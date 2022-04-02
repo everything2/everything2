@@ -76,7 +76,7 @@ This link will expire in <% $.linkvalid %> days.</p>
 <p>The email contains some useful information, so please read it carefully, print it out on high-quality paper, and hang it on your wall in a tasteful frame.</p>
 
 % } else {
-<& '/helpers/openform.mi', node => $.node, id => "signupform" &>
+<& 'openform', node => $.node, id => "signupform" &>
 <fieldset style="width: 32em; max-width: 100%; margin: 3em auto 0">
 <legend>Sign Up</legend>
 <p><% $.prompt %>:</p>

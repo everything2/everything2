@@ -1,0 +1,4 @@
+<%class>
+  has 'node' => (isa => 'Everything::Node', required => 1);
+</%class>
+<& 'openform', node => $.node &><input type="text" name="username"><& 'closeform' &>

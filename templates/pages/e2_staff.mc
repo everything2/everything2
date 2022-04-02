@@ -32,7 +32,7 @@
 <p><b>The Content Editor group is currently:</b></p>
 <ol>
 % foreach my $u(@{$.editors}) {
-<li><& '/helpers/linknode.mi', node => $u &></li>
+<li><& 'linknode', node => $u &></li>
 % }
 </ol>
 
@@ -64,14 +64,14 @@
 <strong>Active:</strong>
 <ol>
 % foreach my $u(@{$.gods}) {
-<li><& '/helpers/linknode.mi', node => $u &></li>
+<li><& 'linknode', node => $u &></li>
 % }
 </ol>
 
 <strong>Inactive:</strong>
 <ol>
 % foreach my $u(@{$.inactive}) {
-<li><& '/helpers/linknode.mi', node => $u &></li>
+<li><& 'linknode', node => $u &></li>
 % }
 
 </ol>
@@ -114,7 +114,7 @@
 <p>[SIGTITLE] user group: [Edit These E2 Titles|Node Titles]</p>
 <ul>
 % foreach my $u(@{$.sigtitle}) {
-<li><& '/helpers/linknode.mi', node => $u &></li>
+<li><& 'linknode', node => $u &></li>
 % }
 </ul>
 
@@ -124,7 +124,7 @@
 <p>People in this group are responsible for maintaining good order in the [Chatterbox]. Think of them as the moderators.</p>
 <ul>
 % foreach my $u(@{$.chanops}) {
-<li><& '/helpers/linknode.mi', node => $u &></li>
+<li><& 'linknode', node => $u &></li>
 % }
 </ul>
 

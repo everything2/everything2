@@ -391,6 +391,13 @@ sub message_ignores
 {
   my ($self) = @_;
 
+  return $self->ignoring_messages_from(1);
+}
+
+sub ignoring_messages_from
+{
+  my ($self, $json) = @_;
+
   my $csr = $self->DB->sqlSelectMany("*","messageignore","messageignore_id=".$self->node_id." ORDER BY messageignore_id");
   my $records = [];
 
@@ -398,7 +405,35 @@ sub message_ignores
   {
     my $node = $self->APP->node_by_id($row->{ignore_node});
     next unless $node;
-    push @$records, $node->json_reference;
+
+    if($json)
+    {
+      push @$records, $node->json_reference;
+    } else {
+      push @$records, $node;
+    }
+  }
+
+  return $records;
+}
+
+sub messages_ignored_by
+{
+  my ($self, $json) = @_;
+
+  my $csr = $self->DB->sqlSelectMany("*","messageignore","ignore_node=".$self->node_id." ORDER BY messageignore_id");
+  my $records = [];
+
+  while(my $row = $csr->fetchrow_hashref())
+  {
+    my $node = $self->APP->node_by_id($row->{messageignore_id});
+    next unless $node;
+    if($json)
+    {
+      push @$records, $node->json_reference;
+    } else {
+      push @$records, $node;
+    }
   }
 
   return $records;

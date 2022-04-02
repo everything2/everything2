@@ -10,17 +10,17 @@
 <tr class="<% ($rownum % 2 == 0)?('oddrow '):('') %>contentinfo">
 %   if ($REQUEST->user->is_editor) {
 <td>
-<& '/helpers/linknode.mi', node => $.node, params => {'op' => ($currentnode->notnew)?('unhidewriteup'):('hidewriteup'), 'hidewriteup' => $currentnode->id }, title => ($currentnode->notnew)?('(un-h!)'):('(h?)') &>
+<& 'linknode', node => $.node, params => {'op' => ($currentnode->notnew)?('unhidewriteup'):('hidewriteup'), 'hidewriteup' => $currentnode->id }, title => ($currentnode->notnew)?('(un-h!)'):('(h?)') &>
 </td>
 %   }
 <td>
-<& '/helpers/linknode.mi', node => $currentnode->parent , class => "title", anchor => $currentnode->author->title &> <& '/helpers/linknode.mi', node => $currentnode, title => "(".$currentnode->writeuptype.")" &>
+<& 'linknode', node => $currentnode->parent , class => "title", anchor => $currentnode->author->title &> <& 'linknode', node => $currentnode, title => "(".$currentnode->writeuptype.")" &>
 </td>
 <td>
 <span class="date"><% ($currentnode->publishtime) | PrettyDate %></span>
 </td>
 <td>
-<& '/helpers/linknode.mi', node => $currentnode->author , class => "author" &>
+<& 'linknode', node => $currentnode->author , class => "author" &>
 </td>
 </tr>
 % }

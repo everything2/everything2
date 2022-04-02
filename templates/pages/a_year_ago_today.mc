@@ -8,10 +8,7 @@
 <p align="center">Turn the clock back!</p><br><br>
 <ul>
 % foreach my $node (@{$.nodes}) {
-%   $.Capture(\my $content) {{
-<& '/helpers/linknode.mi', node => $node->parent, title => "full" &>
-%   }}
-<li>(<% $content | Trim %>) - <& '/helpers/linknode.mi', node => $node, title => $node->parent->title &> by <& '/helpers/linknode.mi', node => $node->author &> <small>entered on <% ($node->createtime) | PrettyDate %></small></li>
+<li>(<& 'linknode', node => $node->parent, title => "full" &>) - <& 'linknode', node => $node, title => $node->parent->title &> by <& 'linknode', node => $node->author &> <small>entered on <% ($node->createtime) | PrettyDate %></small></li>
 % }
 </ul>
 <p><% $.count %> writeups submitted <% (($.yearsago == 1)?("a year"):($.yearsago." years")) %> ago today</p>
@@ -19,7 +16,7 @@
 <tr>
 <td width="50%" align="center">
 % if ($.startat - 50 >= 0) {
-<& '/helpers/linknode.mi', node => $.node, params => {"startat" => $.startat, "yearsago" => $.yearsago} &>
+<& 'linknode', node => $.node, params => {"startat" => $.startat, "yearsago" => $.yearsago} &>
 % } else {
 <%  $.startat %>-50
 % }
@@ -28,7 +25,7 @@
 % my $secondstr = ($.startat+50)."-".(($.startat + 100 < $.count)?($.startat+100):($.count));
 
 % if(($.startat+50) <= ($.count)){
-<& '/helper/linknode.mi', node => $.node, title => $secondstr, params => {"startat" => ($.startat+50), "yearsago" => $.yearsago } &>
+<& 'linknode', node => $.node, title => $secondstr, params => {"startat" => ($.startat+50), "yearsago" => $.yearsago } &>
 % }else{
 (end of list)
 % }
@@ -43,7 +40,7 @@
 %    if($.yearsago == ($.current_year - $year)) {
 <% $year %>
 %    } else {
-<& '/helpers/linknode.mi', node => $.node, title => $year, params => {"yearsago" => ($.current_year - $year)} &>
+<& 'linknode', node => $.node, title => $year, params => {"yearsago" => ($.current_year - $year)} &>
 %    }
 %  }}
 %    push @years,$yearlink;

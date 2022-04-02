@@ -28,7 +28,7 @@
 </%class>
 % if($.type)
 % {
-<a href="/node/<% $.type %>/<% uri_escape_utf8($.node) %><% $.uri_params %>"><% $.title || $.node %></a>
+<a href="/node/<% $.type %>/<% uri_escape_utf8($.node) %><% $.uri_params %>"><% $.title || $.node %></a>\
 % }else{
-<a href="/title/<% uri_escape_utf8($.node) %><% $.uri_params %>"><% $.title || $.node %></a>
+<a href="/title/<% uri_escape_utf8($.node) %><% $.uri_params %>"><% $.title || $.node %></a>\
 % }
