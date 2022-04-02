@@ -81,6 +81,12 @@ sub logout
   return $self->user;
 }
 
+sub get_ip
+{
+  my $self = shift;
+  return $self->APP->getIp;
+}
+
 sub get_current_user
 {
   my $self = shift;
