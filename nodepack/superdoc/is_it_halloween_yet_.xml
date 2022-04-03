@@ -1,16 +1,5 @@
 <node>
-  <doctext>[%
-my $str;
-
-my $specialdate = htmlcode('isSpecialDate','halloween');
-
-$str .= &quot;&lt;br/&gt;&lt;br/&gt;&quot;;
-
-$str .= &quot;&lt;p align=\&quot;center\&quot;&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&quot;. ($specialdate ? &quot;YES&quot; : &quot;NO&quot;) 
-                       .&quot;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;&quot; ;
-
-return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1980681</node_id>
   <title>Is it Halloween yet?</title>
   <type_nodetype>14</type_nodetype>

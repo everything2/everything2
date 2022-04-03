@@ -1,24 +1,22 @@
 <node>
   <doctext>[%
-  return $ENV{HTTP_X_FORWARDED_FOR};
-%]
-
-[%
   my $str = &quot;&quot;;
   my $count = 0;
-  my @nodes = $DB-&gt;getNodeWhere({type_nodetype =&gt; getNode(&quot;superdoc&quot;,&quot;nodetype&quot;)-&gt;{node_id}});
-
-  foreach my $n (sort {$a-&gt;{title} cmp $b-&gt;{title}} @nodes)
+  foreach my $type (&quot;superdoc&quot;,&quot;restricted_superdoc&quot;,&quot;oppressor_superdoc&quot;)
   {
-
-    my $fullnode = $DB-&gt;getNodeById($n-&gt;{node_id});
-    next unless($fullnode-&gt;{doctext} =~ /\S/);
-    $count++;    
-    $str .= linkNodeTitle($n-&gt;{title}).&quot;&lt;br&gt;&quot;;
+    $str .= &quot;&lt;h2&gt;$type&lt;/h2&gt;&quot;;
+    my @nodes = $DB-&gt;getNodeWhere({type_nodetype =&gt; getNode($type,&quot;nodetype&quot;)-&gt;{node_id}});
+   
+    foreach my $n (sort {$a-&gt;{title} cmp $b-&gt;{title}} @nodes)
+    {
+      my $fullnode = $DB-&gt;getNodeById($n-&gt;{node_id});
+      next unless($fullnode-&gt;{doctext} =~ /\S/);
+      $count++;    
+      $str .= linkNodeTitle($n-&gt;{title}).&quot;&lt;br&gt;&quot;;
+    }
   }
 
   return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&quot;;
-
 %]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
