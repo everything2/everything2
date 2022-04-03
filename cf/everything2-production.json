@@ -1743,7 +1743,7 @@
         "FunctionName": "everything2-zipfile-processor",
         "Role": {"Fn::GetAtt" : ["Everything2ZipfileProcessorRole", "Arn"]},
         "Runtime": "ruby2.7",
-        "MemorySize": 1024,
+        "MemorySize": 350,
         "Timeout": "600",
         "Handler": "handler.lambda_handler"
       }
@@ -2179,7 +2179,7 @@
         "Role": {"Fn::GetAtt" : ["SitemapBatchDispatcherLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
@@ -2202,7 +2202,7 @@
         "Role": {"Fn::GetAtt" : ["SitemapBatchProcessorLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "600",
@@ -2473,7 +2473,7 @@
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
@@ -2529,11 +2529,11 @@
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
-        "MemorySize": 1024,
+        "MemorySize": 750,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
@@ -2585,11 +2585,11 @@
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
-        "MemorySize": 1024,
+        "MemorySize": 750,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
@@ -2641,11 +2641,11 @@
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
-        "MemorySize": 1024,
+        "MemorySize": 750,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
@@ -2697,11 +2697,11 @@
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
-        "MemorySize": 1024,
+        "MemorySize": 750,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
@@ -2753,11 +2753,11 @@
         "Role": {"Fn::GetAtt" : ["DatastashProcessorLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
-        "MemorySize": 1024,
+        "MemorySize": 750,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
@@ -2777,10 +2777,10 @@
       "Type": "AWS::Events::Rule",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "Description": "Cron rule to call writeup reaper",
+        "Description": "Cron rule to call the datastash processor",
         "Name": "datastash-processor-cron",
         "State": "ENABLED",
-        "ScheduleExpression": "cron(* * * * ? *)",
+        "ScheduleExpression": "rate(2 minutes)",
         "Targets": [{
           "Id": "datastash-processor-arn",
           "Arn": {"Fn::GetAtt" : ["DatastashProcessorFunction", "Arn"]}
@@ -2809,11 +2809,11 @@
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
-        "MemorySize": 1024,
+        "MemorySize": 750,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
