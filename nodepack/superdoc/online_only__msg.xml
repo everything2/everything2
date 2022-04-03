@@ -1,35 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;
-&lt;big&gt;&lt;strong&gt;Summary&lt;/strong&gt;&lt;/big&gt;&lt;br /&gt;
-Typing&lt;br /&gt;
-&lt;code&gt;/msg?&lt;/code&gt; &lt;var&gt;group&lt;/var&gt; &lt;var&gt;message&lt;/var&gt;&lt;br /&gt;
-will only send to online members of that group, unless they have that long-winded-option picked, then they'll get it anyway.
-&lt;/p&gt;
-&lt;p&gt;
-&lt;big&gt;&lt;strong&gt;Detail&lt;/strong&gt;&lt;/big&gt;&lt;br /&gt;
-Since some groups' messages seem to be only relevant for a short period of time, you can now send a [/msg] to only people that are currently online. This is done by simply appending a question mark, &lt;big&gt;&lt;big&gt;?&lt;/big&gt;&lt;/big&gt;, to the &lt;code&gt;/msg&lt;/code&gt; command. For example, if I want to send a message to only the [content editors] that are active, I could do:
-&lt;blockquote&gt;&lt;code&gt;
-/msg? content_editors Only those of you on right now will get this message!
-&lt;/code&gt;&lt;/blockquote&gt;
-Note the &lt;code&gt;?&lt;/code&gt; after the &lt;code&gt;/msg&lt;/code&gt;. This could be useful for questions only useful for a short while, such as &quot;Does anybody besides me think [% linkNode($$USER{node_id}, 'SomeDumbTroll'); %] is just a troll, and not just a misguided newbie?&quot;.&lt;br /&gt;
-But what if you're one of those [paranoid] people who likes a full [Message Inbox]? Then you can simply visit [user settings] and make sure the option with the verbose description that reads something like &quot;get online-only messages while offline&quot; is checked. You currently have this option [% $$VARS{'getofflinemsgs'}eq'1' ? 'enabled, so you\'ll get messages marked for online-only, even when you aren\'t on E2' : 'disabled, so you will only get online-only messages while you are on E2'; %].
-&lt;/p&gt;
-&lt;p&gt;&lt;big&gt;&lt;strong&gt;Random Notes&lt;/strong&gt;&lt;/big&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;normal [/msg]s (without the ? symbols) will act the same old way - they'll send to everybody in the group, offline and online&lt;/li&gt;
-&lt;li&gt;if you send an online-only message after not loading a page recently, you may not be considered to be online, so it is possible you won't get the /msg&lt;/li&gt;
-&lt;li&gt;a /msg sent this way will have the text &quot;&lt;code&gt;OnO: &lt;/code&gt;&quot; in the front - this stands for &lt;strong&gt;on&lt;/strong&gt;line &lt;strong&gt;o&lt;/strong&gt;nly, which means it was sent using online-only mode; if somebody sends a group message that way, you probably should respond likewise (with &lt;code&gt;/msg?&lt;/code&gt; instead of a plain &lt;code&gt;/msg&lt;/code&gt;&lt;/li&gt;
-&lt;!--
-&lt;li&gt;if you're using the [Java Chatterbox] and want to leave the allow-bad-command-sending option off, you'll have to type &lt;code&gt;/say /msg?&lt;/code&gt; &lt;var&gt;group&lt;/var&gt; &lt;var&gt;message&lt;/var&gt; until a version of jchatter that supports this command option is publically available&lt;/li&gt;
---&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;big&gt;&lt;strong&gt;Q&lt;/strong&gt;&lt;/big&gt; &lt;small&gt;(not FAQs, since there is only one question that has been only asked once)&lt;/small&gt;&lt;/p&gt;
-&lt;dl&gt;
-
-&lt;dt&gt;Does online-only /msgs ignore cloaked users?&lt;/dt&gt;
-&lt;dd&gt;No, online-only sends to everybody online, regardless of their cloaked status. (Essentially, being cloaked only changes other users' displays, nothing else.)&lt;/dd&gt;
-
-&lt;/dl&gt;</doctext>
+  <doctext></doctext>
   <node_id>1022255</node_id>
   <title>online only /msg</title>
   <type_nodetype>14</type_nodetype>
