@@ -3,14 +3,14 @@
   "Description": "E2 production resources",
   "Mappings" : {
     "RegionMap" : {
-      "us-east-1" : { "S3hostedzoneID" : "Z3AQBSTGFYJSTF", "websiteendpoint" : "s3-website-us-east-1.amazonaws.com" },
-      "us-west-1" : { "S3hostedzoneID" : "Z2F56UZL2M1ACD", "websiteendpoint" : "s3-website-us-west-1.amazonaws.com" },
-      "us-west-2" : { "S3hostedzoneID" : "Z3BJ6K6RIION7M", "websiteendpoint" : "s3-website-us-west-2.amazonaws.com" },
-      "eu-west-1" : { "S3hostedzoneID" : "Z1BKCTXD74EZPE", "websiteendpoint" : "s3-website-eu-west-1.amazonaws.com" },
-      "ap-southeast-1" : { "S3hostedzoneID" : "Z3O0J2DXBE1FTB", "websiteendpoint" : "s3-website-ap-southeast-1.amazonaws.com" },
-      "ap-southeast-2" : { "S3hostedzoneID" : "Z1WCIGYICN2BYD", "websiteendpoint" : "s3-website-ap-southeast-2.amazonaws.com" },
-      "ap-northeast-1" : { "S3hostedzoneID" : "Z2M4EHUR26P7ZW", "websiteendpoint" : "s3-website-ap-northeast-1.amazonaws.com" },
-      "sa-east-1" : { "S3hostedzoneID" : "Z31GFT0UA1I2HV", "websiteendpoint" : "s3-website-sa-east-1.amazonaws.com" }
+      "us-east-1" : { "S3hostedzoneID" : "Z3AQBSTGFYJSTF", "websiteendpoint" : "s3-website-us-east-1.amazonaws.com", "ELBAccountID": "127311923021"},
+      "us-west-1" : { "S3hostedzoneID" : "Z2F56UZL2M1ACD", "websiteendpoint" : "s3-website-us-west-1.amazonaws.com", "ELBAccountID": "027434742980"},
+      "us-west-2" : { "S3hostedzoneID" : "Z3BJ6K6RIION7M", "websiteendpoint" : "s3-website-us-west-2.amazonaws.com", "ELBAccountID": "797873946194"},
+      "eu-west-1" : { "S3hostedzoneID" : "Z1BKCTXD74EZPE", "websiteendpoint" : "s3-website-eu-west-1.amazonaws.com", "ELBAccountID": "156460612806"},
+      "ap-southeast-1" : { "S3hostedzoneID" : "Z3O0J2DXBE1FTB", "websiteendpoint" : "s3-website-ap-southeast-1.amazonaws.com","ELBAccountID": "114774131450"},
+      "ap-southeast-2" : { "S3hostedzoneID" : "Z1WCIGYICN2BYD", "websiteendpoint" : "s3-website-ap-southeast-2.amazonaws.com","ELBAccountID": "783225319266"},
+      "ap-northeast-1" : { "S3hostedzoneID" : "Z2M4EHUR26P7ZW", "websiteendpoint" : "s3-website-ap-northeast-1.amazonaws.com","ELBAccountID": "582318560864"},
+      "sa-east-1" : { "S3hostedzoneID" : "Z31GFT0UA1I2HV", "websiteendpoint" : "s3-website-sa-east-1.amazonaws.com", "ELBAccountID": "507241528517"}
     },
     "SESIdentity": {
       "us-west-2": { "arn": "arn:aws:ses:us-west-2:254865750963:identity/accounthelp@everything2.com" }
@@ -374,7 +374,17 @@
       "Properties": {
         "Name": "E2-App-Frontend-ELB-2",
         "Subnets": [{"Ref": "AppVPCSubnet1"}, {"Ref": "AppVPCSubnet2"}],
-        "SecurityGroups": [{"Ref": "ELBFrontendSecurityGroup"}]
+        "SecurityGroups": [{"Ref": "ELBFrontendSecurityGroup"}],
+        "LoadBalancerAttributes": [
+          {
+            "Key": "access_logs.s3.enabled",
+            "Value": true
+          },
+          {
+            "Key": "access_logs.s3.bucket",
+            "Value": {"Ref": "ELBLogsBucket"}
+          }
+        ]
       }
     },
     "E2FrontendELBTargetGroup": {
@@ -3037,6 +3047,60 @@
       "Properties": {
         "CapacityProviders": ["FARGATE"],
         "ClusterName": "E2-App-ECS-Cluster" 
+      }
+    },
+    "ELBLogsBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "elblogs.everything2.com",
+        "LifecycleConfiguration": {
+          "Rules": [{
+            "Id": "DeleteAfter30",
+            "Status": "Enabled",
+            "ExpirationInDays": "30"
+          }]
+        }
+      }
+    },
+    "ELBLogsSystemAccessPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Bucket": {"Ref": "ELBLogsBucket"},
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": {"Fn::Join": ["",["arn:aws:iam::",{"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "ELBAccountID"]},":root"]]}
+            },
+            "Action": "s3:PutObject",
+            "Resource": {"Fn::Join": ["",["arn:aws:s3:::",{"Ref": "ELBLogsBucket"},"/AWSLogs/",{"Ref": "AWS::AccountId"},"/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": {"Fn::Join": ["",["arn:aws:s3:::",{"Ref": "ELBLogsBucket"}, "/AWSLogs/",{"Ref": "AWS::AccountId"},"/*"]]},
+            "Condition": {
+              "StringEquals": {
+                "s3:x-amz-acl": "bucket-owner-full-control"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": {"Fn::Join": ["",["arn:aws:s3:::",{"Ref": "ELBLogsBucket"}]]}
+          }]
+        } 
       }
     }
   }
