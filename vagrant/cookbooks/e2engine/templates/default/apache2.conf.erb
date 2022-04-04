@@ -10,22 +10,6 @@ KeepAliveTimeout 15
 User ${APACHE_RUN_USER}
 Group ${APACHE_RUN_GROUP}
 
-##### LOGGING #####
-# CENTRAL ERROR LOG
-ErrorLogFormat "{\"time\":\"%{%usec_frac}t\", \"function\" : \"[%-m:%l]\", \"process\" : \"[pid%P]\" ,\"message\" : \"%M\"}"
-ErrorLog "|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
-# DEFAULT LOG LEVEL
-LogLevel warn
-# FILTER OUT THESE LOGS IN APACHE
-# DON'T LOG LOOPBACK REQUESTS
-SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
-# DON'T LOG PROXY CHECK OF SERVER_LIVE, MISSING FAVICON AND ROBOTS.TXT
-SetEnvIf Request_URI "^/server_live\.html$" dontlog
-SetEnvIf Request_URI "favicon.ico$" dontlog
-SetEnvIf Request_URI "^/robots\.txt$" dontlog
-
-LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
-
 ##### E2 CUSTOM SETTINGS #####
 UseCanonicalName On
 ServerTokens Prod
@@ -63,6 +47,22 @@ Include mods-enabled/*.conf
   Define E2MinSpareServers 1
   Define E2MaxSpareServers 1
   Define E2MaxClients 1
+
+  # CENTRAL ERROR LOG
+  ErrorLogFormat "{\"time\":\"%{%usec_frac}t\", \"function\" : \"[%-m:%l]\", \"process\" : \"[pid%P]\" ,\"message\" : \"%M\"}"
+  ErrorLog "|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
+  # DEFAULT LOG LEVEL
+  LogLevel warn
+  # FILTER OUT THESE LOGS IN APACHE
+  # DON'T LOG LOOPBACK REQUESTS
+  SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
+  # DON'T LOG PROXY CHECK OF SERVER_LIVE, MISSING FAVICON AND ROBOTS.TXT
+  SetEnvIf Request_URI "^/server_live\.html$" dontlog
+  SetEnvIf Request_URI "favicon.ico$" dontlog
+  SetEnvIf Request_URI "^/robots\.txt$" dontlog
+
+  LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
+
 </IfDefine>
 
 <IfDefine E2_PRODUCTION>
