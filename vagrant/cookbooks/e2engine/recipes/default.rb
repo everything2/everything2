@@ -25,13 +25,6 @@ directory logdir do
   action :create
 end
 
-directory "/etc/apache2/logs" do
-  owner "www-data"
-  group "root"
-  mode 0755
-  action :create
-end
-
 to_install = [
     'perl',
     'libalgorithm-diff-perl',
@@ -100,6 +93,13 @@ to_install = [
 
 to_install.each do |p|
   package p
+end
+
+directory "/etc/apache2/logs" do
+  owner "www-data"
+  group "root"
+  mode 0755
+  action :create
 end
 
 Chef::Log.info("Primary runlist: #{node.primary_runlist}")
