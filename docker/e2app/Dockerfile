@@ -1,5 +1,4 @@
 FROM everything2/e2base
-RUN /var/everything/tools/cloudwatch-agent-installer.rb
 
 RUN rm -f /etc/apache2/mods-enabled/mpm_event.*
 RUN rm -rf /etc/apache2/sites-enabled /etc/apache2/sites-available /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available

@@ -264,11 +264,6 @@ directory logdir do
   notifies :restart, "service[apache2]", :delayed
 end
 
-bash 'Install Cloudwatch Agent' do
-  user 'root'
-  code '/var/everything/tools/cloudwatch-agent-installer.rb'
-end
-
 bash 'Make 4g of swap' do
   user 'root'
   code '/var/everything/tools/mkswap.sh'

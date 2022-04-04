@@ -8,7 +8,7 @@ RUN cd /var && git clone https://github.com/everything2/everything2.git everythi
 
 RUN mkdir -p /etc/everything /var/mason /var/log/everything
 RUN chown root:root /etc/everything
-RUN chown www-data:www-data /var/mason
+RUN chown www-data:www-data /var/mason /var/log/everything
 RUN chmod 0755 /var/mason
 
 RUN gem install aws-sdk-rds aws-sdk-elasticloadbalancingv2 aws-sdk-iam aws-sdk-secretsmanager aws-sdk-ses aws-sdk-opsworks aws-sdk-ec2 aws-sdk-lambda

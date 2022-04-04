@@ -132,12 +132,12 @@ coreconfig+="
                 deny from env=denyip
         </Directory>
 
-	# NORMAL LOGS
-	ErrorLog \"|#{rotatelogs} -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"
-	# Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
-	LogLevel warn
+        <IfDefine E2_DEVELOPMENT>
+          ErrorLog \"|#{rotatelogs} -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"
+          LogLevel warn
+          CustomLog \"|#{rotatelogs} -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" cloudwatch env=!dontlog
+        </IfDefine>
 
-	CustomLog \"|#{rotatelogs} -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" cloudwatch env=!dontlog
 	ServerSignature On"
 
 %>
