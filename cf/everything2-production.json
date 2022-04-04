@@ -2842,19 +2842,28 @@
     "E2LibECRRegistry": {
       "Type": "AWS::ECR::Repository",
       "Properties": {
-        "RepositoryName": "everything2/e2lib"
+        "RepositoryName": "everything2/e2lib",
+        "LifecyclePolicy": {
+          "LifecyclePolicyText": "{\"rules\": [{\"rulePriority\": 1, \"description\": \"Expire images older than 3 days\", \"selection\": {\"tagStatus\": \"untagged\", \"countType\": \"sinceImagePushed\",\"countUnit\": \"days\", \"countNumber\": 3 }, \"action\": {\"type\": \"expire\"}}]}"
+        }
       }
     },
     "E2BaseECRRegistry": {
       "Type": "AWS::ECR::Repository",
       "Properties": {
-        "RepositoryName": "everything2/e2base"
+        "RepositoryName": "everything2/e2base",
+        "LifecyclePolicy": {
+          "LifecyclePolicyText": "{\"rules\": [{\"rulePriority\": 1, \"description\": \"Expire images older than 3 days\", \"selection\": {\"tagStatus\": \"untagged\", \"countType\": \"sinceImagePushed\",\"countUnit\": \"days\", \"countNumber\": 3 }, \"action\": {\"type\": \"expire\"}}]}"
+        }
       }
     },
     "E2AppECRRegistry": {
       "Type": "AWS::ECR::Repository",
       "Properties": {
-        "RepositoryName": "everything2/e2app"
+        "RepositoryName": "everything2/e2app",
+        "LifecyclePolicy": {
+          "LifecyclePolicyText": "{\"rules\": [{\"rulePriority\": 1, \"description\": \"Expire images older than 3 days\", \"selection\": {\"tagStatus\": \"untagged\", \"countType\": \"sinceImagePushed\",\"countUnit\": \"days\", \"countNumber\": 3 }, \"action\": {\"type\": \"expire\"}}]}"
+        }
       }
     },
     "CodeBuildUpdateApplicationECRRegistry": {
