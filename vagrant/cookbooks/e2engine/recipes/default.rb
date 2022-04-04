@@ -276,11 +276,6 @@ bash 'Make 4g of swap' do
   code '/var/everything/tools/mkswap.sh'
 end
 
-cron 'log_deliver_to_s3.pl' do
-  minute '5'
-  command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
-end
-
 unless node['override_configuration'].eql? 'development'
   template "/lib/systemd/system/apache2.service" do
     owner "root"
