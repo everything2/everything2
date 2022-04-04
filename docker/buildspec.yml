@@ -23,17 +23,17 @@ phases:
         fi
       - |
         if [ -f .buildcache/docker_e2base.build ] ; then
-          cd docker/e2base && docker build -t everything2/e2base:$IMAGE_TAG . ;
           docker pull everything2/e2lib:$IMAGE_TAG ;
+          cd docker/e2base && docker build -t everything2/e2base:$IMAGE_TAG . ;
           docker tag everything2/e2base:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2base:$IMAGE_TAG ;
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2base:$IMAGE_TAG ;
           cd ../.. ;
         fi
       - |
         if [ -f .buildcache/docker_e2app.build ] ; then
-          cd docker/e2app && docker build -t everything2/e2app:$IMAGE_TAG . ;
           docker pull everything2/e2lib:$IMAGE_TAG ;
           docker pull everything2/e2base:$IMAGE_TAG ;
+          cd docker/e2app && docker build -t everything2/e2app:$IMAGE_TAG . ;
           docker tag everything2/e2app:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG ;
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG ;
           cd ../.. ;
