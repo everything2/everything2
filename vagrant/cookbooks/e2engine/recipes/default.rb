@@ -69,8 +69,6 @@ to_install = [
     'locate',
     'screen',
     'mysql-client',
-    'xz-utils',
-    'xdelta3',
 # Needed for Amazon provisioning
     'ruby',
     'ruby-dev',
@@ -81,10 +79,6 @@ to_install = [
     'libncurses5-dev',
     'zlib1g-dev',
     'pkg-config',
-# Needed for Cloudwatch agent
-    'collectd',
-# Needed for minification testing
-    'nodejs',
 # The basics
     'apache2',
     'libapache2-mod-perl2',
@@ -101,8 +95,6 @@ directory "/etc/apache2/logs" do
   mode 0755
   action :create
 end
-
-Chef::Log.info("Primary runlist: #{node.primary_runlist}")
 
 git everythingdir do
   repository 'https://github.com/everything2/everything2.git'
