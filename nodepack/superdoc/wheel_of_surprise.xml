@@ -218,9 +218,6 @@ if (!$isHalloween) {
 		}
 		setVars($USER,$VARS);
 	}
-	elsif ($rnd&lt;5220) {
-		$resultStr .= &quot;&lt;b&gt;a black token!&lt;/b&gt; Politically correct but there's not a whole lot you can do with it.&quot;;
-	}
 	elsif ($rnd&lt;5240) {
 		$resultStr .= &quot;&lt;b&gt;a New York City subway token!&lt;/b&gt; Free ride! Expires April 13, 2003.&quot;;
 	}
