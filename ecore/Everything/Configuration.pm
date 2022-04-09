@@ -42,7 +42,6 @@ has 'environment' => (isa => 'Str', is => 'ro', default => 'development');
 has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {
   "homenodeimages" => Everything::S3::BucketConfig->new("bucket" => "hnimagew.everything2.com"),
   "nodebackup" => Everything::S3::BucketConfig->new("bucket" => "nodebackup.everything2.com"),
-  "backup" => Everything::S3::BucketConfig->new("bucket" => "backupwest.everything2.com"),
   "sitemap" => Everything::S3::BucketConfig->new("bucket" => "sitemap.everything2.com"),
   "sitemapdispatch" => Everything::S3::BucketConfig->new("bucket" => "sitemapdispatch.everything2.com"),
   "jscss" => Everything::S3::BucketConfig->new("bucket" => "jscssw.everything2.com") }});
