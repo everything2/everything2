@@ -54,9 +54,6 @@ use DateTime;
 # Used by publishwriteup
 use DateTime::Format::Strptime;
 
-# Used by typeMenu
-use Everything::FormMenu;
-
 # Used by verifyRequestHash, getGravatarMD5, verifyRequest, verifyRequestForm
 use Digest::MD5 qw(md5_hex);
 
@@ -3639,41 +3636,6 @@ sub node_menu
 
   return $query->popup_menu($name, \@idlist, $SELECT, \%items);
 
-}
-
-# Used only in the [Settings] page where they select theme, so this is really likely going to get killed shortly
-# This constructs an HTML popup menu using the FormMenu
-# package of Everything.  Values of the menu come from
-# the specified "setting" node.
-#
-# $name - the name for the form item drop down
-# $selected - which item should be selected by default.
-#    undef if nothing specific.
-# The remaining items passed are the names of the types.
-#
-sub typeMenu
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $name = shift;
-  my $selected = shift;
-
-  my $menu = new Everything::FormMenu;
-  my $typename = undef;
-
-  while(@_ > 0)
-  {
-    $typename = shift @_;
-    $menu->addType($typename);
-  }
-
-  return $menu->writePopupHTML($query,$name,$selected);
 }
 
 # Used in the zen epicenter. Very likely a future template function
