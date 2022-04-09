@@ -156,7 +156,7 @@ You are here to listen.&lt;/p&gt;
   </vars>
   <vars>
     <key>oldexp</key>
-    <value>174</value>
+    <value>176</value>
   </vars>
   <vars>
     <key>personal_nodelet</key>
@@ -178,5 +178,5 @@ You are here to listen.&lt;/p&gt;
     <key>visible</key>
     <value>1</value>
   </vars>
-  <votesleft>997</votesleft>
+  <votesleft>996</votesleft>
 </node>
