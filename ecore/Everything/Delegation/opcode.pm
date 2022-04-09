@@ -80,7 +80,7 @@ sub publishdraft
 
   if ($e2node =~ /\D/){
     # not a node_id: new node
-    my $title = $APP->cleanNodeName($query -> param('title'));
+    my $title = $APP->cleanNodeName(scalar $query->param('title'));
     return unless $title;
     $query -> param('e2node_createdby_user', $$publishAs{node_id}) if $publishAs;
     $e2node = $DB -> insertNode($title, 'e2node', $USER);
