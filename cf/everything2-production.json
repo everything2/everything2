@@ -76,13 +76,6 @@
         "AccessControl": "PublicRead"
       }
     },
-    "BackupS3Bucket": {
-      "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "BucketName": "backupwest.everything2.com"
-      }
-    },
     "PrivateStorageS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
