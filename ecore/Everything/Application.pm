@@ -27,6 +27,9 @@ use JSON;
 # For sitemap_batch_xml
 use XML::Generator;
 
+# For showPartialDiff, showCompleteDiff
+use Algorithm::Diff;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -2678,9 +2681,7 @@ sub use_bootstrap {
 sub showPartialDiff {
   my ($this, $codeOrig, $codeNew) = @_;
 
-  use Algorithm::Diff qw(diff);
-
-  my $diffs = diff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
+  my $diffs = Algorithm::Diff::diff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
   return 'Nothing changed!' unless @$diffs;
 
   my $str = '';
@@ -2721,10 +2722,8 @@ sub showPartialDiff {
 
 sub showCompleteDiff{
   my ($this, $codeOrig,$codeNew) = @_;
-  use Algorithm::Diff qw(sdiff);
 
-
-  my @diff = sdiff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
+  my @diff = Algorithm::Diff::sdiff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
   my @minusBuffer = ();
   my @plusBuffer = ();
   my $html = '';
