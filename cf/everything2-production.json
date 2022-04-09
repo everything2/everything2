@@ -656,11 +656,6 @@
           "Statement": [
           {
             "Effect": "Allow",
-            "Action": ["s3:PutObject","s3:DeleteObject"],
-            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "BackupS3Bucket", "Arn"] }, "/*"]]}
-          },
-          {
-            "Effect": "Allow",
             "Action": ["s3:PutObject","s3:DeleteObject","s3:GetObject"],
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "NodeBackupBucket", "Arn"] }, "/*"]]}
           },
