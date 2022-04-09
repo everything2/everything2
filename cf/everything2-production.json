@@ -450,12 +450,12 @@
         "Protocol": "HTTP"
       }
     },
-    "E2AppELBAddPolicy": {
+    "AppELBAddPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "Description": "Allows E2 machines to upload to the homenode bucket",
-        "ManagedPolicyName": "E2AppELBAddOnly",
+        "Description": "Allows E2 machines to upload to add themselves to the load balancer",
+        "ManagedPolicyName": "AppELBAddPolicy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -518,7 +518,7 @@
         },
         "Description": "Everything2 Application Web Server",
         "ManagedPolicyArns": [
-          {"Ref": "E2AppELBAddPolicy"},
+          {"Ref": "AppELBAddPolicy"},
           {"Ref": "E2AppRDSAddOnly"},
           {"Ref": "E2AppS3Policy"},
           {"Ref": "E2AppMailerPolicy"},
@@ -3098,6 +3098,84 @@
             "Resource": {"Fn::Join": ["",["arn:aws:s3:::",{"Ref": "ELBLogsBucket"}]]}
           }]
         } 
+      }
+    },
+    "NodepackBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "nodepack.everything2.com"
+      }
+    },
+    "NodepackS3Policy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows nodepack lambda jobs to interact with the nodepack bucket",
+        "ManagedPolicyName": "NodepackS3Policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["s3:PutObject","s3:DeleteObject","s3:GetObject"],
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "NodepackBucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": {"Fn::GetAtt": ["NodepackBucket", "Arn"]}
+          }]
+        }
+      }
+    },
+    "NodepackLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Role for Nodepack Lambda",
+        "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+            {"Ref": "VPCLambdaCreateInterfacePolicy"},
+            {"Ref": "E2AppSecretsAccessPolicy"},
+            {"Ref": "CloudWatchEventsWritePolicy"},
+            {"Ref": "NodepackS3Policy"}
+        ],
+        "Path": "/",
+        "RoleName": "Nodepack-Lambda-Role"
+      }
+    },
+    "NodepackBuilderFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "nodepack-builder.zip"
+        },
+        "Description": "On-demand function to upload the latest nodepack to S3",
+        "FunctionName": "nodepack-builder",
+        "Role": {"Fn::GetAtt" : ["NodepackLambdaRole", "Arn"]},
+        "Layers": [
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
+        ],
+        "Runtime": "provided.al2",
+        "Timeout": "400",
+        "MemorySize": 750,
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
+        }
       }
     }
   }

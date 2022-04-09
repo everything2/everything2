@@ -16,7 +16,7 @@
     }
   }
 
-  return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&quot;;
+  return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&lt;br&gt;&quot;;
 %]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
