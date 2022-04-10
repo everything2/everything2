@@ -5019,4 +5019,65 @@ sub spam_cannon
   return $str;
 }
 
+sub pit_of_abomination
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $str = htmlcode("openform");
+  $str .= qq|<p>For they are an Offense in thine Eyes, and that thine Eyes might be freed from the sight of their Works, thou mayest abominate them here. And their feeble Screeds shall not appear in that List which is call&egrave;d New Writeups, nor shall they be shewn amongst the Works of the Worthy in the Nodes of E2. Yet still mayest thou seek them out when thy Fancy is such.|;
+  $str .= qq|<fieldset><legend>Abominate</legend>|;
+  $str .= qq|<label>Wretch's name:<input type="text" name="abomination"></label>|;
+  $str .= qq|<label title="also ignore user's messages and chat"><input type="checkbox" name="pratenot" value="1" checked="checked">disdain also their prattle</label>|;
+  $str .= qq|<br><input type="submit" name="abominate" value="Abominate!">|;
+
+  if (scalar($query->param('abominate')) and my $abominame = $query->param( 'abomination'))
+  {
+    unless(my $abomination = getNode( $abominame , 'user' ))
+    {
+      $str .= '<p>User '.encodeHTML( $abominame ).' not found.' ;
+    } else {
+      $$VARS{ unfavoriteusers } .= ',' if $$VARS{ unfavoriteusers } ;
+      $$VARS{ unfavoriteusers } .= $$abomination{ user_id } unless $$VARS{ unfavoriteusers } =~ /\b$$abomination{ user_id }\b/ ;
+      $str .= htmlcode('ignoreUser', $abominame) if $query -> param('pratenot');
+    }
+  }
+
+  $str .= qq|</fieldset></form>|;
+  $str .= htmlcode("openform");
+
+  if(scalar $query->param('debominate'))
+  {
+    foreach($query->multi_param('debominees'))
+    {
+      $$VARS{ unfavoriteusers } =~ s/\b$_\b,?// ;
+    }
+  }
+
+  $$VARS{ unfavoriteusers } =~ s/,$// ;
+
+  if($VARS->{unfavoriteusers})
+  {
+    my @abominees = split ',' , $$VARS{ unfavoriteusers } ;
+    $str .= '<p>Yet should they swear Betterment and rue their Ways, repenting in Sackcloth and Ashes,
+thou mayest in thy great Mercy relent.
+<fieldset><legend>Relent</legend>
+	'.$query -> checkbox_group( -name => 'debominees' , -values => [ @abominees ] ,
+		-labels => { map { $_ => getNodeById( $_ ) -> { title } } @abominees } ,
+		-linebreak => 'true' ) .
+	$query -> submit( -name=> 'debominate' , -value => 'Relent!' ).'</fieldset>' ;
+  } else {
+    $str .= '<p>In thy Mercy hast thou stayed thy Hand.';
+  }
+
+  $str .= qq|</form>|;
+  return $str;
+}
+
 1;
