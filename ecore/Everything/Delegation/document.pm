@@ -5080,4 +5080,52 @@ thou mayest in thy great Mercy relent.
   return $str;
 }
 
+sub level_distribution
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>The following shows the number of active E2 users at each level (based on users logged in over the last month).</p>|;
+
+  my $levels = {};
+  my $queryText = "SELECT setting.setting_id,setting.vars FROM setting,user WHERE setting.setting_id=user.user_id AND user.lasttime>=DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND setting.vars LIKE '%level=%'";
+
+  my $rows = $DB->{dbh}->prepare($queryText);
+  $rows->execute() or return $rows->errstr;
+
+  while(my $dbrow = $rows->fetchrow_arrayref)
+  {
+    $dbrow->[1] =~ m/level=([0-9]+)/;
+    if(exists($levels->{$1}))
+    {
+      $levels->{$1} = $levels->{$1}+1;
+    }else{
+      $levels->{$1} = 1;
+    }
+  }
+
+  $str .= '<table align="center"><tr><th>Level</th><th>Title</th><th>Number of Users</th></tr>';
+  my $ctr = 0;
+  foreach my $key (sort {$levels->{$b} <=> $levels->{$a}} (keys(%$levels)))
+  {
+    $ctr++;
+
+    if($ctr % 2 ==0)
+    {
+      $str .= '<tr class="evenrow">';
+    } else {
+      $str .= '<tr class="oddrow">';
+    }
+    $str .= '<td>'.($key+0).'</td><td style="text-align:center">'.(getVars(getNode('level titles', 'setting'))->{($key+0)} || 0).'</td><td style="text-align:right">'.$levels->{$key}.'</td></tr>';
+  }
+
+  $str .= '</table>';
+  return $str;
+}
+
 1;
