@@ -4818,4 +4818,95 @@ sub news_archives
   return $text;
 }
 
+sub superbless
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  return '<p>You have not yet learned that spell.</p>' unless $APP->isEditor($USER);
+  
+  my $str = "";
+  if(htmlcode('verifyRequest', 'superbless'))
+  {
+    my @params = $query->param;
+    my @users = ();
+    my @gp = ();
+
+    foreach (@params) {
+      if(/^EnrichUsers(\d+)$/) {
+        $users[$1] = $query->param($_);
+       }
+       if(/^BestowGP(\d+)$/) {
+         $gp[$1] = $query->param($_);
+       }
+    }
+
+    my $curGP = undef;
+    for(my $count=0; $count < @users; $count++)
+    {
+      next unless $users[$count] and $gp[$count];
+
+      my ($U) = getNode ($users[$count], 'user');
+      if (not $U) {
+        $str.="couldn't find user $users[$count]<br />";
+        next;
+      }
+
+      $curGP = $gp[$count];
+ 
+      unless ($curGP =~ /^\-?\d+$/) {
+        $str.="$curGP is not a valid GP value for user $users[$count]<br>";
+        next;
+      }
+
+      my $signum = ($curGP>0) ? 1 : (($curGP<0) ? -1 : 0);
+
+      $str .= "User $$U{title} was given $curGP GP.";
+      $APP->securityLog($NODE, $USER, "$$U{title} was superblessed $curGP GP by $$USER{title}");
+
+      if($signum!=0) {
+        $$U{karma}+=$signum;
+        updateNode($U, -1);
+        htmlcode('achievementsByType','karma');
+        $APP->adjustGP($U, $curGP);
+      } else {
+        $str .= ', so nothing was changed';
+      }
+      $str .= "<br>\n";
+    }
+  }
+  my $count = 10;
+
+  $str .= htmlcode('openform', 'superblessForm')
+  . htmlcode('verifyRequestForm', 'superbless')
+  . '<table border="1">';
+
+  $str.="<tr><th>Bestow user</th><th>with GP</th></tr> ";
+
+  for (my $i = 0; $i < $count; $i++)
+  {
+    $query->param("EnrichUsers$i", '');
+    $query->param("BestowGP$i", '');
+    $str.="<tr><td>";
+    $str.=$query->textfield(
+      -name => "EnrichUsers$i"
+      , -size => 40
+      , -maxlength => 80
+      , -class => 'userComplete');
+    $str.="</td><td>";
+    $str.=$query->textfield("BestowGP$i", '', 4, 7);
+    $str.="</td></tr>";
+  }
+
+  $str .= '</table>'. htmlcode('closeform');
+
+  return $str;
+}
+
 1;
