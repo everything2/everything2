@@ -1,53 +1,5 @@
 <node>
-  <doctext>[{openform}]
-&lt;p&gt;For they are an Offense in thine Eyes, and that thine Eyes might be freed from
-the sight of their Works, thou mayest abominate them here. And their feeble Screeds shall not
-appear in that List which is call&amp;egrave;d New Writeups, nor shall they be shewn amongst the
-Works of the Worthy in the Nodes of E2. Yet still mayest thou seek them out when thy Fancy is such.
-
-&lt;fieldset&gt;&lt;legend&gt;Abominate&lt;/legend&gt;
-&lt;label&gt;Wretch's name:&lt;input type=&quot;text&quot; name=&quot;abomination&quot;&gt;&lt;/label&gt;
-&lt;label title=&quot;also ignore user's messages and chat&quot;&gt;
-	&lt;input type=&quot;checkbox&quot; name=&quot;pratenot&quot; value=&quot;1&quot; checked=&quot;checked&quot;&gt;disdain also their prattle&lt;/label&gt;
-&lt;br&gt;
-&lt;input type=&quot;submit&quot; name=&quot;abominate&quot; value=&quot;Abominate!&quot;&gt;
-[% #/
-if ( $query -&gt; param( 'abominate' ) and my $abominame = $query -&gt; param( 'abomination') ){
-	unless ( my $abomination = getNode( $abominame , 'user' ) ) {
-		return '&lt;p&gt;User '.encodeHTML( $abominame ).' not found.' ;
-	} else {
-		$$VARS{ unfavoriteusers } .= ',' if $$VARS{ unfavoriteusers } ;
-		$$VARS{ unfavoriteusers } .= $$abomination{ user_id } unless
-			$$VARS{ unfavoriteusers } =~ /\b$$abomination{ user_id }\b/ ;
-		htmlcode('ignoreUser', $abominame) if $query -&gt; param('pratenot');
-	}
-}
-'';
-%]
-&lt;/fieldset&gt;
-&lt;/form&gt;
-[{openform}]
-[%
-if ( $query -&gt; param( 'debominate' ) ) {
-	foreach ( $query -&gt; param( 'debominees' ) ) {
-		$$VARS{ unfavoriteusers } =~ s/\b$_\b,?// ;
-	}
-}
-$$VARS{ unfavoriteusers } =~ s/,$// ;
-
-return '&lt;p&gt;In thy Mercy hast thou stayed thy Hand.'
-	unless $$VARS{ unfavoriteusers } ;
-my @abominees = split ',' , $$VARS{ unfavoriteusers } ;
-return '&lt;p&gt;Yet should they swear Betterment and rue their Ways, repenting in Sackcloth and Ashes,
-thou mayest in thy great Mercy relent.
-&lt;fieldset&gt;&lt;legend&gt;Relent&lt;/legend&gt;
-	'.$query -&gt; checkbox_group( -name =&gt; 'debominees' , -values =&gt; [ @abominees ] ,
-		-labels =&gt; { map { $_ =&gt; getNodeById( $_ ) -&gt; { title } } @abominees } ,
-		-linebreak =&gt; 'true' ) .
-	$query -&gt; submit( -name=&gt; 'debominate' , -value =&gt; 'Relent!' ).'
-&lt;/fieldset&gt;' ;
-%]
-&lt;/form&gt;</doctext>
+  <doctext></doctext>
   <node_id>2005930</node_id>
   <title>Pit of Abomination</title>
   <type_nodetype>14</type_nodetype>
