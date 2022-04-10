@@ -5128,4 +5128,43 @@ sub level_distribution
   return $str;
 }
 
+sub nodeshells
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<h3>New Titles in Search of Content</h3>|;
+
+  my $csr = $DB->sqlSelectMany('node.title, node.node_id, createdby_user',
+    "node JOIN e2node ON node_id=e2node_id LEFT JOIN nodegroup ON nodegroup_id = node.node_id",
+    "node.createtime > DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+    AND node.createtime < DATE_SUB(CURDATE(), INTERVAL 30 MINUTE)
+    AND node.type_nodetype=116 AND nodegroup_id IS NULL ORDER BY node_id DESC LIMIT 50");
+
+
+  $str.='<ol>';
+
+  while(my $row = $csr->fetchrow_hashref) {
+    $str.='<li>'.linkNodeTitle($$row{title})."</li>\n";
+  }
+
+  $str.='</ol>';
+
+  $str .= "<p><small>These are [nodeshell|empty headings] created between half an hour and one month ago. They exist to be filled with writing. If you feel like writing, but you don't know what,
+you might also like to visit [Everything's Most Wanted]. See also [Random Nodeshells].";
+
+  unless($APP->isGuest($USER))
+  {
+    $str .= 'And [Your Nodeshells], and [Your Filled Nodeshells].';
+  }
+
+  $str .= qq|</small></p>|;
+  return $str;
+}
+
 1;
