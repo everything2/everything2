@@ -22,7 +22,7 @@ $query-&gt;param(&quot;passwd&quot;, $pass);
 $str .= &quot;&lt;form method=\&quot;POST\&quot; action=\&quot;&quot;.$ENV{SCRIPT_NAME}.&quot;\&quot; id=\&quot;loginsuperdoc\&quot;&gt;&quot;.
 	&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;login\&quot; /&gt;&quot;.	
 	$query-&gt;hidden(&quot;node_id&quot;, getId($NODE)).&quot;\n&quot;.
-	$query-&gt;hidden(&quot;lastnode_id&quot;, $query-&gt;param(&quot;lastnode_id&quot;)).&quot;\n&quot;.
+	$query-&gt;hidden(&quot;lastnode_id&quot;, scalar($query-&gt;param(&quot;lastnode_id&quot;))).&quot;\n&quot;.
 
 	$query-&gt;textfield (-name =&gt; &quot;user&quot;,
 		-size =&gt; 20,
