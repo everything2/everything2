@@ -6,6 +6,8 @@ use lib qw(/var/everything/ecore);
 use Everything;
 use Everything::HTML;
 use CGI;
+use POSIX;
+
 initEverything;
 
 if($Everything::CONF->environment ne "development")
@@ -25,7 +27,8 @@ foreach my $user (1..30,"user with space","genericeditor")
     $user = "normaluser$user";
   }
   print STDERR "Inserting user: $user\n";
-  $DB->insertNode($user,"user",-1,{});
+  my $now = POSIX::strftime('%Y-%m-%d %H:%M:%S', gmtime());
+  $DB->insertNode($user,"user",-1,{"lasttime" => $now});
 
   my $author = getNode($user,"user");
   $author->{author_user} = $author->{node_id};
