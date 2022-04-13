@@ -22,6 +22,11 @@ which do not contain writeups:</p>
 <ul>
 % foreach my $nodeshell (@{$.nodeshells})
 % {
-<li><& 'linknode', node => $nodeshell &></li>
+<li><& 'linknode', node => $nodeshell &>\
+%   if(scalar(@{$nodeshell->firmlinks}) > 0)
+%   {
+ - <b>Firm linked to:</b> <& 'linknode', node => $nodeshell->firmlinks->[0] &>\
+%   }
 % }
+</li>
 </ul>

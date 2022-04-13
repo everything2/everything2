@@ -4815,18 +4815,17 @@ sub get_user_nodeshells
 {
   my ($this, $for_user) = @_;
 
-  my $csr = $this->{db}->sqlSelectMany('node_id,
-    (Select count(*) From nodegroup Where nodegroup_id = e2node_id Limit 1) AS groupcount'
+  my $csr = $this->{db}->sqlSelectMany('node_id, title,
+    (select count(*) from nodegroup where nodegroup_id = e2node_id limit 1) AS groupcount'
     , 'e2node JOIN node ON e2node_id=node.node_id'
     , 'createdby_user='.$for_user->node_id
-    , 'HAVING groupcount = 0');
+    , 'HAVING groupcount = 0',
+      'ORDER BY node.title');
 
   my $nodeshells = [];
   while(my $row = $csr->fetchrow_hashref) {
     push @$nodeshells, $this->node_by_id($row->{node_id});
   }
-
-  $nodeshells = [sort {$a->title cmp $b->title} @$nodeshells];
 
   return $nodeshells;
 }

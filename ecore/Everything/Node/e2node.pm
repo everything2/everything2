@@ -42,6 +42,23 @@ sub createdby_user
   return $self->NODEDATA->{createdby_user};
 }
 
+sub firmlinks
+{
+  my ($self) = @_;
+  my $linktype = $self->APP->node_by_name("firmlink","linktype");
+
+  my $links = [];
+  my $csr = $self->DB->sqlSelectMany("to_node", "links", "linktype=".$linktype->node_id." and from_node=".$self->node_id);
+
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    my $link = $self->APP->node_by_id($row->{to_node});
+    push @$links, $link if defined($link);
+  }
+
+  return $links;
+}
+
 sub softlinks
 {
   my ($self, $user) = @_;
