@@ -5167,4 +5167,97 @@ you might also like to visit [Everything's Most Wanted]. See also [Random Nodesh
   return $str;
 }
 
+sub recent_node_notes
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p align="center"><b>&#91|;
+
+  my $link = linkNode($NODE, 'Only show my notes', {'justme'=>1});
+
+  if($query->param('includehistory'))
+  {
+    $str .= "$link | ".linkNode($NODE, "Hide system notes", {'everyone'=>1});
+  }else{
+    if($query->param('justme'))
+    {
+      $$VARS{RecentNotes_MineOnly} = 1;
+    }elsif($query -> param('everyone')){
+      delete $$VARS{RecentNotes_MineOnly};
+    }
+
+    $link = linkNode($NODE, "Show everyone's notes", {'everyone'=>1}) if $$VARS{RecentNotes_MineOnly};
+
+    $str .= "$link | ".linkNode($NODE, 'Include system notes', {'includehistory'=>1});
+  }
+
+  $str .= qq|&#93;</b></p>|;
+
+  my $where = undef;
+  my %linkpram = ();
+  if($query -> param('includehistory'))
+  {
+    %linkpram = (includehistory => 1);
+  }else{
+    $where = "noter_user=$$USER{node_id} OR notetext like ".$DB->quote("[$$USER{title}]%") if $$VARS{RecentNotes_MineOnly};
+    $where ||= 'nodenote.noter_user != 0';
+  }
+
+  my $start = $query->param('start')||'0';
+  my $limit = $query->param('limit')||'50';
+  my ($prev, $next, $end) = ('','',$limit);
+  my $count =$DB->sqlSelect('count(*)','nodenote',$where);
+  if($start)
+  {
+    my $prevstart = $start-$limit;
+    $prevstart = 0 if $prevstart < 0;
+    $prev = '<th nowrap="nowrap">( '.
+      linkNode($NODE,"prev",{'start'=>$prevstart, %linkpram}).' )</th>';
+    $end = $start + $limit;
+    $end = $count if $end > $count;
+  }
+  if($start+$limit<$count){ ## NEXT
+    $next = '<th nowrap="nowrap">( '.
+      linkNode($NODE,"next",{'start'=>$start+$limit, %linkpram}).' )</th>';
+  }
+
+  my $csr = $DB -> sqlSelectMany(
+    'node_id, type_nodetype, author_user, notetext, timestamp'
+    , 'nodenote JOIN node ON node.node_id=nodenote.nodenote_nodeid'
+    , $where
+    , "ORDER BY timestamp DESC
+    LIMIT $start,$limit"
+    );
+
+  my $paging = "";
+  $paging = "<table width='95%'>\n\t<tr>$prev".
+    "\n\t<th width='100%'>Viewing $start through $end of $count</th>".
+    "$next</tr>\n</table><br>" if $prev or $next;
+
+  $str .= "$paging<table width='95%'><tr><th>Node</th><th>Note</th><th>Time</th></tr>";
+
+  my ($writeup, $draft) = (getId(getType('writeup')), getId(getType('draft')));
+
+  while(my $ref = $csr->fetchrow_hashref()){
+     next unless $$ref{node_id};
+     my $note = $$ref{notetext};
+     $note =~ s/\</&lt;/g;
+     my $time = htmlcode('parsetimestamp',"$$ref{timestamp},128");
+     my $link = linkNode($$ref{node_id});
+     my $author = ' <cite>by '.linkNode($$ref{author_user}).'</cite>' if $$ref{type_nodetype} == $writeup || $$ref{type_nodetype} == $draft;
+     $str.="\n\n\t<tr><td>$link$author</td><td>$note</td><td nowrap>$time</td></tr>";
+  }
+
+  $csr->finish();
+
+  $str.="\n</table><br>$paging";
+  return $str;
+}
+
 1;
