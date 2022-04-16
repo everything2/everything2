@@ -1645,7 +1645,7 @@ sub nodenote
     if($_ =~ /^deletenote\_(\d+)$/)
     {
       $DB->sqlDelete('nodenote', "nodenote_id=$1");
-      $APP->securityLog(getNode("Recent Node Notes","oppressor_superdoc"), $USER, "removed note on [$$NOTEFOR{title}]");
+      $APP->securityLog(getNode("Recent Node Notes","superdoc"), $USER, "removed note on [$$NOTEFOR{title}]");
     }
   }
 
