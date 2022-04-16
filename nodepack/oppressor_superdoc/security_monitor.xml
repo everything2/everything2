@@ -29,7 +29,7 @@
 #		&quot;Editor Vote Fills&quot; =&gt; getId(getNode(&quot;Voting Pit Stop&quot;, &quot;oppressor_superdoc&quot;)),
 		&quot;Account Lockings&quot; =&gt; getId(getNode(&quot;lockaccount&quot;,&quot;opcode&quot;)),
 		&quot;Account Unlockings&quot; =&gt; getId(getNode(&quot;unlockaccount&quot;,&quot;opcode&quot;)),
-		&quot;Node Notes&quot; =&gt; getId(getNode(&quot;Recent Node Notes&quot;,&quot;oppressor_superdoc&quot;)),
+		&quot;Node Notes&quot; =&gt; getId(getNode(&quot;Recent Node Notes&quot;,&quot;superdoc&quot;)),
 		&quot;Writeup reparentings&quot; =&gt; getId(getNode(&quot;Magical Writeup Reparenter&quot;,&quot;superdoc&quot;)),
 		&quot;Topic changes&quot; =&gt; getId(getNode(&quot;E2 Gift Shop&quot;,&quot;superdoc&quot;)),
 		&quot;IP Blacklist&quot; =&gt; getId(getNode(&quot;IP Blacklist&quot;, &quot;restricted_superdoc&quot;)),
