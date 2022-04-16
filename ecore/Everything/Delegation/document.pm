@@ -5128,4 +5128,50 @@ sub level_distribution
   return $str;
 }
 
+sub manna_from_heaven
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $numDays = $query->param("days") || 30;
+
+  my $str="<form method='get'><input type='hidden' name='node_id' value='".$$NODE{node_id}."' /><input type='text' value='$numDays' name='days' /><input type='submit' name='sexisgood' value='Change Days' /></form>";
+  my $usergroup = getNodeById(923653); #content editors node
+
+  my $wuCount;
+  my $wuTotal = 0;
+
+  $str.="<table width='25%'><tr><th width='80%' >User</th><th width='20%'>Writeups</th></tr>";
+
+  foreach(@{$$usergroup{group}})
+  {
+    my $u = getNodeById($_);
+    next if $$u{title} eq 'e2gods';
+    $wuCount = $DB->sqlSelect("count(*)", "node", "type_nodetype=117 and author_user=".$_." and TO_DAYS(NOW())-TO_DAYS(createtime) <=$numDays");
+    $wuTotal += $wuCount;
+    $str.="<tr><td><b>" . linkNode($u) . "</b></td><td>" . linkNode(getNode('everything user search', 'superdoc'), " $wuCount" , {usersearch => $$u{title}, orderby => 'createtime DESC'}) . "</td></tr>";
+  }
+
+  $usergroup = getNodeById(829913); # e2gods
+
+  foreach(@{$$usergroup{group}})
+  {
+    my $u = getNodeById($_);
+    $wuCount = $DB->sqlSelect("count(*)", "node", "type_nodetype=117 and author_user=".$_." and TO_DAYS(NOW())-TO_DAYS(createtime) <=$numDays");
+    $wuTotal += $wuCount;
+    $str.="<tr><td><b>" . linkNode($u) . "</b></td><td>" . linkNode(getNode('everything user search', 'superdoc'), " $wuCount" , {usersearch => $$u{title}, orderby => 'createtime DESC'}) . "</td></tr>";
+  }
+
+  $str.="<tr><td><b>Total</b></td><td>$wuTotal</td></tr>";
+  $str.="</table>";
+
+  return $str;
+
+}
+
 1;
