@@ -260,7 +260,6 @@ sub sqlSelectMany
 	$sql .= "FROM $from " if $from;
 	$sql .= "WHERE $where " if $where;
 	$sql .= "$other" if $other;
-	#$sql .= " FOR UPDATE" if $this->{dbh}->{AutoCommit} == 0;
 
 	my $cursor = $this->{dbh}->prepare($sql);
 	my $result = $cursor->execute();

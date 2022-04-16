@@ -3,7 +3,7 @@ package Everything::Security::StaffOnly;
 use Moose::Role;
 
 use Everything::PermissionResult::OK;
-use Everything::PermissionResult::RedirectLogin;
+use Everything::PermissionResult::PermissionDenied;
 
 sub check_permission
 {
@@ -13,7 +13,7 @@ sub check_permission
   {
     return Everything::PermissionResult::OK->new;
   }else{
-    return Everything::PermissionResult::RedirectLogin->new;
+    return Everything::PermissionResult::PermissionDenied->new;
   }
 }
 
