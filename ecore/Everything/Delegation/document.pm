@@ -5174,4 +5174,86 @@ sub manna_from_heaven
 
 }
 
+sub content_reports
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|These jobs are run on a 24 hour basis and cached in the database. They show user-submitted content that is in need of repair.|;
+  $str .= qq|<table style="padding: 2px; margin: 5px;">|;
+
+  my $drivers = 
+  {
+    "editing_invalid_authors" => 
+      {"title" => "Invalid Authors on nodes", "extended_title" => "These nodes do not have authors. Either the users were deleted or the records were damaged. Includes all types"},
+    "editing_null_node_titles" => {"title" => "Null titles on nodes", "extended_title" => "These nodes have null or empty-string titles. Not necessarily writeups."},
+    "editing_writeups_bad_types" => {"title" => "Writeup types that are invalid", "extended_title" => "These are writeup types, such as (thing), (idea), (definition), etc that are not valid"},
+    "editing_writeups_broken_titles" => {"title" => "Writeup titles that aren't the right pattern", "extended_title" => "These are writeup titles that don't have a left parenthesis in them, which means that it doesn't follow the 'parent_title (type)' pattern."},
+    "editing_writeups_invalid_parents" => {"title" => "Writeups that don't have valid e2node parents", "extended_title" => "These nodes need to be reparented"},
+    "editing_writeups_under_20_characters" => {"title" => "Writeups under 20 characters", "extended_title" => "Writeups that are under 20 characters"},
+    "editing_writeups_without_formatting" => {"title" => "Writeups without any HTML tags", "extended_title" => "Writeups that don't have any HTML tags in them, limited to 200, ignores E1 writeups."},
+    "editing_writeups_linkless" => {"title" => "Writeups without links", "extended_title" => "Writeups post-2001 that don't have any links in them"},
+    "editing_e2nodes_with_duplicate_titles" => {"title" => "Writeups with titles that only differ by case", "extended_title" => "Writeups that only differ by case"},
+  };
+
+  if($query->param("driver"))
+  {
+    my $driver = $query->param("driver");
+    my $datanode = getNode($driver, "datastash");
+
+    if($datanode and exists $drivers->{$driver})
+    {
+      my $data = $DB->stashData($driver);
+      $data = [] unless(UNIVERSAL::isa($data, "ARRAY"));
+      $str .= "<h2>".$drivers->{$driver}->{title}.qq|</h2><br />|;
+      $str .= "<p>".$drivers->{$driver}->{extended_title}.qq|</p>|;
+
+      if(scalar(@$data))
+      {
+        $str .= "<ul>";
+        foreach my $node_id (@$data)
+        {
+           my $N = getNodeById($node_id);
+           if($N)
+           {
+             $str .= qq|<li><a href="/?node_id=$node_id">node_id: $node_id title: |.($N->{title} || "")." type: $N->{type}->{title} </li>";
+           }else{
+             $str .= qq|<li>Could not assemble node reference for id: $node_id</li>|;
+           }
+        }
+        $str .= "</ul>";
+      }else{
+        $str .= "Driver <em>$driver</em> has no failures";
+      }
+    }else{
+      $str .= "Could not access driver: <em>$driver</em>.";
+    }
+
+    $str .= "<br />Back to ".linkNode($NODE)."<br />";
+  }else{
+    $str .= qq|<tr><td><strong>Driver name</strong></td><td style="text-align: center"><strong>Failure count</strong><td></tr>|;
+
+    foreach my $driver (sort {$a cmp $b} keys %$drivers)
+    {
+      my $datanode = getNode($driver, "datastash");
+      next unless $datanode;
+      next unless $datanode->{vars};
+
+      my $data = $DB->stashData($driver);
+      $data = [] unless UNIVERSAL::isa($data, "ARRAY");
+
+      $str .= qq|<tr><td style="padding: 4px">|.linkNode($NODE, $drivers->{$driver}->{title}, {"driver" => $driver}).qq|</td><td style="width: 150px; text-align: center;">|.scalar(@$data).qq|</td></tr>|;
+    }
+
+  }
+
+  $str .= qq|</table>|;
+  return $str;
+}
+
 1;
