@@ -2866,6 +2866,10 @@
             "Effect": "Allow",
             "Action": [
               "ecr:BatchCheckLayerAvailability",
+              "ecr:BatchGetImage",
+              "ecr:GetDownloadUrlForLayer",
+              "ecr:Describe*",
+              "ecr:List*",
               "ecr:CompleteLayerUpload",
               "ecr:GetAuthorizationToken",
               "ecr:InitiateLayerUpload",
