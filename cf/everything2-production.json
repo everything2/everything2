@@ -2868,6 +2868,7 @@
               "ecr:BatchCheckLayerAvailability",
               "ecr:BatchGetImage",
               "ecr:GetDownloadUrlForLayer",
+              "ecr:GetRepositoryPolicy",
               "ecr:Describe*",
               "ecr:List*",
               "ecr:CompleteLayerUpload",
