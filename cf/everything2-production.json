@@ -512,7 +512,7 @@
           "Version": "2012-10-17",
            "Statement": {
              "Effect": "Allow",
-             "Principal": {"Service": "ec2.amazonaws.com"},
+             "Principal": {"Service": ["ec2.amazonaws.com","ecs.amazonaws.com"]},
              "Action": "sts:AssumeRole"
            }
         },
@@ -526,8 +526,7 @@
           {"Ref": "E2AppServerSNSPolicy"},
           {"Ref": "E2AppOpsworksRegistrationPolicy"},
           {"Ref": "CloudWatchEventsWritePolicy"},
-          {"Ref": "SSMPutParameterPolicy"},
-          "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+          {"Ref": "SSMPutParameterPolicy"}
         ],
         "Path": "/",
         "RoleName": "E2-App-Server"
@@ -3042,7 +3041,12 @@
     "ECSAppCluster": {
       "Type": "AWS::ECS::Cluster",
       "Properties": {
-        "CapacityProviders": ["FARGATE"],
+        "CapacityProviders": ["ContainerizedAppCapacityProvider"],
+        "DefaultCapacityProviderStrategy": [{
+          "Base": 0,
+          "CapacityProvider": {"Ref": "ContainerizedAppCapacityProvider"},
+          "Weight": 1 
+        }],
         "ClusterName": "E2-App-ECS-Cluster" 
       }
     },
@@ -3176,6 +3180,290 @@
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
           "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
         }
+      }
+    },
+    "E2AppTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "Family": "e2app-family",
+        "ExecutionRoleArn": {"Ref": "E2TaskExecutionRole"},
+        "RequiresCompatibilities": ["EC2"],
+        "ContainerDefinitions": [{
+          "Name": "e2app",
+          "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistry","RepositoryUri"]},"latest"]]},
+          "Memory": 3072,
+          "Essential": true,
+          "PortMappings": [{
+            "ContainerPort": 443,
+            "HostPort": 443
+          }]
+        }]
+      }
+    },
+    "ECSServiceELBManagementRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "ecs.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "ecs-service-elb-management",
+          "PolicyDocument": {
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+              "elasticloadbalancing:DeregisterTargets",
+              "elasticloadbalancing:Describe*",
+              "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+              "elasticloadbalancing:RegisterTargets",
+              "ec2:Describe*",
+              "ec2:AuthorizeSecurityGroupIngress"],
+            "Resource": "*" }]
+          }
+        }]
+      }
+    },
+    "ECSAppService": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {"Ref": "ECSAppCluster"},
+        "EnableECSManagedTags": true,
+        "LaunchType": "EC2",
+        "ServiceName": "E2-App-ECS-Service",
+        "DeploymentController": {
+          "Type": "ECS"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100
+        },
+        "DesiredCount": 0,
+        "TaskDefinition": {"Ref": "E2AppTaskDefinition"},
+        "Role": {"Ref": "ECSServiceELBManagementRole"},
+        "CapacityProviderStrategy": [{
+          "CapacityProvider": {"Ref": "ContainerizedAppCapacityProvider"},
+          "Base": 1,
+          "Weight": 1
+        }],
+        "LoadBalancers": [{
+          "ContainerName": "e2app",
+          "ContainerPort": 443,
+          "TargetGroupArn": {"Ref": "ContainerizedFrontendELBTargetGroup"} 
+        }]
+      }
+    },
+    "ContainerizedFrontendELB": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "E2-Containerized-Frontend-ELB",
+        "Subnets": [{"Ref": "AppVPCSubnet1"}, {"Ref": "AppVPCSubnet2"}],
+        "SecurityGroups": [{"Ref": "ELBFrontendSecurityGroup"}],
+        "LoadBalancerAttributes": [
+          {
+            "Key": "access_logs.s3.enabled",
+            "Value": true
+          },
+          {
+            "Key": "access_logs.s3.bucket",
+            "Value": {"Ref": "ELBLogsBucket"}
+          }
+        ]
+      }
+    },
+    "ContainerizedFrontendELBTargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "E2-App-ECS-HTTPS-TG",
+        "VpcId": {"Ref": "AppVPC"},
+        "Protocol": "HTTPS",
+        "Port": "443",
+        "HealthCheckEnabled": true,
+        "HealthCheckPort": "443",
+        "HealthCheckProtocol": "HTTPS",
+        "Matcher": {
+          "HttpCode": "200"
+        },
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "10"
+          }
+        ]
+      }
+    },
+    "ELBContainerizedAppHTTPSListener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {"Ref": "ContainerizedFrontendELBTargetGroup"},
+            "Type": "forward"
+          }
+        ],
+        "Certificates": [{"CertificateArn": {"Ref": "E2ELBCertificate"}}],
+        "LoadBalancerArn": {"Ref": "ContainerizedFrontendELB"},
+        "Port": "443",
+        "Protocol": "HTTPS",
+        "SslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
+      }
+    },
+    "ELBContainerizedAppHTTPListener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "Type": "redirect",
+            "RedirectConfig": {
+              "Protocol": "HTTPS",
+              "Port": "443",
+              "Host": "#{host}",
+              "Path": "/#{path}",
+              "Query": "#{query}",
+              "StatusCode": "HTTP_301"
+            }
+          }
+        ],
+        "LoadBalancerArn": {"Ref": "ContainerizedFrontendELB"},
+        "Port": "80",
+        "Protocol": "HTTP"
+      }
+    },
+    "ClusterAutoScalingEC2LaunchTemplate": {
+      "Type": "AWS::EC2::LaunchTemplate",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LaunchTemplateName": "AppOnECSLaunchTemplate",
+        "LaunchTemplateData": {
+          "KeyName": "jaybonci_ec2_uswest2_20120829",
+          "InstanceType": "t3a.medium",
+          "IamInstanceProfile": {
+            "Name": {"Ref": "E2ContainerInstanceProfile"}
+          },
+          "SecurityGroupIds": [{"Ref": "E2AppBastionSecurityGroup"}, {"Ref": "E2AppWebheadSecurityGroup"}],
+          "ImageId": "ami-0e0e34cdb5fd714fc",
+          "Placement": {
+            "AvailabilityZone": {"Fn::GetAtt": ["AppVPCSubnet1", "AvailabilityZone"]}
+          },
+          "UserData": {"Fn::Base64": {"Fn::Join": ["\n",
+            ["#!/bin/bash",
+              "echo ECS_CLUSTER=E2-App-ECS-Cluster >> /etc/ecs/ecs.config" ]]}
+          }
+        }
+      }
+    },
+    "ContainerizedAppScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "DeletionPolicy": "Retain",
+      "DependsOn": ["AppVPCIGWAttach"],
+      "Properties": {
+        "AutoScalingGroupName": "E2-Containerized-App-Scaling-Group",
+        "AvailabilityZones": [{"Fn::GetAtt": ["AppVPCSubnet1", "AvailabilityZone"]}],
+        "MinSize": 0,
+        "MaxSize": 1,
+        "Cooldown": 1200,
+        "HealthCheckGracePeriod": 1200,
+	"DesiredCapacity": 0,
+        "HealthCheckType": "ELB",
+        "LaunchTemplate": {
+          "LaunchTemplateId": {"Ref": "ClusterAutoScalingEC2LaunchTemplate"},
+          "Version": {"Fn::GetAtt": ["ClusterAutoScalingEC2LaunchTemplate","LatestVersionNumber"]}
+        },
+        "TargetGroupARNs": [{"Ref": "ContainerizedFrontendELBTargetGroup"}],
+        "TerminationPolicies": ["OldestInstance"],
+        "NewInstancesProtectedFromScaleIn": false,
+        "NotificationConfigurations": [
+          {
+            "NotificationTypes": [
+              "autoscaling:EC2_INSTANCE_LAUNCH",
+              "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+              "autoscaling:EC2_INSTANCE_TERMINATE",
+              "autoscaling:EC2_INSTANCE_TERMINATE_ERROR",
+              "autoscaling:TEST_NOTIFICATION"
+            ],
+            "TopicARN": {"Ref": "AppAutoScalingSNSTopic"}
+          }
+        ],
+        "VPCZoneIdentifier": [{"Ref": "AppVPCSubnet1"}]
+      }
+    },
+    "ContainerizedAppCapacityProvider": {
+      "Type": "AWS::ECS::CapacityProvider",
+      "Properties": {
+        "Name": "ContainerizedAppCapacityProvider",
+        "AutoScalingGroupProvider": {
+          "AutoScalingGroupArn": {"Ref": "ContainerizedAppScalingGroup"},
+          "ManagedTerminationProtection": "ENABLED",
+          "ManagedScaling": {
+            "MaximumScalingStepSize": 1,
+            "MinimumScalingStepSize": 1,
+            "Status": "ENABLED",
+            "TargetCapacity": 100
+          }
+        }
+      }
+    },
+    "E2ContainerInstanceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "ec2.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Role for ECS-optimized AMIs to register those workloads",
+        "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+            {"Ref": "E2AppRDSAddOnly"},
+            {"Ref": "E2AppS3Policy"},
+            {"Ref": "E2AppMailerPolicy"},
+            {"Ref": "E2AppSecretsAccessPolicy"},
+            {"Ref": "E2AppServerSNSPolicy"},
+            {"Ref": "E2AppOpsworksRegistrationPolicy"},
+            {"Ref": "CloudWatchEventsWritePolicy"},
+            {"Ref": "SSMPutParameterPolicy"}
+        ],
+        "Path": "/",
+        "RoleName": "E2-ECS-Container-Instance-Role"
+      }
+    },
+    "E2ContainerInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "InstanceProfileName": "E2ContainerInstanceProfile",
+        "Roles": [{"Ref": "E2ContainerInstanceRole"}]
+      }
+    },
+    "E2TaskExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "ecs-tasks.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Role for E2 Task Execution Role inside of the container",
+        "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+        ],
+        "Path": "/",
+        "RoleName": "E2-Task-Execution-Role"
       }
     }
   }
