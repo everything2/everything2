@@ -1,27 +1,5 @@
 <node>
-  <doctext>You have insured the following writeups (shown in something vaguely resembling but not quite matching chronological order):
-
-[%
-return if $APP-&gt;isGuest($USER);
-my $str='&lt;p&gt;&lt;ul&gt;';
-
-my $csr = $DB-&gt;sqlSelectMany('publish_id', 'publish', 'publisher='.$$USER{node_id});
-
-my @insured;
-while(my $pubwu = $csr-&gt;fetchrow_hashref) {
-        my $wu = getNodeById($$pubwu{publish_id});
-        push @insured, $$pubwu{publish_id};
-}
-
-foreach(sort {lc($a) cmp lc($b)} @insured) {
-       $str.='&lt;li&gt;'.linkNode($_).'&lt;/li&gt;';
-
-}
-
-$str.='&lt;/ul&gt;';
-
-return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1950299</node_id>
   <title>Your insured writeups</title>
   <type_nodetype>1144104</type_nodetype>
