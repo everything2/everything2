@@ -1,0 +1,3 @@
+#!/bin/bash
+
+perl -I/var/libraries/lib/perl5 -I/var/evertyhing/ecore "$@"
