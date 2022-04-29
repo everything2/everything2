@@ -5256,35 +5256,4 @@ sub content_reports
   return $str;
 }
 
-sub your_insured_writeups
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str .= qq|You have insured the following writeups (shown in something vaguely resembling but not quite matching chronological order):|;
-  $str .='<p><ul>';
-
-  my $csr = $DB->sqlSelectMany('publish_id', 'publish', 'publisher='.$$USER{node_id});
-
-  my @insured = ();
-  while(my $pubwu = $csr->fetchrow_hashref)
-  {
-    my $wu = getNodeById($$pubwu{publish_id});
-    push @insured, $$pubwu{publish_id};
-  }
-
-  foreach(sort {lc($a) cmp lc($b)} @insured)
-  {
-    $str.='<li>'.linkNode($_).'</li>';
-  }
-
-  $str.='</ul>';
-  return $str;
-}
-
 1;
