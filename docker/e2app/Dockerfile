@@ -22,7 +22,7 @@ RUN rm -rf /var/dlcache/* /var/buildcache/*
 
 COPY ./tools/write_apache_config.rb /var/bootstrap
 COPY ./tools/generate-self-signed-cert.rb /var/bootstrap
-COPY ./etc/templates/* /var/bootstrap/etc
+COPY ./etc/templates/* /var/bootstrap/etc/
 RUN ruby /var/bootstrap/write_apache_config.rb
 RUN ruby /var/bootstrap/generate-self-signed-cert.rb
 
