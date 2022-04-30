@@ -3187,6 +3187,46 @@
         }]
       }
     },
+    "E2AppFargateTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "Cpu": 1024,
+        "Memory": 3072,
+        "Family": "e2app-family",
+        "ExecutionRoleArn": {"Ref": "E2TaskExecutionRole"},
+        "RequiresCompatibilities": ["FARGATE"],
+        "NetworkMode": "awsvpc",
+        "RuntimePlatform": {
+          "CpuArchitecture": "X86_64",
+          "OperatingSystemFamily": "LINUX"
+        },
+        "ContainerDefinitions": [{
+          "Name": "e2app",
+          "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistry","RepositoryUri"]},"latest"]]},
+          "Memory": 3072,
+          "Essential": true,
+          "LogConfiguration": {
+            "LogDriver": "awslogs",
+            "Options": {
+              "awslogs-group": "/aws/fargate/fargate-app-awslogs",
+              "awslogs-region": {"Ref": "AWS::Region"},
+              "awslogs-stream-prefix": "e2-fargate"
+            }
+          },
+          "PortMappings": [{
+            "ContainerPort": 443,
+            "HostPort": 443
+          }]
+        }]
+      }
+    },
+    "FargateServiceLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/fargate/fargate-app-awslogs",
+        "RetentionInDays": 3
+      }
+    },
     "ECSServiceELBManagementRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -3246,12 +3286,49 @@
         }]
       }
     },
+    "ECSFargateAppService": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {"Ref": "ECSAppCluster"},
+        "EnableECSManagedTags": true,
+        "ServiceName": "E2-App-Fargate-Service",
+        "DeploymentController": {
+          "Type": "ECS"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100
+        },
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
+            "Subnets": [{"Ref": "AppVPCSubnet1"}]
+          }
+        },
+        "DesiredCount": 0,
+        "TaskDefinition": {"Ref": "E2AppFargateTaskDefinition"},
+        "CapacityProviderStrategy": [{
+          "CapacityProvider": "FARGATE",
+          "Base": 1,
+          "Weight": 1
+        },{
+          "CapacityProvider": "FARGATE_SPOT",
+          "Weight": 4
+        }],
+        "LoadBalancers": [{
+          "ContainerName": "e2app",
+          "ContainerPort": 443,
+          "TargetGroupArn": {"Ref": "FargateTargetGroup"} 
+        }]
+      }
+    },
     "ContainerizedFrontendELB": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "DeletionPolicy": "Retain",
       "Properties": {
         "Name": "E2-Containerized-Frontend-ELB",
-        "Subnets": [{"Ref": "AppVPCSubnet1"}, {"Ref": "AppVPCSubnet2"}],
+        "Subnets": [{"Ref": "AppVPCSubnet1"},{"Ref": "AppVPCSubnet2"}],
         "SecurityGroups": [{"Ref": "ELBFrontendSecurityGroup"}],
         "LoadBalancerAttributes": [
           {
@@ -3287,13 +3364,36 @@
         ]
       }
     },
+    "FargateTargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "E2-App-Fargate-HTTPS-TG",
+        "VpcId": {"Ref": "AppVPC"},
+        "Protocol": "HTTPS",
+        "Port": "443",
+        "HealthCheckEnabled": true,
+        "HealthCheckPort": "443",
+        "HealthCheckProtocol": "HTTPS",
+        "Matcher": {
+          "HttpCode": "200"
+        },
+        "TargetType": "ip",
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "10"
+          }
+        ]
+      }
+    },
     "ELBContainerizedAppHTTPSListener": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "DeletionPolicy": "Retain",
       "Properties": {
         "DefaultActions": [
           {
-            "TargetGroupArn": {"Ref": "ContainerizedFrontendELBTargetGroup"},
+            "TargetGroupArn": {"Ref": "FargateTargetGroup"},
             "Type": "forward"
           }
         ],
@@ -3451,6 +3551,59 @@
         ],
         "Path": "/",
         "RoleName": "E2-Task-Execution-Role"
+      }
+    },
+    "AppAutoScalingRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "e2-fargate-auto-scaling-role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "application-autoscaling.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Policies": [{
+          "PolicyName": "service-auto-scaling-policy",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Effect": "Allow",
+              "Action": ["ecs:DescribeServices","ecs:UpdateServices","cloudwatch:PutMetricAlarm","cloudwatch:DescribeAlarms","cloudwatch:DeleteAlarms"],
+              "Resource": "*"
+            }
+          }
+        }]
+      }
+    },
+    "FargateAppScalableTarget": {
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+      "Properties": {
+        "RoleARN": {"Fn::GetAtt": ["AppAutoScalingRole","Arn"]},
+        "ResourceId": {"Fn::Join": ["/",["service",{"Ref": "ECSAppCluster"},{"Fn::GetAtt": ["ECSFargateAppService","Name"]}]]},
+        "ServiceNamespace": "ecs",
+        "ScalableDimension": "ecs:service:DesiredCount",
+        "MinCapacity": 1,
+        "MaxCapacity": 10
+      }
+    },
+    "FargateAppAutoScalingPolicy": {
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+      "Properties": {
+        "PolicyName": "FargateAppCPUAutoScalingPolicy",
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {"Ref": "FargateAppScalableTarget"},
+        "TargetTrackingScalingPolicyConfiguration": {
+          "DisableScaleIn": true,
+          "TargetValue": 60,
+          "ScaleInCooldown": 60,
+          "ScaleOutCooldown": 60,
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+          }
+        }
       }
     }
   }
