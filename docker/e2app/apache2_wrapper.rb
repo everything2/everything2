@@ -3,6 +3,7 @@
 require 'aws-sdk-s3'
 require 'getoptlong'
 
+production_log_string = "&& cat /etc/apache2/logs/error.log"
 
 if !ENV['E2DOCKER'].nil? and !ENV['E2DOCKER'].eql? "development"
   s3client = Aws::S3::Client.new(region: 'us-west-2');
@@ -13,6 +14,8 @@ if !ENV['E2DOCKER'].nil? and !ENV['E2DOCKER'].eql? "development"
     puts "Downloading secret '#{value}' to disk"
     s3client.get_object(response_target: "#{location}/#{value}", bucket: secretsbucket, key: value)
   end
+
+  production_log_string = ""
 end
 
-exec("/usr/sbin/apachectl -D FOREGROUND")
+exec("/usr/sbin/apachectl -D FOREGROUND #{production_log_string}")
