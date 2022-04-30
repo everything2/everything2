@@ -3200,6 +3200,7 @@
           "CpuArchitecture": "X86_64",
           "OperatingSystemFamily": "LINUX"
         },
+        "TaskRoleArn": {"Ref": "AppFargateTaskRole"},
         "ContainerDefinitions": [{
           "Name": "e2app",
           "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistry","RepositoryUri"]},"latest"]]},
@@ -3498,6 +3499,31 @@
             "TargetCapacity": 100
           }
         }
+      }
+    },
+    "AppFargateTaskRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "ecs-tasks.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Role for Fargate App workloads",
+        "ManagedPolicyArns": [
+            {"Ref": "E2AppRDSAddOnly"},
+            {"Ref": "E2AppS3Policy"},
+            {"Ref": "E2AppMailerPolicy"},
+            {"Ref": "E2AppSecretsAccessPolicy"},
+            {"Ref": "E2AppServerSNSPolicy"},
+            {"Ref": "E2AppOpsworksRegistrationPolicy"},
+            {"Ref": "CloudWatchEventsWritePolicy"}
+        ],
+        "Path": "/",
+        "RoleName": "E2-App-Fargate-Task-Role"
       }
     },
     "E2ContainerInstanceRole": {
