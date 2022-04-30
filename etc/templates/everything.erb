@@ -39,7 +39,10 @@
 
         PerlCleanupHandler Apache2::SizeLimit
 
-	PerlPassEnv E2DOCKER
+        <IfDefine E2DOCKER>
+	  PerlPassEnv E2DOCKER
+	</IfDefine>
+
 	PerlModule Apache2::compat Apache::DBI CGI Everything Everything::HTML
 	PerlResponseHandler ModPerl::Registry
 	PerlOptions +ParseHeaders
