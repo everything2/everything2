@@ -5,6 +5,14 @@ require 'getoptlong'
 
 STDERR.puts "Starting E2 Apache wrapper"
 
+['E2DOCKER','AWS_CONTAINER_CREDENTIALS_RELATIVE_URI'].each do |var|
+  if ENV[var].nil?
+    STDERR.puts "#{var} is missing"
+  else
+    STDERR.puts "#{var} is: '#{ENV[var]}'"
+  end
+end
+
 if !ENV['E2DOCKER'].nil? and !ENV['E2DOCKER'].eql? "development"
   s3client = Aws::S3::Client.new(region: 'us-west-2');
   secretsbucket = "secrets.everything2.com"
