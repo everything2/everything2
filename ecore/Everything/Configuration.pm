@@ -386,7 +386,7 @@ sub _build_current_region
 {
   my ($self) = @_;
 
-  my $region = $ENV{'AWS_REGION'};
+  my $region = $ENV{'AWS_REGION'} || $ENV{'AWS_DEFAULT_REGION'};
   return $region if(defined($region) and $region ne '');
   my $ua = LWP::UserAgent->new(timeout => 2);
   my $resp = $ua->get('http://169.254.169.254/latest/meta-data/placement/availability-zone');
