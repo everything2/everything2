@@ -5,7 +5,7 @@ require 'getoptlong'
 
 STDERR.puts "Starting E2 Apache wrapper"
 
-['E2DOCKER','AWS_CONTAINER_CREDENTIALS_RELATIVE_URI'].each do |var|
+['E2DOCKER','AWS_CONTAINER_CREDENTIALS_RELATIVE_URI','AWS_DEFAULT_REGION'].each do |var|
   if ENV[var].nil?
     STDERR.puts "#{var} is missing"
   else
