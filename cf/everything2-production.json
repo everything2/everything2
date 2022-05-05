@@ -3105,7 +3105,7 @@
         "Description": "Cron rule to call refresh rooms",
         "Name": "cron-chatterbox-cleanup",
         "State": "ENABLED",
-        "ScheduleExpression": "rate(5 minutes)",
+        "ScheduleExpression": "cron(50 * * * ? *)",
         "Targets": [{
           "Id": "chatterbox-cleanup-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/var/everything/cron/cron_clean_cbox.pl\"]}]}",
