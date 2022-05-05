@@ -2934,7 +2934,8 @@
             {"Ref": "E2AppMailerPolicy"},
             {"Ref": "E2AppSecretsAccessPolicy"},
             {"Ref": "E2AppServerSNSPolicy"},
-            {"Ref": "CloudWatchEventsWritePolicy"}
+            {"Ref": "CloudWatchEventsWritePolicy"},
+            {"Ref": "SitemapBucketWritePolicy"}
         ],
         "Path": "/",
         "RoleName": "E2-App-Fargate-Task-Role"
@@ -3051,13 +3052,50 @@
     "CronChatterboxCleanupRule": {
       "Type": "AWS::Events::Rule",
       "Properties": {
-        "Description": "Cron rule to call refresh rooms",
+        "Description": "Cron rule to call chatterbox-cleanup",
         "Name": "cron-chatterbox-cleanup",
         "State": "ENABLED",
         "ScheduleExpression": "cron(50 * * * ? *)",
         "Targets": [{
           "Id": "chatterbox-cleanup-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_clean_cbox.pl\"]}]}",
+          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
+          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
+          "EcsParameters": {
+            "TaskCount": 1,
+            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
+            "NetworkConfiguration": {
+              "AwsVpcConfiguration": {
+                "AssignPublicIp": "ENABLED",
+                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
+                "Subnets": [{"Ref": "AppVPCSubnet1"}]
+              }
+            },
+            "CapacityProviderStrategy": [
+              {
+                "Base": 1,
+                "CapacityProvider": "FARGATE_SPOT",
+                "Weight": 4
+              },
+              {
+                "CapacityProvider": "FARGATE",
+                "Weight": 1
+              }
+            ]
+          }
+        }]
+      }
+    },
+    "CronGenerateSitemapRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Cron rule to call generate-sitemap",
+        "Name": "cron-generate-sitemap",
+        "State": "ENABLED",
+        "ScheduleExpression": "cron(0 0 * * ? *)",
+        "Targets": [{
+          "Id": "chatterbox-cleanup-task-arn",
+          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_generate_sitemap.pl\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
           "EcsParameters": {
