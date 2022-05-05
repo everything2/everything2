@@ -6,4 +6,4 @@ use lib qw(/var/libraries/lib/perl5);
 use Everything;
 initEverything 'everything';
 
-$Everything::APP->chatterbox_cleanup;
+print "cron_clean_cbox: Cleaned ".$Everything::APP->chatterbox_cleanup." items";
