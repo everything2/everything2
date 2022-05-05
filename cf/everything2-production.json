@@ -3108,7 +3108,7 @@
         "ScheduleExpression": "cron(50 * * * ? *)",
         "Targets": [{
           "Id": "chatterbox-cleanup-task-arn",
-          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/var/everything/cron/cron_clean_cbox.pl\"]}]}",
+          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_clean_cbox.pl\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
           "EcsParameters": {
@@ -3121,7 +3121,17 @@
                 "Subnets": [{"Ref": "AppVPCSubnet1"}]
               }
             },
-            "LaunchType": "FARGATE"
+            "CapacityProviderStrategy": [
+              {
+                "Base": 1,
+                "CapacityProvider": "FARGATE_SPOT",
+                "Weight": 4
+              },
+              {
+                "CapacityProvider": "FARGATE",
+                "Weight": 1
+              }
+            ]
           }
         }]
       }
