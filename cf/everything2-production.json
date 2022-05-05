@@ -2805,10 +2805,47 @@
         }]
       }
     },
+    "E2CronFargateTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "Cpu": 512,
+        "Memory": 1024,
+        "Family": "e2cron-family",
+        "ExecutionRoleArn": {"Ref": "E2TaskExecutionRole"},
+        "RequiresCompatibilities": ["FARGATE"],
+        "NetworkMode": "awsvpc",
+        "RuntimePlatform": {
+          "CpuArchitecture": "X86_64",
+          "OperatingSystemFamily": "LINUX"
+        },
+        "TaskRoleArn": {"Ref": "AppFargateTaskRole"},
+        "ContainerDefinitions": [{
+          "Name": "e2app",
+          "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistry","RepositoryUri"]},"latest"]]},
+          "Memory": 1024,
+          "Essential": true,
+          "LogConfiguration": {
+            "LogDriver": "awslogs",
+            "Options": {
+              "awslogs-group": "/aws/fargate/fargate-cron-awslogs",
+              "awslogs-region": {"Ref": "AWS::Region"},
+              "awslogs-stream-prefix": "e2-fargate"
+            }
+          }
+        }]
+      }
+    },
     "FargateServiceLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "LogGroupName": "/aws/fargate/fargate-app-awslogs",
+        "RetentionInDays": 3
+      }
+    },
+    "FargateCronLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/fargate/fargate-cron-awslogs",
         "RetentionInDays": 3
       }
     },
@@ -3024,6 +3061,69 @@
             "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
           }
         }
+      }
+    },
+    "ECSEventsRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "e2-ecs-events-role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "events.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Policies": [{
+          "PolicyName": "e2-ecs-pass-any-role",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Effect": "Allow",
+              "Action": ["iam:PassRole"],
+              "Resource": "*"
+            }
+          }
+        },
+        {
+          "PolicyName": "e2-ecs-run-any-task",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Effect": "Allow",
+              "Action": ["ecs:RunTask"],
+              "Resource": "*"
+            }
+          }
+        }]
+      }
+    },
+    "CronChatterboxCleanupRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Cron rule to call refresh rooms",
+        "Name": "cron-chatterbox-cleanup",
+        "State": "ENABLED",
+        "ScheduleExpression": "rate(5 minutes)",
+        "Targets": [{
+          "Id": "chatterbox-cleanup-task-arn",
+          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/var/everything/cron/cron_clean_cbox.pl\"]}]}",
+          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
+          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
+          "EcsParameters": {
+            "TaskCount": 1,
+            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
+            "NetworkConfiguration": {
+              "AwsVpcConfiguration": {
+                "AssignPublicIp": "ENABLED",
+                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
+                "Subnets": [{"Ref": "AppVPCSubnet1"}]
+              }
+            },
+            "LaunchType": "FARGATE"
+          }
+        }]
       }
     }
   }
