@@ -2536,6 +2536,11 @@
             }
           ],
           "PrivilegedMode": true
+        },
+        "Cache": {
+          "Location": "LOCAL",
+          "Type": "LOCAL",
+          "Modes": [LOCAL_DOCKER_LAYER_CACHE]
         }
       }
     },
