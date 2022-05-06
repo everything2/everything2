@@ -3091,7 +3091,7 @@
       "Properties": {
         "Description": "Cron rule to call generate-sitemap",
         "Name": "cron-generate-sitemap",
-        "State": "ENABLED",
+        "State": "DISABLED",
         "ScheduleExpression": "cron(0 0 * * ? *)",
         "Targets": [{
           "Id": "chatterbox-cleanup-task-arn",
