@@ -7,14 +7,12 @@ use Everything;
 use Everything::HTML;
 use Everything::S3;
 
-use XML::Generator;
-
-use JSON;
-
 initEverything 'everything';
-my $xg = XML::Generator->new(':pretty');
 
 $DB->{cache}->setCacheSize(50);
+
+print "In region: ".$Everything::CONF->current_region."\n";
+exit;
 my $s3 = Everything::S3->new("sitemap");
 print commonLogLine("Starting up");
 
