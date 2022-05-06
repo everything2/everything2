@@ -1926,7 +1926,7 @@
       "Properties": {
         "Description": "Cron rule to call the datastash processor",
         "Name": "datastash-processor-cron",
-        "State": "ENABLED",
+        "State": "DISABLED",
         "ScheduleExpression": "rate(2 minutes)",
         "Targets": [{
           "Id": "datastash-processor-arn",
@@ -2700,8 +2700,45 @@
         "State": "ENABLED",
         "ScheduleExpression": "cron(0 0 * * ? *)",
         "Targets": [{
-          "Id": "chatterbox-cleanup-task-arn",
+          "Id": "cron-sitemap-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_generate_sitemap.pl\"]}]}",
+          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
+          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
+          "EcsParameters": {
+            "TaskCount": 1,
+            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
+            "NetworkConfiguration": {
+              "AwsVpcConfiguration": {
+                "AssignPublicIp": "ENABLED",
+                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
+                "Subnets": [{"Ref": "AppVPCSubnet1"}]
+              }
+            },
+            "CapacityProviderStrategy": [
+              {
+                "Base": 1,
+                "CapacityProvider": "FARGATE_SPOT",
+                "Weight": 4
+              },
+              {
+                "CapacityProvider": "FARGATE",
+                "Weight": 1
+              }
+            ]
+          }
+        }]
+      }
+    },
+    "CronDatastashRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Cron rule to call datastash",
+        "Name": "cron-datastash",
+        "State": "ENABLED",
+        "ScheduleExpression": "rate(2 minutes)",
+        "Targets": [{
+          "Id": "datastash-task-arn",
+          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_datastash.pl\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
           "EcsParameters": {
