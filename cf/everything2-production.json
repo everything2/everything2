@@ -98,13 +98,6 @@
         "AccessControl": "PublicRead"
       }
     },
-    "SitemapS3BucketNamespaced": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "BucketName": {"Fn::Join" : ["-",["sitemap.everything2.com", {"Fn::Select": [4,{"Fn::Split": ["-", {"Fn::Select": [2,{"Fn::Split": ["/",{"Ref": "AWS::StackId"}]}]}]}]}]]},
-        "AccessControl": "PublicRead"
-      }
-    },
     "JSCSSBucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
@@ -344,47 +337,6 @@
         "AvailabilityZone": "us-west-2b"
       }
     },
-    "E2FrontendELB": {
-      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Name": "E2-App-Frontend-ELB-2",
-        "Subnets": [{"Ref": "AppVPCSubnet1"}, {"Ref": "AppVPCSubnet2"}],
-        "SecurityGroups": [{"Ref": "ELBFrontendSecurityGroup"}],
-        "LoadBalancerAttributes": [
-          {
-            "Key": "access_logs.s3.enabled",
-            "Value": true
-          },
-          {
-            "Key": "access_logs.s3.bucket",
-            "Value": {"Ref": "ELBLogsBucket"}
-          }
-        ]
-      }
-    },
-    "E2FrontendELBTargetGroup": {
-      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Name": "E2-App-HTTPS-TG",
-        "VpcId": {"Ref": "AppVPC"},
-        "Protocol": "HTTPS",
-        "Port": "443",
-        "HealthCheckEnabled": true,
-        "HealthCheckPort": "443",
-        "HealthCheckProtocol": "HTTPS",
-        "Matcher": {
-          "HttpCode": "200"
-        },
-        "TargetGroupAttributes": [
-          {
-            "Key": "deregistration_delay.timeout_seconds",
-            "Value": "10"
-          }
-        ]
-      }
-    },
     "E2ELBCertificate": {
       "Type": "AWS::CertificateManager::Certificate",
       "DeletionPolicy": "Retain",
@@ -392,82 +344,6 @@
         "DomainName": "everything2.com",
         "ValidationMethod": "DNS",
         "SubjectAlternativeNames": ["everything2.net","everything2.org","*.everything2.net","*.everything2.org","*.everything2.com"]
-      }
-    },
-    "ELBAppHTTPSListener": {
-      "Type": "AWS::ElasticLoadBalancingV2::Listener",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "DefaultActions": [
-          {
-            "TargetGroupArn": {"Ref": "E2FrontendELBTargetGroup"},
-            "Type": "forward"
-          }
-        ],
-        "Certificates": [{"CertificateArn": {"Ref": "E2ELBCertificate"}}],
-        "LoadBalancerArn": {"Ref": "E2FrontendELB"},
-        "Port": "443",
-        "Protocol": "HTTPS",
-        "SslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
-      }
-    },
-    "ELBAppHTTPListener": {
-      "Type": "AWS::ElasticLoadBalancingV2::Listener",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "DefaultActions": [
-          {
-            "Type": "redirect",
-            "RedirectConfig": {
-              "Protocol": "HTTPS",
-              "Port": "443",
-              "Host": "#{host}",
-              "Path": "/#{path}",
-              "Query": "#{query}",
-              "StatusCode": "HTTP_301"
-            }
-          }
-        ],
-        "LoadBalancerArn": {"Ref": "E2FrontendELB"},
-        "Port": "80",
-        "Protocol": "HTTP"
-      }
-    },
-    "AppELBAddPolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows E2 machines to upload to add themselves to the load balancer",
-        "ManagedPolicyName": "AppELBAddPolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": "elasticloadbalancing:RegisterTargets",
-            "Resource": "*"
-          },
-          {
-            "Effect": "Allow",
-            "Action": "elasticloadbalancing:DescribeLoadBalancers",
-            "Resource": "*"
-          },
-          {
-            "Effect": "Allow",
-            "Action": "elasticloadbalancing:DescribeTags",
-            "Resource": "*"
-          },
-          {
-            "Effect": "Allow",
-            "Action": "elasticloadbalancing:DescribeTargetGroups",
-            "Resource": "*"
-          },
-          {
-            "Effect": "Allow",
-            "Action": "elasticloadbalancing:DecribeListeners",
-            "Resource": "*"
-          }]
-        }
       }
     },
     "E2AppMailerPolicy": {
@@ -501,7 +377,6 @@
         },
         "Description": "Everything2 Application Web Server",
         "ManagedPolicyArns": [
-          {"Ref": "AppELBAddPolicy"},
           {"Ref": "E2AppRDSAddOnly"},
           {"Ref": "E2AppS3Policy"},
           {"Ref": "E2AppMailerPolicy"},
@@ -553,13 +428,6 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "secrets.everything2.com"
-      }
-    },
-    "CookbooksBucket": {
-      "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "BucketName": "cookbooks.everything2.com"
       }
     },
     "E2AppWebheadSecurityGroup": {
@@ -1287,28 +1155,6 @@
         }
       }
     },
-    "CookbooksBucketWritePolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows E2 processes to write to cookbooks bucket",
-        "ManagedPolicyName": "CookbooksBucketWritePolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-            "Resource": {"Fn::Join" : ["",[{"Fn::GetAtt": ["CookbooksBucket", "Arn"]}, "/*"]]}
-          },
-          {
-            "Effect": "Allow",
-            "Action": ["s3:ListBucket"],
-            "Resource": {"Fn::GetAtt": ["CookbooksBucket", "Arn"]}
-          }]
-        }
-      }
-    },
     "Everything2ZipfileProcessorRole": {
       "Type": "AWS::IAM::Role",
       "DeletionPolicy": "Retain",
@@ -1324,7 +1170,6 @@
         "Description": "Everything2 Zipfile Processor Lambda Role",
         "ManagedPolicyArns": [
             {"Ref": "ZipsBucketReadPolicy"},
-            {"Ref": "CookbooksBucketWritePolicy"},
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
         ],
         "Path": "/",
@@ -1650,188 +1495,12 @@
         }
       }
     },
-    "SitemapBatcherBucketWritePolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows the ability to write to the batcher bucket",
-        "ManagedPolicyName": "SitemapBatcherBucketWritePolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": ["s3:PutObject"],
-              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "E2SitmapDispatcherBucket", "Arn"] }, "/*"]]}
-            }
-          ]
-        }
-      }
-    },
-    "SitemapBatcherBucketProcessorPolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows the ability to process items from the batcher bucket",
-        "ManagedPolicyName": "SitemapBatcherBucketProcessorPolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": ["s3:GetObject","s3:DeleteObject"],
-              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "E2SitmapDispatcherBucket", "Arn"] }, "/*"]]}
-            }
-          ]
-        }
-      }
-    },
-    "SitemapBatchDispatcherLambdaRole": {
-      "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": {
-            "Effect": "Allow",
-            "Principal": {"Service": "lambda.amazonaws.com"},
-            "Action": "sts:AssumeRole"
-          }
-        },
-        "Description": "Sitemap Batch Dispatcher Lambda Role",
-        "ManagedPolicyArns": [
-            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-            {"Ref": "VPCLambdaCreateInterfacePolicy"},
-            {"Ref": "SitemapBatcherBucketWritePolicy"},
-            {"Ref": "SitemapProcessorInvokerPolicy"},
-            {"Ref": "E2AppSecretsAccessPolicy"},
-            {"Ref": "SitemapLambdaQueueSend"},
-            {"Ref": "CloudWatchEventsWritePolicy"}
-        ],
-        "Path": "/",
-        "RoleName": "Sitemap-Batch-Dispatcher-Lambda-Role"
-      }
-    },
-    "SitemapBatchProcessorLambdaRole": {
-      "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": {
-            "Effect": "Allow",
-            "Principal": {"Service": "lambda.amazonaws.com"},
-            "Action": "sts:AssumeRole"
-          }
-        },
-        "Description": "Sitemap Batch Processor Lambda Role",
-        "ManagedPolicyArns": [
-            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-            {"Ref": "VPCLambdaCreateInterfacePolicy"},
-            {"Ref": "SitemapBatcherBucketProcessorPolicy"},
-            {"Ref": "E2AppSecretsAccessPolicy"},
-            {"Ref": "SitemapLambdaQueueSend"},
-            {"Ref": "CloudWatchEventsWritePolicy"},
-            {"Ref": "SitemapBucketWritePolicy"}
-        ],
-        "Path": "/",
-        "RoleName": "Sitemap-Batch-Processor-Lambda-Role"
-      }
-    },
     "LambdaSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "GroupDescription": "E2 Lambda Security Group",
         "GroupName": "E2-Lambda-Security-Group",
         "VpcId": {"Ref": "AppVPC"}
-      }
-    },
-    "SitemapProcessorInvokerPolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows the dispatcher the ability to invoke the processors",
-        "ManagedPolicyName": "SitemapProcessorInvokerPolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": "lambda:InvokeFunction",
-            "Resource": {"Fn::GetAtt" : ["SitemapBatchProcessorFunction", "Arn"]}
-          }]
-        }
-      }
-    },
-    "SitemapBatchDispatcherFunction": {
-      "Type": "AWS::Lambda::Function",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "sitemap-batch-dispatcher.zip"
-        },
-        "FunctionName": "sitemap-batch-dispatcher",
-        "Role": {"Fn::GetAtt" : ["SitemapBatchDispatcherLambdaRole", "Arn"]},
-        "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
-        ],
-        "Runtime": "provided.al2",
-        "Timeout": "400",
-        "MemorySize": 1024,
-        "Handler": "handler.lambda_handler",
-        "VpcConfig": {
-          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
-        }
-      }
-    },
-    "SitemapBatchProcessorFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "sitemap-batch-processor.zip"
-        },
-        "FunctionName": "sitemap-batch-processor",
-        "Role": {"Fn::GetAtt" : ["SitemapBatchProcessorLambdaRole", "Arn"]},
-        "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
-        ],
-        "Runtime": "provided.al2",
-        "Timeout": "600",
-        "MemorySize": 1024,
-        "Handler": "handler.lambda_handler",
-        "VpcConfig": {
-          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
-        }
-      }
-    },
-    "SitemapBatchDispatcherLambdaLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "SitemapBatchDispatcherFunction"}]]},
-        "RetentionInDays": 3
-      }
-    },
-    "SitemapBatchProcessorLambdaLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "SitemapBatchProcessorFunction"}]]},
-        "RetentionInDays": 3
-      }
-    },
-    "E2SitmapDispatcherBucket": {
-      "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "BucketName": "sitemapdispatch.everything2.com"
       }
     },
     "AppErrorsEventBus": {
@@ -1929,69 +1598,6 @@
       "Properties": {
         "RouteTableId": {"Ref": "AppVPCRouteTable"},
         "SubnetId": {"Ref": "AppVPCSubnet4"}
-      }
-    },
-    "LambdaDeliveryQueue": {
-      "Type": "AWS::SQS::Queue",
-      "Properties": {
-        "MessageRetentionPeriod": 600
-      }
-    },
-    "SitemapLambdaAsyncConfig": {
-      "Type": "AWS::Lambda::EventInvokeConfig",
-      "Properties": {
-        "DestinationConfig": {
-          "OnFailure": {
-            "Destination": {"Fn::GetAtt": ["LambdaDeliveryQueue","Arn"]}
-          },
-          "OnSuccess": {
-            "Destination": {"Fn::GetAtt": ["LambdaDeliveryQueue","Arn"]}
-          }
-        },
-        "MaximumRetryAttempts": 1,
-        "FunctionName": {"Ref": "SitemapBatchProcessorFunction"},
-        "Qualifier": "$LATEST"
-      }
-    },
-    "SitemapLambdaQueueSend": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows Lambda to send queue messages",
-        "ManagedPolicyName": "SitemapLambdaQueueSend",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": "sqs:SendMessage",
-            "Resource": {"Fn::GetAtt": ["LambdaDeliveryQueue","Arn"]}
-          }]
-        }
-      }
-    },
-    "SitemapDispatcherCronRule": {
-      "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Cron rule to call sitemap dispatcher lambda",
-        "Name": "sitemap-dispatcher-lambda-cron",
-        "State": "ENABLED",
-        "ScheduleExpression": "cron(0 0 * * ? *)",
-        "Targets": [{
-          "Id": "sitemap-dispatcher-lambda-arn",
-          "Arn": {"Fn::GetAtt" : ["SitemapBatchDispatcherFunction", "Arn"]}
-        }]
-      }
-    },
-    "SitemapDispatcherLambdaPermission": {
-      "Type": "AWS::Lambda::Permission",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName" : {"Ref": "SitemapBatchDispatcherFunction"},
-        "Principal": "events.amazonaws.com",
-        "Action": "lambda:InvokeFunction",
-        "SourceArn" : {"Fn::GetAtt" : ["SitemapDispatcherCronRule", "Arn"]}
       }
     },
     "DatabaseOnlyLambdaRole": {
@@ -3091,7 +2697,7 @@
       "Properties": {
         "Description": "Cron rule to call generate-sitemap",
         "Name": "cron-generate-sitemap",
-        "State": "DISABLED",
+        "State": "ENABLED",
         "ScheduleExpression": "cron(0 0 * * ? *)",
         "Targets": [{
           "Id": "chatterbox-cleanup-task-arn",
