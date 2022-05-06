@@ -14,7 +14,7 @@ $DB->{cache}->setCacheSize(50);
 print "In region: ".$Everything::CONF->current_region."\n";
 my $s3 = Everything::S3->new("sitemap");
 print $APP->commonLogLine("Starting up");
-exit
+exit;
 
 my $current_batch = 1;
 print $APP->commonLogLine("Fetching batches");
