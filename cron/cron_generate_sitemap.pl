@@ -12,12 +12,12 @@ initEverything 'everything';
 $DB->{cache}->setCacheSize(50);
 
 print "In region: ".$Everything::CONF->current_region."\n";
-exit;
 my $s3 = Everything::S3->new("sitemap");
-print commonLogLine("Starting up");
+print $APP->commonLogLine("Starting up");
+exit
 
 my $current_batch = 1;
-print commonLogLine("Fetching batches");
+print $APP->commonLogLine("Fetching batches");
 my $batches = $APP->sitemap_batches;
 
 foreach my $batch(@$batches)
@@ -33,10 +33,10 @@ sub sitemap_file_create
   
   my $sitemap_file = $APP->sitemap_batch_xml($batch);
 
-  print commonLogLine("Uploading batch: $batch_number");
+  print $APP->commonLogLine("Uploading batch: $batch_number");
   $s3->upload_data("$batch_number.xml", $sitemap_file, {"content_type" => "application/xml"});
-  print commonLogLine("Finishing batch: $batch_number");
+  print $APP->commonLogLine("Finishing batch: $batch_number");
 }
 
-print commonLogLine("Creating indexes for ".scalar(@$batches)." batches");
+print $APP->commonLogLine("Creating indexes for ".scalar(@$batches)." batches");
 $s3->upload_data("index.xml", $APP->sitemap_index(scalar(@$batches)), {"content_type" => "application/xml"});
