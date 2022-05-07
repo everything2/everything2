@@ -6,4 +6,6 @@ use lib qw(/var/everything/ecore);
 use Everything;
 initEverything 'everything';
 
+print "Starting IQM recalculation\n";
 $APP->global_iqm_recalculate;
+print "Finished IQM recalculation\n";
