@@ -1679,62 +1679,6 @@
         "SourceArn" : {"Fn::GetAtt" : ["RefreshRoomsCronRule", "Arn"]}
       }
     },
-    "IQMRecalculateFunction": {
-      "Type": "AWS::Lambda::Function",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "iqm-recalculate.zip"
-        },
-        "FunctionName": "iqm-recalculate",
-        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
-        "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
-        ],
-        "Runtime": "provided.al2",
-        "Timeout": "400",
-        "MemorySize": 750,
-        "Handler": "handler.lambda_handler",
-        "VpcConfig": {
-          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
-        }
-      }
-    },
-    "IQMRecalculateLambdaLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "IQMRecalculateFunction"}]]},
-        "RetentionInDays": 3
-      }
-    },
-    "IQMRecalculateCronRule": {
-      "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Cron rule to call IQM refresh",
-        "Name": "iqm-recalculate-lambda-cron",
-        "State": "ENABLED",
-        "ScheduleExpression": "cron(10 6 * * ? *)",
-        "Targets": [{
-          "Id": "iqm-recalculate-lambda-arn",
-          "Arn": {"Fn::GetAtt" : ["IQMRecalculateFunction", "Arn"]}
-        }]
-      }
-    },
-    "IQMRecalculateLambdaPermission": {
-      "Type": "AWS::Lambda::Permission",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName" : {"Ref": "IQMRecalculateFunction"},
-        "Principal": "events.amazonaws.com",
-        "Action": "lambda:InvokeFunction",
-        "SourceArn" : {"Fn::GetAtt" : ["IQMRecalculateCronRule", "Arn"]}
-      }
-    },
     "CleanupOldRoomsFunction": {
       "Type": "AWS::Lambda::Function",
       "DeletionPolicy": "Retain",
@@ -2673,6 +2617,44 @@
           }
         }]
       }
+    },
+    "CronIQMRecalcRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Cron rule to call IQM Recalculate",
+        "Name": "cron-iqm-recalc",
+        "State": "ENABLED",
+        "ScheduleExpression": "rate(1 day)",
+        "Targets": [{
+          "Id": "datastash-task-arn",
+          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_iqm_recalculate.pl\"]}]}",
+          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
+          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
+          "EcsParameters": {
+            "TaskCount": 1,
+            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
+            "NetworkConfiguration": {
+              "AwsVpcConfiguration": {
+                "AssignPublicIp": "ENABLED",
+                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
+                "Subnets": [{"Ref": "AppVPCSubnet1"}]
+              }
+            },
+            "CapacityProviderStrategy": [
+              {
+                "Base": 1,
+                "CapacityProvider": "FARGATE_SPOT",
+                "Weight": 4
+              },
+              {
+                "CapacityProvider": "FARGATE",
+                "Weight": 1
+              }
+            ]
+          }
+        }]
+      }
     }
+
   }
 }
