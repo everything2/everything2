@@ -1623,47 +1623,6 @@
         "RoleName": "Database-Only-Lambda-Role"
       }
     },
-    "DatastashLengthyProcessorInvokerPolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows the datastash processor to invoke a lengthy function if needed",
-        "ManagedPolicyName": "DatastashLengthyProcessorInvokerPolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": "lambda:InvokeFunction",
-            "Resource": {"Fn::GetAtt" : ["DatastashLengthyProcessorFunction", "Arn"]}
-          }]
-        }
-      }
-    },
-    "DatastashProcessorLambdaRole": {
-      "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": {
-            "Effect": "Allow",
-            "Principal": {"Service": "lambda.amazonaws.com"},
-            "Action": "sts:AssumeRole"
-          }
-        },
-        "Description": "Role for Lambdas that only interact with the database",
-        "ManagedPolicyArns": [
-            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-            {"Ref": "VPCLambdaCreateInterfacePolicy"},
-            {"Ref": "E2AppSecretsAccessPolicy"},
-            {"Ref": "CloudWatchEventsWritePolicy"},
-            {"Ref": "DatastashLengthyProcessorInvokerPolicy"}
-        ],
-        "Path": "/",
-        "RoleName": "Datastash-Processor-Lambda-Role"
-      }
-    },
     "RefreshRoomsFunction": {
       "Type": "AWS::Lambda::Function",
       "DeletionPolicy": "Retain",
@@ -1886,94 +1845,6 @@
         "Principal": "events.amazonaws.com",
         "Action": "lambda:InvokeFunction",
         "SourceArn" : {"Fn::GetAtt" : ["WriteupReaperCronRule", "Arn"]}
-      }
-    },
-    "DatastashProcessorFunction": {
-      "Type": "AWS::Lambda::Function",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "datastash-processor.zip"
-        },
-        "FunctionName": "datastash-processor",
-        "Role": {"Fn::GetAtt" : ["DatastashProcessorLambdaRole", "Arn"]},
-        "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
-        ],
-        "Runtime": "provided.al2",
-        "Timeout": "400",
-        "MemorySize": 750,
-        "Handler": "handler.lambda_handler",
-        "VpcConfig": {
-          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
-        }
-      }
-    },
-    "DatastashProcessorLambdaLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "DatastashProcessorFunction"}]]},
-        "RetentionInDays": 3
-      }
-    },
-    "DatastashProcessorCronRule": {
-      "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Cron rule to call the datastash processor",
-        "Name": "datastash-processor-cron",
-        "State": "DISABLED",
-        "ScheduleExpression": "rate(2 minutes)",
-        "Targets": [{
-          "Id": "datastash-processor-arn",
-          "Arn": {"Fn::GetAtt" : ["DatastashProcessorFunction", "Arn"]}
-        }]
-      }
-    },
-    "DatastashProcessorLambdaPermission": {
-      "Type": "AWS::Lambda::Permission",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName" : {"Ref": "DatastashProcessorFunction"},
-        "Principal": "events.amazonaws.com",
-        "Action": "lambda:InvokeFunction",
-        "SourceArn" : {"Fn::GetAtt" : ["DatastashProcessorCronRule", "Arn"]}
-      }
-    },
-    "DatastashLengthyProcessorFunction": {
-      "Type": "AWS::Lambda::Function",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "datastash-lengthy-processor.zip"
-        },
-        "FunctionName": "datastash-lengthy-processor",
-        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
-        "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
-        ],
-        "Runtime": "provided.al2",
-        "Timeout": "400",
-        "MemorySize": 750,
-        "Handler": "handler.lambda_handler",
-        "VpcConfig": {
-          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
-        }
-      }
-    },
-    "DatastashLengthyProcessorLambdaLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "DatastashLengthyProcessorFunction"}]]},
-        "RetentionInDays": 3
       }
     },
     "E2AppECRRegistry": {
@@ -2739,6 +2610,43 @@
         "Targets": [{
           "Id": "datastash-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_datastash.pl\"]}]}",
+          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
+          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
+          "EcsParameters": {
+            "TaskCount": 1,
+            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
+            "NetworkConfiguration": {
+              "AwsVpcConfiguration": {
+                "AssignPublicIp": "ENABLED",
+                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
+                "Subnets": [{"Ref": "AppVPCSubnet1"}]
+              }
+            },
+            "CapacityProviderStrategy": [
+              {
+                "Base": 1,
+                "CapacityProvider": "FARGATE_SPOT",
+                "Weight": 4
+              },
+              {
+                "CapacityProvider": "FARGATE",
+                "Weight": 1
+              }
+            ]
+          }
+        }]
+      }
+    },
+    "CronDatastashLengthyRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Cron rule to call datastash lengthy",
+        "Name": "cron-datastash-lengthy",
+        "State": "ENABLED",
+        "ScheduleExpression": "rate(6 hours)",
+        "Targets": [{
+          "Id": "datastash-task-arn",
+          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_datastash.pl\",\"--lengthy\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
           "EcsParameters": {
