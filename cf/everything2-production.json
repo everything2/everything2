@@ -1910,55 +1910,6 @@
         }
       }
     },
-    "NodepackLambdaRole": {
-      "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": {
-            "Effect": "Allow",
-            "Principal": {"Service": "lambda.amazonaws.com"},
-            "Action": "sts:AssumeRole"
-          }
-        },
-        "Description": "Role for Nodepack Lambda",
-        "ManagedPolicyArns": [
-            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-            {"Ref": "VPCLambdaCreateInterfacePolicy"},
-            {"Ref": "E2AppSecretsAccessPolicy"},
-            {"Ref": "CloudWatchEventsWritePolicy"},
-            {"Ref": "NodepackS3Policy"}
-        ],
-        "Path": "/",
-        "RoleName": "Nodepack-Lambda-Role"
-      }
-    },
-    "NodepackBuilderFunction": {
-      "Type": "AWS::Lambda::Function",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "nodepack-builder.zip"
-        },
-        "Description": "On-demand function to upload the latest nodepack to S3",
-        "FunctionName": "nodepack-builder",
-        "Role": {"Fn::GetAtt" : ["NodepackLambdaRole", "Arn"]},
-        "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
-        ],
-        "Runtime": "provided.al2",
-        "Timeout": "400",
-        "MemorySize": 750,
-        "Handler": "handler.lambda_handler",
-        "VpcConfig": {
-          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
-        }
-      }
-    },
     "E2AppFargateTaskDefinition": {
       "Type": "AWS::ECS::TaskDefinition",
       "Properties": {
@@ -2181,6 +2132,7 @@
             {"Ref": "E2AppSecretsAccessPolicy"},
             {"Ref": "E2AppServerSNSPolicy"},
             {"Ref": "CloudWatchEventsWritePolicy"},
+            {"Ref": "NodepackS3Policy"},
             {"Ref": "SitemapBucketWritePolicy"}
         ],
         "Path": "/",
