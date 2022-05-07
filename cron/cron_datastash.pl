@@ -10,10 +10,11 @@ use Everything;
 initEverything 'everything';
 my $force;
 my $only;
+my $lengthy;
 
-GetOptions("force|f" => \$force, "only=s" => \$only);
+GetOptions("force|f" => \$force, "lengthy|l"=> \$lengthy, "only=s" => \$only);
 
-print "Starting data generator: ".localtime()." (".time().")\n";
+print "Starting ".(($lengthy)?("lengthy "):(""))."generator: ".localtime()." (".time().")\n";
 
 foreach my $plugin (@{$FACTORY->{datastash}->all})
 {
@@ -22,6 +23,11 @@ foreach my $plugin (@{$FACTORY->{datastash}->all})
     if($only)
     {
       next unless $plugin eq $only;
+    }elsif($lengthy)
+    {
+      next unless $generator->lengthy;
+    }else{
+      next if $generator->lengthy;
     }
 
     print "Evaluating generator '$plugin'...";
