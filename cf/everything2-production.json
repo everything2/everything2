@@ -1623,62 +1623,6 @@
         "RoleName": "Database-Only-Lambda-Role"
       }
     },
-    "CleanupOldRoomsFunction": {
-      "Type": "AWS::Lambda::Function",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "cleanup-old-rooms.zip"
-        },
-        "FunctionName": "cleanup-old-rooms",
-        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
-        "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
-        ],
-        "Runtime": "provided.al2",
-        "Timeout": "400",
-        "MemorySize": 750,
-        "Handler": "handler.lambda_handler",
-        "VpcConfig": {
-          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
-        }
-      }
-    },
-    "CleanupOldRoomsLambdaLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "CleanupOldRoomsFunction"}]]},
-        "RetentionInDays": 3
-      }
-    },
-    "CleanupOldRoomsCronRule": {
-      "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Cron rule to call cleanup old rooms",
-        "Name": "cleanup-old-rooms-cron",
-        "State": "ENABLED",
-        "ScheduleExpression": "cron(30 6 * * ? *)",
-        "Targets": [{
-          "Id": "cleanup-old-rooms-arn",
-          "Arn": {"Fn::GetAtt" : ["CleanupOldRoomsFunction", "Arn"]}
-        }]
-      }
-    },
-    "CleanupOldRoomsLambdaPermission": {
-      "Type": "AWS::Lambda::Permission",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName" : {"Ref": "CleanupOldRoomsFunction"},
-        "Principal": "events.amazonaws.com",
-        "Action": "lambda:InvokeFunction",
-        "SourceArn" : {"Fn::GetAtt" : ["CleanupOldRoomsCronRule", "Arn"]}
-      }
-    },
     "WriteupReaperFunction": {
       "Type": "AWS::Lambda::Function",
       "DeletionPolicy": "Retain",
@@ -2533,7 +2477,7 @@
         "State": "ENABLED",
         "ScheduleExpression": "rate(6 hours)",
         "Targets": [{
-          "Id": "datastash-task-arn",
+          "Id": "datastash-lengthy-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_datastash.pl\",\"--lengthy\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
@@ -2570,7 +2514,7 @@
         "State": "ENABLED",
         "ScheduleExpression": "rate(1 day)",
         "Targets": [{
-          "Id": "datastash-task-arn",
+          "Id": "iqm-recalc-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_iqm_recalculate.pl\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
@@ -2607,8 +2551,45 @@
         "State": "ENABLED",
         "ScheduleExpression": "rate(5 minutes)",
         "Targets": [{
-          "Id": "datastash-task-arn",
+          "Id": "refresh-rooms-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_refresh_rooms.pl\"]}]}",
+          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
+          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
+          "EcsParameters": {
+            "TaskCount": 1,
+            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
+            "NetworkConfiguration": {
+              "AwsVpcConfiguration": {
+                "AssignPublicIp": "ENABLED",
+                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
+                "Subnets": [{"Ref": "AppVPCSubnet1"}]
+              }
+            },
+            "CapacityProviderStrategy": [
+              {
+                "Base": 1,
+                "CapacityProvider": "FARGATE_SPOT",
+                "Weight": 4
+              },
+              {
+                "CapacityProvider": "FARGATE",
+                "Weight": 1
+              }
+            ]
+          }
+        }]
+      }
+    },
+    "CronCleanOldRoomsRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Cron rule to call clean old rooms",
+        "Name": "cron-clean-old-rooms",
+        "State": "ENABLED",
+        "ScheduleExpression": "rate(1 day)",
+        "Targets": [{
+          "Id": "clean-old-rooms-task-arn",
+          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_clean_old_rooms.pl\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
           "EcsParameters": {
