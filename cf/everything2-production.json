@@ -1623,62 +1623,6 @@
         "RoleName": "Database-Only-Lambda-Role"
       }
     },
-    "RefreshRoomsFunction": {
-      "Type": "AWS::Lambda::Function",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "refresh-rooms.zip"
-        },
-        "FunctionName": "refresh-rooms",
-        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
-        "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:44"]]}
-        ],
-        "Runtime": "provided.al2",
-        "Timeout": "400",
-        "MemorySize": 1024,
-        "Handler": "handler.lambda_handler",
-        "VpcConfig": {
-          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
-        }
-      }
-    },
-    "RefreshRoomsLambdaLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "RefreshRoomsFunction"}]]},
-        "RetentionInDays": 3
-      }
-    },
-    "RefreshRoomsCronRule": {
-      "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Cron rule to call refresh rooms",
-        "Name": "refresh-rooms-lambda-cron",
-        "State": "ENABLED",
-        "ScheduleExpression": "cron(0/5 * * * ? *)",
-        "Targets": [{
-          "Id": "refresh-rooms-lambda-arn",
-          "Arn": {"Fn::GetAtt" : ["RefreshRoomsFunction", "Arn"]}
-        }]
-      }
-    },
-    "RefreshRoomsLambdaPermission": {
-      "Type": "AWS::Lambda::Permission",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName" : {"Ref": "RefreshRoomsFunction"},
-        "Principal": "events.amazonaws.com",
-        "Action": "lambda:InvokeFunction",
-        "SourceArn" : {"Fn::GetAtt" : ["RefreshRoomsCronRule", "Arn"]}
-      }
-    },
     "CleanupOldRoomsFunction": {
       "Type": "AWS::Lambda::Function",
       "DeletionPolicy": "Retain",
@@ -2628,6 +2572,43 @@
         "Targets": [{
           "Id": "datastash-task-arn",
           "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_iqm_recalculate.pl\"]}]}",
+          "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
+          "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
+          "EcsParameters": {
+            "TaskCount": 1,
+            "TaskDefinitionArn": {"Ref": "E2CronFargateTaskDefinition"},
+            "NetworkConfiguration": {
+              "AwsVpcConfiguration": {
+                "AssignPublicIp": "ENABLED",
+                "SecurityGroups": [{"Ref": "E2AppWebheadSecurityGroup"}],
+                "Subnets": [{"Ref": "AppVPCSubnet1"}]
+              }
+            },
+            "CapacityProviderStrategy": [
+              {
+                "Base": 1,
+                "CapacityProvider": "FARGATE_SPOT",
+                "Weight": 4
+              },
+              {
+                "CapacityProvider": "FARGATE",
+                "Weight": 1
+              }
+            ]
+          }
+        }]
+      }
+    },
+    "CronRefreshRoomsRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Cron rule to call refresh rooms",
+        "Name": "cron-refresh-rooms",
+        "State": "ENABLED",
+        "ScheduleExpression": "rate(5 minutes)",
+        "Targets": [{
+          "Id": "datastash-task-arn",
+          "Input": "{\"containerOverrides\": [{\"name\": \"e2app\", \"command\": [\"/usr/bin/perl\",\"/var/everything/cron/cron_refresh_rooms.pl\"]}]}",
           "Arn": {"Fn::Sub": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ECSAppCluster}"},
           "RoleArn": {"Fn::GetAtt": ["ECSEventsRole","Arn"]},
           "EcsParameters": {
