@@ -16,7 +16,7 @@ my $nodepack_bucket = "nodepack.everything2.com";
 my $tmpdir = "/tmp/nodepack-$$";
 
 `mkdir -p $tmpdir`;
-print `cd $tmpdir && /usr/bin/perl -I/opt/everything2/ecore /opt/everything2/ecoretool/ecoretool.pl export 2>&1`;
+print `cd $tmpdir && /usr/bin/perl -I/var/everything/ecore -I/var/libraries/lib/perl5  /var/everything/ecoretool/ecoretool.pl export 2>&1`;
 
 my $files = [];
 File::Find::find({wanted => sub {push @$files,$File::Find::name if -e && /\.xml$/}}, $tmpdir);
