@@ -9,7 +9,7 @@ ec2client = Aws::EC2::Client.new(region: 'us-west-2')
 ecsclient = Aws::ECS::Client.new(region: 'us-west-2')
 job = nil
 extra = ''
-opts = GetoptLong.new(['--job','-j',GetoptLong::REQUIRED_ARGUMENT])
+opts = GetoptLong.new(['--job','-j',GetoptLong::REQUIRED_ARGUMENT],['--extra','-e',GetoptLong::REQUIRED_ARGUMENT])
 opts.each do |opt,arg|
   case opt
     when '--job'
