@@ -463,7 +463,7 @@
         "DBInstanceClass": "db.t3.medium",
         "DBInstanceIdentifier": "everything2vpc",
         "Engine": "mysql",
-        "EngineVersion": "5.7.33",
+        "EngineVersion": "5.7.37",
         "MultiAZ": false,
         "CACertificateIdentifier": "rds-ca-2019",
         "DeletionProtection": true,
