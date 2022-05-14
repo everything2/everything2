@@ -321,10 +321,6 @@
     "module": "DateTime::Format::Strptime"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/A/AN/ANDYA/HTML-Tiny-1.05.tar.gz",
-    "module": "HTML::Tiny"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/J/JM/JMM/Heap-0.80.tar.gz",
     "module": "Heap"
   },
