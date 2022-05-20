@@ -3,7 +3,8 @@ package Everything::Page::sign_up;
 use Moose;
 extends 'Everything::Page';
 
-use HTTP::Request::Common;
+with 'Everything::Form::field_hashing';
+use Digest::SHA;
 use LWP::UserAgent;
 use Data::Dumper;
 use JSON;
@@ -55,7 +56,6 @@ sub verify_recaptcha_token
   my $verify_url = 'https://www.google.com/recaptcha/api/siteverify';
   my ($remote_ip) = $self->APP->getIp();
   
-
   $self->devLog("Doing recaptcha v3 check: url => $verify_url, token => $token, remote_ip => $remote_ip");
   my $resp = $ua->request(POST $verify_url, [secret => $self->CONF->recaptcha_v3_secret_key, response => $token, remote_ip => $remote_ip]);
 
@@ -79,17 +79,15 @@ sub display
 {
   my ($self, $REQUEST, $node) = @_;
 
-  my $query = $REQUEST->cgi;
-
+  my $recaptcha_token = $REQUEST->param('recaptcha_token');
+  my $recaptcha_response = undef;
+  my $enforce_recaptcha = 1;
   my $use_recaptcha = 0;
+
   if($self->CONF->is_production or $ENV{HTTP_HOST} =~ /^development\.everything2\.com:?\d?/)
   {
     $use_recaptcha = 1;
   }
-
-
-  # for how long will a signup form still work after being served?
-  my $formLife = 86400;
 
   my $invalidName = '^\W+$|[\[\]\<\>\&\{\}\|\/\\\]| .*_|_.* |\s\s|^\s|\s$';
   my $validNameDescription = 'Valid user names contain at least one letter or number, and none of
@@ -99,53 +97,73 @@ sub display
   my $prompt = '';
   my %names = ();
 
-  # use automation-resistant field names
-  my $seed = time + $formLife;
-  
-  if(join(',', $REQUEST->param) =~ /,q5q(\d+)/)
+  my ($username, $email, $pass) = ('','','');
+  if(!$self->is_form_submitted($REQUEST))
   {
-    $seed = "$1";
-    $self->devLog("Detected seed: $seed");
+    $prompt = "Please fill in all fields";
   }
 
-  my $hashName = sub{
-    my $x = crypt("$_ majtki", "\$5\$$seed}");
-    $x =~ s/[^0-9A-z]/q/g;
-    return $x;
-  };
-
-  foreach ('username', 'email', 'pass')
+  if($prompt eq '' and !$self->has_valid_formsignature($REQUEST))
   {
-    $names{$_} = &$hashName;
-    $self->devLog("Looking for field for $_: $names{$_} (has ".$REQUEST->param($names{$_}).")");
-  };
+    $prompt = "Form does not have valid signature, please resubmit";
+  }
 
-  my $username = $REQUEST->param($names{'username'});
+  $username = $REQUEST->param('username');
   $username = '' if not defined($username);
 
-  my $email = $REQUEST->param($names{'email'});
+  if($prompt eq '' and $username =~ /$invalidName/)
+  {
+    $prompt = "$validNameDescription<br>Please enter a valid user name";
+  }
+
+  my $olduser = $self->APP->is_username_taken($username);
+
+  if($prompt eq '' and defined($olduser))
+  {
+    $self->security_log("Rejected username $username: matches ".$self->APP->linkNode($olduser));
+    $prompt = 'Sorry, that username is already taken. Please try a different one';
+  }
+
+  $email = $REQUEST->param('email');
   $email = '' if not defined($email);
 
-  my $pass = $REQUEST->param($names{'pass'});
+  $pass = $REQUEST->param('pass');
   $pass = '' if not defined($pass);
 
+  my $hashedemail = $self->get_hashed_field($REQUEST,'email');
+  $hashedemail = '' if not defined($hashedemail);
 
-  my $recaptcha_token = $REQUEST->param('recaptcha_token');
-  my $recaptcha_response = undef;
-  my $enforce_recaptcha = 1;
+  my $hashedpass = $self->get_hashed_field($REQUEST, 'pass');
+  $hashedpass = '' if not defined($hashedpass);
 
-  $self->devLog("Username: $username, Email: $email, Pass: $pass");
+  if($prompt eq '' and ($email eq '' or $pass eq '' or $username eq ''))
+  {
+    $prompt = "Some fields were blank, please try again. ($email, $pass, $username)";
+  }
 
-  my @addrs = $self->APP->getIp();
+  if($prompt eq '' and $email ne $hashedemail)
+  {
+    $prompt = "Emails do not match, please try again";
+  }
 
-  #######
+  if($prompt eq '' and $email !~ /.+@[\w\d.-]+\.[\w]+$/)
+  {
+    $prompt = "Email does not appear to be from a valid domain structure. Please try again";
+  }
 
-  # filter out undesirables
+  if($prompt eq '' and $pass ne $hashedpass)
+  {
+    $prompt = "Passwords do not match, please try again"
+  }
 
-  my $known_good = $self->APP->node_by_name("known good domains","setting")->VARS;
-  my $known_spam = $self->APP->node_by_name("known spam domains", "setting")->VARS;
+  if($prompt eq '')
+  {
+    # filter out undesirables
+    my @addrs = $self->APP->getIp();
 
-  if ($username && $email && $pass){
+    my $known_good = $self->APP->node_by_name("known good domains","setting")->VARS;
+    my $known_spam = $self->APP->node_by_name("known spam domains", "setting")->VARS;
+
     my @undesirable = ();
 
     # check for blacklisted IP
@@ -175,64 +193,43 @@ sub display
       my $log = join('; ', @undesirable);
       $self->security_log("Sign up rejected: $log");
 
-      $query->delete(values %names);
-      $prompt = int(rand(4)) + 1;
+      $prompt = "Sign up rejected. Please contact support";
+      $username = '';
+      $pass = '';
+      $email = '';
     }
   }
 
-  #######
-
-  # ask them nicely...
-  if (time > $seed || !$pass || !$username || !$email || $prompt eq "1")
+  if($prompt eq '' and $use_recaptcha and not defined($recaptcha_token))
   {
-    $prompt = 'Please fill in all fields';
-
-# then check they've jumped through the hoops:
-  }elsif($pass ne $query->param('toad') || $prompt eq "2"){
-    $prompt = "Passwords don't match";
-
-  }elsif($email ne $query->param('celery') || $prompt eq "3"){
-    $prompt = "Email addresses don't match";
-
-  # RFC 5231 & 5232 are not regexp friendly. Only validate host part:
-  }elsif($email !~ /.+@[\w\d.-]+\.[\w]+$/){
-    $prompt = "Please enter a valid email address";
-
-  }elsif($username =~ /$invalidName/){
-    $prompt = "$validNameDescription<br>Please enter a valid user name";
-
-  }elsif(my $old = $self->APP->is_username_taken($username) || $prompt eq "4"){
-    $self->security_log("Rejected username $username: matches ".$self->APP->linkNode($old)) unless $prompt;
-    $prompt = 'Sorry, that username is already taken. Please try a different one';
-
-  }elsif($use_recaptcha and not defined($recaptcha_token)){
     $prompt = "Internal form error, did not receive reCAPTCHAv3 token";
-  }elsif($use_recaptcha and not ($recaptcha_response = $self->verify_recaptcha_token($recaptcha_token))){
+  }
+  
+  if($prompt eq '' and $use_recaptcha and not ($recaptcha_response = $self->verify_recaptcha_token($recaptcha_token)))
+  {
     $prompt = "Could not verify reCAPTCHAv3 token - Please try again";
     $self->security_log("Recaptcha token verification failed");
-  }elsif($use_recaptcha and $enforce_recaptcha and $recaptcha_response->{score} < .5)
+  }
+  
+  if($prompt eq '' and $use_recaptcha and $enforce_recaptcha and $recaptcha_response->{score} < .5)
   {
     $prompt = "Sign up rejected due to spam score of $recaptcha_response->{score}";
     $self->security_log("Spam signup rejected due to recaptcha: $recaptcha_response->{score}, username: $username");
   }
 
-  $query->delete('toad');
-
-  if($prompt)
+  if($prompt ne '')
   {
-    $self->devLog("Calling template with: prompt => $prompt, username => $username, email => $email");
-    return {"prompt" => $prompt, "username" => $username, "email" => $email, "seed" => time + $formLife, "use_recaptcha" => $use_recaptcha, "recaptcha_v3_public_key" => $self->CONF->recaptcha_v3_public_key};
+    return {"prompt" => $prompt, "username" => $username, "email" => $email, "seed" => time + $self->formlife, "use_recaptcha" => $use_recaptcha, "recaptcha_v3_public_key" => $self->CONF->recaptcha_v3_public_key};
   }
 
-  #######
   # all tests passed: create account
-
   my $new_user = $self->APP->create_user($username, $pass, $email);
 
-  unless ($new_user){
-	$self->security_log('Failed to create new user: username '.$self->APP->encodeHTML($username, 1));
-	return $query -> p('Sorry, something just went horribly wrong. Your account has
-		not been created. Please try again.');
+  unless ($new_user)
+  {
+    $self->security_log('Failed to create new user: username '.$self->APP->encodeHTML($username, 1));
+    $prompt = 'Sorry, something just went horribly wrong. Your account has not been created. Please try again';
+    return {"prompt" => $prompt};
   }
 
   $self->security_log('Created user '.$self->APP->linkNode($new_user));
