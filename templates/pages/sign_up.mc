@@ -1,5 +1,8 @@
 <%class>
-  has 'seed' => (default => 0);
+  use Digest::SHA;
+  with 'Everything::Form::field_hashing';
+
+  has 'formtime' => (default => sub { time });
 
   has 'prompt' => (default => 'Please fill in all fields');
   has 'password_maxlength' => (default => 240);
@@ -15,14 +18,6 @@
   has 'success' => (default => 0);
   has 'linkvalid' => (default => 0);
 
-  sub hash_field_name {
-    my $self = shift;
-    my $value = shift;
-    my $x = crypt("$value majtki", "\$5\$".$self->seed."}");
-    $x =~ s/[^0-9A-z]/q/g;
-    return $x;
-  }
-
   has 'form_elements' => (lazy => 1, default => sub {
     my $self = shift;
     return [
@@ -31,7 +26,6 @@
         "maxlength" => 20,
         "fieldname" => "username",
         "autocomplete" => "username",
-        "hash" => 1,
         "default" => $self->username,
       },
       {
@@ -40,13 +34,13 @@
         "fieldname" => "pass",
         "type" => "password",
         "autocomplete" => "new-password",
-        "hash" => 1,
         "default" => "",
       },
       {
         "name" => "Confirm password",
         "maxlength" => $self->password_maxlength,
-        "fieldname" => "toad",
+        "fieldname" => "pass",
+        "hash" => 1,
         "type" => "password",
         "autocomplete" => "new-password",
         "default" => "",
@@ -56,14 +50,14 @@
         "maxlength" => $self->email_maxlength,
         "fieldname" => "email",
         "autocomplete" => "email",
-        "hash" => 1,
         "default" => $self->email,
       },
       {
         "name" => "Confirm email",
         "maxlength" => $self->email_maxlength,
-        "fieldname" => "celery",
+        "fieldname" => "email",
         "autocomplete" => "email",
+        "hash" => 1,
         "default" => $self->confirm_email,
       }
   ]});  
@@ -83,11 +77,12 @@ This link will expire in <% $.linkvalid %> days.</p>
 <p style="text-align: right">
 %   foreach my $element (@{$.form_elements}) {
   <label>
-  <% $element->{name} | Obfuscate %>:<input type="<% $element->{type} || "text" %>" name="<% $element->{hash} ? $.hash_field_name($element->{fieldname}) : $element->{fieldname} %>" size="30" maxlength="<% $element->{maxlength} %>" value="<% $element->{default} %>" autocomplete="<% $element->{autocomplete} %>">
+  <% $element->{name} | Obfuscate %>:<input type="<% $element->{type} || "text" %>" name="<% $element->{hash} ? $.hash_item($element->{fieldname},$.formtime) : $element->{fieldname} %>" size="30" maxlength="<% $element->{maxlength} %>" value="<% $element->{default} %>" autocomplete="<% $element->{autocomplete} %>">
   </label>
   <br />
 %   }
 <br />
+<% $.formsignature_html($.formtime) %>
 <input type="submit" name="beseech" value="Create new account" />
 <input type="hidden" name="recaptcha_token" value="" />
 </p>

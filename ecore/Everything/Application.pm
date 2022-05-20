@@ -4418,7 +4418,7 @@ sub create_user
   # create user
   $user = $this->{db}->insertNode($username, 'user', -1, $user);
 
-  return if not defined($user);
+  return if not defined($user) or "$user" eq "0";
 
 
   $this->{db}->getRef($user);
