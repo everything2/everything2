@@ -3365,7 +3365,7 @@ sub setwriteuptype
   my $isE2docs = $APP->inUsergroup($USER,"E2Docs");
 
   foreach (@WRTYPE){
-    next if (not $isEd and (lc($$_{title}) eq 'definition' or lc($$_{title}) eq 'lede'));
+    next if ((not $isEd) and (lc($$_{title}) eq 'definition' or lc($$_{title}) eq 'lede'));
     next if ((not $isEd or not $isE2docs) and lc($$_{title}) eq 'help');
     $items{$$_{node_id}} = $$_{title};
   }
