@@ -412,6 +412,7 @@ sub _build_last_commit
     local $/ = undef;
     $commit = <$fh>;
   }
+  $commit = "HEAD" if not defined($commit);
   return $commit;
 }
 
