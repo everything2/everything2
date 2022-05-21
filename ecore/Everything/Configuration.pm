@@ -58,6 +58,9 @@ has 'logdirectory' => (isa => 'Str', is => 'ro', default => '/var/log/everything
 
 has 'use_local_javascript' => (isa => 'Bool', is => 'ro', default => '0');
 
+has 'github_url' => (isa => 'Str', is => 'ro', default => 'https://github.com/everything2/everything2');
+has 'last_commit' => (isa => 'Str', is => 'ro', builder => '_build_last_commit', lazy => 1);
+
 has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
   "usergroup" => 1,
   "container" => 1,
@@ -398,6 +401,24 @@ sub _build_current_region
   }
 
   return $region;
+}
+
+sub _build_last_commit
+{
+  my ($self) = @_;
+  my $commit = undef;
+  if(open my $fh, "<", "/etc/everything/last_commit")
+  {
+    local $/ = undef;
+    $commit = <$fh>;
+  }
+  return $commit;
+}
+
+sub last_commit_short
+{
+  my ($self) = @_;
+  return substr($self->last_commit,0,7);
 }
 
 sub is_production

@@ -31,6 +31,8 @@ RUN chmod +x /etc/everything/apache2_wrapper.rb
 
 COPY ./ /var/everything
 
+RUN git -C /var/everything rev-parse HEAD > /etc/everything/last_commit
+
 EXPOSE 80
 EXPOSE 443
 
