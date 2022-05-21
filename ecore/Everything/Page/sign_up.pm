@@ -57,7 +57,7 @@ sub verify_recaptcha_token
   my ($remote_ip) = $self->APP->getIp();
   
   $self->devLog("Doing recaptcha v3 check: url => $verify_url, token => $token, remote_ip => $remote_ip");
-  my $resp = $ua->request(POST $verify_url, [secret => $self->CONF->recaptcha_v3_secret_key, response => $token, remote_ip => $remote_ip]);
+  my $resp = $ua->post($verify_url, [secret => $self->CONF->recaptcha_v3_secret_key, response => $token, remote_ip => $remote_ip]);
 
   $self->devLog("Received HTTP response: ".Data::Dumper->Dump([$resp]));
 
