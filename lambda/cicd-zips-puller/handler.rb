@@ -28,7 +28,6 @@ def lambda_handler(args)
   lambdaclient = Aws::Lambda::Client.new(region: ENV['AWS_DEFAULT_REGION'])
 
   bucket = 'githubzips.everything2.com'
-
   event = args[:event]
 
   if event['repo'].nil?
