@@ -43,7 +43,7 @@ sub is_infected
   my ($user_name) = split(/\|/, $loginCookie);
   my $check_user = $self->APP->node_by_name($user_name, 'user');
 
-  return 1 if $check_user && $self->locked;
+  return 1 if $check_user && $check_user->locked;
 
   return 0;
 }

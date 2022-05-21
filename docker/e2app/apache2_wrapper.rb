@@ -13,7 +13,7 @@ STDERR.puts "Starting E2 Apache wrapper"
   end
 end
 
-if !ENV['E2DOCKER'].nil? and !ENV['E2DOCKER'].eql? "development"
+if ENV['E2DOCKER'].nil? or !ENV['E2DOCKER'].eql? "development"
   s3client = Aws::S3::Client.new(region: 'us-west-2');
   secretsbucket = "secrets.everything2.com"
   location = "/etc/everything"
