@@ -808,6 +808,7 @@ sub everything_developer
     $str .= 'node_id='.getId($NODE). ' (' . $$NODE{type}{title} . ') <small>' . $$NODE{createtime} . ' ('.htmlcode('timesince',$$NODE{createtime}.',1')." old)</small><br />\n";
 
     my $displaytype = $query->param('displaytype');
+    $str .='<a href="'.$Everything::CONF->github_url.'/commit/'.$Everything::CONF->last_commit.'">Build: '.$Everything::CONF->last_commit_short.'</a><br />';
     $str .='<font size="1">using: '.linkNode(getPage($NODE, $displaytype)).'</font><br /><br />';
     $str .= '<a href='.urlGen({node=>'edev',type=>'usergroup'}).'>edev usergroup</a>'.
     '<br />'.

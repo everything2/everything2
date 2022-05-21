@@ -64,7 +64,6 @@ def lambda_handler(args)
 
   downloaded_file.each do |item|
     next if item.directory?
-    puts "Item: #{item.zip_path}"
     if matches = item.zip_path.match(/^([^\/]+)/)
       prefix = matches[1]
     end
