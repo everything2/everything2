@@ -3984,9 +3984,14 @@ sub choose_theme_view_page
   my $defaultStyle = getNode($Everything::CONF->default_style,'stylesheet')->{node_id};
   my $currentStyle = $$VARS{userstyle} || $defaultStyle;
 
-  my $theme = $query -> param('theme');
-  my $themenode = getNodeById($theme);
-  $theme = "" if($theme and (!$themenode || $themenode->{ type }{ title } ne 'stylesheet'));
+  my $theme = $query->param('theme');
+
+  if($theme =~ /^\d+$/)
+  {
+    my $themenode = getNodeById($theme);
+    $theme = "" if($theme and (!$themenode || $themenode->{ type }{ title } ne 'stylesheet'));
+  }
+
   $theme ||= getNodeById($currentStyle);
 
   if ($query->param( 'usetheme' ) and not $APP->isGuest($USER) )
