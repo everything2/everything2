@@ -60,7 +60,6 @@ sub verify_recaptcha_token
   my $resp = $ua->post($verify_url, [secret => $self->CONF->recaptcha_v3_secret_key, response => $token, remote_ip => $remote_ip]);
 
   $self->devLog("Received HTTP response: ".Data::Dumper->Dump([$resp]));
-  $self->security_log("Received HTTP response: ".Data::Dumper->Dump([$resp]));
   if($resp->is_success)
   {
     my $json = JSON::decode_json($resp->decoded_content);
