@@ -5256,4 +5256,61 @@ sub content_reports
   return $str;
 }
 
+sub topic_archive
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str ="<table>";
+  $str .="<th>$_</th>\n" foreach("Time","Details");
+
+  my $sectype=getId(getNode("E2 Gift Shop","superdoc")); # So probably 1872678 then
+  my $startat= $query->param("startat");
+  $startat =~ s/[^0-9]//g;
+  $startat ||= 0;
+
+  my $csr = $DB->sqlSelectMany('*', 'seclog', "seclog_node=$sectype AND seclog_time>'2011-01-22 00:00:00' order by seclog_time DESC limit $startat,50");
+
+  while(my $row = $csr->fetchrow_hashref)
+  { 
+    $str.="<tr>\n";
+    $str.="   <td><small>$$row{seclog_time}</small></td>\n";
+    $str.="   <td>".$$row{seclog_details}."</td>\n";
+    $str.="</tr>\n";
+  }
+
+  $str.="</table>";
+
+  ### Generate the pager
+  my $cnt = $DB->sqlSelect("count(*)", "seclog", "seclog_node=$sectype AND seclog_time>'2011-01-22 00:00:00'");
+  my $firststr = "$startat-".($startat+50);
+  $str.="<p align=\"center\"><table width=\"70%\"><tr>";
+  $str.="<td width=\"50%\" align=\"center\">";
+  if(($startat-50) >= 0)
+  {
+    $str.=linkNode($NODE,$firststr,{"startat" => ($startat-50), "sectype" => $sectype});
+  }else{
+    $str.=$firststr;
+  }
+  $str.="</td>";
+  $str.="<td width=\"50%\" align=\"center\">";
+  my $secondstr = ($startat+50)."-".(($startat + 100 < $cnt)?($startat+100):($cnt));
+
+  if(($startat+50) <= ($cnt))
+  {
+    $str.=linkNode($NODE,$secondstr,{"startat" => ($startat+50), "sectype" => $sectype});
+  }else{
+    $str.="(end of list)";
+  }
+
+  $str .= '</tr></table>';
+  return $str;
+
+}
+
 1;
