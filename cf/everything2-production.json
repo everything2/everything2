@@ -1117,7 +1117,8 @@
             {"Ref": "DockerCodeBuildLogWritePolicy"},
             {"Ref": "ZipsBucketReadPolicy"},
             {"Ref": "BuildcacheAccessPolicy"},
-            {"Ref": "DockerHubSecretsAccessPolicy"}
+            {"Ref": "DockerHubSecretsAccessPolicy"},
+            "arn:aws:iam::aws:policy/AWSCodeCommitReadOnly"
         ],
         "Path": "/",
         "RoleName": "Docker-Builder-CodeBuild-Role"
@@ -1139,9 +1140,9 @@
         "Name": "E2-Application-Builder",
         "ServiceRole": {"Ref": "ApplicationDockerCodeBuildRole"},
         "Source": {
-          "Type": "S3",
+          "Type": "CODECOMMIT",
           "BuildSpec": "docker/buildspec.yml",
-          "Location": {"Fn::Join" : ["/",[{ "Ref": "ZipsBucket"}, "everything2.zip"]]}
+          "Location": {"Fn::GetAtt": ["Everything2CodeCommitRepo","CloneUrlHttp"]}
         },
         "TimeoutInMinutes": 90,
         "Environment": {
