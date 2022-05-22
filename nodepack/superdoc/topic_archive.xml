@@ -1,52 +1,5 @@
 <node>
-  <doctext>[%
-
-# Whipped up by Oolong on 2011-22-01, largely cannibalised from [Security Monitor].
-
-my $str=&quot;&lt;table&gt;&quot;;
-$str.=&quot;   &lt;th&gt;$_&lt;/th&gt;\n&quot; foreach(&quot;Time&quot;,&quot;Details&quot;);
-
-my $sectype=getId(getNode(&quot;E2 Gift Shop&quot;,&quot;superdoc&quot;)); # So probably 1872678 then
-my $startat= $query-&gt;param(&quot;startat&quot;);
-$startat =~ s/[^0-9]//g;
-$startat ||= 0;
-
-
-my $csr = $DB-&gt;sqlSelectMany('*', 'seclog', &quot;seclog_node=$sectype AND seclog_time&gt;'2011-01-22 00:00:00' order by seclog_time DESC limit $startat,50&quot;);
-
-
-while(my $row = $csr-&gt;fetchrow_hashref){ 
-	$str.=&quot;&lt;tr&gt;\n&quot;;
-	$str.=&quot;   &lt;td&gt;&lt;small&gt;$$row{seclog_time}&lt;/small&gt;&lt;/td&gt;\n&quot;;
-	$str.=&quot;   &lt;td&gt;&quot;.$$row{seclog_details}.&quot;&lt;/td&gt;\n&quot;;
-	$str.=&quot;&lt;/tr&gt;\n&quot;;
-}
-
-$str.=&quot;&lt;/table&gt;&quot;;
-
-### Generate the pager
-my $cnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;seclog&quot;, &quot;seclog_node=$sectype AND seclog_time&gt;'2011-01-22 00:00:00'&quot;);
-my $firststr = &quot;$startat-&quot;.($startat+50);
-$str.=&quot;&lt;p align=\&quot;center\&quot;&gt;&lt;table width=\&quot;70%\&quot;&gt;&lt;tr&gt;&quot;;
-$str.=&quot;&lt;td width=\&quot;50%\&quot; align=\&quot;center\&quot;&gt;&quot;;
-if(($startat-50) &gt;= 0){
-	$str.=linkNode($NODE,$firststr,{&quot;startat&quot; =&gt; ($startat-50), &quot;sectype&quot; =&gt; $sectype});
-}else{
-	$str.=$firststr;
-}
-$str.=&quot;&lt;/td&gt;&quot;;
-$str.=&quot;&lt;td width=\&quot;50%\&quot; align=\&quot;center\&quot;&gt;&quot;;
-my $secondstr = ($startat+50).&quot;-&quot;.(($startat + 100 &lt; $cnt)?($startat+100):($cnt));
-if(($startat+50) &lt;= ($cnt)){
-	$str.=linkNode($NODE,$secondstr,{&quot;startat&quot; =&gt; ($startat+50), &quot;sectype&quot; =&gt; $sectype});
-}else{
-	$str.=&quot;(end of list)&quot;;
-}
-$str .= '&lt;/tr&gt;&lt;/table&gt;';
-
-return $str;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>2033982</node_id>
   <title>Topic Archive</title>
   <type_nodetype>14</type_nodetype>
