@@ -1,0 +1,19 @@
+on:
+  push:
+    branches: [ master ]
+jobs:
+  codecommit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: pushes to codecommit
+        env:
+          CODECOMMIT_SSH_KEY: ${{ secrets.CODECOMMIT_SSH_KEY }}
+          CODECOMMIT_SSH_PUBLIC_KEY_ID: ${{ secrets.CODECOMMIT_SSH_PUBLIC_KEY_ID }}
+          CODECOMMIT_URL: ${{ secrets.CODECOMMIT_URL }}
+        shell: bash
+        run: |
+          mkdir .ssh && cd .ssh && echo "$CODECOMMIT_SSH_KEY" > id_rsa && chmod 600 id_rsa
+          ssh-keyscan -H "$CODECOMMIT_URL" > known_hosts && chmod 600 known_hosts && cd ..
+          git remote add codecommit "git://$CODECOMMIT_SSH_PUBLIC_KEY_ID@$CODECOMMIT_URL"
+          git push codecommit master --force

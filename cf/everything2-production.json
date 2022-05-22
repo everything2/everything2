@@ -1986,6 +1986,33 @@
           }
         }]
       }
+    },
+    "Everything2CodeCommitRepo": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "everything2",
+        "RepositoryDescription": "Mirror of GitHub everything2/everything2 repo"
+      }
+    },
+    "ExtGithubCodeCommitUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Policies": [
+          {
+            "PolicyName": "external-github-codecommit-access",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": "codecommit:*",
+                "Resource": {"Fn::GetAtt": ["Everything2CodeCommitRepo","Arn"]}
+              }]
+            }
+          }
+        ],
+        "UserName": "External-GitHub-Actions-User"
+      }
     }
 
   }
