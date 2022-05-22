@@ -13,6 +13,6 @@ jobs:
         shell: bash
         run: |
           mkdir .ssh && cd .ssh && echo "$CODECOMMIT_SSH_KEY" > id_rsa && chmod 600 id_rsa
-          ssh-keyscan -H git-codecommit.us-west-2.amazonaws.com > known_hosts && chmod 600 known_hosts && cat known_hosts cd ..
+          ssh-keyscan -H git-codecommit.us-west-2.amazonaws.com > known_hosts && chmod 600 known_hosts && cd ..
           git remote add codecommit "git://APKATWVZOXOZ3G5UMC7H@git-codecommit.us-west-2.amazonaws.com/v1/repos/everything2"
           git push codecommit master --force
