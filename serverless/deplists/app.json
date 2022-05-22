@@ -844,10 +844,6 @@
     "module": "IO::Socket::SSL"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/G/GB/GBARR/Authen-SASL-2.16.tar.gz",
-    "module": "Authen::SASL"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/B/BO/BOOK/DateTime-Format-Mail-0.403.tar.gz",
     "module": "DateTime::Format::Mail"
   },
