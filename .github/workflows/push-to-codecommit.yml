@@ -11,6 +11,8 @@ jobs:
         env:
           CODECOMMIT_SSH_KEY: ${{ secrets.CODECOMMIT_SSH_KEY }}
         shell: bash
+        with:
+          fetch-depth: 0
         run: |
           mkdir ~/.ssh && cd ~/.ssh && echo "$CODECOMMIT_SSH_KEY" > id_rsa && chmod 600 id_rsa
           ssh-keyscan -H git-codecommit.us-west-2.amazonaws.com 2>/dev/null > known_hosts && chmod 600 known_hosts && cd -
