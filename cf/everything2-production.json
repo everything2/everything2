@@ -1118,6 +1118,7 @@
             {"Ref": "ZipsBucketReadPolicy"},
             {"Ref": "BuildcacheAccessPolicy"},
             {"Ref": "DockerHubSecretsAccessPolicy"},
+            {"Ref": "DeployedAssetsManagement"},
             "arn:aws:iam::aws:policy/AWSCodeCommitReadOnly"
         ],
         "Path": "/",
@@ -1561,6 +1562,7 @@
     },
     "AppFargateTaskRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1586,6 +1588,7 @@
     },
     "E2TaskExecutionRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1605,6 +1608,7 @@
     },
     "AppAutoScalingRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "RoleName": "e2-fargate-auto-scaling-role",
         "AssumeRolePolicyDocument": {
@@ -1630,6 +1634,7 @@
     },
     "FargateAppScalableTarget": {
       "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "RoleARN": {"Fn::GetAtt": ["AppAutoScalingRole","Arn"]},
         "ResourceId": {"Fn::Join": ["/",["service",{"Ref": "ECSAppCluster"},{"Fn::GetAtt": ["ECSFargateAppService","Name"]}]]},
@@ -1641,6 +1646,7 @@
     },
     "FargateAppAutoScalingPolicy": {
       "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "PolicyName": "FargateAppCPUAutoScalingPolicy",
         "PolicyType": "TargetTrackingScaling",
@@ -1658,6 +1664,7 @@
     },
     "ECSEventsRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "RoleName": "e2-ecs-events-role",
         "AssumeRolePolicyDocument": {
@@ -1694,6 +1701,7 @@
     },
     "CronChatterboxCleanupRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call chatterbox-cleanup",
         "Name": "cron-chatterbox-cleanup",
@@ -1731,6 +1739,7 @@
     },
     "CronGenerateSitemapRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call generate-sitemap",
         "Name": "cron-generate-sitemap",
@@ -1768,6 +1777,7 @@
     },
     "CronDatastashRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call datastash",
         "Name": "cron-datastash",
@@ -1805,6 +1815,7 @@
     },
     "CronDatastashLengthyRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call datastash lengthy",
         "Name": "cron-datastash-lengthy",
@@ -1842,6 +1853,7 @@
     },
     "CronIQMRecalcRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call IQM Recalculate",
         "Name": "cron-iqm-recalc",
@@ -1879,6 +1891,7 @@
     },
     "CronRefreshRoomsRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call refresh rooms",
         "Name": "cron-refresh-rooms",
@@ -1916,6 +1929,7 @@
     },
     "CronCleanOldRoomsRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call clean old rooms",
         "Name": "cron-clean-old-rooms",
@@ -1953,6 +1967,7 @@
     },
     "CronWriteupReaperRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call legacy writeup reaper",
         "Name": "cron-writeup-reaper",
@@ -1990,6 +2005,7 @@
     },
     "Everything2CodeCommitRepo": {
       "Type": "AWS::CodeCommit::Repository",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "RepositoryName": "everything2",
         "RepositoryDescription": "Mirror of GitHub everything2/everything2 repo"
@@ -1997,6 +2013,7 @@
     },
     "ExtGithubCodeCommitUser": {
       "Type": "AWS::IAM::User",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Policies": [
           {
@@ -2013,6 +2030,47 @@
           }
         ],
         "UserName": "External-GitHub-Actions-User"
+      }
+    },
+    "DeployedAssetsBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "deployed.everything2.com",
+        "AccessControl": "PublicRead"
+      }
+    },
+    "DeployedAssetsManagement": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows CodeBuild to deploy git-tagged assets",
+        "ManagedPolicyName": "DeployedAssetsS3Policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["s3:PutObject","s3:DeleteObject","s3:GetObject"],
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "DeployedAssetsBucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": {"Fn::GetAtt": ["DeployedAssetsBucket", "Arn"]}
+          }]
+        }
+      }
+    },
+    "DeployedAssetsRS": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "deployed.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "S3hostedzoneID"]},
+          "DNSName": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
+        },
+        "Type": "A"
       }
     }
 

@@ -8,6 +8,8 @@ phases:
       - aws s3 cp s3://$SECRETS_BUCKET/docker_hub_password - | docker login -u everything2 --password-stdin
       - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG || true
       - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG everything2/e2app:$IMAGE_TAG || true
+      - echo Installing node elements
+      - npm install terser
   build:
     commands:
       - echo Build started on `date` in `pwd`
