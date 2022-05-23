@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'aws-sdk-codebuild'
+require 'aws-sdk-ecs'
 
 client = Aws::CodeBuild::Client.new(region: 'us-west-2')
 ecs = Aws::ECS::Client.new(region: 'us-west-2')
@@ -21,7 +22,7 @@ while(done.nil?)
   end
 end
 
-if status.eql? SUCCEEDED
+if status.eql? "SUCCEEDED"
   pp ecs.update_service(service: 'E2-App-Fargate-Service', task_defintion: 'e2app-family', desired_count: 1, force_new_deployment: true)
 else
   puts "Failed, could not deploy cluster"
