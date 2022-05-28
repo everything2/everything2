@@ -1,6 +1,8 @@
 // 1874924.js "default javascript"
 // Used on every pageload
 
+// This function finds the message box and adds in a the chatterbox shortcut
+// to send a private message. It is only used in the chatterbox variants 
 function replyToCB(s, onlineonly) {
         var mbox = jQuery('#message')[0] ;
         mbox.value = ( onlineonly ? '/msg? ' : '/msg ' ) + s + " ";
