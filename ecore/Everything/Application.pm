@@ -4723,4 +4723,12 @@ sub get_user_nodeshells
   return $nodeshells;
 }
 
+sub get_user_style
+{
+  my ($this, $user) = @_;
+
+  my $user_obj = Everything::Node::user->new($user);
+  return $user_obj->style->id;
+}
+
 1;

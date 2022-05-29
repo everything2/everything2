@@ -221,7 +221,7 @@ sub style
 
   $userstyle = $self->APP->node_by_id($userstyle);
 
-  if($userstyle and $userstyle->type->title eq "stylesheet")
+  if($userstyle and $userstyle->type->title eq "stylesheet" and $userstyle->supported)
   {
     return $userstyle;
   }

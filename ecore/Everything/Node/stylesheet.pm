@@ -4,6 +4,12 @@ use Moose;
 extends 'Everything::Node';
 with 'Everything::Node::helper::s3';
 
+sub supported
+{
+  my ($self) = @_;
+  return $self->APP->getParameter($self->NODEDATA, "supported_sheet");
+}
+
 around 'cdn_link' => sub
 {
   my $orig = shift;
