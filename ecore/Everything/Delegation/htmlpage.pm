@@ -4637,6 +4637,11 @@ sub stylesheet_serve_page
   }
 
   my $out = $$NODE{doctext};
+  my $author = getNodeById($NODE->{author_user});
+  my $unsupported = "";
+  $unsupported = " - unsupported" unless $APP->getParameter($NODE, "supported_sheet");
+  $out = "/* $$NODE{node_id}.css ($$NODE{title} by $$author{title}$unsupported) */\n$out";
+
   my $autofix = $query -> param( 'autofix' );
   if ( $autofix or not $APP->isGuest($USER) )
   {
