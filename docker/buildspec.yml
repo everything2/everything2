@@ -9,7 +9,7 @@ phases:
       - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG || true
       - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG everything2/e2app:$IMAGE_TAG || true
       - echo Installing node elements
-      - npm install terser
+      - npm install
       - echo Installing ruby sdk elements
       - gem install aws-sdk-s3
   build:
