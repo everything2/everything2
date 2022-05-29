@@ -68,7 +68,7 @@ javascript_assets.keys.each do |k|
       end
 
       filename = "#{current_rev}/#{filepart}.#{file_ending}"
-      s3args = {bucket: asset_bucket, key: filename, content_type: 'application/javascript', body: javascript_assets[k][upload_type]}
+      s3args = {bucket: asset_bucket, key: filename, content_type: 'application/javascript', body: javascript_assets[k][upload_type], cache_control: "max-age=31536000"}
       s3args.merge!(content_encoding)
       upload_result = s3client.put_object(s3args)
       if upload_result.etag.nil?
