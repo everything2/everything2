@@ -1,0 +1,84 @@
+/* 1930556.css (Zen Organization Visualizer by rootbeer277 - unsupported) */
+/* This stylesheet is intended to provide visual reference for how */
+/*  the zen DIV structure is outlined.  Different DIVs are in different */
+/*  colors to provid reference.  In some cases padding has been added */
+/*  to help understand what is inside what.  This lists all of the */
+/*  DIVs ids and classes in a regular node, not counting repeats. */
+/*  the indenting should also help visualize what is within what. */
+/*  Note the textarea style at the bottom. */
+/* To do: */
+/*  Homenodes */
+/*  main page */
+/*  superdocs? */
+body { margin:0px; }
+#wrapper { background:#88ff88; padding: 5px; }
+#mainbody { background:#aaaaaa; padding: 10px; }
+.createdby {background:purple;}/*node created by, not part of writeups*/
+.writeup {background:darkblue; padding:5px;}  /*one for each writeup*/
+.writeup_title {background:lightblue;} /*writeup header contents*/
+.vote_buttons {background:green;}
+.writeup_text {background:white;}  /*actual text of article*/
+#belowwriteup__###### {} .belowwriteup {background:red; padding:5px;} /*empty*/
+#displaytypelinks  { background:cyan; } /* printable / {chaos or link view} */
+#votefooter {background:violet; padding:5px;}
+#softlinks {background:black;}
+#thinoutline {} .thinoutline {border:yellow 3px dashed;}
+#writeup_add { }
+#sidebar { background: #cccc99; padding: 5px;}
+#sidebar UL { /*list-style:none;*/ }
+#sidebar SMALL { margin-left: 5px; }
+.nodelet { border:black 3px dotted; }
+#nodelet_170070 { background:#ffbbbb; padding: 10px; } /*chatterbox*/
+.nodelet_content { background:#cccccc; }
+#chatterbox_chatter {background:green;}
+#nodelet_1868940 {background:#ff9999; padding: 10px;} /*New Writeups - zen*/
+.writeupmeta { } /*one for each of New Writeups*/
+.author {background:#bbbbbb;}
+.title  {background:#888888;}
+.type   {background:#333333;}
+#nodelet_262 {background:#ff6666; padding: 10px;} /*Epicenter*/
+#nodelet_165437 {background:#ff3333; padding: 10px;} /*Vitals*/
+#nodelet_91 {background:#ff0000; padding: 10px;} /*Other Users*/
+#room_options { background: #ffbbbb; } .nodelet_section {  }
+#nodelet_836984 {padding: 10px;} /* Edev */
+#frontpage { padding: 10px; background: #ffaaff; }
+#printlink { background: cyan; }
+#zenthinoutline
+.thinoutline
+#welcome_message { background: cyan; }
+#loglinks { background: red; }
+#cooluserpicks  { background: #00ff00; }
+.cup_more  { background: #00aa00; }
+#staff_picks { background: #333366; }
+#creamofthecool  { background: #ff0000; }
+#cotc { background: #aa0000; }
+.cotc_entry { background: #990000; }
+.cotc_info { background: #660000; }
+.cotc_text td { background: #330000; color: white; }
+#frontpage_news { background: #333366; }
+#homenodeheader { background: #ff0000; padding: 10px; }
+#homenodepicbox { background: #aa0000; padding: 10px; }
+#userimage { background: #660000; }
+#homenodetext td { background: #00ff00; }
+#bookmarks { background: #aaaaff; }
+#header {background: #ffbbbb; padding: 10px; }
+#searchform { background: #ff8888; }
+.e2logo2 { } /*intended to add markup to the "2" in Everything2*/
+#footer { background: black; color:white; }
+textarea { width:95%; font-family: monospace; }/* SOFTLINK COLORS */
+td#sl64{background:#aaaaaa;}td#sl63{background:#aaaaaa;}td#sl62{background:#aaaaaa;}td#sl61{background:#aaaaaa;}
+td#sl60{background:#aaaaaa;}td#sl59{background:#aaaaaa;}td#sl58{background:#aaaaaa;}td#sl57{background:#aaaaaa;}
+td#sl56{background:#aaaaaa;}td#sl55{background:#aaaaaa;}td#sl54{background:#aaaaaa;}td#sl53{background:#aaaaaa;}
+td#sl52{background:#aaaaaa;}td#sl51{background:#aaaaaa;}td#sl50{background:#aaaaaa;}td#sl49{background:#aaaaaa;}
+td#sl48{background:#aaaaaa;}td#sl47{background:#aaaaaa;}td#sl46{background:#aaaaaa;}td#sl45{background:#aaaaaa;}
+td#sl44{background:#aaaaaa;}td#sl43{background:#aaaaaa;}td#sl42{background:#aaaaaa;}td#sl41{background:#aaaaaa;}
+td#sl40{background:#aaaaaa;}td#sl39{background:#aaaaaa;}td#sl38{background:#aaaaaa;}td#sl37{background:#aaaaaa;}
+td#sl36{background:#aaaaaa;}td#sl35{background:#aaaaaa;}td#sl34{background:#aaaaaa;}td#sl33{background:#aaaaaa;}
+td#sl32{background:#aaaaaa;}td#sl31{background:#aaaaaa;}td#sl30{background:#aaaaaa;}td#sl29{background:#aaaaaa;}
+td#sl28{background:#aaaaaa;}td#sl27{background:#aaaaaa;}td#sl26{background:#aaaaaa;}td#sl25{background:#aaaaaa;}
+td#sl24{background:#aaaaaa;}td#sl23{background:#aaaaaa;}td#sl22{background:#aaaaaa;}td#sl21{background:#aaaaaa;}
+td#sl20{background:#aaaaaa;}td#sl19{background:#aaaaaa;}td#sl18{background:#aaaaaa;}td#sl17{background:#aaaaaa;}
+td#sl16{background:#aaaaaa;}td#sl15{background:#aaaaaa;}td#sl14{background:#aaaaaa;}td#sl13{background:#aaaaaa;}
+td#sl12{background:#aaaaaa;}td#sl11{background:#aaaaaa;}td#sl10{background:#aaaaaa;}td#sl9{background:#aaaaaa;}
+td#sl8{background:#aaaaaa;}td#sl7{background:#aaaaaa;}td#sl6{background:#aaaaaa;}td#sl5{background:#aaaaaa;}
+td#sl4{background:#aaaaaa;}td#sl3{background:#aaaaaa;}td#sl2{background:#aaaaaa;}td#sl1{background:#aaaaaa;}

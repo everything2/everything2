@@ -1,0 +1,85 @@
+/* 1932334.css (Snowblind by Bitriot - unsupported) */
+/* These are the basic colours and fonts */
+body, div, p, th, td, li, dd {
+background-color: #ffffff;
+font-size: 12px;
+font-family: Arial, sans-serif;
+color: #000000;
+}
+/* These are headings */
+h1, h2, h3, h4 {
+font-family: Arial, Sans-serif;
+}
+/* links ... */
+a:link {
+color: #103860;
+}
+a:visited {
+color: #808080;
+}
+a:active, a:hover {
+color: #bbbbbb;
+}
+/* The title of the nodelet */
+.nodelet h2 {
+color:  black;
+background-color: white;
+}
+/* The nodelet border colour should be the same as the nodelet title background */
+.nodelet {
+border-color: white;
+background-color: #ffffff;
+}
+pre, tt {
+font-size: 9pt;
+}
+.oddrow, #homenodeheader dt  {
+background-color: #efefef;
+}
+/* Apply some ekw-ish styling to the New Writeups nodelet */
+#writeup_list span.writeupmeta {
+background-color: #ffffff;
+}
+#writeup_list li {
+padding: 3px;
+}
+#writeup_list span.author a {
+display: block;
+text-align: center;
+margin-bottom: 2px;
+background-color: #d0d0d0;
+}
+#writeup_list span.type {
+text-align: right;
+}
+#writeup_list li a {
+display: inline;
+padding: 0;
+border: 0;
+}
+#writeup_list span.writeupmeta a:link {
+color: #103860;
+}
+#writeup_list span.writeupmeta a:visited {
+color: #808080;
+}
+#writeup_list span.writeupmeta a:active, a:hover {
+color: #bbbbbb;
+}
+/* SOFTLINK COLORS */
+td#sl64{background:#efefef;}td#sl63{background:#efefef;}td#sl62{background:#efefef;}td#sl61{background:#efefef;}
+td#sl60{background:#f0f0f0;}td#sl59{background:#f0f0f0;}td#sl58{background:#f0f0f0;}td#sl57{background:#f0f0f0;}
+td#sl56{background:#f1f1f1;}td#sl55{background:#f1f1f1;}td#sl54{background:#f1f1f1;}td#sl53{background:#f1f1f1;}
+td#sl52{background:#f2f2f2;}td#sl51{background:#f2f2f2;}td#sl50{background:#f2f2f2;}td#sl49{background:#f2f2f2;}
+td#sl48{background:#f3f3f3;}td#sl47{background:#f3f3f3;}td#sl46{background:#f3f3f3;}td#sl45{background:#f3f3f3;}
+td#sl44{background:#f4f4f4;}td#sl43{background:#f4f4f4;}td#sl42{background:#f4f4f4;}td#sl41{background:#f4f4f4;}
+td#sl40{background:#f5f5f5;}td#sl39{background:#f5f5f5;}td#sl38{background:#f5f5f5;}td#sl37{background:#f5f5f5;}
+td#sl36{background:#f6f6f6;}td#sl35{background:#f6f6f6;}td#sl34{background:#f6f6f6;}td#sl33{background:#f6f6f6;}
+td#sl32{background:#f7f7f7;}td#sl31{background:#f7f7f7;}td#sl30{background:#f7f7f7;}td#sl29{background:#f7f7f7;}
+td#sl28{background:#f8f8f8;}td#sl27{background:#f8f8f8;}td#sl26{background:#f8f8f8;}td#sl25{background:#f8f8f8;}
+td#sl24{background:#f9f9f9;}td#sl23{background:#f9f9f9;}td#sl22{background:#f9f9f9;}td#sl21{background:#f9f9f9;}
+td#sl20{background:#fafafa;}td#sl19{background:#fafafa;}td#sl18{background:#fafafa;}td#sl17{background:#fafafa;}
+td#sl16{background:#fbfbfb;}td#sl15{background:#fbfbfb;}td#sl14{background:#fbfbfb;}td#sl13{background:#fbfbfb;}
+td#sl12{background:#fcfcfc;}td#sl11{background:#fcfcfc;}td#sl10{background:#fcfcfc;}td#sl9{background:#fcfcfc;}
+td#sl8{background:#fdfdfd;}td#sl7{background:#fdfdfd;}td#sl6{background:#fdfdfd;}td#sl5{background:#fdfdfd;}
+td#sl4{background:#fefefe;}td#sl3{background:#fefefe;}td#sl2{background:#fefefe;}td#sl1{background:#ffffff;}

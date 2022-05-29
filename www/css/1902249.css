@@ -1,0 +1,714 @@
+/* 1902249.css (Plain Blue-Grey Nonsense by Oolong - unsupported) */
+/* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
+/* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
+#ed_strong {
+font-weight: bold;
+}
+#ed_hardlink {
+color: blue;
+text-decoration: underline;
+}
+#ed_pipe_link {
+color: blue;
+text-decoration: underline;
+}
+#ed_del {
+text-decoration: line-through;
+}
+#ed_em {
+font-style: italic;
+}
+#ed_code {
+font-family: "Courier New", Courier, mono;
+}
+/*The basics*/
+body {
+font-family:  lucida, arial, sans-serif;
+/* This is a starting point: use relative for the rest */
+//font-size: 0.8em;
+}
+h1 {
+font-size: 150%;
+font-weight: bold;
+}
+h2 {
+font-size: 110%;
+font-weight: bold;
+}
+h3 {
+font-size: 100%;
+font-weight: bold;
+}
+big {
+font-size: 110%;
+}
+small {
+font-size: 90%;
+}
+/*Basic structure: this is based on ALA's 'Holy Grail' design. */
+#header {
+height: 64px;
+width: 100%;
+position: absolute;
+top: 0;
+left: 0;
+border-bottom: 1px gray solid;
+}
+#wrapper {
+padding-top: 64px;
+}
+#mainbody {
+position: relative;
+float: left;
+width: 100%;
+margin-left: 2em;
+}
+#sidebar {
+position: relative;
+float: left;
+width: 200px;
+}
+/*Nodelets on right*/
+#wrapper {
+padding-right: 270px;
+}
+#sidebar {
+margin-right: -100%;
+margin-left: 5px;
+}
+/*Nodelets on left*/
+/*
+#wrapper {
+padding-left: 205px;
+}
+#sidebar {
+right: 205px;
+margin-left: -100%;
+}
+* html #left {
+left: 200px;
+}
+*/
+/*end nodelet layout*/
+#footer {
+clear: both;
+width: 100%;
+border-top: 3px gray double;
+text-align: center;
+padding-top: 2px;
+margin-top:8px;
+}
+/* Colours, etc */
+body {
+color: black;
+background-color: white;
+}
+a {
+color: #333399;
+text-decoration:none;
+}
+a:visited {
+color: #993333;
+}
+a:hover {
+border-bottom: 1px solid #99c;
+}
+/* specifics */
+pre {
+/* to stop page-widening */
+display: block;
+overflow: auto;
+}
+#e2logo {
+float: left;
+text-align: left;
+font-size: 150%;
+margin-left: 20px;
+}
+#welcome_message {
+width:25%;
+font-size:75%;
+margin:auto;
+text-align:center;
+}
+#staff_picks {
+width:30%;
+float:right;
+}
+#creamofthecool {
+width:30%;
+float:left;
+}
+#cooluserpicks {
+width:30%;
+float:left;
+}
+#frontpage_news {
+width:25%;
+}
+#loglinks {
+width:50%;
+text-align: center;
+margin: auto;
+font-size: 80%;
+vertical-align: middle;
+}
+#metalinks {
+margin: 2px;
+padding:  0;
+display: block;
+clear: both;
+text-align: center;
+font-size: 80%;
+}
+#metalinks li {
+display: inline;
+padding-right: 5px;
+margin-left: 5px;
+}
+#e2logo a:link, #e2logo a:visited {
+text-decoration: none;
+}
+#searchform {
+width: 440px;
+float: right;
+text-align: right;
+padding-top: 5px;
+}
+#searchform input {
+float: left;
+margin-top: 5px;
+}
+#searchform label {
+display: block;
+font-size: 80%;
+float: right;
+clear: right;
+text-align: left;
+width: 100px;
+}
+#searchform label input {
+margin: 1px;
+}
+.nodelet {
+clear: both;
+width: 200px;
+padding: 6px;
+border: 3px gray double;
+word-wrap: break-word;
+margin-bottom: 1px;
+font-size:95%;
+}
+.nodelet h2 {
+display: block;
+margin: 0 -2px;
+text-align: center;
+background-color: #369;
+color: white;
+}
+.writeup {
+border: 3px gray double;
+padding: 12px;
+margin: 12px;
+//padding-left: 2em;
+font-size:0.9em;
+}
+.createdby {
+text-align: right;
+font-size:90%;
+}
+.writeup_title {
+}
+.writeup_text {
+}
+.oddrow {
+background: #ccc;
+}
+.evenrow {
+background: #eee;
+}
+#firmlink, #isalso {
+font-size: 110%;
+text-indent: 30px;
+}
+#killbutton {
+float: right;
+}
+#msgnum {
+margin: 0;
+margin-bottom: 5px;
+}
+#msgunarchived {
+font-weight: bold;
+}
+#homenodepicbox {
+width: 50%;
+float: left;
+clear: left;
+overflow: auto;
+}
+#homenodeheader {
+clear: both;
+}
+#homenodeheader dl {
+display: block;
+width: 50%;
+float: right;
+clear: right;
+margin: 0;
+}
+.softlinks {
+background:blue;
+border:solid black;
+}
+#homenodeheader dt {
+display: block;
+background-color: #369;
+padding: 2px;
+}
+#homenodeheader dd {
+margin: 0;
+padding: 2px;
+}
+hr.clear {
+clear: both;
+visibility: hidden;
+}
+textarea {
+width: 100%;
+}
+big big big {
+font-size: inherit;
+}
+#writeup_list {
+list-style-type: none;
+padding: 0;
+}
+#writeup_list li {
+clear: both;
+word-wrap: break-word;
+}
+#writeup_list span.writeupmeta {
+display: block;
+text-align: center;
+padding: 0px;
+clear: both;
+background-color: gray;
+color: white;
+margin: 0 -1px;
+}
+#writeup_list span.type {
+font-size: 90%;
+display: block;
+text-align: right;
+word-wrap: no-wrap;
+margin-bottom: 1px;
+clear: right;
+}
+#writeup_list span.title {
+float: left;
+display: block;
+clear: left;
+margin-bottom: 1px;
+}
+#writeup_list span.author {
+}
+#writeup_list span.hidden, #writeup_list span.hide {
+font-size: 85%;
+margin-left: 3px;
+display:inline;
+}
+#writeup_list{
+background:white;
+color:black;
+}
+#writeup_list li
+{
+padding: 1px;
+border-top: 1px solid #333;
+}
+#writeup_list span.author a {
+display: block;
+text-align: center;
+margin-bottom: 2px;
+background-color: #369;
+color:white;
+}
+#writeup_list span.type {
+font-size: 80%;
+text-align: right;
+background:white;
+color:black;
+}
+#writeup_list li a {
+display: inline;
+padding: 0;
+border: 0;
+background:white;
+color:black;
+}
+#writeup_list span.writeupmeta {
+background-color: white;
+color: black;
+border:1px;
+}
+div #epicenter_zen {
+float:right;
+}
+/* This is the skeleton stylesheet for the zen theme, by ascorbic */
+/* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
+/* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
+/*The basics*/
+body {
+font-family:  lucida, arial, sans-serif;
+/* This is a starting point: use relative for the rest */
+//font-size: 0.8em;
+}
+h1 {
+font-size: 150%;
+font-weight: bold;
+}
+h2 {
+font-size: 110%;
+font-weight: bold;
+}
+h3 {
+font-size: 100%;
+font-weight: bold;
+}
+big {
+font-size: 110%;
+}
+small {
+font-size: 90%;
+}
+/*Basic structure: this is based on ALA's 'Holy Grail' design. */
+#header {
+height: 64px;
+width: 100%;
+position: absolute;
+top: 0;
+left: 0;
+border-bottom: 1px gray solid;
+}
+#wrapper {
+padding-top: 64px;
+}
+#mainbody {
+position: relative;
+float: left;
+width: 100%;
+margin-left: 2em;
+}
+#sidebar {
+position: relative;
+float: left;
+width: 200px;
+}
+/*Nodelets on right*/
+#wrapper {
+padding-right: 270px;
+}
+#sidebar {
+margin-right: -100%;
+margin-left: 5px;
+}
+/*Nodelets on left*/
+/*
+#wrapper {
+padding-left: 205px;
+}
+#sidebar {
+right: 205px;
+margin-left: -100%;
+}
+* html #left {
+left: 200px;
+}
+*/
+/*end nodelet layout*/
+#footer {
+clear: both;
+width: 100%;
+border-top: 3px gray double;
+text-align: center;
+padding-top: 2px;
+margin-top:8px;
+}
+/* Colours, etc */
+body {
+color: black;
+background-color: white;
+}
+a {
+color: #333399;
+text-decoration:none;
+}
+a:visited {
+color: #993333;
+}
+a:hover {
+border-bottom: 1px solid #99c;
+}
+/* specifics */
+pre {
+/* to stop page-widening */
+display: block;
+overflow: auto;
+}
+#e2logo {
+float: left;
+text-align: left;
+font-size: 150%;
+margin-left: 20px;
+}
+#welcome_message {
+width:25%;
+font-size:75%;
+margin:auto;
+text-align:center;
+}
+#staff_picks {
+width:30%;
+float:right;
+}
+#creamofthecool {
+width:30%;
+float:left;
+}
+#cooluserpicks {
+width:30%;
+float:left;
+}
+#frontpage_news {
+width:25%;
+}
+#loglinks {
+width:50%;
+text-align: center;
+margin: auto;
+font-size: 80%;
+vertical-align: middle;
+}
+#metalinks {
+margin: 2px;
+padding:  0;
+display: block;
+clear: both;
+text-align: center;
+font-size: 80%;
+}
+#metalinks li {
+display: inline;
+padding-right: 5px;
+margin-left: 5px;
+}
+#e2logo a:link, #e2logo a:visited {
+text-decoration: none;
+}
+#searchform {
+width: 440px;
+float: right;
+text-align: right;
+padding-top: 5px;
+}
+#searchform input {
+float: left;
+margin-top: 5px;
+}
+#searchform label {
+display: block;
+font-size: 80%;
+float: right;
+clear: right;
+text-align: left;
+width: 100px;
+}
+#searchform label input {
+margin: 1px;
+}
+.nodelet {
+clear: both;
+width: 200px;
+padding: 6px;
+border: 3px gray double;
+word-wrap: break-word;
+margin-bottom: 1px;
+font-size:95%;
+}
+.nodelet h2 {
+display: block;
+margin: 0 -2px;
+text-align: center;
+background-color: #369;
+color: white;
+}
+.writeup {
+border: 3px gray double;
+padding: 12px;
+margin: 12px;
+//padding-left: 2em;
+font-size:0.9em;
+}
+.createdby {
+text-align: right;
+font-size:90%;
+}
+.writeup_title {
+}
+.writeup_text {
+}
+.oddrow {
+background: #ccc;
+}
+.evenrow {
+background: #eee;
+}
+#firmlink, #isalso {
+font-size: 110%;
+text-indent: 30px;
+}
+#killbutton {
+float: right;
+}
+#msgnum {
+margin: 0;
+margin-bottom: 5px;
+}
+#msgunarchived {
+font-weight: bold;
+}
+#homenodepicbox {
+width: 50%;
+float: left;
+clear: left;
+overflow: auto;
+}
+#homenodeheader {
+clear: both;
+}
+#homenodeheader dl {
+display: block;
+width: 50%;
+float: right;
+clear: right;
+margin: 0;
+}
+.softlinks {
+background:blue;
+border:solid black;
+}
+#homenodeheader dt {
+display: block;
+background-color: #369;
+padding: 2px;
+}
+#homenodeheader dd {
+margin: 0;
+padding: 2px;
+}
+hr.clear {
+clear: both;
+visibility: hidden;
+}
+textarea {
+width: 100%;
+}
+big big big {
+font-size: inherit;
+}
+#writeup_list {
+list-style-type: none;
+padding: 0;
+}
+#writeup_list li {
+clear: both;
+word-wrap: break-word;
+}
+#writeup_list span.writeupmeta {
+display: block;
+text-align: center;
+padding: 0px;
+clear: both;
+background-color: gray;
+color: white;
+margin: 0 -1px;
+}
+#writeup_list span.type {
+font-size: 90%;
+display: block;
+text-align: right;
+word-wrap: no-wrap;
+margin-bottom: 1px;
+clear: right;
+}
+#writeup_list span.title {
+float: left;
+display: block;
+clear: left;
+margin-bottom: 1px;
+}
+#writeup_list span.author {
+}
+#writeup_list span.hidden, #writeup_list span.hide {
+font-size: 85%;
+margin-left: 3px;
+display:inline;
+}
+#writeup_list{
+background:white;
+color:black;
+}
+#writeup_list li
+{
+padding: 1px;
+border-top: 1px solid #333;
+}
+#writeup_list span.author a {
+display: block;
+text-align: center;
+margin-bottom: 2px;
+background-color: #369;
+color:white;
+}
+#writeup_list span.type {
+font-size: 80%;
+text-align: right;
+background:white;
+color:black;
+}
+#writeup_list li a {
+display: inline;
+padding: 0;
+border: 0;
+background:white;
+color:black;
+}
+#writeup_list span.writeupmeta {
+background-color: white;
+color: black;
+border:1px;
+}
+div #epicenter_zen {
+float:right;
+}
+#message{
+width: 100%;
+display:block;
+}/* SOFTLINK COLORS */
+td#sl64{background:#cccccc;}td#sl63{background:#cccccc;}td#sl62{background:#cdcdcd;}td#sl61{background:#cecece;}
+td#sl60{background:#cfcfcf;}td#sl59{background:#d0d0d0;}td#sl58{background:#d0d0d0;}td#sl57{background:#d1d1d1;}
+td#sl56{background:#d2d2d2;}td#sl55{background:#d3d3d3;}td#sl54{background:#d4d4d4;}td#sl53{background:#d4d4d4;}
+td#sl52{background:#d5d5d5;}td#sl51{background:#d6d6d6;}td#sl50{background:#d7d7d7;}td#sl49{background:#d8d8d8;}
+td#sl48{background:#d8d8d8;}td#sl47{background:#d9d9d9;}td#sl46{background:#dadada;}td#sl45{background:#dbdbdb;}
+td#sl44{background:#dcdcdc;}td#sl43{background:#dddddd;}td#sl42{background:#dddddd;}td#sl41{background:#dedede;}
+td#sl40{background:#dfdfdf;}td#sl39{background:#e0e0e0;}td#sl38{background:#e1e1e1;}td#sl37{background:#e1e1e1;}
+td#sl36{background:#e2e2e2;}td#sl35{background:#e3e3e3;}td#sl34{background:#e4e4e4;}td#sl33{background:#e5e5e5;}
+td#sl32{background:#e5e5e5;}td#sl31{background:#e6e6e6;}td#sl30{background:#e7e7e7;}td#sl29{background:#e8e8e8;}
+td#sl28{background:#e9e9e9;}td#sl27{background:#e9e9e9;}td#sl26{background:#eaeaea;}td#sl25{background:#ebebeb;}
+td#sl24{background:#ececec;}td#sl23{background:#ededed;}td#sl22{background:#eeeeee;}td#sl21{background:#eeeeee;}
+td#sl20{background:#efefef;}td#sl19{background:#f0f0f0;}td#sl18{background:#f1f1f1;}td#sl17{background:#f2f2f2;}
+td#sl16{background:#f2f2f2;}td#sl15{background:#f3f3f3;}td#sl14{background:#f4f4f4;}td#sl13{background:#f5f5f5;}
+td#sl12{background:#f6f6f6;}td#sl11{background:#f6f6f6;}td#sl10{background:#f7f7f7;}td#sl9{background:#f8f8f8;}
+td#sl8{background:#f9f9f9;}td#sl7{background:#fafafa;}td#sl6{background:#fafafa;}td#sl5{background:#fbfbfb;}
+td#sl4{background:#fcfcfc;}td#sl3{background:#fdfdfd;}td#sl2{background:#fefefe;}td#sl1{background:#ffffff;}

@@ -1,0 +1,97 @@
+/* 1886668.css (Two Sheds' theme by Major General Panic - unsupported) */
+/* fonts */
+body {font-family: Arial, sans-serif; font-size: 12px;}
+table {font-size: 12px;}
+h1, h2, h3, h4 {font-weight: bold;}
+h1 {font-size: 130%;}
+.nodetitle {font-size: 150%; text-align: center;}
+h2, big {font-size: 110%;}
+h3, h4 {font-size: 100%;}
+small {font-size: 90%;}
+/* colors */
+a:link {color: #228;}
+a:visited {color: #633;}
+a:hover {color: #933;}
+.nodelet {border-color: #D8D8E8;}
+.writeup, #cooluserpicks, .weblog_item {border-color: #90909A;}
+/* backgrounds */
+#header {background-image: url('https://s3.amazonaws.com/static.everything2.com/slate/header.gif'); background-repeat: repeat-x;} /* 50px high */
+#footer {background-image: url('https://s3.amazonaws.com/static.everything2.com/slate/footer.gif'); background-repeat: repeat-x;} /* 100px high */
+.oddrow, #homenodeheader dt, .weblog_item {background-color: #E4E4F5;}
+/* structure */
+body {margin: 0;}
+#wrapper {padding: 50px 220px 0 15px;}
+#mainbody {width: 100%; float: left;}
+/* header */
+#header {height: 50px; width: 100%; position: absolute; top: 0; left: 0;}
+#e2logo {float: left; margin: 0 0 0 15px; padding: 0; font-size: 150%;}
+#e2logo a {text-decoration: none;}
+#e2logo img {border-style: none;}
+#searchform {width: 400px; float: right; padding-top: 5px;}
+#searchform input {float: left; margin-top: 5px;}
+#searchform label {display: block; font-size: 80%; float: right; clear: right; text-align: left; width: 100px;}
+#searchform label input {margin: 1px;}
+/* footer */
+#footer {clear: both; max-height: 88px; width: 100%; text-align: center; padding: 10px 0 2px;}
+#metalinks {margin: 2px; text-align: center; font-size: 80%; padding: 0;}
+#metalinks li {display: inline;}
+/* nodelets */
+#sidebar {position: relative; float: left; width: 200px; margin: 0 -100% 0 15px;}
+.nodelet {clear: both; word-wrap: break-word; margin: 5px 0; padding: 2px 5px 5px; border-style: solid; border-width: 2px;}
+.nodelet_title {margin: 0 0 2px; text-align: center;}
+#nodelet_262 ul {list-style-type: none; padding: 0;} /* for Epicenter */
+#nodelet_165437 ul {list-style-type: none; padding: 0 0 0 1em; margin: 2px 0;} /* for Vitals */
+#writeup_list {list-style-type: none; padding: 0;} /* for New Writeups - Zen */
+#writeup_list li {margin-bottom: 4px; text-align: right; clear: both;}
+#writeup_list .author {display: block; text-align: center; font-weight: bold;}
+#writeup_list .title {display: block; float: left; text-align: left; max-width: 140px;}
+#writeup_list .type {font-size: 90%;}
+#writeup_faves {list-style-type: none; padding: 0;} /* for Favorite Noders */
+#writeup_faves li {margin-bottom: 5px;}
+#room_options input {margin-top: 0;} /* for Other Users */
+.ns_title {margin: 5px 0 0;}
+/* welcome */
+#cooluserpicks {position: relative; float: left; width: 188px; border-style: solid; border-width: 1px; margin: 0 15px 0 -10px; padding: 2px 5px 0;}
+#cooluserpicks h3 {margin: 0 0 2px; text-align: center;}
+#cooluserpicks ul {list-style-type: none; padding: 0;}
+#cooluserpicks li {margin-bottom: 4px;}
+#welcome_message {text-align: center;}
+#creamofthecool {width: 100%;}
+.cotc_entry {border-bottom-width: 2px; border-bottom-style: solid; padding-bottom: 5px; margin-bottom: 15px;}
+.cotc_more {font-size: 90%; text-align: right;}
+#frontpage_news h2 {margin: 0; text-align: center;}
+.weblog_item {border-style: solid; border-width: 1px; margin: 5px 0; padding: 5px 5px 0;}
+.wl_title {font-weight: bold; float: left;}
+.wl_author, .wl_date {text-align: right;}
+.wl_links {text-align: right;}
+/* e2node */
+.createdby {text-align: right; margin-bottom: 5px;}
+.writeup {border-bottom-width: 2px; border-bottom-style: solid; padding-bottom: 5px; margin-bottom: 15px;}
+#displaytypelinks {float: right; text-align: right;}
+#displaytypelinks p {margin: 0;}
+#softlinks {clear: both;}
+/* homenode */
+#homenodepicbox {width: 50%; float: left;}
+#homenodeheader dl {display: block; width: 50%; float: right; margin: 0;}
+#homenodeheader dt {padding: 2px; text-align: right;}
+#homenodeheader dd {margin: 0; padding: 2px;}
+hr.clear {clear: both;}
+/* layout */
+textarea {width: 100%;}
+pre {display: block; overflow: auto;} /* to stop page-widening *//* SOFTLINK COLORS */
+td#sl64{background:#e4e4f5;}td#sl63{background:#e4e4f5;}td#sl62{background:#e4e4f5;}td#sl61{background:#e5e5f5;}
+td#sl60{background:#e5e5f5;}td#sl59{background:#e6e6f5;}td#sl58{background:#e6e6f5;}td#sl57{background:#e7e7f6;}
+td#sl56{background:#e7e7f6;}td#sl55{background:#e7e7f6;}td#sl54{background:#e8e8f6;}td#sl53{background:#e8e8f6;}
+td#sl52{background:#e9e9f6;}td#sl51{background:#e9e9f7;}td#sl50{background:#eaeaf7;}td#sl49{background:#eaeaf7;}
+td#sl48{background:#eaeaf7;}td#sl47{background:#ebebf7;}td#sl46{background:#ebebf7;}td#sl45{background:#ececf8;}
+td#sl44{background:#ececf8;}td#sl43{background:#ededf8;}td#sl42{background:#ededf8;}td#sl41{background:#ededf8;}
+td#sl40{background:#eeeef8;}td#sl39{background:#eeeef8;}td#sl38{background:#efeff9;}td#sl37{background:#efeff9;}
+td#sl36{background:#f0f0f9;}td#sl35{background:#f0f0f9;}td#sl34{background:#f0f0f9;}td#sl33{background:#f1f1f9;}
+td#sl32{background:#f1f1fa;}td#sl31{background:#f2f2fa;}td#sl30{background:#f2f2fa;}td#sl29{background:#f3f3fa;}
+td#sl28{background:#f3f3fa;}td#sl27{background:#f3f3fa;}td#sl26{background:#f4f4fb;}td#sl25{background:#f4f4fb;}
+td#sl24{background:#f5f5fb;}td#sl23{background:#f5f5fb;}td#sl22{background:#f6f6fb;}td#sl21{background:#f6f6fb;}
+td#sl20{background:#f6f6fb;}td#sl19{background:#f7f7fc;}td#sl18{background:#f7f7fc;}td#sl17{background:#f8f8fc;}
+td#sl16{background:#f8f8fc;}td#sl15{background:#f9f9fc;}td#sl14{background:#f9f9fc;}td#sl13{background:#f9f9fd;}
+td#sl12{background:#fafafd;}td#sl11{background:#fafafd;}td#sl10{background:#fbfbfd;}td#sl9{background:#fbfbfd;}
+td#sl8{background:#fcfcfd;}td#sl7{background:#fcfcfe;}td#sl6{background:#fcfcfe;}td#sl5{background:#fdfdfe;}
+td#sl4{background:#fdfdfe;}td#sl3{background:#fefefe;}td#sl2{background:#fefefe;}td#sl1{background:#ffffff;}
