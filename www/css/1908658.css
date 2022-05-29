@@ -1,0 +1,55 @@
+/* 1908658.css (CharredTangerines by GhettoAardvark - unsupported) */
+/* These are the basic colours and fonts */
+body, div, p, th, td, li, dd {
+background-color: #4A4742;
+font-size: 10pt;
+font-family: Tahoma, Arial, Helvetica;
+color: #DF9242;
+}
+/* These are headings */
+h1, h2, h3, h4 {
+font-family: Tahoma, Arial, Helvetica;
+}
+/* links ... */
+a:link {
+color: #DF9242;
+}
+a:visited {
+color: #DF9242;
+}
+a:active, a:hover {
+color: #DF9242;
+}
+/* The title of the nodelet */
+.nodelet h2, #writeup_list span.writeupmeta, #writeup_list span.writeupmeta a:link, #writeup_list span.writeupmeta a:visited { {
+color:  #DF9242;
+background-color: #4A4742;
+}
+/* The nodelet border colour should be the same as the nodelet title background */
+.nodelet {
+border-color: #4A4742;
+background-color: #4A4742;
+}
+pre, tt {
+font-size: 9pt;
+}
+.oddrow, #homenodeheader dt  {
+background-color: #4A4742;
+}
+/* SOFTLINK COLORS */
+td#sl64{background:#4a4742;}td#sl63{background:#4a4742;}td#sl62{background:#4a4742;}td#sl61{background:#4a4742;}
+td#sl60{background:#4a4742;}td#sl59{background:#4a4742;}td#sl58{background:#4a4742;}td#sl57{background:#4a4742;}
+td#sl56{background:#4a4742;}td#sl55{background:#4a4742;}td#sl54{background:#4a4742;}td#sl53{background:#4a4742;}
+td#sl52{background:#4a4742;}td#sl51{background:#4a4742;}td#sl50{background:#4a4742;}td#sl49{background:#4a4742;}
+td#sl48{background:#4a4742;}td#sl47{background:#4a4742;}td#sl46{background:#4a4742;}td#sl45{background:#4a4742;}
+td#sl44{background:#4a4742;}td#sl43{background:#4a4742;}td#sl42{background:#4a4742;}td#sl41{background:#4a4742;}
+td#sl40{background:#4a4742;}td#sl39{background:#4a4742;}td#sl38{background:#4a4742;}td#sl37{background:#4a4742;}
+td#sl36{background:#4a4742;}td#sl35{background:#4a4742;}td#sl34{background:#4a4742;}td#sl33{background:#4a4742;}
+td#sl32{background:#4a4742;}td#sl31{background:#4a4742;}td#sl30{background:#4a4742;}td#sl29{background:#4a4742;}
+td#sl28{background:#4a4742;}td#sl27{background:#4a4742;}td#sl26{background:#4a4742;}td#sl25{background:#4a4742;}
+td#sl24{background:#4a4742;}td#sl23{background:#4a4742;}td#sl22{background:#4a4742;}td#sl21{background:#4a4742;}
+td#sl20{background:#4a4742;}td#sl19{background:#4a4742;}td#sl18{background:#4a4742;}td#sl17{background:#4a4742;}
+td#sl16{background:#4a4742;}td#sl15{background:#4a4742;}td#sl14{background:#4a4742;}td#sl13{background:#4a4742;}
+td#sl12{background:#4a4742;}td#sl11{background:#4a4742;}td#sl10{background:#4a4742;}td#sl9{background:#4a4742;}
+td#sl8{background:#4a4742;}td#sl7{background:#4a4742;}td#sl6{background:#4a4742;}td#sl5{background:#4a4742;}
+td#sl4{background:#4a4742;}td#sl3{background:#4a4742;}td#sl2{background:#4a4742;}td#sl1{background:#4a4742;}

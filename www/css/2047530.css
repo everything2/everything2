@@ -1,12 +1,10 @@
 /* 2047530.css (Responsive2 by in10se) */
 @import url(https://everything2.com/node/stylesheet/ResponsiveBase?displaytype=view);
-
 html
 {
 margin: 24px 2%;
 background-color: #E8E8E8;
 }
-
 body
 {
 width: 100%;
@@ -27,7 +25,6 @@ border-radius: 5px;
 -webkit-box-shadow: 0 0 3px 3px #ccc;
 box-shadow: 0 0 3px 3px #ccc;
 }
-
 .content a, .content a:link
 {
 color: #3C3C9C;
@@ -53,12 +50,10 @@ th
 background-color: #e1e9eF;
 font-weight: bold;
 }
-
 tr:nth-child(2n) {
-  background-color: #F4FcFF;
+background-color: #F4FcFF;
 }
 img.oddrow { background-color: #000; }
-
 th, td, .content table th, .content table td
 {
 border-bottom: 1px solid #ccc;
@@ -71,25 +66,21 @@ table[border="0"] td,
 .contentinfo table[border="0"] th,
 .contentinfo table[border="0"] td
 {
-        border: 0;
+border: 0;
 }
-
 #header
 {
 clear: both;
 }
-
 #wrapper
 {
 clear: both;
 }
-
 #sidebar
 {
 background-color: #eee;
 border-left: 1px solid #333;
 }
-
 .nodelet
 {
 padding: 24px;
@@ -101,7 +92,6 @@ border-bottom: 1px solid #fff;
 {
 margin-top: 0;
 }
-
 #header, #footer
 {
 border-top: 2px solid #000;
@@ -121,10 +111,9 @@ padding: 24px 24px 0 24px;
 }
 #footer
 {
-margin-left: -24px; 
+margin-left: -24px;
 text-align: center;
 }
-
 #searchform
 {
 font-size: 75%;
@@ -134,7 +123,6 @@ font-size: 75%;
 width: 75%;
 max-width: 100%;
 }
-
 #experience
 {
 color: #060;
@@ -147,7 +135,6 @@ font-size: 100%;
 font-size: 110%;
 color: #090;
 }
-
 .morelink
 {
 text-align: right;
@@ -157,7 +144,6 @@ text-align: right;
 margin-top: -1px;
 border-top: 1px solid #fff;
 }
-
 .createdby, .forward, #cooledby, #firmlink, #isalso
 {
 font-size: 70%;
@@ -165,7 +151,6 @@ color: #666;
 float: left;
 width: 30%;
 }
-
 ul.actions, #welcome_message, #creamofthecool_title, #frontpage_news_title, #parentlink, .sentmessage
 {
 clear: both;
@@ -187,7 +172,6 @@ border-radius: 5px;
 display: inline;
 margin-right: 2em;
 }
-
 .item
 {
 margin-bottom: 24px;
@@ -224,7 +208,6 @@ color: #F1F9FF; /* same as bg */
 font-size: 150%;
 font-weight: bold;
 }
-
 #admintools
 {
 padding: 6px 24px;
@@ -237,7 +220,6 @@ border-radius: 5px;
 -moz-border-radius: 5px;
 border-radius: 5px;
 }
-
 .writeup_add, #drafts #pagefooter
 {
 padding: 6px 24px;
@@ -250,32 +232,27 @@ border-radius: 5px;
 -moz-border-radius: 5px;
 border-radius: 5px;
 }
-
 /* ------------------------------------------------------------
- * FRONT PAGE
- * ------------------------------------------------------------
- */
-
+* FRONT PAGE
+* ------------------------------------------------------------
+*/
 #loglinks, #cooluserpicks, #staff_picks
 {
 float: left;
 width: 33%;
 margin-bottom: 24px;
 }
-
 ul.linklist
 {
 list-style: none;
 margin: 0;
 }
-
 .linklist a
 {
 display: block;
 border-bottom: 1px solid #ccc;
 margin-right: 24px;
 }
-
 #creamofthecool, #frontpage_news
 {
 clear: both;
@@ -290,11 +267,10 @@ font-weight: bold;
 {
 font-size: 120%;
 }
-
 /* ------------------------------------------------------------
- * HOMENODES
- * ------------------------------------------------------------
- */
+* HOMENODES
+* ------------------------------------------------------------
+*/
 #bookmarklist
 {
 max-height: 350px;
@@ -310,11 +286,10 @@ margin: 0;
 display: block;
 border-bottom: 1px solid #ccc;
 }
-
 /* ------------------------------------------------------------
- * DRAFTS
- * ------------------------------------------------------------
- */
+* DRAFTS
+* ------------------------------------------------------------
+*/
 .draft .item, .draftitem
 {
 border: 3px solid #f90;
@@ -338,11 +313,10 @@ border-radius: 5px;
 -moz-border-radius: 5px;
 border-radius: 5px;
 }
-
 /* ------------------------------------------------------------
- * NODELETS
- * ------------------------------------------------------------
- */
+* NODELETS
+* ------------------------------------------------------------
+*/
 .wu_hide
 {
 background-color: #fee;
@@ -379,7 +353,6 @@ color: #bbb;
 {
 display: none;
 }
-
 #chatterlight
 {
 text-align: left;
@@ -397,60 +370,69 @@ padding: 3px;
 display: none;
 }
 #chatterlight_hints { display: none; }
-
 /* ------------------------------------------------------------
- * TABLET LAYOUT
- * ------------------------------------------------------------
- */
+* TABLET LAYOUT
+* ------------------------------------------------------------
+*/
 @media only screen and (min-width: 768px) and (max-width: 991px)
 {
-   #loglinks, #cooluserpicks, #staff_picks
-   {
-   float: left;
-   width: 49%;
-   }
-
-   /*
-    * You would think we wouldn't have to get this strict until the mobile
-    * layout, but because the writeup header/footer content is in a table,
-    * and has a lot of wide content, it starts to mess up the layout at a
-    * very high pixel width (even at 800px).
-    */
-   .contentinfo tr, .contentinfo td
-   {
-   display: inline;
-   margin-right: 24px;
-   }
+#loglinks, #cooluserpicks, #staff_picks
+{
+float: left;
+width: 49%;
 }
-
+/*
+* You would think we wouldn't have to get this strict until the mobile
+* layout, but because the writeup header/footer content is in a table,
+* and has a lot of wide content, it starts to mess up the layout at a
+* very high pixel width (even at 800px).
+*/
+.contentinfo tr, .contentinfo td
+{
+display: inline;
+margin-right: 24px;
+}
+}
 /* ------------------------------------------------------------
- * MOBILE LAYOUT (PORTRAIT)
- * ------------------------------------------------------------
- */
+* MOBILE LAYOUT (PORTRAIT)
+* ------------------------------------------------------------
+*/
 @media only screen and (max-width: 767px)
 {
-   #mainbody
-   {
-   padding-right: 24px;
-   box-sizing: border-box;
-   -moz-box-sizing: border-box;
-   }
-
-   .contentinfo tr, .contentinfo td
-   {
-   display: inline;
-   margin-right: 24px;
-   }
-
-   #sidebar
-   {
-   border: 0;
-   }
-
-   #loglinks, #cooluserpicks, #staff_picks
-   {
-   float: left;
-   width: 99%;
-   }
+#mainbody
+{
+padding-right: 24px;
+box-sizing: border-box;
+-moz-box-sizing: border-box;
 }
-
+.contentinfo tr, .contentinfo td
+{
+display: inline;
+margin-right: 24px;
+}
+#sidebar
+{
+border: 0;
+}
+#loglinks, #cooluserpicks, #staff_picks
+{
+float: left;
+width: 99%;
+}
+}/* SOFTLINK COLORS */
+td#sl64{background:#000000;}td#sl63{background:#040404;}td#sl62{background:#080808;}td#sl61{background:#0c0c0c;}
+td#sl60{background:#101010;}td#sl59{background:#141414;}td#sl58{background:#181818;}td#sl57{background:#1c1c1c;}
+td#sl56{background:#202020;}td#sl55{background:#242424;}td#sl54{background:#282828;}td#sl53{background:#2c2c2c;}
+td#sl52{background:#303030;}td#sl51{background:#343434;}td#sl50{background:#383838;}td#sl49{background:#3c3c3c;}
+td#sl48{background:#404040;}td#sl47{background:#444444;}td#sl46{background:#484848;}td#sl45{background:#4c4c4c;}
+td#sl44{background:#505050;}td#sl43{background:#555555;}td#sl42{background:#595959;}td#sl41{background:#5d5d5d;}
+td#sl40{background:#616161;}td#sl39{background:#656565;}td#sl38{background:#696969;}td#sl37{background:#6d6d6d;}
+td#sl36{background:#717171;}td#sl35{background:#757575;}td#sl34{background:#797979;}td#sl33{background:#7d7d7d;}
+td#sl32{background:#818181;}td#sl31{background:#858585;}td#sl30{background:#898989;}td#sl29{background:#8d8d8d;}
+td#sl28{background:#919191;}td#sl27{background:#959595;}td#sl26{background:#999999;}td#sl25{background:#9d9d9d;}
+td#sl24{background:#a1a1a1;}td#sl23{background:#a5a5a5;}td#sl22{background:#aaaaaa;}td#sl21{background:#aeaeae;}
+td#sl20{background:#b2b2b2;}td#sl19{background:#b6b6b6;}td#sl18{background:#bababa;}td#sl17{background:#bebebe;}
+td#sl16{background:#c2c2c2;}td#sl15{background:#c6c6c6;}td#sl14{background:#cacaca;}td#sl13{background:#cecece;}
+td#sl12{background:#d2d2d2;}td#sl11{background:#d6d6d6;}td#sl10{background:#dadada;}td#sl9{background:#dedede;}
+td#sl8{background:#e2e2e2;}td#sl7{background:#e6e6e6;}td#sl6{background:#eaeaea;}td#sl5{background:#eeeeee;}
+td#sl4{background:#f2f2f2;}td#sl3{background:#f6f6f6;}td#sl2{background:#fafafa;}td#sl1{background:#ffffff;}

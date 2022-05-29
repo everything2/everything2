@@ -1,0 +1,50 @@
+/* 1933722.css (bookworm blue by ascorbic - unsupported) */
+@import url("https://everything2.com/node/stylesheet/bookworm&displaytype=view");
+/* kuler: 1C1D21,31353D,445878, 92CDCF,EEEFF7 */
+body {
+color: #1C1D21;
+background-color: #EEEFF7;
+}
+a:link {
+color: #445878;
+}
+a:link.external {
+color: #339933;
+}
+a:visited {
+color: #993333;
+}
+.oddrow, #searchform input, .nodelet, #msgnum, #homenodeheader dt, #epicenter_zen  {
+background-color: #445878;
+color: #eeeff7;
+}
+.oddrow a:link, .nodelet a:link, #msgnum a:link, #homenodeheader dt a:link, #epicenter_zen a:link {
+color: #92CDCF;
+}
+.nodelet h2 {
+background-color: #1C1D21;
+}
+#writeup_list span.writeupmeta {
+background: none;
+}
+#writeup_list span.title {
+color: #1C1D21;
+background-color: #EEEFF7;
+}
+/* SOFTLINK COLORS */
+td#sl64{background:#445878;}td#sl63{background:#465a7a;}td#sl62{background:#495c7c;}td#sl61{background:#4c5f7e;}
+td#sl60{background:#4e6180;}td#sl59{background:#516382;}td#sl58{background:#546684;}td#sl57{background:#566886;}
+td#sl56{background:#596b88;}td#sl55{background:#5c6d8a;}td#sl54{background:#5e6f8c;}td#sl53{background:#61728e;}
+td#sl52{background:#647490;}td#sl51{background:#677792;}td#sl50{background:#697994;}td#sl49{background:#6c7b96;}
+td#sl48{background:#6f7e98;}td#sl47{background:#71809a;}td#sl46{background:#74839c;}td#sl45{background:#77859e;}
+td#sl44{background:#7987a0;}td#sl43{background:#7c8aa2;}td#sl42{background:#7f8ca4;}td#sl41{background:#828fa6;}
+td#sl40{background:#8491a8;}td#sl39{background:#8793aa;}td#sl38{background:#8a96ac;}td#sl37{background:#8c98ae;}
+td#sl36{background:#8f9bb0;}td#sl35{background:#929db2;}td#sl34{background:#949fb4;}td#sl33{background:#97a2b6;}
+td#sl32{background:#9aa4b8;}td#sl31{background:#9da7ba;}td#sl30{background:#9fa9bc;}td#sl29{background:#a2abbe;}
+td#sl28{background:#a5aec0;}td#sl27{background:#a7b0c2;}td#sl26{background:#aab3c4;}td#sl25{background:#adb5c6;}
+td#sl24{background:#afb7c8;}td#sl23{background:#b2baca;}td#sl22{background:#b5bccc;}td#sl21{background:#b8bfce;}
+td#sl20{background:#bac1d0;}td#sl19{background:#bdc3d2;}td#sl18{background:#c0c6d4;}td#sl17{background:#c2c8d6;}
+td#sl16{background:#c5cbd8;}td#sl15{background:#c8cdda;}td#sl14{background:#cacfdc;}td#sl13{background:#cdd2de;}
+td#sl12{background:#d0d4e0;}td#sl11{background:#d3d7e2;}td#sl10{background:#d5d9e4;}td#sl9{background:#d8dbe6;}
+td#sl8{background:#dbdee8;}td#sl7{background:#dde0ea;}td#sl6{background:#e0e3ec;}td#sl5{background:#e3e5ee;}
+td#sl4{background:#e5e7f0;}td#sl3{background:#e8eaf2;}td#sl2{background:#ebecf4;}td#sl1{background:#eeeff7;}

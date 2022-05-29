@@ -1,0 +1,377 @@
+/* 1887242.css (fondue test1 by fondue - unsupported) */
+/* --
+A hack on test_ReiToei2 by Robin Clarke/fondue
+A work in progress. Colours and positioning are not final, and things WILL be broken.
+Issues:
+- Stylesheet level:
+1. There's sometimes a gap between Cream of The Cool titles and bodies which I've not been able to neutralise.
+- Site level:
+1. There's a hardcoded bgcolor in writeup lists. Plz fix k thx.
+2. At present the 'E2logo' object can be a text link or a linkless image, but not a linked image.
+3. Setting the text size to zero to hide the logo text is broken in safari.
+4. Control over some of the elements within nodelets might be useful.
+5. The 'Welcome to Everything' heading on the front page is treated as a standard node title, limiting formatting options somewhat.
+Highlight colour: #E1FFEC
+Background colour: #9DB68C
+Shadow colour: #708259
+Writeup paper: #ECEAD4
+-- */
+body, div, p, th, td, li, dd {
+font-size:small;
+font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+tt { font-size: medium; }
+h1 {
+font-size:130%;
+font-weight:bold;
+}
+h2 {
+font-size:110%;
+font-weight:bold;
+}
+h3 {
+font-size:100%;
+font-weight:bold;
+}
+big {
+font-size:110%;
+}
+small {
+font-size:90%;
+}
+#header {
+border-bottom: 1px solid #708259;
+height:76px;
+left:0pt;
+position:absolute;
+top:0pt;
+width:100%;
+background-color: #FFA200;
+background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest1/e2back.jpg);
+background-repeat: repeat-x;
+}
+#wrapper {
+padding-top:40px;
+}
+#mainbody {
+float:left;
+position:relative;
+width:100%;
+}
+#sidebar {
+float:left;
+position:relative;
+width:190px;
+margin-top: 20px;
+}
+#wrapper {
+padding-top:50px;
+padding-right:205px;
+}
+#sidebar {
+margin-left:5px;
+margin-right:-100%;
+}
+#footer {
+border-top:1px solid gray;
+clear:both;
+padding-top:2px;
+text-align:right;
+width:100%;
+}
+body {
+background-color: #9DB68C;
+color:black;
+}
+a:link {
+color:#333399;
+}
+a:visited {
+color:#993333;
+}
+pre {
+display:block;
+overflow:auto;
+}
+#e2logo {
+float:left;
+font-size: 0px;
+font-weight: bold;
+font-color: #FFEC28;
+margin-left:8px;
+text-align:left;
+background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest1/e2logo.jpg);
+background-repeat: no-repeat;
+width: 253px;
+height: 76px;
+}
+#metalinks {
+clear:both;
+display:block;
+font-size:80%;
+margin:2px;
+padding:0pt;
+text-align:center;
+}
+#metalinks li {
+display:inline;
+margin-left:5px;
+padding-right:5px;
+}
+#e2logo a:link, #e2logo a:visited {
+text-decoration:none;
+}
+#searchform {
+float:right;
+padding-top:18px;
+text-align:right;
+width:410px;
+}
+#searchform input {
+float:left;
+margin-top:8px;
+}
+#searchform label {
+clear:right;
+display:block;
+float:right;
+font-size:85%;
+text-align:left;
+width:100px;
+}
+#searchform label input {
+margin:1px;
+}
+.nodelet {
+border:1px solid #708259;
+clear:both;
+margin-bottom:2px;
+padding:0pt 2px;
+width:196px;
+background-image: url(x);
+background-repeat: repeat-x;
+background-color: #9DB68C;
+}
+.nodelet h2 {
+background-image: url(x);
+background-repeat: no-repeat;
+background-color: #708259;
+color: #E1FFEC;
+display:block;
+margin: 0px -2px;
+padding-top: 5px;
+height: 20px;
+text-align:center;
+}
+.nodelet_content {
+padding: 4px;
+font-size: 85%;
+}
+.writeup {
+clear: right;
+border-top: 0px solid #000000;
+border-left: 0px solid #000000;
+border-right: 1px solid #708259;
+border-bottom: 2px solid #708259;
+background-color: #ECEAD4;
+xpadding: 5px;
+padding-left: 20px;
+padding-right: 20px;
+padding-top: 10px;
+padding-bottom: 10px;
+margin-bottom:5px;
+margin-left: 30px;
+}
+.createdby {
+float: right;
+background-color: #ECEAD4;
+border-right: 1px solid #708259;
+width:15%;
+font-size: 85%;
+text-align:right;
+xpadding-top: 10px;
+margin-left: 30px;
+padding-right: 5px;
+}
+.writeup_title {
+}
+.writeup_text {
+}
+#firmlink, #isalso {
+font-size:110%;
+text-indent:30px;
+}
+#votebutton, #blabbutton {
+float:left;
+}
+#killbutton {
+float:right;
+}
+#msgnum {
+margin:0pt 0pt 5px;
+}
+#msgunarchived {
+font-weight:bold;
+}
+#homenodepicbox {
+clear:left;
+float:left;
+overflow:auto;
+width:50%;
+}
+#homenodeheader {
+clear:both;
+}
+#homenodeheader dl {
+clear:right;
+display:block;
+float:right;
+margin:0pt;
+width:50%;
+}
+#homenodeheader dt {
+background-color:#A6C199;
+display:block;
+padding:2px;
+}
+#homenodeheader dd {
+margin:0pt;
+padding:2px;
+}
+hr.clear {
+clear:both;
+visibility:hidden;
+}
+textarea {
+width:100%;
+}
+#writeup_list {
+list-style-type:none;
+padding:0pt;
+}
+#writeup_list li {
+clear:both;
+}
+#writeup_list span.writeupmeta {
+background-color:gray;
+clear:both;
+color:white;
+display:block;
+margin:0pt -1px;
+padding:2px;
+text-align:center;
+}
+#writeup_list span.writeupmeta a:link, #writeup_list span.writeupmeta a:visited {
+color:white;
+}
+#writeup_list span.type {
+clear:right;
+display:block;
+font-size:90%;
+margin-bottom:1px;
+text-align:right;
+}
+#writeup_list span.title {
+clear:left;
+display:block;
+float:left;
+margin-bottom:1px;
+}
+#writeup_list span.author {
+}
+#writeup_list span.hidden, #writeup_list span.hide {
+font-size:85%;
+margin-left:3px;
+}
+td.oddrow {
+background-color: #A6C199;
+padding: 2px;
+}
+h1.nodetitle {
+/* font: bold small-caps 2.2em "century gothic"; */
+font: bold 1.8em "trebuchet ms";
+letter-spacing: 0.12pt;
+color: #708259;
+padding-left: 30px;
+padding-top: 10px;
+xfont-family: "century gothic", Georgia, "Times New Roman", Times, serif;
+}
+#cooluserpicks {
+background-image: url(x);
+background-repeat: no-repeat;
+float: left;
+background-color: #9DB68C;
+width: 215px;
+padding: 0px;
+background-position: 0px 30px;
+margin-right: 10px;
+border:1px solid #708259;
+}
+#cooluserpicks ul {
+margin: 0px;
+padding: 4px;
+}
+#cooluserpicks h3 {
+background-image: url(x);
+background-repeat: no-repeat;
+background-color: #708259;
+font-size: medium;
+text-align: center;
+color: #E1FFEC;
+margin: 0px;
+padding-top: 5px;
+padding-bottom: 5px;
+height: 20px;
+width: 215px;
+}
+#cooluserpicks ul li {
+list-style-type: none;
+padding-bottom: 5px;
+font-weight: bold;
+text-align: right;
+padding-right: 20px;
+padding-top: 5px;
+background-color: #A6C199;
+}
+.cotc_entry {
+}
+.cotc_info {
+clear:left;
+margin-bottom: 0px;
+background-image: url(x);
+background-repeat: no-repeat;
+background-color: #ECEAD4;
+height: 32px;
+padding-left: 20px;
+padding-top: 5px;
+font-weight: normal;
+font-size: large;
+word-spacing: -1px;
+border-right: 1px solid #708259;
+}
+.cotc_text {
+clear:left;
+margin-top: 0px;
+xmargin-bottom: 10px;
+padding-left: 20px;
+padding-bottom: 10px;
+background-color: #ECEAD4;
+border-right: 1px solid #708259;
+border-bottom: 2px solid #708259;
+}/* SOFTLINK COLORS */
+td#sl64{background:#a6c199;}td#sl63{background:#a5c098;}td#sl62{background:#a5c098;}td#sl61{background:#a5c098;}
+td#sl60{background:#a5c098;}td#sl59{background:#a5c097;}td#sl58{background:#a5bf97;}td#sl57{background:#a5bf97;}
+td#sl56{background:#a4bf97;}td#sl55{background:#a4bf97;}td#sl54{background:#a4bf96;}td#sl53{background:#a4bf96;}
+td#sl52{background:#a4be96;}td#sl51{background:#a4be96;}td#sl50{background:#a4be96;}td#sl49{background:#a3be95;}
+td#sl48{background:#a3be95;}td#sl47{background:#a3be95;}td#sl46{background:#a3bd95;}td#sl45{background:#a3bd95;}
+td#sl44{background:#a3bd94;}td#sl43{background:#a3bd94;}td#sl42{background:#a2bd94;}td#sl41{background:#a2bc94;}
+td#sl40{background:#a2bc94;}td#sl39{background:#a2bc93;}td#sl38{background:#a2bc93;}td#sl37{background:#a2bc93;}
+td#sl36{background:#a2bc93;}td#sl35{background:#a1bb93;}td#sl34{background:#a1bb92;}td#sl33{background:#a1bb92;}
+td#sl32{background:#a1bb92;}td#sl31{background:#a1bb92;}td#sl30{background:#a1bb91;}td#sl29{background:#a1ba91;}
+td#sl28{background:#a0ba91;}td#sl27{background:#a0ba91;}td#sl26{background:#a0ba91;}td#sl25{background:#a0ba90;}
+td#sl24{background:#a0ba90;}td#sl23{background:#a0b990;}td#sl22{background:#a0b990;}td#sl21{background:#9fb990;}
+td#sl20{background:#9fb98f;}td#sl19{background:#9fb98f;}td#sl18{background:#9fb88f;}td#sl17{background:#9fb88f;}
+td#sl16{background:#9fb88f;}td#sl15{background:#9fb88e;}td#sl14{background:#9eb88e;}td#sl13{background:#9eb88e;}
+td#sl12{background:#9eb78e;}td#sl11{background:#9eb78e;}td#sl10{background:#9eb78d;}td#sl9{background:#9eb78d;}
+td#sl8{background:#9eb78d;}td#sl7{background:#9db78d;}td#sl6{background:#9db68d;}td#sl5{background:#9db68c;}
+td#sl4{background:#9db68c;}td#sl3{background:#9db68c;}td#sl2{background:#9db68c;}td#sl1{background:#9db68c;}
