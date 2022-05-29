@@ -3990,6 +3990,8 @@ sub choose_theme_view_page
   {
     my $themenode = getNodeById($theme);
     $theme = "" if($theme and (!$themenode || $themenode->{ type }{ title } ne 'stylesheet'));
+  }else{
+    $theme = undef;
   }
 
   $theme ||= getNodeById($currentStyle);
@@ -4074,7 +4076,7 @@ sub choose_theme_view_page
       $widget .= '</option>' ;
     }
 
-    my $testtheme = getNodeById($theme);
+    $theme = getNodeById($theme);
     my $banner = "Test a theme:";
     if(defined($theme) and $theme->{type}->{title} eq "stylesheet")
     {
@@ -4140,7 +4142,7 @@ sub choose_theme_view_page
     var zenSheet = jQuery( "#zensheet" ) ;
     var titletext = jQuery( "#widgetheading em" )[0] ;
     var widget = jQuery("#widget")[0];
-    var theme = "$theme" ;
+    var theme = "$theme->{node_id}" ;
     var currentLink = "$currentLink";
 
     jQuery( widget.theme ).bind("change", function() {
