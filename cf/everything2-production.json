@@ -1170,6 +1170,10 @@
             {
               "Name": "SECRETS_BUCKET",
               "Value": {"Ref": "SecretsS3Bucket"} 
+            },
+            {
+              "Name": "ASSETS_BUCKET",
+              "Value": {"Ref": "DeployedAssetsBucket"}
             }
           ],
           "PrivilegedMode": true
@@ -2037,7 +2041,32 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "deployed.everything2.com",
-        "AccessControl": "PublicRead"
+        "AccessControl": "PublicRead",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": false,
+          "BlockPublicPolicy": false,
+          "IgnorePublicAcls": false,
+          "RestrictPublicBuckets": false
+        }
+      }
+    },
+    "DeployedAssetsBucketReadPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {"Ref": "DeployedAssetsBucket"},
+        "PolicyDocument": {
+          "Id": "DeployedAssetsRead",
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "PublicReadForGetObject",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join": ["",["arn:aws:s3:::",{"Ref": "DeployedAssetsBucket"},"/*"]]}
+            }
+          ]
+        }
       }
     },
     "DeployedAssetsManagement": {
