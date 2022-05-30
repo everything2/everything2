@@ -32,5 +32,65 @@ Originally by:
 * in10se
 * mblase
 * mindslip
+
+# Contributors to system stylesheets, by username
+* 3Suns
+* albinowax
+* alex
+* Andrew Aguecheek
+* archiewood
+* Ariloulaleelay
+* ascorbic
+* avalyn
+* BIII
+* Bitriot
+* BlackPawn
+* Blue_Bellied_Lizard
+* ccunning
+* cryforhelp
+* dacronium
+* Devon
+* DonJaime
+* drty30schick
+* Excalibur
+* fondue
+* GhettoAardvark
+* GunpowderGreen
+* in10se
+* JackofHearts
+* Jaesonx5
+* kohlcass
+* kthejoker
+* Major General Panic
+* maxClimb
+* MightyMooquack
+* momomom
+* not_crazy_yet
+* Oolong
+* pfenix
+* quamaretto
+* raincomplex
+* RainDropUp
+* rccolaandamoonpie
+* Redalien
+* ReiToei
+* resiak
+* rootbeer277
+* sabby
+* sam512
+* scarf
+* Scout
+* seagulltheme
+* SharQ
+* Susan
+* Swap
+* The Custodian
+* the entity
+* tundy
+* Two Sheds
+* vandewal
+* WaldemarExkul
+* workman161
+* XWiz
  
-... and dozens of others who have committed patches and looked after the well being of the code on the site
+... and dozens of others who have committed patches and looked after the well being of the code on the site. Should anyone wish to be credited by their real name for professional reasons, we are more than happy to accomodate. Issue a pull request or contact site support.
