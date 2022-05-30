@@ -30,7 +30,7 @@ if (isGod($USER) &amp;&amp; $query -&gt; param('type') eq 'writeup' &amp;&amp; $
 				draft that may be here, but only do that if you really need to.';
 	}else{
 		# ecore redirection means only the acctlock message currently shows:
-		my $author = getNode($query -&gt; param('author'), 'user');
+		my $author = getNode(scalar($query-&gt;param('author')), 'user');
 		unless ($author){
 			$str = 'User does not exist.';
 		}elsif ($$author{acctlock}){
