@@ -3527,11 +3527,13 @@ sub stylesheet_display_page
         $str .= $query -> checkbox(-name => 'inmenu', value => 1 ,checked => $inmenu, label => 'Include in theme menu' );
       }
 
+      my $usercnt = $DB->sqlSelect("count(*)","setting","vars like '%userstyle=$$NODE{node_id}%'");
+
       if ($$USER{user_id} == $$NODE{author_user})
       {
-        $str .="<p>Talk to your users:</p>";
+        $str .="<p>Talk to your users ($usercnt):</p>";
       } else {
-        $str .="<p>Talk to the stylesheet's users:</p>";
+        $str .="<p>Talk to the stylesheet's users ($usercnt):</p>";
       }
 
       $str .= '<input type="text" name="style_msg" size="50" value="">';
