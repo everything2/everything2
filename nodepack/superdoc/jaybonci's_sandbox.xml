@@ -49,6 +49,7 @@ Clean css: &lt;input type=&quot;text&quot; name=&quot;cleancss&quot; /&gt;
   foreach my $n (@$supported_sheets)
   {
     my $unsupported = &quot;&quot;; $unsupported = &quot; - unsupported&quot; unless $APP-&gt;getParameter($n, &quot;supported_sheet&quot;);
+    next if $unsupported eq &quot;&quot;;
     $str .= linkNode($n).&quot; ($n-&gt;{node_id}$unsupported)&lt;br /&gt;&quot;;
   }
   return $str;
