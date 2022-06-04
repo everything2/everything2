@@ -205,11 +205,6 @@
     <paramvalue>958245</paramvalue>
   </nodeparam>
   <nodeparam>
-    <node_id>1883091</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
     <node_id>1892825</node_id>
     <paramkey>fix_level</paramkey>
     <paramvalue>2</paramvalue>
