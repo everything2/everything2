@@ -323,20 +323,8 @@
             "Effect": "Allow",
             "Action": "s3:PutObject",
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "HomenodeImagesS3Bucket", "Arn"] }, "/*"]]}
-          },
-          {
-            "Effect": "Allow",
-            "Action": "s3:PutObject",
-            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "JSCSSBucket", "Arn"] }, "/*"]]}
           }]
         }
-      }
-    },
-    "DatabaseBackupSNSTopic": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "DisplayName": "Database backup complete",
-        "TopicName": "database-backup-complete"
       }
     },
     "E2AppSecretsAccessPolicy": {
