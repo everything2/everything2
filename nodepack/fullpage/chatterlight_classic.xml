@@ -4,14 +4,7 @@
 	&lt;head&gt;
 	&lt;title&gt;[% $$NODE{title}; %]&lt;/title&gt;
 [%
-	
-if (exists(($$VARS{userstyle})) and defined(($$VARS{userstyle})) ) {
-	return &quot;\t&lt;link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=&quot; . $$VARS{userstyle}. &quot;&amp;amp;displaytype=view'&gt;&quot; ;
-}
-else {	#ascorbic's default
-	return &quot;\t&lt;link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=1854393&amp;amp;displaytype=view'&gt;&quot;;
-}
-
+	return &quot;&lt;link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=&quot;. $REQUEST-&gt;user-&gt;style-&gt;id.&quot;&amp;amp;displaytype=serve'&gt;&quot;;
 %]
 [%
 if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {

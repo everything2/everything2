@@ -44,17 +44,16 @@ Clean css: &lt;input type=&quot;text&quot; name=&quot;cleancss&quot; /&gt;
 &lt;br /&gt;&lt;br /&gt;
 
 [%
-  my $supported_sheets = [$DB-&gt;getNodeWhere({},getType(&quot;stylesheet&quot;))];
-  my $str = &quot;&quot;;
-  my $sheets = 0;
-  foreach my $n (@$supported_sheets)
+  my $csr = $DB-&gt;sqlSelectMany(&quot;setting_id&quot;,&quot;setting&quot;,&quot;vars like '%customstyle%'&quot;);
+  $csr-&gt;execute();
+
+  my $count = 0;
+  while(my $row = $csr-&gt;fetchrow_hashref)
   {
-    my $unsupported = &quot;&quot;; $unsupported = &quot; - unsupported&quot; unless($APP-&gt;getParameter($n, &quot;supported_sheet&quot;) or $APP-&gt;getParameter($n, &quot;depended_upon_sheet&quot;));
-    next if $unsupported eq &quot;&quot;;
-    $sheets++;
-    $str .= linkNode($n).&quot; ($n-&gt;{node_id}$unsupported)&lt;br /&gt;&quot;;
+    $count++;
   }
-  return &quot;Sheets: $sheets&lt;br/&gt;$str&quot;;
+
+  return &quot;Users with customstyle: $count&lt;br /&gt;&quot;;
 %]
 [%
   my $str = &quot;&quot;;
