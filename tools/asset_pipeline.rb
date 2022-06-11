@@ -3,15 +3,19 @@
 require 'aws-sdk-s3'
 require 'zlib'
 require 'getoptlong'
-
+require 'open3'
 
 opts = GetoptLong.new(
   [ '--assets', GetoptLong::REQUIRED_ARGUMENT],
-  [ '--region', GetoptLong::REQUIRED_ARGUMENT]
+  [ '--region', GetoptLong::REQUIRED_ARGUMENT],
+  [ '--testonly', GetoptLong::NO_ARGUMENT],
+  [ '--ignore-warnings', GetoptLong::NO_ARGUMENT]
 )
 
 asset_bucket = 'deployed.everything2.com'
 region = 'us-west-2'
+testonly = nil
+ignore_warnings = nil
 
 opts.each do |opt, arg|
   case opt
@@ -19,6 +23,10 @@ opts.each do |opt, arg|
       asset_bucket = arg
     when '--region'
       region = arg
+    when '--testonly'
+      testonly = 1
+    when '--ignore-warnings'
+      ignore_warnings = 1
   end
 end
 
@@ -37,9 +45,21 @@ assets = {'js' => {}, 'css' => {}}
     assets[asset_type][basefile]['plain'] = File.open(f).read
 
     if(asset_type.eql? 'js')
-      assets[asset_type][basefile]['min'] = `npx terser #{f}`
+      out, err, status = Open3.capture3("npx terser #{f}")
+      if(!err.eql? '' and ignore_warnings.nil?)
+        puts "Got terser problem: #{err}"
+        exit 1
+      else
+        assets[asset_type][basefile]['min'] = out
+      end
     elsif(asset_type.eql? 'css')
-      assets[asset_type][basefile]['min'] = `npx clean-css-cli #{f}`
+      out, err, status = Open3.capture3("npx clean-css-cli #{f}")
+      if(!err.eql? '' and ignore_warnings.nil?)
+        puts "Got clean-css-cli problem: #{err}"
+        exit 1
+      else
+        assets[asset_type][basefile]['min'] = out
+      end
     end
 
     assets[asset_type][basefile]['min_gz'] = Zlib::Deflate.deflate(assets[asset_type][basefile]['min'])
@@ -83,14 +103,19 @@ assets.keys.each do |asset_type|
         end
 
         filename = "#{current_rev}/#{filepart}.#{file_ending}"
-        s3args = {bucket: asset_bucket, key: filename, content_type: content_type, body: assets[asset_type][k][upload_type], cache_control: "max-age=31536000"}
-        s3args.merge!(content_encoding)
-        upload_result = s3client.put_object(s3args)
-        if upload_result.etag.nil?
-          puts "File upload failed: #{filename}"
-          exit 1
+
+        if testonly.nil?
+          s3args = {bucket: asset_bucket, key: filename, content_type: content_type, body: assets[asset_type][k][upload_type], cache_control: "max-age=31536000"}
+          s3args.merge!(content_encoding)
+          upload_result = s3client.put_object(s3args)
+          if upload_result.etag.nil?
+            puts "File upload failed: #{filename}"
+            exit 1
+          else
+            puts "Uploaded: #{filename}"
+          end
         else
-          puts "Uploaded: #{filename}"
+          puts "Test only, not uploading #{filename}"
         end
       end
     else
@@ -100,16 +125,20 @@ assets.keys.each do |asset_type|
   end
 end
 
-s3client.list_objects_v2(bucket: asset_bucket).contents.each do |file|
-  matched = nil
-  git_history.each do |rev|
-    if file.key.match(/^#{rev}\//)
-      matched = true
+if testonly.nil?
+  s3client.list_objects_v2(bucket: asset_bucket).contents.each do |file|
+    matched = nil
+    git_history.each do |rev|
+      if file.key.match(/^#{rev}\//)
+        matched = true
+      end
+    end
+
+    if matched.nil?
+      s3client.delete_object(bucket: asset_bucket, key: file.key)
+      puts "Expired asset: #{file.key}"
     end
   end
-
-  if matched.nil?
-    s3client.delete_object(bucket: asset_bucket, key: file.key)
-    puts "Expired asset: #{file.key}"
-  end
+else
+  puts "Test only, not expiring old assets"
 end
