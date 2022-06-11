@@ -553,7 +553,7 @@ sub nodeName
 			$NODE = getNodeById($Everything::CONF->not_found_node);
 		}
 
-		return displayPage ($NODE, $user_id);
+		return displayPage($NODE, $user_id);
 	}
 	elsif (@$select_group == 1)
 	{
@@ -1079,6 +1079,8 @@ sub printHeader
 		$extras->{content_encoding} = "gzip";
 	}
 
+        $extras->{'X-Frame-Options'} = "sameorigin";
+
 	if($ENV{SCRIPT_NAME}) {
 		$query->header(-type=> $datatype, 
 			       -content_length => $len,
@@ -1121,7 +1123,7 @@ sub handleUserRequest{
 
     $nodename = $APP->cleanNodeName(scalar $query->param('node'), $noRemoveSpaces);
 
-    $author = $query -> param("author");
+    $author = $query->param("author");
     $author = getNode($author,"user");
 
     if ($nodename eq "") {
