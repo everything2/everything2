@@ -34,7 +34,6 @@ my $rows = $DB-&gt;sqlSelectMany( 'setting.setting_id,setting.vars' ,
 		AND setting.vars NOT LIKE '%userstyle=$defaultStyle%'&quot; ) ;
 
 my $dbrow ;
-my %styles ;
 while($dbrow = $rows-&gt;fetchrow_arrayref)
 {
    $$dbrow[1] =~ m/userstyle=([0-9]+)/;
