@@ -20,7 +20,7 @@ you
 % }
 which do not contain writeups:</p>
 <ul>
-% foreach my $nodeshell (@{$.nodeshells})
+% foreach my $nodeshell (sort {lc($a->title) cmp lc($b->title) } @{$.nodeshells})
 % {
 <li><& 'linknode', node => $nodeshell &>\
 %   if(scalar(@{$nodeshell->firmlinks}) > 0)

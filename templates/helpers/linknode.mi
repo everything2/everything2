@@ -32,5 +32,5 @@
 % if (not defined($.node) or $.node->is_null) {
 (none)
 % } else {
-<a <% defined($.innertitle)?(qq|title="|.$.innertitle.qq|" |):('') | HTMLEntities %><% defined($.class)?(qq|class="|.$.class.qq|" |):('') %><% defined($.id)?(qq|id="|.$.id.qq|" |):('') | HTMLEntities %>href="<% $.node->canonical_url %><% $.uri_params %><% defined($.anchor)?("#".$.anchor):('') %>"><% defined($.title)?($.title):($.node->title) | H %></a>\
+<a <% defined($.innertitle)?(qq|title="|.$.innertitle.qq|" |):('') | HTMLEntities %><% defined($.class)?(qq|class="|.$.class.qq|" |):('') %><% defined($.id)?(qq|id="|.$.id.qq|" |):('') | HTMLEntities %>href="<% $.node->canonical_url %><% $.uri_params %><% defined($.anchor)?("#".$.anchor):('') %>"><% defined($.title)?($.title):($.node->title) %></a>\
 % }
