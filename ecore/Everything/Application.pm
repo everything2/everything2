@@ -139,21 +139,28 @@ BEGIN {
 			"description" => "Mark this as being about a book with this author",
 			"assignable" => ["admin"],
 		},
-		"fix_level" => 
+		"fix_level" =>
 		{
 			"on" => ["stylesheet"],
 			"description" => "Level of fix automatically applied to other stylesheets",
 			"assignable" => ["admin"],
 			"validate" => "integer",
 		},
-		"supported_sheet" => 
+		"supported_sheet" =>
 		{
 			"on" => ["stylesheet"],
 			"description" => "Supported for general use",
 			"assignable" => ["admin"],
 			"validate" => "integer",
 		},
-		"last_update" => 
+                "depended_upon_sheet" =>
+                {
+			"on" => ["stylesheet"],
+			"description" => "Sheet is protected as it is required by a supported sheet",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+                },
+		"last_update" =>
 		{
 			"on" => ["datastash"],
 			"description" => "When the stash was last updated",
