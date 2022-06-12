@@ -1,4 +1,4 @@
-/* 1965235.css (Understatement by DonJaime - unsupported) */
+/* 1965235.css (Understatement by DonJaime - depended upon by several understatements) */
 /* James' Zen Stylesheet. Layout only, add colour elsewhere. */
 /* Preliminaries: zero everything. This may have been a bad idea. */
 html , body , div , h1 , h2 , h3 , caption , th , td , form , label ,
@@ -109,17 +109,14 @@ border: none ;
 clear: both ;	/* stops it disappearing */
 width: 2000em ;
 height: 3.1em ;
-hei\ght: 2.5em ;
 }
 * html #search_form { /* For IE < 7 */
 clear: both ;	/* stops it disappearing */
 height: 2em ;
-hei\ght: 1.5em ;
 }
 * html #sidebar {
 display: inline ;	/* stops it disappearing */
 width: 12em ;
-wid\th: 13em ;
 }
 /* end IE < 7 hacks */
 /* GENERAL FORMATTING */
@@ -256,7 +253,6 @@ text-align: right ;
 }
 * html .writeuppage .contentheader {
 width: 100% ;
-wid\th: auto ;
 }
 .writeuppage .content {
 border-bottom-style: dotted ;

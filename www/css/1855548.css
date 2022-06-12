@@ -261,7 +261,6 @@ background-color: #cccc99;}
 .weblog .item{
 border-bottom: solid 2px;
 margin-bottom: 0.1em;
-margin-right:
 }
 .weblog .item .contentinfo .title,
 .weblog .item .contentinfo cite,
@@ -329,7 +328,6 @@ float: left;
 margin: 2px;
 padding:  0;
 display: block;
-.clear: both;
 text-align: center;
 font-size: 80%;
 }
@@ -493,26 +491,6 @@ padding: 0;
 clear: both;
 margin: 0;
 padding: 0;
-}
-/*=DISABLED .nodelet .infolist .author*/ {
-background-color: #cccc99;
-width: 100%;
-text-align: center;
-display: block;
-font-weight: bold;
-}
-/*=DISABLED .nodelet .infolist .title*/ {
-float:left;
-width:70%;
-}
-/*=DISABLED .nodelet .infolist .type*/ {
-float:left;
-text-align:right;
-width:30%;
-font-size: 80%;
-}
-/*=DISABLED .nodelet .infolist .type a*/ {
-font-size: 100%;
 }
 #epicenter_zen {
 font-size: 75%;
