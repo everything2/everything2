@@ -413,9 +413,6 @@ margin-left: 5px;
 display: inline;
 font-weight: bold;
 }
-/*=DISABLED .weblog .item .author:before*/ {
-content: "by ";
-}
 .weblog .item .contentinfo cite a {
 text-decoration: none;
 border-bottom: none;
@@ -658,29 +655,6 @@ border-color: #d3d3d3;
 }
 .nodelet .infolist .contentinfo {
 display: block;
-}
-/*=DISABLED .nodelet .infolist span.author*/ {
-float: right;
-font-size: 90%;
-}
-/*=DISABLED .nodelet .infolist span.author:before*/ {
-content: "by ";
-}
-/*=DISABLED .nodelet .infolist span.title*/ {
-font-weight: bold;
-}
-/*=DISABLED .nodelet .infolist .hasvoted span.title*/ {
-font-weight: normal;
-}
-/*=DISABLED .nodelet .infolist span.title a*/ {
-text-decoration: none;
-}
-/*=DISABLED .nodelet .infolist span.type*/ {
-font-size: 90%;
-}
-.nodelet .infolist span.hidden,
-.nodelet .infolist span.hide {
-font-size: 90%;
 }
 .nodelet .morelink {
 text-align: right;

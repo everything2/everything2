@@ -251,9 +251,6 @@ width:8em;
 font-size: 110%;
 text-indent: 30px;
 }
-#votebutton, #blabbutton {
-// float: left;
-}
 #killbutton {
 float: right;
 }
