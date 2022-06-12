@@ -4,6 +4,13 @@ require 'aws-sdk-s3'
 require 'zlib'
 require 'getoptlong'
 require 'open3'
+require 'stringio'
+
+def mem_gzip(data)
+  gz = Zlib::GzipWriter.new(StringIO.new)
+  gz << data
+  gz.close.string
+end
 
 opts = GetoptLong.new(
   [ '--assets', GetoptLong::REQUIRED_ARGUMENT],
@@ -62,7 +69,7 @@ assets = {'js' => {}, 'css' => {}}
       end
     end
 
-    assets[asset_type][basefile]['min_gz'] = Zlib::Deflate.deflate(assets[asset_type][basefile]['min'])
+    assets[asset_type][basefile]['min_gz'] = mem_gzip(assets[asset_type][basefile]['min'])
     puts "Minified #{basefile}"
   end
 end

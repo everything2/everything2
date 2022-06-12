@@ -3,13 +3,8 @@ use Moose;
 extends 'Everything::Node';
 
 with 'Everything::Node::helper::s3';
-
-around 'cdn_link' => sub {
-  my $orig = shift;
-  my $self = shift;
-
-  return $self->$orig(@_).".js";
-};
+has 'media_extension' => (isa => 'Str', is => 'ro', default => 'js');
+has 'local_pref' => (isa => 'Str', is => 'ro', default => 'use_local_javascript');
 
 __PACKAGE__->meta->make_immutable;
 1;

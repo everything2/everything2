@@ -66,7 +66,6 @@ sub _build_pagetitle
 <!--[if lt IE 8]><link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"><![endif]-->
 <link rel="alternate" type="application/atom+xml" title="<% $.atom_feed->[0] %>" href="<% $.atom_feed->[1] %>">
 <meta content="width=device-width,initial-scale=1.0,user-scalable=1" name="viewport">
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"> 
 
 </head>
 <body class="<% $.body_class %>" itemscope itemtype="http://schema.org/WebPage">

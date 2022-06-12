@@ -107,13 +107,6 @@ sub linkStylesheet
     } else {
       $n = getNode($n, 'stylesheet');
     }
-  }
-
-  if ($n) {
-    return urlGen({
-      node_id => $n->{node_id},
-      displaytype => $displaytype
-    }, 1) if(($$USER{node_id} == $$n{author_user} && $$USER{title} ne "root") || $VARS->{useRawStylesheets});
 
     return $APP->stylesheetCDNLink($n);
   } else {
@@ -246,14 +239,14 @@ sub linkjavascript
     return "/js/$$n{node_id}.js";
   }
 
-  my $filename = "$$n{node_id}.$$n{contentversion}.min";
+  my $filename = "$$n{node_id}.min";
   if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
   {
-    $filename.= ".gzip";
+    $filename.= ".gz";
   }
 
   $filename .= ".js";
-  return "https://s3-us-west-2.amazonaws.com/jscssw.everything2.com/$filename";
+  return "https://s3-us-west-2.amazonaws.com/deployed.everything2.com/".$Everything::CONF->last_commit."/$filename";
 }
 
 # On htmlpages, this shows the inherited value for a nodetype

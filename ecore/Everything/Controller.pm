@@ -28,7 +28,7 @@ sub layout
   my $REQUEST = $params->{REQUEST};
   my $node = $params->{node};
 
-  my $gzip = (($REQUEST->can_gzip)?("gzip"):(undef));
+  my $gzip = (($REQUEST->can_gzip)?("gz"):(undef));
  
   my $basesheet = $self->APP->node_by_name("basesheet","stylesheet");
   my $zensheet = $REQUEST->user->style;
