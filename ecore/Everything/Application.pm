@@ -3757,15 +3757,20 @@ sub stylesheetCDNLink
   my ($this, $stylesheet) = @_;
 
   $this->{db}->getRef($stylesheet);
+
+  if($Everything::CONF->use_local_css)
+  {
+    return "/css/$$stylesheet{node_id}.css";
+  }
   
-  my $filename = "$$stylesheet{node_id}.$$stylesheet{contentversion}.min";
+  my $filename = "$$stylesheet{node_id}.min";
   if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
   {
-    $filename.= ".gzip";
+    $filename.= ".gz";
   }
   
   $filename .= ".css";
-  return "https://s3-us-west-2.amazonaws.com/jscssw.everything2.com/$filename";
+  return "https://s3-us-west-2.amazonaws.com/deployed.everything2.com/".$this->{conf}->last_commit."/$filename";
 }
 
 sub pagetitle

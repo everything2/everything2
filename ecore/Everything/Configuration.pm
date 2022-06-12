@@ -57,6 +57,7 @@ has 'search_row_limit' => (isa => 'Int', is => 'ro', default => 200);
 has 'logdirectory' => (isa => 'Str', is => 'ro', default => '/var/log/everything');
 
 has 'use_local_javascript' => (isa => 'Bool', is => 'ro', default => '0');
+has 'use_local_css' => (isa => 'Bool', is => 'ro', default => '0');
 
 has 'github_url' => (isa => 'Str', is => 'ro', default => 'https://github.com/everything2/everything2');
 has 'last_commit' => (isa => 'Str', is => 'ro', builder => '_build_last_commit', lazy => 1);

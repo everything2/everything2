@@ -72,7 +72,7 @@ sub zen_stdcontainer
   my $url = "";
   $url = ($APP->is_tls()?('https'):('http')).'://'.$canonical_web_server if $APP->isGuest($USER);
   $url .= $APP->urlGenNoParams( $NODE , 'noQuotes' ) unless $$NODE{ node_id } eq $Everything::CONF->default_node ;
-  $url .= "http://localhost:8888" if $APP->inDevEnvironment();
+  $url .= "http://localhost:9080" if $APP->inDevEnvironment();
   $url ||= '/' ;
   $str .= '<link rel="canonical" href="' . $url . '">' ;
 
@@ -102,8 +102,7 @@ sub zen_stdcontainer
   }
   
   $str .= qq|<meta content="width=device-width; initial-scale=1.0; user-scalable=1;"name="viewport">| if isMobile();
-  $str .= qq|<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    </head><body class="|;
+  $str .= qq|</head><body class="|;
   $str .= 'writeuppage ' if $$NODE{e2node_id} || $$NODE{writeup_id} || $$NODE{draft_id};
   $str .= $$NODE{type}{title};
   if($$NODE{type}{title} =~ /superdoc/)
