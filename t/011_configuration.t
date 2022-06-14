@@ -76,7 +76,6 @@ ok($CONF->logdirectory eq "/var/log/everything");
 ok(ref $CONF->permanent_cache eq "HASH"); 
 ok(ref $CONF->nosearch_words eq "HASH");
 ok($CONF->create_room_level == 5);
-ok($CONF->stylesheet_fix_level == 2);
 ok($CONF->maintenance_mode == 0);
 ok($CONF->writeuplowrepthreshold == -8);
 ok(ref $CONF->google_ads_badnodes eq "ARRAY");
@@ -112,7 +111,6 @@ ok($CONF->clean_search_words_aggressively == 0);
 ok($CONF->search_row_limit == 321);
 ok($CONF->logdirectory eq "anotherlogdirectory");
 ok($CONF->create_room_level == 99);
-ok($CONF->stylesheet_fix_level == 98);
 ok($CONF->maintenance_mode == 1);
 ok($CONF->writeuplowrepthreshold == -97);
 

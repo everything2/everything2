@@ -33,7 +33,6 @@ my $supported_sheets = $DB-&gt;getNodesWithParam(&quot;supported_sheet&quot;);
 foreach my $thissheet (@$supported_sheets)
 {
   my $fixlevel = $APP-&gt;getParameter($thissheet, &quot;fix_level&quot;);
-  next unless $fixlevel and $fixlevel &gt;= $Everything::CONF-&gt;stylesheet_fix_level;
   my $sh = getNodeById($thissheet);
   #next unless $sh;
 
