@@ -3485,7 +3485,7 @@ sub stylesheet_display_page
   my $APP = shift;
 
   my $str = '<p><cite>by&nbsp;' . linkNode ($$NODE{author_user}) . '</cite></p>';
-  $str .= '<p>'.linkNode($NODE, "View this stylesheet", {displaytype => 'view'}).'</p>';
+  $str .= '<p><a href="https://github.com/everything2/everything2/blob/master/www/css/'.$NODE->{node_id}.'.css">View this stylesheet on GitHub</a></p>';
 
   if(not $APP->isGuest($USER))
   {
@@ -3496,37 +3496,6 @@ sub stylesheet_display_page
 
     if ($$USER{user_id} == $$NODE{author_user} or $APP->isAdmin($USER) )
     {
-      my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
-      my $settings = getVars( $VARSNODE ) ;
-
-      if ( $query -> param( 'fixstylesheet' ) )
-      {
-  	my $saveold = ( $query -> param( 'saveold' ) ? '1' : '0' ) ;
-  	$str .= '<p><strong>The stylesheet has been fixed. Changes will only become permanent when you click on "stumbit".</strong></p><textarea cols="60" rows="30" name="stylesheet_doctext">'.
-        $APP->fixStylesheet($NODE,$saveold ).'</textarea>' ;
-      } else {
-	# update fixed setting if doesn't need fixing:
-  	$APP->fixStylesheet($NODE, 0) unless $$settings{ $$NODE{ node_id } } >= $Everything::CONF->stylesheet_fix_level ;
-	$str .= "<p><strong>Edit the stylesheet:</strong></p>".htmlcode("textarea","doctext,30,60");
-      }
-
-      if ( $$settings{ $$NODE{ node_id } } < $Everything::CONF->stylesheet_fix_level and not $query -> param( 'fixstylesheet') )
-      {
-        $str .= '<p>You can automatically fix this stylesheet to adapt it to many of the recent changes in the E2 code. Changes will not become permanent until you stumbit again.</p><p><input type="submit" name="fixstylesheet" value="Autofix this stylesheet"><label><input type="checkbox" name="saveold" value="1"> Save old selectors in comments</label></p>';
-      } else {
-        my $inmenu = $APP->getParameter($NODE, "supported_sheet"); $inmenu ||= 0;
-
-        if ($query -> param('sexisgood') && $query->param('inmenu'))
-        {
-          $APP->setParameter($NODE, -1,'supported_sheet',1);
-          $inmenu = 1;
-        }elsif ($query->param('sexisgood') && !$query->param('inmenu')){
-          $APP->delParameter($NODE, -1,'supported_sheet');
-          $inmenu = 0;
-        }
-        $str .= $query -> checkbox(-name => 'inmenu', value => 1 ,checked => $inmenu, label => 'Include in theme menu' );
-      }
-
       my $usercnt = $DB->sqlSelect("count(*)","setting","vars like '%userstyle=$$NODE{node_id}%'");
 
       if ($$USER{user_id} == $$NODE{author_user})
@@ -3578,9 +3547,7 @@ sub stylesheet_display_page
       }
     }
 
-    my %autofix = ();
-    %autofix = ( autofix => '1' ) if($$USER{ user_id } == $$NODE{ author_user });
-    $str .= '<p>'.linkNode( $NODE , 'Try this stylesheet out' , {displaytype => 'choosetheme', theme => $$NODE{ node_id }, noscript => 1, -id => 'testdrive', %autofix}).'</p>' ;
+    $str .= '<p>'.linkNode( $NODE , 'Try this stylesheet out' , {displaytype => 'choosetheme', theme => $$NODE{ node_id }, noscript => 1, -id => 'testdrive'}).'</p>' ;
 
     $str .= "<p><input type='checkbox' ".
       ( $$VARS{userstyle} == $$NODE{node_id} ?"checked='checked''" :"").
@@ -4641,20 +4608,6 @@ sub stylesheet_serve_page
   }
 
   my $out = $$NODE{doctext};
-  my $author = getNodeById($NODE->{author_user});
-  my $unsupported = "";
-  $unsupported = " - unsupported" unless $APP->getParameter($NODE, "supported_sheet");
-  $out = "/* $$NODE{node_id}.css ($$NODE{title} by $$author{title}$unsupported) */\n$out";
-
-  my $autofix = $query -> param( 'autofix' );
-  if ( $autofix or not $APP->isGuest($USER) )
-  {
-    unless ( htmlcode( 'displaySetting' , 'fixed stylesheets', $$NODE{ node_id } ) >= $Everything::CONF->stylesheet_fix_level )
-    {
-      $out = "/*autofixed*/\n".$APP->fixStylesheet($NODE , 0 ) if $$USER{ user_id } != $$NODE{ author_user } or $autofix ;
-    }
-  }
-
   $out =~ s/^\s+//mg;
   $out .= "/* SOFTLINK COLORS */\n";
 
