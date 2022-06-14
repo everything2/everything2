@@ -1,49 +1,5 @@
 <node>
-  <doctext>[{openform}]
-Clean css: &lt;input type=&quot;text&quot; name=&quot;cleancss&quot; /&gt;
-[{closeform}]
-[%
-  return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
-  my $str = &quot;&quot;;
-  my $jb = getNode(&quot;jaybonci&quot;,&quot;user&quot;);
-  if(defined($query-&gt;param(&quot;cleancss&quot;)))
-  {
-    my $to_clean = $query-&gt;param(&quot;cleancss&quot;);
-    my $to_clean_sheet = getNodeById($to_clean);
-
-    if(defined $to_clean_sheet)
-    {
-      my $csr = $DB-&gt;sqlSelectMany(&quot;setting_id&quot;, &quot;setting&quot;,&quot;vars like '%userstyle=$$to_clean_sheet{node_id}%' order by setting_id ASC&quot;);
-
-      while(my $row = $csr-&gt;fetchrow_arrayref)
-      {
-        my $u = getNodeById($row-&gt;[0]);
-        $str .= &quot;User: $u-&gt;{title} has the style&lt;br /&gt;&quot;;
-        my $v = getVars($u);
-        delete $v-&gt;{userstyle};
-        setVars($u,$v);
-        updateNode($u,-1);
-        htmlcode(&quot;sendPrivateMessage&quot;,{author_id =&gt; $jb-&gt;{node_id}, recipient_id =&gt; [$u-&gt;{node_id}], message =&gt; &quot;This is an automated message regarding a change to your display preferences. As we continue to iterate over E2, certain unsupported stylesheets are being retired, including the one you have chosen [$$to_clean_sheet{title}]. You have been set to the default, but may choose a new supported style in your [Settings]. Apologies for any disruption this may have caused.&quot;});
-      }
-      
-      my $fs = getNode(&quot;Fixed stylesheets&quot;,&quot;setting&quot;);
-      my $fsv = getVars($fs);
-
-      delete $fsv-&gt;{$to_clean_sheet-&gt;{node_id}};
-      setVars($fs,$fsv);
-      updateNode($fs, -1);
-
-      $str .= &quot;Sheet &lt;em&gt;$to_clean_sheet-&gt;{title}&lt;/em&gt; has been cleaned&lt;br/&gt;&quot;;
-    }else{
-      $str .= &quot;Sheet &lt;em&gt;$to_clean&lt;/em&gt; is not a valid node_id&lt;br /&gt;&quot;;
-    }
-  }
-
-  return $str;
-%]
-&lt;br /&gt;&lt;br /&gt;
-
-[%
+  <doctext>[%
   my $csr = $DB-&gt;sqlSelectMany(&quot;setting_id&quot;,&quot;setting&quot;,&quot;vars like '%customstyle%'&quot;);
   $csr-&gt;execute();
 
