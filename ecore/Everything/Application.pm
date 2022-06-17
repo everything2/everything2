@@ -139,13 +139,6 @@ BEGIN {
 			"description" => "Mark this as being about a book with this author",
 			"assignable" => ["admin"],
 		},
-		"fix_level" =>
-		{
-			"on" => ["stylesheet"],
-			"description" => "Level of fix automatically applied to other stylesheets",
-			"assignable" => ["admin"],
-			"validate" => "integer",
-		},
 		"supported_sheet" =>
 		{
 			"on" => ["stylesheet"],
