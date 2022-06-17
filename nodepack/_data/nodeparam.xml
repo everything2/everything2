@@ -171,18 +171,8 @@
   </nodeparam>
   <nodeparam>
     <node_id>1855548</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1855548</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1882070</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>1882070</node_id>
@@ -201,18 +191,8 @@
   </nodeparam>
   <nodeparam>
     <node_id>1905818</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1905818</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1926437</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>1926437</node_id>
@@ -221,18 +201,8 @@
   </nodeparam>
   <nodeparam>
     <node_id>1926578</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1926578</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1946242</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>1946242</node_id>
@@ -241,33 +211,13 @@
   </nodeparam>
   <nodeparam>
     <node_id>1951961</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1951961</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1965235</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1965286</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>1965286</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1965449</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>1965449</node_id>
@@ -280,24 +230,9 @@
     <paramvalue>1</paramvalue>
   </nodeparam>
   <nodeparam>
-    <node_id>1973976</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1983570</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
     <node_id>1983570</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1996378</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>1996378</node_id>
@@ -306,18 +241,8 @@
   </nodeparam>
   <nodeparam>
     <node_id>1997552</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1997552</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>1997697</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>1997697</node_id>
@@ -326,18 +251,8 @@
   </nodeparam>
   <nodeparam>
     <node_id>2000528</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>2000528</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>2004473</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>2014296</node_id>
@@ -351,11 +266,6 @@
   </nodeparam>
   <nodeparam>
     <node_id>2029380</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>2029380</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
   </nodeparam>
@@ -366,23 +276,8 @@
   </nodeparam>
   <nodeparam>
     <node_id>2041900</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>2041900</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>2047469</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>2047530</node_id>
-    <paramkey>fix_level</paramkey>
-    <paramvalue>2</paramvalue>
   </nodeparam>
   <nodeparam>
     <node_id>2047530</node_id>
