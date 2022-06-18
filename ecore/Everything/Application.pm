@@ -51,14 +51,6 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "integer",
 		},
-
-		"supplemental_javascript" => 
-		{
-			"description" => "Adds additional javascript to a page",
-			"assignable" => ["admin"],
-			"validate" => "integer",
-		},
-
 		# TODO: Add test
 		"hide_chatterbox_staff_symbol" =>
 		{
