@@ -305,11 +305,6 @@
     <paramvalue>1180811</paramvalue>
   </nodeparam>
   <nodeparam>
-    <node_id>407437</node_id>
-    <paramkey>supplemental_javascript</paramkey>
-    <paramvalue>2157677</paramvalue>
-  </nodeparam>
-  <nodeparam>
     <node_id>1065266</node_id>
     <paramkey>disable_weblog</paramkey>
     <paramvalue>1</paramvalue>
