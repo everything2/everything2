@@ -61,8 +61,6 @@
 background-color: #cccc99;
 text-align: center;
 }
-/* This bit is mostly taken from styledef.css, but cleaned up a lot.
-Remember, it's CASCADING style sheets. No need to repeat everything! */
 /* belt and braces.. */
 body, p, td, th, div {
 font-family: arial, helvetica, sans-serif;
@@ -107,7 +105,6 @@ font-size: 85%;
 big {
 font-size: 110%;
 }
-/* end styledef stuff */
 #header {
 background-image: url(https://s3.amazonaws.com/static.everything2.com/e2_others_02.gif);
 background-position: bottom left;
