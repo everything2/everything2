@@ -1821,3 +1821,22 @@ $("#messagebox").submit(function(event){
     },
   });
 });
+
+/* [E2 Rot13 Encoder] / 1271440 */
+$("input[name='e2_rot13_encoder']").click(function() {
+  var do_rot13 = function(str){
+    var am="abcdefghijklmABCDEFGHIJKLM";
+    var nz="nopqrstuvwxyzNOPQRSTUVWXYZ";
+    for(var i=0;i<str.length;i++)
+    {
+      var ch=str.charAt(i);
+      var ca=am.indexOf(ch);
+      if(ca>=0){ str=str.substr(0,i)+nz.charAt(ca)+str.substr(i+1);}else{
+        var cz=nz.indexOf(ch);
+        if (cz>=0) str=str.substr(0,i)+am.charAt(cz)+str.substr(i+1);
+      }
+    }
+    return str
+  };
+  $("textarea[name='rotter']").val(do_rot13($("textarea[name='rotter'").val()));
+});
