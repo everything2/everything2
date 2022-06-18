@@ -4194,14 +4194,6 @@ sub static_javascript
   my $defaultJS = getNode("default javascript","jscript");
   $libraries .= "<script src='".htmlcode("linkjavascript",$$defaultJS{node_id})."' type='text/javascript'></script>\n";
 
-  if(my $sjs = $APP->getParameter($NODE,"supplemental_javascript"))
-  {
-    if(my $sjs_node = getNodeById($sjs))
-    {
-      $libraries .= "<script src='".htmlcode("linkjavascript",$sjs)."' type='text/javascript'></script>\n";
-    }
-  }
-
   return qq|
     <script type='text/javascript' name='nodeinfojson' id='nodeinfojson'>
       e2 = $e2;
