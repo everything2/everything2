@@ -78,7 +78,7 @@ function ParseMessageInbox(xml){
          group = $(this).find('grp').find('e2link');
       
          html = '<div class="Private clearfix" id="msg_'+mi_MsgLimit+'">';// +
-         html+=   '<img src="http://hnimagew.everything2.com/' + GetClassName(author.text()) + '" alt="'+GetClassName(author.text())+'" align="left" height="'+mi_GravatarSize+'" width="'+mi_GravatarSize+'" />';// +
+         html+=   '<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/' + GetClassName(author.text()) + '" alt="'+GetClassName(author.text())+'" align="left" height="'+mi_GravatarSize+'" width="'+mi_GravatarSize+'" />';// +
          html+=   '<p class="To">Private Message from <a href="/user/'+$.trim(author.text())+'">'+author.text()+'</a></b> to ';
          if(group.length==0){html += 'you';}
          else{html += '<a href="/node/usergroup/'+$.trim(group.text())+'">'+group.text()+'</a>';}
@@ -211,9 +211,9 @@ function ParsePublicMessage(msg){
    }else{
       authorHtml = '&lt;'+authorHtml+'&gt;';
    }
-// gravatar src = "http://gravatar.com/avatar/'+$(msg).find('from').find('e2link').attr('md5')+'?d='+$('#gravatarType').val()+'&s=22"
+// gravatar src = "https://gravatar.com/avatar/'+$(msg).find('from').find('e2link').attr('md5')+'?d='+$('#gravatarType').val()+'&s=22"
    html += ('<div class="'+cssClass+' clearfix" id="'+$(msg).attr('msg_id')+'">' +
-      '<img src="http://hnimagew.everything2.com/' + GetClassName(author) + '" alt="'+EncodeHtml(author)+'" height="'+chat_GravatarSize+'" width="'+chat_GravatarSize+'" align="left" />' +
+      '<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/' + GetClassName(author) + '" alt="'+EncodeHtml(author)+'" height="'+chat_GravatarSize+'" width="'+chat_GravatarSize+'" align="left" />' +
       '<span class="Author '+EncodeHtml(author)+'">'+authorHtml+'</span> ' +
       '<span class="Text">'+txt+'</span>' +
       '</div>');
@@ -489,7 +489,7 @@ function InsertOtherUser(ou){
    var id = InsertOtherUserUsername(username, false);
    var md5 = $(ou).find('e2link').attr('md5');
    if(md5.length==32){
-      $('#'+id).prepend('<img src="http://hnimagew.everything2.com/' + GetClassName(author) + '" alt="'+GetClassName(username)+'" height="'+ou_GravatarSize+'" width="'+ou_GravatarSize+'" /> ');
+      $('#'+id).prepend('<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/' + GetClassName(author) + '" alt="'+GetClassName(username)+'" height="'+ou_GravatarSize+'" width="'+ou_GravatarSize+'" /> ');
    }
    var position = '';
    if($(ou).attr('e2god')=='1'){position+='<abbr title="Administrator"> @ </abbr>';}
