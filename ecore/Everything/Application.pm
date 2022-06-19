@@ -3465,8 +3465,6 @@ sub linkNodeTitle {
 
 sub canCompress
 {
-  #TODO: Check to see if we can do this as an apache module, safely
-  #TODO: Don't compress things of shorter than X bytes
   #TODO: Support deflate?
   if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
   {
@@ -3640,19 +3638,19 @@ sub stylesheetCDNLink
 
   $this->{db}->getRef($stylesheet);
 
-  if($Everything::CONF->use_local_css)
+  if($Everything::CONF->use_local_assets)
   {
     return "/css/$$stylesheet{node_id}.css";
   }
   
   my $filename = "$$stylesheet{node_id}.min";
-  if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  if($this->canCompress)
   {
     $filename.= ".gz";
   }
   
   $filename .= ".css";
-  return "https://s3-us-west-2.amazonaws.com/deployed.everything2.com/".$this->{conf}->last_commit."/$filename";
+  return $Everything::CONF->assets_location."/$filename";
 }
 
 sub pagetitle

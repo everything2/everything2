@@ -234,19 +234,19 @@ sub linkjavascript
 
   return "" unless $n;
 
-  if($Everything::CONF->use_local_javascript)
+  if($Everything::CONF->use_local_assets)
   {
     return "/js/$$n{node_id}.js";
   }
 
   my $filename = "$$n{node_id}.min";
-  if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  if($APP->canCompress)
   {
     $filename.= ".gz";
   }
 
   $filename .= ".js";
-  return "https://s3-us-west-2.amazonaws.com/deployed.everything2.com/".$Everything::CONF->last_commit."/$filename";
+  return $Everything::CONF->assets_location."/$filename";
 }
 
 # On htmlpages, this shows the inherited value for a nodetype
@@ -4184,6 +4184,14 @@ sub static_javascript
   $e2->{collapsedNodelets} =~ s/\bsignin\b// if($query->param('op') and $query->param('op') eq 'login');
   $e2->{noquickvote} = 1 if($VARS->{noquickvote});
   $e2->{nonodeletcollapser} = 1 if($VARS->{nonodeletcollapser});
+  $e2->{use_local_assets} = $Everything::CONF->use_local_assets;
+  if($e2->{use_local_assets} == 0)
+  {
+    $e2->{assets_location} = $Everything::CONF->assets_location;
+  }else{
+    $e2->{assets_location} = "";
+  }
+  $e2->{can_gzip} = $APP->canCompress;
   $e2 = encode_json($e2);
 
   my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';
@@ -9899,8 +9907,10 @@ sub zenwriteups
   my $limit = $$VARS{ num_newwus } || ($APP->isGuest($USER) ? 15 : 12);
   my $cansee = $APP->isEditor($USER);
 
-  my @newwus = @{$DB->stashData("newwriteups")};
-  return "<em>No writeups</em>" unless(@newwus);
+  my $newwriteups = $DB->stashData("newwriteups");
+  $newwriteups = [] unless(defined($newwriteups) and UNIVERSAL::isa($newwriteups,"ARRAY"));
+ 
+  return "<em>No writeups</em>" unless(@$newwriteups);
 
   my $noHidden = !$isLogs;
   $noHidden = $noHidden && $$VARS{nw_nojunk} if $cansee;
@@ -9923,7 +9933,7 @@ sub zenwriteups
 
   my $count = undef;
   my @wus = ();
-  foreach (@newwus)
+  foreach (@$newwriteups)
   {
     next if($noHidden and $$_{notnew} or
       $repthreshold ne 'none' and $$_{reputation} < $repthreshold or

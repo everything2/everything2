@@ -476,7 +476,7 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 			active: {},
 
 			'HTML toolbar': {
-				library: 'https://s3-us-west-2.amazonaws.com/jscssw.everything2.com/2069738.js',
+				library: e2.use_local_assets?('/js/2069738.js'):(e2.can_gzip?(e2.assets_location + "/2069738.min.gz.js"):(e2.assets_location + "/2069738.js")),
 				test: 'edToolbar',
 	
 				stop: function(id){

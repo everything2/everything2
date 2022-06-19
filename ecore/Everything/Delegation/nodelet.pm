@@ -459,6 +459,7 @@ sub recommended_reading
   $str.='<h4>'.linkNode(getNode('Cool Archive','superdoc'), 'User Picks').'</h4>';
   $str.='<ul class="infolist">';
   my $coolnodes = $DB->stashData("coolnodes");
+  $coolnodes = [] unless(defined($coolnodes) and UNIVERSAL::isa($coolnodes,"ARRAY")); 
   my $count = 0;
   my $seen = {};
 
@@ -476,6 +477,7 @@ sub recommended_reading
   $str.='</ul>';
 
   my $staffpicks = $DB->stashData("staffpicks");
+  $staffpicks = [] unless(defined($staffpicks) and UNIVERSAL::isa($staffpicks,"ARRAY"));
 
   # From [rtnsection_edc]
   $str.= '<h4>'.linkNode(getNode('Page of Cool','superdoc'), 'Editor Picks').'</h4>';

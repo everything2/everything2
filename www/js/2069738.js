@@ -526,6 +526,34 @@ function literalize(which) {
 	edInsertContent(which,literalizedStr);
 }
 
+function autoFormat (id)
+{
+  var elem = document.getElementsByName(id).item(0);
+  var text = elem.value;
+  var blocks = "pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6" +
+    "|blockquote|dd|dt|dl|p" +
+    "|table|td|tr|th";
+
+  text = '<p>' + text
+    // strip out existing formatting
+    .replace (new RegExp('</?p>', 'ig'), '')
+    .replace (new RegExp('<br */?>', 'ig'), '')
+    // Strip out leading and trailing space
+    .replace (new RegExp('\\s*$', 'ig'), '')
+    .replace (new RegExp('^\\s*', 'ig'), '')
+    // New formatting
+    .replace (new RegExp("\n", 'ig'), "<br />\n")
+    .replace (new RegExp("<br />\n(<br />\n)+", 'ig'), "</p>\n\n<p>")
+    + '</p>';
+  text = text
+    // Fix block elements
+    .replace (new RegExp('<p><('+blocks+'[ >])', 'ig'), '<$1')
+    .replace (new RegExp('</('+blocks+')></p>', 'ig'), '</$1>');
+
+  elem.value = text;
+
+}
+
 function edToolbar(which) {
 	document.write('<div id="ed_toolbar_' + which + '"><span>');
 	for (i = 0; i < extendedStart; i++) {
@@ -534,7 +562,7 @@ function edToolbar(which) {
 	if (edShowExtraCookie()) {
 		document.write(
 			'<input type="button" id="ed_close_' + which + '" class="ed_button" onclick="edCloseAllTags(\'' + which + '\');" value="Close Tags" />'
-			/* + '<input type="button" id="ed_autoformat_' + which + '" class="ed_button" onclick="autoFormat(\'' + which + '\');" value="Line Breaks" title="Insert paragraph and line-break tags based on line breaks in the source" />' */
+			+ '<input type="button" id="ed_autoformat_' + which + '" class="ed_button" onclick="autoFormat(\'' + which + '\');" value="Line Breaks" title="Insert paragraph and line-break tags based on line breaks in the source" />'
 			+ '<input type="button" id="ed_spell_' + which + '" class="ed_button" onclick="edSpell(\'' + which + '\');" value="Dict" />'
 			+ '<input type="button" id="ed_extra_show_' + which + '" class="ed_button" onclick="edShowExtra(\'' + which + '\')" value="&raquo;" style="visibility: hidden;" />'
 			+ '</span><br />'
