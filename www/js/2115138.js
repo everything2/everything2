@@ -1,5 +1,5 @@
 // 2115138.js "jstest"
-// Unknown usage
+// Used in [My Chatterlight]
 
 function InDebugMode(){
    return window.location.href.indexOf("debug")>0;

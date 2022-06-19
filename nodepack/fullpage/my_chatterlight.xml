@@ -2,11 +2,9 @@
   <doctext>[%
 
 my $isGuest = $APP-&gt;isGuest($USER);
- 
-my $pageSource = &lt;&lt;'CODEEND';
-&lt;script type=&quot;text/javascript&quot; src=&quot;https://code.jquery.com/jquery-1.4.2.js&quot;&gt;&lt;/script&gt;
-&lt;!-- 2017-04-02: jstest node here moved to filesystem until we collapse javascript, so we can get normal jscript nodes out of the database -jb --&gt;
-&lt;script type=&quot;text/javascript&quot; src=&quot;/js/2115138.js&quot;&gt;&lt;/script&gt;
+my $jslink = qq|&lt;script type=&quot;text/javascript&quot; src=&quot;|.htmlcode('linkjavascript', getNodeById(2115138)).qq|&quot;&gt;&lt;/script&gt;|;
+my $pageSource = q|
+&lt;script type=&quot;text/javascript&quot; src=&quot;https://code.jquery.com/jquery-1.4.2.js&quot;&gt;&lt;/script&gt;|.$jslink.q|
 &lt;script type=&quot;text/javascript&quot;&gt;
 $(document).ready(function() {
    RefreshMessageInbox();
@@ -214,8 +212,7 @@ Yeah, I know tables aren't for layout. Shut up. This is a proof of concept.
       &lt;/td&gt;
    &lt;/tr&gt;
 &lt;/table&gt;
-&lt;div style=&quot;display:none&quot; id=&quot;utility&quot;&gt;&lt;/div&gt;
-CODEEND
+&lt;div style=&quot;display:none&quot; id=&quot;utility&quot;&gt;&lt;/div&gt;|;
 
 if ($isGuest) {
 
