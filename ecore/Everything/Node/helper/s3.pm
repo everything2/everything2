@@ -2,24 +2,16 @@ package Everything::Node::helper::s3;
 
 use Moose::Role;
 
-sub use_local
-{
-  my ($self) = @_;
-
-  my $attr = $self->local_pref;
-  return $self->CONF->$attr;
-}
-
 sub cdn_link
 {
   my ($self, $decoration) = @_;
 
-  if($self->use_local)
+  if($self->CONF->use_local_assets)
   {
     return "/".$self->media_extension."/".$self->node_id.'.'.$self->media_extension;
   }
 
-  my $link = "https://s3-us-west-2.amazonaws.com/deployed.everything2.com/".$self->CONF->last_commit."/";
+  my $link = $self->CONF->assets_location;
   $link .= join(".",$self->node_id,"min");
   $link .= ".$decoration" if $decoration;
   $link .= ".".$self->media_extension;

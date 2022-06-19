@@ -68,6 +68,14 @@ sub layout
   $e2->{lastnode_id} = $params->{lastnode_id};
   $e2->{title} = $node->title;
   $e2->{guest} = $REQUEST->is_guest;
+  $e2->{use_local_assets} = $self->CONF->use_local_assets;
+  if($e2->{use_local_assets} == 0)
+  {
+    $e2->{assets_location} = $self->CONF->assets_location;
+  }else{
+    $e2->{assets_location} = "";
+  }
+  $e2->{can_gzip} = $REQUEST->can_gzip;
 
   my $cookie = undef;
   foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){

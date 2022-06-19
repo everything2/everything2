@@ -41,10 +41,13 @@ has 'environment' => (isa => 'Str', is => 'ro', default => 'development');
 
 has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {
   "homenodeimages" => Everything::S3::BucketConfig->new("bucket" => "hnimagew.everything2.com"),
+  "deployedassets" => Everything::S3::BucketConfig->new("bucket" => "deployed.everything2.com"),
   "nodebackup" => Everything::S3::BucketConfig->new("bucket" => "nodebackup.everything2.com"),
   "sitemap" => Everything::S3::BucketConfig->new("bucket" => "sitemap.everything2.com"),
   "sitemapdispatch" => Everything::S3::BucketConfig->new("bucket" => "sitemapdispatch.everything2.com"),
   "jscss" => Everything::S3::BucketConfig->new("bucket" => "jscssw.everything2.com") }});
+
+has 'assets_location' => (isa => 'Str', is => 'ro', builder => '_build_assets_location', lazy => 1);
 
 has 'current_region' => (isa => 'Maybe[Str]', is => 'ro', builder => '_build_current_region', lazy => 1);
 
@@ -56,8 +59,7 @@ has 'search_row_limit' => (isa => 'Int', is => 'ro', default => 200);
 
 has 'logdirectory' => (isa => 'Str', is => 'ro', default => '/var/log/everything');
 
-has 'use_local_javascript' => (isa => 'Bool', is => 'ro', default => '0');
-has 'use_local_css' => (isa => 'Bool', is => 'ro', default => '0');
+has 'use_local_assets' => (isa => 'Bool', is => 'ro', default => '0');
 
 has 'github_url' => (isa => 'Str', is => 'ro', default => 'https://github.com/everything2/everything2');
 has 'last_commit' => (isa => 'Str', is => 'ro', builder => '_build_last_commit', lazy => 1);
@@ -184,12 +186,6 @@ has 'google_ads_badwords' => (isa => 'ArrayRef', is => 'ro', default => sub { [
   "suicide",
   "cunnilingus"
 ] });
-
-has 'use_controllers' => (isa => 'Bool', is => 'ro', default => 0);
-
-has 's3host' => (isa => 'Str', is => 'ro', default => 's3-us-west-2.amazonaws.com');
-
-has 'iam_app_role' => (isa => 'Str', is => 'ro', default => 'E2-App-Server');
 
 has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', builder => '_build_recaptcha', lazy => 1);
 has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '6LcnVKsUAAAAAEeEGV28mfD3lt_XVpFUkOzifWGo');
@@ -399,7 +395,7 @@ sub _build_current_region
     $az =~ s/[a-z]$//g;
     $region = $az;
   }
-
+  $region = "us-west-2" if(not defined($region));
   return $region;
 }
 
@@ -413,7 +409,14 @@ sub _build_last_commit
     $commit = <$fh>;
   }
   $commit = "HEAD" if not defined($commit);
+  chomp($commit);
   return $commit;
+}
+
+sub _build_assets_location
+{
+  my ($self) = @_;
+  return "https://s3-".$self->current_region.".amazonaws.com/".$self->s3->{deployedassets}->bucket."/".$self->last_commit;
 }
 
 sub last_commit_short
