@@ -2522,14 +2522,7 @@ sub e2_bouncer
 
   return "Permission Denied" unless $APP->isChanop($USER);
 
-  my $header ='
-    <p>...a.k.a [Nerf] Borg.</p>
-    <script language="JavaScript">
-    <!--
-    function useroom( name ) 
-    { document.forms.bouncer.roomname.value = name; }
-    //-->
-    </script>';
+  my $header ='<p>...a.k.a [Nerf] Borg.</p>';
 
   $header .= htmlcode('openform2','bouncer');
 
