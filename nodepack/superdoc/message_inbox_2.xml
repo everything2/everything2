@@ -75,7 +75,7 @@ if(defined($query-&gt;param('spy_user'))) {
 	my $okay;
 	$$okay{getId(getNode($_, 'user'))} = 1 foreach(@okaytospy);
 
-	$foruser = getNode($query-&gt;param('spy_user'), 'user');
+	$foruser = getNode(scalar($query-&gt;param('spy_user')), 'user');
 
 	unless(defined $foruser){
 
@@ -238,7 +238,7 @@ $limits .= $sqlFilterArc if length($sqlFilterArc);
 
 #TODO - LIMIT x,y
 my $showLimit='LIMIT ';
-my $showMax = $query-&gt;param('showmax') || $$VARS{inboxMax} || 0;
+my $showMax = scalar($query-&gt;param('showmax')) || $$VARS{inboxMax} || 0;
 $showMax = 0 unless ($showMax =~ /[0-9]+/);
 $showLimit= ' LIMIT '.$showMax if $showMax;
 
