@@ -28,8 +28,6 @@ sub layout
   my $REQUEST = $params->{REQUEST};
   my $node = $params->{node};
 
-  my $gzip = (($REQUEST->can_gzip)?("gz"):(undef));
- 
   my $basesheet = $self->APP->node_by_name("basesheet","stylesheet");
   my $zensheet = $REQUEST->user->style;
   my $customstyle = $self->APP->htmlScreen($REQUEST->user->customstyle);
@@ -37,17 +35,17 @@ sub layout
 
   my $canonical_url = "https://".$self->CONF->canonical_web_server.$params->{node}->canonical_url;
   
-  $params->{basesheet} = $basesheet->cdn_link($gzip);
-  $params->{zensheet} = $zensheet->cdn_link($gzip);
+  $params->{basesheet} = $basesheet->cdn_link;
+  $params->{zensheet} = $zensheet->cdn_link;
   $params->{customstyle} = $customstyle;
-  $params->{printsheet} = $printsheet->cdn_link($gzip);
+  $params->{printsheet} = $printsheet->cdn_link;
   $params->{basehref} = ($REQUEST->is_guest)?($self->APP->basehref):(undef);
   $params->{canonical_url} = $canonical_url;
   $params->{metadescription} = $node->metadescription;
 
   $params->{body_class} = $node->type->title;
 
-  $params->{default_javascript} = $self->APP->node_by_name("default javascript","jscript")->cdn_link;
+  $params->{default_javascript} = $self->APP->asset_uri("legacy.js");
 
 
   my $lastnode = $REQUEST->param("lastnode_id");
@@ -75,7 +73,6 @@ sub layout
   }else{
     $e2->{assets_location} = "";
   }
-  $e2->{can_gzip} = $REQUEST->can_gzip;
 
   my $cookie = undef;
   foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){

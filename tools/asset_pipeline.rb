@@ -70,7 +70,7 @@ assets = {'js' => {}, 'css' => {}}
       end
     end
 
-    assets[asset_type][basefile]['gz'] = mem_gzip(assets[asset_type][basefile]['min'])
+    assets[asset_type][basefile]['gzip'] = mem_gzip(assets[asset_type][basefile]['min'])
     assets[asset_type][basefile]['br'] = Brotli.deflate(assets[asset_type][basefile]['min'])
     assets[asset_type][basefile]['deflate'] = Zlib::Deflate.deflate(assets[asset_type][basefile]['min'])
     puts "Minified #{basefile}"
@@ -99,14 +99,14 @@ assets.keys.each do |asset_type|
         content_type = "text/css"
       end
 
-      ['min','gz','br','deflate'].each do |upload_type|
+      ['min','gzip','br','deflate'].each do |upload_type|
         content_encoding = {}
         file_ending = asset_type
         encodingpath = ""
-        if(upload_type.eql? 'gz')
+        if(upload_type.eql? 'gzip')
           content_encoding = {content_encoding: 'gzip'}
           file_ending = "min.gz.#{asset_type}"
-          encodingpath = "gz/"
+          encodingpath = "gzip/"
         end
 
         if(upload_type.eql? 'br')

@@ -3463,16 +3463,6 @@ sub linkNodeTitle {
   return $str;
 }
 
-sub canCompress
-{
-  #TODO: Support deflate?
-  if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
-  {
-    return 1;
-  }
-}
-
-
 sub getELogName
 {
   my ($this) = @_;
@@ -3630,27 +3620,6 @@ sub dumpCallStack
 
   print "*** End Call Stack ***\n";
   return;
-}
-
-sub stylesheetCDNLink
-{
-  my ($this, $stylesheet) = @_;
-
-  $this->{db}->getRef($stylesheet);
-
-  if($Everything::CONF->use_local_assets)
-  {
-    return "/css/$$stylesheet{node_id}.css";
-  }
-  
-  my $filename = "$$stylesheet{node_id}.min";
-  if($this->canCompress)
-  {
-    $filename.= ".gz";
-  }
-  
-  $filename .= ".css";
-  return $Everything::CONF->assets_location."/$filename";
 }
 
 sub pagetitle
@@ -4621,6 +4590,41 @@ sub get_user_style
 
   my $user_obj = Everything::Node::user->new($user);
   return $user_obj->style->id;
+}
+
+sub best_compression_type
+{
+  my ($this) = @_;
+
+  foreach my $encoding ("br","deflate","gzip")
+  {
+    if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /$encoding/)
+    {
+      return $encoding;
+    }
+  }
+
+  return;
+}
+
+sub asset_uri
+{
+  my ($this, $asset) = @_;
+
+  if(my ($ext) = $asset =~ /\.(css|js)$/)
+  {
+    if($Everything::CONF->use_local_assets)
+    {
+      return "/$ext/$asset";
+    }
+  }
+
+  my $compression = $this->best_compression_type;
+
+  if($compression)
+  {
+    return $Everything::CONF->assets_location."/$compression/$asset";
+  }
 }
 
 1;

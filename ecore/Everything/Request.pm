@@ -254,12 +254,6 @@ sub truncated_params
   return $outparams;
 }
 
-sub can_gzip
-{
-  my ($self) = @_;
-  return $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/;
-}
-
 __PACKAGE__->meta->make_immutable;
 
 1;

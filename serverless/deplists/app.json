@@ -1054,5 +1054,11 @@
   {
     "file": "https://cpan.metacpan.org/authors/id/J/JL/JLMARTIN/Paws-0.42.tar.gz",
     "module": "Paws"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MG/MGV/IO-Compress-Brotli-0.004001.tar.gz",
+    "module": "IO::Compress::Brotli",
+    "dependson": ["File::Slurper"],
+    "toplevel": 1
   }
 ]
