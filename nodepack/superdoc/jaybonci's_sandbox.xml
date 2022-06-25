@@ -1,5 +1,9 @@
 <node>
-  <doctext>[%
+  <doctext>&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;/js/main.bundle.js&quot;&gt;&lt;/script&gt;
+
+[%
+  return &quot;&quot;;
   my $csr = $DB-&gt;sqlSelectMany(&quot;setting_id&quot;,&quot;setting&quot;,&quot;vars like '%customstyle%'&quot;);
   $csr-&gt;execute();
 
