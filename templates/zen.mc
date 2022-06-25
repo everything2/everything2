@@ -107,7 +107,6 @@ sub _build_pagetitle
 Everything2 &trade; is brought to you by Everything2 Media, LLC. All content copyright &#169; original author unless stated otherwise.
 </div>
 <& 'static_javascript', nodeinfojson => $.nodeinfojson, default_javascript => $.default_javascript &>
-<& 'googleanalytics' &>
 </body>
 </html>
 </%augment>

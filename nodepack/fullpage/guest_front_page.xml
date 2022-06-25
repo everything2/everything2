@@ -99,7 +99,6 @@ return parseLinks($zenStr);
 &lt;div id='footer'&gt;
 [{zenFooter}]
 &lt;/div&gt;
-[{googleanalytics}]
 [{static javascript}]
 &lt;/body&gt;
 &lt;/html&gt;</doctext>

@@ -117,7 +117,6 @@ sub zen_stdcontainer
   $str .= $contained_stuff;
 
   $str .= htmlcode("static javascript");
-  $str .= htmlcode("googleanalytics");
   $str .= qq|</body></html>|;
   return $str;
 }
