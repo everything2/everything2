@@ -45,9 +45,9 @@ puts "Using asset bucket: #{asset_bucket}"
 
 everydir = File.expand_path(__dir__ + "/..")
 
-assets = {'js' => {}, 'css' => {}}
+assets = {'js' => {}, 'css' => {}, 'react' => {}}
 
-['js','css'].each do |asset_type|
+['js','css','react'].each do |asset_type|
   Dir["#{everydir}/www/#{asset_type}/*"].each do |f|
     basefile = File.basename(f)
     assets[asset_type][basefile] = {}
@@ -68,6 +68,8 @@ assets = {'js' => {}, 'css' => {}}
       else
         assets[asset_type][basefile]['min'] = out
       end
+    elsif(asset_type.eql? 'react')
+      assets[asset_type][basefile]['min'] = File.open(f).read
     end
 
     assets[asset_type][basefile]['gzip'] = mem_gzip(assets[asset_type][basefile]['min'])
@@ -79,7 +81,7 @@ end
 
 git_history = []
 
-(0..4).to_a.each do |num|
+(0..8).to_a.each do |num|
   git_history.push `git -C #{everydir} log -n 1 --skip #{num} --pretty=format:"%H"`
   puts "Preserving commit: "+git_history[-1]
 end
@@ -89,63 +91,46 @@ current_rev = git_history[0]
 puts "Uploading to: #{current_rev}"
 
 assets.keys.each do |asset_type|
-  assets[asset_type].keys.each do |k|
-    if matches = k.match(/([^\.]+)\.#{asset_type}/)
-      filepart = matches[1]
+  assets[asset_type].keys.each do |filename|
+    content_type = "application/javascript"
 
-      content_type = "application/javascript"
+    if asset_type.eql? "css"
+      content_type = "text/css"
+    end
 
-      if asset_type.eql? "css"
-        content_type = "text/css"
+    ['min','gzip','br','deflate'].each do |upload_type|
+      content_encoding = {}
+      encodingpath = ""
+      if(upload_type.eql? 'gzip')
+        content_encoding = {content_encoding: 'gzip'}
+        encodingpath = "gzip/"
       end
 
-      ['min','gzip','br','deflate'].each do |upload_type|
-        content_encoding = {}
-        file_ending = asset_type
-        encodingpath = ""
-        if(upload_type.eql? 'gzip')
-          content_encoding = {content_encoding: 'gzip'}
-          file_ending = "min.gz.#{asset_type}"
-          encodingpath = "gzip/"
-        end
+      if(upload_type.eql? 'br')
+        content_encoding = {content_encoding: 'br'}
+        encodingpath = "br/"
+      end
 
-        if(upload_type.eql? 'br')
-          content_encoding = {content_encoding: 'br'}
-          file_ending = "min.br.#{asset_type}"
-          encodingpath = "br/"
-        end
+      if(upload_type.eql? 'deflate')
+        content_encoding = {content_encoding: 'deflate'}
+        encodingpath = "deflate/"
+      end
 
-        if(upload_type.eql? 'deflate')
-          content_encoding = {content_encoding: 'deflate'}
-          file_ending = "min.deflate.#{asset_type}"
-          encodingpath = "deflate/"
-        end
-
-        if(upload_type.eql? 'min')
-          file_ending = "min.#{asset_type}"
-        end
-
-        filename = "#{current_rev}/#{filepart}.#{file_ending}"
-
-        if testonly.nil?
-          [filename,"#{current_rev}/#{encodingpath}#{filepart}.#{asset_type}"].each do |to_upload|
-            s3args = {bucket: asset_bucket, key: to_upload, content_type: content_type, body: assets[asset_type][k][upload_type], cache_control: "max-age=31536000"}
-            s3args.merge!(content_encoding)
-            upload_result = s3client.put_object(s3args)
-            if upload_result.etag.nil?
-              puts "File upload failed: #{to_upload}"
-              exit 1
-            else
-              puts "Uploaded: #{to_upload}"
-            end
+      if testonly.nil?
+        ["#{current_rev}/#{encodingpath}#{filename}"].each do |to_upload|
+          s3args = {bucket: asset_bucket, key: to_upload, content_type: content_type, body: assets[asset_type][filename][upload_type], cache_control: "max-age=31536000"}
+          s3args.merge!(content_encoding)
+          upload_result = s3client.put_object(s3args)
+          if upload_result.etag.nil?
+            puts "File upload failed: #{to_upload}"
+            exit 1
+          else
+            puts "Uploaded: #{to_upload}"
           end
-        else
-          puts "Test only, not uploading #{to_upload}"
         end
+      else
+        puts "Test only, not uploading #{to_upload}"
       end
-    else
-      puts "Could not determine bucket key from filename: #{k}"
-      exit 1
     end
   end
 end

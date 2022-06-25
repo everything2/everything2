@@ -2,8 +2,9 @@ const path = require('path')
 
 module.exports = {
   entry: path.resolve(__dirname, '../react', 'index.js'),
+  mode: 'production',
   output: {
-    path: path.resolve(__dirname, '../www/js'),
+    path: path.resolve(__dirname, '../www/react'),
     filename: '[name].bundle.js'
   },
   module: {
