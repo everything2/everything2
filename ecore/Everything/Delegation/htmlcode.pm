@@ -80,9 +80,6 @@ use Everything::Delegation::htmlpage;
 # Used by uploaduserimage
 use Everything::S3;
 
-# This links a stylesheet with the proper content negotiation extension
-# linkJavascript below talks a bit about the S3 strategy
-#
 sub linkStylesheet
 {
   my $DB = shift;
@@ -107,8 +104,7 @@ sub linkStylesheet
     } else {
       $n = getNode($n, 'stylesheet');
     }
-
-    return $APP->stylesheetCDNLink($n);
+    return $APP->asset_uri("$n->{node_id}.css");
   } else {
     return $n;
   }
@@ -240,10 +236,6 @@ sub linkjavascript
   }
 
   my $filename = "$$n{node_id}.min";
-  if($APP->canCompress)
-  {
-    $filename.= ".gz";
-  }
 
   $filename .= ".js";
   return $Everything::CONF->assets_location."/$filename";
@@ -4166,7 +4158,6 @@ sub static_javascript
   }else{
     $e2->{assets_location} = "";
   }
-  $e2->{can_gzip} = $APP->canCompress;
   $e2 = encode_json($e2);
 
   my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';
@@ -4175,7 +4166,7 @@ sub static_javascript
       $libraries .= qq|<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>|;
   }
   my $defaultJS = getNode("default javascript","jscript");
-  $libraries .= "<script src='".htmlcode("linkjavascript",$$defaultJS{node_id})."' type='text/javascript'></script>\n";
+  $libraries .= qq|<script src="|.$APP->asset_uri("legacy.js").qq|" type="text/javascript"></script>|;
 
   return qq|
     <script type='text/javascript' name='nodeinfojson' id='nodeinfojson'>

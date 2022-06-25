@@ -17,6 +17,8 @@ use Everything::Delegation::nodelet;
 use Everything::Delegation::htmlpage;
 
 use Compress::Zlib;
+use IO::Compress::Brotli;
+use IO::Compress::Deflate;
 use Everything::Request;
 
 use CGI;
@@ -847,9 +849,16 @@ sub displayPage
 
 		setVars $USER, $VARS unless $APP->isGuest($USER);
 
-		if($APP->canCompress())
-		{
-			$page = Compress::Zlib::memGzip($page);
+                my $best_compression = $APP->best_compression_type;
+                if($best_compression eq "br")
+                {
+                  $page = IO::Compress::Brotli::bro($page);
+                }elsif($best_compression eq "deflate") {
+                  my $outpage = undef;
+                  $page = IO::Compress::Deflate::deflate(\$page => \$outpage);
+                  $page = $outpage; 
+                }elsif($best_compression eq "gzip"){
+                  $page = Compress::Zlib::memGzip($page);
 		}
 
 		printHeader($$NODE{datatype}, $page, $lastnode);
@@ -1074,10 +1083,10 @@ sub printHeader
 		$extras->{cookie} = \@cookies;
 	}
 
-	if($APP->canCompress())
-	{
-		$extras->{content_encoding} = "gzip";
-	}
+        if(my $best_compression = $APP->best_compression_type)
+        {
+		$extras->{content_encoding} = $best_compression;
+        }
 
         $extras->{'X-Frame-Options'} = "sameorigin";
 
