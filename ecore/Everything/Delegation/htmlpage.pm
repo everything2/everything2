@@ -2893,19 +2893,6 @@ sub dbtable_index_page
   return $str;
 }
 
-sub jscript_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return $NODE->{doctext};
-}
-
 sub user_display_page
 {
   my $DB = shift;
