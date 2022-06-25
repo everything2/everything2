@@ -802,7 +802,7 @@ sub displayPage
 		$lastnode = getId($NODE);
 	}elsif ($$NODE{type}{title} eq 'writeup') {
 		$lastnode = $$NODE{parent_e2node};
-	} elsif ($$NODE{type}{title} eq 'jscript' or $$NODE{type}{title} eq 'stylesheet') {
+	} elsif ($$NODE{type}{title} eq 'stylesheet') {
 		$lastnode = -1;
 	}
 	

@@ -661,40 +661,6 @@ sub e2poll_create
   return;
 }
 
-sub jscript_create
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($JSCRIPT) = @_;
-
-  $DB->getRef($JSCRIPT);
-
-  my $scriptAuthor = $$JSCRIPT{author_user};
-  my $author = getNodeById($scriptAuthor)->{title};
-  $$JSCRIPT{author_user} = getNode('e2gods','usergroup') -> {'node_id'};
-
-  $$JSCRIPT{doctext} = $query->param("jscript_doctext");
-
-  my $JNODE = getNode('Javascript Repository listings','setting');
-
-  my $SETTINGS = getVars($JNODE);
-
-  my $nid = $$JSCRIPT{node_id};
-
-  $$SETTINGS{$nid} = "<b>[".$$JSCRIPT{title}."]</b> by [".$author."]<br />".$query->param("jscript_desc") ;
-
-  setVars($JNODE, $SETTINGS);
-  updateNode($JNODE, -1);
-  updateNode($JSCRIPT, -1);
-  return;
-}
-
 sub collaboration_update
 {
   my $DB = shift;
