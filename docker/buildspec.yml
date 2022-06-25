@@ -17,6 +17,7 @@ phases:
     commands:
       - echo Build started on `date` in `pwd`
       - echo Building asset pipeline...
+      - npx webpack --config etc/webpack.config.js
       - ./tools/asset_pipeline.rb --assets=$ASSETS_BUCKET
       - echo Building the Docker image...
       - docker build --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG -f docker/e2app/Dockerfile . ;

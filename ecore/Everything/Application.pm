@@ -4615,7 +4615,14 @@ sub asset_uri
   {
     if($Everything::CONF->use_local_assets)
     {
-      return "/$ext/$asset";
+      if($asset =~ /react/)
+      {
+        return "/$asset";
+      }else{
+        return "/$ext/$asset";
+      }
+    }else{
+      $asset =~ s/^\/?react\///;
     }
   }
 
