@@ -204,43 +204,6 @@ sub zenadheader
   return $ad_text;
 }
 
-# This links javascript to the page with the proper content encoding. What is not obvious is that
-# we store the CSS files in gzip format on disk in S3, since S3 can't do content negotiation on the fly.
-# TODO: Abscract out the jscss entry to a configurable bucket
-#
-sub linkjavascript
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($n) = @_;
-
-  unless (ref $n) {
-    unless ($n =~ /\D/) {
-      $n = getNodeById($n);
-    } else {
-      $n = getNode($n, 'jscript');
-    }
-  }
-
-  return "" unless $n;
-
-  if($Everything::CONF->use_local_assets)
-  {
-    return "/js/$$n{node_id}.js";
-  }
-
-  my $filename = "$$n{node_id}.min";
-
-  $filename .= ".js";
-  return $Everything::CONF->assets_location."/$filename";
-}
-
 # On htmlpages, this shows the inherited value for a nodetype
 #
 sub displayInherited
