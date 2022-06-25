@@ -4128,7 +4128,6 @@ sub static_javascript
   unless ($APP->isGuest($USER)){
       $libraries .= qq|<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>|;
   }
-  my $defaultJS = getNode("default javascript","jscript");
   $libraries .= qq|<script src="|.$APP->asset_uri("legacy.js").qq|" type="text/javascript"></script>|;
 
   return qq|
