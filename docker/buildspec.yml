@@ -12,7 +12,7 @@ phases:
       - npm install -g npm@latest
       - npm install
       - echo Installing ruby sdk elements
-      - gem install aws-sdk-s3
+      - gem install aws-sdk-s3 brotli
   build:
     commands:
       - echo Build started on `date` in `pwd`
