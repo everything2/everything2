@@ -5,6 +5,8 @@ require 'zlib'
 require 'getoptlong'
 require 'open3'
 require 'stringio'
+require 'brotli'
+require 'zlib'
 
 def mem_gzip(data)
   gz = Zlib::GzipWriter.new(StringIO.new)
@@ -49,7 +51,6 @@ assets = {'js' => {}, 'css' => {}}
   Dir["#{everydir}/www/#{asset_type}/*"].each do |f|
     basefile = File.basename(f)
     assets[asset_type][basefile] = {}
-    assets[asset_type][basefile]['plain'] = File.open(f).read
 
     if(asset_type.eql? 'js')
       out, err, status = Open3.capture3("npx terser #{f}")
@@ -69,7 +70,9 @@ assets = {'js' => {}, 'css' => {}}
       end
     end
 
-    assets[asset_type][basefile]['min_gz'] = mem_gzip(assets[asset_type][basefile]['min'])
+    assets[asset_type][basefile]['gz'] = mem_gzip(assets[asset_type][basefile]['min'])
+    assets[asset_type][basefile]['br'] = Brotli.deflate(assets[asset_type][basefile]['min'])
+    assets[asset_type][basefile]['deflate'] = Zlib::Deflate.deflate(assets[asset_type][basefile]['min'])
     puts "Minified #{basefile}"
   end
 end
@@ -96,13 +99,26 @@ assets.keys.each do |asset_type|
         content_type = "text/css"
       end
 
-      ['plain','min','min_gz'].each do |upload_type|
-
+      ['min','gz','br','deflate'].each do |upload_type|
         content_encoding = {}
         file_ending = asset_type
-        if(upload_type.eql? 'min_gz')
+        encodingpath = ""
+        if(upload_type.eql? 'gz')
           content_encoding = {content_encoding: 'gzip'}
           file_ending = "min.gz.#{asset_type}"
+          encodingpath = "gz/"
+        end
+
+        if(upload_type.eql? 'br')
+          content_encoding = {content_encoding: 'br'}
+          file_ending = "min.br.#{asset_type}"
+          encodingpath = "br/"
+        end
+
+        if(upload_type.eql? 'deflate')
+          content_encoding = {content_encoding: 'deflate'}
+          file_ending = "min.deflate.#{asset_type}"
+          encodingpath = "deflate/"
         end
 
         if(upload_type.eql? 'min')
@@ -112,17 +128,19 @@ assets.keys.each do |asset_type|
         filename = "#{current_rev}/#{filepart}.#{file_ending}"
 
         if testonly.nil?
-          s3args = {bucket: asset_bucket, key: filename, content_type: content_type, body: assets[asset_type][k][upload_type], cache_control: "max-age=31536000"}
-          s3args.merge!(content_encoding)
-          upload_result = s3client.put_object(s3args)
-          if upload_result.etag.nil?
-            puts "File upload failed: #{filename}"
-            exit 1
-          else
-            puts "Uploaded: #{filename}"
+          [filename,"#{current_rev}/#{encodingpath}#{filepart}.#{asset_type}"].each do |to_upload|
+            s3args = {bucket: asset_bucket, key: to_upload, content_type: content_type, body: assets[asset_type][k][upload_type], cache_control: "max-age=31536000"}
+            s3args.merge!(content_encoding)
+            upload_result = s3client.put_object(s3args)
+            if upload_result.etag.nil?
+              puts "File upload failed: #{to_upload}"
+              exit 1
+            else
+              puts "Uploaded: #{to_upload}"
+            end
           end
         else
-          puts "Test only, not uploading #{filename}"
+          puts "Test only, not uploading #{to_upload}"
         end
       end
     else
