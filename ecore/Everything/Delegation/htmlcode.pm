@@ -5288,69 +5288,6 @@ sub ednsection_patches
   return $str;
 }
 
-# Used on our mobile page only
-#
-sub zenMobileTabs
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return unless isMobile();
-  my $canEdit = canUpdateNode($USER, $NODE) && $USER->{user_id} == $NODE->{author_user};
-  my $dt = $query->param('displaytype') || 'display';
-  my @tabs = ();
-
-  if ($dt eq 'display') {
-    push @tabs, [1, 'display'];
-  } else {
-    push @tabs, [0, linkNode($NODE, 'display')];
-  }
-
-  if ($canEdit) {
-    if ($dt eq 'edit') {
-      push @tabs, [1, 'edit'];
-    } else {
-      push @tabs, [0, linkNode($NODE, 'edit', { displaytype => 'edit'})];
-    }
-  }
-
-  if ( !$APP->isGuest($USER) ) {
-    my $cb = getNode('chatterbox', 'nodelet');
-    if ($cb && $dt eq 'shownodelet' && $query->param('nodelet_id') == $cb->{node_id}) {
-      push @tabs, [1, 'chat'];
-    } else {
-      push @tabs, [0, linkNode($NODE, 'chat', { displaytype => 'shownodelet', nodelet_id => $cb->{node_id}})];
-    }
-  }
-
-  if ( !$APP->isGuest($USER) ) {
-    my $ou = getNode('other users', 'nodelet');
-    if ($ou && $dt eq 'shownodelet' && $query->param('nodelet_id') == $ou->{node_id}) {
-      push @tabs, [1, 'other users'];
-    } else {
-      push @tabs, [0, linkNode($NODE, 'other users', { displaytype => 'shownodelet', nodelet_id => $ou->{node_id} })];
-    }
-  }
-
-  if ($dt eq 'listnodelets') {
-    push @tabs, [1, 'more...'];
-  } else {
-    push @tabs, [0, linkNode($NODE, 'more...', { displaytype => 'listnodelets' })];
-  }
-
-  return ('<div id="zen_mobiletabs">'
-    .(join ' | ', map {
-      my ($selected, $str) = @$_;
-      '<span class="'.($selected?'zen_mobiletab_selected' : 'zen_mobiletab').'">'.$str.'</span>'
-      } @tabs)
-    . '</div>');
-}
-
 # Used only on the user display page
 # pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the groups the user belongs to will be returned
 #
