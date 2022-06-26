@@ -5118,51 +5118,6 @@ sub zensearchform
   return $str . "\n</div></form>";
 }
 
-sub ednsection_cgiparam
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = '';
-  $str = '[<i>Ajax call parameters, not original page parameters</i>]<br>' if(($query->param('displaytype') || "" ) eq 'ajaxupdate');
-  my $c=0;
-  foreach my $var ($query->param) {
-    next if $var eq 'passwd';
-    my $q=$query->param($var);
-
-    #Sanitise the variable for display
-    $var =~ s/\</\&lt\;/g;
-    $var =~ s/\>/\&gt\;/g;
-
-    next if $q eq '';
-    next if ($var eq 'op') && !$q;
-    ++$c;
-
-    my $maxLen = 70;
-    my $isDebug = ($var =~ /^debug/i);
-    $maxLen *= 2 if $isDebug;
-
-    $str .= '<tt>' if $isDebug;
-    $str .= '<strong>'.$var.'</strong>';
-    if((my $l=length($q))>$maxLen) {
-      $str .= ':'.$APP->encodeHTML(substr($q,0,$maxLen),1).'... ('.$l.')';
-    } elsif($q) {
-      $str .= ':'.$APP->encodeHTML($q,1);
-    }
-
-    $str .= '</tt>' if $isDebug;
-    $str .= "<br>\n";
-  }
-
-  $str = "<small>$c<br></small>\n".$str if $c;
-  return $str;
-}
-
 sub ednsection_globals
 {
   my $DB = shift;
@@ -5230,35 +5185,6 @@ sub ednsection_globals
   return $str.'</table>';
 
   ## use critic (RequireCheckingReturnValueOfEval,ProhibitNoStrict,ProhibitProlongedStrictureOverride)
-}
-
-# Used on the edev nodelet only
-#
-sub ednsection_patches
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $patches = $DB->sqlSelectMany("patch_id, (select author_user from node where node_id=patch.patch_id limit 1) as author_user, (select title from node where node_id=patch.patch_id limit 1) as title", "patch", "cur_status=1983892 order by patch_id desc limit 7");
-  return 'No patches. Word.' unless $patches->rows;
-
-
-  my $str = '<table id="ednsection_patches">';
-  while (my $patch = $patches->fetchrow_hashref){
-    $str.= "<tr><td class='oddrow' align='center'><b>".
-      linkNode($$patch{author_user}).
-      "</b></td></tr><tr><td>".
-      linkNode($$patch{patch_id},$$patch{title},{lastnode_id=>0}).
-      "</td></tr>";
-  }
-
-  $str.= '</table><p align="center">'.linkNodeTitle("Patch Manager") ;
-  return $str;
 }
 
 # Used only on the user display page
