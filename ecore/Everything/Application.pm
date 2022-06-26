@@ -2435,12 +2435,6 @@ sub adjustExp {
 	return 1;
 }
 
-sub use_bootstrap {
-  my ($this) = @_;
-  return $Everything::HTML::VARS->{use_bootstrap};
-}
-
-
 sub urlDecode
 {
   my $this = shift;
