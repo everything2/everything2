@@ -26,7 +26,6 @@ BEGIN {
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
-  *isMobile = *Everything::HTML::isMobile;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *evalCode = *Everything::HTML::evalCode;
@@ -101,7 +100,6 @@ sub zen_stdcontainer
 	. ( $$NODE{type_nodetype}==15 ? '?foruser='.$$NODE{title} : '' ) . '">';
   }
   
-  $str .= qq|<meta content="width=device-width; initial-scale=1.0; user-scalable=1;"name="viewport">| if isMobile();
   $str .= qq|</head><body class="|;
   $str .= 'writeuppage ' if $$NODE{e2node_id} || $$NODE{writeup_id} || $$NODE{draft_id};
   $str .= $$NODE{type}{title};
@@ -137,23 +135,14 @@ sub zen_container
   
   $str .= htmlcode("zenadheader");
  
-  # Mobile has a wrapper around everything, instead of using CSS media selectors. We can eventually reduce it to that, but for now:
-  $str .= qq|<div id="mobilewrapper">| if isMobile();
-
   $str .= qq|<div id='header'>|;
 
   my $epid = getNode('Epicenter','nodelet')->{node_id};
   $str .= (htmlcode('epicenterZen') || "") if $$VARS{nodelets} && $$VARS{nodelets} !~ /\b$epid\b/;
  
-  if(isMobile())
-  {
-    $str.= htmlcode("searchform");
-  }else{
-    $str.= qq|<div id='searchform'>|.htmlcode("zensearchform").qq|</div>|;
-  }
+  $str.= qq|<div id='searchform'>|.htmlcode("zensearchform").qq|</div>|;
 
   $str.=qq|<div id='e2logo'><a href="/">Everything<span id="e2logo2">2</span></a></div></div>|;
-  $str.=(htmlcode("zenMobileTabs") || "");
 
   $str.=qq|<div id='wrapper'>|;
   $str.=htmlcode("guestuserbanner");

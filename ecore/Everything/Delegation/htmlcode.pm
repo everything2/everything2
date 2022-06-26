@@ -4063,7 +4063,6 @@ sub guestuserbanner
 
   return "";
   # return "" unless($APP->isGuest($USER));
-  # return "" if(isMobile());
   # return "" unless($NODE->{type}->{title} eq "writeup" or $NODE->{type}->{title} eq "e2node");
 
   # my $style = q|-moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; align: center; width: 80%; background-color: #fdffd4; border-style:solid; border-color: #bbbbbb; border-width: 1px; min-width:300px; min-height: 70px; margin-left: auto; margin-right: auto; margin-bottom: 10px; padding: 10px; font-family: 'arial',sans-serif; font-size: 130%;|;
@@ -4129,7 +4128,7 @@ sub static_javascript
       $libraries .= qq|<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>|;
   }
   $libraries .= qq|<script src="|.$APP->asset_uri("legacy.js").qq|" type="text/javascript"></script>|;
-
+  # $libraries .= qq|<script src="|.$APP->asset_uri("react/main.bundle.js").qq|" type="text/javascript"></script>|;
   return qq|
     <script type='text/javascript' name='nodeinfojson' id='nodeinfojson'>
       e2 = $e2;
