@@ -56,8 +56,6 @@ sub BEGIN {
               encodeHTML
               processVarsSet
               mod_perlInit
-
-              isMobile
               );
 }
 
@@ -1448,12 +1446,6 @@ sub processVarsSet {
 
 	return;
 }
-
-sub isMobile
-{
-  return $query->cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i;
-}
-
 
 1;
 
