@@ -177,16 +177,6 @@ sub htmlcode_edit_page
 
   my $str = qq|title:|.htmlcode("textfield","title").qq|maintained by:|.htmlcode("node_menu","author_user,user,usergroup").qq|<br />|;
   
-  if($APP->isAdmin($USER) and $NODE->{type}->{title} eq "patch")
-  {
-    if($query->param("op") eq "applypatch")
-    {
-      $str .= linkNode($NODE, "Apply this patch", {"op" => "applypatch", "patch_id" => "$$NODE{node_id}"})."<Br>";
-    }else{
-      $str .= "<font color=\"red\">The patch has been applied</font> ".linkNode($NODE, "Unapply", {"op" => "applypatch", "patch_id" => "$$NODE{node_id}"})."<br />";
-    }
-  }
-
   $str .= htmlcode("listcode","code"). qq|<p><small><strong>Edit the code:</strong></small><br />|;
   $str .= htmlcode("textarea","code,30,80");
 
@@ -967,7 +957,7 @@ sub superdoc_edit_page
   $str .= qq|<h4>title</h4> |.htmlcode("textfield","title");
   $str .= qq|<h4>maintainer:</h4> |.htmlcode("node_menu","author_user,user,usergroup");
   $str .= qq|<p><small><strong>Edit the document text:</strong></small></p>|;
-  $str .= qq|<p align="center" style="border: solid black 2px; background: #ffa; color: black; spacing: 2px; padding: 5px;"><big><strong>Danger! This is editing the code with no undo function! <em>Please use patches to edit code, it drives us nuts when you don't. Ideally, put the patches on the development server.</em></strong></big></p>|;
+  $str .= qq|<p align="center" style="border: solid black 2px; background: #ffa; color: black; spacing: 2px; padding: 5px;"><big><strong>This is a live edit. Be careful.</strong></big></p>|;
 
   $str .= htmlcode("textarea","doctext,30,80");
   $str .= qq|<br />|;

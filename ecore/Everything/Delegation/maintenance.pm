@@ -37,7 +37,7 @@ BEGIN {
   *replaceNodegroup = *Everything::HTML::replaceNodegroup; 
 } 
 
-# Used by writeup_create, debatecomment_create, debate_create, patch_create
+# Used by writeup_create, debatecomment_create, debate_create
 use JSON;
 
 sub room_create

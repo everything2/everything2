@@ -795,19 +795,6 @@ sub listcode
 
   $code = $APP->listCode($code, 1);
 
-  my $patchTitle = undef;
-  my $patchID = undef;
-  my $patchNode = undef;
-
-  if ($field eq 'script_text') {
-    $patchID = $$codenode{script_id};
-    $patchNode = getNode($patchID);
-    $patchTitle = $$patchNode{title};
-  } else {
-    $patchID = $$codenode{node_id};
-    $patchTitle = $$codenode{title};
-  }
-
   # This searches for [{ text }] nodelet section calls and replaces the text with a link.
   $code =~ s/\&\#91;\{\s*(nodeletsection)\s*:\s*([^,\s}]*)\s*,\s*([^,\s}]*)(.*?)\}\&\#93;/"[\{<a href=".urlGen({node=>$1, type=>'htmlcode'}).">$1<\/a>:<a href=".urlGen({node=> $2 . "section_" . $3, type=>'htmlcode'}).">$2, $3<\/a>$4\}]"/egs;
 
@@ -834,8 +821,7 @@ sub listcode
   #N-Wing, Sat, Jun 15, 2002 - help reduce long line horiz scrolling
   $code = '<div style="font-size: smaller;">'.$code.'</div>' if $VARS->{listcode_smaller};
 
-  #breaks the form on code edit pages an' patching a patch may get confusing.
-  return $text.$code if ($query->param('displaytype') eq 'edit' or $$codenode{type}{title} eq 'patch');
+  return $text.$code if ($query->param('displaytype') eq 'edit');
 
   if($delegated)
   {
@@ -843,19 +829,9 @@ sub listcode
   }
 
   return $text unless $APP->isDeveloper($USER);
-  $text = htmlcode('openform') . $text . '<input type="submit" name="sexisgood" value="resize"></form>'.$code ;
+  $text .= '<br />'.linkNode($codenode,'Edit this code',{displaytype => 'edit'}).'<br />' if $APP->isAdmin($USER);
 
-  $text .= '<strong>Submit a patch</strong>';
-  $text .= $query->start_form('POST',$ENV{script_name}) . '<input type="hidden" name="op" value="new"><input type="hidden" name="type" value="patch"> <input type="hidden" name="node" value="'.$patchTitle.' (patch)"> <input type="hidden" name="patch_for_node" value="'.$patchID.'"> <input type="hidden" name="patch_field" value="'.$field.'"> ';
-
-  $text .= 'patch\'s purpose: '.$query->textfield('patch_purpose','',55,240)."<br />\n";
-  $text .= $query->textarea('patch_code', $$codenode{$field}, 20, 60);
-  $text .= "<br />\n";
-  $text .= 'You are creating a patch here. It is possible to '.linkNode($codenode,'edit code directly',{displaytype => 'edit'}).', but don\'t do that with live code.<br />' if $APP->isAdmin($USER);
-  $text .= $query->submit();
-  $text .= $query->end_form;
-
-  return $text;
+  return $text.$code;
 }
 
 # Only really used in the nodetype display page
@@ -4791,59 +4767,6 @@ sub ednsection_edev
   return $str;
 }
 
-# Only used in the patch system. Deletable once that is wound down.
-#
-sub settype
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($patch_id) = @_;
-  $patch_id ||= $NODE -> {node_id};
-
-  my $PATCH = getNodeById($patch_id);
-
-  my $patch_status = getNodeById($PATCH -> {cur_status});
-
-  #Process changes, if any
-  if( $APP->isAdmin($USER) )
-  {
-    my $new_status = $query -> param('patch_status');
-    if( $new_status and $new_status != $patch_status -> {status_id})
-    {
-      $NODE -> {cur_status} = $new_status;
-      updateNode($NODE,-1);
-    }
-  }
-
-  my $applied = $patch_status -> {applied};
-
-  #Only get the statuses that match this status, so that you can't go
-  #from applied to unapplied statuses without hitting the little applied
-  #button.
-  my @statuses = getNodeWhere({-applied => $applied},"status","node_id");
-
-  my %dropdown_labels = ();
-
-  foreach my $status(@statuses)
-  {
-    my $status_title = $status -> {title};
-    $status_title .= " *" if $$status{status_id} == $$patch_status{status_id}; 
-    $dropdown_labels{$status -> {status_id}} = $status_title;
-  }
-
-  my @status_ids = keys %dropdown_labels;
-
-  my $str = $query -> popup_menu("patch_status", \@status_ids, $patch_status -> {status_id}, \%dropdown_labels);
-
-  return $str;
-}
-
 sub getGravatarMD5
 {
   my $DB = shift;
@@ -5001,57 +4924,6 @@ sub unignoreUser
   $query->param('DEBUGignoreUser', 'tried to unignore '.$$U{title});
   return "$$U{title} unignored";
 
-}
-
-sub assign_patch
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  #This should only be called from patch display page --[Swap]
-  my ($patch_id) = @_;
-
-  $patch_id ||= $NODE -> {node_id};
-
-  my $PATCH = getNodeById($patch_id);
-
-  my $assigned_to = $PATCH -> {assigned_to};
-
-  #Process changes, if any
-  if(isGod($USER) ){
-    my $new_assign = $query -> param('assigned_to');
-    if( $new_assign and $new_assign != $assigned_to ){
-      $PATCH -> {assigned_to} = $new_assign;
-      updateNode($PATCH,-1);
-    }
-  }
-
-  my @splat_ids = @{ getNode('%%','usergroup')->{group} };
-
-  my %dropdown_labels = ();
-
-  foreach my $splat_id(@splat_ids){
-    my $splat_title = getNodeById($splat_id) -> {title};
-    $splat_title .= " *" if $splat_id == $assigned_to;
-    $dropdown_labels{$splat_id} = $splat_title;
-  }
-
-  $dropdown_labels{0} = "Nobody";
-  $dropdown_labels{0} .= " *" unless $assigned_to;
-  push @splat_ids,0;
-
-  my $str = undef;
-
-  $str .= $query -> popup_menu("assigned_to", \@splat_ids,
-    $assigned_to,
-    \%dropdown_labels);
-
-  return $str;
 }
 
 sub zensearchform
@@ -5855,7 +5727,7 @@ sub isSpecialDate
 }
 
 # Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title)
-# - that is, if you see something like 'htmlcode('nodeletsection','edn,patches');' the code you need will be at [ednsection_patches].
+# - that is, if you see something like 'htmlcode('nodeletsection','edn,util');' the code you need will be at [ednsection_util].
 #
 sub nodeletsection
 {
@@ -8669,8 +8541,6 @@ sub formxml_superdoc
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  #patch from fuzzie.. sorta
-  #applied so that you can choose not to get the findings doc.
   return "" if (($query->param("no_superdocs") == 1) || ($query->param("no_findings") == 1 && $$NODE{node_id} == $Everything::CONF->search_results));
 
   my $grp = $$NODE{group};
@@ -12297,7 +12167,6 @@ sub canseeNotification
   my $isChanop = $APP->isChanop($uid, "nogods");
 
   return 0 if ( !$isCE && ($$notification{description} =~ /node note/) );
-  return 0 if ( !$isCoder && ($$notification{description} =~ /patch/) );
   return 0 if ( !$isCE && ($$notification{description} =~ /new user/) );
   return 0 if ( !$isCE && ($$notification{description} =~ /(?:blanks|removes) a writeup/) );
   return 0 if ( !$isCE && ($$notification{description} =~ /review of a draft/) );
