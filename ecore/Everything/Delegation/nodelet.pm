@@ -26,7 +26,6 @@ BEGIN {
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
-  *isMobile = *Everything::HTML::isMobile;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *evalCode = *Everything::HTML::evalCode;
