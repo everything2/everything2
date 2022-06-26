@@ -5163,9 +5163,6 @@ sub ednsection_cgiparam
   return $str;
 }
 
-# TODO: Make me into template code
-# TODO: Why is Everything::node in here?
-#
 sub ednsection_globals
 {
   my $DB = shift;
@@ -5178,7 +5175,7 @@ sub ednsection_globals
 
   ## no critic (RequireCheckingReturnValueOfEval,ProhibitNoStrict,ProhibitProlongedStrictureOverride)
 
-  my @globals = qw($USER $VARS $DB $query);
+  my @globals = qw($VARS);
   my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';
 
   my $str = '<table cellpadding="0" cellspacing="1" border="0">';
@@ -5189,20 +5186,9 @@ sub ednsection_globals
     $str.="<td><small>$_</small></td>";
     $str.='<td><small>';
     my %options = (
-      "Everything::node" => sub {
-        my $nid = eval "$_"."->{node_id}";
-        $str.= "NODE: ".linkNode($nid)." ($nid)";
-      },
-     "Everything::NodeBase" => sub {
-        $str.= "NODEBASE (".$DB->{dbname}.")";
-      },
       "HASHREF" => sub {
          $str.= linkNode($NODE, "HASHREF", { "show$_" => 1, -class=>$ajax });
          $str.= " (".int(eval("keys \%{$_}")).")";
-      },
-      "HASH" => sub {
-         $str.= linkNode($NODE, "HASH", { "show$_" => 1, -class=>$ajax });
-         $str.= " (".int(eval("keys $_")).")";
       }
     );
 
@@ -5216,24 +5202,12 @@ sub ednsection_globals
           $str.='<td><code>'.$APP->encodeHTML($$hr{$key}).'</code></td>' if exists $$hr{$key};
           $str.="</tr>\n";
         }
-      }, 
-      "HASH" => sub {
-        no strict;
-        my $hr = eval "\\$_";
-        my $count = 0;
-        foreach my $key (keys %$hr) {
-          $str.="\n<tr><td><small>$key</small></td>";
-          $str.='<td><small><code>'.$APP->encodeHTML($$hr{$key}).'</code></small></td>' if exists $$hr{$key};
-          $str.="</tr>\n";
-        }
-      }
+      } 
     );
 
     /^(.)/;
     my $firstchar = $1;
     $reftype = "HASHREF" if $reftype eq 'HASH' and $firstchar eq '$'; 
-    $reftype = "HASH" if not $reftype and $firstchar eq '%'; 
-    $reftype = "Everything::node" if $reftype eq 'HASHREF' and eval ("exists \$$_".'{node_id}');
 
     if ($_ eq '$PAGELOAD' or (defined $query->param("show$_") and exists $expand{$reftype})) {
       my $ref = $expand{$reftype};
