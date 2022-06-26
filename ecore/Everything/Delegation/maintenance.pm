@@ -577,41 +577,6 @@ sub debate_create
   return;
 }
 
-sub patch_create
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($PATCH) = @_;
-  $DB->getRef($PATCH);
-  my $pf = getVars(getNode("patchable fields", "setting"));
-
-  unless($pf and $$pf{$query->param("patch_field")})
-  { 
-    $DB->nukeNode($PATCH, -1, 1);
-    return;
-  }
-
-  my $review_id = getId(getNode("pending review","status"));
-
-  $$PATCH{cur_status} = $review_id;
-
-  updateNode($PATCH,-1);
-
-  my $notification_id = getNode("newpatch","notification")->{node_id};
-  my $user_id = $notification_id;
-  my $argSet = { patch_id => $$PATCH{node_id}};
-  my $argStr = to_json($argSet);
-  my $addNotifier = htmlcode('addNotification', $notification_id, $user_id, $argStr);
-
-  return;
-}
-
 sub e2poll_create
 {
   my $DB = shift;
