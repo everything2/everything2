@@ -1,6 +1,6 @@
 <node>
   <doctext>&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
-&lt;script src=&quot;/js/main.bundle.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;[% $APP-&gt;asset_uri('react/main.bundle.js') %]&quot;&gt;&lt;/script&gt;
 
 [%
   return &quot;&quot;;
@@ -14,6 +14,26 @@
   }
 
   return &quot;Users with customstyle: $count&lt;br /&gt;&quot;;
+%]
+[%
+  return &quot;&quot;;
+  return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
+  my $str = &quot;&lt;ul&gt; Patch Count: &quot;.$DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;node&quot;,&quot;type_nodetype=&quot;.getType(&quot;patch&quot;)-&gt;{node_id});
+  my $patches = [];
+  my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getType(&quot;patch&quot;)-&gt;{node_id}.&quot; LIMIT 25&quot;);
+  $csr-&gt;execute();
+  while(my $row = $csr-&gt;fetchrow_arrayref)
+  {
+    my $patch = getNodeById($row-&gt;[0]);
+    $str .= &quot;&lt;li&gt;&quot;.$patch-&gt;{title}.&quot; (node_id: $patch-&gt;{node_id}) nuked &lt;/li&gt;&quot;;
+    $DB-&gt;nukeNode($patch, -1);
+  }
+
+  $str .= &quot;&lt;/ul&gt;&quot;;
+  $str .= qq|&lt;script&gt;
+  setTimeout(function(){ document.location.reload()}, 5000);
+  &lt;/script&gt;|;
+  return $str;
 %]
 [%
   my $str = &quot;&quot;;
