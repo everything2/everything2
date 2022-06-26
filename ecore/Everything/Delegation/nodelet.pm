@@ -806,18 +806,16 @@ sub everything_developer
 
   if($$VARS{nodelets})
   {
-    $str .= 'node_id='.getId($NODE). ' (' . $$NODE{type}{title} . ') <small>' . $$NODE{createtime} . ' ('.htmlcode('timesince',$$NODE{createtime}.',1')." old)</small><br />\n";
+    $str .= '<small>node_id='.getId($NODE). ' (' . $$NODE{type}{title} . ') </small><br /><small>' . $$NODE{createtime} . ' ('.htmlcode('timesince',$$NODE{createtime}.',1')." old)</small><br />\n";
 
     my $displaytype = $query->param('displaytype');
-    $str .='<a href="'.$Everything::CONF->github_url.'/commit/'.$Everything::CONF->last_commit.'">Build: '.$Everything::CONF->last_commit_short.'</a><br />';
+    $str .='<small><a href="'.$Everything::CONF->github_url.'/commit/'.$Everything::CONF->last_commit.'">Build: '.$Everything::CONF->last_commit_short.'</a></small><br />';
     $str .='<font size="1">using: '.linkNode(getPage($NODE, $displaytype)).'</font><br /><br />';
     $str .= '<a href='.urlGen({node=>'edev',type=>'usergroup'}).'>edev usergroup</a>'.
     '<br />'.
-    htmlcode('nodeletsection','edn,cgiparam').
     htmlcode('nodeletsection','edn,edev').
     htmlcode('nodeletsection','edn,util').
-    htmlcode('nodeletsection','edn,globals').
-    htmlcode('nodeletsection','edn,patches');
+    htmlcode('nodeletsection','edn,globals');
   }
 
   return $str;
