@@ -24,14 +24,64 @@ Originally by:
 * Ellen Wilson (ekw)
 
 # Contributors through the E2 patch system, by username
-
+* 00100
+* albinowax
+* alex
 * ascorbic
-* bis
-* Delta-Sys
-* flamingweasel
+* avalyn
+* BlackPawn
+* call
+* creases
+* DonJaime
+* Dreamvirus
+* DTal
+* eien_meru
+* elem_125
+* Excalibur
+* gnarl
+* Gorgonzola
 * in10se
-* mblase
-* mindslip
+* jaybonci
+* jclast
+* Johnny
+* kthejoker
+* Kurt
+* lockeduser992
+* Lord Brawl
+* magicmanzach
+* mauler
+* maxClimb
+* mkb
+* moosemanmoo
+* Mortice
+* N-Wing
+* nate
+* Noung
+* OldMiner
+* Oolong
+* Orange Julius
+* pasky
+* prole
+* raincomplex
+* rdude
+* ReiToei
+* rootbeer277
+* s_alanet
+* sam512
+* Senso
+* SharQ
+* skow
+* Swap
+* TallRoo
+* Tem42
+* TenMinJoe
+* The Debutante
+* thecoderwho
+* thefez
+* themanwho
+* Two Sheds
+* ushdfgakjasgh
+* wertperch
 
 # Contributors to system stylesheets, by username
 * 3Suns
