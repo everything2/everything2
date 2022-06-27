@@ -12,7 +12,7 @@ sub generate
 
   my $frontpage_superdoc = $this->DB->getNode("News", "usergroup");
   my $weblog_entries = $this->APP->fetch_weblog($frontpage_superdoc, 5);
-  
+
   return $this->SUPER::generate($weblog_entries);
 }
 

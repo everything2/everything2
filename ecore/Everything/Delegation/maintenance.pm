@@ -34,7 +34,7 @@ BEGIN {
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *opLogin = *Everything::HTML::opLogin;
-  *replaceNodegroup = *Everything::HTML::replaceNodegroup; 
+  *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 } 
 
 # Used by writeup_create, debatecomment_create, debate_create

@@ -191,7 +191,7 @@ has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', builder => '_build_r
 has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '6LcnVKsUAAAAAEeEGV28mfD3lt_XVpFUkOzifWGo');
 
 has 'login_location' => (isa => 'Str', is => 'ro', default => '/node/superdoc/login');
-has 'permission_denied_location' => (isa => 'Str', is => 'ro', lazy => 1, default => sub {"/node/".$_[0]->permission_denied}); 
+has 'permission_denied_location' => (isa => 'Str', is => 'ro', lazy => 1, default => sub {"/node/".$_[0]->permission_denied});
 
 
 has 'blacklist_interval' => (isa => 'Str', is => 'ro', default => '3 MONTH');
@@ -226,7 +226,7 @@ around BUILDARGS => sub
 
   my $configfile;
   my $args;
-  my $config = {}; 
+  my $config = {};
 
   my $override = "/etc/everything/override_configuration";
   my $environment = "production";

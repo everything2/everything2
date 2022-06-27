@@ -3,7 +3,7 @@ package Everything::Form::field_hashing;
 use Moose::Role;
 use Digest::SHA;
 
-has 'formsecret' => (is => 'ro', default => '236391bd13e64d3d8a0c22d23b26827101419ed8f95f48073fe5620a8cb4491a'); 
+has 'formsecret' => (is => 'ro', default => '236391bd13e64d3d8a0c22d23b26827101419ed8f95f48073fe5620a8cb4491a');
 has 'formlife' => (is => 'ro', default => 86400);
 has 'signaturefield' => (is => 'ro', default => 'formsignature');
 has 'formtimefield' => (is => 'ro', default => 'formtime');

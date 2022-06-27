@@ -24,7 +24,7 @@ sub display
   {
     $for_user = $REQUEST->user
   }
-  
+
   return { for_user => $for_user, error => $error };
 }
 
