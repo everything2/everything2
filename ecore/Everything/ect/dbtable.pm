@@ -12,7 +12,7 @@ sub node_xml_prep
 {
 	my ($this, $N, $dbh, $options) = @_;
 	my $NODE = Clone::clone($N);
-	
+
 	my $password_string = " -p$$options{password}";
 
 	if($$options{password} eq "")

@@ -69,7 +69,7 @@ sub container_display_page
   {
     $str .= linkNode($$NODE{parent_container}) if $$NODE{parent_container};
   }else{
-    $str .= "<i>none</i>"; 
+    $str .= "<i>none</i>";
   }
 
   $str .= htmlcode("listcode","content");

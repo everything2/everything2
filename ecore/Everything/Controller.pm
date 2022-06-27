@@ -23,7 +23,7 @@ sub display
 
 sub layout
 {
-  my ($self, $template, @p) = @_; 
+  my ($self, $template, @p) = @_;
   my $params = {@p};
   my $REQUEST = $params->{REQUEST};
   my $node = $params->{node};

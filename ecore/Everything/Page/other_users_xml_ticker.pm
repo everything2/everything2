@@ -50,7 +50,7 @@ sub display
       next unless $ROOM;
       $rooms{$N->{room_id}} = $ROOM->title;
     }
-  
+
     $str.="\n\t".$XG->user({room =>$rooms{$$N{room_id}}, user_id => $$N{member_user},username=>Everything::XML::makeXmlSafe($$N{nick})},"\n");
 
   }

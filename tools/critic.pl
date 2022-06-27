@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use FindBin;
 use Perl::Critic;
 
 my $critic = Perl::Critic->new(-severity => 1, -theme => "bugs");
@@ -15,7 +16,8 @@ if($ARGV[0])
 {
   critique_file($ARGV[0]);
 }else{
-  foreach my $file(`find /var/everything/ecore -type f`)
+  my $libraries = "$FindBin::Bin/../ecore";
+  foreach my $file(`find $libraries -type f`)
   {
     chomp $file;
     print "Evaluating: ".$file."\n";

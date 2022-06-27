@@ -13,13 +13,13 @@ sub display
   my $hidesystemnotes = (defined($REQUEST->param('hidesystemnotes')) and scalar($REQUEST->param('hidesystemnotes')))?(1):(0);
   my $page = defined($REQUEST->param('page'))?(int($REQUEST->param('page'))):(0);
   my $where = "1=1 ";
-  
+
   if($onlymynotes)
   {
     $where = "(noter_user=".$REQUEST->user->node_id." OR notetext like ".$self->DB->quote("[".$REQUEST->user->title."]%").")";
   }elsif($hidesystemnotes)
   {
-    $where = "noter_user != 0"; 
+    $where = "noter_user != 0";
   }
 
   my $totalnotes = $self->DB->sqlSelect("count(*)","nodenote", $where);

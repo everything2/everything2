@@ -8,7 +8,7 @@ has 'LINKDATA' => (isa => 'HashRef', is => 'ro', required => 1);
 
 has 'to' => (isa => 'Everything::Node', is => 'ro', lazy => 1, builder => '_build_to');
 has 'from' => (isa => 'Everything::Node', is => 'ro', lazy => 1, builder => '_build_from');
-has 'linktype' => (isa => 'Everything::Node', is => 'ro', lazy => 1, builder => '_build_linktype'); 
+has 'linktype' => (isa => 'Everything::Node', is => 'ro', lazy => 1, builder => '_build_linktype');
 
 around 'BUILDARGS' => sub {
   my $orig = shift;
