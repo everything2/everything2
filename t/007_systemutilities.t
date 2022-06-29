@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib qw(/var/everything/ecore);
+use FindBin;
+use lib "$FindBin::Bin/../ecore";
 use Test::More;
 use Everything::APIClient;
 
-my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api");
+my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api");
 
 # Guest
 ok(my $result = $eapi->roompurge, "Room purge as guest");

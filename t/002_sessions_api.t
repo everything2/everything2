@@ -1,23 +1,17 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib qw(/var/everything/ecore);
+
+use FindBin;
 
 use LWP::UserAgent;
 use HTTP::Request;
 use Test::More;
 use JSON;
-use Everything;
 
 use HTTP::Cookies;
-initEverything 'everything';
-unless($APP->inDevEnvironment())
-{
-        plan skip_all => "Not in the development environment";
-        exit;
-}
 
-my $endpoint = "http://localhost/api/sessions";
+my $endpoint = "http://localhost:9080/api/sessions";
 my $json = JSON->new;
 
 ok(my $ua = LWP::UserAgent->new, "Make a new LWP::UserAgent object");
@@ -83,7 +77,7 @@ ok($response->code == 200, "Session deletes ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
 ok($session->{display}->{is_guest} == 1, "Guest due to deleted session");
 my $cookiestring = $ua->cookie_jar->as_string;
-my $cookiename = $Everything::CONF->cookiepass;
+my $cookiename = "userpass"; #Taken from Everything::Configuration;
 ok($cookiestring =~ /$cookiename=""/, "Cookie deleted");
 
 # Deleting session again

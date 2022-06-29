@@ -1,22 +1,16 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib qw(/var/everything/ecore);
-use Everything;
+use FindBin;
+use lib "$FindBin::Bin/../ecore";
 use Everything::APIClient;
 use Test::More;
 
-initEverything 'everything';
-unless($APP->inDevEnvironment())
-{
-        plan skip_all => "Not in the development environment";
-        exit;
-}
-
-my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api");
+my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api");
 my $description = "This is a description!<br>";
 ok($eapi->login("root","blah"), "Log in as root");
 ok(my $result = $eapi->create_usergroup({"title" => "My usergroup ".time(),"doctext" => $description}), "Usergroup create returns a non undef structure");
+
 ok($result->{code} == 200, "200 OK returned from usergroup creation");
 my $usergroup = $result->{usergroup};
 ok($usergroup->{node_id} != 0, "Non-zero node_id is returned");
