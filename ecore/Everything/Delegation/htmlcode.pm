@@ -2638,7 +2638,7 @@ sub publishwriteup
 
   my ($WRITEUP, $E2NODE) = @_;
 
-  my $WRTYPE = getNodeById($query->param('writeup_wrtype_writeuptype'));
+  my $WRTYPE = getNodeById(scalar($query->param('writeup_wrtype_writeuptype')));
   # if we haven't been given a type, use the default:
   $WRTYPE = getNode('thing', "writeuptype") unless $WRTYPE and $$WRTYPE{type}{title} eq 'writeuptype';
 
