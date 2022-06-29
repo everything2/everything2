@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib qw(/var/everything/ecore);
+use FindBin;
+use lib "$FindBin::Bin/../ecore";
 use Test::More;
 use Everything::APIClient;
 
-ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api"), "Create new E2 API object");
+ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api"), "Create new E2 API object");
 
 # Creation and valid key tests
 

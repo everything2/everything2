@@ -1,18 +1,16 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib qw(/var/everything/ecore);
 
 use LWP::UserAgent;
 use HTTP::Request;
 use Test::More;
-use Everything;
 use JSON;
 
 use HTTP::Cookies;
 
 my $json = JSON->new;
-my $endpoint = "http://localhost/api/tests";
+my $endpoint = "http://localhost:9080/api/tests";
 ok(my $ua = LWP::UserAgent->new, "Make a new LWP::UserAgent object");
 ok(my $request = HTTP::Request->new("GET","$endpoint"), "Construct HTTP::Request object");
 
