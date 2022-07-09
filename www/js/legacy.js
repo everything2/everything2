@@ -3712,3 +3712,109 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-1314738-1', 'auto');
 ga('require', 'displayfeatures');
 ga('send', 'pageview');
+
+function link_node_title(link_to, title)
+{
+  if(title === undefined)
+  {
+    title = link_to;
+  }
+
+  return '<a href="/title/'+encodeURIComponent(link_to)+'">'+unescapeHTML(title)+'</a>';
+}
+
+// Vitals nodelet
+var vitals_links = [
+  ["Maintenance","maint",[
+    ["Node Title Edit","Edit These E2 Titles"],
+    ["Broken Writeups","Broken Nodes"],
+    ["Writeup Deletion Request","E2 Nuke Request"],
+    ["Make a bug report","E2 Bugs"],
+    ["Suggest a change to E2","Suggestions for E2"]]
+  ],
+  ["Noding Information","nodeinfo",[
+    ["E2 HTML Tags"],
+    ["HTML Symbol Reference"],
+    ["Using Unicode on E2"],
+    ["Reference Desk"]]
+  ],
+  ["Noding Utilities","nodeutil",[
+    ["Node Tracker"],
+    ["Source Code Formatter","E2 Source Code Formatter"],
+    ["Text Formatter"]]
+  ],
+  ["Lists","list",[
+    ["Writeups By Type"],
+    ["Everything's Most Wanted"],
+    ["C! writeups","Cool Archive"],
+    ["Editor Picks","Page of Cool"],
+    ["Usergroup Picks"],
+    ["A Year Ago Today"],
+    ["Old News","News for Noders. Stuff that Matters"],
+    ["Your nodeshells"],
+    ["Random nodeshells"]]
+  ],
+  ["Miscellaneous","misc",[
+    ["Everything User Poll"],
+    ["The Everything2 Voting/Experience System"],
+    ["Chatterlight"],
+    ["E2 Gift Shop"],
+    ["Everything Quote Server"],
+    ["The Registries"],
+    ["Do you C! what I C?"],
+    ["The Recommender"]
+  ]]
+];
+
+function is_section_open(sectionname,sectionid)
+{
+  return e2.display_prefs[sectionname+"_hide"+sectionid] == 0;
+}
+
+function toggle_section(sectionname, sectionid)
+{
+  if(is_section_open(sectionname, sectionid))
+  {
+    e2.display_prefs[sectionname+"_hide"+sectionid] = 0;
+//    $("#"+sectionname+"section_"+sectionid).removeClass("slide-down");
+    $("#"+sectionname+"section_"+sectionid).addClass("slide-up");
+  }else{
+    e2.display_prefs[sectionname+"_hide"+sectionid] = 1;
+//    $("#"+sectionname+"section_"+sectionid).removeClass("slide-up");
+    $("#"+sectionname+"section_"+sectionid).addClass("slide-down");
+  }
+}
+
+
+$("#vitalstest").html(function(){
+  heading = $('<h2 />', {class: "nodelet_title open ui-sortable-handle", style: "cursor: pointer;", text: "Vitals"});
+  heading.append("<style> \n.slider.sliderclosed { max-height: 0; } .slider { overflow-y: hidden; max-height: 100%; transition-property: all; transition-duration: .5s; transition-timing-function: cubic-bezier(0, 1, 0.5, 1); } </style>");
+
+  container = $('<div />',{class: "nodelet_content"});
+  vitals_links.forEach(function(section, section_index) {
+    section_name = section[1];
+    nodeletsection = $('<div />', {class: "nodeletsection", id: "vitsection_"+section_name});
+
+    open_link = $('<a />', {href: "#", text: "+"});
+    if(e2.display_prefs["vit_hide"+section_name] == 1)
+    {
+      open_link = $('<a />', {href: "#", text: "-"});
+    }
+    nodeletsection.append('<div class="sectionheading"><tt>[ '+open_link.prop("outerHTML")+' ] </tt>'+$('<strong />',{text: section[0]}).prop("outerHTML")+'</div>');
+    section_content = $('<div />',{class: "sectioncontent"});
+    links_list = $('<ul />');
+    section[2].forEach(function(link,link_index) {
+      link_href = link[1];
+      if(link_href === undefined)
+      {
+        link_href = link[0];
+      }
+      anchor = $('<a />', {title: link[0], href: "/node/"+encodeURIComponent(link_href), class: "populated", text: link[0]});
+      links_list.append('<li>'+anchor.prop("outerHTML")+'</li>');
+    });
+    section_content.append(links_list.prop("outerHTML"));
+    nodeletsection.append(section_content.prop("outerHTML"));
+    container.append(nodeletsection.prop("outerHTML"));
+  });
+  return heading.prop("outerHTML")+container.prop("outerHTML");
+});

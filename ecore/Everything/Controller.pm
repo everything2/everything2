@@ -86,6 +86,7 @@ sub layout
   $e2->{collapsedNodelets} =~ s/\bsignin\b//;
   $e2->{noquickvote} = 1 if($REQUEST->VARS->{noquickvote});
   $e2->{nonodeletcollapser} = 1 if($REQUEST->VARS->{nonodeletcollapser});
+  $e2->{displayprefs} = $self->APP->display_preferences($REQUEST->VARS);
   $params->{nodeinfojson} = $self->JSON->encode($e2);
 
   $params->{no_ads} = 1 unless($REQUEST->is_guest);

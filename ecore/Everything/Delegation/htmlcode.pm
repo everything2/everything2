@@ -4095,6 +4095,7 @@ sub static_javascript
   }else{
     $e2->{assets_location} = "";
   }
+  $e2->{display_prefs} = $APP->display_preferences($VARS);
   $e2 = encode_json($e2);
 
   my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';

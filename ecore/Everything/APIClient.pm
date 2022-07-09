@@ -209,4 +209,16 @@ sub roompurge
   return $self->_format_response($self->ua->get($self->endpoint."/systemutilities/roompurge"));
 }
 
+sub get_preferences
+{
+  my ($self) = @_;
+  return $self->_format_response($self->ua->get($self->endpoint."/preferences/get"));
+}
+
+sub set_preferences
+{
+  my ($self, $data) = @_;
+  return $self->_format_response($self->_do_post($self->endpoint."/preferences/set",$data));
+}
+
 1;
