@@ -25,6 +25,6 @@ if ENV['E2DOCKER'].nil? or !ENV['E2DOCKER'].eql? "development"
 end
 
 `rm -f /etc/apache2/logs/error_log`
-`ln -s /dev/stderr /etc/apache2/logs/error_log`
+`ln -s /dev/stderr /etc/apache2/logs/error_log` unless ENV['E2DOCKER'].eql? "development"
 
 exec("/usr/sbin/apachectl -D FOREGROUND")

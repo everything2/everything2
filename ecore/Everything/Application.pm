@@ -4477,4 +4477,21 @@ sub asset_uri
   }
 }
 
+sub display_preferences
+{
+  my ($this, $vars) = @_;
+
+  my $prefs = {};
+  foreach my $nodelet (qw(vit))
+  {
+    foreach my $var (qw(nodeinfo maintenance nodeutil list misc))
+    {
+      my $prefname = $nodelet."_hide$var";
+      $prefs->{$prefname} = $vars->{$nodelet."_hide$var"} || 0;
+    }
+  }
+
+  return $prefs;
+}
+
 1;

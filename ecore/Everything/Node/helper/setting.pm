@@ -10,4 +10,10 @@ sub _build_VARS
   return $self->APP->getVars($self->NODEDATA); 
 }
 
+sub set_vars
+{
+  my ($self, $vars) = @_;
+  return Everything::setVars($self->NODEDATA, $vars);
+}
+
 1;
