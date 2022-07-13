@@ -1,7 +1,8 @@
 <node>
-  <doctext>&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
-&lt;script src=&quot;[% $APP-&gt;asset_uri('react/main.bundle.js') %]&quot;&gt;&lt;/script&gt;
-
+  <doctext>&lt;div id=&quot;vitalstest&quot;&gt;&lt;/div&gt;
+[%
+  return $VARS-&gt;{nodelets};
+%]
 [%
   return &quot;&quot;;
   my $csr = $DB-&gt;sqlSelectMany(&quot;setting_id&quot;,&quot;setting&quot;,&quot;vars like '%customstyle%'&quot;);

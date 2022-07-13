@@ -129,26 +129,6 @@ sub new_writeups
   return $str;
 }
 
-sub node_statistics
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = "";
-  $str .= qq|Node ID: $NODE->{node_id} <br>|;
-  $str .= qq|Created on: $NODE->{createtime} <br>|;
-  $str .= qq|Hits: $NODE->{hits} <br>|;
-  $str .= qq|Nodetype: |.linkNode($$NODE{type_nodetype}).qq|<br>|;
-  $str .= qq|Display page: |.linkNode (getPage($NODE, $query->param("displaytype")));
-
-  return $str;
-}
-
 sub other_users
 {
   my $DB = shift;
