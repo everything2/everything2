@@ -99,6 +99,7 @@ sub _build_pagetitle
   <!-- google_ad_section_end -->
  </div>
  <div id='sidebar'>
+  <div id='e2-react-root'></div>
   <& 'nodelets', nodelets => $.nodelets, nodeletorder => $.nodeletorder &>
   <!-- nodelets -->
  </div> 
