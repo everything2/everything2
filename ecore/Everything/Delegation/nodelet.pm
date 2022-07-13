@@ -816,7 +816,6 @@ sub statistics
   $$VARS{IQM} ||=0;
 
   my $str = "";
-  $str .= htmlcode('nodeletsection','edn,cgiparam');
   $str .= htmlcode('nodeletsection','stat,personal,Yours,,,i');
   $str .= htmlcode('nodeletsection','stat,fun,Fun Stats,,,i');
   $str .= htmlcode('nodeletsection','stat,advancement,Old Merit System,,,i'); 
