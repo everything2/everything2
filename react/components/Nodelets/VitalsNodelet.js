@@ -12,6 +12,7 @@ const VitalsSections = [
     ["Suggest a change to E2","Suggestions for E2"]]
   ],
   ["Noding Information","nodeinfo",[
+    ["Code of Conduct","Everything2 Code of Conduct"],
     ["E2 HTML Tags"],
     ["HTML Symbol Reference"],
     ["Using Unicode on E2"],
