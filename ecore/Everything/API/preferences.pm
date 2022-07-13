@@ -72,7 +72,12 @@ sub current_preferences
   {
     if(defined($vars->{$key}))
     {
-      $result->{$key} = $vars->{$key};
+      if($vars->{$key} eq " ")
+      {
+        $result->{$key} = 0;
+      }else {
+        $result->{$key} = $vars->{$key};
+      }
     }else{
       $result->{$key} = 0;
     }

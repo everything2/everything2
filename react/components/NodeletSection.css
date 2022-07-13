@@ -1,0 +1,13 @@
+/* 300px is a guess for the largest section we think it will be
+   If we are off by too much the animation will take too long */
+
+.sectioncontent {
+  overflow-y: hidden;
+  max-height: 300px;
+  transition: max-height .5s linear;
+}
+
+.sectioncontent.toggledoff {
+  max-height: 0;
+  transition-duration: .25s
+}

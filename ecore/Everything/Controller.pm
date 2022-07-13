@@ -45,7 +45,7 @@ sub layout
 
   $params->{body_class} = $node->type->title;
 
-  $params->{default_javascript} = $self->APP->asset_uri("legacy.js");
+  $params->{default_javascript} = [$self->APP->asset_uri("react/main.bundle.js"),$self->APP->asset_uri("legacy.js")];
 
 
   my $lastnode = $REQUEST->param("lastnode_id");
@@ -67,6 +67,7 @@ sub layout
   $e2->{title} = $node->title;
   $e2->{guest} = $REQUEST->is_guest;
   $e2->{use_local_assets} = $self->CONF->use_local_assets;
+  $e2->{display_prefs} = $self->APP->display_preferences($REQUEST->user->VARS);
   if($e2->{use_local_assets} == 0)
   {
     $e2->{assets_location} = $self->CONF->assets_location;

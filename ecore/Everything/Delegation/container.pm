@@ -155,6 +155,7 @@ sub zen_container
   $str.=' class="pagenodelets"' if $PAGELOAD->{pagenodelets};
   $str.='>';
 
+  $str.=qq|<div id='e2-react-root'></div>|;
   $str.=htmlcode('nodelet meta-container');
   $str.=qq|</div><!-- end sidebar --></div><div id='footer'>|;
 

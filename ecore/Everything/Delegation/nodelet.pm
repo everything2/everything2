@@ -497,26 +497,7 @@ sub recommended_reading
 
 sub vitals
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str='';
-  if (!$APP->isGuest($USER) )
-  {
-    $str.=htmlcode('nodeletsection','vit','maintenance','Maintenance');
-  }
-
-  $str .= htmlcode("nodeletsection","vit","nodeinfo","Noding Information");
-  $str .= htmlcode("nodeletsection","vit","nodeutil","Noding Utilities");
-  $str .= htmlcode("nodeletsection","vit","list","Lists");
-  $str .= htmlcode("nodeletsection","vit","misc","Miscellaneous");
-
-  return $str;
+  return '';
 }
 
 sub chatterbox

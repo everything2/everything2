@@ -3543,8 +3543,13 @@ sub zen_wrap_nodelet {
   my $id = lc($title);
   $id =~ s/\W//g;
 
- return qq|<div class='nodelet' id='$id'><h2 class="nodelet_title">$title</h2><div class='nodelet_content'>$nodelet_stuff</div></div>|;
-
+  # Handled by React
+  if($nodelet_stuff eq "")
+  {
+    return qq|<div class='nodelet' id='$id'></div>|;
+  }else{
+    return qq|<div class='nodelet' id='$id'><h2 class="nodelet_title">$title</h2><div class='nodelet_content'>$nodelet_stuff</div></div>|;
+  }
 }
 
 sub fetch_weblog {

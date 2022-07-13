@@ -1,12 +1,13 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-const App = React.lazy(() => import('./components/App'))
+const E2ReactRoot = React.lazy(() => import('./components/E2ReactRoot'))
 
-const container = document.getElementById('app')
+
+const container = document.getElementById('e2-react-root')
 const root = createRoot(container)
 
 root.render(
   <React.StrictMode>
-    <App />
+    <E2ReactRoot />
   </React.StrictMode>
 )
