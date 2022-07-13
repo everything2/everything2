@@ -6,12 +6,6 @@
     <orderby>3</orderby>
   </group>
   <group>
-    <node_id>90</node_id>
-    <nodegroup_id>96</nodegroup_id>
-    <nodegroup_rank>4</nodegroup_rank>
-    <orderby>4</orderby>
-  </group>
-  <group>
     <node_id>174581</node_id>
     <nodegroup_id>98</nodegroup_id>
     <nodegroup_rank>4</nodegroup_rank>
@@ -88,12 +82,6 @@
     <nodegroup_id>146</nodegroup_id>
     <nodegroup_rank>8234</nodegroup_rank>
     <orderby>8234</orderby>
-  </group>
-  <group>
-    <node_id>2116107</node_id>
-    <nodegroup_id>146</nodegroup_id>
-    <nodegroup_rank>8407</nodegroup_rank>
-    <orderby>8407</orderby>
   </group>
   <group>
     <node_id>2115029</node_id>
