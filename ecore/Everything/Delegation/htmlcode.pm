@@ -1096,43 +1096,6 @@ sub searchform
   return $str;
 }
 
-# Only used by the serverstats nodelet, likely to go away
-#
-sub serverstats
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-  
-  my $date = `date`;
-  my $uptime = `uptime`;
-  my @uptime = ();
-  my $str = undef;
-
-  $uptime =~ s/^\s*(.*?)\s*$/$1/;
-  @uptime = split /,?\s+/, $uptime;
-
-  $str = $date . "<br>";
-  shift @uptime;
-
-  $str .= "@uptime[0..3]" . "<br>";
-
-  foreach (@uptime[-3..-1]){
-    if ($_ > 1.0) {
-      $_ = "<font color=#CC0000>" . $_ ."</font>, ";
-    }else{
-      $_ .= ", "; 
-    }
-  }
-  $str .= "@uptime[-3..-1]". "<br>";
-
-  return $str;
-}
-
 # Due to its incredibly generic name, I'm unsure if we use this
 #
 sub setvar
@@ -4096,6 +4059,14 @@ sub static_javascript
     $e2->{assets_location} = "";
   }
   $e2->{display_prefs} = $APP->display_preferences($VARS);
+
+  $e2->{user} ||= {};
+  $e2->{user}->{node_id} = $USER->{node_id};
+  $e2->{user}->{title} = $USER->{title};
+  $e2->{user}->{admin} = int($APP->isAdmin($USER));
+  $e2->{user}->{editor} = int($APP->isEditor($USER));
+  $e2->{user}->{developer} = int($APP->isDeveloper($USER));
+  $e2->{user}->{guest} = int($APP->isGuest($USER));
   $e2 = encode_json($e2);
 
   my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';
