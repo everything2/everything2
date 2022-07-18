@@ -1415,19 +1415,19 @@ sub stripNodelet {
 # Tested in 002
 sub convertDateToEpoch
 {
-	my ($this, $date) = @_;
+  my ($this, $date) = @_;
 
-	my ($d, $t) = split(' ', $date);
-	my ($year,$month,$day) = split('-',$d);
+  my ($d, $t) = split(' ', $date);
+  my ($year,$month,$day) = split('-',$d);
 
-	# In the QA environment, lots of dates are 0
-	if($year eq "0000")
-	{
-		return 0;
-	}
-	my ($hour,$min,$sec) = split(':', $t);
-	my $epoch = Date::Calc::Date_to_Time($year,$month,$day, $hour,$min,$sec);
-	return $epoch;
+  # In the QA environment, lots of dates are 0
+  if($year eq "0000")
+  {
+    return 0;
+  }
+  my ($hour,$min,$sec) = split(':', $t);
+  my $epoch = Date::Calc::Date_to_Time($year,$month,$day, $hour,$min,$sec);
+  return $epoch;
 }
 
 sub convertEpochToDate
@@ -4486,10 +4486,12 @@ sub display_preferences
 {
   my ($this, $vars) = @_;
 
+  my $nodelet_sections = {"vit" => [qw(nodeinfo maintenance nodeutil list misc)],"edn" => [qw(edev util)]};
+
   my $prefs = {};
-  foreach my $nodelet (qw(vit))
+  foreach my $nodelet (keys %$nodelet_sections)
   {
-    foreach my $var (qw(nodeinfo maintenance nodeutil list misc))
+    foreach my $var (@{$nodelet_sections->{$nodelet}})
     {
       my $prefname = $nodelet."_hide$var";
       $prefs->{$prefname} = $vars->{$nodelet."_hide$var"} || 0;
@@ -4497,6 +4499,36 @@ sub display_preferences
   }
 
   return $prefs;
+}
+
+sub weblogs_structure
+{
+  my ($this, $weblogid) = @_;
+
+  my $csr = $this->{db}->sqlSelectMany("*", "weblog","weblog_id=".int($weblogid)." and removedby_user=0 limit 10");
+  my $structure = [];
+
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    my $linker_user = $this->{db}->getNode($row->{linkedby_user});
+    my $linker_user_struct = {"node_id" => 0, "title" => "Deleted user", "type" => "deleteduser"};
+    if($linker_user)
+    {
+      $linker_user_struct = {"node_id" => $linker_user->{node_id}, "title" => $linker_user->{title}, "type" => $linker_user->{type}->{title}};
+    }
+
+    my $weblogged_node = $this->{db}->getNode($row->{to_node});
+    next unless $weblogged_node;
+
+    push @$structure, {node_id => $row->{to_node}, linkedtime => $row->{linkedtime}, linkedby_user => $linker_user_struct, title => $weblogged_node->{title}, type => $weblogged_node->{type}->{title}};
+  }
+
+  return $structure;
+}
+
+sub nodeinfojson
+{
+  my ($this) = @_;
 }
 
 1;

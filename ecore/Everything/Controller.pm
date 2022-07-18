@@ -87,7 +87,35 @@ sub layout
   $e2->{collapsedNodelets} =~ s/\bsignin\b//;
   $e2->{noquickvote} = 1 if($REQUEST->VARS->{noquickvote});
   $e2->{nonodeletcollapser} = 1 if($REQUEST->VARS->{nonodeletcollapser});
+
+  # Used by React
   $e2->{displayprefs} = $self->APP->display_preferences($REQUEST->VARS);
+
+  $e2->{user} ||= {};
+  $e2->{user}->{node_id} = $REQUEST->user->node_id;
+  $e2->{user}->{title} = $REQUEST->user->title;
+  $e2->{user}->{admin} = ($REQUEST->user->is_admin)?("true"):("false");
+  $e2->{user}->{editor} = ($REQUEST->user->is_editor)?("true"):("false");
+  $e2->{user}->{developer} = ($REQUEST->user->is_developer)?("true"):("false");
+  $e2->{user}->{guest} = ($REQUEST->user->is_guest)?("true"):("false");
+
+  $e2->{node} ||= {};
+  $e2->{node}->{title} = $node->title;
+  $e2->{node}->{type} = $node->type->title;
+  $e2->{node}->{node_id} = $node->node_id;
+  $e2->{node}->{createtime} = $self->APP->convertDateToEpoch($node->createtime);
+
+  $e2->{lastCommit} = $Everything::CONF->last_commit;
+  $e2->{nodetype} = $node->type->title;
+  $e2->{developerNodelet} = {};
+
+  if($e2->{user}->{developer} and $REQUEST->user->VARS->{nodelets} =~ /836984/)
+  {
+    my $edev = $self->APP->node_by_name("edev","usergroup");
+    my $page = Everything::HTML::getPage($node->NODEDATA, $REQUEST->param("displaytype"));
+    my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
+    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->node_id, weblogs => $self->APP->weblogs_structure($edev->node_id)}}; 
+  }
   $params->{nodeinfojson} = $self->JSON->encode($e2);
 
   $params->{no_ads} = 1 unless($REQUEST->is_guest);
