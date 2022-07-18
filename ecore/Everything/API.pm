@@ -157,5 +157,17 @@ sub unauthorized_if_guest
   return $self->$orig($REQUEST, @_);
 }
 
+sub unauthorized_unless_developer
+{
+  my ($orig, $self, $REQUEST) = @_;
+
+  if($REQUEST->user->is_developer || $REQUEST->user->is_admin)
+  {
+    return $self->$orig($REQUEST, @_);
+  }
+
+  return [$self->HTTP_UNAUTHORIZED];
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

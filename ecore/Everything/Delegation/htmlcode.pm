@@ -4033,6 +4033,8 @@ sub static_javascript
   $lastnode = $query->param("lastnode_id")||0 if $$NODE{title} eq 'Findings:' && $$NODE{type}{title} eq 'superdoc';
 
   my $e2 = undef;
+
+  # Used by legacy elements
   $e2->{node_id} = $$NODE{node_id};
   $e2->{lastnode_id} = $lastnode;
   $e2->{title} = $$NODE{title};
@@ -4058,15 +4060,36 @@ sub static_javascript
   }else{
     $e2->{assets_location} = "";
   }
+
+  # Used by React
   $e2->{display_prefs} = $APP->display_preferences($VARS);
 
   $e2->{user} ||= {};
   $e2->{user}->{node_id} = $USER->{node_id};
   $e2->{user}->{title} = $USER->{title};
-  $e2->{user}->{admin} = int($APP->isAdmin($USER));
-  $e2->{user}->{editor} = int($APP->isEditor($USER));
-  $e2->{user}->{developer} = int($APP->isDeveloper($USER));
-  $e2->{user}->{guest} = int($APP->isGuest($USER));
+  $e2->{user}->{admin} = $APP->isAdmin($USER)?("true"):("false");
+  $e2->{user}->{editor} = $APP->isEditor($USER)?("true"):("false");
+  $e2->{user}->{developer} = $APP->isDeveloper($USER)?("true"):("false");
+  $e2->{user}->{guest} = $APP->isGuest($USER)?("true"):("false");
+
+  $e2->{node} ||= {};
+  $e2->{node}->{title} = $NODE->{title};
+  $e2->{node}->{type} = $NODE->{type}->{title};
+  $e2->{node}->{node_id} = $NODE->{node_id};
+  $e2->{node}->{createtime} = $APP->convertDateToEpoch($NODE->{createtime});
+
+  $e2->{lastCommit} = $Everything::CONF->last_commit;
+  $e2->{nodetype} = $NODE->{type}->{title};
+  $e2->{developerNodelet} = {};
+
+  if($e2->{user}->{developer} and $VARS->{nodelets} =~ /836984/)
+  {
+    my $edev = getNode("edev","usergroup");
+    my $page = Everything::HTML::getPage($NODE, $query->param("displaytype"));
+    my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
+    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}}; 
+  }
+
   $e2 = encode_json($e2);
 
   my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';

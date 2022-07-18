@@ -221,4 +221,10 @@ sub set_preferences
   return $self->_format_response($self->_do_post($self->endpoint."/preferences/set",$data));
 }
 
+sub developervars
+{
+  my ($self) = @_;
+  return $self->_format_response($self->ua->get($self->endpoint."/developervars"));
+}
+
 1;

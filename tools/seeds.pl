@@ -19,7 +19,7 @@ if($Everything::CONF->environment ne "development")
 $Everything::HTML::USER = getNode("root","user");
 my $APP = $Everything::APP;
 
-foreach my $user (1..30,"user with space","genericeditor")
+foreach my $user (1..30,"user with space","genericeditor","genericdev")
 {
   if($user =~ /^\d/)
   {
@@ -49,6 +49,17 @@ $genericedv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689
 $genericedv->{settings} = '{"notifications":{"2045486":1}}';
 setVars($genericed,$genericedv);
 $DB->updateNode($genericed, -1);
+
+print STDERR "Promoting genericdev to be a developer\n";
+my $dev = $DB->getNode("edev","usergroup");
+my $genericdev = getNode("genericdev","user");
+$DB->insertIntoNodegroup($dev, $DB->getNode("root","user"),$genericdev);
+$DB->updateNode($dev, -1);
+my $genericdevv = getVars($genericdev);
+$genericdevv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708,836984";
+$genericdevv->{settings} = '{"notifications":{"2045486":1}}';
+setVars($genericdev,$genericdevv);
+$DB->updateNode($genericdev, -1);
 
 my $types = 
 {
@@ -80,6 +91,12 @@ my $datanodes = {
       ["good poetry", "poetry", "Solid work here"],
       ["tomato", "definition", "What is a tomato, really?"],
     ],
+    "genericdev" => [
+      ["boring dev announcement 1", "log", "Really, pretty boring stuff"],
+      ["boring dev announcement 2", "idea", "Only interesting if you're a [developer]"],
+      ["interesting dev announcement", "lede", "Don't bury the lede. Understand this!"],
+      ["lukewarm dev announcement", "thing", "Not bad work. Not bad at all"]
+    ]
   },
   "draft" => {
     "normaluser1" => [
@@ -199,6 +216,14 @@ my $document = getNode("Front page news item 1","document");
 $document->{doctext} = "This is the dawn of a new age. Of Everything. And Anything. <em>Mostly</em> [Everything]";
 $DB->updateNode($document, -1);
 $DB->sqlInsert("weblog",{"weblog_id" => $frontpage_usergroup->{node_id}, "to_node" => $document->{node_id} }); 
+
+print STDERR "Making some edev news items\n";
+foreach my $title("boring dev announcement 2","interesting dev announcement","lukewarm dev announcement")
+{
+  my $n = $DB->getNode($title,"e2node");
+  $DB->sqlInsert("weblog",{"weblog_id" => $dev->{node_id}, "to_node" => $n->{node_id},"linkedby_user" => $genericdev->{node_id}});
+}
+
 
 # Cast some votes so we can generate front page content
 

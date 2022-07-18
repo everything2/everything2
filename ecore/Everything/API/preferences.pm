@@ -12,7 +12,9 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
   'vit_hidenodeinfo' => [0,1],
   'vit_hideutil' => [0,1],
   'vit_hidelist' => [0,1],
-  'vit_hidemisc' => [0,1]
+  'vit_hidemisc' => [0,1],
+  'edn_hideutil' => [0,1],
+  'edn_hideedev' => [0,1]
 }});
 
 sub routes

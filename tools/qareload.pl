@@ -13,8 +13,8 @@ if($Everything::CONF->environment ne "development")
 
 `echo "drop database everything" | mysql -u root`;
 `echo "create database everything DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci" | mysql -u root`;
-`/var/everything/ecoretool/ecoretool.pl bootstrap --nodepack=/var/everything/nodepack`;
-`/var/everything/tools/seeds.pl`;
-`/var/everything/cron/cron_datastash.pl`;
-`/var/everything/cron/cron_datastash.pl --lengthy`;
-`/etc/init.d/apache2 restart`;
+print `/var/everything/ecoretool/ecoretool.pl bootstrap --nodepack=/var/everything/nodepack`;
+print `/var/everything/tools/seeds.pl`;
+print `/var/everything/cron/cron_datastash.pl`;
+print `/var/everything/cron/cron_datastash.pl --lengthy`;
+print `/etc/init.d/apache2 restart`;

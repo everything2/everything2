@@ -747,39 +747,7 @@ sub random_nodes
 
 sub everything_developer
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = "";
-
-  my $vc = htmlcode('viewcode');
-  my @links = ();
-
-  push @links, $vc if $vc;
-  push @links, '<font size="1">'.linkNode($NODE, 'xmltrue', {displaytype=>'xmltrue'}).'</font>';
-  $str .= join ' / ',@links;
-  $str .= qq|<br />|;
-
-  if($$VARS{nodelets})
-  {
-    $str .= '<small>node_id='.getId($NODE). ' (' . $$NODE{type}{title} . ') </small><br /><small>' . $$NODE{createtime} . ' ('.htmlcode('timesince',$$NODE{createtime}.',1')." old)</small><br />\n";
-
-    my $displaytype = $query->param('displaytype');
-    $str .='<small><a href="'.$Everything::CONF->github_url.'/commit/'.$Everything::CONF->last_commit.'">Build: '.$Everything::CONF->last_commit_short.'</a></small><br />';
-    $str .='<font size="1">using: '.linkNode(getPage($NODE, $displaytype)).'</font><br /><br />';
-    $str .= '<a href='.urlGen({node=>'edev',type=>'usergroup'}).'>edev usergroup</a>'.
-    '<br />'.
-    htmlcode('nodeletsection','edn,edev').
-    htmlcode('nodeletsection','edn,util').
-    htmlcode('nodeletsection','edn,globals');
-  }
-
-  return $str;
+  return "";
 }
 
 sub statistics
