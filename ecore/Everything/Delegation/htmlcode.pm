@@ -7923,7 +7923,7 @@ sub sendPrivateMessage
     push(@getters, $i);	#count as 1 for group
     next if $groups{$i}==0;
 
-    $DB->sqlInsert('message',{'msgtext' => $msg,'author_user' => $aid,'tstamp' => $sendTime,
+    $DB->sqlInsert('message',{'msgtext' => $msg,'author_user' => $aid,(defined($sendTime)?('tstamp' => $sendTime):()),
       'for_user' => $i,
       'for_usergroup' => $i,	#don't bother with ($i || $fromGroup) since $i is never going to be 0
     });
@@ -7952,7 +7952,7 @@ sub sendPrivateMessage
     $DB->sqlInsert('message',{
       'msgtext' => $msg,
       'author_user' => $aid,
-      'tstamp' => $sendTime,
+      (defined($sendTime)?('tstamp' => $sendTime):()),
       'for_usergroup' => ((defined $forUG)?($forUG):(0)),
       'for_user' => $i,
       'archive' => $isArchived,
@@ -8083,7 +8083,7 @@ sub sendPrivateMessage
     $DB->sqlInsert('message_outbox',{
        'msgtext'     => $m,
        'author_user' => $aid,
-       'tstamp'      => $sendTime,
+       (defined($sendTime)?('tstamp' => $sendTime):()),
     });
 
   } else {

@@ -18,16 +18,15 @@ $str .= &quot;   \t&lt;style type='text/css'&gt;\n\n\t&quot; . $APP-&gt;htmlScre
 
 return $str;
 %]
-[{static javascript}]
-
 	&lt;/head&gt;
 &lt;body id=&quot;chatterlight&quot;&gt;
+&lt;div id=&quot;e2-react-root&quot;&gt;&lt;/div&gt;
 	&lt;div id=&quot;chatterlight_mainbody&quot;&gt;
 
 		&lt;div id=&quot;links&quot;&gt;
 			&lt;p&gt;
-[% return unless $APP-&gt;isAdmin($USER); return (&quot; [E2 Bouncer] | &quot;); %]
-[% #			&lt;a href=&quot;javascript:replyToCB(\'jaybonci\')&quot; title=&quot;Send a bug report to jaybonci&quot;&gt;Comments/Suggestions?&lt;/a&gt; | %]
+[% return unless $APP-&gt;isAdmin($USER); return linkNodeTitle(&quot;E2 Bouncer&quot;).&quot; | &quot;; %]
+
 				&lt;a href=&quot;/node/superdoc/Drafts&quot; title=&quot;Your drafts&quot;&gt;Drafts&lt;/a&gt; |
 				[% linkNode($USER,0,{lastnode_id=&gt;0}) %] |
 				[{bookmarkit}] |
@@ -83,7 +82,7 @@ ENDHTML
 	&lt;div id=&quot;chatterlight_NW&quot;&gt;
 		[% insertNodelet( getNode( 'New Writeups', 'nodelet' )); %]
 	&lt;/div&gt; &lt;!-- close chatterlight_NW --&gt;
-
+[{static javascript}]
 &lt;/body&gt;
 &lt;/html&gt;
 </doctext>
