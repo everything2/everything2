@@ -975,7 +975,9 @@ sub fullpage_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $out = htmlcode("parsecode","doctext");
+  my $noparse = 0;
+  $noparse = 1 if lc($NODE->{title}) =~ /chatterlight/;
+  my $out = htmlcode("parsecode","doctext", $noparse);
   $out =~ s/^\s+//g;
   return $out;
 }

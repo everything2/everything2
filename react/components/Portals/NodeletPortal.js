@@ -23,10 +23,13 @@ class NodeletPortal extends React.Component {
   }
 
   render() {
-    return ReactDOM.createPortal(
-      this.props.children,
-      this.el
-    );
+    if(this.insertRoot != undefined)
+    {
+      return ReactDOM.createPortal(
+        this.props.children,
+        this.el
+      );
+    }
   }
 }
 
