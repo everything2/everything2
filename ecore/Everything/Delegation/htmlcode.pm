@@ -4740,28 +4740,6 @@ sub firmlinks
   return "$parentstr\n$str" ;
 }
 
-# Used by nodeletsection
-#
-sub ednsection_edev
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $csr = $DB->sqlSelectMany("to_node", "weblog", "weblog_id=".getNode('edev','usergroup')->{node_id}." and removedby_user=0", "order by tstamp DESC limit 5" );
-
-  my $str = "";
-  while (my $W = $csr->fetchrow_hashref) {
-    $str.= linkNode($$W{to_node}, undef, {lastnode_id => undef})."<br>";
-  }
-
-  return $str;
-}
-
 sub getGravatarMD5
 {
   my $DB = shift;
@@ -4983,75 +4961,6 @@ sub zensearchform
 
   $str.=qq|</span>|; #searchbtngroup
   return $str . "\n</div></form>";
-}
-
-sub ednsection_globals
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  ## no critic (RequireCheckingReturnValueOfEval,ProhibitNoStrict,ProhibitProlongedStrictureOverride)
-
-  my @globals = qw($VARS);
-  my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';
-
-  my $str = '<table cellpadding="0" cellspacing="1" border="0">';
-  foreach (@globals) {
-    $str.='<tr>';
-    no strict 'refs';
-    my $reftype = eval "ref $_";
-    $str.="<td><small>$_</small></td>";
-    $str.='<td><small>';
-    my %options = (
-      "HASHREF" => sub {
-         $str.= linkNode($NODE, "HASHREF", { "show$_" => 1, -class=>$ajax });
-         $str.= " (".int(eval("keys \%{$_}")).")";
-      }
-    );
-
-    my %expand = (
-      "HASHREF" => sub {
-        no strict;
-        my $hr = eval "$_";
-        my $count = 0;
-        foreach my $key (keys %$hr) {
-          $str.="\n<tr><td>$key</td>";
-          $str.='<td><code>'.$APP->encodeHTML($$hr{$key}).'</code></td>' if exists $$hr{$key};
-          $str.="</tr>\n";
-        }
-      } 
-    );
-
-    /^(.)/;
-    my $firstchar = $1;
-    $reftype = "HASHREF" if $reftype eq 'HASH' and $firstchar eq '$'; 
-
-    if ($_ eq '$PAGELOAD' or (defined $query->param("show$_") and exists $expand{$reftype})) {
-      my $ref = $expand{$reftype};
-      $str.='<table>';
-      &$ref($_);
-      $str.='</table>';
-    } elsif (exists $options{$reftype}) {
-      my $ref = $options{$reftype};
-      &$ref($_);
-    } else {
-      $str.= $reftype;
-    }
-
-    $str.='</small></td>';
-    $str.="</tr>\n";
-
-  }
-  
-  use strict 'refs';
-  return $str.'</table>';
-
-  ## use critic (RequireCheckingReturnValueOfEval,ProhibitNoStrict,ProhibitProlongedStrictureOverride)
 }
 
 # Used only on the user display page
@@ -5721,8 +5630,6 @@ sub isSpecialDate
   return 0;
 }
 
-# Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title)
-# - that is, if you see something like 'htmlcode('nodeletsection','edn,util');' the code you need will be at [ednsection_util].
 #
 sub nodeletsection
 {
@@ -5905,34 +5812,6 @@ sub episection_advice
     '<li>'.linkNodeTitle('Everything2 Help').'</li>'.
     '<li>'.linkNodeTitle('E2 Mentoring Sign-Up').'</li>'.
     '</ul>';
-}
-
-sub ednsection_util
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-  #Useful nodelet section in EDev Nodelet
-
-  my $nl = "<br />\n";
-  my $s = '';
-  $s .= linkNodeTitle('List Nodes of Type') . ' <small>';
-  $s .= '<a href='.urlGen({node=>'List Nodes of Type',type=>'superdoc',filter_user=>$$USER{title}}).'> (yours)</a>';
-  #it would be neat to link to previous search type, but this isn't stored
-  $s .= '</small>'.$nl;
-
-  $s .= qq|<a href="https://github.com/everything2/everything2">E2 on Github</a>$nl|;
-
-  $s .= linkNodeTitle('Everything Data Pages').$nl;
-
-  $s .= linkNodeTitle('Everything Document Directory').$nl;
-
-  return $s;
-
 }
 
 sub episection_ces
