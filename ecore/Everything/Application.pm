@@ -4505,7 +4505,7 @@ sub weblogs_structure
 {
   my ($this, $weblogid) = @_;
 
-  my $csr = $this->{db}->sqlSelectMany("*", "weblog","weblog_id=".int($weblogid)." and removedby_user=0 limit 10");
+  my $csr = $this->{db}->sqlSelectMany("*", "weblog","weblog_id=".int($weblogid)." and removedby_user=0 order by linkedtime DESC limit 10");
   my $structure = [];
 
   while(my $row = $csr->fetchrow_hashref)
