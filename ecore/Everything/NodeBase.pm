@@ -93,14 +93,14 @@ sub new
         my $dbname = $Everything::CONF->database;
 	# A connection to this database does not exist.  Create one.
 	my ($user,$pass, $dbserv, $dbport) = ($Everything::CONF->everyuser, $Everything::CONF->everypass, $Everything::CONF->everything_dbserv, $Everything::CONF->everything_dbport);
-	my $dbh_props = {AutoCommit => 1};
+	my $dbh_props = {AutoCommit => 1, mysql_enable_utf8 => 1};
 
 	if($Everything::CONF->environment eq "development")
 	{
 		$dbh_props->{RaiseError} = 1;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbserv;port=$dbport;mysql_enable_utf8=1", $user, $pass, $dbh_props);
+	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbserv;port=$dbport", $user, $pass, $dbh_props);
 	$this->{dbh} = $dbh;
 
 	$this->{cache} = new Everything::NodeCache($this); 
@@ -648,7 +648,7 @@ sub getNodeWhere
 			# performance.  We already have the entire hash.  We just
 			# need the type and any group info.  Calling getNodeById
 			# would result in two extra sql queries that we don't need.
-			
+
 			# Attach the type to the node
 			$$NODE{type} = $this->getType($$NODE{type_nodetype});
 
@@ -782,11 +782,6 @@ sub getNodeCursor
 	}
 
 	#$select .= " FOR UPDATE" if $this->{dbh}->{AutoCommit} == 0;
-
-	
-	Everything::printLog(
-		"About to do select:\n\t$select"
-	) if 0;
 
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
@@ -2815,7 +2810,7 @@ sub stashData
   if(defined($stash_values))
   {
     # write operation
-    my $stash_text = $json->latin1->encode($stash_values);
+    my $stash_text = $json->encode($stash_values);
     $stashnode->{vars} = $stash_text;
     $this->updateNode($stashnode, -1);
     return $stash_values;

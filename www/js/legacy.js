@@ -1357,7 +1357,6 @@ if(! e2.noquickvote)
 
 	e2('.dismiss', 'click', e2.ajax.dismissListItem);
 
-	new e2.ajax.periodicalUpdater('newwriteups:updateNodelet:New+Writeups', 300);
 	new e2.ajax.periodicalUpdater('otherusers:updateNodelet:Other+Users');
   }
 

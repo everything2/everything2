@@ -5,6 +5,9 @@ import Vitals from './Nodelets/Vitals'
 import DeveloperPortal from './Portals/DeveloperPortal'
 import Developer from './Nodelets/Developer'
 
+import NewWriteupsPortal from './Portals/NewWriteupsPortal'
+import NewWriteups from './Nodelets/NewWriteups'
+
 class E2ReactRoot extends React.Component {
 
   constructor(props) {
@@ -23,6 +26,8 @@ class E2ReactRoot extends React.Component {
 
       developerNodelet: {page: {}, news: {}},
 
+      newWriteupsNodelet: [],
+
       // Section display
       vit_maintenance: true,
       vit_nodeinfo: true,
@@ -31,13 +36,16 @@ class E2ReactRoot extends React.Component {
       vit_misc: true,
 
       edn_util: true,
-      edn_edev: true     
+      edn_edev: true,
+
+      num_newwus: 20
+
     };
   }
 
   loadExternalState() {
     let initialState = {}
-    const toplevelkeys = ["user","node","developerNodelet","lastCommit"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteupsNodelet","lastCommit"]
 
     toplevelkeys.forEach((key) => {
       initialState[key] = e2[key]
@@ -51,6 +59,8 @@ class E2ReactRoot extends React.Component {
       })
     })
 
+    initialState["num_newwus"] = e2.display_prefs["num_newwus"]
+
     this.setState(initialState)
   }
 
@@ -58,10 +68,13 @@ class E2ReactRoot extends React.Component {
     this.loadExternalState()
   }
 
+  apiEndpoint = () => {
+    return location.protocol + '//' + location.host + '/api'
+  }
+
   updatePreference = async (payload) => {
-    let apiEndpoint = location.protocol + '//' + location.host + '/api/preferences/set'
     let currentPreferences = {}
-    fetch (apiEndpoint, {method: "post", credentials: "same-origin", mode: "same-origin", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload)})
+    fetch (this.apiEndpoint() + '/preferences/set', {method: "post", credentials: "same-origin", mode: "same-origin", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload)})
       .then(resp => {
         if(resp.status === 200) {
           return resp.json()
@@ -76,15 +89,39 @@ class E2ReactRoot extends React.Component {
         if(err === "e2error") return
         console.log(err)
       })
-
     return currentPreferences
   } 
+
+  refreshNewWriteups = async () => {
+    return await fetch (this.apiEndpoint() + '/newwriteups', {credentials: "same-origin", mode: "same-origin"})
+      .then((resp) => {
+        if(resp.status === 200) {
+          return resp.json()        
+        }else{
+          return Promise.reject("e2error")
+        }
+      })
+      .then((dataReceived) => {
+        return dataReceived
+      })
+      .catch(err => {
+        if(err === "e2error") return
+        console.log(err)
+      })
+  }
 
   toggleSection = async (event,sectionid) => {
     let setPreferenceTo = !this.state[sectionid]
     let legacyPreferenceKey = sectionid.replace(/_/g,"_hide")
     this.setState({[sectionid]: setPreferenceTo})
     return await this.updatePreference({[legacyPreferenceKey]: +!setPreferenceTo})
+  }
+
+  newWriteupsChange = async (amount) => {
+    await this.updatePreference({"num_newwus": amount})
+    let newWriteups = await this.refreshNewWriteups()
+    this.setState({"num_newwus": amount, "newWriteupsNodelet": newWriteups})
+    return amount
   }
 
   render() {
@@ -94,6 +131,9 @@ class E2ReactRoot extends React.Component {
       <DeveloperPortal>
         <Developer user={this.state.user} node={this.state.node} developerNodelet={this.state.developerNodelet} lastCommit={this.state.lastCommit} toggleSection={this.toggleSection} util={this.state.edn_util} edev={this.state.edn_edev} />
       </DeveloperPortal>
+      <NewWriteupsPortal>
+         <NewWriteups newWriteupsNodelet={this.state.newWriteupsNodelet} limit={this.state.num_newwus} newWriteupsChange={this.newWriteupsChange} user={this.state.user} />
+      </NewWriteupsPortal>
       </>
   }
 }

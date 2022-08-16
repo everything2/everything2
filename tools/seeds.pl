@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use utf8;
 use lib qw(/var/libraries/lib/perl5);
 use lib qw(/var/everything/ecore);
 use Everything;
@@ -90,6 +91,7 @@ my $datanodes = {
       ["bad poetry", "idea", "Kind of bad poetry here"],
       ["good poetry", "poetry", "Solid work here"],
       ["tomato", "definition", "What is a tomato, really?"],
+      ["really bad writeup", "poetry", "This is [super bad]"]
     ],
     "genericdev" => [
       ["boring dev announcement 1", "log", "Really, pretty boring stuff"],
@@ -227,7 +229,9 @@ foreach my $title("boring dev announcement 2","interesting dev announcement","lu
 
 # Cast some votes so we can generate front page content
 
-for my $writeup ("Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)")
+my $writeup_bank = {"Quick brown fox (thing)" => 1, "lazy dog (idea)" => 1, "regular brown fox (person)" => 1, "really bad writeup (poetry)" => -1};
+
+for my $writeup (keys %$writeup_bank)
 {
   my $writeupnode = getNode($writeup, "writeup");
   unless($writeupnode)
@@ -237,11 +241,11 @@ for my $writeup ("Quick brown fox (thing)","lazy dog (idea)", "regular brown fox
   }
   for my $userseq (2..30)
   {
-    my $weight = 1;
+    my $weight = $writeup_bank->{$writeup};
     if($userseq == 23)
     {
       #23 is a jerk
-      $weight = -1;
+      $weight = -1*$weight;
     }
 
     my $user = getNode("normaluser$userseq","user");
@@ -254,4 +258,3 @@ for my $writeup ("Quick brown fox (thing)","lazy dog (idea)", "regular brown fox
     $APP->castVote($writeupnode, $user, $weight);
   }
 }
-

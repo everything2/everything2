@@ -621,5 +621,11 @@ sub karma
   return $self->NODEDATA->{karma} || 0;
 }
 
+sub num_newwus
+{
+  my ($self) = @_;
+  return $self->VARS->{num_newwus};
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
