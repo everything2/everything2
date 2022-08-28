@@ -18,13 +18,6 @@ sub dispatcher
     return $self->output($REQUEST, [$self->HTTP_METHOD_NOT_ALLOWED]); 
   }
 
-  # While in beta, API access is restricted
-  unless($REQUEST->is_guest || $REQUEST->is_editor || $REQUEST->is_developer || $REQUEST->is_clientdev || $Everything::CONF->environment eq "development")
-  {
-    $self->output($REQUEST, [$self->HTTP_FORBIDDEN]);
-    return;
-  }
-
   $self->devLog("Received API request: $urlform");
 
   if(my ($endpoint, $extra) = $urlform =~ m|^/api/([^/]+)/?(.*)|)

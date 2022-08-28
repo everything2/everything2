@@ -1,7 +1,6 @@
 <node>
-  <doctext>&lt;div id=&quot;vitalstest&quot;&gt;&lt;/div&gt;
-[%
-  return $VARS-&gt;{nodelets};
+  <doctext>[%
+  return &quot;&#203;, &#235;&quot;;
 %]
 [%
   return &quot;&quot;;

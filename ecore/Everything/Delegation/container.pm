@@ -51,7 +51,7 @@ sub zen_stdcontainer
   $str = qq|<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <title>|.$APP->pagetitle($NODE).qq| - Everything2.com</title>
 <link rel="stylesheet" id="basesheet" type="text/css" href="|.htmlcode("linkStylesheet","basesheet").qq|" media="all"><link rel="stylesheet" id="zensheet" type="text/css" href="|

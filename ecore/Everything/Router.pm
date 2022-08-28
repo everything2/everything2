@@ -3,7 +3,6 @@ package Everything::Router;
 use diagnostics;
 use Moose;
 use namespace::autoclean;
-use JSON;
 use Everything;
 use Everything::Request;
 
@@ -48,7 +47,7 @@ sub output
   {
     if($headers->{type} eq "application/json")
     {
-      print $self->JSON->encode($data); 
+      print $self->JSON->utf8->encode($data); 
     }else{
       print $data;
     }

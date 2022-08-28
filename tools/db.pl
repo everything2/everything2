@@ -7,4 +7,4 @@ use Everything::Configuration;
 
 my $CONF = Everything::Configuration->new;
 
-exec("mysql --user=\"".$CONF->everyuser."\" --password=\"".$CONF->everypass."\" --host=\"".$CONF->everything_dbserv."\" everything");
+exec("mysql --default-character-set=utf8 --user=\"".$CONF->everyuser."\" --password=\"".$CONF->everypass."\" --host=\"".$CONF->everything_dbserv."\" everything");

@@ -117,6 +117,7 @@ sub new_writeups
   my $PAGELOAD = shift;
   my $APP = shift;
 
+  return "";
   my $str = "";
 
   if(!$APP->isGuest($USER))

@@ -142,7 +142,6 @@ sub route
   return $self->{routerchooser}->($REQUEST, $path);
 }
 
-
 sub unauthorized_if_guest
 {
   my $orig = shift;
@@ -157,16 +156,44 @@ sub unauthorized_if_guest
   return $self->$orig($REQUEST, @_);
 }
 
-sub unauthorized_unless_developer
+sub unauthorized_unless_type
 {
-  my ($orig, $self, $REQUEST) = @_;
+  my $self = shift;
+  my $orig = shift;
+  my $REQUEST = shift;
+  my $type = shift;
 
-  if($REQUEST->user->is_developer || $REQUEST->user->is_admin)
+  unless($type)
+  {
+    $self->devLog("Bailing out of unauthorized_unless_type due to lack of type");
+    return [$self->HTTP_UNAUTHORIZED];
+  }
+
+  $type = "is_$type";
+
+  if($REQUEST->user->$type || $REQUEST->user->is_admin)
   {
     return $self->$orig($REQUEST, @_);
   }
 
+  $self->devLog("User not of type '$type' or admin, bailing");
   return [$self->HTTP_UNAUTHORIZED];
+}
+
+sub unauthorized_unless_developer
+{
+  my $orig = shift;
+  my $self = shift;
+  my $REQUEST = shift;
+  return $self->unauthorized_unless_type($orig,$REQUEST,"developer", @_);
+}
+
+sub unauthorized_unless_editor
+{
+  my $orig = shift;
+  my $self = shift;
+  my $REQUEST = shift;
+  return $self->unauthorized_unless_type($orig,$REQUEST,"editor", @_);
 }
 
 __PACKAGE__->meta->make_immutable;

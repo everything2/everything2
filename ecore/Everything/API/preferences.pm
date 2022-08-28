@@ -8,13 +8,15 @@ extends 'Everything::API';
 ## no critic (ProhibitBuiltinHomonyms)
 
 has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
-  'vit_hidemaint' => [0,1],
+  'vit_hidemaintenance' => [0,1],
   'vit_hidenodeinfo' => [0,1],
-  'vit_hideutil' => [0,1],
+  'vit_hidenodeutil' => [0,1],
   'vit_hidelist' => [0,1],
   'vit_hidemisc' => [0,1],
   'edn_hideutil' => [0,1],
-  'edn_hideedev' => [0,1]
+  'edn_hideedev' => [0,1],
+  'nw_nojunk' => [0,1],
+  'num_newwus' => [1,5,10,15,20,25,30,40]
 }});
 
 sub routes

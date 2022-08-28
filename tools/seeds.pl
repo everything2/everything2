@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use utf8;
 use lib qw(/var/libraries/lib/perl5);
 use lib qw(/var/everything/ecore);
 use Everything;
@@ -86,10 +87,14 @@ my $datanodes = {
       ["tomatoe", "how-to","A poorly-spelled way to say [tomato]"],
       ["swedish tomatoë", "essay","Swedish tomatoes"],
       ["potato", "essay","Boil em, mash em, put em in a [stew]."]],
+    "normaluser3" => [
+      ["hidden writeup here", "idea","This writeup was hidden from [New Writeups]"]
+    ], 
     "user with space" => [
       ["bad poetry", "idea", "Kind of bad poetry here"],
       ["good poetry", "poetry", "Solid work here"],
       ["tomato", "definition", "What is a tomato, really?"],
+      ["really bad writeup", "poetry", "This is [super bad]"]
     ],
     "genericdev" => [
       ["boring dev announcement 1", "log", "Really, pretty boring stuff"],
@@ -137,7 +142,13 @@ foreach my $datatype (keys %$datanodes)
       {
         $writeup->{parent_e2node} = $parent_e2node->{node_id};
         $writeup->{wrtype_writeuptype} = $writeuptype->{node_id};
+      
         $writeup->{notnew} = 0;
+        if($thiswriteup->[0] =~ /hidden/i)
+        {
+          $writeup->{notnew} = 1;
+        }
+
         $writeup->{cooled} = 0;
         $writeup->{writeup_id} = $writeup->{writeup_id};
         # Once we have better models, this will be a lot cleaner, but for now, faking the data is as best as we can do
@@ -227,7 +238,9 @@ foreach my $title("boring dev announcement 2","interesting dev announcement","lu
 
 # Cast some votes so we can generate front page content
 
-for my $writeup ("Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)")
+my $writeup_bank = {"Quick brown fox (thing)" => 1, "lazy dog (idea)" => 1, "regular brown fox (person)" => 1, "really bad writeup (poetry)" => -1};
+
+for my $writeup (keys %$writeup_bank)
 {
   my $writeupnode = getNode($writeup, "writeup");
   unless($writeupnode)
@@ -237,11 +250,11 @@ for my $writeup ("Quick brown fox (thing)","lazy dog (idea)", "regular brown fox
   }
   for my $userseq (2..30)
   {
-    my $weight = 1;
+    my $weight = $writeup_bank->{$writeup};
     if($userseq == 23)
     {
       #23 is a jerk
-      $weight = -1;
+      $weight = -1*$weight;
     }
 
     my $user = getNode("normaluser$userseq","user");
@@ -254,4 +267,3 @@ for my $writeup ("Quick brown fox (thing)","lazy dog (idea)", "regular brown fox
     $APP->castVote($writeupnode, $user, $weight);
   }
 }
-

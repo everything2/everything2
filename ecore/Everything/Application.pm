@@ -4498,6 +4498,9 @@ sub display_preferences
     }
   }
 
+  $prefs->{num_newwus} = $vars->{num_newwus} || 20;
+  $prefs->{nw_nojunk} = ($vars->{nw_nojunk})?(\1):(\0);
+
   return $prefs;
 }
 
@@ -4526,9 +4529,40 @@ sub weblogs_structure
   return $structure;
 }
 
-sub nodeinfojson
+sub filtered_newwriteups2
 {
-  my ($this) = @_;
+  my ($this, $iseditor) = @_;
+
+  my $limit = 40;
+
+  my $writeupsdata = $this->{db}->stashData("newwriteups2");
+  $writeupsdata = [] unless(defined($writeupsdata) and UNIVERSAL::isa($writeupsdata,"ARRAY"));
+
+  my $filteredwriteups = [];
+  my $count = 0;
+
+  while($count < $limit and $count < scalar(@$writeupsdata))
+  {
+    my $wu = $writeupsdata->[$count];
+
+    if($iseditor or (!$wu->{notnew} and !$wu->{is_junk}))
+    {
+      foreach my $key (qw(is_junk notnew is_log))
+      {
+        if($wu->{$key})
+        {
+          $wu->{$key} = \1;
+        }else{
+          $wu->{$key} = \0;
+        }
+      }
+      push(@$filteredwriteups, $wu);
+    }
+
+    $count++;
+  }
+
+  return $filteredwriteups;
 }
 
 1;

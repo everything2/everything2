@@ -1,6 +1,6 @@
 import React from 'react'
 
-const LinkNode = ({type,title,id,display,params}) => {
+const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
 
   let prefix = ""
 
@@ -18,20 +18,26 @@ const LinkNode = ({type,title,id,display,params}) => {
     }
   }
 
-  if(id == undefined)
+  if(author != undefined)
   {
-    if(type == undefined)
+    /* Used in the form /user/$username/writeups/$writeupname */
+    prefix = "/user/"+encodeURIComponent(author)+"/"+encodeURIComponent(type)+"s/"+title
+  }else{
+    if(id == undefined)
     {
-      prefix = "/title/"+encodeURIComponent(title)
-    }else{
-      prefix = "/node/"+type+"/"+encodeURIComponent(title)
-    }
-  }else {
-    prefix = "/node/"+encodeURIComponent(id)
+      if(type == undefined)
+      {
+        prefix = "/title/"+encodeURIComponent(title)
+      }else{
+        prefix = "/node/"+type+"/"+encodeURIComponent(title)
+      }
+    }else {
+      prefix = "/node/"+encodeURIComponent(id)
 
-    if(display == undefined)
-    {
-      display = "node_id: "+id
+      if(display == undefined)
+      {
+        display = "node_id: "+id
+      }
     }
   }
 
@@ -53,7 +59,12 @@ const LinkNode = ({type,title,id,display,params}) => {
     paramstring = '?'+paramstring
   }
 
-  return <a href={prefix+paramstring}>{display}</a>
+  if(anchor !== undefined)
+  {
+    paramstring = paramstring+"#"+encodeURIComponent(anchor)
+  }
+
+  return <a href={prefix+paramstring} className={className}>{display}</a>
 }
 
 export default LinkNode

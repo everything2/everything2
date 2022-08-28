@@ -848,6 +848,7 @@ sub displayPage
 		setVars $USER, $VARS unless $APP->isGuest($USER);
 
                 my $best_compression = $APP->best_compression_type;
+
                 if($best_compression eq "br")
                 {
                   $page = IO::Compress::Brotli::bro($page);
@@ -860,7 +861,6 @@ sub displayPage
 		}
 
 		printHeader($$NODE{datatype}, $page, $lastnode);
-
 		$query->print($page);
 		$page = "";
 	}

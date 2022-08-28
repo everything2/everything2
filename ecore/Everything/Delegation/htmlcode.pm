@@ -61,9 +61,6 @@ use POSIX qw(strftime ceil floor);
 use File::Copy;
 use Image::Magick; 
 
-# Used by showchatter, userAtomFeed
-use utf8;
-
 # Used by socialBookmarks
 use CGI;
 
@@ -145,20 +142,14 @@ sub admin_searchform
   my $servername = `hostname`;
   chomp $servername;
   $servername =~ s/\..*//g;
-  my $str = "\n\t\t\t<span class='var_label'>node_id:</span> <span class='var_value'>$nid</span>
+  my $str = "<span class='var_label'>node_id:</span> <span class='var_value'>$nid</span>
 			<span class='var_label'>nodetype:</span> <span class='var_value'>".linkNode($$NODE{type})."</span>
 			<span class='var_label'>Server:</span> <span class='var_value'>$servername</span>";
 
-  $str .= "\n\t\t\t".$query->start_form("POST",$query->script_name);
+  $str .= $query->start_form("POST",$query->script_name);
 
-  $str .= "\n\t\t\t\t".'<label for ="node">Name:</label> ' . "\n\t\t\t\t".
-  $query->textfield(-name => 'node',
-    -id => 'node',
-    -default => "$$NODE{title}",
-    -size => 18,
-    -maxlength => 80) . "\n\t\t\t\t".
-  $query->submit('name_button', 'go') . "\n\t\t\t" .
-  $query->end_form;
+  $str .= '<label for ="node">Name:</label> '.
+    qq|<input type="text" name="node" id="node" value="|.$APP->encodeHTML($$NODE{title}).qq|" size="18" maxlength="80" />|.$query->submit('name_button', 'go').$query->end_form;
 
   $str .= "\n\t\t\t" .$query->start_form("POST",$query->script_name).
     "\n\t\t\t\t" . '<label for="node_id">ID:</label> ' . "\n\t\t\t\t".
@@ -4067,10 +4058,10 @@ sub static_javascript
   $e2->{user} ||= {};
   $e2->{user}->{node_id} = $USER->{node_id};
   $e2->{user}->{title} = $USER->{title};
-  $e2->{user}->{admin} = $APP->isAdmin($USER)?("true"):("false");
-  $e2->{user}->{editor} = $APP->isEditor($USER)?("true"):("false");
-  $e2->{user}->{developer} = $APP->isDeveloper($USER)?("true"):("false");
-  $e2->{user}->{guest} = $APP->isGuest($USER)?("true"):("false");
+  $e2->{user}->{admin} = $APP->isAdmin($USER)?(\1):(\0);
+  $e2->{user}->{editor} = $APP->isEditor($USER)?(\1):(\0);
+  $e2->{user}->{developer} = $APP->isDeveloper($USER)?(\1):(\1);
+  $e2->{user}->{guest} = $APP->isGuest($USER)?(\1):(\0);
 
   $e2->{node} ||= {};
   $e2->{node}->{title} = $NODE->{title};
@@ -4090,7 +4081,13 @@ sub static_javascript
     $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}}; 
   }
 
-  $e2 = encode_json($e2);
+  $e2->{newWriteupsNodelet} = [];
+  if($VARS->{nodelets} =~ /263/)
+  {
+    $e2->{newWriteupsNodelet} = $APP->filtered_newwriteups2($APP->isEditor($USER))
+  }
+
+  $e2 = JSON->new->encode($e2);
 
   my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';
 
@@ -5169,7 +5166,6 @@ sub showchatter
     my $usermessage = undef;
     $aid = $$MSG{author_user} || 0;
     $text = $$MSG{msgtext};
-    utf8::decode($text);
 
     $text = $APP->escapeAngleBrackets($text);
 
@@ -9243,7 +9239,6 @@ sub userAtomFeed
   } while($row = $csr->fetchrow_hashref);
 
   $str.="</feed>\n";
-  utf8::encode($str);
   return $str;
 }
 
@@ -14692,7 +14687,6 @@ sub giftshop_topic
     my $topics = getVars($settingsnode);
     my $oldtopic = $$topics{$room};
     my $utf8topic = $query->param("newtopic");
-    utf8::encode($utf8topic);
     $utf8topic = $APP->htmlScreen($utf8topic); #Admins and chanops can still put HTML in topic, though.
     $$topics{$room} = $utf8topic;
     $$topics{$room} = $oldtopic if $utf8topic eq '' || $utf8topic =~ /^No information/i;
