@@ -87,6 +87,9 @@ my $datanodes = {
       ["tomatoe", "how-to","A poorly-spelled way to say [tomato]"],
       ["swedish tomatoë", "essay","Swedish tomatoes"],
       ["potato", "essay","Boil em, mash em, put em in a [stew]."]],
+    "normaluser3" => [
+      ["hidden writeup here", "idea","This writeup was hidden from [New Writeups]"]
+    ], 
     "user with space" => [
       ["bad poetry", "idea", "Kind of bad poetry here"],
       ["good poetry", "poetry", "Solid work here"],
@@ -139,7 +142,13 @@ foreach my $datatype (keys %$datanodes)
       {
         $writeup->{parent_e2node} = $parent_e2node->{node_id};
         $writeup->{wrtype_writeuptype} = $writeuptype->{node_id};
+      
         $writeup->{notnew} = 0;
+        if($thiswriteup->[0] =~ /hidden/i)
+        {
+          $writeup->{notnew} = 1;
+        }
+
         $writeup->{cooled} = 0;
         $writeup->{writeup_id} = $writeup->{writeup_id};
         # Once we have better models, this will be a lot cleaner, but for now, faking the data is as best as we can do

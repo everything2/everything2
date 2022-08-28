@@ -4499,6 +4499,7 @@ sub display_preferences
   }
 
   $prefs->{num_newwus} = $vars->{num_newwus} || 20;
+  $prefs->{nw_nojunk} = ($vars->{nw_nojunk})?(\1):(\0);
 
   return $prefs;
 }
@@ -4546,6 +4547,15 @@ sub filtered_newwriteups2
 
     if($iseditor or (!$wu->{notnew} and !$wu->{is_junk}))
     {
+      foreach my $key (qw(is_junk notnew is_log))
+      {
+        if($wu->{$key})
+        {
+          $wu->{$key} = \1;
+        }else{
+          $wu->{$key} = \0;
+        }
+      }
       push(@$filteredwriteups, $wu);
     }
 

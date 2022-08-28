@@ -38,8 +38,8 @@ class E2ReactRoot extends React.Component {
       edn_util: true,
       edn_edev: true,
 
-      num_newwus: 20
-
+      num_newwus: 20,
+      nw_nojunk: false
     };
   }
 
@@ -60,6 +60,7 @@ class E2ReactRoot extends React.Component {
     })
 
     initialState["num_newwus"] = e2.display_prefs["num_newwus"]
+    initialState["nw_nojunk"] = e2.display_prefs["nw_nojunk"]
 
     this.setState(initialState)
   }
@@ -119,9 +120,36 @@ class E2ReactRoot extends React.Component {
 
   newWriteupsChange = async (amount) => {
     await this.updatePreference({"num_newwus": amount})
-    let newWriteups = await this.refreshNewWriteups()
-    this.setState({"num_newwus": amount, "newWriteupsNodelet": newWriteups})
+    this.setState({"num_newwus": amount})
     return amount
+  }
+
+  noJunkChange = async (value) => {
+    await this.updatePreference({"nw_nojunk": +value})
+    this.setState({"nw_nojunk": value})
+    return value
+  }
+
+  editorHideWriteupChange = async (nodeid,notnew) => {
+    let verb = (notnew)?('hide'):('show')
+    await fetch (this.apiEndpoint() + '/hidewriteups/' + nodeid + '/action/' + verb, {credentials: "same-origin", mode: "same-origin"})
+      .then((resp) => {
+        if(resp.status === 200) {
+          return resp.json()        
+        }else{
+          return Promise.reject("e2error")
+        }
+      })
+      .then((dataReceived) => {
+        return dataReceived
+      })
+      .catch(err => {
+        if(err === "e2error") return
+        console.log(err)
+      })
+    let newWriteups = await this.refreshNewWriteups()
+    this.setState({"newWriteupsNodelet": newWriteups})
+    return notnew
   }
 
   render() {
@@ -132,7 +160,7 @@ class E2ReactRoot extends React.Component {
         <Developer user={this.state.user} node={this.state.node} developerNodelet={this.state.developerNodelet} lastCommit={this.state.lastCommit} toggleSection={this.toggleSection} util={this.state.edn_util} edev={this.state.edn_edev} />
       </DeveloperPortal>
       <NewWriteupsPortal>
-         <NewWriteups newWriteupsNodelet={this.state.newWriteupsNodelet} limit={this.state.num_newwus} newWriteupsChange={this.newWriteupsChange} user={this.state.user} />
+         <NewWriteups newWriteupsNodelet={this.state.newWriteupsNodelet} limit={this.state.num_newwus} noJunk={this.state.nw_nojunk} newWriteupsChange={this.newWriteupsChange} noJunkChange={this.noJunkChange} editorHideWriteupChange={this.editorHideWriteupChange} user={this.state.user} />
       </NewWriteupsPortal>
       </>
   }

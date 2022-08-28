@@ -53,15 +53,15 @@ const Developer = (props) => {
 
   return <><h2 className="nodelet_title">Everything Developer</h2>
   <div className="nodelet_content">
-    <IconContext.Provider value={{ size: "1.5em"}}>
-      <div className="link-with-icon"><FaGithubSquare /><a href={githubUrl}>GitHub</a>
-      <FaCodeBranch /><a href={githubUrl + "/commit/"+props.lastCommit}>{props.lastCommit.substr(0,7)}</a></div>
-      <div className="link-with-icon"><FaUsers /><LinkNode type="usergroup" title="edev" display="EDev Usergroup" /></div>
+    <IconContext.Provider value={{ size: "1.5em", style: { lineHeight: "inherit!important", verticalAlign: "middle" }}}>
+      <div className="link-with-icon"><FaGithubSquare /> <a href={githubUrl}>GitHub</a>
+      <FaCodeBranch /> <a href={githubUrl + "/commit/"+props.lastCommit}>{props.lastCommit.substr(0,7)}</a></div>
+      <div className="link-with-icon"><FaUsers /> <LinkNode type="usergroup" title="edev" display="EDev Usergroup" /></div>
       <br />
-      <div className="link-with-icon"><FaRegFileCode /><LinkNode type={props.node.type} title={props.node.title} display="viewcode" params={{displaytype: "viewcode"}} /> / <LinkNode type={props.node.type} title={props.node.title} display="xmltrue" params={{displaytype: "xmltrue"}} /></div>
-      <div className="link-with-icon"><FaCubes />{"node_id: "+props.node.node_id} <small>(<TimeDistance then={props.node.createtime} />)</small></div>
-      <div className="link-with-icon"><FaRegFile /><LinkNode type="nodetype" title={props.node.type} /> (<small>by <LinkNode type="htmlpage" title={props.developerNodelet.page.title} /></small>)</div>
-      <div className="link-with-icon"><FaExternalLinkAlt /><a onClick={openModal} style={{cursor:'pointer'}}>Your $VARS</a></div>
+      <div className="link-with-icon"><FaRegFileCode /> <LinkNode type={props.node.type} title={props.node.title} display="viewcode" params={{displaytype: "viewcode"}} /> / <LinkNode type={props.node.type} title={props.node.title} display="xmltrue" params={{displaytype: "xmltrue"}} /></div>
+      <div className="link-with-icon"><FaCubes /> {"node_id: "+props.node.node_id} <small>(<TimeDistance then={props.node.createtime} />)</small></div>
+      <div className="link-with-icon"><FaRegFile /> <LinkNode type="nodetype" title={props.node.type} /> (<small>by <LinkNode type="htmlpage" title={props.developerNodelet.page.title} /></small>)</div>
+      <div className="link-with-icon"><FaExternalLinkAlt /> <a onClick={openModal} style={{cursor:'pointer'}}>Your $VARS</a></div>
     </IconContext.Provider>
     <br /><br />
     <NodeletSection nodelet="edn" section="edev" title="edev" display={props.edev} toggleSection={props.toggleSection}>
