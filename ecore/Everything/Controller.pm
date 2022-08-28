@@ -94,10 +94,10 @@ sub layout
   $e2->{user} ||= {};
   $e2->{user}->{node_id} = $REQUEST->user->node_id;
   $e2->{user}->{title} = $REQUEST->user->title;
-  $e2->{user}->{admin} = ($REQUEST->user->is_admin)?("true"):("false");
-  $e2->{user}->{editor} = ($REQUEST->user->is_editor)?("true"):("false");
-  $e2->{user}->{developer} = ($REQUEST->user->is_developer)?("true"):("false");
-  $e2->{user}->{guest} = ($REQUEST->user->is_guest)?("true"):("false");
+  $e2->{user}->{admin} = ($REQUEST->user->is_admin)?(\1):(\0);
+  $e2->{user}->{editor} = ($REQUEST->user->is_editor)?(\1):(\0);
+  $e2->{user}->{developer} = ($REQUEST->user->is_developer)?(\1):(\0);
+  $e2->{user}->{guest} = ($REQUEST->user->is_guest)?(\1):(\0);
 
   $e2->{node} ||= {};
   $e2->{node}->{title} = $node->title;
@@ -116,7 +116,14 @@ sub layout
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
     $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->node_id, weblogs => $self->APP->weblogs_structure($edev->node_id)}}; 
   }
-  $params->{nodeinfojson} = $self->JSON->encode($e2);
+
+  $e2->{newWriteupsNodelet} = [];
+  if($REQUEST->user->VARS->{nodelets} =~ /263/)
+  {
+    $e2->{newWriteupsNodelet} = $self->APP->filtered_newwriteups2($REQUEST->user->is_editor);
+  }
+
+  $params->{nodeinfojson} = $self->JSON->utf8->encode($e2);
 
   $params->{no_ads} = 1 unless($REQUEST->is_guest);
 
@@ -178,19 +185,6 @@ sub epicenter
     $params->{$property} = $REQUEST->user->$property;
   }
 
-  return $params;
-}
-
-sub new_writeups
-{
-  my ($self, $REQUEST, $node) = @_;
-
-  my $params = {};
-  $params->{newwriteups} = [];
-  foreach my $newwriteups_entry (@{$self->DB->stashData("newwriteups")})
-  {
-    push @{$params->{newwriteups}}, $self->APP->node_by_id($newwriteups_entry->{writeup_id});
-  }
   return $params;
 }
 
