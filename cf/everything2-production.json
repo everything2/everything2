@@ -890,8 +890,8 @@
           "Essential": true,
           "HealthCheck": {
             "Interval": 30,
-            "Retries": 3,
-            "StartPeriod": 20,
+            "Retries": 5,
+            "StartPeriod": 40,
             "Timeout": 5,
             "Command": ["CMD-SHELL","curl -f http://localhost/ || exit 1" ]
           },
@@ -903,6 +903,11 @@
               "awslogs-stream-prefix": "e2-fargate"
             }
           },
+          "Ulimits": [{
+            "HardLimit": 8192,
+            "Name": "nofile",
+            "SoftLimit": 8192
+          }],
           "PortMappings": [{
             "ContainerPort": 443,
             "HostPort": 443
@@ -1021,6 +1026,7 @@
         "HealthCheckEnabled": true,
         "HealthCheckPort": "443",
         "HealthCheckProtocol": "HTTPS",
+        "HealthCheckTimeoutSeconds": 20,
         "Matcher": {
           "HttpCode": "200"
         },
