@@ -980,6 +980,7 @@
           }
         },
         "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 30,
         "TaskDefinition": {"Ref": "E2AppFargateTaskDefinition"},
         "CapacityProviderStrategy": [{
           "CapacityProvider": "FARGATE",
@@ -1023,12 +1024,14 @@
         "VpcId": {"Ref": "AppVPC"},
         "Protocol": "HTTPS",
         "Port": "443",
+        "HealthyThresholdCount": 2,
+        "UnhealthyThresholdCount": 5,
         "HealthCheckEnabled": true,
         "HealthCheckPort": "443",
         "HealthCheckProtocol": "HTTPS",
         "HealthCheckTimeoutSeconds": 20,
         "Matcher": {
-          "HttpCode": "200"
+          "HttpCode": "200-400"
         },
         "TargetType": "ip",
         "TargetGroupAttributes": [
