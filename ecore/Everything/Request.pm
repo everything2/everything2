@@ -3,7 +3,7 @@ package Everything::Request;
 use strict;
 use Moose;
 use namespace::autoclean;
-use CGI;
+use CGI qw(-utf8);
 
 with 'Everything::Globals';
 

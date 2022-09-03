@@ -21,7 +21,7 @@ use IO::Compress::Brotli;
 use IO::Compress::Deflate;
 use Everything::Request;
 
-use CGI;
+use CGI qw(-utf8);
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
 

@@ -62,7 +62,7 @@ use File::Copy;
 use Image::Magick; 
 
 # Used by socialBookmarks
-use CGI;
+use CGI qw(-utf8);
 
 # Used by create_short_url;
 use POSIX;

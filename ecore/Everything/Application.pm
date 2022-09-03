@@ -16,7 +16,7 @@ use LWP::UserAgent;
 use Date::Calc;
 
 # For rewriteCleanEscape, urlGen
-use CGI;
+use CGI qw(-utf8);
 
 # For getCallStack
 use Devel::Caller qw(caller_args);
