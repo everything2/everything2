@@ -674,7 +674,6 @@ sub personal_links
         my $node=$DB->getNodeById($id);
         next unless $node;
         push @newbnodes, $id;
-        # Can't use CGI::checkbox here because it insists on having a label...
         $str .= qq'<input type="checkbox" name="bnode_$$node{node_id}" value="1">'.
   	  linkNode($node, undef, {lastnode_id => undef}) . "<br>\n";
         $ajax .= "&bnode_$$node{node_id}=/";

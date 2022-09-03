@@ -1,7 +1,7 @@
 package Everything::Node;
 
 use Moose;
-use CGI;
+use CGI qw(-utf8);
 use URI::Escape;
 use Everything::Link;
 use Everything::Node::null;
