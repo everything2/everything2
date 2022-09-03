@@ -20,7 +20,7 @@ sub get
     return [$self->HTTP_UNAVAILABLE];
   }
 
-  my $writeups_out = $self->APP->filtered_newwriteups2($REQUEST->user->is_editor);
+  my $writeups_out = $self->APP->filtered_newwriteups2($REQUEST->user->NODEDATA);
   return [$self->HTTP_OK, $writeups_out];
 }
 

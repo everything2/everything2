@@ -4084,7 +4084,7 @@ sub static_javascript
   $e2->{newWriteupsNodelet} = [];
   if($VARS->{nodelets} =~ /263/)
   {
-    $e2->{newWriteupsNodelet} = $APP->filtered_newwriteups2($APP->isEditor($USER))
+    $e2->{newWriteupsNodelet} = $APP->filtered_newwriteups2($USER)
   }
 
   $e2 = JSON->new->encode($e2);

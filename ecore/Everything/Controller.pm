@@ -120,7 +120,7 @@ sub layout
   $e2->{newWriteupsNodelet} = [];
   if($REQUEST->user->VARS->{nodelets} =~ /263/)
   {
-    $e2->{newWriteupsNodelet} = $self->APP->filtered_newwriteups2($REQUEST->user->is_editor);
+    $e2->{newWriteupsNodelet} = $self->APP->filtered_newwriteups2($REQUEST->user->NODEDATA);
   }
 
   $params->{nodeinfojson} = $self->JSON->utf8->encode($e2);
