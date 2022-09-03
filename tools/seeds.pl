@@ -89,7 +89,8 @@ my $datanodes = {
       ["potato", "essay","Boil em, mash em, put em in a [stew]."]],
     "normaluser3" => [
       ["hidden writeup here", "idea","This writeup was hidden from [New Writeups]"],
-      ["Writeup w/ slash", "thing", "This writeup contains a slash"]
+      ["Writeup w/ slash", "thing", "This writeup contains a slash"],
+      ["Writeups & ampersands", "thing", "This writeup contains an ampersand"]
     ], 
     "user with space" => [
       ["bad poetry", "idea", "Kind of bad poetry here"],

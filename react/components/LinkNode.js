@@ -11,7 +11,7 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
       display = title
     }
 
-    if(title.includes("/"))
+    if(title.includes("/") || title.includes("&"))
     {
       // Double-encode to work around E2 routing bugs
       title = encodeURIComponent(title)
