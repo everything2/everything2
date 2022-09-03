@@ -22,7 +22,7 @@ RUN perl /var/bootstrap/createdeps.pl --depfile=/var/bootstrap/app.json --instal
 RUN rm -rf /var/dlcache/* /var/buildcache/*
 
 # NodeJS / React
-RUN curl -L https://nodejs.org/dist/v16.15.1/node-v16.15.1-linux-x64.tar.xz | xz -cd | tar xv --strip-components=1 -C /usr
+RUN curl -L https://nodejs.org/dist/v16.17.0/node-v16.17.0-linux-x64.tar.xz | xz -cd | tar xv --strip-components=1 -C /usr
 RUN npm install -g npm@latest
 
 
