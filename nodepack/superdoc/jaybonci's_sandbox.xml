@@ -1,6 +1,8 @@
 <node>
   <doctext>[%
-  return &quot;&#203;, &#235;&quot;;
+return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
+return &quot;Got:&quot;.`ulimit -a`;
+
 %]
 [%
   return &quot;&quot;;

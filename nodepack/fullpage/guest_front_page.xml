@@ -92,6 +92,7 @@ return parseLinks($zenStr);
 &lt;div id='sidebar'[%
     return ' class=&quot;pagenodelets&quot;' if $PAGELOAD-&gt;{pagenodelets};
 %]&gt;
+&lt;div id=&quot;e2-react-root&quot;&gt;&lt;/div&gt;
 [{nodelet meta-container}]
 &lt;/div&gt;
 
