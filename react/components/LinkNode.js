@@ -6,15 +6,15 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
 
   if(title != undefined)
   {
+    if(display == undefined)
+    {
+      display = title
+    }
+
     if(title.includes("/"))
     {
       // Double-encode to work around E2 routing bugs
       title = encodeURIComponent(title)
-    }
-
-    if(display == undefined)
-    {
-      display = title
     }
   }
 
