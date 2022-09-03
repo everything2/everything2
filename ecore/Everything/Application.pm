@@ -4531,9 +4531,12 @@ sub weblogs_structure
 
 sub filtered_newwriteups2
 {
-  my ($this, $iseditor) = @_;
+  my ($this, $USER) = @_;
 
   my $limit = 40;
+
+  my $iseditor = $this->isEditor($USER);
+  my $isguest = $this->isGuest($USER);
 
   my $writeupsdata = $this->{db}->stashData("newwriteups2");
   $writeupsdata = [] unless(defined($writeupsdata) and UNIVERSAL::isa($writeupsdata,"ARRAY"));
@@ -4556,6 +4559,12 @@ sub filtered_newwriteups2
           $wu->{$key} = \0;
         }
       }
+
+      if(not $isguest)
+      {
+        $wu->{hasvoted} = ($this->hasVoted($wu->{node_id},$USER))?(\1):(\0);
+      }
+
       push(@$filteredwriteups, $wu);
     }
 
