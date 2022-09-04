@@ -67,6 +67,7 @@ class E2ReactRoot extends React.Component {
 
   componentDidMount() {
     this.loadExternalState()
+    this.scheduleCronNewWriteups()
   }
 
   apiEndpoint = () => {
@@ -92,6 +93,16 @@ class E2ReactRoot extends React.Component {
       })
     return currentPreferences
   } 
+
+  scheduleCronNewWriteups = () => {
+    setInterval(async () => {
+      if(this.state.newWriteupsNodelet.length !== 0)
+      {
+        let newWriteups = await this.refreshNewWriteups()
+        this.setState({"newWriteupsNodelet": newWriteups})
+      }
+    }, 60000)
+  }
 
   refreshNewWriteups = async () => {
     return await fetch (this.apiEndpoint() + '/newwriteups', {credentials: "same-origin", mode: "same-origin"})
