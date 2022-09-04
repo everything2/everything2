@@ -56,7 +56,7 @@ const Vitals = (props) => {
         {
           trueLink = linkInfo[0]
         }
-        return <li key={section[1]+"_"+"i_"+index}><LinkNode title={trueLink} display={linkInfo[0]} key={section[1]+"_"+"a_"+index} /></li>
+        return <li key={section[1]+"_"+"i_"+index}><LinkNode title={trueLink} display={linkInfo[0]} /></li>
       })
     }
     </ul></NodeletSection>
