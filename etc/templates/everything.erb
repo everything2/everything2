@@ -136,7 +136,6 @@ coreconfig+="
 
         <IfDefine E2_DEVELOPMENT>
           ErrorLog \"|#{rotatelogs} -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"
-          LogLevel warn
           CustomLog \"|#{rotatelogs} -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" cloudwatch env=!dontlog
         </IfDefine>
 

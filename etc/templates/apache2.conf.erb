@@ -45,6 +45,8 @@ Include mods-enabled/*.conf
   Define E2_PRODUCTION
 <% end %>
 
+  LogLevel info
+
   LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
   LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%a\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" healthlog
 
@@ -60,8 +62,6 @@ Include mods-enabled/*.conf
   # CENTRAL ERROR LOG
   ErrorLogFormat "{\"time\":\"%{%usec_frac}t\", \"function\" : \"[%-m:%l]\", \"process\" : \"[pid%P]\" ,\"message\" : \"%M\"}"
   ErrorLog "|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
-  # DEFAULT LOG LEVEL
-  LogLevel warn
   # FILTER OUT THESE LOGS IN APACHE
   # DON'T LOG LOOPBACK REQUESTS
   SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
