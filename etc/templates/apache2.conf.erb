@@ -45,6 +45,11 @@ Include mods-enabled/*.conf
   Define E2_PRODUCTION
 <% end %>
 
+  LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
+
+  BrowserMatch "^ELB-HealthChecker" healthchecklog
+  CustomLog /etc/apache2/logs/healthcheck.log cloudwatch env=healthchecklog
+
 <IfDefine E2_DEVELOPMENT>
   Define E2StartServers 1
   Define E2MinSpareServers 1
@@ -63,8 +68,6 @@ Include mods-enabled/*.conf
   SetEnvIf Request_URI "^/server_live\.html$" dontlog
   SetEnvIf Request_URI "favicon.ico$" dontlog
   SetEnvIf Request_URI "^/robots\.txt$" dontlog
-
-  LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
 
 </IfDefine>
 
