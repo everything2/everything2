@@ -46,9 +46,10 @@ Include mods-enabled/*.conf
 <% end %>
 
   LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
+  LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%a\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" healthlog
 
-  BrowserMatch "^ELB-HealthChecker" healthchecklog
-  CustomLog /etc/apache2/logs/healthcheck.log cloudwatch env=healthchecklog
+  BrowserMatch "^ELB-HealthChecker" loghealthcheck
+  CustomLog /etc/apache2/logs/healthcheck.log healthlog env=loghealthcheck
 
 <IfDefine E2_DEVELOPMENT>
   Define E2StartServers 1
