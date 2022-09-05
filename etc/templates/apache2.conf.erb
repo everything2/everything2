@@ -92,10 +92,6 @@ PerlSwitches -I/var/everything/ecore -I/var/libraries/lib/perl5
 ServerName everything2.com
 Listen 80
 
-<VirtualHost *:80>
-  Include everything.conf
-</VirtualHost>
-
 <IfModule mod_ssl.c>
   SSLRandomSeed startup builtin
   SSLRandomSeed startup file:/dev/urandom 512
@@ -125,3 +121,7 @@ Listen 80
 
   </VirtualHost>
 </IfModule>
+
+<VirtualHost _default_:80>
+  Include everything.conf
+</VirtualHost>
