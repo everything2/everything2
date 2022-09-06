@@ -1036,7 +1036,7 @@ sub room_display_page
   
   $str .= qq|<p>|;
 
-  if((eval {$$NODE{criteria}}) and not $APP->isGuest($USER))
+  if((eval $$NODE{criteria}) and not $APP->isGuest($USER))
   {
     $APP->changeRoom($USER, $NODE);
     # For room usage counting:
