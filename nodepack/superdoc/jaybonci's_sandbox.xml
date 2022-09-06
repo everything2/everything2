@@ -1,7 +1,33 @@
 <node>
   <doctext>[%
+  return &quot;&quot;;
+  return `ls -al /var/log/everything/`;
+%]
+[%
+return &quot;&quot;;
+return unless $USER-&gt;{title} eq &quot;jaybonci&quot; or $USER-&gt;{title} eq &quot;root&quot;;
+my $file = &quot;/var/log/everything/e2app.2022090600.log&quot;;
+my $data;
+if(open my $fh, &quot;&lt;&quot;, $file)
+{
+  local $/ = undef;
+  $data = &lt;$fh&gt;;
+}
+$data =~ s/\n/&lt;br&gt;/mig;
+return $data;
+
+%]
+[%
+return &quot;&quot;;
 return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
-return &quot;Got:&quot;.`ulimit -a`;
+my $str = &quot;&quot;;
+my $count = 0;
+foreach my $key(keys %INC)
+{
+  $count++;
+  $str.= &quot;$key&lt;br&gt;&quot;;
+}
+return &quot;Modules loaded: $count&lt;br /&gt;$str&quot;;
 
 %]
 [%
@@ -55,7 +81,8 @@ return &quot;Got:&quot;.`ulimit -a`;
   }
 
   return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&lt;br&gt;&quot;;
-%]</doctext>
+%]
+UTF-8 import test: &#203;, &#235;</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
   <type_nodetype>14</type_nodetype>
