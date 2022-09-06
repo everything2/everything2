@@ -1031,7 +1031,7 @@
         "HealthCheckProtocol": "HTTPS",
         "HealthCheckTimeoutSeconds": 20,
         "Matcher": {
-          "HttpCode": "200-400"
+          "HttpCode": "200"
         },
         "TargetType": "ip",
         "TargetGroupAttributes": [
