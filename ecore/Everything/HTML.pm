@@ -21,6 +21,7 @@ use IO::Compress::Brotli;
 use IO::Compress::Deflate;
 use Everything::Request;
 
+use Encode;
 use CGI qw(-utf8);
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
@@ -851,13 +852,14 @@ sub displayPage
 
                 if($best_compression eq "br")
                 {
-                  $page = IO::Compress::Brotli::bro($page);
+                  $page = IO::Compress::Brotli::bro(Encode::encode("utf8",$page));
                 }elsif($best_compression eq "deflate") {
                   my $outpage = undef;
+                  $page = Encode::encode("utf8",$page);
                   $page = IO::Compress::Deflate::deflate(\$page => \$outpage);
                   $page = $outpage; 
                 }elsif($best_compression eq "gzip"){
-                  $page = Compress::Zlib::memGzip($page);
+                  $page = Compress::Zlib::memGzip(Encode::encode("utf8",$page));
 		}
 
 		printHeader($$NODE{datatype}, $page, $lastnode);
