@@ -98,14 +98,13 @@ class E2ReactRoot extends React.Component {
     setInterval(async () => {
       if(this.state.newWriteupsNodelet.length !== 0)
       {
-        let newWriteups = await this.refreshNewWriteups()
-        this.setState({"newWriteupsNodelet": newWriteups})
+        await this.refreshNewWriteups()
       }
     }, 60000)
   }
 
   refreshNewWriteups = async () => {
-    return await fetch (this.apiEndpoint() + '/newwriteups', {credentials: "same-origin", mode: "same-origin"})
+    let newWriteups = await fetch (this.apiEndpoint() + '/newwriteups', {credentials: "same-origin", mode: "same-origin"})
       .then((resp) => {
         if(resp.status === 200) {
           return resp.json()        
@@ -120,6 +119,11 @@ class E2ReactRoot extends React.Component {
         if(err === "e2error") return
         console.log(err)
       })
+
+    if(newWriteups !== undefined && Array.isArray(newWriteups) && newWriteups.length > 0)
+    {
+      this.setState({"newWriteupsNodelet": newWriteups})
+    }
   }
 
   toggleSection = async (event,sectionid) => {
@@ -158,8 +162,7 @@ class E2ReactRoot extends React.Component {
         if(err === "e2error") return
         console.log(err)
       })
-    let newWriteups = await this.refreshNewWriteups()
-    this.setState({"newWriteupsNodelet": newWriteups})
+    await this.refreshNewWriteups()
     return notnew
   }
 
