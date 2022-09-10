@@ -1,4 +1,6 @@
 <%class>
+use Encode;
+
 has 'node' => (required => 1);
 has 'basesheet' => (required => 1);
 has 'zensheet' => (required => 1);
@@ -47,7 +49,7 @@ sub _build_pagetitle
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <title><% $.pagetitle %></title>
 <link rel="stylesheet" id="basesheet" type="text/css" href="<% $.basesheet %>" media="all">

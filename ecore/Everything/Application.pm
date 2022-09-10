@@ -27,6 +27,12 @@ use JSON;
 # For sitemap_batch_xml
 use XML::Generator;
 
+# For optimally_compress_page
+use Compress::Zlib;
+use IO::Compress::Brotli;
+use IO::Compress::Deflate;
+use Encode;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -4453,6 +4459,27 @@ sub best_compression_type
   }
 
   return;
+}
+
+sub optimally_compress_page
+{
+  my ($this, $page) = @_;
+
+  my $best_compression = $this->best_compression_type;
+
+  if($best_compression eq "br")
+  {
+    $page = IO::Compress::Brotli::bro(Encode::encode("utf8",$page));
+  }elsif($best_compression eq "deflate") {
+    my $outpage = undef;
+    $page = Encode::encode("utf8",$page);
+    $page = IO::Compress::Deflate::deflate(\$page => \$outpage);
+    $page = $outpage;
+  }elsif($best_compression eq "gzip"){
+    $page = Compress::Zlib::memGzip(Encode::encode("utf8",$page));
+  }
+
+  return $page;
 }
 
 sub asset_uri

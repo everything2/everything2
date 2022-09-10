@@ -123,7 +123,7 @@ sub layout
     $e2->{newWriteupsNodelet} = $self->APP->filtered_newwriteups2($REQUEST->user->NODEDATA);
   }
 
-  $params->{nodeinfojson} = $self->JSON->utf8->encode($e2);
+  $params->{nodeinfojson} = $self->JSON->encode($e2);
 
   $params->{no_ads} = 1 unless($REQUEST->is_guest);
 
