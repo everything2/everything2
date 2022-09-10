@@ -36,6 +36,11 @@ sub output
   $headers->{status} ||= $response_code;
   $headers->{charset} ||= "utf-8";
   $headers->{type} ||= "text/html";
+
+  if(my $best_compression = $self->APP->best_compression_type)
+  {
+    $headers->{content_encoding} = $best_compression;
+  }
   
   if($self->CONF->environment eq "development")
   {
@@ -49,7 +54,7 @@ sub output
     {
       print $self->JSON->utf8->encode($data); 
     }else{
-      print $data;
+      print $self->APP->optimally_compress_page($data);
     }
   }
   

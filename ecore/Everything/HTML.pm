@@ -16,9 +16,6 @@ use Everything::Delegation::container;
 use Everything::Delegation::nodelet;
 use Everything::Delegation::htmlpage;
 
-use Compress::Zlib;
-use IO::Compress::Brotli;
-use IO::Compress::Deflate;
 use Everything::Request;
 
 use Encode;
@@ -848,20 +845,7 @@ sub displayPage
 
 		setVars $USER, $VARS unless $APP->isGuest($USER);
 
-                my $best_compression = $APP->best_compression_type;
-
-                if($best_compression eq "br")
-                {
-                  $page = IO::Compress::Brotli::bro(Encode::encode("utf8",$page));
-                }elsif($best_compression eq "deflate") {
-                  my $outpage = undef;
-                  $page = Encode::encode("utf8",$page);
-                  $page = IO::Compress::Deflate::deflate(\$page => \$outpage);
-                  $page = $outpage; 
-                }elsif($best_compression eq "gzip"){
-                  $page = Compress::Zlib::memGzip(Encode::encode("utf8",$page));
-		}
-
+                $page = $APP->optimally_compress_page($page);
 		printHeader($$NODE{datatype}, $page, $lastnode);
 		$query->print($page);
 		$page = "";
