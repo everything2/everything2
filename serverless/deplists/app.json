@@ -852,10 +852,6 @@
     "module": "DateTime::Format::W3CDTF"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/XML-RSS-1.61.tar.gz",
-    "module": "XML::RSS"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/R/RU/RURBAN/B-Keywords-1.21.tar.gz",
     "module": "B::Keywords"
   },
