@@ -1,6 +1,7 @@
 package Everything::Page::sign_up;
 
 use Moose;
+use utf8;
 extends 'Everything::Page';
 
 with 'Everything::Form::field_hashing';
@@ -241,9 +242,9 @@ sub display
     my $params = $self->APP->getTokenLinkParameters($new_user, $pass, 'activate', time() + $self->valid_for_days * 86400);
     my $link = $self->APP->urlGen($params, 'no quotes', $self->APP->node_by_name('Confirm password', 'superdoc')->NODEDATA);
 
-    $mail->{doctext} =~ s/«name»/$username/;
-    $mail->{doctext} =~ s/«link»/$link/g;
-    $mail->{doctext} =~ s/«servername»/$ENV{SERVER_NAME}/g;
+    $mail->{doctext} =~ s/<name>/$username/;
+    $mail->{doctext} =~ s/<link>/$link/g;
+    $mail->{doctext} =~ s/<servername>/$ENV{SERVER_NAME}/g;
 
     $self->APP->node2mail($email, $mail, 1);
   }
