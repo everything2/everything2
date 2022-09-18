@@ -618,7 +618,7 @@ sub cleanLinks
 #
 sub initEverything
 {
-	if($Everything::CONF->maintenance_mode)
+	if($Everything::CONF->maintenance_message)
 	{
 		exit;
 	}

@@ -114,7 +114,7 @@ has 'nosearch_words' => (isa => 'HashRef', is => 'ro', default => sub { {
 } });
 
 has 'create_room_level' => (isa => 'Int', is => 'ro', default => 5);
-has 'maintenance_mode' => (isa => 'Bool', is => 'ro', default => 0);
+has 'maintenance_message' => (isa => 'Str', is => 'ro', default => sub { $ENV{E2_MAINTENANCE_MESSAGE} || "" });
 has 'writeuplowrepthreshold' => (isa => 'Int', is => 'ro', default => '-8');
 has 'google_ads_badnodes' => (isa => 'ArrayRef', is => 'ro', default => sub { [] });
 has 'google_ads_badwords' => (isa => 'ArrayRef', is => 'ro', default => sub { [
