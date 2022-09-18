@@ -18,7 +18,10 @@ sub dispatcher
     return $self->output($REQUEST, [$self->HTTP_METHOD_NOT_ALLOWED]); 
   }
 
-  $self->devLog("Received API request: $urlform");
+  if($self->CONF->maintenance_message)
+  {
+    return $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
+  }
 
   if(my ($endpoint, $extra) = $urlform =~ m|^/api/([^/]+)/?(.*)|)
   {

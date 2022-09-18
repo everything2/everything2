@@ -21,6 +21,8 @@ PassEnv E2DOCKER
 # Fargate awareness inside of the app
 PassEnv AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 PassEnv AWS_DEFAULT_REGION
+# E2 app configuration
+PassEnv E2_MAINTENANCE_MESSAGE
 
 # DON'T RDNS LOOK UP HOST IPS FOR BEST SPEED
 HostnameLookups Off

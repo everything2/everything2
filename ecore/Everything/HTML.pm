@@ -1352,21 +1352,10 @@ sub execOpCode
 #
 sub mod_perlInit
 {
-	if($Everything::CONF->maintenance_mode)
+	if($Everything::CONF->maintenance_message)
 	{
-		my $maintenance_html;
-		
-		if(!$maintenance_html) #intentionally mod_perl 'unsafe'
-		{
-			my $handle;
-			open $handle,'<',"/var/everything/www/maintenance.html";
-			{
-				local $/ = undef;
-				$maintenance_html = <$handle>;
-				close $handle;
-			}
-		}	
-		print "Content-Type: text/html\n\n$maintenance_html\n";
+		print "Content-Type: text/html\n\n";
+		print $Everything::CONF->maintenance_message."\n";
 		return;
 	}
 
