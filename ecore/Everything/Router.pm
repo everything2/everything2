@@ -52,7 +52,7 @@ sub output
   {
     if($headers->{type} eq "application/json")
     {
-      print $self->JSON->utf8->encode($data); 
+      print $self->APP->optimally_compress_page($self->JSON->utf8->encode($data)); 
     }else{
       print $self->APP->optimally_compress_page($data);
     }
