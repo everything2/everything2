@@ -38,9 +38,9 @@
 
         PerlCleanupHandler Apache2::SizeLimit
 
-	PerlPassEnv E2DOCKER
 	PerlPassEnv AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 	PerlPassEnv AWS_DEFAULT_REGION
+	PerlPassEnv E2_DOCKER
 	PerlPassEnv E2_MAINTENANCE_MESSAGE
 
 	PerlModule Apache2::compat Apache::DBI CGI Everything Everything::HTML
