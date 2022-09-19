@@ -5,15 +5,7 @@ require 'getoptlong'
 
 STDERR.puts "Starting E2 Apache wrapper"
 
-['E2DOCKER','AWS_CONTAINER_CREDENTIALS_RELATIVE_URI','AWS_DEFAULT_REGION'].each do |var|
-  if ENV[var].nil?
-    STDERR.puts "#{var} is missing"
-  else
-    STDERR.puts "#{var} is: '#{ENV[var]}'"
-  end
-end
-
-if ENV['E2DOCKER'].nil? or !ENV['E2DOCKER'].eql? "development"
+if ENV['E2_DOCKER'].nil? or !ENV['E2_DOCKER'].eql? "development"
   s3client = Aws::S3::Client.new(region: 'us-west-2');
   secretsbucket = "secrets.everything2.com"
   location = "/etc/everything"
@@ -25,6 +17,6 @@ if ENV['E2DOCKER'].nil? or !ENV['E2DOCKER'].eql? "development"
 end
 
 `rm -f /etc/apache2/logs/error_log`
-`ln -s /dev/stderr /etc/apache2/logs/error_log` unless ENV['E2DOCKER'].eql? "development"
+`ln -s /dev/stderr /etc/apache2/logs/error_log` unless ENV['E2_DOCKER'].eql? "development"
 
 exec("/usr/sbin/apachectl -D FOREGROUND")

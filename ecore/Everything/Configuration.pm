@@ -260,7 +260,7 @@ around BUILDARGS => sub
   chomp $environment;
 
   my $variance = '';
-  if(defined($ENV{'E2DOCKER'}) and $ENV{'E2DOCKER'} eq 'development')
+  if(defined($ENV{'E2_DOCKER'}) and $ENV{'E2_DOCKER'} eq 'development')
   {
     $environment = "development";
     $variance = '-docker';

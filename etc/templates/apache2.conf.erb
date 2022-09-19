@@ -16,11 +16,12 @@ ServerTokens Prod
 ServerSignature EMail
 TraceEnable Off
 
-# Docker awareness inside of the app
-PassEnv E2DOCKER
 # Fargate awareness inside of the app
 PassEnv AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 PassEnv AWS_DEFAULT_REGION
+
+# Docker awareness inside of the app
+PassEnv E2_DOCKER
 # E2 app configuration
 PassEnv E2_MAINTENANCE_MESSAGE
 
