@@ -895,6 +895,12 @@
             "Timeout": 5,
             "Command": ["CMD-SHELL","curl -f http://localhost/ || exit 1" ]
           },
+          "Environment": [
+            {
+              "Name": "E2_DBSERV",
+              "Value": {"Fn::GetAtt": ["EverythingDB","Endpoint.Address"]}
+            }
+          ],
           "LogConfiguration": {
             "LogDriver": "awslogs",
             "Options": {
