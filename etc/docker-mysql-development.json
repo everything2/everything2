@@ -1,6 +1,4 @@
 {
-  "everything_dbserv": "127.0.0.1",
-  "everything_dbport": 3306,
   "canonical_web_server": "development.everything2.com",
   "use_local_assets": 1,
   "google_ads_badnodes": [

@@ -1,5 +1,4 @@
 {
-  "everything_dbserv": "everything2vpc.ciuh20jrlbkm.us-west-2.rds.amazonaws.com",
   "canonical_web_server": "everything2.com",
   "google_ads_badnodes": [
     20453,
