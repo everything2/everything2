@@ -1,5 +1,4 @@
 {
-  "everything_dbserv": "e2devdb",
   "canonical_web_server": "development.everything2.com",
   "use_local_assets": 1,
   "google_ads_badnodes": [

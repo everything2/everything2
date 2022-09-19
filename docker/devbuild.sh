@@ -6,7 +6,7 @@ docker container stop e2devapp
 docker rm e2devapp
 docker image rm everything2/e2app
 docker build -t everything2/e2app -f docker/e2app/Dockerfile .
-docker run -d --publish 9080:80 --publish 443:9443 --env E2_DOCKER=development --name=e2devapp --net=e2-dev-net everything2/e2app
+docker run -d --publish 9080:80 --publish 443:9443 --env E2_DOCKER=development --env E2_DBSERV=e2devdb --name=e2devapp --net=e2-dev-net everything2/e2app
 
 if [ "$1" = "full" ]; then
   docker container stop e2devdb
