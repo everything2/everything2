@@ -947,7 +947,18 @@
               "awslogs-region": {"Ref": "AWS::Region"},
               "awslogs-stream-prefix": "e2-fargate"
             }
-          }
+          },
+          "Ulimits": [{
+            "HardLimit": 8192,
+            "Name": "nofile",
+            "SoftLimit": 8192
+          }],
+          "Environment": [
+            {
+              "Name": "E2_DBSERV",
+              "Value": {"Fn::GetAtt": ["EverythingDB","Endpoint.Address"]}
+            }
+          ]
         }]
       }
     },
