@@ -8,10 +8,12 @@ import Developer from './Nodelets/Developer'
 import NewWriteupsPortal from './Portals/NewWriteupsPortal'
 import NewWriteups from './Nodelets/NewWriteups'
 
+import { E2IdleHandler } from './E2IdleHandler'
+
 class E2ReactRoot extends React.Component {
 
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       user: {},
@@ -40,8 +42,19 @@ class E2ReactRoot extends React.Component {
 
       num_newwus: 20,
       nw_nojunk: false
-    };
+    }
+
+    this.idleTimer = null
+    this.onPrompt = this.onPrompt.bind(this)
+    this.onIdle = this.onIdle.bind(this)
+    this.onAction = this.onAction.bind(this)
+    this.onActive = this.onActive.bind(this)
   }
+
+  onPrompt = () => {}
+  onIdle = () => {}
+  onActive = (e) => {}
+  onAction = (e) => {}
 
   loadExternalState() {
     let initialState = {}
@@ -104,7 +117,13 @@ class E2ReactRoot extends React.Component {
   }
 
   refreshNewWriteups = async () => {
-    let newWriteups = await fetch (this.apiEndpoint() + '/newwriteups', {credentials: "same-origin", mode: "same-origin"})
+    let idleString = ''
+    if(this.idleTimer.isIdle())
+    {
+      idleString = '?ajaxIdle=1'
+    }
+
+    let newWriteups = await fetch (this.apiEndpoint() + '/newwriteups'+idleString, {credentials: "same-origin", mode: "same-origin"})
       .then((resp) => {
         if(resp.status === 200) {
           return resp.json()        
@@ -167,7 +186,12 @@ class E2ReactRoot extends React.Component {
   }
 
   render() {
-    return <><VitalsPortal>
+    return <>
+      <E2IdleHandler
+        ref={ref => { this.idleTimer = ref }}
+        timeout={1000*5*60}
+      />
+      <VitalsPortal>
         <Vitals maintenance={this.state.vit_maintenance} nodeinfo={this.state.vit_nodeinfo} list={this.state.vit_list} nodeutil={this.state.vit_nodeutil} misc={this.state.vit_misc} toggleSection={this.toggleSection} />
       </VitalsPortal>
       <DeveloperPortal>
