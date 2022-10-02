@@ -78,22 +78,6 @@
         "AccessControl": "PublicRead"
       }
     },
-    "E2AppRDSAddOnly": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "Properties": {
-        "Description": "Allows E2 machines to enable ingress to RDS",
-        "ManagedPolicyName": "E2AppRDSAddOnly",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": "rds:AuthorizeDBSecurityGroupIngress",
-            "Resource": "*"
-          }]
-        }
-      }
-    },
     "E2DotComR53Zone": {
       "Type": "AWS::Route53::HostedZone",
       "DeletionPolicy": "Retain",
