@@ -13,7 +13,7 @@
     "Resource" : "*",
     "Condition" : {
       "StringEquals" : {
-        "ResourceType" : ["AWS::EC2::Instance", "AWS::RDS::DBInstance"]
+        "ResourceType" : ["AWS::RDS::DBInstance"]
       }
     }
   }]

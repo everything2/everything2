@@ -372,7 +372,7 @@
       "Type": "AWS::RDS::DBInstance",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "AllocatedStorage": "100",
+        "MaxAllocatedStorage": "200",
         "AllowMajorVersionUpgrade": true,
         "AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"},"a"]]},
         "BackupRetentionPeriod": 7,
@@ -1819,6 +1819,5 @@
         }
       }
     }
-
   }
 }
