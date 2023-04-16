@@ -14,25 +14,25 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
     if(title.includes("/") || title.includes("&"))
     {
       // Double-encode to work around E2 routing bugs
-      title = encodeURIComponent(title)
+      // title = encodeURIComponent(title)
     }
   }
 
   if(author != undefined)
   {
     /* Used in the form /user/$username/writeups/$writeupname */
-    prefix = "/user/"+encodeURIComponent(author)+"/"+encodeURIComponent(type)+"s/"+title
+    prefix = "/user/"+author+"/"+type+"s/"+title
   }else{
     if(id == undefined)
     {
       if(type == undefined)
       {
-        prefix = "/title/"+encodeURIComponent(title)
+        prefix = "/title/"+title
       }else{
-        prefix = "/node/"+type+"/"+encodeURIComponent(title)
+        prefix = "/node/"+type+"/"+title
       }
     }else {
-      prefix = "/node/"+encodeURIComponent(id)
+      prefix = "/node/"+id
 
       if(display == undefined)
       {
@@ -49,7 +49,7 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
   let param_list = []
 
   Object.keys(params).forEach((key) => {
-    param_list.push(encodeURIComponent(key)+"="+encodeURIComponent(params[key]))
+    param_list.push(key+"="+params[key])
   })
 
   let paramstring = param_list.join('&')
@@ -61,10 +61,10 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
 
   if(anchor !== undefined)
   {
-    paramstring = paramstring+"#"+encodeURIComponent(anchor)
+    paramstring = paramstring+"#"+anchor
   }
 
-  return <a href={prefix+paramstring} className={className}>{display}</a>
+  return <a href={encodeURI(encodeURI(prefix+paramstring))} className={className}>{display}</a>
 }
 
 export default LinkNode
