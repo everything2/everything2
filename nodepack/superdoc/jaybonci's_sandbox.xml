@@ -1,7 +1,8 @@
 <node>
   <doctext>[%
   return &quot;&quot;;
-  return `ls -al /var/log/everything/`;
+  return unless $USER-&gt;{title} eq &quot;jaybonci&quot; or $USER-&gt;{title} eq &quot;root&quot;;
+  return $ENV{E2_DBSERV};
 %]
 [%
 return &quot;&quot;;

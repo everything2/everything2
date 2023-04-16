@@ -1,6 +1,6 @@
 <node>
   <doctext>[%
-
+use utf8;
 return &quot;&lt;p&gt;If you logged in, you'd be able to create a backup of your &quot;
 	.&quot;writeups here.&lt;/p&gt;&quot; if $APP-&gt;isGuest($USER);
 
@@ -66,7 +66,7 @@ my $csr = $DB -&gt; sqlSelectMany(
 	, &quot;author_user=$uid AND ($where)&quot;
 );
 
-while (my $wu_row = $csr -&gt; fetchrow_hashref){
+while (my $wu_row = $csr-&gt;fetchrow_hashref){
 	push @wus, $wu_row if $e2parse &amp; 1;
 	push @wus, {
 		title =&gt; $wu_row -&gt; {title},
@@ -103,7 +103,11 @@ foreach my $wu (@wus) {
 	$wu_title = $trytitle.' ('.$dupebust++.')' while $usedtitles{&quot;$wu_title.$suffix&quot;};
 	$usedtitles{&quot;$wu_title.$suffix&quot;} = 1;
 	
-	$zip -&gt; addString($$wu{doctext},($$wu{suffix}||'text').&quot;/$wu_title.$suffix&quot;);
+        my $doctext = $$wu{doctext};
+        utf8::encode($doctext);
+        my $wusuffix = $$wu{suffix};
+        utf8::encode($wusuffix);
+	$zip-&gt;addString($doctext,($wusuffix || 'text').&quot;/$wu_title.$suffix&quot;);
 }
 
 my ($day, $month, $year) = (gmtime(time + $$VARS{localTimeOffset} + $$VARS{localTimeDST}*3600))[3 .. 5];
