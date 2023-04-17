@@ -90,19 +90,19 @@ coreconfig+="
 		RewriteCond %{HTTP:X-Forwarded-Proto} =http
 		RewriteRule (.*)                           https://%{HTTP_HOST}/$1 [R=301,L]
 
-		RewriteRule ^node/(\\d+)/(\\w+)/?$           index.pl?node_id=$1&displaytype=$2  [QSA]
-		RewriteRule ^node/(\\d+)([^&]*)/?$          index.pl?node_id=$1$2               [QSA]
-		RewriteRule ^e2node/(.+)                   /title/$1                           [R]
-		RewriteRule ^node/([^\\d][^/]*)$            /title/$1                           [R]
+		RewriteRule ^node/(\\d+)/(\\w+)/?$           index.pl?node_id=$1&displaytype=$2  [QSA,B]
+		RewriteRule ^node/(\\d+)([^&]*)/?$          index.pl?node_id=$1$2               [QSA,B]
+		RewriteRule ^e2node/(.+)                   /title/$1                           [R,B]
+		RewriteRule ^node/([^\\d][^/]*)$            /title/$1                           [R,B]
 
-		RewriteRule ^node/([^\\W\\/]+)/([^&]+).*/?$  index.pl?node=$2&type=$1            [QSA]
-		RewriteRule ^title/([^&]+).*/?$            index.pl?node=$1                    [QSA]
+		RewriteRule ^node/([^\\W\\/]+)/([^&]+).*/?$  index.pl?node=$2&type=$1            [QSA,B]
+		RewriteRule ^title/([^&]+).*/?$            index.pl?node=$1                    [QSA,B]
 
-		RewriteRule ^user/([^&]+)/writeups/([^&]+).*/?$   index.pl?node=$2&type=writeup&author=$1      [QSA]
+		RewriteRule ^user/([^&]+)/writeups/([^&]+).*/?$   index.pl?node=$2&type=writeup&author=$1      [QSA,B]
 
 		#Ugh, this rule needs to be made prettier
-		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [QSA]
-		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [QSA]
+		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [QSA,B]
+		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [QSA,B]
 
 		RewriteRule ^favicon.ico$		   http://static.everything2.com/favicon.ico [P]
 
