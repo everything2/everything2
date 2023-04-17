@@ -911,6 +911,10 @@
     "module": "Lingua::EN::Inflect"
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/M/MA/MAREKR/Pod-Parser-1.65.tar.gz",
+    "module": "Pod::Parser"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/D/DO/DOLMEN/Pod-Spell-1.20.tar.gz",
     "module": "Pod::Spell"
   },
