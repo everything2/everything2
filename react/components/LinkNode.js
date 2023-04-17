@@ -64,7 +64,7 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
     paramstring = paramstring+"#"+anchor
   }
 
-  return <a href={encodeURI(encodeURI(prefix+paramstring))} className={className}>{display}</a>
+  return <a href={encodeURI(prefix+paramstring)} className={className}>{display}</a>
 }
 
 export default LinkNode
