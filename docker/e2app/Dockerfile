@@ -8,7 +8,7 @@ RUN gem install aws-sdk-rds aws-sdk-elasticloadbalancingv2 aws-sdk-iam aws-sdk-s
 
 # Modern Apache2
 RUN mkdir -p /var/debbuild
-COPY ./debian/* /var/debbuild
+COPY ./debian/* /var/debbuild/
 RUN chmod 0755 /var/debbuild/build_modern_apache.sh
 RUN /var/debbuild/build_modern_apache.sh
 
