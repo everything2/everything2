@@ -4486,7 +4486,7 @@ sub asset_uri
 {
   my ($this, $asset) = @_;
 
-  if(my ($ext) = $asset =~ /\.(css|js)$/)
+  if(my ($ext) = $asset =~ /\.(css|js|ico)$/)
   {
     if($Everything::CONF->use_local_assets)
     {

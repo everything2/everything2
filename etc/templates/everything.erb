@@ -90,7 +90,7 @@ coreconfig+="
 		RewriteCond %{HTTP:X-Forwarded-Proto} =http
 		RewriteRule (.*)                           https://%{HTTP_HOST}/$1 [R=301,L]
 
-		RewriteRule ^favicon.ico$		   http://static.everything2.com/favicon.ico [P,L]
+		RewriteRule ^favicon.ico$		   /react/assets/favicon.ico [L]
 
 		RewriteRule ^node/(\\d+)/(\\w+)/?$           index.pl?node_id=$1&displaytype=$2  [L,QSA,BCTLS]
 		RewriteRule ^node/(\\d+)([^&]*)/?$          index.pl?node_id=$1$2                [L,QSA,BCTLS]
