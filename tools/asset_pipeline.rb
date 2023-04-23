@@ -48,7 +48,9 @@ everydir = File.expand_path(__dir__ + "/..")
 assets = {'js' => {}, 'css' => {}, 'react' => {}}
 
 ['js','css','react'].each do |asset_type|
-  Dir["#{everydir}/www/#{asset_type}/*"].each do |f|
+  Dir["#{everydir}/www/#{asset_type}/**/**"].each do |f|
+    puts "Evaluating #{f}"
+    next if File.directory?(f)
     basefile = File.basename(f)
     assets[asset_type][basefile] = {}
 
@@ -129,7 +131,7 @@ assets.keys.each do |asset_type|
           end
         end
       else
-        puts "Test only, not uploading #{to_upload}"
+        puts "Test only, not uploading for real"
       end
     end
   end
