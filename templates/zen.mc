@@ -37,6 +37,8 @@ has 'nodeletorder' => (required => 1);
 
 has 'friendly_pagetype' => (default => sub { my $self = shift; $self->node->type->title }, lazy => 1);
 
+has 'favicon' => (required => 1);
+
 sub _build_pagetitle
 {
   my ($self) = @_;
@@ -64,8 +66,8 @@ sub _build_pagetitle
 <link rel="canonical" href="<% $.canonical_url %>">
 <meta name="robots" content="<% $.meta_robots_index %>,<% $.meta_robots_follow %>">
 <meta name="description" content="<% $.metadescription %>">
-<link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
-<!--[if lt IE 8]><link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"><![endif]-->
+<link rel="icon" href="<% $.favicon %>" type="image/vnd.microsoft.icon">
+<!--[if lt IE 8]><link rel="shortcut icon" href="<% $.favicon %>" type="image/x-icon"><![endif]-->
 <link rel="alternate" type="application/atom+xml" title="<% $.atom_feed->[0] %>" href="<% $.atom_feed->[1] %>">
 <meta content="width=device-width,initial-scale=1.0,user-scalable=1" name="viewport">
 

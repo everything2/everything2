@@ -46,7 +46,7 @@ sub layout
   $params->{body_class} = $node->type->title;
 
   $params->{default_javascript} = [$self->APP->asset_uri("react/main.bundle.js"),$self->APP->asset_uri("legacy.js")];
-
+  $params->{favicon} = $self->APP->asset_uri("react/assets/favicon.ico");
 
   my $lastnode = $REQUEST->param("lastnode_id");
   if($lastnode)
