@@ -6,6 +6,12 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Ruby
 RUN gem install aws-sdk-rds aws-sdk-elasticloadbalancingv2 aws-sdk-iam aws-sdk-secretsmanager aws-sdk-ses aws-sdk-opsworks aws-sdk-ec2 aws-sdk-lambda aws-sdk-s3
 
+# Modern Apache2
+RUN mkdir -p /var/debbuild
+COPY ./debian/* /var/debbuild
+RUN chmod 0755 /var/debbuild/build_modern_apache.sh
+RUN /var/debbuild/build_modern_apache.sh
+
 # Core Directories and Apache
 RUN mkdir -p /var/libraries /var/dlcache /var/buildcache /etc/everything /var/mason /var/log/everything /etc/apache2/logs /var/everything /var/bootstrap/etc
 RUN rm -f /etc/apache2/mods-enabled/mpm_event.*

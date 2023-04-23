@@ -1,0 +1,14 @@
+--- debian/changelog.orig       2023-04-23 03:01:33.005939144 +0000
++++ debian/changelog    2023-04-23 03:01:42.781939227 +0000
+@@ -1,5 +1,10 @@
+-apache2 (2.4.52-1ubuntu4.4) jammy-security; urgency=medium
++apache2 (2.4.57-1) jammy-security; urgency=high
++
++  * E2-only build of apache 2
+
++ -- Jay Bonci <jay@bonci.net>  Sat, 22 Apr 2023 00:00:00 -0500
++
++apache2 (2.4.52-1ubuntu4.4) jammy-security; urgency=medium
+   * SECURITY UPDATE: HTTP request splitting with mod_rewrite and mod_proxy
+     - debian/patches/CVE-2023-25690-1.patch: don't forward invalid query
+       strings in modules/http2/mod_proxy_http2.c,
