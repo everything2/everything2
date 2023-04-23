@@ -92,9 +92,6 @@ coreconfig+="
 
 		RewriteRule ^favicon.ico$		   http://static.everything2.com/favicon.ico [P,L]
 
-		# This is a stupid fix
-		# RewriteRule ^([^\+]*?)\\+(.*) \"$1 $2\" [N=15,DPI]
-
 		RewriteRule ^node/(\\d+)/(\\w+)/?$           index.pl?node_id=$1&displaytype=$2  [L,QSA,BCTLS]
 		RewriteRule ^node/(\\d+)([^&]*)/?$          index.pl?node_id=$1$2                [L,QSA,BCTLS]
 		RewriteRule ^e2node/(.+)                   /index.pl?node=$1                     [L,QSA,BCTLS]
