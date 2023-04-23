@@ -90,21 +90,22 @@ coreconfig+="
 		RewriteCond %{HTTP:X-Forwarded-Proto} =http
 		RewriteRule (.*)                           https://%{HTTP_HOST}/$1 [R=301,L]
 
-		RewriteRule ^node/(\\d+)/(\\w+)/?$           index.pl?node_id=$1&displaytype=$2  [QSA,B]
-		RewriteRule ^node/(\\d+)([^&]*)/?$          index.pl?node_id=$1$2               [QSA,B]
-		RewriteRule ^e2node/(.+)                   /title/$1                           [R,B]
-		RewriteRule ^node/([^\\d][^/]*)$            /title/$1                           [R,B]
+		RewriteRule ^favicon.ico$		   http://static.everything2.com/favicon.ico [P,L]
 
-		RewriteRule ^node/([^\\W\\/]+)/([^&]+).*/?$  index.pl?node=$2&type=$1            [QSA,B]
-		RewriteRule ^title/([^&]+).*/?$            index.pl?node=$1                    [QSA,B]
+		RewriteRule ^node/(\\d+)/(\\w+)/?$           index.pl?node_id=$1&displaytype=$2  [L,QSA,BCTLS]
+		RewriteRule ^node/(\\d+)([^&]*)/?$          index.pl?node_id=$1$2                [L,QSA,BCTLS]
+		RewriteRule ^e2node/(.+)                   /index.pl?node=$1                     [L,QSA,BCTLS]
+		RewriteRule ^node/([^\\d][^/]*)$            /index.pl?node=$1                    [L,QSA,BCTLS]
 
-		RewriteRule ^user/([^&]+)/writeups/([^&]+).*/?$   index.pl?node=$2&type=writeup&author=$1      [QSA,B]
+		RewriteRule ^node/([^\\W\\/]+)/([^&]+).*/?$  index.pl?node=$2&type=$1            [L,QSA,BCTLS]
+		RewriteRule ^title/([^&]+).*/?$            index.pl?node=$1                    [L,QSA,BCTLS]
+
+		RewriteRule ^user/([^&]+)/writeups/([^&]+).*/?$   index.pl?node=$2&type=writeup&author=$1      [L,QSA,BCTLS]
 
 		#Ugh, this rule needs to be made prettier
-		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [QSA,B]
-		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [QSA,B]
+		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [L,QSA,BCTLS]
+		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [L,QSA,BCTLS]
 
-		RewriteRule ^favicon.ico$		   http://static.everything2.com/favicon.ico [P]
 
 		RewriteCond %{HTTP_HOST}                   ^m\\.everything2.+  [NC]
 		RewriteCond %{QUERY_STRING}                ^$

@@ -1,0 +1,29 @@
+--- debian/patches/series.orig  2023-04-23 02:56:49.812448033 +0000
++++ debian/patches/series       2023-04-23 02:57:01.589448133 +0000
+@@ -8,26 +8,3 @@
+ #buffer-http-request-bodies-for-tlsv13.diff
+ #tlsv13-add-logno.diff
+ fix-macro.patch
+-
+-# This patch is applied manually
+-#suexec-custom.patch
+-CVE-2022-22719.patch
+-CVE-2022-22720.patch
+-CVE-2022-22721.patch
+-CVE-2022-23943-1.patch
+-CVE-2022-23943-2.patch
+-CVE-2022-26377.patch
+-CVE-2022-28614.patch
+-CVE-2022-28615.patch
+-CVE-2022-29404.patch
+-CVE-2022-30522.patch
+-CVE-2022-30556.patch
+-CVE-2022-31813.patch
+-fix-a-possible-listener-deadlock.patch
+-handle-children-killed-pathologically.patch
+-CVE-2006-20001.patch
+-CVE-2022-36760.patch
+-CVE-2022-37436.patch
+-CVE-2023-25690-1.patch
+-CVE-2023-25690-2.patch
+-CVE-2023-27522.patch
