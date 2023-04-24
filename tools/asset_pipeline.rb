@@ -51,7 +51,8 @@ assets = {'js' => {}, 'css' => {}, 'react' => {}}
   Dir["#{everydir}/www/#{asset_type}/**/**"].each do |f|
     puts "Evaluating #{f}"
     next if File.directory?(f)
-    basefile = File.basename(f)
+    basefile = f.gsub(/^#{everydir}\/www\/#{asset_type}\//,"")
+
     assets[asset_type][basefile] = {}
 
     if(asset_type.eql? 'js')
