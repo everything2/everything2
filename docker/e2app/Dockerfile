@@ -29,7 +29,7 @@ RUN rm -rf /var/dlcache/* /var/buildcache/*
 
 # NodeJS / React
 RUN curl -L https://nodejs.org/dist/v18.18.2/node-v18.18.2-linux-x64.tar.xz | xz -cd | tar xv --strip-components=1 -C /usr
-RUN npm install -g npm@latest
+RUN /usr/bin/npm install -g npm@latest
 
 
 COPY ./tools/write_apache_config.rb /var/bootstrap
@@ -43,8 +43,8 @@ RUN chmod +x /etc/everything/apache2_wrapper.rb
 
 COPY ./ /var/everything
 WORKDIR /var/everything
-RUN npm install
-RUN npx webpack --config etc/webpack.config.js --mode=development
+RUN /usr/bin/npm install
+RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development
 
 RUN git -C /var/everything rev-parse HEAD > /etc/everything/last_commit
 
