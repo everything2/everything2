@@ -12,12 +12,13 @@ import { E2IdleHandler } from './E2IdleHandler'
 
 class E2ReactRoot extends React.Component {
 
+
   constructor(props) {
     super(props)
-
-    this.state = {
+    let initialState = {
       user: {},
       node: {},
+      guest: true,
       lastCommit: "",
 
       use_local_assets: 0,
@@ -41,24 +42,16 @@ class E2ReactRoot extends React.Component {
       edn_edev: true,
 
       num_newwus: 20,
-      nw_nojunk: false
+      nw_nojunk: false,
+      collapsedNodelets: '',
+
+      newwriteups_show: true,
+      everythingdeveloper_show: true,
+      vitals_show: true
     }
-
-    this.idleTimer = null
-    this.onPrompt = this.onPrompt.bind(this)
-    this.onIdle = this.onIdle.bind(this)
-    this.onAction = this.onAction.bind(this)
-    this.onActive = this.onActive.bind(this)
-  }
-
-  onPrompt = () => {}
-  onIdle = () => {}
-  onActive = (e) => {}
-  onAction = (e) => {}
-
-  loadExternalState() {
-    let initialState = {}
-    const toplevelkeys = ["user","node","developerNodelet","newWriteupsNodelet","lastCommit"]
+    
+    const toplevelkeys = ["user","node","developerNodelet","newWriteupsNodelet","lastCommit","collapsedNodelets"]
+    const managedNodelets = ["newwriteups","vitals","everythingdeveloper"]
 
     toplevelkeys.forEach((key) => {
       initialState[key] = e2[key]
@@ -72,14 +65,40 @@ class E2ReactRoot extends React.Component {
       })
     })
 
+    if(e2["guest"] == 0)
+    {
+      initialState["guest"] = false
+    }
+
     initialState["num_newwus"] = e2.display_prefs["num_newwus"]
     initialState["nw_nojunk"] = e2.display_prefs["nw_nojunk"]
 
-    this.setState(initialState)
+    managedNodelets.forEach((nodelet) => {
+      let keyname = nodelet + "_show"
+      if(initialState['collapsedNodelets'].match(nodelet+'!'))
+      {
+        initialState[keyname] = false
+      }else{
+        initialState[keyname] = true
+      }
+    })
+
+    this.state = initialState
+
+    this.idleTimer = null
+    this.onPrompt = this.onPrompt.bind(this)
+    this.onIdle = this.onIdle.bind(this)
+    this.onAction = this.onAction.bind(this)
+    this.onActive = this.onActive.bind(this)
   }
 
+  onPrompt = () => {}
+  onIdle = () => {}
+  onActive = (e) => {}
+  onAction = (e) => {}
+
+
   componentDidMount() {
-    this.loadExternalState()
     this.scheduleCronNewWriteups()
   }
 
@@ -152,6 +171,44 @@ class E2ReactRoot extends React.Component {
     return await this.updatePreference({[legacyPreferenceKey]: +!setPreferenceTo})
   }
 
+  showNodelet = async (nodelet, showme) => {
+    let prefname = nodelet.toLowerCase()
+    prefname = prefname.replace(' ','')+'!'
+
+    var replacement = new RegExp(prefname,'g')
+    var collapsedPref = this.state.collapsedNodelets.replace(replacement,'')
+
+    // Compatibility with JQuery versions
+     e2['collapsedNodelets'] = e2['collapsedNodelets'].replace(replacement,'')
+     let cookies = document.cookie.split(/;\s?/).map(v => v.split('='))
+    cookies.forEach((element,index) => {
+      if(cookies[index][0] == 'collapsedNodelets')
+      {
+        cookies[index][1] = cookies[index][1].replace(replacement,'')
+        if(!showme)
+        {
+          cookies[index][1] += prefname
+        }
+        document.cookie = 'collapsedNodelets='+cookies[index][1]
+      }
+    })
+
+    if(!showme)
+    {
+      collapsedPref += prefname
+      // e2['collapsedNodelets'] += prefname
+    }
+
+    this.setState({collapsedNodelets: collapsedPref})
+
+    if(this.state.guest)
+    {
+      return true
+    }else{
+      return await this.updatePreference({'collapsedNodelets': collapsedPref})
+    }
+  }
+
   newWriteupsChange = async (amount) => {
     await this.updatePreference({"num_newwus": amount})
     this.setState({"num_newwus": amount})
@@ -192,13 +249,13 @@ class E2ReactRoot extends React.Component {
         timeout={1000*5*60}
       />
       <VitalsPortal>
-        <Vitals maintenance={this.state.vit_maintenance} nodeinfo={this.state.vit_nodeinfo} list={this.state.vit_list} nodeutil={this.state.vit_nodeutil} misc={this.state.vit_misc} toggleSection={this.toggleSection} />
+        <Vitals maintenance={this.state.vit_maintenance} nodeinfo={this.state.vit_nodeinfo} list={this.state.vit_list} nodeutil={this.state.vit_nodeutil} misc={this.state.vit_misc} toggleSection={this.toggleSection} showNodelet={this.showNodelet} nodeletIsOpen={this.state.vitals_show} />
       </VitalsPortal>
       <DeveloperPortal>
-        <Developer user={this.state.user} node={this.state.node} developerNodelet={this.state.developerNodelet} lastCommit={this.state.lastCommit} toggleSection={this.toggleSection} util={this.state.edn_util} edev={this.state.edn_edev} />
+        <Developer user={this.state.user} node={this.state.node} developerNodelet={this.state.developerNodelet} lastCommit={this.state.lastCommit} toggleSection={this.toggleSection} util={this.state.edn_util} edev={this.state.edn_edev} showNodelet={this.showNodelet} nodeletIsOpen={this.state.everythingdeveloper_show} />
       </DeveloperPortal>
       <NewWriteupsPortal>
-         <NewWriteups newWriteupsNodelet={this.state.newWriteupsNodelet} limit={this.state.num_newwus} noJunk={this.state.nw_nojunk} newWriteupsChange={this.newWriteupsChange} noJunkChange={this.noJunkChange} editorHideWriteupChange={this.editorHideWriteupChange} user={this.state.user} />
+         <NewWriteups newWriteupsNodelet={this.state.newWriteupsNodelet} limit={this.state.num_newwus} noJunk={this.state.nw_nojunk} newWriteupsChange={this.newWriteupsChange} noJunkChange={this.noJunkChange} editorHideWriteupChange={this.editorHideWriteupChange} user={this.state.user} showNodelet={this.showNodelet} nodeletIsOpen={this.state.newwriteups_show} />
       </NewWriteupsPortal>
       </>
   }

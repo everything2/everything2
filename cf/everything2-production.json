@@ -98,6 +98,18 @@
         "Type": "A"
       }
     },
+    "DevelopmentR53RR": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "development.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "Type": "A",
+        "TTL": "900",
+        "ResourceRecords": [
+          "127.0.0.1"
+        ]
+      }
+    },
     "AppVPC": {
       "Type": "AWS::EC2::VPC",
       "DeletionPolicy": "Retain",
