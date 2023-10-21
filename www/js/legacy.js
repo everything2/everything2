@@ -867,7 +867,7 @@ if(! e2.nonodeletcollapser )
   $(function(){
 	if (!$('#sidebar')[0] || $('#sidebar').hasClass('pagenodelets')) return;
 	if (e2.collapsedNodelets.split('!').length != e2.nodeletCollapser.existing.split('!').length){
-		e2.collapsedNodelets = e2.nodeletCollapser.existing;
+		// e2.collapsedNodelets = e2.nodeletCollapser.existing;
 		e2.nodeletCollapser.save();
 	}
   });

@@ -5,7 +5,7 @@ import { IconContext } from "react-icons"
 import { FaGithubSquare,FaUsers,FaCodeBranch,FaRegFile,FaRegFileCode,FaCubes,FaExternalLinkAlt } from "react-icons/fa"
 import LinkNode from '../LinkNode'
 import TimeDistance from '../TimeDistance'
-
+import NodeletContainer from '../NodeletContainer'
 
 import './Developer.css'
 
@@ -47,12 +47,10 @@ const Developer = (props) => {
 
   const afterOpenModal = async () => {
     const currentVars = await getDevVars()
-    /* setDevVars(currentVars) */
   }
 
 
-  return <><h2 className="nodelet_title">Everything Developer</h2>
-  <div className="nodelet_content">
+  return <NodeletContainer title="Everything Developer" nodeletIsOpen={props.nodeletIsOpen} showNodelet={props.showNodelet} >
     <IconContext.Provider value={{ size: "1.5em", style: { lineHeight: "inherit!important", verticalAlign: "middle" }}}>
       <div className="link-with-icon"><FaGithubSquare /> <a href={githubUrl}>GitHub</a>
       <FaCodeBranch /> <a href={githubUrl + "/commit/"+props.lastCommit}>{props.lastCommit.substr(0,7)}</a></div>
@@ -83,17 +81,16 @@ const Developer = (props) => {
     <li><LinkNode key="edn_util2" title="Everything Document Directory" type="superdoc" /></li>
     </ul>
     </NodeletSection>
-  </div>
-  <Modal isOpen={modalIsOpen} ariaHideApp={false} onAfterOpen={afterOpenModal} contentLabel="Your $VARS" devVars={devVars}>
-  <div><h2>Your $VARS</h2><ul>{
-    Object.keys(devVars).sort().map((key,idx) => {
-      return <li key={"edn_vars_key_"+idx}><tt>{key+": "+devVars[key]}</tt></li>
-    })
-  }</ul>
-  <center><button onClick={closeModal}>Close</button></center>
-  </div>
-  </Modal>
-  </>
+    <Modal isOpen={modalIsOpen} ariaHideApp={false} onAfterOpen={afterOpenModal} contentLabel="Your $VARS" devVars={devVars}>
+    <div><h2>Your $VARS</h2><ul>{
+      Object.keys(devVars).sort().map((key,idx) => {
+        return <li key={"edn_vars_key_"+idx}><tt>{key+": "+devVars[key]}</tt></li>
+      })
+    }</ul>
+    <center><button onClick={closeModal}>Close</button></center>
+    </div>
+    </Modal>
+  </NodeletContainer>
 }
 
 export default Developer;

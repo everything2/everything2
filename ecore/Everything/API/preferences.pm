@@ -1,22 +1,25 @@
-
 package Everything::API::preferences;
 
 use Moose;
 use namespace::autoclean;
 extends 'Everything::API';
 
+use Everything::Preference::List;
+use Everything::Preference::String;
+
 ## no critic (ProhibitBuiltinHomonyms)
 
 has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
-  'vit_hidemaintenance' => [0,1],
-  'vit_hidenodeinfo' => [0,1],
-  'vit_hidenodeutil' => [0,1],
-  'vit_hidelist' => [0,1],
-  'vit_hidemisc' => [0,1],
-  'edn_hideutil' => [0,1],
-  'edn_hideedev' => [0,1],
-  'nw_nojunk' => [0,1],
-  'num_newwus' => [1,5,10,15,20,25,30,40]
+  'vit_hidemaintenance' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'vit_hidenodeinfo' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'vit_hidenodeutil' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'vit_hidelist' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'vit_hidemisc' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'edn_hideutil' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'edn_hideedev' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'nw_nojunk' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'num_newwus' => Everything::Preference::List->new(default_value => 15, allowed_values => [1,5,10,15,20,25,30,40]),
+  'collapsedNodelets' => Everything::Preference::String->new(default_value => '', allowed_values => qr/.?/)
 }});
 
 sub routes
@@ -41,18 +44,28 @@ sub set_preferences
 
   foreach my $key (keys %$data)
   {
-    unless(defined($self->allowed_preferences->{$key}) and scalar(grep({"$data->{$key}" eq "$_"} @{$self->allowed_preferences->{$key}})) == 1)
+    if(defined($self->allowed_preferences->{$key}))
     {
+      $valid = $self->allowed_preferences->{$key}->validate($data->{$key});
+    }else{
       $valid = 0;
     }
+
+    last if $valid == 0;
   }
 
   return [$self->HTTP_UNAUTHORIZED] if $valid == 0;
 
   foreach my $key (keys %$data)
   {
-    $REQUEST->user->VARS->{$key} = $data->{$key};
+    if($self->allowed_preferences->{$key}->should_delete($data->{$key}))
+    {
+      delete $REQUEST->user->VARS->{$key};
+    }else{
+      $REQUEST->user->VARS->{$key} = $data->{$key};
+    }
   }
+
   $REQUEST->user->set_vars($REQUEST->user->VARS);
 
   return [$self->HTTP_OK, $self->current_preferences($REQUEST)];
@@ -76,15 +89,14 @@ sub current_preferences
   {
     if(defined($vars->{$key}))
     {
-      if($vars->{$key} eq " ")
+      if($self->allowed_preferences->{$key}->validate($vars->{$key}))
       {
-        $result->{$key} = 0;
-      }else {
         $result->{$key} = $vars->{$key};
+        next;
       }
-    }else{
-      $result->{$key} = 0;
     }
+
+    $result->{$key} = $self->allowed_preferences->{$key}->default_value;
   }
   return $result;
 }

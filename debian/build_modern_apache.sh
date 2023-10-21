@@ -11,7 +11,7 @@ rm -rf "$BUILDDIR"
 mkdir -p "$BUILDDIR"
 ls -al $SCRIPT_DIR
 cp $SCRIPT_DIR/*.patch "$BUILDDIR"
-cd "$BUILDDIR" && wget "https://dlcdn.apache.org/httpd/httpd-$HTTPDVER.tar.gz"
+cd "$BUILDDIR" && wget "https://archive.apache.org/dist/httpd/httpd-$HTTPDVER.tar.gz"
 tar xzf "httpd-$HTTPDVER.tar.gz"
 mv "httpd-$HTTPDVER" "apache2-$HTTPDVER"
 wget "http://archive.ubuntu.com/ubuntu/pool/main/a/apache2/$DEBIANPATCH"

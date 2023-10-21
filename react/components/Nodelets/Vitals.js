@@ -1,6 +1,7 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
 import NodeletSection from '../NodeletSection'
+import NodeletContainer from '../NodeletContainer'
 
 const VitalsSections = [
   ["Maintenance","maintenance",[
@@ -47,7 +48,7 @@ const VitalsSections = [
 ]
 
 const Vitals = (props) => {
-  return <><h2 className="nodelet_title">Vitals</h2><div className="nodelet_content">{VitalsSections.map((section) => {
+  return <NodeletContainer title="Vitals" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}><div className="nodelet_content">{VitalsSections.map((section) => {
     return <NodeletSection nodelet="vit" section={section[1]} title={section[0]} display={props[section[1]]} key={"vitsection_"+section[1]} toggleSection={props.toggleSection}><ul>
     {
       section[2].map((linkInfo,index) => {
@@ -60,7 +61,7 @@ const Vitals = (props) => {
       })
     }
     </ul></NodeletSection>
-  })}</div></>
+  })}</div></NodeletContainer>
 }
 
 export default Vitals;
