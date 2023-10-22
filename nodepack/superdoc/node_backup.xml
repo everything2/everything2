@@ -5,11 +5,10 @@ return &quot;&lt;p&gt;If you logged in, you'd be able to create a backup of your
 	.&quot;writeups here.&lt;/p&gt;&quot; if $APP-&gt;isGuest($USER);
 
 use Everything::S3;
-use Archive::Zip; # This will itself require Compress::Zlib.
-use IO::String;
+use IO::Compress::Zip;
 
 my $zipbuffer;
-my $iozipbuffer = IO::String-&gt;new($zipbuffer);
+my $zip = IO::Compress::Zip-&gt;new(\$zipbuffer);
 my $s3 = Everything::S3-&gt;new(&quot;nodebackup&quot;);
 
 my $str = &quot;&quot;;
@@ -75,7 +74,7 @@ my $csr = $DB -&gt; sqlSelectMany(
 while (my $wu_row = $csr-&gt;fetchrow_hashref){
 	push @wus, $wu_row if $e2parse &amp; 1;
 	push @wus, {
-		title =&gt; $wu_row -&gt; {title},
+		title =&gt; $wu_row-&gt;{title},
 		type_nodetype =&gt; $wu_row -&gt; {type_nodetype},
 		suffix =&gt; 'html',
 		doctext =&gt; &quot;&lt;base href=\&quot;https://everything2.com\&quot;&gt;\n&quot;.
@@ -85,12 +84,8 @@ while (my $wu_row = $csr-&gt;fetchrow_hashref){
 }
 
 unless (@wus){
-	return '&lt;p&gt;No '.$query -&gt; param('dowhat').&quot; found.&lt;/p&gt;\n&quot;;
+	return '&lt;p&gt;No '.$query-&gt;param('dowhat').&quot; found.&lt;/p&gt;\n&quot;;
 }
-
-my $zip = Archive::Zip-&gt;new();
-$zip -&gt; addDirectory(&quot;text/&quot;) if $e2parse &amp; 1;
-$zip -&gt; addDirectory(&quot;html/&quot;) if $e2parse &amp; 2;
 
 my $draftType = getId(getType('draft'));
 my %usedtitles = ();
@@ -113,7 +108,8 @@ foreach my $wu (@wus) {
         utf8::encode($doctext);
         my $wusuffix = $$wu{suffix};
         utf8::encode($wusuffix);
-	$zip-&gt;addString($doctext,($wusuffix || 'text').&quot;/$wu_title.$suffix&quot;);
+        $zip-&gt;newStream(Name =&gt; ($wusuffix || 'text').&quot;/$wu_title.$suffix&quot;);
+	$zip-&gt;print($doctext);
 }
 
 my ($day, $month, $year) = (gmtime(time + $$VARS{localTimeOffset} + $$VARS{localTimeDST}*3600))[3 .. 5];
@@ -122,15 +118,14 @@ $year += 1900;
 $day = &quot;0$day&quot; if $day &lt; 10;
 $month = &quot;0$month&quot; if $month &lt; 10;
 
-my $cleanUser = $APP-&gt;rewriteCleanEscape($targetNoder -&gt; {title});
+my $cleanUser = $APP-&gt;rewriteCleanEscape($targetNoder-&gt;{title});
 my $format = ('text', 'html', 'text-html')[$e2parse-1];
 
 # make URL hard to guess
 my $obfuscateUrl = int(rand(8999999)) + 1000000;
 my $outputfilename = &quot;$cleanUser.$format.$obfuscateUrl.$year-$month-$day.zip&quot;;
 
-$zip-&gt;writeToFileHandle($iozipbuffer);
-close($iozipbuffer);
+$zip-&gt;close();
 $s3-&gt;upload_data($outputfilename, $zipbuffer, {content_type =&gt; &quot;application/zip&quot;});
 
 my $url = &quot;https://s3-us-west-2.amazonaws.com/nodebackup.everything2.com/$outputfilename&quot;;

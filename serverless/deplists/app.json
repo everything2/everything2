@@ -128,10 +128,6 @@
     "module": "Params::ValidationCompiler"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/P/PH/PHRED/Archive-Zip-1.68.tar.gz",
-    "module": "Archive::Zip"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Sub-Uplevel-0.2800.tar.gz",
     "module": "Sub::Uplevel"
   },
