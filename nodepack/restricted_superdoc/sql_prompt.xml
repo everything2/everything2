@@ -5,20 +5,8 @@ $PAGELOAD-&gt;{noparsecodelinks} = 1;
 my $ut = $USER-&gt;{title};
 my $codePerson = 0;
 foreach((
-	'nate',
-	'dann',
-	'N-Wing',
-	'alex',
-	'Kurt',
-	'ascorbic',
-	'Oolong',
-	'in10se',
-	'call',
-	'OldMiner',
-	'DonJaime',
-	'kthejoker',
 	'jaybonci',
-	'mauler',
+	'root'
 )) {
 
 	if($_ eq $ut) {
