@@ -464,10 +464,10 @@ sub recommended_reading
 
   $str.= '<ul class="infolist">';
 
-  for(1..6)
+  for(0..5)
   {
     my $edpick = shift @$staffpicks;
-    my $N = getNodeById(@$staffpicks);
+    my $N = getNodeById($edpick);
     next unless $N;
     $str .= "<li>".linkNode($N,'',{lastnode_id => 0})."</li>";
   }

@@ -268,3 +268,14 @@ for my $writeup (keys %$writeup_bank)
     $APP->castVote($writeupnode, $user, $weight);
   }
 }
+
+# Inserting an editor cool
+my $coollink = $DB->getNode("coollink","linktype");
+my $to_cool = ["Quick brown fox","tomato"];
+
+foreach my $n (@$to_cool)
+{
+  my $coolnode = $DB->getNode($n, "e2node");
+  print STDERR "Using editor cool from $genericed->{title} on $coolnode->{title}\n";
+  $DB->sqlInsert("links",{"from_node" => $coolnode->{node_id}, "to_node" => $genericed->{node_id}, "linktype" => $coollink->{node_id}});
+}
