@@ -1,6 +1,6 @@
 <node>
   <doctext>[%
-my $SRCNODE = getNodeById($query-&gt;param(&quot;srcnode_id&quot;));
+my $SRCNODE = getNodeById(scalar($query-&gt;param(&quot;srcnode_id&quot;)));
 return 'No node to clone.' unless $SRCNODE;
 
 my $newname = $query-&gt;param(&quot;newname&quot;);
