@@ -19,12 +19,12 @@ $str .= &quot;&lt;p&gt;Welcome to the node backup utility. Here you can
 
 $str .= htmlcode('openform',&quot;backup&quot;)
 	.'&lt;label&gt;Back up:'
-	.$query -&gt; popup_menu(
+	.$query-&gt;popup_menu(
 		-name =&gt; 'dowhat'
 		, values =&gt; ['writeups and drafts', 'writeups', 'drafts']
 	)
 	.'&lt;/label&gt;&lt;br&gt;&lt;br&gt;'
-	.$query -&gt; radio_group(
+	.$query-&gt;radio_group(
 		-name=&gt;'e2parse',
 		values=&gt;['1','2','3'],
 		labels=&gt;{
@@ -33,11 +33,17 @@ $str .= htmlcode('openform',&quot;backup&quot;)
 			'3' =&gt; '... in both formats'},
 		linebreak =&gt; 'true'
 	)
-	.'&lt;br&gt;'
-	.htmlcode('closeform', 'Create backup');
+	.'&lt;br&gt;';
+
+        if(isGod($USER))
+        {
+          $str .= &quot;For noder: &quot;.$query-&gt;textfield(-name =&gt; &quot;for_noder&quot;).&quot; &lt;em&gt;(admin only)&lt;/em&gt;&lt;br /&gt;&quot;;
+        }
+
+	$str .= htmlcode('closeform', 'Create backup');
 
 
-return $str unless $query -&gt; param(&quot;sexisgood&quot;);
+return $str unless $query-&gt;param(&quot;sexisgood&quot;);
 
 my $e2parse = $query-&gt;param(&quot;e2parse&quot;);
 my $targetNoder;

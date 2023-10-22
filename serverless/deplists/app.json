@@ -1060,5 +1060,10 @@
     "module": "IO::Compress::Brotli",
     "dependson": ["File::Slurper"],
     "toplevel": 1
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PM/PMQS/IO-Compress-2.206.tar.gz",
+    "module": "IO::Compress::Zip",
+    "toplevel": 1
   }
 ]
