@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mysql --host=localhost --user=everyuser --port=9306 --protocol=TCP
