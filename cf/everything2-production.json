@@ -393,7 +393,7 @@
         "Engine": "mysql",
         "EngineVersion": "5.7.39",
         "MultiAZ": false,
-        "CACertificateIdentifier": "rds-ca-2019",
+        "CACertificateIdentifier": "rds-ca-rsa2048-g1",
         "DeletionProtection": true,
         "DBSubnetGroupName": {"Ref": "EverythingDBSubnetGroup"},
         "OptionGroupName": {"Ref": "DB57OptionGroup"},
