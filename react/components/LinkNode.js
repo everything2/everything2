@@ -11,11 +11,8 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
       display = title
     }
 
-    if(title.includes("/") || title.includes("&"))
-    {
-      // Double-encode to work around E2 routing bugs
-      // title = encodeURIComponent(title)
-    }
+    // Double-encode to work around E2 routing bugs
+    title = title.replace(/[\&@\+\/]/g, (match) => {return encodeURIComponent(encodeURIComponent(match))});
   }
 
   if(author != undefined)
@@ -64,7 +61,7 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
     paramstring = paramstring+"#"+anchor
   }
 
-  return <a href={encodeURI(prefix+paramstring)} className={className}>{display}</a>
+  return React.createElement('a', {className: className, href: prefix+paramstring}, display);
 }
 
 export default LinkNode

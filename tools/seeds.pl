@@ -80,12 +80,15 @@ my $datanodes = {
       ["regular brown fox","person","Not very [quick], but still [admirable]. What does [he|the fox] say?"],
       ["Why are foxes lazy?","essay","<em>Are they really lazy?</em><strong>Here is my manifesto</strong>"],
       ["Dogs are a man's best friend","idea","I want to [hug all the dogs]. HUG them. [Hug them long]. [Hug them huge]"],
-      ["hug all the dogs","thing","Break out the pug hugs"]],
+      ["hug all the dogs","thing","Break out the pug hugs"],
+      ["writeup with ' single quote","thing","Sometimes you just have to be quoted"],
+      ["writeup with \" double quote","thing","Sometimes you just have to be quoted twice"]],
     "normaluser2" => [
       ["tomato", "idea", "A red [vegetable]. A fruit, actually"],
       ["tomatoe", "how-to","A poorly-spelled way to say [tomato]"],
       ["swedish tomatoë", "essay","Swedish tomatoes"],
-      ["potato", "essay","Boil em, mash em, put em in a [stew]."]],
+      ["potato", "essay","Boil em, mash em, put em in a [stew]."],
+      ["Writeups+plusses, a lesson in love","essay","All of the love for the [plus|+] sign"]],
     "normaluser3" => [
       ["hidden writeup here", "idea","This writeup was hidden from [New Writeups]"],
       ["Writeup w/ slash", "thing", "This writeup contains a slash"],
