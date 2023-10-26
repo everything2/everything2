@@ -4076,7 +4076,7 @@ sub static_javascript
   if($e2->{user}->{developer} and $VARS->{nodelets} =~ /836984/)
   {
     my $edev = getNode("edev","usergroup");
-    my $page = Everything::HTML::getPage($NODE, $query->param("displaytype"));
+    my $page = Everything::HTML::getPage($NODE, scalar($query->param("displaytype")));
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
     $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}}; 
   }
