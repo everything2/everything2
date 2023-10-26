@@ -495,7 +495,7 @@
     "module": "Devel::CheckLib"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/D/DV/DVEEDEN/DBD-mysql-4.050.tar.gz",
+    "file": "https://cpan.metacpan.org/authors/id/D/DV/DVEEDEN/DBD-mysql-5.002.tar.gz",
     "module": "DBD::mysql",
     "extra": "--mysql_config=$installdir/bin/mysql_config"
   },
