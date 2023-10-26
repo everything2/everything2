@@ -388,28 +388,28 @@
         "AllowMajorVersionUpgrade": true,
         "AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"},"a"]]},
         "BackupRetentionPeriod": 7,
-        "DBInstanceClass": "db.t3.medium",
+        "DBInstanceClass": "db.t4g.medium",
         "DBInstanceIdentifier": "everything2vpc",
         "Engine": "mysql",
-        "EngineVersion": "5.7.39",
+        "EngineVersion": "8.0.34",
         "MultiAZ": false,
         "CACertificateIdentifier": "rds-ca-rsa2048-g1",
         "DeletionProtection": true,
         "DBSubnetGroupName": {"Ref": "EverythingDBSubnetGroup"},
-        "OptionGroupName": {"Ref": "DB57OptionGroup"},
         "StorageType": "gp2",
         "VPCSecurityGroups": [{"Fn::GetAtt": ["AppVPC","DefaultSecurityGroup"]}, {"Ref": "MainDBSecurityGroup"}],
-        "DBParameterGroupName": {"Ref": "EverythingDB57Parameters"},
+        "DBParameterGroupName": {"Ref": "EverythingDB80Parameters"},
+	"OptionGroupName": {"Ref": "DB80OptionGroup"},
         "MasterUsername": "everyuser",
         "MasterUserPassword": {"Fn::Join": ["", ["{{resolve:secretsmanager:", {"Ref": "E2DBMasterPassword"}, "::password}}"]]}
       }
     },
-    "EverythingDB57Parameters": {
+    "EverythingDB80Parameters": {
       "Type": "AWS::RDS::DBParameterGroup",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "Description": "Enables stored procedures for E2 on mysql 5.7",
-        "Family": "mysql5.7",
+        "Description": "Enables stored procedures for E2 on mysql 8.0",
+        "Family": "mysql8.0",
         "Parameters": {
           "innodb_flush_log_at_trx_commit": 1,
           "log_bin_trust_function_creators": 1,
@@ -418,13 +418,13 @@
         }
       }
     },
-    "DB57OptionGroup": {
+    "DB80OptionGroup": {
       "Type": "AWS::RDS::OptionGroup",
       "DeletionPolicy": "Retain",
       "Properties": {
         "EngineName": "mysql",
-        "MajorEngineVersion": "5.7",
-        "OptionGroupDescription": "mysql-5.7 default option group",
+        "MajorEngineVersion": "8.0",
+        "OptionGroupDescription": "mysql-8.0 default option group",
         "OptionConfigurations": []
       }
     },
@@ -1830,6 +1830,39 @@
           }
         }
       }
+    },
+    "MysqlRDSSnapshotBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "mysqlsnapshots.everything2.com"
+      }
+    },
+    "MysqlRDSSnapshotRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "e2-rds-snapshot-to-s3-role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "rds.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Policies": [{
+          "PolicyName": "s3-write-to-snapshots",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Effect": "Allow",
+              "Action": ["s3:*"],
+              "Resource": {"Fn::GetAtt": ["MysqlRDSSnapshotBucket", "Arn"]}
+            }
+          }
+        }]
+      }
     }
+
   }
 }
