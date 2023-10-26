@@ -4218,12 +4218,14 @@ sub writeup_edittime
 sub global_warn_handler
 {
   my ($this, $warning) = @_;
+  $this->devLog("Sent warning: $warning");
   $this->send_cloudwatch_event("warning", $warning || "");
 }
 
 sub global_die_handler
 {
   my ($this, $error) = @_;
+  $this->devLog("Sent error: $error");
   $this->send_cloudwatch_event("error", $error || "");
 }
 
@@ -4245,6 +4247,11 @@ sub send_cloudwatch_event
       $detail->{url} = $Everything::HTML::REQUEST->url;
       $detail->{request_method} = $Everything::HTML::REQUEST->request_method;
       $detail->{params} = $Everything::HTML::REQUEST->truncated_params;
+    }
+
+    if(defined($Everything::HTML::NODE)){
+      $detail->{node_id} = $Everything::HTML::NODE->{node_id};
+      $detail->{title} = $Everything::HTML::NODE->{title};
     }
 
     my $eventbus = 'com.everything2.errors';
