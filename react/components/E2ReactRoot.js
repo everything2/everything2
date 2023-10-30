@@ -10,6 +10,8 @@ import NewWriteups from './Nodelets/NewWriteups'
 
 import { E2IdleHandler } from './E2IdleHandler'
 
+import ErrorBoundary from './ErrorBoundary'
+
 class E2ReactRoot extends React.Component {
 
 
@@ -255,7 +257,9 @@ class E2ReactRoot extends React.Component {
         <Developer user={this.state.user} node={this.state.node} developerNodelet={this.state.developerNodelet} lastCommit={this.state.lastCommit} toggleSection={this.toggleSection} util={this.state.edn_util} edev={this.state.edn_edev} showNodelet={this.showNodelet} nodeletIsOpen={this.state.everythingdeveloper_show} />
       </DeveloperPortal>
       <NewWriteupsPortal>
+        <ErrorBoundary>
          <NewWriteups newWriteupsNodelet={this.state.newWriteupsNodelet} limit={this.state.num_newwus} noJunk={this.state.nw_nojunk} newWriteupsChange={this.newWriteupsChange} noJunkChange={this.noJunkChange} editorHideWriteupChange={this.editorHideWriteupChange} user={this.state.user} showNodelet={this.showNodelet} nodeletIsOpen={this.state.newwriteups_show} />
+        </ErrorBoundary>
       </NewWriteupsPortal>
       </>
   }
