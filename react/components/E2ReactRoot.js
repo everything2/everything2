@@ -8,6 +8,9 @@ import Developer from './Nodelets/Developer'
 import NewWriteupsPortal from './Portals/NewWriteupsPortal'
 import NewWriteups from './Nodelets/NewWriteups'
 
+import RecommendedReadingPortal from './Portals/RecommendedReadingPortal'
+import RecommendedReading from './Nodelets/RecommendedReading'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -49,11 +52,15 @@ class E2ReactRoot extends React.Component {
 
       newwriteups_show: true,
       everythingdeveloper_show: true,
-      vitals_show: true
+      vitals_show: true,
+      recommendedreading_show: true,
+
+      coolnodes: [],
+      staffpicks: []
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteupsNodelet","lastCommit","collapsedNodelets"]
-    const managedNodelets = ["newwriteups","vitals","everythingdeveloper"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteupsNodelet","lastCommit","collapsedNodelets","coolnodes","staffpicks"]
+    const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading"]
 
     toplevelkeys.forEach((key) => {
       initialState[key] = e2[key]
@@ -261,6 +268,11 @@ class E2ReactRoot extends React.Component {
          <NewWriteups newWriteupsNodelet={this.state.newWriteupsNodelet} limit={this.state.num_newwus} noJunk={this.state.nw_nojunk} newWriteupsChange={this.newWriteupsChange} noJunkChange={this.noJunkChange} editorHideWriteupChange={this.editorHideWriteupChange} user={this.state.user} showNodelet={this.showNodelet} nodeletIsOpen={this.state.newwriteups_show} />
         </ErrorBoundary>
       </NewWriteupsPortal>
+      <RecommendedReadingPortal>
+        <ErrorBoundary>
+          <RecommendedReading coolnodes={this.state.coolnodes} staffpicks={this.state.staffpicks} showNodelet={this.showNodelet} nodeletIsOpen={this.state.recommendedreading_show} />
+        </ErrorBoundary>
+      </RecommendedReadingPortal>
       </>
   }
 }

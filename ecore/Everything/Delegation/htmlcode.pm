@@ -4087,6 +4087,32 @@ sub static_javascript
     $e2->{newWriteupsNodelet} = $APP->filtered_newwriteups2($USER)
   }
 
+  if($VARS->{nodelets} =~ /2027508/)
+  {
+    foreach my $section (qw/coolnodes staffpicks/)
+    {
+      my $section_data = $DB->stashData($section);
+      $section_data = [] unless(defined($section_data) and UNIVERSAL::isa($section_data,"ARRAY"));
+
+      my $final_section_data = [];
+
+      for my $i (0..scalar(@$section_data)-1)
+      {
+        if($section_data->[$i] =~ /^\d+$/)
+        {
+          my $n = $DB->getNodeById($section_data->[$i]);
+          if($n)
+          {
+            push @$final_section_data, {"node_id" => $n->{node_id}, "title" => $n->{title}, "type" => $n->{type}{title}};
+          }
+        }else{
+          push @$final_section_data, $section_data->[$i];
+        }
+      }
+      $e2->{$section} = $final_section_data;
+    }
+  }
+
   $e2 = JSON->new->encode($e2);
 
   my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';
