@@ -4627,11 +4627,11 @@ sub minilogin
       <table border="0">
       <tr>
       <td><strong>Login</strong></td>
-      <td>'. $query->textfield (-name => "user", -size => 10, -maxlength => 20, -tabindex => 1).'</td>
+      <td>'. $query->textfield (-name => "user", -size => 10, -maxlength => 20, -tabindex => 1, -autocomplete => "username").'</td>
       </tr>
       <tr>
       <td><strong>Password</strong></td>
-      <td>'.$query->password_field(-name => "passwd", -size => 10, -maxlength => 240, -tabindex => 2) .' </td>
+      <td>'.$query->password_field(-name => "passwd", -size => 10, -maxlength => 240, -tabindex => 2, -autocomplete => "current-password") .' </td>
       </tr>
       </table>
       <font size="2">'.
