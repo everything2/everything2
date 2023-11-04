@@ -106,6 +106,9 @@ my $datanodes = {
       ["boring dev announcement 2", "idea", "Only interesting if you're a [developer]"],
       ["interesting dev announcement", "lede", "Don't bury the lede. Understand this!"],
       ["lukewarm dev announcement", "thing", "Not bad work. Not bad at all"]
+    ],
+    "Virgil" => [
+      ["An Introduction to Everything2", "place", "Stub content for a site help doc here"],
     ]
   },
   "draft" => {

@@ -426,54 +426,7 @@ sub sign_in
 
 sub recommended_reading
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str='';
-  $str.='<h4>'.linkNode(getNode('An Introduction to Everything2','e2node'), 'About Everything2').'</h4>';
-  $str.='<h4>'.linkNode(getNode('Cool Archive','superdoc'), 'User Picks').'</h4>';
-  $str.='<ul class="infolist">';
-  my $coolnodes = $DB->stashData("coolnodes");
-  $coolnodes = [] unless(defined($coolnodes) and UNIVERSAL::isa($coolnodes,"ARRAY")); 
-  my $count = 0;
-  my $seen = {};
-
-  while($count < 6 and @$coolnodes > 0){
-    my $cw = shift @$coolnodes;
-    next if $seen->{$cw->{coolwriteups_id}};
-    $seen->{$cw->{coolwriteups_id}} = 1;
-
-    my $N = $DB->getNodeById($cw->{coolwriteups_id});
-    next unless $N;
-    $str .= "<li>".linkNode($N, $cw->{parentTitle}, {lastnode_id => 0})."</li>";
-    $count++;
-  }
-
-  $str.='</ul>';
-
-  my $staffpicks = $DB->stashData("staffpicks");
-  $staffpicks = [] unless(defined($staffpicks) and UNIVERSAL::isa($staffpicks,"ARRAY"));
-
-  # From [rtnsection_edc]
-  $str.= '<h4>'.linkNode(getNode('Page of Cool','superdoc'), 'Editor Picks').'</h4>';
-
-  $str.= '<ul class="infolist">';
-
-  for(0..5)
-  {
-    my $edpick = shift @$staffpicks;
-    my $N = getNodeById($edpick);
-    next unless $N;
-    $str .= "<li>".linkNode($N,'',{lastnode_id => 0})."</li>";
-  }
-
-  $str.='</ul>';
-  return $str;
+  return '';
 }
 
 sub vitals

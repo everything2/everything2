@@ -31,7 +31,6 @@ RUN rm -rf /var/dlcache/* /var/buildcache/*
 RUN curl -L https://nodejs.org/dist/v18.18.2/node-v18.18.2-linux-x64.tar.xz | xz -cd | tar xv --strip-components=1 -C /usr
 RUN /usr/bin/npm install -g npm@latest
 
-
 COPY ./tools/write_apache_config.rb /var/bootstrap
 COPY ./tools/generate-self-signed-cert.rb /var/bootstrap
 COPY ./etc/templates/* /var/bootstrap/etc/
