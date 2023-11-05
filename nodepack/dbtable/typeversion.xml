@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `typeversion` (
-  `typeversion_id` int(11) NOT NULL DEFAULT '0',
-  `version` int(11) NOT NULL DEFAULT '0',
+  `typeversion_id` int NOT NULL DEFAULT '0',
+  `version` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`typeversion_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <node_id>2004575</node_id>

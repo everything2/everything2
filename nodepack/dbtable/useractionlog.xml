@@ -1,13 +1,13 @@
 <node>
   <_create_table_statement>CREATE TABLE `useractionlog` (
-  `useractionlog_id` int(11) NOT NULL AUTO_INCREMENT,
-  `useraction_id` int(11) NOT NULL,
-  `useraction_session_id` int(11) NOT NULL,
-  `useraction_source_node_id` int(11) DEFAULT NULL,
-  `useraction_target_node_id` int(11) DEFAULT NULL,
-  `useraction_condition` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `useractionlog_id` int NOT NULL AUTO_INCREMENT,
+  `useraction_id` int NOT NULL,
+  `useraction_session_id` int NOT NULL,
+  `useraction_source_node_id` int DEFAULT NULL,
+  `useraction_target_node_id` int DEFAULT NULL,
+  `useraction_condition` varchar(50) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`useractionlog_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
   <node_id>2070554</node_id>
   <title>useractionlog</title>
   <type_nodetype>148</type_nodetype>

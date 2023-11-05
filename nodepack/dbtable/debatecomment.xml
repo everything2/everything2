@@ -1,12 +1,12 @@
 <node>
   <_create_table_statement>CREATE TABLE `debatecomment` (
-  `debatecomment_id` int(11) NOT NULL DEFAULT '0',
-  `parent_debatecomment` int(11) NOT NULL DEFAULT '0',
-  `root_debatecomment` int(11) NOT NULL DEFAULT '0',
-  `doctext` text COLLATE utf8_unicode_ci,
-  `restricted` int(11) DEFAULT NULL,
+  `debatecomment_id` int NOT NULL DEFAULT '0',
+  `parent_debatecomment` int NOT NULL DEFAULT '0',
+  `root_debatecomment` int NOT NULL DEFAULT '0',
+  `doctext` text COLLATE utf8mb3_unicode_ci,
+  `restricted` int DEFAULT NULL,
   PRIMARY KEY (`debatecomment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>1156104</node_id>
   <title>debatecomment</title>
   <type_nodetype>148</type_nodetype>

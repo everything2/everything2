@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `xmlschema` (
-  `schema_id` int(11) NOT NULL DEFAULT '0',
-  `schema_extends` int(11) NOT NULL DEFAULT '0',
+  `schema_id` int NOT NULL DEFAULT '0',
+  `schema_extends` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`schema_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>2070556</node_id>

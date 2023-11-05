@@ -1,6 +1,6 @@
 <node>
   <_create_table_statement>CREATE TABLE `folder` (
-  `folder_id` int(11) NOT NULL DEFAULT '0',
+  `folder_id` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`folder_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>1825398</node_id>

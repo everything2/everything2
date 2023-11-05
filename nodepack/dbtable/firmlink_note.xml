@@ -1,13 +1,13 @@
 <node>
   <_create_table_statement>CREATE TABLE `firmlink_note` (
-  `from_node` int(11) NOT NULL,
-  `to_node` int(11) NOT NULL,
-  `firmlink_note_id` int(11) NOT NULL AUTO_INCREMENT,
-  `firmlink_note_text` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `from_node` int NOT NULL,
+  `to_node` int NOT NULL,
+  `firmlink_note_id` int NOT NULL AUTO_INCREMENT,
+  `firmlink_note_text` varchar(1024) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`firmlink_note_id`),
   UNIQUE KEY `from_node` (`from_node`,`to_node`),
   KEY `to_node` (`to_node`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>2034356</node_id>
   <title>firmlink_note</title>
   <type_nodetype>148</type_nodetype>

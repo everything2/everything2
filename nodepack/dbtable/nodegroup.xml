@@ -1,9 +1,9 @@
 <node>
   <_create_table_statement>CREATE TABLE `nodegroup` (
-  `nodegroup_id` int(11) NOT NULL AUTO_INCREMENT,
-  `nodegroup_rank` int(11) NOT NULL DEFAULT '0',
-  `node_id` int(11) NOT NULL DEFAULT '0',
-  `orderby` int(11) DEFAULT NULL,
+  `nodegroup_id` int NOT NULL AUTO_INCREMENT,
+  `nodegroup_rank` int NOT NULL DEFAULT '0',
+  `node_id` int NOT NULL DEFAULT '0',
+  `orderby` int DEFAULT NULL,
   PRIMARY KEY (`nodegroup_id`,`nodegroup_rank`),
   KEY `nodememberof` (`node_id`),
   KEY `orderby_index` (`orderby`),

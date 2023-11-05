@@ -1,8 +1,8 @@
 <node>
   <_create_table_statement>CREATE TABLE `achieved` (
-  `achieved_id` int(11) NOT NULL AUTO_INCREMENT,
-  `achieved_user` int(11) NOT NULL DEFAULT '0',
-  `achieved_achievement` int(11) NOT NULL DEFAULT '0',
+  `achieved_id` int NOT NULL AUTO_INCREMENT,
+  `achieved_user` int NOT NULL DEFAULT '0',
+  `achieved_achievement` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`achieved_id`),
   KEY `user_achievement` (`achieved_user`,`achieved_achievement`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>

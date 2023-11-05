@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `e2schema` (
-  `e2schema_id` int(11) NOT NULL,
-  `schema_extends` int(11) NOT NULL DEFAULT '0',
+  `e2schema_id` int NOT NULL,
+  `schema_extends` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`e2schema_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>2025088</node_id>

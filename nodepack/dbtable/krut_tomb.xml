@@ -1,16 +1,16 @@
 <node>
   <_create_table_statement>CREATE TABLE `krut_tomb` (
-  `krut_tomb_id` int(11) NOT NULL DEFAULT '0',
-  `type_nodetype` int(11) NOT NULL DEFAULT '0',
-  `title` varchar(240) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `author_user` int(11) NOT NULL DEFAULT '0',
-  `killa_user` int(11) NOT NULL DEFAULT '0',
+  `krut_tomb_id` int NOT NULL DEFAULT '0',
+  `type_nodetype` int NOT NULL DEFAULT '0',
+  `title` varchar(240) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `author_user` int NOT NULL DEFAULT '0',
+  `killa_user` int NOT NULL DEFAULT '0',
   `createtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `hits` int(11) NOT NULL DEFAULT '0',
-  `reputation` int(11) NOT NULL DEFAULT '0',
-  `data` text COLLATE utf8_unicode_ci,
+  `hits` int NOT NULL DEFAULT '0',
+  `reputation` int NOT NULL DEFAULT '0',
+  `data` text COLLATE utf8mb3_unicode_ci,
   PRIMARY KEY (`krut_tomb_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
   <node_id>1669994</node_id>
   <title>krut_tomb</title>
   <type_nodetype>148</type_nodetype>

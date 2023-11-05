@@ -1,8 +1,8 @@
 <node>
   <_create_table_statement>CREATE TABLE `newwriteup` (
-  `newwriteup_id` int(11) NOT NULL AUTO_INCREMENT,
-  `node_id` int(11) NOT NULL DEFAULT '0',
-  `notnew` int(11) NOT NULL DEFAULT '0',
+  `newwriteup_id` int NOT NULL AUTO_INCREMENT,
+  `node_id` int NOT NULL DEFAULT '0',
+  `notnew` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`newwriteup_id`),
   KEY `node_id` (`node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>

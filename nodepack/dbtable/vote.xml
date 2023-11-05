@@ -1,8 +1,8 @@
 <node>
   <_create_table_statement>CREATE TABLE `vote` (
-  `vote_id` int(11) NOT NULL DEFAULT '0',
-  `voter_user` int(11) NOT NULL DEFAULT '0',
-  `weight` int(11) NOT NULL DEFAULT '0',
+  `vote_id` int NOT NULL DEFAULT '0',
+  `voter_user` int NOT NULL DEFAULT '0',
+  `weight` int NOT NULL DEFAULT '0',
   `votetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `revotetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`vote_id`,`voter_user`),

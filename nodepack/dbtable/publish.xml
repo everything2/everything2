@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `publish` (
-  `publish_id` int(11) NOT NULL DEFAULT '0',
-  `publisher` int(11) NOT NULL DEFAULT '0',
+  `publish_id` int NOT NULL DEFAULT '0',
+  `publisher` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`publish_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>1876600</node_id>

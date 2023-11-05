@@ -1,6 +1,6 @@
 <node>
   <_create_table_statement>CREATE TABLE `newuserimage` (
-  `newuserimage_id` int(11) NOT NULL DEFAULT '0',
+  `newuserimage_id` int NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`newuserimage_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>

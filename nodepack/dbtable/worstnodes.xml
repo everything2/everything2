@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `worstnodes` (
-  `worstnodes_id` int(11) NOT NULL DEFAULT '0',
-  `rep` int(11) NOT NULL DEFAULT '0',
+  `worstnodes_id` int NOT NULL DEFAULT '0',
+  `rep` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`worstnodes_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <node_id>531351</node_id>

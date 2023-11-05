@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `messageignore` (
-  `messageignore_id` int(11) NOT NULL DEFAULT '0',
-  `ignore_node` int(11) NOT NULL DEFAULT '0',
+  `messageignore_id` int NOT NULL DEFAULT '0',
+  `ignore_node` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`messageignore_id`,`ignore_node`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <node_id>999088</node_id>

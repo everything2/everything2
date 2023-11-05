@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `status` (
-  `status_id` int(11) NOT NULL DEFAULT '0',
-  `applied` int(11) NOT NULL DEFAULT '0',
+  `status_id` int NOT NULL DEFAULT '0',
+  `applied` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>1989892</node_id>

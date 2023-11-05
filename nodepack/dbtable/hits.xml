@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `hits` (
-  `node_id` int(11) NOT NULL DEFAULT '0',
-  `hits` int(11) NOT NULL DEFAULT '0',
+  `node_id` int NOT NULL DEFAULT '0',
+  `hits` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <node_id>2001465</node_id>
