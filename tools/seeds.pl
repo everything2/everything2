@@ -19,6 +19,13 @@ if($Everything::CONF->environment ne "development")
 $Everything::HTML::USER = getNode("root","user");
 my $APP = $Everything::APP;
 
+my $months = [qw|January February March April May June July August September October November December|];
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+
+my $realyear = $year+1900;
+my $rootlog = "root log: $months->[$mon] $realyear";
+my $daylog = "$months->[$mon] $mday, $realyear";
+
 foreach my $user (1..30,"user with space","genericeditor","genericdev")
 {
   if($user =~ /^\d/)
@@ -82,7 +89,8 @@ my $datanodes = {
       ["Dogs are a man's best friend","idea","I want to [hug all the dogs]. HUG them. [Hug them long]. [Hug them huge]"],
       ["hug all the dogs","thing","Break out the pug hugs"],
       ["writeup with ' single quote","thing","Sometimes you just have to be quoted"],
-      ["writeup with \" double quote","thing","Sometimes you just have to be quoted twice"]],
+      ["writeup with \" double quote","thing","Sometimes you just have to be quoted twice"],
+      [$daylog, "log", "Sometimes you just gotta daylog, and trigger is_log!"]],
     "normaluser2" => [
       ["tomato", "idea", "A red [vegetable]. A fruit, actually"],
       ["tomatoe", "how-to","A poorly-spelled way to say [tomato]"],
@@ -105,7 +113,8 @@ my $datanodes = {
       ["boring dev announcement 1", "log", "Really, pretty boring stuff"],
       ["boring dev announcement 2", "idea", "Only interesting if you're a [developer]"],
       ["interesting dev announcement", "lede", "Don't bury the lede. Understand this!"],
-      ["lukewarm dev announcement", "thing", "Not bad work. Not bad at all"]
+      ["lukewarm dev announcement", "thing", "Not bad work. Not bad at all"],
+      [$rootlog, "log", "This triggers is_log!"]
     ],
     "Virgil" => [
       ["An Introduction to Everything2", "place", "Stub content for a site help doc here"],
