@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `pkeytest` (
-  `pkeytest_id` int(11) NOT NULL DEFAULT '0',
-  `t1` int(11) NOT NULL DEFAULT '0',
+  `pkeytest_id` int NOT NULL DEFAULT '0',
+  `t1` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`pkeytest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>1372037</node_id>

@@ -1,10 +1,10 @@
 <node>
   <_create_table_statement>CREATE TABLE `weblog` (
-  `weblog_id` int(11) NOT NULL DEFAULT '0',
-  `to_node` int(11) NOT NULL DEFAULT '0',
+  `weblog_id` int NOT NULL DEFAULT '0',
+  `to_node` int NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `linkedby_user` int(11) NOT NULL DEFAULT '0',
-  `removedby_user` int(11) NOT NULL DEFAULT '0',
+  `linkedby_user` int NOT NULL DEFAULT '0',
+  `removedby_user` int NOT NULL DEFAULT '0',
   `linkedtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`weblog_id`,`to_node`),
   KEY `tstamp` (`tstamp`)

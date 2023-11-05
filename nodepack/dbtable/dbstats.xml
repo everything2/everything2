@@ -1,10 +1,10 @@
 <node>
   <_create_table_statement>CREATE TABLE `dbstats` (
-  `dbstats_id` int(11) NOT NULL AUTO_INCREMENT,
+  `dbstats_id` int NOT NULL AUTO_INCREMENT,
   `tstamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `uptime` int(11) NOT NULL DEFAULT '0',
-  `questions` int(11) NOT NULL DEFAULT '0',
-  `slow` int(11) NOT NULL DEFAULT '0',
+  `uptime` int NOT NULL DEFAULT '0',
+  `questions` int NOT NULL DEFAULT '0',
+  `slow` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`dbstats_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <node_id>1055289</node_id>

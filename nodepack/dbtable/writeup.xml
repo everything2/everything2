@@ -1,12 +1,12 @@
 <node>
   <_create_table_statement>CREATE TABLE `writeup` (
-  `writeup_id` int(11) NOT NULL DEFAULT '0',
-  `parent_e2node` int(11) NOT NULL DEFAULT '0',
-  `wrtype_writeuptype` int(11) NOT NULL DEFAULT '0',
-  `notnew` int(11) NOT NULL DEFAULT '0',
-  `cooled` int(11) NOT NULL DEFAULT '0',
+  `writeup_id` int NOT NULL DEFAULT '0',
+  `parent_e2node` int NOT NULL DEFAULT '0',
+  `wrtype_writeuptype` int NOT NULL DEFAULT '0',
+  `notnew` int NOT NULL DEFAULT '0',
+  `cooled` int NOT NULL DEFAULT '0',
   `publishtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `feedback_policy_id` int(11) NOT NULL DEFAULT '0',
+  `feedback_policy_id` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`writeup_id`),
   KEY `parent_e2node_index` (`parent_e2node`),
   KEY `idx_cooled` (`cooled`),

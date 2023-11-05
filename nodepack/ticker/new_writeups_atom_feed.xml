@@ -8,7 +8,7 @@ if ($foruser) {
    return $str if $str;
 }
 
-my $newwriteups = $DB-&gt;stashData(&quot;newwriteups&quot;);
+my $newwriteups = $DB-&gt;stashData(&quot;newwriteups2&quot;);
 $str = &quot;&lt;updated&gt;&quot;;
 my ($sec,$min,$hour,$mday,$mon,$year) = localtime;
 $str .= sprintf(&quot;%04d-%02d-%02dT%02d:%02d:%02dZ&quot;, $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
@@ -19,13 +19,11 @@ my $node_ids = [];
 
 while ($numberofwriteups and @$newwriteups) {
         my $N = shift(@$newwriteups);
-        push @$node_ids, $N-&gt;{writeup_id};
+        push @$node_ids, $N-&gt;{node_id};
         $numberofwriteups--;
 }
 
 $str .= htmlcode( 'atomiseNode' , $node_ids);
-
-#utf8::encode($str);
 
 return '&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot; xml:base=&quot;https://everything2.com&quot;&gt;

@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `coolwriteups` (
-  `coolwriteups_id` int(11) NOT NULL DEFAULT '0',
-  `cooledby_user` int(11) NOT NULL DEFAULT '0',
+  `coolwriteups_id` int NOT NULL DEFAULT '0',
+  `cooledby_user` int NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`coolwriteups_id`,`cooledby_user`),
   KEY `cooledbyuser` (`cooledby_user`),

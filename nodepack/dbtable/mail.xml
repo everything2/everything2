@@ -1,10 +1,10 @@
 <node>
   <_create_table_statement>CREATE TABLE `mail` (
-  `mail_id` int(11) NOT NULL DEFAULT '0',
-  `from_address` char(80) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `attachment_file` int(11) NOT NULL DEFAULT '0',
+  `mail_id` int NOT NULL DEFAULT '0',
+  `from_address` char(80) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `attachment_file` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`mail_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>166</node_id>
   <title>mail</title>
   <type_nodetype>148</type_nodetype>

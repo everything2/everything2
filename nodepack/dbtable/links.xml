@@ -1,10 +1,10 @@
 <node>
   <_create_table_statement>CREATE TABLE `links` (
-  `from_node` int(11) NOT NULL DEFAULT '0',
-  `to_node` int(11) NOT NULL DEFAULT '0',
-  `linktype` int(11) NOT NULL DEFAULT '0',
-  `hits` int(11) NOT NULL DEFAULT '0',
-  `food` int(11) DEFAULT '0',
+  `from_node` int NOT NULL DEFAULT '0',
+  `to_node` int NOT NULL DEFAULT '0',
+  `linktype` int NOT NULL DEFAULT '0',
+  `hits` int NOT NULL DEFAULT '0',
+  `food` int DEFAULT '0',
   PRIMARY KEY (`from_node`,`to_node`,`linktype`),
   KEY `to_node` (`to_node`),
   KEY `linktype_fromnode_hits` (`linktype`,`from_node`,`hits`),

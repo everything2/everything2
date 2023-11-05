@@ -1,16 +1,16 @@
 <node>
   <_create_table_statement>CREATE TABLE `stats` (
-  `stats_id` int(11) NOT NULL AUTO_INCREMENT,
+  `stats_id` int NOT NULL AUTO_INCREMENT,
   `stattime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `numwriteups` int(11) NOT NULL DEFAULT '0',
-  `nume2nodes` int(11) NOT NULL DEFAULT '0',
-  `numusers` int(11) NOT NULL DEFAULT '0',
-  `numlinks` int(11) NOT NULL DEFAULT '0',
-  `xpsum` int(11) NOT NULL DEFAULT '0',
-  `nodehits` int(11) NOT NULL DEFAULT '0',
-  `numedcools` int(11) NOT NULL DEFAULT '0',
-  `numcools` int(11) NOT NULL DEFAULT '0',
-  `numvotes` int(11) NOT NULL DEFAULT '0',
+  `numwriteups` int NOT NULL DEFAULT '0',
+  `nume2nodes` int NOT NULL DEFAULT '0',
+  `numusers` int NOT NULL DEFAULT '0',
+  `numlinks` int NOT NULL DEFAULT '0',
+  `xpsum` int NOT NULL DEFAULT '0',
+  `nodehits` int NOT NULL DEFAULT '0',
+  `numedcools` int NOT NULL DEFAULT '0',
+  `numcools` int NOT NULL DEFAULT '0',
+  `numvotes` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`stats_id`),
   KEY `stattime` (`stattime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>

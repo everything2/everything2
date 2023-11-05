@@ -1,9 +1,9 @@
 <node>
   <_create_table_statement>CREATE TABLE `setting` (
-  `setting_id` int(11) NOT NULL AUTO_INCREMENT,
-  `vars` mediumtext COLLATE utf8_unicode_ci,
+  `setting_id` int NOT NULL AUTO_INCREMENT,
+  `vars` mediumtext COLLATE utf8mb3_unicode_ci,
   PRIMARY KEY (`setting_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>172</node_id>
   <title>setting</title>
   <type_nodetype>148</type_nodetype>

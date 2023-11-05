@@ -1,9 +1,9 @@
 <node>
   <_create_table_statement>CREATE TABLE `e2node` (
-  `e2node_id` int(11) NOT NULL DEFAULT '0',
-  `createdby_user` int(11) NOT NULL DEFAULT '0',
+  `e2node_id` int NOT NULL DEFAULT '0',
+  `createdby_user` int NOT NULL DEFAULT '0',
   `updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `orderlock_user` int(11) NOT NULL DEFAULT '0',
+  `orderlock_user` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`e2node_id`),
   KEY `createdby_user` (`createdby_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>

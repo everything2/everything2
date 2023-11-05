@@ -1,13 +1,13 @@
 <node>
   <_create_table_statement>CREATE TABLE `htmlpage` (
-  `htmlpage_id` int(11) NOT NULL AUTO_INCREMENT,
-  `pagetype_nodetype` int(11) DEFAULT NULL,
-  `displaytype` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `page` text COLLATE utf8_unicode_ci,
-  `parent_container` int(11) DEFAULT NULL,
-  `mimetype` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `htmlpage_id` int NOT NULL AUTO_INCREMENT,
+  `pagetype_nodetype` int DEFAULT NULL,
+  `displaytype` varchar(20) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `page` text COLLATE utf8mb3_unicode_ci,
+  `parent_container` int DEFAULT NULL,
+  `mimetype` varchar(50) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`htmlpage_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>163</node_id>
   <title>htmlpage</title>
   <type_nodetype>148</type_nodetype>

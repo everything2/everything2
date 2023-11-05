@@ -1,13 +1,13 @@
 <node>
   <_create_table_statement>CREATE TABLE `message` (
-  `message_id` int(11) NOT NULL AUTO_INCREMENT,
-  `msgtext` text COLLATE utf8_unicode_ci,
-  `author_user` int(11) NOT NULL DEFAULT '0',
+  `message_id` int NOT NULL AUTO_INCREMENT,
+  `msgtext` text COLLATE utf8mb3_unicode_ci,
+  `author_user` int NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `for_user` int(11) NOT NULL DEFAULT '0',
-  `room` int(11) NOT NULL DEFAULT '0',
+  `for_user` int NOT NULL DEFAULT '0',
+  `room` int NOT NULL DEFAULT '0',
   `archive` tinyint(1) NOT NULL DEFAULT '0',
-  `for_usergroup` int(11) NOT NULL DEFAULT '0',
+  `for_usergroup` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`message_id`),
   KEY `room` (`room`),
   KEY `for_usergroup_index` (`for_usergroup`),
@@ -20,7 +20,7 @@
   KEY `for_user_for_usergroup` (`for_user`,`for_usergroup`),
   KEY `foruser_tstamp_message_id` (`for_user`,`tstamp`,`message_id`),
   KEY `message_author` (`author_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>445059</node_id>
   <title>message</title>
   <type_nodetype>148</type_nodetype>

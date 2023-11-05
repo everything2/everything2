@@ -1,23 +1,23 @@
 <node>
   <_create_table_statement>CREATE TABLE `nodebak` (
-  `node_id` int(11) NOT NULL AUTO_INCREMENT,
-  `type_nodetype` int(11) NOT NULL DEFAULT '0',
-  `title` char(240) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `author_user` int(11) NOT NULL DEFAULT '0',
+  `node_id` int NOT NULL AUTO_INCREMENT,
+  `type_nodetype` int NOT NULL DEFAULT '0',
+  `title` char(240) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `author_user` int NOT NULL DEFAULT '0',
   `createtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `hits` int(11) DEFAULT '0',
-  `reputation` int(11) NOT NULL DEFAULT '0',
-  `lockedby_user` int(11) NOT NULL DEFAULT '0',
+  `hits` int DEFAULT '0',
+  `reputation` int NOT NULL DEFAULT '0',
+  `lockedby_user` int NOT NULL DEFAULT '0',
   `locktime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `core` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `package` int(11) NOT NULL DEFAULT '0',
+  `core` char(1) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `package` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`node_id`),
   KEY `title` (`title`,`type_nodetype`),
   KEY `author` (`author_user`),
   KEY `type` (`type_nodetype`),
   KEY `createtime` (`createtime`),
   KEY `authortype` (`type_nodetype`,`author_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>2070550</node_id>
   <title>nodebak</title>
   <type_nodetype>148</type_nodetype>

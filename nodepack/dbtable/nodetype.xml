@@ -1,18 +1,18 @@
 <node>
   <_create_table_statement>CREATE TABLE `nodetype` (
-  `nodetype_id` int(11) NOT NULL AUTO_INCREMENT,
-  `readers_user` int(11) DEFAULT '0',
-  `writers_user` int(11) DEFAULT '0',
-  `deleters_user` int(11) DEFAULT '0',
-  `restrict_nodetype` int(11) DEFAULT '0',
-  `extends_nodetype` int(11) DEFAULT '0',
-  `restrictdupes` int(11) DEFAULT '0',
-  `sqltable` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `grouptable` char(40) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `typeVersioned` int(11) NOT NULL DEFAULT '0',
+  `nodetype_id` int NOT NULL AUTO_INCREMENT,
+  `readers_user` int DEFAULT '0',
+  `writers_user` int DEFAULT '0',
+  `deleters_user` int DEFAULT '0',
+  `restrict_nodetype` int DEFAULT '0',
+  `extends_nodetype` int DEFAULT '0',
+  `restrictdupes` int DEFAULT '0',
+  `sqltable` char(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `grouptable` char(40) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `typeVersioned` int NOT NULL DEFAULT '0',
   `verify_edits` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`nodetype_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>171</node_id>
   <title>nodetype</title>
   <type_nodetype>148</type_nodetype>

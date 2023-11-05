@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `lastreaddebate` (
-  `user_id` int(11) NOT NULL DEFAULT '0',
-  `debateroot_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int NOT NULL DEFAULT '0',
+  `debateroot_id` int NOT NULL DEFAULT '0',
   `dateread` datetime NOT NULL DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>1977479</node_id>

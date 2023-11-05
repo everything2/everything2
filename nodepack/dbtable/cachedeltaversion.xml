@@ -1,6 +1,6 @@
 <node>
   <_create_table_statement>CREATE TABLE `cachedeltaversion` (
-  `deltaversion` int(11) NOT NULL
+  `deltaversion` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>2070599</node_id>
   <title>cachedeltaversion</title>

@@ -1,14 +1,14 @@
 <node>
   <_create_table_statement>CREATE TABLE `heaven` (
-  `node_id` int(11) NOT NULL AUTO_INCREMENT,
-  `type_nodetype` int(11) NOT NULL DEFAULT '0',
-  `title` varchar(240) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `author_user` int(11) NOT NULL DEFAULT '0',
-  `killa_user` int(11) NOT NULL DEFAULT '0',
+  `node_id` int NOT NULL AUTO_INCREMENT,
+  `type_nodetype` int NOT NULL DEFAULT '0',
+  `title` varchar(240) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `author_user` int NOT NULL DEFAULT '0',
+  `killa_user` int NOT NULL DEFAULT '0',
   `createtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `hits` int(11) DEFAULT '0',
-  `reputation` int(11) NOT NULL DEFAULT '0',
-  `data` text COLLATE utf8_unicode_ci,
+  `hits` int DEFAULT '0',
+  `reputation` int NOT NULL DEFAULT '0',
+  `data` text COLLATE utf8mb3_unicode_ci,
   PRIMARY KEY (`node_id`),
   KEY `killa` (`killa_user`),
   KEY `author` (`author_user`),
@@ -17,7 +17,7 @@
   KEY `heaven_author_user` (`author_user`),
   KEY `title` (`title`),
   KEY `author_user__title` (`author_user`,`title`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>961482</node_id>
   <title>heaven</title>
   <type_nodetype>148</type_nodetype>
