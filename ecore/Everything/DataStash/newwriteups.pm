@@ -11,20 +11,18 @@ sub generate
   my ($this) = @_;
   my $howMany = 100;
 
-  my $cuss = $this->DB->sqlSelectMany('
-    writeup_id, parent_e2node, notnew,
-    node.author_user, node.reputation,
-    type.title AS type_title,
-    node.title REGEXP
-      \'^((January|February|March|April|May|June|July|August|September|October'
-      .'|November|December) [[:digit:]]{1,2}, [[:digit:]]{4})'
-      .'|((dream|editor|root) Log: )\'
-    AS islog ','
-    writeup JOIN node ON writeup_id = node.node_id JOIN node type ON type.node_id = writeup.wrtype_writeuptype',
-    'node.author_user != ' .$this->DB->getNode('Webster 1913' , 'user') -> {node_id},
-    "ORDER BY publishtime DESC LIMIT $howMany");
+  my $cuss = $this->DB->sqlSelectMany('writeup_id','writeup',"publishtime > 0 ORDER BY publishtime DESC LIMIT $howMany");
 
-  return $this->SUPER::generate($cuss->fetchall_arrayref({}));
+  my $writeups = [];
+  while(my $item = $cuss->fetchrow_hashref)
+  {
+    my $writeup = $this->APP->node_by_id($item->{writeup_id});
+    next unless $writeup;
+
+    push @$writeups, $writeup->new_writeups_reference;
+  }
+
+  return $this->SUPER::generate($writeups);
 }
 
 
