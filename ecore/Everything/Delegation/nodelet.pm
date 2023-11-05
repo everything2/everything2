@@ -108,25 +108,7 @@ sub epicenter
 
 sub new_writeups
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
   return "";
-  my $str = "";
-
-  if(!$APP->isGuest($USER))
-  {
-    $str.= htmlcode('nwuamount');
-  }
-  $str .= htmlcode('zenwriteups');
-  $str .= qq|<div class="nodeletfoot morelink">(|.linkNode(getNode('Writeups by Type', 'superdoc'), 'more').qq|)</div>|;
-
-  return $str;
 }
 
 sub other_users
@@ -931,21 +913,7 @@ SQLEND
 
 sub new_logs
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-
-  my $str = htmlcode('daylog').htmlcode('zenwriteups',"New Logs");
-  $str .= qq|<div class="nodeletfoot morelink">|;
-  $str .= linkNode(getNode('Writeups by Type', 'superdoc'), 'more', {wutype=>getNode('log', 'writeuptype')->{node_id}});
-  $str .= qq|</div>|;
-
-  return $str;
+  return "";
 }
 
 sub usergroup_writeups

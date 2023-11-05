@@ -11,6 +11,9 @@ import NewWriteups from './Nodelets/NewWriteups'
 import RecommendedReadingPortal from './Portals/RecommendedReadingPortal'
 import RecommendedReading from './Nodelets/RecommendedReading'
 
+import NewLogsPortal from './Portals/NewLogsPortal'
+import NewLogs from './Nodelets/NewLogs'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -34,7 +37,7 @@ class E2ReactRoot extends React.Component {
 
       developerNodelet: {page: {}, news: {}},
 
-      newWriteupsNodelet: [],
+      newWriteups: [],
 
       // Section display
       vit_maintenance: true,
@@ -54,13 +57,15 @@ class E2ReactRoot extends React.Component {
       everythingdeveloper_show: true,
       vitals_show: true,
       recommendedreading_show: true,
+      newlogs_show: true,
 
       coolnodes: [],
-      staffpicks: []
+      staffpicks: [],
+      daylogLinks: []
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteupsNodelet","lastCommit","collapsedNodelets","coolnodes","staffpicks"]
-    const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","collapsedNodelets","coolnodes","staffpicks","daylogLinks"]
+    const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs"]
 
     toplevelkeys.forEach((key) => {
       initialState[key] = e2[key]
@@ -137,7 +142,7 @@ class E2ReactRoot extends React.Component {
 
   scheduleCronNewWriteups = () => {
     setInterval(async () => {
-      if(this.state.newWriteupsNodelet.length !== 0)
+      if(this.state.newWriteups.length !== 0)
       {
         await this.refreshNewWriteups()
       }
@@ -169,7 +174,7 @@ class E2ReactRoot extends React.Component {
 
     if(newWriteups !== undefined && Array.isArray(newWriteups) && newWriteups.length > 0)
     {
-      this.setState({"newWriteupsNodelet": newWriteups})
+      this.setState({"newWriteups": newWriteups})
     }
   }
 
@@ -265,7 +270,7 @@ class E2ReactRoot extends React.Component {
       </DeveloperPortal>
       <NewWriteupsPortal>
         <ErrorBoundary>
-         <NewWriteups newWriteupsNodelet={this.state.newWriteupsNodelet} limit={this.state.num_newwus} noJunk={this.state.nw_nojunk} newWriteupsChange={this.newWriteupsChange} noJunkChange={this.noJunkChange} editorHideWriteupChange={this.editorHideWriteupChange} user={this.state.user} showNodelet={this.showNodelet} nodeletIsOpen={this.state.newwriteups_show} />
+         <NewWriteups newWriteups={this.state.newWriteups} limit={this.state.num_newwus} noJunk={this.state.nw_nojunk} newWriteupsChange={this.newWriteupsChange} noJunkChange={this.noJunkChange} editorHideWriteupChange={this.editorHideWriteupChange} user={this.state.user} showNodelet={this.showNodelet} nodeletIsOpen={this.state.newwriteups_show} />
         </ErrorBoundary>
       </NewWriteupsPortal>
       <RecommendedReadingPortal>
@@ -273,6 +278,11 @@ class E2ReactRoot extends React.Component {
           <RecommendedReading coolnodes={this.state.coolnodes} staffpicks={this.state.staffpicks} showNodelet={this.showNodelet} nodeletIsOpen={this.state.recommendedreading_show} />
         </ErrorBoundary>
       </RecommendedReadingPortal>
+      <NewLogsPortal>
+        <ErrorBoundary>
+          <NewLogs newWriteups={this.state.newWriteups} daylogLinks={this.state.daylogLinks} showNodelet={this.showNodelet} nodeletIsOpen={this.state.newlogs_show} limit={20} />
+        </ErrorBoundary>
+      </NewLogsPortal>
       </>
   }
 }

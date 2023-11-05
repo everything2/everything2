@@ -154,7 +154,7 @@ sub is_log
 {
   my ($self) = @_;
 
-  return ($self->title =~ /^((January|February|March|April|May|June|July|August|September|October|November|December) [[:digit:]]{1,2}, [[:digit:]]{4})|(dream|editor|root) Log: /) || 0;
+  return ($self->title =~ /^((January|February|March|April|May|June|July|August|September|October|November|December) [[:digit:]]{1,2}, [[:digit:]]{4})|(dream|editor|root) Log: /i) || 0;
 }
 
 sub field_whitelist

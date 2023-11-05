@@ -4082,9 +4082,15 @@ sub static_javascript
   }
 
   $e2->{newWriteupsNodelet} = [];
-  if($VARS->{nodelets} =~ /263/)
+  # New Writeups or New Logs
+  if($VARS->{nodelets} =~ /263/ or $VARS->{nodelets} =~ /1923735/)
   {
-    $e2->{newWriteupsNodelet} = $APP->filtered_newwriteups2($USER)
+    $e2->{newWriteups} = $APP->filtered_newwriteups2($USER)
+  }
+
+  if($VARS->{nodelets} =~ /1923735/)
+  {
+    $e2->{daylogLinks} = $DB->stashData("dayloglinks");
   }
 
   if($VARS->{nodelets} =~ /2027508/)
