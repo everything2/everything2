@@ -1,1 +1,3 @@
-New Logs
+<%class>
+has 'react_handled' => (isa => 'Bool', default => 1);
+</%class>

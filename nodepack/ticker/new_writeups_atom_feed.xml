@@ -8,7 +8,7 @@ if ($foruser) {
    return $str if $str;
 }
 
-my $newwriteups = $DB-&gt;stashData(&quot;newwriteups2&quot;);
+my $newwriteups = $DB-&gt;stashData(&quot;newwriteups&quot;);
 $str = &quot;&lt;updated&gt;&quot;;
 my ($sec,$min,$hour,$mday,$mon,$year) = localtime;
 $str .= sprintf(&quot;%04d-%02d-%02dT%02d:%02d:%02dZ&quot;, $year + 1900, $mon + 1, $mday, $hour, $min, $sec);

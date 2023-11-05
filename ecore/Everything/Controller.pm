@@ -117,10 +117,10 @@ sub layout
     $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->node_id, weblogs => $self->APP->weblogs_structure($edev->node_id)}}; 
   }
 
-  $e2->{newWriteupsNodelet} = [];
+  $e2->{newWriteups} = [];
   if($REQUEST->user->VARS->{nodelets} =~ /263/)
   {
-    $e2->{newWriteupsNodelet} = $self->APP->filtered_newwriteups2($REQUEST->user->NODEDATA);
+    $e2->{newWriteups} = $self->APP->filtered_newwriteups($REQUEST->user->NODEDATA);
   }
 
   $params->{nodeinfojson} = $self->JSON->encode($e2);
