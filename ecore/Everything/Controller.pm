@@ -61,19 +61,8 @@ sub layout
 
   $params->{script_name} = $REQUEST->script_name;
 
-  my $e2 = undef;
-  $e2->{node_id} = $node->node_id;
+  my $e2 = $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS);
   $e2->{lastnode_id} = $params->{lastnode_id};
-  $e2->{title} = $node->title;
-  $e2->{guest} = $REQUEST->is_guest;
-  $e2->{use_local_assets} = $self->CONF->use_local_assets;
-  $e2->{display_prefs} = $self->APP->display_preferences($REQUEST->user->VARS);
-  if($e2->{use_local_assets} == 0)
-  {
-    $e2->{assets_location} = $self->CONF->assets_location;
-  }else{
-    $e2->{assets_location} = "";
-  }
 
   my $cookie = undef;
   foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
@@ -85,29 +74,6 @@ sub layout
   }
 
   $e2->{collapsedNodelets} =~ s/\bsignin\b//;
-  $e2->{noquickvote} = 1 if($REQUEST->VARS->{noquickvote});
-  $e2->{nonodeletcollapser} = 1 if($REQUEST->VARS->{nonodeletcollapser});
-
-  # Used by React
-  $e2->{displayprefs} = $self->APP->display_preferences($REQUEST->VARS);
-
-  $e2->{user} ||= {};
-  $e2->{user}->{node_id} = $REQUEST->user->node_id;
-  $e2->{user}->{title} = $REQUEST->user->title;
-  $e2->{user}->{admin} = ($REQUEST->user->is_admin)?(\1):(\0);
-  $e2->{user}->{editor} = ($REQUEST->user->is_editor)?(\1):(\0);
-  $e2->{user}->{developer} = ($REQUEST->user->is_developer)?(\1):(\0);
-  $e2->{user}->{guest} = ($REQUEST->user->is_guest)?(\1):(\0);
-
-  $e2->{node} ||= {};
-  $e2->{node}->{title} = $node->title;
-  $e2->{node}->{type} = $node->type->title;
-  $e2->{node}->{node_id} = $node->node_id;
-  $e2->{node}->{createtime} = $self->APP->convertDateToEpoch($node->createtime);
-
-  $e2->{lastCommit} = $Everything::CONF->last_commit;
-  $e2->{nodetype} = $node->type->title;
-  $e2->{developerNodelet} = {};
 
   if($e2->{user}->{developer} and $REQUEST->user->VARS->{nodelets} =~ /836984/)
   {
@@ -115,12 +81,6 @@ sub layout
     my $page = Everything::HTML::getPage($node->NODEDATA, $REQUEST->param("displaytype"));
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
     $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->node_id, weblogs => $self->APP->weblogs_structure($edev->node_id)}}; 
-  }
-
-  $e2->{newWriteups} = [];
-  if($REQUEST->user->VARS->{nodelets} =~ /263/)
-  {
-    $e2->{newWriteups} = $self->APP->filtered_newwriteups($REQUEST->user->NODEDATA);
   }
 
   $params->{nodeinfojson} = $self->JSON->encode($e2);

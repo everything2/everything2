@@ -4619,4 +4619,88 @@ sub updateNewWriteups
   $datastash->generate();
 }
 
+sub buildNodeInfoStructure
+{
+  my ($this, $NODE, $USER, $VARS) = @_;
+
+  my $e2 = {};
+  $e2->{node_id} = $$NODE{node_id};
+  $e2->{title} = $$NODE{title};
+  $e2->{guest} = ($this->isGuest($USER))?(1):(0);
+
+  $e2->{noquickvote} = 1 if($VARS->{noquickvote});
+  $e2->{nonodeletcollapser} = 1 if($VARS->{nonodeletcollapser});
+  $e2->{use_local_assets} = $this->{conf}->use_local_assets;
+
+  if($e2->{use_local_assets} == 0)
+  {
+    $e2->{assets_location} = $this->{conf}->assets_location;
+  }else{
+    $e2->{assets_location} = "";
+  }
+
+  $e2->{display_prefs} = $this->display_preferences($VARS);
+
+  $e2->{user} ||= {};
+  $e2->{user}->{node_id} = $USER->{node_id};
+  $e2->{user}->{title} = $USER->{title};
+  $e2->{user}->{admin} = $this->isAdmin($USER)?(\1):(\0);
+  $e2->{user}->{editor} = $this->isEditor($USER)?(\1):(\0);
+  $e2->{user}->{developer} = $this->isDeveloper($USER)?(\1):(\1);
+  $e2->{user}->{guest} = $this->isGuest($USER)?(\1):(\0);
+
+  $e2->{node} ||= {};
+  $e2->{node}->{title} = $NODE->{title};
+  $e2->{node}->{type} = $NODE->{type}->{title};
+  $e2->{node}->{node_id} = $NODE->{node_id};
+  $e2->{node}->{createtime} = $this->convertDateToEpoch($NODE->{createtime});
+
+  $e2->{lastCommit} = $this->{conf}->last_commit;
+
+  $e2->{nodetype} = $NODE->{type}->{title};
+  $e2->{developerNodelet} = {};
+
+  $e2->{newWriteups} = [];
+  # New Writeups or New Logs
+  if($VARS->{nodelets} =~ /263/ or $VARS->{nodelets} =~ /1923735/)
+  {
+    $e2->{newWriteups} = $this->filtered_newwriteups($USER)
+  }
+
+  # The second half of New Logs
+  if($VARS->{nodelets} =~ /1923735/)
+  {
+    $e2->{daylogLinks} = $this->{db}->stashData("dayloglinks");
+  }
+
+  # Recommended Reading
+  if($VARS->{nodelets} =~ /2027508/)
+  {
+    foreach my $section (qw/coolnodes staffpicks/)
+    {
+      my $section_data = $this->{db}->stashData($section);
+      $section_data = [] unless(defined($section_data) and UNIVERSAL::isa($section_data,"ARRAY"));
+
+      my $final_section_data = [];
+
+      for my $i (0..scalar(@$section_data)-1)
+      {
+        if($section_data->[$i] =~ /^\d+$/)
+        {
+          my $n = $this->{db}->getNodeById($section_data->[$i]);
+          if($n)
+          {
+            push @$final_section_data, {"node_id" => $n->{node_id}, "title" => $n->{title}, "type" => $n->{type}{title}};
+          }
+        }else{
+          push @$final_section_data, $section_data->[$i];
+        }
+      }
+      $e2->{$section} = $final_section_data;
+    }
+  }
+
+  return $e2;
+}
+
 1;
