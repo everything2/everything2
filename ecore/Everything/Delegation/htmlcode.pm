@@ -37,7 +37,6 @@ BEGIN {
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *opLogin = *Everything::HTML::opLogin;
-  *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 }
 
 # Used by parsetime, parsetimestamp, timesince, giftshop_buyching 
@@ -4019,13 +4018,9 @@ sub static_javascript
   $lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
   $lastnode = $query->param("lastnode_id")||0 if $$NODE{title} eq 'Findings:' && $$NODE{type}{title} eq 'superdoc';
 
-  my $e2 = undef;
+  my $e2 = $APP->buildNodeInfoStructure($NODE, $USER, $VARS);
 
-  # Used by legacy elements
-  $e2->{node_id} = $$NODE{node_id};
   $e2->{lastnode_id} = $lastnode;
-  $e2->{title} = $$NODE{title};
-  $e2->{guest} = ($APP->isGuest($USER))?(1):(0);
 
   my $cookie = undef;
   foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
@@ -4038,36 +4033,7 @@ sub static_javascript
 
   $e2->{collapsedNodelets} ||= "";
   $e2->{collapsedNodelets} =~ s/\bsignin\b// if($query->param('op') and $query->param('op') eq 'login');
-  $e2->{noquickvote} = 1 if($VARS->{noquickvote});
-  $e2->{nonodeletcollapser} = 1 if($VARS->{nonodeletcollapser});
-  $e2->{use_local_assets} = $Everything::CONF->use_local_assets;
-  if($e2->{use_local_assets} == 0)
-  {
-    $e2->{assets_location} = $Everything::CONF->assets_location;
-  }else{
-    $e2->{assets_location} = "";
-  }
 
-  # Used by React
-  $e2->{display_prefs} = $APP->display_preferences($VARS);
-
-  $e2->{user} ||= {};
-  $e2->{user}->{node_id} = $USER->{node_id};
-  $e2->{user}->{title} = $USER->{title};
-  $e2->{user}->{admin} = $APP->isAdmin($USER)?(\1):(\0);
-  $e2->{user}->{editor} = $APP->isEditor($USER)?(\1):(\0);
-  $e2->{user}->{developer} = $APP->isDeveloper($USER)?(\1):(\1);
-  $e2->{user}->{guest} = $APP->isGuest($USER)?(\1):(\0);
-
-  $e2->{node} ||= {};
-  $e2->{node}->{title} = $NODE->{title};
-  $e2->{node}->{type} = $NODE->{type}->{title};
-  $e2->{node}->{node_id} = $NODE->{node_id};
-  $e2->{node}->{createtime} = $APP->convertDateToEpoch($NODE->{createtime});
-
-  $e2->{lastCommit} = $Everything::CONF->last_commit;
-  $e2->{nodetype} = $NODE->{type}->{title};
-  $e2->{developerNodelet} = {};
 
   if($e2->{user}->{developer} and $VARS->{nodelets} =~ /836984/)
   {
@@ -4075,44 +4041,6 @@ sub static_javascript
     my $page = Everything::HTML::getPage($NODE, scalar($query->param("displaytype")));
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
     $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}}; 
-  }
-
-  $e2->{newWriteupsNodelet} = [];
-  # New Writeups or New Logs
-  if($VARS->{nodelets} =~ /263/ or $VARS->{nodelets} =~ /1923735/)
-  {
-    $e2->{newWriteups} = $APP->filtered_newwriteups($USER)
-  }
-
-  if($VARS->{nodelets} =~ /1923735/)
-  {
-    $e2->{daylogLinks} = $DB->stashData("dayloglinks");
-  }
-
-  if($VARS->{nodelets} =~ /2027508/)
-  {
-    foreach my $section (qw/coolnodes staffpicks/)
-    {
-      my $section_data = $DB->stashData($section);
-      $section_data = [] unless(defined($section_data) and UNIVERSAL::isa($section_data,"ARRAY"));
-
-      my $final_section_data = [];
-
-      for my $i (0..scalar(@$section_data)-1)
-      {
-        if($section_data->[$i] =~ /^\d+$/)
-        {
-          my $n = $DB->getNodeById($section_data->[$i]);
-          if($n)
-          {
-            push @$final_section_data, {"node_id" => $n->{node_id}, "title" => $n->{title}, "type" => $n->{type}{title}};
-          }
-        }else{
-          push @$final_section_data, $section_data->[$i];
-        }
-      }
-      $e2->{$section} = $final_section_data;
-    }
   }
 
   $e2 = JSON->new->encode($e2);
