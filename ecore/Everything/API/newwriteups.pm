@@ -13,14 +13,11 @@ sub get
 {
   my ($self, $REQUEST) = @_;
 
-  my $writeupslist = $self->DB->stashData("newwriteups2");
-
-  unless(UNIVERSAL::isa($writeupslist, "ARRAY"))
+  my $writeups_out = $self->APP->filtered_newwriteups($REQUEST->user->NODEDATA);
+  unless(UNIVERSAL::isa($writeups_out, "ARRAY"))
   {
     return [$self->HTTP_UNAVAILABLE];
   }
-
-  my $writeups_out = $self->APP->filtered_newwriteups2($REQUEST->user->NODEDATA);
   return [$self->HTTP_OK, $writeups_out];
 }
 

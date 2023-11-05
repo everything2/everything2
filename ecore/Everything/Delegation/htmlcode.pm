@@ -4081,7 +4081,7 @@ sub static_javascript
   # New Writeups or New Logs
   if($VARS->{nodelets} =~ /263/ or $VARS->{nodelets} =~ /1923735/)
   {
-    $e2->{newWriteups} = $APP->filtered_newwriteups2($USER)
+    $e2->{newWriteups} = $APP->filtered_newwriteups($USER)
   }
 
   if($VARS->{nodelets} =~ /1923735/)

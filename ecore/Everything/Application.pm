@@ -35,7 +35,6 @@ use Encode;
 
 # For updateNewWriteups
 use Everything::DataStash::newwriteups;
-use Everything::DataStash::newwriteups2;
 
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
@@ -4567,7 +4566,7 @@ sub weblogs_structure
   return $structure;
 }
 
-sub filtered_newwriteups2
+sub filtered_newwriteups
 {
   my ($this, $USER) = @_;
 
@@ -4576,7 +4575,7 @@ sub filtered_newwriteups2
   my $iseditor = $this->isEditor($USER);
   my $isguest = $this->isGuest($USER);
 
-  my $writeupsdata = $this->{db}->stashData("newwriteups2");
+  my $writeupsdata = $this->{db}->stashData("newwriteups");
   $writeupsdata = [] unless(defined($writeupsdata) and UNIVERSAL::isa($writeupsdata,"ARRAY"));
 
   my $filteredwriteups = [];
@@ -4616,11 +4615,8 @@ sub updateNewWriteups
 {
   my ($this) = @_;
 
-  foreach my $package (qw|newwriteups newwriteups2|)
-  {
-    my $datastash = "Everything::DataStash::$package"->new(APP => $this, CONF => $this->{conf}, DB => $this->{db});
-    $datastash->generate();
-  }
+  my $datastash = Everything::DataStash::newwriteups->new(APP => $this, CONF => $this->{conf}, DB => $this->{db});
+  $datastash->generate();
 }
 
 1;
