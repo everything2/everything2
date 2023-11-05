@@ -20,7 +20,7 @@ const NewLogs = (props) => {
     )
   }</ul>
 
-  // Note that 1871573 is the "log" writeuptype
+  {/* Note that 1871573 is the "log" writeuptype */}
   <div className="nodeletfoot morelink"><LinkNode title="Writeups by Type" type="superdoc" display="more" params={{wutype: 1871573}} /></div>
   </div></NodeletContainer>)
 }

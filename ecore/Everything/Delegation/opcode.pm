@@ -2560,13 +2560,13 @@ sub remove
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  if (my $wu = $query -> param('writeup_id'))
+  if (my $wu = $query->param('writeup_id'))
   {
     # user removing own writeup
     return unless htmlcode('verifyRequest', 'remove') && getRef($wu) && $$wu{author_user} == $$USER{node_id}
       && htmlcode('unpublishwriteup', $wu);
 
-    return htmlcode('update New Writeups data');
+    return $APP->updateNewWriteups();
   }
 
   return unless $APP->isEditor($USER);
@@ -2630,7 +2630,7 @@ sub remove
       recipient_id=>$aid});
   }
 
-  htmlcode('update New Writeups data');
+  $APP->updateNewWriteups();
   return;
 }
 

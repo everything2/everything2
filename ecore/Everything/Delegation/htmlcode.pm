@@ -2610,7 +2610,6 @@ sub publishwriteup
   $DB->sqlInsert('newwriteup', {node_id => getId($WRITEUP), notnew => $notnew});
 
   # If you are publishing as another user, and you have permission to, let this go through.
-  # This is after newwriteup insertion to update New Writeup data
   if($WRITEUP->{author_user} != $USER->{node_id} && htmlcode("canpublishas",getNodeById($WRITEUP->{author_user})->{title}))
   {
     updateNode($WRITEUP, -1);
@@ -13363,7 +13362,7 @@ sub unpublishwriteup
   $DB->{cache}->removeNode($wu); # and it's in the wrong typecache, so remove it
 
   $DB->sqlDelete('newwriteup', "node_id=$id");
-  htmlcode('update New Writeups data');
+  $APP->updateNewWriteups();
 
   $DB->sqlDelete('publish', "publish_id=$id");
   $DB->sqlDelete('links',
