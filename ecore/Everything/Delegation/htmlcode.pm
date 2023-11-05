@@ -43,7 +43,7 @@ BEGIN {
 # Used by parsetime, parsetimestamp, timesince, giftshop_buyching 
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved,
+# Used by shownewexp, publishwriteup, static_javascript, hasAchieved,
 #  showNewGP, notificationsJSON, Notifications_nodelet_settings,sendPrivateMessage
 use JSON;
 
@@ -9303,119 +9303,6 @@ sub ignoreUser
 
   $query->param('DEBUGignoreUser', 'tried to ignore '.$$U{title});
   return "$$U{title} ignored";
-}
-
-sub zenwriteups
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($isLogs) = @_;
-
-  my $UID = $$USER{user_id} || $Everything::CONF->guest_user ;
-  my $limit = $$VARS{ num_newwus } || ($APP->isGuest($USER) ? 15 : 12);
-  my $cansee = $APP->isEditor($USER);
-
-  my $newwriteups = $DB->stashData("newwriteups");
-  $newwriteups = [] unless(defined($newwriteups) and UNIVERSAL::isa($newwriteups,"ARRAY"));
- 
-  return "<em>No writeups</em>" unless(@$newwriteups);
-
-  my $noHidden = !$isLogs;
-  $noHidden = $noHidden && $$VARS{nw_nojunk} if $cansee;
-
-  my ($repthreshold, $abominations) = ('none', undef);
-  if ((not $cansee) or $$VARS{nw_nojunk} or $isLogs)
-  {
-    if (exists $$VARS{repThreshold})
-    {
-      $repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
-    } else {
-      $repthreshold = $Everything::CONF->writeuplowrepthreshold || 0;
-    }
-    
-    if($VARS->{unfavoriteusers})
-    {	
-      $abominations->{$_} = 1 foreach(split(',', $$VARS{unfavoriteusers}));
-    }
-  }
-
-  my $count = undef;
-  my @wus = ();
-  foreach (@$newwriteups)
-  {
-    next if($noHidden and $$_{notnew} or
-      $repthreshold ne 'none' and $$_{reputation} < $repthreshold or
-      exists($abominations->{$$_{author_user}}) or
-      $isLogs and not $$_{islog});
-    push @wus, $_;
-    # last if !$$_{notnew} || $isLogs;
-    last if  ++$count >= $limit;
-  }
-
-  my $instructions = '<li' ;
-  my %newwuspecials = () ;
-
-  unless($APP->isGuest($USER) || scalar(@wus) == 0)
-  {
-    my $sql = "SELECT vote_id
-      FROM vote
-      WHERE voter_user=$UID
-      AND vote_id in ("
-      .join(',', map { $_->{writeup_id} } @wus).')';
-
-    my $votes = undef;
-    $votes->{$_} = 1 foreach(@{$DB->{dbh} -> selectcol_arrayref($sql)});
-
-    $instructions .= ' class="&extraclasses"' ;
-    $newwuspecials{extraclasses} = sub{
-      my $N = shift ;
-      my $str = ''; # it remembers if you don't do this
-      $str .= ' hasvoted' if exists $votes->{$$N{writeup_id}} ;
-      $str .= ' mine' if $$N{author_user} == $UID ;
-      $str .= ' wu_hide' if $$N{notnew} ;
-      return $str ;
-    };
-  }
-
-  $instructions .= '>parenttitle, type, byline' ;
-
-  if ($cansee && !$isLogs)
-  {
-    $instructions .= ', editorstuff';
-    my $ajax = "ajax newwriteups:updateNodelet:New+Writeups" ;
-
-    $newwuspecials{editorstuff} = sub {
-      my $N = shift ;
-      # reputation warning
-      my ( $rep ) = $$N{ reputation } ;
-      my $str = ( $rep < 0 ? "R:$rep " : '' ).'<span class="hide">(' ;
-      # flag if hiddden from New Writeups and control to hide/unhide
-      $str .= $$N{ notnew } > 0 ?
-        'H: '
-        .linkNode($NODE, 'un-h!', {
-        op => 'unhidewriteup' ,
-        hidewriteup => $N -> {writeup_id},
-        -title => 'unhide this writeup',
-        -class => $ajax}):
-      linkNode($NODE, 'h?', {
-        op => 'hidewriteup' ,
-        hidewriteup => $N -> {writeup_id},
-        -title => 'hide this writeup',
-        -class => $ajax});
-      $str .= ')</span>' ;
-      $str .= ' (X)' if $$N{nuked} && !$$N{restored};
-      $str .= ' (R)' if $$N{restored};
-      qq'<span class="admin">$str</span>' ;
-    };
-  }
-
-  return '<ul class="infolist">'.htmlcode('show content' , \@wus , $instructions , %newwuspecials) .'</ul>';
 }
 
 # TODO: Make this JSON
