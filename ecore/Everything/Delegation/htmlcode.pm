@@ -67,9 +67,6 @@ use CGI qw(-utf8);
 # Used by create_short_url;
 use POSIX;
 
-# Used by update_New_Writeups_data
-use Everything::DataStash::newwriteups;
-
 # Used by display_draft
 use Everything::Delegation::htmlpage;
 
@@ -13215,20 +13212,6 @@ sub setdraftstatus
 
  return $query -> div({id => "draftstatus$$N{node_id}", class => 'parentdraft'}, $str);
 
-}
-
-sub update_New_Writeups_data
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $datastash = Everything::DataStash::newwriteups->new(APP => $APP, CONF => $Everything::CONF, DB => $DB);
-  return $datastash->generate();
 }
 
 sub ordernode
