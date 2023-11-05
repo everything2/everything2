@@ -33,6 +33,10 @@ use IO::Compress::Brotli;
 use IO::Compress::Deflate;
 use Encode;
 
+# For updateNewWriteups
+use Everything::DataStash::newwriteups;
+use Everything::DataStash::newwriteups2;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -4606,6 +4610,17 @@ sub filtered_newwriteups2
   }
 
   return $filteredwriteups;
+}
+
+sub updateNewWriteups
+{
+  my ($this) = @_;
+
+  foreach my $package (qw|newwriteups newwriteups2|)
+  {
+    my $datastash = "Everything::DataStash::$package"->new(APP => $this, CONF => $this->{conf}, DB => $this->{db});
+    $datastash->generate();
+  }
 }
 
 1;

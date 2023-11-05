@@ -2,9 +2,7 @@ package Everything::API::hidewriteups;
 
 use Moose;
 use namespace::autoclean;
-use Everything::DataStash::newwriteups2;
 extends 'Everything::API';
-
 
 sub routes
 { 
@@ -23,8 +21,7 @@ sub toggle_writeup
   {
     $writeup->update($REQUEST->user, {notnew => $notnew});
 
-    my $datastash = Everything::DataStash::newwriteups2->new(APP => $self->APP, CONF => $self->CONF, DB => $self->DB);
-    $datastash->generate();
+    $self->APP->updateNewWriteups();
 
     return [$self->HTTP_OK, {node_id => $writeup->node_id, notnew => ($notnew)?(\1):(\0)}];
   }else{

@@ -242,7 +242,7 @@ sub writeup_update
       }) if length $trimmedNewText < 20;
     }
 
-    htmlcode('update New Writeups data') unless($query->param('op') and $query->param('op') eq 'vote' or $query -> param('op') eq 'cool');
+    $APP->updateNewWriteups() unless($query->param('op') and $query->param('op') eq 'vote' or $query -> param('op') eq 'cool');
 
     if($query->param('writeup_wrtype_writeuptype'))
     {
