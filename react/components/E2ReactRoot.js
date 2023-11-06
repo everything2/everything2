@@ -14,12 +14,36 @@ import RecommendedReading from './Nodelets/RecommendedReading'
 import NewLogsPortal from './Portals/NewLogsPortal'
 import NewLogs from './Nodelets/NewLogs'
 
+import RandomNodesPortal from './Portals/RandomNodesPortal'
+import RandomNodes from './Nodelets/RandomNodes'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
 
 class E2ReactRoot extends React.Component {
 
+  getRandomNodesPhrase = () => {
+    let choices = ['cousin','sibling','grandpa','grandma'];
+    let person = choices[Math.floor(Math.random()*choices.length)];
+    let rn = Math.random();
+
+    let phrases = [
+        `Nodes your ${person} would have liked:`,
+        'After stirring Everything, these nodes rose to the top:',
+        'Look at this mess the Death Borg made!',
+        'Just another sprinkling of '+(rn<0.5?'indeterminacy':'randomness'),
+        'The '+(rn<0.5?'best':'worst')+' nodes of all time:',
+        (rn<0.5?'Drink up!':'Food for thought:'),
+        'Things you could have written:',
+        'What you are reading:',
+        'Read this. You know you want to:',
+        'Nodes to '+(rn<0.5?'live by':'die for')+':',
+        'Little presents from the Node Fairy:'
+     ];
+
+     return phrases[Math.floor(Math.random()*phrases.length)];
+  }
 
   constructor(props) {
     super(props)
@@ -58,18 +82,23 @@ class E2ReactRoot extends React.Component {
       vitals_show: true,
       recommendedreading_show: true,
       newlogs_show: true,
+      randomnodes_show: true,
 
       coolnodes: [],
       staffpicks: [],
-      daylogLinks: []
+      daylogLinks: [],
+
+      randomNodes: []
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","collapsedNodelets","coolnodes","staffpicks","daylogLinks"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes"]
     const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs"]
 
     toplevelkeys.forEach((key) => {
       initialState[key] = e2[key]
     })
+
+    initialState['randomNodesPhrase'] = this.getRandomNodesPhrase(); 
 
     const nodeletSections = {"vit": ["maintenance","nodeinfo","list","nodeutil","misc"], "edn": ["util","edev"]}
 
@@ -283,6 +312,11 @@ class E2ReactRoot extends React.Component {
           <NewLogs newWriteups={this.state.newWriteups} daylogLinks={this.state.daylogLinks} showNodelet={this.showNodelet} nodeletIsOpen={this.state.newlogs_show} limit={20} />
         </ErrorBoundary>
       </NewLogsPortal>
+      <RandomNodesPortal>
+        <ErrorBoundary>
+          <RandomNodes randomNodes={this.state.randomNodes} randomNodesPhrase={this.state.randomNodesPhrase} RanshowNodelet={this.showNodelet} nodeletIsOpen={this.state.randomnodes_show} />
+        </ErrorBoundary>
+      </RandomNodesPortal>
       </>
   }
 }

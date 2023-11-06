@@ -4700,6 +4700,11 @@ sub buildNodeInfoStructure
     }
   }
 
+  if($VARS->{nodelets} =~ /457857/)
+  {
+    $e2->{randomNodes} = $this->{db}->stashData("randomnodes");
+  }
+
   return $e2;
 }
 
