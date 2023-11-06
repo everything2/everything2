@@ -635,48 +635,7 @@ sub personal_links
 
 sub random_nodes
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-
-  my @choices = ('cousin','sibling','grandpa','grandma');
-  my $r = $choices[rand(@choices)];
-  my $rn = rand();
-  my @phrase = (
-	'Nodes your '.$r.' would have liked:',
-	'After stirring Everything, these nodes rose to the top:',
-	'Look at this mess the Death Borg made!',
-	'Just another sprinkling of '.($rn<0.5?'indeterminacy':'randomness'),
-	'The '.($rn<0.5?'best':'worst').' nodes of all time:',
-	($rn<0.5?'Drink up!':'Food for thought:'),
-	'Things you could have written:',
-	'What you are reading:',
-	'Read this. You know you want to:',
-	'Nodes to '.($rn<0.5?'live by':'die for').':',
-	'Little presents from the Node Fairy:',
-  );
-
-  my $randomnodes = $DB->stashData("randomnodes");
-
-  my $str = "";
-  $str.='<em>'.$phrase[rand(int(@phrase))]."</em>\n<ul class=\"linklist\">\n" ;
-
-  my $len = 20;
-  foreach my $N (@$randomnodes)
-  { 
-    my $RN = $DB->getNodeById( $N->{node_id} );
-    my $node_title = $$RN{'title'};
-    $node_title =~ s/(\S{$len})\S{4,}/$1.../go;
-    $str .= '<li>' . linkNode($RN, $node_title, {lastnode_id=>0}) . "</li>\n";
-  }
-  $str .= "</ul>\n" ;
-
-  return $str;
+  return "";
 }
 
 sub everything_developer
