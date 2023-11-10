@@ -4093,7 +4093,7 @@ sub everything_user_search
   $str .= q|<input type="submit" name="submit" value="submit"></fieldset></form>|;
 
   # keep all necessary parameters in %params hash for sort/filter links
-  my %params = $query -> Vars();
+  my %params = $query->Vars();
   my $us = $APP->htmlScreen($params{usersearch}); #user's title to find WUs on
 
   unless($us)
@@ -4127,7 +4127,7 @@ sub everything_user_search
 
         # remove url-derived and other superfluous parameters, include defaults
         delete @params{qw(node node_id type op submit)};
-        delete $params{page} unless $params{page} > 1;
+        delete $params{page} unless(defined($params{page}) and $params{page} > 1);
         $params{usersearch} = $$user{title}; # clean/right case for links
         $params{orderby} ||= 'writeup.publishtime DESC';
 
@@ -4228,7 +4228,6 @@ sub everything_user_search
 
         my $instructions = '<tr class="&oddrow">c, "<td align=\'left\'>", parenttitle, type, "</td>"';
 
-	# JAYBONCI PICK UP HERE
         my %funx = (
           c => sub {
             my $cMsg = '&nbsp;';
@@ -4267,7 +4266,6 @@ sub everything_user_search
           };
         }
 
-        # Show users how they've voted on a writeup. -ap 20080731
         unless ($isMe || $isGuest)
         {
           $thRow .= '<th><abbr title="Your vote">Vote</abbr></th>';
@@ -4275,7 +4273,7 @@ sub everything_user_search
           $instructions .=',vote';
           $funx{vote} = sub{
             '<td align="center">'
-            .('-', '&nbsp;', '+')[$_[0]->{weight} + 1]
+            .('-', '&nbsp;', '+')[(defined($_[0]->{weight})?($_[0]->{weight}+1):(1))]
             .'</td>';
             };
         }
