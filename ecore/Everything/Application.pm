@@ -2833,7 +2833,9 @@ sub urlGenNoParams {
               .$this->rewriteCleanEscape($$NODE{title});
   }
   else {
-    $retval = "/node/".$this->{db}->getId($NODE);
+    my $id = $this->{db}->getId($NODE);
+    $id = "" if not defined($id);
+    $retval = "/node/$id";
   }
 
   if ($noquotes) {
@@ -3189,6 +3191,7 @@ sub linkNode {
   $NODE = $this->{db}->getNodeById($NODE, 'light') unless ref $NODE;
 
   $title ||= $$NODE{title};
+  $title = "" if not defined($title);
   my $tags = "";
 
   #any params that have a "-" preceding 

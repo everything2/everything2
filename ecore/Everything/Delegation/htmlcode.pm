@@ -1291,7 +1291,7 @@ sub show_content
 
   my $date = $infofunctions{date} ||= sub {
     return '<span class="date">'
-      .htmlcode('parsetimestamp', $_[0]{publishtime} || $_[0]{createtime}, 256 + $_[1]) # 256 suppresses the seconds
+      .htmlcode('parsetimestamp', $_[0]{publishtime} || $_[0]{createtime}, 256 + defined($_[1])?($_[1]):(0)) # 256 suppresses the seconds
       .'</span>' ;
   };
 
@@ -1309,7 +1309,7 @@ sub show_content
   my $xml = 0;
   $xml = '1' if $instructions =~ s/^xml\b\s*// ;
 
-  my ($wrapTag, $wrapClass, $wrapAtts) = (undef, undef, undef); ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
+  my ($wrapTag, $wrapClass, $wrapAtts) = ("", undef, undef); ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
   $wrapAtts .= $1 if $wrapTag =~ s/(\s+.*)//;
   $wrapAtts ||= "";
 
@@ -3599,6 +3599,8 @@ sub weblog
   $interval ||= 5 ;
   $listOnly ||= 0 ;
 
+  $skipFilterHTML = 0 if not defined($skipFilterHTML);
+
   my $endat = $interval ;
   if ($query && $query->param( 'nextweblog' )) {
     $endat = $query->param( 'nextweblog' );
@@ -5872,13 +5874,14 @@ sub writeupcools
   my ( $N ) = @_ ;
   $N = $NODE unless $N ;
   getRef( $N );
+  return "" unless(defined($N));
 
   my $nr = getNode('node row', 'superdoc')->{node_id};
 
   my $str = undef;
   my $coollink = "";
   my $coolnum = undef;
-  my $coolers = undef;
+  my $coolers = "";
 
   if ( not $DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$N{node_id} and removedby_user=0")
     and ( $$VARS{cools} && $$VARS{cools} > 0 )
@@ -5952,7 +5955,7 @@ sub writeupcools
     }
   }
 
-  $query -> param( 'showwidget' , 'showCs'.$$N{ node_id } ) if $query -> param( 'op' ) eq 'cool' and $query -> param( 'cool_id' ) == $$N{ node_id } ;
+  $query->param( 'showwidget' , 'showCs'.$$N{ node_id } ) if $query->param('op') eq 'cool' and $query->param('cool_id') == $$N{ node_id } ;
 
   return '<span id="cools'.$$N{node_id}.'" class="cools">'.htmlcode( 'widget' , '<small>This writeup has been cooled by: &nbsp;</small><br>
     '.$coolers , 'span ' , $coolnum , { showwidget => 'showCs'.$$N{ node_id } , -title => 'show who gave the C!s' , -closetitle => 'hide cools' } ) .
@@ -6415,9 +6418,9 @@ sub displayWriteupInfo
       my $author = getNodeById( $$WRITEUP{ author_user } ) ;
       $author = $author -> { title } if $author ;
       $author =~ s/[\W]/ /g ;
-      $query -> param( 'showwidget' , 'addto'.$$WRITEUP{ node_id } ) if(
-        $query -> param( 'op' ) eq 'weblog' and $query -> param( 'target' ) == $$WRITEUP{ node_id } or
-        $query -> param( 'op' ) eq 'category' and $query -> param( 'nid' ) == $$WRITEUP{ node_id });
+      $query->param( 'showwidget' , 'addto'.$$WRITEUP{ node_id } ) if(
+        $query->param( 'op' ) eq 'weblog' and $query->param( 'target' ) == $$WRITEUP{ node_id } or
+        $query->param( 'op' ) eq 'category' and $query->param( 'nid' ) == $$WRITEUP{ node_id });
 
       $str = htmlcode( 'widget' , '
         <small>'.htmlcode( 'bookmarkit' , $WRITEUP , "Add $author"."'s writeup to your E2 bookmarks" ).'</small>
@@ -10809,7 +10812,7 @@ sub confirmop
 
   my $N = $query -> param('like_id') || $query -> param( 'cool_id' ) || $query -> param( 'ins_id' ) || $query -> param('cure_user_id');
   my $node = undef; $node = getNodeById( $N ) if $N;
-  my $author = undef; $author = getNode( $$node{ author_user } ) if $node ;
+  my $author = ''; $author = getNode( $$node{ author_user } ) if $node ;
   $author = $$author{ title } if $author ;
 
   my $polehash_seed = $query -> param('polehash_seed');
