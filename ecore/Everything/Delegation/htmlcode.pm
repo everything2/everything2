@@ -4549,7 +4549,7 @@ sub minilogin
 
   my $goto = getId($NODE);
   $goto = $Everything::CONF->default_node if $goto == $Everything::CONF->default_guest_node;
-  return $query->start_form(-method => "POST", -action => $query->script_name, -name => "loginform", -id => "loginform") .
+  return $query->start_form(-method => "POST", -action => $query->script_name, -name => "loginform", -id => "loginform" ) .
     $query->hidden("node_id", $goto) . "\n" .
     $query->hidden("lastnode_id") . "\n" .
     $query->hidden(-name => "op", value => "login", force => 1) . "\n" .

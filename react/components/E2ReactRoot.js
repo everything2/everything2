@@ -17,9 +17,14 @@ import NewLogs from './Nodelets/NewLogs'
 import RandomNodesPortal from './Portals/RandomNodesPortal'
 import RandomNodes from './Nodelets/RandomNodes'
 
+import SignInPortal from './Portals/SignInPortal'
+import SignIn from './Nodelets/SignIn'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
+
+const E2Constants = {"defaultGuestNode": 2030780, "defaultNode": 124}
 
 class E2ReactRoot extends React.Component {
 
@@ -55,9 +60,6 @@ class E2ReactRoot extends React.Component {
 
       use_local_assets: 0,
       assets_location: "",
-      title: "",
-      lastnode_id: 0,
-      node_id: 0,
 
       developerNodelet: {page: {}, news: {}},
 
@@ -84,15 +86,20 @@ class E2ReactRoot extends React.Component {
       newlogs_show: true,
       randomnodes_show: true,
 
+      signin_show: false,
+
       coolnodes: [],
       staffpicks: [],
       daylogLinks: [],
 
-      randomNodes: []
+      randomNodes: [],
+
+      loginMessage: ""
     }
     
     const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes"]
     const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs"]
+    const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
       initialState[key] = e2[key]
@@ -111,6 +118,22 @@ class E2ReactRoot extends React.Component {
     if(e2["guest"] == 0)
     {
       initialState["guest"] = false
+    }
+
+    if(initialState["guest"])
+    {
+      initialState["loginGoto"] = initialState["node"]["node_id"]
+
+      if(initialState["loginGoto"] == E2Constants["defaultGuestNode"])
+      {
+        initialState["loginGoto"] = E2Constants["defaultNode"]
+      }
+
+      if(urlParams.has("trylogin"))
+      {
+        initialState["loginMessage"] = "Login failed. Try resetting your password or contacting support"
+        initialState["signin_show"] = true
+      }
     }
 
     initialState["num_newwus"] = e2.display_prefs["num_newwus"]
@@ -314,9 +337,14 @@ class E2ReactRoot extends React.Component {
       </NewLogsPortal>
       <RandomNodesPortal>
         <ErrorBoundary>
-          <RandomNodes randomNodes={this.state.randomNodes} randomNodesPhrase={this.state.randomNodesPhrase} RanshowNodelet={this.showNodelet} nodeletIsOpen={this.state.randomnodes_show} />
+          <RandomNodes randomNodes={this.state.randomNodes} randomNodesPhrase={this.state.randomNodesPhrase} showNodelet={this.showNodelet} nodeletIsOpen={this.state.randomnodes_show} />
         </ErrorBoundary>
       </RandomNodesPortal>
+      <SignInPortal>
+        <ErrorBoundary>
+          <SignIn nodeletIsOpen={this.state.signin_show} user={this.state.user} loginGoto={this.state.loginGoto} loginMessage={this.state.loginMessage} />
+        </ErrorBoundary>
+      </SignInPortal>
       </>
   }
 }
