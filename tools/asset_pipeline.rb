@@ -97,8 +97,12 @@ assets.keys.each do |asset_type|
   assets[asset_type].keys.each do |filename|
     content_type = "application/javascript"
 
-    if asset_type.eql? "css"
+    if filename.match(/"\.css$"/)
       content_type = "text/css"
+    end
+
+    if filename.match(/"\.ico$/)
+      content_type = "image/x-icon" 
     end
 
     ['min','gzip','br','deflate'].each do |upload_type|
