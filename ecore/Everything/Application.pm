@@ -4519,6 +4519,8 @@ sub asset_uri
   if($compression)
   {
     return $Everything::CONF->assets_location."/$compression/$asset";
+  }else{
+    return $Everything::CONF->assets_location."/$asset";
   }
 }
 
