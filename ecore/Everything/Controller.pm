@@ -118,7 +118,7 @@ sub nodelets
     }else{
       if(my $delegation = Everything::Delegation::nodelet->can($title))
       {
-        $self->devLog("Using delegated nodelet content for: $title");
+        # $self->devLog("Using delegated nodelet content for: $title");
         $params->{nodelets}->{$title}->{delegated_content} = $delegation->($self->DB, $REQUEST->cgi, $node->NODEDATA, $REQUEST->user->NODEDATA,$REQUEST->VARS, $Everything::HTML::PAGELOAD, $self->APP);
       }
     }

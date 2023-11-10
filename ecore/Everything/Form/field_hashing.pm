@@ -67,8 +67,18 @@ sub has_valid_formsignature {
 sub get_hashed_field {
   my ($self, $REQUEST, $fieldname) = @_;
 
-  my $hashed_field = $self->hash_item($fieldname, $self->get_formtime($REQUEST));
-  return $REQUEST->param($hashed_field);
+
+  my $formtime = $self->get_formtime($REQUEST);
+  if($formtime)
+  {
+    my $hashed_field = $self->hash_item($fieldname, $formtime);
+    if($hashed_field)
+    {
+      return $REQUEST->param($hashed_field);
+    }
+  }
+
+  return '';
 }
 
 1;
