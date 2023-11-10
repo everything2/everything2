@@ -151,6 +151,8 @@ $str.=$query-&gt;param('hideresults');
 ##N-Wing added 2006-04-11, so column order is same as what is specified in query
 #my @columns = @{$cursor-&gt;{NAME}};
 
+my $ordered_columns = [];
+
 while($ROW = $cursor-&gt;fetchrow_hashref()) {
 	next if $query-&gt;param('hideresults');
 	if($str eq '') { 
@@ -160,6 +162,7 @@ while($ROW = $cursor-&gt;fetchrow_hashref()) {
 		foreach(keys %$ROW) {
 			$_ = $changeValueBlank if((not defined $_) || ($_ eq '')); 
 			$hdr .= $columnHeaderOpen . $_. $columnHeaderClose;
+                        push @$ordered_columns, $_;
 		}
 		$hdr .= $recordClose;
 	}
@@ -171,8 +174,7 @@ while($ROW = $cursor-&gt;fetchrow_hashref()) {
 	}
 	my ($k, $v);
 
-	#foreach(@columns) {
-	foreach (keys %$ROW) {
+	foreach (@$ordered_columns) {
 		$k = $_;  $v = $$ROW{$_};
 		if(defined $v) {
 			$v = encodeHTML($v, 1);
