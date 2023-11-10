@@ -10402,6 +10402,8 @@ sub messageBox
     $sendName='Send to user';
   }
 
+  $usergroupID = "" if not defined($usergroupID);
+
   $str .= $query->textfield(-name=>$qp, class=>"expandable ajax replyto$messageID:messageBox:$userID,$showCC,$messageID,$usergroupID", size=>20, maxlength=>1234 );
   $str .= ' ' .$query->submit('message send', $sendName);
   if ($usergroupID)
