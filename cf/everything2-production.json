@@ -394,6 +394,7 @@
         "EngineVersion": "8.0.34",
         "MultiAZ": false,
         "CACertificateIdentifier": "rds-ca-rsa2048-g1",
+        "EnablePerformanceInsights": true,
         "DeletionProtection": true,
         "DBSubnetGroupName": {"Ref": "EverythingDBSubnetGroup"},
         "StorageType": "gp2",
