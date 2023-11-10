@@ -4532,60 +4532,6 @@ sub rearrangenodelets
 
 }
 
-# This needs to move to a template
-#
-sub minilogin
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $op = $query->param("op") || "";
-  $query->delete('passwd');
-
-  my $goto = getId($NODE);
-  $goto = $Everything::CONF->default_node if $goto == $Everything::CONF->default_guest_node;
-  return $query->start_form(-method => "POST", -action => $query->script_name, -name => "loginform", -id => "loginform" ) .
-    $query->hidden("node_id", $goto) . "\n" .
-    $query->hidden("lastnode_id") . "\n" .
-    $query->hidden(-name => "op", value => "login", force => 1) . "\n" .
-    '
-      <table border="0">
-      <tr>
-      <td><strong>Login</strong></td>
-      <td>'. $query->textfield (-name => "user", -size => 10, -maxlength => 20, -tabindex => 1, -autocomplete => "username").'</td>
-      </tr>
-      <tr>
-      <td><strong>Password</strong></td>
-      <td>'.$query->password_field(-name => "passwd", -size => 10, -maxlength => 240, -tabindex => 2, -autocomplete => "current-password") .' </td>
-      </tr>
-      </table>
-      <font size="2">'.
-    $query->checkbox(
-      -name => "expires"
-      , -checked => ""
-      , -value => "+10y"
-      , -label => "remember me"
-      , -tabindex => 3
-    ).
-    ($op eq "login" ? '<p><i>Login incorrect.</i><br>If you are unable to login, try resetting your password. If you don\'t have access to the email attached to your account or are otherwise stuck, email <a href="mailto:accounthelp@everything2.com">accounthelp@everything2.com</a></p></td></tr>' : "")
-."</font>" .
-    $query->submit(
-      -name => "login"
-      , -value => "Login"
-      , -tabindex => 4
-    )."<br />".
-    linkNodeTitle("Reset password[superdoc]|Lost password")."
-    <p><strong>".linkNode($Everything::CONF->create_new_user,'Sign up')."</strong></p>\n" .
-    $query->end_form;
-}
-
-
-
 #displays firmlinks for this e2node or writeup
 #	for admins, also shows widgets to allow deleting of checked items
 # TODO - Template code
