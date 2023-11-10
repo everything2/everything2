@@ -1,5 +1,6 @@
 FROM ubuntu:22.04
 
+ARG ARCH=x64
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 perlmagick mysql-client ruby ruby-dev xz-utils && rm -rf /var/lib/apt/lists/*
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -28,7 +29,7 @@ RUN perl /var/bootstrap/createdeps.pl --depfile=/var/bootstrap/app.json --instal
 RUN rm -rf /var/dlcache/* /var/buildcache/*
 
 # NodeJS / React
-RUN curl -L https://nodejs.org/dist/v18.18.2/node-v18.18.2-linux-x64.tar.xz | xz -cd | tar xv --strip-components=1 -C /usr
+RUN curl -L "https://nodejs.org/dist/v18.18.2/node-v18.18.2-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
 RUN /usr/bin/npm install -g npm@latest
 
 COPY ./tools/write_apache_config.rb /var/bootstrap

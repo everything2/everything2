@@ -384,25 +384,7 @@ sub other_users
 
 sub sign_in
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = "";
-
-  if ($APP->isGuest($USER)) {
-    $str.= htmlcode('minilogin');
-  }else{
-    $str.= "You are logged in.";
-  }
-
-  $str .= qq|<p>Need help? <a href="mailto:accounthelp\@everything2.com">accounthelp\@everything2.com</a></p>|;
-
-  return $str;
+  return "";
 }
 
 sub recommended_reading
