@@ -4481,15 +4481,19 @@ sub optimally_compress_page
   my $best_compression = $this->best_compression_type;
 
   $page = Encode::encode("utf8",$page);
-  if($best_compression eq "br")
+
+  if(defined($best_compression))
   {
-    $page = IO::Compress::Brotli::bro($page);
-  }elsif($best_compression eq "deflate") {
-    my $outpage = undef;
-    $page = IO::Compress::Deflate::deflate(\$page => \$outpage);
-    $page = $outpage;
-  }elsif($best_compression eq "gzip"){
-    $page = Compress::Zlib::memGzip($page);
+    if($best_compression eq "br")
+    {
+      $page = IO::Compress::Brotli::bro($page);
+    }elsif($best_compression eq "deflate") {
+      my $outpage = undef;
+      $page = IO::Compress::Deflate::deflate(\$page => \$outpage);
+      $page = $outpage;
+    }elsif($best_compression eq "gzip"){
+      $page = Compress::Zlib::memGzip($page);
+    }
   }
 
   return $page;
