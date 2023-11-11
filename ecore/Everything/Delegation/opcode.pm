@@ -263,7 +263,6 @@ sub vote
 
     if ( $APP->isUnvotable($N) )
     {
-      htmlcode('logWarning',getId($N).',vote: attempt on disallowed node: '.$val.' from '.$userid);
       next;
     }
 
@@ -293,7 +292,6 @@ sub vote
   if ($numTimes)
   {
     ++$numTimes;
-    htmlcode('logWarning',',vote: multiple ('.$numTimes.') votes ('.$countPlus.'+  '.$countMinus.'-) for same person: '.$prev_uid);
   }
 
   return; 
