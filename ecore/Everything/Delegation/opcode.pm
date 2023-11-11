@@ -1135,7 +1135,7 @@ sub message
     }
 
     return if ($APP->isSuspended($USER,"chat"));
-    return if ($$VARS{infected} == 1);
+    return if (defined($$VARS{infected}) and $$VARS{infected} == 1);
 
     $DB->sqlInsert('message', {msgtext => $message, author_user => getId($USER), for_user => 0, room => $$USER{in_room}});
   }
