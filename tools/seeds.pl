@@ -295,3 +295,13 @@ foreach my $n (@$to_cool)
   print STDERR "Using editor cool from $genericed->{title} on $coolnode->{title}\n";
   $DB->sqlInsert("links",{"from_node" => $coolnode->{node_id}, "to_node" => $genericed->{node_id}, "linktype" => $coollink->{node_id}});
 }
+
+
+# Work around maintenance weirdness
+$Everything::HTML::query = new CGI;
+my $potato = $DB->getNode("potato", "e2node");
+my $nf = $DB->insertNode("Goto potato", "node_forward", $DB->getNode("root","user"), {});
+$nf = $DB->getNode("Goto potato", "node_forward");
+$nf->{doctext} = $potato->{node_id};
+print STDERR "Inserting node_forward '$nf->{title}' to point to '$potato->{title}' ($potato->{node_id})\n";
+$DB->updateNode($nf, -1);

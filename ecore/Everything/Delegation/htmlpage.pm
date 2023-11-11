@@ -1609,6 +1609,7 @@ sub node_forward_display_page
   my $APP = shift;
 
   my $origTitle = $query->param("originalTitle");
+  $origTitle = "" if not defined($origTitle);
   my $circularLink = ($origTitle eq $$NODE{title});
 
   my $targetNodeId = $$NODE{doctext};
