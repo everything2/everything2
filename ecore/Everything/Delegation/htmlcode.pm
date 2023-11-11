@@ -6833,54 +6833,6 @@ sub nodenote
     </form></div>';
 }
 
-sub logWarning
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my @allParams = @_;
-
-  my $nodeID = undef;
-  my $description = undef;
-  my $uid = undef
-  my $UID = getId($USER);
-
-  $nodeID = $allParams[0] || getId($NODE) || 0;
-  $description = $allParams[1] || '';
-  $uid = $UID || 0;
-
-  my $info = '';
-
-  local *createInfoString = sub {
-    $info='(node_id, user_id) = (' . $nodeID . ', ' . $uid . '); description = ' . $description;
-  };
-
-  if( $APP->isAdmin($USER) ) {
-    $info = createInfoString();
-  } else {
-    my $dbh = $DB->getDatabaseHandle();
-    unless($dbh) {
-      $info = createInfoString() . ' Ack! No handle!';
-    } else {
-      my $values = join(',',($nodeID, $uid, $dbh->quote($description)));
-      my $result = $dbh->do('INSERT INTO warnlog (problemnode_id,problemuser_id,description) VALUES('.$values.')');
-
-      if($result) {
-        $info = '#'.$DB->sqlSelect('LAST_INSERT_ID()');
-      } else {
-        $info = createInfoString() . ' Ack! Unable to insert!';
-      }
-    }
-  }
-
-  return '<small>( <span style="color: blue;">Server Warning!</span> <small>(don\'t worry about this)</small> '.$info.' )</small>';
-}
-
 sub admin_toolset
 {
   my $DB = shift;
