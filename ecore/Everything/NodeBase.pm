@@ -100,7 +100,7 @@ sub new
 		$dbh_props->{RaiseError} = 1;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbserv;port=$dbport", $user, $pass, $dbh_props);
+	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbserv;port=$dbport;mysql_ssl=1;mysql_get_server_pubkey=1", $user, $pass, $dbh_props);
 	$this->{dbh} = $dbh;
 
 	$this->{cache} = new Everything::NodeCache($this); 
