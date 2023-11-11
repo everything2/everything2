@@ -5923,7 +5923,6 @@ sub writeupcools
         updateNode( $N , -1 ) ;
       }
 
-      $coolers .= htmlcode('logWarning',$$N{ node_id } , 'writeupcools: count mismatch: $nc='.$nc.' and query='.$count.($N?' (fixed)':'(not fixed)'));
       $nc=$count;
     }
 
@@ -5947,12 +5946,6 @@ sub writeupcools
 
     $coolers .= join( ', ' , @people ) ;
     $coolers =~ s/((?:.*?,){5})/$1<br>/g ;
-
-    unless($count==$nc)
-    {
-      # log wrong count; do NOT fix: the fix was attempted before, but that didn't work for some strange reason
-      $coolers .= htmlcode('logWarning',$$N{ node_id } , 'writeupcools: STILL a count mismatch: $nc='.$nc.' and $count='.$count.' and $$N{cooled}='.$$N{cooled});
-    }
   }
 
   $query->param( 'showwidget' , 'showCs'.$$N{ node_id } ) if $query->param('op') eq 'cool' and $query->param('cool_id') == $$N{ node_id } ;
@@ -6840,21 +6833,6 @@ sub nodenote
     </form></div>';
 }
 
-# call this when there is something strange happening, but it isn't
-#  a full blown Server Error!
-#
-# this logs some information to the warnlog table and displays a little
-#  warning message to the user ... unless it is N-Wing, then it just shows the
-#  message
-#
-# parameters:
-#	node_id of error (if omitted, uses current node_id) (useful for nodegroups)
-#	short description of problem (may not contain commas) (may be omitted, but logging the warning isn't very useful then)
-#
-# sample uses:
-#	htmlcode('logWarning',',I got a weird number. It was: '.$num);
-#	htmlcode('logWarning',$$WRITEUP{node_id}.',saw:'.$s.' expected:'.$e);
-#
 sub logWarning
 {
   my $DB = shift;
