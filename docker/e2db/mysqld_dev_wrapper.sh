@@ -12,7 +12,7 @@ then
   echo "development" > /etc/everything/override_configuration
   echo "CREATE DATABASE everything DEFAULT CHARACTER SET=utf8 COLLATE utf8_unicode_ci;" | mysql --user=root
   echo "CREATE USER 'everyuser'@'%'; " | mysql --user=root
-  echo "GRANT ALL ON everything.* to 'everyuser'@'%';" | mysql --user=root
+  echo "GRANT ALL ON *.* to 'everyuser'@'%';" | mysql --user=root
   cp /var/everything/etc/development.json /var/everything/etc/development.json.old
   cp /var/everything/etc/docker-mysql-development.json /var/everything/etc/development.json
   /var/everything/tools/qareload.pl
