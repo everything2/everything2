@@ -217,24 +217,6 @@ $DB->sqlInsert("nodenote", {"nodenote_nodeid" => $oldneglect->{node_id}, "timest
 $DB->sqlInsert("nodenote", {"nodenote_nodeid" => $oldneglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-29*24*60*60),"notetext" => "looks good","noter_user" => $DB->getNode("root","user")->{node_id}});
 
 
-my $cools = { "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)"]};
-
-foreach my $chinger (keys %$cools)
-{
-  my $chinger_node = getNode($chinger, "user");
-  foreach my $writeup (@{$cools->{$chinger}})
-  {
-    my $writeup_node = getNode($writeup, "writeup");
-    unless($writeup_node)
-    {
-      print STDERR "ERROR: Could not get writeup node '$writeup'"; 
-      next;
-    }
-    $writeup_node->{cooled}++;
-    updateNode($writeup_node, -1);
-    $DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $writeup_node->{node_id}, cooledby_user => $chinger_node->{node_id}});
-  }
-}
 
 # Create a document so we can create a new item
 my $frontpage_usergroup = $DB->getNode("News", "usergroup");
@@ -297,11 +279,85 @@ foreach my $n (@$to_cool)
 }
 
 
+my $thing_writeuptype = $DB->getNode("thing","writeuptype");
+my $normaluser1 = $DB->getNode("normaluser1","user");
+my $root = $DB->getNode("root","user");
+
+## Insert a node_forward
 # Work around maintenance weirdness
+print STDERR "Inserting a node_foward";
 $Everything::HTML::query = new CGI;
 my $potato = $DB->getNode("potato", "e2node");
-my $nf = $DB->insertNode("Goto potato", "node_forward", $DB->getNode("root","user"), {});
+my $nf = $DB->insertNode("Goto potato", "node_forward", $root, {});
 $nf = $DB->getNode("Goto potato", "node_forward");
 $nf->{doctext} = $potato->{node_id};
-print STDERR "Inserting node_forward '$nf->{title}' to point to '$potato->{title}' ($potato->{node_id})\n";
 $DB->updateNode($nf, -1);
+print STDERR "Inserted node_forward '$nf->{title}' to point to '$potato->{title}' ($potato->{node_id})\n";
+
+$Everything::HTML::query = undef;
+
+
+## Create a writeup with a broken writeuptype
+print STDERR "Inserting a node with a broken writeuptype\n";
+my $broken_type_e2node = $DB->insertNode("writeup with a broken type", "e2node", $root);
+$broken_type_e2node = $DB->getNodeById($broken_type_e2node);
+
+my $broken_type_writeup = $DB->getNodeById($DB->insertNode("writeup with a broken type (thing)", "writeup", $normaluser1));
+$broken_type_writeup->{parent_e2node} = $broken_type_e2node->{node_id};
+$broken_type_writeup->{wrtype_writeuptype} = 9999;
+$DB->updateNode($broken_type_writeup, -1);
+$DB->insertIntoNodegroup($broken_type_e2node,-1,$broken_type_writeup);
+print STDERR "Inserted writeup with broken type: '$broken_type_writeup->{title}' ($broken_type_writeup->{node_id})\n";
+
+my $no_parent_writeup = $DB->getNodeById($DB->insertNode("writeup with no parent (thing)", "writeup", $normaluser1));
+$no_parent_writeup->{doctext} = "This writeup is an [orphan]";
+$no_parent_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
+$DB->updateNode($no_parent_writeup, -1);
+print STDERR "Inserted writeup with no parent: '$no_parent_writeup->{title}'\n";
+
+my $broken_nodegroup_e2node = $DB->getNodeById($DB->insertNode("writeup with a broken nodegroup", "e2node", $root));
+my $broken_nodegroup_writeup = $DB->getNodeById($DB->insertNode("writeup with a broken nodegroup (thing)", "writeup", $normaluser1));
+$broken_nodegroup_writeup->{doctext} = "This is a node that doesn't have the proper [group membership] in [nodegroup], but it has an e2node parent";
+$broken_nodegroup_writeup->{parent_e2node} = $broken_nodegroup_e2node->{node_id};
+$broken_nodegroup_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
+print STDERR "Inserted writeup with no nodegroup registration: '$broken_nodegroup_writeup->{title}'\n";
+
+my $no_author_e2node = $DB->getNodeById($DB->insertNode("writeup with no owner","e2node",$root));
+my $no_author_writeup = $DB->getNodeById($DB->insertNode("no author writeup (thing)", "writeup", $normaluser1));
+$no_author_writeup->{author_user} = 0;
+$no_author_writeup->{parent_e2node} = $no_author_e2node->{node_id};
+$no_author_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
+$no_author_writeup->{doctext} = "This writeup has no author to test broken node handling!";
+$DB->insertIntoNodegroup($no_author_e2node, -1, $no_author_writeup);
+$DB->updateNode($no_author_writeup, -1);
+print STDERR "Inserted writeup with no author: '$no_author_writeup->{title}'\n";
+
+my $bad_cool_e2node = $DB->getNodeById($DB->insertNode("writeup with bad cool info", "e2node", $root));
+my $bad_cool_writeup = $DB->getNodeById($DB->insertNode("writeup with bad cool info (thing)", "writeup", $normaluser1));
+$bad_cool_writeup->{parent_e2node} = $bad_cool_e2node->{node_id};
+$bad_cool_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
+$bad_cool_writeup->{doctext} = "This writeup was [Cool Archive|cooled] by a [ghost]";
+$bad_cool_writeup->{cooled} = 1;
+$DB->insertIntoNodegroup($bad_cool_e2node, -1, $bad_cool_writeup);
+$DB->updateNode($bad_cool_writeup, -1);
+$DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $bad_cool_writeup->{node_id}, cooledby_user => 9999});
+print STDERR "Inserted writeup with bad cooler: '$bad_cool_writeup->{title}'\n";
+
+my $cools = { "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)", "writeup with a broken type (thing)","writeup with no parent (thing)", "writeup with a broken nodegroup (thing)", "no author writeup (thing)"]};
+
+foreach my $chinger (keys %$cools)
+{
+  my $chinger_node = getNode($chinger, "user");
+  foreach my $writeup (@{$cools->{$chinger}})
+  {
+    my $writeup_node = getNode($writeup, "writeup");
+    unless($writeup_node)
+    {
+      print STDERR "ERROR: Could not get writeup node '$writeup'"; 
+      next;
+    }
+    $writeup_node->{cooled}++;
+    updateNode($writeup_node, -1);
+    $DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $writeup_node->{node_id}, cooledby_user => $chinger_node->{node_id}});
+  }
+}

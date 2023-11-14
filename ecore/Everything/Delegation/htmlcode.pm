@@ -1280,7 +1280,7 @@ sub show_content
 
   $infofunctions{ type } ||= sub {
     my $type = $_[0]{type_title} || getNodeById($_[0]{wrtype_writeuptype}) || $_[0]{type};
-    $type = $type -> {title} if(UNIVERSAL::isa($type,"HASH"));
+    $type = $type->{title} if(UNIVERSAL::isa($type,"HASH"));
     if ($type eq 'draft'){
       my $status = getNodeById($_[0]{publication_status});
       $type = ($status ? $$status{title} : '(bad status)').' draft';
@@ -1309,7 +1309,9 @@ sub show_content
   my $xml = 0;
   $xml = '1' if $instructions =~ s/^xml\b\s*// ;
 
-  my ($wrapTag, $wrapClass, $wrapAtts) = ("", undef, undef); ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
+  my ($wrapTag, $wrapClass, $wrapAtts) = ("", undef, undef);
+  ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
+
   $wrapAtts .= $1 if $wrapTag =~ s/(\s+.*)//;
   $wrapAtts ||= "";
 
