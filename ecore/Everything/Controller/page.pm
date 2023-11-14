@@ -1,5 +1,5 @@
 package Everything::Controller::page;
-  
+
 use Moose;
 extends 'Everything::Controller';
 
