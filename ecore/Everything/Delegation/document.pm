@@ -1480,7 +1480,6 @@ sub cool_archive
   $str .= htmlcode("openform");
 
   my $isEDev = $APP->isDeveloper($USER);
-  my $isDevServer = 0;
   my $orderby = $query->param('orderby');
   $orderby = "" if not defined($orderby);
 
@@ -1599,33 +1598,18 @@ sub cool_archive
  
   return encodeHTML($coolQuery) unless $csr;
 
-  if ($isEDev and $isDevServer)
-  {
-    my $total = $csr->rows;
-    $str .= "<h3>Query Debug</h3>";
-    $str .= "<pre>" . encodeHTML($coolQuery) . "</pre>" if $isEDev;
-    $str .= "orderby: " . encodeHTML($orderby) . "<br>"
-      . "limit: " . encodeHTML($limit) . "<br>"
-      . "offset: " . encodeHTML($offset) . "<br>"
-      . "<strong>total: " . encodeHTML($total) . "</strong><br>";
-  }
-
   $str.='<table width="100%" cellpadding="0" cellspacing="0">';
   $str.='<tr>';
   $str.='<th>Writeup</th><th>Written by</th><th>Cooled By</th></tr>';
 
   my $count = 0;
 
-  $str .= htmlcode('show content', $csr,
-    '<tr class="&oddrow">"<td>",parenttitle, type, "</td><td>", author, "</td><td>", cooledby, "</td>"',
-    cansee => sub{
-      return 1 unless ++$count > $pageSize;
-      0;
-    },
-    cooledby => sub{
-      linkNode($_[0]->{cooledby_user});
-    }
-  );
+  my $rownum = 1;
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    $str .= $APP->cool_archive_row($row, ($rownum % 2));
+    $rownum++;
+  }
 
   $csr->finish;
 

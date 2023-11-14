@@ -4717,4 +4717,71 @@ sub buildNodeInfoStructure
   return $e2;
 }
 
+sub author_link
+{
+  my ($this, $authornode) = @_;
+
+  return $this->linkNode($authornode, undef, {-class => 'author'});
+}
+
+sub title_link
+{
+  my ($this, $node) = @_;
+
+  return $this->linkNode($node, undef, {-class => 'title'});
+}
+
+sub parenttitle_link
+{
+  my ($this, $node, $author) = @_;
+
+    # Not getting a real node here, likely a hash of values
+    my $parent = $this->{db}->getNodeById($node->{parent_e2node},'light'); 
+
+    if(not defined($parent))
+    {
+      return qq|<span class="title noparent">(No parent node) |.$this->title_link($node).qq|</span>|;
+    }
+
+    return $this->linkNode($parent, undef, {-class => 'title', '#' => $author->{title}, author_id => $author->{node_id}});
+}
+
+sub writeuptype_link
+{
+  my ($this, $node) = @_;
+
+  my $writeuptype = $this->{db}->getNodeById($node->{wrtype_writeuptype});
+  my $writeuptypetitle = "broken type";
+
+  if(defined($writeuptype))
+  {
+    $writeuptypetitle = $writeuptype->{title};
+  }
+
+  my $writeuplink = $this->linkNode($node, $writeuptypetitle);
+
+  return qq|<span class="type">($writeuplink)</span>|;
+}
+
+sub cool_archive_row
+{
+  my ($this, $row, $oddrow) = @_;
+
+  my $rowclass = "contentinfo";
+  $rowclass .= " oddrow" if $oddrow;
+
+  my $rownode = $this->{db}->getNodeById($row->{node_id});
+
+  my $authornode = $this->{db}->getNodeById($row->{author_user});
+  my $authorlink = $this->author_link($authornode);
+
+
+  my $cooledby = $this->linkNode($row->{cooledby_user});
+  my $parenttitle = $this->parenttitle_link($row, $authornode);
+  my $wutypelink = $this->writeuptype_link($rownode);
+
+  return qq|<tr class="$rowclass"><td>$parenttitle $wutypelink</td><td>$authorlink</td><td>$cooledby</td></tr>|;
+
+}
+
 1;
