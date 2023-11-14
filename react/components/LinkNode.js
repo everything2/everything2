@@ -12,7 +12,7 @@ const LinkNode = ({type,title,id,display,className,author,anchor,params}) => {
     }
 
     // Double-encode to work around E2 routing bugs
-    title = title.replace(/[\&@\+\/\;]/g, (match) => {return encodeURIComponent(encodeURIComponent(match))});
+    title = title.replace(/[\&@\+\/\;\?]/g, (match) => {return encodeURIComponent(encodeURIComponent(match))});
   }
 
   if(author != undefined)
