@@ -5263,4 +5263,88 @@ sub topic_archive
 
 }
 
+sub writeups_by_type
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  ####################################################################
+  # get all the URL parameters
+
+  my $wuType = abs int($query->param("wutype"));
+
+  my $count = $query->param("count") || 50;
+  $count = abs int($count);
+
+  my $page = abs int($query->param("page"));
+
+  ####################################################################
+  # Form with list of writeup types and number to show
+
+  my (@WRTYPE) = getNodeWhere({type_nodetype => getId(getType('writeuptype'))});
+  my %items;
+  map $items{$$_{node_id}} = $$_{title}, @WRTYPE;
+
+  my @idlist = sort { $items{$a} cmp $items{$b} } keys %items;
+  unshift @idlist, 0;
+  $items{0} = 'All';
+
+  my $str = htmlcode('openform')
+	  .qq'<fieldset><legend>Choose...</legend>
+	  <input type="hidden" name="page" value="$page">
+	  <label><strong>Select Writeup Type:</strong>'
+	  .$query->popup_menu('wutype', \@idlist, 0, \%items)
+	  .'</label>
+	  <label> &nbsp; <strong>Number of writeups to display:</strong>'
+	  .$query->popup_menu('count', [10, 25, 50, 75, 100, 150, 200, 250, 500], $count)
+	  .'</label> &nbsp; '
+	  .$query -> submit('Get Writeups')
+	  .'</fieldset></form>';
+
+  ####################################################################
+  # get writeups
+  #
+
+  my $where = "wrtype_writeuptype=$wuType" if $wuType;
+  my $wus = $DB -> sqlSelectMany('
+ 	  writeup_id, parent_e2node, publishtime,
+	  node.author_user,
+	  type.title AS type_title','
+	  writeup
+	  JOIN node ON writeup_id = node.node_id
+	  JOIN node type ON type.node_id = writeup.wrtype_writeuptype',
+	  $where,'
+	  ORDER BY publishtime DESC LIMIT '.($page * $count).','.$count);
+
+  ####################################################################
+  # display
+  #
+
+  $str .= '<table style="margin-left: auto; margin-right: auto;">
+	  <tr>
+	  <th>Title</th>
+	  <th>Author</th>
+	  <th>Published</th>
+	  </tr>'
+	  .htmlcode('show content', $wus, '<tr class="&oddrow">"<td>", parenttitle, type,
+		  "</td><td>", author, "</td><td align=\'right\'><small>", listdate, "</small></td>"')
+	  .'</table>';
+
+  $str .= '<p class="morelink">';
+  $str .= linkNode($NODE, '&lt&lt Prev',
+	  {wutype => $wuType, page => $page-1, count => $count}).' | ' if $page;
+
+  $str .= '<b>Page '.($page+1).'</b> | '
+	  .linkNode($NODE, 'Next &gt;&gt;',
+	  	{wutype => $wuType, page => $page+1, count => $count})
+	  .'</p>';
+
+  return $str;
+}
+
 1;
