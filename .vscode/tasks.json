@@ -1,0 +1,14 @@
+{
+        "version": "2.0.0",
+        "tasks": [
+                {
+                        "type": "shell",
+                        "command": "./docker/devbuild.sh",
+                        "group": {
+                                "kind": "build",
+                                "isDefault": true
+                        },
+                        "label": "Rebuild web app"
+                }
+        ]
+}
