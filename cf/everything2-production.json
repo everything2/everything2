@@ -593,6 +593,24 @@
         }
       }
     },
+    "E2AppECRRegistryX64": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "RepositoryName": "everything2/e2app-x64",
+        "LifecyclePolicy": {
+          "LifecyclePolicyText": "{\"rules\": [{\"rulePriority\": 1, \"description\": \"Expire images older than 3 days\", \"selection\": {\"tagStatus\": \"untagged\", \"countType\": \"sinceImagePushed\",\"countUnit\": \"days\", \"countNumber\": 3 }, \"action\": {\"type\": \"expire\"}}]}"
+        }
+      }
+    },
+    "E2AppECRRegistryARM": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "RepositoryName": "everything2/e2app-arm",
+        "LifecyclePolicy": {
+          "LifecyclePolicyText": "{\"rules\": [{\"rulePriority\": 1, \"description\": \"Expire images older than 3 days\", \"selection\": {\"tagStatus\": \"untagged\", \"countType\": \"sinceImagePushed\",\"countUnit\": \"days\", \"countNumber\": 3 }, \"action\": {\"type\": \"expire\"}}]}"
+        }
+      }
+    },
     "CodeBuildUpdateApplicationECRRegistry": {
       "Type": "AWS::IAM::ManagedPolicy",
       "DeletionPolicy": "Retain",
@@ -684,6 +702,10 @@
             {
               "Name": "IMAGE_TAG",
               "Value": "latest"
+            },
+            {
+              "Name": "ECR_REPOSITORY_NAME",
+              "Value": {"Ref": "E2AppECRRegistry"}
             },
             {
               "Name": "BUILDCACHE_BUCKET",
