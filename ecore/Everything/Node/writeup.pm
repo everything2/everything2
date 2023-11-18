@@ -122,7 +122,14 @@ sub writeuptype
 {
   my ($self) = @_;
 
-  return $self->APP->node_by_id($self->NODEDATA->{wrtype_writeuptype})->title;
+  if(defined($self->NODEDATA->{wrtype_writeuptype}))
+  {
+    if(my $writeuptype = $self->APP->node_by_id($self->NODEDATA->{wrtype_writeuptype}))
+    {
+      return $writeuptype->title;
+    }
+  }
+  return;
 }
 
 sub publishtime
@@ -170,7 +177,10 @@ sub new_writeups_reference
 
   foreach my $key (qw|author parent|)
   {
-    $outdata->{$key} = $self->$key->json_reference;
+    unless(UNIVERSAL::isa($self->$key, "Everything::Node::null"))
+    {
+      $outdata->{$key} = $self->$key->json_reference;
+    }
   }
 
   foreach my $key (qw|title notnew node_id is_junk is_log writeuptype|)

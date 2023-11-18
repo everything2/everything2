@@ -2850,7 +2850,7 @@ sub existsInGroupCache {
 }
 
 sub nodegroupRankColumn {
-  "nodegroup_rank"
+  return "nodegroup_rank"
 }
 
 #############################################################################

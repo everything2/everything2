@@ -95,7 +95,7 @@ sub BEGIN
 		die $FACTORY->{lc($plugin)}->error_string if $FACTORY->{lc($plugin)}->error_string;
 	}
 
-	$ENV{'PAWS_SILENCE_UNSTABLE_WARNINGS'} = 1;
+	local $ENV{'PAWS_SILENCE_UNSTABLE_WARNINGS'} = 1;
 }
 
 use vars qw($DB);
@@ -628,8 +628,8 @@ sub initEverything
 	$DB->closeTransaction();
 	$APP ||= Everything::Application->new($DB, $CONF);
 
-	$SIG{__WARN__} = sub { my $warning = shift; $APP->global_warn_handler($warning); };
-	$SIG{__DIE__} = sub { $APP->global_die_handler("Caught DIE handler"); };
+	local $SIG{__WARN__} = sub { my $warning = shift; $APP->global_warn_handler($warning); };
+	local $SIG{__DIE__} = sub { $APP->global_die_handler("Caught DIE handler"); };
 	return;
 }
 

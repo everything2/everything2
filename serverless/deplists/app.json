@@ -848,7 +848,7 @@
     "module": "DateTime::Format::W3CDTF"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/R/RU/RURBAN/B-Keywords-1.21.tar.gz",
+    "file": "https://cpan.metacpan.org/authors/id/R/RU/RURBAN/B-Keywords-1.26.tar.gz",
     "module": "B::Keywords"
   },
   {
@@ -882,7 +882,7 @@
     "dependson": ["Hook::LexWrap"]
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/M/MI/MITHALDU/PPI-1.270.tar.gz",
+    "file": "https://cpan.metacpan.org/authors/id/M/MI/MITHALDU/PPI-1.277.tar.gz",
     "module": "PPI",
     "dependson": ["Task::Weaken","Test::Object","Test::SubCalls"]
   },
@@ -919,8 +919,17 @@
     "module": "String::Format"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/P/PE/PETDANCE/Perl-Critic-1.138.tar.gz",
-    "module": "Perl::Critic"
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/List-SomeUtils-0.59.tar.gz",
+    "module": "List::SomeUtils"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DB/DBOOK/PPIx-Utils-0.003.tar.gz",
+    "module": "PPIx::Utils"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PE/PETDANCE/Perl-Critic-1.152.tar.gz",
+    "module": "Perl::Critic",
+    "dependson": ["B::Keywords","List::SomeUtils","PPI","PPIx::Utils"]
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/I/IL/ILMARI/Class-Unload-0.11.tar.gz",
