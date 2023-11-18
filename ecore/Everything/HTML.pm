@@ -232,7 +232,7 @@ sub htmlErrorUsers
 {
 	my ($code, $err, $warn) = @_;
 	my $errorId = int(rand(9999999));  # just generate a random error id.
-	
+
 	my $str = "Server Error (Error Id $errorId)!";
 	$str = "<font color=\"#CC0000\"><b>$str</b></font>";
 	$str .= '<p id="servererror">An error has occured.  It has been logged. Apologies for the inconvenience. If it persists, contact an administrator</p>';
@@ -321,7 +321,7 @@ sub htmlErrorGods
 	$str .= "\n\n<b>Call Stack</b>:\n";
 	$str .= (join "\n", reverse $APP->getCallStack($ignoreMe));
 	$str .= "\n<b>End Call Stack</b>\n";
-	
+
 	$str.= "</pre></dd>";
 	$str.="</dl>\n";
 	return $str;
@@ -397,7 +397,7 @@ sub getPageForType
 	my $PAGE;
 	my $ORIGTYPE = int $$TYPE{node_id};
 	my $PAGETYPE;
-	
+
 	$PAGETYPE = getType("htmlpage");
 	$PAGETYPE or die "HTML PAGES NOT LOADED!";
 
@@ -623,7 +623,7 @@ sub evalCode {
 	my $str = eval $code;
 
  	local $SIG{__WARN__} = sub {};
-	$str .= htmlFormatErr ($code, $@, $warnbuf) if ($@ or $warnbuf); 
+	$str .= htmlFormatErr ($code, $@, $warnbuf) if ($@ or $warnbuf);
 	local $@ = undef;
 	return $str;
 }
@@ -693,7 +693,7 @@ sub embedCode {
 
 	$block =~ /^(\W)/;
 	my $char = $1;
-	
+
 	if ($char eq '"') {
 		$block = evalCode ($block . ';', @_);
 	} elsif ($char eq '{') {
@@ -801,7 +801,7 @@ sub displayPage
 	} elsif ($$NODE{type}{title} eq 'stylesheet') {
 		$lastnode = -1;
 	}
-	
+
 
 	my $type = $NODE->{type}->{title};
 
@@ -1075,7 +1075,7 @@ sub printHeader
         $extras->{'X-Frame-Options'} = "sameorigin";
 
 	if($ENV{SCRIPT_NAME}) {
-		$query->header(-type=> $datatype, 
+		$query->header(-type=> $datatype,
 			       -content_length => $len,
 			       %HEADER_PARAMS,%$extras);
 	}
@@ -1304,7 +1304,6 @@ sub opNew
 sub execOpCode
 {
   my $op = $query->param('op');
-  my ($OPCODE, $opCodeCode);
   my $handled = 0;
   
   return 0 unless(defined $op && $op ne "");
@@ -1392,7 +1391,7 @@ sub mod_perlInit
 
 	# Execute any operations that we may have
 	execOpCode();
-	
+
 	# Do the work.
 	handleUserRequest();
 

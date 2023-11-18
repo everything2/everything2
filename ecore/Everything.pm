@@ -628,8 +628,9 @@ sub initEverything
 	$DB->closeTransaction();
 	$APP ||= Everything::Application->new($DB, $CONF);
 
-	local $SIG{__WARN__} = sub { my $warning = shift; $APP->global_warn_handler($warning); };
-	local $SIG{__DIE__} = sub { $APP->global_die_handler("Caught DIE handler"); };
+    ## no critic (RequireLocalizedPunctuationVars)
+	$SIG{__WARN__} = sub { my $warning = shift; $APP->global_warn_handler($warning); };
+	$SIG{__DIE__} = sub { $APP->global_die_handler("Caught DIE handler"); };
 	return;
 }
 
