@@ -4651,7 +4651,7 @@ sub page_of_cool
     next if $count < $next;
     last if $count > $next+$increment;
     my $csr = $DB->{dbh}->prepare("select * from links where from_node=".getId($_)." and linktype=$clink");
-    my $str .= '<tr class="';
+    my $str = '<tr class="';
     $str .= ( int($count) & 1 ) ? 'oddrow' : 'evenrow';
     $str .= '">';
     $csr->execute;
@@ -5311,8 +5311,8 @@ sub writeups_by_type
   #
 
   my $where = "wrtype_writeuptype=$wuType" if $wuType;
-  my $wus = $DB -> sqlSelectMany('
- 	  writeup_id, parent_e2node, publishtime,
+  my $wus = $DB->sqlSelectMany('
+ 	  node.node_id, writeup_id, parent_e2node, publishtime,
 	  node.author_user,
 	  type.title AS type_title','
 	  writeup
@@ -5330,10 +5330,16 @@ sub writeups_by_type
 	  <th>Title</th>
 	  <th>Author</th>
 	  <th>Published</th>
-	  </tr>'
-	  .htmlcode('show content', $wus, '<tr class="&oddrow">"<td>", parenttitle, type,
-		  "</td><td>", author, "</td><td align=\'right\'><small>", listdate, "</small></td>"')
-	  .'</table>';
+	  </tr>';
+
+  my $oddrow = 1;
+  while(my $row = $wus->fetchrow_hashref)
+  {
+	  $str .= $APP->writeups_by_type_row($row, $VARS, ($oddrow % 1 == 0));
+    $oddrow++;
+  }
+
+  $str .= "</table>";
 
   $str .= '<p class="morelink">';
   $str .= linkNode($NODE, '&lt&lt Prev',

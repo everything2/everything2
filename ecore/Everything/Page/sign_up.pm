@@ -103,7 +103,7 @@ sub display
     $prompt = "Please fill in all fields";
   }
 
-  if($prompt eq '' and !$self->has_valid_formsignature($REQUEST))
+  if($prompt eq '' and not $self->has_valid_formsignature($REQUEST))
   {
     $prompt = "Form does not have valid signature, please resubmit";
   }

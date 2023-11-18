@@ -36,6 +36,10 @@ use Encode;
 # For updateNewWriteups
 use Everything::DataStash::newwriteups;
 
+# For parse_timestamp
+use Time::Local;
+
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -1392,32 +1396,6 @@ sub node2mail {
   		'Source' => $from
 	);
 	return $response->MessageId;
-}
-
-sub stripNodelet {
-	my ($this, $user, $nodelet) = @_;
-
-	my $nodelet_id = undef;
-	if(ref $nodelet ne "") 
-	{
-		$nodelet_id = $nodelet->{node_id};
-	}else{
-		$nodelet_id = $nodelet;
-	}
-
-	my $vars = Everything::getVars($user);
-	my $nodeletstring = $vars->{nodelets};
-	return unless defined($nodeletstring) and $nodeletstring =~ /\S/;
-	my $nodelets = [split(",",$nodeletstring)];
-	$nodelets = [grep {$_ != $nodelet_id} @$nodelets];
-	$nodeletstring = join(",",@$nodelets);
-	if($nodeletstring ne $vars->{nodelets})
-	{
-		$vars->{nodelets} = $nodeletstring;
-		Everything::setVars($user, $vars);
-		$this->{db}->updateNode($user, -1);
-		return $nodelet_id;
-	}
 }
 
 # Replaces the htmlcode of the same name
@@ -4225,14 +4203,14 @@ sub global_warn_handler
 {
   my ($this, $warning) = @_;
   $this->devLog("Sent warning: $warning");
-  $this->send_cloudwatch_event("warning", $warning || "");
+  return $this->send_cloudwatch_event("warning", $warning || "");
 }
 
 sub global_die_handler
 {
   my ($this, $error) = @_;
   $this->devLog("Sent error: $error");
-  $this->send_cloudwatch_event("error", $error || "");
+  return $this->send_cloudwatch_event("error", $error || "");
 }
 
 sub send_cloudwatch_event
@@ -4271,6 +4249,7 @@ sub send_cloudwatch_event
     }]);
     return $resp;
   }
+  return;
 }
 
 sub chatterbox_cleanup
@@ -4305,7 +4284,7 @@ sub level_factor_recalculate
   $$hrv{mean} =sprintf("%.4f", $this->{db}->sqlSelect("AVG(merit)", "user", "numwriteups>=25"));
   $$hrv{stddev} = sprintf("%.4f",$this->{db}->sqlSelect("STD(merit)","user", "numwriteups>=25"));
   Everything::setVars($hrstats, $hrv);
-  $this->{db}->updateNode($hrstats, -1);
+  return $this->{db}->updateNode($hrstats, -1);
 }
 
 sub global_iqm_recalculate
@@ -4370,7 +4349,7 @@ sub global_iqm_recalculate
     $this->{db}->updateNode($uid, -1);
   }
 
-  $this->level_factor_recalculate;
+  return $this->level_factor_recalculate;
 }
 
 sub clean_old_rooms
@@ -4388,6 +4367,8 @@ sub clean_old_rooms
 
     $this->{db}->nukeNode($N, -1);
   }
+
+  return;
 }
 
 sub process_reaper_targets
@@ -4594,7 +4575,7 @@ sub filtered_newwriteups
   {
     my $wu = $writeupsdata->[$count];
 
-    if($iseditor or (!$wu->{notnew} and !$wu->{is_junk}))
+    if($iseditor or (not $wu->{notnew} and not $wu->{is_junk}))
     {
       foreach my $key (qw(is_junk notnew is_log))
       {
@@ -4625,7 +4606,7 @@ sub updateNewWriteups
   my ($this) = @_;
 
   my $datastash = Everything::DataStash::newwriteups->new(APP => $this, CONF => $this->{conf}, DB => $this->{db});
-  $datastash->generate();
+  return $datastash->generate();
 }
 
 sub buildNodeInfoStructure
@@ -4782,6 +4763,162 @@ sub cool_archive_row
 
   return qq|<tr class="$rowclass"><td>$parenttitle $wutypelink</td><td>$authorlink</td><td>$cooledby</td></tr>|;
 
+}
+
+# localTimeUse
+sub timestamp_preferences
+{
+  my ($this, $vars, $other_prefs) = @_;
+  
+  my $translate = {
+    "localTimeUse" => "use_local_time",
+    "localTimeOffset" => "local_time_offset",
+    "localTimeDST" => "local_time_dst",
+    "localTime12hr" => "local_time_12hr"};
+  
+  my $flags = {};
+  foreach my $pref (@$other_prefs)
+  {
+    $flags->{$pref} = 1;
+  }
+
+  foreach my $key (%$translate)
+  {
+    $flags->{$translate->{$key}} = $vars->{$key} if defined($vars->{$key});
+  }
+
+  return $flags;
+}
+
+
+#	 hide_time / 1 / hide time (only show the date)
+#	 hide_date / 2 / hide date (only show the time)
+#	 hide_day_of_week / 4 / hide day of week (only useful if showing date)
+#	 show_utc / 8 / show 'UTC' (recommended to show only if also showing time)
+#	 show_full_dayname / 16 / show full name of day of week (only useful if showing date)
+#	 show_full_month / 32 / show full name of month (only useful if showing date)
+#  ignore_local / 64 / ignores user's local time
+#	 compact / 128 / compact (yyyy-mm-dd@hh:mm)
+#	 hide_seconds / 256 / hide seconds
+#	 leading_zeroes / 512 / zero on single-digit hours
+#  use_local_time ($VARS->{localTimeUse})
+#  local_time_offset ($VARS->{localTimeOffset})
+#  local_time_dst ($VARS->{localTimeDST})
+#  local_time_12hr ($VARS->{localTime12hr})
+
+sub parse_timestamp
+{
+  my ($this, $timestamp, $flags) = @_;
+
+  my ($date, $time, $yy, $mm, $dd, $hrs, $min, $sec) = (undef,undef,undef,undef,undef,undef,undef,undef);
+ 
+  if($timestamp =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/)
+  {
+    ($yy, $mm, $dd, $hrs, $min, $sec) = ($1, $2, $3, $4, $5, $6);
+    #let's hear it for fudge:
+    $mm-=1;
+  }elsif($timestamp =~ / /)
+  {
+    ($date, $time) = split / /,$timestamp;
+
+    ($hrs, $min, $sec) = split /:/, $time;
+    ($yy, $mm, $dd) = split /-/, $date;
+    $mm-=1;
+  }
+
+  # I repeat: let's hear it for fudge!
+  return "<em>never</em>" unless (int($yy)>0 and int($mm)>-1 and int($dd)>0);
+
+  my $epoch_secs = timelocal( $sec, $min, $hrs, $dd, $mm, $yy);
+
+  if(!($flags->{ignore_local}) && $flags->{use_local_time}) {
+    $epoch_secs += $flags->{local_time_offset} if exists $flags->{local_time_offset};
+    #add 1 hour = 60 min * 60 s/min = 3600 seconds if daylight savings
+    $epoch_secs += 3600 if $flags->{local_time_dst};	#maybe later, only add time if also in the time period for that - but is it true that some places have different daylight savings time stuff?
+  }
+
+  my $wday = undef;
+  ($sec, $min, $hrs, $dd, $mm, $yy, $wday, undef, undef) = localtime($epoch_secs);
+  $yy += 1900;	#stupid Perl
+  ++$mm;
+
+  my $niceDate='';
+  if(!($flags->{hide_date})) {	#show date
+    if ($flags->{compact}) { # compact
+      $mm = substr('0'.$mm,-2);
+      $dd = substr('0'.$dd,-2);
+      $niceDate .= $yy. '-' .$mm. '-' .$dd;
+    } else {
+      if(!($flags->{hide_day_of_week}))
+      {	
+        #4=hide week day, 0=show week day
+        $niceDate .= ($flags->{show_day_of_week})	#16=full day name, 0=short name
+          ? (qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday))[$wday].', '
+          : (qw(Sun Mon Tue Wed Thu Fri Sat))[$wday].' ';
+      }
+
+      my $fullMonthName = $flags->{show_full_month};
+      $niceDate .= ($fullMonthName
+        ? (qw(January February March April May June July August September October November December))
+        : (qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)))[$mm-1];
+
+      $dd='0'.$dd if length($dd)==1 && !$fullMonthName;
+      $niceDate .= ' ' . $dd;
+      $niceDate .= ',' if $fullMonthName;
+      $niceDate .= ' '.$yy;
+    }
+  }
+
+  if(!($flags->{hide_time})) {	#show time
+    if ($flags->{compact}) { # if compact
+      $niceDate .= '@' if length($niceDate);
+    } else {
+      $niceDate .= ' at ' if length($niceDate);
+    }
+
+    my $showAMPM='';
+    if($flags->{local_time_12hr}) {
+      if($hrs<12) {
+        $showAMPM = ' AM';
+        $hrs=12 if $hrs==0;
+      } else {
+        $showAMPM = ' PM';
+        $hrs -= 12 unless $hrs==12;
+      }
+    }
+
+    $hrs = '0'.$hrs if $flags->{leading_zeroes} and length($hrs)==1;
+    $min = '0'.$min if length($min)==1;
+    $niceDate .= $hrs.':'.$min;
+    if (!($flags->{compact} or $flags->{hide_seconds})) { # if no compact show seconds
+      $sec = '0'.$sec if length($sec)==1;
+      $niceDate .= ':'.$sec;
+    }	
+
+    $niceDate .= $showAMPM if length($showAMPM);
+  }
+
+  $niceDate .= ' UTC' if length($niceDate) && ($flags->{show_utc});	#show UTC
+
+  return $niceDate;
+}
+
+sub writeups_by_type_row
+{
+  my ($this, $row, $VARS, $oddrow) = @_;
+
+  my $rowclass = "contentrow";
+  $rowclass .= " oddrow" if $oddrow;
+
+  my $rownode = $this->{db}->getNodeById($row->{node_id});
+
+  my $authornode = $this->{db}->getNodeById($rownode->{author_user});
+  my $parenttitle = $this->parenttitle_link($rownode, $authornode);
+  my $wutypelink = $this->writeuptype_link($rownode);
+  my $authorlink = $this->author_link($authornode);
+  my $timedisplay = $this->parse_timestamp($rownode->{publishtime}, 
+    $this->timestamp_preferences($VARS, ['hide_day_of_week','leading_zeroes']));
+  return qq|<tr class="$rowclass"><td>$parenttitle $wutypelink</td><td>$authorlink</td><td align="right"><small>$timedisplay</small></tr>|;
 }
 
 1;
