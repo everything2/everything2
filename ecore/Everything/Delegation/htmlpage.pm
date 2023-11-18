@@ -2823,7 +2823,7 @@ sub category_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $page = int($query->param('p'));
+  my $page = int($query->param('p') || 0);
   my $count = 50;
   my $isCategoryEditor = 0;
   my $maintainer = getNodeById($$NODE{author_user});
