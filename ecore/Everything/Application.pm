@@ -4646,6 +4646,7 @@ sub buildNodeInfoStructure
   $e2->{node}->{createtime} = $this->convertDateToEpoch($NODE->{createtime});
 
   $e2->{lastCommit} = $this->{conf}->last_commit;
+  $e2->{architecture} = $this->{conf}->architecture;
 
   $e2->{nodetype} = $NODE->{type}->{title};
   $e2->{developerNodelet} = {};
@@ -4690,6 +4691,7 @@ sub buildNodeInfoStructure
     }
   }
 
+  # Random Nodes
   if($VARS->{nodelets} =~ /457857/)
   {
     $e2->{randomNodes} = $this->{db}->stashData("randomnodes");

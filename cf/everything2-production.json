@@ -593,15 +593,6 @@
         }
       }
     },
-    "E2AppECRRegistryX64": {
-      "Type": "AWS::ECR::Repository",
-      "Properties": {
-        "RepositoryName": "everything2/e2app-x64",
-        "LifecyclePolicy": {
-          "LifecyclePolicyText": "{\"rules\": [{\"rulePriority\": 1, \"description\": \"Expire images older than 3 days\", \"selection\": {\"tagStatus\": \"untagged\", \"countType\": \"sinceImagePushed\",\"countUnit\": \"days\", \"countNumber\": 3 }, \"action\": {\"type\": \"expire\"}}]}"
-        }
-      }
-    },
     "E2AppECRRegistryARM": {
       "Type": "AWS::ECR::Repository",
       "Properties": {
@@ -688,7 +679,7 @@
         "TimeoutInMinutes": 90,
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/standard:5.0",
+          "Image": "aws/codebuild/standard:7.0",
           "Type": "LINUX_CONTAINER",
           "EnvironmentVariables": [
             {
@@ -708,12 +699,84 @@
               "Value": {"Ref": "E2AppECRRegistry"}
             },
             {
+              "Name": "NODEJS_ARCH",
+              "Value": "x64"
+            },
+            {
               "Name": "BUILDCACHE_BUCKET",
               "Value": {"Ref": "BuildcacheBucket"}
             },
             {
               "Name": "SECRETS_BUCKET",
-              "Value": {"Ref": "SecretsS3Bucket"} 
+              "Value": {"Ref": "SecretsS3Bucket"}
+            },
+            {
+              "Name": "ASSETS_BUCKET",
+              "Value": {"Ref": "DeployedAssetsBucket"}
+            }
+          ],
+          "PrivilegedMode": true
+        },
+        "Cache": {
+          "Location": "LOCAL",
+          "Type": "LOCAL",
+          "Modes": ["LOCAL_DOCKER_LAYER_CACHE"]
+        }
+      }
+    },
+    "DockerCodeBuildProjectARM": {
+      "Type": "AWS::CodeBuild::Project",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Artifacts": {
+          "Type": "NO_ARTIFACTS"
+        },
+        "LogsConfig": {
+          "CloudWatchLogs": {
+            "Status": "ENABLED",
+            "GroupName": {"Ref": "DockerCodeBuildLogGroup"}
+          }
+        },
+        "Name": "E2-Application-Builder-ARM",
+        "ServiceRole": {"Ref": "ApplicationDockerCodeBuildRole"},
+        "Source": {
+          "Type": "CODECOMMIT",
+          "BuildSpec": "docker/buildspec.yml",
+          "Location": {"Fn::GetAtt": ["Everything2CodeCommitRepo","CloneUrlHttp"]}
+        },
+        "TimeoutInMinutes": 90,
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/amazonlinux2-aarch64-standard:3.0",
+          "Type": "ARM_CONTAINER",
+          "EnvironmentVariables": [
+            {
+              "Name": "AWS_REGION",
+              "Value": {"Ref": "AWS::Region"}
+            },
+            {
+              "Name": "AWS_ACCOUNT_ID",
+              "Value": {"Ref": "AWS::AccountId"}
+            },
+            {
+              "Name": "IMAGE_TAG",
+              "Value": "latest"
+            },
+            {
+              "Name": "ECR_REPOSITORY_NAME",
+              "Value": {"Ref": "E2AppECRRegistryARM"}
+            },
+            {
+              "Name": "NODEJS_ARCH",
+              "Value": "arm"
+            },
+            {
+              "Name": "BUILDCACHE_BUCKET",
+              "Value": {"Ref": "BuildcacheBucket"}
+            },
+            {
+              "Name": "SECRETS_BUCKET",
+              "Value": {"Ref": "SecretsS3Bucket"}
             },
             {
               "Name": "ASSETS_BUCKET",

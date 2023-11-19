@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Modal from 'react-modal'
 import NodeletSection from '../NodeletSection'
 import { IconContext } from "react-icons"
-import { FaGithubSquare,FaUsers,FaCodeBranch,FaRegFile,FaRegFileCode,FaCubes,FaExternalLinkAlt } from "react-icons/fa"
+import { FaGithubSquare,FaUsers,FaCodeBranch,FaRegFile,FaRegFileCode,FaCubes,FaExternalLinkAlt,FaMicrochip } from "react-icons/fa"
 import LinkNode from '../LinkNode'
 import TimeDistance from '../TimeDistance'
 import NodeletContainer from '../NodeletContainer'
@@ -53,7 +53,8 @@ const Developer = (props) => {
   return <NodeletContainer title="Everything Developer" nodeletIsOpen={props.nodeletIsOpen} showNodelet={props.showNodelet} >
     <IconContext.Provider value={{ size: "1.5em", style: { lineHeight: "inherit!important", verticalAlign: "middle" }}}>
       <div className="link-with-icon"><FaGithubSquare /> <a href={githubUrl}>GitHub</a>
-      <FaCodeBranch /> <a href={githubUrl + "/commit/"+props.lastCommit}>{props.lastCommit.substr(0,7)}</a></div>
+      <FaCodeBranch /> <a href={githubUrl + "/commit/"+props.lastCommit}>{props.lastCommit.substr(0,7)}</a></div><br />
+      <div className="link-with-icon"><FaMicrochip /> {props.architecture}</div><br />
       <div className="link-with-icon"><FaUsers /> <LinkNode type="usergroup" title="edev" display="EDev Usergroup" /></div>
       <br />
       <div className="link-with-icon"><FaRegFileCode /> <LinkNode type={props.node.type} title={props.node.title} display="viewcode" params={{displaytype: "viewcode"}} /> / <LinkNode type={props.node.type} title={props.node.title} display="xmltrue" params={{displaytype: "xmltrue"}} /></div>
