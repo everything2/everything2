@@ -768,7 +768,7 @@
             },
             {
               "Name": "NODEJS_ARCH",
-              "Value": "arm"
+              "Value": "arm64"
             },
             {
               "Name": "BUILDCACHE_BUCKET",
