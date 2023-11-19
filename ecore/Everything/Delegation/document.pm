@@ -17,23 +17,15 @@ BEGIN {
   *parseCode = *Everything::HTML::parseCode;
   *parseLinks = *Everything::HTML::parseLinks;
   *isNodetype = *Everything::HTML::isNodetype;
-  *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
   *insertNodelet = *Everything::HTML::insertNodelet;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *setVars = *Everything::HTML::setVars;
-  *getNodeWhere = *Everything::HTML::getNodeWhere;
-  *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
-  *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
   *canReadNode = *Everything::HTML::canReadNode;
-  *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *getPageForType = *Everything::HTML::getPageForType;
-  *opLogin = *Everything::HTML::opLogin;
-  *replaceNodegroup = *Everything::HTML::replaceNodegroup;
   *encodeHTML = *Everything::HTML::encodeHTML;
 }
 
@@ -233,7 +225,7 @@ sub advanced_settings
 
   $str .= "<fieldset><legend>Writeup Footers</legend>\n";
 
-  if ($$USER{title} =~ /^(?:mauler|riverrun|Wiccanpiper|DonJaime)$/ and isGod($USER))
+  if ($$USER{title} =~ /^(?:mauler|riverrun|Wiccanpiper|DonJaime)$/ and $DB->isGod($USER))
   {
     # only gods can disable pop-up: they get the missing tools in Master Control
     # as of 2011-07-15 only three gods are using it. Let's lose it gradually...
@@ -1300,7 +1292,7 @@ sub clientdev_home
   $str .= qq|<table border="1" cellpadding="1" cellspacing="0">|;
   $str .= qq|<tr><th>title</th><th>version</th></tr>|;
 
-  my @clientdoc = getNodeWhere ({}, 'e2client', 'title');
+  my @clientdoc = $DB->getNodeWhere ({}, 'e2client', 'title');
   my $v = undef;
 
   foreach (@clientdoc)
@@ -1809,7 +1801,7 @@ sub create_room
   my $isChanop = $APP->isChanop($USER);
 
   if ($APP->getLevel($USER) < $Everything::CONF->create_room_level
-    and not isGod($USER)
+    and not $DB->isGod($USER)
     and not $isChanop)
   {
     return "<I>Too young, my friend.</I>";
@@ -3062,7 +3054,7 @@ sub e2_ticket_center
   return $str unless($isGod); ## temp until system is ready
 
   ## Define variables
-  my (@TKTTYPES) = getNodeWhere({type_nodetype => getId(getType('ticket_type'))});
+  my (@TKTTYPES) = $DB->getNodeWhere({type_nodetype => getId(getType('ticket_type'))});
   my @TKTTYPE;
   foreach(@TKTTYPES) { push @TKTTYPE, $_; }
   my $settickettype ="\n\t\t<select id='tickettype' name='tickettype'>";
@@ -3234,7 +3226,7 @@ sub edev_documentation_index
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my @edoc = getNodeWhere ({}, "edevdoc", "title");
+  my @edoc = $DB->getNodeWhere ({}, "edevdoc", "title");
   my $str = "";
   foreach (@edoc) {
     $str.= linkNode($_) ."<br>\n";
@@ -3396,7 +3388,7 @@ sub everything_data_pages
 
   $str = '(<a href='.urlGen({node=>'List Nodes of Type', chosen_type=>'fullpage'}).'>alternate display</a> at [List Nodes of Type])'.$str if $isDev;
 
-  my @nodes = getNodeWhere({type_nodetype => getId(getType('fullpage'))});
+  my @nodes = $DB->getNodeWhere({type_nodetype => getId(getType('fullpage'))});
   foreach (@nodes)
   {
     $str.= '<tr><td>'.linkNode($_).'</td><td>'.$$_{node_id};
@@ -3411,7 +3403,7 @@ sub everything_data_pages
 
   $str .="These are the second generation tickers, using a more unified XML base, and also exporting information more fully. These are of type [ticker].";
 
-  @nodes = getNodeWhere({type_nodetype => getId(getType('ticker'))});
+  @nodes = $DB->getNodeWhere({type_nodetype => getId(getType('ticker'))});
   foreach (@nodes)
   {
     $str.= '<tr><td>'.linkNode($_).'</td><td>'.$$_{node_id};
@@ -3640,7 +3632,7 @@ sub everything_document_directory
   $str .= '<th class="oddrow">node_id</th>' if $showNodeId;
   $str .= '</tr>';
 
-  my @nodes = getNodeWhere({type_nodetype => \@types, author_user => $filterUser},'',$sqlSort);
+  my @nodes = $DB->getNodeWhere({type_nodetype => \@types, author_user => $filterUser},'',$sqlSort);
   my $shown = 0;
   my $limit = $query->param('edd_limit') || 0;
   if($limit =~ /^(\d+)$/)
@@ -3831,7 +3823,7 @@ sub everything_poll_archive
   my $numtoshow=10;
   my $startat = int($query->param("startat"))||0;
 
-  my @polls = getNodeWhere({poll_status => 'closed'}, 'e2poll', "e2poll_id DESC LIMIT $startat, $numtoshow");
+  my @polls = $DB->getNodeWhere({poll_status => 'closed'}, 'e2poll', "e2poll_id DESC LIMIT $startat, $numtoshow");
 
   my $str = '<ul>';
 
@@ -3951,7 +3943,7 @@ sub everything_poll_directory
     $PrevLink=linkNode($NODE,'previous',{startat => $finishat, %oldPollParameter});
   }
 
-  my @nodes = getNodeWhere($pollfilter, 'e2poll', "e2poll_id DESC LIMIT $startat, $numtoshow");
+  my @nodes = $DB->getNodeWhere($pollfilter, 'e2poll', "e2poll_id DESC LIMIT $startat, $numtoshow");
   my $str = "";
 
   $str .= '<p>Go to the <b>'.linkNodeTitle('Everything User Poll[superdoc]').'</b>.';
@@ -5286,7 +5278,7 @@ sub writeups_by_type
   ####################################################################
   # Form with list of writeup types and number to show
 
-  my (@WRTYPE) = getNodeWhere({type_nodetype => getId(getType('writeuptype'))});
+  my (@WRTYPE) = $DB->getNodeWhere({type_nodetype => getId(getType('writeuptype'))});
   my %items;
   map $items{$$_{node_id}} = $$_{title}, @WRTYPE;
 

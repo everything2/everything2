@@ -41,15 +41,8 @@ BEGIN {
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
-  *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
-  *updateLinks = *Everything::HTML::updateLinks;
-  *canReadNode = *Everything::HTML::canReadNode;
-  *canDeleteNode = *Everything::HTML::canDeleteNode;
   *evalCode = *Everything::HTML::evalCode;
-  *getPageForType = *Everything::HTML::getPageForType;
-  *opLogin = *Everything::HTML::opLogin;
-  *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 }
 
 sub container_display_page
