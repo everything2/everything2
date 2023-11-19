@@ -60,7 +60,7 @@ sub BEGIN
 		removeNode
 		getCachedNodeById
 		getCachedNodeByName
-		dumpCache); 
+		dumpCache);
 }
 
 
@@ -86,13 +86,13 @@ sub new
 {
 	my ($packageName, $nodeBase) = @_;
 	my $this = {};
-	
+
 	bless $this, $packageName;
 
 	$this->{maxSize} = $Everything::CONF->nodecache_size;
 	$this->{nodeBase} = $nodeBase;
-	
-	$this->{nodeQueue} = new Everything::CacheQueue();
+
+	$this->{nodeQueue} = Everything::CacheQueue->new();
 
 	$this->createVersionTable();
 
@@ -108,7 +108,7 @@ sub new
 	$this->{paramcache} = {};
 
 	$this->{pagecache} = {};
-	
+
 	return $this;
 }
 
@@ -131,12 +131,12 @@ sub createVersionTable{
 		# The global version table does not exist, we need to create it.
 		my $createTable;
 		my $dbh = $this->{nodeBase}->getDatabaseHandle();
-		
+
 		$createTable = "create table version (";
 		$createTable .= "version_id int(11) default '0' not null, ";
 		$createTable .= "version int(11) default '1' not null, ";
 		$createTable .= "primary key (version_id))";
-	
+
 		$dbh->do($createTable);
 	}
 
@@ -203,7 +203,6 @@ sub getCacheSize
 sub getCachedNodeByName
 {
 	my ($this, $title, $typename) = @_;
-	my $hashkey;
 	my $data;
 	my $NODE;
 	
@@ -340,7 +339,7 @@ sub flushCache
 	undef $this->{paramcache};
 	undef $this->{groupCache};
 
-	$this->{nodeQueue} = new Everything::CacheQueue();
+	$this->{nodeQueue} = Everything::CacheQueue->new();
 	$this->{typeCache} = {};
 	$this->{idCache} = {};
 	$this->{version} = {};
@@ -392,7 +391,7 @@ sub dumpCache
 {
 	my ($this) = @_;
 	my $queue = $this->{nodeQueue}->listItems();
-	
+
 	return $queue;
 }
 
@@ -400,7 +399,7 @@ sub getCachedNodeParam
 {
 	my ($this, $N, $param) = @_;
 	return unless defined($N);
-	return unless defined($param);	
+	return unless defined($param);
 
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
@@ -655,7 +654,7 @@ sub incrementGlobalVersion
 			{ version_id => $$NODE{node_id}, version => 1 } );
 	}
 	return $this->{nodeBase}->sqlUpdate('typeversion', {-version => 'version+1'}, "typeversion_id=".$$NODE{type}{node_id}) if $this->{nodeBase}->sqlSelect("version", "typeversion", "typeversion_id=".$$NODE{type}{node_id});
-        return; 
+        return;
 }
 
 sub clearSessionCache
@@ -709,7 +708,7 @@ sub resetCache
 
       #if the typeversion haven't changed, we can verify the type
       $newVersion{$$N{typeversion_id}} = $$N{version};
-    } 
+    }
     $csr->finish;
   }
 
