@@ -97,7 +97,7 @@ class E2ReactRoot extends React.Component {
       loginMessage: ""
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes"]
     const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs"]
     const urlParams = new URLSearchParams(window.location.search)
 
@@ -318,7 +318,7 @@ class E2ReactRoot extends React.Component {
         <Vitals maintenance={this.state.vit_maintenance} nodeinfo={this.state.vit_nodeinfo} list={this.state.vit_list} nodeutil={this.state.vit_nodeutil} misc={this.state.vit_misc} toggleSection={this.toggleSection} showNodelet={this.showNodelet} nodeletIsOpen={this.state.vitals_show} />
       </VitalsPortal>
       <DeveloperPortal>
-        <Developer user={this.state.user} node={this.state.node} developerNodelet={this.state.developerNodelet} lastCommit={this.state.lastCommit} toggleSection={this.toggleSection} util={this.state.edn_util} edev={this.state.edn_edev} showNodelet={this.showNodelet} nodeletIsOpen={this.state.everythingdeveloper_show} />
+        <Developer user={this.state.user} node={this.state.node} developerNodelet={this.state.developerNodelet} lastCommit={this.state.lastCommit} architecture={this.state.architecture} toggleSection={this.toggleSection} util={this.state.edn_util} edev={this.state.edn_edev} showNodelet={this.showNodelet} nodeletIsOpen={this.state.everythingdeveloper_show} />
       </DeveloperPortal>
       <NewWriteupsPortal>
         <ErrorBoundary>

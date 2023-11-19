@@ -7,6 +7,7 @@ use Paws;
 use LWP::UserAgent;
 use JSON;
 use namespace::autoclean;
+use Config;
 
 has 'configfile' => (isa => 'Maybe[Str]', is => 'ro');
 has 'configdir' => (isa => 'Str', is => 'ro', default => '/etc/everything');
@@ -218,6 +219,7 @@ has 'room_cleanup_threshold' => (isa => 'Int', is => 'ro', default => 60*60*24*9
 
 has 'always_keep_rooms' => (isa => 'ArrayRef[Str]', is => 'ro', default => sub {["Valhalla", "Political Asylum", "M-Noder Washroom", "Noders Nursery", "Debriefing Room"]});
 
+has 'architecture' => (isa => 'Str', is => 'ro', builder => '_build_architecture');
 
 around BUILDARGS => sub
 {
@@ -429,6 +431,15 @@ sub is_production
 {
   my ($self) = @_;
   return $self->environment eq 'production';
+}
+
+sub _build_architecture
+{
+  my ($self) = @_;
+
+  my $arch = $Config{archname};
+  $arch =~ s/-.*//g;
+  return $arch;
 }
 
 __PACKAGE__->meta->make_immutable;
