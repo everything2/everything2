@@ -1361,7 +1361,7 @@ sub show_content
       }
 
       $text = $APP->screenTable( $text ) if $lastnodeid ; # i.e. if writeup page & logged in
-      $text = parseLinks( $APP->cleanupHTML( $text , $HTML ) , $lastnodeid ) ;
+      $text = parseLinks( $APP->htmlScreen( $text , $HTML ) , $lastnodeid ) ;
       return "\n<div class=\"content\">\n$text$dots\n</div>$morelink" unless $xml ;
 
       $text =~ s/<a .*?(href=".*?").*?>/<a $1>/sg ; # kill onmouseup etc

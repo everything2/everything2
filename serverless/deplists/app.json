@@ -4,6 +4,10 @@
     "module": "B::COW"
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.63.tar.gz",
+    "module": "Scalar::Util"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Simple-1.302175.tar.gz",
     "module": "Test::Simple",
     "skiptest": 1
@@ -148,7 +152,7 @@
     "module": "Test::Deep"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/G/GA/GAAS/HTML-Parser-3.72.tar.gz",
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTML-Parser-3.81.tar.gz",
     "module": "HTML::Entities"
   },
   {
@@ -554,7 +558,7 @@
     "dependson": ["File::pushd"]
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Moose-2.2012.tar.gz",
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Moose-2.2206.tar.gz",
     "module": "Moose",
     "dependson": ["Test::Fatal","Test::CleanNamespaces"]
   },
@@ -1024,10 +1028,6 @@
     "module": "Net::Amazon::Signature::V4"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/PerlIO-utf8_strict-0.007.tar.gz",
-    "module": "PerlIO::utf8_strict"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Mixin-Linewise-0.108.tar.gz",
     "module": "Mixin::Linewise",
     "skiptest": 1
@@ -1069,6 +1069,16 @@
   {
     "file": "https://cpan.metacpan.org/authors/id/P/PM/PMQS/IO-Compress-2.206.tar.gz",
     "module": "IO::Compress::Zip",
+    "toplevel": 1
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/N/NI/NIGELM/HTML-Scrubber-0.19.tar.gz",
+    "module": "HTML::Scrubber",
+    "toplevel": 1
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RO/ROBM/HTML-Defang-1.07.tar.gz",
+    "module": "HTML::Defang",
     "toplevel": 1
   }
 ]

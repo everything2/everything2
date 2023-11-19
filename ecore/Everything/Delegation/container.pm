@@ -8,30 +8,7 @@ BEGIN {
   *getNodeById = *Everything::HTML::getNodeById;
   *getVars = *Everything::HTML::getVars;
   *getId = *Everything::HTML::getId;
-  *urlGen = *Everything::HTML::urlGen;
-  *linkNode = *Everything::HTML::linkNode;
   *htmlcode = *Everything::HTML::htmlcode;
-  *parseCode = *Everything::HTML::parseCode;
-  *parseLinks = *Everything::HTML::parseLinks;
-  *isNodetype = *Everything::HTML::isNodetype;
-  *isGod = *Everything::HTML::isGod;
-  *getRef = *Everything::HTML::getRef;
-  *insertNodelet = *Everything::HTML::insertNodelet;
-  *getType = *Everything::HTML::getType;
-  *updateNode = *Everything::HTML::updateNode;
-  *setVars = *Everything::HTML::setVars;
-  *getNodeWhere = *Everything::HTML::getNodeWhere;
-  *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
-  *linkNodeTitle = *Everything::HTML::linkNodeTitle;
-  *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
-  *canUpdateNode = *Everything::HTML::canUpdateNode;
-  *updateLinks = *Everything::HTML::updateLinks;
-  *canReadNode = *Everything::HTML::canReadNode;
-  *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *evalCode = *Everything::HTML::evalCode;
-  *getPageForType = *Everything::HTML::getPageForType;
-  *opLogin = *Everything::HTML::opLogin;
-  *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 }
 
 sub zen_stdcontainer

@@ -11,30 +11,7 @@ BEGIN {
   *getNodeById = *Everything::HTML::getNodeById;
   *getVars = *Everything::HTML::getVars;
   *getId = *Everything::HTML::getId;
-  *urlGen = *Everything::HTML::urlGen;
-  *linkNode = *Everything::HTML::linkNode;
   *htmlcode = *Everything::HTML::htmlcode;
-  *parseCode = *Everything::HTML::parseCode;
-  *parseLinks = *Everything::HTML::parseLinks;
-  *isNodetype = *Everything::HTML::isNodetype;
-  *isGod = *Everything::HTML::isGod;
-  *getRef = *Everything::HTML::getRef;
-  *insertNodelet = *Everything::HTML::insertNodelet;
-  *getType = *Everything::HTML::getType;
-  *updateNode = *Everything::HTML::updateNode;
-  *setVars = *Everything::HTML::setVars;
-  *getNodeWhere = *Everything::HTML::getNodeWhere;
-  *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
-  *linkNodeTitle = *Everything::HTML::linkNodeTitle;
-  *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
-  *canUpdateNode = *Everything::HTML::canUpdateNode;
-  *updateLinks = *Everything::HTML::updateLinks;
-  *canReadNode = *Everything::HTML::canReadNode;
-  *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *evalCode = *Everything::HTML::evalCode;
-  *getPageForType = *Everything::HTML::getPageForType;
-  *opLogin = *Everything::HTML::opLogin;
-  *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 } 
 
 # Used by writeup_create, debatecomment_create, debate_create
@@ -52,7 +29,7 @@ sub room_create
 
   my ($N) = @_;
 
-  my $canCreate = ($APP->getLevel($USER) >= $Everything::CONF->create_room_level or isGod($USER));
+  my $canCreate = ($APP->getLevel($USER) >= $Everything::CONF->create_room_level or $DB->isGod($USER));
   $canCreate = 0 if $APP->isSuspended($USER, 'room');
 
   if (!$canCreate) {
@@ -143,7 +120,7 @@ sub writeup_create
   # user already has a writeup in this E2node: update it
   $$problem{doctext} = $query->param("writeup_doctext");
   $$problem{wrtype_writeuptype} = $query -> param('writeup_wrtype_writeuptype') if $query -> param('writeup_wrtype_writeuptype');
-  updateNode($problem, $USER);
+  $DB->updateNode($problem, $USER);
 
   # redirect to the updated writeup
   $Everything::HTML::HEADER_PARAMS{-status} = 303;
@@ -456,7 +433,7 @@ sub debatecomment_create
   ## END notification code
 
 
-  updateNode( $COMMENT, $USER );
+  $DB->updateNode( $COMMENT, $USER );
 
   $DB->insertIntoNodegroup( $PARENT, -1, [$COMMENT] );
   return;
@@ -517,7 +494,7 @@ sub debate_create
   if ($$COMMENT{title} =~ /^\s*$/)
   {
     $$COMMENT{title} = "Untitled ". $$ug{title} ." discussion";
-    updateNode( $COMMENT, $USER );
+    $DB->updateNode( $COMMENT, $USER );
   }
 
   my $announce = $query -> param('announce_to_ug');
@@ -573,7 +550,7 @@ sub debate_create
 
   $$COMMENT{'doctext'} = $query -> param('newdebate_text');
 
-  updateNode( $COMMENT, $USER );
+  $DB->updateNode( $COMMENT, $USER );
   return;
 }
 
@@ -621,7 +598,7 @@ sub e2poll_create
   $$POLL{doctext} = join "\n\n", @doctext;
   $$POLL{poll_status} = 'new';
 
-  updateNode( $POLL, -1 );
+  $DB->updateNode( $POLL, -1 );
   return;
 }
 
@@ -793,7 +770,7 @@ sub draft_update
     unless ($status && $$status{type}{title} eq 'publication_status')
     {
       $$N{publication_status} = getId(getNode('private', 'publication_status'));
-      return updateNode($N, $USER) if $$N{publication_status};
+      return $DB->updateNode($N, $USER) if $$N{publication_status};
 
     }elsif($$status{title} eq 'review'){
 
@@ -811,7 +788,7 @@ sub draft_update
       );
 
       # record event in node history:
-      my $note = ''; $note = ' (while suspended by '.linkNode($editor).') ' if $editor;
+      my $note = ''; $note = ' (while suspended by '.$APP->linkNode($editor).') ' if $editor;
       my $nodenote_id = htmlcode('addNodenote', $$N{node_id}, "author requested review$note");
 
       # Notify. If no $editor, everyone gets it:
@@ -842,7 +819,7 @@ sub draft_update
   return if $title eq $$N{title};
 
   $$N{title} = $title;
-  updateNode($N, $USER);
+  $DB->updateNode($N, $USER);
   return;
 }
 

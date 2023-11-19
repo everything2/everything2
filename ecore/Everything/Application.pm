@@ -39,6 +39,9 @@ use Everything::DataStash::newwriteups;
 # For parse_timestamp
 use Time::Local;
 
+# For htmlScreen
+use HTML::Scrubber;
+use HTML::Defang;
 
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
@@ -2697,8 +2700,18 @@ sub cleanupHTML {
 #		approved_tags -- ref to hash where approved tags are keys.  Null means
 #			all HTML will be taken out.
 #
+
 sub htmlScreen {
 	my ($this, $text, $approved_tags) = @_;
+
+  my $defang = HTML::Defang->new(
+    "fix_mismatched_tags" => 1,
+    "delete_defang_content" => 1
+  );
+
+  my $scrubber = HTML::Scrubber->new();
+  $scrubber->rules(%{$this->get_html_rules()});
+  return $defang->defang($scrubber->scrub($text));
 	$approved_tags ||= {};
 
 	$text = $this->cleanupHTML($text, $approved_tags);
@@ -4921,6 +4934,180 @@ sub writeups_by_type_row
   my $timedisplay = $this->parse_timestamp($rownode->{publishtime}, 
     $this->timestamp_preferences($VARS, ['hide_day_of_week','leading_zeroes']));
   return qq|<tr class="$rowclass"><td>$parenttitle $wutypelink</td><td>$authorlink</td><td align="right"><small>$timedisplay</small></tr>|;
+}
+
+sub get_html_rules
+{
+  return {
+    'abbr' => {
+      'lang' => 1,
+      'title' => 1,
+      '*' => 0
+    },
+    'acronym' => {
+      'lang' => 1,
+      'title' => 1,
+      '*' => 0
+    },
+    'blockquote' => {
+      'cite' => 1,
+      '*' => 0
+    },
+    'ol' => {
+      'type' => 1,
+      'start' => 1,
+      '*' => 0
+    },
+    'p' => {
+      'align' => 1,
+      '*' => 0
+    },
+    'q' => {
+      'cite' => 1,
+      '*' => 0
+    },
+    'table' => {
+      'cellpadding' => 1,
+      'border' => 1,
+      'cellspacing' => 1,
+      'cols' => 1,
+      'frame' => 1,
+      'width' => 1,
+      '*' => 0
+    },
+    'td' => {
+      'rowspan' => 1,
+      'colspan' => 1,
+      'align' => 1,
+      'valign' => 1,
+      'height' => 1,
+      'width' => 1,
+      '*' => 0
+    },
+    'th' => {
+      'rowspan' => 1,
+      'colspan' => 1,
+      'align' => 1,
+      'valign' => 1,
+      'height' => 1,
+      'width' => 1,
+      '*' => 0
+    },
+    'tr' => {
+      'align' => 1,
+      'valign' => 1,
+      '*' => 0
+    },
+    'ul' => {
+      'type' => 1,
+      '*' => 0
+    },
+    'b' => {
+      '*' => 0
+    },
+    'big' => {
+      '*' => 0
+    },
+    'caption' => {
+      '*' => 0
+    },
+    'center' => {
+      '*' => 0
+    },
+    'cite' => {
+      '*' => 0
+    },
+   'dd' => {
+      '*' => 0
+    },
+    'del' => {
+      '*' => 0
+    },
+    "dl" => {
+      '*' => 0
+    },
+    "dt" => {
+      '*' => 0
+    },
+    "em" => {
+      '*' => 0
+    },
+    "i" => {
+      '*' => 0
+    },
+    "ins" => {
+      '*' => 0
+    },
+    "kbd" => {
+      '*' => 0
+    },
+    "li" => {
+      "*" => 0
+    },
+    "s" => {
+      "*" => 0
+    },
+    "samp" => {
+      "*" => 0
+    },
+    "pre" => {
+      "*" => 0
+    },
+    "small" => {
+      "*" => 0
+    },
+    "strike" => {
+      "*" => 0
+    },
+    "strong" => {
+      "*" => 0
+    },
+    "sub" => {
+      "*" => 0
+    },
+    "sup" => {
+      "*" => 0
+    },
+    "tbody" => {
+      "*" => 0
+    },
+    "thead" => {
+      "*" => 0
+    },
+    "tt" => {
+      "*" => 0
+    },
+    "u" => {
+      "*" => 0
+    },
+    "var" => {
+      "*" => 0
+    },
+    "h1" => {
+      "align" => 1,
+      "*" => 0
+    },
+    "h2" => {
+      "align" => 1,
+      "*" => 0
+    },
+    "h3" => {
+      "align" => 1,
+      "*" => 0
+    },
+    "h4" => {
+      "align" => 1,
+      "*" => 0
+    },
+    "h5" => {
+      "align" => 1,
+      "*" => 0
+    },
+    "h6" => {
+      "align" => 1,
+      "*" => 0
+    }
+  };
 }
 
 1;
