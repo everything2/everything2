@@ -29,3 +29,8 @@
 
 Make changes to the source directory and re-run ./docker/devbuild.sh to relaunch the container. The database won't be touched unless you explicitly run the corresponding devclean.sh script.
 
+# Working with perl dependencies
+
+E2 uses [carton](https://metacpan.org/pod/Carton) to manage the perl dependencies. In order to update them, they need to be able to build locally, which may require libmysqlclient, imagemagick, expat and other dependencies
+
+Note that Ubuntu 22 LTS does weird things with Perlmagick6, so using the OS distribution

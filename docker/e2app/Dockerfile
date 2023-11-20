@@ -1,11 +1,11 @@
 FROM ubuntu:22.04
 
 ARG ARCH=x64
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 perlmagick mysql-client ruby ruby-dev xz-utils && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 mysql-client ruby ruby-dev xz-utils cpanminus perlmagick && rm -rf /var/lib/apt/lists/*
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Ruby
-RUN gem install aws-sdk-rds aws-sdk-elasticloadbalancingv2 aws-sdk-iam aws-sdk-secretsmanager aws-sdk-ses aws-sdk-opsworks aws-sdk-ec2 aws-sdk-lambda aws-sdk-s3 brotli
+RUN gem install aws-sdk-s3
 
 # Modern Apache2
 RUN mkdir -p /var/debbuild
@@ -14,7 +14,7 @@ RUN chmod 0755 /var/debbuild/build_modern_apache.sh
 RUN /var/debbuild/build_modern_apache.sh
 
 # Core Directories and Apache
-RUN mkdir -p /var/libraries /var/dlcache /var/buildcache /etc/everything /var/mason /var/log/everything /etc/apache2/logs /var/everything /var/bootstrap/etc
+RUN mkdir -p /var/libraries /etc/everything /var/mason /var/log/everything /etc/apache2/logs /var/everything /var/bootstrap/cache
 RUN rm -f /etc/apache2/mods-enabled/mpm_event.*
 RUN rm -rf /etc/apache2/sites-enabled /etc/apache2/sites-available /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available
 RUN for i in deflate rewrite authz_core proxy proxy_http ssl perl mpm_prefork socache_shmcb; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
@@ -23,13 +23,12 @@ RUN chown www-data:www-data /var/mason /var/log/everything /etc/apache2/logs
 RUN chmod 0755 /var/mason
 
 # Perl
-COPY ./tools/createdeps.pl /var/bootstrap
-COPY ./serverless/deplists/app.json /var/bootstrap
-RUN perl /var/bootstrap/createdeps.pl --depfile=/var/bootstrap/app.json --installdir=/var/libraries --skipverify=Alien::Libxml --builddir=/var/buildcache --dldir=/var/dlcache --skipverify=Alien::Libxml2
-RUN rm -rf /var/dlcache/* /var/buildcache/*
+COPY ./vendor/cache/ /var/bootstrap/cache/
+COPY ./cpanfile /var/bootstrap
+RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest --quiet --cpanfile=/var/bootstrap/cpanfile .
 
 # NodeJS / React
-RUN curl -L "https://nodejs.org/dist/v18.18.2/node-v18.18.2-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
+RUN curl -L "https://nodejs.org/dist/v20.9.0/node-v20.9.0-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
 RUN /usr/bin/npm install -g npm@latest
 
 COPY ./tools/write_apache_config.rb /var/bootstrap
@@ -42,6 +41,7 @@ COPY docker/e2app/apache2_wrapper.rb /etc/everything
 RUN chmod +x /etc/everything/apache2_wrapper.rb
 
 COPY ./ /var/everything
+RUN rm -rf /var/everything/local
 WORKDIR /var/everything
 RUN /usr/bin/npm install
 RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development
