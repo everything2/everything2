@@ -77,18 +77,18 @@ Include mods-enabled/*.conf
 </IfDefine>
 
 <IfDefine E2_PRODUCTION>
-  Define E2StartServers 10
+  Define E2StartServers 5
   Define E2MinSpareServers 5
-  Define E2MaxSpareServers 10
-  Define E2MaxClients 200
+  Define E2MaxSpareServers 15
+  Define E2MaxClients 20
 </IfDefine>
 
 <IfModule mpm_prefork_module>
   StartServers         ${E2StartServers}
   MinSpareServers      ${E2MinSpareServers}
   MaxSpareServers      ${E2MaxSpareServers}
-  MaxClients           ${E2MaxClients}
-  MaxRequestsPerChild  4000
+  MaxRequestWorkers    ${E2MaxClients}
+  MaxConnectionsPerChild 5000
 </IfModule>
 
 
