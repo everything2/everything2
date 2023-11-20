@@ -646,7 +646,6 @@
         "Description": "Docker builder CodeBuild role",
         "ManagedPolicyArns": [
             {"Ref": "CodeBuildUpdateApplicationECRRegistry"},
-            {"Ref": "DockerCodeBuildLogWritePolicy"},
             {"Ref": "BuildcacheAccessPolicy"},
             {"Ref": "DockerHubSecretsAccessPolicy"},
             {"Ref": "DeployedAssetsManagement"},
@@ -662,12 +661,6 @@
       "Properties": {
         "Artifacts": {
           "Type": "NO_ARTIFACTS"
-        },
-        "LogsConfig": {
-          "CloudWatchLogs": {
-            "Status": "ENABLED",
-            "GroupName": {"Ref": "DockerCodeBuildLogGroup"}
-          }
         },
         "Name": "E2-Application-Builder",
         "ServiceRole": {"Ref": "ApplicationDockerCodeBuildRole"},
@@ -731,12 +724,6 @@
         "Artifacts": {
           "Type": "NO_ARTIFACTS"
         },
-        "LogsConfig": {
-          "CloudWatchLogs": {
-            "Status": "ENABLED",
-            "GroupName": {"Ref": "DockerCodeBuildLogGroup"}
-          }
-        },
         "Name": "E2-Application-Builder-ARM",
         "ServiceRole": {"Ref": "ApplicationDockerCodeBuildRole"},
         "Source": {
@@ -789,36 +776,6 @@
           "Location": "LOCAL",
           "Type": "LOCAL",
           "Modes": ["LOCAL_DOCKER_LAYER_CACHE"]
-        }
-      }
-    },
-    "DockerCodeBuildLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": "/aws/codebuild/dockerbuild",
-        "RetentionInDays": 3
-      }
-    },
-    "DockerCodeBuildLogWritePolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows CodeBuild to write to the log group",
-        "ManagedPolicyName": "DockerCodeBuildLogWritePolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": "logs:PutLogEvents",
-            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "DockerCodeBuildLogGroup", "Arn"] }, ":*"]]}
-          },
-          {
-            "Effect": "Allow",
-            "Action": "logs:CreateLogStream",
-            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "DockerCodeBuildLogGroup", "Arn"] }, ":*"]]}
-          }]
         }
       }
     },
@@ -988,9 +945,9 @@
           "Memory": 3072,
           "Essential": true,
           "HealthCheck": {
-            "Interval": 30,
+            "Interval": 10,
             "Retries": 5,
-            "StartPeriod": 40,
+            "StartPeriod": 60,
             "Timeout": 5,
             "Command": ["CMD-SHELL","curl -f http://localhost/ || exit 1" ]
           },
