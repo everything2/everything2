@@ -25,6 +25,7 @@ requires 'JSON';
 requires 'LWP::UserAgent';
 requires 'Mason';
 requires 'Mason::Plugin::HTMLFilters';
+requires 'Module::Pluggable';
 requires 'Moose';
 
 # Handled by Ubuntu LTS for now
