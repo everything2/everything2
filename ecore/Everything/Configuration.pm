@@ -36,7 +36,7 @@ has 'homenode_image_host' => (isa => 'Str', is => 'ro', default => 'hnimagew.eve
 # SMTP options
 has 'mail_from' => (isa => 'Str', is => 'ro', default => 'accounthelp@everything2.com');
 
-has 'nodecache_size' => (isa => 'Int', is => 'ro', default => 300);
+has 'nodecache_size' => (isa => 'Int', is => 'ro', default => 500);
 
 has 'environment' => (isa => 'Str', is => 'ro', default => 'development');
 
