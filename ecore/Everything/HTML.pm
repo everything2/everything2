@@ -112,11 +112,6 @@ my %NO_SIDE_EFFECT_PARAMS = (
 	, 'should_redirect' => 'delete'
 );
 
-sub getRandomNode {
-  return $APP->getRandomNode(@_);
-}
-
-
 sub handle_errors {
 
     CORE::die(@_) if CGI::Carp::ineval();
@@ -1384,7 +1379,7 @@ sub mod_perlInit
 
          #only for Everything2.com
          if ($query->param("op") eq "randomnode") {
-               $query->param("node_id", getRandomNode());
+               $query->param("node_id", $APP->getRandomNodesMany(1)->[0]->{node_id});
          }
 
 	$APP->refreshVotesAndCools($USER, $VARS);

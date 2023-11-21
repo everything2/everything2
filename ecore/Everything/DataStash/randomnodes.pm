@@ -12,9 +12,8 @@ sub generate
 
   my $randomnodes = [];
 
-  foreach(1..12)
+  foreach my $N (@{$this->APP->getRandomNodesMany(12)})
   {
-    my $N = $this->APP->getRandomNode();
     push @$randomnodes, {"node_id" => $N->{node_id}, "title" => $N->{title}};
   }
 
