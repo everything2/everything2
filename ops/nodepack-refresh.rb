@@ -66,7 +66,7 @@ while(done.nil?)
 end
 
 puts "Calling remote nodepack update"
-ecsresult = @ecsclient.run_task(cluster: e2_cluster, task_definition: "e2cron-family", overrides: {container_overrides: [{name: "e2app", command: ["/usr/bin/perl","/var/everything/jobs/job_nodepack_builder.pl",]}]}, network_configuration: {awsvpc_configuration: {subnets: [subnet_placement], security_groups: [security_group], assign_public_ip: "ENABLED"}}, capacity_provider_strategy: [{capacity_provider: "FARGATE_SPOT", weight: 4, base: 1},{capacity_provider: "FARGATE", weight: 1}])
+ecsresult = @ecsclient.run_task(cluster: e2_cluster, task_definition: "e2cron-family", overrides: {container_overrides: [{name: "e2app", command: ["/usr/bin/perl","/var/everything/jobs/job_nodepack_builder.pl",]}]}, network_configuration: {awsvpc_configuration: {subnets: [subnet_placement], security_groups: [security_group], assign_public_ip: "ENABLED"}}, capacity_provider_strategy: [{capacity_provider: "FARGATE", weight: 1}])
 task_arn = ecsresult.tasks[0].task_arn
 puts "Watching task_arn: #{task_arn}"
 
