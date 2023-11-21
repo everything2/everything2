@@ -881,7 +881,7 @@
     "ECSAppCluster": {
       "Type": "AWS::ECS::Cluster",
       "Properties": {
-        "CapacityProviders": ["FARGATE","FARGATE_SPOT"],
+        "CapacityProviders": ["FARGATE"],
         "ClusterName": "E2-App-ECS-Cluster" 
       }
     },
@@ -978,13 +978,13 @@
         "RequiresCompatibilities": ["FARGATE"],
         "NetworkMode": "awsvpc",
         "RuntimePlatform": {
-          "CpuArchitecture": "X86_64",
+          "CpuArchitecture": "ARM64",
           "OperatingSystemFamily": "LINUX"
         },
         "TaskRoleArn": {"Ref": "AppFargateTaskRole"},
         "ContainerDefinitions": [{
           "Name": "e2app",
-          "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistry","RepositoryUri"]},"latest"]]},
+          "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistryARM","RepositoryUri"]},"latest"]]},
           "Memory": 3072,
           "Essential": true,
           "HealthCheck": {
@@ -1030,13 +1030,13 @@
         "RequiresCompatibilities": ["FARGATE"],
         "NetworkMode": "awsvpc",
         "RuntimePlatform": {
-          "CpuArchitecture": "X86_64",
+          "CpuArchitecture": "ARM64",
           "OperatingSystemFamily": "LINUX"
         },
         "TaskRoleArn": {"Ref": "AppFargateTaskRole"},
         "ContainerDefinitions": [{
           "Name": "e2app",
-          "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistry","RepositoryUri"]},"latest"]]},
+          "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistryARM","RepositoryUri"]},"latest"]]},
           "Memory": 1024,
           "Essential": true,
           "LogConfiguration": {
@@ -1095,16 +1095,13 @@
             "Subnets": [{"Ref": "AppVPCSubnet1"}]
           }
         },
-        "DesiredCount": 1,
+        "DesiredCount": 2,
         "HealthCheckGracePeriodSeconds": 30,
         "TaskDefinition": {"Ref": "E2AppFargateTaskDefinition"},
         "CapacityProviderStrategy": [{
           "CapacityProvider": "FARGATE",
           "Base": 1,
           "Weight": 1
-        },{
-          "CapacityProvider": "FARGATE_SPOT",
-          "Weight": 4
         }],
         "LoadBalancers": [{
           "ContainerName": "e2app",
@@ -1360,11 +1357,6 @@
             },
             "CapacityProviderStrategy": [
               {
-                "Base": 1,
-                "CapacityProvider": "FARGATE_SPOT",
-                "Weight": 4
-              },
-              {
                 "CapacityProvider": "FARGATE",
                 "Weight": 1
               }
@@ -1397,11 +1389,6 @@
               }
             },
             "CapacityProviderStrategy": [
-              {
-                "Base": 1,
-                "CapacityProvider": "FARGATE_SPOT",
-                "Weight": 4
-              },
               {
                 "CapacityProvider": "FARGATE",
                 "Weight": 1
@@ -1436,11 +1423,6 @@
             },
             "CapacityProviderStrategy": [
               {
-                "Base": 1,
-                "CapacityProvider": "FARGATE_SPOT",
-                "Weight": 4
-              },
-              {
                 "CapacityProvider": "FARGATE",
                 "Weight": 1
               }
@@ -1473,11 +1455,6 @@
               }
             },
             "CapacityProviderStrategy": [
-              {
-                "Base": 1,
-                "CapacityProvider": "FARGATE_SPOT",
-                "Weight": 4
-              },
               {
                 "CapacityProvider": "FARGATE",
                 "Weight": 1
@@ -1512,11 +1489,6 @@
             },
             "CapacityProviderStrategy": [
               {
-                "Base": 1,
-                "CapacityProvider": "FARGATE_SPOT",
-                "Weight": 4
-              },
-              {
                 "CapacityProvider": "FARGATE",
                 "Weight": 1
               }
@@ -1549,11 +1521,6 @@
               }
             },
             "CapacityProviderStrategy": [
-              {
-                "Base": 1,
-                "CapacityProvider": "FARGATE_SPOT",
-                "Weight": 4
-              },
               {
                 "CapacityProvider": "FARGATE",
                 "Weight": 1
@@ -1588,11 +1555,6 @@
             },
             "CapacityProviderStrategy": [
               {
-                "Base": 1,
-                "CapacityProvider": "FARGATE_SPOT",
-                "Weight": 4
-              },
-              {
                 "CapacityProvider": "FARGATE",
                 "Weight": 1
               }
@@ -1625,11 +1587,6 @@
               }
             },
             "CapacityProviderStrategy": [
-              {
-                "Base": 1,
-                "CapacityProvider": "FARGATE_SPOT",
-                "Weight": 4
-              },
               {
                 "CapacityProvider": "FARGATE",
                 "Weight": 1

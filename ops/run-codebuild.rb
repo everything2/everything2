@@ -6,7 +6,7 @@ require 'aws-sdk-ecs'
 client = Aws::CodeBuild::Client.new(region: 'us-west-2')
 ecs = Aws::ECS::Client.new(region: 'us-west-2')
 
-result = client.start_build(project_name: 'E2-Application-Builder')
+result = client.start_build(project_name: 'E2-Application-Builder-ARM')
 build_id = result.build.id
  
 done = nil
