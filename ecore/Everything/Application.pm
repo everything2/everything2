@@ -3536,9 +3536,22 @@ sub parseLinks {
        return $text;
 }
 
-sub getRandomNode {
-  my ($this) = @_;
-  return $this->{db}->getNodeById($this->{db}->sqlSelect("e2node_id", "e2node", "exists(select 1 from nodegroup where nodegroup_id=e2node_id) order by RAND() limit 1;"));
+sub getRandomNodesMany {
+  my ($this, $count) = @_;
+
+  $count = 1 if not defined($count);
+  $count = int($count);
+  $count = 20 if ($count > 20);
+
+  my $csr = $this->{db}->sqlSelectMany("e2node_id", "e2node", "exists(select 1 from nodegroup where nodegroup_id=e2node_id) order by RAND() limit $count;");
+
+  my $response = [];
+  while(my $row = $csr->fetchrow_arrayref)
+  {
+    my $n = $this->{db}->getNodeById($row->[0]);
+    push @$response, $n if defined($n);
+  }
+  return $response;
 }
 
 sub zen_wrap_nodelet {
