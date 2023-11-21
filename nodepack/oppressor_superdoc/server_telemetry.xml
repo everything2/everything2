@@ -1,0 +1,24 @@
+<node>
+  <doctext>&lt;pre&gt;
+[%
+ return `ps aux | grep apache2 | grep -v grep`;
+%]
+[%
+  return &quot;Apache threads running: &quot;.`ps aux | grep apache2 | grep -v grep | wc -l`;
+%]
+&lt;/pre&gt;
+&lt;pre&gt;
+[%
+  return `vmstat`;
+%]
+&lt;/pre&gt;
+&lt;pre&gt;
+[%
+  return `uptime`;
+%]
+&lt;/pre&gt;
+</doctext>
+  <node_id>2203605</node_id>
+  <title>Server Telemetry</title>
+  <type_nodetype>1144104</type_nodetype>
+</node>
