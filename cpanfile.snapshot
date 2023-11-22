@@ -1040,6 +1040,29 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Sub::Exporter::Progressive 0.001011
       perl 5.006
+  Devel-NYTProf-6.14
+    pathname: J/JK/JKEENAN/Devel-NYTProf-6.14.tar.gz
+    provides:
+      Devel::NYTProf 6.14
+      Devel::NYTProf::Apache 6.14
+      Devel::NYTProf::Constants undef
+      Devel::NYTProf::Core 6.14
+      Devel::NYTProf::Data 6.14
+      Devel::NYTProf::FileHandle undef
+      Devel::NYTProf::FileInfo undef
+      Devel::NYTProf::ReadStream 6.14
+      Devel::NYTProf::Reader 6.14
+      Devel::NYTProf::Run undef
+      Devel::NYTProf::SubCallInfo undef
+      Devel::NYTProf::SubInfo undef
+      Devel::NYTProf::Util 6.14
+    requirements:
+      ExtUtils::MakeMaker 0
+      File::Which 1.09
+      Getopt::Long 0
+      JSON::MaybeXS 0
+      List::Util 0
+      XSLoader 0
   Devel-OverloadInfo-0.007
     pathname: I/IL/ILMARI/Devel-OverloadInfo-0.007.tar.gz
     provides:
@@ -31961,6 +31984,15 @@ DISTRIBUTIONS
       Exporter 5.57
       ExtUtils::MakeMaker 0
       Text::ParseWords 0
+      perl 5.006
+  Ref-Util-XS-0.117
+    pathname: X/XS/XSAWYERX/Ref-Util-XS-0.117.tar.gz
+    provides:
+      Ref::Util::XS 0.117
+    requirements:
+      Exporter 5.57
+      ExtUtils::MakeMaker 0
+      XSLoader 0
       perl 5.006
   Role-Tiny-2.002004
     pathname: H/HA/HAARG/Role-Tiny-2.002004.tar.gz
