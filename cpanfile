@@ -31,7 +31,8 @@ requires 'Moose';
 # Handled by Ubuntu LTS for now
 # requires 'Image::Magick';
 
-# Paws requirement
+# Paws requirements
+requires 'Ref::Util::XS';
 requires 'Cpanel::JSON::XS';
 requires 'JSON::MaybeXS';
 requires 'Paws';
@@ -44,3 +45,6 @@ requires 'XML::Generator';
 requires 'XML::Parser';
 requires 'XML::Simple';
 requires 'namespace::autoclean';
+
+#Development Only
+requires 'Devel::NYTProf';
