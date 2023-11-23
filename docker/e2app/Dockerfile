@@ -31,10 +31,8 @@ RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest
 RUN curl -L "https://nodejs.org/dist/v20.9.0/node-v20.9.0-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
 RUN /usr/bin/npm install -g npm@latest
 
-COPY ./tools/write_apache_config.rb /var/bootstrap
 COPY ./tools/generate-self-signed-cert.rb /var/bootstrap
 COPY ./etc/templates/* /var/bootstrap/etc/
-RUN ruby /var/bootstrap/write_apache_config.rb
 RUN ruby /var/bootstrap/generate-self-signed-cert.rb
 
 COPY docker/e2app/apache2_wrapper.rb /etc/everything
