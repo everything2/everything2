@@ -36,7 +36,6 @@ AccessFileName .htaccess
 	Satisfy all
 </Files>
 
-PerlModule Devel::NYTProf::Apache
 <% if node["override_configuration"].eql? "development" %>
   Define E2_DEVELOPMENT
   UnDefine E2_PRODUCTION
