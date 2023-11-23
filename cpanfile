@@ -22,6 +22,7 @@ requires 'HTTP::Request';
 requires 'IO::Compress::Brotli';
 requires 'IO::Compress::Deflate';
 requires 'JSON';
+requires 'JSON::XS';
 requires 'LWP::UserAgent';
 requires 'Mason';
 requires 'Mason::Plugin::HTMLFilters';

@@ -36,18 +36,22 @@ AccessFileName .htaccess
 	Satisfy all
 </Files>
 
+PerlModule Devel::NYTProf::Apache
+<% if node["override_configuration"].eql? "development" %>
+  Define E2_DEVELOPMENT
+  UnDefine E2_PRODUCTION
+  PerlModule Devel::NYTProf::Apache
+<% else %>
+  Undefine E2_DEVELOPMENT
+  Define E2_PRODUCTION
+<% end %>
+
+
 ##### INCLUDE ADDITIONAL CONFIGURATION #####
 # Include module configuration:
 Include mods-enabled/*.load
 Include mods-enabled/*.conf
 
-<% if node["override_configuration"].eql? "development" %>
-  Define E2_DEVELOPMENT
-  UnDefine E2_PRODUCTION
-<% else %>
-  Undefine E2_DEVELOPMENT
-  Define E2_PRODUCTION
-<% end %>
 
   LogLevel warn
 
@@ -58,10 +62,6 @@ Include mods-enabled/*.conf
 #  CustomLog /etc/apache2/logs/healthcheck.log healthlog env=loghealthcheck
 
 <IfDefine E2_DEVELOPMENT>
-  Define E2StartServers 1
-  Define E2MinSpareServers 1
-  Define E2MaxSpareServers 1
-  Define E2MaxClients 1
 
   # CENTRAL ERROR LOG
   ErrorLogFormat "{\"time\":\"%{%usec_frac}t\", \"function\" : \"[%-m:%l]\", \"process\" : \"[pid%P]\" ,\"message\" : \"%M\"}"
@@ -76,13 +76,11 @@ Include mods-enabled/*.conf
 
 </IfDefine>
 
-<IfDefine E2_PRODUCTION>
-  Define E2StartServers 5
-  Define E2MinSpareServers 5
-  Define E2MaxSpareServers 15
-  #This number can't go higher than what the server can handle
-  Define E2MaxClients 20
-</IfDefine>
+Define E2StartServers 5
+Define E2MinSpareServers 5
+Define E2MaxSpareServers 15
+#This number can't go higher than what the server can handle
+Define E2MaxClients 20
 
 <IfModule mpm_prefork_module>
   StartServers         ${E2StartServers}
