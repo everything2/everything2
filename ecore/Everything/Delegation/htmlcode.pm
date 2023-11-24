@@ -135,9 +135,7 @@ sub admin_searchform
   my $nid = getId($NODE) || '';
   return unless $APP->isEditor($USER); 
 
-  my $servername = `hostname`;
-  chomp $servername;
-  $servername =~ s/\..*//g;
+  my $servername = $Everything::CONF->server_hostname;
   my $str = "<span class='var_label'>node_id:</span> <span class='var_value'>$nid</span>
 			<span class='var_label'>nodetype:</span> <span class='var_value'>".linkNode($$NODE{type})."</span>
 			<span class='var_label'>Server:</span> <span class='var_value'>$servername</span>";
