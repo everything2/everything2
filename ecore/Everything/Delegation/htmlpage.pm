@@ -1952,8 +1952,7 @@ sub podcast_display_page
   my $text = $APP->htmlScreen($$NODE{description}, $TAGS);
   $text = parseLinks($text);
 
-  my $str = "";
-  $str.= qq|<object type="application/x-shockwave-flash" data="http://static.everything2.com/player_mp3_maxi.swf" width="300" height="20"><param name="movie" value="http://static.everything2.com/player_mp3_maxi.swf" /><param name="bgcolor" value="#ffffff" /><param name="FlashVars" value="mp3=$$NODE{link}&amp;width=300&amp;autoload=0&amp;volume=50&amp;showstop=1&amp;showinfo=1&amp;showvolume=1" /></object><h2><a href='$$NODE{link}'>download mp3</a></h2>|;
+  my $str = qq|<h2><a href='$$NODE{link}'>download mp3</a></h2>|;
   $str.="$text";
   $str.='<p align="right">('.linkNode($NODE, 'edit', {'displaytype'=>'edit', 'lastnode_id'=>0}).")</p>" if canUpdateNode($USER, $NODE);
  
