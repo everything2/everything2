@@ -8,6 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use namespace::autoclean;
 use Config;
+use Sys::Hostname;
 
 has 'configfile' => (isa => 'Maybe[Str]', is => 'ro');
 has 'configdir' => (isa => 'Str', is => 'ro', default => '/etc/everything');
@@ -220,6 +221,8 @@ has 'room_cleanup_threshold' => (isa => 'Int', is => 'ro', default => 60*60*24*9
 has 'always_keep_rooms' => (isa => 'ArrayRef[Str]', is => 'ro', default => sub {["Valhalla", "Political Asylum", "M-Noder Washroom", "Noders Nursery", "Debriefing Room"]});
 
 has 'architecture' => (isa => 'Str', is => 'ro', builder => '_build_architecture');
+
+has 'server_hostname' => (isa => 'Str', is => 'ro', builder => '_build_server_hostname', lazy => 1);
 
 around BUILDARGS => sub
 {
@@ -440,6 +443,14 @@ sub _build_architecture
   my $arch = $Config{archname};
   $arch =~ s/-.*//g;
   return $arch;
+}
+
+sub _build_server_hostname
+{
+  my ($self) = @_;
+  my $hostname = Sys::Hostname::hostname;
+  $hostname =~ s/\..*//;
+  return $hostname;
 }
 
 __PACKAGE__->meta->make_immutable;
