@@ -85,6 +85,178 @@
         "Name": "everything2.com"
       }
     },
+    "E2DotComMainAlias": {
+      "Type": "AWS::Route53::RecordSet",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
+          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotComWWW": {
+      "Type": "AWS::Route53::RecordSet",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "www.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
+          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotComAssets": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "assets.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "S3hostedzoneID"]},
+          "DNSName": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotComNodeBackup": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "nodebackup.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "S3hostedzoneID"]},
+          "DNSName": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotComOutage": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "outage.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "S3hostedzoneID"]},
+          "DNSName": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotComSitemap": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "sitemap.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "S3hostedzoneID"]},
+          "DNSName": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotComHNImageW": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "hnimagew.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "S3hostedzoneID"]},
+          "DNSName": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotComImages": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "images.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "Type": "CNAME",
+        "TTL": "900",
+        "ResourceRecords": [
+          "everything2.com"
+        ]
+      }
+    },
+    "E2DotComMobile": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "m.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "Type": "CNAME",
+        "TTL": "900",
+        "ResourceRecords": [
+          "everything2.com"
+        ]
+      }
+    },
+    "E2DotOrgR53Zone": {
+      "Type": "AWS::Route53::HostedZone",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "everything2.org"
+      }
+    },
+    "E2DotOrgMainAlias": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "everything2.org",
+        "HostedZoneName": "everything2.org.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
+          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotOrgWWW": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "www.everything2.org",
+        "HostedZoneName": "everything2.org.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
+          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotNetR53Zone": {
+      "Type": "AWS::Route53::HostedZone",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "everything2.net"
+      }
+    },
+    "E2DotNetMainAlias": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "everything2.net",
+        "HostedZoneName": "everything2.net.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
+          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+        },
+        "Type": "A"
+      }
+    },
+    "E2DotNetWWW": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "www.everything2.net",
+        "HostedZoneName": "everything2.net.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
+          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+        },
+        "Type": "A"
+      }
+    },
     "E2DotComJSCSSWR53RR": {
       "Type": "AWS::Route53::RecordSet",
       "DeletionPolicy": "Retain",
@@ -647,7 +819,6 @@
         "ManagedPolicyArns": [
             {"Ref": "CodeBuildUpdateApplicationECRRegistry"},
             {"Ref": "DockerCodeBuildLogWritePolicy"},
-            {"Ref": "BuildcacheAccessPolicy"},
             {"Ref": "DockerHubSecretsAccessPolicy"},
             {"Ref": "DeployedAssetsManagement"},
             "arn:aws:iam::aws:policy/AWSCodeCommitReadOnly"
@@ -701,10 +872,6 @@
             {
               "Name": "NODEJS_ARCH",
               "Value": "x64"
-            },
-            {
-              "Name": "BUILDCACHE_BUCKET",
-              "Value": {"Ref": "BuildcacheBucket"}
             },
             {
               "Name": "SECRETS_BUCKET",
@@ -771,10 +938,6 @@
               "Value": "arm64"
             },
             {
-              "Name": "BUILDCACHE_BUCKET",
-              "Value": {"Ref": "BuildcacheBucket"}
-            },
-            {
               "Name": "SECRETS_BUCKET",
               "Value": {"Ref": "SecretsS3Bucket"}
             },
@@ -837,36 +1000,6 @@
             "Action": "logs:CreateLogStream",
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "DockerCodeBuildLogGroup", "Arn"] }, ":*"]]}
           }]
-        }
-      }
-    },
-    "BuildcacheBucket": {
-      "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "BucketName": "buildcache.everything2.com"
-      }
-    },
-    "BuildcacheAccessPolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Ability to access the buildcache bucket",
-        "ManagedPolicyName": "BuildcacheAccessPolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": ["s3:GetObject","s3:DeleteObject","s3:PutObject"],
-              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "BuildcacheBucket", "Arn"] }, "/*"]]}
-            },
-            {
-              "Effect": "Allow",
-              "Action": ["s3:ListBucket"],
-              "Resource": {"Fn::GetAtt": ["BuildcacheBucket", "Arn"]}
-            }
-          ]
         }
       }
     },
@@ -950,7 +1083,7 @@
       "Type": "AWS::IAM::ManagedPolicy",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "Description": "Allows nodepack lambda jobs to interact with the nodepack bucket",
+        "Description": "Allows nodepack cron jobs to interact with the nodepack bucket",
         "ManagedPolicyName": "NodepackS3Policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
