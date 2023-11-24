@@ -121,6 +121,7 @@ coreconfig+="
 		RewriteRule ^/?stylesheet/([^_]+)_v[0-9]+(_autofix)?\\.css      /stylesheet/$1$2.css  [R=307]
 
 		RewriteRule ^/?sitemap/(.+)$		   http://sitemap.everything2.com/$1 [P]
+		RewriteRule ^/?sitemap.xml$		   http://sitemap.everything2.com/index.xml [P]
 
 		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
 	</Directory>
