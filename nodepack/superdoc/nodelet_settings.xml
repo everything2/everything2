@@ -1,43 +1,5 @@
 <node>
-  <doctext>[%
-return '&lt;p&gt;You need to sign in or '
-	.linkNode(getNode('Sign up','superdoc'), 'register')
-	.' to use this page.&lt;/p&gt;
-	&lt;!-- ' if ($APP-&gt;isGuest($USER));
-
-$PAGELOAD-&gt;{pageheader} = '&lt;!-- bottom --&gt;'.htmlcode('settingsDocs');
-htmlcode('openform',-id=&gt;'pagebody');
-%]
-
-&lt;fieldset&gt;&lt;legend&gt;Choose and sort nodelets
-&lt;/legend&gt;
-You can change the order of nodelets by dragging and dropping the menus here (don't forget to save) or by dragging them around by the title on most other pages.
-[{rearrangenodelets:nodelets,classic nodelets,1}]
-If the 'Epicenter' nodelet is not selected, its functions are placed in the page header.&lt;/fieldset&gt;
-
-[%
-my $str;
-my @nodelets= split ',', $$VARS{nodelets};
-foreach (@nodelets){
-	my $n = getNodeById($_);
-	my $name = $$n{title}.' nodelet settings';
-	next unless $n &amp;&amp; $$n{type}-&gt;{title} eq 'nodelet' &amp;&amp;
-		getNode($name,'htmlcode');
-	my $id = lc($name);
-	$id =~ s/\W//g;
-	$str .= qq'&lt;fieldset id=&quot;$id&quot;&gt;&lt;legend&gt;$name&lt;/legend&gt;\n'.
-		htmlcode($name).&quot;\n&lt;/fieldset&gt;\n&quot;;
-}
-return &quot;&lt;h2&gt;Settings\n&lt;/h2&gt;\n$str&quot; if $str;
-'';
-%]
-
-[{closeform:Save settings}]
-[%
-return '--&gt;' if $APP-&gt;isGuest($USER);
-'';
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>1677879</node_id>
   <title>Nodelet Settings</title>
   <type_nodetype>14</type_nodetype>
