@@ -4679,7 +4679,7 @@ sub buildNodeInfoStructure
 
   $e2->{newWriteups} = [];
   # New Writeups or New Logs
-  if($VARS->{nodelets} =~ /263/ or $VARS->{nodelets} =~ /1923735/)
+  if($this->isGuest($USER) or $VARS->{nodelets} =~ /263/ or $VARS->{nodelets} =~ /1923735/)
   {
     $e2->{newWriteups} = $this->filtered_newwriteups($USER)
   }
@@ -4691,7 +4691,7 @@ sub buildNodeInfoStructure
   }
 
   # Recommended Reading
-  if($VARS->{nodelets} =~ /2027508/)
+  if($this->isGuest($USER) or $VARS->{nodelets} =~ /2027508/)
   {
     foreach my $section (qw/coolnodes staffpicks/)
     {

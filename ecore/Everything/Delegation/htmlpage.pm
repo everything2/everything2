@@ -4247,10 +4247,9 @@ sub node_listnodelets_page
   # probably much the way it is in pre-1.0
   #
 
-  unless ( $$VARS{nodelets} )
-  {
-    my ($DEFAULT) = $DB->getNodeById($Everything::CONF->default_nodeletgroup);
-    $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
+  unless ( $$VARS{nodelets} ) {
+    #push default nodelets on
+    $VARS->{nodelets} = join(',',@{$Everything::CONF->default_nodelets});
   }
 
   my $required = getNode('Master Control', 'nodelet') -> { node_id } ;

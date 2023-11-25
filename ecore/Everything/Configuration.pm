@@ -203,7 +203,51 @@ has 'site_description' => (isa => 'Str', is => 'ro', default => 'Everything2 is 
 has 'site_name' => (isa => 'Str', is => 'ro', default => 'Everything2');
 has 'create_new_user' => (isa => 'Int', is => 'ro', default => '2072173');
 has 'default_guest_node' => (isa => 'Int', is => 'ro', default => '2030780');
-has 'default_nodeletgroup' => (isa => 'Int', is => 'ro', default => '837990');
+
+has 'default_nodelets' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub{[
+  262, # Epicenter
+  2044453, # Messages
+  170070, # Chatterbox
+  91, # Other Users
+  263, # New Writeups
+  1157024, # ReadThis
+  165437, # Vitals
+  1689202 # Current User Poll
+]});
+
+has 'supported_nodelets' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub{[
+  2068913, # For Review
+  2044453, # Messages
+  1986723, # Most Wanted
+  1930708, # Notifications
+  1924754, # Usergroup Writeups
+  1923735, # New Logs
+  1689202, # Current User Poll
+  1290534, # Notelet
+  1322699, # Recent Nodes
+  1157024, # ReadThis
+  838296, # Statistics
+  836984, # Everything Developer
+  174581, # Personal Links
+  165437, # Vitals
+  263, # New Writeups
+  457857, # Random Nodes
+  170070, # Chatterbox
+  91, # Other Users
+  262, # Epicenter
+  2146276, # Quick Reference
+  1876005, # Favorite Noders
+  1935779, # Categories
+  2051342 # Neglected Drafts
+
+]});
+
+has 'guest_nodelets' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub {[
+  2029388, # Sign in
+  2027508, # Recommended Reading
+  263 # New Writeups
+]});
+
 has 'default_node' => (isa => 'Int', is => 'ro', default => '124');
 has 'default_duplicates_node' => (isa => 'Int', is => 'ro', default => '382987');
 has 'not_found_node' => (isa => 'Int', is => 'ro', default => '668164');
