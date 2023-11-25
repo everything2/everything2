@@ -251,7 +251,7 @@ sub nodelets
 
     return $output;
   }else{
-    return [$self->APP->node_by_name("default nodelets","nodeletgroup")->group];
+    return $self->CONF->default_nodelets;
   }
 }
 

@@ -5365,8 +5365,6 @@ sub nodelet_settings
 
     $str .= qq|<fieldset><legend>Choose and sort nodelets</legend> You can change the order of nodelets by dragging and dropping the menus here (don't forget to save) or by dragging them around by the title on most other pages.|;
 
-    my $nodeletgroup = 'classic nodelets';
-
     my $i = undef;
     my @selected = ();
     my $prefix = 'nodeletedit';
@@ -5383,7 +5381,7 @@ sub nodelet_settings
     }
 
     my $names = {'0'=>'(none)'};
-    my $ids = $DB->getNode($nodeletgroup,'nodeletgroup')->{group};
+    my $ids = $Everything::CONF->supported_nodelets;
     foreach my $id (@$ids,@selected)
     { # include @selected in case user has a non-standard nodelet selected
       my $n = $DB->getNodeById($id);

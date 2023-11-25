@@ -1000,43 +1000,48 @@ sub nodelet_meta_container
   return 'you disabled nodelets' if $$VARS{nodelets_off};
   return '' if $query->param('nonodelets');
 
-  my $str = undef;
+  my $str = "";
 
-  unless ( $$VARS{nodelets} ) {
-    #push default nodelets on
-    my ($DEFAULT) = $DB->getNodeById( $Everything::CONF->default_nodeletgroup );
-    $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
-  }
-
-  my $required = getNode('Master Control', 'nodelet') -> { node_id } ;
-  if( $APP->isEditor($USER) ) {
-    # If Master Control is not in the list of nodelets, add it right at the beginning. 
-    $$VARS{ nodelets } = "$required,".$$VARS{ nodelets } unless $$VARS{ nodelets } =~ /\b$required\b/ ;
+  my $nodelets = [];
+  if($APP->isGuest($USER))
+  {
+    $nodelets = $Everything::CONF->guest_nodelets;
   }else{
-    # Otherwise, if it is there, remove it, keeping a comma as required
-    $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 && $2 ? ",":""/ge;
-  }
+    unless ( $$VARS{nodelets} )
+    {
+      #push default nodelets on
+      $VARS->{nodelets} = join(',',@{$Everything::CONF->default_nodelets});
+    }
 
-  my $nodelets = $PAGELOAD->{pagenodelets} || $$VARS{nodelets} ;
-  my @nodelets = (undef); @nodelets = split(',',$nodelets) if $nodelets ;
+    my $required = getNode('Master Control', 'nodelet')->{node_id};
+    if( $APP->isEditor($USER) ) {
+      # If Master Control is not in the list of nodelets, add it right at the beginning. 
+      $$VARS{ nodelets } = "$required,".$$VARS{ nodelets } unless $$VARS{ nodelets } =~ /\b$required\b/ ;
+    }else{
+      # Otherwise, if it is there, remove it, keeping a comma as required
+      $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 && $2 ? ",":""/ge;
+    }
+    my $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets} ;
+    $nodelets = [split(',',$nodeletlist)] if $nodeletlist ;
 
-  return '' unless @nodelets;
+    return '' unless scalar(@$nodelets) > 0;
 
-  my $CB = getNode('chatterbox','nodelet') -> {node_id} ;
-  if (not $APP->isGuest($USER) and ($$VARS{hideprivmessages} or (not $$VARS{nodelets} =~ /\b$CB\b/)) and my $count = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER))) {
-    my $unArcCount = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER).' AND archive=0');
-    $str.='<p id="msgnum">you have <a id="msgtotal" href='.
-      urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'0'}).'>'.$count.'</a>'.
-      ( $unArcCount>0 ? '(<a id="msgunarchived" href='.
-      urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'1'}).'>'.$unArcCount.'</a>)' : '').
-      ' messages</p>';
+    my $CB = getNode('chatterbox','nodelet') -> {node_id} ;
+    if (($$VARS{hideprivmessages} or (not $$VARS{nodelets} =~ /\b$CB\b/)) and my $count = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER))) {
+      my $unArcCount = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER).' AND archive=0');
+      $str.='<p id="msgnum">you have <a id="msgtotal" href='.
+        urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'0'}).'>'.$count.'</a>'.
+        ( $unArcCount>0 ? '(<a id="msgunarchived" href='.
+        urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'1'}).'>'.$unArcCount.'</a>)' : '').
+        ' messages</p>';
+    }
   }
 
   my $errWrapper = '<div class="nodelet">%s</div>';
 
   my $nodeletNum=0;
 
-  foreach(@nodelets) {
+  foreach(@$nodelets) {
     my $current_nodelet = $DB->getNodeById($_);
     $nodeletNum++;
     unless(defined $current_nodelet) {
