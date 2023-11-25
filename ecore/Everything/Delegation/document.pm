@@ -5345,4 +5345,44 @@ sub writeups_by_type
   return $str;
 }
 
+sub nodelet_settings
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = '';
+  if($APP->isGuest($USER))
+  {
+    $str = '<p>You need to sign in or '.linkNode(getNode('Sign up','superdoc'), 'register').' to use this page.</p>';
+  }else{
+    $PAGELOAD->{pageheader} = '<!-- bottom -->'.htmlcode('settingsDocs');
+    $str = htmlcode('openform',-id=>'pagebody');
+
+    $str .= qq|<fieldset><legend>Choose and sort nodelets</legend> You can change the order of nodelets by dragging and dropping the menus here (don't forget to save) or by dragging them around by the title on most other pages.|;
+    $str .= htmlcode("rearrangenodelets","nodelets","classic nodelets",1);
+    $str .= qq|If the 'Epicenter' nodelet is not selected, its functions are placed in the page header.</fieldset>|;
+
+    my $settingsstr = "";
+    my @nodelets= split ',', $$VARS{nodelets};
+    foreach my $nodelet (@nodelets){
+	    my $n = getNodeById($nodelet);
+	    my $name = $$n{title}.' nodelet settings';
+	    next unless $n && $$n{type}->{title} eq 'nodelet' &&
+		  getNode($name,'htmlcode');
+	    my $id = lc($name);
+	    $id =~ s/\W//g;
+	    $settingsstr .= qq'<fieldset id="$id"><legend>$name</legend>\n'.htmlcode($name)."\n</fieldset>\n";
+    }
+    $str .= "<h2>Settings</h2>\n$settingsstr" if $settingsstr;
+
+    $str .= htmlcode("closeform","Save settings");
+  }
+  return $str;
+}
+
 1;
