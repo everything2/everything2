@@ -10,16 +10,8 @@
   <type_nodetype>15</type_nodetype>
   <validemail>1</validemail>
   <vars>
-    <key>collapsedNodelets</key>
-    <value>signin!</value>
-  </vars>
-  <vars>
     <key>hasRecalculated</key>
     <value>1</value>
-  </vars>
-  <vars>
-    <key>nodelets</key>
-    <value>2029388,2027508,263</value>
   </vars>
   <vars>
     <key>num_newwus</key>
