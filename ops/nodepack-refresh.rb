@@ -71,12 +71,22 @@ task_arn = ecsresult.tasks[0].task_arn
 puts "Watching task_arn: #{task_arn}"
 
 done = nil
+retries = 0
 while(done.nil?)
-  sleep 2
-  current_status = @ecsclient.describe_tasks(cluster: e2_cluster, tasks: [task_arn]).tasks[0].last_status
-  puts "Current nodepack job status: #{current_status}"
-  if current_status.eql? "STOPPED"
-    done = 1
+  begin
+    sleep 2
+    current_status = @ecsclient.describe_tasks(cluster: e2_cluster, tasks: [task_arn]).tasks[0].last_status
+    puts "Current nodepack job status: #{current_status}"
+    if current_status.eql? "STOPPED"
+      done = 1
+    end
+  rescue SocketError => e
+    if retries.eql? 6
+      puts "Failing to monitor nodepack job"
+    else
+      puts "Retrying connection: #{e.message}"
+      retries = restries + 1
+    end
   end
 end
 

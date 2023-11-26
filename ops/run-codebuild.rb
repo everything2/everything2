@@ -11,14 +11,26 @@ build_id = result.build.id
  
 done = nil
 status = nil
-while(done.nil?)
-  status = client.batch_get_builds(ids: [build_id]).builds[0].build_status
-  puts "#{build_id}: #{status}"
+retries = 0
 
-  if(status.eql? "IN_PROGRESS")
-    sleep 2
-  else
-    done = 1
+while(done.nil?)
+  begin
+    status = client.batch_get_builds(ids: [build_id]).builds[0].build_status
+    puts "#{build_id}: #{status}"
+
+    if(status.eql? "IN_PROGRESS")
+      sleep 2
+    else
+      done = 1
+    end
+  rescue Exception => e
+    if retries.eql? 6
+      puts "Bailing out due to connectivity issues"
+      exit
+    else
+      retries = retries +1
+      puts "Retrying after error: #{e.message}"
+    end
   end
 end
 
