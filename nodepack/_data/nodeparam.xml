@@ -100,11 +100,6 @@
     <paramvalue>1</paramvalue>
   </nodeparam>
   <nodeparam>
-    <node_id>837990</node_id>
-    <paramkey>prevent_nuke</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
     <node_id>838015</node_id>
     <paramkey>allow_message_archive</paramkey>
     <paramvalue>1</paramvalue>

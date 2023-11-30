@@ -32,8 +32,7 @@ my %CLR = (
   image =&gt; &quot;#33CCFF&quot;,
   default =&gt; '#ffffff',
   container =&gt; '#FFCC99',
-  nodelet =&gt; '#CCFFCC',
-  nodeletgroup =&gt; '#99FF99'
+  nodelet =&gt; '#CCFFCC'
 );
 
 my $type = $query-&gt;param('whichtype');
