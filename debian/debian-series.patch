@@ -1,6 +1,6 @@
---- debian/patches/series.orig  2023-04-23 02:56:49.812448033 +0000
-+++ debian/patches/series       2023-04-23 02:57:01.589448133 +0000
-@@ -8,26 +8,3 @@
+--- debian/patches/series.org	2023-12-02 19:44:59
++++ debian/patches/series	2023-12-02 19:47:19
+@@ -8,30 +8,3 @@
  #buffer-http-request-bodies-for-tlsv13.diff
  #tlsv13-add-logno.diff
  fix-macro.patch
@@ -27,3 +27,7 @@
 -CVE-2023-25690-1.patch
 -CVE-2023-25690-2.patch
 -CVE-2023-27522.patch
+-mod_proxy_hcheck_jammy_fix_to_detect_support.patch
+-reenable-workers-in-standard-error-state-jammy-apache2.patch
+-update_http2.patch
+-CVE-2023-31122.patch

@@ -240,19 +240,25 @@ sub nodelets
 {
   my ($self) = @_;
   my $output = [];
+  my $nodeletids;
+
   if($self->VARS->{nodelets})
   {
-    foreach my $nodelet (split(",",$self->VARS->{nodelets}))
-    {
-      my $nodelet = $self->APP->node_by_id($nodelet);
-      next unless $nodelet;
-      push @$output, $nodelet;
-    }
-
-    return $output;
+    $nodeletids = [split(",",$self->VARS->{nodelets})];
+  }elsif($self->is_guest){
+    $nodeletids = $self->CONF->guest_nodelets;
   }else{
-    return $self->CONF->default_nodelets;
+    $nodeletids = $self->CONF->default_nodelets;
   }
+  
+  foreach my $n (@$nodeletids)
+  {
+    my $nodelet = $self->APP->node_by_id($n);
+    next unless $nodelet;
+    push @$output, $nodelet;
+  }
+
+  return $output;
 }
 
 sub is_borged
