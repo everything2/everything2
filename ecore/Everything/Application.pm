@@ -4678,20 +4678,24 @@ sub buildNodeInfoStructure
   $e2->{developerNodelet} = {};
 
   $e2->{newWriteups} = [];
+
+  my $nodelets = $VARS->{nodelets};
+  $nodelets = "" unless defined($nodelets);
+
   # New Writeups or New Logs
-  if($this->isGuest($USER) or $VARS->{nodelets} =~ /263/ or $VARS->{nodelets} =~ /1923735/)
+  if($this->isGuest($USER) or $nodelets =~ /263/ or $nodelets =~ /1923735/)
   {
     $e2->{newWriteups} = $this->filtered_newwriteups($USER)
   }
 
   # The second half of New Logs
-  if($VARS->{nodelets} =~ /1923735/)
+  if($nodelets =~ /1923735/)
   {
     $e2->{daylogLinks} = $this->{db}->stashData("dayloglinks");
   }
 
   # Recommended Reading
-  if($this->isGuest($USER) or $VARS->{nodelets} =~ /2027508/)
+  if($this->isGuest($USER) or $nodelets =~ /2027508/)
   {
     foreach my $section (qw/coolnodes staffpicks/)
     {
@@ -4718,9 +4722,15 @@ sub buildNodeInfoStructure
   }
 
   # Random Nodes
-  if($VARS->{nodelets} =~ /457857/)
+  if($nodelets =~ /457857/)
   {
     $e2->{randomNodes} = $this->{db}->stashData("randomnodes");
+  }
+
+  # Neglected Drafts
+  if($nodelets =~ /2051342/)
+  {
+    $e2->{neglectedDrafts} = $this->{db}->stashData("neglecteddrafts");
   }
 
   return $e2;

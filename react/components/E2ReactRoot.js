@@ -20,6 +20,11 @@ import RandomNodes from './Nodelets/RandomNodes'
 import SignInPortal from './Portals/SignInPortal'
 import SignIn from './Nodelets/SignIn'
 
+/*
+import NeglectedDraftsPortal from './Portals/NeglectedDrafts'
+import NeglectedDrafts from './Nodelets/NeglectedDrafts'
+*/
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -85,6 +90,7 @@ class E2ReactRoot extends React.Component {
       recommendedreading_show: true,
       newlogs_show: true,
       randomnodes_show: true,
+      neglecteddrafts_show: true,
 
       signin_show: false,
 
@@ -94,11 +100,13 @@ class E2ReactRoot extends React.Component {
 
       randomNodes: [],
 
+      neglectedDrafts: {},
+
       loginMessage: ""
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes"]
-    const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes","neglectedDrafts"]
+    const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs","neglecteddrafts"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
@@ -345,6 +353,13 @@ class E2ReactRoot extends React.Component {
           <SignIn nodeletIsOpen={this.state.signin_show} user={this.state.user} loginGoto={this.state.loginGoto} loginMessage={this.state.loginMessage} />
         </ErrorBoundary>
       </SignInPortal>
+      {/*
+      <NeglectedDraftsPortal>
+        <ErrorBoundary>
+          <NeglectedDrafts showNodelet={this.showNodelet} nodeletIsOpen={this.state.signin_show} neglectedDrafts={this.state.neglectedDrafts} />
+        </ErrorBoundary>
+      </NeglectedDraftsPortal>
+      */}
       </>
   }
 }
