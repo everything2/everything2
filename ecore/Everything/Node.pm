@@ -13,7 +13,7 @@ with 'Everything::Globals';
 has 'NODEDATA' => (isa => "HashRef", required => 1, is => "rw");
 has 'author' => (is => "ro", lazy => 1, builder => "_build_author");
 has 'is_group' => (is => "ro", default => 0);
-
+has 'notes' => (is => "ro", isa => "ArrayRef", lazy => 1, builder => "_build_notes");
 
 sub id
 {
@@ -248,6 +248,21 @@ sub is_null
 {
   my ($self) = @_;
   return 0;
+}
+
+sub _build_notes
+{
+  my ($self) = @_;
+
+  my $csr = $self->DB->sqlSelectMany("*", "nodenote", "nodenote_nodeid=".$self->node_id." order by timestamp desc");
+
+  my $outdata = [];
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    push @$outdata, $row;
+  }
+
+  return $outdata;
 }
 
 __PACKAGE__->meta->make_immutable;

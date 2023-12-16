@@ -80,13 +80,18 @@ sub generate
 
   foreach my $params (@$parameters)
   {
-    my $cuss = $this->DB->sqlSelectMany(
-      "node_id, title, author_user, basenote.nodenote_id, DATEDIFF(NOW(), basenote.timestamp) AS days",
+    my $csr = $this->DB->sqlSelectMany(
+      "node_id",
       "draft JOIN node on node_id = draft_id JOIN nodenote AS basenote ON draft_id = nodenote_nodeid AND basenote.noter_user $$params{noter_user}
         LEFT JOIN nodenote AS newer ON basenote.nodenote_nodeid = newer.nodenote_nodeid AND basenote.timestamp < newer.timestamp",
       "publication_status = $review AND basenote.timestamp < NOW()- INTERVAL $$params{neglect} DAY AND newer.timestamp IS NULL",
       "ORDER BY basenote.timestamp");
-    $output->{lc($params->{who})} = $cuss->fetchall_arrayref({});
+
+    while(my $row = $csr->fetchrow_arrayref)
+    {
+      $output->{lc($params->{who})} ||= [];
+      push @{$output->{lc($params->{who})}},$this->APP->node_by_id($row->[0])->neglected_drafts_reference;
+    }
 
     foreach my $N(@{$output->{lc($params->{who})}})
     {
