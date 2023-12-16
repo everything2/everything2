@@ -1105,7 +1105,7 @@
       "Type": "AWS::ECS::TaskDefinition",
       "Properties": {
         "Cpu": 1024,
-        "Memory": 3072,
+        "Memory": 2048,
         "Family": "e2app-family",
         "ExecutionRoleArn": {"Ref": "E2TaskExecutionRole"},
         "RequiresCompatibilities": ["FARGATE"],
@@ -1118,7 +1118,7 @@
         "ContainerDefinitions": [{
           "Name": "e2app",
           "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistryARM","RepositoryUri"]},"latest"]]},
-          "Memory": 3072,
+          "Memory": 2048,
           "Essential": true,
           "HealthCheck": {
             "Interval": 10,
@@ -1418,7 +1418,7 @@
         "PolicyType": "TargetTrackingScaling",
         "ScalingTargetId": {"Ref": "FargateAppScalableTarget"},
         "TargetTrackingScalingPolicyConfiguration": {
-          "TargetValue": 60,
+          "TargetValue": 80,
           "ScaleInCooldown": 60,
           "ScaleOutCooldown": 60,
           "PredefinedMetricSpecification": {
