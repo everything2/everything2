@@ -1418,7 +1418,6 @@
         "PolicyType": "TargetTrackingScaling",
         "ScalingTargetId": {"Ref": "FargateAppScalableTarget"},
         "TargetTrackingScalingPolicyConfiguration": {
-          "DisableScaleIn": true,
           "TargetValue": 60,
           "ScaleInCooldown": 60,
           "ScaleOutCooldown": 60,
