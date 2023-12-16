@@ -35,7 +35,11 @@ while(done.nil?)
 end
 
 if status.eql? "SUCCEEDED"
-  pp ecs.update_service(cluster: 'E2-App-ECS-Cluster', service: 'E2-App-Fargate-Service', task_definition: 'e2app-family', desired_count: 2, force_new_deployment: true)
+  e2cluster = 'E2-App-ECS-Cluster'
+  e2service = 'E2-App-Fargate-Service'
+  build_count = ecs.describe_services(cluster: e2cluster,services: [e2service]).services[0].desired_count
+  
+  pp ecs.update_service(cluster: e2cluster, service: e2service, task_definition: 'e2app-family', desired_count: build_count, force_new_deployment: true)
 else
   puts "Failed, could not deploy cluster"
 end
