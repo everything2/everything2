@@ -19,10 +19,11 @@ sub neglected_drafts_reference
     unless(UNIVERSAL::isa($self->$key, "Everything::Node::null"))
     {
       $outdata->{"draft_$key"} = $self->$key->json_reference;
+      $outdata->{$key} = $self->$key->json_reference;
     }
   }
 
-  foreach my $key (qw|author_user title node_id|)
+  foreach my $key (qw|title node_id|)
   {
     $outdata->{$key} = $self->{NODEDATA}->{$key};
   }
