@@ -12149,7 +12149,7 @@ sub Personal_Links_nodelet_settings
   my $n = undef;
   while(defined $query->param($name.$i))
   {
-    $n=$APP->htmlScreen($query->param($name.$i));
+    $n=$APP->htmlScreen(scalar($query->param($name.$i)));
     $n =~ s/\[/\&\#91;/g;
     $n =~ s/\]/\&\#93;/g;
     push(@newnodes, $n) unless $query->param($delname.$i) || $n =~ /^\s*$/;
