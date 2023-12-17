@@ -1083,41 +1083,7 @@ sub messages
 
 sub neglected_drafts
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $setType = sub{
-    # make hashref look enough like a real node that linkNode works properly
-    $_[0] -> {type}{title} = 'draft';
-    '';
-  };
-
-  my $days = sub{
-    qq'<span class="days">&#91;$_[0]->{days} days&#93;</span>';
-  };
-
-  my $str = "";
-
-  my $data = $DB->stashData("neglecteddrafts");
-
-  foreach my $param (qw(Editor Author))
-  {
-    $str .= "<h4>$param neglect</h4>";
-    my $list = htmlcode('show content', $data->{lc($param)}, '<li> setType, title, byline, days', setType => $setType, days => $days);
-
-    if ($list){
-      $str .= qq'<ul class="infolist">$list</ul>' if $list;
-    }else{
-      $str .= '<p><small><em>(none)</em></small></p>';
-    }
-  }
-
-  return $str.qq|<div class="nodeletfoot"><a href="/node/superdoc/Drafts For Review">Drafts for Review</a></div>|;
+  return '';
 }
 
 sub for_review

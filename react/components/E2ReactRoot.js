@@ -20,10 +20,8 @@ import RandomNodes from './Nodelets/RandomNodes'
 import SignInPortal from './Portals/SignInPortal'
 import SignIn from './Nodelets/SignIn'
 
-/*
 import NeglectedDraftsPortal from './Portals/NeglectedDrafts'
 import NeglectedDrafts from './Nodelets/NeglectedDrafts'
-*/
 
 import { E2IdleHandler } from './E2IdleHandler'
 
@@ -353,13 +351,11 @@ class E2ReactRoot extends React.Component {
           <SignIn nodeletIsOpen={this.state.signin_show} user={this.state.user} loginGoto={this.state.loginGoto} loginMessage={this.state.loginMessage} />
         </ErrorBoundary>
       </SignInPortal>
-      {/*
       <NeglectedDraftsPortal>
         <ErrorBoundary>
-          <NeglectedDrafts showNodelet={this.showNodelet} nodeletIsOpen={this.state.signin_show} neglectedDrafts={this.state.neglectedDrafts} />
+          <NeglectedDrafts showNodelet={this.showNodelet} nodeletIsOpen={this.state.neglecteddrafts_show} neglectedDrafts={this.state.neglectedDrafts} />
         </ErrorBoundary>
       </NeglectedDraftsPortal>
-      */}
       </>
   }
 }
