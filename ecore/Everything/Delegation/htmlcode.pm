@@ -5497,6 +5497,7 @@ sub nodeletsection
   if($showContent)
   {
     $content = htmlcode($sectionId);
+    $content = "" if not defined($content);
     $content = qq'<div class="sectioncontent">\n$content\n</div>\n';
   }
 
