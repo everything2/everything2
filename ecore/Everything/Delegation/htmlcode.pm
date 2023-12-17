@@ -4042,7 +4042,7 @@ sub static_javascript
   $e2->{collapsedNodelets} =~ s/\bsignin\b// if($query->param('op') and $query->param('op') eq 'login');
 
 
-  if($e2->{user}->{developer} and $VARS->{nodelets} =~ /836984/)
+  if($e2->{user}->{developer} and defined($VARS->{nodelets}) and $VARS->{nodelets} =~ /836984/)
   {
     my $edev = getNode("edev","usergroup");
     my $page = Everything::HTML::getPage($NODE, scalar($query->param("displaytype")));
