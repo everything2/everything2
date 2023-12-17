@@ -5,20 +5,20 @@ import NodeletContainer from '../NodeletContainer'
 const NeglectedDrafts = (props) => {
 
   return (<NodeletContainer title="Neglected Drafts" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen} neglectedDrafts={props.neglectedDrafts}>
-  {
+  <>{
       ['editor','author'].map((type,index) => {
-        return (<><h4>{type[0].toUpperCase() + type.slice(1)} neglect</h4>        
+        return (<div key={`neglected_${type}`}><h4>{type[0].toUpperCase() + type.slice(1)} neglect</h4>        
           <ul className="infolist">
           {(props.neglectedDrafts[type].length > 0)?(
           props.neglectedDrafts[type].map((entry, idx) => {
-              return (<li className="contentinfo" key={`neglected_${entry.node_id}`}><LinkNode id={entry.node_id} title={entry.title} className="title"/><cite> by <LinkNode id={entry.draft_author.id} title={entry.draft_author.title} /></cite>
+              return (<li key={`neglected_${type}_${entry.node_id}`} className="contentinfo"><LinkNode id={entry.node_id} title={entry.title} className="title"/><cite> by <LinkNode id={entry.draft_author.id} title={entry.draft_author.title} /></cite>
                 <span className="days"> [{entry.days} days]</span></li>)
-            })):('<p><small><em>(none)</em></small></p>')
+            })):(<p><small><em>(none)</em></small></p>)
           }
-          </ul></>
+          </ul></div>
         )
       })
-    }<div className="nodeletfoot" key="drafts_foot"><LinkNode title="Drafts For Review" type="superdoc" /></div>
+    }<div className="nodeletfoot"><LinkNode title="Drafts For Review" type="superdoc" /></div></>
   </NodeletContainer>)
 }
 
