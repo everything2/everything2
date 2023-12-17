@@ -11,7 +11,7 @@ const NeglectedDrafts = (props) => {
           <ul className="infolist">
           {(props.neglectedDrafts[type].length > 0)?(
           props.neglectedDrafts[type].map((entry, idx) => {
-              return (<li key={`neglected_${type}_${entry.node_id}`} className="contentinfo"><LinkNode id={entry.node_id} title={entry.title} className="title"/><cite> by <LinkNode id={entry.draft_author.id} title={entry.draft_author.title} /></cite>
+              return (<li key={`neglected_${type}_${entry.node_id}`} className="contentinfo"><LinkNode id={entry.node_id} title={entry.title} className="title"/><cite> by <LinkNode id={entry.author.id} title={entry.author.title} /></cite>
                 <span className="days"> [{entry.days} days]</span></li>)
             })):(<p><small><em>(none)</em></small></p>)
           }

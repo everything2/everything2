@@ -18,7 +18,6 @@ sub neglected_drafts_reference
   {
     unless(UNIVERSAL::isa($self->$key, "Everything::Node::null"))
     {
-      $outdata->{"draft_$key"} = $self->$key->json_reference;
       $outdata->{$key} = $self->$key->json_reference;
     }
   }
