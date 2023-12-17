@@ -3980,37 +3980,6 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
   return $str;
 }
 
-# Almost certainly going to be a template item
-#
-sub guestuserbanner
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return "";
-  # return "" unless($APP->isGuest($USER));
-  # return "" unless($NODE->{type}->{title} eq "writeup" or $NODE->{type}->{title} eq "e2node");
-
-  # my $style = q|-moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; align: center; width: 80%; background-color: #fdffd4; border-style:solid; border-color: #bbbbbb; border-width: 1px; min-width:300px; min-height: 70px; margin-left: auto; margin-right: auto; margin-bottom: 10px; padding: 10px; font-family: 'arial',sans-serif; font-size: 130%;|;
-
-  # my $nodeshell = "";
-  # if($NODE->{type}->{title} eq "e2node" or $query->param('nodeshell') == 1)
-  # {
-  #   if(not defined $NODE->{group} or scalar(@{$NODE->{group}}) == 0)
-  #   {
-  #     $nodeshell = "<br /><br /><em><strong>$$NODE{title}</strong></em> is a topic without any content; merely an idea or a thought that someone found interesting. If you sign up for an account, you can add something here.";
-  #   }
-  # }
-
-  # return "<div id=\"guestuserbanner\" style=\"$style\"><strong>Welcome!</strong><br /><em>Everything2</em> is a community of readers and writers who write about pretty much anything and share their feedback with others. It's a great place to get help with your writing or just lose yourself in nearly a half-million pieces from over a decade in existence. People come here to contribute and read fiction, nonfiction, poetry, reviews, or their thoughts on the day. If you'd like to give feedback, offer a correction, or contribute your own work, <a href=\"/node/superdoc/Sign+up\">sign up</a>!$nodeshell</div>";
-
-}
-
 sub static_javascript
 {
   my $DB = shift;

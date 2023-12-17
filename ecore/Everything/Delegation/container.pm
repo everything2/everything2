@@ -122,7 +122,6 @@ sub zen_container
   $str.=qq|<div id='e2logo'><a href="/">Everything<span id="e2logo2">2</span></a></div></div>|;
 
   $str.=qq|<div id='wrapper'>|;
-  $str.=htmlcode("guestuserbanner");
 
   $str.=qq|<div id='mainbody' itemprop="mainContentOfPage"><!-- google_ad_section_start -->|;
   $str.=htmlcode("page header");
