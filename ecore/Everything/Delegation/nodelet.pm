@@ -105,9 +105,8 @@ sub other_users
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str = "";
-
-  $str .= htmlcode("changeroom","Other Users");
+  my $str = htmlcode("changeroom","Other Users");
+  $str = "" if not defined($str);
 
   my $wherestr = "";
 
