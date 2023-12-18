@@ -2092,10 +2092,12 @@ sub ilikeit
   my $nid = $query->param("like_id");
   return unless $nid;
 
+  my $LIKE = getNodeById($nid);
+  return unless $LIKE;
+
   my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
   return if $DB->sqlSelect("count(*)","likedit","likedit_ip = '$addr' and likedit_node=$nid");
-
-  my $LIKE = getNodeById($nid);
+ 
   my $GU = $Everything::CONF->guest_user;
 
   my $lType = getNode("ilikeit","linktype")->{node_id};
