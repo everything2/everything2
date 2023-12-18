@@ -3836,6 +3836,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
     #HTML tags in links
     $c='';
     foreach(@wuPartLink) {
+      next unless defined $_;
       $i = (($i=index($_,'|'))==-1) ? $_ : substr($_,0,$i);	#only care about part that links, not display
       if(defined($i) and $i =~ /<.*?>/) {
         $c.=', ' if length($c);
