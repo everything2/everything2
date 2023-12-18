@@ -12894,11 +12894,11 @@ sub setdraftstatus
   }
 
   my ($publishas, $advanced) = (undef,undef);
-  if ($query -> param('advanced'))
+  if ($query->param('advanced'))
   {
     $publishas = htmlcode('canpublishas');
 
-    $publishas = $query -> p($publishas) if $publishas;
+    $publishas = $query->p($publishas) if $publishas;
 
     $advanced = '<button type="submit" name="confirmop" value="publishdrafttodocument"
       title="publish this draft as a document">Publish as document</button>' if $APP->isEditor($USER);
@@ -12910,7 +12910,11 @@ sub setdraftstatus
       ) if $APP->getLevel($USER);
   }
 
-  $advanced = $query -> p($advanced) if $advanced;
+  $advanced = $query->p($advanced) if $advanced;
+
+  $publishas = "" if not defined($publishas);
+  $advanced = "" if not defined($advanced);
+  $detach = "" if not defined($detach);
 
   unless ($stash{removed} == $$N{publication_status})
   {
