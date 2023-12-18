@@ -4387,8 +4387,10 @@ sub draft_display_page
   }
 
   my $str = undef;
+  my $nukedraft = $query->param('nukedraft');
+  $nukedraft = "" if not defined($nukedraft);
 
-  if ($query -> param('nukedraft') eq 'Delete draft' && htmlcode('verifyRequest', 'nukedraft'))
+  if ($nukedraft eq 'Delete draft' && htmlcode('verifyRequest', 'nukedraft'))
   {
     my @fields = $DB -> getFieldsHash('draft', 0);
     my $linktype = getId(getNode 'parent_node', 'linktype');
