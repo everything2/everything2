@@ -3822,9 +3822,12 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
       push @problems, $curCat.'It looks like you forgot to close a link, since you tried to link to a node with &#91; in the title. Here is what you linked to: '.$c.'.';
     }
 
-    #forgot to close a link - no final ]
-    if( ($i=index($wuPartText[-1],'['))!=-1 ) {
-      push @problems, $curCat.'Oops, it looks like you forgot to close your last link. You ended with: " <code>'.$APP->encodeHTML(substr($wuPartText[-1],$i),1).'</code> ".';
+    if(defined($wuPartText[-1]))
+    {
+      #forgot to close a link - no final ]
+      if( ($i=index($wuPartText[-1],'['))!=-1 ) {
+        push @problems, $curCat.'Oops, it looks like you forgot to close your last link. You ended with: " <code>'.$APP->encodeHTML(substr($wuPartText[-1],$i),1).'</code> ".';
+      }
     }
 
   } #end show default hints
