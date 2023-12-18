@@ -4239,6 +4239,8 @@ sub node_listnodelets_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
+  return '' if $APP->isGuest($USER);
+
   my $str = qq|<table><tr><td>|;
   $str .= htmlcode("zensearchform");
   $str .= qq|</td></tr></table><div class="nodelet"><div class="nodelet_title">Nodelets</div>|;
@@ -4296,6 +4298,8 @@ sub node_shownodelet_page
   my $VARS = shift;
   my $PAGELOAD = shift;
   my $APP = shift;
+
+  return '' if $APP->isGuest($USER);
 
   my $nodelet_id = $query->param('nodelet_id');
   my $current_nodelet = getNode($nodelet_id);
