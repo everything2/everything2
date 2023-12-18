@@ -6320,11 +6320,20 @@ sub displayWriteupInfo
     if ($str)
     {
       my $author = getNodeById( $$WRITEUP{ author_user } ) ;
-      $author = $author -> { title } if $author ;
+      $author = $author->{ title } if $author ;
       $author =~ s/[\W]/ /g ;
+
+      my $target = $query->param( 'target' );
+      $target = 0 if not defined($target);
+      my $nid = $query->param( 'nid' );
+      $nid = 0 if not defined($nid);
+
+      my $op = $query->param( 'op' );
+      $op = "" if not defined($op);
+      
       $query->param( 'showwidget' , 'addto'.$$WRITEUP{ node_id } ) if(
-        $query->param( 'op' ) eq 'weblog' and $query->param( 'target' ) == $$WRITEUP{ node_id } or
-        $query->param( 'op' ) eq 'category' and $query->param( 'nid' ) == $$WRITEUP{ node_id });
+        $op eq 'weblog' and $target == $$WRITEUP{ node_id } or
+        $op eq 'category' and $nid == $$WRITEUP{ node_id });
 
       $str = htmlcode( 'widget' , '
         <small>'.htmlcode( 'bookmarkit' , $WRITEUP , "Add $author"."'s writeup to your E2 bookmarks" ).'</small>
