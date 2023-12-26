@@ -756,7 +756,6 @@ sub insertNodelet
 
 	if(my $delegation = Everything::Delegation::nodelet->can($delegation_name))
 	{
-	  $APP->devLog("Accepting delegation for nodelet: $NODELET->{title} as $delegation_name");
 	  my $nltext = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
           return $APP->zen_wrap_nodelet($NODELET->{title}, $nltext);
 	}
