@@ -11961,7 +11961,7 @@ sub weblogform
 
   $options = "\n\t\t\t<option value=\"\" selected=\"selected\">Choose&hellip;</option>$options" unless $sourceid ;
 
-  my ( $class , $addnid ) = (undef,undef); ($class, $addnid) = ( "wuformaction " , $$N{ node_id } ) if $inwriteupform ;
+  my ( $class , $addnid ) = ("",""); ($class, $addnid) = ( "wuformaction " , $$N{ node_id } ) if $inwriteupform ;
   $class .= "ajax weblogform$$N{node_id}:weblogform?op=weblog&target=/target$addnid&source=/source$addnid:$$N{node_id},$inwriteupform" ;
 
   return qq'<fieldset id="weblogform$$N{node_id}"><legend>Add this '	.
