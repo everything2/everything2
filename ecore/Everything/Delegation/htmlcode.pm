@@ -978,9 +978,10 @@ sub password_field
     }
   }
 
-  $query -> delete('oldpass', $name.1, $name.2);
+  $query->delete('oldpass', $name.1, $name.2);
 
-  return $str . '<label>Your current password:'.$query->password_field(-name=>"oldpass", size=>10, -label=>'') . '</label><br>
+  $str = "" if not defined($str);
+  return $str.'<label>Your current password:'.$query->password_field(-name=>"oldpass", size=>10, -label=>'').'</label><br>
 
   <label>Enter a new password:'.$query->password_field(-name=>$name.'1', size=>10).'</label><br>
 
@@ -1352,7 +1353,9 @@ sub show_content
       my $text = $N->{ doctext } ;
       # Superdoc stuff hardcoded below
       $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq "14" or $$N{ type }{ extends_nodetype } eq "14" ) ;
+      $APP->devLog("Before breakTags: $text");
       $text = $APP->breakTags( $text ) ;
+      $APP->devLog("After breakTags: $text");
 
       my ( $dots , $morelink ) = ( '' , '' ) ;
       if ( $length && length( $text ) > $length + $showanyway ) {
@@ -1364,6 +1367,7 @@ sub show_content
       }
 
       $text = $APP->screenTable( $text ) if $lastnodeid ; # i.e. if writeup page & logged in
+      $APP->devLog("After screenTable: $text");
       $text = parseLinks( $APP->htmlScreen( $text , $HTML ) , $lastnodeid ) ;
       return "\n<div class=\"content\">\n$text$dots\n</div>$morelink" unless $xml ;
 
