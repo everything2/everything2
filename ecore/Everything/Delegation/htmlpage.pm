@@ -759,7 +759,8 @@ sub classic_user_edit_page
       $query->param($k,'');
     }
 
-    $str .= htmlcode('showuserimage','1');
+    my $showuserimage = htmlcode('showuserimage','1');
+    $str .= $showuserimage if defined($showuserimage);
     $str .= '<br />' . $query->checkbox($k, '', '1', 'remove image') if (exists $$NODE{imgsrc}) && length($$NODE{imgsrc});
   }
 
@@ -1239,7 +1240,7 @@ sub writeup_display_page
       .htmlcode('editwriteup', $NODE)
       .qq|</form>|;
   }
-
+  
   return $str;
 }
 

@@ -821,7 +821,7 @@ sub displayPage
 		{
 			$APP->devLog("Using delegated htmlpage for '$pagetitle'");
 			# $NODE twice for legacy reasons though I am not sure if anyone needs it
-			$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $NODE);	
+			$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $NODE);
 		}else{
 			$APP->devLog("Using legacy htmlpage for '$pagetitle'");
 			$page = $$PAGE{page};
@@ -829,17 +829,16 @@ sub displayPage
 			$page = parseCode($page, $NODE);
 		}
 
-        	my $container_node = $DB->getNodeById($$PAGE{parent_container});
+        my $container_node = $DB->getNodeById($$PAGE{parent_container});
 
-        	if($container_node and my $delegation = Everything::Delegation::container->can($container_node->{title}))
-        	{
-			$APP->devLog("Using Everything::Delegation::container::$container_node->{title} for node: '$NODE->{title}'");
-                	$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $page);
-        	}
+        if($container_node and my $delegation = Everything::Delegation::container->can($container_node->{title}))
+        {
+          $page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $page);
+        }
 
 		setVars $USER, $VARS unless $APP->isGuest($USER);
 
-                $page = $APP->optimally_compress_page($page);
+        $page = $APP->optimally_compress_page($page);
 		printHeader($$NODE{datatype}, $page, $lastnode);
 		$query->print($page);
 		$page = "";
