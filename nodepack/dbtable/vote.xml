@@ -8,7 +8,7 @@
   PRIMARY KEY (`vote_id`,`voter_user`),
   KEY `voter_user` (`voter_user`),
   KEY `vote_voter_user` (`voter_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>444190</node_id>
   <title>vote</title>
   <type_nodetype>148</type_nodetype>

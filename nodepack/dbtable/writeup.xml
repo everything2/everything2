@@ -12,7 +12,7 @@
   KEY `idx_cooled` (`cooled`),
   KEY `writeuptype` (`wrtype_writeuptype`),
   KEY `publishtime_index` (`publishtime`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>218</node_id>
   <title>writeup</title>
   <type_nodetype>148</type_nodetype>

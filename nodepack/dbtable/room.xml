@@ -2,7 +2,7 @@
   <_create_table_statement>CREATE TABLE `room` (
   `room_id` int NOT NULL DEFAULT '0',
   `member_user` int NOT NULL DEFAULT '0',
-  `nick` char(64) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `nick` char(64) DEFAULT NULL,
   `op` int NOT NULL DEFAULT '0',
   `visible` int NOT NULL DEFAULT '0',
   `borgd` int NOT NULL DEFAULT '0',
@@ -10,7 +10,7 @@
   `unixcreatetime` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`room_id`,`member_user`),
   KEY `exp_index` (`experience`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>544808</node_id>
   <title>room</title>
   <type_nodetype>148</type_nodetype>

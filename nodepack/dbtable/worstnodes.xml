@@ -3,7 +3,7 @@
   `worstnodes_id` int NOT NULL DEFAULT '0',
   `rep` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`worstnodes_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>531351</node_id>
   <title>worstnodes</title>
   <type_nodetype>148</type_nodetype>

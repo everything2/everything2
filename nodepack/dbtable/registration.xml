@@ -4,12 +4,12 @@
   `for_registry` int NOT NULL DEFAULT '0',
   `in_user_profile` int NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `data` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `comments` varchar(512) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `data` varchar(255) DEFAULT NULL,
+  `comments` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`for_registry`,`from_user`),
   KEY `registry` (`for_registry`),
   KEY `user` (`from_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2001831</node_id>
   <title>registration</title>
   <type_nodetype>148</type_nodetype>

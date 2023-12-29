@@ -3,7 +3,7 @@
   `xplevel_user` int NOT NULL DEFAULT '0',
   `xplevel_level` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`xplevel_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>1358602</node_id>
   <title>xplevel</title>
   <type_nodetype>148</type_nodetype>

@@ -8,7 +8,7 @@
   KEY `nodememberof` (`node_id`),
   KEY `orderby_index` (`orderby`),
   KEY `nodegroup_id_orderby` (`nodegroup_id`,`orderby`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>169</node_id>
   <title>nodegroup</title>
   <type_nodetype>148</type_nodetype>

@@ -5,7 +5,7 @@
   `notnew` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`newwriteup_id`),
   KEY `node_id` (`node_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>839095</node_id>
   <title>newwriteup</title>
   <type_nodetype>148</type_nodetype>

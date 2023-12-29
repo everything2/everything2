@@ -3,7 +3,7 @@
   `newuserimage_id` int NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`newuserimage_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>541871</node_id>
   <title>newuserimage</title>
   <type_nodetype>148</type_nodetype>

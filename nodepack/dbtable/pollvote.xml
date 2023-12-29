@@ -5,7 +5,7 @@
   `choice` tinyint NOT NULL DEFAULT '0',
   `votetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`pollvote_id`,`voter_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2052481</node_id>
   <title>pollvote</title>
   <type_nodetype>148</type_nodetype>

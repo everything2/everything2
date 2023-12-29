@@ -8,7 +8,7 @@
   `linkedtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`weblog_id`,`to_node`),
   KEY `tstamp` (`tstamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>458689</node_id>
   <title>weblog</title>
   <type_nodetype>148</type_nodetype>

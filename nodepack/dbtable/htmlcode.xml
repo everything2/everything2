@@ -1,9 +1,9 @@
 <node>
   <_create_table_statement>CREATE TABLE `htmlcode` (
   `htmlcode_id` int NOT NULL AUTO_INCREMENT,
-  `code` text COLLATE utf8mb3_unicode_ci,
+  `code` mediumtext,
   PRIMARY KEY (`htmlcode_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>162</node_id>
   <title>htmlcode</title>
   <type_nodetype>148</type_nodetype>

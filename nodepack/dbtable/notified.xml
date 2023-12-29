@@ -2,7 +2,7 @@
   <_create_table_statement>CREATE TABLE `notified` (
   `notified_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL DEFAULT '0',
-  `args` text COLLATE utf8mb3_unicode_ci,
+  `args` mediumtext,
   `notification_id` int NOT NULL DEFAULT '0',
   `notified_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `is_seen` int NOT NULL DEFAULT '0',
@@ -11,7 +11,7 @@
   KEY `user_seen` (`user_id`,`is_seen`),
   KEY `reference_notified_id` (`reference_notified_id`),
   KEY `reference_notified_id__user_id__is_seen` (`reference_notified_id`,`user_id`,`is_seen`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>1930715</node_id>
   <title>notified</title>
   <type_nodetype>148</type_nodetype>

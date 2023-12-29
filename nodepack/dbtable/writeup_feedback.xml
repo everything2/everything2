@@ -4,7 +4,7 @@
   `parent_entry` int NOT NULL,
   `removed_by` int DEFAULT NULL,
   PRIMARY KEY (`writeup_feedback_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2116381</node_id>
   <title>writeup_feedback</title>
   <type_nodetype>148</type_nodetype>

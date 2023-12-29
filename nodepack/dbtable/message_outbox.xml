@@ -1,7 +1,7 @@
 <node>
   <_create_table_statement>CREATE TABLE `message_outbox` (
   `message_id` int NOT NULL AUTO_INCREMENT,
-  `msgtext` text COLLATE utf8mb3_unicode_ci,
+  `msgtext` mediumtext,
   `author_user` int NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `archive` tinyint(1) NOT NULL DEFAULT '0',
@@ -11,7 +11,7 @@
   KEY `author_user_tstamp` (`author_user`,`tstamp`),
   KEY `author_user_archive_tstamp` (`author_user`,`archive`,`tstamp`),
   KEY `message_author` (`author_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>2115028</node_id>
   <title>message_outbox</title>
   <type_nodetype>148</type_nodetype>
