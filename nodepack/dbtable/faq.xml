@@ -1,12 +1,12 @@
 <node>
   <_create_table_statement>CREATE TABLE `faq` (
   `faq_id` int NOT NULL AUTO_INCREMENT,
-  `question` text COLLATE utf8mb3_unicode_ci,
-  `answer` text COLLATE utf8mb3_unicode_ci,
-  `keywords` text COLLATE utf8mb3_unicode_ci,
+  `question` mediumtext,
+  `answer` mediumtext,
+  `keywords` mediumtext,
   `hits` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`faq_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>1885717</node_id>
   <title>faq</title>
   <type_nodetype>148</type_nodetype>

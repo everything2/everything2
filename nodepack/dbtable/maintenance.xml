@@ -2,9 +2,9 @@
   <_create_table_statement>CREATE TABLE `maintenance` (
   `maintenance_id` int NOT NULL DEFAULT '0',
   `maintain_nodetype` int NOT NULL DEFAULT '0',
-  `maintaintype` char(32) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `maintaintype` char(32) DEFAULT NULL,
   PRIMARY KEY (`maintenance_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>167</node_id>
   <title>maintenance</title>
   <type_nodetype>148</type_nodetype>

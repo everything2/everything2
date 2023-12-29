@@ -2,13 +2,13 @@
   <_create_table_statement>CREATE TABLE `heaven` (
   `node_id` int NOT NULL AUTO_INCREMENT,
   `type_nodetype` int NOT NULL DEFAULT '0',
-  `title` varchar(240) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `title` varchar(240) DEFAULT NULL,
   `author_user` int NOT NULL DEFAULT '0',
   `killa_user` int NOT NULL DEFAULT '0',
   `createtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `hits` int DEFAULT '0',
   `reputation` int NOT NULL DEFAULT '0',
-  `data` text COLLATE utf8mb3_unicode_ci,
+  `data` mediumtext,
   PRIMARY KEY (`node_id`),
   KEY `killa` (`killa_user`),
   KEY `author` (`author_user`),
@@ -17,7 +17,7 @@
   KEY `heaven_author_user` (`author_user`),
   KEY `title` (`title`),
   KEY `author_user__title` (`author_user`,`title`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>961482</node_id>
   <title>heaven</title>
   <type_nodetype>148</type_nodetype>

@@ -1,35 +1,35 @@
 <node>
   <_create_table_statement>CREATE TABLE `user` (
   `user_id` int NOT NULL AUTO_INCREMENT,
-  `nick` varchar(20) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `passwd` varchar(127) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `realname` varchar(40) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `email` varchar(40) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `nick` varchar(20) DEFAULT NULL,
+  `passwd` varchar(127) DEFAULT NULL,
+  `realname` varchar(40) DEFAULT NULL,
+  `email` varchar(40) DEFAULT NULL,
   `lasttime` datetime DEFAULT NULL,
   `karma` int DEFAULT '0',
   `votes` int NOT NULL DEFAULT '0',
   `experience` int NOT NULL DEFAULT '0',
   `votesleft` int NOT NULL DEFAULT '0',
-  `imgsrc` varchar(128) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `imgsrc` varchar(128) DEFAULT NULL,
   `in_room` int NOT NULL DEFAULT '0',
   `acctlock` int NOT NULL DEFAULT '0',
   `merit` float NOT NULL DEFAULT '0',
   `numwriteups` int NOT NULL DEFAULT '0',
-  `validationkey` varchar(70) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `validationkey` varchar(70) DEFAULT NULL,
   `validemail` int DEFAULT '0',
   `GP` int NOT NULL DEFAULT '0',
   `sanctity` int NOT NULL DEFAULT '0',
   `stars` int NOT NULL DEFAULT '0',
   `session_id` int DEFAULT NULL,
   `user_salt` int DEFAULT NULL,
-  `salt` varchar(23) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `salt` varchar(23) DEFAULT NULL,
   `infected` int NOT NULL DEFAULT '0',
   `message_forward_to` int DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   KEY `email` (`email`),
   KEY `lasttime` (`lasttime`),
   KEY `session_id` (`session_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>173</node_id>
   <title>user</title>
   <type_nodetype>148</type_nodetype>

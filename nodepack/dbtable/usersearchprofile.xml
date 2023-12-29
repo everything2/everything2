@@ -1,10 +1,10 @@
 <node>
   <_create_table_statement>CREATE TABLE `usersearchprofile` (
   `profile_id` int NOT NULL AUTO_INCREMENT,
-  `searchtype` varchar(25) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `searchtype` varchar(25) DEFAULT NULL,
   `searched_user` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`profile_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>1171297</node_id>
   <title>usersearchprofile</title>
   <type_nodetype>148</type_nodetype>

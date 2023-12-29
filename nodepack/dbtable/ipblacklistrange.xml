@@ -4,7 +4,7 @@
   `max_ip` int unsigned NOT NULL DEFAULT '0',
   `min_ip` int unsigned NOT NULL DEFAULT '0',
   `ban_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `comment` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `comment` varchar(255) DEFAULT NULL,
   `banner_user_id` int NOT NULL,
   `ipblacklistref_id` int NOT NULL,
   PRIMARY KEY (`ipblacklistrange_id`),
@@ -12,7 +12,7 @@
   KEY `max_ip__min_ip` (`max_ip`,`min_ip`),
   KEY `ban_timestamp` (`ban_timestamp`),
   KEY `ipblacklistref_id` (`ipblacklistref_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2015634</node_id>
   <title>ipblacklistrange</title>
   <type_nodetype>148</type_nodetype>

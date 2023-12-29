@@ -8,7 +8,7 @@
   KEY `coolwriteupsid` (`coolwriteups_id`),
   KEY `coolwriteups_cooleby_user` (`cooledby_user`),
   KEY `tstamp_user` (`tstamp`,`cooledby_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>447522</node_id>
   <title>coolwriteups</title>
   <type_nodetype>148</type_nodetype>

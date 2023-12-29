@@ -1,13 +1,13 @@
 <node>
   <_create_table_statement>CREATE TABLE `nodelet` (
   `nodelet_id` int NOT NULL AUTO_INCREMENT,
-  `nltext` text COLLATE utf8mb3_unicode_ci,
-  `nlcode` text COLLATE utf8mb3_unicode_ci,
+  `nltext` mediumtext,
+  `nlcode` mediumtext,
   `updateinterval` int NOT NULL DEFAULT '0',
   `parent_container` int DEFAULT NULL,
   `lastupdate` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodelet_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>170</node_id>
   <title>nodelet</title>
   <type_nodetype>148</type_nodetype>

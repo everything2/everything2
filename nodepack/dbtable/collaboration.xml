@@ -5,7 +5,7 @@
   `locktime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `lockedby_user` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`collaboration_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>1936999</node_id>
   <title>collaboration</title>
   <type_nodetype>148</type_nodetype>

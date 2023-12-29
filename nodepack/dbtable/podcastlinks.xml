@@ -1,11 +1,11 @@
 <node>
   <_create_table_statement>CREATE TABLE `podcastLinks` (
   `podcastLinks_id` int NOT NULL DEFAULT '0',
-  `title` char(32) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `link` char(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb3_unicode_ci,
+  `title` char(32) DEFAULT NULL,
+  `link` char(255) DEFAULT NULL,
+  `description` mediumtext,
   PRIMARY KEY (`podcastLinks_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2070552</node_id>
   <title>podcastLinks</title>
   <type_nodetype>148</type_nodetype>

@@ -2,14 +2,14 @@
   <_create_table_statement>CREATE TABLE `publicmessages` (
   `publicmessages_id` int NOT NULL AUTO_INCREMENT,
   `message_id` int NOT NULL,
-  `msgtext` text COLLATE utf8mb3_unicode_ci,
+  `msgtext` mediumtext,
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `author_user` int NOT NULL,
   PRIMARY KEY (`publicmessages_id`),
   UNIQUE KEY `message_id` (`message_id`),
   KEY `tstamp_index` (`tstamp`),
   KEY `author_user` (`author_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2048212</node_id>
   <title>publicmessages</title>
   <type_nodetype>148</type_nodetype>

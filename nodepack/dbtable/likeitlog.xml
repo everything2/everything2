@@ -2,13 +2,13 @@
   <_create_table_statement>CREATE TABLE `likeitlog` (
   `likeitlog_id` int NOT NULL AUTO_INCREMENT,
   `hits` int DEFAULT '0',
-  `user_agent` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
   `liked_node_id` int NOT NULL,
   PRIMARY KEY (`likeitlog_id`),
   UNIQUE KEY `user_agent__liked_node_id` (`user_agent`,`liked_node_id`),
   KEY `user_agent` (`user_agent`),
   KEY `liked_node_id` (`liked_node_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2015859</node_id>
   <title>likeitlog</title>
   <type_nodetype>148</type_nodetype>

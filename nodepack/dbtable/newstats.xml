@@ -4,7 +4,7 @@
   `newstats_calctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `newstats_iqm` float DEFAULT NULL,
   PRIMARY KEY (`newstats_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>1264987</node_id>
   <title>newstats</title>
   <type_nodetype>148</type_nodetype>

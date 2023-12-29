@@ -1,12 +1,12 @@
 <node>
   <_create_table_statement>CREATE TABLE `uservars` (
   `user_id` int NOT NULL,
-  `setting_name` varchar(40) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT '',
-  `setting_value` varchar(50) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `setting_name` varchar(40) NOT NULL DEFAULT '',
+  `setting_value` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`user_id`,`setting_name`),
   KEY `user_id` (`user_id`),
   KEY `setting_name` (`setting_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2048926</node_id>
   <title>uservars</title>
   <type_nodetype>148</type_nodetype>

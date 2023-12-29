@@ -2,8 +2,8 @@
   <_create_table_statement>CREATE TABLE `ipblacklist` (
   `ipblacklist_id` int NOT NULL AUTO_INCREMENT,
   `ipblacklist_user` int NOT NULL DEFAULT '0',
-  `ipblacklist_ipaddress` char(16) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
-  `ipblacklist_comment` char(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `ipblacklist_ipaddress` char(16) DEFAULT NULL,
+  `ipblacklist_comment` char(255) DEFAULT NULL,
   `ipblacklist_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `ipblacklistref_id` int NOT NULL,
   PRIMARY KEY (`ipblacklist_id`),
@@ -11,7 +11,7 @@
   KEY `ipblacklist_timestamp` (`ipblacklist_timestamp`),
   KEY `ipblacklist_timestamp__ipblacklist_id` (`ipblacklist_timestamp`,`ipblacklist_id`),
   KEY `ipblacklistref_id` (`ipblacklistref_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>1948145</node_id>
   <title>ipblacklist</title>
   <type_nodetype>148</type_nodetype>
