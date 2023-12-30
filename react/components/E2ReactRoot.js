@@ -204,7 +204,7 @@ class E2ReactRoot extends React.Component {
       {
         await this.refreshNewWriteups()
       }
-    }, 60000)
+    }, 180000)
   }
 
   refreshNewWriteups = async () => {
