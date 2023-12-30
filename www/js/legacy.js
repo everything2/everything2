@@ -1214,10 +1214,13 @@ if(! e2.noquickvote)
 					if (!value) return false ;
 				}
 			}
-			if (value != null)
-				query[name] = (value && value.replace(
-					/[^ -~]/gm, function(x) {return "&#" + x.charCodeAt(0) + ";";})
+
+			 if (value != null)
+				query[name] = (value && 
+                    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 					) || query[name] || '';
+
+			console.log(query[name])
 		}
 
 		// remember a couple of things for later:
