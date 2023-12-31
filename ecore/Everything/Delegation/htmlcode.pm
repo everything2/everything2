@@ -806,7 +806,9 @@ sub listcode
   #N-Wing, Sat, Jun 15, 2002 - help reduce long line horiz scrolling
   $code = '<div style="font-size: smaller;">'.$code.'</div>' if $VARS->{listcode_smaller};
 
-  return $text.$code if ($query->param('displaytype') eq 'edit');
+  my $dt = $query->param('displaytype');
+  $dt = "" if not defined($dt);
+  return $text.$code if ($dt eq 'edit');
 
   if($delegated)
   {
