@@ -61,7 +61,7 @@ sub layout
 
   $params->{script_name} = $REQUEST->script_name;
 
-  my $e2 = $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS);
+  my $e2 = $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS, $REQUEST->cgi);
   $e2->{lastnode_id} = $params->{lastnode_id};
 
   my $cookie = undef;

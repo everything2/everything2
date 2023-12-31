@@ -4637,7 +4637,7 @@ sub updateNewWriteups
 
 sub buildNodeInfoStructure
 {
-  my ($this, $NODE, $USER, $VARS) = @_;
+  my ($this, $NODE, $USER, $VARS, $query) = @_;
 
   my $e2 = {};
   $e2->{node_id} = $$NODE{node_id};
@@ -4731,6 +4731,23 @@ sub buildNodeInfoStructure
   if($nodelets =~ /2051342/)
   {
     $e2->{neglectedDrafts} = $this->{db}->stashData("neglecteddrafts");
+  }
+
+  # Quick Reference
+  if($nodelets =~ /2146276/)
+  {
+    # What topic to link
+    my $lookfor = $NODE->{title};
+    if ($$NODE{type}{title} eq 'writeup') {
+      # Instead of writeup title w/ type annotation, use the e2node title
+      $lookfor = $this->{db}->getNodeById($NODE->{parent_e2node})->{title} ;
+    }else{
+       if (($NODE->{title} eq 'Findings:') || ($NODE->{title} eq 'Nothing Found')) {
+       # Special case findings to look up what was searched
+       $lookfor = $query->param('node');
+     }
+    }
+    $e2->{quickRefSearchTerm} = $lookfor;
   }
 
   return $e2;
