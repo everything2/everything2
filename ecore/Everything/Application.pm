@@ -4682,6 +4682,9 @@ sub buildNodeInfoStructure
   my $nodelets = $VARS->{nodelets};
   $nodelets = "" unless defined($nodelets);
 
+  # Cover for display on nodelet pages
+  $nodelets .= ",$NODE->{node_id}";
+
   # New Writeups or New Logs
   if($this->isGuest($USER) or $nodelets =~ /263/ or $nodelets =~ /1923735/)
   {
