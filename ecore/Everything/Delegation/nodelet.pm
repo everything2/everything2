@@ -1122,42 +1122,7 @@ sub for_review
 
 sub quick_reference
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  # Lord Brawl made this cheesy little nodelet and DonJaime tidied it up a bit
-  my $str = "<p>Look for more about this topic:</p>\n<ul>\n" ;
-
-  # What topic to link
-  my $lookfor = $NODE->{title};
-  if ($$NODE{type}{title} eq 'writeup') {
-    # Instead of writeup title w/ type annotation, use the e2node title
-    $lookfor = $DB->getNodeById($NODE->{parent_e2node})->{title} ;
-  }
-  else
-  {
-   if (($NODE->{title} eq 'Findings:') || ($NODE->{title} eq 'Nothing Found')) {
-     # Special case findings to look up what was searched
-     $lookfor = $query->param('node');
-   }
-  }
-
-  $lookfor =~ s/\[/&#91;/g ; # avoid link format meltdown (shouldn't be necessary)
-  $lookfor =~ s/\|/&#x7c;/g ; 
-
-  $str .= "<li>Try [https://en.wikipedia.org/wiki/$lookfor|Wikipedia] or [https://en.wiktionary.org/wiki/$lookfor|Wiktionary]</li>
-  <li>Try [https://www.google.com/search?q=%22";
-  # ... Google replaces spaces with a "+" symbol ...
-  $lookfor =~ s/ /\+/g ;
-  $str .= "$lookfor%22&amp;sa=Search|Google]</li>\n</ul>";
-
-  # Convert links and display
-  return parseLinks( $str ) ;
+  return '';
 }
 
 1;

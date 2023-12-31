@@ -23,6 +23,9 @@ import SignIn from './Nodelets/SignIn'
 import NeglectedDraftsPortal from './Portals/NeglectedDrafts'
 import NeglectedDrafts from './Nodelets/NeglectedDrafts'
 
+import QuickReference from './Nodelets/QuickReference'
+import QuickReferencePortal from './Portals/QuickReferencePortal'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -89,6 +92,7 @@ class E2ReactRoot extends React.Component {
       newlogs_show: true,
       randomnodes_show: true,
       neglecteddrafts_show: true,
+      quickreference_show: true,
 
       signin_show: false,
 
@@ -100,11 +104,13 @@ class E2ReactRoot extends React.Component {
 
       neglectedDrafts: {},
 
-      loginMessage: ""
+      loginMessage: "",
+
+      quickRefSearchTerm: ""
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes","neglectedDrafts"]
-    const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs","neglecteddrafts"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes","neglectedDrafts", "quickRefSearchTerm"]
+    const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs","neglecteddrafts","quickreference"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
@@ -356,6 +362,11 @@ class E2ReactRoot extends React.Component {
           <NeglectedDrafts showNodelet={this.showNodelet} nodeletIsOpen={this.state.neglecteddrafts_show} neglectedDrafts={this.state.neglectedDrafts} />
         </ErrorBoundary>
       </NeglectedDraftsPortal>
+      <QuickReferencePortal>
+        <ErrorBoundary>
+          <QuickReference showNodelet={this.showNodelet} nodeletIsOpen={this.state.quickreference_show} quickRefSearchTerm={this.state.quickRefSearchTerm} />
+        </ErrorBoundary>
+      </QuickReferencePortal>
       </>
   }
 }

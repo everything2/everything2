@@ -4004,7 +4004,7 @@ sub static_javascript
   $lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
   $lastnode = $query->param("lastnode_id")||0 if $$NODE{title} eq 'Findings:' && $$NODE{type}{title} eq 'superdoc';
 
-  my $e2 = $APP->buildNodeInfoStructure($NODE, $USER, $VARS);
+  my $e2 = $APP->buildNodeInfoStructure($NODE, $USER, $VARS,$query);
 
   $e2->{lastnode_id} = $lastnode;
 

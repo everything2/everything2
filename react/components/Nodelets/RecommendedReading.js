@@ -3,7 +3,7 @@ import LinkNode from '../LinkNode'
 import NodeletContainer from '../NodeletContainer'
 
 const RecommendedReading = (props) => {
-  return (<NodeletContainer title="Recommended Reading" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}><div className="nodelet_content">
+  return (<NodeletContainer title="Recommended Reading" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}>
   <h4><LinkNode type="e2node" title="An Introduction to Everything2" display="About Everything2" /></h4>
   <h4><LinkNode type="superdoc" title="Cool Archive" display="User Picks" /></h4>
   <ul className="infolist">{props.coolnodes.map((coolnode, i) =>
@@ -17,7 +17,7 @@ const RecommendedReading = (props) => {
         return (<li key={"rrstaffpick"+i}><LinkNode id={staffpick.node_id} display={staffpick.title} /></li>)
       })
     }</ul>
-  </div></NodeletContainer>)
+  </NodeletContainer>)
 }
 
 export default RecommendedReading;

@@ -38,7 +38,7 @@ const SignIn = (props) => {
     <p>Need help? <a href="mailto:accounthelp@everything2.com">accounthelp@everything2.com</a></p></>
   }
 
-  return <NodeletContainer title="Sign In" nodeletIsOpen={props.nodeletIsOpen}><div className="nodelet_content">{content}</div></NodeletContainer>
+  return <NodeletContainer title="Sign In" nodeletIsOpen={props.nodeletIsOpen}>{content}</NodeletContainer>
 
 }
 
