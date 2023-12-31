@@ -26,7 +26,7 @@ $str
 &lt;/ul&gt;
 &lt;/td&gt;';
 
-my $usergroup = $query-&gt;param('for_usergroup') ? getNodeById($query-&gt;param('for_usergroup')) : 0;
+my $usergroup = $query-&gt;param('for_usergroup') ? getNodeById(scalar($query-&gt;param('for_usergroup'))) : 0;
 return $str.'&lt;/tr&gt;&lt;/table&gt;' unless $usergroup and $ok{$usergroup -&gt; {node_id}};
 
 $str.='&lt;td valign=&quot;top&quot;&gt;
