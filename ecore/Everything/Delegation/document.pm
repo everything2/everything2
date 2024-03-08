@@ -6323,12 +6323,12 @@ $str
         foreach ( split( "\n", $query->param('addperson') ) ) {
             $_ =~ s/\s+$//g;
             if ( defined( $u = getNode( $_, 'user' ) ) ) {
-                insertIntoNodegroup( $usergroup, -1, $u );
+                $DB->insertIntoNodegroup( $usergroup, -1, $u );
                 $str .= 'Added user: ' . linkNode($u) . '<br>';
                 next;
             }
             if ( defined( $u = getNode( $_, 'usergroup' ) ) ) {
-                insertIntoNodegroup( $usergroup, -1, $u );
+                $DB->insertIntoNodegroup( $usergroup, -1, $u );
                 $str .= 'Added usergroup: ' . linkNode($u) . '<br>';
                 next;
             }
