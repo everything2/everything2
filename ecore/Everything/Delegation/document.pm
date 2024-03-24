@@ -6313,7 +6313,7 @@ $str
         if ( $_ =~ /rem_(\d+)/ ) {
             my $u = getNodeById($1);
             next unless $u;
-            removeFromNodegroup( $usergroup, $u, -1 );
+            $DB->removeFromNodegroup( $usergroup, $u, -1 );
             $str .= 'Removed: ' . linkNode($u) . '<br>';
         }
     }
