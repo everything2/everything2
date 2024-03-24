@@ -3780,9 +3780,9 @@ sub editor_endorsements {
     my $APP      = shift;
 
     my @grp = (
-        @{ getNode( "gods",            "usergroup" )->{group} },
-        @{ getNode( "Content Editors", "usergroup" )->{group} },
-        @{ getNode( "exeds",           "nodegroup" )->{group} }
+        @{ getNode( "gods",            "usergroup" )->{group} || []},
+        @{ getNode( "Content Editors", "usergroup" )->{group} || []},
+        @{ getNode( "exeds",           "nodegroup" )->{group} || []}
     );
     my %except = map { getNode( $_, "user" )->{node_id} => 1 }
       ( "Cool Man Eddie", "EDB", "Webster 1913", "Klaproth" );
@@ -4931,7 +4931,7 @@ qq'<td class="reputation">$r</td><td class="reputation"><small>+$p/-$m</small></
 qq|<table border='0' cellspacing='0' width='100%'>$thRow$sortRow$wulist</table>|;
                 $str .= $pages;
             }
-        }
+        }33
     }
     return $str;
 }
