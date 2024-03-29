@@ -225,7 +225,7 @@ sub writeup_update
     {
       my $WRTYPE=getNode($$WRITEUP{wrtype_writeuptype});
       if ($$WRTYPE{type}{title} ne 'writeuptype' or 
-        ($$WRTYPE{title} eq 'definition' or $$WRTYPE{title} eq 'lede' and
+        (($$WRTYPE{title} eq 'definition' or $$WRTYPE{title} eq 'lede') and
         not Everything::isApproved($USER, getNode('Content Editors','usergroup'))
         and $$USER{title} ne 'Webster 1913'
         and $$USER{title} ne 'Virgil'))
