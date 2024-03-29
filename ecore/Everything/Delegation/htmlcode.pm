@@ -6522,7 +6522,7 @@ sub displayUserText
   my $APP = shift;
 
   my $txt = $NODE->{doctext};
-  my $APRTAGS = getNode 'approved html tags', 'setting';
+  my $APRTAGS = getNode('approved html tags', 'setting');
   $txt = $APP->breakTags($APP->htmlScreen($txt, getVars($APRTAGS)));
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
   return $txt;
@@ -9539,33 +9539,6 @@ sub zenDisplayUserInfo
   my $textMid = '</dt><dd>';
   my $textPost = "</dd>\n";
 
-  local *hash2var = sub {
-    my $hash_ref = $_[0];
-    my $str = undef;
-    while ( my ($key, $value) = each(%$hash_ref) )
-    {
-      $str.= "$key=>$value|||";
-    }
-
-    $str = substr($str,0,-3);
-
-    return $str;
-  };
-
-  local * var2hash = sub {
-    my ($str2) = @_;
-    my @split2 = split(/\|\|\|/,$str2);
-    my ($tstr, $hash ) = (undef, undef); 
-    my @temp = ();
-    foreach (@split2)
-    {
-      @temp = split(/\=\>/, $_);
-      $$hash{$temp[0]} = $temp[1];
-    }
-
-    return $hash;
-  };
-
   local *info_groups = sub {
     return if $$VARS{hidehomenodeUG} ;
     return (htmlcode('showUserGroups','') || "").(( $APP->isEditor($NODE) )?(" - ".linkNode(getNode("Editor Endorsements","superdoc"),"My Endorsements",{editor=>$$NODE{node_id}})):(''));
@@ -9577,11 +9550,7 @@ sub zenDisplayUserInfo
   };
 
   local *info_msgalias = sub {
-    #jb says: same as in [usercheck]
-    my $retstr = '';
-    my $ptr = undef;
     my $tousr = undef;
-
     if($NODE->{message_forward_to})
     {
       $tousr = getNodeById($NODE->{message_forward_to});
