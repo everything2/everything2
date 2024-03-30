@@ -6268,8 +6268,11 @@ qq|If the 'Epicenter' nodelet is not selected, its functions are placed in the p
 sub simple_usergroup_editor {
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
 
+    my $forbidden_for_editors = {'content editors' => 1, 'gods' => 1, 'e2gods' => 1};
+    my $editor_only = $APP->isEditor($USER) and not $APP->isAdmin($USER);
+
     my @find =
-      $DB->isGod($USER)
+      $APP->isEditor($USER)
       ? ( 'node', 'type_nodetype=' . getId( getType('usergroup') ) )
       : (
         'nodeparam JOIN node on nodeparam.node_id=node.node_id',
@@ -6282,9 +6285,13 @@ sub simple_usergroup_editor {
     my $str = '';
     my %ok  = ();
     while ( my $row = $csr->fetchrow_hashref() ) {
-
+        if($editor_only)
+        {
+            next if exists($forbidden_for_editors->{lc($row->{title})});
+        }
         #	next if $protected{$row -> {node_id}};
         $ok{ $row->{node_id} } = 1;
+
         $str .= '<li>Edit '
           . linkNode( $NODE->{node_id}, $row->{title},
             { for_usergroup => $$row{node_id} } )
@@ -6303,6 +6310,12 @@ $str
       $query->param('for_usergroup')
       ? getNodeById( $query->param('for_usergroup') )
       : 0;
+
+    if($usergroup and exists($forbidden_for_editors->{lc($usergroup->{title})}) and $editor_only)
+    {
+        $usergroup = undef;
+    }
+
     return $str . '</tr></table>'
       unless $usergroup and $ok{ $usergroup->{node_id} };
 
