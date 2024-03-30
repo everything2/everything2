@@ -4931,7 +4931,7 @@ qq'<td class="reputation">$r</td><td class="reputation"><small>+$p/-$m</small></
 qq|<table border='0' cellspacing='0' width='100%'>$thRow$sortRow$wulist</table>|;
                 $str .= $pages;
             }
-        }33
+        }
     }
     return $str;
 }
@@ -6269,7 +6269,7 @@ sub simple_usergroup_editor {
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
 
     my $forbidden_for_editors = {'content editors' => 1, 'gods' => 1, 'e2gods' => 1};
-    my $editor_only = $APP->isEditor($USER) and not $APP->isAdmin($USER);
+    my $editor_only = ($APP->isEditor($USER) and not $APP->isAdmin($USER));
 
     my @find =
       $APP->isEditor($USER)
