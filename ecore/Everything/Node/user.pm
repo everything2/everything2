@@ -157,7 +157,7 @@ sub message_forward_to
 sub coolsleft
 {
   my ($self) = @_;
-  return $self->VARS->{cools} || 0;
+  return int($self->VARS->{cools} || 0);
 }
 
 sub deliver_message
