@@ -28,6 +28,7 @@ foreach my $plugin (@{$FACTORY->{datastash}->all})
       next unless $generator->lengthy;
     }else{
       next if $generator->lengthy;
+      next if $generator->manual;
     }
 
     print "Evaluating generator '$plugin'...";

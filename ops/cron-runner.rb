@@ -51,4 +51,4 @@ if job.nil?
   exit
 end
 
-pp ecsclient.run_task(cluster: "E2-App-ECS-Cluster", task_definition: "e2cron-family", overrides: {container_overrides: [{name: "e2app", command: ["/usr/bin/perl","/var/everything/cron/#{job}.pl","#{extra}"]}]}, network_configuration: {awsvpc_configuration: {subnets: [subnet_placement], security_groups: [security_group], assign_public_ip: "ENABLED"}}, capacity_provider_strategy: [{capacity_provider: "FARGATE_SPOT", weight: 4, base: 1},{capacity_provider: "FARGATE", weight: 1}])
+pp ecsclient.run_task(cluster: "E2-App-ECS-Cluster", task_definition: "e2cron-family", overrides: {container_overrides: [{name: "e2app", command: ["/usr/bin/perl","/var/everything/cron/#{job}.pl","#{extra}"]}]}, network_configuration: {awsvpc_configuration: {subnets: [subnet_placement], security_groups: [security_group], assign_public_ip: "ENABLED"}}, capacity_provider_strategy: [{capacity_provider: "FARGATE", weight: 1}])

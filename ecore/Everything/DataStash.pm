@@ -8,7 +8,7 @@ with 'Everything::Globals';
 
 has 'interval' => (isa => 'Int', is => 'ro', required => 1, default => 300);
 has 'lengthy' => (isa => 'Int', is => 'ro', default => 0);
-
+has 'manual' => (isa => 'Int', is => 'ro', default => 0);
 
 sub generate
 {
