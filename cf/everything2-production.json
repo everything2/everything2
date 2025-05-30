@@ -1407,7 +1407,7 @@
         "ServiceNamespace": "ecs",
         "ScalableDimension": "ecs:service:DesiredCount",
         "MinCapacity": 1,
-        "MaxCapacity": 3
+        "MaxCapacity": 6
       }
     },
     "FargateAppAutoScalingPolicy": {
