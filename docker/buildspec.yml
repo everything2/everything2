@@ -9,7 +9,7 @@ phases:
       - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG || true
       - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG everything2/e2app:$IMAGE_TAG || true
       - echo Installing node elements
-      - n 18.18.2
+      - n 20.19.2
       - npm install -g npm@latest
       - npm install
       - echo Installing ruby sdk elements
