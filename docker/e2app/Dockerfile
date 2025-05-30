@@ -28,7 +28,7 @@ COPY ./cpanfile /var/bootstrap
 RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest --quiet --cpanfile=/var/bootstrap/cpanfile .
 
 # NodeJS / React
-RUN curl -L "https://nodejs.org/dist/v20.9.0/node-v20.9.0-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
+RUN curl -L "https://nodejs.org/download/release/v20.19.2/node-v20.19.2-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
 RUN /usr/bin/npm install -g npm@latest
 
 COPY ./tools/generate-self-signed-cert.rb /var/bootstrap
