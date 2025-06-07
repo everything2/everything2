@@ -1104,8 +1104,8 @@
     "E2AppFargateTaskDefinition": {
       "Type": "AWS::ECS::TaskDefinition",
       "Properties": {
-        "Cpu": 1024,
-        "Memory": 3072,
+        "Cpu": 2048,
+        "Memory": 4096,
         "Family": "e2app-family",
         "ExecutionRoleArn": {"Ref": "E2TaskExecutionRole"},
         "RequiresCompatibilities": ["FARGATE"],
