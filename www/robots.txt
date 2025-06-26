@@ -4,7 +4,13 @@ User-Agent: 008
 Disallow: /
 
 user-agent: AhrefsBot
-disallow: /
+Disallow: /
 
 User-agent: Yandex
 Crawl-delay: 2
+
+User-Agent: GPTBot
+Disallow: /
+
+User-Agent: DotBot
+Disallow: /
