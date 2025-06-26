@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 
+use lib qw(/var/libraries/lib/perl5);
 use Perl::Tidy;
 
 foreach my $file(`find /var/everything/ecore -type f`)
