@@ -49,3 +49,5 @@ requires 'namespace::autoclean';
 
 #Development Only
 requires 'Devel::NYTProf';
+requires 'Perl::Tidy';
+requires 'Perl::Critic';
