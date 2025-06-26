@@ -1118,7 +1118,7 @@
         "ContainerDefinitions": [{
           "Name": "e2app",
           "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistryARM","RepositoryUri"]},"latest"]]},
-          "Memory": 3072,
+          "Memory": 4096,
           "Essential": true,
           "HealthCheck": {
             "Interval": 10,
@@ -1214,6 +1214,7 @@
         "Cluster": {"Ref": "ECSAppCluster"},
         "EnableECSManagedTags": true,
         "ServiceName": "E2-App-Fargate-Service",
+        "EnableExecuteCommand": true,
         "DeploymentController": {
           "Type": "ECS"
         },
