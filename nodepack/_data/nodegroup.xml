@@ -78,6 +78,12 @@
     <orderby>8483</orderby>
   </group>
   <group>
+    <node_id>674792</node_id>
+    <nodegroup_id>146</nodegroup_id>
+    <nodegroup_rank>8505</nodegroup_rank>
+    <orderby>8505</orderby>
+  </group>
+  <group>
     <node_id>545263</node_id>
     <nodegroup_id>545274</nodegroup_id>
     <nodegroup_rank>0</nodegroup_rank>
