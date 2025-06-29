@@ -141,8 +141,8 @@ sub createVersionTable{
 	}
 
 	return;
-}	
-	
+}
+
 
 #############################################################################
 #	Sub
@@ -159,7 +159,7 @@ sub createVersionTable{
 sub setCacheSize
 {
 	my ($this, $newMaxSize) = @_;
-	
+
 	$this->{maxSize} = $newMaxSize;
 	return $this->purgeCache();
 }
@@ -205,14 +205,14 @@ sub getCachedNodeByName
 	my ($this, $title, $typename) = @_;
 	my $data;
 	my $NODE;
-	
+
 	return if(not defined $typename);
-	
+
 	if(defined $this->{typeCache}{$typename}{$title})
 	{
 		$data = $this->{typeCache}{$typename}{$title};
 		$NODE = $this->{nodeQueue}->getItem($data);
-	
+
 		if ($$NODE{title} ne $title) {
 			delete $this->{typeCache}{$typename}{$title};
 			return;
@@ -241,7 +241,7 @@ sub getCachedNodeById
 	my ($this, $id) = @_;
 	my $data;
 	my $NODE;
-	
+
 	if(defined $this->{idCache}{$id})
 	{
 		$data = $this->{idCache}{$id};
@@ -276,7 +276,7 @@ sub cacheNode
 		# This node is already in the cache, lets remove it (this will get
 		# rid of the old stale data) and reinsert it into the cache.
 		$this->removeNode($NODE);
-		
+
 		# If we are removing a node that already existed, it is because it
 		# has been updated.  We need to increment the global version.
 		#$this->incrementGlobalVersion($NODE)
@@ -430,7 +430,7 @@ sub setCachedNodeParam
 {
 	my ($this, $N, $param, $value) = @_;
 	return unless defined($N);
-	return unless defined($param);	
+	return unless defined($param);
 	return unless defined($value);
 
 	my $node_id;
@@ -458,7 +458,7 @@ sub deleteCachedNodeParam
 {
 	my ($this, $N, $param) = @_;
 	return unless defined($N);
-	return unless defined($param);	
+	return unless defined($param);
 
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
@@ -508,7 +508,7 @@ sub purgeCache
 	{
 		$this->setCacheSize($this->{maxSize} * 2);
 	}
-	
+
 	while (($this->{maxSize} > 0) &&
 		($this->{maxSize} < $this->getCacheSize()))
 	{
@@ -544,7 +544,7 @@ sub removeNodeFromHash
 	if (defined $this->{idCache}{$$NODE{node_id}})
 	{
 		my $data = $this->{typeCache}{$type}{$title};
-		
+
 		# Remove this hash entry
 		delete ($this->{typeCache}{$type}{$title});
 		delete ($this->{idCache}{$$NODE{node_id}});
@@ -578,7 +578,7 @@ sub getGlobalVersion
 	my ($this, $NODE) = @_;
 	my %version;
 	my $ver;
-	
+
 	$ver = $this->{nodeBase}->sqlSelect("version", "version",
 		"version_id=$$NODE{node_id}");
 
@@ -615,12 +615,12 @@ sub isSameVersion
 
 	return 1 if(exists $$this{typeVerified}{$$NODE{type}{node_id}});
 	return 1 if(exists $$this{verified}{$$NODE{node_id}});
-	
+
 	my $ver = $this->getGlobalVersion($NODE);
-	
+
 	if($ver == $this->{version}{$$NODE{node_id}}) {
 		$$this{verified}{$$NODE{node_id}} = 1;
-	    return 1;	
+	    return 1;
 	}
 	return 0;
 }
@@ -643,7 +643,7 @@ sub incrementGlobalVersion
 	my ($this, $NODE) = @_;
 	my %version;
 	my $rowsAffected;
-	
+
 	$rowsAffected = $this->{nodeBase}->sqlUpdate('version',
 		{ -version => 'version+1' },  "version_id=$$NODE{node_id}");
 
@@ -732,7 +732,7 @@ sub resetCache
 
   $this->{typeVersion} = \%newVersion;
   #replace the typeVersion with the most recent table
-	
+
   return;
 }
 

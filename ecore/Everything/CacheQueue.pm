@@ -35,16 +35,16 @@ sub new
 {
 	my $class = shift;
 	my $this = {};
-	
+
 	bless ($this, $class);
-	
+
 	$this->{queueHead} = $this->createQueueData("HEAD");
 	$this->{queueTail} = $this->createQueueData("TAIL");
 
 	# Hook them up
 	$this->{queueHead}{prev} = $this->{queueTail};
 	$this->{queueTail}{next} = $this->{queueHead};
-	
+
 	$this->{queueSize} = 0;
 
 	# Keep track of how many permanent items we have in the cache.
@@ -77,8 +77,8 @@ sub queueItem
 	my ($this, $item, $permanent) = @_;
 	my $data = $this->createQueueData($item, $permanent);
 
-	$this->queueData($data);	
-	
+	$this->queueData($data);
+
 	return $data;
 }
 
@@ -108,7 +108,7 @@ sub getItem
 	# work their way to head of the queue).
 	$this->removeData($data);
 	$this->queueData($data);
-	
+
 	return $$data{item};
 }
 
@@ -247,7 +247,7 @@ sub insertData
 
 	$$data{next} = $after;
 	$$data{prev} = $before;
-	
+
 	$$before{next} = $data;
 	$$after{prev} = $data;
 
@@ -270,11 +270,11 @@ sub removeData
 	# Remove us from the list
 	$$next{prev} = $prev;
 	$$prev{next} = $next;
-	
+
 	# Null out our next and prev pointers
 	$$data{next} = 0;
 	$$data{prev} = 0;
-	
+
 	$this->{numPermanent}-- if($$data{permanent});
 	$this->{queueSize}--;
 	return $this->{queueSize};
@@ -292,7 +292,7 @@ sub createQueueData
 {
 	my ($this, $item, $permanent) = @_;
 	my $data;
-	
+
 	$permanent ||= 0;
 	$data = { "item" => $item, "next" => 0, "prev" => 0,
 		"permanent" => $permanent};

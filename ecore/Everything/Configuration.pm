@@ -2,6 +2,7 @@ package Everything::Configuration;
 
 use Moose;
 use Everything::S3::BucketConfig;
+use Everything::Constants;
 use Carp qw(croak);
 use Paws;
 use LWP::UserAgent;
@@ -13,7 +14,7 @@ use Sys::Hostname;
 has 'configfile' => (isa => 'Maybe[Str]', is => 'ro');
 has 'configdir' => (isa => 'Str', is => 'ro', default => '/etc/everything');
 has 'site_url' => (isa => 'Str', is => 'ro', required => 1, default => 'https://everything2.com');
-has 'guest_user' => (isa => 'Int', is => 'ro', required => 1, default => '779713');
+has 'guest_user' => (isa => 'Int', is => 'ro', required => 1, default => Everything::Constants->GUEST_USER);
 
 has 'infected_ips' => (isa => 'ArrayRef', is => 'ro', builder => '_build_infected', lazy => 1);
 has 'default_style' => (isa => 'Str', is => 'ro', default => 'Kernel Blue');
@@ -205,47 +206,46 @@ has 'create_new_user' => (isa => 'Int', is => 'ro', default => '2072173');
 has 'default_guest_node' => (isa => 'Int', is => 'ro', default => '2030780');
 
 has 'default_nodelets' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub{[
-  262, # Epicenter
-  2044453, # Messages
-  170070, # Chatterbox
-  91, # Other Users
-  263, # New Writeups
-  1157024, # ReadThis
-  165437, # Vitals
-  1689202 # Current User Poll
+  Everything::Constants->NODELET_EPICENTER,
+  Everything::Constants->NODELET_MESSAGES,
+  Everything::Constants->NODELET_CHATTERBOX,
+  Everything::Constants->NODELET_OTHERUSERS,
+  Everything::Constants->NODELET_NEWWRITEUPS,
+  Everything::Constants->NODELET_READTHIS,
+  Everything::Constants->NODELET_VITALS,
+  Everything::Constants->NODELET_CURRENTUSERPOLL
 ]});
 
 has 'supported_nodelets' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub{[
-  2068913, # For Review
-  2044453, # Messages
-  1986723, # Most Wanted
-  1930708, # Notifications
-  1924754, # Usergroup Writeups
-  1923735, # New Logs
-  1689202, # Current User Poll
-  1290534, # Notelet
-  1322699, # Recent Nodes
-  1157024, # ReadThis
-  838296, # Statistics
-  836984, # Everything Developer
-  174581, # Personal Links
-  165437, # Vitals
-  263, # New Writeups
-  457857, # Random Nodes
-  170070, # Chatterbox
-  91, # Other Users
-  262, # Epicenter
-  2146276, # Quick Reference
-  1876005, # Favorite Noders
-  1935779, # Categories
-  2051342 # Neglected Drafts
-
+  Everything::Constants->NODELET_FORREVIEW,
+  Everything::Constants->NODELET_MESSAGES,
+  Everything::Constants->NODELET_MOSTWANTED,
+  Everything::Constants->NODELET_NOTIFICATIONS,
+  Everything::Constants->NODELET_USERGROUPWRITEUPS,
+  Everything::Constants->NODELET_NEWLOGS,
+  Everything::Constants->NODELET_CURRENTUSERPOLL,
+  Everything::Constants->NODELET_NOTELET,
+  Everything::Constants->NODELET_RECENTNODES,
+  Everything::Constants->NODELET_READTHIS,
+  Everything::Constants->NODELET_STATISTICS,
+  Everything::Constants->NODELET_EVERYTHINGDEVELOPER,
+  Everything::Constants->NODELET_PERSONALLINKS,
+  Everything::Constants->NODELET_VITALS,
+  Everything::Constants->NODELET_NEWWRITEUPS,
+  Everything::Constants->NODELET_RANDOMNODES,
+  Everything::Constants->NODELET_CHATTERBOX,
+  Everything::Constants->NODELET_OTHERUSERS,
+  Everything::Constants->NODELET_EPICENTER,
+  Everything::Constants->NODELET_QUICKREFERENCE,
+  Everything::Constants->NODELET_FAVORITENODERS,
+  Everything::Constants->NODELET_CATEGORIES,
+  Everything::Constants->NODELET_NEGLECTEDDRAFTS
 ]});
 
 has 'guest_nodelets' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub {[
-  2029388, # Sign in
-  2027508, # Recommended Reading
-  263 # New Writeups
+  Everything::Constants->NODELET_SIGNIN,
+  Everything::Constants->NODELET_RECOMMENDEDREADING,
+  Everything::Constants->NODELET_NEWWRITEUPS
 ]});
 
 has 'default_node' => (isa => 'Int', is => 'ro', default => '124');

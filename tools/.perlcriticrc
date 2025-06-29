@@ -1,0 +1,2 @@
+[Subroutines::ProhibitUnusedPrivateSubroutines]
+allow_name_regex = _build_\w+
