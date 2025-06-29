@@ -5,12 +5,15 @@ use strict;
 use warnings;
 use FindBin;
 use Perl::Critic;
+use File::Basename;
 
-my $critic = Perl::Critic->new(-severity => 1, -theme => "bugs");
+my $config = dirname(__FILE__)."/.perlcriticrc";
+
+my $critic = Perl::Critic->new(-severity => 1, -theme => "bugs", -profile => $config);
 
 if(defined($ENV{"CRITIC_FULL"}))
 {
-  $critic = Perl::Critic->new(-severity => 1, -theme => "core && !cosmetic && !complexity", -exclude => ["RequireArgUnpacking","RequireVersionVar"]);
+  $critic = Perl::Critic->new(-severity => 1, -theme => "core && !cosmetic && !complexity", -exclude => ["RequireArgUnpacking","RequireVersionVar"], -profile => $config);
 }
 
 if($ARGV[0])
@@ -21,7 +24,6 @@ if($ARGV[0])
   foreach my $file(`find $libraries -type f`)
   {
     chomp $file;
-    print "Evaluating: ".$file."\n";
     critique_file($file);
   }
 }

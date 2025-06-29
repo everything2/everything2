@@ -16,7 +16,7 @@ sub display
   my ($self, $REQUEST, $node) = @_;
 
   my $str = "";
-  my $XG = new XML::Generator;
+  my $XG = XML::Generator->new;
   my $time=180;
 
   my $curUserID = $REQUEST->user->node_id;
