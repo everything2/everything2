@@ -6396,4 +6396,27 @@ $str
 
 }
 
+sub everything_s_biggest_stars
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $rows = undef;
+    my $str = "";
+    my $dbrow = undef;
+    my $limit = 100;
+
+    my $queryText = 'SELECT user_id,stars FROM user ORDER BY stars DESC LIMIT '.$limit;
+    $rows = $DB->{dbh}->prepare($queryText) or return $rows->errstr;
+    $rows->execute() or return $rows->errstr;
+
+    $str .= '<h3>'.$limit.' Most Starred Noders</h3>';
+    $str .= '<ol>';
+    while(my $row = $rows->fetchrow_arrayref)
+    {
+        $str .= '<li>'.linkNode($$row[0]).' ('.$$row[1].' stars)</li>';
+    }
+
+    $str .= '</ol><hr />';
+}
+
 1;
