@@ -36,7 +36,7 @@
   </vars>
   <vars>
     <key>cake</key>
-    <value>cuts ~ a slice of fruitcake</value>
+    <value>cuts ~ a slice of Victoria sponge</value>
   </vars>
   <vars>
     <key>candle</key>
@@ -44,7 +44,7 @@
   </vars>
   <vars>
     <key>champagne</key>
-    <value>Pours a glass of champagne for</value>
+    <value>pours a glass of champagne for</value>
   </vars>
   <vars>
     <key>cocoa</key>
@@ -60,7 +60,7 @@
   </vars>
   <vars>
     <key>cthulhu</key>
-    <value>Ph'nglui mglw'nafh ~ R'lyeh wgah'nagl fhtagn</value>
+    <value>ph'nglui mglw'nafh ~ R'lyeh wgah'nagl fhtagn</value>
   </vars>
   <vars>
     <key>curse</key>
@@ -208,7 +208,7 @@
   </vars>
   <vars>
     <key>random</key>
-    <value>applauds ~'s moxie</value>
+    <value>applauds ~'s audacious moxie</value>
   </vars>
   <vars>
     <key>rubberchicken</key>
@@ -245,6 +245,15 @@
   <vars>
     <key>tomato</key>
     <value>throws tomatoes at</value>
+  </vars>
+  <vars>
+    <key>treat</key>
+    <value>presents ~ with a selection of king-sized chocolate bars
+</value>
+  </vars>
+  <vars>
+    <key>trick</key>
+    <value>throws chocolate eggs at ~ 19s house</value>
   </vars>
   <vars>
     <key>turkey</key>
