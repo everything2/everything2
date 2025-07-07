@@ -5160,4 +5160,18 @@ sub get_html_rules
   };
 }
 
+sub fisher_yates_shuffle
+{
+  my ($this, $array) = @_;
+
+    my $i;
+    for ($i = @$array; --$i; ) {
+        my $j = int rand ($i+1);
+        next if $i == $j;
+        @$array[$i,$j] = @$array[$j,$i];
+    }
+    return $array;
+}
+
+
 1;
