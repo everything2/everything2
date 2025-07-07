@@ -6419,4 +6419,36 @@ sub everything_s_biggest_stars
     $str .= '</ol><hr />';
 }
 
+sub word_messer_upper
+{
+  my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+  my $text = $query->param("text");
+  my $numbreaks = $query->param("numbreaks");
+  $numbreaks ||= 0;
+  $numbreaks = int($numbreaks);
+  
+  my $str = "";
+
+  if (not $text) {
+    $str.="Type in something you'd like to see messed up:<br>";
+  } else {
+    my $words = [split " ", $text];
+    while ($numbreaks--) {
+      $words->[rand(int(@$words))].="\n";
+    }
+    $words = $APP->fisher_yates_shuffle($words);
+    $text = join " ", @$words;
+    $query->param('text', $text);
+  }
+
+  $str.=htmlcode('openform');
+  $str.="insert ".$query->textfield("numbreaks", "", 2, 2)." line breaks<br>";
+  $str.=$query->textarea("text", $text, 40, 60,"" , "wrap=virtual");
+  $str.=htmlcode('closeform');
+  $text =~ s/\n/\&lt\;br\&gt\;\<br\>/gs;
+  $text =~ s/\</\&lt\;/g;
+  $text =~ s/\>/\&gt\;/g;
+  return $str.$text;
+}
+
 1;
