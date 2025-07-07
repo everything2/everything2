@@ -1,49 +1,5 @@
 <node>
-  <doctext>[%
-
-
-local *fisher_yates_shuffle = sub {
-    my $array = shift;
-    my $i;
-    for ($i = @$array; --$i; ) {
-        my $j = int rand ($i+1);
-        next if $i == $j;
-        @$array[$i,$j] = @$array[$j,$i];
-    }
-};
-
-
-my $text = $query-&gt;param(&quot;text&quot;);
-my $numbreaks;
-$numbreaks = $query-&gt;param(&quot;numbreaks&quot;);
-$numbreaks ||= 0;
-$numbreaks = int($numbreaks);
-
-
-my $str;
-
-if (not $text) {
-  $str.=&quot;Type in something you'd like to see messed up:&lt;br&gt;&quot;;
-} else {
-  my @words = split &quot; &quot;, $text;
-  while ($numbreaks--) {
-     $words[rand(int(@words))].=&quot;\n&quot;;
-  }
-  fisher_yates_shuffle(\@words);  
-  $text = join &quot; &quot;, @words;
-  $query-&gt;param('text', $text);
-}
-
-$str.=htmlcode('openform');
-$str.=&quot;insert &quot;.$query-&gt;textfield(&quot;numbreaks&quot;, &quot;&quot;, 2, 2).&quot; line breaks&lt;br&gt;&quot;;
-$str.=$query-&gt;textarea(&quot;text&quot;, $text, 40, 60,&quot;&quot; , &quot;wrap=virtual&quot;);
-$str.=htmlcode('closeform');
-$text =~ s/\n/\&amp;lt\;br\&amp;gt\;\&lt;br\&gt;/gs;
-$text =~ s/\&lt;/\&amp;lt\;/g;
-$text =~ s/\&gt;/\&amp;gt\;/g;
-$str.$text;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>366659</node_id>
   <title>word messer-upper</title>
   <type_nodetype>14</type_nodetype>
