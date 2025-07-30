@@ -29,6 +29,7 @@
 		AllowOverride None
 	</Directory>
 
+	<IfDefine E2_PRODUCTION>
 	# Make sure that processes in production never stray above 800M
         <Perl>
         use Apache2::SizeLimit;
@@ -37,6 +38,7 @@
         </Perl>
 
         PerlCleanupHandler Apache2::SizeLimit
+    </IfDefine>
 
 	PerlPassEnv AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 	PerlPassEnv AWS_DEFAULT_REGION

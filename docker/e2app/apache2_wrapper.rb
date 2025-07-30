@@ -45,4 +45,8 @@ end
 `rm -f /etc/apache2/logs/error_log`
 `ln -s /dev/stderr /etc/apache2/logs/error_log` unless ENV['E2_DOCKER'].eql? "development"
 
-exec("/usr/sbin/apachectl -D FOREGROUND")
+if ENV['E2_DOCKER'].eql? "development"
+  exec("/usr/sbin/apachectl -k start; sleep infinity & wait")
+else
+  exec("/usr/sbin/apachectl -D FOREGROUND")
+end
