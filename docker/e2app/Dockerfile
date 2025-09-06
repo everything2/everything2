@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 ARG ARCH=x64
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc cmake && rm -rf /var/lib/apt/lists/*
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Ruby
@@ -25,7 +25,7 @@ RUN chmod 0755 /var/mason
 # Perl
 COPY ./vendor/cache/ /var/bootstrap/cache/
 COPY ./cpanfile /var/bootstrap
-RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest --quiet --cpanfile=/var/bootstrap/cpanfile .
+RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest --cpanfile=/var/bootstrap/cpanfile .
 
 # NodeJS / React
 RUN curl -L "https://nodejs.org/download/release/v20.19.2/node-v20.19.2-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
