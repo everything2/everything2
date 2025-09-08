@@ -6108,7 +6108,8 @@ sub writeups_by_type {
     # get writeups
     #
 
-    my $where = "wrtype_writeuptype=$wuType" if $wuType;
+    my $where = "";
+    $where = "wrtype_writeuptype=$wuType" if $wuType;
     my $wus   = $DB->sqlSelectMany( '
  	  node.node_id, writeup_id, parent_e2node, publishtime,
 	  node.author_user,
