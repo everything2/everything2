@@ -116,7 +116,7 @@ sub _format_response
 
   $data_key ||= "data";
   my $output = {"code" => $response->code};
-  
+
   if($response->code == $self->HTTP_OK)
   {
     $output->{$data_key} = $self->json->decode($response->content);
