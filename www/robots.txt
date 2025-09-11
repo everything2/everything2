@@ -14,3 +14,6 @@ Disallow: /
 
 User-Agent: DotBot
 Disallow: /
+
+User-agent: TerraCotta  
+Disallow: /
