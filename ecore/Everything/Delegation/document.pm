@@ -6418,6 +6418,7 @@ sub everything_s_biggest_stars
     }
 
     $str .= '</ol><hr />';
+    return $str;
 }
 
 sub word_messer_upper
