@@ -2056,7 +2056,84 @@
           }
         }]
       }
+    },
+    "E2WAFLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "aws-waf-logs-e2",
+        "RetentionInDays": 1
+      }
+    },
+    "E2WAFAcl": {
+      "Type": "AWS::WAFv2::WebACL",
+      "Properties": {
+        "Name": "E2ALBWAF",
+        "Scope": "REGIONAL",
+        "DefaultAction": {
+          "Allow": {}
+        },
+        "VisibilityConfig": {
+          "SampledRequestsEnabled": false,
+          "CloudWatchMetricsEnabled": true,
+          "MetricName": "BlockedRequests"
+        },
+        "Rules": [{
+           "Name": "E2-AWSBotControl",
+           "Priority": 5,
+           "OverrideAction": {
+             "None": {}
+           },
+           "Statement": {
+              "ManagedRuleGroupStatement": {
+                 "VendorName": "AWS",
+                 "Name": "AWSManagedRulesBotControlRuleSet",
+                 "ManagedRuleGroupConfigs": [
+                   {
+                     "AWSManagedRulesBotControlRuleSet": {
+                       "InspectionLevel": "COMMON"
+                     }
+                   }
+                 ],
+                 "RuleActionOverrides": [],
+                 "ExcludedRules": []
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "BlockedRequests"
+            }
+        }]
+      }
+    },
+    "E2WAFAclAssociation": {
+      "Type": "AWS::WAFv2::WebACLAssociation",
+      "Properties": {
+        "ResourceArn": {"Fn::GetAtt": ["ContainerizedFrontendELB","LoadBalancerArn"]},
+        "WebACLArn": {"Fn::GetAtt": ["E2WAFAcl","Arn"]}
+      }
+    },
+    "E2WAFLoggingConfiguration": {
+      "Type": "AWS::WAFv2::LoggingConfiguration",
+      "Properties": {
+        "ResourceArn": {"Fn::GetAtt": ["E2WAFAcl","Arn"]},
+        "LogDestinationConfigs": [{"Fn::GetAtt": ["E2WAFLogGroup","Arn"]}],
+        "LoggingFilter": {
+          "DefaultBehavior": "DROP",
+          "Filters": [
+            {
+              "Behavior": "KEEP",
+              "Requirement": "MEETS_ANY",
+              "Conditions": [{
+                "ActionCondition": {
+                  "Action": "BLOCK"
+                }
+              }]
+            }
+          ]
+        }
+      }
     }
-
   }
 }
