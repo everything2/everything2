@@ -9,7 +9,7 @@ package Everything::S3;
 sub new
 {
 	my ($class, $s3type) = @_;
-	
+
 	return if not defined $s3type;
 	my $this = {};
 	if(exists($Everything::CONF->s3->{$s3type}))

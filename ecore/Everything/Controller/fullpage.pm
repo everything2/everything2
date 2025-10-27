@@ -8,7 +8,7 @@ extends 'Everything::Controller::page';
 sub display
 {
   my ($self, $REQUEST, $node) = @_;
-  return $self->page_delegate($REQUEST,$node); 
+  return $self->page_delegate($REQUEST,$node);
 }
 
 __PACKAGE__->meta->make_immutable();

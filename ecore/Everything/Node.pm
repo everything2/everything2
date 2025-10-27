@@ -53,7 +53,7 @@ sub _build_author
 
 around 'BUILDARGS' => sub {
   my $orig = shift;
-  my $class = shift; 
+  my $class = shift;
   my $NODEDATA = shift;
 
   return $class->$orig("NODEDATA" => $NODEDATA);
@@ -81,7 +81,7 @@ sub can_delete_node
 sub json_reference
 {
   my ($self) = @_;
-  return $self->APP->node_json_reference($self->NODEDATA); 
+  return $self->APP->node_json_reference($self->NODEDATA);
 }
 
 sub json_display
