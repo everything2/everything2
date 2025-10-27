@@ -35,6 +35,9 @@ use POSIX qw(ceil);
 # Used by your_gravatar
 use Digest::MD5;
 
+# Used by Log Archive
+use DateTime;
+
 sub admin_settings {
     my $DB       = shift;
     my $query    = shift;
@@ -6451,6 +6454,229 @@ sub word_messer_upper
   $text =~ s/\</\&lt\;/g;
   $text =~ s/\>/\&gt\;/g;
   return $str.$text;
+}
+
+sub log_archive
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $nodeId = getId($NODE);
+    my $stubdate = DateTime->new(year => 2001, month => 1, day => 1);
+    my $curDate = DateTime->now;
+    my $minYear = 1997;
+    my $maxYear = $curDate->year;
+
+    my $month = int($query->param("m"));
+    if ($month < 1 || $month > 12)
+    {
+      $month = $curDate->month;
+    }
+
+    my $year = int($query->param("y"));
+    if ($year < $minYear || $year > $maxYear)
+    {
+      $year = $year || $curDate->year;
+    }
+
+    my $prevYear = $year;
+    my $prevMonth = $month - 1;
+    if ($prevMonth < 1)
+    {
+      $prevMonth = 12;
+      $prevYear = $prevYear - 1;
+    }
+    my $nextYear = $year;
+    my $nextMonth = $month + 1;
+    if ($nextMonth > 12)
+    {
+      $nextMonth = 1;
+      $nextYear = $nextYear + 1;
+    }
+    my $month_name = $stubdate->set_month($month)->month_name;
+    my $queryText = 'SELECT
+    writeupNode.node_id,
+    writeupNode.title,
+    writeupNode.author_user,
+    writeupNode.reputation,
+    authorNode.title AS authorTitle,
+    writeup.writeup_id,
+    writeup.wrtype_writeuptype,
+    notnew,
+    nodeTypeNode.title AS writeupTypeTitle,
+    writeup.parent_e2node,
+    e2node.title AS parentTitle,
+    writeupNode.createtime
+    FROM node writeupNode,node authorNode,writeup,node nodeTypeNode,node e2node
+    WHERE writeupNode.node_id=writeup.writeup_id
+    AND writeupNode.author_user=authorNode.node_id
+    AND nodeTypeNode.node_id=writeup.wrtype_writeuptype
+    AND e2node.node_id=writeup.parent_e2node
+    AND (e2node.title LIKE \''.$month_name.' %, '.$year.'\'
+    OR e2node.title LIKE \'Dream Log: '.$month_name.' %, '.$year.'\'
+    OR e2node.title = \'Editor Log: '.$month_name.' '.$year.'\'
+    OR e2node.title = \'root log: '.$month_name.' '.$year.'\')
+    ORDER BY writeupNode.createtime';
+
+    my $str = "";
+    $str .= '<form method="get" action="/index.pl">
+    <div style="text-align:center">
+    <input type="hidden" name="node_id" value="'.$nodeId.'">
+    <b>Select Month and Year:</b>
+    <select name="m">';
+    for (my $i = 1; $i <= 12; $i++)
+    {
+      $str .= '<option value="'.$i.'"';
+      if ($i == $month)
+      {
+        $str .= ' selected="selected"';
+      }
+      $str .= '>'.$stubdate->set_month($i)->month_name.'</option>';
+    }
+    $str .= '</select>
+    <select name="y">';
+    for(my $i = $curDate->year; $i >= $minYear; $i--)
+    {
+    $str .= '<option value="'.$i.'"';
+    if ($i == $year)
+    {
+        $str .= ' selected="selected"';
+    }
+    $str .= '>'.$i.'</option>';
+    }
+    $str .= '</select>
+    <input type="submit" value="Get Logs"><br />';
+    if ($prevYear >= $minYear)
+    {
+      $str .= '<a href="/index.pl?node_id='.$nodeId.'&m='.$prevMonth.'&y='.$prevYear.'">&lt;&lt; '.$stubdate->set_month($prevMonth)->month_name.' '.$prevYear.'</a> -';
+    }
+
+    if ($nextYear <= $curDate->year)
+    {
+      $str .= '- <a href="/index.pl?node_id='.$nodeId.'&m='.$nextMonth.'&y='.$nextYear.'">'.$stubdate->set_month($nextMonth)->month_name.' '.$nextYear.' &gt;&gt;</a>';
+    }
+    $str .= '</div>
+    </form>
+    <p><small>Writeups are displayed based on their titles, and are sorted by &quot;Create Time&quot;.<br />
+    Titles and create times do not always match up (i.e., someone can post a daylog for &quot;February 28, '.($curDate->year - 10).'&quot; today, and that daylog will be displayed in the February '.($curDate->year - 10).' archive).</small></p>';
+
+    my $dbrow;
+    my $rowCtr = 0;
+    my $logs = $DB->{dbh}->prepare($queryText);
+    $logs->execute()
+    or return $logs->errstr;
+
+    my $daylogs = '';
+    my $dreamlogs = '';
+    my $editorlogs = '';
+    my $rootlogs = '';
+    my $curRow;
+
+    my $daylogCtr = 0;
+    my $dreamlogCtr = 0;
+    my $editorlogCtr = 0;
+    my $rootlogCtr = 0;
+
+    while($dbrow = $logs->fetchrow_arrayref)
+    {
+        $curRow = '';
+        $curRow .= '<td><a href="/index.pl?node_id='.$$dbrow[9].'">'.$$dbrow[10].'</a> ';
+        $curRow .= ' (<a href="/index.pl?node_id='.$$dbrow[5].'">'.$$dbrow[8].'</a>)</td>';
+        $curRow .= '<td><a href="/index.pl?node_id='.$$dbrow[2].'">'.$$dbrow[4].'</a></td>';
+        $curRow .= '<td style="text-align:right;white-space:nowrap">'.$$dbrow[11].'</td>';
+        $curRow .= '</tr>';
+
+        # day logs
+        if ($$dbrow[10] =~ m/^(January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{1,2}, [0-9]{4}$/)
+        {
+            $daylogCtr++;
+            if ($daylogCtr% 2 == 0)
+            {
+                $daylogs .= '<tr class="evenrow">'.$curRow;
+            }
+            else
+            {
+                $daylogs .= '<tr class="oddrow">'.$curRow;
+            }
+        }
+        # dream logs
+        elsif ($$dbrow[10] =~ m/^Dream Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{1,2}, [0-9]{4}$/)
+        {
+            $dreamlogCtr++;
+            if ($dreamlogCtr% 2 == 0)
+            {
+                $dreamlogs .= '<tr class="evenrow">'.$curRow;
+            }
+            else
+            {
+                $dreamlogs .= '<tr class="oddrow">'.$curRow;
+            }
+        }
+        # editor logs
+        elsif ($$dbrow[10] =~ m/^Editor Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
+        {
+            $editorlogCtr++;
+            if ($editorlogCtr% 2 == 0)
+            {
+                $editorlogs .= '<tr class="evenrow">'.$curRow;
+            }
+            else
+            {
+                $editorlogs .= '<tr class="oddrow">'.$curRow;
+            }
+        }
+        # root logs
+        elsif ($$dbrow[10] =~ m/^root log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
+        {
+            $rootlogCtr++;
+            if ($rootlogCtr% 2 == 0)
+            {
+                $rootlogs .= '<tr class="evenrow">'.$curRow;
+            }
+            else
+            {
+                $rootlogs .= '<tr class="oddrow">'.$curRow;
+            }
+        }
+    }
+
+    $str .= '<table width="100%">
+    <tr><th colspan="3"><h3>Day Logs</h3></th></tr>';
+    if (length($daylogs) > 0)
+    {
+      $str .= '<tr><th>Title</th><th>Author</th><th>Create Time</th></tr>'.$daylogs;
+    }
+    else
+    {
+      $str .= '<tr><td colspan="3"><em>No day logs found</em></td></tr>';
+    }
+
+    if (length($dreamlogs) > 0)
+    {
+      $str .= '<tr><th colspan="3"><h3>Dream Logs</h3></th></tr><tr><th>Title</th><th>Author</th><th>Create Time</th></tr>'.$dreamlogs;
+    }
+
+    $str .= '<tr><th colspan="3"><h3>Editor Logs</h3></th></tr>';
+    if (length($editorlogs) > 0)
+    {
+      $str .= '<tr><th>Title</th><th>Author</th><th>Create Time</th></tr>'.$editorlogs;
+    }
+    else
+    {
+      $str .= '<tr><td colspan="3"><em>No editor logs found</em></td></tr>';
+    }
+
+    $str .= '<tr><th colspan="3"><h3>Root Logs</h3></th></tr>';
+    if (length($rootlogs) > 0)
+    {
+      $str .= '<tr><th>Title</th><th>Author</th><th>Create Time</th></tr>'.$rootlogs;
+    }
+    else
+    {
+      $str .= '<tr><td colspan="3"><em>No root logs found</em></td></tr>';
+    }
+    $str .= '</table>';
+
+    return $str;
 }
 
 1;
