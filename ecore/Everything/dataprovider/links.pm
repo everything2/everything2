@@ -18,7 +18,7 @@ sub data_out
 	{
 		push @{$data->{link}}, $row;
 	}
-	
+
 	return $this->SUPER::xml_out($data);
 }
 

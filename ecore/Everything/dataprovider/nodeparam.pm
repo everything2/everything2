@@ -19,7 +19,7 @@ sub data_out
 		next if $row->{paramkey} eq "last_update";
 		push @{$data->{nodeparam}}, $row;
 	}
-	
+
 	return $this->SUPER::xml_out($data);
 }
 

@@ -44,7 +44,7 @@ sub _hash_insert
 	$sth->execute();
 
 	my $node_columns;
-	
+
 	while (my $row = $sth->fetchrow_hashref())
 	{
 		push @$node_columns, $row->{Field};

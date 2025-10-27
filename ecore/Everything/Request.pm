@@ -52,8 +52,8 @@ sub _build_cgi
   my $self = shift;
 
   my $cgi;
-	
-  if ($ENV{SCRIPT_NAME}) { 
+
+  if ($ENV{SCRIPT_NAME}) {
     $cgi = new CGI;
   } else {
     $cgi = new CGI(\*STDIN);

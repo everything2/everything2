@@ -967,7 +967,7 @@ sub bestow_easter_eggs {
     my @params = $query->param;
     my $str    = '';
 
-    my ( @users, @thenodes );
+    my @users = ();
     foreach (@params) {
         if (/^eggUser(\d+)$/) {
             $users[$1] = $query->param($_);
@@ -6683,6 +6683,7 @@ sub delegation_hitlist
 {
   my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
   my $str = "";
+  my $count = 0;
   my $types = ["superdoc","restricted_superdoc","superdocnolinks","oppressor_superdoc","fullpage","htmlcode","htmlpage","nodelet"];
 
   foreach my $type (@$types)
@@ -6693,11 +6694,14 @@ sub delegation_hitlist
     while(my $row = $csr->fetchrow_arrayref)
     {
       my $n = getNodeById($row->[0]);
+      next unless $n;
+      $count++;
       $str .= "<li>".linkNode($n)."</li>";
     }
     $str .= "</ul>";
   }
 
+  $str .= "<br /><strong>$count delegations remain</strong>";
   return $str;
 }
 
@@ -6865,6 +6869,111 @@ sub suspension_info
     Keep in mind that the punishment should fit the crime, and that systematic downvoting is not a "crime" at all, regardless of what an asshole thing to do that it is. Autovoters, C! abusers, etc.  Use these sparingly, but as needed.
     </p>
     |;
+
+    return $str;
+}
+
+sub show_user_vars
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $str = '';
+
+    my $uid = getId($USER);
+    return 'Try logging in.' if $APP->isGuest($USER);
+    my $isRoot = $DB->isGod($USER);
+    my $isEDev = $APP->isDeveloper($USER);
+    return ($str . ' Ummmm... no.') unless $isRoot || $isEDev;
+
+    my $username = $query->param('username') if $isRoot;
+    my $inspectUser = getNode($username, 'user') if (defined $username);
+    $inspectUser = $USER if (!$inspectUser);
+    my $inspectVars = getVars($inspectUser);
+
+    if ($isRoot) {
+        $str .=
+        htmlcode('openform', 'uservarsform', 'GET')
+        . 'Showing user variables for '
+        . $query->textfield(
+            -value => $$inspectUser{title}
+            , -name => "username"
+            , -size => 30
+            )
+        . $query->submit('Show user vars')
+        . '<br />'
+        . $query->end_form
+        ;
+    } else {
+        $str .= $$inspectUser{title} . '<br />';
+    }
+
+
+    my $tOpen = "<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\">\n";
+    my $tClose = '</table>';
+
+    my @validKeys = ();
+    my $key = undef;
+    my $val = undef;
+
+    if($isRoot) {
+    @validKeys = keys(%$inspectVars);
+    } else {
+    @validKeys =
+    (
+        'borged',
+        'coolnotification','cools','coolsafety',
+        'emailSubscribedusers','employment',
+        'ipaddy',
+        'level',
+        'mission','motto',
+        'nick','nodelets','nohints','nowhynovotes',
+        'nullvote','numborged','numwriteups','nwriteups',
+        'personal_nodelet',
+        'specialties'
+    );
+    }
+
+    if($isEDev) {
+        push(@validKeys, 'can_weblog') unless $isRoot;
+        push(@validKeys, 'hidden_weblog') unless $isRoot;
+        # List of hidden weblog commands (from Unhideify!)
+        foreach (keys %$inspectVars){
+            if(/hide_weblog_(\d*)/){
+                push @validKeys, $_ unless $isRoot;
+            }
+        }
+    }
+
+    @validKeys = sort(@validKeys);
+    $str .= '<h3>VARS</h3>' . $tOpen;
+    foreach $key (@validKeys) {
+        next if length($key)==0;
+        $val = encodeHTML($$inspectVars{$key});
+        $val =~ s/[\r\n]+/<br>/g if $key =~ /^notelet/;
+        $val='(<em>null</em>)' unless defined $val;
+        $str.='<tr><td>' . encodeHTML($key)
+            . '</td><td>' . $val . "</td>\n";
+    }
+    $str.=$tClose;
+
+    if($isRoot) {
+        @validKeys = keys(%$inspectUser);
+    } else {
+        @validKeys = ();
+    }
+    @validKeys = sort(@validKeys);
+    $str .= '<h3>USER</h3>'.$tOpen;
+    foreach $key (@validKeys) {
+        next if length($key)==0;
+        next if (($key eq 'vars') || ($key eq 'passwd'));
+        if($key ne '' and $key ne 'vars')
+        {
+            $val = $$inspectUser{$key};
+            $val='(<em>null</em>)' unless defined $val;
+            $str.='<tr><td>' . encodeHTML($key)
+                . '</td><td>' . encodeHTML($val) . "</td>\n";
+        }
+    }
+    $str.=$tClose;
 
     return $str;
 }
