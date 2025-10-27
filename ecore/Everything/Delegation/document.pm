@@ -6679,4 +6679,26 @@ sub log_archive
     return $str;
 }
 
+sub delegation_hitlist
+{
+  my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+  my $str = "";
+  my $types = ["superdoc","restricted_superdoc","superdocnolinks","oppressor_superdoc","fullpage"];
+
+  foreach my $type (@$types)
+  {
+    my $nt = getType($type);
+    my $csr = $DB->sqlSelectMany("node_id","node LEFT JOIN document on node.node_id=document.document_id","type_nodetype=$nt->{node_id} AND doctext IS NOT NULL AND doctext!=''");
+    $str .= "<ul>$type";
+    while(my $row = $csr->fetchrow_arrayref)
+    {
+      my $n = getNodeById($row->[0]);
+      $str .= "<li>".linkNode($n)."</li>";
+    }
+    $str .= "</ul>";
+  }
+
+  return $str;
+}
+
 1;
