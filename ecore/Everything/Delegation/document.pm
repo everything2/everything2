@@ -6683,7 +6683,7 @@ sub delegation_hitlist
 {
   my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
   my $str = "";
-  my $types = ["superdoc","restricted_superdoc","superdocnolinks","oppressor_superdoc","fullpage"];
+  my $types = ["superdoc","restricted_superdoc","superdocnolinks","oppressor_superdoc","fullpage","htmlcode","htmlpage","nodelet"];
 
   foreach my $type (@$types)
   {
@@ -6699,6 +6699,174 @@ sub delegation_hitlist
   }
 
   return $str;
+}
+
+sub suspension_info
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $isEd = $APP->isEditor($USER);
+    my $isChanop = $APP->isChanop($USER);
+    my %chanopSuspensionTypes = ('room' => 1, 'topic' => 1, 'chat' => 1);
+
+    my $failMessage = qq|<p>Looks like you stumbled upon a page you can't access.  Try the [Welcome to Everything\|front page].</p>|;
+
+    return $failMessage unless $isEd || $isChanop;
+
+    my $str = qq|<p><strong>See also: [Node Forbiddance[restricted_superdoc]]</strong> to suspend writeup posting privileges.</p>|;
+
+    my $userName = $query->param("lookup_name");
+    my $userId = undef;
+    $userId = getId(getNode($userName, "user")) if defined $userName;
+    $query->param("lookup_user", $userId) if $userId;
+
+    my $sustypeId = $query->param("sustype");
+    my $sustype = getNodeById($sustypeId);
+    my $lookupUserId = $query->param("lookup_user");
+    my $lookupUser = getNodeById($lookupUserId);
+    my $suspensionInfo = "";
+
+    my $invalidSustype = 0;
+
+    if ($isChanop && !$isEd) {
+        if ($sustype && !$chanopSuspensionTypes{$$sustype{title}}) {
+            $invalidSustype = 1;
+        }
+    }
+
+    if (htmlcode('verifyRequest', 'suspension') && $sustype && $lookupUser && !$invalidSustype)
+    {
+        my $outstr = "";
+
+        if($query->param("unsuspend"))
+        {
+            $DB->sqlDelete("suspension", "suspension_user=$$lookupUser{node_id} and suspension_sustype=$$sustype{node_id}");
+            $APP->securityLog($NODE, $USER, "$$lookupUser{title} was unsuspended from $$sustype{title} by $$USER{title}");
+            $outstr = "Suspension repealed";
+
+        } else {
+
+            $DB->sqlInsert("suspension", {"suspension_user" => $$lookupUser{node_id},  "suspension_sustype" => $$sustype{node_id}, "suspendedby_user" => $$USER{node_id}});
+            $APP->securityLog($NODE, $USER, "$$lookupUser{title} was suspended from $$sustype{title} by $$USER{title}");
+            $outstr = "Suspension imposed";
+        }
+
+        $str .= qq|<font color="red"><big><big><strong>$outstr</strong></big></big></font>|;
+    }
+
+    if ($lookupUser)
+    {
+        $str.="<table>";
+        $str.="<tr>";
+
+        $str.=qq|<td valign="center">Suspension info for: <br><strong>$$lookupUser{title}</strong></td>|;
+
+        my $sustypeTypeId = getId(getType("sustype"));
+        my $suspensionRestrict = "";
+        if ($isChanop && !$isEd) {
+            $suspensionRestrict = "AND title IN ("
+            . join(', ', map { $DB->quote($_); } keys %chanopSuspensionTypes)
+            . ")"
+            ;
+        }
+        my $csr =
+        $DB->sqlSelectMany(
+            "node_id, title, doctext"
+            , "node LEFT JOIN document ON node_id = document_id"
+            , "type_nodetype = $sustypeTypeId $suspensionRestrict AND title != 'email'"
+        );
+
+        my %suspension_types = ();
+
+        while(my $row = $csr->fetchrow_hashref) {
+            $suspension_types{$$row{title}} = { node_id => $$row{node_id}, desc => $$row{doctext} };
+        }
+
+        for my $suspension_name (sort keys %suspension_types) {
+        my $suspension_id = $suspension_types{$suspension_name}->{node_id};
+        $suspensionInfo .= "\n<dt>$suspension_name</dt>\n"
+            . "<dd>" . $suspension_types{$suspension_name}->{desc} . "</dd>\n"
+            ;
+        $str.="<td>";
+        $str.=qq|<p align="center">$suspension_name suspension</p>|;
+
+        my $sushash =
+            $DB->sqlSelectHashref(
+            "*"
+            , "suspension"
+            , "suspension_user = $$lookupUser{node_id} "
+                . "AND suspension_sustype = $suspension_id"
+            );
+
+        my $linkParams = htmlcode('verifyRequestHash', 'suspension'); 
+        $$linkParams{"lookup_user"} = $$lookupUser{node_id};
+        $$linkParams{"sustype"} = $suspension_id;
+
+        if($sushash)
+        {
+            $str.= '<p align="center"><small>'
+                . "Suspended by "
+                . linkNode(getNodeById($$sushash{suspendedby_user}))
+                . '</small></p>'
+                ; 
+
+            my $orig_started = $$sushash{started};
+            $$sushash{started} ||= "00000000000000";
+            $$sushash{started} =~ /(\d{4})-?(\d{2})-?(\d{2})\s*(\d{2}):?(\d{2}):?(\d{2})/;
+
+            $str .= qq|<p align="center"><small><small>|
+                . "on $2-$3-$1 at $4:$5:$6 "
+                . "</small></small></p>"
+                ;
+            $$linkParams{"unsuspend"} = 1;
+            $str .= "<p align=\"center\"><small>"
+                . linkNode($NODE,"Unsuspend", $linkParams)
+                . "</small></p>"
+                ;
+
+        }
+        else
+        {
+            $str.=qq|<p align="center"><small><em>No restriction</em></small></p>|;
+            $str.=qq|<p align="center"><small>|
+                . linkNode($NODE, "Suspend", $linkParams)
+                . "</small></p>"
+                ;
+        }
+        $str.="</td>";
+        $str.=qq|<td width="30"> </td>|;
+
+        }
+
+        $str.="</tr>";
+        $str.="</table>";
+        $str.="<br><br>";
+    }
+
+    my $formFields = ""
+    . htmlcode('verifyRequestForm', 'suspension')
+    . $query->textfield(-name => "lookup_name")
+    . $query->submit(-value => "Check info")
+    ;
+
+    $suspensionInfo = "<dl>\n$suspensionInfo\n</dl>" if $suspensionInfo ne "";
+
+    $str.=htmlcode('openform', 'suspensionlookupform');
+    $str.= qq|Check suspension info for: $formFields</form>
+
+    <hr width="200">
+
+    <strong>General Information:</strong>
+    <p>Each type of suspension carries its own weight.  More can be added later, but for right now, this works.  Borging and account locking may eventually move to this one interface.</p>
+
+    $suspensionInfo
+
+    <p>
+    Keep in mind that the punishment should fit the crime, and that systematic downvoting is not a "crime" at all, regardless of what an asshole thing to do that it is. Autovoters, C! abusers, etc.  Use these sparingly, but as needed.
+    </p>
+    |;
+
+    return $str;
 }
 
 1;
