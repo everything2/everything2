@@ -44,7 +44,7 @@ WORKDIR /var/everything
 RUN /usr/bin/npm install
 RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development
 
-RUN git -C /var/everything rev-parse HEAD > /etc/everything/last_commit
+RUN GIT_DIR=`GIT_DIR=/var/everything/.git git rev-parse --git-dir` git rev-parse HEAD > /etc/everything/last_commit
 
 EXPOSE 80
 EXPOSE 443
