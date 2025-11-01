@@ -821,8 +821,7 @@
             {"Ref": "CodeBuildUpdateApplicationECRRegistry"},
             {"Ref": "DockerCodeBuildLogWritePolicy"},
             {"Ref": "DockerHubSecretsAccessPolicy"},
-            {"Ref": "DeployedAssetsManagement"},
-            "arn:aws:iam::aws:policy/AWSCodeCommitReadOnly"
+            {"Ref": "DeployedAssetsManagement"}
         ],
         "Path": "/",
         "RoleName": "Docker-Builder-CodeBuild-Role"
@@ -1727,35 +1726,6 @@
             ]
           }
         }]
-      }
-    },
-    "Everything2CodeCommitRepo": {
-      "Type": "AWS::CodeCommit::Repository",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "RepositoryName": "everything2",
-        "RepositoryDescription": "Mirror of GitHub everything2/everything2 repo"
-      }
-    },
-    "ExtGithubCodeCommitUser": {
-      "Type": "AWS::IAM::User",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Policies": [
-          {
-            "PolicyName": "external-github-codecommit-access",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-              {
-                "Effect": "Allow",
-                "Action": "codecommit:*",
-                "Resource": {"Fn::GetAtt": ["Everything2CodeCommitRepo","Arn"]}
-              }]
-            }
-          }
-        ],
-        "UserName": "External-GitHub-Actions-User"
       }
     },
     "DeployedAssetsBucket": {
