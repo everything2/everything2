@@ -827,69 +827,6 @@
         "RoleName": "Docker-Builder-CodeBuild-Role"
       }
     },
-    "DockerCodeBuildProject": {
-      "Type": "AWS::CodeBuild::Project",
-      "Properties": {
-        "Artifacts": {
-          "Type": "NO_ARTIFACTS"
-        },
-        "LogsConfig": {
-          "CloudWatchLogs": {
-            "Status": "ENABLED",
-            "GroupName": {"Ref": "DockerCodeBuildLogGroup"}
-          }
-        },
-        "Name": "E2-Application-Builder",
-        "ServiceRole": {"Ref": "ApplicationDockerCodeBuildRole"},
-        "Source": {
-          "Type": "GITHUB",
-          "BuildSpec": "docker/buildspec.yml",
-          "Location": "https://github.com/everything2/everything2.git"
-        },
-        "TimeoutInMinutes": 90,
-        "Environment": {
-          "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/standard:7.0",
-          "Type": "LINUX_CONTAINER",
-          "EnvironmentVariables": [
-            {
-              "Name": "AWS_REGION",
-              "Value": {"Ref": "AWS::Region"}
-            },
-            {
-              "Name": "AWS_ACCOUNT_ID",
-              "Value": {"Ref": "AWS::AccountId"}
-            },
-            {
-              "Name": "IMAGE_TAG",
-              "Value": "latest"
-            },
-            {
-              "Name": "ECR_REPOSITORY_NAME",
-              "Value": {"Ref": "E2AppECRRegistry"}
-            },
-            {
-              "Name": "NODEJS_ARCH",
-              "Value": "x64"
-            },
-            {
-              "Name": "SECRETS_BUCKET",
-              "Value": {"Ref": "SecretsS3Bucket"}
-            },
-            {
-              "Name": "ASSETS_BUCKET",
-              "Value": {"Ref": "DeployedAssetsBucket"}
-            }
-          ],
-          "PrivilegedMode": true
-        },
-        "Cache": {
-          "Location": "LOCAL",
-          "Type": "LOCAL",
-          "Modes": ["LOCAL_DOCKER_LAYER_CACHE"]
-        }
-      }
-    },
     "DockerCodeBuildProjectARM": {
       "Type": "AWS::CodeBuild::Project",
       "DeletionPolicy": "Retain",
