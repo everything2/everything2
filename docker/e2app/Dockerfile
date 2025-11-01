@@ -1,6 +1,8 @@
 FROM ubuntu:22.04
 
 ARG ARCH=x64
+ARG CODEBUILD_RESOLVED_SOURCE_VERSION
+
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc cmake && rm -rf /var/lib/apt/lists/*
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -44,7 +46,7 @@ WORKDIR /var/everything
 RUN /usr/bin/npm install
 RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development
 
-RUN GIT_DIR=`GIT_DIR=/var/everything/.git git rev-parse --git-dir` git rev-parse HEAD > /etc/everything/last_commit
+RUN if [[ -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]]; then echo $CODEBUILD_RESOLVED_SOURCE_VERSION; else git -C /var/everything rev-parse HEAD; fi > /etc/everything/last_commit
 
 EXPOSE 80
 EXPOSE 443
