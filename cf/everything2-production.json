@@ -830,7 +830,6 @@
     },
     "DockerCodeBuildProject": {
       "Type": "AWS::CodeBuild::Project",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Artifacts": {
           "Type": "NO_ARTIFACTS"
@@ -844,9 +843,9 @@
         "Name": "E2-Application-Builder",
         "ServiceRole": {"Ref": "ApplicationDockerCodeBuildRole"},
         "Source": {
-          "Type": "CODECOMMIT",
+          "Type": "GITHUB",
           "BuildSpec": "docker/buildspec.yml",
-          "Location": {"Fn::GetAtt": ["Everything2CodeCommitRepo","CloneUrlHttp"]}
+          "Location": "https://github.com/everything2/everything2.git"
         },
         "TimeoutInMinutes": 90,
         "Environment": {
@@ -908,9 +907,9 @@
         "Name": "E2-Application-Builder-ARM",
         "ServiceRole": {"Ref": "ApplicationDockerCodeBuildRole"},
         "Source": {
-          "Type": "CODECOMMIT",
+          "Type": "GITHUB",
           "BuildSpec": "docker/buildspec.yml",
-          "Location": {"Fn::GetAtt": ["Everything2CodeCommitRepo","CloneUrlHttp"]}
+          "Location": "https://github.com/everything2/everything2.git"
         },
         "TimeoutInMinutes": 90,
         "Environment": {
