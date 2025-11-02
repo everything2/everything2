@@ -46,7 +46,7 @@ WORKDIR /var/everything
 RUN /usr/bin/npm install
 RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development
 
-RUN if [[ -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]]; then echo $CODEBUILD_RESOLVED_SOURCE_VERSION; else git -C /var/everything rev-parse HEAD; fi > /etc/everything/last_commit
+RUN if [ -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then echo "$CODEBUILD_RESOLVED_SOURCE_VERSION"; else git -C /var/everything rev-parse HEAD; fi > /etc/everything/last_commit
 
 EXPOSE 80
 EXPOSE 443
