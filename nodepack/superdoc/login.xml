@@ -1,42 +1,5 @@
 <node>
-  <doctext>[%
-my $str = '';
-
-
-if($query-&gt;param('op') eq 'login' &amp;&amp; !$APP-&gt;isGuest($USER)) {
-	$str.= &quot;Hey.  Glad you're back.  Would you like to go to your &quot;.linkNode($USER, &quot;home node&quot;).' or to '.linkNode($Everything::CONF-&gt;default_node).'?&lt;br /&gt;';
-	$str .= '...or back to '.linkNode($query-&gt;param('lastnode_id')).'?&lt;br /&gt;' if ($query-&gt;param('lastnode_id'));
-	return $str;
-} elsif ($query-&gt;param('op') eq 'login') { 
-	$str .=&quot;Oops.  You must have the wrong login or password or something:\n&lt;p&gt;\n&quot;;
-} elsif (!$APP-&gt;isGuest($USER)) {
-	$str.=&quot;Hey, &quot;.linkNode($USER).&quot;...  this is where you log in:&lt;p&gt;\n&quot;;
-}else {
-	$str .=&quot;Welcome to &quot;.$Everything::CONF-&gt;site_name.&quot;.  Authenticate yourself:\n&lt;p&gt;\n&quot;;
-}
-#jb says: security fixes
-my $pass = $query-&gt;param(&quot;passwd&quot;);
-$pass =~ s/./\*/g;
-$query-&gt;param(&quot;passwd&quot;, $pass);
-
-$str .= &quot;&lt;form method=\&quot;POST\&quot; action=\&quot;&quot;.$ENV{SCRIPT_NAME}.&quot;\&quot; id=\&quot;loginsuperdoc\&quot;&gt;&quot;.
-	&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;login\&quot; /&gt;&quot;.	
-	$query-&gt;hidden(&quot;node_id&quot;, getId($NODE)).&quot;\n&quot;.
-	$query-&gt;hidden(&quot;lastnode_id&quot;, scalar($query-&gt;param(&quot;lastnode_id&quot;))).&quot;\n&quot;.
-
-	$query-&gt;textfield (-name =&gt; &quot;user&quot;,
-		-size =&gt; 20,
-		-maxlength =&gt; 20) . &quot;&lt;br&gt;&quot; .
-	$query-&gt;password_field(-name =&gt; &quot;passwd&quot;,
-		-size =&gt; 20,
-		-maxlength =&gt; 240) .&quot;&lt;br&gt;&quot;.
-	$query-&gt;checkbox(&quot;expires&quot;, &quot;&quot;, &quot;+10y&quot;, &quot;save me a permanent cookie, cowboy!&quot;). 
-	$query-&gt;submit(&quot;sexisgood&quot;, &quot;submit&quot;) .
-	$query-&gt;end_form;
-	$str.=&quot;[Reset password[superdoc]|Forgot your password or username?]&quot;;
-        $str.=&quot;&lt;p&gt;Don't have an account? [Sign up[superdoc]|Create one]!&quot;;
-$str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>109</node_id>
   <title>login</title>
   <type_nodetype>14</type_nodetype>
