@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG ARCH=x64
 ARG CODEBUILD_RESOLVED_SOURCE_VERSION
@@ -8,12 +8,6 @@ ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Ruby
 RUN gem install aws-sdk-s3
-
-# Modern Apache2
-RUN mkdir -p /var/debbuild
-COPY ./debian/* /var/debbuild/
-RUN chmod 0755 /var/debbuild/build_modern_apache.sh
-RUN /var/debbuild/build_modern_apache.sh
 
 # Core Directories and Apache
 RUN mkdir -p /var/libraries /etc/everything /var/mason /var/log/everything /etc/apache2/logs /var/everything /var/bootstrap/cache
