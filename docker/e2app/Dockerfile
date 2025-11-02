@@ -11,7 +11,7 @@ RUN gem install aws-sdk-s3
 
 # Core Directories and Apache
 RUN mkdir -p /var/libraries /etc/everything /var/mason /var/log/everything /etc/apache2/logs /var/everything /var/bootstrap/cache
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.*
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/status.*
 RUN rm -rf /etc/apache2/sites-enabled /etc/apache2/sites-available /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available
 RUN for i in deflate rewrite authz_core proxy proxy_http ssl perl mpm_prefork socache_shmcb; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
 RUN chown root:root /etc/everything
