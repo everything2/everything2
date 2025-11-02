@@ -38,6 +38,12 @@ use Digest::MD5;
 # Used by Log Archive
 use DateTime;
 
+# Used by Node Backup
+use Everything::S3;
+use IO::Compress::Zip;
+
+## no critic (ProhibitEmptyQuotes,ProhibitManyArgs,Capitalization)
+
 sub admin_settings {
     my $DB       = shift;
     my $query    = shift;
@@ -47,6 +53,7 @@ sub admin_settings {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
+    ## no critic 'Perl::Critic::Policy::ValuesAndExpressions::RequireInterpolationOfMetachars'
     return
         '<p>You need to sign in or '
       . linkNode( getNode( 'Sign up', 'superdoc' ), 'register' )
@@ -59,7 +66,10 @@ sub admin_settings {
 
     #editor options
     if ( $APP->isEditor($USER) ) {
-        return unless $APP->isEditor($USER);
+        if(not $APP->isEditor($USER))
+        {
+            return;
+        }
         my $nl = "<br />\n";
         $str .= "<p><strong>Editor Stuff</strong>\n";
         $str .= $nl
@@ -90,14 +100,14 @@ sub admin_settings {
             'nv'     =>
 '/say /msg $1 Hey, I know that you probably didn\'t mean to, but advertising your writeups ("[nodevertising]") in the chatterbox isn\'t cool. Imagine if everyone did that - there would be no room for chatter.',
             'misc1' =>
-'/say /msg $0 Use this for your own custom macro. See [macro FAQ] for information about macros.'
+'/say /msg \$0 Use this for your own custom macro. See [macro FAQ] for information about macros.'
               . "\n"
               . '/say /msg $0 If you have an idea of another thing to add that would be wanted by many people, give N-Wing a /msg.',
             'misc2' =>
               '/say /msg $0 Yup, this is an area for another custom macro.'
         );
 
-        my @ks = sort( keys(%allowedMacros) );
+        my @ks = sort( keys %allowedMacros );
 
         foreach my $k (@ks) {
             my $v = undef;
@@ -116,13 +126,13 @@ sub admin_settings {
                     $v =~ s/\{/[/gs;
                     $v =~ s/\}/]/gs
                       ; #hack - it seems you can't use square brackets in a superdoc :(
-                    $$VARS{ 'chatmacro_' . $k } = $v;
+                    $VARS->{ 'chatmacro_' . $k } = $v;
                 }
             }
             elsif ($f) {
 
                 #delete unwanted macro (but only if no form submit problems)
-                delete $$VARS{ 'chatmacro_' . $k };
+                delete $VARS->{ 'chatmacro_' . $k };
             }
         }
 
@@ -132,14 +142,14 @@ sub admin_settings {
           . "\n";
 
         foreach my $k (@ks) {
-            my $v = $$VARS{ 'chatmacro_' . $k };
+            my $v = $VARS->{ 'chatmacro_' . $k };
             my $z = ( $v && length($v) > 0 ) ? 1 : 0;
             unless ($z) { $v = $allowedMacros{$k}; }
             $v =~ s/\[/{/gs;
             $v =~ s/\]/}/gs;    #square-link-in-superdoc workaround :(
             $str .=
                 '<tr><td>'
-              . $query->checkbox( 'usemacro_' . $k, $z, '1', '' )
+              . $query->checkbox( 'usemacro_' . $k, $z, '1', '')
               . '</td><td><code>'
               . $k
               . '</code></td><td>'
@@ -160,7 +170,7 @@ sub admin_settings {
 
     }
 
-    $str .= htmlcode("closeform");
+    $str .= htmlcode('closeform');
     return $str;
 }
 
@@ -173,6 +183,7 @@ sub advanced_settings {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
+    ## no critic 'Perl::Critic::Policy::ValuesAndExpressions::RequireInterpolationOfMetachars'
     return
         '<p>You need to sign in or '
       . linkNode( getNode( 'Sign up', 'superdoc' ), 'register' )
@@ -180,15 +191,15 @@ sub advanced_settings {
       if ( $APP->isGuest($USER) );
 
     if ( defined $query->param('sexisgood') ) {
-        $$VARS{'preference_last_update_time'} = DateTime->now()->epoch() - 60;
+        $VARS->{'preference_last_update_time'} = DateTime->now()->epoch() - 60;
     }
 
     $PAGELOAD->{pageheader} = '<!-- put at end -->' . htmlcode('settingsDocs');
     my $str = htmlcode( 'openform', -id => 'pagebody' );
-    $str .= qq|<h2>Page display</h2>|;
+    $str .= q|<h2>Page display</h2>|;
 
-    my @headeroptions = ( 'audio', 'length',  'hits',  'dtcreate' );
-    my @footeroptions = ( 'kill',  'sendmsg', 'addto', 'social' );
+    my @headeroptions = qw(audio length hits dtcreate);
+    my @footeroptions = qw(kill sendmsg addto social);
 
     my $legacycheck = '^$|c:type,c:(author|pseudoanon)(,\w:'
       . join( ')?(,\w:', @headeroptions ) . ',?)?';
@@ -200,7 +211,7 @@ sub advanced_settings {
 'Overwrite all existing header settings. (Changing settings here will not overwrite any custom formatting you already have in place unless you check this.)'
       )
       . "</p>\n"
-      unless $$VARS{wuhead} =~ /^$legacycheck$/
+      unless $VARS->{wuhead} =~ /^$legacycheck$/
       || $query->param('replaceoldheader');
 
     $legacycheck = '^$|(l:kill)?,?c:vote,c:cfull(,\w:'
@@ -213,42 +224,42 @@ sub advanced_settings {
 'Overwrite all existing footer settings. (Changing settings here will not overwrite any custom formatting you already have in place unless you check this.)'
       )
       . "</p>\n"
-      unless $$VARS{wufoot} =~ /^$legacycheck$/
+      unless $VARS->{wufoot} =~ /^$legacycheck$/
       || $query->param('replaceoldfooter');
 
     if ( defined( $query->param('change_stuff') ) ) {
-        $$VARS{wuhead} = 'c:type,c:author,c:audio,c:length,c:hits,r:dtcreate'
+        $VARS->{wuhead} = 'c:type,c:author,c:audio,c:length,c:hits,r:dtcreate'
           unless $legacyhead;
-        $$VARS{wuhead} =~ s/,$//;
+        $VARS->{wuhead} =~ s/,$//;
 
         foreach my $headeroption (@headeroptions) {
             if ( $query->param( 'wuhead_' . $headeroption ) ) {
-                $$VARS{wuhead} .= ",c:$headeroption,"
-                  unless $$VARS{wuhead} =~ /\w:$headeroption/;
+                $VARS->{wuhead} .= ",c:$headeroption,"
+                  unless $VARS->{wuhead} =~ /\w:$headeroption/;
             }
             else {
-                $$VARS{wuhead} =~ s/,?\w:$headeroption//g;
+                $VARS->{wuhead} =~ s/,?\w:$headeroption//g;
             }
         }
 
-        $$VARS{wufoot} = 'l:kill,c:vote,c:cfull,c:sendmsg,c:addto,r:social'
+        $VARS->{wufoot} = 'l:kill,c:vote,c:cfull,c:sendmsg,c:addto,r:social'
           unless $legacyfoot;
-        $$VARS{wufoot} =~ s/,$//;
+        $VARS->{wufoot} =~ s/,$//;
         foreach my $footeroption (@footeroptions) {
             if ( $query->param( 'wufoot_' . $footeroption ) ) {
-                $$VARS{wufoot} .= ",c:$footeroption"
-                  unless $$VARS{wufoot} =~ /\w:$footeroption/;
+                $VARS->{wufoot} .= ",c:$footeroption"
+                  unless $VARS->{wufoot} =~ /\w:$footeroption/;
             }
             else {
-                $$VARS{wufoot} =~ s/,?\w:$footeroption//g;
+                $VARS->{wufoot} =~ s/,?\w:$footeroption//g;
             }
         }
 
         if ( $query->param('nokillpopup') ) {
-            $$VARS{nokillpopup} = 4;
+            $VARS->{nokillpopup} = 4;
         }
         else {
-            delete $$VARS{nokillpopup};
+            delete $VARS->{nokillpopup};
         }
     }
 
@@ -259,14 +270,14 @@ sub advanced_settings {
 
     $str .= $query->checkbox(
         -name    => 'wuhead_audio',
-        -checked => ( ( $$VARS{'wuhead'} =~ 'audio' ) ? 1 : 0 ),
+        -checked => ( ( $VARS->{'wuhead'} =~ 'audio' ) ? 1 : 0 ),
         -label   => 'Show links to any audio files'
     );
     $str .= "<br>\n";
 
     $str .= $query->checkbox(
         -name    => 'wuhead_length',
-        -checked => ( ( $$VARS{'wuhead'} =~ 'length' ) ? 1 : 0 ),
+        -checked => ( ( $VARS->{'wuhead'} =~ 'length' ) ? 1 : 0 ),
         -label   => 'Show approximate word count of writeup'
     );
     $str .= "<br>\n";
@@ -274,7 +285,7 @@ sub advanced_settings {
     $str .= $query->checkbox(
         -name    => 'wuhead_hits',
         -checked => (
-            ( $$VARS{'wuhead'} =~ 'hits' || $$VARS{'wuhead'} eq '' ) ? 1 : 0
+            ( $VARS->{'wuhead'} =~ 'hits' || $VARS->{'wuhead'} eq '' ) ? 1 : 0
         ),
         -label => 'Show a hit counter for each writeup'
     );
@@ -283,7 +294,7 @@ sub advanced_settings {
     $str .= $query->checkbox(
         -name    => 'wuhead_dtcreate',
         -checked => (
-            ( $$VARS{'wuhead'} =~ 'dtcreate' || $$VARS{'wuhead'} eq '' )
+            ( $VARS->{'wuhead'} =~ 'dtcreate' || $VARS->{'wuhead'} eq '' )
             ? 1
             : 0
         ),
@@ -295,14 +306,14 @@ sub advanced_settings {
 
     $str .= "<fieldset><legend>Writeup Footers</legend>\n";
 
-    if (    $$USER{title} =~ /^(?:mauler|riverrun|Wiccanpiper|DonJaime)$/
+    if (    $USER->{title} =~ /^(?:mauler|riverrun|Wiccanpiper|DonJaime)$/
         and $DB->isGod($USER) )
     {
     # only gods can disable pop-up: they get the missing tools in Master Control
     # as of 2011-07-15 only three gods are using it. Let's lose it gradually...
         $str .= $query->checkbox(
             -name    => 'nokillpopup',
-            -checked => ( $$VARS{nokillpopup} == 4 ),
+            -checked => ( $VARS->{nokillpopup} == 4 ),
             -label   => 'Admin tools always visible, no pop-up'
         ) . '<br>';
     }
@@ -310,7 +321,7 @@ sub advanced_settings {
     $str .= $query->checkbox(
         -name    => 'wufoot_sendmsg',
         -checked => (
-            ( $$VARS{'wufoot'} =~ 'sendmsg' || $$VARS{'wufoot'} eq '' ) ? 1 : 0
+            ( $VARS->{'wufoot'} =~ 'sendmsg' || $VARS->{'wufoot'} eq '' ) ? 1 : 0
         ),
         -label => 'Show a box to send messages to the author'
     );
@@ -319,7 +330,7 @@ sub advanced_settings {
     $str .= $query->checkbox(
         -name    => 'wufoot_addto',
         -checked => (
-            ( $$VARS{'wufoot'} =~ 'addto' || $$VARS{'wufoot'} eq '' ) ? 1 : 0
+            ( $VARS->{'wufoot'} =~ 'addto' || $VARS->{'wufoot'} eq '' ) ? 1 : 0
         ),
         -label =>
 'Show a tool to add the writeup to your bookmarks, a usergroup page or a category'
@@ -329,13 +340,13 @@ sub advanced_settings {
     $str .= $query->checkbox(
         -name    => 'wufoot_social',
         -checked => (
-            ( $$VARS{'wufoot'} =~ 'social' || $$VARS{'wufoot'} eq '' ) ? 1 : 0
+            ( $VARS->{'wufoot'} =~ 'social' || $VARS->{'wufoot'} eq '' ) ? 1 : 0
         ),
         -label => 'Show social bookmarking buttons'
     );
     $str .= "<br>\n";
 
-    if ( $$VARS{nosocialbookmarking} ) {
+    if ( $VARS->{nosocialbookmarking} ) {
         $str .=
 "<small>To see social bookmarking buttons on other people's writeups you must enable them for yours<br>\n";
 
@@ -351,240 +362,240 @@ sub advanced_settings {
     $str .= $query->hidden( -name => 'change_stuff' );
 
     $str .=
-qq|<p><small><strong>[Old Writeup Settings]</strong> provides more control over writeup headers and footers, but the interface is rather complicated.</small></p>|;
-    $str .= qq|<fieldset><legend>Homenodes</legend>|;
+q|<p><small><strong>[Old Writeup Settings]</strong> provides more control over writeup headers and footers, but the interface is rather complicated.</small></p>|;
+    $str .= q|<fieldset><legend>Homenodes</legend>|;
 
-    $str .= htmlcode( "varcheckbox", "hidemsgme", "I am anti-social." );
-    $str .= qq|(So don't display the user /msg box in users' homenodes.)|;
-    $str .= qq|<br>|;
+    $str .= htmlcode( 'varcheckbox', 'hidemsgme', 'I am anti-social.' );
+    $str .= q|(So don't display the user /msg box in users' homenodes.)|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckbox", "hidemsgyou",
+    $str .= htmlcode( 'varcheckbox', 'hidemsgyou',
 'No one talks to me either, so on homenodes, hide the "/msgs from me" link to [Message Inbox]'
     );
-    $str .= qq|<br>|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckbox", "hidevotedata",
-"Not only that, but I'm careless with my votes and C!s (so don't show them on my homenode)"
+    $str .= htmlcode( 'varcheckbox', 'hidevotedata',
+'Not only that, but I\'m careless with my votes and C!s (so don\'t show them on my homenode)'
     );
-    $str .= qq|<br>|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckbox", "hidehomenodeUG",
-"I'm a loner, Dottie, a rebel. (Don't list my usergroups on my homenode.)"
+    $str .= htmlcode( 'varcheckbox', 'hidehomenodeUG',
+'I\'m a loner, Dottie, a rebel. (Don\'t list my usergroups on my homenode.)'
     );
-    $str .= qq|<br>|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckbox", "hidehomenodeUC",
-        "I'm a secret librarian. (Don't list my categories on my homenode.)" );
-    $str .= qq|<br>|;
+    $str .= htmlcode( 'varcheckbox', 'hidehomenodeUC',
+        'I\'m a secret librarian. (Don\'t list my categories on my homenode.)' );
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckbox", "showrecentwucount",
-"Let the world know, I'm a fervent noder, and I love it! (show recent writeup count in homenode.)"
+    $str .= htmlcode( 'varcheckbox', 'showrecentwucount',
+'Let the world know, I\'m a fervent noder, and I love it! (show recent writeup count in homenode.)'
     );
-    $str .= qq|<br>|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "hidelastnoded",
-        "Link to user's most recently created writeup on their homenode" );
-    $str .= qq|<br>|;
-    $str .= qq|</fieldset>|;
+    $str .= htmlcode( 'varcheckboxinverse', 'hidelastnoded',
+        'Link to user\'s most recently created writeup on their homenode' );
+    $str .= q|<br>|;
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<fieldset><legend>Other display options</legend>|;
-    $str .= htmlcode( "varcheckboxinverse", "hideauthore2node",
-        "Show who created a writeup page title (a.k.a. e2node)" );
-    $str .= qq|<br>|;
+    $str .= q|<fieldset><legend>Other display options</legend>|;
+    $str .= htmlcode( 'varcheckboxinverse', 'hideauthore2node',
+        'Show who created a writeup page title (a.k.a. e2node)' );
+    $str .= q|<br>|;
 
-    $$VARS{repThreshold} ||= '0'
-      if exists( $$VARS{repThreshold} );    # ecore stores 0 as ''
+    $VARS->{repThreshold} ||= '0'
+      if exists( $VARS->{repThreshold} );    # ecore stores 0 as ''
     if ( $query->param('sexisgood') ) {
         $query->param( 'activateThreshold', 1 )
           if $query->param('repThreshold') ne ''
-          and $$VARS{repThreshold} eq 'none';
+          and $VARS->{repThreshold} eq 'none';
         unless ( $query->param('activateThreshold') ) {
-            $$VARS{repThreshold} = 'none';
+            $VARS->{repThreshold} = 'none';
         }
         else {
-            $$VARS{repThreshold} = $query->param('repThreshold');
-            unless ( $$VARS{repThreshold} =~ /\d+|none/ ) {
-                delete $$VARS{repThreshold};
+            $VARS->{repThreshold} = $query->param('repThreshold');
+            unless ( $VARS->{repThreshold} =~ /\d+|none/ ) {
+                delete $VARS->{repThreshold};
             }
             else {
-                $$VARS{repThreshold} = int $$VARS{repThreshold};
+                $VARS->{repThreshold} = int $VARS->{repThreshold};
                 if ( $query->param('repThreshold') > 50 ) {
                     $query->param( 'repThreshold', 50 );
-                    $str .= "<small>Maximum threshold is 50.</small><br>";
+                    $str .= '<small>Maximum threshold is 50.</small><br>';
                 }
             }
         }
     }
 
-    $query->param( 'repThreshold', '' ) if $$VARS{repThreshold} eq 'none';
+    $query->param( 'repThreshold', '' ) if $VARS->{repThreshold} eq 'none';
 
     $str .= $query->checkbox(
         -name    => 'activateThreshold',
         -value   => 1,
-        -checked => ( $$VARS{repThreshold} eq 'none' ? 0 : 1 ),
+        -checked => ( $VARS->{repThreshold} eq 'none' ? 0 : 1 ),
         -force   => 1,
         -label   => 'Hide low-reputation writeups in New Writeups and e2nodes.'
     );
 
     $str .= ' <label>Reputation threshold: ';
-    $str .= $query->textfield( 'repThreshold', $$VARS{repThreshold}, 3, 3 );
+    $str .= $query->textfield( 'repThreshold', $VARS->{repThreshold}, 3, 3 );
     $str .=
-      "</label> (default is " . $Everything::CONF->writeuplowrepthreshold . ")";
+      '</label> (default is ' . $Everything::CONF->writeuplowrepthreshold . ')';
 
-    $str .= qq|<br>|;
-    $str .= htmlcode( "varcheckbox", "noSoftLinks", "Hide softlinks" );
-    $str .= qq|<br>|;
-    $str .= qq|</fieldset>|;
+    $str .= q|<br>|;
+    $str .= htmlcode( 'varcheckbox', 'noSoftLinks', 'Hide softlinks');
+    $str .= q|<br>|;
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<h2>Information</h2>|;
-    $str .= qq|<fieldset><legend>Writeup maintenance</legend>|;
+    $str .= q|<h2>Information</h2>|;
+    $str .= q|<fieldset><legend>Writeup maintenance</legend>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "no_notify_kill",
-        "Tell me when my writeups are deleted" );
-    $str .= qq|<br>|;
+    $str .= htmlcode( 'varcheckboxinverse', 'no_notify_kill',
+        'Tell me when my writeups are deleted');
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "no_editnotification",
-"Tell me when my writeups get edited by [e2 staff|an editor or administrator]"
+    $str .= htmlcode( 'varcheckboxinverse', 'no_editnotification',
+'Tell me when my writeups get edited by [e2 staff|an editor or administrator]'
     );
-    $str .= qq|</fieldset>|;
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<fieldset><legend>Writeup response</legend>|;
+    $str .= q|<fieldset><legend>Writeup response</legend>|;
 
     $str .= htmlcode(
-        "varcheckboxinverse",
-        "no_coolnotification",
+        'varcheckboxinverse',
+        'no_coolnotification',
         'Tell me when my writeups get [C!]ed ("cooled")'
     );
-    $str .= qq|<br>|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "no_likeitnotification",
-        "Tell me when Guest Users like my writeups" );
-    $str .= qq|<br>|;
+    $str .= htmlcode( 'varcheckboxinverse', 'no_likeitnotification',
+        'Tell me when Guest Users like my writeups');
+    $str .= q|<br>|;
 
     $str .= htmlcode(
-        "varcheckboxinverse",
-        "no_bookmarknotification",
-        "Tell me when my writeups get bookmarked on E2"
+        'varcheckboxinverse',
+        'no_bookmarknotification',
+        'Tell me when my writeups get bookmarked on E2'
     );
-    $str .= qq|<br>|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "no_bookmarkinformer",
-        "Tell others when I bookmark a writeup on E2" );
+    $str .= htmlcode( 'varcheckboxinverse', 'no_bookmarkinformer',
+        'Tell others when I bookmark a writeup on E2' );
     $str .=
-      htmlcode( "varcheckbox", "anonymous_bookmark", "but do it anonymously" );
-    $str .= qq|</fieldset>|;
+      htmlcode( 'varcheckbox', 'anonymous_bookmark', 'but do it anonymously' );
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<fieldset><legend>Social bookmarking</legend>|;
+    $str .= q|<fieldset><legend>Social bookmarking</legend>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "nosocialbookmarking",
-        "Allow others to see social bookmarking buttons on my writeups" );
+    $str .= htmlcode( 'varcheckboxinverse', 'nosocialbookmarking',
+        'Allow others to see social bookmarking buttons on my writeups' );
     $str .=
-qq|<small>Unchecking this will also hide the social bookmarking buttons on other people's writeups.</small><br>|;
+q|<small>Unchecking this will also hide the social bookmarking buttons on other people's writeups.</small><br>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "no_socialbookmarknotification",
-        "Tell me when my writeups get bookmarked on a social bookmarking site"
+    $str .= htmlcode( 'varcheckboxinverse', 'no_socialbookmarknotification',
+        'Tell me when my writeups get bookmarked on a social bookmarking site'
     );
-    $str .= qq|<br>|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "no_socialbookmarkinformer",
-        "Tell others when I bookmark a writeup on a social bookmarking site" );
-    $str .= qq|</p></fieldset>|;
+    $str .= htmlcode( 'varcheckboxinverse', 'no_socialbookmarkinformer',
+        'Tell others when I bookmark a writeup on a social bookmarking site' );
+    $str .= q|</p></fieldset>|;
 
-    $str .= qq|<fieldset><legend>Other information</legend>|;
+    $str .= q|<fieldset><legend>Other information</legend>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "no_discussionreplynotify",
-        "Tell me when someone replies to my usergroup discussion posts" );
-    $str .= qq|<br>|;
+    $str .= htmlcode( 'varcheckboxinverse', 'no_discussionreplynotify',
+        'Tell me when someone replies to my usergroup discussion posts' );
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckbox", "hidelastseen",
-        "Don't tell anyone when I was last here" );
-    $str .= qq|<br>|;
-    $str .= qq|</fieldset>|;
+    $str .= htmlcode( 'varcheckbox', 'hidelastseen',
+        'Don\'t tell anyone when I was last here');
+    $str .= q|<br>|;
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<h2>Messages</h2>|;
-    $str .= qq|<fieldset><legend>Message Inbox</legend>|;
+    $str .= q|<h2>Messages</h2>|;
+    $str .= q|<fieldset><legend>Message Inbox</legend>|;
 
-    $str .= htmlcode( "varcheckbox", "sortmyinbox",
-        "Sort my messages in message inbox" );
-    $str .= qq|<br>|;
+    $str .= htmlcode( 'varcheckbox', 'sortmyinbox',
+        'Sort my messages in message inbox');
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckbox", "mitextarea",
-        "Larger text box in Message Inbox" );
-    $str .= qq|<br></fieldset>|;
+    $str .= htmlcode( 'varcheckbox', 'mitextarea',
+        'Larger text box in Message Inbox');
+    $str .= q|<br></fieldset>|;
 
-    $str .= qq|<fieldset><legend>Usergroup messages</legend>|;
-    $str .= htmlcode( "varcheckbox", "getofflinemsgs",
-        "Get online-only messages, even while offline." );
+    $str .= q|<fieldset><legend>Usergroup messages</legend>|;
+    $str .= htmlcode( 'varcheckbox', 'getofflinemsgs',
+        'Get online-only messages, even while offline.' );
     $str .= '([online only /msg|explanation])';
-    $str .= qq|</fieldset>|;
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<h2>Miscellaneous</h2>|;
-    $str .= qq|<fieldset><legend>Chatterbox</legend>|;
+    $str .= q|<h2>Miscellaneous</h2>|;
+    $str .= q|<fieldset><legend>Chatterbox</legend>|;
 
-    $str .= htmlcode( "varcheckboxinverse", "noTypoCheck",
-        "Check for chatterbox command typos" );
+    $str .= htmlcode( 'varcheckboxinverse', 'noTypoCheck',
+        'Check for chatterbox command typos' );
     $str .=
-qq|&ndash; /mgs etc.(when enabled, some messages that aren't typos may be flagged as such, although this will protect you against most real typos)<br>|;
-    $str .= qq|</fieldset>|;
+q|&ndash; /mgs etc.(when enabled, some messages that aren't typos may be flagged as such, although this will protect you against most real typos)<br>|;
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<fieldset><legend>Nodeshells</legend>|;
+    $str .= q|<fieldset><legend>Nodeshells</legend>|;
 
-    $str .= htmlcode( "varcheckbox", "hidenodeshells",
-        "Hide nodeshells in search results and softlink tables" );
+    $str .= htmlcode( 'varcheckbox', 'hidenodeshells',
+        'Hide nodeshells in search results and softlink tables' );
     $str .=
-qq|<br><small>A nodeshell is a page on Everything2 with a title but no content</small>|;
-    $str .= qq|</fieldset>|;
+q|<br><small>A nodeshell is a page on Everything2 with a title but no content</small>|;
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<fieldset><legend>GP system</legend>|;
+    $str .= q|<fieldset><legend>GP system</legend>|;
     $str .=
-      htmlcode( "varcheckbox", "GPoptout", "Opt me out of the GP System." );
-    $str .= qq|<br>|;
+      htmlcode( 'varcheckbox', 'GPoptout', 'Opt me out of the GP System.' );
+    $str .= q|<br>|;
     $str .=
-qq|<small>[GP] is a points reward system. You get points for doing good stuff and can use them to buy fun stuff.</small>|;
-    $str .= qq|</fieldset>|;
+q|<small>[GP] is a points reward system. You get points for doing good stuff and can use them to buy fun stuff.</small>|;
+    $str .= q|</fieldset>|;
 
-    $str .= qq|<fieldset><legend>Little-needed</legend>|;
+    $str .= q|<fieldset><legend>Little-needed</legend>|;
 
-    $str .= htmlcode( "varcheckbox", "defaultpostwriteup",
-        "Publish immediately by default." );
-    $str .= qq|<br>|;
-
-    $str .=
-qq|<small>(Some older users may appreciate having 'publish immediately' initially selected instead 'post as draft'.)</small><br>|;
-
-    $str .= htmlcode( "varcheckbox", "noquickvote",
-        "Disable quick functions (a.k.a. AJAX)." );
-    $str .= qq|<br>|;
+    $str .= htmlcode( 'varcheckbox', 'defaultpostwriteup',
+        'Publish immediately by default.');
+    $str .= q|<br>|;
 
     $str .=
-qq|<small>(Voting, cooling, chatting, etc will all require complete pageloads. You probably don't want this.)</small><br>|;
+q|<small>(Some older users may appreciate having 'publish immediately' initially selected instead 'post as draft'.)</small><br>|;
 
-    $str .= htmlcode( "varcheckbox", "nonodeletcollapser",
-        "Disable nodelet collapser" );
-    $str .= qq|<br>|;
-    $str .=
-qq|<small>(clicking on a nodelet title will not hide its content).</small><br>|;
-
-    $str .= htmlcode( "varcheckbox", "HideNewWriteups",
-        "Hide your new writeups by default" );
-    $str .= qq|<br>|;
-    $str .=
-"<small>(note: some writeups, such as [Everything Daylogs|day log]s and maintenance-related writeups,always default to a hidden creation)</small><br>";
-
-    $str .= htmlcode( "varcheckbox", "nullvote", "Show null vote button" );
-    $str .=
-qq|<br><small>Some old browsers needed at least one radio-button to be selected</small></fieldset>|;
-
-    $str .= qq|<h2>Unsupported options</h2>|;
-    $str .= qq|<fieldset><legend>Experimental/In development</legend>|;
-    $str .=
-qq|<p><small>The time zone and other settings here do not currently affect the display of all times on the site.</small><br>|;
+    $str .= htmlcode('varcheckbox', 'noquickvote',
+        'Disable quick functions (a.k.a. AJAX).' );
+    $str .= q|<br>|;
 
     $str .=
-      htmlcode( "varcheckbox", "localTimeUse", "Use my time zone offset" );
+q|<small>(Voting, cooling, chatting, etc will all require complete pageloads. You probably don't want this.)</small><br>|;
+
+    $str .= htmlcode( 'varcheckbox', 'nonodeletcollapser',
+        'Disable nodelet collapser');
+    $str .= q|<br>|;
+    $str .=
+q|<small>(clicking on a nodelet title will not hide its content).</small><br>|;
+
+    $str .= htmlcode( 'varcheckbox', 'HideNewWriteups',
+        'Hide your new writeups by default');
+    $str .= q|<br>|;
+    $str .=
+'<small>(note: some writeups, such as [Everything Daylogs|day log]s and maintenance-related writeups,always default to a hidden creation)</small><br>';
+
+    $str .= htmlcode( 'varcheckbox', 'nullvote', 'Show null vote button');
+    $str .=
+q|<br><small>Some old browsers needed at least one radio-button to be selected</small></fieldset>|;
+
+    $str .= q|<h2>Unsupported options</h2>|;
+    $str .= q|<fieldset><legend>Experimental/In development</legend>|;
+    $str .=
+q|<p><small>The time zone and other settings here do not currently affect the display of all times on the site.</small><br>|;
+
+    $str .=
+      htmlcode( 'varcheckbox', 'localTimeUse', 'Use my time zone offset');
 
 #daylight saving time messes things up; cheap way is to have a separate checkbox for daylight saving time
-    my %specialNames = (
+    my $specialNames = {
         '-12:00' => 'International date line West',
         '-11:00' => 'Samoa',
         '-10:00' => 'Hawaii',
@@ -618,7 +629,7 @@ qq|<p><small>The time zone and other settings here do not currently affect the d
         '11:00' => 'Magadan/Solomon Islands/New Caledonia',
         '12:00' => 'Auckland/Wellington/Fiji',
         '13:00' => 'Nuku\'alofa',
-    );
+    };
 
     my $params  = '';
     my $t       = -43200;    # 12 * 3600: time() uses seconds
@@ -630,7 +641,7 @@ qq|<p><small>The time zone and other settings here do not currently affect the d
         for ( my $i = $n ; $i ; $i-- ) {
             my $zone = "$hours:$minutes";
             $params .= ",$t,$plus$zone"
-              . ( $specialNames{$zone} ? " - $specialNames{$zone}" : '' );
+              . ( $specialNames->{$zone} ? " - $specialNames->{$zone}" : '' );
             $minutes = $minutes eq '00' ? '30' : '00';
             $t += 1800;
             $plus = '+' unless $hours;
@@ -648,19 +659,19 @@ qq|<p><small>The time zone and other settings here do not currently affect the d
       ',-3155760000,Y2k bug' . $params . ',604800,I live for the future';
 
     $str .= htmlcode( 'varsComboBox', 'localTimeOffset,0' . $params );
-    $str .= qq|<br>|;
+    $str .= q|<br>|;
 
-    $str .= htmlcode( "varcheckbox", "localTimeDST",
-        "I am currently in daylight saving time" );
-    $str .= qq|(so add an an hour to my normal offset)<br>|;
+    $str .= htmlcode( 'varcheckbox', 'localTimeDST',
+        'I am currently in daylight saving time');
+    $str .= q|(so add an an hour to my normal offset)<br>|;
 
-    $str .= htmlcode( "varcheckbox", "localTime12hr",
-        "I am from a backwards country that uses a 12 hour clock" );
-    $str .= qq|(show AM/PM instead of 24-hour format)|;
+    $str .= htmlcode( 'varcheckbox', 'localTime12hr',
+        'I am from a backwards country that uses a 12 hour clock');
+    $str .= q|(show AM/PM instead of 24-hour format)|;
 
-    $str .= qq|</p></fieldset>|;
+    $str .= q|</p></fieldset>|;
 
-    $str .= htmlcode("closeform");
+    $str .= htmlcode('closeform');
     return $str;
 }
 
@@ -673,21 +684,21 @@ sub alphabetizer {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str = qq|<p>Go ahead -- one entry per line:</p>|;
-    $str .= htmlcode("openform");
+    my $str = q|<p>Go ahead -- one entry per line:</p>|;
+    $str .= htmlcode('openform');
 
-    $str .= qq|<p><!-- N-Wing added options 2005-12-12 -->|;
+    $str .= q|<p><!-- N-Wing added options 2005-12-12 -->|;
 
-    $str .= qq|separator: |;
+    $str .= q|separator: |;
     $str .=
-      htmlcode( "varsComboBox", "alphabetizer_sep", 0, 0, "none (default)",
-        1, "<br>", 2, "<li> (use in UL or OL)" );
-    $str .= qq|<br />|;
+      htmlcode( 'varsComboBox', 'alphabetizer_sep', 0, 0, 'none (default)',
+        1, '<br>', 2, '<li> (use in UL or OL)' );
+    $str .= q|<br />|;
 
-    $str .= qq|sort: |;
-    $str .= htmlcode( "varcheckbox", "alphabetizer_sortorder", "reverse" );
-    $str .= htmlcode( "varcheckboxinverse", "alphabetizer_case",
-        "ignore case (default yes)" );
+    $str .= q|sort: |;
+    $str .= htmlcode( 'varcheckbox', 'alphabetizer_sortorder', 'reverse' );
+    $str .= htmlcode( 'varcheckboxinverse', 'alphabetizer_case',
+        'ignore case (default yes)' );
     $str .= qq|<br />|;
 
     $str .= htmlcode( "varcheckbox", "alphabetizer_format",
@@ -769,20 +780,20 @@ sub ask_everything__do_i_have_the_swine_flu_ {
     my $APP      = shift;
 
     my $str =
-qq|<p>You walk up to the Everything Oracle, insert your coin, and ask the question that's most on your mind: DO I HAVE [SWINE FLU]???</p>|;
+q|<p>You walk up to the Everything Oracle, insert your coin, and ask the question that's most on your mind: DO I HAVE [SWINE FLU]???</p>|;
     $str .=
-qq|<br>The answer instantly flashes on the screen:<br><br><p align=center>|;
+q|<br>The answer instantly flashes on the screen:<br><br><p align=center>|;
 
     my @flu = (
-        "No.",
-        "Yes.",
-        "Maybe.",
-        "I'm afraid that is classified information.",
-        "Does your mother know you're here?",
-        "Who wants to know?",
-        "No.",
-        "Please try again.",
-"I could tell you but then I'd have to kill you. If the Swine Flu doesn't do it first.",
+        'No.',
+        'Yes.',
+        'Maybe.',
+        'I\'m afraid that is classified information.',
+        'Does your mother know you\'re here?',
+        'Who wants to know?',
+        'No.',
+        'Please try again.',
+'I could tell you but then I\'d have to kill you. If the Swine Flu doesn\'t do it first.',
         "No. You're probably Jewish and not allowed to have Swine Flu.",
         "You... INSERT ANOTHER COIN",
         "No. But for aboot tree-fiddy I get you some.",
@@ -898,9 +909,9 @@ sub bad_spellings_listing {
     my $APP      = shift;
 
     my $str =
-qq|<p>If you have the option enabled to show <strong>common bad spellings</strong> in your writeups, common bad spellings will be flagged and displayed you are looking at your writeup by itself (as opposed to the e2node, which may contain other noders' writeups).</p>|;
+q|<p>If you have the option enabled to show <strong>common bad spellings</strong> in your writeups, common bad spellings will be flagged and displayed you are looking at your writeup by itself (as opposed to the e2node, which may contain other noders' writeups).</p>|;
     $str .=
-qq|<p>This option can be toggled at [Settings[Superdoc]] in the Writeup Hints section. You currently have it |;
+q|<p>This option can be toggled at [Settings[Superdoc]] in the Writeup Hints section. You currently have it |;
     $str .=
       $VARS->{nohintSpelling}
       ? 'disabled, which is not recommended'
@@ -927,7 +938,7 @@ qq|<p>This option can be toggled at [Settings[Superdoc]] in the Writeup Hints se
 
     #table header
     $str .=
-qq|Spelling errors and corrections:<table border="1" cellpadding="2" cellspacing="0"><tr><th>invalid</th><th>correction</th></tr>|;
+q|Spelling errors and corrections:<table border="1" cellpadding="2" cellspacing="0"><tr><th>invalid</th><th>correction</th></tr>|;
 
     #table body - wrong spellings to correct spellings
     my $s        = "";
@@ -938,7 +949,7 @@ qq|Spelling errors and corrections:<table border="1" cellpadding="2" cellspacing
         ++$numShown;
         $s = $_;
         $s =~ tr/_/ /;
-        $str .= '<tr><td>' . $s . '</td><td>' . $$spellInfo{$_} . '</td></tr>';
+        $str .= '<tr><td>' . $s . '</td><td>' . $spellInfo->{$_} . '</td></tr>';
     }
 
     #table footer
@@ -948,7 +959,7 @@ qq|Spelling errors and corrections:<table border="1" cellpadding="2" cellspacing
     $str .= ' shown, ' . scalar( keys(%$spellInfo) ) . ' total' if $isCE;
     $str .= ')';
 
-    $str .= qq|</p>|;
+    $str .= q|</p>|;
     return $str;
 }
 
@@ -996,11 +1007,11 @@ sub bestow_easter_eggs {
         $str .= "User $$U{title} was given one easter egg";
 
         my $v = getVars($U);
-        if ( !exists( $$v{easter_eggs} ) ) {
-            $$v{easter_eggs} = 1;
+        if ( !exists( $v->{easter_eggs} ) ) {
+            $v->{easter_eggs} = 1;
         }
         else {
-            $$v{easter_eggs} += 1;
+            $v->{easter_eggs} += 1;
         }
 
         setVars( $U, $v );
@@ -1017,19 +1028,19 @@ sub bestow_easter_eggs {
         $query->param( "eggUser$i", '' );
         $str .= "\n\t<tr><td>";
         $str .= $query->textfield( "eggUser$i", '', 40, 80 );
-        $str .= "</td>";
+        $str .= '</td>';
     }
 
     $str .= '</table>';
 
     $str .= htmlcode('closeform');
 
-    if ( $query->param("Give yourself an egg you greedy bastard") ) {
-        if ( !exists( $$VARS{easter_eggs} ) ) {
-            $$VARS{easter_eggs} = 1;
+    if ( $query->param('Give yourself an egg you greedy bastard') ) {
+        if ( !exists( $VARS->{easter_eggs} ) ) {
+            $VARS->{easter_eggs} = 1;
         }
         else {
-            $$VARS{easter_eggs} += 1;
+            $VARS->{easter_eggs} += 1;
         }
     }
 
@@ -1051,7 +1062,7 @@ sub between_the_cracks {
 
     my $isGuest = $APP->isGuest($USER);
     return
-"<p>Undifferentiated from the masses of the streets, you fall between the cracks yourself.</p>"
+'<p>Undifferentiated from the masses of the streets, you fall between the cracks yourself.</p>'
       if $isGuest;
 
     my $rowCtr = 0;
@@ -1066,8 +1077,8 @@ sub between_the_cracks {
         $maxVotes = 5;
     }
 
-    if ( defined $query->param("mr") && $query->param("mr") ne "" ) {
-        $minRep = int( $query->param("mr") );
+    if ( defined $query->param('mr') && $query->param('mr') ne '' ) {
+        $minRep = int( $query->param('mr') );
         if ( $minRep > 5 || abs($minRep) > ( $maxVotes - 2 ) ) {
             $minRep = undef;
         }
@@ -1080,10 +1091,10 @@ sub between_the_cracks {
 
     my $str =
 qq|<p>These nodes have fallen between the cracks, and seem to have gone unnoticed. This page lists <em>up to</em> $resultCtr writeups that you haven't voted on that have fewer than $maxVotes total vote(s)$repStr on E2. Since they have been neglected until now, why don\'t you visit them and click that vote button?</p>|;
-    $str .= qq|<form method="get"><div>|;
+    $str .= q|<form method="get"><div>|;
     $str .=
-      qq|<input type="hidden" name="node_id" value="| . getId($NODE) . qq|" />|;
-    $str .= qq|<b>Display writeups with |;
+      q|<input type="hidden" name="node_id" value="| . getId($NODE) . q|" />|;
+    $str .= q|<b>Display writeups with |;
 
     my @mvChoices = ();
 
@@ -1114,10 +1125,10 @@ qq|<p>These nodes have fallen between the cracks, and seem to have gone unnotice
 
     $str .= ' (or greater) rep.';
 
-    $str .= qq|</b><input type="submit" value="Go" /></div></form>|;
+    $str .= q|</b><input type="submit" value="Go" /></div></form>|;
     $str .=
-      qq|<table width="100%"><tr><th>#</th><th>Writeup</th><th>Author</th>|;
-    $str .= qq|<th>Total Votes</th><th>Create Time</th></tr>|;
+      q|<table width="100%"><tr><th>#</th><th>Writeup</th><th>Author</th>|;
+    $str .= q|<th>Total Votes</th><th>Create Time</th></tr>|;
 
     $queryText =
       qq|SELECT title, author_user, createtime, writeup_id, totalvotes
@@ -1143,7 +1154,7 @@ qq|<p>These nodes have fallen between the cracks, and seem to have gone unnotice
         if ( $title =~ /^(.*?) \([\w-]+\)$/ ) { $title = $1; }
         $title =~ s/\s/_/g;
 
-        if ( !$APP->isUnvotable( $$wu{writeup_id} ) ) {
+        if ( !$APP->isUnvotable( $wu->{writeup_id} ) ) {
             $rowCtr++;
             if ( $rowCtr % 2 == 0 ) {
                 $str .= '<tr class="evenrow">';
@@ -1153,12 +1164,10 @@ qq|<p>These nodes have fallen between the cracks, and seem to have gone unnotice
             }
             $str .=
               '<td style="text-align:center;padding:0 5px">' . $rowCtr . '</td>
-         <td>' . linkNode( $$wu{writeup_id}, '', { lastnode_id => 0 } ) . '</td>
+         <td>' . linkNode( $wu->{writeup_id}, '', { lastnode_id => 0 } ) . '</td>
          <td>'
-              . linkNode( $$wu{author_user}, '', { lastnode_id => 0 } ) . '</td>
-         <td style="text-align:center">' . $$wu{totalvotes} . '</td>
-         <td style="text-align:right">' . $$wu{createtime} . '</td>
-         </tr>';
+              . linkNode( $wu->{author_user}, '', { lastnode_id => 0 } ) . '</td>
+         <td style="text-align:center">' . $wu->{totalvotes} . '</td><td style="text-align:right">' . $wu->{createtime} . '</td></tr>';
         }
         last if ( $rowCtr >= $resultCtr );
     }
@@ -1193,19 +1202,19 @@ sub blind_voting_booth {
 'Welcome to the blind voting booth.  You can give anonymous feedback without knowing who wrote a writeup here, if you so choose.<br><br>';
 
     if ( !( $query->param('op') eq 'vote' ) ) {
-        return qq|You're done for today| if ( $$USER{votesleft} == 0 );
+        return q|You're done for today| if ( $USER->{votesleft} == 0 );
 
         my $wucount = 0;
         while ( !$wu && $wucount < 30 ) {
 
-            my $limit = $DB->sqlSelect( "max(writeup_id)", "writeup" );
-            my $min   = $DB->sqlSelect( "min(writeup_id)", "writeup" );
+            my $limit = $DB->sqlSelect( 'max(writeup_id)', 'writeup' );
+            my $min   = $DB->sqlSelect( 'min(writeup_id)', 'writeup' );
             my $rnd   = int( rand( $limit - $min ) );
 
             $rnd += $min;
 
             my $maybewu =
-              $DB->sqlSelect( "writeup_id", "writeup", "writeup_id=$rnd" );
+              $DB->sqlSelect( 'writeup_id', 'writeup', "writeup_id=$rnd" );
 
             if ($maybewu) {
                 my $tempref = getNodeById($maybewu);
@@ -1247,7 +1256,7 @@ sub blind_voting_booth {
     }
     else {
         $str .= '? - ('
-          . linkNode( getNodeById( $$rndnode{parent_e2node} ), 'full node' )
+          . linkNode( getNodeById( $rndnode->{parent_e2node} ), 'full node' )
           . ')';
     }
 
@@ -1256,11 +1265,11 @@ sub blind_voting_booth {
     if ( $hasvoted == 0 ) {
         $str .=
             '<input type="hidden" name="votedon" value="'
-          . $$rndnode{node_id}
+          . $rndnode->{node_id}
           . '"><input type="radio" name="vote__'
-          . $$rndnode{node_id}
+          . $rndnode->{node_id}
           . '" value="1"> +<input type="radio" name="vote__'
-          . $$rndnode{node_id}
+          . $rndnode->{node_id}
           . '" value="-1"> - '
           . linkNode(
             $NODE,
@@ -1302,10 +1311,10 @@ sub bounty_hunters_wanted {
     my $APP      = shift;
 
     my $str =
-qq|<style type="text/css"> .mytable th, .mytable td {border: 1px solid silver;padding: 3px;}</style>|;
+q|<style type="text/css"> .mytable th, .mytable td {border: 1px solid silver;padding: 3px;}</style>|;
 
     $str .=
-qq|<p align=center><b>[Everything's Most Wanted] is now automated</b></p>|;
+q|<p align=center><b>[Everything's Most Wanted] is now automated</b></p>|;
 
     $str .=
 "<p>Okay, so [mauler|I] just finished fully automating the [Everything's Most Wanted] feature so that noders can manage bounties they have posted by themselves without having to go through the tedious process of messaging an admin several times. Hopefully this feature should be a lot more useful now. [Everything's Most Wanted|Check it out!]</p>";
@@ -1313,9 +1322,9 @@ qq|<p align=center><b>[Everything's Most Wanted] is now automated</b></p>|;
     $str .=
 "<p>The five most recently requested nodes are automatically listed below. If you fill one of these, please message the requesting noder to claim your prize. Please see [Everything's Most Wanted|the main list] for full details on conditions and rewards.</p>";
 
-    $str .= qq|<p>&nbsp;</p>|;
+    $str .= q|<p>&nbsp;</p>|;
 
-    $str .= qq|<table>|;
+    $str .= q|<table>|;
 
     $str .=
 "<p><table class='mytable' align=center><tr><th>Requesting Sheriff</th><th>Outlaw Nodeshell</th><th>GP Reward (if any)</th></tr>";
@@ -2495,14 +2504,14 @@ sub drafts {
         $username = $$u{title} unless $user == $$USER{node_id};
     }
 
-    if ( $query->param("shownuked") ) {
+    if ( $query->param('shownuked') ) {
         $showhidenukedlink =
-          linkNode( $NODE, "Hide nuked", $shownukedlinkparams );
+          linkNode( $NODE, 'Hide nuked', $shownukedlinkparams );
     }
     else {
         $shownukedlinkparams->{shownuked} = 1;
         $showhidenukedlink =
-          linkNode( $NODE, "Show nuked", $shownukedlinkparams );
+          linkNode( $NODE, 'Show nuked', $shownukedlinkparams );
     }
 
     $showhidenukedlink = "<strong>($showhidenukedlink)</strong>";
@@ -3102,13 +3111,13 @@ sub e2_gift_shop {
     if ( $$VARS{GPoptout} ) {
         $str .=
             "<p>You currently have <b>"
-          . ( $$VARS{easter_eggs} || "0" )
+          . ( $VARS->{easter_eggs} || "0" )
           . "</b> easter egg"
-          . ( $$VARS{easter_eggs} == 1 ? "" : "s" )
+          . ( $VARS->{easter_eggs} == 1 ? "" : "s" )
           . " and <b>"
-          . ( $$VARS{tokens} || "0" )
+          . ( $VARS->{tokens} || "0" )
           . "</b> token"
-          . ( $$VARS{tokens} == 1 ? "" : "s" ) . ".</p>";
+          . ( $VARS->{tokens} == 1 ? "" : "s" ) . ".</p>";
     }
     else {
         $str .=
@@ -3819,10 +3828,10 @@ sub editor_endorsements {
     return $str unless $ed && getNodeById($ed)->{type}->{title} eq "user";
 
     my $csr = $DB->sqlSelectMany(
-        "node_id",
-        "links left join node on links.from_node=node_id",
-        "linktype="
-          . getId( getNode( "coollink", "linktype" ) )
+        'node_id',
+        'links left join node on links.from_node=node_id',
+        'linktype='
+          . getId( getNode( 'coollink', 'linktype' ) )
           . " and to_node='$ed' order by title"
     );
 
@@ -3836,9 +3845,9 @@ sub editor_endorsements {
         $innerstr .= "<li>"
           . linkNode($n)
           . (
-            ( $$n{type}{title} eq "e2node" )
+            ( $$n{type}{title} eq 'e2node' )
             ?       ( " - $num writeup"
-                  . ( ( $num == 0 || $num > 1 ) ? ("s") : ("") ) )
+                  . ( ( $num == 0 || $num > 1 ) ? ('s') : ('') ) )
             : (" - ($$n{type}{title})")
           ) . "</li>";
     }
@@ -3903,7 +3912,7 @@ q|</p><p><a href="headlines.rdf">http://everything2.com/headlines.rdf</a> is the
     $str .= q|</p><br><br><hr><br><table>|;
 
     $str .=
-"These are the second generation tickers, using a more unified XML base, and also exporting information more fully. These are of type [ticker].";
+q|These are the second generation tickers, using a more unified XML base, and also exporting information more fully. These are of type [ticker].|;
 
     @nodes =
       $DB->getNodeWhere( { type_nodetype => getId( getType('ticker') ) } );
@@ -3932,8 +3941,8 @@ sub everything_finger {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str      = "";
-    my $wherestr = "";
+    my $str      = '';
+    my $wherestr = '';
 
     #old way
     unless ( $$VARS{infravision} ) {
@@ -4060,7 +4069,7 @@ sub everything_document_directory {
 
     #TODO checkboxes to NOT show things
 
-    my %ids = ( $$USER{node_id} => $USER, $$NODE{node_id} => $NODE );
+    my %ids = ( $USER->{node_id} => $USER, $NODE->{node_id} => $NODE );
     local *getNodeFromID = sub {
         my $nid = $_[0];
         return unless ( defined $nid ) && ( $nid =~ /^\d+$/ );
@@ -4099,7 +4108,7 @@ sub everything_document_directory {
       . $query->textfield('filter_nodetype')
       . '<br />';
 
-    $str .= qq|Choose your poison, sir:<form method="POST">|;
+    $str .= q|Choose your poison, sir:<form method="POST">|;
     $str .= qq|<input type="hidden" name="node_id" value="$NODE->{node_id}">|;
     $str .= qq|$opt<input type="submit" value="Fetch!"></form>|;
 
@@ -4170,22 +4179,22 @@ sub everything_document_directory {
     foreach my $n (@nodes) {
         last if $shown >= $limit;
         ++$shown;
-        my $user = getNodeFromID( $$n{author_user} );
+        my $user = getNodeFromID( $n->{author_user} );
 
         $str .= '<tr><td>';
         $str .=
             '<a href='
-          . urlGen( { 'node_id' => $$n{node_id}, 'displaytype' => 'viewcode' } )
+          . urlGen( { 'node_id' => $n->{node_id}, 'displaytype' => 'viewcode' } )
           . '>vc</a></td><td>'
           if $showLinkViewcode;
         $str .= linkNode( $n, 0, { lastnode_id => 0 } );
         $str .=
 qq|</td><td>$$user{title}</td><td><small>$$n{type}{title}</small></td><td><small>|;
-        $str .= htmlcode( 'parsetimestamp', $$n{createtime} . ',1' );
+        $str .= htmlcode( 'parsetimestamp', $n->{createtime} . ',1' );
         $str .= '</small></td>';
 
         if ($showNodeId) {
-            $str .= '<td>' . $$n{node_id} . '</td>';
+            $str .= '<td>' . $n->{node_id} . '</td>';
         }
 
         $str .= '</tr>';
@@ -4294,11 +4303,11 @@ sub everything_i_ching {
 
     #coin method
 
-    my @pset = ( "B", "F", "B", "F" );
-    my @sset = ( "F", "F", "B", "B" );
+    my @pset = qw(B F B F);
+    my @sset = qw(F F B B);
 
-    my $primary   = "";
-    my $secondary = "";
+    my $primary   = '';
+    my $secondary = '';
     while ( length($primary) < 6 ) {
         my $coins = int( rand(2) ) + int( rand(2) ) + int( rand(2) );
 
@@ -4309,34 +4318,34 @@ sub everything_i_ching {
 
     my $PNODE = getNode( $figures{$primary}, 'e2node' );
     return "$figures{$primary} not found!" unless $PNODE;
-    my $PWRITEUP = getNodeById( $$PNODE{group}[0] );
+    my $PWRITEUP = getNodeById( $PNODE->{group}[0] );
 
     my $SNODE = getNode( $figures{$secondary}, 'e2node' );
     return "$figures{$secondary} not found!" unless $SNODE;
-    my $SWRITEUP = getNodeById( $$SNODE{group}[0] );
+    my $SWRITEUP = getNodeById( $SNODE->{group}[0] );
 
-    my $str = "";
+    my $str = '';
 
     $str .= q|<table width=100% border=0 cellpadding=3 cellspacing=1>|;
     $str .=
-q|<tr><TH width=50%>Primary Hexagram</TH><TH width=50%>Secondary Hexagram</TH></TR>|;
-    $str .= q|<TR><td width=50% valign=top>|;
+q|<tr><th width=50%>Primary Hexagram</th><th width=50%>Secondary Hexagram</th></tr>|;
+    $str .= q|<tr><td width="50%" valign="top">|;
 
     $str .=
-      "<center>" . linkNode($PNODE) . "</center></td><td width=50% valign=top>";
+      "<center>" . linkNode($PNODE) . q|</center></td><td width="50%" valign="top">|;
     $str .= "<center>" . linkNode($SNODE) . "</center></tr>";
 
-    $str .= q|<tr bgcolor=black><td colspan=2>|;
+    $str .= q|<tr bgcolor="black"><td colspan="2">|;
     $str .=
-q|<table width=100% bgcolor=black cellpadding=2 cellspacing=0><tr><td align=center width=50%>|;
+q|<table width="100%" bgcolor="black" cellpadding="2" cellspacing="0"><tr><td align="center" width="50%">|;
     $str .=
-      htmlcode( 'generatehex', $primary ) . "</td><td width=50% align=center>";
-    $str .= htmlcode( 'generatehex', $secondary ) . "</td></tr></table>";
+      htmlcode( 'generatehex', $primary ) . q|</td><td width="50%" align="center">|;
+    $str .= htmlcode( 'generatehex', $secondary ) . q|</td></tr></table>|;
 
-    $str .= "</td></tr><tr><td valign=top width=50%>";
-    $str .= "<p>" . parseLinks( $$PWRITEUP{doctext} );
-    $str .= "</td><td valign=top width=50%>";
-    $str .= "<p>" . parseLinks( $$SWRITEUP{doctext} );
+    $str .= q|</td></tr><tr><td valign="top" width="50%">|;
+    $str .= q|<p>|.parseLinks( $PWRITEUP->{doctext} );
+    $str .= q|</td><td valign="top" width="50%">|;
+    $str .= q|<p>|.parseLinks( $SWRITEUP->{doctext} );
 
     $str .= "</td></tr></table>";
 
@@ -4361,7 +4370,7 @@ sub everything_poll_archive {
     my $APP      = shift;
 
     my $numtoshow = 10;
-    my $startat   = int( $query->param("startat") ) || 0;
+    my $startat   = int( $query->param('startat') ) || 0;
 
     my @polls = $DB->getNodeWhere( { poll_status => 'closed' },
         'e2poll', "e2poll_id DESC LIMIT $startat, $numtoshow" );
@@ -4463,35 +4472,35 @@ sub everything_poll_directory {
 
     my $dailypoll = '';
     $dailypoll = $query->param('dailypoll') if $isRoot;
-    my $poll_id          = $query->param("poll_id");
-    my $oldpolls         = $query->param("oldpolls") || 0;
+    my $poll_id          = $query->param('poll_id');
+    my $oldpolls         = $query->param('oldpolls') || 0;
     my $pollfilter       = undef;
-    my $pollLink         = "";
+    my $pollLink         = '';
     my %oldPollParameter = ();
 
     if ($oldpolls) {
-        $pollLink         = linkNode( $$NODE{node_id}, 'Hide old polls' );
+        $pollLink         = linkNode( $NODE->{node_id}, 'Hide old polls' );
         %oldPollParameter = ( oldpolls => 1 );
     }
     else {
         $pollfilter = { 'poll_status !' => 'closed' };
         $pollLink =
-          linkNode( $$NODE{node_id}, 'Show old polls', { oldpolls => 1 } );
+          linkNode( $NODE->{node_id}, 'Show old polls', { oldpolls => 1 } );
     }
 
     if ($dailypoll) {
         $DB->sqlUpdate( 'e2poll', { poll_status => 'closed' },
-            "poll_status='current'" );
+            q|poll_status='current'| );
         $DB->sqlUpdate( 'e2poll', { poll_status => 'current' },
-            "e2poll_id=$poll_id" );
+            qq|e2poll_id=$poll_id| );
 
         htmlcode( 'addNotification', 'e2poll', '', { e2poll_id => $poll_id } );
     }
 
-    my ( $PrevLink, $NextLink ) = ( "", "" );
+    my ( $PrevLink, $NextLink ) = ( '', '' );
     my $numtoshow = 8;
 
-    my $startat = $query->param("startat") || 0;
+    my $startat = $query->param('startat') || 0;
     if ($startat) {
         my $finishat = $startat - $numtoshow;
         $PrevLink = linkNode( $NODE, 'previous',
@@ -4514,15 +4523,15 @@ sub everything_poll_directory {
         if ($isRoot) {
             $str .= '<p>'
               . (
-                $$n{poll_status} ne 'current'
-                ? linkNode( $$NODE{node_id}, 'make current',
-                    { poll_id => $$n{node_id}, dailypoll => 1 } )
+                $n->{poll_status} ne 'current'
+                ? linkNode( $NODE->{node_id}, 'make current',
+                    { poll_id => $n->{node_id}, dailypoll => 1 } )
                   . ' | '
                 : ''
               )
               . linkNode( $n, 'edit', { displaytype => 'edit' } ) . ' | '
               . linkNode( $n, 'delete',
-                { node_id => $$n{node_id}, confirmop => 'nuke' } )
+                { node_id => $n->{node_id}, confirmop => 'nuke' } )
               . '</p>';
         }
 
@@ -4541,8 +4550,7 @@ sub everything_poll_directory {
 }
 
 sub everything_quote_server {
-    return
-qq|<br><br><b><font size="3"><div id="quoteserver" align="center"></div></font></b><br><br><br>|;
+    return q|<br><br><b><font size="3"><div id="quoteserver" align="center"></div></font></b><br><br><br>|;
 }
 
 sub everything_user_poll {
@@ -4641,7 +4649,7 @@ sub everything_user_search {
 
     $query->delete('orderby')
       if $query->param('orderby')
-      and not $$labels{ $query->param('orderby') };
+      and not $labels->{ $query->param('orderby') };
 
     $str .= $query->hidden('filterhidden')
       . $query->popup_menu(
@@ -4699,8 +4707,7 @@ sub everything_user_search {
                 delete @params{qw(node node_id type op submit)};
                 delete $params{page}
                   unless ( defined( $params{page} ) and $params{page} > 1 );
-                $params{usersearch} =
-                  $$user{title};              # clean/right case for links
+                $params{usersearch} = $user->{title}; # clean/right case for links
                 $params{orderby} ||= 'writeup.publishtime DESC';
 
                 $params{filterhidden} = 0
@@ -4948,73 +4955,69 @@ sub everything_s_best_users {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str =
-qq|<p align="right"><small>[News for noders.  Stuff that matters.]</small></p>|;
+    my $str = q|<p align="right"><small>[News for noders.  Stuff that matters.]</small></p>|;
 
     # Form toolbar (check boxes and Change button)
-    $str .= qq|<p align="right">|;
-    $str .=
-"<small>If you miss the merit display, you can go and complain to [ascorbic], but try getting some perspective first.</small>"
-      if $$VARS{ebu_showmerit};
+    $str .= q|<p align="right">|;
+    $str .= q|<small>If you miss the merit display, you can go and complain to [ascorbic], but try getting some perspective first.</small>|
+      if $VARS->{ebu_showmerit};
 
     if ( !$APP->isGuest($USER) ) {
 
         # Clear/reset the form control variables
-        delete $$VARS{ebu_showmerit};    # if($query->param("gochange"));
-        delete $$VARS{ebu_showdevotion}  if ( $query->param("gochange") );
-        delete $$VARS{ebu_showaddiction} if ( $query->param("gochange") );
-        delete $$VARS{ebu_newusers}      if ( $query->param("gochange") );
-        delete $$VARS{ebu_showrecent}    if ( $query->param("gochange") );
+        delete $VARS->{ebu_showmerit};    # if($query->param('gochange'));
+        delete $VARS->{ebu_showdevotion}  if ( $query->param('gochange') );
+        delete $VARS->{ebu_showaddiction} if ( $query->param('gochange') );
+        delete $VARS->{ebu_newusers}      if ( $query->param('gochange') );
+        delete $VARS->{ebu_showrecent}    if ( $query->param('gochange') );
 
-        # $$VARS{ebu_showmerit} = 1 if($query->param("ebu_showmerit") eq "on");
-        $$VARS{ebu_showdevotion} = 1
-          if ( $query->param("ebu_showdevotion") eq "on" );
-        $$VARS{ebu_newusers} = 1 if ( $query->param("ebu_newusers") eq "on" );
-        $$VARS{ebu_showaddiction} = 1
-          if ( $query->param("ebu_showaddiction") eq "on" );
-        $$VARS{ebu_showrecent} = 1
-          if ( $query->param("ebu_showrecent") eq "on" );
+        # $VARS->{ebu_showmerit} = 1 if($query->param("ebu_showmerit") eq "on");
+        $VARS->{ebu_showdevotion} = 1
+          if ( $query->param('ebu_showdevotion') eq 'on' );
+        $VARS->{ebu_newusers} = 1 if ( $query->param('ebu_newusers') eq 'on' );
+        $VARS->{ebu_showaddiction} = 1
+          if ( $query->param('ebu_showaddiction') eq 'on' );
+        $VARS->{ebu_showrecent} = 1
+          if ( $query->param('ebu_showrecent') eq 'on' );
 
         # Show the mini-toolbar
-        $str .= htmlcode("openform")
+        $str .= htmlcode('openform')
 
-          # . "<input type=\"checkbox\" name=\"ebu_showmerit\" "
-          # . ($$VARS{ebu_showmerit}?' CHECKED ':'')
-          # . ">Display by merit "
-          . "<input type=\"checkbox\" name=\"ebu_showdevotion\" "
-          . ( $$VARS{ebu_showdevotion} ? ' CHECKED ' : '' )
-          . ">Display by [devotion] "
-          . "<input type=\"checkbox\" name=\"ebu_showaddiction\" "
-          . ( $$VARS{ebu_showaddiction} ? ' CHECKED ' : '' )
-          . ">Display by [addiction] "
-          . "<input type=\"checkbox\" name=\"ebu_newusers\" "
-          . ( $$VARS{ebu_newusers} ? ' CHECKED ' : '' )
-          . ">Show New users  "
-          . "<input type=\"checkbox\" name=\"ebu_showrecent\" "
-          . ( $$VARS{ebu_showrecent} ? ' CHECKED ' : '' )
-          . ">Don't show fled users &nbsp;<input type=\"hidden\" "
-          . "name=\"gochange\" value=\"foo\">"
-          . "<input type=\"submit\" value=\"change\"></p>";
+          # . '<input type="checkbox" name="ebu_showmerit" '
+          # . ($VARS->{ebu_showmerit}?' CHECKED ':'')
+          # . '>Display by merit '
+          . '<input type="checkbox" name="ebu_showdevotion" '
+          . ( $VARS->{ebu_showdevotion} ? ' CHECKED ' : '' )
+          . '>Display by [devotion] '
+          . '<input type="checkbox" name="ebu_showaddiction" '
+          . ( $VARS->{ebu_showaddiction} ? ' CHECKED ' : '' )
+          . '>Display by [addiction] '
+          . '<input type="checkbox" name="ebu_newusers" '
+          . ( $VARS->{ebu_newusers} ? ' CHECKED ' : '' )
+          . '>Show New users  '
+          . '<input type="checkbox" name="ebu_showrecent" '
+          . ( $VARS->{ebu_showrecent} ? ' CHECKED ' : '' )
+          . '>Don\'t show fled users &nbsp;<input type="hidden" '
+          . 'name="gochange" value="foo">'
+          . '<input type="submit" value="change"></p>';
     }
     else {
         # No toolbar for the Guest User.
         return '';
     }
 
-    $str .=
-qq|<p>Shake these people's manipulatory appendages.  They deserve it.<br /><em>A drum roll please....</em></p>|;
+    $str .= q|<p>Shake these people's manipulatory appendages.  They deserve it.<br /><em>A drum roll please....</em></p>|;
 
-    $str .= qq|<!-- Start the TABLE ...  --->|;
-    $str .= qq|<table border="0" width="70%" align="center">|;
-    $str .=
-qq|<!-- I left this out of the code block to avoid escaping the quotes. -->|;
-    $str .= qq|<tr bgcolor="#ffffff">|;
+    $str .= q|<!-- Start the TABLE ...  --->|;
+    $str .= q|<table border="0" width="70%" align="center">|;
+    $str .= q|<!-- I left this out of the code block to avoid escaping the quotes. -->|;
+    $str .= q|<tr bgcolor="#ffffff">|;
 
     # Find out the date 2 years ago
     my $rows    = undef;
     my $datestr = undef;
 
-    my $queryText = "SELECT DATE_ADD(CURDATE(), INTERVAL -2 YEAR)";
+    my $queryText = 'SELECT DATE_ADD(CURDATE(), INTERVAL -2 YEAR)';
     $rows = $DB->{dbh}->prepare($queryText);
     $rows->execute();
     $datestr = $rows->fetchrow_array();
@@ -5064,7 +5067,7 @@ qq|<!-- I left this out of the code block to avoid escaping the quotes. -->|;
     $limit += ( keys %$skip );
 
     my $recent = '';
-    if ( $$VARS{ebu_newusers} ) {
+    if ( $VARS->{ebu_newusers} ) {
         $recent =
 " and (select createtime from node where node_id=user.user_id)>'$datestr 00:00:00'";
     }
@@ -5073,7 +5076,7 @@ qq|<!-- I left this out of the code block to avoid escaping the quotes. -->|;
     # the old code cut off recent users at 2 years and fled users at 1 year
 
     my $noFled = '';
-    if ( $$VARS{ebu_showrecent} ) {
+    if ( $VARS->{ebu_showrecent} ) {
         $noFled = " and user.lasttime>'$datestr 00:00:00' ";
     }
 
@@ -6096,9 +6099,9 @@ sub writeups_by_type {
     unshift @idlist, 0;
     $items{0} = 'All';
 
-    my $str = htmlcode('openform') . qq'<fieldset><legend>Choose...</legend>
+    my $str = htmlcode('openform') . qq|<fieldset><legend>Choose...</legend>
 	  <input type="hidden" name="page" value="$page">
-	  <label><strong>Select Writeup Type:</strong>'
+	  <label><strong>Select Writeup Type:</strong>|
       . $query->popup_menu( 'wutype', \@idlist, 0, \%items ) . '</label>
 	  <label> &nbsp; <strong>Number of writeups to display:</strong>'
       . $query->popup_menu( 'count',
@@ -6240,7 +6243,7 @@ qq|<fieldset><legend>Choose and sort nodelets</legend> You can change the order 
 
         $str .=
             $query->hidden( -name => $prefix, value => 1 )
-          . qq'<ul id="rearrangenodelets"><li>\n'
+          . qq|<ul id="rearrangenodelets"><li>\n|
           . join( "</li>\n<li>", @menus )
           . "</li></ul>\n";
         $str .=
@@ -6982,7 +6985,7 @@ sub websterbless
 {
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
 
-    my $output = qq|<p>A simple tool used to reward users who suggest writeup corrections to [Webster 1913].</p>|;
+    my $output = q|<p>A simple tool used to reward users who suggest writeup corrections to [Webster 1913].</p>|;
 
     # Display explanatory text to the gods group and designated Webby secretaries.
     my $notestr = 'Users are blessed with 3 GP and receive an automated thank-you note from Webster 1913:<br /><br />';
@@ -7136,7 +7139,6 @@ sub sanctify_user
     return "<p>Who do you think you are? The Pope or something?</p><p>Sorry, but you will have to come back when you reach Level $minLevel.</p>" unless $APP->getLevel($USER)>= $minLevel or $APP->isEditor($USER);
     return "<p>Sorry, but you don't have at least $Sanctificity GP to give away. Please come back when you have more GP.</p>" if $$USER{GP} < $Sanctificity;
 
-    my $warnStr.="";
     my $str = "<p>This tool lets you give <b>$Sanctificity GP</b> at a time to any user of your choice. The GP is transferred from your own account to theirs. Please use it for the good of Everything2!</p>";
 
     if ($query->param('give_GP'))
@@ -7175,6 +7177,133 @@ sub sanctify_user
 
     $$VARS{oldexp} = $$USER{experience};
     $$VARS{oldGP} = $$USER{GP};
+
+    return $str;
+}
+
+sub node_backup
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    return q|<p>If you logged in, you'd be able to create a backup of your writeups here.</p>| if $APP->isGuest($USER);
+
+    my $zipbuffer = undef;
+    my $zip = IO::Compress::Zip->new(\$zipbuffer);
+    my $s3 = Everything::S3->new("nodebackup");
+
+    my $str = '';
+    $str .= q|<p>Welcome to the node backup utility. Here you can download all of your writeups and/or drafts in a handy zipfile.</p>|;
+
+    $str .= htmlcode('openform','backup')
+	    .'<label>Back up:'
+	    .$query->popup_menu(
+		    -name => 'dowhat'
+		    , values => ['writeups and drafts', 'writeups', 'drafts'])
+	    .'</label><br><br>'
+	    .$query->radio_group(
+		    -name=>'e2parse',
+		    values=>['1','2','3'],
+		    labels=>{
+			    '1' => '... as you typed them',
+			    '2' => '... as E2 renders them',
+			    '3' => '... in both formats'},
+		    linebreak => 'true')
+	    .'<br>';
+
+    if($DB->isGod($USER))
+    {
+        $str .= q|For noder: |.$query->textfield(-name => 'for_noder').q| <em>(admin only)</em><br />|;
+    }
+	$str .= htmlcode('closeform', 'Create backup');
+    return $str unless $query->param('sexisgood');
+
+    my $e2parse = $query->param("e2parse");
+    my $targetNoder = undef;
+
+    if ($query->param('for_noder') && $DB->isGod($USER)) {
+        # hard-of-access option to test on other other users' stuff:
+        # draft security hole comparable to [SQL prompt]
+	    my $targetNoderName = $query->param("for_noder");
+	    $targetNoder = getNode($targetNoderName, "user");
+    }
+
+    $targetNoder ||= $USER;
+    my $uid = $targetNoder->{user_id};
+
+    my @types = ($1, $2) if $query -> param('dowhat') =~ /(writeup)?.*?(draft)?s$/;
+    @types = map { $_ ? 'type_nodetype='.getType($_)->{node_id} : () } @types;
+    my $where = join ' OR ', @types;
+
+    my $TAGNODE = getNode('approved html tags', 'setting');
+    my $TAGS=getVars($TAGNODE);
+
+    my @wus;
+    my $csr = $DB->sqlSelectMany(
+	    'title, doctext, type_nodetype, node_id'
+	    , 'document JOIN node ON document_id=node_id'
+	    , "author_user=$uid AND ($where)");
+
+    while (my $wu_row = $csr->fetchrow_hashref){
+	    push @wus, $wu_row if $e2parse & 1;
+	    push @wus, {
+		    title => $wu_row->{title},
+		    type_nodetype => $wu_row->{type_nodetype},
+		    suffix => 'html',
+		    doctext => "<base href=\"https://everything2.com\">\n".
+			    $APP->breakTags(parseLinks($APP->screenTable($APP->htmlScreen($wu_row -> {doctext},$TAGS))))
+	    } if $e2parse & 2;
+    }
+
+    unless (@wus){
+	    return '<p>No '.$query->param('dowhat')." found.</p>\n";
+    }
+
+    my $draftType = getId(getType('draft'));
+    my %usedtitles = ();
+
+    foreach my $wu (@wus) {
+	    my $wu_title = $$wu{title};
+	    my $suffix = $$wu{suffix}||'txt';
+	
+	    #Slashes create directories in the zip file, so change them to
+	    #dashes. Various other characters make various OSes puke, so change them, too.
+	    $wu_title =~ s,[^[:alnum:]&#; ()],-,g;
+	    $wu_title .= ' (draft)' if $$wu{type_nodetype} == $draftType;
+	    my $trytitle = $wu_title;
+	
+	    my $dupebust = 1;
+	    $wu_title = $trytitle.' ('.$dupebust++.')' while $usedtitles{"$wu_title.$suffix"};
+	    $usedtitles{"$wu_title.$suffix"} = 1;
+	
+        my $doctext = $$wu{doctext};
+        my $wusuffix = $$wu{suffix};
+        $zip->newStream(Name => ($wusuffix || 'text')."/$wu_title.$suffix");
+	    $zip->print($doctext);
+    }
+
+    my ($day, $month, $year) = (gmtime(time + $$VARS{localTimeOffset} + $$VARS{localTimeDST}*3600))[3 .. 5];
+    $month += 1; # month initially 0..11; make it 1..12
+    $year += 1900;
+    $day = "0$day" if $day < 10;
+    $month = "0$month" if $month < 10;
+
+    my $cleanUser = $APP->rewriteCleanEscape($targetNoder->{title});
+    my $format = ('text', 'html', 'text-html')[$e2parse-1];
+
+    # make URL hard to guess
+    my $obfuscateUrl = int(rand(8999999)) + 1000000;
+    my $outputfilename = "$cleanUser.$format.$obfuscateUrl.$year-$month-$day.zip";
+
+    $zip->close();
+    $s3->upload_data($outputfilename, $zipbuffer, {content_type => "application/zip"});
+
+    my $url = "https://s3-us-west-2.amazonaws.com/nodebackup.everything2.com/$outputfilename";
+
+    $str .= "<p> Your backup is ready. You can fetch it <strong><a href=\"$url\">$url</a></strong></p>";
+    $str .= "<p>This link is public in the sense that anyone with the URL can download it, and will last for 7 days, in which time it will be automatically deleted. This is the only time you will see this link, so download it now.</p>";
+
+    $str .= '<p>This is not your work and some of it may be private. Please do not read the drafts and remember to delete the backup after checking it is OK.'
+		if $uid != $$USER{user_id} and $where =~ /$draftType/;
 
     return $str;
 }
