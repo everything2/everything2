@@ -6978,4 +6978,108 @@ sub show_user_vars
     return $str;
 }
 
+sub websterbless
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $output = qq|<p>A simple tool used to reward users who suggest writeup corrections to [Webster 1913].</p>|;
+
+    # Display explanatory text to the gods group and designated Webby secretaries.
+    my $notestr = 'Users are blessed with 3 GP and receive an automated thank-you note from Webster 1913:<br /><br />';
+    $notestr .= '<blockquote><em>[Webster 1913] says re [Writeup name]: Thank you! My servants have attended to any errors.</em></blockquote><br />';
+    $notestr .= 'Writeup name is optional (this parameter is pure text, it is not checked in any way).<br /><br />';
+
+    # Display a count of Webby's messages, if non-zero. This count links to Webby's mailbox. The link currently works only for gods.
+    # TODO: Make mailbox link work for Webby secretaries.
+    # (The following is adapted from showmessages)
+    # ... make SQl query text for Webster 1913's messages
+    my $limits = 'for_user='.getId(getNode('Webster 1913', 'user'));
+    # ... total messages for user, archived and not, group and not, from all users
+    my $totalMsg = $DB->sqlSelect('COUNT(*)','message',$limits); 
+    # ... display the number of messages in Webster 1913's Message Inbox.
+    my $moreMsgStr = '';
+    if($totalMsg) {
+        $moreMsgStr .= '<a href='.urlGen({node=>'Message Inbox', type=>'superdoc',spy_user=>'Webster 1913'}).'>'.$totalMsg.'</a> messages total';
+    }
+
+    # Display the number of messages Webster has, and link to Message Inbox
+    $output .= $notestr;
+    # Display the note text and the message text (if any).
+    $output .=  '<br />Webster 1913 has ' . $moreMsgStr . '<br /><br />' if length($moreMsgStr);
+
+    #Adapted from superbless
+    my @params = $query->param;
+    my $str = '';
+
+    # Get the list of users to be thanked.
+    my (@users, @thenodes);
+    foreach (@params)
+    {
+        if(/^webbyblessUser(\d+)$/)
+        {
+            $users[$1] = $query->param($_);
+        }
+
+        if(/^webbyblessNode(\d+)$/)
+        {
+            $thenodes[$1] = $query->param($_);
+        }
+    }
+
+    # For this purpose the bless is fixed at 3 GP.
+    my $curGP = 3;
+
+    # Loop through, apply the bless, report the results
+    for(my $count=0; $count < @users; $count++)
+    {
+        next unless $users[$count];
+
+        my ($U) = getNode ($users[$count], 'user');
+        if (not $U)
+        {
+            $str.="couldn't find user $users[$count]<br />";
+            next;
+        }
+
+        # Send an automated thank-you.
+        htmlcode('sendPrivateMessage',{
+            'recipient_id'=>getId($U),
+            'message'=>'Thank you! My servants have attended to any errors.',
+            'author'=>'Webster 1913',
+            'renode'=>$thenodes[$count]});
+
+        $str .= "User $$U{title} was given $curGP GP";
+        $$U{karma}+=1;
+        updateNode($U, -1);
+        htmlcode('achievementsByType','karma');
+        $APP->securityLog(getNode('Superbless', 'superdoc'), $USER, "$$USER{title} [Websterbless|Websterblessed] $$U{title} with $curGP GP.");
+        $APP->adjustGP($U, $curGP);
+        $str .= "<br />\n";
+    }
+
+    $output .= $str;
+    $output .= htmlcode("openform");
+    $output .= qq|<table border="1">|;
+
+
+    # Build the table rows for inputting user names
+    my $count = 5;
+    $str = "";
+    $str.="<tr><th>Thank these users</th><th>Writeup name</th></tr> ";
+
+    for (my $i = 0; $i < $count; $i++)
+    {
+        $query->param("webbyblessUser$i", '');
+        $query->param("webbyblessNode$i", '');
+        $str.="<tr><td>";
+        $str.=$query->textfield("webbyblessUser$i", '', 40, 80);
+        $str.="</td><td>";
+        $str.=$query->textfield("webbyblessNode$i", '', 40, 80);
+        $str.="</td></tr>";
+    }
+
+    $output .= $str.qq|</table>|.htmlcode("closeform");
+    return $output;
+}
+
 1;
