@@ -7082,4 +7082,46 @@ sub websterbless
     return $output;
 }
 
+sub login
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str = '';
+    if($query->param('op') eq 'login' && !$APP->isGuest($USER))
+    {
+	    $str.= "Hey.  Glad you're back.  Would you like to go to your ".linkNode($USER, "home node").' or to '.linkNode($Everything::CONF->default_node).'?<br />';
+	    $str .= '...or back to '.linkNode($query->param('lastnode_id')).'?<br />' if ($query->param('lastnode_id'));
+	    return $str;
+    } elsif ($query->param('op') eq 'login') {
+	    $str .="Oops.  You must have the wrong login or password or something:\n<p>\n";
+    } elsif (!$APP->isGuest($USER)) {
+	    $str.="Hey, ".linkNode($USER)."...  this is where you log in:<p>\n";
+    }else {
+	    $str .="Welcome to ".$Everything::CONF->site_name.".  Authenticate yourself:\n<p>\n";
+    }
+
+    #security fix
+    my $pass = $query->param("passwd");
+    $pass =~ s/./\*/g;
+    $query->param("passwd", $pass);
+
+    $str .= "<form method=\"POST\" action=\"".$ENV{SCRIPT_NAME}."\" id=\"loginsuperdoc\">".
+	    "<input type=\"hidden\" name=\"op\" value=\"login\" />".
+	    $query->hidden("node_id", getId($NODE))."\n".
+	    $query->hidden("lastnode_id", scalar($query->param("lastnode_id")))."\n".
+
+	$query->textfield (-name => "user",
+		-size => 20,
+		-maxlength => 20) . "<br>" .
+	$query->password_field(-name => "passwd",
+		-size => 20,
+		-maxlength => 240) ."<br>".
+	$query->checkbox("expires", "", "+10y", "save me a permanent cookie, cowboy!").
+	$query->submit("sexisgood", "submit") .
+	$query->end_form;
+	$str.="[Reset password[superdoc]|Forgot your password or username?]";
+    $str.="<p>Don't have an account? [Sign up[superdoc]|Create one]!";
+    return $str;
+}
+
 1;
