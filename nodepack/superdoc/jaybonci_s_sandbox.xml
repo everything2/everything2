@@ -1,9 +1,8 @@
 <node>
   <doctext>&lt;pre&gt;
 [%
-  use Time::Piece;
-  my $t = localtime;
-  return &quot;Year is: &quot;.$t-&gt;year.&quot;&lt;br /&gt;&quot;;
+ return &quot;&quot; unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
+ return `ls -al /etc/apache2/mods-enabled/`;
 %]
 
 [%
