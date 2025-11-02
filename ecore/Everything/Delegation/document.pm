@@ -7124,4 +7124,59 @@ sub login
     return $str;
 }
 
+sub sanctify_user
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    #Note that if you adjust these settings, you should also adjust them in the "Epicenter" nodelet and the "sanctify" opcode --mauler
+    my $minLevel = 11;
+    my $Sanctificity = 10;
+
+    return "<p>Sorry, this tool can only be used by people who have [User Settings|opted in] to the GP system.</p>" if ($$VARS{GPoptout});
+    return "<p>Who do you think you are? The Pope or something?</p><p>Sorry, but you will have to come back when you reach Level $minLevel.</p>" unless $APP->getLevel($USER)>= $minLevel or $APP->isEditor($USER);
+    return "<p>Sorry, but you don't have at least $Sanctificity GP to give away. Please come back when you have more GP.</p>" if $$USER{GP} < $Sanctificity;
+
+    my $warnStr.="";
+    my $str = "<p>This tool lets you give <b>$Sanctificity GP</b> at a time to any user of your choice. The GP is transferred from your own account to theirs. Please use it for the good of Everything2!</p>";
+
+    if ($query->param('give_GP'))
+    {
+        my $recipient = $query->param('give_to');
+	    my $user = getNode($recipient, 'user');
+	    return "<p>The user '$recipient' doesn't exist!</p>" unless $user;
+        return "<p>It is not possible to sanctify yourself!</p><p>Would you like to [Sanctify user|try again on someone else]?</p>" if ($$USER{title} eq $recipient);
+        $$user{sanctity} += 1;
+        updateNode($user, -1);
+
+        $APP->adjustGP($user, $Sanctificity);
+        $APP->adjustGP($USER, -$Sanctificity);
+
+        $APP->securityLog($NODE, $USER, "$$USER{title} sanctified $$user{title} with $Sanctificity GP.");
+        
+	    my $from =  ($query->param('anon') eq 'sssh') ? "!" : (' by [' . $$USER{title} . ']!');
+	    htmlcode('sendPrivateMessage',{
+		    'author_id' => getId(getNode('Cool Man Eddie', 'user')),
+		    'recipient_id' => $$user{user_id},
+		    'message' => "Whoa! You’ve been [Sanctify|sanctified]$from" });
+        $str = "<p>User [" . $$user{title} ."] has been given 10 GP. ";
+	    return $str . "</p>You have <b>" . $$USER{GP} . " GP</b> left. Would you like to [Sanctify user|sanctify someone else]?</p><p>Or, return to the [E2 Gift Shop].</p>";
+    }
+
+    $str.=$query->start_form();
+    $str.=$query->hidden('node_id', $$NODE{node_id});
+    $str.= "</p><p>Which noder has earned your favor? " . $query->textfield('give_to');
+    $str.= $query->checkbox(-name=>'anon',
+        -value=>'sssh',
+		-label=>'Remain anonymous') . '</p>';
+    $str.=$query->submit('give_GP','Sanctify!');
+    $str.=$query->end_form();
+
+    $str.="<p>Or, return to the [E2 Gift Shop].</p>";
+
+    $$VARS{oldexp} = $$USER{experience};
+    $$VARS{oldGP} = $$USER{GP};
+
+    return $str;
+}
+
 1;
