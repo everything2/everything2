@@ -5,11 +5,6 @@
     <paramvalue>1</paramvalue>
   </nodeparam>
   <nodeparam>
-    <node_id>106</node_id>
-    <paramkey>prevent_nuke</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
     <node_id>108</node_id>
     <paramkey>prevent_nuke</paramkey>
     <paramvalue>1</paramvalue>
