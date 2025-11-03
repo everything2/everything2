@@ -5028,23 +5028,23 @@ sub everything_s_best_users {
     # Declare and init the string that contains our whole HTML stream.
 
     # Build the rest of the table's heading row
-    $str .= "<th></th><th>User</th>";
+    $str .= q|<th></th><th>User</th>|;
 
     # ... only include the Merit column if the checkbox is on.
-    if ( $$VARS{ebu_showmerit} ) {
+    if ( $VARS->{ebu_showmerit} ) {
         $str .= "<th>Merit</th>";
     }
 
-    if ( $$VARS{ebu_showdevotion} ) {
-        $str .= "<th>Devotion</th>";
+    if ( $VARS->{ebu_showdevotion} ) {
+        $str .= q|<th>Devotion</th>|;
     }
 
-    if ( $$VARS{ebu_showaddiction} ) {
-        $str .= "<th>Addiction</th>";
+    if ( $VARS->{ebu_showaddiction} ) {
+        $str .= q|<th>Addiction</th>|;
     }
 
-    $str .= "<th>Experience</th><th># Writeups</th><th>Rank</th><th>Level</th>";
-    $str .= "</tr>";
+    $str .= q|<th>Experience</th><th># Writeups</th><th>Rank</th><th>Level</th>|;
+    $str .= q|</tr>|;
 
     # Build the database query
     # ... skip these users
@@ -5086,14 +5086,14 @@ sub everything_s_best_users {
     if ( $$VARS{ebu_showmerit} ) {
 
         # Query for all users with >24 writeups, sort by merit
-        $csr = $DB->sqlSelectMany( "user_id", "user",
+        $csr = $DB->sqlSelectMany( 'user_id', 'user',
             "numwriteups > 24 $noFled order by merit desc limit $limit" );
     }
 
     if ( $$VARS{ebu_showdevotion} ) {
 
         # Query for all users with >24 writeups, sort by merit
-        $csr = $DB->sqlSelectMany( "user_id", "user",
+        $csr = $DB->sqlSelectMany( 'user_id', 'user',
 "numwriteups > 24 $noFled order by (numwriteups*merit) desc limit $limit"
         );
     }
@@ -5165,15 +5165,15 @@ sub everything_s_best_users {
         $str .= ( $isMe ? '<strong>' : '' );
         $str .= ( linkNode( $node, 0, { lastnode_id => undef } ) );
         $str .= ( $isMe ? '</strong>' : '' ) . "</td>";
-        if ( $$VARS{ebu_showmerit} ) {
+        if ( $VARS->{ebu_showmerit} ) {
             $str .= "<td>$merit</td>";
         }
 
-        if ( $$VARS{ebu_showdevotion} ) {
+        if ( $VARS->{ebu_showdevotion} ) {
             $str .= "<td>$devo</td>";
         }
 
-        if ( $$VARS{ebu_showaddiction} ) {
+        if ( $VARS->{ebu_showaddiction} ) {
             my $addict = sprintf( '%.3f', $nid->{addiction} );
             $str .= "<td>$addict</td>";
         }
@@ -5184,7 +5184,7 @@ sub everything_s_best_users {
         ++$step;
     }
 
-    $str .= qq|</table>|;
+    $str .= q|</table>|;
     return $str;
 }
 
@@ -5210,19 +5210,19 @@ sub everything_s_best_writeups {
     $str .=
 '<br><br><table><tr bgcolor="#CCCCCC"><td width="200">Writeup</td><td width="200">Author</td></tr>';
     while ( my $row = $csr->fetchrow_hashref() ) {
-        my $bestnode = getNodeById( $$row{writeup_id} );
+        my $bestnode = getNodeById( $row->{writeup_id} );
         next unless ($bestnode);
 
-        my $bestparent = getNodeById( $$bestnode{parent_e2node} );
-        my $bestuser   = getNodeById( $$bestnode{author_user} );
+        my $bestparent = getNodeById( $bestnode->{parent_e2node} );
+        my $bestuser   = getNodeById( $bestnode->{author_user} );
 
         $str .=
             '<tr><td>'
-          . linkNode( $bestnode,   $$bestnode{title} ) . ' - '
+          . linkNode( $bestnode,   $bestnode->{title} ) . ' - '
           . linkNode( $bestparent, 'full' ) . ' <b>'
           . $$bestnode{cooled}
           . 'C!</b></td><td> by '
-          . linkNode( $bestuser, $$bestuser{title} )
+          . linkNode( $bestuser, $bestuser->{title} )
           . '</td></tr>';
     }
 
@@ -5241,16 +5241,16 @@ sub page_of_cool {
     my $APP      = shift;
 
     my @grp = (
-        @{ getNode( "gods",            "usergroup" )->{group} || [] },
-        @{ getNode( "Content Editors", "usergroup" )->{group} || [] },
-        @{ getNode( "exeds",           "nodegroup" )->{group} || [] }
+        @{ getNode( 'gods',            'usergroup' )->{group} || [] },
+        @{ getNode( 'Content Editors', 'usergroup' )->{group} || [] },
+        @{ getNode( 'exeds', 'nodegroup' )->{group} || [] }
     );
     my $except = {};
 
-    foreach my $except_user ( "Cool Man Eddie",
-        "EDB", "Webster 1913", "Klaproth", "PadLock" )
+    foreach my $except_user ( 'Cool Man Eddie',
+        'EDB', 'Webster 1913', 'Klaproth', 'PadLock' )
     {
-        my $user = $DB->getNode( $except_user, "user" );
+        my $user = $DB->getNode( $except_user, 'user' );
         if ($user) {
             $except->{ $user->{node_id} } = 1;
         }
@@ -5261,32 +5261,31 @@ sub page_of_cool {
     my $first_block =
 "Browse through the latest editor selections below, or choose a specific editor (or former editor) to see what they've endorsed:";
 
-    $first_block .= htmlcode("openform");
-    $first_block .= "<select name=\"editor\">";
+    $first_block .= htmlcode('openform');
+    $first_block .= q|<select name="editor">|;
     foreach (@grp) {
         $first_block .=
             "<option value=\"$_\""
-          . ( ( $query->param("editor") . "" eq "$_" ) ? (" SELECTED ") : ("") )
-          . ">"
+          . ( ( $query->param('editor') . "" eq "$_" ) ? (' SELECTED ') : ('') )
+          . '>'
           . getNodeById($_)->{title}
-          . "</option>"
+          . '</option>'
           unless ( $except->{$_} )
-          || not getNodeById($_)->{type}->{title} eq "user";
+          || not getNodeById($_)->{type}->{title} eq 'user';
         $except->{$_} = 1;
     }
 
-    $first_block .=
-      "</select><input type=\"submit\" value=\"Show Endorsements\"></form>";
+    $first_block .= q|</select><input type="submit" value="Show Endorsements"></form>|;
 
-    my $ed = $query->param("editor");
+    my $ed = $query->param('editor');
     $ed =~ s/[^\d]//g;
 
-    if ( $ed && getNodeById($ed)->{type}->{title} eq "user" ) {
+    if ( $ed && getNodeById($ed)->{type}->{title} eq 'user' ) {
         my $csr = $DB->sqlSelectMany(
-            "node_id",
-            "links left join node on links.from_node=node_id",
-            "linktype="
-              . getId( getNode( "coollink", "linktype" ) )
+            'node_id',
+            'links left join node on links.from_node=node_id',
+            'linktype='
+              . getId( getNode( 'coollink', 'linktype' ) )
               . " and to_node='$ed' order by title"
         );
 
@@ -5294,17 +5293,17 @@ sub page_of_cool {
         my $count = 0;
         while ( my $row = $csr->fetchrow_hashref ) {
             $count++;
-            my $n = getNodeById( $$row{node_id} );
+            my $n = getNodeById( $row->{node_id} );
             $$n{group} ||= [];
-            my $num = scalar( @{ $$n{group} } );
-            $innerstr .= "<li>"
+            my $num = scalar( @{ $n->{group} } );
+            $innerstr .= q|<li>|
               . linkNode($n)
               . (
-                ( $$n{type}{title} eq "e2node" )
+                ( $$n{type}{title} eq 'e2node' )
                 ?       ( " - $num writeup"
                       . ( ( $num == 0 || $num > 1 ) ? ("s") : ("") ) )
                 : (" - ($$n{type}{title})")
-              ) . "</li>";
+              ) . q|</li>|;
         }
 
         $first_block .= linkNode( getNodeById($ed) )
@@ -7309,6 +7308,71 @@ sub node_backup
 		if $uid != $$USER{user_id} and $where =~ /$draftType/;
 
     return $str;
+}
+
+sub cache_dump
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $output = q|This is what the cache contains<br>|;
+    $output .= qq|(Process ID: $$)<br /><p>|;
+
+    my $cache = $DB->getCache()->dumpCache();
+    my $num = $DB->getCache()->getCacheSize();
+    $output .= "Cache size: $num\n";
+
+    $output .= q|<ul>|;
+
+    my $typestats;
+
+    foreach my $cache_entry (@$cache)
+    {
+        next unless $cache_entry;
+
+        my $item = $cache_entry->[0];
+        my $extrainfo = [];
+
+        $typestats->{$item->{type}->{title}} ||= 0;
+        $typestats->{$item->{type}->{title}}++;
+   
+        push @$extrainfo, $$item{type}{title};
+
+        if($cache_entry->[1]->{permanent})
+        {
+            push @$extrainfo, "permanent";
+        }
+
+        if(exists($$item{group}))
+        {
+            push @$extrainfo, scalar(@{$$item{group}}). " items in group";
+        }
+ 
+        if(exists($DB->{cache}->{groupCache}->{$$item{node_id}}))
+        {
+            push @$extrainfo, scalar(keys %{$DB->{cache}->{groupCache}->{$$item{node_id}}})." items in groupCache";
+        }
+
+        $output .= "<li> $$item{title} (".join(" , ",@$extrainfo).")\n";
+    }
+
+    $output .= q|</ul><br /><br />Counts: <ul>|;
+
+    foreach my $key(keys %$typestats)
+    {
+        $output .= "<li>$key: ".$typestats->{$key}
+    }
+
+    $output .= q|</ul>|;
+    $output .= "Pagecache:<ul>";
+
+    foreach my $key (keys %{$DB->{cache}->{pagecache}})
+    {
+        $output .= "<li>$key: ".$DB->{cache}->{pagecache}->{$key};
+    }
+
+    $output .= q|</ul>|;
+    return $output;
+
 }
 
 1;
