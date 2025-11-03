@@ -41,6 +41,7 @@ use DateTime;
 # Used by Node Backup
 use Everything::S3;
 use IO::Compress::Zip;
+use utf8;
 
 ## no critic (ProhibitEmptyQuotes,ProhibitManyArgs,Capitalization)
 
@@ -7276,7 +7277,9 @@ sub node_backup
 	    $usedtitles{"$wu_title.$suffix"} = 1;
 	
         my $doctext = $$wu{doctext};
+        utf8::encode($doctext);
         my $wusuffix = $$wu{suffix};
+        utf8::encode($wusuffix);
         $zip->newStream(Name => ($wusuffix || 'text')."/$wu_title.$suffix");
 	    $zip->print($doctext);
     }
