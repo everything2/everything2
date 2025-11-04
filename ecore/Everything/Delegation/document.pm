@@ -1349,10 +1349,7 @@ sub buffalo_generator {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my @verbNouns = (
-        'Buffalo', 'buffalo', 'police', 'bream', 'perch', 'char',
-        'people',  'dice',    'cod',    'smelt', 'pants'
-    );
+    my @verbNouns = qw(Buffalo buffalo police bream perch char people dice cod smelt pants);
     my @intermediatePunctuation = ( ',', ';', ',', ':', '...' );
     my @finalPunctuation        = ( '.', '!', '?' );
 
@@ -1728,7 +1725,7 @@ sub cool_archive {
     $str .= 'Order by: '
       . $query->popup_menu( 'orderby', \@ordervals, $orderby, \%orderhash );
     $str .= ' and ';
-    my @actions = ( 'cooled', 'written' );
+    my @actions = qw(cooled written);
     $str .= $query->popup_menu( 'useraction', \@actions );
     $str .= ' by user: ';
     $str .= $query->textfield( 'cooluser', '', 15, 30 );
@@ -1873,21 +1870,18 @@ sub create_a_registry {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str =
-qq|<p>Registries are places where people can share snippets of information about themselves, like their [email address] or [favourite vegetables].</p>|;
+    my $str = q|<p>Registries are places where people can share snippets of information about themselves, like their [email address] or [favourite vegetables].</p>|;
 
-    $str .=
-qq|<p>Before you create any new registries, you should have a look at [the registries] we already have.</p>|;
+    $str .= q|<p>Before you create any new registries, you should have a look at [the registries] we already have.</p>|;
 
-    $str .= htmlcode("openform");
+    $str .= htmlcode('openform');
 
     if ( $query->param('sexisgood') ) {
         return $str;
     }
 
     if ( $APP->getLevel($USER) < 8 ) {
-        return
-"You would need to be [The Everything2 Voting/Experience System|level 8] to create a registry."
+        return q{You would need to be [The Everything2 Voting/Experience System|level 8] to create a registry.}
           unless $APP->getLevel($USER);
 
     }
@@ -1920,7 +1914,7 @@ qq|<p>Before you create any new registries, you should have a look at [the regis
         }
     ];
     $str .= $APP->buildTable( $labels, $rows, 'nolabels' );
-    $str .= qq|</form>|;
+    $str .= q|</form>|;
     return $str;
 }
 
@@ -1935,8 +1929,7 @@ sub create_category {
 
     my $str = q|<p><b><big>[Everything2 Help] &gt; [Everything2 Categories]</big></b></p>|;
 
-    $str .=
-"<p>A [category] is a way to group a list of related nodes. You can create a category that only you can edit, a category that anyone can edit, or a category that can be maintained by any [Everything2 Usergroups|usergroup] you are a member of.</p>";
+    $str .= q{<p>A [category] is a way to group a list of related nodes. You can create a category that only you can edit, a category that anyone can edit, or a category that can be maintained by any [Everything2 Usergroups|usergroup] you are a member of.</p>};
 
     $str .= q|<p>The scope of categories is limitless. Some examples might include:</p>|;
 
@@ -2023,16 +2016,16 @@ sub create_category {
     $str .= '</p>'
       . '<fieldset><legend>Category Description</legend>'
       . $query->textarea(
-        -name  => "category_doctext",
-        -id    => "category_doctext",
-        -class => "formattable",
+        -name  => 'category_doctext',
+        -id    => 'category_doctext',
+        -class => 'formattable',
         @customDimensions
       )
       . '</fieldset>'
-      . $query->hidden( -name => "op",   -value => "new" )
-      . $query->hidden( -name => "type", -value => $catType );
+      . $query->hidden( -name => 'op',   -value => 'new' )
+      . $query->hidden( -name => 'type', -value => $catType );
 
-    $str .= $query->submit( "createit", "Create It!" );
+    $str .= $query->submit( 'createit', 'Create It!');
     $str .= $query->end_form;
 
     return $str;
@@ -2069,9 +2062,8 @@ sub create_room {
     $str .= $query->hidden( -name => 'type', -value => 'room' );
     $str .= 'Room name: ';
     $str .= $query->textfield( -name => 'node', -size => 28, -maxlenght => 80 );
-    $str .= "<P>And a few words of description: "
-      . $query->textarea( "room_doctext", "", 5, 60, "", "wrap=virtual" );
-    $str .= $query->submit("enter");
+    $str .= q|<p>And a few words of description: |.$query->textarea( 'room_doctext', '', 5, 60, '', 'wrap=virtual');
+    $str .= $query->submit('enter');
     $str .= $query->end_form;
 
     return $str;
@@ -2086,7 +2078,7 @@ sub database_lag_o_meter {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str = qq|<p>|;
+    my $str = q|<p>|;
 
     my %stats = ();
     my %vars  = ();
@@ -2199,30 +2191,30 @@ sub display_categories {
 
     my $order = $query->param('o');
 
-    $str .= qq|<form method="get" action="/index.pl">|;
-    $str .= qq|<input type="hidden" name="node_id" value="| . getId($NODE);
-    $str .= qq|" />|;
-    $str .= qq|<table><tr><td><b>Maintained By:</b></td><td>|;
+    $str .= q|<form method="get" action="/index.pl">|;
+    $str .= q|<input type="hidden" name="node_id" value="| . getId($NODE);
+    $str .= q|" />|;
+    $str .= q|<table><tr><td><b>Maintained By:</b></td><td>|;
     $str .= $query->textfield(
-        -name      => "m",
+        -name      => 'm',
         -default   => $maintainerName,
         -size      => 25,
         -maxlength => 255
     );
 
-    $str .= qq| (leave blank to list all categories)</td>|;
-    $str .= qq|</tr><tr><td><b>Sort Order:</b></td><td>|;
-    $str .= qq|<select name="o">|;
-    $str .= qq|<option value="">Category Name</option>|;
-    $str .= qq|<option value="m">Maintainer</option>|;
-    $str .= qq|</select></td></tr></table>|;
-    $str .= $query->submit( "submit", "Submit" );
+    $str .= q| (leave blank to list all categories)</td>|;
+    $str .= q|</tr><tr><td><b>Sort Order:</b></td><td>|;
+    $str .= q|<select name="o">|;
+    $str .= q|<option value="">Category Name</option>|;
+    $str .= q|<option value="m">Maintainer</option>|;
+    $str .= q|</select></td></tr></table>|;
+    $str .= $query->submit( 'submit', 'Submit');
     $str .= $query->end_form;
 
     my $contribute = "";
-    $contribute = "<th>Can I Contribute?</th>" if !$APP->isGuest($USER);
+    $contribute = q|<th>Can I Contribute?</th>| if !$APP->isGuest($USER);
 
-    $str .= qq|<table width="100%"><tr>|;
+    $str .= q|<table width="100%"><tr>|;
     $str .= qq|<th>Category</th><th>Maintainer</th>$contribute</tr>|;
 
     my $orderBy = 'n.title,a.title';
@@ -2252,8 +2244,8 @@ sub display_categories {
     $ds = $DB->{dbh}->prepare($sql);
     $ds->execute() or return $ds->errstr;
     while ( my $n = $ds->fetchrow_hashref ) {
-        my $maintName        = $$n{maintainer};
-        my $maintId          = $$n{author_user};
+        my $maintName        = $n->{maintainer};
+        my $maintId          = $n->{author_user};
         my $isPublicCategory = ( $guestUser == $maintId );
 
         $ctr++;
@@ -2263,14 +2255,14 @@ sub display_categories {
         else {
             $str .= '<tr class="oddrow">';
         }
-        $str .= '<td>' . linkNode( $$n{node_id}, $$n{title} ) . '</td>';
+        $str .= '<td>' . linkNode( $n->{node_id}, $n->{title} ) . '</td>';
 
-        my $authorLink = linkNode( $$n{author_user}, $maintName );
-        $authorLink = "Everyone" if $isPublicCategory;
+        my $authorLink = linkNode( $n->{author_user}, $maintName );
+        $authorLink = 'Everyone' if $isPublicCategory;
         $authorLink .= ' (usergroup)'
-          if ( $$n{maintainerType} == $usergroupType );
+          if ( $n->{maintainerType} == $usergroupType );
 
-        $str .= qq'<td style="text-align:center">$authorLink</td>\n';
+        $str .= qq|<td style="text-align:center">$authorLink</td>\n|;
 
         if ( !$APP->isGuest($USER) ) {
             $str .= '<td style="text-align:center">';
@@ -2279,7 +2271,7 @@ sub display_categories {
             {
                 $str .= '<b>Yes!</b>';
             }
-            elsif ($$n{maintainerType} == $usergroupType
+            elsif ($n->{maintainerType} == $usergroupType
                 && $APP->inUsergroup( $uid, $maintName ) )
             {
                 $str .= '<b>Yes!</b>';

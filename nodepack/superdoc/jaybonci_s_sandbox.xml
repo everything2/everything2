@@ -2,11 +2,6 @@
   <doctext>&lt;pre&gt;
 [%
  return &quot;&quot; unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
- return `ls -al /etc/apache2/mods-enabled/`;
-%]
-
-[%
- return &quot;&quot; unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
  return `cat /etc/apache2/everything.conf`;
 %]
 &lt;/pre&gt;</doctext>

@@ -7,13 +7,13 @@ use FindBin;
 use Perl::Critic;
 use File::Basename;
 
-my $config = dirname(__FILE__)."/.perlcriticrc";
+my $config = dirname(__FILE__)."/../.perlcriticrc";
 
 my $critic = Perl::Critic->new(-severity => 1, -theme => "bugs", -profile => $config);
 
 if(defined($ENV{"CRITIC_FULL"}))
 {
-  $critic = Perl::Critic->new(-severity => 1, -theme => "core && !cosmetic && !complexity", -exclude => ["RequireArgUnpacking","RequireVersionVar"], -profile => $config);
+  $critic = Perl::Critic->new(-severity => 1, -theme => "core", -profile => $config);
 }
 
 if($ARGV[0])
