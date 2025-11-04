@@ -1,22 +1,5 @@
 <node>
-  <doctext>[%
-my $isCoolPerson = $APP-&gt;isEditor($USER) || $APP-&gt;isChanop($USER);
-
-if ($$VARS{lockedin} &gt; time &amp;&amp; !$isCoolPerson)
-	{
-	my $remainingtime = int( ($$VARS{lockedin} - time)/ 60 + 0.5);
-	my $lockmessage = &quot;&lt;p&gt;&lt;strong style='color:red;'&gt;&quot;
-		. &quot;You cannot change rooms for $remainingtime minutes.  &quot;
-		. &quot;You can still send private messages, however, or talk to people in your current room.  &quot;
-		. &quot;&lt;/strong&gt;&lt;/p&gt;&quot;;
-	return $lockmessage;
-	}
-
-return if $APP-&gt;isGuest($USER);
-$APP-&gt;changeRoom($USER,0);
-'You step outside. You see many noders here.';
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>1102338</node_id>
   <title>go outside</title>
   <type_nodetype>1065266</type_nodetype>

@@ -565,7 +565,6 @@
         "Engine": "mysql",
         "EngineVersion": "8.0.43",
         "EnableCloudwatchLogsExports": ["slowquery","error"],
-	"EnablePerformanceInsights": true,
         "MultiAZ": false,
         "CACertificateIdentifier": "rds-ca-rsa2048-g1",
         "EnablePerformanceInsights": true,
