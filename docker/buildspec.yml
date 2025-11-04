@@ -28,3 +28,7 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+  cache:
+    paths:
+      - '/root/.npm/**/*'
+      - '/root/.cache/docker/**/*'

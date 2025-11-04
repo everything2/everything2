@@ -886,7 +886,7 @@
         "Cache": {
           "Location": "LOCAL",
           "Type": "LOCAL",
-          "Modes": ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE"]
+          "Modes": ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE","LOCAL_CUSTOM_CACHE"]
         }
       }
     },
