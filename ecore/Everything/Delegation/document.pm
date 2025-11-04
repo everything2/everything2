@@ -43,8 +43,6 @@ use Everything::S3;
 use IO::Compress::Zip;
 use utf8;
 
-## no critic (ProhibitEmptyQuotes,ProhibitManyArgs,Capitalization)
-
 sub admin_settings {
     my $DB       = shift;
     my $query    = shift;
@@ -700,17 +698,16 @@ sub alphabetizer {
     $str .= htmlcode( 'varcheckbox', 'alphabetizer_sortorder', 'reverse' );
     $str .= htmlcode( 'varcheckboxinverse', 'alphabetizer_case',
         'ignore case (default yes)' );
-    $str .= qq|<br />|;
+    $str .= q|<br />|;
 
-    $str .= htmlcode( "varcheckbox", "alphabetizer_format",
-        "make everything an E2 link" );
+    $str .= htmlcode( 'varcheckbox', 'alphabetizer_format','make everything an E2 link' );
 
-    $str .= qq|</p><p>|;
+    $str .= q|</p><p>|;
 
     $str .= $query->textarea( 'alpha', '', 20, 60 );
-    $str .= qq|</p>|;
+    $str .= q|</p>|;
 
-    $str .= htmlcode("closeform");
+    $str .= htmlcode('closeform');
 
     my $list = $query->param('alpha');
     return $str unless $list;
@@ -786,72 +783,72 @@ q|<p>You walk up to the Everything Oracle, insert your coin, and ask the questio
 q|<br>The answer instantly flashes on the screen:<br><br><p align=center>|;
 
     my @flu = (
-        'No.',
-        'Yes.',
-        'Maybe.',
-        'I\'m afraid that is classified information.',
-        'Does your mother know you\'re here?',
-        'Who wants to know?',
-        'No.',
-        'Please try again.',
-'I could tell you but then I\'d have to kill you. If the Swine Flu doesn\'t do it first.',
-        "No. You're probably Jewish and not allowed to have Swine Flu.",
-        "You... INSERT ANOTHER COIN",
-        "No. But for aboot tree-fiddy I get you some.",
-        "Would you rather have the answer that's behind door number three?",
-        "Not yet",
-        "No. You don't deserve it.",
-        "Yes. You've earned it.",
-"Hast thou eaten of the tree, whereof I commanded thee that thou shouldest not eat? Damn right you have the Swine Flu!",
-        "I'm sorry, Dave. I cannot allow this.",
-        "Yes. You got it from kissing Al Gore.",
-        "Yes. You got it from kissing Janet Reno.",
-        "Yes. A tall, dark stranger gave it to you.",
-        "Yes. It's part of an evil plot by the E2 gods.",
-        "No.",
-        "Why does it always have to be about you?",
-        "No. Nice shoes!",
-        "Yes. And the horse you rode in on",
-        "No. You have Avian Flu. Get a clue and know the difference!",
-        "No. Your biology is too alien to be infected.",
-        "No. You may be a swine but you're not that kind of swine.",
-        "No. Just no.",
-        "No. Have you made your will yet?",
-        "No. But, if you ask nicely, you can have mine.",
-        "What, you didn't get yours yet? Here, have some.",
-        "You sick puppy, you...",
-        "Who's asking? Oh, it's you, ignorant as usual.",
-        "I'm not sure. Let's play doctor and find out.",
-"What do you mean, SWINE FLU? Omigod, you were with that floozy again!! What did you catch this time? That's it! I'm taking the kids and am going to my mother's!",
-        "Yes. No. Yes. No. Oh, whatever.",
-        "Yes. YES. <b>OH GOD YES!</b>",
-        "Maybe. What's in it for me?",
-        "I know but I'm not telling.",
-        "ACCESS DENIED",
-        "Do I look like a doctor?",
-        "My sources say no",
-        "Outlook not so good",
-        "Signs point to yes",
-        "I see dead people.",
-        "Wouldn't you like to know?",
-        "No. Swine Flu is not an STD.",
-        "No. I'd do something about that rash, though.",
-        "No. You're not smart enough to get it.",
-        "No.",
-        "Yes. Now go away.",
-        "42",
-        "YES. OH YES! Thank you so much for asking!",
-        "Whaddaya mean, do you have Swine Flu? If you don't know, who does?",
-        "What do I care if you have Swine Flu?",
-        "GUARDS!!!",
-        "No.",
-        "Yes. No. What was the question again?",
-        "No. Can I have your stuff when you die?",
-        "GET AWAY FROM ME!!!"
+        q|No.|,
+        q|Yes.|,
+        q|Maybe.|,
+        q|I'm afraid that is classified information.|,
+        q|Does your mother know you're here?|,
+        q|Who wants to know?|,
+        q|No.|,
+        q|Please try again.|,
+        q|I could tell you but then I'd have to kill you. If the Swine Flu doesn't do it first.|,
+        q|No. You're probably Jewish and not allowed to have Swine Flu.|,
+        q|You... INSERT ANOTHER COIN|,
+        q|No. But for aboot tree-fiddy I get you some.|,
+        q|Would you rather have the answer that's behind door number three?|,
+        q|Not yet|,
+        q|No. You don't deserve it.|,
+        q|Yes. You've earned it.|,
+        q|Hast thou eaten of the tree, whereof I commanded thee that thou shouldest not eat? Damn right you have the Swine Flu!|,
+        q|I'm sorry, Dave. I cannot allow this.|,
+        q|Yes. You got it from kissing Al Gore.|,
+        q|Yes. You got it from kissing Janet Reno.|,
+        q|Yes. A tall, dark stranger gave it to you.|,
+        q|Yes. It's part of an evil plot by the E2 gods.|,
+        q|No.|,
+        q|Why does it always have to be about you?|,
+        q|No. Nice shoes!|,
+        q|Yes. And the horse you rode in on|,
+        q|No. You have Avian Flu. Get a clue and know the difference!|,
+        q|No. Your biology is too alien to be infected.|,
+        q|No. You may be a swine but you're not that kind of swine.|,
+        q|No. Just no.|,
+        q|No. Have you made your will yet?|,
+        q|No. But, if you ask nicely, you can have mine.|,
+        q|What, you didn't get yours yet? Here, have some.|,
+        q|You sick puppy, you...|,
+        q|Who's asking? Oh, it's you, ignorant as usual.|,
+        q|I'm not sure. Let's play doctor and find out.|,
+        q|What do you mean, SWINE FLU? Omigod, you were with that floozy again!! What did you catch this time? That's it! I'm taking the kids and am going to my mother's!|,
+        q|Yes. No. Yes. No. Oh, whatever.|,
+        q|Yes. YES. <b>OH GOD YES!</b>|,
+        q|Maybe. What's in it for me?|,
+        q|I know but I'm not telling.|,
+        q|ACCESS DENIED|,
+        q|Do I look like a doctor?|,
+        q|My sources say no|,
+        q|Outlook not so good|,
+        q|Signs point to yes|,
+        q|I see dead people.|,
+        q|"Wouldn't you like to know?|,
+        q|No. Swine Flu is not an STD.|,
+        q|No. I'd do something about that rash, though.|,
+        q|No. You're not smart enough to get it.|,
+        q|No.|,
+        q|Yes. Now go away.|,
+        q|42|,
+        q|YES. OH YES! Thank you so much for asking!|,
+        q|Whaddaya mean, do you have Swine Flu? If you don't know, who does?|,
+        q|What do I care if you have Swine Flu?|,
+        q|GUARDS!!!|,
+        q|No.|,
+        q|Yes. No. What was the question again?|,
+        q|No. Can I have your stuff when you die?|,
+        q|GET AWAY FROM ME!!!|
     );
 
-    $str .= "<b><font size='+1'>" . $flu[ int( rand(@flu) ) ] . "</font></b>";
-    $str .= qq|</p>|;
+    $str .= q|<b><font size='+1'>|.$flu[ int( rand(@flu) ) ] .q|</font></b>|;
+    $str .= q|</p>|;
     return $str;
 }
 
@@ -865,38 +862,38 @@ sub available_rooms {
     my $APP      = shift;
 
     my @stuff = (
-        "Yeah, yeah, get a room...",
-        "I'll take door number three...",
-        "Hey, that's a llama back there!",
-        "Three doors, down, on your right, just past [Political Asylum]",
-        "They can't ALL be locked!?",
-        "Why be so stuffed up in a room? [Go outside]!"
+        q|Yeah, yeah, get a room...|,
+        q|I'll take door number three...|,
+        q|Hey, that's a llama back there!|,
+        q|Three doors, down, on your right, just past [Political Asylum]|,
+        q|They can't ALL be locked!?|,
+        q|Why be so stuffed up in a room? [Go outside]!|
     );
 
     my $str =
-        "<p align=\"center\">"
+        q|<p align="center">|
       . ( $stuff[ rand(@stuff) ] )
-      . "</p><br><br>"
-      . "<p align=\"right\">..or you could "
-      . linkNode( getNode( "go outside", "superdocnolinks" ) )
-      . "</p><br><br>";
+      . q|</p><br><br>|
+      . q|<p align="right">..or you could |
+      . linkNode( getNode( 'go outside', 'superdocnolinks' ) )
+      . q|</p><br><br>|;
 
-    my $csr = $DB->sqlSelectMany( "node_id, title",
-        "node", "type_nodetype=" . getId( getType("room") ) );
+    my $csr = $DB->sqlSelectMany( 'node_id, title',
+        'node', 'type_nodetype=' . getId( getType('room') ) );
 
     my $rooms = {};
 
     while ( my $ROW = $csr->fetchrow_hashref() ) {
-        $$rooms{ lc( $$ROW{title} ) } = $$ROW{node_id};
+        $rooms->{ lc( $ROW->{title} ) } = $ROW->{node_id};
     }
 
-    $str .= "<ul>";
+    $str .= q|<ul>|;
 
     foreach ( sort( keys %$rooms ) ) {
-        $str .= "<li>" . linkNode( getNodeById( $$rooms{$_} ) );
+        $str .= q|<li>| . linkNode( getNodeById( $rooms->{$_} ) );
     }
 
-    $str .= "</ul>";
+    $str .= q|</ul>|;
     return $str;
 }
 
@@ -917,7 +914,7 @@ q|<p>This option can be toggled at [Settings[Superdoc]] in the Writeup Hints sec
       $VARS->{nohintSpelling}
       ? 'disabled, which is not recommended'
       : 'enabled, the recommended setting';
-    $str .= qq|</p><p>|;
+    $str .= q|</p><p>|;
 
     my $spellInfo = getNode( 'bad spellings en-US', 'setting' );
     return $str . '<strong>Error</strong>: unable to get spelling setting.'
@@ -929,8 +926,7 @@ q|<p>This option can be toggled at [Settings[Superdoc]] in the Writeup Hints sec
         $str .=
             '<p>(Site administrators can edit this setting at '
           . linkNode( $spellInfo, 0, { lastnode_id => 0 } )
-          . '.)</p><p>
-';
+          . '.)</p><p>';
     }
 
     $spellInfo = getVars($spellInfo);
@@ -942,7 +938,7 @@ q|<p>This option can be toggled at [Settings[Superdoc]] in the Writeup Hints sec
 q|Spelling errors and corrections:<table border="1" cellpadding="2" cellspacing="0"><tr><th>invalid</th><th>correction</th></tr>|;
 
     #table body - wrong spellings to correct spellings
-    my $s        = "";
+    my $s        = '';
     my $numShown = 0;
     foreach ( sort( keys(%$spellInfo) ) ) {
         next if substr( $_, 0, 1 ) eq '_';
@@ -1062,15 +1058,13 @@ sub between_the_cracks {
     my $APP      = shift;
 
     my $isGuest = $APP->isGuest($USER);
-    return
-'<p>Undifferentiated from the masses of the streets, you fall between the cracks yourself.</p>'
-      if $isGuest;
+    return '<p>Undifferentiated from the masses of the streets, you fall between the cracks yourself.</p>' if $isGuest;
 
     my $rowCtr = 0;
 
     my ( $title, $queryText, $rows );
     my $count    = 1000;
-    my $maxVotes = int( $query->param("mv") );
+    my $maxVotes = int( $query->param('mv') );
     my ( $minRep, $repRestriction, $repStr ) = ( undef, '', '' );
     my $resultCtr = 50;
 
@@ -1093,8 +1087,7 @@ sub between_the_cracks {
     my $str =
 qq|<p>These nodes have fallen between the cracks, and seem to have gone unnoticed. This page lists <em>up to</em> $resultCtr writeups that you haven't voted on that have fewer than $maxVotes total vote(s)$repStr on E2. Since they have been neglected until now, why don\'t you visit them and click that vote button?</p>|;
     $str .= q|<form method="get"><div>|;
-    $str .=
-      q|<input type="hidden" name="node_id" value="| . getId($NODE) . q|" />|;
+    $str .= q|<input type="hidden" name="node_id" value="| . getId($NODE) . q|" />|;
     $str .= q|<b>Display writeups with |;
 
     my @mvChoices = ();
@@ -1127,8 +1120,7 @@ qq|<p>These nodes have fallen between the cracks, and seem to have gone unnotice
     $str .= ' (or greater) rep.';
 
     $str .= q|</b><input type="submit" value="Go" /></div></form>|;
-    $str .=
-      q|<table width="100%"><tr><th>#</th><th>Writeup</th><th>Author</th>|;
+    $str .= q|<table width="100%"><tr><th>#</th><th>Writeup</th><th>Author</th>|;
     $str .= q|<th>Total Votes</th><th>Create Time</th></tr>|;
 
     $queryText =
@@ -1220,8 +1212,8 @@ sub blind_voting_booth {
             if ($maybewu) {
                 my $tempref = getNodeById($maybewu);
 
-                if (   $$tempref{wrtype_writeuptype} != 177599
-                    && $$tempref{author_user} != $$USER{user_id} )
+                if (   $tempref->{wrtype_writeuptype} != 177599
+                    && $tempref->{author_user} != $USER->{user_id} )
                 {
                     $wu = $maybewu if ( !$APP->hasVoted( $tempref, $USER ) );
                 }
@@ -1244,15 +1236,15 @@ sub blind_voting_booth {
     }
 
     my $rndnode    = getNodeById($wu);
-    my $nodeauthor = getNodeById( $$rndnode{author_user} );
+    my $nodeauthor = getNodeById( $rndnode->{author_user} );
 
     $str .= htmlcode('votehead');
-    $str .= '(<b>' . $$rndnode{title} . '</b>) by ';
+    $str .= '(<b>' . $rndnode->{title} . '</b>) by ';
     if ( $hasvoted == 1 ) {
-        $str .= linkNode( getNode( $$nodeauthor{title}, 'user' ),
+        $str .= linkNode( getNode( $nodeauthor->{title}, 'user' ),
             $$nodeauthor{title} )
           . ' - ('
-          . linkNode( getNodeById( $$rndnode{parent_e2node} ), 'full node' )
+          . linkNode( getNodeById( $rndnode->{parent_e2node} ), 'full node' )
           . ')';
     }
     else {
@@ -1279,11 +1271,11 @@ sub blind_voting_booth {
           );
     }
     else {
-        $str .= 'Reputation: ' . $$rndnode{reputation};
+        $str .= 'Reputation: ' . $rndnode->{reputation};
     }
 
     $str .= '<br><hr><br>';
-    $str .= $$rndnode{doctext};
+    $str .= $rndnode->{doctext};
 
     if ( $hasvoted == 0 ) {
         $str .=
@@ -1297,7 +1289,7 @@ sub blind_voting_booth {
     }
 
     $str .= '<br><br><hr><br>' . linkNode( $NODE, 'Another writeup, please' )
-      if ( $hasvoted && $$USER{votesleft} != 0 );
+      if ( $hasvoted && $USER->{votesleft} != 0 );
 
     return $str;
 }
@@ -1311,24 +1303,14 @@ sub bounty_hunters_wanted {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str =
-q|<style type="text/css"> .mytable th, .mytable td {border: 1px solid silver;padding: 3px;}</style>|;
+    my $str = q|<style type="text/css"> .mytable th, .mytable td {border: 1px solid silver;padding: 3px;}</style>|;
 
-    $str .=
-q|<p align=center><b>[Everything's Most Wanted] is now automated</b></p>|;
-
-    $str .=
-"<p>Okay, so [mauler|I] just finished fully automating the [Everything's Most Wanted] feature so that noders can manage bounties they have posted by themselves without having to go through the tedious process of messaging an admin several times. Hopefully this feature should be a lot more useful now. [Everything's Most Wanted|Check it out!]</p>";
-
-    $str .=
-"<p>The five most recently requested nodes are automatically listed below. If you fill one of these, please message the requesting noder to claim your prize. Please see [Everything's Most Wanted|the main list] for full details on conditions and rewards.</p>";
-
+    $str .= q|<p align=center><b>[Everything's Most Wanted] is now automated</b></p>|;
+    $str .= q(<p>Okay, so [mauler|I] just finished fully automating the [Everything's Most Wanted] feature so that noders can manage bounties they have posted by themselves without having to go through the tedious process of messaging an admin several times. Hopefully this feature should be a lot more useful now. [Everything's Most Wanted\|Check it out!]</p>);
+    $str .= q(<p>The five most recently requested nodes are automatically listed below. If you fill one of these, please message the requesting noder to claim your prize. Please see [Everything's Most Wanted|the main list] for full details on conditions and rewards.</p>);
     $str .= q|<p>&nbsp;</p>|;
-
     $str .= q|<table>|;
-
-    $str .=
-"<p><table class='mytable' align=center><tr><th>Requesting Sheriff</th><th>Outlaw Nodeshell</th><th>GP Reward (if any)</th></tr>";
+    $str .= q|<p><table class='mytable' align=center><tr><th>Requesting Sheriff</th><th>Outlaw Nodeshell</th><th>GP Reward (if any)</th></tr>|;
 
     my $REQ  = getVars( getNode( 'bounty order',  'setting' ) );
     my $OUT  = getVars( getNode( 'outlaws',       'setting' ) );
@@ -1336,26 +1318,24 @@ q|<p align=center><b>[Everything's Most Wanted] is now automated</b></p>|;
     my $HIGH = getVars( getNode( 'bounty number', 'setting' ) );
     my $MAX  = 5;
 
-    my $bountyTot   = $$HIGH{1};
+    my $bountyTot   = $HIGH->{1};
     my $numberShown = 0;
-    my $outlawStr   = "";
+    my $outlawStr   = '';
     my $requester   = undef;
     my $reward      = undef;
 
     for ( my $i = $bountyTot ; $numberShown < $MAX ; $i-- ) {
 
-        if ( exists $$REQ{$i} ) {
+        if ( exists $REQ->{$i} ) {
             $numberShown++;
-            $requester = $$REQ{$i};
-            $outlawStr = $$OUT{$requester};
-            $reward    = $$REW{$requester};
-            $str .=
-"<tr><TD>[$requester]</TD><TD>$outlawStr</TD><TD>$reward</TD></tr>";
+            $requester = $REQ->{$i};
+            $outlawStr = $OUT->{$requester};
+            $reward    = $REW->{$requester};
+            $str .= "<tr><TD>[$requester]</TD><TD>$outlawStr</TD><TD>$reward</TD></tr>";
         }
     }
 
-    $str .=
-"</table><p align=center>([Everything's Most Wanted|see full list])</p><p>&nbsp;</p>";
+    $str .= q{</table><p align=center>([Everything's Most Wanted|see full list])</p><p>&nbsp;</p>};
 
     return $str;
 }
@@ -1398,22 +1378,21 @@ sub buffalo_generator {
     }
 
     $str .=
-        "<ul>\n\t<li>"
-      . linkNode( $NODE, "MOAR", { moar => 'more' } )
-      . "</li>\n";
+        q|<ul><li>|
+      . linkNode( $NODE, 'MOAR', { moar => 'more' } )
+      . q|</li>|;
     $str .=
-        "\n\t<li>"
-      . linkNode( $NODE, "Only buffalo", { onlybuffalo => 'true' } )
-      . "</li>\n";
+        q|<li>|
+      . linkNode( $NODE, 'Only buffalo', { onlybuffalo => 'true' } )
+      . q|</li>|;
     $str .=
-        "\n\t<li>"
-      . linkNodeTitle("Buffalo Haiku Generator|In haiku form")
-      . "</li>\n";
+        q|<li>|
+      . linkNodeTitle('Buffalo Haiku Generator|In haiku form')
+      . q|</li>|;
     $str .=
-      "\n\t<li>"
-      . linkNodeTitle(
-"Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo|...what?"
-      ) . "</li></ul>\n";
+      q|<li>|
+      . linkNodeTitle('Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo|...what?'
+      ) . q|</li></ul>|;
 
     return $str;
 
@@ -1428,10 +1407,7 @@ sub buffalo_haiku_generator {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my @verbNouns = (
-        'Buffalo', 'buffalo', 'police', 'people', 'bream', 'perch',
-        'char',    'dice',    'cod',    'smelt',  'pants'
-    );
+    my @verbNouns = qw(Buffalo buffalo police people bream perch char dice cod smelt pants);
     my @wordLength =
       ( 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 );
     my @intermediatePunctuation = ( ',', ';', ',', ':', '...' );
@@ -1456,12 +1432,12 @@ sub buffalo_haiku_generator {
             $sentence .=
               $intermediatePunctuation[ int( rand(@intermediatePunctuation) ) ]
               if ( rand(1) < 0.1 );
-            $sentence .= " ";
+            $sentence .= ' ';
         }
-        $sentence .= "<br />";
+        $sentence .= q|<br />|;
     }
     $sentence = ucfirst($sentence);
-    $str .= $sentence . "</p>";
+    $str .= $sentence . q|</p>|;
 
     $str .=
         "<ul>\n\t<li>"
@@ -1490,19 +1466,17 @@ sub chatterlighter {
     my $APP      = shift;
 
     my $nlid = getNode( 'Notifications', 'nodelet' )->{node_id};
-    $PAGELOAD->{pagenodelets} = "$nlid," if $$VARS{nodelets} =~ /\b$nlid\b/;
-    $PAGELOAD->{pagenodelets} .=
-      getNode( 'New Writeups', 'nodelet' )->{node_id};
+    $PAGELOAD->{pagenodelets} = "$nlid," if $VARS->{nodelets} =~ /\b$nlid\b/;
+    $PAGELOAD->{pagenodelets} .= getNode( 'New Writeups', 'nodelet' )->{node_id};
 
     my $str = insertNodelet( getNode( 'Chatterbox', 'nodelet' ) );
-    $str .=
-qq|<span class="instant ajax chatterlight_rooms:updateNodelet:Other+Users"></span>|;
-    $str .= qq|<div id="chatterlight_rooms">|;
-    $str .= qq|<p><span title="What chatroom you are in">Now talking in: |;
-    $str .= linkNode( $$USER{in_room} ) || "outside";
-    $str .= qq|</span> |;
-    $str .= htmlcode("changeroom");
-    $str .= qq|</div>|;
+    $str .= q|<span class="instant ajax chatterlight_rooms:updateNodelet:Other+Users"></span>|;
+    $str .= q|<div id="chatterlight_rooms">|;
+    $str .= q|<p><span title="What chatroom you are in">Now talking in: |;
+    $str .= linkNode( $USER->{in_room} ) || 'outside';
+    $str .= q|</span> |;
+    $str .= htmlcode('changeroom');
+    $str .= q|</div>|;
 
     return $str;
 }
@@ -1540,31 +1514,30 @@ sub clientdev_home {
 
     if ( $DB->isApproved( $USER, $NODE ) ) {
         $str .= htmlcode('openform');
-        $str .= "<input type=\"hidden\" name=\"op\" value=\"new\">\n";
-        $str .= "<input type=\"hidden\" name=\"type\" value=\"e2client\">\n";
-        $str .= "<input type=\"hidden\" name=\"displaytype\" value=\"edit\">\n";
-        $str .= '<h2>Register your client:</h2>';
+        $str .= q|<input type="hidden" name="op" value="new">|;
+        $str .= q|<input type="hidden" name="type" value="e2client">|;
+        $str .= q|<input type="hidden" name="displaytype" value="edit">|;
+        $str .= q|<h2>Register your client:</h2>|;
         $str .= $query->textfield( 'node', '', 25 );
         $str .= htmlcode('closeform');
     }
 
-    $str .= qq|</p>|;
+    $str .= q|</p>|;
 
-    $str .= qq|<p>Things to (eventually) come:</p>|;
-    $str .= qq|<ol><li>make debates work for general groups</li>|;
-    $str .=
-qq|<li>list of people, their programming language, the platform, and the project</li>|;
-    $str .= qq|</ol>|;
+    $str .= q|<p>Things to (eventually) come:</p>|;
+    $str .= q|<ol><li>make debates work for general groups</li>|;
+    $str .= q|<li>list of people, their programming language, the platform, and the project</li>|;
+    $str .= q|</ol>|;
 
-    $str .= qq|<p>|;
-    $str .= htmlcode( "linkGroupMessages", "N-Wing" );
-    $str .= qq|</p>|;
+    $str .= q|<p>|;
+    $str .= htmlcode( 'linkGroupMessages', 'N-Wing' );
+    $str .= q|</p>|;
 
-    $str .= qq|<p><hr /></p>|;
+    $str .= q|<p><hr /></p>|;
 
-    my $cd = getNode( "clientdev", "usergroup" );
+    my $cd = getNode( 'clientdev', 'usergroup' );
     if ( $DB->isApproved( $USER, $cd ) ) {
-        $str .= "<p>\n" . htmlcode( 'weblog', "5,$cd->{node_id}" ) . "\n<p>";
+        $str .= q|<p>|.htmlcode( 'weblog', "5,$cd->{node_id}" ).q|<p>|;
     }
 
     return $str;
@@ -1585,9 +1558,7 @@ sub confirm_password {
     my $username = $query->param('user');
 
     unless ( $token and $action and $username ) {
-        return
-qq|<p>To use this page, please click on or copy and paste the link from the email we sent you. </p>|
-          . qq|<p>If we didn't send you an email, you don't need this page.</p>|;
+        return q|<p>To use this page, please click on or copy and paste the link from the email we sent you. </p><p>If we didn't send you an email, you don't need this page.</p>|;
     }
 
     return '<p>Invalid action.</p>'
@@ -1624,9 +1595,7 @@ qq|<p>To use this page, please click on or copy and paste the link from the emai
       unless $user;
 
     return
-      "<p>We're sorry, but we don't accept new users from the IP address you
-    used to create this account. Please get in touch with us if you think this
-    is a mistake.</p>" if $action eq 'activate' && $user->{acctlock};
+      q|<p>We're sorry, but we don't accept new users from the IP address you used to create this account. Please get in touch with us if you think this is a mistake.</p>| if $action eq 'activate' && $user->{acctlock};
 
     my $prompt = '';
 
@@ -1974,43 +1943,39 @@ sub create_category {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str =
-qq|<p><b><big>[Everything2 Help] &gt; [Everything2 Categories]</big></b></p>|;
+    my $str = q|<p><b><big>[Everything2 Help] &gt; [Everything2 Categories]</big></b></p>|;
 
     $str .=
 "<p>A [category] is a way to group a list of related nodes. You can create a category that only you can edit, a category that anyone can edit, or a category that can be maintained by any [Everything2 Usergroups|usergroup] you are a member of.</p>";
 
-    $str .=
-qq|<p>The scope of categories is limitless. Some examples might include:</p>|;
+    $str .= q|<p>The scope of categories is limitless. Some examples might include:</p>|;
 
-    $str .= qq|<ul>|;
+    $str .= q|<ul>|;
     $str .= qq|<li>$USER->{title}'s Favorite Movies</li>|;
-    $str .= qq|<li>The Definitive Guide To Star Trek</li>|;
-    $str .= qq|<li>Everything2 Memes</li>|;
-    $str .= qq|<li>Funny Node Titles</li>|;
-    $str .= qq|<li>The Best Books of All Time</li>|;
+    $str .= q|<li>The Definitive Guide To Star Trek</li>|;
+    $str .= q|<li>Everything2 Memes</li>|;
+    $str .= q|<li>Funny Node Titles</li>|;
+    $str .= q|<li>The Best Books of All Time</li>|;
     $str .= qq|<li>Albums $USER->{title} Owns</li>|;
-    $str .= qq|<li>Writeups About Love</li>|;
-    $str .= qq|<li>Angsty Poetry</li>|;
-    $str .= qq|<li>Human Diseases</li>|;
-    $str .= qq|<li>... the list could go on and on</li>|;
-    $str .= qq|</ul>|;
+    $str .= q|<li>Writeups About Love</li>|;
+    $str .= q|<li>Angsty Poetry</li>|;
+    $str .= q|<li>Human Diseases</li>|;
+    $str .= q|<li>... the list could go on and on</li>|;
+    $str .= q|</ul>|;
 
-    $str .=
-"<p>Before you create your own category you might want to visit the [Display Categories|category display page] to see if you can contribute to an existing category.</p>";
+    $str .= q{<p>Before you create your own category you might want to visit the [Display Categories|category display page] to see if you can contribute to an existing category.</p>};
 
     my $guestUser = $Everything::CONF->guest_user;
     #
     # Filter people out who can't create categories
     #
     if ( $APP->isGuest($USER) ) {
-        $str .= "You must be [login|logged in] to create a category.";
+        $str .= 'You must be [login|logged in] to create a category.';
         return $str;
     }
 
     if ( $APP->getLevel($USER) <= 1 ) {
-        $str .=
-'Note that until you are at least Level 2, you can only add your own writeups to categories.';
+        $str .= 'Note that until you are at least Level 2, you can only add your own writeups to categories.';
     }
 
     # this check may or may not be needed/wanted
@@ -2025,11 +1990,11 @@ qq|<p>The scope of categories is limitless. Some examples might include:</p>|;
     #
 
     $str .= $query->start_form;
-    $query->param( "node", "" );
+    $query->param( 'node', '' );
     $str .= '<p><b>Category Name:</b><br />';
     $str .= $query->textfield(
-        -name      => "node",
-        -default   => "",
+        -name      => 'node',
+        -default   => '',
         -size      => 50,
         -maxlength => 255
     );
@@ -2050,14 +2015,14 @@ qq|<p>The scope of categories is limitless. Some examples might include:</p>|;
     push @vals, $$USER{user_id};
 
     # guest user will be used for "Any Noder"
-    $txts{$guestUser} = "Any Noder";
+    $txts{$guestUser} = 'Any Noder';
     push @vals, $guestUser;
     while ( my $ug = $ds->fetchrow_hashref ) {
-        $txts{ $$ug{node_id} } = $$ug{title} . " (usergroup)";
+        $txts{ $$ug{node_id} } = $$ug{title} . ' (usergroup)';
         push @vals, $$ug{node_id};
     }
 
-    $str .= $query->popup_menu( "maintainer", \@vals, "", \%txts );
+    $str .= $query->popup_menu('maintainer', \@vals, '', \%txts);
 
     my @customDimensions = htmlcode('customtextarea');
 
@@ -2187,8 +2152,7 @@ sub decloaker {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str =
-qq|<p><em>Or to drown my clothes, and say I was stripped.</em> --- [Parolles]</p>|;
+    my $str = q|<p><em>Or to drown my clothes, and say I was stripped.</em> --- [Parolles]</p>|;
 
     return qq|$str The Treaty of Algeron prohibits your presence.|
       if $APP->isGuest($USER);
@@ -2526,11 +2490,11 @@ sub drafts {
       = ( '', '', '', '', '', '', '', '' );
     my $draftType = getType('draft');
 
-    my $nukedStatus = getNode( "nuked", "publication_status" );
+    my $nukedStatus = getNode('nuked', 'publication_status');
 
     my $draftStatus = "publication_status != $$nukedStatus{node_id}";
 
-    if ( $query->param("shownuked") ) {
+    if ( $query->param('shownuked') ) {
         $draftStatus = "publication_status = $$nukedStatus{node_id}";
     }
 
@@ -2599,7 +2563,7 @@ sub drafts {
                     $yes = 'group';
                 }
             }
-            return qq'<td class="collaborators">$yes</td>';
+            return qq|<td class="collaborators">$yes</td>|;
         };
 
         @showit = ( 'show content', $DB->sqlSelectMany(@showit) );
@@ -2624,10 +2588,10 @@ qq|<p>[${username}[user]] has no drafts visible to you.</p>$showhidenukedlink|;
     }
     else {
 
-        my $showcount = "";
+        my $showcount = '';
         $showcount = "<p>You have $count drafts.</p>" if $navigation;
 
-        my $outstr = "";
+        my $outstr = '';
         $outstr = "<h2>$title</h2>$showhidenukedlink<br />
       $showcount
       <table><tr><th>status</th><th>title</th>$cs</th></tr>
@@ -3495,16 +3459,16 @@ sub e2_ticket_center {
       . $query->end_form;
 
     ## Admin Only checkbox only visible to admins, C_Es
-    my $adminchecktitle = "";
-    my $admincheck      = "";
+    my $adminchecktitle = '';
+    my $admincheck      = '';
     if ( $isGod || $isCE ) {
         $adminchecktitle = '<span class="staff_only">Admin<br>Only?</span>';
         $admincheck =
 '<span class="staff_only"><input type="checkbox" name="adminonly" value="1">';
     }
     else {
-        $adminchecktitle = "&nbsp;";
-        $admincheck      = "&nbsp;";
+        $adminchecktitle = q|&nbsp;|;
+        $admincheck      = q|&nbsp;|;
     }
 
     ## start multi-line string to define the table layout
@@ -5655,19 +5619,19 @@ qq|<tr><td valign="top" colspan="2" align="right"><input type="submit" value="Se
                 }
 
                 # Skip duplicates
-                if ( $$sent{ $$victim{'node_id'} } ) {
+                if ( $sent->{ $victim->{'node_id'} } ) {
                     $str .=
-                        "<dd><font color=\"#c00000\">You sent this to "
-                      . linkNode( $$victim{'node_id'} )
-                      . " already.</font></dd>\n";
+                        q|<dd><font color="#c00000">You sent this to |
+                      . linkNode( $victim->{'node_id'} )
+                      . q| already.</font></dd>|;
                     next;
                 }
                 else {
-                    $$sent{ $$victim{'node_id'} } = 1;
+                    $sent->{ $victim->{'node_id'} } = 1;
                 }
 
                 # Some feedback for the user
-                $str .= "<dd>" . linkNode( $$victim{'node_id'} ) . "</dd>\n";
+                $str .= "<dd>" . linkNode( $victim->{'node_id'} ) . "</dd>\n";
 
 # Insert message into messages table.
 # $DB->sqlInsert( 'message', { msgtext => "(massmail): " . $message, author_user => $$USER{ 'node_id' }, for_user => $$victim{ 'node_id' } } );
@@ -5698,15 +5662,12 @@ sub pit_of_abomination {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str = htmlcode("openform");
-    $str .=
-qq|<p>For they are an Offense in thine Eyes, and that thine Eyes might be freed from the sight of their Works, thou mayest abominate them here. And their feeble Screeds shall not appear in that List which is call&egrave;d New Writeups, nor shall they be shewn amongst the Works of the Worthy in the Nodes of E2. Yet still mayest thou seek them out when thy Fancy is such.|;
-    $str .= qq|<fieldset><legend>Abominate</legend>|;
-    $str .=
-      qq|<label>Wretch's name:<input type="text" name="abomination"></label>|;
-    $str .=
-qq|<label title="also ignore user's messages and chat"><input type="checkbox" name="pratenot" value="1" checked="checked">disdain also their prattle</label>|;
-    $str .= qq|<br><input type="submit" name="abominate" value="Abominate!">|;
+    my $str = htmlcode('openform');
+    $str .= q|<p>For they are an Offense in thine Eyes, and that thine Eyes might be freed from the sight of their Works, thou mayest abominate them here. And their feeble Screeds shall not appear in that List which is call&egrave;d New Writeups, nor shall they be shewn amongst the Works of the Worthy in the Nodes of E2. Yet still mayest thou seek them out when thy Fancy is such.|;
+    $str .= q|<fieldset><legend>Abominate</legend>|;
+    $str .= q|<label>Wretch's name:<input type="text" name="abomination"></label>|;
+    $str .= q|<label title="also ignore user's messages and chat"><input type="checkbox" name="pratenot" value="1" checked="checked">disdain also their prattle</label>|;
+    $str .= q|<br><input type="submit" name="abominate" value="Abominate!">|;
 
     if ( scalar( $query->param('abominate') )
         and my $abominame = $query->param('abomination') )
@@ -5715,27 +5676,27 @@ qq|<label title="also ignore user's messages and chat"><input type="checkbox" na
             $str .= '<p>User ' . encodeHTML($abominame) . ' not found.';
         }
         else {
-            $$VARS{unfavoriteusers} .= ',' if $$VARS{unfavoriteusers};
-            $$VARS{unfavoriteusers} .= $$abomination{user_id}
-              unless $$VARS{unfavoriteusers} =~ /\b$$abomination{ user_id }\b/;
+            $VARS->{unfavoriteusers} .= ',' if $VARS->{unfavoriteusers};
+            $VARS->{unfavoriteusers} .= $abomination->{user_id}
+              unless $VARS->{unfavoriteusers} =~ /\b$abomination->{ user_id }\b/;
             $str .= htmlcode( 'ignoreUser', $abominame )
               if $query->param('pratenot');
         }
     }
 
     $str .= qq|</fieldset></form>|;
-    $str .= htmlcode("openform");
+    $str .= htmlcode('openform');
 
     if ( scalar $query->param('debominate') ) {
         foreach ( $query->multi_param('debominees') ) {
-            $$VARS{unfavoriteusers} =~ s/\b$_\b,?//;
+            $VARS->{unfavoriteusers} =~ s/\b$_\b,?//;
         }
     }
 
-    $$VARS{unfavoriteusers} =~ s/,$//;
+    $VARS->{unfavoriteusers} =~ s/,$//;
 
     if ( $VARS->{unfavoriteusers} ) {
-        my @abominees = split ',', $$VARS{unfavoriteusers};
+        my @abominees = split ',', $VARS->{unfavoriteusers};
         $str .=
 '<p>Yet should they swear Betterment and rue their Ways, repenting in Sackcloth and Ashes,
 thou mayest in thy great Mercy relent.
@@ -5754,7 +5715,7 @@ thou mayest in thy great Mercy relent.
         $str .= '<p>In thy Mercy hast thou stayed thy Hand.';
     }
 
-    $str .= qq|</form>|;
+    $str .= q|</form>|;
     return $str;
 }
 
@@ -5767,12 +5728,10 @@ sub level_distribution {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str =
-qq|<p>The following shows the number of active E2 users at each level (based on users logged in over the last month).</p>|;
+    my $str = q|<p>The following shows the number of active E2 users at each level (based on users logged in over the last month).</p>|;
 
     my $levels = {};
-    my $queryText =
-"SELECT setting.setting_id,setting.vars FROM setting,user WHERE setting.setting_id=user.user_id AND user.lasttime>=DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND setting.vars LIKE '%level=%'";
+    my $queryText = q|SELECT setting.setting_id,setting.vars FROM setting,user WHERE setting.setting_id=user.user_id AND user.lasttime>=DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND setting.vars LIKE '%level=%'|;
 
     my $rows = $DB->{dbh}->prepare($queryText);
     $rows->execute() or return $rows->errstr;
@@ -5787,8 +5746,7 @@ qq|<p>The following shows the number of active E2 users at each level (based on 
         }
     }
 
-    $str .=
-'<table align="center"><tr><th>Level</th><th>Title</th><th>Number of Users</th></tr>';
+    $str .= q|<table align="center"><tr><th>Level</th><th>Title</th><th>Number of Users</th></tr>|;
     my $ctr = 0;
     foreach
       my $key ( sort { $levels->{$b} <=> $levels->{$a} } ( keys(%$levels) ) )
@@ -5835,48 +5793,47 @@ sub manna_from_heaven {
     my $wuCount;
     my $wuTotal = 0;
 
-    $str .=
-"<table width='25%'><tr><th width='80%' >User</th><th width='20%'>Writeups</th></tr>";
+    $str .= q|<table width='25%'><tr><th width='80%' >User</th><th width='20%'>Writeups</th></tr>|;
 
     foreach ( @{ $$usergroup{group} } ) {
         my $u = getNodeById($_);
         next if $$u{title} eq 'e2gods';
-        $wuCount = $DB->sqlSelect( "count(*)", "node",
-                "type_nodetype=117 and author_user="
+        $wuCount = $DB->sqlSelect( 'count(*)', 'node',
+                'type_nodetype=117 and author_user='
               . $_
               . " and TO_DAYS(NOW())-TO_DAYS(createtime) <=$numDays" );
         $wuTotal += $wuCount;
         $str .=
-            "<tr><td><b>"
+            q|<tr><td><b>|
           . linkNode($u)
-          . "</b></td><td>"
+          . q|</b></td><td>|
           . linkNode( getNode( 'everything user search', 'superdoc' ),
             " $wuCount",
             { usersearch => $$u{title}, orderby => 'createtime DESC' } )
-          . "</td></tr>";
+          . q|</td></tr>|;
     }
 
     $usergroup = getNodeById(829913);    # e2gods
 
     foreach ( @{ $$usergroup{group} } ) {
         my $u = getNodeById($_);
-        $wuCount = $DB->sqlSelect( "count(*)", "node",
-                "type_nodetype=117 and author_user="
+        $wuCount = $DB->sqlSelect( 'count(*)', 'node',
+                'type_nodetype=117 and author_user='
               . $_
               . " and TO_DAYS(NOW())-TO_DAYS(createtime) <=$numDays" );
         $wuTotal += $wuCount;
         $str .=
-            "<tr><td><b>"
+            q|<tr><td><b>|
           . linkNode($u)
-          . "</b></td><td>"
+          . q|</b></td><td>|
           . linkNode( getNode( 'everything user search', 'superdoc' ),
             " $wuCount",
-            { usersearch => $$u{title}, orderby => 'createtime DESC' } )
-          . "</td></tr>";
+            { usersearch => $u->{title}, orderby => 'createtime DESC' } )
+          . q|</td></tr>|;
     }
 
-    $str .= "<tr><td><b>Total</b></td><td>$wuTotal</td></tr>";
-    $str .= "</table>";
+    $str .= qq|<tr><td><b>Total</b></td><td>$wuTotal</td></tr>|;
+    $str .= q|</table>|;
 
     return $str;
 
@@ -5891,81 +5848,74 @@ sub content_reports {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str =
-qq|These jobs are run on a 24 hour basis and cached in the database. They show user-submitted content that is in need of repair.|;
-    $str .= qq|<table style="padding: 2px; margin: 5px;">|;
+    my $str = q|These jobs are run on a 24 hour basis and cached in the database. They show user-submitted content that is in need of repair.|;
+    $str .= q|<table style="padding: 2px; margin: 5px;">|;
 
     my $drivers = {
-        "editing_invalid_authors" => {
-            "title"          => "Invalid Authors on nodes",
-            "extended_title" =>
-"These nodes do not have authors. Either the users were deleted or the records were damaged. Includes all types"
+        'editing_invalid_authors' => {
+            'title'          => 'Invalid Authors on nodes',
+            'extended_title' => 'These nodes do not have authors. Either the users were deleted or the records were damaged. Includes all types'
         },
-        "editing_null_node_titles" => {
-            "title"          => "Null titles on nodes",
-            "extended_title" =>
-"These nodes have null or empty-string titles. Not necessarily writeups."
+        'editing_null_node_titles' => {
+            'title'          => 'Null titles on nodes',
+            'extended_title' => 'These nodes have null or empty-string titles. Not necessarily writeups.'
         },
-        "editing_writeups_bad_types" => {
-            "title"          => "Writeup types that are invalid",
-            "extended_title" =>
-"These are writeup types, such as (thing), (idea), (definition), etc that are not valid"
+        'editing_writeups_bad_types' => {
+            'title'          => 'Writeup types that are invalid',
+            'extended_title' => 'These are writeup types, such as (thing), (idea), (definition), etc that are not valid'
         },
-        "editing_writeups_broken_titles" => {
-            "title"          => "Writeup titles that aren't the right pattern",
-            "extended_title" =>
-"These are writeup titles that don't have a left parenthesis in them, which means that it doesn't follow the 'parent_title (type)' pattern."
+        'editing_writeups_broken_titles' => {
+            'title'          => q|Writeup titles that aren't the right pattern|,
+            'extended_title' =>
+q|These are writeup titles that don't have a left parenthesis in them, which means that it doesn't follow the 'parent_title (type)' pattern.|
         },
-        "editing_writeups_invalid_parents" => {
-            "title"          => "Writeups that don't have valid e2node parents",
-            "extended_title" => "These nodes need to be reparented"
+        'editing_writeups_invalid_parents' => {
+            'title'          => q|Writeups that don't have valid e2node parents|,
+            'extended_title' => q|These nodes need to be reparented|
         },
-        "editing_writeups_under_20_characters" => {
-            "title"          => "Writeups under 20 characters",
-            "extended_title" => "Writeups that are under 20 characters"
+        'editing_writeups_under_20_characters' => {
+            'title'          => 'Writeups under 20 characters',
+            'extended_title' => 'Writeups that are under 20 characters'
         },
-        "editing_writeups_without_formatting" => {
-            "title"          => "Writeups without any HTML tags",
-            "extended_title" =>
-"Writeups that don't have any HTML tags in them, limited to 200, ignores E1 writeups."
+        'editing_writeups_without_formatting' => {
+            'title'          => 'Writeups without any HTML tags',
+            'extended_title' => q|Writeups that don't have any HTML tags in them, limited to 200, ignores E1 writeups.|
         },
-        "editing_writeups_linkless" => {
-            "title"          => "Writeups without links",
-            "extended_title" =>
-              "Writeups post-2001 that don't have any links in them"
+        'editing_writeups_linkless' => {
+            'title'          => 'Writeups without links',
+            'extended_title' => q|Writeups post-2001 that don't have any links in them|
         },
-        "editing_e2nodes_with_duplicate_titles" => {
-            "title"          => "Writeups with titles that only differ by case",
-            "extended_title" => "Writeups that only differ by case"
+        'editing_e2nodes_with_duplicate_titles' => {
+            'title'          => 'Writeups with titles that only differ by case',
+            'extended_title' => 'Writeups that only differ by case'
         },
     };
 
-    if ( $query->param("driver") ) {
-        my $driver   = $query->param("driver");
-        my $datanode = getNode( $driver, "datastash" );
+    if ( $query->param('driver') ) {
+        my $driver   = $query->param('driver');
+        my $datanode = getNode( $driver, 'datastash' );
 
         if ( $datanode and exists $drivers->{$driver} ) {
             my $data = $DB->stashData($driver);
-            $data = [] unless ( UNIVERSAL::isa( $data, "ARRAY" ) );
-            $str .= "<h2>" . $drivers->{$driver}->{title} . qq|</h2><br />|;
-            $str .= "<p>" . $drivers->{$driver}->{extended_title} . qq|</p>|;
+            $data = [] unless ( UNIVERSAL::isa( $data, 'ARRAY' ) );
+            $str .= q|<h2>|.$drivers->{$driver}->{title}.q|</h2><br />|;
+            $str .= q|<p>|.$drivers->{$driver}->{extended_title}.q|</p>|;
 
             if ( scalar(@$data) ) {
-                $str .= "<ul>";
+                $str .= q|<ul>|;
                 foreach my $node_id (@$data) {
                     my $N = getNodeById($node_id);
                     if ($N) {
                         $str .=
 qq|<li><a href="/?node_id=$node_id">node_id: $node_id title: |
-                          . ( $N->{title} || "" )
+                          . ( $N->{title} || '' )
                           . " type: $N->{type}->{title} </li>";
                     }
                     else {
-                        $str .=
-qq|<li>Could not assemble node reference for id: $node_id</li>|;
+                        $str .= qq|<li>Could not assemble node reference for id: $node_id</li>|;
                     }
                 }
-                $str .= "</ul>";
+                $str .= q|</ul>|;
             }
             else {
                 $str .= "Driver <em>$driver</em> has no failures";
@@ -5975,34 +5925,33 @@ qq|<li>Could not assemble node reference for id: $node_id</li>|;
             $str .= "Could not access driver: <em>$driver</em>.";
         }
 
-        $str .= "<br />Back to " . linkNode($NODE) . "<br />";
+        $str .= q|<br />Back to | . linkNode($NODE) . q|<br />|;
     }
     else {
-        $str .=
-qq|<tr><td><strong>Driver name</strong></td><td style="text-align: center"><strong>Failure count</strong><td></tr>|;
+        $str .= q|<tr><td><strong>Driver name</strong></td><td style="text-align: center"><strong>Failure count</strong><td></tr>|;
 
         foreach my $driver ( sort { $a cmp $b } keys %$drivers ) {
-            my $datanode = getNode( $driver, "datastash" );
+            my $datanode = getNode( $driver, 'datastash' );
             next unless $datanode;
             next unless $datanode->{vars};
 
             my $data = $DB->stashData($driver);
-            $data = [] unless UNIVERSAL::isa( $data, "ARRAY" );
+            $data = [] unless UNIVERSAL::isa( $data, 'ARRAY' );
 
-            $str .= qq|<tr><td style="padding: 4px">|
+            $str .= q|<tr><td style="padding: 4px">|
               . linkNode(
                 $NODE,
                 $drivers->{$driver}->{title},
                 { "driver" => $driver }
               )
-              . qq|</td><td style="width: 150px; text-align: center;">|
+              . q|</td><td style="width: 150px; text-align: center;">|
               . scalar(@$data)
-              . qq|</td></tr>|;
+              . q|</td></tr>|;
         }
 
     }
 
-    $str .= qq|</table>|;
+    $str .= q|</table>|;
     return $str;
 }
 
@@ -6015,12 +5964,12 @@ sub topic_archive {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str = "<table>";
-    $str .= "<th>$_</th>\n" foreach ( "Time", "Details" );
+    my $str = q|<table>|;
+    $str .= "<th>$_</th>\n" foreach ( 'Time', 'Details' );
 
     my $sectype =
-      getId( getNode( "E2 Gift Shop", "superdoc" ) ); # So probably 1872678 then
-    my $startat = $query->param("startat");
+      getId( getNode( 'E2 Gift Shop', 'superdoc' ) ); # So probably 1872678 then
+    my $startat = $query->param('startat');
     $startat =~ s/[^0-9]//g;
     $startat ||= 0;
 
@@ -6029,41 +5978,41 @@ sub topic_archive {
     );
 
     while ( my $row = $csr->fetchrow_hashref ) {
-        $str .= "<tr>\n";
-        $str .= "   <td><small>$$row{seclog_time}</small></td>\n";
-        $str .= "   <td>" . $$row{seclog_details} . "</td>\n";
-        $str .= "</tr>\n";
+        $str .= q|<tr>|;
+        $str .= qq|<td><small>$row->{seclog_time}</small></td>|;
+        $str .= q|<td>| . $row->{seclog_details} . q|</td>|;
+        $str .= q|</tr>|;
     }
 
-    $str .= "</table>";
+    $str .= q|</table>|;
 
     ### Generate the pager
-    my $cnt = $DB->sqlSelect( "count(*)", "seclog",
+    my $cnt = $DB->sqlSelect( 'count(*)', 'seclog',
         "seclog_node=$sectype AND seclog_time>'2011-01-22 00:00:00'" );
     my $firststr = "$startat-" . ( $startat + 50 );
-    $str .= "<p align=\"center\"><table width=\"70%\"><tr>";
-    $str .= "<td width=\"50%\" align=\"center\">";
+    $str .= q|<p align="center"><table width="70%"><tr>|;
+    $str .= q|<td width="50%" align="center">|;
     if ( ( $startat - 50 ) >= 0 ) {
         $str .= linkNode( $NODE, $firststr,
-            { "startat" => ( $startat - 50 ), "sectype" => $sectype } );
+            { 'startat' => ( $startat - 50 ), 'sectype' => $sectype } );
     }
     else {
         $str .= $firststr;
     }
-    $str .= "</td>";
-    $str .= "<td width=\"50%\" align=\"center\">";
-    my $secondstr = ( $startat + 50 ) . "-"
+    $str .= q|</td>|;
+    $str .= q|<td width="50%" align="center">|;
+    my $secondstr = ( $startat + 50 ) . '-'
       . ( ( $startat + 100 < $cnt ) ? ( $startat + 100 ) : ($cnt) );
 
     if ( ( $startat + 50 ) <= ($cnt) ) {
         $str .= linkNode( $NODE, $secondstr,
-            { "startat" => ( $startat + 50 ), "sectype" => $sectype } );
+            { 'startat' => ( $startat + 50 ), 'sectype' => $sectype } );
     }
     else {
-        $str .= "(end of list)";
+        $str .= q|(end of list)|;
     }
 
-    $str .= '</tr></table>';
+    $str .= q|</tr></table>|;
     return $str;
 
 }
@@ -6080,12 +6029,12 @@ sub writeups_by_type {
     ####################################################################
     # get all the URL parameters
 
-    my $wuType = abs int( $query->param("wutype") );
+    my $wuType = abs int( $query->param('wutype') );
 
-    my $count = $query->param("count") || 50;
+    my $count = $query->param('count') || 50;
     $count = abs int($count);
 
-    my $page = abs int( $query->param("page") );
+    my $page = abs int( $query->param('page') );
 
     ####################################################################
     # Form with list of writeup types and number to show
@@ -6099,11 +6048,8 @@ sub writeups_by_type {
     unshift @idlist, 0;
     $items{0} = 'All';
 
-    my $str = htmlcode('openform') . qq|<fieldset><legend>Choose...</legend>
-	  <input type="hidden" name="page" value="$page">
-	  <label><strong>Select Writeup Type:</strong>|
-      . $query->popup_menu( 'wutype', \@idlist, 0, \%items ) . '</label>
-	  <label> &nbsp; <strong>Number of writeups to display:</strong>'
+    my $str = htmlcode('openform') . qq|<fieldset><legend>Choose...</legend><input type="hidden" name="page" value="$page"><label><strong>Select Writeup Type:</strong>|
+      . $query->popup_menu( 'wutype', \@idlist, 0, \%items ).q|</label><label> &nbsp; <strong>Number of writeups to display:</strong>|
       . $query->popup_menu( 'count',
         [ 10, 25, 50, 75, 100, 150, 200, 250, 500 ], $count )
       . '</label> &nbsp; '
@@ -6114,9 +6060,9 @@ sub writeups_by_type {
     # get writeups
     #
 
-    my $where = "";
+    my $where = '';
     $where = "wrtype_writeuptype=$wuType" if $wuType;
-    my $wus   = $DB->sqlSelectMany( '
+    my $wus = $DB->sqlSelectMany('
  	  node.node_id, writeup_id, parent_e2node, publishtime,
 	  node.author_user,
 	  type.title AS type_title', '
@@ -6143,7 +6089,7 @@ sub writeups_by_type {
         $oddrow++;
     }
 
-    $str .= "</table>";
+    $str .= q|</table>|;
 
     $str .= '<p class="morelink">';
     $str .=
@@ -6185,8 +6131,7 @@ sub nodelet_settings {
         $PAGELOAD->{pageheader} = '<!-- bottom -->' . htmlcode('settingsDocs');
         $str = htmlcode( 'openform', -id => 'pagebody' );
 
-        $str .=
-qq|<fieldset><legend>Choose and sort nodelets</legend> You can change the order of nodelets by dragging and dropping the menus here (don't forget to save) or by dragging them around by the title on most other pages.|;
+        $str .= q|<fieldset><legend>Choose and sort nodelets</legend> You can change the order of nodelets by dragging and dropping the menus here (don't forget to save) or by dragging them around by the title on most other pages.|;
 
         my $i        = undef;
         my @selected = ();
@@ -6261,13 +6206,13 @@ qq|If the 'Epicenter' nodelet is not selected, its functions are placed in the p
             my $id = lc($name);
             $id =~ s/\W//g;
             $settingsstr .=
-                qq'<fieldset id="$id"><legend>$name</legend>\n'
+                qq|<fieldset id="$id"><legend>$name</legend>|
               . htmlcode($name)
-              . "\n</fieldset>\n";
+              . q|</fieldset>|;
         }
         $str .= "<h2>Settings</h2>\n$settingsstr" if $settingsstr;
 
-        $str .= htmlcode( "closeform", "Save settings" );
+        $str .= htmlcode( 'closeform', 'Save settings' );
     }
     return $str;
 }
@@ -6378,27 +6323,24 @@ $str
         $str .= '</td></tr>';
     }
 
-    $str .= "</table>";
+    $str .= q|</table>|;
 
-    $str .= "Add people (one per line):<br>";
-    $str .= "<textarea name=\"addperson\" rows=\"20\" cols=\"30\"></textarea>";
-    $str .= "<input type=\"submit\" name=\"submit\" value=\"Update group\">";
-    $str .=
-"<input type=\"hidden\" name=\"for_usergroup\" value=\"$$usergroup{node_id}\">";
+    $str .= q|Add people (one per line):<br>|;
+    $str .= q|<textarea name="addperson" rows="20" cols="30"></textarea>|;
+    $str .= q|<input type="submit" name="submit" value="Update group">|;
+    $str .= qq|<input type="hidden" name="for_usergroup" value="$usergroup->{node_id}">|;
 
-    $str .= "</form>";
+    $str .= q|</form>|;
 
-    $str .= "<p><b>Users Ignoring This Group</b> (includes ex-members)</p>";
-    $str .= "<ul>";
+    $str .= q|<p><b>Users Ignoring This Group</b> (includes ex-members)</p>|;
+    $str .= q|<ul>|;
     my $ignore = $DB->sqlSelectMany( 'messageignore_id', 'messageignore',
         'ignore_node=' . $query->param('for_usergroup') );
     my $ignorelist;
     while ( $ignorelist = $ignore->fetchrow_hashref() ) {
-        $str .= "<li>" . linkNode( $$ignorelist{messageignore_id} ) . "</li>";
+        $str .= q|<li>| . linkNode( $$ignorelist{messageignore_id} ) . q|</li>|;
     }
-    $str .= "</ul>";
-
-    $str .= "</td></tr></table>";
+    $str .= q|</ul></td></tr></table>|;
     return $str;
 
 }
@@ -6408,7 +6350,7 @@ sub everything_s_biggest_stars
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
 
     my $rows = undef;
-    my $str = "";
+    my $str = '';
     my $dbrow = undef;
     my $limit = 100;
 
@@ -6469,13 +6411,13 @@ sub log_archive
     my $minYear = 1997;
     my $maxYear = $curDate->year;
 
-    my $month = int($query->param("m"));
+    my $month = int($query->param('m'));
     if ($month < 1 || $month > 12)
     {
       $month = $curDate->month;
     }
 
-    my $year = int($query->param("y"));
+    my $year = int($query->param('y'));
     if ($year < $minYear || $year > $maxYear)
     {
       $year = $year || $curDate->year;
@@ -6602,7 +6544,7 @@ sub log_archive
             }
         }
         # dream logs
-        elsif ($$dbrow[10] =~ m/^Dream Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{1,2}, [0-9]{4}$/)
+        elsif ($dbrow->[10] =~ m/^Dream Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{1,2}, [0-9]{4}$/)
         {
             $dreamlogCtr++;
             if ($dreamlogCtr% 2 == 0)
@@ -6615,7 +6557,7 @@ sub log_archive
             }
         }
         # editor logs
-        elsif ($$dbrow[10] =~ m/^Editor Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
+        elsif ($->dbrow[10] =~ m/^Editor Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
         {
             $editorlogCtr++;
             if ($editorlogCtr% 2 == 0)
@@ -6628,7 +6570,7 @@ sub log_archive
             }
         }
         # root logs
-        elsif ($$dbrow[10] =~ m/^root log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
+        elsif ($dbrow->[10] =~ m/^root log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
         {
             $rootlogCtr++;
             if ($rootlogCtr% 2 == 0)
@@ -6685,14 +6627,14 @@ sub log_archive
 sub delegation_hitlist
 {
   my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-  my $str = "";
+  my $str = '';
   my $count = 0;
-  my $types = ["superdoc","restricted_superdoc","superdocnolinks","oppressor_superdoc","fullpage","htmlcode","htmlpage","nodelet"];
+  my $types = [qw(superdoc restricted_superdoc superdocnolinks oppressor_superdoc fullpage htmlcode htmlpage nodelet)];
 
   foreach my $type (@$types)
   {
     my $nt = getType($type);
-    my $csr = $DB->sqlSelectMany("node_id","node LEFT JOIN document on node.node_id=document.document_id","type_nodetype=$nt->{node_id} AND doctext IS NOT NULL AND doctext!=''");
+    my $csr = $DB->sqlSelectMany('node_id','node LEFT JOIN document on node.node_id=document.document_id',"type_nodetype=$nt->{node_id} AND doctext IS NOT NULL AND doctext!=''");
     $str .= "<ul>$type";
     while(my $row = $csr->fetchrow_arrayref)
     {
@@ -6743,19 +6685,19 @@ sub suspension_info
 
     if (htmlcode('verifyRequest', 'suspension') && $sustype && $lookupUser && !$invalidSustype)
     {
-        my $outstr = "";
+        my $outstr = '';
 
-        if($query->param("unsuspend"))
+        if($query->param('unsuspend'))
         {
-            $DB->sqlDelete("suspension", "suspension_user=$$lookupUser{node_id} and suspension_sustype=$$sustype{node_id}");
-            $APP->securityLog($NODE, $USER, "$$lookupUser{title} was unsuspended from $$sustype{title} by $$USER{title}");
-            $outstr = "Suspension repealed";
+            $DB->sqlDelete('suspension', "suspension_user=$lookupUser->{node_id} and suspension_sustype=$sustype->{node_id}");
+            $APP->securityLog($NODE, $USER, "$lookupUser->{title} was unsuspended from $sustype->{title} by $USER->{title}");
+            $outstr = 'Suspension repealed';
 
         } else {
 
-            $DB->sqlInsert("suspension", {"suspension_user" => $$lookupUser{node_id},  "suspension_sustype" => $$sustype{node_id}, "suspendedby_user" => $$USER{node_id}});
-            $APP->securityLog($NODE, $USER, "$$lookupUser{title} was suspended from $$sustype{title} by $$USER{title}");
-            $outstr = "Suspension imposed";
+            $DB->sqlInsert('suspension', {'suspension_user' => $lookupUser->{node_id},  'suspension_sustype' => $sustype->{node_id}, 'suspendedby_user' => $USER->{node_id}});
+            $APP->securityLog($NODE, $USER, "$lookupUser->{title} was suspended from $sustype->{title} by $USER->{title}");
+            $outstr = 'Suspension imposed';
         }
 
         $str .= qq|<font color="red"><big><big><strong>$outstr</strong></big></big></font>|;
@@ -6763,23 +6705,22 @@ sub suspension_info
 
     if ($lookupUser)
     {
-        $str.="<table>";
-        $str.="<tr>";
+        $str.=q|<table><tr>|;
 
-        $str.=qq|<td valign="center">Suspension info for: <br><strong>$$lookupUser{title}</strong></td>|;
+        $str.=qq|<td valign="center">Suspension info for: <br><strong>$lookupUser->{title}</strong></td>|;
 
-        my $sustypeTypeId = getId(getType("sustype"));
-        my $suspensionRestrict = "";
+        my $sustypeTypeId = getId(getType('sustype'));
+        my $suspensionRestrict = '';
         if ($isChanop && !$isEd) {
-            $suspensionRestrict = "AND title IN ("
+            $suspensionRestrict = 'AND title IN ('
             . join(', ', map { $DB->quote($_); } keys %chanopSuspensionTypes)
-            . ")"
+            . ')'
             ;
         }
         my $csr =
         $DB->sqlSelectMany(
-            "node_id, title, doctext"
-            , "node LEFT JOIN document ON node_id = document_id"
+            'node_id, title, doctext'
+            , 'node LEFT JOIN document ON node_id = document_id'
             , "type_nodetype = $sustypeTypeId $suspensionRestrict AND title != 'email'"
         );
 
@@ -6791,72 +6732,67 @@ sub suspension_info
 
         for my $suspension_name (sort keys %suspension_types) {
         my $suspension_id = $suspension_types{$suspension_name}->{node_id};
-        $suspensionInfo .= "\n<dt>$suspension_name</dt>\n"
-            . "<dd>" . $suspension_types{$suspension_name}->{desc} . "</dd>\n"
-            ;
-        $str.="<td>";
+        $suspensionInfo .= "<dt>$suspension_name</dt>"
+            . q|<dd>| . $suspension_types{$suspension_name}->{desc} . q|</dd>|;
+        $str.=q|<td>|;
         $str.=qq|<p align="center">$suspension_name suspension</p>|;
 
         my $sushash =
             $DB->sqlSelectHashref(
-            "*"
-            , "suspension"
-            , "suspension_user = $$lookupUser{node_id} "
+            '*'
+            , 'suspension'
+            , "suspension_user = $lookupUser->{node_id} "
                 . "AND suspension_sustype = $suspension_id"
             );
 
-        my $linkParams = htmlcode('verifyRequestHash', 'suspension'); 
-        $$linkParams{"lookup_user"} = $$lookupUser{node_id};
-        $$linkParams{"sustype"} = $suspension_id;
+        my $linkParams = htmlcode('verifyRequestHash', 'suspension');
+        $linkParams->{'lookup_user'} = $lookupUser->{node_id};
+        $linkParams->{'sustype'} = $suspension_id;
 
         if($sushash)
         {
             $str.= '<p align="center"><small>'
-                . "Suspended by "
-                . linkNode(getNodeById($$sushash{suspendedby_user}))
+                . 'Suspended by '
+                . linkNode(getNodeById($sushash->{suspendedby_user}))
                 . '</small></p>'
-                ; 
-
-            my $orig_started = $$sushash{started};
-            $$sushash{started} ||= "00000000000000";
-            $$sushash{started} =~ /(\d{4})-?(\d{2})-?(\d{2})\s*(\d{2}):?(\d{2}):?(\d{2})/;
-
-            $str .= qq|<p align="center"><small><small>|
-                . "on $2-$3-$1 at $4:$5:$6 "
-                . "</small></small></p>"
                 ;
-            $$linkParams{"unsuspend"} = 1;
-            $str .= "<p align=\"center\"><small>"
-                . linkNode($NODE,"Unsuspend", $linkParams)
-                . "</small></p>"
+
+            my $orig_started = $sushash->{started};
+            $sushash->{started} ||= '00000000000000';
+            $sushash->{started} =~ /(\d{4})-?(\d{2})-?(\d{2})\s*(\d{2}):?(\d{2}):?(\d{2})/;
+
+            $str .= q|<p align="center"><small><small>|
+                . "on $2-$3-$1 at $4:$5:$6 "
+                . q|</small></small></p>|
+                ;
+            $linkParams->{'unsuspend'} = 1;
+            $str .= q|<p align="center"><small>|
+                . linkNode($NODE,'Unsuspend', $linkParams)
+                . q|</small></p>|
                 ;
 
         }
         else
         {
-            $str.=qq|<p align="center"><small><em>No restriction</em></small></p>|;
-            $str.=qq|<p align="center"><small>|
-                . linkNode($NODE, "Suspend", $linkParams)
-                . "</small></p>"
-                ;
+            $str.=q|<p align="center"><small><em>No restriction</em></small></p>|;
+            $str.=q|<p align="center"><small>|
+                . linkNode($NODE, 'Suspend', $linkParams)
+                . q|</small></p>|;
         }
-        $str.="</td>";
-        $str.=qq|<td width="30"> </td>|;
+        $str.=q|</td>|;
+        $str.=q|<td width="30"> </td>|;
 
         }
 
-        $str.="</tr>";
-        $str.="</table>";
-        $str.="<br><br>";
+        $str.=q|</tr></table><br><br>|;
     }
 
-    my $formFields = ""
-    . htmlcode('verifyRequestForm', 'suspension')
-    . $query->textfield(-name => "lookup_name")
-    . $query->submit(-value => "Check info")
+    my $formFields = htmlcode('verifyRequestForm', 'suspension')
+    . $query->textfield(-name => 'lookup_name')
+    . $query->submit(-value => 'Check info')
     ;
 
-    $suspensionInfo = "<dl>\n$suspensionInfo\n</dl>" if $suspensionInfo ne "";
+    $suspensionInfo = "<dl>\n$suspensionInfo\n</dl>" if $suspensionInfo ne '';
 
     $str.=htmlcode('openform', 'suspensionlookupform');
     $str.= qq|Check suspension info for: $formFields</form>
@@ -6898,7 +6834,7 @@ sub show_user_vars
         . 'Showing user variables for '
         . $query->textfield(
             -value => $$inspectUser{title}
-            , -name => "username"
+            , -name => 'username'
             , -size => 30
             )
         . $query->submit('Show user vars')
@@ -6906,12 +6842,12 @@ sub show_user_vars
         . $query->end_form
         ;
     } else {
-        $str .= $$inspectUser{title} . '<br />';
+        $str .= $inspectUser->{title} . '<br />';
     }
 
 
-    my $tOpen = "<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\">\n";
-    my $tClose = '</table>';
+    my $tOpen = q|<table border="1" cellpadding="1" cellspacing="1">|;
+    my $tClose = q|</table>|;
 
     my @validKeys = ();
     my $key = undef;
@@ -6950,7 +6886,7 @@ sub show_user_vars
     $str .= '<h3>VARS</h3>' . $tOpen;
     foreach $key (@validKeys) {
         next if length($key)==0;
-        $val = encodeHTML($$inspectVars{$key});
+        $val = encodeHTML($inspectVars->{$key});
         $val =~ s/[\r\n]+/<br>/g if $key =~ /^notelet/;
         $val='(<em>null</em>)' unless defined $val;
         $str.='<tr><td>' . encodeHTML($key)
@@ -6970,7 +6906,7 @@ sub show_user_vars
         next if (($key eq 'vars') || ($key eq 'passwd'));
         if($key ne '' and $key ne 'vars')
         {
-            $val = $$inspectUser{$key};
+            $val = $inspectUser->{$key};
             $val='(<em>null</em>)' unless defined $val;
             $str.='<tr><td>' . encodeHTML($key)
                 . '</td><td>' . encodeHTML($val) . "</td>\n";
@@ -6998,7 +6934,7 @@ sub websterbless
     # ... make SQl query text for Webster 1913's messages
     my $limits = 'for_user='.getId(getNode('Webster 1913', 'user'));
     # ... total messages for user, archived and not, group and not, from all users
-    my $totalMsg = $DB->sqlSelect('COUNT(*)','message',$limits); 
+    my $totalMsg = $DB->sqlSelect('COUNT(*)','message',$limits);
     # ... display the number of messages in Webster 1913's Message Inbox.
     my $moreMsgStr = '';
     if($totalMsg) {
@@ -7052,7 +6988,7 @@ sub websterbless
             'renode'=>$thenodes[$count]});
 
         $str .= "User $$U{title} was given $curGP GP";
-        $$U{karma}+=1;
+        $U->{karma}+=1;
         updateNode($U, -1);
         htmlcode('achievementsByType','karma');
         $APP->securityLog(getNode('Superbless', 'superdoc'), $USER, "$$USER{title} [Websterbless|Websterblessed] $$U{title} with $curGP GP.");
@@ -7061,27 +6997,27 @@ sub websterbless
     }
 
     $output .= $str;
-    $output .= htmlcode("openform");
-    $output .= qq|<table border="1">|;
+    $output .= htmlcode('openform');
+    $output .= q|<table border="1">|;
 
 
     # Build the table rows for inputting user names
     my $count = 5;
-    $str = "";
-    $str.="<tr><th>Thank these users</th><th>Writeup name</th></tr> ";
+    $str = '';
+    $str.= q|<tr><th>Thank these users</th><th>Writeup name</th></tr>|;
 
     for (my $i = 0; $i < $count; $i++)
     {
         $query->param("webbyblessUser$i", '');
         $query->param("webbyblessNode$i", '');
-        $str.="<tr><td>";
+        $str.=q|<tr><td>|;
         $str.=$query->textfield("webbyblessUser$i", '', 40, 80);
-        $str.="</td><td>";
+        $str.=q|</td><td>|;
         $str.=$query->textfield("webbyblessNode$i", '', 40, 80);
-        $str.="</td></tr>";
+        $str.=q|</td></tr>|;
     }
 
-    $output .= $str.qq|</table>|.htmlcode("closeform");
+    $output .= $str.q|</table>|.htmlcode('closeform');
     return $output;
 }
 
@@ -7092,38 +7028,38 @@ sub login
     my $str = '';
     if($query->param('op') eq 'login' && !$APP->isGuest($USER))
     {
-	    $str.= "Hey.  Glad you're back.  Would you like to go to your ".linkNode($USER, "home node").' or to '.linkNode($Everything::CONF->default_node).'?<br />';
+	    $str.= "Hey.  Glad you're back.  Would you like to go to your ".linkNode($USER, 'home node').' or to '.linkNode($Everything::CONF->default_node).'?<br />';
 	    $str .= '...or back to '.linkNode($query->param('lastnode_id')).'?<br />' if ($query->param('lastnode_id'));
 	    return $str;
     } elsif ($query->param('op') eq 'login') {
-	    $str .="Oops.  You must have the wrong login or password or something:\n<p>\n";
+	    $str .= q|Oops.  You must have the wrong login or password or something:<p>|;
     } elsif (!$APP->isGuest($USER)) {
-	    $str.="Hey, ".linkNode($USER)."...  this is where you log in:<p>\n";
+	    $str.=q|Hey, |.linkNode($USER).q|...  this is where you log in:<p>|;
     }else {
-	    $str .="Welcome to ".$Everything::CONF->site_name.".  Authenticate yourself:\n<p>\n";
+	    $str .=q|Welcome to |.$Everything::CONF->site_name.q|.  Authenticate yourself:<p>|;
     }
 
     #security fix
-    my $pass = $query->param("passwd");
+    my $pass = $query->param('passwd');
     $pass =~ s/./\*/g;
-    $query->param("passwd", $pass);
+    $query->param('passwd', $pass);
 
-    $str .= "<form method=\"POST\" action=\"".$ENV{SCRIPT_NAME}."\" id=\"loginsuperdoc\">".
-	    "<input type=\"hidden\" name=\"op\" value=\"login\" />".
-	    $query->hidden("node_id", getId($NODE))."\n".
-	    $query->hidden("lastnode_id", scalar($query->param("lastnode_id")))."\n".
+    $str .= q|<form method="POST" action="|.$ENV{SCRIPT_NAME}.q|" id="loginsuperdoc">|.
+	    q|<input type="hidden" name="op" value="login" />|.
+	    $query->hidden('node_id', getId($NODE))."\n".
+	    $query->hidden('lastnode_id', scalar($query->param('lastnode_id')))."\n".
 
-	$query->textfield (-name => "user",
+	$query->textfield (-name => 'user',
 		-size => 20,
-		-maxlength => 20) . "<br>" .
-	$query->password_field(-name => "passwd",
+		-maxlength => 20) . q|<br>| .
+	$query->password_field(-name => 'passwd',
 		-size => 20,
-		-maxlength => 240) ."<br>".
-	$query->checkbox("expires", "", "+10y", "save me a permanent cookie, cowboy!").
-	$query->submit("sexisgood", "submit") .
+		-maxlength => 240) .q|<br>|.
+	$query->checkbox('expires', '', '+10y', 'save me a permanent cookie, cowboy!').
+	$query->submit('sexisgood', 'submit') .
 	$query->end_form;
-	$str.="[Reset password[superdoc]|Forgot your password or username?]";
-    $str.="<p>Don't have an account? [Sign up[superdoc]|Create one]!";
+	$str.=q{[Reset password[superdoc]|Forgot your password or username?]};
+    $str.=q{<p>Don't have an account? [Sign up[superdoc]|Create one]!};
     return $str;
 }
 
@@ -7135,9 +7071,9 @@ sub sanctify_user
     my $minLevel = 11;
     my $Sanctificity = 10;
 
-    return "<p>Sorry, this tool can only be used by people who have [User Settings|opted in] to the GP system.</p>" if ($$VARS{GPoptout});
+    return "<p>Sorry, this tool can only be used by people who have [User Settings|opted in] to the GP system.</p>" if ($VARS->{GPoptout});
     return "<p>Who do you think you are? The Pope or something?</p><p>Sorry, but you will have to come back when you reach Level $minLevel.</p>" unless $APP->getLevel($USER)>= $minLevel or $APP->isEditor($USER);
-    return "<p>Sorry, but you don't have at least $Sanctificity GP to give away. Please come back when you have more GP.</p>" if $$USER{GP} < $Sanctificity;
+    return "<p>Sorry, but you don't have at least $Sanctificity GP to give away. Please come back when you have more GP.</p>" if $USER->{GP} < $Sanctificity;
 
     my $str = "<p>This tool lets you give <b>$Sanctificity GP</b> at a time to any user of your choice. The GP is transferred from your own account to theirs. Please use it for the good of Everything2!</p>";
 
@@ -7146,22 +7082,22 @@ sub sanctify_user
         my $recipient = $query->param('give_to');
 	    my $user = getNode($recipient, 'user');
 	    return "<p>The user '$recipient' doesn't exist!</p>" unless $user;
-        return "<p>It is not possible to sanctify yourself!</p><p>Would you like to [Sanctify user|try again on someone else]?</p>" if ($$USER{title} eq $recipient);
+        return q{<p>It is not possible to sanctify yourself!</p><p>Would you like to [Sanctify user|try again on someone else]?</p>} if ($USER->{title} eq $recipient);
         $$user{sanctity} += 1;
         updateNode($user, -1);
 
         $APP->adjustGP($user, $Sanctificity);
         $APP->adjustGP($USER, -$Sanctificity);
 
-        $APP->securityLog($NODE, $USER, "$$USER{title} sanctified $$user{title} with $Sanctificity GP.");
-        
-	    my $from =  ($query->param('anon') eq 'sssh') ? "!" : (' by [' . $$USER{title} . ']!');
+        $APP->securityLog($NODE, $USER, "$USER->{title} sanctified $user->{title} with $Sanctificity GP.");
+
+	    my $from =  ($query->param('anon') eq 'sssh') ? '!' : (' by [' . $USER->{title} . ']!');
 	    htmlcode('sendPrivateMessage',{
 		    'author_id' => getId(getNode('Cool Man Eddie', 'user')),
-		    'recipient_id' => $$user{user_id},
+		    'recipient_id' => $user->{user_id},
 		    'message' => "Whoa! You’ve been [Sanctify|sanctified]$from" });
-        $str = "<p>User [" . $$user{title} ."] has been given 10 GP. ";
-	    return $str . "</p>You have <b>" . $$USER{GP} . " GP</b> left. Would you like to [Sanctify user|sanctify someone else]?</p><p>Or, return to the [E2 Gift Shop].</p>";
+        $str = q|<p>User [| . $user->{title} .q|] has been given 10 GP. |;
+	    return $str . q|</p>You have <b>| . $USER->{GP} . q{GP</b> left. Would you like to [Sanctify user|sanctify someone else]?</p><p>Or, return to the [E2 Gift Shop].</p>};
     }
 
     $str.=$query->start_form();
@@ -7173,10 +7109,10 @@ sub sanctify_user
     $str.=$query->submit('give_GP','Sanctify!');
     $str.=$query->end_form();
 
-    $str.="<p>Or, return to the [E2 Gift Shop].</p>";
+    $str.=q|<p>Or, return to the [E2 Gift Shop].</p>|;
 
-    $$VARS{oldexp} = $$USER{experience};
-    $$VARS{oldGP} = $$USER{GP};
+    $VARS->{oldexp} = $USER->{experience};
+    $VARS->{oldGP} = $USER->{GP};
 
     return $str;
 }
@@ -7189,7 +7125,7 @@ sub node_backup
 
     my $zipbuffer = undef;
     my $zip = IO::Compress::Zip->new(\$zipbuffer);
-    my $s3 = Everything::S3->new("nodebackup");
+    my $s3 = Everything::S3->new('nodebackup');
 
     my $str = '';
     $str .= q|<p>Welcome to the node backup utility. Here you can download all of your writeups and/or drafts in a handy zipfile.</p>|;
@@ -7217,14 +7153,14 @@ sub node_backup
 	$str .= htmlcode('closeform', 'Create backup');
     return $str unless $query->param('sexisgood');
 
-    my $e2parse = $query->param("e2parse");
+    my $e2parse = $query->param('e2parse');
     my $targetNoder = undef;
 
     if ($query->param('for_noder') && $DB->isGod($USER)) {
         # hard-of-access option to test on other other users' stuff:
         # draft security hole comparable to [SQL prompt]
-	    my $targetNoderName = $query->param("for_noder");
-	    $targetNoder = getNode($targetNoderName, "user");
+	    my $targetNoderName = $query->param('for_noder');
+	    $targetNoder = getNode($targetNoderName, 'user');
     }
 
     $targetNoder ||= $USER;
@@ -7255,35 +7191,35 @@ sub node_backup
     }
 
     unless (@wus){
-	    return '<p>No '.$query->param('dowhat')." found.</p>\n";
+	    return  q|<p>No |.$query->param('dowhat').q| found.</p>|;
     }
 
     my $draftType = getId(getType('draft'));
     my %usedtitles = ();
 
     foreach my $wu (@wus) {
-	    my $wu_title = $$wu{title};
-	    my $suffix = $$wu{suffix}||'txt';
-	
+	    my $wu_title = $wu->{title};
+	    my $suffix = $wu->{suffix} || 'txt';
+
 	    #Slashes create directories in the zip file, so change them to
 	    #dashes. Various other characters make various OSes puke, so change them, too.
 	    $wu_title =~ s,[^[:alnum:]&#; ()],-,g;
-	    $wu_title .= ' (draft)' if $$wu{type_nodetype} == $draftType;
+	    $wu_title .= ' (draft)' if $wu->{type_nodetype} == $draftType;
 	    my $trytitle = $wu_title;
-	
+
 	    my $dupebust = 1;
 	    $wu_title = $trytitle.' ('.$dupebust++.')' while $usedtitles{"$wu_title.$suffix"};
 	    $usedtitles{"$wu_title.$suffix"} = 1;
-	
-        my $doctext = $$wu{doctext};
+
+        my $doctext = $wu->{doctext};
         utf8::encode($doctext);
-        my $wusuffix = $$wu{suffix};
+        my $wusuffix = $wu->{suffix};
         utf8::encode($wusuffix);
         $zip->newStream(Name => ($wusuffix || 'text')."/$wu_title.$suffix");
 	    $zip->print($doctext);
     }
 
-    my ($day, $month, $year) = (gmtime(time + $$VARS{localTimeOffset} + $$VARS{localTimeDST}*3600))[3 .. 5];
+    my ($day, $month, $year) = (gmtime(time + $VARS->{localTimeOffset} + $VARS->{localTimeDST}*3600))[3 .. 5];
     $month += 1; # month initially 0..11; make it 1..12
     $year += 1900;
     $day = "0$day" if $day < 10;
@@ -7305,7 +7241,7 @@ sub node_backup
     $str .= "<p>This link is public in the sense that anyone with the URL can download it, and will last for 7 days, in which time it will be automatically deleted. This is the only time you will see this link, so download it now.</p>";
 
     $str .= '<p>This is not your work and some of it may be private. Please do not read the drafts and remember to delete the backup after checking it is OK.'
-		if $uid != $$USER{user_id} and $where =~ /$draftType/;
+		if $uid != $USER->{user_id} and $where =~ /$draftType/;
 
     return $str;
 }
@@ -7315,11 +7251,11 @@ sub cache_dump
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
 
     my $output = q|This is what the cache contains<br>|;
-    $output .= qq|(Process ID: $$)<br /><p>|;
+    $output .= q|(Process ID: |.$$.q|)<br /><p>|;
 
     my $cache = $DB->getCache()->dumpCache();
     my $num = $DB->getCache()->getCacheSize();
-    $output .= "Cache size: $num\n";
+    $output .= "Cache size: $num";
 
     $output .= q|<ul>|;
 
@@ -7334,25 +7270,25 @@ sub cache_dump
 
         $typestats->{$item->{type}->{title}} ||= 0;
         $typestats->{$item->{type}->{title}}++;
-   
-        push @$extrainfo, $$item{type}{title};
+
+        push @$extrainfo, $item->{type}->{title};
 
         if($cache_entry->[1]->{permanent})
         {
-            push @$extrainfo, "permanent";
+            push @$extrainfo, 'permanent';
         }
 
-        if(exists($$item{group}))
+        if(exists($item->{group}))
         {
-            push @$extrainfo, scalar(@{$$item{group}}). " items in group";
-        }
- 
-        if(exists($DB->{cache}->{groupCache}->{$$item{node_id}}))
-        {
-            push @$extrainfo, scalar(keys %{$DB->{cache}->{groupCache}->{$$item{node_id}}})." items in groupCache";
+            push @$extrainfo, scalar(@{$item->{group}}). q| items in group|;
         }
 
-        $output .= "<li> $$item{title} (".join(" , ",@$extrainfo).")\n";
+        if(exists($DB->{cache}->{groupCache}->{$item->{node_id}}))
+        {
+            push @$extrainfo, scalar(keys %{$DB->{cache}->{groupCache}->{$item->{node_id}}}).q| items in groupCache|;
+        }
+
+        $output .= "<li> $item->{title} (".join(' , ',@$extrainfo).')';
     }
 
     $output .= q|</ul><br /><br />Counts: <ul>|;
@@ -7363,7 +7299,7 @@ sub cache_dump
     }
 
     $output .= q|</ul>|;
-    $output .= "Pagecache:<ul>";
+    $output .= q|Pagecache:<ul>|;
 
     foreach my $key (keys %{$DB->{cache}->{pagecache}})
     {
@@ -7373,6 +7309,72 @@ sub cache_dump
     $output .= q|</ul>|;
     return $output;
 
+}
+
+sub the_tokenator
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $output = '';
+    my @params = $query->param;
+
+    my (@users, @thenodes);
+    foreach (@params) {
+        if(/^tokenateUser(\d+)$/)
+        {
+            $users[$1] = $query->param($_);
+        }
+    }
+
+    for(my $count=0; $count < @users; $count++)
+    {
+        next unless $users[$count];
+
+        my ($U) = getNode($users[$count], 'user');
+        if (not $U)
+        {
+            $output.="couldn't find user $users[$count]<br />";
+            next;
+        }
+
+        # Send an automated notification.
+        my $failMessage = htmlcode('sendPrivateMessage',{
+            'recipient_id'=>getId($U),
+            'message'=>'Whoa! Somebody has given you a [token]! Use it to [E2 Gift Shop|reset the chatterbox topic].',
+            'author'=>'Cool Man Eddie'});
+
+        $output .= "User $$U{title} was given one token";
+
+        my $v = getVars($U);
+        if (!exists($$v{tokens}))
+        {
+            $$v{tokens} = 1;
+        } else {
+	        $$v{tokens} += 1;
+        }
+        setVars($U, $v);
+        $output .= q|<br />|;
+    }
+
+    # Build the table rows for inputting user names
+    my $count = 5;
+    $output.=htmlcode('openform');
+    $output.='<table border="1">';
+
+    $output.=q|<tr><th>Tokenate these users</th></tr> |;
+
+    for (my $i = 0; $i < $count; $i++)
+    {
+        $query->param("tokenateUser$i", '');
+        $output.=q|<tr><td>|;
+        $output.=$query->textfield("tokenateUser$i", '', 40, 80);
+        $output.=q|</td>|;
+    }
+
+    $output.=q|</table>|;
+    $output.=htmlcode('closeform');
+
+    return $output;
 }
 
 1;

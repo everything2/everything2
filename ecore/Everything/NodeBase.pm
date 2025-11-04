@@ -24,7 +24,7 @@ use Try::Tiny;
 sub BEGIN
 {
 	use Exporter ();
-	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
+	use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
 		getCache
@@ -87,15 +87,15 @@ sub new
 {
 	my ($className) = @_;
 	my $this = {};
-	
+
 	bless $this, $className;
 
-        my $dbname = $Everything::CONF->database;
+    my $dbname = $Everything::CONF->database;
 	# A connection to this database does not exist.  Create one.
 	my ($user,$pass, $dbserv, $dbport) = ($Everything::CONF->everyuser, $Everything::CONF->everypass, $Everything::CONF->everything_dbserv, $Everything::CONF->everything_dbport);
 	my $dbh_props = {AutoCommit => 1, mysql_enable_utf8mb4 => 1};
 
-	if($Everything::CONF->environment eq "development")
+	if($Everything::CONF->environment eq 'development')
 	{
 		$dbh_props->{RaiseError} = 1;
 	}
@@ -103,7 +103,7 @@ sub new
 	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbserv;port=$dbport;mysql_ssl=1;mysql_get_server_pubkey=1", $user, $pass, $dbh_props);
 	$this->{dbh} = $dbh;
 
-	$this->{cache} = new Everything::NodeCache($this); 
+	$this->{cache} = new Everything::NodeCache($this);
 	$this->{dbname} = $dbname;
 	$this->{staticNodetypes} = $Everything::CONF->static_nodetypes;
 
@@ -445,10 +445,10 @@ sub getNode
 	if (not $TYPE and $title =~ /^\d+$/) {
 		return $this->getNodeById($title, $selectop);
 	}
-	
+
 	if(defined $TYPE)
-	{	
-		$TYPE = $this->getType($TYPE) unless(UNIVERSAL::isa($TYPE,"HASH"));
+	{
+		$TYPE = $this->getType($TYPE) unless(UNIVERSAL::isa($TYPE,'HASH'));
 	}
 
 	$selectop ||= '';
@@ -463,8 +463,8 @@ sub getNode
 		$NODE = $this->sqlSelectHashref('*', 'node', "title=".$this->{dbh}->quote($title). " and type_nodetype=$$TYPE{node_id}");
 		return $NODE;
 	}
-	
-	
+
+
 	# If it looks like there's a double encoded character, try looking up both this title and the title
 	#  with an additional decode
 	if ($title !~ /%/) {
@@ -519,7 +519,7 @@ sub getNodeById
 	$N = $this->getId($N);
 	$N = int($N);
 	return unless $N;
-	
+
 	if($selectop ne 'nocache')
 	{
 		# See if we have this node cached already
@@ -529,7 +529,7 @@ sub getNodeById
 
 	$NODE = $this->sqlSelectHashref('*', 'node', "node_id=$N");
 	return if(not defined $NODE);
-	
+
 	$NODETYPE = $this->getType($$NODE{type_nodetype});
 	if (not defined $NODETYPE or $NODETYPE == -1) {
 		Everything::printLog(
@@ -561,7 +561,7 @@ sub getNodeById
 	{
 		my $perm = 0;
 		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
-	
+
 		$this->{cache}->cacheNode($NODE, $perm);
 	}
 
@@ -602,7 +602,7 @@ sub loadGroupNodeIDs
 			{
 				push @{ $$NODE{group} }, $nid;
 			}
-			
+
 			$cursor->finish();
 		}
 	}
@@ -638,7 +638,7 @@ sub getNodeWhere
 	my $cursor;
 
 	$cursor = $this->getNodeCursor($WHERE, $TYPE, $orderby);
-	
+
 	if(defined $cursor)
 	{
 		while($NODE = $cursor->fetchrow_hashref)
@@ -654,7 +654,7 @@ sub getNodeWhere
 
 			# Fill out the group, if its a group node.
 			$this->loadGroupNodeIDs($NODE);
-			
+
 			push @nodelist, $NODE;
 		}
 
@@ -697,9 +697,9 @@ sub selectNodeWhere
 	my $select;
 	my @nodelist;
 	my $node_id;
-	
+
 	$cursor = $this->getNodeCursor($WHERE, $TYPE, $orderby, $nodeTableOnly);
-	
+
 	if((defined $cursor) && ($cursor->execute()))
 	{
 		while (($node_id) = $cursor->fetchrow) 
@@ -811,7 +811,7 @@ sub constructNode
 	my $TYPE = $this->getType($$NODE{type_nodetype});
 	my $cursor;
 	my $NODEDATA;
-	
+
 	return 0 unless((defined $TYPE) && (ref $$TYPE{tableArray}));
 
 	$cursor = $this->getNodeCursor({-node_id => $$NODE{node_id}}, $TYPE);
@@ -822,7 +822,7 @@ sub constructNode
 	$cursor->finish();
 
 	@$NODE{keys %$NODEDATA} = values %$NODEDATA;
-	
+
 	# Make sure each field is at least defined to be nothing.
 	foreach (keys %$NODE)
 	{
@@ -965,7 +965,7 @@ sub closeTransaction
 
 	# Prevent AutoCommit mistakes from propgating, creating weird superlong transactions
 	if (!$this->{dbh}->{AutoCommit}) {
-		Everything::printLog("AutoCommit was left off after the last page served.");
+		Everything::printLog('AutoCommit was left off after the last page served.');
 		$this->{dbh}->{AutoCommit} = 1;
 	}
 
@@ -1066,15 +1066,8 @@ sub updateNode
 		my $whereStr =
 			join("\n\t\tAND "
 				, map {$_ . "_id = " . $$NODE{node_id} } keys %tableList
-			); 
-		my $sqlString = <<SQLEND;
-			UPDATE
-				$tableListStr
-				SET
-					$updateList
-				WHERE
-					$whereStr
-SQLEND
+			);
+		my $sqlString = qq|UPDATE $tableListStr SET $updateList WHERE $whereStr|;
 
 		$this->executeQuery($sqlString);
 
@@ -1108,7 +1101,7 @@ sub replaceNode {
 			@$N{keys %$NODEDATA} = values %$NODEDATA if $NODEDATA;
 			$this->updateNode($N, $USER, undef, $skip_maintenance);
 		}
-	} else { 
+	} else {
 		$this->insertNode($title, $TYPE, $USER, $NODEDATA, $skip_maintenance);
 	}
 
@@ -1139,7 +1132,7 @@ sub insertNode
 	my $tableArray;
 	my $NODE;
 
-	
+
 	$TYPE = $this->getType($TYPE) unless (ref $TYPE);
 
 	unless ($this->canCreateNode($USER, $TYPE))
@@ -1191,7 +1184,7 @@ sub insertNode
 
 	my $app = Everything::Application->new($this, $Everything::CONF);
  	$app->insertSearchWord($title, $node_id);
-	
+
 	# This node has just been created.  Do any maintenance if needed.
 	# We do this here before calling updateNode below to make sure that
 	# the 'created' routines are executed before any 'update' routines.
@@ -1284,27 +1277,24 @@ sub nukeNode
 	}
 
 	pop @$tableArray; # remove the implied "node" that we put on
-	
-	# Remove all links that go from or to this node that we are deleting
-	$this->executeQuery("DELETE LOW_PRIORITY FROM links 
-		WHERE to_node=$$NODE{node_id}");
 
-	$this->executeQuery("DELETE LOW_PRIORITY FROM links 
-		WHERE from_node=$$NODE{node_id}");
+	# Remove all links that go from or to this node that we are deleting
+	$this->executeQuery("DELETE LOW_PRIORITY FROM links WHERE to_node=$$NODE{node_id}");
+
+	$this->executeQuery("DELETE LOW_PRIORITY FROM links WHERE from_node=$$NODE{node_id}");
 
 	# If this node is a group node, we will remove all of its members
 	# from the group table.
 	if($groupTable = $this->isGroup($$NODE{type}))
 	{
 		# Remove all group entries for this group node
-		$this->executeQuery("DELETE FROM $groupTable WHERE " . $groupTable . 
-			"_id=$$NODE{node_id}");
+		$this->executeQuery("DELETE FROM $groupTable WHERE $groupTable"."_id=$$NODE{node_id}");
 	}
 
 	$this->executeQuery("DELETE FROM nodegroup WHERE node_id=$$NODE{node_id}");
 	my $app = Everything::Application->new($this, $Everything::CONF);
 	$app->removeSearchWord($NODE);
-	
+
 	# This will be zero if nothing was deleted from the tables.
 	return $result;
 }
@@ -1338,7 +1328,7 @@ sub getType
 
 	# If they pass in a hash, just take the id.
 	$idOrName = $$idOrName{node_id} if(UNIVERSAL::isa($idOrName,"HASH"));
-	
+
 	return if((not defined $idOrName) || ($idOrName eq ""));
 
 	if($idOrName =~ /\D/) # Does it contain non-digits?
@@ -1351,7 +1341,7 @@ sub getType
 			$TYPE = $this->sqlSelectHashref("*",
 				"node left join nodetype on node_id=nodetype_id",
 				"title=" . $this->quote($idOrName) . " && type_nodetype=1");
-			
+
 			$fromCache = 0;
 		}
 	}
@@ -1835,8 +1825,8 @@ sub genWhereString
 			if (ref ($$WHERE{$key}) eq "ARRAY")
 			{
 				my $LIST = $$WHERE{$key};
-				my $orstr = "";	
-				
+				my $orstr = "";
+
 				foreach my $item (@$LIST)
 				{
 					$orstr .= " or " if($orstr ne "");
@@ -2244,7 +2234,7 @@ sub canCreateNode {
 	my ($this, $USER, $TYPE) = @_;
 	$this->getRef($TYPE);
 
-	return 1 unless $$TYPE{writers_user};	
+	return 1 unless $$TYPE{writers_user};
 	return $this->isApproved ($USER, $$TYPE{writers_user});
 }
 
@@ -2264,7 +2254,7 @@ sub canDeleteNode {
 sub canUpdateNode {
 	my ($this, $USER, $NODE) = @_;
 	$this->getRef($NODE);
-	my $UID = $this->getId($USER);	
+	my $UID = $this->getId($USER);
 	return 0 if((not defined $NODE) || ($NODE == 0));
 	$EDS ||= $this->getNode('content editors', 'usergroup');
 	my $type = $$NODE{type}{title};
@@ -2281,7 +2271,7 @@ sub canReadNode {
 	$this->getRef($NODE);
 
 	return 0 if((not defined $NODE) || ($NODE == 0));
-	return 1 unless $$NODE{type}{readers_user};	
+	return 1 unless $$NODE{type}{readers_user};
 	return $this->isApproved($USER, $$NODE{type}{readers_user});
 }
 
@@ -2302,7 +2292,7 @@ sub canReadNode {
 #
 sub isApproved
 {
-	my ($this, $USER, $NODE, $NOGODS) = @_;	
+	my ($this, $USER, $NODE, $NOGODS) = @_;
 
 	return 0 if(not defined $USER);
 	return 0 if(not defined $NODE);
@@ -2318,7 +2308,7 @@ sub isApproved
 
 	# If we short circuit out the flattening, it's a performance gain
 	$this->groupCache($NODE, $this->selectNodegroupFlat($NODE)) unless $this->hasGroupCache($NODE);
-	return $this->existsInGroupCache($NODE, $user_id);	
+	return $this->existsInGroupCache($NODE, $user_id);
 }
 
 
@@ -2343,18 +2333,17 @@ sub isGod
 	my $user_id;
 	my $usergroup;
 	my $GODS;
-	my $god;  # he's my god too...
 
 	return 1 if($USER == -1);
 
 	$this->getRef($USER);
 
 	$user_id = $this->getId($USER);
-	$usergroup = $this->getType("usergroup");
+	$usergroup = $this->getType('usergroup');
 
-	($GODS) = $this->getNode("gods", $usergroup);
+	($GODS) = $this->getNode('gods', $usergroup);
 
-	$this->groupCache($GODS, $$GODS{group}, "plain") unless $this->hasGroupCache($GODS);
+	$this->groupCache($GODS, $$GODS{group}, 'plain') unless $this->hasGroupCache($GODS);
 	return $this->existsInGroupCache($GODS, $user_id);
 }
 
@@ -2684,7 +2673,7 @@ sub getNodeParam
 {
 	my ($this, $NODE, $paramname) = @_;
 	return unless defined($NODE);
-	return unless defined($paramname);	
+	return unless defined($paramname);
 
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
@@ -2739,7 +2728,7 @@ sub setNodeParam
 {
 	my ($this, $NODE, $paramname, $paramvalue) = @_;
 	return unless defined($NODE);
-	return unless defined($paramname);	
+	return unless defined($paramname);
 
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
@@ -2780,7 +2769,7 @@ sub deleteNodeParam
 {
 	my ($this, $NODE, $paramname) = @_;
 	return unless defined($NODE);
-	return unless defined($paramname);	
+	return unless defined($paramname);
 
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
