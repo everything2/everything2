@@ -55,17 +55,17 @@ sub container_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str = "";
-  $str .= qq|parent container: |;
+  my $str = '';
+  $str .= q|parent container: |;
 
   if($NODE->{parent_container})
   {
-    $str .= linkNode($$NODE{parent_container}) if $$NODE{parent_container};
+    $str .= linkNode($NODE->{parent_container}) if $NODE->{parent_container};
   }else{
-    $str .= "<i>none</i>";
+    $str .= q|<i>none</i>|;
   }
 
-  $str .= htmlcode("listcode","content");
+  $str .= htmlcode('listcode','content');
 
   return $str;
 }
@@ -137,7 +137,7 @@ sub document_edit_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str = qq|<H4>title:</H4>|.htmlcode("textfield","title");
+  my $str = q|<h4>title:</h4>|.htmlcode('textfield','title');
   $str .= qq|<h4>owner:</h4>|.htmlcode("node_menu","author_user,user,usergroup");
   $str .= qq|<p><small><strong>Edit the document text:</strong></small><br />|;
   $str .= htmlcode("textarea","doctext,30,60");
@@ -155,7 +155,7 @@ sub htmlcode_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return htmlcode("listcode","code");
+  return htmlcode('listcode','code');
 }
 
 sub htmlcode_edit_page
@@ -836,7 +836,7 @@ sub superdoc_display_page
     $APP->devLog("Using document delegation for $NODE->{title} as '$doctitle'");
     return parseLinks($delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP));
   }else{
-    return htmlcode("parsecode","doctext");
+    return htmlcode('parsecode','doctext');
   }
 }
 
@@ -874,8 +874,8 @@ sub node_basicedit_page
     updateNode($NODE, $USER);
   }
 
-  $str .= htmlcode("openform");
- 
+  $str .= htmlcode('openform');
+
   # This code generates the form fields and the stuff that
   # the user sees.
 
@@ -1567,7 +1567,32 @@ sub mail_edit_page
 
 sub superdocnolinks_display_page
 {
-  return htmlcode("parsecode","doctext",1);
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $doctitle = $NODE->{title};
+  $doctitle =~ s/[\s-]/_/g;
+  $doctitle =~ s/[^A-Za-z0-9]/_/g;
+  $doctitle = lc($doctitle);
+
+  if($doctitle =~ /^\d+$/)
+  {
+    $doctitle = "document_$doctitle";
+  }
+
+  $APP->devLog("Proposed delegation for '$NODE->{title}': '$doctitle'");
+  if(my $delegation = Everything::Delegation::document->can("$doctitle"))
+  {
+    $APP->devLog("Using document delegation for $NODE->{title} as '$doctitle'");
+    return $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+  }else{
+    return htmlcode('parsecode','doctext');
+  }
 }
 
 sub e2node_xml_page

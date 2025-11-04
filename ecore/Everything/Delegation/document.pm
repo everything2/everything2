@@ -889,7 +889,7 @@ sub available_rooms {
 
     $str .= q|<ul>|;
 
-    foreach ( sort( keys %$rooms ) ) {
+    foreach ( sort( keys %{$rooms} ) ) {
         $str .= q|<li>| . linkNode( getNodeById( $rooms->{$_} ) );
     }
 
@@ -940,7 +940,7 @@ q|Spelling errors and corrections:<table border="1" cellpadding="2" cellspacing=
     #table body - wrong spellings to correct spellings
     my $s        = '';
     my $numShown = 0;
-    foreach ( sort( keys(%$spellInfo) ) ) {
+    foreach ( sort( keys(%{$spellInfo}) ) ) {
         next if substr( $_, 0, 1 ) eq '_';
         next if $_ eq 'nwing';
         ++$numShown;
@@ -953,7 +953,7 @@ q|Spelling errors and corrections:<table border="1" cellpadding="2" cellspacing=
     $str .= '</table>';
 
     $str .= '(' . $numShown . ' entries';
-    $str .= ' shown, ' . scalar( keys(%$spellInfo) ) . ' total' if $isCE;
+    $str .= ' shown, ' . scalar( keys(%{$spellInfo}) ) . ' total' if $isCE;
     $str .= ')';
 
     $str .= q|</p>|;
@@ -1143,7 +1143,7 @@ qq|<p>These nodes have fallen between the cracks, and seem to have gone unnotice
     $rows->execute() or return $rows->errstr;
 
     while ( my $wu = $rows->fetchrow_hashref ) {
-        $title = $$wu{title};
+        $title = $wu->{title};
         if ( $title =~ /^(.*?) \([\w-]+\)$/ ) { $title = $1; }
         $title =~ s/\s/_/g;
 
@@ -1242,7 +1242,7 @@ sub blind_voting_booth {
     $str .= '(<b>' . $rndnode->{title} . '</b>) by ';
     if ( $hasvoted == 1 ) {
         $str .= linkNode( getNode( $nodeauthor->{title}, 'user' ),
-            $$nodeauthor{title} )
+            $nodeauthor->{title} )
           . ' - ('
           . linkNode( getNodeById( $rndnode->{parent_e2node} ), 'full node' )
           . ')';
@@ -1369,7 +1369,7 @@ sub buffalo_generator {
             $sentence .=
               $intermediatePunctuation[ int( rand(@intermediatePunctuation) ) ]
               if ( rand(1) < 0.25 );
-            $sentence .= " ";
+            $sentence .= ' ';
         }
         $sentence = ucfirst($sentence);
         $sentence .= $finalPunctuation[ int( rand(@finalPunctuation) ) ] . ' ';
@@ -1440,18 +1440,18 @@ sub buffalo_haiku_generator {
     $str .= $sentence . q|</p>|;
 
     $str .=
-        "<ul>\n\t<li>"
-      . linkNode( $NODE, "Furthermore!", { moar => 'further' } )
-      . "</li>\n";
+        q|<ul><li>|
+      . linkNode( $NODE, 'Furthermore!', { moar => 'further' } )
+      . q|</li>|;
     $str .=
-        "\t<li>"
-      . linkNodeTitle("Buffalo Generator|More buffalo, less haiku")
-      . "</li>\n";
+        q|<li>|
+      . linkNodeTitle('Buffalo Generator|More buffalo, less haiku')
+      . q|</li>|;
     $str .=
-      "\t<li>"
+      q|<li>|
       . linkNodeTitle(
-        "Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo")
-      . "</li></ul>\n";
+        'Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo')
+      . q|</li></ul>|;
 
     return $str;
 }
@@ -1490,12 +1490,11 @@ sub clientdev_home {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str = qq|<h2>Registered Clients</h2>|;
-    $str .= qq|<p>|;
-    $str .=
-"(See [clientdev: Registering a client|here] for more information as to what this is about)<br />";
-    $str .= qq|<table border="1" cellpadding="1" cellspacing="0">|;
-    $str .= qq|<tr><th>title</th><th>version</th></tr>|;
+    my $str = q|<h2>Registered Clients</h2>|;
+    $str .= q|<p>|;
+    $str .= q{(See [clientdev: Registering a client|here] for more information as to what this is about)<br />};
+    $str .= q|<table border="1" cellpadding="1" cellspacing="0">|;
+    $str .= q|<tr><th>title</th><th>version</th></tr>|;
 
     my @clientdoc = $DB->getNodeWhere( {}, 'e2client', 'title' );
     my $v         = undef;
@@ -1603,27 +1602,25 @@ sub confirm_password {
 
         # check for locked-user infection...
         my $newVars = getVars($user);
-        if ( $$newVars{infected} ) {
+        if ( $newVars->{infected} ) {
 
             # new user infects current user
-            $$VARS{infected} = 1 unless $APP->isGuest($USER);
+            $VARS->{infected} = 1 unless $APP->isGuest($USER);
 
         }
         elsif ( htmlcode('checkInfected') ) {
 
             # current user infects new user
-            $$newVars{infected} = 1;
+            $newVars->{infected} = 1;
             setVars( $user, $newVars );
         }
 
-        $action = 'validate' if $$newVars{infected};
-
-        $prompt =
-"Please log in with your username and password to $action your account";
+        $action = 'validate' if $newVars->{infected};
+        $prompt = "Please log in with your username and password to $action your account";
 
     }
     elsif ($USER->{title} ne $username
-        || $$USER{salt} eq $query->param('oldsalt') )
+        || $USER->{salt} eq $query->param('oldsalt') )
     {
         $prompt = 'Password or link invalid. Please try again';
     }
@@ -1648,10 +1645,10 @@ sub confirm_password {
               )
               . '<br>'
               . $query->label(
-                'Password:' . $query->password_field( 'passwd', '', 30, 240 )
+                'Password:' . $query->password_field('passwd', '', 30, 240 )
               )
               . '<br>'
-              . $query->checkbox( "expires", "", "+10y", 'stay logged in' )
+              . $query->checkbox( 'expires', '', '+10y', 'stay logged in' )
               . '<br>'
               . $query->submit( 'sockItToMe', $action )
           )
@@ -1659,12 +1656,12 @@ sub confirm_password {
       . $query->hidden('token')
       . $query->hidden('action')
       . $query->hidden('expiry')
-      . $query->hidden( 'oldsalt', $$USER{salt} )
+      . $query->hidden( 'oldsalt', $USER->{salt} )
       . $query->hidden( -name => 'op', value => 'login', force => '1' )
       . '</form>'
       if $prompt;
 
-    return "<p>Password updated. You are logged in.</p>" if $action eq 'reset';
+    return q|<p>Password updated. You are logged in.</p>| if $action eq 'reset';
 
     # send welcome message
     htmlcode(
@@ -1673,16 +1670,13 @@ sub confirm_password {
             'author_id'    => getId( getNode( 'Virgil', 'user' ) ),
             'recipient_id' => $USER->{node_id},
             'message'      =>
-"Welcome to E2! We hope you're enjoying the site. If you haven't already done so,
-    We recommend reading both [E2 Quick Start] and [Links on Everything2] before you start writing anything. If you have any questions or need help, feel free to ask any editor (editors have a \$ next to their names in the Other Users list)"
+                q|Welcome to E2! We hope you're enjoying the site. If you haven't already done so, we recommend reading both [E2 Quick Start] and [Links on Everything2] before you start writing anything. If you have any questions or need help, feel free to ask any editor (editors have a \$ next to their names in the Other Users list)|
         }
     );
 
-    return "<p>Your account has been activated and you have been logged in.</p>
-    <p>Perhaps you'd like to edit "
+    return q|<p>Your account has been activated and you have been logged in.</p><p>Perhaps you'd like to edit |
       . linkNode( $USER, 'your profile' )
-      . ", or check out the logged-in users' <a href='/'>front page</a>,
-    or maybe just read <a href='/?op=randomnode'>something at random</a>.";
+      . q|, or check out the logged-in users' <a href="/">front page</a>, or maybe just read <a href="/?op=randomnode">something at random</a>.|;
 
 }
 
@@ -1695,23 +1689,19 @@ sub cool_archive {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str =
-      qq|<p>Welcome to the Cool Archive page -- where you can see the entire|;
-    $str .=
-qq|library of especially worthwhile content in the mess of Everything history.  Enjoy.|;
-    $str .= qq|<small>(|;
-    $str .= linkNode( getNode( 'Cool Archive Atom Feed', 'ticker' ),
-        'feed', { lastnode_id => 0 } );
-    $str .= qq|)</small></p>|;
+    my $str = q|<p>Welcome to the Cool Archive page -- where you can see the entire|;
+    $str .= q|library of especially worthwhile content in the mess of Everything history.  Enjoy.|;
+    $str .= q|<small>(|;
+    $str .= linkNode( getNode( 'Cool Archive Atom Feed', 'ticker' ), 'feed', { lastnode_id => 0 } );
+    $str .= q|)</small></p>|;
 
-    $str .=
-qq|<p><strong>NB</strong>: sorting by something other than most recently or oldest C!ed requires entering a user.</p>|;
+    $str .= q|<p><strong>NB</strong>: sorting by something other than most recently or oldest C!ed requires entering a user.</p>|;
 
-    $str .= htmlcode("openform");
+    $str .= htmlcode('openform');
 
     my $isEDev  = $APP->isDeveloper($USER);
     my $orderby = $query->param('orderby');
-    $orderby = "" if not defined($orderby);
+    $orderby = '' if not defined($orderby);
 
     my $useraction = $query->param('useraction');
     $useraction ||= '';
@@ -2011,15 +2001,15 @@ sub create_category {
     my %txts    = ();
 
     # current user
-    $txts{ $$USER{user_id} } = "Me ($$USER{title})";
-    push @vals, $$USER{user_id};
+    $txts{ $USER->{user_id} } = "Me ($USER->{title})";
+    push @vals, $USER->{user_id};
 
     # guest user will be used for "Any Noder"
     $txts{$guestUser} = 'Any Noder';
     push @vals, $guestUser;
     while ( my $ug = $ds->fetchrow_hashref ) {
-        $txts{ $$ug{node_id} } = $$ug{title} . ' (usergroup)';
-        push @vals, $$ug{node_id};
+        $txts{ $ug->{node_id} } = $ug->{title} . ' (usergroup)';
+        push @vals, $ug->{node_id};
     }
 
     $str .= $query->popup_menu('maintainer', \@vals, '', \%txts);
@@ -2173,7 +2163,7 @@ sub display_categories {
 
     my $canContributePublicCategory = ( $APP->getLevel($USER) >= 1 );
     my $guestUser                   = $Everything::CONF->guest_user;
-    my $uid                         = $$USER{user_id};
+    my $uid                         = $USER->{user_id};
     my $isCategory                  = 0;
     my $linktype = getId( getNode( 'category', 'linktype' ) );
 
@@ -2194,11 +2184,11 @@ sub display_categories {
 
     if ( length($maintainerName) > 0 ) {
         $maintainer = getNode( $maintainerName, 'user' );
-        if ( !$$maintainer{node_id} ) {
+        if ( !$maintainer->{node_id} ) {
             $maintainer = getNode( $maintainerName, 'usergroup' );
-            if ( !$$maintainer{node_id} ) {
+            if ( !$maintainer->{node_id} ) {
                 $maintainerName = '';
-                $$maintainer{node_id} = 0;
+                $maintainer->{node_id} = 0;
             }
         }
     }
@@ -2241,9 +2231,9 @@ sub display_categories {
         $orderBy = 'a.title,n.title';
     }
 
-    my $authorRestrict = "";
+    my $authorRestrict = '';
     $authorRestrict = "AND n.author_user = $$maintainer{node_id}\n"
-      if ( $$maintainer{node_id} > 0 );
+      if ( $maintainer->{node_id} > 0 );
 
     my $startAt = $page * $count;
 
@@ -5815,7 +5805,7 @@ sub manna_from_heaven {
 
     $usergroup = getNodeById(829913);    # e2gods
 
-    foreach ( @{ $$usergroup{group} } ) {
+    foreach ( @{ $usergroup->{group} } ) {
         my $u = getNodeById($_);
         $wuCount = $DB->sqlSelect( 'count(*)', 'node',
                 'type_nodetype=117 and author_user='
@@ -5942,7 +5932,7 @@ qq|<li><a href="/?node_id=$node_id">node_id: $node_id title: |
               . linkNode(
                 $NODE,
                 $drivers->{$driver}->{title},
-                { "driver" => $driver }
+                { 'driver' => $driver }
               )
               . q|</td><td style="width: 150px; text-align: center;">|
               . scalar(@$data)
@@ -6188,13 +6178,12 @@ sub nodelet_settings {
 
         $str .=
             $query->hidden( -name => $prefix, value => 1 )
-          . qq|<ul id="rearrangenodelets"><li>\n|
+          . q|<ul id="rearrangenodelets"><li>|
           . join( "</li>\n<li>", @menus )
           . "</li></ul>\n";
-        $str .=
-qq|If the 'Epicenter' nodelet is not selected, its functions are placed in the page header.</fieldset>|;
+        $str .= q|If the 'Epicenter' nodelet is not selected, its functions are placed in the page header.</fieldset>|;
 
-        my $settingsstr = "";
+        my $settingsstr = '';
         my @nodelets    = split ',', $$VARS{nodelets};
         foreach my $nodelet (@nodelets) {
             my $n    = getNodeById($nodelet);
@@ -6246,7 +6235,7 @@ sub simple_usergroup_editor {
 
         $str .= '<li>Edit '
           . linkNode( $NODE->{node_id}, $row->{title},
-            { for_usergroup => $$row{node_id} } )
+            { for_usergroup => $row->{node_id} } )
           . '</li>';
     }
 
@@ -6372,28 +6361,28 @@ sub everything_s_biggest_stars
 sub word_messer_upper
 {
   my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-  my $text = $query->param("text");
-  my $numbreaks = $query->param("numbreaks");
+  my $text = $query->param('text');
+  my $numbreaks = $query->param('numbreaks');
   $numbreaks ||= 0;
   $numbreaks = int($numbreaks);
-  
-  my $str = "";
+
+  my $str = '';
 
   if (not $text) {
-    $str.="Type in something you'd like to see messed up:<br>";
+    $str.=q|Type in something you'd like to see messed up:<br>|;
   } else {
-    my $words = [split " ", $text];
+    my $words = [split ' ', $text];
     while ($numbreaks--) {
       $words->[rand(int(@$words))].="\n";
     }
     $words = $APP->fisher_yates_shuffle($words);
-    $text = join " ", @$words;
+    $text = join ' ', @$words;
     $query->param('text', $text);
   }
 
   $str.=htmlcode('openform');
-  $str.="insert ".$query->textfield("numbreaks", "", 2, 2)." line breaks<br>";
-  $str.=$query->textarea("text", $text, 40, 60,"" , "wrap=virtual");
+  $str.='insert '.$query->textfield('numbreaks', '', 2, 2).q| line breaks<br>|;
+  $str.=$query->textarea('text', $text, 40, 60,'' , 'wrap=virtual');
   $str.=htmlcode('closeform');
   $text =~ s/\n/\&lt\;br\&gt\;\<br\>/gs;
   $text =~ s/\</\&lt\;/g;
@@ -6462,7 +6451,7 @@ sub log_archive
     OR e2node.title = \'root log: '.$month_name.' '.$year.'\')
     ORDER BY writeupNode.createtime';
 
-    my $str = "";
+    my $str = '';
     $str .= '<form method="get" action="/index.pl">
     <div style="text-align:center">
     <input type="hidden" name="node_id" value="'.$nodeId.'">
@@ -6641,12 +6630,12 @@ sub delegation_hitlist
       my $n = getNodeById($row->[0]);
       next unless $n;
       $count++;
-      $str .= "<li>".linkNode($n)."</li>";
+      $str .= q|<li>|.linkNode($n).q|</li>|;
     }
-    $str .= "</ul>";
+    $str .= q|</ul>|;
   }
 
-  $str .= "<br /><strong>$count delegations remain</strong>";
+  $str .= qq|<br /><strong>$count delegations remain</strong>|;
   return $str;
 }
 
@@ -6658,22 +6647,22 @@ sub suspension_info
     my $isChanop = $APP->isChanop($USER);
     my %chanopSuspensionTypes = ('room' => 1, 'topic' => 1, 'chat' => 1);
 
-    my $failMessage = qq|<p>Looks like you stumbled upon a page you can't access.  Try the [Welcome to Everything\|front page].</p>|;
+    my $failMessage = q{<p>Looks like you stumbled upon a page you can't access.  Try the [Welcome to Everything|front page].</p>};
 
     return $failMessage unless $isEd || $isChanop;
 
-    my $str = qq|<p><strong>See also: [Node Forbiddance[restricted_superdoc]]</strong> to suspend writeup posting privileges.</p>|;
+    my $str = q|<p><strong>See also: [Node Forbiddance[restricted_superdoc]]</strong> to suspend writeup posting privileges.</p>|;
 
-    my $userName = $query->param("lookup_name");
+    my $userName = $query->param('lookup_name');
     my $userId = undef;
-    $userId = getId(getNode($userName, "user")) if defined $userName;
-    $query->param("lookup_user", $userId) if $userId;
+    $userId = getId(getNode($userName, 'user')) if defined $userName;
+    $query->param('lookup_user', $userId) if $userId;
 
-    my $sustypeId = $query->param("sustype");
+    my $sustypeId = $query->param('sustype');
     my $sustype = getNodeById($sustypeId);
-    my $lookupUserId = $query->param("lookup_user");
+    my $lookupUserId = $query->param('lookup_user');
     my $lookupUser = getNodeById($lookupUserId);
-    my $suspensionInfo = "";
+    my $suspensionInfo = '';
 
     my $invalidSustype = 0;
 
@@ -7102,7 +7091,7 @@ sub sanctify_user
 
     $str.=$query->start_form();
     $str.=$query->hidden('node_id', $$NODE{node_id});
-    $str.= "</p><p>Which noder has earned your favor? " . $query->textfield('give_to');
+    $str.= q|</p><p>Which noder has earned your favor? |.$query->textfield('give_to');
     $str.= $query->checkbox(-name=>'anon',
         -value=>'sssh',
 		-label=>'Remain anonymous') . '</p>';
@@ -7233,7 +7222,7 @@ sub node_backup
     my $outputfilename = "$cleanUser.$format.$obfuscateUrl.$year-$month-$day.zip";
 
     $zip->close();
-    $s3->upload_data($outputfilename, $zipbuffer, {content_type => "application/zip"});
+    $s3->upload_data($outputfilename, $zipbuffer, {content_type => 'application/zip'});
 
     my $url = "https://s3-us-west-2.amazonaws.com/nodebackup.everything2.com/$outputfilename";
 
@@ -7271,16 +7260,16 @@ sub cache_dump
         $typestats->{$item->{type}->{title}} ||= 0;
         $typestats->{$item->{type}->{title}}++;
 
-        push @$extrainfo, $item->{type}->{title};
+        push @{$extrainfo}, $item->{type}->{title};
 
         if($cache_entry->[1]->{permanent})
         {
-            push @$extrainfo, 'permanent';
+            push @{$extrainfo}, 'permanent';
         }
 
         if(exists($item->{group}))
         {
-            push @$extrainfo, scalar(@{$item->{group}}). q| items in group|;
+            push @{$extrainfo}, scalar(@{$item->{group}}). q| items in group|;
         }
 
         if(exists($DB->{cache}->{groupCache}->{$item->{node_id}}))
@@ -7375,6 +7364,26 @@ sub the_tokenator
     $output.=htmlcode('closeform');
 
     return $output;
+}
+
+sub go_outside
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $isCoolPerson = $APP->isEditor($USER) || $APP->isChanop($USER);
+
+    if ($VARS->{lockedin} > time && !$isCoolPerson)
+	{
+	    my $remainingtime = int( ($VARS->{lockedin} - time)/ 60 + 0.5);
+	    my $lockmessage = q|<p><strong style='color:red;'>|
+		. qq|You cannot change rooms for $remainingtime minutes.  |
+		. q|You can still send private messages, however, or talk to people in your current room.</strong></p>|;
+	    return $lockmessage;
+	}
+
+    return if $APP->isGuest($USER);
+    $APP->changeRoom($USER,0);
+    return q|You step outside. You see many noders here.|;
 }
 
 1;

@@ -5,7 +5,7 @@ then
   usermod -d /var/lib/mysql/ mysql
   cp /etc/mysql/mysql.conf.d/mysqld.cnf /etc/mysql/mysqld.cnf.old
   echo 'sql_mode="ALLOW_INVALID_DATES"' >> /etc/mysql/mysql.conf.d/mysqld.cnf
-  echo 'general_log=1' >> /etc/mysql/mysql.conf.d/mysqld.cnf
+#  echo 'general_log=1' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   echo 'general_log_file=/var/log/mysql/general.log' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   echo 'wait_timeout=31536000' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   echo 'interactive_timeout=31536000' >> /etc/mysql/mysql.conf.d/mysqld.cnf
