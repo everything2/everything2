@@ -6557,7 +6557,7 @@ sub log_archive
             }
         }
         # editor logs
-        elsif ($->dbrow[10] =~ m/^Editor Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
+        elsif ($dbrow->[10] =~ m/^Editor Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
         {
             $editorlogCtr++;
             if ($editorlogCtr% 2 == 0)
