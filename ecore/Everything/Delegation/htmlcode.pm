@@ -58,7 +58,7 @@ use Digest::MD5 qw(md5_hex);
 # Used by uploaduserimage, giftshop_buyching
 use POSIX qw(strftime ceil floor);
 use File::Copy;
-use Image::Magick; 
+use Image::Magick;
 
 # Used by socialBookmarks
 use CGI qw(-utf8);
@@ -133,14 +133,14 @@ sub admin_searchform
   my ($PARAM) = @_;
 
   my $nid = getId($NODE) || '';
-  return unless $APP->isEditor($USER); 
+  return unless $APP->isEditor($USER);
 
   my $servername = $Everything::CONF->server_hostname;
   my $str = "<span class='var_label'>node_id:</span> <span class='var_value'>$nid</span>
 			<span class='var_label'>nodetype:</span> <span class='var_value'>".linkNode($$NODE{type})."</span>
 			<span class='var_label'>Server:</span> <span class='var_value'>$servername</span>";
 
-  $str .= $query->start_form("POST",$query->script_name);
+  $str .= $query->start_form('POST',$query->script_name);
 
   $str .= '<label for ="node">Name:</label> '.
     qq|<input type="text" name="node" id="node" value="|.$APP->encodeHTML($$NODE{title}).qq|" size="18" maxlength="80" />|.$query->submit('name_button', 'go').$query->end_form;
@@ -178,12 +178,12 @@ sub zenadheader
 
   my $ad_text = undef;
 
-  if($APP->isGuest($USER)) 
+  if($APP->isGuest($USER))
   {
     $ad_text = htmlcode( 'googleads' );
     $ad_text = '<div class="headerads">'.$ad_text.'</div>' if $ad_text;
   }else{
-    return "<!-- noad:settings -->";
+    return q|<!-- noad:settings -->|;
   }
   return $ad_text;
 }
@@ -4372,7 +4372,7 @@ sub changeroom
   my ($nodelet) = @_ ;
   $nodelet =~ s/ /+/g;
 
-  ## no critic (RequireCheckingReturnValueOfEval)
+  ## no critic RequireCheckingReturnValueOfEval
   foreach(@rooms) {
     my $R = getNodeById($_);
     next unless eval($$R{criteria});
@@ -4380,7 +4380,7 @@ sub changeroom
     {
       $APP->changeRoom($USER, $R);
     }
-  
+
     push @aprrooms, $_;
     $aprlabel{$_} = $$R{title};
   }
@@ -4417,7 +4417,7 @@ sub changeroom
   $str.=$query->checkbox(-name=>'cloaked', checked=>$$VARS{visible}, value=>1, label=>'cloaked', class=>$ajax."sexiscool=1&cloaked=/$nodelet") if $isCloaker;
 
   #$str.=htmlcode('lockroom').' '.htmlcode('createroom');
-  $str.=' '.htmlcode('createroom')."<br />";
+  $str.=' '.htmlcode('createroom').q|<br />|;
 
   if(my $suspensioninfo = $APP->isSuspended($USER,"changeroom"))
   {
@@ -4730,7 +4730,7 @@ sub zensearchform
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $lastnodeId = $query->param("softlinkedFrom");
+  my $lastnodeId = $query->param('softlinkedFrom');
   $lastnodeId ||= $query -> param('lastnode_id') unless $APP->isGuest($USER);
 
   my $lastnode = undef; 
@@ -4743,16 +4743,16 @@ sub zensearchform
     , -id => 'search_form'
     , -role => 'form'
     ).
-    qq|<div class="form-group"><div class="has-feedback has-feedback-left">|.
+    q|<div class="form-group"><div class="has-feedback has-feedback-left">|.
     $query->textfield(-name => 'node',
       value => $default,
       force => 1,
-      -class => 'form-control', 
+      -class => 'form-control',
       -id => 'node_search',
       -placeholder => 'Search',
       -size => 28,
       -maxlength => 230).qq|<i class="glyphicon glyphicon-search form-control-feedback"></i></div>|;
-  
+
   my $lnid = undef;
   $lnid = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup' and $$NODE{parent_e2node} and getNodeById($$NODE{parent_e2node});
   $lnid ||= getId($NODE);
@@ -4885,13 +4885,13 @@ sub showuserimage
   my $APP = shift;
 
   return unless $DB->isApproved($NODE, getNode('users with image', 'nodegroup')) or $APP->getLevel($NODE) >= 1;
-  return if $APP->isSuspended($NODE,"homenodepic");
+  return if $APP->isSuspended($NODE,'homenodepic');
   return unless $$NODE{imgsrc};
   my $imgsrc = $$NODE{imgsrc};
   $imgsrc = "$$NODE{title}";
   $imgsrc =~ s/\W/_/g;
   $imgsrc = "/$imgsrc" if ($imgsrc !~ /^\//);
-  return '<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com'.$imgsrc.'" id="userimage">'; 
+  return '<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com'.$imgsrc.'" id="userimage">';
 }
 
 sub showchatter

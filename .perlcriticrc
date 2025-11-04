@@ -1,0 +1,1 @@
+exclude = ProhibitEmptyQuotes ProhibitManyArgs Capitalization ProhibitUnlessBlocks ProhibitCStyleForLoops ProhibitNoisyQuotes ProhibitPostfixControls RequireNumberSeparators ProhibitExcessComplexity ProhibitParensWithBuiltins

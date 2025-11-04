@@ -404,7 +404,7 @@ sub getCachedNodeParam
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	if(ref $N eq "")
+	if(ref $N eq '')
 	{
 		$node_id = $N;
 	}else{
@@ -436,7 +436,7 @@ sub setCachedNodeParam
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	if(ref $N eq "")
+	if(ref $N eq '')
 	{
 		$node_id = $N;
 	}else{
@@ -463,7 +463,7 @@ sub deleteCachedNodeParam
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	if(ref $N eq "")
+	if(ref $N eq '')
 	{
 		$node_id = $N;
 	}else{
@@ -579,7 +579,7 @@ sub getGlobalVersion
 	my %version;
 	my $ver;
 
-	$ver = $this->{nodeBase}->sqlSelect("version", "version",
+	$ver = $this->{nodeBase}->sqlSelect('version', 'version',
 		"version_id=$$NODE{node_id}");
 
 	if( (not defined $ver) || (not $ver) )
@@ -716,7 +716,7 @@ sub resetCache
   # to typeversion.  we need to remove any stale data from that type
   foreach my $nodetype_id (@confirmTypes)
   {
-    my $typename = $this->{nodeBase}->sqlSelect("title", 'node', "node_id=$nodetype_id");
+    my $typename = $this->{nodeBase}->sqlSelect('title', 'node', "node_id=$nodetype_id");
     foreach my $nodename (keys %{ $this->{typeCache}{$typename} })
     {
       my $NODE = $this->{nodeQueue}->getItem($this->{typeCache}{$typename}{$nodename});
