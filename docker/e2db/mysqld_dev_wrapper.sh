@@ -4,7 +4,9 @@ if [ ! -e /etc/everything/dev_db_ready ]
 then
   usermod -d /var/lib/mysql/ mysql
   cp /etc/mysql/mysql.conf.d/mysqld.cnf /etc/mysql/mysqld.cnf.old
-  echo 'sql-mode="ALLOW_INVALID_DATES"' >> /etc/mysql/mysql.conf.d/mysqld.cnf
+  echo 'sql_mode="ALLOW_INVALID_DATES"' >> /etc/mysql/mysql.conf.d/mysqld.cnf
+  echo 'general_log=1' >> /etc/mysql/mysql.conf.d/mysqld.cnf
+  echo 'general_log_file=/var/log/mysql/general.log' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   echo 'wait_timeout=31536000' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   echo 'interactive_timeout=31536000' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   sed -i "s/bind-address.*/bind-address = 0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf
