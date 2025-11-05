@@ -3759,20 +3759,19 @@ sub editor_endorsements {
         next if $last == $_;
         $last = $_;
         $str .=
-            "<option value=\"$_\""
-          . ( ( $query->param("editor") . "" eq "$_" ) ? (" SELECTED ") : ("") )
-          . ">"
+            qq|<option value="$_"|
+          . ( ( $query->param('editor') . '' eq "$_" ) ? (' SELECTED ') : ('') )
+          . '>'
           . getNodeById($_)->{title}
-          . "</option>"
+          . q|</option>|
           unless ( $except{$_} )
-          or not getNodeById($_)->{type}->{title} eq "user";
+          or not getNodeById($_)->{type}->{title} eq 'user';
     }
-    $str .=
-      "</select><input type=\"submit\" value=\"Show Endorsements\"></form>";
+    $str .= q|</select><input type="submit" value="Show Endorsements"></form>|;
 
-    my $ed = $query->param("editor");
+    my $ed = $query->param('editor');
     $ed =~ s/[^\d]//g;
-    return $str unless $ed && getNodeById($ed)->{type}->{title} eq "user";
+    return $str unless $ed && getNodeById($ed)->{type}->{title} eq 'user';
 
     my $csr = $DB->sqlSelectMany(
         'node_id',
@@ -7378,4 +7377,33 @@ sub go_outside
     return q|You step outside. You see many noders here.|;
 }
 
+sub ip2name
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $output = htmlcode('openform');
+    $output .= q|Please use me sparingly! I am expensive to run! Note: this probably won't work too well with people that have dynamic IP addresses. <p>|;
+
+    if (my $like = $query->param('ipaddy'))
+    {
+        $like =~ s/\./\%\%2e/g;
+        $like = "\%ipaddy\=$like\%";
+
+        my $results = '';
+        my $csr = $DB->sqlSelectMany('setting_id', 'setting', 'vars like '. $DB->{dbh}->quote($like));
+
+        while (my ($id) = $csr->fetchrow)
+        {
+            $results.=linkNode($id).q|<br>|;
+        }
+
+        $results ||= q|<i>nein!</i><br>|;
+        $output .= $results;
+    }
+
+    $output .= $query->textfield('ipaddy', '');
+    $output .= htmlcode('closeform');
+
+    return $output;
+}
 1;
