@@ -1,10 +1,5 @@
 <% coreconfig="
 	ServerName everything2.com
-	ServerAlias www.everything2.com
-	ServerAlias everything2.net
-	ServerAlias www.everything2.net
-	ServerAlias everything2.org
-	ServerAlias www.everything2.org
 	ServerAdmin e2webmaster@everything2.com
 	
 	DocumentRoot /var/everything/www
@@ -89,9 +84,6 @@ coreconfig+="
 
 		RewriteEngine On
 
-		RewriteCond %{HTTP:X-Forwarded-Proto} =http
-		RewriteRule (.*)                           https://%{HTTP_HOST}/$1 [R=301,L]
-
 		RewriteRule ^favicon.ico$		   /react/assets/favicon.ico [L]
 
 		RewriteRule ^node/(\\d+)/(\\w+)/?$           index.pl?node_id=$1&displaytype=$2  [L,QSA,BCTLS]
@@ -108,16 +100,8 @@ coreconfig+="
 		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [L,QSA,BCTLS]
 		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [L,QSA,BCTLS]
 
-
-		RewriteCond %{HTTP_HOST}                   ^m\\.everything2.+  [NC]
-		RewriteCond %{QUERY_STRING}                ^$
-		RewriteRule ^/?$                           /index.pl?node=Welcome+to+Everything
-
 		# Add short URL redirection$
 		RewriteRule ^/?s/([^/]+)$                  index.pl?type=superdoc&node=Short+URL+Lookup&short_string=$1
-
-		# Redirect weird recurring RDF request to somewhere useful
-		RewriteRule ^/?heaedlines.rdf$             index.pl?type=ticker&node=New+Writeups+Atom+Feed
 
 		RewriteCond %{REQUEST_FILENAME}            !-f
 		RewriteRule ^/?stylesheet/([^_]+)_v[0-9]+(_autofix)?\\.css      /stylesheet/$1$2.css  [R=307]
