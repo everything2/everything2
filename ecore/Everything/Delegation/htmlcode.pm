@@ -11738,9 +11738,8 @@ sub googleads
   return "<!-- noad:findings -->" if $node_id == getNode('Findings:', 'superdoc')->{node_id};
   return "<!-- noad:badnodeid -->" unless ($node_id =~ /^\d+$/);
 
-  return '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0613380022572506"crossorigin="anonymous"></script>
-    <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-0613380022572506" data-ad-slot="9636638260"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>';
+  return '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0613380022572506"
+     crossorigin="anonymous"></script>';
 }
 
 sub decode_short_string
