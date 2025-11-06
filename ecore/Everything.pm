@@ -80,10 +80,10 @@ sub BEGIN
 
 	$CONF = Everything::Configuration->new;
 	$MASON = Mason->new(
-		data_dir => "/var/mason",
-		comp_root => "/var/everything/templates",
+		data_dir => '/var/mason',
+		comp_root => '/var/everything/templates',
 		base_request_class => 'Everything::Mason::Request',
-		static_source => ($CONF->environment eq "production"),
+		static_source => ($CONF->environment eq 'production'),
 		allow_globals => [qw($REQUEST)],
 		plugins => ['HTMLFilters','Everything']);
 
@@ -228,7 +228,7 @@ sub setVars
 
 	getRef($NODE);
 
-	unless (exists $$NODE{vars}) {
+	unless (exists $NODE->{vars}) {
 		warn ("setVars:\t'vars' field does not exist for node ".getId($NODE)."
 		perhaps it doesn't join on the settings table?\n");
 	}
@@ -244,9 +244,9 @@ sub setVars
 
 	# Record just the modified vars
 	my %modifiedVars = ();
-	my @allVarNames = (keys %originalVars, keys %$varsref);
+	my @allVarNames = (keys %originalVars, keys %{$varsref});
 	foreach my $newVar (@allVarNames) {
-		$modifiedVars{$newVar} = $$varsref{$newVar}
+		$modifiedVars{$newVar} = $varsref->{$newVar}
 			if defined($$varsref{$newVar}) and (!defined($originalVars{$newVar}) || $$varsref{$newVar} ne $originalVars{$newVar});
 	}
 
@@ -259,7 +259,7 @@ sub setVars
 		my %currentVars = getVarHashFromStringFast($currentVarString);
 		map { $currentVars{$_} = $modifiedVars{$_}; } keys %modifiedVars;
 		map { delete $currentVars{$_} if !defined $$varsref{$_}; } keys %currentVars;
-		$$NODE{vars} = getVarStringFromHash(\%currentVars);
+		$NODE->{vars} = getVarStringFromHash(\%currentVars);
 		my $superuser = -1;
 		$DB->updateNode($NODE, $superuser, 1);
 	};
@@ -479,7 +479,7 @@ sub updateHits
 	$DB->sqlUpdate('hits', { -hits => 'hits+1' }, "node_id=$id");
 
 	#Shift this work some to the webhead
-	if($$NODE{author_user} != $$USER{node_id})
+	if($NODE->{author_user} != $USER->{node_id})
 	{
 		$DB->sqlUpdate('node', { -hits => 'hits+1' }, "node_id=$id");
 	}
@@ -515,14 +515,14 @@ sub selectLinks
 {
 	my ($FROMNODE, $orderby) = @_;
 
-	my $obstr = "";
+	my $obstr = '';
 	my @links;
 	my $cursor;
 
 	$obstr = " ORDER BY $orderby" if $orderby;
 
-	$cursor = $DB->sqlSelectMany ("*", 'links use index (linktype_fromnode_hits) ',
-		"from_node=". $DB->getDatabaseHandle()->quote(getId($FROMNODE)) .
+	$cursor = $DB->sqlSelectMany ('*', 'links use index (linktype_fromnode_hits) ',
+		'from_node='. $DB->getDatabaseHandle()->quote(getId($FROMNODE)) .
 		$obstr);
 
 	while (my $linkref = $cursor->fetchrow_hashref())
@@ -562,8 +562,7 @@ sub cleanLinks
 	my $row;
 	my @to_array;
 	my @from_array;
-	$select = "SELECT to_node,node_id from links";
-	$select .= " left join node on to_node=node_id";
+	$select = 'SELECT to_node,node_id from links left join node on to_node=node_id';
 
 	$cursor = $DB->getDatabaseHandle()->prepare($select);
 
@@ -571,16 +570,15 @@ sub cleanLinks
 	{
 		while($row = $cursor->fetchrow_hashref())
 		{
-			if(not $$row{node_id})
+			if(not $row->{node_id})
 			{
 				# No match.  This is a bad link.
-				push @to_array, $$row{to_node};
+				push @to_array, $row->{to_node};
 			}
 		}
 	}
 
-	$select = "SELECT from_node,node_id from links";
-	$select .= " left join node on from_node=node_id";
+	$select = 'SELECT from_node,node_id from links left join node on from_node=node_id';
 
 	$cursor = $DB->getDatabaseHandle()->prepare($select);
 
@@ -588,22 +586,22 @@ sub cleanLinks
 	{
 		while($row = $cursor->fetchrow_hashref())
 		{
-			if(not $$row{node_id})
+			if(not $row->{node_id})
 			{
 				# No match.  This is a bad link.
-				push @from_array, $$row{to_node};
+				push @from_array, $row->{to_node};
 			}
 		}
 	}
 
 	foreach my $badlink (@to_array)
 	{
-		$DB->sqlDelete("links", { to_node => $badlink });
+		$DB->sqlDelete('links', { to_node => $badlink });
 	}
 
 	foreach my $badlink (@from_array)
 	{
-		$DB->sqlDelete("links", { from_node => $badlink });
+		$DB->sqlDelete('links', { from_node => $badlink });
 	}
 
 	return;
@@ -630,7 +628,7 @@ sub initEverything
 
     ## no critic (RequireLocalizedPunctuationVars)
 	$SIG{__WARN__} = sub { my $warning = shift; $APP->global_warn_handler($warning); };
-	$SIG{__DIE__} = sub { $APP->global_die_handler("Caught DIE handler"); };
+	$SIG{__DIE__} = sub { $APP->global_die_handler('Caught DIE handler'); };
 	return;
 }
 
