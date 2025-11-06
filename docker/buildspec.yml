@@ -28,8 +28,8 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo "Current directory: "`pwd`
-      - echo "File tree:"
+      - echo Current directory `pwd`
+      - echo File tree
       - find .
 cache:
   paths:
