@@ -1,32 +1,5 @@
 <node>
-  <doctext>[{openform}]
-Please use me sparingly!
-I am expensive to run!
-Note: this probably won't work too well with people that have dynamic IP addresses.
-&lt;p&gt;
-[%
-
-my $str;
-if (my $like = $query-&gt;param('ipaddy')) {
-  $like =~ s/\./\%\%2e/g;
-  $like = &quot;\%ipaddy\=$like\%&quot;;
-
-
-  my $csr = $DB-&gt;sqlSelectMany(&quot;setting_id&quot;, &quot;setting&quot;, &quot;vars like &quot;. $DB-&gt;{dbh}-&gt;quote($like));
-  while (my ($id) = $csr-&gt;fetchrow) {
-   $str.=linkNode($id).&quot;&lt;br&gt;&quot;;
-  }
-
-
-  $str ||= &quot;&lt;i&gt;nein!&lt;/i&gt;&lt;br&gt;&quot;;
-}
-$str.=$query-&gt;textfield(&quot;ipaddy&quot;, &quot;&quot;);
-
-$str;
-%]
-
-
-[{closeform}]</doctext>
+  <doctext></doctext>
   <node_id>981615</node_id>
   <title>ip2name</title>
   <type_nodetype>13</type_nodetype>

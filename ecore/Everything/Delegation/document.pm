@@ -2326,25 +2326,20 @@ sub do_you_c__what_i_c_ {
     my $PAGELOAD = shift;
     my $APP      = shift;
 
-    my $str = qq|<h4>What It Does</h4><ul>|;
-    $str .= qq|<li>Picks up to 100 things you've cooled.</li>|;
-    $str .=
-qq|<li>Finds everyone else who has cooled those things, too, then uses the top 20 of those (your "best friends.")</li>|;
-    $str .=
-qq|<li>Finds the writeups that have been cooled by your "best friends" the most.</li>|;
-    $str .=
-qq|<li>Shows you the top 10 from that list that you haven't voted on and have less than 10C!s.</li>|;
-
-    $str .= qq|</ul>|;
+    my $str = q|<h4>What It Does</h4><ul>|;
+    $str .= q|<li>Picks up to 100 things you've cooled.</li>|;
+    $str .= q|<li>Finds everyone else who has cooled those things, too, then uses the top 20 of those (your "best friends.")</li>|;
+    $str .= q|<li>Finds the writeups that have been cooled by your "best friends" the most.</li>|;
+    $str .= q|<li>Shows you the top 10 from that list that you haven't voted on and have less than 10C!s.</li>|;
+    $str .= q|</ul>|;
 
     my $user = $query->param('cooluser');
     $str .= htmlcode('openform');
-    $str .=
-'<p>Or you can enter a user name to see what we think <em>they</em> would like:'
+    $str .= q|<p>Or you can enter a user name to see what we think <em>they</em> would like:|
       . $query->textfield( 'cooluser', encodeHTML($user), 15, 30 );
     $str .= htmlcode('closeform') . '</p>';
 
-    my $user_id = $$USER{user_id};
+    my $user_id = $USER->{user_id};
 
     my $pronoun = 'You';
     if ($user) {
@@ -2355,7 +2350,7 @@ qq|<li>Shows you the top 10 from that list that you haven't voted on and have le
           . encodeHTML($user)
           . "' is found on the system!"
           unless $U;
-        $user_id = $$U{user_id};
+        $user_id = $U->{user_id};
         $pronoun = 'They';
     }
 
@@ -2364,7 +2359,7 @@ qq|<li>Shows you the top 10 from that list that you haven't voted on and have le
     my $numWriteups = 10;
     my $maxCools    = $query->param('maxcools') || 10;
 
-    my $coolList = $DB->sqlSelectMany( "coolwriteups_id", "coolwriteups",
+    my $coolList = $DB->sqlSelectMany( 'coolwriteups_id', 'coolwriteups',
         "cooledby_user=$user_id order by rand() limit $numCools" );
     return $str
       . "$pronoun haven't cooled anything yet. Sorry - you might like to try [The Recommender], which uses bookmarks, instead."
