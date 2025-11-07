@@ -1,6 +1,6 @@
 <node>
   <doctext>[%
-   my $keywords = $APP-&gt;cleanNodeName($query-&gt;param('keywords'));
+   my $keywords = $APP-&gt;cleanNodeName(scalar $query-&gt;param('keywords'));
    my $e2ntype = getId(getNode(&quot;e2node&quot;,&quot;nodetype&quot;));
    
    return &quot;no keywords supplied&quot; unless $keywords;
