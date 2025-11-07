@@ -116,7 +116,7 @@ sub handle_errors {
 
     CORE::die(@_) if CGI::Carp::ineval();
 
-    Everything::printLog("Trying to handle error.");
+    Everything::printLog('Trying to handle error.');
 
     my $errorFromPerl = shift;
     $errorFromPerl .=

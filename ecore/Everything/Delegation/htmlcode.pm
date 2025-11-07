@@ -142,20 +142,18 @@ sub admin_searchform
 
   $str .= $query->start_form('POST',$query->script_name);
 
-  $str .= '<label for ="node">Name:</label> '.
-    qq|<input type="text" name="node" id="node" value="|.$APP->encodeHTML($$NODE{title}).qq|" size="18" maxlength="80" />|.$query->submit('name_button', 'go').$query->end_form;
+  $str .= '<label for ="node">Name:</label> '.q|<input type="text" name="node" id="node" value="|.$APP->encodeHTML($NODE->{title}).q|" size="18" maxlength="80" />|.$query->submit('name_button', 'go').$query->end_form;
 
-  $str .= "\n\t\t\t" .$query->start_form("POST",$query->script_name).
-    "\n\t\t\t\t" . '<label for="node_id">ID:</label> ' . "\n\t\t\t\t".
+  $str .= $query->start_form('POST',$query->script_name).'<label for="node_id">ID:</label> '.
   $query->textfield(
     -name => 'node_id',
     -id => 'node_id',
     -default => $nid,
     -size => 12,
-    -maxlength => 80) . "\n\t\t\t\t".
+    -maxlength => 80).
   $query->submit('id_button', 'go');
 
-  $str.= "\n\t\t\t" . $query->end_form;
+  $str.= $query->end_form;
 
   return '<div class="nodelet_section">
     <h4 class="ns_title">Node Info</h4>
@@ -205,33 +203,33 @@ sub displayInherited
   # values.
 
   my ($field) = @_;
-  my $str = "";
+  my $str = '';
   my $TYPE = undef;
 
-  return "" unless ((isNodetype($NODE)) && (defined $field) && ($$NODE{extends_nodetype} > 0));
+  return '' unless ((isNodetype($NODE)) && (defined $field) && ($NODE->{extends_nodetype} > 0));
 
-  if($field eq "sqltable")
+  if($field eq 'sqltable')
   {
-    $TYPE = $DB->getType($$NODE{extends_nodetype});
+    $TYPE = $DB->getType($NODE->{extends_nodetype});
     $str .= "$$TYPE{sqltablelist}" if(defined $TYPE);
   }
-  elsif(($field eq "grouptable") && ($$NODE{$field} eq ""))
+  elsif(($field eq 'grouptable') && ($NODE->{$field} eq ''))
   {
-    $TYPE = $DB->getType($$NODE{node_id});
-    my $gt = "";
+    $TYPE = $DB->getType($NODE->{node_id});
+    my $gt = '';
     $gt = "$$TYPE{$field}" if(defined $TYPE);
-    $str .= $gt if ($gt ne "");
+    $str .= $gt if ($gt ne '');
   }
-  elsif($$NODE{$field} eq "-1")
+  elsif($NODE->{$field} eq '-1')
   {
-    $TYPE = $DB->getType($$NODE{extends_nodetype});
-    my $node = undef; $node = $DB->getNodeById($$TYPE{$field});
-    my $title = undef; $title = $$node{title} if (defined $node);
-    $title ||= "none";
+    $TYPE = $DB->getType($NODE->{extends_nodetype});
+    my $node = undef; $node = $DB->getNodeById($TYPE->{$field});
+    my $title = undef; $title = $node->{title} if (defined $node);
+    $title ||= 'none';
     $str .= $title;
   }
 
-  $str = " ( Inherited value: $str )" if ($str ne "");
+  $str = " ( Inherited value: $str )" if ($str ne '');
   return $str;
 }
 
@@ -255,11 +253,11 @@ sub displaySetting
   my $SETTING = $DB->selectNodeWhere({title => $setting},
     $DB->getType('setting'));
   my $vars;
-  my $str = "";
+  my $str = '';
 
-  $SETTING = $$SETTING[0];  # there should only be one in the array
+  $SETTING = $SETTING->[0];  # there should only be one in the array
   $vars = getVars($SETTING);
-  $str .= $$vars{$key};
+  $str .= $vars->{$key};
   return $str;
 }
 
@@ -281,20 +279,20 @@ sub displaytable
   # you get when 'show columns from $table' is executed.
   my ($table, $edit) = @_;
   my @fields = $DB->getFieldsHash($table);
-  my $str = "";
+  my $str = '';
 
   $edit = 0 if(not defined $edit);
 
-  $str .= "<table border=1 width=400>\n";
+  $str .= q|<table border=1 width=400>|;
 
-  $str .= " <tr>\n";
+  $str .= q| <tr>|;
   foreach my $fieldname (keys %{$fields[0]})
   {
-    $str .= "  <td bgcolor=\"#cccccc\">$fieldname</td>\n";
+    $str .= qq|<td bgcolor="#cccccc">$fieldname</td>|;
   }
 
-  $str .= "  <td bgcolor=\"#cccccc\">Remove Field?</td>\n" if($edit);
-  $str .= " </tr>\n";
+  $str .= q|<td bgcolor="#cccccc">Remove Field?</td>| if($edit);
+  $str .= q| </tr>|;
 
   foreach my $field (@fields)
   {
