@@ -6,7 +6,7 @@ use lib "$FindBin::Bin/../ecore";
 use Test::More;
 use Everything::APIClient;
 
-ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api"), "Create new E2 API object");
+ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api"), "Create new E2 API object");
 
 # Attempt to create an e2node as guest
 my $title = "Random new node ".time();

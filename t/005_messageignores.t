@@ -7,7 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use Everything::APIClient;
 
-ok(my $eapi = Everything::APIClient->new(endpoint => "http://localhost:9080/api"), "Create a new Everything::APIClient object");
+ok(my $eapi = Everything::APIClient->new(endpoint => "http://localhost/api"), "Create a new Everything::APIClient object");
 
 ok(my $cme = $eapi->get_node("Cool Man Eddie", "user")->{data}, "CME fetch ok");
 my $cme_struct = {'type' => 'user','title' => 'Cool Man Eddie', 'node_id' => 839239}; 

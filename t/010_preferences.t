@@ -9,7 +9,7 @@ use Everything::APIClient;
 my $testpref = "vit_hidenodeinfo";
 my $testpref2 = "vit_hidemisc";
 
-ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api"), "Create new E2 API object");
+ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api"), "Create new E2 API object");
 
 ok(my $guest_prefs = $eapi->get_preferences, "Get Guest Users Preferences");
 ok($guest_prefs->{code} == 200, "Guest get preferences comes back as 200 OK");

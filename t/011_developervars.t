@@ -6,7 +6,7 @@ use lib "$FindBin::Bin/../ecore";
 use Test::More;
 use Everything::APIClient;
 
-ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api"), "Create new E2 API object");
+ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api"), "Create new E2 API object");
 
 ok(my $guest_vars = $eapi->developervars, "Get Guest Users Developer VARS");
 ok($guest_vars->{code} == 401, "Guest VARS comes back as 403 Forbidden");

@@ -11,7 +11,7 @@ use JSON;
 
 use HTTP::Cookies;
 
-my $endpoint = "http://localhost:9080/api/sessions";
+my $endpoint = "http://localhost/api/sessions";
 my $json = JSON->new;
 
 ok(my $ua = LWP::UserAgent->new, "Make a new LWP::UserAgent object");

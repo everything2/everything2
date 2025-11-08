@@ -6,7 +6,7 @@ use lib "$FindBin::Bin/../ecore";
 use Test::More;
 use Everything::APIClient;
 
-my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api");
+my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api");
 
 # Guest
 ok(my $result = $eapi->roompurge, "Room purge as guest");

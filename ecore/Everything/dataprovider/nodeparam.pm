@@ -9,11 +9,25 @@ sub data_out
 {
 	my ($this, $nodeidhash) = @_;
 
-	my $inclause = join(",",keys %$nodeidhash);
+	# Fixed SQL injection: validate node IDs as integers and use placeholders
+	my @node_ids = keys %{$nodeidhash};
+	my $data = {nodeparam => []};
 
-	my $csr = $this->{dbh}->prepare("select * from nodeparam where node_id IN($inclause)");
-	$csr->execute();
-	my $data;
+	# Validate all node IDs are integers
+	foreach my $id (@node_ids) {
+		die "Invalid node ID: $id" unless $id =~ /^\d+$/;
+	}
+
+	# Return empty result if no node IDs provided
+	return $this->SUPER::xml_out($data) if scalar(@node_ids) == 0;
+
+	# Build placeholders for prepared statement
+	my $placeholders = join(",", ("?") x scalar(@node_ids));
+
+	my $csr = $this->{dbh}->prepare(
+		"SELECT * FROM nodeparam WHERE node_id IN($placeholders)"
+	);
+	$csr->execute(@node_ids);
 	while(my $row = $csr->fetchrow_hashref())
 	{
 		next if $row->{paramkey} eq "last_update";
