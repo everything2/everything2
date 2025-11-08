@@ -34,11 +34,17 @@ RUN ruby /var/bootstrap/generate-self-signed-cert.rb
 COPY docker/e2app/apache2_wrapper.rb /etc/everything
 RUN chmod +x /etc/everything/apache2_wrapper.rb
 
+# Install Node dependencies (separate layer for better caching)
+WORKDIR /var/everything
+COPY package.json package-lock.json ./
+RUN /usr/bin/npm install
+
+# Copy application code
 COPY ./ /var/everything
 RUN rm -rf /var/everything/local
-WORKDIR /var/everything
-RUN /usr/bin/npm install
-RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development
+
+# Build assets (done in buildspec.yml for CodeBuild, or here for local builds)
+RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development || true
 
 RUN if [ -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then echo "$CODEBUILD_RESOLVED_SOURCE_VERSION"; else git -C /var/everything rev-parse HEAD; fi > /etc/everything/last_commit
 
