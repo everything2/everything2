@@ -1030,6 +1030,8 @@ sub room_display_page
   
   $str .= qq|<p>|;
 
+  ## no critic (ProhibitStringyEval)
+  # TODO: Part of database code removal modernization - criteria should be a proper method
   if((eval $$NODE{criteria}) and not $APP->isGuest($USER))
   {
     $APP->changeRoom($USER, $NODE);

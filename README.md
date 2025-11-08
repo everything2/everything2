@@ -32,8 +32,7 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 | [www/](www/) | Static web assets (CSS, JS, images) |
 | [t/](t/) | Test suite (automated in build) |
 | [docker/](docker/) | Development and production containers |
-| [claude/](claude/) | 📚 **Comprehensive modernization documentation** |
-| [docs/](docs/) | Additional documentation |
+| [docs/](docs/) | 📚 **Comprehensive documentation and guides** |
 
 [View all directories →](docs/GETTING_STARTED.md#repository-structure)
 
@@ -41,16 +40,16 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 
 ### For Developers
 - **[Getting Started](docs/GETTING_STARTED.md)** - Development setup and workflow
-- **[Coding Standards](claude/coding-standards.md)** - Perl/JavaScript style guide
-- **[Quick Reference](claude/quick-reference.md)** - Common commands and patterns
+- **[Coding Standards](docs/coding-standards.md)** - Perl/JavaScript style guide
+- **[Quick Reference](docs/quick-reference.md)** - Common commands and patterns
 
 ### Technical Analysis
-- **[Analysis Summary](claude/analysis-summary.md)** - Complete architectural overview ⭐
-- **[Modernization Priorities](claude/modernization-priorities.md)** - Strategic roadmap
-- **[React Analysis](claude/react-analysis.md)** - Frontend implementation
-- **[Infrastructure Overview](claude/infrastructure-overview.md)** - AWS/Docker deployment
+- **[Analysis Summary](docs/analysis-summary.md)** - Complete architectural overview ⭐
+- **[Modernization Priorities](docs/modernization-priorities.md)** - Strategic roadmap
+- **[React Analysis](docs/react-analysis.md)** - Frontend implementation
+- **[Infrastructure Overview](docs/infrastructure-overview.md)** - AWS/Docker deployment
 
-**[Browse all documentation →](claude/README.md)**
+**[Browse all documentation →](docs/README.md)**
 
 ## Current Modernization Status
 
@@ -59,10 +58,13 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 | SQL Injection Fixes | ✅ Complete | 4/4 critical vulnerabilities fixed |
 | Database Code Removal | 🔄 In Progress | 81% migrated to filesystem |
 | Testing Infrastructure | ✅ Complete | Automated in build process |
+| Code Coverage Tracking | 🔄 Infrastructure Ready | Blocked by mod_perl architecture* |
 | Mobile Responsiveness | ⚠️ Critical Gap | Zero mobile CSS currently |
 | jQuery Removal | 📋 Planned | jQuery 1.11.1 → React/vanilla JS |
 
-See [claude/status.md](claude/status.md) for detailed progress tracking.
+*Requires PSGI/Plack migration for full coverage measurement.
+
+See [docs/status.md](docs/status.md) for detailed progress tracking.
 
 ## Testing
 
@@ -72,20 +74,27 @@ Tests run automatically during `./docker/devbuild.sh`. To run manually:
 ./docker/run-tests.sh              # Run all tests
 ./docker/run-tests.sh 012          # Run specific test
 ./docker/run-tests.sh sql          # Run tests matching pattern
+./tools/coverage.sh                # Run tests with code coverage
 ```
 
-**Current Status:** 40/40 SQL injection tests passing, test infrastructure fully operational.
+**Current Status:** 11/13 test files passing (572/576 tests), Perl::Critic checks passing (235/235 modules).
+
+**Code Coverage:** 0%* - Infrastructure ready with Devel::Cover, blocked by mod_perl architecture. Requires PSGI/Plack migration for full coverage. See [Code Coverage Guide](docs/code-coverage.md) and [Priority 8: PSGI Migration](docs/modernization-priorities.md#priority-8-psgiplack-migration-) for details.
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Follow [Coding Standards](claude/coding-standards.md)
-4. Add tests for new features
-5. Ensure all tests pass (`./docker/run-tests.sh`)
-6. Submit a pull request
+2. Create a [GitHub issue](https://github.com/everything2/everything2/issues) (if one doesn't exist)
+3. Create a feature branch: `issue/ISSUE_NUMBER/short-description`
+4. Follow [Coding Standards](docs/coding-standards.md)
+5. Add tests for new features
+6. Ensure all tests pass (`./docker/run-tests.sh`)
+7. Submit a pull request referencing the issue
 
-See [CONTRIBUTING.md](docs/GETTING_STARTED.md#contributing) for details.
+**Branch naming convention:** `issue/ISSUE_NUMBER/short-description`
+- Example: `issue/3597/broken-rdf-feed`
+
+See [Contributing Guide](docs/GETTING_STARTED.md#contributing) for full details.
 
 ## Technology Stack
 
@@ -127,16 +136,22 @@ We take security seriously. If you discover a security vulnerability:
 
 ## License
 
-[Add license information here]
+This project is licensed under the same terms as Perl itself, under either:
+
+* The GNU General Public License as published by the Free Software Foundation; either version 1, or (at your option) any later version, or
+* The Artistic License
+
+See the Perl documentation for details on these licenses.
 
 ## Links
 
 - **Website:** [everything2.com](https://everything2.com)
 - **Issues:** [GitHub Issues](https://github.com/everything2/everything2/issues)
-- **Documentation:** [claude/](claude/) directory
+- **Documentation:** [docs/](docs/) directory
 
 ---
 
-**Last Updated:** 2025-11-07
-**Build Status:** ✅ Tests passing (40/40 SQL injection tests)
-**Modernization:** 📚 Comprehensive documentation available in [claude/](claude/)
+**Last Updated:** 2025-11-08
+**Build Status:** ✅ 11/13 test files passing (572/576 tests), Perl::Critic 235/235 modules
+**Code Coverage:** 📊 Infrastructure configured with Devel::Cover
+**Modernization:** 📚 Comprehensive documentation available in [docs/](docs/)

@@ -1,6 +1,6 @@
 # Everything2 Coding Standards
 
-**Date:** 2025-11-07
+**Date:** 2025-11-08
 **Status:** Active Guidelines
 
 ## Purpose
@@ -307,7 +307,43 @@ ok($result, "test 1");
 is($count, 5);
 ```
 
-## Git Commit Standards
+## Git Workflow Standards
+
+### Branch Naming Convention
+
+**Required format:** `issue/ISSUE_NUMBER/short-description`
+
+All feature branches must follow this convention to maintain traceability between code changes and GitHub issues.
+
+**Examples:**
+```bash
+git checkout -b issue/3597/broken-rdf-feed
+git checkout -b issue/3594/auto-managed-googleads
+git checkout -b issue/3591/redirect-to-dotcom
+git checkout -b issue/3596/fix-sql-injection
+```
+
+**Components:**
+- `issue/` - Fixed prefix indicating this is an issue-based branch
+- `ISSUE_NUMBER` - GitHub issue number from https://github.com/everything2/everything2/issues
+- `short-description` - Brief kebab-case description of the work
+
+**Benefits:**
+- Automatic issue/PR linking in GitHub
+- Clear traceability in git history
+- Easy identification of related work
+- Consistent naming across team
+
+**Invalid examples:**
+```bash
+# ❌ AVOID - No issue reference
+git checkout -b fix-bug
+git checkout -b new-feature
+
+# ❌ AVOID - Wrong format
+git checkout -b feature/add-login
+git checkout -b bugfix/sql-error
+```
 
 ### Commit Messages
 
@@ -320,8 +356,19 @@ Longer description if needed, explaining:
 - Why it changed
 - Any breaking changes or side effects
 
-References: #issue-number
+Fixes #issue-number
 ```
+
+**Important:** Use `Fixes #issue-number` (not just `References`) to:
+- Automatically close the issue when PR is merged
+- Create clickable links in GitHub
+- Maintain traceability between commits and issues
+
+**GitHub Keywords for Issue Linking:**
+- `Fixes #123` - Closes the issue when merged
+- `Closes #123` - Same as Fixes
+- `Resolves #123` - Same as Fixes
+- `Addresses #123` - Links but doesn't auto-close (for partial fixes)
 
 **Examples:**
 
@@ -332,7 +379,7 @@ Replaced direct interpolation with prepared statement using
 placeholders. Added integer validation for node IDs.
 
 Security: Fixes CVE-YYYY-XXXX
-References: #1234
+Fixes #3596
 ```
 
 ```
@@ -344,7 +391,16 @@ Created comprehensive test suite with 20 tests covering:
 - SQL injection attempt rejection
 - Edge cases and malicious input
 
-References: #1234
+Addresses #3596
+```
+
+```
+Update documentation for code coverage
+
+Added comprehensive guide for using Devel::Cover with
+mod_perl limitations. Documented PSGI migration requirement.
+
+Fixes #3598
 ```
 
 ### Commit Atomicity
@@ -361,17 +417,78 @@ References: #1234
 - Commit 1: Fix all SQL injection and add tests and update docs
 ```
 
+### Pull Request Creation
+
+**Required:** All changes must go through pull requests
+
+**Steps:**
+1. Push your branch to your fork:
+   ```bash
+   git push origin issue/3596/fix-sql-injection
+   ```
+
+2. Create PR on GitHub at https://github.com/everything2/everything2/pulls
+
+3. **PR Title:** Use clear, descriptive title
+   - Example: "Fix SQL injection vulnerabilities in dataproviders"
+
+4. **PR Description Template:**
+   ```markdown
+   ## Summary
+   Brief description of what this PR does
+
+   ## Changes
+   - Bullet list of specific changes
+   - File-by-file if extensive
+
+   ## Testing
+   - How you tested the changes
+   - Test results
+   - Manual testing steps if applicable
+
+   ## Related Issues
+   Fixes #3596
+
+   ## Screenshots (if applicable)
+   Before/after images for UI changes
+   ```
+
+5. **Link to Issue:** Use `Fixes #ISSUE_NUMBER` in PR description to:
+   - Auto-link PR to issue
+   - Auto-close issue when PR is merged
+   - Maintain traceability
+
+**PR Title Examples:**
+```
+✅ GOOD:
+- "Fix SQL injection in links, nodegroup, and nodeparam dataproviders"
+- "Add comprehensive test suite for SQL injection fixes"
+- "Update documentation for code coverage infrastructure"
+
+❌ AVOID:
+- "fixes"
+- "update"
+- "WIP" (work in progress - use draft PRs instead)
+```
+
+**Draft PRs:**
+- Use for work-in-progress
+- Mark as "Ready for review" when complete
+- Helps get early feedback without formal review
+
 ## Code Review Standards
 
-### Before Submitting
+### Before Submitting PR
 
 **Checklist:**
+- [ ] Branch follows naming convention: `issue/NUMBER/description`
+- [ ] All commits have proper messages with `Fixes #NUMBER`
 - [ ] Run perlcritic: `CRITIC_FULL=1 ./tools/critic.pl .`
-- [ ] Run tests: `prove -lv t/*.t`
+- [ ] Run tests: `./docker/run-tests.sh`
 - [ ] Test locally: http://localhost:9080
 - [ ] Check for security issues
 - [ ] Add/update documentation
-- [ ] Clear commit message
+- [ ] PR description includes issue link
 
 ### Review Focus
 

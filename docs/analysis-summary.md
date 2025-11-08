@@ -449,7 +449,7 @@ $dbh->prepare("... IN($inclause) ...");
 - **Engagement:** Beta testing for mobile interface
 
 ### For Staff
-- **Documentation:** Technical docs in `claude/` directory
+- **Documentation:** Technical docs in `docs/` directory
 - **Training:** Moose patterns, testing practices, React hooks
 - **Code Review:** Standards for modernization work
 

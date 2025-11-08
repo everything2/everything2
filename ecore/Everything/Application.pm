@@ -2712,10 +2712,6 @@ sub htmlScreen {
   my $scrubber = HTML::Scrubber->new();
   $scrubber->rules(%{$this->get_html_rules()});
   return $defang->defang($scrubber->scrub($text));
-	$approved_tags ||= {};
-
-	$text = $this->cleanupHTML($text, $approved_tags);
-	return $text;
 }
 
 

@@ -3,6 +3,8 @@ package Everything::Constants;
 use strict;
 use warnings;
 
+## no critic (ProhibitConstantPragma)
+# Using constant pragma is appropriate for this constants-only module
 #nodes
 use constant GUEST_USER => 779713;
 
