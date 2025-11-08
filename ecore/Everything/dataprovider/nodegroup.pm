@@ -11,11 +11,25 @@ sub data_out
 {
 	my ($this, $nodeidhash) = @_;
 
-	my $inclause = join(",",keys %$nodeidhash);
+	# Fixed SQL injection: validate node IDs as integers and use placeholders
+	my @node_ids = keys %{$nodeidhash};
+	my $data = {group => []};
 
-	my $linkcsr = $this->{dbh}->prepare("select * from nodegroup where nodegroup_id IN($inclause) and node_id IN($inclause)");
-	$linkcsr->execute();
-	my $data = {"group" => []};
+	# Validate all node IDs are integers
+	foreach my $id (@node_ids) {
+		die "Invalid node ID: $id" unless $id =~ /^\d+$/;
+	}
+
+	# Return empty result if no node IDs provided
+	return $this->SUPER::xml_out($data) if scalar(@node_ids) == 0;
+
+	# Build placeholders for prepared statement
+	my $placeholders = join(',', ('?') x scalar(@node_ids));
+
+	my $linkcsr = $this->{dbh}->prepare(
+		"SELECT * FROM nodegroup WHERE nodegroup_id IN($placeholders) AND node_id IN($placeholders)"
+	);
+	$linkcsr->execute(@node_ids, @node_ids);
 	while(my $row = $linkcsr->fetchrow_hashref())
 	{
 		push @{$data->{group}}, $row;

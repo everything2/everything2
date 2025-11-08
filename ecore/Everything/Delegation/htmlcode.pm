@@ -6647,14 +6647,14 @@ sub rtnsection_edc
 
     next unless($_);
 
-    my $csr = $DB->{dbh}->prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\' limit 1');
-    $csr->execute;
+    my $csr = $DB->{dbh}->prepare('SELECT * FROM links WHERE from_node=? AND linktype=? LIMIT 1');
+    $csr->execute(getId($_), $poclink);
 
     my $coolref = $csr->fetchrow_hashref;
 
     next unless($coolref);
     $coolref = getNodeById($$coolref{from_node});
-    next unless($coolref); 
+    next unless($coolref);
     $str .= '<li>'.linkNode($coolref,$$coolref{title}, {lastnode_id => 0}).'</li>';
 
     $csr->finish();

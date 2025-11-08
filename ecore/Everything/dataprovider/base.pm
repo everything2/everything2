@@ -21,10 +21,12 @@ sub xml_out
 	my $filename = ref $this;
 	$filename =~ s/.*://g;
 
-	`mkdir -p $$this{basedir}/_data/`;
+	# Use basedir if provided, otherwise use /tmp for test environments
+	my $basedir = $this->{basedir} || '/tmp';
+	`mkdir -p $basedir/_data/`;
 
 	my $handle;
-	open $handle, ">","$$this{basedir}/_data/$filename.xml";
+	open $handle, ">","$basedir/_data/$filename.xml";
 	print $handle $this->{xs}->XMLout({"$filename" => $data});
 	close $handle;
 	return;

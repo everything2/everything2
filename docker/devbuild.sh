@@ -13,3 +13,21 @@ docker run -d --publish 9080:80 --publish 443:9443 --env E2_DOCKER=development -
 if [ "$1" = "full" ]; then
   $SCRIPT_DIR/devdbbuild.sh
 fi
+
+# Wait for container to be ready
+echo ""
+echo "Waiting for container to be ready..."
+sleep 3
+
+# Run tests
+echo ""
+echo "========================================="
+echo "Running test suite..."
+echo "========================================="
+$SCRIPT_DIR/run-tests.sh
+
+echo ""
+echo "========================================="
+echo "Build complete!"
+echo "Application available at: http://localhost:9080"
+echo "========================================="

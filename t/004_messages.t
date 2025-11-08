@@ -6,6 +6,6 @@ use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use Everything::APIClient;
 
-ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api"));
+ok(my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api"));
 
 done_testing();

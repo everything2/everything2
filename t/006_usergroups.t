@@ -6,7 +6,7 @@ use lib "$FindBin::Bin/../ecore";
 use Everything::APIClient;
 use Test::More;
 
-my $eapi = Everything::APIClient->new("endpoint" => "http://localhost:9080/api");
+my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api");
 my $description = "This is a description!<br>";
 ok($eapi->login("root","blah"), "Log in as root");
 ok(my $result = $eapi->create_usergroup({"title" => "My usergroup ".time(),"doctext" => $description}), "Usergroup create returns a non undef structure");

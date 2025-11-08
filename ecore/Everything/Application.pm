@@ -4004,7 +4004,10 @@ sub is_username_taken
 sub is_ip_blacklisted
 {
   my ($this, $ip) = @_;
-  return $this->{db}->sqlSelect('ipblacklist_ipaddress', 'ipblacklist', "ipblacklist_ipaddress = '$ip' AND ipblacklist_timestamp > DATE_SUB(NOW(), INTERVAL ".$this->{conf}->blacklist_interval.")");
+
+  return $this->{db}->sqlSelect('ipblacklist_ipaddress', 'ipblacklist',
+    "ipblacklist_ipaddress = " . $this->{db}->quote($ip) .
+    " AND ipblacklist_timestamp > DATE_SUB(NOW(), INTERVAL " . $this->{conf}->blacklist_interval . ")");
 }
 
 # Originally in [Sign up]

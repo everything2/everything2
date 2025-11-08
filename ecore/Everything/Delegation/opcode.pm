@@ -1332,18 +1332,24 @@ sub removeweblog
   my $APP = shift;
 
   # This removes one item from a weblog
-  my $src = int($query->param("source"));
-  my $to_node = int($query->param("to_node"));
+  my $src = int($query->param('source'));
+  my $to_node = int($query->param('to_node'));
 
   # usergroup owner
   my $isOwner = 0;
-  $isOwner = 1 if $$USER{node_id} == $APP -> getParameter($src, 'usergroup_owner');
-  my $canRemove = isGod($USER) || $isOwner || $DB -> sqlSelect( "weblog_id" , "weblog" ,
-    "weblog_id=$src and to_node=$to_node and linkedby_user=$$USER{ user_id }" );
+  $isOwner = 1 if $USER->{node_id} == $APP->getParameter($src, 'usergroup_owner');
+
+  my $canRemove = $DB->isGod($USER) || $isOwner || $DB->sqlSelect( 'weblog_id' , 'weblog' ,
+    'weblog_id=' . $DB->quote($src) . ' AND to_node=' . $DB->quote($to_node) .
+    ' AND linkedby_user=' . $DB->quote($USER->{user_id}) );
 
   return unless $canRemove;
   return unless $src && $to_node ;
-  $DB->getDatabaseHandle()->do("update weblog set removedby_user=$$USER{ user_id } where weblog_id=$src && to_node=$to_node");
+
+  my $sth = $DB->getDatabaseHandle()->prepare(
+    'UPDATE weblog SET removedby_user=? WHERE weblog_id=? AND to_node=?'
+  );
+  $sth->execute($USER->{user_id}, $src, $to_node);
 
   return;
 }
