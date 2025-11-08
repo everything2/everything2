@@ -406,14 +406,14 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  DBD-mysql-5.012
-    pathname: D/DV/DVEEDEN/DBD-mysql-5.012.tar.gz
+  DBD-mysql-5.013
+    pathname: D/DV/DVEEDEN/DBD-mysql-5.013.tar.gz
     provides:
-      DBD::mysql 5.012
+      DBD::mysql 5.013
       DBD::mysql::GetInfo undef
-      DBD::mysql::db 5.012
-      DBD::mysql::dr 5.012
-      DBD::mysql::st 5.012
+      DBD::mysql::db 5.013
+      DBD::mysql::dr 5.013
+      DBD::mysql::st 5.013
     requirements:
       DBI 1.609
       Data::Dumper 0
@@ -1062,6 +1062,67 @@ DISTRIBUTIONS
       File::Spec 0
       File::Temp 0.16
       perl 5.004050
+  Devel-Cover-1.51
+    pathname: P/PJ/PJCJ/Devel-Cover-1.51.tar.gz
+    provides:
+      Devel::Cover 1.51
+      Devel::Cover::Annotation::Git 1.51
+      Devel::Cover::Annotation::Random 1.51
+      Devel::Cover::Annotation::Svk 1.51
+      Devel::Cover::Branch 1.51
+      Devel::Cover::Collection 1.51
+      Devel::Cover::Collection::Template::Provider 1.51
+      Devel::Cover::Condition 1.51
+      Devel::Cover::Condition_and_2 1.51
+      Devel::Cover::Condition_and_3 1.51
+      Devel::Cover::Condition_or_2 1.51
+      Devel::Cover::Condition_or_3 1.51
+      Devel::Cover::Condition_xor_4 1.51
+      Devel::Cover::Criterion 1.51
+      Devel::Cover::DB 1.51
+      Devel::Cover::DB::Criterion 1.51
+      Devel::Cover::DB::Digests 1.51
+      Devel::Cover::DB::File 1.51
+      Devel::Cover::DB::IO 1.51
+      Devel::Cover::DB::IO::Base 1.51
+      Devel::Cover::DB::IO::JSON 1.51
+      Devel::Cover::DB::IO::Sereal 1.51
+      Devel::Cover::DB::IO::Storable 1.51
+      Devel::Cover::DB::Run 1.51
+      Devel::Cover::DB::Structure 1.51
+      Devel::Cover::Html_Common 1.51
+      Devel::Cover::Op 1.51
+      Devel::Cover::Pod 1.51
+      Devel::Cover::Report::Compilation 1.51
+      Devel::Cover::Report::Html 1.51
+      Devel::Cover::Report::Html_basic 1.51
+      Devel::Cover::Report::Html_basic::Template::Provider 1.51
+      Devel::Cover::Report::Html_minimal 1.51
+      Devel::Cover::Report::Html_subtle 1.51
+      Devel::Cover::Report::Html_subtle::Template::Provider 1.51
+      Devel::Cover::Report::Json 1.51
+      Devel::Cover::Report::Nvim 1.51
+      Devel::Cover::Report::Nvim::Template::Provider 1.51
+      Devel::Cover::Report::Sort 1.51
+      Devel::Cover::Report::Text 1.51
+      Devel::Cover::Report::Text2 1.51
+      Devel::Cover::Report::Vim 1.51
+      Devel::Cover::Report::Vim::Template::Provider 1.51
+      Devel::Cover::Statement 1.51
+      Devel::Cover::Subroutine 1.51
+      Devel::Cover::Test 1.51
+      Devel::Cover::Time 1.51
+      Devel::Cover::Truth_Table 1.51
+      Devel::Cover::Truth_Table::Row 1.51
+      Devel::Cover::Util 1.51
+      Devel::Cover::Web 1.51
+    requirements:
+      Digest::MD5 0
+      ExtUtils::MakeMaker 0
+      HTML::Entities 3.69
+      Storable 0
+      Test::More 0
+      perl 5.012
   Devel-Declare-0.006022
     pathname: E/ET/ETHER/Devel-Declare-0.006022.tar.gz
     provides:
@@ -1291,14 +1352,13 @@ DISTRIBUTIONS
       File::HomeDir::Windows 1.006
     requirements:
       Carp 0
-      Cwd 3
+      Cwd 3.12
       ExtUtils::MakeMaker 0
       File::Basename 0
       File::Path 2.01
-      File::Spec 3
+      File::Spec 3.12
       File::Temp 0.19
       File::Which 0.05
-      Mac::SystemDirectory 0.04
       POSIX 0
       perl 5.008003
   File-Listing-6.16
@@ -1609,6 +1669,7 @@ DISTRIBUTIONS
       JSON::MaybeXS 1.004008
     requirements:
       Carp 0
+      Cpanel::JSON::XS 4.38
       ExtUtils::MakeMaker 0
       JSON::PP 2.27300
       Scalar::Util 0
@@ -1706,17 +1767,6 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.006
-  Mac-SystemDirectory-0.14
-    pathname: E/ET/ETHER/Mac-SystemDirectory-0.14.tar.gz
-    provides:
-      Mac::SystemDirectory 0.14
-    requirements:
-      Exporter 0
-      ExtUtils::MakeMaker 0
-      XSLoader 0
-      perl 5.006
-      strict 0
-      warnings 0
   Mason-2.24
     pathname: J/JS/JSWARTZ/Mason-2.24.tar.gz
     provides:
@@ -32588,6 +32638,7 @@ DISTRIBUTIONS
     requirements:
       Exporter 5.57
       ExtUtils::MakeMaker 0
+      Ref::Util::XS 0
       Text::ParseWords 0
       perl 5.006
   Ref-Util-XS-0.117
@@ -32615,17 +32666,6 @@ DISTRIBUTIONS
       Exporter 5.57
       ExtUtils::MakeMaker 0
       Scalar::Util 0
-      perl 5.006
-  Scalar-List-Utils-1.69
-    pathname: P/PE/PEVANS/Scalar-List-Utils-1.69.tar.gz
-    provides:
-      List::Util 1.69
-      List::Util::XS 1.69
-      Scalar::List::Utils 1.69
-      Scalar::Util 1.69
-      Sub::Util 1.69
-    requirements:
-      ExtUtils::MakeMaker 0
       perl 5.006
   Sort-Versions-1.62
     pathname: N/NE/NEILB/Sort-Versions-1.62.tar.gz

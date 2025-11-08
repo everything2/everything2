@@ -1,6 +1,6 @@
-# Everything2 Modernization Documentation
+# Everything2 Documentation
 
-This directory contains comprehensive analysis and modernization plans for the Everything2 codebase, created with assistance from Claude Code.
+This directory contains comprehensive documentation, technical analysis, and modernization plans for the Everything2 codebase.
 
 ## Purpose
 
@@ -13,23 +13,27 @@ These documents serve as:
 
 ## Documents
 
-### Start Here
-- **[Analysis Summary](analysis-summary.md)** - Complete overview and recommendations ⭐
+### Getting Started
+- **[Getting Started Guide](GETTING_STARTED.md)** - Development setup and workflow ⭐
+- **[Quick Reference](quick-reference.md)** - Common tasks, commands, checklists
+- **[Coding Standards](coding-standards.md)** - Perl/JavaScript style guide and best practices
+- **[Code Coverage Guide](code-coverage.md)** - Testing coverage infrastructure and usage
+
+### Technical Overview
+- **[Analysis Summary](analysis-summary.md)** - Complete architectural overview
 - **[Status](status.md)** - Current progress and priorities
 - **[Modernization Priorities](modernization-priorities.md)** - Strategic roadmap
 
-### Technical Analysis
+### Architecture & Infrastructure
 - [React Analysis](react-analysis.md) - Frontend implementation and mobile gaps
 - [Infrastructure Overview](infrastructure-overview.md) - AWS, Docker, deployment pipeline
+- [API Documentation](API.md) - API endpoints and usage
+
+### Security & Modernization
 - [SQL Injection Vulnerabilities](sql-injection-vulnerabilities.md) - Security analysis and fixes needed
 - [SQL Fixes Applied](sql-fixes-applied.md) - ✅ Completed security fixes (4 critical issues)
-- [Inline JavaScript Modernization](inline-javascript-modernization.md) - Asset pipeline integration (Medium priority)
-- [jQuery Removal](jquery-removal.md) - Legacy jQuery 1.11.1 → Modern vanilla JS/React (Medium priority)
-
-### Reference
-- [Quick Reference](quick-reference.md) - Common tasks, commands, checklists
-- [Coding Standards](coding-standards.md) - Perl/JavaScript style guide and best practices
-- This README - Navigation and overview
+- [Inline JavaScript Modernization](inline-javascript-modernization.md) - Asset pipeline integration
+- [jQuery Removal](jquery-removal.md) - Legacy jQuery 1.11.1 → Modern vanilla JS/React
 
 ## Contributing
 
@@ -48,4 +52,4 @@ These documents should be reviewed and updated:
 - When architecture decisions are made
 - As modernization work progresses
 
-Last Updated: 2025-11-07
+Last Updated: 2025-11-08

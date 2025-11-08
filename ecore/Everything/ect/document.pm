@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use lib qw(lib);
 package Everything::ect::document;
+
 use base qw(Everything::ect::node);
 
 sub node_xml_prep

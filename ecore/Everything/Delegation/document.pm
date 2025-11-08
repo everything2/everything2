@@ -5204,14 +5204,15 @@ sub page_of_cool {
     $first_block .= htmlcode('openform');
     $first_block .= q|<select name="editor">|;
     foreach (@grp) {
-        $first_block .=
-            "<option value=\"$_\""
-          . ( ( $query->param('editor') . "" eq "$_" ) ? (' SELECTED ') : ('') )
-          . '>'
-          . getNodeById($_)->{title}
-          . '</option>'
-          unless ( $except->{$_} )
-          || not getNodeById($_)->{type}->{title} eq 'user';
+        my $selected = (($query->param('editor') . '') eq "$_") ? ' SELECTED ' : '';
+        unless ( $except->{$_} || (getNodeById($_)->{type}->{title} ne 'user') ) {
+            $first_block .=
+                "<option value=\"$_\""
+              . $selected
+              . '>'
+              . getNodeById($_)->{title}
+              . '</option>';
+        }
         $except->{$_} = 1;
     }
 
@@ -6018,7 +6019,7 @@ sub writeups_by_type {
     my (@WRTYPE) =
       $DB->getNodeWhere( { type_nodetype => getId( getType('writeuptype') ) } );
     my %items;
-    map $items{ $$_{node_id} } = $$_{title}, @WRTYPE;
+    map { $items{ $$_{node_id} } = $$_{title} } @WRTYPE;
 
     my @idlist = sort { $items{$a} cmp $items{$b} } keys %items;
     unshift @idlist, 0;
@@ -6798,8 +6799,10 @@ sub show_user_vars
     my $isEDev = $APP->isDeveloper($USER);
     return ($str . ' Ummmm... no.') unless $isRoot || $isEDev;
 
-    my $username = $query->param('username') if $isRoot;
-    my $inspectUser = getNode($username, 'user') if (defined $username);
+    my $username;
+    $username = $query->param('username') if $isRoot;
+    my $inspectUser;
+    $inspectUser = getNode($username, 'user') if (defined $username);
     $inspectUser = $USER if (!$inspectUser);
     my $inspectVars = getVars($inspectUser);
 
@@ -6859,7 +6862,7 @@ sub show_user_vars
 
     @validKeys = sort(@validKeys);
     $str .= '<h3>VARS</h3>' . $tOpen;
-    foreach $key (@validKeys) {
+    foreach my $key (@validKeys) {
         next if length($key)==0;
         $val = encodeHTML($inspectVars->{$key});
         $val =~ s/[\r\n]+/<br>/g if $key =~ /^notelet/;
@@ -6876,7 +6879,7 @@ sub show_user_vars
     }
     @validKeys = sort(@validKeys);
     $str .= '<h3>USER</h3>'.$tOpen;
-    foreach $key (@validKeys) {
+    foreach my $key (@validKeys) {
         next if length($key)==0;
         next if (($key eq 'vars') || ($key eq 'passwd'));
         if($key ne '' and $key ne 'vars')
@@ -7141,7 +7144,8 @@ sub node_backup
     $targetNoder ||= $USER;
     my $uid = $targetNoder->{user_id};
 
-    my @types = ($1, $2) if $query -> param('dowhat') =~ /(writeup)?.*?(draft)?s$/;
+    my @types;
+    @types = ($1, $2) if $query -> param('dowhat') =~ /(writeup)?.*?(draft)?s$/;
     @types = map { $_ ? 'type_nodetype='.getType($_)->{node_id} : () } @types;
     my $where = join ' OR ', @types;
 

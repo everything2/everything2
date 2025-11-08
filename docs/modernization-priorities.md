@@ -375,6 +375,276 @@ MySQL
    - Istanbul/nyc for JavaScript
    - Minimum 70% threshold
 
+## Priority 7: Code Coverage Tracking 📊
+
+### Why This Matters
+
+**Visibility**
+- Identify untested code paths
+- Track test improvement over time
+- Ensure critical paths are covered
+- Guide testing priorities
+
+**Quality Assurance**
+- Catch regression gaps
+- Validate refactoring safety
+- Enforce coverage minimums
+- CI/CD quality gates
+
+### Current Blocker: mod_perl Architecture
+
+**Issue:** Devel::Cover cannot effectively track coverage in the current setup because:
+- Most tests make HTTP requests to the Apache/mod_perl server
+- Application code runs in a separate Apache process
+- Devel::Cover only instruments the test process, not the web server
+
+**Solution:** Migrate to PSGI/Plack architecture first (see Priority 8 below)
+- PSGI apps can be loaded directly in test processes
+- Enables in-process testing without HTTP overhead
+- Full coverage tracking of application code
+- Faster test execution
+
+**Current Status:** Infrastructure ready, blocked by architecture
+
+### Implementation Plan
+
+**Phase 1: Infrastructure Setup** ✅ COMPLETE
+1. ✅ Add Devel::Cover to cpanfile dependencies
+2. ✅ Create coverage script: `./tools/coverage.sh`
+3. ✅ Add coverage/ to .gitignore
+4. ✅ Create documentation: [Code Coverage Guide](code-coverage.md)
+5. 🔄 Run `carton install && carton bundle` to vendor dependencies
+6. 🔄 Rebuild Docker container with new dependencies
+
+**Phase 2: PSGI Migration Required** ⏸️ BLOCKED
+1. ⏸️ Migrate from mod_perl to PSGI/Plack (Priority 8)
+2. ⏸️ Convert tests to use Plack::Test for in-process testing
+3. ⏸️ Generate baseline coverage report
+4. ⏸️ HTML report generation
+
+**Phase 3: CI/CD Integration** ⏸️ BLOCKED
+1. ⏸️ Coverage threshold enforcement
+2. ⏸️ Fail build if coverage drops
+3. ⏸️ Coverage badge in README
+4. ⏸️ Trend tracking over time
+
+### Tool Configuration
+
+**Devel::Cover Options:**
+```bash
+# Run tests with coverage
+./docker/run-tests.sh coverage
+
+# Generate HTML report
+cover -report html -outputdir coverage/html
+
+# Check coverage thresholds
+cover -report text -coverage_threshold 70
+```
+
+**Exclusions:**
+- Generated code (Moose attributes)
+- Legacy database eval code
+- Vendor libraries
+- Test files themselves
+
+### Coverage Goals
+
+**Current State:**
+- ❌ No coverage tracking
+- ❌ Unknown coverage percentage
+- ❌ No coverage baseline
+
+**Short-term (Month 1):**
+- ✅ Coverage infrastructure setup
+- ✅ Baseline measurement
+- 🎯 Target: 40% overall coverage
+
+**Medium-term (Month 2-3):**
+- 🎯 Target: 60% core modules
+- 🎯 Target: 80% new code
+- 🎯 CI/CD enforcement
+
+**Long-term (Month 4-6):**
+- 🎯 Target: 70% overall coverage
+- 🎯 Target: 90% critical paths
+- 🎯 Per-module coverage reports
+
+### Priority Modules for Coverage
+
+**High Priority (>80% target):**
+- Everything::Application (security, permissions)
+- Everything::Security::* (authentication, authorization)
+- Everything::API::* (public interfaces)
+- SQL injection fixes (dataproviders)
+
+**Medium Priority (>60% target):**
+- Everything::Node::* (business logic)
+- Everything::NodeBase (database layer)
+- Everything::HTML (rendering)
+- Everything::Request (routing)
+
+**Lower Priority (>40% target):**
+- Everything::Delegation::* (legacy code being replaced)
+- Utility modules
+- Helper classes
+
+## Priority 8: PSGI/Plack Migration 🔄
+
+### Why This Matters
+
+**Modern Perl Web Standards**
+- PSGI is the standard interface for Perl web applications (like WSGI for Python, Rack for Ruby)
+- Decouples application from web server (run on Apache, nginx, Starman, etc.)
+- Enables middleware ecosystem (logging, authentication, compression, etc.)
+- Better testability with in-process testing
+
+**Enables Code Coverage**
+- Applications can be loaded directly in test processes
+- No separate Apache server needed for tests
+- Full Devel::Cover instrumentation of application code
+- Faster test execution (no HTTP overhead)
+
+**Deployment Flexibility**
+- Run with any PSGI-compatible server
+- Easier local development (Plack's built-in server)
+- Better process management options
+- Simplified Docker containers
+
+### Current State
+
+**Architecture:**
+- mod_perl 2 with Apache 2.4
+- Application tied to Apache::Request
+- Global variables ($APP, $DB, $USER, etc.)
+- Request handling in Everything::Application
+
+### Implementation Plan
+
+**Phase 1: Research and Planning (Week 1-2)**
+1. 📋 Audit Apache-specific dependencies
+2. 📋 Identify mod_perl-specific features in use
+3. 📋 Document request lifecycle
+4. 📋 Design PSGI app structure
+5. 📋 Plan gradual migration strategy
+
+**Phase 2: PSGI Compatibility Layer (Week 3-4)**
+1. 📋 Create PSGI app wrapper (app.psgi)
+2. 📋 Add Plack dependencies to cpanfile
+3. 📋 Wrap Everything::Application in PSGI handler
+4. 📋 Create request/response adapters
+5. 📋 Test basic request handling
+
+**Phase 3: Parallel Deployment (Week 5-8)**
+1. 📋 Run PSGI app alongside mod_perl
+2. 📋 Route subset of traffic to PSGI
+3. 📋 Monitor performance and errors
+4. 📋 Gradually increase PSGI traffic
+5. 📋 Fix compatibility issues
+
+**Phase 4: Test Migration (Week 9-10)**
+1. 📋 Convert HTTP tests to Plack::Test
+2. 📋 Enable in-process testing
+3. 📋 Validate coverage tracking works
+4. 📋 Update test documentation
+
+**Phase 5: Full Cutover (Week 11-12)**
+1. 📋 Deploy PSGI as primary
+2. 📋 Remove mod_perl configuration
+3. 📋 Update deployment scripts
+4. 📋 Update documentation
+
+### Required Dependencies
+
+```perl
+# Add to cpanfile
+requires 'Plack';
+requires 'Plack::Middleware::Session';
+requires 'Plack::Middleware::Static';
+requires 'Plack::Test';  # For testing
+requires 'Starman';      # Production PSGI server
+```
+
+### Example app.psgi Structure
+
+```perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use lib 'ecore';
+use Everything::Application;
+use Plack::Builder;
+
+my $app = sub {
+    my $env = shift;
+
+    # Create Everything application instance
+    my $e2app = Everything::Application->new(env => $env);
+
+    # Handle request
+    my $response = $e2app->handle_request();
+
+    return $response->finalize();
+};
+
+builder {
+    enable 'Static',
+        path => qr{^/images/},
+        root => './www';
+
+    enable 'Session',
+        store => 'File';
+
+    $app;
+};
+```
+
+### Testing Benefits
+
+**Before (mod_perl):**
+```perl
+# Must start Apache server, make HTTP requests
+my $ua = LWP::UserAgent->new;
+my $response = $ua->get("http://localhost/api/users");
+# No coverage of application code
+```
+
+**After (PSGI):**
+```perl
+# In-process testing with full coverage
+use Plack::Test;
+my $app = require 'app.psgi';
+test_psgi $app, sub {
+    my $cb = shift;
+    my $res = $cb->(GET "/api/users");
+    # Full Devel::Cover instrumentation
+};
+```
+
+### Risk Assessment
+
+**Low Risk:**
+- PSGI is well-established (since 2009)
+- Large community support
+- Minimal code changes required
+- Can run in parallel with mod_perl
+
+**Medium Risk:**
+- Request object differences (Apache::Request vs Plack::Request)
+- Session handling changes
+- Upload handling differences
+
+**Mitigation:**
+- Gradual rollout with parallel deployment
+- Comprehensive testing before cutover
+- Keep mod_perl config as fallback
+
+### Dependencies
+
+- **Blocks:** Priority 7 (Code Coverage Tracking)
+- **Enables:** Better testing, code coverage, deployment flexibility
+- **Requires:** Refactoring of request handling in Everything::Application
+
 ## Risk Assessment
 
 ### High Risk Areas
@@ -451,7 +721,7 @@ MySQL
 - Gradual rollout to minimize disruption
 
 ### For Staff
-- Technical documentation in `claude/` directory
+- Technical documentation in `docs/` directory
 - Regular status updates
 - Code review standards
 - Testing requirements

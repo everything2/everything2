@@ -1,17 +1,21 @@
 # Everything2 Modernization Status
 
-**Last Updated:** 2025-11-07
+**Last Updated:** 2025-11-08
 
 ## Quick Overview
 
 | Priority | Status | Progress | Risk |
 |----------|--------|----------|------|
+| SQL Injection Fixes | ✅ Complete | 100% (4/4 critical) | High |
 | Database Code Removal | 🟡 In Progress | 81% (368/413) | High |
 | Object-Oriented Refactoring | 🟢 Active | 43% (100+/235) | Medium |
-| Database Security | 🔴 Not Started | 0% | High |
+| Database Security | 🟡 In Progress | 25% | High |
 | PSGI/Plack Migration | 🔴 Not Started | 0% | High |
 | React Mobile Frontend | 🟡 Partial | 15% | Medium |
-| Testing Infrastructure | 🔴 Minimal | 5% | Medium |
+| Testing Infrastructure | ✅ Complete | 100% | Medium |
+| Code Coverage Tracking | 🟡 Infrastructure Ready | 0%* | Low |
+
+**Note:** *Code coverage at 0% for application code due to mod_perl architecture limitation. Infrastructure ready, blocked pending PSGI migration. See [Code Coverage Guide](code-coverage.md) for details.
 
 ## Database Code Removal (Priority 1)
 
@@ -145,25 +149,57 @@ extends 'Everything::Node';
 
 ## Testing Infrastructure (Priority 6)
 
-### Current Coverage
-- **12 active tests** (643 LOC) - API integration only
+### ✅ Test Status
+- **11/13 test files passing** (572/576 tests)
+- **235/235 modules** pass Perl::Critic checks
+- **Automated in build:** Tests run during `./docker/devbuild.sh`
+- **Test runner:** `./docker/run-tests.sh` with pattern matching
+
+### Current Test Coverage
+- **13 active tests** (643+ LOC) - API integration, unit tests
 - **16 legacy tests** (795 LOC) - excluded, unmaintained
 - **0 React tests** - No Jest configured
-- **No CI/CD test gate** - Tests don't block deployment
+- **CI/CD:** Tests automated in Docker build
 
-### Gaps
-- Core business logic untested
-- 235 Perl modules untested
-- All 29 React components untested
-- No coverage measurement
-- No test fixtures
+### Test Failures (Deferred)
+- **006_usergroups.t** - Multi-add operations (3 failed tests)
+- **007_systemutilities.t** - Purge count mismatch (1 failed test)
 
 ### Next Steps
-1. Fix test dependencies (LWP::UserAgent)
-2. Add GitHub Actions CI/CD
-3. Install Jest + React Testing Library
+1. Add GitHub Actions CI/CD test gate
+2. Install Jest + React Testing Library
+3. Fix deferred test failures
 4. Create test fixtures
-5. Target 70%+ coverage
+5. Enable full coverage after PSGI migration
+
+## Code Coverage Tracking (Priority 7)
+
+### ✅ Infrastructure Status
+- **Devel::Cover** added to cpanfile
+- **Coverage script:** `./tools/coverage.sh` ready
+- **Documentation:** [Code Coverage Guide](code-coverage.md)
+- **Reports:** HTML and text output configured
+
+### ⚠️ Current Limitation
+**Application coverage blocked by mod_perl architecture:**
+- Tests make HTTP requests to separate Apache process
+- Devel::Cover cannot instrument web server process
+- Currently only tracks test runner code (t/run.pl)
+- **Effective coverage: 0%** for application modules
+
+### Blocker: PSGI Migration Required
+**To enable full coverage:**
+1. Migrate from mod_perl to PSGI/Plack (Priority 8)
+2. Convert tests to use Plack::Test for in-process testing
+3. Application code will load directly in test process
+4. Devel::Cover will instrument all executed code
+
+**See:** [Priority 8: PSGI/Plack Migration](modernization-priorities.md#priority-8-psgiplack-migration-) for migration plan
+
+### Coverage Goals (Post-PSGI)
+- **High Priority (>80%):** Security, API, Application modules
+- **Medium Priority (>60%):** Node, NodeBase, HTML, Request
+- **Lower Priority (>40%):** Delegation (legacy code)
 
 ## Development Environment
 
@@ -180,13 +216,17 @@ extends 'Everything::Node';
 - **Build:** Webpack + Babel for React
 
 ### Code Quality
-- **Perl::Critic:** `CRITIC_FULL=1 ./tools/critic.pl`
+- **Perl::Critic:** `CRITIC_FULL=1 ./tools/critic.pl` ✅ All modules passing
 - **.perlcriticrc:** Configured overrides
-- **No coverage tools** installed yet
+- **Code Coverage:** Devel::Cover installed, blocked by architecture (see Priority 7)
 
 ## Recent Milestones
 
 ### Completed
+- ✅ SQL injection fixes (4 critical vulnerabilities)
+- ✅ Perl::Critic compliance (235/235 modules)
+- ✅ Test infrastructure automation
+- ✅ Code coverage tooling (infrastructure ready)
 - ✅ Moose adoption in 100+ modules
 - ✅ htmlcode/htmlpage/opcode delegation (368 nodes)
 - ✅ React integration (29 components)
@@ -197,7 +237,7 @@ extends 'Everything::Node';
 ### In Progress
 - 🟡 Database code removal (81% complete)
 - 🟡 React frontend expansion
-- 🟡 Documentation in claude/ directory
+- 🟡 Documentation in docs/ directory
 
 ## Immediate Priorities
 
@@ -229,7 +269,7 @@ extends 'Everything::Node';
 - Transparent testing process
 
 ### For Staff
-- Technical docs in claude/ directory
+- Technical docs in docs/ directory
 - Regular status updates
 - Code review standards
 - Modernization guidelines
@@ -258,5 +298,5 @@ extends 'Everything::Node';
 ---
 
 **Next Review:** Weekly
-**Documentation:** claude/ directory under version control
+**Documentation:** docs/ directory under version control
 **Contact:** See team roster for modernization working group

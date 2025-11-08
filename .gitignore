@@ -1,2 +1,6 @@
 .DS_Store
 local/**
+
+# Code coverage reports
+coverage/
+cover_db/

@@ -13,11 +13,16 @@
 git push origin master                  # Automatic deploy
 ./ops/run-codebuild.rb                 # Manual deploy
 
+# Testing
+./docker/run-tests.sh                   # Run all tests
+./docker/run-tests.sh 012               # Run specific test
+./tools/coverage.sh                     # Run tests with coverage
+
 # Code quality
 CRITIC_FULL=1 ./tools/critic.pl .      # Perl::Critic check
 
 # Dependency management
-carton install                          # Install Perl deps
+carton install && carton bundle         # Install and vendor Perl deps
 npm install                            # Install JS deps
 npm run build                          # Build React
 ```
@@ -66,7 +71,7 @@ www/                           # Web-accessible files
 nodepack/                      # Development seed data (XML)
 docker/                        # Docker build files
 cron/                          # Scheduled tasks (7 cron jobs)
-claude/                        # Modernization documentation
+docs/                          # Documentation and technical guides
 ```
 
 ## 🔧 Common Tasks
@@ -223,11 +228,36 @@ test('renders component', () => {
 
 ### Perl Tests
 ```bash
-cd t/
-perl 001_api_routing.t              # Single test
-prove -lv *.t                       # All tests with verbose
+./docker/run-tests.sh               # Run all tests in container
+./docker/run-tests.sh 012           # Run specific test by number
+./docker/run-tests.sh sql           # Run tests matching pattern
 CRITIC_FULL=1 ./tools/critic.pl .   # Code quality
 ```
+
+### Code Coverage
+
+⚠️ **Limited by mod_perl**: Coverage currently only tracks test-loaded modules. Full coverage requires PSGI migration (Priority 8).
+
+```bash
+./tools/coverage.sh                 # Run tests with coverage
+./tools/coverage.sh report          # Generate report only
+./tools/coverage.sh clean           # Clean coverage data
+
+# Inside container (manual)
+perl -MDevel::Cover=-db,coverage/cover_db t/run.pl
+cover -report html -outputdir coverage/html
+```
+
+**Coverage Goals (post-PSGI migration):**
+- Core modules: >80% (Security, API, Application)
+- Business logic: >60% (Node, NodeBase)
+- Legacy code: >40% (Delegation)
+
+**View Reports:**
+- HTML: `coverage/html/coverage.html`
+- Text: `cover -report text`
+
+**See:** [Code Coverage Guide](code-coverage.md) for details
 
 ### React Tests
 ```bash
@@ -414,7 +444,7 @@ fields @timestamp, @message
 
 ## 📞 Contact
 
-- Modernization Documentation: `claude/` directory
+- Modernization Documentation: `docs/` directory
 - Report Issues: GitHub Issues
 - Questions: See team roster
 
