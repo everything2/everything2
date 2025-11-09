@@ -1,33 +1,5 @@
 <node>
-  <doctext>&lt;P&gt;Total Number of Nodes:
-[% $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;node&quot;); 
-  
-%]
-
-&lt;p&gt;Total Number of Writeups:
-[%
-my $type = getType(&quot;writeup&quot;);
-$DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;, &quot;type_nodetype=$$type{node_id}&quot;);
-%]
-
-&lt;P&gt;Total Number of Users:
-[%  $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;user&quot;); 
-%]
-
-&lt;P&gt;Total Number of Links:
-[% $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;links&quot;);  
-%]
-
-
-
-&lt;P&gt;You may also find the [Everything Finger] interesting if you are looking to pull something useful out of all these nodes. Useful? Ha.&lt;p&gt;[news for noders.  stuff that matters.]
-
-
-
-
-
-
-  </doctext>
+  <doctext></doctext>
   <node_id>165493</node_id>
   <title>Everything Statistics</title>
   <type_nodetype>13</type_nodetype>

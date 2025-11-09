@@ -19,15 +19,11 @@ sub POSTDATA
   my $self = shift;
   my $encoding = $ENV{CONTENT_TYPE};
 
-  $self->devLog("POST data encoding: $encoding");
-
   if($encoding =~ m|^application/json|)
   {
-    $self->devLog("Detected 'application/json'");
     return $self->param("POSTDATA");
   }elsif($encoding =~ m|^application/x-www-form-urlencoded|)
   {
-    $self->devLog("Detected x-www-form-urlencoded");
     return $self->param("data");
   }
 }
@@ -36,7 +32,6 @@ sub JSON_POSTDATA
 {
   my $self = shift;
   my $postdata = $self->POSTDATA;
-  $self->devLog("Parsing POST data: ".$postdata);
   return {} unless $postdata;
   return $self->JSON->decode($postdata);
 }
@@ -97,15 +92,12 @@ sub get_current_user
   my $originalpass = $pass;
   my $cookie = undef;
 
-  $self->devLog("Got get_current_user with u/p: $username, $pass");
-
   unless ($username && $pass)
   {
     $cookie = $self->cookie($self->CONF->cookiepass);
     if($cookie)
     {
       ($username, $pass) = split(/\|/, $cookie);
-      $self->devLog("Cookie found for '$username', attempting login from that");
     }
   }
 
@@ -113,18 +105,14 @@ sub get_current_user
 
   if($username)
   {
-    $user = $self->APP->node_by_name($username, "user");
-    unless($user)
-    {
-      $self->devLog("Could not get blessed node for user: '$username'");
-    }
+    $user = $self->APP->node_by_name($username, 'user');
   }
 
   if($user)
   {
     if($user->locked)
     {
-      $self->devLog("Account is locked: $username");
+      # Account is locked
       $user = undef;
     }else{
        unless($cookie)
@@ -144,22 +132,22 @@ sub get_current_user
       {
         if($pass eq $user->passwd)
         {
-          $self->devLog("Salted password accepted for user: ".$user->title); 
+          # Salted password accepted
           unless($cookie)
           {
             print $self->header({-cookie => $self->make_login_cookie($user)});
           }
         }else{
-          $self->devLog("Salted password not accepted by default for user: ".$user->title);
+          # Salted password not accepted by default for user
           if($user->salt)
           {
-            $self->devLog("User has salt available, therefore bad login");
+            # User has salt available, therefore bad login
             $user = undef;
           }else{
-            $self->devLog("No salt available, therefore legacy password method");
+            # No salt available, therefore legacy password method
             if(substr($originalpass, 0, 10) ne $user->passwd && $self->APP->urlDecode($cookie) ne $user->title.'|'.crypt($user->passwd, $user->title))
             {
-                $self->devLog("Could not verify password with legacy method '".substr($originalpass, 0, 10)."' vs '".$user->passwd."'");
+                # Could not verify password with legacy method
                 $user = undef;
             }else{
                 $self->APP->updatePassword($user->NODEDATA, $user->passwd);
@@ -167,21 +155,21 @@ sub get_current_user
                 {
                   print $self->header({-cookie => $self->make_login_cookie($user)});
                 }
-                $self->devLog("Successfully updated password and logged in as: ".$user->title);
+                # Successfully updated password and logged in
             }
           }
         }
       }else{
-        $self->devLog("Username and password not present, could not go any further. Username: $username Pass: $pass");
-  	$user = $self->APP->node_by_id($self->CONF->guest_user);
+        # Username and password not present, could not go any further.
+        $user = $self->APP->node_by_id($self->CONF->guest_user);
       }
     }
   }
-  
+
   $user ||= $self->APP->node_by_id($self->CONF->guest_user);
 
   return $user if !$user || $user->is_guest || $self->param('ajaxIdle');
-  
+
   my $TIMEOUT_SECONDS = 4 * 60;
 
   my $sth = $self->DB->getDatabaseHandle()->prepare("CALL update_lastseen(".$user->node_id.");");
@@ -217,21 +205,19 @@ sub get_api_version
   my $accept_header = $ENV{HTTP_ACCEPT}; 
   if(defined($accept_header) and my ($version) = $accept_header =~ /application\/vnd\.e2\.v(\d+)/)
   {
-    $self->devLog("Explicitly requesting API version $version");
     return $version;
   }
-  $self->devLog("No API version requested, defaulting to CURRENT_VERSION");
+  # No API version requested, defaulting to CURRENT_VERSION
   return;
 }
 
 sub make_login_cookie
 {
   my ($self, $user) = @_;
-  my $expires = "";
-  if($self->cgi->param("expires"))
+  my $expires = '';
+  if($self->cgi->param('expires'))
   {
-    $expires = $self->cgi->param("expires");
-    $self->devLog("Got expires checkbox: $expires");
+    $expires = $self->cgi->param('expires');
   }
   return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->title."|".$user->passwd, -expires => $expires);
 }

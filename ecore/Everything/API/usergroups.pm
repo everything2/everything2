@@ -20,7 +20,7 @@ sub _group_operation_permissions
 {
   my ($orig, $self, $REQUEST, $id) = @_;
 
-  my $output = $self->_can_action_okay($REQUEST, "update", $id);
+  my $output = $self->_can_action_okay($REQUEST, 'update', $id);
   my ($node, $user) = (undef, undef);
   if($output->[0])
   {
@@ -31,10 +31,10 @@ sub _group_operation_permissions
   }
 
   my $data = $REQUEST->JSON_POSTDATA;
-  
-  unless(ref $data eq "ARRAY")
+
+  unless(ref $data eq 'ARRAY')
   {
-    $self->devLog("Expecting POST to be an array. Returning BAD REQUEST");
+    # Expecting POST to be an array. Returning BAD REQUEST
     return [$self->BAD_REQUEST];
   }
 
@@ -59,7 +59,7 @@ sub removeuser
   return [$self->HTTP_OK, $group->json_display($user)];
 }
 
-around ['adduser','removeuser'] => \&_group_operation_permissions; 
+around ['adduser','removeuser'] => \&_group_operation_permissions;
 
 __PACKAGE__->meta->make_immutable;
 1;

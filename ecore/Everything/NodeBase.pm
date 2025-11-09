@@ -168,8 +168,6 @@ sub executeQuery
 {
 	my ($this, $query) = @_;
 
-	$Everything::APP->devLog("executeQuery: '$query'");
-
 	my $result = $this->{dbh}->do($query);
 	return $result;
 }
@@ -387,7 +385,7 @@ sub sqlInsert
 		{
 			$values.="\n  " . $this->{dbh}->quote($$data{$_}) . ",";
 		}
-		
+
 		$names .= "$_,";
 	}
 
@@ -1252,16 +1250,16 @@ sub nukeNode
 	my $tableArray;
 	my $result = 0;
 	my $groupTable;
-	
+
 	$this->getRef($NODE, $USER);
-	
+
 	return unless ($this->canDeleteNode($USER, $NODE));
 
 	$this->tombstoneNode($NODE, $USER) unless $NOTOMB;
 
 	# This node is about to be deleted.  Do any maintenance if needed.
 	$this->nodeMaintenance($NODE, 'delete') unless $skip_maintenance;
-	
+
 	# Delete this node from the cache that we keep.
 	$this->{cache}->incrementGlobalVersion($NODE);
 	$this->{cache}->removeNode($NODE);
@@ -1488,14 +1486,12 @@ sub getFieldsHash
 	if (ref $table eq 'ARRAY') {
 
 			my $paramList = ' (?' . (', ?' x (-1 + scalar @$table)) . ') ';
-			my $sqlQuery = <<SQLEND;
-
+			my $sqlQuery = qq|
 SELECT TABLE_NAME, ORDINAL_POSITION, COLUMN_NAME
 	FROM INFORMATION_SCHEMA.COLUMNS
 	WHERE TABLE_NAME IN
 		$paramList
-		AND table_schema = ?
-SQLEND
+		AND table_schema = ?|;
 
 			return $this->{dbh}->selectall_hashref(
 			  $sqlQuery
@@ -1574,7 +1570,7 @@ sub createNodeTable
 	my ($this, $table) = @_;
 	my $tableid = $table . "_id";
 	my $result;
-	
+
 	return -1 if($this->tableExists($table));
 
 	$result = $this->executeQuery("CREATE TABLE $table ($tableid int(11)" .
@@ -2112,12 +2108,11 @@ sub nodeMaintenance
 	my $thisnode = $node_id;
         getRef($thisnode);
         return unless $thisnode;
-        my $maintenance_name = $thisnode->{type}->{title}."_".$op; 
+        my $maintenance_name = $thisnode->{type}->{title}.'_'.$op;
         if(my $delegation = Everything::Delegation::maintenance->can($maintenance_name))
         {
 		return $delegation->($this, $Everything::HTML::query, $Everything::HTML::GNODE, $Everything::HTML::USER, $Everything::HTML::VARS, $Everything::HTML::PAGELOAD, $Everything::APP, $node_id);
 	}else{
-		$Everything::APP->devLog("Could not find maintenance for $maintenance_name");
 		return;
 	}
 }
@@ -2399,20 +2394,20 @@ sub flattenNodegroup
 	$groupsTraversed ||= {};  # anonymous empty hash
 
 	$this->getRef($NODE);
-	
+
 	if ($this->isGroup($$NODE{type}))
 	{
 		# return if we have already been through this group.  Otherwise,
 		# we will get stuck in infinite recursion.
 		return if($$groupsTraversed{$$NODE{node_id}});
 		$$groupsTraversed{$$NODE{node_id}} = $$NODE{node_id};
-		
+
 		foreach my $groupref (@{ $$NODE{group} })
 		{
 			$group = $this->flattenNodegroup($groupref);
 			push(@listref, @$group) if(defined $group);
 		}
-		
+
 		return \@listref;
   	}
 	else
@@ -2449,9 +2444,9 @@ sub insertIntoNodegroup
 	my $nodegroup_rank;
 	my $nodegroup_rank_column = $this->nodegroupRankColumn;
 
-	return unless($this->canUpdateNode ($USER, $NODE)); 
-	
-	$TYPE = $$NODE{type};
+	return unless($this->canUpdateNode ($USER, $NODE));
+
+	$TYPE = $NODE->{type};
 	$groupTable = $this->isGroup($TYPE);
 
 	# We need a nodetype, darn it!
@@ -2464,7 +2459,7 @@ sub insertIntoNodegroup
 		return 0;
 	}
 
-	if(ref ($insert) eq "ARRAY")
+	if(ref ($insert) eq 'ARRAY')
 	{
 		$insertref = $insert;
 
@@ -2477,30 +2472,29 @@ sub insertIntoNodegroup
 		#converts to a list reference w/ 1 element if we get a scalar
 		$insertref = [$insert];
 	}
-	
-	foreach my $INSERT (@$insertref)
+
+	foreach my $INSERT (@{$insertref})
 	{
 		$this->getRef($INSERT);
 		my $maxOrderBy;
-		
+
 		# This will return a value if the select is not empty.  If
 		# it is empty (there is nothing in the group) it will be null.
-		($maxOrderBy) = $this->sqlSelect('MAX(orderby)', $groupTable, 
-			$groupTable . "_id=$$NODE{node_id}"); 
+		($maxOrderBy) = $this->sqlSelect('MAX(orderby)', $groupTable, $groupTable . "_id=$$NODE{node_id}");
 
 		if (defined $maxOrderBy)
 		{
 			# The group is not empty.  We may need to change some ordering
 			# information.
 			if ((defined $orderby) && ($orderby <= $maxOrderBy))
-			{ 
+			{
 				# The caller of this function specified an order position
 				# for the new node in the group.  We need to make a spot
 				# for it.  To do this, we will increment each orderby
 				# field that is the same or higher than the orderby given.
 				# If orderby is greater than the current max orderby, we
 				# don't need to do this.
-				$this->sqlUpdate($groupTable, { '-orderby' => 'orderby+1' }, 
+				$this->sqlUpdate($groupTable, { '-orderby' => 'orderby+1' },
 					$groupTable. "_id=$$NODE{node_id} && orderby>=$orderby");
 			}
 			elsif(not defined $orderby)
@@ -2512,9 +2506,8 @@ sub insertIntoNodegroup
 		{
 			$orderby = 0;  # start it off
 		}
-		
-		$nodegroup_rank = $this->sqlSelect("MAX($nodegroup_rank_column)", $groupTable, 
-			$groupTable . "_id=$$NODE{node_id}");
+
+		$nodegroup_rank = $this->sqlSelect("MAX($nodegroup_rank_column)", $groupTable, $groupTable . "_id=$$NODE{node_id}");
 
 		# If rank exists, increment it.  Otherwise, start it off at zero.
 		$nodegroup_rank = ((defined $nodegroup_rank) ? $nodegroup_rank+1 : 0);
@@ -2527,7 +2520,7 @@ sub insertIntoNodegroup
 		# inserts work.
 		undef $orderby;
 	}
-	
+
 	#we should also refresh the group list ref stuff
 	$this->{cache}->incrementGlobalVersion($NODE);
 	$_[1] = $this->getNodeById($NODE, 'force'); #refresh the group
@@ -2720,7 +2713,7 @@ sub getNodeParams
 		$params->{$row->{paramkey}} = $row->{paramvalue};
 		$this->{cache}->setCachedNodeParam($node_id, $row->{paramkey}, $row->{paramvalue});
 	}
-	
+
 	return $params;
 }
 
@@ -2790,7 +2783,7 @@ sub deleteNodeParam
 sub stashData
 {
   my ($this, $stash_name, $stash_values) = @_;
-  
+
   # TODO: Add to permanent cache
   my $stashnode = $this->getNode($stash_name, "datastash");
   return unless $stashnode;
@@ -2839,7 +2832,7 @@ sub existsInGroupCache {
 }
 
 sub nodegroupRankColumn {
-  return "nodegroup_rank"
+  return 'nodegroup_rank';
 }
 
 #############################################################################

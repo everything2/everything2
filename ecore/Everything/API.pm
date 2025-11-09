@@ -77,20 +77,16 @@ sub _build_routechooser
     $perlcode .= '$path =~ /^';
     $perlcode .= join('\/',@$re);
     $perlcode .= '$/){ ';
-    $perlcode .= '$self->devLog("Choosing \''.$routetarget.'\' for ".(($path eq "")?("/"):($path)));';
     $perlcode .= 'return ';
 
     $perlcode .= '$self->'.$subref.'(';
     $arguments ||= "";
     $arguments =~ s/\:/\$/g;
     $perlcode .= '$REQUEST,'."$arguments)};";
- 
+
   }
-  $perlcode .= '$self->devLog("Could not choose route for $path");';
   $perlcode .= 'return [$self->HTTP_UNIMPLEMENTED];';
   $perlcode .= '}';
-  
-  $self->devLog("Compiled routes into code: '$perlcode'");
 
   try {
     ## no critic (ProhibitStringyEval)
@@ -112,7 +108,6 @@ sub routes
 sub get
 {
   my ($self, $REQUEST) = @_;
-  $self->devLog("Handling with get catchall: ".$REQUEST->url(-absolute=>1));
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
@@ -120,7 +115,6 @@ sub route
 {
   my ($self, $REQUEST, $path) = @_;
 
-  $self->devLog("Choosing route for $path in '".ref($self)."'");
   # Since Moose is giving me trouble with this, I'll let mod_perl cover me
   # TODO: The right way with Moose Meta 
   my $version = $REQUEST->get_api_version;
@@ -128,13 +122,11 @@ sub route
 
   if($version == 0 || $version > $self->CURRENT_VERSION)
   {
-    $self->devLog("Sending HTTP_BAD_REQUEST due to request version being 0 or higher than CURRENT_VERSION");
     return [$self->HTTP_BAD_REQUEST];
   }
 
   if($version < $self->MINIMUM_VERSION)
   {
-    $self->devLog("Sending HTTP_GONE due to request version being lower than minimum");
     return [$self->HTTP_GONE];
   }
 
@@ -150,7 +142,6 @@ sub unauthorized_if_guest
 
   if($REQUEST->is_guest)
   {
-    $self->devLog("Can't access path due to being Guest");
     return [$self->HTTP_UNAUTHORIZED];
   }
   return $self->$orig($REQUEST, @_);
@@ -165,7 +156,6 @@ sub unauthorized_unless_type
 
   unless($type)
   {
-    $self->devLog("Bailing out of unauthorized_unless_type due to lack of type");
     return [$self->HTTP_UNAUTHORIZED];
   }
 
@@ -176,7 +166,6 @@ sub unauthorized_unless_type
     return $self->$orig($REQUEST, @_);
   }
 
-  $self->devLog("User not of type '$type' or admin, bailing");
   return [$self->HTTP_UNAUTHORIZED];
 }
 

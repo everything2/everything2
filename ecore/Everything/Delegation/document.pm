@@ -7405,4 +7405,35 @@ sub ip2name
 
     return $output;
 }
+
+sub everything_statistics
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str = '';
+
+    # Total Number of Nodes
+    my $total_nodes = $DB->sqlSelect('count(*)', 'node');
+    $str .= "<p>Total Number of Nodes: $total_nodes</p>";
+
+    # Total Number of Writeups
+    my $writeup_type = getType('writeup');
+    my $total_writeups = $DB->sqlSelect('count(*)', 'node', 'type_nodetype=' . getId($writeup_type));
+    $str .= "<p>Total Number of Writeups: $total_writeups</p>";
+
+    # Total Number of Users
+    my $total_users = $DB->sqlSelect('count(*)', 'user');
+    $str .= "<p>Total Number of Users: $total_users</p>";
+
+    # Total Number of Links
+    my $total_links = $DB->sqlSelect('count(*)', 'links');
+    $str .= "<p>Total Number of Links: $total_links</p>";
+
+    # Footer text
+    $str .= '<p>You may also find the ' . linkNode(getNode('Everything Finger', 'superdoc'), 'Everything Finger') . ' interesting if you are looking to pull something useful out of all these nodes. Useful? Ha.</p>';
+    $str .= '<p>' . linkNode(getNode('news for noders.  stuff that matters.', 'document')) . '</p>';
+
+    return $str;
+}
+
 1;

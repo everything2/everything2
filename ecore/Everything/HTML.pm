@@ -801,18 +801,17 @@ sub displayPage
 
 	my $displaytype = $query->param('displaytype');
 	my $PAGE = getPage($NODE, $displaytype);
-	$$NODE{datatype} = $$PAGE{mimetype};
+	$NODE->{datatype} = $PAGE->{mimetype};
 
 	my $pagetitle = $PAGE->{title};
 	$pagetitle =~ s/ /_/g;
 
 	if($Everything::ROUTER->can_route($NODE, $displaytype))
 	{
-		$page = "";
-		$APP->devLog("Using available router for $NODE->{title} / $NODE->{type}->{title}");
+		$page = '';
 		# HTMLRouter does the printing
-		$Everything::ROUTER->route_node($NODE, $displaytype || "display", $REQUEST);
-	
+		$Everything::ROUTER->route_node($NODE, $displaytype || 'display', $REQUEST);
+
 		# TODO: Make sure that VARS are set in ROUTER once we're cut over
 		setVars($USER, $VARS) unless $APP->isGuest($USER);
 	}else{

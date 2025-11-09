@@ -7,6 +7,9 @@ use Cwd 'abs_path';
 use Test::Harness;
 use File::Find;
 
+# Set alternate log location for test runner to avoid conflicts with Apache process
+$ENV{E2_DEV_LOG} = "/tmp/test-runner.log";
+
 my $testfiles;
 my $dirname = dirname(abs_path($0));
 my $wanted = sub {$testfiles->{$_}=1 if /\.t$/ and not /\legacy\//};

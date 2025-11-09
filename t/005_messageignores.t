@@ -51,7 +51,7 @@ foreach my $user("root","normaluser1")
 
   cmp_deeply($eapi->unignore_messages_from_id($virgil->{node_id}),$unignored_virgil, "Unignored messages from Virgil");
   cmp_deeply($eapi->get_ignores(), $ignoring_only_eddie, "Root: Ignoring messages from CME"); 
-  
+
   cmp_deeply($eapi->unignore_messages_from_id($cme->{node_id}), $unignored_eddie, "Unignore CME");
   cmp_deeply($eapi->get_ignores(), $emptyignores,"Initial ignoring set is empty");
 

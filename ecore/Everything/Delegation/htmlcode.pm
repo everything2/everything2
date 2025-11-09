@@ -1353,9 +1353,7 @@ sub show_content
       my $text = $N->{ doctext } ;
       # Superdoc stuff hardcoded below
       $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq "14" or $$N{ type }{ extends_nodetype } eq "14" ) ;
-      $APP->devLog("Before breakTags: $text");
       $text = $APP->breakTags( $text ) ;
-      $APP->devLog("After breakTags: $text");
 
       my ( $dots , $morelink ) = ( '' , '' ) ;
       if ( $length && length( $text ) > $length + $showanyway ) {
@@ -1367,7 +1365,6 @@ sub show_content
       }
 
       $text = $APP->screenTable( $text ) if $lastnodeid ; # i.e. if writeup page & logged in
-      $APP->devLog("After screenTable: $text");
       $text = parseLinks( $APP->htmlScreen( $text , $HTML ) , $lastnodeid ) ;
       return "\n<div class=\"content\">\n$text$dots\n</div>$morelink" unless $xml ;
 
@@ -6948,8 +6945,6 @@ sub sendPrivateMessage
   my $params = shift;
   my $showWhatSaid = $params->{show_said};
 
-  $APP->devLog("Got sendPrivateMessage with parameters: ".JSON::encode_json($params));
-
   #
   #constants and global vars setup, part 1 of 2
   #
@@ -6992,7 +6987,6 @@ sub sendPrivateMessage
     my ($ident,$isNumeric) = (@_[0,1]);
 
     $isNumeric ||= 0;
-    $APP->devLog("sendPrivateMessage: getCached params: $ident,$isNumeric");
     return unless defined($ident) && length($ident);
 
     my $N = undef;
@@ -7025,7 +7019,6 @@ sub sendPrivateMessage
     } else {
       if(exists($cachedTitles->{$ident}))
       {
-        $APP->devLog("Found cache hit for $ident: $cachedTitles->{$ident}");
         return $cachedTitles->{$ident} if exists $cachedTitles->{$ident};
       }
       # given title isn't cached, so find it
@@ -7041,7 +7034,7 @@ sub sendPrivateMessage
 
       unless($N)
       {
-         $APP->devLog("sendPrivateMessage getCached couldn't find object for $forwarded, bailing");
+         # sendPrivateMessage getCached couldn't find object for forwarded, bailing
          return;
       }
 
@@ -7049,7 +7042,6 @@ sub sendPrivateMessage
       {
         $forwarded = $N->{title};
         $N = getNodeById($N->{message_forward_to});
-        $APP->devLog("sendPrivateMessage getCached: using $forwarded for $N->{title}");
       }
 
       # on 2002.11.09.n5, removed space-and-underscore-in-name code; see displaytype=help for more information
@@ -7070,12 +7062,10 @@ sub sendPrivateMessage
 
   local *getParamList = sub {
     my $p=$_[0];
-    $APP->devLog("sendPrivateMessage getParamList params: ".JSON::encode_json([$p])); 
     my @l = ();
     if( (defined $p) && (exists $params->{$p}) && (defined $params->{$p}) )
     {
       $p=$params->{$p};
-      $APP->devLog("sendPrivateMessage getParamList data: ".JSON::encode_json([$p])); 
       my $r=ref $p;
       if($r eq '')
       {
@@ -7277,7 +7267,6 @@ sub sendPrivateMessage
 
   local *addUser = sub {
     my ($userObj, $groupID) = @_[0,1];
-    $APP->devLog("sendPrivateMessage addUser params: ".JSON::encode_json([$userObj->{node_id},$groupID]));
     return unless defined $userObj;
     $groupID = (defined $groupID) ? $groupID : 0;
     my $uid = $userObj->{node_id};
@@ -7355,7 +7344,6 @@ sub sendPrivateMessage
 
   local *addRecipient = sub {
     my $u = $_[0];
-    $APP->devLog("sendPrivateMessage addRecipient: $u->{node_id}");
     return unless defined $u;
     my $i=$u->{node_id};
 

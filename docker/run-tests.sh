@@ -32,7 +32,7 @@ echo ""
 if [ -z "$1" ]; then
     # Run all tests using run.pl
     echo "Running all tests in e2devapp container..."
-    docker exec -w /var/everything $CONTAINER_NAME perl t/run.pl
+    docker exec -w /var/everything -e E2_DEV_LOG=/tmp/test-runner.log $CONTAINER_NAME perl t/run.pl
 else
     # Run specific test(s) matching the pattern
     TEST_PATTERN="$1"
@@ -55,7 +55,7 @@ else
         echo "========================================="
         echo "Running: $TEST"
         echo "========================================="
-        docker exec -w /var/everything $CONTAINER_NAME perl -I/var/libraries/lib/perl5 "$TEST"
+        docker exec -w /var/everything -e E2_DEV_LOG=/tmp/test-runner.log $CONTAINER_NAME perl -I/var/libraries/lib/perl5 "$TEST"
         echo ""
     done
 fi

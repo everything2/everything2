@@ -457,9 +457,7 @@ sub updateLogin
 {
 	my ($this, $user, $query, $cookie) = @_;
 
-        $this->devLog("Updating login for user to salt: $user->{title}");
-
-	  return 0 if substr($query->param('passwd'), 0, 10) ne $user->{passwd}
+	return 0 if substr($query->param('passwd'), 0, 10) ne $user->{passwd}
 		&& $this->urlDecode($cookie) ne $user->{title}.'|'.crypt($user->{passwd}, $user->{title});
 
 	$this->updatePassword($user, $user->{passwd});
@@ -1972,8 +1970,8 @@ sub logUserIp {
   my $addr = join ',', @addrs;
   return unless $addr;
 
-  return if ($$vars{ipaddy} eq $addr);
-  $$vars{ipaddy} = $addr;
+  return if (defined($vars->{ipaddy}) and $vars->{ipaddy} eq $addr);
+  $vars->{ipaddy} = $addr;
 
   my $hour_limit = 24;
   my $ipquery = qq|SELECT DISTINCT iplog_ipaddy FROM iplog WHERE iplog_user = $$user{user_id} AND iplog_time > DATE_SUB(NOW(), INTERVAL $hour_limit HOUR)|;
@@ -2016,13 +2014,11 @@ sub confirmUser
   my $user = $this->{db}->getNode($username, 'user');
   unless($user)
   {
-    $this->devLog("Could not log in with user: $username as it does not exist");
     return 0;
   }
 
   unless($user->{acctlock} == 0)
   {
-    $this->devLog("Could not log into logged account: $username");
     return 0;
   }
 
@@ -2040,7 +2036,6 @@ sub confirmUser
   return $user if $pass eq $user->{passwd};
   if($user->{salt})
   {
-    $this->devLog("Could not log in because password is salted but doesn't equal what is given");
     return 0;
   }
 
@@ -3345,14 +3340,20 @@ sub devLog
   if($this->inDevEnvironment)
   {
     my $callerinfo = [caller()];
-    
+
     # Check to see if this is a convenience call to the delegation method in Everything::Globals
     if($callerinfo->[0] eq "Moose::Meta::Method::Delegation")
     {
       $callerinfo = [caller(2)];
     }
 
-    return $this->genericLog("/tmp/development.log", join(":",$callerinfo->[0],$callerinfo->[2])." - ".$entry);
+    if($callerinfo->[0] =~ /^Eval::Closure::Sandbox/)
+    {
+      $callerinfo = [caller(1)];
+    }
+
+    my $logfile = $ENV{E2_DEV_LOG} || "/tmp/development.log";
+    return $this->genericLog($logfile, join(":",$callerinfo->[0],$callerinfo->[2])." - ".$entry);
   }
   return;
 }
@@ -3670,8 +3671,6 @@ sub get_messages
   $offset = int($offset);
   $offset ||= 0;
 
-  $this->devLog("Getting messages for $user->{title} with limit $limit and offset $offset");
-
   my $csr = $this->{db}->sqlSelectMany("*","message","for_user=$user->{node_id}", "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
   my $records = [];
   while (my $row = $csr->fetchrow_hashref)
@@ -3743,14 +3742,10 @@ sub can_see_message
 {
   my ($this, $user, $message) = @_;
 
-  $this->devLog("Got message: $message->{message_id}");
-
   if($message->{message_id} and $message->{for_user}->{node_id} == $user->{node_id})
   {
-    $this->devLog("User $user->{node_id} can see message $message->{message_id}");
     return 1;
   }
-  $this->devLog("User $user->{node_id} can NOT see message $message->{message_id}");
   return 0;
 }
 
@@ -3758,8 +3753,6 @@ sub delete_message
 {
   my ($this, $message) = @_;
 
-  $this->devLog("Deleting message: $message->{message_id}");
-  
   if($message->{message_id})
   {
     $this->{db}->sqlDelete("message","message_id=$message->{message_id}");
@@ -3772,8 +3765,6 @@ sub delete_message
 sub message_archive_set
 {
   my ($this, $message, $value) = @_;
-
-  $this->devLog("Archiving message bit set to $value: $message->{message_id}");
 
   $this->{db}->sqlUpdate("message",{"archive"=>$value},"message_id=$message->{message_id}");
   return $message->{message_id};

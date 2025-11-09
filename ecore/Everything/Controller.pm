@@ -111,14 +111,12 @@ sub nodelets
 
     if($self->can($title))
     {
-      $self->devLog("In controller-handled nodelet: $title");
       my $nodelet_values = $self->$title($REQUEST, $node);
       next unless $nodelet_values;
       $params->{nodelets}->{$title} = $nodelet_values;
     }else{
       if(my $delegation = Everything::Delegation::nodelet->can($title))
       {
-        # $self->devLog("Using delegated nodelet content for: $title");
         $params->{nodelets}->{$title}->{delegated_content} = $delegation->($self->DB, $REQUEST->cgi, $node->NODEDATA, $REQUEST->user->NODEDATA,$REQUEST->VARS, $Everything::HTML::PAGELOAD, $self->APP);
       }
     }
@@ -168,9 +166,8 @@ sub fully_supports
 sub page_exists
 {
   my ($self, $page) = @_;
-  
+
   my $page_to_find = $self->title_to_page($page);
-  $self->devLog("Looking for page: $page_to_find");
   return exists($self->PAGE_TABLE->{$page_to_find});
 }
 
