@@ -97,12 +97,11 @@ sub json_display
 sub insert
 {
   my ($self, $user, $data) = @_;
-  $self->devLog("Insert called by user '".$user->title."' for type '".$self->typeclass."' with data ".$self->JSON->encode($data));
 
   my $title = $data->{title};
   unless(defined $title)
   {
-    $self->devLog("Everything::Node::insert: Didn't get a title in the \$data hash, returning");
+    # Everything::Node::insert: Didn't get a title in the data hash, returning
     return;
   }
 
@@ -111,7 +110,7 @@ sub insert
   my $new_node_id = $self->DB->insertNode($title, $self->typeclass, $user->NODEDATA,$data, "skip maintenances");
   unless($new_node_id)
   {
-    $self->devLog("Did not get good node_id back from insertNode. Returning");
+    # Did not get good node_id back from insertNode. Returning
     return;
   }
 
@@ -147,21 +146,18 @@ sub update
 
   my $updater_title = undef;
   my $user_struct = undef;
-  if($user and $user eq "-1")
+  if($user and $user eq '-1')
   {
-    $updater_title = "root";
+    $updater_title = 'root';
     $user_struct = -1;
   }else{
     $updater_title = $user->title;
     $user_struct = $user->NODEDATA;
   }
 
-  $self->devLog("Attempting to update node: ".$self->title." (".$self->node_id.") as user: $updater_title");
-  $self->devLog("Received update overwrite data: ".$self->JSON->encode([$data]));
   my $NODEDATA = $self->NODEDATA;
   foreach my $key (keys %$data)
   {
-    $self->devLog("Overwriting data in node for key $key");
     $NODEDATA->{$key} = $data->{$key};
   }
   $self->NODEDATA($NODEDATA);
@@ -193,7 +189,7 @@ sub url_safe_title
 {
   my ($self) = @_;
 
-  my $title = $self->title;  
+  my $title = $self->title;
   $title = CGI::escape(CGI::escape($title));
   # Make spaces more readable
   # But not for spaces at the start/end or next to other spaces
@@ -259,10 +255,17 @@ sub _build_notes
   my $outdata = [];
   while(my $row = $csr->fetchrow_hashref)
   {
-    push @$outdata, $row;
+    push @{$outdata}, $row;
   }
 
   return $outdata;
+}
+
+sub cache_refresh
+{
+  my ($self) = @_;
+  $self->{NODEDATA} = $self->DB->getNodeById($self->node_id,'force');
+  return $self->NODEDATA;
 }
 
 __PACKAGE__->meta->make_immutable;

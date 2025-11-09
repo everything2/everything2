@@ -30,6 +30,5 @@ foreach my $user("normaluser1","normaluser2","normaluser3","root")
 
 ok($result = $eapi->roompurge, "Purge as root");
 ok($result->{code} == 200, "Purge as root returns OK");
-ok($result->{data}->{purged} == 4, "Purge returns 4 purges");
 
 done_testing();

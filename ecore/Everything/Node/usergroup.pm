@@ -37,7 +37,7 @@ sub deliver_message
   }
 
   my $responses = {};
- 
+
   foreach my $groupmember (@{$self->group || []})
   {
     if($groupmember->can("deliver_message"))

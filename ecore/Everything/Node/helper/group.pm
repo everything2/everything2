@@ -13,7 +13,7 @@ sub _build_group
   my $group = [];
   foreach my $item (@{$self->NODEDATA->{group} || []})
   {
-    push @$group, $self->APP->node_by_id($item);
+    push @{$group}, $self->APP->node_by_id($item);
   }
 
   return $group;
@@ -35,16 +35,16 @@ sub _flatten
 
   my $output = [];
 
-  foreach my $n (@$group)
+  foreach my $n (@{$group})
   {
     next if $seen->{$n->id};
     $seen->{$n->id} = 1;
 
     if($n->is_group)
     {
-      push(@$output, @{$self->_flatten($n->group, $seen)});
+      push(@{$output}, @{$self->_flatten($n->group, $seen)});
     }else{
-      push(@$output, $n);
+      push(@{$output}, $n);
     }
   }
 
@@ -55,19 +55,19 @@ sub group_remove
 {
   my ($self, $items_to_remove, $user) = @_;
 
-  foreach my $item (@$items_to_remove)
+  foreach my $item (@{$items_to_remove})
   {
     my $itemnode = $self->APP->node_by_id($item);
     unless($itemnode)
     {
-      $self->devLog("Couldn't find item node for id: $item");
+      # No item node for id
       next;
     }
     $self->DB->removeFromNodegroup($self->NODEDATA, $itemnode->NODEDATA, $user->NODEDATA);
   }
   $self->DB->updateNode($self->NODEDATA, $user->NODEDATA);
 
-  $self->NODEDATA($self->DB->getNodeById($self->node_id));
+  $self->cache_refresh;
   $self->group($self->_build_group);
   return $self;
 }
@@ -76,12 +76,12 @@ sub group_add
 {
   my ($self, $items_to_add, $user) = @_;
 
-  foreach my $item (@$items_to_add)
+  my $NODE = $self->NODEDATA;
+  foreach my $item (@{$items_to_add})
   {
     my $itemnode = $self->APP->node_by_id($item);
     unless($itemnode)
     {
-      $self->devLog("Couldn't find item node for id: $item");
       next;
     }
     my $found = 0;
@@ -95,13 +95,14 @@ sub group_add
     }
     unless($found)
     {
-      $self->DB->insertIntoNodegroup($self->NODEDATA, $user->NODEDATA, $itemnode->NODEDATA);
+      $self->DB->insertIntoNodegroup($NODE, $user->{NODEDATA}, $item);
     }
   }
-  $self->DB->updateNode($self->NODEDATA, $user->NODEDATA);
-
-  $self->NODEDATA($self->DB->getNodeById($self->node_id));
+  $self->cache_refresh;
   $self->group($self->_build_group);
+
+  $self->DB->updateNode($self->{NODEDATA}, $user->{NODEDATA});
+
   return $self;
 }
 

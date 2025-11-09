@@ -33,9 +33,6 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Current directory `pwd`
-      - echo File tree
-      - find /root
 cache:
   paths:
     - '/root/.npm/**/*'

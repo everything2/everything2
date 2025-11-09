@@ -32,13 +32,12 @@ sub get
 sub get_by_name
 {
   my ($self, $REQUEST, $type, $title) = @_;
-  $self->devLog("Doing node lookup for: title: $title, type: $type");
 
   $type = uri_unescape($type);
   $title = uri_unescape($title);
 
   # Works around an ecore bug which throws an ISE on non-existent nodetype
-  my $nodetype = $self->APP->node_by_name($type,"nodetype");
+  my $nodetype = $self->APP->node_by_name($type,'nodetype');
   unless($nodetype)
   {
     return [$self->HTTP_NOT_FOUND];
@@ -55,7 +54,7 @@ sub get_by_name
   {
     return [$self->HTTP_OK, $node->json_display($REQUEST->user)];
   }else{
-    $self->devLog("Could not read node per can_read_node. Returning FORBIDDEN");
+    # Could not read node per can_read_node. Returning FORBIDDEN
     return [$self->HTTP_FORBIDDEN];
   }
 
@@ -73,7 +72,7 @@ sub get_id
   {
     if($node->typeclass ne $class)
     {
-      $self->devLog("Node class of ".$node->typeclass." does not match API class $class (and is not node). Returning NOT FOUND");
+      # Node class does not match API class (and is not node). Returning NOT FOUND
       return [$self->HTTP_NOT_FOUND];
     }
   }
@@ -87,13 +86,13 @@ sub create
 
   if($REQUEST->is_guest)
   {
-    $self->devLog("Guest cannot access create endpoint");
+    # Guest cannot access create endpoint
     return [$self->HTTP_UNAUTHORIZED];
   }
 
   unless($self->CREATE_ALLOWED)
   {
-    $self->devLog("Creation flag explicitly off for API, returning UNIMPLEMENTED");
+    # Creation flag explicitly off for API, returning UNIMPLEMENTED
     return [$self->HTTP_UNIMPLEMENTED];
   }
 
@@ -101,13 +100,12 @@ sub create
 
   unless($newnode)
   {
-    $self->devLog("Returning unimplemented due to lack of good node skeleton for type: ".$self->node_type);
+    # Returning unimplemented due to lack of good node skeleton
     return [$self->HTTP_UNIMPLEMENTED];
   }
 
   unless($newnode->can_create_type($REQUEST->user))
   {
-    $self->devLog("User ".$REQUEST->user->title." can't create node for of type ".$self->node_type.". Returning FORBIDDEN");
     return [$self->HTTP_FORBIDDEN];
   }
 
@@ -116,7 +114,7 @@ sub create
 
   if(not defined($postdata))
   {
-    $self->devLog("No postdata after translate_create_params, returning BAD REQUEST");
+    # No postdata after translate_create_params, returning BAD REQUEST
     return [$self->HTTP_BAD_REQUEST];
   }
 
@@ -136,7 +134,7 @@ sub create
 
   unless($node)
   {
-    $self->devLog("Didn't get a good node back from the insert routine, having to return UNAUTHORIZED");
+    # Didn't get a good node back from the insert routine, having to return UNAUTHORIZED
     return [$self->HTTP_UNAUTHORIZED];
   }
 
@@ -158,13 +156,11 @@ sub update
   my $postdata = $REQUEST->JSON_POSTDATA;
 
   my $allowed_data = {};
- 
-  $self->devLog("Available update keys are: ".$self->JSON->encode($node->field_whitelist)); 
+
   foreach my $key (@{$node->field_whitelist})
   {
     if(exists($postdata->{$key}))
     {
-      $self->devLog("Found request to update key '$key'");
       $allowed_data->{$key} = $postdata->{$key};
     }
   }
@@ -172,10 +168,10 @@ sub update
   $node = $node->update($user, $allowed_data);
   if($node)
   {
-    $self->devLog("Update successful, returning new node object as JSON");
+    # Update successful, returning new node object as JSON
     return [$self->HTTP_OK, $node->json_display($user)];
   }else{
-    $self->devLog("Update went wrong for some reason, returning FORBIDDEN");
+    # Update went wrong for some reason, returning FORBIDDEN
     return [$self->HTTP_FORBIDDEN];
   }
 
@@ -242,7 +238,6 @@ sub _can_action_okay
 
   unless($node)
   {
-    $self->devLog("Could not get blessed node reference for id: $id. Returning UNIMPLEMENTED");
     return [0, $self->HTTP_UNIMPLEMENTED];
   }
 
@@ -251,7 +246,6 @@ sub _can_action_okay
   {
     return [1,$node,$REQUEST->user];
   }else{
-    $self->devLog("Could not $action node per can_".$action."_node. Returning FORBIDDEN");
     return [0,$self->HTTP_FORBIDDEN];
   }
 }

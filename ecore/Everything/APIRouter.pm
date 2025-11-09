@@ -29,11 +29,11 @@ sub dispatcher
     {
       return $self->output($REQUEST, $self->CONTROLLER_TABLE->{$endpoint}->route($REQUEST, $extra));
     }else{
-      $self->devLog("Request fell through to catchall after CONTROLLER_TABLE check");
+      # Request fell through to catchall after CONTROLLER_TABLE check
       return $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
     }
   }else{
-    $self->devLog("Request fell through to catchall after form check: $method for $urlform");
+    # Request fell through to catchall after form check
     return $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
   }
 }

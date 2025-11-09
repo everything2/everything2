@@ -1,14 +1,6 @@
 #!/bin/bash
 
-docker container stop e2devapp
-docker container stop e2devdb
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
-docker rm e2devdb
-docker rm e2devapp
-
-docker network rm e2-dev-net
-
-docker image rm everything2/e2db
-docker image rm everything2/e2app
-
-docker builder prune --all --force
+# Wrapper script for cleaning development environment
+exec "$SCRIPT_DIR/devbuild.sh" --clean "$@"

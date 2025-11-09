@@ -13,9 +13,10 @@ Everything2 is a user-submitted content website emphasizing writing and connecti
 
 1. Clone the repository
 2. From the main directory, run `./docker/devbuild.sh`
-3. Visit http://localhost:9080
+3. Wait for database initialization and tests to complete (~2-5 minutes first time)
+4. Visit http://localhost:9080
 
-Make changes to the source directory and re-run `./docker/devbuild.sh` to rebuild and relaunch the container. The database won't be touched unless you explicitly run the corresponding `devclean.sh` script.
+The build script automatically detects if the database container exists. On subsequent runs, it will only rebuild the application container unless you use `--db-only` or `--clean` flags.
 
 ## Repository Structure
 
@@ -78,7 +79,7 @@ To update dependencies:
 5. Commit both `cpanfile.snapshot` and `vendor/` changes
 6. Rebuild container: `./docker/devbuild.sh`
 
-**Note:** Ubuntu 22.04 LTS has issues with Perlmagick6, use the OS distribution packages instead.
+**Note:** Ubuntu LTS has historically had issues with Perlmagick6, so image builds use the OS distribution packages instead.
 
 **Quick command:**
 ```bash
@@ -95,30 +96,58 @@ Follow the [Coding Standards](coding-standards.md):
 
 ### Docker Commands
 
-**Build and start:**
+The `devbuild.sh` script intelligently manages both database and application containers.
+
+**Basic build (auto-detects what's needed):**
 ```bash
 ./docker/devbuild.sh
+# → Builds DB if missing, always rebuilds app, runs tests
 ```
 
-**Build with fresh database:**
+**Build specific components:**
 ```bash
-./docker/devbuild.sh full
+./docker/devbuild.sh --db-only    # Build only database container
+./docker/devbuild.sh --app-only   # Build only application container
 ```
 
-**Stop container:**
+**Clean and start fresh:**
 ```bash
-docker stop e2devapp
+./docker/devbuild.sh --clean      # Remove all containers, images, network
+# Or use the wrapper:
+./docker/devclean.sh
 ```
 
-**View logs:**
+**Common workflows:**
 ```bash
-docker logs e2devapp -f
+# Code changes only (fastest - skips DB)
+./docker/devbuild.sh --app-only
+
+# Database schema changes
+./docker/devdbbuild.sh            # Wrapper for --db-only
+
+# Complete rebuild
+./docker/devbuild.sh --clean && ./docker/devbuild.sh
 ```
 
-**Shell access:**
+**Container management:**
 ```bash
-docker exec -it e2devapp bash
+# Stop containers
+docker stop e2devapp e2devdb
+
+# View logs
+docker logs e2devapp -f           # App logs
+docker logs e2devdb -f            # Database logs
+
+# Shell access
+docker exec -it e2devapp bash     # App container
+docker exec -it e2devdb bash      # Database container
+
+# Check status
+docker ps --filter "name=e2dev"
 ```
+
+**Database initialization:**
+The database container automatically runs `qareload.pl` to load nodepack and seeds on first build. The app container waits for the `/etc/everything/dev_db_ready` flag file before starting.
 
 ## Architecture Overview
 

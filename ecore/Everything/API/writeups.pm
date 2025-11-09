@@ -11,7 +11,7 @@ sub translate_create_params
 
   unless(defined($postdata->{writeuptype}) and defined($postdata->{title}) and defined($postdata->{doctext}))
   {
-    $self->devLog("Writeup create API needs writeuptype, title, and doctext; missing at least one");
+    # Writeup create API needs writeuptype, title, and doctext; missing at least one
     return;
   }
 

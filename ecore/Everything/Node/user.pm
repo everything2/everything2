@@ -321,7 +321,6 @@ sub newxp
     $difference = $self->experience - $self->VARS->{oldexp};
     unless($dontupdate)
     {
-      $self->APP->devLog("Setting oldexp as ".$self->experience." (was ".$self->VARS->{oldexp}.")");
       $self->VARS->{oldexp} = $self->experience;  
     }
   }
@@ -452,19 +451,17 @@ sub set_message_ignore
   my $ignore = $self->DB->getNodeById($ignore_id);
   return unless $ignore;
 
-  $self->devLog("set_message_ignore: ".$self->node_id." is ".(($state)?(""):("un"))."ignoring $ignore->{title}");
-
   if($state)
   {
     if(my $struct = $self->is_ignoring_messages($ignore_id))
     {
       return $struct;
     }else{
-      $self->DB->sqlInsert("messageignore",{"messageignore_id" => $self->node_id, "ignore_node" => $ignore->{node_id}});
+      $self->DB->sqlInsert('messageignore',{'messageignore_id' => $self->node_id, "ignore_node" => $ignore->{node_id}});
       return $self->APP->node_json_reference($ignore);
     }
   }else{
-    $self->DB->sqlDelete("messageignore","messageignore_id=".$self->node_id." and ignore_node=$ignore->{node_id}");
+    $self->DB->sqlDelete('messageignore','messageignore_id='.$self->node_id." and ignore_node=$ignore->{node_id}");
     return [$ignore->{node_id}];
   }
 
@@ -474,7 +471,7 @@ sub is_ignoring_messages
 {
   my ($self, $ignore) = @_;
 
-  my $ignorestruct = $self->DB->sqlSelectHashref("*","messageignore","messageignore_id=".$self->node_id." and ignore_node=".int($ignore));
+  my $ignorestruct = $self->DB->sqlSelectHashref('*','messageignore',"messageignore_id=".$self->node_id." and ignore_node=".int($ignore));
 
   if($ignorestruct)
   {
