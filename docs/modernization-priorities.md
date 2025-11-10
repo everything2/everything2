@@ -1,6 +1,6 @@
 # Everything2 Modernization Priorities
 
-**Date:** 2025-11-07
+**Date:** 2025-11-09
 **Status:** Planning Phase
 
 ## Executive Summary
@@ -14,6 +14,7 @@ Everything2 (E2) is a user-submitted content website with a Perl/mod_perl backen
 3. **Modern Object-Oriented Code** - Moose-based architecture
 4. **Security & Maintainability** - Remove technical debt
 5. **Scalability** - Move toward modern web frameworks (PSGI/Plack)
+6. **User Acquisition** - Alternative login methods to reduce friction
 
 ## Current Architecture
 
@@ -645,6 +646,289 @@ test_psgi $app, sub {
 - **Enables:** Better testing, code coverage, deployment flexibility
 - **Requires:** Refactoring of request handling in Everything::Application
 
+## Priority 9: Alternative Login Methods 🔐
+
+### Why This Matters
+
+**User Acquisition**
+- Reduce account creation friction
+- Lower barrier to entry for new users
+- Improve conversion rates
+- Modern user expectations (OAuth login is standard)
+
+**Security Benefits**
+- OAuth providers handle password security
+- Multi-factor authentication via providers
+- Reduced password management burden
+- Better account recovery options
+
+**User Experience**
+- Faster registration process
+- No password to remember
+- Seamless cross-device experience
+- Trusted third-party authentication
+
+### Current State
+
+**Authentication System:**
+- Custom username/password authentication
+- Manual account creation flow
+- Password storage with salt/hash
+- Email verification required
+- No alternative login methods
+
+**Barriers to Entry:**
+- Users must create new credentials
+- Email verification step
+- Password requirements
+- Additional friction vs. modern sites
+
+### Target Implementation
+
+**OAuth 2.0 Providers:**
+1. **Google Sign-In** (OAuth 2.0)
+   - Widest adoption
+   - Google Account integration
+   - Well-documented API
+
+2. **Facebook Login** (OAuth 2.0)
+   - Large user base
+   - Social graph integration
+   - Profile data access
+
+3. **Apple Sign In** (OAuth 2.0)
+   - Required for iOS apps
+   - Privacy-focused
+   - Email relay option
+
+### Technical Architecture
+
+**OAuth Flow:**
+```
+1. User clicks "Login with Google"
+2. Redirect to provider authorization URL
+3. User authorizes on provider site
+4. Provider redirects back with auth code
+5. Exchange auth code for access token
+6. Fetch user profile from provider
+7. Link to existing account or create new
+8. Set E2 session cookie
+```
+
+**Database Schema Changes:**
+```sql
+CREATE TABLE oauth_accounts (
+    oauth_account_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    provider VARCHAR(50) NOT NULL,
+    provider_user_id VARCHAR(255) NOT NULL,
+    provider_email VARCHAR(255),
+    access_token TEXT,
+    refresh_token TEXT,
+    token_expires DATETIME,
+    created_on DATETIME NOT NULL,
+    last_login DATETIME,
+    UNIQUE KEY unique_provider_user (provider, provider_user_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+);
+```
+
+**Account Linking:**
+- Match by email address (with confirmation)
+- Allow multiple OAuth providers per account
+- Support both OAuth and password login
+- Handle edge cases (email changes, account merges)
+
+### Implementation Plan
+
+**Phase 1: Infrastructure (Week 1-2)**
+1. 📋 Add OAuth2 client library to cpanfile (Net::OAuth2, Mojolicious::Plugin::OAuth2, or similar)
+2. 📋 Create oauth_accounts database table
+3. 📋 Store OAuth credentials in environment variables
+4. 📋 Create OAuth configuration module
+
+**Phase 2: Google Sign-In (Week 3-4)**
+1. 📋 Register application with Google Cloud Console
+2. 📋 Implement authorization flow
+3. 📋 Add "Login with Google" button to login page
+4. 📋 Handle callback and token exchange
+5. 📋 Create or link user account
+6. 📋 Set session and redirect
+
+**Phase 3: Facebook Login (Week 5-6)**
+1. 📋 Register application with Facebook Developers
+2. 📋 Implement Facebook-specific flow
+3. 📋 Add "Login with Facebook" button
+4. 📋 Handle permissions and profile data
+5. 📋 Test account linking
+
+**Phase 4: Apple Sign In (Week 7-8)**
+1. 📋 Register with Apple Developer Program
+2. 📋 Implement Apple-specific flow (different from standard OAuth2)
+3. 📋 Add "Sign in with Apple" button
+4. 📋 Handle email relay privacy feature
+5. 📋 Test iOS integration
+
+**Phase 5: Security & Testing (Week 9-10)**
+1. 📋 CSRF protection on OAuth flows
+2. 📋 State parameter validation
+3. 📋 Token refresh logic
+4. 📋 Account unlinking functionality
+5. 📋 Comprehensive testing
+6. 📋 Security audit
+
+**Phase 6: User Experience (Week 11-12)**
+1. 📋 Account settings page for linked accounts
+2. 📋 Help documentation
+3. 📋 Error handling and user messaging
+4. 📋 Mobile responsive design
+5. 📋 Analytics tracking
+
+### Required Dependencies
+
+```perl
+# Add to cpanfile
+requires 'LWP::Protocol::https';  # HTTPS support
+requires 'JSON::XS';              # JSON handling
+requires 'URI';                   # URL manipulation
+requires 'Crypt::JWT';            # JWT for Apple Sign In
+
+# OAuth2 client (choose one)
+requires 'Net::OAuth2::Client';
+# OR
+requires 'Mojolicious::Plugin::OAuth2';
+# OR
+requires 'LWP::Authen::OAuth2';
+```
+
+### Configuration
+
+**Environment Variables:**
+```bash
+# Google OAuth
+GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_secret
+
+# Facebook OAuth
+FACEBOOK_APP_ID=your_app_id
+FACEBOOK_APP_SECRET=your_secret
+
+# Apple Sign In
+APPLE_CLIENT_ID=com.everything2.signin
+APPLE_TEAM_ID=your_team_id
+APPLE_KEY_ID=your_key_id
+APPLE_PRIVATE_KEY=/path/to/private/key
+```
+
+### Security Considerations
+
+**Token Storage:**
+- Store access tokens encrypted in database
+- Never log tokens
+- Implement token rotation
+- Automatic expiration handling
+
+**Account Linking:**
+- Require re-authentication before linking
+- Email confirmation for account merges
+- Prevent account hijacking via email takeover
+- Rate limiting on OAuth attempts
+
+**Privacy:**
+- Request minimal OAuth scopes (profile, email only)
+- Clear privacy policy about data usage
+- Allow users to unlink accounts
+- GDPR compliance for EU users
+
+### User Stories
+
+**New User:**
+1. Visits E2, sees "Login with Google"
+2. Clicks button, redirects to Google
+3. Authorizes, redirects back to E2
+4. Account automatically created
+5. Immediately logged in and ready to contribute
+
+**Existing User:**
+1. Logs in with username/password
+2. Goes to account settings
+3. Clicks "Link Google Account"
+4. Authorizes on Google
+5. Now can use either login method
+
+**Mobile User:**
+1. Opens E2 on phone
+2. Sees "Sign in with Apple"
+3. Uses Face ID to authorize
+4. Seamlessly logged in
+
+### Success Metrics
+
+**Adoption Metrics:**
+- 30%+ of new signups use OAuth within 6 months
+- 50%+ of new signups use OAuth within 12 months
+- Reduced signup abandonment rate
+- Faster time-to-first-contribution
+
+**Technical Metrics:**
+- <2s OAuth flow completion time
+- >99.9% OAuth authentication success rate
+- Zero security incidents related to OAuth
+- Comprehensive error logging and monitoring
+
+### Risks and Mitigation
+
+**Provider Outages:**
+- Keep traditional login as fallback
+- Monitor provider status pages
+- Graceful degradation
+
+**Privacy Concerns:**
+- Clear documentation of data usage
+- Minimal scope requests
+- Allow account unlinking
+- Transparent privacy policy
+
+**Technical Complexity:**
+- Well-tested OAuth libraries
+- Comprehensive testing
+- Security review
+- Staged rollout
+
+### Future Enhancements
+
+**Additional Providers:**
+- GitHub Login (developer audience)
+- Twitter/X Login
+- Microsoft Account
+- Discord Login
+
+**Advanced Features:**
+- Social profile importing
+- Friend graph integration
+- Cross-platform account sync
+- OAuth for API access (developer tokens)
+
+### Timeline
+
+**Q1 2025:**
+- ⏸️ Infrastructure and Google Sign-In
+- ⏸️ Database schema and OAuth client setup
+
+**Q2 2025:**
+- ⏸️ Facebook and Apple Sign In
+- ⏸️ Security audit and testing
+
+**Q3 2025:**
+- ⏸️ User experience refinement
+- ⏸️ Documentation and analytics
+- ⏸️ Production deployment
+
+**Q4 2025:**
+- ⏸️ Monitor adoption metrics
+- ⏸️ Additional provider evaluation
+- ⏸️ Feature enhancements
+
 ## Risk Assessment
 
 ### High Risk Areas
@@ -694,24 +978,28 @@ test_psgi $app, sub {
 - Remove room criteria from database
 - Fix SQL injection vulnerabilities
 - Add basic test infrastructure
+- OAuth infrastructure and Google Sign-In
 
 ### Q2 2025
 - Mobile responsiveness Phase 1
 - React component testing
 - Begin PSGI preparation
 - Superdoc migration strategy
+- Facebook and Apple Sign-In implementation
 
 ### Q3 2025
 - PSGI migration Phase 1-2
 - Redis cache implementation
 - React modernization
 - 50%+ test coverage
+- OAuth production deployment
 
 ### Q4 2025
 - PSGI production deployment
 - Complete database code removal
 - 70%+ test coverage
 - Full mobile support
+- OAuth adoption monitoring
 
 ## Communication Strategy
 
@@ -739,5 +1027,5 @@ See [next-steps.md](next-steps.md) for immediate action items.
 ---
 
 **Document Status:** Initial draft
-**Last Updated:** 2025-11-07
-**Next Review:** 2025-12-07
+**Last Updated:** 2025-11-09
+**Next Review:** 2025-12-09
