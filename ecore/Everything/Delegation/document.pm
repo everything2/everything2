@@ -8466,4 +8466,106 @@ padding: 3px;
     }
 }
 
+sub the_nodeshell_hopper
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    # Editor-only access check
+    return 'You\'ve got other things to snoop on, don\'t ya.'
+        unless $APP->isEditor($USER);
+
+    my $str = 'A smarter nodeshell deletion implementation
+	<br><br>Copy and paste off of the nodeshells marked for destructions lists.
+	DO NOT separate them by pipes anymore.
+	<b>This is slow to execute</b>, but is worth it.<br><br>
+	<ul>This does the following things:
+		<li>Checks to see if it\'s an E2node
+		<li>Checks to see whether it is empty
+		<li>Checks for firmlinks
+		<li>Deletes the nodeshell
+	</ul>
+	<br><br>This is stable, except the recurring server error.<br><br>';
+
+    my @nodeshellgroup = ();
+    my $nodeshell      = undef;
+
+    $str .= '<ul>';
+
+    if ( defined $query->param('nodeshells') ) {
+        my $shells = $query->param('nodeshells');
+
+        $shells =~ s/\s+\n/\n/g;
+        $shells =~ s/\r/\n/g;
+        $shells =~ s/\[//g;
+        $shells =~ s/\]//g;
+
+        @nodeshellgroup = split( '\n', $shells );
+
+        # jay: this is wharfcode.
+        my %exempt = (
+            9651    => 1,
+            631430  => 1,
+            3146    => 1,
+            9147    => 1,
+            406468  => 1,
+            331     => 1,
+            614583  => 1,
+            1019934 => 1,
+            893653  => 1,
+            448206  => 1,
+            470183  => 1,
+            488505  => 1,
+            898636  => 1,
+            650043  => 1
+        );
+
+        foreach my $nshell (@nodeshellgroup) {
+            $nodeshell = getNode( $nshell, 'e2node' );
+
+            if ( defined $nodeshell ) {
+                $str .= '<li>' . $$nodeshell{title} . ' - exists';
+
+                unless (
+                    $DB->sqlSelect(
+                        "to_node", "links",
+                        "linktype=1150375
+				AND from_node=$$nodeshell{node_id}"
+                    )
+                    )
+                {
+
+                    if(defined($nodeshell->{group}) and scalar(@{$nodeshell->{group}}) >0 ) {
+                        $str .= ' - not empty, can\'t delete.';
+                    } else {
+                        $str .= ' - empty - nuking';
+                        $DB->nukeNode( $nodeshell, $USER );
+                        $str .= ' - <font color="red"><b>DELETED</b></font>';
+                    }
+
+                } else {
+                    $str .= ' - Part of a firmlink, can\'t delete';
+                }    #firmlink check
+
+            } else {
+                $str .=
+                    '<li>"' . $nshell . '" doesn\'t exist as an e2node.';
+            }    #if(defined $nodeshell)
+
+        }
+    }
+
+    $str .= '</ul>';
+
+    $str .= '<form method="post">
+	<input type="hidden" name="node_id" value="1140925">
+	<textarea name="nodeshells" rows="20" cols="60" ></textarea>
+	<br><br><input type="submit" value="Whack em all!">
+	</form>
+	<br><br>';
+
+    $text .= $str;
+    return $text;
+}
+
 1;
