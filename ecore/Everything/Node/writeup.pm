@@ -63,7 +63,7 @@ sub single_writeup_display
 sub cools
 {
   my ($self) = @_;
-  
+
   my $csr = $self->DB->sqlSelectMany("*","coolwriteups","coolwriteups_id=".$self->node_id." ORDER BY tstamp");
   my $cools = [];
   while(my $row = $csr->fetchrow_hashref)
@@ -153,7 +153,7 @@ sub notnew
 sub is_junk
 {
   my ($self) = @_;
- 
+
   return ($self->reputation < $self->CONF->writeuplowrepthreshold) || 0;
 }
 
@@ -169,7 +169,7 @@ sub field_whitelist
   return ["doctext","parent_e2node","wrtype_writeuptype","notnew"];
 }
 
-sub new_writeups_reference 
+sub new_writeups_reference
 {
   my ($self) = @_;
 

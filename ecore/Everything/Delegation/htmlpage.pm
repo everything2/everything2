@@ -1216,7 +1216,7 @@ sub writeup_display_page
   $str .= htmlcode("show writeups") || "";
 
   $str .= qq|<div id='displaytypelinks'>|;
-  
+
   unless($APP->isGuest($USER))
   {
     $str .= qq|<p>|.linkNode($NODE, 'link view', { displaytype => 'linkview' } ).qq|</p>|;
