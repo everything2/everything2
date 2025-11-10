@@ -3,7 +3,7 @@ package Everything::Delegation::document;
 use strict;
 use warnings;
 
-# Used by advanced_settings
+# Used in: advanced_settings, settings
 use DateTime;
 
 BEGIN {
@@ -7552,6 +7552,175 @@ sub create_node
     $str .= $query->end_form;
 
     return $str;
+}
+
+sub settings
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $text = '';
+
+    # Block 1: Guest check and initialization
+    if ($APP->isGuest($USER)) {
+        return '<p>You need to sign in or ' . linkNode(getNode('Sign up','superdoc'), 'register') . ' to use this page.</p>';
+    }
+
+    # Save last updated time for preferences (DateTime loaded at top)
+    if (defined $query->param('sexisgood')) {
+        $$VARS{'preference_last_update_time'} = DateTime->now()->epoch()-60;
+    }
+    $PAGELOAD->{pageheader} = '<!-- put at end -->'.htmlcode('settingsDocs');
+    $text .= htmlcode('openform',-id=>'pagebody');
+
+    # Static HTML: Look and feel section
+    $text .= '<h2 id="appearance">Look and feel</h2>';
+    $text .= '<fieldset><legend>Style</legend>';
+
+    # Block 2: Style selection
+    if($query->param('chosenstyle')) {
+        my $style = getNodeById(scalar $query->param('chosenstyle'));
+        my $style_type = undef;
+        $style_type = $$style{type}{title} if $style;
+        if ($style_type eq 'stylesheet' or $query->param('chosenstyle') eq 'default' ){
+            delete $$VARS{userstyle};
+            $$VARS{userstyle} = $$style{node_id} if $style;
+        }
+    }
+
+    my $sheets = undef;
+    my $supported_sheets = $DB->getNodesWithParam("supported_sheet");
+    foreach my $thissheet (@$supported_sheets) {
+        my $fixlevel = $APP->getParameter($thissheet, "fix_level");
+        my $sh = getNodeById($thissheet);
+
+        my $auth = getNodeById($$sh{author_user});
+        my $author_string = "";
+        if($auth) {
+            $author_string = " by ".$auth->{title};
+        }
+        $$sheets{$thissheet} = $$sh{title}.($$sh{title} ne $Everything::CONF->default_style ? $author_string : ' (default)');
+    }
+
+    $$sheets{ $$VARS{userstyle} } = getNodeById($$VARS{userstyle})->{title}
+        unless !$$VARS{userstyle} || $$sheets{ $$VARS{userstyle} };
+
+    my @values = ( 'default' , keys %$sheets );
+    $$sheets{default} = '(default)';
+    $$sheets{ $$VARS{userstyle} } .= '*' if $$VARS{userstyle};
+    my $str = 'Choose a style: ' . $query->popup_menu( -name => 'chosenstyle', -id => 'settings_styleselector', values=> \@values,
+        labels=>$sheets, default=>$$VARS{userstyle}||'default');
+
+    $text .= "$str";
+
+    # Static HTML: Style options and Quick functions
+    $text .= htmlcode('varcheckboxinverse', 'nogradlinks', 'Show the softlink color gradient') . '<br>';
+    $text .= '</fieldset>';
+    $text .= '<fieldset><legend>Quick functions</legend>';
+
+    if ($$VARS{noquickvote}) {
+        $text .= htmlcode('varcheckboxinverse', 'noquickvote', 'Enable quick functions (a.k.a. AJAX).');
+        $text .= '<br><small>(Voting, cooling, chatting, etc will no longer require complete pageloads. Highly recommended.)</small><br>';
+    }
+
+    $text .= '<label>On-page transitions:' . htmlcode('varsComboBox', 'fxDuration', '0', '1', 'Off (instant)', '100', 'Supersonic', '150', 'Faster', '0', 'Fast (default)', '300', 'Less fast', '400', 'Medium', '600', 'Slow', '800', 'Slower', '1000', 'Glacial') . '</label>';
+    $text .= '<br>';
+    $text .= htmlcode('varcheckboxinverse', 'noreplacevotebuttons', 'Replace ');
+    $text .= '<label><input type="radio" name="sampledummy">+</label><label><input type="radio" name="sampledummy">-</label>';
+    $text .= ' voting buttons with <input type="button" value="Up"><input type="button" value="Down"> buttons.';
+    $text .= '<br>';
+    $text .= htmlcode('varcheckbox', 'votesafety', 'Ask for confirmation when voting.');
+    $text .= '<br>';
+    $text .= htmlcode('varcheckbox', 'coolsafety', 'Ask for confirmation when cooling writeups.') . '<br>';
+    $text .= '</fieldset>';
+
+    # Static HTML: Your writeups section
+    $text .= '<h2 id="writeups">Your writeups</h2>';
+    $text .= '<fieldset><legend>Editing</legend>';
+    $text .= htmlcode('varcheckbox', 'HideWriteupOnE2node', 'Only show your writeup edit box text on the writeup\'s own page');
+    $text .= ' (useful for slow connections; [E2 Options: Don\'t default to writeup edit on e2nodes|more information])<br>';
+    $text .= htmlcode('varcheckbox', 'settings_useTinyMCE', 'Use WYSIWYG content editor to format writeups') . '<br>';
+    $text .= 'Writeup edit box display size: ' . htmlcode('varsComboBox', 'textareaSize', '0', '0', '20 x 60 (Small) (Default)', '1', '30 x 80 (Medium)', '2', '50 x 95 (Large)');
+    $text .= '([E2 Options: Editbox size choices|more information])<br>';
+    $text .= '</fieldset>';
+    $text .= '<fieldset><legend>Writeup Hints</legend>';
+    $text .= 'Check for some common mistakes made in creating or editing writeups.<br>';
+    $text .= htmlcode('varcheckboxinverse', 'nohints', 'Show critical writeup hints') . ' (recommended: on)<br>';
+    $text .= htmlcode('varcheckboxinverse', 'nohintSpelling', 'Check for common misspellings') . ' (recommended: on)<br>';
+    $text .= htmlcode('varcheckboxinverse', 'nohintHTML', 'Show HTML hints') . ' (recommended: on)<br>';
+    $text .= htmlcode('varcheckbox', 'hintXHTML', 'Show strict HTML hints') . '<br>';
+    $text .= htmlcode('varcheckbox', 'hintSilly', 'Show silly hints');
+    $text .= '</fieldset>';
+
+    # Static HTML: Other users section
+    $text .= '<h2 id="noders">Other users</h2>';
+    $text .= '<fieldset><legend>Other users\' writeups</legend>';
+    $text .= '<label>Anonymous voting:' . htmlcode('varsComboBox', 'anonymousvote', '0', '0', 'Always show author\'s username', '1', 'Hide author completely until I have voted on a writeup', '2', 'Hide author\'s name until I have voted but still link to the author');
+    $text .= '</label>';
+    $text .= '</fieldset>';
+
+    # Block 3: Favorite noders and message blocking
+    $str = '';  # REINITIALIZE for mod_perl
+    my $favoritelinktype = getId(getNode("favorite","linktype"));
+
+    my $csr = $DB->sqlSelectMany("*","links", "from_node = $$USER{'node_id'} AND linktype = $favoritelinktype");
+
+    my @list = ();
+    while( my $favnoder = $csr->fetchrow_hashref) {
+        $favnoder = getNodeById($$favnoder{'to_node'});
+        push @list, '<li>'.$query->checkbox('cutlinkto_'.$$favnoder{'node_id'},'','1','').linkNode($favnoder).'</li>';
+    }
+
+    if(@list) {
+        $str .= '<fieldset><legend>Favorite other users</legend>Your favourite noders are:<ul>';
+        $str .= join("",@list);
+        $str .= '</ul><input type="hidden" name="op" value="linktrim">';
+        $str .= htmlcode('verifyRequestForm', 'linktrim');
+        $str .= $query->hidden("cutlinkfrom",$$USER{'node_id'});
+        $str .= $query->hidden("linktype",$favoritelinktype);
+        $str .= 'Check a user\'s name to remove them from the list.</fieldset>';
+    }
+
+    $str .= '<fieldset><legend>Less favorite other users</legend>';
+
+    if(my $uname = $query->param('nomail')) {
+        htmlcode('ignoreUser',"$uname");
+    }
+
+    foreach ($query->param) {
+        next unless /restore_(\d+)/;
+        my $restore = $1;
+        $DB->sqlDelete('messageignore', "messageignore_id=$$USER{node_id} and ignore_node=$restore");
+    }
+
+    $str .= 'Block messages from: ';
+    $str .= $query->textfield(-name=>'nomail', default=>'', override=>'1');
+    $str .= '<br><small>(If you enter a user name here, you will not receive private messages from this person or see their comments in the Chatterbox. If you enter a group, you will not receive messages to that group.)</small><br>';
+
+    $csr = $DB->sqlSelectMany('ignore_node', 'messageignore', 'messageignore_id='.$$USER{node_id});
+    @list = ();  # REINITIALIZE for mod_perl
+    while (my ($u) = $csr->fetchrow) {
+        push @list, '<li>'.$query->checkbox('restore_'.$u, '', '1', '').linkNode($u).'</li>';
+    }
+    $csr->finish;
+
+    if (@list) {
+        $str .= '<br>You are ignoring:<ul>'.join("",@list).'</ul>';
+        $str .= 'Check a user\'s name to remove them from the list.<br>';
+        $str .= '<small>More thorough ignoring is available at the [Pit of Abomination].</small><br>';
+    }
+
+    $str .= '<br>If one of your messages is blocked, you will be informed:';
+    $str .= htmlcode('varsComboBox','informmsgignore','0', '0','by private message','1','in the chatterbox',2,'both ways',3,'do not inform (bad idea)');
+    $str .= '<br><small>(<strong>Warning</strong>: "do not inform" could lead to you engaging in a one-sided conversation without noticing.)</small></p>';
+    $str .= '</fieldset>';
+
+    $text .= $str.'<br>';
+
+    # Static HTML: JavaScript theme config and close form
+    $text .= '<script type="text/javascript">THEME = {"default_style": "'.$Everything::CONF->default_style.'"}</script>';
+    $text .= htmlcode('closeform', 'Save Settings');
+
+    return $text;
 }
 
 1;
