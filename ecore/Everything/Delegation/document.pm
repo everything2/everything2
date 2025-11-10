@@ -7508,4 +7508,50 @@ sub usergroup_picks
     return $text;
 }
 
+sub create_node
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str = '';
+
+    # Static HTML text from doctext
+    $str .= '<p><i><h3>Please:</h3></i>  <ul><li>Before creating a [new] node make sure there isn\'t already a node that you could simply [add a writeup] to.  Often a user will create a new node only to find there are several others on the same topics.  Just type several key-words in the [search box] above--there\'s a pretty good chance somebody\'s already created a node about it. <br><br></p>';
+
+    # Delete 'node' param and start form
+    $query->delete("node");
+    $str .= $query->start_form;
+
+    # Node name textfield
+    $str .= "Node name: ";
+    $str .= $query->textfield(
+        -name => "node",
+        -size => 50,
+        -maxlength => 100,
+        -value => ($query->param('newtitle') || "")
+    );
+    $str .= "<br>";
+
+    # Nodetype popup
+    $str .= "Nodetype: ";
+    my @idlist = ();
+    my %items = ();
+    my $csr = $DB->sqlSelectMany("*", "node", "type_nodetype=".getId(getType('nodetype'))." ORDER BY title ASC");
+
+    while(my $r = $csr->fetchrow_hashref()) {
+        my $n = getNodeById($$r{node_id});
+        $items{$$n{node_id}} = $$n{title};
+        push @idlist, $$n{node_id};
+    }
+
+    $query->param('type', getId(getType('e2node')));
+    $str .= $query->popup_menu("type", \@idlist, "", \%items);
+
+    # Hidden field and submit button
+    $str .= '<input TYPE="hidden" NAME="op" VALUE="new">';
+    $str .= $query->submit('createit', 'Create It!');
+    $str .= $query->end_form;
+
+    return $str;
+}
+
 1;
