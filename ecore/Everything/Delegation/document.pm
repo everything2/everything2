@@ -7723,4 +7723,467 @@ sub settings
     return $text;
 }
 
+sub everything_s_most_wanted
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $text = '';
+
+    # Static HTML: CSS and header
+    $text .= '<style type="text/css">
+.mytable th, .mytable td
+{
+border: 1px solid silver;
+padding: 3px;
+}
+</style>
+
+<p><blockquote><p align=center><b>Welcome to Everything\'s Most Wanted</b></p>
+
+
+';
+
+    # Block 1: Main bounty management logic
+    my $minlevel = 3;
+    my $lvl = $APP->getLevel($USER);
+    my $isSheriff = $APP->inUsergroup($USER, "sheriffs");
+
+    my $userGP = $$USER{GP};
+    my $sheriff = $$USER{title};
+    my $BountyLimit = ($userGP / 10);
+
+    my $str = "<p><br>Howdy stranger! Reckon you have the [cojones] to take down some of the meanest nodes this side of the [Rio Grande]? Below is a list of the most dangerously unfilled nodes ever to wander the lawless plains of the [nodegel]. Track one down, hogtie it, and fill it up with good content, and you might end up earning yourself a shiny silver sheriff's star.
+
+<p>Any user can fill a posted node and claim the posted bounty. If you think you have captured one of these fugitives, contact the requesting sheriff. If they judge your writeup worthy, you will get your reward!
+
+<p>Check back often for new bounties. Happy hunting!</p>
+
+<p>&nbsp;</p>";
+
+    unless (($APP->isAdmin($USER)) || ($isSheriff)) {
+        $text .= $str;
+        return $text if ($lvl < $minlevel);
+    }
+
+    $str .= "<p><hr width=50></p><p>&nbsp;</p>";
+
+    if ($query->param("yankify")) {
+        my $removee = encodeHTML($query->param("removee"));
+        my $user = getNode($removee, 'user');
+        unless ($user) {
+            $text .= "<p>The user '$removee' doesn't exist!</p><p>Please [Everything's Most Wanted|try again].</p><p>&nbsp;</p>";
+            return $text;
+        }
+
+        my $rewardnode = getNode('bounties', 'setting');
+        my $REF = getVars($rewardnode);
+        my $refund = $$REF{$removee};
+        $APP->adjustGP($user, $refund);
+
+        my $v = getVars($user);
+        $$v{Bounty} = 0;
+        setVars($user, $v);
+
+        if ($$USER{title} eq $removee) {
+            $$VARS{Bounty} = 0;
+            setVars($USER, $VARS);
+        }
+
+        my $deletenode = getNode('bounty order', 'setting');
+        my $deletevars = getVars($deletenode);
+        delete $$deletevars{$$v{BountyNumber}};
+        setVars($deletenode, $deletevars);
+
+        $str = "<hr width=50></p><p>&nbsp;</p><p>Okay, [$removee]'s bounty has been removed";
+        if ($refund > 0) {
+            $str .= " and <b>$refund GP</b> has been returned to their account";
+        }
+        $str .= ".</p><p>Do you need to [Everything's Most Wanted|remove another bounty]?</p>";
+        $str .= "<p>&nbsp;</p>";
+
+        $text .= $str;
+        return $text;
+    }
+
+    $$VARS{Bounty} = 0 unless($$VARS{Bounty});
+
+    if ($$VARS{Bounty} == 1) {
+        my $citation = undef;
+        my $outset = getVars(getNode('outlaws', 'setting'));
+        my $outlaw = $$outset{$sheriff};
+        my $rwdset = getVars(getNode('bounties', 'setting'));
+        my $reward = $$rwdset{$sheriff};
+        if ($reward eq "N/A") {
+            $reward = 0;
+        }
+
+        if ($query->param("bountify")) {
+            my $LuckyWinner = encodeHTML($query->param("rewardee"));
+            my $user = getNode($LuckyWinner, 'user');
+            unless ($user) {
+                $text .= "<p>The user '$LuckyWinner' doesn't exist!</p><p>Please [Everything's Most Wanted|try again].</p><p>&nbsp;</p>";
+                return $text;
+            }
+            if ($$USER{title} eq $LuckyWinner) {
+                $text .= "<p>It is not possible to reward yourself!</p><p>Please [Everything's Most Wanted|try again].</p><p>&nbsp;</p>";
+                return $text;
+            }
+
+            $APP->adjustGP($user, $reward);
+            $$VARS{Bounty} = 0;
+            setVars($USER, $VARS);
+
+            my $deletenode = getNode('bounty order', 'setting');
+            my $deletevars = getVars($deletenode);
+            delete $$deletevars{$$VARS{BountyNumber}};
+            setVars($deletenode, $deletevars);
+
+            $citation = "[$LuckyWinner] tracked down $outlaw and earned $reward GP from [$sheriff]!";
+
+            my $justicenode = getNode('justice served', 'setting');
+            my $justicevars = getVars($justicenode);
+            my $numbernode = getNode('bounty number', 'setting');
+            my $numbervar = getVars($numbernode);
+
+            my $citesNum = (($$numbervar{"justice"})+1);
+            $$justicevars{$citesNum} = $citation;
+            $$numbervar{"justice"}++;
+            setVars($justicenode, $justicevars);
+            setVars($numbernode, $numbervar);
+
+            $str = "<p>Okay, user [$LuckyWinner] has been rewarded the bounty of <b>$reward GP</b>.</p><p>Would you like to [Everything's Most Wanted|post a new bounty]?</p>";
+            $str .= "<p>&nbsp;</p>";
+
+            $text .= $str;
+            return $text;
+        }
+
+        if ($query->param("awardify")) {
+            my $LuckyWinner = encodeHTML($query->param("awardee"));
+            my $Prize = encodeHTML($query->param("awarded"));
+            my $user = getNode($LuckyWinner, 'user');
+            unless ($user) {
+                $text .= "<p>The user '$LuckyWinner' doesn't exist!</p><p>Please [Everything's Most Wanted|try again].</p><p>&nbsp;</p>";
+                return $text;
+            }
+            if ($$USER{title} eq $LuckyWinner) {
+                $text .= "<p>It is not possible to reward yourself!</p><p>Please [Everything's Most Wanted|try again].</p><p>&nbsp;</p>";
+                return $text;
+            }
+
+            $APP->adjustGP($user, $reward);
+            $$VARS{Bounty} = 0;
+            setVars($USER, $VARS);
+
+            my $deletenode = getNode('bounty order', 'setting');
+            my $deletevars = getVars($deletenode);
+            delete $$deletevars{$$VARS{BountyNumber}};
+            setVars($deletenode, $deletevars);
+
+            $citation = "[$LuckyWinner] rounded up $outlaw and earned a bounty from [$sheriff] of $Prize";
+            if ($reward > 0) {
+                $citation .= " and $reward GP";
+            }
+            $citation .= "!";
+
+            my $justicenode = getNode('justice served', 'setting');
+            my $justicevars = getVars($justicenode);
+            my $numbernode = getNode('bounty number', 'setting');
+            my $numbervar = getVars($numbernode);
+
+            my $citesNum = (($$numbervar{"justice"})+1);
+            $$justicevars{$citesNum} = $citation;
+            $$numbervar{"justice"}++;
+            setVars($justicenode, $justicevars);
+            setVars($numbernode, $numbervar);
+
+            $str = "<p><br>Okay, let the record show that user [$LuckyWinner] has been awarded a bounty of <b>$Prize</b>";
+            if ($reward > 0) {
+                $str .= " and <b>$reward GP</b>";
+            }
+            $str .= "!</p>";
+            $str .= "<p>&nbsp;</p><p>Would you like to [Everything's Most Wanted|post a new bounty]?</p>";
+            $str .= "<p>&nbsp;</p>";
+
+            $text .= $str;
+            return $text;
+        }
+
+        if ($query->param("Reward")) {
+            $str = "<p>&nbsp;</p><p>Okay, who would you like the posted bounty of <b>$reward GP</b> to be awarded to? ";
+            $str .= htmlcode('openform');
+            $str .= $query->textfield("rewardee");
+            $str .= " " . $query->submit("bountify","Reward Them!");
+            $str .= $query->end_form;
+            $str .= "<p>&nbsp;</p>";
+
+            $text .= $str;
+            return $text;
+        }
+
+        if ($query->param("Award")) {
+            $str = htmlcode('openform');
+            $str .= "<p>Okay, which noder are you rewarding? ";
+            $str .= $query->textfield("awardee") . " And what exactly are you giving to them? ";
+            $str .= $query->textfield("awarded") . "</p>";
+            $str .= " " . $query->submit("awardify","Reward Them!");
+            $str .= $query->end_form;
+            $str .= "<p>&nbsp;</p>";
+
+            $text .= $str;
+            return $text;
+        }
+
+        if ($query->param("Remove")) {
+            $APP->adjustGP($USER, $reward);
+            $$VARS{Bounty} = 0;
+            setVars($USER, $VARS);
+
+            my $deletenode = getNode('bounty order', 'setting');
+            my $deletevars = getVars($deletenode);
+            delete $$deletevars{$$VARS{BountyNumber}};
+            setVars($deletenode, $deletevars);
+
+            $str = "<p>&nbsp;</p><p>Okay, your bounty has been removed";
+            if ($reward > 0) {
+                $str .= ", and the bounty you posted of <b>$reward GP</b> has been returned to your account";
+            }
+            $str .= ".<p>Would you like to [Everything's Most Wanted|post a new bounty]?</p></p><p>&nbsp;</p>";
+
+            $text .= $str;
+            return $text;
+        }
+
+        $str .= "<p>You have already posted a bounty. Would you like to remove it (either because it has been filled by a user, or because you just want to take it down)?</p>";
+
+        $str .= htmlcode('openform');
+        unless ($$VARS{GPoptout}) {
+            unless ($reward == 0) {
+                $str .= "<p>" . $query->submit("Reward","Yes, and I'd like to pay out the reward (GP only)") . "</p>";
+            }
+        }
+        $str .= "<p>" . $query->submit("Award","Yes, and I'd like to pay out the reward (including other reward(s) besides GP)") . "</p>";
+        $str .= "<p>" . $query->submit("Remove","Yes, just remove it (and return any GP to me)") . "</p>";
+        $str .= $query->end_form;
+        $str .= "<p>&nbsp;</p>";
+
+        $str .= "<p>&nbsp;</p>";
+
+        $text .= $str;
+        return $text;
+    }
+
+    if ($query->param("postBounty")) {
+        my $bounty = encodeHTML(scalar($query->param("bounty")));
+        my $comment = encodeHTML(scalar($query->param("comment")));
+        my $outlawed = encodeHTML(scalar($query->param("outlaw")));
+        my $isNode = getNode($outlawed, 'e2node');
+
+        if ($bounty eq "") {
+            $bounty = "N/A";
+        }
+        if ($comment eq "") {
+            $comment = "&nbsp;";
+        }
+
+        unless ($bounty <= $BountyLimit) {
+            $text .= "<p>&nbsp;</p><p>Your bounty is too high! Bounties cannot be greater than 10% of your total GP. Please [Everything's Most Wanted|try again].</p>";
+            return $text;
+        }
+        if ($bounty < 0) {
+            $text .= "<p>&nbsp;</p><p>You must enter a bounty of 0 or greater. Please [Everything's Most Wanted|try again].</p>";
+            return $text;
+        }
+        if (($bounty < 1) && ($bounty ne "N/A")) {
+            $text .= "<p>&nbsp;</p><p>You must enter a number. Please [Everything's Most Wanted|try again].</p>";
+            return $text;
+        }
+        if ($outlawed eq "") {
+            $text .= "<p>&nbsp;</p><p>You must specify a node or nodeshell to be filled. Please [Everything's Most Wanted|try again].</p>";
+            return $text;
+        }
+        unless ($isNode) {
+            $text .= "<p>&nbsp;</p><p>No such node! Your 'Outlaw Node' must be a valid node or nodeshell.  Please [Everything's Most Wanted|try again].</p>";
+            return $text;
+        }
+
+        $APP->adjustGP($USER, -$bounty);
+
+        my $bountyNum = undef;
+        my $ordernode = getNode('bounty order', 'setting');
+        my $maxnode = getNode('bounty number', 'setting');
+        my $BNT = getVars($ordernode);
+        my $MAX = getVars($maxnode);
+
+        $bountyNum = ($$MAX{1} + 1);
+        $$MAX{1}++;
+        $$BNT{$bountyNum} = $sheriff;
+        setVars($ordernode, $BNT);
+        setVars($maxnode, $MAX);
+
+        $$VARS{Bounty} = 1;
+        $$VARS{BountyNumber} = $bountyNum;
+        setVars($USER, $VARS);
+
+        my $settingsnode = getNode('bounties', 'setting');
+        my $bountySettings = getVars($settingsnode);
+        $$bountySettings{$sheriff} = $bounty;
+        setVars($settingsnode, $bountySettings);
+
+        my $outlawStr = "[$outlawed]";
+        my $outlawnode = getNode('outlaws', 'setting');
+        my $outlawvars = getVars($outlawnode);
+        $$outlawvars{$sheriff} = $outlawStr;
+        setVars($outlawnode, $outlawvars);
+
+        my $commentsnode = getNode('bounty comments', 'setting');
+        my $commentsvars = getVars($commentsnode);
+        $$commentsvars{$sheriff} = $comment;
+        setVars($commentsnode, $commentsvars);
+
+        $text .= "<p>&nbsp;</p><p>Your bounty has been posted!</p>";
+        return $text;
+    }
+
+    if ($query->param("Yes")) {
+        $str = "<p>Welcome to the team, Deputy! Enter the outlaw nodeshell you want rounded up below, along with a GP reward. Don't forget to [hardlink] your nodeshell! Also, feel free to add a different kind of reward if you would like, instead of or in addition to the GP reward. Some suggestions include C!s, a postcard, a [node audit], some sort of homemade item, or anything else you can imagine! In this case, explain your reward in the 'Outlaw Nodeshell' box, and feel free to leave the 'Bounty' box blank or enter 0.</p>
+
+<p>When your bounty is posted, any GP you put up as a reward will be removed from your account and held in [escrow], pending successful capture of the bandit in question. However, if you later take your bounty down and choose not to authorize payment to another user, your GP will be returned to you in full. Finally, please note that bounties cannot be larger than 10% of your total GP.</p>";
+        $str .= htmlcode('openform');
+        $str .= "Outlaw node (just node title, do *not* hardlink): ";
+        $str .= $query->textfield("outlaw");
+        $str .= "<br><br>Any comments (such as additional non-GP rewards): ";
+        $str .= $query->textfield("comment");
+        $str .= "<br><br>Bounty (in GP): ";
+        if ($$VARS{GPoptout}) {
+            $str .= " <em>You are currently [User Settings|opted out] of the [GP] system. Please enter a non-GP reward in the 'comments' box above.</em><br><br>";
+        } else {
+            $str .= $query->textfield("bounty")."<br><br>";
+        }
+        $str .= $query->submit("postBounty","Post Bounty!");
+        $str .= $query->end_form;
+        $str .= "<p>&nbsp;</p>";
+
+        $text .= $str;
+        return $text;
+    }
+
+    $str .= "<p>Since you are Level $minlevel or higher, you are allowed to add a bounty of your own to the list below. Would you like to add a bounty?</p>";
+
+    $str .= htmlcode('openform');
+    $str .= $query->submit("Yes","Yes!");
+    $str .= $query->end_form;
+    $str .= "<p>&nbsp;</p>";
+
+    $text .= $str;
+
+    # Block 2: Sheriff/admin section for removing bounties
+    $str = '';  # REINITIALIZE for mod_perl
+    $isSheriff = $APP->inUsergroup($USER, "sheriffs");
+
+    if (($APP->isAdmin($USER)) || ($isSheriff)) {
+        unless ($query->param("yankify")) {
+            $str .= "<p>&nbsp;</p><p><hr width=50></p><p>&nbsp;</p>";
+
+            if ($APP->isAdmin($USER)) {
+                $str .= "<p>Since you are an administrator, you have the authority to delete bounties if necessary. Note that you can also delete or edit automatically generated entries from the 'Justice Served' list by going the [justice served] settings node and removing or editing entries (hard coded entries can be deleted by patching this node).</p>";
+            } else {
+                $str .= "<p>Since you are a member of the [sheriffs] usergroup, you have the authority to delete bounties if necessary.</p>";
+            }
+
+            $str .= "<p>&nbsp;</p><p>Enter the name of a user whose bounty you need to remove: ";
+            $str .= htmlcode('openform');
+            $str .= $query->textfield("removee");
+            $str .= " " . $query->submit("yankify","Remove Bounty");
+            $str .= $query->end_form;
+            $str .= "<p>&nbsp;</p>";
+        }
+    }
+
+    $text .= $str;
+
+    # Static HTML: Close blockquote and start table section
+    $text .= '</blockquote></p>
+
+<p><hr width=50></p><p>&nbsp;</p>
+<table>
+';
+
+    # Block 3: Display bounty table
+    $str = '';  # REINITIALIZE for mod_perl
+
+    $str .= "<p><table class='mytable'><tr><th>Requesting Sheriff</th><th>Outlaw Node</th><th>Details of the Crime</th><th>GP Reward (if any)</th></tr>";
+
+    my $REQ = getVars(getNode('bounty order','setting'));
+    my $OUT = getVars(getNode('outlaws', 'setting'));
+    my $REW = getVars(getNode('bounties', 'setting'));
+    my $COM = getVars(getNode('bounty comments', 'setting'));
+    my $MAX = getVars(getNode('bounty number', 'setting'));
+
+    my $bountyTot = 0;
+    my $outlawStr = undef;
+    my $requester = undef;
+    my $reward = undef;
+    my $details = undef;
+
+    my $numBounties = 1;
+
+    while ($numBounties < $$MAX{1}) {
+        $numBounties++;
+    }
+    $bountyTot = $numBounties;
+
+    for(my $i = $bountyTot; $i >= 1; $i--) {
+        if (exists $$REQ{$i}) {
+            $requester = $$REQ{$i};
+            $outlawStr = $$OUT{$requester};
+            $reward = $$REW{$requester};
+            $details = $$COM{$requester};
+            $str .= "<tr><TD>[$requester]</TD><TD>$outlawStr</TD><TD>$details</TD><TD>$reward</TD></tr>";
+        }
+    }
+
+    $text .= $str;
+
+    # Static HTML: Close table and start Justice Served section
+    $text .= '</table>
+
+<p>&nbsp;<br></p>
+
+<h1>Justice Served!</h1>
+
+<ul>
+';
+
+    # Block 4: Display justice served list
+    $str = '';  # REINITIALIZE for mod_perl
+
+    my $JUST = getVars(getNode('justice served','setting'));
+    my $NUM = getVars(getNode('bounty number','setting'));
+
+    my $justiceTot = $$NUM{"justice"};
+    my $justice = undef;
+
+    for(my $i = $justiceTot; $i > 0; $i--) {
+        if (exists $$JUST{$i}) {
+            $justice = $$JUST{$i};
+            $str .= "<li>$justice</li>";
+        }
+    }
+
+    $text .= $str;
+
+    # Static HTML: Close list
+    $text .= '</ul>
+';
+
+    # Block 5: Include Justice Served oppressor_document if it exists
+    my $justiceDoc = getNode("Justice Served", "oppressor_document");
+    if (defined $justiceDoc) {
+        $text .= $$justiceDoc{doctext};
+    }
+
+    return $text;
+}
+
 1;

@@ -101,10 +101,17 @@ The system uses a two-tier lookup:
    - These are generic handlers for the nodetype
 
 2. **Node-specific delegation**: Based on the node's title
-   - Use lowercase with underscores, replacing spaces and special characters
-   - "Everything Statistics" → `sub everything_statistics`
-   - "Usergroup Picks" → `sub usergroup_picks`
-   - "News for Noders" → `sub news_for_noders`
+   - Convert to lowercase
+   - Replace spaces with underscores
+   - Replace any characters not valid in Perl function names with underscores
+   - Examples:
+     - "Everything Statistics" → `sub everything_statistics`
+     - "Usergroup Picks" → `sub usergroup_picks`
+     - "News for Noders" → `sub news_for_noders`
+     - "Everything's Most Wanted" → `sub everything_s_most_wanted` (apostrophe becomes underscore)
+     - "User Settings (Advanced)" → `sub user_settings__advanced_` (parentheses become underscores)
+
+**Important**: Valid Perl function name characters are: letters (a-z, A-Z), digits (0-9), and underscores. All other characters (apostrophes, hyphens, parentheses, etc.) are converted to underscores.
 
 Most migrations create **node-specific delegations** based on the node title, which the nodetype delegation handler will call.
 
