@@ -8206,4 +8206,264 @@ sub the_well_of_cool
     return $text;
 }
 
+sub recalculate_xp
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $text = '';
+
+    # Static HTML: CSS
+    $text .= '<style type="text/css">
+.mytable th, .mytable td
+{
+border: 1px solid silver;
+padding: 3px;
+}
+</style>
+
+';
+
+    my $targetStr = '';
+    my $targetUser = undef;
+    my $targetVars = undef;
+
+    if ( $APP->isAdmin($USER) ) {
+        $targetStr .= "<label>Target user:"
+            . $query->textfield(-name => 'targetUser')
+            . "</label><br>"
+            ;
+
+        my $targetUsername = $query->param('targetUser');
+
+        if ($targetUsername) {
+            $targetUser = getNode($targetUsername, 'user');
+
+            if (!$targetUser) {
+                $targetStr .= "<p><em>Could not find user '"
+                    . encodeHTML($targetUsername)
+                    . "'</em></p>"
+                    ;
+            }
+        }
+    }
+
+    my $checkCanRecalc = sub {
+        ### Check if user joined before October 29, 2008
+        return "This service is only needed by and available to users who joined E2 prior to October 29, 2008.
+   Don't worry - all of your XP was earned under the present system.</p>" if ($$USER{node_id} > 1960662);
+
+        return "<p>Our records show that you have already recalculated your XP.
+   You are only allowed to recalculate your XP once.</p>" if ($$VARS{hasRecalculated} == 1);
+
+        return '';
+    };
+
+    my $noRecalcStr = &$checkCanRecalc();
+
+    # Do these checks for normal users.  Bypass them if a god is recalculating someone else
+    if (!$targetUser) {
+        if ($noRecalcStr ne '') {
+            if ($targetStr) {
+                $noRecalcStr .= ''
+                    . $query->start_form()
+                    . $targetStr
+                    . $query->hidden('node_id', $$NODE{node_id})
+                    . $query->submit('recalculate_XP', 'Recalculate!')
+                    . $query->end_form()
+                    ;
+            }
+
+            $text .= $noRecalcStr;
+            return $text;
+        }
+
+        $targetVars = $VARS;
+        $targetUser = $USER;
+
+    } else {
+        $targetVars = getVars($targetUser);
+    }
+
+    my $uid = getId($targetUser);
+
+    ##################################################
+    # set variables for each system
+    #
+    my $wuBonus = 5;
+    my $coolBonus = 20;
+
+    #####################################################
+    my $rows = undef;
+    my $row = undef;
+    my $queryText = '';
+    my $count = undef;
+
+    my $writeupCount = 0;
+    my $heavenTotalReputation = 0;
+    my $coolCount = 0;
+    my $xp = 0;
+    my $upvotes = 0;
+    my $NodeHeavenCoolCount = 0;
+
+    #
+    # Experience
+    #
+    $queryText = "SELECT experience FROM user WHERE user_id=$uid";
+    $rows = $DB->{dbh}->prepare($queryText);
+    $rows->execute()
+        or do { $text .= $rows->errstr; return $text; };
+    $xp = $rows->fetchrow_array();
+
+    #
+    # Writeup Count
+    #
+    $queryText = "SELECT COUNT(*) FROM node,writeup WHERE node.node_id=writeup.writeup_id AND node.author_user=$uid";
+    $rows = $DB->{dbh}->prepare($queryText);
+    $rows->execute()
+        or do { $text .= $rows->errstr; return $text; };
+    $writeupCount = $rows->fetchrow_array();
+
+    #
+    # Total Upvotes
+    #
+    my $queryText2 = '';
+    my $rows2 = undef;
+    my $row2 = undef;
+    $queryText = "SELECT node_id FROM node
+	JOIN draft ON node_id=draft_id
+	WHERE node.author_user=$uid";
+    $rows = $DB->{dbh}->prepare($queryText);
+    $rows->execute()
+        or do { $text .= $rows->errstr; return $text; };
+    $queryText2 = "SELECT COUNT(vote_id) FROM vote WHERE weight>0 AND vote_id=?";
+    $rows2 = $DB->{dbh}->prepare($queryText2);
+    while($row = $rows->fetchrow_arrayref)
+    {
+        $rows2->execute($$row[0]);
+        $upvotes += $rows2->fetchrow_array();
+    }
+
+    #
+    # Heaven Total Reputation
+    #
+    $queryText = "SELECT SUM(heaven.reputation) AS totalReputation FROM heaven WHERE heaven.type_nodetype=117 AND heaven.author_user=$uid";
+    $rows = $DB->{dbh}->prepare($queryText);
+    $rows->execute()
+        or do { $text .= $rows->errstr; return $text; };
+    while($row = $rows->fetchrow_arrayref)
+    {
+        $heavenTotalReputation = $$row[0];
+    }
+
+    #
+    # Cool Count
+    #
+    $queryText = "SELECT COUNT(*) FROM node
+	JOIN coolwriteups ON node_id=coolwriteups_id
+	WHERE node.author_user=$uid";
+    $rows = $DB->{dbh}->prepare($queryText);
+    $rows->execute()
+        or do { $text .= $rows->errstr; return $text; };
+    $coolCount = $rows->fetchrow_array();
+
+    #
+    # Node Heaven Cool Count
+    #
+    $queryText = 'SELECT COUNT(*) from coolwriteups,heaven where coolwriteups_id=node_id AND author_user='.$$targetUser{node_id};
+    $rows = $DB->{dbh}->prepare($queryText)
+        or do { $text .= $rows->errstr; return $text; };
+    $rows->execute()
+        or do { $text .= $rows->errstr; return $text; };
+    $NodeHeavenCoolCount = $rows->fetchrow_array();
+
+    if ($heavenTotalReputation < 0) {
+        $heavenTotalReputation = 0;
+    }
+
+    #
+    # cached upvotes and cools from deleted drafts/heaven
+    #
+    my ($upcache, $coolcache) = $DB -> sqlSelect('upvotes, cools', 'xpHistoryCache',
+        "xpHistoryCache_id=$uid");
+
+    my $newXP = (($writeupCount * $wuBonus) + ($upvotes + $upcache + $heavenTotalReputation) +
+        (($coolCount + $coolcache + $NodeHeavenCoolCount) * $coolBonus));
+
+    my $str = '';
+
+    $str .= '<p>This superdoc converts your current XP total to the XP total you would have
+   if the new system had been in place since the start of your time as a noder.
+   Any excess XP will be converted into GP.</p><p>Conversion is permanent; once
+   you recalculate, you can not go back. Each user can only recalculate their
+   XP one time.</p>
+';
+
+    $str .= "&nbsp; <b>User: ".$$targetUser{title}."</b>";
+    $str .= '<table class="mytable">
+   <tr class="oddrow">
+   <td>Current XP:</td>
+   <td style="text-align:right">'.$xp.'</td>
+   </tr>
+   <tr class="evenrow">
+   <td>Writeups:</td>
+   <td style="text-align:right">'.$writeupCount.'</td>
+   <tr class="oddrow">
+   <td>Upvotes Received:</td>
+   <td style="text-align:right">'.($upvotes + $upcache + $heavenTotalReputation).'</td>
+   </tr>
+   <tr class="evenrow">
+   <td>C!s Received:</td>
+   <td style="text-align:right">'.($coolCount + $coolcache + $NodeHeavenCoolCount).'</td>
+   </tr>
+   <tr class="oddrow">
+   <td><b>Recalculated XP:</b></td>
+
+   <td style="text-align:right"><b>'.$newXP.'</b></td>
+   </tr>
+   </table>';
+
+    if ($xp > $newXP) {
+        $str .= "<p><b>Recalculation Bonus!</b>&nbsp; Your current XP is greater than your recalculated XP, so if you choose to recalculate you will be awarded a one-time recalculation bonus of  <b>".($xp - $newXP)." GP!</b></p>";
+    }
+
+    $str .= "<p></p>";
+
+    $str .= $query->start_form();
+    $str .= $targetStr;
+    $str .= $query->hidden('node_id', $$NODE{node_id});
+    $str .= $query->checkbox(-name=>'confirm',
+-value=>'wakaru',
+-label=>'I understand that recalculating my stats is permanent, and that I can never go back once I have done so.') . '</p>';
+    $str .= $query->submit('recalculate_XP','Recalculate!');
+    $str .= $query->end_form();
+
+    if ($query->param('recalculate_XP')) {
+        my $warnstr = '';
+        if ($query->param('confirm') eq 'wakaru') {
+            $APP->securityLog($NODE, $USER, "$$USER{title} recalculated $$targetUser{title}'s XP");
+            $APP->adjustExp($targetUser, (-$xp));
+            $APP->adjustExp($targetUser, $newXP);
+            $$targetVars{hasRecalculated} = 1;
+            $DB -> sqlDelete('xpHistoryCache', "xpHistoryCache_id=$uid");
+            setVars($targetUser, $targetVars);
+            $str = "<p>Recalculation complete! You now have <b>".$newXP." XP</b>";
+            if ($xp > $newXP) {
+                $$targetUser{GP} += ($xp-$newXP);
+                updateNode($targetUser, -1);
+                $$targetVars{oldexp} = $$targetUser{experience};
+                $str .= " and <b>".$$targetUser{GP}." GP</b>.";
+            } else {
+                $str .= ".";
+            }
+        } else {
+            $warnstr = "<p><b>!! Note !! You must check the box to acknowledge you understand before your XP can be recalculated.</b></p>";
+        }
+        $text .= $warnstr . $str;
+        return $text;
+    } else {
+        $text .= $str;
+        return $text;
+    }
+}
+
 1;
