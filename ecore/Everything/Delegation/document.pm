@@ -8186,4 +8186,24 @@ padding: 3px;
     return $text;
 }
 
+sub the_well_of_cool
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $text = '';
+    my $str = '';
+
+    if ($query->param("Drink deeply from the well of cool")) {
+        $$VARS{cools} += 1;
+    }
+
+    $str .= htmlcode('openform');
+    $str .= $query->submit('Drink deeply from the well of cool');
+    $str .= $query->end_form;
+
+    $text .= $str;
+
+    return $text;
+}
+
 1;
