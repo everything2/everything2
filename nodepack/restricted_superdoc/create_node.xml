@@ -1,55 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;&lt;i&gt;&lt;h3&gt;Please:&lt;/h3&gt;&lt;/i&gt;  &lt;ul&gt;&lt;li&gt;
-Before creating a [new] node make sure there isn't already
-a node that you could simply [add a writeup] to.  
-Often a user will create a new node only to 
-find there are several others
-on the same topics.  Just 
-type several key-words in the [search box] above
---there's a pretty good chance somebody's already created 
-a node about it. &lt;br&gt;&lt;br&gt;&lt;/p&gt;
-[% 
-$query-&gt;delete(&quot;node&quot;);
-$query-&gt;start_form; %]
-
-[%
-my $str = &quot;Node name: &quot;;
-my %types;
-
-$str .= $query-&gt;textfield(-name =&gt; &quot;node&quot;,
-                          -size =&gt; 50,
-                          -maxlength =&gt; 100,
-                          -value =&gt; ($query-&gt;param('newtitle') || &quot;&quot;) # this must be last in case it's empty
-                          );
-$str .= &quot;&lt;br&gt;\n&quot;;
-$str;
-%]
-
-Nodetype:
-[%
-my @idlist;
-my %items;
-my $id;
-#my @allTypes = $DB-&gt;getAllTypes();
-my @allTypes;
-my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getId(getType('nodetype')).&quot; ORDER BY title ASC&quot;);
-
-while(my $r = $csr-&gt;fetchrow_hashref())
-{
-  my $n = getNodeById($$r{node_id});
-  $items{$$n{node_id}} = $$n{title};
-  push @idlist, $$n{node_id};
-}
-$query-&gt;param('type', getId(getType('e2node')));
-$query-&gt;popup_menu(&quot;type&quot;, \@idlist, &quot;&quot;, \%items );
-%]
-
-[%
-my $str = &quot;&lt;input TYPE=\&quot;hidden\&quot; NAME=\&quot;op\&quot; VALUE=\&quot;new\&quot;&gt;\n&quot;;
-$str .= $query-&gt;submit(&quot;createit&quot;, &quot;Create It!&quot;) . &quot;\n&quot;;
-$str .= $query-&gt;end_form;
-$str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>197</node_id>
   <title>create node</title>
   <type_nodetype>13</type_nodetype>
