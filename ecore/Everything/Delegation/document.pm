@@ -2679,7 +2679,7 @@ sub duplicates_found_ {
     my $list          = undef;
     my $author        = '';
     my $lnode         = $query->param('lastnode_id') || 0;
-    my $UID           = $$USER{node_id};
+    my $current_user_id = $$USER{node_id};
     my $oddrow        = '';
     my $ONE           = undef;
 
@@ -2705,9 +2705,9 @@ sub duplicates_found_ {
           . '</td><td>';
 
         if ($author) {
-            $list .= '<strong>' if $author == $UID;
+            $list .= '<strong>' if $author == $current_user_id;
             $list .= linkNode( $author, '', { lastnode_id => 0 } );
-            $list .= '</strong>' if $author == $UID;
+            $list .= '</strong>' if $author == $current_user_id;
         }
 
         $list .= '<td>' . $$N{createtime} . '</td>';
@@ -3897,8 +3897,7 @@ sub everything_finger {
     $str .=
 '<table align="center" width="75%" cellpadding="2" border="1" cellspacing="0"><tr><th>Who</th><th>What</th><th>Where</th></tr>';
 
-    my $UID = getId($USER);    #logged on user's ID
-    my $uid;                   #current display user's ID
+    my $uid = undef;           #current display user's ID
 
     my $newbielook = $APP->isEditor($USER);
 
@@ -3963,8 +3962,6 @@ sub everything_document_directory {
     </style>|;
 
     $str .= q|<p>|;
-
-    my $UID = getId($USER);
 
     return '<p>Please log in first.</p>' if $APP->isGuest($USER);
 
@@ -4637,10 +4634,10 @@ sub everything_user_search {
                 my $perpage = 50;    # number to show at a time
 
                 my $uid = getId($user);       # lowercase = user searching on
-                my $UID = $$USER{node_id};    # uppercase = user that is viewing
+                my $viewing_user_id = $$USER{node_id};    # user that is viewing
                 my $isRoot  = $APP->isAdmin($USER);
                 my $isEd    = $APP->isEditor($USER);
-                my $isMe    = ( $uid == $UID ) && ( $uid != 0 );
+                my $isMe    = ( $uid == $viewing_user_id ) && ( $uid != 0 );
                 my $rep     = $isMe || $isEd;
                 my $isGuest = $APP->isGuest($USER);
 
@@ -4667,7 +4664,7 @@ sub everything_user_search {
                 my ( $voteSelect, $voteJoin ) = ( '', '' );
                 ( $voteSelect, $voteJoin ) = (
                     ', vote.weight',
-"LEFT OUTER JOIN vote ON vote.voter_user = $UID AND vote.vote_id = node.node_id"
+"LEFT OUTER JOIN vote ON vote.voter_user = $viewing_user_id AND vote.vote_id = node.node_id"
                 ) unless $isGuest;
 
                 my ( $filter, $showFilter ) = ( '', '' );
@@ -8471,10 +8468,6 @@ sub the_nodeshell_hopper
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
     my $text = '';
 
-    # Editor-only access check
-    return 'You\'ve got other things to snoop on, don\'t ya.'
-        unless $APP->isEditor($USER);
-
     my $str = 'A smarter nodeshell deletion implementation
 	<br><br>Copy and paste off of the nodeshells marked for destructions lists.
 	DO NOT separate them by pipes anymore.
@@ -8484,8 +8477,7 @@ sub the_nodeshell_hopper
 		<li>Checks to see whether it is empty
 		<li>Checks for firmlinks
 		<li>Deletes the nodeshell
-	</ul>
-	<br><br>This is stable, except the recurring server error.<br><br>';
+	</ul>';
 
     my @nodeshellgroup = ();
     my $nodeshell      = undef;
@@ -8563,6 +8555,295 @@ sub the_nodeshell_hopper
 	<br><br><input type="submit" value="Whack em all!">
 	</form>
 	<br><br>';
+
+    $text .= $str;
+    return $text;
+}
+
+sub my_big_writeup_list
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    #
+    #  Again, Gorgonzola takes perfectly good E2 code and twists it
+    #  to his nefarious purposes
+    #
+
+    my $user_id = $$USER{node_id} || 0;
+
+    if ( $APP->isGuest($USER) ) {
+        return
+              'You need an account to access this node.<br /><br />.'
+            . 'Why not '
+            . linkNode( getNode( 'Sign Up', 'superdoc' ), 'create one' ) . '?';
+    }
+    my ($name) = @_;
+    $name ||= "";
+
+    my $str = htmlcode('openform');
+
+    my $victim = $query->param('usersearch');
+    $victim = $$USER{title} unless ($victim);
+
+    if ( $APP->isAdmin($USER) ) {
+        $str .= $query->textfield( 'usersearch', $victim );
+    } else {
+        $str .= $query->hidden( 'usersearch', $victim );
+        $str .= 'For: ' . $$USER{title};
+    }
+
+    #N-Wing converted this from FormMenu to plain old CGI so items could be in a logical order
+
+    #this sets the ordering of items in the combo box
+    my $choices = [
+        'title ASC',
+        'wrtype_writeuptype ASC,title ASC',
+        'cooled DESC,title ASC',
+        'cooled DESC,node.reputation DESC,title ASC',
+        'node.reputation DESC,title ASC',
+        'writeup.publishtime DESC',
+        'writeup.publishtime ASC'
+    ];
+
+    my $labels = {
+        'title ASC'                                    => 'Title',
+        "wrtype_writeuptype ASC,title ASC"             => "Writeup type, then title",
+        "cooled DESC,title ASC"                        => "C!, then title",
+        'cooled DESC,node.reputation DESC,title ASC'   => 'C!, then reputation',
+        'node.reputation DESC,title ASC'               => 'Reputation',
+        'writeup.publishtime DESC'                     => 'Date, most recent first',
+        'writeup.publishtime ASC'                      => 'Date,most recent last'
+    };
+
+    my $raw = $query->param('raw');
+    $str .= $query->hidden('filterhidden');
+
+    $str .=
+        "Order By:"
+        . $query->popup_menu( 'orderby', $choices, 'title ASC', $labels );
+    $str .=
+        "<br />"
+        . $query->checkbox( -name => 'raw', -label => 'Raw Data', -checked => $raw );
+    my $fdelim = $query->param('delimiter');
+    $fdelim = "_" unless ($fdelim);
+    $str .=
+          "&nbsp;&nbsp;Delimiter: "
+        . $query->textfield( 'delimiter', $fdelim )
+        . "<br />";
+    $str .= $query->submit( "sexisgood", "submit" ) . $query->end_form;
+    $text .= $str;
+
+    # REINITIALIZE variables for second code block
+    $user_id = $$USER{node_id} || 0;
+
+    if ( $APP->isGuest($USER) ) {
+        return $text;
+    }
+
+    my $isRoot = $APP->isAdmin($USER);
+    my $us     = undef;
+    my $israw  = $query->param('raw');
+
+    if ($isRoot) {
+        $us = $query->param('usersearch');    #user's title to find WUs on
+    } else {
+        $us = $$USER{title};
+    }
+    my $orderby = $query->param('orderby');
+    my $delim   = $query->param('delimiter');
+
+    return $text unless ($orderby);
+    my $orderdata = {
+        'title ASC'                                  => 1,    # Title
+        'wrtype_writeuptype ASC,title ASC'           => 1,    # Writeup type, then title
+        'cooled DESC,title ASC'                      => 'Number C!',    # Number of C!
+        'cooled DESC,node.reputation DESC,title ASC' =>
+            'C! then rep',                                     # Number of C!, then rep, title
+        'node.reputation DESC,title ASC' => 'Reputation',     # Reputation
+        'writeup.publishtime DESC'       => 'Date, most recent first',
+        'writeup.publishtime ASC'        => 'Date, most recent last'
+    };
+    $orderby = '' unless exists $$orderdata{$orderby};
+
+    #NOTE:  we must CHECK to make sure orderby is one of
+    #our valid options, otherwise a user could potentially
+    #execute arbitrary SQL -- VERY BAD
+
+    $orderby ||= 'title ASC';
+
+    if ($israw) {
+        return $text . "Delimiter (" . $delim . ") must be exactly one character."
+            unless ( length($delim) == 1 );
+    }
+
+    #quit if no user given to get info on
+    return $text . 'It helps to give a user\'s nick.' unless $us;
+
+    #quit if invalid user given
+    my $user = getNode( $us, 'user' );
+
+    my $usEncode = encodeHTML($us);
+    return
+          $text
+        . "It seems that the user '$usEncode' doesn't exist... how very, very strange... (Did you type their name correctly?)"
+        unless ( defined $user );
+    return $text
+        . 'Are you really looking for almost all the words in the English language?'
+        if $$user{title} eq 'Webster 1913';
+
+    #constants setup
+    my $uid = getId($user) || 0;    #lowercase = user searching on
+
+    my $isMe = ( $uid == $user_id ) && ( $uid != 0 );
+    my $rep  = $isMe || $isRoot;
+
+    $str = '';
+
+    my $isEd = $rep || ( $APP->isEditor($USER) );
+
+    #quit for special bots
+
+    return $text
+        . '<p align="center"><big><big><strong>G r o w l !</strong></big></big>'
+        if ( $$user{title} eq 'EDB' );
+
+    return $text
+        . '<p align="center"><big><big><strong>Um, no.</strong></big></big>'
+        if ( $$user{title} eq 'Webster 1913' );
+
+    #load writeup information
+
+    #database setup
+    my $qh     = undef;             #query handle
+    my $typeID = getId( getType('writeup') ) || 0;
+
+    #
+    # total writeup count
+
+    #
+
+    $qh = $DB->{dbh}
+        ->prepare( 'SELECT COUNT(*) FROM node WHERE author_user='
+            . $uid
+            . ' AND type_nodetype='
+            . $typeID );
+
+    $qh->execute();
+    my ($totalWUs) = $qh->fetchrow();
+    $qh->finish();
+
+    return $text . linkNode($user) . ' has no writeups' . '.'
+        unless $totalWUs;
+
+    #load in only writeups we're currently looking at
+    $qh = $DB->{dbh}->prepare(
+              'SELECT parent_e2node, title, cooled, reputation, publishtime'
+            . ', totalvotes'
+            . ' FROM node, writeup WHERE node.author_user='
+            . $uid
+            . ' AND node.type_nodetype='
+            . $typeID
+            . ' AND writeup.writeup_id=node.node_id'
+            . ' ORDER BY '
+            . $orderby
+
+            #	' LIMIT 1,50'  #comment this out after debug
+    );
+    $qh->execute();    #gets current WUs and their info
+    my @allWUInfo = ();
+    while ( my $r = $qh->fetchrow_hashref ) {
+        push( @allWUInfo, $r );
+    }
+    $qh->finish();
+
+    #done with getting writeup info, the rest is just display
+
+    $str .=
+          ( $totalWUs == 1 ? 'This writeup was' : 'These ' . $totalWUs . ' writeups were all' )
+        . ' written by '
+        . linkNode( $user, ( $isMe ? 'you' : 0 ), { lastnode_id => 0 } )
+        . ":</p>\n";
+
+    #prepare for loop
+    my $drn  = 0;       #display row number - for row coloring
+    my $wuid = undef;   #current WU's ID
+
+    #loop through WUs, and show their info
+    if ($israw) {
+        $str .= "<pre>";
+        foreach my $wu (@allWUInfo) {
+
+            $wuid = getId($wu);
+
+            $str .= $$wu{title} . $delim;
+
+            if ( $$wu{cooled} ) {
+                $str .= "$$wu{cooled}C!" . $delim;
+            } else {
+                $str .= " " . $delim;
+            }
+
+            if ($rep) {
+                $str .= $$wu{reputation} . $delim;
+
+                my $votescast = $$wu{totalvotes};
+
+                $str .= $votescast . $delim;
+            }
+
+            $str .= htmlcode( 'parsetimestamp', "$$wu{publishtime}" ) . "\n";
+        }
+        $str .= "</pre>";
+
+    } else {
+
+        #header
+
+        $str .=
+              '<table border="0" cellpadding="1" cellspacing="0">' . "\n"
+            . '<tr><th align="left">Writeup Title (type)</th><th>C!</th>';
+        $str .= '<th colspan="2" align="center">Rep</th>' if $rep;
+        $str .= '<th align="center">Published</th>';
+        $str .= "</tr>\n";
+        foreach my $wu (@allWUInfo) {
+
+            $wuid = getId($wu);
+
+            $str .= '<tr';
+            $str .= ' class="oddrow" bgcolor="#bbbbff"' unless ( $drn % 2 );
+            $str .= '>';
+
+            $str .=
+                  '<td nowrap>'
+                . linkNode( $$wu{parent_e2node}, $$wu{title}, { lastnode_id => 0 } )
+                . '</td><td>';
+            $str .= " <strong>$$wu{cooled}C!</strong>&nbsp;" if $$wu{cooled};
+            $str .= '</td>';
+
+            if ($rep) {
+                my $r = $$wu{reputation} || 0;
+
+                my $votescast = $$wu{totalvotes};
+                my $p         = ( $votescast + $r ) / 2;
+                my $m         = ( $votescast - $r ) / 2;
+                $str .=
+                      '<td>' . $r
+                    . '</td><td><small>+'
+                    . $p . '/-'
+                    . $m
+                    . '</small></td>';
+            }
+
+            $str .=
+                  '<td nowrap align="right"><small>'
+                . htmlcode( 'parsetimestamp', "$$wu{publishtime}" )
+                . "</small></td></tr>\n";
+
+            ++$drn;
+        }
+        $str .= "</table>\n";
+    }
 
     $text .= $str;
     return $text;
