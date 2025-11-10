@@ -7436,4 +7436,76 @@ sub everything_statistics
     return $str;
 }
 
+sub usergroup_picks
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $text = '<p>Some of Everything2\'s [usergroup]s keep lists of writeups and documents particularly relevant to the group in question. These are listed below. </p>';
+    $text .= '<p>You can also keep tabs on these using the Usergroup Writeups [nodelet settings|nodelet]. Find out more about these and other usergroups at [Usergroup Lineup].</p>';
+
+    my $isGod = $APP->isAdmin($USER);
+    my $isEd = $APP->isEditor($USER);
+
+    my $webloggables = getVars(getNode("webloggables", "setting"));
+    my $view_weblog = $query->param('view_weblog');
+    my $skipped = 0;
+    my @labels;
+
+    foreach my $node_id (sort {
+        lc($$webloggables{$a}) cmp lc($$webloggables{$b})
+    } keys(%$webloggables)) {
+        next if ($node_id==165580||$node_id==923653||$node_id==114);
+        my $somenode=getNode($node_id);
+        next unless($somenode);
+        my $title = $$somenode{title};
+        my $wclause = "weblog_id='$node_id' AND removedby_user=''";
+        my $count = $DB->sqlSelect('count(*)','weblog',"$wclause");
+        my $link = linkNode($NODE,$title,{'view_weblog'=>"$node_id"});
+        $link = "<b>$link</b>" if $node_id == $view_weblog;
+        push @labels, "$link<br /><font size='1'>($count node".($count==1?'':'s').')</font>';
+    }
+
+    if (!$view_weblog) {
+        $text .= "<table border='0' width='100%' cellpadding='3' valign='top'><tr>";
+        my $labelcount=0;
+        foreach (@labels) {
+            if ($labelcount % 10 ==0) {$text.="<td><ul>";}
+            $text .= "<li>".$_."</li>";
+            if ($labelcount % 10 == 9) {$text.="</ul></td>";}
+            $labelcount++;
+        }
+        $text .= "</ul></td></table>";
+        return $text;
+    }
+
+    return $text if (($view_weblog == 114)||($view_weblog==923653))&&(!($isEd));
+
+    if($isGod && (my $unlink_node = $query->param('unlink_node'))){
+        $unlink_node =~ s/\D//g;
+        $DB->sqlUpdate('weblog',{'removedby_user'=>$$USER{user_id}},"weblog_id='$view_weblog' AND to_node='$unlink_node'");
+    }
+
+    $text .= '<p align="center"><font size="3">Viewing news items for <b>'.linkNode(getNode($view_weblog)).'</b></font> - <small>[News Archives|back to archive menu]</small></p>';
+
+    $text .= "<table border='1' width='100%' cellpadding='3'><tr><th>Node</th><th>Time</th><th>Linker</th>".($isGod?'<th>Unlink?</th>':'').'</tr>';
+    my $wclause = "weblog_id='$view_weblog' AND removedby_user=''";
+    my $csr = $DB->sqlSelectMany('*','weblog',$wclause,'order by tstamp desc');
+    while(my $ref = $csr->fetchrow_hashref()){
+        my $N = getNode($$ref{to_node});
+        $skipped++ unless $N;
+        next unless $N;
+        my $link = linkNode($N);
+        my $time = htmlcode('parsetimestamp',"$$ref{tstamp},128");
+        my $linker = getNode($$ref{linkedby_user});
+        $linker = $linker?linkNode($linker):'<i>unknown</i>';
+        my $unlink = linkNode($NODE,'unlink?',{'unlink_node'=>$$ref{to_node},'view_weblog'=>$view_weblog});
+        $text .= "<tr><td>$link</td><td><small>$time</small></td><td>$linker</td>".($isGod?"<td>$unlink</td>":'').'</tr>';
+    }
+    $text .= "</table>";
+
+    $text .= "<br /><table border='1' width='100%' cellpadding='3'><tr><th>$skipped deleted node".($skipped==1?' was':'s were').' skipped</th></tr></table>' if $skipped;
+
+    return $text;
+}
+
 1;

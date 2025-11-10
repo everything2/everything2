@@ -18,6 +18,7 @@ These documents serve as:
 - **[Quick Reference](quick-reference.md)** - Common tasks, commands, checklists
 - **[Coding Standards](coding-standards.md)** - Perl/JavaScript style guide and best practices
 - **[Code Coverage Guide](code-coverage.md)** - Testing coverage infrastructure and usage
+- **[Delegation Migration](delegation-migration.md)** - Moving database code to filesystem delegation functions
 
 ### Technical Overview
 - **[Analysis Summary](analysis-summary.md)** - Complete architectural overview
@@ -52,4 +53,4 @@ These documents should be reviewed and updated:
 - When architecture decisions are made
 - As modernization work progresses
 
-Last Updated: 2025-11-08
+Last Updated: 2025-11-09
