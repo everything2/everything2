@@ -148,6 +148,125 @@ These will be converted to actual links when the output is passed through `parse
 - `getNode()`, `linkNode()`, `htmlcode()` remain the same
 - Database queries: `$DB->sqlSelect()`, `$DB->sqlSelectMany()`, etc.
 
+#### Module Imports (use statements)
+
+**IMPORTANT**: When delegating code that requires Perl modules, add `use` statements at the top of `document.pm`, NOT inside the function.
+
+**Why:**
+- Functions are called repeatedly for every request
+- `use` statements should be at compile time, not runtime
+- Keeps imports organized and visible
+- Better performance (modules loaded once)
+
+**Pattern:**
+
+```perl
+# At top of ecore/Everything/Delegation/document.pm
+use strict;
+use warnings;
+use Everything::Globals;
+
+# Import symbols from Everything::HTML
+our ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+*DB = \$Everything::HTML::DB;
+# ... other symbol mappings ...
+
+use DateTime;  # Used in: settings
+use JSON::XS;  # Used in: api_response, json_export
+
+# ... rest of file with delegation functions ...
+```
+
+**Adding a New Module:**
+
+1. Add the `use` statement at the top with existing imports
+2. Add a comment noting which function(s) use it: `# Used in: function_name`
+3. If multiple functions use it, list them: `# Used in: settings, user_profile, preferences`
+
+**Example - Wrong:**
+
+```perl
+sub settings
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    use DateTime;  # WRONG - don't use inside function
+    my $time = DateTime->now();
+    # ...
+}
+```
+
+**Example - Correct:**
+
+```perl
+# At top of document.pm
+use DateTime;  # Used in: settings
+
+# ... later in file ...
+
+sub settings
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $time = DateTime->now();  # Module already loaded
+    # ...
+}
+```
+
+**Common Modules:**
+- `DateTime` - Date/time operations
+- `JSON::XS` - JSON encoding/decoding
+- `URI::Escape` - URL encoding
+- `Digest::MD5` - Hashing
+- `POSIX` - POSIX functions
+
+#### Template Language: Htmlcode Calls
+
+The Everything2 template language includes a special syntax for calling htmlcode functions:
+
+**Syntax:** `[{htmlcode_name:arg1,arg2,arg3}]`
+
+**Important:** This is **NOT a link** - it's a function call to an htmlcode function.
+
+**In Delegation Functions:**
+- These calls are made using the `htmlcode()` function
+- Available due to symbol table mapping at the top of `document.pm`
+- Arguments are comma-separated in template syntax, passed as separate parameters
+
+**Examples:**
+
+```perl
+# Template syntax in static HTML
+[{varcheckbox:settings_useTinyMCE,Use WYSIWYG content editor}]
+
+# Equivalent delegation function call
+htmlcode('varcheckbox', 'settings_useTinyMCE', 'Use WYSIWYG content editor')
+
+# Template syntax with multiple arguments
+[{varsComboBox:textareaSize,0, 0,Small, 1,Medium, 2,Large}]
+
+# Equivalent delegation function call
+htmlcode('varsComboBox', 'textareaSize', '0', '0', 'Small', '1', 'Medium', '2', 'Large')
+
+# Template syntax in dynamic code
+$text .= '[{openform:pagebody}]';
+
+# Better: Direct call in delegation
+htmlcode('openform', 'pagebody');
+```
+
+**When Migrating:**
+- Keep `[{...}]` syntax in static HTML text strings (will be parsed)
+- In dynamic code, prefer direct `htmlcode()` calls for clarity
+- Arguments split on commas, so `arg1,arg2,arg3` becomes three parameters
+
+**Common htmlcode Functions:**
+- `openform`, `closeform` - Form helpers
+- `varcheckbox`, `varcheckboxinverse` - User preference checkboxes
+- `varsComboBox` - User preference dropdown selectors
+- `verifyRequestForm` - CSRF protection
+- `settingsDocs` - Settings page documentation
+
 #### Bracket Links in Dynamic Code
 Use bracket notation for links that will be parsed:
 ```perl
@@ -160,6 +279,106 @@ Remove any lines like:
 - "Report bugs to [username]"
 
 Defects are now tracked in GitHub, not assigned to individual developers.
+
+#### Multiple Code Blocks
+
+Many nodes contain multiple `[% ... %]` code blocks interleaved with static HTML text. When migrating these, create a **single delegation function** that combines all blocks and text in order.
+
+**Challenges:**
+
+1. **Variable Reuse**: Variables may be declared in one block and used in another
+   - **CRITICAL**: Reinitialize variables between blocks to prevent mod_perl persistence issues
+   - Track which variables are used across blocks
+   - Example: If `my $str` appears in block 1 and block 3, reinitialize it: `$str = '';` at the start of block 3
+
+2. **Early Returns**: Code blocks may have `return` statements to exit early
+   - Convert early returns to conditional logic that skips subsequent code
+   - Save return values to the main output variable
+   - Only return at the very end of the function
+
+3. **Conditional Display**: Blocks may conditionally add content
+   - Preserve the conditional logic
+   - Use the main output variable to accumulate all content
+   - Append both static text and dynamic output in order
+
+**Pattern for Multiple Blocks:**
+
+```perl
+sub function_name
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $text = '';
+
+    # Block 1: Early check with return
+    if ($APP->isGuest($USER)) {
+        $text .= '<p>You need to sign in...</p>';
+        return $text;  # Early exit is OK here
+    }
+
+    # Block 1 continued: Initialization code
+    $PAGELOAD->{pageheader} = htmlcode('settingsDocs');
+    htmlcode('openform', -id=>'pagebody');
+
+    # Static HTML from doctext
+    $text .= '<h2>Section Header</h2>';
+    $text .= '<fieldset><legend>Subsection</legend>';
+
+    # Block 2: Dynamic content
+    my $str = '';  # Local variable for this block
+    # ... block 2 logic ...
+    $text .= $str;  # Append block output to main text
+
+    # More static HTML
+    $text .= '</fieldset>';
+    $text .= '<h2>Another Section</h2>';
+
+    # Block 3: More dynamic content
+    $str = '';  # REINITIALIZE - critical for mod_perl
+    my @list = ();  # Local variable for this block
+    # ... block 3 logic ...
+    $text .= $str;  # Append block output to main text
+
+    # Final static HTML
+    $text .= '<div>Footer</div>';
+
+    return $text;
+}
+```
+
+**Example - Converting Multiple Returns:**
+
+Original code with early return:
+```perl
+[% return '<p>Error</p>' if $condition; %]
+<p>Static text</p>
+[% my $output = doSomething(); $output; %]
+```
+
+Converted to single function:
+```perl
+my $text = '';
+
+if ($condition) {
+    $text .= '<p>Error</p>';
+    return $text;  # Early return OK
+}
+
+$text .= '<p>Static text</p>';
+
+my $output = doSomething();
+$text .= $output;
+
+return $text;
+```
+
+**Variable Reinitialization Checklist:**
+
+When a variable appears in multiple blocks:
+- [ ] First occurrence: `my $var = '';` (declaration with initialization)
+- [ ] Subsequent blocks: `$var = '';` (reinitialization without `my`)
+- [ ] Check: Is the variable used across blocks intentionally, or should each block have its own scope?
+- [ ] Common variables to watch: `$str`, `$csr`, `@list`, `%hash`
 
 ### 7. Variable Initialization and mod_perl Persistence
 
@@ -375,6 +594,7 @@ $text .= '[Node Title|display text]';
 - [ ] Note: All delegation functions go in `document.pm` (most nodetypes chain up to document)
 - [ ] Extract code from `[% ... %]` blocks
 - [ ] Create delegation function in `ecore/Everything/Delegation/document.pm`
+- [ ] **Add use statements at top of file** - if code requires modules, add `use Module;` at top with comment `# Used in: function_name`
 - [ ] Include static HTML text at beginning of function
 - [ ] Keep bracket notation for links (will be parsed by parseLinks)
 - [ ] **Initialize all variables** - `my $text = undef;` or `my $text = '';` (critical for security)
