@@ -450,6 +450,57 @@ When migrating code or reviewing delegations:
 
 The only time you intentionally avoid initialization is when using this behavior for caching, such as in `Everything::Nodecache`, where long-lived objects are deliberately persisted across requests.
 
+#### Avoid Perl Magic Variables
+
+**CRITICAL**: Now that delegation code is no longer isolated in `eval()` blocks, you must avoid using Perl's built-in magic variable names. These variables have special meanings in Perl and can cause unexpected behavior or conflicts.
+
+**Common Magic Variables to Avoid:**
+
+```perl
+# Process and User IDs - AVOID THESE
+$UID / $<    # Real user ID (causes conflicts!)
+$EUID / $>   # Effective user ID
+$GID / $(    # Real group ID
+$EGID / $)   # Effective group ID
+
+# Other special variables
+$_           # Default scalar (avoid unless intentionally using)
+$a, $b       # Used by sort() function
+$&, $`, $'   # Regex match variables (deprecated, slow)
+@_           # Subroutine arguments (only use in specific contexts)
+%ENV         # Environment variables (read-only access OK)
+$0           # Program name
+$!           # System error
+$?           # Child process status
+$$           # Process ID
+```
+
+**Instead:**
+
+```perl
+# WRONG - uses magic variable
+my $UID = $$USER{node_id} || 0;
+
+# CORRECT - use descriptive name
+my $user_id = $$USER{node_id} || 0;
+my $current_uid = $$USER{node_id} || 0;
+my $uid = $$USER{node_id} || 0;  # OK if lowercase and contextual
+```
+
+**Why This Matters:**
+
+In `eval()` blocks, magic variables were somewhat isolated. In delegation functions:
+- Magic variables are global to the Perl process
+- They can cause hard-to-debug issues
+- Some (like `$UID`) actively interfere with Perl's behavior
+- Code becomes less portable and maintainable
+
+**Rule of Thumb:**
+- Use lowercase for regular variables: `$uid`, `$user_id`
+- Avoid ALL-CAPS variable names except for constants
+- Never use `$UID`, `$EUID`, `$GID`, `$EGID`
+- Check against Perl's magic variable list if unsure
+
 ### 8. Update Node XML
 
 Replace the `<doctext>` content with just the static HTML (keeping bracket notation):
