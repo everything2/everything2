@@ -929,6 +929,319 @@ APPLE_PRIVATE_KEY=/path/to/private/key
 - ⏸️ Additional provider evaluation
 - ⏸️ Feature enhancements
 
+## Priority 10: CSS Asset Pipeline 🎨
+
+**Priority Level:** Low (Developer Efficiency / Code Quality)
+
+### Why This Matters
+
+**Code Maintainability**
+- CSS scattered across inline `<style>` blocks in delegation functions
+- No single source of truth for styles
+- Difficult to maintain consistency across pages
+- Hard to identify and remove duplicate/unused CSS
+
+**Performance**
+- Inline CSS sent with every page request
+- No browser caching for styles
+- No minification or compression
+- Larger HTML payloads
+
+**Developer Experience**
+- Cannot use CSS preprocessors (SASS, LESS)
+- No CSS linting or validation
+- Difficult to organize styles by component/page
+- No hot-reloading during development
+
+**Modern Standards**
+- Industry standard is external stylesheets
+- Better separation of concerns (content vs. presentation)
+- Easier to apply site-wide theme changes
+- Better tooling support
+
+### Current State
+
+**Inline CSS Locations:**
+- Delegation functions (e.g., `site_trajectory_2`, settings, etc.)
+- Legacy `<style>` blocks in superdoc content
+- Scattered style definitions in htmlcode functions
+- Some CSS in Mason2 templates
+
+**Example Problem:**
+
+```perl
+sub site_trajectory_2
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    # CSS mixed with Perl code
+    $text .= '<style>
+<!--
+th {
+  text-align:left;
+}
+.graph td {
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 3px;
+}
+-->
+</style>';
+
+    # Rest of function...
+}
+```
+
+**Existing Asset Pipeline:**
+- Webpack configured for JavaScript bundling
+- React components use CSS modules
+- Modern frontend has proper asset pipeline
+- Legacy backend code lacks integration
+
+### Target Implementation
+
+**Asset Pipeline Structure:**
+
+```
+everything2/
+├── assets/
+│   ├── css/
+│   │   ├── core/
+│   │   │   ├── base.css          # Reset, typography, global
+│   │   │   ├── layout.css        # Grid, containers, spacing
+│   │   │   └── variables.css     # CSS custom properties
+│   │   ├── components/
+│   │   │   ├── forms.css         # Form elements
+│   │   │   ├── buttons.css       # Button styles
+│   │   │   ├── tables.css        # Table styles
+│   │   │   └── graphs.css        # Graph/chart styles
+│   │   ├── pages/
+│   │   │   ├── settings.css      # Settings page
+│   │   │   ├── trajectory.css    # Site trajectory graphs
+│   │   │   ├── writeups.css      # Writeup display
+│   │   │   └── users.css         # User pages
+│   │   └── legacy/
+│   │       └── compat.css        # Backward compatibility
+│   └── js/
+│       └── (existing webpack setup)
+└── webpack.config.js              # Add CSS loaders
+```
+
+**Webpack Configuration:**
+
+```javascript
+// webpack.config.js additions
+module: {
+  rules: [
+    {
+      test: /\.css$/,
+      use: [
+        MiniCssExtractPlugin.loader,
+        'css-loader',
+        'postcss-loader'  // For autoprefixer, minification
+      ]
+    }
+  ]
+},
+plugins: [
+  new MiniCssExtractPlugin({
+    filename: 'css/[name].[contenthash].css'
+  })
+]
+```
+
+**HTML Template Integration:**
+
+```perl
+# In htmlpage delegation or layout template
+sub standard_header {
+    my $css_url = $APP->getAssetUrl('main.css');
+    return qq{
+        <link rel="stylesheet" href="$css_url">
+    };
+}
+```
+
+### Implementation Plan
+
+**Phase 1: Infrastructure Setup (Week 1-2)**
+1. 📋 Configure Webpack for CSS processing
+2. 📋 Add CSS loaders (css-loader, mini-css-extract-plugin, postcss-loader)
+3. 📋 Create directory structure in `assets/css/`
+4. 📋 Add CSS build to deployment pipeline
+5. 📋 Create asset URL helper in Everything::Application
+6. 📋 Add cache-busting with content hashes
+
+**Phase 2: Extract Core Styles (Week 3-4)**
+1. 📋 Audit existing inline `<style>` blocks across codebase
+2. 📋 Create `core/base.css` with reset and typography
+3. 📋 Create `core/layout.css` with grid and spacing
+4. 📋 Extract common styles from delegation functions
+5. 📋 Create CSS variables for colors, fonts, spacing
+6. 📋 Update main layout template to include stylesheet
+
+**Phase 3: Component Styles (Week 5-6)**
+1. 📋 Extract form styles to `components/forms.css`
+2. 📋 Extract table styles to `components/tables.css`
+3. 📋 Extract graph styles to `components/graphs.css`
+4. 📋 Create button style system
+5. 📋 Document CSS component classes
+
+**Phase 4: Page-Specific Styles (Week 7-8)**
+1. 📋 Extract settings page CSS
+2. 📋 Extract trajectory/statistics page CSS
+3. 📋 Extract writeup display CSS
+4. 📋 Extract user page CSS
+5. 📋 Create page-specific CSS bundles if needed
+
+**Phase 5: Legacy Cleanup (Week 9-10)**
+1. 📋 Remove inline `<style>` blocks from delegation functions
+2. 📋 Update delegation migration docs
+3. 📋 Add CSS guidelines to developer documentation
+4. 📋 Create CSS linting configuration
+5. 📋 Run tests to ensure no visual regressions
+
+**Phase 6: Optimization (Week 11-12)**
+1. 📋 Enable CSS minification in production
+2. 📋 Set up PostCSS for autoprefixing
+3. 📋 Analyze and remove unused CSS
+4. 📋 Implement critical CSS for above-fold content
+5. 📋 Add CSS to build monitoring
+
+### Technical Details
+
+**Asset URL Helper:**
+
+```perl
+package Everything::Application;
+
+sub getAssetUrl {
+    my ($self, $asset_name) = @_;
+
+    # In production: Use manifest.json from webpack
+    # In development: Use dev server URL
+
+    if ($ENV{E2_ENV} eq 'production') {
+        my $manifest = $self->loadAssetManifest();
+        return '/static/' . $manifest->{$asset_name};
+    } else {
+        return '/static/' . $asset_name;
+    }
+}
+
+sub loadAssetManifest {
+    # Read webpack-generated manifest.json
+    # Maps logical names to hashed filenames
+    # Cached in memory for performance
+}
+```
+
+**Migration Pattern:**
+
+```perl
+# BEFORE (inline CSS)
+sub some_page {
+    my $text = '<style>
+    .special-table { border: 1px solid #ccc; }
+    </style>';
+    # ...
+}
+
+# AFTER (external CSS)
+sub some_page {
+    # CSS moved to assets/css/pages/some-page.css
+    # Automatically included via main stylesheet
+    # Or page-specific bundle loaded by layout
+    my $text = '';
+    # ...
+}
+```
+
+**CSS Organization Guidelines:**
+
+```css
+/* assets/css/pages/trajectory.css */
+
+/* Graph component styles */
+.graph td {
+    border-bottom: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+    padding: var(--spacing-sm);
+}
+
+.graph .bar {
+    background-color: var(--color-success);
+    position: absolute;
+    box-sizing: border-box;
+}
+
+/* Use CSS custom properties for theming */
+:root {
+    --color-border: #ccc;
+    --color-success: #9e9;
+    --spacing-sm: 3px;
+}
+```
+
+### Benefits
+
+**Performance Improvements:**
+- Reduced HTML payload size (no inline CSS)
+- Browser caching of stylesheets
+- Minified and compressed CSS in production
+- Fewer bytes transferred per request
+
+**Developer Experience:**
+- Modern CSS tooling (linting, formatting, validation)
+- Hot-reloading during development
+- Easier to find and modify styles
+- Better IDE support and autocomplete
+
+**Maintainability:**
+- Single source of truth for styles
+- Easier to enforce consistency
+- Simpler to apply site-wide changes
+- Clear organization and documentation
+
+**Future Enhancements:**
+- Easy to add CSS preprocessors (SASS/LESS)
+- Support for CSS-in-JS if needed
+- Easier to implement theming
+- Better integration with design systems
+
+### Dependencies
+
+**Blocks:** None (can proceed independently)
+
+**Enables:**
+- Easier theming and design system implementation
+- Better mobile-first responsive design
+- Improved site performance
+- Modern frontend development workflow
+
+**Requires:**
+- Webpack already configured (✅ present)
+- Asset serving infrastructure (✅ present)
+- Developer time for migration
+
+### Timeline
+
+**Q2 2025:**
+- ⏸️ Infrastructure setup and tooling configuration
+- ⏸️ Begin extracting core and component styles
+
+**Q3 2025:**
+- ⏸️ Continue page-specific style extraction
+- ⏸️ Update delegation functions to remove inline CSS
+
+**Q4 2025:**
+- ⏸️ Complete migration and cleanup
+- ⏸️ Optimize and document new system
+- ⏸️ Update developer guidelines
+
+**Note:** This is a **low priority** effort that can proceed in parallel with other work and doesn't block any critical functionality. It's primarily a code quality and developer experience improvement.
+
 ## Risk Assessment
 
 ### High Risk Areas
@@ -986,6 +1299,7 @@ APPLE_PRIVATE_KEY=/path/to/private/key
 - Begin PSGI preparation
 - Superdoc migration strategy
 - Facebook and Apple Sign-In implementation
+- CSS asset pipeline infrastructure (low priority)
 
 ### Q3 2025
 - PSGI migration Phase 1-2
@@ -993,6 +1307,7 @@ APPLE_PRIVATE_KEY=/path/to/private/key
 - React modernization
 - 50%+ test coverage
 - OAuth production deployment
+- CSS extraction from delegation functions (low priority)
 
 ### Q4 2025
 - PSGI production deployment
@@ -1000,6 +1315,7 @@ APPLE_PRIVATE_KEY=/path/to/private/key
 - 70%+ test coverage
 - Full mobile support
 - OAuth adoption monitoring
+- CSS asset pipeline completion (low priority)
 
 ## Communication Strategy
 
