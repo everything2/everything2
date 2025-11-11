@@ -9070,4 +9070,31 @@ $(document).ready(function() {
     return $text;
 }
 
+sub node_row
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    return $text unless ( $APP->isEditor($USER) );
+
+    my $str =
+          'There are '
+        . $DB->sqlSelect( 'COUNT(*)', 'weblog',
+        'weblog_id=' . $$NODE{node_id} )
+        . ' waiting on Node Row.  Of those, you removed '
+        . $DB->sqlSelect(
+        'COUNT(*)',
+        'weblog',
+        'weblog_id='
+            . $$NODE{node_id}
+            . ' AND linkedby_user='
+            . $$USER{user_id}
+        ) . '.<br /><br />';
+
+    $text .= $str;
+    $text .= htmlcode( 'weblog', '10', '', 'restore', '1', '0' );
+
+    return $text;
+}
+
 1;
