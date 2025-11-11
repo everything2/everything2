@@ -4391,7 +4391,7 @@ sub process_reaper_targets
 {
   my ($this) = @_;
 
-  my $ROW = $this->{db}->getNode('node row','superdoc');
+  my $ROW = $this->{db}->getNode('node row','oppressor_superdoc');
   my $csr = $this->{db}->sqlSelectMany("*",'weblog', "weblog_id=".$this->{db}->getId($ROW)." and removedby_user=0");
 
   my $actions = [];

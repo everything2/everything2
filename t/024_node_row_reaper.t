@@ -15,7 +15,7 @@ unless($APP->inDevEnvironment)
 }
 
 
-my $node_row = $DB->getNode("node row", "superdoc");
+my $node_row = $DB->getNode("node row", "oppressor_superdoc");
 
 my $e2node = "nodeshell_for_testing";
 my $cme = $DB->getNode("Cool Man Eddie","user");

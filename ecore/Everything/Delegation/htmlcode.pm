@@ -5792,7 +5792,7 @@ sub writeupcools
   getRef( $N );
   return "" unless(defined($N));
 
-  my $nr = getNode('node row', 'superdoc')->{node_id};
+  my $nr = getNode('node row', 'oppressor_superdoc')->{node_id};
 
   my $str = undef;
   my $coollink = "";
@@ -7914,7 +7914,7 @@ sub xmlwriteup
 
   my $str = "";
 
-  my $nr = getId(getNode("node row", "superdoc"));
+  my $nr = getId(getNode("node row", "oppressor_superdoc"));
   my $marked = (($DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$wu{node_id}"))?(1):(0));
 
   $str .= "<writeup node_id=\"$$wu{node_id}\" createtime=\"$$wu{publishtime}\" ";
