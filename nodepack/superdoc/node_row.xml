@@ -1,12 +1,5 @@
 <node>
-  <doctext>[% 
-return unless( $APP-&gt;isEditor($USER) );
-
-my $str = 'There are '.$DB-&gt;sqlSelect('COUNT(*)', 'weblog', 'weblog_id='.$$NODE{node_id}).' waiting on Node Row.  Of those, you removed '.$DB-&gt;sqlSelect('COUNT(*)', 'weblog', 'weblog_id='.$$NODE{node_id}.' AND linkedby_user='.$$USER{user_id}).'.&lt;br /&gt;&lt;br /&gt;';
-
-return $str;
-%]
-[{weblog:10,,restore,1,0}]</doctext>
+  <doctext></doctext>
   <node_id>855769</node_id>
   <title>Node Row</title>
   <type_nodetype>14</type_nodetype>
