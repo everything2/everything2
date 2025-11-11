@@ -8849,4 +8849,225 @@ sub my_big_writeup_list
     return $text;
 }
 
+sub site_trajectory_2
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    $text .= '<style>
+<!--
+th {
+  text-align:left;
+}
+.graph td {
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 3px;
+}
+.graph div {
+  position: relative;
+/*  line-height: 25px;*/
+  height: 25px;
+  width: 100%;
+}
+.bar {
+  background-color: #9e9;
+  padding: 0px;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  height: 100%;
+}
+.val {
+  z-index: 100;
+  display: block;
+  position: absolute;
+  left: 5px;
+  top: 2px;
+}
+-->
+</style>
+
+';
+
+    my $monthsago = 1;
+    my ( $sec, $min, $hour, $mday, $month, $year, $wday, $yday, $isdst ) =
+        gmtime(time);
+    $year += 1900;
+    my $strMonth = undef;
+    my $backyear = int( $query->param("y") ) || $year - 5;
+
+    # no nodes before 1999
+    if ( $backyear < 1999 ) {
+        $backyear = 1999;
+    }
+
+    my $str =
+          '<form method="get" action="/index.pl">
+         <input type="hidden" name="node_id" value="'
+        . $$NODE{node_id} . '" />
+         <b>Report back to </b>
+         <select name="y">
+         <option value="'
+        . $backyear . '">'
+        . $backyear
+        . '</option>';
+    for ( my $i = $year ; $i > 1999 ; $i-- ) {
+        $str .= '<option value="' . $i . '">' . $i . '</option>';
+    }
+    $str .=
+          '<option value="1999">1999 (not suggested)</option>
+         </select>
+         <input type="submit" value="Go" />
+         </form>
+         <hr />
+         <table width="100%" class="graph">
+         <tr>
+         <th>Month</th>
+         <th>New Writeups</th>
+         <th>Contributing Users</th>
+         <th>C!s Spent</th>
+         <th title="ratio of all C!s spent to new writeups">C!:NW</th>
+         </tr>';
+
+    $monthsago = 1;
+    my $maxwucnt    = 1;
+    my $maxusercnt  = 1;
+    my $maxcoolcnt  = 1;
+    my $maxcnwratio = .1;
+    while ( $year >= $backyear ) {
+        $strMonth = ( $month + 1 ) . '';
+        if ( length($strMonth) == 1 ) {
+            $strMonth = "0" . $strMonth;
+        }
+        my $strDate = $year . "-" . $strMonth . "-01";
+        my $limit =
+              'type_nodetype='
+            . getId( getType('writeup') )
+            . " and publishtime >= '"
+            . $strDate
+            . "' and publishtime < DATE_ADD('"
+            . $strDate
+            . "',INTERVAL 1 MONTH)";
+
+        my $wucnt = $DB->sqlSelect( 'count(*)',
+            'node JOIN writeup on writeup.writeup_id=node.node_id', $limit );
+        if ( $wucnt > $maxwucnt ) {
+            $maxwucnt = $wucnt;
+        }
+
+        # this query counts contributing users (new and old)
+        $limit =
+              "type_nodetype='"
+            . getId( getType('writeup') )
+            . "' AND createtime>='"
+            . $strDate
+            . "' AND createtime<DATE_ADD('"
+            . $strDate
+            . "',INTERVAL 1 MONTH)";
+        my $usercnt = $DB->sqlSelect( 'count(DISTINCT author_user)', 'node', $limit );
+        if ( $usercnt > $maxusercnt ) {
+            $maxusercnt = $usercnt;
+        }
+
+        $limit =
+              "tstamp >= '"
+            . $strDate
+            . "' and tstamp < DATE_ADD('"
+            . $strDate
+            . "',INTERVAL 1 MONTH)";
+
+        my $coolcnt = $DB->sqlSelect( 'count(*)', 'coolwriteups', $limit );
+        if ( $coolcnt > $maxcoolcnt ) {
+            $maxcoolcnt = $coolcnt;
+        }
+
+        my $cnwratio = $wucnt ? $coolcnt / $wucnt : 0;
+        if ( $cnwratio > $maxcnwratio ) {
+            $maxcnwratio = $cnwratio;
+        }
+
+        $str .= "\n<tr>";
+        $str .= '<td class="DateLabel">';
+        if ( $month == 0 ) {
+            $str .= '<b>' . ( $month + 1 ) . '/' . ($year) . '</b>';
+        } else {
+            $str .= ( $month + 1 ) . '/' . ($year);
+        }
+        $str .= '</td>';
+
+        $str .=
+              '<td><div><span class="val">'
+            . $wucnt
+            . '</span><span class="bar wubar" style="width:'
+            . ( $wucnt * 100.0 / 11060.0 )
+            . '%;" data-value="'
+            . $wucnt
+            . '">&nbsp;</span></div></td>
+           <td><div><span class="val">'
+            . $usercnt
+            . '</span><span class="bar userbar" style="width:'
+            . ( $usercnt * 100.0 / 1230.0 )
+            . '%;" data-value="'
+            . $usercnt
+            . '">&nbsp;</span></div></td>
+           <td><div><span class="val">'
+            . $coolcnt
+            . '</span><span class="bar coolbar" style="width:'
+            . ( $coolcnt * 100.0 / 6650.0 )
+            . '%;" data-value="'
+            . $coolcnt
+            . '">&nbsp;</span></div></td>
+           <td><div><span class="val">'
+            . sprintf( "%.2f", $cnwratio )
+            . '</span><span class="bar cnwratio" style="width:'
+            . ( $cnwratio * 100.0 / 4.0 )
+            . '%;" data-value="'
+            . $cnwratio
+            . '">&nbsp;</span></div></td>
+           </tr>';
+
+        $month--;
+        if ( $month < 0 ) {
+            $month = 11;
+            $year--;
+        }
+        $monthsago++;
+
+    }
+    $str .= "</table>";
+
+    $str .=
+          '<script>
+$(document).ready(function() {
+  var maxwucnt = '
+        . $maxwucnt . ';
+  var maxusercnt = '
+        . $maxusercnt . ';
+  var maxcoolcnt = '
+        . $maxcoolcnt . ';
+  var maxcnwratio= '
+        . $maxcnwratio . ';
+  $(".wubar").each(function(index) {
+    $(this).css("width", (parseInt($(this).data("value")) * 100.0 / maxwucnt) + "%");
+  });
+  $(".userbar").each(function(index) {
+    $(this).css("width", (parseInt($(this).data("value")) * 100.0 / maxusercnt) + "%");
+  });
+  $(".coolbar").each(function(index) {
+    $(this).css("width", (parseInt($(this).data("value")) * 100.0 / maxcoolcnt) + "%");
+  });
+  $(".cnwratio").each(function(index) {
+    $(this).css("width", (parseFloat($(this).data("value")) * 100.0 / maxcnwratio) + "%");
+  });
+});
+</script>';
+
+    $text .= $str;
+    return $text;
+}
+
 1;
