@@ -9097,4 +9097,73 @@ sub node_row
     return $text;
 }
 
+sub costume_remover
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    my @params = $query->param;
+    my $str    = '';
+
+    my @users     = ();
+    my @thenodes  = ();
+    foreach (@params) {
+        if (/^undressUser(\d+)$/) {
+            $users[$1] = $query->param($_);
+        }
+    }
+
+    for ( my $count = 0 ; $count < @users ; $count++ ) {
+        next unless $users[$count];
+
+        my ($U) = getNode( $users[$count], 'user' );
+        if ( not $U ) {
+            $str .= "couldn't find user $users[$count]<br />";
+            next;
+        }
+
+        # Send an automated notification.
+        my $failMessage = htmlcode(
+            'sendPrivateMessage',
+            {
+                'recipient_id' => getId($U),
+                'message'      => 'Hey, your costume has been removed because it was deemed abusive. Please choose your costume more carefully next time, or you will lose costume-wearing privileges.',
+                'author' => 'Klaproth',
+            }
+        );
+
+        $str .= "User $$U{title} was stripped of their costume.";
+
+        my $v = getVars($U);
+        delete $$v{costume};
+        setVars( $U, $v );
+        $str .= q|<br />|;
+
+    }
+    $text .= $str;
+
+    # Build the table rows for inputting user names
+    my $count = 5;
+    $str =
+        "<p>This tool deletes the costume variable for selected users. Use it to remove abusively or innapropriately named costumes.</p><p>";
+    $str .= htmlcode('openform');
+    $str .= '<table border="1">';
+
+    $str .= "\t<tr><th>Undress these users</th></tr> ";
+
+    for ( my $i = 0 ; $i < $count ; $i++ ) {
+        $query->param( "undressUser$i", '' );
+        $str .= "\n\t<tr><td>";
+        $str .= $query->textfield( "undressUser$i", '', 40, 80 );
+        $str .= "</td>";
+    }
+
+    $str .= '</table>';
+    $str .= htmlcode('closeform');
+    $str .= "</p>";
+
+    $text .= $str;
+    return $text;
+}
+
 1;

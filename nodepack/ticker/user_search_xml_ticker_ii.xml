@@ -33,7 +33,7 @@ $sort = &quot;&quot; if $query-&gt;param(&quot;nosort&quot;);
 my $wuCount = $DB-&gt;sqlSelect('count(*)','node',
    &quot;author_user=$$searchuser{node_id} AND type_nodetype=117&quot;);
 
-my $nr = getId(getNode(&quot;node row&quot;, &quot;superdoc&quot;));
+my $nr = getId(getNode(&quot;node row&quot;, &quot;oppressor_superdoc&quot;));
 
 my $csr = $DB-&gt;sqlSelectMany(&quot;node_id&quot;, &quot;node JOIN writeup ON node_id=writeup_id&quot;,
 	&quot;author_user=$$searchuser{node_id} $sort $limit&quot;);
