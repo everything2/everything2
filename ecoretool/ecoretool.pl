@@ -40,7 +40,7 @@ if($directive and exists($allowed_directives->{$directive}))
 
 	$handler->main();
 	exit;
-	
+
 }else{
 	general_help();
 	exit;
@@ -49,7 +49,7 @@ if($directive and exists($allowed_directives->{$directive}))
 sub general_help
 {
 	print "Usage: ecoretool.pl [DIRECTIVE] [OPTIONS]\n";
-	
+
 	if(defined($directive))
 	{
 		print "(Unknown directive '$directive', here are your choices:)\n";

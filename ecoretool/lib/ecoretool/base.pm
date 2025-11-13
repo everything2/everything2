@@ -142,7 +142,7 @@ sub _skippable_types
 		"edevdoc" => [],
 		"patch" => [],
 		"user" => [113,952215,779713,839239,1080927,373682,176726,373682,373113], #root,klaproth,guest user,cool man eddie,virgil,everyone,webster 1913,everyone, EDB
-		"usergroup" => [838015, 114, 829913, 923653, 1199641, 1969185, 1192564, 1882128, 1175790, 1433518, 2175734, 1713398], #Edev, gods, e2gods, content editors, clientdev, chanops,debuggers,e2docs,%%, SIGTITLE, News, Sheriffs
+		"usergroup" => [838015, 114, 829913, 923653, 1199641, 1969185, 1192564, 1882128, 1175790, 1433518, 2175734, 1713398, 1797556], #Edev, gods, e2gods, content editors, clientdev, chanops,debuggers,e2docs,%%, SIGTITLE, News, Sheriffs, thepub
 		"node_forward" => [],
 		"ticket" => [], 
 		"draft" => [],
