@@ -1,14 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;
-[% 
-  my $news = getNode(&quot;News&quot;,&quot;usergroup&quot;);
-  return htmlcode(&quot;weblog&quot;,10,$news-&gt;{node_id},,,1);
-%]
-
-
-&lt;br&gt;&lt;br&gt;&lt;p align=center&gt;
-[Everything FAQ]&lt;br&gt;&lt;br&gt;
-</doctext>
+  <doctext></doctext>
   <node_id>165580</node_id>
   <title>News for noders. Stuff that matters.</title>
   <type_nodetype>14</type_nodetype>
