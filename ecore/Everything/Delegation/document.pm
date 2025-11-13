@@ -9758,4 +9758,110 @@ Last updated on October 9, 2012 by [wertperch] <!-- Added header and footer, tid
     return $text;
 }
 
+sub xp_superbless
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    return $text unless $APP->isAdmin($USER);
+
+    my $bonesrant =
+'<P>This is an archived version of the old [Superbless] which used to give XP instead of GP. All blessings should be given in GP nowadays. There is no reason why administrators should fiddle with user XP except for extraordinary circumstances. All usage of this node is logged.</P><P>-[The Power Structure of Everything2|the management]</P><p>Please contact [Tem42] if a user wants XP reset to zero.<br></p>';
+
+    $text .= $bonesrant;
+
+    # REINITIALIZE for second code block
+    return $text unless $APP->isAdmin($USER);
+
+    my @params = $query->param;
+    my $str    = '';
+    my @users  = ();
+    my @xp     = ();
+    foreach (@params)
+    {
+        if (/^multiblessUser(\d+)$/)
+        {
+            $users[$1] = $query->param($_);
+        }
+        if (/^multiblessXP(\d+)$/)
+        {
+            $xp[$1] = $query->param($_);
+        }
+    }
+
+    my $curXP = undef;
+    for ( my $count = 0 ; $count < @users ; $count++ )
+    {
+        next unless $users[$count] and $xp[$count];
+
+        my ($U) = getNode( $users[$count], 'user' );
+        if ( not $U )
+        {
+            $str .= "couldn't find user $users[$count]<br />";
+            next;
+        }
+
+        $curXP = $xp[$count];
+
+        unless ( $curXP =~ /^\-?\d+$/ )
+        {
+            $str .= "$curXP is not a valid XP value for user $users[$count]<br>";
+            next;
+        }
+
+        my $signum = ( $curXP > 0 ) ? 1 : ( ( $curXP < 0 ) ? -1 : 0 );
+
+        $str .= "user $$U{title} was given $curXP XP";
+        $APP->securityLog( $NODE, $USER,
+            "$$U{title} was superblessed $curXP XP by $$USER{title}" );
+        if ( $signum != 0 )
+        {
+            $$U{karma} += $signum;
+            $APP->adjustExp( $U, $curXP );
+            htmlcode( 'achievementsByType', 'karma' );
+
+        }
+        else
+        {
+            $str .= ', so nothing was changed';
+        }
+        $str .= "<br />\n";
+    }
+    $text .= $str;
+
+    # REINITIALIZE for third code block
+    $text .= htmlcode('openform');
+    $text .= '<table border="1">
+';
+
+    return $text
+        . '<TR><TH>You want to be supercursed? No? Then play elsewhere.</TH></TR></table>'
+        . htmlcode('closeform')
+        unless $APP->isAdmin($USER);
+
+    my $count = 10;
+
+    $str = '';
+
+    $str .= "<tr><th>Bless user</th><th>with XP</th></tr> ";
+
+    for ( my $i = 0 ; $i < $count ; $i++ )
+    {
+        $query->param( "multiblessUser$i", '' );
+        $query->param( "multiblessXP$i",   '' );
+        $str .= "<tr><td>";
+        $str .= $query->textfield( "multiblessUser$i", '', 40, 80 );
+        $str .= "</td><td>";
+        $str .= $query->textfield( "multiblessXP$i", '', 10, 10 );
+        $str .= "</td></tr>";
+    }
+
+    $text .= $str;
+    $text .= '</table>
+';
+    $text .= htmlcode('closeform');
+
+    return $text;
+}
+
 1;
