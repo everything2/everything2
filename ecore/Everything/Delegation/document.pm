@@ -9864,4 +9864,15 @@ sub xp_superbless
     return $text;
 }
 
+sub news_for_noders__stuff_that_matters_
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '<p>';
+
+    my $news = getNode( "News", "usergroup" );
+    $text .= htmlcode( 'weblog', '10', $news->{node_id}, '', '', '1' );
+    $text .= q|<br><br><p align="center">[Everything FAQ]<br><br>|;
+    return $text;
+}
+
 1;
