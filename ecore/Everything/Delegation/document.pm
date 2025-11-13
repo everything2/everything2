@@ -9875,4 +9875,365 @@ sub news_for_noders__stuff_that_matters_
     return $text;
 }
 
+sub message_inbox
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    return "<p>If you had an account, you could get messages.</p>"
+        if $APP->isGuest($USER);
+
+    # options
+    my $str = "(Also see: [Message Outbox])"
+        . htmlcode( 'openform', 'message_inbox_form' )
+        . '<input type="hidden" name="op" value="message">'
+        . $query->hidden('perpage')
+        . $query->hidden( 'sexisgood', '1' )    #so auto-VARS changing works
+        . $query->fieldset(
+        $query->legend('Options')
+            . htmlcode( 'varcheckbox', 'sortmyinbox',
+            'Sort messages by usergroup' )
+            . '<br>'
+            . 'Show only messages from user '
+            . $query->textfield( -name => 'fromuser' )
+            . ', or do the inverse: '
+            . $query->checkbox(
+            -name  => 'notuser',
+            -label => 'hide from this user'
+            )
+            . '<br>'
+            . 'Show only messages for group '
+            . $query->textfield( -name => 'fromgroup' )
+            . ', or do the inverse: '
+            . $query->checkbox(
+            -name  => 'notgroup',
+            -label => 'hide to this group'
+            )
+            . '<br>'
+            . 'Show only archived/unarchived messages: '
+            . htmlcode( 'varsComboBox',
+            'msginboxUnArc,0, 0,all, 1,unarchived, 2,archived' )
+        );
+
+    # get parameters for messages to show
+    my $filterUser  = $query->param('fromuser');
+    my $filterGroup = $query->param('fromgroup');
+    my $spyon       = $query->param('spy_user');
+
+    my $isRoot     = $APP->isAdmin($USER);
+    my $bots       = undef;
+    my $grandtotal = undef;
+
+    $bots = getVars( getNode( 'bot inboxes', 'setting' ) )
+        if $isRoot or $spyon;
+
+    # show alternate user account's messages
+    my $spystring = '';
+    if ($isRoot)
+    {
+
+        my @names = sort { lc($a) cmp lc($b) } keys(%$bots);
+        unshift @names, $$USER{title};
+
+        $spystring = $query->label( 'Message inbox for: '
+                . $query->popup_menu(
+                -name   => 'spy_user',
+                -values => \@names
+                ) );
+    }
+
+    my $foruser = 0;
+    if ($spyon)
+    {
+        my $u = getNode( $spyon, 'user' );
+        if ($u)
+        {
+            my $okUg = getNode( $$bots{ $$u{title} }, 'usergroup' );
+            $foruser = $u if $okUg and $DB->isApproved( $USER, $okUg );
+
+        }
+        elsif ($isRoot)
+        {
+            $spystring .=
+                '<small>"' . $query->escapeHTML($spyon) . '" is not a user</small>';
+        }
+    }
+
+    $str .= $query->p($spystring) if $spystring;
+    $foruser = ( $foruser || $USER )->{node_id};
+
+    # start building SQL WHERE string
+    # TODO: look at XML ticker and consider sharing code
+    my $sqlWhere = "for_user=$foruser";
+
+    #show archived/unarchived things
+    $sqlWhere .= ( '', ' AND archive=0', ' AND archive!=0' )
+        [ $$VARS{msginboxUnArc} ];
+
+    my $showFilters =
+        ( '', ' unarchived', ' archived' )[ $$VARS{msginboxUnArc} ]
+        . ' messages';
+
+    $filterUser  = getNode( $filterUser,  'user' )      if $filterUser;
+    $filterGroup = getNode( $filterGroup, 'usergroup' ) if $filterGroup;
+
+    # sort by usergroup?
+    my $ugJoin = '';
+    if ( $$VARS{sortmyinbox} )
+    {
+        # get a list of usergroups from which we have messages, with how many
+        my $ugType = getType('usergroup');
+        my $csr    = $DB->sqlSelectMany(
+            'count(*), title',
+            "message
+			LEFT JOIN node
+				ON for_usergroup = node_id
+				AND type_nodetype=$$ugType{node_id}",
+            $sqlWhere,
+            'GROUP BY title
+			ORDER BY (title IS NULL)'
+        );
+
+        my $totalMess = 0;
+
+        while ( my $group = $csr->fetchrow_hashref() )
+        {
+            my $num   = $$group{'count(*)'};
+            my $title = $$group{title} || 'No group';
+            $str .=
+                  linkNode( $NODE, "<strong>$title</strong>: ",
+                { 'fromgroup' => $$group{title} } )
+                . "$num<br>\n";
+            $totalMess += $num;
+        }
+
+        $str .=
+              '('
+            . linkNode( $NODE, "$totalMess$showFilters total" )
+            . ")<br><br>\n";
+        $grandtotal = $totalMess unless $$VARS{msginboxUnArc};
+
+        unless ($filterGroup)
+        {
+            # default display is messages not for a group:
+            $ugJoin = 'LEFT JOIN node ON for_usergroup = node_id';
+            $sqlWhere .=
+                " AND (for_usergroup=0 OR type_nodetype != $$ugType{node_id})";
+            $showFilters .= ' not to any usergroup';
+        }
+    }
+
+    $grandtotal ||= $DB->sqlSelect( "count(*)", "message", "for_user=$foruser" );
+
+    # from user/to usergroup
+    if ($filterUser)
+    {
+        my ( $n, $not ) =
+            $query->param('notuser') ? ( '!', ' not' ) : ( '', '' );
+        $sqlWhere .= " AND message.author_user$n=$$filterUser{node_id}";
+        $showFilters .= "$not from " . linkNode($filterUser);
+    }
+
+    if ($filterGroup)
+    {
+        my ( $n, $not ) =
+            $query->param('notgroup') ? ( '!', ' not' ) : ( '', '' );
+        $sqlWhere .= " AND for_usergroup$n=$$filterGroup{node_id}";
+        $showFilters .= "$not to usergroup " . linkNode($filterGroup);
+    }
+
+    # provoke jump to last page:
+    $query->param( 'page', 1000000000 ) unless $query->param('page');
+
+    # get messages
+    my ( $csr, $paginationLinks, $totalmsgs, $firstmsg, $lastmsg ) = htmlcode(
+        'show paged content',
+        'message.*',
+        "message $ugJoin",
+        "$sqlWhere",,
+        'ORDER BY message_id
+		LIMIT 100',    # can be overridden by 'perpage' parameter
+        0,             # no instructions, so it doesn't 'show' but returns cursor
+        noform => 1    # 'go to page' box not wrapped in form
+    );
+
+    # display
+    my $colHeading = '<tr><th align="left">delete</th><th>send time</th>
+	<th colspan="2" align="right">&#91;un&#93;Archive</th></tr>';
+
+    $str .= "$paginationLinks
+	<table>
+	$colHeading" if $totalmsgs;
+
+    while ( my $MSG = $csr->fetchrow_hashref )
+    {
+        my $text = $$MSG{msgtext};
+        my $from = $$MSG{author_user};
+        my $ug   = $$MSG{for_usergroup};
+
+        getRef( $from, $ug );
+        $from ||= { title => '&#91;unknown user]' };
+        $ug = 0
+            if $ug
+            && $$ug{type}{title} ne 'usergroup'
+            && $$ug{type}{title} ne 'user';
+
+        # don't escape HTML for bots
+        unless ( $$bots{ $$from{title} } eq 'Content Editors' )
+        {
+            $text = $APP->escapeAngleBrackets($text);
+            $text = parseLinks( $text, 0, 1 );
+            $text =~ s/\[/&#91;/g;    # no spare [s for page parseLinks
+        }
+        $text =~ s/\s+\\n\s+/<br>/g;    # replace literal '\n' with HTML breaks
+
+        # delete box
+        $str .=
+              qq'<tr class="privmsg"><td>'
+            . $query->checkbox(
+            -name   => 'deletemsg_' . $$MSG{message_id},
+            -value  => 'yup',
+            -valign => 'top',
+            -label  => '',
+            -class  => 'delete'
+            );
+
+        # reply links
+        my $a = '';
+
+        my $responses = [ encodeHTML( $$from{title} ) ];
+        push @$responses, $$ug{title} if $ug;
+
+        foreach (@$responses)
+        {
+            my $respondto = $_;
+
+            # make names safe and find user if it's from Eddie.
+            # (To find more users, patch the messages, not this)
+
+            $text =~ /\[([^\[\]]*)\[user]/ and ( $respondto = $1 )
+                if $respondto eq 'Cool Man Eddie';    # (sic)
+            next unless $respondto;
+            $respondto =~ s/'/\\'/g;
+            $respondto =~ s/"/\\"/g;
+            $respondto =~ s/ /_/g;
+
+            $str .=
+                  '('
+                . $query->a(
+                {
+                    class => 'action reply'
+
+                        #				, onmouseover => 'if(e2.autofillInbox){e2.startText('zetextbox','/msg $respondto ', 1);}'
+                        ,
+                    href => "javascript:e2.startText('zetextbox','/msg $respondto ')"
+                },
+                "r$a"
+                ) . ')';
+            $a = 'a';
+        }
+
+        # time sent
+        my $t = $$MSG{tstamp};
+        $str .=
+              '</td><td><small>&nbsp;'
+            . substr( $t, 0, 4 ) . '.'
+            . substr( $t, 5, 2 ) . '.'
+            . substr( $t, 8, 2 )
+            . '&nbsp;at&nbsp;'
+            . substr( $t, 11, 2 ) . ':'
+            . substr( $t, 14, 2 )
+            . '</small></td><td>';
+
+        # message
+        $str .= '(' . linkNode($ug) . ') ' if $ug;
+        $str .= '<em>' . linkNode($from) . " says</em> $text</td>";
+
+        # archive box
+        $str .=
+              '<td><tt>'
+            . ( $$MSG{archive} ? 'A' : '&nbsp;' )
+            . '</tt>'
+            . $query->checkbox(
+            -name  => ( $$MSG{archive} ? 'un' : '' ) . "archive_$$MSG{message_id}",
+            -value => 'yup',
+            -label => '',
+            -class => 'archive'
+            ) . "</td></tr>\n";
+    }
+
+    # summary report
+    unless ( $totalmsgs
+        || $filterUser
+        || $filterGroup
+        || $$VARS{msginboxUnArc} == 2    # archived only
+        || $foruser != $$USER{node_id} )
+    {
+        #no messages showing
+        $showFilters =
+              "<em>You may feel lonely.</em>
+		<small>(But you do have $grandtotal messages all together)</small>"
+            if $grandtotal;
+    }
+    else
+    {
+        $str .= $colHeading if $lastmsg - $firstmsg > 10;
+        $str .= '</table>' if $totalmsgs;
+
+        $totalmsgs ||= 'no';
+        $showFilters =~ s/messages/message/
+            if $totalmsgs ne 'no' && $totalmsgs == 1;
+        $showFilters =
+              ( $foruser == $$USER{node_id} ? 'You have ' : linkNode($foruser) . ' has ' )
+            . $totalmsgs
+            . $showFilters;
+        $showFilters .= ". ($grandtotal all together)"
+            if $totalmsgs eq 'no' && $grandtotal != 0
+            or $totalmsgs != $grandtotal;
+    }
+
+    $str .= $query->p($showFilters);
+
+    # form manipulation buttons
+    $str .=
+          $paginationLinks
+        . $query->p(
+        $query->reset('Clear All')
+            . q! <input type="button" value="Clear Reply"
+        onclick="$('#zetextbox').val('');">
+	<input type="button" value="Delete All"
+		onclick="$('.delete').each(function(){this.checked=true;});">
+	<input type="button" value="Archive All"
+		onclick="$('.archive&#91;name^=archive]').each(function(){this.checked=true;});">
+	<input type="button" value="Unarchive All"
+		onclick="$('.archive&#91;name^=unarchive]').each(function(){this.checked=true;});">!
+        );
+
+    # message and box
+    if ( $query->param('sentmessage') )
+    {
+        $str .= '<p><i>' . $query->param('sentmessage') . '</i></p>';
+    }
+
+    $str .=
+        $query->div( { id => 'MI_textbox' },
+        $query->textarea(
+            -name  => 'message',
+            -value => '',
+            -force => 1,
+            -rows  => 1,
+            -cols  => 35,
+            -id    => 'zetextbox',
+            -class => 'expandable'
+        ) )
+        unless $$VARS{'borged'};
+
+    $text .=
+          $str . ' '
+        . $query->submit( 'message send', 'submit' )
+        . $query->end_form();
+
+    return $text;
+}
+
 1;
