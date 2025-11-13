@@ -7576,7 +7576,7 @@ sub settings
     # Block 2: Style selection
     if($query->param('chosenstyle')) {
         my $style = getNodeById(scalar $query->param('chosenstyle'));
-        my $style_type = undef;
+        my $style_type = '';
         $style_type = $$style{type}{title} if $style;
         if ($style_type eq 'stylesheet' or $query->param('chosenstyle') eq 'default' ){
             delete $$VARS{userstyle};
@@ -9415,6 +9415,346 @@ sub noding_speedometer
         . "</b> days.</p>";
 
     $text .= $str;
+    return $text;
+}
+
+sub the_everything2_voting_experience_system
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    $text .= '<style type="text/css">
+.mytable th, .mytable td
+{
+border: 1px solid silver;
+padding: 3px;
+}
+</style>
+
+<h2>An [Everything2 Help] Document</h2>
+<p><br />
+<h1>Why it\'s important to read this before you begin writing</h1>
+<p>
+Everything2 may be unlike anything you have met before. Writers are rewarded for their writing, and gain certain privileges as they gain in experience.
+</p><br /><hr width=250><br /><p><p>
+<p align=center><big><big>
+XP is an [imaginary] number granted to you by an<br>
+[anonymous] stranger. Treat it as such.
+</big></big></p>
+
+<h3>Votes</strong></h3>
+<p>
+You begin as a Level 0 user. Level 1 users and up can vote on others\' writeups. Once you have voted you will see the voting pattern of that writeup.</p>
+<p>
+Use these votes wisely! The reputation of a writeup doesn\'t mean it will be deleted, nor does it mean it will <em>not</em> be deleted, but it acts as one way to qualify written work and to help editors find what can often be a weak writeup. If one of your writeups is deleted, you will lose the <strong>five</strong> [XP] you gained when posting it.</p>
+<p>
+Try to vote according to the standard of writing, not because you agree or disagree with what someone has written.
+<p>
+Voting and deletion are two ways we try to keep quality [writeup|writeups] coming in - a hastily/poorly written writeup will often gain a negative reputation.  Conversely, if your writeups are voted up by your fellow users, you will gain XP. Details are below.</p>
+
+<p>
+Note: not all powers are gained instantly upon reaching a new level: votes and C!s refresh at midnight server time.</p>
+
+<h3>C!s</h3>
+<p>
+One important power is the ability to grant a "C!" (also known as "C!ing" or "chinging"). Beginning at 4th level, users will get the ability to C! an <em>individual</em> writeup by clicking the [C!] located next to the voting buttons. This will give the author of the writeup <b>twenty</b> XP, and kick the writeup to the front page and the [Cool Archive] for all to see.</p>
+
+<p><strong>Use these chings wisely!</strong> Just because you have chings doesn\'t mean you should use them with careless abandon. Most users view a writeup\'s chings as an endorsement of <em>quality</em> regardless of the impulsive reason you may have chosen to bestow that "Attaboy". <em>Do you really want your name to be associated with something that we might consider to be stupid ten minutes/days/months from now?</em> Think twice before you click on that C!; chings spent in haste can be regretted in leisure.</p>
+
+<p>
+A writeup can be C!d <em>any number of times,</em> but only <strong>once</strong> by any given user.</p>
+
+<h3>XP</h3>
+
+<p>
+Each of your writeups earns you 5 [XP] in addition to all the XP you get when people vote it up or cool it. If created using the guidelines detailed in [The perfect node], they will pay off many times over in XP.</p>
+
+<h3>The voting/level system:</h3>
+
+<p>(Note: You must meet <em>both</em> requirements to reach a level, and you lose the level if you drop below either requirement).</p>
+
+<p><small>Your user level is in bold.</small></p>
+
+<table>
+';
+
+    my $str        = '';
+    my $fstLvl     = $query->param('fstlevel') || 0;
+    my $sndLvl     = $query->param('sndlevel') || 12;
+
+    if ( ( $sndLvl - $fstLvl ) > 99 )
+    {
+
+        my $warnStr =
+'<p><b>!! This tool cannot display more than 100 levels at a time. Please choose fewer levels!</b></p>';
+
+        $warnStr .=
+              htmlcode('openform')
+            . '<p>Show me all levels from Level '
+            . $query->textfield( 'fstlevel', '0', '', 20 )
+            . ' to Level '
+            . $query->textfield( 'sndlevel', '12', '', 20 )
+            . $query->submit( 'show', 'Show Levels!' )
+            . $query->end_form()
+            . '</p>';
+
+        $text .= $warnStr;
+        $text .= '</table>
+
+<h3>Powers:</h3>
+<ul>
+<li>Level 0 &#8212; Joining Everything2 gives you the ability to [E2 Quick Start|contribute writeups], communicate with other members via the [Chatterbox] and message system, customise your view of the site in [User Settings], etc.</li>
+<li>Level 1 &#8212; Can [voting|vote] on E2 writeups by other users. Can give [Star|Stars] to other users at the [E2 Gift Shop]. Can display a small (uncopyrighted) image in your home node (Nope, no [porn] allowed!).</li>
+<li>Level 2 &#8212; Can [E2 Gift Shop|buy additional votes] at the [E2 Gift Shop]; can [create category|create categories].</li>
+<li>Level 3 &#8212; Can [Everything Poll Creator|create polls]; can post a bounty on [Everything\'s Most Wanted].</li>
+<li>Level 4 &#8212; [C!] power!</li>
+<li>Level 5 &#8212; Can display a larger homenode image (up to 400&times;800), ability to [create room]s in the [Chatterbox]</li>
+<li>Level 6 &#8212; Can reset the chatterbox topic by buying a token at the [E2 Gift Shop].</li>
+<li>Level 7 &#8212; Can buy [Easter Egg|easter eggs] at the [E2 Gift Shop], and give them to other users.</li>
+<li>Level 8 &#8212; Can [Create A Registry|create registries].</li>
+<li>Level 9 &#8212; Can give votes to other users at the [E2 Gift Shop].</li>
+<li>Level 10 &#8212; Can [Cloak] oneself in the [Other Users] nodelet. </li>
+<li>Level 11 &#8212; Can [Sanctify] other users with GP.</li>
+<li>Level 12 &#8212; Can purchase up to one extra C! per day at the [E2 Gift Shop]</li>
+<li>Level 15 &#8212; [Fireball]! Can "fireball" other users in the chatterbox using the [/fireball] command.</li>
+</ul>
+<br>
+
+<h3>You can [gain] or [lose] [XP] in the following ways <em>only</em>:</h3>
+<ul>
+<li>Each writeup you turn in gives you five [XP]. If it\'s later deleted, you lose that five XP.</li>
+<li>+20 XP each time one of your writeups is [C!]\'d ([Cool Archive|Chinged] by another user and sent to the [Cool Archive])</li>
+<li>+1 XP every time another user upvotes one of your [writeup|writeups].</li>
+</ul>
+
+<!-- Added by rootbeer277 -->
+<p><strong>Please note</strong> that under this system, the XP requirement is entirely out of proportion to the writeup requirement.  There is no correlation between number of writeups and the amount of XP one could reasonably be expected to have given that number of writeups.  The writeup requirement exists solely as a safety net against unusual situations rather than a level guideline, and XP is the key value for advancement.</p>
+<!-- End rootbeer277\'s addendum -->
+
+<p>
+
+
+
+<strong>Note:</strong> If a writeup you\'ve submitted has accrued a positive reputation and it is deleted, you <i><b>will not</i></b> "lose" any [XP] you\'d already gained for the + votes. You will only lose the 5 XP you got when you initially posted the writeup.</p>
+<p>
+Gaining and losing XP for adding and deleting also applies to "housekeeping" write-ups like [E2 Nuke Request|Writeup Deletion Request] and [Edit These E2 Titles|Node Title Edit]. It can be disconcerting to gain and lose XP from these, but that\'s life.</p>
+
+<h3>You can [gain] or [lose] [GP] in the following ways, and possibly others:</h3>
+<ul>
+<li>Each time you cast a vote you have a 1 in 3 chance of gaining 1 GP.</li>
+<li>+10 GP every time you are [bless|blessed] by an administrator.</li>
+<li>+10 GP every time you are [sanctify|sanctified] by another user.</li>
+<li>+5 GP every time you are [/fireball|fireballed] by another user in the chatterbox.</li>
+<li>+3 GP every time you are [easter egg|egged] by another user in the chatterbox.</li>
+<li>variable GP rewards for participating in [Everything Quest|Quests and contests].
+<li>GP can be spent at the [E2 Gift Shop] and similar nodes.</li>
+</ul>
+
+<p align=center><br><em>[The Power Structure of Everything2|The administration] does not take the voting and experience point system too terribly seriously.</p>
+<p align=center><u>Woe to those who do.</u></em></p>
+<p align=center><br><br>
+</p><br><hr width=250><br></p><p>
+
+
+<p align=center>
+If this is not clear, ask questions in the [Chatterbox] or approach the [E2 Staff]
+</p><br>
+<p align="center"><big><em>Back to</em><br><strong>[Everything2 Help]</strong></big></p><br />
+
+
+
+<p align=right><small>
+If you believe that this document needs updating or correcting, /msg any member of [E2Docs]<br>
+Last updated on October 9, 2012 by [wertperch] <!-- Added header and footer, tidied up some language --><br>
+</small>
+</p>';
+
+        return $text;
+    }
+
+    $str .=
+'<p><table class=\'mytable\'><tr><th>Level</th><th>Level Title</th><th>XP Req</th><th>Writeups Req</th><th>Votes per Day</th><th>[C!]s per Day</th></tr>';
+
+    my $EXP = getVars( getNode( 'level experience', 'setting' ) );
+    my $WRP = getVars( getNode( 'level writeups',   'setting' ) );
+    my $VTS = getVars( getNode( 'level votes',      'setting' ) );
+    my $C   = getVars( getNode( 'level cools',      'setting' ) );
+    my $TTL = getVars( getNode( 'level titles',     'setting' ) );
+
+    my $exp = 0;
+    my $wrp = 0;
+
+    my $vts = 0;
+    my $c   = 0;
+    my $ttl = 0;
+
+    my $userLevel = $APP->getLevel($USER);
+
+    for ( my $i = $fstLvl ; $i <= $sndLvl ; $i++ )
+    {
+
+        if ( $i < -3 )
+        {
+
+            $exp = 1000000 * $i;
+            $ttl = "Archdemon";
+            $vts = 10000;
+            $c   = 1000;
+            $wrp = 0;
+
+            $str .=
+                  "<tr "
+                . ( $i == $userLevel ? "style='font-weight:bold'" : "" )
+                . "><TD>$i</TD><TD>$ttl</TD><TD>$exp</TD><TD>$wrp</TD><TD>$vts</TD><TD>$c</TD></tr>";
+
+        }
+        elsif ( $i == -3 )
+        {
+
+            $exp = 1000000 * $i;
+            $ttl = "Demon";
+            $vts = 1000;
+            $c   = 100;
+            $wrp = 0;
+
+            $str .=
+                  "<tr "
+                . ( $i == $userLevel ? "style='font-weight:bold'" : "" )
+                . "><TD>$i</TD><TD>$ttl</TD><TD>$exp</TD><TD>$wrp</TD><TD>$vts</TD><TD>$c</TD></tr>";
+
+        }
+        elsif ( $i == -2 )
+        {
+
+            $exp = 1000000 * $i;
+            $ttl = "Master Arcanist";
+            $vts = 500;
+            $c   = 50;
+            $wrp = 0;
+
+            $str .=
+                  "<tr "
+                . ( $i == $userLevel ? "style='font-weight:bold'" : "" )
+                . "><TD>$i</TD><TD>$ttl</TD><TD>$exp</TD><TD>$wrp</TD><TD>$vts</TD><TD>$c</TD></tr>";
+
+        }
+        elsif ( $i == -1 )
+        {
+
+            $exp = 1000000 * $i;
+            $ttl = "Arcanist";
+            $vts = "NONE";
+            $c   = "NONE";
+            $wrp = 0;
+
+            $str .=
+                  "<tr "
+                . ( $i == $userLevel ? "style='font-weight:bold'" : "" )
+                . "><TD>$i</TD><TD>$ttl</TD><TD>$exp</TD><TD>$wrp</TD><TD>$vts</TD><TD>$c</TD></tr>";
+
+        }
+        elsif ( $i < 100 )
+        {
+
+            $str .=
+                  "<tr "
+                . ( $i == $userLevel ? "style='font-weight:bold'" : "" )
+                . "><TD>$i</TD><TD>$$TTL{$i}</TD><TD>$$EXP{$i}</TD><TD>$$WRP{$i}</TD><TD>$$VTS{$i}</TD><TD>$$C{$i}</TD></tr>";
+
+        }
+        else
+        {
+
+            $exp = $i * 2500 - 30000;
+            $wrp = $i * 5;
+
+            $str .=
+                  "<tr "
+                . ( $i == $userLevel ? "style='font-weight:bold'" : "" )
+                . "><TD>$i</TD><TD>Transcendent</TD><TD>$exp</TD><TD>$wrp</TD><TD>50</TD><TD>$$C{100}</TD></tr>";
+        }
+
+    }
+
+    $str .=
+          htmlcode('openform')
+        . '<p>Show me all levels from Level '
+        . $query->textfield( 'fstlevel', '0', '', 20 )
+        . ' to Level '
+        . $query->textfield( 'sndlevel', '12', '', 20 )
+        . $query->submit( 'show', 'Show Levels!' )
+        . $query->end_form()
+        . '</p>';
+
+    $text .= $str;
+    $text .= '</table>
+
+<h3>Powers:</h3>
+<ul>
+<li>Level 0 &#8212; Joining Everything2 gives you the ability to [E2 Quick Start|contribute writeups], communicate with other members via the [Chatterbox] and message system, customise your view of the site in [User Settings], etc.</li>
+<li>Level 1 &#8212; Can [voting|vote] on E2 writeups by other users. Can give [Star|Stars] to other users at the [E2 Gift Shop]. Can display a small (uncopyrighted) image in your home node (Nope, no [porn] allowed!).</li>
+<li>Level 2 &#8212; Can [E2 Gift Shop|buy additional votes] at the [E2 Gift Shop]; can [create category|create categories].</li>
+<li>Level 3 &#8212; Can [Everything Poll Creator|create polls]; can post a bounty on [Everything\'s Most Wanted].</li>
+<li>Level 4 &#8212; [C!] power!</li>
+<li>Level 5 &#8212; Can display a larger homenode image (up to 400&times;800), ability to [create room]s in the [Chatterbox]</li>
+<li>Level 6 &#8212; Can reset the chatterbox topic by buying a token at the [E2 Gift Shop].</li>
+<li>Level 7 &#8212; Can buy [Easter Egg|easter eggs] at the [E2 Gift Shop], and give them to other users.</li>
+<li>Level 8 &#8212; Can [Create A Registry|create registries].</li>
+<li>Level 9 &#8212; Can give votes to other users at the [E2 Gift Shop].</li>
+<li>Level 10 &#8212; Can [Cloak] oneself in the [Other Users] nodelet. </li>
+<li>Level 11 &#8212; Can [Sanctify] other users with GP.</li>
+<li>Level 12 &#8212; Can purchase up to one extra C! per day at the [E2 Gift Shop]</li>
+<li>Level 15 &#8212; [Fireball]! Can "fireball" other users in the chatterbox using the [/fireball] command.</li>
+</ul>
+<br>
+
+<h3>You can [gain] or [lose] [XP] in the following ways <em>only</em>:</h3>
+<ul>
+<li>Each writeup you turn in gives you five [XP]. If it\'s later deleted, you lose that five XP.</li>
+<li>+20 XP each time one of your writeups is [C!]\'d ([Cool Archive|Chinged] by another user and sent to the [Cool Archive])</li>
+<li>+1 XP every time another user upvotes one of your [writeup|writeups].</li>
+</ul>
+
+<p><strong>Please note</strong> that under this system, the XP requirement is entirely out of proportion to the writeup requirement.  There is no correlation between number of writeups and the amount of XP one could reasonably be expected to have given that number of writeups.  The writeup requirement exists solely as a safety net against unusual situations rather than a level guideline, and XP is the key value for advancement.</p>
+
+<p>
+
+
+
+<strong>Note:</strong> If a writeup you\'ve submitted has accrued a positive reputation and it is deleted, you <i><b>will not</i></b> "lose" any [XP] you\'d already gained for the + votes. You will only lose the 5 XP you got when you initially posted the writeup.</p>
+<p>
+Gaining and losing XP for adding and deleting also applies to "housekeeping" write-ups like [E2 Nuke Request|Writeup Deletion Request] and [Edit These E2 Titles|Node Title Edit]. It can be disconcerting to gain and lose XP from these, but that\'s life.</p>
+
+<h3>You can [gain] or [lose] [GP] in the following ways, and possibly others:</h3>
+<ul>
+<li>Each time you cast a vote you have a 1 in 3 chance of gaining 1 GP.</li>
+<li>+10 GP every time you are [bless|blessed] by an administrator.</li>
+<li>+10 GP every time you are [sanctify|sanctified] by another user.</li>
+<li>+5 GP every time you are [/fireball|fireballed] by another user in the chatterbox.</li>
+<li>+3 GP every time you are [easter egg|egged] by another user in the chatterbox.</li>
+<li>variable GP rewards for participating in [Everything Quest|Quests and contests].
+<li>GP can be spent at the [E2 Gift Shop] and similar nodes.</li>
+</ul>
+
+<p align=center><br><em>[The Power Structure of Everything2|The administration] does not take the voting and experience point system too terribly seriously.</p>
+<p align=center><u>Woe to those who do.</u></em></p>
+<p align=center><br><br>
+</p><br><hr width=250><br></p><p>
+
+
+<p align=center>
+If this is not clear, ask questions in the [Chatterbox] or approach the [E2 Staff]
+</p><br>
+<p align="center"><big><em>Back to</em><br><strong>[Everything2 Help]</strong></big></p><br />
+
+
+
+<p align=right><small>
+If you believe that this document needs updating or correcting, /msg any member of [E2Docs]<br>
+Last updated on October 9, 2012 by [wertperch] <!-- Added header and footer, tidied up some language --><br>
+</small>
+</p>';
+
     return $text;
 }
 
