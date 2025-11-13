@@ -9166,4 +9166,256 @@ sub costume_remover
     return $text;
 }
 
+sub noding_speedometer
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    #constants
+    my $user_id = getId($USER);
+    my $isGuest = $APP->isGuest($USER);
+    my $isRoot  = $APP->isAdmin($USER);
+
+    return 'Sorry, but only registered members can use the Noding Speedometer.'
+        if $isGuest;
+
+    my $user_in  = $query->param('speedyuser');
+    my $username = $user_in || $$USER{title};
+    $username = encodeHTML($username);
+
+    # A non-number will break the page, so:
+    my $clock_nodes = $query->param('clocknodes');
+    unless ($clock_nodes) { $clock_nodes = 50 }
+    unless ( $clock_nodes =~ /^[0-9]+$/ ) {
+        return "Please enter a number of nodes greater than 0.";
+    }
+    my $str =
+          htmlcode('openform')
+        . "<table><tr><td>Username: </td><td><input type=\"text\" name=\"speedyuser\" value=\"$username\"></td></tr><tr><td>Nodes to clock: </td><td><input type=\"text\" name=\"clocknodes\" value=\""
+        . $clock_nodes
+        . "\"></td></tr></table>"
+        . htmlcode('closeform') . "<br>";
+
+    return $str .= "Okay, the radar gun's ready.  Who should we clock?"
+        unless ($user_in);
+
+    my $u = getNode( $user_in, 'user' );
+    return $str .=
+        "<br><br>Your aim is way off. "
+        . encodeHTML($user_in)
+        . " isn't a user. Try again."
+        unless ($u);
+
+    my $initcnt = $DB->sqlSelect( "count(*)", "node",
+            "author_user=$$u{user_id} AND type_nodetype="
+            . getId( getType('writeup') ) );
+
+    return $str .= "<br><br>Um, user $$u{title} has no writeups!"
+        if ( $initcnt == 0 );
+
+    $str .= "$$u{title} has <b>$initcnt</b> nodes in total. ";
+    my $cnt = undef;
+
+    if ( $initcnt >= $clock_nodes ) {
+        $cnt = $clock_nodes;
+    } else {
+        $str .=
+              "Since it's less than "
+            . $clock_nodes
+            . ", we'll just clock them for $initcnt.<br>";
+        $cnt = $initcnt;
+    }
+
+    my $lastcnt = $DB->sqlSelect(
+        "TO_DAYS(NOW())-TO_DAYS(publishtime)",
+        "node JOIN writeup ON writeup_id=node_id",
+        "author_user=$$u{node_id} ORDER BY publishtime DESC limit "
+            . ( $cnt - 1 ) . ",1"
+    );
+
+    if ( $lastcnt < 1 ) {
+        $str .= "<br><br>Wait a while, ";
+        return $str
+            . "do at least one [day|lap] around the track before timing yourself."
+            if ( $$USER{node_id} == $$u{node_id} );
+        return $str . "let ["
+            . $$u{title}
+            . "] do at least one [day|lap] around the track before timing them.";
+    }
+
+    my $speed = $lastcnt / $cnt;
+
+    $str .=
+          "To write the last $cnt nodes, it took $$u{title} $lastcnt days.   This works out at <b>"
+        . sprintf( "%.2f", $speed )
+        . "</b> days per node.<br><br>";
+
+# Setting arbitrary speed values. I guess 1 node per day or faster is RED hot, less than 3 days per node is ORANGE, less than 7 days per node is YELLOW, and anything slower is GREEN.
+
+    my $color   = "white";
+    my $width   = "0";
+    my $comment = "";
+
+    SWITCH: {
+        if ( $speed <= 0.75 ) {
+            $color   = "#6600CC";
+            $width   = "100";
+            $comment =
+                "$$u{title} has broken the speedometer and is probably not even human...";
+            last SWITCH;
+        }
+        if ( $speed <= 1 ) {
+            $color = "red";
+            $width = "90";
+            $comment =
+                "[THE IRON NODER CHALLENGE|IRON NODER] speed! $$u{title} has been issued a [social life|ticket].";
+            last SWITCH;
+        }
+        if ( $speed <= 3 ) {
+            $color   = "orange";
+            $width   = "75";
+            $comment = "Pretty fast! A warning and a doughnut bribe may be in order.";
+            last SWITCH;
+        }
+        if ( $speed <= 7 ) {
+            $color   = "yellow";
+            $width   = "50";
+            $comment = "Nothing the node police need to worry about just yet.";
+            last SWITCH;
+        }
+        if ( $speed <= 20 ) {
+            $color   = "green";
+            $width   = "25";
+            $comment =
+                "We all get there in our own time, even if we cause tailbacks on the way...";
+            last SWITCH;
+        }
+        if ( $speed > 20 ) {
+            $color   = "#330000";
+            $width   = "10";
+            $comment =
+                "We politely suggest that you exit your vehicle and get a taxi. Perhaps the conversation will inspire you.";
+            last SWITCH;
+        }
+    }
+
+    $str .=
+        '<p align="center"><table width="300" style="margin:auto;" cellpadding=0 cellspacing=0>';
+    $str .=
+        '<tr><td><table width="100%" border=0 cellpadding=0 cellspacing=0>';
+    $str .= '<tr><td align="left"><small><b>NODING SPEED</b></small>';
+    $str .=
+        '<table width="260" border=0 cellpadding=0 cellspacing=2 style="border: solid 1px black;">';
+    $str .= '<tr><td bgcolor="gray" align="left">';
+    $str .=
+          '<table width="'
+        . $width
+        . '%" border=0 cellpadding=0 cellspacing=0 bgcolor="'
+        . $color . '">';
+    $str .=
+        '<tr><td><img src="https://s3.amazonaws.com/static.everything2.com/clear.gif" width=1 height=13 alt="" border=0>';
+    $str .=
+        '</td></tr></table></td></tr></table></td></tr></table></td></tr></table></p>';
+    $str .= '<p align="center">' . $comment . '</p>';
+    $str .= '<hr width="25%">';
+
+# Projections. Because we're allowing them to clock X nodes, it makes sense to base the
+# projections only on the last X nodes rather than basing it on their overall node-fu.
+# The formula for average XP per writeup is: ((5 * NoWUs) + (20 * C!s) + upvotes) / NoWUs
+
+# If Writeups are the holdup then:
+# No. of days to levelup = writeups required * days per node
+# If xp is the holdup (as will usually now be the case) then:
+# No. of days to levelup = XP to next level / ((1/days per node) * AVG XP)
+
+    my $lvwu   = getVars( getNode( "level writeups",   "setting" ) );
+    my $lvxp   = getVars( getNode( "level experience", "setting" ) );
+    my $curlvl = $APP->getLevel($u);
+    my $curxp  = $$u{experience};
+    my $req_wu = ( $$lvwu{ $curlvl + 1 } ) - $initcnt;
+    my $req_xp = ( $$lvxp{ $curlvl + 1 } ) - $curxp;
+    my $daystolevel_wu = 0;
+    my $daystolevel_xp = 0;
+    my $daystolevel    = 0;
+    my $total_upvotes  = 0;
+    my $total_cools    = 0;
+
+    my $clocked_nodes = $DB->sqlSelectMany(
+        'title, node_id, reputation, cooled',
+        'node inner join writeup on node_id=writeup_id',
+        "author_user=$$u{node_id} and type_nodetype="
+            . getId( getNode( 'writeup', 'nodetype' ) ),
+        'order by publishtime desc limit 0, ' . $cnt
+    );
+
+    while ( my $N = $clocked_nodes->fetchrow_hashref ) {
+        my ( $name, $type ) = ( $$N{title} =~ m|(.*) \(([a-z-]+)\)| );
+
+        if (   ( $name eq "E2 Nuke Request" )
+            or ( $name eq "Edit these E2 titles" )
+            or ( $name eq "Nodeshells marked for destruction" )
+            or ( $name eq "Broken Nodes" ) )
+        {
+            next;
+        }
+
+        my ($votescast) =
+            $DB->sqlSelect( 'count(*)', 'vote', 'vote_id=' . $$N{node_id} );
+        my $upvotes = ( $votescast + $$N{reputation} ) / 2;
+        if ( int($upvotes) != $upvotes ) {
+            $upvotes = $DB->sqlSelect( 'count(*)', 'vote',
+                'vote_id=' . $$N{node_id} . ' and weight=1' );
+        }
+        $total_upvotes += $upvotes;
+        $total_cools   += $$N{cooled};
+    }
+
+    my $AVG = ( ( $cnt * 5 ) + ( $total_cools * 20 ) + $total_upvotes ) / $cnt;
+    my $nodes_needed = 0;
+
+    #debug
+    #$str.= "reqwu: $req_wu, reqxp: $req_xp, lvwu: ".$$lvwu{$curlvl+1}.", initcnt: $initcnt, cnt: $cnt";
+
+    if ( $req_wu > 0 ) {
+        $daystolevel_wu = $req_wu * $speed;
+        $nodes_needed   = $req_wu;
+    } else {
+        $req_wu = 0;
+    }
+    if ( $req_xp > 0 ) {
+        $daystolevel_xp = $req_xp / ( ( 1 / $speed ) * $AVG );
+        my $temp = $req_xp / $AVG;
+        if ( $temp > $nodes_needed ) { $nodes_needed = $temp; }
+    } else {
+        $req_xp = 0;
+    }
+    if ( $daystolevel_wu > $daystolevel_xp ) {
+        $daystolevel = $daystolevel_wu;
+    } else {
+        $daystolevel = $daystolevel_xp;
+    }
+
+    $str .= "<p><big><strong>Level-up Projections</strong></big></p>";
+    $str .=
+          "<p>$$u{title} needs <b>$req_wu</b> nodes and <b>$req_xp</b> experience to reach Level "
+        . ( $curlvl + 1 )
+        . ". Based on a noding speed of <b>"
+        . sprintf( "%.2f", $speed )
+        . "</b> days per node, ";
+    $str .=
+          "and an average XP per node of <b>"
+        . sprintf( "%.2f", $AVG )
+        . "</b> (clocked over the last $cnt nodes), "
+        if ( $req_xp > 0 );
+    $str .=
+          "this will take <b>"
+        . sprintf( "%.0f", $nodes_needed )
+        . "</b> nodes, written over a period of <b>"
+        . sprintf( "%.0f", $daystolevel )
+        . "</b> days.</p>";
+
+    $text .= $str;
+    return $text;
+}
+
 1;
