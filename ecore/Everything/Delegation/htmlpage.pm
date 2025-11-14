@@ -1837,17 +1837,23 @@ sub debatecomment_edit_page
     $$NODE{ 'restricted' } = $restrict;
   }
 
-  $restrict = getNodeById($$NODE{ 'root_debatecomment' }) -> {'restricted'};
+  if($restrict = getNodeById($$NODE{ 'root_debatecomment' }))
+  {
+    $restrict = $restrict->{restricted};
+  }else{
+    $restrict = undef;
+  }
   my $title = $$NODE { 'title' };
   $title =~ s/\</\&lt\;/g;
   $title =~ s/\>/\&gt\;/g;
 
-  my $ug_name = getNodeById($restrict) -> {'title'};
+  my $ug_name = "";
+  $ug_name = getNodeById($restrict)->{'title'}.": " if(defined($restrict) and $restrict);
 
   $title =~ /^\s*([\w\s]+):/;
   my $prefix = $1;
 
-  $title = "$ug_name: ".$title unless lc($prefix) eq lc($ug_name);
+  $title = $ug_name.$title unless lc($prefix) eq lc($ug_name);
 
   $$NODE { 'title' } = $title;
   updateNode( $NODE, $USER );

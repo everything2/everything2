@@ -4670,7 +4670,7 @@ sub explode_ug
   my ($ug) = @_;
   $ug = getNodeById($ug) if $ug =~ /^\d+$/;
 
-  my @ids = @{$$ug{'group'}};
+  my @ids = @{$$ug{'group'} || []};
 
   my @result = ();
   foreach my $id(@ids){
