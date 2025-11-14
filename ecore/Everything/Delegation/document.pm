@@ -10067,7 +10067,7 @@ sub message_inbox
 
     while ( my $MSG = $csr->fetchrow_hashref )
     {
-        my $text = $$MSG{msgtext};
+        my $msgtext = $$MSG{msgtext};
         my $from = $$MSG{author_user};
         my $ug   = $$MSG{for_usergroup};
 
@@ -10081,11 +10081,11 @@ sub message_inbox
         # don't escape HTML for bots
         unless ( $$bots{ $$from{title} } eq 'Content Editors' )
         {
-            $text = $APP->escapeAngleBrackets($text);
-            $text = parseLinks( $text, 0, 1 );
-            $text =~ s/\[/&#91;/g;    # no spare [s for page parseLinks
+            $msgtext = $APP->escapeAngleBrackets($msgtext);
+            $msgtext = parseLinks( $msgtext, 0, 1 );
+            $msgtext =~ s/\[/&#91;/g;    # no spare [s for page parseLinks
         }
-        $text =~ s/\s+\\n\s+/<br>/g;    # replace literal '\n' with HTML breaks
+        $msgtext =~ s/\s+\\n\s+/<br>/g;    # replace literal '\n' with HTML breaks
 
         # delete box
         $str .=
@@ -10099,7 +10099,7 @@ sub message_inbox
             );
 
         # reply links
-        my $a = '';
+        my $alink = '';
 
         my $responses = [ encodeHTML( $$from{title} ) ];
         push @$responses, $$ug{title} if $ug;
@@ -10111,7 +10111,7 @@ sub message_inbox
             # make names safe and find user if it's from Eddie.
             # (To find more users, patch the messages, not this)
 
-            $text =~ /\[([^\[\]]*)\[user]/ and ( $respondto = $1 )
+            $msgtext =~ /\[([^\[\]]*)\[user]/ and ( $respondto = $1 )
                 if $respondto eq 'Cool Man Eddie';    # (sic)
             next unless $respondto;
             $respondto =~ s/'/\\'/g;
@@ -10122,15 +10122,12 @@ sub message_inbox
                   '('
                 . $query->a(
                 {
-                    class => 'action reply'
-
-                        #				, onmouseover => 'if(e2.autofillInbox){e2.startText('zetextbox','/msg $respondto ', 1);}'
-                        ,
+                    class => 'action reply',
                     href => "javascript:e2.startText('zetextbox','/msg $respondto ')"
                 },
-                "r$a"
+                "r$alink"
                 ) . ')';
-            $a = 'a';
+            $alink = 'a';
         }
 
         # time sent
@@ -10147,7 +10144,7 @@ sub message_inbox
 
         # message
         $str .= '(' . linkNode($ug) . ') ' if $ug;
-        $str .= '<em>' . linkNode($from) . " says</em> $text</td>";
+        $str .= '<em>' . linkNode($from) . " says</em> $msgtext</td>";
 
         # archive box
         $str .=
@@ -10188,8 +10185,8 @@ sub message_inbox
             . $totalmsgs
             . $showFilters;
         $showFilters .= ". ($grandtotal all together)"
-            if $totalmsgs eq 'no' && $grandtotal != 0
-            or $totalmsgs != $grandtotal;
+            if ( $totalmsgs eq 'no' && $grandtotal != 0 )
+            || $totalmsgs != $grandtotal;
     }
 
     $str .= $query->p($showFilters);
@@ -10233,6 +10230,172 @@ sub message_inbox
         . $query->submit( 'message send', 'submit' )
         . $query->end_form();
 
+    return $text;
+}
+
+sub everything_publication_directory
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    return "go away" unless $APP->inUsergroup( $USER, 'thepub' );
+
+    $text .= '<p>Discussions on E2 Publications, most recently commented listed first.</p>
+
+<style type="text/css">
+<!--
+th {
+	text-align: left;
+}
+-->
+</style>
+
+<p>
+The "restricted" column shows who may view/add to a discussion.
+</p>
+
+<!-- [%
+# return \'<p>"Restricted" discussions are limited to "gods" only. This superdoc shows them (and the "restricted" column, and this paragraph too) only for "gods". </p>\' if ( isGod( $USER ) );
+\'\';
+%] -->
+
+<p>
+<table>
+<tr bgcolor="#dddddd">
+<th class="oddrow" width="200" colspan="2">title</th>
+<th class="oddrow" width="80">restricted</th>
+<th class="oddrow" width="80">author</th>
+<th class="oddrow" width="100">created</th>
+<th class="oddrow" width="100">last updated</td>
+<!--th width="100">type</th-->
+</tr>
+';
+
+    my @types = qw( debate );
+    foreach (@types)
+    {
+        $_ = getId( getType($_) );
+    }
+
+    #gets a node given the ID
+    #this caches nodes between hits, so it doesn't hurt to get 1 group a zillion times
+    #note: this may be completely pointless if E2 caches things anyway, but I don't have much faith in that :-|
+    #returns undef if unable to get a node
+    #created: 2001.11.27.n2; updated: 2001.11.27.n2
+    #author: N-Wing
+    my %ids = ();
+    local *getNodeFromID = sub {
+        my $nid = $_[0];
+        return unless ( defined $nid ) && ( $nid =~ /^\d+$/ );
+
+        #already known, return it
+        return $ids{$nid} if exists $ids{$nid};
+
+        #unknown, find that
+        my $N = getNodeById($nid);
+        return unless defined $N;
+        return $ids{$nid} = $N;
+    };
+
+    local *in_an_array = sub {
+        my $needle   = shift;
+        my @haystack = @_;
+
+        for (@haystack)
+        {
+            return 1 if $_ eq $needle;
+        }
+        return 0;
+    };
+
+    my $csr = $DB->sqlSelectMany( "root_debatecomment", "debatecomment",
+        "restricted=114", "ORDER BY debatecomment_id DESC" );
+    my @nodes = ();
+    while ( my $temprow = $csr->fetchrow_hashref )
+    {
+        my $N = getNodeById( $temprow->{root_debatecomment} );
+        push @nodes, $N if ( $N && !in_an_array( $N, @nodes ) );
+    }
+
+    my $str           = '';
+    my $restrictGroup = undef;
+    foreach my $n (@nodes)
+    {
+        $n = getNodeById( $$n{'node_id'} );
+        my ($user) = getNodeById( $$n{author_user} );
+        my $created = $$n{createtime};
+
+        # Maybe we should have some sympathy for brits, who write dates
+        # backwards? Nahh...
+        $created =~ s/^([0-9]+)-([0-9]+)-([0-9]+).*$/$2\/$3\/$1/;
+        $created =~ s/(^|\/)0/$1/;
+
+        my $latest = getNodeById(
+            $DB->sqlSelect(
+                "MAX(debatecomment_id)", "debatecomment",
+                "root_debatecomment=$$n{node_id}"
+            )
+        );
+        my $latesttime = $latest->{createtime};
+        $latesttime ||= "<em>(none)</em>";
+        $latesttime =~ s/^([0-9]+)-([0-9]+)-([0-9]+).*$/$2\/$3\/$1/;
+        $latesttime =~ s/(^|\/)0/$1/;
+        $latesttime ||= "<em>(none)</em>";
+
+        $restrictGroup = $$n{restricted} || 923653;    #ugly backwards-
+        $restrictGroup = 114 if $restrictGroup == 1;   #compatiblity hack
+        $restrictGroup = getNodeFromID($restrictGroup);
+
+        next unless $DB->isApproved( $USER, $restrictGroup );
+
+        $str .=
+              '<tr><td>'
+            . linkNode( $n, 0, { lastnode_id => 0 } )
+            . '</td><td><small>('
+            . linkNode( $n, 'compact',
+            { lastnode_id => 0, displaytype => 'compact' } )
+            . ')</small></td><td><small>'
+            . linkNode( $restrictGroup, 0, { lastnode_id => 0 } )
+            . '</small></td><td>'
+            . linkNode( $$user{'node_id'}, 0, { lastnode_id => 0 } )
+            . '</td><td>'
+            . $created
+            . '</td>'
+            . '<td>'
+            . $latesttime
+            . '</td>'
+            . '</tr>';
+    }
+    $text .= $str;
+
+    $text .= '</table>
+
+';
+
+    # REINITIALIZE for second code block
+    $str = '';
+
+    my $createDebate = 1;
+
+    if ($createDebate)
+    {
+        $str .= '
+<p><b>Create a New Discussion:</b></p>
+
+<form method="post">
+<p>
+<input type="hidden" name="op" value="new" />
+<input type="hidden" name="type" value="debate" />
+<input type="hidden" name="displaytype" value="edit" />
+<input type="hidden" name="debate_parent_debatecomment" value="0" />
+<input type="text" size="50" maxlength="64" name="node" value="" /><br />';
+        $str .= '<input type="submit" value="Create Debate" />
+</p>
+</form>
+';
+    }
+
+    $text .= $str;
     return $text;
 }
 
