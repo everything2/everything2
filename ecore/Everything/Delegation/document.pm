@@ -6,6 +6,9 @@ use warnings;
 # Used in: advanced_settings, settings
 use DateTime;
 
+# Used in: findings_
+use Time::HiRes;
+
 BEGIN {
     *getNode       = *Everything::HTML::getNode;
     *getNodeById   = *Everything::HTML::getNodeById;
@@ -10747,6 +10750,116 @@ sub nothing_found
     }
 
     $text .= qq|<p>Sorry, but nothing matching "$nt" was found.$str|;
+    $text .= htmlcode('e2createnewnode');
+
+    return $text;
+}
+
+sub findings_
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    my @start     = Time::HiRes::gettimeofday;
+    my $timeStr   = undef;
+    my $timeCount = 1;
+
+    my $str   = '';
+    my $title = $query->param('node');
+    my $lnode = $query->param('lastnode_id');
+    $lnode ||= '0';
+
+    return htmlcode( 'randomnode', 'Psst! Over here!' ) unless $title;
+    $str .= 'Here\'s the stuff we found when you searched for "' . $title . '"';
+
+    $str .= qq'\n\t<ul class="findings">';
+
+    my $isRoot = $APP->isAdmin($USER);
+    my $curType = undef;
+
+    my @nodes = ();
+
+    # Likely we are coming from a draft cold and we were short circuited here. Do a new search.
+    if ( not exists( $NODE->{group} ) and defined($title) )
+    {
+        $NODE->{group} = $APP->searchNodeName( $title, ["e2node"], undef, 1 );
+    }
+
+    #For some reason, sometimes e2 thinks there is no nodegroup here. Huh? --[Swap]
+    if ( defined $$NODE{group} )
+    {
+        @nodes = @{ $$NODE{group} };
+    }
+
+    my @e2node_ids = ();
+    foreach my $node (@nodes)
+    {
+        if ( $node->{type}{title} eq "e2node" )
+        {
+            push @e2node_ids, $node->{node_id};
+        }
+    }
+
+    my %fillednode_ids = ();
+
+    #Only make one SQL call to find the non-nodeshells.
+    if (@e2node_ids)
+    {
+        my $sql =
+              "SELECT DISTINCT nodegroup_id
+             FROM nodegroup
+             WHERE nodegroup_id IN ("
+            . join( ", ", @e2node_ids ) . ")";
+
+        @fillednode_ids{ @{ $DB->{dbh}->selectcol_arrayref($sql) } } = ();
+    }
+
+    foreach my $ND ( @{ $$NODE{group} } )
+    {
+        #$ND = getNodeById($ND, 'light');
+        next unless canReadNode( $USER, $ND );
+        $curType = $$ND{type}{title};
+
+        next if $curType eq 'writeup';
+        next if $curType eq 'debatecomment';
+
+        next if $curType eq 'draft' && !$APP->canSeeDraft( $USER, $ND, 'find' );
+        if ( $curType eq 'debate' && !$isRoot )
+        {
+            next unless $APP->inUsergroup( $USER, getNodeById( $$ND{restricted} ) );
+        }
+
+        my $openli = "<li>";
+
+        # Mark nodeshells with class name
+        if ( $curType eq 'e2node' )
+        {
+            $openli = '<li class="nodeshell">'
+                unless exists $fillednode_ids{ $$ND{node_id} };
+        }
+        if ( $APP->isGuest($USER) )
+        {
+            $str .= $openli . linkNode( $ND, '', { lastnode_id => 0 } );
+        }
+        else
+        {
+            $str .= $openli . linkNode( $ND, '', { lastnode_id => $lnode } );
+        }
+        if ( $curType ne 'e2node' )
+        {
+            $str .= " ($curType)";
+        }
+        $str .= "</li>\n";
+    }
+
+    $str .= "</ul>\n";
+
+    # We need to clear out the results of the search because if we are coming here from a draft
+    # we need to nix these search results so we can detect it and get new ones
+
+    delete $NODE->{group};
+
+    $text .= $str;
     $text .= htmlcode('e2createnewnode');
 
     return $text;
