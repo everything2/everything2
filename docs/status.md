@@ -10,6 +10,7 @@
 | Database Code Removal | 🟡 In Progress | 82% (372/~542) | High |
 | Object-Oriented Refactoring | 🟢 Active | 43% (100+/235) | Medium |
 | Database Security | 🟡 In Progress | 25% | High |
+| MySQL Modernization (8.0→8.4) | 🔴 Not Started | 0% | High |
 | PSGI/Plack Migration | 🔴 Not Started | 0% | High |
 | React Mobile Frontend | 🟡 Partial | 15% | Medium |
 | Testing Infrastructure | ✅ Complete | 100% | Medium |
@@ -26,17 +27,18 @@
   - *Note: Opcodes are action handlers (op=login, op=vote, etc.)*
   - *Future: Migrate to REST APIs once React migration is substantial*
   - *See: [Development Goals - Opcode Framework Migration](delegation-migration.md#development-goals---opcode-framework-migration-to-rest-apis)*
-- **superdoc/document** - 4 nodes migrated to Everything::Delegation::document.pm (242 lines)
+- **superdoc/document** - 5 nodes migrated to Everything::Delegation::document.pm (267 lines)
   - Permission Denied
   - super mailbox
   - Nothing Found
   - Findings:
-- **Total:** 372 nodes, 21,987 lines of delegated code
+  - My Recent Writeups
+- **Total:** 373 nodes, 22,012 lines of delegated code
 
 ### ❌ Remaining (18%)
 - **achievement** - 45 nodes with Perl code in `{code}` field
 - **room criteria** - Unknown count with Perl expressions in `roomdata.criteria`
-- **superdoc templates** - 125 nodes with `[% perl %]` blocks (4 completed this week)
+- **superdoc templates** - 125 nodes with `[% perl %]` blocks (5 completed this week)
 - **Total:** 170+ code-containing nodes
 
 ### Why This Matters
@@ -105,7 +107,91 @@ extends 'Everything::Node';
 4. Whitelist table names
 5. Migrate to prepared statements
 
-## PSGI/Plack Migration (Priority 4)
+## MySQL Modernization (Priority 4)
+
+### Current State: MySQL 8.0
+- **Amazon RDS**: Running MySQL 8.0, which is approaching end of standard support
+- **Extended Support Charges**: Will be required after standard support ends
+- **sql_mode=ALLOW_INVALID_DATES**: Current dependency on deprecated mode
+- **Authentication**: Using legacy mysql_native_password (being phased out)
+
+### Critical Issues
+
+1. **Invalid Date Defaults**:
+   - DATE/DATETIME columns with '0000-00-00' defaults
+   - Code assumes invalid dates are valid sentinel values
+   - MySQL 8.4 enforces stricter date validation
+   - ALLOW_INVALID_DATES mode deprecated
+
+2. **Authentication Methods**:
+   - mysql_native_password deprecated in MySQL 8.4
+   - Need to migrate to caching_sha2_password
+   - DBD::mysql version compatibility required
+   - Apache::DBI connection pooling must be tested
+
+3. **Schema Compatibility**:
+   - Unknown number of date columns with invalid defaults
+   - Need full audit of all tables
+   - Existing data may contain '0000-00-00' values
+   - Must decide NULL vs. valid default strategy
+
+### Migration Phases
+
+**Phase 1: Audit (Week 1)**
+- Run INFORMATION_SCHEMA queries to find date columns with invalid defaults
+- Grep codebase for '0000-00-00' literals and comparisons
+- Test application against MySQL 8.4 in development
+- Document all breaking changes and affected code
+- Categorize fixes by risk and impact
+
+**Phase 2: Schema Changes (Weeks 2-3)**
+- ALTER TABLE statements to fix column defaults
+- UPDATE statements to fix existing invalid date data
+- Test schema changes in development environment
+- Create rollback procedures
+- Document migration scripts
+
+**Phase 3: Code Updates (Weeks 3-4)**
+- Replace '0000-00-00' comparisons with IS NULL checks
+- Fix code that inserts invalid dates
+- Update date validation and handling logic
+- Add tests for date edge cases
+- Run full test suite
+
+**Phase 4: Authentication (Week 5)**
+- Update MySQL users to caching_sha2_password
+- Verify DBD::mysql version (minimum 4.050)
+- Test all database connections
+- Update deployment documentation
+
+**Phase 5: Upgrade (Week 6)**
+- Final testing in staging environment
+- Deploy schema changes to production
+- Upgrade RDS instance to MySQL 8.4
+- Monitor for errors and performance regressions
+
+### Estimated Effort
+- **Total:** 4-6 weeks
+- **Risk:** High (schema changes, potential data corruption)
+- **Dependencies:** Testing infrastructure, staging environment
+- **Rollback:** Complex (requires database restore for schema changes)
+
+### Blockers
+1. Need to identify all date columns (schema audit)
+2. Need to understand business logic for "invalid" dates
+3. Must ensure DBD::mysql compatibility
+4. Must coordinate downtime for schema changes
+
+### Next Steps
+1. Run SQL audit to find all date columns with invalid defaults
+2. Grep codebase for '0000-00-00' usage patterns
+3. Set up MySQL 8.4 in Docker development environment
+4. Test current application against MySQL 8.4
+5. Document breaking changes and create migration plan
+
+**See**: [Development Goals - MySQL Modernization](delegation-migration.md#development-goals---mysql-modernization-80--84) for detailed migration strategy
+
+## PSGI/Plack Migration (Priority 5)
 
 ### Current State: Apache mod_perl2 + Prefork MPM
 - Package-level globals
@@ -133,7 +219,7 @@ extends 'Everything::Node';
 3. Implement Plack::Request wrapper
 4. Design Redis cache architecture
 
-## React Mobile Frontend (Priority 5)
+## React Mobile Frontend (Priority 6)
 
 ### Current State
 - **29 React components** (1,094 lines)
@@ -185,7 +271,7 @@ extends 'Everything::Node';
    - Requires React forms to replace legacy HTML forms
    - See: [Opcode Framework Migration](delegation-migration.md#development-goals---opcode-framework-migration-to-rest-apis)
 
-## Testing Infrastructure (Priority 6)
+## Testing Infrastructure (Priority 7)
 
 ### ✅ Test Status
 - **11/13 test files passing** (572/576 tests)
@@ -210,7 +296,7 @@ extends 'Everything::Node';
 4. Create test fixtures
 5. Enable full coverage after PSGI migration
 
-## Code Coverage Tracking (Priority 7)
+## Code Coverage Tracking (Priority 8)
 
 ### ✅ Infrastructure Status
 - **Devel::Cover** added to cpanfile
@@ -232,7 +318,7 @@ extends 'Everything::Node';
 3. Application code will load directly in test process
 4. Devel::Cover will instrument all executed code
 
-**See:** [Priority 8: PSGI/Plack Migration](modernization-priorities.md#priority-8-psgiplack-migration-) for migration plan
+**See:** [Priority 5: PSGI/Plack Migration](modernization-priorities.md#priority-5-psgiplack-migration-) for migration plan
 
 ### Coverage Goals (Post-PSGI)
 - **High Priority (>80%):** Security, API, Application modules
@@ -256,16 +342,17 @@ extends 'Everything::Node';
 ### Code Quality
 - **Perl::Critic:** `CRITIC_FULL=1 ./tools/critic.pl` ✅ All modules passing
 - **.perlcriticrc:** Configured overrides
-- **Code Coverage:** Devel::Cover installed, blocked by architecture (see Priority 7)
+- **Code Coverage:** Devel::Cover installed, blocked by architecture (see Priority 8)
 
 ## Recent Milestones
 
 ### Week of November 15, 2025
-- ✅ Superdoc delegation progress (4 nodes completed)
+- ✅ Superdoc delegation progress (5 nodes completed)
   - Permission Denied - Simple access denied message
   - super mailbox - Bot mailbox management with usergroup permissions
   - Nothing Found - 404-style search results with external link detection
   - Findings: - Search results display with nodeshell detection
+  - My Recent Writeups - User's writeup count from the past year
 - ✅ Documentation updates
   - Added usergroup permission details to delegation-migration.md
   - Documented 'gods' administrative usergroup
@@ -273,6 +360,7 @@ extends 'Everything::Node';
   - Added development goal for template system migration to React
   - Clarified distinction between Legacy E2 templates (parseCode) and Mason2 templates
   - Added development goal for opcode framework migration to REST APIs
+  - Added development goal for MySQL modernization (8.0 → 8.4)
   - Enhanced module import checklist (use statements at top of file)
 - ✅ Code quality improvements
   - Fixed expression form of map/grep violations
@@ -293,7 +381,7 @@ extends 'Everything::Node';
 - ✅ AWS deployment pipeline
 
 ### In Progress
-- 🟡 Database code removal (82% complete, 4 nodes added this week)
+- 🟡 Database code removal (82% complete, 5 nodes added this week)
 - 🟡 Superdoc template migration (125 remaining, down from 129)
 - 🟡 React frontend expansion
 - 🟡 Documentation in docs/ directory
@@ -301,7 +389,7 @@ extends 'Everything::Node';
 ## Immediate Priorities
 
 ### This Week
-1. ✅ Continue superdoc delegation (4 completed)
+1. ✅ Continue superdoc delegation (5 completed)
 2. ✅ Update delegation documentation with usergroup details
 3. Complete achievement node audit
 4. Complete room criteria audit
@@ -321,10 +409,11 @@ extends 'Everything::Node';
 ### This Quarter
 1. Complete database code removal (Phase 1: delegation functions)
 2. Fix critical SQL injection vulnerabilities
-3. Set up React testing infrastructure
-4. Begin PSGI preparation work
-5. Mobile responsiveness Phase 1
-6. Document React migration strategy and identify Phase 2 pilot candidates
+3. Begin MySQL 8.4 audit (schema + code analysis)
+4. Set up React testing infrastructure
+5. Begin PSGI preparation work
+6. Mobile responsiveness Phase 1
+7. Document React migration strategy and identify Phase 2 pilot candidates
 
 ## Team Communication
 
@@ -360,7 +449,17 @@ extends 'Everything::Node';
    - Which features provide the most value for React conversion (high user interaction)?
    - **Mason2 templates**: Should Mason2 templates also be converted to React, or maintained separately?
    - What is the long-term vision for Mason2 vs React rendering?
-8. **Opcode framework migration**:
+8. **MySQL modernization (8.0 → 8.4)**:
+   - When to schedule the MySQL 8.0 → 8.4 upgrade (timeline relative to RDS support end)?
+   - What is the business logic meaning of '0000-00-00' dates (unknown? not set? legacy data?)?
+   - Should invalid dates become NULL or valid sentinel values (e.g., '1970-01-01')?
+   - How many date columns are affected (need schema audit results)?
+   - What is acceptable downtime window for schema ALTER TABLE operations?
+   - Should we batch schema changes or apply incrementally?
+   - Which tables are highest priority (most critical business data)?
+   - Test strategy: Full staging test or incremental table-by-table validation?
+   - Rollback plan: Database restore vs. reverse migrations?
+9. **Opcode framework migration**:
    - At what point in React migration should we begin converting opcodes to REST APIs?
    - Which opcodes should be prioritized (authentication, voting, messaging, content creation)?
    - Should we maintain `op=` query parameter backward compatibility during transition?

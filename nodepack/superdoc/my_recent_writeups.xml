@@ -1,19 +1,5 @@
 <node>
-  <doctext>[%
-return &quot;If you logged in, you would know how many writeups you've published recently.&quot; if( $APP-&gt;isGuest($USER) );
-
-my $oneyearago = time() - 31536000; 
-$oneyearago = htmlcode('DateTimeLocal',$oneyearago);
-
-my $userID = $$USER{node_id};
-
-my $numwriteups = htmlcode('writeupssincelastyear', &quot;$userID&quot;);
-
-my $str = &quot;Since one year ago, on &quot;.$oneyearago.&quot;, &quot;.linkNode($userID,&quot;you&quot;).&quot; have published &quot;.$numwriteups.&quot; writeups. &lt;br/&gt; &lt;br/&gt;&quot;;
-
-return $str;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1975906</node_id>
   <title>My Recent Writeups</title>
   <type_nodetype>14</type_nodetype>

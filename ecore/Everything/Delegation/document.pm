@@ -10865,4 +10865,30 @@ sub findings_
     return $text;
 }
 
+sub my_recent_writeups
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    return "If you logged in, you would know how many writeups you've published recently."
+        if $APP->isGuest($USER);
+
+    my $oneyearago = time() - 31536000;
+    $oneyearago = htmlcode( 'DateTimeLocal', $oneyearago );
+
+    my $userID = $$USER{node_id};
+
+    my $numwriteups = htmlcode( 'writeupssincelastyear', "$userID" );
+
+    $text .=
+          "Since one year ago, on "
+        . $oneyearago . ", "
+        . linkNode( $userID, "you" )
+        . " have published "
+        . $numwriteups
+        . " writeups. <br/> <br/>";
+
+    return $text;
+}
+
 1;

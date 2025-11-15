@@ -1164,8 +1164,8 @@
             "Subnets": [{"Ref": "AppVPCSubnet1"}]
           }
         },
-        "DesiredCount": 2,
-        "HealthCheckGracePeriodSeconds": 30,
+        "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 60,
         "TaskDefinition": {"Ref": "E2AppFargateTaskDefinition"},
         "CapacityProviderStrategy": [{
           "CapacityProvider": "FARGATE",
