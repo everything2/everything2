@@ -10507,4 +10507,123 @@ sub random_nodeshells
     return $text;
 }
 
+sub nodes_of_the_year
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    ####################################################################
+    # get all the URL parameters
+
+    my $wuType = abs int( $query->param("wutype") );
+
+    my $count = abs int( $query->param("count") );
+    $count = 50 if !$count;
+
+    my $orderby = $query->param('orderby') || 'cooled DESC,reputation DESC';
+
+    # Show last year until Decemberish (11*30.5*24*3600)
+    my $year = $query->param('year') || ( localtime( time - 28987200 ) )[5] + 1900;
+
+    my $nextyear = $year + 1;
+
+    ####################################################################
+    # Form with list of writeup types and number to show
+
+    my (@WRTYPE) =
+        $DB->getNodeWhere( { type_nodetype => getId( getType('writeuptype') ) } );
+    my %items = ();
+    foreach my $wrtype (@WRTYPE)
+    {
+        $items{ $wrtype->{node_id} } = $wrtype->{title};
+    }
+
+    my @idlist = sort { $items{$a} cmp $items{$b} } keys %items;
+    unshift @idlist, 0;
+    $items{0} = 'All';
+
+    my $choices = [
+        'cooled DESC,node.reputation DESC',
+        'node.reputation DESC', 'publishtime DESC', 'publishtime ASC'
+    ];
+
+    my $labels = {
+        'cooled DESC,node.reputation DESC' => 'C!, then reputation',
+        'node.reputation DESC'             => 'Reputation',
+        'publishtime DESC'                 => 'Date, most recent first',
+        'publishtime ASC'                  => 'Date, most recent last'
+    };
+
+    my $str =
+          htmlcode('openform')
+        . qq'<fieldset><legend>Choose...</legend>
+	<strong>Year:</strong>'
+        . $query->textfield( 'year', '2014', 4, 4 ) . '
+	<label> &nbsp; <strong>Select Writeup Type:</strong>'
+        . $query->popup_menu( 'wutype', \@idlist, 0, \%items )
+        . '</label> &nbsp;
+	<label> &nbsp; <strong>Number of writeups to display:</strong>'
+        . $query->popup_menu( 'count', [ 0, 15, 25, 50, 75, 100, 150, 200, 250, 500 ],
+        $count )
+        . '</label>
+	<br>
+	<label><strong>Order By:</strong>'
+        . $query->popup_menu( 'orderby', $choices, 'cooled DESC,reputation DESC',
+        $labels )
+        . '</label> &nbsp; '
+        . $query->submit('Get Writeups')
+        . '</fieldset></form>';
+
+    ####################################################################
+    # get writeups
+    #
+    my $where = '';
+
+    $where = "wrtype_writeuptype=$wuType
+	and " if $wuType;
+
+    $where .=
+          "publishtime >= '"
+        . $year
+        . "-01-01 00:00:00' and publishtime < '"
+        . $nextyear
+        . "-01-01 00:00:00'";
+
+    my ( $list, $navigation ) = htmlcode(
+        'show paged content',
+        'writeup_id, parent_e2node, publishtime,
+	node.author_user,
+	type.title AS type_title,
+	cooled, node.reputation',
+        'writeup
+	JOIN node ON writeup_id = node.node_id
+	JOIN node type ON type.node_id = writeup.wrtype_writeuptype',
+        $where,
+        "ORDER BY $orderby LIMIT $count",
+        '<tr class="&oddrow">"<td>", parenttitle, type,
+		"</td><td>", author, "</td><td align=\'right\'><small>", listdate, "</small></td>
+		<td><small>", cooled, "/", reputation, "</small></td>"'
+    );
+
+    ####################################################################
+    # display
+    #
+
+    $str .= $navigation if $count > 25;
+
+    $str .=
+          '<table style="margin-left: auto; margin-right: auto;">
+	<tr>
+	<th>Title</th>
+	<th>Author</th>
+	<th>Published</th>
+	<th>C/rep</th>
+	</tr>'
+        . $list
+        . '</table>';
+
+    $text .= $str . $navigation;
+    return $text;
+}
+
 1;
