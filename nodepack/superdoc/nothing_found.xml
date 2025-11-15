@@ -1,53 +1,5 @@
 <node>
-  <doctext>[%
-
-return &quot;&lt;p&gt;Oh good, there's nothing there!&lt;/p&gt; &lt;p&gt;(It looks like you nuked it.)&lt;/p&gt;&quot;
-	if $query-&gt;param('op') eq 'nuke'
-		&amp;&amp; $query -&gt; param('node_id')
-		&amp;&amp; $query -&gt; param('node_id') !~ /\D/;
-
-my $nt = $query-&gt;param('node');
-return &quot;&lt;p&gt;Hmm...  that's odd.  There's nothing there!&lt;/p&gt;&quot; unless $nt;
-
-$nt = $query -&gt; escapeHTML($nt);
-
-my $str = '';
-
-if($nt =~ /^https?:\/\// ) {
-$nt =~ s/'/&amp;#39;/g;
-$nt =~ s/,/&amp;#44;/g;
-	my $s = htmlcode('externalLinkDisplay',$nt);
-	if(length($s)) {
-		$str = '&lt;p&gt;(this appears to be an external link: '.$s.')&lt;/p&gt;';
-	}
-}
-
-if (isGod($USER) &amp;&amp; $query -&gt; param('type') eq 'writeup' &amp;&amp; $query -&gt; param('author')){
-	unless ($query -&gt; param('tinopener')){
-		$str = 'You could &lt;a href=&quot;'
-			.$query -&gt; url(-absolute =&gt; 1, -rewrite =&gt; 1)
-			.'?tinopener=1&quot;&gt;use the godly tin-opener&lt;/a&gt; to show a censored version of any
-				draft that may be here, but only do that if you really need to.';
-	}else{
-		# ecore redirection means only the acctlock message currently shows:
-		my $author = getNode(scalar($query-&gt;param('author')), 'user');
-		unless ($author){
-			$str = 'User does not exist.';
-		}elsif ($$author{acctlock}){
-			$str = linkNode($author)
-				.&quot;'s account is locked. The tin-opener doesn't work on locked users.&quot;
-		}else{
-			$str = 'No draft here.'
-		}
-	}
-	$str = &quot;&lt;p&gt;&lt;small&gt;($str)&lt;/small&gt;&lt;/p&gt;&quot;;
-}
-
-return qq'&lt;p&gt;Sorry, but nothing matching &quot;$nt&quot; was found.$str'
-	.htmlcode('e2createnewnode');
-
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>668164</node_id>
   <title>Nothing Found</title>
   <type_nodetype>14</type_nodetype>
