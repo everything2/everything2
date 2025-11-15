@@ -10686,4 +10686,70 @@ sub super_mailbox
     return $text;
 }
 
+sub nothing_found
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    return '<p>Oh good, there\'s nothing there!</p> <p>(It looks like you nuked it.)</p>'
+        if $query->param('op') eq 'nuke'
+            && $query->param('node_id')
+            && $query->param('node_id') !~ /\D/;
+
+    my $nt = $query->param('node');
+    return '<p>Hmm...  that\'s odd.  There\'s nothing there!</p>' unless $nt;
+
+    $nt = $query->escapeHTML($nt);
+
+    my $str = '';
+
+    if ( $nt =~ /^https?:\/\// )
+    {
+        $nt =~ s/'/&#39;/g;
+        $nt =~ s/,/&#44;/g;
+        my $s = htmlcode( 'externalLinkDisplay', $nt );
+        if ( length($s) )
+        {
+            $str = '<p>(this appears to be an external link: ' . $s . ')</p>';
+        }
+    }
+
+    if ( $APP->isAdmin($USER) && $query->param('type') eq 'writeup' && $query->param('author') )
+    {
+        unless ( $query->param('tinopener') )
+        {
+            $str =
+                'You could <a href="'
+                . $query->url( -absolute => 1, -rewrite => 1 )
+                . '?tinopener=1">use the godly tin-opener</a> to show a censored version of any
+                draft that may be here, but only do that if you really need to.';
+        }
+        else
+        {
+            # ecore redirection means only the acctlock message currently shows:
+            my $author = getNode( scalar( $query->param('author') ), 'user' );
+            unless ($author)
+            {
+                $str = 'User does not exist.';
+            }
+            elsif ( $$author{acctlock} )
+            {
+                $str =
+                    linkNode($author)
+                    . "'s account is locked. The tin-opener doesn't work on locked users.";
+            }
+            else
+            {
+                $str = 'No draft here.';
+            }
+        }
+        $str = "<p><small>($str)</small></p>";
+    }
+
+    $text .= qq|<p>Sorry, but nothing matching "$nt" was found.$str|;
+    $text .= htmlcode('e2createnewnode');
+
+    return $text;
+}
+
 1;
