@@ -77,12 +77,12 @@ Include mods-enabled/*.conf
 </IfDefine>
 
 <IfDefine E2_PRODUCTION>
-Define E2StartServers 5
-Define E2MinSpareServers 5
-Define E2MaxSpareServers 15
+Define E2StartServers 15
+Define E2MinSpareServers 15
+Define E2MaxSpareServers 20
 #This number can't go higher than what the server can handle
-Define E2MaxClients 30
-Define E2MaxConnections 5000
+Define E2MaxRequestWorkers 50
+Define E2MaxConnections 10000
 </IfDefine>
 
 <IfDefine E2_DEVELOPMENT>
@@ -90,7 +90,7 @@ Define E2MaxConnections 5000
 Define E2StartServers 2
 Define E2MinSpareServers 2
 Define E2MaxSpareServers 2
-Define E2MaxClients 2
+Define E2MaxRequestWorkers 2
 Define E2MaxConnections 0
 </IfDefine>
 
@@ -98,7 +98,7 @@ Define E2MaxConnections 0
   StartServers         ${E2StartServers}
   MinSpareServers      ${E2MinSpareServers}
   MaxSpareServers      ${E2MaxSpareServers}
-  MaxRequestWorkers    ${E2MaxClients}
+  MaxRequestWorkers    ${E2MaxRequestWorkers}
   MaxConnectionsPerChild ${E2MaxConnections}
 </IfModule>
 
