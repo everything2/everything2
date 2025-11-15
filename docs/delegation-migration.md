@@ -277,6 +277,154 @@ React component → POST /api/auth/login → JSON response → React update
 - Can use existing patterns as templates for opcode conversion
 - Opcode delegation functions provide clean starting point for API logic extraction
 
+#### Development Goals - MySQL Modernization (8.0 → 8.4)
+
+**Goal**: Upgrade from MySQL 8.0 to MySQL 8.4 to avoid extended support charges and deprecated features.
+
+**Business Rationale**:
+- **Amazon RDS**: MySQL 8.0 support is being deprecated, will incur extended support charges
+- **Security**: MySQL 8.4 includes important security patches and improvements
+- **Performance**: Newer optimizer improvements and query performance enhancements
+- **Long-term viability**: Stay on supported MySQL versions to avoid forced migrations
+
+**Current Issues**:
+
+1. **sql_mode=ALLOW_INVALID_DATES dependency**:
+   - MySQL 8.0.x tolerates invalid dates like '0000-00-00' with this mode enabled
+   - MySQL 8.4 deprecates this mode and enforces stricter date validation
+   - Current database schema relies on invalid date defaults
+   - Code may assume invalid dates are possible
+
+2. **Deprecated authentication plugins**:
+   - Legacy mysql_native_password authentication method being phased out
+   - Need to migrate to caching_sha2_password or auth_socket
+   - May require connection library updates (DBD::mysql)
+
+3. **Schema defaults**:
+   - DATE/DATETIME columns with '0000-00-00' defaults
+   - TIMESTAMP columns with invalid default values
+   - Need to identify all affected columns across all tables
+
+**Technical Challenges**:
+
+1. **Date Column Audit**:
+   - Identify all DATE, DATETIME, TIMESTAMP columns in schema
+   - Find columns with '0000-00-00' or invalid defaults
+   - Determine business logic meaning of "invalid" dates (unknown? not set? legacy data?)
+
+2. **Code Audit**:
+   - Search codebase for assumptions about invalid dates
+   - Check for comparisons with '0000-00-00'
+   - Identify code that inserts/updates with invalid dates
+   - Review date parsing and validation logic
+
+3. **Default Value Strategy**:
+   - NULL for unknown dates (most common approach)
+   - Sentinel values like '1970-01-01' (epoch) for special cases
+   - NOT NULL with valid defaults (e.g., '2000-01-01', CURRENT_TIMESTAMP)
+   - Application-level handling of "no date set" state
+
+4. **Authentication Migration**:
+   - Update database user authentication methods
+   - Test connection pooling (Apache::DBI compatibility)
+   - Update deployment scripts and connection strings
+   - Verify DBD::mysql version supports new auth methods
+
+**Migration Path**:
+
+1. **Phase 1: Audit and Assessment**
+   - Run schema audit to identify all date columns with invalid defaults
+   - Grep codebase for '0000-00-00', date comparisons, date insertions
+   - Document all tables/columns affected
+   - Categorize by risk (high-traffic tables, critical business logic)
+   - Test current code against MySQL 8.4 in development environment
+   - Document breaking changes and errors
+
+2. **Phase 2: Schema Migration**
+   - Create ALTER TABLE statements to fix invalid defaults
+   - Decide NULL vs. valid default strategy per column
+   - Test schema changes in development
+   - Create rollback plan
+   - Update existing rows with invalid dates:
+     - `UPDATE table SET date_column = NULL WHERE date_column = '0000-00-00'`
+   - Create migration scripts with comprehensive testing
+
+3. **Phase 3: Code Updates**
+   - Fix code that inserts invalid dates
+   - Update date validation logic
+   - Replace '0000-00-00' comparisons with IS NULL checks
+   - Add proper date handling for "not set" states
+   - Update ORMs/query builders if needed
+   - Run test suite to catch regressions
+
+4. **Phase 4: Authentication Update**
+   - Update MySQL users to caching_sha2_password
+   - Test all database connections (web app, scripts, cron jobs)
+   - Update DBD::mysql if needed (minimum version 4.050)
+   - Test Apache::DBI connection pooling
+   - Document new authentication requirements
+
+5. **Phase 5: MySQL Upgrade**
+   - Test full application stack on MySQL 8.4 in staging
+   - Performance testing and query plan analysis
+   - Deploy schema changes to production
+   - Upgrade RDS instance to MySQL 8.4
+   - Monitor for errors and performance issues
+   - Have rollback plan ready
+
+**Target Changes**:
+- Remove sql_mode=ALLOW_INVALID_DATES dependency
+- All date columns have valid defaults (NULL or proper dates)
+- Code uses NULL checks instead of '0000-00-00' comparisons
+- Modern authentication methods (caching_sha2_password)
+- Full compatibility with MySQL 8.4 LTS
+- Documentation of date handling conventions
+
+**SQL Audit Commands**:
+```sql
+-- Find columns with invalid date defaults
+SELECT TABLE_NAME, COLUMN_NAME, COLUMN_DEFAULT, DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = 'everything2'
+  AND DATA_TYPE IN ('date', 'datetime', 'timestamp')
+  AND (COLUMN_DEFAULT = '0000-00-00'
+       OR COLUMN_DEFAULT = '0000-00-00 00:00:00'
+       OR COLUMN_DEFAULT LIKE '%0000-00-00%')
+ORDER BY TABLE_NAME, COLUMN_NAME;
+
+-- Find rows with invalid dates
+-- Run per table: SELECT COUNT(*) FROM table WHERE date_column = '0000-00-00';
+```
+
+**Code Audit Patterns**:
+```bash
+# Find invalid date literals
+grep -r "0000-00-00" ecore/ --include="*.pm"
+
+# Find sql_mode references
+grep -ri "ALLOW_INVALID_DATES" .
+
+# Find date insertions/updates
+grep -r "INSERT\|UPDATE" ecore/ --include="*.pm" | grep -i "date\|timestamp"
+```
+
+**Priority**: Medium-High
+- **Timeline**: Must complete before MySQL 8.0 extended support charges begin
+- **Risk**: High (breaking schema changes, potential data loss if mishandled)
+- **Dependencies**: Requires comprehensive testing infrastructure
+- **Estimated Effort**: 4-6 weeks
+  - Week 1: Audit (schema + code)
+  - Week 2-3: Schema migration + testing
+  - Week 3-4: Code updates + testing
+  - Week 5: Authentication updates
+  - Week 6: Production upgrade + monitoring
+
+**Related Work**:
+- Testing infrastructure already in place (t/*.t files)
+- Can add specific date handling tests
+- Schema is already documented in database migrations
+- Docker development environment can test MySQL 8.4 locally
+
 ## Migration Process
 
 ### 1. Locate the Node XML
