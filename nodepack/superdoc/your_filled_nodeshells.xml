@@ -1,44 +1,5 @@
 <node>
-  <doctext>[%
-return if $APP-&gt;isGuest($USER);
-
-my $csr = $DB-&gt;sqlSelectMany('title'
-	, &quot;(Select title, e2node_id,
-			(select nodegroup_id from nodegroup where nodegroup_id = e2node_id limit 1) As groupentry
-		From e2node Join node On node.node_id = e2node_id
-		Where createdby_user = $$USER{node_id}
-		Having groupentry &gt; 0)
-		AS fillede2nodes
-	LEFT JOIN
-		(Select parent_e2node
-		From node
-		Join writeup On node_id = writeup_id
-		Where author_user = $$USER{node_id})
-		AS writeups
-	ON fillede2nodes.e2node_id = writeups.parent_e2node&quot;
-	, 'parent_e2node IS NULL');
-
-my @nodes;
-my $wu;
-
-while(my $row = $csr-&gt;fetchrow_hashref) {
-	push @nodes, $$row{title};
-}
-
-my $str = '&lt;p&gt;(Be sure to check out [Your nodeshells], too.)&lt;/p&gt;&lt;p&gt;&lt;strong&gt;'
-	.scalar(@nodes).'&lt;/strong&gt; nodeshells created by you which have been filled by someone else:&lt;/p&gt;
-&lt;ul&gt;
-';
-
-foreach(sort {lc($a) cmp lc($b)} @nodes) {
-	$str.='&lt;li&gt;'.linkNodeTitle($_).'&lt;/li&gt;
-';
-}
-
-$str.='&lt;/ul&gt;';
-
-return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1797573</node_id>
   <title>Your filled nodeshells</title>
   <type_nodetype>14</type_nodetype>

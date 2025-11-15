@@ -10399,4 +10399,56 @@ The "restricted" column shows who may view/add to a discussion.
     return $text;
 }
 
+sub your_filled_nodeshells
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    return $text if $APP->isGuest($USER);
+
+    my $csr = $DB->sqlSelectMany(
+        'title',
+        "(Select title, e2node_id,
+			(select nodegroup_id from nodegroup where nodegroup_id = e2node_id limit 1) As groupentry
+		From e2node Join node On node.node_id = e2node_id
+		Where createdby_user = $$USER{node_id}
+		Having groupentry > 0)
+		AS fillede2nodes
+	LEFT JOIN
+		(Select parent_e2node
+		From node
+		Join writeup On node_id = writeup_id
+		Where author_user = $$USER{node_id})
+		AS writeups
+	ON fillede2nodes.e2node_id = writeups.parent_e2node",
+        'parent_e2node IS NULL'
+    );
+
+    my @nodes = ();
+    my $wu    = undef;
+
+    while ( my $row = $csr->fetchrow_hashref )
+    {
+        push @nodes, $$row{title};
+    }
+
+    my $str =
+          '<p>(Be sure to check out [Your nodeshells], too.)</p><p><strong>'
+        . scalar(@nodes)
+        . '</strong> nodeshells created by you which have been filled by someone else:</p>
+<ul>
+';
+
+    foreach ( sort { lc($a) cmp lc($b) } @nodes )
+    {
+        $str .= '<li>' . linkNodeTitle($_) . '</li>
+';
+    }
+
+    $str .= '</ul>';
+
+    $text .= $str;
+    return $text;
+}
+
 1;
