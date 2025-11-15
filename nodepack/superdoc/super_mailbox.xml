@@ -1,40 +1,5 @@
 <node>
-  <doctext>[%
-
-# A simple tool made by Lord Brawl and improvified by an anonymous coder
-
-my $options = getVars(getNode('bot inboxes', 'setting'));
-my @names = sort {lc($a) cmp lc($b)} keys(%$options);
-my ($str, @ok, %groups) = ('');
-
-my $inbox = getNode('Message Inbox', 'Superdoc');
-my $isEd = $APP-&gt;isEditor($USER);
-
-foreach (@names){
-	my $ugName = $$options{$_};
-	my $ug = $groups{$ugName} ||= getNode($ugName, 'usergroup');
-	next unless $isEd || $DB -&gt; isApproved($USER, $ug);
-
-	push(@ok, &quot;[$_\[user]]&quot;);
-	my $n = getId(getNode($_, 'user'));
-	my $x = $DB-&gt;sqlSelect('COUNT(*)', 'message', &quot;for_user=$n&quot;);
-	$str .= $query -&gt; li(&quot;$_ has &quot;.linkNode($inbox, &quot;$x message(s)&quot;, {spy_user =&gt;$_}))
-		if $x;
-}
-
-return &quot;Restricted area. You are not allowed in here. Leave now or suffer the consequences.&quot;
-	unless @ok;
-
-my $and = ' and '.pop(@ok) if scalar @ok &gt; 1;
-my $list = join(', ', @ok).$and;
-$str ||= '&lt;li&gt;No messages&lt;/li&gt;';
-
-return $query -&gt; h3(&quot;The 'bot super mailbox&quot;)
-	.$query -&gt; p(&quot;One stop check for msgs to 'bot and support mailboxes. You can see
-		messages for: $list&quot;)
-	.$query -&gt; ul($str);
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1527016</node_id>
   <title>super mailbox</title>
   <type_nodetype>14</type_nodetype>

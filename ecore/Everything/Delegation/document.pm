@@ -10633,4 +10633,57 @@ sub permission_denied
     return q|<p>You don't have access to that node.</p>|;
 }
 
+sub super_mailbox
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    # A simple tool made by Lord Brawl and improvified by an anonymous coder
+
+    my $options = getVars( getNode( 'bot inboxes', 'setting' ) );
+    my @names = sort { lc($a) cmp lc($b) } keys(%$options);
+    my $str = '';
+    my @ok  = ();
+    my %groups = ();
+
+    my $inbox = getNode( 'Message Inbox', 'Superdoc' );
+    my $isEd  = $APP->isEditor($USER);
+
+    foreach (@names)
+    {
+        my $ugName = $$options{$_};
+        my $ug = $groups{$ugName} ||= getNode( $ugName, 'usergroup' );
+        next unless $isEd || $DB->isApproved( $USER, $ug );
+        my $botuser = getNode($_,'user');
+        next unless $botuser;
+        push( @ok, linkNode( $botuser ) );
+        my $n = getId( $botuser );
+
+        my $x = $DB->sqlSelect( 'COUNT(*)', 'message', "for_user=$n" );
+        $str .= '<li>'
+            . $_ . ' has '
+            . linkNode( $inbox, "$x message(s)", { spy_user => $_ } )
+            . '</li>'
+            if $x;
+    }
+
+    return
+        "Restricted area. You are not allowed in here. Leave now or suffer the consequences."
+        unless @ok;
+
+    my $and = '';
+    $and = ' and ' . pop(@ok) if scalar @ok > 1;
+    my $list = join( ', ', @ok ) . $and;
+    $str ||= '<li>No messages</li>';
+
+    $text .= '<h3>The \'bot super mailbox</h3>';
+    $text .=
+        '<p>One stop check for msgs to \'bot and support mailboxes. You can see messages for: '
+        . $list
+        . '</p>';
+    $text .= '<ul>' . $str . '</ul>';
+
+    return $text;
+}
+
 1;
