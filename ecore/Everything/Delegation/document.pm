@@ -11204,4 +11204,299 @@ sub usergroup_discussions
     return $text;
 }
 
+sub list_nodes_of_type
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    # list nodes of type
+    # lists all available nodetypes, prompts to display nodes of that nodetype
+    # only available to members of gods, editors, and edev
+    # original version written by chromatic for EDC
+    # modified by N-Wing
+
+    my $UID       = $USER->{node_id};
+    my $isRoot    = $APP->isAdmin($USER);
+    my $isCE      = $APP->isEditor($USER);
+    my $isEDev    = $APP->isDeveloper($USER);
+    return 'Sorry, cowboy. You must be at least [edev|this tall] to ride the Node Type Lister!'
+        unless $isCE || $isEDev;
+
+    my $sth = $DB->{dbh}->prepare(
+        'SELECT title, node_id FROM node, nodetype WHERE node_id = nodetype_id ORDER BY title');
+    $sth->execute();
+    my $opt = '';
+
+    #TODO would be more secure to have list of things allowed, instead of things not allowed
+
+    #reasons for skipping:
+    #	user, e2node, writeup - a zillion of them
+    #	ditto, plus privacy
+    #	restricted_superdoc - admins only
+    #	bug - ?
+    #	oppressor_superdoc - editors only
+    #	debate, debatecomment - like writeups/e2nodes - eventually a zillion of them
+
+    my %skips;
+    @skips{qw(user e2node writeup draft)} = ();    #later filter useralias
+    delete $skips{'user'}
+        if $USER->{node_id} == 9740 || 1306028 || 1390290
+        ;    #2005 August new user create bug - N-Wing wants easy way to get these
+             #and Two Sheds and Wiccanpiper wanted to list users for other reasons.
+
+    #not sure about collaboration - is that supposed to be a group private thing, or public thing that only certain people can edit?
+
+    if ($isRoot)
+    {
+        #	@skips{qw()} = ();
+    }
+    else
+    {
+        @skips{qw(restricted_superdoc bug)} = ();
+        @skips{qw(oppressor_superdoc debate debatecomment)} = () unless $isCE;
+    }
+
+    #get node types
+    my @choiceNodeTypes = ( 0, '(choose a node type)' );
+    my $t;
+    my $nid;
+    my %validTypeIDs;    #key is valid node_id, value is title
+    while ( my $item = $sth->fetchrow_arrayref )
+    {
+        $nid = $item->[1];
+
+        # the getNode call may slow things down, so I'm commenting it out
+        #	next unless canReadNode($USER, getNode($nid));
+
+        $t = $item->[0];
+
+        # the man says you're not worthy to read these
+        # or it slows down the server for everything
+        # so getcher own installation, buddy!
+        next if ( exists $skips{$t} );
+
+        push( @choiceNodeTypes, $nid, $t );
+        $validTypeIDs{$nid} = $t;
+    }
+    $opt .= 'nodetype: '
+        . htmlcode( 'varsComboBox', 'ListNodesOfType_Type', 0, @choiceNodeTypes )
+        . "<br />\n";
+
+    my $choicelist = [
+        '0',        '(no sorting)',
+        'idA',      'node_id, ascending (lowest first)',
+        'idD',      'node_id, descending (highest first)',
+        'nameA',    'title, ascending (ABC)',
+        'nameD',    'title, descending (ZYX)',
+        'authorA',  'author\'s ID, ascending (lowest ID first)',
+        'authorD',  'author\'s ID, descending (highest ID first)',
+        'createA',  'create time, ascending (oldest first)',
+        'createD',  'create time, descending (newest first)',
+    ];
+    $opt .= 'sort order: ';
+    $opt .= ' <small>1:</small> '
+        . htmlcode( 'varsComboBox', 'ListNodesOfType_Sort', 0, @$choicelist );
+    $opt .= ' <small>2:</small> '
+        . htmlcode( 'varsComboBox', 'ListNodesOfType_Sort2', 0, @$choicelist );
+    $opt .= '<br />
+';
+
+    $opt
+        .= 'only show things ('
+        . $query->checkbox( 'filter_user_not', 0, 1, 'not' )
+        . ') written by '
+        . $query->textfield('filter_user')
+        . '<br />
+';
+
+    $text .= 'Choose your poison, sir:
+<form method="POST">
+<input type="hidden" name="node_id" value="' . $NODE->{node_id} . '" />
+';
+    $text .= $opt;
+    $text .= $query->submit( 'fetch', 'Fetch!' ) . '
+</form>';
+
+    my $selectionTypeID = $VARS->{ListNodesOfType_Type};
+    return $text unless $query->param('fetch');    #check if user hit Fetch button
+    return $text unless $selectionTypeID && exists( $validTypeIDs{$selectionTypeID} );
+    return $text
+        . ' <span style="background-color: yellow;" title="'
+        . $selectionTypeID
+        . '">!!! Assertion Error !!!</span>'
+        unless $selectionTypeID =~ /^[1-9]\d*$/;
+
+    #force a 0 or 1 from a CGI parameter
+    local *cgiBool = sub {
+        return ( $query->param( $_[0] ) eq '1' ) ? 1 : 0;
+    };
+
+    #mapping of unsafe VARS sort data into safe SQL
+    my %mapVARStoSQL = (
+        '0'       => '',
+        'idA'     => 'node_id ASC',
+        'idD'     => 'node_id DESC',
+        'nameA'   => 'title ASC',
+        'nameD'   => 'title DESC',
+        'authorA' => 'author_user ASC',
+        'authorD' => 'author_user DESC',
+        'createA' => 'createtime ASC',
+        'createD' => 'createtime DESC',
+    );
+
+    #loop so can have secondary (or more!) sorting
+    #maybe TODO don't allow stupid combos
+    my $sqlSort = '';
+    foreach my $varsSortKey ( 'ListNodesOfType_Sort', 'ListNodesOfType_Sort2' )
+    {
+        last unless exists $VARS->{$varsSortKey};
+        $t = $VARS->{$varsSortKey};
+        last unless defined $t;
+        last unless exists $mapVARStoSQL{$t};
+        $sqlSort .= ',' unless length($sqlSort) == 0;
+        $sqlSort .= $mapVARStoSQL{$t};
+    }
+
+    my $filterUserNot = cgiBool('filter_user_not');
+    my $filterUser = ( defined $query->param('filter_user') ) ? $query->param('filter_user') : undef;
+    if ( defined $filterUser )
+    {
+        $filterUser = getNode( $filterUser, 'user' ) || getNode( $filterUser, 'usergroup' ) || undef;
+    }
+    my $sqlFilterUser   = '';
+    my $plainTextFilter = '';
+    if ( defined $filterUser )
+    {
+        $sqlFilterUser = ' AND author_user' . ( $filterUserNot ? '!=' : '=' ) . getId($filterUser);
+        $plainTextFilter
+            .= ( $filterUserNot ? ' not' : '' )
+            . ' created by '
+            . linkNode( $filterUser, 0, { lastnode_id => 0 } );
+    }
+
+    my $total;
+    $sth = $DB->{dbh}
+        ->prepare( "SELECT COUNT(*) FROM node WHERE type_nodetype='$selectionTypeID'" . $sqlFilterUser );
+    $sth->execute();
+    ($total) = $sth->fetchrow;
+    $text
+        .= 'Found <strong>'
+        . $total
+        . '</strong> nodes of nodetype <strong><a href='
+        . urlGen( { 'node_id' => $selectionTypeID } ) . '>'
+        . $validTypeIDs{$selectionTypeID}
+        . '</a></strong>';
+    $text .= $plainTextFilter if length($plainTextFilter);
+    $text .= '.';
+
+    my $num = $isRoot ? 100 : $isCE ? 75 : 60;
+
+    #gets a node given the ID
+    #this caches nodes between hits, so it doesn't hurt to get 1 user a zillion times
+    #note: this is completely pointless if E2 keeps a cache per-page-load, but I don't think it currently does that
+    #returns undef if unable to get a node
+    #created: 2001.11.27.n2; updated: 2002.05.14.n2
+    #author: N-Wing
+    my %ids = ( $USER->{node_id} => $USER, $NODE->{node_id} => $NODE );
+    local *getNodeFromID = sub {
+        my $node_id = $_[0];
+        return unless ( defined $node_id ) && ( $node_id =~ /^\d+$/ );
+
+        #already known, return it
+        return $ids{$node_id} if exists $ids{$node_id};
+
+        #unknown, find that (we also cache a mis-hit, so we don't try to get it again later)
+        my $N = getNodeById($node_id);
+        return $ids{$node_id} = $N;
+    };
+
+    my $listedItems = '';
+    my $next        = $query->param('next') || '0';
+    my $queryText
+        = "SELECT node_id, title, author_user, createtime FROM node WHERE type_nodetype = '$selectionTypeID'";
+    $queryText .= $sqlFilterUser if length($sqlFilterUser);
+    $queryText .= ' ORDER BY ' . $sqlSort if length($sqlSort);
+    $queryText .= " LIMIT $next, $num";
+
+    $sth = $DB->{dbh}->prepare($queryText);
+    $sth->execute();
+    my $numCurFound = 0;
+    my $aID;         #author ID
+    while ( my $item = $sth->fetchrow_arrayref )
+    {
+        ++$numCurFound;
+        $listedItems .= '<tr><td>';
+        $aID = $item->[2];
+
+        #show edit link if admin or user viewing page created node
+        if ( $isRoot || ( $aID == $UID ) )
+        {
+            $listedItems
+                .= '<small>('
+                . linkNode( $item->[0], 'edit', { lastnode_id => 0, displaytype => 'edit' } )
+                . ')</small>';
+        }
+
+        $listedItems
+            .= '</td><td>'
+            . linkNode( @$item[ 0, 1 ], { lastnode_id => 0 } )
+            . '</td><td>'
+            . $item->[0]
+            . '</td>';
+        $listedItems .= '<td>' . linkNode( getNodeFromID($aID), 0, { lastnode_id => 0 } ) . '</td>';
+        my $createTime = $item->[3];
+        $listedItems
+            .= '<td>'
+            . htmlcode( 'parsetimestamp', $createTime . ',1' )
+            . '</td><td>'
+            . htmlcode( 'timesince', $createTime . ',1,100' )
+            . '</td>';
+        $listedItems .= "</tr>\n";
+    }
+    $text .= ' (Showing items ' . ( $next + 1 ) . ' to ' . ( $next + $numCurFound ) . '.)' if $total;
+    $text .= '</p><p><table border="0">
+<tr><th>edit</th><th>title</th><th>node_id</th><th>author</th><th>created</th><th>age</th></tr>
+'
+        . $listedItems
+        . '
+</table></p>
+';
+    return $text if ( $total < $num );
+
+    local *jumpLinkGen = sub {
+        my ( $startNum, $disp ) = @_;
+        my $opts = {
+            'node_id' => $NODE->{node_id},
+            'fetch'   => 1,
+            'next'    => $startNum,
+
+            #		'chosen_type'=>$selection,	#stored in VARS now
+        };
+        if ( defined $filterUser )
+        {
+            $opts->{filter_user}     = $filterUser->{title};
+            $opts->{filter_user_not} = $filterUserNot;
+        }
+        return '<a href=' . urlGen($opts) . '>' . $disp . '</a>';
+    };
+
+    my $nextprev  = '';
+    my $remainder = $total - ( $next + $num );
+    if ( $next > 0 )
+    {
+        $nextprev .= jumpLinkGen( $next - $num, 'previous ' . $num ) . "<br />\n";
+    }
+    if ( $remainder < $num and $remainder > 0 )
+    {
+        $nextprev .= jumpLinkGen( $next + $num, 'next ' . $remainder ) . "\n";
+    }
+    elsif ( $remainder > 0 )
+    {
+        $nextprev .= jumpLinkGen( $next + $num, 'next ' . $num ) . "<br />\n";
+    }
+    $text .= qq|<p align="right">$nextprev</p>| if length($nextprev);
+
+    return $text;
+}
+
 1;

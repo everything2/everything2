@@ -2,19 +2,27 @@
 #
 # ELB Log Bot and Spike Analysis Tool
 # Analyzes ELB logs to identify bots, scrapers, and activity spikes
+# By default: Analyzes FORWARDED traffic (requests sent to backend)
+# By default: EXCLUDES 403 responses (blocked by Apache config)
+# Optional: --non-forwarded-only to analyze redirects, errors, etc.
+# Optional: --include-403 to include Apache-blocked requests
 #
 # Usage:
 #   ./tools/bot-spike-analysis.rb [options]
 #
 # Options:
-#   --min-requests N    Only show IPs with at least N requests (default: 100)
-#   --time-window N     Time window in minutes for spike detection (default: 5)
-#   --top N             Show top N results (default: 50)
-#   --ip IP             Filter to specific IP address
-#   --help              Show this help
+#   --min-requests N        Only show IPs with at least N requests (default: 100)
+#   --time-window N         Time window in minutes for spike detection (default: 5)
+#   --top N                 Show top N results (default: 50)
+#   --ip IP                 Filter to specific IP address
+#   --non-forwarded-only    Analyze non-forwarded traffic instead of forwarded
+#   --include-403           Include 403 responses (default: excluded)
+#   --help                  Show this help
 #
 # Examples:
-#   ./tools/bot-spike-analysis.rb
+#   ./tools/bot-spike-analysis.rb                        # Analyze forwarded traffic (no 403s)
+#   ./tools/bot-spike-analysis.rb --include-403          # Include Apache-blocked bots
+#   ./tools/bot-spike-analysis.rb --non-forwarded-only   # Analyze redirects/errors
 #   ./tools/bot-spike-analysis.rb --min-requests 1000
 #   ./tools/bot-spike-analysis.rb --ip 1.2.3.4
 #
@@ -23,13 +31,16 @@ require 'find'
 require 'zlib'
 require 'optparse'
 require 'time'
+require 'io/console'
 
 # Parse command-line options
 options = {
   min_requests: 100,
   time_window: 5,
   top: 50,
-  ip: nil
+  ip: nil,
+  non_forwarded_only: false,
+  include_403: false
 }
 
 OptionParser.new do |opts|
@@ -51,11 +62,40 @@ OptionParser.new do |opts|
     options[:ip] = ip
   end
 
+  opts.on("--non-forwarded-only", "Analyze only non-forwarded traffic (default: forwarded only)") do
+    options[:non_forwarded_only] = true
+  end
+
+  opts.on("--include-403", "Include 403 responses (default: excluded)") do
+    options[:include_403] = true
+  end
+
   opts.on("-h", "--help", "Show this help") do
     puts opts
     exit
   end
 end.parse!
+
+# Get terminal width for user agent display
+# Default to 120 if not a TTY (piped output)
+begin
+  terminal_width = IO.console ? IO.console.winsize[1] : 120
+rescue
+  terminal_width = 120
+end
+
+# Helper function to truncate user agent strings based on available space
+# Calculates available space after IP, stats columns, and padding
+def truncate_ua(ua, terminal_width, fixed_cols_width)
+  available = terminal_width - fixed_cols_width - 5  # 5 for padding/spacing
+  available = 40 if available < 40  # minimum reasonable width
+
+  if ua.length > available
+    ua[0..(available-4)] + "..."
+  else
+    ua
+  end
+end
 
 # ELB log format regex
 elb_regex = %r{(?<type>[^ ]*) (?<time>[^ ]*) (?<elb>[^ ]*) (?<client_ip>[^ ]*):(?<client_port>[0-9]*) (?<target_ip>[^ ]*)[:-]([0-9]*) (?<request_processing_time>[-.0-9]*) (?<target_processing_time>[-.0-9]*) (?<response_processing_time>[-.0-9]*) (?<elb_status_code>|[-0-9]*) (?<target_status_code>\-|[-0-9]*) (?<received_bytes>[-0-9]*) (?<sent_bytes>[-0-9]*) \"(?<request_verb>[^ ]*) (?<request_url>.*) (?<request_proto>- |[^ ]*)\" \"(?<user_agent>[^\"]*)\" (?<ssl_cipher>[A-Z0-9\-_]+) (?<ssl_protocol>[A-Za-z0-9.-]*) (?<target_group_arn>[^ ]*) \"(?<trace_id>[^\"]*)\" \"(?<domain_name>[^\"]*)\" \"(?<chosen_cert_arn>[^\"]*)\" (?<matched_rule_priority>[\-.0-9]*) (?<request_creation_time>[^ ]*) \"(?<actions_executed>[^\"]*)\" \"(?<redirect_url>[^\"]*)\" \"(?<lambda_error_reason>[^ ]*)\" \"(?<target_port_list>[^\\s]+?)\" \"(?<target_status_code_list>[^\\s]+)\" \"(?<classification>[^ ]*)\" \"(?<classification_reason>[^ ]*)\" ?(?<conn_trace_id>[^ ]*)?}
@@ -111,6 +151,8 @@ total_requests = 0
 files_inspected = 0
 
 puts "Analyzing ELB logs in current directory..."
+puts "Traffic type: #{options[:non_forwarded_only] ? 'Non-forwarded only (redirects, errors)' : 'Forwarded only (backend traffic)'}"
+puts "403 filtering: #{options[:include_403] ? 'Including 403 responses' : 'Excluding 403 responses (Apache-blocked)'}"
 puts "Min requests threshold: #{options[:min_requests]}"
 puts "Time window: #{options[:time_window]} minutes"
 puts
@@ -131,6 +173,21 @@ Find.find('.').each do |file|
       line_count += 1
       linedata = line.match(elb_regex)
       next unless linedata
+
+      # Filter based on forwarded vs non-forwarded traffic
+      is_forwarded = linedata[:actions_executed].match(/forward/)
+      if options[:non_forwarded_only]
+        # Skip forwarded requests (only analyze non-forwarded traffic)
+        next if is_forwarded
+      else
+        # Default: Skip non-forwarded requests (only analyze forwarded traffic)
+        next unless is_forwarded
+      end
+
+      # Filter 403 responses (Apache-blocked bots) unless --include-403
+      unless options[:include_403]
+        next if linedata[:target_status_code] == '403'
+      end
 
       total_requests += 1
       client_ip = linedata[:client_ip]
@@ -181,11 +238,31 @@ end
 
 puts
 puts "=" * 80
-puts "ANALYSIS SUMMARY"
+if options[:non_forwarded_only]
+  puts "ANALYSIS SUMMARY (Non-forwarded traffic only)"
+else
+  puts "ANALYSIS SUMMARY (Forwarded traffic only)"
+end
 puts "=" * 80
 puts "Files inspected: #{files_inspected}"
-puts "Total requests: #{total_requests}"
+puts "Total requests analyzed: #{total_requests}"
 puts "Unique IPs: #{ip_stats.keys.length}"
+puts
+if options[:non_forwarded_only]
+  puts "Note: Only analyzing non-forwarded traffic (redirects, errors, etc.)"
+  puts "      Forwarded requests to backend are excluded."
+  puts "      Use without --non-forwarded-only to analyze backend traffic."
+else
+  puts "Note: Only analyzing forwarded traffic (requests sent to backend servers)"
+  puts "      Non-forwarded requests (redirects, errors) are excluded."
+  puts "      Use --non-forwarded-only to analyze redirects/errors instead."
+end
+unless options[:include_403]
+  puts "      403 responses (Apache-blocked) are excluded."
+  puts "      Use --include-403 to include Apache-blocked bots in analysis."
+else
+  puts "      403 responses (Apache-blocked) are INCLUDED in analysis."
+end
 puts
 
 # Filter IPs by minimum request threshold
@@ -237,8 +314,8 @@ puts "-" * 80
 
 sorted_by_count.first(options[:top]).each do |ip, stats|
   top_ua = stats[:user_agents].max_by { |ua, count| count }
-  ua_display = top_ua[0][0..60]
-  ua_display += "..." if top_ua[0].length > 60
+  # Fixed columns: IP(15) + Requests(10) + Req/min(8) + Bot?(6) = 39
+  ua_display = truncate_ua(top_ua[0], terminal_width, 39)
 
   printf "%-15s %10d %8.1f %6s %s\n",
     ip,
@@ -280,8 +357,8 @@ else
 
   sorted_bots.first(options[:top]).each do |ip, stats|
     top_ua = stats[:user_agents].max_by { |ua, count| count }
-    ua_display = top_ua[0][0..60]
-    ua_display += "..." if top_ua[0].length > 60
+    # Fixed columns: IP(15) + Requests(10) + Req/min(8) = 33
+    ua_display = truncate_ua(top_ua[0], terminal_width, 33)
 
     printf "%-15s %10d %8.1f %s\n",
       ip,
@@ -310,8 +387,8 @@ else
 
   sorted_suspicious.first(options[:top]).each do |ip, stats|
     top_ua = stats[:user_agents].max_by { |ua, count| count }
-    ua_display = top_ua[0][0..40]
-    ua_display += "..." if top_ua[0].length > 40
+    # Fixed columns: IP(15) + Requests(10) + Req/min(8) + Burst(10) = 43
+    ua_display = truncate_ua(top_ua[0], terminal_width, 43)
 
     printf "%-15s %10d %8.1f %10.1f %s\n",
       ip,
