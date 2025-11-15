@@ -10891,4 +10891,317 @@ sub my_recent_writeups
     return $text;
 }
 
+sub usergroup_discussions
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    # March 2009: Most of the code here is Swap hacking on top of N-Wing's
+    # and kthejoker's code.
+
+    $text = '<p align="right"><small>See also [usergroup message archive]</small></p>' . "\n";
+
+    return $text
+        . "If you logged in, you would be able to strike up long-winded conversations with [usergroup lineup|your buddies]"
+        if $APP->isGuest($USER);
+
+    # N-Wing loves sticking this function all over the place -- Swap
+    local *in_an_array = sub {
+        my $needle = shift;
+        my @haystack = @_;
+
+        for (@haystack)
+        {
+            return 1 if $_ eq $needle;
+        }
+        return 0;
+    };
+
+    my $uid = getId($USER);
+
+    my $csr = $DB->sqlSelectMany( "node_id", "node",
+        "type_nodetype=16 ORDER BY node_id" );
+    my @ug_ids = ();
+    while ( my $row = $csr->fetchrow_hashref )
+    {
+        push @ug_ids, $row->{node_id};
+    }
+
+    # A few usergroups are not really usergroups that have discussions.
+    # For now, that's %%, and e2gods. Don't show those.
+    my @exclude_ug_ids = qw(829913 1175790);
+
+    my @thisnoder_ug_ids = ();
+    foreach my $ug_id (@ug_ids)
+    {
+        my $ids = getNodeById($ug_id)->{group};
+        if ( in_an_array( $uid, @$ids ) )
+        {
+            push @thisnoder_ug_ids, $ug_id
+                unless in_an_array( $ug_id, @exclude_ug_ids );
+
+            if ( $ug_id == 114 )
+            {    # If an admin, also an ed
+                push @thisnoder_ug_ids, 923653;
+            }
+        }
+    }
+
+    return $text
+        . "You have no usergroups! Find [usergroup lineup|some friends first], and then start a discussion with them."
+        unless @thisnoder_ug_ids;
+
+    my $show_ug = int $query->param('show_ug') || 0;
+
+    # Is this table here kosher? Does CSS have a better way to do this?
+    my $tablecols = 8;
+    $text .=
+        "Choose the usergroup to filter by: <br/> <center><table cellspacing=\"7\">\n";
+
+    my $count = 1;
+    foreach my $ug_id (@thisnoder_ug_ids)
+    {
+        $text .= "<tr>" if ( $count % $tablecols == 1 );
+        my $ug = getNodeById($ug_id);
+        $text .= "<td>";
+        $text .= "<b>" if $ug_id == $show_ug;
+        $text .= "<center>"
+            . linkNode( $NODE, "$$ug{title}", { show_ug => $ug_id } )
+            . "</center>";
+        $text .= "</b>" if $ug_id == $show_ug;
+        $text .= "</td>";
+        $text .= "</tr>\n" if $count % $tablecols == 0;
+        $count++;
+    }
+
+    while ( $count % $tablecols != 0 )
+    {    # I'm a good boy, and I tidy up the table.
+        $text .= "<td>&nbsp;</td>";
+        $count++;
+    }
+    $text .= "</tr> </table></center> <br/>";
+
+    # As elsewhere in e2, "nothing" really means "everything".
+    $text .= "<center>Or ";
+    $text .= "<b>" if $show_ug == 0;
+    $text .= linkNode( $NODE,
+        "show discussions from all usergroups.",
+        { show_ug => 0 } ) . "</center><br/>\n";
+    $text .= "</b>" if $show_ug == 0;
+
+    # Check for manual manipulations of query string, for security.
+    if ( $show_ug && !in_an_array( $show_ug, @thisnoder_ug_ids ) )
+    {
+        $text .= "You are not a member of the selected usergroup.<br/>";
+        return $text;
+    }
+
+    my $wherestr = '';
+    if ($show_ug)
+    {
+        $wherestr .= "restricted=$show_ug";
+    }
+    else
+    {    # No usergroup requested, show all available.
+        my $appendstr = "(@thisnoder_ug_ids)";
+        $appendstr =~ s/ /, /g;
+        $wherestr .= "restricted in " . $appendstr;
+    }
+
+    $csr = $DB->sqlSelectMany( "root_debatecomment", "debatecomment",
+        $wherestr, "GROUP BY root_debatecomment" );
+
+    my @types = qw( debate );
+    foreach (@types)
+    {
+        $_ = getId( getType($_) );
+    }
+
+    my @nodes = ();
+    while ( my $temprow = $csr->fetchrow_hashref )
+    {
+        my $N = getNodeById( $temprow->{root_debatecomment} );
+        next unless $N;
+        my $latest = getNodeById(
+            $DB->sqlSelect(
+                "MAX(debatecomment_id)", "debatecomment",
+                "root_debatecomment=$$N{node_id}"
+            )
+        );
+        next unless $latest;
+        my $latesttime = $$latest{'createtime'};
+        $latesttime = $APP->convertDateToEpoch($latesttime);
+        push @nodes, [ $N, $latest, $latesttime ];
+    }
+    @nodes = sort { my ( @a, @b ); return @$b[2] <=> @$a[2]; } @nodes;
+
+    # Limit the number of nodes to the pagination requirements
+    my $offset     = $query->param("offset") || 0;
+    my $limit      = 50;
+    my $totalnodes = scalar(@nodes);
+    my $nodesleft  = $totalnodes - $offset;
+    my $thispage   = ( $limit < $nodesleft ? $limit : $nodesleft );
+
+    @nodes = @nodes[ $offset .. $offset + $thispage - 1 ];
+
+    if ( not @nodes )
+    {
+        $text .= "<p align=\"center\">There are no discussions!</p>";
+    }
+    else
+    {
+        $text .= '<style type="text/css">
+                        <!--
+            th {
+              text-align: left;
+            }
+            -->
+            </style>
+
+            </p>
+
+            <p>
+            <table>
+            <tr bgcolor="#dddddd">
+            <th class="oddrow" width="200" colspan="2">title</th>
+            <th class="oddrow" width="80">usergroup</th>
+            <th class="oddrow" width="80">author</th>
+            <th class="oddrow" width="50">replies</th>
+            <th class="oddrow" width="30">new</th>
+            <th class="oddrow" width="100">last updated</td>
+            <!--th width="100">type</th-->
+            </tr>
+            ';
+        foreach my $nodestuff (@nodes)
+        {
+            my $n      = @$nodestuff[0];
+            my ($user) = getNodeById( $$n{author_user} );
+            my $ug     = $$n{restricted};
+
+            my $latest = @$nodestuff[1];
+            my $latestreadtime = $DB->sqlSelect(
+                "dateread", "lastreaddebate",
+                "user_id=$uid and debateroot_id=$$n{node_id}"
+            );
+
+            my $latesttime = $latest->{createtime};
+            $latesttime ||= "<em>(none)</em>";
+
+            my $latesttime_e = @$nodestuff[2];
+            my $latestreadtime_e = undef;
+            $latestreadtime_e = $APP->convertDateToEpoch($latestreadtime)
+                if $latestreadtime;
+
+            my $unread = ( $latestreadtime_e < $latesttime_e );
+
+            my $replycount = $DB->sqlSelect( "COUNT(*)", "debatecomment",
+                "root_debatecomment=$$n{node_id}" );
+
+            # Don't count the root node itself
+            $replycount--;
+
+            $text .=
+                  "<tr><td>"
+                . linkNode( $n, $$n{title}, { lastnode_id => 0 } )
+                . "</td><td><small>("
+                . linkNode( $n, "compact",
+                { lastnode_id => 0, displaytype => "compact" } )
+                . ")</small></td><td><small>"
+                . linkNode( $ug, 0, { lastnode_id => 0 } )
+                . "</small></td><td>"
+                . linkNode( $$user{"node_id"}, 0, { lastnode_id => 0 } )
+                . "</td><td>"
+                . $replycount
+                . "</td><td>";
+            $text .= ( $unread ? '&times;' : '&nbsp;' );
+            $text .=
+                  "</td><td>"
+                . $latesttime
+                . "</td>"
+                . "</tr>\n";
+        }
+        $text .= "</table>\n";
+        $text .=
+            "<p align=\"right\">There are $totalnodes discussions total</p>";
+
+        # Show pagination links if necessary
+        my $numnodes = scalar(@nodes);
+        if ( $offset > 0 || $numnodes == $limit )
+        {
+            $text .= '<p align="right">';
+            if ( $offset > 0 )
+            {
+                my ( $start, $end );
+                $end   = $offset;
+                $start = $offset - $limit + 1;
+                $text .= linkNode( $NODE, "prev $start &ndash; $end",
+                    { show_ug => $show_ug, offset => $offset - $limit } );
+                $text .= "<br />";
+            }
+
+            my $bot = $offset + 1;
+            my $top = $offset + $numnodes;
+            $text .= "Now: $bot &ndash; $top <br/>";
+
+            # Yeah, ok, there's one pathological case this doesn't really
+            # handle, but I think users can deal with a blank page if they
+            # happen to have exactly mod($limit) discussions.
+            if ( $numnodes == $limit )
+            {
+                my ( $start, $end );
+                $start = $offset + $limit + 1;
+                $end   = $offset + 2 * $limit;
+                $text .= linkNode( $NODE, "next $start &ndash; $end",
+                    { show_ug => $show_ug, offset => $offset + $limit } );
+                $text .= "<br />";
+            }
+            $text .= "</p>\n";
+        }
+    }
+
+    $text .= '
+         <hr />
+         <b>Choose a title for a new discussion:</b><br />
+         <form method="post">
+         <input type="hidden" name="op" value="new">
+         <input type="hidden" name="type" value="debate">
+         <input type="hidden" name="displaytype" value="edit">
+         <input type="hidden" name="debate_parent_debatecomment" value="0">
+         <input type="text" size="50" maxlength="64" name="node"
+                value=""><br />';
+
+    my %thisnoder_ug_names = ();
+    foreach my $ug_id (@thisnoder_ug_ids)
+    {
+        my $N = getNodeById($ug_id);
+        $thisnoder_ug_names{$ug_id} = $$N{title};
+    }
+
+    $text .= "Choose the usegroup it's for: <br />";
+    $text .= $query->popup_menu( 'debatecomment_restricted',
+        \@thisnoder_ug_ids, $show_ug, \%thisnoder_ug_names );
+
+    $text .= $query->checkbox( "announce_to_ug", "checked", "yup",
+        "Announce new discussion to usergroup" );
+
+    $text .= "<br /> <br/>\n";
+
+    $text .= "Write the first discussion post: <br/>";
+
+    $text .= $query->textarea(
+        {   name    => "newdebate_text",
+            id      => "newdebate_text",
+            default => "",
+            rows    => 20,
+            columns => 80
+        }
+    );
+
+    $text .= '<input type="submit" name="sexisgood" value="Start new discussion!">';
+
+    $text .= "\n</form>";
+
+    return $text;
+}
+
 1;
