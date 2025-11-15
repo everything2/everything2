@@ -1,13 +1,13 @@
 # Everything2 Modernization Status
 
-**Last Updated:** 2025-11-08
+**Last Updated:** 2025-11-15
 
 ## Quick Overview
 
 | Priority | Status | Progress | Risk |
 |----------|--------|----------|------|
 | SQL Injection Fixes | ✅ Complete | 100% (4/4 critical) | High |
-| Database Code Removal | 🟡 In Progress | 81% (368/413) | High |
+| Database Code Removal | 🟡 In Progress | 82% (372/~542) | High |
 | Object-Oriented Refactoring | 🟢 Active | 43% (100+/235) | Medium |
 | Database Security | 🟡 In Progress | 25% | High |
 | PSGI/Plack Migration | 🔴 Not Started | 0% | High |
@@ -19,17 +19,25 @@
 
 ## Database Code Removal (Priority 1)
 
-### ✅ Completed (81%)
+### ✅ Completed (82%)
 - **htmlcode** - 222 nodes migrated to Everything::Delegation::htmlcode.pm (14,499 lines)
 - **htmlpage** - 99 nodes migrated to Everything::Delegation::htmlpage.pm (4,609 lines)
 - **opcode** - 47 nodes migrated to Everything::Delegation::opcode.pm (2,637 lines)
-- **Total:** 368 nodes, 21,745 lines of delegated code
+  - *Note: Opcodes are action handlers (op=login, op=vote, etc.)*
+  - *Future: Migrate to REST APIs once React migration is substantial*
+  - *See: [Development Goals - Opcode Framework Migration](delegation-migration.md#development-goals---opcode-framework-migration-to-rest-apis)*
+- **superdoc/document** - 4 nodes migrated to Everything::Delegation::document.pm (242 lines)
+  - Permission Denied
+  - super mailbox
+  - Nothing Found
+  - Findings:
+- **Total:** 372 nodes, 21,987 lines of delegated code
 
-### ❌ Remaining (19%)
+### ❌ Remaining (18%)
 - **achievement** - 45 nodes with Perl code in `{code}` field
 - **room criteria** - Unknown count with Perl expressions in `roomdata.criteria`
-- **superdoc templates** - 129 nodes with `[% perl %]` blocks
-- **Total:** 174+ code-containing nodes
+- **superdoc templates** - 125 nodes with `[% perl %]` blocks (4 completed this week)
+- **Total:** 170+ code-containing nodes
 
 ### Why This Matters
 1. **Security:** eval() of database strings = arbitrary code execution
@@ -140,12 +148,42 @@ extends 'Everything::Node';
 - ❌ No mobile navigation
 - ❌ No touch interactions
 
+### Long-term Goal: Replace Template Systems with React
+
+**Two Distinct Template Systems in Everything2**:
+1. **Legacy E2 Templates** (Everything::HTML::parseCode):
+   - `[% perl %]` blocks in database nodes
+   - **Current migration**: Moving to delegation functions (Phase 1)
+   - 125 superdocs remaining to migrate
+2. **Mason2 Templates** (Everything::Page, Everything::Mason):
+   - Modern Mason2 framework in `templates/` directory
+   - Already version-controlled and testable
+   - Separate from current delegation migration
+
+**Current Focus**: Legacy E2 template migration (Phase 1)
+- **Interim step**: Delegation functions are temporary, server-side rendering solution
+- **End goal**: Replace both delegation functions AND Mason2 templates with React components + REST APIs
+- **Benefits**:
+  - Dynamic UI without page reloads
+  - Component reusability and testing
+  - Separation of concerns (API backend + React frontend)
+  - Modern, responsive, mobile-first design
+- **Migration path**:
+  - Legacy E2: Database templates → Delegation functions → REST APIs + React
+  - Mason2: Mason2 templates → REST APIs + React (future consideration)
+- **See**: [Development Goals - Template System Migration to React](delegation-migration.md#development-goals---template-system-migration-to-react) for full migration strategy
+
 ### Next Steps
 1. Add CSS media queries
 2. Responsive navigation
 3. Touch-friendly interactions
 4. Convert class components to hooks
 5. Add Context API for state
+6. Identify high-value delegations for React conversion pilots
+7. **Future (post-React migration)**: Convert opcode framework (`op=login`, `op=vote`, etc.) to REST APIs
+   - Opcodes are action handlers currently using query parameters
+   - Requires React forms to replace legacy HTML forms
+   - See: [Opcode Framework Migration](delegation-migration.md#development-goals---opcode-framework-migration-to-rest-apis)
 
 ## Testing Infrastructure (Priority 6)
 
@@ -222,6 +260,26 @@ extends 'Everything::Node';
 
 ## Recent Milestones
 
+### Week of November 15, 2025
+- ✅ Superdoc delegation progress (4 nodes completed)
+  - Permission Denied - Simple access denied message
+  - super mailbox - Bot mailbox management with usergroup permissions
+  - Nothing Found - 404-style search results with external link detection
+  - Findings: - Search results display with nodeshell detection
+- ✅ Documentation updates
+  - Added usergroup permission details to delegation-migration.md
+  - Documented 'gods' administrative usergroup
+  - Added development goal for permission simplification (gods → Content_Editors)
+  - Added development goal for template system migration to React
+  - Clarified distinction between Legacy E2 templates (parseCode) and Mason2 templates
+  - Added development goal for opcode framework migration to REST APIs
+  - Enhanced module import checklist (use statements at top of file)
+- ✅ Code quality improvements
+  - Fixed expression form of map/grep violations
+  - Fixed mixed high/low precedence boolean issues
+  - Moved Time::HiRes import to top of document.pm (findings_ function)
+  - All new delegations pass Perl::Critic severity 1 + theme bugs
+
 ### Completed
 - ✅ SQL injection fixes (4 critical vulnerabilities)
 - ✅ Perl::Critic compliance (235/235 modules)
@@ -235,31 +293,38 @@ extends 'Everything::Node';
 - ✅ AWS deployment pipeline
 
 ### In Progress
-- 🟡 Database code removal (81% complete)
+- 🟡 Database code removal (82% complete, 4 nodes added this week)
+- 🟡 Superdoc template migration (125 remaining, down from 129)
 - 🟡 React frontend expansion
 - 🟡 Documentation in docs/ directory
 
 ## Immediate Priorities
 
 ### This Week
-1. Complete achievement node audit
-2. Complete room criteria audit
-3. Document current test infrastructure
-4. Create modernization roadmap for team
+1. ✅ Continue superdoc delegation (4 completed)
+2. ✅ Update delegation documentation with usergroup details
+3. Complete achievement node audit
+4. Complete room criteria audit
+
+### Next Week
+1. Continue superdoc template migration
+2. Document current test infrastructure
+3. Create modernization roadmap for team
 
 ### This Month
-1. Migrate achievement nodes to Delegation
-2. Migrate room criteria to Delegation
-3. Fix test dependencies
-4. Add CI/CD test gate
-5. Begin SQL injection fixes
+1. Migrate more superdoc templates to Delegation (target: 20+ nodes)
+2. Begin achievement node audit and migration planning
+3. Begin room criteria audit
+4. Fix test dependencies
+5. Add CI/CD test gate
 
 ### This Quarter
-1. Complete database code removal
+1. Complete database code removal (Phase 1: delegation functions)
 2. Fix critical SQL injection vulnerabilities
 3. Set up React testing infrastructure
 4. Begin PSGI preparation work
 5. Mobile responsiveness Phase 1
+6. Document React migration strategy and identify Phase 2 pilot candidates
 
 ## Team Communication
 
@@ -280,20 +345,27 @@ extends 'Everything::Node';
 - API-first design
 - Security awareness
 
-## Resource Utilization
-
-**Claude Usage Today:**
-- Token usage: ~62,000 / 200,000 (31%)
-- Remaining: ~138,000 tokens
-- Plenty of capacity remaining for continued work
-
 ## Questions & Decisions Needed
 
 1. Which to migrate first: achievements or room criteria?
-2. What's the strategy for 129 superdoc templates?
-3. Timeline for PSGI migration start?
-4. Redis vs Memcached for cache layer?
-5. Testing coverage targets by milestone?
+2. What's the strategy for remaining 125 superdoc templates?
+3. Timeline for implementing permission simplification (gods → Content_Editors)?
+4. Timeline for PSGI migration start?
+5. Redis vs Memcached for cache layer?
+6. Testing coverage targets by milestone?
+7. **React migration strategy**:
+   - **Legacy E2 templates**: Which delegated superdocs should be prioritized for React conversion?
+   - When to start Phase 2 (delegation functions → React + REST APIs)?
+   - Should we build REST APIs alongside delegations now, or later?
+   - Which features provide the most value for React conversion (high user interaction)?
+   - **Mason2 templates**: Should Mason2 templates also be converted to React, or maintained separately?
+   - What is the long-term vision for Mason2 vs React rendering?
+8. **Opcode framework migration**:
+   - At what point in React migration should we begin converting opcodes to REST APIs?
+   - Which opcodes should be prioritized (authentication, voting, messaging, content creation)?
+   - Should we maintain `op=` query parameter backward compatibility during transition?
+   - What authentication strategy for APIs (JWT tokens, session cookies, both)?
+   - How to handle CSRF protection in React + API architecture?
 
 ---
 

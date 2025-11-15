@@ -62,9 +62,220 @@ The system uses **two levels of delegation**:
 ### Permission Handling
 
 Permissions are handled by the nodetype, not the delegation:
-- **restricted_superdoc**: Uses `readers_user` field (usually a usergroup node_id)
+- **All nodetypes** have a `readers_user` field that controls who can read the node
+- **restricted_superdoc**: Uses `readers_user` field (typically set to the 'gods' usergroup node_id)
+  - The 'gods' usergroup is Everything2's administrative user group
+  - Only members of the usergroup specified in `readers_user` can access these nodes
 - **oppressor_superdoc**: Hardcoded to Content Editors usergroup
 - Delegation functions inherit these permission checks from the display function
+
+**Note**: "Gods" is the historical name for Everything2's administrative user group. Administrative functions check membership using `$APP->isAdmin($USER)`.
+
+#### Development Goals - Permission Simplification
+
+**Goal**: Reduce dependency on administrative ('gods') permissions and transition user management functions to the 'Content_Editors' usergroup.
+
+**Rationale**:
+- Administrative permissions should be reserved for system-level operations
+- Most content and user management tasks don't require full admin access
+- Content Editors already handle editorial workflow and can be trusted with expanded responsibilities
+- Distributing permissions improves security through principle of least privilege
+
+**Target Changes**:
+- Migrate user management functions currently requiring admin to Content Editors
+- Review restricted_superdocs to identify candidates for reclassification to oppressor_superdoc
+- Create new permission checking patterns that distinguish between system admin and editorial admin
+- Document which operations genuinely require 'gods' access vs. editorial oversight
+
+#### Development Goals - Template System Migration to React
+
+**Goal**: Eliminate server-side template rendering and replace with modern React-based UI components.
+
+**Important Context - Two Distinct Template Systems**:
+
+Everything2 has **two separate templating systems** that must be understood:
+
+1. **Legacy E2 Templates** (parsed by `Everything::HTML::parseCode`):
+   - `[% perl %]` blocks embedded in database nodes (superdocs, restricted_superdocs, etc.)
+   - eval() execution of database-stored code
+   - **Current migration target**: Moving these to delegation functions
+   - Located in: Database nodes (nodepack/*.xml files)
+
+2. **Mason2 Templates** (used by `Everything::Page`, `Everything::Mason`):
+   - Modern Mason2 templating framework
+   - Filesystem-based templates in `templates/` directory
+   - Already version-controlled and testable
+   - Separate from the legacy E2 template system
+   - **Not part of current delegation migration**
+
+**This migration focuses on Legacy E2 Templates only.** Mason2 templates are a separate, already-modernized system.
+
+**Rationale for React Migration**:
+- Server-side template rendering is being phased out in favor of client-side React
+- Current delegation to Perl functions is an interim step, not the final architecture
+- React provides better user experience with dynamic updates, no page reloads
+- Separation of concerns: API backend (Perl) + UI frontend (React)
+- Modern development workflow with component reusability and testing
+- Both legacy E2 templates (after delegation) and Mason2 templates are candidates for eventual React conversion
+
+**Migration Path (Legacy E2 Templates)**:
+
+1. **Phase 1 (Current)**: Migrate legacy E2 templates to Perl delegation functions
+   - Moves code from database (`[% perl %]` blocks) to version-controlled filesystem
+   - Enables testing, profiling, and code review
+   - Maintains existing server-side rendering temporarily
+   - **Status**: In progress (4/129 superdocs migrated this week)
+
+2. **Phase 2 (Future)**: Replace delegation functions with React components + REST APIs
+   - Convert delegation functions to REST API endpoints
+   - Build React components that consume the APIs
+   - Progressive enhancement: Start with high-value, frequently-used features
+   - Maintain delegation functions for gradual migration
+   - Eventually, Mason2 templates can also be replaced with React where appropriate
+
+3. **Phase 3 (Long-term)**: Full React migration
+   - Complete replacement of server-rendered content with React SPA
+   - Retire delegation functions as corresponding React components are deployed
+   - Retire or minimize Mason2 template usage where React provides better UX
+   - Modern, responsive, mobile-first user interface
+
+**Target Changes**:
+- **Current focus**: Complete Phase 1 (legacy E2 template → delegation migration)
+- Prioritize delegations that are good candidates for React conversion
+- Design REST APIs alongside delegation functions where practical
+- Document which delegations are temporary vs. long-term
+- Create React component architecture that mirrors Everything2's node structure
+- Build progressive enhancement strategy (works without JS, better with JS)
+- Consider Mason2 templates separately for future React conversion planning
+
+**Example Flow (Legacy E2 Templates)**:
+```
+Today:        Database [% code %] → parseCode eval() → HTML
+Phase 1:      Delegation function → HTML (current migration)
+Phase 2-3:    REST API → JSON → React component → Dynamic UI
+```
+
+**Example Flow (Mason2 Templates)**:
+```
+Today:        templates/*.mi → Mason2 → HTML
+Future:       REST API → JSON → React component → Dynamic UI (where beneficial)
+```
+
+#### Development Goals - Opcode Framework Migration to REST APIs
+
+**Goal**: Migrate the legacy opcode framework from server-side delegation functions to modern REST API endpoints once pages transition to React.
+
+**What are Opcodes?**
+
+Opcodes are Everything2's operation handlers, triggered by the `op={operation}` URL parameter:
+- **Examples**: `op=login`, `op=vote`, `op=message`, `op=new`
+- **Location**: `Everything::Delegation::opcode` module
+- **Current State**: 47 opcode delegation functions (already migrated from database)
+- **Function**: Handle form submissions, user actions, state changes
+- **Pattern**: Server receives `op=login` → calls `opcode::login()` → processes → redirects/renders
+
+**Why This Matters**:
+- Opcodes are **action handlers**, not display functions
+- Perfect candidates for REST API conversion: `POST /api/login` instead of `?op=login`
+- Currently tightly coupled to server-side HTML rendering
+- React apps need API endpoints, not opcode query parameters
+- Modern web architecture separates API (backend) from UI (frontend)
+
+**Current Architecture**:
+```perl
+# Everything::Delegation::opcode
+sub login {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+    # Validate credentials
+    # Set session cookie
+    # Redirect to page
+}
+```
+
+**Challenges - Deeper Refactoring Required**:
+
+Unlike superdocs (which just render HTML), opcodes require deeper changes:
+
+1. **HTML/Template Support**: Current templates and HTML generation assume opcodes exist
+   - Forms use `<form action="?op=login">`
+   - Links use `?op=vote&node_id=123`
+   - Redirects use `?op=message&for_user=456`
+
+2. **Session Management**: Opcodes handle authentication, cookies, redirects
+   - Need to separate session logic from rendering logic
+   - API endpoints need stateless authentication (JWT/tokens)
+   - Current approach mixes authentication with page rendering
+
+3. **Error Handling**: Opcodes redirect or render error pages
+   - REST APIs return JSON error responses
+   - React components handle error display
+   - Need standard error response format
+
+4. **CSRF Protection**: Forms currently use `op=` with session validation
+   - Need modern CSRF token approach for APIs
+   - API authentication separate from form submission
+
+**Migration Path**:
+
+1. **Phase 1 (Completed)**: Migrate opcodes from database to delegation functions
+   - **Status**: ✅ Complete (47 nodes migrated)
+   - Enables testing, profiling, code review
+   - Still uses legacy server-side pattern
+
+2. **Phase 2 (Requires React Migration)**: Design REST API equivalents
+   - Map opcodes to RESTful endpoints:
+     - `op=login` → `POST /api/auth/login`
+     - `op=vote` → `POST /api/nodes/{id}/vote`
+     - `op=message` → `POST /api/messages`
+     - `op=new` → `POST /api/nodes`
+   - Design JSON request/response formats
+   - Implement authentication middleware (JWT/session tokens)
+   - Maintain opcode delegation for gradual migration
+
+3. **Phase 3 (React Components)**: Update HTML/templates to use APIs
+   - React forms call REST APIs instead of `?op=` URLs
+   - Remove opcode query parameter handling from templates
+   - Implement client-side error handling
+   - Progressive enhancement: Forms work with/without JavaScript
+
+4. **Phase 4 (Cleanup)**: Retire opcode delegation functions
+   - Once all forms/actions use REST APIs
+   - Remove `Everything::Delegation::opcode` module
+   - Clean up legacy HTML generation code
+   - Simplify request routing
+
+**Target Changes**:
+- **Prerequisite**: React migration must be substantially complete
+- Design RESTful API architecture alongside React component development
+- Maintain backward compatibility during transition
+- Document API endpoints as opcodes are converted
+- Create API client library for React components
+- Implement proper HTTP status codes (200, 201, 400, 401, 403, 404, etc.)
+- Use JSON for all API responses (no HTML generation in API handlers)
+
+**Example Flow Evolution**:
+```
+Today (Legacy):
+User submits form → ?op=login → opcode::login() → HTML redirect → Page render
+
+Phase 2-3 (Transition):
+User submits form → ?op=login OR POST /api/auth/login
+Both paths supported during migration
+
+Phase 4 (Future):
+React component → POST /api/auth/login → JSON response → React update
+```
+
+**Priority**: This migration should begin **after** substantial React frontend conversion is complete, as it requires:
+- React components ready to consume APIs
+- API authentication infrastructure
+- Client-side routing and state management
+- HTML templates no longer generating opcode forms
+
+**Related Work**:
+- REST API infrastructure already exists (15+ endpoints for React nodelets)
+- Can use existing patterns as templates for opcode conversion
+- Opcode delegation functions provide clean starting point for API logic extraction
 
 ## Migration Process
 
@@ -651,13 +862,18 @@ $text .= '[Node Title|display text]';
 - [ ] Identify nodetype (superdoc, restricted_superdoc, oppressor_superdoc, document)
 - [ ] Note: All delegation functions go in `document.pm` (most nodetypes chain up to document)
 - [ ] Extract code from `[% ... %]` blocks
+- [ ] **Check for module dependencies** - identify any `use Module;` statements in the original code
 - [ ] Create delegation function in `ecore/Everything/Delegation/document.pm`
-- [ ] **Add use statements at top of file** - if code requires modules, add `use Module;` at top with comment `# Used in: function_name`
+- [ ] **Add use statements at TOP of file** - if code requires modules (e.g., Time::HiRes, JSON::XS):
+  - Add `use Module;  # Used in: function_name` at the top of document.pm (after `use DateTime;`)
+  - **NEVER put `use` statements inside the function** (wrong: causes compile-time statements at runtime)
+  - Remove any `use` statements from inside the function body
 - [ ] Include static HTML text at beginning of function
 - [ ] Keep bracket notation for links (will be parsed by parseLinks)
 - [ ] **Initialize all variables** - `my $text = undef;` or `my $text = '';` (critical for security)
 - [ ] Remove "bugs go to" lines
 - [ ] Update node XML with static text only
+- [ ] Run Perl::Critic verification: `perlcritic --severity 1 --theme bugs ecore/Everything/Delegation/document.pm`
 - [ ] Test in Docker environment
 - [ ] Verify output matches original
 

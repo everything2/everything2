@@ -91,20 +91,20 @@ sub publishdraft
   return unless $NODE and $$NODE{type}{title} eq 'e2node';
 
   return if htmlcode('nopublishreason', $publishAs || $USER, $NODE);
-	
+
   my $wu = $$draft{node_id};
-	
+
   return unless $DB->sqlUpdate('node, draft', {
     type_nodetype => getType('writeup') -> {node_id},
     publication_status => 0
     },
     "node_id=$wu AND draft_id=$wu"
   );
-	
+
   # remove any old attachment:
   my $linktype = getId(getNode('parent_node', 'linktype'));
   $DB->sqlDelete('links', "from_node=$$draft{node_id} AND linktype=$linktype");
-	
+
   $DB->sqlInsert('writeup', {
     writeup_id => $wu,
     parent_e2node => $e2node,
