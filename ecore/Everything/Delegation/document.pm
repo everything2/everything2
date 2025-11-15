@@ -10626,4 +10626,11 @@ sub nodes_of_the_year
     return $text;
 }
 
+sub permission_denied
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    return q|<p>You don't have access to that node.</p>|;
+}
+
 1;
