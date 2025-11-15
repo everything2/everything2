@@ -10451,4 +10451,60 @@ sub your_filled_nodeshells
     return $text;
 }
 
+sub random_nodeshells
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    return $text if $APP->isGuest($USER);
+
+    my $maxId    = $DB->sqlSelect( "max(node_id)", "node" );
+    my @rand     = ();
+    my $numNodes = 1200;
+
+    for ( my $x = 1 ; $x <= $numNodes ; $x++ )
+    {
+        push @rand, int( rand $maxId );
+    }
+
+    my $randStr = join( ', ', @rand );
+
+    my $csr = $DB->sqlSelectMany( 'node_id', 'node',
+            'type_nodetype=116 and (select count(*) from nodegroup where nodegroup_id=node.node_id) = 0 and (select count(*) from links where linktype=1150375 and from_node=node.node_id limit 1) = 0 and node_id in ('
+            . $randStr
+            . ')' );
+
+    my @nodes = ();
+    while ( my $row = $csr->fetchrow_hashref )
+    {
+        push @nodes, $$row{node_id};
+    }
+
+    my $str = '
+<p><b>How this works:</b></p>
+
+<p>The code picks '
+        . $numNodes
+        . ' random possible node_ids, then checks if the node_id actually exists, if it is an e2node nodetype, and if it has no writeups and no firmlinks. Interestingly, this usually produces between 30 and 40 nodeshells with pretty good consistency.</p>
+
+<p>[Random nodeshells|Generate a new list]</p>
+
+<p>Here are <strong>'
+        . scalar(@nodes)
+        . '</strong> random nodeshells:</p>
+<ul>
+';
+
+    foreach (@nodes)
+    {
+        $str .= '<li>' . linkNode($_) . '</li>
+';
+    }
+
+    $str .= '</ul>';
+
+    $text .= $str;
+    return $text;
+}
+
 1;
