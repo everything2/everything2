@@ -2055,6 +2055,25 @@
               "CloudWatchMetricsEnabled": true,
               "MetricName": "BlockedRequests"
             }
+        },
+        {
+          "Name": "E2-RateLimit",
+          "Priority": 15,
+          "Statement": {
+            "RateBasedStatement": {
+              "Limit": 200,
+              "AggregateKeyType": "IP",
+              "EvaluationWindowSec": 60
+            }
+          },
+          "Action": {
+            "Block": {}
+          },
+          "VisibilityConfig": {
+            "SampledRequestsEnabled": true,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "RateBlockedRequests"
+          }
         }]
       }
     },
