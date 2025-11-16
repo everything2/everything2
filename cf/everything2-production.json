@@ -1388,7 +1388,7 @@
         "ResourceId": {"Fn::Join": ["/",["service",{"Ref": "ECSAppCluster"},{"Fn::GetAtt": ["ECSFargateAppService","Name"]}]]},
         "ServiceNamespace": "ecs",
         "ScalableDimension": "ecs:service:DesiredCount",
-        "MinCapacity": 1,
+        "MinCapacity": 2,
         "MaxCapacity": 6
       }
     },

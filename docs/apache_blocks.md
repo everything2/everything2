@@ -116,6 +116,11 @@ cd ../e2-loganalysis
 
 # Include Apache-blocked bots to verify blocks are working
 ../everything2/tools/bot-spike-analysis.rb --include-403
+
+# Analyze only recent traffic (faster for large log collections)
+../everything2/tools/bot-spike-analysis.rb --lookback 1h   # Last hour
+../everything2/tools/bot-spike-analysis.rb --lookback 1d   # Last day
+../everything2/tools/bot-spike-analysis.rb --lookback 1w   # Last week
 ```
 
 See [tools/bot-spike-analysis.rb](../tools/bot-spike-analysis.rb) for more options.
