@@ -429,24 +429,43 @@ grep SLOW /var/log/everything/health-check.log
 ```
 
 **CloudWatch Logs:**
+
+Using the helper script (recommended):
+```bash
+# Follow all health check logs in real-time
+./tools/tail-health-check-logs.sh
+
+# Show only failed health checks
+./tools/tail-health-check-logs.sh --failed
+
+# Show only slow health checks
+./tools/tail-health-check-logs.sh --slow
+
+# Show logs from the last hour
+./tools/tail-health-check-logs.sh --since 1h
+
+# Show failed checks from last 30 minutes
+./tools/tail-health-check-logs.sh --since 30m --failed
+```
+
+Using AWS CLI directly:
 ```bash
 # View recent health check events
-aws logs tail /aws/fargate/health-check-awslogs --follow
-
-# View logs for a specific container
-aws logs tail /aws/fargate/health-check-awslogs --follow --filter-pattern "health-check-<hostname>"
+aws logs tail /aws/fargate/e2-health-check --follow --region us-west-2
 
 # Query failed health checks from the last hour
 aws logs filter-log-events \
-  --log-group-name /aws/fargate/health-check-awslogs \
+  --log-group-name /aws/fargate/e2-health-check \
+  --region us-west-2 \
   --start-time $(date -d '1 hour ago' +%s)000 \
-  --filter-pattern '{ $.reason = "FAILED" }'
+  --filter-pattern '"FAILED"'
 
 # Query slow health checks
 aws logs filter-log-events \
-  --log-group-name /aws/fargate/health-check-awslogs \
+  --log-group-name /aws/fargate/e2-health-check \
+  --region us-west-2 \
   --start-time $(date -d '1 hour ago' +%s)000 \
-  --filter-pattern '{ $.reason = "SLOW" }'
+  --filter-pattern '"SLOW"'
 ```
 
 ## Testing Health Checks
@@ -511,11 +530,11 @@ aws ecs describe-tasks \
 # In the container or via ECS exec
 tail -100 /var/log/everything/health-check.log
 
-# Via CloudWatch Logs - Health Check specific logs
-aws logs tail /aws/fargate/health-check-awslogs --follow
+# Via CloudWatch Logs - Health Check specific logs (use helper script)
+./tools/tail-health-check-logs.sh --failed
 
 # Via CloudWatch Logs - General application logs
-aws logs tail /aws/fargate/fargate-app-awslogs --follow
+aws logs tail /aws/fargate/fargate-app-awslogs --follow --region us-west-2
 ```
 
 ### Step 3: Test Health Endpoint Manually
