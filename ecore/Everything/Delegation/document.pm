@@ -35,7 +35,7 @@ BEGIN {
 # Used by e2_sperm_counter
 use POSIX qw(ceil);
 
-# Used by your_gravatar
+# Used by your_gravatar, recent_users
 use Digest::MD5;
 
 # Used by Log Archive
@@ -12212,6 +12212,72 @@ sub guest_front_page {
 </html>';
 
     return $html;
+}
+
+# Recent Users (oppressor_superdoc)
+# Displays users who have logged in within the last 24 hours
+# Shows username and staff symbols (admin, editor, chanop)
+sub recent_users
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str = undef;
+    my $queryText = undef;
+    my $rows = undef;
+    my $dbrow = undef;
+    my $U = undef;
+    my $flags = undef;
+    my $ctr = 0;
+    my $uid = undef;
+
+    # Staff symbol links
+    my $powStructLink = '<a href=' . urlGen( { 'node' => 'E2 staff', 'nodetype' => 'superdoc' } );
+    my $linkRoots = $powStructLink . ' title="e2gods">@</a>';
+    my $linkCEs = $powStructLink . ' title="Content Editors">$</a>';
+    my $linkChanops = $powStructLink . ' title="chanops">+</a>';
+
+    # Query users who logged in within last 24 hours
+    $queryText = "SELECT user_id FROM user,node WHERE user.user_id=node.node_id AND lasttime>=ADDDATE(NOW(), INTERVAL -1 DAY) ORDER BY node.title";
+    $rows = $DB->{dbh}->prepare($queryText)
+        or return $rows->errstr;
+    $rows->execute()
+        or return $rows->errstr;
+
+    $str = '<p>The following is a list of users who have logged in over the last 24 hours.</p>
+         <table border="1">
+         <tr>
+         <th>#</th>
+         <th>Name</th>
+         <th>Title</th>
+         </tr>';
+
+    while ( $dbrow = $rows->fetchrow_arrayref ) {
+        $ctr++;
+        $uid = $$dbrow[0];
+        $U   = getNodeById($uid);
+
+        my $thisChanop = $APP->isChanop( $U, "nogods" );
+
+        $flags = '';
+        if ( $APP->isAdmin($U) && !$APP->getParameter( $U, "hide_chatterbox_staff_symbol" ) ) {
+            $flags .= $linkRoots;
+        }
+        if ( $APP->isEditor( $U, "nogods" ) && !$APP->getParameter( $U, "hide_chatterbox_staff_symbol" ) ) {
+            $flags .= $linkCEs;
+        }
+        $flags .= $linkChanops if $thisChanop;
+
+        # gravatar column (if approved)            <td><img src="http://gravatar.com/avatar/'.md5_hex($$U{email}).'?d=identicon&s=32" alt="." /></td>
+        # lastseen time (if approved)            <td style="text-align:center">'.$$U{lasttime}.'</td>
+        $str .= '<tr>
+            <td style="text-align:center">' . $ctr . '</td>
+            <td>' . linkNode($U) . '</td>
+            <td style="text-align:center">' . $flags . '</td>
+            </tr>';
+    }
+    $str .= '</table>';
+
+    return $str;
 }
 
 1;
