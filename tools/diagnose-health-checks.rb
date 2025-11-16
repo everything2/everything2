@@ -466,10 +466,11 @@ end
 if recommendations.empty?
   puts "✅ No major issues detected!"
   puts "\nIf you're still experiencing problems:"
-  puts "  1. Check application logs for errors"
-  puts "  2. Verify SSL certificate is valid"
-  puts "  3. Test health check endpoint manually: curl -k https://<task-ip>/"
-  puts "  4. Review recent deployments for changes"
+  puts "  1. Check health check logs: aws logs tail /aws/fargate/e2-health-check --follow --region #{options[:region]}"
+  puts "  2. Check application logs: aws logs tail /ecs/#{td_resp.task_definition.family} --follow --region #{options[:region]}"
+  puts "  3. Verify SSL certificate is valid"
+  puts "  4. Test health check endpoint manually: curl -k https://<task-ip>/health.pl"
+  puts "  5. Review recent deployments for changes"
 else
   puts "Issues Found:\n"
   recommendations.each do |rec|
@@ -478,10 +479,11 @@ else
 
   puts "\nNext Steps:"
   puts "  1. Review service events above for specific error messages"
-  puts "  2. Check task logs: aws logs tail /ecs/#{td_resp.task_definition.family} --follow"
-  puts "  3. Verify health check configuration matches application"
-  puts "  4. Consider increasing health check timeout or grace period"
-  puts "  5. Test application manually from within VPC"
+  puts "  2. Check health check logs: aws logs tail /aws/fargate/e2-health-check --follow --region #{options[:region]}"
+  puts "  3. Check task logs: aws logs tail /ecs/#{td_resp.task_definition.family} --follow --region #{options[:region]}"
+  puts "  4. Verify health check configuration matches application"
+  puts "  5. Consider increasing health check timeout or grace period"
+  puts "  6. Test application manually from within VPC"
 end
 
 puts "=" * 80

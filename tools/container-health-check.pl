@@ -9,7 +9,8 @@
 #
 # Options:
 #   --detailed    Include detailed system metrics
-#   --db          Test database connectivity (implies --detailed)
+#   --db          Test database connectivity (default: enabled)
+#   --no-db       Skip database connectivity test
 #   --timeout N   HTTP timeout in seconds (default: 5)
 #   --quiet       Only output on failure
 #   --help        Show this help
@@ -25,9 +26,9 @@
 #   1. Apache processes running (ps aux)
 #   2. HTTP endpoint responsive (curl http://localhost/health.pl)
 #   3. Apache server-status (mod_status internal configuration)
-#   4. System load (--detailed only)
-#   5. Memory usage (--detailed only)
-#   6. Database connectivity (--db only)
+#   4. Database connectivity (enabled by default, use --no-db to skip)
+#   5. System load (--detailed only)
+#   6. Memory usage (--detailed only)
 #
 # Apache Server Status Data:
 #   The script captures complete Apache internal configuration from mod_status,
@@ -37,20 +38,22 @@
 
 use strict;
 use warnings;
+use lib qw(/var/libraries/lib/perl5);
+use lib qw(/var/everything/ecore);
 use Time::HiRes qw(time);
 use JSON;
 use Getopt::Long;
 
 # Parse options
 my $detailed = 0;
-my $check_db = 0;
+my $check_db = 1;  # Database checks enabled by default
 my $timeout = 5;
 my $quiet = 0;
 my $help = 0;
 
 GetOptions(
     'detailed' => \$detailed,
-    'db' => \$check_db,
+    'db!' => \$check_db,
     'timeout=i' => \$timeout,
     'quiet' => \$quiet,
     'help' => \$help,
@@ -64,7 +67,8 @@ Usage: container-health-check.pl [options]
 
 Options:
   --detailed    Include detailed system metrics
-  --db          Test database connectivity (implies --detailed)
+  --db          Test database connectivity (default: enabled)
+  --no-db       Skip database connectivity test
   --timeout N   HTTP timeout in seconds (default: 5)
   --quiet       Only output on failure
   --help        Show this help
@@ -80,9 +84,9 @@ Health Checks Performed:
   1. Apache processes running (ps aux)
   2. HTTP endpoint responsive (curl http://localhost/health.pl)
   3. Apache server-status (mod_status internal configuration)
-  4. System load (--detailed only)
-  5. Memory usage (--detailed only)
-  6. Database connectivity (--db only)
+  4. Database connectivity (enabled by default, use --no-db to skip)
+  5. System load (--detailed only)
+  6. Memory usage (--detailed only)
 
 Apache Server Status Data:
   The script captures complete Apache internal configuration from mod_status,
@@ -93,8 +97,8 @@ HELP
     exit 0;
 }
 
-# Enable detailed mode if db check requested
-$detailed = 1 if $check_db;
+# Database checks are enabled by default
+# Detailed mode enables additional system metrics only when explicitly requested
 
 # Detect production environment (CloudWatch logging)
 my $is_production = ($ENV{E2_DOCKER} || '') ne '' && ($ENV{E2_DEVELOPMENT} || '') eq '';
@@ -289,6 +293,7 @@ if ($check_db) {
                 $all_ok = 0;
             }
 
+            $sth->finish();
             $dbh->disconnect();
         } else {
             $response->{checks}->{database} = 'connection_failed';
