@@ -1,0 +1,75 @@
+<node>
+  <doctext>&lt;P&gt;
+I love to hug noders.
+&lt;/p&gt;</doctext>
+  <email>lord_brawl@yahoo.com</email>
+  <imgsrc></imgsrc>
+  <nick></nick>
+  <node_id>1527919</node_id>
+  <passwd></passwd>
+  <realname>A project by Lord Brawl</realname>
+  <sanctity>6</sanctity>
+  <title>Giant Teddy Bear</title>
+  <type_nodetype>15</type_nodetype>
+  <vars>
+    <key>can_weblog</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>costume</key>
+    <value>Murder Demon</value>
+  </vars>
+  <vars>
+    <key>easter_eggs</key>
+    <value>2000000000</value>
+  </vars>
+  <vars>
+    <key>employment</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>hidelastseen</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>mission</key>
+    <value>Spreading love</value>
+  </vars>
+  <vars>
+    <key>motto</key>
+    <value>You're special.</value>
+  </vars>
+  <vars>
+    <key>nodelets</key>
+    <value>262,170070,91,263,165437</value>
+  </vars>
+  <vars>
+    <key>num_newwus</key>
+    <value>15</value>
+  </vars>
+  <vars>
+    <key>numwriteups</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>nwriteups</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>oldGP</key>
+    <value>77</value>
+  </vars>
+  <vars>
+    <key>oldexp</key>
+    <value>18</value>
+  </vars>
+  <vars>
+    <key>preference_last_update_time</key>
+    <value>1278018700</value>
+  </vars>
+  <vars>
+    <key>specialties</key>
+    <value>Hugs</value>
+  </vars>
+  <votesleft>499977</votesleft>
+</node>

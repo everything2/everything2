@@ -7,7 +7,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Ruby
-RUN gem install aws-sdk-s3 aws-sdk-ecs aws-sdk-elasticloadbalancingv2 aws-sdk-cloudwatchlogs
+RUN gem install aws-sdk-s3 aws-sdk-ecs aws-sdk-elasticloadbalancingv2 aws-sdk-cloudwatchlogs aws-sdk-secretsmanager
 
 # AWS CLI v2
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "/tmp/awscliv2.zip" && \

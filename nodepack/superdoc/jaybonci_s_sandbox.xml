@@ -2,6 +2,10 @@
   <doctext>&lt;pre&gt;
 [%
  return &quot;&quot; unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
+ return &quot;Container Health Check: &quot;.`/var/everything/tools/container-health-check.pl 2&gt;&amp;1`;
+%]
+[%
+ return &quot;&quot; unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
  return `cat /etc/apache2/everything.conf`;
 %]
 &lt;/pre&gt;</doctext>
