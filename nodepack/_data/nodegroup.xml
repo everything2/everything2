@@ -168,6 +168,12 @@
     <orderby>3</orderby>
   </group>
   <group>
+    <node_id>1988327</node_id>
+    <nodegroup_id>1467487</nodegroup_id>
+    <nodegroup_rank>20</nodegroup_rank>
+    <orderby>20</orderby>
+  </group>
+  <group>
     <node_id>923653</node_id>
     <nodegroup_id>1713398</nodegroup_id>
     <nodegroup_rank>4</nodegroup_rank>

@@ -1,7 +1,6 @@
 {
   "comment": "Apache access control configuration for Everything2",
   "banned_user_agents": [
-    "HTTrack 3.0x",
     "BLEXBot/1.0",
     "DataForSeoBot/1.0"
   ],

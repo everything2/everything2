@@ -1,6 +1,6 @@
 <node>
   <doctext>[%
-my $currentYear = '2024';
+my $currentYear = '2025';
 my $dateMinInc = '' . $currentYear . '-11-01';
 my $dateMaxExc = '' . $currentYear . '-12-01';
 my $triggerAchievement = $query -&gt; param('ironise'); # option to activate achievement if iron noder period is not one calendar month
