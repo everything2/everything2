@@ -239,7 +239,71 @@ Migrate from custom key-value encoding to MySQL JSON column type for improved qu
 
 **See**: [Development Goals - Settings Table JSON Migration](delegation-migration.md#development-goals---settings-table-json-migration) for detailed migration strategy
 
-## PSGI/Plack Migration (Priority 5)
+## DBIx::Class ORM Migration (Priority 5)
+
+### Current State: Direct SQL + Custom Nodebase
+- Hundreds of raw SQL queries throughout codebase
+- Custom `Everything::DB` abstraction layer
+- String concatenation for query building
+- Manual relationship management
+- No compile-time query validation
+- No schema versioning framework
+
+### Goal
+Migrate from direct SQL queries and nodebase functions to DBIx::Class ORM for improved type safety, relationship handling, and modern Perl development practices.
+
+### Benefits
+- **Type Safety**: Compile-time column validation catches errors early
+- **Relationships**: Automatic JOIN handling (`$node->nodetype`, `$user->writeups`)
+- **Query Building**: Programmatic construction, no SQL string concatenation
+- **Testing**: Mock schema with SQLite for fast unit tests
+- **Migrations**: Versioned schema changes with DBIx::Class::Migration
+- **Documentation**: Self-documenting schema classes
+- **Developer Onboarding**: Standard Perl ORM, not custom API
+
+### Migration Strategy
+1. **Phase 1**: Generate schema classes from database (2-3 weeks)
+2. **Phase 2**: Dual-mode operation (DBIx::Class + legacy) (4-6 weeks)
+3. **Phase 3**: Incremental module conversion (6-12 months)
+   - Start with low-risk: user preferences, reporting
+   - Then medium-risk: messages, chatterbox
+   - Finally high-risk: core node CRUD
+4. **Phase 4**: Wrap nodebase functions with DBIx::Class (3-4 weeks)
+5. **Phase 5**: Schema versioning with migrations (2-3 weeks)
+
+### Estimated Effort
+- **Total:** 12-18 months (incremental)
+- **Risk:** High (touches all database access, requires careful rollout)
+- **Dependencies:**
+  - Comprehensive test coverage expansion
+  - MySQL 8.4 upgrade coordination
+  - Best after Settings Table JSON Migration (reduce concurrent DB changes)
+  - Pairs well with PSGI migration (modern Perl stack)
+- **Rollback:** Low risk (per-module isolation, feature flags for A/B testing)
+
+### Technical Challenges
+1. **Massive Codebase**: Hundreds of SQL queries across ecore/
+2. **Performance Critical**: High-traffic site, ORM overhead must be measured
+3. **Complex Schema**: Polymorphic node types, multiple inheritance
+4. **Nodebase Integration**: Deep integration with caching, permissions
+
+### Performance Considerations
+- Lazy loading for relationships (load only when accessed)
+- Eager loading with `prefetch` to avoid N+1 queries
+- Keep raw SQL escape hatch for complex reporting queries
+- Profile with DBIx::Class::QueryLog
+
+### Next Steps
+1. Install DBIx::Class::Schema::Loader
+2. Generate initial schema from dev database
+3. Review and customize Result classes
+4. Set up DBIx::Class::Migration framework
+5. Identify 2-3 low-risk modules for pilot conversion
+6. Benchmark ORM vs. raw SQL performance
+
+**See**: [Development Goals - DBIx::Class ORM Migration](delegation-migration.md#development-goals---dbixclass-orm-migration) for detailed migration strategy, code examples, and testing approach
+
+## PSGI/Plack Migration (Priority 6)
 
 ### Current State: Apache mod_perl2 + Prefork MPM
 - Package-level globals
@@ -267,7 +331,7 @@ Migrate from custom key-value encoding to MySQL JSON column type for improved qu
 3. Implement Plack::Request wrapper
 4. Design Redis cache architecture
 
-## React Mobile Frontend (Priority 6)
+## React Mobile Frontend (Priority 7)
 
 ### Current State
 - **29 React components** (1,094 lines)

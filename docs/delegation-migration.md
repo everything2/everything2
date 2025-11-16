@@ -588,6 +588,289 @@ $DB->sqlUpdate('vars', {vars_json => $json}, "vars_id = $user_id");
 - Modern web standards favor JSON over custom formats
 - Existing VARS handling code provides migration starting point
 
+#### Development Goals - DBIx::Class ORM Migration
+
+**Goal**: Migrate from direct SQL queries and nodebase functions to DBIx::Class ORM for improved type safety, relationship handling, and modern Perl development practices.
+
+**Current Issues**:
+
+1. **Direct SQL Everywhere**:
+   - Raw SQL queries scattered throughout codebase
+   - String concatenation for query building
+   - SQL injection risks despite prepared statements
+   - Difficult to refactor table schemas
+   - No compile-time query validation
+   - Example: `$DB->sqlSelect('title,type_nodetype', 'node', "node_id = $nid")`
+
+2. **Nodebase Abstraction Limitations**:
+   - Custom database abstraction layer (`Everything::DB`)
+   - Not standardized - unique to Everything2
+   - Limited relationship handling
+   - No lazy loading or eager loading control
+   - Manual join management
+   - Difficult to test (requires full database)
+
+3. **Maintenance Challenges**:
+   - Schema changes require finding all SQL queries
+   - No single source of truth for table structure
+   - Relationships defined implicitly in queries
+   - Type coercion handled manually
+   - No migration framework
+
+4. **Developer Onboarding**:
+   - New developers must learn custom nodebase API
+   - No standard Perl ORM patterns
+   - Documentation spread across codebase
+   - Unclear data model relationships
+
+**Business Rationale**:
+- **Developer Productivity**: Standard ORM reduces boilerplate, speeds development
+- **Code Quality**: Type-safe queries catch errors at compile time
+- **Maintainability**: Single schema source makes changes easier
+- **Testing**: Mock database easier with ORM layer
+- **Modern Stack**: DBIx::Class is industry-standard Perl ORM
+- **Relationships**: Automatic JOIN handling, lazy/eager loading
+- **Migration Framework**: DBIx::Class::Migration for schema versioning
+
+**Technical Challenges**:
+
+1. **Massive Codebase**:
+   - Hundreds of direct SQL queries across ecore/
+   - Many complex queries with subqueries, joins
+   - Performance-critical queries need optimization
+   - Existing code works - high risk of regressions
+
+2. **Nodebase Integration**:
+   - Current `Everything::DB` deeply integrated
+   - Node caching layer built on nodebase
+   - Permission system tied to nodebase
+   - Need gradual migration path, not big-bang rewrite
+
+3. **Complex Schema**:
+   - node table with polymorphic type system
+   - Multiple inheritance through nodetype chain
+   - Dynamic fields based on node type
+   - Custom serialization (vars, settings)
+
+4. **Performance Requirements**:
+   - High-traffic production site
+   - Query optimization critical
+   - ORM overhead must be measured
+   - Connection pooling, caching needed
+
+**Migration Path**:
+
+1. **Phase 1: Schema Generation (2-3 weeks)**
+   - Install DBIx::Class::Schema::Loader
+   - Generate initial schema from existing database
+   - Review and customize generated Result classes
+   - Document table relationships explicitly
+   - Add custom methods to Result classes
+   - Set up DBIx::Class::Migration framework
+
+2. **Phase 2: Dual-Mode Operation (4-6 weeks)**
+   - Add DBIx::Class connection alongside existing `$DB`
+   - Create helper methods that wrap DBIx::Class
+   - Identify low-risk areas for initial conversion (reporting, admin tools)
+   - Write comprehensive tests for converted code
+   - Benchmark performance: ORM vs. raw SQL
+   - Establish patterns for common operations
+
+3. **Phase 3: Incremental Migration (6-12 months)**
+   - Convert modules one at a time, starting with:
+     - User preferences (low traffic, simple queries)
+     - Message system (medium complexity)
+     - Chatterbox (high traffic - good performance test)
+     - Node CRUD operations (core functionality)
+   - Each conversion gets full test coverage
+   - Performance regression tests
+   - Monitor production metrics during rollout
+
+4. **Phase 4: Nodebase Wrapper (3-4 weeks)**
+   - Implement nodebase functions as DBIx::Class wrappers
+   - Maintain API compatibility for legacy code
+   - Add deprecation warnings for old patterns
+   - Document migration guide for internal developers
+
+5. **Phase 5: Schema Versioning (2-3 weeks)**
+   - Set up DBIx::Class::Migration for all schema changes
+   - Migrate existing schema to versioned migrations
+   - Establish CI/CD pipeline for schema changes
+   - Document migration workflow
+
+**Example Schema Class**:
+```perl
+# lib/Everything2/Schema/Result/Node.pm
+package Everything2::Schema::Result::Node;
+use strict;
+use warnings;
+use base 'DBIx::Class::Core';
+
+__PACKAGE__->table('node');
+__PACKAGE__->add_columns(
+  'node_id' => {
+    data_type => 'integer',
+    is_auto_increment => 1,
+  },
+  'title' => {
+    data_type => 'varchar',
+    size => 240,
+  },
+  'type_nodetype' => {
+    data_type => 'integer',
+  },
+  'createtime' => {
+    data_type => 'datetime',
+  },
+  # ... more columns
+);
+__PACKAGE__->set_primary_key('node_id');
+__PACKAGE__->belongs_to(
+  'nodetype',
+  'Everything2::Schema::Result::Nodetype',
+  { 'foreign.node_id' => 'self.type_nodetype' }
+);
+__PACKAGE__->might_have(
+  'user',
+  'Everything2::Schema::Result::User',
+  { 'foreign.user_id' => 'self.node_id' }
+);
+
+# Custom methods
+sub is_deleted {
+  my $self = shift;
+  return $self->createtime eq '0000-00-00 00:00:00';
+}
+
+1;
+```
+
+**Code Migration Example**:
+```perl
+# Before (direct SQL)
+my $title = $DB->sqlSelect('title', 'node', "node_id = $nid");
+my $nodes = $DB->sqlSelectMany('*', 'node', "type_nodetype = $type");
+
+# After (DBIx::Class)
+my $node = $schema->resultset('Node')->find($nid);
+my $title = $node->title;
+my @nodes = $schema->resultset('Node')->search({ type_nodetype => $type })->all;
+
+# Relationships (automatic joins)
+# Before
+my $type_name = $DB->sqlSelect('title', 'node', "node_id = (SELECT type_nodetype FROM node WHERE node_id = $nid)");
+
+# After
+my $type_name = $node->nodetype->title;
+
+# Complex queries
+# Before
+my $query = "SELECT n.* FROM node n
+             JOIN user u ON n.node_id = u.user_id
+             WHERE u.lasttime > DATE_SUB(NOW(), INTERVAL 1 DAY)
+             ORDER BY u.lasttime DESC";
+
+# After
+my @recent_users = $schema->resultset('User')->search(
+  { lasttime => { '>' => \'DATE_SUB(NOW(), INTERVAL 1 DAY)' } },
+  {
+    join => 'node',
+    order_by => { -desc => 'lasttime' },
+  }
+)->all;
+```
+
+**Benefits**:
+- **Type Safety**: Compile-time column validation
+- **Relationships**: Automatic JOIN handling via `$node->author`, `$user->writeups`
+- **Query Building**: Programmatic query construction, no string concatenation
+- **Testing**: Can mock schema, use SQLite for fast tests
+- **IDE Support**: Autocomplete for columns, methods
+- **Migrations**: Versioned schema changes with rollback
+- **Performance**: Query optimization tools, explain plan analysis
+- **Documentation**: Schema is self-documenting code
+- **Transactions**: Proper transaction handling with rollback
+- **Data Validation**: Type coercion, constraints at ORM level
+
+**Priority**: Low-Medium (Long-term modernization)
+- **Timeline**: 12-18 months (incremental migration)
+- **Risk**: High (touches all database access, requires careful rollout)
+- **Dependencies**:
+  - Requires comprehensive test coverage (expand existing t/*.t)
+  - Should coordinate with MySQL 8.4 upgrade for modern features
+  - Consider after Settings Table JSON Migration (reduce concurrent DB changes)
+  - Pairs well with PSGI migration (modern Perl stack)
+- **Estimated Effort**: 12-18 months incremental
+  - Month 1-2: Schema generation, tooling setup, pilot conversions
+  - Month 3-6: Low-risk module conversions (25% of queries)
+  - Month 7-12: Medium-risk conversions (50% of queries)
+  - Month 13-15: High-risk core conversions (20% of queries)
+  - Month 16-18: Nodebase wrapper, deprecation, cleanup (5% legacy)
+
+**Performance Considerations**:
+- **Lazy Loading**: Load relationships only when accessed
+- **Eager Loading**: Prefetch with `prefetch => ['author', 'nodetype']` to avoid N+1 queries
+- **Result Class Caching**: Cache frequently-accessed objects
+- **Raw SQL Escape Hatch**: Keep `$dbh->prepare()` for performance-critical queries
+- **Profiling**: Use DBIx::Class::QueryLog to identify slow queries
+
+**Testing Strategy**:
+```perl
+# t/100_dbic_node.t
+use Test::More;
+use Everything2::Schema;
+
+my $schema = Everything2::Schema->connect('dbi:SQLite:dbname=:memory:');
+$schema->deploy();  # Create tables from schema
+
+# Test node creation
+my $node = $schema->resultset('Node')->create({
+  title => 'Test Node',
+  type_nodetype => 14,  # superdoc
+});
+is($node->title, 'Test Node', 'Node created');
+
+# Test relationships
+my $type = $node->nodetype;
+is($type->title, 'superdoc', 'Nodetype relationship works');
+
+done_testing;
+```
+
+**Rollback Plan**:
+- Each module conversion is isolated
+- Original SQL code remains in git history
+- Feature flags allow A/B testing ORM vs. SQL
+- Can revert individual modules independently
+- Database schema unchanged (only access layer changes)
+
+**Success Metrics**:
+- Zero performance regressions (p99 latency)
+- 50% reduction in SQL injection risks (automated scanning)
+- 30% faster feature development (measured in story points)
+- 90% code coverage for DB layer
+- Schema documentation auto-generated and up-to-date
+
+**Related Work**:
+- DBIx::Class is mature, actively maintained Perl ORM
+- Used by Catalyst framework (potential future migration)
+- Strong community, extensive documentation
+- Compatible with MySQL, PostgreSQL, SQLite
+- Migration framework based on Alembic (Python) and Rails patterns
+
+**Decision Points**:
+1. **Start Now or Wait?**
+   - Recommend: Start Phase 1 (schema generation) now, low risk
+   - Defer: Phase 2+ until after delegation migration complete
+
+2. **Full Migration or Hybrid?**
+   - Recommend: Hybrid long-term (80% ORM, 20% raw SQL for performance)
+   - Keep raw SQL option for complex reporting queries
+
+3. **Testing Strategy?**
+   - Recommend: Parallel run ORM + SQL, compare results in dev
+   - Use SQLite for fast unit tests, MySQL for integration tests
+
 ## Migration Process
 
 ### 1. Locate the Node XML
