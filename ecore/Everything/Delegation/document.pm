@@ -12907,4 +12907,818 @@ END_HTML
     return $str;
 }
 
+=head2 usergroup_message_archive
+
+Displays archived messages for usergroups that have message archiving enabled.
+Members can view messages sent to their groups and copy them to their private inbox.
+
+=cut
+
+sub usergroup_message_archive
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str      = undef;
+    my $uID      = undef;
+    my $isRoot   = undef;
+    my $NL       = undef;
+    my $BRN      = undef;
+    my $UG       = undef;
+    my $ugID     = undef;
+    my $MSG      = undef;
+    my $numMsg   = undef;
+    my $LIMITS   = undef;
+    my $MAXSHOW  = undef;
+    my $showStart = undef;
+    my $startDefault = undef;
+    my $csr      = undef;
+    my $numShow  = undef;
+    my $TD       = undef;
+    my $msgCount = undef;
+    my $a        = undef;
+    my $name     = undef;
+    my $jsName   = undef;
+    my $t        = undef;
+    my $text     = undef;
+    my $groupLink = undef;
+    my @G        = ();
+    my @MSGS     = ();
+    my @jumps    = ();
+
+    # Initial HTML
+    $str = '<p align="right"><small>See also ' . linkNode( getNode( 'Usergroup discussions', 'superdoc' ) ) . '</small></p>
+
+<p>If you are a member of one of these groups, you can view messages sent to the group.</p>
+
+<p>';
+
+    $uID    = getId($USER);
+    $isRoot = $APP->isAdmin($USER);
+
+    return $str . 'You must login to use this feature.</p>' if $APP->isGuest($USER);
+
+    if ( $APP->isAdmin($USER) ) {
+        $str .= 'You can edit the usergroups that have messages archived at <a href='
+            . urlGen( { 'node' => 'usergroup message archive manager', 'type' => 'restricted_superdoc' } )
+            . '>usergroup message archive manager</a>.</p><p>';
+    }
+
+    $NL  = "\n";
+    $BRN = "<br />\n";
+
+    # Groups that archive
+    $str .= 'To view messages sent to a group, choose one of the following groups. You can only see the messages if the group has the feature enabled, and you\'re a member of the group.'
+        . $BRN
+        . 'choose from: ';
+
+    my $ks = $APP->getNodesWithParameter('allow_message_archive');
+
+    foreach my $ug (@$ks) {
+        $ug = getNodeById($ug);
+        next unless $ug;
+        push @G, linkNode( $NODE, $ug->{title}, { viewgroup => $ug->{title} } );
+    }
+
+    $str .= join( ', ', @G ) . '</p><p>' . $NL;
+
+    # Find usergroup we're showing
+    $UG = $query->param('viewgroup');
+    return $str . '</p>' unless length($UG);
+    $UG = getNode( $UG, 'usergroup' );
+    return $str . 'There is no such usergroup.</p>' unless $UG;
+    $str .= $query->hidden( 'viewgroup', $UG->{title} );    # so form works
+    $groupLink = linkNode( $UG, 0, { lastnode_id => 0 } );
+    return $str . 'You aren\'t a member of ' . $groupLink . ', so you can\'t view the group\'s messages.</p>'
+        unless Everything::isApproved( $USER, $UG );
+    $str .= 'Viewing messages for group ' . $groupLink . ': ' . $BRN;
+    $ugID = getId($UG);
+    return $str . 'Ack! Unable to find group ID!</p>' unless $ugID;
+
+    # Archiving allowed?
+    return $str . 'This group doesn\'t archive messages.</p>' unless $APP->getParameter( $UG, "allow_message_archive" );
+
+    # Misc. variable/database setup
+    my $userid = getId($USER);
+    $LIMITS = 'for_user=' . $ugID . ' AND for_usergroup=' . $ugID;
+
+    # Copy selected messages to self
+    $str .= htmlcode( 'varcheckboxinverse', 'ugma_resettime,Keep original send date' )
+        . ' (instead of using "now" time)'
+        . $BRN;
+    $numMsg = 0;    # using now to keep track of number of msgs copied
+    foreach ( $query->param ) {
+        if ( $_ =~ /^cpgroupmsg_(\d+)$/ ) {
+            $MSG = $DB->sqlSelectHashref( '*', 'message', 'message_id=' . $1 );
+            next unless $MSG;
+
+            # already checked if user is in group, so only need to make
+            # sure message is a group-archived one
+            next unless ( $MSG->{for_user} == $ugID ) && ( $MSG->{for_usergroup} == $ugID );
+            ++$numMsg;
+            delete $MSG->{message_id};
+            delete $MSG->{tstamp} if $VARS->{ugma_resettime};
+            $MSG->{for_user} = $userid;
+            $DB->sqlInsert( 'message', $MSG );
+        }
+    }
+    $str .= '(Copied ' . $numMsg . ' group message' . ( $numMsg == 1 ? '' : 's' ) . ' to self.)' . $BRN if $numMsg;
+
+    # Find range of messages to show
+    ($numMsg) = $DB->sqlSelect( 'COUNT(*)', 'message', $LIMITS );
+    $MAXSHOW      = $query->param('max_show') || 25;    # maximum number of messages to show at a time
+    $startDefault = $numMsg - $MAXSHOW;                 # default to show most recent messages
+    $startDefault = 0 if $startDefault < 0;
+    $showStart = defined $query->param('startnum') ? $query->param('startnum') : $startDefault;
+    if ( $showStart =~ /^(\d+)$/ ) {
+        $showStart = $1;
+        $showStart = $startDefault if $showStart > $startDefault;
+    } else {
+        $showStart = $startDefault;
+    }
+    $str .= $query->hidden( 'startnum', $showStart );    # so form works
+
+    # Get messages
+    $csr = $DB->sqlSelectMany( '*', 'message', $LIMITS, 'ORDER BY tstamp,message_id LIMIT ' . $showStart . ',' . $MAXSHOW );
+    return $str . 'Ack! Unable to get messages!</p>' unless $csr;
+    while ( my $msg_row = $csr->fetchrow_hashref ) {
+        push( @MSGS, $msg_row );
+    }
+    $csr->finish();
+
+    $numShow = scalar(@MSGS);
+    $str .= 'Showing '
+        . $numShow
+        . ' message'
+        . ( $numShow == 1 ? '' : 's' )
+        . ' (number '
+        . ( $showStart + 1 ) . ' to '
+        . ( $showStart + $numShow )
+        . ') out of a total of '
+        . $numMsg . '.'
+        . $BRN
+        if $numShow;
+
+    # Show messages
+    $str .= '<table border="0">' . $NL . '<tr><th># cp</th><th>author</th><th>time</th><th>message</th>' . $NL;
+    $TD       = '<td valign="top">';
+    $msgCount = $showStart;
+    foreach my $MSG (@MSGS) {
+
+        $str .= '<tr>';
+
+        # message number / copy to self
+        $str .= $TD
+            . '<small><small>'
+            . ++$msgCount
+            . '</small></small><input type="checkbox" name="cpgroupmsg_'
+            . $MSG->{message_id}
+            . '" value="copy" /></td>';
+
+        # name
+        my $author_node = $MSG->{author_user} || 0;
+        if ($author_node) { $author_node = getNodeById($author_node) || 0; }
+        $name = $author_node ? $author_node->{title} : '';
+        $name =~ tr/ /_/;
+        $name   = encodeHTML($name);
+        $jsName = $name;
+        $jsName =~ s/'/\\'/g;
+        $str .= $TD . '<small>';
+        $str .= '(<a href="javascript:replyToCB(\'' . $jsName . '\'">r</a>) ' if $VARS->{showmessages_replylink};
+        $str .= $author_node ? linkNode( $author_node, $name, { lastnode_id => 0 } ) : '?';
+        $str .= '</small></td>';
+
+        # date/time
+        my $timestamp = $MSG->{tstamp};
+        $str .= $TD . '<small style="font-family: Andale Mono, sans-serif;">';
+        $str .= $timestamp;
+        $str .= '</small></td>';
+
+        # message
+        $text = $MSG->{msgtext};
+        $text =~ s/</&lt;/g;
+        $text =~ s/>/&gt;/g;
+        $text =~ s/\s+\\n\s+/<br \/>/g;
+        $text = parseLinks($text);
+        $text =~ s/\[/&#91;/g;    # can't have [ in final text (even in links), because everything is parsed for links *again*, which can cause bad display
+        $str .= $TD . $text . '</td>';
+
+        $str .= '</tr>' . $NL;
+    }
+    $str .= '<tr><td colspan="5">checking the box in the "cp" column will <strong>c</strong>o<strong>p</strong>y the message&#91;s&#93; to your private message box</td></tr>'
+        . $NL
+        . '</table>'
+        . $NL;
+
+    # Link to first/prev/next/last messages
+    if ( $numMsg > scalar(@MSGS) ) {
+
+        # generates link to this node, starting at the given message number
+        # arguments: ('link display','starting number')
+        my $genLink = sub {
+            my ( $link_text, $sn ) = @_;
+            $link_text ||= 'start at ' . ( $sn + 1 );
+            $sn = 0 if $sn < 0;
+            return linkNode( $NODE, $link_text, { viewgroup => $UG->{title}, startnum => $sn, lastnode_id => 0 } );
+        };
+
+        my $s      = undef;
+        my $limitL = undef;
+        my $limitU = undef;
+
+        $s = 'first ' . $MAXSHOW;
+        if ( $showStart != 0 ) {
+            $limitU = $MAXSHOW < $numMsg ? $MAXSHOW : $numMsg;
+            $s .= ' (1-' . $limitU . ')';
+            push( @jumps, $genLink->( $s, 0 ) );
+        } else {
+            push( @jumps, $s );
+        }
+
+        $s = 'previous';
+        if ( $showStart > 0 ) {
+            $limitL = $showStart - $MAXSHOW;
+            $limitL = 1 if $limitL < 1;
+            $limitU = $limitL + $MAXSHOW;
+            $limitU = $numMsg if $limitU > $numMsg;
+            $s .= ' (' . $limitL . '-' . ( $limitU - 1 ) . ')';
+            push( @jumps, $genLink->( $s, $showStart - $MAXSHOW ) );
+        } else {
+            push( @jumps, $s );
+        }
+
+        push( @jumps, '<strong>current (' . ( $showStart + 1 ) . '-' . ( $showStart + $numShow ) . ')</strong>' );
+
+        if ( $showStart < $startDefault ) {
+            $limitU = $showStart + $MAXSHOW + $MAXSHOW;
+            $limitU = $numMsg if $limitU > $numMsg;
+            $limitL = $limitU - $MAXSHOW + 1;
+            $limitL = 1 if $limitL < 1;
+            $limitL = $startDefault + 1 if $limitL > ( $startDefault + 1 );
+            $s = 'next (' . $limitL . '-' . $limitU . ')';
+            push( @jumps, $genLink->( $s, $limitL - 1 ) );
+        } else {
+            push( @jumps, 'next' );
+        }
+
+        $s = 'last ' . $MAXSHOW;
+        if ( $showStart < $startDefault ) {
+            $s .= ' (' . ( $startDefault + 1 ) . '-' . $numMsg . ')';
+            push( @jumps, $genLink->( $s, $startDefault ) );
+        } else {
+            push( @jumps, $s );
+        }
+
+        $str .= '&#91; ' . join( ' &#93; &nbsp; &#91; ', @jumps ) . ' &#93;' . $BRN;
+    }
+
+    $str = htmlcode( 'openform', '' ) . $str . $BRN . htmlcode( 'closeform', '' );
+    $str .= '</p>
+
+<p align="right"><small>(bugs to ' . linkNode( getNode( 'N-Wing', 'user' ) ) . ')</small></p>';
+
+    return $str;
+}
+
+=head2 notelet_editor
+
+Editor for user's "Notelet" nodelet - allows users to customize their notelet content with HTML/JavaScript.
+Includes a "castrator" to comment out broken JavaScript and security verification.
+
+=cut
+
+sub notelet_editor
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str          = undef;
+    my $feedback     = undef;
+    my $charcount    = undef;
+    my $rawraw       = undef;
+    my $MAXRAW       = undef;
+    my $curLevel     = undef;
+    my $maxLen       = undef;
+    my $curLen       = undef;
+    my $s            = undef;
+    my $l            = undef;
+    my @btns         = ();
+
+    # Notelet Castrator section
+    $str      = '<h3>Notelet Castrator</h3>
+
+<p>This is the Notelet Castrator.  Its purpose is to neuter your Notelet by
+        adding // to the front of every line, commenting out all Javascript.
+        Use this tool when your Nodelet is causing problems and there is no other way to fix them.</p>
+
+';
+    $str .= htmlcode('openform');
+    $feedback = "Click submit to castrate your Notelet Nodelet.<br>";
+
+    if ( $query->param('YesReallyCastrate') ) {
+        $VARS->{'noteletRaw'} =~ s,\n,\n//,g;
+        $VARS->{'noteletRaw'} = '// ' . $VARS->{'noteletRaw'};
+        $VARS->{'noteletScreened'} = "";
+        $feedback = "</p>\n<p><b>Notelet Castrated!</b><br>";
+    }
+
+    $charcount = length( $VARS->{'noteletRaw'} );
+
+    $str .= "\n<input type='hidden' name='YesReallyCastrate' value='1'>";
+    $str .= "<p>Your notelet contains $charcount characters.  ";
+    $str .= $feedback . "\n";
+    $str .= htmlcode('closeform') . "</p>";
+
+    # Separator
+    $str .= '
+<hr width="75%"><hr width="50%"><hr width="75%">
+
+<h3>Notelet Editor</h3>
+
+<p>This <strong>Notelet Editor</strong> lets you edit your Notelet. No, not your nodelet, your notelet (your notelet nodelet). ';
+
+    # Guest user check
+    if ( $APP->isGuest($USER) ) {
+        $str .= 'Only logged in users can use this.</p>';
+        return $str;
+    }
+
+    # Check if Notelet nodelet is enabled
+    unless ( $VARS->{nodelets} =~ /1290534/ ) {    # kind of a hack, but it is quick
+        $str .= ' (Note: you currently don\'t have your Notelet on, so changing things here is rather pointless. You can turn on the Notelet nodelet by visiting your '
+            . linkNode( getNode( 'user settings', 'superdoc' ) ) . '.)';
+    }
+
+    $str .= ' What is the notelet? It lets you put notes (or anything, really) into a nodelet. (Other nodelet settings are available at '
+        . linkNode( getNode( 'Nodelet Settings', 'superdoc' ) ) . '.)</p>
+
+';
+
+    # Process save if submitted
+    if ( $query->param('makethechange') && !$APP->isGuest($USER) ) {
+
+        # Security checking
+        unless ( htmlcode( 'verifyRequest', 'noteletedit' ) ) {
+            $str .= '<h2 class="error">Security error</h2><p>Invalid attempt made to edit notelet.</p>';
+            return $str;
+        }
+
+        $rawraw = $query->param('notelet_source');
+        $VARS->{noteletRaw} = $VARS->{personalRaw} if exists $VARS->{personalRaw};
+        delete $VARS->{'personalRaw'};    #old way
+
+        if ( ( !defined $rawraw ) || !length($rawraw) ) {
+            delete $VARS->{'noteletRaw'};
+        } else {
+            $MAXRAW = 32768;
+            if ( length($rawraw) > $MAXRAW ) {
+                $rawraw = substr( $rawraw, 0, $MAXRAW );
+                $query->param( 'notelet_source', $rawraw );
+            }
+            $VARS->{'noteletRaw'} = $rawraw;
+        }
+        htmlcode( 'screenNotelet', '' );
+    }
+
+    # Notes section
+    $str .= '<p><strong>Notes</strong>:</p>
+<ol>
+<li><code>&lt;!--</code> You may enter comments here. Why would you want comments? Scripting! (But be sure to uncheck "Remove comments.") <code>--&gt;</code></li>
+<li>The raw text you enter here is limited to 1000 characters. Anything longer than that will be lost. This raw text will not be changed in any way. As a slight reward for gaining levels, the higher your level, the more of your raw text is used. ';
+
+    $curLevel = $APP->getLevel($USER) || 0;
+
+    $maxLen = $curLevel * 100;
+    if ( $maxLen > 1000 )    { $maxLen = 1000; }
+    elsif ( $maxLen < 500 )  { $maxLen = 500; }
+
+    # Power has its privileges
+    # this is in [Notelet Editor] (superdoc) and [screenNotelet] (htmlcode)
+    if ( $APP->isAdmin($USER) ) {
+        $maxLen = 32768;
+    } elsif ( $APP->isEditor($USER) ) {
+        $maxLen += 100;
+    } elsif ( $APP->isDeveloper($USER) ) {
+        $maxLen = 16384;    #16k ought to be enough for everyone.
+    }
+
+    $str .= 'You are level '
+        . $curLevel
+        . ', so your maximum used length is <strong>'
+        . $maxLen
+        . '</strong> characters. This means that the first '
+        . $maxLen
+        . ' characters of your raw text ('
+        . ( $VARS->{nodeletKeepComments} ? '' : 'not ' )
+        . 'including comments) will be used for your notelet text. </small></li>
+</ol>
+
+<p><strong>Preview</strong>:<br />
+
+';
+
+    # Preview section
+    unless ( ( exists $VARS->{noteletScreened} ) || ( exists $VARS->{personalScreened} ) ) {
+        $str .= '<em>No text entered for the Notelet nodelet.</em></p>';
+    } else {
+        if ( $query->param('oops') ) {
+            $query->delete('oops');
+            $str .= 'Oops. Since your Notelet text messed things up, the preview is hidden. Fix it then resubmit.</p>';
+        } else {
+            $curLen = length( $VARS->{noteletScreened} || $VARS->{personalScreened} );
+            $s      = '';
+
+            $s .= '(If you missed a closing tag somewhere, and the bottom part of this page is all messed up, follow this <big><strong><a href='
+                . urlGen( { 'node_id' => $NODE->{node_id}, 'oops' => int( rand(99999) ) } )
+                . '>Oops!</a></strong></big> link to hide the preview.)<br />
+';
+
+            if ( $query->param('YesReallyCastrate') ) {
+                $s .= "\n(<b>Note:</b> your preview will be empty if you've just castrated the notelet)<br>";
+            }
+
+            $s .= 'Your filtered length is currently ' . $curLen . ' character' . ( $curLen == 1 ? '' : 's' ) . '.
+<table border="1" cellpadding="5" cellspacing="0"><tr><td>'
+                . ( $VARS->{noteletScreened} || $VARS->{personalScreened} ) . '
+<!--
+this comment saves the user from old notelet text
+with no closing comment mark; that is,
+LEAVE THIS HERE
+-->
+</td></tr></table>';
+            $str .= $s . '</p>';
+        }
+    }
+
+    # Edit section
+    $str .= '
+
+<p><strong>Edit</strong>:<br />
+Your raw text is ';
+    $l = length( $VARS->{noteletRaw} || '' );
+    $str .= $l . ' character' . ( $l == 1 ? '' : 's' ) . '.
+<br />
+';
+    $str .= htmlcode( 'openform2', 'notelet_form' );
+    $str .= htmlcode( 'varcheckboxinverse', 'noteletKeepComments,Remove comments' )
+        . ' (Keep comments in if you\'re using scripting; otherwise, let them be removed. In either case, any comments in your source area, below, are not changed.)<br />
+<textarea name="notelet_source" rows="25" cols="65 wrap="virtual" onkeypress="var mylen = new String(document.notelet_form.notelet_source.value); if(mylen.length > 32768) alert(\'You can only have up to 32768 characters in this nodelet. You currently have \'+ String(mylen.length) + \'.  Anything typed past this point will be irretrievably removed, never to be seen again.\');">';
+    $str .= encodeHTML( ( $VARS->{noteletRaw} || $VARS->{personalRaw} ), 1 );
+    $str .= '</textarea>
+<br />
+';
+
+    @btns = ( 'submit', 'sumbit', 'button', 'notelet', 'noteletting', 'Notelet nodelet' );
+
+    $str .= $query->hidden( 'sexisgood', 1 );
+    $str .= $query->submit( 'makethechange', $btns[ rand( int(@btns) ) ] );
+    $str .= htmlcode( 'verifyRequestForm', 'noteletedit' );
+    $str .= '
+</form>
+</p>
+';
+
+    # Clean up
+    delete $VARS->{'noteletScreened'};    #FIXME FIXME FIXME hack
+
+    return $str;
+}
+
+=head2 who_is_doing_what
+
+Admin-only tool showing recent node creation activity (excluding common node types like writeups and e2nodes).
+
+=cut
+
+sub who_is_doing_what
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str        = undef;
+    my $days       = undef;
+    my $ignoreList = undef;
+    my $whereStr   = undef;
+    my $csr        = undef;
+    my $row        = undef;
+    my $typename   = undef;
+    my @ignoreTypes = ();
+
+    return 'Curiosity killed the cat, this means YOU ' . linkNode( $USER, $USER->{title} )
+        unless ( $APP->isAdmin($USER) );
+
+    $days = int $query->param('days');
+    $days = 2 if ( $days < 1 );
+    @ignoreTypes = qw/writeup e2node draft user debatecomment/;
+    $ignoreList = join ', ', map { getType($_)->{node_id} } @ignoreTypes;
+    $whereStr = "createtime >= DATE_SUB(NOW(), INTERVAL $days DAY)
+  AND type_nodetype NOT IN ($ignoreList)
+  ORDER BY CREATETIME DESC";
+    $csr = $DB->sqlSelectMany( "*", "node", $whereStr );
+
+    $str = '<ul>';
+
+    while ( $row = $csr->fetchrow_hashref() ) {
+        $typename = getNodeById( $row->{type_nodetype} );
+        $str .= '<li>' . linkNode( $row, $row->{title} ) . " - " . $typename->{title};
+    }
+
+    $str .= '</ul>';
+
+    return $str;
+}
+
+=head2 magical_writeup_reparenter
+
+Admin tool (oppressor_superdoc) for moving writeups from one e2node to another.
+Can fix orphaned writeups and handle bulk reparenting operations.
+
+=cut
+
+sub magical_writeup_reparenter
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $old_e2node_id    = undef;
+    my $old_e2node       = undef;
+    my $old_writeup_id   = undef;
+    my $writeup          = undef;
+    my $parent_node      = undef;
+    my $new_e2node_id    = undef;
+    my $new_e2node       = undef;
+    my $inputs_string    = undef;
+    my $selection_string = undef;
+    my $feedback_string  = undef;
+    my $movedsomething   = undef;
+    my $newgroup         = undef;
+    my $alreadyinnodegroup = undef;
+    my $move_writeup     = undef;
+    my $oldtitle         = undef;
+    my $author           = undef;
+    my $authortitle      = undef;
+    my $writeuptype      = undef;
+    my $guessParentTitle = undef;
+    my $potentialParent  = undef;
+    my %success_reparent = ();
+
+    # Utility routine to get a node by ID or by name
+    my $getNodeByNameOrId = sub {
+        my ( $node_id_or_name, $nodetype ) = @_;
+        my $target_node = undef;
+
+        if ( $node_id_or_name =~ m/\D/ ) {
+            $target_node = getNode( $node_id_or_name, $nodetype );
+        } else {
+            $target_node = getNodeById( $node_id_or_name, $nodetype );
+            $target_node = undef
+                unless $target_node
+                && $target_node->{type}{title} eq $nodetype;
+        }
+
+        return $target_node;
+
+    };
+
+    # Get the old_e2node from either old_e2node_id or old_writeup_id
+    $old_e2node_id = $query->param('old_e2node_id');
+
+    if ( defined $old_e2node_id ) {
+        $old_e2node = $getNodeByNameOrId->( $old_e2node_id, 'e2node' );
+    }
+    # only look at old_writeup_id if we don't get a old_e2node_id
+    elsif ( defined( $old_writeup_id = $query->param('old_writeup_id') ) ) {
+        $writeup = $getNodeByNameOrId->( $old_writeup_id, 'writeup' );
+        $old_e2node = $parent_node = $getNodeByNameOrId->( $writeup->{'parent_e2node'}, 'e2node' );
+
+        # If this node's parent e2node is invalid, try automatically finding and reparenting it
+        if ( $writeup && !$parent_node ) {
+            $guessParentTitle = $writeup->{title};
+
+            # strip off '(idea)' writeuptype from title, if present
+            # but be tolerant of writeups where it gets cut off
+            $guessParentTitle =~ s/^(.*?)(\([^\(]*)?$/$1/;
+            $potentialParent = getNode( $guessParentTitle, 'e2node' );
+            if ($potentialParent) {
+                $new_e2node = $potentialParent;
+                $query->param( "reparent_" . $old_writeup_id, 1 );
+            }
+        }
+
+    }
+
+    # Get new_e2node_id
+    if ( defined( $new_e2node_id = $query->param('new_e2node_id') ) ) {
+        $new_e2node = $getNodeByNameOrId->( $new_e2node_id, 'e2node' );
+    }
+
+    # Perform the reparenting operation
+    if ( ( $old_e2node || $writeup ) && $new_e2node ) {
+        $movedsomething = 0;
+        $newgroup       = $new_e2node->{'group'};
+        $newgroup = [] unless $newgroup && ref $newgroup eq 'ARRAY';
+
+        foreach my $move_writeup_id ( grep { /^reparent_/ } $query->param() ) {
+            next unless ( $query->param($move_writeup_id) == 1 );
+            $move_writeup_id =~ s/^reparent_//;
+            $alreadyinnodegroup = scalar grep { $_ == $move_writeup_id; } @$newgroup;
+            $move_writeup = htmlcode( 'make node sane', $move_writeup_id );
+            next unless $move_writeup;
+            $movedsomething = 1;
+            $success_reparent{$move_writeup_id} = 1;
+
+            $DB->removeFromNodegroup( $old_e2node, $move_writeup, -1 )
+                if ( $old_e2node && $new_e2node->{'node_id'} != $old_e2node->{'node_id'} );
+
+            $oldtitle   = $move_writeup->{'title'};
+            $author     = getNodeById( $move_writeup->{'author_user'} );
+            $authortitle = "bad author";
+            $authortitle = $author->{'title'} if $author;
+
+            # Reset writeup type just in case it was invalid
+            $writeuptype = $getNodeByNameOrId->( $move_writeup->{'wrtype_writeuptype'}, 'writeuptype' );
+            $writeuptype = getNode( 'idea', 'writeuptype' ) unless $writeuptype;
+            $move_writeup->{'wrtype_writeuptype'} = $writeuptype->{'node_id'};
+            $move_writeup->{'title'}              = $new_e2node->{'title'} . " ($writeuptype->{'title'})";
+            $move_writeup->{'parent_e2node'}      = $new_e2node->{'node_id'};
+
+            $DB->insertIntoNodegroup( $new_e2node, -1, $move_writeup )
+                unless ($alreadyinnodegroup);
+
+            updateNode( $move_writeup, -1 );
+
+            $APP->securityLog( $NODE, $USER,
+                    $oldtitle . " by ["
+                    . encodeHTML($authortitle) . "]"
+                    . " was moved to ["
+                    . encodeHTML( $move_writeup->{'title'} ) . "]" );
+
+            $DB->sqlInsert(
+                'message',
+                {
+                    msgtext => 'I moved your writeup "['
+                        . encodeHTML($oldtitle) . ']"'
+                        . ' You can now find it at "'
+                        . '[' . $new_e2node->{'title'} . ']"',
+                    author_user => $USER->{'node_id'},
+                    for_user    => $move_writeup->{'author_user'}
+                }
+            );
+
+            $feedback_string .= "<p>Didn't insert into nodegroup since it was already in the destination e2node.</p>"
+                if $alreadyinnodegroup;
+            $feedback_string .= "\n<p>"
+                . encodeHTML($oldtitle)
+                . " by "
+                . linkNode($author)
+                . " has been moved from ";
+            $feedback_string .= linkNode($old_e2node) if ($old_e2node);
+            $feedback_string .= "<i>an unparented state</i>" if ( !$old_e2node );
+            $feedback_string .= " to " . linkNode($new_e2node) . "</p>";
+        }
+
+        # Get nodes with updated groups now that we've moved stuff
+        if ($movedsomething) {
+            htmlcode( 'repair e2node', $new_e2node ) if ($movedsomething);
+            $old_e2node = getNodeById( $old_e2node->{'node_id'} ) if $old_e2node;
+            $new_e2node = getNodeById( $new_e2node->{'node_id'} ) if $new_e2node;
+        }
+
+    }
+
+    # Generate input form
+    $inputs_string = "\n" . htmlcode('openform');
+    if ($writeup) {
+        $inputs_string .= "\n" . $query->hidden( -name => 'old_writeup_id' );
+        $inputs_string .= "\n<p>A writeup id has been supplied: " . $old_writeup_id . "</p>";
+        $inputs_string .= "\n";
+
+        if ( !$parent_node && !$success_reparent{ $writeup->{'node_id'} } ) {
+            $inputs_string .= "\n<p>Writeup "
+                . linkNode($writeup)
+                . " is unparented!  But we can still move it."
+                . " </p>";
+        } else {
+            # Default to moving to parent so the most common problem -- orphaned nodes -- can be easily fixed
+            $query->param( 'new_e2node_id', $parent_node->{'title'} )
+                unless $new_e2node_id;
+        }
+    }
+
+    # Old node id
+    if ( $old_writeup_id && !$writeup ) {
+        $inputs_string .= "\n<p>Invalid writeup id provided.</p>";
+    }
+    if ( $old_e2node_id && !$old_e2node ) {
+        $inputs_string .= "\n<p>Invalid e2node id provided.</p>";
+    }
+
+    if ( !$writeup ) {
+        if ( !$old_e2node_id ) {
+            $inputs_string .= "\n<p>Please provide the node id (or title) of the e2node from which we will be moving.</p>";
+        } else {
+            $inputs_string .= "\n<p>Old node id:<br>";
+        }
+        $inputs_string .= "\n\t" . $query->textfield( -name => 'old_e2node_id' );
+        if ($old_e2node) {
+            $inputs_string .= " (Currently: " . linkNode($old_e2node) . ")</p>";
+        }
+
+    }
+
+    # New node id
+    if ( $new_e2node_id && !$new_e2node && $new_e2node_id =~ /\D/ ) {
+        $inputs_string .= "\n\n<p>Invalid new node title provided.</p>";
+    } elsif ( $new_e2node_id && !$new_e2node ) {
+        $inputs_string .= "\n\n<p>Invalid new node id provided.</p>";
+    }
+
+    if ( !$new_e2node ) {
+        $inputs_string .= "\n\n<p>Please input a node title or id into which we will move the writeup(s):<br>";
+    } else {
+        $inputs_string .= "\n\n<p>New node id (or title) for the writeups:<br>";
+    }
+    $inputs_string .= "\n\t" . $query->textfield( -name => 'new_e2node_id' );
+
+    if ($new_e2node) {
+        $inputs_string .= " (Currently: " . linkNode($new_e2node) . ")</p>";
+    }
+
+    # List the writeups available to move
+    $selection_string .= "\n";
+
+    my $list_writeups = sub {
+
+        my ( $list_node, $mandatory_node ) = @_;
+        return unless $list_node || $mandatory_node;
+        my $mandatory_node_id = undef;
+        $mandatory_node_id = $mandatory_node->{'node_id'} if $mandatory_node;
+
+        my $group = [];
+        push( @$group, @{ $list_node->{'group'} } ) if $list_node && $list_node->{'group'};
+
+        # Add writeup to the group if it's not already there so we can reparent unparented writeups
+        if ( $mandatory_node && !( grep { $_ == $mandatory_node_id } @$group ) ) {
+            push( @$group, $mandatory_node_id );
+            $selection_string .= "\n<p>The target writeup "
+                . linkNode($mandatory_node)
+                . " was not found in "
+                . linkNode($list_node)
+                . "'s nodegroup. "
+                . " You may want to move the writeup into the node to fix this.</p>"
+                if $list_node;
+        }
+
+        if ( $group && scalar @$group ) {
+            $selection_string .= "\n<ul>";
+            my $check_all = $query->param('reparent_all');
+            foreach my $move_writeup_id (@$group) {
+                my $list_writeup = $getNodeByNameOrId->( $move_writeup_id, 'writeup' );
+                if ($list_writeup) {
+                    my $checked = ( $writeup && $move_writeup_id == $writeup->{node_id} );
+                    my $saveAE  = $query->autoEscape();
+                    $query->autoEscape(0);
+                    my $label = "\n\t"
+                        . linkNode($list_writeup)
+                        . "\n\t by "
+                        . linkNode( getNodeById( $list_writeup->{'author_user'} ) )
+                        . "\n\t (id = $move_writeup_id)";
+                    $selection_string .= "\n\t<li>"
+                        . $query->checkbox(
+                        -name    => "reparent_$move_writeup_id",
+                        -value   => '1',
+                        -checked => $check_all || $checked,
+                        -label   => $label
+                        )
+                        . "</li>";
+                    $query->autoEscape($saveAE);
+                } else {
+                    $selection_string .= "\n\t<li>$move_writeup_id does not appear to be a valid writeup id!";
+                    $selection_string .= linkNode($list_node) . " may have a bad group.</li>"
+                        if $list_node;;
+                }
+            }
+            $selection_string .= "\n</ul>";
+        } elsif ($list_node) {
+            $selection_string .= "\n<p>" . linkNode($list_node) . " is a nodeshell.</p>";
+        }
+
+    };
+
+    # Don't force listing of writeup if we just did a reparent
+    $writeup = undef if ( $writeup && $success_reparent{ $writeup->{'node_id'} } );
+
+    # List writeups in both source and destination node
+    $list_writeups->( $old_e2node, $writeup );
+    if ( $new_e2node && ( !$old_e2node || $old_e2node->{'node_id'} != $new_e2node->{'node_id'} ) ) {
+        $selection_string .= "\n<hr>\n" if $old_e2node || $writeup;
+        $selection_string .= "<p>Destination node: " . linkNode($new_e2node) . "</p>";
+        $list_writeups->($new_e2node);
+    }
+
+    # Close form
+    $selection_string .= "\n<br>" . htmlcode('closeform');
+
+    return ( $inputs_string . $selection_string . $feedback_string
+            . "<p> Try "
+            . linkNode( getNode( 'Klaproth Van Lines', 'restricted_superdoc' ) )
+            . " for bulk moves. Certain conditions apply.</p>" );
+}
+
 1;

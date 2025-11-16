@@ -1,30 +1,5 @@
 <node>
-  <doctext>[%
-return 'Curiosity killed the cat, this means YOU '.linkNode($USER, $$USER{title}) unless(isGod($USER));
-my $days = int $query-&gt;param('days');
-$days = 2 if ($days &lt; 1);
-my @ignoreTypes = qw/writeup e2node draft user debatecomment/; 
-my $ignoreList = join ', ', map { getType($_)-&gt;{node_id} } @ignoreTypes;
-my $whereStr = &lt;&lt;SQLEND;
-  createtime &gt;= DATE_SUB(NOW(), INTERVAL $days DAY)
-  AND type_nodetype NOT IN ($ignoreList)
-  ORDER BY CREATETIME DESC
-SQLEND
-my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;node&quot;, $whereStr);
-
-my $str = '&lt;ul&gt;';
-
-while(my $row = $csr-&gt;fetchrow_hashref())
-{
-   my $typename = getNodeById($$row{type_nodetype});
-   $str .= '&lt;li&gt;'.linkNode($row, $$row{title}).&quot; - &quot;.$$typename{title};
-}
-
-$str .= '&lt;/ul&gt;';
-
-return $str;
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>1189539</node_id>
   <title>Who is doing what</title>
   <type_nodetype>14</type_nodetype>

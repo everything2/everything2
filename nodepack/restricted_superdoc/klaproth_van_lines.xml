@@ -186,7 +186,7 @@ else
     $str .= '&lt;input type=&quot;text&quot; name=&quot;user_name&quot;&gt;&lt;/td&gt;&lt;/tr&gt;';
     $str .= '&lt;tr&gt;&lt;th&gt;Source writeup IDs&lt;br&gt;&lt;small&gt;';
     $str .= '(get \'em from the ';
-    $str .= linkNode(getNode('Altar of Sacrifice', 'restricted_superdoc'), 'Altar');
+    $str .= linkNode(getNode('Altar of Sacrifice', 'oppressor_superdoc'), 'Altar');
     $str .= ')&lt;/small&gt;&lt;/th&gt;&lt;th&gt;Target node names&lt;/th&gt;&lt;/tr&gt;';
     $str .= '&lt;tr&gt;&lt;td&gt;';
     $str .= '&lt;textarea name=&quot;oldlist&quot; ROWS=20 COLS=30&gt;&lt;/textarea&gt;';
