@@ -18,6 +18,22 @@ Everything2 is a user-submitted content website emphasizing writing and connecti
 
 The build script automatically detects if the database container exists. On subsequent runs, it will only rebuild the application container unless you use `--db-only` or `--clean` flags.
 
+### Default User Credentials
+
+The development database is seeded with test users, all using the same default password for easy testing:
+
+- **Username:** `root` (super user with full admin privileges)
+- **Password:** `blah`
+
+**All seeded users** have the password `blah`, including users with special characters like `user with space`.
+
+To log in:
+1. Visit http://localhost:9080
+2. Use any seeded username (e.g., `root`)
+3. Enter password: `blah`
+
+**Note:** These credentials are for local development only and are never used in production.
+
 ## Repository Structure
 
 * **[cf](https://github.com/everything2/everything2/tree/master/cf)** - CloudFormation templates for AWS infrastructure

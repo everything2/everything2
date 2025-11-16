@@ -327,8 +327,21 @@ if (!$all_ok) {
     $response->{status} = 'unhealthy';
 }
 
+# Debug CloudWatch configuration if requested
+if ($debug_cloudwatch) {
+    $response->{cloudwatch_debug} = {
+        enabled => 1,
+        is_production => $is_production ? 1 : 0,
+        environment => {
+            E2_DOCKER => $ENV{E2_DOCKER} || '(not set)',
+            E2_DEVELOPMENT => $ENV{E2_DEVELOPMENT} || '(not set)',
+        },
+        log_group => $cloudwatch_log_group,
+    };
+}
+
 # CloudWatch logging in production
-if ($is_production) {
+if ($is_production || $debug_cloudwatch) {
     eval {
         # Get hostname for log stream name
         my $hostname = `hostname`;
@@ -356,27 +369,29 @@ if ($is_production) {
 
         my $log_message = JSON::encode_json($log_event);
 
-        # Debug info for CloudWatch logging
-        my %cloudwatch_debug;
-
+        # Add additional debug info for CloudWatch logging
         if ($debug_cloudwatch) {
-            $cloudwatch_debug{enabled} = 1;
-            $cloudwatch_debug{log_group} = $cloudwatch_log_group;
-            $cloudwatch_debug{log_stream} = $log_stream;
-            $cloudwatch_debug{hostname} = $hostname;
-            $cloudwatch_debug{log_event_size} = length($log_message);
+            $response->{cloudwatch_debug}->{log_stream} = $log_stream;
+            $response->{cloudwatch_debug}->{hostname} = $hostname;
+            $response->{cloudwatch_debug}->{log_event_size} = length($log_message);
+            $response->{cloudwatch_debug}->{will_send_logs} = $is_production ? 1 : 0;
         }
 
         # Create log stream if it doesn't exist (ignore errors if it already exists)
         my $create_stream_cmd = "aws logs create-log-stream --log-group-name '$cloudwatch_log_group' --log-stream-name '$log_stream' 2>&1";
 
         if ($debug_cloudwatch) {
-            my $create_stream_output = `$create_stream_cmd`;
-            my $create_stream_exit = $? >> 8;
-            $cloudwatch_debug{create_stream_command} = $create_stream_cmd;
-            $cloudwatch_debug{create_stream_output} = $create_stream_output || '(no output)';
-            $cloudwatch_debug{create_stream_exit_code} = $create_stream_exit;
-        } else {
+            $response->{cloudwatch_debug}->{create_stream_command} = $create_stream_cmd;
+            if ($is_production) {
+                my $create_stream_output = `$create_stream_cmd`;
+                my $create_stream_exit = $? >> 8;
+                $response->{cloudwatch_debug}->{create_stream_output} = $create_stream_output || '(no output)';
+                $response->{cloudwatch_debug}->{create_stream_exit_code} = $create_stream_exit;
+            } else {
+                $response->{cloudwatch_debug}->{create_stream_output} = '(skipped - not in production)';
+                $response->{cloudwatch_debug}->{create_stream_exit_code} = undef;
+            }
+        } elsif ($is_production) {
             system("$create_stream_cmd >/dev/null 2>&1");
         }
 
@@ -391,17 +406,20 @@ if ($is_production) {
         my $put_log_cmd = "aws logs put-log-events --log-group-name '$cloudwatch_log_group' --log-stream-name '$log_stream' --log-events '$log_events' 2>&1";
 
         if ($debug_cloudwatch) {
-            # In debug mode, run synchronously and capture output
-            my $put_log_output = `$put_log_cmd`;
-            my $put_log_exit = $? >> 8;
-            $cloudwatch_debug{put_log_command} = $put_log_cmd;
-            $cloudwatch_debug{put_log_output} = $put_log_output || '(no output)';
-            $cloudwatch_debug{put_log_exit_code} = $put_log_exit;
-            $cloudwatch_debug{log_events_payload} = $log_events;
+            $response->{cloudwatch_debug}->{put_log_command} = $put_log_cmd;
+            $response->{cloudwatch_debug}->{log_events_payload} = $log_events;
 
-            # Include debug info in response
-            $response->{cloudwatch_debug} = \%cloudwatch_debug;
-        } else {
+            if ($is_production) {
+                # In debug mode with production, run synchronously and capture output
+                my $put_log_output = `$put_log_cmd`;
+                my $put_log_exit = $? >> 8;
+                $response->{cloudwatch_debug}->{put_log_output} = $put_log_output || '(no output)';
+                $response->{cloudwatch_debug}->{put_log_exit_code} = $put_log_exit;
+            } else {
+                $response->{cloudwatch_debug}->{put_log_output} = '(skipped - not in production)';
+                $response->{cloudwatch_debug}->{put_log_exit_code} = undef;
+            }
+        } elsif ($is_production) {
             # Use a background process to avoid blocking the health check response
             system("$put_log_cmd >/dev/null 2>&1 &");
         }
