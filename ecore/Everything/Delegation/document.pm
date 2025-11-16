@@ -11877,4 +11877,98 @@ sub gnl
     return $text;
 }
 
+sub giant_teddy_bear_suit
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    $text .= '<p><i><b>';
+    $text .= $$USER{title};
+    $text .= '</b> has donned the Giant Teddy Bear Suit . . . </i>';
+    $text .= '</p>';
+    $text .= "\n";
+
+    # Only gods can use this feature
+    return $text . '<p>Hands off the bear, bobo.</p>' unless $APP->isAdmin($USER);
+
+    # Display note text to the gods group
+    my $notestr = 'The user(s) are publicly hugged by a Giant Teddy Bear. Users are blessed with 2 GP.<br /><br />';
+
+    # Adapted from superbless
+    my @params = $query->param;
+    my $str    = '';
+
+    # Get the list of users to be hugged
+    my (@users);
+    foreach (@params) {
+        if (/^hugUser(\d+)$/) {
+            $users[$1] = $query->param($_);
+        }
+    }
+
+    # For this purpose the bless is fixed at 2 GP
+    my $curGP = 2;
+
+    # Loop through, apply the bless, report the results
+    for ( my $count = 0; $count < @users; $count++ ) {
+        next unless $users[$count];
+
+        my ($U) = getNode( $users[$count], 'user' );
+        if ( not $U ) {
+            $str .= "couldn't find user $users[$count]<br />";
+            next;
+        }
+
+        # Giant Teddy Bear Suit
+        # Tell the catbox
+        $DB->sqlInsert(
+            'message',
+            {
+                msgtext     => '/me hugs ' . $$U{title},
+                author_user => getId( getNode( 'Giant Teddy Bear', 'user' ) ),
+                for_user    => 0,                # 0 is public
+                room        => $$USER{in_room}   # 0 is outside
+            }
+        );
+
+        $str .= "User $$U{title} was given $curGP GP";
+        $$U{karma} += 1;
+        updateNode( $U, -1 );
+        htmlcode( 'achievementsByType', 'karma' );
+        $APP->securityLog(
+            getNode( 'Superbless', 'superdoc' ),
+            $USER,
+            "$$USER{title} hugged $$U{title} using the [Giant Teddy Bear suit] for $curGP GP."
+        );
+        $APP->adjustGP( $U, $curGP );
+
+        $str .= "<br />\n";
+    }
+
+    $text .= $str;
+
+    # Build the form
+    $text .= htmlcode('openform');
+    $text .= '<table border="1">';
+
+    # Build the table rows for inputting user names
+    my $count = 3;
+    $str = '';
+
+    $str .= '<tr><th>Hug these users</th></tr> ';
+
+    for ( my $i = 0; $i < $count; $i++ ) {
+        $query->param( "hugUser$i", '' );
+        $str .= '<tr><td>';
+        $str .= $query->textfield( "hugUser$i", '', 40, 80 );
+        $str .= '</td></tr>';
+    }
+
+    $text .= $str;
+    $text .= '</table>';
+    $text .= htmlcode('closeform');
+
+    return $text;
+}
+
 1;
