@@ -11971,4 +11971,95 @@ sub giant_teddy_bear_suit
     return $text;
 }
 
+sub mark_all_discussions_as_read
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $str = '';
+
+    my $uid = $$USER{node_id};
+    my $isRoot = $APP->isAdmin($USER);
+    my $isCE = $APP->isEditor($USER);
+
+    # Usergroup IDs
+    my ($ce_id, $gods_id) = (923653, 114);
+
+    my $doneCE = $query->param("mark_ce_read");
+    if (!$doneCE) {
+        $str .= "<p>Apply pressure to the hypertext if you want to mark all of
+  your old CE debates as read (and the new ones too,
+  everything!).</p>";
+
+        $str .= "<p><center>\n";
+        $str .= linkNode($NODE, "Mark CE Debates as Read", {"mark_ce_read" => 1}) . "\n";
+        $str .= "</center></p>\n";
+    }
+    else {
+        my $csr = $DB->sqlSelectMany("root_debatecomment", "debatecomment",
+                                     "restricted=$ce_id",
+                                     "GROUP BY root_debatecomment");
+        while (my $row = $csr->fetchrow_hashref) {
+            my $debate = $row->{root_debatecomment};
+            my $lastread = $DB->sqlSelect("dateread",
+                                          "lastreaddebate",
+                                          "user_id=$uid and
+                                           debateroot_id=$debate");
+            if ($lastread) {
+                $DB->sqlUpdate("lastreaddebate",
+                               {-dateread => "NOW()"},
+                               "user_id=$uid and
+                                debateroot_id=$debate");
+            }
+            else {
+                $DB->sqlInsert("lastreaddebate",
+                               {"user_id" => $uid,
+                                "debateroot_id" => $debate,
+                                -dateread => "NOW()"}
+                              );
+            }
+        }
+        $str .= 'It is done. All of your CE debates have been marked
+           as read. Hopefully there\'s never a reason to do this
+           again. <br />';
+    }
+
+    my $doneRoot = $query->param("mark_admin_read");
+    if (!$doneRoot && $isRoot) {
+        $str .= "<p>It appears you are like a god amongst men. You may do the same but to your admin debates.</p>";
+
+        $str .= "<p><center>\n";
+        $str .= linkNode($NODE, "Mark Admin Debates as Read", {"mark_admin_read" => 1}) . "\n";
+        $str .= "</center></p>\n";
+    }
+    elsif ($doneRoot && $isRoot) {
+        my $csr = $DB->sqlSelectMany("root_debatecomment", "debatecomment",
+                                     "restricted=$gods_id",
+                                     "GROUP BY root_debatecomment");
+        while (my $row = $csr->fetchrow_hashref) {
+            my $debate = $row->{root_debatecomment};
+            my $lastread = $DB->sqlSelect("dateread",
+                                          "lastreaddebate",
+                                          "user_id=$uid and
+                                           debateroot_id=$debate");
+            if ($lastread) {
+                $DB->sqlUpdate("lastreaddebate",
+                               {-dateread => "NOW()"},
+                               "user_id=$uid and
+                                debateroot_id=$debate");
+            }
+            else {
+                $DB->sqlInsert("lastreaddebate",
+                               {"user_id" => $uid,
+                                "debateroot_id" => $debate,
+                                -dateread => "NOW()"}
+                              );
+            }
+        }
+        $str .= 'It is done. All of your admin debates have been marked
+           as read. Hopefully there\'s never a reason to do this
+           again. <br />';
+    }
+
+    return $str;
+}
+
 1;

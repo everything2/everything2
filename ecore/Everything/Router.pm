@@ -37,14 +37,20 @@ sub output
   $headers->{charset} ||= "utf-8";
   $headers->{type} ||= "text/html";
 
-  if(my $best_compression = $self->APP->best_compression_type)
-  {
-    $headers->{content_encoding} = $best_compression;
-  }
-  
   if($self->CONF->environment eq "development")
   {
     $headers->{'-Access-Control-Allow-Origin'} = '*';
+  }
+
+  # Only set Content-Encoding header if we have data to compress
+  # This fixes issue #3391 where error responses with no body were
+  # incorrectly advertising compression
+  if($data)
+  {
+    if(my $best_compression = $self->APP->best_compression_type)
+    {
+      $headers->{content_encoding} = $best_compression;
+    }
   }
 
   print $REQUEST->header($headers);
@@ -52,7 +58,7 @@ sub output
   {
     if($headers->{type} eq "application/json")
     {
-      print $self->APP->optimally_compress_page($self->JSON->encode($data)); 
+      print $self->APP->optimally_compress_page($self->JSON->encode($data));
     }else{
       print $self->APP->optimally_compress_page($data);
     }
