@@ -46,27 +46,36 @@
 	PerlOptions +ParseHeaders
 "
 
-econfig='/etc/everything'
+# Load Apache blocks configuration from source control
+blocks_config = '/var/everything/etc/apache_blocks.json'
 
-coreconfig+="\t\# Explicit IP address bans\n"
-if File.exist?("#{econfig}/banned_ips_secret")
-  JSON.parse(File.read("#{econfig}/banned_ips_secret")).each do |ip|
-    coreconfig+="\tSetEnvIf X-FORWARDED-FOR \"#{ip}\" denyip\n"
-  end
-end
+if File.exist?(blocks_config)
+  blocks = JSON.parse(File.read(blocks_config))
 
-coreconfig+="\t\# IP address block bans\n"
-if File.exist?("#{econfig}/banned_ipblocks_secret")
-  JSON.parse(File.read("#{econfig}/banned_ipblocks_secret")).each do |block|
-    coreconfig+="\tSetEnvIf X-FORWARDED-FOR ^#{block.gsub(".","\\.")} denyip\n"
+  coreconfig+="\t\# Explicit IP address bans\n"
+  if blocks['banned_ips']
+    blocks['banned_ips'].each do |ip|
+      coreconfig+="\tSetEnvIf X-FORWARDED-FOR \"#{ip}\" denyip\n"
+    end
   end
-end
 
-coreconfig+="\t\# User agent bans\n"
-if File.exist?("#{econfig}/banned_user_agents_secret")
-  JSON.parse(File.read("#{econfig}/banned_user_agents_secret")).each do |ua|
-    coreconfig+="\tBrowserMatchNoCase #{ua} denyip\n"
+  coreconfig+="\t\# IP address block bans\n"
+  if blocks['banned_ipblocks']
+    blocks['banned_ipblocks'].each do |block|
+      coreconfig+="\tSetEnvIf X-FORWARDED-FOR ^#{block.gsub(".","\\.")} denyip\n"
+    end
   end
+
+  coreconfig+="\t\# User agent bans\n"
+  if blocks['banned_user_agents']
+    blocks['banned_user_agents'].each do |ua|
+      # Quote user agents that contain spaces
+      ua_quoted = ua.include?(' ') ? "\"#{ua}\"" : ua
+      coreconfig+="\tBrowserMatchNoCase #{ua_quoted} denyip\n"
+    end
+  end
+else
+  coreconfig+="\t\# WARNING: Apache blocks configuration not found at #{blocks_config}\n"
 end
 
 rotatelogs = '/usr/bin/rotatelogs'

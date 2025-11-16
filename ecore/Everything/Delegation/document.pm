@@ -11499,4 +11499,112 @@ sub list_nodes_of_type
     return $text;
 }
 
+sub macro_faq
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    $text .= '<p><big><strong>Macro FAQ</strong></big>';
+    $text .= ( $APP->isEditor($USER) ) ? '' : ' (note: you are not allowed to use macros yet)';
+    $text .= '</p>
+<p>Okay, okay, this isn\'t really a FAQ, more like a mini-lesson on how to use the <code>/macro</code> command. But isn\'t "macro FAQ" easier to remember than "macro mini-lesson-and-possibly-later-even-some-frequently-asked-questions"?</p>
+
+<p><strong>Use <code>/macro</code></strong><br />
+A macro can be used in the chatterbox by typing:<br />
+<code>/macro</code> <var>macroname</var> &#91; <var>parameter1</var> &#91; <var>parameter2</var> &#91; ... &#93; &#93; &#93;<br />
+You first have to enable the macro(s) you wish to use, though, at [user settings 2]. For each macro you may want to use, check the appropriate box in the "Use?" column. If you don\'t want to use a macro any more, uncheck the box. If you desire, you can edit the macro to your liking.
+</p>
+
+<p><strong>Example</strong><br />
+Here is an example of how to use the default "newbie" macro, which sends a private message to a user, telling them about [Everything University] and [Everything FAQ], and how to /msg you back.
+</p><ol>
+<li>visit [user settings 2]</li>
+<li>in the "Macros" section, find the "newbie" macro, and check that checkbox</li>
+<li>press the "Submit" button</li>
+<li>in the chatterbox, type: <code>/macro newbie ';
+
+    my $n = $USER->{title};
+    $n =~ s/ /_/g;
+    $text .= $n;
+
+    $text .= ' Duh, this is easy stuff!</code></li>
+<li>press the "Talk" button :)</li>
+</ol>
+<p>
+What you just did was send a basic E2-usage message to a newbie (in this case, you). In the default "newbie" macro setup, the messages are sent to the user specified in the first parameter (in this case, you). Anything you type afterwards are added to the first message. <!-- NPB FIXME should say if invalid macro name (change return value and use that) When you send any macro, you will also get a message saying which macro you ran, along with the parameters. -->
+</p>
+
+<p><strong>Variable Substitution</strong><br />
+So far, macros only support the <code>/say</code> command, which treats everything after it as something you typed in the chatterbox. Well, mostly... there are a few variables that you can use. Each variable must have a space on each site.<br />
+If you use <code>$0</code> by itself, your username will substituted in (with underscores, if your name has spaces in it).<br />
+If you use <code>$1</code> and up (in the form <code>$</code><var>n</var>), that will substitute the first (or <var>n</var><sup>th</sup>) word you entered after the macro\'s name.<br />
+But what if you want to type a whole bunch of words? Instead of doing something like <code>$3 $4 $5 $6</code> ..., you can use <code>$3+</code> which will show all the words after the second.<br />
+</p>
+
+<p><strong>Created Macros</strong><br />
+This section will have some useful macros people have created.<br />
+(Um, has anybody done anything useful with these? Although I doubt it, tell [N-Wing|me] if so.)
+</p>
+
+<p><strong>Miscellaneous</strong><br />
+Note: if you want to use a square bracket, &#91; and/or &#93; in the macro definition (that is, in the place where you type in the macro in [user settings 2]), you\'ll have to type it as a curly brace, { and/or } <small>(sorry about that)</small>.
+<br />
+Note: in most cases, the first parameter is the user you want to get the macro text. As is the case with sending a normal private message, if the user has a space in their name, you should change them into underscores.
+</p>
+
+<p><strong>FAQs</strong> <small><small>(Wow! Some actual questions in something that is supposed to <strong>all</strong> Q &amp; As!)</small></small></p>
+<dl>
+
+<dt><strong>Q</strong>: Who can use macros?</dt>
+<dd><strong>A</strong>: Currently, only ';
+
+    $text .= linkNode( getNode( 'Content Editors', 'usergroup' ) ) . ' and '
+        . linkNode( getNode( 'gods', 'usergroup' ) );
+
+    $text .= ' may.</dd>
+
+<dt><strong>Q</strong>: What happens if you call a macro recursively?</dt>
+<dd><strong>A</strong>: Who knows? While it doesn\'t cause an infinite loop, it also doesn\'t seem to work as expected. So for now, don\'t. <tt>:-/</tt></dd>
+
+<!--
+<dt><strong>Q</strong>: </dt>
+<dd><strong>A</strong>: </dd>
+-->
+
+</dl>
+
+<p><strong>Stored Macros</strong><br />
+Here are all your currently defined macros. You can edit them at [user settings 2].
+<table cellspacing="1" cellpadding="3" border="1">
+<tr><th>Name</th><th>Text</th></tr>
+';
+
+    return $text if $APP->isGuest($USER);
+
+    my $k;
+    my $v;
+    foreach ( sort( keys(%$VARS) ) )
+    {
+        next unless /^chatmacro_(.+)/;
+        $k = $1;
+        $v = $VARS->{$_};
+        $v =~ s/&/&amp;/gs;
+        $v =~ s/</&lt;/gs;
+        $v =~ s/>/&gt;/gs;
+        $v =~ s/\[/&#91;/gs;
+        $v =~ s/\]/&#93;/gs;
+        $v =~ s/\n/<br \/>/gs;
+        $text .= '<tr><td valign="top"><code>' . $k . '</code></td><td><code>' . $v . "</code></td></tr>\n";
+    }
+
+    $text .= '</table>
+</p>
+
+<p><strong>Lame Guide/FAQ/etc. Thingy</strong><br />
+If you have a question about macros, you can <code>/msg N-Wing</code>, so this currently-lame guide can be updated. You can also /msg N-Wing if you have an idea for better default macros, and/or want more added that would be probably used by other people.
+</p>';
+
+    return $text;
+}
+
 1;
