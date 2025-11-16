@@ -1242,6 +1242,119 @@ sub some_page {
 
 **Note:** This is a **low priority** effort that can proceed in parallel with other work and doesn't block any critical functionality. It's primarily a code quality and developer experience improvement.
 
+### Related Task: Migrate static.everything2.com Assets
+
+**Background:**
+
+Currently, various static assets (fonts, images) are hosted in an S3 bucket at `s3.amazonaws.com/static.everything2.com` and referenced directly in stylesheets and code. These assets should be migrated to the webpack asset deployment pipeline to:
+
+- Centralize asset management in source control
+- Enable versioning and cache-busting
+- Improve asset loading performance
+- Simplify deployment (no separate S3 bucket)
+- Allow for asset optimization (compression, format conversion)
+
+**Current Static Assets:**
+
+1. **Fonts** (pamphleteer stylesheet):
+   - essays1743-webfont.{eot,woff,ttf}
+   - essays1743-italic-webfont.{eot,woff,ttf}
+   - linlibertine_re-4.7.5-webfont.{eot,woff,ttf}
+   - linlibertine_bd-4.1.5-webfont.{eot,woff,ttf}
+   - linlibertine_it-4.2.6-webfont.{eot,woff,ttf}
+
+2. **Images** (various stylesheets):
+   - e2_tight.gif
+   - external.png
+   - triangles.png
+   - socialcombined.gif
+   - externalLinkGrayscale.png
+   - topleft.png
+   - e2_others_01.gif, e2_others_02.gif
+   - search_button.gif
+   - epicenter.gif, chatterbox.gif, otherusers.gif
+   - vitals.gif, newwriteups.gif, readthis.gif
+   - everything_developer.gif
+   - magnifier.png
+   - e2bg.jpg (bookwormier theme)
+
+**Affected Files:**
+
+17 files reference static.everything2.com:
+- ecore/Everything/Delegation/document.pm
+- ecore/Everything/Delegation/htmlcode.pm
+- nodepack/superdocnolinks/e2_color_toy.xml
+- 7 stylesheet files (nodepack/stylesheet/*.xml)
+- 7 compiled CSS files (www/css/*.css)
+
+**Implementation Plan:**
+
+1. **Phase 1: Download and Organize Assets**
+   - Download all assets from S3 bucket
+   - Organize into appropriate directory structure:
+     ```
+     assets/
+     ├── fonts/
+     │   ├── essays1743/
+     │   └── linlibertine/
+     └── images/
+         ├── themes/
+         │   ├── pamphleteer/
+         │   ├── simplicity/
+         │   ├── kernel_blue/
+         │   └── bookwormier/
+         └── ui/
+     ```
+
+2. **Phase 2: Configure Webpack Asset Handling**
+   - Add file-loader for fonts and images
+   - Configure output paths and naming
+   - Set up proper MIME types
+   - Enable optimization (compression, format conversion)
+
+3. **Phase 3: Update References**
+   - Update stylesheet source files (nodepack/stylesheet/*.xml)
+   - Update delegation code references
+   - Use webpack asset helper functions
+   - Generate new CSS with correct asset paths
+
+4. **Phase 4: Testing and Validation**
+   - Verify all themes render correctly
+   - Check font loading in all supported browsers
+   - Validate image references
+   - Test cache-busting
+
+5. **Phase 5: Deployment and Cleanup**
+   - Deploy updated stylesheets
+   - Verify assets load from new location
+   - Monitor for any 404s or broken references
+   - Document S3 bucket can be deprecated
+
+**Benefits:**
+
+- **Version Control:** All assets tracked in git
+- **Cache-Busting:** Automatic content hashing
+- **Optimization:** Webpack can compress/optimize assets
+- **Simplification:** One less external dependency
+- **Performance:** Assets served from same CDN as application
+- **Developer Experience:** Easier to add/update assets
+
+**Risks:**
+
+- Low risk - primarily CSS reference updates
+- No functionality changes, only asset location
+- Easy to test visually
+- Can be rolled back quickly if issues arise
+
+**Priority:** Low (infrastructure improvement, no user-facing impact)
+
+**Estimated Effort:** 1-2 days
+
+**Dependencies:**
+- Webpack configuration (already present)
+- Asset pipeline infrastructure (already present)
+- Access to static.everything2.com S3 bucket for downloading assets
+
 ## Risk Assessment
 
 ### High Risk Areas

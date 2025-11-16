@@ -21,10 +21,14 @@ if ENV['E2_DOCKER'].nil? or !ENV['E2_DOCKER'].eql? "development"
   secretsbucket = "secrets.everything2.com"
   location = "/etc/everything"
 
-  ['recaptcha_v3_secret','infected_ips_secret','banned_user_agents_secret','banned_ips_secret','banned_ipblocks_secret'].each do |value|
+  # Download actual secrets and infected_ips (used by Everything::Configuration)
+  # Apache blocks (banned_ips, banned_ipblocks, banned_user_agents) now in source control
+  ['recaptcha_v3_secret', 'infected_ips_secret'].each do |value|
     STDERR.puts "Downloading secret '#{value}' to disk"
     s3client.get_object(response_target: "#{location}/#{value}", bucket: secretsbucket, key: value)
   end
+
+  STDERR.puts "Apache access blocks loaded from source control: /var/everything/etc/apache_blocks.json"
 end
 
 files.each do |f|

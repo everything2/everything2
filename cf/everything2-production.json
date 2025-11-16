@@ -1164,7 +1164,7 @@
             "Subnets": [{"Ref": "AppVPCSubnet1"}]
           }
         },
-        "DesiredCount": 1,
+        "DesiredCount": 2,
         "HealthCheckGracePeriodSeconds": 60,
         "TaskDefinition": {"Ref": "E2AppFargateTaskDefinition"},
         "CapacityProviderStrategy": [{
@@ -1260,7 +1260,7 @@
         }],
         "Conditions": [{
           "Field": "host-header",
-          "Values": ["www.everything2.org","everything2.org","www.everything2.net","everything2.net"]
+          "Values": ["www.everything2.org","everything2.org","www.everything2.net","everything2.net","everything.blockstackers.com"]
         }]
       }
     },
