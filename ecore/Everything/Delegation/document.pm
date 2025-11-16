@@ -12468,4 +12468,443 @@ sub the_catwalk
     return $str;
 }
 
+# Text Formatter (superdoc)
+# Legacy JavaScript-based text formatting tool for converting plain text to HTML
+# Provides paragraph formatting, list creation, style markup, and HTML character escaping
+sub text_formatter
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str = undef;
+
+    # Developer note
+    if ( $APP->isDeveloper($USER) ) {
+        $str = '<p>Note: this is from [Magical Text Formatter]</p>';
+    }
+
+    # Static HTML/JavaScript content
+    $str .= <<'END_HTML';
+<p align="right">Last updated Thursday March 21, 2002</p>
+<!--
+  This is mblase's edevdoc. Howdy.
+  All JavaScript code is copyright 2000 by me.
+  Please /msg with any changes, suggestions, etc.
+-->
+<p>
+This is intended to be the E2 Text Formatter to end all Text Formatters.
+It will [E2 Paragraph Tagger|insert paragraphs].
+It will [Wharfinger's Linebreaker|insert line breaks].
+It will [E2 Source Code Formatter|escape special characters].
+It will [E2 List Formatter|format lists of items].
+And it will add styles, interpret horizontal rules,
+and indent using the markup tags of your choice,
+all thanks to the power of [regular expression|regular expressions].
+<p>
+<script language="javascript">
+if (navigator.userAgent.indexOf('Opera') == -1) {
+//version = navigator.userAgent.substring(navigator.userAgent.indexOf('v'));
+  document.write("The \"undo\" and \"preview\" features are there because I always wanted them. I hope they're useful. ");
+} else {
+  document.write("The \"undo\" feature is there because I always wanted it. I hope it's useful. ");
+}
+</script>
+Several configurable options are below the form buttons;
+their default settings are all what seem to be used most often.
+<p>
+The one caveat is that your browser must support JavaScript 1.2,
+which includes Netscape 4.0, Internet Explorer 4.0, and Opera 5.0.
+If you have any problems, comments, or whatnot, send a [/msg] to [mblase].
+<p>
+
+<hr />
+
+<form action="/index.pl" name="dummyform" method="post">
+
+Enter the text to format below.
+<a href="#" onClick="return clearBox()">Clear the box</a>
+<br /><br />
+<textarea name="skratch" cols="60" rows="16"
+style="font-family:monospace">Text can be *formatted* in a _variety_ of */styles/*.
+Characters like <, >, and & are automatically escaped.
+
+   You can also create indented text
+   and lists of items:
+
+1) alpha
+2) bravo
+3) charlie
+
+* one
+* two
+* three
+
+-----------
+Just above this text is a horizontal line.</textarea>
+<br /><br />
+<input type="hidden" name="undo" value="">
+<input type="submit" value="Format Text" onClick="doFormat();return false">
+<input type="submit" value="Undo" onClick="undoFormat();return false">
+<script language="javascript">
+if (navigator.userAgent.indexOf('Opera') == -1) {
+//version = navigator.userAgent.substring(navigator.userAgent.indexOf('v'));
+  document.write('<input type="submit" value="Preview" onClick="popupHTML();return false">');
+}
+</script>
+
+<hr>
+Format new lines using:<br />
+&nbsp; &nbsp; &nbsp; &nbsp;
+<input type="radio" name="breaks" value="p" checked>
+  <tt>&lt;p&gt;...&lt;/p&gt;</tt> paragraph tags at empty lines<br />
+&nbsp; &nbsp; &nbsp; &nbsp;
+<input type="radio" name="breaks" value="br">
+  <tt>&lt;br /&gt;</tt> line break after each new line<br />
+
+<br />
+Convert <tt>*starred text*</tt> to: <br />
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <input type="radio" name="starred" value="b" checked> <b>bold</b>
+  <input type="radio" name="starred" value="i"> <i>italics</i>
+  <input type="radio" name="starred" value="u"> <u>underline</u>
+  <input type="radio" name="starred" value=""> plain text
+  <input type="radio" name="starred" value="ignore"> don't convert to HTML
+<br />
+Convert <tt>_underscored text_</tt> to: <br />
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <input type="radio" name="underlined" value="b"> <b>bold</b>
+  <input type="radio" name="underlined" value="i" checked> <i>italics</i>
+  <input type="radio" name="underlined" value="u"> <u>underline</u>
+  <input type="radio" name="underlined" value=""> plain text
+  <input type="radio" name="underlined" value="ignore"> don't convert to HTML
+<br />
+Convert <tt>/slashed text/</tt> to: <br />
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <input type="radio" name="slashed" value="b"> <b>bold</b>
+  <input type="radio" name="slashed" value="i" checked> <i>italics</i>
+  <input type="radio" name="slashed" value="u"> <u>underline</u>
+  <input type="radio" name="slashed" value=""> plain text
+  <input type="radio" name="slashed" value="ignore"> don't convert to HTML
+<br />
+
+<br />
+Convert lines beginning with <tt>*</tt> or <tt>.</tt> to:<br />
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <input type="radio" name="starlist" value="ul" checked> bulleted lists
+  <input type="radio" name="starlist" value="ol"> numbered lists
+  <input type="radio" name="starlist" value="ignore"> don't convert to lists
+<br />
+Convert lines beginning with <tt>-</tt> or <tt>--</tt> to:<br />
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <input type="radio" name="dashlist" value="ul" checked> bulleted lists
+  <input type="radio" name="dashlist" value="ol"> numbered lists
+  <input type="radio" name="dashlist" value="ignore"> don't convert to lists
+<br />
+Convert lines beginning with <tt>1.2.3.</tt> or <tt>1)2)3)</tt> to:<br />
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <input type="radio" name="numberlist" value="ul"> bulleted lists
+  <input type="radio" name="numberlist" value="ol" checked> numbered lists
+  <input type="radio" name="numberlist" value="ignore"> don't convert to lists
+<br />
+Convert other indented text to:<br />
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <input type="radio" name="indent" value="blockquote" checked> blockquotes
+  <input type="radio" name="indent" value="pre"> <tt>preformatted text</tt>
+  <input type="radio" name="indent" value="ignore"> don't indent
+<br />
+
+<br />
+<input type="checkbox" name="horizrule" value="yes" checked>
+    Convert rows of hyphens, equals or underscores into <tt>&lt;hr /&gt;</tt> tags<br />
+<!-- ADDED 08/31/01 -->
+<input type="checkbox" name="logicalstyles" value="yes">
+    Use <strong>&lt;strong&gt;</strong> and <em>&lt;em&gt;</em> instead of <b>&lt;b&gt;</b> and <i>&lt;i&gt;</i><br />
+<!-- END ADDED -->
+<input type="checkbox" name="curlyquotes" value="yes" checked>
+    Convert all "curly quotes" to standard quotes<br />
+<input type="checkbox" name="brackets" value="yes">
+    Convert &#91;brackets&#93; to HTML symbols<br />
+<input type="checkbox" name="asciichars" value="yes" checked>
+    Convert other ASCII characters to HTML symbols<br />
+<input type="checkbox" name="striptags" value="yes">
+    Strip existing HTML tags before formatting<br />
+<!-- <input type="checkbox" name="optimize" value="yes">
+    Optimize HTML by removing extra whitespace<br /> -->
+<br />
+
+</form>
+
+
+<script language="javascript1.2">
+<!--
+var myform = document.dummyform;
+// ========================================================================
+// some hacks to get around E2's lack of bracket escapes
+var ob = String.fromCharCode(91);    // opening bracket
+var cb = String.fromCharCode(93);    // closing bracket
+function getRadio(name,pos) { return eval("myform."+name+ob+pos+cb); }
+// the main formatting function, checks all options and adds tags accordingly
+function clearBox() {
+  myform.undo.value = myform.skratch.value;
+  myform.skratch.value = "";
+  return false;
+}
+function doFormat() {
+  var text = myform.skratch.value;
+  myform.undo.value = text;
+  text = fixEndOfLine(text);
+
+
+  // prepare the text
+  if (myform.striptags.checked)   { text = stripTags(text); }
+  if (myform.curlyquotes.checked) { text = fixCurlyQuotes(text); }
+  if (myform.asciichars.checked)  { text = encodeAscii(text); }
+  if (myform.brackets.checked)    { text = encodeBrackets(text); }
+
+
+  // add text styles
+  for (var i=0; i<myform.slashed.length; i++) {
+    var myradio = getRadio("slashed", i);
+    if (myradio.checked) { text = addStyles("\\/", myradio.value, text); }
+  }
+  for (var i=0; i<myform.starred.length; i++) {
+    var myradio = getRadio("starred", i);
+    if (myradio.checked) { text = addStyles("\\*", myradio.value, text); }
+  }
+  for (var i=0; i<myform.underlined.length; i++) {
+    var myradio = getRadio("underlined", i);
+    if (myradio.checked) { text = addStyles("_", myradio.value, text); }
+  }
+
+
+  // format linebreaks and horiz. rules
+  for (var i=0; i<myform.breaks.length; i++) {
+    var myradio = getRadio("breaks", i);
+    if (myradio.value=="p" && myradio.checked) { text = addPara(text); }
+    else if (myradio.value=="br" && myradio.checked) { text = addBr(text); }
+  }
+  if (myform.horizrule.checked)   { text = addHorizRule(text); }
+
+
+  // format ordered and unordered lists and indenting
+  for (var i=0; i<myform.starlist.length; i++) {
+    var myradio = getRadio("starlist", i);
+    if (myradio.checked) { text = addGenericList(ob+"\\*\\."+cb+" ", "li", myradio.value, text); }
+  }
+  for (var i=0; i<myform.dashlist.length; i++) {
+    var myradio = getRadio("dashlist", i);
+    if (myradio.checked) { text = addGenericList("\\-\\-?", "li", myradio.value, text); }
+  }
+  for (var i=0; i<myform.numberlist.length; i++) {
+    var myradio = getRadio("numberlist", i);
+    if (myradio.checked) { text = addGenericList("\\d+"+ob+"\\.\\) "+cb, "li", myradio.value, text);}
+  }
+  for (var i=0; i<myform.indent.length; i++) {
+    var myradio = getRadio("indent", i);
+    if (myradio.checked) { text = addGenericList("(\\t+|  +) *", "", myradio.value, text); }
+  }
+
+
+  // optimize HTML
+  text = text.replace(/<\/?>/g, "");    // delete "empty tags"
+//  if (myform.optimize.checked) { text = optimizeWhitespace(text); }
+  text = optimizeWhitespace(text);
+  text = text.replace(/^\n+/, "");      // trim leading linebreaks
+  text = text.replace(/\n+$/, "\n");    // trim trailing linebreaks
+  myform.skratch.value = text;
+  myform.skratch.select();
+}
+// undo the latest formatting using the hidden "undo" input tag
+function undoFormat() {
+  var temp = myform.skratch.value;
+  myform.skratch.value = myform.undo.value;
+  myform.undo.value = temp;
+}
+// open a new browser window
+
+function popupHTML() {
+  var wintext = myform.skratch.value;
+  var reg1 = new RegExp("\\"+ob+"("+ob+"^\\|\\"+cb+cb+"*)"+"|"+"("+ob+"^\\"+cb+cb+"*)\\"+cb, "g"); // pipe link
+  var reg2 = new RegExp("\\"+ob+"("+ob+"^\\"+cb+cb+"*)\\"+cb, "g");   // hard link
+  var reg3 = /\s/g;
+  var starturl = "<a target=\"_blank\" href=\"/index.pl?node=";
+  var endurl = "\">";
+// ADDED 10/10/01
+  wintext = wintext.replace(reg1, starturl+"$1"+endurl+"$2</a>");
+  wintext = wintext.replace(reg2, starturl+"$1"+endurl+"$1</a>");
+  var idx = wintext.indexOf(starturl);
+  while (idx>0) {
+    idx += starturl.length;
+    var end = wintext.indexOf(endurl, idx);
+    wintext = wintext.substring(0,idx)+escape(wintext.substring(idx,end))+wintext.substring(end);
+    idx = wintext.indexOf(starturl, idx+1);
+  }
+// END ADDED
+// ADDED 8/31/01
+// whoops -- nested functions is a JS 1.3 feature.
+//  wintext = wintext.replace(reg1, function makeLink($0,$1) {
+//                var s1=$1, s2=s1, pp=s1.indexOf("|");
+//                if (pp>0) { s2=s1.substr(pp+1); s1=s1.substr(0,pp); }
+//                return "<a target=\"_blank\" href=\"/index.pl?node="+escape(s1)+"\">"+s2+"</a>";
+//              }
+//            );
+// END ADDED
+
+// to add: close the popup window if it's already there
+
+  var popupWin = window.open('', 'popup', 'status,scrollbars,resizable,width=480,height=360,left=20,top=20');
+  var popupText = "<html><head>";
+  popupText += "<title>Magical Text Formatter Preview@everything2.com</title>";
+  popupText += "</head><body bgcolor='white'>";
+  popupText += "<p align='right'><a href='javascript:window.close()'>Close window</a></p>";
+  popupText += wintext;
+  popupText += "</body></html>\n";
+  popupWin.document.open();
+  popupWin.document.write(popupText);
+  popupWin.document.close();
+  popupWin.focus();
+}
+// ========================================================================
+// turn all end-of-line invisible characters to "standard" \n characters
+function stripTags(str) {
+  reg1 = new RegExp("<"+ob+"^ "+cb+""+ob+"^>"+cb+"*>", "g");
+  str = str.replace(reg1, "");
+  return str;
+}
+function fixEndOfLine(str) {
+  str = str.replace(/\r\n/g, "\n");  // windows to unix
+  str = str.replace(/\r/g, "\n");    // mac to unix
+  str = str.replace(/^\n+/, "");     // trim extra leading linebreaks
+  str = str.replace(/\n+$/, "");     // trim extra trailing linebreaks
+  return str;
+}
+// replace "curly quotes" with regular HTML-safe quotes
+function fixCurlyQuotes(str) {
+  var reg1 = new RegExp(ob+String.fromCharCode(8216)+String.fromCharCode(8217)+cb, "g");
+  str = str.replace(reg1, "\"");    // single quotes
+  var reg2 = new RegExp(ob+String.fromCharCode(8220)+String.fromCharCode(8221)+cb, "g");
+  str = str.replace(reg2, "\'");    // double quotes
+  return str;
+}
+// replace odd ASCII characters with their HTML equivalents
+function encodeAscii(str) {
+  str = str.replace(/\&/g, "&amp;");
+  str = str.replace(/\</g, "&lt;");
+  str = str.replace(/\>/g, "&gt;");
+  // get other odd ASCII characters
+  for (var i=160; i<256; i++) {
+    var reg = new RegExp(String.fromCharCode(i), "g");
+    str = str.replace(reg, "&#"+i+";");
+  }
+  return str;
+}
+// replace brackets with HTML-safe characters
+function encodeBrackets(str) {
+  var reg1 = new RegExp("\\"+ob, "g");
+  var reg2 = new RegExp("\\"+cb, "g");
+  str = str.replace(reg1, "&#91;");
+  str = str.replace(reg2, "&#93;");
+  return str;
+}
+// create <hr> tags from ASCII rules
+function addHorizRule(str) {
+  var reg1 = new RegExp("(<p>|\\n<br \\/>)?\\n"+ob+" \\t"+cb+"*"+ob+"\\-_="+cb+"{5,}"+ob+" \\t"+cb+"*(\\n<\\/p>|<br \\/>\\n|\\n)?", "g");
+  return str.replace(reg1, "\n<hr />\n");
+}
+// compress whitespace to optimize the HTML
+function optimizeWhitespace(str) {
+  str = str.replace(/  +/g, " ");
+  str = str.replace(/\t+/g, " ");
+  str = str.replace(/\n /g, "\n");
+  str = str.replace(/\n\n+/g, "\n");
+  return str;
+}
+// ========================================================================
+// add <br /> linebreaks to the string
+function addBr(str) {
+  str = str.replace(/\n/g, "<br />\n");
+  str += "<br />\n";
+  return str;
+}
+// add <p> paragraph tags to the string
+function addPara(str) {
+  var reg1 = new RegExp("\n"+ob+" \t"+cb+"*\n+", "g");
+  str = str.replace(reg1, "\n</p>\n<p>\n");
+  str = "\n<p>\n" + str + "\n</p>\n";
+  return str;
+}
+// ========================================================================
+// generic function to add lists of some type
+function addGenericList(match,tag,ltype,str) {
+  if (ltype=="ignore") { return str; }
+  var startitem = "\n  <"+tag+">", enditem = "</"+tag+">";
+  var listtag = enditem + startitem;
+  var reg1 = new RegExp("\\n\\s*"+match+"\\s*", "g");
+  str = str.replace(reg1, listtag);
+  var reg2 = new RegExp("^\\s*"+match+"\s*", "g");
+  str = str.replace(reg2, "\n"+listtag);
+  str = addListOpenClose(startitem,enditem,ltype,str);
+  return str;
+}
+// add opening and closing list tags around all <li> groups
+function addListOpenClose(startitem, enditem, ltype, str) {
+  var starttag = "\n<"+ltype+">", endtag = "\n</"+ltype+">";
+  var listtag = enditem + startitem;
+  var idx = 0;
+  while (idx>=0) {
+    // add opening list tag
+    var mstr = "\n<p>"+listtag; idx = str.indexOf(mstr, idx);
+    if (idx<0) { mstr = "\n<br />"+listtag; idx = str.indexOf(mstr, idx); }
+    if (idx<0) { mstr = "\n"+listtag; idx = str.indexOf(mstr, idx); }
+    if (idx>=0) {
+      str = str.substring(0,idx) + starttag + startitem + str.substring(idx+mstr.length);
+      idx += starttag.length + listtag.length;
+    }
+    // add closing list tag
+    if (idx>=0) {
+      mstr = "\n</p>";
+      var temp = str.indexOf(mstr, idx);
+      if (temp<0) {
+        mstr = "<br />\n<";
+        temp = str.indexOf(mstr, idx)+6;
+        if (temp<idx) { temp=str.length; }
+        mstr = "";  // keep the break tag after the insertion
+      }
+      if (temp>=0) {
+        str = str.substring(0,temp) + enditem + endtag + str.substring(temp+mstr.length);
+        temp += endtag.length;
+      }
+      idx = temp;
+    }
+  }
+  return str;
+}
+// ========================================================================
+function addStyles(mark,tag,str) {
+  if (tag=="ignore") { return str; }
+// ADDED 8/31/01
+  if (myform.logicalstyles.checked) {
+    if (tag=="b") { tag = "strong"; }
+    else if (tag=="i") { tag = "em"; }
+  }
+// END ADDED
+  // check the first character in the string
+  var reg1 = new RegExp("^"+mark+"("+ob+"^ >"+mark+""+cb+""+ob+"^"+mark+""+cb+"*)"+mark, "g");
+  // ignore slashes inside HTML tags
+  var reg2 = new RegExp("("+ob+"^<"+cb+")"+mark+"("+ob+"^ >"+mark+""+cb+""+ob+"^"+mark+""+cb+"*"+ob+"^ <"+mark+""+cb+")"+mark, "g");
+  if (tag) {
+    str = str.replace(reg1, "<"+tag+">" + "$1" + "</"+tag+">");
+    str = str.replace(reg2, "$1" + "<"+tag+">" + "$2" + "</"+tag+">");
+  } else {
+    str = str.replace(reg1, "$1");
+    str = str.replace(reg2, "$1" + "$2");
+  }
+  return str;
+}
+// -->
+</script>
+END_HTML
+
+    return $str;
+}
+
 1;

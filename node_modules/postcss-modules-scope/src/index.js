@@ -4,7 +4,23 @@ const selectorParser = require("postcss-selector-parser");
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
-function getSingleLocalNamesForComposes(root) {
+function isNestedRule(rule) {
+  if (!rule.parent || rule.parent.type === "root") {
+    return false;
+  }
+
+  if (rule.parent.type === "rule") {
+    return true;
+  }
+
+  return isNestedRule(rule.parent);
+}
+
+function getSingleLocalNamesForComposes(root, rule) {
+  if (isNestedRule(rule)) {
+    throw new Error(`composition is not allowed in nested rule \n\n${rule}`);
+  }
+
   return root.nodes.map((node) => {
     if (node.type !== "selector" || node.nodes.length !== 1) {
       throw new Error(
@@ -91,17 +107,19 @@ const plugin = (options = {}) => {
     Once(root, { rule }) {
       const exports = Object.create(null);
 
-      function exportScopedName(name, rawName) {
+      function exportScopedName(name, rawName, node) {
         const scopedName = generateScopedName(
           rawName ? rawName : name,
           root.source.input.from,
-          root.source.input.css
+          root.source.input.css,
+          node
         );
         const exportEntry = generateExportEntry(
           rawName ? rawName : name,
           scopedName,
           root.source.input.from,
-          root.source.input.css
+          root.source.input.css,
+          node
         );
         const { key, value } = exportEntry;
 
@@ -117,22 +135,34 @@ const plugin = (options = {}) => {
       function localizeNode(node) {
         switch (node.type) {
           case "selector":
-            node.nodes = node.map(localizeNode);
+            node.nodes = node.map((item) => localizeNode(item));
             return node;
           case "class":
             return selectorParser.className({
               value: exportScopedName(
                 node.value,
-                node.raws && node.raws.value ? node.raws.value : null
+                node.raws && node.raws.value ? node.raws.value : null,
+                node
               ),
             });
           case "id": {
             return selectorParser.id({
               value: exportScopedName(
                 node.value,
-                node.raws && node.raws.value ? node.raws.value : null
+                node.raws && node.raws.value ? node.raws.value : null,
+                node
               ),
             });
+          }
+          case "attribute": {
+            if (node.attribute === "class" && node.operator === "=") {
+              return selectorParser.attribute({
+                attribute: node.attribute,
+                operator: node.operator,
+                quoteMark: "'",
+                value: exportScopedName(node.value, null, null),
+              });
+            }
           }
         }
 
@@ -149,8 +179,8 @@ const plugin = (options = {}) => {
                 throw new Error('Unexpected comma (",") in :local block');
               }
 
-              const selector = localizeNode(node.first, node.spaces);
-              // move the spaces that were around the psuedo selector to the first
+              const selector = localizeNode(node.first);
+              // move the spaces that were around the pseudo selector to the first
               // non-container node
               selector.first.spaces = node.spaces;
 
@@ -172,7 +202,7 @@ const plugin = (options = {}) => {
           /* falls through */
           case "root":
           case "selector": {
-            node.each(traverseNode);
+            node.each((item) => traverseNode(item));
             break;
           }
           case "id":
@@ -200,32 +230,39 @@ const plugin = (options = {}) => {
 
         rule.selector = traverseNode(parsedSelector.clone()).toString();
 
-        rule.walkDecls(/composes|compose-with/i, (decl) => {
-          const localNames = getSingleLocalNamesForComposes(parsedSelector);
-          const classes = decl.value.split(/\s+/);
+        rule.walkDecls(/^(composes|compose-with)$/i, (decl) => {
+          const localNames = getSingleLocalNamesForComposes(
+            parsedSelector,
+            decl.parent
+          );
+          const multiple = decl.value.split(",");
 
-          classes.forEach((className) => {
-            const global = /^global\(([^)]+)\)$/.exec(className);
+          multiple.forEach((value) => {
+            const classes = value.trim().split(/\s+/);
 
-            if (global) {
-              localNames.forEach((exportedName) => {
-                exports[exportedName].push(global[1]);
-              });
-            } else if (hasOwnProperty.call(importedNames, className)) {
-              localNames.forEach((exportedName) => {
-                exports[exportedName].push(className);
-              });
-            } else if (hasOwnProperty.call(exports, className)) {
-              localNames.forEach((exportedName) => {
-                exports[className].forEach((item) => {
-                  exports[exportedName].push(item);
+            classes.forEach((className) => {
+              const global = /^global\(([^)]+)\)$/.exec(className);
+
+              if (global) {
+                localNames.forEach((exportedName) => {
+                  exports[exportedName].push(global[1]);
                 });
-              });
-            } else {
-              throw decl.error(
-                `referenced class name "${className}" in ${decl.prop} not found`
-              );
-            }
+              } else if (hasOwnProperty.call(importedNames, className)) {
+                localNames.forEach((exportedName) => {
+                  exports[exportedName].push(className);
+                });
+              } else if (hasOwnProperty.call(exports, className)) {
+                localNames.forEach((exportedName) => {
+                  exports[className].forEach((item) => {
+                    exports[exportedName].push(item);
+                  });
+                });
+              } else {
+                throw decl.error(
+                  `referenced class name "${className}" in ${decl.prop} not found`
+                );
+              }
+            });
           });
 
           decl.remove();
@@ -275,6 +312,27 @@ const plugin = (options = {}) => {
         }
 
         atRule.params = exportScopedName(localMatch[1]);
+      });
+
+      root.walkAtRules(/scope$/i, (atRule) => {
+        if (atRule.params) {
+          atRule.params = atRule.params
+            .split("to")
+            .map((item) => {
+              const selector = item.trim().slice(1, -1).trim();
+
+              const localMatch = /^\s*:local\s*\((.+?)\)\s*$/.exec(selector);
+
+              if (!localMatch) {
+                return `(${selector})`;
+              }
+
+              let parsedSelector = selectorParser().astSync(selector);
+
+              return `(${traverseNode(parsedSelector).toString()})`;
+            })
+            .join(" to ");
+        }
       });
 
       // If we found any :locals, insert an :export rule

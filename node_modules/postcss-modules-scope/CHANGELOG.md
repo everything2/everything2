@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.1](https://github.com/postcss-modules-local-by-default/compare/v3.2.0...v3.2.1)
+
+### Chore
+
+- update `postcss-selector-parser`
+
+## [3.2.0](https://github.com/postcss-modules-local-by-default/compare/v3.1.2...v3.2.0) - 2024-04-03
+
+### Features
+
+- supports multiple composes, i.e. `.class { composes: a b, global(c), d e from "./path/file.css" }`
+
+## [3.1.2](https://github.com/postcss-modules-local-by-default/compare/v3.1.1...v3.1.2) - 2024-04-03
+
+### Fixes
+
+- export a root and limit from the `@scope` at-rule
+
+## [3.1.1](https://github.com/postcss-modules-local-by-default/compare/v3.1.0...v3.1.1) - 2024-01-18
+
+### Fixes
+
+- handle `@scope` at-rule
+- fix CSS nesting logic
+
+## [3.1.0](https://github.com/postcss-modules-local-by-default/compare/v3.0.0...v3.1.0) - 2023-12-21
+
+### Fixes
+
+- scoped class attribute
+
+### Features
+
+- pass a node to the `generateExportEntry` option
+
 ## [3.0.0](https://github.com/postcss-modules-local-by-default/compare/v3.0.0-rc.2...v3.0.0) - 2020-10-13
 
 ### Fixes
