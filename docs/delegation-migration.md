@@ -425,6 +425,169 @@ grep -r "INSERT\|UPDATE" ecore/ --include="*.pm" | grep -i "date\|timestamp"
 - Schema is already documented in database migrations
 - Docker development environment can test MySQL 8.4 locally
 
+#### Development Goals - Settings Table JSON Migration
+
+**Goal**: Migrate the settings table from custom key-value encoding to JSON storage for improved queryability and support for complex data types.
+
+**Current Issues**:
+
+1. **Custom Encoding Format**:
+   - Settings stored as custom-encoded key-value pairs
+   - `vars` table stores user preferences and developer variables (VARS hash)
+   - Custom serialization format makes it difficult to query specific keys
+   - Limited support for complex data structures (arrays, nested objects)
+   - Hard to add indexing or search capabilities
+
+2. **Schema Limitations**:
+   - TEXT column type stores serialized data
+   - No ability to query or index individual keys
+   - No data type validation at database level
+   - Schema doesn't reflect actual data structure
+
+3. **Code Complexity**:
+   - Custom encoding/decoding logic must be maintained
+   - Error-prone serialization format
+   - Difficult to debug stored values
+   - No standardized tooling support
+
+**Business Rationale**:
+- **Developer Experience**: JSON is a standard format with widespread tooling support
+- **Queryability**: MySQL JSON column type enables queries on specific keys
+- **Indexing**: JSON columns support generated columns and indexes for performance
+- **Validation**: JSON schema validation can prevent corrupt data
+- **Modern Stack**: Aligns with REST API JSON responses and React state management
+- **Future-proofing**: Enables GraphQL-style field selection and advanced querying
+
+**Technical Challenges**:
+
+1. **Data Migration**:
+   - Convert existing custom-encoded settings to JSON
+   - Preserve all existing key-value pairs exactly
+   - Validate converted data matches original
+   - Handle edge cases (special characters, binary data, etc.)
+
+2. **Schema Changes**:
+   - Change column type from TEXT to JSON
+   - Add generated columns for frequently-queried keys
+   - Create indexes on JSON paths for performance
+   - Maintain backward compatibility during migration
+
+3. **Code Updates**:
+   - Update `getVars()` / `setVars()` to use JSON encoding
+   - Update all code that reads/writes settings
+   - Update developer vars handling
+   - Ensure proper JSON escaping and validation
+
+4. **Performance Impact**:
+   - JSON parsing vs. custom decoding overhead
+   - Index usage for common queries
+   - Storage size comparison (JSON vs. custom format)
+   - Connection pool impact
+
+**Migration Path**:
+
+1. **Phase 1: Analysis and Planning**
+   - Document current encoding format specification
+   - Inventory all settings keys across codebase
+   - Identify most frequently accessed keys (candidates for indexing)
+   - Create test dataset with edge cases
+   - Benchmark current performance baselines
+
+2. **Phase 2: Code Preparation**
+   - Create JSON encoder/decoder functions compatible with current format
+   - Add feature flag to switch between encodings
+   - Update `Everything::HTML::setVars()` and `getVars()`
+   - Add comprehensive tests for encoding conversion
+   - Test dual-write mode (write both formats, read from JSON)
+
+3. **Phase 3: Migration Script**
+   - Create conversion script: custom encoding → JSON
+   - Validate converted data matches original
+   - Handle special cases (NULL values, empty strings, etc.)
+   - Add rollback capability
+   - Test on copy of production data
+
+4. **Phase 4: Schema Changes**
+   - Alter table to add new JSON column
+   - Dual-write to both columns during transition
+   - Verify JSON column data integrity
+   - Create generated columns for key indexes (e.g., `theme`, `num_newwus`)
+   - Add indexes on frequently-queried generated columns
+
+5. **Phase 5: Cutover**
+   - Switch read operations to JSON column
+   - Monitor for errors and performance issues
+   - Drop old custom-encoded column after confidence period
+   - Update documentation with new JSON schema
+
+**Example Schema Changes**:
+```sql
+-- Add JSON column
+ALTER TABLE vars ADD COLUMN vars_json JSON;
+
+-- Create generated columns for common keys
+ALTER TABLE vars
+  ADD COLUMN theme VARCHAR(50)
+  GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(vars_json, '$.theme'))) STORED,
+  ADD COLUMN num_newwus INT
+  GENERATED ALWAYS AS (JSON_EXTRACT(vars_json, '$.num_newwus')) STORED;
+
+-- Add indexes for performance
+CREATE INDEX idx_vars_theme ON vars(theme);
+CREATE INDEX idx_vars_num_newwus ON vars(num_newwus);
+
+-- Query examples with new schema
+SELECT * FROM vars WHERE theme = 'zenlight';
+SELECT * FROM vars WHERE num_newwus > 20;
+SELECT JSON_EXTRACT(vars_json, '$.notifications.email') FROM vars WHERE user_id = 123;
+```
+
+**Code Updates Example**:
+```perl
+# Before (custom encoding)
+my $vars_text = $DB->sqlSelect('vars', 'vars', "vars_id = $user_id");
+my $VARS = decode_custom_format($vars_text);
+
+# After (JSON)
+my $vars_json = $DB->sqlSelect('vars_json', 'vars', "vars_id = $user_id");
+my $VARS = JSON::decode_json($vars_json);
+
+# Setting values
+my $json = JSON::encode_json($VARS);
+$DB->sqlUpdate('vars', {vars_json => $json}, "vars_id = $user_id");
+```
+
+**Benefits**:
+- **Complex Types**: Store arrays, nested objects, booleans natively
+  - Example: `notifications: { email: true, messages: ['inbox', 'mentions'] }`
+- **Queryability**: Find all users with specific settings
+  - Example: "All users with dark theme enabled"
+- **Indexing**: Fast lookups on common preferences
+- **Validation**: JSON schema enforcement at database level
+- **Developer Tools**: Standard JSON tools for debugging and analysis
+- **API Integration**: Direct mapping to REST API responses
+
+**Priority**: Medium
+- **Timeline**: 6-8 weeks (can run parallel to other migrations)
+- **Risk**: Medium (requires careful data migration, affects all users)
+- **Dependencies**:
+  - Requires comprehensive testing infrastructure
+  - Should coordinate with MySQL 8.4 upgrade for optimal JSON support
+  - Consider alongside PSGI migration for testing strategy
+- **Estimated Effort**: 6-8 weeks
+  - Week 1-2: Analysis, documentation, planning
+  - Week 3-4: Code updates, dual-write implementation
+  - Week 5-6: Data migration, testing
+  - Week 7: Schema changes, index creation
+  - Week 8: Cutover, monitoring, cleanup
+
+**Related Work**:
+- MySQL 8.4 has improved JSON performance and features
+- REST APIs already use JSON for data exchange
+- React components work natively with JSON structures
+- Modern web standards favor JSON over custom formats
+- Existing VARS handling code provides migration starting point
+
 ## Migration Process
 
 ### 1. Locate the Node XML

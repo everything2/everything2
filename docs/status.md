@@ -191,6 +191,54 @@ extends 'Everything::Node';
 
 **See**: [Development Goals - MySQL Modernization](delegation-migration.md#development-goals---mysql-modernization-80--84) for detailed migration strategy
 
+## Settings Table JSON Migration (Priority 4)
+
+### Current State: Custom Key-Value Encoding
+- Settings stored in `vars` table using custom serialization
+- TEXT column type with proprietary encoding format
+- No queryability on individual keys
+- Limited support for complex data types
+- Hard to index or search specific preferences
+
+### Goal
+Migrate from custom key-value encoding to MySQL JSON column type for improved queryability, indexing, and support for complex data structures.
+
+### Benefits
+- **Queryability**: Find users by specific settings (e.g., "all users with dark theme")
+- **Indexing**: Generated columns + indexes for frequently-queried keys
+- **Complex Types**: Native support for arrays, nested objects, booleans
+- **Validation**: JSON schema enforcement at database level
+- **Developer Tools**: Standard JSON tooling for debugging and analysis
+- **API Integration**: Direct mapping to REST API responses
+
+### Migration Strategy
+1. **Phase 1**: Document current encoding, analyze settings usage
+2. **Phase 2**: Implement dual-write (custom + JSON)
+3. **Phase 3**: Convert existing data, validate integrity
+4. **Phase 4**: Add JSON column, generated columns, indexes
+5. **Phase 5**: Switch reads to JSON, drop old column
+
+### Estimated Effort
+- **Total:** 6-8 weeks
+- **Risk:** Medium (affects all users, requires careful data migration)
+- **Dependencies:** Testing infrastructure, MySQL 8.4 upgrade (for optimal JSON performance)
+- **Rollback:** Medium complexity (dual-write enables gradual rollback)
+
+### Technical Challenges
+1. Preserve exact data during custom→JSON conversion
+2. Maintain backward compatibility during transition
+3. Performance impact of JSON parsing vs. custom decoding
+4. Identify frequently-queried keys for indexing
+
+### Next Steps
+1. Document current custom encoding format specification
+2. Inventory all VARS keys across codebase
+3. Create test dataset with edge cases
+4. Benchmark current performance baselines
+5. Implement JSON encoder/decoder with tests
+
+**See**: [Development Goals - Settings Table JSON Migration](delegation-migration.md#development-goals---settings-table-json-migration) for detailed migration strategy
+
 ## PSGI/Plack Migration (Priority 5)
 
 ### Current State: Apache mod_perl2 + Prefork MPM

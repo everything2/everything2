@@ -12280,4 +12280,192 @@ sub recent_users
     return $str;
 }
 
+# The Catwalk (superdoc)
+# Browser for all stylesheets/themes on E2
+# Allows sorting, filtering by author, and testing themes
+sub the_catwalk
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    # Guest users get simple message
+    return "This page will allow you to customize your view of the site if you sign up for an account."
+        if ( $APP->isGuest($USER) );
+
+    my $str            = undef;
+    my $nodeType       = 1854352;    # Stylesheet nodetype
+    my $selectionTypeID = undef;
+    my $sqlSort        = undef;
+    my $sqlFilterUser  = undef;
+    my $plainTextFilter = undef;
+    my $total          = undef;
+    my $sth            = undef;
+    my $num            = 100;
+    my $listedItems    = undef;
+    my $next           = undef;
+    my $queryText      = undef;
+    my $numCurFound    = 0;
+    my $aID            = undef;
+    my $nextprev       = undef;
+    my $remainder      = undef;
+
+    # Sort options for combo box
+    my $choicelist = [
+        '0',        '(no sorting)',
+        'nameA',    'title, ascending (ABC)',
+        'nameD',    'title, descending (ZYX)',
+        'createA',  'create time, ascending (oldest first)',
+        'createD',  'create time, descending (newest first)',
+    ];
+    my $opt = 'sort order: ';
+    $opt .= htmlcode( 'varsComboBox', 'ListNodesOfType_Sort', 0, @$choicelist );
+
+    $opt .= 'only show things ('
+        . $query->checkbox( 'filter_user_not', 0, 1, 'not' )
+        . ') written by '
+        . $query->textfield('filter_user')
+        . '<br>';
+
+    # Clear custom style if requested
+    if ( defined( $query->param('clearVandalism') ) ) {
+        delete( $$VARS{customstyle} );
+    }
+
+    $str = '';
+
+    # Show current user's stylesheet
+    if ( length( $$VARS{userstyle} ) ) {
+        $str .= "\n<p>What's your style? Currently " . linkNode( $$VARS{userstyle} ) . ".</p>";
+    }
+    $str .= "\n<p>A selection of popular stylesheets can be found at [Theme Nirvana]; below is a list of every stylesheet ever submitted here.</p>";
+
+    # Show customization options
+    if ( length( $$VARS{customstyle} ) ) {
+        $str .= '<p>Note that you have customised your style using the [style defacer], which is going to affect the formatting of any stylesheet you choose. '
+            . linkNode( $NODE, 'Click here to clear that out', { clearVandalism => 'true' } )
+            . ' if that\'s not what you want. If you want to create a whole new stylesheet, visit [the draughty atelier].</p>';
+    }
+    else {
+        $str .= "<p>You can customise your stylesheet at the [style defacer] or, if you're feeling brave, create a whole new stylesheet at [the draughty atelier].</p>";
+    }
+
+    # Form for filtering/sorting
+    $str .= '
+<form method="POST">
+<input type="hidden" name="node_id" value="' . $NODE->{node_id} . '" />
+';
+    $str .= $opt;
+    $str .= $query->submit( 'fetch', 'Fetch!' ) . '
+</form>';
+
+    $selectionTypeID = $VARS->{ListNodesOfType_Type};
+
+    # Helper function to force 0 or 1 from CGI parameter
+    my $cgiBool = sub {
+        return ( $query->param( $_[0] ) eq '1' ) ? 1 : 0;
+    };
+
+    # Mapping of unsafe VARS sort data into safe SQL
+    my %mapVARStoSQL = (
+        '0'       => '',
+        'nameA'   => 'title ASC',
+        'nameD'   => 'title DESC',
+        'authorA' => 'author_user ASC',
+        'authorD' => 'author_user DESC',
+        'createA' => 'createtime ASC',
+        'createD' => 'createtime DESC',
+    );
+    $sqlSort = $mapVARStoSQL{ $VARS->{ListNodesOfType_Sort} };
+
+    # Handle user filtering
+    my $filterUserNot = $cgiBool->('filter_user_not');
+    my $filterUser    = ( defined $query->param('filter_user') ) ? $query->param('filter_user') : undef;
+    if ( defined $filterUser ) {
+        $filterUser = getNode( $filterUser, 'user' ) || getNode( $filterUser, 'usergroup' ) || undef;
+    }
+
+    $sqlFilterUser  = '';
+    $plainTextFilter = '';
+    if ( defined $filterUser ) {
+        $sqlFilterUser = ' AND author_user' . ( $filterUserNot ? '!=' : '=' ) . getId($filterUser);
+        $plainTextFilter .= ( $filterUserNot ? ' not' : '' ) . ' created by ' . linkNode( $filterUser, 0, { lastnode_id => 0 } );
+    }
+
+    # Get total count
+    $sth = $DB->{dbh}->prepare( "SELECT COUNT(*) FROM node WHERE type_nodetype='$nodeType'" . $sqlFilterUser );
+    $sth->execute();
+    ($total) = $sth->fetchrow;
+    $str .= $plainTextFilter if length($plainTextFilter);
+
+    # Get paginated list
+    $listedItems = '';
+    $next        = $query->param('next') || '0';
+    $queryText   = "SELECT node_id, title, author_user, createtime FROM node WHERE type_nodetype = '$nodeType'";
+    $queryText .= $sqlFilterUser if length($sqlFilterUser);
+    $queryText .= ' ORDER BY ' . $sqlSort if length($sqlSort);
+    $queryText .= " LIMIT $next, $num";
+
+    $sth = $DB->{dbh}->prepare($queryText);
+    $sth->execute();
+    $numCurFound = 0;
+    while ( my $item = $sth->fetchrow_arrayref ) {
+        ++$numCurFound;
+        $listedItems .= '<tr>';
+        $aID = $$item[2];
+
+        # Show edit link if admin or user viewing page created node
+        $listedItems .= '<td>' . linkNode( @$item[ 0, 1 ], { lastnode_id => 0 } ) . '</td>';
+        $listedItems .= '<td>' . linkNode( $aID, 0, { lastnode_id => 0 } ) . '</td>';
+        my $createTime = @$item[3];
+        $listedItems .= '<td>' . htmlcode( 'parsetimestamp', $createTime . ',1' ) . '</td><td>' . htmlcode( 'timesince', $createTime . ',1,100' ) . '</td>';
+        $listedItems .= '<td>'
+            . (
+            $APP->isGuest($USER)
+            ? '&nbsp;'
+            : '&#91;&nbsp;<a href="/?displaytype=choosetheme&theme='
+                . $$item[0]
+                . '&noscript=1"
+ 			onfocus="this.href = this.href.replace( \'&noscript=1\' , \'\' ) ;">test</a>&nbsp;]'
+            ) . '</td>';
+        $listedItems .= "</tr>\n";
+    }
+    $str .= ' (Showing items ' . ( $next + 1 ) . ' to ' . ( $next + $numCurFound ) . '.)' if $total;
+    $str .= '</p><p><table border="0">
+<tr><th>title</th><th>author</th><th>created</th><th>age</th><th>&nbsp;</th></tr>
+'
+        . $listedItems . '
+</table></p>
+';
+    return $str if ( $total < $num );
+
+    # Helper function to generate pagination links
+    my $jumpLinkGen = sub {
+        my ( $startNum, $disp ) = @_;
+        my $opts = {
+            'node_id' => $$NODE{node_id},
+            'fetch'   => 1,
+            'next'    => $startNum,
+        };
+        if ( defined $filterUser ) {
+            $$opts{filter_user}     = $$filterUser{title};
+            $$opts{filter_user_not} = $filterUserNot;
+        }
+        return '<a href=' . urlGen($opts) . '>' . $disp . '</a>';
+    };
+
+    $nextprev = '';
+    $remainder = $total - ( $next + $num );
+    if ( $next > 0 ) {
+        $nextprev .= $jumpLinkGen->( $next - $num, 'previous ' . $num ) . "<br />\n";
+    }
+    if ( $remainder < $num and $remainder > 0 ) {
+        $nextprev .= $jumpLinkGen->( $next + $num, 'next ' . $remainder ) . "\n";
+    }
+    elsif ( $remainder > 0 ) {
+        $nextprev .= $jumpLinkGen->( $next + $num, 'next ' . $num ) . "<br />\n";
+    }
+    $str .= qq|<p align="right">$nextprev</p>| if length($nextprev);
+
+    return $str;
+}
+
 1;
