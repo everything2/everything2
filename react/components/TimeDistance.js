@@ -29,7 +29,7 @@ const TimeDistance = ({then,now}) => {
 
   if(timeDiff < 300)
   {
-    timeStr = "just now"
+    return "just now"
   }else if(timeDiff < 60*60)
   {
     timeStr = roundGently(timeDiff/60,1)+"m"

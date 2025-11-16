@@ -34,7 +34,7 @@ sub layout
   my $printsheet = $self->APP->node_by_name("print","stylesheet");
 
   my $canonical_url = "https://".$self->CONF->canonical_web_server.$params->{node}->canonical_url;
-  
+
   $params->{basesheet} = $basesheet->cdn_link;
   $params->{zensheet} = $zensheet->cdn_link;
   $params->{customstyle} = $customstyle;
