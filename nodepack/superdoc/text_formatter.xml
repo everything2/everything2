@@ -1,5 +1,423 @@
 <node>
-  <doctext></doctext>
+  <doctext>[% return '&lt;p&gt;Note: this is from [Magical Text Formatter]&lt;/p&gt;' if $APP-&gt;isDeveloper($USER); %]
+&lt;p align=&quot;right&quot;&gt;Last updated Thursday March 21, 2002&lt;/p&gt;
+&lt;!-- 
+  This is mblase's edevdoc. Howdy.
+  All JavaScript code is copyright 2000 by me. 
+  Please /msg with any changes, suggestions, etc.
+--&gt;
+&lt;p&gt;
+This is intended to be the E2 Text Formatter to end all Text Formatters. 
+It will [E2 Paragraph Tagger|insert paragraphs]. 
+It will [Wharfinger's Linebreaker|insert line breaks]. 
+It will [E2 Source Code Formatter|escape special characters]. 
+It will [E2 List Formatter|format lists of items]. 
+And it will add styles, interpret horizontal rules, 
+and indent using the markup tags of your choice, 
+all thanks to the power of [regular expression|regular expressions]. 
+&lt;p&gt;
+&lt;script language=&quot;javascript&quot;&gt;
+if (navigator.userAgent.indexOf('Opera') == -1) {
+//version = navigator.userAgent.substring(navigator.userAgent.indexOf('v'));
+  document.write(&quot;The \&quot;undo\&quot; and \&quot;preview\&quot; features are there because I always wanted them. I hope they're useful. &quot;);
+} else {
+  document.write(&quot;The \&quot;undo\&quot; feature is there because I always wanted it. I hope it's useful. &quot;);
+}
+&lt;/script&gt;
+Several configurable options are below the form buttons; 
+their default settings are all what seem to be used most often.
+&lt;p&gt;
+The one caveat is that your browser must support JavaScript 1.2, 
+which includes Netscape 4.0, Internet Explorer 4.0, and Opera 5.0. 
+If you have any problems, comments, or whatnot, send a [/msg] to [mblase].
+&lt;p&gt;
+
+&lt;hr /&gt;
+
+&lt;form action=&quot;/index.pl&quot; name=&quot;dummyform&quot; method=&quot;post&quot;&gt;
+
+Enter the text to format below. 
+&lt;a href=&quot;#&quot; onClick=&quot;return clearBox()&quot;&gt;Clear the box&lt;/a&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;textarea name=&quot;skratch&quot; cols=&quot;60&quot; rows=&quot;16&quot; 
+style=&quot;font-family:monospace&quot;&gt;Text can be *formatted* in a _variety_ of */styles/*. 
+Characters like &lt;, &gt;, and &amp; are automatically escaped.
+
+   You can also create indented text 
+   and lists of items:
+
+1) alpha
+2) bravo
+3) charlie
+
+* one
+* two
+* three
+
+-----------
+Just above this text is a horizontal line.&lt;/textarea&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;undo&quot; value=&quot;&quot;&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Format Text&quot; onClick=&quot;doFormat();return false&quot;&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Undo&quot; onClick=&quot;undoFormat();return false&quot;&gt;
+&lt;script language=&quot;javascript&quot;&gt;
+if (navigator.userAgent.indexOf('Opera') == -1) {
+//version = navigator.userAgent.substring(navigator.userAgent.indexOf('v'));
+  document.write('&lt;input type=&quot;submit&quot; value=&quot;Preview&quot; onClick=&quot;popupHTML();return false&quot;&gt;');
+}
+&lt;/script&gt;
+
+&lt;hr&gt;
+Format new lines using:&lt;br /&gt;
+&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+&lt;input type=&quot;radio&quot; name=&quot;breaks&quot; value=&quot;p&quot; checked&gt;
+  &lt;tt&gt;&amp;lt;p&amp;gt;...&amp;lt;/p&amp;gt;&lt;/tt&gt; paragraph tags at empty lines&lt;br /&gt;
+&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+&lt;input type=&quot;radio&quot; name=&quot;breaks&quot; value=&quot;br&quot;&gt;
+  &lt;tt&gt;&amp;lt;br /&amp;gt;&lt;/tt&gt; line break after each new line&lt;br /&gt;
+
+&lt;br /&gt;
+Convert &lt;tt&gt;*starred text*&lt;/tt&gt; to: &lt;br /&gt;
+  &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+  &lt;input type=&quot;radio&quot; name=&quot;starred&quot; value=&quot;b&quot; checked&gt; &lt;b&gt;bold&lt;/b&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;starred&quot; value=&quot;i&quot;&gt; &lt;i&gt;italics&lt;/i&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;starred&quot; value=&quot;u&quot;&gt; &lt;u&gt;underline&lt;/u&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;starred&quot; value=&quot;&quot;&gt; plain text
+  &lt;input type=&quot;radio&quot; name=&quot;starred&quot; value=&quot;ignore&quot;&gt; don't convert to HTML
+&lt;br /&gt;
+Convert &lt;tt&gt;_underscored text_&lt;/tt&gt; to: &lt;br /&gt;
+  &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+  &lt;input type=&quot;radio&quot; name=&quot;underlined&quot; value=&quot;b&quot;&gt; &lt;b&gt;bold&lt;/b&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;underlined&quot; value=&quot;i&quot; checked&gt; &lt;i&gt;italics&lt;/i&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;underlined&quot; value=&quot;u&quot;&gt; &lt;u&gt;underline&lt;/u&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;underlined&quot; value=&quot;&quot;&gt; plain text
+  &lt;input type=&quot;radio&quot; name=&quot;underlined&quot; value=&quot;ignore&quot;&gt; don't convert to HTML
+&lt;br /&gt;
+Convert &lt;tt&gt;/slashed text/&lt;/tt&gt; to: &lt;br /&gt;
+  &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+  &lt;input type=&quot;radio&quot; name=&quot;slashed&quot; value=&quot;b&quot;&gt; &lt;b&gt;bold&lt;/b&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;slashed&quot; value=&quot;i&quot; checked&gt; &lt;i&gt;italics&lt;/i&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;slashed&quot; value=&quot;u&quot;&gt; &lt;u&gt;underline&lt;/u&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;slashed&quot; value=&quot;&quot;&gt; plain text
+  &lt;input type=&quot;radio&quot; name=&quot;slashed&quot; value=&quot;ignore&quot;&gt; don't convert to HTML
+&lt;br /&gt;
+
+&lt;br /&gt;
+Convert lines beginning with &lt;tt&gt;*&lt;/tt&gt; or &lt;tt&gt;.&lt;/tt&gt; to:&lt;br /&gt;
+  &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+  &lt;input type=&quot;radio&quot; name=&quot;starlist&quot; value=&quot;ul&quot; checked&gt; bulleted lists
+  &lt;input type=&quot;radio&quot; name=&quot;starlist&quot; value=&quot;ol&quot;&gt; numbered lists
+  &lt;input type=&quot;radio&quot; name=&quot;starlist&quot; value=&quot;ignore&quot;&gt; don't convert to lists
+&lt;br /&gt;
+Convert lines beginning with &lt;tt&gt;-&lt;/tt&gt; or &lt;tt&gt;--&lt;/tt&gt; to:&lt;br /&gt;
+  &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+  &lt;input type=&quot;radio&quot; name=&quot;dashlist&quot; value=&quot;ul&quot; checked&gt; bulleted lists
+  &lt;input type=&quot;radio&quot; name=&quot;dashlist&quot; value=&quot;ol&quot;&gt; numbered lists
+  &lt;input type=&quot;radio&quot; name=&quot;dashlist&quot; value=&quot;ignore&quot;&gt; don't convert to lists
+&lt;br /&gt;
+Convert lines beginning with &lt;tt&gt;1.2.3.&lt;/tt&gt; or &lt;tt&gt;1)2)3)&lt;/tt&gt; to:&lt;br /&gt;
+  &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+  &lt;input type=&quot;radio&quot; name=&quot;numberlist&quot; value=&quot;ul&quot;&gt; bulleted lists
+  &lt;input type=&quot;radio&quot; name=&quot;numberlist&quot; value=&quot;ol&quot; checked&gt; numbered lists
+  &lt;input type=&quot;radio&quot; name=&quot;numberlist&quot; value=&quot;ignore&quot;&gt; don't convert to lists
+&lt;br /&gt;
+Convert other indented text to:&lt;br /&gt;
+  &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+  &lt;input type=&quot;radio&quot; name=&quot;indent&quot; value=&quot;blockquote&quot; checked&gt; blockquotes
+  &lt;input type=&quot;radio&quot; name=&quot;indent&quot; value=&quot;pre&quot;&gt; &lt;tt&gt;preformatted text&lt;/tt&gt;
+  &lt;input type=&quot;radio&quot; name=&quot;indent&quot; value=&quot;ignore&quot;&gt; don't indent
+&lt;br /&gt;
+
+&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;horizrule&quot; value=&quot;yes&quot; checked&gt;
+    Convert rows of hyphens, equals or underscores into &lt;tt&gt;&amp;lt;hr /&amp;gt;&lt;/tt&gt; tags&lt;br /&gt;
+&lt;!-- ADDED 08/31/01 --&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;logicalstyles&quot; value=&quot;yes&quot;&gt;
+    Use &lt;strong&gt;&amp;lt;strong&amp;gt;&lt;/strong&gt; and &lt;em&gt;&amp;lt;em&amp;gt;&lt;/em&gt; instead of &lt;b&gt;&amp;lt;b&amp;gt;&lt;/b&gt; and &lt;i&gt;&amp;lt;i&amp;gt;&lt;/i&gt;&lt;br /&gt;
+&lt;!-- END ADDED --&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;curlyquotes&quot; value=&quot;yes&quot; checked&gt;
+    Convert all &quot;curly quotes&quot; to standard quotes&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;brackets&quot; value=&quot;yes&quot;&gt;
+    Convert &amp;#91;brackets&amp;#93; to HTML symbols&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;asciichars&quot; value=&quot;yes&quot; checked&gt;
+    Convert other ASCII characters to HTML symbols&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;striptags&quot; value=&quot;yes&quot;&gt;
+    Strip existing HTML tags before formatting&lt;br /&gt;
+&lt;!-- &lt;input type=&quot;checkbox&quot; name=&quot;optimize&quot; value=&quot;yes&quot;&gt;
+    Optimize HTML by removing extra whitespace&lt;br /&gt; --&gt;
+&lt;br /&gt;
+
+&lt;/form&gt;
+
+
+&lt;script language=&quot;javascript1.2&quot;&gt;
+&lt;!--
+var myform = document.skratchform;
+// ========================================================================
+// some hacks to get around E2's lack of bracket escapes
+var ob = String.fromCharCode(91);    // opening bracket
+var cb = String.fromCharCode(93);    // closing bracket
+function getRadio(name,pos) { return eval(&quot;myform.&quot;+name+ob+pos+cb); }
+// the main formatting function, checks all options and adds tags accordingly
+function clearBox() {
+  myform.undo.value = myform.skratch.value;
+  myform.skratch.value = &quot;&quot;;
+  return false;
+}
+function doFormat() {
+  var text = myform.skratch.value;
+  myform.undo.value = text;
+  text = fixEndOfLine(text);
+
+
+  // prepare the text
+  if (myform.striptags.checked)   { text = stripTags(text); }
+  if (myform.curlyquotes.checked) { text = fixCurlyQuotes(text); }
+  if (myform.asciichars.checked)  { text = encodeAscii(text); }
+  if (myform.brackets.checked)    { text = encodeBrackets(text); }
+  
+
+  // add text styles
+  for (var i=0; i&lt;myform.slashed.length; i++) {
+    var myradio = getRadio(&quot;slashed&quot;, i);
+    if (myradio.checked) { text = addStyles(&quot;\\/&quot;, myradio.value, text); }
+  }
+  for (var i=0; i&lt;myform.starred.length; i++) {
+    var myradio = getRadio(&quot;starred&quot;, i);
+    if (myradio.checked) { text = addStyles(&quot;\\*&quot;, myradio.value, text); }
+  }
+  for (var i=0; i&lt;myform.underlined.length; i++) {
+    var myradio = getRadio(&quot;underlined&quot;, i);
+    if (myradio.checked) { text = addStyles(&quot;_&quot;, myradio.value, text); }
+  }
+
+  
+  // format linebreaks and horiz. rules
+  for (var i=0; i&lt;myform.breaks.length; i++) {
+    var myradio = getRadio(&quot;breaks&quot;, i);
+    if (myradio.value==&quot;p&quot; &amp;&amp; myradio.checked) { text = addPara(text); } 
+    else if (myradio.value==&quot;br&quot; &amp;&amp; myradio.checked) { text = addBr(text); }
+  }
+  if (myform.horizrule.checked)   { text = addHorizRule(text); }
+
+  
+  // format ordered and unordered lists and indenting
+  for (var i=0; i&lt;myform.starlist.length; i++) {
+    var myradio = getRadio(&quot;starlist&quot;, i);
+    if (myradio.checked) { text = addGenericList(ob+&quot;\\*\\.&quot;+cb+&quot; &quot;, &quot;li&quot;, myradio.value, text); }
+  }
+  for (var i=0; i&lt;myform.dashlist.length; i++) {
+    var myradio = getRadio(&quot;dashlist&quot;, i);
+    if (myradio.checked) { text = addGenericList(&quot;\\-\\-?&quot;, &quot;li&quot;, myradio.value, text); }
+  }
+  for (var i=0; i&lt;myform.numberlist.length; i++) {
+    var myradio = getRadio(&quot;numberlist&quot;, i);
+    if (myradio.checked) { text = addGenericList(&quot;\\d+&quot;+ob+&quot;\\.\\) &quot;+cb, &quot;li&quot;, myradio.value, text);}
+  }
+  for (var i=0; i&lt;myform.indent.length; i++) {
+    var myradio = getRadio(&quot;indent&quot;, i);
+    if (myradio.checked) { text = addGenericList(&quot;(\\t+|  +) *&quot;, &quot;&quot;, myradio.value, text); }
+  }
+
+
+  // optimize HTML
+  text = text.replace(/&lt;\/?&gt;/g, &quot;&quot;);    // delete &quot;empty tags&quot;
+//  if (myform.optimize.checked) { text = optimizeWhitespace(text); }
+  text = optimizeWhitespace(text);
+  text = text.replace(/^\n+/, &quot;&quot;);      // trim leading linebreaks
+  text = text.replace(/\n+$/, &quot;\n&quot;);    // trim trailing linebreaks
+  myform.skratch.value = text;
+  myform.skratch.select();
+}
+// undo the latest formatting using the hidden &quot;undo&quot; input tag
+function undoFormat() {
+  var temp = myform.skratch.value;
+  myform.skratch.value = myform.undo.value;
+  myform.undo.value = temp;
+}
+// open a new browser window 
+
+function popupHTML() {
+  var wintext = myform.skratch.value;
+  var reg1 = new RegExp(&quot;\\&quot;+ob+&quot;(&quot;+ob+&quot;^\\|\\&quot;+cb+cb+&quot;*)&quot;+&quot;\\|&quot;+&quot;(&quot;+ob+&quot;^\\&quot;+cb+cb+&quot;*)\\&quot;+cb, &quot;g&quot;); // pipe link
+  var reg2 = new RegExp(&quot;\\&quot;+ob+&quot;(&quot;+ob+&quot;^\\&quot;+cb+cb+&quot;*)\\&quot;+cb, &quot;g&quot;);   // hard link
+  var reg3 = /\s/g;
+  var starturl = &quot;&lt;a target=\&quot;_blank\&quot; href=\&quot;/index.pl?node=&quot;;
+  var endurl = &quot;\&quot;&gt;&quot;;
+// ADDED 10/10/01
+  wintext = wintext.replace(reg1, starturl+&quot;$1&quot;+endurl+&quot;$2&lt;/a&gt;&quot;);
+  wintext = wintext.replace(reg2, starturl+&quot;$1&quot;+endurl+&quot;$1&lt;/a&gt;&quot;);
+  var idx = wintext.indexOf(starturl);
+  while (idx&gt;0) {
+    idx += starturl.length;
+    var end = wintext.indexOf(endurl, idx);
+    wintext = wintext.substring(0,idx)+escape(wintext.substring(idx,end))+wintext.substring(end);
+    idx = wintext.indexOf(starturl, idx+1);
+  }
+// END ADDED
+// ADDED 8/31/01
+// whoops -- nested functions is a JS 1.3 feature.
+//  wintext = wintext.replace(reg1, function makeLink($0,$1) {
+//                var s1=$1, s2=s1, pp=s1.indexOf(&quot;|&quot;);
+//                if (pp&gt;0) { s2=s1.substr(pp+1); s1=s1.substr(0,pp); }
+//                return &quot;&lt;a target=\&quot;_blank\&quot; href=\&quot;/index.pl?node=&quot;+escape(s1)+&quot;\&quot;&gt;&quot;+s2+&quot;&lt;/a&gt;&quot;;
+//              }
+//            );
+// END ADDED
+
+// to add: close the popup window if it's already there
+
+  var popupWin = window.open('', 'popup', 'status,scrollbars,resizable,width=480,height=360,left=20,top=20');
+  var popupText = &quot;&lt;html&gt;&lt;head&gt;&quot;;
+  popupText += &quot;&lt;title&gt;Magical Text Formatter Preview@everything2.com&lt;/title&gt;&quot;;
+  popupText += &quot;&lt;/head&gt;&lt;body bgcolor='white'&gt;&quot;;
+  popupText += &quot;&lt;p align='right'&gt;&lt;a href='javascript:window.close()'&gt;Close window&lt;/a&gt;&lt;/p&gt;&quot;;
+  popupText += wintext;
+  popupText += &quot;&lt;/body&gt;&lt;/html&gt;\n&quot;;
+  popupWin.document.open();
+  popupWin.document.write(popupText);
+  popupWin.document.close();
+  popupWin.focus();
+}
+// ========================================================================
+// turn all end-of-line invisible characters to &quot;standard&quot; \n characters
+function stripTags(str) {
+  reg1 = new RegExp(&quot;&lt;&quot;+ob+&quot;^ &quot;+cb+&quot;&quot;+ob+&quot;^&gt;&quot;+cb+&quot;*&gt;&quot;, &quot;g&quot;);
+  str = str.replace(reg1, &quot;&quot;);
+  return str;
+}
+function fixEndOfLine(str) {
+  str = str.replace(/\r\n/g, &quot;\n&quot;);  // windows to unix
+  str = str.replace(/\r/g, &quot;\n&quot;);    // mac to unix
+  str = str.replace(/^\n+/, &quot;&quot;);     // trim extra leading linebreaks
+  str = str.replace(/\n+$/, &quot;&quot;);     // trim extra trailing linebreaks
+  return str;
+}
+// replace &quot;curly quotes&quot; with regular HTML-safe quotes
+function fixCurlyQuotes(str) {
+  var reg1 = new RegExp(ob+String.fromCharCode(8216)+String.fromCharCode(8217)+cb, &quot;g&quot;);
+  str = str.replace(reg1, &quot;\&quot;&quot;);    // single quotes
+  var reg2 = new RegExp(ob+String.fromCharCode(8220)+String.fromCharCode(8221)+cb, &quot;g&quot;);
+  str = str.replace(reg2, &quot;\'&quot;);    // double quotes
+  return str;
+}
+// replace odd ASCII characters with their HTML equivalents
+function encodeAscii(str) {
+  str = str.replace(/\&amp;/g, &quot;&amp;amp;&quot;);
+  str = str.replace(/\&lt;/g, &quot;&amp;lt;&quot;);
+  str = str.replace(/\&gt;/g, &quot;&amp;gt;&quot;);
+  // get other odd ASCII characters
+  for (var i=160; i&lt;256; i++) {
+    var reg = new RegExp(String.fromCharCode(i), &quot;g&quot;);
+    str = str.replace(reg, &quot;&amp;#&quot;+i+&quot;;&quot;);
+  }
+  return str;
+}
+// replace brackets with HTML-safe characters
+function encodeBrackets(str) {
+  var reg1 = new RegExp(&quot;\\&quot;+ob, &quot;g&quot;);
+  var reg2 = new RegExp(&quot;\\&quot;+cb, &quot;g&quot;);
+  str = str.replace(reg1, &quot;&amp;#91;&quot;);
+  str = str.replace(reg2, &quot;&amp;#93;&quot;);
+  return str;
+}
+// create &lt;hr&gt; tags from ASCII rules
+function addHorizRule(str) {
+  var reg1 = new RegExp(&quot;(&lt;p&gt;|\\n&lt;br \\/&gt;)?\\n&quot;+ob+&quot; \\t&quot;+cb+&quot;*&quot;+ob+&quot;\\-_=&quot;+cb+&quot;{5,}&quot;+ob+&quot; \\t&quot;+cb+&quot;*(\\n&lt;\\/p&gt;|&lt;br \\/&gt;\\n|\\n)?&quot;, &quot;g&quot;);
+  return str.replace(reg1, &quot;\n&lt;hr /&gt;\n&quot;);
+}
+// compress whitespace to optimize the HTML
+function optimizeWhitespace(str) {
+  str = str.replace(/  +/g, &quot; &quot;);
+  str = str.replace(/\t+/g, &quot; &quot;);
+  str = str.replace(/\n /g, &quot;\n&quot;);
+  str = str.replace(/\n\n+/g, &quot;\n&quot;);
+  return str;
+}
+// ========================================================================
+// add &lt;br /&gt; linebreaks to the string
+function addBr(str) {
+  str = str.replace(/\n/g, &quot;&lt;br /&gt;\n&quot;);
+  str += &quot;&lt;br /&gt;\n&quot;;
+  return str;
+}
+// add &lt;p&gt; paragraph tags to the string
+function addPara(str) {
+  var reg1 = new RegExp(&quot;\n&quot;+ob+&quot; \t&quot;+cb+&quot;*\n+&quot;, &quot;g&quot;);
+  str = str.replace(reg1, &quot;\n&lt;/p&gt;\n&lt;p&gt;\n&quot;);
+  str = &quot;\n&lt;p&gt;\n&quot; + str + &quot;\n&lt;/p&gt;\n&quot;;
+  return str;
+}
+// ========================================================================
+// generic function to add lists of some type
+function addGenericList(match,tag,ltype,str) {
+  if (ltype==&quot;ignore&quot;) { return str; }
+  var startitem = &quot;\n  &lt;&quot;+tag+&quot;&gt;&quot;, enditem = &quot;&lt;/&quot;+tag+&quot;&gt;&quot;;
+  var listtag = enditem + startitem;
+  var reg1 = new RegExp(&quot;\\n\\s*&quot;+match+&quot;\\s*&quot;, &quot;g&quot;);
+  str = str.replace(reg1, listtag);
+  var reg2 = new RegExp(&quot;^\s*&quot;+match+&quot;\s*&quot;, &quot;g&quot;);
+  str = str.replace(reg2, &quot;\n&quot;+listtag);
+  str = addListOpenClose(startitem,enditem,ltype,str);
+  return str;
+}
+// add opening and closing list tags around all &lt;li&gt; groups
+function addListOpenClose(startitem, enditem, ltype, str) {
+  var starttag = &quot;\n&lt;&quot;+ltype+&quot;&gt;&quot;, endtag = &quot;\n&lt;/&quot;+ltype+&quot;&gt;&quot;;
+  var listtag = enditem + startitem;
+  var idx = 0;
+  while (idx&gt;=0) {
+    // add opening list tag
+    var mstr = &quot;\n&lt;p&gt;&quot;+listtag; idx = str.indexOf(mstr, idx);
+    if (idx&lt;0) { mstr = &quot;\n&lt;br /&gt;&quot;+listtag; idx = str.indexOf(mstr, idx); }
+    if (idx&lt;0) { mstr = &quot;\n&quot;+listtag; idx = str.indexOf(mstr, idx); }
+    if (idx&gt;=0) {
+      str = str.substring(0,idx) + starttag + startitem + str.substring(idx+mstr.length);
+      idx += starttag.length + listtag.length;
+    }
+    // add closing list tag
+    if (idx&gt;=0) {
+      mstr = &quot;\n&lt;/p&gt;&quot;; 
+      var temp = str.indexOf(mstr, idx);
+      if (temp&lt;0) { 
+        mstr = &quot;&lt;br /&gt;\n&lt;&quot;; 
+        temp = str.indexOf(mstr, idx)+6;
+        if (temp&lt;idx) { temp=str.length; }
+        mstr = &quot;&quot;;  // keep the break tag after the insertion
+      }
+      if (temp&gt;=0) {
+        str = str.substring(0,temp) + enditem + endtag + str.substring(temp+mstr.length);
+        temp += endtag.length;
+      }
+      idx = temp;
+    }
+  }
+  return str;
+}
+// ========================================================================
+function addStyles(mark,tag,str) {
+  if (tag==&quot;ignore&quot;) { return str; }
+// ADDED 8/31/01
+  if (myform.logicalstyles.checked) {
+    if (tag==&quot;b&quot;) { tag = &quot;strong&quot;; }
+    else if (tag==&quot;i&quot;) { tag = &quot;em&quot;; }
+  }
+// END ADDED
+  // check the first character in the string
+  var reg1 = new RegExp(&quot;^&quot;+mark+&quot;(&quot;+ob+&quot;^ &gt;&quot;+mark+&quot;&quot;+cb+&quot;&quot;+ob+&quot;^&quot;+mark+&quot;&quot;+cb+&quot;*)&quot;+mark, &quot;g&quot;);
+  // ignore slashes inside HTML tags
+  var reg2 = new RegExp(&quot;(&quot;+ob+&quot;^&lt;&quot;+cb+&quot;)&quot;+mark+&quot;(&quot;+ob+&quot;^ &gt;&quot;+mark+&quot;&quot;+cb+&quot;&quot;+ob+&quot;^&quot;+mark+&quot;&quot;+cb+&quot;*&quot;+ob+&quot;^ &lt;&quot;+mark+&quot;&quot;+cb+&quot;)&quot;+mark, &quot;g&quot;); 
+  if (tag) {
+    str = str.replace(reg1, &quot;&lt;&quot;+tag+&quot;&gt;&quot; + &quot;$1&quot; + &quot;&lt;/&quot;+tag+&quot;&gt;&quot;);
+    str = str.replace(reg2, &quot;$1&quot; + &quot;&lt;&quot;+tag+&quot;&gt;&quot; + &quot;$2&quot; + &quot;&lt;/&quot;+tag+&quot;&gt;&quot;);
+  } else {
+    str = str.replace(reg1, &quot;$1&quot;);
+    str = str.replace(reg2, &quot;$1&quot; + &quot;$2&quot;);
+  }
+  return str;
+}
+// --&gt;
+&lt;/script&gt;</doctext>
   <node_id>1133419</node_id>
   <title>Text Formatter</title>
   <type_nodetype>14</type_nodetype>
