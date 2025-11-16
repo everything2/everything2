@@ -341,6 +341,112 @@ Retrives a node format if you are blocking messages from that node, 404 NOT FOUN
 
 Stops ignoring a particular node at :id
 
+## Preferences
+
+Current version: *1 (beta)*
+
+Manages user interface preferences and settings. Preferences control various display and behavior options for the user interface, such as which nodelets to hide, how many new writeups to display, and UI element collapse states.
+
+All preference methods return 401 Unauthorized for Guest User.
+
+### /api/preferences/get
+
+Returns the current user's preferences as a JSON object containing all allowed preference keys and their values. If a preference has not been explicitly set by the user, the default value is returned.
+
+Returns a JSON object with the following structure:
+
+```json
+{
+  "vit_hidemaintenance": 0,
+  "vit_hidenodeinfo": 0,
+  "vit_hidenodeutil": 0,
+  "vit_hidelist": 0,
+  "vit_hidemisc": 0,
+  "edn_hideutil": 0,
+  "edn_hideedev": 0,
+  "nw_nojunk": 0,
+  "num_newwus": 15,
+  "collapsedNodelets": ""
+}
+```
+
+#### Allowed Preferences
+
+**UI Visibility Preferences (0 = show, 1 = hide):**
+* **vit_hidemaintenance** - Hide maintenance nodelet (default: 0)
+* **vit_hidenodeinfo** - Hide node info nodelet (default: 0)
+* **vit_hidenodeutil** - Hide node utilities nodelet (default: 0)
+* **vit_hidelist** - Hide list nodelet (default: 0)
+* **vit_hidemisc** - Hide miscellaneous nodelet (default: 0)
+* **edn_hideutil** - Hide editor utilities (default: 0)
+* **edn_hideedev** - Hide e2dev utilities (default: 0)
+* **nw_nojunk** - Hide junk from new writeups (default: 0)
+
+**Display Preferences:**
+* **num_newwus** - Number of new writeups to display (default: 15, allowed: 1, 5, 10, 15, 20, 25, 30, 40)
+
+**State Preferences:**
+* **collapsedNodelets** - String containing collapsed nodelet state (default: empty string, accepts any string matching regex /.?/)
+
+### /api/preferences/set
+
+Sets one or more user preferences. Accepts a JSON POST body with preference key-value pairs to update. Multiple preferences can be set in a single request.
+
+**POST Parameters:**
+
+Accepts a JSON object with one or more preference keys and their new values:
+
+```json
+{
+  "vit_hidenodeinfo": 1,
+  "num_newwus": 25,
+  "collapsedNodelets": "epicenter!readthis!"
+}
+```
+
+**Validation:**
+* All preference keys must be in the allowed preferences list
+* All values must match their allowed values (specific list for List preferences, regex pattern for String preferences)
+* If any key or value fails validation, the entire request is rejected with 401 Unauthorized
+* No partial updates occur on validation failure
+
+**Special Behavior:**
+* Setting a List preference to its default value will delete the preference from the user's stored settings
+* Setting a String preference to an empty string or whitespace-only string will delete the preference
+* Deleted preferences will return their default values on subsequent GET requests
+
+**Returns:**
+
+On success (200 OK), returns the same structure as GET /api/preferences/get with all current preference values, including the newly updated ones.
+
+On validation failure (401 Unauthorized), no preferences are updated.
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/preferences/set \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"vit_hidenodeinfo": 1, "num_newwus": 25}'
+```
+
+**Example Response (200 OK):**
+
+```json
+{
+  "vit_hidemaintenance": 0,
+  "vit_hidenodeinfo": 1,
+  "vit_hidenodeutil": 0,
+  "vit_hidelist": 0,
+  "vit_hidemisc": 0,
+  "edn_hideutil": 0,
+  "edn_hideedev": 0,
+  "nw_nojunk": 0,
+  "num_newwus": 25,
+  "collapsedNodelets": ""
+}
+```
+
 ## Chats
 
 ## Bookmarks
