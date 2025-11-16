@@ -11740,4 +11740,141 @@ sub fiery_teddy_bear_suit
     return $text;
 }
 
+sub gnl
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    # Header
+    $text .= '<center><h3>Gigantic Node Lister</h3></center>';
+    $text .= "\n";
+
+    # Form for type selection
+    $text .= htmlcode('openform');
+    $text .= "\n";
+
+    # Build type selection menu
+    use Everything::FormMenu;
+
+    my $menu = new Everything::FormMenu();
+    my $type = $query->param('whichtype');
+    $type ||= "alltypes";
+
+    $menu->addHash({ "alltypes" => "All Types"});
+    $menu->addType('nodetype', 1);
+
+    $text .= $menu->writePopupHTML($query, "whichtype", $type);
+    $text .= "\n";
+
+    $text .= htmlcode('closeform');
+    $text .= "\n";
+
+    # Color scheme for node types
+    my %CLR = (
+        document => "#AAAAcc",
+        user => "#66dd66",
+        usergroup => "#99CC99",
+        nodetype => "#CC6666",
+        htmlpage => "#CC66CC",
+        htmlcode => "#FF99FF",
+        node => "#FFFFFF",
+        superdoc => "#6666CC",
+        nodegroup => "#CCCCCC",
+        image => "#33CCFF",
+        default => '#ffffff',
+        container => '#FFCC99',
+        nodelet => '#CCFFCC'
+    );
+
+    my $ref;
+
+    if($type eq "alltypes")
+    {
+        $ref = $DB->selectNodeWhere({ -1 => 1 }, "",
+            "type_nodetype");
+    }
+    else
+    {
+        $ref = $DB->selectNodeWhere({type_nodetype => $type}, "");
+    }
+
+    return $text . "<p><b>No Nodes of the selected type</b>\n"
+        unless(defined $ref);
+
+    my $count = $query->param("next");
+    $count ||= 0;
+    my $length = $$VARS{listlen};
+    $length ||= 100;
+    my $max = $count + $length;
+
+    # Generate the prev...count...next row
+    my $nav;
+    $nav .= "<tr><td align=left>";
+
+    my $next = $count - $length;
+    $next = 0 if ($count - $length < 0);
+
+    $nav .= "<a href=" .
+        urlGen ({node_id => getId ($NODE), next => 0}) .
+        ">Previous " . ($count-$next) . " entries...</a>"
+        if ($count > 0);
+
+    $nav .= "</td><td align=center>($count-$max) of ".int(@$ref)."</td><td align=right>";
+
+    $next = $count+$length;
+    my $num = $length;
+    if ($next + $length > @$ref) {
+        $num = @$ref - $next;
+    }
+
+    $nav .= "<a href=" .
+        urlGen ({node_id => getId ($NODE), next => $max}) .
+        ">Next $num entries...</a>" if ($max < @$ref);
+    $nav .= "</td></tr>";
+
+    # Construct the table
+    my $str = "<TABLE width=100% border=0>";
+    my $NODEGROUP;
+
+    if ($$VARS{group}) {
+        my $GR = $DB->getNodeById($$VARS{group}, 'light');
+
+        if(canUpdateNode($USER, $GR))
+        {
+            $NODEGROUP = $GR;
+            $str .=
+                "<SCRIPT language=\"javascript\">
+                function updateMyGroup(nodeid) {
+                    window.open('" .
+                    urlGen({node_id => $$VARS{group},
+                    displaytype => 'editor'}, "noquotes") .
+                    "&add='+nodeid+'" .  "','". $$VARS{group} ."', '');
+                }
+                </SCRIPT>";
+        }
+    }
+
+    $str .= $nav;
+    $str .= "<tr><th>Node ID</td><th>Title</th><th>Type</th></tr>";
+
+    for (my $i=$count;$i<$max and $i < @$ref;$i++){
+        my $N = $DB->getNodeById($$ref[$i], 'light');
+        $str .= "<tr><td align=left>" . getId($N);
+        if ($NODEGROUP) {
+            $str .= "<font size=1><A href=\"javascript:updateMyGroup(".getId($N).")\">add to &quot;$$NODEGROUP{title}&quot;</a></font>";
+        }
+
+        $str .= "</td><td bgcolor=#DDCCCC>" . linkNode ($N) .
+            "</td><td bgcolor=" .
+            ($CLR{$$N{type}{title}} || $CLR{default}) .
+            ">$$N{type}{title}</td></tr>\n" if (ref $$N{type});
+    }
+    $str .= $nav;
+
+    $str .= "</TABLE>";
+    $text .= $str;
+
+    return $text;
+}
+
 1;

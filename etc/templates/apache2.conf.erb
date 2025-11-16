@@ -106,6 +106,7 @@ Define E2MaxConnections 0
 PerlSwitches -I/var/everything/ecore -I/var/libraries/lib/perl5
 ServerName everything2.com
 Listen 80
+ListenBacklog 511
 
 <IfModule mod_ssl.c>
   SSLRandomSeed startup builtin
@@ -127,6 +128,7 @@ Listen 80
   SSLProtocol all -SSLv2 -SSLv3
 
   Listen 443
+  ListenBacklog 511
   <VirtualHost _default_:443>
     SSLEngine on
     SSLCertificateFile    /etc/apache2/e2.cert
