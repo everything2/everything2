@@ -18,6 +18,9 @@ git push origin master                  # Automatic deploy
 ./docker/run-tests.sh 012               # Run specific test
 ./tools/coverage.sh                     # Run tests with coverage
 
+# Container shell access
+./tools/shell.sh                        # Get bash shell in container
+
 # Code quality
 CRITIC_FULL=1 ./tools/critic.pl .      # Perl::Critic check
 

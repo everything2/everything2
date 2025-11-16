@@ -449,6 +449,28 @@
         }
       }
     },
+    "HealthCheckLogWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the app containers to write health check logs to CloudWatch",
+        "ManagedPolicyName": "HealthCheckLogWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "logs:PutLogEvents",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "HealthCheckLogGroup", "Arn"] }, ":*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "logs:CreateLogStream",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "HealthCheckLogGroup", "Arn"] }, ":*"]]}
+          }]
+        }
+      }
+    },
     "SecretsS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
@@ -950,7 +972,13 @@
       "Type": "AWS::ECS::Cluster",
       "Properties": {
         "CapacityProviders": ["FARGATE"],
-        "ClusterName": "E2-App-ECS-Cluster" 
+        "ClusterName": "E2-App-ECS-Cluster",
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "enabled"
+          }
+        ]
       }
     },
     "ELBLogsBucket": {
@@ -1073,7 +1101,9 @@
             "Options": {
               "awslogs-group": "/aws/fargate/fargate-app-awslogs",
               "awslogs-region": {"Ref": "AWS::Region"},
-              "awslogs-stream-prefix": "e2-fargate"
+              "awslogs-stream-prefix": "e2-fargate",
+              "mode": "non-blocking",
+              "max-buffer-size": "25m"
             }
           },
           "Ulimits": [{
@@ -1143,11 +1173,19 @@
         "RetentionInDays": 3
       }
     },
+    "HealthCheckLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/fargate/e2-health-check",
+        "RetentionInDays": 3
+      }
+    },
     "ECSFargateAppService": {
       "Type": "AWS::ECS::Service",
       "Properties": {
         "Cluster": {"Ref": "ECSAppCluster"},
         "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE",
         "ServiceName": "E2-App-Fargate-Service",
         "EnableExecuteCommand": true,
         "DeploymentController": {
@@ -1327,6 +1365,7 @@
             {"Ref": "E2AppMailerPolicy"},
             {"Ref": "E2AppSecretsAccessPolicy"},
             {"Ref": "CloudWatchEventsWritePolicy"},
+            {"Ref": "HealthCheckLogWritePolicy"},
             {"Ref": "NodepackS3Policy"},
             {"Ref": "SitemapBucketWritePolicy"}
         ],
@@ -2030,6 +2069,44 @@
           "MetricName": "BlockedRequests"
         },
         "Rules": [{
+           "Name": "E2-AWSIPReputationList",
+           "Priority": 1,
+           "OverrideAction": {
+             "None": {}
+           },
+           "Statement": {
+              "ManagedRuleGroupStatement": {
+                 "VendorName": "AWS",
+                 "Name": "AWSManagedRulesAmazonIpReputationList",
+                 "ExcludedRules": []
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "IPReputationBlockedRequests"
+            }
+        },
+        {
+           "Name": "E2-AWSAnonymousIPList",
+           "Priority": 2,
+           "OverrideAction": {
+             "None": {}
+           },
+           "Statement": {
+              "ManagedRuleGroupStatement": {
+                 "VendorName": "AWS",
+                 "Name": "AWSManagedRulesAnonymousIpList",
+                 "ExcludedRules": []
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AnonymousIPBlockedRequests"
+            }
+        },
+        {
            "Name": "E2-AWSBotControl",
            "Priority": 5,
            "OverrideAction": {
@@ -2055,6 +2132,35 @@
               "CloudWatchMetricsEnabled": true,
               "MetricName": "BlockedRequests"
             }
+        },
+        {
+          "Name": "E2-BlockHTTrack",
+          "Priority": 10,
+          "Statement": {
+            "ByteMatchStatement": {
+              "SearchString": "HTTrack 3.0x",
+              "FieldToMatch": {
+                "SingleHeader": {
+                  "Name": "user-agent"
+                }
+              },
+              "TextTransformations": [
+                {
+                  "Priority": 0,
+                  "Type": "NONE"
+                }
+              ],
+              "PositionalConstraint": "CONTAINS"
+            }
+          },
+          "Action": {
+            "Block": {}
+          },
+          "VisibilityConfig": {
+            "SampledRequestsEnabled": true,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "E2BotBlacklistBlockedRequests"
+          }
         },
         {
           "Name": "E2-RateLimit",

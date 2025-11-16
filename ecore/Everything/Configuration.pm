@@ -47,7 +47,6 @@ has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {
   "deployedassets" => Everything::S3::BucketConfig->new("bucket" => "deployed.everything2.com"),
   "nodebackup" => Everything::S3::BucketConfig->new("bucket" => "nodebackup.everything2.com"),
   "sitemap" => Everything::S3::BucketConfig->new("bucket" => "sitemap.everything2.com"),
-  "sitemapdispatch" => Everything::S3::BucketConfig->new("bucket" => "sitemapdispatch.everything2.com"),
   "jscss" => Everything::S3::BucketConfig->new("bucket" => "jscssw.everything2.com") }});
 
 has 'assets_location' => (isa => 'Str', is => 'ro', builder => '_build_assets_location', lazy => 1);

@@ -7,13 +7,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Ruby
-RUN gem install aws-sdk-s3
+RUN gem install aws-sdk-s3 aws-sdk-ecs aws-sdk-elasticloadbalancingv2 aws-sdk-cloudwatchlogs
 
 # Core Directories and Apache
 RUN mkdir -p /var/libraries /etc/everything /var/mason /var/log/everything /etc/apache2/logs /var/everything /var/bootstrap/cache
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/status.*
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.*
 RUN rm -rf /etc/apache2/sites-enabled /etc/apache2/sites-available /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available
-RUN for i in deflate rewrite authz_core proxy proxy_http ssl perl mpm_prefork socache_shmcb; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
+RUN for i in deflate rewrite authz_core proxy proxy_http ssl perl mpm_prefork socache_shmcb status; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
 RUN chown root:root /etc/everything
 RUN chown www-data:www-data /var/mason /var/log/everything /etc/apache2/logs
 RUN chmod 0755 /var/mason

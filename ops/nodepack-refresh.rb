@@ -39,6 +39,23 @@ end
 
 @bucket = 'nodepack.everything2.com'
 
+# Find nodepack directory - works from main dir or ops/
+nodepack_dir = nil
+if Dir.exist?('nodepack')
+  # Running from main directory
+  nodepack_dir = 'nodepack'
+elsif Dir.exist?('../nodepack')
+  # Running from ops/ directory
+  nodepack_dir = '../nodepack'
+else
+  puts "ERROR: Could not find nodepack directory"
+  puts "Tried: ./nodepack and ../nodepack"
+  puts "Please run this script from either the project root or the ops/ directory"
+  exit 1
+end
+
+puts "Using nodepack directory: #{nodepack_dir}"
+
 done = nil
 
 results = @s3client.list_objects_v2(bucket: @bucket)
@@ -97,7 +114,7 @@ done = nil
 while(done.nil?)
   results.contents.each do |content|
     puts "Downloading #{content.key}"
-    @s3client.get_object(bucket: @bucket, key: content.key, response_target: "../nodepack/#{content.key}")
+    @s3client.get_object(bucket: @bucket, key: content.key, response_target: "#{nodepack_dir}/#{content.key}")
   end
 
   if !results.next_continuation_token.nil?

@@ -95,11 +95,11 @@ Production (everything2.com)
   - `deployed.everything2.com` - Deployed assets
   - `nodebackup.everything2.com` - Backup/export data
   - `sitemap.everything2.com` - Sitemap data
-  - `sitemapdispatch.everything2.com` - Sitemap dispatch
   - `jscssw.everything2.com` - JavaScript/CSS assets
 
 **Networking:**
 - Application Load Balancer (ALB)
+- AWS WAF (Web Application Firewall) protecting ALB
 - CloudFront CDN (likely, for static assets)
 - Route53 DNS
 
@@ -315,6 +315,16 @@ CloudWatch Logs
 - Application logs from containers
 - Cron job output
 - ECS task metrics (CPU, memory, network)
+- **Container Insights** - Enhanced monitoring for ECS cluster
+  - Task and container-level CPU and memory metrics
+  - Network metrics (rx/tx bytes, packets)
+  - Diagnostic metrics for performance troubleshooting
+  - Pre-built CloudWatch dashboards
+
+**Enhanced Observability Features:**
+- **Tag Propagation** - Service tags automatically propagate to tasks for better resource tracking and cost allocation
+- **Non-blocking Logging** - Logs use non-blocking mode with 25MB buffer to prevent logging backpressure from affecting application performance
+- **ECS Managed Tags** - Automatic tagging of resources with cluster, service, and task metadata
 
 **Manual:**
 - AWS Console monitoring
@@ -327,15 +337,80 @@ CloudWatch Logs
 - ❌ No error tracking (Sentry, Rollbar, etc.)
 - ❌ No uptime monitoring
 - ❌ No alerting on errors
-- ❌ Limited metrics dashboards
+- ⚠️  Basic metrics dashboards (Container Insights provides task-level metrics, but no application-level APM)
 
 ### Recommendations
 
-1. Add CloudWatch dashboards
-2. Set up CloudWatch alarms (error rate, latency, etc.)
-3. Implement APM (NewRelic, DataDog, or CloudWatch Application Insights)
-4. Add error tracking service
-5. Set up PagerDuty or similar for on-call
+1. ✅ Container Insights enabled - Use pre-built dashboards for task/container metrics
+2. Set up CloudWatch alarms based on Container Insights metrics (CPU, memory, network)
+3. Configure alerting for:
+   - Task failure count
+   - Unhealthy target count
+   - High CPU/memory utilization
+   - Network errors
+4. Implement application-level APM (NewRelic, DataDog, or CloudWatch Application Insights)
+5. Add error tracking service (Sentry, Rollbar)
+6. Set up PagerDuty or similar for on-call
+
+### Troubleshooting Tools
+
+**Application Health Checks:**
+
+The E2 application includes a dedicated health check endpoint at `/health` for monitoring and diagnostics. See [Health Check Documentation](health-checks.md) for complete details.
+
+```bash
+# Test health check locally
+./tools/test-health-check.sh
+
+# Detailed health status
+./tools/test-health-check.sh --detailed
+
+# Test database connectivity
+./tools/test-health-check.sh --db
+
+# Continuous monitoring
+./tools/test-health-check.sh --watch
+```
+
+**ECS/AWS Health Check Diagnostics:**
+
+```bash
+# Quick health check status
+./tools/diagnose-health-checks.rb
+
+# Include recent CloudWatch logs
+./tools/diagnose-health-checks.rb --logs
+
+# Custom configuration
+./tools/diagnose-health-checks.rb --region us-west-2 --cluster E2-App-ECS-Cluster
+```
+
+The health check diagnostic tool ([tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb)) provides:
+- ECS service status and task counts
+- Running task details and container health
+- Target group health status for all registered targets
+- Task definition health check configuration
+- Recent CloudWatch logs (with --logs flag)
+- Automated diagnostics and recommendations
+
+**Use Cases:**
+- Debugging deployment issues
+- Investigating unhealthy targets
+- Understanding why tasks are failing
+- Analyzing health check configuration
+- Quick operational status check
+
+**Requirements:**
+- AWS CLI configured with appropriate credentials
+- Ruby gems: aws-sdk-ecs, aws-sdk-elasticloadbalancingv2, aws-sdk-cloudwatchlogs
+
+**Common Issues Detected:**
+- No tasks running
+- Tasks below desired count
+- Unhealthy targets in load balancer
+- Multiple deployments in progress
+- Health check timeout issues
+- Application not responding on health check port
 
 ## Security
 
@@ -356,23 +431,31 @@ CloudWatch Logs
 - Perl module updates via Carton
 - npm package updates via package-lock.json
 
+### Security Features
+
+- ✅ AWS WAF (Web Application Firewall) protecting ALB with:
+  - IP reputation list blocking (known malicious IPs)
+  - Anonymous IP list blocking (VPNs, proxies, Tor nodes)
+  - Bot control (common bot detection)
+  - Rate limiting (200 requests/minute per IP)
+  - Custom bot blacklist (HTTrack blocker)
+  - CloudWatch metrics and logging
+
 ### Security Gaps
 
 - ❌ SQL injection vulnerabilities (see analysis-summary.md)
 - ❌ Eval'd code in database (see analysis-summary.md)
-- ❌ No WAF (Web Application Firewall)
-- ❌ No rate limiting
 - ❌ No automated security scanning
 - ❌ No dependency vulnerability scanning
 
 ### Recommendations
 
-1. Add AWS WAF in front of ALB
-2. Implement rate limiting (per IP, per user)
-3. Add Dependabot for dependency updates
-4. Run Snyk or similar for vulnerability scanning
-5. Fix SQL injection vulnerabilities (Priority 2)
-6. Remove database code execution (Priority 1)
+1. Add Dependabot for dependency updates
+2. Run Snyk or similar for vulnerability scanning
+3. Fix SQL injection vulnerabilities (Priority 2)
+4. Remove database code execution (Priority 1)
+5. Consider WAF geo-blocking if needed
+6. Consider enabling AWS Shield Advanced for DDoS protection
 
 ## Scaling Considerations
 
@@ -457,7 +540,7 @@ CloudWatch Logs
 
 1. **APM integration** - Application performance monitoring
 2. **Error tracking** - Sentry or similar
-3. **WAF deployment** - Web application firewall
+3. **WAF enhancements** - Geo-blocking, advanced rules, Shield Advanced
 4. **Redis for caching** - Shared cache for PSGI
 
 ### Long Term (Q3-Q4 2025)

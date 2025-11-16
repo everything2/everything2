@@ -44,6 +44,18 @@
 	PerlModule Apache2::compat Apache::DBI CGI Everything Everything::HTML
 	PerlResponseHandler ModPerl::Registry
 	PerlOptions +ParseHeaders
+
+	# Health check endpoint - lightweight, no access logging
+	<Location /health.pl>
+		SetEnv dontlog 1
+	</Location>
+
+	# Apache server-status for monitoring (localhost only)
+	<Location /server-status>
+		SetHandler server-status
+		Require local
+		SetEnv dontlog 1
+	</Location>
 "
 
 # Load Apache blocks configuration from source control
@@ -92,6 +104,9 @@ coreconfig+="
 		deny from env=denyip
 
 		RewriteEngine On
+
+		# Health check endpoint - redirect /health to /health.pl
+		RewriteRule ^health$                   /health.pl [L,QSA]
 
 		RewriteRule ^favicon.ico$		   /react/assets/favicon.ico [L]
 

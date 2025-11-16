@@ -138,7 +138,11 @@ docker stop e2devapp e2devdb
 docker logs e2devapp -f           # App logs
 docker logs e2devdb -f            # Database logs
 
-# Shell access
+# Shell access (convenience script)
+./tools/shell.sh                  # App container shell in /var/everything
+./tools/shell.sh /tmp             # App container shell in specific directory
+
+# Shell access (raw docker commands)
 docker exec -it e2devapp bash     # App container
 docker exec -it e2devdb bash      # Database container
 
