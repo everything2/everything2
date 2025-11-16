@@ -12062,4 +12062,156 @@ sub mark_all_discussions_as_read
     return $str;
 }
 
+sub guest_front_page {
+    my $DB       = shift;
+    my $query    = shift;
+    my $NODE     = shift;
+    my $USER     = shift;
+    my $VARS     = shift;
+    my $PAGELOAD = shift;
+    my $APP      = shift;
+
+    # Ensure guest users have nodelets configured for proper e2 config generation
+    # This ensures buildNodeInfoStructure populates nodelet data correctly
+    unless ($VARS->{nodelets}) {
+        my $guest_nodelets = $Everything::CONF->guest_nodelets;
+        if ($guest_nodelets && ref($guest_nodelets) eq 'ARRAY' && @$guest_nodelets) {
+            $VARS->{nodelets} = join(',', @$guest_nodelets);
+        }
+    }
+
+    # Disable parseCode link parsing
+    $PAGELOAD->{noparsecodelinks} = 1;
+
+    my $html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+';
+
+    # Add meta description tag
+    $html .= htmlcode('metadescriptiontag');
+
+    $html .= '
+<title>Everything2</title>
+<link rel="stylesheet" id="basesheet" type="text/css" href="' . htmlcode('linkStylesheet', 'basesheet') . '" media="all">
+';
+
+    # Add zensheet (user style)
+    $html .= '<link rel="stylesheet" id="zensheet" type="text/css" href="'
+           . htmlcode('linkStylesheet', $$VARS{userstyle} || $Everything::CONF->default_style, 'serve')
+           . '" media="screen,tv,projection">';
+
+    # Add custom style if present
+    if (exists($$VARS{customstyle}) && defined($$VARS{customstyle})) {
+        $html .= '
+	<style type="text/css">
+' . $APP->htmlScreen($$VARS{customstyle}) . '
+	</style>';
+    }
+
+    $html .= '
+	<link rel="stylesheet" id="printsheet" type="text/css" href="' . htmlcode('linkStylesheet', 'print') . '" media="print">
+	<link rel="icon" href="' . $APP->asset_uri("react/assets/favicon.ico") . '" type="image/vnd.microsoft.icon">
+	<!--[if lt IE 8]><link rel="shortcut icon" href="' . $APP->asset_uri("react/assets/favicon.ico") . '" type="image/x-icon"><![endif]-->
+	<link rel="alternate" type="application/atom+xml" title="Everything2 New Writeups" href="/node/ticker/New+Writeups+Atom+Feed">
+</head>
+
+
+
+<body class="fullpage" id="guestfrontpage">
+    <div id="header">
+           <div id="e2logo"><a href="/title/About+Everything2">Everything<span id="e2logo2">2</span></a></div>
+';
+
+    $html .= parseLinks("<h2 id='tagline'>[Everything2 Help|Read with us. Write for us.]</h2>");
+
+    $html .= '
+    </div>
+<div id=\'wrapper\'>
+    <div id=\'mainbody\'>
+
+';
+
+    # Build the main content
+    my $zenStr;
+
+    if ($APP->isGuest($USER)) {
+        $PAGELOAD->{pagenodelets} = getNode('Sign in', 'nodelet')->{node_id};
+        $PAGELOAD->{pagenodelets} .= ',' . getNode('Recommended Reading', 'nodelet')->{node_id};
+        $PAGELOAD->{pagenodelets} .= ',' . getNode('New Writeups', 'nodelet')->{node_id};
+    }
+
+    $zenStr .= "<div id='welcome_message'>";
+    my @wit = (
+        " Defying definition since 1999",
+        " Literary Karaoke",
+        " Writing everything about everything.",
+        " E2, Brute?",
+        " Our fiction is more entertaining than Wikipedia's.",
+        " You will never find a more wretched hive of ponies and buttercups.",
+        " Please try to make more sense than our blurbs.",
+        " Words arranged in interesting ways",
+        " Remove lid. Add water to fill line. Replace lid. Microwave for 1 1/2 minutes. Let cool for 3 minutes.",
+        " Welcome to the rebirth of your desire to write.",
+        " Don't know where this \"writers' site\" crap came from but it sure as hell isn't in the prospectus. ",
+        " Read, write, enjoy.",
+        " Everything2.com has baked you a pie! (Do not eat it.)"
+    );
+
+    $zenStr .= "            <form action='/' method='GET' id='searchform'>
+                <input type='text' placeholder='Search' name='node' id='searchfield'>
+                <button type='submit' id='search'>Search</button>
+            </form>";
+    $zenStr .= "<h3 id='wit'>" . $wit[int(rand(@wit))] . "</h3></div>";
+
+    $zenStr .= '
+     <div id="bestnew">
+        <h3 id="bestnew_title">[Cool Archive|The Best of The Week]</h3>
+        ' . htmlcode('frontpage_altcontent') . '
+      </div>';
+
+    $zenStr .= '
+  <div id="frontpage_news">
+        <h2 id="frontpage_news_title">[News for Noders. Stuff that matters.|News for Noders]</h2>
+   ' . htmlcode('frontpage_news') . '</div>';
+
+    $html .= parseLinks($zenStr);
+
+    # Add sidebar and footer
+    $html .= '
+</div>
+<div id=\'sidebar\'';
+
+    $html .= ' class="pagenodelets"' if $PAGELOAD->{pagenodelets};
+
+    $html .= '>
+<div id="e2-react-root"></div>
+';
+
+    $html .= htmlcode('nodelet_meta_container');
+
+    $html .= '
+</div>
+
+</div>
+<div id=\'footer\'>
+';
+
+    $html .= htmlcode('zenFooter');
+
+    $html .= '
+</div>
+';
+
+    $html .= htmlcode('static javascript');
+
+    $html .= '
+</body>
+</html>';
+
+    return $html;
+}
+
 1;

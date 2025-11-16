@@ -834,7 +834,8 @@ sub superdoc_display_page
   if(my $delegation = Everything::Delegation::document->can("$doctitle"))
   {
     $APP->devLog("Using document delegation for $NODE->{title} as '$doctitle'");
-    return parseLinks($delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP));
+    my $output = $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+    return $PAGELOAD->{noparsecodelinks} ? $output : parseLinks($output);
   }else{
     return htmlcode('parsecode','doctext');
   }
@@ -969,11 +970,29 @@ sub fullpage_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $noparse = 0;
-  $noparse = 1 if lc($NODE->{title}) =~ /chatterlight/;
-  my $out = htmlcode("parsecode","doctext", $noparse);
-  $out =~ s/^\s+//g;
-  return $out;
+  my $doctitle = $NODE->{title};
+  $doctitle =~ s/[\s-]/_/g;
+  $doctitle =~ s/[^A-Za-z0-9]/_/g;
+  $doctitle = lc($doctitle);
+
+  if($doctitle =~ /^\d+$/)
+  {
+    $doctitle = "fullpage_$doctitle";
+  }
+
+  $APP->devLog("Proposed fullpage delegation for '$NODE->{title}': '$doctitle'");
+  if(my $delegation = Everything::Delegation::document->can("$doctitle"))
+  {
+    $APP->devLog("Using fullpage delegation for $NODE->{title} as '$doctitle'");
+    my $output = $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+    return $PAGELOAD->{noparsecodelinks} ? $output : parseLinks($output);
+  }else{
+    my $noparse = 0;
+    $noparse = 1 if lc($NODE->{title}) =~ /chatterlight/;
+    my $out = htmlcode("parsecode","doctext", $noparse);
+    $out =~ s/^\s+//g;
+    return $out;
+  }
 }
 
 sub room_edit_page

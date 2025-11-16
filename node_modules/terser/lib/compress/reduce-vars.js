@@ -52,6 +52,7 @@ import {
     AST_Case,
     AST_Chain,
     AST_Class,
+    AST_ClassStaticBlock,
     AST_ClassExpression,
     AST_Conditional,
     AST_Default,
@@ -70,11 +71,13 @@ import {
     AST_Number,
     AST_ObjectKeyVal,
     AST_PropAccess,
+    AST_Scope,
     AST_Sequence,
     AST_SimpleStatement,
     AST_Symbol,
     AST_SymbolCatch,
     AST_SymbolConst,
+    AST_SymbolDeclaration,
     AST_SymbolDefun,
     AST_SymbolFunarg,
     AST_SymbolLambda,
@@ -91,26 +94,25 @@ import {
 
     walk,
     walk_body,
-
-    _INLINE,
-    _NOINLINE,
-    _PURE
+    walk_parent,
 } from "../ast.js";
 import { HOP, make_node, noop } from "../utils/index.js";
 
-import { lazy_op, is_modified } from "./inference.js";
+import { lazy_op, is_modified, is_lhs } from "./inference.js";
 import { INLINED, clear_flag } from "./compressor-flags.js";
 import { read_property, has_break_or_continue, is_recursive_ref } from "./common.js";
 
-// Define the method AST_Node#reduce_vars, which goes through the AST in
-// execution order to perform basic flow analysis
-
+/**
+ * Define the method AST_Node#reduce_vars, which goes through the AST in
+ * execution order to perform basic flow analysis
+ */
 function def_reduce_vars(node, func) {
     node.DEFMETHOD("reduce_vars", func);
 }
 
 def_reduce_vars(AST_Node, noop);
 
+/** Clear definition properties */
 function reset_def(compressor, def) {
     def.assignments = 0;
     def.chained = false;
@@ -119,7 +121,10 @@ function reset_def(compressor, def) {
     def.recursive_refs = 0;
     def.references = [];
     def.single_use = undefined;
-    if (def.scope.pinned()) {
+    if (
+        def.scope.pinned()
+        || (def.orig[0] instanceof AST_SymbolFunarg && def.scope.uses_arguments)
+    ) {
         def.fixed = false;
     } else if (def.orig[0] instanceof AST_SymbolConst || !compressor.exposed(def)) {
         def.fixed = def.init;
@@ -377,6 +382,10 @@ def_reduce_vars(AST_Class, function(tw, descend) {
     return true;
 });
 
+def_reduce_vars(AST_ClassStaticBlock, function(tw, descend, compressor) {
+    reset_block_variables(compressor, this);
+});
+
 def_reduce_vars(AST_Conditional, function(tw) {
     this.condition.walk(tw);
     push(tw);
@@ -439,13 +448,11 @@ function mark_lambda(tw, descend, compressor) {
     clear_flag(this, INLINED);
     push(tw);
     reset_variables(tw, compressor, this);
-    if (this.uses_arguments) {
-        descend();
-        pop(tw);
-        return;
-    }
+
     var iife;
     if (!this.name
+        && !this.uses_arguments
+        && !this.pinned()
         && (iife = tw.parent()) instanceof AST_Call
         && iife.expression === this
         && !iife.args.some(arg => arg instanceof AST_Expansion)
@@ -470,9 +477,183 @@ function mark_lambda(tw, descend, compressor) {
             }
         });
     }
+
     descend();
     pop(tw);
+
+    handle_defined_after_hoist(this);
+
     return true;
+}
+
+/**
+ * It's possible for a hoisted function to use something that's not defined yet. Example:
+ *
+ * hoisted();
+ * var defined_after = true;
+ * function hoisted() {
+ *   // use defined_after
+ * }
+ *
+ * Or even indirectly:
+ *
+ * B();
+ * var defined_after = true;
+ * function A() {
+ *   // use defined_after
+ * }
+ * function B() {
+ *   A();
+ * }
+ *
+ * Access a variable before declaration will either throw a ReferenceError
+ * (if the variable is declared with `let` or `const`),
+ * or get an `undefined` (if the variable is declared with `var`).
+ *
+ * If the variable is inlined into the function, the behavior will change.
+ *
+ * This function is called on the parent to disallow inlining of such variables,
+ */
+function handle_defined_after_hoist(parent) {
+    const defuns = [];
+    walk(parent, node => {
+        if (node === parent) return;
+        if (node instanceof AST_Defun) {
+            defuns.push(node);
+            return true;
+        }
+        if (
+            node instanceof AST_Scope
+            || node instanceof AST_SimpleStatement
+        ) return true;
+    });
+
+    // `defun` id to array of `defun` it uses
+    const defun_dependencies_map = new Map();
+    // `defun` id to array of enclosing `def` that are used by the function
+    const dependencies_map = new Map();
+    // all symbol ids that will be tracked for read/write
+    const symbols_of_interest = new Set();
+    const defuns_of_interest = new Set();
+
+    for (const defun of defuns) {
+        const fname_def = defun.name.definition();
+        const enclosing_defs = [];
+
+        for (const def of defun.enclosed) {
+            if (
+                def.fixed === false
+                || def === fname_def
+                || def.scope.get_defun_scope() !== parent
+            ) {
+                continue;
+            }
+
+            symbols_of_interest.add(def.id);
+
+            // found a reference to another function
+            if (
+                def.assignments === 0
+                && def.orig.length === 1
+                && def.orig[0] instanceof AST_SymbolDefun
+            ) {
+                defuns_of_interest.add(def.id);
+                symbols_of_interest.add(def.id);
+
+                defuns_of_interest.add(fname_def.id);
+                symbols_of_interest.add(fname_def.id);
+
+                if (!defun_dependencies_map.has(fname_def.id)) {
+                    defun_dependencies_map.set(fname_def.id, []);
+                }
+                defun_dependencies_map.get(fname_def.id).push(def.id);
+
+                continue;
+            }
+
+            enclosing_defs.push(def);
+        }
+
+        if (enclosing_defs.length) {
+            dependencies_map.set(fname_def.id, enclosing_defs);
+            defuns_of_interest.add(fname_def.id);
+            symbols_of_interest.add(fname_def.id);
+        }
+    }
+
+    // No defuns use outside constants
+    if (!dependencies_map.size) {
+        return;
+    }
+
+    // Increment to count "symbols of interest" (defuns or defs) that we found.
+    // These are tracked in AST order so we can check which is after which.
+    let symbol_index = 1;
+    // Map a defun ID to its first read (a `symbol_index`)
+    const defun_first_read_map = new Map();
+    // Map a symbol ID to its last write (a `symbol_index`)
+    const symbol_last_write_map = new Map();
+
+    walk_parent(parent, (node, walk_info) => {
+        if (node instanceof AST_Symbol && node.thedef) {
+            const id = node.definition().id;
+
+            symbol_index++;
+
+            // Track last-writes to symbols
+            if (symbols_of_interest.has(id)) {
+                if (node instanceof AST_SymbolDeclaration || is_lhs(node, walk_info.parent())) {
+                    symbol_last_write_map.set(id, symbol_index);
+                }
+            }
+
+            // Track first-reads of defuns (refined later)
+            if (defuns_of_interest.has(id)) {
+                if (!defun_first_read_map.has(id) && !is_recursive_ref(walk_info, id)) {
+                    defun_first_read_map.set(id, symbol_index);
+                }
+            }
+        }
+    });
+
+    // Refine `defun_first_read_map` to be as high as possible
+    for (const [defun, defun_first_read] of defun_first_read_map) {
+        // Update all depdencies of `defun`
+        const queue = new Set(defun_dependencies_map.get(defun));
+        for (const enclosed_defun of queue) {
+            let enclosed_defun_first_read = defun_first_read_map.get(enclosed_defun);
+            if (enclosed_defun_first_read != null && enclosed_defun_first_read < defun_first_read) {
+                continue;
+            }
+
+            defun_first_read_map.set(enclosed_defun, defun_first_read);
+
+            for (const enclosed_enclosed_defun of defun_dependencies_map.get(enclosed_defun) || []) {
+                queue.add(enclosed_enclosed_defun);
+            }
+        }
+    }
+
+    // ensure write-then-read order, otherwise clear `fixed`
+    // This is safe because last-writes (found_symbol_writes) are assumed to be as late as possible, and first-reads (defun_first_read_map) are assumed to be as early as possible.
+    for (const [defun, defs] of dependencies_map) {
+        const defun_first_read = defun_first_read_map.get(defun);
+        if (defun_first_read === undefined) {
+            continue;
+        }
+
+        for (const def of defs) {
+            if (def.fixed === false) {
+                continue;
+            }
+
+            let def_last_write = symbol_last_write_map.get(def.id) || 0;
+
+            if (defun_first_read < def_last_write) {
+                def.fixed = false;
+            }
+        }
+    }
 }
 
 def_reduce_vars(AST_Lambda, mark_lambda);
@@ -595,12 +776,15 @@ def_reduce_vars(AST_Toplevel, function(tw, descend, compressor) {
         reset_def(compressor, def);
     });
     reset_variables(tw, compressor, this);
+    descend();
+    handle_defined_after_hoist(this);
+    return true;
 });
 
 def_reduce_vars(AST_Try, function(tw, descend, compressor) {
     reset_block_variables(compressor, this);
     push(tw);
-    walk_body(this, tw);
+    this.body.walk(tw);
     pop(tw);
     if (this.bcatch) {
         push(tw);

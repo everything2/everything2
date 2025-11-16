@@ -8,12 +8,13 @@
 #   ./tools/container-health-check.pl [options]
 #
 # Options:
-#   --detailed    Include detailed system metrics
-#   --db          Test database connectivity (default: enabled)
-#   --no-db       Skip database connectivity test
-#   --timeout N   HTTP timeout in seconds (default: 5)
-#   --quiet       Only output on failure
-#   --help        Show this help
+#   --detailed           Include detailed system metrics
+#   --db                 Test database connectivity (default: enabled)
+#   --no-db              Skip database connectivity test
+#   --timeout N          HTTP timeout in seconds (default: 5)
+#   --quiet              Only output on failure
+#   --debug-cloudwatch   Include AWS CloudWatch log command output for debugging
+#   --help               Show this help
 #
 # Exit codes:
 #   0 - Healthy
@@ -21,6 +22,12 @@
 #
 # Output: JSON to stdout
 # Logging: All health checks logged to CloudWatch in production environments
+#
+# Debug Mode:
+#   When --debug-cloudwatch is enabled, the script captures and includes detailed
+#   information about CloudWatch logging operations in the JSON output under the
+#   "cloudwatch_debug" key. This includes AWS command outputs, exit codes, and
+#   payload information to help diagnose logging issues in production.
 #
 # Health Checks Performed:
 #   1. Apache processes running (ps aux)
@@ -49,6 +56,7 @@ my $detailed = 0;
 my $check_db = 1;  # Database checks enabled by default
 my $timeout = 5;
 my $quiet = 0;
+my $debug_cloudwatch = 0;
 my $help = 0;
 
 GetOptions(
@@ -56,6 +64,7 @@ GetOptions(
     'db!' => \$check_db,
     'timeout=i' => \$timeout,
     'quiet' => \$quiet,
+    'debug-cloudwatch' => \$debug_cloudwatch,
     'help' => \$help,
 ) or die "Error parsing options. Use --help for usage.\n";
 
@@ -66,12 +75,13 @@ Container Health Check Script for Everything2
 Usage: container-health-check.pl [options]
 
 Options:
-  --detailed    Include detailed system metrics
-  --db          Test database connectivity (default: enabled)
-  --no-db       Skip database connectivity test
-  --timeout N   HTTP timeout in seconds (default: 5)
-  --quiet       Only output on failure
-  --help        Show this help
+  --detailed           Include detailed system metrics
+  --db                 Test database connectivity (default: enabled)
+  --no-db              Skip database connectivity test
+  --timeout N          HTTP timeout in seconds (default: 5)
+  --quiet              Only output on failure
+  --debug-cloudwatch   Include AWS CloudWatch log command output for debugging
+  --help               Show this help
 
 Exit codes:
   0 - Healthy
@@ -346,8 +356,29 @@ if ($is_production) {
 
         my $log_message = JSON::encode_json($log_event);
 
+        # Debug info for CloudWatch logging
+        my %cloudwatch_debug;
+
+        if ($debug_cloudwatch) {
+            $cloudwatch_debug{enabled} = 1;
+            $cloudwatch_debug{log_group} = $cloudwatch_log_group;
+            $cloudwatch_debug{log_stream} = $log_stream;
+            $cloudwatch_debug{hostname} = $hostname;
+            $cloudwatch_debug{log_event_size} = length($log_message);
+        }
+
         # Create log stream if it doesn't exist (ignore errors if it already exists)
-        system("aws logs create-log-stream --log-group-name '$cloudwatch_log_group' --log-stream-name '$log_stream' 2>/dev/null");
+        my $create_stream_cmd = "aws logs create-log-stream --log-group-name '$cloudwatch_log_group' --log-stream-name '$log_stream' 2>&1";
+
+        if ($debug_cloudwatch) {
+            my $create_stream_output = `$create_stream_cmd`;
+            my $create_stream_exit = $? >> 8;
+            $cloudwatch_debug{create_stream_command} = $create_stream_cmd;
+            $cloudwatch_debug{create_stream_output} = $create_stream_output || '(no output)';
+            $cloudwatch_debug{create_stream_exit_code} = $create_stream_exit;
+        } else {
+            system("$create_stream_cmd >/dev/null 2>&1");
+        }
 
         # Put log events
         my $timestamp_ms = int($response->{timestamp} * 1000);
@@ -356,9 +387,30 @@ if ($is_production) {
             message => $log_message
         }]);
 
-        # Use a background process to avoid blocking the health check response
-        system("aws logs put-log-events --log-group-name '$cloudwatch_log_group' --log-stream-name '$log_stream' --log-events '$log_events' >/dev/null 2>&1 &");
+        # Execute put-log-events command
+        my $put_log_cmd = "aws logs put-log-events --log-group-name '$cloudwatch_log_group' --log-stream-name '$log_stream' --log-events '$log_events' 2>&1";
+
+        if ($debug_cloudwatch) {
+            # In debug mode, run synchronously and capture output
+            my $put_log_output = `$put_log_cmd`;
+            my $put_log_exit = $? >> 8;
+            $cloudwatch_debug{put_log_command} = $put_log_cmd;
+            $cloudwatch_debug{put_log_output} = $put_log_output || '(no output)';
+            $cloudwatch_debug{put_log_exit_code} = $put_log_exit;
+            $cloudwatch_debug{log_events_payload} = $log_events;
+
+            # Include debug info in response
+            $response->{cloudwatch_debug} = \%cloudwatch_debug;
+        } else {
+            # Use a background process to avoid blocking the health check response
+            system("$put_log_cmd >/dev/null 2>&1 &");
+        }
     };
+
+    # In debug mode, include any eval errors
+    if ($@ && $debug_cloudwatch) {
+        $response->{cloudwatch_debug}->{error} = substr($@, 0, 500);
+    }
     # Silently ignore logging errors - don't fail health check due to logging issues
 }
 
