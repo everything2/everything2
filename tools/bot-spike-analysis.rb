@@ -15,6 +15,7 @@
 #   --time-window N         Time window in minutes for spike detection (default: 5)
 #   --top N                 Show top N results (default: 50)
 #   --ip IP                 Filter to specific IP address
+#   --lookback PERIOD       How far back to analyze: 1h, 5h, 1d, 1w (default: all files)
 #   --non-forwarded-only    Analyze non-forwarded traffic instead of forwarded
 #   --include-403           Include 403 responses (default: excluded)
 #   --help                  Show this help
@@ -25,6 +26,8 @@
 #   ./tools/bot-spike-analysis.rb --non-forwarded-only   # Analyze redirects/errors
 #   ./tools/bot-spike-analysis.rb --min-requests 1000
 #   ./tools/bot-spike-analysis.rb --ip 1.2.3.4
+#   ./tools/bot-spike-analysis.rb --lookback 1h          # Analyze last hour only
+#   ./tools/bot-spike-analysis.rb --lookback 1d          # Analyze last day only
 #
 
 require 'find'
@@ -39,6 +42,7 @@ options = {
   time_window: 5,
   top: 50,
   ip: nil,
+  lookback: nil,
   non_forwarded_only: false,
   include_403: false
 }
@@ -62,6 +66,10 @@ OptionParser.new do |opts|
     options[:ip] = ip
   end
 
+  opts.on("--lookback PERIOD", String, "Look back period: 1h, 5h, 1d, 1w (default: all files)") do |period|
+    options[:lookback] = period
+  end
+
   opts.on("--non-forwarded-only", "Analyze only non-forwarded traffic (default: forwarded only)") do
     options[:non_forwarded_only] = true
   end
@@ -75,6 +83,28 @@ OptionParser.new do |opts|
     exit
   end
 end.parse!
+
+# Parse lookback period and calculate cutoff time
+cutoff_time = nil
+if options[:lookback]
+  if options[:lookback] =~ /^(\d+)([hdw])$/
+    amount = $1.to_i
+    unit = $2
+
+    seconds_per_unit = {
+      'h' => 3600,      # hours
+      'd' => 86400,     # days
+      'w' => 604800     # weeks
+    }
+
+    lookback_seconds = amount * seconds_per_unit[unit]
+    cutoff_time = Time.now - lookback_seconds
+  else
+    puts "Error: Invalid lookback format '#{options[:lookback]}'"
+    puts "Valid formats: 1h, 5h, 1d, 1w (hours, days, weeks)"
+    exit 1
+  end
+end
 
 # Get terminal width for user agent display
 # Default to 120 if not a TTY (piped output)
@@ -155,12 +185,33 @@ puts "Traffic type: #{options[:non_forwarded_only] ? 'Non-forwarded only (redire
 puts "403 filtering: #{options[:include_403] ? 'Including 403 responses' : 'Excluding 403 responses (Apache-blocked)'}"
 puts "Min requests threshold: #{options[:min_requests]}"
 puts "Time window: #{options[:time_window]} minutes"
+if cutoff_time
+  puts "Lookback period: #{options[:lookback]} (analyzing files modified after #{cutoff_time.strftime('%Y-%m-%d %H:%M:%S')})"
+else
+  puts "Lookback period: all available files"
+end
 puts
+
+# Track how many files are skipped for performance
+files_skipped = 0
 
 # Process all gzipped log files
 Find.find('.').each do |file|
   next if FileTest.directory?(file)
   next unless file.match(/\.gz$/)
+
+  # Skip files older than cutoff time (performance optimization)
+  if cutoff_time
+    begin
+      file_mtime = File.mtime(file)
+      if file_mtime < cutoff_time
+        files_skipped += 1
+        next
+      end
+    rescue
+      # If we can't get mtime, process the file anyway
+    end
+  end
 
   files_inspected += 1
   print "Reading #{file}..."
@@ -245,6 +296,9 @@ else
 end
 puts "=" * 80
 puts "Files inspected: #{files_inspected}"
+if files_skipped > 0
+  puts "Files skipped (older than lookback): #{files_skipped}"
+end
 puts "Total requests analyzed: #{total_requests}"
 puts "Unique IPs: #{ip_stats.keys.length}"
 puts

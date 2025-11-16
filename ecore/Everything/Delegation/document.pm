@@ -11607,4 +11607,44 @@ If you have a question about macros, you can <code>/msg N-Wing</code>, so this c
     return $text;
 }
 
+sub popular_registries
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+    my $text = '';
+
+    $text .= '<table align="center">
+<tr>
+<th>Registry</th>
+<th># Submissions</th>
+</tr>';
+
+    my $rows;
+    my $row;
+    my $str    = '';
+    my $queryText;
+    my $limit  = 25;
+    my $r;
+
+    $queryText =
+        'select for_registry,COUNT(for_registry) AS ctr FROM registration GROUP BY for_registry ORDER BY ctr DESC LIMIT '
+      . $limit;
+    $rows = $DB->{dbh}->prepare($queryText)
+      or return $rows->errstr;
+    $rows->execute()
+      or return $rows->errstr;
+
+    while ( $row = $rows->fetchrow_arrayref ) {
+        $r = getNodeById( $$row[0] );
+        $str .= '<tr>
+      <td>' . linkNode($r) . '</td>
+      <td style="text-align:center">' . $$row[1] . '</td>
+      </tr>';
+    }
+
+    $text .= $str;
+    $text .= '</table>';
+
+    return $text;
+}
+
 1;
