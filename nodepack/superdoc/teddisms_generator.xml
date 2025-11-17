@@ -1,50 +1,5 @@
 <node>
-  <doctext>
-&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;p align=center&gt;
-[%
-#!/usr/bin/perl
-
-#Chihuahua Grub Personal Evaluation Generator v1.01
-#revision history:
-#v1.00: original -fw
-#v1.01: added capitalization and vocab -cg
-#v1.02: unfucked rand, added vocab, fixed all-noun, exclamation point -fw
-
-my $str = &quot;&lt;html&gt;&lt;body&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;b&gt;&lt;i&gt;&quot;;
-
-#&lt;KidTamago&gt; um. there's got to be more with nuns.
-#&lt;flamingweasel&gt; you want me to weight nuns?
-#&lt;KidTamago&gt; yes!
-my @noun = (&quot;NUN&quot;, &quot;NUN&quot;, &quot;NUN&quot;, &quot;NUN&quot;, &quot;NUN&quot;, &quot;CHRIST&quot;, &quot;POWERHOOKER&quot;, &quot;CUNT&quot;, &quot;PORN&quot;, &quot;COCK&quot;, &quot;CRUNCH&quot;, &quot;POOP&quot;, &quot;JEW&quot;, &quot;FUCK&quot;, &quot;FUCK&quot;, &quot;FUCK&quot;, &quot;FUCK&quot;, &quot;FUCK&quot;, &quot;FUCK&quot;, &quot;SHIT&quot;, &quot;SHIT&quot;, &quot;SHIT&quot;, &quot;SHIT&quot;, &quot;BRIT&quot;, &quot;FLANNEL&quot;, &quot;CRAP&quot;, &quot;TIT&quot;, &quot;SLUT&quot;, &quot;PISS&quot;, &quot;DICK&quot;, &quot;ASS&quot;, &quot;PUBIC&quot;, &quot;SIDE&quot;, &quot;CHALLA&quot;, &quot;COMMA&quot;, &quot;BLING&quot;, &quot;ASS&quot;, &quot;TURD&quot;, &quot;GOD&quot;);
-my @verb = (&quot;SHITT&quot;, &quot;FUCK&quot;, &quot;GAGG&quot;, &quot;TAPP&quot;, &quot;SLAPP&quot;, &quot;BURN&quot;, &quot;PISS&quot;, &quot;LICK&quot;, &quot;CRAPP&quot;, &quot;BLAST&quot;, &quot;MUNCH&quot;);
-my @phrase = (&quot;UNRELENTING FUCKTARD&quot;);
-
-
-my $i = int(rand 10);
-if (5 == $i) {
-  $str.=$noun[rand scalar(@noun)] . $verb[rand scalar(@verb)] . &quot;ING &quot; .
-  $noun[rand scalar(@noun)];
-}
-elsif (4 == $i) {
-  $str.=$noun[rand scalar(@noun)] .
-  $noun[rand scalar(@noun)] . $verb[rand scalar(@verb)] . &quot;ER&quot;;
-}
-elsif (3 == $i) {
-  $str.=$noun[rand scalar(@noun)] . $verb[rand scalar(@verb)] . &quot;ING &quot; .
-  $noun[rand scalar(@noun)] . $verb[rand scalar(@verb)] . &quot;ER&quot;;
-}
-elsif (2 == $i) {
-  $str.=$phrase[rand scalar(@phrase)];
-}
-else {
-$str.=$noun[rand scalar(@noun)] . $verb[rand scalar(@verb)] . &quot;ING &quot; .
-$noun[rand scalar(@noun)] . $verb[rand scalar(@verb)] . &quot;ER&quot;;
-}
-
-$str.=&quot;!&lt;/i&gt;&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/body&gt;&lt;/html&gt;\n&quot;; 
-return $str;
-%]&lt;br&gt;&lt;br&gt;&lt;br&gt;
-</doctext>
+  <doctext></doctext>
   <node_id>1250804</node_id>
   <title>Teddisms Generator</title>
   <type_nodetype>14</type_nodetype>

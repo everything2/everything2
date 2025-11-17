@@ -1,32 +1,5 @@
 <node>
-  <doctext>[%
- return &quot;You'd see something here if you had an account.&quot; if $APP-&gt;isGuest($USER);
-
-  my $csr = $DB-&gt;sqlSelectMany('*','registration',&quot;from_user=$$USER{user_id}&quot;)
-    ||return &quot;SQL Problem.  Please notify a [coder].&quot;;
-  my $labels = ['Registry','Data','Comments','Profile?'];
-  my $rows;
-  while(my $ref = $csr-&gt;fetchrow_hashref()){
-    push @$rows,{
-      'Registry'=&gt;linkNode($$ref{for_registry}),
-      'Data'=&gt;$APP-&gt;htmlScreen($$ref{data}),
-      'Comments'=&gt;$APP-&gt;htmlScreen($$ref{comments}),
-      'Profile?'=&gt;['No','Yes']-&gt;[$$ref{in_user_profile}]
-    };
-  }
-  if($rows){
-    return &quot;&lt;p&gt;To add more registry entries, check out [The Registries[superdoc]].&lt;/p&gt;&quot;
-      . $APP-&gt;buildTable($labels,$rows)
-      ;
-  }else{
-    return '&lt;div style=&quot;text-align:center;font-weight:bold;margin:20px;&quot;&gt;'
-    . &quot;You haven\'t added your data to any registries yet.&lt;br&gt;&quot;
-    . &quot;To add some, visit [The Registries[superdoc]].&quot;
-    . &quot;&lt;/div&gt;&quot;
-    ;
-  }
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>2001829</node_id>
   <title>Registry Information</title>
   <type_nodetype>14</type_nodetype>

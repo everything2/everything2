@@ -1,41 +1,5 @@
 <node>
-  <doctext>&lt;p align=&quot;center&quot; style=&quot;text-align:center; font-weight:bold; margin:20px;&quot;&gt;
-  The 100 most recently added or updated registry entries, served with a hint of basil...
-&lt;/p&gt;
-
-[%
-  return &quot;...would be shown here if you logged in.&quot; if $APP-&gt;isGuest($USER);
-  my $csr = $DB-&gt;sqlSelectMany('*','registration',
-     '','ORDER BY tstamp DESC LIMIT 100')
-    || return 'SQL Error (prepare).  Please notify a [coder]';
-
-  my $labels = ['Registry','User','Data','Comments','Profile?'];
-  my $rows;
-  while(my $ref = $csr-&gt;fetchrow_hashref()){
-    my $data = $$ref{data};
-    my $comments = $$ref{comments};
-
-    $data = $APP-&gt;parseAsPlainText($data);
-    $comments = $APP-&gt;parseAsPlainText($comments);
-
-    push @$rows,{
-      'Registry'=&gt;linkNode($$ref{for_registry}),
-      'User'=&gt;linkNode($$ref{from_user}),
-      'Data'=&gt;$data,
-      'Comments'=&gt;($comments ? $comments : '&amp;nbsp;'),
-      'Profile?'=&gt;['No','Yes']-&gt;[$$ref{in_user_profile}],
-#      'As of'=&gt;parseSQLTstamp($$ref{tstamp})
-    }
-    if (linkNode($$ref{for_registry}));
-#   ^ RoguePoet pointed out some entries that had a blank space for &quot;Registry&quot;,
-#     because the registry (_id 8000) had been deleted...this was weird.
-#     Quick hack to stop entries in deleted registries from showing up;
-#     I'm sure someone can find a better way to do this. --alexander
-  }
-
-  return $APP-&gt;buildTable($labels,$rows,'class=&quot;registries&quot;','center');
-# 4th option centers the table, so we don't need &lt;center&gt; any more --alexander
-%]</doctext>
+  <doctext></doctext>
   <node_id>2001828</node_id>
   <title>Recent Registry Entries</title>
   <type_nodetype>14</type_nodetype>
