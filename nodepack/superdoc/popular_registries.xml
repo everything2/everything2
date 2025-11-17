@@ -1,36 +1,5 @@
 <node>
-  <doctext>&lt;table align=&quot;center&quot;&gt;
-&lt;tr&gt;
-&lt;th&gt;Registry&lt;/th&gt;
-&lt;th&gt;# Submissions&lt;/th&gt;
-&lt;/tr&gt;
-[%
-my $rows;
-my $row;
-my $str;
-my $queryText;
-my $limit = 25;
-my $r;
-
-$queryText = 'select for_registry,COUNT(for_registry) AS ctr FROM registration GROUP BY for_registry ORDER BY ctr DESC LIMIT '. $limit;
-$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
-   or return $rows-&gt;errstr;
-$rows-&gt;execute()
-   or return $rows-&gt;errstr;
-
-while($row = $rows-&gt;fetchrow_arrayref)
-{
-   $r = getNodeById($$row[0]);
-   $str .= '&lt;tr&gt;
-      &lt;td&gt;' . linkNode($r) . '&lt;/td&gt;
-      &lt;td style=&quot;text-align:center&quot;&gt;' . $$row[1] . '&lt;/td&gt;
-      &lt;/tr&gt;';
-}
-return $str;
-%]
-&lt;/table&gt;
-
-</doctext>
+  <doctext></doctext>
   <node_id>2007587</node_id>
   <title>Popular Registries</title>
   <type_nodetype>14</type_nodetype>

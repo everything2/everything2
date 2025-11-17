@@ -1,7 +1,6 @@
 <node>
   <_create_table_statement>CREATE TABLE `roomdata` (
   `roomdata_id` int NOT NULL DEFAULT '0',
-  `criteria` mediumtext,
   `abreviation` varchar(8) DEFAULT NULL,
   `lastused_date` date NOT NULL DEFAULT '0000-00-00',
   `roomlocked` tinyint(1) DEFAULT '0',
