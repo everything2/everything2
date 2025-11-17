@@ -6606,7 +6606,7 @@ sub delegation_hitlist
   my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
   my $str = '';
   my $count = 0;
-  my $types = [qw(superdoc restricted_superdoc superdocnolinks oppressor_superdoc fullpage htmlcode htmlpage nodelet)];
+  my $types = [qw(superdoc restricted_superdoc superdocnolinks oppressor_superdoc fullpage htmlcode htmlpage nodelet ticker)];
 
   foreach my $type (@$types)
   {
@@ -17575,4 +17575,1288 @@ $finalStr.=$query->end_form;
 
 return $str."<br /><br />".$finalStr;
 }
+
+sub e2_color_toy {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = <<'END_HTML';
+<noscript>
+<h3>JavaScript is not available in your browser.</h3>
+<p>It may be disabled, or your browser may not support it at all.
+<strong>Without JavaScript, this page will not work.</strong> We apologize. </p>
+<hr>
+</noscript>
+
+<style type="text/css">
+<!--
+.gradcell {
+    position: relative;
+    visibility: show;
+    margin: 0px;
+    padding: 0px;
+}
+//-->
+</style>
+<script language="JavaScript">
+// 2069767.js colorclass.js
+// Unknown usage
+
+//  JavaScript class for handling colors
+//  1/24/02
+
+//-----------------------------------------------------------------------------
+//  Named colors
+var NAMED = new Object();
+//  Which of the named colors are fake.
+var FAKE  = new Object();
+initNamedColors();
+
+//-----------------------------------------------------------------------------
+//  These are IntRange instances. They are properly initalized below, after the
+//  IntRange class is fully defined.
+var RGBRange    = null; //  RGB values
+var HueRange    = null; //  Hue
+var SatBriRange = null; //  Saturation and brightness
+
+//-----------------------------------------------------------------------------
+function zpadl( s, digits ) {
+    while ( s.length < digits )
+        s = "0" + s;
+    return s;
+}
+
+
+function toHex( x, digits ) {
+    var n = parseInt( x.toString() );
+
+    if ( digits == null )
+        digits = 1;
+
+    if ( isNaN( n ) )
+        n = 0;
+
+    return zpadl(n.toString( 16 ), 2 );
+}
+
+
+//-----------------------------------------------------------------------------
+function IntRange( low, high, dflt ) {
+    this.set( low, high, dflt );
+}
+
+IntRange.prototype.low      = 0;
+IntRange.prototype.high     = 255;
+IntRange.prototype.dflt     = 0;
+
+IntRange.prototype.set = function( low, high, dflt ) {
+    if ( low != null ) {
+        this.low = parseInt( low );
+        if ( isNaN( this.low ) )
+            this.low = IntRange.prototype.low;
+    }
+
+    if ( high != null ) {
+        this.high = parseInt( high );
+        if ( isNaN( this.high ) )
+            this.high = IntRange.prototype.high;
+    }
+
+    if ( dflt != null ) {
+        this.dflt = parseInt( dflt );
+        if ( isNaN( this.dflt ) )
+            this.dflt = IntRange.prototype.dflt;
+    }
+
+    return this;
+}
+
+//  If n is a string that might not be base 10, provide a radix
+IntRange.prototype.enforceOn = function( n, radix ) {
+    n = parseInt( n, radix );
+
+    if ( isNaN( n ) )
+        return this.dflt;
+    else if ( n < this.low )
+        return this.low;
+    else if ( n > this.high )
+        return this.high;
+    else
+        return n;
+}
+
+
+//-----------------------------------------------------------------------------
+//  Due to the weird JS object model, IntRange() exists before we define it.
+//  This is because it is declared, so it exists as soon as the file is parsed.
+//  Its member functions, however, aren not added until *execution* of the file
+//  gets to that point: They are assignments rather than declarations. If we do
+//  this before then, we get errors because the constructor calls
+//  IntRange.prototype.set, which remains undefined until we assign a function
+//  object to it.
+RGBRange    = new IntRange( 0, 255, 0 );    //  RGB values
+HueRange    = new IntRange( 0, 419, 0 );    //  Hue
+SatBriRange = new IntRange( 0, 100, 0 );    //  Saturation and brightness
+
+
+//-----------------------------------------------------------------------------
+function htmlColor( r, g, b ) {
+    return "#" + toHex(r, 2 ) + toHex(g, 2 ) + toHex(b, 2 );
+}
+
+function namedColorValue( s ) {
+    var s = NAMED[ s ];
+
+    return ( ( "" + s ) == "undefined" ) ? "#000000" : s;
+}
+
+
+//-----------------------------------------------------------------------------
+//  This one is the whole point.
+//  Constructor:
+//      Color( a, b, c )    //  If all arguments are null, default to 0, 0, 0;
+//                          //  If b or c is null but a is not, call
+//                          //  this.fromString( a );
+//                          //  Otherwise, call this.fromRGB( a, b, c ).
+//
+//  Members:
+//      r, g, b             //  Red, green, and blue values.
+//
+//      fromString( s )     //  If the first character of s is "#", s is
+//                          //  presumed to be an HTML hex color string.
+//                          //  Otherwise, it is presumed to be a named HTML
+//                          //  color.
+//
+//      toString()          //  return HTML hex color string: #RRGGBB
+//      fromRGB( r, g, b )  //  Initialize from red, green, and blue values
+//      fromHSB( h, s, b )  //  Initialize from hue, saturation, and brightness
+//      toHSB()             //  return HSB object w/ h, s, and b members
+//
+//      getRGBSorted()      //  return an Object with min, max, and mid members.
+//                          //  We use it internally.
+//-----------------------------------------------------------------------------
+function Color( a, b, c ) {
+    if ( a != null ) {
+        if ( b == null && c == null ) {
+            this.fromString( a );
+        } else {
+            this.fromRGB( a, b, c );
+        }
+    }
+}
+
+Color.prototype.r   = 0;
+Color.prototype.g   = 0;
+Color.prototype.b   = 0;
+
+Color.prototype.fromRGB = function( r, g, b ) {
+    this.r = RGBRange.enforceOn( r );
+    this.g = RGBRange.enforceOn( g );
+    this.b = RGBRange.enforceOn( b );
+
+    return this;
+}
+
+Color.prototype.toString = function() {
+    return htmlColor( this.r, this.g, this.b );
+}
+
+Color.prototype.fromString = function( s ) {
+    s = (s + "").toString();
+
+    if ( s.substr( 0, 1 ) != "#" )
+        s = namedColorValue( s );
+
+    s = zpadl( s.replace( /^[^0-9a-f]/gi, "" ), 6 );
+
+    var clrs = s.match( /([0-9a-f][0-9a-f])/gi );
+
+    this.r = RGBRange.enforceOn( clrs[ 0 ], 16 );
+    this.g = RGBRange.enforceOn( clrs[ 1 ], 16 );
+    this.b = RGBRange.enforceOn( clrs[ 2 ], 16 );
+
+    return this;
+}
+
+Color.prototype.fromHSB = function( hue, sat, bright ) {
+    sat /= 100;
+    bright /= 100;
+
+    if ( sat == 0 ) {
+        this.r = bright;
+        this.g = bright;
+        this.b = bright;
+
+        return this;
+    } else {
+        hue = hue / 60;
+        var i = Math.floor( hue );
+        var f = hue - i;
+        var p = bright * ( 1.0 - sat );
+        var q = bright * ( 1.0 - sat * f );
+        var t = bright * ( 1.0 - sat * ( 1.0 - f ) );
+
+        bright *= 255;
+        t *= 255;
+        p *= 255;
+        q *= 255;
+
+        switch ( i ) {
+            case 0:
+                return this.fromRGB( bright, t, p );
+
+            case 1:
+                return this.fromRGB( q, bright, p );
+
+            case 2:
+                return this.fromRGB( p, bright, t );
+
+            case 3:
+                return this.fromRGB( p, q, bright );
+
+            case 4:
+                return this.fromRGB( t, p, bright );
+
+            default:
+                return this.fromRGB( bright, p, q );
+        }
+    }
+}
+
+
+Color.prototype.getRGBSorted = function() {
+    var ary = new Array( this.r, this.b, this.g );
+
+    //  Make sure we sort these as integers, not strings.
+    //  According to Netscape JS documentation, the callback will not work with
+    //  some pre-v4 versions of Netscape on some platforms. Or something. Maybe
+    //  it was version 2.
+    ary.sort( function( a, b ) { return parseInt( a ) - parseInt( b ); } );
+
+    /*
+    var rtn = new Object();
+
+    rtn.min = ary[ 0 ];
+    rtn.mid = ary[ 1 ];
+    rtn.max = ary[ 2 ];
+
+    alert( rtn.toSource() );
+
+    return rtn;
+    */
+
+    //  Object literal. Ph334r my 1337 skillz.
+    return { min: ary[ 0 ], mid: ary[ 1 ], max: ary[ 2 ] };
+}
+
+
+Color.prototype.toHSB = function() {
+    var domainBase      = 0;
+    var domainOffset    = 0;
+
+    var hsb = new HSB();
+    var mmm = this.getRGBSorted();
+
+    if ( mmm.max == 0 ) {
+        hsb.b = 0;
+        hsb.s = 0;
+    } else {
+        hsb.b = mmm.max / 255;
+        hsb.s = ( hsb.b - ( mmm.min / 255.0 ) ) / hsb.b;
+    }
+
+    var oneSixth = 1.0 / 6.0;
+
+    domainOffset = ( mmm.mid - mmm.min ) / ( mmm.max - mmm.min ) / 6.0;
+
+    if ( mmm.max == mmm.min ) {
+        hsb.h = 0;
+    } else {
+        if ( this.r == mmm.max ) {
+            if ( mmm.mid == this.g ) {
+                domainBase = 0 / 6.0;
+            } else {
+                domainBase = 5 / 6.0;
+                domainOffset = oneSixth - domainOffset;
+            }
+        } else if ( this.g == mmm.max ) {
+            if ( mmm.mid == this.b ) {
+                domainBase = 2 / 6.0;
+            } else {
+                domainBase = 1 / 6.0;
+                domainOffset = oneSixth - domainOffset;
+            }
+        } else {
+            if ( mmm.mid == this.r ) {
+                domainBase = 4 / 6.0;
+            } else {
+                domainBase = 3 / 6.0;
+                domainOffset = oneSixth - domainOffset;
+            }
+        }
+
+        hsb.h = domainBase + domainOffset;
+    }
+
+    hsb.h = Math.round( hsb.h * 360 );
+    hsb.s = Math.round( hsb.s * 100 );
+    hsb.b = Math.round( hsb.b * 100 );
+
+    return hsb.integerize();
+}
+
+
+//-----------------------------------------------------------------------------
+//  This HSB class is primitive. Think of it as a struct with functions rather
+//  than a real class. It exists only so Color.toHSB() has a type to return.
+//-----------------------------------------------------------------------------
+function HSB( h, s, b ) {
+    this.h = h || 0;
+    this.s = s || 0;
+    this.b = b || 0;
+}
+
+HSB.prototype.integerize = function() {
+    this.h = parseInt( this.h );
+    this.s = parseInt( this.s );
+    this.b = parseInt( this.b );
+
+    return this;
+}
+
+HSB.prototype.toString = function() {
+    return this.toColor().toString();
+}
+
+
+HSB.prototype.toColor = function() {
+    return new Color().fromHSB( this.h, this.s, this.b );
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+function initNamedColors() {
+    NAMED[ "snow" ]                 = "#fffafa";
+    NAMED[ "ghostwhite" ]           = "#f8f8ff";
+    NAMED[ "whitesmoke" ]           = "#f5f5f5";
+    NAMED[ "gainsboro" ]            = "#dcdcdc";
+    NAMED[ "floralwhite" ]          = "#fffaf0";
+    NAMED[ "oldlace" ]              = "#fdf5e6";
+    NAMED[ "linen" ]                = "#faf0e6";
+    NAMED[ "antiquewhite" ]         = "#faebd7";
+    NAMED[ "papayawhip" ]           = "#ffefd5";
+    NAMED[ "blanchedalmond" ]       = "#ffebcd";
+    NAMED[ "bisque" ]               = "#ffe4c4";
+    NAMED[ "peachpuff" ]            = "#ffdab9";
+    NAMED[ "navajowhite" ]          = "#ffdead";
+    NAMED[ "moccasin" ]             = "#ffe4b5";
+    NAMED[ "cornsilk" ]             = "#fff8dc";
+    NAMED[ "ivory" ]                = "#fffff0";
+    NAMED[ "lemonchiffon" ]         = "#fffacd";
+    NAMED[ "seashell" ]             = "#fff5ee";
+    NAMED[ "honeydew" ]             = "#f0fff0";
+    NAMED[ "mintcream" ]            = "#f5fffa";
+    NAMED[ "azure" ]                = "#f0ffff";
+    NAMED[ "aliceblue" ]            = "#f0f8ff";
+    NAMED[ "lavender" ]             = "#e6e6fa";
+    NAMED[ "lavenderblush" ]        = "#fff0f5";
+    NAMED[ "mistyrose" ]            = "#ffe4e1";
+    NAMED[ "white" ]                = "#ffffff";
+    NAMED[ "black" ]                = "#000000";
+    NAMED[ "darkslategray" ]        = "#2f4f4f";
+    NAMED[ "dimgray" ]              = "#696969";
+    NAMED[ "slategray" ]            = "#708090";
+    NAMED[ "lightslategray" ]       = "#778899";
+    NAMED[ "gray" ]                 = "#bebebe";
+    NAMED[ "lightgray" ]            = "#d3d3d3";
+    NAMED[ "midnightblue" ]         = "#191970";
+    NAMED[ "cornflowerblue" ]       = "#6495ed";
+    NAMED[ "darkslateblue" ]        = "#483d8b";
+    NAMED[ "slateblue" ]            = "#6a5acd";
+    NAMED[ "mediumslateblue" ]      = "#7b68ee";
+    NAMED[ "mediumblue" ]           = "#0000cd";
+    NAMED[ "royalblue" ]            = "#4169e1";
+    NAMED[ "blue" ]                 = "#0000ff";
+    NAMED[ "dodgerblue" ]           = "#1e90ff";
+    NAMED[ "deepskyblue" ]          = "#00bfff";
+    NAMED[ "skyblue" ]              = "#87ceeb";
+    NAMED[ "lightskyblue" ]         = "#87cefa";
+    NAMED[ "steelblue" ]            = "#4682b4";
+    NAMED[ "lightsteelblue" ]       = "#b0c4de";
+    NAMED[ "lightblue" ]            = "#add8e6";
+    NAMED[ "powderblue" ]           = "#b0e0e6";
+    NAMED[ "paleturquoise" ]        = "#afeeee";
+    NAMED[ "darkturquoise" ]        = "#00ced1";
+    NAMED[ "mediumturquoise" ]      = "#48d1cc";
+    NAMED[ "turquoise" ]            = "#40e0d0";
+    NAMED[ "cyan" ]                 = "#00ffff";
+    NAMED[ "lightcyan" ]            = "#e0ffff";
+    NAMED[ "cadetblue" ]            = "#5f9ea0";
+    NAMED[ "mediumaquamarine" ]     = "#66cdaa";
+    NAMED[ "aquamarine" ]           = "#7fffd4";
+    NAMED[ "darkgreen" ]            = "#006400";
+    NAMED[ "darkolivegreen" ]       = "#556b2f";
+    NAMED[ "darkseagreen" ]         = "#8fbc8f";
+    NAMED[ "seagreen" ]             = "#2e8b57";
+    NAMED[ "mediumseagreen" ]       = "#3cb371";
+    NAMED[ "lightseagreen" ]        = "#20b2aa";
+    NAMED[ "palegreen" ]            = "#98fb98";
+    NAMED[ "springgreen" ]          = "#00ff7f";
+    NAMED[ "lawngreen" ]            = "#7cfc00";
+    NAMED[ "chartreuse" ]           = "#7fff00";
+    NAMED[ "greenyellow" ]          = "#adff2f";
+    NAMED[ "limegreen" ]            = "#32cd32";
+    NAMED[ "forestgreen" ]          = "#228b22";
+    NAMED[ "green" ]                = "#00ff00";
+    NAMED[ "olivedrab" ]            = "#6b8e23";
+    NAMED[ "yellowgreen" ]          = "#9acd32";
+    NAMED[ "darkkhaki" ]            = "#bdb76b";
+    NAMED[ "palegoldenrod" ]        = "#eee8aa";
+    NAMED[ "lightgoldenrodyellow" ] = "#fafad2";
+    NAMED[ "lightyellow" ]          = "#ffffe0";
+    NAMED[ "yellow" ]               = "#ffff00";
+    NAMED[ "gold" ]                 = "#ffd700";
+    NAMED[ "goldenrod" ]            = "#daa520";
+    NAMED[ "darkgoldenrod" ]        = "#b8860b";
+    NAMED[ "rosybrown" ]            = "#bc8f8f";
+    NAMED[ "indianred" ]            = "#cd5c5c";
+    NAMED[ "saddlebrown" ]          = "#8b4513";
+    NAMED[ "sienna" ]               = "#a0522d";
+    NAMED[ "peru" ]                 = "#cd853f";
+    NAMED[ "burlywood" ]            = "#deb887";
+    NAMED[ "beige" ]                = "#f5f5dc";
+    NAMED[ "wheat" ]                = "#f5deb3";
+    NAMED[ "sandybrown" ]           = "#f4a460";
+    NAMED[ "tan" ]                  = "#d2b48c";
+    NAMED[ "chocolate" ]            = "#d2691e";
+    NAMED[ "firebrick" ]            = "#b22222";
+    NAMED[ "brown" ]                = "#a52a2a";
+    NAMED[ "darksalmon" ]           = "#e9967a";
+    NAMED[ "salmon" ]               = "#fa8072";
+    NAMED[ "lightsalmon" ]          = "#ffa07a";
+    NAMED[ "orange" ]               = "#ffa500";
+    NAMED[ "darkorange" ]           = "#ff8c00";
+    NAMED[ "coral" ]                = "#ff7f50";
+    NAMED[ "lightcoral" ]           = "#f08080";
+    NAMED[ "tomato" ]               = "#ff6347";
+    NAMED[ "orangered" ]            = "#ff4500";
+    NAMED[ "red" ]                  = "#ff0000";
+    NAMED[ "hotpink" ]              = "#ff69b4";
+    NAMED[ "deeppink" ]             = "#ff1493";
+    NAMED[ "pink" ]                 = "#ffc0cb";
+    NAMED[ "lightpink" ]            = "#ffb6c1";
+    NAMED[ "palevioletred" ]        = "#db7093";
+    NAMED[ "maroon" ]               = "#b03060";
+    NAMED[ "mediumvioletred" ]      = "#c71585";
+    NAMED[ "magenta" ]              = "#ff00ff";
+    NAMED[ "violet" ]               = "#ee82ee";
+    NAMED[ "plum" ]                 = "#dda0dd";
+    NAMED[ "orchid" ]               = "#da70d6";
+    NAMED[ "mediumorchid" ]         = "#ba55d3";
+    NAMED[ "darkorchid" ]           = "#9932cc";
+    NAMED[ "darkviolet" ]           = "#9400d3";
+    NAMED[ "blueviolet" ]           = "#8a2be2";
+    NAMED[ "purple" ]               = "#a020f0";
+    NAMED[ "mediumpurple" ]         = "#9370db";
+    NAMED[ "thistle" ]              = "#d8bfd8";
+    //  fake
+    NAMED[ "wharfkhaki" ]           = "#d5d1c1";
+    NAMED[ "wharfolive" ]           = "#6e6d56";
+    NAMED[ "jukkaback" ]            = "#ddddbb";
+    NAMED[ "jukkaodd" ]             = "#cccc99";
+    NAMED[ "jukkabrown" ]           = "#7e7e66";
+
+    FAKE[ "wharfkhaki" ]        = true;
+    FAKE[ "wharfolive" ]        = true;
+    FAKE[ "jukkaback" ]         = true;
+    FAKE[ "jukkaodd" ]          = true;
+    FAKE[ "jukkabrown" ]        = true;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+<!--
+//  Named HTML colors
+var IS_NS4      = (     navigator.appName == "Netscape"
+                    &&  navigator.userAgent.indexOf( 'Mozilla/5' ) == -1 );
+var obj_ref     = ( IS_NS4 ) ? ns_obj_ref : ie_obj_ref;
+//  This should, obviously, be a member function. However, IE 5.5 seems to have
+//  some kind of issue with that.
+var setBGColor  = ( IS_NS4 ) ? ns_setBGColor : ie_setBGColor;
+
+//------------------------------------------------------------------------------
+function ie_obj_ref( parent, name ) {
+    //  This works w/ Opera 5+ (dunno 'bout 4), Mozilla, and IE 5+ (dunno 'bout
+    //  IE4; parent[ name ] is known to work with IE 4, but not with Mozilla)
+    return parent.getElementById( name );
+}
+
+function ns_obj_ref( parent, name ) {
+    return parent[ name ];
+}
+
+function ie_setBGColor( obj, clr ) {
+    obj.style.backgroundColor = clr;
+}
+
+function ns_setBGColor( obj, clr ) {
+    obj.bgColor = clr;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+function on_use_HSB( frm ) {
+    frm.hue.value       = HueRange.enforceOn( frm.hue.value );
+    frm.sat.value       = SatBriRange.enforceOn( frm.sat.value );
+    frm.bright.value    = SatBriRange.enforceOn( frm.bright.value );
+
+    var clr = new Color().fromHSB( frm.hue.value, frm.sat.value, frm.bright.value );
+
+    frm.r.value = clr.r;
+    frm.g.value = clr.g;
+    frm.b.value = clr.b;
+
+    frm.hex.value = clr.toString();
+
+    var cell = obj_ref( document, 'dechex' );
+    setBGColor( cell, clr.toString() );
+}
+
+function on_use_RGB( frm ) {
+    frm.r.value = RGBRange.enforceOn( frm.r.value );
+    frm.g.value = RGBRange.enforceOn( frm.g.value );
+    frm.b.value = RGBRange.enforceOn( frm.b.value );
+
+    var clr = new Color( frm.r.value, frm.g.value, frm.b.value );
+    frm.hex.value = clr;
+
+    var hsb = clr.toHSB();
+    frm.hue.value       = hsb.h;
+    frm.sat.value       = hsb.s;
+    frm.bright.value    = hsb.b;
+
+    var cell = obj_ref( document, 'dechex' );
+    setBGColor( cell, clr.toString() );
+}
+
+function on_use_hex( frm ) {
+    var clr = new Color( frm.hex.value );
+
+    if ( frm.nametohex.checked )
+        frm.hex.value = clr;
+
+    frm.r.value = clr.r;
+    frm.g.value = clr.g;
+    frm.b.value = clr.b;
+
+    var hsb = clr.toHSB();
+    frm.hue.value       = hsb.h;
+    frm.sat.value       = hsb.s;
+    frm.bright.value    = hsb.b;
+
+    var cell = obj_ref( document, 'dechex' );
+    setBGColor( cell, clr.toString() );
+}
+
+function use_in_grad( value, which ) {
+    document.forms.grad[ which ].value = value;
+    on_gengrad( document.forms.grad );
+}
+
+function on_gengrad( frm ) {
+    var from    = new Color( frm.from.value );
+    var to      = new Color( frm.to.value );
+    var cell    = null;
+    var inc     = new Object(); //  Signed increments for each color
+
+    if ( frm.nametohex.checked ) {
+        frm.from.value  = from;
+        frm.to.value    = to;
+    }
+
+    inc.r   = ( to.r - from.r ) / 15;
+    inc.g   = ( to.g - from.g ) / 15;
+    inc.b   = ( to.b - from.b ) / 15;
+
+    var clr = new Color( from );
+
+    var hexes = '';
+
+    for ( i = 0; i < 15; ++i ) {
+        cell = obj_ref( document, 'grad' + i );
+        setBGColor( cell, clr.toString() );
+        hexes += clr.toString() + '\n';
+        clr.r += inc.r;
+        clr.g += inc.g;
+        clr.b += inc.b;
+    }
+
+    cell = obj_ref( document, 'grad' + i );
+    setBGColor( cell, to.toString() );
+    hexes += to.toString() + '\n';
+
+    frm.output.value = hexes;
+
+    frm.output.select();
+    frm.output.focus();
+}
+//-->
+</script>
+
+<form name="color">
+<table border="0">
+
+<tr valign="top">
+<td>
+<input type="button" value="Use" onclick="on_use_HSB( document.forms.color )" />
+<small>Hue:</small> <input type="text" size="4" name="hue" value="0" />
+<small>Saturation:</small> <input type="text" size="4" name="sat" value="0" />
+<small>Brightness:</small> <input type="text" size="4" name="bright" value="0" />
+</td>
+<td><small><i>Hue must be 0..419; S/B values must be 0..100.</i></small></td>
+</tr>
+
+<tr valign="top">
+<td>
+<input type="button" value="Use" onclick="on_use_RGB( document.forms.color )" />
+<small>Red:</small> <input type="text" size="4" name="r" value="0" />
+<small>Green:</small> <input type="text" size="4" name="g" value="0" />
+<small>Blue:</small> <input type="text" size="4" name="b" value="0" />
+</td>
+<td><small><i>R/G/B values must be 0..255.</i></small></td>
+</tr>
+
+<tr valign="top">
+<td>
+<input type="button" value="Use" onclick="on_use_hex( document.forms.color )" />
+Hex/<a href="/index.pl?node=Named%20HTML%20Colors">named</a>:
+<input type="text" size="12" name="hex" value="#000000" />
+<br />
+<input type="checkbox" name="nametohex" __checked>Convert named colors to hex</input>
+</td>
+<td><small><i>Hex fields will also accept <a href="/index.pl?node=Named%20HTML%20Colors">HTML color
+names</a> like </i><tt>dodgerblue</tt><i> etc.</i></small></td>
+</tr>
+
+</table>
+
+<input type="button" value="Use Hex for Gradient From"
+    onclick="use_in_grad( document.forms.color.hex.value, 'from' );" />
+<input type="button" value="Use Hex for Gradient To"
+    onclick="use_in_grad( document.forms.color.hex.value, 'to' );" />
+
+</form>
+
+<div class="gradcell" id="dechex" width="64px" height="32px">
+<img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="48" height="24" />
+</div>
+
+<hr>
+<form name="grad">
+From <input type="text" size="12" name="from" value="#ffffff" /> to
+<input type="text" size="12" name="to" value="#000000" />
+<input type="button" value="Generate Gradient" onclick="on_gengrad( document.forms.grad )" />
+<br />
+<input type="checkbox" name="nametohex" __checked>Convert named colors to hex</input>
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td><div class="gradcell" id="grad0" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad1" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad2" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad3" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad4" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad5" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad6" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad7" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad8" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad9" ><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad10"><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad11"><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad12"><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad13"><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad14"><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+<td><div class="gradcell" id="grad15"><img src="https://s3.amazonaws.com/static.everything2.com/dot.gif" width="24" height="24" /></div></td>
+</tr>
+<tr align="center">
+<td>1</td><td>2</td><td>3</td><td>4</td>
+<td>5</td><td>6</td><td>7</td><td>8</td>
+<td>9</td><td>10</td><td>11</td><td>12</td>
+<td>13</td><td>14</td><td>15</td><td>16</td>
+</tr>
+</table>
+
+<textarea name="output" rows="17" cols="16"></textarea>
+
+</form>
+
+<p>Additional "fake" named colors: <tt>wharfkhaki, wharfolive, jukkaback,
+jukkaodd, jukkabrown</tt>. </p>
+
+<hr>
+<script>
+<!--
+function on_bugrep( frm ) {
+    function repl( m0, m1 ) {
+        switch ( m1 ) {
+            case '[':   return '&#91;';
+            case ']':   return '&#93;';
+            case '<':   return '&lt;';
+            case '>':   return '&gt;';
+            default:    return m1;
+        }
+    }
+
+    var uastr = (navigator.userAgent + '').replace( /([\[\]<>])/g, repl );
+    frm.message.value =   '/msg wharfinger &#91;' + uastr + '&#93; '
+                        + frm.explain.value;
+
+    return true;
+}
+//-->
+</script>
+<p>If you're having trouble with this page, explain briefly and click here:<br />
+END_HTML
+
+    $str .= htmlcode('openform2', 'bugrep');
+
+    $str .= <<'END_HTML2';
+<input type="hidden" name="op" value="message" />
+<input type="hidden" name="message" />
+<input type="text" size="40" maxlength="150" name="explain" />
+<input type="submit" name="message_send" value="Bug Report" onclick="return on_bugrep( document.forms.bugrep );"/>
+</form>
+</p>
+<br /><br />
+<p><i>Comments, complaints, offers one can't refuse, etc. all go
+to <a href="/index.pl?node_id=470183">wharfinger</a>.</i> </p>
+
+<p><i>In Opera 5, the hex and decimal values will be displayed, but
+not the colors. See
+<a href="http://www.opera.com/docs/specs/js/">Opera's DOM specs</a>:
+They claim that as of version 6, they still don't support the</i>
+<tt>backgroundColor</tt> <i>attribute. However, I've gotten reports
+from Win32 Opera 6 users saying that the colors work fine. They're
+definitely not working for me in Opera 5, though. That's a tough one
+to work around, but I'll see what I can do. I never advise anybody
+to "upgrade"; it's your life, use your own judgement. </i>
+</p>
+
+<p><i>Other than that, we seem to work properly with Mozilla 0.9.5
+(K-Meleon), Netscape 4, and IE 5.5 (Win32 for all three). If you're
+using IE4, or if you're using anything at all on Linux/UNIX, Mac,
+BeOS, Amiga, CPM-80, 16-bit Windows, Multics, or the Timex Sinclair,
+I'd like to hear from you.</i></p>
+
+<p><i>[StarryNight] tells me that OmniWeb 4.0.6 on Mac is a no-go
+with this. [cbustapeck] is seeing problems with [icab] pre2.6 on
+MacOS 9.2.2 but not MacOS 10.1.2. A few weeks later: [cbustapeck]
+just let me know that icab pre2.6 has expired, and all is well on
+[icab] pre2.71, on MacOS 9.2.2 and X.
+</i></p>
+
+
+END_HTML2
+
+    return $str;
+}
+
+sub e2_word_counter {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = <<'END_HTML';
+<script language="JavaScript">
+<!--
+function word_count( str ) {
+//    var tagregex = new RegExp( '<\x5b^>\x5d*>', "g" );
+    //   I get away with the square brackets because this is a superdocnolinks node.
+    var tagregex = new RegExp( '<[^>]*>', "g" );
+    str = str.replace( tagregex, ' ' );
+
+    var words = str.split( /[ \t\r\n]+/ );
+    alert( words.length + ' words in text.' );
+
+    return false;
+}
+//-->
+</script>
+
+<noscript>
+<p><font color="c00000"><strong>This won't work</strong> because
+you either a) don't have JavaScript at all, or b) have it turned off. </p>
+</noscript>
+
+<p>This ignores HTML tags. If there's an HTML tag in the <em>middle</em>
+of a word, that'll count as two words. Other than that, it splits words only by
+whitespace, so if you're one of those "foo--bar" people with em-dashes,
+you're <strong>doomed</strong>. It might be a couple words off anyway. </p>
+
+<form name="wc">
+<textarea cols="50" rows="20" name="text"></textarea><br />
+<input type="button" value="Count the Words" onclick="word_count( document.forms.wc.text.value )"></input>
+</form>
+END_HTML
+
+    return $str;
+}
+
+sub style_defacer {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    $str .= parseLinks("<p>So you're not satisfied with [Theme Nirvana|the beautiful styles lovingly crafted for you by the best designers on E2]? Thought not. I bet you want to change all the colours, add low-res background images and generally [MySpace|MySpacify] it. Well, don't ever say we're not good to you. This form right here will let you add any styles that you want, which will then override those in the theme. If you used to use ekw theme and fear change, then perhaps you'd like to start by using the [ekw shredder], which will attempt to create a custom style based on your old EKW settings.</p><p>You need at least a small amount of knowledge of [CSS] to edit these, but if you start with a Shredded ekw style you should be able to simply edit the colours in that, or otherwise use it as a starting point. One day we may have an easier way to edit this. Perhaps after ascorbic retires.</p>");
+
+    $str .= htmlcode('openform');
+
+    if (defined($query->param('vandalism'))) {
+        $$VARS{customstyle} = $query->param('vandalism');
+        if (!length($$VARS{customstyle})) {
+            delete($$VARS{customstyle});
+        }
+    }
+
+    $str .= "<textarea id=\"vandalism\" rows='40' name=\"vandalism\">" . $APP->htmlScreen($$VARS{customstyle}) . "</textarea><br />\n";
+    $str .= "<input type='submit' name='submit' value='Throw that paint'>\n";
+    $str .= "</form>";
+
+    return $str;
+}
+
+sub the_killing_floor_ii {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    $str .= htmlcode('openform');
+
+    my $UID = getId($USER);
+    return ($$USER{title} . ' ain\'t allowed ta squash nuttin\'!') unless $APP->isEditor($USER);
+    my $NOPARENT = '<p><strong>Nothing to remove!</strong>
+	(Either the writeups had been removed by the time you got here,
+	or they were insured,
+	or you forgot to check the little "axe" box on at least 1 writeup.)</p>';
+
+    my $edLink = linkNode($USER,0,{lastnode_id=>0});
+
+    $str .= 'Are ya shure ya wanna beat up on all thez perty writeups?
+	<table border="1" cellpadding="5" cellspacing="0">
+	<tr><th>shhh</th><th>reason</th><th>title</th><th>node_id</th>
+	<th>author</th></tr>'."\n";
+
+    my $alsoHTML = ($VARS->{killfloor_showlinks} ? 1 : 0);
+    my $strHTML = ''; #contains version to copy and paste into editor logs
+
+    my (@param) = $query->param;
+
+    my $parent;
+    my $nid;
+    my $optNoPain;
+    my $optInstant;
+    my $t;
+    my $wuaid;      #WU author ID
+    my $wuAuthor;
+    foreach(@param) {
+        next unless /removenode(\d+)/;
+        $nid = $1;
+        next unless $query->param('removenode'.$nid); # just existing is not enough
+
+        my $N = getNodeById($nid);
+        next unless $N and $$N{type}{title} eq 'writeup';
+        $str .= '<tr>';
+        if($$N{publication_status}) {
+            $str .= '<td colspan="8">' . linkNode($N) . ' by ' . linkNode($$N{author_user})
+            .' is '.getNodeById($$N{publication_status})->{title};
+            next;
+        }
+        $parent = $$N{parent_e2node};
+
+        $optNoPain = defined $query->param('nopain'.$nid);
+        $optInstant = $query->param('instakill'.$nid);
+        $wuaid = $$N{author_user} || 0;
+        $wuAuthor = getNodeById($wuaid);
+
+        $str .= '<td>';
+        $str .= '<input type="checkbox" name="noklapmsg'.$nid.'" value="1">' if $wuaid==$UID;
+
+        $str .= '</td><td>';
+
+        $str .= $query->textfield('removereason'.$nid,'',50).'</td><td>';
+        $str.="<input type=\"hidden\" name=\"$_\" value=\"1\">";
+
+        $str.="<input type=\"hidden\" name=\"instakill$nid\" value=\"1\">" if $optInstant;
+        $str.= linkNode($N) . '</td><td>' . $$N{node_id} . '</td><td>' . ((defined $wuAuthor)
+            ? linkNode($wuAuthor).' <small>('
+             .htmlcode('timesince', $wuAuthor->{lasttime}.',1').')</small>'
+            : '(deleted user; node_id='.$wuaid.')'
+        )."</td></tr>\n";
+
+        if($alsoHTML) {
+            $strHTML .= '&lt;li&gt;&#91;';
+            $t = $$N{title};
+            if($t =~ /^(.*) \((\w+)\)$/) {
+                $strHTML .= $1 . '&#93; ('. $2 .')';
+            } else {
+                $strHTML .= $t . '&#93;';
+            }
+            $strHTML .= (defined $wuAuthor)
+                ? ' by &#91;'.($wuAuthor->{title}).'&#93;'
+                : ' by a removed user (node_id='.$wuaid.')'
+            ;
+            $strHTML .= ' (mercifully)' if $optNoPain;
+            $strHTML .= "&lt;/li&gt;\n";
+        }
+    }
+    $str .= '</table><p><small>
+<strong>shhh</strong>: If checked, no message is sent. This is only enabled if you\'re removing
+your own writeup.<br>
+<strong>reason</strong>: this optional message is sent by you, and the user gets it unless the
+user disables kill notification in their '.linkNodeTitle('user settings').'; see '
+.linkNodeTitle('E2 FAQ: Klaproth').' for more information
+</small></p>';
+    if($alsoHTML) {
+        $str .= "<p>You can use this to copy-n-paste into an editor log:\n<br>
+<textarea rows=\"10\" cols=\"65\">&lt;ul&gt;\n" . $strHTML . "&lt;/ul&gt;</textarea>\n";
+    }
+    return $NOPARENT . $str . $NOPARENT unless $parent;
+    $str.='<p align="right">'.$query->submit('op','remove');
+    $str.='<p>'.linkNode($parent, 'Changed my mind.');
+    $str.=$query->end_form;
+
+    return $str;
+}
+
+sub zenmastery {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = <<'END_HTML';
+<h2>About this page</h2>
+
+<p>Welcome to Zenmastery, the demonstration node where you can view staff-only options to
+style them properly in your Zen Stylesheet.  The nodelets below are encased in a DIV
+called <tt>id="zenmastery_sidebar"</tt>.  This will allow you to tinker with a false sidebar
+DIV without interfering with the real sidebar on your layout.</p>
+
+<p>For your convenience, the HTML has been cleaned up a bit to make it easier to find the IDs and
+Classes you need to reference.  All forms are still intact but they are neutered, they can't
+actually set or change anything.  All links go to the homepage.  These are for demonstration
+purposes only.</p>
+
+<p>Also see
+END_HTML
+
+    $str .= linkNodeTitle('The Nodelets');
+
+    $str .= <<'END_HTML2';
+ for a list of all the available nodelets
+that are not currently in your sidebar.
+
+<h3>New Writeups</h3>
+
+<p>The staff-only options in
+END_HTML2
+
+    $str .= parseLinks('[New Writeups[nodelet]|New Writeups]');
+
+    $str .= <<'END_HTML3';
+ are:
+<dl>
+<dt>R:-5<dd>Signals that a writeup currently has a negative rep (Not given a class)
+<dt>(h?)<dd>Link to "hide" a writeup from New Writeups. Class: 'hide'
+<dt>(H: un-h!)<dd>Link to "unhide" a writeup from new Writeups. Class: 'hide'
+<dt>(X)<dd>Marks writeups that have been nuked (Not given a class)
+</dl>
+<p>(The same controls are also present in the
+END_HTML3
+
+    $str .= linkNodeTitle('[New Logs[nodelet]|New Logs nodelet]');
+
+    $str .= <<'END_HTML4';
+.)
+</p>
+
+<h3>Master Control</h3>
+
+<p>Master Control is a staff-only nodelet.  Most of it is self-explanatory, but the Node Notes are
+a special section that allows staff members to add commentary to a node to coordinate their
+efforts so they don't accidentally work at cross-purposes to each other.  For example one editor
+might note "I'm working with the author to improve this writeup." so another editor doesn't
+nuke it.</p>
+
+<h3>Front Page News/weblogs</h3>
+
+<p>Staff may be shown who linked a writeup or other document to a weblog or to the front page news
+if that person is not the author of the document. Imaginatively enough, the information is in a div
+with class 'linkedby'. They also get a link allowing them to remove the document from the weblog, with
+class 'remove'.
+</p>
+
+<div id="zenmastery_sidebar">
+
+<div class='nodelet' id='newwriteups'>
+	<h2 class="nodelet_title">New Writeups</h2>
+	<div class='nodelet_content'>
+		<form>
+			<input type="hidden">
+			<input type='hidden'>
+			<input type="hidden">
+			<select>
+				<option value="1">1</option>
+				<option value="5">5</option>
+				<option value="10">10</option>
+				<option value="15">15</option>
+				<option value="20">20</option>
+				<option value="25" selected="selected">25</option>
+				<option value="30">30</option>
+				<option value="40">40</option>
+			</select>
+			<input type="submit" value='show'>
+			<label>
+				<input type="checkbox" name="nw_nojunk" value="">
+					No junk
+			</label>
+			<div>
+				<input type="hidden">
+			</div>
+		</form>
+
+		<ul class="infolist">
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup1</a>
+				<span class="type">(<a href="/">idea</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup2</a>
+				<span class="type">(<a href="/">fiction</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup3</a>
+				<span class="type">(<a href="/">person</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup4</a>
+				<span class="type">(<a href="/">log</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup5</a>
+				<span class="type">(<a href="/">person</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					R:-1
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup6</a>
+				<span class="type">(<a href="/">person</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					R:-1
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup7</a>
+				<span class="type">(<a href="/">idea</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					R:-1
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo  hasvoted">
+				<a class="title" href="/">writeup8</a>
+				<span class="type">(<a href="/">person</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo  wu_hide">
+				<a class="title" href="/">writeup9</a>
+				<span class="type">(<a href="/">person</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					<span class="hide">(H: <a href="/">un-h!</a>)</span>
+					(X)
+				</span>
+			</li>
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup10</a>
+				<span class="type">(<a href="/">review</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo  wu_hide">
+				<a class="title" href="/">writeup11</a>
+				<span class="type">(<a href="/">dream</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					R:-1
+					<span class="hide">(H: <a href="/">un-h!</a>)</span>
+				</span>
+			</li>
+			<li class="contentinfo ">
+				<a class="title" href="/">writeup12</a>
+				<span class="type">(<a href="/">idea</a>)</span>
+				<cite>by <a href="/" class="author">rootbeer277</a></cite>
+				<span class="admin">
+					<span class="hide">(<a href="/">h?</a>)</span>
+				</span>
+			</li>
+		</ul>
+
+		<div class="nodeletfoot morelink">(<a href="/node/superdoc/Writeups+by+Type">more</a>)</div>
+
+	</div>
+</div>
+
+<div class='nodelet' id='mastercontrol'>
+	<h2 class="nodelet_title">Master Control</h2>
+	<div class='nodelet_content'>
+
+		<div class="nodelet_section">
+			<h4 class="ns_title">Node Info</h4>
+			<span class="rightmenu">
+				<span class='var_label'>node_id:</span> <span class='var_value'>1986688</span>
+				<span class='var_label'>nodetype:</span> <span class='var_value'><a href="/index.pl">superdocnolinks</a></span>
+				<span class='var_label'>Server:</span> <span class='var_value'>web5</span>
+				<p></p>
+
+				<form>
+					<label for ="node">Name:</label>
+					<input type="text" name="node" value="zenmastery" size="18" maxlength="80" id="node">
+					<input type="submit" value="go">
+				</form>
+
+				<form>
+					<label for="node_id">ID:</label>
+					<input type="text" name="node_id" value="1986688" size="12" maxlength="80" id="node_id">
+					<input type="submit" value="go">
+				</form>
+
+			</span>
+		</div>
+
+		<div class='nodelet_section'>
+			<h4 class='ns_title'>Node Toolset</h4>
+			<ul>
+				<li><a href='/index.pl'>Clone Node</a></li>
+				<li><a href='/index.pl'>Edit Code</a></li>
+				<li><a href="/index.pl">Node XML</a></li>
+				<li><a href="/index.pl">Document Node?</a></li>
+				<li style='list-style: none'><br></li>
+				<li><a href='/index.pl'>Delete Node</a></li>
+			</ul>
+		</div>
+
+		<div class="nodelet_section" id="nodenotes">
+			<h4 class="ns_title">Node Notes <em>(0)</em></h4>
+			<form>
+				<input type="hidden">
+				<input type="hidden">
+				<p>
+					<input type="checkbox">
+					2009-05-15 <a href="/index.pl" class='populated' >rootbeer277</a>: Test chamber for <a href="/index.pl" class='populated' >zenmasters</a> to style staff features
+				</p>
+				<p align="right">
+					<input type="hidden">
+					<input type="hidden">
+					<input type="hidden">
+					<input type="text" name="notetext" maxlength="255" size="22"><br>
+					<input type="submit" value="(un)note">
+				</p>
+			</form>
+		</div>
+
+		<div id="episection_admins" class="nodeletsection">
+			<div class="sectionheading">
+				[<a style="text-decoration: none;" class="ajax " href="/" title="collapse"><tt> - </tt></a>]
+				<strong>Admin</strong>
+			</div>
+
+			<div class="sectioncontent">
+				<ul>
+					<li><a href='/index.pl'>Edit These E2 Titles</a></li>
+					<li><a href='/index.pl'>Admin HOWTO</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="episection_ces" class="nodeletsection">
+			<div class="sectionheading">
+				[<a style="text-decoration: none;" class="ajax " href="/" title="collapse"><tt> - </tt></a>]
+				<strong>CE</strong>
+			</div>
+			<div class="sectioncontent">
+				<ul>
+					<li><a href='/index.pl'>25</a> | <a href='/index.pl' >Everything New Nodes</a></li>
+					<li><a href='/index.pl'>E2 Nuke Request</a></li>
+					<li><a href='/index.pl'>Nodeshells</a></li>
+					<li><a href='/index.pl'>Node Row</a></li>
+					<li><a href='/index.pl'>Recent Node Notes</a></li>
+					<li><a href='/index.pl'>Your insured writeups</a></li>
+					<li><a href='/index.pl'>Make Unvotable</a></li>
+					<li><a href='/index.pl'>Blind Voting Booth</a></li>
+					<li><a href='/index.pl'>Group discussions</a></li>
+					<li><a href='/index.pl'>Editor Log: May 2009</a></li>
+					<li><a href='/index.pl'>The Oracle</a></li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+</div>
+<br><br><br>
+<div class="weblog">
+	<div class="item">
+		<div class="contentinfo contentheader">
+ 			<a href="/" class="title">Welcome to Zenmastery</a>
+			<cite>by <a href="/" class="author">rootbeer277</a></cite>
+			<span class="date">Wed May 27 2009 at 9:56:10</span>
+			<div class="linkedby">linked by <a href="/">DonJaime</a></div>
+			<a class="remove" href="/">remove</a>
+		</div>
+		<div class="content">
+			<p>Content goes here.</p>
+		</div>
+	</div>
+	<div class="item">
+		<div class="contentinfo contentheader">
+			<a href="/" class="title">Zenmastery now Updated!</a>
+			<cite>by <a href="/" class="author">DonJaime</a></cite>
+			<span class="date">Sun May 17 2009 at 4:00:50</span>
+			<a class="remove" href="/">remove</a>
+		</div>
+		<div class="content">
+			<p>Content goes here.</p>
+		</div>
+	</div>
+</div>
+END_HTML4
+
+    return $str;
+}
+
 1;

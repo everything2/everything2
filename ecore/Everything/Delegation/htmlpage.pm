@@ -737,7 +737,7 @@ sub classic_user_edit_page
   $PAGELOAD->{pageheader} = '<!-- put at end -->'.htmlcode('settingsDocs');
   my $str = htmlcode('openform').htmlcode('verifyRequestForm', 'edit_user');
 
-  $str .= qq|<p align="right">|.linkNode($NODE, 'display', {displaytype=>'display', lastnode_id => undef});
+  $str .= q|<p align="right">|.linkNode($NODE, 'display', {displaytype=>'display', lastnode_id => undef});
 
   if(Everything::isApproved($NODE, getNode('users with image', 'nodegroup')) or $APP->getLevel($NODE) >= 1)
   {
@@ -775,7 +775,7 @@ sub classic_user_edit_page
   $str .= qq|<p>Change password:<br />|.htmlcode("password_field","passwd").qq|</p>|;
 
   $str .= qq|<p><b>Email Address</b>:|; 
- 
+
   my $email = $$NODE{email};
   $email =~ s/\</\&lt\;/g;
   $email =~ s/\>/\&gt\;/g;
@@ -795,7 +795,7 @@ sub classic_user_edit_page
   $str .= qq|<p>|.htmlcode("editSingleVar","employment","school/company").qq|</p>|;
   $str .= qq|<p>|.htmlcode("editSingleVar","motto").qq|</p>|;
   $str .= qq|<p>You can remove your bookmarks:</p>|;
-  
+
   $str .= qq|<input type="button" value="Check All" id="checkall" style="display:none">|;
   $str .= htmlcode("showbookmarks","edit");
 
@@ -805,7 +805,7 @@ sub classic_user_edit_page
   $str .= qq|<hr class="clear"><table width="100%" id='homenodetext'><tr><td><div class='content'>|;
   $str .= htmlcode("displayUserText");
 
-  $str .= qq|</div></td></tr></table>|;
+  $str .= q|</div></td></tr></table>|;
 
   return $str;
 }
@@ -836,9 +836,9 @@ sub superdoc_display_page
     $APP->devLog("Using document delegation for $NODE->{title} as '$doctitle'");
     my $output = $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
     return $PAGELOAD->{noparsecodelinks} ? $output : parseLinks($output);
-  }else{
-    return htmlcode('parsecode','doctext');
   }
+
+  return htmlcode('parsecode','doctext');
 }
 
 sub node_basicedit_page
