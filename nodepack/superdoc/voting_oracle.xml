@@ -1,37 +1,5 @@
 <node>
-  <doctext>Look into thy past. Where hast thou judged?
-&lt;br&gt;&lt;br&gt;
-[%
-  return if $APP-&gt;isGuest($USER);
-  my $cnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=$$USER{node_id} and weight between -1 and 1&quot;);
-  my $upcnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=$$USER{node_id} and weight=1&quot;);
-
-if ($cnt == 0) {
-  return &quot;..thou art too young yet. Come back soon.&quot; if $APP-&gt;getLevel($USER) == 0;
-  return &quot;Thou hast grown, but are still yet a man. Prove thy judgment!&quot;;
-  }
-  #my $up = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=$$USER{node_id} and weight=1&quot;);
-  #jb says: We do not  need to show anyone what percentage of their votes are
-  # up or down. Typically I'd like to keep this system as honest as possible and
-  # knowledge of your voting percentages in the +/- sense, keeps the numbers
-  # from possibly being honest.  People's voting habits would be unnaturally
-  # affected by knowing the exact number.
-  # See also: [The tree of knowledge of good and evil]
-
-  #my $pcUp = sprintf(&quot;%.3f&quot;, 100*($up / $cnt));
-  my $total = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;);
-  my $percent = sprintf(&quot;%.4f&quot;, 100*($cnt / $total));
-  my $wus = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;writeup&quot;);
-  my $uppercent = sprintf(&quot;%.3f&quot;, 100*($upcnt / $cnt));
-
-my $webbyWus = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;, &quot;type_nodetype=117 and author_user=176726&quot;);
-$wus -= $webbyWus;
-  my $wuspercent = sprintf(&quot;%.3f&quot;, 100*($cnt/$wus));
-
-  return &quot;Thou hast cast $cnt votes... $percent\% of the judgements made of all time, across $wuspercent\% of all votable writeups. Of these, $uppercent\% are upvotes.&quot;;
-%]
-&lt;br&gt;&lt;br&gt;&lt;br&gt;
-&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Keep in mind, these numbers could be wildly inaccurate. Oracles aren't known for their precision.&lt;/small&gt;&lt;/p&gt;</doctext>
+  <doctext></doctext>
   <node_id>1395195</node_id>
   <title>Voting Oracle</title>
   <type_nodetype>14</type_nodetype>

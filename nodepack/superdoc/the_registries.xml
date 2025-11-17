@@ -1,24 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;
-  &lt;p&gt;Tell us a bit about yourself...
-&lt;/p&gt;
-
-[%
-  return &quot;...first, you'd better log in.&quot; if $APP-&gt;isGuest($USER);
-
-  my $csr = $DB-&gt;sqlSelectMany('registry.registry_id','registry, registration WHERE registry.registry_id = registration.for_registry GROUP BY registration.for_registry',
-     '','ORDER BY registration.tstamp DESC LIMIT 100')
-    || return 'SQL Error (prepare).  Please notify a [coder]';
-
-  my $str=&quot;&lt;ul&gt;&quot;;
-  while(my $ref = $csr-&gt;fetchrow_hashref()){
-    my $id = $$ref{registry_id};
-    $str.=&quot;&lt;li&gt;&quot;.linkNode($id).&quot;&lt;/li&gt;&quot;
-    }
-  $str.=&quot;&lt;/ul&gt;&quot;;
-  $str.=&quot;&lt;p&gt;(Registries are listed in order of most recent entry)&lt;/p&gt;&quot;;
-  return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>2004312</node_id>
   <title>The Registries</title>
   <type_nodetype>14</type_nodetype>

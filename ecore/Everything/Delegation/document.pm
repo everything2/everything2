@@ -13721,4 +13721,913 @@ sub magical_writeup_reparenter
             . " for bulk moves. Certain conditions apply.</p>" );
 }
 
+sub welcome_to_everything
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $zenStr = undef;
+
+    $zenStr = '<div id="welcome_message">Everything2 is a collection of user-submitted writings about
+	more or less everything. Spend some time looking around and reading, or '
+        . linkNodeTitle('Everything2 Help|learn how to contribute')
+        . '.</div>';
+
+    $zenStr .= '<div id="loglinks">
+<h3>Logs</h3>
+' . htmlcode('daylog') . '
+</div>';
+
+    $zenStr .= '<div id="cooluserpicks">
+<h3>Cool User Picks!</h3>
+' . htmlcode('frontpage_cooluserpicks') . '</div>';
+
+    $zenStr .= '
+	<div id="staff_picks">
+	<h3>Staff Picks</h3>
+' . htmlcode('frontpage_staffpicks')
+        . '</div>'
+        unless ( $APP->isGuest($USER) );
+
+    $zenStr .= '
+     <div id="creamofthecool">
+        <h3 id="creamofthecool_title">'
+        . linkNodeTitle('Cool Archive[superdoc]|Cream of the Cool')
+        . '</h3>
+        ' . htmlcode('frontpage_creamofthecool') . '
+      </div>';
+
+    if ( !$APP->isGuest($USER) ) {
+        $zenStr .= '
+  <div id="frontpage_news">
+        <h2 id="frontpage_news_title">'
+            . linkNodeTitle('News for Noders. Stuff that matters.[superdoc]|News for Noders')
+            . '</h2>
+   ' . htmlcode('frontpage_news') . '</div>';
+    }
+
+    return $zenStr;
+}
+
+sub teddisms_generator
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str = undef;
+    my $i   = undef;
+
+    $str = "<html><body><big><big><big><big><big><big><big><big><big><big><b><i>";
+
+    my @noun   = ( "NUN", "NUN", "NUN", "NUN", "NUN", "CHRIST", "POWERHOOKER", "CUNT", "PORN", "COCK", "CRUNCH", "POOP", "JEW", "FUCK", "FUCK", "FUCK", "FUCK", "FUCK", "FUCK", "SHIT", "SHIT", "SHIT", "SHIT", "BRIT", "FLANNEL", "CRAP", "TIT", "SLUT", "PISS", "DICK", "ASS", "PUBIC", "SIDE", "CHALLA", "COMMA", "BLING", "ASS", "TURD", "GOD" );
+    my @verb   = ( "SHITT", "FUCK", "GAGG", "TAPP", "SLAPP", "BURN", "PISS", "LICK", "CRAPP", "BLAST", "MUNCH" );
+    my @phrase = ("UNRELENTING FUCKTARD");
+
+    $i = int( rand 10 );
+    if ( 5 == $i ) {
+        $str .= $noun[ rand scalar(@noun) ] . $verb[ rand scalar(@verb) ] . "ING " . $noun[ rand scalar(@noun) ];
+    }
+    elsif ( 4 == $i ) {
+        $str .= $noun[ rand scalar(@noun) ] . $noun[ rand scalar(@noun) ] . $verb[ rand scalar(@verb) ] . "ER";
+    }
+    elsif ( 3 == $i ) {
+        $str .= $noun[ rand scalar(@noun) ] . $verb[ rand scalar(@verb) ] . "ING " . $noun[ rand scalar(@noun) ] . $verb[ rand scalar(@verb) ] . "ER";
+    }
+    elsif ( 2 == $i ) {
+        $str .= $phrase[ rand scalar(@phrase) ];
+    }
+    else {
+        $str .= $noun[ rand scalar(@noun) ] . $verb[ rand scalar(@verb) ] . "ING " . $noun[ rand scalar(@noun) ] . $verb[ rand scalar(@verb) ] . "ER";
+    }
+
+    $str .= "!</i></b></big></big></big></big></big></big></big></big></big></big></body></html>\n";
+    return $str;
+}
+
+sub voting_oracle
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $cnt         = undef;
+    my $upcnt       = undef;
+    my $total       = undef;
+    my $percent     = undef;
+    my $wus         = undef;
+    my $uppercent   = undef;
+    my $webbyWus    = undef;
+    my $wuspercent  = undef;
+
+    return '' if $APP->isGuest($USER);
+
+    $cnt   = $DB->sqlSelect( "count(*)", "vote", "voter_user=$USER->{node_id} and weight between -1 and 1" );
+    $upcnt = $DB->sqlSelect( "count(*)", "vote", "voter_user=$USER->{node_id} and weight=1" );
+
+    if ( $cnt == 0 ) {
+        return "..thou art too young yet. Come back soon." if $APP->getLevel($USER) == 0;
+        return "Thou hast grown, but are still yet a man. Prove thy judgment!";
+    }
+
+    $total      = $DB->sqlSelect( "count(*)", "vote" );
+    $percent    = sprintf( "%.4f", 100 * ( $cnt / $total ) );
+    $wus        = $DB->sqlSelect( "count(*)", "writeup" );
+    $uppercent  = sprintf( "%.3f", 100 * ( $upcnt / $cnt ) );
+    $webbyWus   = $DB->sqlSelect( "count(*)", "node", "type_nodetype=117 and author_user=176726" );
+    $wus        -= $webbyWus;
+    $wuspercent = sprintf( "%.3f", 100 * ( $cnt / $wus ) );
+
+    return "Thou hast cast $cnt votes... $percent% of the judgements made of all time, across $wuspercent% of all votable writeups. Of these, $uppercent% are upvotes.";
+}
+
+sub recent_registry_entries
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $csr    = undef;
+    my $labels = undef;
+    my $rows   = undef;
+    my $ref    = undef;
+    my $data   = undef;
+    my $comments = undef;
+
+    return "...would be shown here if you logged in." if $APP->isGuest($USER);
+
+    $csr = $DB->sqlSelectMany( '*', 'registration', '', 'ORDER BY tstamp DESC LIMIT 100' )
+        || return 'SQL Error (prepare).  Please notify a [coder]';
+
+    $labels = [ 'Registry', 'User', 'Data', 'Comments', 'Profile?' ];
+    while ( $ref = $csr->fetchrow_hashref() ) {
+        $data     = $ref->{data};
+        $comments = $ref->{comments};
+
+        $data     = $APP->parseAsPlainText($data);
+        $comments = $APP->parseAsPlainText($comments);
+
+        push @$rows,
+            {
+            'Registry'  => linkNode( $ref->{for_registry} ),
+            'User'      => linkNode( $ref->{from_user} ),
+            'Data'      => $data,
+            'Comments'  => ( $comments ? $comments : '&nbsp;' ),
+            'Profile?'  => [ 'No', 'Yes' ]->[ $ref->{in_user_profile} ],
+            }
+            if ( linkNode( $ref->{for_registry} ) );
+    }
+
+    return $APP->buildTable( $labels, $rows, 'class="registries"', 'center' );
+}
+
+sub registry_information
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $csr    = undef;
+    my $labels = undef;
+    my $rows   = undef;
+    my $ref    = undef;
+
+    return "You'd see something here if you had an account." if $APP->isGuest($USER);
+
+    $csr = $DB->sqlSelectMany( '*', 'registration', "from_user=$USER->{user_id}" )
+        || return "SQL Problem.  Please notify a [coder].";
+
+    $labels = [ 'Registry', 'Data', 'Comments', 'Profile?' ];
+    while ( $ref = $csr->fetchrow_hashref() ) {
+        push @$rows,
+            {
+            'Registry'  => linkNode( $ref->{for_registry} ),
+            'Data'      => $APP->htmlScreen( $ref->{data} ),
+            'Comments'  => $APP->htmlScreen( $ref->{comments} ),
+            'Profile?'  => [ 'No', 'Yes' ]->[ $ref->{in_user_profile} ]
+            };
+    }
+
+    if ($rows) {
+        return "<p>To add more registry entries, check out [The Registries[superdoc]].</p>"
+            . $APP->buildTable( $labels, $rows );
+    }
+    else {
+        return '<div style="text-align:center;font-weight:bold;margin:20px;'
+            . "You haven't added your data to any registries yet.<br>"
+            . "To add some, visit [The Registries[superdoc]]."
+            . "</div>";
+    }
+}
+
+sub the_registries
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $csr = undef;
+    my $str = undef;
+    my $ref = undef;
+    my $id  = undef;
+
+    return "...first, you'd better log in." if $APP->isGuest($USER);
+
+    $csr = $DB->sqlSelectMany(
+        'registry.registry_id',
+        'registry, registration WHERE registry.registry_id = registration.for_registry GROUP BY registration.for_registry',
+        '', 'ORDER BY registration.tstamp DESC LIMIT 100'
+    ) || return 'SQL Error (prepare).  Please notify a [coder]';
+
+    $str = "<ul>";
+    while ( $ref = $csr->fetchrow_hashref() ) {
+        $id = $ref->{registry_id};
+        $str .= "<li>" . linkNode($id) . "</li>";
+    }
+    $str .= "</ul>";
+    $str .= "<p>(Registries are listed in order of most recent entry)</p>";
+
+    return $str;
+}
+
+sub message_outbox
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $str          = undef;
+    my $spyon        = undef;
+    my $isRoot       = undef;
+    my $bots         = undef;
+    my $grandtotal   = undef;
+    my $spystring    = undef;
+    my $authoruser   = undef;
+    my $sqlWhere     = undef;
+    my $showFilters  = undef;
+    my $csr          = undef;
+    my $paginationLinks = undef;
+    my $totalmsgs    = undef;
+    my $firstmsg     = undef;
+    my $lastmsg      = undef;
+    my $colHeading   = undef;
+    my $MSG          = undef;
+    my $text         = undef;
+    my $t            = undef;
+
+    return "<p>If you had an account, you could send messages.</p>"
+        if $APP->isGuest($USER);
+
+    # options
+    $str = "(Also see: [Message Inbox])"
+        . htmlcode( 'openform', 'message_outbox_form' )
+        . '<input type="hidden" name="op" value="message_outbox">'
+        . $query->hidden('perpage')
+        . $query->hidden( 'sexisgood', '1' )    #so auto-VARS changing works
+        . $query->fieldset(
+        $query->legend('Options')
+            . 'Show only archived/unarchived messages: '
+            . htmlcode( 'varsComboBox', 'msgoutboxUnArc,0, 0,all, 1,unarchived, 2,archived' )
+        );
+
+    $spyon  = $query->param('spy_user');
+    $isRoot = $APP->isAdmin($USER);
+    $bots   = getVars( getNode( 'bot inboxes', 'setting' ) ) if $isRoot or $spyon;
+
+    # show alternate user account's messages
+    $spystring = '';
+    if ($isRoot) {
+        my @names = sort { lc($a) cmp lc($b) } keys(%$bots);
+        unshift @names, $USER->{title};
+
+        $spystring = $query->label( 'Message Outbox for: '
+                . $query->popup_menu(
+                -name   => 'spy_user',
+                values => \@names
+                ) );
+    }
+
+    $authoruser = 0;
+    if ($spyon) {
+        my $u = getNode( $spyon, 'user' );
+        if ($u) {
+            my $okUg = getNode( $bots->{ $u->{title} }, 'usergroup' );
+            $authoruser = $u if $okUg and $DB->isApproved( $USER, $okUg );
+
+        }
+        elsif ($isRoot) {
+            $spystring .= '<small>"' . $query->escapeHTML($spyon) . '" is not a user</small>';
+        }
+    }
+
+    $str .= $query->p($spystring) if $spystring;
+    $authoruser = ( $authoruser || $USER )->{node_id};
+
+    # start building SQL WHERE string
+    $sqlWhere = "author_user=$authoruser";
+
+    #show archived/unarchived things
+    $sqlWhere .= ( '', ' AND archive=0', ' AND archive!=0' )[ $VARS->{msgoutboxUnArc} ];
+
+    $showFilters = ( '', ' unarchived', ' archived' )[ $VARS->{msgoutboxUnArc} ];
+
+    $grandtotal ||= $DB->sqlSelect( "count(*)", "message_outbox", "author_user=$authoruser" );
+
+    # provoke jump to last page:
+    $query->param( 'page', 1000000000 ) unless $query->param('page');
+
+    # get messages
+    ( $csr, $paginationLinks, $totalmsgs, $firstmsg, $lastmsg ) = htmlcode(
+        'show paged content', 'message_outbox.*', "message_outbox ", "$sqlWhere",
+        'ORDER BY message_id
+		LIMIT 100',    # can be overridden by 'perpage' parameter
+        0,                     # no instructions, so it doesn't 'show' but returns cursor
+        noform => 1            # 'go to page' box not wrapped in form
+    );
+
+    # display
+    $colHeading = '<tr><th align="left">delete</th><th>send time</th>
+	<th colspan="2" align="right">&#91;un&#93;Archive</th></tr>';
+
+    $str .= "$paginationLinks
+	<table>
+	$colHeading" if $totalmsgs;
+
+    while ( $MSG = $csr->fetchrow_hashref ) {
+        $text = $MSG->{msgtext};
+
+        $text =~ s/\s+\\n\s+/<br>/g;    # replace literal '\n' with HTML breaks
+
+        # delete box
+        $str .= qq'<tr class="privmsg"><td>'
+            . $query->checkbox(
+            -name   => 'deletemsg_' . $MSG->{message_id},
+            value   => 'yup',
+            valign  => 'top',
+            label   => '',
+            class   => 'delete'
+            ) . '</td>';
+
+        # time sent
+        $t = $MSG->{tstamp};
+        $str .= '<td><small>&nbsp;'
+            . substr( $t, 0,  4 ) . '.'
+            . substr( $t, 5,  2 ) . '.'
+            . substr( $t, 8,  2 )
+            . '&nbsp;at&nbsp;'
+            . substr( $t, 11, 2 ) . ':'
+            . substr( $t, 14, 2 )
+            . '</small></td>';
+
+        # message text
+        $str .= "<td> $text</td>";
+
+        # archive box
+        $str .= '<td><tt>' . ( $MSG->{archive} ? 'A' : '&nbsp;' ) . '</tt>'
+            . $query->checkbox(
+            -name  => ( $MSG->{archive} ? 'un' : '' ) . "archive_$MSG->{message_id}",
+            value  => 'yup',
+            label  => '',
+            class  => 'archive'
+            ) . "</td>";
+
+        # close table row
+        $str .= "</tr>\n";
+    }
+
+    # summary report
+    unless ( $totalmsgs
+        || $VARS->{msgoutboxUnArc} == 2    # archived only
+        || $authoruser != $USER->{node_id} )
+    {
+        #no messages showing
+        $showFilters = "<em>You may feel lonely.</em>
+		<small>(But you do have $grandtotal sent messages all together)</small>"
+            if $grandtotal;
+    }
+    else {
+        $str .= $colHeading if $lastmsg - $firstmsg > 10;
+        $str .= '</table>' if $totalmsgs;
+
+        $showFilters =~ s/messages/message/ if $totalmsgs == 1;
+        $showFilters = ( $authoruser == $USER->{node_id} ? 'You have ' : linkNode($authoruser) . ' has ' )
+            . ( ( $totalmsgs == 0 ) ? ("no") : $totalmsgs )
+            . $showFilters
+            . ' sent messages';
+        $showFilters .= ". ($grandtotal all together)" if $totalmsgs != $grandtotal;
+    }
+
+    $str .= $query->p($showFilters);
+
+    # form manipulation buttons
+    $str .= $paginationLinks
+        . $query->p(
+        $query->reset('Clear All') . q!
+	<input type="button" value="Delete All"
+		onclick="$('.delete').each(function(){this.checked=true;});">
+	<input type="button" value="Archive All"
+		onclick="$('.archive&#91;name^=archive]').each(function(){this.checked=true;});">
+	<input type="button" value="Unarchive All"
+		onclick="$('.archive&#91;name^=unarchive]').each(function(){this.checked=true;});">!
+        );
+
+    return $str . ' ' . $query->submit( 'message_outbox update', 'submit' ) . $query->end_form();
+}
+
+sub site_trajectory
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $monthsago  = undef;
+    my $sec        = undef;
+    my $min        = undef;
+    my $hour       = undef;
+    my $mday       = undef;
+    my $month      = undef;
+    my $year       = undef;
+    my $wday       = undef;
+    my $yday       = undef;
+    my $isdst      = undef;
+    my $strMonth   = undef;
+    my $str        = undef;
+    my $strDate    = undef;
+    my $limit      = undef;
+    my $wucnt      = undef;
+    my $usercnt    = undef;
+    my $coolcnt    = undef;
+
+    $monthsago = 1;
+    ( $sec, $min, $hour, $mday, $month, $year, $wday, $yday, $isdst ) = gmtime(time);
+    $year += 1900;
+
+    $str = "<table>\n<tr>\n<th>Month to</th>\n<th colspan='2'>New writeups (surviving, not hidden)</th>\n<th colspan='2'>New users</th>\n<th colspan='2'>C!s spent</th>\n<th title='ratio of cools to new writeups'>C!:NW</th></tr>";
+    $monthsago = 1;
+
+    while ( $year > 2007 ) {
+        $strMonth = ( $month + 1 ) . '';
+        if ( length($strMonth) == 1 ) {
+            $strMonth = "0" . $strMonth;
+        }
+        $strDate = $year . "-" . $strMonth . "-01";
+        $limit =
+              'type_nodetype='
+            . getId( getType('writeup') )
+            . " and publishtime >= '"
+            . $strDate
+            . "' and publishtime < DATE_ADD('"
+            . $strDate
+            . "',INTERVAL 1 MONTH) and writeup.notnew=0";
+
+        $wucnt = $DB->sqlSelect( 'count(*)', 'node JOIN writeup on writeup.writeup_id=node.node_id', $limit );
+
+        $limit =
+              'type_nodetype='
+            . getId( getType('user') )
+            . " and createtime >= '"
+            . $strDate
+            . "' and createtime < DATE_ADD('"
+            . $strDate
+            . "',INTERVAL 1 MONTH)";
+
+        $usercnt = $DB->sqlSelect( 'count(*)', 'node', $limit );
+
+        $limit = "tstamp >= '" . $strDate . "' and tstamp < DATE_ADD('" . $strDate . "',INTERVAL 1 MONTH)";
+
+        $coolcnt = $DB->sqlSelect( 'count(*)', 'coolwriteups', $limit );
+
+        $str .= "\n<tr>";
+        $str .= '<td class="DateLabel">';
+        if ( $month == 0 ) {
+            $str .= '<b>' . ( $month + 1 ) . '/' . ($year) . '</b>';
+        }
+        else {
+            $str .= ( $month + 1 ) . '/' . ($year);
+        }
+        $str .= '</td>';
+
+        $str .=
+              "\n\t<td>$wucnt</td>\n\t<td><span class='bar' style='padding-right:"
+            . ( $wucnt / 45 )
+            . "px;'>&nbsp;</span></td>\n\t<td>$usercnt</td>\n\t<td><span class='bar' style='padding-right:"
+            . ( $usercnt / 45 )
+            . "px;'>&nbsp;</span></td>\n\t<td>$coolcnt</td>\n\t<td><span class='bar' style='padding-right:"
+            . ( $coolcnt / 45 )
+            . "px;'>&nbsp;</span></td>";
+        $str .= "\n\t<td>" . sprintf( "%.2f", $coolcnt / $wucnt ) . "</td>" if ( $wucnt > 0 );
+        $str .= "</tr>";
+
+        $month--;
+        if ( $month < 0 ) {
+            $month = 11;
+            $year--;
+        }
+        $monthsago++;
+    }
+
+    $str .= "\n</table>";
+
+    return $str;
+}
+
+sub squawkbox
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $uid          = undef;
+    my $isCoolPerson = undef;
+    my $oldroom      = undef;
+    my $str          = undef;
+    my $MSGOP        = undef;
+    my $add_room     = undef;
+    my @rooms        = ();
+    my $sqrms        = undef;
+    my $RT           = undef;
+    my $msgcsr       = undef;
+
+    $uid          = $USER->{node_id};
+    $isCoolPerson = $APP->isChanop($USER);
+
+    return "um, no" if $APP->isGuest($USER);
+
+    return "Sorry, this is now locked except for [gods|admins] and [chanops]."
+        unless $isCoolPerson;
+
+    $VARS->{squawk_rooms} ||= "0";
+    $VARS->{squawk_talk}  ||= "0";
+    $VARS->{squawk_talk} = $query->param("talkin")
+        if ( $query->param("talkin") or $query->param("talkin") eq "0" );
+
+    $oldroom = $USER->{in_room};
+    $USER->{in_room} = $VARS->{squawk_talk};
+    $str = '';
+
+    # here's where the magic happens
+    $MSGOP = getNode( "message", "opcode" );
+    Everything::Delegation::opcode::message( $DB, $query, $MSGOP, $USER, $VARS, $PAGELOAD, $APP )
+        if ( $query->param("squawk") );
+    $query->param( "message", "" );
+
+    $USER->{in_room} = $oldroom;
+
+    $add_room = getNodeById( scalar $query->param("add_room") );
+    $add_room = {
+        "node_id"       => "0",
+        "type_nodetype" => getId( getType("room") )
+        }
+        if $query->param("add_room") eq "0";
+
+    if ( $add_room and $add_room->{type_nodetype} = getId( getType("room") ) )
+    {
+        $add_room->{criteria} ||= 1;
+        ## no critic (ProhibitStringyEval)
+        $VARS->{squawk_rooms} .= "," . getId($add_room)
+            if ( $add_room->{criteria} and eval( $add_room->{criteria} ) );
+        ## use critic
+    }
+
+    if ( $query->param("showaddrooms") )
+    {
+        my $csr = $DB->sqlSelectMany( "node_id", "node",
+            "type_nodetype=" . getId( getType("room") ) );
+
+        while ( my $row = $csr->fetchrow_hashref )
+        {
+            my $N = getNodeById( $row->{node_id} );
+            push @rooms, $N if $N;
+        }
+
+        @rooms = sort { lc( $a->{title} ) cmp lc( $b->{title} ) } @rooms;
+        unshift @rooms, { node_id => "0", title => "outside" };
+
+        $str .= htmlcode("openform");
+        $str .= "<select name=\"add_room\">";
+        foreach (@rooms)
+        {
+            $str .= "<option value=\"$_->{node_id}\">$_->{title}</option>";
+        }
+        $str .= "</select>";
+        $str .= "<input type=\"submit\" value=\"Add Room\"></form>";
+        $str .= "<br><br>";
+    }
+    else
+    {
+        $str .= htmlcode("openform");
+        $str .= "<input type=\"hidden\" name=\"showaddrooms\" value=\"1\">";
+        $str .= "<input type=\"submit\" value=\"Add Rooms\">";
+        $str .= "</form>";
+    }
+
+    $sqrms = {};
+    foreach ( split( ",", $VARS->{squawk_rooms} ) )
+    {
+        $sqrms->{$_} = 1;
+    }
+
+    foreach ( my @params = $query->param )
+    {
+        next unless $_ =~ /^unsquawk_(\d+)$/;
+        delete $sqrms->{$1};
+    }
+
+    $VARS->{squawk_rooms} = join ",", keys %$sqrms;
+    return $str unless ( keys %$sqrms > 0 );
+
+    $str .= htmlcode("openform");
+    $str .= "<table>";
+    $str .= "<tr>";
+    $str .= "<td width=\"100\"><strong>Room</strong></td>";
+    $str .= "<td width=\"150\"><strong>Remove Watch</strong></td>";
+    $str .= "<td width=\"150\"><strong>Talk</strong></td>";
+    foreach ( sort { $a <=> $b } keys %$sqrms )
+    {
+        my $room = getNodeById($_);
+        $room = {
+            title          => "outside",
+            node_id        => "0",
+            type_nodetype  => getId( getType("room") )
+            }
+            if ( $_ == 0 );
+        next unless $room;
+        $str .= "<tr>";
+        $str .= "<td>"
+            . ( ( $_ == 0 ) ? ("outside") : ( linkNode($room) ) )
+            . "</td>";
+        $str
+            .= "<td><input type=\"checkbox\" name=\"unsquawk_$room->{node_id}\"></td>";
+        $str
+            .= "<td><input type=\"radio\" value=\"$room->{node_id}\" name=\"talkin\""
+            . ( ( $VARS->{squawk_talk} == $room->{node_id} ) ? (" CHECKED ") : ("") )
+            . "></td>";
+        $str .= "</tr>";
+    }
+    $str .= "</table>";
+    $str .= "<br>";
+    $str .= "<p align=\"center\"><hr width=\"200\"></p>";
+
+    $RT = getVars( getNode( "room topics", "setting" ) );
+    $VARS->{squawk_talk} ||= 0;
+    $str
+        .= "<p align=\"center\"><table><tr><td>"
+        . $RT->{ $VARS->{squawk_talk} }
+        . "</td></tr></table></p>";
+
+    $str .= "<br>";
+    $str .= "<table>";
+    $str .= "<tr>";
+    $str .= "<td width=\"75\"><strong>Where</strong></td>";
+    $str .= "<td width=\"50\"><strong>When</strong></td>";
+    $str .= "<td width=\"100\"><strong>Who</strong></td>";
+    $str .= "<td width=\"80%\"><strong>What</strong></td>";
+    $str .= "</tr>";
+
+    $msgcsr = $DB->sqlSelectMany(
+        "*", "message",
+        "("
+            . join( " or ", map { " room='$_' " } keys %$sqrms )
+            . ") and for_user=0 and unix_timestamp(now())-unix_timestamp(tstamp) < 300 order by tstamp asc"
+    );
+
+    while ( my $msg = $msgcsr->fetchrow_hashref )
+    {
+        my $room = getNodeById( $msg->{room} );
+        $room = {
+            title         => "outside",
+            node_id       => "0",
+            type_nodetype => getId( getType("room") )
+            }
+            if ( $msg->{room} == 0 );
+        next unless $room;
+
+        my $user = getNodeById( $msg->{author_user} );
+        next unless $user;
+
+        my $msgtext = encodeHTML( $msg->{msgtext} );
+        if ( $msgtext =~ /^\/me (.*)$/ )
+        {
+            $msgtext = "<em>$1</em>";
+        }
+
+        $str .= "<tr>";
+        $str
+            .= "<td>"
+            . (
+            ( $msg->{room} == $VARS->{squawk_talk} )
+            ? ("<strong>$room->{title}</strong>")
+            : ("($room->{title})")
+            ) . "</td>";
+        $str
+            .= "<td><small>"
+            . htmlcode( 'parsetimestamp', "$msg->{tstamp},2" )
+            . "</small></td>";
+        $str .= "<td>&lt;" . linkNode($user) . "&gt;</td>";
+        $str .= "<td>$msgtext</td>";
+        $str .= "</tr>";
+    }
+    $str .= "</table>";
+    $str .= "<br><br>";
+    $str .= "<input type=\"text\" width=\"400\" name=\"message\" maxlength=\"255\">";
+    $str .= "<input type=\"hidden\" name=\"squawk\" value=\"1\">";
+    $str .= "<input type=\"submit\" value=\"talk\">";
+    $str .= "</form>";
+
+    return $str;
+}
+
+sub squawkbox_update
+{
+    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
+
+    my $oldroom       = undef;
+    my $str           = undef;
+    my $MSGOP         = undef;
+    my $add_room      = undef;
+    my @rooms         = ();
+    my $sqrms         = undef;
+    my $RT            = undef;
+    my $ignorelist    = undef;
+    my @ignorelistlist = ();
+    my $ignoreStr     = undef;
+    my $searchcriteria = undef;
+    my $msgcsr        = undef;
+
+    return "um, no" if $APP->isGuest($USER);
+
+    $VARS->{squawk_rooms} ||= "0";
+    $VARS->{squawk_talk}  ||= "0";
+    $VARS->{squawk_talk} = $query->param("talkin")
+        if ( $query->param("talkin") or $query->param("talkin") eq "0" );
+
+    $oldroom = $USER->{in_room};
+    $USER->{in_room} = $VARS->{squawk_talk};
+    $str = '';
+
+    # here's where the magic happens
+    $MSGOP = getNode( "message", "opcode" );
+    Everything::Delegation::opcode::message( $DB, $query, $MSGOP, $USER, $VARS, $PAGELOAD, $APP )
+        if ( $query->param("squawk") );
+    $query->param( "message", "" );
+
+    $USER->{in_room} = $oldroom;
+
+    $add_room = getNodeById( $query->param("add_room") );
+    $add_room = {
+        "node_id"       => "0",
+        "type_nodetype" => getId( getType("room") )
+        }
+        if $query->param("add_room") eq "0";
+
+    if ( $add_room and $add_room->{type_nodetype} = getId( getType("room") ) )
+    {
+        $add_room->{criteria} ||= 1;
+        ## no critic (ProhibitStringyEval)
+        $VARS->{squawk_rooms} .= "," . getId($add_room)
+            if ( $add_room->{criteria} and eval( $add_room->{criteria} ) );
+        ## use critic
+    }
+
+    if ( $query->param("showaddrooms") )
+    {
+        my $csr = $DB->sqlSelectMany( "node_id", "node",
+            "type_nodetype=" . getId( getType("room") ) );
+
+        while ( my $row = $csr->fetchrow_hashref )
+        {
+            my $N = getNodeById( $row->{node_id} );
+            push @rooms, $N if $N;
+        }
+
+        @rooms = sort { lc( $a->{title} ) cmp lc( $b->{title} ) } @rooms;
+        unshift @rooms, { node_id => "0", title => "outside" };
+
+        $str .= htmlcode("openform");
+        $str .= "<select name=\"add_room\">";
+        foreach (@rooms)
+        {
+            $str .= "<option value=\"$_->{node_id}\">$_->{title}</option>";
+        }
+        $str .= "</select>";
+        $str .= "<input type=\"submit\" value=\"Add Room\"></form>";
+        $str .= "<br><br>";
+    }
+    else
+    {
+        $str .= htmlcode("openform");
+        $str .= "<input type=\"hidden\" name=\"showaddrooms\" value=\"1\">";
+        $str .= "<input type=\"submit\" value=\"Add Rooms\">";
+        $str .= "</form>";
+    }
+
+    $sqrms = {};
+    foreach ( split( ",", $VARS->{squawk_rooms} ) )
+    {
+        $sqrms->{$_} = 1;
+    }
+
+    foreach ( my @params = $query->param )
+    {
+        next unless $_ =~ /^unsquawk_(\d+)$/;
+        delete $sqrms->{$1};
+    }
+
+    $VARS->{squawk_rooms} = join ",", keys %$sqrms;
+    return $str unless ( keys %$sqrms > 0 );
+
+    $str .= htmlcode("openform");
+    $str .= "<table>";
+    $str .= "<tr>";
+    $str .= "<td width=\"100\"><strong>Room</strong></td>";
+    $str .= "<td width=\"150\"><strong>Remove Watch</strong></td>";
+    $str .= "<td width=\"150\"><strong>Talk</strong></td>";
+    foreach ( sort {$a <=> $b} keys %$sqrms )
+    {
+        my $room = getNodeById($_);
+        $room = {
+            title         => "outside",
+            node_id       => "0",
+            type_nodetype => getId( getType("room") )
+            }
+            if ( $_ == 0 );
+        next unless $room;
+        $str .= "<tr>";
+        $str .= "<td>"
+            . ( ( $_ == 0 ) ? ("outside") : ( linkNode($room) ) )
+            . "</td>";
+        $str
+            .= "<td><input type=\"checkbox\" name=\"unsquawk_$room->{node_id}\"></td>";
+        $str
+            .= "<td><input type=\"radio\" value=\"$room->{node_id}\" name=\"talkin\""
+            . ( ( $VARS->{squawk_talk} == $room->{node_id} ) ? (" CHECKED ") : ("") )
+            . "></td>";
+        $str .= "</tr>";
+    }
+    $str .= "</table>";
+    $str .= "<br>";
+    $str .= "<p align=\"center\"><hr width=\"200\"></p>";
+
+    $RT = getVars( getNode( "room topics", "setting" ) );
+    $VARS->{squawk_talk} ||= 0;
+    $str
+        .= "<p align=\"center\"><table><tr><td>"
+        . $RT->{ $VARS->{squawk_talk} }
+        . "</td></tr></table></p>";
+
+    $str .= "<br>";
+    $str .= "<table>";
+    $str .= "<tr>";
+    $str .= "<td width=\"75\"><strong>Where</strong></td>";
+    $str .= "<td width=\"50\"><strong>When</strong></td>";
+    $str .= "<td width=\"100\"><strong>Who</strong></td>";
+    $str .= "<td width=\"100\"><strong>What</strong></td>";
+    $str .= "</tr>";
+
+    # Build ignore list and then get the messages
+    $ignorelist = $DB->sqlSelectMany( 'ignore_node', 'messageignore',
+        'messageignore_id=' . $USER->{user_id} );
+    while ( my ($ignorelistu) = $ignorelist->fetchrow )
+    {
+        push @ignorelistlist, $ignorelistu;
+    }
+    $ignoreStr = join( ", ", @ignorelistlist );
+    $searchcriteria
+        = "("
+        . join( " or ", map { " room='$_' " } keys %$sqrms )
+        . ") and for_user=0 and unix_timestamp(now())-unix_timestamp(tstamp) < 300";
+    $searchcriteria .= " and author_user not in ($ignoreStr)" if $ignoreStr;
+    $searchcriteria .= " order by tstamp asc";
+
+    $msgcsr = $DB->sqlSelectMany( "*", "message", $searchcriteria );
+
+    while ( my $msg = $msgcsr->fetchrow_hashref )
+    {
+        my $room = getNodeById( $msg->{room} );
+        $room = {
+            title         => "outside",
+            node_id       => "0",
+            type_nodetype => getId( getType("room") )
+            }
+            if ( $msg->{room} == 0 );
+        next unless $room;
+
+        my $user = getNodeById( $msg->{author_user} );
+        next unless $user;
+
+        my $msgtext = encodeHTML( $msg->{msgtext} );
+        if ( $msgtext =~ /^\/me (.*)$/ )
+        {
+            $msgtext = "<em>$1</em>";
+        }
+
+        $str .= "<tr>";
+        $str
+            .= "<td>"
+            . (
+            ( $msg->{room} == $VARS->{squawk_talk} )
+            ? ("<strong>$room->{title}</strong>")
+            : ("($room->{title})")
+            ) . "</td>";
+        $str
+            .= "<td><small>"
+            . htmlcode( 'parsetimestamp', "$msg->{tstamp},2" )
+            . "</small></td>";
+        $str .= "<td>&lt;" . linkNode($user) . "&gt;</td>";
+        $str .= "<td>$msgtext</td>";
+        $str .= "</tr>";
+    }
+    $str .= "</table>";
+    $str .= "<br><br>";
+    $str .= "<input type=\"text\" width=\"400\" name=\"message\" maxlength=\"255\">";
+    $str .= "<input type=\"hidden\" name=\"squawk\" value=\"1\">";
+    $str .= "<input type=\"submit\" value=\"talk\">";
+    $str .= "</form>";
+
+    return $str;
+}
+
 1;

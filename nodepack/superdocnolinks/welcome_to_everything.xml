@@ -1,45 +1,5 @@
 <node>
-  <doctext>[%
-my $zenStr = '&lt;div id=&quot;welcome_message&quot;&gt;Everything2 is a collection of user-submitted writings about
-	more or less everything. Spend some time looking around and reading, or '
-	.linkNodeTitle('Everything2 Help|learn how to contribute')
-	.'.&lt;/div&gt;';
-
-$zenStr .= '&lt;div id=&quot;loglinks&quot;&gt;
-&lt;h3&gt;Logs&lt;/h3&gt;
-'.htmlcode( 'daylog' ).'
-&lt;/div&gt;';
-
-$zenStr .= '&lt;div id=&quot;cooluserpicks&quot;&gt;
-&lt;h3&gt;Cool User Picks!&lt;/h3&gt;
-'.htmlcode('frontpage_cooluserpicks').'&lt;/div&gt;' ;
-
-$zenStr .= '
-	&lt;div id=&quot;staff_picks&quot;&gt;
-	&lt;h3&gt;Staff Picks&lt;/h3&gt;
-'.htmlcode('frontpage_staffpicks')
-.'&lt;/div&gt;' unless ($APP-&gt;isGuest($USER));
-
-$zenStr.='
-     &lt;div id=&quot;creamofthecool&quot;&gt;
-        &lt;h3 id=&quot;creamofthecool_title&quot;&gt;'
-		.linkNodeTitle('Cool Archive[superdoc]|Cream of the Cool')
-		.'&lt;/h3&gt;
-        '.htmlcode('frontpage_creamofthecool').'
-      &lt;/div&gt;';
-
-if (!$APP-&gt;isGuest($USER)) {
-  $zenStr.='
-  &lt;div id=&quot;frontpage_news&quot;&gt;
-        &lt;h2 id=&quot;frontpage_news_title&quot;&gt;'
-		.linkNodeTitle('News for Noders. Stuff that matters.[superdoc]|News for Noders')
-		.'&lt;/h2&gt;
-   '.htmlcode('frontpage_news').'&lt;/div&gt;';
-}
-
-return $zenStr ;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>124</node_id>
   <title>Welcome to Everything</title>
   <type_nodetype>1065266</type_nodetype>
