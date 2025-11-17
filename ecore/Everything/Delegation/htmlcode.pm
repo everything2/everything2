@@ -4367,10 +4367,9 @@ sub changeroom
   my ($nodelet) = @_ ;
   $nodelet =~ s/ /+/g;
 
-  ## no critic RequireCheckingReturnValueOfEval
   foreach(@rooms) {
     my $R = getNodeById($_);
-    next unless eval($$R{criteria});
+    next unless $APP->canEnterRoom( $R, $USER, $VARS );
     if(defined $query->param('changeroom') and $query->param('changeroom') == $_ and $$USER{in_room} != $_)
     {
       $APP->changeRoom($USER, $R);
@@ -4379,7 +4378,6 @@ sub changeroom
     push @aprrooms, $_;
     $aprlabel{$_} = $$R{title};
   }
-  ## use critic (RequireCheckingReturnValueOfEval)
 
   return unless @aprrooms;
 
@@ -8675,7 +8673,7 @@ sub formxml_room
   my $APP = shift;
 
   my $entrance="0";
-  if(eval($$NODE{criteria}) and not $APP->isGuest($USER))
+  if( $APP->canEnterRoom( $NODE, $USER, $VARS ) and not $APP->isGuest($USER))
   {
     $entrance=1;
     $APP->changeRoom($USER, $NODE);

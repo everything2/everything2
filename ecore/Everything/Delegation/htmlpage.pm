@@ -1030,6 +1030,9 @@ sub room_display_page
   my $str = "";
   if($APP->isAdmin($USER))
   {
+    # TODO: Room locking should be implemented as a new database field instead of
+    # updating the criteria field with executable Perl code ("1;" or "0;").
+    # See https://github.com/everything2/everything2/issues/3720
     my $open = "1\;";
     my $locked = "0\;";
 
@@ -1042,16 +1045,14 @@ sub room_display_page
     } elsif ($$NODE{criteria} eq $locked) {
       $title = "unlock";
       $otherone = $open;
-    } 
+    }
 
     $str .= "<font size=1><i>".linkNode($NODE, $title, {room_criteria=>$otherone})."</i></font>";
   }
-  
+
   $str .= qq|<p>|;
 
-  ## no critic (ProhibitStringyEval)
-  # TODO: Part of database code removal modernization - criteria should be a proper method
-  if((eval $$NODE{criteria}) and not $APP->isGuest($USER))
+  if( $APP->canEnterRoom( $NODE, $USER, $VARS ) and not $APP->isGuest($USER))
   {
     $APP->changeRoom($USER, $NODE);
     # For room usage counting:
