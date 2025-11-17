@@ -1,38 +1,5 @@
 <node>
-  <doctext>&lt;script language=&quot;JavaScript&quot;&gt;
-&lt;!--
-function word_count( str ) {
-//    var tagregex = new RegExp( '&lt;\x5b^&gt;\x5d*&gt;', &quot;g&quot; );
-    //   I get away with the square brackets because this is a superdocnolinks node.
-    var tagregex = new RegExp( '&lt;[^&gt;]*&gt;', &quot;g&quot; );
-    str = str.replace( tagregex, ' ' );
-
-    var words = str.split( /[ \t\r\n]+/ );
-    alert( words.length + ' words in text.' );
-
-    return false;
-}
-//--&gt;
-&lt;/script&gt;
-
-&lt;noscript&gt;
-&lt;p&gt;&lt;font color=&quot;c00000&quot;&gt;&lt;strong&gt;This won't work&lt;/strong&gt; because 
-you either a) don't have JavaScript at all, or b) have it turned off. &lt;/p&gt;
-&lt;/noscript&gt;
-
-&lt;p&gt;This ignores HTML tags. If there's an HTML tag in the &lt;em&gt;middle&lt;/em&gt; 
-of a word, that'll count as two words. Other than that, it splits words only by 
-whitespace, so if you're one of those &quot;foo--bar&quot; people with em-dashes, 
-you're &lt;strong&gt;doomed&lt;/strong&gt;. It might be a couple words off anyway. &lt;/p&gt;
-
-&lt;form name=&quot;wc&quot;&gt;
-&lt;textarea cols=&quot;50&quot; rows=&quot;20&quot; name=&quot;text&quot;&gt;&lt;/textarea&gt;&lt;br /&gt;
-&lt;input type=&quot;button&quot; value=&quot;Count the Words&quot; onclick=&quot;word_count( document.forms.wc.text.value )&quot;&gt;&lt;/input&gt;
-&lt;/form&gt;
-
-&lt;br /&gt;&lt;br /&gt;
-&lt;p&gt;Feature requests and bug (ha!) reports go to [%linkNode( 470183 )%]. &lt;/p&gt;
-</doctext>
+  <doctext></doctext>
   <node_id>1166526</node_id>
   <title>E2 Word Counter</title>
   <type_nodetype>1065266</type_nodetype>

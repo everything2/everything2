@@ -1,21 +1,5 @@
 <node>
-  <doctext>[%
-parseLinks(&quot;&lt;p&gt;So you're not satisfied with [Theme Nirvana|the beautiful styles lovingly crafted for you by the best designers on E2]? Thought not. I bet you want to change all the colours, add low-res background images and generally [MySpace|MySpacify] it. Well, don't ever say we're not good to you. This form right here will let you add any styles that you want, which will then override those in the theme. If you used to use ekw theme and fear change, then perhaps you'd like to start by using the [ekw shredder], which will attempt to create a custom style based on your old EKW settings.&lt;/p&gt;
-&lt;p&gt;You need at least a small amount of knowledge of [CSS] to edit these, but if you start with a Shredded ekw style you should be able to simply edit the colours in that, or otherwise use it as a starting point. One day we may have an easier way to edit this. Perhaps after ascorbic retires.&lt;/p&gt;&quot;);
-%]
-[{openform}]
-[% 
-if(defined($query-&gt;param('vandalism'))) {
-$$VARS{customstyle} = $query-&gt;param('vandalism');
-if(!length($$VARS{customstyle})) {
-delete($$VARS{customstyle});
-}
-}
-''
-%]
-&lt;textarea id=&quot;vandalism&quot; rows='40' name=&quot;vandalism&quot;&gt;[% $APP-&gt;htmlScreen($$VARS{customstyle}) %]&lt;/textarea&gt;&lt;br /&gt;
-&lt;input type='submit' name='submit' value='Throw that paint'&gt;
-&lt;/form&gt;</doctext>
+  <doctext></doctext>
   <node_id>1855110</node_id>
   <title>Style Defacer</title>
   <type_nodetype>1065266</type_nodetype>
