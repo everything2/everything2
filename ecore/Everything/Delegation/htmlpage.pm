@@ -1005,13 +1005,12 @@ sub room_edit_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str = "";
+  my $str = '';
   $str .= qq|Title: |.htmlcode("textfield","title").qq| maintained by: |.
     htmlcode("node_menu","author_user,user,usergroup").qq|<br>|;
   $str .= qq|Other Users Abrev: |.htmlcode("textfield","abbreviation").qq|<br>|;
-  $str .= qq|<b>Criteria</b> (evaled perl)<br>|;
-  $str .= htmlcode("textarea","criteria");
-  $str .= qq|<p><b>description</b><br>|;
+  $str .= $query->checkbox('room_roomlocked', $NODE->{roomlocked}, 1, 'Room locked').qq|<br>|;
+  $str .= q|<p><b>description</b><br>|;
   $str .= htmlcode("textarea","doctext");
 
   return $str;
@@ -1027,27 +1026,21 @@ sub room_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
+  # Handle roomlocked parameter if provided
+  if(defined $query->param('roomlocked') && $APP->isAdmin($USER))
+  {
+    $$NODE{roomlocked} = $query->param('roomlocked');
+    $DB->updateNode($NODE, -1);
+  }
+
   my $str = "";
   if($APP->isAdmin($USER))
   {
-    # TODO: Room locking should be implemented as a new database field instead of
-    # updating the criteria field with executable Perl code ("1;" or "0;").
-    # See https://github.com/everything2/everything2/issues/3720
-    my $open = "1\;";
-    my $locked = "0\;";
+    my $roomlocked = $$NODE{roomlocked} || 0;
+    my $title = $roomlocked ? "unlock" : "lock";
+    my $newstate = $roomlocked ? 0 : 1;
 
-    my $otherone = "";
-    my $title = "";
-    if ($$NODE{criteria} eq $open)
-    {
-      $title = "lock";
-      $otherone = $locked;
-    } elsif ($$NODE{criteria} eq $locked) {
-      $title = "unlock";
-      $otherone = $open;
-    }
-
-    $str .= "<font size=1><i>".linkNode($NODE, $title, {room_criteria=>$otherone})."</i></font>";
+    $str .= "<font size=1><i>".linkNode($NODE, $title, {roomlocked=>$newstate})."</i></font>";
   }
 
   $str .= qq|<p>|;

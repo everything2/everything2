@@ -1915,8 +1915,11 @@ sub changeRoom {
 sub canEnterRoom {
   my ($this, $NODE, $USER, $VARS) = @_;
 
-  # Admins can always enter any room
+  # Admins can always enter any room (including locked rooms)
   return 1 if $this->isAdmin($USER);
+
+  # Check if room is locked
+  return 0 if $NODE->{roomlocked};
 
   my $room_node = undef;
   my $func_name = undef;

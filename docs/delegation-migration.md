@@ -1528,10 +1528,13 @@ Rooms in Everything2 have a `criteria` field containing Perl code that determine
 - Uses `->can()` pattern instead of symbolic references (cleaner implementation)
 - No eval() fallback needed (all built-in rooms migrated at once)
 
+**Room Locking**:
+- Room locking migrated to dedicated `roomlocked` database field (issue #3720 - COMPLETED)
+- Admins can lock/unlock rooms via room display page
+- Locked rooms prevent non-admin users from entering
+
 **Outstanding Items**:
-- Room locking currently implemented via criteria field manipulation (see TODO in `room_display_page`)
-- Should be migrated to dedicated database field (see issue #3720)
-- User-created rooms would need delegation functions if restrictions are required in the future
+- User-created rooms would need delegation functions if custom restrictions are required in the future
 
 ### Actual Implementation
 

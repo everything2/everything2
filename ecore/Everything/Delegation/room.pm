@@ -23,7 +23,8 @@ sub debriefing_room
     return 1;
 }
 
-# M-Noder Washroom - Users with 1000+ writeups or gods
+# M-Noder Washroom - Users with 1000+ writeups
+# Note: Admins are allowed by canEnterRoom before delegation is called
 sub m_noder_washroom
 {
     my ( $USER, $VARS, $APP ) = @_;
@@ -31,7 +32,7 @@ sub m_noder_washroom
     my $numwr = undef;
 
     $numwr = $VARS->{numwriteups} || 0;
-    return 0 unless $numwr >= 1000 or $APP->isAdmin($USER);
+    return 0 unless $numwr >= 1000;
     return 1;
 }
 

@@ -4,6 +4,7 @@
   `criteria` mediumtext,
   `abreviation` varchar(8) DEFAULT NULL,
   `lastused_date` date NOT NULL DEFAULT '0000-00-00',
+  `roomlocked` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`roomdata_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>545220</node_id>
