@@ -1450,6 +1450,147 @@ my $link = linkNode(getNode($node_id));
 $text .= '[Node Title|display text]';
 ```
 
+### HTMLcode Template Calls
+
+**Legacy E2 templates use `[{htmlcode}]` constructs for calling htmlcode functions.**
+
+HTMLcodes are reusable display functions (similar to template helpers) stored in the database and fully delegated to `Everything::Delegation::htmlcode`. In legacy templates, they were called using bracket notation:
+
+**Pattern Recognition:**
+- `[{htmlcode_name}]` - Call htmlcode with no arguments
+- `[{htmlcode_name:arg1,arg2,arg3}]` - Call htmlcode with comma-separated arguments
+
+**Migration Pattern:**
+When migrating code from templates to delegation functions, these bracket constructs must be replaced with proper `htmlcode()` function calls:
+
+```perl
+# Before (in template):
+[{isSpecialDate:halloween}]
+[{openform}]
+[{linkNodeTitle}]
+[{showStatusMessage}]
+
+# After (in delegation function):
+htmlcode('isSpecialDate', 'halloween')
+htmlcode('openform')
+htmlcode('linkNodeTitle')
+htmlcode('showStatusMessage')
+```
+
+**Argument Unpacking:**
+- Arguments in the template are colon-separated with a single colon after the function name
+- Multiple arguments are comma-separated
+- In the delegation function, all arguments become separate quoted strings in the htmlcode() call
+
+**Examples:**
+
+```perl
+# No arguments
+[{openform}]                          → htmlcode('openform')
+[{closeform}]                         → htmlcode('closeform')
+
+# Single argument
+[{isSpecialDate:halloween}]           → htmlcode('isSpecialDate', 'halloween')
+[{linkNodeTitle:1234}]                → htmlcode('linkNodeTitle', '1234')
+
+# Multiple arguments
+[{formatDate:2024-01-15,short}]       → htmlcode('formatDate', '2024-01-15', 'short')
+[{userLink:jaybonci,showlevel}]       → htmlcode('userLink', 'jaybonci', 'showlevel')
+```
+
+**Important Notes:**
+- The `htmlcode()` function is available in the delegation function context (from `Everything::HTML`)
+- HTMLcode calls happen at runtime during page rendering
+- Do NOT confuse with bracket notation `[node title]` which is for linking to nodes
+- HTMLcode functions are themselves already delegated (in `Everything::Delegation::htmlcode`)
+
+### Static HTML Text Between Code Blocks
+
+**CRITICAL: When migrating templates with multiple `[% ... %]` blocks, ALL static HTML text between and around the blocks must be included in the delegation function.**
+
+Legacy E2 templates often have this structure:
+```
+Static HTML at beginning
+[% Perl code block 1 %]
+Static HTML between blocks
+[% Perl code block 2 %]
+Static HTML at end
+```
+
+**Incorrect Migration (Missing Text):**
+```perl
+sub example_function {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    # Code block 1
+    $str .= some_code();
+
+    # Code block 2
+    $str .= more_code();
+
+    return $str;
+}
+```
+
+**Correct Migration (All Text Included):**
+```perl
+sub example_function {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    # Static HTML at beginning
+    my $str = '<p>Introduction text here</p>
+<h3>Section Title</h3>
+<p>More static text</p>
+';
+
+    # Code block 1
+    $str .= some_code();
+
+    # Static HTML between blocks
+    $str .= '
+<h3>Another Section</h3>
+<p>Text between the code blocks</p>
+';
+
+    # Code block 2
+    $str .= more_code();
+
+    # Static HTML at end
+    $str .= '
+<p>Closing instructions and documentation</p>
+<p>More documentation...</p>
+';
+
+    return $str;
+}
+```
+
+**Migration Steps:**
+
+1. **Read the entire XML file** - Don't just extract the `[% ... %]` blocks
+2. **Identify all sections:**
+   - Static HTML before first code block
+   - Each `[% ... %]` code block
+   - Static HTML between code blocks
+   - Static HTML after last code block
+3. **Preserve order** - Concatenate everything in the exact order it appears
+4. **Convert `[{htmlcode}]` to `htmlcode()` calls** - Even in static HTML sections
+5. **Use multi-line strings** - Easier to read and maintain than many concatenations
+
+**Real Example - Old Writeup Settings:**
+
+The original template had:
+- Opening form and introduction text
+- First code block (header settings)
+- Middle section with `<h3>Writeup Footer Display</h3>` and instructions
+- Second code block (footer settings)
+- Large documentation section (visual example, table of codes, instructions)
+- Closing form
+
+All of this text must be included in the final delegation function, not just the Perl code blocks.
+
 ## Checklist
 
 - [ ] Locate node XML file
@@ -1470,6 +1611,126 @@ $text .= '[Node Title|display text]';
 - [ ] Run Perl::Critic verification: `perlcritic --severity 1 --theme bugs ecore/Everything/Delegation/document.pm`
 - [ ] Test in Docker environment
 - [ ] Verify output matches original
+
+## Code Style and Formatting Guidelines
+
+### Module Use Statements
+
+**All module use statements must be at the top of the file with comments indicating which functions use them:**
+
+```perl
+# At the top of Everything/Delegation/document.pm after package declaration:
+
+use strict;
+use warnings;
+
+# Used in: reputation_graph, reputation_graph_horizontal
+use Date::Parse;
+
+# Used in: findings_
+use Time::HiRes;
+```
+
+**NEVER put `use` statements inside function bodies:**
+- ❌ Wrong: `use` inside a function creates compile-time side effects at runtime
+- ✓ Correct: All `use` statements at the top of the file
+
+When migrating code that contains inline `use` statements:
+1. Move the `use` statement to the top of the file
+2. Add a comment indicating which function(s) use it
+3. Remove the inline `use` statement from the function body
+
+### Code Indentation
+
+**All function bodies must use consistent 4-space indentation:**
+
+```perl
+# Correct:
+sub my_function {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    if ($condition) {
+        $str .= 'content';
+    }
+
+    return $str;
+}
+
+# Wrong - no indentation:
+sub my_function {
+my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+my $str = '';
+
+return $str;
+}
+```
+
+**Indentation Requirements:**
+- First level (function body): 4 spaces
+- Nested blocks (if, for, while, etc.): 4 additional spaces per level
+- Use spaces, not tabs
+- Maintain consistency with existing code in document.pm
+
+**Important Exception - Heredoc Strings:**
+
+Heredoc content should NOT be automatically indented, as this changes the string value:
+
+```perl
+# Correct - heredoc marker indented, content at column 0:
+sub my_function {
+    my $str = '';
+
+    $str .= <<'END_HTML';
+<p>This HTML content starts at column 0.</p>
+<p>Adding indentation would add spaces to the actual string!</p>
+END_HTML
+
+    return $str;
+}
+
+# For SQL queries, intentional indentation is acceptable for readability:
+sub my_function {
+    my $query = <<QUERY;
+    SELECT
+        field1, field2
+    FROM table
+    WHERE condition
+QUERY
+}
+
+# Perl 5.26+ supports indented heredocs with <<~:
+sub my_function {
+    my $str = <<~'END_HTML';
+        <p>This content will have leading spaces stripped.</p>
+        <p>Use this syntax if you want to indent heredoc content.</p>
+        END_HTML
+
+    return $str;
+}
+```
+
+**When indenting code:**
+- Indent the heredoc marker line (`<<HEREDOC`)
+- Do NOT indent the heredoc content lines (unless using `<<~` syntax)
+- Do NOT indent the heredoc terminator (`HEREDOC`)
+
+### Avoid Hardcoded Values
+
+**Don't hardcode dates or years that should be dynamic:**
+
+```perl
+# Wrong - hardcoded year:
+my $currentYear = '2025';
+
+# Correct - dynamic year:
+my ($sec, $min, $hour, $mday, $mon, $year) = localtime(time);
+my $currentYear = $year + 1900;
+```
+
+**Exception**: Historical data functions (like `historical_iron_noder_stats`) may intentionally use hardcoded years for specific past events.
 
 ## Delegation Pattern Details
 

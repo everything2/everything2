@@ -1,39 +1,5 @@
 <node>
-  <doctext>[%
-return unless $query;
-
-my $shortString = $query-&gt;param('short_string');
-my $redirectNode = htmlcode('decode short string', $shortString);
-
-if (!defined $redirectNode) {
-
-  my $errorString =
-    $shortString eq '' ?
-      &quot;There doesn't look to be a short URL to look up.&quot;
-      : &quot;The string &lt;strong&gt;$shortString&lt;/strong&gt; doesn't appear to go anywhere.&quot;
-    ;
-
-  return
-    '&lt;h3&gt;Short URL Error&lt;/h3&gt;'
-    . &quot;&lt;p&gt;&quot;
-    . $errorString
-    . &quot;  Why not &quot;
-    . htmlcode('randomnode', 'try a random node')
-    . &quot; instead?&quot;
-    . &quot;&lt;/p&gt;&quot;
-    ;
-
-}
-
-my $urlParams = { };
-my $bNoQuoteUrl = 1;
-
-my $redirect_url = urlGen($urlParams, $bNoQuoteUrl, $redirectNode);
-$HEADER_PARAMS{-status} = 303;
-$HEADER_PARAMS{-location} =
-  'http://' . $ENV{HTTP_HOST} . $redirect_url
-  ;
-%]</doctext>
+  <doctext></doctext>
   <node_id>2021986</node_id>
   <title>Short URL Lookup</title>
   <type_nodetype>14</type_nodetype>

@@ -1,16 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;Daylogs have long had an established place in the everything2 [nodegel], even if there is no general agreement about what that place is and if it should exist. Some hate them, some ignore them, some wouldn't miss them for the world.
-&lt;/p&gt;
-&lt;p&gt;If you fall into (or even carefully skirt the [brink] of) this last category, the [New logs] nodelet is for you. It shows the last few writeups of type 'log', whether or not they were posted hidden, and saves you nervous energy and the time you would otherwise spend feverishly checking the daylog nodes several times a day.
-&lt;/p&gt;
-&lt;p&gt;To insert the [New logs] nodelet you can either use the new improved interface at [Nodelet Settings], or simply click on the Useful Button below, which will insert it right after [New Writeups].
-&lt;/p&gt;
-[{openform}]
-&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;movenodelet&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;nodelet&quot; value=&quot;1923735&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;position&quot; value=&quot;after263&quot;&gt;
-&lt;input type=&quot;submit&quot; value=&quot;Useful Button&quot;&gt;
-&lt;/form&gt;</doctext>
+  <doctext></doctext>
   <node_id>2020068</node_id>
   <title>New Logs Nodelet</title>
   <type_nodetype>14</type_nodetype>

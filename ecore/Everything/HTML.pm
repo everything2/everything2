@@ -535,7 +535,7 @@ sub nodeName
 		# more fuzzy.
 		$search_group =
         	        $APP->searchNodeName($node, \@types, $soundex, 1);
-	
+
 		if($search_group && @$search_group > 0)
 		{
 			$NODE = getNodeById($Everything::CONF->search_results);
@@ -1051,7 +1051,7 @@ sub printHeader
 	if ($$USER{cookie}) {
 		push @cookies, $$USER{cookie};
 	}
-	
+
 	my $extras = {};
 	$extras->{charset} = 'utf-8';
 	if(@cookies)

@@ -111,7 +111,11 @@ HELP
 # Detailed mode enables additional system metrics only when explicitly requested
 
 # Detect production environment (CloudWatch logging)
-my $is_production = ($ENV{E2_DOCKER} || '') ne '' && ($ENV{E2_DEVELOPMENT} || '') eq '';
+# Production: E2_DOCKER not set (no docker) AND E2_DEVELOPMENT not set
+# OR database endpoint is AWS RDS (ends with rds.amazonaws.com)
+my $dbserv = $ENV{E2_DBSERV} || 'localhost';
+my $is_production = (($ENV{E2_DOCKER} || '') eq '' && ($ENV{E2_DEVELOPMENT} || '') eq '')
+                    || ($dbserv =~ /\.rds\.amazonaws\.com$/);
 my $cloudwatch_log_group = '/aws/fargate/e2-health-check';
 
 my $start_time = time();
@@ -266,7 +270,7 @@ if ($check_db) {
     eval {
         require DBI;
 
-        my $dbserv = $ENV{E2_DBSERV} || 'localhost';
+        # $dbserv already defined above for production detection
         my $dbname = 'everything';
         my $dbuser = 'everyuser';
 
@@ -335,8 +339,14 @@ if ($debug_cloudwatch) {
         environment => {
             E2_DOCKER => $ENV{E2_DOCKER} || '(not set)',
             E2_DEVELOPMENT => $ENV{E2_DEVELOPMENT} || '(not set)',
+            E2_DBSERV => $dbserv,
         },
         log_group => $cloudwatch_log_group,
+        production_checks => {
+            no_docker => ($ENV{E2_DOCKER} || '') eq '' ? 1 : 0,
+            no_development => ($ENV{E2_DEVELOPMENT} || '') eq '' ? 1 : 0,
+            rds_database => $dbserv =~ /\.rds\.amazonaws\.com$/ ? 1 : 0,
+        },
     };
 }
 
