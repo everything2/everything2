@@ -1,10 +1,10 @@
-#!/usr/bin/perl
-
+package Everything::Application;
 use strict;
 use warnings;
-package Everything::Application;
+
 use Everything;
 use Everything::S3;
+use Everything::Delegation::room;
 
 use DateTime;
 use DateTime::Format::Strptime;
@@ -1908,8 +1908,34 @@ sub changeRoom {
     $this->{db}->updateNode($user, -1);
   }
   $this->{db}->sqlDelete("room", "member_user=".$this->{db}->getId($user));
-    
+
   return $this->insertIntoRoom($ROOM, $user);
+}
+
+sub canEnterRoom {
+  my ($this, $NODE, $USER, $VARS) = @_;
+
+  # Admins can always enter any room
+  return 1 if $this->isAdmin($USER);
+
+  my $room_node = undef;
+  my $func_name = undef;
+
+  $room_node = $NODE;
+
+  # Convert room title to function name (same pattern as document.pm)
+  $func_name = lc( $room_node->{title} );
+  $func_name =~ s/[^a-z0-9]+/_/g;
+  $func_name =~ s/^_+|_+$//g;    # Remove leading/trailing underscores
+
+  # Check if delegation exists and call it
+  if ( my $delegation = Everything::Delegation::room->can($func_name) )
+  {
+    return $delegation->( $USER, $VARS, $this );
+  }
+
+  # Default: allow entry for rooms without delegation
+  return 1;
 }
 
 sub inRoomUsers {

@@ -14265,11 +14265,8 @@ sub squawkbox
 
     if ( $add_room and $add_room->{type_nodetype} = getId( getType("room") ) )
     {
-        $add_room->{criteria} ||= 1;
-        ## no critic (ProhibitStringyEval)
         $VARS->{squawk_rooms} .= "," . getId($add_room)
-            if ( $add_room->{criteria} and eval( $add_room->{criteria} ) );
-        ## use critic
+            if ( $add_room and $APP->canEnterRoom( $add_room, $USER, $VARS ) );
     }
 
     if ( $query->param("showaddrooms") )
@@ -14465,11 +14462,8 @@ sub squawkbox_update
 
     if ( $add_room and $add_room->{type_nodetype} = getId( getType("room") ) )
     {
-        $add_room->{criteria} ||= 1;
-        ## no critic (ProhibitStringyEval)
         $VARS->{squawk_rooms} .= "," . getId($add_room)
-            if ( $add_room->{criteria} and eval( $add_room->{criteria} ) );
-        ## use critic
+            if ( $add_room and $APP->canEnterRoom( $add_room, $USER, $VARS ) );
     }
 
     if ( $query->param("showaddrooms") )

@@ -1,10 +1,6 @@
 <node>
   <abreviation></abreviation>
-  <criteria>my $uid = getId($USER);
-return 1 if $APP-&gt;isEditor($USER);
-return 1 if $APP-&gt;getLevel($USER) &lt;= 3 or $APP-&gt;getLevel($USER) &gt;= 6;
-
-0;</criteria>
+  <criteria></criteria>
   <doctext>&lt;p&gt;What's going on?  What's this whole noding thing?  What's with these &quot;votes&quot;, and why don't I have any?&lt;/p&gt;
 &lt;p&gt;If these are the questions which come to mind, maybe you should come in.  The room is restricted to new users,
 and editors -- a place to ask questions outside of the public eye.&lt;/p&gt;
