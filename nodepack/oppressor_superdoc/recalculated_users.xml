@@ -1,43 +1,5 @@
 <node>
-  <doctext>[%
-sub mysort {
- lc($a) cmp lc($b);
-}
-
-my $queryText;
-my $rows;
-my $dbrow;
-my $str;
-my @list;
-my @sortedList;
-my $key;
-my $n;
-
-my $nodeId = getId($NODE);
-my $uid = getId($USER)||0;
-
-$queryText = &quot;SELECT user.user_id,user.experience FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%hasRecalculated=1%'&quot;;
-
-$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
-   or return $rows-&gt;errstr;
-$rows-&gt;execute()
-   or return $rows-&gt;errstr;
-
-while($dbrow = $rows-&gt;fetchrow_arrayref)
-{
-   push(@list, linkNode($$dbrow[0]) . ' - Level: ' . $APP-&gt;getLevel($$dbrow[0]) . ' - XP: ' . $$dbrow[1]);
-}
-
-$str .= '&lt;h3&gt;Users who have run [Recalculate XP]&lt;/h3&gt;';
-$str .= '&lt;ol style=&quot;margin-left:55px&quot;&gt;';
-foreach $key (sort mysort @list)
-{
-  $str .= '&lt;li&gt;'.$key.'&lt;/li&gt;';
-}
-$str .= '&lt;/ol&gt;';
-
-return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1960696</node_id>
   <title>Recalculated Users</title>
   <type_nodetype>1144104</type_nodetype>

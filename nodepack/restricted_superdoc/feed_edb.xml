@@ -1,48 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;
-[%
-my $UID = getId($USER);
-my $isRoot = $APP-&gt;isAdmin($USER);
-return 'You narrowly escape EDB\'s mouth.' unless $isRoot;
-
-my $t;
-my $m;
-
-if( (defined $query-&gt;param('numborgings')) &amp;&amp; defined($t=$query-&gt;param('numborgings')) &amp;&amp; (length($t)!=0) &amp;&amp; ($t=~/^(-?\d*)$/)) {
-
-	$t=$1 || 0;
-	my $z;
-	if($t&gt;0) {
-		#borg self
-		$z=1;
-		$VARS-&gt;{numborged}=$t;
-		$VARS-&gt;{borged}=time;
-		$m='Simulating being borged '.$t.' time'.($t==1?'':'s').'.';
-	} else {
-		#unborg self
-		$z=0;
-		delete $VARS-&gt;{borged};
-		if($t==0) {
-			$m='Unborged.';
-		} else {
-			$m='Borg-proof '.(-$t).' time'.($t==-1?'':'s').'.';
-		}
-	}
-	$m .= &quot;&lt;br /&gt;\n&lt;a href=&quot;.urlGen({node_id=&gt;$NODE-&gt;{node_id}}).'&gt;EDB still hungry&lt;/a&gt;';
-	$VARS-&gt;{numborged}=$t;
-	$DB-&gt;sqlUpdate('room',{borgd=&gt;$z},'member_user='.$UID);
-
-} else {
-
-	$m = 'This is mainly for the 3 of us that need to play with EDB.&lt;br /&gt;Er, that doesn\'t quite sound the way I meant it. How about &quot;...want to experiment with EDB&quot;.&lt;br /&gt;Mmmmm, that isn\'t quite what I meant, either. Lets try: &quot;...want to have EDB eat them&quot;.&lt;br /&gt;Argh, I give up.&lt;br /&gt;&lt;br /&gt;&lt;code&gt;numborgings = ( &amp;nbsp;&lt;/code&gt;';
-	$m .= join(', &amp;nbsp; ',map {linkNode($NODE,'&amp;nbsp;'.$_.'&amp;nbsp;',{numborgings=&gt;$_,lastnode_id=&gt;0})} qw(-100 -10 -2 -1 0 1 2 5 10 25 50 100));
-	$m .= '&lt;code&gt;&amp;nbsp;);&lt;/code&gt;';
-
-}
-
-'Your current borged count: '.($VARS-&gt;{numborged}||0).&quot;&lt;br /&gt;&lt;br /&gt;\n&quot;.$m;
-%]
-&lt;/p&gt;</doctext>
+  <doctext></doctext>
   <node_id>1262818</node_id>
   <title>feed EDB</title>
   <type_nodetype>13</type_nodetype>

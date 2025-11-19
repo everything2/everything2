@@ -1,24 +1,5 @@
 <node>
-  <doctext>Sometimes we need fire to fight fire... 
-&lt;p&gt;This allows you to edit a node and all its fields directly. 
-[{openform}] 
-[% 
-  'id: ' . $query-&gt;textfield('editnode') . ' or name and type: ' . $query-&gt;textfield('editnodetitle') . ', ' . $query-&gt;textfield('editnodetype'); 
-
-%] 
-&lt;p&gt; 
-[% 
-  my $EDITNODE = getNodeById($query-&gt;param('editnode')); 
-  my $name = $query-&gt;param('editnodetitle'); 
-  my $title = $query-&gt;param('editnodetype'); 
-  $EDITNODE ||= getNode($name, $title) if $name and $title; 
-  return 'no node!' if !$EDITNODE; my $str = ''; 
-
-  foreach my $field (keys %$EDITNODE) 
-   { next if $field eq &quot;passwd&quot;;
-    $str .= &quot;$field:&quot;; $str .= $query-&gt;textfield($field, encodeHTML($$EDITNODE{$field}), 40); $str .= &quot;&lt;br /&gt;\n&quot;; } $str; 
-%] 
-[{closeform}]</doctext>
+  <doctext></doctext>
   <node_id>366647</node_id>
   <title>raw node editor</title>
   <type_nodetype>13</type_nodetype>

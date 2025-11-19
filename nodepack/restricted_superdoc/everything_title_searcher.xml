@@ -1,8 +1,0 @@
-<node>
-  <doctext>select node_id, title from node where title like &quot;%everything%&quot; and type_nodetype=116 order by createtime 
-node_id, title from node where title like &quot;%everything%&quot; and type_nodetype=116 order
-by createtime</doctext>
-  <node_id>1142259</node_id>
-  <title>Everything Title Searcher</title>
-  <type_nodetype>13</type_nodetype>
-</node>

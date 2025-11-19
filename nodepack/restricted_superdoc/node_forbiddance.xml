@@ -1,45 +1,5 @@
 <node>
-  <doctext>[%
-   my $unforbid = $query-&gt;param(&quot;unforbid&quot;);
-   my $ufusr = getNodeById($unforbid);
-   my $forbid = $query-&gt;param(&quot;forbid&quot;);
-   my $fusr = getNode($forbid, 'user');
-   my $str;
-
-   if($unforbid &amp;&amp; $ufusr)
-   {
-     $DB-&gt;sqlDelete(&quot;nodelock&quot;, &quot;nodelock_node=&quot;.$$ufusr{user_id});
-     $str.=&quot;It is done...they are free&lt;br&gt;&lt;br&gt;&quot;;
-   }
-
-   if($forbid &amp;&amp; $fusr)
-   {
-     $DB-&gt;sqlInsert(&quot;nodelock&quot;, {'nodelock_node'=&gt; $$fusr{user_id}, 'nodelock_user' =&gt; $$USER{user_id}, 'nodelock_reason' =&gt; $query-&gt;param(&quot;reason&quot;)});
-    $str.=&quot;It is done...they have been forbidden&lt;br&gt;&lt;br&gt;&quot;;
-   }
-
-   $str.= htmlcode(&quot;openform&quot;);
-   $str.= &quot;Forbid user &lt;input type=\&quot;text\&quot; name=\&quot;forbid\&quot;&gt; because &lt;input type=\&quot;text\&quot; name=\&quot;reason\&quot;&gt;&lt;br&gt;&lt;input type=\&quot;submit\&quot; value=\&quot;do it\&quot;&gt;&lt;/form&gt;&quot;;
-
-   return $str;
-%]
-&lt;br&gt;&lt;br&gt;&lt;p align=&quot;center&quot;&gt;&lt;hr width=&quot;300&quot;&gt;&lt;/p&gt;
-[%
-
-   my $str = &quot;&quot;;
-
-  my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;nodelock left join node on nodelock_node = node_id&quot;, &quot;type_nodetype=&quot;.getId(getType('user')));
-
-   $str.=&quot;&lt;ul&gt;&quot;;
-
-  while(my $row = $csr-&gt;fetchrow_hashref)
-  {
-   $str.=&quot;&lt;li&gt;&quot;.linkNode($$row{nodelock_node}).&quot; is forbidden by &quot;.linkNode($$row{nodelock_user}).&quot; (&lt;small&gt;&quot;.(($$row{nodelock_reason})?(parseLinks($$row{nodelock_reason})):(&quot;&lt;em&gt;No reason given&lt;/em&gt;&quot;)).&quot;&lt;/small&gt;) &quot;. linkNode($NODE, &quot;unforbid&quot;, {'unforbid'=&gt;&quot;$$row{nodelock_node}&quot;});
-  }
-
-  $str.=&quot;&lt;/ul&gt;&quot;;
-  return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1286312</node_id>
   <title>Node Forbiddance</title>
   <type_nodetype>13</type_nodetype>

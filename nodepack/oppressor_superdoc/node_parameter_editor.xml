@@ -1,56 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;This is a temporary ghetto tool to edit node parameters, and do a bit of testing until we have full parameter support built into the application, with the full removal of $VARS. We'll get there, but this isn't bad for now.  &lt;/p&gt;
-&lt;br /&gt;&lt;br /&gt;&lt;hr width=&quot;20%&quot; /&gt;&lt;br /&gt;&lt;br /&gt;
-Available types of parameters: 
-[%
-  my $for_node = $query-&gt;param('for_node');
-  if(not defined($for_node))
-  {
-    return &quot;No node to check the parameters for. Use this from the C_E tools menu in Master Control.&quot;;
-  }else{
-    my $f_node = getNodeById($for_node);
-    return &quot;No such node_id '$for_node'&quot; unless defined $f_node;
-    my $all_params_for_type = $APP-&gt;getParametersForType($f_node-&gt;{type});
-
-    my $str = &quot;&lt;ul&gt;&quot;;
-    foreach my $param (sort {$a cmp $b} keys %$all_params_for_type)
-    {
-       $str .= &quot;&lt;li&gt; $param - &quot;.$all_params_for_type-&gt;{$param}-&gt;{description}.&quot;&lt;/li&gt;\n&quot;;
-       $str .= qq|&lt;br /&gt;|.htmlcode(&quot;openform&quot;).qq|&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;parameter&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;for_node&quot; value=&quot;$$f_node{node_id}&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;paramname&quot; value=&quot;$param&quot;&gt;&lt;input type=&quot;text&quot; name=&quot;paramvalue&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;add&quot;&gt;&lt;/form&gt;|;
-    }
-    $str .= &quot;&lt;/ul&gt;&quot;;
-    return $str;
-  }
-%]
-&lt;br /&gt;&lt;br /&gt;&lt;hr width=&quot;20%&quot; /&gt;&lt;br /&gt;&lt;br /&gt;
-[%
-  my $for_node = $query-&gt;param('for_node');
-  if(not defined($for_node))
-  {
-    return &quot;No node to check the parameters for. Use this from the C_E tools menu in the epicenter&quot;;
-  }else{
-    my $f_node = getNodeById($for_node);
-    return &quot;No such node_id '$for_node'&quot; unless defined $f_node;
-    my $return = &quot;&lt;h3&gt;Node: $$f_node{title} / $$f_node{type}{title}&lt;/h3&gt;(node_id: $$f_node{node_id})&lt;br /&gt;&quot;;
-    $return .= &quot;&lt;br /&gt;&lt;br /&gt;&quot;;
-    my $params = $DB-&gt;getNodeParams($f_node);
-    if(scalar(keys %$params) == 0)
-    {
-       $return .= &quot;&lt;em&gt;No node parameters&lt;/em&gt;&lt;br /&gt;&quot;;
-    }else{
-       $return .= &quot;&lt;table&gt;&quot;;
-       $return .= &quot;&lt;tr&gt;&lt;td width=\&quot;30%\&quot;&gt;&lt;strong&gt;Parameter name&lt;/strong&gt;&lt;/td&gt;&lt;td width=\&quot;50%\&quot;&gt;&lt;strong&gt;Parameter value&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;X&lt;/td&gt;&lt;/tr&gt;&quot;;
-       
-       foreach my $key (keys %$params)
-       {
-          $return .= &quot;&lt;tr&gt;&lt;td&gt;&quot;.encodeHTML($key).&quot;&lt;/td&gt;&lt;td&gt;&quot;.encodeHTML($params-&gt;{$key}).&quot;&lt;/td&gt;&lt;td&gt;&quot;.htmlcode(&quot;openform&quot;).qq|&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;parameter&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;for_node&quot; value=&quot;$$f_node{node_id}&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;paramname&quot; value=&quot;$key&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;action&quot; value=&quot;delete&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;del&quot;&gt;&lt;/form&gt;&lt;/td&gt;&lt;/tr&gt;|;
-       }
-       $return .= &quot;&lt;/table&gt;&quot;;
-    }
-
-  }
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>2070638</node_id>
   <title>Node Parameter Editor</title>
   <type_nodetype>1144104</type_nodetype>

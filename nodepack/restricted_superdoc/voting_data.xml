@@ -1,41 +1,5 @@
 <node>
-  <doctext>[%
-
-my $str;
-
-if ($query-&gt;param(&quot;voteday&quot;)) {
-	my $vd = $query-&gt;param(&quot;voteday&quot;);
-	my $vd2 = $query-&gt;param(&quot;voteday2&quot;) || $vd;
-	my $vc = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;vote&quot;,&quot;votetime&gt;='$vd 00:00:00' and votetime&lt;='$vd2 23:59:59'&quot;);
-	$str.=&quot;&lt;p&gt;Vote Results: $vc&lt;/p&gt;&quot;;
-}
-
-if ($query-&gt;param(&quot;votemonth&quot;)) {
-	my $vm = $query-&gt;param(&quot;votemonth&quot;);
-	my $vy = $query-&gt;param(&quot;voteyear&quot;);
-	for (my $x=1;$x&lt;=31;$x++) {
-		my $checkdate = $vy.&quot;-&quot;.$vm.&quot;-&quot;.sprintf(&quot;%02s&quot;,$x);
-		my $vc = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;vote&quot;,&quot;votetime&gt;='$checkdate 00:00:00' and votetime&lt;='$checkdate 23:59:59'&quot;);
-		$str.=$checkdate.&quot; : &quot;.$vc.&quot;&lt;br /&gt;&quot;;
-	}
-}
-
-$str.=htmlcode('openform');
-$str.=&quot;Start Date: &quot;.$query-&gt;textfield(&quot;voteday&quot;,&quot;&quot;,10).&quot;&lt;br /&gt;&quot;;
-$str.=&quot;Finish Date: &quot;.$query-&gt;textfield(&quot;voteday2&quot;,&quot;&quot;,10).&quot;&lt;br /&gt;&quot;;
-$str.=&quot;&lt;p&gt;&lt;b&gt;Month Breakdown&lt;/b&gt;&lt;/p&gt;
-
-Year: &quot;.$query-&gt;textfield(&quot;voteyear&quot;,&quot;&quot;,10).&quot;&lt;br /&gt;
-Month: &quot;.$query-&gt;textfield(&quot;votemonth&quot;,&quot;&quot;,10).&quot;&lt;br /&gt;&quot;;
-
-
-$str.=htmlcode('closeform');
-
-return $str;
-
-
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1877984</node_id>
   <title>Voting Data</title>
   <type_nodetype>13</type_nodetype>

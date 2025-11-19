@@ -5384,9 +5384,8 @@ sub news_archives {
       . linkNode( getNode($view_weblog) )
       . '</b></font> - <small>[News Archives|back to archive menu]</small></p>';
 
-    $text .=
-        "<table border='1' width='100%' cellpadding='3'>"
-      . "<tr><th>Node</th><th>Time</th><th>Linker</th>"
+    $text .= q|<table border='1' width='100%' cellpadding='3'>|
+      . q|<tr><th>Node</th><th>Time</th><th>Linker</th>|
       . ( $isGod ? '<th>Unlink?</th>' : '' ) . '</tr>';
     my $wclause = "weblog_id='$view_weblog' AND removedby_user=''";
     my $csr =
@@ -12484,13 +12483,8 @@ sub text_formatter
     }
 
     # Static HTML/JavaScript content
-    $str .= <<'END_HTML';
+    $str .= q#
 <p align="right">Last updated Thursday March 21, 2002</p>
-<!--
-  This is mblase's edevdoc. Howdy.
-  All JavaScript code is copyright 2000 by me.
-  Please /msg with any changes, suggestions, etc.
--->
 <p>
 This is intended to be the E2 Text Formatter to end all Text Formatters.
 It will [E2 Paragraph Tagger|insert paragraphs].
@@ -12499,7 +12493,7 @@ It will [E2 Source Code Formatter|escape special characters].
 It will [E2 List Formatter|format lists of items].
 And it will add styles, interpret horizontal rules,
 and indent using the markup tags of your choice,
-all thanks to the power of [regular expression|regular expressions].
+all thanks to the power of [regular expression\|regular expressions].
 <p>
 <script language="javascript">
 if (navigator.userAgent.indexOf('Opera') == -1) {
@@ -12522,7 +12516,7 @@ If you have any problems, comments, or whatnot, send a [/msg] to [mblase].
 <form action="/index.pl" name="dummyform" method="post">
 
 Enter the text to format below.
-<a href="#" onClick="return clearBox()">Clear the box</a>
+<a href="\#" onClick="return clearBox()">Clear the box</a>
 <br /><br />
 <textarea name="skratch" cols="60" rows="16"
 style="font-family:monospace">Text can be *formatted* in a _variety_ of */styles/*.
@@ -12623,7 +12617,7 @@ Convert other indented text to:<br />
 <input type="checkbox" name="curlyquotes" value="yes" checked>
     Convert all "curly quotes" to standard quotes<br />
 <input type="checkbox" name="brackets" value="yes">
-    Convert &#91;brackets&#93; to HTML symbols<br />
+    Convert &\#91;brackets&\#93; to HTML symbols<br />
 <input type="checkbox" name="asciichars" value="yes" checked>
     Convert other ASCII characters to HTML symbols<br />
 <input type="checkbox" name="striptags" value="yes">
@@ -12665,11 +12659,11 @@ function doFormat() {
   // add text styles
   for (var i=0; i<myform.slashed.length; i++) {
     var myradio = getRadio("slashed", i);
-    if (myradio.checked) { text = addStyles("\\/", myradio.value, text); }
+    if (myradio.checked) { text = addStyles("\\\\/", myradio.value, text); }
   }
   for (var i=0; i<myform.starred.length; i++) {
     var myradio = getRadio("starred", i);
-    if (myradio.checked) { text = addStyles("\\*", myradio.value, text); }
+    if (myradio.checked) { text = addStyles("\\\\*", myradio.value, text); }
   }
   for (var i=0; i<myform.underlined.length; i++) {
     var myradio = getRadio("underlined", i);
@@ -12689,19 +12683,19 @@ function doFormat() {
   // format ordered and unordered lists and indenting
   for (var i=0; i<myform.starlist.length; i++) {
     var myradio = getRadio("starlist", i);
-    if (myradio.checked) { text = addGenericList(ob+"\\*\\."+cb+" ", "li", myradio.value, text); }
+    if (myradio.checked) { text = addGenericList(ob+"\\\\*\\\\."+cb+" ", "li", myradio.value, text); }
   }
   for (var i=0; i<myform.dashlist.length; i++) {
     var myradio = getRadio("dashlist", i);
-    if (myradio.checked) { text = addGenericList("\\-\\-?", "li", myradio.value, text); }
+    if (myradio.checked) { text = addGenericList("\\\\-\\\\-?", "li", myradio.value, text); }
   }
   for (var i=0; i<myform.numberlist.length; i++) {
     var myradio = getRadio("numberlist", i);
-    if (myradio.checked) { text = addGenericList("\\d+"+ob+"\\.\\) "+cb, "li", myradio.value, text);}
+    if (myradio.checked) { text = addGenericList("\\\\d+"+ob+"\\\\.\\\\) "+cb, "li", myradio.value, text);}
   }
   for (var i=0; i<myform.indent.length; i++) {
     var myradio = getRadio("indent", i);
-    if (myradio.checked) { text = addGenericList("(\\t+|  +) *", "", myradio.value, text); }
+    if (myradio.checked) { text = addGenericList("(\\\\t+|  +) *", "", myradio.value, text); }
   }
 
 
@@ -12724,8 +12718,8 @@ function undoFormat() {
 
 function popupHTML() {
   var wintext = myform.skratch.value;
-  var reg1 = new RegExp("\\"+ob+"("+ob+"^\\|\\"+cb+cb+"*)"+"|"+"("+ob+"^\\"+cb+cb+"*)\\"+cb, "g"); // pipe link
-  var reg2 = new RegExp("\\"+ob+"("+ob+"^\\"+cb+cb+"*)\\"+cb, "g");   // hard link
+  var reg1 = new RegExp("\\\\"+ob+"("+ob+"^\\\\|"+cb+cb+"*)"+"|"+"("+ob+"^\\\\"+cb+cb+"*)\\\\"+cb, "g"); // pipe link
+  var reg2 = new RegExp("\\\\"+ob+"("+ob+"^\\\\"+cb+cb+"*\\\\)"+cb, "g");   // hard link
   var reg3 = /\s/g;
   var starturl = "<a target=\"_blank\" href=\"/index.pl?node=";
   var endurl = "\">";
@@ -12794,21 +12788,21 @@ function encodeAscii(str) {
   // get other odd ASCII characters
   for (var i=160; i<256; i++) {
     var reg = new RegExp(String.fromCharCode(i), "g");
-    str = str.replace(reg, "&#"+i+";");
+    str = str.replace(reg, "&\#"+i+";");
   }
   return str;
 }
 // replace brackets with HTML-safe characters
 function encodeBrackets(str) {
-  var reg1 = new RegExp("\\"+ob, "g");
-  var reg2 = new RegExp("\\"+cb, "g");
-  str = str.replace(reg1, "&#91;");
-  str = str.replace(reg2, "&#93;");
+  var reg1 = new RegExp("\\\\"+ob, "g");
+  var reg2 = new RegExp("\\\\"+cb, "g");
+  str = str.replace(reg1, "&\#91;");
+  str = str.replace(reg2, "&\#93;");
   return str;
 }
 // create <hr> tags from ASCII rules
 function addHorizRule(str) {
-  var reg1 = new RegExp("(<p>|\\n<br \\/>)?\\n"+ob+" \\t"+cb+"*"+ob+"\\-_="+cb+"{5,}"+ob+" \\t"+cb+"*(\\n<\\/p>|<br \\/>\\n|\\n)?", "g");
+  var reg1 = new RegExp("(<p>|\\\\n<br \\\\/>)?\\\\n"+ob+" \\\\t"+cb+"*"+ob+"\\\\-_="+cb+"{5,}"+ob+" \\\\t"+cb+"*(\\\\n<\\\\/p>|<br \\\\/>\\\\n|\\\\n)?", "g");
   return str.replace(reg1, "\n<hr />\n");
 }
 // compress whitespace to optimize the HTML
@@ -12839,9 +12833,9 @@ function addGenericList(match,tag,ltype,str) {
   if (ltype=="ignore") { return str; }
   var startitem = "\n  <"+tag+">", enditem = "</"+tag+">";
   var listtag = enditem + startitem;
-  var reg1 = new RegExp("\\n\\s*"+match+"\\s*", "g");
+  var reg1 = new RegExp("\\\\n\\\\s*"+match+"\\s*", "g");
   str = str.replace(reg1, listtag);
-  var reg2 = new RegExp("^\\s*"+match+"\s*", "g");
+  var reg2 = new RegExp("^\\\\s*"+match+"\s*", "g");
   str = str.replace(reg2, "\n"+listtag);
   str = addListOpenClose(startitem,enditem,ltype,str);
   return str;
@@ -12902,8 +12896,7 @@ function addStyles(mark,tag,str) {
   return str;
 }
 // -->
-</script>
-END_HTML
+</script>#;
 
     return $str;
 }
@@ -13173,9 +13166,6 @@ sub usergroup_message_archive
     }
 
     $str = htmlcode( 'openform', '' ) . $str . $BRN . htmlcode( 'closeform', '' );
-    $str .= '</p>
-
-<p align="right"><small>(bugs to ' . linkNode( getNode( 'N-Wing', 'user' ) ) . ')</small></p>';
 
     return $str;
 }
@@ -16578,7 +16568,7 @@ sub iron_noder_progress {
 
     if($showWUs) {
 
-        my $getWriteupQuery = <<QUERY;
+        my $getWriteupQuery = qq|
     SELECT
         node.node_id, node.title
         , parent.title 'parenttitle', writeup.parent_e2node
@@ -16601,8 +16591,7 @@ sub iron_noder_progress {
             AND writeup.publishtime  >= ?
             AND writeup.publishtime  <  ?
         ORDER BY
-            writeup.publishtime ASC
-QUERY
+            writeup.publishtime ASC|;
 
         $qh = $DB->{dbh}->prepare($getWriteupQuery);
 
@@ -16876,7 +16865,7 @@ sub historical_iron_noder_stats {
 
     if($showWUs) {
 
-        my $getWriteupQuery = <<QUERY;
+        my $getWriteupQuery = qq|
     SELECT
         node.node_id, node.title
         , parent.title 'parenttitle', writeup.parent_e2node
@@ -16899,8 +16888,7 @@ sub historical_iron_noder_stats {
             AND writeup.publishtime  >= ?
             AND writeup.publishtime  <  ?
         ORDER BY
-            writeup.publishtime ASC
-QUERY
+            writeup.publishtime ASC|;
 
         $qh = $DB->{dbh}->prepare($getWriteupQuery);
 
@@ -17579,7 +17567,7 @@ return $str."<br /><br />".$finalStr;
 sub e2_color_toy {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
 
-    my $str = <<'END_HTML';
+    my $str = qq|
 <noscript>
 <h3>JavaScript is not available in your browser.</h3>
 <p>It may be disabled, or your browser may not support it at all.
@@ -17910,9 +17898,9 @@ Color.prototype.toHSB = function() {
 //  than a real class. It exists only so Color.toHSB() has a type to return.
 //-----------------------------------------------------------------------------
 function HSB( h, s, b ) {
-    this.h = h || 0;
-    this.s = s || 0;
-    this.b = b || 0;
+    this.h = h \|\| 0;
+    this.s = s \|\| 0;
+    this.b = b \|\| 0;
 }
 
 HSB.prototype.integerize = function() {
@@ -18187,7 +18175,7 @@ function on_gengrad( frm ) {
     for ( i = 0; i < 15; ++i ) {
         cell = obj_ref( document, 'grad' + i );
         setBGColor( cell, clr.toString() );
-        hexes += clr.toString() + '\n';
+        hexes += clr.toString() + '\\n';
         clr.r += inc.r;
         clr.g += inc.g;
         clr.b += inc.b;
@@ -18195,7 +18183,7 @@ function on_gengrad( frm ) {
 
     cell = obj_ref( document, 'grad' + i );
     setBGColor( cell, to.toString() );
-    hexes += to.toString() + '\n';
+    hexes += to.toString() + '\\n';
 
     frm.output.value = hexes;
 
@@ -18316,12 +18304,11 @@ function on_bugrep( frm ) {
 }
 //-->
 </script>
-<p>If you're having trouble with this page, explain briefly and click here:<br />
-END_HTML
+<p>If you're having trouble with this page, explain briefly and click here:<br />|;
 
     $str .= htmlcode('openform2', 'bugrep');
 
-    $str .= <<'END_HTML2';
+    $str .= qq{
 <input type="hidden" name="op" value="message" />
 <input type="hidden" name="message" />
 <input type="text" size="40" maxlength="150" name="explain" />
@@ -18354,10 +18341,7 @@ with this. [cbustapeck] is seeing problems with [icab] pre2.6 on
 MacOS 9.2.2 but not MacOS 10.1.2. A few weeks later: [cbustapeck]
 just let me know that icab pre2.6 has expired, and all is well on
 [icab] pre2.71, on MacOS 9.2.2 and X.
-</i></p>
-
-
-END_HTML2
+</i></p>};
 
     return $str;
 }
@@ -18365,7 +18349,7 @@ END_HTML2
 sub e2_word_counter {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
 
-    my $str = <<'END_HTML';
+    my $str = q{
 <script language="JavaScript">
 <!--
 function word_count( str ) {
@@ -18395,8 +18379,7 @@ you're <strong>doomed</strong>. It might be a couple words off anyway. </p>
 <form name="wc">
 <textarea cols="50" rows="20" name="text"></textarea><br />
 <input type="button" value="Count the Words" onclick="word_count( document.forms.wc.text.value )"></input>
-</form>
-END_HTML
+</form>};
 
     return $str;
 }
@@ -18530,7 +18513,7 @@ user disables kill notification in their '.linkNodeTitle('user settings').'; see
 sub zenmastery {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
 
-    my $str = <<'END_HTML';
+    my $str = qq{
 <h2>About this page</h2>
 
 <p>Welcome to Zenmastery, the demonstration node where you can view staff-only options to
@@ -18543,23 +18526,21 @@ Classes you need to reference.  All forms are still intact but they are neutered
 actually set or change anything.  All links go to the homepage.  These are for demonstration
 purposes only.</p>
 
-<p>Also see
-END_HTML
+<p>Also see };
 
     $str .= linkNodeTitle('The Nodelets');
 
-    $str .= <<'END_HTML2';
+    $str .= q|
  for a list of all the available nodelets
 that are not currently in your sidebar.
 
 <h3>New Writeups</h3>
 
-<p>The staff-only options in
-END_HTML2
+<p>The staff-only options in|;
 
     $str .= parseLinks('[New Writeups[nodelet]|New Writeups]');
 
-    $str .= <<'END_HTML3';
+    $str .= qq{
  are:
 <dl>
 <dt>R:-5<dd>Signals that a writeup currently has a negative rep (Not given a class)
@@ -18567,12 +18548,11 @@ END_HTML2
 <dt>(H: un-h!)<dd>Link to "unhide" a writeup from new Writeups. Class: 'hide'
 <dt>(X)<dd>Marks writeups that have been nuked (Not given a class)
 </dl>
-<p>(The same controls are also present in the
-END_HTML3
+<p>(The same controls are also present in the };
 
     $str .= linkNodeTitle('[New Logs[nodelet]|New Logs nodelet]');
 
-    $str .= <<'END_HTML4';
+    $str .= qq{;
 .)
 </p>
 
@@ -18853,8 +18833,3810 @@ class 'remove'.
 			<p>Content goes here.</p>
 		</div>
 	</div>
-</div>
-END_HTML4
+</div>};
+
+    return $str;
+}
+
+sub bestow_cools {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    $str .= htmlcode('openform');
+    $str .= 'User ' . $query->textfield("myuser", "", 30) . "\n";
+    $str .= 'gets ' . $query->textfield("mycools", "", 3, 3) . "\n";
+    $str .= 'cools.' . "\n";
+    $str .= htmlcode('closeform');
+    $str .= "<p>\n";
+
+    my $user = $query->param("myuser");
+    my $cools = $query->param("mycools");
+
+    return $str unless $APP->isAdmin($USER);
+
+    return $str unless $user and $cools;
+    return $str . "invalid cools" unless $cools =~ /^\d+$/;
+
+    my $U = getNode($user, 'user');
+    return $str . "<i>No user \"$user\" exists!</i>" unless $U;
+
+    my $V = getVars($U);
+    $$V{cools} = $cools;
+    setVars($U, $V);
+    $APP->securityLog($NODE, $USER, "$$U{title} was given $cools cools by $$USER{title}");
+    $$U{karma}+=1;
+    updateNode($U, -1);
+
+    $str .= qq|<strong>$cools cools were bestowed to |.linkNode($U).q|</strong>|;
+
+    return $str;
+}
+
+sub caja_de_arena {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $gonesince = $query->param('gonesince') || '1 YEAR';
+    my $showlength = $query->param('showlength') || 1000;
+
+    my $filter = "doctext != ''";
+
+    $filter .= " AND lasttime < DATE_SUB(NOW(), INTERVAL $gonesince)";
+    $filter .= ' AND numwriteups=0' unless $query->param('published');
+    $filter .= "doctext LIKE '%[http%'" if $query->param('extlinks');
+
+    return "Spam entries: <br />".htmlcode('show paged content', 'title, user_id AS author_user, doctext', 'node JOIN user on node_id=user_id JOIN document ON node_id=document_id', $filter, 'ORDER BY lasttime DESC LIMIT 10', "author, $showlength, smite", ('smite' => sub {
+        my $verify = htmlcode('verifyRequestHash', 'polehash');
+        '<hr>'.linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
+        , 'Smite Spammer'
+        , {%$verify
+        , confirmop => 'remove'
+        , removeauthor => 1
+        , author => $_[0]{title}
+        , -title => 'detonate this noder, blank their homenode, remove their writeups, blacklist their IP where appropriate'
+        , -class => 'action'});
+    }
+    ));
+}
+
+sub dr__nate_s_secret_lab {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "It...  it...  it...  it...\n<p>\n";
+
+    my $nid = $query->param("olde2nodeid");
+    return $str . "huh?" unless $nid;
+
+    my $burialground = (($query->param("heaven"))?("heaven"):("tomb"));
+    my $tomb = $DB->sqlSelectHashref("*",$burialground,"node_id=$nid");
+    my $VAR1 = {}; # dumper sometimes puts this in the data
+    my $nodeproto = eval("my ".$tomb->{data});  ## no critic 'Perl::Critic::Policy::BuiltinFunctions::ProhibitStringyEval'
+
+    return $str . "ACK! nodeproto failed!" unless $nodeproto;
+
+    my $typetables = $DB->getNodetypeTables($tomb->{type_nodetype});
+    return $str . "ACK! no typetables!" unless $typetables;
+    push @$typetables, "node";
+
+
+    foreach my $table (@$typetables)
+    {
+        my @fields = $DB->getFieldsHash($table);
+        my $insertref = {};
+
+        foreach(@fields)
+        {
+            my $field = $$_{Field};
+            $insertref->{$field} = $$nodeproto{$field};
+            $insertref->{$field} ||=  $$tomb{$field};
+            $insertref->{$field} ||= 0;
+        }
+
+        # primary key may not be in the data if new tables added since nuke:
+        $$insertref{"${table}_id"} = $nid;
+        $DB->sqlDelete($table,"$table"."_id=$nid");
+        $DB->sqlInsert($table, $insertref);
+    }
+
+    my $N = getNodeById($nid);
+
+    #insert it into the nodegroup - added by ascorbic
+    my $nt = $$N{title};
+    $nt =~ s/ \(\w+\)$//;
+    my $e2N = getNode($nt, 'e2node');
+    if($e2N) {
+        insertIntoNodegroup($e2N, $USER, $N);
+        updateNode($e2N, -1);
+    }
+    $APP->securityLog($NODE, $USER, "$$N{title} (id: $$N{node_id}) was raised from its $burialground");
+    $DB->{cache}->incrementGlobalVersion($N);
+    return $str . "Inserted $nid<br><br> as ".linkNode($N) . '<br>'  if $N;
+    return $str . "Ressurection failed<br>";
+}
+
+sub e2node_reparenter {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    $str .= htmlcode('openform');
+
+    $str .= "The node to reparent: ".$query->textfield("repare", "")."<p>";
+    my $repare = $query->param('repare');
+
+    return $str . htmlcode('closeform') unless $repare;
+
+    my $N = getNode($repare, 'e2node');
+
+    return $str . "can't find $repare e2node...<p>" . htmlcode('closeform') unless $N;
+
+    my $id = getId($N);
+
+    my $csr = $DB->sqlSelectMany("writeup_id", "writeup", "parent_e2node=$id");
+
+    my @group;
+    while (my ($wrid) = $csr->fetchrow) {
+        push @group, $wrid;
+    }
+
+    replaceNodegroup($N, \@group, $USER);
+
+    $str .= "The following nodes have been put into ".linkNode($N);
+
+    foreach (@group) {
+        my $W = getNodeById($_);
+        $str .= "<li>".linkNode($W)." by ".linkNode($$W{author_user});
+    }
+    $str .= "<P>these may need to be reordered<P>";
+
+    $str .= htmlcode('closeform');
+
+    return $str;
+}
+
+sub enrichify {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    # Process form submission first
+    my @params = $query->param;
+    my (@users, @gp);
+    foreach (@params) {
+        if(/^EnrichUsers(\d+)$/) {
+            $users[$1] = $query->param($_);
+        }
+        if(/^BestowGP(\d+)$/) {
+            $gp[$1] = $query->param($_);
+        }
+    }
+
+    my $curGP;
+    for(my $count=0; $count < @users; $count++) {
+        next unless $users[$count] and $gp[$count];
+
+        my ($U) = getNode ($users[$count], 'user');
+        if (not $U) {
+            $str .= "couldn't find user $users[$count]<br />";
+            next;
+        }
+
+        $curGP = $gp[$count];
+
+        unless ($curGP =~ /^\-?\d+$/) {
+            $str .= "$curGP is not a valid GP value for user $users[$count]<br>";
+            next;
+        }
+
+        my $signum = ($curGP>0) ? 1 : (($curGP<0) ? -1 : 0);
+
+        $str .= "User $$U{title} was given $curGP GP.";
+        $APP->securityLog($NODE, $USER, "$$U{title} was superblessed $curGP GP by $$USER{title}");
+        if($signum!=0) {
+            $$U{karma}+=$signum;
+            $$U{GP}+=$curGP;
+            updateNode($U,-1);
+
+
+        } else {
+            $str .= ', so nothing was changed';
+        }
+        $str .= "<br />\n";
+    }
+
+    # Now display the form
+    $str .= htmlcode('openform');
+    $str .= '<table border="1">';
+
+    if (!$APP->isAdmin($USER)) {
+        $str .= '<TR><TH>You want to be supercursed? No? Then play elsewhere.</TH></TR>';
+    } else {
+        my $count = 10;
+
+        $str .= "<tr><th>Bestow user</th><th>with GP</th></tr> ";
+
+        for (my $i = 0; $i < $count; $i++) {
+            $query->param("EnrichUsers$i", '');
+            $query->param("BestowGP$i", '');
+            $str .= "<tr><td>";
+            $str .= $query->textfield("EnrichUsers$i", '', 40, 80);
+            $str .= "</td><td>";
+            $str .= $query->textfield("BestowGP$i", '', 4, 5);
+            $str .= "</td></tr>";
+        }
+    }
+
+    $str .= '</table>';
+    $str .= htmlcode('closeform');
+
+    return $str;
+}
+
+sub everything_s_richest_noders {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $rows;
+    my $str = '';
+    my $queryText = '';
+    my $limit = 1500;
+    my $limit2 = 10;
+    my $row;
+
+    $queryText = 'SELECT SUM(GP) FROM user';
+    $rows = $DB->{dbh}->prepare($queryText)
+        or return $rows->errstr;
+    $rows->execute()
+        or return $rows->errstr;
+    my $totalGP = $rows->fetchrow_array();
+
+    $queryText = 'SELECT user_id,gp FROM user ORDER BY gp DESC LIMIT '.$limit;
+    $rows = $DB->{dbh}->prepare($queryText)
+        or return $rows->errstr;
+    $rows->execute()
+        or return $rows->errstr;
+
+    $str .= '<h3>'.$limit.' Richest Noders</h3>';
+    $str .= '<ol>';
+    while($row = $rows->fetchrow_arrayref)
+    {
+        $str .= '<li>'.linkNode($$row[0]).' ('.$$row[1].'GP)</li>';
+    }
+    $str .= '</ol><hr />';
+
+    $queryText = 'SELECT user_id,gp FROM user WHERE gp<>0 ORDER BY gp LIMIT '.$limit2;
+    $rows = $DB->{dbh}->prepare($queryText)
+        or return $rows->errstr;
+    $rows->execute()
+        or return $rows->errstr;
+    $str .= '<h3>'.$limit2.' Poorest Noders (ignore 0GP)</h3>';
+    $str .= '<ol>';
+    while($row = $rows->fetchrow_arrayref)
+    {
+        $str .= '<li>'.linkNode($$row[0]).' ('.$$row[1].'GP)</li>';
+    }
+    $str .= '</ol><hr />';
+
+    $queryText = 'SELECT user_id,gp FROM user ORDER BY gp DESC LIMIT '.$limit2;
+    $rows = $DB->{dbh}->prepare($queryText)
+        or return $rows->errstr;
+    $rows->execute()
+        or return $rows->errstr;
+    $str .= '<h3>'.$limit2.' Richest Noders</h3>';
+    $str .= '<ol>';
+    my $richestUsersGP = 0;
+    while($row = $rows->fetchrow_arrayref)
+    {
+        $str .= '<li>'.linkNode($$row[0]).' ('.$$row[1].'GP)</li>';
+        $richestUsersGP += $$row[1];
+    }
+    $str .= '</ol>';
+
+    $str .= '<p><b>Total GP in circulation:</b> ' . $totalGP . '</p>';
+
+    $str .= '<p>The top ' . $limit2 . ' users hold ' . ($richestUsersGP / $totalGP * 100) . '% of all the GP</p>';
+
+    return $str;
+}
+
+sub faq_editor {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my  $faqData = {};
+
+    my $fID = $query->param("faq_id") || 0;
+
+    if ($query->param("sexisgood")) {
+        if ($query->param("edit_faq")) {
+            $fID = $query->param("edit_faq");
+            $DB->sqlUpdate("faq",{question => $query->param("faq_question"), answer => $query->param("faq_answer"), keywords => $query->param("faq_keywords")},"faq_id = $fID");
+        }
+        else {
+            $DB->sqlInsert("faq",{question => $query->param("faq_question"), answer => $query->param("faq_answer"), keywords => $query->param("faq_keywords")});
+        }
+    }
+
+    if ($fID) {
+        $faqData = $DB->sqlSelectHashref("*","faq","faq_id = $fID");
+    }
+
+    my $str = '';
+
+    $str .= htmlcode('openform');
+
+    $str .= $query->hidden("edit_faq",$fID) if $fID;
+
+    $str .= "<p>Question: </p>
+
+<textarea rows='6' cols='40' name='faq_question'>
+".$$faqData{question}."
+</textarea>
+
+<p>Answer: </p>
+
+<textarea rows='6' cols='40' name='faq_answer'>
+".$$faqData{answer}."
+</textarea>
+
+<p>Keywords (separated by commas):</p>
+
+<textarea rows='1' cols='40' name='faq_keywords'>
+".$$faqData{keywords}."
+</textarea>";
+
+
+    $str .= htmlcode('closeform');
+
+    return $str;
+}
+
+sub feed_edb {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '<p>';
+
+    my $UID = getId($USER);
+    my $isRoot = $APP->isAdmin($USER);
+    return $str . 'You narrowly escape EDB\'s mouth.</p>' unless $isRoot;
+
+    my $t;
+    my $m = '';
+
+    if( (defined $query->param('numborgings')) && defined($t=$query->param('numborgings')) && (length($t)!=0) && ($t=~/^(-?\d*)$/)) {
+
+        $t=$1 || 0;
+        my $z;
+        if($t>0) {
+            #borg self
+            $z=1;
+            $VARS->{numborged}=$t;
+            $VARS->{borged}=time;
+            $m='Simulating being borged '.$t.' time'.($t==1?'':'s').'.';
+        } else {
+            #unborg self
+            $z=0;
+            delete $VARS->{borged};
+            if($t==0) {
+                $m='Unborged.';
+            } else {
+                $m='Borg-proof '.(-$t).' time'.($t==-1?'':'s').'.';
+            }
+        }
+        $m .= "<br />\n<a href=" . urlGen({node_id=>$NODE->{node_id}}) . '>EDB still hungry</a>';
+        $VARS->{numborged}=$t;
+        $DB->sqlUpdate('room',{borgd=>$z},'member_user='.$UID);
+
+    } else {
+
+        $m = 'This is mainly for the 3 of us that need to play with EDB.<br />Er, that doesn\'t quite sound the way I meant it. How about "...want to experiment with EDB".<br />Mmmmm, that isn\'t quite what I meant, either. Lets try: "...want to have EDB eat them".<br />Argh, I give up.<br /><br /><code>numborgings = ( &nbsp;</code>';
+        $m .= join(', &nbsp; ',map {linkNode($NODE,'&nbsp;'.$_.'&nbsp;',{numborgings=>$_,lastnode_id=>0})} qw(-100 -10 -2 -1 0 1 2 5 10 25 50 100));
+        $m .= '<code>&nbsp;);</code>';
+
+    }
+
+    $str .= 'Your current borged count: '.($VARS->{numborged}||0)."<br /><br />\n".$m;
+    $str .= '</p>';
+
+    return $str;
+}
+
+sub gp_optouts {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $queryText = '';
+    my $rows;
+    my $dbrow;
+    my $str = '';
+    my @list = ();
+
+    $queryText = "SELECT user.user_id,user.GP FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%GPoptout=1%'";
+
+    $rows = $DB->{dbh}->prepare($queryText)
+        or return $rows->errstr;
+    $rows->execute()
+        or return $rows->errstr;
+
+    while($dbrow = $rows->fetchrow_arrayref)
+    {
+        push(@list, linkNode($$dbrow[0]) . ' - Level: ' . $APP->getLevel($$dbrow[0]) . '; GP: ' . $$dbrow[1]);
+    }
+
+    $str .= '<h3>Users who have opted out of the GP system</h3>';
+    $str .= '<ol style="margin-left:55px">';
+    foreach my $key (sort { lc($a) cmp lc($b) } @list)
+    {
+        $str .= '<li>'.$key.'</li>';
+    }
+    $str .= '</ol>';
+
+    return $str;
+}
+
+sub ip_blacklist {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    local $SIG{__WARN__} = sub {};
+
+    my $str = '<p>This page manages the IP addresses which are barred from <strong>creating new accounts</strong>.  Except for very extreme circumstances, we don\'t block pageloads as '.linkNode(getNode('Guest User','user')).'.</p>';
+    $str .= '<p><strong>This tool should ONLY be used to block access at the IP level for users whose primary accounts have been locked if they continue to abuse our hospitality.</strong> Usually the \'Smite Spammer\' tool will do the job automatically for you when it needs to be done. </p>';
+    $str .= '<h3>';
+
+    # Helper subroutines
+    my $intFromAddr = sub {
+        my $addr = shift;
+        return unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+        return if $1 > 255 or $2 > 255 or $3 > 255 or $4 > 255;
+        return (
+            (int $1) * 256*256*256
+            + (int $2) * 256 * 256
+            + (int $3) * 256
+            + (int $4)
+        );
+    };
+
+    my $rangeMinMax = sub {
+        my $cidrIP = shift;
+        return () unless $cidrIP =~ m/^(\d{1,3}\.\d{1,3}.\d{1,3}\.\d{1,3})\s*\/(\d{1,2})$/;
+        my $addr = $1;
+        my $intAddr = &$intFromAddr($addr);
+        return () unless $intAddr;
+        my $bits = $2;
+        return () unless $bits < 33 && $bits > 7;
+
+        my $maxAddr = &$intFromAddr('255.255.255.255');
+        my $mask = ($maxAddr << (32 - $bits)) & $maxAddr;
+
+        my $validAddr = 1;
+        my $addrMin   = $intAddr & $mask;
+        my $addrMax   = $addrMin + ($maxAddr >> $bits);
+
+        return ($validAddr, $addrMin, $addrMax);
+    };
+
+    # Remove an IP from the blacklist if requested
+    if (my $idToRemove = $query->param("remove_ip_block_ref")) {
+
+        $idToRemove = int $idToRemove;
+
+        my $selectAddrFromBlacklistSQL = qq|
+SELECT
+	IFNULL(ipblacklist.ipblacklist_ipaddress,
+		CONCAT(ipblacklistrange.min_ip, ' - ', ipblacklistrange.max_ip)
+	) ipblacklist_ipaddress
+	FROM ipblacklistref
+	LEFT JOIN ipblacklist
+		ON ipblacklistref.ipblacklistref_id =
+			ipblacklist.ipblacklistref_id
+	LEFT JOIN ipblacklistrange
+		ON ipblacklistref.ipblacklistref_id =
+			ipblacklistrange.ipblacklistref_id
+	WHERE ipblacklistref.ipblacklistref_id = $idToRemove|;
+
+        my @blacklistAddressArray =
+            @ { $DB->{dbh}->selectall_arrayref($selectAddrFromBlacklistSQL) };
+        my $blAddress = $blacklistAddressArray[0]->[0];
+
+        my $removeFromBlacklistSQL = qq|
+DELETE ipblacklist, ipblacklistref, ipblacklistrange
+	FROM ipblacklistref
+	LEFT JOIN ipblacklist
+		ON ipblacklistref.ipblacklistref_id =
+			ipblacklist.ipblacklistref_id
+	LEFT JOIN ipblacklistrange
+		ON ipblacklistref.ipblacklistref_id =
+			ipblacklistrange.ipblacklistref_id
+	WHERE ipblacklistref.ipblacklistref_id = $idToRemove|;
+
+        my $saveRaise = $DB->{dbh}->{RaiseError};
+        $DB->{dbh}->{RaiseError} = 1;
+        eval { $DB->{dbh}->do($removeFromBlacklistSQL) };  ## no critic 'Perl::Critic::Policy::ErrorHandling::RequireCheckingReturnValueOfEval'
+        $DB->{dbh}->{RaiseError} = $saveRaise;
+
+        if($@){
+            return $str . "There was an error removing this block from the database: "
+                . $DB->{dbh}->errstr()
+                ;
+        }else{
+            $APP->securityLog($NODE, $USER, "$$USER{title} removed $blAddress from the IP blacklist.");
+            return $str . "The IP \"$blAddress\" was successfully removed from the blacklist.";
+        }
+
+    }
+
+    # Add an IP to the blacklist if requested
+    if($query->param("add_ip_block")){
+        my $ipToAdd = $query->param("bad_ip");
+        return $str . "You must list an IP to block." unless $ipToAdd;
+        my ($isRangeAddr, $rangeMin, $rangeMax) = &$rangeMinMax($ipToAdd);
+
+        my $blockReason = $query->param("block_reason");
+        return $str . "You must give a reason to block this IP." unless $blockReason;
+
+        return $str . htmlcode('blacklistIP', $ipToAdd, $blockReason) unless $isRangeAddr;
+
+        $ipToAdd = $DB->quote($ipToAdd);
+        $blockReason = $DB->quote($blockReason);
+
+        my $addBlacklistRefSQL = q|INSERT INTO ipblacklistref () VALUES ()|;
+
+        my $addBlacklistSQL = '';
+        $addBlacklistSQL = qq|
+INSERT INTO ipblacklistrange
+	(banner_user_id, min_ip, max_ip, comment
+	 , ipblacklistref_id)
+	VALUES ($$USER{user_id}, $rangeMin, $rangeMax, $blockReason
+		, LAST_INSERT_ID()) | if $isRangeAddr;
+
+        my $saveRaise = $DB->{dbh}->{RaiseError};
+        $DB->{dbh}->{RaiseError} = 1;
+        eval {  ## no critic 'Perl::Critic::Policy::ErrorHandling::RequireCheckingReturnValueOfEval'
+            $DB->{dbh}->do($addBlacklistRefSQL);
+            $DB->{dbh}->do($addBlacklistSQL);
+        };
+        $DB->{dbh}->{RaiseError} = $saveRaise;
+
+        if ($@){
+            return $str . "There was an error adding this block to the database: "
+                . "<pre>" . encodeHTML($addBlacklistSQL) . "</pre>"
+                . $DB->{dbh}->errstr()
+                ;
+        }else{
+            $ipToAdd = encodeHTML($ipToAdd);
+            $APP->securityLog($NODE, $USER, "$$USER{title} added $ipToAdd to the IP blacklist: \"$blockReason.\"");
+
+            return $str . "The IP \"$ipToAdd\" was successfully added to the blacklist.";
+        }
+
+    }
+
+    $str .= '</h3>';
+
+    # Form for blacklisting an IP
+    $str .= '<h3>Blacklist an IP</h3>';
+
+    my $bad_ip = $query->param("bad_ip") || '';
+
+    $str .= htmlcode('openform');
+    $str .= $query->hidden('node_id', getId($NODE));
+    $str .= '<div><strong>IP Address</strong><br />';
+    $str .= $query->textfield('bad_ip', $bad_ip, 20);
+    $str .= '</div><br />';
+    $str .= '<div><strong>Reason</strong><br />';
+    $str .= $query->textfield('block_reason', '', 50);
+    $str .= '</div><br />';
+    $str .= $query->submit('add_ip_block', 'Please blacklist this IP.');
+    $str .= htmlcode('closeform');
+
+    # Display the list of blacklisted IPs
+    $str .= htmlcode('blacklistedIPs');
+
+    return $str;
+}
+
+sub ip_hunter {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = htmlcode('openform');
+    $str .= "<table><tr>";
+    $str .= "<td width=\"50\"><b>name:</b> </td>";
+    $str .= "<td><input type=\"text\" name=\"hunt_name\"></td>";
+    $str .= "</tr>";
+    $str .= "<td></td><td><b> - or -</b></td>";
+    $str .= "<tr><td><b>IP:</b></td>";
+    $str .= "<td><input type=\"text\" name=\"hunt_ip\"></td></tr>";
+    $str .= "<tr><td></td><td><input type=\"submit\" value=\"hunt\">";
+    $str .= "</tr></table>";
+    $str .= $query->end_form();
+    $str .= "<br><hr><br>";
+
+    my $TABLEHEAD = '<table border="1" cellspacing="0" cellpadding="2">' . "\n" . '<tr><th>#</th>';
+
+    my $humanTime = sub {
+        my $t = $_[0];
+        return $t;
+    };
+
+    # Limit put in 2006 August 26 while N-Wing trying to get working again
+    # maybe later this will be removed or user-runtime-settable
+    # 50 is big enough for now
+    my $resultLimit = 500;
+
+    # Every log entry below this number is from 2003 or earlier - generally
+    # not very useful for our hunting purposes. We'll exclude them from the search.
+    my $lowID = 1500000;
+
+    $TABLEHEAD = '(only showing ' . $resultLimit . ' most recent)
+' . $TABLEHEAD;
+    $resultLimit = 'LIMIT ' . $resultLimit;
+
+    if($query->param('hunt_ip')) {
+        my $ip = $APP->encodeHTML(scalar($query->param('hunt_ip')));
+        $str .= "The IP ($ip) <small>(" . htmlcode('ip lookup tools', $ip) . ")</small> has been here and logged on as:";
+        $str .= $TABLEHEAD . '<th colspan="2">Who (Hunt User)</th><th>When</th></tr>';
+
+        my $csr = $DB->sqlSelectMany('iplog.*', 'iplog', "iplog_id > $lowID AND iplog_ipaddy = " . $DB->quote($ip) . " ORDER BY iplog_id DESC", $resultLimit);
+
+        my $i = 0;
+        while(my $ROW = $csr->fetchrow_hashref) {
+            my $loggedUser = getNodeById($$ROW{iplog_user});
+            my $loggedUserLink = '';
+            my $loggedUserHuntLink = '';
+
+            if ($loggedUser) {
+                $loggedUserLink = linkNode($loggedUser, 0, {lastnode_id => 0});
+                $loggedUserHuntLink = linkNode($NODE, 'hunt', {'hunt_name' => "$$loggedUser{title}"});
+            } else {
+                $loggedUserLink = "<strong>Deleted user</strong>";
+                $loggedUserHuntLink = linkNode($NODE, 'hunt', {'hunt_name' => ""});
+            }
+
+            $str .= '<tr><td>' . (++$i) . '</td><td>' . $loggedUserLink . '</td><td align="right">' . $loggedUserHuntLink . '</td><td>' . $humanTime->($$ROW{iplog_time}) . "</td></tr>\n";
+        }
+
+        $str .= '</table>';
+        return $str;
+    }
+
+    if (defined $query->param('hunt_name')) {
+        my $username = $query->param('hunt_name');
+        my $csr = undef;
+        my $selectString = q|
+	iplog.*
+	, (SELECT ipblacklist.ipblacklistref_id
+	    FROM ipblacklist
+	    WHERE iplog.iplog_ipaddy = ipblacklist_ipaddress
+	) 'banned'
+	, (SELECT MAX(ipblacklistrange.ipblacklistref_id)
+	    FROM ipblacklistrange
+	    WHERE ip_to_uint(iplog.iplog_ipaddy) BETWEEN min_ip AND max_ip
+	) 'banned_ranged'|;
+
+        if ($username ne '') {
+            my $usr = getNode($username, 'user');
+            return $str . "<font color=\"red\">No such user!</font>" unless($usr);
+
+            $str .= 'The user ' . linkNode($usr, 0, {lastnode_id => 0}) . ' has been here as IPs:' . $TABLEHEAD . '<th>IP</th><th>When</th><th>Look up</th></tr>';
+
+            $csr = $DB->sqlSelectMany($selectString, 'iplog', "iplog_id > $lowID AND iplog_user = '$$usr{user_id}' ORDER BY iplog_id DESC", $resultLimit);
+        } else {
+            $str .= 'Deleted users have been here as IPs:' . $TABLEHEAD . '<th>IP</th><th>When</th><th>Look up</th></tr>';
+            $csr = $DB->sqlSelectMany($selectString, 'iplog LEFT JOIN user ON iplog_user = user.user_id', "iplog_id > $lowID AND user.user_id IS NULL ORDER BY iplog_id DESC", $resultLimit);
+        }
+
+        my $i = 0;
+        while(my $ROW = $csr->fetchrow_hashref) {
+            my ($strike, $unstrike) = ('', '');
+            ($strike, $unstrike) = ('<strike><b>', '</b></unstrike>') if $$ROW{banned} || $$ROW{banned_ranged};
+            $str .= '<tr><td>' . (++$i) . '</td>' . '<td>' . $strike . linkNode($NODE, $$ROW{iplog_ipaddy}, {hunt_ip => $$ROW{iplog_ipaddy}}) . $unstrike . '</td>' . '<td>' . $humanTime->($$ROW{iplog_time}) . '</td>' . '<td>' . htmlcode('ip lookup tools', $$ROW{iplog_ipaddy}) . '</td>' . "</tr>\n";
+        }
+
+        $str .= '</table>';
+        return $str;
+    }
+
+    $str .= 'Please enter an IP address or a name to continue';
+
+    return $str;
+}
+
+sub klaproth_van_lines {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    return '<p>Welcome to Klaproth Van Lines.  This utility will reparent writeups for a single user in bulk.</p>' unless($APP->isAdmin($USER));
+
+    my $str = '<p>Welcome to Klaproth Van Lines.  This utility will reparent writeups for a single user in bulk.</p>';
+    $str .= htmlcode('openform');
+    $str .= '<table border="1">';
+
+    return $str . '<tr><th>[Klaproth] has no business with you ... just now.</th></tr></table>' . htmlcode('closeform') unless $APP->isAdmin($USER);
+
+    # Debug
+    if($query->param('user_name') && $query->param('idlist')) {
+        $str .= '<tr><th>Altar\'d states!</th></tr>';
+    }
+
+    my $myusername = $query->param('user_name') || '';
+    my $myoldlist = $query->param('oldlist') || '';
+
+    if($myusername && $myoldlist) {
+        # Second stage - retrieve and validate form data
+
+        # For which user is this request?
+        my $uservictim = getNode($myusername, 'user');
+
+        # Sorry, we don't know that user
+        unless($uservictim) {
+            $str .= '<tr><th>There is no user: "' . $myusername . '"</th></tr>';
+            $str .= '</table>' . htmlcode('closeform');
+            return $str;
+        }
+
+        # Strip the linefeeds
+        $myoldlist =~ s/\s+\n/\n/g;
+
+        my @idlist = split('\n', $myoldlist);
+        my $tempid = undef;
+        my $goodstr = '';
+        my $errstr = '';
+
+        # Build the table's top, to be used if no errors are found
+        $goodstr .= '<tr><td colspan=2>The following writeups by <strong>';
+        $goodstr .= $$uservictim{title};
+        $goodstr .= '</strong> are ready to be reparented.';
+        $goodstr .= 'Nothing has happened to them ... yet.</td>';
+        $goodstr .= '<tr><th>Writeups to reparent</th><th>New homes</th></tr>';
+        $goodstr .= '<tr><td><ol>';
+
+        # Iterate over the writeup ID list and make sure they're all kosher
+        foreach my $wu (@idlist) {
+            next unless $wu;
+
+            # Use the writeup ID to get the node ID
+            $tempid = getNodeById($wu);
+
+            # Error if this didn't work -- e.g. writeup has no parent
+            $errstr .= '<li><strong>Error</strong>:Writeup ID ' . $wu . ' has no parent' unless $tempid;
+            next unless $tempid;
+
+            # ID must be type 'writeup' (117) ? want an error msg ?
+            $errstr .= '<li><strong>Error</strong>:ID ' . $wu . ' is not a writeup' unless $$tempid{type_nodetype} == 117;
+            next unless $$tempid{type_nodetype} == 117;
+
+            # Check that the author is correct
+            if ($$tempid{author_user} == $$uservictim{node_id}) {
+                $goodstr .= '<li>' . linkNode($tempid, $$tempid{title});
+            } else {
+                $errstr .= '<li><strong>Error</strong>: ' . linkNode($tempid, $$tempid{title});
+                $errstr .= ' is not by target author';
+            }
+        }
+        $goodstr .= '</ol></td>';
+        $goodstr .= '<td><ol>';
+
+        my $mynewlist = $query->param('newlist') || '';
+        my @nodelist = ();
+        my @nodeidlist = ();
+
+        # Iterate over the new node list to ensure they're all e2nodes
+        if($mynewlist) {
+            $mynewlist =~ s/\s+\n/\n/g;
+            @nodelist = split('\n', $mynewlist);
+
+            # Iterate over the new parent list and grab the node IDs
+            foreach my $wu (@nodelist) {
+                next unless $wu;
+
+                $tempid = getNode($wu, 'e2node');
+                # Error if this didn't work -- e.g. not an e2node
+                $errstr .= '<li><strong>Error</strong>: ' . $wu . ' is not an e2node.' unless $tempid;
+                next unless $tempid;
+
+                # ID must be type 'node' (116) ? want an error msg ?
+                next unless $$tempid{type_nodetype} == 116;
+
+                # Seems OK ...
+                # ... Add to node id list (for later post)
+                push(@nodeidlist, $$tempid{node_id});
+                # ... add to the display list
+                $goodstr .= '<li>' . linkNode($tempid, $$tempid{title});
+            }
+        }
+        $goodstr .= '</ol></td></tr>';
+
+        # Check that the counts match
+        if($#idlist != $#nodelist) {
+            $errstr .= '<li><strong>Error</strong>: Mismatched lists! ';
+
+            if($#idlist > $#nodelist) {
+                $errstr .= 'More IDs than Nodes';
+            } else {
+                $errstr .= 'More Nodes than IDs';
+            }
+        }
+
+        # Assemble the table
+        if($errstr) {
+            # Errors were encountered
+            $str .= '<tr><td>Errors were found<br><ul>' . $errstr . '</ul></td></tr>';
+        } else {
+            # Show the source and target lists
+            $str .= $goodstr;
+
+            # Rebuild the table rows for final verification (debug)
+            $str .= '<tr><td><input type=hidden name="movelist" value="';
+            $str .= join(',', @idlist);
+            $str .= '"></td>';
+            $str .= '<td><input type=hidden name="homelist" value="';
+            $str .= join(',', @nodeidlist);
+            $str .= '"></td></tr>';
+            $str .= '<tr><td colspan=2><input type="checkbox" value=1 name="doit" CHECKED/> Do it!</td></tr>';
+        }
+    } else {
+        if($query->param('doit') && $query->param('doit') == 1) {
+            # Final stage, do the actual move
+
+            my @moveidlist = split(',', $query->param('movelist') || '');
+            my @homeidlist = split(',', $query->param('homelist') || '');
+
+            $str .= '<tr><td>';
+            my $i = 0;
+            foreach my $wu (@moveidlist) {
+                my $wuid = getNodeById($wu);
+                my $oldparent = getNodeById($$wuid{parent_e2node});
+                my $newparent = getNodeById($homeidlist[$i]);
+
+                # Report it
+                $str .= $wu . ' ' . $$wuid{title} . ' in ' . $$oldparent{title};
+                $str .= ' has moved to ' . linkNode($newparent, $$newparent{title});
+                $str .= '<br />';
+
+                # Do it - based on 'Magical Writeup Reparenter'
+                # ... out of the old e2node ...
+                $DB->removeFromNodegroup($oldparent, $wuid, $USER);
+                # ... store the new e2node as parent ...
+                $$wuid{parent_e2node} = $$newparent{node_id};
+                # ... Retitle the writeup "new name (type)" ...
+                my $wutype = getNodeById($$wuid{wrtype_writeuptype});
+                $$wuid{title} = $$newparent{title} . ' (' . $$wutype{title} . ')';
+                # ... Put it in its new e2node ...
+                $DB->insertIntoNodegroup($newparent, $USER, $wuid);
+                # ... Make sure all parties know of the change
+                updateNode($oldparent, -1);
+                updateNode($newparent, -1);
+                updateNode($wuid, -1);
+
+                # Loop counter (don't know how to use foreach on 2 arrays)
+                $i++;
+            }
+            $str .= '</td></tr>';
+        } else {
+            # No data yet - build and present the input form
+            $str .= '<tr><td colspan=2>Username: ';
+            $str .= '<input type="text" name="user_name"></td></tr>';
+            $str .= '<tr><th>Source writeup IDs<br><small>';
+            $str .= '(get \'em from the ';
+            $str .= linkNode(getNode('Altar of Sacrifice', 'oppressor_superdoc'), 'Altar');
+            $str .= ')</small></th><th>Target node names</th></tr>';
+            $str .= '<tr><td>';
+            $str .= '<textarea name="oldlist" ROWS=20 COLS=30></textarea>';
+            $str .= '</td><td>';
+            $str .= '<textarea name="newlist" ROWS=20 COLS=30></textarea>';
+            $str .= '</td></tr>';
+        }
+    }
+
+    $str .= '</table>';
+    $str .= htmlcode('closeform');
+
+    return $str;
+}
+
+sub mass_ip_blacklister {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '<div style="width:600px">';
+    $str .= '<p>This page manages the IP addresses which are barred from <strong>creating new accounts</strong>.  Except for very extreme circumstances, we don\'t block pageloads as '.linkNode(getNode('Guest User','user')).'.</p>';
+    $str .= '<p>This tool should be used to block access at the IP level based on externally maintained blacklists, until we implement a less hacky solution. - '.linkNode(getNode('Oolong', 'user')).'</p>';
+    $str .= '</div>';
+
+    ### Remove an IP from the blacklist if requested
+    if(my $idToRemove = $query->param("remove_ip_block")){
+
+        $idToRemove =~ s/(\\g|;|"|'|`|\s)//g;
+        my $blacklistHash = $DB->sqlSelectHashref("ipblacklist_ipaddress", "ipblacklist", "ipblacklist_id = $idToRemove");
+
+        my $removeFromBlacklistSQL = "delete from ipblacklist where ipblacklist_id = \"$idToRemove\";";
+
+        eval { $DB->{dbh}->do($removeFromBlacklistSQL) };  ## no critic 'Perl::Critic::Policy::ErrorHandling::RequireCheckingReturnValueOfEval'
+        if( $@ ){
+            return $str . "There was an error adding this block to the database: " . $DB->{dbh}->errstr();
+        }else{
+            $APP->securityLog($NODE, $USER, "$$USER{title} removed $$blacklistHash{ipblacklist_ipaddress} from the IP blacklist.");
+            return $str . "The IP \"$$blacklistHash{ipblacklist_ipaddress}\" was successfully removed from the blacklist.";
+        }
+
+    }
+
+    ### Add an IP to the blacklist if requested
+    if($query->param("add_ip_block")){
+        my $ipList = $query->param("bad_ips") || '';
+        $ipList =~ s/\s*\n\s*/NEXT/g;
+        $ipList =~ s/(\\g|;|"|'|`|\s)//g;
+        my @ipsToAdd = split( 'NEXT', $ipList );
+
+        return $str . "You must list IPs to block." unless @ipsToAdd;
+
+        my $blockReason = $query->param("block_reason") || '';
+        $blockReason =~ s/(\\g|;|"|'|`)//g;
+        return $str . "You must give a reason to block these IPs." unless $blockReason;
+        $str .= "<ol>\n";
+        foreach my $ipToAdd ( @ipsToAdd ) {
+            next unless( $ipToAdd );
+            my $addBlacklistSQL = "insert into ipblacklist (ipblacklist_user, ipblacklist_ipaddress, ipblacklist_comment) values (\"$$USER{user_id}\",\"$ipToAdd\",\"$blockReason\");";
+            eval { $DB->{dbh}->do($addBlacklistSQL) };  ## no critic 'Perl::Critic::Policy::ErrorHandling::RequireCheckingReturnValueOfEval'
+
+            if( $@ ){
+                $str .= "<li>There was an error adding this block to the database: " . $DB->{dbh}->errstr() . "</li>";
+            }else{
+                $APP->securityLog($NODE, $USER, "$$USER{title} added $ipToAdd to the IP blacklist: \"$blockReason.\"");
+                $str .= "<li>The IP \"$ipToAdd\" was successfully added to the blacklist.</li>\n";
+            }
+        }
+        $str .= "</ol>";
+        return $str;
+    }
+
+    $str .= '<h3>Blacklist IPs (one per line)</h3>';
+
+    my $bad_ips = $query->param("bad_ips") || '';
+
+    $str .= $query->start_form(-method=>'post');
+    $str .= $query->hidden('node_id', getId($NODE));
+    $str .= '<div><strong>IP Addresses</strong><br />';
+    $str .= $query->textarea(-name=>'bad_ips', -default=>$bad_ips, -rows=>20, -columns=>40);
+    $str .= '</div><br />';
+    $str .= '<div><strong>Reason</strong><br />';
+    $str .= $query->textfield('block_reason', '', 50);
+    $str .= '</div><br />';
+    $str .= $query->submit('add_ip_block', 'Please blacklist these IPs.');
+    $str .= $query->end_form;
+    $str .= htmlcode('blacklistedIPs');
+
+    return $str;
+}
+
+sub nate_s_secret_unborg_doc {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    return 'Maybe you\'d better just stay in there' unless $APP->isAdmin($USER);
+
+    $VARS->{borged} = '';
+
+    my $OTHERUSERS = getNode("other users", 'nodelet');
+    $OTHERUSERS->{nltext} = Everything::HTML::parseCode($OTHERUSERS->{nlcode}, $OTHERUSERS);
+    updateNode($OTHERUSERS, -1);
+    $DB->sqlUpdate('room', {borgd => '0'}, 'member_user=' . getId($USER));
+
+    return 'you\'re unborged';
+}
+
+sub new_user_images {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my @params = $query->param;
+
+    foreach (@params) {
+        if (/approvepic_(\d+)$/) {
+            my $num = int($1);
+            $DB->getDatabaseHandle()->do("delete from newuserimage where newuserimage_id=$num");
+        }
+        if (/deletepic_(\d+)$/) {
+            my $num = int($1);
+            my $U = getNodeById($num);
+            $U->{imgsrc} = "";
+            updateNode($U, -1);
+            $DB->getDatabaseHandle()->do("delete from newuserimage where newuserimage_id=$num");
+        }
+    }
+
+    my $str = "New user images:\n";
+    $str .= htmlcode('openform');
+
+    my $csr = $DB->sqlSelectMany("*", 'newuserimage', '1 = 1', 'order by tstamp desc LIMIT 10');
+
+    while (my $P = $csr->fetchrow_hashref()) {
+        my $U = getNodeById($P->{newuserimage_id});
+        $str .= qq|<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com$U->{imgsrc}" />|;
+        $str .= "<br>posted by " . linkNode($U);
+        $str .= $query->checkbox("approvepic_$P->{newuserimage_id}", "", "1", "approve");
+        $str .= $query->checkbox("deletepic_$P->{newuserimage_id}", "", "1", "remove");
+        $str .= "<hr width=90%><p>";
+    }
+    $csr->finish;
+
+    $str .= htmlcode('closeform');
+
+    return $str;
+}
+
+sub node_cloner {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $SRCNODE = getNodeById(scalar($query->param("srcnode_id")));
+    return 'No node to clone.' unless $SRCNODE;
+
+    my $newname = $query->param("newname");
+    return 'No name for cloned node.' unless $newname;
+
+    my %DATA = (%$SRCNODE);
+
+    # Delete the node id so that when we insert it, it gets a new id.
+    delete $DATA{node_id};
+    delete $DATA{type};
+    delete $DATA{group} if(exists $DATA{group});
+    delete $DATA{title}; # we want to use the new title.
+    delete $DATA{_ORIGINAL_VALUES}; # so update doesn't fail in insertNode
+
+    my $newid = $DB->insertNode($newname, $SRCNODE->{type}, $USER, \%DATA);
+
+    my $str = '';
+    if ($newid) {
+        $str = "Node " . linkNode($SRCNODE) .
+            ' has been cloned as ' . linkNode($newid);
+    } else {
+        $str = 'Ack! Clone failed.';
+    }
+
+    return $str;
+}
+
+sub node_forbiddance {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $unforbid = $query->param("unforbid");
+    my $ufusr = getNodeById($unforbid);
+    my $forbid = $query->param("forbid");
+    my $fusr = getNode($forbid, 'user');
+    my $str = '';
+
+    if($unforbid && $ufusr) {
+        $DB->sqlDelete("nodelock", "nodelock_node=" . $ufusr->{user_id});
+        $str .= "It is done...they are free<br><br>";
+    }
+
+    if($forbid && $fusr) {
+        $DB->sqlInsert("nodelock", {'nodelock_node' => $fusr->{user_id}, 'nodelock_user' => $USER->{user_id}, 'nodelock_reason' => $query->param("reason")});
+        $str .= "It is done...they have been forbidden<br><br>";
+    }
+
+    $str .= htmlcode("openform");
+    $str .= "Forbid user <input type=\"text\" name=\"forbid\"> because <input type=\"text\" name=\"reason\"><br><input type=\"submit\" value=\"do it\"></form>";
+
+    $str .= "<br><br><p align=\"center\"><hr width=\"300\"></p>";
+
+    my $csr = $DB->sqlSelectMany("*", "nodelock left join node on nodelock_node = node_id", "type_nodetype=" . getId(getType('user')));
+
+    $str .= "<ul>";
+
+    while(my $row = $csr->fetchrow_hashref) {
+        $str .= "<li>" . linkNode($row->{nodelock_node}) . " is forbidden by " . linkNode($row->{nodelock_user}) . " (<small>" . (($row->{nodelock_reason}) ? (parseLinks($row->{nodelock_reason})) : ("<em>No reason given</em>")) . "</small>) " . linkNode($NODE, "unforbid", {'unforbid' => $row->{nodelock_node}});
+    }
+
+    $str .= "</ul>";
+
+    return $str;
+}
+
+sub node_heaven_title_search {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+    my $isAdmin = undef;
+    my $filterTitle = undef;
+    my $sqlStatement = undef;
+    my $sortOrder = undef;
+    my $csr = undef;
+    my $count = undef;
+    my $T = undef;
+    my $selfkill = undef;
+    my $N = undef;
+
+    $str .= "<p>Welcome to Node Heaven, where you may sit and reconcile with your dear departed writeups.</p>\n\n";
+    $str .= "<p><strong>Note:</strong> It takes <em>up to</em> 48 hours for a writeup that was deleted to turn up in Node Heaven. Remember: first they must be <em>judged</em>. For that 48 hours they are in purgatory...<strong><em>" . linkNode('copper starlight', 'sleeping') . "</em></strong>.</p>\n\n";
+
+    if ($APP->isAdmin($USER)) {
+        $str .= "<p><blockquote>\n";
+        $str .= "Since you are a god, you can also see other nuked nodes.<br />\n";
+        $str .= htmlcode('openform') . "\n";
+        $str .= 'title: ' . $query->textfield(-name=>'heaventitle', -size=>32) . "<br />\n";
+        $str .= htmlcode('closeform') . '</blockquote></p>';
+    }
+
+    $str .= "\n<p align=\"center\">Here are the little Angels:\n\n";
+
+    $isAdmin = $APP->isAdmin($USER);  # only call database once
+
+    if ($query->param('heaventitle') && $isAdmin) {
+        $filterTitle = $query->param('heaventitle');
+        $filterTitle =~ s/".*//;
+    }
+
+    return $str unless $filterTitle;
+
+    return $str . '<em>not yet, you\'re not ready</em>' unless $APP->getLevel($USER) >= 1 || $APP->getParameter($USER, "node_heaven_guest") || $isAdmin;
+
+    $str .= "<table width=\"100%\">\n";
+
+    $sqlStatement = "title like \"" . $filterTitle . " (%\"" if $filterTitle;
+    $sortOrder = 'createtime';
+    $csr = $DB->sqlSelectMany('*', 'heaven', $sqlStatement, 'order by ' . $sortOrder);
+
+    $str .= '<tr><th>' . linkNode($NODE, 'Create Time', {'orderby' => 'createtime'}) .
+        '</th><th>' . linkNode($NODE, 'Writeup Title', {'orderby' => 'title'}) .
+        '</th><th>' . linkNode($NODE, 'Rep', {'orderby' => 'rep'}) . '</th>';
+    $str .= '<th>' . linkNode($NODE, 'Killa', {'orderby' => 'killerid'}) . '</th>' if $isAdmin;
+    $str .= "</tr>\n";
+
+    $count = 0;
+    $T = getNode('Node Heaven Visitation', 'superdoc');
+    $selfkill = 0;
+
+    while ($N = $csr->fetchrow_hashref) {
+        return $str . 'no nodes by this user have been nuked' if int($N) == -1;
+        $count++;
+        $str .= "<tr><td><small>$N->{createtime}</small></td><td>"
+            . linkNode($T, $N->{title}, {visit_id => $N->{node_id}})
+            . ' by ' . linkNode($N->{author_user}) . '</td><td>' . $N->{reputation} . '</td>';
+        $str .= '<td>' . linkNode($N->{killa_user}) . '</td>' if $isAdmin && $N->{killa_user} != -1;
+        ++$selfkill if ($N->{killa_user} == $USER->{node_id});
+        $str .= "</tr>\n";
+    }
+
+    $str .= '</table>';
+
+    if ($isAdmin) {
+        $str .= '<p>' . $count . ' writeups, of which you killed ' . $selfkill . '.</p>';
+    }
+
+    return $str;
+}
+
+sub the_old_hooked_pole {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    return 'You\'ve got other things to snoop on, don\'t ya.' unless ($APP->isEditor($USER));
+
+    # block spammer's IP if a locked account had logged in from same IP less than this long ago (SQL INTERVAL)
+    my $ipTrauma = '1 MONTH';
+
+    my $str = '';
+
+    my @savedUsers = ();
+    my $usersToNail = {};
+    my $smite = $query->param('op') eq 'remove' ? 1 : '';  # did we come here from the Smite Spammer link (old version)?
+    my $usernameString = $smite ? $query->param('author') : $query->param('usernames');
+    $smite ||= $query->param('smite');  # from Smite Spammer link (new version)
+
+    if ($usernameString) {
+
+        my $typeIdUser = getType('user')->{node_id};
+        my $typeIdWriteup = getType('writeup')->{node_id};
+        my $typeIdE2node = getType('e2node')->{node_id};
+        $usernameString =~ s/[\[\]]//g;
+        my @usernames = split('\s*[\n\r]\s*', $usernameString);
+
+        my $ordinal = 1;
+        my $inputTable =
+            join "\n    UNION ALL\n"
+                , map { "    SELECT " . $DB->quote($_) . " AS title"
+                        . ", " . ($ordinal++) . " AS ordinal" } @usernames;
+
+        my $userQuery = qq|
+
+SELECT input.title 'input', node.title, node.node_id, user.lasttime
+  , user.acctlock
+  , (SELECT COUNT(writeups.node_id)
+      FROM node writeups
+      WHERE node.node_id = writeups.author_user
+      AND writeups.type_nodetype = $typeIdWriteup)
+     'writeup count'
+  , (SELECT COUNT(nodeshells.node_id)
+      FROM node AS nodeshells
+      WHERE node.node_id = nodeshells.author_user
+      AND nodeshells.type_nodetype = $typeIdE2node)
+     'nodeshell count'
+  , input.ordinal
+  FROM (
+$inputTable
+  ) input
+  LEFT JOIN node
+    ON node.title = input.title
+    AND node.type_nodetype = $typeIdUser
+  LEFT JOIN user
+    ON node.node_id = user.user_id
+  GROUP BY input.title
+  ORDER BY input.ordinal|;
+
+        $str .= "<h3>Query</h3><pre>$userQuery</pre>" if ($query->param("showquery"));
+
+        $usersToNail = $DB->{dbh}->selectall_hashref($userQuery, 'ordinal');
+    }
+
+    if (keys %$usersToNail) {
+
+        my $smiteSpammer = sub {
+            my @smitten = ();
+            my $targetUserData = shift;
+            my $spammer = $targetUserData->{node_id};
+
+            if (getRef $spammer) {  # may conceivably have been nuked
+                $spammer->{doctext} = '';
+                updateNode($spammer, -1);
+                my $uservars = getVars($spammer);
+                $uservars = { ipaddy => $uservars->{ipaddy} };
+                setVars($spammer, $uservars);
+                push @smitten, 'Blanked homenode';
+                htmlcode('addNodenote', $targetUserData->{node_id}, "Spammer: smitten by [$USER->{title}\[user]]");
+            }
+
+            # has this user logged in from the same IP as a recently locked user?
+            my $badIP = $DB->sqlSelect('myIP.iplog_ipaddy'
+                , "iplog myIP JOIN iplog badIP JOIN user
+                    ON myIP.iplog_ipaddy = badIP.iplog_ipaddy
+                    AND myIP.iplog_ipaddy != 'unknown'
+                    AND user_id = badIP.iplog_user
+                    AND user_id != myIP.iplog_user"
+                , "myIP.iplog_user = $targetUserData->{node_id}
+                    AND acctlock != 0
+                    AND lasttime > DATE_SUB(NOW(), INTERVAL $ipTrauma)"
+            );
+
+            push @smitten, htmlcode('blacklistIP', $badIP, "Spammer $targetUserData->{input} using same IP as recently locked account") if $badIP;
+
+            @smitten;
+        };
+
+        $str .= '<h3>The Doomed Performers</h3>';
+        $str .= '<ul>';
+
+        foreach my $targetOrdinal (sort keys %$usersToNail) {
+
+            my $safeToWhack = 1;
+            my $safeToLock = 1;
+            my @unsafeReasons = ();
+            my $targetUserData = $usersToNail->{$targetOrdinal};
+            my $targetName  = $targetUserData->{'input'};
+            $targetName = encodeHTML($targetName);
+
+            $str .= "<li>";
+
+            if ($targetUserData->{node_id} == 0) {
+
+                push @unsafeReasons,  "$targetName isn't a valid user";
+                $safeToWhack = 0;
+                $safeToLock = 0;
+
+            } else {
+
+                $targetName = linkNode($targetUserData->{node_id});
+
+            }
+
+            if ("$targetUserData->{lasttime}" ne "0" && "$targetUserData->{lasttime}" ne "") {
+
+                push @unsafeReasons,  "$targetName logged in at $targetUserData->{lasttime}!";
+                $safeToWhack = 0;
+
+            }
+
+            if ($targetUserData->{'nodeshell count'} != 0) {
+
+                push @unsafeReasons,  "$targetName has $targetUserData->{'nodeshell count'} nodeshells!";
+                $safeToWhack = 0;
+
+            }
+
+            if ($targetUserData->{'writeup count'} != 0) {
+
+                my %removereason = $query->param('removereason') ? (removereason => $query->param('removereason')) : ();
+                my $removeLink = linkNode(getNode('Altar of Sacrifice', 'oppressor_superdoc'), 'Remove them...'
+                    , {author => $targetUserData->{'title'}, %removereason});
+                push @unsafeReasons,  "$targetName has $targetUserData->{'writeup count'} writeups! &#91; $removeLink ]";
+                $safeToWhack = 0;
+
+
+            }
+
+            if (!htmlcode('verifyRequest', 'polehash')) {
+                push @unsafeReasons,  "$targetName not being whacked because security hash verification failed.";
+                $safeToWhack = 0;
+                $safeToLock = 0;
+
+            }
+
+            if ($safeToWhack) {
+
+                $str .= "Deleted $targetName ($targetUserData->{node_id}).";
+                nukeNode($targetUserData->{node_id}, $USER);
+
+            } else {
+
+                if ($safeToLock) {
+
+                    if ($targetUserData->{acctlock} == 0) {
+
+                        htmlcode('lock user account', $targetUserData->{node_id});
+                        push @unsafeReasons,  "<strong>Locked account.</strong>";
+
+                    } else {
+
+                        push @unsafeReasons,  "<strong>Account already locked.</strong>";
+
+                    }
+
+                    push @unsafeReasons, $smiteSpammer->($targetUserData) if $smite;
+
+                }
+
+                $str .= '<ul><li>' . (join '<li>', @unsafeReasons) . '</ul>';
+                push @savedUsers, $targetUserData->{'input'};
+
+            }
+
+        }
+
+        $str .= '</ul>';
+
+    }
+
+    return $str if $smite || $query->param('detonate');
+
+    $str .= '<h3>&ldquo;Off the stage with \'em!&rdquo;</h3>
+       A mass user deletion tool which provides basic checks for deletion.
+      <br><br>Copy and paste list of names of users to destroy.
+      <p>
+      This does the following things:
+      </p>
+      <ul>
+        <li>Checks to see if the user has ever logged in
+        <li>Checks if the user has any live writeups
+        <li>Checks if the user has any live e2nodes
+        <li>Deletes the user if it is safe
+        <li>Locks a user if deletion isn\'t safe
+      </ul>
+      '
+        . htmlcode('openform', 'username_whacker', 'POST')
+        . $query->hidden(-name => "showquery")
+        . htmlcode('verifyRequestForm', 'polehash')
+        ;
+
+    if (scalar @savedUsers) {
+        my $savedList = "";
+        $savedList .= join "\n", @savedUsers;
+        $str .= '<fieldset><legend>The users who were spared</legend>';
+        $query->delete("ignored-saved");
+        $str .= $query->textarea(
+            -name => "ignored-saved"
+            , -value => $savedList
+            , -class => "expandable"
+        );
+        $str .= '</fieldset>';
+        $str .= "<br><br>";
+    }
+
+    $str .= ''
+        . '<fieldset><legend>Inadequate Performers</legend>'
+        . $query->textarea(-name => "usernames"
+            , -rows => "2"
+            , -cols => "15"
+            , -class => "expandable"
+        )
+        . "<br><br>"
+        . $query->submit(-name => "Get The Hook!")
+        . '</fieldset>'
+        . $query->end_form()
+        ;
+
+    return $str;
+}
+
+sub sql_prompt {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    $PAGELOAD->{noparsecodelinks} = 1;
+
+    my $ut = $USER->{title};
+    my $codePerson = 0;
+    foreach ((
+        'jaybonci',
+        'root'
+    )) {
+
+        if ($_ eq $ut) {
+            $codePerson = 1;
+            last;
+        }
+    }
+    return 'You really really shouldn\'t be playing with this.' unless $codePerson;
+
+    my $str = undef;
+    my $execstr = $query->param('sqlquery');
+
+    $str = $query->start_multipart_form('POST', $ENV{script_name}) . "\n";
+    $str .= $query->hidden('displaytype') . "\n";
+    $str .= $query->hidden('node_id', getId($NODE)) . "\n";
+    $str .= "SQL Query:\n";
+    $str .= $query->textarea(-name => 'sqlquery', -cols => 60, -rows => 5, -class => "expandable");
+    $str .= $query->submit('execsql', 'Execute') . "\n";
+    $str .= 'text flow: ' . htmlcode('varsComboBox', 'sqlprompt_wrap,0, 0,PRE (default), 1,CODE, 2,variable width, 3,copy-n-paste (textarea)');
+    $str .= htmlcode('varcheckboxinverse', 'sqlprompt_nocount,row count');
+    $str .= '<input type="checkbox" name="hideresults" value="1" /> hide results';
+    $str .= '<input type="hidden" name="sexisgood" value="1" /><br />
+';
+    $str .= $query->end_form;
+
+    #TODO other boolean options (make varscheckboxmulti or something) (maybe make varsComboBox that operates on several bits (but that may get icky))
+    #bit 1 = (currently sqlprompt_nocount)
+    #(not sure about 2 and 3)
+    #bit 2 = empty string produces empty string (only for table-based)
+    #bit 3 = null produces empty string (only for table-based)
+
+    #$str . '<p>new format option Feb 10, 2006 - textarea result for easy export</p>';
+
+    $str .= "\n<p>\n";
+
+    #Cleaner output of SQL Errors
+    local $SIG{__WARN__} = sub { return };
+
+    $execstr = $query->param('sqlquery');
+
+
+    #if no SQL to run, then done
+    return $str . "</p>\n" unless $execstr;
+
+
+    my $thisdbh = $DB->getDatabaseHandle();
+    use Time::HiRes;
+    my @start = Time::HiRes::gettimeofday;
+    my $cursor = eval { $thisdbh->prepare($execstr) };
+    return $str . 'Bad SQL: ' . $thisdbh->errstr . "($@)\n</p>\n" if $@;
+
+    unless ($cursor->execute()) {
+        return $str . $thisdbh->errstr . "</p>\n";
+    }
+
+    #
+    # format options
+    #
+
+    my $codeOpen = undef;
+    my $codeClose = undef;
+
+    #defaults are for table-based formats, because they are the most common
+    my $grandOpen = '<table border="1">
+';
+    my $grandClose = "</table>\n";
+    my $recordOpen = " <tr>\n";
+    my $recordClose = " </tr>\n";
+    my $columnHeaderOpen = '  <td align="center" bgcolor="#CC99CC">';
+    my $columnHeaderClose = "</td>\n";
+    my $datumOpen = '<td>';
+    my $datumClose = '</td>';
+
+    my $linkifyValues = 1;
+    my $changeValueNull = '';  # '&empty;'
+    my $changeValueBlank = '&nbsp;';
+
+
+    my $formatStyle = $VARS->{'sqlprompt_wrap'} || 0;
+
+    if ($formatStyle eq '1') {
+        $codeOpen = '<code>';
+        $codeClose = '</code>';
+    } elsif ($formatStyle eq '2') {
+        #variable width
+        $codeOpen = '';
+        $codeClose = '';
+    } elsif ($formatStyle eq '3') {
+        $grandOpen = '<strong>N-Wing added this display method on Friday, February 10, 2006; it seems to work, but let me know if something is funny for you</strong><br />
+<textarea name="dummy" rows="30" cols="80" wrap="virtual">' . "\n";
+        #TODO maybe there is some htmlcode for this (i.e., custom size)
+        $grandClose = '</textarea>';
+        $recordOpen = '';
+        $recordClose = "\n";
+        $columnHeaderOpen = '';
+        $columnHeaderClose = "\t";
+        $datumOpen = '';
+        $datumClose = "\t";
+        $linkifyValues = 0;
+        $changeValueNull = '';
+        $changeValueBlank = '';
+    } else {
+        #formatStyle 0 or something invalid
+        $codeOpen = '<pre>';
+        $codeClose = '</pre>';
+    }
+    my $showRowCount = $VARS->{'sqlprompt_nocount'} ? 0 : 1;
+
+    #SELECT reputation, COUNT(*) FROM node WHERE type_nodetype=117 AND node_id < 50000 GROUP BY reputation
+
+
+
+
+
+
+
+
+
+
+
+    #
+    # get results and dump out
+    #
+
+    my $results = '';
+    my $rowCount = $cursor->rows();
+
+    if ($showRowCount && !$cursor->{Active} && $rowCount && $rowCount != -1) {
+        my $plural = '';
+        $plural = 's' if $rowCount > 1;
+        $results .= "$rowCount row$plural affected.";
+    }
+
+    my $ROW = undef;
+    my $hdr = $grandOpen;
+    my $rowNum = 0;
+
+    $results .= $query->param('hideresults');
+
+    #N-Wing removed, because it gives Server Error! when no rows returned
+    ##N-Wing added 2006-04-11, so column order is same as what is specified in query
+    #my @columns = @{$cursor->{NAME}};
+
+    my $ordered_columns = [];
+
+    while ($ROW = $cursor->fetchrow_hashref()) {
+        next if $query->param('hideresults');
+        if ($results eq '') {
+            $hdr .= $recordOpen;
+            $hdr .= $columnHeaderOpen . '#' . $columnHeaderClose if $showRowCount;
+            #foreach(@columns) {
+            foreach (keys %$ROW) {
+                $_ = $changeValueBlank if ((not defined $_) || ($_ eq ''));
+                $hdr .= $columnHeaderOpen . $_ . $columnHeaderClose;
+                push @$ordered_columns, $_;
+            }
+            $hdr .= $recordClose;
+        }
+
+        $results .= $recordOpen;
+        if ($showRowCount) {
+            $results .= $datumOpen . $rowNum . $datumClose;
+            ++$rowNum;
+        }
+        my ($k, $v);
+
+        foreach (@$ordered_columns) {
+            $k = $_;
+            $v = $ROW->{$_};
+            if (defined $v) {
+                $v = encodeHTML($v, 1);
+                if ($linkifyValues) {
+                    $v = linkNode($v, $v) if (($k =~ /_/) && (not($v =~ /\D/)));
+                }
+                $v = $changeValueBlank if ((!defined $v) || ($v eq ''));
+            } else {
+                $v = $changeValueNull;
+            }
+            $results .= $datumOpen . $codeOpen . $v . $codeClose . $datumClose;
+        }
+        $results .= $recordClose;
+    }
+    $cursor->finish();
+
+    $hdr = '<p>Elapsed time: ' . Time::HiRes::tv_interval(\@start, [Time::HiRes::gettimeofday]) . ' seconds</p>' . $hdr;
+
+    $results ||= '<tr><td><em>No results found</em></td></tr>';
+
+    $results = $hdr . $results . $grandClose;
+
+    return $str . $results . "</p>\n";
+}
+
+sub yet_another_secret_laboratory {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = htmlcode('openform')
+        . "<table><tr>"
+        . "<td width=\"50\"><b>name:</b> </td>"
+        . "<td><input type=\"text\" name=\"hunt_name\"></td>"
+        . "</tr>"
+        . "<td></td><td><b> - or -</b></td>"
+        . "<tr><td><b>IP:</b></td>"
+        . "<td><input type=\"text\" name=\"hunt_ip\"></td></tr>"
+        . "<tr><td></td><td><input type=\"submit\" value=\"hunt\">"
+        . "</tr></table>"
+        . $query->end_form()
+        . "<br><hr><br>"
+        ;
+
+    my $TABLEHEAD = '<table border="1" cellspacing="0" cellpadding="2">'
+        . "\n"
+        . '<tr><th>#</th>'
+        ;
+    my $humanTime = sub {
+        my $t = $_[0];
+        return $t;  #N-Wing maybe this is problem
+    };
+
+    #limit put in 2006 August 26 while N-Wing trying to get working again
+    #maybe later this will be removed or user-runtime-setable
+    #50 is big enough for now
+    my $resultLimit = 500;
+
+    #every log entry below this number is from 2003 or earlier - generally
+    #not very useful for our hunting purposes. We'll exclude them from the search.
+    my $lowID = 1500000;
+
+    $TABLEHEAD = '(only showing ' . $resultLimit . ' most recent)
+' . $TABLEHEAD;
+    $resultLimit = 'LIMIT ' . $resultLimit;
+
+    if ($query->param('hunt_ip')) {
+        my $ip = encodeHTML($query->param('hunt_ip'));
+        $str .= "The IP ($ip) <small>("
+            . htmlcode('ip lookup tools', $ip)
+            . ")</small> has been here and logged on as:"
+            . $TABLEHEAD
+            . '<th colspan="2">Who (Hunt User)</th><th>When</th></tr>'
+            ;
+        my $csr = $DB->sqlSelectMany('iplog.*'
+            , 'iplog'
+            , "iplog_id > $lowID AND "
+                . " iplog_ipaddy = " . $DB->quote($ip)
+                . " ORDER BY iplog_id DESC"
+            , $resultLimit
+        );  #fast - iplog_id key field
+
+        my $i = 0;
+        while (my $ROW = $csr->fetchrow_hashref) {
+            my $loggedUser = getNodeById($ROW->{iplog_user});
+            my $loggedUserLink = undef;
+            my $loggedUserHuntLink = undef;
+
+            if ($loggedUser) {
+                $loggedUserLink = linkNode($loggedUser, 0, {lastnode_id => 0});
+                $loggedUserHuntLink = linkNode($NODE, 'hunt', {'hunt_name' => "$loggedUser->{title}"});
+            }
+
+            if (!$loggedUser) {
+                $loggedUserLink = "<strong>Deleted user</strong>";
+                $loggedUserHuntLink =
+                    linkNode($NODE, 'hunt', {'hunt_name' => ""});
+            }
+
+            $str .= '<tr><td>'
+                . $loggedUserLink
+                . '</td></tr>\n'
+                ;
+        }
+
+        $str .= '</table>';
+
+        return $str;
+
+    }
+
+    if (defined $query->param('hunt_name')) {
+        my $username = $query->param('hunt_name');
+        my $csr = undef;
+        my $selectString = qq|
+	iplog.*
+	, (SELECT ipblacklist.ipblacklistref_id
+	    FROM ipblacklist
+	    WHERE iplog.iplog_ipaddy = ipblacklist_ipaddress
+	) 'banned'
+	, (SELECT MAX(ipblacklistrange.ipblacklistref_id)
+	    FROM ipblacklistrange
+	    WHERE ip_to_uint(iplog.iplog_ipaddy) BETWEEN min_ip AND max_ip
+	) 'banned_ranged' |;
+
+        if ($username ne '') {
+
+            my $usr = getNode($username, 'user');
+            return "<font color=\"red\">No such user!</font>" unless ($usr);
+
+            $str .= 'The user '
+                . linkNode($usr, 0, {lastnode_id => 0})
+                . ' has been here as IPs:'
+                . $TABLEHEAD
+                . '<th>IP</th><th>When</th><th>Look up</th></tr>'
+                ;
+
+            $csr = $DB->sqlSelectMany(
+                $selectString
+                , 'iplog'
+                , "iplog_id > $lowID "
+                    . " AND iplog_user = '$usr->{user_id}' "
+                    . " ORDER BY iplog_id DESC"
+                , $resultLimit
+            );  #fast - iplog_id key field
+
+        } else {
+
+            $str .= 'Deleted users have been here as IPs:'
+                . $TABLEHEAD
+                . '<th>IP</th><th>When</th><th>Look up</th></tr>'
+                ;
+            $csr = $DB->sqlSelectMany(
+                $selectString
+                , 'iplog LEFT JOIN user ON iplog_user = user.user_id'
+                , "iplog_id > $lowID AND user.user_id IS NULL"
+                    . " ORDER BY iplog_id DESC"
+                , $resultLimit
+            );  #fast - iplog_id key field
+
+        }
+
+        my $i = 0;
+        while (my $ROW = $csr->fetchrow_hashref) {
+            my ($strike, $unstrike) = ('', '');
+            ($strike, $unstrike) = ('<strike><b>', '</b></unstrike>')
+                if $ROW->{banned} || $ROW->{banned_ranged};
+            $str .= '<tr><td>' . (++$i) . '</td>'
+                . '<td>'
+                . $strike
+                . linkNode(
+                    $NODE
+                    , $ROW->{iplog_ipaddy}
+                    , {hunt_ip => $ROW->{iplog_ipaddy}}
+                )
+                . $unstrike
+                . '</td>'
+                . '<td>' . $humanTime->($ROW->{iplog_time}) . '</td>'
+                . '<td>' . htmlcode('ip lookup tools', $ROW->{iplog_ipaddy}) . '</td>'
+                . "</tr>\n"
+                ;
+        }
+
+        $str .= '</table>';
+
+        return $str;
+
+    }
+
+    $str .= 'Please enter an IP address or a name to continue';
+    return $str;
+}
+
+sub usergroup_message_archive_manager {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<p>\n";
+    $str .= "This simple-minded doc just makes it easy to set if usergroups have their messages automatically archived. Users can read the messages at the <a href=\""
+        . htmlcode('urlGen', {'node' => 'usergroup message archive', 'type' => 'superdoc'})
+        . "\">usergroup message archive</a> superdoc.\n";
+    $str .= "<br /><small>Complain to N-Wing about problems and/or error messages you get.</small>\n";
+    $str .= "</p>\n";
+    $str .= "<p>Note: to make a change, you must choose what you want from the dropdown menu <strong><big>and</big> check the checkbox next to it</strong>. (This is to help reduce accidental changes.)</p>\n";
+    $str .= "<p>\n";
+
+    my $uID = getId($USER);
+    return 'Ack! You don\'t exist!' unless $uID;
+    return 'Ack! You shouldn\'t see this!' unless $APP->isAdmin($USER);
+
+    my $usergroup_list = [];
+
+    my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=" . getId(getType('usergroup')));
+    while (my $ug = $csr->fetchrow_arrayref) {
+        push @$usergroup_list, $ug->[0];
+    }
+
+    #change setting information
+    #things to do:
+    #	0 = nothing
+    #	1 = delete key
+    #	2 = add key with value 1
+
+    my @whatDid = ();
+    my @origQueryParams = $query->param;
+    foreach (@origQueryParams) {
+        next unless /^umam_sure_id_(.+)$/ && ($query->param($_) eq '1');
+        my $ug_id = $1;
+        my $valName = 'umam_what_id_' . $ug_id;
+        my $parm = $query->param($valName);
+
+        $query->delete($_);  #don't want sticky settings
+        $query->delete($valName);  #don't want sticky settings
+
+        unless ((defined $parm) && length($parm) && ($parm ne '0')) {
+            #don't do anything if user doesn't want a change
+            next;
+        }
+        my $ug = getNodeById($ug_id);
+
+        if ($parm eq '1') {
+            #disable archiving for a usergroup
+            $APP->delParameter($ug_id, $USER, 'allow_message_archive');
+            push(@whatDid, 'Disabled auto-archive for <a href=' . htmlcode('urlGen', {'node_id' => $ug_id}) . '>' . encodeHTML($ug->{title}, 1) . '</a>.');
+        } elsif ($parm eq '2') {
+            #enable archiving for a usergroup
+            $APP->setParameter($ug_id, $USER, 'allow_message_archive', 1);
+            push(@whatDid, 'Enabled auto-archive for <a href=' . htmlcode('urlGen', {'node_id' => $ug_id}) . '>' . encodeHTML($ug->{title}, 1) . '</a>.');
+        }
+    }
+
+    #display what changes were made
+    $str = '';
+    if (scalar(@whatDid)) {
+        $str = 'Made ' . scalar(@whatDid) . ' change' . (scalar(@whatDid) == 1 ? '' : 's') . ':</p><ul>
+<li>' . join('</li>
+<li>', @whatDid) . '</li>
+</ul><p>
+';
+
+    }
+
+
+    #table header
+    $str .= htmlcode('openform') . '
+<table border="1" cellpadding="1" cellspacing="0">
+';
+    $str .= '<tr><th>change this</th><th>usergroup</th><th>current status</th><th><code>/msg</code>s</th></tr>
+';
+
+    my $genDoWhat = sub {
+        my $ug_id = shift;
+        my %disps = ();
+        my $formName = undef;
+        my $ug_archiving = $APP->getParameter($ug_id, 'allow_message_archive');
+
+        if ($ug_archiving) {
+            $disps{0} = '(stay archiving)';
+        } else {
+            $disps{0} = '(stay not archiving)';
+        }
+        $disps{1} = 'no archiving';
+        $disps{2} = 'start archiving';
+        $formName = 'id_' . $ug_id;
+
+        my @vals = sort(keys(%disps));
+        return '<input type="checkbox" name="umam_sure_' . $formName . '" value="1" />' . $query->popup_menu('umam_what_' . $formName, \@vals, 0, \%disps);
+    };
+
+
+    #show valid usergroups
+    $str .= '<tr><th colspan="4">u s e r g r o u p s</th></tr>';
+    my $numArchive = 0;
+    my $numNotArchive = 0;
+    foreach my $s (@$usergroup_list) {
+
+        my $ug = getNodeById($s);
+        my $title = $ug->{title};
+
+        $str .= '<tr><td>' . $genDoWhat->($ug->{node_id});
+        $str .= '</td><td><a href=' . htmlcode('urlGen', {'node_id' => $ug->{node_id}}) . '>' . $title . '</a></td><td>';
+        if ($APP->getParameter($ug->{node_id}, "allow_message_archive")) {
+            ++$numArchive;
+            $str .= 'archiving';
+        } else {
+            ++$numNotArchive;
+            $str .= 'not archiving';
+        }
+        $str .= '</td><td><a href=' . htmlcode('urlGen', {'node' => 'usergroup message archive', 'type' => 'superdoc', 'viewgroup' => $title}) . '>(view)</a></td></tr>
+';
+    }
+
+
+    #table footer
+    $str .= '</table>
+' . htmlcode('closeform');
+
+    #stats
+    my $stats = 'Stats:</p><ul>';
+    $stats .= '<li>' . $numNotArchive . ' usergroup' . ($numNotArchive == 1 ? '' : 's') . ' not archiving</li>
+' if $numNotArchive;
+    $stats .= '<li>' . $numArchive . ' usergroup' . ($numArchive == 1 ? '' : 's') . ' archiving</li>
+' if $numArchive;
+    $stats .= '</ul><p>
+';
+
+
+    return $stats . $str . "</p>\n";
+}
+
+sub usergroup_press_gang {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+    my $usernames = '';
+    my $groopname = '';
+    my $ugroop = undef;
+    my $count = 0;
+
+    # Check if we're processing a submission
+    if (defined $query->param('usernames') && defined $query->param('groupname')) {
+        $usernames = $query->param('usernames');
+        $groopname = $query->param('groupname');
+        $ugroop = getNode($groopname, 'usergroup');
+
+        if (!$ugroop) {
+            return '<p><font color="#c00000">Group <b>"' . $groopname . '"</b> does not exist.</font></p>';
+        } else {
+            $str .= "<p>Adding users to group <b>" . linkNode($ugroop->{node_id}) . ":</b></p>\n";
+        }
+
+        # Remove whitespace from beginning and end of each line
+        $usernames =~ s/\s*\n\s*/\n/g;
+
+        my @users = split('\n', $usernames);
+
+        $str .= "<ol>\n";
+
+        $count = 0;
+
+        foreach my $username (@users) {
+            my $user = getNode($username, 'user') || getNode($username, 'usergroup');
+
+            if ($user) {
+                $DB->insertIntoNodegroup($ugroop, -1, [getId($user)]);
+
+                $str .= '<li>' . linkNode($user->{node_id}) . "</li>\n";
+            } else {
+                $str .= "<li><font color=\"#c00000\">User <b>\"" . $username . "\"</b> does not exist.</font></li>\n";
+            }
+
+            ++$count;
+        }
+
+        $str .= "</ol>\n";
+
+        $str .= "<p>No users specified.</p>\n" if ($count == 0);
+
+        return $str;
+    }
+
+    # Not processing, show the form
+    $str = "<p>This thing adds a list of users to a given usergroup. It's a <strike>little bit </strike><ins>lot</ins> more convenient than the node bucket. </p>\n\n";
+
+    # If there's a group_id param, that takes precedence over a
+    # groupname. It's not likely that we'll have both: group_id
+    # is here so we can link from a usergroup display or edit
+    # page.
+    # We just pop the name in the edit and then get the usergroup
+    # node all over again when the user submits. Oh, well.
+    if (defined $query->param('group_id')) {
+        $ugroop = getNodeById($query->param('group_id'));
+        $query->param('groupname', $ugroop->{title});
+    }
+
+    $usernames = $query->param('usernames') || '';
+
+    $str .= htmlcode('openform2', 'pressgang');
+    $str .= "<table>\n";
+    $str .= "<tr><td valign=\"top\" align=\"right\" width=\"80\">\n";
+    $str .= "<p>Add user(s)</p>\n";
+    $str .= "<p><i>Put each username on its own line, and don't hardlink them.</i></p>\n";
+    $str .= "</td>\n";
+    $str .= "<td>\n";
+    # I cannot for the life of me figure out how $query->textarea( ) is supposed to work.
+    $str .= "<textarea name=\"usernames\" rows=\"20\" cols=\"30\">$usernames</textarea>\n";
+    $str .= "</td>\n";
+    $str .= "</tr>\n";
+    $str .= "<tr><td valign=\"top\" align=\"right\">to usergroup</td> <td>\n";
+    $str .= $query->textfield('groupname');
+    $str .= "</td></tr>\n";
+    $str .= "<tr><td valign=\"top\" colspan=\"2\" align=\"right\">";
+    $str .= htmlcode('closeform');
+    $str .= "</td></tr>\n";
+    $str .= "</table>\n\n";
+
+    $str .= "<br />\n";
+    $str .= "<hr />\n\n";
+    $str .= "<p><i>Bug reports go to [JayBonci]. </i></p>\n";
+
+    return $str;
+}
+
+sub node_notes_by_editor {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $targetStr = '';
+    my $targetUser = undef;
+    my $targetVars = undef;
+
+    $targetStr .= "<label>Editor Username:"
+        . $query->textfield(-name => 'targetUser')
+        . "</label><br>"
+        ;
+
+    my $targetUsername = $query->param('targetUser');
+
+    if ($targetUsername) {
+        $targetUser = getNode($targetUsername, 'user');
+
+        if (!$targetUser) {
+            $targetStr .= "<p><em>Could not find user '"
+                . encodeHTML($targetUsername)
+                . "'</em></p>"
+                ;
+        }
+    }
+
+    my $str = $query->start_form('get');
+    $str .= $targetStr;
+    $str .= $query->submit('gotime', 'Go!');
+    $str .= $query->end_form();
+
+    if ($query->param('gotime')) {
+        my $uid = getId($targetUser);
+        my $where = "noter_user=" . $uid;
+        my %linkpram = ();
+
+        my $start = $query->param('start') || '0';
+        my $limit = $query->param('limit') || '50';
+        my $prev = '';
+        my $next = '';
+        my $end = $limit;
+
+        my $count = $DB->sqlSelect('count(*)', 'nodenote', $where);
+
+        if ($start) { ## PREV
+            my $prevstart = $start - $limit;
+            $prevstart = 0 if $prevstart < 0;
+            $prev = '<th nowrap="nowrap">( '
+                . linkNode($NODE, "prev", {'start' => $prevstart, %linkpram}) . ' )</th>';
+            $end = $start + $limit;
+            $end = $count if $end > $count;
+        }
+
+        if ($start + $limit < $count) { ## NEXT
+            $next = '<th nowrap="nowrap">( '
+                . linkNode($NODE, "next", {'start' => $start + $limit, %linkpram}) . ' )</th>';
+        }
+
+        my $csr = $DB->sqlSelectMany(
+            'node_id, type_nodetype, author_user, notetext, timestamp'
+            , 'nodenote JOIN node ON node.node_id=nodenote.nodenote_nodeid'
+            , $where
+            , " ORDER BY timestamp DESC
+            LIMIT $start,$limit"
+        ) || return "$!";
+
+        my $paging = '';
+
+        if ($prev or $next) {
+            $paging = "<table width='95%'>\n\t<tr>$prev"
+                . "\n\t<th width='100%'>Viewing $start through $end of $count</th>"
+                . "$next</tr>\n</table><br>";
+        }
+
+        $str = "$paging
+            <table width='95%'><tr><th>Node</th><th>Note</th><th>Time</th></tr>";
+
+        my $writeup = getId(getType('writeup'));
+        my $draft = getId(getType('draft'));
+
+        while (my $ref = $csr->fetchrow_hashref()) {
+            next unless $ref->{node_id};
+            my $note = $ref->{notetext};
+            $note =~ s/</&lt;/g;
+            my $time = htmlcode('parsetimestamp', "$ref->{timestamp},128");
+            my $link = linkNode($ref->{node_id});
+            my $author = '';
+
+            if ($ref->{type_nodetype} == $writeup || $ref->{type_nodetype} == $draft) {
+                $author = ' <cite>by '
+                    . linkNode($ref->{author_user})
+                    . '</cite>';
+            }
+
+            $str .= "\n\n\t<tr><td>$link$author</td><td>$note</td><td nowrap>$time</td></tr>";
+        }
+
+        $csr->finish();
+
+        $str .= "\n</table><br>$paging";
+    } else {
+        return $str;
+    }
+
+    return $str;
+}
+
+sub nodetype_changer {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    if ($query->param("new_nodetype")) {
+        $DB->sqlUpdate('node', {type_nodetype => $query->param("new_nodetype")}, 'node_id=' . $query->param("change_id"));
+    }
+
+    if ($query->param("oldtype_id")) {
+        my $N = getNodeById($query->param("oldtype_id"));
+
+        return '' unless $N;
+
+        $str .= "<P>" . $N->{title} . " is currently a: " . getNodeById($N->{type_nodetype}, 'light')->{title} . "</p>";
+
+        $str .= htmlcode('openform');
+
+        my (@NTYPES) = $DB->getNodeWhere({type_nodetype => getId(getType('nodetype'))});
+
+        $str .= "<select name='new_nodetype'>";
+        foreach (@NTYPES) {
+            my $t = $_->{title};
+            $str .= "<option value='$_->{node_id}'>$t</option>";
+        }
+        $str .= "</select>";
+        $str .= $query->hidden("change_id", $query->param("oldtype_id"));
+        $str .= $query->submit("sexisgood", "update");
+    } else {
+        $str .= htmlcode('openform');
+        $str .= "Node Id: " . $query->textfield("oldtype_id", "", 20);
+        $str .= " " . $query->submit("sexisgood", "get data");
+    }
+
+    return $str;
+}
+
+sub raw_node_editor {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "Sometimes we need fire to fight fire... \n<p>This allows you to edit a node and all its fields directly. \n";
+
+    $str .= htmlcode('openform');
+    $str .= "\n";
+
+    $str .= 'id: ' . $query->textfield('editnode') . ' or name and type: ' . $query->textfield('editnodetitle') . ', ' . $query->textfield('editnodetype');
+
+    $str .= "\n<p>\n";
+
+    my $EDITNODE = getNodeById(scalar $query->param('editnode'));
+    my $name = $query->param('editnodetitle');
+    my $title = $query->param('editnodetype');
+
+    if ($name and $title) {
+        $EDITNODE ||= getNode($name, $title);
+    }
+
+    $str .= '<br />';
+
+    if($EDITNODE)
+    {
+        my $fields_str = '';
+
+        foreach my $field (keys %$EDITNODE) {
+            next if $field eq "passwd";
+            $fields_str .= "$field:";
+            $fields_str .= $query->textfield($field, encodeHTML($EDITNODE->{$field}), 40);
+            $fields_str .= "<br />\n";
+        }
+
+        $str .= $fields_str;
+    }else{
+      $str .= "(no node)" 
+    }
+
+    $str .= htmlcode('closeform');
+    return $str;
+}
+
+sub the_borg_clinic {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $borg_victim = '';
+
+    if (defined($query->param('clinic_user'))) {
+        $borg_victim = $query->param('clinic_user');
+    } else {
+        $borg_victim = $USER->{title};
+    }
+
+    my $str = 'Circle circle, dot dot, now you\'ve got your borg shot!<br><br>
+Who needs to be looked at?<br>
+<form method="post">
+<input type="hidden" name="node_id" value="1142758">
+<input type="text" name="clinic_user" value="' . $borg_victim . '">';
+
+    my $borged_user = getNode($borg_victim, 'user');
+
+    if (defined($borged_user)) {
+        my $borged_vars = getVars($borged_user);
+        my $num = $borged_vars->{numborged};
+
+        if (defined($query->param('clinic_borgcount'))) {
+            if ($USER->{title} eq $borged_user->{title}) {
+                $VARS->{numborged} = $query->param('clinic_borgcount');
+                $num = $VARS->{numborged};
+            } else {
+                $borged_vars->{numborged} = $query->param('clinic_borgcount');
+                setVars($borged_user, $borged_vars);
+                $num = $borged_vars->{numborged};
+            }
+        }
+
+        if (defined($query->param('clinic_user'))) {
+            $str .= '<br><small>borg count:</small><br><input type="text" name="clinic_borgcount" value="' . $num . '"><br><small>Users stay borged for 4 minutes plus two minutes times this number. (4 + (2 * x))<br><ul>Quick math (should it ever come to this):<li>28 is an hour<li>714 is a day<li>5038 is a week</ul><br>Negative numbers are "borg insurance", meaning that you pop out instantly.</small><br><br>[The Borg Clinic|I\'d like another patient]<br><br>';
+        }
+
+        $str .= '<br><br>';
+    } else {
+        $str .= '<br><br>You need a patient!  I can\'t find a user "' . $query->param('clinic_user') . '" on the system!';
+    }
+
+    $str .= '<br><input type="submit" value="Do it!">';
+    $str .= '</form>';
+
+    return $str;
+}
+
+sub the_killing_floor {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = htmlcode('openform');
+
+    # DEPRECATED: this is used instead: [the killing floor II]
+    # return 'You\'re in the wrong section, buddy!';
+
+    $str .= 'Are ya shure ya wanna kill all these perty nodes?<p><ol>';
+
+    return $USER->{title} . " ain't allowed ta kill nuttin'!" unless (Everything::isApproved($USER, getNode('Content Editors', 'usergroup')) || $APP->isAdmin($USER));
+
+    my (@param) = $query->param;
+
+    my $parent = undef;
+
+    foreach (@param) {
+        next unless /killnode(\d+)/;
+        my $N = getNodeById($1);
+
+        if (!$parent) {
+            $parent = $N->{parent_e2node};
+        }
+
+        $str .= "<input type=\"hidden\" name=$_ value=\"1\">";
+        $str .= "<input type=hidden name=nopain" . getId($N) . " value=1>" if defined $query->param('nopain' . getId($N));
+        $str .= "<input type=hidden name=noderow" . getId($N) . " value=1>" if defined $query->param('noderow' . getId($N));
+        $str .= '<li>' . linkNode($N) . ' by ' . linkNode($N->{author_user});
+        $str .= ' (mercifully)' if defined $query->param("nopain" . getId($N));
+        $str .= ' (node row)' if defined $query->param("noderow" . getId($N));
+        $str .= "</li>\n";
+    }
+
+    return '(empty)' unless $parent;
+
+    $str .= '<p align="right">' . $query->submit('op', 'massacre');
+    $str .= '<p>' . linkNode($parent, 'Changed my mind.');
+    $str .= $query->end_form;
+
+    $str .= '</ol>';
+
+    return $str;
+}
+
+sub viewvars {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    foreach (keys %$VARS) {
+        $str .= "$_ : $VARS->{$_}<br>";
+    }
+
+    return $str;
+}
+
+sub who_killed_what {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    return '' unless $APP->isAdmin($USER);
+
+    my $str = htmlcode('openform');
+    $str .= 'And what has' . $query->textfield('heavenuser') . ' been up to?<br />';
+
+    my @offset = (0..25);
+    foreach (@offset) { $_ *= 200 }
+    $str .= 'offset: ' . $query->popup_menu('offset', \@offset);
+
+    my @limit = (1..10);
+    foreach (@limit) { $_ *= 50 }
+    $str .= 'limit: ' . $query->popup_menu('limit', \@limit);
+
+    $str .= htmlcode('closeform');
+
+    $str .= "\n\n\n<table width=\"100%\">\n";
+    $str .= "<tr><th>Time</th><th>Title</th><th>Author User</th><th>Rep</th></tr>\n";
+
+    return $str unless $APP->isAdmin($USER);
+
+    my $offset = int($query->param('offset'));
+    $offset ||= 0;
+    my $limit = int($query->param('limit'));
+    $limit ||= 100;
+    my $U = $USER;
+
+    if ($query->param('heavenuser') and $APP->isAdmin($USER)) {
+        $U = getNode($query->param('heavenuser'), 'user');
+    }
+
+    $U or return 'Hmm... no user.  You loser.';
+
+    my $csr = $DB->sqlSelectMany('*', 'heaven', 'type_nodetype=' . getId(getType('writeup')) . ' and killa_user=' . getId($U), "order by title limit $offset, $limit");
+    my $num = $DB->sqlSelect('count(*)', 'heaven', 'type_nodetype=' . getId(getType('writeup')) . ' and killa_user=' . getId($U));
+
+    my $results_str = '';
+    my $count = 0;
+    my $T = getNode('Node Heaven Visitation', 'superdoc');
+
+    while (my $N = $csr->fetchrow_hashref) {
+        $count++;
+        $results_str .= "<tr><td>$N->{createtime}</td><td>"
+            . linkNode($T, $N->{title}, {visit_id => $N->{node_id}})
+            . '</td><td>' . linkNode($N->{author_user}) . '</td><td>' . $N->{reputation} . "</td><tr>\n";
+    }
+
+    $str .= "<tr><td>Kill count: $num</td></tr>" . $results_str;
+
+    $str .= "</table>";
+
+    return $str;
+}
+
+sub the_node_crypt {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "Here is where the nodes come to rest, after being\nskillfully slain by an editor or god.  \n/Tell them, if you believe this\naction was unjust...  for nodes may live again.<p>\n\n\n<p>\n\n";
+
+    if (defined $query->param('opencoffin')) {
+        my $node_id = $query->param('opencoffin');
+        $str .= '<h2 align="center">' . linkNode($NODE, 'close the coffin') . "</h2>";
+        my $LAB = getNode("dr. nate's secret lab", 'restricted_superdoc');
+        $str .= '<h2 align="center">' . linkNode($LAB, 'RESURRECT', {olde2nodeid => $node_id}) . '</h2>';
+
+        my $N = $DB->sqlSelectHashref('*', 'tomb', 'node_id=' . $DB->{dbh}->quote($node_id));
+        return "uh, nope -- $node_id didn't work" unless $N;
+
+        my $DATA = eval('my ' . $N->{data});  ## no critic 'Perl::Critic::Policy::BuiltinFunctions::ProhibitStringyEval'
+
+        @$N{keys %$DATA} = values %$DATA;
+        delete $N->{data};
+
+        $str .= '<p>items: ' . scalar(keys(%$N)) . '</p>';
+        $str .= '<table width="100%"><tr><th>Field</th><th>Value</th></tr>
+';
+        foreach (keys %$N) {
+            $str .= '<tr><td valign="top"><strong>' . $_ . '</strong></td><td>';
+            if (/\_/ and $N->{$_} != -1) {
+                $str .= linkNode($N->{$_});
+            } else {
+                $str .= $N->{$_};
+            }
+            $str .= '</td></tr>
+';
+        }
+        $str .= '</table>';
+
+        return $str;
+    }
+
+    $str .= '<table border="1" cellpadding="2" cellspacing="0"><tr><th>Node Title</th><th>Type</th><th>Author</th><th>Killa</th></tr>';
+
+    my $csr = $DB->sqlSelectMany('title, type_nodetype, author_user, killa_user, node_id', 'tomb');
+
+    my $numItems = 0;
+
+    while (my $N = $csr->fetchrow_hashref()) {
+        if ($N->{killa_user} == -1) { $N->{killa_user} = 0 }
+
+        $str .= '<tr><td>' . linkNode($NODE, $N->{title}, {opencoffin => $N->{node_id}}) . '</td><td>' . linkNode($N->{type_nodetype}, '', {lastnode_id => 0}) . '</td><td>';
+        if ($N->{author_user} == -1) {
+            $str .= 'none';
+        } else {
+            $str .= linkNode($N->{author_user}, '', {lastnode_id => 0});
+        }
+        $str .= '</td><td>' . linkNode($N->{killa_user}, '', {lastnode_id => 0}) . '</td></tr>
+';
+        ++$numItems;
+    }
+
+    $csr->finish;
+
+    $str .= '</table></p>
+<p>number of items: ' . $numItems . '</p>';
+    $str .= '<p align="right"><i>In pace requiescant.</i></p>';
+
+    return $str;
+}
+
+sub the_oracle_classic {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    return '' unless $APP->isAdmin($USER);
+
+    # Handle variable editing/updating first
+    if (defined($query->param("new_value"))) {
+        my $u = getNode($query->param("new_user"), "user");
+        my $v = getVars($u);
+
+        $v->{$query->param("new_var")} = $query->param("new_value");
+        setVars($u, $v);
+
+        if ($u->{user_id} == $USER->{user_id}) {
+            $VARS = $v;
+        }
+
+        getVars($u);
+
+        return $v->{$query->param("new_var")};
+    }
+
+    # Handle individual variable editing form
+    my $varEdit = $query->param("varEdit");
+    if ($varEdit and $query->param('userEdit')) {
+        my $orasubj = $query->param('userEdit');
+        my $oraref = getNode($orasubj, 'user');
+        my $v = getVars($oraref);
+
+        my $str = '';
+        $str .= htmlcode('openform');
+        $str .= "Editing " . $orasubj . " - var <b>$varEdit</b><br />";
+        $str .= "<b>Old Value:</b> " . $v->{$varEdit} . "<br />";
+        $str .= "<b>New Value:</b> " . $query->textfield('new_value', "", 50);
+        $str .= $query->hidden("new_user", $orasubj);
+        $str .= $query->hidden("new_var", $varEdit);
+        $str .= htmlcode('closeform');
+
+        return $str;
+    }
+
+    # Handle display of all variables for a user
+    my $orasubj = $query->param('the_oracle_subject');
+    if ($orasubj) {
+        my $oraref = getNode($orasubj, 'user');
+        my $hash = getVars($oraref);
+        my $return = '';
+
+        $return = '<table border="0" cellpadding="2" cellspacing="1">';
+        foreach (sort(keys(%{$hash}))) {
+            next if ($_ eq 'noteletRaw');
+            next if ($_ eq 'noteletScreened');
+            $hash->{$_} = "&nbsp;" if (!$hash->{$_});
+            $return .= '<tr><td>' . $_ . '</td><td>=</td><td>' . $hash->{$_};
+            $return .= " " . linkNode($NODE, "edit", {userEdit => $orasubj, varEdit => $_}) . " ";
+            if ($_ eq 'ipaddy') {
+                $return .= linkNode(getNode('IP Hunter', 'restricted_superdoc'), "check other users with this IP", {hunt_ip => $hash->{$_}});
+            }
+            $return .= '</td></tr>';
+        }
+        $return .= '</table>';
+
+        return $return;
+    }
+
+    # Default: show welcome form
+    my $welcome = 'Welcome to the User Oracle. Please enter a user name<br>';
+    $welcome .= htmlcode('openform');
+    $welcome .= $query->textfield('the_oracle_subject');
+    $welcome .= htmlcode('closeform');
+
+    return $welcome;
+}
+
+sub typeversion_controls {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = 'Do-na-touch!
+
+';
+    $str .= htmlcode('openform');
+    $str .= '<INPUT type="hidden" name="confirmpage" value="1">';
+
+    my @nodetypes = $DB->getNodeWhere({type_nodetype => 1}, "nodetype");
+    my %TVERSIONS = ();
+    my %NEWVERSIONS = ();
+
+    if (my $csr = $DB->sqlSelectMany("*", 'typeversion')) {
+        while (my $N = $csr->fetchrow_hashref) {
+            $TVERSIONS{$N->{typeversion_id}} = 1;
+        }
+        $csr->finish;
+    }
+
+    if (defined $query->param('confirmpage')) {
+        foreach ($query->param) {
+            next unless /^typeify_(\d+)$/;
+            my $n_id = $1;
+            $NEWVERSIONS{$n_id} = 1;
+            if (not $TVERSIONS{$n_id}) {
+                $DB->sqlInsert("typeversion", {typeversion_id => $n_id, version => 1});
+            }
+        }
+
+        foreach (keys %TVERSIONS) {
+            if (!exists $NEWVERSIONS{$_}) {
+                $DB->sqlDelete("typeversion", "typeversion_id=$_");
+            }
+        }
+    } else {
+        %NEWVERSIONS = %TVERSIONS;
+    }
+
+    foreach (@nodetypes) {
+        $str .= $query->checkbox('typeify_' . getId($_), exists($NEWVERSIONS{getId($_)}), 1, $_->{title}) . "<br>";
+    }
+
+    $str .= htmlcode('closeform');
+
+    return $str;
+}
+
+sub user_statistics {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $csr = $DB->getDatabaseHandle()->prepare("select count(user_id) from user where unix_timestamp(lasttime)>(unix_timestamp(now())-3600*24)");
+    $csr->execute or return "SHIT";
+    my ($userslast24) = $csr->fetchrow_array;
+
+    $csr = $DB->getDatabaseHandle()->prepare("select count(user_id) from user where unix_timestamp(lasttime)>(unix_timestamp(now())-3600*24*7)");
+    $csr->execute or return "SHIT";
+    my ($userslastweek) = $csr->fetchrow_array;
+
+    $csr = $DB->getDatabaseHandle()->prepare("select count(user_id) from user where unix_timestamp(lasttime)>(unix_timestamp(now())-3600*24*7*2)");
+    $csr->execute or return "SHIT";
+    my ($userslast2weeks) = $csr->fetchrow_array;
+
+    $csr = $DB->getDatabaseHandle()->prepare("select count(user_id) from user where unix_timestamp(lasttime)>(unix_timestamp(now())-3600*24*7*4)");
+    $csr->execute or return "SHIT";
+    my ($userslast4weeks) = $csr->fetchrow_array;
+
+    $csr = $DB->getDatabaseHandle()->prepare("select count(user_id) from user");
+    $csr->execute or return "SHIT";
+    my ($totalusers) = $csr->fetchrow_array;
+
+    $csr = $DB->getDatabaseHandle()->prepare("select count(user_id) from user where lasttime not like \"0%\"");
+    $csr->execute or return "SHIT";
+    my ($userseverloggedin) = $csr->fetchrow_array;
+
+    return "<TABLE>
+    <TR><TD align=right><B>$totalusers</B></TD><TD> total users registered</TD></TR>
+    <TR><TD align=right><B>$userseverloggedin</B></TD><TD> unique users logged in ever</TD></TR>
+    <TR><TD align=right><B>$userslast4weeks</B></TD><TD> users logged in within the last 4 weeks</TD></TR>
+    <TR><TD align=right><B>$userslast2weeks</B></TD><TD> users logged in within the last 2 weeks</TD></TR>
+    <TR><TD align=right><B>$userslastweek</B></TD><TD> users logged in within the last week</TD></TR>
+    <TR><TD align=right><B>$userslast24</B></TD><TD> users logged in within the last 24 hours</TD></TR>
+    </TABLE>
+   ";
+}
+
+sub usergroup_attendance_monitor {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    return '' unless $APP->isAdmin($USER);
+
+    my $people = {};
+    my $str = '';
+    my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=" . getId(getType("usergroup")));
+
+    while (my $row = $csr->fetchrow_hashref) {
+        my $N = getNodeById($row->{node_id});
+        foreach (@{$N->{group}}) {
+            $people->{$_} ||= "";
+            $people->{$_} .= $N->{node_id} . ",";
+        }
+    }
+
+    foreach my $uid (keys %$people) {
+        my $p = $DB->sqlSelect("user_id", "user", "user_id=$uid and TO_DAYS(NOW()) - TO_DAYS(lasttime) > 365");
+        next unless $p;
+        $str .= "<li>" . linkNode(getNodeById($p)) . " (<small>";
+        my @grps = ();
+        foreach (split(",", $people->{$p})) {
+            my $ministr = linkNode($_);
+            if ($DB->sqlSelect("messageignore_id", "messageignore", "messageignore_id=$p and ignore_node=$_")) {
+                $ministr .= "-ignored";
+            }
+            push @grps, $ministr;
+        }
+        $str .= join ",", @grps;
+        $str .= "</small>)";
+    }
+
+    return "Users that haven't been here in 30 days.  I propose that we auto remove someone who hasn't been to the site in 30 days unless they choose to ignore a certain usergroup's messages (with the exception of: [gods] and [content editors]).  With usergroup ownership, it is now much easier for people to be able to manage those groups. For now, here is an active, automatic list.
+<br><br><p align=\"center\"><hr width=\"30%\"></p><br>
+<ul>$str</ul>";
+}
+
+sub users_with_infravision {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $queryText = "SELECT user.user_id,user.GP FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%infravision=1%'";
+
+    my $rows = $DB->{dbh}->prepare($queryText);
+    return "Database prepare error" unless $rows;
+
+    $rows->execute() or return "Database execute error";
+
+    my @list = ();
+    while (my $dbrow = $rows->fetchrow_arrayref) {
+        push(@list, linkNode($dbrow->[0]));
+    }
+
+    my $str = '';
+    $str .= '<h3>Users with infravision</h3>';
+    $str .= '<ol style="margin-left:55px">';
+    foreach my $key (sort { lc($a) cmp lc($b) } @list) {
+        $str .= '<li>' . $key . '</li>';
+    }
+    $str .= '</ol>';
+
+    return $str;
+}
+
+sub voting_data {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    if ($query->param("voteday")) {
+        my $vd = $query->param("voteday");
+        my $vd2 = $query->param("voteday2") || $vd;
+        my $vc = $DB->sqlSelect("count(*)", "vote", "votetime>='$vd 00:00:00' and votetime<='$vd2 23:59:59'");
+        $str .= "<p>Vote Results: $vc</p>";
+    }
+
+    if ($query->param("votemonth")) {
+        my $vm = $query->param("votemonth");
+        my $vy = $query->param("voteyear");
+        for (my $x = 1; $x <= 31; $x++) {
+            my $checkdate = $vy . "-" . $vm . "-" . sprintf("%02s", $x);
+            my $vc = $DB->sqlSelect("count(*)", "vote", "votetime>='$checkdate 00:00:00' and votetime<='$checkdate 23:59:59'");
+            $str .= $checkdate . " : " . $vc . "<br />";
+        }
+    }
+
+    $str .= htmlcode('openform');
+    $str .= "Start Date: " . $query->textfield("voteday", "", 10) . "<br />";
+    $str .= "Finish Date: " . $query->textfield("voteday2", "", 10) . "<br />";
+    $str .= "<p><b>Month Breakdown</b></p>
+
+Year: " . $query->textfield("voteyear", "", 10) . "<br />
+Month: " . $query->textfield("votemonth", "", 10) . "<br />";
+
+    $str .= htmlcode('closeform');
+
+    return $str;
+}
+
+sub altar_of_sacrifice {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '<p>Welcome to the mountaintop. Don\'t mind the blood.
+</p>
+
+<p><strong>N.B.:</strong> If you used the previous version of this page, be aware that this tool has been sharpened: it <em>will</em> remove the writeups you select.
+</p>
+
+<h2>Instructions
+</h2>
+
+<ol>
+<li>Enter a user\'s name in the box. Sumbit.
+</li>
+<li>Choose which writeups to spare (if any) from the list provided, or choose to remove all writeups at once.
+</li>
+<li>Confirm that you really want to do this.
+</li>
+<li>Repeat as necessary.
+</li>
+<li>Shed a tear, keep a minute\'s silence, then hold up the bloody heart to the crowd.
+</li>
+</ol>
+
+';
+
+    $str .= htmlcode('openform');
+    $str .= '<fieldset><legend>
+
+';
+
+    my $userName = $query->param('author');
+    my $user = 0;
+    my $tmpStr = '';
+
+    if ($userName) {
+        $user = getNode($userName, 'user');
+        if (!$user) {
+            $tmpStr = $query->escapeHTML($userName) . ' is not a user.<br>';
+        }
+    }
+
+    if (!$user) {
+        return $str . "Step 1: the victim</legend>
+	$tmpStr<label>User name:"
+            . $query->textfield('author')
+            . '</label>'
+            . $query->submit('submit', 'sumbit');
+    }
+
+    my $wuType = getType('writeup');
+
+    my ($list, $navigation, $count, $offset, $last) = htmlcode('show paged content', 'title, node_id', 'node', "type_nodetype=$wuType->{node_id} AND author_user=$user->{node_id}", 'ORDER BY title LIMIT 100', '<tr class="&oddrow">axe, "<td>", title, "</td>"', axe => sub {
+        $_[0]->{type} = $wuType;
+        return $query->td({align => 'center'}, $query->checkbox(-name => "removenode$_[0]->{node_id}", value => 1, label => '', checked => 1));
+    });
+
+    if (!$count) {
+        return $str . ($query->param('op') eq 'remove' ? 'Step 5' : 'Nothing to do') . "</legend>$user->{title} has no writeups.";
+    }
+
+    my $page = $query->param('page') || 1;
+    if (($page - 1) || $count > $last) {
+        $page = ": page $page";
+    } else {
+        $page = '';
+    }
+
+    $tmpStr = 'Step '
+        . ($query->param('op') eq 'remove' ? 4 : 2)
+        . ': show mercy (or not)</legend>'
+        . $query->hidden('author')
+        . $query->h2(linkNode($user) . "'s writeups$page")
+        . '<table><tr><th>axe</th><th>title</th>
+	' . $list . '
+	</table>
+	' . $navigation . '
+	<input type="hidden" name="op" value="remove">'
+        . $query->p($query->label('Reason for removal (optional):' . $query->textfield(-name => 'removereason', size => 50)));
+
+    if ($page) {
+        $tmpStr .= $query->p($query->checkbox(-name => 'removeauthor', value => 1, label => "remove all of $user->{title}'s writeups"));
+    }
+
+    return $str . $tmpStr . $query->p('<button type="submit" name="confirmop" value="remove"
+	title="remove these writeups">Let the axe fall</button>');
+}
+
+sub everything2_user_relations__e2contact_and_chanops {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '<p align="center"><h2>E2contact (e2c) and chanops</h2></p>
+
+<p><h3>What is e2c?</h3></p>
+
+<p>' . linkNode('e2contact') . ' is a subset of everything2\'s editorial staff dedicated to user relations, for both new and existing users.</p>
+
+<p><h3>Why is e2c necessary?</h3></p>
+
+<p>e2 is a diverse and complicated community, which presents challenges for both new and established users. In addition to the technical learning curve that new users are expected to climb, they must also tackle the social and cultural element of the site, which can present as hostile or overwhelming initially. As with any community, there exist tensions and relationship issues between established users. By creating a team of staff dedicated to user relations, to help new users navigate their paths through their first weeks and to help established users get the most out of the site, it is hoped to improve e2\'s user experience, thereby allowing for a more creative and productive site.</p>
+
+<p><h3>Who operates e2c?</h3></p>
+
+<p>e2c is currently led by ' . linkNode('mauler') . ', everything2\'s Director of User Relations, who reports into ' . linkNode('Tem42') . ' as everything2\'s Director of Operations.</p>
+
+<p>They are supported by:
+<ul></li>
+<li>' . linkNode('Dimview') . '</li>
+<li>' . linkNode('karma debt') . '</li>
+<li>' . linkNode('TheDeadGuy') . '</li>
+<li>' . linkNode('vandewal') . '</li>
+</ul></p>
+
+<p>The ' . linkNode('chanops') . ' group, which acts similarly to IRC channel operators, falls under e2c\'s umbrella. Following the devolution of catbox powers in May 2009, some gods opted to retain their catbox operational facilities, and joined chanops, too. More on their work can be found under \'Catbox drama\' in this document.</p>
+
+<p>The present members of chanops are:
+<ul>
+<li>' . linkNode('BookReader') . '</li>
+<li>' . linkNode('GhettoAardvark') . '</li>
+<li>' . linkNode('moosemanmoo') . '
+<li>' . linkNode('NanceMuse') . '</li>
+<li>' . linkNode('Oolong') . '</li>
+<li>' . linkNode('riverrun') . '.</li></ul></p>
+
+<p>All members of e2c and chanops have the ability to flush the chatterbox and drag users into other rooms as necessary.</p>
+
+
+<p><h3>What are e2c\'s fields of operation?</h3></p>
+
+<p>e2c has four primary spheres of operation:
+<ol><li>New user interaction</li>
+<li>Existing user relations</li>
+<li>Catbox drama</li>
+<li>The mentoring system</li></ol></p>
+
+<p><h5>New user interaction</h5>
+Until recently, new users to the site were greeted by an array of automated or rehearsed messages, directing them to the FAQs. e2c has adopted a more simplified approach to greeting new users, sending messages only when a new user has begun to interact with the site in some way – for example by speaking in the catbox – and then only to say hello and ask if she or he would like any help. We would rather that new users have the opportunity to explore, than us bombard and overwhelm their first experiences here. For users who weren\'t welcomed or greeted by a member of staff, you\'ll remember that part if the wonder was being able to wander.</p>
+
+<p>Members of e2c will be available to offer both technical assistance and help of a more abstract nature, for example helping new users to understand e2\'s culture. In particular, e2c intends to help new users learn what it is that e2 looks for in a writeup. However, the aim is to be personal and personable, rather than just directing someone to the FAQs.</p>
+
+<p>If a new user submits a writeup that is questionable, borderline or otherwise isn\'t to the standards and expectations of the site, she or he will be asked to use the scratchpad facility and have her or his draft proofed by an editor prior to submission. New users should also be urged towards the mentoring programme. Any persistently difficult or troublesome users should be referred directly to either TheDeadGuy or mauler.</p>
+
+<p>Troublesome users are a fact of the site; they are always going to be there. Those users whose actions are clearly detrimental to the site and show no willingness or ability to contribute in a positive way should be encouraged to move along. However, it is also important to try to see through the bravura, the bluster, and the general ignorance of some of these people. Never forget that new users have no real vested interest in the site in the way established users do and have no real reason to submit their \'good material\' unless they are given a reason to. Users need to be encouraged, respected, and listened to by staff. For example, just because a user submits a series of ridiculous, stupid, or silly writeups does not mean they are incapable of more. She or he may very well be incapable of more than that, but many may just land on the site thinking: \'What fun! I can submit random shit!\' That\'s what TheDeadGuy did when he first came to e2.</p>
+
+<p><h5>Existing user relations</h5>
+e2 is a community. All communities have dynamics, points of inertia, tensions, conflicts, tragedies, and celebrations. e2 is no different from any other community in this respect. Relationships between users, and between users and site management, can therefore on occasion become strained or difficult. For example, it is possible that two users can come into conflict with each other, or an existing user can feel unhappy about a change to site policy. Without wanting to be seen as some form of marriage guidance counselling service, e2c can be made available to help bring some calm and some dialogue in these situations.</p>
+
+<p>There has been a recent suggestion by some older users that the site is not as respectful towards them and their concerns as it should be. Quite specifically, there have been accusations that their contributions are not valued as much as those of newer and more prolific writers. e2c is aimed at user relations, and these concerns are just as valid as the learning experiences of a new user; therefore, e2c should be prepared to listen to these points and to act on them as appropriate.</p>
+
+<p><h5>Catbox drama</h5>
+From time-to-time, users choose to play out their personal dramas in the public forum of the catbox. This can and does distress and arouse alarm in other users. Whilst e2c or chanops can have no formal powers of intervention in such situations, there are protocols laid down for dealing with situations where users are threatening suicide, and guidance for young users is in development. Remaining calm and minimising the situation is key in these instances and members of e2c and chanops are expected to act appropriately as such occasions arise.</p>
+
+<p>In addition to site administrators, members of e2c and chanops also have the ability to drag users who are behaving inappropriately or offensively in the catbox from the main room to the debriefing room. Once dragged to the debriefing room, users are held there for 30 minutes. It is not expected for these users to be left alone there, but for she or he to be accompanied by a member of staff and the rationale for expulsion explicated. This feature has proved effective so far and it is expected for e2c and chanops operators to use it at their discretion.</p>
+
+<p><h5>The mentoring system</h5>
+Also falling in e2c\'s remit will be the mentoring system, which is planned for a revamp. Members of e2c may be asked to volunteer their time and effort into that programme. In the past, the mentoring system was an effective mechanism for guiding new users through the site, which has fallen into relative disuse recently. There is no reason why it can\'t operate successfully again. New users who indicate a desire or show a need for one-on-one guidance will be encouraged towards the mentoring programme.</p>
+
+<p>The mentoring programme is designed to offer longer-term attention to newer users; whereas e2c is intended to provide them with more immediate and short-term support.</p>
+
+<p><h3>And finally…</h3></p>
+
+<p>Throughout everything that we do, it is worth remembering that e2 is people. If we take care of the people, the content will take care of itself. That comes from alex, but it has never seemed more apt.</p>
+';
+
+    return $str;
+}
+
+sub fresh_blood {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $usertype = getId(getType('user'));
+
+    my $sql = "select count(*) from `node` where `type_nodetype` = $usertype and `createtime` > date_sub(now(), interval 1 week)";
+    my $usr = $DB->{dbh}->prepare($sql);
+    $usr->execute or return 'Oh dear. Database oops';
+    my ($numUser) = $usr->fetchrow();
+
+    $sql = "select count(*) from `user`, `node` where `user_id` = `node_id` and `createtime` > date_sub(now(), interval 1 week) and `lasttime` > 0";
+    $usr = $DB->{dbh}->prepare($sql);
+    $usr->execute or return 'Oh dear. Database oops';
+    my ($numLoggedIn) = $usr->fetchrow();
+
+    return 'nobody ever comes this way' if ($numLoggedIn == 0 || $numUser == 0);
+
+    my $start = int($query->param('start'));
+    $start ||= 0;
+
+    $sql = qq|
+
+SELECT `user_id`, `nick`, `title`,`createtime`, `lasttime`
+  , (SELECT `notetext`
+      FROM nodenote
+      WHERE nodenote_nodeid = user_id LIMIT 1
+    ) 'notetext'
+  FROM `node`
+  JOIN `user`
+    ON `node_id`=`user_id`
+  WHERE `createtime` > date_sub(now(), interval 1 week)
+  ORDER BY createtime
+  DESC LIMIT ?, 50 |;
+
+    $usr = $DB->{dbh}->prepare($sql);
+    $usr->execute($start) or return 'Oh dear. Database oops';
+
+    my $row = 1;
+    my $last = $start + 50;
+    if ($last > $numUser) {
+        $last = $numUser;
+    }
+
+    my $str = "<p>In the past week, $numUser users enrolled. Of those $numLoggedIn logged-in.</p>";
+    my $nav = "<p style='text-align: center'>";
+
+    if ($start > 0) {
+        $nav .= '&laquo ' . linkNode($NODE, 'Later', {'start' => $start - 50}) . ' ';
+    }
+
+    for (my $i = 0; $i < $numUser; $i += 50) {
+        $nav .= ($i == $start) ? "<b>$i</b>" : linkNode($NODE, $i ? $i : 1, {'start' => $i});
+        $nav .= ' ';
+    }
+
+    if ($last < $numUser) {
+        $nav .= linkNode($NODE, 'Earlier', {'start' => $start + 50}) . ' &raquo;</p>';
+    }
+
+    $str .= $nav;
+
+    $str .= "<table style='width: 100%; border-top: 1px gray solid'><tr><th>Joined</th><th>User</th><th>Last logged in</th><th>Node note</th></tr>\n";
+    $usr->fetchrow_hashref;
+    while (my $N = $usr->fetchrow_hashref) {
+        my $login = htmlcode('timesince', $N->{lasttime});
+        my $create = htmlcode('timesince', $N->{createtime});
+
+        $str .= sprintf("\t<tr class='%s'><td>%s</td><td><a href=%s>%s</a></td><td>%s</td><td>%s</td></tr>\n",
+            $row ? 'oddrow' : 'evenrow',
+            $create,
+            "/node/$N->{user_id}",
+            $N->{title},
+            $login eq '?' ? 'never' : $login,
+            $N->{notetext},
+        );
+        $row = !$row;
+    }
+    $str .= '</table>' . $nav;
+
+    return $str;
+}
+
+sub freshly_bloodied {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $usertype = getId(getType('user'));
+
+    my $sql = "select count(*) from `node` where `type_nodetype` = $usertype and `createtime` > date_sub(now(), interval 1 week)";
+    my $usr = $DB->{dbh}->prepare($sql);
+    $usr->execute or return 'Oh dear. Database oops';
+    my ($numUser) = $usr->fetchrow();
+
+    $sql = "select count(*) from `user`, `node` where `user_id` = `node_id` and `createtime` > date_sub(now(), interval 1 week) AND `acctlock` != 0";
+    $usr = $DB->{dbh}->prepare($sql);
+    $usr->execute or return 'Oh dear. Database oops';
+    my ($numLocked) = $usr->fetchrow();
+
+    return 'nobody ever comes this way' if ($numLocked == 0 || $numUser == 0);
+
+    my $start = int($query->param('start'));
+    $start ||= 0;
+
+    $sql = qq|
+
+SELECT `user`.`user_id`, `user`.`nick`
+  , `node`.`createtime`, `user`.`validemail`, `user`.`lasttime`
+  , `locker`.`node_id` AS locker_id
+  , `locker`.`title` AS locker_name
+  , (SELECT `notetext`
+      FROM `nodenote`
+      WHERE `nodenote_nodeid` = `user`.`user_id` LIMIT 1
+    ) 'notetext'
+  FROM `node`
+  JOIN `user`
+    ON `node`.`node_id` = `user`.`user_id`
+  JOIN `node` AS `locker`
+    ON `locker`.`node_id` = `user`.`acctlock`
+  WHERE `node`.`createtime` > date_sub(now(), interval 1 week)
+    AND `user`.`acctlock` != 0
+  ORDER BY `node`.`createtime`
+  DESC LIMIT ?, 50|;
+
+    $usr = $DB->{dbh}->prepare($sql);
+    $usr->execute($start) or return 'Oh dear. Database oops';
+
+    my $row = 1;
+    my $last = $start + 50;
+    if ($last > $numLocked) {
+        $last = $numLocked;
+    }
+
+    my $str = "<p>In the past week, $numUser users enrolled. Of those $numLocked were locked.</p>";
+    my $nav = "<p style='text-align: center'>";
+
+    if ($start > 0) {
+        $nav .= '&laquo ' . linkNode($NODE, 'Later', {'start' => $start - 50}) . ' ';
+    }
+
+    for (my $i = 0; $i < $numLocked; $i += 50) {
+        $nav .= ($i == $start) ? "<b>$i</b>" : linkNode($NODE, $i ? $i : 1, {'start' => $i});
+        $nav .= ' ';
+    }
+
+    if ($last < $numLocked) {
+        $nav .= linkNode($NODE, 'Earlier', {'start' => $start + 50}) . ' &raquo;</p>';
+    }
+
+    $str .= $nav;
+
+    $str .= "<table style='width: 100%; border-top: 1px gray solid'><tr><th>Joined</th><th>User</th><th>Last logged in</th><th>Node note</th><th>Locked By</th><th>Validated</th></tr>\n";
+    $usr->fetchrow_hashref;
+    while (my $N = $usr->fetchrow_hashref) {
+        my $login = htmlcode('timesince', $N->{lasttime});
+        my $create = htmlcode('timesince', $N->{createtime});
+
+        $str .= sprintf("\t<tr class='%s'><td>%s</td><td><a href=%s>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n",
+            $row ? 'oddrow' : 'evenrow',
+            $create,
+            "/node/$N->{user_id}",
+            $N->{nick},
+            $login eq '?' ? 'never' : $login,
+            linkNode(getNodeById($N->{locker_id}), $N->{locker_name}),
+            $N->{notetext},
+            $N->{validemail}
+        );
+        $row = !$row;
+    }
+    $str .= '</table>' . $nav;
+
+    return $str;
+}
+
+sub homenode_inspector {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $gonetime = $query->param('gonetime') eq '0' ? 0 : $query->param('gonetime') || 0;
+    my $goneunit = $query->param('goneunit') || 'MONTH';
+    my $showlength = $query->param('showlength') || 1000;
+    my $maxwus = $query->param('maxwus') || 0;
+
+    return 'Parameter error' unless
+        $maxwus == int($maxwus)
+        && $gonetime == int($gonetime)
+        && $showlength == int($showlength)
+        && $goneunit =~ /year|month|week|day/i;
+
+    my $filter = "doctext != ''";
+
+    $filter .= " AND lasttime < DATE_SUB(NOW(), INTERVAL $gonetime $goneunit)";
+    $filter .= " AND numwriteups <= $maxwus";
+    $filter .= " AND doctext LIKE '%[http%'" if $query->param('extlinks');
+    $filter .= " AND doctext != '...'" unless $query->param('dotstoo');
+
+    my $optionsform = $query->fieldset($query->legend('Options')
+        . $query->label('Max writeups:' . $query->textfield('maxwus', $maxwus, 2))
+        . '<br>' . $query->label('Not logged in for:' . $query->textfield('gonetime', $gonetime, 2))
+        . $query->popup_menu('goneunit', ['year', 'month', 'week', 'day'], 'month')
+        . '<br>' . $query->checkbox(-name => 'extlinks'
+        , -checked => 0
+        , -value => 1
+        , -label => 'Only homenodes with external links')
+        . '<br>' . $query->checkbox(-name => 'dotstoo'
+        , -checked => 0
+        , -value => 1
+        , -label => 'Include "..." homenodes')
+        . '<br>' . $query->label('Only show' . $query->textfield('showlength', $showlength, 3) . 'characters')
+        . '<br>' . $query->submit('Go')
+    );
+
+    my $smite = sub {
+        my $verify = htmlcode('verifyRequestHash', 'polehash');
+        return linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
+            , 'Smite Spammer'
+            , {%$verify
+            , confirmop => 'remove'
+            , removeauthor => 1
+            , author => $_[0]{title}
+            , -title => 'detonate this noder, blank their homenode, remove their writeups, blacklist their IP where appropriate'
+            , -class => 'action'}
+        );
+    };
+
+    return htmlcode('widget'
+        , $optionsform
+        , 'form'
+        , 'Options'
+        , {showwidget => 'optionsform'}
+    )
+        . htmlcode('show paged content', 'title, node_id, user_id AS author_user, doctext', 'node JOIN user on node_id=user_id JOIN document ON node_id=document_id', $filter, 'ORDER BY lasttime DESC LIMIT 10', "author, $showlength, smite", ('smite' => $smite));
+}
+
+sub node_parameter_editor {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '<p>This is a temporary ghetto tool to edit node parameters, and do a bit of testing until we have full parameter support built into the application, with the full removal of $VARS. We\'ll get there, but this isn\'t bad for now.  </p>
+<br /><br /><hr width="20%" /><br /><br />
+Available types of parameters:
+';
+
+    my $for_node = $query->param('for_node');
+    if (not defined($for_node)) {
+        $str .= "No node to check the parameters for. Use this from the C_E tools menu in Master Control.";
+    } else {
+        my $f_node = getNodeById($for_node);
+        return "No such node_id \'$for_node\'" unless defined $f_node;
+        my $all_params_for_type = $APP->getParametersForType($f_node->{type});
+
+        $str .= "<ul>";
+        foreach my $param (sort { $a cmp $b } keys %$all_params_for_type) {
+            $str .= "<li> $param - " . $all_params_for_type->{$param}->{description} . "</li>\n";
+            $str .= '<br />' . htmlcode("openform") . qq|<input type="hidden" name="op" value="parameter"><input type="hidden" name="for_node" value="$f_node->{node_id}"><input type="hidden" name="paramname" value="$param"><input type="text" name="paramvalue"><input type="submit" value="add"></form>|;
+        }
+        $str .= "</ul>";
+    }
+
+    $str .= '<br /><br /><hr width="20%" /><br /><br />';
+
+    $for_node = $query->param('for_node');
+    if (not defined($for_node)) {
+        $str .= "No node to check the parameters for. Use this from the C_E tools menu in the epicenter";
+    } else {
+        my $f_node = getNodeById($for_node);
+        return "No such node_id \'$for_node\'" unless defined $f_node;
+        my $return = "<h3>Node: $f_node->{title} / $f_node->{type}{title}</h3>(node_id: $f_node->{node_id})<br />";
+        $return .= "<br /><br />";
+        my $params = $DB->getNodeParams($f_node);
+        if (scalar(keys %$params) == 0) {
+            $return .= "<em>No node parameters</em><br />";
+        } else {
+            $return .= "<table>";
+            $return .= '<tr><td width="30%"><strong>Parameter name</strong></td><td width="50%"><strong>Parameter value</strong></td><td>X</td></tr>';
+
+            foreach my $key (keys %$params) {
+                $return .= "<tr><td>" . encodeHTML($key) . "</td><td>" . encodeHTML($params->{$key}) . "</td><td>" . htmlcode("openform") . qq|<input type="hidden" name="op" value="parameter"><input type="hidden" name="for_node" value="$f_node->{node_id}"><input type="hidden" name="paramname" value="$key"><input type="hidden" name="action" value="delete"><input type="submit" value="del"></form></td></tr>|;
+            }
+            $return .= "</table>";
+        }
+        $str .= $return;
+    }
+
+    return $str;
+}
+
+sub renunciation_chainsaw {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+
+    if(    $query->param( 'user_name_from' )
+        && $query->param( 'user_name_to' )
+        && $query->param( 'namelist' ) )
+    {
+        my $names    = $query->param( 'namelist' );
+        my $userfrom = getNode( $query->param( 'user_name_from' ), 'user' );
+        my $userto   = getNode( $query->param( 'user_name_to' ), 'user' );
+
+        return 'There was no user: "'.$query->param('user_name_from').'" back to the '.linkNode($NODE, $NODE->{title}) unless( $userfrom );
+
+        return 'There was no user: "'.$query->param('user_name_to').'" back to the '.linkNode($NODE, $NODE->{title}) unless( $userto );
+
+        my $userfrom_id = $userfrom->{ node_id };
+        my $userto_id   = $userto->{ node_id };
+
+        $names =~ s/\s*\n\s*/\n/g;
+
+        my @namelist = split( '\n', $names );
+
+        my $reparent   = '';   # Names of reparented writeups
+        my $totalcount = 0;    # Total writeups reparented
+
+        # Realistic error conditions
+        my $nonexist   = '';   # The node doesn\'t exist.
+        my $nowriteup  = '';   # The node exists, but bonehead has no writeup there.
+
+        # Unlikely error conditions
+        my $badowner   = '';   # This is bad: We queried for nodes with a given
+                              #   author_user and got some with a different one.
+        my $badtype    = '';   # This is bad, too. We queried for writeups and got
+                              #   something else.
+
+        foreach my $parentnode ( @namelist )
+        {
+            next unless( $parentnode );
+
+            my $pnode = getNode( $parentnode, 'e2node' );
+
+            if ( ! $pnode ) {
+                $nonexist .= "<dd>[" . $parentnode . "]</dd>\n";
+            } else {
+                my $csr = $DB->{dbh}->prepare(  'SELECT * FROM node LEFT JOIN writeup '
+                                      . 'ON node.node_id = writeup.writeup_id '
+                                      . 'where writeup.parent_e2node='
+                                      . $pnode->{ node_id } . ' AND node.author_user='
+                                      . $userfrom->{ node_id } . ' ' );
+
+                $csr->execute();
+
+                my $count   = 0;
+                my $writeup;
+
+                while ( my $ROW = $csr->fetchrow_hashref() )
+                {
+                    $writeup = getNode( $ROW->{ node_id } );
+                    ++$count;
+
+                    if ( $writeup->{ type_nodetype } != 117 ) {
+                        $badtype .= "<dd>[" . $parentnode . "]</dd>\n";
+                    } elsif ( $writeup->{ author_user } != $userfrom_id ) {
+                        $badowner .= "<dd>[" . $parentnode . "]</dd>\n";
+                    } else {
+                        $writeup->{ author_user } = $userto_id;
+                        updateNode( $writeup, $USER );
+                        ++$totalcount;
+                        $reparent .= "<dd>[" . $parentnode . "]</dd>\n";
+                    }
+                }
+
+                if ( ! $count ) {
+                    $nowriteup .= "<dd>[" . $parentnode . "]</dd>\n";
+                }
+
+                $csr->finish();
+            }
+        }
+
+        $str .= "<dl>\n";
+
+        if ( $reparent ) {
+            my $varsfrom = getVars( $userfrom );
+            my $varsto   = getVars( $userto );
+
+            my $wuctfrom = int( $varsfrom->{ numwriteups } || 0 );
+            my $wuctto   = int( $varsto->{ numwriteups } || 0 );
+
+            $varsfrom->{ numwriteups } = '' . ($wuctfrom - int( $totalcount ));
+            $varsto->{ numwriteups }   = '' . ($wuctto + int( $totalcount ));
+
+            setVars( $userfrom, $varsfrom );
+            setVars( $userto, $varsto );
+
+            updateNode( $userfrom, $USER );
+            updateNode( $userto, $USER );
+
+            $str .=  "<dt><b>" . $totalcount . " writeups re-ownered from "
+                   . linkNode( $userfrom_id ) . " to "
+                   . linkNode( $userto_id ) . ":</b></dt>\n"
+                   . $reparent;
+        }
+
+        $str .= "<font color=\"#c00000\">\n";
+
+        if ( $nonexist ) {
+            $str .=   "<dt>&nbsp;</dt>";
+            $str .=   "<dt><b>Nonexistent nodes:</b> (if you provided "
+                    . "writeup titles, they may differ from their "
+                    . "parent node titles due to the parent nodes "
+                    . "having been renamed)</dt>\n"
+                    . $nonexist . "\n";
+        }
+
+        if ( $badowner ) {
+            $str .=   "<dt>&nbsp;</dt>";
+            $str .=   "<dt><b>Wrong <code>author_user</code> "
+                    . "(SQL problem; talk to nate):</b></dt>\n"
+                    . $badowner . "\n";
+        }
+
+        if ( $badtype ) {
+            $str .=   "<dt>&nbsp;</dt>";
+            $str .=   "<dt><b>Wrong <code>type_nodetype</code> "
+                    . "(SQL problem; talk to nate):</b></dt>\n"
+                    . $badtype . "\n";
+        }
+
+        if ( $nowriteup ) {
+            $str .=   "<dt>&nbsp;</dt>";
+            $str .=   "<dt><b>" . linkNode( $userfrom_id )
+                    . " has nothing here:</b></dt>\n"
+                    . $nowriteup . "\n";
+        }
+
+        $str .= "</font>\n";
+        $str .= "</dl>\n";
+
+        $str .= "&#91; " . linkNode( $NODE->{ node_id }, 'back' ) . " &#93;\n";
+    }
+    else
+    {
+        # wharf: this is a usability fix from me:
+        my $wu;
+        my @foo = ("", "");
+        if($query->param('wu_id')){
+            $wu = getNodeById($query->param('wu_id'));
+            if($wu->{type_nodetype} == getId(getType('writeup')))
+            {
+                my $auth = getNodeById($wu->{author_user});
+                $foo[0] = $auth->{title};
+                $auth = getNodeById($wu->{parent_e2node});
+                $foo[1] = $auth->{title};
+            }
+        }
+
+        $str =
+        htmlcode( 'openform' ) .
+        '
+Change ownership of writeups from user
+<input type="text" name="user_name_from" value="'.$foo[0].'"><br />
+to user
+<input type="text" name="user_name_to" ><br />
+<br />
+The writeups in question:<br />
+<textarea name="namelist" rows="20" cols="50">'
+        . $foo[1] . $query->param( 'namelist' ) .
+        '</textarea><br />
+<input type="submit" value="Do It" />
+</form>
+';
+    }
+
+    $str .='
+<br /><br />
+<hr />
+<p><i>Consider this in beta. </i> </p>
+<br /><br />
+';
+
+    $str .= '<br><br><hr><br>' . htmlcode('openform') . 'Gen nodelist: <input type="text" name="nodes_for">' . htmlcode('closeform');
+
+    my $nodesfor = $query->param("nodes_for");
+    if($nodesfor) {
+        my $usr = getNode($nodesfor, "user");
+        if($usr) {
+            my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=".getId(getType("writeup"))." and author_user=$usr->{node_id}");
+
+            $str .= "<ul>";
+
+            while(my $row = $csr->fetchrow_hashref)
+            {
+                $str.= "<li>".linkNode(getNodeById(getNodeById($row->{node_id})->{parent_e2node}));
+            }
+
+            $str.="</ul>";
+        } else {
+            $str .= "Ack! No user!";
+        }
+    }
+
+    return $str;
+}
+
+sub security_monitor {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $sec = {
+        "Kill reasons" => getId(getNode("massacre","opcode")),
+        "Password resets" => getId(getNode("Reset password", "superdoc")),
+        "Suspensions" => getId(getNode("Suspension Info", "superdoc")),
+        "Resurrections" => getId(getNode("Dr. Nate\'s Secret Lab", "restricted_superdoc")),
+        "Blessings" => getId(getNode("bless","opcode")),
+        "SuperBless" => getId(getNode("superbless","superdoc")),
+        "Vote bestowings" => getId(getNode("bestow","opcode")),
+        "C! bestowings" => getId(getNode("bestow cools","restricted_superdoc")),
+        "Stars Awarded" => getId(getNode('The Gift of Star', 'node_forward')),
+        "Votes Given Away" => getId(getNode('The Gift of Votes', 'node_forward')),
+        "Chings Given Away" => getId(getNode('The Gift of Ching', 'node_forward')),
+        "Chings Bought" => getId(getNode('Buy Chings', 'node_forward')),
+        "Votes Bought" => getId(getNode('Buy Votes', 'node_forward')),
+        "Account Lockings" => getId(getNode("lockaccount","opcode")),
+        "Account Unlockings" => getId(getNode("unlockaccount","opcode")),
+        "Node Notes" => getId(getNode("Recent Node Notes","superdoc")),
+        "Writeup reparentings" => getId(getNode("Magical Writeup Reparenter","superdoc")),
+        "Topic changes" => getId(getNode("E2 Gift Shop","superdoc")),
+        "IP Blacklist" => getId(getNode("IP Blacklist", "restricted_superdoc")),
+        "User Signup" => getId(getNode("Sign up", "superdoc")),
+        "Writeup insurance" => getId(getNode("insure", "opcode")),
+        "XP SuperBless" => getId(getNode("XP Superbless","restricted_superdoc")),
+        "XP Recalculations" => getId(getNode("Recalculate XP","superdoc")),
+        "Sanctifications" => getId(getNode("Sanctify user","superdoc")),
+        "User Deletions" => getId(getNode("The Old Hooked Pole","restricted_superdoc")),
+        "Catbox flushes" => getId(getNode("flushcbox","opcode")),
+        "Parameter changes" => getId(getNode("parameter","opcode")),
+    };
+
+
+    ### Generate the selection table
+    my $str="<p align=\"center\"><table width=\"90%\"><tr>";
+
+    my $index = 0;
+    foreach(sort {lc($a) cmp lc($b)} keys %$sec){
+        next unless $sec->{$_};
+        $str.="<td align=\"center\"><div style=\"margin:0.5em; padding:0.5em; border:1px solid #555\">"
+            .linkNode($NODE, $_, {sectype=>$sec->{$_}})."<br />\n"
+            ."<small>("
+            .$DB->sqlSelect("count(*)", "seclog", "seclog_node=$sec->{$_}")." entries)"
+            ."</small>"
+            ."</div></td>";
+        if($index % 5 == 4){
+            $str .= "</tr><tr>";
+        }
+        $index++;
+    }
+
+    $str.="</tr></table></p>\n";
+
+
+
+    ### Generate the log table if one is requested
+    my $sectype = $query->param("sectype");
+    $sectype =~ s/[^0-9]//g;
+    if($sectype){
+
+        $str.="<style type=\"text/css\">\n";
+        $str.="    table.logtable th, table.logtable td{ ";
+        $str.="       padding: 0.5em 1em; border-bottom:1px solid #AAA; marin:0px";
+        $str.="    }\n";
+        $str.="    table.logtable th{ text-align:left; }";
+        $str.="</style>\n";
+        $str.="<p align=\"center\"><table class=\"logtable\" cellspacing=\"0\" cellpadding=\"0\"><tr>\n";
+        $str.="   <th><strong>$_</strong></th>\n" foreach("Node","User","Time","Details");
+        $str.="</tr>\n";
+
+        my $startat= $query->param("startat");
+        $startat =~ s/[^0-9]//g;
+        $startat ||= 0;
+
+        my $csr = $DB->sqlSelectMany('*', 'seclog', "seclog_node=$sectype order by seclog_time DESC limit $startat,50");
+
+        while(my $row = $csr->fetchrow_hashref){
+            $str.="<tr>\n";
+            $str.="   <td>".linkNode(getNodeById($row->{seclog_node}))."</td>\n";
+            $str.="   <td>".linkNode(getNodeById($row->{seclog_user}))."</td>\n";
+            $str.="   <td><small>$row->{seclog_time}</small></td>\n";
+            $str.="   <td>".$row->{seclog_details}."</td>\n";
+            $str.="</tr>\n";
+        }
+
+        $str.="</table></p><br><p align=\"center\"><hr width=\"300\"></p>";
+
+
+
+        ### Generate the pager
+        my $cnt = $DB->sqlSelect("count(*)", "seclog", "seclog_node=$sectype");
+        my $firststr = "$startat-".($startat+50);
+        $str.="<p align=\"center\"><table width=\"70%\"><tr>";
+        $str.="<td width=\"50%\" align=\"center\">";
+        if(($startat-50) >= 0){
+            $str.=linkNode($NODE,$firststr,{"startat" => ($startat-50), "sectype" => $sectype});
+        }else{
+            $str.=$firststr;
+        }
+        $str.="</td>";
+        $str.="<td width=\"50%\" align=\"center\">";
+        my $secondstr = ($startat+50)."-".(($startat + 100 < $cnt)?($startat+100):($cnt));
+
+        if(($startat+50) <= ($cnt)){
+            $str.=linkNode($NODE,$secondstr,{"startat" => ($startat+50), "sectype" => $sectype});
+        }else{
+            $str.="(end of list)";
+        }
+        $str .= '</tr></table>';
+    }
+
+    return $str;
+}
+
+sub server_telemetry {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '<h1>Apache Processes</h1><pre>';
+    $str .= `ps aux | grep apache2 | grep -v grep`;
+    $str .= "\n";
+    $str .= "Apache threads running: ".`ps aux | grep apache2 | grep -v grep | wc -l`;
+    $str .= '</pre><h1>VM Stat</h1><pre>';
+    $str .= `vmstat`;
+    $str .= '</pre><h1>Uptime</h1><pre>';
+    $str .= `uptime`;
+    $str .= '</pre><h1>Cloud Health Check</h1><tt>';
+    $str .= `/var/everything/tools/container-health-check.pl --debug-cloudwatch 2>&1`;
+    $str .= '</tt><h1>Apache config</h1><pre>';
+    $str .= `cat /etc/apache2/everything.conf`;
+    $str .= '</pre>';
+
+    return $str;
+}
+
+sub the_oracle {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    ##########
+    # This section creates the user search field - always displayed
+    my $str = "";
+    unless($query->param("userEdit"))
+    {
+
+        $str .= qq(Welcome to the User Oracle. Please enter a user name<br>);
+        $str .= htmlcode('openform');
+        $str .= $query->textfield('the_oracle_subject');
+        $str .= htmlcode('closeform');
+
+        ##########
+        # This section lists the variables if a username is given and we\'re not editing a variable
+
+        # The below is for allowing gods to check what CEs are allowed to see
+
+        my $orasubj = $query->param('the_oracle_subject');
+        if ($orasubj)
+        {
+            my $oraref = getNode($orasubj, 'user');
+            my $hash = getVars($oraref);
+
+            # message to content editors explaining what this is
+            $str .= '<p>As a content editor, you can view an abbreviated list of user settings.
+    <br>Any given variable will not be displayed unless the user has turned it on at least once. 1=on, 0 or blank=off</p>
+    <dl>
+    <dt>browser</dt><dd>the web browser and operating system the noder is using</dd>
+    <dt>easter_eggs</dt><dd>how many easter eggs the noder has</dd>
+    <dt>nodelets</dt><dd>list of nodelets the noder has turned on, node_id and name</dd>
+    <dt>settings_useTinyMCE</dt><dd>whether or not the noder has tinyMCE turned on.</dd>
+    <dt>userstyle</dt><dd>the Zen stylesheet the noder has active</dd>
+    <dt>wuhead</dt><dd>the code for displaying the writeupheader</dd>
+    </dl>' if ($APP->isEditor($USER) and not $APP->isAdmin($USER));
+
+            my $oddeven = 0; # tracks odd rows for .oddrow class color
+            my $oddrowclass = ""; # blank if even row, contains .oddrow class color if odd row
+
+            $str .= qq(<table border=0 cellpadding=2 cellspacing=1>);
+            foreach(sort(keys(%{$hash}))) {
+                next if ($_) eq 'noteletRaw'; # notelet can run code that breaks the page
+                next if ($_) eq 'noteletScreened';
+                # Allow content editors to view an abbreviated list
+                unless ($_ eq 'settings_useTinyMCE'
+                    || $_ eq "easter_eggs"
+                    || $_ eq "nodelets"
+                    || $_ eq "userstyle"
+                    || $_ eq "wuhead"
+                    || $_ eq "browser")
+                {
+                    next if $APP->isEditor($USER) && !$APP->isAdmin($USER);
+                }
+            
+                # replace undefined values with a blank
+                ${$hash}{$_} = "&nbsp;" if(!${$hash}{$_});
+                if ($oddeven%2 == 0)
+                {
+                    $oddrowclass = ' class="oddrow"';
+                } else { 
+                    $oddrowclass = ' class="evenrow"';
+                }
+
+                # first special case: style defacer code to be listed in PRE tags
+                # personal nodelet should be linked
+                # CSV lists should have extra space between variables to prevent page stretching
+                if ($_ eq 'customstyle') {
+                    $str .= qq(\n\n<tr$oddrowclass><td>$_</td><td>=</td><td><pre><small>${$hash}{$_}</small></pre>);
+                } elsif ($_ eq 'personal_nodelet') {
+                    $str .= qq(\n\n<tr$oddrowclass><td>$_</td><td>=</td><td>);
+                    unless ($hash->{$_} eq '&nbsp;') {
+                        my @items_list = split(/<br>/,$hash->{$_});
+                        foreach my $i (@items_list) {
+                            $str .= qq(\n[$i]<br>) if $i;
+                        }
+                    }
+                } else {
+                    my $cleancsv = ${$hash}{$_};
+                    $cleancsv =~ s/,/, /g;
+                    $str .= qq(\n\n<tr$oddrowclass><td>$_</td><td>=</td><td>$cleancsv);
+                }
+
+                # don\'t let CEs perform an IP hunt
+                $str .= " ".linkNode($NODE,"edit",{userEdit => $orasubj, varEdit => $_})." " unless ($APP->isEditor($USER) and not $APP->isAdmin($USER));
+                if ($_ eq 'ipaddy') {
+                    $str .= linkNode(getNode('IP Hunter', 'restricted_superdoc'), "<br><tt>(check other users with this IP)</tt> ", {hunt_ip => $hash->{$_}})
+                }
+
+                # second special case: fetch node titles for these node_ids to be human-readable
+                if ($_ eq 'userstyle'
+                    || $_ eq 'lastnoded'
+                    || $_ eq 'current_nodelet'
+                    || $_ eq 'group') {
+                    # undefined hash values are replaced with \'&nbsp;\'
+                    unless ($hash->{$_} eq '&nbsp;') {
+                        # check to make sure node exists before grabbing its title
+                        if (getNodeById($hash->{$_})) {
+                            $str .= " <br><tt>(" . linkNode($hash->{$_},getNodeById($hash->{$_})->{title}) . ")</tt> ";
+                        } else {
+                            $str .= " <br><tt>(" . linkNode($hash->{$_},'<b style="color:red;">ERROR:</b> Node not found!)</tt>');
+                        }
+                    }
+                }
+
+                # third special case: fetch node titles for these CSV lists of node_ids to be human-readable
+                if ($_ eq 'nodelets'
+                    || $_ eq 'bookbucket'
+                    || $_ eq 'favorite_noders'
+                    || $_ eq 'emailSubscribedusers'
+                    || $_ eq 'nodetrail'
+                    || $_ eq 'nodebucket'
+                    || $_ eq 'can_weblog') {
+                    unless ($hash->{$_} eq '&nbsp;') {
+                        my @items_list = split(/,/,$hash->{$_});
+                        foreach my $i (@items_list) {
+                            # check to make sure node exists before grabbing its title
+                            if (getNodeById($i)) {
+                                $str .= "\n<br>" . linkNode($i,getNodeById($i)->{title}) if $i;
+                            } else {
+                                $str .= "\n<br>(" . linkNode($i,'<b style="color:red;">ERROR:</b> Node not found!)') if $i;
+                            }
+                        }
+                    }
+                }
+
+                # fourth special case: get titles of notifications_nodelet items
+                # assumption: \'settings\' will have more than just the notifications in it some day
+                # therefore, look for "notifications": and return the list that comes after it.
+                # this technique can be applied to other hypothetical things saved in \'settings\'
+                if ($_ eq 'settings') {
+                    unless ($hash->{$_} eq '&nbsp;') {
+                        my @items_list1 = split(/{|}/,$hash->{$_});
+                        for (my $j=0; $j <= $#items_list1; $j++) {
+                            if ($items_list1[$j] eq '"notifications":') {
+                                my @items_list2 = split(/,/,$items_list1[$j+1]);
+                                foreach my $i (@items_list2) {
+                                    $i =~ /\"(\d*)\\":\d/;
+                                    $str .= "\n<br>" . getNodeById($1)->{title} if $1;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $oddeven++;
+                $str .= "</td></tr>";
+            }
+            $str .= qq(</table>);
+        }
+    }
+    
+    # This section is for pulling up the variable edits
+    if($APP->isAdmin($USER))
+    {
+        if (defined($query->param("new_value")))
+        {
+            my $u = getNode($query->param("new_user"),"user");
+            my $v = getVars($u);
+
+            $v->{$query->param("new_var")} = $query->param("new_value");
+            setVars($u, $v);
+
+            if ($u->{user_id} == $USER->{user_id})
+            {
+                $VARS = $v;
+            }
+
+            getVars($u);
+            $str .= $v->{$query->param("new_var")};
+
+        }
+    }
+
+    my $varEdit = $query->param("varEdit");
+    return $str unless $varEdit;
+
+    my $orasubj2 = $query->param('userEdit');
+    return $str unless($orasubj2);
+
+    my $oraref2 = getNode($orasubj2, 'user');
+    my $v = getVars($oraref2);
+
+    $str .= htmlcode('openform');
+    $str .= "Editing ".$orasubj2." - var <b>$varEdit</b><br />";
+    $str .= "<b>Old Value:</b> ".$v->{$varEdit}."<br />";
+    $str .= "<b>New Value:</b> ".$query->textfield('new_value',"",50);
+    $str .= $query->hidden("new_user",$orasubj2);
+    $str .= $query->hidden("new_var",$varEdit);
+    $str .= htmlcode('closeform');
+
+    return $str;
+}
+
+sub what_does_what {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    return unless $APP->isAdmin($USER);
+
+    my $str = "<p align=\"right\">".linkNode(getNode("superdoc documentation", "setting"), "edit/add documentation", {displaytype => "edit"})."</p>";
+
+    my $documentation = getVars(getNode("superdoc documentation", "setting"));
+
+    $documentation ||= {};
+
+    my @types = ("superdoc","oppressor_superdoc");
+
+    push @types, ("restricted_superdoc", "setting") if $APP->isAdmin($USER);
+    foreach(@types)
+    {
+        $str.="<h1>$_";
+        $str.=" - ".linkNode(getNode("$_ documentation", "setting"), "edit documentation") if $APP->isAdmin($USER);
+        $str.="</h1><table>";
+        my $type = getType($_);
+        my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=$type->{node_id} order by title");
+
+        my $rownum = 1;
+
+        while(my $row = $csr->fetchrow_hashref)
+        {
+            my $N = getNodeById($row->{node_id});
+            unless($USER->{title} eq "JayBonci"){
+                next unless $N and $documentation->{$N->{node_id}};
+            }
+
+            $str.="<tr".(($rownum % 2)?(" class=\"oddrow\""):(""))."><td><small><strong>".linkNode($N)."</strong></small></td><td><small>($N->{node_id})</small></td><td>".($documentation->{$N->{node_id}} || "<em>none</em>")."</td></tr>";
+            $rownum++;
+        }
+
+        $str.="</table><br>";
+    }
+    return $str;
+}
+
+sub quick_rename {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = htmlcode('openform');
+
+    $str .= "<p align=\"right\"><small>This will allow you to retitle a lot of e2nodes in mass. Enter the title of the node originally on the left, and the new title on the right.  It will retitle the node and repair it, all in one fell swoop</small></p>";
+
+    foreach(1..30)
+    {
+        my $from = $query->param("retitle_from$_");
+        my $to = $query->param("retitle_to$_");
+
+        next unless($from and $to);
+        $from =~ s/\s+$//g;
+        $to =~ s/\s+$//g;
+        my $fromnode = getNode($from, "e2node");
+
+        unless($fromnode)
+        {
+            $str.="<font color=\"red\">No such e2node".linkNodeTitle($from,0,1)."</font><br>";
+            next;
+        }
+
+        my $realfrom = $$fromnode{title};
+        my $changeCaps = ($realfrom ne $to && lc($realfrom) eq lc($to));
+
+        if($realfrom eq $to){
+            $str.="<font color=\"red\">Didn't change the title at  all:".linkNodeTitle($realfrom,0,1)."</font><br>";
+            next;
+        }
+
+        my $tonode = getNode($to, "e2node");
+        if($tonode && !$changeCaps)
+        {
+            $str.="<font color=\"red\">Target e2node already exists: ".linkNodeTitle($to,0,1)."</font><br>";
+            next;
+        }
+
+
+        $fromnode->{title} = $to;
+        updateNode($fromnode, -1);
+
+        $str.=linkNodeTitle($realfrom,0,1)." has been renamed to ".linkNode($fromnode)." ";
+
+        my $repair_success = htmlcode("repair e2node", $fromnode->{node_id});
+
+        if($repair_success)
+        {
+            $str.="(repair ok)";
+        }else
+        {
+            $str.="(repair failed)";
+        }
+
+        $query->delete("retitle_from$_", "retitle_to$_");
+        $str.="<br>";
+
+    }
+
+    $str.= "<p>Retitle items: <br><br>";
+    $str.="<table>";
+    for(1..30)
+    {
+        $str.= "<tr>";
+        $str.= $query->td("<tt>retitle: </tt>");
+        $str.= $query->td({-width => "200"}, $query->textfield("retitle_from$_"));
+        $str.= $query->td("<tt>to: </tt>");
+        $str.= $query->td({-width => "200"}, $query->textfield("retitle_to$_"));
+        $str.= "</tr>";
+    }
+
+    $str.="</table>";
+    $str.=htmlcode('closeform', "Retitle items");
+
+    return $str;
+}
+
+sub recalculated_users {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $queryText = "SELECT user.user_id,user.experience FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%hasRecalculated=1%'";
+
+    my $rows = $DB->{dbh}->prepare($queryText)
+        or return $DB->{dbh}->errstr;
+    $rows->execute()
+        or return $DB->{dbh}->errstr;
+
+    my @list = ();
+    my $dbrow;
+    while($dbrow = $rows->fetchrow_arrayref)
+    {
+        push(@list, linkNode($dbrow->[0]) . ' - Level: ' . $APP->getLevel($dbrow->[0]) . ' - XP: ' . $dbrow->[1]);
+    }
+
+    my $str = '';
+    $str .= '<h3>Users who have run [Recalculate XP]</h3>';
+    $str .= '<ol style="margin-left:55px">';
+    foreach my $key (sort { lc($a) cmp lc($b) } @list)
+    {
+        $str .= '<li>'.$key.'</li>';
+    }
+    $str .= '</ol>';
 
     return $str;
 }

@@ -1,17 +1,5 @@
 <node>
-  <doctext>[%
-
-
-my $V = getVars(getNode('dem bones','user'));
-
-my $str;
-foreach (keys %$V) {
-$str.=&quot;$_ : $$V{$_}&lt;br&gt;&quot;;
-
-}
-
-$str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>530149</node_id>
   <title>viewvars</title>
   <type_nodetype>13</type_nodetype>

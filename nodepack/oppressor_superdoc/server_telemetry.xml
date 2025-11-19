@@ -1,38 +1,5 @@
 <node>
-  <doctext>&lt;h1&gt;Apache Processes&lt;/h1&gt;
-&lt;pre&gt;
-[%
- return `ps aux | grep apache2 | grep -v grep`;
-%]
-[%
-  return &quot;Apache threads running: &quot;.`ps aux | grep apache2 | grep -v grep | wc -l`;
-%]
-&lt;/pre&gt;
-&lt;h1&gt;VM Stat&lt;/h1&gt;
-&lt;pre&gt;
-[%
-  return `vmstat`;
-%]
-&lt;/pre&gt;
-&lt;h1&gt;Uptime&lt;/h1&gt;
-&lt;pre&gt;
-[%
-  return `uptime`;
-%]
-&lt;/pre&gt;
-&lt;h1&gt;Cloud Health Check&lt;/h1&gt;
-&lt;tt&gt;
-[%
- return `/var/everything/tools/container-health-check.pl --debug-cloudwatch 2&gt;&amp;1`;
-%]
-&lt;/tt&gt;
-&lt;h1&gt;Apache config&lt;/h1&gt;
-&lt;pre&gt;
-[%
- return `cat /etc/apache2/everything.conf`;
-%]
-&lt;/pre&gt;
-</doctext>
+  <doctext></doctext>
   <node_id>2203605</node_id>
   <title>Server Telemetry</title>
   <type_nodetype>1144104</type_nodetype>

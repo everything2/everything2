@@ -1,33 +1,5 @@
 <node>
-  <doctext>[%
-my $SRCNODE = getNodeById(scalar($query-&gt;param(&quot;srcnode_id&quot;)));
-return 'No node to clone.' unless $SRCNODE;
-
-my $newname = $query-&gt;param(&quot;newname&quot;);
-return 'No name for cloned node.' unless $newname;
-
-my %DATA = (%$SRCNODE);
-
-  # Delete the node id so that when we insert it, it
-  # get a new id.
-  delete $DATA{node_id};
-  delete $DATA{type};
-  delete $DATA{group} if(exists $DATA{group});
-  delete $DATA{title}; # we want to use the new title.
-delete $DATA{_ORIGINAL_VALUES}; # so update doesn't fail in insertNode
-
-my $newid = insertNode($newname, $$SRCNODE{type}, $USER, \%DATA);
-
-my $str;
-if ($newid){
-	$str = &quot;Node &quot; . linkNode($SRCNODE) .
-    	' has been cloned as ' . linkNode($newid);
-}else{
-	$str = 'Ack! Clone failed.'
-}
-
-$query -&gt; p($str);
-%]</doctext>
+  <doctext></doctext>
   <node_id>418271</node_id>
   <title>node cloner</title>
   <type_nodetype>13</type_nodetype>

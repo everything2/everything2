@@ -1,28 +1,5 @@
 <node>
-  <doctext>[%
-my $gonesince = $query -&gt; param('gonesince') || '1 YEAR';
-my $showlength = $query -&gt; param('showlength') || 1000;
-
-my $filter = &quot;doctext != ''&quot;;
-
-$filter .= &quot; AND lasttime &lt; DATE_SUB(NOW(), INTERVAL $gonesince)&quot;;
-$filter .= ' AND numwriteups=0' unless $query -&gt; param('published');
-$filter .= &quot;doctext LIKE '%[http%'&quot; if $query -&gt; param('extlinks');
-
-htmlcode('show paged content', 'title, user_id AS author_user, doctext', 'node JOIN user on node_id=user_id JOIN document ON node_id=document_id', $filter, 'ORDER BY lasttime DESC LIMIT 10', &quot;author, $showlength, smite&quot;, ('smite' =&gt; sub {
-	my $verify = htmlcode('verifyRequestHash', 'polehash');
-		'&lt;hr&gt;'.linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
-		, 'Smite Spammer'
-		, {%$verify
-		, confirmop =&gt; 'remove'
-		, removeauthor =&gt; 1
-		, author =&gt; $_[0]{title}
-		, -title =&gt; 'detonate this noder, blank their homenode, remove their writeups, blacklist their IP where appropriate'
-		, -class =&gt; 'action'});
-	}
-));
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>2000674</node_id>
   <title>caja de arena</title>
   <type_nodetype>13</type_nodetype>
