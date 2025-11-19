@@ -1,39 +1,5 @@
 <node>
-  <doctext>Users that haven't been here in 30 days.  I propose that we auto remove someone who hasn't been to the site in 30 days unless they choose to ignore a certain usergroup's messages (with the exception of: [gods] and [content editors]).  With usergroup ownership, it is now much easier for people to be able to manage those groups. For now, here is an active, automatic list.
-&lt;br&gt;&lt;br&gt;&lt;p align=&quot;center&quot;&gt;&lt;hr width=&quot;30%&quot;&gt;&lt;/p&gt;&lt;br&gt;
-[%
-   return unless isGod($USER);
-   my $people;
-   my $str;
-   my $csr = $DB-&gt;sqlSelectMany(&quot;node_id&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getId(getType(&quot;usergroup&quot;)));
-
-  while(my $row = $csr-&gt;fetchrow_hashref)
-  {
-    my $N = getNodeById($$row{node_id});
-    foreach(@{$$N{group}})
-    {
-      $$people{$_} ||= &quot;&quot;;
-      $$people{$_} .= $$N{node_id}.&quot;,&quot;;
-    }
-  }
-
-  foreach my $uid (keys %$people)
-  {
-     my $p = $DB-&gt;sqlSelect(&quot;user_id&quot;, &quot;user&quot;, &quot;user_id=$uid and TO_DAYS(NOW()) - TO_DAYS(lasttime) &gt; 365&quot;);
-     next unless $p;
-     $str.=&quot;&lt;li&gt;&quot;.linkNode(getNodeById($p)).&quot; (&lt;small&gt;&quot;;
-     my @grps;
-     foreach(split(&quot;,&quot;,$$people{$p}))
-     {
-        my $ministr = linkNode($_);
-        $ministr.=&quot;-ignored&quot; if $DB-&gt;sqlSelect(&quot;messageignore_id&quot;, &quot;messageignore&quot;, &quot;messageignore_id=$p and ignore_node=$_&quot;);
-        push @grps,$ministr;
-     }
-        $str.=join &quot;,&quot;, @grps;
-        $str.=&quot;&lt;/small&gt;)&quot;;
-  }
-   return &quot;&lt;ul&gt;$str&lt;/ul&gt;&quot;;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1383812</node_id>
   <title>Usergroup Attendance Monitor</title>
   <type_nodetype>13</type_nodetype>

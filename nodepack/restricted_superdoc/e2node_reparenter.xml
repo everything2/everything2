@@ -1,38 +1,5 @@
 <node>
-  <doctext>[{openform}]
-[%
-my $str;
-
-$str.= &quot;The node to reparent: &quot;.$query-&gt;textfield(&quot;repare&quot;, &quot;&quot;).&quot;&lt;p&gt;&quot;;
-my $repare = $query-&gt;param('repare');
-
-return $str unless $repare;
-
-my $N = getNode($repare, 'e2node');
-
-return $str.&quot;can't find $repare e2node...&lt;p&gt;&quot; unless $N;
-
-my $id = getId($N);
-
-my $csr = $DB-&gt;sqlSelectMany(&quot;writeup_id&quot;, &quot;writeup&quot;, &quot;parent_e2node=$id&quot;);
-
-my @group;
-while (my ($wrid) = $csr-&gt;fetchrow) {
-  push @group, $wrid;  
-}
-
-replaceNodegroup($N, \@group, $USER);
-
-$str.=&quot;The following nodes have been put into &quot;.linkNode($N);
-
-foreach (@group) {
-  my $W = getNodeById($_);
-  $str.=&quot;&lt;li&gt;&quot;.linkNode($W).&quot; by &quot;.linkNode($$W{author_user});
-}
-$str.=&quot;&lt;P&gt;these may need to be reordered&lt;P&gt;&quot;;
-
-%]
-[{closeform}]</doctext>
+  <doctext></doctext>
   <node_id>741854</node_id>
   <title>e2node reparenter</title>
   <type_nodetype>13</type_nodetype>

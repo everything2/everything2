@@ -1,34 +1,5 @@
 <node>
-  <doctext>[{openform}]
-User [% $query-&gt;textfield(&quot;myuser&quot;, &quot;&quot;, 30) %]
-gets [% $query-&gt;textfield(&quot;mycools&quot;, &quot;&quot;, 3, 3) %]
-cools.
-[{closeform}]
-&lt;p&gt;
-[%
-my $user = $query-&gt;param(&quot;myuser&quot;);
-my $cools = $query-&gt;param(&quot;mycools&quot;);
-
-return unless $APP-&gt;isAdmin($USER);
-
-return unless $user and $cools;
-return &quot;invalid cools&quot; unless $cools =~ /^\d+$/;
-
-
-my $U = getNode($user, 'user');
-return &quot;&lt;i&gt;No user \&quot;$user\&quot; exists!&lt;/i&gt;&quot; unless $U;
-
-my $V = getVars $U;
-$$V{cools} = $cools;
-setVars($U, $V);
-&quot;&lt;i&gt;$cools cools were bestowed to &quot;.linkNode($U).&quot;&lt;/i&gt;&quot;;
-$APP-&gt;securityLog($NODE, $USER, &quot;$$U{title} was given $cools cools by $$USER{title}&quot;);
-$$U{karma}+=1;
-updateNode($U, -1);
-
-return 'Success!';
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>605785</node_id>
   <title>bestow cools</title>
   <type_nodetype>13</type_nodetype>

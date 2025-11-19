@@ -1,51 +1,5 @@
 <node>
-  <doctext>[%
-  return unless isGod($USER);
-  my $str = htmlcode('openform');
-  $str.='And what has' . $query-&gt;textfield('heavenuser').' been up to?&lt;br /&gt;';
-  my @offset = (0..25);
-  foreach (@offset) { $_ *= 200 }
-  $str.='offset: '. $query-&gt;popup_menu('offset', \@offset);
-  my @limit = (1..10);
-  foreach (@limit) { $_ *= 50 }
-  $str.='limit: '. $query-&gt;popup_menu('limit', \@limit);
-
-  $str.=htmlcode('closeform');
-%]
-
-
-
-&lt;table width=&quot;100%&quot;&gt;
-&lt;tr&gt;&lt;th&gt;Time&lt;/th&gt;&lt;th&gt;Title&lt;/th&gt;&lt;th&gt;Author User&lt;/th&gt;&lt;th&gt;Rep&lt;/th&gt;&lt;/tr&gt;
-[%
-  return unless isGod($USER); 
-
-  my $offset = int($query-&gt;param('offset'));
-  $offset ||= 0;
-  my $limit = int($query-&gt;param('limit'));
-  $limit ||= 100;
-  my $U = $USER;
-  $U = getNode($query-&gt;param('heavenuser'),'user') if $query-&gt;param('heavenuser') and isGod($USER);
- 
-  $U or return 'Hmm... no user.  You loser.';
-  my $csr = $DB-&gt;sqlSelectMany('*', 'heaven', 'type_nodetype='.getId(getType('writeup')).' and killa_user='.getId($U), &quot;order by title limit $offset, $limit&quot;);
-  my $num = $DB-&gt;sqlSelect('count(*)', 'heaven', 'type_nodetype='.getId(getType('writeup')).' and killa_user='.getId($U));
-  
-  my $str;
-  my $count;
-  my $T = getNode('Node Heaven Visitation', 'superdoc');
- 
-  while (my $N = $csr-&gt;fetchrow_hashref) {
-    $count++;
-    $str.=&quot;&lt;tr&gt;&lt;td&gt;$$N{createtime}&lt;/td&gt;&lt;td&gt;&quot;
-      .linkNode($T, $$N{title}, {visit_id =&gt; $$N{node_id}})
-      .'&lt;/td&gt;&lt;td&gt;'.linkNode($$N{author_user}).'&lt;/td&gt;&lt;td&gt;'.$$N{reputation}.&quot;&lt;/td&gt;&lt;tr&gt;\n&quot;;  
-  } 
-
-  &quot;&lt;tr&gt;&lt;td&gt;Kill count: $num&lt;/td&gt;&lt;/tr&gt;&quot;.$str;
-
-%]
-&lt;/table&gt;</doctext>
+  <doctext></doctext>
   <node_id>794900</node_id>
   <title>Who Killed What</title>
   <type_nodetype>13</type_nodetype>

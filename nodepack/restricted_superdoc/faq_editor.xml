@@ -1,54 +1,5 @@
 <node>
-  <doctext>[%
-
-my  $faqData;
-
-my $fID = $query-&gt;param(&quot;faq_id&quot;) || 0;
-
-if ($query-&gt;param(&quot;sexisgood&quot;)) {
-	if ($query-&gt;param(&quot;edit_faq&quot;)) {
-		$fID = $query-&gt;param(&quot;edit_faq&quot;);
-		$DB-&gt;sqlUpdate(&quot;faq&quot;,{question =&gt; $query-&gt;param(&quot;faq_question&quot;), answer =&gt; $query-&gt;param(&quot;faq_answer&quot;), keywords =&gt; $query-&gt;param(&quot;faq_keywords&quot;)},&quot;faq_id = $fID&quot;);
-	}
-	else {
-		$DB-&gt;sqlInsert(&quot;faq&quot;,{question =&gt; $query-&gt;param(&quot;faq_question&quot;), answer =&gt; $query-&gt;param(&quot;faq_answer&quot;), keywords =&gt; $query-&gt;param(&quot;faq_keywords&quot;)});
-	}
-}
-
-if ($fID) {
-$faqData = $DB-&gt;sqlSelectHashref(&quot;*&quot;,&quot;faq&quot;,&quot;faq_id = $fID&quot;);
-}
-
-my $str;
-
-$str.=htmlcode('openform');
-
-$str .= $query-&gt;hidden(&quot;edit_faq&quot;,$fID) if $fID;
-
-$str.=&quot;&lt;p&gt;Question: &lt;/p&gt;
-
-&lt;textarea rows='6' cols='40' name='faq_question'&gt;
-&quot;.$$faqData{question}.&quot;
-&lt;/textarea&gt;
-
-&lt;p&gt;Answer: &lt;/p&gt;
-
-&lt;textarea rows='6' cols='40' name='faq_answer'&gt;
-&quot;.$$faqData{answer}.&quot;
-&lt;/textarea&gt;
-
-&lt;p&gt;Keywords (separated by commas):&lt;/p&gt;
-
-&lt;textarea rows='1' cols='40' name='faq_keywords'&gt;
-&quot;.$$faqData{keywords}.&quot;
-&lt;/textarea&gt;&quot;;
-
-
-$str.=htmlcode('closeform');
-
-return $str;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1885718</node_id>
   <title>FAQ Editor</title>
   <type_nodetype>13</type_nodetype>

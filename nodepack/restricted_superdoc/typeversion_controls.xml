@@ -1,38 +1,5 @@
 <node>
-  <doctext>Do-na-touch!
-
-[{openform}]
-&lt;INPUT type=hidden name=confirmpage value=1&gt;
-[%
-    my @nodetypes = getNodeWhere({type_nodetype =&gt; 1 }, &quot;nodetype&quot;);
-    my $str;
-    my %TVERSIONS;
-    my %NEWVERSIONS;
-
-    if (my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;,'typeversion')) {
-        while (my $N = $csr-&gt;fetchrow_hashref) { $TVERSIONS{$$N{typeversion_id}} = 1 }
-        $csr-&gt;finish;
-    }
-if (defined $query-&gt;param('confirmpage')) {
-    foreach ($query-&gt;param) {
-        next unless /^typeify_(\d+)$/;
-        my $n_id = $1;
-        $NEWVERSIONS{$n_id} = 1;
-        if (not $TVERSIONS{$n_id}) {
-            $DB-&gt;sqlInsert(&quot;typeversion&quot;, { typeversion_id=&gt; $n_id, version =&gt; 1 });
-        }
-    }
-
-    foreach (keys %TVERSIONS) {
-        $DB-&gt;sqlDelete(&quot;typeversion&quot;, &quot;typeversion_id=$_&quot;) unless exists $NEWVERSIONS{$_};
-    }
-} else { %NEWVERSIONS = %TVERSIONS }
-foreach (@nodetypes) {
-    $str.=$query-&gt;checkbox('typeify_'.getId($_), exists($NEWVERSIONS{getId($_)}), 1, $$_{title}).&quot;&lt;br&gt;&quot;;
-}
-$str;
-%]
-[{closeform}]</doctext>
+  <doctext></doctext>
   <node_id>906163</node_id>
   <title>typeversion controls</title>
   <type_nodetype>13</type_nodetype>

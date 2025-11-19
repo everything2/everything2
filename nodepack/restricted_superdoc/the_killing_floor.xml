@@ -1,36 +1,5 @@
 <node>
-  <doctext>[{openform}]
-[%
-return 'You\'re in the wrong section, buddy!'; #this is used instead: [the killing floor II]
-my $str = 'Are ya shure ya wanna kill all these perty nodes?&lt;p&gt;&lt;ol&gt;';
-
-return $$USER{title} . &quot; ain't allowed ta kill nuttin'!&quot; unless (Everything::isApproved($USER, getNode('Content Editors', 'usergroup')) || isGod($USER));
-
-my (@param) = $query-&gt;param;
-
-my $parent;
-foreach (@param) {
-  next unless /killnode(\d+)/;
-  my $N = getNodeById($1);
-  $parent ||= $$N{parent_e2node};
-
-  $str.=&quot;&lt;input type=\&quot;hidden\&quot; name=$_ value=\&quot;1\&quot;&gt;&quot;;
-  $str.=&quot;&lt;input type=hidden name=nopain&quot;.getId($N).&quot; value=1&gt;&quot; if defined $query-&gt;param('nopain'.getId($N));
-    $str.=&quot;&lt;input type=hidden name=noderow&quot;.getId($N).&quot; value=1&gt;&quot; if defined $query-&gt;param('noderow'.getId($N));
-  $str.='&lt;li&gt;'.linkNode($N).' by '.linkNode($$N{author_user});
-  $str.=' (mercifully)' if defined $query-&gt;param(&quot;nopain&quot;.getId($N));
-  $str.=' (node row)' if defined $query-&gt;param(&quot;noderow&quot;.getId($N));
-  $str .= &quot;&lt;/li&gt;\n&quot;;
-}
-return unless $parent;
-$str.='&lt;p align=&quot;right&quot;&gt;'.$query-&gt;submit('op','massacre');
-$str.='&lt;p&gt;'.linkNode($parent, 'Changed my mind.');
-$str.=$query-&gt;end_form;
-
-$str .= '&lt;/ol&gt;';
-
-$str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>884776</node_id>
   <title>The killing floor</title>
   <type_nodetype>13</type_nodetype>

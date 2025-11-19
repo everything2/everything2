@@ -1,40 +1,5 @@
 <node>
-  <doctext>[% return unless isGod($USER);  return &quot;&lt;p align=\&quot;right\&quot;&gt;&quot;.linkNode(getNode(&quot;superdoc documentation&quot;, &quot;setting&quot;), &quot;edit/add documentation&quot;, {displaytype =&gt; &quot;edit&quot;}).&quot;&lt;/p&gt;&quot;; %]
-
-[%
-   my $documentation = getVars(getNode(&quot;superdoc documentation&quot;, &quot;setting&quot;));
-
-   $documentation ||= {};
-
-   my @types = (&quot;superdoc&quot;,&quot;oppressor_superdoc&quot;);
-
-   push @types, (&quot;restricted_superdoc&quot;, &quot;setting&quot;) if isGod($USER);
-   my $str = &quot;&quot;;
-   foreach(@types)
-   {
-     $str.=&quot;&lt;h1&gt;$_&quot;;
-     $str.=&quot; - &quot;.linkNode(getNode(&quot;$_ documentation&quot;, &quot;setting&quot;), &quot;edit documentation&quot;) if isGod($USER);
-     $str.=&quot;&lt;/h1&gt;&lt;table&gt;&quot;;
-     my $type = getType($_);
-     my $csr = $DB-&gt;sqlSelectMany(&quot;node_id&quot;, &quot;node&quot;, &quot;type_nodetype=$type-&gt;{node_id} order by title&quot;);
-
-     my $rownum = 1;
-
-     while(my $row = $csr-&gt;fetchrow_hashref)
-     {
-        my $N = getNodeById($row-&gt;{node_id});
-        unless($USER-&gt;{title} eq &quot;JayBonci&quot;){
-            next unless $N and $documentation-&gt;{$N-&gt;{node_id}};
-        }
-
-        $str.=&quot;&lt;tr&quot;.(($rownum % 2)?(&quot; class=\&quot;oddrow\&quot;&quot;):(&quot;&quot;)).&quot;&gt;&lt;td&gt;&lt;small&gt;&lt;strong&gt;&quot;.linkNode($N).&quot;&lt;/strong&gt;&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&lt;small&gt;($$N{node_id})&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&quot;.($documentation-&gt;{$N-&gt;{node_id}} || &quot;&lt;em&gt;none&lt;/em&gt;&quot;).&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
-        $rownum++;
-     }
-
-   $str.=&quot;&lt;/table&gt;&lt;br&gt;&quot;;
-   }
-   return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1468369</node_id>
   <title>What does what</title>
   <type_nodetype>1144104</type_nodetype>

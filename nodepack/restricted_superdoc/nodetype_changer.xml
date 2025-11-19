@@ -1,49 +1,5 @@
 <node>
-  <doctext>[%
-
-
-my $str;
-
-
-if ($query-&gt;param(&quot;new_nodetype&quot;)) {
-
-$DB-&gt;sqlUpdate('node',{type_nodetype =&gt; $query-&gt;param(&quot;new_nodetype&quot;)},'node_id='.$query-&gt;param(&quot;change_id&quot;));
-
-}
-
-if ($query-&gt;param(&quot;oldtype_id&quot;)) {
-
-my $N = getNodeById($query-&gt;param(&quot;oldtype_id&quot;));
-
-next unless $N;
-
-$str.=&quot;&lt;P&gt;&quot;.$$N{title}.&quot; is currently a: &quot;.getNodeById($$N{type_nodetype},'light')-&gt;{title}.&quot;&lt;/p&gt;&quot;;
-
-$str .= htmlcode('openform');
-
-	my (@NTYPES) = getNodeWhere({type_nodetype =&gt; getId(getType('nodetype'))});
-
-$str.=&quot;&lt;select name='new_nodetype'&gt;&quot;;
-	foreach(@NTYPES) {
-		my $t = $$_{title};
-		$str.=&quot;&lt;option value='$$_{node_id}'&gt;$t&lt;/option&gt;&quot;;
-	}
-$str.=&quot;&lt;/select&gt;&quot;;
-$str.=$query-&gt;hidden(&quot;change_id&quot;,$query-&gt;param(&quot;oldtype_id&quot;));
-$str.= $query-&gt;submit(&quot;sexisgood&quot;,&quot;update&quot;);
-
-}
-else {
-$str .= htmlcode('openform');
-$str .= &quot;Node Id: &quot;.$query-&gt;textfield(&quot;oldtype_id&quot;,&quot;&quot;,20);
-$str .= &quot; &quot;.$query-&gt;submit(&quot;sexisgood&quot;,&quot;get data&quot;);
-}
-
-$str;
-
-
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1877660</node_id>
   <title>Nodetype Changer</title>
   <type_nodetype>13</type_nodetype>

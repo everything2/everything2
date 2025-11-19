@@ -960,6 +960,254 @@ These will be converted to actual links when the output is passed through `parse
 - `getNode()`, `linkNode()`, `htmlcode()` remain the same
 - Database queries: `$DB->sqlSelect()`, `$DB->sqlSelectMany()`, etc.
 
+#### Helper Functions and Nested Subroutines
+
+**CRITICAL: Do NOT use nested subroutines in delegation functions.** Nested subroutines cause scope problems in mod_perl environments and can lead to hard-to-debug issues.
+
+**The Problem:**
+
+```perl
+# WRONG - nested subroutine
+sub my_delegation {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    # This is a NESTED subroutine - causes scope problems
+    sub helper {
+        my $value = shift;
+        return $value * 2;
+    }
+
+    my $result = helper(5);
+    return $result;
+}
+```
+
+**Why This Fails:**
+- Nested named subroutines create closure over lexical variables
+- In mod_perl, this causes variable persistence between requests
+- Can leak data from one user's request to another
+- Triggers Perl::Critic warnings
+- Violates best practices for persistent Perl environments
+
+**Solutions:**
+
+**Option 1: Inline Simple Functions (Preferred for simple operations)**
+
+```perl
+# CORRECT - inline the logic
+sub my_delegation {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $value = 5;
+    my $result = $value * 2;  # Inlined instead of helper function
+    return $result;
+}
+```
+
+**Option 2: Create Helper in Everything::Application (For complex or reusable logic)**
+
+```perl
+# In Everything::Application
+sub doubleValue {
+    my ($this, $value) = @_;
+    return $value * 2;
+}
+
+# In delegation function
+sub my_delegation {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $result = $APP->doubleValue(5);
+    return $result;
+}
+```
+
+**Real Example from Migrations:**
+
+The `gp_optouts` migration originally used a nested `mysort` subroutine:
+
+```perl
+# WRONG - original nested subroutine
+sub gp_optouts {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    sub mysort {  # Nested - causes scope problems!
+        return lc($a) cmp lc($b);
+    }
+
+    foreach my $key (sort mysort @list) {
+        # ...
+    }
+}
+```
+
+This was fixed by inlining the sort comparison:
+
+```perl
+# CORRECT - inlined sort comparison
+sub gp_optouts {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    foreach my $key (sort { lc($a) cmp lc($b) } @list) {
+        # ...
+    }
+}
+```
+
+**Guidelines:**
+
+1. **Never use `sub name { }` inside delegation functions**
+2. **For simple operations**: Inline the logic directly
+3. **For complex logic**: Create a method in `Everything::Application`
+4. **For sorting**: Use inline `sort { }` blocks instead of named sort subroutines
+5. **For one-time calculations**: Just write the code inline
+6. **For reusable logic**: Add it to `Everything::Application` where it can be tested and reused
+
+**Exception - Anonymous Subroutines:**
+
+Anonymous subroutines assigned to lexical variables are acceptable if properly initialized:
+
+```perl
+# CORRECT - anonymous sub assigned to lexical variable
+sub my_delegation {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $helper = sub {  # Anonymous sub assigned to lexical
+        my $value = shift;
+        return $value * 2;
+    };
+
+    my $result = $helper->(5);  # Call with ->()
+    return $result;
+}
+```
+
+**IMPORTANT:** If you encounter code using `local *funcname = sub {}`, convert it to `my $funcname = sub {}`:
+
+```perl
+# WRONG - using local * to create typeglob alias
+local *humanTime = sub {
+    my $t = shift;
+    return $t;
+};
+my $time = humanTime($value);  # Called like regular function
+```
+
+```perl
+# CORRECT - using lexical variable with subroutine reference
+my $humanTime = sub {
+    my $t = shift;
+    return $t;
+};
+my $time = $humanTime->($value);  # Called with ->()
+```
+
+**Key Differences:**
+- `local *name` creates a typeglob alias to the symbol table (problematic in mod_perl)
+- `my $name` creates a proper lexical variable holding a subroutine reference
+- Lexical subroutine references must be called with `->()` syntax
+- Anonymous subs assigned to lexical variables are mod_perl safe
+
+**Real Example from ip_hunter:**
+
+```perl
+# BEFORE - typeglob alias
+local *humanTime = sub {  ## no critic
+    my $t = $_[0];
+    return $t;
+};
+$str .= humanTime($$ROW{iplog_time});
+```
+
+```perl
+# AFTER - lexical subroutine reference
+my $humanTime = sub {
+    my $t = $_[0];
+    return $t;
+};
+$str .= $humanTime->($$ROW{iplog_time});
+```
+
+However, even anonymous subroutines should be avoided in favor of inlining or Application methods for better maintainability and to avoid potential closure issues.
+
+#### Cleaning Up Unused Variables
+
+**IMPORTANT: Remove unused variables during migration.** Original node code may declare variables that are never used, often remnants from earlier versions or copy-paste artifacts. Clean these up during the migration process.
+
+**Why This Matters:**
+- Reduces code clutter and improves readability
+- Prevents confusion about variable purpose
+- Avoids Perl::Critic warnings about unused variables
+- Demonstrates code quality and attention to detail
+- In functions without string eval(), unused variables serve no purpose
+
+**How to Identify Unused Variables:**
+
+1. **After writing the delegation function**, review all variable declarations
+2. **Search for each variable** in the function body to confirm it's actually used
+3. **Remove declarations** for variables that are:
+   - Declared but never assigned a value AND never read
+   - Assigned but the value is never used
+   - Artifacts from template code that don't apply in delegation context
+
+**Real Example from gp_optouts:**
+
+```perl
+# BEFORE - with unused variables
+sub gp_optouts {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $queryText;
+    my $rows;
+    my $dbrow;
+    my $str = '';
+    my @list = ();
+    my @sortedList;  # NEVER USED - should be removed
+    my $n;           # NEVER USED - should be removed
+
+    my $nodeId = getId($NODE);  # NEVER USED - should be removed
+    my $uid = getId($USER)||0;  # NEVER USED - should be removed
+
+    $queryText = "SELECT ...";
+    # ... rest of function
+}
+```
+
+```perl
+# AFTER - cleaned up
+sub gp_optouts {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $queryText = '';
+    my $rows;
+    my $dbrow;
+    my $str = '';
+    my @list = ();
+
+    $queryText = "SELECT ...";
+    # ... rest of function
+}
+```
+
+**Guidelines:**
+
+1. **Keep variables that ARE used**, even if they're only used once
+2. **Remove variables from original template code** that made sense in the node context but not in delegation
+3. **Don't remove variables used in string eval()** - if the function uses `eval "..."`, variables might be referenced in the eval string
+4. **Initialize remaining variables properly** for mod_perl safety (empty string, empty array, empty hash)
+5. **Be especially watchful for:**
+   - Loop variables from removed code
+   - Helper variables from removed nested subroutines
+   - Node/User ID variables that were used in removed template syntax
+
+**When to Clean Up:**
+
+- **During initial migration**: Review and clean as you write the delegation function
+- **After Perl::Critic check**: If critic flags unused variables, remove them
+- **Before final build**: Do a final review of all variable declarations
+
+This cleanup is part of improving code quality during migration, not just mechanical translation from template to delegation.
+
 #### Module Imports (use statements)
 
 **IMPORTANT**: When delegating code that requires Perl modules, add `use` statements at the top of `document.pm`, NOT inside the function.
