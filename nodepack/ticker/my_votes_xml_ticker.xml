@@ -1,30 +1,5 @@
 <node>
-  <doctext>[%
-my $str = &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;
-&lt;votes&gt;\r\n&quot;;
-
-my $count = 100;
-my $page = int($query-&gt;param('p'));
-
-my $sql = &quot;SELECT node.node_id,node.title,vote.weight,node.reputation,vote.votetime
-           FROM vote,node
-           WHERE node.node_id=vote.vote_id
-            AND vote.voter_user=$$USER{user_id}
-           ORDER BY vote.votetime
-           LIMIT &quot;.($page*$count).&quot;,$count&quot;;
-my $ds = $DB-&gt;{dbh}-&gt;prepare($sql);
-$ds-&gt;execute() or return $ds-&gt;errstr;
-while(my $v = $ds-&gt;fetchrow_hashref)
-{
-  $str .= &quot;  &lt;vote votetime=\&quot;$$v{votetime}\&quot;&gt;
-    &lt;e2link node_id=\&quot;$$v{node_id}\&quot;&gt;&quot;.encodeHTML($$v{title}).&quot;&lt;/e2link&gt;
-    &lt;rep cast=\&quot;$$v{weight}\&quot;&gt;$$v{reputation}&lt;/rep&gt;
-  &lt;/vote&gt;\r\n&quot;;
-}
-$str .= '&lt;/votes&gt;';
-return $str;
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>1934718</node_id>
   <title>My Votes XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

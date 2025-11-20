@@ -1469,7 +1469,7 @@ sub inUsergroup
 	{
 		$usergroup = $this->{db}->getNode($usergroup, "usergroup");
 	}
-
+  return 0 unless $usergroup;
 	return $this->{db}->isApproved($user,$usergroup,$nogods);
 }
 
@@ -4603,9 +4603,9 @@ sub weblogs_structure
 
 sub filtered_newwriteups
 {
-  my ($this, $USER) = @_;
+  my ($this, $USER, $limit) = @_;
 
-  my $limit = 40;
+  $limit ||= 40;
 
   my $iseditor = $this->isEditor($USER);
   my $isguest = $this->isGuest($USER);

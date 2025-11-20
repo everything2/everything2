@@ -1,57 +1,5 @@
 <node>
-  <doctext>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml/transitional.dtd&quot;&gt;
-&lt;html&gt;
-	&lt;head&gt;
-	&lt;title&gt;[% $$NODE{title}; %]&lt;/title&gt;
-[%
-	return &quot;&lt;link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=&quot;. $REQUEST-&gt;user-&gt;style-&gt;id.&quot;&amp;amp;displaytype=serve'&gt;&quot;;
-%]
-[%
-if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
-	return &quot;   \t&lt;style type='text/css'&gt;\n\n\t&quot; . $APP-&gt;htmlScreen($$VARS{customstyle}) . &quot;\n\n\t&lt;/style&gt;&quot;;
-}
-%]
-	[{static javascript}]
-	&lt;/head&gt;
-	&lt;body&gt;
-	&lt;div id=&quot;links&quot;&gt;
-		&lt;p&gt;
-			&lt;a href=&quot;javascript:replyToCB(\'jaybonci\')&quot;&gt;Comments/Suggestions?&lt;/a&gt; |
-			&lt;a href=&quot;/?node_id=[%  $$NODE{node_id}; %]&amp;amp;op=bookmark&quot;&gt;bookmark&lt;/a&gt; |
-			&lt;a href=&quot;/&quot;&gt;The front door&lt;/a&gt; | 
-			&lt;b&gt;server time:&lt;/b&gt;[% localtime(); %]
-		&lt;/p&gt;
-	&lt;/div&gt;
-	&lt;div style='width: 100%;'&gt;
-		&lt;div id='chatterbox_nodelet' style='width: 73%; float: left; margin-right: 0px'&gt;
-			[% insertNodelet( getNode( 'Chatterbox', 'nodelet' ) ); %]
-
-			&lt;p&gt;&lt;a href=&quot;javascript:replyToCB('[% my $name = $$USER{title}; $name =~ s/'/\\'/g; $name =~ s/ /_/g; $name; %]')&quot;&gt;Talk to yourself&lt;/a&gt;&lt;/p&gt;
-
-			&lt;p&gt;Now talking in: [% linkNode($$USER{in_room}) || &quot;outside&quot;; %]&lt;br /&gt;([% linkNode(getNode(&quot;Available Rooms&quot;, &quot;superdoc&quot;), &quot;change room&quot;); %])&lt;/p&gt;
-
-		&lt;/div&gt;
-
-		&lt;div style='width: 25%; float: left'&gt;
-			[% insertNodelet( getNode( 'New Writeups', 'nodelet' )); %]
-
-		&lt;/div&gt;
-	&lt;/div&gt;
-	&lt;div style=&quot;clear: both&quot;&gt;
-
-		[% htmlcode('zensearchform','noendform'); %]
-		&lt;br /&gt;&lt;br /&gt;
-		&lt;p style='text-align: right'&gt;[% linkNodeTitle('chatterlight'); %] Original credit goes to wharfinger.&lt;/p&gt;
-	&lt;/div&gt;
-&lt;script&gt;
-new PeriodicalExecuter(function() { if ($F('message') == '') {updateTalk();}},10);
-new PeriodicalExecuter(function() { if ($('message').size != &quot;70&quot;) {$('message').size=&quot;70&quot;; $('message').focus();}},0.2);
-new PeriodicalExecuter(function() {E2AJAX.updateNodelet('263','New Writeups');},180);
-$('message').size=&quot;70&quot;;
-$('message').focus();
-&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</doctext>
+  <doctext></doctext>
   <node_id>1942820</node_id>
   <title>chatterlight classic</title>
   <type_nodetype>451267</type_nodetype>

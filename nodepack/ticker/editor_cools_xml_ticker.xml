@@ -1,55 +1,5 @@
 <node>
-  <doctext>[%
-   my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot;?&gt;\n&quot;;
-$str.=&quot;
-   &lt;!DOCTYPE editorcools \[
-     &lt;!ELEMENT editorcools (edselection*)&gt;\n
-     &lt;!ELEMENT edselection (endorsed, e2link)&gt;\n
-     &lt;!ELEMENT e2link (\#PCDATA)&gt;\n
-     &lt;!ELEMENT endorsed (\#PCDATA)&gt;\n
-       &lt;!ATTLIST e2link node_id CDATA \#REQUIRED&gt;\n 
-       &lt;!ATTLIST endorsed node_id CDATA \#REQUIRED&gt;\n
-   \]&gt;
-&quot;;
-   $str .= &quot;&lt;editorcools&gt;\n&quot;;
-
-  my $poclink = getId(getNode('coollink', 'linktype'));
-  my $pocgrp = getNode('coolnodes', 'nodegroup');
-  my $count = 0;
-  my $countmax = $query-&gt;param('count');
-  $countmax ||= 10;
-  $countmax = 50 if $countmax &gt; 50;
-
-
-  $pocgrp = $$pocgrp{group};
-
-  foreach(reverse @$pocgrp)
-  {
-    return $str .= &quot;&lt;/editorcools&gt;&quot; if($count &gt;= $countmax);
-    $count++;
-
-    next unless($_);
-
-    my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\'');
-
-    $csr-&gt;execute;
-
-    my $coolref = $csr-&gt;fetchrow_hashref;
-
-    next unless($coolref);
-    my $cooler = getNodeById($$coolref{to_node});
-    $coolref = getNodeById($$coolref{from_node});
-    next unless($coolref); 
-    $str .= &quot;&lt;edselection&gt;\n&quot;;
-    
-    $str .= &quot; &lt;endorsed node_id=\&quot;$$cooler{node_id}\&quot;&gt;$$cooler{title}&lt;/endorsed&gt;\n&quot;;
-    $str .= &quot; &lt;e2link node_id=\&quot;$$coolref{node_id}\&quot;&gt;&quot;.encodeHTML($$coolref{title}).&quot;&lt;/e2link&gt;\n&quot;;
-    $str .= &quot;&lt;/edselection&gt;\n&quot;;
-    $csr-&gt;finish();
-  }
-
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>1256768</node_id>
   <title>Editor Cools XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

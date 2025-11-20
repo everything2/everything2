@@ -6,8 +6,26 @@ use warnings;
 # Used in: reputation_graph, reputation_graph_horizontal
 use Date::Parse;
 
-# Used in: findings_
+# Used in: findings_, sql_prompt
 use Time::HiRes;
+
+# Used in: gnl
+use Everything::FormMenu;
+
+# Used in: ajax_update
+use JSON;
+use Everything::Delegation::opcode;
+
+# Used in: chatterbox_xml_ticker, cool_nodes_xml_ticker, new_nodes_xml_ticker,
+#          private_message_xml_ticker, rdf_search, user_information_xml,
+#          user_search_xml_ticker
+use XML::Generator;
+
+# Used in: personal_session_xml_ticker, podcast_rss_feed
+use POSIX qw(strftime asctime);
+
+# Used in: universal_message_xml_ticker
+use XML::Simple;
 
 BEGIN {
     *getNode         = *Everything::HTML::getNode;
@@ -48,6 +66,11 @@ use Date::Parse;
 use Everything::S3;
 use IO::Compress::Zip;
 use utf8;
+
+# Used by XML ticker fullpage functions: new_nodes_xml_ticker,
+#         private_message_xml_ticker, rdf_search, user_information_xml,
+#         user_search_xml_ticker
+use Everything::XML;
 
 sub admin_settings {
     my $DB       = shift;
@@ -312,7 +335,7 @@ sub advanced_settings {
     $str .= "<fieldset><legend>Writeup Footers</legend>\n";
 
     if (    $USER->{title} =~ /^(?:mauler|riverrun|Wiccanpiper|DonJaime)$/
-        and $DB->isGod($USER) )
+        and $APP->isAdmin($USER) )
     {
     # only gods can disable pop-up: they get the missing tools in Master Control
     # as of 2011-07-15 only three gods are using it. Let's lose it gradually...
@@ -2047,7 +2070,7 @@ sub create_room {
     my $isChanop = $APP->isChanop($USER);
 
     if (    $APP->getLevel($USER) < $Everything::CONF->create_room_level
-        and not $DB->isGod($USER)
+        and not $APP->isAdmin($USER)
         and not $isChanop )
     {
         return "<I>Too young, my friend.</I>";
@@ -6605,12 +6628,18 @@ sub delegation_hitlist
   my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
   my $str = '';
   my $count = 0;
-  my $types = [qw(superdoc restricted_superdoc superdocnolinks oppressor_superdoc fullpage htmlcode htmlpage nodelet ticker)];
+  my $types = [qw(superdoc restricted_superdoc superdocnolinks oppressor_superdoc fullpage htmlcode htmlpage nodelet ticker achievement)];
 
   foreach my $type (@$types)
   {
     my $nt = getType($type);
-    my $csr = $DB->sqlSelectMany('node_id','node LEFT JOIN document on node.node_id=document.document_id',"type_nodetype=$nt->{node_id} AND doctext IS NOT NULL AND doctext!=''");
+    my $csr;
+    if($type eq "achievement")
+    {
+      $csr = $DB->sqlSelectMany('node_id','node LEFT JOIN achievement on node.node_id=achievement.achievement_id',"type_nodetype=$nt->{node_id} and code IS NOT NULL AND code !=''");
+    }else{
+      $csr = $DB->sqlSelectMany('node_id','node LEFT JOIN document on node.node_id=document.document_id',"type_nodetype=$nt->{node_id} AND doctext IS NOT NULL AND doctext!=''");
+    }
     $str .= "<ul>$type";
     while(my $row = $csr->fetchrow_arrayref)
     {
@@ -6795,7 +6824,7 @@ sub show_user_vars
 
     my $uid = getId($USER);
     return 'Try logging in.' if $APP->isGuest($USER);
-    my $isRoot = $DB->isGod($USER);
+    my $isRoot = $APP->isAdmin($USER);
     my $isEDev = $APP->isDeveloper($USER);
     return ($str . ' Ummmm... no.') unless $isRoot || $isEDev;
 
@@ -7124,7 +7153,7 @@ sub node_backup
             linebreak => 'true')
         .'<br>';
 
-    if($DB->isGod($USER))
+    if($APP->isAdmin($USER))
     {
         $str .= q|For noder: |.$query->textfield(-name => 'for_noder').q| <em>(admin only)</em><br />|;
     }
@@ -7134,7 +7163,7 @@ sub node_backup
     my $e2parse = $query->param('e2parse');
     my $targetNoder = undef;
 
-    if ($query->param('for_noder') && $DB->isGod($USER)) {
+    if ($query->param('for_noder') && $APP->isAdmin($USER)) {
         # hard-of-access option to test on other other users' stuff:
         # draft security hole comparable to [SQL prompt]
         my $targetNoderName = $query->param('for_noder');
@@ -11754,7 +11783,6 @@ sub gnl
     $text .= "\n";
 
     # Build type selection menu
-    use Everything::FormMenu;
 
     my $menu = new Everything::FormMenu();
     my $type = $query->param('whichtype');
@@ -20295,7 +20323,6 @@ sub sql_prompt {
 
 
     my $thisdbh = $DB->getDatabaseHandle();
-    use Time::HiRes;
     my @start = Time::HiRes::gettimeofday;
     my $cursor = eval { $thisdbh->prepare($execstr) };
     return $str . 'Bad SQL: ' . $thisdbh->errstr . "($@)\n</p>\n" if $@;
@@ -20832,7 +20859,6 @@ sub usergroup_press_gang {
 
     $str .= "<br />\n";
     $str .= "<hr />\n\n";
-    $str .= "<p><i>Bug reports go to [JayBonci]. </i></p>\n";
 
     return $str;
 }
@@ -22522,9 +22548,6 @@ sub what_does_what {
         while(my $row = $csr->fetchrow_hashref)
         {
             my $N = getNodeById($row->{node_id});
-            unless($USER->{title} eq "JayBonci"){
-                next unless $N and $documentation->{$N->{node_id}};
-            }
 
             $str.="<tr".(($rownum % 2)?(" class=\"oddrow\""):(""))."><td><small><strong>".linkNode($N)."</strong></small></td><td><small>($N->{node_id})</small></td><td>".($documentation->{$N->{node_id}} || "<em>none</em>")."</td></tr>";
             $rownum++;
@@ -22638,6 +22661,2722 @@ sub recalculated_users {
     }
     $str .= '</ol>';
 
+    return $str;
+}
+
+sub ajax_update
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $mode = $query->param("mode") || "var";
+    $PAGELOAD->{noparsecodelinks} = 'nolinks';
+
+    if ($mode eq 'message') {
+        $query->param('message',$query->param("msgtext"));
+        my @deleteParams = split(',', $query->param("deletelist") || '');
+        foreach (@deleteParams) {
+            $query->param($_,1);
+        }
+        Everything::Delegation::opcode::message($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+        return $query->param('sentmessage');
+    }
+
+    if ($mode eq 'vote') {
+        Everything::Delegation::opcode::vote($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+        return 0;
+    }
+
+    if ($mode eq 'getNodeInfo') {
+        my $type = $query->param("type");
+        my $title = $query->param("title");
+        my $field = $query->param("field");
+        return unless ($type && $title && $field);
+
+        my $tempNode = getNode($title,$type);
+        return unless $tempNode;
+
+        return $tempNode->{$field};
+    }
+
+    if ($mode eq 'annotate') {
+
+        my $action = $query->param("action");
+        return unless $action;
+
+        if ($action eq 'delete') {
+            my $aNode = $query->param("annotation_id");
+            my $aLoc = $query->param("location");
+            return unless ($aNode && $aLoc);
+            $DB->sqlDelete("annotation",{ann_node => $aNode, ann_location => $aLoc});
+            return "annotation deleted";
+        }
+
+        if ($action eq 'retrieve') {
+            my $aNode = $query->param("annotation_id");
+            return unless $aNode;
+            my $commentList = $DB->sqlSelectMany("ann_text, ann_location","annotation","ann_node = $aNode");
+            my $cSet = '';
+            while (my $c = $commentList->fetchrow_hashref) {
+                $cSet.=$$c{ann_location}.",".$$c{ann_text}.",";
+            }
+            return $cSet;
+
+        }
+
+        if ($action eq 'add') {
+            my $aNode = $query->param("annotation_id");
+            my $aText = $query->param("comment");
+            my $aLoc = $query->param("location");
+            return unless ($aNode && $aText && $aLoc);
+            $DB->sqlInsert("annotation",{ann_node => $aNode, ann_text => $aText, ann_location => $aLoc});
+            return "annotation added";
+        }
+    }
+
+    if ($mode eq 'update') {
+        return '"update" mode retired for security reasons:<br>
+            see e2.ajax.update code for current implementation';
+    }
+
+    if ($mode eq 'getlastmessage') {
+        return $DB->sqlSelect('max(message_id)', 'message use index(foruser_tstamp) ', "for_user=0 and room=0", "");
+    }
+
+
+    if ($mode eq 'markNotificationSeen') {
+        htmlcode('ajaxNotificationSeen',$query->param("notified_id"));
+    }
+
+    if ($mode eq 'checkNotifications') {
+        return to_json(htmlcode('notificationsJSON'));
+    }
+
+
+    if ($mode eq 'checkCools') {
+        return to_json(htmlcode('coolsJSON'));
+    }
+
+    if ($mode eq 'checkMessages') {
+        return to_json(htmlcode('showchatterJSON'));
+    }
+
+    if ($mode eq 'checkFeedItems') {
+        return to_json(htmlcode('userFeedJSON'));
+    }
+
+    if ($mode eq 'deleteFeedItem') {
+        return unless $query->param('feeditem_nodeid');
+        nukeNode(getNodeById($query->param('feeditem_nodeid')), $USER);
+    }
+
+
+
+    $NODE = getNodeById(124);
+
+    return '';
+}
+
+sub chatterbox_xml_ticker {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $room = $$USER{in_room};
+    $room ||= 0;
+    my $RNODE = getNodeById($room);
+    my $str = '';
+    my $XG = XML::Generator->new();
+
+    my $oldUA = $query->user_agent();
+    if (index($oldUA,'JChatter/0.1.12.1beta')!=-1) {
+        $oldUA = 1;
+    } else {
+        $oldUA = 0;
+    }
+
+    my $csr = $DB->sqlSelectMany('*', 'message', "for_user=0 and room=$room and tstamp > date_sub(now(), interval 500 second)", 'order by tstamp');
+
+    my @msgs = ();
+    while (my $MSG = $csr->fetchrow_hashref) {
+        push @msgs, $MSG;
+    }
+
+    my $V = getVars(getNode('room topics','setting'));
+    my $topic = '';
+    if (exists $$V{$room}) {
+        $topic = $$V{$room};
+        $topic = $query->escape($topic);
+    }
+
+    $str.=$XG->INFO({site => $Everything::CONF->site_url, sitename => $Everything::CONF->site_name, servertime=>scalar(localtime(time)), room => $$RNODE{title}, topic => $topic}, "Rendered by the Chatterbox XML Ticker, which has been deprecated since 2002. Use the universal message xml ticker instead.");
+
+    my $m = '';
+    my $mTime = '';
+    foreach my $MSG (@msgs) {
+        my $FUSER = getNodeById($$MSG{author_user});
+        $m = $$MSG{msgtext};
+
+        $m =~ s/\[([^\]]*?)$/&#91;$1/;
+
+        $m = Everything::XML::makeXmlSafe($m);
+
+        $mTime = $$MSG{tstamp};
+        if ($oldUA) {
+            if ($mTime =~ /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) {
+                $mTime = $1.$2.$3.$4.$5.$6;
+            } else {
+                $mTime .= ' no';
+            }
+        }
+
+        $str.= "\n".$XG->message({
+            author => Everything::XML::makeXmlSafe($$FUSER{title}),
+            time => $mTime,
+        }, "\n".$m);
+    }
+
+    return "\n".$XG->CHATTER($str."\n");
+}
+
+sub chatterlight {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '';
+    $str = '	<link rel="stylesheet" id="zensheet" type="text/css" href="'
+                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$Everything::CONF->default_style,'serve')
+                 . '" media="screen,tv,projection">' ;
+    $str .= "   \t<style type='text/css'>\n\n\t" . $APP->htmlScreen($$VARS{customstyle}) . "\n\n\t</style>"
+        if ($$VARS{customstyle});
+
+    my $html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+	<title>'.$$NODE{title}.'</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style type="text/css">#message { width: 97%; }</style>
+	<link rel=\'stylesheet\' id=\'basesheet\' type=\'text/css\' href=\'/node/stylesheet/basesheet?displaytype=view\'>
+'.$str.'
+	</head>
+<body id="chatterlight">
+<div id="e2-react-root"></div>
+	<div id="chatterlight_mainbody">
+
+		<div id="links">
+			<p>';
+
+    $html .= linkNodeTitle("E2 Bouncer")." | " if $APP->isAdmin($USER);
+
+    $html .= '
+				<a href="/node/superdoc/Drafts" title="Your drafts">Drafts</a> |
+				'.linkNode($USER,0,{lastnode_id=>0}).' |
+				'.htmlcode('bookmarkit').' |
+				<a href="/" title="E2\'s Front Page">The front door</a> |
+                                     <a href="/?node_id='.$$NODE{node_id}.'" title="Refresh Private Messages">refresh private msgs</a> |
+				<b>server time:</b> '.localtime().'
+			</p>
+		</div> <!-- end links -->
+
+			<div id=\'chatterbox_nodelet\'>
+
+				'.insertNodelet( getNode( 'Chatterbox', 'nodelet' ) ).'
+
+				<div id="chatterlight_rooms">
+ 					<p><span title="What chatroom you are in">Now talking in: '.(linkNode($$USER{in_room}) || "outside").' </span> '.htmlcode('changeroom').'
+					<p><a href="javascript:replyToCB(\'';
+
+    my $name = $$USER{title};
+    $name =~ s/'/\\'/g;
+    $name =~ s/ /_/g;
+
+    $html .= $name.'\')" title="send a private message to yourself">Talk to yourself</a></p>
+				</div> <!-- close chatterlight_rooms -->
+
+			</div> <!-- close chatterbox_nodelet -->
+
+		<div id="chatterlight_search">
+			'.htmlcode('zensearchform').'
+		</div>
+
+			<div id="chatterlight_credit">
+				<p><small>'.linkNodeTitle('chatterlight').' Original credit goes to wharfinger.</small></p>
+			</div> <!-- close chatterlight_credit -->
+
+		<div id="chatterlight_hints">
+			<p>To make chatterlight look nice, try adding the following to [Style Defacer] or your stylesheet:
+			<br />#chatterlight_mainbody { float: left; width: 750px; margin-left: 10px; }
+			<br />#chatterlight_NW       { float: left; width: 190px; }
+			<br />#chatterlight_hints    { display: none; }
+		</p></div> <!-- end chatterlight_hints -->
+
+	</div> <!-- close chatterlight_mainbody -->
+';
+
+    my $nodeletString = $$VARS{nodelets};
+    my %nodelets = ();
+    %nodelets = map { $_ => 1 } split(',', $nodeletString) if $nodeletString;
+    my $notificationsNodelet = getNode('Notifications', 'nodelet');
+    if ($notificationsNodelet && $nodelets{$$notificationsNodelet{node_id}}) {
+        my $str2 = insertNodelet($notificationsNodelet);
+        $str2 = <<ENDHTML;
+			<div id=\"chatterlight_Notifications\">
+			$str2
+			</div>
+ENDHTML
+        $html .= $str2;
+    }
+
+    $html .= '
+	<div id="chatterlight_NW">
+		'.insertNodelet( getNode( 'New Writeups', 'nodelet' )).'
+	</div> <!-- close chatterlight_NW -->
+'.htmlcode('static javascript').'
+</body>
+</html>';
+
+    return $html;
+}
+
+sub chatterlight_classic {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $styleId = $$VARS{userstyle} || $Everything::CONF->default_style;
+    my $str = "";
+    $str = "<link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=$styleId&amp;displaytype=serve'>";
+
+    my $customstyle = '';
+    if (exists($$VARS{customstyle}) && defined($$VARS{customstyle})) {
+        $customstyle = "   \t<style type='text/css'>\n\n\t" . $APP->htmlScreen($$VARS{customstyle}) . "\n\n\t</style>";
+    }
+
+    my $name = $$USER{title};
+    $name =~ s/'/\\'/g;
+    $name =~ s/ /_/g;
+
+    my $html = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml/transitional.dtd">
+<html>
+	<head>
+	<title>'.$$NODE{title}.'</title>
+'.$str.'
+'.$customstyle.'
+	'.htmlcode('static javascript').'
+	</head>
+	<body>
+	<div id="links">
+		<p>
+			<a href="/?node_id='.$$NODE{node_id}.'&amp;op=bookmark">bookmark</a> |
+			<a href="/">The front door</a> |
+			<b>server time:</b>'.localtime().'
+		</p>
+	</div>
+	<div style=\'width: 100%;\'>
+		<div id=\'chatterbox_nodelet\' style=\'width: 73%; float: left; margin-right: 0px\'>
+			'.insertNodelet( getNode( 'Chatterbox', 'nodelet' ) ).'
+
+			<p><a href="javascript:replyToCB(\''.$name.'\')">Talk to yourself</a></p>
+
+			<p>Now talking in: '.(linkNode($$USER{in_room}) || "outside").'<br />('.linkNode(getNode("Available Rooms", "superdoc"), "change room").')</p>
+
+		</div>
+
+		<div style=\'width: 25%; float: left\'>
+			'.insertNodelet( getNode( 'New Writeups', 'nodelet' )).'
+
+		</div>
+	</div>
+	<div style="clear: both">
+
+		'.htmlcode('zensearchform','noendform').'
+		<br /><br />
+		<p style=\'text-align: right\'>'.linkNodeTitle('chatterlight').' Original credit goes to wharfinger.</p>
+	</div>
+<script>
+new PeriodicalExecuter(function() { if ($F(\'message\') == \'\') {updateTalk();}},10);
+new PeriodicalExecuter(function() { if ($(\'message\').size != "70") {$(\'message\').size="70"; $(\'message\').focus();}},0.2);
+new PeriodicalExecuter(function() {E2AJAX.updateNodelet(\'263\',\'New Writeups\');},180);
+$(\'message\').size="70";
+$(\'message\').focus();
+</script>
+</body>
+</html>';
+
+    return $html;
+}
+
+sub cool_nodes_xml_ticker {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $cache = $DB->stashData("coolnodes");
+
+    my $xml = '';
+    my $XG = XML::Generator->new();
+
+    my $count = 15;
+    my %used = ();
+
+    foreach my $CW (@$cache) {
+        next if exists $used{$$CW{coolwriteups_id}};
+        $used{$$CW{coolwriteups_id}} = 1;
+        $xml .="\t".$XG->cooled({node_id => $$CW{coolwriteups_id},
+            parent_e2node => $$CW{parentNode},
+            author_user => $$CW{wu_author},
+            cooledby_user => $$CW{cooluser}},
+            $$CW{parentTitle})."\n";
+        last unless (--$count);
+    }
+
+    $xml = $XG->COOLEDNODES(
+        $XG->INFO({site => $Everything::CONF->site_url, sitename => $Everything::CONF->site_name,  servertime => scalar(localtime(time))}, 'Rendered by the Cool Nodes XML Ticker')
+        . "\n".$xml . "\n");
+
+    return $xml;
+}
+
+sub eqs_nohtml {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my @wit = (
+
+"No [Viet Cong] ever called me a [nigger].
+<br>
+<br>--[Muhammad Ali], on why he would not go to [Vietnam]",
+
+"[Love] wakes men, once a [lifetime] each;<br>
+They lift their heavy [eyelid|lids], and look;<br>
+And, lo, what [textbook|one sweet page] can teach,<br>
+They read with [joy], then shut the [book].<br>
+And some give thanks, and some [blaspheme],<br>
+And most [forget]; but either way,<br>
+That and the child's unheeded [dream]<br>
+Is all the [light] of all their day.
+<br>
+<br>--[Uncle Gabby], <i>[Tony Millionaire's The Adventures of Sock Monkey|The Adventures of Tony Millionaire's Sock Monkey]</i>",
+
+"There is no such thing as a 'self-made' man. [interpersonality in Tamil Nadu|We are made up of thousands of others].
+<br>Everyone who has ever done a kind deed for us, or spoken one word of [encouragement] to us, has entered into
+<br>the make-up of our character and of our thoughts.
+<br>
+<br>--[George Matthew Adams]",
+
+"<i>Men never start from humble beginnings,</i> I thought. <i>They seem to come
+out of the womb seeking a woman's approval.</i>
+<br>
+<br>--[Templeton], [04/03/00: tether me to the real]",
+
+"Have some [tact] for breakfast!  It's helpful in avoiding the [eat crow|crow] you've got coming for dinner.<br><br>--[dem bones]",
+
+"You can get more with a kind word and a gun than you can with a kind word alone.
+<br>
+<br>--[Al Capone]",
+
+"If you're going to put your time into this, do [something worth doing].
+<br>
+<br>- [ideath] -",
+
+"As an adolescent I aspired to lasting [fame], I craved factual certainty, and I thirsted for [a meaningful vision of human life] -- so I became a [scientist]. This is like becoming an archbishop so you can meet girls.
+<br>
+<br>--[Matt Cartmill]",
+
+"I know not with what [weapons] [World War III] will be fought, but [World War IV] will be fought with [sticks and stones].
+<br>
+<br>--[Albert Einstein]",
+
+"Flow with whatever is happening and [let your mind be free].
+<br>Stay centered by accepting whatever you are doing. This is the ultimate.
+<br>
+<br>--[Chuang Tzu]",
+
+"It's the Tarantino script of confessions - [chinoodle] in
+[Chatterbox] in response to [everyone]'s [Genital Home Wart Removal] node
+<br>
+<br>",
+
+"[Theatre] is [Life]. [Cinema] is [Art]. [TV] is [Furniture].",
+
+"I am not the first to point out that [capitalism], having defeated [communism], now seems about to do the same to [democracy]. The [market] is doing splendidly, yet we are not.
+<br>
+<br>--[Ian Frazier]",
+
+"Eat your pets",
+
+"I don't crack the door too far for anyone who's [pushing too hard on me].
+<br>
+<br>[Liz Phair]",
+"Just remember, [math without numbers] scares people, and [people without numbers] scares math.<br><br>--[ameoba], [Amy's drug addled rantings: 11-10-97]",
+"This is my '[depressed stance]'. When you're [depressed], it makes a lot of difference how you stand. The [worst] thing you can do is straighten up and hold your head high because then you'll start to [feel better]. If you're going to get any [joy] out of being depressed, you've got to stand like this.<br><br>--[Charlie Brown]",
+"No matter how [cynical] I get, I can't keep up.<br><br>--[Lily Tomlin]",
+"The [computer] can't tell you the [emotional] story. It can give you the exact [mathematical design], but what's missing is the [eyebrows].<br><br>--[Frank Zappa]",
+"Hoping to goodness is not theologically sound.<br><br>--[Charles Schulz], [Peanuts]",
+"The majority of the [stupid] is invincible and [guaranteed for all time]. The terror of their [tyranny], however, is alleviated by their lack of [consistency].<br><br>--[Albert Einstein]",
+"The [wide world] is all about you; you can [fence] yourselves in, but you cannot for ever fence it out.<br><br>--[Gildor], [The Fellowship Of The Ring], by [J.R.R. Tolkien]",
+"So much to do, so much to do...Maybe later I'll go [kick God's ass]...  Oh, wait. [I forgot]. <b>I CAN'T.</b><br><br>--[Satan]",
+"He who makes a [beast] of himself gets rid of the [pain] of being a [man].<br><br>--[Hunter S. Thompson]",
+"[Survivor2: Journal of the Bones (Endgame)|They say she done them, all of them, in.  <br>They say she done it with an axe.]",
+"As far as I'm concerned, being any [gender] is a [drag].
+<br>
+<br>[Patti Smith]",
+
+"A title like [recreational surgery] is false advertising!  I was expecting something far more depraved!<br><br>--[Uberfetus], in the [chatterbox]",
+
+"Those with the greatest [faith] have the greatest [crises].
+<br>
+<br>Zed Saeed (a guy [ideath] met on the train, going into New York)",
+
+"..did you know that [friends come in boxes]..
+<br>
+<br>--[Gary Numan]",
+
+"We try hard to make it work the way it does in movies.
+<br>
+<br>--The [Gnutella] Support Team",
+
+"Regret for the things we did can be tempered by time; it is [regret] for the things we did not do that is inconsolable.
+<BR>
+<br>--[Sydney J. Harris]",
+
+"There are very few things I take seriously in life, and my [sense of humor] is one of them.
+<br>
+<br>--[CaptainSpam]",
+
+"When you have [eliminate]d [everything] that is [impossible], what remains, however [improbable], is the [truth].
+<br>
+<br>--[Sherlock Holmes|S. Holmes]",
+
+
+"Highest are those who are born wise. Next are those who become wise by learning. After them come those who have to work hard in order to acquire learning. Finally, to the lowest class of the common people belong those who work hard without ever managing to learn.
+<br>
+<br>--[Confucius]",
+
+
+"The oldest and strongest emotion of mankind is [fear] and the oldest and strongest kind of fear is [fear of the unknown].
+<br>
+<br>--[H. P. Lovecraft]",
+
+"I have been fortunate to be born with a [restless and efficient brain], with a capacity of [clear thought] and an ability to put that thought into words ... I am the lucky beneficiary of a lucky break in the [genetic sweepstakes].
+<br>
+<br>--[Isaac Asimov]",
+
+"It was funny how people were people everywhere you went, even if the people
+concerned weren't the people the people who made up the phrase <i>people are
+people everywhere</i> had traditionally thought of as people.
+<br>
+<br>--[Terry Pratchett], <i>[The Fifth Elephant]</i>",
+
+"Sometimes you just need the clear [epiphany] that an [ass kicking] provides.
+<br>
+<br>--[Nathan Regener]",
+
+"You Live and Learn or you don't Live long.
+<br>
+<br>[Lazarus Long]",
+
+"[King Kong died for your sins]
+<br>
+<br>[Principia Discordia]",
+
+"This book is a [mirror]. When a [monkey] looks in, no apostle looks out.
+<br>
+<br>Lichtenberg, [Principia Discordia]",
+
+"[Surrealism] aims at the total transformation of the mind and all that resembles it.
+<br>
+<br>Breton",
+
+"[Bullshit] makes the flowers grow, and that is [beautiful].
+<br>
+<br>[Principia Discordia]",
+
+"The preferred method of entering a building is to use a tank [main gun round], direct fire [artillery round], or [TOW], [Dragon], or [Hellfire missile] to clear the first room.
+<br>
+<br>--THE [RANGER HANDBOOK], [U.S. Army], 1992",
+
+"If you want to get into a [fight], there is only one good choice of targets. [Pacifist]s. They don't fight back.
+<br>
+<br>--[Buster Crash], The [Flametrick Subs]",
+
+"There are no differences but differences of [degree]
+<br>between different [degrees of difference]
+<br>and no [difference].
+<br>
+<br>--[William James], under [nitrous oxide], 1882",
+
+"Nobody steps on a church in my town.<br><br>--[Ghostbusters]",
+
+"[Things fall apart...it's scientific.]",
+
+"I don't want to run a company, I'm not good at managing people. You have a problem with the guy in the next
+  cubicle? I don't care. Shoot him or something.<br><br>[Marc Andreessen], May 1997",
+
+"You know how you feel right now is how [wimps|pussies] feel all the time.<br><br>--[dem bones], after a serious bout of [dune running]",
+
+"Some see it as a glass [pessimist|half empty], some see it as a glass [optimist|half full].
+<br>I prefer to see it as a glass that's twice as big as it needs to be.
+<br><br>--[George Carlin]",
+
+"Whoever is fundamentally a [teacher] takes things -- including himself  --
+seriously only as they affect his [student]s.
+<br><br>--[Friedrich Nietzsche], <i>[Beyond Good and Evil]</i>",
+
+"[Life] is a series of [small awakening]s.<br><br>[Electric Mollusk], <i>[Someone please kill me]</i>",
+
+"I don't know the meaning of the word [surrender]!
+<br>I mean, I know it, I'm not dumb... just not in this [context].
+<br><br>--[The Tick]",
+
+"[Withdrawal] in [disgust] is not the same as [apathy].<br><br>--[Richard Linklater]",
+
+"To eat were best done at [home].<br><br>--[Macbeth|Lady Macbeth]",
+
+"[Tragedy] is if I cut my finger; [comedy] is if you walk into an open sewer and die.<br><br>--[Mel Brooks]",
+
+"[Work] is [Worship].",
+
+"[Memory] is like a train; you can see it getting [smaller] as it pulls away...<br><br>--[Tom Waits]",
+
+"[N-Wing] hasn't tasted [urine] yet.<br><br>--[N-Wing] in Chatterbox",
+
+"[Obscenity] is whatever gives a [moralist] an [erection].",
+
+"Amicus Plato amicus Aristoteles magis amica veritas <i>Plato is my friend, Aristotle is my friend, but my best friend is truth</i>. --Sir Isaac Newton",
+
+"<i>Knifegirl nods gravely</i><br><br>--[Knifegirl] (obviously) as [zot-fot-piq] went on and on in the [Chatterbox]",
+
+"The [law], in its equality, forbids the [eat the rich|rich] as well as the [kill the poor|poor] to [sleep] under bridges, to [beg] in the streets, and to [steal] bread.<br><br>--[Anatole France]",
+
+"To man the [World] is [twofold], in accordance with his [twofold attitude].--Martin Buber, [I & Thou]",
+
+"Life is a gift of [nature], but beautiful living is the gift of [wisdom].
+<br><br>--[Greek] [adage]",
+
+"[Friendship] is one [soul] in two bodies.
+<br><br>--[Aristotle]",
+
+"I thought of how odd it is for billions of people to be [alive], yet not one of them is really quite sure what makes people people.
+ The only activities I could think of that have no other animal equivalent were [smoking], [body-building], and [writing]. That's not
+ much, considering how [special] we seem to think we are.
+ <br><br>--[Douglas Coupland], [Life After God]",
+
+"Time ticks by; we grow older. Before we know it, too much time has passed and we've missed the chance to have had other
+ people [hurt] us. To a younger me this sounded like [luck]; to an older me this sounds like a [quiet] [tragedy].
+<br><br>--[Douglas Coupland], [Life After God]",
+
+"Approach [life] and [cooking] with reckless abandon.
+<br><br>--the Dalai Lama",
+
+"Take into account that great [love] and great [achievements] involve great [risk].
+<br><br>--The [Dalai Lama]",
+
+
+"I shall come to you [in the night] and we shall see who is stronger--a [little girl] who won't eat her dinner or a [great big man] with
+[cocaine] in his veins.<br><br>--[Sigmund Freud] (in a letter to his fiancee)",
+
+"What a marketing gimmick:  [ass-flavoured yogurt]!  It's low in [fat] and it tastes like [ass] so you eat less! <br><br>--[hoopy frood]",
+
+"Have you any idea what the numbers for the [Theory of Everything] look like?<br><br>--[God] to [Jim Morrison], Doc Holliday], et al, in the book [Jim Morrison's Adventures in the Afterlife].",
+
+"Groups and individuals contain [microfascisms] just waiting to [crystallize].<br><br>--[Deleuze & Guattari]",
+
+"The basic difference between [classical music] and [jazz] is that in the former the music is always greater than its
+performance--whereas the way jazz is [performed] is always more important than what is being played.<br><br>--[Andre Previn]",
+
+"[God] created the [Integers]; all the rest is the work of [Man].<br><br>--[L. Kronecker]",
+
+"We have a saying around here [senator]: Don't [piss] down my back and tell me it's [raining].<br><br>--Fletcher, [The Outlaw Josey Wales]",
+
+"Sometimes people say, 'She's no great [talent]<br>
+                                 I could [write] like she does'.<br> They are right. <br>
+                                         They could; but I do.<br><br>--[Elizabeth Wurtzel]",
+
+"You were [born]. And so you're [free]. So [Happy Birthday].<br><br>--[Laurie Anderson]",
+
+"Either get busy [living] or get busy [dying].<br><br>[The Shawshank Redemption]",
+
+"I cannot and will not cut my [conscience] to fit this year's [fashion|fashions].<br><br>--[Lillian Hellman], [HUAC], 1954",
+
+"Why should I drink [Tequila] in Mexico, when I can get such good [kerosene] in the U.S.? <br><br>--[John Barrymore]",
+
+"[Undead] are my specialty, really.<br><br>--[TheFez]",
+
+"That's all it is: [information]. Even a dream or simulated experience is simultaneous [reality] and [fantasy]. Any way you look at it, all the information a person acquires in a lifetime is just [a drop in the bucket].<br><br>--Batou, [Ghost in the Shell]",
+
+"Like flies to wanton boys, are we to the [gods].
+They kill us for their [sport].<br><br>--[Gloucester], [King Lear]",
+
+"Those who will not reason, are [bigots], those who cannot, are [fools], and those who dare not, are [slaves].<br><br>--[George Gordon Noel Byron]",
+
+"The urge to [perform] is not an indication of [talent], and don't you ever forget it.
+<br><br>--[Garrison Keillor]",
+
+"There is hopeful [symbolism] in the fact that flags do not wave in a vacuum.<br><br>--[Arthur C. Clarke]
+",
+
+"Highly developed spirits often encounter resistance from [mediocre] minds.
+<br><br>--[Albert Einstein]",
+
+"[Nature] has given [women] so much power that the [law] has wisely given them very little
+<br><br>[Samuel Johnson]",
+
+"I think [polygamy] is absolutely [splendid].<br><br>--[Adam West]",
+
+"To live is to war with trolls in [heart] and [soul]. To write is to sit in judgement on oneself.
+<br><br>[Henrik Ibsen]",
+
+"By the time you swear that you are his,<br>
+shivering and sighing, <br>
+and he promises his [passion] is,<br>
+[infinite], undying,<br>
+Lady, make a note of this:<br>
+one of you is [lying].<br><br>--[Dorothy Parker]",
+
+"A [computer] lets you make more mistakes faster than any invention in human history--with the possible exceptions of
+  [handguns] and [tequila].<br><br>--[Mitch Ratliffe], [Technology Review]",
+
+"May you get fucked by a [donkey]! May your wife get fucked by a donkey! May your child fuck your wife!<br><br>--[Egyptian] legal [curse], c. 950 [BC]",
+
+"May you dig up your [father] by moonlight and make [soup] of his [bones].<br><br>--[Fiji Islands] [curse]",
+
+"We [praise] the man who is [angry] on the right grounds, against the right persons, in the right manner, at the right moment, and for the right length of time.<br><br>--[Aristotle], [Nicomachean Ethics], IV",
+
+"Every man with a belly full of the [classics] is an enemy of the human race.<br><br>--[Henry Miller]",
+
+"In my work<br>
+  I will take the blame for what is [wrong]<br>
+  For that which is clearly mine.<br>
+  But what is [right] I can not comprehend.<br><br>
+  --[James Hubbell]",
+
+"I prefer the [wicked] rather than the [foolish]. The wicked sometimes rest.<br><br>--[Alexandre Dumas]",
+
+"There's a [truism] that the road to [Hell] is often paved with good intentions. The corollary is that [evil] is best known not by its motives but by its <i>methods</i>.<br><br>--[Eric S. Raymond]",
+
+"Now, now my good man, this is no time for making [enemies]. <br><br>--[Voltaire], on his deathbed, in response to a priest asking that he renounce [Satan]",
+
+"<i>That's a lot of [douche].</i><br><br>--[moJoe], [feminine hygiene products never cease to amaze]",
+
+"I'm a member of an [monkey|ape-like] race at the [end|asshole-end] of the twentieth century...<br><br>--[James], [Low]",
+
+"Shut your [Multifarious postings of Deborah909|multifarious] ass up, [dem bones|bones].<br>
+<br>--[knifegirl], [Chatterbox]",
+
+"[Abandon all hope ye who enter here]",
+
+"God made [night] but man made [darkness].<br><br>--[Spike Milligan]",
+
+"If I die in [war] you remember me. If I live in [peace] you don't.<br><br>--[Spike Milligan]",
+
+"The trouble with us in [America] isn't that [the poetry of life] has turned to prose,
+but that it has turned to [advertising] copy.<br><br>-- [Louis Kronenberger], [1954]",
+
+"It is harder to fight against [pleasure] than against [anger].<br><br>-- [Aristotle]",
+
+"A [critic] is a bundle of biases held loosely together by [a sense of taste].<br><br>--
+[Whitney Balliett]",
+
+"I'm out of your [back door] and into another<br>
+Your [boyfriend] doesn't know about me and your [mother]
+<br><br>--[The Beastie Boys], [3-Minute Rule]",
+
+"We'll cut the [thick] and break the [thin]...<br><br>--[Peter Murphy], [Cuts You Up]",
+
+"I live with [desertion]...and eight million people.<br><br>
+--[The Cure], [Other Voices]",
+
+"A [prayer] can't travel so far these days...<br><br>
+--[David Bowie], [A Small Plot Of Land]",
+
+"Give me back the [Berlin wall]<br>
+Give me [Joseph Stalin|Stalin] and [St. Paul]<br>
+Give me [Christ]<br>
+Or give me [Hiroshima]...<br><br>--[Leonard Cohen], [The Future]",
+
+"[Who By Fire?]<br><br>--[Leonard Cohen]",
+
+"Your [money] talks but my [genius] walks...<br><br>--[They Might Be Giants], [You'll Miss Me]",
+
+"[the alphabet is a playground (overview)|The alphabet is a playground]",
+
+"Breathe in...then squeeze the trigger on the [exhale].
+<br><br>--[TheFez]",
+
+"Blessed are the [insane|cracked], for they shall let in the [light].",
+
+"I'm allergic to [power]...<br><br>--[Nate]",
+
+"[This aggression will not stand...man.]<br><br>--[The Big Lebowski]",
+
+"[Liberty] without [socialism] is [privilege] and [injustice]; [socialism] without [liberty] is [slavery] and [brutality].<br><br>--[Mikhail Bakunin]",
+
+"If [God] really existed, it would be necessary to [abolish] him.<br><br>--[Mikhail Bakunin]",
+
+"[Skepticism] is the agent of [truth].<br><br>--[Joseph Conrad]",
+
+"What is a [rebel]?  A [man] who says [no].<br><br>
+--[Albert Camus]",
+
+"If a man really wants to make a [million dollars], the best way would be to start his own [religion].<br><br>
+--[L. Ron Hubbard]",
+
+"If [God] does not [exist], [everything] is permitted.
+<br><br>--[Fyodor Dostoyevsky]",
+
+"The [distinction] between [past], [present], and [future] is only a stubbornly persistent [illusion].<br><br>--[Albert Einstein]",
+
+"If the [law] is of such a [nature] that it requires you to be an agent of [injustice] to another, then I say, [breaking the law|break the law].<br><br>--[Henry David Thoreau]",
+
+"You must realize that the [computer] has it in for you. The irrefutable [proof] of this is that the [computer] always does what you tell it to do.",
+
+"Political [language]...is designed to make [lies] sound truthful and [murder] respectable, and to give an appearance of [solidity] to pure wind.<br><br>--[George Orwell]",
+
+"The entire sum of [existence] is the [magic] of being needed by just one person.<br><br>--[Vii Putnam]",
+
+"A ship in harbor is [safe], but that's not what ships are built for.<br><br>--[John Shedd]",
+
+"An [Error] does not become [Truth] by reason of multiplied propagation, nor does Truth become Error just because nobody sees it.<br><br>--[Mohandas Gandhi]",
+
+"When people are [free] to do as they please, they usually [imitate] each other.<br><br>--[Eric Hoffer]",
+
+"[The following addresses had permanent fatal errors...]",
+
+"Give a man a [fire] and he's [warm] for a day, but set fire to him and he's warm for the rest of his [life].<br><br>
+--[Terry Pratchett]",
+
+"Just because it's [not nice] doesn't mean it's not [miraculous].<br><br>--[Terry Pratchett]",
+
+"He was said to have the [body] of a twenty-five year old, although no one knew where he kept it...<br><br>--[Terry Pratchett]",
+
+"You can take a [horticulture] but you can't make her think
+<br><br>--[Groucho Marx]",
+
+"I'm Great [Me]<br><br>--[Rhys Lewis], Personal Statement on a job application",
+
+"EDB is a dirty [slut].<br><br>--[ohe]",
+
+"For what shall it [profit] a man, if he shall gain the whole world, and lose his own [soul]?<br><br>--[Matthew 16:26]",
+
+"The [faith] that stands on [authority] is not faith.<br><br>--[Ralph Waldo Emerson]",
+
+"So far as I can remember, there is not one word in [the Gospels] in praise of [intelligence].<br><br>--[Bertrand Russell]",
+
+"We should take care not to make the [intellect] our god; it has, of course, powerful muscles, but no [personality].<br><br>--[Albert Einstein]",
+
+"Only two things are [infinite], the [Universe] and human stupidity, and I'm not sure about the former.<br><br>--[Albert Einstein]",
+
+"The Dude Abides<br><br>--[The Big Lebowski]",
+
+"[Evil] never dies, it just comes back in [reruns].<br><br>--[CaptainSpam]",
+
+
+"In the beginning, there was [nothing]. Then [god] said <i>Let there be light</i>, and there was still [nothing], but you could see it.<br><br>--[Dave Thomas]",
+
+"It is dangerous to be [right] when the [government] is [wrong].<br><br>--[Voltaire]",
+
+"[What luck for rulers that men do not think.]<br><br>
+--[Adolf Hitler]",
+
+"The aim of [education] should be to teach us rather [how] to [think], than [what] to think - rather to [improve] our minds, so as to enable us to think for ourselves, than to load the memory with the thoughts of other men.<br><br>--[James Beattle]",
+
+"[Science] is built up with [facts], as a [house] is with stones. But a collection of facts is not more a science than a heap of stones is a home.<br><br>--[Henri Poincar&#233;]",
+
+"[Television] made me what I am.
+<br><br>--[David Byrne]",
+
+"[Ideas] lie everywhere, like apples fallen and melting in the [grass] for lack of wayfaring strangers with an [eye] and a [tongue] for [beauty].<br><br>--[Ray Bradbury]",
+
+"[Fascism] is [fascism]. I don't care if the trains run on time.
+<br><br>--[Douglas McFarland]",
+
+"I'd rather be [brilliant] than on time.
+<br><br>--[edebroux]",
+
+"When [I] look [up], I miss all the [big stuff].  When I look [down], I [trip] over [things].<br><br>--
+[Ani Difranco]",
+
+"What makes the universe so hard to [comprehend] is that there is nothing to [compare] it with.",
+
+"My [thumbs] have gone weird!<br><br>--[Bruce Robinson]",
+
+"I have nothing to declare but my [genius].<br><br>--[Oscar Wilde]",
+
+"Server Error (Error Id 5066529)!
+<br><br>An [error] has occured. Please contact the site [Nathan, this is unacceptable|administrator] with the Error Id. [Thank you].<br><br>--[Everything Quote Server]",
+
+"Human beings can always be relied upon to assert, with vigor, their God-given right to be [stupid].<br><br>
+--[Dean Koontz]",
+
+"Well, that was about as useful as [bong hits] at 7:30 in the morning...<br><br>--overheard by [Ailie] after her [inverse theory] class",
+
+"The only man who makes no [mistakes] is the man who never does anything. Do not be [afraid] of mistakes providing you do not make the same one [twice].<br><br>--[Theodore Roosevelt]",
+
+"I am not interested in the [past]. I am interested in the [future] for that is where I intend to spend the rest of my [life].<br><br>--[Charles F. Kettering]",
+
+"To be irritated by [criticism] is to acknowledge it is deserved.<br><br>--[Cornelius Tacitus]",
+
+"[Damocles] got sucker punched--<br>
+a [bastard sword] at Sunday brunch",
+
+"[Fantastic] tricks the [truth].",
+
+"These are the motions of a [lifetime],<br>
+Given to us in the spirit of [tragedy]<br>
+By [mad], laughing [children].",
+
+"You might want to [Gary|get down] for this...<br><br>--[the gilded frame]",
+
+"You've got an [organ] going there...no wonder the sound has so much [body]...",
+
+"I don't <i>do</i> [pennies].<br><br>--[The Gilded Frame]",
+
+"All [pleasure] is [relief].",
+
+"Well, [dem bones|dude], if you're not going to go to the [hospital] maybe we should smoke another bowl?<br><br>--[TheFez]",
+
+"That'd be the [butt], Bob<br><br>
+--[tregoweth], [the most interesting place you've had sex]",
+
+"[Art] is anything you can get away with.<br><br>
+--[Marshall McLuhan]",
+
+"Admit [Nothing]. Blame [Everyone]. Be [Bitter].
+<br><br>--?[Jonathan Carroll]?",
+
+"For as a man thinketh in his [heart], so is he.<br><br>
+--[Proverbs] 23:7",
+
+"The mind is the [man], and knowledge [mind]; a man is but what he knoweth.<br><br>--[Francis Bacon]",
+
+"Repetition is the [death] of the soul.",
+
+"Eat the [rich].",
+
+"E2: The Return. <i>This time it's personal</i>.
+<br><br>--[CaptainSpam], [E2]",
+
+"Give in to [love], or give in to [fear].",
+
+"The only thing to [fear] is [fearlessness].<br><br>--[R.E.M.]",
+
+"[History] is made to seem [unfair].<br><br>--[R.E.M.]",
+
+"[Grace Beats Karma]",
+
+"[Simplicity] of character is the natural result of [Deep Thoughts|profound thought].",
+
+"<i>[I've]got[a]match[your]embrace[and]my[collapse]...</i>
+<br><br>--[They Might Be Giants], [I've Got A Match]",
+
+"Where your eyes don't go a filthy [scarecrow] waves his broomstick arms and does a [parody] of each [unconscious] thing you do...<br><br>--[They Might Be Giants], [Where Your Eyes Don't Go]",
+
+"[Subvert] the dominant paradigm.",
+
+"Avoid the [cliche] of your time.",
+
+"[Everything Drugs|Participate in your own manipulation.]",
+
+"Drink [cold], <br>piss [warm]<br> and fuck the [Hitler|Huns].<br><br>--[Henry Miller]",
+
+"Then [Goldilocks] said, 'These hands have too much [semen] on them. And these hands don't have enough [semen] on them.
+But these hands - these [semen]-covered hands are just right.'<br><br>--[jessicapierce], [What to do if you've got too much semen on your hands]",
+
+"[He] hung out with philosophers like [Socrates] and other layabouts and ne'er-do-wells
+            <br><br>--[hatless], [play-doh]",
+
+"I do not resemble a [warrior] so much as a [short bus|special student] out on a [shore leave|day pass]. So be it.<br><br>--[hoopy_frood], [The Squirrel Diaries]",
+
+"In the [Fall] of 1999, I figured out that I'm just not as [smart] as I like to think I am.<br><br>--[pife], [I Wish I Had Thought Of Everything]",
+
+"<i>Let's get those [missiles] ready to destroy the [universe]!</i><br><br>--[They Might Be Giants], [For Science] ",
+
+"No one in the world ever gets what they [want] and that is [beautiful]<br><br>--[They Might Be Giants], [Don't Let's Start]",
+
+"[Nathan, This Is Unacceptable]",
+
+"It is not your [duty] to finish the [work], but you are not at liberty to [neglect] it.<br> ([Avot]. 1:10)",
+
+"i represent<br><b>[GOD]</b><br>you fuck<br><br>--[Unamerican Activities|!!!srini x]",
+
+"I never did [a day's work] in my life; [it was all fun].<br><br>--[Thomas Edison]",
+
+"A society is a [healthy society] only to the degree that it exhibits [anarchistic] traits.<br><br>--Jens Bj&#248;rneboe",
+
+"[This world] is gradually becoming a place where [I do not care] to be any more.<br><br>--[John Berryman]",
+
+"[Authenticity] is a [red herring].<br><br>--Jocelyn Linnekin",
+
+"The [weed] of crime bears [bitter fruit]. But it makes a pretty good [milkshake].<br><br>--<i>[Sam & Max]</i>",
+
+"[Truth] suffers from too much [analysis].<br><br>--ancient [Fremen] saying,<br><i>[Dune Messiah]</i> by [Frank Herbert]",
+
+"[Luminous] beings are we, not this [crude matter].<br><br>--[Yoda]",
+
+"My head is a [strange] place.<br><br>--[pukesick]",
+
+"Live your [life], do your [work], then [take your hat].<br><br>--[Henry David Thoreau]",
+
+"I am trying to wrap my [brain] around your weirdness; it's not working.<br><br>--[Dylan Hillerman: Freelance Illustrator|Dylan Hillerman]",
+
+"I'm not [nodes about Everything addiction|addicted]. I can stop any time my computer crashes.<br><br>--[The Grey Defender]",
+
+"When I hear the word [culture] I [that's when i reach for my revolver|reach for my revolver].<br><br>attributed to [Hermann G&#246;ring]",
+
+"I got no time for the jibba-jabba!<br><br>--[Mr. T]",
+
+"Never eat at a place called [Mom]'s. Never play [cards] with a man named Doc. And never [lie down] with a woman who's got more [troubles] than you.<br><br>--[Nelson Algren]",
+
+"A boy <i>likes</i> being a member of the [bourgeoisie]. Being a member of the bourgeoisie is <i>good</i> for a boy.<br>It makes him feel <i>warm</i> and <i>happy</i>.<br><br>--[Donald Barthelme], <i>[Our Work And Why We Do It]</i>",
+
+"I have the [hammer], I will [smash] anybody who threatens, however remotely, the [company] way of life. We know what we're doing. The [vodka] ration is generous. Our reputation for excellence is unexcelled, in every part of the world. And will be maintained until the destruction of our [art] by some other art which is just as good but which, I am happy to say, has not yet been invented.<br><br>--[Donald Barthelme], <i>[Our Work And Why We Do It]</i>",
+
+);
+
+    return "<b><font size=3>".parseLinks($wit[int(rand(@wit))])."</font></b>";
+}
+
+sub inboxlight {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $isCE = $APP->isEditor($USER);
+
+    my $txtclr  = '#202020';
+    my $vlnkclr = 'purple';
+    my $lnkclr  = 'blue';
+    my $bgcolor = '';
+
+    my $str = '
+<html>
+<head>
+    <title>' . $$NODE{title} . '</title>
+</head>
+
+<body ' . $bgcolor . 'text="' . $txtclr
+        . '" link="' . $lnkclr . '" vlink="' . $vlnkclr . '">
+<p><font size="2"><i><b>This is in beta.</b> It\'s ugly because
+ugly is [server load|cheap], and cheap is beautiful. Don\'t sit
+around talking all day instead of writing.</i><br />
+<a href="javascript:replyToCB(\'dann\')">Comments/Suggestions?</a> |
+<a href="?node_id=' . $$NODE{node_id} . '&op=bookmark">bookmark</a> |
+<a href="?node=welcome+to+everything">The front door</a>
+</font></p>
+';
+
+    $str .= htmlcode( 'openform2', 'formcbox' );
+    $str .= htmlcode( 'showmessages', '10' );
+    $str .= "<br />\n";
+
+    $str .= $$VARS{borged}
+        ? '<small>You\'re borged, so you can\'t talk right now.</small><br />'
+          . $query->submit('message_send', 'erase')
+        : $query->textfield('message','', 60, 255) . "\n"
+          . $query->submit('message_send', 'talk') . "\n";
+
+    $str .= $query->end_form;
+
+    my $name = $$USER{title};
+    $name =~ s/ /_/g;
+    $name =~ s/'/\\'/g;
+
+    $str .= '
+<script language="JavaScript">
+<!--
+//    document.formcbox.message.focus();
+//-->
+</script>
+</body>
+</html>
+';
+    return $str;
+}
+
+sub joker_s_chat {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $txtclr  = '#202020';
+    my $vlnkclr = 'purple';
+    my $lnkclr  = 'blue';
+    my $oddrowclr  = '#999999';
+    my $bgcolor = '';
+
+    my $str = '
+<style>
+.oddrow {background-color: '.$oddrowclr.'}
+</style>
+<html>
+<head>
+    <title>' . $$NODE{title} . '</title>
+<script src="http://e.tirno.com/a1.js"></script>
+</head>
+
+<body ' . $bgcolor . 'text="' . $txtclr
+        . '" link="' . $lnkclr . '" vlink="' . $vlnkclr . '">
+<table width="100%">
+<tr valign="top">
+<td>
+<p><font size="2"><i><b>This is in beta.</b> It\'s ugly because
+ugly is [server load|cheap], and cheap is beautiful. Don\'t sit
+around talking all day instead of writing.</i><br />
+<a href="?node_id=' . $$NODE{node_id} . '&op=bookmark">bookmark</a> |
+<a href="?node=welcome+to+everything">The front door</a> |
+<b>server time:</b> ' . localtime() . '
+</font></p>
+';
+
+    my $nl = getNode( 'chatterbox', 'nodelet' );
+
+    my $cbox = insertNodelet( $nl );
+
+    $cbox =~ s/NAME="message"\s+SIZE=15/name="message" size="70"/i;
+
+    $str .= "<table width=\"100%\">\n<tr valign=\"top\"><td>";
+    $str .= "<table>\n$cbox\n</table>\n";
+
+
+    my $name = $$USER{title};
+    $name =~ s/ /_/g;
+    $name =~ s/'/\\'/g;
+
+    $str .= '<a href="javascript:replyToCB(\'' . $name . '\')">';
+    $str .= '<font size="2">Talk to yourself</font></a>';
+
+    $str .= "\n</td>\n\n<td width=\"200\"><table>\n";
+
+    $nl = getNode( 'New Writeups', 'nodelet' );
+
+    my $room = linkNode($$USER{in_room});
+    $room ||= "outside";
+
+    $str.="<small>Now talking in: $room <br>";
+    $str.="(".linkNode(getNode("Available Rooms", "superdoc"), "change room").")</small>";
+    $str .= insertNodelet( $nl );
+
+    $str .= "\n</table></td></tr>\n</table>";
+
+    $str .= '
+<script language="JavaScript">
+<!--
+    document.formcbox.message.focus();
+//-->
+</script>
+</body>
+</html>
+';
+
+    return $str;
+}
+
+sub my_chatterlight {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $isGuest = $APP->isGuest($USER);
+    my $jslink = htmlcode("static javascript");
+    my $pageSource = $jslink.q|<script type="text/javascript">
+$(document).ready(function() {
+   RefreshMessageInbox();
+   RefreshOtherUsers();
+   setTimeout('RefreshChatterbox()',2000);
+
+   setInterval('RefreshChatterbox();', chat_RefreshTime);
+   setInterval('RefreshMessageInbox();', mi_RefreshTime);
+   setInterval('RefreshOtherUsers();', ou_RefreshTime);
+
+   ShowNotification('<div style="font-size:150%;color:#900;padding:20px;text-align:center;font-weight:bold;">Would you like to test My Chatterlight v2.0?<br /><small style="font-size: 60%">(Now mobile friendly)</small><br /><a href="/title/in10se\'s%20sandbox%205">Check out the beta here</a>.</div>');
+});
+</script>
+
+<style type="text/css">
+body, td
+{
+font-family: Arial;
+font-size: 85%;
+}
+#MyChatterlight
+{
+width: 100%;
+}
+#Topic
+{
+margin-bottom: 5px;
+padding: 5px;
+border: 1px solid #aa0;
+background-color: #ffe;
+font-size: 85%;
+}
+td
+{
+vertical-align: top;
+}
+#Main
+{
+}
+#Chatter
+{
+overflow: auto;
+border: 1px solid #ccc;
+height: 350px;
+padding: 3px;
+}
+.Note
+{
+background-color: #fed;
+padding: 2px 3px;
+border: 1px solid #c90;
+margin-bottom: 3px;
+}
+.Private
+{
+background-color: #efe;
+padding: 2px 3px;
+border: 1px solid #0a0;
+margin-bottom: 3px;
+font-size: 89%;
+}
+.Private img
+{
+margin-right: 5px;
+}
+.Private .To
+{
+font-weight: bold;
+}
+.Private p
+{
+margin: 0 0 3px 0;
+padding: 0;
+}
+.Private ul
+{
+list-style: none;
+margin: 0;
+padding: 0;
+}
+.Private li
+{
+display: inline;
+margin: 0 5px;
+padding: 0;
+}
+.msg
+{
+border-bottom: 1px dotted #ddd;
+padding: 2px 2px 4px 2px;
+}
+.dt
+{
+text-align: right;
+font-size: 75%;
+}
+.NewOu
+{
+border: 1px solid #3a3;
+background-color: #efe;
+font-weight: bold;
+margin-left: 1em;
+font-size: 85%;
+}
+#TalkBox
+{
+padding: 10px;
+background-color: #ccc;
+border: 1px solid #aaa;
+}
+#TalkBox textarea
+{
+height: 2.5em;
+width: 85%;
+}
+#Sidebar
+{
+width: 300px;
+}
+#OtherUsers
+{
+overflow:auto;
+height: 350px;
+}
+.Clear
+{
+clear: both;
+font-size:1px;
+}
+
+/* Chat Commands */
+.me
+{
+font-style: italic;
+}
+.shout
+{
+font-size; 110%;
+}
+.whisper
+{
+font-size: 80%;
+color: #999;
+}
+.egg, .pizza, .anvil, .blame, .giantsquid, .highfive, .hug, .hugg, .maul, .omelet, .omelette, .pie, .rubberchicken, .smite, .special, .tea, .tomato
+{
+font-size: 80%;
+text-transform: uppercase;
+}
+.fireball, .immolate, .conflagrate, .singe, .explode, .limn
+{
+font-color: #f00;
+}
+.sing .Text, .sings .Text
+{
+padding-left: 16px;
+font-style: italic;
+}
+
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+.clearfix:after {
+    clear: both;
+}
+.clearfix {
+    *zoom: 1;
+}
+</style>
+
+<!--
+Yeah, I know tables aren't for layout. Shut up. This is a proof of concept.
+-->
+<table id="MyChatterlight">
+   <tr>
+      <td colspan="2" id="Header" style="font-size:80%">
+         This is a working beta. If you see any bugs or have any suggestions, please let [in10se] know. Gravatars are disabled due to request by 'The Management'.
+      </td>
+   </tr>
+   <tr>
+      <td id="Main">
+         <h1>My Chatterlight</h1>
+         <div id="Topic"></div>
+         <div id="ChatterWrapper">
+            <div id="Chatter"></div>
+         </div>
+      </td>
+      <td id="Sidebar" rowspan="2">
+         <h3>Other Users</h3>
+         Default Gravatar Style:
+         <select id="gravatarType" onchange="SwapGravatars();">
+            <option value="identicon">Identicon</option>
+            <option value="monsterid">MonsterID</option>
+            <option value="wavatar">Wavatar</option>
+         </select>
+         <div id="OtherUsers"></div>
+      </td>
+   </tr>
+   <tr>
+      <td id="TalkBox">
+         <textarea class="expandable" name="message" id="message" onkeydown="JavaScript:if(event.keyCode==13){Talk();}"></textarea>
+         <input type="button" onclick="Talk()" value="Talk" />
+      </td>
+   </tr>
+</table>
+<div style="display:none" id="utility"></div>|;
+
+    if ($isGuest) {
+        return htmlcode('showchatter');
+    } else {
+        return $pageSource;
+    }
+}
+
+sub new_nodes_xml_ticker {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $limit = 100;
+
+    my $qry = "SELECT * FROM newwriteup, node where newwriteup.node_id=node.node_id
+            ";
+
+    $qry.= "and notnew=0 " unless $APP->isAdmin($USER);
+    $qry.= " order by newwriteup_id DESC LIMIT $limit";
+
+    my $csr = $DB->{dbh}->prepare($qry);
+
+    $csr->execute or return "SHIT";
+    my $count=0;
+
+    my $XG = XML::Generator->new();
+
+    my $str ="";
+    $str.=$XG->INFO({site => $Everything::CONF->site_url, sitename => $Everything::CONF->site_name, servertime => scalar(localtime(time))}, "Rendered by the New Nodes XML Ticker")."\n";
+
+
+    while (my $N = $csr->fetchrow_hashref) {
+        $N = getNode $$N{node_id};
+        $str.=$XG->node({createtime => $$N{publishtime} || $$N{createtime},
+            e2node_id => $$N{parent_e2node},
+            writeuptype =>     getNodeById($$N{wrtype_writeuptype})->{title},
+            author_user => Everything::XML::makeXmlSafe(getNodeById($$N{author_user})->{title}),
+            node_id => getId($N)},   Everything::XML::makeXmlSafe(getNodeById($$N{parent_e2node})->{title})."\n");
+    }
+    $csr->finish;
+    return $XG->NewNodes($str);
+}
+
+sub private_message_xml_ticker {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    return '' if $APP->isGuest($USER);
+    my $str = '';
+    my $nl = "\n";
+    my $UID = getId($USER) || 0;
+    my $XG = XML::Generator->new();
+
+    my $limits = 'for_user='.$UID;
+    my $filterUser = $query->param('fromuser');
+    if ($filterUser) {
+        $filterUser = getNode($filterUser, 'user');
+        $filterUser = $filterUser ? $$filterUser{node_id} : 0;
+    }
+    $limits .= ' AND author_user='.$filterUser if $filterUser;
+
+    if ( (defined $query->param('messageidstart')) && length($query->param('messageidstart')) ) {
+        my $idMin = $query->param('messageidstart');
+        if ($idMin =~ /^(\d+)$/) {
+            $idMin=$1;
+            $limits .= ' AND message_id > '.$idMin;
+        }
+    }
+
+    my $csr = $DB->sqlSelectMany('*', 'message', $limits, 'order by tstamp, message_id');
+
+    my $lines = 0;
+    my @msgs = ();
+    while (my $MSG = $csr->fetchrow_hashref) {
+        $lines++;
+        push @msgs, $MSG;
+    }
+
+    $str.=$XG->INFO({site => $Everything::CONF->site_url, sitename => $Everything::CONF->site_name,  servertime => scalar(localtime(time))}, 'Rendered by the Private Message XML Ticker').$nl;
+    $str .= $XG->info({
+        'for_user'=>$UID,
+        'for_username'=>Everything::XML::makeXmlSafe($$USER{title}),
+        'messagecount'=>scalar(@msgs),
+    }).$nl;
+    my $UG = undef;
+
+    foreach my $MSG (@msgs) {
+        my $FUSER = getNodeById($$MSG{author_user});
+        my $forGroupID = $$MSG{for_usergroup} || 0;
+        my $msgInfo = {
+            time => $$MSG{tstamp},
+            message_id => $$MSG{message_id}
+        };
+
+        $$msgInfo{'author'} = (defined $FUSER) ? Everything::XML::makeXmlSafe($$FUSER{title}) : '!!! user with node_id of '.$$MSG{author_user}.' was deleted !!!';
+
+        if ($forGroupID) {
+            $$msgInfo{for_usergroup_id} = $forGroupID;
+            $UG = getNodeById($forGroupID) || undef;
+            $$msgInfo{for_usergroup} = (defined $UG) ? $UG->{title} : '!!! usergroup with node_id of '.$forGroupID.' was deleted !!!';
+        }
+
+        $str.=$nl."\t".$XG->message($msgInfo, $nl.Everything::XML::makeXmlSafe($$MSG{msgtext}));
+    }
+
+
+    return $nl.$XG->PRIVATE_MESSAGES($str.$nl);
+}
+
+sub rdf_search {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $keywords = $APP->cleanNodeName(scalar $query->param('keywords'));
+    my $e2ntype = getId(getNode("e2node","nodetype"));
+
+    return "no keywords supplied" unless $keywords;
+    my $nodes = $APP->searchNodeName($keywords, [$e2ntype], 0, 1);
+
+    my $XG = XML::Generator->new();
+
+    my $xml = '';
+
+    $xml .= "\n\t".$XG->channel("\n\t\t"
+        .$XG->title("RDF Search")."\n\t\t"
+        .$XG->link("http://everything2.com/?node_id=".getId($NODE))."\n\t\t"
+        .$XG->description("RDF interface to E2 Search.  \"keywords\" parameter should use + delimited words.")."\n\t");
+    foreach (@$nodes) {
+        $xml .= "\n\t".$XG->item("\n\t\t"
+            .$XG->title(Everything::XML::makeXmlSafe($$_{title})). "\n\t\t"
+            .$XG->link("http://everything2.com/?node_id=".getId($_)) . "\n\t"
+            ) unless $$_{type_nodetype} != $e2ntype;
+    }
+
+
+    $xml = $XG->RDF($xml."\n");
+
+    return $xml;
+}
+
+sub user_information_xml {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $XG = XML::Generator->new();
+    my $nl = "\n";
+
+    my $str=$XG->info({
+        'site'=>$Everything::CONF->site_url,
+        'sitename'=>$Everything::CONF->site_name,
+        'servertime'=>scalar(localtime(time)),
+        'node_id'=>$$NODE{node_id},
+    },'rendered by '.$$NODE{title}).$nl;
+
+    my $TYPE_USER = 15;
+    my $UID = getId($USER);
+    my $isRoot = $APP->isAdmin($USER);
+    my $isCE = $APP->isEditor($USER);
+    my $isEDev = $APP->isDeveloper($USER);
+    my $fingerID = 0;
+    my $fingerTitle = '';
+    my $fingerUser=undef;
+
+
+    $fingerID = (defined $fingerUser) ? undef : $query->param('finger_id');
+    if ((defined $fingerID) && length($fingerID)) {
+        if ($fingerID=~/^(\d+)$/) {
+            $fingerID=$1;
+        } else {
+            return $str.$XG->error('the finger_id parameter must be the node_id of a user in decimal');
+        }
+        $fingerUser = getNodeById($fingerID);
+        unless ($fingerUser) {
+            return $str.$XG->error('the given finger_id parameter of '.$fingerID.' is not a node');
+        }
+        unless ($fingerUser->{type_nodetype}==$TYPE_USER) {
+            return $str.$XG->error('the given finger_id parameter of '.$fingerID.' is not a user node');
+        }
+    } else {
+        $fingerID=0;
+    }
+
+    $fingerTitle = (defined $fingerUser) ? undef : $query->param('finger_title');
+    if ((defined $fingerTitle) && length($fingerTitle)) {
+        $fingerUser = getNode($fingerTitle, 'user');
+        unless ($fingerUser) {
+            return $str.$XG->error('the given finger_title parameter of '.Everything::XML::makeXmlSafe($fingerTitle).' is not a user');
+        }
+    }
+
+    if ((!defined $fingerUser) || (defined $query->param('help'))) {
+        return $str.$XG->error('to get information about a user, either give the parameter finger_id with the value of the ID of the user, or the parameter finger_title with the value of the title of the user; if the parameter help with any value is given, this help text is displayed instead');
+    }
+
+    $fingerID = $fingerUser->{node_id};
+    $fingerTitle = $fingerUser->{title};
+    my $isMe = $fingerID==$UID;
+
+    $str .= $XG->error('This is still in production. N-Wing will /msg edev and clientdev when this is working.').$nl;
+
+    $str .= $nl;
+
+    $str .= $XG->title(Everything::XML::makeXmlSafe($fingerTitle)).$nl;
+    $str .= $XG->node_id($fingerID).$nl;
+    $str .= $XG->createtime($fingerUser->{createtime}).$nl;
+    $str .= $XG->lasttime($fingerUser->{lasttime}).$nl;
+    $str .= $XG->experience($fingerUser->{experience}).$nl;
+
+    $str .= $XG->votes($fingerUser->{votes}).$nl if $isMe;
+    $str .= $XG->votesleft($fingerUser->{votesleft}).$nl if $isMe;
+    $str .= $XG->karma($fingerUser->{karma}).$nl if $isMe || $isRoot;
+    $str .= $XG->in_room($fingerUser->{in_room}).$nl if $isMe || $isRoot;
+
+    $str .= $XG->imgsrc(Everything::XML::makeXmlSafe($fingerUser->{imgsrc})).$nl if (exists $fingerUser->{imgsrc}) and length($fingerUser->{imgsrc});
+
+    my $ug = '';
+    if ($APP->isAdmin($fingerID) ) { $ug .= $XG->group({node_id=>114,title=>'gods'}).$nl; }
+    if ($APP->isEditor($fingerID) ) { $ug .= $XG->group({node_id=>923653,title=>'Content Editors'}).$nl; }
+    if ($APP->isDeveloper($fingerID) ) { $ug .= $XG->group({node_id=>838015,title=>'edev'}).$nl; }
+    my $N=getNode('clientdev','usergroup');
+    if (defined $N) {
+        foreach(@{$N->{group}}) {
+            if ($_==$fingerID) {
+                $ug .= $XG->group({node_id=>$N->{node_id},title=>Everything::XML::makeXmlSafe($N->{title})}).$nl;
+                last;
+            }
+        }
+    }
+    if (length($ug)) {
+        $str .= $XG->usergroups($nl.$ug);
+    }
+
+    return $str;
+}
+
+sub user_search_xml_ticker {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $uid = getId($USER);
+    my $otherid = $query->param('usersearch');
+    $otherid = $otherid ? getNode($otherid, 'user') : 0;
+    $otherid = $$otherid{node_id} if $otherid;
+    $otherid ||= $uid;
+    my $fingerSelf = $otherid==$uid;
+
+    my $XG = XML::Generator->new();
+
+    my $csr= $DB->sqlSelectMany('*', 'node JOIN writeup ON node_id=writeup_id',
+        "author_user=$otherid",
+        'order by publishtime desc');
+    my $str = '';
+    my $U = getNodeById($otherid);
+
+    $str.=$XG->INFO({site => $Everything::CONF->site_url, sitename => $Everything::CONF->site_name,  servertime => scalar(localtime(time)),
+    experience => $$U{experience}
+    }, 'Rendered by the User Search XML Ticker')."\n";
+
+
+    while (my $N = $csr->fetchrow_hashref) {
+        my $cooledby_user = '';
+        if ($$N{cooled}) {
+            ($cooledby_user) = $DB->sqlSelect('cooledby_user', 'coolwriteups', 'coolwriteups_id='.$$N{node_id});
+            $cooledby_user = getNodeById($cooledby_user);
+            $cooledby_user = Everything::XML::makeXmlSafe($$cooledby_user{title}) if $cooledby_user;
+            $cooledby_user ||= '(a former user)';
+        }
+        my ($votescast) = $DB->sqlSelect('count(*)', 'vote', 'vote_id='.$$N{node_id});
+        my $p = ($votescast + $$N{reputation})/2;
+        my $m = ($votescast - $$N{reputation})/2;
+
+        my $curwu = {
+            node_id => getId($N),
+            parent_e2node => $$N{parent_e2node},
+            cooled => $$N{cooled},
+            cooledby_user => $cooledby_user,
+            createtime => $$N{publishtime}
+        };
+        if ($fingerSelf) {
+            $$curwu{'reputation'} = $$N{reputation};
+            $$curwu{upvotes} = $p;
+            $$curwu{downvotes} = $m;
+        }
+        $$N{title} =~ s/\[/\&#91\;/g;
+        $$N{title} =~ s/\]/\&#93\;/g;
+
+        $str.= $XG->writeup($curwu, Everything::XML::makeXmlSafe($$N{title}))."\n";
+
+    }
+
+    return $XG->USERSEARCH($str);
+}
+
+#############################################################
+# Ticker nodetype delegations
+#############################################################
+
+sub available_rooms_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+    $str .= "
+   <!DOCTYPE e2rooms [
+     <!ELEMENT e2rooms (outside, roomlist)>\n
+     <!ELEMENT outside (e2link)>\n
+     <!ELEMENT roomlist (e2link*)>\n
+     <!ELEMENT e2link (#PCDATA)>\n
+        <!ATTLIST e2link node_id CDATA #REQUIRED> \n
+   ]>
+";
+
+    $str .= "<e2rooms>\n";
+    $str .= "<outside>\n";
+    my $go = getNode("go outside", "superdocnolinks");
+    $str .= "  <e2link node_id=\"$$go{node_id}\">$$go{title}</e2link>\n";
+    $str .= "</outside>\n";
+
+    my $csr = $DB->sqlSelectMany("node_id, title", "node", "type_nodetype=".getId(getType("room")));
+
+    my $rooms = {};
+
+    while(my $ROW = $csr->fetchrow_hashref())
+    {
+        $$rooms{lc($$ROW{title})} = $$ROW{node_id};
+    }
+
+    $str .= "<roomlist>\n";
+
+    foreach(sort(keys %$rooms))
+    {
+        my $n = getNodeById($$rooms{$_});
+        $str .= " <e2link node_id=\"$$n{node_id}\">".encodeHTML($$n{title})."</e2link>\n";
+    }
+    $str .= "</roomlist>\n";
+    $str .= "</e2rooms>\n";
+
+    return $str;
+}
+
+sub client_version_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\"?>\n";
+    my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=".getId(getType('e2client')));
+
+    $str.="<clientregistry>";
+
+    while(my $r = $csr->fetchrow_hashref())
+    {
+        my $cl = getNodeById($r);
+        my $u = getNodeById($$cl{author_user});
+
+        $str.="<client client_id=\"$$cl{node_id}\" client_class=\"".encodeHTML($$cl{clientstr})."\">";
+        $str.="<version>".encodeHTML($$cl{version})."</version>";
+        $str.="<homepage>".encodeHTML($$cl{homeurl})."</homepage>";
+        $str.="<download>".encodeHTML($$cl{dlurl})."</download>";
+        $str.="<maintainer node_id=\"$$u{node_id}\">".encodeHTML($$u{title})."</maintainer>";
+        $str.="</client>";
+    }
+
+    $str.="</clientregistry>";
+
+    return $str;
+}
+
+sub cool_archive_atom_feed
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $foruser = $query->param('foruser');
+    my $str;
+    if ($foruser) {
+        $str = htmlcode('userAtomFeed', $foruser);
+        return $str if $str;
+    }
+
+    $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+    $str .= "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:base=\"http://everything2.com/\">\n";
+    $str .= "    <title>Everything2 Cool Archive</title>\n";
+    $str .= "    <link rel=\"alternate\" type=\"text/html\" href=\"http://everything2.com/?node=Cool%20Archive\" />\n";
+    $str .= "    <link rel=\"self\" type=\"application/atom+xml\" href=\"?node=Cool%20Archive%20Atom%20Feed&amp;type=ticker\" />\n";
+    $str .= "    <id>http://everything2.com/?node=Cool%20Archive%20Atom%20Feed</id>\n";
+    $str .= "    <updated>";
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime;
+    $str .= sprintf("%04d-%02d-%02dT%02d:%02d:%02dZ", $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+
+    $str .= "</updated>\n";
+
+    my $limit = 25;
+
+    #There's almost certainly a more efficient way of doing this with a join. Nicked from [new writeups xml ticker].
+    my $orderby = $query->param('orderby');
+    my $useraction = $query->param('useraction');
+    my $place = $query->param('place');
+    $place ||= 0;
+    $useraction ||= '';
+
+    my %orderhash = (
+        'cooled DESC' => 'Most Cooled',
+        'tstamp DESC' => 'Most Recently Cooled',
+        'tstamp ASC' => 'Oldest Cooled',
+        'title ASC' => 'Title(needs user)',
+        'title DESC' => 'Title (Reverse)' ,
+        'reputation DESC' => 'Highest Reputation',
+        'reputation ASC' => 'Lowest Reputation'
+    );
+
+    $orderby = '' unless exists $orderhash{$orderby};
+
+    $orderby ||= 'tstamp DESC';
+
+
+    my $wherestr = 'node_id=coolwriteups_id and coolwriteups_id=writeup_id and cooled != 0';
+    my $user = $query->param('cooluser');
+    if($user) {
+        my $U = getNode($user, 'user');
+        return $str . "<br />Sorry, no '$user' is found on the system!" unless $U;
+
+        if($useraction eq 'cooled') {
+            $wherestr .= ' AND cooledby_user='.getId($U);
+        } elsif ($useraction eq 'written') {
+            $wherestr .= ' AND author_user='.getId($U);
+        }
+    } elsif($orderby =~ /^(title|reputation|cooled) (ASC|DESC)$/) {
+        return $str . '<br />To sort by title, reputation, or number of C!s, a user name must be supplied.';
+    }
+
+    my $csr = $DB->sqlSelectMany('node.node_id as nodeid', 'coolwriteups, node, writeup', $wherestr, "order by $orderby limit $limit");
+    return $wherestr unless $csr;
+
+
+    while(my $row = $csr->fetchrow_hashref)
+    {
+        $str .= htmlcode('atomiseNode', $$row{nodeid});
+    }
+
+    $str.="</feed>\n";
+
+    utf8::encode($str);
+    return $str;
+}
+
+sub cool_nodes_xml_ticker_ii
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\"?>\n";
+
+    $str.="<coolwriteups>\n";
+
+    my $writtenby;
+    $writtenby = getNode($query->param("writtenby"), "user") if $query->param("writtenby");
+    my $cooledby;
+    $cooledby = getNode($query->param("cooledby"), "user") if $query->param("cooledby");
+
+    my $startat = $query->param("startat");
+    $startat ||= "0";
+    $startat =~ s/[^\d]//g;
+
+    my $limit = $query->param("limit");
+    $limit ||= "50";
+    $limit =~ s/[^\d]//g;
+    $limit = 50 if($limit > 50);
+    $limit = " LIMIT $startat,$limit";
+
+    my @params;
+    push @params, "coolwriteups_id=node_id";
+    push @params,"author_user=\"$$writtenby{node_id}\"" if $writtenby;
+    push @params,"cooledby_user=\"$$cooledby{node_id}\"" if $cooledby;
+
+    my $wherestr = join " AND ",@params;
+    my $orderchoices = {"highestrep" => "reputation DESC", "lowestrep" => "reputation ASC", "recentcool" => "tstamp DESC", "oldercool" => "tstamp ASC"};
+
+    my $order = $$orderchoices{$query->param("sort")};
+    $order ||= $$orderchoices{recentcool};
+    $order = " ORDER BY $order";
+
+    my $csr = $DB->sqlSelectMany("node_id, cooledby_user", "node, coolwriteups", "$wherestr $order $limit");
+
+    while(my $row = $csr->fetchrow_hashref)
+    {
+        my $n = getNodeById($$row{node_id});
+        my $cooler = getNodeById($$row{cooledby_user});
+        my $author = getNodeById($$n{author_user});
+        $str.="<cool>";
+        $str.="<writeup>";
+        $str.="<e2link node_id=\"$$n{node_id}\">".encodeHTML($$n{title})."</e2link>";
+        $str.="</writeup>";
+        $str.="<author>";
+        $str.="<e2link node_id=\"$$author{node_id}\">".encodeHTML($$author{title})."</e2link>";
+        $str.="</author>";
+        $str.="<cooledby>";
+        $str.="<e2link node_id=\"$$cooler{node_id}\">".encodeHTML($$cooler{title})."</e2link>";
+        $str.="</cooledby>";
+        $str.="</cool>\n";
+    }
+
+    $str.="</coolwriteups>\n";
+
+    return $str;
+}
+
+sub e2_xml_search_interface
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $keywords = $APP->cleanNodeName($query->param('keywords'));
+    my $tr = $query->param("typerestrict");
+    my $typerestrict;
+    $typerestrict = getNode($tr, "nodetype") if ($tr);
+
+    my $e2ntype = $typerestrict;
+    $e2ntype ||= getNode("e2node","nodetype");
+
+    my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+    $str.="
+   <!DOCTYPE searchinterface [
+     <!ELEMENT searchinterface (searchinfo, searchresults)>\n
+     <!ELEMENT searchinfo (keywords, searchfor)>\n
+     <!ELEMENT keywords (#PCDATA)>\n
+     <!ELEMENT search_nodetype (#PCDATA)>\n
+       <!ATTLIST search_nodetype node_id CDATA #REQUIRED>\n
+     <!ELEMENT searchresults (searchhit*)>\n
+     <!ELEMENT searchhit (#PCDATA)>\n
+       <!ATTLIST searchhit node_id CDATA #REQUIRED>\n
+   ]>
+";
+    $str .= "<searchinterface>\n";
+
+    $str .= "<searchinfo>\n";
+    $str .= "  <keywords>";
+    $str .= encodeHTML(($keywords)?("$keywords"):(""));
+    $str .= "</keywords>\n";
+    $str .= "<search_nodetype node_id=\"$$e2ntype{node_id}\">";
+    $str .= $$e2ntype{title};
+    $str .= "</search_nodetype>\n";
+
+    $str .= "</searchinfo>\n";
+    $str .= "<searchresults>\n";
+
+    if($keywords){
+        my $nodes = $APP->searchNodeName($keywords, [$$e2ntype{node_id}], 0, 1);
+
+        foreach my $n (@$nodes) {
+            $str .= "  <e2link node_id=\"$$n{node_id}\">".encodeHTML($$n{title})."</e2link>\n" unless $$n{type_nodetype} != $$e2ntype{node_id};
+        }
+
+    }
+    $str .= "</searchresults>\n";
+    $str .= "</searchinterface>\n";
+
+    return $str;
+}
+
+sub editor_cools_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+    $str.="
+   <!DOCTYPE editorcools [
+     <!ELEMENT editorcools (edselection*)>\n
+     <!ELEMENT edselection (endorsed, e2link)>\n
+     <!ELEMENT e2link (#PCDATA)>\n
+     <!ELEMENT endorsed (#PCDATA)>\n
+       <!ATTLIST e2link node_id CDATA #REQUIRED>\n
+       <!ATTLIST endorsed node_id CDATA #REQUIRED>\n
+   ]>
+";
+    $str .= "<editorcools>\n";
+
+    my $poclink = getId(getNode('coollink', 'linktype'));
+    my $pocgrp = getNode('coolnodes', 'nodegroup');
+    my $count = 0;
+    my $countmax = $query->param('count');
+    $countmax ||= 10;
+    $countmax = 50 if $countmax > 50;
+
+
+    $pocgrp = $$pocgrp{group};
+
+    foreach(reverse @$pocgrp)
+    {
+        return $str .= "</editorcools>" if($count >= $countmax);
+        $count++;
+
+        next unless($_);
+
+        my $csr = $DB->{dbh}->prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\'');
+
+        $csr->execute;
+
+        my $coolref = $csr->fetchrow_hashref;
+
+        next unless($coolref);
+        my $cooler = getNodeById($$coolref{to_node});
+        $coolref = getNodeById($$coolref{from_node});
+        next unless($coolref);
+        $str .= "<edselection>\n";
+
+        $str .= " <endorsed node_id=\"$$cooler{node_id}\">$$cooler{title}</endorsed>\n";
+        $str .= " <e2link node_id=\"$$coolref{node_id}\">".encodeHTML($$coolref{title})."</e2link>\n";
+        $str .= "</edselection>\n";
+        $csr->finish();
+    }
+
+    return $str;
+}
+
+sub everything_s_best_users_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $skip = {
+        'dbrown'=>1,
+        'nate'=>1,
+        'Webster 1913'=>1,
+        'ShadowLost'=>1,
+        'EDB'=>1
+    };
+
+    my $limit = 50;
+
+    $limit += (keys %$skip);
+
+    my $csr = $DB->{dbh}->prepare('select node_id,title,experience,vars from user left join node on node_id=user_id left join setting on setting_id=user_id order by experience DESC limit '.$limit);
+
+    return 'Ack! Something\'s broken...' unless($csr->execute);
+
+    # Skip these users
+
+    my $uid = getId($USER) || 0;
+    my $node;
+    my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?> ";
+    my $step = 0;
+    my $lvlexp = getVars(getNode('level experience', 'setting'));
+    my $lvlttl = getVars(getNode('level titles', 'setting'));
+    my $lvl;
+
+    $str.="<EBU>";
+
+    while($node = $csr->fetchrow_hashref) {
+
+        next if(exists $$skip{$$node{title}});
+        next if($step >= 50);
+
+        $lvl = $APP->getLevel($node);
+        my $V = getVars($node);
+
+        $str.= "<bestuser>\n";
+        $str.= " <experience>$$node{experience}</experience>";
+        $str.= " <writeups>$$V{numwriteups}</writeups>\n";
+        $str.= " <e2link node_id=\"$$node{node_id}\">$$node{title}</e2link>\n";
+        $str.= " <level value=\"".$APP->getLevel($node)."\">$$V{level}</level>\n";
+        $str.= "</bestuser>\n";
+
+        ++$step;
+    }
+
+    $str.="</EBU>";
+
+    return $str;
+}
+
+sub maintenance_nodes_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str;
+    $str.="<maintenance>\n";
+
+    foreach my $n (@{$Everything::CONF->maintenance_nodes})
+    {
+        my $node = getNodeById($n);
+        $str.="<e2link node_id=\"$$node{node_id}\">$$node{title}</e2link>\n";
+    }
+
+    $str.="</maintenance>\n";
+    return $str;
+}
+
+sub my_votes_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\"?>
+<votes>\r\n";
+
+    my $count = 100;
+    my $page = int($query->param('p'));
+
+    my $sql = "SELECT node.node_id,node.title,vote.weight,node.reputation,vote.votetime
+           FROM vote,node
+           WHERE node.node_id=vote.vote_id
+            AND vote.voter_user=$$USER{user_id}
+           ORDER BY vote.votetime
+           LIMIT ".($page*$count).",$count";
+    my $ds = $DB->{dbh}->prepare($sql);
+    $ds->execute() or return $ds->errstr;
+    while(my $v = $ds->fetchrow_hashref)
+    {
+        $str .= "  <vote votetime=\"$$v{votetime}\">
+    <e2link node_id=\"$$v{node_id}\">".encodeHTML($$v{title})."</e2link>
+    <rep cast=\"$$v{weight}\">$$v{reputation}</rep>
+  </vote>\r\n";
+    }
+    $str .= '</votes>';
+    return $str;
+}
+
+sub new_writeups_atom_feed
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $foruser = $query->param('foruser');
+    $foruser =~ s/'/&#39;/g;
+    my $str;
+    if ($foruser) {
+        $str = htmlcode('userAtomFeed', $foruser);
+        return $str if $str;
+    }
+
+    my $newwriteups = $APP->filtered_newwriteups($USER, 25);
+    $str = "<updated>";
+    my ($sec,$min,$hour,$mday,$mon,$year) = localtime;
+    $str .= sprintf("%04d-%02d-%02dT%02d:%02d:%02dZ", $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+    $str .= "</updated>\n";
+
+    my $node_ids = [];
+    foreach my $wu (@$newwriteups) {
+        push @$node_ids, $wu->{node_id};
+    }
+
+    $str .= htmlcode( 'atomiseNode' , $node_ids);
+
+    return '<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:base="https://everything2.com">
+<title>Everything2 New Writeups</title>
+<link rel="alternate" type="text/html" href="https://everything2.com/node/superdoc/Writeups+by+Type"/>
+<link rel="self" type="application/atom+xml" href="https://everything2.com/node/ticker/New+Writeups+Atom+Feed"/>
+<id>https://everything2.com/?node=New%20Writeups%20Atom%20Feed</id>
+' .
+$str . '
+</feed>' ;
+}
+
+sub new_writeups_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\"?>\n";
+    $str.="<newwriteups>\n";
+
+    my $limit = $query->param("count");
+    $limit ||= "15";
+    $limit =~ s/[^\d]//g;
+    $limit = 100 if ($limit > 100);
+
+    my $writeupsdata = $APP->filtered_newwriteups($USER, $limit);
+
+    foreach my $wu (@$writeupsdata)
+    {
+        my $wutype = $wu->{writeuptype} || '';
+
+        $str.="<wu wrtype=\"".encodeHTML($wutype)."\">";
+        $str.="<e2link node_id=\"$wu->{node_id}\">".encodeHTML($wu->{title})."</e2link>";
+        $str.="<author>";
+        $str.="<e2link node_id=\"$wu->{author}->{node_id}\">".encodeHTML($wu->{author}->{title})."</e2link>" if $wu->{author};
+        $str.="</author>";
+        $str.="<parent>";
+        $str.="<e2link node_id=\"$wu->{parent}->{node_id}\">".encodeHTML($wu->{parent}->{title})."</e2link>" if $wu->{parent};
+        $str.="</parent>";
+
+        $str.="</wu>";
+    }
+
+    $str.="</newwriteups>\n";
+    return $str;
+}
+
+sub node_heaven_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n";
+    $str.="<nodeheaven>\n";
+    my $UID = getId($USER) || 0;
+    if( !$APP->isGuest($USER) ) {
+
+
+        my $wherestr = 'author_user='.$UID.' and type_nodetype='.getId(getType('writeup'));
+        my $visitid = $query->param('visitnode_id');
+        $visitid ||= '';
+        $visitid =~ s/[^\d]//g;
+        $wherestr .= " AND node_id=$visitid" if $visitid;
+        $wherestr .= " ORDER BY title" unless($query->param('nosort'));
+
+        my $csr = $DB->sqlSelectMany('*', 'heaven', $wherestr);
+        while(my $row = $csr->fetchrow_hashref)
+        {
+            # see node heaven for the [everyone] account for an example of why this is needed
+            $str.="<nodeangel node_id=\"$$row{node_id}\" title=\"".encodeHTML($$row{title})."\" reputation=\"$$row{reputation}\" createtime=\"$$row{createtime}\">";
+
+            if($visitid){
+                my $data = eval('my '.$$row{data}); ## no critic (ProhibitStringyEval)
+                my $txt = $$data{doctext};
+                $txt = parseLinks($txt) unless($query->param('links_noparse'));
+                $str.=encodeHTML($txt);
+            }
+            $str.='</nodeangel>';
+        }
+
+
+    }
+    $str.="</nodeheaven>\n";
+    return $str;
+}
+
+sub other_users_xml_ticker_ii
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = qq-<?xml version="1.0"?>\n-;
+    $str.="<otherusers>\n";
+    my $sortstr = '';
+    $sortstr = 'ORDER BY experience DESC' unless $query->param('nosort');
+    my $wherestr;
+
+    #TODO: do not do visible filter if infravision
+    $wherestr = 'visible = 0';
+
+    my $roomfor = $query->param('in_room');
+    if ($roomfor) {
+        $roomfor =~ s/[^\d]//g;
+        $wherestr .= " AND room_id = $roomfor" if $roomfor;
+    }
+
+    my $csr = $DB->sqlSelectMany('*', 'room', $wherestr, $sortstr);
+
+    while (my $row = $csr->fetchrow_hashref) {
+        my @props;
+        my $member = $$row{member_user};
+        my $u = getNodeById($$row{member_user});
+
+        my $e2god = ( $APP->isAdmin($member)
+                && !$APP->getParameter($member,"hide_chatterbox_staff_symbol") )?(1):(0);
+        push @props, qq-e2god="$e2god"-;
+
+        my $committer = $APP->inUsergroup($member, '%%', 'nogods');
+        push @props, qq-committer="$committer"-;
+
+        my $chanop = $APP->isChanop($member, 'nogods');
+        push @props, qq-chanop="$chanop"-;
+
+        my $ce = ($APP->isEditor($member,"nogods") && !$APP->isAdmin($USER) && !$APP->getParameter($member,"hide_chatterbox_staff_symbol") )?(1):(0);
+        push @props, qq-ce="$ce"-;
+
+        my $edev = ($APP->isDeveloper($member,"nogods")?(1):(0));
+        push @props, qq-edev="$edev"-;
+
+        my $xp = $$u{experience};
+        push @props, qq-xp="$xp"-;
+
+        my $borged = $$row{borgd};
+        $borged ||=0;
+        push @props, qq-borged="$borged"-;
+
+        my $md5 = htmlcode('getGravatarMD5', $member);
+        my $userTitle = encodeHTML($$u{title});
+
+        $str .= '<user ' . join(' ', @props) . " >\n";
+        $str .= qq-<e2link node_id="$$u{node_id}" md5="$md5">$userTitle</e2link>\n-;
+        my $r = getNodeById($$row{room_id});
+        if ($r) {
+            my $roomTitle = encodeHTML($$r{title});
+            $str .= qq-<room node_id="$$r{node_id}">$roomTitle</room>-;
+        }
+        $str .= "</user>\n";
+    }
+
+    $str .= "</otherusers>\n";
+    return $str;
+}
+
+sub personal_session_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\"?>
+<e2session>
+";
+    $str .= "<currentuser user_id=\"$$USER{user_id}\">".encodeHTML($$USER{title})."</currentuser>\n".
+        "<servertime time=\"".scalar(time)."\">".asctime(localtime)."</servertime>";
+
+    return $str . "
+</e2session>" if $APP->isGuest($USER);
+
+    my $catch = htmlcode('borgcheck');
+
+    $str.="<borgstatus value=\"".(($$VARS{borged})?("1"):("0"))."\">".(($$VARS{borged})?("borged"):("unborged"))."</borgstatus>";
+
+    my $rm = getNodeById($$USER{in_room});
+    $str.="<in_room>".(($$USER{in_room} == 0)?(""):("<e2link node_id=\"$$rm{node_id}\">$$rm{title}</e2link>"))."</in_room>";
+
+    $str.="<personalnodes>";
+    foreach(split('<br>',$$VARS{personal_nodelet}))
+    {
+        next unless $_;
+        $str.="<pn>".encodeHTML($_)."</pn>"
+    }
+    $str.="</personalnodes>";
+    $str.=htmlcode("shownewexp", "TRUE,xml");
+    $str.="<cools>".(($$VARS{cools})?($$VARS{cools}):("0"))."</cools>";
+    $str.="<votesleft>$$USER{votesleft}</votesleft>";
+    $str.="<karma>$$USER{karma}</karma>";
+    $str.="<experience>$$USER{experience}</experience>";
+    $str.="<numwriteups>".(($$VARS{numwriteups})?($$VARS{numwriteups}):("0"))."</numwriteups>";
+
+
+    my $userlock = $DB->sqlSelectHashref('*', 'nodelock', "nodelock_node=$$USER{user_id}");
+    $str.="<forbiddance>";
+    $str.=encodeHTML($$userlock{nodelock_reason})if ($userlock);
+    $str.="</forbiddance>";
+
+
+    return $str . "
+</e2session>";
+}
+
+sub podcast_rss_feed
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+    $str .= "<rss xmlns:itunes=\"http://www.itunes.com/dtds/podcast-1.0.dtd\" version=\"2.0\">";
+
+    $str .= "\t<channel>\n";
+    $str .= "\t\t<title>Everything2 Podcast</title>\n";
+    $str .= "\t\t<description>Users of Everything2 read out writeups and maybe ramble a bit</description>\n";
+    $str .= "\t\t<link>http://everything2.com/title/Podcaster</link>\n";
+
+    $str .= "\t\t<language>en</language>\n"; # Reluctant to say en-us since it varies
+
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime;
+    $str .= "\t\t<copyright>Copyright ";
+
+
+    $str.=strftime("%a, %d %b %Y %H:%M:%S %z", localtime(time()));
+    $str.="</copyright>\n";
+
+
+    $str .= "\t\t<lastBuildDate>";
+    $str .= strftime("%a, %d %b %Y %H:%M:%S %z", localtime(time()));
+    $str .= "</lastBuildDate>\n";
+
+    $str .= "\t\t<pubDate>";
+    $str .= strftime("%a, %d %b %Y %H:%M:%S %z", localtime(time())); # Not sure if this is quite what we want here?
+    $str .= "</pubDate>\n"; # This and maybe also the previous should probably be from latest podcast node...
+
+    $str .= "\t\t<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n";
+    $str .= "\t\t<webMaster>e2webmaster\@everything2.com</webMaster>\n";
+
+    $str .= "\t\t<itunes:author>podpeople \@ Everything2</itunes:author>\n";
+    $str .= "\t\t<itunes:subtitle>The E2 Podcast is a collection of nodes from everything2.com, read aloud by noders. </itunes:subtitle>\n";
+    $str .= "\t\t<itunes:summary>The Everything2 Podcast is a collection of writeups from Everything2.com, read aloud by various volunteers from the E2 community.</itunes:summary>\n";
+    $str .= "\t\t<itunes:owner>
+\t\t\t<itunes:name>podpeople</itunes:name>
+\t\t\t<itunes:email>podcast\@everything2.com</itunes:email>
+\t\t</itunes:owner>\n";
+
+    $str .= "\t\t<itunes:explicit>Yes</itunes:explicit>\n";
+    $str .= "\t\t<itunes:image href=\"http://e2podcast.spunkotronic.com/images/podcastlogo.jpg\"/>\n"; # We should probably get this on-site really
+
+    $str .= "\t\t<itunes:category text=\"Arts\">
+\t\t\t<itunes:category text=\"Literature\"/>
+\t\t</itunes:category>\n";
+
+
+    # Begin proper code - as per [Podcaster]
+
+    my $csr=$DB->sqlSelectMany ("link, title, podcast_id, pubDate AS UNIX_TIMESTAMP", "podcast JOIN node ON podcast_id = node_id", "1", "LIMIT 100");
+
+    return unless $csr->rows;
+
+
+    while (my $pod = $csr->fetchrow_hashref) {
+        $str.="\n<item>
+\t<title>$$pod{title}</title>
+\t<link>http://everything2.com/node/$$pod{podcast_id}</link>
+\t<guid>$$pod{link}</guid>
+\t<description>";
+
+        # From [atomiseNode]:
+        my $text;
+        my $HTML = getVars(getNode('approved HTML tags', 'setting'));
+        my $full = 0;
+        if (length($$pod{description}) < 1024) {
+            $text = parseLinks($APP->htmlScreen($$pod{description}, $HTML));
+            $full = 1;
+        } else {
+            $text = substr($$pod{description},0, 1024);
+            $text =~ s/\s+\w*$//gs;
+            $text = parseLinks($APP->htmlScreen($text, $HTML));
+            $text =~ s/\[.*?$//;
+        }
+        $text = encodeHTML($text);
+
+
+        $str.="$text</description>
+\t<enclosure url=\"$$pod{link}\" type=\"audio/mpeg\"/>\n"; # Generate 'length'...?
+        $str.="\t<category>Podcasts</category>\n";
+        $str.="\t<pubDate>";
+        $str.=strftime("%a, %d %b %Y %H:%M:%S %z",localtime($$pod{pubdate}));
+        $str.="</pubDate>\n";
+        $str.="</item>\n";
+
+    }
+
+    $str .= "</channel>\n</rss>";
+
+    utf8::encode($str);
+    return $str;
+}
+
+sub random_nodes_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my @phrase = (
+        'Nodes your grandma would have liked:',
+        'After stirring Everything, these nodes rose to the top:',
+        'Look at this mess the Death Borg made!',
+        'Just another sprinking of indeterminacy',
+        'The best nodes of all time:'
+    );
+
+    my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+    $str.="
+   <!DOCTYPE randomnodes [
+     <!ELEMENT randomnodes (wit, e2link*)>\n
+     <!ELEMENT wit (#PCDATA)>\n
+     <!ELEMENT e2link (#PCDATA)>\n
+        <!ATTLIST e2link node_id CDATA #REQUIRED> \n
+   ]>
+
+";
+
+    $str.="<randomnodes>\n";
+    $str.='<wit>'.$phrase[rand(int(@phrase))]."</wit>\n";
+
+    my $randomnodes = $DB->stashData("randomnodes");
+
+    foreach my $N (@$randomnodes) {
+        $str.="  <e2link node_id=\"$$N{node_id}\">".encodeHTML($$N{title})."</e2link>\n";
+    }
+
+    $str.="</randomnodes>\n";
+    return $str;
+}
+
+sub raw_vars_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<vars>";
+
+    unless($APP->isGuest($USER) ){
+        my $ev = getVars(getNode("exportable vars","setting"));
+
+        foreach(keys %$ev)
+        {
+            next unless $$VARS{$_};
+            $str.="<key name=\"$_\">$$VARS{$_}</key>\n";
+        }
+    }
+
+    $str.="</vars>";
+    return $str;
+}
+
+sub time_since_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str="<timesince>";
+
+
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+    $year+=1900;
+    $mon+=1;
+
+    $mon = sprintf("%02d", $mon);
+    $mday = sprintf("%02d", $mday);
+    $hour = sprintf("%02d", $hour);
+    $min = sprintf("%02d", $min);
+    $sec = sprintf("%02d", $sec);
+
+    my $now = "$year-$mon-$mday $hour:$min:$sec";
+    my @users;
+
+    if($query->param("user"))
+    {
+        push @users, getNode($_, "user") foreach(split(',',$query->param("user")));
+    }elsif($query->param("user_id"))
+    {
+        push @users, getNodeById($_) foreach(split(",",$query->param("user_id")));
+    }else
+    {
+        @users = ($USER);
+    }
+
+    $str.="<now>$now</now>\n";
+    $str.="<lasttimes>\n";
+    foreach(@users){
+        next unless($_ and $$_{type}{title} eq "user");
+        $str.="<user lasttime=\"$$_{lasttime}\">\n<e2link node_id=\"$$_{node_id}\">$$_{title}</e2link>\n</user>";
+    }
+    $str.="</lasttimes>\n";
+    $str.="</timesince>";
+    return $str;
+}
+
+sub universal_message_xml_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $msglimit = int($query->param("msglimit")); # to prevent against nasty SQL injection attacks. mkb thanks call
+    if ($msglimit !~ /^[0-9]*$/)
+    {
+        $msglimit = 0;
+    }
+
+    my $for_node = $query->param("for_node");
+    my $backtime = $query->param("backtime");
+    my $nosort = $query->param("nosort");
+    my $lnp = $query->param("links_noparse");
+
+    $for_node = $$USER{user_id} if ($for_node eq "me");
+
+    $nosort ||= 0;
+    $for_node ||= 0;
+    $msglimit ||= 0; #not actually necessary due to call's fix above, but better safe than sorry -- tmw
+    $backtime ||= 0;
+    my $recip = getNodeById($for_node);
+
+    if ($for_node == 0)
+    {
+        $$recip{type_nodetype} = getId(getType('room'));
+        $$recip{node_id} = 0;
+        $$recip{title} = "outside";
+        $$recip{criteria} = "1;";
+    }
+
+    my $limits = "";
+    my $secs;
+    my $room;
+    my $messages = {};
+
+    if ($$recip{type_nodetype} == getId(getType('room')))
+    {
+        if ($APP->canEnterRoom($recip, $USER, $VARS)
+            and ((!$APP->isGuest($USER))
+            or getVars(getNode("public rooms", "setting"))->{$$recip{node_id}})
+            )
+        {
+            $room = getVars(getNode("room topics", "setting"));
+            my $topic = $$room{$$recip{node_id}};
+            unless ($lnp == 1)
+            {
+                if ($query->param('do_the_right_thing'))
+                {
+                    $topic = $APP->escapeAngleBrackets($topic);
+                }
+                $topic = parseLinks($topic);
+            }
+
+            $messages -> {room} = {room_id => $$recip{node_id},
+                                content => $$recip{title}
+                                };
+
+            $messages -> {topic} = {content => $topic};
+
+            if ($backtime != 5 && $backtime != 10)
+            {
+                $backtime = 5;
+            }
+
+            $secs = $backtime * 60;
+
+            if ($$USER{in_room} == $$recip{node_id} || $$USER{user_id} == getId(getNode("Guest User", "user")))
+            {
+                # Use interval here to avoid a table scan -- [call]
+                $limits = "message_id > $msglimit AND room='$$recip{node_id}' AND for_user='0'"
+                    . " AND tstamp >= date_sub(now(), interval $secs second)";
+            }
+            else
+            {
+                $limits = "";
+            }
+        }
+    }
+    elsif ($$recip{type_nodetype} == getId(getType('user')))
+    {
+        $secs = $backtime * 60;
+
+        if ($$USER{user_id} == $$recip{node_id})
+        {
+            $limits = "message_id > $msglimit AND for_user='$$USER{user_id}' AND room='0'";
+            # Avoid a table scan here, too. -- [call]
+            $limits.= " AND tstamp >= date_sub(now(), interval $secs second)" if($secs > 0);
+        }
+        else
+        {
+            $limits = "";
+        }
+    }
+
+    $limits .=" ORDER BY message_id" unless($nosort == 1 || $limits eq "");
+    $limits = " message_id is NULL LIMIT 0" if($limits eq "");
+    my $csr = $DB->sqlSelectMany("*", "message use index(foruser_tstamp)", $limits);
+
+    my $gu = getNode("Guest User", "user");
+    my $username;
+    my $costume;
+    my $msglist = [];
+
+    unless ($$recip{node_id} == $$gu{node_id})
+    {
+        while (my $row = $csr->fetchrow_hashref())
+        {
+            my $msg = {};
+            $msg -> {msg_id} = $$row{message_id};
+            $msg -> {msg_time} = $$row{tstamp};
+            $msg -> {archive} = 1 if($$row{archive} == 1);
+
+            my $frm=getNodeById($$row{author_user});
+            my $grp=getNodeById($$row{for_usergroup});
+            $username = $$frm{title};
+
+            if (htmlcode('isSpecialDate','halloween') && $room)
+            {
+                $costume = '';
+                $costume = getVars($frm)->{costume} if (getVars($frm)->{costume});
+                $costume =~ s/\t//g;
+
+                if ($costume gt '')
+                {
+                    $username = $costume;
+                }
+            }
+
+            #properly encode usernames
+            utf8::encode($username);
+
+            if($frm)
+            {
+                #This weird way of putting the form data is because we're using
+                #<from> tags without any attributes, and XML::Simple will only
+                #allow this for grouping tags.
+                my $frmdata = [];
+                my $md5 = htmlcode('getGravatarMD5', $frm);
+                push @$frmdata, {node_id => $$frm{node_id},
+                            content => $username,
+                            md5 => $md5
+                            };
+                $msg -> {from} = $frmdata;
+            }
+
+            if($grp)
+            {
+                $msg -> {grp} = {type    => $$grp{type}{title},
+                            e2link  => {node_id => $$grp{node_id},
+                                        content => $$grp{title}
+                                        },
+                            };
+            }
+
+            my $txt = encodeHTML($$row{msgtext});
+            unless ($lnp == 1)
+            {
+                $txt = parseLinks($txt);
+            }
+
+            $msg -> {txt} = {content => $txt};
+            push @$msglist,  $msg;
+        }
+    }
+
+    $messages -> {msglist} = { msg => $msglist };
+
+    # For reason behind options, see
+    # http://perldesignpatterns.com/?XmlSimple, as well as the XML::Simple
+    # documentation.
+
+    my $xmls = XML::Simple->new(
+        RootName => undef,
+        KeepRoot => 1,
+        ForceArray => 1,
+        ForceContent => 1,
+        XMLDecl => 1,
+        GroupTags => {from => 'e2link'}, #Hack to get <from> tags without attributes
+    );
+    my $xml = $xmls -> XMLout({"messages" => $messages});
+    return $xml;
+}
+
+sub user_search_xml_ticker_ii
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\"?>\n";
+
+    my $searchuser = $query->param("searchuser");
+    $searchuser = getNode($searchuser, "user") if defined($searchuser);
+    $searchuser ||= $USER;
+    my $startat = $query->param("startat");
+    $startat ||= "0";
+    $startat =~ s/[^\d]//g;
+    my $limit;
+    $limit = $query->param("count");
+    $limit ||= "50";
+    $limit =~ s/[^\d]//g;
+    $limit = " LIMIT $startat,$limit ";
+    $limit = "" if $query->param("nolimit");
+
+    my $o = " ORDER BY ";
+
+    my $sortchoices = {
+        'rep' => "$o reputation DESC",
+        'rep_asc' => "$o reputation",
+        'title' => "$o title",
+        'creation' => "$o publishtime DESC",
+        'creation_asc' => "$o publishtime",
+        'publication' => "$o publishtime DESC",
+        'publication_asc' => "$o publishtime"
+    };
+    my $sort = $$sortchoices{$query->param("sort")};
+    $sort ||= $$sortchoices{creation};
+    $sort = "" if $query->param("nosort");
+
+    my $wuCount = $DB->sqlSelect('count(*)','node',
+        "author_user=$$searchuser{node_id} AND type_nodetype=117");
+
+    my $nr = getId(getNode("node row", "oppressor_superdoc"));
+
+    my $csr = $DB->sqlSelectMany("node_id", "node JOIN writeup ON node_id=writeup_id",
+        "author_user=$$searchuser{node_id} $sort $limit");
+
+    $str.='<usersearch user="'.encodeHTML($$searchuser{title}).'" writeupCount="'.$wuCount.'">';
+
+    while(my $row = $csr->fetchrow_hashref)
+    {
+        my $n = getNodeById($$row{node_id});
+        next unless $n;
+        my $parent = getNodeById($$n{parent_e2node});
+        my @props;
+        my $ct = $$n{publishtime};
+        push @props, "createtime=\"$ct\"";
+
+        my $marked = (($DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$n{node_id}")?(1):(0)));
+        push @props, "marked=\"$marked\"" if($$searchuser{node_id} == $$USER{node_id});
+
+        my $hidden = $$n{notnew};
+        $hidden ||= 0;
+        push @props, "hidden=\"$hidden\"" if($$searchuser{node_id} == $$USER{node_id});
+
+        my $c = $DB->sqlSelect("count(*)", "coolwriteups", "coolwriteups_id=$$n{node_id}");
+        $c ||= 0;
+
+        push @props, "cools=\"$c\"";
+
+        my $wrtype = getNodeById($$n{wrtype_writeuptype});
+        push @props, "wrtype=\"$$wrtype{title}\"";
+
+        my $up = $DB->sqlSelect("count(*)", "vote", "vote_id=$$n{node_id} AND weight=1");
+        my $down = $DB->sqlSelect("count(*)", "vote", "vote_id=$$n{node_id} AND weight=-1");
+        $str.="<wu ".join(" ", @props).">";
+        $str.="<rep up=\"$up\" down=\"$down\">$$n{reputation}</rep>" if($$searchuser{node_id} == $$USER{node_id});
+        $str.="<e2link node_id=\"$$n{node_id}\">".encodeHTML($$n{title})."</e2link>";
+        $str.="<parent>";
+        $str.="<e2link node_id=\"$$parent{node_id}\">".encodeHTML($$parent{title})."</e2link>";
+        $str.="</parent>";
+        $str.="</wu>";
+    }
+    $str.="</usersearch>";
+
+    return $str;
+}
+
+sub xml_interfaces_ticker
+{
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = "<?xml version=\"1.0\" ?>";
+    $str.="<xmlcaps>\n";
+    $str.="<this node_id=\"$$NODE{node_id}\">$$NODE{title}</this>\n";
+    my $ifaces = getVars(getNode("XML exports", "setting"));
+
+    foreach(keys %$ifaces)
+    {
+        my $i = $_;
+        my $n = getNodeById($$ifaces{$i});
+
+        $str.=" <xmlexport iface=\"$i\" node_id=\"$$n{node_id}\">".encodeHTML($$n{title})."</xmlexport>\n";
+    }
+
+    $str.="</xmlcaps>";
     return $str;
 }
 

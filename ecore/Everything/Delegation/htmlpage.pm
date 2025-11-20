@@ -1816,7 +1816,24 @@ sub ticker_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return parseCode($$NODE{doctext});
+  my $doctitle = $NODE->{title};
+  $doctitle =~ s/[\s-]/_/g;
+  $doctitle =~ s/[^A-Za-z0-9]/_/g;
+  $doctitle = lc($doctitle);
+
+  if($doctitle =~ /^\d+$/)
+  {
+    $doctitle = "ticker_$doctitle";
+  }
+
+  $APP->devLog("Proposed ticker delegation for '$NODE->{title}': '$doctitle'");
+  if(my $delegation = Everything::Delegation::document->can("$doctitle"))
+  {
+    $APP->devLog("Using ticker delegation for $NODE->{title} as '$doctitle'");
+    return $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+  }else{
+    return parseCode($$NODE{doctext});
+  }
 }
 
 sub plaindoc_display_page

@@ -10,6 +10,38 @@ This document outlines a comprehensive plan to remove all `eval()` calls from th
 
 **IMPORTANT NOTE:** Mason templates in XML node files are NOT a security risk. They are controlled server-side templates that don't process user input. The migration of these templates (like the recent oppressor_superdoc work) is for architecture simplification, not security.
 
+## Recently Completed (2025-11-19)
+
+### ✅ ajax_update Opcode eval() Removal - COMPLETED
+
+**Location:** `ecore/Everything/Delegation/document.pm` (ajax_update function)
+
+**What Was Fixed:**
+Two eval() calls in the ajax_update function were replaced with direct delegation calls:
+
+1. **Message Mode** (line 22683):
+   - **Removed:** `my $op = getNode('message','opcode'); eval($$op{code});`
+   - **Replaced with:** `Everything::Delegation::opcode::message($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);`
+
+2. **Vote Mode** (line 22688):
+   - **Removed:** `my $op = getNode('vote','opcode'); eval($$op{code});`
+   - **Replaced with:** `Everything::Delegation::opcode::vote($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);`
+
+**Module Import Added:**
+Added `use Everything::Delegation::opcode;` to document.pm to support the delegation calls.
+
+**Benefits Achieved:**
+- ✅ Eliminated eval() security risks for voting and messaging
+- ✅ Removed 2 database queries (getNode() calls) per operation
+- ✅ Removed 2 Perl::Critic violations
+- ✅ Clearer code path for debugging
+
+**Documentation:**
+- Updated `/docs/ajax_update_system_analysis.md` with detailed before/after analysis
+- Documented all 12 ajax_update modes
+
+---
+
 ## Current eval() Usage Analysis
 
 ### Location Summary
@@ -66,17 +98,24 @@ eval("use $evalclass") or do { if($@){$self->errors->{"$evalclass"} = $@} };
 
 #### 3. **Data Structure eval() - Deserialization** (MEDIUM PRIORITY)
 **Files:**
-- `ecore/Everything/Delegation/htmlcode.pm:13630` - Node data deserialization
+- `ecore/Everything/Delegation/htmlcode.pm:3670` - Weblog special handler (dynamic subroutine creation)
+- `ecore/Everything/Delegation/htmlcode.pm:13649` - Node data deserialization
 - `ecore/Everything/Delegation/document.pm:18934` - Tomb data (nodeproto)
 - `ecore/Everything/Delegation/document.pm:21235` - Node crypt data
 - `ecore/Everything/API.pm:93` - Subroutine reference eval
 
 **Usage Pattern:**
 ```perl
+# Data deserialization
 my $DATA = eval('my ' . $N->{data});
+
+# Dynamic subroutine creation (weblog)
+eval( q|$weblogspecials{ remove } = sub { ... }|);
 ```
 
-**Replacement Strategy:** Use JSON or proper Perl serialization (Storable/JSON::XS)
+**Replacement Strategy:**
+- For data: Use JSON or proper Perl serialization (Storable/JSON::XS)
+- For dynamic subs: Refactor to static function with parameters
 
 #### 4. **Error Handling eval() - Exception Catching** (LOW PRIORITY)
 **Files:**
@@ -211,9 +250,11 @@ my $DATA = thaw($node->{data});
 
 **Steps:**
 1. ⬜ Identify all data fields using eval() deserialization:
-   - Node `data` field in htmlcode:13630 ✅ TO REMOVE
+   - Weblog special handler in htmlcode:3670 ✅ TO REMOVE (refactor to static function)
+   - Node `data` field in htmlcode:13649 ✅ TO REMOVE
    - ~~Tomb `data` field in document.pm:18934~~ ⏸️ RETAINED (see Tomb Exception below)
    - Node crypt `data` field in document.pm:21235 ✅ TO REMOVE
+   - API subroutine reference in API.pm:93 ✅ TO INVESTIGATE (may move to Phase 4)
 2. ⬜ Choose serialization format (recommend JSON for readability)
 3. ⬜ Create migration script to convert existing data (excluding tomb)
 4. ⬜ Update write paths to use new serialization
@@ -490,10 +531,13 @@ While there's no risk of malicious code injection, there IS a process problem:
 ### String eval() (Must Remove)
 - `ecore/Everything/PluginFactory.pm:60` - Module loading
 - `ecore/Everything/HTML.pm` - embedCode/evalCode implementation
-- `ecore/Everything/Delegation/htmlcode.pm:13630` - Data deserialize
+- `ecore/Everything/Delegation/htmlcode.pm:3670` - Weblog special handler (dynamic subroutine creation)
+- `ecore/Everything/Delegation/htmlcode.pm:13649` - Data deserialize (was 13630 in earlier analysis)
 - ~~`ecore/Everything/Delegation/document.pm:18934` - Tomb data~~ ⏸️ **RETAINED** - See Phase 3 Tomb Exception
 - `ecore/Everything/Delegation/document.pm:21235` - Crypt data
 - `ecore/Everything/API.pm:93` - Subroutine reference
+- ~~`ecore/Everything/Delegation/document.pm:22683` - ajax_update message mode~~ ✅ **COMPLETED** (2025-11-19)
+- ~~`ecore/Everything/Delegation/document.pm:22688` - ajax_update vote mode~~ ✅ **COMPLETED** (2025-11-19)
 
 ### Block eval{} (Safe - Keep)
 - `ecore/Everything/NodeBase.pm:924, 2639` - Error handling

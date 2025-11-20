@@ -1,37 +1,5 @@
 <node>
-  <doctext>[%
-my $str = &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&quot;;
-$str.=&quot;&lt;newwriteups&gt;\n&quot;;
-
-my $limit = $query-&gt;param(&quot;count&quot;);
-$limit ||= &quot;15&quot;;
-$limit =~ s/[^\d]//g;
-$limit = 300 if ($limit &gt; 300);
-
-my $csr = $DB-&gt;sqlSelectMany(&quot;node.node_id as nodeid&quot;, &quot;newwriteup, node&quot;, &quot;newwriteup.node_id=node.node_id and notnew=0 order by newwriteup_id DESC limit $limit&quot;);
-while(my $row = $csr-&gt;fetchrow_hashref)
-{
-  my $n = getNodeById($$row{nodeid});
-  next unless($n);
-  my $author = getNodeById($$n{author_user});
-  my $parent = getNodeById($$n{parent_e2node});
-  my $wutype = getNodeById($$n{wrtype_writeuptype});
-
-  $str.=&quot;&lt;wu wrtype=\&quot;$$wutype{title}\&quot;&gt;&quot;;
-  $str.=&quot;&lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;&quot;.encodeHTML($$n{title}).&quot;&lt;/e2link&gt;&quot;;
-  $str.=&quot;&lt;author&gt;&quot;;
-  $str.=&quot;&lt;e2link node_id=\&quot;$$author{node_id}\&quot;&gt;&quot;.encodeHTML($$author{title}).&quot;&lt;/e2link&gt;&quot; if $author;
-  $str.=&quot;&lt;/author&gt;&quot;;
-  $str.=&quot;&lt;parent&gt;&quot;;
-  $str.=&quot;&lt;e2link node_id=\&quot;$$parent{node_id}\&quot;&gt;&quot;.encodeHTML($$parent{title}).&quot;&lt;/e2link&gt;&quot; if $parent;
-  $str.=&quot;&lt;/parent&gt;&quot;;
-
-  $str.=&quot;&lt;/wu&gt;&quot;;
-}
-
-$str.=&quot;&lt;/newwriteups&gt;\n&quot;;
-return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1291781</node_id>
   <title>New Writeups XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

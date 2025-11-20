@@ -1,20 +1,5 @@
 <node>
-  <doctext>[%
-my $str.=&quot;&lt;vars&gt;&quot;;
-
-unless($APP-&gt;isGuest($USER) ){
-  my $ev = getVars(getNode(&quot;exportable vars&quot;,&quot;setting&quot;));
-
-  foreach(keys %$ev)
-  {
-    next unless $$VARS{$_};
-    $str.=&quot;&lt;key name=\&quot;$_\&quot;&gt;$$VARS{$_}&lt;/key&gt;\n&quot;;
-  }
-}
-
-$str.=&quot;&lt;/vars&gt;&quot;;
-return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1372677</node_id>
   <title>Raw VARS XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

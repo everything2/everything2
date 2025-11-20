@@ -1,58 +1,5 @@
 <node>
-  <doctext>[%
-my $skip = {
-	'dbrown'=&gt;1,
-	'nate'=&gt;1,
-	'Webster 1913'=&gt;1,
-	'ShadowLost'=&gt;1,
-	'EDB'=&gt;1
-};
-
-my $limit = 50;
-
-$limit += (keys %$skip);
-
-my $csr = $DB-&gt;{dbh}-&gt;prepare('select node_id,title,experience,vars from user left join node on node_id=user_id left join setting on setting_id=user_id order by experience DESC limit '.$limit);
-
-return 'Ack! Something\'s broken...' unless($csr-&gt;execute);
-
-# Skip these users
-
-my $uid = getId($USER) || 0;
-my $node;
-my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot; ?&gt; &quot;;
-my $step = 0;
-my $lvlexp = getVars(getNode('level experience', 'setting'));
-my $lvlttl = getVars(getNode('level titles', 'setting'));
-my $lvl;
-
-$str.=&quot;&lt;EBU&gt;&quot;;
-
-while($node = $csr-&gt;fetchrow_hashref) {
-  
-	next if(exists $$skip{$$node{title}});
-        next if($step &gt;= 50);
-
-	$lvl = $APP-&gt;getLevel($node);
-	my $V = getVars($node);
-
-        $str.= &quot;&lt;bestuser&gt;\n&quot;;
-        $str.= &quot; &lt;experience&gt;$$node{experience}&lt;/experience&gt;&quot;;
-        $str.= &quot; &lt;writeups&gt;$$V{numwriteups}&lt;/writeups&gt;\n&quot;; 
-        $str.= &quot; &lt;e2link node_id=\&quot;$$node{node_id}\&quot;&gt;$$node{title}&lt;/e2link&gt;\n&quot;;
-        $str.= &quot; &lt;level value=\&quot;&quot;.$APP-&gt;getLevel($node).&quot;\&quot;&gt;&quot;.$$V{level}.&quot;&lt;/level&gt;\n&quot;;
-        $str.= &quot;&lt;/bestuser&gt;\n&quot;;
-
-	++$step;
-}
-
-$str.=&quot;&lt;/EBU&gt;&quot;;
-
-$str;
-%]
-
-
-</doctext>
+  <doctext></doctext>
   <node_id>1259941</node_id>
   <title>Everything's Best Users XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

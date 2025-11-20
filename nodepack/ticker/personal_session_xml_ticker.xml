@@ -1,47 +1,5 @@
 <node>
-  <doctext>&lt;?xml version=&quot;1.0&quot;?&gt; 
-&lt;e2session&gt;
-[%
-  use POSIX;
-  return &quot;&lt;currentuser user_id=\&quot;$$USER{user_id}\&quot;&gt;&quot;.encodeHTML($$USER{title}).&quot;&lt;/currentuser&gt;\n&quot;.
-         &quot;&lt;servertime time=\&quot;&quot;.scalar(time).&quot;\&quot;&gt;&quot;.asctime(localtime).&quot;&lt;/servertime&gt;&quot;;
-%]
-[%
-  return &quot;&quot; if $APP-&gt;isGuest($USER);
-
-  my $str;
-  my $catch = htmlcode('borgcheck');
-
-  $str.=&quot;&lt;borgstatus value=\&quot;&quot;.(($$VARS{borged})?(&quot;1&quot;):(&quot;0&quot;)).&quot;\&quot;&gt;&quot;.(($$VARS{borged})?(&quot;borged&quot;):(&quot;unborged&quot;)).&quot;&lt;/borgstatus&gt;&quot;;
-
-  my $rm = getNodeById($$USER{in_room});
-  $str.=&quot;&lt;in_room&gt;&quot;.(($$USER{in_room} == 0)?(&quot;&quot;):(&quot;&lt;e2link node_id=\&quot;$$rm{node_id}\&quot;&gt;$$rm{title}&lt;/e2link&gt;&quot;)).&quot;&lt;/in_room&gt;&quot;;
-
-  $str.=&quot;&lt;personalnodes&gt;&quot;;
-   foreach(split('&lt;br&gt;',$$VARS{personal_nodelet}))
-   {
-       next unless $_;
-       $str.=&quot;&lt;pn&gt;&quot;.encodeHTML($_).&quot;&lt;/pn&gt;&quot;
-   }
-  $str.=&quot;&lt;/personalnodes&gt;&quot;;
-  $str.=htmlcode(&quot;shownewexp&quot;, &quot;TRUE,xml&quot;);
-  $str.=&quot;&lt;cools&gt;&quot;.(($$VARS{cools})?($$VARS{cools}):(&quot;0&quot;)).&quot;&lt;/cools&gt;&quot;;
-  $str.=&quot;&lt;votesleft&gt;&quot;.$$USER{votesleft}.&quot;&lt;/votesleft&gt;&quot;;
-  $str.=&quot;&lt;karma&gt;&quot;.$$USER{karma}.&quot;&lt;/karma&gt;&quot;;
-  $str.=&quot;&lt;experience&gt;&quot;.$$USER{experience}.&quot;&lt;/experience&gt;&quot;;
-  $str.=&quot;&lt;numwriteups&gt;&quot;.(($$VARS{numwriteups})?($$VARS{numwriteups}):(&quot;0&quot;)).&quot;&lt;/numwriteups&gt;&quot;;
-
-
-my $userlock = $DB-&gt;sqlSelectHashref('*', 'nodelock', &quot;nodelock_node=$$USER{user_id}&quot;);
-$str.=&quot;&lt;forbiddance&gt;&quot;;
-$str.=encodeHTML($$userlock{nodelock_reason})if ($userlock);
-$str.=&quot;&lt;/forbiddance&gt;&quot;;
-
-
-  return $str;
-
-%]
-&lt;/e2session&gt;</doctext>
+  <doctext></doctext>
   <node_id>1262798</node_id>
   <title>Personal Session XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

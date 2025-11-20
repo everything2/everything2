@@ -1,45 +1,5 @@
 <node>
-  <doctext>[%
-
-my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot;?&gt;\n&quot;;
-$str.=&quot;
-   &lt;!DOCTYPE e2rooms \[
-     &lt;!ELEMENT e2rooms (outside, roomlist)&gt;\n
-     &lt;!ELEMENT outside (e2link)&gt;\n
-     &lt;!ELEMENT roomlist (e2link*)&gt;\n
-     &lt;!ELEMENT e2link (\#PCDATA)&gt;\n
-        &lt;!ATTLIST e2link node_id CDATA \#REQUIRED&gt; \n
-   \]&gt;
-&quot;;
-
-$str.=&quot;&lt;e2rooms&gt;\n&quot;;
-$str.=&quot;&lt;outside&gt;\n&quot;;
-my $go = getNode(&quot;go outside&quot;, &quot;superdocnolinks&quot;);
-$str.= &quot;  &lt;e2link node_id=\&quot;$$go{node_id}\&quot;&gt;$$go{title}&lt;/e2link&gt;\n&quot;;
-$str.=&quot;&lt;/outside&gt;\n&quot;;
-
-my $csr = $DB-&gt;sqlSelectMany(&quot;node_id, title&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getId(getType(&quot;room&quot;)));
-
-my $rooms;
-
-while(my $ROW = $csr-&gt;fetchrow_hashref())
-{
-   $$rooms{lc($$ROW{title})} = $$ROW{node_id};
-}
-
-  $str.=&quot;&lt;roomlist&gt;\n&quot;;
-
-foreach(sort(keys %$rooms))
-{
-  my $n = getNodeById($$rooms{$_});
-  $str.=&quot; &lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;&quot;.encodeHTML($$n{title}).&quot;&lt;/e2link&gt;\n&quot;;
-}
-  $str.=&quot;&lt;/roomlist&gt;\n&quot;;
-  $str.=&quot;&lt;/e2rooms&gt;\n&quot;;
-
-  return $str;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1254496</node_id>
   <title>Available Rooms XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

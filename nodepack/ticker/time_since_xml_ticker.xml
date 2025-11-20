@@ -1,42 +1,5 @@
 <node>
-  <doctext>[%
-  my $str=&quot;&lt;timesince&gt;&quot;;
-
-
-  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
-  $year+=1900;
-  $mon+=1;
-
-  $mon = sprintf(&quot;%02d&quot;, $mon);
-  $mday = sprintf(&quot;%02d&quot;, $mday);
-  $hour = sprintf(&quot;%02d&quot;, $hour);
-  $min = sprintf(&quot;%02d&quot;, $min);
-  $sec = sprintf(&quot;%02d&quot;, $sec);
-
-  my $now = &quot;$year-$mon-$mday $hour:$min:$sec&quot;;
-  my @users;
-  
-  if($query-&gt;param(&quot;user&quot;))
-  {
-     push @users, getNode($_, &quot;user&quot;) foreach(split(',',$query-&gt;param(&quot;user&quot;)));
-  }elsif($query-&gt;param(&quot;user_id&quot;))
-  {
-     push @users, getNodeById($_) foreach(split(&quot;,&quot;,$query-&gt;param(&quot;user_id&quot;)));
-  }else  
-  {
-    @users = ($USER);
-  }
-
-  $str.=&quot;&lt;now&gt;$now&lt;/now&gt;\n&quot;;
-  $str.=&quot;&lt;lasttimes&gt;\n&quot;;
-  foreach(@users){
-    next unless($_ and $$_{type}{title} eq &quot;user&quot;);
-    $str.=&quot;&lt;user lasttime=\&quot;$$_{lasttime}\&quot;&gt;\n&lt;e2link node_id=\&quot;$$_{node_id}\&quot;&gt;$$_{title}&lt;/e2link&gt;\n&lt;/user&gt;&quot;;
-    }
-  $str.=&quot;&lt;/lasttimes&gt;\n&quot;;
-  $str.=&quot;&lt;/timesince&gt;&quot;;
-  return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1372684</node_id>
   <title>Time Since XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

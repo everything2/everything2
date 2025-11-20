@@ -1,32 +1,5 @@
 <node>
-  <doctext>[%
-
-my $cache = $DB-&gt;stashData(&quot;coolnodes&quot;);
-
-my $xml;
-use XML::Generator;
-my $XG = new XML::Generator;
-
-my $count = 15;
-my %used;
-
-foreach my $CW (@$cache) {
-  next if exists $used{$$CW{coolwriteups_id}};
-  $used{$$CW{coolwriteups_id}} = 1;
-  $xml .=&quot;\t&quot;.$XG-&gt;cooled({node_id =&gt; $$CW{coolwriteups_id}, 
-     parent_e2node =&gt; $$CW{parentNode}, 
-     author_user =&gt; $$CW{wu_author},
-     cooledby_user =&gt; $$CW{cooluser}},
-     $$CW{parentTitle}).&quot;\n&quot;;
-  last unless (--$count);
-}
-
-$xml = $XG-&gt;COOLEDNODES(
-   $XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;site_url, sitename =&gt; $Everything::CONF-&gt;site_name,  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Cool Nodes XML Ticker')
-   . &quot;\n&quot;.$xml . &quot;\n&quot;);
-
-$xml;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1101708</node_id>
   <title>Cool Nodes XML Ticker</title>
   <type_nodetype>451267</type_nodetype>
