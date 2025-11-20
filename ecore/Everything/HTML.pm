@@ -822,10 +822,7 @@ sub displayPage
 			# $NODE twice for legacy reasons though I am not sure if anyone needs it
 			$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $NODE);
 		}else{
-			$APP->devLog("Using legacy htmlpage for '$pagetitle'");
-			$page = $$PAGE{page};
-			die "NO PAGE!" unless $page;
-			$page = parseCode($page, $NODE);
+			$page = "<p>Error: Htmlpage delegation not implemented for '$$PAGE{title}' (expected: $pagetitle)</p>";
 		}
 
         my $container_node = $DB->getNodeById($$PAGE{parent_container});

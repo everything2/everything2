@@ -17,7 +17,6 @@ BEGIN {
   *urlGen = *Everything::HTML::urlGen;
   *linkNode = *Everything::HTML::linkNode;
   *htmlcode = *Everything::HTML::htmlcode;
-  *parseCode = *Everything::HTML::parseCode;
   *parseLinks = *Everything::HTML::parseLinks;
   *isNodetype = *Everything::HTML::isNodetype;
   *isGod = *Everything::HTML::isGod;
@@ -892,25 +891,6 @@ sub openform
 
 # This needs to go away, but that's at the end of a very long road
 #
-sub parsecode
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($field, $nolinks) = @_;
-  my $text = $$NODE{$field};
-  $text = parseCode ($text);
-  $nolinks ||= $PAGELOAD->{noparsecodelinks};
-
-  $text = parseLinks($text) unless $nolinks;
-  return $text;
-}
-
 # [{parsetime:FIELD}]
 # Parses out a datetime field into a more human-readable form
 #
@@ -1234,9 +1214,8 @@ sub windowview
 #	If one of these has the key 'cansee' it will be used to check whether to show an item:
 #	return '1' for yes.
 #
-# doctext is parseCoded if a node type is present and (inherits from) superdoc
+# Superdoc content is rendered via delegation
 # tables in doctext are screened for logged-in users
-# TODO: Unwind the parseCode bits
 #
 sub show_content
 {
@@ -1354,8 +1333,18 @@ sub show_content
       $$HTML{ noscreening } = ($content[$i] eq 'unfiltered');
       $i-- unless $content[++$i];
       my $text = $N->{ doctext } ;
-      # Superdoc stuff hardcoded below
-      $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq "14" or $$N{ type }{ extends_nodetype } eq "14" ) ;
+
+      # For superdocs, use delegation
+      if ( exists( $$N{ type } ) and ( $$N{ type_nodetype } eq "14" or $$N{ type }{ extends_nodetype } eq "14" ) ) {
+        my $doctitle = $$N{title};
+        $doctitle =~ s/[\s-]/_/g;
+        $doctitle = lc($doctitle);
+
+        if(my $delegation = Everything::Delegation::document->can($doctitle)) {
+          $text = $delegation->($DB, $query, $N, $USER, $VARS, $PAGELOAD, $APP);
+        }
+        # If no delegation, $text remains as doctext (empty for migrated superdocs)
+      }
       $text = $APP->breakTags( $text ) ;
 
       my ( $dots , $morelink ) = ( '' , '' ) ;
@@ -8048,8 +8037,17 @@ sub formxml_superdoc
   my $grp = $$NODE{group};
   my $str = "";
   $str.="<superdoctext>\n";
-  my $txt = $$NODE{doctext};
-  $txt = parseCode($txt);
+
+  # Use delegation for superdoc content
+  my $txt = "";
+  my $delegation_name = $$NODE{title};
+  $delegation_name =~ s/[\s\-]/_/g;
+  if (my $delegation = Everything::Delegation::document->can($delegation_name)) {
+    $txt = $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+  } else {
+    $txt = $$NODE{doctext};
+  }
+
   $txt = parseLinks($txt) unless($query->param("links_noparse") == 1 or $$NODE{type_title} eq "superdocnolinks");
   $str.= $APP->encodeHTML($txt);
   $str.="</superdoctext>\n";
@@ -8196,7 +8194,7 @@ sub formxml_usergroup
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $txt = parseCode($$NODE{doctext});
+  my $txt = $$NODE{doctext};
   my $str = "";
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
   $txt = $APP->encodeHTML($txt);
@@ -12348,9 +12346,9 @@ sub display_draft
   if(my $delegation = Everything::Delegation::htmlpage->can($title))
   {
     return $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
-  }else{
-   return parseCode($PAGE -> {page}, $NODE);
   }
+
+  return "Error: Htmlpage delegation not implemented for '$PAGE->{title}' (expected: $title)";
 }
 
 sub nopublishreason
@@ -12729,23 +12727,20 @@ sub Chatterbox_nodelet_settings
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return '<h4>Chat</h4>'.
-
-  parseCode(qq|
-    [{varcheckbox:hideTopic,Hide the chatterbox topic}]<br>
-    [{varcheckbox:powersChatter,Show user powers in chatterbox}]<br>
-    <h4>Private messages</h4>
-    [{varcheckbox:pmsgDate,Show date messages were sent}]<br>
-    [{varcheckbox:pmsgTime,Show time messages were sent}]<br>
-    [{varcheckbox:chatterbox_authorsince,Show when message sender was last seen}]<br>
-    [{varcheckbox:chatterbox_msgs_ascend,Show oldest messages instead of newest}]<br>
-    <br>
-    [{varcheckboxinverse:showmessages_replylink,Hide reply-to link}]<br>
-    [{varcheckbox:powersMsg,Show user powers in private messages}]<br>
-    <br>
-    [{varcheckbox:showRawPrivateMsg,Show sent message as you typed it (not with links)}]<br>
-    [{varcheckbox:hideprivmessages,Don't show private messages in the chatterbox}]<br>
-  |);
+  return '<h4>Chat</h4>' .
+    htmlcode('varcheckbox', 'hideTopic', 'Hide the chatterbox topic') . '<br>' .
+    htmlcode('varcheckbox', 'powersChatter', 'Show user powers in chatterbox') . '<br>' .
+    '<h4>Private messages</h4>' .
+    htmlcode('varcheckbox', 'pmsgDate', 'Show date messages were sent') . '<br>' .
+    htmlcode('varcheckbox', 'pmsgTime', 'Show time messages were sent') . '<br>' .
+    htmlcode('varcheckbox', 'chatterbox_authorsince', 'Show when message sender was last seen') . '<br>' .
+    htmlcode('varcheckbox', 'chatterbox_msgs_ascend', 'Show oldest messages instead of newest') . '<br>' .
+    '<br>' .
+    htmlcode('varcheckboxinverse', 'showmessages_replylink', 'Hide reply-to link') . '<br>' .
+    htmlcode('varcheckbox', 'powersMsg', 'Show user powers in private messages') . '<br>' .
+    '<br>' .
+    htmlcode('varcheckbox', 'showRawPrivateMsg', 'Show sent message as you typed it (not with links)') . '<br>' .
+    htmlcode('varcheckbox', 'hideprivmessages', "Don't show private messages in the chatterbox") . '<br>';
 }
 
 sub setdraftstatus

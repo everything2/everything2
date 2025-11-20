@@ -1355,6 +1355,327 @@ Currently, various static assets (fonts, images) are hosted in an S3 bucket at `
 - Asset pipeline infrastructure (already present)
 - Access to static.everything2.com S3 bucket for downloading assets
 
+## Priority 11: XML Generation Library Rationalization 📄
+
+**Priority Level:** Low (Code Quality / Technical Debt)
+
+### Why This Matters
+
+**Code Maintainability**
+- Multiple XML generation approaches scattered across codebase
+- Inconsistent XML formatting and escaping
+- Mix of string concatenation, custom functions, and library code
+- Difficult to ensure consistent, valid XML output
+
+**Security**
+- Manual XML generation prone to injection vulnerabilities
+- Inconsistent escaping of special characters
+- No validation of XML structure
+- Risk of malformed XML breaking parsers
+
+**Library Redundancy**
+- `Everything::XML` module (legacy custom implementation)
+- `XML::Simple` used in some places
+- Manual string concatenation in others
+- No single standard approach
+
+**Modern Standards**
+- Industry standard is using well-tested XML libraries
+- Better validation and error handling
+- Standards-compliant output
+- Easier to maintain and test
+
+### Current State
+
+**XML Generation Methods:**
+
+1. **Everything::XML** (ecore/Everything/XML.pm)
+   - Custom legacy module for XML generation
+   - Used primarily for displaytype=xml (node export feature)
+   - 460+ lines of custom XML generation code
+   - Functions: `node2xml()`, `genTag()`, `xml_convert()`, etc.
+   - Relies on global `$DB` variable
+   - Limited to specific E2 node export use cases
+
+2. **XML::Simple**
+   - Perl CPAN module for simple XML tasks
+   - Used in some parts of codebase
+   - Better than string concatenation but has limitations
+   - Not ideal for complex XML generation
+
+3. **String Concatenation**
+   - Manual XML building with string operations
+   - Scattered across delegation functions
+   - Prone to escaping errors
+   - Hard to maintain and validate
+
+**Example of Custom XML Module:**
+
+```perl
+# Everything/XML.pm - Custom implementation
+sub genTag {
+    my ($tag, $value, $PARAMS) = @_;
+    my $str = "<$tag";
+
+    foreach my $param (keys %$PARAMS) {
+        $str .= qq| $param="$$PARAMS{$param}"|;
+    }
+
+    if (defined $value && $value ne "") {
+        $str .= ">$value</$tag>";
+    } else {
+        $str .= " />";
+    }
+
+    return $str;
+}
+```
+
+**Current Uses of Everything::XML:**
+- displaytype=xml query parameter (legacy node export)
+- XML representation of nodes for backup/import
+- Nodepack XML generation (delegation migration tool)
+- Limited usage outside of admin/debugging features
+
+### Target Implementation
+
+**Standardize on Modern XML Library:**
+
+Use **XML::LibXML** (or similar robust library) for all XML generation:
+
+**Benefits of XML::LibXML:**
+- Industry-standard libxml2 bindings
+- Comprehensive DOM API
+- Automatic escaping and validation
+- XPath support for querying
+- Namespace handling
+- Schema validation support
+- Well-tested and maintained
+- Fast C-based implementation
+
+**Example Refactored Code:**
+
+```perl
+# BEFORE (Everything::XML custom code)
+my $xml = genTag('user', $username, {
+    id => $userid,
+    level => $level
+});
+
+# AFTER (XML::LibXML)
+use XML::LibXML;
+
+my $doc = XML::LibXML::Document->new('1.0', 'UTF-8');
+my $user_elem = $doc->createElement('user');
+$user_elem->setAttribute('id', $userid);
+$user_elem->setAttribute('level', $level);
+$user_elem->appendText($username);
+$doc->setDocumentElement($user_elem);
+my $xml = $doc->toString();
+```
+
+### Implementation Plan
+
+**Phase 1: Audit and Analysis (Week 1)**
+1. 📋 Audit all XML generation code across codebase
+2. 📋 Document current uses of Everything::XML
+3. 📋 Identify all displaytype=xml usage in production
+4. 📋 Catalog string concatenation XML building
+5. 📋 Assess impact of removing Everything::XML
+
+**Phase 2: Library Selection and Testing (Week 2)**
+1. 📋 Evaluate XML::LibXML vs alternatives (XML::Writer, XML::Twig)
+2. 📋 Add chosen library to cpanfile
+3. 📋 Create wrapper/utility module for common E2 XML patterns
+4. 📋 Write tests for XML generation functions
+5. 📋 Document XML generation standards
+
+**Phase 3: Migrate displaytype=xml (Week 3-4)**
+1. 📋 Refactor Everything::XML to use modern library
+2. 📋 Or create new implementation alongside old
+3. 📋 Test node export functionality
+4. 📋 Validate XML output matches expected format
+5. 📋 Ensure backward compatibility for existing exports
+
+**Phase 4: Migrate Other XML Generation (Week 5-6)**
+1. 📋 Replace string concatenation with library calls
+2. 📋 Update nodepack XML generation
+3. 📋 Refactor any delegation functions using manual XML
+4. 📋 Add XML validation to relevant code paths
+5. 📋 Create helper functions for common patterns
+
+**Phase 5: Deprecation and Cleanup (Week 7-8)**
+1. 📋 Remove Everything::XML module (if fully replaced)
+2. 📋 Update documentation and coding standards
+3. 📋 Add XML generation guidelines to developer docs
+4. 📋 Run comprehensive tests
+5. 📋 Monitor production for any XML-related issues
+
+### Technical Details
+
+**Recommended Dependencies:**
+
+```perl
+# Add to cpanfile
+requires 'XML::LibXML';
+requires 'XML::LibXML::Simple';  # For backward compatibility if needed
+```
+
+**Utility Module Pattern:**
+
+```perl
+package Everything::XML::Generator;
+use Moose;
+use XML::LibXML;
+
+has 'doc' => (
+    is => 'ro',
+    isa => 'XML::LibXML::Document',
+    lazy => 1,
+    default => sub { XML::LibXML::Document->new('1.0', 'UTF-8') }
+);
+
+sub node_to_xml {
+    my ($self, $node) = @_;
+
+    my $elem = $self->doc->createElement($node->{type}{title});
+    $elem->setAttribute('node_id', $node->{node_id});
+    $elem->setAttribute('title', $node->{title});
+
+    # Add child elements with automatic escaping
+    for my $field (keys %$node) {
+        next if ref($node->{$field});
+        my $field_elem = $self->doc->createElement($field);
+        $field_elem->appendText($node->{$field});
+        $elem->appendChild($field_elem);
+    }
+
+    return $elem;
+}
+```
+
+**Migration Pattern for displaytype=xml:**
+
+```perl
+# In htmlpage delegation or similar
+sub display_xml {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    # BEFORE: use Everything::XML
+    # my $xml = Everything::XML::node2xml($NODE);
+
+    # AFTER: use modern library
+    use Everything::XML::Generator;
+    my $generator = Everything::XML::Generator->new();
+    my $xml = $generator->node_to_xml($NODE)->toString();
+
+    $query->header(-type => 'text/xml');
+    return $xml;
+}
+```
+
+### Benefits
+
+**Code Quality:**
+- Single standard approach across codebase
+- Well-tested library code vs custom implementation
+- Proper escaping and validation
+- Easier to maintain and understand
+
+**Security:**
+- Automatic escaping prevents XML injection
+- Library handles edge cases properly
+- Validation catches malformed XML
+- Reduced attack surface
+
+**Developer Experience:**
+- Standard Perl XML library (well-documented)
+- Better IDE support and examples
+- Easier for new developers to understand
+- Follows Perl best practices
+
+**Future Capabilities:**
+- XPath querying for XML parsing
+- Schema validation support
+- Namespace handling for complex formats
+- XSLT transformation if needed
+
+### Alternative Approaches
+
+**Option A: Minimal Refactor**
+- Keep Everything::XML but refactor internals to use XML::LibXML
+- Maintain same API for backward compatibility
+- Lower risk, easier migration
+- Still reduces custom code
+
+**Option B: Complete Removal**
+- Replace Everything::XML entirely
+- Deprecate displaytype=xml feature (low usage)
+- Simplify codebase significantly
+- Higher risk if feature is used
+
+**Option C: Incremental Migration**
+- Introduce new XML generation alongside old
+- Gradually migrate code over time
+- Eventually remove Everything::XML
+- Safest approach, longer timeline
+
+**Recommended:** Option A (refactor internals, keep API)
+
+### Dependencies
+
+**Blocks:** None (can proceed independently)
+
+**Enables:**
+- Better XML validation and security
+- Easier to implement XML-based features
+- Cleaner, more maintainable codebase
+
+**Requires:**
+- XML::LibXML or similar library added to dependencies
+- Developer time for audit and migration
+- Testing of XML output formats
+
+**Related Work:**
+- Priority 1: eval removal (XML generation in database code)
+- Priority 2: Moose refactoring (could create XML::Generator as Moose class)
+
+### Usage Assessment
+
+**Current displaytype=xml Usage:**
+- Admin/debugging feature
+- Node export for backup/migration
+- Used by delegation migration tooling
+- Not heavily used in production
+- Could be deprecated if low value
+
+**Impact of Removal:**
+- Low user impact (admin feature)
+- May affect internal tooling
+- Would simplify codebase
+- Need to assess actual production usage
+
+### Timeline
+
+**Q2 2025:**
+- ⏸️ Audit XML generation usage across codebase
+- ⏸️ Evaluate and select modern XML library
+- ⏸️ Add dependencies and create wrapper utilities
+
+**Q3 2025:**
+- ⏸️ Refactor Everything::XML internals
+- ⏸️ Migrate string concatenation XML building
+- ⏸️ Test XML output and validation
+
+**Q4 2025:**
+- ⏸️ Complete migration and cleanup
+- ⏸️ Update developer documentation
+- ⏸️ Consider deprecating legacy XML features
+
+**Estimated Effort:** 2-3 weeks (low priority, can be done incrementally)
+
+**Note:** This is a **low priority** technical debt cleanup that doesn't block any critical functionality. It primarily improves code quality, security, and maintainability. Can proceed in parallel with other work or be deferred to a future development cycle.
+
 ## Risk Assessment
 
 ### High Risk Areas

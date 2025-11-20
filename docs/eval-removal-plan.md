@@ -548,6 +548,308 @@ While there's no risk of malicious code injection, there IS a process problem:
 - `ecore/Everything/Delegation/htmlcode.pm:611, 612` - Form JavaScript
 - `ecore/Everything/Delegation/document.pm:12645` - Radio JavaScript
 
+## evalCode() Usage Analysis
+
+### Overview
+
+`evalCode()` is the core eval() function in Everything2 that evaluates arbitrary Perl code strings. It's used as the underlying implementation for `parseCode()`, `embedCode()`, and several specialized systems.
+
+**Location:** `ecore/Everything/HTML.pm:603-623`
+
+**Function Signature:**
+```perl
+sub evalCode {
+  my ($code, $CURRENTNODE) = @_;
+  # Sets up context variables: $NODE, $GNODE, $USER, $VARS, etc.
+  ## no critic (ProhibitStringyEval)
+  my $str = eval $code;
+  # Error handling and formatting
+  return $str;
+}
+```
+
+### evalCode() Call Sites (4 total)
+
+#### 1. embedCode() Internal Use (2 calls) - Part of parseCode System
+
+**Locations:**
+- `ecore/Everything/HTML.pm:702` - Variable resolution in htmlcode arguments
+- `ecore/Everything/HTML.pm:707` - Perl code block execution
+
+**Usage Pattern:**
+```perl
+# Line 702: Resolve variables in [{ htmlcode:args }]
+$args = evalCode('"'.$args.'"');  # Interpolate variables
+
+# Line 707: Execute [% perl code %] blocks
+$block = evalCode($block, @_);
+```
+
+**Context:**
+- Called by `embedCode()` function which processes `[{ }]` and `[% %]` tags
+- Used by `parseCode()` which calls `embedCode()`
+- Part of the legacy template system
+- **Will be removed when parseCode/embedCode are removed**
+
+**Security:**
+- Same security profile as parseCode (processes admin-controlled content)
+- No direct user input reaches these eval() calls
+
+---
+
+#### 2. jsonexport_display_page (1 call) - JSON Structure Generation
+
+**Location:** `ecore/Everything/Delegation/htmlpage.pm:2512`
+
+**Usage Pattern:**
+```perl
+sub jsonexport_display_page {
+  my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+  my $json_struct = evalCode($NODE->{code});
+  return encode_json($json_struct);
+}
+```
+
+**Context:**
+- Evaluates the {code} field of jsonexport nodes
+- The code field contains Perl code that returns a data structure
+- That structure is then JSON-encoded and returned
+- Only 1 jsonexport nodetype exists in the system
+- Used for admin utility/debugging purposes
+
+**Nodes Using This:**
+- `jsonexport` nodetype (extends htmlcode type)
+- `jsonexport display page` htmlpage
+
+**Security Assessment:** ✅ **LOW RISK**
+- Admin-controlled nodetype (no user access)
+- Utility feature for debugging/exporting data structures
+- Code field can only be edited by admins
+
+**Removal Strategy:**
+- **Option A:** Keep as admin debugging tool (low priority)
+- **Option B:** Convert to delegation-based JSON builders
+- **Recommended:** LOW PRIORITY - defer until Phases 1-3 complete
+
+---
+
+#### 3. Achievement Checking (1 call) - hasAchieved Function
+
+**Location:** `ecore/Everything/Delegation/htmlcode.pm:9175`
+
+**Usage Pattern:**
+```perl
+# Check for delegation function first
+my $achtitle = $$ACH{title};
+$achtitle =~ s/[\s-]/_/g;
+$achtitle =~ s/[^A-Za-z0-9_]/_/g;
+$achtitle = lc($achtitle);
+
+my $result;
+if(my $delegation = Everything::Delegation::achievement->can($achtitle)) {
+  $APP->devLog("Using achievement delegation for '$$ACH{title}' as '$achtitle'");
+  $result = $force || $delegation->($DB, $APP, $user_id);
+} else {
+  # Fall back to eval of {code} field for unmigrated achievements
+  $result = $force || evalCode("my \$user_id = $user_id;\n$$ACH{code}", $NODE);
+}
+```
+
+**Context:**
+- Checks if a user has earned a specific achievement
+- 45 achievement nodes exist in `nodepack/achievement/`
+- 45 delegation functions already exist in `Everything::Delegation::achievement`
+- evalCode is now the **fallback** for unmigrated achievements
+- System already checks for delegation first
+
+**Achievement Architecture:**
+- **Old system:** Achievement {code} field contains Perl condition
+- **New system:** Static delegation function in `Everything::Delegation::achievement`
+- **Examples:**
+  ```perl
+  # Old: achievement XML <code> field
+  <code>return 1 if $$USER{karma} >= 20;
+  return 0;</code>
+
+  # New: delegation function
+  sub karma20 {
+    my ($DB, $APP, $user_id) = @_;
+    my $USER = getNodeById($user_id);
+    return 1 if $$USER{karma} >= 20;
+    return 0;
+  }
+  ```
+
+**Migration Status:**
+- ✅ 45 achievement delegations created
+- ⬜ Need to verify all achievements have delegations
+- ⬜ Remove evalCode fallback after verification
+
+**Security Assessment:** ✅ **NO RISK**
+- Achievement nodes are admin-controlled
+- Code field can only be edited by admins
+- No user input reaches evalCode
+
+**Removal Strategy:**
+1. ⬜ Audit all 45 achievements to verify delegation exists
+2. ⬜ Migrate any remaining achievements without delegations
+3. ⬜ Test achievement checking with delegation-only code
+4. ⬜ Remove evalCode fallback from htmlcode.pm:9175
+5. ⬜ Empty all achievement {code} fields in XML
+
+**Estimated Effort:** 1-2 days
+
+---
+
+#### 4. Notification Rendering (1 call) - get_notification Function
+
+**Location:** `ecore/Everything/Delegation/htmlcode.pm:11327`
+
+**Usage Pattern:**
+```perl
+my $invalidCheckCode = $notification->{invalid_check};
+my $argJSON = $$notify{args};
+my $args = &$safe_JSON_decode($argJSON);
+
+my $evalNotify = sub {
+  my $notifyCode = shift;
+  my $wrappedNotifyCode = "sub { my \$args = shift; 0; $notifyCode };";
+  my $wrappedSub = evalCode($wrappedNotifyCode);
+  return &$wrappedSub($args);
+};
+
+# Don't return an invalid notification and remove it from the notified table
+if ($invalidCheckCode ne '' && &$evalNotify($invalidCheckCode)) {
+  $DB->sqlDelete('notified', 'notified_id = ' . int($$notify{notified_id}));
+  next;
+}
+
+# Render notification message
+$notificationCode = $notification->{code};
+$html .= '<li>'.$type.': '.&$evalNotify($notificationCode).'</li>';
+```
+
+**Context:**
+- Renders notification messages for users
+- 23 notification types exist in `nodepack/notification/`
+- Each notification has two code fields:
+  - `{code}`: Generates the notification message text
+  - `{invalid_check}`: Validates if notification should still be shown
+- Creates dynamic subroutines from code strings at runtime
+- Arguments passed as JSON, decoded and passed to generated sub
+
+**Notification Fields:**
+```xml
+<!-- Example: voting notification -->
+<code>my $str;
+if ($$args{weight} > 0) {
+  $str .= "Someone upvoted ";
+} else {
+  $str .= "Someone downvoted ";
+}
+if ($$args{node_id}) {
+  $str .= linkNode($$args{node_id});
+}
+return $str;</code>
+<invalid_check></invalid_check>
+```
+
+**Notification Types (23 total):**
+- voting, newcomment, newdiscussion, nodenote, socialbookmark
+- weblog, writeupedit, achievement, message, etc.
+
+**Security Assessment:** ✅ **NO RISK**
+- Notification nodes are admin-controlled
+- Code fields can only be edited by admins
+- User args are JSON-decoded (not eval'd)
+- No user input reaches evalCode
+
+**Architectural Issues:**
+- Dynamic subroutine creation at runtime is inefficient
+- Creates a new anonymous sub for EVERY notification rendered
+- Makes profiling difficult
+- Adds unnecessary complexity
+
+**Removal Strategy:**
+
+**Option A: Delegation Functions (Recommended)**
+```perl
+# Create Everything::Delegation::notification module
+package Everything::Delegation::notification;
+
+sub voting {
+  my ($args) = @_;
+  my $str;
+  if ($$args{weight} > 0) {
+    $str .= "Someone upvoted ";
+  } else {
+    $str .= "Someone downvoted ";
+  }
+  if ($$args{node_id}) {
+    $str .= linkNode($$args{node_id});
+  }
+  return $str;
+}
+
+sub voting_invalid_check {
+  my ($args) = @_;
+  # Return 1 if notification should be hidden
+  return 0;
+}
+```
+
+**Option B: Template-Based**
+- Use simple string templates with variable substitution
+- Would work for simple notifications
+- Complex logic would still need delegation functions
+
+**Recommended Approach:**
+1. ⬜ Create `Everything::Delegation::notification` module
+2. ⬜ Migrate each of 23 notifications to delegation functions
+3. ⬜ Update `get_notification` to use delegation lookup
+4. ⬜ Test notification rendering
+5. ⬜ Remove evalCode calls
+6. ⬜ Empty notification {code} and {invalid_check} fields
+
+**Performance Benefits:**
+- Static functions vs runtime subroutine generation
+- Better profiling support
+- Clearer code path for debugging
+- Follows established delegation pattern
+
+**Estimated Effort:** 2-3 days
+
+---
+
+### evalCode() Removal Summary
+
+**Total Call Sites:** 4
+
+**Removal Priority:**
+
+1. **HIGHEST:** embedCode calls (lines 702, 707)
+   - ✅ Will be removed automatically when parseCode/embedCode removed (Phase 1)
+   - No separate work required
+
+2. **HIGH:** Achievement checking (line 9175)
+   - ⏱️ 1-2 days effort
+   - 45 delegations already exist
+   - Just needs verification and fallback removal
+
+3. **MEDIUM:** Notification rendering (line 11327)
+   - ⏱️ 2-3 days effort
+   - 23 notifications to migrate
+   - Architectural improvement + eval removal
+
+4. **LOW:** jsonexport (line 2512)
+   - ⏱️ DEFER to later phase
+   - Admin debugging tool
+   - Low risk, low priority
+
+**Total Estimated Effort:** 3-5 days (after parseCode removal)
+
+---
+
 ## Appendix B: parseCode Usage Sites
 
 All parseCode() call sites documented for Phase 1:

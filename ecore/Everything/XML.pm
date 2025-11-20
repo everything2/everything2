@@ -248,9 +248,9 @@ sub node2xml
 
 	foreach my $table (@tables) {
 		my @fields = $DB->getFields($table);
-		foreach (@fields) { 
-			$fieldtable{$_} = $table if (exists $$N{$_}); 
-		}	
+		foreach (@fields) {
+			$fieldtable{$_} = $table if (exists $$N{$_});
+		}
 	}
 
 	#now we catch the node table
