@@ -29,7 +29,6 @@ BEGIN {
   *urlGen = *Everything::HTML::urlGen;
   *linkNode = *Everything::HTML::linkNode;
   *htmlcode = *Everything::HTML::htmlcode;
-  *parseCode = *Everything::HTML::parseCode;
   *parseLinks = *Everything::HTML::parseLinks;
   *isNodetype = *Everything::HTML::isNodetype;
   *isGod = *Everything::HTML::isGod;
@@ -838,7 +837,7 @@ sub superdoc_display_page
     return $PAGELOAD->{noparsecodelinks} ? $output : parseLinks($output);
   }
 
-  return htmlcode('parsecode','doctext');
+  return "Error: Document delegation not implemented for '$NODE->{title}' (expected: $doctitle)";
 }
 
 sub node_basicedit_page
@@ -986,13 +985,9 @@ sub fullpage_display_page
     $APP->devLog("Using fullpage delegation for $NODE->{title} as '$doctitle'");
     my $output = $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
     return $PAGELOAD->{noparsecodelinks} ? $output : parseLinks($output);
-  }else{
-    my $noparse = 0;
-    $noparse = 1 if lc($NODE->{title}) =~ /chatterlight/;
-    my $out = htmlcode("parsecode","doctext", $noparse);
-    $out =~ s/^\s+//g;
-    return $out;
   }
+
+  return "Error: Fullpage delegation not implemented for '$NODE->{title}' (expected: $doctitle)";
 }
 
 sub room_edit_page
@@ -1605,9 +1600,9 @@ sub superdocnolinks_display_page
   {
     $APP->devLog("Using document delegation for $NODE->{title} as '$doctitle'");
     return $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
-  }else{
-    return htmlcode('parsecode','doctext');
   }
+
+  return "Error: Document delegation not implemented for '$NODE->{title}' (expected: $doctitle)";
 }
 
 sub e2node_xml_page
@@ -1831,9 +1826,10 @@ sub ticker_display_page
   {
     $APP->devLog("Using ticker delegation for $NODE->{title} as '$doctitle'");
     return $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
-  }else{
-    return parseCode($$NODE{doctext});
   }
+
+  # Ticker XML exports - return empty string when delegation not found
+  return '';
 }
 
 sub plaindoc_display_page
@@ -3772,7 +3768,17 @@ sub choose_theme_view_page
 
   # generate page output with user's current stylesheet
   my $PAGE = Everything::HTML::getPage( $NODE , $testdisplay ) ;
-  my $str = parseCode( $$PAGE{ page } , $NODE ) ; #currently, ecore ignores the 2nd argument
+
+  # Try to use delegation for the htmlpage
+  my $pagetitle = $$PAGE{title};
+  $pagetitle =~ s/ /_/g;
+
+  my $str;
+  if(my $delegation = Everything::Delegation::htmlpage->can($pagetitle)) {
+    $str = $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP, $NODE);
+  } else {
+    $str = "<p>Error: Htmlpage delegation not implemented for '$$PAGE{title}' (expected: $pagetitle)</p>";
+  }
   if ( $$PAGE{ parent_container } )
   {
     if(my $container_node = $DB->getNodeById($$PAGE{parent_container}))

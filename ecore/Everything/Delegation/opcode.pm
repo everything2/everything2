@@ -16,7 +16,6 @@ BEGIN {
   *urlGen = *Everything::HTML::urlGen;
   *linkNode = *Everything::HTML::linkNode;
   *htmlcode = *Everything::HTML::htmlcode;
-  *parseCode = *Everything::HTML::parseCode;
   *parseLinks = *Everything::HTML::parseLinks;
   *isNodetype = *Everything::HTML::isNodetype;
   *isGod = *Everything::HTML::isGod;

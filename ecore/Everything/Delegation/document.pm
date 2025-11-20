@@ -35,7 +35,6 @@ BEGIN {
     *urlGen          = *Everything::HTML::urlGen;
     *linkNode        = *Everything::HTML::linkNode;
     *htmlcode        = *Everything::HTML::htmlcode;
-    *parseCode       = *Everything::HTML::parseCode;
     *parseLinks      = *Everything::HTML::parseLinks;
     *isNodetype      = *Everything::HTML::isNodetype;
     *getRef          = *Everything::HTML::getRef;
@@ -2742,9 +2741,14 @@ sub duplicates_found_ {
     }
 
     unless ($list) {
-        $NODE = $Everything::HTML::GNODE =
-          getNodeById( $Everything::CONF->not_found_node );
-        return parseCode( $$NODE{doctext} );
+        # Call the nothing_found delegation directly
+        if (my $delegation = Everything::Delegation::document->can('nothing_found')) {
+            my $nothing_node = getNodeById($Everything::CONF->not_found_node);
+            return $delegation->($DB, $query, $nothing_node, $USER, $VARS, $PAGELOAD, $APP);
+        }
+
+        # Fallback error if delegation not found
+        return '<p>Error: No matches found, and the "nothing_found" delegation is missing.</p>';
     }
     elsif ($ONE) {
         $Everything::HTML::HEADER_PARAMS{-status} = 303;
@@ -12108,7 +12112,7 @@ sub guest_front_page {
         }
     }
 
-    # Disable parseCode link parsing
+    # Disable link parsing
     $PAGELOAD->{noparsecodelinks} = 1;
 
     my $html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -19839,9 +19843,6 @@ sub nate_s_secret_unborg_doc {
 
     $VARS->{borged} = '';
 
-    my $OTHERUSERS = getNode("other users", 'nodelet');
-    $OTHERUSERS->{nltext} = Everything::HTML::parseCode($OTHERUSERS->{nlcode}, $OTHERUSERS);
-    updateNode($OTHERUSERS, -1);
     $DB->sqlUpdate('room', {borgd => '0'}, 'member_user=' . getId($USER));
 
     return 'you\'re unborged';
