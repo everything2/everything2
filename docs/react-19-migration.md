@@ -1,9 +1,9 @@
 # React 19 Migration Plan
 
-**Status**: Planned (Not Started)
+**Status**: Deferred until Q3 2025
 **Priority**: Medium
 **Estimated Effort**: 5-7 hours
-**Blocked By**: Ongoing delegation migration work
+**Blocked By**: Nodelet React migration, Mason2 elimination, legacy.js cleanup
 
 ## Executive Summary
 
@@ -421,13 +421,30 @@ Before starting:
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2025-11-20 | **Defer React 19 until after Mason2 elimination** | Strategic decision to minimize risk and maintain focus during complex migration work. Upgrade will be separate, focused task in Q3 2025 after: (1) legacy.js dead code removal, (2) nodelet React migration completion, (3) AJAX modernization to REST APIs, (4) central container migration, (5) Mason2 template elimination |
+| 2025-11-20 | Pin React to 18.3.x in package.json | Prevent accidental upgrades during migration work |
 | 2025-11-16 | Defer migration until delegation complete | Avoid context switching, complete current work stream first |
 | 2025-11-16 | Recommend Radix UI for collapsible | Modern, maintained, React 19 compatible, accessible |
 | 2025-11-16 | Stay on React 18.3.1 for now | Safe, stable, zero vulnerabilities after current updates |
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-16
-**Next Review**: When delegation work 90% complete
+**Document Version**: 1.1
+**Last Updated**: 2025-11-20
+**Next Review**: Q2 2025 (after Mason2 elimination 90% complete)
 **Owner**: Development Team
+
+---
+
+## Migration Timeline (Updated 2025-11-20)
+
+**Current Phase**: React 18 on nodelet migration and Mason2 elimination
+
+**React 19 Upgrade Timing**:
+- ⏸️ **Q1 2025**: Stay on React 18 - Remove legacy.js dead code
+- ⏸️ **Q2 2025**: Stay on React 18 - Complete nodelet React migration, modernize AJAX calls, migrate central containers
+- ⏸️ **Q2-Q3 2025**: Stay on React 18 - Eliminate Mason2 templates
+- 🎯 **Q3 2025**: **Upgrade to React 19** as focused, standalone task
+- 🎯 **Q3 2025**: Production deployment and monitoring
+
+**Key Principle**: One major change at a time. Migration work is already complex - adding React upgrade adds unnecessary debugging complexity and risk.
