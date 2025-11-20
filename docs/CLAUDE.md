@@ -221,6 +221,14 @@
 - ✅ 116 React tests pass
 - ✅ All tests run cleanly with no warnings
 
+5. ✅ **Fixed bestow_cools Bug**
+   - Fixed self-bestowing: now modifies in-scope $VARS instead of fetching user node
+   - Prevents changes from being overwritten when page saves $USER and $VARS
+   - Changed from setting to incrementing: `$$V{cools} += $cools`
+   - Added self-detection: checks if target user is the current user
+   - Shows current total after bestowing: "now have X cools" or "now has X cools"
+   - Location: document.pm:18899-18918
+
 ## Everything2 Architecture Context
 
 ### Core Technology Stack

@@ -18896,14 +18896,26 @@ sub bestow_cools {
     my $U = getNode($user, 'user');
     return $str . "<i>No user \"$user\" exists!</i>" unless $U;
 
-    my $V = getVars($U);
-    $$V{cools} = $cools;
-    setVars($U, $V);
-    $APP->securityLog($NODE, $USER, "$$U{title} was given $cools cools by $$USER{title}");
-    $$U{karma}+=1;
-    updateNode($U, -1);
+    # Check if bestowing on yourself - need to modify in-scope variables
+    # to avoid being overwritten when the page saves $USER and $VARS
+    my $is_self = ($$U{node_id} == $$USER{node_id});
 
-    $str .= qq|<strong>$cools cools were bestowed to |.linkNode($U).q|</strong>|;
+    if ($is_self) {
+        # Modify the in-scope $VARS directly for current user
+        $$VARS{cools} = ($$VARS{cools} || 0) + $cools;
+        $$USER{karma} += 1;
+        $APP->securityLog($NODE, $USER, "$$USER{title} bestowed $cools cools to themselves");
+        $str .= qq|<strong>$cools cools were bestowed to you (now have $$VARS{cools} cools)</strong>|;
+    } else {
+        # Modifying another user - get their vars and update their node
+        my $V = getVars($U);
+        $$V{cools} = ($$V{cools} || 0) + $cools;
+        setVars($U, $V);
+        $$U{karma} += 1;
+        updateNode($U, -1);
+        $APP->securityLog($NODE, $USER, "$$U{title} was given $cools cools by $$USER{title}");
+        $str .= qq|<strong>$cools cools were bestowed to |.linkNode($U).qq| (now has $$V{cools} cools)</strong>|;
+    }
 
     return $str;
 }
