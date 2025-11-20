@@ -1,10 +1,5 @@
 <node>
-  <doctext><?xml version="1.0" ?> <!-- is this correct --> <!-- hey - this is also version 1.1 - are we up to date, or what -->
-<user>
-<!-- this is now in production (finally, after many months wait) -->
-<!-- N-Wing will /msg the clientdev usergroups when this is working. -->
-<!-- oh, no! JayBonci now has displaytype=xmltrue which will eventually (but not yet :) ) have everything this does, and more -->
-</user></doctext>
+  <doctext></doctext>
   <node_id>1098218</node_id>
   <title>user information XML</title>
   <type_nodetype>451267</type_nodetype>

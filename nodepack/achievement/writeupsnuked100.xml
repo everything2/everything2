@@ -1,15 +1,7 @@
 <node>
   <achievement_still_available>0</achievement_still_available>
   <achievement_type>writeup</achievement_type>
-  <code>my $heavenCount =
-  $DB-&gt;sqlSelect(
-    &quot;count(*)&quot;
-    , &quot;heaven JOIN node AS type ON type.node_id = heaven.type_nodetype AND type.title = 'writeup'&quot;
-    , &quot;heaven.author_user=$user_id&quot;
-  );
-
-return 1 if $heavenCount &gt;=100;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Welcome to Hell, Here's your Accordion&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;100 writeups in node heaven&lt;/i&gt;</display>
   <node_id>1918344</node_id>
   <subtype></subtype>

@@ -1,8 +1,6 @@
 <node>
   <achievement_type>reputation</achievement_type>
-  <code>my $controversial = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;node&quot;, &quot;author_user=$user_id and type_nodetype=117 and (reputation &gt;= -5 and reputation &lt;=10)  and (select count(*) from vote where vote_id=node_id)&gt;=30&quot;);
-return 1 if $controversial &gt;= 1;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Tug of War&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Writeup with 30 votes and low reputation&lt;/i&gt;</display>
   <node_id>1918325</node_id>
   <subtype></subtype>

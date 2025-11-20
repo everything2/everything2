@@ -1,7 +1,6 @@
 <node>
   <achievement_type>karma</achievement_type>
-  <code>return 1 if $$USER{karma} &gt;= 20;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Favored by the Gods&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Karma of 20&lt;/i&gt;</display>
   <node_id>1918317</node_id>
   <subtype></subtype>

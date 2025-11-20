@@ -1,9 +1,6 @@
 <node>
   <achievement_type>vote</achievement_type>
-  <code>my $voteCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;vote&quot;,&quot;voter_user=$user_id&quot;);
-
-return 1 if $voteCount &gt;= 5000;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Vote or Die!&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cast 5000 votes&lt;/i&gt;</display>
   <node_id>1920612</node_id>
   <subtype>give</subtype>

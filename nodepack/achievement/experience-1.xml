@@ -1,9 +1,7 @@
 <node>
   <achievement_still_available>0</achievement_still_available>
   <achievement_type>experience</achievement_type>
-  <code>my $xpCount = $DB-&gt;sqlSelect(&quot;experience&quot;,&quot;user&quot;,&quot;user_id=$user_id&quot;);
-return 1 if $xpCount &lt; 0;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Purple Heart&lt;/strong&gt; &lt;br /&gt; &lt;em&gt;Negative total XP&lt;/em&gt;</display>
   <node_id>1918326</node_id>
   <subtype></subtype>

@@ -1,6 +1,6 @@
 <node>
   <achievement_type>usergroup</achievement_type>
-  <code>return $APP-&gt;inUsergroup($user_id,'valhalla', &quot;nogods&quot;);</code>
+  <code></code>
   <display>&lt;b&gt;Guest of Valhalla&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Participated in April Fools' Day 2008 Ragnarok!&lt;/i&gt;</display>
   <node_id>1936186</node_id>
   <subtype></subtype>

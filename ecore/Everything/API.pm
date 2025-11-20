@@ -30,19 +30,20 @@ sub _build_routechooser
   my ($self) = @_;
 
   my $routes = $self->routes;
-  my $subroutineref;
-  my $perlcode = 'sub { my $REQUEST=shift;my $path=shift;';
+
+  my @compiled_routes;
 
   foreach my $route(keys %{$routes})
   {
-    my $routetarget = $routes->{$route}; 
+    my $routetarget = $routes->{$route};
+    my $original_route = $route;
     $route =~ s/^\///g;
 
     my $routesections = [split("/",$route)];
     $routesections ||= [];
 
     my $variables = [];
-    my $re = [];
+    my $re_parts = [];
 
     foreach my $section (@$routesections)
     {
@@ -53,48 +54,65 @@ sub _build_routechooser
         if($variable eq "id")
         {
           # id is a numeric hint
-          push @$re,'(\d+)';
+          push @$re_parts,'(\d+)';
         }else{
-          push @$re,'([^\/]+)';
+          push @$re_parts,'([^\/]+)';
         }
       }else{
-        push @$re,$section;
+        push @$re_parts, quotemeta($section);
       }
     }
 
-    $perlcode.= 'if(';
-    if(scalar(@$variables) > 0)
-    {
-      $perlcode.= 'my (';
-      foreach my $variable (@$variables)
-      {
-        $perlcode .='$'.$variable.',';
-      }
-      $perlcode.= ')=';
-    }
-    my ($subref, $arguments) = $routetarget =~ /^([^\(]+)\(?([^\)]*)\)?/;
+    my $pattern = '^' . join('\/',@$re_parts) . '$';
+    my $regex = qr/$pattern/;
 
-    $perlcode .= '$path =~ /^';
-    $perlcode .= join('\/',@$re);
-    $perlcode .= '$/){ ';
-    $perlcode .= 'return ';
-
-    $perlcode .= '$self->'.$subref.'(';
+    my ($method, $arguments) = $routetarget =~ /^([^\(]+)\(?([^\)]*)\)?/;
     $arguments ||= "";
-    $arguments =~ s/\:/\$/g;
-    $perlcode .= '$REQUEST,'."$arguments)};";
 
+    # Parse argument list into array of variable names
+    my @arg_names = split(/[\s,]+/, $arguments);
+    @arg_names = grep { $_ } map { (my $name = $_) =~ s/^://; $name } @arg_names;
+
+    push @compiled_routes, {
+      regex => $regex,
+      variables => $variables,
+      method => $method,
+      arguments => \@arg_names,
+    };
   }
-  $perlcode .= 'return [$self->HTTP_UNIMPLEMENTED];';
-  $perlcode .= '}';
 
-  try {
-    ## no critic (ProhibitStringyEval)
-    eval ("\$subroutineref = $perlcode") or do {
-      die "Router compiler error! ($perlcode): $@";
+  # Return a closure that does the routing at runtime
+  my $subroutineref = sub {
+    my $REQUEST = shift;
+    my $path = shift;
+
+    foreach my $route (@compiled_routes)
+    {
+      if(my @captures = $path =~ $route->{regex})
+      {
+        # Build argument list for method call
+        my @method_args = ($REQUEST);
+
+        # Add captured path variables
+        foreach my $capture (@captures)
+        {
+          push @method_args, $capture;
+        }
+
+        # Add additional arguments (like constants from route definition)
+        foreach my $arg_name (@{$route->{arguments}})
+        {
+          # If argument starts with $ it's a captured variable reference
+          # For now just pass argument names - may need enhancement
+          push @method_args, $arg_name if $arg_name;
+        }
+
+        my $method = $route->{method};
+        return $self->$method(@method_args);
+      }
     }
-  } catch {
-    die "Router compiler error (in catch)! ($perlcode): $_";
+
+    return [$self->HTTP_UNIMPLEMENTED];
   };
 
   return $subroutineref;

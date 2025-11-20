@@ -50,6 +50,9 @@ use Everything::Delegation::achievement;
 # Used by notificationsJSON for notification rendering
 use Everything::Delegation::notification;
 
+# Used by retrieveCorpse for safe deserialization
+use Everything::Serialization qw(safe_deserialize_dumper);
+
 # Used by publishwriteup,isSpecialDate
 use DateTime;
 
@@ -3654,18 +3657,16 @@ sub weblog
     } ;
   }
 
-  ## no critic (RequireCheckingReturnValueOfEval)
   $remlabel ||= "remove";
   if ( $canRemove ) {
     $instructions .= ', remove' ;
-    eval( q|$weblogspecials{ remove } = sub {
-    my $N = shift ;
-    return '<a class="remove" href='
-      . urlGen( { node_id => $$N{ weblog_id }, source => $$N{ weblog_id } , to_node => $$N{ to_node } , op => 'removeweblog' } )
-      . '>'.'|.$remlabel.q|'.'</a>' ;
-    }|);
+    $weblogspecials{ remove } = sub {
+      my $N = shift ;
+      return '<a class="remove" href='
+        . urlGen( { node_id => $$N{ weblog_id }, source => $$N{ weblog_id } , to_node => $$N{ to_node } , op => 'removeweblog' } )
+        . '>'.$remlabel.'</a>' ;
+    };
   }
-  ## use critic (RequireCheckingReturnValueOfEval)
 
   $instructions .= ( $skipFilterHTML ne '1' ? ', content' : ', unfiltered' ) ;
 
@@ -13652,7 +13653,8 @@ sub resurrectNode
   my $N = $DB->sqlSelectHashref("*", 'tomb', "node_id=".$DB->{dbh}->quote("$node_id"));
   return unless $N;
 
-  my $NODEDATA = eval($$N{data});
+  my $NODEDATA = safe_deserialize_dumper($$N{data});
+  return unless $NODEDATA;
 
   @$N{keys %$NODEDATA} = values %$NODEDATA;
 

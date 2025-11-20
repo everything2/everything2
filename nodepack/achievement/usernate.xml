@@ -1,7 +1,6 @@
 <node>
   <achievement_type>user</achievement_type>
-  <code>return 1 if $user_id == 220;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Nate&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Mr. Oostendorp&lt;/i&gt;</display>
   <node_id>1918318</node_id>
   <subtype></subtype>

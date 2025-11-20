@@ -1,18 +1,6 @@
 <node>
   <achievement_type>writeup</achievement_type>
-  <code>my $maxWusInAMonth = $DB-&gt;sqlSelect(
-	&quot;nwus&quot;,
-	&quot;(SELECT Year(publishtime) AS year,
-			Month(publishtime) AS month,
-			count(*) AS nwus
-		FROM node JOIN writeup ON node_id=writeup_id
-		WHERE type_nodetype=117
-			AND author_user=$user_id
-		GROUP BY year,month
-		ORDER BY nwus desc limit 1) AS maxnwus&quot;
-	);
-return 1 if $maxWusInAMonth &gt;= 30;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;[THE IRON NODER CHALLENGE|IRON NODER]&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted 30 new writeups in one month&lt;/i&gt;</display>
   <node_id>1977814</node_id>
   <subtype></subtype>

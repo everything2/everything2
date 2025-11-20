@@ -1,8 +1,6 @@
 <node>
   <achievement_type>reputation</achievement_type>
-  <code>my $zombieNode = $DB-&gt;sqlSelect(&quot;min(reputation)&quot;,&quot;node&quot;,&quot;author_user=$user_id&quot;);
-return 1 if $zombieNode &lt;= -10;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;It's Alive!&lt;/strong&gt; &lt;br /&gt; &lt;em&gt;A zombie writeup with at most -10 rep&lt;/em&gt;</display>
   <node_id>1918324</node_id>
   <subtype></subtype>
