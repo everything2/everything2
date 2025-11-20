@@ -1,6 +1,6 @@
 <node>
   <achievement_type>usergroup</achievement_type>
-  <code>return $APP-&gt;inUsergroup($user_id,'britnoders','nogods');</code>
+  <code></code>
   <display>&lt;b&gt;Britnoder&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Britnoders usergroup&lt;/i&gt;</display>
   <node_id>2073120</node_id>
   <subtype></subtype>

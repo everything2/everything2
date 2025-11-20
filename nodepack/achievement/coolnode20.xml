@@ -1,9 +1,6 @@
 <node>
   <achievement_type>cool</achievement_type>
-  <code>my $coolCount = $DB-&gt;sqlSelect(&quot;max(cooled)&quot;,&quot;writeup&quot;,&quot;writeup_id in (select node_id from node where author_user=$user_id and type_nodetype=117)&quot;);
-
-return 1 if $coolCount &gt;=20;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Dry Ice&lt;/strong&gt; &lt;br/&gt; &lt;em&gt;Writeup with 20 Cools&lt;/em&gt;</display>
   <node_id>1918136</node_id>
   <subtype>wu</subtype>

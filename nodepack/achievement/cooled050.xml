@@ -1,9 +1,6 @@
 <node>
   <achievement_type>cool</achievement_type>
-  <code>my $coolCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;coolwriteups&quot;,&quot;cooledby_user=$user_id&quot;);
-
-return 1 if $coolCount &gt;=50;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Ice Bucket&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cooled 50 writeups&lt;/i&gt;</display>
   <node_id>1918118</node_id>
   <subtype>give</subtype>

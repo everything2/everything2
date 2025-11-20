@@ -1,18 +1,6 @@
 <node>
   <achievement_type>writeup</achievement_type>
-  <code>my $uid = $$USER{'node_id'};
-
-
-#nodetype 117 is writeups, remember.
-my $whereStr = &quot;author_user=$uid and type_nodetype=117 and UPPER(doctext) like '%DEFENESTRATE%'&quot;;
-
-my $windowCount = $DB-&gt;sqlSelect(&quot;count(doctext)&quot;, 
-                                 &quot;document join node ON 
-                                  document.document_id=node.node_id&quot;, 
-                                  $whereStr);
-
-return 1 if $windowCount &gt;= 15;
-return 0;</code>
+  <code></code>
   <display>&lt;b&gt;Open Window Award&lt;/b&gt; &lt;br/&gt; &lt;i&gt;Have used the word &quot;defenestrate&quot; in at least 15 writeups.&lt;/i&gt;</display>
   <node_id>1980775</node_id>
   <subtype></subtype>

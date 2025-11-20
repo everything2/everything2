@@ -27,6 +27,9 @@ use POSIX qw(strftime asctime);
 # Used in: universal_message_xml_ticker
 use XML::Simple;
 
+# Used in: dr_nates_secret_lab_2 (resurrect, opencoffin), nodeheaven for safe deserialization
+use Everything::Serialization qw(safe_deserialize_dumper);
+
 BEGIN {
     *getNode         = *Everything::HTML::getNode;
     *getNodeById     = *Everything::HTML::getNodeById;
@@ -18939,40 +18942,17 @@ sub dr__nate_s_secret_lab {
     my $nid = $query->param("olde2nodeid");
     return $str . "huh?" unless $nid;
 
-    my $burialground = (($query->param("heaven"))?("heaven"):("tomb"));
-    my $tomb = $DB->sqlSelectHashref("*",$burialground,"node_id=$nid");
-    my $VAR1 = {}; # dumper sometimes puts this in the data
-    my $nodeproto = eval("my ".$tomb->{data});  ## no critic 'Perl::Critic::Policy::BuiltinFunctions::ProhibitStringyEval'
+    # Check if node already exists - can't resurrect a living node
+    my $existing = $DB->getNodeById($nid);
+    return $str . "That node (id: $nid) is already alive! No resurrection needed." if $existing;
 
-    return $str . "ACK! nodeproto failed!" unless $nodeproto;
+    my $burialground = $query->param("heaven") ? "heaven" : "tomb";
 
-    my $typetables = $DB->getNodetypeTables($tomb->{type_nodetype});
-    return $str . "ACK! no typetables!" unless $typetables;
-    push @$typetables, "node";
+    # Use the new resurrectNode method in NodeBase
+    my $N = $DB->resurrectNode($nid, $burialground);
+    return $str . "ACK! Resurrection failed!" unless $N;
 
-
-    foreach my $table (@$typetables)
-    {
-        my @fields = $DB->getFieldsHash($table);
-        my $insertref = {};
-
-        foreach(@fields)
-        {
-            my $field = $$_{Field};
-            $insertref->{$field} = $$nodeproto{$field};
-            $insertref->{$field} ||=  $$tomb{$field};
-            $insertref->{$field} ||= 0;
-        }
-
-        # primary key may not be in the data if new tables added since nuke:
-        $$insertref{"${table}_id"} = $nid;
-        $DB->sqlDelete($table,"$table"."_id=$nid");
-        $DB->sqlInsert($table, $insertref);
-    }
-
-    my $N = getNodeById($nid);
-
-    #insert it into the nodegroup - added by ascorbic
+    # Insert it into the nodegroup - added by ascorbic
     my $nt = $$N{title};
     $nt =~ s/ \(\w+\)$//;
     my $e2N = getNode($nt, 'e2node');
@@ -18980,10 +18960,11 @@ sub dr__nate_s_secret_lab {
         insertIntoNodegroup($e2N, $USER, $N);
         updateNode($e2N, -1);
     }
+
     $APP->securityLog($NODE, $USER, "$$N{title} (id: $$N{node_id}) was raised from its $burialground");
     $DB->{cache}->incrementGlobalVersion($N);
-    return $str . "Inserted $nid<br><br> as ".linkNode($N) . '<br>'  if $N;
-    return $str . "Ressurection failed<br>";
+
+    return $str . "Inserted $nid<br><br> as ".linkNode($N) . '<br>';
 }
 
 sub e2node_reparenter {
@@ -21218,13 +21199,22 @@ sub the_node_crypt {
     if (defined $query->param('opencoffin')) {
         my $node_id = $query->param('opencoffin');
         $str .= '<h2 align="center">' . linkNode($NODE, 'close the coffin') . "</h2>";
-        my $LAB = getNode("dr. nate's secret lab", 'restricted_superdoc');
-        $str .= '<h2 align="center">' . linkNode($LAB, 'RESURRECT', {olde2nodeid => $node_id}) . '</h2>';
+
+        # Check if node has already been resurrected
+        my $existing = $DB->getNodeById($node_id);
+        if ($existing) {
+            $str .= '<h2 align="center" style="color: green;">This node has already been resurrected!</h2>';
+            $str .= '<p align="center">View it here: ' . linkNode($existing) . '</p>';
+        } else {
+            my $LAB = getNode("dr. nate's secret lab", 'restricted_superdoc');
+            $str .= '<h2 align="center">' . linkNode($LAB, 'RESURRECT', {olde2nodeid => $node_id}) . '</h2>';
+        }
 
         my $N = $DB->sqlSelectHashref('*', 'tomb', 'node_id=' . $DB->{dbh}->quote($node_id));
         return "uh, nope -- $node_id didn't work" unless $N;
 
-        my $DATA = eval('my ' . $N->{data});  ## no critic 'Perl::Critic::Policy::BuiltinFunctions::ProhibitStringyEval'
+        my $DATA = safe_deserialize_dumper('my ' . $N->{data});
+        return "uh, nope -- deserialization failed for $node_id" unless $DATA;
 
         @$N{keys %$DATA} = values %$DATA;
         delete $N->{data};
@@ -24775,10 +24765,12 @@ sub node_heaven_xml_ticker
             $str.="<nodeangel node_id=\"$$row{node_id}\" title=\"".encodeHTML($$row{title})."\" reputation=\"$$row{reputation}\" createtime=\"$$row{createtime}\">";
 
             if($visitid){
-                my $data = eval('my '.$$row{data}); ## no critic (ProhibitStringyEval)
-                my $txt = $$data{doctext};
-                $txt = parseLinks($txt) unless($query->param('links_noparse'));
-                $str.=encodeHTML($txt);
+                my $data = safe_deserialize_dumper('my '.$$row{data});
+                if ($data) {
+                    my $txt = $$data{doctext};
+                    $txt = parseLinks($txt) unless($query->param('links_noparse'));
+                    $str.=encodeHTML($txt);
+                }
             }
             $str.='</nodeangel>';
         }

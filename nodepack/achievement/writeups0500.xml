@@ -1,8 +1,6 @@
 <node>
   <achievement_type>writeup</achievement_type>
-  <code>my $writeupCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);
-return 1 if $writeupCount &gt;= 500;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;D-Noders Club&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;500 Writeups&lt;/i&gt;</display>
   <node_id>1918315</node_id>
   <subtype>user</subtype>

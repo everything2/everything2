@@ -1300,6 +1300,88 @@ sub nukeNode
 
 #############################################################################
 #	Sub
+#		resurrectNode
+#
+#	Purpose
+#		Resurrect a deleted node from the tomb or heaven table.
+#		This reverses the nukeNode operation by deserializing the node
+#		data and reconstructing it in all appropriate tables.
+#
+#	Parameters
+#		$node_id - the node_id to resurrect
+#		$burialground - optional, 'tomb' or 'heaven' (defaults to 'tomb')
+#
+#	Returns
+#		The resurrected node on success, undef on failure
+#
+sub resurrectNode
+{
+	my ($this, $node_id, $burialground) = @_;
+
+	$burialground ||= 'tomb';
+
+	# Check if node already exists - can't resurrect a living node
+	my $existing = $this->getNodeById($node_id);
+	return if $existing;
+
+	# Retrieve the tombstone record
+	my $tomb = $this->sqlSelectHashref("*", $burialground, "node_id=" . $this->quote($node_id));
+	return unless $tomb;
+	return unless $tomb->{data};
+
+	# Deserialize the node data using safe deserialization
+	require Everything::Serialization;
+	Everything::Serialization->import('safe_deserialize_dumper');
+
+	my $nodeproto = safe_deserialize_dumper("my " . $tomb->{data});
+	return unless $nodeproto;
+	return unless ref($nodeproto) eq 'HASH';
+
+	# Get the tables for this node type
+	my $typetables = $this->getNodetypeTables($tomb->{type_nodetype});
+	return unless $typetables;
+
+	push @$typetables, "node";
+
+	# Reconstruct the node in all tables
+	foreach my $table (@$typetables)
+	{
+		my @fields = $this->getFieldsHash($table);
+		my $insertref = {};
+
+		foreach my $field_info (@fields)
+		{
+			my $field = $field_info->{Field};
+			# Match original logic: try nodeproto first, then tomb, then 0
+			# Use ||= to treat undef/0/"" as false and fall through
+			$insertref->{$field} = $nodeproto->{$field};
+			$insertref->{$field} ||= $tomb->{$field};
+			$insertref->{$field} ||= 0;
+		}
+
+		# Primary key may not be in the data if new tables added since nuke
+		$insertref->{"${table}_id"} = $node_id;
+
+		# Clean out any existing data and insert fresh
+		$this->sqlDelete($table, "${table}_id=" . $this->quote($node_id));
+		$this->sqlInsert($table, $insertref);
+	}
+
+	pop @$typetables; # Remove the "node" table we added
+
+	# Delete the tombstone now that resurrection is complete
+	# This allows the node to be nuked again with a fresh tombstone if needed
+	$this->sqlDelete($burialground, "node_id=" . $this->quote($node_id));
+
+	# Fetch and return the resurrected node (bypass cache since we just reconstructed it)
+	my $resurrected = $this->getNodeById($node_id, 'nocache');
+
+	return $resurrected;
+}
+
+
+#############################################################################
+#	Sub
 #		getType
 #
 #	Purpose

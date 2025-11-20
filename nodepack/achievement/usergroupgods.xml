@@ -1,7 +1,6 @@
 <node>
   <achievement_type>usergroup</achievement_type>
-  <code>return 1 if $APP-&gt;isAdmin($user_id);
-return 0;</code>
+  <code></code>
   <display>&lt;b&gt;God Mode&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Gods usergroup&lt;/i&gt;</display>
   <node_id>1920602</node_id>
   <subtype></subtype>

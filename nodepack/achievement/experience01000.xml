@@ -1,8 +1,6 @@
 <node>
   <achievement_type>experience</achievement_type>
-  <code>my $xpCount = $DB-&gt;sqlSelect(&quot;experience&quot;,&quot;user&quot;,&quot;user_id=$user_id&quot;);
-return 1 if $xpCount &gt;= 1000;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Are You Experienced?&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;1000 XP&lt;/i&gt;</display>
   <node_id>1918333</node_id>
   <subtype>user</subtype>

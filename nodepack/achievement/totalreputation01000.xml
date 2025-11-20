@@ -1,9 +1,6 @@
 <node>
   <achievement_type>reputation</achievement_type>
-  <code>my $totalRep = $DB-&gt;sqlSelect(&quot;sum(reputation)&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);
-
-return 1 if $totalRep &gt;= 1000;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Miss Congeniality&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Total reputation of 1000&lt;/i&gt;</display>
   <node_id>1918062</node_id>
   <subtype>user</subtype>

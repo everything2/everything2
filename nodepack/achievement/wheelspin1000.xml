@@ -1,8 +1,6 @@
 <node>
   <achievement_type>miscellaneous</achievement_type>
-  <code>my $uVars = getVars(getNodeById($user_id));
-return 1 if $$uVars{spin_wheel} &gt;=1000;
-return 0;</code>
+  <code></code>
   <display>&lt;strong&gt;Big Wheels Keep on Turning&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Spun the [Wheel of Surprise] 1000 times&lt;/i&gt;</display>
   <node_id>1918341</node_id>
   <subtype></subtype>

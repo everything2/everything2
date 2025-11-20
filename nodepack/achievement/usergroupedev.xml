@@ -1,6 +1,6 @@
 <node>
   <achievement_type>usergroup</achievement_type>
-  <code>return $APP-&gt;isDeveloper($user_id, &quot;nogods&quot;);</code>
+  <code></code>
   <display>&lt;b&gt;Code Monkey&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of [edev[usergroup]] usergroup&lt;/i&gt;</display>
   <node_id>1920603</node_id>
   <subtype></subtype>

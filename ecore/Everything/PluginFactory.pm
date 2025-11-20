@@ -3,6 +3,7 @@ package Everything::PluginFactory;
 use Moose;
 use namespace::autoclean;
 use Try::Tiny;
+use Module::Runtime qw(use_module);
 
 with 'Everything::Globals';
 
@@ -52,20 +53,14 @@ sub _build_plugins
          my $fullmodule = "$path/$modulepath/$module";
          next unless -e $fullmodule and -f $fullmodule;
          my ($pluginname) = $module =~ /^([^\.]+)/;
-         my $evalclass = $self->PLUGINCLASS."::$pluginname";
-
-         ## no critic (ProhibitStringyEval)
+         my $plugin_class = $self->PLUGINCLASS."::$pluginname";
 
          try {
-           eval("use $evalclass") or do { if($@){$self->errors->{"$evalclass"} = $@} };
+           use_module($plugin_class);
+           $plugins->{"$pluginname"} = $plugin_class;
          } catch {
-           $self->errors->{"$evalclass"} = $_;
+           $self->errors->{"$plugin_class"} = $_;
          };
-
-         unless(defined($self->errors->{"$evalclass"}))
-         {
-           $plugins->{"$pluginname"} = $evalclass;
-         }
        }
        last;
     }
