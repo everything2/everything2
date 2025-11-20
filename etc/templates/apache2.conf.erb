@@ -86,11 +86,10 @@ Define E2MaxConnections 10000
 </IfDefine>
 
 <IfDefine E2_DEVELOPMENT>
-# For NYTPRof
-Define E2StartServers 2
-Define E2MinSpareServers 2
-Define E2MaxSpareServers 2
-Define E2MaxRequestWorkers 2
+Define E2StartServers 5
+Define E2MinSpareServers 5
+Define E2MaxSpareServers 10
+Define E2MaxRequestWorkers 20
 Define E2MaxConnections 0
 </IfDefine>
 

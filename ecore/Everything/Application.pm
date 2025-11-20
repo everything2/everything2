@@ -3443,17 +3443,9 @@ sub getCallStack
 
   while(($package, $file, $line, $subname, $hashargs) = caller($i++))
   {
-    my $codeText = "";
-
-    if ($subname eq "Everything::HTML::evalCode")
-    {
-      my @calledArgs = caller_args($i - 1);
-      $codeText = ":" . $calledArgs[0] if (scalar @calledArgs);
-    }
-
     # We unshift it so that we can use "pop" to get them in the
     # desired order.
-    unshift @callStack, "$file:$line:$subname$codeText";
+    unshift @callStack, "$file:$line:$subname";
   }
 
   # Get rid of this function and other callers that are part of the reporting.

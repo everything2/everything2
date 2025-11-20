@@ -33,7 +33,6 @@ BEGIN {
   *updateLinks = *Everything::HTML::updateLinks;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *opLogin = *Everything::HTML::opLogin;
 }
@@ -47,6 +46,9 @@ use JSON;
 
 # Used by hasAchieved for achievement delegation
 use Everything::Delegation::achievement;
+
+# Used by notificationsJSON for notification rendering
+use Everything::Delegation::notification;
 
 # Used by publishwriteup,isSpecialDate
 use DateTime;
@@ -9157,7 +9159,7 @@ sub hasAchieved
 
   return 0 unless $$ACH{achievement_still_available};
 
-  # Check for delegation function first
+  # Check for delegation function
   my $achtitle = $$ACH{title};
   $achtitle =~ s/[\s-]/_/g;
   $achtitle =~ s/[^A-Za-z0-9_]/_/g;
@@ -9171,8 +9173,9 @@ sub hasAchieved
   }
   else
   {
-    # Fall back to eval of {code} field for unmigrated achievements
-    $result = $force || evalCode("my \$user_id = $user_id;\n$$ACH{code}", $NODE);
+    # Achievement not migrated to delegation - log error and return 0
+    $APP->devLog("ERROR: Achievement '$$ACH{title}' (expected: $achtitle) has no delegation function");
+    return 0;
   }
 
   if ($result == 1)
@@ -11316,24 +11319,32 @@ sub notificationsJSON
   foreach my $notify (@$db_notifieds)
   {
     my $notification = getNodeById($$notify{notification_id});
-    my $displayCode = $notification->{code};
-    my $invalidCheckCode = $notification->{invalid_check};
     my $argJSON = $$notify{args};
     $argJSON =~ s/'/\'/g;
     my $args = &$safe_JSON_decode($argJSON);
-    my $evalNotify = sub {
-      my $notifyCode = shift;
-      my $wrappedNotifyCode = "sub { my \$args = shift; 0; $notifyCode };";
-      my $wrappedSub = evalCode($wrappedNotifyCode);
-      return &$wrappedSub($args);
-      };
 
-    # Don't return an invalid notification and remove it from the notified table
-    if ($invalidCheckCode ne '' && &$evalNotify($invalidCheckCode))
+    # Convert notification title to delegation function name
+    my $notificationTitle = $notification->{title};
+    $notificationTitle =~ s/[\s\-]/_/g;  # Replace spaces and hyphens with underscores
+    $notificationTitle = lc($notificationTitle);
+
+    # Look up delegation function
+    my $renderNotification = Everything::Delegation::notification->can($notificationTitle);
+
+    if (!$renderNotification)
     {
-      $DB->sqlDelete('notified', 'notified_id = ' . int($$notify{notified_id}));
+      # No delegation found - log error and skip
+      $APP->devLog("ERROR: Notification '$notification->{title}' (expected: $notificationTitle) has no delegation function");
       next;
     }
+
+    # Render notification using delegation
+    my $displayText = $renderNotification->($DB, $APP, $args);
+
+    # Check if notification is still valid
+    # Note: Most notifications have empty invalid_check, but we keep the structure for future use
+    # If needed, invalid check functions could be added to the delegation module
+    # For now, we skip invalid_check since all current notifications have empty checks
 
     my ($pre, $post) = (undef, undef);
     if ($wrap)
@@ -11346,7 +11357,7 @@ sub notificationsJSON
 
     $$notification_list{$notify_count} = {
       id => $$notify{notified_id},
-      value => $pre.parseLinks(&$evalNotify($displayCode)).$post,
+      value => $pre.parseLinks($displayText).$post,
       timestamp => $$notify{notified_time}};
     $notify_count++;
   }

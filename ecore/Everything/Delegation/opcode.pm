@@ -32,7 +32,6 @@ BEGIN {
   *updateLinks = *Everything::HTML::updateLinks;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *opLogin = *Everything::HTML::opLogin;
   *replaceNodegroup = *Everything::HTML::replaceNodegroup; 

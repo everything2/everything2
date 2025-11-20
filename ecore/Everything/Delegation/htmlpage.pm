@@ -41,7 +41,6 @@ BEGIN {
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
-  *evalCode = *Everything::HTML::evalCode;
 }
 
 sub container_display_page
@@ -2509,8 +2508,24 @@ sub jsonexport_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $json_struct = evalCode($NODE->{code});
-  return encode_json($json_struct);
+  # Convert node title to delegation function name
+  my $functionName = $$NODE{title};
+  $functionName =~ s/[\s\-]/_/g;  # Replace spaces and hyphens with underscores
+  $functionName =~ s/[^A-Za-z0-9_]/_/g;  # Replace non-alphanumeric with underscores
+  $functionName = lc($functionName);
+
+  # Look up delegation function in Everything::Delegation::document
+  my $delegation = Everything::Delegation::document->can($functionName);
+
+  if (!$delegation)
+  {
+    # No delegation found - log error and return empty JSON
+    $APP->devLog("ERROR: jsonexport '$$NODE{title}' (expected: $functionName) has no delegation function");
+    return encode_json({error => "No delegation function found"});
+  }
+
+  # Call delegation function and return result (delegation returns JSON string)
+  return $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
 }
 
 sub document_linkview_page

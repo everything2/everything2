@@ -1,8 +1,14 @@
 # React Migration Strategy: Mason2 to React Frontend
 
+**React Version**: 18.3.x (pinned until Mason2 elimination complete)
+**Migration Status**: Phase 1 - Nodelet migration in progress
+**Last Updated**: 2025-11-20
+
 ## Executive Summary
 
 This document outlines a strategy for migrating Everything2's page rendering from Mason2 templates to a React-based frontend, building on the existing React infrastructure already in place for nodelets.
+
+**Important**: This migration will be completed on **React 18.3.x**. React 19 upgrade is deferred until Q3 2025 as a separate, focused task after Mason2 elimination is complete. See [react-19-migration.md](react-19-migration.md) for details.
 
 ## Current Architecture Analysis
 

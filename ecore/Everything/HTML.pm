@@ -45,10 +45,7 @@ sub BEGIN {
               linkNode
               linkNodeTitle
               nodeName
-              evalCode
               htmlcode
-              parseCode
-              embedCode
               displayPage
               gotoNode
               encodeHTML
@@ -595,34 +592,6 @@ sub nodeName
 }
 
 
-#############################################################################
-#this function takes a bit of code to eval 
-#and returns it return value.
-#
-#it also formats errors found in the code for HTML
-sub evalCode {
-	my ($code, $CURRENTNODE) = @_;
-	#these are the vars that will be in context for the evals
-
-	my $NODE = $GNODE;
-	my $warnbuf = "";
-
-	local $SIG{__WARN__} = sub {
-		$warnbuf .= $_[0]
-		 unless $_[0] =~ /^Use of uninitialized value/;
-	};
-
-	$code =~ s/\015//gs;
-
-	## no critic (ProhibitStringyEval)
-	my $str = eval $code;
-
- 	local $SIG{__WARN__} = sub {};
-	$str .= htmlFormatErr ($code, $@, $warnbuf) if ($@ or $warnbuf);
-	local $@ = undef;
-	return $str;
-}
-
 #########################################################################
 #	sub htmlcode
 #
@@ -677,71 +646,6 @@ sub htmlcode {
 	} else {
 		return $returnVal;
 	}
-}
-
-#############################################################################
-#a wrapper function.
-sub embedCode {
-	my $block = shift @_;
-
-	my $NODE = $GNODE;
-
-	$block =~ /^(\W)/;
-	my $char = $1;
-
-	if ($char eq '"') {
-		$block = evalCode ($block . ';', @_);
-	} elsif ($char eq '{') {
-		#take the arguments out
-
-		$block =~ s/^\{(.*)\}$/$1/s;
-		my ($func, $args) = split /\s*:\s*/, $block;
-		if ( $args ) {
-			$args =~ s/\\/\\\\/g ;
-			$args =~ s/"/\\"/g ; #prohibit exploits/avoid errors
-			$args =  evalCode( '"'.$args.'"' ) ; #resolve variables
-  		}
-		$block = htmlcode( $func , $args );
-	} elsif ($char eq '%') {
-		$block =~ s/^\%(.*)\%$/$1/s;
-		$block = evalCode ($block, @_);
-	}
-
-	# Block needs to be defined, otherwise the search/replace regex
-	# stuff will break when it gets an undefined return from this.
-	$block = "" unless defined $block;
-
-	return $block;
-}
-
-
-#############################################################################
-sub parseCode {
-	my ($text, $CURRENTNODE) = @_;
-
-	# the order is:  
-	# [% %]s -- full embedded perl
-	# [{ }]s -- calls to the code database
-	# [" "]s -- embedded code strings
-	#
-	# this is important to know when you are writing pages -- you 
-	# always want to print user data through [" "] so that they
-	# cannot embed arbitrary code...
-	#
-	# someday I'll come up with a better way to do that...
-
-
-		 $text=~s/
-		  \[
-		  (
-		  \{.*?\}
-		  |".*?"
-		  |%.*?%
-		  )
-		  \]
-		   /embedCode("$1",$CURRENTNODE)/egsx;
-	return $text;
-
 }
 
 #############################################################################

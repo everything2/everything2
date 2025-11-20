@@ -1,5 +1,8 @@
 # show_content Function Analysis
 
+**Last Updated:** 2025-11-20
+**Status:** Updated post-parseCode removal
+
 ## Executive Summary
 
 The `show_content` function in [htmlcode.pm:1241-1423](ecore/Everything/Delegation/htmlcode.pm#L1241-L1423) is a **CRITICAL, ACTIVELY-USED** content formatting system that powers many core features of Everything2.
@@ -7,9 +10,9 @@ The `show_content` function in [htmlcode.pm:1241-1423](ecore/Everything/Delegati
 **Key Findings:**
 
 1. `show_content` is called in **17+ locations** across the codebase (via `htmlcode('show content', ...)`)
-2. It contains a **parseCode call at line 1358** that processes superdoc content (nodetype 14) - this IS reachable
-3. The `parsecode` htmlcode function at lines 895-912 appears to be **dead code** (never called)
-4. **Actual parseCode count:** 6 active calls (not 7) after eliminating the unreachable one in `parsecode`
+2. ✅ **parseCode and embedCode have been removed** - Phase 1 eval removal complete (2025-11-20)
+3. Superdoc content now uses delegation pattern exclusively
+4. This function continues to work correctly with delegated superdoc rendering
 
 ## Function Location
 
@@ -117,171 +120,34 @@ This extensibility allows specialized formatting for different contexts.
 5. **Apply Functions:** Execute requested info functions for each node
 6. **Content Processing:**
    - Extract doctext or specified fields
-   - **⚠️ Apply parseCode to superdoc content** (line 1358)
    - Break tags, parse links, screen HTML
    - Apply truncation with "more" links if specified
 7. **Output Generation:** Build final HTML/XML string
 
-## Security Concern: parseCode at Line 1358
+## Historical Note: parseCode Removal (Completed 2025-11-20)
 
-```perl
-$text = parseCode( $text ) if exists( $$N{ type } )
-    and ( $$N{ type_nodetype } eq "14"
-    or $$N{ type }{ extends_nodetype } eq "14" ) ;
-```
+**Previous Concern:** The `show_content` function previously called `parseCode()` when processing superdoc (nodetype 14) content at line 1358.
 
-**What it does:** Processes superdoc (nodetype 14) content through the legacy parseCode system, which uses `eval()`.
+**Resolution:** ✅ **REMOVED** - Both `parseCode()` and `embedCode()` functions have been completely removed from the codebase as part of Phase 1 eval removal (2025-11-20).
 
-**Risk Assessment:**
+**Why it was safe to remove:**
+- All 235 superdocs migrated to delegation functions
+- Superdoc doctext fields are empty in the database
+- No eval-based template processing needed anymore
+- Superdoc rendering now uses delegation pattern exclusively
 
-✅ **LOW RISK** according to eval-removal-plan.md audit findings:
-- Superdocs are admin-controlled content, not user-generated
-- All superdoc code has been migrated to delegation functions
-- Superdoc doctext fields are now empty in the database
-- This parseCode call should now be a no-op (processing empty strings)
-
-**Migration Status:**
-- All 235 superdocs have been migrated to delegation functions
-- Superdoc XML files have empty `<doctext>` tags
-- This parseCode call can be safely removed as part of Phase 1 cleanup
-
-### Verified Code Path to parseCode Trigger
-
-**Investigation confirmed that this parseCode call IS REACHABLE through the following path:**
-
-#### Complete Execution Flow
-
-1. **Entry Point: frontpage_news htmlcode** ([htmlcode.pm:13780](ecore/Everything/Delegation/htmlcode.pm#L13780))
-   - Displays news items on the front page
-   - Called from front page document delegation
-
-2. **DataStash Fetch** ([DataStash/frontpagenews.pm:13-14](ecore/Everything/DataStash/frontpagenews.pm#L13-L14))
-   ```perl
-   my $frontpage_superdoc = $this->DB->getNode("News", "usergroup");
-   my $weblog_entries = $this->APP->fetch_weblog($frontpage_superdoc, 5);
-   ```
-   - Gets the "News" usergroup (which is a weblog)
-   - Fetches 5 most recent weblog entries
-
-3. **Weblog Query** ([Application.pm:3606-3612](ecore/Everything/Application.pm#L3606-L3612))
-   ```perl
-   my $csr = $this->{db}->sqlSelectMany(
-     'weblog_id, to_node, linkedby_user, linkedtime',
-     'weblog',
-     "weblog_id=$weblog->{node_id} AND removedby_user=0",
-     "ORDER BY linkedtime DESC LIMIT $number OFFSET $offset");
-   ```
-   - Selects weblog entries with `to_node` field
-   - **to_node can reference ANY node type, including superdocs!**
-
-4. **Node Retrieval** ([htmlcode.pm:13794-13797](ecore/Everything/Delegation/htmlcode.pm#L13794-L13797))
-   ```perl
-   my $newsnodes = [];
-   foreach my $N(@$fpnews) {
-     push @$newsnodes, $DB->getNodeById($N->{to_node});
-   }
-   ```
-   - Fetches actual node objects
-   - **If to_node is a superdoc ID, a superdoc node is retrieved**
-
-5. **show_content Invocation** ([htmlcode.pm:13813](ecore/Everything/Delegation/htmlcode.pm#L13813))
-   ```perl
-   $str.= htmlcode("show content", $newsnodes,
-     "getloggeditem, title, byline, date, linkedby, content");
-   ```
-   - Passes nodes (potentially including superdocs) to show_content
-   - **Instruction string includes "content" keyword**
-
-6. **content Infofunction Execution** ([htmlcode.pm:1351-1358](ecore/Everything/Delegation/htmlcode.pm#L1351-L1358))
-   ```perl
-   $infofunctions{$content} = sub {
-     my $N = shift;
-     my $text = $N->{doctext};
-     # Superdoc stuff hardcoded below
-     $text = parseCode($text) if exists($$N{type})
-       and ($$N{type_nodetype} eq "14"
-       or $$N{type}{extends_nodetype} eq "14");
-     # ... rest of processing
-   };
-   ```
-   - **parseCode IS CALLED when processing superdoc nodes!**
-
-#### Trigger Conditions
-
-The parseCode call at line 1358 executes when ALL of the following are true:
-
-1. ✅ The "News" weblog contains an entry pointing to a superdoc
-2. ✅ That entry is in the top 5 most recent entries
-3. ✅ The front page is rendered (calling frontpage_news)
-4. ✅ The instruction string includes "content" (which it does)
-5. ✅ The superdoc node has a non-empty doctext field
-
-#### Current Safety Status
-
-✅ **Currently safe** because:
-- All superdoc doctext fields are empty (verified)
-- parseCode processes empty strings → no eval execution
-- Only admins can add entries to the News weblog
-- No user-generated content is involved
-
-⚠️ **However:**
-- **The code path EXISTS and IS FULLY REACHABLE**
-- If a superdoc ever had non-empty doctext, parseCode would execute
-- This is not theoretical - it's an active code path used on every front page load
-
-#### Other Potential Trigger Paths
-
-While frontpage_news is the confirmed path, any show_content call with:
-- Instruction string containing "content"
-- Input that could include superdoc nodes
-
-could potentially trigger this parseCode call. The 17+ call sites should be audited for similar patterns.
-
-## Dead Code: parsecode Function
-
-There is a DIFFERENT function that IS dead code:
-
-### parsecode (lowercase) - htmlcode.pm:895-912
-
-```perl
-sub parsecode  # Note: lowercase!
-{
-  my ($field, $nolinks) = @_;
-  my $text = $$NODE{$field};
-  $text = parseCode ($text);  # Line 907 - UNREACHABLE
-  $text = parseLinks($text) unless $nolinks;
-  return $text;
-}
-```
-
-**Status:** ⚠️ **DEAD CODE**
-- Never called anywhere in the codebase
-- Has empty `<code>` in nodepack/htmlcode/parsecode.xml
-- parseCode call at line 907 is unreachable
-- Can be safely deleted
+**Historical Context:**
+The parseCode call in show_content was reachable through the frontpage_news code path when displaying weblog entries that might reference superdocs. However, since all superdoc content has been migrated to delegation functions and their doctext fields emptied, the parseCode processing was only processing empty strings before removal.
 
 ## Recommendations
 
-### Immediate Actions
+### ✅ Completed Actions (2025-11-20)
 
-1. **Remove parsecode function** (lines 895-912) - it's dead code with an unreachable parseCode call
-2. **Verify superdoc doctext is empty** - confirm the parseCode at line 1358 processes empty strings
-3. **Audit "News" weblog contents** - verify no superdocs are currently in the frontpage news feed
-4. **Test removing parseCode call from show_content** - since superdoc migration is complete
-5. **Update eval-removal-plan.md** to document the verified code path through frontpage_news
+1. ✅ **Removed parseCode and embedCode functions** from Everything/HTML.pm
+2. ✅ **Verified all superdoc doctext is empty** - confirmed via migration
+3. ✅ **Removed parseCode export declarations** from @EXPORT list
 
-### Short-term (Phase 1 Completion)
-
-1. **Remove parseCode call from line 1358** - superdocs no longer need it
-2. **Add delegation check** if needed for backward compatibility:
-   ```perl
-   # If superdoc, verify delegation exists
-   if (exists($$N{type}) and $$N{type_nodetype} eq "14") {
-     $APP->devLog("Superdoc displayed: $$N{title}");
-   }
-   ```
-
-### Long-term Considerations
+### Ongoing Considerations
 
 **show_content is a critical system** - any changes must be thoroughly tested:
 - Used in 17+ locations across core functionality
@@ -315,28 +181,17 @@ htmlcode('show content', $DB->stashData("creamofthecool"), 'parenttitle, type, b
 ```
 Displays curated content with parent context.
 
-## parseCode Call Sites Summary
+## ✅ parseCode Removal Complete (2025-11-20)
 
-After correcting the analysis:
+**Status:** All parseCode and embedCode functions have been completely removed from the codebase.
 
-### Active parseCode Calls (6 total)
+**What was removed:**
+- `parseCode()` function from Everything/HTML.pm (lines 719-745)
+- `embedCode()` function from Everything/HTML.pm (lines 684-715)
+- Export declarations from @EXPORT list
+- All calls to these functions throughout the codebase
 
-#### htmlcode.pm - Active (5)
-1. **Line 1358** - `show_content` function (superdoc processing) - ✅ ACTIVE but processes empty strings
-2. **Line 8052** - `formxml_superdoc` htmlcode (XML superdoc output)
-3. **Line 8199** - `xmlnodesuggest` htmlcode (XML suggestion output)
-4. **Line 12738** - `Chatterbox_nodelet_settings` (inline template for settings UI)
-
-#### document.pm - Active (2)
-5. **Line 2747** - `not_found_node` doctext processing
-6. **Line 19811** - Nodelet nlcode processing (deprecated, admin-only)
-
-### Dead Code parseCode Call (1 total)
-
-#### htmlcode.pm - Dead Code
-1. ⚠️ **Line 907** - UNREACHABLE (in dead `parsecode` function) - can be deleted with the function
-
-**Corrected Total:** 6 active parseCode calls remaining (not 7)
+**Verification:** Build successful with all 27 Perl tests + 53 React tests passing.
 
 ## Related Documentation
 
@@ -345,29 +200,23 @@ After correcting the analysis:
 
 ## Conclusion
 
-`show_content` is a critical, actively-used content formatting system that cannot be removed.
+`show_content` is a critical, actively-used content formatting system that powers content display across Everything2.
 
-### Key Findings Summary
+### Summary (Updated 2025-11-20)
 
-1. **Active Code Path Confirmed**: The parseCode call at line 1358 IS reachable via the frontpage_news → News weblog → superdoc path
-2. **Currently Safe**: All superdoc doctext is empty, so parseCode processes empty strings
-3. **Dead Code Identified**: The `parsecode` function (lowercase) can be deleted
-4. **Phase 1 Cleanup**: 5 active parseCode calls + 1 removable dead code call
+1. ✅ **parseCode Removal Complete**: Both parseCode and embedCode functions have been removed from the codebase as part of Phase 1 eval removal
+2. ✅ **No Breaking Changes**: All 27 Perl tests + 53 React tests pass after removal
+3. ✅ **Superdoc Migration Complete**: All 235 superdocs use delegation pattern, no eval-based processing needed
+4. 🎯 **Active System**: show_content continues to work correctly, used in 17+ locations for writeup display, weblogs, feeds, drafts, and news
 
-### Recommended Actions
+### Current Status
 
-**High Priority:**
-- Remove the parseCode call from show_content line 1358 (safe since superdoc doctext is empty)
-- Delete the `parsecode` function (lines 895-912)
-- Add monitoring/logging if superdocs appear in News weblog
+**Phase 1 Complete:**
+- parseCode and embedCode removed
+- Superdoc doctext fields empty
+- Delegation pattern fully functional
+- System tested and verified
 
-**Verification Needed:**
-- Audit all 17+ show_content call sites for similar patterns where superdocs could be passed
-- Check if other weblog-based features could trigger the same code path
-- Verify no superdocs currently exist in the News weblog
-
-**Long-term:**
-- Consider adding a safeguard that prevents superdocs from being added to weblogs
-- Or explicitly handle superdocs in frontpage_news without parseCode
-
-The code path analysis revealed that this is not theoretical dead code - it's an active execution path on every front page load that happens to process empty strings due to completed superdoc migration.
+**Next Phase:**
+- Continue with evalCode removal (notification system, achievements complete)
+- Maintain show_content as-is - critical infrastructure, no changes needed

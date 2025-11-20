@@ -25381,4 +25381,185 @@ sub xml_interfaces_ticker
     return $str;
 }
 
+#############################################################################
+# universal_message_json_ticker
+#
+# Chatterbox JSON message ticker for fetching room/private messages
+# Migrated from jsonexport node (2025-11-20)
+#############################################################################
+
+sub universal_message_json_ticker
+{
+    my $DB = shift;
+    my $query = shift;
+    my $NODE = shift;
+    my $USER = shift;
+    my $VARS = shift;
+    my $PAGELOAD = shift;
+    my $APP = shift;
+
+    my $msglimit = int($query->param("msglimit")); # to prevent against nasty SQL injection attacks. mkb thanks call
+    if ($msglimit !~ /^[0-9]*$/)
+    {
+        $msglimit = 0;
+    }
+
+    my $for_node = $query->param("for_node");
+    my $backtime = $query->param("backtime");
+    my $nosort = $query->param("nosort");
+    my $lnp = $query->param("links_noparse");
+
+    $for_node = $$USER{user_id} if ($for_node eq "me");
+
+    $nosort ||= 0;
+    $for_node ||= 0;
+    $msglimit ||= 0; #not actually necessary due to call's fix above, but better safe than sorry -- tmw
+    $backtime ||= 0;
+    my $recip = getNodeById($for_node);
+
+    if ($for_node == 0)
+    {
+        $$recip{type_nodetype} = getId(getType('room'));
+        $$recip{node_id} = 0;
+        $$recip{title} = "outside";
+        $$recip{criteria} = "1;";
+    }
+
+    my $limits = "";
+    my $secs;
+    my $room;
+    my $messages = {};
+
+    if ($$recip{type_nodetype} == getId(getType('room')))
+    {
+        # Check room access using delegation instead of eval()
+        my $roomTitle = $$recip{title} || '';
+        $roomTitle =~ s/[\s\-]/_/g;  # Replace spaces and hyphens with underscores
+        $roomTitle = lc($roomTitle);
+
+        my $hasAccess = 1;  # Default to allow (public room)
+
+        # Check if room has delegation function for access control
+        my $roomDelegation = Everything::Delegation::room->can($roomTitle);
+        if ($roomDelegation)
+        {
+            $hasAccess = $roomDelegation->($USER, $VARS, $APP);
+        }
+
+        if ($hasAccess
+            and (!$APP->isGuest($USER)
+            || getVars(getNode("public rooms", "setting"))->{$$recip{node_id}})
+            )
+        {
+            $room = getVars(getNode("room topics", "setting"));
+            my $topic = $$room{$$recip{node_id}};
+            unless ($lnp == 1)
+            {
+                if ($query->param('do_the_right_thing'))
+                {
+                    $topic = $APP->escapeAngleBrackets($topic);
+                }
+                $topic = parseLinks($topic);
+            }
+
+            $messages -> {room} = {room_id => $$recip{node_id},
+                                   content => $$recip{title}
+                                  };
+
+            $messages -> {topic} = {content => $topic};
+
+            if ($backtime != 5 && $backtime != 10)
+            {
+                $backtime = 5;
+            }
+
+            $secs = $backtime * 60;
+
+            if ($$USER{in_room} == $$recip{node_id} || $APP->isGuest($USER))
+            {
+                # Use interval here to avoid a table scan -- [call]
+                $limits = "message_id > $msglimit AND room='$$recip{node_id}' AND for_user='0'"
+                        . " AND tstamp >= date_sub(now(), interval $secs second)";
+            }
+            else
+            {
+                $limits = "";
+            }
+        }
+    }
+    elsif ($$recip{type_nodetype} == getId(getType('user')))
+    {
+        $secs = $backtime * 60;
+
+        if ($$USER{user_id} == $$recip{node_id})
+        {
+            $limits = "message_id > $msglimit AND for_user='$$USER{user_id}' AND room='0'";
+            # Avoid a table scan here, too. -- [call]
+            $limits.= " AND tstamp >= date_sub(now(), interval $secs second)" if($secs > 0);
+        }
+        else
+        {
+            $limits = "";
+        }
+    }
+
+    $limits .=" ORDER BY message_id" unless($nosort == 1 || $limits eq "");
+    $limits = " message_id is NULL LIMIT 0" if($limits eq "");
+    my $csr = $DB->sqlSelectMany("*", "message use index(foruser_tstamp)", $limits);
+
+    my $username;
+    my $costume;
+    my $msglist = [];
+
+    unless ($APP->isGuest($$recip{node_id}))
+    {
+        while (my $row = $csr->fetchrow_hashref())
+        {
+            my $msg = {};
+            $msg -> {msg_id} = $$row{message_id};
+            $msg -> {msg_time} = $$row{tstamp};
+            $msg -> {archive} = 1 if($$row{archive} == 1);
+
+            my $frm=getNodeById($$row{author_user});
+            my $grp=getNodeById($$row{for_usergroup});
+            $username = $$frm{title};
+
+
+            #properly encode usernames
+            utf8::encode($username);
+
+            if($frm)
+            {
+
+                my $frmdata = [];
+                push @$frmdata, {node_id => $$frm{node_id},
+                                 content => $username,
+                                };
+                $msg -> {from} = $frmdata;
+            }
+
+            if($grp)
+            {
+                $msg -> {grp} = {type    => $$grp{type}{title},
+                                 e2link  => {node_id => $$grp{node_id},
+                                             content => $$grp{title}
+                                            },
+                                };
+            }
+
+            my $txt = $$row{msgtext};
+            if($lnp != 1) {
+                $txt = parseLinks($txt);
+            }
+
+            $msg -> {txt} = {content => $txt};
+            push @$msglist,  $msg;
+        }
+    }
+
+    $messages -> {msglist} = { msg => $msglist };
+
+    return encode_json({"messages" => $messages});
+}
+
 1;
