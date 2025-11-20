@@ -229,6 +229,19 @@
    - Shows current total after bestowing: "now have X cools" or "now has X cools"
    - Location: document.pm:18899-18918
 
+6. ✅ **Created Monthly Changelog System**
+   - Created docs/changelog-2025-11.md for user-friendly monthly communication
+   - Documented eval() removal campaign, resurrection improvements, bug fixes
+   - Added "Monthly User Communication" section to CLAUDE.md with guidelines
+   - Non-technical language focusing on "what" and "why" for site users
+
+7. ✅ **Removed Deprecated Chat Functions**
+   - Removed `joker_s_chat` function (lines 23690-23764, 75 lines)
+   - Removed `my_chatterlight` function (lines 23766-23986, 221 lines)
+   - Both nodes deleted from production database
+   - Total reduction: 297 lines from Everything::Delegation::document
+   - Location: ecore/Everything/Delegation/document.pm
+
 ## Everything2 Architecture Context
 
 ### Core Technology Stack
@@ -280,7 +293,7 @@ Modified:
   docs/react-migration-strategy.md
   docs/show_content_analysis.md
   ecore/Everything/Application.pm (removed evalCode stack trace check)
-  ecore/Everything/Delegation/document.pm (simplified dr__nate_s_secret_lab to use resurrectNode)
+  ecore/Everything/Delegation/document.pm (simplified dr__nate_s_secret_lab, fixed bestow_cools, removed joker_s_chat & my_chatterlight)
   ecore/Everything/Delegation/htmlcode.pm (added notification module import + notificationsJSON delegation)
   ecore/Everything/Delegation/htmlpage.pm
   ecore/Everything/Delegation/opcode.pm (removed evalCode typeglob)
@@ -300,6 +313,7 @@ Renamed:
   t/022_chatterbox_cleanup.t → t/029_chatterbox_cleanup.t
 
 Untracked:
+  docs/changelog-2025-11.md (new file - user-friendly monthly changelog)
   docs/notification-system.md
   ecore/Everything/Delegation/notification.pm (new file - cleaned evalCode from header + fixed achievement guard clause)
   ecore/Everything/Serialization.pm (new file - Safe.pm deserialization module)
@@ -357,3 +371,22 @@ When resuming work on E2:
 - Security and eval() removal are top priorities
 - All new code must use Moose, prepared SQL statements
 - No mobile CSS currently (major gap to address)
+
+## Monthly User Communication
+
+**IMPORTANT:** Maintain a running log of changes for monthly user communication.
+
+- **File:** `docs/changelog-YYYY-MM.md` (e.g., changelog-2025-11.md)
+- **Audience:** Non-technical Everything2 users
+- **Format:**
+  - High-level description of changes
+  - Executive summary explaining "why" for each change
+  - User-friendly language (avoid technical jargon)
+  - Focus on user impact and benefits
+- **Content Guidelines:**
+  - What changed (user perspective)
+  - Why it matters (benefits, improvements)
+  - User impact (visible changes or "behind the scenes")
+  - Include security, performance, and feature improvements
+- **Update Frequency:** Add entries as significant changes are made
+- **Monthly Rollup:** Jay uses this for once-a-month communication to site users
