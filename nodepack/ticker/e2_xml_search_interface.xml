@@ -1,51 +1,5 @@
 <node>
-  <doctext>[%
-   my $keywords = $APP-&gt;cleanNodeName($query-&gt;param('keywords'));
-   my $tr = $query-&gt;param(&quot;typerestrict&quot;);
-   my $typerestrict; 
-     $typerestrict = getNode($tr, &quot;nodetype&quot;) if ($tr);
-   
-   my $e2ntype = $typerestrict;
-   $e2ntype ||= getNode(&quot;e2node&quot;,&quot;nodetype&quot;);
-   
-   my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot;?&gt;\n&quot;;
-$str.=&quot;
-   &lt;!DOCTYPE searchinterface \[
-     &lt;!ELEMENT searchinterface (searchinfo, searchresults)&gt;\n
-     &lt;!ELEMENT searchinfo (keywords, searchfor)&gt;\n
-     &lt;!ELEMENT keywords (\#PCDATA)&gt;\n
-     &lt;!ELEMENT search_nodetype (\#PCDATA)&gt;\n
-       &lt;!ATTLIST search_nodetype node_id CDATA \#REQUIRED&gt;\n 
-     &lt;!ELEMENT searchresults (searchhit*)&gt;\n
-     &lt;!ELEMENT searchhit (\#PCDATA)&gt;\n
-       &lt;!ATTLIST searchhit node_id CDATA \#REQUIRED&gt;\n
-   \]&gt;
-&quot;;
-   $str .= &quot;&lt;searchinterface&gt;\n&quot;;
-
-   $str .= &quot;&lt;searchinfo&gt;\n&quot;;
-   $str .= &quot;  &lt;keywords&gt;&quot;;
-   $str .= encodeHTML(($keywords)?(&quot;$keywords&quot;):(&quot;&quot;));
-   $str .= &quot;&lt;/keywords&gt;\n&quot;;
-   $str .= &quot;&lt;search_nodetype node_id=\&quot;$$e2ntype{node_id}\&quot;&gt;&quot;;
-   $str .= $$e2ntype{title};
-   $str .= &quot;&lt;/search_nodetype&gt;\n&quot;;
-
-   $str .= &quot;&lt;/searchinfo&gt;\n&quot;;
-   $str .= &quot;&lt;searchresults&gt;\n&quot;;
-
-   if($keywords){
-   my $nodes = $APP-&gt;searchNodeName($keywords, [$$e2ntype{node_id}], 0, 1); 
-
-   foreach my $n (@$nodes) {
-     $str .= &quot;  &lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;&quot;.encodeHTML($$n{title}).&quot;&lt;/e2link&gt;\n&quot; unless $$n{type_nodetype} != $$e2ntype{node_id};
-   }
-
-   }
-   $str .= &quot;&lt;/searchresults&gt;\n&quot;;
-   $str .= &quot;&lt;/searchinterface&gt;\n&quot;;
-%]
-</doctext>
+  <doctext></doctext>
   <node_id>1252400</node_id>
   <title>E2 XML Search Interface</title>
   <type_nodetype>1252389</type_nodetype>

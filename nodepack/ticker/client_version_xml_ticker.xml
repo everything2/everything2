@@ -1,26 +1,5 @@
 <node>
-  <doctext>[%
-my $str = &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&quot;;
-my $csr = $DB-&gt;sqlSelectMany(&quot;node_id&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getId(getType('e2client')));
-
-$str.=&quot;&lt;clientregistry&gt;&quot;;
-
-while(my $r = $csr-&gt;fetchrow_hashref())
-{
-  my $cl = getNodeById($r);
-  my $u = getNodeById($$cl{author_user});
-
-  $str.=&quot;&lt;client client_id=\&quot;$$cl{node_id}\&quot; client_class=\&quot;&quot;.encodeHTML($$cl{clientstr}).&quot;\&quot;&gt;&quot;;
-  $str.=&quot;&lt;version&gt;&quot;.encodeHTML($$cl{version}).&quot;&lt;/version&gt;&quot;;
-  $str.=&quot;&lt;homepage&gt;&quot;.encodeHTML($$cl{homeurl}).&quot;&lt;/homepage&gt;&quot;;
-  $str.=&quot;&lt;download&gt;&quot;.encodeHTML($$cl{dlurl}).&quot;&lt;/download&gt;&quot;;
-  $str.=&quot;&lt;maintainer node_id=\&quot;$$u{node_id}\&quot;&gt;&quot;.encodeHTML($$u{title}).&quot;&lt;/maintainer&gt;&quot;;
-  $str.=&quot;&lt;/client&gt;&quot;;
-}
-
-$str.=&quot;&lt;/clientregistry&gt;&quot;;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1261985</node_id>
   <title>Client Version XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>

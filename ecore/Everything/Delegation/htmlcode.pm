@@ -46,6 +46,9 @@ use Time::Local;
 #  showNewGP, notificationsJSON, Notifications_nodelet_settings,sendPrivateMessage
 use JSON;
 
+# Used by hasAchieved for achievement delegation
+use Everything::Delegation::achievement;
+
 # Used by publishwriteup,isSpecialDate
 use DateTime;
 
@@ -9156,7 +9159,23 @@ sub hasAchieved
 
   return 0 unless $$ACH{achievement_still_available};
 
-  my $result = $force || evalCode("my \$user_id = $user_id;\n$$ACH{code}", $NODE);
+  # Check for delegation function first
+  my $achtitle = $$ACH{title};
+  $achtitle =~ s/[\s-]/_/g;
+  $achtitle =~ s/[^A-Za-z0-9_]/_/g;
+  $achtitle = lc($achtitle);
+
+  my $result;
+  if(my $delegation = Everything::Delegation::achievement->can($achtitle))
+  {
+    $APP->devLog("Using achievement delegation for '$$ACH{title}' as '$achtitle'");
+    $result = $force || $delegation->($DB, $APP, $user_id);
+  }
+  else
+  {
+    # Fall back to eval of {code} field for unmigrated achievements
+    $result = $force || evalCode("my \$user_id = $user_id;\n$$ACH{code}", $NODE);
+  }
 
   if ($result == 1)
   {

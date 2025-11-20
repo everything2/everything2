@@ -1,37 +1,5 @@
 <node>
-  <doctext>[%
-my $limit = 100;
-
-my $qry = &quot;SELECT * FROM newwriteup, node where newwriteup.node_id=node.node_id 
-         &quot;;
-
-$qry.= &quot;and notnew=0 &quot; unless isGod($USER);
-$qry.= &quot; order by newwriteup_id DESC LIMIT $limit&quot;;
-
-my $csr = $DB-&gt;{dbh}-&gt;prepare($qry);
-
-$csr-&gt;execute or return &quot;SHIT&quot;;
-my $count=0;
-
-use XML::Generator;
-my $XG = new XML::Generator;
-
-my $str =&quot;&quot;;
-$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;site_url, sitename =&gt; $Everything::CONF-&gt;site_name, servertime =&gt; scalar(localtime(time))}, &quot;Rendered by the New Nodes XML Ticker&quot;).&quot;\n&quot;;
-
-use Everything::XML;
-
-while(my $N = $csr-&gt;fetchrow_hashref){
-  $N = getNode $$N{node_id};
-  $str.=$XG-&gt;node({createtime =&gt; $$N{publishtime} || $$N{createtime}, 
-     e2node_id =&gt; $$N{parent_e2node},
-     writeuptype =&gt;     getNodeById($$N{wrtype_writeuptype})-&gt;{title},
-     author_user =&gt; Everything::XML::makeXmlSafe(getNodeById($$N{author_user})-&gt;{title}),
-     node_id =&gt; getId($N)},   Everything::XML::makeXmlSafe(getNodeById($$N{parent_e2node})-&gt;{title}).&quot;\n&quot;);
-}
-$csr-&gt;finish;
-$XG-&gt;NewNodes($str);
-%]</doctext>
+  <doctext></doctext>
   <node_id>781532</node_id>
   <title>New Nodes XML Ticker</title>
   <type_nodetype>451267</type_nodetype>

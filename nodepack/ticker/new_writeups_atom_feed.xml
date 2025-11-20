@@ -1,40 +1,5 @@
 <node>
-  <doctext>[% 
-my $foruser = $query-&gt;param('foruser');
-$foruser =~ s/'/&amp;#39;/g;
-my $str;
-if ($foruser) {
-   $str = htmlcode('userAtomFeed', $foruser);
-   return $str if $str;
-}
-
-my $newwriteups = $DB-&gt;stashData(&quot;newwriteups&quot;);
-$str = &quot;&lt;updated&gt;&quot;;
-my ($sec,$min,$hour,$mday,$mon,$year) = localtime;
-$str .= sprintf(&quot;%04d-%02d-%02dT%02d:%02d:%02dZ&quot;, $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
-$str .= &quot;&lt;/updated&gt;\n&quot;;
-
-my $numberofwriteups = 25;
-my $node_ids = [];
-
-while ($numberofwriteups and @$newwriteups) {
-        my $N = shift(@$newwriteups);
-        push @$node_ids, $N-&gt;{node_id};
-        $numberofwriteups--;
-}
-
-$str .= htmlcode( 'atomiseNode' , $node_ids);
-
-return '&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot; xml:base=&quot;https://everything2.com&quot;&gt;
-&lt;title&gt;Everything2 New Writeups&lt;/title&gt;
-&lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot; href=&quot;https://everything2.com/node/superdoc/Writeups+by+Type&quot;/&gt;
-&lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot; href=&quot;https://everything2.com/node/ticker/New+Writeups+Atom+Feed&quot;/&gt;
-&lt;id&gt;https://everything2.com/?node=New%20Writeups%20Atom%20Feed&lt;/id&gt;
-' .
-$str . '
-&lt;/feed&gt;' ;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1822009</node_id>
   <title>New Writeups Atom Feed</title>
   <type_nodetype>1252389</type_nodetype>

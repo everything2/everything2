@@ -1,36 +1,5 @@
 <node>
-  <doctext>[% 
-my @phrase = (
-  'Nodes your grandma would have liked:',
-  'After stirring Everything, these nodes rose to the top:',
-  'Look at this mess the Death Borg made!',
-  'Just another sprinking of indeterminacy',
-  'The best nodes of all time:'
-);
-
-my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot;?&gt;\n&quot;;
-$str.=&quot;
-   &lt;!DOCTYPE randomnodes \[
-     &lt;!ELEMENT randomnodes (wit, e2link*)&gt;\n
-     &lt;!ELEMENT wit (\#PCDATA)&gt;\n
-     &lt;!ELEMENT e2link (\#PCDATA)&gt;\n
-        &lt;!ATTLIST e2link node_id CDATA \#REQUIRED&gt; \n
-   \]&gt;
-
-&quot;;
-
-$str.=&quot;&lt;randomnodes&gt;\n&quot;;
-$str.='&lt;wit&gt;'.$phrase[rand(int(@phrase))].&quot;&lt;/wit&gt;\n&quot;;
-
-my $randomnodes = $DB-&gt;stashData(&quot;randomnodes&quot;);
-
-foreach my $N (@$randomnodes) {
-  $str.=&quot;  &lt;e2link node_id=\&quot;$$N{node_id}\&quot;&gt;&quot;.encodeHTML($$N{title}).&quot;&lt;/e2link&gt;\n&quot;;
-}
-
-$str.=&quot;&lt;/randomnodes&gt;\n&quot;;
-return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1252390</node_id>
   <title>Random Nodes XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>
