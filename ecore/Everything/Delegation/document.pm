@@ -21015,48 +21015,6 @@ sub nodetype_changer {
     return $str;
 }
 
-sub raw_node_editor {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    my $str = "Sometimes we need fire to fight fire... \n<p>This allows you to edit a node and all its fields directly. \n";
-
-    $str .= htmlcode('openform');
-    $str .= "\n";
-
-    $str .= 'id: ' . $query->textfield('editnode') . ' or name and type: ' . $query->textfield('editnodetitle') . ', ' . $query->textfield('editnodetype');
-
-    $str .= "\n<p>\n";
-
-    my $EDITNODE = getNodeById(scalar $query->param('editnode'));
-    my $name = $query->param('editnodetitle');
-    my $title = $query->param('editnodetype');
-
-    if ($name and $title) {
-        $EDITNODE ||= getNode($name, $title);
-    }
-
-    $str .= '<br />';
-
-    if($EDITNODE)
-    {
-        my $fields_str = '';
-
-        foreach my $field (keys %$EDITNODE) {
-            next if $field eq "passwd";
-            $fields_str .= "$field:";
-            $fields_str .= $query->textfield($field, encodeHTML($EDITNODE->{$field}), 40);
-            $fields_str .= "<br />\n";
-        }
-
-        $str .= $fields_str;
-    }else{
-      $str .= "(no node)" 
-    }
-
-    $str .= htmlcode('closeform');
-    return $str;
-}
-
 sub the_borg_clinic {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
 
