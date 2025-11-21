@@ -195,9 +195,25 @@ if [ "$BUILD_APP" = true ]; then
 
   build_application
 
-  # Run tests after app build
+  # Run smoke tests first
   echo "========================================="
-  echo "Running test suite..."
+  echo "Running smoke tests..."
+  echo "========================================="
+  if ! $SCRIPT_DIR/../tools/run-smoke-tests.sh http://localhost:9080; then
+    echo ""
+    echo "========================================="
+    echo "SMOKE TESTS FAILED"
+    echo "========================================="
+    echo "Build completed but application failed smoke tests."
+    echo "Fix the Apache/Perl errors above before the application will run."
+    echo "Skipping Perl test suite."
+    exit 1
+  fi
+
+  # Run full test suite after smoke tests pass
+  echo ""
+  echo "========================================="
+  echo "Smoke tests passed! Running Perl test suite..."
   echo "========================================="
   $SCRIPT_DIR/run-tests.sh
 fi

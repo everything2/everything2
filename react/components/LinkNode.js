@@ -28,6 +28,9 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) =>
         if(type == undefined)
         {
           prefix = "/title/"+title
+        }else if(type == "user"){
+          // User profile: /user/$username
+          prefix = "/user/"+title
         }else{
           prefix = "/node/"+type+"/"+title
       }

@@ -45,24 +45,24 @@ use HTML::Defang;
 
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
-	$PARAMS = 
+	$PARAMS =
 	{
 		# Tested in 000_test_cloaking.t
-		"cancloak" => 
+		'cancloak' =>
 		{
-			"on" => ["user"],
-			"description" => "Grants the user a courtesy chatterbox cloaking utility",
-			"assignable" => ["admin"],
-			"validate" => "set_only",
+			'on' => ['user'],
+			'description' => 'Grants the user a courtesy chatterbox cloaking utility',
+			'assignable' => ['admin'],
+			'validate' => 'set_only',
 		},
-		
+
 		# Tested in 000_test_cloaking.t
-		"level_override" => 
+		'level_override' =>
 		{
-			"on" => ["user"],
-			"description" => "Hard sets a level on a user",
-			"assignable" => ["admin"],
-			"validate" => "integer",
+			'on' => ['user'],
+			'description' => 'Hard sets a level on a user',
+			'assignable' => ['admin'],
+			'validate' => 'integer',
 		},
 		# TODO: Add test
 		"hide_chatterbox_staff_symbol" =>
@@ -129,7 +129,7 @@ BEGIN {
 			"description" => "Mark this as being about a book of a particular edition",
 			"assignable" => ["admin"],
 		},
-	
+
 		"book_numpages" =>
 		{
 			"on" => ["writeup"],
@@ -4708,8 +4708,8 @@ sub buildNodeInfoStructure
     $e2->{daylogLinks} = $this->{db}->stashData("dayloglinks");
   }
 
-  # Recommended Reading
-  if($this->isGuest($USER) or $nodelets =~ /2027508/)
+  # Recommended Reading or ReadThis
+  if($this->isGuest($USER) or $nodelets =~ /2027508/ or $nodelets =~ /1157024/)
   {
     foreach my $section (qw/coolnodes staffpicks/)
     {
@@ -4733,6 +4733,68 @@ sub buildNodeInfoStructure
       }
       $e2->{$section} = $final_section_data;
     }
+  }
+
+  # ReadThis news section - uses frontpagenews datastash (weblog entries from "News" usergroup)
+  if($nodelets =~ /1157024/)
+  {
+    my $fpnews = $this->{db}->stashData("frontpagenews");
+    $fpnews = [] unless(defined($fpnews) and UNIVERSAL::isa($fpnews,"ARRAY"));
+
+    my $final_news = [];
+    foreach my $entry (@$fpnews)
+    {
+      my $n = $this->{db}->getNodeById($entry->{to_node});
+      # Skip removed nodes and drafts (same logic as htmlcode show_content_frontpage)
+      if($n && $n->{type}{title} ne 'draft')
+      {
+        push @$final_news, {"node_id" => $n->{node_id}, "title" => $n->{title}};
+      }
+    }
+    $e2->{news} = $final_news;
+  }
+
+  # Epicenter nodelet
+  if($nodelets =~ /262/ and not $this->isGuest($USER))
+  {
+    $e2->{epicenter} = {};
+    $e2->{epicenter}->{votesLeft} = $USER->{votesleft} || 0;
+    $e2->{epicenter}->{cools} = $VARS->{cools} || 0;
+    $e2->{epicenter}->{experience} = $USER->{experience} || 0;
+    $e2->{epicenter}->{gp} = $USER->{GP} || 0;
+    $e2->{epicenter}->{level} = $this->getLevel($USER);
+    $e2->{epicenter}->{gpOptOut} = $VARS->{GPoptout} ? \1 : \0;
+    $e2->{epicenter}->{localTimeUse} = $VARS->{localTimeUse} ? \1 : \0;
+    $e2->{epicenter}->{userId} = $USER->{node_id};
+    $e2->{epicenter}->{userSettingsId} = $this->{conf}->user_settings;
+
+    # Determine help page based on level
+    $e2->{epicenter}->{helpPage} = ($e2->{epicenter}->{level} < 2) ? 'E2 Quick Start' : 'Everything2 Help';
+
+    # Generate HTML for complex components
+    $e2->{epicenter}->{borgcheck} = Everything::HTML::htmlcode("borgcheck");
+    $e2->{epicenter}->{experienceDisplay} = Everything::HTML::htmlcode("shownewexp", "TRUE");
+    unless($VARS->{GPoptout}) {
+      $e2->{epicenter}->{gpDisplay} = Everything::HTML::htmlcode("showNewGP", "TRUE");
+    }
+    $e2->{epicenter}->{randomNode} = Everything::HTML::htmlcode("randomnode", "Random Node");
+
+    # Generate server time display
+    my $NOW = time;
+    my $timeHtml = 'server time<br />' . Everything::HTML::htmlcode('DateTimeLocal', "$NOW,1");
+    if($VARS->{localTimeUse}) {
+      $timeHtml .= '<br />' . $this->linkNodeTitle('Advanced Settings|your time') . '<br />' . Everything::HTML::htmlcode('DateTimeLocal', $NOW);
+    } else {
+      $timeHtml .= '<br />' . $this->linkNodeTitle('Advanced Settings|(set your time)');
+    }
+    $e2->{epicenter}->{serverTimeDisplay} = $timeHtml;
+  }
+
+  # Epicenter for guests (borgcheck only)
+  if($nodelets =~ /262/ and $this->isGuest($USER))
+  {
+    $e2->{epicenter} = {};
+    $e2->{epicenter}->{borgcheck} = Everything::HTML::htmlcode("borgcheck");
   }
 
   # Random Nodes

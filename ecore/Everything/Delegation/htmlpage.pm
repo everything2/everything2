@@ -753,7 +753,7 @@ sub classic_user_edit_page
       $olduserimage =~ s"/[^/]+?(/[^/]+)$"$1";
       unlink($olduserimage);
       $$NODE{imgsrc} = '';
-      updateNode $NODE, $USER;
+      $DB->updateNode($NODE, $USER);
       $query->param($k,'');
     }
 
@@ -1078,7 +1078,7 @@ sub e2node_display_page
   unless ( $APP->isGuest($USER) )
   {
     # find attached drafts:
-    my $linktype = getId(getNode 'parent_node', 'linktype');
+    my $linktype = getId(getNode('parent_node', 'linktype'));
     my $drafts = $DB->{dbh}->selectcol_arrayref("
       SELECT from_node
       FROM links
@@ -2005,7 +2005,7 @@ sub podcast_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $TAGNODE = getNode 'approved html tags', 'setting';
+  my $TAGNODE = $DB->getNode('approved html tags', 'setting');
   my $TAGS=getVars($TAGNODE);
 
   my $text = $APP->htmlScreen($$NODE{description}, $TAGS);
@@ -2603,7 +2603,7 @@ sub document_linkview_page
     push @links, [linkNodeTitle($linkref -> [1], $NODE), $isfilled ];
   }
 
-  my $TAGNODE = getNode 'approved html tags', 'setting';
+  my $TAGNODE = getNode('approved html tags', 'setting');
   my $TAGS=getVars($TAGNODE);
 
   @notlinks = () if $codeDoc;
@@ -4478,7 +4478,7 @@ sub draft_display_page
   if ($nukedraft eq 'Delete draft' && htmlcode('verifyRequest', 'nukedraft'))
   {
     my @fields = $DB -> getFieldsHash('draft', 0);
-    my $linktype = getId(getNode 'parent_node', 'linktype');
+    my $linktype = getId(getNode('parent_node', 'linktype'));
     my $parent = $DB -> sqlSelect(
       'to_node', 'links', "from_node=$$NODE{node_id} AND linktype=$linktype");
     
@@ -4589,7 +4589,7 @@ sub draft_restore_page
   if ($query -> param('nukedraft') eq 'Delete draft' && htmlcode('verifyRequest', 'nukedraft'))
   {
     my @fields = $DB -> getFieldsHash('draft', 0);
-    my $linktype = getId(getNode 'parent_node', 'linktype');
+    my $linktype = getId(getNode('parent_node', 'linktype'));
     my $parent = $DB -> sqlSelect(
       'to_node', 'links', "from_node=$$NODE{node_id} AND linktype=$linktype");
 

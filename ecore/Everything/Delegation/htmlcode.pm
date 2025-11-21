@@ -1747,20 +1747,20 @@ sub showbookmarks
   my $bookmarks = $APP->get_bookmarks($NODE) || [];
 
 
-  my $str = "";
+  my $str = '';
   if ($edit and $createform) {
     $str.=htmlcode('openform');
   }
 
   $str.="<ul class=\"linklist\" id=\"bookmarklist\">\n";
-  my $count = scalar(@$bookmarks);
-  foreach my $link (@$bookmarks) {
+  my $count = scalar(@{$bookmarks});
+  foreach my $link (@{$bookmarks}) {
 
     next unless defined($link->{title});
     # Not all bookmarks have a tstamp component
-    $link->{tstamp} ||= "";
+    $link->{tstamp} ||= '';
 
-    my $linktitle = lc($$link{title}); #Lowercased for case-insensitive sort
+    my $linktitle = lc($link->{title}); #Lowercased for case-insensitive sort
     if ($edit) {
       if ($query->param("unbookmark_$$link{node_id}")) {
         if($USER->{node_id} eq $NODE->{node_id} || $APP->isAdmin($USER))
@@ -2380,7 +2380,7 @@ sub parentdraft
 
   # ...existing parent...
 
-  my $linktype = getId(getNode 'parent_node', 'linktype');
+  my $linktype = getId(getNode('parent_node', 'linktype'));
   my $parent = $DB -> sqlSelect('to_node', 'links', "from_node=$$N{node_id} AND linktype=$linktype");
 
   # ... and choice last time around
@@ -2506,7 +2506,7 @@ sub parentdraft
           .$query -> escapeHTML($title)
           ."'" unless $e2node =~ /\D/ or $parent == $e2node;
 
-        my $review = getId(getNode 'review', 'publication_status');
+        my $review = getId(getNode('review', 'publication_status'));
         $options .= ($options ? ' and request review of it' : 'Request review of this draft').'' unless $$N{publication_status} == $review;
 
         $str .= '</p><p>'
@@ -2611,21 +2611,21 @@ sub publishwriteup
   # If you are publishing as another user, and you have permission to, let this go through.
   if($WRITEUP->{author_user} != $USER->{node_id} && htmlcode("canpublishas",getNodeById($WRITEUP->{author_user})->{title}))
   {
-    updateNode($WRITEUP, -1);
+    $DB->updateNode($WRITEUP, -1);
   }else{
-    unless(updateNode($WRITEUP, $USER))
+    unless($DB->updateNode($WRITEUP, $USER))
     {
       Everything::printLog("In publishwriteup, user '$$USER{title}' Could not update writeup id: '$$WRITEUP{node_id}'"); 
     }
   }
 
-  updateNode $E2NODE, -1;
+  $DB->updateNode($E2NODE, -1);
 
   unless ($$WRTYPE{title} eq 'lede'){
     # insert into the node group, last or before Webster entry;
     # make sure Webster is last while we're at it
 	
-    my @addList = getNodeWhere({
+    my @addList = $DB->getNodeWhere({
       parent_e2node => $$E2NODE{node_id},
       author_user => getId(getNode('Webster 1913', 'user'))
       }, 'writeup');
@@ -2648,7 +2648,7 @@ sub publishwriteup
 
   # credit user
   $$USER{experience}+=5;
-  updateNode $USER, $USER;
+  $DB->updateNode($USER, $USER);
 
   $$VARS{numwriteups}++;
   $$VARS{lastnoded} = $$WRITEUP{writeup_id};
@@ -6575,9 +6575,9 @@ sub rtnsection_cwu
   my $csr = $DB->sqlSelectMany("distinct coolwriteups_id", "coolwriteups", "", "order by tstamp desc limit 15");
 
   map {
-    my $wu = getNodeById $$_{coolwriteups_id};
-    my $parent = getNodeById $$wu{parent_e2node};
-    my $author = getNodeById $$wu{author_user};
+    my $wu = $DB->getNodeById($$_{coolwriteups_id});
+    my $parent = $DB->getNodeById($$wu{parent_e2node});
+    my $author = $DB->getNodeById($$wu{author_user});
     $author = $$author{title} if $author ;
     $str .= '<li>'.linkNode($parent, '', {'#' => $author, lastnode_id => 0})."</li>\n";
   } @{$csr -> fetchall_arrayref({})};
@@ -9423,7 +9423,7 @@ sub writeuptools
   {
     $remove = linkNode($N, 'remove writeup', {confirmop => 'remove', %{htmlcode('verifyRequestHash', 'remove')}, writeup_id => $n, writeup_parent_e2node => $$N{parent_e2node}
       # reattach to node
-      , draft_publication_status => getId(getNode 'private', 'publication_status')
+      , draft_publication_status => getId($DB->getNode('private', 'publication_status'))
       , -class => "action" # no ajax: go to draft's own page
       , -title => 'remove this writeup and return it to draft status'
     });
@@ -12401,13 +12401,13 @@ sub nopublishreason
   }
 
   # no more checks if author has an editor-approved a draft for this node:
-  my $linktype = getId(getNode 'parent_node', 'linktype');
-  return '' if $E2N && $DB -> sqlSelect(
+  my $linktype = getId($DB->getNode('parent_node', 'linktype'));
+  return '' if $E2N && $DB->sqlSelect(
     'food' # 'food' is the editor
     , 'links JOIN node ON from_node=node_id'
     , "to_node=$$E2N{node_id} AND linktype=$linktype AND node.author_user=$$user{node_id}");
 
-  my $notMe = ($$user{node_id} ne $$USER{node_id});
+  my $notMe = ($user->{node_id} ne $USER->{node_id});
 
   # user on forbiddance:
 
@@ -12446,7 +12446,7 @@ sub e2nodetools
     $str .= htmlcode("addfirmlink");
     unless ($$NODE{group} && @{ $$NODE{group} })
     {
-      $str .= htmlcode("addnodeforward")
+      $str .= htmlcode('addnodeforward')
         .htmlcode('openform')
         .'<fieldset><legend>Delete nodeshell</legend>Usually you should only delete a nodeshell if it is egregiously offensive
 	or was created by mistake. If there is anything else wrong with it, you should just correct the spelling.<br>'
@@ -12829,18 +12829,18 @@ sub setdraftstatus
 
   $str .= '(Put commas between names.)</small></p></p>';
 
-  $str .= $query -> submit(
+  $str .= $query->submit(
     -name => 'sexisgood',
     value => 'Update status/sharing')
-    .$query -> hidden(
+    .$query->hidden(
       -name => 'ajaxTrigger',
       value => 1,
       class => "ajax draftstatus$$N{node_id}:setdraftstatus:$$N{node_id}")
     .'</fieldset></form>';
 
-  my $linktype = getId(getNode 'parent_node', 'linktype');
+  my $linktype = getId($DB->getNode('parent_node', 'linktype'));
 
-  if (my $newparent = $query -> param('writeup_parent_e2node'))
+  if (my $newparent = $query->param('writeup_parent_e2node'))
   {
     # remove old attachment
     $DB->sqlDelete('links', "from_node=$$N{node_id} AND linktype=$linktype");
@@ -12849,10 +12849,10 @@ sub setdraftstatus
     {
       my $title = $APP->cleanNodeName($query->param('title'));
       # insertNode checks user can do this and returns false if not or fails
-      $newparent = $DB -> insertNode($title, 'e2node', $USER) if $title;
+      $newparent = $DB->insertNode($title, 'e2node', $USER) if $title;
     }
 
-    $DB -> sqlInsert('links', {
+    $DB->sqlInsert('links', {
       from_node => $$N{node_id},
       to_node => $newparent,
       linktype => $linktype
@@ -13322,18 +13322,18 @@ sub drafttools
 
   if ($isEditor)
   {
-    my $linktype = getId(getNode 'parent_node', 'linktype');
-    my ($parent, $approver) = $DB -> sqlSelect( # editor approval is flagged by feeding the link
+    my $linktype = getId($DB->getNode('parent_node', 'linktype'));
+    my ($parent, $approver) = $DB->sqlSelect( # editor approval is flagged by feeding the link
       'to_node, food', 'links', "from_node=$$N{node_id} AND linktype=$linktype");
 
     unless ($status eq 'private' || $status eq 'removed' || $isMine)
     {
       my %options = (private => 'Made Private', public => 'Removed from review');
-      my $change = $query -> param('smiteStatus');
+      my $change = $query->param('smiteStatus');
 
       if ($change && $options{$change})
       {
-        $$N{publication_status} = getId(getNode($change, 'publication_status'));
+        $$N{publication_status} = getId($DB->getNode($change, 'publication_status'));
         updateNode($N, -1);
         $text = $status = $linktitle = $options{$change};
         $DB->sqlUpdate('links', {food => ($approver = 0)},

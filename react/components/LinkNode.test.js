@@ -36,6 +36,13 @@ describe('LinkNode Component', () => {
       expect(link).toHaveAttribute('href', '/user/testuser/writeups/Test');
     });
 
+    it('renders a user profile link', () => {
+      render(<LinkNode type="user" title="testuser" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('href', '/user/testuser');
+      expect(link).toHaveTextContent('testuser');
+    });
+
     it('handles special characters in title', () => {
       render(<LinkNode title="Test & Node @ Plus+" />);
       const link = screen.getByRole('link');

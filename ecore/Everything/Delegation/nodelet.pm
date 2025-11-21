@@ -28,66 +28,9 @@ sub epicenter
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str = "";
-  $str .= htmlcode("borgcheck") || "";
-
-  return $str if $APP->isGuest($USER);
-  my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr) = ("","","","");
-
-  #####LOGIN STRING
-
-  $loginStr = "
-  <ul>
-	<li>".linkNode($NODE, 'Log Out', {op=>'logout'})."</li>
-	<li title=\"User Settings\">".linkNode($Everything::CONF->user_settings, '',{lastnode_id=>0})."</li>
-	<li title=\"Your profile\">".linkNode($USER,0,{lastnode_id=>0}).' '.linkNode($USER,'<small>(edit)</small>',{displaytype=>'edit',lastnode_id=>0})."</li>
-	<li title=\"Draft, format, and organize your works in progress\">".linkNode(getNode('Drafts','superdoc'))."</li>
-	<li title=\"Learn what all those numbers mean\">".linkNode(getNode('The Everything2 Voting/Experience System','superdoc'), 'Voting/XP System')."</li>
-	<li title=\"View a randomly selected node\">".htmlcode('randomnode','Random Node')."</li>
-	<li title=\"Need help?\">".linkNode(getNode(
-		($APP->getLevel($USER) < 2 ? 'E2 Quick Start' : 'Everything2 Help'),'e2node'), 'Help')."</li>
-  </ul>";
-
-  ###VOTES LEFT, XP
-
-  my @thingys = ();
-
-  my $c = int ($$VARS{cools} || 0);
-  my $v = int ($$USER{votesleft} || 0);
-  if($v !~ /^\d+$/) { $v = 0; }
-  if ($c || $v)
-  {
-    if($c) { push @thingys, '<strong id="chingsleft">'.$c.'</strong> C!'.($c>1?'s':''); }
-    if($v) { push @thingys, '<strong id="votesleft">'.$v.'</strong> vote'.($v>1?'s':''); }
-  }
-
-  if (scalar(@thingys))
-  {
-    $votesLeftStr = "\n\n\t".'<p id="voteschingsleft">You have ' . join(' and ',@thingys) . ' left today.</p>';
-  }
-
-  $expStr = "\n\n\t".'<p id="experience">'.(htmlcode('shownewexp','TRUE') || "").'</p>';
-
-  unless ($$VARS{GPoptout})
-  {
-    $expStr .= "\n\n\t".'<p id="gp">'.(htmlcode('showNewGP','TRUE') || "").'</p>';
-  }
-
-  #### SERVER TIME
-
-  my $NOW = time;
-  $serverTimeStr='server time' . "<br />\n\t\t" . htmlcode('DateTimeLocal',$NOW.',1');
-
-  if( (exists $VARS->{'localTimeUse'}) && $VARS->{'localTimeUse'} )
-  {
-    $serverTimeStr .= "<br />\n\t\t" . linkNodeTitle('Advanced Settings|your time') . "<br />\n\t\t" . htmlcode('DateTimeLocal',$NOW);
-  } else {
-    $serverTimeStr .= "<br />\n\t\t" . linkNodeTitle('Advanced Settings|(set your time)');
-  }
-
-  $serverTimeStr = '<p id="servertime">'.$serverTimeStr.'</p>';
-
-  return $str.$loginStr .$votesLeftStr . $expStr . $serverTimeStr;
+  # React component handles all rendering
+  # The Perl function remains for nodelet framework compatibility
+  return "";
 }
 
 sub new_writeups
@@ -639,12 +582,9 @@ sub readthis
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str = "";
-  $str .= htmlcode('nodeletsection','rtn,cwu,Cool Writeups,Cool Archive,,i');
-  $str .= htmlcode('nodeletsection','rtn,edc,Editor Selections,Page of Cool,,i');
-  $str .= htmlcode('nodeletsection','rtn,nws,News,,,i');
-
-  return $str;
+  # React component handles all rendering
+  # The Perl function remains for nodelet framework compatibility
+  return "";
 }
 
 sub notelet
