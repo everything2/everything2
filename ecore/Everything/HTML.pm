@@ -1198,7 +1198,7 @@ sub execOpCode
 {
   my $op = $query->param('op');
   my $handled = 0;
-  
+
   return 0 unless(defined $op && $op ne "");
   my $delegation = undef;
   if($op ne "new" and $delegation = Everything::Delegation::opcode->can($op))
@@ -1207,7 +1207,7 @@ sub execOpCode
     $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
     return;
   }
-  
+
   # These are built in defaults.  If no 'opcode' nodes exist for
   # the specified op, we have some default handlers.
 

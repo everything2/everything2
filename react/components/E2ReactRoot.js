@@ -2,6 +2,9 @@ import React from 'react'
 import VitalsPortal from './Portals/VitalsPortal'
 import Vitals from './Nodelets/Vitals'
 
+import EpicenterPortal from './Portals/EpicenterPortal'
+import Epicenter from './Nodelets/Epicenter'
+
 import DeveloperPortal from './Portals/DeveloperPortal'
 import Developer from './Nodelets/Developer'
 
@@ -10,6 +13,9 @@ import NewWriteups from './Nodelets/NewWriteups'
 
 import RecommendedReadingPortal from './Portals/RecommendedReadingPortal'
 import RecommendedReading from './Nodelets/RecommendedReading'
+
+import ReadThisPortal from './Portals/ReadThisPortal'
+import ReadThis from './Nodelets/ReadThis'
 
 import NewLogsPortal from './Portals/NewLogsPortal'
 import NewLogs from './Nodelets/NewLogs'
@@ -88,6 +94,7 @@ class E2ReactRoot extends React.Component {
       newwriteups_show: true,
       everythingdeveloper_show: true,
       vitals_show: true,
+      epicenter_show: true,
       recommendedreading_show: true,
       newlogs_show: true,
       randomnodes_show: true,
@@ -99,31 +106,37 @@ class E2ReactRoot extends React.Component {
       coolnodes: [],
       staffpicks: [],
       daylogLinks: [],
+      news: [],
 
       randomNodes: [],
 
       neglectedDrafts: {},
+
+      epicenter: {},
 
       loginMessage: "",
 
       quickRefSearchTerm: ""
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "randomNodes","neglectedDrafts", "quickRefSearchTerm"]
-    const managedNodelets = ["newwriteups","vitals","everythingdeveloper","recommendedreading","newlogs","neglecteddrafts","quickreference"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter"]
+    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
       initialState[key] = e2[key]
     })
 
-    initialState['randomNodesPhrase'] = this.getRandomNodesPhrase(); 
+    initialState['randomNodesPhrase'] = this.getRandomNodesPhrase();
 
-    const nodeletSections = {"vit": ["maintenance","nodeinfo","list","nodeutil","misc"], "edn": ["util","edev"]}
+    const nodeletSections = {"vit": ["maintenance","nodeinfo","list","nodeutil","misc"], "edn": ["util","edev"], "rtn": ["cwu","edc","nws"]}
 
     Object.keys(nodeletSections).forEach((nodelet) => {
       nodeletSections[nodelet].forEach((section) => {
-        initialState[nodelet+"_"+section] = (e2.display_prefs[nodelet+"_hide"+section] == 0)
+        const prefKey = nodelet+"_hide"+section;
+        // Default to showing section if preference is undefined or 0
+        // Hide section only if preference is explicitly set to 1
+        initialState[nodelet+"_"+section] = (e2.display_prefs[prefKey] !== 1);
       })
     })
 
@@ -329,6 +342,31 @@ class E2ReactRoot extends React.Component {
       <VitalsPortal>
         <Vitals maintenance={this.state.vit_maintenance} nodeinfo={this.state.vit_nodeinfo} list={this.state.vit_list} nodeutil={this.state.vit_nodeutil} misc={this.state.vit_misc} toggleSection={this.toggleSection} showNodelet={this.showNodelet} nodeletIsOpen={this.state.vitals_show} />
       </VitalsPortal>
+      <EpicenterPortal>
+        <ErrorBoundary>
+          <Epicenter
+            isGuest={this.state.user.guest}
+            userName={this.state.user.title}
+            votesLeft={this.state.epicenter?.votesLeft}
+            cools={this.state.epicenter?.cools}
+            experience={this.state.epicenter?.experience}
+            gp={this.state.epicenter?.gp}
+            level={this.state.epicenter?.level}
+            gpOptOut={this.state.epicenter?.gpOptOut}
+            localTimeUse={this.state.epicenter?.localTimeUse}
+            userId={this.state.epicenter?.userId}
+            userSettingsId={this.state.epicenter?.userSettingsId}
+            helpPage={this.state.epicenter?.helpPage}
+            borgcheck={this.state.epicenter?.borgcheck}
+            experienceDisplay={this.state.epicenter?.experienceDisplay}
+            gpDisplay={this.state.epicenter?.gpDisplay}
+            randomNode={this.state.epicenter?.randomNode}
+            serverTimeDisplay={this.state.epicenter?.serverTimeDisplay}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.epicenter_show}
+          />
+        </ErrorBoundary>
+      </EpicenterPortal>
       <DeveloperPortal>
         <Developer user={this.state.user} node={this.state.node} developerNodelet={this.state.developerNodelet} lastCommit={this.state.lastCommit} architecture={this.state.architecture} toggleSection={this.toggleSection} util={this.state.edn_util} edev={this.state.edn_edev} showNodelet={this.showNodelet} nodeletIsOpen={this.state.everythingdeveloper_show} />
       </DeveloperPortal>
@@ -342,6 +380,21 @@ class E2ReactRoot extends React.Component {
           <RecommendedReading coolnodes={this.state.coolnodes} staffpicks={this.state.staffpicks} showNodelet={this.showNodelet} nodeletIsOpen={this.state.recommendedreading_show} />
         </ErrorBoundary>
       </RecommendedReadingPortal>
+      <ReadThisPortal>
+        <ErrorBoundary>
+          <ReadThis
+            coolnodes={this.state.coolnodes}
+            staffpicks={this.state.staffpicks}
+            news={this.state.news}
+            cwu_show={this.state.rtn_cwu}
+            edc_show={this.state.rtn_edc}
+            nws_show={this.state.rtn_nws}
+            toggleSection={this.toggleSection}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.readthis_show}
+          />
+        </ErrorBoundary>
+      </ReadThisPortal>
       <NewLogsPortal>
         <ErrorBoundary>
           <NewLogs newWriteups={this.state.newWriteups} daylogLinks={this.state.daylogLinks} showNodelet={this.showNodelet} nodeletIsOpen={this.state.newlogs_show} limit={20} />

@@ -1,14 +1,21 @@
-# React Migration Strategy: Mason2 to React Frontend
+# React Migration Strategy: Progressive React Adoption
 
 **React Version**: 18.3.x (pinned until Mason2 elimination complete)
-**Migration Status**: Phase 1 - Nodelet migration in progress
+**Migration Status**: Phase 1 - Nodelet migration (9/~15 complete, expanding)
 **Last Updated**: 2025-11-20
+**Current Focus**: ReadThis nodelet → first new nodelet migration using established patterns
 
 ## Executive Summary
 
-This document outlines a strategy for migrating Everything2's page rendering from Mason2 templates to a React-based frontend, building on the existing React infrastructure already in place for nodelets.
+This document outlines Everything2's progressive strategy for adopting React across the application, starting with nodelets (sidebar components) and eventually expanding to page content where beneficial. The migration builds on existing React infrastructure.
 
 **Important**: This migration will be completed on **React 18.3.x**. React 19 upgrade is deferred until Q3 2025 as a separate, focused task after Mason2 elimination is complete. See [react-19-migration.md](react-19-migration.md) for details.
+
+**Key Insights**:
+- **Not all pages use Mason2**: Some pages (JSON APIs, XML tickers, document functions) bypass Mason entirely
+- **React adoption is selective**: Focus on components where React provides clear UX/maintainability benefits
+- **Portal architecture works**: Current React nodelets use Portals to render into Mason-generated DOM
+- **Progressive enhancement**: New React components added incrementally without disrupting existing functionality
 
 ## Current Architecture Analysis
 
@@ -60,6 +67,112 @@ HTTP Request
 ```
 
 Built in [ecore/Everything/Application.pm:4628-4720](ecore/Everything/Application.pm#L4628-L4720) `buildNodeInfoStructure()`
+
+### Current React Nodelets (Phase 1 - In Progress)
+
+**Completed React Nodelets** (9 of ~15 total):
+
+1. **Vitals** ([react/components/Nodelets/Vitals.js](../react/components/Nodelets/Vitals.js))
+   - Node maintenance tools, XP display, level progress
+   - Multiple collapsible sections (Maintenance, Node Info, Lists, Utilities, Misc)
+   - Uses NodeletSection for section management
+
+2. **Developer** ([react/components/Nodelets/Developer.js](../react/components/Nodelets/Developer.js))
+   - Developer tools and news for contributors
+   - Two sections: Utility and Everything Development
+   - Conditional rendering based on user.developer flag
+
+3. **NewWriteups** ([react/components/Nodelets/NewWriteups.js](../react/components/Nodelets/NewWriteups.js))
+   - Real-time new writeups feed
+   - Filtering controls (show/hide junk, count selection)
+   - Uses NewWriteupsEntry and NewWriteupsFilter components
+   - State management for filter preferences
+
+4. **RecommendedReading** ([react/components/Nodelets/RecommendedReading.js](../react/components/Nodelets/RecommendedReading.js))
+   - Cool Archive user picks
+   - Page of Cool editor selections
+   - Similar structure to what ReadThis should be
+
+5. **NewLogs** ([react/components/Nodelets/NewLogs.js](../react/components/Nodelets/NewLogs.js))
+   - System logs and admin messages
+   - Conditional rendering based on log availability
+
+6. **RandomNodes** ([react/components/Nodelets/RandomNodes.js](../react/components/Nodelets/RandomNodes.js))
+   - Random node recommendations
+   - Randomized phrase header for variety
+
+7. **SignIn** ([react/components/Nodelets/SignIn.js](../react/components/Nodelets/SignIn.js))
+   - Guest user sign-in form
+   - Only shown when user.guest is true
+
+8. **NeglectedDrafts** ([react/components/Nodelets/NeglectedDrafts.js](../react/components/Nodelets/NeglectedDrafts.js))
+   - Draft management for writers
+   - Conditional rendering based on draft availability
+
+9. **QuickReference** ([react/components/Nodelets/QuickReference.js](../react/components/Nodelets/QuickReference.js))
+   - Help links and quick access tools
+
+**Nodelet Architecture Pattern**:
+
+Each React nodelet follows this established pattern:
+
+```javascript
+// 1. Nodelet Component (react/components/Nodelets/Example.js)
+import React from 'react'
+import NodeletContainer from '../NodeletContainer'
+import LinkNode from '../LinkNode'
+
+const Example = (props) => {
+  return (
+    <NodeletContainer
+      title="Example Nodelet"
+      showNodelet={props.showNodelet}
+      nodeletIsOpen={props.nodeletIsOpen}
+    >
+      {/* Nodelet content here */}
+    </NodeletContainer>
+  )
+}
+
+export default Example
+```
+
+```javascript
+// 2. Portal Component (react/components/Portals/ExamplePortal.js)
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Example from '../Nodelets/Example'
+
+const ExamplePortal = (props) => {
+  const targetElement = document.getElementById('example')
+  if (!targetElement) return null
+
+  return ReactDOM.createPortal(
+    <Example {...props} />,
+    targetElement
+  )
+}
+
+export default ExamplePortal
+```
+
+```javascript
+// 3. Integration in E2ReactRoot (react/components/E2ReactRoot.js)
+import ExamplePortal from './Portals/ExamplePortal'
+import Example from './Nodelets/Example'
+
+// In render():
+<ExamplePortal
+  showNodelet={(event) => this.showNodelet(event, 'example')}
+  nodeletIsOpen={this.state.example_show}
+  // ... pass data props
+/>
+```
+
+**Next Nodelet to Migrate**: ReadThis ([ecore/Everything/Delegation/nodelet.pm:632-648](../ecore/Everything/Delegation/nodelet.pm#L632-L648))
+- Currently renders three NodeletSections: Cool Writeups, Editor Selections, News
+- Similar to RecommendedReading but with News section
+- Good candidate for demonstrating the migration pattern
 
 ## Proposed Migration Architecture
 

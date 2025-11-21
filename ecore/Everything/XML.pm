@@ -178,7 +178,7 @@ sub noderef2xml {
 	my ($tag, $node_id, $PARAMS) = @_;
 	$PARAMS ||= {};
 
-	my $POINTED_TO = $DB->getNodeById($node_id);
+	my $POINTED_TO = $Everything::DB->getNodeById($node_id);
 	my ($title, $typetitle, $TYPE);
 
 	if (keys %$POINTED_TO) {
@@ -247,7 +247,7 @@ sub node2xml
 	my (%fieldtable); 
 
 	foreach my $table (@tables) {
-		my @fields = $DB->getFields($table);
+		my @fields = $Everything::DB->getFields($table);
 		foreach (@fields) {
 			$fieldtable{$_} = $table if (exists $$N{$_});
 		}

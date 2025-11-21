@@ -9,9 +9,6 @@ use Date::Parse;
 # Used in: findings_, sql_prompt
 use Time::HiRes;
 
-# Used in: gnl
-use Everything::FormMenu;
-
 # Used in: ajax_update
 use JSON;
 use Everything::Delegation::opcode;
@@ -5286,10 +5283,10 @@ sub page_of_cool {
     my $second_block =
 qq|<table width="100%" cellpadding="2" cellspacing="0" border="0"><tr align="left"><th>Title</th><th>Cooled by</th></tr>|;
 
-    my $COOLNODES = getNode 'coolnodes', 'nodegroup';
-    my $COOLLINKS = getNode 'coollink',  'linktype';
+    my $COOLNODES = getNode('coolnodes', 'nodegroup');
+    my $COOLLINKS = getNode('coollink',  'linktype');
     my $cn        = $$COOLNODES{group};
-    my $clink     = getId $COOLLINKS;
+    my $clink     = getId($COOLLINKS);
 
     my $return    = '';
     my $increment = 50;
@@ -7137,6 +7134,11 @@ sub node_backup
 
     return q|<p>If you logged in, you'd be able to create a backup of your writeups here.</p>| if $APP->isGuest($USER);
 
+    # Node backup requires S3 and is not available in development environment
+    if ($Everything::CONF->environment eq 'development') {
+        return q|<p>Node backup is not available in the development environment.</p><p>This feature requires AWS S3 access for storing backups, which is only configured in production.</p>|;
+    }
+
     my $zipbuffer = undef;
     my $zip = IO::Compress::Zip->new(\$zipbuffer);
     my $s3 = Everything::S3->new('nodebackup');
@@ -8631,8 +8633,6 @@ sub my_big_writeup_list
         $str .= $query->hidden( 'usersearch', $victim );
         $str .= 'For: ' . $$USER{title};
     }
-
-    #N-Wing converted this from FormMenu to plain old CGI so items could be in a logical order
 
     #this sets the ordering of items in the combo box
     my $choices = [
@@ -11790,15 +11790,30 @@ sub gnl
     $text .= "\n";
 
     # Build type selection menu
-
-    my $menu = new Everything::FormMenu();
     my $type = $query->param('whichtype');
     $type ||= "alltypes";
 
-    $menu->addHash({ "alltypes" => "All Types"});
-    $menu->addType('nodetype', 1);
+    # Build options manually
+    my @values = ("alltypes");
+    my %labels = ("alltypes" => "All Types");
 
-    $text .= $menu->writePopupHTML($query, "whichtype", $type);
+    # Get all nodetypes
+    my $TYPE = $Everything::DB->getType('nodetype');
+    if (defined $TYPE) {
+        my $NODES = $Everything::DB->selectNodeWhere({type_nodetype => $TYPE->{node_id}});
+        foreach my $NODE (@$NODES) {
+            getRef($NODE);
+            $labels{$NODE->{node_id}} = $NODE->{title};
+            push @values, $NODE->{node_id};
+        }
+        # Sort by label (except "alltypes" which stays first)
+        @values = ("alltypes", sort { $labels{$a} cmp $labels{$b} } grep { $_ ne "alltypes" } @values);
+    }
+
+    $text .= $query->popup_menu(-name => "whichtype",
+                                -values => \@values,
+                                -default => $type,
+                                -labels => \%labels);
     $text .= "\n";
 
     $text .= htmlcode('closeform');
@@ -23710,7 +23725,7 @@ sub new_nodes_xml_ticker {
 
 
     while (my $N = $csr->fetchrow_hashref) {
-        $N = getNode $$N{node_id};
+        $N = getNode($$N{node_id});
         $str.=$XG->node({createtime => $$N{publishtime} || $$N{createtime},
             e2node_id => $$N{parent_e2node},
             writeuptype =>     getNodeById($$N{wrtype_writeuptype})->{title},
