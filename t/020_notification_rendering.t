@@ -236,18 +236,18 @@ sub test_notification {
 #############################################################################
 
 {
-    my $args = { node_id => 123 };
+    my $args = { writeup_id => 123, cooluser_id => 888 };
     test_notification(
         'cooled',
         \&Everything::Delegation::notification::cooled,
         $args,
         qr/cooled/i,
-        'with node_id'
+        'with writeup_id'
     );
 
-    # Test without node_id
+    # Test without writeup_id
     my $result = Everything::Delegation::notification::cooled($DB, $APP, {});
-    ok(defined $result, "cooled: Handles missing node_id");
+    ok(defined $result, "cooled: Handles missing writeup_id");
 }
 
 #############################################################################
@@ -255,18 +255,18 @@ sub test_notification {
 #############################################################################
 
 {
-    my $args = { node_id => 456 };
+    my $args = { frontpage_item_id => 456 };
     test_notification(
         'frontpage',
         \&Everything::Delegation::notification::frontpage,
         $args,
         qr/front page/i,
-        'with node_id'
+        'with frontpage_item_id'
     );
 
-    # Test without node_id
+    # Test without frontpage_item_id
     my $result = Everything::Delegation::notification::frontpage($DB, $APP, {});
-    ok(defined $result, "frontpage: Handles missing node_id");
+    ok(defined $result, "frontpage: Handles missing frontpage_item_id");
 }
 
 #############################################################################
@@ -293,18 +293,18 @@ sub test_notification {
 #############################################################################
 
 {
-    my $args = { node_id => 101 };
+    my $args = { writeup_id => 101, bookmark_user => 999, nodeshell => 0 };
     test_notification(
         'bookmark',
         \&Everything::Delegation::notification::bookmark,
         $args,
         qr/bookmarked/i,
-        'with node_id'
+        'with writeup_id'
     );
 
-    # Test without node_id
+    # Test without writeup_id
     my $result = Everything::Delegation::notification::bookmark($DB, $APP, {});
-    ok(defined $result, "bookmark: Handles missing node_id");
+    ok(defined $result, "bookmark: Handles missing writeup_id");
 }
 
 #############################################################################
@@ -525,18 +525,18 @@ sub test_notification {
 #############################################################################
 
 {
-    my $args = { node_id => 1212 };
+    my $args = { writeup_id => 1212, group_id => 567 };
     test_notification(
         'weblog',
         \&Everything::Delegation::notification::weblog,
         $args,
         qr/weblog/i,
-        'with node_id'
+        'with writeup_id'
     );
 
-    # Test without node_id
+    # Test without writeup_id
     my $result = Everything::Delegation::notification::weblog($DB, $APP, {});
-    ok(defined $result, "weblog: Handles missing node_id");
+    ok(defined $result, "weblog: Handles missing writeup_id");
 }
 
 #############################################################################
@@ -544,25 +544,25 @@ sub test_notification {
 #############################################################################
 
 {
-    my $args = { node_id => 1313, service => 'Twitter' };
+    my $args = { writeup_id => 1313, bookmark_user => 777, bookmark_site => 'Twitter' };
     test_notification(
         'socialbookmark',
         \&Everything::Delegation::notification::socialbookmark,
         $args,
         qr/shared/i,
-        'with node_id and service'
+        'with writeup_id and bookmark_site'
     );
 
-    # Test without service
-    $args = { node_id => 1313 };
+    # Test without bookmark_site
+    $args = { writeup_id => 1313, bookmark_user => 777 };
     my $result = Everything::Delegation::notification::socialbookmark($DB, $APP, $args);
-    ok(defined $result, "socialbookmark: Handles missing service");
+    ok(defined $result, "socialbookmark: Handles missing bookmark_site");
     like($result, qr/shared/i, "socialbookmark: Contains 'shared'");
 
-    # Test without node_id
-    $args = { service => 'Twitter' };
+    # Test without writeup_id
+    $args = { bookmark_site => 'Twitter', bookmark_user => 777 };
     $result = Everything::Delegation::notification::socialbookmark($DB, $APP, $args);
-    ok(defined $result, "socialbookmark: Handles missing node_id");
+    ok(defined $result, "socialbookmark: Handles missing writeup_id");
 }
 
 #############################################################################

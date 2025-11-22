@@ -561,15 +561,9 @@ sub statistics
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  $$VARS{numwriteups} ||=0;
-  $$VARS{IQM} ||=0;
-
-  my $str = "";
-  $str .= htmlcode('nodeletsection','stat,personal,Yours,,,i');
-  $str .= htmlcode('nodeletsection','stat,fun,Fun Stats,,,i');
-  $str .= htmlcode('nodeletsection','stat,advancement,Old Merit System,,,i'); 
-
-  return $str;
+  # React component handles all rendering
+  # The Perl function remains for nodelet framework compatibility
+  return "";
 }
 
 sub readthis
