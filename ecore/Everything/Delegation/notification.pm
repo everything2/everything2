@@ -42,11 +42,6 @@ package Everything::Delegation::notification;
 
 use Everything::Globals;
 
-BEGIN {
-    *getNodeById     = *Everything::HTML::getNodeById;
-    *linkNode        = *Everything::HTML::linkNode;
-}
-
 #############################################################################
 # Achievement notification
 # Triggered when user earns an achievement
@@ -57,7 +52,7 @@ sub achievement
 {
     my ($DB, $APP, $args) = @_;
 
-    my $achievement = getNodeById($args->{achievement_id});
+    my $achievement = $DB->getNodeById($args->{achievement_id});
     return "You earned an achievement!" unless $achievement;
     return "You earned the " . $achievement->{display} . " achievement!";
 }
@@ -82,7 +77,7 @@ sub voting
     }
 
     if ($args->{node_id}) {
-        $str .= linkNode($args->{node_id});
+        $str .= $APP->linkNode($args->{node_id});
     }
 
     return $str;
@@ -99,7 +94,7 @@ sub newcomment
     my ($DB, $APP, $args) = @_;
 
     my $str = "Someone commented on ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -145,7 +140,7 @@ sub gp
 #############################################################################
 # Cooled writeup notification
 # Triggered when user's writeup is cooled by an editor
-# Args: { node_id => writeup_id }
+# Args: { writeup_id => node_id, cooluser_id => user_id }
 #############################################################################
 
 sub cooled
@@ -153,7 +148,7 @@ sub cooled
     my ($DB, $APP, $args) = @_;
 
     my $str = "Your writeup ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{writeup_id}) if $args->{writeup_id};
     $str .= " was cooled!";
 
     return $str;
@@ -162,7 +157,7 @@ sub cooled
 #############################################################################
 # Front page notification
 # Triggered when user's writeup hits the front page
-# Args: { node_id => writeup_id }
+# Args: { frontpage_item_id => node_id }
 #############################################################################
 
 sub frontpage
@@ -170,7 +165,7 @@ sub frontpage
     my ($DB, $APP, $args) = @_;
 
     my $str = "Your writeup ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{frontpage_item_id}) if $args->{frontpage_item_id};
     $str .= " made it to the front page!";
 
     return $str;
@@ -187,7 +182,7 @@ sub favorite
     my ($DB, $APP, $args) = @_;
 
     my $str = "Someone favorited ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -195,7 +190,7 @@ sub favorite
 #############################################################################
 # Bookmark notification
 # Triggered when someone bookmarks user's node
-# Args: { node_id => node_id }
+# Args: { writeup_id => node_id, bookmark_user => user_id, nodeshell => 0|1 }
 #############################################################################
 
 sub bookmark
@@ -203,7 +198,7 @@ sub bookmark
     my ($DB, $APP, $args) = @_;
 
     my $str = "Someone bookmarked ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{writeup_id}) if $args->{writeup_id};
 
     return $str;
 }
@@ -219,7 +214,7 @@ sub mostwanted
     my ($DB, $APP, $args) = @_;
 
     my $str = "Your writeup ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
     $str .= " is on the Most Wanted list";
 
     return $str;
@@ -236,7 +231,7 @@ sub draft_for_review
     my ($DB, $APP, $args) = @_;
 
     my $str = "New draft submitted for review: ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -254,7 +249,7 @@ sub writeupedit
     my $str = "";
     $str .= $args->{author} . " " if $args->{author};
     $str .= "edited ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -318,7 +313,7 @@ sub nodenote
     my ($DB, $APP, $args) = @_;
 
     my $str = "Node note added to ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
     $str .= ": " . $args->{note} if $args->{note};
 
     return $str;
@@ -337,7 +332,7 @@ sub newbiewriteup
     my $str = "New user ";
     $str .= $args->{author} . " " if $args->{author};
     $str .= "published their first writeup: ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -353,7 +348,7 @@ sub newdiscussion
     my ($DB, $APP, $args) = @_;
 
     my $str = "New discussion post: ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -369,7 +364,7 @@ sub e2poll
     my ($DB, $APP, $args) = @_;
 
     my $str = "New poll: ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -377,7 +372,7 @@ sub e2poll
 #############################################################################
 # Weblog notification
 # Triggered when a weblog entry is posted
-# Args: { node_id => weblog_entry_id }
+# Args: { writeup_id => node_id, group_id => group_node_id }
 #############################################################################
 
 sub weblog
@@ -385,7 +380,7 @@ sub weblog
     my ($DB, $APP, $args) = @_;
 
     my $str = "New weblog entry: ";
-    $str .= linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->linkNode($args->{writeup_id}) if $args->{writeup_id};
 
     return $str;
 }
@@ -393,7 +388,7 @@ sub weblog
 #############################################################################
 # Social bookmark notification
 # Triggered when content is shared via social bookmarking
-# Args: { node_id => node_id, service => service_name }
+# Args: { writeup_id => node_id, bookmark_user => user_id, bookmark_site => site_name }
 #############################################################################
 
 sub socialbookmark
@@ -401,8 +396,8 @@ sub socialbookmark
     my ($DB, $APP, $args) = @_;
 
     my $str = "Your content was shared";
-    $str .= " on " . $args->{service} if $args->{service};
-    $str .= ": " . linkNode($args->{node_id}) if $args->{node_id};
+    $str .= " on " . $args->{bookmark_site} if $args->{bookmark_site};
+    $str .= ": " . $APP->linkNode($args->{writeup_id}) if $args->{writeup_id};
 
     return $str;
 }

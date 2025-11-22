@@ -195,6 +195,18 @@
         ]
       }
     },
+    "E2DotComGoogleSiteVerification": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "Type": "TXT",
+        "TTL": "900",
+        "ResourceRecords": [
+          "\"google-site-verification=TBPnZJcPUz8rGsBoHERTb8VVxWPuyJb2XnpJRKubD_0\""
+        ]
+      }
+    },
     "E2DotOrgR53Zone": {
       "Type": "AWS::Route53::HostedZone",
       "DeletionPolicy": "Retain",

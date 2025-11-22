@@ -4982,6 +4982,59 @@ sub buildNodeInfoStructure
     $e2->{quickRefSearchTerm} = $lookfor;
   }
 
+  # Statistics
+  if($nodelets =~ /838296/ and not $this->isGuest($USER))
+  {
+    $e2->{statistics} = {};
+
+    # Personal section
+    my $numwriteups = $VARS->{numwriteups} || 0;
+    my $xp = $USER->{experience} || 0;
+    my $lvl = $this->getLevel($USER) + 1;
+    my $LVLS = Everything::getVars(Everything::getNode('level experience', 'setting'));
+    my $WRPS = Everything::getVars(Everything::getNode('level writeups', 'setting'));
+
+    my $expleft = 0;
+    $expleft = $$LVLS{$lvl} - $xp if exists $$LVLS{$lvl};
+    my $wrpleft = 0;
+    $wrpleft = $$WRPS{$lvl} - $numwriteups if exists $$WRPS{$lvl};
+
+    $e2->{statistics}->{personal} = {
+      xp => $xp,
+      writeups => $numwriteups,
+      level => $this->getLevel($USER),
+      xpNeeded => $expleft > 0 ? $expleft : undef,
+      wusNeeded => ($expleft <= 0 && $wrpleft) ? $wrpleft : undef,
+      gp => $USER->{GP} || 0,
+      gpOptout => $VARS->{GPoptout} ? 1 : 0
+    };
+
+    # Fun Stats section
+    my $nodeFu = ($numwriteups > 0) ? sprintf('%.1f', $xp/$numwriteups) : '0.0';
+    $e2->{statistics}->{fun} = {
+      nodeFu => $nodeFu,
+      goldenTrinkets => $USER->{karma} || 0,
+      silverTrinkets => $USER->{sanctity} || 0,
+      stars => $USER->{stars} || 0,
+      easterEggs => $VARS->{easter_eggs} || 0,
+      tokens => $VARS->{tokens} || 0
+    };
+
+    # Old Merit System (advancement) section
+    my $hv = Everything::getVars(Everything::getNode("hrstats", "setting"));
+    my $merit = ($USER->{merit}) ? $USER->{merit} : 0;
+    my $lf = $this->getHRLF($USER) || 0;
+    my $devotion = int(($numwriteups * $merit) + .5);
+
+    $e2->{statistics}->{advancement} = {
+      merit => sprintf('%.2f', $merit),
+      lf => sprintf('%.4f', $lf),
+      devotion => $devotion,
+      meritMean => $$hv{mean} || 0,
+      meritStddev => $$hv{stddev} || 0
+    };
+  }
+
   return $e2;
 }
 

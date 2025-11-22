@@ -1676,6 +1676,281 @@ sub display_xml {
 
 **Note:** This is a **low priority** technical debt cleanup that doesn't block any critical functionality. It primarily improves code quality, security, and maintainability. Can proceed in parallel with other work or be deferred to a future development cycle.
 
+## Priority 12: MySQL 8.0 → 8.4 Upgrade ⚠️
+
+**Priority Level:** High (Infrastructure / Cost Reduction)
+
+### Why This Matters
+
+**AWS RDS Deprecation Timeline**
+- MySQL 8.0 reaches end of standard support April 30, 2026
+- AWS will charge ~$150/month for extended support (50% of RDS instance cost)
+- Upgrade required to avoid additional operational costs
+- Proactive upgrade gives us time to identify and fix issues
+
+**Technical Debt**
+- Current database relies on `ALLOW_INVALID_DATES` SQL mode
+- Significant number of date columns have invalid default values ('0000-00-00')
+- MySQL 8.4 enforces stricter date validation
+- Must audit and fix all date-related code before upgrade
+
+**Security & Performance**
+- MySQL 8.4 includes security improvements and bug fixes
+- Better performance for certain query patterns
+- Improved JSON handling
+- Modern authentication methods
+
+### Current State
+
+**Environment:**
+- MySQL 8.0.37 (development) / 8.0.39 (production)
+- Running on AWS RDS
+- Using `sql_mode=ALLOW_INVALID_DATES` to permit zero dates
+- 240+ tables in schema
+
+**Known Issues:**
+
+1. **Invalid Date Defaults**
+   - Multiple date/datetime columns default to '0000-00-00' or '0000-00-00 00:00:00'
+   - MySQL 8.4 rejects these invalid dates by default
+   - Will cause schema migrations and inserts to fail
+
+2. **Date Column Usage**
+   - Code may explicitly insert zero dates for "null" semantics
+   - Some queries may filter on zero dates
+   - Application logic may depend on zero date behavior
+   - Potential display code that formats zero dates specially
+
+3. **Authentication Changes**
+   - MySQL 8.0 introduced caching_sha2_password as default
+   - Older client libraries may have compatibility issues
+   - May need to verify DBD::mysql version compatibility
+
+### Implementation Plan
+
+**Phase 1: Date Column Audit (Week 1)**
+
+Identify all date columns with invalid defaults:
+
+```sql
+-- List all date/datetime/timestamp columns with defaults
+SELECT
+    TABLE_NAME,
+    COLUMN_NAME,
+    COLUMN_TYPE,
+    COLUMN_DEFAULT,
+    IS_NULLABLE
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA = 'everything'
+AND DATA_TYPE IN ('date', 'datetime', 'timestamp')
+ORDER BY TABLE_NAME, COLUMN_NAME;
+
+-- Check for zero date values in use
+SELECT
+    TABLE_NAME,
+    COLUMN_NAME
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA = 'everything'
+AND DATA_TYPE IN ('date', 'datetime', 'timestamp')
+AND COLUMN_DEFAULT IN ('0000-00-00', '0000-00-00 00:00:00');
+```
+
+**Phase 2: Schema Migration (Week 2-3)**
+
+Update all date columns to use NULL instead of zero dates:
+
+```sql
+-- Example migration for a table
+ALTER TABLE mytable
+MODIFY mydate DATE NULL DEFAULT NULL;
+
+-- Update existing zero dates to NULL
+UPDATE mytable
+SET mydate = NULL
+WHERE mydate = '0000-00-00';
+```
+
+Document all schema changes and create migration scripts.
+
+**Phase 3: Code Audit (Week 3-4)**
+
+Search codebase for date-related patterns:
+
+```bash
+# Find INSERT/UPDATE statements with date columns
+grep -r "INSERT INTO\|UPDATE.*SET" ecore/ www/ | grep -i "date\|time"
+
+# Find comparisons to zero dates
+grep -r "'0000-00-00'" ecore/ www/
+grep -r '"0000-00-00"' ecore/ www/
+
+# Find date column references in queries
+grep -r "DATE\|datetime\|timestamp" ecore/ www/ | grep -v "^Binary"
+
+# Check for ALLOW_INVALID_DATES in code
+grep -r "ALLOW_INVALID_DATES" ecore/ www/
+```
+
+Update all code to:
+- Use NULL instead of '0000-00-00'
+- Check for NULL instead of zero dates
+- Handle NULL dates in display logic
+
+**Phase 4: Authentication Verification (Week 4)**
+
+```perl
+# Verify DBD::mysql version supports caching_sha2_password
+# Check cpanfile for DBD::mysql version
+# Test connection with MySQL 8.4 test instance
+# Update authentication if needed
+```
+
+**Phase 5: Testing and Migration (Week 5-6)**
+
+1. 📋 Set up MySQL 8.4 test instance
+2. 📋 Run schema migrations on test database
+3. 📋 Deploy code changes to test environment
+4. 📋 Run full test suite against MySQL 8.4
+5. 📋 Perform manual QA of date-related features
+6. 📋 Test backup/restore procedures
+7. 📋 Create rollback plan
+8. 📋 Schedule production migration window
+9. 📋 Perform production upgrade with monitoring
+
+**Phase 6: Production Migration**
+
+1. 📋 Create RDS snapshot before upgrade
+2. 📋 Enable enhanced monitoring
+3. 📋 Upgrade RDS instance to MySQL 8.4
+4. 📋 Monitor error logs for issues
+5. 📋 Verify application functionality
+6. 📋 Monitor performance metrics
+7. 📋 Document any post-upgrade issues
+8. 📋 Update infrastructure documentation
+
+### SQL Mode Changes
+
+**Current sql_mode:**
+```
+ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,
+NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+```
+
+**Note:** `ALLOW_INVALID_DATES` is explicitly enabled in current config
+
+**Target sql_mode (MySQL 8.4):**
+```
+ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,
+NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+```
+
+**Key difference:** Remove `ALLOW_INVALID_DATES` reliance
+
+### Risk Assessment
+
+**High Risk:**
+- Schema migrations could fail if zero dates are in use
+- Application code may break if it inserts zero dates
+- Display logic may not handle NULL dates properly
+- Queries filtering on zero dates will need updates
+
+**Medium Risk:**
+- Authentication compatibility with client libraries
+- Performance differences in query execution
+- Backup/restore procedures may need updates
+
+**Low Risk:**
+- RDS upgrade process itself (well-documented by AWS)
+- Rollback capability (RDS snapshot)
+
+**Mitigation:**
+- Comprehensive audit before migration
+- Test environment validation
+- Staged rollout approach
+- RDS snapshot for quick rollback
+- Detailed monitoring during migration
+
+### Success Metrics
+
+**Pre-Migration:**
+- ✅ 100% of date columns audited
+- ✅ All zero date defaults converted to NULL
+- ✅ All zero date inserts updated to NULL
+- ✅ All zero date comparisons updated
+- ✅ Full test suite passes on MySQL 8.4
+
+**Post-Migration:**
+- ✅ Zero application errors related to dates
+- ✅ No performance degradation
+- ✅ All automated tests passing
+- ✅ No increase in error logs
+- ✅ Avoiding $150/month extended support costs
+
+### Timeline
+
+**Target Completion:** Q2 2025 (before April 2026 deadline)
+
+**Q1 2025 (January-March):**
+- ⏸️ Phase 1: Date column audit (Week 1)
+- ⏸️ Phase 2: Schema migrations (Week 2-3)
+- ⏸️ Phase 3: Code audit and updates (Week 3-4)
+- ⏸️ Phase 4: Authentication verification (Week 4)
+
+**Q2 2025 (April-June):**
+- ⏸️ Phase 5: Testing on MySQL 8.4 instance (Week 5-6)
+- ⏸️ Phase 6: Production migration (Week 7)
+- ⏸️ Post-migration monitoring and optimization (Week 8+)
+
+**Total Estimated Effort:** 4-6 weeks
+
+**Buffer:** 10 months before AWS extended support charges begin
+
+### Dependencies
+
+**Blocks:** Avoiding extended support costs
+
+**Requires:**
+- Database schema audit
+- Code audit for date handling
+- Test environment with MySQL 8.4
+- DBD::mysql compatibility verification
+
+**Related Work:**
+- Priority 6: Testing Infrastructure (need tests for validation)
+- Priority 3: Database Security (opportunity to review all SQL)
+
+### Communication Plan
+
+**Internal Team:**
+- Audit results and migration plan
+- Timeline and resource allocation
+- Testing requirements
+- Production migration schedule
+
+**Operations:**
+- RDS upgrade process
+- Monitoring requirements
+- Rollback procedures
+- Post-migration validation
+
+**Documentation:**
+- Schema changes
+- Code changes
+- Migration runbook
+- Troubleshooting guide
+
+### Resources
+
+**AWS Documentation:**
+- [MySQL on RDS Upgrade Guide](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.MySQL.html)
+- [MySQL 8.0 to 8.4 Upgrade Guide](https://dev.mysql.com/doc/refman/8.4/en/upgrading.html)
+
+**Key Considerations:**
+- Plan migration during low-traffic window
+- Have rollback plan ready (RDS snapshot)
+- Monitor application logs closely post-upgrade
+- Extended support charges begin April 30, 2026
+
 ## Risk Assessment
 
 ### High Risk Areas
@@ -1777,5 +2052,5 @@ See [next-steps.md](next-steps.md) for immediate action items.
 ---
 
 **Document Status:** Initial draft
-**Last Updated:** 2025-11-09
-**Next Review:** 2025-12-09
+**Last Updated:** 2025-11-22
+**Next Review:** 2025-12-22

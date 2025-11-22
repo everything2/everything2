@@ -35,6 +35,9 @@ import QuickReferencePortal from './Portals/QuickReferencePortal'
 import MasterControl from './Nodelets/MasterControl'
 import MasterControlPortal from './Portals/MasterControlPortal'
 
+import Statistics from './Nodelets/Statistics'
+import StatisticsPortal from './Portals/StatisticsPortal'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -104,6 +107,7 @@ class E2ReactRoot extends React.Component {
       neglecteddrafts_show: true,
       quickreference_show: true,
       mastercontrol_show: true,
+      statistics_show: true,
 
       signin_show: false,
 
@@ -123,8 +127,8 @@ class E2ReactRoot extends React.Component {
       quickRefSearchTerm: ""
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl"]
-    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics"]
+    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
@@ -133,7 +137,7 @@ class E2ReactRoot extends React.Component {
 
     initialState['randomNodesPhrase'] = this.getRandomNodesPhrase();
 
-    const nodeletSections = {"vit": ["maintenance","nodeinfo","list","nodeutil","misc"], "edn": ["util","edev"], "rtn": ["cwu","edc","nws"], "epi": ["admins","ces"]}
+    const nodeletSections = {"vit": ["maintenance","nodeinfo","list","nodeutil","misc"], "edn": ["util","edev"], "rtn": ["cwu","edc","nws"], "epi": ["admins","ces"], "stat": ["personal","fun","advancement"]}
 
     Object.keys(nodeletSections).forEach((nodelet) => {
       nodeletSections[nodelet].forEach((section) => {
@@ -444,6 +448,19 @@ class E2ReactRoot extends React.Component {
           />
         </ErrorBoundary>
       </MasterControlPortal>
+      <StatisticsPortal>
+        <ErrorBoundary>
+          <Statistics
+            statistics={this.state.statistics}
+            stat_personal={this.state.stat_personal}
+            stat_fun={this.state.stat_fun}
+            stat_advancement={this.state.stat_advancement}
+            toggleSection={this.toggleSection}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.statistics_show}
+          />
+        </ErrorBoundary>
+      </StatisticsPortal>
       </>
   }
 }

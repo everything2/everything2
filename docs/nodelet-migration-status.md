@@ -1,6 +1,6 @@
 # Nodelet Migration Status
 
-**Last Updated**: 2025-11-20
+**Last Updated**: 2025-11-22
 **Migration Target**: React 18.3.x with Portals
 
 ## Overview
@@ -10,8 +10,8 @@ This document tracks the migration status of all nodelets in the Everything2 cod
 ## Migration Statistics
 
 - **Total Nodelets**: 25
-- **Migrated to React**: 12 (48%)
-- **Remaining in Perl**: 13 (52%)
+- **Migrated to React**: 13 (52%)
+- **Remaining in Perl**: 12 (48%)
 
 ## React Migration Pattern
 
@@ -22,6 +22,56 @@ All React nodelets follow this established architecture:
 3. **E2ReactRoot Integration** ([react/components/E2ReactRoot.js](../react/components/E2ReactRoot.js)) - State management and data flow
 4. **Data Loading** ([ecore/Everything/Application.pm](../ecore/Everything/Application.pm)) - buildNodeInfoStructure()
 5. **Perl Stub** ([ecore/Everything/Delegation/nodelet.pm](../ecore/Everything/Delegation/nodelet.pm)) - Returns empty string
+
+### Portal Implementation Pattern ⚠️
+
+**CRITICAL**: All portal components must extend `NodeletPortal` class, not be functional components.
+
+**Correct Pattern** (used by all working nodelets):
+```javascript
+import NodeletPortal from './NodeletPortal'
+
+class StatisticsPortal extends NodeletPortal {
+  constructor(props) {
+    super(props)
+    this.insertRoot = document.getElementById('statistics')
+  }
+}
+
+export default StatisticsPortal
+```
+
+**Incorrect Pattern** (will cause props not to flow and NodeletContainer to not render):
+```javascript
+// ❌ WRONG - DO NOT USE
+const StatisticsPortal = (props) => {
+  const container = document.getElementById('statistics')
+  return ReactDOM.createPortal(
+    <Statistics {...props} />,
+    container
+  )
+}
+```
+
+**Why the class pattern is required**:
+- `NodeletPortal` creates a div element and appends it to the target container
+- It renders `this.props.children` into that div via `ReactDOM.createPortal()`
+- E2ReactRoot passes the component as children to the portal:
+  ```javascript
+  <StatisticsPortal>
+    <ErrorBoundary>
+      <Statistics {...props} />
+    </ErrorBoundary>
+  </StatisticsPortal>
+  ```
+- The portal must render `props.children`, not create its own instance of the component
+
+**Symptoms of incorrect portal implementation**:
+- Component appears to mount but `NodeletContainer` doesn't render
+- Props don't flow from E2ReactRoot to the nodelet component
+- State shows correct data in DevTools but component displays nothing
+
+**Reference**: See [StatisticsPortal.js](../react/components/Portals/StatisticsPortal.js) (fixed 2025-11-22) and [EpicenterPortal.js](../react/components/Portals/EpicenterPortal.js) for examples.
 
 ## Migrated Nodelets (React)
 
@@ -153,7 +203,7 @@ All React nodelets follow this established architecture:
 - Comprehensive test coverage (25 tests)
 
 ### 12. MasterControl ✅
-**Status**: Complete (Just Migrated!)
+**Status**: Complete
 **Function**: `master_control()` (line 686)
 **Component**: [react/components/Nodelets/MasterControl.js](../react/components/Nodelets/MasterControl.js)
 **Portal**: [react/components/Portals/MasterControlPortal.js](../react/components/Portals/MasterControlPortal.js)
@@ -170,16 +220,34 @@ All React nodelets follow this established architecture:
 - Pragmatic hybrid approach using dangerouslySetInnerHTML for htmlcode-generated content
 - Comprehensive test coverage (26 tests)
 
+### 13. Statistics ✅
+**Status**: Complete
+**Function**: `statistics()` (line 554)
+**Component**: [react/components/Nodelets/Statistics.js](../react/components/Nodelets/Statistics.js)
+**Portal**: [react/components/Portals/StatisticsPortal.js](../react/components/Portals/StatisticsPortal.js)
+**Test Suite**: [react/components/Nodelets/Statistics.test.js](../react/components/Nodelets/Statistics.test.js) (27 tests)
+**Description**: User statistics display showing XP, level progression, fun stats, and merit system
+**Features**:
+- Three collapsible sections:
+  1. **Yours** - Personal stats (XP, writeups, level, XP/WUs needed, GP)
+  2. **Fun Stats** - Node-Fu, Golden/Silver Trinkets, Stars, Easter Eggs, Tokens
+  3. **Old Merit System** - Merit, LF, Devotion, Merit mean/stddev
+- Conditional rendering (XP needed vs WUs needed, GP opt-out support)
+- Proper handling of zero values and missing sections
+- Fixed gpOptout boolean serialization (was using scalar refs `\1`/`\0`)
+- Fixed portal implementation to extend NodeletPortal class (2025-11-22)
+- Comprehensive test coverage (27 tests including edge cases)
+
 ## Remaining Nodelets (Perl)
 
-### 13. OtherUsers ⏳
+### 14. OtherUsers ⏳
 **Status**: Perl
 **Function**: `other_users()` (line 98)
 **Description**: List of online users
 **Complexity**: Medium - Real-time user tracking
 **Priority**: Medium - Social feature, could benefit from React updates
 
-### 14. Chatterbox ⏳
+### 15. Chatterbox ⏳
 **Status**: Perl
 **Function**: `chatterbox()` (line 383)
 **Description**: Real-time chat interface
@@ -187,19 +255,12 @@ All React nodelets follow this established architecture:
 **Priority**: High - Core social feature, prime candidate for React
 **Notes**: Uses AJAX showchatter polling (11-second refresh), complex interaction patterns
 
-### 15. PersonalLinks ⏳
+### 16. PersonalLinks ⏳
 **Status**: Perl
 **Function**: `personal_links()` (line 492)
 **Description**: User's bookmarked links
 **Complexity**: Low-Medium - Simple list display
 **Priority**: Low - Personal feature, less critical
-
-### 16. Statistics ⏳
-**Status**: Perl
-**Function**: `statistics()` (line 611)
-**Description**: Site statistics display
-**Complexity**: Low - Mostly static data display
-**Priority**: Low - Informational, infrequent updates
 
 ### 17. Notelet ⏳
 **Status**: Perl
@@ -278,16 +339,13 @@ Based on user impact, complexity, and architectural benefits:
 5. **UsergroupWriteups** - Content display, moderate complexity
 6. **OtherUsers** - Social awareness, real-time updates
 
-### Tier 3: Lower Priority (Informational/Admin)
-7. **Statistics** - Static display
-
-### Tier 4: Personal/Niche Features
-8. **PersonalLinks** - Personal feature
-9. **Notelet** - Personal notes
-10. **RecentNodes** - Personal history
-11. **FavoriteNoders** - Personal list
-12. **Categories** - Static navigation
-13. **MostWanted** - Community list
+### Tier 3: Personal/Niche Features
+7. **PersonalLinks** - Personal feature
+8. **Notelet** - Personal notes
+9. **RecentNodes** - Personal history
+10. **FavoriteNoders** - Personal list
+11. **Categories** - Static navigation
+12. **MostWanted** - Community list
 
 ## Migration Benefits
 
@@ -296,7 +354,7 @@ Based on user impact, complexity, and architectural benefits:
 - ✅ Improved client-side interactivity
 - ✅ Better state management
 - ✅ Component reusability (NodeletContainer, NodeletSection, LinkNode)
-- ✅ Comprehensive test coverage (193 tests total)
+- ✅ Comprehensive test coverage (265 tests total)
 - ✅ Progressive enhancement approach maintains backward compatibility
 
 ### Future Benefits
@@ -342,7 +400,7 @@ Nodelet components
 
 ## Testing Status
 
-- **Total React Tests**: 193
+- **Total React Tests**: 265
   - NewWriteups: ~20 tests
   - Vitals: ~25 tests
   - Developer: ~15 tests
@@ -350,7 +408,8 @@ Nodelet components
   - ReadThis: 25 tests
   - Epicenter: 25 tests
   - MasterControl: 26 tests
-  - Other nodelets: ~42 tests
+  - Statistics: 32 tests
+  - Other nodelets and components: ~82 tests
 
 ## Related Documentation
 
