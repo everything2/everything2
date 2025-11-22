@@ -46,8 +46,30 @@ const NodeToolset = ({
     setIsDeleting(true)
     setError(null)
 
-    // Navigate to the confirmop URL which will handle the actual deletion
-    window.location.href = `/?confirmop=nuke&node_id=${nodeId}`
+    try {
+      const response = await fetch(`/api/nodes/${nodeId}/action/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Navigate to the deleted node page which will show "not found"
+        window.location.href = `/?node_id=${nodeId}`
+      } else {
+        setError(data.error || 'Failed to delete node')
+        setIsDeleting(false)
+        closeNukeModal()
+      }
+    } catch (err) {
+      setError('Network error: ' + err.message)
+      setIsDeleting(false)
+      closeNukeModal()
+    }
   }
 
   const handleClone = async (e) => {
