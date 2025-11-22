@@ -11,13 +11,14 @@ has 'CREATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 0);
 has 'UPDATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 0);
 
 sub routes
-{ 
+{
   return {
   "/" => "get",
   "/:id" => "get_id(:id)",
   "/:id/action/delete" => "delete(:id)",
   "create" => "create",
   "/:id/action/update" => "update(:id)",
+  "/:id/action/clone" => "clone(:id)",
   "lookup/:type/:title" => "get_by_name(:type,:title)"
   }
 }
@@ -259,9 +260,67 @@ sub delete
   return [$self->HTTP_OK, {"deleted" => $node_id}];
 }
 
+sub clone
+{
+  my ($self, $REQUEST, $node, $user) = @_;
+
+  # Get POST data
+  my $postdata = $REQUEST->JSON_POSTDATA;
+  if (!$postdata || !exists $postdata->{title}) {
+    return [$self->HTTP_BAD_REQUEST, { error => "Missing title for cloned node" }];
+  }
+
+  my $new_title = $postdata->{title};
+  if (!defined($new_title) || length($new_title) == 0) {
+    return [$self->HTTP_BAD_REQUEST, { error => "Title cannot be empty" }];
+  }
+
+  # Check if a node with this title already exists
+  my $type_title = $node->type->title;
+  my $existing_node = $self->APP->node_by_name($new_title, $type_title);
+  if ($existing_node) {
+    return [$self->HTTP_CONFLICT, { error => "A node with this title already exists" }];
+  }
+
+  # Clone the node
+  my $cloned_node = $node->clone($new_title, $user);
+
+  unless($cloned_node) {
+    return [$self->HTTP_INTERNAL_SERVER_ERROR, { error => "Failed to clone node" }];
+  }
+
+  return [$self->HTTP_OK, {
+    message => "Node cloned successfully",
+    original_node_id => $node->node_id,
+    original_title => $node->title,
+    cloned_node_id => $cloned_node->node_id,
+    cloned_title => $cloned_node->title,
+    cloned_node => $cloned_node->json_display($user)
+  }];
+}
+
+sub _can_clone_okay
+{
+  my ($orig, $self, $REQUEST, $id) = @_;
+
+  # Check if user is admin
+  unless($REQUEST->user->is_admin) {
+    return [$self->HTTP_FORBIDDEN, { error => "Only administrators can clone nodes" }];
+  }
+
+  my $output = $self->_can_action_okay($REQUEST, "read", $id);
+  if($output->[0])
+  {
+    return $self->$orig($REQUEST, $output->[1], $output->[2]);
+  }else{
+    return [$output->[1]];
+  }
+}
+
 around ['get_id'] => \&_can_read_okay;
 around ['delete'] => \&_can_delete_okay;
 around ['update'] => \&_can_update_okay;
+around ['clone'] => \&_can_clone_okay;
 
 __PACKAGE__->meta->make_immutable;
 1;

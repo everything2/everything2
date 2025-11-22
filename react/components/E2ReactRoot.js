@@ -32,6 +32,9 @@ import NeglectedDrafts from './Nodelets/NeglectedDrafts'
 import QuickReference from './Nodelets/QuickReference'
 import QuickReferencePortal from './Portals/QuickReferencePortal'
 
+import MasterControl from './Nodelets/MasterControl'
+import MasterControlPortal from './Portals/MasterControlPortal'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -100,6 +103,7 @@ class E2ReactRoot extends React.Component {
       randomnodes_show: true,
       neglecteddrafts_show: true,
       quickreference_show: true,
+      mastercontrol_show: true,
 
       signin_show: false,
 
@@ -119,8 +123,8 @@ class E2ReactRoot extends React.Component {
       quickRefSearchTerm: ""
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter"]
-    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl"]
+    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
@@ -129,7 +133,7 @@ class E2ReactRoot extends React.Component {
 
     initialState['randomNodesPhrase'] = this.getRandomNodesPhrase();
 
-    const nodeletSections = {"vit": ["maintenance","nodeinfo","list","nodeutil","misc"], "edn": ["util","edev"], "rtn": ["cwu","edc","nws"]}
+    const nodeletSections = {"vit": ["maintenance","nodeinfo","list","nodeutil","misc"], "edn": ["util","edev"], "rtn": ["cwu","edc","nws"], "epi": ["admins","ces"]}
 
     Object.keys(nodeletSections).forEach((nodelet) => {
       nodeletSections[nodelet].forEach((section) => {
@@ -358,10 +362,11 @@ class E2ReactRoot extends React.Component {
             userSettingsId={this.state.epicenter?.userSettingsId}
             helpPage={this.state.epicenter?.helpPage}
             borgcheck={this.state.epicenter?.borgcheck}
-            experienceDisplay={this.state.epicenter?.experienceDisplay}
-            gpDisplay={this.state.epicenter?.gpDisplay}
-            randomNode={this.state.epicenter?.randomNode}
-            serverTimeDisplay={this.state.epicenter?.serverTimeDisplay}
+            experienceGain={this.state.epicenter?.experienceGain}
+            gpGain={this.state.epicenter?.gpGain}
+            randomNodeUrl={this.state.epicenter?.randomNodeUrl}
+            serverTime={this.state.epicenter?.serverTime}
+            localTime={this.state.epicenter?.localTime}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.epicenter_show}
           />
@@ -420,6 +425,25 @@ class E2ReactRoot extends React.Component {
           <QuickReference showNodelet={this.showNodelet} nodeletIsOpen={this.state.quickreference_show} quickRefSearchTerm={this.state.quickRefSearchTerm} />
         </ErrorBoundary>
       </QuickReferencePortal>
+      <MasterControlPortal>
+        <ErrorBoundary>
+          <MasterControl
+            isEditor={this.state.masterControl?.isEditor}
+            isAdmin={this.state.masterControl?.isAdmin}
+            adminSearchForm={this.state.masterControl?.adminSearchForm}
+            nodeToolsetData={this.state.masterControl?.nodeToolsetData}
+            nodeNotesData={this.state.masterControl?.nodeNotesData}
+            currentUserId={this.state.currentUserId}
+            adminSection={this.state.masterControl?.adminSection}
+            ceSection={this.state.masterControl?.ceSection}
+            epi_admins={this.state.epi_admins}
+            epi_ces={this.state.epi_ces}
+            toggleSection={this.toggleSection}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.mastercontrol_show}
+          />
+        </ErrorBoundary>
+      </MasterControlPortal>
       </>
   }
 }

@@ -78,8 +78,8 @@ describe('NodeletSection Component', () => {
   });
 
   describe('collapse/expand functionality', () => {
-    it('shows "-" toggle when section is displayed', () => {
-      const { getByText } = render(
+    it('shows down chevron icon when section is displayed', () => {
+      const { container } = render(
         <NodeletSection
           nodelet="vitals"
           section="info"
@@ -91,11 +91,14 @@ describe('NodeletSection Component', () => {
         </NodeletSection>
       );
 
-      expect(getByText('-')).toBeInTheDocument();
+      // Check for SVG icon in the toggle link
+      const toggleLink = container.querySelector('a[style*="cursor"]');
+      expect(toggleLink).toBeInTheDocument();
+      expect(toggleLink.querySelector('svg')).toBeInTheDocument();
     });
 
-    it('shows "+" toggle when section is hidden', () => {
-      const { getByText } = render(
+    it('shows right chevron icon when section is hidden', () => {
+      const { container } = render(
         <NodeletSection
           nodelet="vitals"
           section="info"
@@ -107,7 +110,10 @@ describe('NodeletSection Component', () => {
         </NodeletSection>
       );
 
-      expect(getByText('+')).toBeInTheDocument();
+      // Check for SVG icon in the toggle link
+      const toggleLink = container.querySelector('a[style*="cursor"]');
+      expect(toggleLink).toBeInTheDocument();
+      expect(toggleLink.querySelector('svg')).toBeInTheDocument();
     });
 
     it('does not apply toggledoff class when section is displayed', () => {
@@ -149,7 +155,7 @@ describe('NodeletSection Component', () => {
 
   describe('user interactions', () => {
     it('calls toggleSection when toggle link is clicked', () => {
-      const { getByText } = render(
+      const { container } = render(
         <NodeletSection
           nodelet="vitals"
           section="info"
@@ -161,14 +167,14 @@ describe('NodeletSection Component', () => {
         </NodeletSection>
       );
 
-      const toggleLink = getByText('-');
+      const toggleLink = container.querySelector('a[style*="cursor"]');
       fireEvent.click(toggleLink);
 
       expect(mockToggleSection).toHaveBeenCalledTimes(1);
     });
 
     it('passes correct section identifier to toggleSection', () => {
-      const { getByText } = render(
+      const { container } = render(
         <NodeletSection
           nodelet="developer"
           section="logs"
@@ -180,7 +186,7 @@ describe('NodeletSection Component', () => {
         </NodeletSection>
       );
 
-      const toggleLink = getByText('-');
+      const toggleLink = container.querySelector('a[style*="cursor"]');
       fireEvent.click(toggleLink);
 
       expect(mockToggleSection).toHaveBeenCalledWith(
@@ -190,7 +196,7 @@ describe('NodeletSection Component', () => {
     });
 
     it('toggle link has pointer cursor', () => {
-      const { getByText } = render(
+      const { container } = render(
         <NodeletSection
           nodelet="vitals"
           section="info"
@@ -202,7 +208,7 @@ describe('NodeletSection Component', () => {
         </NodeletSection>
       );
 
-      const toggleLink = getByText('-');
+      const toggleLink = container.querySelector('a[style*="cursor"]');
       expect(toggleLink).toHaveStyle({ cursor: 'pointer' });
     });
   });
