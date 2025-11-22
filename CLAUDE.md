@@ -2,10 +2,75 @@
 
 This document provides context for AI assistants (like Claude) working on the Everything2 codebase. It summarizes recent work, architectural decisions, and important patterns to understand.
 
-**Last Updated**: 2025-11-20
+**Last Updated**: 2025-11-21
 **Maintained By**: Jay Bonci
 
 ## Recent Work History
+
+### Session 5: Node Notes Enhancement & Mason2 Double Rendering Fix (2025-11-21)
+
+**Focus**: Node notes display improvement, fixing double nodelet rendering, and E2 link parsing
+
+**Completed Work**:
+1. ✅ Fixed Perl hash dereference syntax error in Application.pm
+   - Changed `$NODE{node_id}` to `$NODE->{node_id}` (lines 4910-4916)
+   - Fixed similar errors for `$USER{node_id}`
+2. ✅ Enhanced smoke test Apache detection
+   - Added content validation for E2-specific markers
+   - Added specific HTTP 500 error detection for Perl syntax errors
+   - More helpful error messages
+3. ✅ Improved node notes display in MasterControl
+   - Added `noter_username` field to API responses
+   - Created reusable `ParseLinks` React component for E2's bracket link syntax
+   - Updated NodeNotes component to display noter username
+   - Notes now show: `timestamp username: [parsed links in notetext]`
+4. ✅ Fixed double nodelet rendering issue (Mason2 Elimination Phase 1)
+   - Added `react_handled => 1` to epicenter.mi, readthis.mi, master_control.mi
+   - Mason2 templates now render empty placeholder divs only
+   - React handles all nodelet rendering
+   - Created comprehensive 4-phase elimination plan
+5. ✅ Enhanced ParseLinks to support nested bracket syntax
+   - Added support for `[title[nodetype]]` syntax (e.g., `[root[user]]`)
+   - Matches Perl parseLinks() regex exactly for legacy compatibility
+   - Pattern: `/\[([^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?)\]/g`
+   - Parses nested brackets to extract title and nodetype separately
+   - Passes nodetype to LinkNode for correct URL generation
+6. ✅ Optimized NodeNotes API usage
+   - Eliminated redundant GET request after DELETE operations
+   - DELETE endpoint already returns updated state
+   - Reduced API calls from 2 to 1 per delete operation
+7. ✅ Fixed initial page load for node notes
+   - Added noter_username lookup in Application.pm getNodeNotes() method
+   - Initial page load now has same data structure as API responses
+   - No refresh needed to see noter usernames
+
+**Final Results**:
+- ✅ **213 React tests passing** (20 ParseLinks tests including nested bracket syntax)
+- ✅ **61 API tests passing** (added 2 noter_username tests)
+- ✅ **159/159 smoke tests passing**
+- ✅ **No double rendering** - All nodelets appear exactly once
+- ✅ **Nested bracket links work** - `[root[user]]` renders correctly as link to `/node/user/root`
+
+**Key Files Modified**:
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Fixed hash dereference, added noter_username to getNodeNotes()
+- [ecore/Everything/API/nodenotes.pm](ecore/Everything/API/nodenotes.pm) - Added noter_username lookup
+- [react/components/ParseLinks.js](react/components/ParseLinks.js) - NEW: E2 link parser with nested bracket support
+- [react/components/ParseLinks.test.js](react/components/ParseLinks.test.js) - NEW: 20 comprehensive tests
+- [react/components/MasterControl/NodeNotes.js](react/components/MasterControl/NodeNotes.js) - Display noter, use ParseLinks, optimized API
+- [templates/nodelets/epicenter.mi](templates/nodelets/epicenter.mi) - Added react_handled flag
+- [templates/nodelets/readthis.mi](templates/nodelets/readthis.mi) - Added react_handled flag
+- [templates/nodelets/master_control.mi](templates/nodelets/master_control.mi) - Added react_handled flag
+- [tools/smoke-test.rb](tools/smoke-test.rb) - Better Apache error detection
+- [docs/mason2-elimination-plan.md](docs/mason2-elimination-plan.md) - NEW: Comprehensive 4-phase plan
+- [docs/changelog-2025-11.md](docs/changelog-2025-11.md) - Updated with React migration details
+
+**Important Discoveries**:
+- Mason2 already has `react_handled` mechanism in Base.mc - just needed to set flags
+- ParseLinks component is now reusable across entire React codebase
+- E2's nested bracket syntax `[title[nodetype]]` requires exact Perl regex match for legacy compatibility
+- API endpoints that return updated state eliminate need for separate GET requests
+- Everything::Page can be preserved while eliminating Mason2 rendering
+- Clean path forward: Phase 2 (optimize), Phase 3 (React template), Phase 4 (eliminate)
 
 ### Session 4: Smoke Test & Documentation Improvements (2025-11-20)
 

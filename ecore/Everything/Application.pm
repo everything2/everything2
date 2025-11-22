@@ -2198,9 +2198,70 @@ sub getHRLF
   return 1 if $$user{numwriteups} < 25;
   return $$user{HRLF} if $$user{HRLF};
   my $hrstats = Everything::getVars($this->{db}->getNode("hrstats", "setting"));
-  
+
   return 1 unless $$user{merit} > $$hrstats{mean};
   return 1/(2-exp(-(($$user{merit}-$$hrstats{mean})**2)/(2*($$hrstats{stddev})**2)));
+}
+
+sub getNodeNotes
+{
+  my ($this, $node) = @_;
+  my $DB = $this->{db};
+
+  return [] unless $node;
+
+  my $notelist = undef;
+  my $node_type = $$node{type}{title};
+
+  if ($node_type eq 'writeup')
+  {
+    # Include e2node & other writeups
+    $notelist = $DB->sqlSelectMany(
+      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
+      , 'nodenote'
+      , "(nodenote_nodeid = $$node{node_id}"
+      . " OR nodenote_nodeid = $$node{parent_e2node})"
+      . " ORDER BY nodenote_nodeid, timestamp");
+  }
+  elsif ($node_type eq 'e2node')
+  {
+    # Include writeups
+    $notelist = $DB->sqlSelectMany(
+      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp, node.author_user'
+      , 'nodenote'
+      . " LEFT OUTER JOIN writeup ON writeup.writeup_id = nodenote_nodeid"
+      . " LEFT OUTER JOIN node ON node.node_id = writeup.writeup_id"
+      , "(nodenote_nodeid = $$node{node_id}"
+      . " OR writeup.parent_e2node = $$node{node_id})"
+      . " ORDER BY nodenote_nodeid, timestamp");
+  }
+  else
+  {
+    $notelist = $DB->sqlSelectMany(
+      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
+      , 'nodenote'
+      , "nodenote_nodeid = $$node{node_id}"
+      . " ORDER BY timestamp");
+  }
+
+  my @notes = ();
+  return \@notes unless $notelist;
+
+  while (my $note = $notelist->fetchrow_hashref)
+  {
+    # Legacy format check: noter_user = 1 means author was encoded in notetext
+    if ($note->{noter_user} && $note->{noter_user} == 1) {
+      # Legacy format: author is embedded in notetext, mark as version 1
+      $note->{legacy_format} = 1;
+    } elsif ($note->{noter_user}) {
+      # Modern format: look up noter username (0 = system note, no username)
+      my $noter = $DB->getNodeById($note->{noter_user});
+      $note->{noter_username} = $noter->{title} if $noter;
+    }
+    push @notes, $note;
+  }
+
+  return \@notes;
 }
 
 sub refreshVotesAndCools
@@ -4771,30 +4832,125 @@ sub buildNodeInfoStructure
     # Determine help page based on level
     $e2->{epicenter}->{helpPage} = ($e2->{epicenter}->{level} < 2) ? 'E2 Quick Start' : 'Everything2 Help';
 
-    # Generate HTML for complex components
-    $e2->{epicenter}->{borgcheck} = Everything::HTML::htmlcode("borgcheck");
-    $e2->{epicenter}->{experienceDisplay} = Everything::HTML::htmlcode("shownewexp", "TRUE");
-    unless($VARS->{GPoptout}) {
-      $e2->{epicenter}->{gpDisplay} = Everything::HTML::htmlcode("showNewGP", "TRUE");
+    # Borgcheck data (React component will handle rendering)
+    if($VARS->{borged}) {
+      $e2->{epicenter}->{borgcheck} = {
+        borged => $VARS->{borged},
+        numborged => $VARS->{numborged} || 1,
+        currentTime => time
+      };
     }
-    $e2->{epicenter}->{randomNode} = Everything::HTML::htmlcode("randomnode", "Random Node");
 
-    # Generate server time display
-    my $NOW = time;
-    my $timeHtml = 'server time<br />' . Everything::HTML::htmlcode('DateTimeLocal', "$NOW,1");
-    if($VARS->{localTimeUse}) {
-      $timeHtml .= '<br />' . $this->linkNodeTitle('Advanced Settings|your time') . '<br />' . Everything::HTML::htmlcode('DateTimeLocal', $NOW);
-    } else {
-      $timeHtml .= '<br />' . $this->linkNodeTitle('Advanced Settings|(set your time)');
+    # Experience change data (React component will handle rendering)
+    $VARS->{oldexp} ||= $USER->{experience};
+    my $expChange = $USER->{experience} - $VARS->{oldexp};
+    if($expChange > 0) {
+      $e2->{epicenter}->{experienceGain} = $expChange;
+      $VARS->{oldexp} = $USER->{experience};
     }
-    $e2->{epicenter}->{serverTimeDisplay} = $timeHtml;
+
+    # GP change data (React component will handle rendering)
+    unless($VARS->{GPoptout}) {
+      $VARS->{oldGP} ||= $USER->{GP};
+      my $gpChange = $USER->{GP} - $VARS->{oldGP};
+      if($gpChange > 0) {
+        $e2->{epicenter}->{gpGain} = $gpChange;
+        $VARS->{oldGP} = $USER->{GP};
+      }
+    }
+
+    # Random node link data
+    $e2->{epicenter}->{randomNodeUrl} = '/index.pl?op=randomnode&garbage=' . int(rand(100000));
+
+    # Server time data (formatted strings for React component)
+    my $NOW = time;
+    $e2->{epicenter}->{serverTime} = Everything::HTML::htmlcode('DateTimeLocal', "$NOW,1");
+    if($VARS->{localTimeUse}) {
+      $e2->{epicenter}->{localTime} = Everything::HTML::htmlcode('DateTimeLocal', $NOW);
+    }
   }
 
   # Epicenter for guests (borgcheck only)
   if($nodelets =~ /262/ and $this->isGuest($USER))
   {
     $e2->{epicenter} = {};
-    $e2->{epicenter}->{borgcheck} = Everything::HTML::htmlcode("borgcheck");
+    if($VARS->{borged}) {
+      $e2->{epicenter}->{borgcheck} = {
+        borged => $VARS->{borged},
+        numborged => $VARS->{numborged} || 1,
+        currentTime => time
+      };
+    }
+  }
+
+  # Master Control
+  if($nodelets =~ /1687135/)
+  {
+    $e2->{masterControl} = {};
+    $e2->{masterControl}->{isEditor} = $this->isEditor($USER) ? \1 : \0;
+    $e2->{masterControl}->{isAdmin} = $this->isAdmin($USER) ? \1 : \0;
+
+    if($this->isEditor($USER))
+    {
+      # Admin search form data (React component will handle rendering)
+      $e2->{masterControl}->{adminSearchForm} = {
+        nodeId => $$NODE{node_id} || '',
+        nodeType => $$NODE{type}{title},
+        nodeTitle => $$NODE{title},
+        serverName => $Everything::CONF->server_hostname,
+        scriptName => $query->script_name
+      };
+
+      # CE Section data (React component will handle rendering)
+      my (undef,undef,undef,$mday,$mon,$year) = localtime(time);
+      $year += 1900;
+      $e2->{masterControl}->{ceSection} = {
+        currentMonth => $mon,
+        currentYear => $year,
+        isUserNode => ($$NODE{type}{title} eq 'user'),
+        nodeId => $$NODE{node_id},
+        nodeTitle => $$NODE{title},
+        showSection => ($VARS->{epi_hideces} != 1)
+      };
+
+      # NodeNote - Get notes data and pass structured data to React
+      my $notes = $this->getNodeNotes($NODE);
+      $e2->{masterControl}->{nodeNotesData} = {
+        node_id => $NODE->{node_id},
+        node_title => $NODE->{title},
+        node_type => $NODE->{type}{title},
+        notes => $notes,
+        count => scalar(@$notes),
+      };
+      $e2->{currentUserId} = $USER->{node_id};
+
+      if($this->isAdmin($USER))
+      {
+        # Node Toolset data (React component with nuke confirmation modal)
+        my $currentDisplay = $query->param("displaytype") || "display";
+        my $nodeType = $NODE->{type}{title};
+        my $canDelete = Everything::canDeleteNode($USER, $NODE) && $nodeType ne 'draft' && $nodeType ne 'user';
+        my $hasHelp = $this->{db}->sqlSelectHashref("*", "nodehelp", "nodehelp_id=$$NODE{node_id}") ? \1 : \0;
+        my $preventNuke = $this->getParameter($NODE->{node_id}, "prevent_nuke") ? \1 : \0;
+
+        $e2->{masterControl}->{nodeToolsetData} = {
+          nodeId => $NODE->{node_id},
+          nodeTitle => $NODE->{title},
+          nodeType => $nodeType,
+          canDelete => $canDelete ? \1 : \0,
+          currentDisplay => $currentDisplay,
+          hasHelp => $hasHelp,
+          isWriteup => ($nodeType eq 'writeup') ? \1 : \0,
+          preventNuke => $preventNuke,
+        };
+
+        # Admin Section data (React component will handle rendering)
+        $e2->{masterControl}->{adminSection} = {
+          isBorged => $$VARS{borged} ? \1 : \0,
+          showSection => ($VARS->{epi_hideadmins} != 1)
+        };
+      }
+    }
   }
 
   # Random Nodes

@@ -6668,36 +6668,16 @@ sub nodenote
   return if($$VARS{hidenodenotes});
 
   my $N = my $onlyMe = shift;
-  getRef $N if $N;
-  $N ||= $NODE;
-
-  my $notelist = undef;
-
-  if ($$N{type}{title} eq 'writeup' && !$onlyMe)
-  { 
-    #include e2node & other wus
-    $notelist = $DB->sqlSelectMany(
-      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
-      , 'nodenote'
-      , "nodenote_nodeid = $$N{node_id}"
-      . " OR nodenote_nodeid = $$N{parent_e2node}"
-      . " ORDER BY nodenote_nodeid, timestamp");
-  } elsif ($$N{type}{title} eq 'e2node') { 
-    # include writeups
-    $notelist = $DB->sqlSelectMany(
-      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp, node.author_user'
-      , 'nodenote'
-      . " LEFT OUTER JOIN writeup ON writeup.writeup_id = nodenote_nodeid"
-      . " LEFT OUTER JOIN node ON node.node_id = writeup.writeup_id"
-      , "nodenote_nodeid = $$N{node_id}"
-      . " OR writeup.parent_e2node = $$N{node_id}"
-      . " ORDER BY nodenote_nodeid, timestamp");
+  # If first parameter is an array ref, it's the notes data from $APP
+  my $notesData = undef;
+  if (ref($N) eq 'ARRAY') {
+    $notesData = $N;
+    $N = $NODE;
   } else {
-    $notelist = $DB->sqlSelectMany(
-      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
-      , 'nodenote'
-      , "nodenote_nodeid = $$N{node_id}"
-      . " ORDER BY timestamp");
+    getRef $N if $N;
+    $N ||= $NODE;
+    # If no notes data provided, get it from database (legacy fallback)
+    $notesData = $APP->getNodeNotes($N) unless $notesData;
   }
 
   my $makeNoteLine = sub {
@@ -6713,11 +6693,12 @@ sub nodenote
 
   my $noteCount = 0;
   my $finalstr = "";
-  my $notetext = undef;
-  $notetext = $notelist->fetchrow_hashref if $notelist;
 
-  while ($notetext)
+  # Use notes data array instead of database cursor
+  my $i = 0;
+  while ($i < scalar(@$notesData))
   {
+    my $notetext = $notesData->[$i];
     my $currentNodeId = $$notetext{nodenote_nodeid};
     my $currentAuthor = $$notetext{author_user};
 
@@ -6729,11 +6710,11 @@ sub nodenote
       $finalstr .= ' by '.linkNode($currentAuthor) if $$N{type}{title} eq 'e2node';
     }
 
-    while ($notetext && $$notetext{nodenote_nodeid} == $currentNodeId)
+    while ($i < scalar(@$notesData) && $notesData->[$i]{nodenote_nodeid} == $currentNodeId)
     {
-      $finalstr .= &$makeNoteLine($notetext);
+      $finalstr .= &$makeNoteLine($notesData->[$i]);
       $noteCount++;
-      $notetext = $notelist->fetchrow_hashref;
+      $i++;
     }
   }
 
@@ -6768,21 +6749,8 @@ sub admin_toolset
 
   my $newStr = $query -> h4({class => 'ns_title'}, 'Node Toolset');
 
-  if ($query -> param('showcloner')){
-    $newStr .= $query -> start_form(action => $APP->urlGenNoParams(
-      getNode('node cloner', 'restricted_superdoc'), 'noquotes'))
-      .$query -> fieldset($query -> legend('Clone node')
-      .$query -> hidden('srcnode_id', $$NODE{node_id})
-      .$query -> label('New title:' .$query -> textfield(-name => 'newname'
-      , -title => 'name for cloned node'))
-      .$query -> submit('ajaxTrigger', 'clone') # don't ajaxify this form...
-      ).$query -> end_form .'<ul>';
-  }else{
-    $newStr .= '<ul>'
-      .$query -> li(linkNode($NODE, 'Clone Node...', {
-      showcloner => 1
-      , -class => 'ajax mcadmintools:admin+toolset' }));
-  }
+  # Clone Node functionality moved to React modal in Master Control nodelet
+  $newStr .= '<ul>';
 
   $newStr .= $query -> li(linkNode($NODE,"Display Node"))	if ($currentDisplay ne 'display');
 

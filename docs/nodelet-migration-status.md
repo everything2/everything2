@@ -10,8 +10,8 @@ This document tracks the migration status of all nodelets in the Everything2 cod
 ## Migration Statistics
 
 - **Total Nodelets**: 25
-- **Migrated to React**: 11 (44%)
-- **Remaining in Perl**: 14 (56%)
+- **Migrated to React**: 12 (48%)
+- **Remaining in Perl**: 13 (52%)
 
 ## React Migration Pattern
 
@@ -135,7 +135,7 @@ All React nodelets follow this established architecture:
 - Comprehensive test coverage (25 tests)
 
 ### 11. Epicenter ✅
-**Status**: Complete (Just Migrated!)
+**Status**: Complete
 **Function**: `epicenter()` (line 21)
 **Component**: [react/components/Nodelets/Epicenter.js](../react/components/Nodelets/Epicenter.js)
 **Portal**: [react/components/Portals/EpicenterPortal.js](../react/components/Portals/EpicenterPortal.js)
@@ -152,16 +152,34 @@ All React nodelets follow this established architecture:
 - Pragmatic hybrid approach: raw data for simple elements, pre-rendered HTML for complex calculations (XP/GP changes, time display)
 - Comprehensive test coverage (25 tests)
 
+### 12. MasterControl ✅
+**Status**: Complete (Just Migrated!)
+**Function**: `master_control()` (line 686)
+**Component**: [react/components/Nodelets/MasterControl.js](../react/components/Nodelets/MasterControl.js)
+**Portal**: [react/components/Portals/MasterControlPortal.js](../react/components/Portals/MasterControlPortal.js)
+**Test Suite**: [react/components/Nodelets/MasterControl.test.js](../react/components/Nodelets/MasterControl.test.js) (26 tests)
+**Description**: Admin control panel for editors and administrators
+**Features**:
+- Role-based access control (isEditor, isAdmin)
+- Admin search form for node lookup
+- Node note management
+- Admin toolset (admin-only)
+- Admin section controls (admin-only)
+- CE (Content Editor) section tools
+- Non-editors see "Nothing for you here" message
+- Pragmatic hybrid approach using dangerouslySetInnerHTML for htmlcode-generated content
+- Comprehensive test coverage (26 tests)
+
 ## Remaining Nodelets (Perl)
 
-### 12. OtherUsers ⏳
+### 13. OtherUsers ⏳
 **Status**: Perl
 **Function**: `other_users()` (line 98)
 **Description**: List of online users
 **Complexity**: Medium - Real-time user tracking
 **Priority**: Medium - Social feature, could benefit from React updates
 
-### 13. Chatterbox ⏳
+### 14. Chatterbox ⏳
 **Status**: Perl
 **Function**: `chatterbox()` (line 383)
 **Description**: Real-time chat interface
@@ -169,40 +187,33 @@ All React nodelets follow this established architecture:
 **Priority**: High - Core social feature, prime candidate for React
 **Notes**: Uses AJAX showchatter polling (11-second refresh), complex interaction patterns
 
-### 14. PersonalLinks ⏳
+### 15. PersonalLinks ⏳
 **Status**: Perl
 **Function**: `personal_links()` (line 492)
 **Description**: User's bookmarked links
 **Complexity**: Low-Medium - Simple list display
 **Priority**: Low - Personal feature, less critical
 
-### 15. Statistics ⏳
+### 16. Statistics ⏳
 **Status**: Perl
 **Function**: `statistics()` (line 611)
 **Description**: Site statistics display
 **Complexity**: Low - Mostly static data display
 **Priority**: Low - Informational, infrequent updates
 
-### 16. Notelet ⏳
+### 17. Notelet ⏳
 **Status**: Perl
 **Function**: `notelet()` (line 647)
 **Description**: Personal notes
 **Complexity**: Medium - User-specific content
 **Priority**: Low - Personal feature
 
-### 17. RecentNodes ⏳
+### 18. RecentNodes ⏳
 **Status**: Perl
 **Function**: `recent_nodes()` (line 698)
 **Description**: Recently viewed nodes
 **Complexity**: Low - Simple history list
 **Priority**: Low - Nice-to-have feature
-
-### 18. MasterControl ⏳
-**Status**: Perl
-**Function**: `master_control()` (line 743)
-**Description**: Admin control panel
-**Complexity**: High - Admin functionality
-**Priority**: Medium - Admin-only, less urgent
 
 ### 19. CurrentUserPoll ⏳
 **Status**: Perl
@@ -268,18 +279,15 @@ Based on user impact, complexity, and architectural benefits:
 6. **OtherUsers** - Social awareness, real-time updates
 
 ### Tier 3: Lower Priority (Informational/Admin)
-7. **Epicenter** - High visibility but stable
-8. **Statistics** - Static display
-9. **MasterControl** - Admin-only
-10. **ForReview** - Editor tooling
+7. **Statistics** - Static display
 
 ### Tier 4: Personal/Niche Features
-11. **PersonalLinks** - Personal feature
-12. **Notelet** - Personal notes
-13. **RecentNodes** - Personal history
-14. **FavoriteNoders** - Personal list
-15. **Categories** - Static navigation
-16. **MostWanted** - Community list
+8. **PersonalLinks** - Personal feature
+9. **Notelet** - Personal notes
+10. **RecentNodes** - Personal history
+11. **FavoriteNoders** - Personal list
+12. **Categories** - Static navigation
+13. **MostWanted** - Community list
 
 ## Migration Benefits
 
@@ -288,7 +296,7 @@ Based on user impact, complexity, and architectural benefits:
 - ✅ Improved client-side interactivity
 - ✅ Better state management
 - ✅ Component reusability (NodeletContainer, NodeletSection, LinkNode)
-- ✅ Comprehensive test coverage (141 tests total)
+- ✅ Comprehensive test coverage (193 tests total)
 - ✅ Progressive enhancement approach maintains backward compatibility
 
 ### Future Benefits
@@ -334,14 +342,15 @@ Nodelet components
 
 ## Testing Status
 
-- **Total React Tests**: 166
+- **Total React Tests**: 193
   - NewWriteups: ~20 tests
   - Vitals: ~25 tests
   - Developer: ~15 tests
   - RecommendedReading: ~15 tests
   - ReadThis: 25 tests
   - Epicenter: 25 tests
-  - Other nodelets: ~41 tests
+  - MasterControl: 26 tests
+  - Other nodelets: ~42 tests
 
 ## Related Documentation
 

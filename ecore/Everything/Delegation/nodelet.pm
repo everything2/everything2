@@ -693,20 +693,9 @@ sub master_control
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str = "";
-
-  my $UID = $$USER{user_id};
-  my $isAdmin = $APP->isAdmin($USER);
-  my $isCE = $APP->isEditor($USER);
-
-  return 'Nothing for you here.' unless $isCE;
-  $str = htmlcode('admin searchform');
-  $str .= htmlcode('admin toolset') if $isAdmin;
-  $str .= htmlcode('nodenote');
-  $str .= htmlcode('nodeletsection', 'epi', 'admins', 'Admin') if $isAdmin;
-  $str .= htmlcode('nodeletsection', 'epi', 'ces', 'CE');
-  return $str;
-
+  # React component handles all rendering
+  # The Perl function remains for nodelet framework compatibility
+  return "";
 }
 
 sub current_user_poll

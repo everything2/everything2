@@ -65,7 +65,37 @@ During the rapid development period, we may be changing the APIs, but we will be
 
 # API Catalogue
 
+## Test Coverage Overview
+
+This section documents the automated test coverage for each API endpoint. Coverage indicates how many endpoints have dedicated test suites verifying their functionality.
+
+| API Module | Endpoints | Tested | Coverage | Test File |
+|------------|-----------|--------|----------|-----------|
+| Sessions | 3 | 3 | ✅ 100% | t/002_sessions_api.t (41 tests) |
+| Node Notes | 3 | 3 | ✅ 100% | t/026_nodenotes_api.t (66 tests) |
+| Tests | 1 | 1 | ✅ 100% | t/003_api_versions.t (8 tests) |
+| Nodes | 7 | 1 | ⚠️ 14% | t/027_nodes_api_clone.t (45 tests for clone only) |
+| Users | 7 | 0 | ❌ 0% | None |
+| Usergroups | 9 | 0 | ❌ 0% | None |
+| Writeups | 7 | 0 | ❌ 0% | None |
+| E2nodes | 7 | 0 | ❌ 0% | None |
+| Messages | 6 | 6 | ✅ 100% | t/032_messages_api.t (37 tests) |
+| Message Ignores | 4 | 0 | ❌ 0% | None |
+| System Utilities | 1 | 0 | ❌ 0% | None |
+| Preferences | 2 | 2 | ✅ 100% | t/030_preferences_api.t (50 tests) |
+| New Writeups | 1 | 1 | ✅ 100% | t/031_newwriteups_api.t (33 tests) |
+| Hide Writeups | 2 | 2 | ✅ 100% | t/029_hidewriteups_api.t (32 tests) |
+| Developer Variables | 1 | 1 | ✅ 100% | t/028_developervars_api.t (23 tests) |
+
+**Overall API Test Coverage: ~35%** (21 of ~54 endpoints have dedicated tests)
+
+**Infrastructure Tests:**
+- t/001_api_routing.t - General API routing (2 tests)
+- t/025_api_content_encoding.t - Content-Encoding headers (24 tests)
+
 ## Node requests
+
+**Test Coverage: ⚠️ 14%** (1/7 endpoints tested - clone only)
 
 The node requests form is good for looking up particular node_ids, but does not have actions on it.
 
@@ -114,6 +144,69 @@ The fields that are allowed to be updated work on a whitelist system. The follow
 * **documents** - doctext
 * **usergroups** - doctext
 
+### /api/nodes/:id/action/clone
+
+**POST only, admin-only endpoint**
+
+Creates a complete copy of the specified node with a new title. Only administrators can clone nodes.
+
+**Required POST data:**
+* **title** - The title for the cloned node (must be unique)
+
+**Returns:**
+
+* **200 OK** - Clone successful
+  * **message** - Success message
+  * **original_node_id** - The node_id of the source node
+  * **original_title** - The title of the source node
+  * **cloned_node_id** - The node_id of the newly cloned node
+  * **cloned_title** - The title of the newly cloned node
+  * **cloned_node** - Full JSON display of the cloned node
+
+* **400 BAD REQUEST** - Missing or empty title in request
+  * **error** - Error message
+
+* **403 FORBIDDEN** - User is not an administrator
+  * **error** - "Only administrators can clone nodes"
+
+* **404 NOT FOUND** - Node does not exist
+  * **error** - Error message
+
+* **409 CONFLICT** - A node with the specified title already exists
+  * **error** - "A node with this title already exists"
+
+* **500 INTERNAL SERVER ERROR** - Clone operation failed
+  * **error** - Error message
+
+**Example:**
+```json
+POST /api/nodes/123456/action/clone
+{
+  "title": "Clone of My Document"
+}
+
+Response (200 OK):
+{
+  "message": "Node cloned successfully",
+  "original_node_id": 123456,
+  "original_title": "My Document",
+  "cloned_node_id": 789012,
+  "cloned_title": "Clone of My Document",
+  "cloned_node": {
+    "node_id": 789012,
+    "title": "Clone of My Document",
+    "type": "document",
+    ...
+  }
+}
+```
+
+**Implementation Notes:**
+- Clones all node data fields except node_id, type, group, and title
+- The cloned node receives a new node_id
+- The cloning user becomes the creator of the cloned node
+- This operation preserves all content and metadata from the original node
+
 ### /api/nodes/lookup/:type/:title
 
 Looks up the node by type and title. Note that this currently does not properly handle returning multiple nodes of the same title back.
@@ -123,6 +216,8 @@ If the title/type combination does not exist, this returns NOT FOUND
 If the user cannot read the node details, this returns FORBIDDEN
 
 ## Users
+
+**Test Coverage: ❌ 0%** (0/7 endpoints tested)
 
 ### /api/users
 
@@ -150,6 +245,8 @@ Returns all of the items returned by /api/nodes/:id for that id, plus the follow
 * **message_forward_to** - Node reference to message recipient if this is a chatterbox forward
 
 ## Usergroups
+
+**Test Coverage: ❌ 0%** (0/9 endpoints tested)
 
 ### /api/usergroups/
 
@@ -193,6 +290,8 @@ Returns the node reference if successful
 
 ## Writeups
 
+**Test Coverage: ❌ 0%** (0/7 endpoints tested)
+
 ### /api/writeups
 
 Always returns UNIMPLEMENTED
@@ -229,6 +328,8 @@ Creates a writeup. Requires several parameters:
 
 ## E2nodes
 
+**Test Coverage: ❌ 0%** (0/7 endpoints tested)
+
 ### /api/e2nodes
 
 Always returns UNIMPLEMENTED
@@ -258,6 +359,8 @@ Returns the display of e2nodes/:id of the newly created object
 ## Superdocument
 
 ## Messages
+
+**Test Coverage: ✅ 100%** (6/6 endpoints tested - t/032_messages_api.t)
 
 Current version: *1 (beta)*
 
@@ -317,6 +420,8 @@ Accepts a JSON post with the following parameters
 
 ## Message Ignores
 
+**Test Coverage: ❌ 0%** (0/4 endpoints tested)
+
 Current version: *1 (beta)*
 
 Sets message blocking preferences. If you block a user, you won't see messages from that user. If you block a usergroup, you won't see messages sent to that usergroup (that presumably you are a member of). Has no other practical effect in blocking non user or usergroup nodes from messaging you.
@@ -342,6 +447,8 @@ Retrives a node format if you are blocking messages from that node, 404 NOT FOUN
 Stops ignoring a particular node at :id
 
 ## Preferences
+
+**Test Coverage: ✅ 100%** (2/2 endpoints tested - t/030_preferences_api.t)
 
 Current version: *1 (beta)*
 
@@ -447,6 +554,223 @@ curl -X POST https://everything2.com/api/preferences/set \
 }
 ```
 
+## Node Notes
+
+**Test Coverage: ✅ 100%** (3/3 endpoints tested - t/026_nodenotes_api.t)
+
+Current version: *1 (beta)*
+
+Retrieves editor notes attached to nodes. Node notes are annotations that editors can add to any node to track issues, coordinate work, or provide context. The API returns notes for the requested node and may include related notes (e.g., for writeups, includes parent e2node notes; for e2nodes, includes all child writeup notes).
+
+All node notes methods require editor privileges and return 401 Unauthorized for non-editors.
+
+### /api/nodenotes/:node_id
+
+Returns all notes for the specified node, following the database relationship patterns:
+
+- **For documents and other simple nodes**: Returns notes directly attached to the node
+- **For writeups**: Returns notes for the writeup AND its parent e2node
+- **For e2nodes**: Returns notes for the e2node AND all its child writeups
+
+**URL Parameters:**
+* **node_id** - The node_id to retrieve notes for (required, must be numeric)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "node_id": 123,
+  "node_title": "Example Node",
+  "node_type": "writeup",
+  "count": 2,
+  "notes": [
+    {
+      "nodenote_id": 456,
+      "nodenote_nodeid": 123,
+      "notetext": "This writeup needs cleanup",
+      "noter_user": 789,
+      "timestamp": "2025-11-21 12:34:56"
+    },
+    {
+      "nodenote_id": 457,
+      "nodenote_nodeid": 100,
+      "notetext": "Parent e2node note",
+      "noter_user": 790,
+      "timestamp": "2025-11-20 10:15:30",
+      "node_title": "Parent E2node Title",
+      "node_type": "e2node"
+    }
+  ]
+}
+```
+
+**Response Keys:**
+
+Top-level keys:
+* **node_id** - The requested node_id
+* **node_title** - Title of the requested node
+* **node_type** - Type of the requested node
+* **count** - Total number of notes returned
+* **notes** - Array of note objects
+
+Note object keys:
+* **nodenote_id** - Unique identifier for this note
+* **nodenote_nodeid** - The node_id this note is attached to (may differ from requested node_id for related notes)
+* **notetext** - The text content of the note
+* **noter_user** - The user_id of the editor who created the note (0 for system notes)
+* **noter_username** - (Optional) The username of the editor who created the note (only present for modern format notes where noter_user > 1)
+* **timestamp** - When the note was created (ISO 8601 format)
+* **legacy_format** - (Optional) If set to 1, indicates this is a legacy format note where the author was encoded directly in the notetext string. When present, noter_username will NOT be included and the full notetext should be displayed as-is
+* **node_title** - (Optional) Title of the node if this is a related note (e.g., parent e2node title when viewing writeup notes)
+* **node_type** - (Optional) Type of the node if this is a related note
+* **author_user** - (Optional) The author_user field when querying e2node notes (included for writeup author context)
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid node_id (not numeric)
+  ```json
+  { "error": "Invalid node_id" }
+  ```
+
+* **401 Unauthorized** - User is not an editor
+
+* **404 Not Found** - Node does not exist
+  ```json
+  { "error": "Node not found" }
+  ```
+
+**Example Request:**
+
+```bash
+curl https://everything2.com/api/nodenotes/123 \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Node notes use specialized queries based on node type for efficiency
+- System notes (noter_user = 0) are displayed with a bullet (•) instead of a deletion checkbox
+- Notes are ordered by nodenote_nodeid, then timestamp
+- The API leverages the same `getNodeNotes()` method used for HTML rendering to avoid extra database queries during page load
+- **Legacy format notes**: In the early history of E2, node notes did not have a proper foreign key to the noter user. Instead, the author was encoded directly in the notetext string (e.g., "[username[user]]: note text"). These legacy notes have `noter_user = 1` as a placeholder value. When the API detects `noter_user = 1`, it sets `legacy_format = 1` and does NOT populate the `noter_username` field. Clients should display the full notetext as-is for legacy notes, as it contains the author attribution
+
+### POST /api/nodenotes/:node_id/create
+
+Adds a new note to the specified node and returns the updated list of all notes for that node.
+
+**URL Parameters:**
+* **node_id** - The node_id to add a note to (required, must be numeric)
+
+**Request Body:**
+
+JSON object with:
+
+```json
+{
+  "notetext": "This is a new note"
+}
+```
+
+**Request Keys:**
+* **notetext** - The text content of the note (required, cannot be empty)
+
+**Returns:**
+
+200 OK with the same JSON structure as GET /api/nodenotes/:node_id, containing the updated list of all notes including the newly created note.
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid node_id, missing notetext, or empty notetext
+  ```json
+  { "error": "Invalid node_id" }
+  { "error": "Missing notetext in request body" }
+  { "error": "Note text cannot be empty" }
+  ```
+
+* **401 Unauthorized** - User is not an editor
+
+* **404 Not Found** - Node does not exist
+  ```json
+  { "error": "Node not found" }
+  ```
+
+* **500 Internal Server Error** - Failed to create note in database
+  ```json
+  { "error": "Failed to create note" }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/nodenotes/123/create \
+  -H "Cookie: userpass=..." \
+  -H "Content-Type: application/json" \
+  -d '{"notetext": "Needs copyediting"}'
+```
+
+**Implementation Notes:**
+
+- The noter_user is automatically set to the current logged-in editor
+- The timestamp is automatically set to the current time (NOW())
+- After creating the note, returns the full updated notes list for the node
+- Notes are permanently stored in the nodenote table
+
+### DELETE /api/nodenotes/:node_id/:note_id/delete
+
+Deletes a specific note and returns the updated list of remaining notes for the node.
+
+**URL Parameters:**
+* **node_id** - The node_id the note belongs to (required, must be numeric)
+* **note_id** - The nodenote_id to delete (required, must be numeric)
+
+**Returns:**
+
+200 OK with the same JSON structure as GET /api/nodenotes/:node_id, containing the updated list of remaining notes after deletion.
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid node_id or note_id (not numeric)
+  ```json
+  { "error": "Invalid node_id" }
+  { "error": "Invalid note_id" }
+  ```
+
+* **401 Unauthorized** - User is not an editor
+
+* **403 Forbidden** - User is not the note author and not an admin
+  ```json
+  { "error": "You can only delete your own notes" }
+  ```
+
+* **404 Not Found** - Node or note does not exist, or note is not associated with this node
+  ```json
+  { "error": "Node not found" }
+  { "error": "Note not found" }
+  { "error": "Note not associated with this node" }
+  ```
+
+* **500 Internal Server Error** - Failed to delete note from database
+  ```json
+  { "error": "Failed to delete note" }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X DELETE https://everything2.com/api/nodenotes/123/456/delete \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Editors can only delete their own notes unless they are admins
+- Admins can delete any note regardless of author
+- The API verifies that the note actually belongs to the specified node (including e2node/writeup relationships)
+- After deletion, returns the full updated notes list for the node
+- Deletion is permanent and cannot be undone
+
 ## Chats
 
 ## Bookmarks
@@ -456,6 +780,8 @@ curl -X POST https://everything2.com/api/preferences/set \
 ## Cools
 
 ## New Writeups
+
+**Test Coverage: ✅ 100%** (1/1 endpoints tested - t/031_newwriteups_api.t)
 
 ### /api/newwriteups
 
@@ -473,7 +799,100 @@ New writeups keys:
 * **is_log** - Whether the node is a log of some type (daylog, ed log, etc)
 * **notnew** - If you are an editor, whether the node was hidden from new writeups
 
+## Hide Writeups
+
+**Test Coverage: ✅ 100%** (2/2 endpoints tested - t/029_hidewriteups_api.t)
+
+Current version: *1 (beta)*
+
+Controls visibility of writeups in the New Writeups list. Editors can hide writeups from appearing in New Writeups (useful for removing junk, spam, or placeholder writeups) or show them again if they were previously hidden. This toggles the `notnew` flag on writeup nodes.
+
+All hide writeups methods require editor privileges and return 401 Unauthorized for non-editors.
+
+### POST /api/hidewriteups/:id/action/hide
+
+Hides the specified writeup from the New Writeups list by setting its `notnew` flag to 1.
+
+**URL Parameters:**
+* **id** - The node_id of the writeup to hide (required, must be a writeup type)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "node_id": 123456,
+  "notnew": true
+}
+```
+
+**Response Keys:**
+* **node_id** - The node_id of the writeup
+* **notnew** - Boolean indicating the writeup is now hidden (always `true` for this endpoint)
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not an editor, or the node doesn't exist or is not a writeup type
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/hidewriteups/123456/action/hide \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Only works on writeup type nodes
+- Updates the New Writeups data cache immediately after hiding
+- Hidden writeups will no longer appear in the public New Writeups list
+- Editors can still see hidden writeups in New Writeups with the `notnew` flag displayed
+- This is commonly used to filter out junk, spam, or very short writeups from New Writeups
+
+### POST /api/hidewriteups/:id/action/show
+
+Shows the specified writeup in the New Writeups list by setting its `notnew` flag to 0.
+
+**URL Parameters:**
+* **id** - The node_id of the writeup to show (required, must be a writeup type)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "node_id": 123456,
+  "notnew": false
+}
+```
+
+**Response Keys:**
+* **node_id** - The node_id of the writeup
+* **notnew** - Boolean indicating the writeup is now visible (always `false` for this endpoint)
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not an editor, or the node doesn't exist or is not a writeup type
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/hidewriteups/123456/action/show \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Only works on writeup type nodes
+- Updates the New Writeups data cache immediately after showing
+- Writeup will reappear in the New Writeups list (if it's still within the time/count window)
+- This can be used to undo an accidental hide operation
+
 ## Sessions
+
+**Test Coverage: ✅ 100%** (3/3 endpoints tested - t/002_sessions_api.t)
 
 Current version: *1 (beta)*
 
@@ -517,9 +936,81 @@ Returns the output of /api/sessions for the new current user, which is probably 
 
 ## System Utilities
 
+**Test Coverage: ❌ 0%** (0/1 endpoints tested)
+
 ### /api/systemutilities/roompurge
 
 (Admin only) Kicks all users "offline" for the purposes of ONO messages. Desirable mostly for testing
+
+## Developer Variables
+
+**Test Coverage: ✅ 100%** (1/1 endpoints tested - t/028_developervars_api.t)
+
+Current version: *1 (beta)*
+
+Provides access to user preference variables (VARS) for developers. This endpoint is used in production by the Everything Developer nodelet, which displays a modal dialog showing the user's $VARS information for debugging and system visibility purposes.
+
+All developer variables methods require developer privileges and return 401 Unauthorized for non-developers.
+
+### GET /api/developervars/
+
+Returns all user VARS (preferences/settings) for the currently logged-in user as a JSON object.
+
+**Returns:**
+
+200 OK with JSON object containing all user VARS as key-value pairs:
+
+```json
+{
+  "vit_hidenodeinfo": "1",
+  "num_newwus": "25",
+  "collapsedNodelets": "epicenter!readthis!",
+  "theme": "dark",
+  "custom_setting_1": "value1",
+  "custom_setting_2": "value2"
+}
+```
+
+**Response Structure:**
+
+The response is a flat JSON object where:
+* **Keys** - Variable names from the user's VARS hash
+* **Values** - Variable values (typically strings, but can be any JSON-serializable type)
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not a developer
+
+**Example Request:**
+
+```bash
+curl https://everything2.com/api/developervars/ \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- This endpoint returns ALL variables stored in the user's VARS hash, not just the standard preferences exposed through `/api/preferences`
+- VARS can contain various system-internal settings, user preferences, UI state, and custom variables
+- This is a read-only endpoint - it does not provide a way to set variables (use `/api/preferences/set` for standard preferences)
+- Developer privileges are required to access this endpoint to prevent unauthorized inspection of user settings
+- **Production Usage**: Powers the Everything Developer nodelet's modal dialog that displays $VARS information for system visibility
+- Useful for:
+  - Real-time inspection of user settings and preferences
+  - Debugging preference-related issues
+  - Understanding what settings a user has configured
+  - Verifying correct preference storage and retrieval
+  - Development and testing of preference-dependent features
+
+**Common VARS keys you might see:**
+
+- **vit_hide*** - Visibility preferences for nodelets
+- **edn_hide*** - Editor-specific visibility preferences
+- **num_newwus** - Number of new writeups to display
+- **nw_nojunk** - Hide junk from new writeups
+- **collapsedNodelets** - State of collapsed nodelets
+- **theme** - User theme preference
+- Various other system and custom settings
 
 ## Searches
 

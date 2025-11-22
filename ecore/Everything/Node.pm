@@ -268,5 +268,44 @@ sub cache_refresh
   return $self->NODEDATA;
 }
 
+sub clone
+{
+  my ($self, $new_title, $user) = @_;
+
+  unless($new_title)
+  {
+    # Must provide a title for the cloned node
+    return;
+  }
+
+  unless($user)
+  {
+    # Must provide a user for the clone operation
+    return;
+  }
+
+  # Create a copy of the node data
+  my %cloned_data = %{$self->NODEDATA};
+
+  # Remove fields that should not be copied to the new node
+  delete $cloned_data{node_id};     # New node gets new ID
+  delete $cloned_data{type};        # Type is set by insertNode
+  delete $cloned_data{group};       # Group should be recalculated
+  delete $cloned_data{title};       # Using the new title instead
+  delete $cloned_data{_ORIGINAL_VALUES}; # Internal tracking field
+
+  # Insert the cloned node with the new title
+  my $new_node_id = $self->DB->insertNode($new_title, $self->type->NODEDATA, $user->NODEDATA, \%cloned_data);
+
+  unless($new_node_id)
+  {
+    # Failed to create cloned node
+    return;
+  }
+
+  # Return the new node object
+  return $self->APP->node_by_id($new_node_id);
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

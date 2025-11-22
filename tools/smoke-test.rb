@@ -38,7 +38,17 @@ class SmokeTest
     begin
       response = http_get('/')
       if response.code.to_i == 200
-        puts "✓ Server is running"
+        # Check that we got actual E2 content, not just any 200 response
+        if response.body && (response.body.include?('everything2.com') || response.body.include?('e2-react-root'))
+          puts "✓ Server is running"
+        else
+          puts "✗ Server returned 200 but unexpected content"
+          @errors << "Server returned 200 but response doesn't look like Everything2"
+        end
+      elsif response.code.to_i == 500
+        # Internal server error often indicates Perl compilation failure
+        puts "✗ Server returned 500 (possible Perl syntax error)"
+        @errors << "Server returned 500 - check Apache error logs for Perl compilation errors"
       else
         puts "✗ Server returned #{response.code}"
         @errors << "Server not responding correctly (HTTP #{response.code})"

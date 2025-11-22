@@ -1,6 +1,10 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
 import NodeletContainer from '../NodeletContainer'
+import Borgcheck from '../Borgcheck'
+import ExperienceGain from '../ExperienceGain'
+import GPGain from '../GPGain'
+import ServerTime from '../ServerTime'
 
 const Epicenter = (props) => {
   if (props.isGuest) {
@@ -11,7 +15,11 @@ const Epicenter = (props) => {
         nodeletIsOpen={props.nodeletIsOpen}
       >
         {props.borgcheck && (
-          <div dangerouslySetInnerHTML={{ __html: props.borgcheck }} />
+          <Borgcheck
+            borged={props.borgcheck.borged}
+            numborged={props.borgcheck.numborged}
+            currentTime={props.borgcheck.currentTime}
+          />
         )}
       </NodeletContainer>
     )
@@ -40,7 +48,11 @@ const Epicenter = (props) => {
       nodeletIsOpen={props.nodeletIsOpen}
     >
       {props.borgcheck && (
-        <div dangerouslySetInnerHTML={{ __html: props.borgcheck }} />
+        <Borgcheck
+          borged={props.borgcheck.borged}
+          numborged={props.borgcheck.numborged}
+          currentTime={props.borgcheck.currentTime}
+        />
       )}
 
       <ul>
@@ -76,8 +88,8 @@ const Epicenter = (props) => {
           />
         </li>
         <li title="View a randomly selected node">
-          {props.randomNode && (
-            <span dangerouslySetInnerHTML={{ __html: props.randomNode }} />
+          {props.randomNodeUrl && (
+            <a href={props.randomNodeUrl}>Random Node</a>
           )}
         </li>
         <li title="Need help?">
@@ -98,21 +110,25 @@ const Epicenter = (props) => {
         </p>
       )}
 
-      {props.experienceDisplay && (
+      {props.experienceGain && (
         <p id="experience">
-          <span dangerouslySetInnerHTML={{ __html: props.experienceDisplay }} />
+          <ExperienceGain amount={props.experienceGain} />
         </p>
       )}
 
-      {!props.gpOptOut && props.gpDisplay && (
+      {!props.gpOptOut && props.gpGain && (
         <p id="gp">
-          <span dangerouslySetInnerHTML={{ __html: props.gpDisplay }} />
+          <GPGain amount={props.gpGain} />
         </p>
       )}
 
-      {props.serverTimeDisplay && (
+      {props.serverTime && (
         <p id="servertime">
-          <span dangerouslySetInnerHTML={{ __html: props.serverTimeDisplay }} />
+          <ServerTime
+            timeString={props.serverTime}
+            showLocalTime={props.localTimeUse}
+            localTimeString={props.localTime}
+          />
         </p>
       )}
     </NodeletContainer>

@@ -19,11 +19,41 @@ jest.mock('../NodeletContainer', () => {
   }
 })
 
+jest.mock('../Borgcheck', () => {
+  return function MockBorgcheck({ borged, numborged, currentTime }) {
+    return <div data-testid="borgcheck">Borgcheck: {borged}</div>
+  }
+})
+
+jest.mock('../ExperienceGain', () => {
+  return function MockExperienceGain({ amount }) {
+    return <span data-testid="experience-gain">You gained {amount} experience points!</span>
+  }
+})
+
+jest.mock('../GPGain', () => {
+  return function MockGPGain({ amount }) {
+    return <span data-testid="gp-gain">Yay! You gained {amount} GP!</span>
+  }
+})
+
+jest.mock('../ServerTime', () => {
+  return function MockServerTime({ timeString, showLocalTime, localTimeString }) {
+    return (
+      <span data-testid="server-time">
+        Server time: {timeString}
+        {showLocalTime && localTimeString && ` | Your time: ${localTimeString}`}
+      </span>
+    )
+  }
+})
+
 describe('Epicenter Component', () => {
   const mockShowNodelet = jest.fn()
 
   const defaultProps = {
     isGuest: false,
+    userName: 'testuser',
     votesLeft: 5,
     cools: 2,
     experience: 1000,
@@ -34,11 +64,12 @@ describe('Epicenter Component', () => {
     userId: 123,
     userSettingsId: 456,
     helpPage: 'Everything2 Help',
-    borgcheck: '',
-    experienceDisplay: '<span>Experience: 1000</span>',
-    gpDisplay: '<span>GP: 50</span>',
-    randomNode: '<a href="/node/random">Random Node</a>',
-    serverTimeDisplay: 'server time<br />2025-11-20 12:00:00',
+    borgcheck: null,
+    experienceGain: 10,
+    gpGain: 5,
+    randomNodeUrl: '/index.pl?op=randomnode&garbage=12345',
+    serverTime: '2025-11-20 12:00:00',
+    localTime: null,
     showNodelet: mockShowNodelet,
     nodeletIsOpen: true
   }
@@ -77,15 +108,15 @@ describe('Epicenter Component', () => {
     it('renders experience display', () => {
       render(<Epicenter {...defaultProps} />)
 
-      const expElement = screen.getByText('Experience: 1000')
-      expect(expElement).toBeInTheDocument()
+      expect(screen.getByTestId('experience-gain')).toBeInTheDocument()
+      expect(screen.getByText('You gained 10 experience points!')).toBeInTheDocument()
     })
 
     it('renders GP display when not opted out', () => {
       render(<Epicenter {...defaultProps} />)
 
-      const gpElement = screen.getByText('GP: 50')
-      expect(gpElement).toBeInTheDocument()
+      expect(screen.getByTestId('gp-gain')).toBeInTheDocument()
+      expect(screen.getByText('Yay! You gained 5 GP!')).toBeInTheDocument()
     })
 
     it('renders server time display', () => {
@@ -178,17 +209,18 @@ describe('Epicenter Component', () => {
 
   describe('GP opt-out', () => {
     it('does not render GP display when opted out', () => {
-      const props = { ...defaultProps, gpOptOut: true }
+      const props = { ...defaultProps, gpOptOut: true, gpGain: 5 }
       render(<Epicenter {...props} />)
 
-      expect(screen.queryByText('GP: 50')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('gp-gain')).not.toBeInTheDocument()
     })
 
     it('renders GP display when not opted out', () => {
-      const props = { ...defaultProps, gpOptOut: false }
+      const props = { ...defaultProps, gpOptOut: false, gpGain: 5 }
       render(<Epicenter {...props} />)
 
-      expect(screen.getByText('GP: 50')).toBeInTheDocument()
+      expect(screen.getByTestId('gp-gain')).toBeInTheDocument()
+      expect(screen.getByText('Yay! You gained 5 GP!')).toBeInTheDocument()
     })
   })
 
@@ -210,23 +242,22 @@ describe('Epicenter Component', () => {
   })
 
   describe('borgcheck', () => {
-    it('renders borgcheck HTML when present', () => {
+    it('renders borgcheck when present', () => {
       const props = {
         ...defaultProps,
-        borgcheck: '<div class="borg">You have been assimilated</div>'
+        borgcheck: { borged: 1234567890, numborged: 2, currentTime: 1234567900 }
       }
-      const { container } = render(<Epicenter {...props} />)
-
-      expect(container.querySelector('.borg')).toBeInTheDocument()
-      expect(container.textContent).toContain('You have been assimilated')
-    })
-
-    it('renders without borgcheck when empty', () => {
-      const props = { ...defaultProps, borgcheck: '' }
       render(<Epicenter {...props} />)
 
-      const container = screen.getByTestId('nodelet-container')
-      expect(container).toBeInTheDocument()
+      expect(screen.getByTestId('borgcheck')).toBeInTheDocument()
+      expect(screen.getByText('Borgcheck: 1234567890')).toBeInTheDocument()
+    })
+
+    it('renders without borgcheck when null', () => {
+      const props = { ...defaultProps, borgcheck: null }
+      render(<Epicenter {...props} />)
+
+      expect(screen.queryByTestId('borgcheck')).not.toBeInTheDocument()
     })
   })
 
@@ -250,26 +281,27 @@ describe('Epicenter Component', () => {
   })
 
   describe('HTML content rendering', () => {
-    it('renders random node HTML', () => {
+    it('renders random node link', () => {
       const props = {
         ...defaultProps,
-        randomNode: '<a href="/node/random" class="random-link">Go Random</a>'
+        randomNodeUrl: '/index.pl?op=randomnode&garbage=12345'
       }
       const { container } = render(<Epicenter {...props} />)
 
-      expect(container.querySelector('.random-link')).toBeInTheDocument()
+      const link = container.querySelector('a[href="/index.pl?op=randomnode&garbage=12345"]')
+      expect(link).toBeInTheDocument()
+      expect(link.textContent).toBe('Random Node')
     })
 
-    it('renders server time HTML', () => {
+    it('renders server time', () => {
       const props = {
         ...defaultProps,
-        serverTimeDisplay: 'server time<br />2025-11-20 14:30:00<br />your time<br />2025-11-20 09:30:00'
+        serverTime: 'Monday, November 20, 2025 at 12:00:00'
       }
-      const { container } = render(<Epicenter {...props} />)
+      render(<Epicenter {...props} />)
 
-      const timeElement = container.querySelector('#servertime')
-      expect(timeElement).toBeInTheDocument()
-      expect(timeElement.innerHTML).toContain('server time')
+      expect(screen.getByTestId('server-time')).toBeInTheDocument()
+      expect(screen.getByText(/Server time: Monday, November 20, 2025/)).toBeInTheDocument()
     })
   })
 
