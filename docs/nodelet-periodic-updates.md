@@ -427,6 +427,26 @@ const Messages = (props) => {
 
 6. **Can optimize later** - If multiple HTTP requests become an issue, can switch to Option C later. But premature optimization is unnecessary.
 
+## Background Request Pattern
+
+All polling/periodic update requests should use the `X-Ajax-Idle` header to prevent updating the user's lastseen status:
+
+```javascript
+fetch('/api/chatter/', {
+  headers: {
+    'X-Ajax-Idle': '1'
+  }
+})
+```
+
+This is equivalent to the legacy `ajaxIdle=1` query parameter but cleaner for REST APIs. The backend checks both:
+- Query parameter: `?ajaxIdle=1`
+- HTTP header: `X-Ajax-Idle: 1`
+
+Without this flag, each poll would update the user's lastseen timestamp, making them appear constantly active.
+
+**Implementation:** [ecore/Everything/Request.pm:171-174](../ecore/Everything/Request.pm#L171-L174)
+
 ## Implementation Plan
 
 ### Phase 1: Create Shared Hook
