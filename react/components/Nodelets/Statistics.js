@@ -18,7 +18,17 @@ import {
 
 const Statistics = (props) => {
   if (!props.statistics) {
-    return null
+    return (
+      <NodeletContainer
+        title="Statistics"
+        showNodelet={props.showNodelet}
+        nodeletIsOpen={props.nodeletIsOpen}
+      >
+        <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
+          No statistics available
+        </p>
+      </NodeletContainer>
+    )
   }
 
   const { personal = {}, fun = {}, advancement = {} } = props.statistics

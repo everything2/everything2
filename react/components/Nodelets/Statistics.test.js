@@ -25,14 +25,14 @@ jest.mock('../NodeletSection', () => {
 
 describe('Statistics Component', () => {
   describe('rendering with no data', () => {
-    it('returns null when statistics prop is undefined', () => {
-      const { container } = render(<Statistics />)
-      expect(container.firstChild).toBeNull()
+    it('shows friendly message when statistics prop is undefined', () => {
+      render(<Statistics />)
+      expect(screen.getByText('No statistics available')).toBeInTheDocument()
     })
 
-    it('returns null when statistics prop is null', () => {
-      const { container } = render(<Statistics statistics={null} />)
-      expect(container.firstChild).toBeNull()
+    it('shows friendly message when statistics prop is null', () => {
+      render(<Statistics statistics={null} />)
+      expect(screen.getByText('No statistics available')).toBeInTheDocument()
     })
 
     it('renders container but hides personal section when empty', () => {

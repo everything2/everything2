@@ -77,10 +77,10 @@ sub create_test_node {
 }
 
 sub add_note_to_node {
-    my ($node_id, $note_text, $noter_user_id) = @_;
+    my ($node_id, $note_text, $noter_user_id, $custom_timestamp) = @_;
     $noter_user_id ||= $test_user->{node_id};
 
-    my $timestamp = $DB->sqlSelect("NOW()", "DUAL");
+    my $timestamp = $custom_timestamp || $DB->sqlSelect("NOW()", "DUAL");
 
     $DB->sqlInsert("nodenote", {
         nodenote_nodeid => $node_id,
@@ -255,12 +255,12 @@ my $ordered_doc = create_test_node("Test Ordering " . time(), "document");
 if ($ordered_doc) {
     my $ordered_id = $ordered_doc->{node_id};
 
-    # Add notes with slight delays to ensure timestamp ordering
-    add_note_to_node($ordered_id, "First note");
-    sleep(1);
-    add_note_to_node($ordered_id, "Second note");
-    sleep(1);
-    add_note_to_node($ordered_id, "Third note");
+    # Add notes with explicit timestamps to ensure deterministic ordering
+    # Use timestamps 3, 2, and 1 seconds in the past to test ordering
+    my $now = time();
+    add_note_to_node($ordered_id, "First note", undef, $APP->convertEpochToDate($now - 3));
+    add_note_to_node($ordered_id, "Second note", undef, $APP->convertEpochToDate($now - 2));
+    add_note_to_node($ordered_id, "Third note", undef, $APP->convertEpochToDate($now - 1));
 
     $notes = $APP->getNodeNotes($ordered_doc);
     is(scalar(@$notes), 3, "Retrieved 3 ordered notes");

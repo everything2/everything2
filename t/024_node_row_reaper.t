@@ -21,13 +21,17 @@ my $e2node = "nodeshell_for_testing";
 my $cme = $DB->getNode("Cool Man Eddie","user");
 my $root = $DB->getNode("root","user");
 
+# Clean up tomb entries from previous test runs
+my $writeup_title = "$e2node (idea)";
+$DB->sqlDelete('tomb', "title=" . $DB->quote($e2node));
+$DB->sqlDelete('tomb', "title=" . $DB->quote($writeup_title));
+
 $DB->nukeNode($DB->getNode($e2node, "e2node"), -1);
 $DB->insertNode($e2node,$DB->getType("e2node"), $root);
 my $e2node_parent = $DB->getNode($e2node, "e2node");
 $e2node_parent->{createdby_user} = $cme->{node_id};
 $DB->updateNode($e2node_parent, -1);
 
-my $writeup_title = "$e2node (idea)";
 $DB->nukeNode($DB->getNode($writeup_title, "writeup"),-1);
 
 $DB->insertNode($writeup_title, $DB->getType("writeup"), $cme, {"doctext" => "This is a test writeup!"});

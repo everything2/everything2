@@ -20,7 +20,6 @@ has 'MINIMUM_VERSION' => (isa => "Int", lazy => 1, builder => "_build_minimum_ve
 sub _build_minimum_version
 {
   my ($self) = @_;
-  
   # If minimum isn't set then the current version is the minimum
   return $self->CURRENT_VERSION;
 }

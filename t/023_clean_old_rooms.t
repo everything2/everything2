@@ -17,6 +17,9 @@ unless($APP->inDevEnvironment())
 my $long_enough = '2000-01-01 12:00:00';
 my $testname = 'test old room';
 
+# Clean up any existing tomb entries from previous test runs
+$DB->sqlDelete('tomb', "title=" . $DB->quote($testname));
+
 $DB->nukeNode($DB->getNode($testname,'room'), -1);
 
 my $val = $DB->getNode("Valhalla","room");

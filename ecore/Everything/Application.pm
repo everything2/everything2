@@ -4707,6 +4707,363 @@ sub updateNewWriteups
   return $datastash->generate();
 }
 
+=head2 buildOtherUsersData
+
+Build the data structure for the Other Users nodelet / chatroom user list.
+Returns a hashref with user list, room info, permissions, etc.
+
+Parameters:
+  $USER - The user node for whom to build the data
+
+Returns:
+  Hashref with structure:
+    userCount, currentRoom, currentRoomId, rooms, availableRooms,
+    canCloak, isCloaked, suspension, canCreateRoom, createRoomSuspended
+
+=cut
+
+sub buildOtherUsersData
+{
+  my ($this, $USER) = @_;
+
+  my $current_room_id = $USER->{in_room} || 0;
+  my $user_is_editor = $this->isEditor($USER);
+  my $user_is_chanop = $this->isChanop($USER);
+  my $uservars = $this->getVars($USER);
+  my $infravision = $uservars->{infravision} || 0;
+
+  # Random user actions (from original implementation)
+  my @doVerbs = ('eating', 'watching', 'stalking', 'filing',
+                'noding', 'amazed by', 'tired of', 'crying for',
+                'thinking of', 'fighting', 'bouncing towards',
+                'fleeing from', 'diving into', 'wishing for',
+                'skating towards', 'playing with',
+                'upvoting', 'learning of', 'teaching',
+                'getting friendly with', 'frowned upon by',
+                'sleeping on', 'getting hungry for', 'touching',
+                'beating up', 'spying on', 'rubbing', 'caressing',
+                '');  # Blank - sometimes omit verb entirely
+  my @doNouns = ('a carrot', 'some money', 'EDB', 'nails', 'some feet',
+                'a balloon', 'wheels', 'soy', 'a monkey', 'a smurf',
+                'an onion', 'smoke', 'the birds', 'you!', 'a flashlight',
+                'hash', 'your speaker', 'an idiot', 'an expert', 'an AI',
+                'the human genome', 'upvotes', 'downvotes',
+                'their pants', 'smelly cheese', 'a pink elephant',
+                'teeth', 'a hippopotamus', 'noders', 'a scarf',
+                'your ear', 'killer bees', 'an angst sandwich',
+                'Butterfinger McFlurry');
+
+  # Get ignore list for current user
+  my $user_is_admin = $this->isAdmin($USER);
+  my %ignoring = ();
+  my $ignore_csr = $this->{db}->sqlSelectMany(
+    'ignore_node',
+    'messageignore',
+    'messageignore_id=' . $USER->{node_id}
+  );
+  while(my ($ignore_id) = $ignore_csr->fetchrow_array()) {
+    $ignoring{$ignore_id} = 1;
+  }
+
+  # Get all users - including current user for multi-room support
+  my $wherestr = '1=1';  # Include all users
+
+  # Editors/chanops/infravision can see invisible users
+  unless($user_is_editor || $user_is_chanop || $infravision) {
+    $wherestr .= ' AND r.visible=0';
+  }
+
+  my $csr = $this->{db}->sqlSelectMany(
+    'r.member_user, r.room_id, r.visible, r.borgd, r.experience',
+    'room r',
+    $wherestr
+  );
+
+  my @noderlist = ();
+
+  while(my $row = $csr->fetchrow_hashref()) {
+    my $user = $this->{db}->getNodeById($row->{member_user});
+    next unless $user;
+
+    # Skip ignored users (unless admin)
+    next if $ignoring{$user->{node_id}} && !$user_is_admin;
+
+    my $other_uservars = $this->getVars($user);
+
+    # Get last node info from user VARS
+    my $jointime = $this->convertDateToEpoch($user->{createtime});
+    my ($lastnode, $lastnodetime, $lastnodehidden);
+    my $lastnodeid = $other_uservars->{lastnoded};
+
+    if($lastnodeid) {
+      $lastnode = $this->{db}->getNodeById($lastnodeid);
+      if($lastnode) {
+        $lastnodetime = $lastnode->{publishtime};
+        $lastnodehidden = $lastnode->{notnew};
+        # Nuked writeups can mess this up, so check there really is a lastnodetime
+        $lastnodetime = $this->convertDateToEpoch($lastnodetime) if $lastnodetime;
+      }
+    }
+
+    # Haven't been here for a month or haven't noded? Reset to 0
+    if(time() - $jointime < 2592000 || !$lastnodetime) {
+      $lastnodetime = 0;
+    }
+
+    # Active days from votesrefreshed VARS (votes refresh when user logs in)
+    my $activeDays = $other_uservars->{votesrefreshed} || 0;
+
+    push @noderlist, {
+      user => $user,
+      uservars => $other_uservars,
+      roomId => $row->{room_id},
+      visible => $row->{visible},
+      borgd => $row->{borgd},
+      experience => $row->{experience},
+      lastNodeTime => $lastnodetime,
+      lastNodeId => $lastnodeid,
+      lastNode => $lastnode,
+      lastNodeHidden => $lastnodehidden,
+      activeDays => $activeDays
+    };
+  }
+
+  # Sort by room (current room first), then by last node time, then by active days
+  @noderlist = sort {
+    ($b->{roomId} == $current_room_id) <=> ($a->{roomId} == $current_room_id)
+    || $b->{roomId} <=> $a->{roomId}
+    || $b->{lastNodeTime} <=> $a->{lastNodeTime}
+    || $b->{activeDays} <=> $a->{activeDays}
+  } @noderlist;
+
+  # Build user display list
+  my %room_users = ();
+  my $userCount = 0;
+  my $showActions = $uservars->{showuseractions} ? 1 : 0;
+
+  foreach my $noder (@noderlist) {
+    my $user = $noder->{user};
+    my $other_uservars = $noder->{uservars};
+    my $roomId = $noder->{roomId};
+
+    # Check for Halloween costume
+    my $displayUser = $user;
+    my $costume_id = $other_uservars->{e2_hc_costume};
+    if($costume_id && $this->inHalloweenPeriod()) {
+      my $costume = $this->{db}->getNodeById($costume_id);
+      $displayUser = $costume if $costume;
+    }
+
+    # Check if same user
+    my $sameUser = ($user->{node_id} == $USER->{node_id});
+
+    # Calculate account age
+    my $jointime = $this->convertDateToEpoch($user->{createtime});
+    my $accountage = time() - $jointime;
+    my $getTime = int($accountage / (24*60*60));
+
+    # Build flags array (structured data, not HTML)
+    my @flags = ();
+
+    # New user indicator (only visible to admins/editors)
+    my $newbielook = $user_is_admin || $user_is_editor;
+    if($newbielook && $getTime <= 30) {
+      push @flags, {
+        type => 'newuser',
+        days => $getTime,
+        veryNew => ($getTime <= 3) ? 1 : 0
+      };
+    }
+
+    # Staff indicators (only if user is not hiding their own symbols)
+    my $hideSymbols = $this->getParameter($user, 'hide_chatterbox_staff_symbol');
+    if($this->isAdmin($user) && !$hideSymbols) {
+      push @flags, { type => 'god' };
+    }
+    if($this->isEditor($user, 'nogods') && !$this->isAdmin($user) && !$hideSymbols) {
+      push @flags, { type => 'editor' };
+    }
+    my $thisChanop = $this->isChanop($user, 'nogods');
+    if($thisChanop) {
+      push @flags, { type => 'chanop' };
+    }
+
+    # Borged indicator (for editors/chanops)
+    if(($user_is_editor || $user_is_chanop) && $noder->{borgd}) {
+      push @flags, { type => 'borged' };
+    }
+
+    # Invisibility indicator (for editors/chanops/infravision)
+    if(($user_is_editor || $user_is_chanop || $infravision) && $noder->{visible} == 1) {
+      push @flags, { type => 'invisible' };
+    }
+
+    # Room indicator - show if user is in different room and viewer is Outside
+    if($roomId != 0 && $current_room_id == 0) {
+      my $rm = $this->{db}->getNodeById($roomId);
+      if($rm) {
+        push @flags, {
+          type => 'room',
+          roomId => $roomId,
+          roomTitle => $rm->{title}
+        };
+      }
+    }
+
+    # User action or recent noding
+    my $action = undef;
+
+    # Add user actions (2% chance, not for same user)
+    if($showActions && !$sameUser && (0.02 > rand())) {
+      $action = {
+        type => 'action',
+        verb => $doVerbs[int(rand(@doVerbs))],
+        noun => $doNouns[int(rand(@doNouns))]
+      };
+    }
+
+    # Add recent noding link (2% chance, replaces action if triggered)
+    # Check: noded in last week AND writeup not hidden
+    if($showActions && (0.02 > rand())) {
+      if((time() - $noder->{lastNodeTime}) < 604800 && !$noder->{lastNodeHidden}) {
+        if($noder->{lastNode}) {
+          my $lastnodeparent = $this->{db}->getNodeById($noder->{lastNode}->{parent_e2node});
+          $action = {
+            type => 'recent',
+            nodeId => $noder->{lastNode}->{node_id},
+            nodeTitle => $noder->{lastNode}->{title},
+            parentTitle => $lastnodeparent ? $lastnodeparent->{title} : ''
+          };
+        }
+      }
+    }
+
+    # Build structured user data
+    my $userData = {
+      userId => $user->{node_id},
+      username => $user->{title},
+      displayName => $displayUser->{title},
+      isCurrentUser => $sameUser ? 1 : 0,
+      flags => \@flags
+    };
+    $userData->{action} = $action if $action;
+
+    # Add to room's user list
+    push @{$room_users{$roomId}}, $userData;
+    $userCount++;
+  }
+
+  # Build rooms array with headers
+  my @rooms = ();
+  foreach my $roomId (sort { ($b == $current_room_id) <=> ($a == $current_room_id) || $b <=> $a } keys %room_users) {
+    my $roomTitle = '';
+
+    # Only show room header if not current room or if multiple rooms
+    if(scalar(keys %room_users) > 1) {
+      if($roomId == 0) {
+        $roomTitle = 'Outside';
+      } else {
+        my $room = $this->{db}->getNodeById($roomId);
+        $roomTitle = ($room && $room->{type}{title} eq 'room') ? $room->{title} : 'Unknown Room';
+      }
+    }
+
+    push @rooms, {
+      title => $roomTitle,
+      users => $room_users{$roomId}
+    };
+  }
+
+  # Get current room name
+  my $room_node = $this->{db}->getNodeById($current_room_id);
+  my $currentRoom = $room_node ? $room_node->{title} : '';
+
+  # Get available rooms for dropdown
+  my @available_rooms = ();
+
+  # First, get system rooms from 'e2 rooms' nodegroup
+  my $rooms_group = $this->{db}->getNode('e2 rooms', 'nodegroup');
+  if ($rooms_group && $rooms_group->{group}) {
+    foreach my $room_id (@{$rooms_group->{group}}) {
+      my $room = $this->{db}->getNodeById($room_id);
+      next unless $room;
+      next unless $this->canEnterRoom($room, $USER, $uservars);
+
+      push @available_rooms, {
+        room_id => int($room->{node_id}),
+        title => $room->{title}
+      };
+    }
+  }
+
+  # Second, get user-created rooms from roomdata table
+  my $room_csr = $this->{db}->sqlSelectMany('roomdata_id', 'roomdata', '', 'roomdata_id');
+  if ($room_csr) {
+    while (my ($room_id) = $room_csr->fetchrow_array()) {
+      my $room = $this->{db}->getNodeById($room_id);
+      next unless $room;
+      next unless $room->{type}{title} eq 'room';
+      next unless $this->canEnterRoom($room, $USER, $uservars);
+
+      # Check if already added from nodegroup (avoid duplicates)
+      next if grep { $_->{room_id} == $room_id } @available_rooms;
+
+      push @available_rooms, {
+        room_id => int($room->{node_id}),
+        title => $room->{title}
+      };
+    }
+    $room_csr->finish();
+  }
+
+  # Add "outside" option
+  push @available_rooms, {
+    room_id => 0,
+    title => 'outside'
+  };
+
+  # Check cloak permissions
+  my $can_cloak = $this->userCanCloak($USER) ? 1 : 0;
+  my $is_cloaked = $uservars->{visible} ? 1 : 0;
+
+  # Check room change suspension
+  my $suspension_info = $this->isSuspended($USER, 'changeroom');
+  my $suspension = undef;
+  if ($suspension_info) {
+    if (defined($suspension_info->{ends}) && $suspension_info->{ends} != 0) {
+      my $seconds_remaining = $this->convertDateToEpoch($suspension_info->{ends}) - time();
+      $suspension = {
+        type => 'temporary',
+        seconds_remaining => int($seconds_remaining)
+      };
+    } else {
+      $suspension = {
+        type => 'indefinite'
+      };
+    }
+  }
+
+  # Check room creation permissions
+  my $is_chanop = $this->isChanop($USER);
+  my $user_level = $this->getLevel($USER);
+  my $required_level = $Everything::CONF->create_room_level || 0;
+  my $can_create_room = ($user_level >= $required_level || $this->isAdmin($USER) || $is_chanop) ? 1 : 0;
+  my $create_room_suspended = $this->isSuspended($USER, 'room') ? 1 : 0;
+
+  return {
+    userCount => $userCount,
+    currentRoom => $currentRoom,
+    currentRoomId => int($current_room_id),
+    rooms => \@rooms,
+    availableRooms => \@available_rooms,
+    canCloak => $can_cloak,
+    isCloaked => $is_cloaked,
+    suspension => $suspension,
+    canCreateRoom => $can_create_room,
+    createRoomSuspended => $create_room_suspended
+  };
+}
+
 sub buildNodeInfoStructure
 {
   my ($this, $NODE, $USER, $VARS, $query) = @_;
@@ -5033,6 +5390,365 @@ sub buildNodeInfoStructure
       meritMean => $$hv{mean} || 0,
       meritStddev => $$hv{stddev} || 0
     };
+  }
+
+  # Notelet
+  if($nodelets =~ /1290534/ and not $this->isGuest($USER))
+  {
+    my $isLocked = (exists $VARS->{lockCustomHTML}) || (exists $VARS->{noteletLocked});
+    my $hasContent = (exists $VARS->{'noteletRaw'}) && length($VARS->{'noteletRaw'});
+    my $content = '';
+
+    if ($hasContent) {
+      # Call screenNotelet if needed
+      unless(exists $VARS->{'noteletScreened'}) {
+        Everything::Delegation::htmlcode::screenNotelet(
+          $this->{db},
+          $query,
+          $NODE,
+          $USER,
+          $VARS,
+          undef,  # $PAGELOAD
+          $this   # $APP
+        );
+      }
+      $content = $VARS->{'noteletScreened'} || '';
+    }
+
+    $e2->{noteletData} = {
+      isLocked => $isLocked ? 1 : 0,
+      hasContent => $hasContent ? 1 : 0,
+      content => $content,
+      isGuest => $this->isGuest($USER) ? 1 : 0
+    };
+  }
+
+  # Categories
+  if($nodelets =~ /1935779/ and not $this->isGuest($USER))
+  {
+    my $GU = $Everything::CONF->guest_user;
+    my $uid = $USER->{user_id};
+
+    # Get all usergroups the user is in
+    my $sql = "SELECT DISTINCT ug.node_id
+      FROM node ug, nodegroup ng
+      WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$uid";
+
+    my $ds = $this->{db}->{dbh}->prepare($sql);
+    $ds->execute();
+    my $inClause = $uid.','.$GU;
+    while(my $n = $ds->fetchrow_hashref)
+    {
+      $inClause .= ','.$n->{node_id};
+    }
+
+    # Get all categories the user can edit
+    $sql = "SELECT n.node_id, n.title, n.author_user, u.title AS author_username
+      FROM node n
+      LEFT JOIN node u ON n.author_user = u.node_id
+      WHERE n.author_user IN ($inClause)
+      AND n.type_nodetype=1522375
+      AND n.node_id NOT IN (SELECT to_node AS node_id FROM links WHERE from_node=n.node_id)
+      ORDER BY n.title";
+
+    $ds = $this->{db}->{dbh}->prepare($sql);
+    $ds->execute();
+    my @categories = ();
+    while(my $n = $ds->fetchrow_hashref)
+    {
+      push @categories, {
+        node_id => $n->{node_id},
+        title => $n->{title},
+        author_user => $n->{author_user},
+        author_username => $n->{author_username}
+      };
+    }
+
+    $e2->{categories} = \@categories;
+    $e2->{currentNodeId} = $NODE->{node_id};
+  }
+
+  # Most Wanted
+  if($nodelets =~ /1986723/)
+  {
+    my $REQ = Everything::getVars(Everything::getNode('bounty order','setting'));
+    my $OUT = Everything::getVars(Everything::getNode('outlaws', 'setting'));
+    my $REW = Everything::getVars(Everything::getNode('bounties', 'setting'));
+    my $HIGH = Everything::getVars(Everything::getNode('bounty number', 'setting'));
+    my $MAX = 5;
+
+    my $bountyTot = $$HIGH{1};
+    my $numberShown = 0;
+    my @bounties = ();
+
+    for(my $i = $bountyTot; $numberShown < $MAX; $i--)
+    {
+      if (exists $$REQ{$i})
+      {
+        $numberShown++;
+        my $requesterName = $$REQ{$i};
+        my $requesterNode = $this->{db}->getNode($requesterName, 'user');
+        my $outlawStr = $$OUT{$requesterName} || '';
+        my $reward = $$REW{$requesterName} || '';
+
+        push @bounties, {
+          requester_id => $requesterNode->{node_id},
+          requester_name => $requesterName,
+          outlaw_nodeshell => $outlawStr,
+          reward => $reward
+        };
+      }
+    }
+
+    $e2->{bounties} = \@bounties;
+  }
+
+  # Recent Nodes
+  if($nodelets =~ /1322699/)
+  {
+    $VARS->{nodetrail} ||= "";
+    my @trail_ids = split(",", $VARS->{nodetrail});
+
+    # Add current node to beginning of trail for next page load
+    $VARS->{nodetrail} = $NODE->{node_id} . ',';
+
+    my @recent_nodes = ();
+    my $count = 0;
+
+    foreach my $nid (@trail_ids)
+    {
+      next unless $nid;
+      # Skip if already in our updated trail (avoids dupes)
+      next if $VARS->{nodetrail} =~ /\b$nid\b/;
+
+      my $node = $this->{db}->getNodeById($nid);
+      if($node && $node->{node_id})
+      {
+        push @recent_nodes, {
+          node_id => $node->{node_id},
+          title => $node->{title}
+        };
+
+        $VARS->{nodetrail} .= $nid . ',';
+        $count++;
+        last if $count > 8;
+      }
+    }
+
+    $e2->{recentNodes} = \@recent_nodes;
+  }
+
+  # Favorite Noders
+  if($nodelets =~ /1876005/ and not $this->isGuest($USER))
+  {
+    my $wuLimit = int($VARS->{favorite_limit}) || 15;
+    $wuLimit = 50 if ($wuLimit > 50 || $wuLimit < 1);
+
+    my $linktypeFavorite = Everything::getNode('favorite', 'linktype');
+    if($linktypeFavorite)
+    {
+      my $linktypeIdFavorite = $linktypeFavorite->{node_id};
+      my $typeIdWriteup = Everything::getType('writeup')->{node_id};
+
+      my $sql = "SELECT node.node_id, node.author_user
+        FROM links
+        JOIN node ON links.to_node = node.author_user
+        WHERE links.linktype = $linktypeIdFavorite
+          AND links.from_node = $USER->{user_id}
+          AND node.type_nodetype = $typeIdWriteup
+        ORDER BY node.node_id DESC
+        LIMIT $wuLimit";
+
+      my $writeuplist = $this->{db}->{dbh}->selectall_arrayref($sql);
+      my @fav_writeups = ();
+
+      foreach my $row (@$writeuplist)
+      {
+        my $node = $this->{db}->getNodeById($row->[0]);
+        if($node && $node->{node_id})
+        {
+          my $author = $this->{db}->getNodeById($node->{author_user});
+          push @fav_writeups, {
+            node_id => $node->{node_id},
+            title => $node->{title},
+            author_id => $node->{author_user},
+            author_name => $author ? $author->{title} : 'Unknown'
+          };
+        }
+      }
+
+      $e2->{favoriteWriteups} = \@fav_writeups;
+      $e2->{favoriteLimit} = $wuLimit;
+    }
+  }
+
+  # Personal Links
+  if($nodelets =~ /174581/ and not $this->isGuest($USER))
+  {
+    my $item_limit = 20;
+    my $char_limit = 1000;
+
+    my $personal_nodelet_str = $VARS->{personal_nodelet} || '';
+    my @nodes = split('<br>', $personal_nodelet_str);
+    my @links = ();
+    my $total_chars = 0;
+
+    foreach my $title (@nodes)
+    {
+      next unless $title && $title !~ /^\s*$/;
+      my $title_length = length($title);
+
+      # Stop if we would exceed either limit
+      last if scalar(@links) >= $item_limit;
+      last if ($total_chars + $title_length) > $char_limit;
+
+      push @links, $title;
+      $total_chars += $title_length;
+    }
+
+    # Just pass the current node title - React will calculate if it can be added
+    my $current_title = $NODE->{title};
+    $current_title =~ s/(\S{16})/$1 /g;
+
+    $e2->{personalLinks} = \@links;
+    $e2->{currentNodeTitle} = $current_title;
+    $e2->{currentNodeId} = $NODE->{node_id};
+  }
+
+  # Current User Poll
+  if($nodelets =~ /1689202/)
+  {
+    my @POLL = $this->{db}->getNodeWhere({poll_status => 'current'}, 'e2poll');
+    if(@POLL)
+    {
+      my $POLL = $POLL[0];
+      my $vote = ($this->{db}->sqlSelect(
+        'choice',
+        'pollvote',
+        "voter_user=".$USER->{node_id}." AND pollvote_id=".$POLL->{node_id}))[0];
+
+      $vote = -1 unless defined $vote;
+
+      # Parse options from doctext
+      my @options = split /\s*\n\s*/, $POLL->{doctext};
+
+      # Parse results
+      my @results = split ',', $POLL->{e2poll_results} || '';
+
+      # Get author info
+      my $author = $this->{db}->getNodeById($POLL->{poll_author});
+      my $author_name = $author ? $author->{title} : 'Unknown';
+
+      $e2->{currentPoll} = {
+        node_id => $POLL->{node_id},
+        title => $POLL->{title},
+        poll_author => $POLL->{poll_author},
+        author_name => $author_name,
+        question => $POLL->{question},
+        options => \@options,
+        poll_status => $POLL->{poll_status},
+        e2poll_results => \@results,
+        totalvotes => $POLL->{totalvotes} || 0,
+        userVote => $vote
+      };
+    }
+  }
+
+  # Usergroup Writeups
+  if($nodelets =~ /1924754/)
+  {
+    my $isEd = $this->isEditor($USER);
+
+    # Get user's available weblog groups first
+    my $can_weblog = $VARS->{can_weblog} || '';
+    my @groupids = split(',', $can_weblog);
+
+    # If can_weblog is empty, get all usergroups the user is a member of
+    unless (@groupids && $groupids[0]) {
+      my $membership_csr = $this->{db}->sqlSelectMany(
+        'DISTINCT nodegroup_id',
+        'nodegroup',
+        "node_id=$$USER{node_id}"
+      );
+      while (my $row = $membership_csr->fetchrow_hashref()) {
+        push @groupids, $row->{nodegroup_id};
+      }
+    }
+
+    # Default to first available group, or fallback if none
+    my $default_group_title = 'edev';  # Fallback for dev environment
+    if(@groupids && $groupids[0]) {
+      my $first_group = $this->{db}->getNodeById($groupids[0], 'light');
+      $default_group_title = $first_group->{title} if $first_group;
+    }
+
+    my $ug_title = $VARS->{nodeletusergroup} || $default_group_title;
+    my $ug = $this->{db}->getNode($ug_title, 'usergroup');
+
+    if($ug)
+    {
+      my $view_weblog = $ug->{node_id};
+      my $isRestricted = ($view_weblog == 114 || $view_weblog == 923653);
+
+      # Get writeups from this usergroup's weblog
+      my @writeups = ();
+      my $wclause = "weblog_id='$view_weblog' AND removedby_user=''";
+      my $csr = $this->{db}->sqlSelectMany('*','weblog',$wclause,'order by tstamp desc');
+      my $counter = 0;
+      my $limit = 14;
+      while(($counter <= $limit) && (my $ref = $csr->fetchrow_hashref()))
+      {
+        my $N = $this->{db}->getNodeById($ref->{to_node});
+        next unless $N;
+        push @writeups, {
+          node_id => $N->{node_id},
+          title => $N->{title}
+        };
+        $counter++;
+      }
+
+      # Build available usergroups for dropdown (reuse groupids from above)
+      my @availableGroups = ();
+      my %seen = ();  # Track which groups we've already added
+
+      foreach my $gid (@groupids)
+      {
+        my $g = $this->{db}->getNodeById($gid, 'light');
+        if ($g) {
+          push @availableGroups, {
+            node_id => $g->{node_id},
+            title => $g->{title}
+          };
+          $seen{$g->{node_id}} = 1;
+        }
+      }
+
+      # Ensure current group is always in the list (even if not in can_weblog)
+      unless ($seen{$ug->{node_id}}) {
+        unshift @availableGroups, {
+          node_id => $ug->{node_id},
+          title => $ug->{title}
+        };
+      }
+
+      $e2->{usergroupData} = {
+        currentGroup => {
+          node_id => $ug->{node_id},
+          title => $ug->{title}
+        },
+        writeups => \@writeups,
+        availableGroups => \@availableGroups,
+        isRestricted => $isRestricted,
+        isEditor => $isEd
+      };
+    }
+  }
+
+  # Other Users - Real-time user tracking
+  if($nodelets =~ /91/)
+  {
+    # Use helper method to build the complete data structure
+    $e2->{otherUsersData} = $this->buildOtherUsersData($USER);
   }
 
   return $e2;

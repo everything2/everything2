@@ -67,6 +67,10 @@ end
 `ln -s /dev/stderr /etc/apache2/logs/error_log` unless ENV['E2_DOCKER'].eql? "development"
 
 if ENV['E2_DOCKER'].eql? "development"
+  # Create development log file with world-writable permissions for tests
+  STDERR.puts "Setting up development log file"
+  `touch /tmp/development.log`
+  `chmod 777 /tmp/development.log`
   exec("/usr/sbin/apachectl -k start; sleep infinity & wait")
 else
   exec("/usr/sbin/apachectl -D FOREGROUND")
