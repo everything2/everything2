@@ -65,6 +65,9 @@ import UsergroupWriteupsPortal from './Portals/UsergroupWriteupsPortal'
 import OtherUsers from './Nodelets/OtherUsers'
 import OtherUsersPortal from './Portals/OtherUsersPortal'
 
+import Chatterbox from './Nodelets/Chatterbox'
+import ChatterboxPortal from './Portals/ChatterboxPortal'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -143,6 +146,7 @@ class E2ReactRoot extends React.Component {
       currentpoll_show: true,
       usergroupwriteups_show: true,
       otherusers_show: true,
+      chatterbox_show: true,
       notelet_show: true,
 
       signin_show: false,
@@ -164,7 +168,7 @@ class E2ReactRoot extends React.Component {
     }
     
     const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics", "categories", "currentNodeId", "bounties", "recentNodes", "favoriteWriteups", "favoriteLimit", "personalLinks", "canAddCurrent", "currentNodeTitle", "currentPoll", "usergroupData", "otherUsersData", "noteletData"]
-    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics","categories","mostwanted","recentnodes","favoritenoders","personallinks","currentpoll","usergroupwriteups","otherusers","randomnodes","notelet"]
+    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics","categories","mostwanted","recentnodes","favoritenoders","personallinks","currentpoll","usergroupwriteups","otherusers","chatterbox","randomnodes","notelet"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
@@ -581,6 +585,20 @@ class E2ReactRoot extends React.Component {
           />
         </ErrorBoundary>
       </OtherUsersPortal>
+      <ChatterboxPortal>
+        <ErrorBoundary>
+          <Chatterbox
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.chatterbox_show}
+            borged={this.props.e2?.user?.vars?.borged}
+            chatSuspended={this.props.e2?.user?.chatSuspended}
+            isGuest={this.props.e2?.user?.isGuest}
+            showMessagesInChatterbox={this.props.e2?.chatterbox?.showMessagesInChatterbox}
+            showHelp={this.props.e2?.user?.level < 2}
+            roomTopic={this.props.e2?.chatterbox?.roomTopic}
+          />
+        </ErrorBoundary>
+      </ChatterboxPortal>
       <NoteletPortal>
         <ErrorBoundary>
           <Notelet

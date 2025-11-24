@@ -1293,18 +1293,23 @@ if(! e2.noquickvote)
 		dismissItem: 'ajaxMarkNotificationSeen' // htmlcode run when item dismissed. arg is id from json
 	});
 
-	e2.ajax.addList('chatterbox_messages', {
-		ascending: true, // put newest at bottom (default is newest at top)
-		getJSON: 'showmessages',
-		args: ',j',
-		idGroup: 'message_',
-		preserve: 'input:checked', // don't remove list items which match or whose contents match this
-		period: 23,
-		callback: function(){ // called after update iff anything changed
-			if ( $('#chatterbox_messages *')[0] && !$('#formcbox hr').length )
-				$('#chatterbox_chatter').before('<hr width="40%">');
-		}
-	});
+	// LEGACY CHATTERBOX AJAX REMOVED - Now handled by React polling system
+	// See: react/components/Nodelets/Chatterbox.js
+	// Uses: react/hooks/useChatterPolling.js + react/hooks/useActivityDetection.js
+	// API: /api/chatter/ (GET) and /api/chatter/create (POST)
+
+// REMOVED: 	e2.ajax.addList('chatterbox_messages', {
+// REMOVED: 		ascending: true, // put newest at bottom (default is newest at top)
+// REMOVED: 		getJSON: 'showmessages',
+// REMOVED: 		args: ',j',
+// REMOVED: 		idGroup: 'message_',
+// REMOVED: 		preserve: 'input:checked', // don't remove list items which match or whose contents match this
+// REMOVED: 		period: 23,
+// REMOVED: 		callback: function(){ // called after update iff anything changed
+// REMOVED: 			if ( $('#chatterbox_messages *')[0] && !$('#formcbox hr').length )
+// REMOVED: 				$('#chatterbox_chatter').before('<hr width="40%">');
+// REMOVED: 		}
+// REMOVED: 	});
 
  	e2.ajax.addList('messages_messages', {
 		ascending: true, // put newest at bottom (default is newest at top)
@@ -1315,48 +1320,48 @@ if(! e2.noquickvote)
 		period: 23
 	});
 			
-	e2.ajax.addList('chatterbox_chatter', {
-		ascending: true,
-		getJSON: 'showchatter',
-		args: 'json',
-		idGroup: 'chat_',
-		period: e2.autoChat ? 11 : -1, // -1 creates periodical function in stopped state
-  //		preserve: '.chat', // never remove chat items
-		callback:(function(){
-			// scroll down as chat updated.
-			// NB: Without this, slide down of chat is unreliable in IE8, even without scrollbar
-
-			var chat, userScrolled = false,
-
-			scrollChat = new e2.periodical(function(){
-				chat.scrollTop = chat.scrollHeight;
-			}, -1);
-
-
-			// tell scrollChat what to scroll, or not to scroll if user has scrolled up
-			e2('#chatterbox_chatter', function(){
-				scrollChat.restart(jQuery.fx.interval/1000, e2.fxDuration*3/1000);
-				$(this)
-  //				.addClass('autochat') // limits height and adds scroll bar if needed
-				.scroll(function(e){
-					userScrolled = (this.scrollHeight - this.scrollTop - this.clientHeight > 16);
-				});
-				chat = this;
-			});
-
-			return function(){
-				if (!userScrolled) scrollChat.restart();
-			};
-		})(),
-
-		stopAfter: e2.sleepAfter * 60, // seconds
-		die: function(){
-			$('#autoChat').each(function(){this.checked=false;});
-			$('#chatterbox *').blur(); // '#chatterbox :focus' fails if window is not focussed
-			e2.ajax.insertListItem($('#chatterbox_chatter'), $(
-				'<p id="chat_stopped"><strong>Chatterbox refresh stopped.</strong></p>'),0,1);
-		}
-	});
+// REMOVED: 	e2.ajax.addList('chatterbox_chatter', {
+// REMOVED: 		ascending: true,
+// REMOVED: 		getJSON: 'showchatter',
+// REMOVED: 		args: 'json',
+// REMOVED: 		idGroup: 'chat_',
+// REMOVED: 		period: e2.autoChat ? 11 : -1, // -1 creates periodical function in stopped state
+// REMOVED:   //		preserve: '.chat', // never remove chat items
+// REMOVED: 		callback:(function(){
+// REMOVED: 			// scroll down as chat updated.
+// REMOVED: 			// NB: Without this, slide down of chat is unreliable in IE8, even without scrollbar
+// REMOVED: 
+// REMOVED: 			var chat, userScrolled = false,
+// REMOVED: 
+// REMOVED: 			scrollChat = new e2.periodical(function(){
+// REMOVED: 				chat.scrollTop = chat.scrollHeight;
+// REMOVED: 			}, -1);
+// REMOVED: 
+// REMOVED: 
+// REMOVED: 			// tell scrollChat what to scroll, or not to scroll if user has scrolled up
+// REMOVED: 			e2('#chatterbox_chatter', function(){
+// REMOVED: 				scrollChat.restart(jQuery.fx.interval/1000, e2.fxDuration*3/1000);
+// REMOVED: 				$(this)
+// REMOVED:   //				.addClass('autochat') // limits height and adds scroll bar if needed
+// REMOVED: 				.scroll(function(e){
+// REMOVED: 					userScrolled = (this.scrollHeight - this.scrollTop - this.clientHeight > 16);
+// REMOVED: 				});
+// REMOVED: 				chat = this;
+// REMOVED: 			});
+// REMOVED: 
+// REMOVED: 			return function(){
+// REMOVED: 				if (!userScrolled) scrollChat.restart();
+// REMOVED: 			};
+// REMOVED: 		})(),
+// REMOVED: 
+// REMOVED: 		stopAfter: e2.sleepAfter * 60, // seconds
+// REMOVED: 		die: function(){
+// REMOVED: 			$('#autoChat').each(function(){this.checked=false;});
+// REMOVED: 			$('#chatterbox *').blur(); // '#chatterbox :focus' fails if window is not focussed
+// REMOVED: 			e2.ajax.insertListItem($('#chatterbox_chatter'), $(
+// REMOVED: 				'<p id="chat_stopped"><strong>Chatterbox refresh stopped.</strong></p>'),0,1);
+// REMOVED: 		}
+// REMOVED: 	});
 
 	e2('.dismiss', 'click', e2.ajax.dismissListItem);
 
