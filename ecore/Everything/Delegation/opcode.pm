@@ -1114,28 +1114,8 @@ sub message
       for_user => $userid,});
 
   } else {
-    return if $$VARS{publicchatteroff};
-
-    $message = substr($message, 0, 512); # keep old, shorter length for public chatter
-    utf8::encode($message);
-
-    my $messageInterval = 480;
-    my $wherestr = "for_user=0 and tstamp >= date_sub(now(), interval $messageInterval second)";
-    $wherestr .= ' and author_user='.$$USER{user_id};
-
-    my $lastmessage = $DB->sqlSelect('trim(msgtext)', 'message', $wherestr." order by message_id desc limit 1");
-    my $trimmedMessage = $message;
-    $trimmedMessage =~ s/^\s+//;
-    $trimmedMessage =~ s/\s+$//;
-    if ($lastmessage eq $trimmedMessage)
-    {
-      return;
-    }
-
-    return if ($APP->isSuspended($USER,"chat"));
-    return if (defined($$VARS{infected}) and $$VARS{infected} == 1);
-
-    $DB->sqlInsert('message', {msgtext => $message, author_user => getId($USER), for_user => 0, room => $$USER{in_room}});
+    # Send public chatter via Application method
+    $APP->sendPublicChatter($USER, $message, $VARS);
   }
 
   return;

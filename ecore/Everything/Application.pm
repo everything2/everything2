@@ -3852,6 +3852,90 @@ sub message_archive_set
   return $message->{message_id};
 }
 
+sub sendPublicChatter
+{
+  my ($this, $user, $message, $vars) = @_;
+
+  # Validate inputs
+  return unless defined $user && defined $message && defined $vars;
+  return unless $user->{user_id};
+
+  # Check if user has public chatter disabled
+  return if $vars->{publicchatteroff};
+
+  # Truncate to 512 chars for public chatter
+  $message = substr($message, 0, 512);
+  utf8::encode($message);
+
+  # Check for duplicate message within time window
+  my $messageInterval = 480;
+  my $wherestr = "for_user=0 and tstamp >= date_sub(now(), interval $messageInterval second)";
+  $wherestr .= ' and author_user='.$user->{user_id};
+
+  my $lastmessage = $this->{db}->sqlSelect('trim(msgtext)', 'message', $wherestr." order by message_id desc limit 1");
+  my $trimmedMessage = $message;
+  $trimmedMessage =~ s/^\s+//;
+  $trimmedMessage =~ s/\s+$//;
+  if ($lastmessage eq $trimmedMessage)
+  {
+    return;
+  }
+
+  # Check if user is suspended from chat
+  return if ($this->isSuspended($user,"chat"));
+
+  # Check if user is infected (borged)
+  return if (defined($vars->{infected}) and $vars->{infected} == 1);
+
+  # Insert public chatter message
+  $this->{db}->sqlInsert('message', {
+    msgtext => $message,
+    author_user => $user->{user_id},
+    for_user => 0,
+    room => $user->{in_room}
+  });
+
+  return 1;
+}
+
+sub getRecentChatter
+{
+  my ($this, $params) = @_;
+
+  # Extract parameters with defaults
+  my $limit = int($params->{limit} || 30);
+  my $offset = int($params->{offset} || 0);
+  my $room = int($params->{room} || 0);
+  my $since = $params->{since}; # Optional timestamp for incremental updates
+
+  # Enforce limits
+  $limit = 30 if ($limit < 1);
+  $limit = 100 if ($limit > 100);
+  $offset = 0 if ($offset < 0);
+
+  # Build where clause
+  my $where = "for_user=0";
+  if ($room > 0) {
+    $where .= " and room=$room";
+  }
+  if ($since) {
+    # since should be ISO timestamp like "2025-11-24T12:00:00Z"
+    $since =~ s/T/ /;
+    $since =~ s/Z$//;
+    $where .= " and tstamp > '$since'";
+  }
+
+  # Fetch recent chatter
+  my $csr = $this->{db}->sqlSelectMany("*", "message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
+  my $records = [];
+  while (my $row = $csr->fetchrow_hashref)
+  {
+    push @$records, $this->message_json_structure($row);
+  }
+
+  return $records;
+}
+
 sub is_tls
 {
   my ($this) = @_;
