@@ -1,6 +1,7 @@
 import React from 'react'
 import NodeletContainer from '../NodeletContainer'
 import LinkNode from '../LinkNode'
+import { useOtherUsersPolling } from '../../hooks/useOtherUsersPolling'
 
 const OtherUsers = (props) => {
   const [selectedRoom, setSelectedRoom] = React.useState(null)
@@ -13,7 +14,13 @@ const OtherUsers = (props) => {
   const [isCreatingRoom, setIsCreatingRoom] = React.useState(false)
   const [error, setError] = React.useState(null)
 
-  if (!props.otherUsersData) {
+  // Use polling hook for automatic updates every 2 minutes
+  const { otherUsersData: polledData, loading: pollingLoading, error: pollingError } = useOtherUsersPolling(120000)
+
+  // Use polled data if no props data provided (backwards compatibility)
+  const otherUsersData = props.otherUsersData || polledData
+
+  if (!otherUsersData) {
     return (
       <NodeletContainer
         title="Other Users"
@@ -21,7 +28,7 @@ const OtherUsers = (props) => {
         nodeletIsOpen={props.nodeletIsOpen}
       >
         <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
-          No chat data available
+          {pollingLoading ? 'Loading...' : pollingError ? `Error: ${pollingError}` : 'No chat data available'}
         </p>
       </NodeletContainer>
     )
@@ -38,7 +45,7 @@ const OtherUsers = (props) => {
     suspension,
     canCreateRoom,
     createRoomSuspended
-  } = props.otherUsersData
+  } = otherUsersData
 
   // Initialize states from props
   React.useEffect(() => {

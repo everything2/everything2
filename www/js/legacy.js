@@ -1365,7 +1365,10 @@ if(! e2.noquickvote)
 
 	e2('.dismiss', 'click', e2.ajax.dismissListItem);
 
-	new e2.ajax.periodicalUpdater('otherusers:updateNodelet:Other+Users');
+	// LEGACY OTHER USERS AJAX REMOVED - Now handled by React polling
+	// See: react/components/Nodelets/OtherUsers.js
+	// Uses: react/hooks/useOtherUsersPolling.js (2-minute intervals)
+	// REMOVED: new e2.ajax.periodicalUpdater('otherusers:updateNodelet:Other+Users');
   }
 
   // replace other inputs with push buttons

@@ -10,7 +10,17 @@ sub routes
     'change_room' => 'change_room',
     'set_cloaked' => 'set_cloaked',
     'create_room' => 'create_room',
+    '/' => 'get_other_users',
   }
+}
+
+sub get_other_users {
+  my ($self, $REQUEST) = @_;
+
+  my $USER = $REQUEST->user->NODEDATA;
+  my $otherUsersData = $self->APP->buildOtherUsersData($USER);
+
+  return [$self->HTTP_OK, $otherUsersData];
 }
 
 sub change_room {
@@ -244,7 +254,7 @@ sub create_room {
   }];
 }
 
-around ['change_room', 'set_cloaked', 'create_room'] => \&Everything::API::unauthorized_if_guest;
+around ['get_other_users', 'change_room', 'set_cloaked', 'create_room'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 
