@@ -2,10 +2,62 @@
 
 This document provides context for AI assistants (like Claude) working on the Everything2 codebase. It summarizes recent work, architectural decisions, and important patterns to understand.
 
-**Last Updated**: 2025-11-23
+**Last Updated**: 2025-11-24
 **Maintained By**: Jay Bonci
 
 ## Recent Work History
+
+### Session 9: Message Opcode Analysis & Baseline Testing (2025-11-24)
+
+**Focus**: Analyze message opcode for refactoring, document nodelet periodic update system, create baseline test suite
+
+**Completed Work**:
+1. ✅ Documented nodelet periodic update system ([docs/nodelet-periodic-updates.md](docs/nodelet-periodic-updates.md))
+   - Analyzed legacy.js AJAX polling mechanisms (list-based updates vs nodelet replacement)
+   - Documented sleep/wake system (stops polling after 10 minutes inactivity)
+   - Evaluated 4 options for React-based periodic updates
+   - **Recommended**: Option D (Hybrid with Shared Activity Detection)
+   - Individual polling per nodelet with shared useActivityDetection hook
+   - Migration plan for removing legacy.js updaters piecemeal
+2. ✅ Analyzed message opcode structure ([opcode.pm:379-1142](ecore/Everything/Delegation/opcode.pm#L379))
+   - 763-line monolithic function handling all message functionality
+   - Identified 20+ command handlers (/msg, /roll, /fireball, /sanctify, /borg, /drag, etc.)
+   - Documented synonym normalization (/small→/whisper, /flip→/rolls 1d2, etc.)
+   - Planned hybrid refactoring: extract core commands, keep admin commands in opcode
+3. ✅ Created comprehensive baseline test suite ([t/036_message_opcode.t](t/036_message_opcode.t))
+   - **9 subtests, 21 tests, 100% pass rate**
+   - Tests public chatter (basic + 512 char limit)
+   - Tests private messages (creation + permissions)
+   - Tests special commands (/roll dice, /me actions)
+   - Tests message actions (delete, archive, unarchive)
+   - Uses existing users (root, guest user, Cool Man Eddie)
+   - MockQuery class simulates CGI query params
+   - Baseline ensures no regressions during refactoring
+
+**Final Results**:
+- ✅ **Documentation complete**: Periodic update system fully analyzed and documented
+- ✅ **Message opcode mapped**: 763 lines analyzed, refactoring strategy defined
+- ✅ **Baseline tests passing**: 21/21 tests pass, safe refactoring foundation established
+
+**Key Files Created**:
+- [docs/nodelet-periodic-updates.md](docs/nodelet-periodic-updates.md) - Complete periodic update analysis
+- [t/036_message_opcode.t](t/036_message_opcode.t) - Baseline test suite (247 lines)
+
+**Key Discoveries**:
+- Legacy.js uses two patterns: list-based (smart DOM updates) and nodelet replacement (full HTML swap)
+- Message opcode handles 20+ commands but can be refactored piecemeal
+- Testing in Docker container required (DBI dependencies)
+- `Everything::getVars()` is the correct function (not `$DB->getVars()` or `$user->getVars()`)
+- `$DB->sqlSelect('LAST_INSERT_ID()')` for getting last insert ID
+
+**Next Steps**:
+1. Extract sendPublicChatter() to Application.pm
+2. Extract sendPrivateMessage() to Application.pm
+3. Extract processSpecialCommand() to Application.pm
+4. Create getRecentChatter() method
+5. Create Everything::API::chatter module
+6. Update opcode to call new Application methods
+7. Verify baseline tests still pass
 
 ### Session 8: Chatroom API, Stylesheet Recovery & UI Refinement (2025-11-23)
 
