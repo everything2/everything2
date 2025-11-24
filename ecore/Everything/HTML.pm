@@ -1272,7 +1272,7 @@ sub mod_perlInit
 	$query = $REQUEST->cgi;
 
 	$USER = $REQUEST->user->NODEDATA;
-        $VARS = $REQUEST->user->VARS;
+    $VARS = $REQUEST->user->VARS;
 	$PAGELOAD = $REQUEST->PAGELOAD;
 
          #only for Everything2.com

@@ -372,3 +372,222 @@ foreach my $chinger (keys %$cools)
 # Create ip_to_uint function that is needed for IP Hunter
 $DB->{dbh}->do("CREATE DEFINER=`everyuser`@`%` FUNCTION `ip_to_uint`(ipin VARCHAR(255)) RETURNS int unsigned     DETERMINISTIC BEGIN     RETURN (CAST(SUBSTRING_INDEX(ipin,'.',1) AS UNSIGNED) * 256 * 256 * 256)      + (CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(ipin,'.',2),'.',-1) AS UNSIGNED) * 256 * 256)      + (CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(ipin,'.',3),'.',-1) AS UNSIGNED) * 256)      + (CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(ipin,'.',4),'.',-1)  AS UNSIGNED))      ;   END");
 print STDERR "Created ip_to_uint function\n";
+
+# Create a test poll with voting data
+print STDERR "Creating test poll\n";
+my $poll_title = "What is your favorite programming language?";
+
+# Set poll options (newline-separated in doctext)
+my @poll_options = (
+  "Perl",
+  "JavaScript",
+  "Python",
+  "Ruby",
+  "Go",
+  "Rust"
+);
+
+# Use insertNode with skip_maintenance=1 to avoid triggering e2poll_create
+# which requires CGI context
+my $poll_node_id = $DB->insertNode($poll_title, "e2poll", $normaluser1, {}, 1);
+unless($poll_node_id) {
+  print STDERR "ERROR: Could not create poll node\n";
+  exit 1;
+}
+
+# Get the poll node and update its fields
+my $poll_node = $DB->getNodeById($poll_node_id);
+$poll_node->{doctext} = join("\n", @poll_options);
+$poll_node->{question} = $poll_title;
+$poll_node->{poll_status} = 'current';
+$poll_node->{poll_author} = $normaluser1->{node_id};
+$poll_node->{multiple} = 0;
+$poll_node->{is_dailypoll} = 0;
+$poll_node->{was_dailypoll} = 0;
+$poll_node->{e2poll_results} = "0,0,0,0,0,0";
+$poll_node->{totalvotes} = 0;
+
+# Use sqlUpdate to update the fields directly (avoid maintenance functions)
+$DB->sqlUpdate("document", {
+  doctext => join("\n", @poll_options)
+}, "document_id = $poll_node_id");
+
+$DB->sqlUpdate("e2poll", {
+  question => $poll_title,
+  poll_status => 'current',
+  poll_author => $normaluser1->{node_id},
+  multiple => 0,
+  is_dailypoll => 0,
+  was_dailypoll => 0,
+  e2poll_results => "0,0,0,0,0,0",
+  totalvotes => 0
+}, "e2poll_id = $poll_node_id");
+
+print STDERR "Created poll '$poll_title' (node_id: $poll_node_id) with status 'current'\n";
+
+# Initialize vote counts to 0 for each option
+my @vote_counts = (0) x scalar(@poll_options);
+
+# Have normaluser1-20 vote on the poll with various preferences
+my $poll_votes = {
+  # Perl fans
+  1 => 0, 2 => 0, 3 => 0, 4 => 0,
+  # JavaScript fans
+  5 => 1, 6 => 1, 7 => 1, 8 => 1, 9 => 1,
+  # Python fans
+  10 => 2, 11 => 2, 12 => 2, 13 => 2, 14 => 2, 15 => 2,
+  # Ruby fan
+  16 => 3,
+  # Go fans
+  17 => 4, 18 => 4,
+  # Rust fans
+  19 => 5, 20 => 5,
+};
+
+my $total_votes = 0;
+foreach my $user_num (sort {$a <=> $b} keys %$poll_votes) {
+  my $choice = $poll_votes->{$user_num};
+  my $voter = $DB->getNode("normaluser$user_num", "user");
+
+  unless($voter) {
+    print STDERR "ERROR: Could not get voter normaluser$user_num\n";
+    next;
+  }
+
+  # Insert the vote
+  print STDERR "Recording poll vote: normaluser$user_num voting for option $choice ($poll_options[$choice])\n";
+  $DB->sqlInsert("pollvote", {
+    pollvote_id => $poll_node->{node_id},
+    voter_user => $voter->{node_id},
+    choice => $choice,
+    votetime => $APP->convertEpochToDate(time())
+  });
+
+  # Update vote count
+  $vote_counts[$choice]++;
+  $total_votes++;
+}
+
+# Update poll with final vote counts
+$DB->sqlUpdate("e2poll", {
+  e2poll_results => join(',', @vote_counts),
+  totalvotes => $total_votes
+}, "e2poll_id = " . $poll_node->{node_id});
+
+print STDERR "Created poll '$poll_title' with $total_votes votes\n";
+print STDERR "Results: " . join(', ', map { "$poll_options[$_]: $vote_counts[$_]" } 0..$#poll_options) . "\n";
+
+# Create second poll with 'closed' status
+print STDERR "\nCreating closed poll\n";
+my $poll_title2 = "What's your favorite time of day?";
+my @poll_options2 = (
+  "Early morning (5am-8am)",
+  "Late morning (8am-12pm)",
+  "Afternoon (12pm-5pm)",
+  "Evening (5pm-9pm)",
+  "Night (9pm-12am)",
+  "Late night (12am-5am)"
+);
+
+my $poll_node_id2 = $DB->insertNode($poll_title2, "e2poll", $normaluser1, {}, 1);
+unless($poll_node_id2) {
+  print STDERR "ERROR: Could not create second poll node\n";
+  exit 1;
+}
+
+$DB->sqlUpdate("document", {
+  doctext => join("\n", @poll_options2)
+}, "document_id = $poll_node_id2");
+
+$DB->sqlUpdate("e2poll", {
+  question => $poll_title2,
+  poll_status => 'closed',
+  poll_author => $normaluser1->{node_id},
+  multiple => 0,
+  is_dailypoll => 0,
+  was_dailypoll => 0,
+  e2poll_results => "0,0,0,0,0,0",
+  totalvotes => 0
+}, "e2poll_id = $poll_node_id2");
+
+print STDERR "Created poll '$poll_title2' (node_id: $poll_node_id2) with status 'closed'\n";
+
+# Have normaluser1-15 vote on this poll
+my @vote_counts2 = (0) x scalar(@poll_options2);
+my $poll_votes2 = {
+  # Early morning fans
+  1 => 0, 2 => 0,
+  # Late morning fans
+  3 => 1, 4 => 1, 5 => 1,
+  # Afternoon fans
+  6 => 2, 7 => 2, 8 => 2, 9 => 2,
+  # Evening fans
+  10 => 3, 11 => 3, 12 => 3,
+  # Night fans
+  13 => 4, 14 => 4,
+  # Late night fan
+  15 => 5,
+};
+
+my $total_votes2 = 0;
+foreach my $user_num (sort {$a <=> $b} keys %$poll_votes2) {
+  my $choice = $poll_votes2->{$user_num};
+  my $voter = $DB->getNode("normaluser$user_num", "user");
+
+  unless($voter) {
+    print STDERR "ERROR: Could not get voter normaluser$user_num\n";
+    next;
+  }
+
+  print STDERR "Recording poll vote: normaluser$user_num voting for option $choice ($poll_options2[$choice])\n";
+  $DB->sqlInsert("pollvote", {
+    pollvote_id => $poll_node_id2,
+    voter_user => $voter->{node_id},
+    choice => $choice,
+    votetime => $APP->convertEpochToDate(time())
+  });
+
+  $vote_counts2[$choice]++;
+  $total_votes2++;
+}
+
+$DB->sqlUpdate("e2poll", {
+  e2poll_results => join(',', @vote_counts2),
+  totalvotes => $total_votes2
+}, "e2poll_id = $poll_node_id2");
+
+print STDERR "Created poll '$poll_title2' with $total_votes2 votes\n";
+print STDERR "Results: " . join(', ', map { "$poll_options2[$_]: $vote_counts2[$_]" } 0..$#poll_options2) . "\n";
+
+# Create third poll with 'new' status (no votes)
+print STDERR "\nCreating new poll\n";
+my $poll_title3 = "Which season do you prefer?";
+my @poll_options3 = (
+  "Spring",
+  "Summer",
+  "Fall",
+  "Winter"
+);
+
+my $poll_node_id3 = $DB->insertNode($poll_title3, "e2poll", $normaluser1, {}, 1);
+unless($poll_node_id3) {
+  print STDERR "ERROR: Could not create third poll node\n";
+  exit 1;
+}
+
+$DB->sqlUpdate("document", {
+  doctext => join("\n", @poll_options3)
+}, "document_id = $poll_node_id3");
+
+$DB->sqlUpdate("e2poll", {
+  question => $poll_title3,
+  poll_status => 'new',
+  poll_author => $normaluser1->{node_id},
+  multiple => 0,
+  is_dailypoll => 0,
+  was_dailypoll => 0,
+  e2poll_results => "0,0,0,0",
+  totalvotes => 0
+}, "e2poll_id = $poll_node_id3");
+
+print STDERR "Created poll '$poll_title3' (node_id: $poll_node_id3) with status 'new' (no votes)\n";

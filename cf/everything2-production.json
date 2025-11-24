@@ -2100,25 +2100,6 @@
             }
         },
         {
-           "Name": "E2-AWSAnonymousIPList",
-           "Priority": 2,
-           "OverrideAction": {
-             "None": {}
-           },
-           "Statement": {
-              "ManagedRuleGroupStatement": {
-                 "VendorName": "AWS",
-                 "Name": "AWSManagedRulesAnonymousIpList",
-                 "ExcludedRules": []
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "AnonymousIPBlockedRequests"
-            }
-        },
-        {
            "Name": "E2-AWSBotControl",
            "Priority": 5,
            "OverrideAction": {
@@ -2146,37 +2127,8 @@
             }
         },
         {
-          "Name": "E2-BlockHTTrack",
-          "Priority": 10,
-          "Statement": {
-            "ByteMatchStatement": {
-              "SearchString": "HTTrack 3.0x",
-              "FieldToMatch": {
-                "SingleHeader": {
-                  "Name": "user-agent"
-                }
-              },
-              "TextTransformations": [
-                {
-                  "Priority": 0,
-                  "Type": "NONE"
-                }
-              ],
-              "PositionalConstraint": "CONTAINS"
-            }
-          },
-          "Action": {
-            "Block": {}
-          },
-          "VisibilityConfig": {
-            "SampledRequestsEnabled": true,
-            "CloudWatchMetricsEnabled": true,
-            "MetricName": "E2BotBlacklistBlockedRequests"
-          }
-        },
-        {
           "Name": "E2-RateLimit",
-          "Priority": 15,
+          "Priority": 10,
           "Statement": {
             "RateBasedStatement": {
               "Limit": 500,

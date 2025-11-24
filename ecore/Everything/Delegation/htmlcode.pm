@@ -10696,7 +10696,11 @@ sub movenodelet
   # no position/invalid position: put it at the bottom
 
   my ($nodelet, $position) = @_;
-  $nodelet = getNode($nodelet, 'nodelet')->{node_id} if $nodelet =~ /\D/;
+  if ($nodelet =~ /\D/) {
+    my $nodelet_node = getNode($nodelet, 'nodelet');
+    return unless $nodelet_node;
+    $nodelet = $nodelet_node->{node_id};
+  }
 
   return unless($nodelet and (getNodeById($nodelet)->{type}->{title} eq 'nodelet') and not $APP->isGuest($USER) and ($USER->{title} ne 'everyone'));
 

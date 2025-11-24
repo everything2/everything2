@@ -12,11 +12,18 @@ import LinkNode from './LinkNode'
  * - [title[nodetype]] - internal links with explicit nodetype (e.g., [root[user]])
  *
  * This is the React equivalent of the Perl parseLinks() function.
+ *
+ * Usage:
+ *   <ParseLinks text="some [link] text" />
+ *   or
+ *   <ParseLinks>some [link] text</ParseLinks>
  */
-const ParseLinks = ({ children }) => {
-  if (!children) return null
+const ParseLinks = ({ text, children }) => {
+  // Accept either text prop or children
+  const input = text || children
+  if (!input) return null
 
-  const text = String(children)
+  const textString = String(input)
   const parts = []
   let lastIndex = 0
   let key = 0
@@ -33,7 +40,7 @@ const ParseLinks = ({ children }) => {
   // First pass: Find all external links
   const externalLinks = []
   let match
-  while ((match = externalLinkPattern.exec(text)) !== null) {
+  while ((match = externalLinkPattern.exec(textString)) !== null) {
     externalLinks.push({
       start: match.index,
       end: match.index + match[0].length,
@@ -46,7 +53,7 @@ const ParseLinks = ({ children }) => {
   // Second pass: Find all internal links (avoiding external link positions)
   internalLinkPattern.lastIndex = 0
   const internalLinks = []
-  while ((match = internalLinkPattern.exec(text)) !== null) {
+  while ((match = internalLinkPattern.exec(textString)) !== null) {
     const start = match.index
     const end = match.index + match[0].length
 
@@ -96,7 +103,7 @@ const ParseLinks = ({ children }) => {
   allLinks.forEach(link => {
     // Add any plain text before this link
     if (link.start > lastIndex) {
-      parts.push(text.substring(lastIndex, link.start))
+      parts.push(textString.substring(lastIndex, link.start))
     }
 
     // Add the link
@@ -126,8 +133,8 @@ const ParseLinks = ({ children }) => {
   })
 
   // Add any remaining plain text
-  if (lastIndex < text.length) {
-    parts.push(text.substring(lastIndex))
+  if (lastIndex < textString.length) {
+    parts.push(textString.substring(lastIndex))
   }
 
   return <>{parts}</>

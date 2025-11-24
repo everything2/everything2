@@ -19895,37 +19895,6 @@ sub new_user_images {
     return $str;
 }
 
-sub node_cloner {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    my $SRCNODE = getNodeById(scalar($query->param("srcnode_id")));
-    return 'No node to clone.' unless $SRCNODE;
-
-    my $newname = $query->param("newname");
-    return 'No name for cloned node.' unless $newname;
-
-    my %DATA = (%$SRCNODE);
-
-    # Delete the node id so that when we insert it, it gets a new id.
-    delete $DATA{node_id};
-    delete $DATA{type};
-    delete $DATA{group} if(exists $DATA{group});
-    delete $DATA{title}; # we want to use the new title.
-    delete $DATA{_ORIGINAL_VALUES}; # so update doesn't fail in insertNode
-
-    my $newid = $DB->insertNode($newname, $SRCNODE->{type}, $USER, \%DATA);
-
-    my $str = '';
-    if ($newid) {
-        $str = "Node " . linkNode($SRCNODE) .
-            ' has been cloned as ' . linkNode($newid);
-    } else {
-        $str = 'Ack! Clone failed.';
-    }
-
-    return $str;
-}
-
 sub node_forbiddance {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
 

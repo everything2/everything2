@@ -38,6 +38,33 @@ import MasterControlPortal from './Portals/MasterControlPortal'
 import Statistics from './Nodelets/Statistics'
 import StatisticsPortal from './Portals/StatisticsPortal'
 
+import Notelet from './Nodelets/Notelet'
+import NoteletPortal from './Portals/NoteletPortal'
+
+import Categories from './Nodelets/Categories'
+import CategoriesPortal from './Portals/CategoriesPortal'
+
+import MostWanted from './Nodelets/MostWanted'
+import MostWantedPortal from './Portals/MostWantedPortal'
+
+import RecentNodes from './Nodelets/RecentNodes'
+import RecentNodesPortal from './Portals/RecentNodesPortal'
+
+import FavoriteNoders from './Nodelets/FavoriteNoders'
+import FavoriteNodersPortal from './Portals/FavoriteNodersPortal'
+
+import PersonalLinks from './Nodelets/PersonalLinks'
+import PersonalLinksPortal from './Portals/PersonalLinksPortal'
+
+import CurrentUserPoll from './Nodelets/CurrentUserPoll'
+import CurrentUserPollPortal from './Portals/CurrentUserPollPortal'
+
+import UsergroupWriteups from './Nodelets/UsergroupWriteups'
+import UsergroupWriteupsPortal from './Portals/UsergroupWriteupsPortal'
+
+import OtherUsers from './Nodelets/OtherUsers'
+import OtherUsersPortal from './Portals/OtherUsersPortal'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -108,6 +135,15 @@ class E2ReactRoot extends React.Component {
       quickreference_show: true,
       mastercontrol_show: true,
       statistics_show: true,
+      categories_show: true,
+      mostwanted_show: true,
+      recentnodes_show: true,
+      favoritenoders_show: true,
+      personallinks_show: true,
+      currentpoll_show: true,
+      usergroupwriteups_show: true,
+      otherusers_show: true,
+      notelet_show: true,
 
       signin_show: false,
 
@@ -127,8 +163,8 @@ class E2ReactRoot extends React.Component {
       quickRefSearchTerm: ""
     }
     
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics"]
-    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics", "categories", "currentNodeId", "bounties", "recentNodes", "favoriteWriteups", "favoriteLimit", "personalLinks", "canAddCurrent", "currentNodeTitle", "currentPoll", "usergroupData", "otherUsersData", "noteletData"]
+    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics","categories","mostwanted","recentnodes","favoritenoders","personallinks","currentpoll","usergroupwriteups","otherusers","randomnodes","notelet"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
@@ -325,7 +361,7 @@ class E2ReactRoot extends React.Component {
     await fetch (this.apiEndpoint() + '/hidewriteups/' + nodeid + '/action/' + verb, {credentials: "same-origin", mode: "same-origin"})
       .then((resp) => {
         if(resp.status === 200) {
-          return resp.json()        
+          return resp.json()
         }else{
           return Promise.reject("e2error")
         }
@@ -339,6 +375,10 @@ class E2ReactRoot extends React.Component {
       })
     await this.refreshNewWriteups()
     return notnew
+  }
+
+  updateOtherUsersData = (otherUsersData) => {
+    this.setState({ otherUsersData })
   }
 
   render() {
@@ -461,6 +501,95 @@ class E2ReactRoot extends React.Component {
           />
         </ErrorBoundary>
       </StatisticsPortal>
+      <CategoriesPortal>
+        <ErrorBoundary>
+          <Categories
+            categories={this.state.categories}
+            currentNodeId={this.state.currentNodeId}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.categories_show}
+          />
+        </ErrorBoundary>
+      </CategoriesPortal>
+      <MostWantedPortal>
+        <ErrorBoundary>
+          <MostWanted
+            bounties={this.state.bounties}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.mostwanted_show}
+          />
+        </ErrorBoundary>
+      </MostWantedPortal>
+      <RecentNodesPortal>
+        <ErrorBoundary>
+          <RecentNodes
+            recentNodes={this.state.recentNodes}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.recentnodes_show}
+          />
+        </ErrorBoundary>
+      </RecentNodesPortal>
+      <FavoriteNodersPortal>
+        <ErrorBoundary>
+          <FavoriteNoders
+            favoriteWriteups={this.state.favoriteWriteups}
+            favoriteLimit={this.state.favoriteLimit}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.favoritenoders_show}
+          />
+        </ErrorBoundary>
+      </FavoriteNodersPortal>
+      <PersonalLinksPortal>
+        <ErrorBoundary>
+          <PersonalLinks
+            personalLinks={this.state.personalLinks}
+            canAddCurrent={this.state.canAddCurrent}
+            currentNodeId={this.state.currentNodeId}
+            currentNodeTitle={this.state.currentNodeTitle}
+            isGuest={this.state.guest}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.personallinks_show}
+          />
+        </ErrorBoundary>
+      </PersonalLinksPortal>
+      <CurrentUserPollPortal>
+        <ErrorBoundary>
+          <CurrentUserPoll
+            currentPoll={this.state.currentPoll}
+            user={this.state.user}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.currentpoll_show}
+          />
+        </ErrorBoundary>
+      </CurrentUserPollPortal>
+      <UsergroupWriteupsPortal>
+        <ErrorBoundary>
+          <UsergroupWriteups
+            usergroupData={this.state.usergroupData}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.usergroupwriteups_show}
+          />
+        </ErrorBoundary>
+      </UsergroupWriteupsPortal>
+      <OtherUsersPortal>
+        <ErrorBoundary>
+          <OtherUsers
+            otherUsersData={this.state.otherUsersData}
+            onOtherUsersDataUpdate={this.updateOtherUsersData}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.otherusers_show}
+          />
+        </ErrorBoundary>
+      </OtherUsersPortal>
+      <NoteletPortal>
+        <ErrorBoundary>
+          <Notelet
+            noteletData={this.state.noteletData}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.notelet_show}
+          />
+        </ErrorBoundary>
+      </NoteletPortal>
       </>
   }
 }

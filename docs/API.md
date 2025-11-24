@@ -86,8 +86,11 @@ This section documents the automated test coverage for each API endpoint. Covera
 | New Writeups | 1 | 1 | ✅ 100% | t/031_newwriteups_api.t (33 tests) |
 | Hide Writeups | 2 | 2 | ✅ 100% | t/029_hidewriteups_api.t (32 tests) |
 | Developer Variables | 1 | 1 | ✅ 100% | t/028_developervars_api.t (23 tests) |
+| Personal Links | 4 | 4 | ✅ 100% | t/033_personallinks_api.t (18 tests) |
+| Polls | 2 | 2 | ✅ 100% | t/034_poll_api.t (62 tests) |
+| Chatroom | 3 | 3 | ✅ 100% | t/035_chatroom_api.t (TBD tests) |
 
-**Overall API Test Coverage: ~35%** (21 of ~54 endpoints have dedicated tests)
+**Overall API Test Coverage: ~45%** (30 of ~63 endpoints have dedicated tests)
 
 **Infrastructure Tests:**
 - t/001_api_routing.t - General API routing (2 tests)
@@ -771,7 +774,340 @@ curl -X DELETE https://everything2.com/api/nodenotes/123/456/delete \
 - After deletion, returns the full updated notes list for the node
 - Deletion is permanent and cannot be undone
 
-## Chats
+## Chatroom
+
+**Test Coverage: ✅ 100%** (3/3 endpoints tested - t/035_chatroom_api.t)
+
+Current version: *1 (beta)*
+
+Manages chatroom operations including room changes, visibility (cloak) status, and room creation. All endpoints return full `otherUsersData` structure to enable real-time UI updates without page reloads.
+
+All chatroom methods require logged-in users and return 401 Unauthorized for Guest User.
+
+### POST /api/chatroom/change_room
+
+Changes the current user's chatroom. Users can move between different chat rooms or go "outside" (the main lobby).
+
+**POST Data (JSON):**
+* **room_id** - The node_id of the room to enter, or 0 for "outside" (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "Changed to room: The Living Room",
+  "room_id": 12345,
+  "room_title": "The Living Room",
+  "otherUsersData": {
+    "userCount": 42,
+    "currentRoom": "The Living Room",
+    "currentRoomId": 12345,
+    "rooms": [...],
+    "availableRooms": [...],
+    "canCloak": 1,
+    "isCloaked": 0,
+    "suspension": null,
+    "canCreateRoom": 1,
+    "createRoomSuspended": 0
+  }
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **message** - Success message with room name
+* **room_id** - The room_id the user is now in
+* **room_title** - The title of the room, or "outside"
+* **otherUsersData** - Complete Other Users nodelet data structure (see below)
+
+**Error Responses:**
+
+* **400 Bad Request** - Missing room_id
+  ```json
+  { "error": "room_id is required" }
+  ```
+
+* **401 Unauthorized** - User is not logged in
+  ```json
+  { "error": "Guests cannot change rooms" }
+  ```
+
+* **403 Forbidden** - User doesn't have permission or is suspended
+  ```json
+  { "error": "This user cannot change rooms" }
+  { "error": "You cannot enter this room" }
+  { "error": "You are locked here for 3600 seconds" }
+  { "error": "You are locked here indefinitely" }
+  ```
+
+* **404 Not Found** - Room doesn't exist
+  ```json
+  { "error": "Room not found" }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/chatroom/change_room \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"room_id": 12345}'
+```
+
+**Implementation Notes:**
+
+- Room ID 0 is a special value meaning "outside" (main lobby)
+- Checks `canEnterRoom()` permissions before allowing room change
+- Checks for room change suspensions (temporary or indefinite)
+- Returns full `otherUsersData` to enable UI refresh without page reload
+- Updates user's `in_room` field in database
+
+### POST /api/chatroom/set_cloaked
+
+Toggles the user's visibility status in the chatroom. Cloaked (invisible) users can only be seen by editors, chanops, and users with infravision.
+
+**POST Data (JSON):**
+* **cloaked** - Boolean (1/0) for invisible/visible status (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "You are now cloaked",
+  "cloaked": 1,
+  "otherUsersData": {
+    "userCount": 42,
+    "currentRoom": "The Living Room",
+    "currentRoomId": 12345,
+    "rooms": [...],
+    "availableRooms": [...],
+    "canCloak": 1,
+    "isCloaked": 1,
+    "suspension": null,
+    "canCreateRoom": 1,
+    "createRoomSuspended": 0
+  }
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **message** - Success message indicating new status
+* **cloaked** - Boolean (1/0) confirming new cloak status
+* **otherUsersData** - Complete Other Users nodelet data structure (see below)
+
+**Error Responses:**
+
+* **400 Bad Request** - Missing cloaked parameter
+  ```json
+  { "error": "cloaked parameter is required" }
+  ```
+
+* **401 Unauthorized** - User is not logged in
+  ```json
+  { "error": "Guests cannot cloak" }
+  ```
+
+* **403 Forbidden** - User doesn't have cloak permission
+  ```json
+  { "error": "You do not have permission to cloak" }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/chatroom/set_cloaked \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"cloaked": 1}'
+```
+
+**Implementation Notes:**
+
+- Only users with cloak permission can use this endpoint (checked via `userCanCloak()`)
+- Updates the user's `visible` field in the room table
+- Returns full `otherUsersData` to enable UI refresh without page reload
+- Cloaked users are hidden from normal users but visible to editors/chanops/infravision users
+
+### POST /api/chatroom/create_room
+
+Creates a new chatroom and automatically moves the creating user into it.
+
+**POST Data (JSON):**
+* **room_title** - Title for the new room (required, max 80 characters)
+* **room_doctext** - Optional description for the room (optional)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "Room created successfully",
+  "room_id": 67890,
+  "room_title": "My New Chat Room",
+  "otherUsersData": {
+    "userCount": 1,
+    "currentRoom": "My New Chat Room",
+    "currentRoomId": 67890,
+    "rooms": [...],
+    "availableRooms": [...],
+    "canCloak": 1,
+    "isCloaked": 0,
+    "suspension": null,
+    "canCreateRoom": 1,
+    "createRoomSuspended": 0
+  }
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **message** - Success message
+* **room_id** - The node_id of the newly created room
+* **room_title** - The title of the newly created room
+* **otherUsersData** - Complete Other Users nodelet data structure with user now in new room
+
+**Validation:**
+* `room_title` is required and cannot be empty or whitespace-only
+* `room_title` must be 80 characters or less
+* `room_title` must be unique (no existing room with same title)
+* User must have sufficient level or be admin/chanop
+* User must not be suspended from creating rooms
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid request data
+  ```json
+  { "error": "Request body is required" }
+  { "error": "room_title is required and cannot be empty" }
+  { "error": "Room title must be 80 characters or less" }
+  ```
+
+* **401 Unauthorized** - User is not logged in
+  ```json
+  { "error": "Guests cannot create rooms" }
+  ```
+
+* **403 Forbidden** - User doesn't have permission or is suspended
+  ```json
+  { "error": "This user cannot create rooms" }
+  { "error": "Too young, my friend. You need level 5 to create rooms." }
+  { "error": "You have been suspended from creating new rooms" }
+  ```
+
+* **409 Conflict** - Room title already exists
+  ```json
+  { "error": "A room with this title already exists" }
+  ```
+
+* **500 Internal Server Error** - Room creation failed
+  ```json
+  { "error": "Room nodetype not found" }
+  { "error": "Failed to create room" }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/chatroom/create_room \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"room_title": "Poetry Corner", "room_doctext": "A place for poetry lovers"}'
+```
+
+**Implementation Notes:**
+
+- Checks user level against `create_room_level` configuration (default 0)
+- Admins and chanops can always create rooms regardless of level
+- Checks for room creation suspension via `isSuspended($USER, 'room')`
+- Creates room node with type "room"
+- Sets `roomlocked` to 0 (unlocked) by default
+- Automatically moves creating user into the new room via `changeRoom()`
+- Returns full `otherUsersData` to enable UI refresh without page reload
+- New room is immediately added to available rooms list
+
+### otherUsersData Structure
+
+All chatroom endpoints return the complete `otherUsersData` object to enable real-time UI updates. This structure contains all information needed to render the Other Users nodelet:
+
+```json
+{
+  "userCount": 42,
+  "currentRoom": "The Living Room",
+  "currentRoomId": 12345,
+  "rooms": [
+    {
+      "title": "The Living Room",
+      "users": [
+        {
+          "userId": 100,
+          "username": "alice",
+          "displayName": "alice",
+          "isCurrentUser": 0,
+          "flags": [
+            {"type": "god"},
+            {"type": "newuser", "days": 5, "veryNew": 1}
+          ],
+          "action": {
+            "type": "action",
+            "verb": "juggling",
+            "noun": "a carrot"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Outside",
+      "users": [...]
+    }
+  ],
+  "availableRooms": [
+    {"room_id": 0, "title": "outside"},
+    {"room_id": 12345, "title": "The Living Room"},
+    {"room_id": 67890, "title": "Poetry Corner"}
+  ],
+  "canCloak": 1,
+  "isCloaked": 0,
+  "suspension": null,
+  "canCreateRoom": 1,
+  "createRoomSuspended": 0
+}
+```
+
+**otherUsersData Keys:**
+* **userCount** - Total number of users visible to current user
+* **currentRoom** - Title of user's current room (empty string if outside)
+* **currentRoomId** - node_id of current room (0 if outside)
+* **rooms** - Array of room objects with user lists
+* **availableRooms** - Array of rooms user can enter
+* **canCloak** - Boolean (1/0) whether user can toggle invisibility
+* **isCloaked** - Boolean (1/0) current cloak status
+* **suspension** - Object with suspension details or null
+  * **type** - "temporary" or "indefinite"
+  * **seconds_remaining** - Seconds until suspension ends (temporary only)
+* **canCreateRoom** - Boolean (1/0) whether user can create rooms
+* **createRoomSuspended** - Boolean (1/0) whether user is suspended from creating rooms
+
+**User Object Keys:**
+* **userId** - User's node_id
+* **username** - User's account name
+* **displayName** - Display name (may differ for Halloween costumes)
+* **isCurrentUser** - Boolean (1/0) if this is the current user
+* **flags** - Array of flag objects:
+  * **type** - "newuser", "god", "editor", "chanop", "borged", "invisible", "room"
+  * Additional fields vary by flag type (e.g., "days" for newuser, "roomId" for room)
+* **action** - Optional user action object:
+  * **type** - "action" or "recent"
+  * For "action": **verb** and **noun** fields
+  * For "recent": **nodeId**, **nodeTitle**, **parentTitle** fields
 
 ## Bookmarks
 
@@ -889,6 +1225,153 @@ curl -X POST https://everything2.com/api/hidewriteups/123456/action/show \
 - Updates the New Writeups data cache immediately after showing
 - Writeup will reappear in the New Writeups list (if it's still within the time/count window)
 - This can be used to undo an accidental hide operation
+
+## Polls
+
+**Test Coverage: ✅ 100%** (2/2 endpoints tested - t/034_poll_api.t)
+
+Current version: *1 (beta)*
+
+Enables interactive poll voting functionality. Users can vote on active polls and administrators can manage poll votes for testing and maintenance purposes.
+
+### POST /api/poll/vote
+
+Submits a vote on an active poll. Users can only vote once per poll unless the poll allows multiple votes.
+
+**POST Data (JSON):**
+* **poll_id** - The node_id of the poll (required)
+* **choice** - The zero-based index of the selected option (required, must be a valid integer within the poll's option range)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": true,
+  "message": "Vote recorded successfully",
+  "poll": {
+    "node_id": 2205828,
+    "title": "What is your favorite programming language?",
+    "poll_author": 113,
+    "author_name": "root",
+    "question": "What is your favorite programming language?",
+    "options": ["Perl", "JavaScript", "Python", "Ruby", "Go", "Rust"],
+    "poll_status": "current",
+    "e2poll_results": [5, 4, 6, 1, 2, 2],
+    "totalvotes": 21,
+    "userVote": 0
+  }
+}
+```
+
+**Response Keys:**
+* **success** - Boolean indicating vote was recorded
+* **message** - Success message
+* **poll** - Updated poll object with:
+  * **node_id** - Poll node ID
+  * **title** - Poll title
+  * **poll_author** - Author's node_id
+  * **author_name** - Author's username
+  * **question** - Poll question text
+  * **options** - Array of poll option strings
+  * **poll_status** - Poll status (current, open, closed, new)
+  * **e2poll_results** - Array of vote counts for each option
+  * **totalvotes** - Total number of votes cast
+  * **userVote** - The user's vote (0-based index)
+
+**Error Responses:**
+
+* **400 Bad Request** - Missing required fields, invalid choice, poll not open for voting, or user has already voted
+  ```json
+  {
+    "error": "You have already voted on this poll",
+    "previous_vote": 0
+  }
+  ```
+* **403 Forbidden** - User is not logged in
+* **404 Not Found** - Poll doesn't exist
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/poll/vote \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"poll_id": 2205828, "choice": 0}'
+```
+
+**Implementation Notes:**
+
+- Validates user is logged in before accepting votes
+- Checks poll status (must be "current" or "open")
+- Validates choice is within valid range (0 to number of options - 1)
+- Prevents duplicate voting unless poll has `multiple` flag set
+- Uses `updateNode()` to properly invalidate cache after updating vote counts
+- Returns updated poll data so UI can refresh without additional request
+- Vote existence check uses `COUNT(*)` to avoid false positives from `sqlSelect` returning `0`
+
+### POST /api/poll/delete_vote
+
+**Admin-only endpoint** for deleting poll votes. Useful for testing, maintenance, and correcting vote data.
+
+**Authorization Required:** God-level permissions (admin access)
+
+**POST Data (JSON):**
+* **poll_id** - The node_id of the poll (required)
+* **voter_user** - The node_id of the user whose vote to delete (optional - if omitted, deletes ALL votes for the poll)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": true,
+  "message": "Deleted 1 vote(s)",
+  "deleted_count": 1,
+  "poll_id": 2205828,
+  "new_total": 20
+}
+```
+
+**Response Keys:**
+* **success** - Boolean indicating operation succeeded
+* **message** - Description of deletion
+* **deleted_count** - Number of votes deleted
+* **poll_id** - Poll node ID
+* **new_total** - Updated total vote count after deletion
+
+**Error Responses:**
+
+* **400 Bad Request** - Missing required `poll_id` field
+* **403 Forbidden** - User does not have admin permissions
+* **404 Not Found** - Poll doesn't exist
+
+**Example Request:**
+
+```bash
+# Delete specific user's vote
+curl -X POST https://everything2.com/api/poll/delete_vote \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"poll_id": 2205828, "voter_user": 2205741}'
+
+# Delete all votes for a poll
+curl -X POST https://everything2.com/api/poll/delete_vote \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"poll_id": 2205828}'
+```
+
+**Implementation Notes:**
+
+- Requires admin permissions via `isAdmin()` check
+- Automatically recalculates vote counts after deletion
+- Uses `updateNode()` to properly invalidate cache
+- Can delete a single user's vote or all votes for a poll
+- Commonly used in test suites to ensure idempotent test runs
+- Useful for correcting accidental votes or cleaning up test data
 
 ## Sessions
 
@@ -1011,6 +1494,266 @@ curl https://everything2.com/api/developervars/ \
 - **collapsedNodelets** - State of collapsed nodelets
 - **theme** - User theme preference
 - Various other system and custom settings
+
+## Personal Links
+
+**Test Coverage: ✅ 100%** (4/4 endpoints tested - t/033_personallinks_api.t, 18 total tests)
+
+Current version: *1 (beta)*
+
+Manages user personal links - a customizable list of node titles displayed in the Personal Links nodelet. Personal links are separate from bookmarks and provide quick navigation to frequently visited pages. Each user can maintain their own ordered list with a maximum of 20 items OR 1000 characters total storage.
+
+All personal links methods return 401 Unauthorized for Guest User.
+
+### Business Logic: Limits and Validation
+
+Personal Links enforces **dual limits** to prevent excessive storage:
+- **Item Limit**: Maximum 20 links
+- **Character Limit**: Maximum 1000 total characters across all link titles
+
+**Limit Enforcement Strategy:**
+
+The API uses "reduction-while-over-limit" logic to help users who are over limits get back under:
+
+1. **Under Limits** (normal case)
+   - Adding new links: ✅ Allowed
+   - Updating links: ✅ Allowed
+   - Deleting links: ✅ Allowed
+
+2. **Over Limits BUT Reducing Usage**
+   - Adding new links: ❌ Rejected (would increase usage)
+   - Updating links: ✅ Allowed if new count/chars ≤ current count/chars
+   - Deleting links: ✅ Always allowed (reduces usage)
+
+3. **Over Limits AND Increasing Usage**
+   - Adding new links: ❌ Rejected
+   - Updating links: ❌ Rejected (would make it worse)
+   - Deleting links: ✅ Always allowed
+
+**Why This Matters:**
+
+Users who are over the limit (e.g., from before limits were introduced) can still manage their links by:
+- Deleting individual links via DELETE endpoint
+- Updating the full list via UPDATE endpoint, as long as they reduce the count/characters
+
+**Example Scenario:**
+```
+Current state: 25 links, 1200 characters (over both limits)
+
+✅ DELETE /api/personallinks/delete/0        → Allowed (reduces to 24 links)
+✅ POST /api/personallinks/update             → Allowed if new list has ≤25 items and ≤1200 chars
+   {"links": ["link1", ..., "link22"]}         (reduced to 22 links, still over but improving)
+❌ POST /api/personallinks/update             → Rejected (trying to increase)
+   {"links": ["link1", ..., "link26"]}         (would go from 25 to 26 links)
+❌ POST /api/personallinks/add                → Rejected (would increase count)
+   {"title": "New Link"}
+```
+
+### GET /api/personallinks/get
+
+Retrieves all personal links for the current user.
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "links": ["Everything", "homenode", "Writeups By Type"],
+  "count": 3,
+  "total_chars": 42,
+  "item_limit": 20,
+  "char_limit": 1000,
+  "can_add_more": 1
+}
+```
+
+**Response Keys:**
+* **links** - Array of node title strings in display order
+* **count** - Number of links in the user's list
+* **total_chars** - Total character count across all links
+* **item_limit** - Maximum number of items allowed (20)
+* **char_limit** - Maximum total character count allowed (1000)
+* **can_add_more** - Boolean (1/0) indicating whether the user can add more links (under both limits)
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in (guest user)
+
+**Example Request:**
+
+```bash
+curl https://everything2.com/api/personallinks/get \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Links are stored in the user's `personal_nodelet` VARS as a `<br>` separated string
+- Empty and whitespace-only entries are automatically filtered
+- Links are node titles, not node IDs, for flexibility
+- Enforces dual limits: 20 items OR 1000 total characters (whichever is reached first)
+
+### POST /api/personallinks/update
+
+Replaces all personal links with a new list. This is an atomic operation - the entire list is replaced, not merged.
+
+**Request Body:**
+
+JSON object with:
+
+```json
+{
+  "links": ["new link 1", "new link 2", "new link 3"]
+}
+```
+
+**Request Keys:**
+* **links** - Array of node title strings (required, must be an array)
+
+**Returns:**
+
+200 OK with the same JSON structure as GET /api/personallinks/get, containing the updated link list.
+
+**Validation:**
+* `links` must be an array
+* Number of links must not exceed 20 items
+* Total character count must not exceed 1000 characters
+* Empty strings and whitespace-only strings are automatically filtered out
+* Brackets in titles are escaped as HTML entities (`[` → `&#91;`, `]` → `&#93;`)
+* Additional sanitization via `htmlScreen()` for security
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid request data or limit violations
+  ```json
+  { "error": "Missing links array in request body" }
+  { "error": "links must be an array" }
+  { "error": "Cannot add more links. You are over the 20 item limit. Please remove items to get back under the limit.",
+    "item_limit": 20, "current_count": 25, "new_count": 26 }
+  { "error": "Cannot add more characters. You are over the 1000 character limit. Please remove items to get back under the limit.",
+    "char_limit": 1000, "current_chars": 1200, "new_chars": 1250 }
+  ```
+
+* **401 Unauthorized** - User is not logged in
+
+**Note:** When over limits, the API only rejects updates that would INCREASE usage. Updates that maintain or reduce usage are allowed to help users get back under the limit.
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/personallinks/update \
+  -H "Cookie: userpass=..." \
+  -H "Content-Type: application/json" \
+  -d '{"links": ["Everything", "homenode", "Writeups By Type"]}'
+```
+
+**Implementation Notes:**
+
+- This completely replaces the existing link list
+- To reorder links, send the full list in the new order
+- To remove specific links, send the full list without those links
+- Bracket escaping prevents link syntax from being interpreted as E2 links
+- Updates are stored immediately in the user's VARS
+- **Reduction Logic**: If you're over the limit, you can still update as long as the new list has ≤ items and ≤ characters than your current list. This allows users to gradually reduce their usage back under the limit.
+
+### POST /api/personallinks/add
+
+Adds a new link to the end of the user's personal links list. Commonly used to add the current page being viewed.
+
+**Request Body:**
+
+JSON object with:
+
+```json
+{
+  "title": "Node Title To Add"
+}
+```
+
+**Request Keys:**
+* **title** - The node title to add (required, cannot be empty)
+
+**Returns:**
+
+200 OK with the same JSON structure as GET /api/personallinks/get, containing the updated link list with the new link appended.
+
+**Validation:**
+* `title` must be present and non-empty
+* User must not be at their link limit (returns error if at limit)
+* Brackets in title are escaped as HTML entities
+* Additional sanitization via `htmlScreen()` for security
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid request data or limit reached
+  ```json
+  { "error": "Missing title in request body" }
+  { "error": "Title cannot be empty" }
+  { "error": "Cannot add more links. Maximum is 20 items.", "item_limit": 20 }
+  { "error": "Cannot add link. Would exceed 1000 character limit.",
+    "char_limit": 1000, "current_chars": 950, "new_title_length": 100 }
+  ```
+
+* **401 Unauthorized** - User is not logged in
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/personallinks/add \
+  -H "Cookie: userpass=..." \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Current Page Title"}'
+```
+
+**Implementation Notes:**
+
+- Appends to the end of the existing list
+- Does not check for duplicates - users can add the same link multiple times
+- Title is the node title as displayed, not a node ID
+- Useful for "add current page" functionality in the UI
+- **Enforces both limits**: Checks item count (≤20) AND total character count (≤1000) before adding
+- If user is already at or over either limit, the add operation is rejected
+
+### DELETE /api/personallinks/delete/:index
+
+Removes a link at the specified index position from the user's personal links list.
+
+**URL Parameters:**
+* **index** - The zero-based array index of the link to remove (required, must be numeric and in range)
+
+**Returns:**
+
+200 OK with the same JSON structure as GET /api/personallinks/get, containing the updated link list after deletion.
+
+**Validation:**
+* `index` must be numeric (returns 400 if non-numeric)
+* `index` must be in range [0, count-1] (returns 400 if out of range)
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid index
+  ```json
+  { "error": "Invalid index" }
+  { "error": "Index out of range", "count": 5 }
+  ```
+
+* **401 Unauthorized** - User is not logged in
+
+**Example Request:**
+
+```bash
+curl -X DELETE https://everything2.com/api/personallinks/delete/2 \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Uses zero-based array indexing (first link is index 0)
+- Remaining links shift down after deletion
+- Updates the user's VARS immediately
+- To remove multiple links, call this endpoint multiple times or use `/update` with the desired final list
+- **Always allowed**: Delete operations are permitted even when the user is over the limits, since deletion always reduces usage
 
 ## Searches
 

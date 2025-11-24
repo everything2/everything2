@@ -1,6 +1,6 @@
 # Nodelet Migration Status
 
-**Last Updated**: 2025-11-22
+**Last Updated**: 2025-11-23
 **Migration Target**: React 18.3.x with Portals
 
 ## Overview
@@ -9,9 +9,9 @@ This document tracks the migration status of all nodelets in the Everything2 cod
 
 ## Migration Statistics
 
-- **Total Nodelets**: 25
-- **Migrated to React**: 13 (52%)
-- **Remaining in Perl**: 12 (48%)
+- **Total Nodelets**: 26
+- **Migrated to React**: 22 (85%)
+- **Remaining in Perl**: 4 (15%)
 
 ## React Migration Pattern
 
@@ -238,114 +238,159 @@ const StatisticsPortal = (props) => {
 - Fixed portal implementation to extend NodeletPortal class (2025-11-22)
 - Comprehensive test coverage (27 tests including edge cases)
 
+### 14. Notelet ✅
+**Status**: Complete
+**Function**: `notelet()` (line 216)
+**Component**: [react/components/Nodelets/Notelet.js](../react/components/Nodelets/Notelet.js)
+**Portal**: [react/components/Portals/NoteletPortal.js](../react/components/Portals/NoteletPortal.js)
+**Test Suite**: [react/components/Nodelets/Notelet.test.js](../react/components/Nodelets/Notelet.test.js) (39 tests)
+**Description**: Personal sticky notes feature for users
+**Features**:
+- Locked state handling (when administrator is working on account)
+- No content state with setup instructions
+- Content display using ParseLinks for E2 bracket syntax
+- Edit link to Notelet Editor superdoc
+- Remove link for nodelet management
+- Links to Nodelet Settings
+- Comprehensive test coverage (39 tests)
+
+### 15. OtherUsers ✅
+**Status**: Complete
+**Function**: `other_users()` (line 42)
+**Component**: [react/components/Nodelets/OtherUsers.js](../react/components/Nodelets/OtherUsers.js)
+**Portal**: [react/components/Portals/OtherUsersPortal.js](../react/components/Portals/OtherUsersPortal.js)
+**Test Suite**: [react/components/Nodelets/OtherUsers.test.js](../react/components/Nodelets/OtherUsers.test.js)
+**Description**: List of online users with chatroom management
+**Features**:
+- Real-time user tracking and display
+- Chatroom creation and management
+- Room switching functionality
+- User list display with cloaking support
+
+### 16. PersonalLinks ✅
+**Status**: Complete
+**Function**: `personal_links()` (line 171)
+**Component**: [react/components/Nodelets/PersonalLinks.js](../react/components/Nodelets/PersonalLinks.js)
+**Portal**: [react/components/Portals/PersonalLinksPortal.js](../react/components/Portals/PersonalLinksPortal.js)
+**Test Suite**: [react/components/Nodelets/PersonalLinks.test.js](../react/components/Nodelets/PersonalLinks.test.js)
+**Description**: User's personal bookmarked links
+**Features**:
+- Display user's personal link collection
+- Add current node to personal links
+- Link management
+
+### 17. RecentNodes ✅
+**Status**: Complete
+**Function**: `recent_nodes()` (line 231)
+**Component**: [react/components/Nodelets/RecentNodes.js](../react/components/Nodelets/RecentNodes.js)
+**Portal**: [react/components/Portals/RecentNodesPortal.js](../react/components/Portals/RecentNodesPortal.js)
+**Test Suite**: [react/components/Nodelets/RecentNodes.test.js](../react/components/Nodelets/RecentNodes.test.js)
+**Description**: Recently viewed nodes history
+**Features**:
+- Display user's browsing history
+- Navigation to recently visited nodes
+
+### 18. FavoriteNoders ✅
+**Status**: Complete
+**Function**: `favorite_noders()` (line 256)
+**Component**: [react/components/Nodelets/FavoriteNoders.js](../react/components/Nodelets/FavoriteNoders.js)
+**Portal**: [react/components/Portals/FavoriteNodersPortal.js](../react/components/Portals/FavoriteNodersPortal.js)
+**Test Suite**: [react/components/Nodelets/FavoriteNoders.test.js](../react/components/Nodelets/FavoriteNoders.test.js)
+**Description**: Writeups from user's favorite noders
+**Features**:
+- Display writeups from favorited users
+- Hard-coded 5-writeup limit (TODO: API enhancement #3765)
+
+### 19. CurrentUserPoll ✅
+**Status**: Complete
+**Function**: `current_user_poll()` (line 251)
+**Component**: [react/components/Nodelets/CurrentUserPoll.js](../react/components/Nodelets/CurrentUserPoll.js)
+**Portal**: [react/components/Portals/CurrentUserPollPortal.js](../react/components/Portals/CurrentUserPollPortal.js)
+**Test Suite**: [react/components/Nodelets/CurrentUserPoll.test.js](../react/components/Nodelets/CurrentUserPoll.test.js)
+**Description**: Active poll display and voting
+**Features**:
+- Display current user poll
+- Interactive voting functionality
+- Poll results display
+
+### 20. UsergroupWriteups ✅
+**Status**: Complete
+**Function**: `usergroup_writeups()` (line 266)
+**Component**: [react/components/Nodelets/UsergroupWriteups.js](../react/components/Nodelets/UsergroupWriteups.js)
+**Portal**: [react/components/Portals/UsergroupWriteupsPortal.js](../react/components/Portals/UsergroupWriteupsPortal.js)
+**Test Suite**: [react/components/Nodelets/UsergroupWriteups.test.js](../react/components/Nodelets/UsergroupWriteups.test.js)
+**Description**: Writeups from specific usergroups
+**Features**:
+- Display writeups from selected usergroup
+- Usergroup selector dropdown
+- Restricted usergroup access control
+- Editor override for restricted content
+
+### 21. Categories ✅
+**Status**: Complete
+**Function**: `categories()` (line 300)
+**Component**: [react/components/Nodelets/Categories.js](../react/components/Nodelets/Categories.js)
+**Portal**: [react/components/Portals/CategoriesPortal.js](../react/components/Portals/CategoriesPortal.js)
+**Test Suite**: [react/components/Nodelets/Categories.test.js](../react/components/Nodelets/Categories.test.js)
+**Description**: Content category navigation
+**Features**:
+- Display available content categories
+- Add current node to category
+- Category author attribution
+- Create new category link
+
+### 22. MostWanted ✅
+**Status**: Complete
+**Function**: `most_wanted()` (line 305)
+**Component**: [react/components/Nodelets/MostWanted.js](../react/components/Nodelets/MostWanted.js)
+**Portal**: [react/components/Portals/MostWantedPortal.js](../react/components/Portals/MostWantedPortal.js)
+**Test Suite**: [react/components/Nodelets/MostWanted.test.js](../react/components/Nodelets/MostWanted.test.js)
+**Description**: Most wanted/requested nodes
+**Features**:
+- Display most requested but missing nodes
+- Bounty information
+- Community content gaps identification
+
 ## Remaining Nodelets (Perl)
 
-### 14. OtherUsers ⏳
+### 23. Chatterbox ⏳
 **Status**: Perl
-**Function**: `other_users()` (line 98)
-**Description**: List of online users
-**Complexity**: Medium - Real-time user tracking
-**Priority**: Medium - Social feature, could benefit from React updates
-
-### 15. Chatterbox ⏳
-**Status**: Perl
-**Function**: `chatterbox()` (line 383)
+**Function**: `chatterbox()` (line 62)
 **Description**: Real-time chat interface
 **Complexity**: High - Complex state, AJAX updates, real-time messaging
 **Priority**: High - Core social feature, prime candidate for React
 **Notes**: Uses AJAX showchatter polling (11-second refresh), complex interaction patterns
 
-### 16. PersonalLinks ⏳
+### 24. Notifications ⏳
 **Status**: Perl
-**Function**: `personal_links()` (line 492)
-**Description**: User's bookmarked links
-**Complexity**: Low-Medium - Simple list display
-**Priority**: Low - Personal feature, less critical
-
-### 17. Notelet ⏳
-**Status**: Perl
-**Function**: `notelet()` (line 647)
-**Description**: Personal notes
-**Complexity**: Medium - User-specific content
-**Priority**: Low - Personal feature
-
-### 18. RecentNodes ⏳
-**Status**: Perl
-**Function**: `recent_nodes()` (line 698)
-**Description**: Recently viewed nodes
-**Complexity**: Low - Simple history list
-**Priority**: Low - Nice-to-have feature
-
-### 19. CurrentUserPoll ⏳
-**Status**: Perl
-**Function**: `current_user_poll()` (line 769)
-**Description**: Active poll display and voting
-**Complexity**: Medium - Interactive voting
-**Priority**: Medium - Community engagement feature
-
-### 20. FavoriteNoders ⏳
-**Status**: Perl
-**Function**: `favorite_noders()` (line 782)
-**Description**: User's favorite community members
-**Complexity**: Low - Simple list display
-**Priority**: Low - Social feature
-
-### 21. UsergroupWriteups ⏳
-**Status**: Perl
-**Function**: `usergroup_writeups()` (line 840)
-**Description**: Writeups from specific usergroups
-**Complexity**: Medium - Filtered content display
-**Priority**: Medium - Group-specific content
-
-### 22. Notifications ⏳
-**Status**: Perl
-**Function**: `notifications()` (line 933)
+**Function**: `notifications()` (line 271)
 **Description**: User notifications and alerts
 **Complexity**: High - Real-time updates, multiple notification types
 **Priority**: High - Important UX feature, excellent React candidate
 
-### 23. Categories ⏳
-**Status**: Perl
-**Function**: `categories()` (line 962)
-**Description**: Content category navigation
-**Complexity**: Low - Navigation links
-**Priority**: Low - Static navigation
-
-### 24. MostWanted ⏳
-**Status**: Perl
-**Function**: `most_wanted()` (line 1020)
-**Description**: Requested but missing nodes
-**Complexity**: Low - Simple list display
-**Priority**: Low - Community feature
-
 ### 25. Messages ⏳
 **Status**: Perl
-**Function**: `messages()` (line 1067)
+**Function**: `messages()` (line 310)
 **Description**: User messaging interface
 **Complexity**: High - Complex messaging, read/unread state
 **Priority**: High - Core communication feature
+
+### 26. ForReview ⏳
+**Status**: Perl
+**Function**: `for_review()` (line 328)
+**Description**: Editor-focused nodelet showing drafts submitted for review
+**Complexity**: Medium - DataStash integration, conditional display for editors
+**Priority**: Medium - Editor workflow tool
 
 ## Recommended Migration Order
 
 Based on user impact, complexity, and architectural benefits:
 
-### Tier 1: High Priority (Core Features)
+### Remaining High Priority Features
 1. **Chatterbox** - Core social feature, would benefit from modern state management
 2. **Notifications** - Important UX, real-time updates ideal for React
 3. **Messages** - Core communication, complex state management
-
-### Tier 2: Medium Priority (Engagement Features)
-4. **CurrentUserPoll** - Interactive, community engagement
-5. **UsergroupWriteups** - Content display, moderate complexity
-6. **OtherUsers** - Social awareness, real-time updates
-
-### Tier 3: Personal/Niche Features
-7. **PersonalLinks** - Personal feature
-8. **Notelet** - Personal notes
-9. **RecentNodes** - Personal history
-10. **FavoriteNoders** - Personal list
-11. **Categories** - Static navigation
-12. **MostWanted** - Community list
+4. **ForReview** - Editor workflow tool, DataStash integration
 
 ## Migration Benefits
 
@@ -354,8 +399,10 @@ Based on user impact, complexity, and architectural benefits:
 - ✅ Improved client-side interactivity
 - ✅ Better state management
 - ✅ Component reusability (NodeletContainer, NodeletSection, LinkNode)
-- ✅ Comprehensive test coverage (265 tests total)
+- ✅ Comprehensive test coverage (429+ tests total)
 - ✅ Progressive enhancement approach maintains backward compatibility
+- ✅ **22 of 26 nodelets now in React (85% complete)**
+- ✅ Only 4 nodelets remain (Chatterbox, Notifications, Messages, ForReview)
 
 ### Future Benefits
 - 🔄 Easier feature additions and modifications
@@ -400,7 +447,7 @@ Nodelet components
 
 ## Testing Status
 
-- **Total React Tests**: 265
+- **Total React Tests**: 429
   - NewWriteups: ~20 tests
   - Vitals: ~25 tests
   - Developer: ~15 tests
@@ -409,7 +456,8 @@ Nodelet components
   - Epicenter: 25 tests
   - MasterControl: 26 tests
   - Statistics: 32 tests
-  - Other nodelets and components: ~82 tests
+  - Notelet: 39 tests
+  - Other nodelets and components: ~207 tests
 
 ## Related Documentation
 

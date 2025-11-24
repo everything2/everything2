@@ -39,6 +39,25 @@
 - ✅ **ReadThis**: News feed from "News For Noders" with frontpage news integration
 - ✅ **MasterControl**: Editor control panel with interactive node notes, admin tools, CE section
 - ✅ **Node Notes Enhancement**: Added interactive note management with link parsing, noter username display, and real-time updates via API
+- ✅ **Current Poll Voting**: Interactive AJAX voting system with real-time results (no page reload)
+  - Vote directly from the nodelet without leaving the page
+  - Instant vote results with visual bar graphs and percentages
+  - Admin vote management tools (delete votes, audit poll integrity)
+  - Full REST API for poll operations with comprehensive test coverage
+- ✅ **Other Users Nodelet**: Complete restoration of all social interaction features
+  - Linked staff badges with tooltips (@ = gods, $ = editors, + = chanops, Ø = borged)
+  - New user indicators (shows account age for users < 30 days, visible to admins/editors only)
+  - Random user actions ("is petting a kitten" - adds personality and fun)
+  - Recent noding activity ("has recently noded [writeup]" - shows active contributors)
+  - Multi-room support (see users across different chat rooms)
+  - Respect for user preferences (message ignore list, invisibility, infravision)
+  - Halloween costume support (festive feature for October)
+  - All original social signaling features preserved from legacy implementation
+  - **Data Architecture**: Refactored from pre-rendered HTML to structured JSON objects
+    - Better security (no dangerouslySetInnerHTML for user data)
+    - Lighter payload
+    - Consistent LinkNode usage throughout
+    - Privilege checks properly enforced (new user tags only visible to staff)
 
 **Technical Foundation Built:**
 - Created reusable `ParseLinks` component for E2's bracket link syntax (20 tests)
@@ -46,10 +65,19 @@
   - Supports external links: `[http://url]`, `[http://url|text]`
   - Supports nested bracket syntax: `[title[nodetype]]` (e.g., `[root[user]]` → `/node/user/root`)
   - Matches Perl parseLinks() regex exactly for legacy compatibility
+- Implemented complete poll voting REST API (POST /api/poll/vote, POST /api/poll/delete_vote)
+  - Full validation and authorization checks
+  - Real-time vote updates without page reload
+  - Admin vote management for poll integrity
+  - Type-safe responses (JavaScript strict equality compatibility)
+  - 62 automated tests ensuring reliability
 - Implemented node notes REST API (GET/POST/DELETE) with full test coverage (62 tests including legacy format)
 - Built shared components: `NodeletContainer`, `NodeletSection`, `LinkNode`, `ParseLinks`
 - Optimized API usage: Eliminated redundant GET requests after CREATE/DELETE operations
 - Fixed initial page load: `noter_username` now populated on first render (no refresh needed)
+- **Section collapse preferences**: Fixed 8 nodelets to properly respect user collapse settings
+  - Categories, CurrentUserPoll, FavoriteNoders, MostWanted, OtherUsers, PersonalLinks, RecentNodes, UsergroupWriteups
+  - Changed from hardcoded `collapsible={false}` to proper `showNodelet` and `nodeletIsOpen` props
 - **Legacy format support**: Handles historical notes where author was embedded in notetext (noter_user = 1)
   - API marks legacy notes with `legacy_format` flag
   - Component displays full notetext without separate username for legacy notes

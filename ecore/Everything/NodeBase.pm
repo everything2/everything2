@@ -333,13 +333,13 @@ sub sqlUpdate
 		{
 			# If the parameter name starts with a '-', we need to treat
 			# the value as a literal value (don't quote it).
-			s/^-//; 
-			$sql .="\n  $_ = " . $$data{'-'.$_} . ",";
+			s/^-//;
+			$sql .= "\n  $_" . ' = ' . $$data{'-' . $_} . ',';
 		}
 		else
 		{
 			# We need to quote the value
-			$sql .="\n  $_ = " . $this->{dbh}->quote($$data{$_}) . ",";
+			$sql .= "\n  $_" . ' = ' . $this->{dbh}->quote($$data{$_}) . ',';
 		}
 	}
 
@@ -373,17 +373,17 @@ sub sqlUpdate
 sub sqlInsert
 {
 	my ($this, $table, $data, $updateData) = @_;
-	my ($names, $values, $updateSql) = ("", "", "");
+	my ($names, $values, $updateSql) = ('', '', '');
 
 	foreach (keys %$data)
 	{
 		if (/^-/)
 		{
-			$values.="\n  ".$$data{$_}.","; s/^-//;
+			$values .= "\n  " . $$data{$_} . ','; s/^-//;
 		}
 		else
 		{
-			$values.="\n  " . $this->{dbh}->quote($$data{$_}) . ",";
+			$values .= "\n  " . $this->{dbh}->quote($$data{$_}) . ',';
 		}
 
 		$names .= "$_,";
@@ -458,7 +458,7 @@ sub getNode
 	}
 
 	if ($selectop eq 'light') {
-		$NODE = $this->sqlSelectHashref('*', 'node', "title=".$this->{dbh}->quote($title). " and type_nodetype=$$TYPE{node_id}");
+		$NODE = $this->sqlSelectHashref('*', 'node', 'title=' . $this->{dbh}->quote($title) . ' and type_nodetype=' . $$TYPE{node_id});
 		return $NODE;
 	}
 
@@ -466,9 +466,9 @@ sub getNode
 	# If it looks like there's a double encoded character, try looking up both this title and the title
 	#  with an additional decode
 	if ($title !~ /%/) {
-		($NODE) = $this->getNodeWhere({ "title" => $title }, $TYPE);
+		($NODE) = $this->getNodeWhere({ 'title' => $title }, $TYPE);
 	} else {
-		($NODE) = $this->getNodeWhere({ "title" => [ $title, CGI::unescape($title) ] }, $TYPE);
+		($NODE) = $this->getNodeWhere({ 'title' => [ $title, CGI::unescape($title) ] }, $TYPE);
 	}
 
 	if(defined $NODE and $selectop ne 'nocache')
@@ -532,7 +532,7 @@ sub getNodeById
 	if (not defined $NODETYPE or $NODETYPE == -1) {
 		Everything::printLog(
 			"Node $$NODE{title} (#$$NODE{node_id}) has a bad nodetype #$$NODE{type_nodetype}."
-			. "  This can't end well."
+			. '  This can\'t end well.'
 		);
 		return if not defined $NODETYPE;
 	}
@@ -751,29 +751,29 @@ sub getNodeCursor
 
 	$nodeTableOnly ||= 0;
 
-	$TYPE = $this->getType($TYPE) if((defined $TYPE) && (!UNIVERSAL::isa($TYPE,"HASH")));
+	$TYPE = $this->getType($TYPE) if((defined $TYPE) && (!UNIVERSAL::isa($TYPE,'HASH')));
 
 	my $wherestr = $this->genWhereString($WHERE, $TYPE, $orderby);
 
 	# We need to generate an sql join command that has the potential
 	# to join on multiple tables.  This way the SQL engine does the
 	# search for us.
-	$select = "SELECT * FROM node";
+	$select = 'SELECT * FROM node';
 
 	# Now we need to join on the appropriate tables.
 	if((! $nodeTableOnly) && (defined $TYPE) && (ref $$TYPE{tableArray}))
 	{
 		my $tableArray = $$TYPE{tableArray};
-		
+
 		foreach my $table (@$tableArray)
 		{
-			$select .= " LEFT OUTER JOIN $table ON node_id=" . $table . "_id";
+			$select .= " LEFT OUTER JOIN $table ON node_id=" . $table . '_id';
 		}
 	}
 
-	$select .= " WHERE " . $wherestr if($wherestr);
+	$select .= ' WHERE ' . $wherestr if($wherestr);
 
-	if ($select eq "SELECT * FROM node")
+	if ($select eq 'SELECT * FROM node')
 	{
 		Everything::HTML::htmlFormatErr($select, 'getNodeCursor() tried to evaluate a stupid query', '');
 		return;
@@ -824,7 +824,7 @@ sub constructNode
 	# Make sure each field is at least defined to be nothing.
 	foreach (keys %$NODE)
 	{
-		$$NODE{$_} = "" unless defined ($$NODE{$_});
+		$$NODE{$_} = '' unless defined ($$NODE{$_});
 	}
 
 	return 1;
@@ -864,7 +864,7 @@ sub updateLockedNode
 
 	my $updateSub = sub {
 		# Grab a fresh copy of each node, locking the nodes' DB rows.
-		@freshNodes = map { $this->getNodeById($_, "force") } @node_id_list;
+		@freshNodes = map { $this->getNodeById($_, 'force') } @node_id_list;
 		# Only proceed if we can update all locked nodes
 		return if grep { !$this->canUpdateNode($USER, $_) } @freshNodes;
 
@@ -876,7 +876,7 @@ sub updateLockedNode
 	my $success = $this->transactionWrap($updateSub);
 	return 1 if $success;
 	my $errorNodes =
-			join(", ", map { $_->{title} . "(" . $_->{node_id} . ")" } @freshNodes);
+			join(', ', map { $_->{title} . '(' . $_->{node_id} . ')' } @freshNodes);
 	Everything::printLog(
 		"Attempt to do a locked update on $errorNodes failed!\n$@"
 	);
@@ -1003,7 +1003,7 @@ sub updateNode
 
 	# The node table is assumed, so its not in the "joined" table array.
 	# However, for this update, we need to add it.
-	push @$tableArray, "node";
+	push @$tableArray, 'node';
 
 	my $fieldHash = $this->getFieldsHash($tableArray);
 	my %tableList = (); # So we only update tables as required
@@ -1021,7 +1021,7 @@ sub updateNode
 			# we don't want to chance mucking with the primary key
 			next if $field eq $table . '_id';
 			# don't write a value if we haven't changed it since we read the node
-			if(UNIVERSAL::isa($ORIGINAL_NODE,"HASH") and eq_deeply($ORIGINAL_NODE->{$field}, $NODE->{$field}))
+			if(UNIVERSAL::isa($ORIGINAL_NODE,'HASH') and eq_deeply($ORIGINAL_NODE->{$field}, $NODE->{$field}))
 			{
 				next;
 			}
@@ -1058,12 +1058,12 @@ sub updateNode
 		my $updateList =
 			join(
 				"\n\t\t,"
-				, map {$_ . " = " . $this->{dbh}->quote($VALUES{$_}) }
+				, map {$_ . ' = ' . $this->{dbh}->quote($VALUES{$_}) }
 					keys %VALUES
 			);
 		my $whereStr =
 			join("\n\t\tAND "
-				, map {$_ . "_id = " . $$NODE{node_id} } keys %tableList
+				, map {$_ . '_id = ' . $$NODE{node_id} } keys %tableList
 			);
 		my $sqlString = qq|UPDATE $tableListStr SET $updateList WHERE $whereStr|;
 
@@ -1141,10 +1141,10 @@ sub insertNode
 	}
 
 	if ($$TYPE{restrictdupes})
-	{ 
+	{
 		# Check to see if we already have a node of this title.
-		my $DUPELIST = $this->sqlSelect("*", "node", "title=" .
-			$this->quote($title) . " && type_nodetype=" . $$TYPE{node_id});
+		my $DUPELIST = $this->sqlSelect('*', 'node', 'title=' .
+			$this->quote($title) . ' && type_nodetype=' . $$TYPE{node_id});
 
 		if ($DUPELIST)
 		{
@@ -1154,7 +1154,7 @@ sub insertNode
 		}
 	}
 
-	$this->sqlInsert("node", 
+	$this->sqlInsert('node', 
 			{title => $title, 
 			type_nodetype => $$TYPE{node_id}, 
 			author_user => $this->getId($USER), 
@@ -1164,7 +1164,7 @@ sub insertNode
 
 
 	# Get the id of the node that we just inserted.
-	my ($node_id) = $this->sqlSelect("LAST_INSERT_ID()");
+	my ($node_id) = $this->sqlSelect('LAST_INSERT_ID()');
 
 
 	#this is for the hits table
@@ -1175,7 +1175,7 @@ sub insertNode
 	$tableArray = $$TYPE{tableArray};
 	foreach my $table (@$tableArray)
 	{
-		$this->sqlInsert($table, { $table . "_id" => $node_id });
+		$this->sqlInsert($table, { $table . '_id' => $node_id });
 	}
 
 	$NODE = $this->getNodeById($node_id, 'force');
@@ -1223,7 +1223,7 @@ sub tombstoneNode {
 
     use Data::Dumper;
     $N{data} = Data::Dumper->Dump([\%data]);
-    $this->sqlInsert("tomb", \%N);
+    $this->sqlInsert('tomb', \%N);
     return;
 }
 
@@ -1266,7 +1266,7 @@ sub nukeNode
 
 	$tableArray = $$NODE{type}{tableArray};
 
-	push @$tableArray, "node";  # the node table is not in there.
+	push @$tableArray, 'node';  # the node table is not in there.
 
 	foreach my $table (@$tableArray)
 	{
@@ -1325,7 +1325,7 @@ sub resurrectNode
 	return if $existing;
 
 	# Retrieve the tombstone record
-	my $tomb = $this->sqlSelectHashref("*", $burialground, "node_id=" . $this->quote($node_id));
+	my $tomb = $this->sqlSelectHashref('*', $burialground, 'node_id=' . $this->quote($node_id));
 	return unless $tomb;
 	return unless $tomb->{data};
 
@@ -1333,7 +1333,7 @@ sub resurrectNode
 	require Everything::Serialization;
 	Everything::Serialization->import('safe_deserialize_dumper');
 
-	my $nodeproto = safe_deserialize_dumper("my " . $tomb->{data});
+	my $nodeproto = safe_deserialize_dumper('my ' . $tomb->{data});
 	return unless $nodeproto;
 	return unless ref($nodeproto) eq 'HASH';
 
@@ -1341,7 +1341,7 @@ sub resurrectNode
 	my $typetables = $this->getNodetypeTables($tomb->{type_nodetype});
 	return unless $typetables;
 
-	push @$typetables, "node";
+	push @$typetables, 'node';
 
 	# Reconstruct the node in all tables
 	foreach my $table (@$typetables)
@@ -1371,7 +1371,7 @@ sub resurrectNode
 
 	# Delete the tombstone now that resurrection is complete
 	# This allows the node to be nuked again with a fresh tombstone if needed
-	$this->sqlDelete($burialground, "node_id=" . $this->quote($node_id));
+	$this->sqlDelete($burialground, 'node_id=' . $this->quote($node_id));
 
 	# Fetch and return the resurrected node (bypass cache since we just reconstructed it)
 	my $resurrected = $this->getNodeById($node_id, 'nocache');
@@ -1407,20 +1407,20 @@ sub getType
 	# break and we will need to change this stuff.
 
 	# If they pass in a hash, just take the id.
-	$idOrName = $$idOrName{node_id} if(UNIVERSAL::isa($idOrName,"HASH"));
+	$idOrName = $$idOrName{node_id} if(UNIVERSAL::isa($idOrName,'HASH'));
 
-	return if((not defined $idOrName) || ($idOrName eq ""));
+	return if((not defined $idOrName) || ($idOrName eq ''));
 
 	if($idOrName =~ /\D/) # Does it contain non-digits?
 	{
 		# It is a string name of the nodetype we are looking for.
-		$TYPE = $this->{cache}->getCachedNodeByName($idOrName, "nodetype");
+		$TYPE = $this->{cache}->getCachedNodeByName($idOrName, 'nodetype');
 
 		if(not defined $TYPE)
 		{
-			$TYPE = $this->sqlSelectHashref("*",
-				"node left join nodetype on node_id=nodetype_id",
-				"title=" . $this->quote($idOrName) . " && type_nodetype=1");
+			$TYPE = $this->sqlSelectHashref('*',
+				'node left join nodetype on node_id=nodetype_id',
+				'title=' . $this->quote($idOrName) . ' && type_nodetype=1');
 
 			$fromCache = 0;
 		}
@@ -1432,8 +1432,8 @@ sub getType
 
 		if(not defined $TYPE)
 		{
-			$TYPE = $this->sqlSelectHashref("*",
-				"node left join nodetype on node_id=nodetype_id",
+			$TYPE = $this->sqlSelectHashref('*',
+				'node left join nodetype on node_id=nodetype_id',
 				"node_id=$idOrName && type_nodetype=1");
 			
 			$fromCache = 0;
@@ -1499,8 +1499,8 @@ sub getAllTypes
 	my $cursor;
 	my @allTypes = ();
 	my $node_id;
-	my $TYPE = $this->getType("nodetype");
-	
+	my $TYPE = $this->getType('nodetype');
+
 	$sql = "SELECT node_id FROM node WHERE type_nodetype = " . $$TYPE{node_id};
 	$cursor = $this->{dbh}->prepare($sql);
 	if($cursor && $cursor->execute())
@@ -1563,7 +1563,7 @@ sub getFieldsHash
 	my $value;
 
 	$getHash = 1 if(not defined $getHash);
-	$table ||= "node";
+	$table ||= 'node';
 
 	if (ref $table eq 'ARRAY') {
 
@@ -2014,7 +2014,7 @@ sub deriveType
 
 	# If this is the 'nodetype' nodetype, we need to reassign the 'type'
 	# field to point to this completed nodetype.
-	if($$NODETYPE{title} eq "nodetype")
+	if($$NODETYPE{title} eq 'nodetype')
 	{
 		$$NODETYPE{type} = $NODETYPE;
 	}

@@ -571,7 +571,7 @@ sub e2poll_create
   unless ($$POLL{title} && $query -> param('e2poll_question'))
   {
     $DB->nukeNode($POLL, -1);
-    $query -> param('node_id', getId(getNode('Everything Poll Creator', 'superdoc')));
+    $query->param('node_id', getId(getNode('Everything Poll Creator', 'superdoc')));
     return;
   }
 
@@ -580,7 +580,7 @@ sub e2poll_create
 
   # this node no longer belongs to its author. So if the author is a normal user, they can't update it any more
   # so e2poll_question will get lost. So:
-  $$POLL{question} = $query -> param('e2poll_question');
+  $$POLL{question} = $query->param('e2poll_question');
 
   my @doctext = ();
   $$POLL{e2poll_results} = 0;
@@ -595,8 +595,8 @@ sub e2poll_create
   };
 
   push @doctext, 'None of the above';
-  $$POLL{doctext} = join "\n\n", @doctext;
-  $$POLL{poll_status} = 'new';
+  $POLL->{doctext} = join "\n\n", @doctext;
+  $POLL->{poll_status} = 'new';
 
   $DB->updateNode( $POLL, -1 );
   return;
@@ -618,7 +618,7 @@ sub collaboration_update
 
   $DB->{cache}->incrementGlobalVersion($N);
   my $WRTYPE=getNode($$N{wrtype_writeuptype});
-  
+
   my $title = "$$N{title}";
   return if $$N{title} eq $title; 
   #only YOU can prevent deep recursion...
