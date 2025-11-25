@@ -1,23 +1,143 @@
 import React from 'react'
-import NewWriteupsEntry from '../NewWriteupsEntry'
+import WriteupEntry from '../WriteupEntry'
 import NewWriteupsFilter from '../NewWriteupsFilter'
 import LinkNode from '../LinkNode'
 import NodeletContainer from '../NodeletContainer'
+import { useActivityDetection } from '../../hooks/useActivityDetection'
 
 const NewWriteups = (props) => {
-  return <NodeletContainer title="New Writeups" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen} ><NewWriteupsFilter limit={props.limit} newWriteupsChange={props.newWriteupsChange} noJunkChange={props.noJunkChange} noJunk={props.noJunk} user={props.user} />
-  <ul className="infolist">{
-    (props.newWriteups.length === 0)?(<em>No writeups!</em>):(
-      props.newWriteups.filter((entry) => {return !entry.is_junk || !props.noJunk }).map((entry,index) => {
-        if(index < props.limit)
-        {
-          return <NewWriteupsEntry entry={entry} key={"nwe_"+entry.node_id} editor={props.user.editor} editorHideWriteupChange={props.editorHideWriteupChange}/>
+  const [writeups, setWriteups] = React.useState(props.newWriteups || [])
+  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const pollInterval = React.useRef(null)
+  const missedUpdate = React.useRef(false)
+
+  // Load new writeups from API
+  const loadWriteups = React.useCallback(async () => {
+    try {
+      const response = await fetch('/api/newwriteups/', {
+        credentials: 'include',
+        headers: {
+          'X-Ajax-Idle': '1'
         }
       })
-    )
-  }</ul><div className="nodeletfoot morelink">
-  (<LinkNode type="superdoc" title="Writeups By Type" display="more" />)
-  </div></NodeletContainer>
+
+      if (response.ok) {
+        const data = await response.json()
+        setWriteups(data)
+      }
+    } catch (err) {
+      console.error('Failed to load new writeups:', err)
+    }
+  }, [])
+
+  // Polling effect - refresh every 5 minutes when active and nodelet is expanded
+  React.useEffect(() => {
+    const shouldPoll = isActive && isMultiTabActive && props.nodeletIsOpen
+
+    if (shouldPoll) {
+      pollInterval.current = setInterval(() => {
+        loadWriteups()
+      }, 300000) // 5 minutes
+    } else {
+      // If we're not polling because nodelet is collapsed, mark that we missed updates
+      if (isActive && isMultiTabActive && !props.nodeletIsOpen) {
+        missedUpdate.current = true
+      }
+
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current)
+        pollInterval.current = null
+      }
+    }
+
+    return () => {
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current)
+        pollInterval.current = null
+      }
+    }
+  }, [isActive, isMultiTabActive, props.nodeletIsOpen, loadWriteups])
+
+  // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
+  React.useEffect(() => {
+    if (props.nodeletIsOpen && missedUpdate.current) {
+      missedUpdate.current = false
+      loadWriteups()
+    }
+  }, [props.nodeletIsOpen, loadWriteups])
+
+  // Focus refresh: immediately refresh when page becomes visible
+  React.useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isActive) {
+        loadWriteups()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [isActive, loadWriteups])
+
+  const filteredWriteups = writeups
+    .filter((entry) => !entry.is_junk || !props.noJunk)
+    .slice(0, props.limit)
+
+  return (
+    <NodeletContainer
+      title="New Writeups"
+      showNodelet={props.showNodelet}
+      nodeletIsOpen={props.nodeletIsOpen}
+    >
+      <div style={{ marginBottom: '12px' }}>
+        <NewWriteupsFilter
+          limit={props.limit}
+          newWriteupsChange={props.newWriteupsChange}
+          noJunkChange={props.noJunkChange}
+          noJunk={props.noJunk}
+          user={props.user}
+        />
+      </div>
+
+      {writeups.length === 0 ? (
+        <div style={{
+          padding: '16px',
+          textAlign: 'center',
+          fontSize: '12px',
+          color: '#999',
+          fontStyle: 'italic'
+        }}>
+          No writeups yet
+        </div>
+      ) : (
+        <ul className="infolist" style={{ margin: 0 }}>
+          {filteredWriteups.map((entry) => (
+            <WriteupEntry
+              entry={entry}
+              key={`nwe_${entry.node_id}`}
+              mode="full"
+              editor={props.user.editor}
+              editorHideWriteupChange={props.editorHideWriteupChange}
+            />
+          ))}
+        </ul>
+      )}
+
+      <div
+        className="nodeletfoot morelink"
+        style={{
+          marginTop: '12px',
+          padding: '8px',
+          textAlign: 'center',
+          fontSize: '11px'
+        }}
+      >
+        (<LinkNode type="superdoc" title="Writeups By Type" display="more" />)
+      </div>
+    </NodeletContainer>
+  )
 }
 
 export default NewWriteups;

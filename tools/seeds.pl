@@ -26,7 +26,7 @@ my $realyear = $year+1900;
 my $rootlog = "root log: $months->[$mon] $realyear";
 my $daylog = "$months->[$mon] $mday, $realyear";
 
-foreach my $user (1..30,"user with space","genericeditor","genericdev")
+foreach my $user (1..30,"user with space","genericeditor","genericdev","genericchanop")
 {
   if($user =~ /^\d/)
   {
@@ -67,6 +67,17 @@ $genericdevv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,168
 $genericdevv->{settings} = '{"notifications":{"2045486":1}}';
 setVars($genericdev,$genericdevv);
 $DB->updateNode($genericdev, -1);
+
+print STDERR "Promoting genericchanop to be a channel operator\n";
+my $chanops = $DB->getNode("chanops","usergroup");
+my $genericchanop = getNode("genericchanop","user");
+$DB->insertIntoNodegroup($chanops, $DB->getNode("root","user"), $genericchanop);
+$DB->updateNode($chanops, -1);
+my $genericchanopv = getVars($genericchanop);
+$genericchanopv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708";
+$genericchanopv->{settings} = '{"notifications":{"2045486":1}}';
+setVars($genericchanop, $genericchanopv);
+$DB->updateNode($genericchanop, -1);
 
 my $types = 
 {

@@ -33,6 +33,7 @@ const MasterControl = (props) => {
           nodeTitle={props.adminSearchForm.nodeTitle}
           serverName={props.adminSearchForm.serverName}
           scriptName={props.adminSearchForm.scriptName}
+          lastCommit={props.lastCommit}
         />
       )}
 

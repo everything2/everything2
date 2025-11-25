@@ -174,6 +174,259 @@ import Example from './Nodelets/Example'
 - Similar to RecommendedReading but with News section
 - Good candidate for demonstrating the migration pattern
 
+## Polling and Real-Time Updates
+
+React nodelets implement intelligent polling to provide real-time updates while respecting server resources and user activity states. The polling system uses three-tier activity detection and page visibility management.
+
+### Activity Detection System
+
+**Three Activity States** ([react/hooks/useActivityDetection.js](../react/hooks/useActivityDetection.js)):
+
+1. **Recently Active** (< 60 seconds since last activity)
+   - User has interacted with page within last minute
+   - Enables fastest polling rates
+   - Triggered by mouse movement, clicks, keypresses, scrolling
+
+2. **Idle** (60 seconds - 10 minutes since last activity)
+   - User present but not actively interacting
+   - Enables slower polling rates
+   - Still updates content but less frequently
+
+3. **Asleep** (10+ minutes since last activity)
+   - User considered away from desk
+   - Polling stops completely
+   - Resumes immediately when activity detected
+
+**Multi-Tab Detection**:
+- Cookie-based active window tracking
+- Only the focused browser tab polls the server
+- Background tabs pause polling to avoid duplicate requests
+- Uses `visibilitychange` event to detect tab switching
+
+**Implementation Example**:
+```javascript
+import { useActivityDetection } from '../../hooks/useActivityDetection'
+
+const MyNodelet = (props) => {
+  const { isActive, isRecentlyActive, isMultiTabActive } = useActivityDetection(10)
+
+  // isActive: false if 10+ minutes idle (asleep)
+  // isRecentlyActive: false if 60+ seconds idle
+  // isMultiTabActive: false if page not in focus
+}
+```
+
+### Polling Patterns by Nodelet
+
+**Chatterbox** - Adaptive Dual-Rate Polling ([react/hooks/useChatterPolling.js](../react/hooks/useChatterPolling.js)):
+```javascript
+// Polls at 45s when recently active, 2m when idle, stops when asleep/unfocused
+export const useChatterPolling = (activeIntervalMs = 45000, idleIntervalMs = 120000) => {
+  const { isActive, isRecentlyActive, isMultiTabActive } = useActivityDetection(10)
+
+  useEffect(() => {
+    const shouldPoll = isActive && isMultiTabActive && !loading
+
+    if (shouldPoll) {
+      // Use active interval (45s) if recently active, idle interval (2m) otherwise
+      const currentInterval = isRecentlyActive ? activeIntervalMs : idleIntervalMs
+      pollInterval.current = setInterval(() => fetchChatter(false), currentInterval)
+    }
+  }, [isActive, isRecentlyActive, isMultiTabActive, loading, activeIntervalMs, idleIntervalMs])
+}
+```
+
+**Messages and NewWriteups** - Fixed 2-Minute Polling:
+```javascript
+const { isActive, isMultiTabActive } = useActivityDetection(10)
+const pollInterval = React.useRef(null)
+
+// Polling effect - refresh every 2 minutes when active
+React.useEffect(() => {
+  const shouldPoll = isActive && isMultiTabActive && !loading
+
+  if (shouldPoll) {
+    pollInterval.current = setInterval(() => {
+      loadData()
+    }, 120000) // 2 minutes
+  } else {
+    if (pollInterval.current) {
+      clearInterval(pollInterval.current)
+      pollInterval.current = null
+    }
+  }
+
+  return () => {
+    if (pollInterval.current) {
+      clearInterval(pollInterval.current)
+      pollInterval.current = null
+    }
+  }
+}, [isActive, isMultiTabActive, loading, loadData])
+```
+
+### Focus Refresh Pattern
+
+All polling nodelets implement **immediate refresh on page focus**:
+
+```javascript
+// Focus refresh: immediately refresh when page becomes visible
+React.useEffect(() => {
+  const handleVisibilityChange = () => {
+    if (!document.hidden && isActive) {
+      // Page just became visible and user is active - refresh immediately
+      loadData()
+    }
+  }
+
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+
+  return () => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }
+}, [isActive, loadData])
+```
+
+**Benefits**:
+- User returns from another tab/window → sees fresh data immediately
+- No waiting for next polling interval
+- Better perceived responsiveness
+
+### Generic Polling Hook
+
+For future nodelet migrations, use the reusable hook ([react/hooks/usePolling.js](../react/hooks/usePolling.js)):
+
+```javascript
+import { usePolling } from '../../hooks/usePolling'
+
+const MyNodelet = (props) => {
+  const fetchData = async () => {
+    const response = await fetch('/api/my-data/', {
+      credentials: 'include',
+      headers: { 'X-Ajax-Idle': '1' }
+    })
+    return response.json()
+  }
+
+  const { data, loading, error, refresh } = usePolling(
+    fetchData,
+    120000,  // 2 minutes
+    { refreshOnFocus: true }  // Enable focus refresh
+  )
+
+  return (
+    <NodeletContainer>
+      {loading && <div>Loading...</div>}
+      {error && <div>Error: {error}</div>}
+      {data && <div>{/* render data */}</div>}
+    </NodeletContainer>
+  )
+}
+```
+
+### Server-Side Considerations
+
+**X-Ajax-Idle Header**:
+All polling requests include `X-Ajax-Idle: 1` header to indicate background refresh:
+```javascript
+fetch('/api/endpoint/', {
+  credentials: 'include',
+  headers: { 'X-Ajax-Idle': '1' }
+})
+```
+
+This allows server-side logging and monitoring to distinguish:
+- User-initiated requests (interactive)
+- Background polling requests (automated)
+
+**Polling Rate Guidelines**:
+- **High-value real-time data** (chat): 45s active / 2m idle
+- **Medium-value updates** (messages, writeups): 2m
+- **Low-value updates** (rarely changing content): 5m+
+- **Always stop when asleep** (10+ minutes idle)
+
+### Incremental vs Full Updates
+
+**Chatterbox** - Incremental Updates:
+```javascript
+// Use 'since' parameter for incremental updates
+let url = '/api/chatter/'
+if (!isInitial && lastTimestamp.current) {
+  url += '?since=' + lastTimestamp.current
+} else {
+  url += '?limit=30'
+}
+
+// Prepend new messages, keep existing
+if (data.length > 0) {
+  setChatter((prev) => [...data, ...prev])
+  lastTimestamp.current = data[0].timestamp
+}
+```
+
+**Messages/NewWriteups** - Full Replace:
+```javascript
+// Replace entire list on each poll
+const data = await response.json()
+setMessages(data)
+```
+
+**Trade-offs**:
+- Incremental: Lower bandwidth, preserves scroll position, more complex
+- Full replace: Simpler code, always consistent, may reset UI state
+
+### Testing Polling Behavior
+
+**Simulate Activity States**:
+```javascript
+// In tests, mock useActivityDetection
+jest.mock('../../hooks/useActivityDetection', () => ({
+  useActivityDetection: jest.fn(() => ({
+    isActive: true,
+    isRecentlyActive: true,
+    isMultiTabActive: true
+  }))
+}))
+
+// Test idle state
+useActivityDetection.mockReturnValue({
+  isActive: true,
+  isRecentlyActive: false,  // Idle for 60+ seconds
+  isMultiTabActive: true
+})
+
+// Test asleep state
+useActivityDetection.mockReturnValue({
+  isActive: false,  // Asleep for 10+ minutes
+  isRecentlyActive: false,
+  isMultiTabActive: true
+})
+```
+
+**Verify Polling Intervals**:
+```javascript
+jest.useFakeTimers()
+
+// Fast-forward 45 seconds
+jest.advanceTimersByTime(45000)
+expect(fetchChatter).toHaveBeenCalledTimes(1)
+
+// Fast-forward another 2 minutes (idle state)
+jest.advanceTimersByTime(120000)
+expect(fetchChatter).toHaveBeenCalledTimes(2)
+```
+
+### Best Practices for New Nodelets
+
+1. **Always use activity detection** - Never poll unconditionally
+2. **Always stop when asleep** - Respect user's away state
+3. **Always implement focus refresh** - Better UX when returning to tab
+4. **Use X-Ajax-Idle header** - Help server distinguish request types
+5. **Clean up intervals** - Use `useEffect` cleanup to prevent memory leaks
+6. **Consider incremental updates** - For high-frequency data (chat, notifications)
+7. **Test all activity states** - Active, idle, asleep, focused, unfocused
+8. **Document polling rate** - Make it clear why you chose specific interval
+
 ## Proposed Migration Architecture
 
 ### Phase 1: Hybrid Mode (Immediate)

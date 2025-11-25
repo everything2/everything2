@@ -2,6 +2,16 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import OtherUsers from './OtherUsers'
 
+// Mock the polling hook
+jest.mock('../../hooks/useOtherUsersPolling', () => ({
+  useOtherUsersPolling: (pollIntervalMs, initialData) => ({
+    otherUsersData: initialData !== undefined ? initialData : null,
+    loading: false,  // In tests, we simulate data already loaded
+    error: null,
+    refresh: jest.fn()
+  })
+}))
+
 // Mock child components
 jest.mock('../NodeletContainer', () => {
   return function NodeletContainer({ title, children }) {

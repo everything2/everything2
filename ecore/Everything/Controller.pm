@@ -80,14 +80,28 @@ sub layout
     my $edev = $self->APP->node_by_name("edev","usergroup");
     my $page = Everything::HTML::getPage($node->NODEDATA, $REQUEST->param("displaytype"));
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
-    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->node_id, weblogs => $self->APP->weblogs_structure($edev->node_id)}}; 
+    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->node_id, weblogs => $self->APP->weblogs_structure($edev->node_id)}};
   }
+
+  # Phase 3: React owns sidebar - build nodeletorder for React, skip Mason2 nodelet data
+  my $user_nodelets = $REQUEST->user->nodelets || [];
+  my @nodeletorder = ();
+  foreach my $nodelet (@$user_nodelets) {
+    my $title = lc($nodelet->title);
+    $title =~ s/ /_/g;
+    push @nodeletorder, $title;
+  }
+  $e2->{nodeletorder} = \@nodeletorder;
 
   $params->{nodeinfojson} = $self->JSON->encode($e2);
 
   $params->{no_ads} = 1 unless($REQUEST->is_guest);
 
-  $params = $self->nodelets($REQUEST->user->nodelets, $params);
+  # Phase 3: Mason2 templates still require nodeletorder param (even though not used for rendering)
+  $params->{nodeletorder} = \@nodeletorder;
+  $params->{nodelets} = {};  # Empty hash - Mason2 no longer renders nodelets
+
+  # $params = $self->nodelets($REQUEST->user->nodelets, $params);
 
   $self->MASON->set_global('$REQUEST',$REQUEST);
   return $self->MASON->run($template, $params)->output();
@@ -109,21 +123,16 @@ sub nodelets
     $title =~ s/ /_/g;
     $id =~ s/\W//g;
 
-    if($self->can($title))
-    {
-      my $nodelet_values = $self->$title($REQUEST, $node);
-      next unless $nodelet_values;
-      $params->{nodelets}->{$title} = $nodelet_values;
-    }else{
-      if(my $delegation = Everything::Delegation::nodelet->can($title))
-      {
-        $params->{nodelets}->{$title}->{delegated_content} = $delegation->($self->DB, $REQUEST->cgi, $node->NODEDATA, $REQUEST->user->NODEDATA,$REQUEST->VARS, $Everything::HTML::PAGELOAD, $self->APP);
-      }
-    }
-    push @{$params->{nodeletorder}}, $title;  
-    $params->{nodelets}->{$title}->{title} = $nodelet->title;
-    $params->{nodelets}->{$title}->{id} = $id;
-    $params->{nodelets}->{$title}->{node} = $node;
+    # ALL nodelets are React-handled now - just add minimal placeholder data
+    # This skips ~100+ redundant DB queries per page load that were building
+    # Mason2 data structures which were discarded by react_handled flags
+    $params->{nodelets}->{$title} = {
+      react_handled => 1,
+      title => $nodelet->title,
+      id => $id,
+      node => $node
+    };
+    push @{$params->{nodeletorder}}, $title;
   }
   return $params;
 }

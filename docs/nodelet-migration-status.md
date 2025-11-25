@@ -10,8 +10,10 @@ This document tracks the migration status of all nodelets in the Everything2 cod
 ## Migration Statistics
 
 - **Total Nodelets**: 26
-- **Migrated to React**: 22 (85%)
-- **Remaining in Perl**: 4 (15%)
+- **Migrated to React**: 26 (100%)
+- **Remaining in Perl**: 0 (0%)
+
+🎉 **COMPLETE**: All nodelets have been migrated to React!
 
 ## React Migration Pattern
 
@@ -351,46 +353,65 @@ const StatisticsPortal = (props) => {
 - Bounty information
 - Community content gaps identification
 
-## Remaining Nodelets (Perl)
+### 23. Chatterbox ✅
+**Status**: Complete
+**Function**: `chatterbox()` (line 45)
+**Component**: [react/components/Nodelets/Chatterbox.js](../react/components/Nodelets/Chatterbox.js)
+**Portal**: [react/components/Portals/ChatterboxPortal.js](../react/components/Portals/ChatterboxPortal.js)
+**Hook**: [react/hooks/useChatterPolling.js](../react/hooks/useChatterPolling.js)
+**Test Suite**: [react/components/Nodelets/Chatterbox.test.js](../react/components/Nodelets/Chatterbox.test.js)
+**Description**: Real-time chat interface with polling-based updates
+**Features**:
+- Real-time chatter display with 3-second polling
+- Message input form with 512 character limit
+- Private messages section (when shown separately)
+- Borged/chat suspension status handling
+- Room topic display
+- Guest user messaging disabled
+- Help links for new users
+- Activity detection and multi-tab coordination
 
-### 23. Chatterbox ⏳
-**Status**: Perl
-**Function**: `chatterbox()` (line 62)
-**Description**: Real-time chat interface
-**Complexity**: High - Complex state, AJAX updates, real-time messaging
-**Priority**: High - Core social feature, prime candidate for React
-**Notes**: Uses AJAX showchatter polling (11-second refresh), complex interaction patterns
+### 24. Messages ✅
+**Status**: Complete
+**Function**: `messages()` (line 150)
+**Component**: [react/components/Nodelets/Messages.js](../react/components/Nodelets/Messages.js)
+**Portal**: [react/components/Portals/MessagesPortal.js](../react/components/Portals/MessagesPortal.js)
+**Test Suite**: [react/components/Nodelets/Messages.test.js](../react/components/Nodelets/Messages.test.js) (18 tests)
+**API**: [ecore/Everything/API/messages.pm](../ecore/Everything/API/messages.pm)
+**Description**: Private message inbox with archive/delete functionality
+**Features**:
+- Display inbox and archived messages
+- Archive/unarchive/delete message actions
+- Toggle between inbox and archived views
+- Pagination support (limit/offset)
+- ParseLinks integration for bracket syntax
+- Usergroup message support
+- Comprehensive test coverage (18 tests)
 
-### 24. Notifications ⏳
-**Status**: Perl
-**Function**: `notifications()` (line 271)
-**Description**: User notifications and alerts
-**Complexity**: High - Real-time updates, multiple notification types
-**Priority**: High - Important UX feature, excellent React candidate
+### 25. Notifications ✅
+**Status**: Complete
+**Function**: `notifications()` (line 111)
+**Component**: [react/components/Nodelets/Notifications.js](../react/components/Nodelets/Notifications.js)
+**Portal**: [react/components/Portals/NotificationsPortal.js](../react/components/Portals/NotificationsPortal.js)
+**Description**: User notifications and alerts system
+**Features**:
+- User notification display with delegation rendering
+- Settings widget integration
+- Configuration prompt for new users
+- Multiple notification types (achievements, voting, comments, etc.)
+- Hybrid approach with pre-rendered HTML
 
-### 25. Messages ⏳
-**Status**: Perl
-**Function**: `messages()` (line 310)
-**Description**: User messaging interface
-**Complexity**: High - Complex messaging, read/unread state
-**Priority**: High - Core communication feature
-
-### 26. ForReview ⏳
-**Status**: Perl
-**Function**: `for_review()` (line 328)
+### 26. ForReview ✅
+**Status**: Complete
+**Function**: `for_review()` (line 138)
+**Component**: [react/components/Nodelets/ForReview.js](../react/components/Nodelets/ForReview.js)
+**Portal**: [react/components/Portals/ForReviewPortal.js](../react/components/Portals/ForReviewPortal.js)
 **Description**: Editor-focused nodelet showing drafts submitted for review
-**Complexity**: Medium - DataStash integration, conditional display for editors
-**Priority**: Medium - Editor workflow tool
-
-## Recommended Migration Order
-
-Based on user impact, complexity, and architectural benefits:
-
-### Remaining High Priority Features
-1. **Chatterbox** - Core social feature, would benefit from modern state management
-2. **Notifications** - Important UX, real-time updates ideal for React
-3. **Messages** - Core communication, complex state management
-4. **ForReview** - Editor workflow tool, DataStash integration
+**Features**:
+- Editor-only visibility
+- Draft review queue from DataStash
+- Node notes integration
+- Hybrid approach with pre-rendered table HTML
 
 ## Migration Benefits
 
@@ -399,10 +420,14 @@ Based on user impact, complexity, and architectural benefits:
 - ✅ Improved client-side interactivity
 - ✅ Better state management
 - ✅ Component reusability (NodeletContainer, NodeletSection, LinkNode)
-- ✅ Comprehensive test coverage (429+ tests total)
+- ✅ Comprehensive test coverage (461 tests total)
 - ✅ Progressive enhancement approach maintains backward compatibility
-- ✅ **22 of 26 nodelets now in React (85% complete)**
-- ✅ Only 4 nodelets remain (Chatterbox, Notifications, Messages, ForReview)
+- 🎉 **ALL 26 of 26 nodelets migrated to React (100% complete)**
+- ✅ Chatterbox fully migrated with polling hooks and activity detection
+- ✅ Messages fully migrated with API integration and 18 tests
+- ✅ Notifications migrated with delegation rendering system
+- ✅ ForReview migrated for editor draft review workflow
+- 🚀 **READY FOR MASON2 ELIMINATION**
 
 ### Future Benefits
 - 🔄 Easier feature additions and modifications
@@ -458,6 +483,211 @@ Nodelet components
   - Statistics: 32 tests
   - Notelet: 39 tests
   - Other nodelets and components: ~207 tests
+
+## ⚠️ insertNodelet() Legacy Call Sites
+
+**Issue**: Migrated nodelets now return empty string from Perl stubs. Any code calling `insertNodelet()` directly will receive empty output.
+
+**Impact**: "Chatterlight" pages that use insertNodelet() to render nodelets may be broken for migrated nodelets.
+
+### Affected Functions in document.pm
+
+| Function | Line | Nodelet Called | Migration Status | Impact |
+|----------|------|----------------|------------------|--------|
+| `chatterlighter` | 1495 | Chatterbox | ✅ Migrated | **BROKEN** - Returns empty string |
+| `chatterlight` | 22863 | Notifications | ❌ Not migrated | Working (still renders) |
+| `chatterlight` | 22874 | New Writeups | ✅ Migrated | **BROKEN** - Returns empty string |
+| `chatterlight_classic` | 22917 | Chatterbox | ✅ Migrated | **BROKEN** - Returns empty string |
+| `chatterlight_classic` | 22926 | New Writeups | ✅ Migrated | **BROKEN** - Returns empty string |
+
+### Other insertNodelet() Call Sites
+
+| File | Line | Context | Status |
+|------|------|---------|--------|
+| htmlpage.pm | 105 | Display nodelet htmlpage | ⚠️ May be affected |
+| htmlpage.pm | 4395 | Nodelet container rendering | ⚠️ May be affected |
+| htmlcode.pm | 1040 | Nodelet container rendering | ⚠️ May be affected |
+| htmlcode.pm | 9100 | Return nodelet output | ⚠️ May be affected |
+
+### Resolution Options
+
+**Option 1: Migrate chatterlight pages to React** (Recommended)
+- Create dedicated chatterlight React components
+- Remove insertNodelet() calls
+- Use portal-based architecture
+
+**Option 2: Keep specific pages using Perl rendering**
+- Revert affected nodelets to Perl for these specific pages
+- Maintain dual rendering paths
+- Not recommended - increases maintenance burden
+
+**Option 3: Update chatterlight to use portal div targets**
+- Instead of calling insertNodelet(), emit div with nodelet ID
+- React portals will render into those divs
+- Requires updating `react_handled` logic to work on chatterlight pages
+
+### Investigation Needed
+
+To assess full impact, need to:
+1. Test chatterlight pages (chatterlighter, chatterlight, chatterlight_classic)
+2. Check if these pages are still actively used3. Determine if htmlpage/htmlcode insertNodelet calls are affected
+4. Choose resolution strategy and implement fix
+
+**Date Identified**: 2025-11-24 (Session 10)
+
+## Remaining htmlcode Dependencies in buildNodeInfoStructure
+
+While all 26 nodelets have been migrated to React components, `Everything::Application::buildNodeInfoStructure()` still calls legacy htmlcode functions to build certain page state data. These represent the final step in achieving pure React rendering.
+
+### Current htmlcode Call Sites
+
+#### 1. Epicenter - DateTimeLocal (Server/Local Time)
+**Location**: [ecore/Everything/Application.pm:5936,5938](../ecore/Everything/Application.pm#L5936)
+
+**Code**:
+```perl
+$e2->{epicenter}->{serverTime} = Everything::HTML::htmlcode('DateTimeLocal', "$NOW,1");
+$e2->{epicenter}->{localTime} = Everything::HTML::htmlcode('DateTimeLocal', $NOW);
+```
+
+**Purpose**: Formats timestamps for server time and local time display in Epicenter nodelet.
+
+**Current Approach**: Hybrid - htmlcode generates pre-rendered HTML strings that React renders via dangerouslySetInnerHTML.
+
+**Future Migration Path**:
+- Pass raw timestamp values (`$NOW`) to React
+- Create React component for date/time formatting (or use JavaScript Date API)
+- Benefits: Client-side timezone conversion, live clock updates, no HTML injection
+
+**Migration Priority**: Low - Simple output, minimal security risk, works reliably
+
+---
+
+#### 2. Notifications - Settings Widget Link
+**Location**: [ecore/Everything/Application.pm:6923](../ecore/Everything/Application.pm#L6923)
+
+**Code**:
+```perl
+my $settingsLink = Everything::HTML::htmlcode('nodeletsettingswidget','Notifications', 'Notification settings');
+```
+
+**Purpose**: Generates settings link for Notifications nodelet footer.
+
+**Current Approach**: Hybrid - htmlcode generates pre-rendered HTML link that React renders via dangerouslySetInnerHTML.
+
+**Future Migration Path**:
+- Pass settings URL and label text as props
+- Create React component for settings links (could be reusable across nodelets)
+- Use LinkNode or standard anchor tag with proper routing
+- Benefits: Type safety, consistent styling, easier to test
+
+**Migration Priority**: Medium - Simple link, but reusable pattern would benefit other nodelets
+
+---
+
+#### 3. Notifications - Notification List
+**Location**: [ecore/Everything/Application.pm:6926](../ecore/Everything/Application.pm#L6926)
+
+**Code**:
+```perl
+my $notification_list = Everything::HTML::htmlcode('notificationsJSON', 'wrap');
+```
+
+**Purpose**: Renders complex notification list with delegation to various notification type handlers.
+
+**Current Approach**: Hybrid - htmlcode delegates to notification type modules (Achievement.pm, Voting.pm, etc.) which return pre-rendered HTML wrapped in JSON structure.
+
+**Delegation Chain**:
+1. `htmlcode('notificationsJSON')` → [htmlcode.pm:11500](../ecore/Everything/Delegation/htmlcode.pm#L11500)
+2. Calls `notification->generate()` for each notification
+3. Delegates to type-specific modules: `Everything::Notification::Achievement`, `Everything::Notification::Voting`, etc.
+4. Each module returns HTML via delegation pattern
+
+**Future Migration Path**:
+- Pass raw notification data (type, params, timestamp) to React
+- Create React components for each notification type:
+  - `NotificationAchievement.js`
+  - `NotificationVoting.js`
+  - `NotificationComment.js`
+  - etc.
+- Use factory pattern or switch statement to render correct component per type
+- Benefits: Type-safe props, consistent styling, easier to add new notification types
+
+**Migration Priority**: High - Complex delegation system, most impactful migration, enables full React notification system
+
+**Complexity**: HIGH - Requires migrating entire notification delegation hierarchy
+
+---
+
+#### 4. ForReview - Draft Table HTML
+**Location**: [ecore/Everything/Application.pm:6978](../ecore/Everything/Application.pm#L6978)
+
+**Code**:
+```perl
+my $tableHtml = Everything::HTML::htmlcode('show content', $drafts
+  , qq!<tr class="&oddrow"> startline, title, byline, "</td>", notes, %funx!)
+  .'</table>';
+```
+
+**Purpose**: Generates HTML table of drafts awaiting editor review with custom row template.
+
+**Current Approach**: Hybrid - `htmlcode('show content')` is a powerful templating system that generates table HTML with alternating row classes, custom cell formatters, and embedded functions.
+
+**Template Syntax**:
+- `&oddrow` - Auto-alternating row class
+- `startline, title, byline, notes` - Column specifications
+- `%funx` - Special functions map for custom rendering
+
+**Future Migration Path**:
+- Pass raw draft data array to React (already available as `$drafts`)
+- Create `DraftReviewTable.js` component:
+  - Map over drafts array
+  - Render table rows with proper columns
+  - Implement odd/even row styling with CSS or index % 2
+  - Use LinkNode for titles
+  - Format bylines and notes
+- Benefits: Declarative rendering, easier to modify columns, better accessibility
+
+**Migration Priority**: Medium - Editor-only feature, lower traffic than public nodelets
+
+**Complexity**: MEDIUM - Table rendering is straightforward, but need to replicate custom formatters
+
+---
+
+### Migration Strategy
+
+**Phase 1: Simple Migrations** (DateTimeLocal, Settings Widget)
+- Low risk, high value
+- Establish patterns for future migrations
+- Create reusable date/time and settings link components
+
+**Phase 2: Medium Complexity** (Draft Table)
+- Moderate risk, moderate value
+- Editor-focused, lower traffic
+- Test with editor team before rollout
+
+**Phase 3: Complex Delegation** (Notification List)
+- High risk, high value
+- Requires migrating entire delegation hierarchy
+- Most impactful for pure React architecture
+- Recommend breaking into sub-phases:
+  1. Map delegation types
+  2. Create React components for each type
+  3. Migrate type by type with feature flags
+  4. Final cutover when all types complete
+
+**Benefits of Complete Migration**:
+- Zero `dangerouslySetInnerHTML` usage (improved security)
+- Full type safety with PropTypes or TypeScript
+- Easier testing and maintenance
+- Better performance (no HTML parsing)
+- Enables client-side features (live updates, animations, etc.)
+
+**Timeline Consideration**: These migrations are NOT blockers for Mason2 elimination. The hybrid approach is stable and functional. Prioritize Mason2 removal first, then tackle these as optimization work.
+
+---
+
+**Date Identified**: 2025-11-24 (Session 12)
 
 ## Related Documentation
 

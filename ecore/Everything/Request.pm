@@ -168,7 +168,10 @@ sub get_current_user
 
   $user ||= $self->APP->node_by_id($self->CONF->guest_user);
 
-  return $user if !$user || $user->is_guest || $self->param('ajaxIdle');
+  # Skip lastseen update for background/idle requests
+  # Supports both query parameter (ajaxIdle=1) and header (X-Ajax-Idle: 1)
+  my $is_idle_request = $self->param('ajaxIdle') || $ENV{HTTP_X_AJAX_IDLE};
+  return $user if !$user || $user->is_guest || $is_idle_request;
 
   my $TIMEOUT_SECONDS = 4 * 60;
 

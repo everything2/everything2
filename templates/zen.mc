@@ -100,9 +100,8 @@ sub _build_pagetitle
   <!-- google_ad_section_end -->
  </div>
  <div id='sidebar'>
+  <!-- Phase 3: React now renders the entire sidebar (no more Mason2 nodelet loop) -->
   <div id='e2-react-root'></div>
-  <& 'nodelets', nodelets => $.nodelets, nodeletorder => $.nodeletorder &>
-  <!-- nodelets -->
  </div> 
 </div>
 <div id='footer'>

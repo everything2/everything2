@@ -1,6 +1,6 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
-import NewWriteupsEntry from '../NewWriteupsEntry'
+import WriteupEntry from '../WriteupEntry'
 import NodeletContainer from '../NodeletContainer'
 
 const NewLogs = (props) => {
@@ -14,7 +14,7 @@ const NewLogs = (props) => {
       props.newWriteups.filter((entry) => {return entry.is_log }).map((entry,index) => {
         if(index < props.limit)
         {
-          return <NewWriteupsEntry entry={entry} key={"nl_"+entry.node_id} />
+          return <WriteupEntry entry={entry} key={"nl_"+entry.node_id} mode="full" />
         }
       })
     )

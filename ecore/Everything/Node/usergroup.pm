@@ -36,10 +36,31 @@ sub deliver_message
     return {"errors" => 1, "errortext" => ["Recursion limit reached"]};
   }
 
+  # Check if sender is member of usergroup
+  my $sender_hash = ref($messagedata->{from}) ? $messagedata->{from}->NODEDATA : $messagedata->{from};
+  unless ($self->APP->inUsergroup($sender_hash, $self->NODEDATA)) {
+    return {"errors" => 1, "errortext" => ["You are not a member of ".$self->title]};
+  }
+
+  # Set for_usergroup field so replies work correctly
+  $messagedata->{for_usergroup} = $self->node_id;
+
   my $responses = {};
+
+  # Get list of users ignoring this usergroup
+  my $csr = $self->DB->sqlSelectMany('messageignore_id', 'messageignore',
+    'ignore_node='.$self->node_id);
+  my %ignores = ();
+  while (my ($ig) = $csr->fetchrow) {
+    $ignores{$ig} = 1;
+  }
+  $csr->finish;
 
   foreach my $groupmember (@{$self->group || []})
   {
+    # Skip users who are ignoring this usergroup
+    next if $ignores{$groupmember->node_id};
+
     if($groupmember->can("deliver_message"))
     {
       my $response = $groupmember->deliver_message($messagedata);
@@ -56,6 +77,18 @@ sub deliver_message
         push @{$responses->{errortext}},$response->{errortext};
       }
     }
+  }
+
+  # Check if usergroup itself should get archive copy
+  if ($self->APP->getParameter($self->node_id, 'allow_message_archive')) {
+    my $author_id = ref($messagedata->{from}) ? $messagedata->{from}->node_id : $messagedata->{from}{node_id};
+    $self->DB->sqlInsert('message', {
+      msgtext => $messagedata->{message},
+      author_user => $author_id,
+      for_user => $self->node_id,
+      for_usergroup => $self->node_id,
+      archive => 0
+    });
   }
 
   return $responses;

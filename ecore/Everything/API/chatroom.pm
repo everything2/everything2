@@ -10,7 +10,17 @@ sub routes
     'change_room' => 'change_room',
     'set_cloaked' => 'set_cloaked',
     'create_room' => 'create_room',
+    '/' => 'get_other_users',
   }
+}
+
+sub get_other_users {
+  my ($self, $REQUEST) = @_;
+
+  my $USER = $REQUEST->user->NODEDATA;
+  my $otherUsersData = $self->APP->buildOtherUsersData($USER);
+
+  return [$self->HTTP_OK, $otherUsersData];
 }
 
 sub change_room {
@@ -73,6 +83,9 @@ sub change_room {
   # Change the room
   $APP->changeRoom($USER, $room_node);
 
+  # Get room data (name and topic)
+  my $room_data = $APP->getRoomData($room_id);
+
   # Return success with new room info and full otherUsersData
   my $new_room_title = $room_node ? $room_node->{title} : 'outside';
   my $otherUsersData = $APP->buildOtherUsersData($USER);
@@ -82,6 +95,8 @@ sub change_room {
     message => 'Changed to room: ' . $new_room_title,
     room_id => int($room_id),
     room_title => $new_room_title,
+    room_name => $room_data->{roomName},
+    room_topic => $room_data->{roomTopic},
     otherUsersData => $otherUsersData
   }];
 }
@@ -231,6 +246,9 @@ sub create_room {
   # Move user to the new room
   $APP->changeRoom($USER, $room_node);
 
+  # Get room data (name and topic)
+  my $room_data = $APP->getRoomData($room_node->{node_id});
+
   # Get updated otherUsersData after room creation and change
   my $otherUsersData = $APP->buildOtherUsersData($USER);
 
@@ -240,11 +258,13 @@ sub create_room {
     message => 'Room created successfully',
     room_id => int($room_node->{node_id}),
     room_title => $room_node->{title},
+    room_name => $room_data->{roomName},
+    room_topic => $room_data->{roomTopic},
     otherUsersData => $otherUsersData
   }];
 }
 
-around ['change_room', 'set_cloaked', 'create_room'] => \&Everything::API::unauthorized_if_guest;
+around ['get_other_users', 'change_room', 'set_cloaked', 'create_room'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 

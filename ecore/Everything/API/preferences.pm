@@ -19,7 +19,8 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
   'edn_hideedev' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'nw_nojunk' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'num_newwus' => Everything::Preference::List->new(default_value => 15, allowed_values => [1,5,10,15,20,25,30,40]),
-  'collapsedNodelets' => Everything::Preference::String->new(default_value => '', allowed_values => qr/.?/)
+  'collapsedNodelets' => Everything::Preference::String->new(default_value => '', allowed_values => qr/.?/),
+  'nodetrail' => Everything::Preference::String->new(default_value => '', allowed_values => qr/.?/)
 }});
 
 sub routes

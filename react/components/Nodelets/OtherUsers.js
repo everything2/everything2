@@ -1,6 +1,7 @@
 import React from 'react'
 import NodeletContainer from '../NodeletContainer'
 import LinkNode from '../LinkNode'
+import { useOtherUsersPolling } from '../../hooks/useOtherUsersPolling'
 
 const OtherUsers = (props) => {
   const [selectedRoom, setSelectedRoom] = React.useState(null)
@@ -13,7 +14,14 @@ const OtherUsers = (props) => {
   const [isCreatingRoom, setIsCreatingRoom] = React.useState(false)
   const [error, setError] = React.useState(null)
 
-  if (!props.otherUsersData) {
+  // Use polling hook for automatic updates every 2 minutes
+  // Pass initial data from props to skip initial API call
+  const { otherUsersData: polledData, loading: pollingLoading, error: pollingError, refresh } = useOtherUsersPolling(120000, props.otherUsersData)
+
+  // Use polled data (which now includes initial data from props)
+  const otherUsersData = polledData
+
+  if (!otherUsersData) {
     return (
       <NodeletContainer
         title="Other Users"
@@ -21,7 +29,7 @@ const OtherUsers = (props) => {
         nodeletIsOpen={props.nodeletIsOpen}
       >
         <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
-          No chat data available
+          {pollingLoading ? 'Loading...' : pollingError ? `Error: ${pollingError}` : 'No chat data available'}
         </p>
       </NodeletContainer>
     )
@@ -38,9 +46,9 @@ const OtherUsers = (props) => {
     suspension,
     canCreateRoom,
     createRoomSuspended
-  } = props.otherUsersData
+  } = otherUsersData
 
-  // Initialize states from props
+  // Initialize states from props and sync with updates
   React.useEffect(() => {
     setSelectedRoom(currentRoomId)
     setIsCloaked(initialCloaked)
@@ -70,13 +78,16 @@ const OtherUsers = (props) => {
         throw new Error(data.error || 'Failed to change room')
       }
 
-      // Update state with new room data from API
+      // Update state with new room data from API (pass full response to get room_name and room_topic)
       if (data.otherUsersData && props.onOtherUsersDataUpdate) {
-        props.onOtherUsersDataUpdate(data.otherUsersData)
+        props.onOtherUsersDataUpdate(data)
       } else {
         // Fallback to reload if callback not provided
         window.location.reload()
       }
+
+      // Refresh polling data immediately to get updated room info
+      refresh()
     } catch (error) {
       setError(error.message)
     } finally {
@@ -157,13 +168,16 @@ const OtherUsers = (props) => {
       setNewRoomTitle('')
       setNewRoomDescription('')
 
-      // Update state with new room data from API
+      // Update state with new room data from API (pass full response to get room_name and room_topic)
       if (data.otherUsersData && props.onOtherUsersDataUpdate) {
-        props.onOtherUsersDataUpdate(data.otherUsersData)
+        props.onOtherUsersDataUpdate(data)
       } else {
         // Fallback to reload if callback not provided
         window.location.reload()
       }
+
+      // Refresh polling data immediately to get updated room info
+      refresh()
     } catch (error) {
       setError(error.message)
     } finally {

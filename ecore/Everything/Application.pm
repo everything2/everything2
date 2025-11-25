@@ -1991,6 +1991,31 @@ sub refreshRoomUsers {
   return $actions;
 }
 
+sub getRoomData {
+  my ($this, $room_id) = @_;
+
+  my $room_data = {};
+
+  # Get room name
+  if ($room_id == 0) {
+    $room_data->{roomName} = 'outside';
+  } else {
+    my $room = $this->{db}->getNodeById($room_id);
+    $room_data->{roomName} = $room->{title} if $room;
+  }
+
+  # Get room topic from Room Topics setting node
+  my $settingsnode = $this->{db}->getNode('Room Topics', 'setting');
+  if ($settingsnode) {
+    my $topics = $this->getVars($settingsnode);
+    if ($topics && defined $topics->{$room_id}) {
+      $room_data->{roomTopic} = $topics->{$room_id};
+    }
+  }
+
+  return $room_data;
+}
+
 sub logUserIp {
   my ($this, $user, $vars) = @_;
   return if $this->isGuest($user);
@@ -3740,11 +3765,11 @@ sub getVars
 
 sub get_messages
 {
-  my ($this, $user, $limit, $offset) = @_;
+  my ($this, $user, $limit, $offset, $archive) = @_;
 
   $this->{db}->getRef($user);
   return unless defined($user) and defined($user->{node_id});
-  
+
   $limit = int($limit);
   $limit ||= 15;
   $limit = 15 if ($limit < 0);
@@ -3753,7 +3778,10 @@ sub get_messages
   $offset = int($offset);
   $offset ||= 0;
 
-  my $csr = $this->{db}->sqlSelectMany("*","message","for_user=$user->{node_id}", "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
+  $archive = int($archive) || 0;
+
+  my $where = "for_user=$user->{node_id} AND archive=$archive";
+  my $csr = $this->{db}->sqlSelectMany("*","message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
   my $records = [];
   while (my $row = $csr->fetchrow_hashref)
   {
@@ -3765,9 +3793,9 @@ sub get_messages
 sub get_message
 {
   my ($this, $message_id) = @_;
-  
+
   my $row = $this->{db}->sqlSelectHashref("*", "message", "message_id=".int($message_id));
-  
+
   if($row->{message_id})
   {
     return $this->message_json_structure($row);
@@ -3850,6 +3878,823 @@ sub message_archive_set
 
   $this->{db}->sqlUpdate("message",{"archive"=>$value},"message_id=$message->{message_id}");
   return $message->{message_id};
+}
+
+sub sendPublicChatter
+{
+  my ($this, $user, $message, $vars) = @_;
+
+  # Validate inputs
+  return unless defined $user && defined $message && defined $vars;
+  return unless $user->{user_id};
+
+  # Check if user has public chatter disabled
+  return if $vars->{publicchatteroff};
+
+  # Truncate to 512 chars for public chatter
+  $message = substr($message, 0, 512);
+  utf8::encode($message);
+
+  # Check for duplicate message within time window
+  my $messageInterval = 480;
+  my $wherestr = "for_user=0 and tstamp >= date_sub(now(), interval $messageInterval second)";
+  $wherestr .= ' and author_user='.$user->{user_id};
+
+  my $lastmessage = $this->{db}->sqlSelect('trim(msgtext)', 'message', $wherestr." order by message_id desc limit 1");
+  my $trimmedMessage = $message;
+  $trimmedMessage =~ s/^\s+//;
+  $trimmedMessage =~ s/\s+$//;
+  if ($lastmessage eq $trimmedMessage)
+  {
+    return;
+  }
+
+  # Check if user is suspended from chat
+  return if ($this->isSuspended($user,"chat"));
+
+  # Check if user is infected (borged)
+  return if (defined($vars->{infected}) and $vars->{infected} == 1);
+
+  # Insert public chatter message
+  $this->{db}->sqlInsert('message', {
+    msgtext => $message,
+    author_user => $user->{user_id},
+    for_user => 0,
+    room => $user->{in_room}
+  });
+
+  return 1;
+}
+
+sub processMessageCommand
+{
+  my ($this, $user, $message, $vars) = @_;
+
+  # Validate inputs
+  return unless defined $user && defined $message && defined $vars;
+  return unless $user->{user_id};
+
+  # Trim whitespace
+  $message =~ s/^\s+|\s+$//g;
+  return unless $message ne '';
+
+  # Check if borged or suspended
+  return if $vars->{borged};
+  return if $this->isSuspended($user, 'chat');
+
+  # Normalize command synonyms
+  $message =~ s/^\/(small|aside|ooc|whispers?|monologue)\b/\/whisper/i;
+  $message =~ s/^\/(aria|chant|song|rap|gregorianchant)\b/\/sing/i;
+  $message =~ s/^\/(tomb|sepulchral|doom|reaper)\b/\/death/i;
+  $message =~ s/^\/(conflagrate|immolate|singe|explode|limn)\b/\/fireball/i;
+  $message =~ s/^\/my/\/me\'s/i;
+
+  # /flip → /roll 1d2
+  if ($message =~ /^\/(flip|coinflip)\s*$/i) {
+    $message = "/rolls 1d2";
+  }
+
+  # Route commands
+  my $result;
+
+  if ($message =~ /^\/msg\s+(.+)/i || $message =~ /^\/tell\s+(.+)/i) {
+    $result = $this->handlePrivateMessageCommand($user, $1, $vars);
+  }
+  elsif ($message =~ /^\/me\s+(.+)/i || $message =~ /^\/me\'s\s+(.+)/i) {
+    $result = $this->handleMeCommand($user, $message, $vars);
+  }
+  elsif ($message =~ /^\/rolls?\s+(.*)$/i) {
+    $result = $this->handleRollCommand($user, $1, $vars);
+  }
+  elsif ($message =~ /^\/fireball\s+(.+)/i) {
+    $result = $this->handleFireballCommand($user, $1, $vars);
+  }
+  elsif ($message =~ /^\/sanctify\s+(.+)/i) {
+    $result = $this->handleSanctifyCommand($user, $1, $vars);
+  }
+  elsif ($message =~ /^\/invite\s+(\S+)/i) {
+    $result = $this->handleInviteCommand($user, $1, $vars);
+  }
+  elsif ($message =~ /^\/chatteroff/i) {
+    $result = $this->handleChatterOffCommand($user, $vars);
+  }
+  elsif ($message =~ /^\/chatteron/i) {
+    $result = $this->handleChatterOnCommand($user, $vars);
+  }
+  elsif ($message =~ /^\/borg\s+(\S+)/i) {
+    $result = $this->handleBorgCommand($user, $message, $vars);
+  }
+  elsif ($message =~ /^\/(whisper|sing|death|sings|me\'s)\s+/i) {
+    # Commands that display in showchatter with special formatting
+    $result = $this->sendPublicChatter($user, $message, $vars);
+  }
+  elsif ($message =~ /^\//) {
+    # Unknown command - check easter eggs
+    $result = $this->handleEasterEggCommand($user, $message, $vars);
+  }
+  else {
+    # Plain chatter
+    $result = $this->sendPublicChatter($user, $message, $vars);
+  }
+
+  # Handle error responses from command handlers
+  # If handler returns hashref with {success => 0, error => "..."}, propagate error
+  if (ref($result) eq 'HASH' && exists $result->{success} && !$result->{success}) {
+    return $result;  # Return error hashref
+  }
+
+  # Otherwise, convert truthy/falsy to success response
+  return $result ? { success => 1 } : { success => 0, error => 'Message not posted' };
+}
+
+sub handleMeCommand
+{
+  my ($this, $user, $message, $vars) = @_;
+
+  # /me action → plain action text
+  # /me's action → same
+  # Just send the command as-is, showchatter will parse it
+  return $this->sendPublicChatter($user, $message, $vars);
+}
+
+sub handleRollCommand
+{
+  my ($this, $user, $roll_spec, $vars) = @_;
+
+  my $result = $this->processDiceRoll($roll_spec);
+
+  if ($result->{success}) {
+    return $this->sendPublicChatter($user, $result->{message}, $vars);
+  }
+
+  # Error message
+  my $error_msg = $result->{message} || "/rolls poorly, format: 3d6[+1]";
+  return $this->sendPublicChatter($user, $error_msg, $vars);
+}
+
+sub handlePrivateMessageCommand
+{
+  my ($this, $user, $rest, $vars) = @_;
+
+  # Parse: /msg user message or /msg {user1 user2} message
+  # ONO (online-only) indicated by ? suffix: /msg? user message
+
+  my $is_ono = 0;
+  my @recipients;
+  my $message_text;
+
+  # Check for ONO marker in command or recipients
+  if ($rest =~ /^\?\s*(.+)$/) {
+    $is_ono = 1;
+    $rest = $1;
+  }
+
+  # Parse recipients and message
+  if ($rest =~ /^\{(.+?)\}\??\s+(.+)$/s) {
+    # Multiple recipients: /msg {user1 user2} message
+    @recipients = split(/\s+/, $1);
+    $message_text = $2;
+    $is_ono = 1 if $rest =~ /\}\?/;
+  }
+  elsif ($rest =~ /^(\S+)\??\s+(.+)$/s) {
+    # Single recipient: /msg user message
+    @recipients = ($1);
+    $message_text = $2;
+    $is_ono = 1 if $1 =~ /\?$/;
+    $recipients[0] =~ s/\?$//;
+  }
+  else {
+    # Invalid format
+    return;
+  }
+
+  return unless $message_text && $message_text =~ /\S/;
+
+  # Send via sendPrivateMessage
+  my $result = $this->sendPrivateMessage(
+    $user,
+    \@recipients,
+    $message_text,
+    { online_only => $is_ono }
+  );
+
+  return $result->{success};
+}
+
+sub handleFireballCommand
+{
+  my ($this, $user, $target_name, $vars) = @_;
+
+  my $minLvl = 15;
+  my $is_admin = $this->isAdmin($user);
+  my $user_level = $this->getLevel($user);
+
+  # Check authorization
+  unless ($user_level >= $minLvl || $is_admin) {
+    return { success => 0, error => "You must be level $minLvl or higher to use /fireball" };
+  }
+
+  # Check easter eggs (admins bypass this check)
+  unless ($is_admin || ($vars->{easter_eggs} && $vars->{easter_eggs} > 0)) {
+    return { success => 0, error => "You need easter eggs to use /fireball" };
+  }
+
+  # Find recipient
+  my $recipient = $this->{db}->getNode($target_name, 'user');
+  unless ($recipient) {
+    $target_name =~ s/_/ /g;
+    $recipient = $this->{db}->getNode($target_name, 'user');
+  }
+
+  unless ($recipient) {
+    return { success => 0, error => "User '$target_name' not found" };
+  }
+
+  # Can't fireball yourself
+  if ($recipient->{user_id} == $user->{user_id}) {
+    return { success => 0, error => "You cannot fireball yourself" };
+  }
+
+  # Consume egg and award GP (only consume egg if not admin)
+  unless ($is_admin) {
+    $vars->{easter_eggs}--;
+    Everything::setVars($user, $vars);
+  }
+  $this->adjustGP($recipient, 5);
+
+  # Send chatter message
+  my $message = "/fireballs $target_name!";
+  return $this->sendPublicChatter($user, $message, $vars);
+}
+
+sub handleSanctifyCommand
+{
+  my ($this, $user, $target_name, $vars) = @_;
+
+  my $minLvl = 15;
+  my $is_admin = $this->isAdmin($user);
+  my $user_level = $this->getLevel($user);
+
+  # Check authorization
+  unless ($user_level >= $minLvl || $is_admin) {
+    return { success => 0, error => "You must be level $minLvl or higher to use /sanctify" };
+  }
+
+  # Check easter eggs (admins bypass this check)
+  unless ($is_admin || ($vars->{easter_eggs} && $vars->{easter_eggs} > 0)) {
+    return { success => 0, error => "You need easter eggs to use /sanctify" };
+  }
+
+  # Find recipient
+  my $recipient = $this->{db}->getNode($target_name, 'user');
+  unless ($recipient) {
+    $target_name =~ s/_/ /g;
+    $recipient = $this->{db}->getNode($target_name, 'user');
+  }
+
+  unless ($recipient) {
+    return { success => 0, error => "User '$target_name' not found" };
+  }
+
+  # Can't sanctify yourself
+  if ($recipient->{user_id} == $user->{user_id}) {
+    return { success => 0, error => "You cannot sanctify yourself" };
+  }
+
+  # Consume egg and award GP (only consume egg if not admin)
+  unless ($is_admin) {
+    $vars->{easter_eggs}--;
+    Everything::setVars($user, $vars);
+  }
+  $this->adjustGP($recipient, 5);
+
+  # Send chatter message
+  my $message = "/sanctifies $target_name!";
+  return $this->sendPublicChatter($user, $message, $vars);
+}
+
+sub handleInviteCommand
+{
+  my ($this, $user, $target_name, $vars) = @_;
+
+  my $room_text;
+  if ($user->{in_room}) {
+    my $room = $this->{db}->getNodeById($user->{in_room});
+    $room_text = $room ? $room->{title} : 'my room';
+  } else {
+    $room_text = 'outside';
+  }
+
+  # Convert to private message
+  my $message = "come join me in [$room_text]";
+  if ($user->{in_room}) {
+    $message = "come join me in [$room_text]";
+  } else {
+    $message = "come join me outside";
+  }
+
+  return $this->sendPrivateMessage($user, $target_name, $message, {});
+}
+
+sub handleChatterOffCommand
+{
+  my ($this, $user, $vars) = @_;
+
+  # Set publicchatteroff preference
+  $vars->{publicchatteroff} = 1;
+  Everything::setVars($user, $vars);
+
+  return 1;
+}
+
+sub handleChatterOnCommand
+{
+  my ($this, $user, $vars) = @_;
+
+  # Remove publicchatteroff preference
+  delete $vars->{publicchatteroff};
+  Everything::setVars($user, $vars);
+
+  return 1;
+}
+
+sub handleBorgCommand
+{
+  my ($this, $user, $message, $vars) = @_;
+
+  # Only chanops and admins can borg
+  my $is_chanop = $this->isChanop($user, "nogods");
+  my $is_admin = $this->isAdmin($user);
+
+  unless ($is_chanop || $is_admin) {
+    return { success => 0, error => "You must be a chanop or administrator to use /borg" };
+  }
+
+  # Parse: /borg username [reason]
+  my ($target_name, $reason);
+  if ($message =~ /^\/borg\s+(\S+)\s+(.+?)$/i) {
+    $target_name = $1;
+    $reason = $2;
+  } elsif ($message =~ /^\/borg\s+(\S+)/i) {
+    $target_name = $1;
+  } else {
+    return { success => 0, error => "Usage: /borg username [reason]" };
+  }
+
+  # Get target user (handle underscores)
+  my $target = $this->{db}->getNode($target_name, 'user');
+  $target_name =~ s/_/ /g;
+  $target = $this->{db}->getNode($target_name, 'user') unless $target;
+
+  # Get EDB (borgbot)
+  my $borg = $this->{db}->getNode('EDB', 'user');
+
+  unless ($target) {
+    # Send error message via EDB (borgbot) for legacy compatibility
+    $this->{db}->sqlInsert('message', {
+      msgtext => "Can't borg 'em, $target_name doesn't exist on this system!",
+      author_user => $borg->{node_id},
+      for_user => $user->{user_id}
+    });
+    return { success => 0, error => "User '$target_name' not found" };
+  }
+
+  $target_name = $target->{title}; # Ensure proper case
+
+  # Send message to target
+  my $send_message = '[' . $user->{title} . '] instructed me to eat you';
+  if ($reason) {
+    $send_message .= ': ' . $reason;
+  }
+
+  $this->{db}->sqlInsert('message', {
+    msgtext => $send_message,
+    author_user => $borg->{node_id},
+    for_user => $target->{node_id}
+  });
+
+  # Send confirmation to borger
+  my $confirm_message = 'you instructed me to eat [' . $target_name . '] (' . $target->{node_id} . ')';
+  if ($reason) {
+    $confirm_message .= ': ' . $reason;
+  }
+
+  $this->{db}->sqlInsert('message', {
+    msgtext => $confirm_message,
+    author_user => $borg->{node_id},
+    for_user => $user->{user_id}
+  });
+
+  # Set borged flag in target's vars
+  my $target_vars = $this->getVars($target);
+  $target_vars->{borged} = 1;
+  Everything::setVars($target, $target_vars);
+
+  # Public announcement
+  my $announcement = '/me has swallowed [' . $target_name . ']. ';
+
+  # Random borg message
+  my @borg_bursts = (
+    '*BURP*',
+    'Mmmm...',
+    '[' . $target_name . '] is good food!',
+    '[' . $target_name . '] was tasty!',
+    'keep \'em coming!',
+    '[' . $target_name . '] yummy! More!',
+    '[EDB] needed that!',
+    '*GULP*',
+    'moist noder flesh',
+    '*B R A P *'
+  );
+  $announcement .= $borg_bursts[int(rand(@borg_bursts))];
+
+  $this->{db}->sqlInsert('message', {
+    msgtext => $announcement,
+    author_user => $borg->{node_id},
+    for_user => 0,
+    room => $user->{in_room}
+  });
+
+  return 1;
+}
+
+sub handleEasterEggCommand
+{
+  my ($this, $user, $message, $vars) = @_;
+
+  # Check if this is a valid easter egg command
+  my $egg_commands = $this->{db}->getNode('egg commands', 'setting');
+  return unless $egg_commands;
+
+  my $egg_vars = $this->getVars($egg_commands);
+  return unless $egg_vars;
+
+  # Parse command: /command target
+  if ($message =~ /^\/(\S+)\s+(.+?)\s*$/) {
+    my $phrase = $1;
+    my $target_name = $2;
+
+    # Try without last character if not found (plurals)
+    my $phrase_key = $phrase;
+    $phrase_key = substr($phrase, 0, -1) unless $egg_vars->{$phrase};
+
+    if ($egg_vars->{$phrase_key}) {
+      # Valid easter egg command
+
+      # Check easter eggs
+      unless ($vars->{easter_eggs} && $vars->{easter_eggs} > 0) {
+        return;
+      }
+
+      # Find recipient
+      my $recipient = $this->{db}->getNode($target_name, 'user');
+      unless ($recipient) {
+        $target_name =~ s/_/ /g;
+        $recipient = $this->{db}->getNode($target_name, 'user');
+      }
+
+      return unless $recipient;
+
+      # Can't use on yourself
+      return if $recipient->{user_id} == $user->{user_id};
+
+      # Consume egg and award GP
+      $vars->{easter_eggs}--;
+      $this->adjustGP($recipient, 3);
+
+      # Send chatter message
+      my $msg = "/$phrase_key $target_name";
+      return $this->sendPublicChatter($user, $msg, $vars);
+    }
+  }
+
+  # Not a valid command - silently fail
+  return;
+}
+
+sub getRecentChatter
+{
+  my ($this, $params) = @_;
+
+  # Extract parameters with defaults
+  my $limit = int($params->{limit} || 30);
+  my $offset = int($params->{offset} || 0);
+  my $room = int($params->{room} || 0);
+  my $since = $params->{since}; # Optional timestamp for incremental updates
+
+  # Enforce limits
+  $limit = 30 if ($limit < 1);
+  $limit = 100 if ($limit > 100);
+  $offset = 0 if ($offset < 0);
+
+  # Build where clause
+  my $where = "for_user=0";
+  # Always filter by room (including room=0 for "outside")
+  $where .= " and room=$room";
+  if ($since) {
+    # since should be ISO timestamp like "2025-11-24T12:00:00Z"
+    $since =~ s/T/ /;
+    $since =~ s/Z$//;
+    $where .= " and tstamp > '$since'";
+  }
+
+  # Fetch recent chatter
+  my $csr = $this->{db}->sqlSelectMany("*", "message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
+  my $records = [];
+  while (my $row = $csr->fetchrow_hashref)
+  {
+    push @$records, $this->message_json_structure($row);
+  }
+
+  return $records;
+}
+
+sub sendPrivateMessage
+{
+  my ($this, $author, $recipients, $message, $options) = @_;
+
+  $options ||= {};
+
+  # Validate inputs
+  return {success => 0, error => 'No message provided'} unless defined $message && length($message);
+  return {success => 0, error => 'No author provided'} unless defined $author && $author->{user_id};
+  return {success => 0, error => 'No recipients provided'} unless defined $recipients;
+
+  # Clean message whitespace
+  $message = $this->messageCleanWhitespace($message);
+  return {success => 0, error => 'Message only contains whitespace'} unless length($message);
+
+  # Normalize recipients to array
+  my @recipient_list = ();
+  if (ref($recipients) eq 'ARRAY') {
+    @recipient_list = @$recipients;
+  } else {
+    @recipient_list = ($recipients);
+  }
+
+  my @sent_to = ();
+  my @errors = ();
+
+  foreach my $recip (@recipient_list) {
+    # Get recipient node if string provided
+    my $recipient_node = $recip;
+    if (!ref($recip)) {
+      my $name = $recip;
+      $recipient_node = $this->{db}->getNode($name, 'user');
+      unless ($recipient_node) {
+        $name =~ s/_/ /g;
+        $recipient_node = $this->{db}->getNode($name, 'user');
+      }
+      $recipient_node = $this->{db}->getNode($recip, 'usergroup') unless $recipient_node;
+
+      unless ($recipient_node) {
+        push @errors, "Recipient not found: $recip";
+        next;
+      }
+    }
+
+    # Check message forwarding
+    if ($recipient_node->{message_forward_to}) {
+      $recipient_node = $this->{db}->getNodeById($recipient_node->{message_forward_to});
+      unless ($recipient_node) {
+        push @errors, "Forward target not found for $recip";
+        next;
+      }
+    }
+
+    # Handle usergroup messages
+    if ($recipient_node->{type}{title} eq 'usergroup') {
+      my $result = $this->sendUsergroupMessage($author, $recipient_node, $message, $options);
+      if ($result->{success}) {
+        push @sent_to, @{$result->{sent_to}};
+      } else {
+        push @errors, $result->{error};
+      }
+      next;
+    }
+
+    # Check if recipient is ignoring sender
+    if ($this->userIgnoresMessagesFrom($recipient_node->{user_id}, $author->{user_id})) {
+      push @errors, "$recipient_node->{title} is ignoring you";
+      next;
+    }
+
+    # Check online-only restriction
+    if ($options->{online_only}) {
+      my $is_online = $this->{db}->sqlSelect('COUNT(*)', 'room', "member_user=$recipient_node->{user_id}");
+      unless ($is_online) {
+        # Check if they want offline ONO messages
+        my $recip_vars = $this->getVars($recipient_node);
+        unless ($recip_vars->{getofflinemsgs}) {
+          next; # Skip this recipient
+        }
+      }
+    }
+
+    # Prepare message text
+    my $msgtext = $message;
+    if ($options->{online_only}) {
+      $msgtext = "OnO: $msgtext";
+    }
+    if ($options->{about_node}) {
+      $msgtext = "re [$options->{about_node}]: $msgtext";
+    }
+
+    # Insert message
+    $this->{db}->sqlInsert('message', {
+      msgtext => $msgtext,
+      author_user => $author->{user_id},
+      for_user => $recipient_node->{user_id},
+      for_usergroup => $options->{for_usergroup} || 0,
+      archive => 0
+    });
+
+    push @sent_to, $recipient_node->{title};
+  }
+
+  if (@sent_to) {
+    return {
+      success => 1,
+      sent_to => \@sent_to,
+      errors => (@errors ? \@errors : undef)
+    };
+  } else {
+    return {
+      success => 0,
+      error => 'No messages sent',
+      errors => \@errors
+    };
+  }
+}
+
+sub sendUsergroupMessage
+{
+  my ($this, $author, $usergroup, $message, $options) = @_;
+
+  $options ||= {};
+
+  # Check if author is member of usergroup
+  unless ($this->inUsergroup($author, $usergroup)) {
+    return {success => 0, error => "You are not a member of $usergroup->{title}"};
+  }
+
+  # Get all members of usergroup
+  my @members = @{$this->{db}->selectNodegroupFlat($usergroup)};
+
+  # Get list of users ignoring this usergroup
+  my $csr = $this->{db}->sqlSelectMany('messageignore_id', 'messageignore',
+    'ignore_node='.$usergroup->{node_id});
+  my %ignores = ();
+  while (my ($ig) = $csr->fetchrow) {
+    $ignores{$ig} = 1;
+  }
+  $csr->finish;
+
+  # Filter out users who are ignoring the usergroup
+  @members = grep { !exists($ignores{$_->{user_id}}) } @members;
+
+  # Handle online-only restriction
+  if ($options->{online_only}) {
+    my %onlines = ();
+    my $room_csr = $this->{db}->sqlSelectMany('member_user', 'room', '', '');
+    while (my ($user_id) = $room_csr->fetchrow) {
+      $onlines{$user_id} = 1;
+    }
+    $room_csr->finish;
+
+    @members = grep {
+      my $is_online = $onlines{$_->{user_id}};
+      if (!$is_online) {
+        my $vars = $this->getVars($_);
+        $is_online = $vars->{getofflinemsgs};
+      }
+      $is_online;
+    } @members;
+  }
+
+  # Prepare message text
+  my $msgtext = $message;
+  if ($options->{online_only}) {
+    $msgtext = "OnO: $msgtext";
+  }
+
+  # Send to all members (deduplicate by user_id)
+  my %sent = ();
+  my @sent_to = ();
+  foreach my $member (@members) {
+    next if $sent{$member->{user_id}};
+
+    $this->{db}->sqlInsert('message', {
+      msgtext => $msgtext,
+      author_user => $author->{user_id},
+      for_user => $member->{user_id},
+      for_usergroup => $usergroup->{node_id},
+      archive => 0
+    });
+
+    $sent{$member->{user_id}} = 1;
+    push @sent_to, $member->{title};
+  }
+
+  # Check if usergroup itself should get archive copy
+  if ($this->getParameter($usergroup->{node_id}, 'allow_message_archive')) {
+    $this->{db}->sqlInsert('message', {
+      msgtext => $msgtext,
+      author_user => $author->{user_id},
+      for_user => $usergroup->{node_id},
+      for_usergroup => $usergroup->{node_id},
+      archive => 0
+    });
+  }
+
+  return {
+    success => 1,
+    sent_to => \@sent_to
+  };
+}
+
+sub processDiceRoll
+{
+  my ($this, $roll_string) = @_;
+
+  return {success => 0, error => 'No dice roll specified'} unless defined $roll_string && length($roll_string);
+
+  # Remove spaces from roll string
+  $roll_string =~ s/\s//g;
+
+  # Parse dice notation: XdY[+/-Z][keepN]
+  # Examples: 3d6, 2d20+5, 4d6keep3, 1d100-10
+  unless ($roll_string =~ m/((\d+)d(-?\d+)(([\+-])(\d+))?(keep(\d+))?)/i) {
+    return {
+      success => 0,
+      error => 'Invalid format',
+      message => '/rolls poorly, format: 3d6&#91;+1&#93;'
+    };
+  }
+
+  my $dice_count = int($2);
+  my $dice_sides = int($3);
+  my $modifier_sign = $5;  # + or -
+  my $modifier_value = $6;
+  my $dice_kept = int($8 || 0);
+
+  # Validate dice count
+  if ($dice_count > 1000) {
+    return {
+      success => 0,
+      error => 'Too many dice',
+      message => '/rolls too many dice and makes a mess.'
+    };
+  }
+
+  # Validate dice sides
+  if ($dice_sides < 0) {
+    return {
+      success => 0,
+      error => 'Negative dice sides',
+      message => '/rolls anti-dice, keep them away from the normal dice please.'
+    };
+  }
+
+  # If no "keep" specified or invalid keep value, keep all dice
+  if ($dice_kept <= 0 || $dice_kept > $dice_count) {
+    $dice_kept = $dice_count;
+  }
+
+  my @dice = ();
+  my $total = 0;
+
+  # Roll the dice (unless zero-sided dice)
+  unless ($dice_sides == 0) {
+    for (my $i = 0; $i < $dice_count; $i++) {
+      push @dice, int(rand($dice_sides)) + 1;
+    }
+
+    # Sort dice in descending order (for "keep highest" mechanics)
+    @dice = reverse sort { $a <=> $b } @dice;
+
+    # Sum the kept dice
+    for (my $i = 0; $i < $dice_kept; $i++) {
+      $total += $dice[$i];
+    }
+  }
+
+  # Apply modifier
+  if (defined $modifier_sign && defined $modifier_value) {
+    if ($modifier_sign eq '+') {
+      $total += $modifier_value;
+    } elsif ($modifier_sign eq '-') {
+      $total -= $modifier_value;
+    }
+  }
+
+  return {
+    success => 1,
+    roll_notation => $1,  # Original matched notation
+    total => $total,
+    dice => \@dice,
+    message => "/rolls $1 &rarr; $total"
+  };
 }
 
 sub is_tls
@@ -4846,6 +5691,11 @@ sub buildOtherUsersData
     my $other_uservars = $noder->{uservars};
     my $roomId = $noder->{roomId};
 
+    # Skip current user if they're in a different room (prevents stale room table entries)
+    if($user->{node_id} == $USER->{node_id} && $roomId != $current_room_id) {
+      next;
+    }
+
     # Check for Halloween costume
     my $displayUser = $user;
     my $costume_id = $other_uservars->{e2_hc_costume};
@@ -5091,8 +5941,38 @@ sub buildNodeInfoStructure
   $e2->{user}->{title} = $USER->{title};
   $e2->{user}->{admin} = $this->isAdmin($USER)?(\1):(\0);
   $e2->{user}->{editor} = $this->isEditor($USER)?(\1):(\0);
+  $e2->{user}->{chanop} = $this->isChanop($USER)?(\1):(\0);
   $e2->{user}->{developer} = $this->isDeveloper($USER)?(\1):(\1);
   $e2->{user}->{guest} = $this->isGuest($USER)?(\1):(\0);
+  $e2->{user}->{in_room} = $USER->{in_room};
+
+  # Chatterbox data - room topic and initial messages for current room
+  $e2->{chatterbox} ||= {};
+  if (defined $USER->{in_room}) {
+    # Get room name
+    if ($USER->{in_room} == 0) {
+      $e2->{chatterbox}->{roomName} = 'outside';
+    } else {
+      my $room = $this->{db}->getNodeById($USER->{in_room});
+      $e2->{chatterbox}->{roomName} = $room->{title} if $room;
+    }
+
+    # Get room topic
+    my $settingsnode = $this->{db}->getNode('Room Topics', 'setting');
+    if ($settingsnode) {
+      my $topics = $this->getVars($settingsnode);
+      if ($topics && defined $topics->{$USER->{in_room}}) {
+        $e2->{chatterbox}->{roomTopic} = $topics->{$USER->{in_room}};
+      }
+    }
+
+    # Get initial chatter messages for the room (prevents redundant API call on page load)
+    my $initialChatter = $this->getRecentChatter({
+      room => $USER->{in_room},
+      limit => 30
+    });
+    $e2->{chatterbox}->{messages} = $initialChatter || [];
+  }
 
   $e2->{node} ||= {};
   $e2->{node}->{title} = $NODE->{title};
@@ -5751,6 +6631,25 @@ sub buildNodeInfoStructure
     $e2->{otherUsersData} = $this->buildOtherUsersData($USER);
   }
 
+  # Messages - Private message inbox
+  if($nodelets =~ /2044453/)
+  {
+    # Load initial messages (limit 10 for performance)
+    $e2->{messagesData} = $this->get_messages($USER, 10, 0);
+  }
+
+  # Notifications - User notification system
+  if($nodelets =~ /1930708/)
+  {
+    $e2->{notificationsData} = $this->buildNotificationsData($NODE, $USER, $VARS, $query);
+  }
+
+  # ForReview - Editor draft review queue
+  if($nodelets =~ /1930900/)
+  {
+    $e2->{forReviewData} = $this->buildForReviewData($USER);
+  }
+
   return $e2;
 }
 
@@ -6174,5 +7073,85 @@ sub fisher_yates_shuffle
     return $array;
 }
 
+
+1;
+
+
+sub buildNotificationsData
+{
+  my ($this, $NODE, $USER, $VARS, $query) = @_;
+
+  # Pragmatic hybrid approach: Call existing htmlcode to get notification HTML
+  # This preserves the complex notification delegation system while migrating to React
+  # Future enhancement: Extract notification rendering into proper API endpoints
+
+  my $showSettings = !$$VARS{settings} && !($$NODE{title} eq 'Nodelet Settings' && $$NODE{type}{title} eq 'superdoc');
+
+  # Get settings link
+  my $settingsLink = Everything::HTML::htmlcode('nodeletsettingswidget','Notifications', 'Notification settings');
+
+  # Get notification list with HTML wrapper
+  my $notification_list = Everything::HTML::htmlcode('notificationsJSON', 'wrap');
+
+  # Convert notification list to array of notification objects
+  my @notifications = ();
+  my $notify_count = 1;
+
+  while (defined $$notification_list{$notify_count}) {
+    my $notify = $$notification_list{$notify_count};
+    push @notifications, {
+      notified_id => $$notify{notified_id} || $notify_count,
+      html => $$notify{value}
+    };
+    $notify_count++;
+  }
+
+  return {
+    notifications => \@notifications,
+    settingsLink => $settingsLink,
+    showSettings => $showSettings ? 1 : 0
+  };
+}
+
+
+sub buildForReviewData
+{
+  my ($this, $USER) = @_;
+
+  # Only show to editors
+  my $isEditor = $this->isEditor($USER);
+  return { isEditor => 0 } unless $isEditor;
+
+  # Get drafts from DataStash
+  my $drafts = $this->{db}->stashData("reviewdrafts");
+
+  # Build table HTML using htmlcode (hybrid approach)
+  my %funx = (
+    startline => sub{
+      $_[0] -> {type}{title} = 'draft';
+      '<td>';
+    },
+    notes => sub{
+      $_[0]{latestnote} =~ s/\[user\]//;
+      my $note = $this->encodeHTML($_[0]{latestnote}, 'adv');
+      '<td align="center">'
+      .($_[0]{notecount} ? $this->linkNode($_[0], $_[0]{notecount},
+      {'#' => 'nodenotes', -title => "$_[0]{notecount} notes; latest $note"})
+      : '&nbsp;')
+      .'</td>';
+    }
+  );
+
+  my $tableHtml = "<table><tr><th>Draft</th><th align=\"center\" title=\"node notes\">N?</th></tr>"
+    .Everything::HTML::htmlcode('show content', $drafts
+    , qq!<tr class="&oddrow"> startline, title, byline, "</td>", notes, %funx!)
+    .'</table>';
+
+  return {
+    isEditor => 1,
+    drafts => $drafts,
+    tableHtml => $tableHtml
+  };
+}
 
 1;

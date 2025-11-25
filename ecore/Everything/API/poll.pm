@@ -141,7 +141,7 @@ sub delete_vote
   my $DB = $self->DB;
 
   # Check if user is an admin/god
-  unless ($user && $user->is_admin) {
+  unless ($user && $user->is_admin()) {
     return [$self->HTTP_FORBIDDEN, { error => 'Admin access required' }];
   }
 
