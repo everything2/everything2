@@ -3946,6 +3946,7 @@ sub processMessageCommand
   $message =~ s/^\/(small|aside|ooc|whispers?|monologue)\b/\/whisper/i;
   $message =~ s/^\/(aria|chant|song|rap|gregorianchant)\b/\/sing/i;
   $message =~ s/^\/(tomb|sepulchral|doom|reaper)\b/\/death/i;
+  $message =~ s/^\/(conflagrate|immolate|singe|explode|limn)\b/\/fireball/i;
   $message =~ s/^\/my/\/me\'s/i;
 
   # /flip → /roll 1d2
@@ -3954,45 +3955,56 @@ sub processMessageCommand
   }
 
   # Route commands
+  my $result;
+
   if ($message =~ /^\/msg\s+(.+)/i || $message =~ /^\/tell\s+(.+)/i) {
-    return $this->handlePrivateMessageCommand($user, $1, $vars);
+    $result = $this->handlePrivateMessageCommand($user, $1, $vars);
   }
   elsif ($message =~ /^\/me\s+(.+)/i || $message =~ /^\/me\'s\s+(.+)/i) {
-    return $this->handleMeCommand($user, $message, $vars);
+    $result = $this->handleMeCommand($user, $message, $vars);
   }
   elsif ($message =~ /^\/rolls?\s+(.*)$/i) {
-    return $this->handleRollCommand($user, $1, $vars);
+    $result = $this->handleRollCommand($user, $1, $vars);
   }
   elsif ($message =~ /^\/fireball\s+(.+)/i) {
-    return $this->handleFireballCommand($user, $1, $vars);
+    $result = $this->handleFireballCommand($user, $1, $vars);
   }
   elsif ($message =~ /^\/sanctify\s+(.+)/i) {
-    return $this->handleSanctifyCommand($user, $1, $vars);
+    $result = $this->handleSanctifyCommand($user, $1, $vars);
   }
   elsif ($message =~ /^\/invite\s+(\S+)/i) {
-    return $this->handleInviteCommand($user, $1, $vars);
+    $result = $this->handleInviteCommand($user, $1, $vars);
   }
   elsif ($message =~ /^\/chatteroff/i) {
-    return $this->handleChatterOffCommand($user, $vars);
+    $result = $this->handleChatterOffCommand($user, $vars);
   }
   elsif ($message =~ /^\/chatteron/i) {
-    return $this->handleChatterOnCommand($user, $vars);
+    $result = $this->handleChatterOnCommand($user, $vars);
   }
   elsif ($message =~ /^\/borg\s+(\S+)/i) {
-    return $this->handleBorgCommand($user, $message, $vars);
+    $result = $this->handleBorgCommand($user, $message, $vars);
   }
   elsif ($message =~ /^\/(whisper|sing|death|sings|me\'s)\s+/i) {
     # Commands that display in showchatter with special formatting
-    return $this->sendPublicChatter($user, $message, $vars);
+    $result = $this->sendPublicChatter($user, $message, $vars);
   }
   elsif ($message =~ /^\//) {
     # Unknown command - check easter eggs
-    return $this->handleEasterEggCommand($user, $message, $vars);
+    $result = $this->handleEasterEggCommand($user, $message, $vars);
   }
   else {
     # Plain chatter
-    return $this->sendPublicChatter($user, $message, $vars);
+    $result = $this->sendPublicChatter($user, $message, $vars);
   }
+
+  # Handle error responses from command handlers
+  # If handler returns hashref with {success => 0, error => "..."}, propagate error
+  if (ref($result) eq 'HASH' && exists $result->{success} && !$result->{success}) {
+    return $result;  # Return error hashref
+  }
+
+  # Otherwise, convert truthy/falsy to success response
+  return $result ? { success => 1 } : { success => 0, error => 'Message not posted' };
 }
 
 sub handleMeCommand
@@ -4079,12 +4091,12 @@ sub handleFireballCommand
 
   # Check authorization
   unless ($user_level >= $minLvl || $is_admin) {
-    return;
+    return { success => 0, error => "You must be level $minLvl or higher to use /fireball" };
   }
 
   # Check easter eggs
   unless ($vars->{easter_eggs} && $vars->{easter_eggs} > 0) {
-    return;
+    return { success => 0, error => "You need easter eggs to use /fireball" };
   }
 
   # Find recipient
@@ -4094,10 +4106,14 @@ sub handleFireballCommand
     $recipient = $this->{db}->getNode($target_name, 'user');
   }
 
-  return unless $recipient;
+  unless ($recipient) {
+    return { success => 0, error => "User '$target_name' not found" };
+  }
 
   # Can't fireball yourself
-  return if $recipient->{user_id} == $user->{user_id};
+  if ($recipient->{user_id} == $user->{user_id}) {
+    return { success => 0, error => "You cannot fireball yourself" };
+  }
 
   # Consume egg and award GP
   $vars->{easter_eggs}--;
@@ -4116,11 +4132,13 @@ sub handleSanctifyCommand
   my $is_admin = $this->isAdmin($user);
 
   # Admin-only command
-  return unless $is_admin;
+  unless ($is_admin) {
+    return { success => 0, error => "You must be an administrator to use /sanctify" };
+  }
 
   # Check easter eggs
   unless ($vars->{easter_eggs} && $vars->{easter_eggs} > 0) {
-    return;
+    return { success => 0, error => "You need easter eggs to use /sanctify" };
   }
 
   # Find recipient
@@ -4130,10 +4148,14 @@ sub handleSanctifyCommand
     $recipient = $this->{db}->getNode($target_name, 'user');
   }
 
-  return unless $recipient;
+  unless ($recipient) {
+    return { success => 0, error => "User '$target_name' not found" };
+  }
 
   # Can't sanctify yourself
-  return if $recipient->{user_id} == $user->{user_id};
+  if ($recipient->{user_id} == $user->{user_id}) {
+    return { success => 0, error => "You cannot sanctify yourself" };
+  }
 
   # Consume egg and award GP
   $vars->{easter_eggs}--;
@@ -4199,7 +4221,7 @@ sub handleBorgCommand
   my $is_admin = $this->isAdmin($user);
 
   unless ($is_chanop || $is_admin) {
-    return;
+    return { success => 0, error => "You must be a chanop or administrator to use /borg" };
   }
 
   # Parse: /borg username [reason]
@@ -4210,7 +4232,7 @@ sub handleBorgCommand
   } elsif ($message =~ /^\/borg\s+(\S+)/i) {
     $target_name = $1;
   } else {
-    return;
+    return { success => 0, error => "Usage: /borg username [reason]" };
   }
 
   # Get target user (handle underscores)
@@ -4222,13 +4244,13 @@ sub handleBorgCommand
   my $borg = $this->{db}->getNode('EDB', 'user');
 
   unless ($target) {
-    # Send error message
+    # Send error message via EDB (borgbot) for legacy compatibility
     $this->{db}->sqlInsert('message', {
       msgtext => "Can't borg 'em, $target_name doesn't exist on this system!",
       author_user => $borg->{node_id},
       for_user => $user->{user_id}
     });
-    return;
+    return { success => 0, error => "User '$target_name' not found" };
   }
 
   $target_name = $target->{title}; # Ensure proper case

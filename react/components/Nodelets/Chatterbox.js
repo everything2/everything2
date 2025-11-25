@@ -160,6 +160,7 @@ const Chatterbox = (props) => {
   const [message, setMessage] = React.useState('')
   const [sending, setSending] = React.useState(false)
   const [showCommands, setShowCommands] = React.useState(false)
+  const [messageError, setMessageError] = React.useState(null)
   const inputRef = React.useRef(null)
   // Poll at 45s when active, 2m when idle, stop when page not in focus
   // Skip polling when nodelet is collapsed, refresh on room change
@@ -236,14 +237,21 @@ const Chatterbox = (props) => {
 
       if (data.success) {
         setMessage('')
+        setMessageError(null)
         // Refresh chatter display to show new message
         refresh()
       } else {
-        // Message was not posted (duplicate, suspension, etc.)
-        console.warn('Message not posted:', data.error)
+        // Message was not posted - show error to user and clear input
+        setMessageError(data.error || 'Message not posted')
+        setMessage('')
+        // Auto-clear error after 5 seconds
+        setTimeout(() => setMessageError(null), 5000)
       }
     } catch (err) {
       console.error('Failed to send message:', err)
+      setMessageError('Failed to send message')
+      setMessage('')
+      setTimeout(() => setMessageError(null), 5000)
     } finally {
       setSending(false)
       // Restore focus to input so user can continue chatting
@@ -461,6 +469,22 @@ const Chatterbox = (props) => {
               </div>
             )}
           </form>
+
+          {/* Error Message Display */}
+          {messageError && (
+            <div style={{
+              margin: '8px 12px',
+              padding: '8px 12px',
+              backgroundColor: '#fee',
+              border: '1px solid #fcc',
+              borderRadius: '4px',
+              color: '#c33',
+              fontSize: '12px',
+              textAlign: 'center'
+            }}>
+              {messageError}
+            </div>
+          )}
         </div>
       )}
 

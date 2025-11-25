@@ -50,16 +50,34 @@ sub create
   my $vars = $self->APP->getVars($REQUEST->user->NODEDATA);
 
   # Process message command (handles /flip, /roll, /me, /msg, etc.)
+  # Now returns: { success => 1 } or { success => 0, error => "specific message" }
   my $result = $self->APP->processMessageCommand($REQUEST->user->NODEDATA, $data->{message}, $vars);
 
-  if($result)
+  # Check if result is a hashref with error details
+  if (ref($result) eq 'HASH')
   {
-    # Success - return the recent chatter to update the client
+    if ($result->{success})
+    {
+      # Success - return the recent chatter to update the client
+      my $chatter = $self->APP->getRecentChatter({limit => 1});
+      return [$self->HTTP_OK, {success => 1, chatter => $chatter}];
+    }
+    else
+    {
+      # Failed with specific error message
+      $self->devLog("Message not posted: " . ($result->{error} || "unknown error"));
+      return [$self->HTTP_OK, {success => 0, error => $result->{error} || "Message not posted"}];
+    }
+  }
+
+  # Legacy behavior: truthy/falsy result (for backward compatibility)
+  if ($result)
+  {
     my $chatter = $self->APP->getRecentChatter({limit => 1});
     return [$self->HTTP_OK, {success => 1, chatter => $chatter}];
-  }else{
-    # Failed - could be due to duplicate, suspension, etc.
-    # Return success but with a flag indicating message wasn't posted
+  }
+  else
+  {
     return [$self->HTTP_OK, {success => 0, error => "Message not posted"}];
   }
 }

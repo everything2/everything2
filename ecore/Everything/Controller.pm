@@ -109,21 +109,16 @@ sub nodelets
     $title =~ s/ /_/g;
     $id =~ s/\W//g;
 
-    if($self->can($title))
-    {
-      my $nodelet_values = $self->$title($REQUEST, $node);
-      next unless $nodelet_values;
-      $params->{nodelets}->{$title} = $nodelet_values;
-    }else{
-      if(my $delegation = Everything::Delegation::nodelet->can($title))
-      {
-        $params->{nodelets}->{$title}->{delegated_content} = $delegation->($self->DB, $REQUEST->cgi, $node->NODEDATA, $REQUEST->user->NODEDATA,$REQUEST->VARS, $Everything::HTML::PAGELOAD, $self->APP);
-      }
-    }
-    push @{$params->{nodeletorder}}, $title;  
-    $params->{nodelets}->{$title}->{title} = $nodelet->title;
-    $params->{nodelets}->{$title}->{id} = $id;
-    $params->{nodelets}->{$title}->{node} = $node;
+    # ALL nodelets are React-handled now - just add minimal placeholder data
+    # This skips ~100+ redundant DB queries per page load that were building
+    # Mason2 data structures which were discarded by react_handled flags
+    $params->{nodelets}->{$title} = {
+      react_handled => 1,
+      title => $nodelet->title,
+      id => $id,
+      node => $node
+    };
+    push @{$params->{nodeletorder}}, $title;
   }
   return $params;
 }

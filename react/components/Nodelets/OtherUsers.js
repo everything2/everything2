@@ -16,7 +16,7 @@ const OtherUsers = (props) => {
 
   // Use polling hook for automatic updates every 2 minutes
   // Pass initial data from props to skip initial API call
-  const { otherUsersData: polledData, loading: pollingLoading, error: pollingError } = useOtherUsersPolling(120000, props.otherUsersData)
+  const { otherUsersData: polledData, loading: pollingLoading, error: pollingError, refresh } = useOtherUsersPolling(120000, props.otherUsersData)
 
   // Use polled data (which now includes initial data from props)
   const otherUsersData = polledData
@@ -48,7 +48,7 @@ const OtherUsers = (props) => {
     createRoomSuspended
   } = otherUsersData
 
-  // Initialize states from props
+  // Initialize states from props and sync with updates
   React.useEffect(() => {
     setSelectedRoom(currentRoomId)
     setIsCloaked(initialCloaked)
@@ -85,6 +85,9 @@ const OtherUsers = (props) => {
         // Fallback to reload if callback not provided
         window.location.reload()
       }
+
+      // Refresh polling data immediately to get updated room info
+      refresh()
     } catch (error) {
       setError(error.message)
     } finally {
@@ -172,6 +175,9 @@ const OtherUsers = (props) => {
         // Fallback to reload if callback not provided
         window.location.reload()
       }
+
+      // Refresh polling data immediately to get updated room info
+      refresh()
     } catch (error) {
       setError(error.message)
     } finally {

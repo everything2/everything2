@@ -142,7 +142,8 @@ class SmokeTest
     # Skip these documents (undersupported or not initialized in dev)
     skip_docs = ['Podcast RSS Feed']
 
-    File.readlines('/home/jaybonci/projects/everything2/docs/special-documents.md').each do |line|
+    docs_path = File.expand_path('../docs/special-documents.md', __dir__)
+    File.readlines(docs_path).each do |line|
       # Skip non-table rows
       next unless line.start_with?('| ') && !line.include?('Document | Type | URL')
 
