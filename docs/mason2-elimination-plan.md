@@ -341,103 +341,137 @@ Phase 2 is complete and stable. Ready to proceed with:
 
 ---
 
-### Phase 3: REACT-ONLY TEMPLATE PATH (Medium Term)
+### Phase 3: SIDEBAR REACT OWNERSHIP (Medium Term)
 
-**Goal**: Create pure React rendering path without Mason2 nodelets
+**Scope**: SIDEBAR ONLY - This phase targets the nodelet sidebar. Page content (main column) remains Mason2-rendered and is NOT part of Phase 3.
 
-**Problem**: Even with optimizations, Mason2 still:
-- Renders `<div class='nodelet' id='epicenter'>` wrappers
-- Processes nodelet loop
-- Maintains two parallel rendering systems
+**Goal**: Eliminate React Portals and have React directly render the entire sidebar
 
-**Changes Required**:
+**Current State**:
+- ✅ All 26 nodelets migrated to React components
+- ✅ Phase 2 eliminates redundant Controller method calls
+- ❌ Still using React Portals to inject into Mason2-generated `<div>` wrappers
+- ❌ Mason2 still renders empty nodelet shells in sidebar
 
-1. **Create new React-only template**:
+**Problem**:
+Even with Phase 2 optimizations, Mason2 still:
+- Renders `<div class='nodelet' id='epicenter'>` wrappers for each nodelet
+- Processes nodelet loop to generate placeholder divs
+- React Portals inject components into these divs
+- Two parallel systems rendering the same structure
+
+**Phase 3 Solution - React Owns Sidebar**:
+
+Since **all 26 nodelets are React**, we can eliminate Portals entirely:
+
+1. **Backend provides nodelet order**:
    ```perl
-   # templates/zen_react.mc
-   <%class>
-   # Same as zen.mc but simplified
-   </%class>
-   <%augment wrap>
-   <!DOCTYPE html>
-   <html lang="en">
-   <head>...</head>
-   <body class="<% $.body_class %>" itemscope itemtype="http://schema.org/WebPage">
-   <div id='header'>...</div>
+   # ecore/Everything/Application.pm - buildNodeInfoStructure()
+   # Already exists: $e2->{nodeletOrder} = ['chatterbox', 'epicenter', ...]
+   # No changes needed - already passing order
+   ```
+
+2. **E2ReactRoot renders sidebar directly**:
+   ```jsx
+   // react/components/E2ReactRoot.js
+   const nodeletComponents = {
+     chatterbox: Chatterbox,
+     epicenter: Epicenter,
+     otherusers: OtherUsers,
+     // ... all 26 nodelets
+   }
+
+   render() {
+     const { nodeletOrder } = this.state
+
+     return (
+       <div id='sidebar'>
+         {nodeletOrder.map(name => {
+           const Component = nodeletComponents[name]
+           if (!Component) return null
+
+           return (
+             <ErrorBoundary key={name}>
+               <Component {...this.getNodeletProps(name)} />
+             </ErrorBoundary>
+           )
+         })}
+       </div>
+     )
+   }
+   ```
+
+3. **Update Mason2 template** - zen.mc renders sidebar container only:
+   ```html
+   <!-- templates/zen.mc -->
    <div id='wrapper'>
      <div id='mainbody' itemprop="mainContentOfPage">
-       <% inner() %>
+       <% inner() %>  <!-- Page content (still Mason2) -->
      </div>
-     <div id='sidebar'>
-       <!-- ONLY React root, no Mason2 nodelets -->
-       <div id='e2-react-root'></div>
-     </div>
+
+     <!-- Sidebar: ONLY React root, no Mason2 nodelet loop -->
+     <div id='e2-react-root'></div>
    </div>
-   <div id='footer'>...</div>
-   <& 'static_javascript', ... &>
-   </body>
-   </html>
-   </%augment>
    ```
 
-2. **Add template selector to Everything::Page**:
-   ```perl
-   # ecore/Everything/Page.pm
-   package Everything::Page;
-
-   has 'template' => (is => 'ro', default => '');
-   has 'use_react_template' => (is => 'ro', default => 0); # NEW
+4. **Delete all Portal components**:
+   ```bash
+   rm react/components/Portals/ChatterboxPortal.js
+   rm react/components/Portals/EpicenterPortal.js
+   # ... delete all 26 portal files
    ```
 
-3. **Modify Controller::layout()** to choose template:
+5. **Update Controller.pm** - Stop calling nodelets() for sidebar:
    ```perl
-   sub layout
-   {
+   sub layout {
      my ($self, $template, @p) = @_;
      my $params = {@p};
 
-     # NEW: Choose zen_react.mc for pages that are fully React
-     my $page = $params->{page};
-     if ($page && $page->use_react_template) {
-       $template = 'zen_react';
-     }
-
-     # ... rest of layout logic
-
-     # NEW: Skip nodelet building for React-only pages
-     if (!$page || !$page->use_react_template) {
-       $params = $self->nodelets($REQUEST->user->nodelets, $params);
-     }
+     # Skip nodelet building - React owns sidebar now
+     # $params = $self->nodelets(...);  # DELETE THIS LINE
 
      return $self->MASON->run($template, $params)->output();
    }
    ```
 
-4. **Gradually migrate pages**:
-   ```perl
-   # ecore/Everything/Page/25.pm
-   package Everything::Page::25;
-
-   use Moose;
-   extends 'Everything::Page';
-
-   has 'template' => (is => 'ro', default => 'numbered_nodelist');
-   has 'use_react_template' => (is => 'ro', default => 1); # NEW: This page is React-ready
-   ```
+**What This Changes**:
+- ✅ Sidebar: 100% React-rendered (nodelets only)
+- ❌ Main content: Still Mason2 (writeups, documents, forms, etc.)
+- ❌ Header/Footer: Still Mason2
+- ❌ Page wrapper: Still Mason2
 
 **Benefits**:
-- True separation of React and Mason2
-- Can migrate pages incrementally
-- Cleaner codebase
-- Faster page loads for React pages
+- Eliminates React Portals architecture
+- Simpler codebase (no portal files)
+- React has full control of sidebar DOM
+- No Mason2 nodelet loop processing
+- Cleaner separation of concerns
+
+**Implementation Steps**:
+1. Create nodelet component map in E2ReactRoot
+2. Update E2ReactRoot render() to map over nodeletOrder
+3. Modify zen.mc template (remove nodelet loop)
+4. Update Controller.pm layout() (skip nodelets() call)
+5. Delete all 26 Portal component files
+6. Test extensively
 
 **Testing**:
-- Create both zen.mc and zen_react.mc paths
-- Verify pages work on both templates
-- A/B test performance
-- Gradual rollout
+- Verify all 26 nodelets render correctly
+- Verify nodelet order matches user preferences
+- Verify collapse state persists
+- Verify no duplicate rendering
+- Performance test (should be faster)
 
-**Risk**: MEDIUM-HIGH - New template architecture, requires careful migration
+**Risk**: MEDIUM - Major architectural change, but all nodelets already React
+**Rollback**: Easy - revert template and Controller changes, restore Portals
+
+**NOT in Phase 3 Scope**:
+- Page content migration (writeups, documents, forms)
+- Header/footer migration
+- Mason2 template system removal
+- htmlcode function migration
+
+These are **Phase 4+** work.
 
 ---
 
