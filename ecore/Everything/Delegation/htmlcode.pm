@@ -3961,8 +3961,23 @@ sub static_javascript
 
   # Phase 3: Build nodeletorder for React sidebar rendering
   my @nodeletorder = ();
-  # Get nodelet IDs from PAGELOAD or VARS (same logic as nodelet_meta_container)
-  my $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};
+
+  # Determine nodelet source: guest users ALWAYS use config, others use PAGELOAD or VARS
+  # This prevents guest_front_page document from overriding nodelet display on other pages
+  # See Session 20 bug fix: check guest status FIRST before VARS
+  my $nodeletlist;
+  if ($APP->isGuest($USER)) {
+    # Guest users: build nodeletlist directly from guest_nodelets config
+    my $guest_nodelets = $Everything::CONF->guest_nodelets;
+    if ($guest_nodelets && ref($guest_nodelets) eq 'ARRAY' && @$guest_nodelets) {
+      $nodeletlist = join(',', @$guest_nodelets);
+    }
+  } else {
+    # Logged-in users: use PAGELOAD or VARS
+    $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};
+  }
+
+  # Build nodeletorder array from nodelet IDs
   if ($nodeletlist) {
     my @nodelet_ids = split(',', $nodeletlist);
     foreach my $nodelet_id (@nodelet_ids) {

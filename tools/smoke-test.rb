@@ -142,6 +142,23 @@ class SmokeTest
     # Skip these documents (undersupported or not initialized in dev)
     skip_docs = ['Podcast RSS Feed']
 
+    # Pages that require authentication (NoGuest security trait)
+    # These pages will redirect to login if accessed without valid session
+    auth_required_pages = [
+      'Silver Trinkets',
+      'Golden Trinkets',
+      'Sanctify user',
+      'Admin Settings',
+      'Decloaker',
+      'Drafts',
+      'Drafts for review',
+      'Personal Scratchpad',
+      'User Preferences',
+      'User XML Generator',
+      'Write User',
+      'Profile Settings'
+    ]
+
     docs_path = File.expand_path('../docs/special-documents.md', __dir__)
     File.readlines(docs_path).each do |line|
       # Skip non-table rows
@@ -164,7 +181,8 @@ class SmokeTest
         title: title,
         path: url,
         type: doc_type,
-        rendering: rendering
+        rendering: rendering,
+        auth_required: auth_required_pages.include?(title)
       }
     end
 
@@ -458,7 +476,7 @@ class SmokeTest
     end
   end
 
-  def http_get(path)
+  def http_get(path, follow_redirects: true)
     uri = URI.join(@base_url, path)
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 10
@@ -466,7 +484,29 @@ class SmokeTest
     request = Net::HTTP::Get.new(uri.request_uri)
     request['Cookie'] = cookies_string if @cookies.any?
 
-    http.request(request)
+    response = http.request(request)
+
+    # Follow redirects (up to 5 hops)
+    redirect_count = 0
+    while follow_redirects && response.is_a?(Net::HTTPRedirection) && redirect_count < 5
+      redirect_count += 1
+      location = response['Location']
+
+      # Handle both absolute and relative redirects
+      if location.start_with?('http')
+        uri = URI.parse(location)
+      else
+        uri = URI.join(@base_url, location)
+      end
+
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.read_timeout = 10
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request['Cookie'] = cookies_string if @cookies.any?
+      response = http.request(request)
+    end
+
+    response
   end
 
   def http_post(path, params)

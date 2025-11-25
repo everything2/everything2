@@ -4440,12 +4440,14 @@ sub sendPrivateMessage
     my $recipient_node = $recip;
     if (!ref($recip)) {
       my $name = $recip;
+      my $name_with_spaces = $name;
+      $name_with_spaces =~ s/_/ /g;
+
+      # Try lookups in order: user (original), user (with spaces), usergroup (original), usergroup (with spaces)
       $recipient_node = $this->{db}->getNode($name, 'user');
-      unless ($recipient_node) {
-        $name =~ s/_/ /g;
-        $recipient_node = $this->{db}->getNode($name, 'user');
-      }
-      $recipient_node = $this->{db}->getNode($recip, 'usergroup') unless $recipient_node;
+      $recipient_node = $this->{db}->getNode($name_with_spaces, 'user') unless $recipient_node;
+      $recipient_node = $this->{db}->getNode($name, 'usergroup') unless $recipient_node;
+      $recipient_node = $this->{db}->getNode($name_with_spaces, 'usergroup') unless $recipient_node;
 
       unless ($recipient_node) {
         push @errors, "Recipient not found: $recip";
@@ -5918,10 +5920,17 @@ sub buildNodeInfoStructure
 {
   my ($this, $NODE, $USER, $VARS, $query) = @_;
 
+  # Convert USER hashref to blessed object for use throughout this function
+  my $user_node = $this->node_by_id($USER->{node_id});
+
   my $e2 = {};
   $e2->{node_id} = $$NODE{node_id};
   $e2->{title} = $$NODE{title};
   $e2->{guest} = ($this->isGuest($USER))?(1):(0);
+
+  # Derive messages nodelet presence from user's nodelet configuration
+  # Messages nodelet node_id is 2044453
+  $e2->{hasMessagesNodelet} = (($VARS->{nodelets} || '') =~ /2044453/) ? 1 : 0;
 
   $e2->{noquickvote} = 1 if($VARS->{noquickvote});
   $e2->{nonodeletcollapser} = 1 if($VARS->{nonodeletcollapser});
@@ -5946,6 +5955,14 @@ sub buildNodeInfoStructure
   $e2->{user}->{guest} = $this->isGuest($USER)?(\1):(\0);
   $e2->{user}->{in_room} = $USER->{in_room};
 
+  # Core user properties (always available, not nodelet-specific)
+  unless($this->isGuest($USER)) {
+    $e2->{user}->{gp} = $USER->{GP} || 0;
+    $e2->{user}->{gpOptOut} = $VARS->{GPoptout} ? \1 : \0;
+    $e2->{user}->{experience} = $USER->{experience} || 0;
+    $e2->{user}->{level} = $this->getLevel($USER);
+  }
+
   # Chatterbox data - room topic and initial messages for current room
   $e2->{chatterbox} ||= {};
   if (defined $USER->{in_room}) {
@@ -5967,11 +5984,26 @@ sub buildNodeInfoStructure
     }
 
     # Get initial chatter messages for the room (prevents redundant API call on page load)
+    # Only show last 5 minutes of messages
+    my $five_minutes_ago = $this->{db}->sqlSelect('DATE_SUB(NOW(), INTERVAL 5 MINUTE)');
     my $initialChatter = $this->getRecentChatter({
       room => $USER->{in_room},
-      limit => 30
+      limit => 30,
+      since => $five_minutes_ago
     });
     $e2->{chatterbox}->{messages} = $initialChatter || [];
+
+    # If Messages nodelet is not in sidebar, show mini-messages in Chatterbox
+    # Check if hasMessagesNodelet flag was set by Controller
+    if (!$e2->{hasMessagesNodelet}) {
+      $e2->{chatterbox}->{showMessagesInChatterbox} = 1;
+
+      # Load last 5 private messages for mini-messages display
+      my $mini_messages = $this->get_messages($USER, 5, 0); # limit 5, archive 0 (pass hashref not blessed)
+      $e2->{chatterbox}->{miniMessages} = $mini_messages || [];
+    } else {
+      $e2->{chatterbox}->{showMessagesInChatterbox} = 0;
+    }
   }
 
   $e2->{node} ||= {};
@@ -6648,6 +6680,44 @@ sub buildNodeInfoStructure
   if($nodelets =~ /1930900/)
   {
     $e2->{forReviewData} = $this->buildForReviewData($USER);
+  }
+
+  # Phase 4a: React-rendered documents
+  # Check if this superdoc has a Page class that provides React data
+  if ($NODE->{type}->{title} eq 'superdoc' && $user_node) {
+    my $page_name = $NODE->{title};
+    $page_name =~ s/ /_/g;  # Convert spaces to underscores for package name
+    $page_name = lc($page_name);  # Lowercase for consistency
+
+    my $page_class = "Everything::Page::$page_name";
+    my $page_file = "Everything/Page/$page_name.pm";
+
+    # Try to load the Page class if not already loaded
+    # Use require which caches results in %INC
+    my $page_loaded = 1;
+    if (!exists $INC{$page_file}) {
+      # Attempt to load - return value indicates success
+      $page_loaded = eval { require $page_file; 1; } || 0;
+    }
+
+    # Check if Page class exists and has buildReactData method
+    if ($page_loaded && $page_class->can('new') && $page_class->can('buildReactData')) {
+      my $page_instance = $page_class->new();
+
+      # Create minimal REQUEST object for buildReactData
+      # Only needs user attribute - buildReactData expects ($self, $REQUEST)
+      my $REQUEST = Everything::Request->new(user => $user_node);
+
+      my $page_data = $page_instance->buildReactData($REQUEST);
+
+      # Automatically enable React page mode when buildReactData exists
+      $e2->{reactPageMode} = \1;
+
+      # Merge Page data into e2 structure
+      if ($page_data->{contentData}) {
+        $e2->{contentData} = $page_data->{contentData};
+      }
+    }
   }
 
   return $e2;

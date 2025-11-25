@@ -654,10 +654,11 @@ class E2ReactRoot extends React.Component {
             borged={this.props.e2?.user?.vars?.borged}
             numborged={this.props.e2?.user?.vars?.numborged}
             chatSuspended={this.props.e2?.user?.chatSuspended}
-            publicChatterOff={this.props.e2?.user?.vars?.publicchatteroff}
+            publicChatterOff={Boolean(this.props.e2?.user?.vars?.publicchatteroff)}
             easterEggs={this.props.e2?.user?.easterEggs}
-            isGuest={this.props.e2?.user?.isGuest}
-            showMessagesInChatterbox={this.props.e2?.chatterbox?.showMessagesInChatterbox}
+            isGuest={Boolean(this.props.e2?.user?.isGuest)}
+            showMessagesInChatterbox={Boolean(this.props.e2?.chatterbox?.showMessagesInChatterbox)}
+            miniMessages={this.props.e2?.chatterbox?.miniMessages}
             showHelp={this.props.e2?.user?.level < 2}
             roomTopic={this.state.roomTopic}
             roomName={this.state.roomName}

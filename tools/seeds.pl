@@ -79,6 +79,29 @@ $genericchanopv->{settings} = '{"notifications":{"2045486":1}}';
 setVars($genericchanop, $genericchanopv);
 $DB->updateNode($genericchanop, -1);
 
+print STDERR "Creating c_e user with message forward to Content Editors\n";
+my $now = POSIX::strftime('%Y-%m-%d %H:%M:%S', gmtime());
+my $content_editors = $DB->getNode("Content Editors","usergroup");
+$DB->insertNode("c_e","user",-1,{
+  "lasttime" => $now,
+  "message_forward_to" => $content_editors->{node_id}
+});
+my $c_e_user = getNode("c_e","user");
+$c_e_user->{author_user} = $c_e_user->{node_id};
+$c_e_user->{passwd} = "blah";
+$DB->updateNode($c_e_user, -1);
+
+print STDERR "Adding root user to e2gods usergroup\n";
+my $e2gods = $DB->getNode("e2gods","usergroup");
+my $root_user = $DB->getNode("root","user");
+# Insert into nodegroup table to add root to e2gods
+$DB->sqlInsert("nodegroup", {
+  nodegroup_id => $e2gods->{node_id},
+  node_id => $root_user->{node_id},
+  nodegroup_rank => 0,
+  orderby => 0
+});
+
 my $types = 
 {
   "e2node" => getNode("e2node","nodetype"),

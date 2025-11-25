@@ -5481,6 +5481,12 @@ sub superbless {
                 next;
             }
 
+            # If superblessing yourself, use $USER instead of fetched node
+            # to ensure session object is updated
+            if ( $$U{node_id} == $$USER{node_id} ) {
+                $U = $USER;
+            }
+
             $curGP = $gp[$count];
 
             unless ( $curGP =~ /^\-?\d+$/ ) {
@@ -7093,7 +7099,7 @@ sub sanctify_user
         my $recipient = $query->param('give_to');
         my $user = getNode($recipient, 'user');
         return "<p>The user '$recipient' doesn't exist!</p>" unless $user;
-        return q{<p>It is not possible to sanctify yourself!</p><p>Would you like to [Sanctify user|try again on someone else]?</p>} if ($USER->{title} eq $recipient);
+        return q{<p>It is not possible to sanctify yourself!</p><p>Would you like to [Sanctify user|try again on someone else]?</p>} if ($USER->{title} eq $recipient && !$APP->isAdmin($USER));
         $$user{sanctity} += 1;
         updateNode($user, -1);
 
