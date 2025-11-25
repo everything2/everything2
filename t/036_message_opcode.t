@@ -61,6 +61,9 @@ sub send_message {
 	my $NODE = $DB->getNode('root', 'user');
 	my $VARS = Everything::getVars($user);
 
+	# Ensure publicchatteroff is not set for tests (allows public chatter)
+	delete $VARS->{publicchatteroff};
+
 	require Everything::Delegation::opcode;
 	return Everything::Delegation::opcode::message(
 		$DB, $query, $NODE, $user, $VARS, undef, $APP

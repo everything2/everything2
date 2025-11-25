@@ -3,16 +3,33 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders, createMockUser, createMockGuest } from '../test-utils';
 import E2ReactRoot from './E2ReactRoot';
 
-// Mock the portals to avoid rendering complexity
-jest.mock('./Portals/VitalsPortal', () => () => null);
-jest.mock('./Portals/DeveloperPortal', () => () => null);
-jest.mock('./Portals/NewWriteupsPortal', () => () => null);
-jest.mock('./Portals/RecommendedReadingPortal', () => () => null);
-jest.mock('./Portals/NewLogsPortal', () => () => null);
-jest.mock('./Portals/RandomNodesPortal', () => () => null);
-jest.mock('./Portals/SignInPortal', () => () => null);
-jest.mock('./Portals/NeglectedDrafts', () => () => null);
-jest.mock('./Portals/QuickReferencePortal', () => () => null);
+// Phase 3: Mock the nodelet components to avoid rendering complexity
+jest.mock('./Nodelets/Vitals', () => () => null);
+jest.mock('./Nodelets/Epicenter', () => () => null);
+jest.mock('./Nodelets/Developer', () => () => null);
+jest.mock('./Nodelets/NewWriteups', () => () => null);
+jest.mock('./Nodelets/RecommendedReading', () => () => null);
+jest.mock('./Nodelets/ReadThis', () => () => null);
+jest.mock('./Nodelets/NewLogs', () => () => null);
+jest.mock('./Nodelets/RandomNodes', () => () => null);
+jest.mock('./Nodelets/SignIn', () => () => null);
+jest.mock('./Nodelets/NeglectedDrafts', () => () => null);
+jest.mock('./Nodelets/QuickReference', () => () => null);
+jest.mock('./Nodelets/MasterControl', () => () => null);
+jest.mock('./Nodelets/Statistics', () => () => null);
+jest.mock('./Nodelets/Notelet', () => () => null);
+jest.mock('./Nodelets/Categories', () => () => null);
+jest.mock('./Nodelets/MostWanted', () => () => null);
+jest.mock('./Nodelets/RecentNodes', () => () => null);
+jest.mock('./Nodelets/FavoriteNoders', () => () => null);
+jest.mock('./Nodelets/PersonalLinks', () => () => null);
+jest.mock('./Nodelets/CurrentUserPoll', () => () => null);
+jest.mock('./Nodelets/UsergroupWriteups', () => () => null);
+jest.mock('./Nodelets/OtherUsers', () => () => null);
+jest.mock('./Nodelets/Chatterbox', () => () => null);
+jest.mock('./Nodelets/Messages', () => () => null);
+jest.mock('./Nodelets/Notifications', () => () => null);
+jest.mock('./Nodelets/ForReview', () => () => null);
 
 describe('E2ReactRoot Component', () => {
   beforeEach(() => {
@@ -28,6 +45,7 @@ describe('E2ReactRoot Component', () => {
       lastCommit: 'abc123',
       architecture: 'test',
       collapsedNodelets: '',
+      nodeletorder: ['vitals', 'new_writeups', 'recommended_reading'],
       newWriteups: [],
       coolnodes: [],
       staffpicks: [],

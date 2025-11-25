@@ -4094,8 +4094,8 @@ sub handleFireballCommand
     return { success => 0, error => "You must be level $minLvl or higher to use /fireball" };
   }
 
-  # Check easter eggs
-  unless ($vars->{easter_eggs} && $vars->{easter_eggs} > 0) {
+  # Check easter eggs (admins bypass this check)
+  unless ($is_admin || ($vars->{easter_eggs} && $vars->{easter_eggs} > 0)) {
     return { success => 0, error => "You need easter eggs to use /fireball" };
   }
 
@@ -4115,9 +4115,11 @@ sub handleFireballCommand
     return { success => 0, error => "You cannot fireball yourself" };
   }
 
-  # Consume egg and award GP
-  $vars->{easter_eggs}--;
-  $this->{db}->setVars($user, $vars);
+  # Consume egg and award GP (only consume egg if not admin)
+  unless ($is_admin) {
+    $vars->{easter_eggs}--;
+    Everything::setVars($user, $vars);
+  }
   $this->adjustGP($recipient, 5);
 
   # Send chatter message
@@ -4129,15 +4131,17 @@ sub handleSanctifyCommand
 {
   my ($this, $user, $target_name, $vars) = @_;
 
+  my $minLvl = 15;
   my $is_admin = $this->isAdmin($user);
+  my $user_level = $this->getLevel($user);
 
-  # Admin-only command
-  unless ($is_admin) {
-    return { success => 0, error => "You must be an administrator to use /sanctify" };
+  # Check authorization
+  unless ($user_level >= $minLvl || $is_admin) {
+    return { success => 0, error => "You must be level $minLvl or higher to use /sanctify" };
   }
 
-  # Check easter eggs
-  unless ($vars->{easter_eggs} && $vars->{easter_eggs} > 0) {
+  # Check easter eggs (admins bypass this check)
+  unless ($is_admin || ($vars->{easter_eggs} && $vars->{easter_eggs} > 0)) {
     return { success => 0, error => "You need easter eggs to use /sanctify" };
   }
 
@@ -4157,9 +4161,11 @@ sub handleSanctifyCommand
     return { success => 0, error => "You cannot sanctify yourself" };
   }
 
-  # Consume egg and award GP
-  $vars->{easter_eggs}--;
-  $this->{db}->setVars($user, $vars);
+  # Consume egg and award GP (only consume egg if not admin)
+  unless ($is_admin) {
+    $vars->{easter_eggs}--;
+    Everything::setVars($user, $vars);
+  }
   $this->adjustGP($recipient, 5);
 
   # Send chatter message
@@ -4196,7 +4202,7 @@ sub handleChatterOffCommand
 
   # Set publicchatteroff preference
   $vars->{publicchatteroff} = 1;
-  $this->{db}->setVars($user, $vars);
+  Everything::setVars($user, $vars);
 
   return 1;
 }
@@ -4207,7 +4213,7 @@ sub handleChatterOnCommand
 
   # Remove publicchatteroff preference
   delete $vars->{publicchatteroff};
-  $this->{db}->setVars($user, $vars);
+  Everything::setVars($user, $vars);
 
   return 1;
 }
@@ -4282,7 +4288,7 @@ sub handleBorgCommand
   # Set borged flag in target's vars
   my $target_vars = $this->getVars($target);
   $target_vars->{borged} = 1;
-  $this->{db}->setVars($target, $target_vars);
+  Everything::setVars($target, $target_vars);
 
   # Public announcement
   my $announcement = '/me has swallowed [' . $target_name . ']. ';

@@ -20,6 +20,8 @@ jest.mock('../LinkNode', () => ({ type, title, id, display }) => (
   <a href={type ? `/node/${type}/${title}` : `/node/${id}`}>{display || title}</a>
 ))
 
+jest.mock('../ParseLinks', () => ({ text }) => <span>{text}</span>)
+
 import { useChatterPolling } from '../../hooks/useChatterPolling'
 
 describe('Chatterbox', () => {
@@ -150,8 +152,10 @@ describe('Chatterbox', () => {
       refresh: mockRefresh
     })
 
-    render(<Chatterbox showNodelet={true} nodeletIsOpen={true} borged={true} />)
-    expect(screen.getByText(/You're borged/)).toBeInTheDocument()
+    // Pass a recent timestamp so countdown timer shows
+    const currentTime = Math.floor(Date.now() / 1000)
+    render(<Chatterbox showNodelet={true} nodeletIsOpen={true} borged={currentTime} numborged={1} />)
+    expect(screen.getByText(/You are borged!/)).toBeInTheDocument()
   })
 
   it('shows suspension message when user is chat suspended', () => {

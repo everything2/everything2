@@ -986,68 +986,8 @@ sub nodelet_meta_container
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return 'you disabled nodelets' if $$VARS{nodelets_off};
-  return '' if $query->param('nonodelets');
-
-  my $str = "";
-
-  my $nodelets = [];
-  if($APP->isGuest($USER))
-  {
-    $nodelets = $Everything::CONF->guest_nodelets;
-  }else{
-    unless ( $$VARS{nodelets} )
-    {
-      #push default nodelets on
-      $VARS->{nodelets} = join(',',@{$Everything::CONF->default_nodelets});
-    }
-
-    my $required = getNode('Master Control', 'nodelet')->{node_id};
-    if( $APP->isEditor($USER) ) {
-      # If Master Control is not in the list of nodelets, add it right at the beginning. 
-      $$VARS{ nodelets } = "$required,".$$VARS{ nodelets } unless $$VARS{ nodelets } =~ /\b$required\b/ ;
-    }else{
-      # Otherwise, if it is there, remove it, keeping a comma as required
-      $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 && $2 ? ",":""/ge;
-    }
-    my $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets} ;
-    $nodelets = [split(',',$nodeletlist)] if $nodeletlist ;
-
-    return '' unless scalar(@$nodelets) > 0;
-
-    my $CB = getNode('chatterbox','nodelet') -> {node_id} ;
-    if (($$VARS{hideprivmessages} or (not $$VARS{nodelets} =~ /\b$CB\b/)) and my $count = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER))) {
-      my $unArcCount = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER).' AND archive=0');
-      $str.='<p id="msgnum">you have <a id="msgtotal" href='.
-        urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'0'}).'>'.$count.'</a>'.
-        ( $unArcCount>0 ? '(<a id="msgunarchived" href='.
-        urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'1'}).'>'.$unArcCount.'</a>)' : '').
-        ' messages</p>';
-    }
-  }
-
-  my $errWrapper = '<div class="nodelet">%s</div>';
-
-  my $nodeletNum=0;
-
-  foreach(@$nodelets) {
-    my $current_nodelet = $DB->getNodeById($_);
-    $nodeletNum++;
-    unless(defined $current_nodelet) {
-      next;
-    }
-
-    my $nl = insertNodelet($current_nodelet);
-    unless(defined $nl) {
-      $str .= sprintf($errWrapper, 'Ack! Result of nodelet '.$_.' undefined.</td></tr>');
-      next;
-    }
-
-    $str .= $nl;
-  }
-
-  return $str;
-
+  # Phase 3: React owns sidebar content - no need to render nodelet divs
+  return '';
 }
 
 # Only used semi-temporarily by the mobile stuff
@@ -4016,8 +3956,25 @@ sub static_javascript
     my $edev = getNode("edev","usergroup");
     my $page = Everything::HTML::getPage($NODE, scalar($query->param("displaytype")));
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
-    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}}; 
+    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}};
   }
+
+  # Phase 3: Build nodeletorder for React sidebar rendering
+  my @nodeletorder = ();
+  # Get nodelet IDs from PAGELOAD or VARS (same logic as nodelet_meta_container)
+  my $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};
+  if ($nodeletlist) {
+    my @nodelet_ids = split(',', $nodeletlist);
+    foreach my $nodelet_id (@nodelet_ids) {
+      my $nodelet = $DB->getNodeById($nodelet_id);
+      if ($nodelet) {
+        my $title = lc($nodelet->{title});
+        $title =~ s/ /_/g;
+        push @nodeletorder, $title;
+      }
+    }
+  }
+  $e2->{nodeletorder} = \@nodeletorder;
 
   $e2 = JSON->new->encode($e2);
 

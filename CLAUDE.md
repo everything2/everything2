@@ -7,6 +7,50 @@ This document provides context for AI assistants (like Claude) working on the Ev
 
 ## Recent Work History
 
+### Session 15: Mason2 Elimination Phase 3 - Portal Elimination & Bug Fix (2025-11-24)
+
+**Focus**: Execute Phase 3 of Mason2 elimination plan - eliminate React Portals, have React own sidebar rendering
+
+**Completed Work**:
+1. ✅ **Phase 3 Documentation** - Updated docs/mason2-elimination-plan.md to explicitly scope Phase 3 to sidebar only
+2. ✅ **E2ReactRoot.js Complete Rewrite** ([E2ReactRoot.js:1-728](react/components/E2ReactRoot.js))
+   - Removed all 26 Portal component imports
+   - Added `nodeletorder` to toplevelkeys array (line 186)
+   - Created `renderNodelet()` method (lines 438-698) with component map for all 26 nodelets
+   - New `render()` method (lines 708-725) renders nodelets directly without sidebar wrapper
+3. ✅ **Controller.pm Updates** ([Controller.pm:86-102](ecore/Everything/Controller.pm#L86-L102))
+   - Built `nodeletorder` array from user's nodelet preferences
+   - Added to both `$e2` (for React) and `$params` (for Mason2 template requirements)
+   - Skipped `nodelets()` call - Mason2 no longer builds nodelet data structures
+4. ✅ **zen.mc Template Update** ([zen.mc:102-105](templates/zen.mc#L102-L105))
+   - Removed Mason2 nodelet loop
+   - Left only `<div id='e2-react-root'></div>` inside sidebar div
+5. ✅ **Portal Files Deleted** - Removed entire `react/components/Portals/` directory (27 files, ~1,350 lines)
+6. ✅ **Critical Bug Fix** - Fixed nodelets not displaying on page
+   - **Problem**: E2ReactRoot was rendering `<div id='sidebar'>` wrapper but mounting to `#e2-react-root` which is already inside Mason2's sidebar div
+   - **Result**: Incorrect double-nesting, nodelets not visible
+   - **Fix**: Removed sidebar wrapper from React render() - React just renders nodelets directly
+   - **DOM Structure**: `Mason2 sidebar div → e2-react-root div → React nodelets`
+
+**Final Results**:
+- ✅ **445/445 React tests passing** (100%)
+- ✅ **159/159 smoke tests passing** (100%)
+- ✅ **Nodelets displaying correctly** - All 26 nodelets render properly
+- ✅ **Portal architecture eliminated** - Cleaner, simpler codebase
+
+**Key Files Modified**:
+- [ecore/Everything/Controller.pm](ecore/Everything/Controller.pm) - Build nodeletorder, skip nodelets()
+- [react/components/E2ReactRoot.js](react/components/E2ReactRoot.js) - Complete rewrite without Portals
+- [react/components/E2ReactRoot.test.js](react/components/E2ReactRoot.test.js) - Updated mocks
+- [templates/zen.mc](templates/zen.mc) - Removed nodelet loop
+- [docs/mason2-elimination-plan.md](docs/mason2-elimination-plan.md) - Phase 3 completion report + Phase 4 plan
+
+**Important Discoveries**:
+- **DOM Mounting**: React mounts to `#e2-react-root` which is **inside** Mason2's `<div id='sidebar'>` wrapper
+- **No Wrapper Needed**: React must NOT render a sidebar wrapper - it renders nodelets directly
+- **Single Mount Point**: React mounts once instead of 26 times (Portals), better performance
+- **Clear Boundaries**: Mason2 owns structure wrappers, React owns content rendering
+
 ### Session 14: Mason2 Elimination Phase 2 - Controller Simplification (2025-11-24)
 
 **Focus**: Execute Phase 2 of Mason2 elimination plan - simplify Controller to skip building unused data structures

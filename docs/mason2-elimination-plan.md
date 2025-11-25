@@ -475,9 +475,316 @@ These are **Phase 4+** work.
 
 ---
 
-### Phase 4: FULL MASON2 ELIMINATION (Long Term Goal)
+## Phase 3 Completion Report
 
-**Goal**: Remove Mason2 entirely, pure React frontend
+**Completed**: November 24, 2025
+
+### Changes Made:
+
+**1. E2ReactRoot.js - Complete Rewrite** ([E2ReactRoot.js:1-720](react/components/E2ReactRoot.js)):
+- Removed all 26 Portal component imports
+- Added `nodeletorder` to toplevelkeys array
+- Created comprehensive `renderNodelet()` method (lines 438-698) with component map for all 26 nodelets
+- New `render()` method (lines 708-725): React renders nodelets directly (mounts inside Mason2's sidebar div)
+
+**2. Controller.pm** ([Controller.pm:86-102](ecore/Everything/Controller.pm#L86-L102)):
+- Built `nodeletorder` array from user's nodelet preferences
+- Added to both `$e2` (for React via window.e2) and `$params` (for Mason2 template requirements)
+- Commented out `nodelets()` call - Mason2 no longer builds nodelet data structures
+
+**3. zen.mc Template** ([zen.mc:102-105](templates/zen.mc#L102-L105)):
+- Removed Mason2 nodelet loop
+- Left only `<div id='e2-react-root'></div>` inside sidebar div
+
+**4. E2ReactRoot.test.js** ([E2ReactRoot.test.js:6-32](react/components/E2ReactRoot.test.js#L6-L32)):
+- Replaced Portal mocks with nodelet component mocks
+- Added `nodeletorder` to mock e2 object
+
+**5. htmlcode.pm** ([htmlcode.pm:990-991](ecore/Everything/Delegation/htmlcode.pm#L990-L991)):
+- Modified `nodelet_meta_container()` to return empty string immediately
+- Removed 62 lines of unreachable legacy nodelet rendering code (Perl::Critic compliance)
+- Modified `static_javascript()` (lines 4025-4040) to build `nodeletorder` array for fullpage documents
+
+**6. Deleted Files**:
+- Removed entire `react/components/Portals/` directory (27 files)
+
+### Architecture Change:
+
+**Before Phase 3:**
+```
+Mason2 renders:
+  <div id='sidebar'>
+    26 empty <div id='nodeletname'></div> placeholders
+  </div>
+React Portals inject into each placeholder
+```
+
+**After Phase 3:**
+```
+Mason2 renders:
+  <div id='sidebar'>
+    <div id='e2-react-root'></div>
+  </div>
+React renders nodelets directly inside e2-react-root
+```
+
+### Testing Results:
+
+✅ **React Tests**: 445/445 tests passing (100%)
+✅ **Perl Tests**: 47 test files, 1277 assertions passing (100%)
+✅ **Smoke Tests**: 159/159 documents passing (100%)
+✅ **Perl::Critic**: All code quality checks passing
+✅ **Application**: Running successfully at http://localhost:9080
+
+### What Changed:
+
+- ✅ **Sidebar content**: 100% React-rendered (all 26 nodelets)
+- ⚠️ **Sidebar wrapper**: Mason2 still renders `<div id='sidebar'>` but React controls content
+- ❌ **Main content**: Still Mason2 (writeups, documents, forms)
+- ❌ **Header/Footer**: Still Mason2
+- ❌ **Page wrapper**: Still Mason2
+
+### Benefits Achieved:
+
+1. **Eliminated React Portals** - Cleaner architecture, no more dual rendering
+2. **Deleted 27 Portal files** - ~1,350 lines of boilerplate removed
+3. **React owns sidebar content** - Full control of nodelet rendering
+4. **Simpler mental model** - Clear ownership boundaries (Mason2 wrapper, React content)
+5. **Better performance** - No Portal overhead
+6. **Single mount point** - React mounts once to #e2-react-root instead of 26 portals
+
+### Files Changed:
+
+- Modified: [ecore/Everything/Controller.pm](ecore/Everything/Controller.pm)
+- Modified: [ecore/Everything/Delegation/htmlcode.pm](ecore/Everything/Delegation/htmlcode.pm) - Phase 3 completion fixes
+- Modified: [react/components/E2ReactRoot.js](react/components/E2ReactRoot.js)
+- Modified: [react/components/E2ReactRoot.test.js](react/components/E2ReactRoot.test.js)
+- Modified: [templates/zen.mc](templates/zen.mc)
+- Deleted: `react/components/Portals/` (27 files)
+
+### Important Implementation Detail:
+
+**DOM Structure**:
+- Mason2 creates: `<div id='sidebar'><div id='e2-react-root'></div></div>`
+- React mounts to: `#e2-react-root` (inside the sidebar)
+- React renders: Nodelets directly (NO sidebar wrapper)
+
+**Critical**: React must NOT render `<div id='sidebar'>` because it's mounting inside the sidebar div created by Mason2. Rendering a sidebar wrapper would create incorrect double-nesting.
+
+**Special Case - Fullpage Document Type**:
+- The `fullpage` document type (e.g., Guest Front Page) renders HTML directly in `document.pm` instead of using Mason2 templates
+- This bypasses the `zen.mc` template and calls `htmlcode('nodelet_meta_container')` directly
+- **Fix**: Modified `nodelet_meta_container()` in `htmlcode.pm` to return empty string (line 990), removed unreachable code (991 lines of legacy nodelet rendering code)
+- Also modified `static_javascript()` in `htmlcode.pm` (lines 4025-4040) to build `nodeletorder` array for fullpage documents
+- This prevents rendering of empty `<div class="nodelet">` placeholder divs and provides React with nodeletorder data
+
+### Next Steps:
+
+Phase 3 is complete and stable. Ready to proceed with **Phase 4**: React owns page structure.
+
+---
+
+### Phase 4: REACT OWNS PAGE STRUCTURE (Next Phase)
+
+**Goal**: Expand React to own entire page layout, inject Mason2-rendered content as HTML
+
+**Current State**:
+- ✅ React owns sidebar (Phase 3 complete)
+- ❌ Mason2 still owns page structure (header, footer, wrapper)
+- ❌ Mason2 renders page content (writeups, documents, forms)
+
+**Phase 4 Solution - React Owns Structure, Injects Perl Content**:
+
+Since sidebar is now 100% React, expand React to own the entire page structure. Mason2-rendered content becomes HTML strings injected into React-controlled areas.
+
+**Why This Approach**:
+- ✅ Single source of truth for DOM (React)
+- ✅ Simpler mental model (React controls layout, Perl provides HTML strings)
+- ✅ No coordination needed between two rendering systems
+- ✅ Easy to migrate incrementally (shrink injected HTML area over time)
+- ❌ **Not reverse portals** (avoids timing issues and complexity)
+
+**Implementation**:
+
+**1. Expand E2ReactRoot to Own Page**:
+```jsx
+// react/components/E2ReactRoot.js
+render() {
+  const nodeletorder = this.state.nodeletorder || []
+
+  return (
+    <div id='e2-page'>
+      {/* React owns header */}
+      <Header scriptName={this.state.scriptName} lastNode={this.state.lastnode} />
+
+      <div id='wrapper'>
+        <div id='mainbody' itemProp="mainContentOfPage">
+          {/* React owns page header (title, actions) */}
+          <PageHeader node={this.state.node} user={this.state.user} />
+
+          {/* Inject Perl-rendered content as HTML */}
+          <div
+            id='legacy-content'
+            dangerouslySetInnerHTML={{__html: this.state.pageContent}}
+          />
+        </div>
+
+        {/* React already owns sidebar (Phase 3) */}
+        <div id='sidebar'>
+          {nodeletorder.map(name => this.renderNodelet(name))}
+        </div>
+      </div>
+
+      {/* React owns footer */}
+      <Footer />
+    </div>
+  )
+}
+```
+
+**2. Update Controller to Provide HTML String**:
+```perl
+# ecore/Everything/Controller.pm
+sub layout {
+  my ($self, $template, @p) = @_;
+  my $params = {@p};
+  my $REQUEST = $params->{REQUEST};
+  my $node = $params->{node};
+
+  # Build e2 object (Phase 3 code remains)
+  my $e2 = $self->APP->buildNodeInfoStructure(...);
+  $e2->{nodeletorder} = \@nodeletorder;
+
+  # Render page-specific content as HTML string
+  my $pageContent = $self->MASON->run($template, $params)->output();
+  $e2->{pageContent} = $pageContent;
+
+  $params->{nodeinfojson} = $self->JSON->encode($e2);
+
+  # Use minimal shell template that just loads React
+  return $self->MASON->run('/react_shell.mc', $params)->output();
+}
+```
+
+**3. Create Minimal Shell Template**:
+```html
+<!-- templates/react_shell.mc -->
+<%class>
+has 'basesheet' => (required => 1);
+has 'zensheet' => (required => 1);
+has 'printsheet' => (required => 1);
+has 'canonical_url' => (required => 1);
+has 'metadescription' => (required => 1);
+has 'favicon' => (required => 1);
+has 'nodeinfojson' => (required => 1);
+has 'default_javascript' => (required => 1);
+has 'customstyle';
+has 'basehref';
+</%class>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title><% $.pagetitle %></title>
+  <link rel="stylesheet" href="<% $.basesheet %>">
+  <link rel="stylesheet" href="<% $.zensheet %>">
+  <link rel="stylesheet" href="<% $.printsheet %>">
+% if($.customstyle) {
+  <style><% $.customstyle %></style>
+% }
+% if($.basehref) {
+  <base href="<% $.basehref %>">
+% }
+  <link rel="canonical" href="<% $.canonical_url %>">
+  <meta name="description" content="<% $.metadescription %>">
+  <link rel="icon" href="<% $.favicon %>">
+  <script>window.e2 = <% $.nodeinfojson %>;</script>
+</head>
+<body>
+  <div id='e2-react-root'></div>
+% foreach my $js (@{$.default_javascript}) {
+  <script src="<% $js %>"></script>
+% }
+</body>
+</html>
+```
+
+**What This Changes**:
+- ✅ **Page structure**: React owns header, footer, wrapper
+- ✅ **Sidebar**: React owns (Phase 3)
+- ⚠️ **Page content**: Mason2 HTML injected into React-controlled div
+- ❌ **Page types**: Still Mason2 (writeups, documents, forms)
+
+**Migration Path - Shrink Injected HTML**:
+
+As page types are migrated to React, the injected HTML area shrinks:
+
+**Stage 1 (Initial - Phase 4)**:
+```jsx
+// Everything injected
+<div dangerouslySetInnerHTML={{__html: this.state.pageContent}} />
+```
+
+**Stage 2 (Migrate search results - Phase 5a)**:
+```jsx
+// Check page type, render React or inject Perl
+{this.state.node.type === 'search' ? (
+  <SearchResults results={this.state.searchResults} />
+) : (
+  <div dangerouslySetInnerHTML={{__html: this.state.pageContent}} />
+)}
+```
+
+**Stage 3 (Migrate multiple types - Phase 5b-c)**:
+```jsx
+{pageType === 'search' ? <SearchResults /> :
+ pageType === 'userlist' ? <UserList /> :
+ pageType === 'user' ? <UserProfile /> :
+ <div dangerouslySetInnerHTML={{__html: this.state.pageContent}} />}
+```
+
+**Final Stage (All migrated - Phase 6)**:
+```jsx
+// No more injection - pure React
+<PageRouter pageType={pageType} {...pageProps} />
+```
+
+**Implementation Steps**:
+
+1. Create Header, Footer, PageHeader React components
+2. Update E2ReactRoot render() to own page structure
+3. Create react_shell.mc minimal template
+4. Update Controller.pm layout() to render content as HTML string
+5. Add pageContent to window.e2
+6. Test extensively - verify all page types render
+7. Performance benchmark (should be faster - one less template layer)
+
+**Testing**:
+- ✅ Verify all page types render (writeups, documents, user profiles, etc.)
+- ✅ Verify header/footer render correctly
+- ✅ Verify CSS applies correctly (may need adjustments)
+- ✅ Verify forms work (POST actions, etc.)
+- ✅ Verify JavaScript in injected HTML works
+- ✅ Mobile responsive check
+- ✅ Performance benchmark vs Phase 3
+
+**Benefits**:
+- React owns entire DOM structure
+- Single rendering system (React)
+- Clean migration path (incrementally replace injected HTML)
+- No reverse portals complexity
+- Easier to reason about
+
+**Risk**: MEDIUM - Changes page rendering flow, but content is unchanged
+
+**Rollback**: Easy - revert Controller and E2ReactRoot changes, restore zen.mc
+
+---
+
+### Phase 5: INCREMENTAL PAGE TYPE MIGRATION (Long Term)
+
+**Goal**: Migrate page content from Mason2 to React, one page type at a time
 
 **Vision**: Everything::Page becomes pure API/data layer:
 ```perl
@@ -709,6 +1016,7 @@ Phase 1 is complete and stable. Ready to proceed with:
 
 ---
 
-*Last Updated: November 24, 2025*
+*Last Updated: November 25, 2025*
 *Author: Claude (with Jay Bonci)*
+*Phase 3 Completed: November 25, 2025 - All tests passing, Perl::Critic compliant*
 *Phase 2 Updated: November 24, 2025 - Simplified approach now that all 16 nodelets are React-handled*

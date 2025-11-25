@@ -628,7 +628,7 @@ sub initEverything
 
     ## no critic (RequireLocalizedPunctuationVars)
 	$SIG{__WARN__} = sub { my $warning = shift; $APP->global_warn_handler($warning); };
-	$SIG{__DIE__} = sub { $APP->global_die_handler('Caught DIE handler'); };
+	$SIG{__DIE__} = sub { my $error = shift; $APP->global_die_handler("DIE handler: $error"); };
 	return;
 }
 

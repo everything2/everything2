@@ -90,6 +90,11 @@ package main;
 # Clear existing public chatter for clean tests
 $DB->sqlDelete('message', 'for_user=0');
 
+# Ensure test user doesn't have publicchatteroff set (allows public chatter)
+my $test_user_vars = Everything::getVars($test_user);
+delete $test_user_vars->{publicchatteroff};
+Everything::setVars($test_user, $test_user_vars);
+
 # Create API instance
 my $api = Everything::API::chatter->new(DB => $DB, APP => $APP);
 ok($api, "Created chatter API instance");

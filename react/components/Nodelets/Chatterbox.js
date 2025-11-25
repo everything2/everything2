@@ -15,7 +15,8 @@ const parseMessageText = (msg) => {
     return (
       <em>
         <LinkNode type={author.type} title={author.title} />
-        {match[1]}{match[2]}
+        {match[1]}
+        <ParseLinks text={match[2]} />
       </em>
     )
   }
@@ -25,7 +26,7 @@ const parseMessageText = (msg) => {
     const match = text.match(/^\/me's\s(.*)/i)
     return (
       <em>
-        <LinkNode type={author.type} title={author.title} />'s {match[1]}
+        <LinkNode type={author.type} title={author.title} />'s <ParseLinks text={match[1]} />
       </em>
     )
   }
@@ -41,7 +42,7 @@ const parseMessageText = (msg) => {
         {'<'}
         <LinkNode type={author.type} title={author.title} />
         {'> '}
-        <em>{randomNote1} {match[1]} {randomNote2}</em>
+        <em>{randomNote1} <ParseLinks text={match[1]} /> {randomNote2}</em>
       </>
     )
   }
@@ -54,7 +55,7 @@ const parseMessageText = (msg) => {
         {'<'}
         <LinkNode type={author.type} title={author.title} />
         {'> '}
-        {match[2]}
+        <ParseLinks text={match[2]} />
       </small>
     )
   }
@@ -67,7 +68,9 @@ const parseMessageText = (msg) => {
         {'<'}
         <LinkNode type={author.type} title={author.title} />
         {'> '}
-        <span style={{ fontVariant: 'small-caps' }}>{match[2]}</span>
+        <span style={{ fontVariant: 'small-caps' }}>
+          <ParseLinks text={match[2]} />
+        </span>
       </>
     )
   }
@@ -83,13 +86,14 @@ const parseMessageText = (msg) => {
     } else if (text.match(/^\/rolls 1d2 (&rarr;|→) 2/i)) {
       rollText = ' flips a coin → tails'
     } else {
-      rollText = ' rolls' + rollText
+      // Replace HTML entity with actual arrow character for dice rolls
+      rollText = ' rolls' + rollText.replace(/&rarr;/g, '→')
     }
 
     return (
       <span style={{ fontVariant: 'small-caps' }}>
         <LinkNode type={author.type} title={author.title} />
-        <span dangerouslySetInnerHTML={{ __html: rollText }} />
+        <ParseLinks text={rollText} />
       </span>
     )
   }
@@ -151,7 +155,7 @@ const parseMessageText = (msg) => {
       {'<'}
       <LinkNode type={author.type} title={author.title} />
       {'> '}
-      <span dangerouslySetInnerHTML={{ __html: text }} />
+      <ParseLinks text={text} />
     </>
   )
 }
@@ -161,14 +165,15 @@ const Chatterbox = (props) => {
   const [sending, setSending] = React.useState(false)
   const [showCommands, setShowCommands] = React.useState(false)
   const [messageError, setMessageError] = React.useState(null)
+  const [borgTimeRemaining, setBorgTimeRemaining] = React.useState(0)
   const inputRef = React.useRef(null)
   // Poll at 45s when active, 2m when idle, stop when page not in focus
-  // Skip polling when nodelet is collapsed, refresh on room change
+  // Skip polling when nodelet is collapsed or public chatter is off
   // Use initial messages from props to prevent redundant API call on page load
   const { chatter, loading, error, refresh } = useChatterPolling(
     45000,  // activeIntervalMs
     120000, // idleIntervalMs
-    props.nodeletIsOpen, // nodeletIsOpen
+    props.nodeletIsOpen && !props.publicChatterOff, // nodeletIsOpen (also disabled if chatter is off)
     props.currentRoom,   // currentRoom (for change detection)
     props.initialMessages // initialChatter (from backend)
   )
@@ -176,6 +181,38 @@ const Chatterbox = (props) => {
   // Polling-based chatter display with fallback to legacy AJAX
   // The Messages component handles private messages when shown separately
   // This component provides the input interface and displays recent chatter
+
+  // Calculate borg time remaining and update every second
+  React.useEffect(() => {
+    if (!props.borged) {
+      setBorgTimeRemaining(0)
+      return
+    }
+
+    const calculateTimeRemaining = () => {
+      const currentTime = Math.floor(Date.now() / 1000) // Unix timestamp in seconds
+      const timeElapsed = currentTime - props.borged
+      const adjustedNum = (props.numborged || 1) * 2
+      const cooldownPeriod = 300 + 60 * adjustedNum
+      const remaining = Math.max(0, cooldownPeriod - timeElapsed)
+      setBorgTimeRemaining(remaining)
+      return remaining
+    }
+
+    // Calculate initial value
+    calculateTimeRemaining()
+
+    // Update every second
+    const interval = setInterval(() => {
+      const remaining = calculateTimeRemaining()
+      // Clear interval when borg expires
+      if (remaining === 0) {
+        clearInterval(interval)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [props.borged, props.numborged])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -268,6 +305,7 @@ const Chatterbox = (props) => {
   const isEditor = props.user?.editor || false
   const isAdmin = props.user?.admin || false
   const isChanop = props.user?.chanop || false
+  const hasEasterEggs = (props.easterEggs || 0) > 0
 
   // Get available commands based on user permissions
   const getAvailableCommands = () => {
@@ -289,11 +327,17 @@ const Chatterbox = (props) => {
       )
     }
 
+    // Easter Eggs commands (require Easter Eggs or admin)
+    if (hasEasterEggs || isAdmin) {
+      commands.push(
+        { cmd: '/fireball <user>', desc: 'Award GP to a user (requires Easter Eggs, replace spaces with underscores)', restricted: true },
+        { cmd: '/sanctify <user>', desc: 'Award GP to a user (requires Easter Eggs, replace spaces with underscores)', restricted: true }
+      )
+    }
+
     // Chanop and admin commands
     if (isChanop || isAdmin) {
       commands.push(
-        { cmd: '/fireball <user>', desc: 'Award GP to a user (replace spaces with underscores)', restricted: true },
-        { cmd: '/sanctify <user>', desc: 'Award GP to a user (replace spaces with underscores)', restricted: true },
         { cmd: '/borg <user> [reason]', desc: 'Suspend user from chat (replace spaces with underscores)', restricted: true },
         { cmd: '/drag <user>', desc: 'Move user to your room (replace spaces with underscores)', restricted: true },
         { cmd: '/topic <text>', desc: 'Set room topic', restricted: true }
@@ -349,40 +393,56 @@ const Chatterbox = (props) => {
 
       {/* Chatter display - polling-based */}
       <div id="chatterbox_chatter" style={{ marginBottom: '12px' }}>
-        {loading && chatter.length === 0 && (
-          <div style={{ fontSize: '11px', color: '#999', padding: '8px', textAlign: 'center' }}>
-            Loading chatter...
-          </div>
-        )}
-
-        {error && (
-          <div style={{ fontSize: '11px', color: '#dc3545', padding: '8px' }}>
-            Error loading chatter: {error}
-          </div>
-        )}
-
-        {chatter.length === 0 && !loading && !error && (
-          <div style={{ fontSize: '11px', color: '#999', padding: '8px', fontStyle: 'italic' }}>
-            and all is quiet...
-          </div>
-        )}
-
-        {chatter.length > 0 && (
+        {props.publicChatterOff ? (
           <div style={{
-            maxHeight: '400px',
-            overflowY: 'auto',
-            fontSize: '11px',
-            lineHeight: '1.4'
+            fontSize: '12px',
+            color: '#856404',
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffc107',
+            borderRadius: '4px',
+            padding: '12px',
+            textAlign: 'center'
           }}>
-            {[...chatter].reverse().map((msg) => (
-              <div key={msg.message_id} style={{ padding: '4px 8px', borderBottom: '1px solid #f0f0f0' }}>
-                {parseMessageText(msg)}
-                <span style={{ color: '#999', fontSize: '10px', marginLeft: '8px' }}>
-                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-            ))}
+            You have chatter off. Use <code>/chatteron</code> to enable it.
           </div>
+        ) : (
+          <>
+            {loading && chatter.length === 0 && (
+              <div style={{ fontSize: '11px', color: '#999', padding: '8px', textAlign: 'center' }}>
+                Loading chatter...
+              </div>
+            )}
+
+            {error && (
+              <div style={{ fontSize: '11px', color: '#dc3545', padding: '8px' }}>
+                Error loading chatter: {error}
+              </div>
+            )}
+
+            {chatter.length === 0 && !loading && !error && (
+              <div style={{ fontSize: '11px', color: '#999', padding: '8px', fontStyle: 'italic' }}>
+                and all is quiet...
+              </div>
+            )}
+
+            {chatter.length > 0 && (
+              <div style={{
+                maxHeight: '400px',
+                overflowY: 'auto',
+                fontSize: '11px',
+                lineHeight: '1.4'
+              }}>
+                {[...chatter].reverse().map((msg) => (
+                  <div key={msg.message_id} style={{ padding: '4px 8px', borderBottom: '1px solid #f0f0f0' }}>
+                    {parseMessageText(msg)}
+                    <span style={{ color: '#999', fontSize: '10px', marginLeft: '8px' }}>
+                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -395,13 +455,19 @@ const Chatterbox = (props) => {
           padding: '8px'
         }}>
           <form onSubmit={handleSubmit} id="chatterbox_input_form">
-            {isBorged && (
+            {isBorged && borgTimeRemaining > 0 && (
               <div style={{
-                fontSize: '11px',
+                fontSize: '12px',
                 color: '#dc3545',
-                marginBottom: '6px'
+                fontWeight: 'bold',
+                marginBottom: '6px',
+                textAlign: 'center',
+                padding: '8px',
+                backgroundColor: '#fff3cd',
+                border: '1px solid #ffc107',
+                borderRadius: '4px'
               }}>
-                You're borged, so you can't talk right now.
+                You are borged! {Math.floor(borgTimeRemaining / 60)}:{String(borgTimeRemaining % 60).padStart(2, '0')}
               </div>
             )}
 
@@ -415,42 +481,45 @@ const Chatterbox = (props) => {
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <input
-                ref={inputRef}
-                type="text"
-                id="message"
-                name="message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                disabled={isBorged || sending}
-                maxLength={512}
-                style={{
-                  flex: 1,
-                  padding: '4px 8px',
-                  fontSize: '12px',
-                  borderRadius: '3px',
-                  border: '1px solid #dee2e6',
-                  backgroundColor: isBorged ? '#e9ecef' : '#fff'
-                }}
-                placeholder={isBorged ? "You're borged" : "Type a message..."}
-              />
-              <button
-                type="submit"
-                id="message_send"
-                disabled={isBorged || sending || !message.trim()}
-                style={{
-                  padding: '4px 12px',
-                  fontSize: '12px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '3px',
-                  backgroundColor: (isBorged || !message.trim()) ? '#e9ecef' : '#fff',
-                  cursor: (isBorged || !message.trim()) ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {isBorged ? 'erase' : 'talk'}
-              </button>
-            </div>
+            {/* Hide input entirely when borged, show only countdown */}
+            {!isBorged && (
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  id="message"
+                  name="message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  disabled={sending}
+                  maxLength={512}
+                  style={{
+                    flex: 1,
+                    padding: '4px 8px',
+                    fontSize: '12px',
+                    borderRadius: '3px',
+                    border: '1px solid #dee2e6',
+                    backgroundColor: '#fff'
+                  }}
+                  placeholder="Type a message..."
+                />
+                <button
+                  type="submit"
+                  id="message_send"
+                  disabled={sending || !message.trim()}
+                  style={{
+                    padding: '4px 12px',
+                    fontSize: '12px',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '3px',
+                    backgroundColor: !message.trim() ? '#e9ecef' : '#fff',
+                    cursor: !message.trim() ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  talk
+                </button>
+              </div>
+            )}
 
             {props.showHelp && (
               <div style={{
