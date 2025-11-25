@@ -44,21 +44,20 @@ ok($APP, "Application object created");
 # 8. Critical for React messaging UI
 #############################################################################
 
-# Get test users
-my $test_user1 = $DB->getNode("normaluser1", "user");
-if (!$test_user1) {
-    $test_user1 = $DB->sqlSelectHashref("*", "user JOIN node ON user_id=node_id", "node_id > 1 LIMIT 1");
-}
-ok($test_user1, "Got first test user");
+# Get test users - use known existing users for reliable testing
+my $test_user1 = $DB->getNode("root", "user");
+ok($test_user1, "Got first test user (root)");
 diag("Test user 1 ID: " . ($test_user1 ? $test_user1->{node_id} : "NONE")) if $ENV{TEST_VERBOSE};
 
-my $test_user2 = $DB->sqlSelectHashref("*", "user JOIN node ON user_id=node_id", "node_id > 1 AND node_id != " . ($test_user1->{node_id} || 0) . " LIMIT 1");
-if (!$test_user2) {
-    # Create a mock second user for testing
-    $test_user2 = { node_id => 999996, title => 'testuser2' };
-}
-ok($test_user2, "Got second test user");
+my $test_user2 = $DB->getNode("guest user", "user");
+ok($test_user2, "Got second test user (guest user)");
 diag("Test user 2 ID: " . ($test_user2 ? $test_user2->{node_id} : "NONE")) if $ENV{TEST_VERBOSE};
+
+# Verify both users exist in node table
+my $user1_node = $DB->getNodeById($test_user1->{node_id});
+my $user2_node = $DB->getNodeById($test_user2->{node_id});
+ok($user1_node, "User 1 exists in node table");
+ok($user2_node, "User 2 exists in node table");
 
 #############################################################################
 # Helper Functions
@@ -477,6 +476,140 @@ subtest 'Default message limit' => sub {
     # Default limit is 15
     my $count = scalar(@{$result->[1]});
     ok($count <= 15, "Default limit of 15 is applied (got $count messages)");
+};
+
+#############################################################################
+# Test 11: Cross-user message permissions (CRITICAL SECURITY TEST)
+#############################################################################
+
+subtest 'User cannot delete/archive messages sent to other users' => sub {
+    plan tests => 14;  # 2 create + 8 checks (4 ops × 2 each) + 2 verify + 2 recipient
+
+    # Create an actual message in the database from user1 to user2
+    my $insert_ok = $DB->sqlInsert('message', {
+        author_user => $test_user1->{node_id},
+        for_user => $test_user2->{node_id},
+        msgtext => 'Test message for permission check',
+        '-tstamp' => 'NOW()',  # Leading dash means raw SQL, not quoted
+        archive => 0
+    });
+    ok($insert_ok, 'Message insert successful');
+
+    # Get the actual message ID
+    my ($message_id) = $DB->sqlSelect('LAST_INSERT_ID()');
+    ok($message_id, 'Got message ID');
+
+    # Create mock request for sender (user1)
+    my $mock_sender = MockUser->new(
+        node_id => $test_user1->{node_id},
+        title => $test_user1->{title},
+        is_guest_flag => 0,
+        NODEDATA => $test_user1,
+    );
+    my $mock_sender_request = MockRequest->new(
+        user => $mock_sender,
+    );
+
+    # TEST: Sender (user1) cannot delete message sent to user2
+    my $result = $api->delete($mock_sender_request, $message_id);
+    is($result->[0], 403, "Sender cannot delete message sent to another user");
+    my $check = $DB->sqlSelectHashref('*', 'message', "message_id=$message_id");
+    ok($check, "Message still exists after delete attempt");
+
+    # TEST: Sender (user1) cannot archive message sent to user2
+    $result = $api->archive($mock_sender_request, $message_id);
+    is($result->[0], 403, "Sender cannot archive message sent to another user");
+    $check = $DB->sqlSelectHashref('*', 'message', "message_id=$message_id");
+    ok($check, "Message still exists after archive attempt");
+
+    # TEST: Sender (user1) cannot unarchive message sent to user2
+    $result = $api->unarchive($mock_sender_request, $message_id);
+    is($result->[0], 403, "Sender cannot unarchive message sent to another user");
+    $check = $DB->sqlSelectHashref('*', 'message', "message_id=$message_id");
+    ok($check, "Message still exists after unarchive attempt");
+
+    # TEST: Sender (user1) cannot get message sent to user2
+    $result = $api->get_single_message($mock_sender_request, $message_id);
+    is($result->[0], 403, "Sender cannot view message sent to another user");
+    $check = $DB->sqlSelectHashref('*', 'message', "message_id=$message_id");
+    ok($check, "Message still exists after get attempt");
+
+    # Verify message still exists and is not archived
+    my $message = $DB->sqlSelectHashref('*', 'message', "message_id=$message_id");
+    ok($message, 'Message still exists after unauthorized operations');
+    is($message->{archive}, 0, 'Message is still not archived');
+
+    # Create mock request for recipient (user2)
+    my $mock_recipient = MockUser->new(
+        node_id => $test_user2->{node_id},
+        title => $test_user2->{title},
+        is_guest_flag => 0,
+        NODEDATA => $test_user2,
+    );
+    my $mock_recipient_request = MockRequest->new(
+        user => $mock_recipient,
+    );
+
+    # TEST: Recipient (user2) CAN delete the message
+    $result = $api->delete($mock_recipient_request, $message_id);
+    is($result->[0], 200, "Recipient can delete message sent to them");
+
+    # Cleanup - verify message was deleted
+    $message = $DB->sqlSelectHashref('*', 'message', "message_id=$message_id");
+    ok(!$message, 'Message was successfully deleted by recipient');
+};
+
+#############################################################################
+# Test 12: Archive operation permissions
+#############################################################################
+
+subtest 'Archive/unarchive permissions enforced' => sub {
+    plan tests => 7;  # 2 create + 4 operations + 1 cleanup
+
+    # Create a message from user1 to user2
+    my $insert_ok = $DB->sqlInsert('message', {
+        author_user => $test_user1->{node_id},
+        for_user => $test_user2->{node_id},
+        msgtext => 'Test message for archive permissions',
+        '-tstamp' => 'NOW()',  # Leading dash means raw SQL, not quoted
+        archive => 0
+    });
+    ok($insert_ok, 'Message insert successful');
+
+    # Get the actual message ID
+    my ($message_id) = $DB->sqlSelect('LAST_INSERT_ID()');
+    ok($message_id, 'Got message ID');
+
+    # Create mock recipient
+    my $mock_recipient = MockUser->new(
+        node_id => $test_user2->{node_id},
+        title => $test_user2->{title},
+        is_guest_flag => 0,
+        NODEDATA => $test_user2,
+    );
+    my $mock_recipient_request = MockRequest->new(
+        user => $mock_recipient,
+    );
+
+    # TEST: Recipient can archive their own message
+    my $result = $api->archive($mock_recipient_request, $message_id);
+    is($result->[0], 200, "Recipient can archive message");
+
+    # Verify message is archived
+    my $message = $DB->sqlSelectHashref('*', 'message', "message_id=$message_id");
+    is($message->{archive}, 1, 'Message is now archived');
+
+    # TEST: Recipient can unarchive their own message
+    $result = $api->unarchive($mock_recipient_request, $message_id);
+    is($result->[0], 200, "Recipient can unarchive message");
+
+    # Verify message is unarchived
+    $message = $DB->sqlSelectHashref('*', 'message', "message_id=$message_id");
+    is($message->{archive}, 0, 'Message is now unarchived');
+
+    # Cleanup
+    $DB->sqlDelete('message', "message_id=$message_id");
+    pass('Test cleanup complete');
 };
 
 done_testing();

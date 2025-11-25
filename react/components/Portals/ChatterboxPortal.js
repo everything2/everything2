@@ -1,18 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Chatterbox from '../Nodelets/Chatterbox'
+import NodeletPortal from './NodeletPortal'
 
-const ChatterboxPortal = (props) => {
-  const container = document.getElementById('chatterbox')
-
-  if (!container) {
-    return null
+class ChatterboxPortal extends NodeletPortal {
+  constructor(props) {
+    super(props)
+    this.insertRoot = document.getElementById('chatterbox')
   }
-
-  return ReactDOM.createPortal(
-    <Chatterbox {...props} />,
-    container
-  )
 }
 
 export default ChatterboxPortal

@@ -56,7 +56,9 @@ package MockUser {
     has 'node_id' => (is => 'rw');
     has 'title' => (is => 'rw');
     has 'is_guest_flag' => (is => 'rw', default => 0);
+    has 'is_admin_flag' => (is => 'rw', default => 0);
     sub is_guest { return shift->is_guest_flag; }
+    sub is_admin { return shift->is_admin_flag; }
 }
 
 # Mock CGI object for testing query parameters
@@ -279,6 +281,72 @@ subtest 'Authorization - guest users blocked' => sub {
 
     my ($status_post) = @{$api->create($request)};
     is($status_post, 401, "POST blocked for guest users (401 Unauthorized)");
+};
+
+#############################################################################
+# Test 8: POST /api/chatter/clear_all - Admin only
+#############################################################################
+
+subtest 'POST /api/chatter/clear_all - admin access' => sub {
+    plan tests => 3;
+
+    # Add some test messages first
+    $DB->sqlInsert('message', {
+        msgtext => 'Test message 1',
+        author_user => $test_user->{node_id},
+        for_user => 0
+    });
+    $DB->sqlInsert('message', {
+        msgtext => 'Test message 2',
+        author_user => $test_user->{node_id},
+        for_user => 0
+    });
+
+    # Root user is admin
+    my $admin_user = MockUser->new(
+        NODEDATA => $test_user,
+        node_id => $test_user->{node_id},
+        title => $test_user->{title},
+        is_admin_flag => 1
+    );
+
+    my $request = MockRequest->new(user => $admin_user);
+
+    my ($status, $data) = @{$api->clear_all($request)};
+
+    is($status, 200, "Status is 200 OK for admin");
+    is($data->{success}, 1, "Success flag is true");
+    ok($data->{deleted} >= 2, "Deleted count is at least 2");
+};
+
+#############################################################################
+# Test 9: POST /api/chatter/clear_all - Non-admin blocked
+#############################################################################
+
+subtest 'POST /api/chatter/clear_all - non-admin blocked' => sub {
+    plan tests => 2;
+
+    # Add a test message
+    $DB->sqlInsert('message', {
+        msgtext => 'Test message',
+        author_user => $test_user->{node_id},
+        for_user => 0
+    });
+
+    # Regular user without admin flag
+    my $regular_user = MockUser->new(
+        NODEDATA => $test_user,
+        node_id => $test_user->{node_id},
+        title => $test_user->{title},
+        is_admin_flag => 0
+    );
+
+    my $request = MockRequest->new(user => $regular_user);
+
+    my ($status, $data) = @{$api->clear_all($request)};
+
+    is($status, 403, "Status is 403 FORBIDDEN for non-admin");
+    ok($data->{error}, "Error message is present");
 };
 
 # Cleanup

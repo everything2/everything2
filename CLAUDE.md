@@ -7,6 +7,259 @@ This document provides context for AI assistants (like Claude) working on the Ev
 
 ## Recent Work History
 
+### Session 13: Notification Dismiss & API Polling Optimization (2025-11-24)
+
+**Focus**: Fix notification dismiss functionality and prevent redundant API calls on page load
+
+**Completed Work**:
+1. ✅ Implemented notification dismiss functionality
+   - Created [notifications.pm](ecore/Everything/API/notifications.pm) API with two endpoints:
+     - `GET /api/notifications/` - Fetch unseen notifications
+     - `POST /api/notifications/dismiss` - Mark notification as seen
+   - Updated [Notifications.js](react/components/Nodelets/Notifications.js) with dismiss handling
+   - Uses event delegation to catch clicks on dismiss buttons
+   - Extracts `notified_id` from button class (`dismiss notified_123`)
+   - Local state filtering hides dismissed notifications immediately
+   - Security: Users can only dismiss their own notifications (403 for others)
+   - Guest users blocked (401)
+2. ✅ Created comprehensive test suite ([t/037_notifications_api.t](t/037_notifications_api.t))
+   - 6 subtests, 15 assertions, 100% passing
+   - Tests success, validation, security, guest blocking
+   - Verified cross-user security (can't dismiss another user's notifications)
+3. ✅ **API Polling Optimization** - Prevented redundant API calls on page load
+   - **Problem**: Polling hooks made API calls on mount even when components had initial data from server
+   - **Impact**: 2x database queries per page load, delayed rendering
+   - Modified three polling hooks to accept `initialData` parameter:
+     - [usePolling.js](react/hooks/usePolling.js) - Added `options.initialData`
+     - [useChatterPolling.js](react/hooks/useChatterPolling.js) - Added `initialChatter` parameter
+     - [useOtherUsersPolling.js](react/hooks/useOtherUsersPolling.js) - Added `initialData` parameter
+   - Hooks skip initial API call when data provided: `if (!initialData) { fetchData() }`
+   - Updated [OtherUsers.js](react/components/Nodelets/OtherUsers.js) to pass `props.otherUsersData` to hook
+   - **Benefits**: 50% fewer API calls on page load, instant rendering, reduced server load
+4. ✅ Documentation created
+   - [docs/api-polling-optimization.md](docs/api-polling-optimization.md) - Complete optimization details
+   - Documented before/after data flow, performance impact, future opportunities
+
+**Final Results**:
+- ✅ **All 445 React tests passing**
+- ✅ **All 47 Perl tests passing**
+- ✅ **Application rebuilt and running** at http://localhost:9080
+- ✅ **Performance**: 50% fewer API calls on page load for optimized components
+
+**Key Files Modified**:
+- [ecore/Everything/API/notifications.pm](ecore/Everything/API/notifications.pm) - NEW: Notification management API
+- [react/components/Nodelets/Notifications.js](react/components/Nodelets/Notifications.js) - Dismiss functionality
+- [react/hooks/usePolling.js](react/hooks/usePolling.js) - Added initialData option
+- [react/hooks/useChatterPolling.js](react/hooks/useChatterPolling.js) - Added initialChatter parameter
+- [react/hooks/useOtherUsersPolling.js](react/hooks/useOtherUsersPolling.js) - Added initialData parameter
+- [react/components/Nodelets/OtherUsers.js](react/components/Nodelets/OtherUsers.js) - Pass initial data to hook
+- [t/037_notifications_api.t](t/037_notifications_api.t) - NEW: Comprehensive API tests
+- [react/components/Nodelets/OtherUsers.test.js](react/components/Nodelets/OtherUsers.test.js) - Updated mock
+
+**Important Discoveries**:
+- **API Polling Pattern**: Hooks should accept `initialData` to avoid redundant requests on mount
+- **Performance Impact**: Components with server-provided initial data save 1 API call + 1 DB query per page load
+- **Test Mocking**: Mock functions must handle new parameters: `(pollIntervalMs, initialData) => ...`
+- **Backward Compatible**: Hooks work with or without initial data (existing behavior maintained)
+- **Local State Optimization**: For dismiss operations, local state filtering is faster than re-fetching HTML from server
+
+**Next Steps**:
+1. Monitor API call reduction in production logs
+2. Add initial chatter messages to backend (`window.e2.chatterbox.messages`)
+3. Apply same optimization pattern to other polling components
+4. Consider localStorage caching for even faster page loads
+
+### Session 12: UI Bug Fixes & Room Filtering (2025-11-24)
+
+**Focus**: Fix multiple UI bugs - notifications display, Recent Nodes clear button, nodelet collapse, and chatterbox room filtering
+
+**Completed Work**:
+1. ✅ Fixed Notifications nodelet showing "0" ([Notifications.js:27,70](react/components/Nodelets/Notifications.js#L27))
+   - Issue: When notifications configured but empty, displayed "0" instead of appropriate message
+   - Root cause: Perl boolean `0` being rendered by React when using `{showSettings && ...}`
+   - Fix: Added `const shouldShowSettings = Boolean(showSettings)` to convert to proper boolean
+   - Now shows "No new notifications" or "Configure notifications to get started"
+2. ✅ Implemented Recent Nodes "Clear My Tracks" button ([RecentNodes.js:32-59](react/components/Nodelets/RecentNodes.js#L32-L59))
+   - Issue: Button used HTML form submission causing page reload without clearing tracks
+   - Added `nodetrail` preference to [preferences.pm:23](ecore/Everything/API/preferences.pm#L23)
+   - Created async handler calling `/api/preferences/set` with `{ nodetrail: '' }`
+   - Added `onClearTracks` callback to [E2ReactRoot.js:580](react/components/E2ReactRoot.js#L580)
+   - Shows visual feedback (disabled button + opacity) while clearing
+   - Updates UI immediately without page reload
+3. ✅ Fixed collapsedNodelets bug preventing last nodelet collapse ([E2ReactRoot.js:347-352](react/components/E2ReactRoot.js#L347-L352))
+   - Issue: When expanding last collapsed nodelet, preference gets deleted (becomes undefined)
+   - Root cause: [String.pm:20](ecore/Everything/Preference/String.pm#L20) `should_delete` returns true for empty string
+   - Fix: Added defensive checks `this.state.collapsedNodelets || ''` and `e2['collapsedNodelets'] || ''`
+   - Ensures collapsedNodelets is always a string before calling `.replace()`
+   - Now properly handles empty string preference
+4. ✅ Fixed Chatterbox showing all rooms when in "outside" ([Application.pm:4231-4232](ecore/Everything/Application.pm#L4231-L4232))
+   - Issue: When in room 0 ("outside"), chatterbox showed messages from ALL rooms
+   - Root cause: SQL filter only applied when `if ($room > 0)`, excluding room 0
+   - Fix: Changed to `$where .= " and room=$room"` to always filter by room
+   - Now properly shows only "outside" messages when in room 0
+
+**Final Results**:
+- ✅ **All 445 React tests passing**
+- ✅ **All 46 Perl tests passing**
+- ✅ **Application rebuilt and running** at http://localhost:9080
+- ✅ All UI bugs resolved
+
+**Key Files Modified**:
+- [react/components/Nodelets/Notifications.js](react/components/Nodelets/Notifications.js) - Fixed "0" display with boolean conversion
+- [react/components/Nodelets/RecentNodes.js](react/components/Nodelets/RecentNodes.js) - Implemented clear tracks functionality
+- [react/components/E2ReactRoot.js](react/components/E2ReactRoot.js) - Fixed collapsedNodelets handling + added clear tracks callback
+- [ecore/Everything/API/preferences.pm](ecore/Everything/API/preferences.pm) - Added nodetrail preference support
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Fixed room filtering in getRecentChatter
+- [react/components/Nodelets/RecentNodes.test.js](react/components/Nodelets/RecentNodes.test.js) - Updated tests for new API approach
+
+**Important Discoveries**:
+- **React rendering of falsy values**: React renders `0` but not `false/null/undefined` - always use Boolean() for Perl booleans
+- **String preference deletion**: When set to empty string, String.pm deletes the preference instead of storing ""
+- **Defensive coding**: Always check for undefined/null before calling string methods like `.replace()`
+- **SQL filtering**: Be careful with `> 0` checks that exclude valid zero values
+- **Room 0 is valid**: "outside" is room 0, not a null/undefined room
+
+### Session 11: Usergroup Messaging & Message Modal Implementation (2025-11-24)
+
+**Focus**: Fix usergroup messaging bugs, implement comprehensive message composition modal with reply/reply-all functionality
+
+**Completed Work**:
+1. ✅ Fixed usergroup messaging internal server error ([Application.pm:4403,4412-4417](ecore/Everything/Application.pm#L4403))
+   - Root cause: Code accessed `$usergroup->{user_id}` but usergroups have `node_id`, not `user_id`
+   - Fixed `for_usergroup` field in message insertion
+   - Fixed `getParameter()` call for archive copy
+   - Fixed archive copy insertion
+2. ✅ Created usergroup message test suite ([t/037_usergroup_messages.t](t/037_usergroup_messages.t))
+   - 4 subtests: member send, non-member rejection, /msg command, archive copy
+   - Validates `for_usergroup` field uses node_id correctly
+   - Tests usergroup membership authorization
+   - Tests archive copy creation for usergroups with `allow_message_archive` setting
+3. ✅ Fixed archive filter in Messages nodelet
+   - API endpoint wasn't reading `archive` parameter ([messages.pm:27](ecore/Everything/API/messages.pm#L27))
+   - `get_messages()` wasn't filtering by archive status ([Application.pm:3758](ecore/Everything/Application.pm#L3758))
+   - Added WHERE clause: `for_user=$user->{node_id} AND archive=$archive`
+4. ✅ Implemented comprehensive message composition modal ([MessageModal.js](react/components/MessageModal.js))
+   - Reply and Reply-All functionality
+   - Toggle between individual/group replies for usergroup messages
+   - 512 character limit with live counter (yellow at 90%, red at 100%)
+   - Auto-focus textarea on open
+   - Click-outside-to-close pattern
+   - Error handling and loading states
+   - Fixed positioning with z-index 10000
+5. ✅ Updated Messages nodelet UI ([Messages.js:165-202,253-315,406-453](react/components/Nodelets/Messages.js))
+   - Added reply/reply-all/archive/delete buttons with icons (↩, ↩↩, 📦, 🗑)
+   - Added Compose and Message Inbox footer buttons (✉, 📬)
+   - Integrated MessageModal component
+   - Refresh messages list after send
+6. ✅ Deployed React bundle and restarted Apache
+   - Bundle size: main.bundle.js 139KB, 671.bundle.js 115KB
+   - All features live in development environment
+7. ✅ Documented message modal features ([message-chatter-system.md:728-794](docs/message-chatter-system.md#L728))
+   - Complete feature documentation
+   - Button layout and icon usage
+   - Validation rules and UX patterns
+   - API integration details
+
+**Final Results**:
+- ✅ **Usergroup messaging working** - Fixed node_id bug, tests passing
+- ✅ **Archive filter working** - Correctly shows inbox vs archived messages
+- ✅ **Message modal deployed** - Full reply/reply-all/compose functionality
+- ✅ **Complete documentation** - All features documented in message-chatter-system.md
+
+**Key Files Created/Modified**:
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Fixed sendUsergroupMessage() node_id bugs, archive filtering
+- [ecore/Everything/API/messages.pm](ecore/Everything/API/messages.pm) - Added archive parameter reading
+- [t/037_usergroup_messages.t](t/037_usergroup_messages.t) - NEW: Comprehensive usergroup test suite
+- [react/components/MessageModal.js](react/components/MessageModal.js) - NEW: Full-featured composition modal
+- [react/components/Nodelets/Messages.js](react/components/Nodelets/Messages.js) - Integrated modal, updated UI
+- [docs/message-chatter-system.md](docs/message-chatter-system.md) - Documented modal features
+
+**Important Discoveries**:
+- **Blessed Object Fields**: Usergroup nodes have `node_id` field, not `user_id` - must check node type
+- **Archive Parameter Flow**: Must explicitly pass parameters through all API layers (CGI → API → Application)
+- **React Modal Patterns**: Fixed positioning with high z-index, click-outside-to-close, focus management
+- **Character Limit UI**: Live counter with color changes (90% yellow, 100% red) provides clear feedback
+- **Reply Context**: Modal needs to distinguish between individual replies and usergroup replies
+- **API Integration**: POST to `/api/messages/create` automatically refreshes message list on success
+
+**Critical Bug Pattern Identified**:
+```perl
+# WRONG - accessing non-existent field
+$usergroup->{user_id}  # usergroups don't have user_id
+
+# RIGHT - using correct field
+$usergroup->{node_id}  # usergroups are nodes with node_id
+```
+
+### Session 10: Message Opcode Refactoring & Parallel Testing (2025-11-24)
+
+**Focus**: Refactor message opcode into centralized Application.pm methods, implement parallel test execution, fix test runner bugs
+
+**Completed Work**:
+1. ✅ Extracted command processing from message opcode ([Application.pm:3901-4184](ecore/Everything/Application.pm#L3901-L4184))
+   - Created `processMessageCommand()` router with synonym normalization (~285 LOC)
+   - Extracted 8 command handlers: /me, /roll, /msg, /fireball, /sanctify, /invite, easter eggs, public chatter
+   - Command synonyms: /flip→/roll 1d2, /small→/whisper, /aria→/sing, /tomb→/death
+   - ONO (Online-Only) private message support with ? suffix
+   - Dice notation parser: XdY[kZ][+/-N] format
+2. ✅ Updated chatter API to use command processor ([chatter.pm:52](ecore/Everything/API/chatter.pm#L52))
+   - Routes through processMessageCommand() instead of direct chatter
+   - React Chatterbox now uses centralized command logic
+3. ✅ Refactored message opcode to use Application.pm ([opcode.pm:421-435, 666-673](ecore/Everything/Delegation/opcode.pm#L421))
+   - Routes user commands through processMessageCommand()
+   - Keeps admin commands inline (/drag, /borg, /topic, etc.)
+   - Replaced hardcoded node_id '1948205' with getNode('unverified email', 'sustype')
+4. ✅ Implemented Chatterbox focus retention ([Chatterbox.js:55,89](react/components/Nodelets/Chatterbox.js#L55))
+   - Stores input reference before async operations
+   - Restores focus after message sent (success and error paths)
+   - Enables rapid-fire messaging without re-clicking input
+5. ✅ Created message opcode burndown chart ([message-chatter-system.md:1136-1270](docs/message-chatter-system.md#L1136))
+   - Documented 7 op=message call sites (1 XML ticker, 6 internal forms)
+   - 4-phase migration strategy
+   - Progress tracking table
+6. ✅ Documented insertNodelet() legacy issue ([nodelet-migration-status.md:487-536](docs/nodelet-migration-status.md#L487))
+   - 5 affected chatterlight functions in document.pm
+   - Impact: Pages likely broken for migrated nodelets
+   - 3 resolution options with recommendations
+7. ✅ Created parallel test runner ([tools/parallel-test.sh](tools/parallel-test.sh))
+   - Concurrent execution: smoke+perl and react tests
+   - Animated progress spinners, color-coded output
+   - Performance: ~52s vs 55.3s sequential (6% faster + better UX)
+   - Integrated into devbuild.sh
+8. ✅ Fixed parallel test runner exit code bug
+   - Changed from grep-based detection to direct exit code capture
+   - Prevents false failures when grep doesn't find expected patterns
+   - All tests now report correct pass/fail status
+
+**Final Results**:
+- ✅ **1223 Perl tests passing** (smoke + unit, 14 parallel jobs)
+- ✅ **445 React tests passing** (25 test suites)
+- ✅ **Command processing centralized** - Ready for future API migration
+- ✅ **Parallel testing integrated** - Faster builds with better visibility
+
+**Key Files Modified**:
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Added ~285 LOC of command processing
+- [ecore/Everything/API/chatter.pm](ecore/Everything/API/chatter.pm) - Routes through processMessageCommand()
+- [ecore/Everything/Delegation/opcode.pm](ecore/Everything/Delegation/opcode.pm) - Refactored to use Application.pm methods
+- [react/components/Nodelets/Chatterbox.js](react/components/Nodelets/Chatterbox.js) - Focus retention
+- [tools/parallel-test.sh](tools/parallel-test.sh) - NEW: Unified parallel test runner
+- [docker/devbuild.sh](docker/devbuild.sh) - Integrated parallel testing
+- [docs/message-chatter-system.md](docs/message-chatter-system.md) - Added burndown chart
+- [docs/nodelet-migration-status.md](docs/nodelet-migration-status.md) - Added insertNodelet() issue
+- [docs/test-parallelization.md](docs/test-parallelization.md) - Added parallel test runner docs
+
+**Important Discoveries**:
+- Command Router Pattern: Central dispatcher routes messages to specialized handlers
+- Exit Code Handling: Bash grep returns 1 on no matches - must capture command exit codes directly
+- Focus Restoration: Store element reference before async operations, restore after completion
+- Test Parallelization: Concurrent test execution improves speed AND developer UX
+- Hardcoded IDs: Use getNode() lookups instead of hardcoded node_ids for maintainability
+
+**Next Steps**:
+- Complete op=message migration after React page routing and Mason2 elimination
+- Resolve insertNodelet() legacy issue (3 options documented)
+- Consider extracting more admin commands from opcode
+
 ### Session 9: Message Opcode Analysis & Baseline Testing (2025-11-24)
 
 **Focus**: Analyze message opcode for refactoring, document nodelet periodic update system, create baseline test suite

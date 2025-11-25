@@ -24,7 +24,8 @@ sub get_all
 
   my $limit = int($REQUEST->cgi->param("limit")) || undef;
   my $offset = int($REQUEST->cgi->param("offset")) || undef;
-  return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->user->NODEDATA,$limit, $offset)];
+  my $archive = int($REQUEST->cgi->param("archive")) || 0;
+  return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->user->NODEDATA, $limit, $offset, $archive)];
 }
 
 sub create

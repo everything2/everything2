@@ -168,21 +168,152 @@ class SmokeTest
     end
 
     puts "  Found #{superdocs.length} documents to test"
+
+    # Detect number of CPU cores for parallel testing
+    num_cores = detect_cpu_cores
+    num_workers = [num_cores - 2, 2].max  # cores - 2, minimum 2
+    puts "  Using #{num_workers} parallel workers (detected #{num_cores} cores)"
     puts ""
 
-    # Track statistics
-    tested = 0
-    passed = 0
+    # Test documents in parallel using thread pool
+    results = test_pages_parallel(superdocs, num_workers)
 
-    superdocs.each do |doc|
-      result = test_page(doc[:title], doc[:path], doc[:type], doc[:rendering])
-      tested += 1
-      passed += 1 if result == :pass
-    end
+    # Count results
+    passed = results.count { |r| r == :pass }
+    tested = results.length
 
     puts ""
     puts "  Document Test Summary:"
     puts "  ✓ Passed: #{passed}/#{tested}"
+  end
+
+  def detect_cpu_cores
+    # Try nproc first (most reliable)
+    nproc = `nproc 2>/dev/null`.chomp
+    return nproc.to_i if nproc && nproc =~ /^\d+$/
+
+    # Fall back to /proc/cpuinfo
+    if File.exist?('/proc/cpuinfo')
+      count = File.readlines('/proc/cpuinfo').count { |line| line.start_with?('processor') }
+      return count if count > 0
+    end
+
+    # Default to 2 if detection fails
+    2
+  end
+
+  def test_pages_parallel(docs, num_workers)
+    require 'thread'
+
+    queue = Queue.new
+    docs.each { |doc| queue << doc }
+
+    results = []
+    results_mutex = Mutex.new
+    print_mutex = Mutex.new
+
+    workers = (1..num_workers).map do
+      Thread.new do
+        until queue.empty?
+          begin
+            doc = queue.pop(true)
+          rescue ThreadError
+            # Queue is empty
+            break
+          end
+
+          # Test the page
+          result = test_page_quiet(doc[:title], doc[:path], doc[:type], doc[:rendering], print_mutex)
+
+          # Store result thread-safely
+          results_mutex.synchronize do
+            results << result
+          end
+        end
+      end
+    end
+
+    workers.each(&:join)
+    results
+  end
+
+  def test_page_quiet(name, path, doc_type, rendering, print_mutex)
+    # Run the test
+    result = nil
+    begin
+      response = http_get(path)
+      code = response.code.to_i
+
+      # Permission denied is only expected for the "Permission Denied" page itself
+      if code == 403 || (code == 200 && response.body.include?("You don't have access to that node.") && name != 'Permission Denied')
+        print_mutex.synchronize { puts "  #{name}... ✗ Permission denied" }
+        @errors << "#{name}: Unexpected permission denial (root should have access)"
+        return :error
+      end
+
+      if code == 200
+        body = response.body
+
+        # For XML/JSON API endpoints (tickers), just verify they return XML-like content
+        if rendering == 'XML/JSON API'
+          if body.include?('<?xml') || body.include?('<') || body.include?('{')
+            print_mutex.synchronize { puts "  #{name}... ✓ (API)" }
+            return :pass
+          else
+            print_mutex.synchronize { puts "  #{name}... ✗ Invalid API response" }
+            @errors << "#{name}: API endpoint doesn't return XML/JSON"
+            return :error
+          end
+        end
+
+        # Check for fatal errors
+        if body.include?('Software error') || body.include?('Internal Server Error')
+          print_mutex.synchronize { puts "  #{name}... ✗ Fatal error" }
+          @errors << "#{name}: Shows fatal error"
+          return :error
+        end
+
+        # Check for Perl errors
+        if body =~ /at \/.*?\.pm line \d+/
+          print_mutex.synchronize { puts "  #{name}... ✗ Perl error" }
+          error_match = body.match(/(.{0,150}at \/.*?\.pm line \d+.{0,50})/)
+          @errors << "#{name}: Perl error - #{error_match[0]}" if error_match
+          return :error
+        end
+
+        # Check for missing htmlcode errors
+        if body.include?('could not be found as Everything::Delegation::htmlcode')
+          print_mutex.synchronize { puts "  #{name}... ✗ Missing htmlcode" }
+          error_match = body.match(/(.{0,50}could not be found as Everything::Delegation::htmlcode::\w+.{0,50})/)
+          @errors << "#{name}: #{error_match[0]}" if error_match
+          return :error
+        end
+
+        # Check for undefined method errors
+        if body.include?("Can't locate object method")
+          print_mutex.synchronize { puts "  #{name}... ✗ Method error" }
+          error_match = body.match(/(Can't locate object method .{0,100})/)
+          @errors << "#{name}: #{error_match[0]}" if error_match
+          return :error
+        end
+
+        print_mutex.synchronize { puts "  #{name}... ✓" }
+        return :pass
+      elsif code == 404
+        print_mutex.synchronize { puts "  #{name}... ⚠ Not found" }
+        @warnings << "#{name}: Page not found (may not exist in dev environment)"
+        return :warning
+      else
+        print_mutex.synchronize { puts "  #{name}... ✗ HTTP #{code}" }
+        @errors << "#{name}: HTTP #{code}"
+        return :error
+      end
+
+    rescue => e
+      print_mutex.synchronize { puts "  #{name}... ✗ Exception" }
+      @errors << "#{name}: #{e.message}"
+      return :error
+    end
   end
 
   def test_page(name, path, doc_type = 'Superdoc', rendering = 'E2 Legacy')

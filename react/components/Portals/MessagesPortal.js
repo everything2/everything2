@@ -1,18 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Messages from '../Nodelets/Messages'
+import NodeletPortal from './NodeletPortal'
 
-const MessagesPortal = (props) => {
-  const container = document.getElementById('messages_messages')
-
-  if (!container) {
-    return null
+class MessagesPortal extends NodeletPortal {
+  constructor(props) {
+    super(props)
+    this.insertRoot = document.getElementById('messages')
   }
-
-  return ReactDOM.createPortal(
-    <Messages {...props} />,
-    container
-  )
 }
 
 export default MessagesPortal

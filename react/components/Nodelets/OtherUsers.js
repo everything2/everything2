@@ -15,10 +15,11 @@ const OtherUsers = (props) => {
   const [error, setError] = React.useState(null)
 
   // Use polling hook for automatic updates every 2 minutes
-  const { otherUsersData: polledData, loading: pollingLoading, error: pollingError } = useOtherUsersPolling(120000)
+  // Pass initial data from props to skip initial API call
+  const { otherUsersData: polledData, loading: pollingLoading, error: pollingError } = useOtherUsersPolling(120000, props.otherUsersData)
 
-  // Use polled data if no props data provided (backwards compatibility)
-  const otherUsersData = props.otherUsersData || polledData
+  // Use polled data (which now includes initial data from props)
+  const otherUsersData = polledData
 
   if (!otherUsersData) {
     return (
@@ -77,9 +78,9 @@ const OtherUsers = (props) => {
         throw new Error(data.error || 'Failed to change room')
       }
 
-      // Update state with new room data from API
+      // Update state with new room data from API (pass full response to get room_name and room_topic)
       if (data.otherUsersData && props.onOtherUsersDataUpdate) {
-        props.onOtherUsersDataUpdate(data.otherUsersData)
+        props.onOtherUsersDataUpdate(data)
       } else {
         // Fallback to reload if callback not provided
         window.location.reload()
@@ -164,9 +165,9 @@ const OtherUsers = (props) => {
       setNewRoomTitle('')
       setNewRoomDescription('')
 
-      // Update state with new room data from API
+      // Update state with new room data from API (pass full response to get room_name and room_topic)
       if (data.otherUsersData && props.onOtherUsersDataUpdate) {
-        props.onOtherUsersDataUpdate(data.otherUsersData)
+        props.onOtherUsersDataUpdate(data)
       } else {
         // Fallback to reload if callback not provided
         window.location.reload()

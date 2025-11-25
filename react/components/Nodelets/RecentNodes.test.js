@@ -52,10 +52,10 @@ describe('RecentNodes', () => {
     expect(button).toBeInTheDocument()
   })
 
-  test('form has correct hidden field', () => {
+  test('form has submit button', () => {
     const { container } = render(<RecentNodes recentNodes={mockNodes} />)
-    const hidden = container.querySelector('input[type="hidden"][name="eraseTrail"]')
-    expect(hidden).toHaveValue('1')
+    const button = container.querySelector('input[type="submit"][name="schwammdrueber"]')
+    expect(button).toBeInTheDocument()
   })
 
   test('renders empty state with saying only', () => {

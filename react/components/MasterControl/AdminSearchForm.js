@@ -1,8 +1,10 @@
 import React from 'react'
-import { FaServer, FaHashtag, FaSearch, FaTag } from 'react-icons/fa'
+import { FaServer, FaHashtag, FaSearch, FaTag, FaCodeBranch } from 'react-icons/fa'
 import LinkNode from '../LinkNode'
 
-const AdminSearchForm = ({ nodeId, nodeType, nodeTitle, serverName, scriptName }) => {
+const githubUrl = "https://github.com/everything2/everything2"
+
+const AdminSearchForm = ({ nodeId, nodeType, nodeTitle, serverName, scriptName, lastCommit }) => {
   return (
     <div className="nodelet_section">
       <h4 className="ns_title">Node Info</h4>
@@ -31,6 +33,15 @@ const AdminSearchForm = ({ nodeId, nodeType, nodeTitle, serverName, scriptName }
             <FaServer size={10} /> Server:
           </span>
           <span className="var_value">{serverName}</span>
+
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#666' }}>
+            <FaCodeBranch size={10} /> Build:
+          </span>
+          <span className="var_value">
+            <a href={githubUrl + "/commit/" + lastCommit} style={{ textDecoration: 'none' }}>
+              {lastCommit ? lastCommit.substr(0, 7) : 'unknown'}
+            </a>
+          </span>
         </div>
 
         {/* Search by name */}

@@ -10,7 +10,8 @@ sub routes
 {
   return {
   "create" => "create",
-  "/" => "get_all"
+  "/" => "get_all",
+  "clear_all" => "clear_all"
   }
 }
 
@@ -48,8 +49,8 @@ sub create
   # Get user variables
   my $vars = $self->APP->getVars($REQUEST->user->NODEDATA);
 
-  # Send the public chatter
-  my $result = $self->APP->sendPublicChatter($REQUEST->user->NODEDATA, $data->{message}, $vars);
+  # Process message command (handles /flip, /roll, /me, /msg, etc.)
+  my $result = $self->APP->processMessageCommand($REQUEST->user->NODEDATA, $data->{message}, $vars);
 
   if($result)
   {
@@ -63,7 +64,27 @@ sub create
   }
 }
 
+sub clear_all
+{
+  my ($self, $REQUEST) = @_;
+
+  # Admin-only endpoint
+  unless($REQUEST->user->is_admin)
+  {
+    $self->devLog("Non-admin user attempted to clear chatter. Sending FORBIDDEN");
+    return [$self->HTTP_FORBIDDEN, {error => "Administrator access required"}];
+  }
+
+  # Delete all public chatter messages (for_user=0)
+  my $deleted = $self->DB->sqlDelete('message', 'for_user=0');
+
+  $self->devLog("Cleared all public chatter messages (deleted: $deleted)");
+
+  return [$self->HTTP_OK, {success => 1, deleted => int($deleted)}];
+}
+
 around ['get_all','create'] => \&Everything::API::unauthorized_if_guest;
+around ['clear_all'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 1;

@@ -1514,6 +1514,11 @@ if(! e2.noquickvote)
 
   // switch automatic chatter update on and off
   e2('#chatterbox:not(.pending)', function(){
+	// Skip if React is handling the chatterbox (React components don't use AJAX polling)
+	if ($(this).find('[data-react-component]').length > 0 || !e2.ajax.lists.chatterbox_chatter) {
+		return;
+	}
+
 	function onOff(on){
 		if (on){
 			e2.ajax.updateList('chatterbox_chatter');
@@ -2500,11 +2505,12 @@ function ParsePublicMessage(msg){
       html += '<div class="dt">'+chat_MsgTime.getHours()+':'+Pad(chat_MsgTime.getMinutes(),2)+'</div>';
    }
 
-   // Other Users helper
-   var author = $(msg).find('from').find('e2link').text();
-   if (!IsKnownUser(author)){
-      InsertOtherUserUsername(author,true);
-   }
+   // REMOVED: Legacy Other Users helper - now handled by React
+   // Other Users nodelet is managed by React (OtherUsers.js) with 2-minute polling
+   // var author = $(msg).find('from').find('e2link').text();
+   // if (!IsKnownUser(author)){
+   //    InsertOtherUserUsername(author,true);
+   // }
 
    // msg   
    chat_MsgLimit = $(msg).attr('msg_id');
@@ -2570,23 +2576,25 @@ function ResizeChatArea(doScroll){
       $('#Chatter').css('height',ch+'px');
    }
 
-   var oh;
-   prevHeight = $(document).height() + 1;
-   while(prevHeight > $(document).height()){
-      oh = parseInt($('#OtherUsers').css('height').replace('px',''));
-      oh += 10;
-      $('#OtherUsers').css('height',oh+'px');
-   }
+   // REMOVED: Legacy height adjustments for #OtherUsers
+   // Other Users nodelet is now managed by React and handles its own sizing
+   // var oh;
+   // prevHeight = $(document).height() + 1;
+   // while(prevHeight > $(document).height()){
+   //    oh = parseInt($('#OtherUsers').css('height').replace('px',''));
+   //    oh += 10;
+   //    $('#OtherUsers').css('height',oh+'px');
+   // }
 
    prevHeight = $(document).height() + 1;
    while(prevHeight > $(document).height()){
       prevHeight = $(document).height();
       ch = parseInt($('#Chatter').css('height').replace('px',''));
       ch -= 1;
-      oh = parseInt($('#OtherUsers').css('height').replace('px',''));
-      oh -= 1;
+      // REMOVED: oh = parseInt($('#OtherUsers').css('height').replace('px',''));
+      // REMOVED: oh -= 1;
       $('#Chatter').css('height',ch+'px');
-      $('#OtherUsers').css('height',oh+'px');
+      // REMOVED: $('#OtherUsers').css('height',oh+'px');
    }
    if(doScroll){
       $("#Chatter").attr({ scrollTop: ($("#Chatter").attr("scrollHeight")) });
@@ -2701,119 +2709,125 @@ function Talk()
 
 /*
  *==============================================================================
- * OTHER USERS
+ * OTHER USERS - REMOVED (Now handled by React)
  *==============================================================================
+ * All Other Users functionality has been migrated to React.
+ * See: react/components/Nodelets/OtherUsers.js
+ * Uses: react/hooks/useOtherUsersPolling.js (2-minute intervals)
+ *
+ * The functions below are commented out to prevent DOM conflicts with React.
+ * REMOVED: 2025-11-24 Session 10
  */
 
-function RefreshOtherUsers(){
-   $.ajax({
-      type: 'GET',
-      url: '/index.pl?node=Other Users XML Ticker II&nosort=1',
-      dataType: 'xml',
-      success: ParseOtherUsers
-   });
-}
+// function RefreshOtherUsers(){
+//    $.ajax({
+//       type: 'GET',
+//       url: '/index.pl?node=Other Users XML Ticker II&nosort=1',
+//       dataType: 'xml',
+//       success: ParseOtherUsers
+//    });
+// }
 
-function IsKnownUser(username){
-   var id = GetClassName(username);
-   if ($('#OU_'+id).length > 0){
-      return true;
-   }
-   return false;
-}
+// function IsKnownUser(username){
+//    var id = GetClassName(username);
+//    if ($('#OU_'+id).length > 0){
+//       return true;
+//    }
+//    return false;
+// }
 
-function ParseOtherUsers(xml){
-   // First loop through and add users
-   var curUserCount = $('#OtherUsers').find('.OtherUser').length;
-   var newUserCount = 0;
-   $(xml).find("user").each(function()
-   {
-      author = $.trim($(this).find('e2link').text());
-      if (!IsKnownUser(author)){
-         InsertOtherUser($(this));
-         newUserCount++;
-      }
-   });
-   // Then loop through and remove users
-   var found, username;
-   $('#OtherUsers').find('.Username').each(function(){
-      username = $.trim($(this).text());
-      found = false;
-      $(xml).find('e2link').each(function()
-      {
-         if($.trim($(this).text()).toUpperCase() == username.toUpperCase()){
-            found=true;
-            return;
-         }
-      });
-      if(!found){
-         RemoveElement('#OU_'+GetClassName(username), 5000);
-      }
-   });
-   if(newUserCount>0){
-      RemoveElement('.NewOu', 60000);
-   }
-   ou_IsFirstLoad = false;
-   $('#ou_loading').css('visibility', 'hidden');
-}
+// function ParseOtherUsers(xml){
+//    // First loop through and add users
+//    var curUserCount = $('#OtherUsers').find('.OtherUser').length;
+//    var newUserCount = 0;
+//    $(xml).find("user").each(function()
+//    {
+//       author = $.trim($(this).find('e2link').text());
+//       if (!IsKnownUser(author)){
+//          InsertOtherUser($(this));
+//          newUserCount++;
+//       }
+//    });
+//    // Then loop through and remove users
+//    var found, username;
+//    $('#OtherUsers').find('.Username').each(function(){
+//       username = $.trim($(this).text());
+//       found = false;
+//       $(xml).find('e2link').each(function()
+//       {
+//          if($.trim($(this).text()).toUpperCase() == username.toUpperCase()){
+//             found=true;
+//             return;
+//          }
+//       });
+//       if(!found){
+//          RemoveElement('#OU_'+GetClassName(username), 5000);
+//       }
+//    });
+//    if(newUserCount>0){
+//       RemoveElement('.NewOu', 60000);
+//    }
+//    ou_IsFirstLoad = false;
+//    $('#ou_loading').css('visibility', 'hidden');
+// }
 
-function InsertOtherUserUsername(username, isTemp){
-   var inserted=false;
-   var id = 'OU_'+GetClassName(username);
-   var html;
-   $('#OtherUsers').find('.Username').each(function(){
-      if(inserted){return;}
-      if(username.toUpperCase() <= $(this).text().toUpperCase()){
-         html = '<div class="OtherUser" id="'+id+'"><a class="Username" href="/user/'+username+'">'+username+'</a>';
-         if(!ou_IsFirstLoad){
-            html += '<span class="NewOu">New Login</span>';
-         }
-         html += '</div>';
-         $(this).parent().before(html);
-         inserted=true;
-         return;
-      }
-   });
-   if(!inserted){
-      html = '<div class="OtherUser" id="'+id+'"><a class="Username" href="/user/'+username+'">'+username+'</a>';
-      if(!ou_IsFirstLoad){
-         html += '<span class="NewOu">New Login</span>';
-      }
-      html += '</div>';
-      $('#OtherUsers').append(html);
-   }
-   /*
-    * Why temp? Because the other users nodelet is only updated every 5(?)
-    * minutes, and we might discover other online users by watching the actual
-    * chatter. Unfortunately, the universal message xml ticker does not tell us
-    * who the editors, admins, coders, edev, ops, etc are. Therefore, we add a
-    * temporary entry in the page's other users list, and add the 'official'
-    * entry when the other users ticker updates itself.
-    */
-   if(isTemp){
-      RemoveElement('#'+id, 30000);
-   }
-   return id;
-}
+// function InsertOtherUserUsername(username, isTemp){
+//    var inserted=false;
+//    var id = 'OU_'+GetClassName(username);
+//    var html;
+//    $('#OtherUsers').find('.Username').each(function(){
+//       if(inserted){return;}
+//       if(username.toUpperCase() <= $(this).text().toUpperCase()){
+//          html = '<div class="OtherUser" id="'+id+'"><a class="Username" href="/user/'+username+'">'+username+'</a>';
+//          if(!ou_IsFirstLoad){
+//             html += '<span class="NewOu">New Login</span>';
+//          }
+//          html += '</div>';
+//          $(this).parent().before(html);
+//          inserted=true;
+//          return;
+//       }
+//    });
+//    if(!inserted){
+//       html = '<div class="OtherUser" id="'+id+'"><a class="Username" href="/user/'+username+'">'+username+'</a>';
+//       if(!ou_IsFirstLoad){
+//          html += '<span class="NewOu">New Login</span>';
+//       }
+//       html += '</div>';
+//       $('#OtherUsers').append(html);
+//    }
+//    /*
+//     * Why temp? Because the other users nodelet is only updated every 5(?)
+//     * minutes, and we might discover other online users by watching the actual
+//     * chatter. Unfortunately, the universal message xml ticker does not tell us
+//     * who the editors, admins, coders, edev, ops, etc are. Therefore, we add a
+//     * temporary entry in the page's other users list, and add the 'official'
+//     * entry when the other users ticker updates itself.
+//     */
+//    if(isTemp){
+//       RemoveElement('#'+id, 30000);
+//    }
+//    return id;
+// }
 
-function InsertOtherUser(ou){
-   var inserted=false;
-   var username = $.trim($(ou).find('e2link').text());
-   var id = InsertOtherUserUsername(username, false);
-   var md5 = $(ou).find('e2link').attr('md5');
-   if(md5.length==32){
-      $('#'+id).prepend('<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/' + GetClassName(author) + '" alt="'+GetClassName(username)+'" height="'+ou_GravatarSize+'" width="'+ou_GravatarSize+'" /> ');
-   }
-   var position = '';
-   if($(ou).attr('e2god')=='1'){position+='<abbr title="Administrator"> @ </abbr>';}
-   if($(ou).attr('ce')=='1'){position+='<abbr title="Editor"> $ </abbr>';}
-   if($(ou).attr('chanop')=='1'){position+='<abbr title="Chat Moderator"> ! </abbr>';}
-   if($(ou).attr('committer')=='1'){position+='<abbr title="Sr. Developer"> * </abbr>';}
-   if($(ou).attr('edev')=='1'){position+='<abbr title="Jr. Developer"> % </abbr>';}
-   if(position.length>0){
-      $('#'+id).append(' ('+position+')');
-   }
-}
+// function InsertOtherUser(ou){
+//    var inserted=false;
+//    var username = $.trim($(ou).find('e2link').text());
+//    var id = InsertOtherUserUsername(username, false);
+//    var md5 = $(ou).find('e2link').attr('md5');
+//    if(md5.length==32){
+//       $('#'+id).prepend('<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/' + GetClassName(author) + '" alt="'+GetClassName(username)+'" height="'+ou_GravatarSize+'" width="'+ou_GravatarSize+'" /> ');
+//    }
+//    var position = '';
+//    if($(ou).attr('e2god')=='1'){position+='<abbr title="Administrator"> @ </abbr>';}
+//    if($(ou).attr('ce')=='1'){position+='<abbr title="Editor"> $ </abbr>';}
+//    if($(ou).attr('chanop')=='1'){position+='<abbr title="Chat Moderator"> ! </abbr>';}
+//    if($(ou).attr('committer')=='1'){position+='<abbr title="Sr. Developer"> * </abbr>';}
+//    if($(ou).attr('edev')=='1'){position+='<abbr title="Jr. Developer"> % </abbr>';}
+//    if(position.length>0){
+//       $('#'+id).append(' ('+position+')');
+//    }
+// }
 
 
 function OtherUsersSort(a,b){

@@ -1,6 +1,7 @@
 import React from 'react'
 import NodeletContainer from '../NodeletContainer'
 import LinkNode from '../LinkNode'
+import WriteupEntry from '../WriteupEntry'
 
 const UsergroupWriteups = (props) => {
   const [selectedGroup, setSelectedGroup] = React.useState(
@@ -52,9 +53,12 @@ const UsergroupWriteups = (props) => {
       {writeups && writeups.length > 0 ? (
         <ul className="linklist" style={{ listStyle: 'none', paddingLeft: '8px', margin: '4px 0', fontSize: '12px' }}>
           {writeups.map((writeup, index) => (
-            <li key={index} style={{ marginBottom: '2px' }}>
-              <LinkNode nodeId={writeup.node_id} title={writeup.title} />
-            </li>
+            <WriteupEntry
+              key={index}
+              entry={writeup}
+              mode="simple"
+              className=""
+            />
           ))}
         </ul>
       ) : (

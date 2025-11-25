@@ -1,6 +1,7 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
 import NodeletContainer from '../NodeletContainer'
+import WriteupEntry from '../WriteupEntry'
 
 const NeglectedDrafts = (props) => {
 
@@ -11,8 +12,14 @@ const NeglectedDrafts = (props) => {
           <ul className="infolist">
           {(props.neglectedDrafts[type].length > 0)?(
           props.neglectedDrafts[type].map((entry, idx) => {
-              return (<li key={`neglected_${type}_${entry.node_id}`} className="contentinfo"><LinkNode id={entry.node_id} title={entry.title} className="title"/><cite> by <LinkNode id={entry.author.id} title={entry.author.title} /></cite>
-                <span className="days"> [{entry.days} days]</span></li>)
+              return (
+                <WriteupEntry
+                  key={`neglected_${type}_${entry.node_id}`}
+                  entry={entry}
+                  mode="standard"
+                  metadata={<span className="days"> [{entry.days} days]</span>}
+                />
+              )
             })):(<p><small><em>(none)</em></small></p>)
           }
           </ul></div>

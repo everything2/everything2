@@ -6,11 +6,12 @@ import { useActivityDetection } from './useActivityDetection'
  * Uses activity detection to pause polling when user is inactive
  *
  * @param {number} pollIntervalMs - Milliseconds between polls (default: 120000 = 2 minutes)
+ * @param {object} initialData - Initial data to use (skips initial API call if provided)
  * @returns {Object} { otherUsersData, loading, error, refresh } - Other users state and refresh function
  */
-export const useOtherUsersPolling = (pollIntervalMs = 120000) => {
-  const [otherUsersData, setOtherUsersData] = useState(null)
-  const [loading, setLoading] = useState(true)
+export const useOtherUsersPolling = (pollIntervalMs = 120000, initialData = null) => {
+  const [otherUsersData, setOtherUsersData] = useState(initialData)
+  const [loading, setLoading] = useState(!initialData)
   const [error, setError] = useState(null)
   const { isActive, isMultiTabActive } = useActivityDetection(10)
   const pollInterval = useRef(null)
@@ -45,9 +46,11 @@ export const useOtherUsersPolling = (pollIntervalMs = 120000) => {
     fetchOtherUsers()
   }
 
-  // Initial fetch
+  // Initial fetch - only if no initial data provided
   useEffect(() => {
-    fetchOtherUsers()
+    if (!initialData) {
+      fetchOtherUsers()
+    }
   }, [])
 
   // Polling effect

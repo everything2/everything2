@@ -51,12 +51,12 @@ Future: Modern React SPA
   ↓ Mobile-first responsive design
 ```
 
-## Priority 1: Remove Executable Code from Database 🔥
+## Priority 1: Remove Executable Code from Database ✅ COMPLETE
 
-### Why This Matters
+### Why This Mattered
 
 **Security**
-- `eval()` of database strings = arbitrary code execution
+- `eval()` of database strings = arbitrary code execution risk
 - No code sandboxing, only access control
 - Template injection vulnerabilities
 
@@ -75,40 +75,19 @@ Future: Modern React SPA
 - Only integration tests possible
 - No mocking or isolation
 
-### Current Status
+### Status: COMPLETE ✅
+
+**Completed November 2025** - All executable code has been removed from the database.
 
 **Migrated to Delegation (100%):**
 - ✅ htmlcode (222 nodes) → Everything::Delegation::htmlcode.pm
 - ✅ htmlpage (99 nodes) → Everything::Delegation::htmlpage.pm
 - ✅ opcode (47 nodes) → Everything::Delegation::opcode.pm
+- ✅ achievement (45 nodes) → Everything::Delegation::achievement.pm
+- ✅ room criteria → Everything::Delegation::room.pm (delegation pattern in canEnterRoom)
+- ✅ superdoc template execution → parseCode/eval() system completely eliminated (Session 1)
 
-**Still in Database:**
-- ❌ **achievement** (45 nodes) - Perl code in `{code}` field
-- ❌ **room criteria** (unknown count) - Perl expressions in `roomdata.criteria`
-- ❌ **superdoc templates** (129 nodes) - `[% perl code %]` blocks in content
-
-### Template Language
-
-E2 uses a custom template language in superdoc content:
-
-```perl
-[%
-  # Full embedded Perl code
-  my $user = getNode($query->param('user'));
-  return linkNode($user);
-%]
-
-[{htmlcode_name:arg1:arg2:arg3}]  # Function call
-
-[" $variable "]  # Expression evaluation (rarely used)
-```
-
-### Action Items
-
-1. **Migrate achievements** - Move 45 nodes to Delegation pattern
-2. **Migrate room criteria** - Extract logic to filesystem
-3. **Audit all node types** - Find any hidden executable code
-4. **Superdoc strategy** - Plan for 129 templates with Perl blocks
+**Key Achievement:** Complete removal of unsafe eval() from production code paths. All code now resides in the filesystem under version control.
 
 ## Priority 2: Object-Oriented Refactoring 🎯
 
@@ -322,7 +301,503 @@ MySQL
    - Component tests
    - Integration tests
 
-## Priority 6: Testing Infrastructure ✅
+## Priority 5.5: Guest User Static Page Caching (S3) 💰
+
+**Priority Level:** High (Cost Reduction / Scalability)
+
+### Why This Matters
+
+**Financial Sustainability**
+- Majority of E2 traffic is anonymous/guest users viewing read-only content
+- Every guest page view hits the database and executes Perl code
+- Static HTML caching for guest users could reduce infrastructure costs by 60-80%
+- Massive reduction in database load and compute costs
+- Long-term financial stability measure for the site
+
+**Scalability**
+- S3 can handle millions of requests with minimal cost
+- CloudFront CDN distribution for global performance
+- Eliminates database as bottleneck for read traffic
+- Web Application Firewall (WAF) costs reduced proportionally
+- Infrastructure can scale down during off-peak hours
+
+**Performance**
+- Static S3 pages served in milliseconds vs. hundreds of milliseconds for dynamic generation
+- Reduced latency for international users via CloudFront edge locations
+- No database queries, no Perl execution for cached content
+- Better user experience for guest visitors
+
+**Reliability**
+- Static content survives database outages
+- Reduced load on application servers
+- Better fault isolation
+- Easier disaster recovery
+
+### Current State
+
+**Architecture:**
+- All page requests (logged-in and guest) hit Apache/mod_perl
+- Every request executes Perl code and queries MySQL
+- No differentiation between authenticated and anonymous traffic
+- Full application stack overhead for read-only guest views
+
+**Traffic Patterns:**
+- ~70-80% of traffic is anonymous/guest users
+- Most guest traffic is to static content (writeups, nodes, help pages)
+- Authenticated users see personalized content (nodelets, user-specific data)
+- Search engines and bots generate significant guest traffic
+
+### Target Architecture
+
+```
+Guest Request → CloudFront CDN
+  ↓
+  ├─ Cache Hit → Serve from S3 (fast path)
+  └─ Cache Miss → Origin Request
+       ↓
+     React App renders static HTML
+       ↓
+     Upload to S3 + serve response
+       ↓
+     Future requests served from S3
+
+Logged-in Request → Normal dynamic path
+  ↓
+  React App (personalized content)
+  ↓
+  Database queries
+  ↓
+  Dynamic response
+```
+
+### Implementation Plan
+
+**Phase 1: Static Page Generator (Week 1-2)**
+1. 📋 Create static HTML generator for guest-viewable pages
+2. 📋 Identify cacheable routes (writeups, nodes, superdocs, help pages)
+3. 📋 Build React components that can render to static HTML
+4. 📋 Generate initial static snapshot of top 10,000 pages
+5. 📋 Configure S3 bucket for static hosting
+6. 📋 Set appropriate cache headers and TTLs
+
+**Phase 2: Routing Logic (Week 3-4)**
+1. 📋 Implement guest detection at CloudFront/ALB level
+2. 📋 Route guest traffic to S3 bucket
+3. 📋 Route authenticated traffic to application servers
+4. 📋 Handle cache misses (fall through to origin)
+5. 📋 Implement cache invalidation webhooks
+6. 📋 Add monitoring for cache hit rates
+
+**Phase 3: Dynamic Cache Population (Week 5-6)**
+1. 📋 On-demand static page generation for cache misses
+2. 📋 Background worker to pre-generate popular pages
+3. 📋 Incremental updates when content changes
+4. 📋 Cache warming for trending content
+5. 📋 Intelligent TTL based on page type and update frequency
+
+**Phase 4: Cache Invalidation (Week 7-8)**
+1. 📋 Invalidate S3 pages when writeups are edited
+2. 📋 Invalidate related pages (parent nodes, category pages)
+3. 📋 Batch invalidation for efficiency
+4. 📋 Fallback to origin for recently invalidated pages
+5. 📋 Monitor invalidation patterns and costs
+
+**Phase 5: Optimization & Rollout (Week 9-12)**
+1. 📋 A/B test with 10% of guest traffic to S3
+2. 📋 Monitor performance, errors, and cost savings
+3. 📋 Gradually increase guest traffic to S3 (25%, 50%, 75%, 100%)
+4. 📋 Optimize cache hit rates and generation patterns
+5. 📋 Document cost savings and performance improvements
+6. 📋 Scale down application infrastructure proportionally
+
+### Technical Details
+
+**Cacheable Page Types:**
+- Writeups (core content, rarely changes)
+- E2nodes (collections of writeups)
+- Superdocs (help pages, FAQs, documentation)
+- User pages (for guest view, without personalized nodelets)
+- Category pages
+- Search engine landing pages
+
+**Non-Cacheable (Always Dynamic):**
+- Logged-in user pages (personalized nodelets)
+- Write operations (posting, voting, messaging)
+- User-specific API endpoints
+- Admin tools and operations
+- Real-time features (chatterbox, notifications)
+
+**S3 Bucket Structure:**
+```
+s3://e2-guest-static/
+├── node/
+│   ├── writeup/
+│   │   ├── 12345.html
+│   │   └── 67890.html
+│   ├── e2node/
+│   │   ├── Everything.html
+│   │   └── Perl.html
+│   └── user/
+│       └── root.html
+├── title/
+│   ├── Everything.html
+│   └── help/
+│       └── FAQ.html
+└── manifest.json  # Cache metadata
+```
+
+**CloudFront Configuration:**
+```
+Origin Request Policy:
+- Forward query strings: No (for guest requests)
+- Forward headers: None (for guest requests)
+- Forward cookies: None (for guest requests)
+
+Cache Policy:
+- TTL: 1 hour (default)
+- TTL: 24 hours (writeups, stable content)
+- TTL: 5 minutes (frequently updated pages)
+
+Behaviors:
+- /node/* → S3 bucket (guest only)
+- /title/* → S3 bucket (guest only)
+- /api/* → ALB (always dynamic)
+- /* (with auth cookie) → ALB (authenticated users)
+```
+
+**Cache Invalidation Strategy:**
+```perl
+# When a writeup is edited
+sub invalidate_writeup_cache {
+    my ($writeup_id, $node_id) = @_;
+
+    # Invalidate writeup page
+    $s3->delete_object("node/writeup/$writeup_id.html");
+
+    # Invalidate parent e2node
+    $s3->delete_object("node/e2node/$node_id.html");
+
+    # Invalidate related indexes
+    # (category pages, user pages, etc.)
+}
+```
+
+### Cost Savings Projection
+
+**Current Costs (estimated):**
+- ECS Fargate tasks: $200-300/month
+- RDS database: $150-200/month
+- ALB: $50/month
+- WAF: $100-150/month (based on request volume)
+- **Total: $500-700/month**
+
+**Projected Costs with S3 Caching:**
+- ECS Fargate (reduced scale): $60-100/month (70% reduction)
+- RDS database (reduced load): $150-200/month (unchanged, but better margin)
+- ALB (reduced requests): $30/month (40% reduction)
+- WAF (reduced requests): $30-50/month (70% reduction)
+- S3 + CloudFront: $20-40/month (new cost)
+- **Total: $290-420/month**
+
+**Estimated Savings: $200-300/month (40-50% reduction)**
+
+**Annual Savings: $2,400-3,600/year**
+
+### Success Metrics
+
+**Performance:**
+- 📊 P50 latency for guest pages: <100ms (vs. current 300-500ms)
+- 📊 P95 latency for guest pages: <200ms (vs. current 800-1200ms)
+- 📊 Cache hit rate: >90% for popular content
+- 📊 Time to first byte (TTFB): <50ms from CloudFront
+
+**Cost:**
+- 📊 40-50% reduction in total infrastructure costs
+- 📊 60-80% reduction in database query volume
+- 📊 70% reduction in WAF request charges
+- 📊 Ability to scale down ECS tasks during off-peak
+
+**Reliability:**
+- 📊 99.9% availability for cached content (S3 SLA)
+- 📊 Reduced database connection exhaustion
+- 📊 Better handling of traffic spikes
+- 📊 Improved disaster recovery posture
+
+### Risk Assessment
+
+**Medium Risk:**
+- Cache invalidation complexity (stale content visible to guests)
+- Increased complexity in deployment pipeline
+- S3/CloudFront costs if caching is ineffective
+- Need to maintain two rendering paths (static + dynamic)
+
+**Low Risk:**
+- S3/CloudFront are well-proven, reliable services
+- Can roll back easily by routing traffic back to origin
+- Incremental rollout allows validation at each step
+- No changes to logged-in user experience
+
+**Mitigation:**
+- Comprehensive testing with traffic shadowing
+- Start with long-lived, stable content (old writeups)
+- Monitor cache hit rates and cost savings closely
+- Maintain ability to bypass cache for debugging
+- Gradual rollout with easy rollback mechanism
+
+### Dependencies
+
+**Requires:**
+- Priority 5: Mobile-First React Frontend (React components must render static HTML)
+- API-driven architecture for logged-in users
+- Clear separation between guest and authenticated paths
+
+**Enables:**
+- Massive cost savings for site sustainability
+- Better performance for guest users
+- Ability to handle traffic spikes without infrastructure scaling
+- Foundation for future optimizations (edge computing, etc.)
+
+### Timeline
+
+**Target Completion:** Q3 2025
+
+**Q2 2025 (April-June):**
+- ⏸️ Phase 1: Static page generator and initial snapshot
+- ⏸️ Phase 2: Routing logic and S3 bucket configuration
+
+**Q3 2025 (July-September):**
+- ⏸️ Phase 3: Dynamic cache population and warming
+- ⏸️ Phase 4: Cache invalidation strategy
+- ⏸️ Phase 5: A/B testing and gradual rollout
+
+**Q4 2025 (October-December):**
+- ⏸️ 100% guest traffic to S3 cache
+- ⏸️ Infrastructure cost optimization
+- ⏸️ Monitoring and refinement
+
+**Total Estimated Effort:** 8-12 weeks
+
+**Expected ROI:** Break-even in 2-3 months, ongoing savings of $2,400-3,600/year
+
+### Future Enhancements
+
+**Edge Computing:**
+- Lambda@Edge for dynamic personalization at the edge
+- Real-time cache invalidation via edge functions
+- A/B testing at CloudFront level
+
+**Advanced Caching:**
+- Incremental Static Regeneration (ISR) for popular pages
+- Predictive pre-caching based on trending content
+- Edge caching for API responses (public data)
+
+**Global Performance:**
+- Regional S3 buckets for faster cache population
+- Multi-region failover for reliability
+- Optimized CloudFront distribution configuration
+
+## Priority 6: Message Opcode Cleanup 🧹
+
+**Priority Level:** Medium (Technical Debt / API Modernization)
+
+### Why This Matters
+
+**API Modernization**
+- Legacy `op=message` forms scattered across the codebase
+- Mix of form submissions and AJAX calls using old opcode system
+- Modern React components already using REST APIs
+- Inconsistent patterns make maintenance harder
+
+**Better User Experience**
+- REST APIs can return structured error messages
+- Enables better client-side error handling and user feedback
+- Modern UX patterns (inline validation, toast notifications)
+- Consistent error messaging across the application
+
+**Code Maintainability**
+- Centralized message handling in API endpoints
+- Easier to add features (rate limiting, spam detection)
+- Better separation of concerns
+- Clearer code paths and fewer edge cases
+
+### Current State
+
+**Message System Architecture:**
+- Core message commands extracted to Application.pm (✅ Complete)
+- Chatter API using command processor (✅ Complete)
+- React Chatterbox using `/api/chatter/create` (✅ Complete)
+- Messages API for private messages (✅ Complete)
+
+**Remaining op=message Usage:**
+- 7 total call sites identified
+- 1 XML ticker (user-facing, must preserve)
+- 6 internal forms (can migrate to API)
+
+**Call Sites to Migrate:**
+
+1. **Archive/Delete Message Actions** (htmlcode.pm:11211, 11215)
+   - Currently use op=message with action parameters
+   - Should POST to `/api/messages/:id/action/{archive,delete}`
+   - Estimated effort: 1-2 hours
+
+2. **Message Inbox Forms** (document.pm:9928, 16184, 18362)
+   - Legacy message composition forms
+   - Should POST to `/api/messages/create`
+   - Consider React component for composition
+   - Estimated effort: 4-6 hours
+
+3. **Universal Message XML Ticker** (legacy.js:2690)
+   - **KEEP**: User-facing public API
+   - Used by bookmarklets and external tools
+   - Preserve for backward compatibility
+
+### Implementation Plan
+
+**Phase 1: Archive/Delete Actions (Week 1)**
+1. 📋 Update htmlcode.pm message action links to use API endpoints
+2. 📋 Convert GET links to POST forms for proper REST semantics
+3. 📋 Test message archive and delete functionality
+4. 📋 Update any error handling to use API responses
+
+**Phase 2: Message Inbox Forms (Week 2-3)**
+1. 📋 Audit all message composition forms in document.pm
+2. 📋 Update forms to POST to `/api/messages/create`
+3. 📋 Implement structured error responses (validation, rate limits)
+4. 📋 Update client-side code to display API errors
+5. 📋 Test message sending and error scenarios
+6. 📋 Consider React component for unified message composition
+
+**Phase 3: Documentation & Cleanup (Week 4)**
+1. 📋 Document XML ticker as preserved public API
+2. 📋 Update API documentation with error response formats
+3. 📋 Create examples of error handling patterns
+4. 📋 Remove unused opcode=message handling code
+5. 📋 Update developer guidelines
+
+### Error Response Pattern
+
+**Structured API Error Responses:**
+
+```json
+// Success
+{
+  "success": true,
+  "message_id": 12345,
+  "message": "Message sent successfully"
+}
+
+// Validation Error
+{
+  "success": false,
+  "error": "message_too_long",
+  "message": "Message exceeds 512 character limit",
+  "max_length": 512,
+  "current_length": 650
+}
+
+// Rate Limit Error
+{
+  "success": false,
+  "error": "rate_limit_exceeded",
+  "message": "Too many messages sent. Please wait before sending another.",
+  "retry_after": 30
+}
+
+// Permission Error
+{
+  "success": false,
+  "error": "user_ignored",
+  "message": "This user has ignored your messages"
+}
+```
+
+**Client-Side Error Handling:**
+
+```javascript
+// React component error handling
+try {
+  const response = await fetch('/api/messages/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recipient: 'username', text: message })
+  })
+
+  const data = await response.json()
+
+  if (data.success) {
+    showToast('Message sent!', 'success')
+  } else {
+    // Display specific error message from API
+    showToast(data.message, 'error')
+
+    // Handle specific error types
+    if (data.error === 'rate_limit_exceeded') {
+      disableSubmitButton(data.retry_after)
+    }
+  }
+} catch (err) {
+  showToast('Network error. Please try again.', 'error')
+}
+```
+
+### Benefits
+
+**User Experience:**
+- Clear, actionable error messages
+- Inline validation feedback
+- Better rate limiting communication
+- Consistent error presentation
+
+**Developer Experience:**
+- Structured error responses
+- Type-safe error codes
+- Easier to add new validations
+- Better debugging information
+
+**Maintainability:**
+- Centralized error handling
+- Easier to update messaging
+- Simpler code paths
+- Better testability
+
+### Dependencies
+
+**Blocks:** None
+
+**Enables:**
+- Modern UX patterns in React components
+- Better error reporting infrastructure
+- Preparation for future API expansions
+- Foundation for PSGI/Plack error middleware (Priority 9)
+
+**Requires:**
+- Priority 5: Mason2 template elimination must be complete first
+- Messages API already complete (✅)
+- Chatter API already complete (✅)
+- React components for client-side handling
+
+**Sequencing Note:**
+This work follows Mason2 elimination in the React migration. Once Mason2 templates are removed, API endpoints become the primary interface, making structured error responses even more critical.
+
+**Related Work:**
+- Priority 5: Mobile-First React Frontend (React components, Mason2 elimination)
+- Priority 9: PSGI/Plack Migration (error middleware foundation)
+
+### Timeline
+
+**Q1 2025:**
+- ⏸️ Phase 1: Archive/delete actions (Week 1)
+- ⏸️ Phase 2: Message inbox forms (Week 2-3)
+
+**Q2 2025:**
+- ⏸️ Phase 3: Documentation and cleanup (Week 4)
+- ⏸️ Monitor usage and refine error messages
+
+**Estimated Effort:** 3-4 weeks
+
+**Progress:** Phase 1 preparation complete (command processor extracted, APIs created)
+
+## Priority 7: Testing Infrastructure ✅
 
 ### Current State
 
@@ -376,7 +851,7 @@ MySQL
    - Istanbul/nyc for JavaScript
    - Minimum 70% threshold
 
-## Priority 7: Code Coverage Tracking 📊
+## Priority 9: Code Coverage Tracking 📊
 
 ### Why This Matters
 
@@ -399,7 +874,7 @@ MySQL
 - Application code runs in a separate Apache process
 - Devel::Cover only instruments the test process, not the web server
 
-**Solution:** Migrate to PSGI/Plack architecture first (see Priority 8 below)
+**Solution:** Migrate to PSGI/Plack architecture first (see Priority 8 above)
 - PSGI apps can be loaded directly in test processes
 - Enables in-process testing without HTTP overhead
 - Full coverage tracking of application code
@@ -499,6 +974,14 @@ cover -report text -coverage_threshold 70
 - Decouples application from web server (run on Apache, nginx, Starman, etc.)
 - Enables middleware ecosystem (logging, authentication, compression, etc.)
 - Better testability with in-process testing
+
+**Enables Better API Error Handling**
+- PSGI middleware for consistent error responses across all endpoints
+- Structured error logging and monitoring
+- Better exception handling and recovery
+- Foundation for improved user-facing error messages (relates to Priority 6)
+- Standardized error response format across application
+- Easier to implement API versioning and deprecation warnings
 
 **Enables Code Coverage**
 - Applications can be loaded directly in test processes
@@ -642,11 +1125,11 @@ test_psgi $app, sub {
 
 ### Dependencies
 
-- **Blocks:** Priority 7 (Code Coverage Tracking)
-- **Enables:** Better testing, code coverage, deployment flexibility
+- **Blocks:** Priority 9 (Code Coverage Tracking)
+- **Enables:** Better testing, code coverage, deployment flexibility, improved error handling (Priority 6)
 - **Requires:** Refactoring of request handling in Everything::Application
 
-## Priority 9: Alternative Login Methods 🔐
+## Priority 10: Alternative Login Methods 🔐
 
 ### Why This Matters
 
@@ -929,7 +1412,7 @@ APPLE_PRIVATE_KEY=/path/to/private/key
 - ⏸️ Additional provider evaluation
 - ⏸️ Feature enhancements
 
-## Priority 10: CSS Asset Pipeline 🎨
+## Priority 11: CSS Asset Pipeline 🎨
 
 **Priority Level:** Low (Developer Efficiency / Code Quality)
 
@@ -1355,7 +1838,7 @@ Currently, various static assets (fonts, images) are hosted in an S3 bucket at `
 - Asset pipeline infrastructure (already present)
 - Access to static.everything2.com S3 bucket for downloading assets
 
-## Priority 11: XML Generation Library Rationalization 📄
+## Priority 12: XML Generation Library Rationalization 📄
 
 **Priority Level:** Low (Code Quality / Technical Debt)
 
@@ -1676,7 +2159,7 @@ sub display_xml {
 
 **Note:** This is a **low priority** technical debt cleanup that doesn't block any critical functionality. It primarily improves code quality, security, and maintainability. Can proceed in parallel with other work or be deferred to a future development cycle.
 
-## Priority 12: MySQL 8.0 → 8.4 Upgrade ⚠️
+## Priority 13: MySQL 8.0 → 8.4 Upgrade ⚠️
 
 **Priority Level:** High (Infrastructure / Cost Reduction)
 

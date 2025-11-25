@@ -68,6 +68,15 @@ import OtherUsersPortal from './Portals/OtherUsersPortal'
 import Chatterbox from './Nodelets/Chatterbox'
 import ChatterboxPortal from './Portals/ChatterboxPortal'
 
+import Messages from './Nodelets/Messages'
+import MessagesPortal from './Portals/MessagesPortal'
+
+import Notifications from './Nodelets/Notifications'
+import NotificationsPortal from './Portals/NotificationsPortal'
+
+import ForReview from './Nodelets/ForReview'
+import ForReviewPortal from './Portals/ForReviewPortal'
+
 import { E2IdleHandler } from './E2IdleHandler'
 
 import ErrorBoundary from './ErrorBoundary'
@@ -164,16 +173,34 @@ class E2ReactRoot extends React.Component {
 
       loginMessage: "",
 
-      quickRefSearchTerm: ""
+      quickRefSearchTerm: "",
+
+      // Track current room ID for chatterbox filtering
+      currentRoomId: null,
+
+      // Room name and topic for chatterbox display
+      roomName: null,
+      roomTopic: null
     }
-    
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics", "categories", "currentNodeId", "bounties", "recentNodes", "favoriteWriteups", "favoriteLimit", "personalLinks", "canAddCurrent", "currentNodeTitle", "currentPoll", "usergroupData", "otherUsersData", "noteletData"]
-    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics","categories","mostwanted","recentnodes","favoritenoders","personallinks","currentpoll","usergroupwriteups","otherusers","chatterbox","randomnodes","notelet"]
+
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics", "categories", "currentNodeId", "bounties", "recentNodes", "favoriteWriteups", "favoriteLimit", "personalLinks", "canAddCurrent", "currentNodeTitle", "currentPoll", "usergroupData", "otherUsersData", "noteletData", "messagesData", "notificationsData", "forReviewData"]
+    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics","categories","mostwanted","recentnodes","favoritenoders","personallinks","currentpoll","usergroupwriteups","otherusers","chatterbox","messages","notifications","forreview","randomnodes","notelet"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
       initialState[key] = e2[key]
     })
+
+    // Initialize currentRoomId from user's in_room
+    if (e2.user && e2.user.in_room !== undefined) {
+      initialState.currentRoomId = e2.user.in_room
+    }
+
+    // Initialize room name and topic from chatterbox data
+    if (e2.chatterbox) {
+      initialState.roomName = e2.chatterbox.roomName
+      initialState.roomTopic = e2.chatterbox.roomTopic
+    }
 
     initialState['randomNodesPhrase'] = this.getRandomNodesPhrase();
 
@@ -238,7 +265,8 @@ class E2ReactRoot extends React.Component {
 
 
   componentDidMount() {
-    this.scheduleCronNewWriteups()
+    // NewWriteups component now handles its own polling with activity detection
+    // this.scheduleCronNewWriteups()
   }
 
   apiEndpoint = () => {
@@ -315,10 +343,13 @@ class E2ReactRoot extends React.Component {
     prefname = prefname.replace(' ','')+'!'
 
     var replacement = new RegExp(prefname,'g')
-    var collapsedPref = this.state.collapsedNodelets.replace(replacement,'')
+    // Ensure collapsedNodelets is always a string (may be undefined if preference was deleted)
+    var currentCollapsed = this.state.collapsedNodelets || ''
+    var collapsedPref = currentCollapsed.replace(replacement,'')
 
     // Compatibility with JQuery versions
-     e2['collapsedNodelets'] = e2['collapsedNodelets'].replace(replacement,'')
+    var e2Collapsed = e2['collapsedNodelets'] || ''
+    e2['collapsedNodelets'] = e2Collapsed.replace(replacement,'')
      let cookies = document.cookie.split(/;\s?/).map(v => v.split('='))
     cookies.forEach((element,index) => {
       if(cookies[index][0] == 'collapsedNodelets')
@@ -381,8 +412,27 @@ class E2ReactRoot extends React.Component {
     return notnew
   }
 
-  updateOtherUsersData = (otherUsersData) => {
-    this.setState({ otherUsersData })
+  updateOtherUsersData = (data) => {
+    // Update otherUsersData and extract currentRoomId for chatterbox filtering
+    const newState = {}
+
+    // Handle both cases: data is the full response object or just otherUsersData
+    const otherUsersData = data.otherUsersData || data
+    newState.otherUsersData = otherUsersData
+
+    if (otherUsersData && otherUsersData.currentRoomId !== undefined) {
+      newState.currentRoomId = otherUsersData.currentRoomId
+    }
+
+    // Update room name and topic if provided (from change_room or create_room API)
+    if (data.room_name !== undefined) {
+      newState.roomName = data.room_name
+    }
+    if (data.room_topic !== undefined) {
+      newState.roomTopic = data.room_topic
+    }
+
+    this.setState(newState)
   }
 
   render() {
@@ -489,6 +539,7 @@ class E2ReactRoot extends React.Component {
             toggleSection={this.toggleSection}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.mastercontrol_show}
+            lastCommit={this.state.lastCommit}
           />
         </ErrorBoundary>
       </MasterControlPortal>
@@ -530,6 +581,7 @@ class E2ReactRoot extends React.Component {
             recentNodes={this.state.recentNodes}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.recentnodes_show}
+            onClearTracks={() => this.setState({ recentNodes: [] })}
           />
         </ErrorBoundary>
       </RecentNodesPortal>
@@ -588,6 +640,7 @@ class E2ReactRoot extends React.Component {
       <ChatterboxPortal>
         <ErrorBoundary>
           <Chatterbox
+            user={this.props.e2?.user}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.chatterbox_show}
             borged={this.props.e2?.user?.vars?.borged}
@@ -595,10 +648,40 @@ class E2ReactRoot extends React.Component {
             isGuest={this.props.e2?.user?.isGuest}
             showMessagesInChatterbox={this.props.e2?.chatterbox?.showMessagesInChatterbox}
             showHelp={this.props.e2?.user?.level < 2}
-            roomTopic={this.props.e2?.chatterbox?.roomTopic}
+            roomTopic={this.state.roomTopic}
+            roomName={this.state.roomName}
+            currentRoom={this.state.currentRoomId}
+            initialMessages={this.props.e2?.chatterbox?.messages}
           />
         </ErrorBoundary>
       </ChatterboxPortal>
+      <MessagesPortal>
+        <ErrorBoundary>
+          <Messages
+            initialMessages={this.props.e2?.messagesData}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.messages_show}
+          />
+        </ErrorBoundary>
+      </MessagesPortal>
+      <NotificationsPortal>
+        <ErrorBoundary>
+          <Notifications
+            notificationsData={this.props.e2?.notificationsData}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.notifications_show}
+          />
+        </ErrorBoundary>
+      </NotificationsPortal>
+      <ForReviewPortal>
+        <ErrorBoundary>
+          <ForReview
+            forReviewData={this.props.e2?.forReviewData}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.forreview_show}
+          />
+        </ErrorBoundary>
+      </ForReviewPortal>
       <NoteletPortal>
         <ErrorBoundary>
           <Notelet

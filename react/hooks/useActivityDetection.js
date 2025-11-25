@@ -6,10 +6,11 @@ import { useState, useEffect, useRef } from 'react'
  * events to determine if the user is active.
  *
  * @param {number} sleepAfterMinutes - Minutes of inactivity before going to sleep (default: 10)
- * @returns {Object} { isActive, isMultiTabActive } - Activity state
+ * @returns {Object} { isActive, isRecentlyActive, isMultiTabActive } - Activity state
  */
 export const useActivityDetection = (sleepAfterMinutes = 10) => {
   const [isActive, setIsActive] = useState(true)
+  const [isRecentlyActive, setIsRecentlyActive] = useState(true)
   const [isMultiTabActive, setIsMultiTabActive] = useState(true)
   const lastActivity = useRef(Date.now())
   const tabId = useRef(Math.random().toString(36).substr(2, 9))
@@ -18,6 +19,7 @@ export const useActivityDetection = (sleepAfterMinutes = 10) => {
     const handleActivity = () => {
       lastActivity.current = Date.now()
       setIsActive(true)
+      setIsRecentlyActive(true)
 
       // Multi-tab detection: mark this tab as active
       document.cookie = `lastActiveWindow=${tabId.current}; path=/`
@@ -26,6 +28,12 @@ export const useActivityDetection = (sleepAfterMinutes = 10) => {
     const checkInactivity = setInterval(() => {
       const now = Date.now()
       const minutesInactive = (now - lastActivity.current) / 1000 / 60
+      const secondsInactive = (now - lastActivity.current) / 1000
+
+      // Recently active = activity within last 60 seconds
+      if (secondsInactive >= 60) {
+        setIsRecentlyActive(false)
+      }
 
       // Check if this tab should sleep due to inactivity
       if (minutesInactive >= sleepAfterMinutes) {
@@ -61,5 +69,5 @@ export const useActivityDetection = (sleepAfterMinutes = 10) => {
     }
   }, [sleepAfterMinutes])
 
-  return { isActive, isMultiTabActive }
+  return { isActive, isRecentlyActive, isMultiTabActive }
 }

@@ -1,7 +1,8 @@
 # Nodelet Periodic Update System
 
-**Status**: Analysis complete, implementation pending
+**Status**: Implementation complete with collapse optimization
 **Created**: 2025-11-24
+**Updated**: 2025-11-24
 **Related**: React migration, legacy.js removal
 
 ## Overview
@@ -426,6 +427,102 @@ const Messages = (props) => {
 5. **Testable** - Components and hooks can be tested independently.
 
 6. **Can optimize later** - If multiple HTTP requests become an issue, can switch to Option C later. But premature optimization is unnecessary.
+
+## Collapse-Aware Polling (IMPLEMENTED)
+
+**Status**: ✅ Implemented 2025-11-24
+
+To optimize performance and reduce unnecessary network requests, all nodelets with background polling now implement collapse-aware updates:
+
+### Behavior
+
+1. **Collapsed nodelet**: Polling stops completely. No API requests are made while the nodelet is collapsed.
+
+2. **Missed update tracking**: When polling would have occurred but the nodelet was collapsed, the system marks that an update was missed.
+
+3. **Uncollapse refresh**: When the user expands a previously-collapsed nodelet that missed updates, an immediate refresh is triggered to bring the data up to date.
+
+### Implementation Pattern
+
+All polling nodelets follow this pattern:
+
+```javascript
+const MyNodelet = (props) => {
+  const missedUpdate = React.useRef(false)
+  const pollInterval = React.useRef(null)
+
+  // Polling effect
+  React.useEffect(() => {
+    const shouldPoll = isActive && isMultiTabActive && props.nodeletIsOpen
+
+    if (shouldPoll) {
+      pollInterval.current = setInterval(() => {
+        loadData()
+      }, INTERVAL_MS)
+    } else {
+      // Mark that we missed an update if the only reason we're not polling is collapse
+      if (isActive && isMultiTabActive && !props.nodeletIsOpen) {
+        missedUpdate.current = true
+      }
+
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current)
+        pollInterval.current = null
+      }
+    }
+
+    return () => {
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current)
+        pollInterval.current = null
+      }
+    }
+  }, [isActive, isMultiTabActive, props.nodeletIsOpen])
+
+  // Uncollapse detection: refresh immediately when expanded after missing updates
+  React.useEffect(() => {
+    if (props.nodeletIsOpen && missedUpdate.current) {
+      missedUpdate.current = false
+      loadData()
+    }
+  }, [props.nodeletIsOpen])
+}
+```
+
+### Nodelets with Collapse-Aware Polling
+
+| Nodelet | Polling Interval | Implementation |
+|---------|------------------|----------------|
+| **Chatterbox** | 45s active / 2m idle | useChatterPolling hook with nodeletIsOpen param |
+| **NewWriteups** | 5 minutes | Individual polling with nodeletIsOpen check |
+| **Messages** | 2 minutes | Individual polling with nodeletIsOpen check |
+
+### Benefits
+
+- **Reduced server load**: No wasted API calls for hidden content
+- **Improved client performance**: Fewer network requests and DOM updates
+- **Better user experience**: Immediate refresh when uncollapsing ensures current data
+- **Battery savings**: Mobile devices benefit from reduced background activity
+
+### Room Change Detection (Chatterbox Only)
+
+Chatterbox also implements room change detection to immediately refresh when the user changes chat rooms:
+
+```javascript
+// In useChatterPolling hook
+const previousRoom = useRef(currentRoom)
+
+useEffect(() => {
+  if (currentRoom !== null && previousRoom.current !== null &&
+      currentRoom !== previousRoom.current) {
+    // Room changed - fetch new chatter immediately
+    fetchChatter(true)
+  }
+  previousRoom.current = currentRoom
+}, [currentRoom])
+```
+
+This ensures users see the correct chatter for their current room without waiting for the next poll interval.
 
 ## Background Request Pattern
 

@@ -4,9 +4,9 @@ import OtherUsers from './OtherUsers'
 
 // Mock the polling hook
 jest.mock('../../hooks/useOtherUsersPolling', () => ({
-  useOtherUsersPolling: () => ({
-    otherUsersData: null,
-    loading: false,
+  useOtherUsersPolling: (pollIntervalMs, initialData) => ({
+    otherUsersData: initialData !== undefined ? initialData : null,
+    loading: false,  // In tests, we simulate data already loaded
     error: null,
     refresh: jest.fn()
   })

@@ -605,6 +605,10 @@ subtest 'Create room - Already in room with same title' => sub {
   like($result->[1]{error}, qr/already in this room/, 'Returns specific error message for already in room');
 };
 
+# Move admin user back to "outside" before cleaning up test room
+$admin_user->{in_room} = 0;
+$DB->updateNode($admin_user, -1);
+
 # Clean up test data
 $DB->sqlDelete('node', "node_id=$test_room->{node_id}");
 

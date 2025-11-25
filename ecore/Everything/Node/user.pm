@@ -164,7 +164,25 @@ sub deliver_message
 {
   my ($self, $messagedata) = @_;
 
-  $self->DB->sqlInsert("message",{"author_user" => $messagedata->{from}->node_id,"for_user" => $self->node_id,"msgtext" => $messagedata->{message}});
+  # Check if recipient is ignoring sender (unless it's a usergroup message)
+  unless ($messagedata->{for_usergroup}) {
+    my $ignoring = $self->DB->sqlSelect(
+      'COUNT(*)',
+      'messageignore',
+      'messageignore_id='.$self->node_id.' AND ignore_node='.$messagedata->{from}->node_id
+    );
+    if ($ignoring) {
+      return {"ignores" => 1};
+    }
+  }
+
+  $self->DB->sqlInsert("message",{
+    "author_user" => $messagedata->{from}->node_id,
+    "for_user" => $self->node_id,
+    "msgtext" => $messagedata->{message},
+    "for_usergroup" => $messagedata->{for_usergroup} || 0,
+    "archive" => 0
+  });
 
   return {"successes" => 1};
 }

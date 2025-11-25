@@ -20,6 +20,17 @@
 # - Use --clean to remove all development containers and start fresh
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+LOG_FILE="/tmp/devbuild.log"
+
+# Initialize log file
+echo "=== Everything2 Development Build - $(date) ===" | tee "$LOG_FILE"
+echo "Logs are being captured to: $LOG_FILE" | tee -a "$LOG_FILE"
+echo "" | tee -a "$LOG_FILE"
+
+# Helper function to log and display
+log_and_display() {
+  tee -a "$LOG_FILE"
+}
 
 # Parse command line arguments
 BUILD_DB=false
@@ -123,6 +134,21 @@ build_app_container() {
   echo ""
   echo "Waiting for container to be ready..."
   sleep 3
+
+  # Additional check: wait for Apache to respond
+  echo "Verifying Apache is responding..."
+  RETRY=0
+  MAX_RETRIES=30
+  until curl -sf http://localhost:9080/ > /dev/null 2>&1; do
+    RETRY=$((RETRY + 1))
+    if [ $RETRY -ge $MAX_RETRIES ]; then
+      echo "ERROR: Apache did not start within 30 seconds"
+      exit 1
+    fi
+    sleep 1
+    echo "  Still waiting... (attempt $RETRY/$MAX_RETRIES)"
+  done
+  echo "Apache is ready!"
   echo ""
 }
 
@@ -195,27 +221,26 @@ if [ "$BUILD_APP" = true ]; then
 
   build_application
 
-  # Run smoke tests first
+  # Run all tests in parallel (smoke + perl + react)
   echo "========================================="
-  echo "Running smoke tests..."
+  echo "Running test suite..."
   echo "========================================="
-  if ! $SCRIPT_DIR/../tools/run-smoke-tests.sh http://localhost:9080; then
+
+  # Ensure output is not buffered
+  stdbuf -o0 -e0 $SCRIPT_DIR/../tools/parallel-test.sh
+  TEST_EXIT=$?
+
+  if [ $TEST_EXIT -ne 0 ]; then
     echo ""
     echo "========================================="
-    echo "SMOKE TESTS FAILED"
+    echo "TESTS FAILED"
     echo "========================================="
-    echo "Build completed but application failed smoke tests."
-    echo "Fix the Apache/Perl errors above before the application will run."
-    echo "Skipping Perl test suite."
+    echo "Build completed but tests failed."
+    echo "See output above for details."
+    echo ""
+    echo "To re-run tests: ./tools/parallel-test.sh"
     exit 1
   fi
-
-  # Run full test suite after smoke tests pass
-  echo ""
-  echo "========================================="
-  echo "Smoke tests passed! Running Perl test suite..."
-  echo "========================================="
-  $SCRIPT_DIR/run-tests.sh
 fi
 
 echo ""
