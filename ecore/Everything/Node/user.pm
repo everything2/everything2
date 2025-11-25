@@ -70,7 +70,7 @@ sub experience
 sub GP
 {
   my ($self) = @_;
-  return $self->NODEDATA->{GP} || 0;
+  return int($self->NODEDATA->{GP} || 0);
 }
 
 sub mission
@@ -222,7 +222,7 @@ sub passwd
 sub sanctity
 {
   my ($self) = @_;
-  return $self->NODEDATA->{sanctity};
+  return int($self->NODEDATA->{sanctity} || 0);
 }
 
 sub style
@@ -260,13 +260,25 @@ sub nodelets
   my $output = [];
   my $nodeletids;
 
-  if($self->VARS->{nodelets})
+  # DEBUG logging - goes to /tmp/development.log
+  warn "NODELETS DEBUG: nodelets() called - user_id=" . $self->node_id . ", title=" . $self->title;
+  my $is_guest = $self->is_guest;
+  warn "NODELETS DEBUG: is_guest=" . ($is_guest ? 'TRUE' : 'FALSE');
+  my $vars_nodelets = $self->VARS->{nodelets} // '';
+  warn "NODELETS DEBUG: VARS->{nodelets}=" . ($vars_nodelets eq '' ? 'EMPTY' : $vars_nodelets);
+
+  # Check is_guest FIRST to ensure consistent guest experience
+  # (guest_front_page sets VARS->{nodelets} which would override config)
+  if($self->is_guest){
+    $nodeletids = $self->CONF->guest_nodelets;
+    warn "NODELETS DEBUG: Using guest_nodelets, count=" . scalar(@$nodeletids);
+  }elsif($self->VARS->{nodelets})
   {
     $nodeletids = [split(",",$self->VARS->{nodelets})];
-  }elsif($self->is_guest){
-    $nodeletids = $self->CONF->guest_nodelets;
+    warn "NODELETS DEBUG: Using VARS nodelets, count=" . scalar(@$nodeletids);
   }else{
     $nodeletids = $self->CONF->default_nodelets;
+    warn "NODELETS DEBUG: Using default_nodelets, count=" . scalar(@$nodeletids);
   }
   
   foreach my $n (@$nodeletids)
@@ -646,6 +658,12 @@ sub num_newwus
 {
   my ($self) = @_;
   return $self->VARS->{num_newwus};
+}
+
+sub gp_optout
+{
+  my ($self) = @_;
+  return $self->VARS->{GPoptout} || 0;
 }
 
 __PACKAGE__->meta->make_immutable;

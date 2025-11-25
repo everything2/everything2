@@ -14,7 +14,19 @@ sub display
     $self->devLog("Page permission allowed: ".(ref $permission_result));
     my $controller_output = $self->page_class($node)->display($REQUEST, $node);
 
-    my $layout = $self->page_class($node)->template || $self->title_to_page($node->title);
+    # Check if this page uses React (has buildReactData method)
+    my $page_class = $self->page_class($node);
+    my $is_react_page = $page_class->can('buildReactData');
+
+    my $layout;
+    if ($is_react_page) {
+      # Use generic React container template for React pages
+      $layout = 'react_page';
+    } else {
+      # Use page-specific Mason template for traditional pages
+      $layout = $page_class->template || $self->title_to_page($node->title);
+    }
+
     my $html = $self->layout("/pages/$layout", %$controller_output, REQUEST => $REQUEST, node => $node);
     return [$self->HTTP_OK,$html];
   } else {

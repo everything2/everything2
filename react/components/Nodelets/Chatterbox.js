@@ -1,8 +1,11 @@
 import React from 'react'
 import NodeletContainer from '../NodeletContainer'
 import { useChatterPolling } from '../../hooks/useChatterPolling'
+import { useActivityDetection } from '../../hooks/useActivityDetection'
 import LinkNode from '../LinkNode'
 import ParseLinks from '../ParseLinks'
+import MessageList from '../MessageList'
+import MessageModal from '../MessageModal'
 
 // Parse special message commands for display (mimics legacy showchatter behavior)
 const parseMessageText = (msg) => {
@@ -165,8 +168,25 @@ const Chatterbox = (props) => {
   const [sending, setSending] = React.useState(false)
   const [showCommands, setShowCommands] = React.useState(false)
   const [messageError, setMessageError] = React.useState(null)
+  const [messageSuccess, setMessageSuccess] = React.useState(null)
+  const [messageFading, setMessageFading] = React.useState(false)
+  const [messageEntering, setMessageEntering] = React.useState(false)
   const [borgTimeRemaining, setBorgTimeRemaining] = React.useState(0)
   const inputRef = React.useRef(null)
+
+  // Mini-messages state (when Messages nodelet not present)
+  const [miniMessages, setMiniMessages] = React.useState(props.miniMessages || [])
+  const [modalOpen, setModalOpen] = React.useState(false)
+  const [replyingTo, setReplyingTo] = React.useState(null)
+  const [isReplyAll, setIsReplyAll] = React.useState(false)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false)
+  const [messageToDelete, setMessageToDelete] = React.useState(null)
+
+  // Activity detection for mini-messages polling
+  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const miniMessagesPollInterval = React.useRef(null)
+  const miniMessagesMissedUpdate = React.useRef(false)
+
   // Poll at 45s when active, 2m when idle, stop when page not in focus
   // Skip polling when nodelet is collapsed or public chatter is off
   // Use initial messages from props to prevent redundant API call on page load
@@ -213,6 +233,188 @@ const Chatterbox = (props) => {
 
     return () => clearInterval(interval)
   }, [props.borged, props.numborged])
+
+  // Mini-messages handlers
+  const loadMiniMessages = React.useCallback(async () => {
+    if (!props.showMessagesInChatterbox) return
+
+    try {
+      const response = await fetch('/api/messages/?limit=5', {
+        credentials: 'include',
+        headers: {
+          'X-Ajax-Idle': '1'
+        }
+      })
+
+      if (!response.ok) {
+        console.error('Failed to load mini-messages')
+        return
+      }
+
+      const data = await response.json()
+      setMiniMessages(data)
+    } catch (err) {
+      console.error('Error loading mini-messages:', err)
+    }
+  }, [props.showMessagesInChatterbox])
+
+  const handleReply = (messageObj, replyAll = false) => {
+    setReplyingTo(messageObj)
+    setIsReplyAll(replyAll)
+    setModalOpen(true)
+  }
+
+  const handleSendMessage = async (recipient, messageText) => {
+    try {
+      const response = await fetch('/api/messages/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          for: recipient,
+          message: messageText
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      // Refresh mini-messages list
+      await loadMiniMessages()
+
+      return true
+    } catch (err) {
+      console.error('Failed to send message:', err)
+      throw err
+    }
+  }
+
+  const handleArchive = async (messageId) => {
+    try {
+      const response = await fetch(`/api/messages/${messageId}/action/archive`, {
+        method: 'POST',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to archive message')
+      }
+
+      // Remove message from list
+      setMiniMessages(miniMessages.filter(m => m.message_id !== messageId))
+    } catch (err) {
+      console.error('Archive error:', err)
+    }
+  }
+
+  const handleUnarchive = async (messageId) => {
+    try {
+      const response = await fetch(`/api/messages/${messageId}/action/unarchive`, {
+        method: 'POST',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to unarchive message')
+      }
+
+      // Remove message from list
+      setMiniMessages(miniMessages.filter(m => m.message_id !== messageId))
+    } catch (err) {
+      console.error('Unarchive error:', err)
+    }
+  }
+
+  const handleDelete = (messageId) => {
+    setMessageToDelete(messageId)
+    setDeleteConfirmOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`/api/messages/${messageToDelete}/action/delete`, {
+        method: 'POST',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete message')
+      }
+
+      // Remove message from list
+      setMiniMessages(miniMessages.filter(m => m.message_id !== messageToDelete))
+      setDeleteConfirmOpen(false)
+      setMessageToDelete(null)
+    } catch (err) {
+      console.error('Delete error:', err)
+      setDeleteConfirmOpen(false)
+      setMessageToDelete(null)
+    }
+  }
+
+  const cancelDelete = () => {
+    setDeleteConfirmOpen(false)
+    setMessageToDelete(null)
+  }
+
+  // Mini-messages polling effect - refresh every 2 minutes when active and nodelet is expanded
+  React.useEffect(() => {
+    if (!props.showMessagesInChatterbox) return
+
+    const shouldPoll = isActive && isMultiTabActive && props.nodeletIsOpen
+
+    if (shouldPoll) {
+      miniMessagesPollInterval.current = setInterval(() => {
+        loadMiniMessages()
+      }, 120000) // 2 minutes
+    } else {
+      // If we're not polling because nodelet is collapsed, mark that we missed updates
+      if (isActive && isMultiTabActive && !props.nodeletIsOpen) {
+        miniMessagesMissedUpdate.current = true
+      }
+
+      if (miniMessagesPollInterval.current) {
+        clearInterval(miniMessagesPollInterval.current)
+        miniMessagesPollInterval.current = null
+      }
+    }
+
+    return () => {
+      if (miniMessagesPollInterval.current) {
+        clearInterval(miniMessagesPollInterval.current)
+        miniMessagesPollInterval.current = null
+      }
+    }
+  }, [isActive, isMultiTabActive, props.nodeletIsOpen, props.showMessagesInChatterbox, loadMiniMessages])
+
+  // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
+  React.useEffect(() => {
+    if (props.nodeletIsOpen && miniMessagesMissedUpdate.current && props.showMessagesInChatterbox) {
+      miniMessagesMissedUpdate.current = false
+      loadMiniMessages()
+    }
+  }, [props.nodeletIsOpen, props.showMessagesInChatterbox, loadMiniMessages])
+
+  // Focus refresh: immediately refresh when page becomes visible
+  React.useEffect(() => {
+    if (!props.showMessagesInChatterbox) return
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isActive) {
+        loadMiniMessages()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [isActive, props.showMessagesInChatterbox, loadMiniMessages])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -275,20 +477,62 @@ const Chatterbox = (props) => {
       if (data.success) {
         setMessage('')
         setMessageError(null)
+
+        // Show success message for /msg commands (private messages)
+        // since there's no visible feedback in the chatter feed
+        const isPrivateMessage = /^\/(msg|message|whisper|small)\s/.test(message.trim())
+        if (isPrivateMessage) {
+          setMessageSuccess('Message sent')
+          setMessageFading(false)
+          setMessageEntering(true)
+          // Fade in quickly
+          setTimeout(() => setMessageEntering(false), 150)
+          // Auto-clear success with fade-out after 3 seconds
+          setTimeout(() => {
+            setMessageFading(true)
+            setTimeout(() => {
+              setMessageSuccess(null)
+              setMessageFading(false)
+            }, 300)
+          }, 3000)
+        } else {
+          setMessageSuccess(null) // No success message - user sees immediate feedback in chatter
+        }
+
         // Refresh chatter display to show new message
         refresh()
       } else {
         // Message was not posted - show error to user and clear input
         setMessageError(data.error || 'Message not posted')
         setMessage('')
-        // Auto-clear error after 5 seconds
-        setTimeout(() => setMessageError(null), 5000)
+        setMessageFading(false)
+        setMessageEntering(true)
+        // Fade in quickly
+        setTimeout(() => setMessageEntering(false), 150)
+        // Auto-clear error with fade-out after 5 seconds
+        setTimeout(() => {
+          setMessageFading(true) // Start fade
+          setTimeout(() => {
+            setMessageError(null) // Remove after fade
+            setMessageFading(false)
+          }, 300) // Match CSS transition duration
+        }, 5000)
       }
     } catch (err) {
       console.error('Failed to send message:', err)
       setMessageError('Failed to send message')
       setMessage('')
-      setTimeout(() => setMessageError(null), 5000)
+      setMessageFading(false)
+      setMessageEntering(true)
+      // Fade in quickly
+      setTimeout(() => setMessageEntering(false), 150)
+      setTimeout(() => {
+        setMessageFading(true) // Start fade
+        setTimeout(() => {
+          setMessageError(null) // Remove after fade
+          setMessageFading(false)
+        }, 300) // Match CSS transition duration
+      }, 5000)
     } finally {
       setSending(false)
       // Restore focus to input so user can continue chatting
@@ -386,8 +630,53 @@ const Chatterbox = (props) => {
 
       {/* Private messages section - only shown if Messages nodelet not separately displayed */}
       {props.showMessagesInChatterbox && (
-        <div id="chatterbox_messages" style={{ marginBottom: '12px' }}>
-          {/* This div will be populated by legacy code or Messages component */}
+        <div id="chatterbox_messages" style={{
+          marginBottom: '12px',
+          backgroundColor: '#f8f9fa',
+          border: '1px solid #dee2e6',
+          borderRadius: '4px',
+          padding: '8px'
+        }}>
+          <div style={{
+            fontSize: '11px',
+            fontWeight: 'bold',
+            marginBottom: '8px',
+            paddingBottom: '6px',
+            borderBottom: '1px solid #dee2e6',
+            color: '#495057',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span>Recent Messages</span>
+            <a
+              href="/title/Message+Inbox"
+              style={{
+                fontSize: '10px',
+                color: '#667eea',
+                textDecoration: 'none'
+              }}
+            >
+              view all →
+            </a>
+          </div>
+          <MessageList
+            messages={miniMessages}
+            onReply={handleReply}
+            onReplyAll={handleReply}
+            onArchive={handleArchive}
+            onUnarchive={handleUnarchive}
+            onDelete={handleDelete}
+            compact={false}
+            limit={5}
+            showActions={{
+              reply: true,
+              replyAll: true,
+              archive: true,
+              unarchive: true,
+              delete: true
+            }}
+          />
         </div>
       )}
 
@@ -538,22 +827,6 @@ const Chatterbox = (props) => {
               </div>
             )}
           </form>
-
-          {/* Error Message Display */}
-          {messageError && (
-            <div style={{
-              margin: '8px 12px',
-              padding: '8px 12px',
-              backgroundColor: '#fee',
-              border: '1px solid #fcc',
-              borderRadius: '4px',
-              color: '#c33',
-              fontSize: '12px',
-              textAlign: 'center'
-            }}>
-              {messageError}
-            </div>
-          )}
         </div>
       )}
 
@@ -569,13 +842,58 @@ const Chatterbox = (props) => {
         </div>
       )}
 
-      {/* Commands Help Link */}
+      {/* Commands Help Link + Message Container - Fixed height to prevent layout shift */}
       {!isGuest && (
         <div style={{
+          position: 'relative',
+          minHeight: '40px',
           marginTop: '8px',
-          textAlign: 'center',
-          fontSize: '11px'
+          textAlign: 'center'
         }}>
+          {/* Error/Success Messages - Absolutely positioned to overlay the link */}
+          {messageError && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: '12px',
+              right: '12px',
+              padding: '8px 12px',
+              backgroundColor: '#fee',
+              border: '1px solid #fcc',
+              borderRadius: '4px',
+              color: '#c33',
+              fontSize: '12px',
+              textAlign: 'center',
+              opacity: messageFading ? 0 : (messageEntering ? 0 : 1),
+              transition: messageFading ? 'opacity 0.3s ease-out' : 'opacity 0.15s ease-in',
+              zIndex: 1
+            }}>
+              {messageError}
+            </div>
+          )}
+
+          {messageSuccess && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: '12px',
+              right: '12px',
+              padding: '8px 12px',
+              backgroundColor: '#d4edda',
+              border: '1px solid #c3e6cb',
+              borderRadius: '4px',
+              color: '#155724',
+              fontSize: '12px',
+              textAlign: 'center',
+              opacity: messageFading ? 0 : (messageEntering ? 0 : 1),
+              transition: messageFading ? 'opacity 0.3s ease-out' : 'opacity 0.15s ease-in',
+              zIndex: 1
+            }}>
+              {messageSuccess}
+            </div>
+          )}
+
+          {/* Chat Commands Link - In normal flow beneath messages */}
           <button
             onClick={() => setShowCommands(true)}
             style={{
@@ -585,7 +903,8 @@ const Chatterbox = (props) => {
               cursor: 'pointer',
               textDecoration: 'underline',
               fontSize: '11px',
-              padding: '2px 4px'
+              padding: '2px 4px',
+              marginTop: '0'
             }}
           >
             Chat Commands
@@ -704,6 +1023,86 @@ const Chatterbox = (props) => {
                   You have elevated privileges - use responsibly
                 </p>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Message composition modal for mini-messages */}
+      {props.showMessagesInChatterbox && (
+        <MessageModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          replyTo={replyingTo}
+          onSend={handleSendMessage}
+          initialReplyAll={isReplyAll}
+        />
+      )}
+
+      {/* Delete confirmation modal for mini-messages */}
+      {props.showMessagesInChatterbox && deleteConfirmOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10000
+          }}
+          onClick={cancelDelete}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: '8px',
+              padding: '24px',
+              maxWidth: '400px',
+              width: '90%',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+              Delete Message
+            </h3>
+            <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#495057' }}>
+              Are you sure you want to permanently delete this message? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={cancelDelete}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '13px',
+                  border: '1px solid #dee2e6',
+                  borderRadius: '4px',
+                  backgroundColor: '#fff',
+                  color: '#495057',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '13px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  backgroundColor: '#dc3545',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>

@@ -61,8 +61,33 @@ sub layout
 
   $params->{script_name} = $REQUEST->script_name;
 
+  # Phase 3: React owns sidebar - build nodeletorder for React BEFORE buildNodeInfoStructure
+  # This ensures hasMessagesNodelet flag is available when buildNodeInfoStructure needs it
+  # For guest users, always use guest_nodelets config (ignore any VARS->{nodelets} that might be set)
+  my $user_nodelets;
+  if ($REQUEST->user->is_guest) {
+    # Load guest nodelets directly from config as node objects
+    my $guest_nodelet_ids = $self->CONF->guest_nodelets || [];
+    $user_nodelets = [];
+    foreach my $nid (@$guest_nodelet_ids) {
+      my $nodelet = $self->APP->node_by_id($nid);
+      push @$user_nodelets, $nodelet if $nodelet;
+    }
+  } else {
+    $user_nodelets = $REQUEST->user->nodelets || [];
+  }
+
+  my @nodeletorder = ();
+  foreach my $nodelet (@$user_nodelets) {
+    my $title = lc($nodelet->title);
+    $title =~ s/ /_/g;
+    push @nodeletorder, $title;
+  }
+
+
   my $e2 = $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS, $REQUEST->cgi);
   $e2->{lastnode_id} = $params->{lastnode_id};
+  $e2->{nodeletorder} = \@nodeletorder;
 
   my $cookie = undef;
   foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
@@ -82,16 +107,6 @@ sub layout
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
     $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->node_id, weblogs => $self->APP->weblogs_structure($edev->node_id)}};
   }
-
-  # Phase 3: React owns sidebar - build nodeletorder for React, skip Mason2 nodelet data
-  my $user_nodelets = $REQUEST->user->nodelets || [];
-  my @nodeletorder = ();
-  foreach my $nodelet (@$user_nodelets) {
-    my $title = lc($nodelet->title);
-    $title =~ s/ /_/g;
-    push @nodeletorder, $title;
-  }
-  $e2->{nodeletorder} = \@nodeletorder;
 
   $params->{nodeinfojson} = $self->JSON->encode($e2);
 

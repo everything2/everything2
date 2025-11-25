@@ -17,7 +17,7 @@ has 'lastnode' => (required => 1);
     <input type="checkbox" id="near_match" name="soundex" value="1">
     Near Matches
    </label>
-  <span>
+  </span>
   <span title="Show all results, even when there is a page matching the search exactly">
    <label>
     <input type="checkbox" id="match_all" name="match_all" value="1">

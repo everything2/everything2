@@ -43,7 +43,8 @@ sub deliver_message
   }
 
   # Set for_usergroup field so replies work correctly
-  $messagedata->{for_usergroup} = $self->node_id;
+  # Only set if not already set (prevents nested groups from overwriting parent group)
+  $messagedata->{for_usergroup} ||= $self->node_id;
 
   my $responses = {};
 

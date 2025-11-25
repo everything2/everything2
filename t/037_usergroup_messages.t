@@ -168,7 +168,96 @@ subtest 'Usergroup archive copy' => sub {
   cmp_ok($total, '==', 3, 'Total messages includes archive copy');
 };
 
-# Cleanup
+subtest 'Nested usergroup message delivery' => sub {
+  plan tests => 5;
+
+  # Test with real nested groups: Content Editors contains e2gods contains root
+  my $content_editors = $DB->getNode('Content Editors', 'usergroup');
+  ok($content_editors, 'Got Content Editors usergroup');
+
+  my $e2gods = $DB->getNode('e2gods', 'usergroup');
+  ok($e2gods, 'Got e2gods usergroup');
+
+  # Clear previous messages
+  $DB->sqlDelete('message', "author_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}");
+
+  # Send message to Content Editors as root (who is in e2gods, which is in Content Editors)
+  my $result = $APP->sendPrivateMessage(
+    $sender,
+    ['Content Editors'],
+    'Test nested delivery'
+  );
+
+  ok($result->{success}, 'Message sent successfully to nested usergroup');
+
+  # Check that root received the message (even though root is only in e2gods, not directly in Content Editors)
+  my $root_message_count = $DB->sqlSelect(
+    'COUNT(*)',
+    'message',
+    "author_user=$sender->{user_id} AND for_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}"
+  );
+  cmp_ok($root_message_count, '==', 1, 'Root received message via nested usergroup (e2gods)');
+
+  # Check total messages - should include all expanded members
+  # Content Editors members: e2gods (contains root) + genericeditor = 2 users total
+  my $total = $DB->sqlSelect(
+    'COUNT(*)',
+    'message',
+    "author_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}"
+  );
+  cmp_ok($total, '>=', 2, 'Messages delivered to all expanded usergroup members');
+
+  # Cleanup nested usergroup test messages
+  $DB->sqlDelete('message', "author_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}");
+};
+
+subtest 'Message forwarding (chatterbox forward)' => sub {
+  plan tests => 6;
+
+  # Test c_e user which forwards to Content Editors
+  my $c_e = $DB->getNode('c_e', 'user');
+  ok($c_e, 'Got c_e user');
+
+  # Verify forward is set up
+  ok($c_e->{message_forward_to}, 'c_e has message_forward_to set');
+
+  my $content_editors = $DB->getNode('Content Editors', 'usergroup');
+  is($c_e->{message_forward_to}, $content_editors->{node_id}, 'c_e forwards to Content Editors');
+
+  # Clear previous messages
+  $DB->sqlDelete('message', "author_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}");
+
+  # Send message to c_e - should be forwarded to Content Editors usergroup
+  my $result = $APP->sendPrivateMessage(
+    $sender,
+    ['c_e'],
+    'Test message forwarding'
+  );
+
+  ok($result->{success}, 'Message sent successfully to c_e');
+
+  # Check that message was delivered to Content Editors members (via forwarding)
+  # Content Editors contains: e2gods (which contains root) + genericeditor
+  my $total = $DB->sqlSelect(
+    'COUNT(*)',
+    'message',
+    "author_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}"
+  );
+  cmp_ok($total, '>=', 2, 'Messages delivered to Content Editors members via c_e forward');
+
+  # Verify root received the forwarded message
+  my $root_msg = $DB->sqlSelect(
+    'COUNT(*)',
+    'message',
+    "author_user=$sender->{user_id} AND for_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}"
+  );
+  cmp_ok($root_msg, '==', 1, 'Root received forwarded message');
+
+  # Cleanup
+  $DB->sqlDelete('message', "author_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}");
+};
+
+# Cleanup test usergroup
 $DB->sqlDelete('message', "for_usergroup=$ug_node->{node_id}");
 $DB->sqlDelete('nodegroup', "node_id=$ug_node->{node_id}");
 $DB->sqlDelete('node', "node_id=$ug_node->{node_id}");

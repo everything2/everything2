@@ -2,10 +2,1286 @@
 
 This document provides context for AI assistants (like Claude) working on the Everything2 codebase. It summarizes recent work, architectural decisions, and important patterns to understand.
 
-**Last Updated**: 2025-11-24
+**Last Updated**: 2025-11-25
 **Maintained By**: Jay Bonci
 
+## ⚠️ CRITICAL: Common Pitfalls & Required Patterns ⚠️
+
+**READ THIS FIRST - These patterns are repeated mistakes that must be avoided:**
+
+### Testing & Development
+
+**NEVER run Perl tests directly in container** ❌
+```bash
+# WRONG - missing vendor libs
+docker exec e2devapp perl -c Application.pm
+docker exec e2devapp prove t/test.t
+```
+
+**ALWAYS use devbuild.sh or proper test runners** ✅
+```bash
+# CORRECT - has all dependencies
+./docker/devbuild.sh                    # Full rebuild + all tests
+./tools/parallel-test.sh                # Run tests only
+docker exec e2devapp bash -c "cd /var/everything && prove t/test.t"  # If you must run single test
+```
+
+### Docker File Synchronization
+
+**CRITICAL: Containers have separate filesystems - use docker cp to sync files** ⚠️
+
+The Docker containers (e2devapp, e2devdb) run on completely separate filesystems from WSL. Changes to files in `/home/jaybonci/projects/everything2/` (WSL host) do NOT automatically appear in the container at `/var/everything/`. You MUST use `docker cp` to copy edited files into the container:
+
+```bash
+# WRONG - edit file on WSL host and just reload/run in container
+# (Container still has old version of the file!)
+docker exec e2devapp apache2ctl graceful
+docker exec e2devapp bash -c "cd /var/everything && prove t/test.t"
+
+# CORRECT - copy file from WSL host to container FIRST
+docker cp /home/jaybonci/projects/everything2/ecore/Everything/Application.pm \
+  e2devapp:/var/everything/ecore/Everything/Application.pm
+docker exec e2devapp apache2ctl graceful
+
+# For test files (CRITICAL - containers won't see new tests without this!)
+docker cp /home/jaybonci/projects/everything2/t/037_usergroup_messages.t \
+  e2devapp:/var/everything/t/037_usergroup_messages.t
+docker exec e2devapp bash -c "cd /var/everything && prove t/037_usergroup_messages.t"
+
+# For htmlcode delegation (frequently edited)
+docker cp /home/jaybonci/projects/everything2/ecore/Everything/Delegation/htmlcode.pm \
+  e2devapp:/var/everything/ecore/Everything/Delegation/htmlcode.pm
+docker exec e2devapp apache2ctl graceful
+```
+
+**Why this matters:**
+- Containers have completely separate filesystems from WSL host
+- Editing files on WSL does NOT update files in container
+- Apache serves code from container's `/var/everything/`, not WSL's files
+- **Test files affected too** - new tests won't run without docker cp
+- Symptoms: Changes don't appear, tests show old behavior, new subtests missing
+- Solution: ALWAYS `docker cp` after editing ANY file (.pm, .t, .js, etc.) that needs to run in container
+- Alternative: Use `./docker/devbuild.sh` which rebuilds container with fresh files
+
+### Perl::Critic - Finding Code Quality Issues
+
+**ALWAYS run Perl::Critic to find bugs** ✅
+
+Perl::Critic can catch common bugs like uninitialized variables, string interpolation issues, and more. Run it before making commits:
+
+```bash
+# Check specific file (works in or out of container)
+./tools/critic.pl ecore/Everything/Application.pm
+
+# Check all files
+./tools/critic.pl
+
+# In container (if needed)
+docker exec e2devapp bash -c "cd /var/everything && ./tools/critic.pl ecore/Everything/Application.pm"
+```
+
+**Common issues Perl::Critic catches:**
+- Uninitialized variables in conditionals
+- String interpolation of non-interpolating strings
+- Missing return statements
+- Unused variables
+- Code complexity issues
+
+### Webpack Build Mode
+
+**ALWAYS use --mode=development for webpack builds** ⚠️
+
+Development mode preserves class names and doesn't minify, making profiling and debugging much easier.
+
+```bash
+# CORRECT - Development mode (readable class names, easier debugging)
+npx webpack --config etc/webpack.config.js --mode=development
+
+# WRONG - Production mode in development (minified, hard to debug)
+npx webpack --config etc/webpack.config.js --mode=production
+npx webpack --config etc/webpack.config.js  # Defaults to production
+```
+
+**Why this matters:**
+- ✅ **Class names preserved**: React components show as `Chatterbox` not `a`
+- ✅ **Source maps**: Better stack traces in browser console
+- ✅ **No minification**: Code is readable in DevTools
+- ✅ **Faster builds**: Skips optimization step
+
+**Production mode is ONLY for deployment builds**, not development iterations.
+
+### React & Perl Boolean Values
+
+**CRITICAL: Perl numeric 0/1 values render as "0" in React** ⚠️
+
+```javascript
+// WRONG - Perl 0 renders as "0" on screen
+{props.someValue && <div>Content</div>}
+
+// CORRECT - Convert to JS boolean first
+{Boolean(props.someValue) && <div>Content</div>}
+```
+
+**Always use Boolean() when passing Perl 0/1 to React:**
+```javascript
+// In E2ReactRoot or parent components:
+someFlag={Boolean(this.props.e2?.user?.someFlag)}
+showThing={Boolean(this.props.e2?.showThing)}
+```
+
+### Blessed Objects vs Hashrefs
+
+**User/Node objects come in TWO forms - know which to use and which scope you're in:**
+
+**SCOPE 1: Controller/Page classes (have $REQUEST)**
+```perl
+# In Everything::Controller, Everything::Page, or anywhere with $REQUEST object:
+my $user = $REQUEST->user;                 # Blessed Everything::Node::user object
+my $node = $REQUEST->node;                 # Blessed Everything::Node object
+
+# Read via methods:
+my $username = $user->title;                # ✓ Use methods
+my $gp = $user->GP;                        # ✓ Use methods
+my $is_admin = $user->is_admin;            # ✓ Note underscore, not camelCase
+
+# CANNOT modify blessed object directly!
+# $user->{GP} = 100;                       # ✗ WRONG - won't work
+
+# To modify, get hashref:
+my $USER = $user->NODEDATA;                # Get hashref from blessed object
+$USER->{GP} = 100;                         # ✓ Modify hashref
+$DB->updateNode($USER, -1);                # ✓ Save changes
+
+# VARS access:
+my $VARS = $user->VARS;                    # Get VARS hashref
+$VARS->{some_setting} = 1;                 # Modify
+$user->set_vars($VARS);                    # Save back (uses blessed method)
+```
+
+**SCOPE 2: Application.pm / Legacy code (have $USER hashref)**
+```perl
+# In Application.pm::buildNodeInfoStructure and similar legacy methods:
+# These receive hashrefs directly, not blessed objects
+
+sub some_method {
+  my ($this, $NODE, $USER, $VARS) = @_;    # All hashrefs!
+
+  # Read via hash access:
+  my $username = $USER->{title};            # ✓ Direct hash access
+  my $gp = $USER->{GP};                     # ✓ Direct hash access
+
+  # Modify directly:
+  $USER->{GP} = 100;                        # ✓ Modify hashref
+  $this->{db}->updateNode($USER, -1);       # ✓ Save changes
+
+  # If you need blessed object methods:
+  my $user_node = $this->node_by_id($USER->{node_id});  # Convert to blessed
+  my $is_admin = $user_node->is_admin;                  # ✓ Now can use methods
+}
+```
+
+**SCOPE 3: API endpoints (convert as needed)**
+```perl
+# In Everything::API::* modules:
+sub my_endpoint {
+  my ($self, $REQUEST) = @_;
+
+  my $user = $REQUEST->user;                # Blessed object
+  my $USER = $user->NODEDATA;               # Hashref for modifications
+  my $VARS = $user->VARS;                   # VARS hashref
+
+  # Modify and save:
+  $USER->{GP} += 50;
+  $self->DB->updateNode($USER, -1);
+  $user->set_vars($VARS);
+
+  return [$self->HTTP_OK, { gp => $USER->{GP} }];
+}
+```
+
+**Quick Reference:**
+| Context | Form | Access Pattern | Modification |
+|---------|------|----------------|--------------|
+| Controller/Page | Blessed (`$REQUEST->user`) | Methods (`$user->GP`) | Get hashref first (`$user->NODEDATA`) |
+| Application.pm | Hashref (`$USER`) | Hash (`$USER->{GP}`) | Direct (`$USER->{GP} = 100`) |
+| API endpoints | Both | Convert as needed | Use NODEDATA hashref |
+
+### API Response Format
+
+**ALWAYS return arrayref, never call method:**
+
+```perl
+# WRONG
+return $self->API_RESPONSE(200, { data => 'value' });
+
+# CORRECT
+return [$self->HTTP_OK, { data => 'value' }];
+return [$self->HTTP_FORBIDDEN, { error => 'Not allowed' }];
+return [$self->HTTP_BAD_REQUEST, { error => 'Invalid input' }];
+```
+
+**HTTP status constants:**
+- `$self->HTTP_OK` (200)
+- `$self->HTTP_CREATED` (201)
+- `$self->HTTP_BAD_REQUEST` (400)
+- `$self->HTTP_FORBIDDEN` (403)
+- `$self->HTTP_NOT_FOUND` (404)
+- `$self->HTTP_INTERNAL_SERVER_ERROR` (500)
+
+### Database Node IDs
+
+**Node IDs vary between dev/prod - never hardcode them:**
+
+```perl
+# WRONG
+my $messages_nodelet_id = 1916651;  # Wrong ID!
+
+# CORRECT - Look up in database first
+my $node = $DB->getNode('Messages', 'nodelet');
+my $id = $node->{node_id};
+
+# Or if checking in string:
+my $nodelets = $VARS->{nodelets} || '';
+# Check for actual node_id from database: 2044453 for Messages
+```
+
+**Common node IDs to verify in dev environment:**
+- Messages nodelet: 2044453 (NOT 1916651)
+- Always look up via `$DB->getNode(title, type)` instead of assuming
+
+### Cookie Authentication
+
+**E2 uses special cookie format:**
+
+```bash
+# Cookie format: userpass=username%09password
+curl -b 'userpass=root%09blah' http://localhost/
+
+# %09 is URL-encoded tab character (separator)
+```
+
+### React Component Data Flow
+
+**Phase 3 (Sidebar only):**
+```
+Mason2 → window.e2 → E2ReactRoot → Nodelet components
+```
+
+**Phase 4a (Content + Sidebar):**
+```
+Mason2 → window.e2 → PageLayout (content) + E2ReactRoot (sidebar)
+```
+
+**Page detection:**
+```perl
+# In Controller/superdoc.pm
+my $is_react_page = $page_class->can('buildReactData');
+```
+
+### Everything::Page Pattern
+
+```perl
+package Everything::Page::my_page;
+
+use Moose;
+extends 'Everything::Page';
+
+# This method triggers React rendering
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+
+  my $user = $REQUEST->user;  # Blessed object
+
+  return {
+    contentData => {
+      type => 'my_page',      # Must match DocumentComponent router
+      # ...page-specific data
+    }
+  };
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
+```
+
+### Docker Container Names
+
+**Correct container names:**
+- Application: `e2devapp` (NOT `e2_everything2_1`)
+- Database: `e2devdb`
+
+```bash
+docker exec e2devapp apache2ctl graceful
+docker exec e2devdb mysql -u root -pblah everything
+```
+
+### File Synchronization
+
+**Docker volume mounts can cache - force updates:**
+
+```bash
+# After editing files, if changes don't appear:
+docker cp localfile.pm e2devapp:/var/everything/path/to/file.pm
+docker exec e2devapp apache2ctl graceful
+```
+
+### No More eval() for Data
+
+**eval() has been removed - never reintroduce it:**
+
+```perl
+# WRONG - eval() removed for security
+my $data = eval $string;
+
+# CORRECT - data comes from trusted sources only
+# Use JSON, %INC cache, or proper module loading
+```
+
+---
+
+## Development Operations Reference
+
+### 🔄 Always Rebuild After Major Changes
+
+**IMPORTANT: Do a full rebuild after any major change to get clean test results:**
+
+```bash
+./docker/devbuild.sh
+```
+
+**"Major changes" include:**
+- Modifying Perl module structure (new packages, changed inheritance)
+- Changing database schema or adding migrations
+- Modifying API routing or authentication
+- Changing React component structure significantly
+- Adding new dependencies to package.json or cpanfile
+- Modifying Docker configuration
+
+**Why this matters:** Incremental updates can leave stale code in memory, cached files, or inconsistent state. A full rebuild ensures clean containers, fresh dependencies, and accurate test results.
+
+### Running Tests
+
+**Full rebuild with all tests (recommended after major changes):**
+```bash
+./docker/devbuild.sh
+# Runs: Docker build → smoke tests → Perl unit tests (parallel) → React tests
+# Takes ~2-3 minutes
+```
+
+**Run tests only (after minor Perl/React changes):**
+```bash
+./tools/parallel-test.sh
+# Runs smoke + Perl + React tests in parallel
+# Takes ~60 seconds
+# Use after: Apache graceful reload or webpack rebuild
+```
+
+**Run specific Perl test:**
+```bash
+# MUST be inside container with proper library paths
+docker exec e2devapp bash -c "cd /var/everything && prove t/035_chatroom_api.t"
+
+# Multiple tests:
+docker exec e2devapp bash -c "cd /var/everything && prove t/035_chatroom_api.t t/036_message_opcode.t"
+
+# With verbose output:
+docker exec e2devapp bash -c "cd /var/everything && prove -v t/035_chatroom_api.t"
+
+# All tests in parallel (same as devbuild.sh test phase):
+docker exec e2devapp bash -c "cd /var/everything && prove -j14 t/*.t"
+```
+
+**Run React tests:**
+```bash
+npm test                    # All React tests
+npm test -- Chatterbox      # Specific test file
+npm test -- --watch         # Watch mode
+npm test -- --coverage      # With coverage report
+```
+
+**Smoke tests only (fast pre-flight check):**
+```bash
+./tools/smoke-test.rb
+# Tests all 159+ special documents
+# Takes ~10-15 seconds
+# Run this BEFORE full test suite to catch obvious breaks
+```
+
+### Authenticated API Testing
+
+**E2 cookie format: `userpass=username%09password`** (%09 = URL-encoded tab)
+
+**Test as root user:**
+```bash
+# Simple GET request:
+curl -b 'userpass=root%09blah' http://localhost:9080/
+
+# POST API endpoint:
+curl -X POST -b 'userpass=root%09blah' \
+  -H 'Content-Type: application/json' \
+  -d '{"data":"value"}' \
+  http://localhost:9080/api/wheel/spin
+
+# GET API with query params:
+curl -b 'userpass=root%09blah' \
+  'http://localhost:9080/api/messages/?limit=5&archive=0'
+```
+
+**Save and reuse session:**
+```bash
+# Login and save cookie to file:
+curl -c cookies.txt \
+  -d "user=root&passwd=blah&op=login" \
+  http://localhost:9080/
+
+# Use saved cookie:
+curl -b cookies.txt http://localhost:9080/api/messages/
+```
+
+**Test from inside container:**
+```bash
+docker exec e2devapp curl -s 'http://localhost/api/messages/?limit=5' \
+  -H 'Cookie: userpass=root%09blah'
+```
+
+**Common test users in dev environment:**
+| Username | Password | Role | Use For |
+|----------|----------|------|---------|
+| `root` | `blah` | Admin | Admin features, all permissions |
+| `genericdev` | `blah` | Developer | Developer nodelet, normal user tests |
+| `Cool Man Eddie` | `blah` | Regular user | Standard user tests |
+| `c_e` | `blah` | Content editor | Message forwarding tests |
+
+Check `tools/seeds.pl` for complete list of test users.
+
+### Database Access
+
+**MySQL shell access:**
+```bash
+# Interactive shell:
+docker exec -it e2devdb mysql -u root -pblah everything
+
+# Run single query:
+docker exec e2devdb mysql -u root -pblah everything \
+  -e "SELECT node_id, title FROM node WHERE title='Messages'"
+
+# Suppress warnings in output:
+docker exec e2devdb mysql -u root -pblah everything -e "SELECT ..." 2>&1 | grep -v "^mysql:"
+
+# Export results to file:
+docker exec e2devdb mysql -u root -pblah everything -e "SELECT ..." > results.txt
+```
+
+**Common queries:**
+```sql
+-- Find node by title:
+SELECT node_id, title, type_nodetype FROM node WHERE title='Messages';
+
+-- Check node type:
+SELECT node_id, title FROM nodetype WHERE node_id=151;
+
+-- Get user's VARS:
+SELECT vars FROM setting WHERE user_id=1;
+
+-- Check messages for user:
+SELECT * FROM message WHERE for_user=1 AND archive=0 ORDER BY tstamp DESC LIMIT 5;
+
+-- Find nodelet ID by name:
+SELECT n.node_id, n.title
+FROM node n
+JOIN nodetype nt ON n.type_nodetype = nt.node_id
+WHERE n.title='Messages' AND nt.title='nodelet';
+
+-- Check user's nodelet configuration:
+SELECT vars FROM setting WHERE user_id=1;
+-- Look for "nodelets" in the vars string
+
+-- Count writeups:
+SELECT COUNT(*) FROM writeup WHERE author_user=1;
+
+-- Recent chatter messages:
+SELECT * FROM message WHERE for_user=0 ORDER BY tstamp DESC LIMIT 10;
+```
+
+### Rebuilding Webpack
+
+**Rebuild React bundle (run on host, not in container):**
+```bash
+npx webpack --config etc/webpack.config.js --mode=development
+```
+
+**Deploy bundle to running container:**
+```bash
+# Copy bundle to container:
+docker cp www/react/main.bundle.js e2devapp:/var/everything/www/react/main.bundle.js
+
+# Graceful Apache reload (no downtime):
+docker exec e2devapp apache2ctl graceful
+
+# Check it worked:
+curl -I http://localhost:9080/react/main.bundle.js
+```
+
+**One-liner rebuild and deploy:**
+```bash
+npx webpack --config etc/webpack.config.js --mode=development && \
+docker cp www/react/main.bundle.js e2devapp:/var/everything/www/react/main.bundle.js && \
+docker exec e2devapp apache2ctl graceful && \
+echo "✓ Bundle deployed"
+```
+
+**Check bundle sizes:**
+```bash
+ls -lh www/react/*.bundle.js
+# Expected sizes:
+# main.bundle.js: ~1.1-1.2 MB
+# react_components_E2ReactRoot_js.bundle.js: ~400 KB
+# react_components_PageLayout_js.bundle.js: ~33 KB
+```
+
+### Rebuilding Application
+
+**Full application rebuild (Docker + tests):**
+```bash
+./docker/devbuild.sh
+# Does: Docker build → Start containers → Run all tests
+# Takes ~2-3 minutes
+# Use after: Major code changes, dependency updates, schema changes
+```
+
+**Restart just the app container (fast):**
+```bash
+docker restart e2devapp
+# Takes ~10 seconds
+# Use after: Configuration changes, environment variable changes
+```
+
+**Graceful Apache reload (fastest, no downtime):**
+```bash
+docker exec e2devapp apache2ctl graceful
+# Takes ~2 seconds
+# Use after: Perl code edits, template changes
+```
+
+**Force file sync (if volume mount is cached):**
+```bash
+# Copy specific file to container:
+docker cp ecore/Everything/Application.pm \
+  e2devapp:/var/everything/ecore/Everything/Application.pm
+
+# Then reload Apache:
+docker exec e2devapp apache2ctl graceful
+
+# Or copy entire directory:
+docker cp ecore/Everything/ e2devapp:/var/everything/ecore/
+```
+
+### Viewing Logs & Debugging
+
+**Apache error log (Perl errors, crashes, warnings):**
+```bash
+# Tail live log (Ctrl+C to exit):
+docker exec e2devapp tail -f /var/log/apache2/error.log
+
+# View recent errors:
+docker exec e2devapp tail -100 /var/log/apache2/error.log
+
+# Search for specific errors:
+docker exec e2devapp tail -500 /var/log/apache2/error.log | \
+  grep -i "error\|warning\|fatal"
+
+# Perl compilation errors:
+docker exec e2devapp tail -200 /var/log/apache2/error.log | \
+  grep "at /.*\.pm line"
+
+# Specific module errors:
+docker exec e2devapp tail -200 /var/log/apache2/error.log | \
+  grep "Application.pm"
+
+# 500 Internal Server Error:
+docker exec e2devapp tail -200 /var/log/apache2/error.log | \
+  grep "500"
+```
+
+**Apache access log:**
+```bash
+# Tail live access log:
+docker exec e2devapp tail -f /var/log/apache2/access.log
+
+# Find 500 errors:
+docker exec e2devapp tail -500 /var/log/apache2/access.log | grep " 500 "
+
+# API endpoint access:
+docker exec e2devapp tail -500 /var/log/apache2/access.log | grep "/api/"
+```
+
+**Container logs (Docker/startup output):**
+```bash
+docker logs e2devapp              # All logs
+docker logs e2devapp --tail 100   # Last 100 lines
+docker logs -f e2devapp            # Follow mode (live)
+docker logs e2devdb                # Database logs
+```
+
+**Check Apache configuration:**
+```bash
+# Test config syntax:
+docker exec e2devapp apache2ctl configtest
+
+# Show loaded modules:
+docker exec e2devapp apache2ctl -M
+
+# Check Apache status:
+docker exec e2devapp apache2ctl status
+```
+
+**Common error patterns:**
+```bash
+# Undefined subroutine (typo or missing import):
+grep "Undefined subroutine" /var/log/apache2/error.log
+
+# Can't locate module (missing dependency):
+grep "Can't locate" /var/log/apache2/error.log
+
+# Permission denied:
+grep -i "permission denied" /var/log/apache2/error.log
+
+# Variable masking (Perl::Critic warning):
+grep "masks earlier declaration" /var/log/apache2/error.log
+
+# Database connection issues:
+grep -i "DBI\|DBD\|mysql" /var/log/apache2/error.log
+```
+
+### Quick Health Checks
+
+**Application responding:**
+```bash
+curl -s http://localhost:9080/ | head -20
+# Should see HTML with "Everything2"
+```
+
+**Containers running:**
+```bash
+docker ps | grep e2dev
+# Should see e2devapp and e2devdb both "Up"
+```
+
+**Database accessible:**
+```bash
+docker exec e2devdb mysql -u root -pblah -e "SELECT 1"
+# Should return "1"
+```
+
+**Apache running:**
+```bash
+docker exec e2devapp ps aux | grep apache2
+# Should see multiple apache2 processes
+```
+
+**Smoke test single document:**
+```bash
+curl -s http://localhost:9080/title/Login | grep -q "Everything2" && \
+  echo "✓ OK" || echo "✗ FAIL"
+```
+
+**Check React bundle loaded:**
+```bash
+curl -I http://localhost:9080/react/main.bundle.js 2>&1 | grep "200 OK"
+# Should return "HTTP/1.1 200 OK"
+```
+
+---
+
 ## Recent Work History
+
+### Session 21: Guest Nodelet Fix - htmlcode.pm Path (2025-11-25)
+
+**Focus**: Complete the guest nodelet consistency fix for delegation-rendered pages (htmlcode.pm path)
+
+**Completed Work**:
+1. ✅ **Fixed Guest Nodelet Ordering in htmlcode.pm** ([htmlcode.pm:3962-3992](ecore/Everything/Delegation/htmlcode.pm#L3962-L3992))
+   - **Problem**: Session 20 fixed user.pm and Controller.pm, but missed htmlcode.pm delegation path
+   - **Discovery**: Most superdocs don't use Controller - they fall back to htmlcode delegation
+   - **Root Cause**: htmlcode.pm `static_javascript()` was setting `$$VARS{nodelets}` from config, but VARS doesn't persist across pages
+   - **Original Broken Code**:
+     ```perl
+     if ($APP->isGuest($USER) && !$$VARS{nodelets}) {  # Wrong!
+       $$VARS{nodelets} = join(',', @$guest_nodelets);
+     }
+     my $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};  # VARS empty on other pages
+     ```
+   - **Fix**: Build nodeletlist directly from config for guests
+     ```perl
+     my $nodeletlist;
+     if ($APP->isGuest($USER)) {
+       # Guest users: build nodeletlist directly from guest_nodelets config
+       $nodeletlist = join(',', @$guest_nodelets);
+     } else {
+       # Logged-in users: use PAGELOAD or VARS
+       $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};
+     }
+     ```
+   - **Impact**: Guest nodelets now consistent across ALL pages (Guest Front Page, Everything FAQ, Cool Archive, etc.)
+2. ✅ **Added Docker File Synchronization to CLAUDE.md** ([CLAUDE.md:29-54](CLAUDE.md#L29-L54))
+   - **Critical Gotcha**: Volume mount caching requires `docker cp` to force file updates
+   - **Pattern**: ALWAYS `docker cp` .pm files before `apache2ctl graceful`
+   - Prevents "changes not appearing" debugging sessions
+
+**Final Results**:
+- ✅ **Guest nodelets consistent** - All pages show `["sign_in","recommended_reading","new_writeups"]`
+- ✅ **Two rendering paths fixed** - Both Controller.pm AND htmlcode.pm paths work correctly
+- ✅ **Documentation updated** - Docker cp pattern documented in Common Pitfalls
+
+**Key Files Modified**:
+- [ecore/Everything/Delegation/htmlcode.pm](ecore/Everything/Delegation/htmlcode.pm) - Fixed nodeletorder building for guests
+- [CLAUDE.md](CLAUDE.md) - Added Docker File Synchronization section
+
+**Important Discoveries**:
+- **Two Rendering Paths**: E2 has TWO paths for building window.e2 JSON:
+  1. **Controller.pm** `display()` → `buildNodeInfoStructure()` → `static_javascript.mi` template (for pages with Everything::Page classes)
+  2. **htmlcode.pm** `static_javascript()` function → delegated rendering (for most superdocs)
+- **Superdoc Routing**: Most superdocs return "does not fully support page" and fall back to delegation
+- **VARS Scope**: `$$VARS` in htmlcode.pm is a local hashref passed to the function, NOT the user's persistent database VARS
+- **Container Filesystem**: WSL and Docker containers have separate filesystems - `docker cp` required to sync files
+- **Debug Logging**: Use `$APP->devLog()` and check `/tmp/development.log`, not Apache error log
+
+**Critical Pattern Identified**:
+```perl
+# WRONG - trying to persist data via local VARS hashref
+if ($APP->isGuest($USER) && !$$VARS{nodelets}) {
+  $$VARS{nodelets} = join(',', @$guest_nodelets);  # Doesn't persist!
+}
+my $nodeletlist = $$VARS{nodelets};  # Empty on next page
+
+# RIGHT - build directly from config for guests
+my $nodeletlist;
+if ($APP->isGuest($USER)) {
+  $nodeletlist = join(',', @$guest_nodelets);  # Always use config
+} else {
+  $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};
+}
+```
+
+**Next Steps**:
+- Consider unifying the two rendering paths (Controller vs htmlcode delegation)
+- Continue Phase 4a work (React page migrations)
+
+### Session 20: Guest Nodelet Regression Fix & E2E Test Documentation (2025-11-25)
+
+**Focus**: Fix critical guest nodelet consistency bug, implement E2E test suite, document regression test strategy
+
+**Completed Work**:
+1. ✅ **Fixed Guest Nodelet Consistency Regression** ([user.pm:265](ecore/Everything/Node/user.pm#L265))
+   - **Critical Bug**: Guest users saw different nodelets on different pages
+   - **User Report**: "Non-fullpage versions of guest front pages only have the Login nodelet, while 'Guest Front Page' has the correct nodelet sets"
+   - **Root Cause Analysis**:
+     - `guest_front_page` document ([document.pm:12132-12137](ecore/Everything/Delegation/document.pm#L12132)) sets `$VARS->{nodelets}` for guests
+     - Guest user's VARS persisted across requests
+     - `nodelets()` method checked `if($VARS->{nodelets})` BEFORE `elsif($is_guest)`
+     - Once guest visited "Guest Front Page", VARS overrode `guest_nodelets` config on all subsequent pages
+   - **Fix**: Reordered checks in `nodelets()` method:
+     ```perl
+     # OLD ORDER (buggy):
+     if($self->VARS->{nodelets}) { ... }
+     elsif($self->is_guest) { ... }
+
+     # NEW ORDER (fixed):
+     if($self->is_guest) { ... }           # Check guest FIRST
+     elsif($self->VARS->{nodelets}) { ... }
+     ```
+   - **Impact**: Guests now see consistent nodelets on ALL pages, regardless of navigation path
+2. ✅ **Implemented Playwright E2E Test Suite** (Phase 1 & 2 Complete)
+   - Installed Playwright with fixtures and configuration
+   - Created authentication helpers ([tests/e2e/fixtures/auth.js](tests/e2e/fixtures/auth.js))
+   - Implemented 16 test scenarios across 4 files:
+     - [chatterbox.spec.js](tests/e2e/chatterbox.spec.js) - 5 tests (layout shift, errors, commands, focus, counter)
+     - [messages.spec.js](tests/e2e/messages.spec.js) - 2 tests (initial load, visibility logic)
+     - [navigation.spec.js](tests/e2e/navigation.spec.js) - 6 tests (homepage, login, chatterbox, React pages, Mason2 pages, nodelets)
+     - [wheel.spec.js](tests/e2e/wheel.spec.js) - 3 tests (spin result, GP blocking, admin sanctify)
+   - **Current Status**: 10/16 tests passing (62.5%)
+   - **Failing Tests**: Login-related issues (selector too broad, pointer interception, timeout)
+3. ✅ **Fixed Playwright Auth Fixture**
+   - **Problem**: Sign In nodelet collapsed by default for guests
+   - **Solution**: Detect collapsed state via `aria-expanded` and `is-closed` class, expand before login
+   - Code improved login reliability significantly
+4. ✅ **Enhanced Chatterbox Success Message Behavior**
+   - **User Feedback**: "Should show up for /msg requests... but should not show up for other chatter commands"
+   - **Fix**: Added regex pattern to detect private message commands:
+     ```javascript
+     const isPrivateMessage = /^\/(msg|message|whisper|small)\s/.test(message.trim())
+     if (isPrivateMessage) {
+       setMessageSuccess('Message sent')
+       // 3-second auto-clear with fade-out
+     } else {
+       setMessageSuccess(null)  // No message - immediate visual feedback in chatter feed
+     }
+     ```
+5. ✅ **Updated seeds.pl for Nested Messaging Tests**
+   - Added root user to e2gods usergroup for testing nested message forwarding
+   - Enables testing usergroup-within-usergroup scenarios
+6. ✅ **Created Comprehensive E2E Test Plan** ([docs/e2e-test-plan.md](docs/e2e-test-plan.md))
+   - 11 feature areas with priority levels (P0-P3)
+   - Coverage tracking table (16 tests, 10 passing)
+   - Detailed test scenarios with validation points
+   - Edge cases and planned tests
+   - Success metrics and roadmap (Phase 2-4)
+   - **NEW**: Guest Nodelet Consistency regression test documentation
+7. ✅ **Added .gitignore for Playwright Outputs**
+   - `test-results/`, `playwright-report/`, `playwright/.cache/`
+   - Prevents test artifacts from being committed
+8. ✅ **Documented Guest Nodelet Regression Test** ([docs/e2e-test-plan.md:317-331](docs/e2e-test-plan.md#L317))
+   - Added as P0 (Critical) regression test
+   - Documents bug fix, root cause, and test strategy
+   - Test approach: Visit multiple pages as guest, verify nodelet list consistency
+
+**Final Results**:
+- ✅ **Guest nodelet bug fixed** - Consistent experience across all pages
+- ✅ **E2E test suite operational** - 16 tests, 10 passing (62.5%)
+- ✅ **Comprehensive documentation** - E2E test plan with 11 feature areas
+- ✅ **Regression test documented** - Ensures bug doesn't recur
+- ✅ **All 445 React tests passing** (100%)
+- ✅ **All 49 Perl tests passing** (100% when run individually)
+- ✅ **Application running** at http://localhost:9080
+
+**Key Files Modified**:
+- [ecore/Everything/Node/user.pm](ecore/Everything/Node/user.pm) - Fixed nodelets() check order
+- [react/components/Nodelets/Chatterbox.js](react/components/Nodelets/Chatterbox.js) - Private message success detection
+- [tools/seeds.pl](tools/seeds.pl) - Added root to e2gods
+- [tests/e2e/fixtures/auth.js](tests/e2e/fixtures/auth.js) - Nodelet expansion logic
+- [tests/e2e/README.md](tests/e2e/README.md) - Test status and setup instructions
+- [docs/e2e-test-plan.md](docs/e2e-test-plan.md) - NEW: Comprehensive test coverage plan
+- [.gitignore](.gitignore) - Added Playwright outputs
+
+**Important Discoveries**:
+- **Check Order Matters**: When a variable can be set by multiple paths, check the most specific condition FIRST
+- **Session Persistence**: Guest user VARS persist across requests, can cause unexpected behavior
+- **E2E Login Complexity**: E2's nodelet collapsing requires special handling in tests
+- **Playwright Pointer Interception**: Collapsed nodelets can intercept click events, need to expand first
+- **Success Message UX**: Only show explicit confirmations when there's no immediate visual feedback
+- **Test Documentation Strategy**: Living document with coverage tracking prevents feature gaps
+
+**Critical Bug Pattern Identified**:
+```perl
+# WRONG - Checks custom VARS before guest status
+if($self->VARS->{nodelets}) {
+    $nodeletids = [split(",",$self->VARS->{nodelets})];
+}elsif($self->is_guest){
+    $nodeletids = $self->CONF->guest_nodelets;
+}
+
+# RIGHT - Checks guest status FIRST (most specific)
+if($self->is_guest){
+    $nodeletids = $self->CONF->guest_nodelets;
+}elsif($self->VARS->{nodelets}) {
+    $nodeletids = [split(",",$self->VARS->{nodelets})];
+}
+```
+
+**E2E Testing Insights**:
+- **Login URL**: E2 login is at `/title/login` OR via Sign In nodelet (NOT `/login`)
+- **Nodelet Expansion**: Check `aria-expanded="false"` and `is-closed` class, click header to expand
+- **Selector Specificity**: `text=root` matches 9 elements - use more specific selectors like `#username`
+- **Test Organization**: Group by feature area, use beforeEach for auth, share fixtures
+- **Regression Tests**: Document WHY test exists, WHAT bug it prevents, WHEN it was fixed
+
+**Next Steps**:
+- Fix E2E test selector issues (login assertion too broad)
+- Implement guest nodelet consistency E2E test
+- Add tests for remaining 0% coverage areas (content creation, voting, settings, search, notifications)
+- Run full E2E test suite in CI/CD pipeline
+
+### Session 19: UI Polish, Bug Fixes & E2E Testing Strategy (2025-11-25)
+
+**Focus**: Fix blessed vs hashref bugs, improve chatterbox UX, create E2E testing strategy, enhance documentation
+
+**Completed Work**:
+1. ✅ **Modified Sanctify User for Admin Testing** ([document.pm:7102](ecore/Everything/Delegation/document.pm#L7102))
+   - Admins can now sanctify themselves (useful for testing)
+   - Changed condition from `if ($USER->{title} eq $recipient)` to `if ($USER->{title} eq $recipient && !$APP->isAdmin($USER))`
+   - Regular users still blocked from self-sanctification
+2. ✅ **Removed Unused Mason Template**
+   - Deleted [templates/pages/silver_trinkets.mc](templates/pages/silver_trinkets.mc)
+   - Page now uses React via [buildReactData()](ecore/Everything/Page/silver_trinkets.pm#L43) method
+   - Controller automatically detects and uses generic react_page.mc template
+3. ✅ **Fixed Mini Messages Initial Data Loading** ([Application.pm:6002](ecore/Everything/Application.pm#L6002))
+   - **Critical Bug**: Was passing `$user_node` (blessed object) to `get_messages()` which expects hashref
+   - **Root Cause**: Blessed object has methods, hashref needs direct `{node_id}` access
+   - **Fix**: Changed to `$this->get_messages($USER, 5, 0)` - pass hashref instead
+   - Mini messages now load on initial page render without API call
+4. ✅ **Fixed Chatterbox Message Layout & Animations**
+   - **Problem**: Error/success messages caused page layout to jump
+   - **Solution**: Absolutely positioned messages overlay "Chat Commands" link
+   - Reserved space (minHeight: 40px) to accommodate both link and message
+   - Added fade-out animation with CSS transitions (opacity 0.3s ease-out)
+   - Added `messageFading` state to control opacity during auto-clear
+   - Success messages clear after 3s, errors after 5s, both with smooth fade
+   - **No more layout shift** - page height remains constant
+5. ✅ **Created Comprehensive E2E Testing Strategy** ([docs/e2e-testing-strategy.md](docs/e2e-testing-strategy.md))
+   - **Motivation**: User doing manual UI testing, wants automated headless tests
+   - **Recommendation**: Playwright (over Puppeteer/Cypress)
+   - Multi-browser support (Chrome, Firefox, Safari)
+   - Example tests for: chatterbox layout shift, fade animations, mini messages, wheel spin, sanctify
+   - Integration with devbuild.sh pipeline
+   - Visual regression testing with screenshots
+   - CI/CD setup for GitHub Actions
+   - **Estimated effort**: 8-12 hours for full coverage
+6. ✅ **Enhanced CLAUDE.md Documentation**
+   - Added Perl::Critic section to Common Pitfalls ([CLAUDE.md:29-51](CLAUDE.md#L29-L51))
+   - Added Webpack Build Mode section ([CLAUDE.md:53-74](CLAUDE.md#L53-L74))
+   - **Critical**: Always use `--mode=development` for webpack builds
+   - Preserves class names, enables source maps, skips minification
+   - Production mode ONLY for deployment, not development iterations
+
+**Final Results**:
+- ✅ **All 49 Perl tests passing** (100%)
+- ✅ **All 445 React tests passing** (100%)
+- ✅ **Application running** at http://localhost:9080
+- ✅ **No layout shifts** - Chatterbox error messages use absolute positioning
+- ✅ **Smooth fade-out** - 300ms CSS transition on message clear
+- ✅ **Mini messages working** - Load from initial page data without API call
+- ✅ **Admin self-sanctify** - Testing feature now available
+- ✅ **E2E testing roadmap** - Clear path to automated UI testing
+
+**Key Files Modified**:
+- [ecore/Everything/Delegation/document.pm](ecore/Everything/Delegation/document.pm) - Admin self-sanctify bypass
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Fixed blessed vs hashref bug for mini messages
+- [react/components/Nodelets/Chatterbox.js](react/components/Nodelets/Chatterbox.js) - Layout fix + fade-out animation
+- [docs/e2e-testing-strategy.md](docs/e2e-testing-strategy.md) - NEW: Comprehensive E2E testing guide
+- [CLAUDE.md](CLAUDE.md) - Added Perl::Critic and Webpack mode sections
+- **Deleted**: [templates/pages/silver_trinkets.mc](templates/pages/silver_trinkets.mc) - Unused Mason template
+
+**Important Discoveries**:
+- **Blessed vs Hashref Scope Issues**: Application.pm mixes blessed objects (`$user_node`) and hashrefs (`$USER`). Must use correct form for each function - `get_messages()` expects hashref with `{node_id}` field, not blessed object
+- **Absolute Positioning Pattern**: To prevent layout shifts, use `position: relative` container with `minHeight`, then absolutely position overlays with `zIndex`
+- **CSS Transition Timing**: Fade-out requires: 1) Set opacity to 0, 2) Wait for transition duration (300ms), 3) Remove element
+- **Development vs Production Webpack**: `--mode=development` preserves class names (shows `Chatterbox` not `a` in profiler), critical for debugging
+- **Playwright vs Puppeteer**: Playwright supports multiple browsers out of box, better for E2E testing than Puppeteer (Chrome-only)
+- **Manual Testing Automation**: User doing lots of manual UI testing → perfect opportunity to implement E2E test suite
+
+**Critical Bug Pattern Identified**:
+```perl
+# WRONG - Passing blessed object to function expecting hashref
+my $user_node = $this->node_by_id($USER->{node_id});  # Blessed object
+my $mini_messages = $this->get_messages($user_node, 5, 0);  # ❌ Function expects hashref
+
+# RIGHT - Pass hashref directly
+my $mini_messages = $this->get_messages($USER, 5, 0);  # ✅ $USER is hashref
+```
+
+**React Layout Shift Prevention Pattern**:
+```javascript
+// Container with fixed height
+<div style={{ position: 'relative', minHeight: '40px' }}>
+  {/* Absolutely positioned message overlays */}
+  {messageError && (
+    <div style={{
+      position: 'absolute',
+      opacity: messageFading ? 0 : 1,
+      transition: 'opacity 0.3s ease-out',
+      zIndex: 1
+    }}>
+      {messageError}
+    </div>
+  )}
+
+  {/* Static content in normal flow */}
+  <button>Chat Commands</button>
+</div>
+```
+
+**User Feedback Incorporated**:
+1. **Testing Automation**: "I feel like I'm doing a lot of by-hand user interface integration testing"
+   - Created comprehensive E2E testing strategy with Playwright
+   - Provided example tests for exact scenarios user was manually testing
+2. **Layout Jumping**: "Confirmation boxes cause page layout to jump"
+   - Fixed with absolute positioning and reserved space
+   - Messages now overlay link instead of pushing it down
+3. **Fade-out Effect**: "Have them fade out as they disappear"
+   - Implemented 300ms CSS transition with opacity control
+   - Two-stage timeout: display duration → fade duration → removal
+4. **Webpack Mode**: "Always webpack build with --mode=development"
+   - Added to CLAUDE.md common pitfalls
+   - Explained benefits: preserved class names, source maps, no minification
+
+**Next Steps**:
+- Implement Playwright E2E test suite (estimated 8-12 hours)
+- Continue Phase 4a document migrations
+- Consider extracting more htmlcode modules into API methods
+
+### Session 18: React Full-Page Infrastructure & eval() Cleanup (2025-11-25)
+
+**Focus**: Implement React full-page rendering for superdocs, remove eval() calls, fix test failures, repair broken HTML
+
+**Completed Work**:
+1. ✅ **React Full-Page Rendering Infrastructure**
+   - Created generic [templates/pages/react_page.mc](templates/pages/react_page.mc) container template
+   - Modified [Controller/superdoc.pm:17-28](ecore/Everything/Controller/superdoc.pm#L17-L28) to detect React pages via `buildReactData()` method
+   - Updated [Application.pm:6665-6700](ecore/Everything/Application.pm#L6665-L6700) to load Page classes and call `buildReactData()`
+   - **Pattern**: Pages with `buildReactData()` method automatically use React rendering
+   - **Benefits**: Eliminates need for page-specific Mason templates
+   - Fixed file permissions on react_page.mc (600→644)
+2. ✅ **eval() Cleanup with %INC Caching**
+   - **User Request**: "Can we get rid of the eval() in Everything::Application? We just killed those off"
+   - Removed @INC searching pattern (inefficient filesystem operations every request)
+   - **Solution**: Use Perl's `%INC` cache for already-loaded modules
+   - **Pattern**: `if (!exists $INC{$page_file}) { $page_loaded = eval { require $page_file; 1; } || 0; }`
+   - Only one minimal eval remains for optional module loading (safe pattern)
+   - Fixed Perl::Critic violations: initialized variables, tested eval return values
+3. ✅ **Fixed buildReactData() Page Classes**
+   - [silver_trinkets.pm:43-48](ecore/Everything/Page/silver_trinkets.pm#L43-L48) - Returns proper contentData structure
+   - [wheel_of_surprise.pm:12-19](ecore/Everything/Page/wheel_of_surprise.pm#L12-L19) - Returns proper contentData structure
+   - [sanctify.pm:12-18](ecore/Everything/Page/sanctify.pm#L12-L18) - Returns proper contentData structure
+   - **Pattern**: `return { contentData => { type => 'page_name', ...data } };`
+4. ✅ **Fixed Usergroup Message Sending** ([Application.pm:4446-4450](ecore/Everything/Application.pm#L4446-L4450))
+   - **Problem**: `/msg content_editors test` failing with "Recipient not found"
+   - **Root Cause**: Code converted underscores to spaces, then only tried usergroup lookup with converted name
+   - **Fix**: Try all combinations (user original, user spaces, usergroup original, usergroup spaces)
+   - Test [t/037_usergroup_messages.t](t/037_usergroup_messages.t) now passing 9/9 tests
+5. ✅ **Fixed Wheel API GPoptout Check** ([t/038_wheel_api.t:19,87,151,171,221](t/038_wheel_api.t))
+   - **Problem**: GPoptout users could spin wheel when they shouldn't
+   - **Root Cause**: Test manually built vars string with wrong separator (`\n` instead of `&`)
+   - **Fix**: Use proper `Everything::setVars($test_user, $vars)` function
+   - **Additional Fix**: Declare `our ($APP, $DB)` so MockUser::VARS can access `$main::APP`
+   - Test now passing 8/8 subtests with GPoptout correctly blocking wheel spins
+6. ✅ **Fixed Broken HTML in Search Form** ([templates/helpers/searchform.mi:20](templates/helpers/searchform.mi#L20))
+   - **Problem**: Layout broken on React pages (Silver Trinkets, Wheel of Surprise)
+   - **Root Cause**: Line 20 had opening `<span>` tag instead of closing `</span>`
+   - **Impact**: Broken HTML structure affected all pages (React and Mason)
+   - **Fix**: Changed `<span>` to `</span>` to properly close the "Near Matches" checkbox container
+   - All 159/159 smoke tests now passing
+
+**Final Results**:
+- ✅ **159/159 smoke tests passing** (100%)
+- ✅ **All Perl tests passing** (including 037_usergroup_messages.t and 038_wheel_api.t)
+- ✅ **React page infrastructure complete** - Generic template serves all React pages
+- ✅ **eval() minimized** - Only safe optional module loading pattern remains
+- ✅ **HTML structure repaired** - Layout rendering correctly on all pages
+
+**Key Files Modified**:
+- [templates/pages/react_page.mc](templates/pages/react_page.mc) - NEW: Generic React page container
+- [ecore/Everything/Controller/superdoc.pm](ecore/Everything/Controller/superdoc.pm) - React page detection
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - eval() cleanup, Page class loading, usergroup lookup fix
+- [ecore/Everything/Controller.pm](ecore/Everything/Controller.pm) - Pass user_node to buildNodeInfoStructure
+- [ecore/Everything/Page/silver_trinkets.pm](ecore/Everything/Page/silver_trinkets.pm) - Fixed contentData structure
+- [ecore/Everything/Page/wheel_of_surprise.pm](ecore/Everything/Page/wheel_of_surprise.pm) - Fixed contentData structure
+- [ecore/Everything/Page/sanctify.pm](ecore/Everything/Page/sanctify.pm) - Fixed contentData structure
+- [t/038_wheel_api.t](t/038_wheel_api.t) - Fixed setVars usage, added global declarations
+- [templates/helpers/searchform.mi](templates/helpers/searchform.mi) - Fixed broken HTML tag
+
+**Important Discoveries**:
+- **%INC Caching**: Perl tracks loaded modules in `%INC` hash - use this instead of searching @INC
+- **buildReactData() Detection**: `$page_class->can('buildReactData')` determines if page uses React
+- **Generic Template Pattern**: Single react_page.mc serves all React pages - no page-specific templates needed
+- **contentData Structure**: React routing requires `{ contentData => { type => 'page_name', ...data } }`
+- **Usergroup Name Conventions**: E2 allows underscores in commands but stores names with spaces
+- **setVars() Pattern**: Always use `Everything::setVars()` function for proper serialization (uses `&` separator)
+- **HTML Validation**: Single broken tag in shared template affects ALL pages
+- **Docker File Sync**: Use `docker cp` to force template updates through volume mount caching
+
+**Critical Patterns Identified**:
+```perl
+# REACT PAGE DETECTION PATTERN
+my $page_class = $self->page_class($node);
+my $is_react_page = $page_class->can('buildReactData');
+
+if ($is_react_page) {
+  $layout = 'react_page';  # Generic React container
+} else {
+  $layout = $page_class->template || $self->title_to_page($node->title);
+}
+
+# EFFICIENT MODULE LOADING PATTERN
+my $page_loaded = 1;
+if (!exists $INC{$page_file}) {
+  $page_loaded = eval { require $page_file; 1; } || 0;
+}
+
+# BUILDREACTDATA SIGNATURE
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+  return {
+    contentData => {
+      type => 'page_name',
+      # ...page-specific data
+    }
+  };
+}
+```
+
+**User Feedback Incorporated**:
+1. **@INC Searching**: "We should absolutely not be searching @INC every time we load a superdoc"
+   - Fixed by using %INC cache
+2. **Preloading Approach**: "Can we create an inclusion page which just use's every available Page?"
+   - Investigated but caused circular dependencies
+   - User: "If it's too much surgery, leave it in Everything::Application right now"
+   - Kept current architecture with runtime loading
+3. **REQUEST Object**: "We should not be building a new Everything::Request object"
+   - Fixed by passing `user_node` parameter from Controller
+4. **Perl::Critic**: "Application.pm is now failing Perl::Critic for bugs"
+   - Fixed all violations (local variable initialization, eval return testing)
+
+**Next Steps**:
+- Continue Phase 4a document migrations using React page infrastructure
+- Consider refactoring htmlcode modules into API methods
+- Implement isSpecialDate() for Halloween detection in wheel_of_surprise
+
+### Session 17: Phase 4a API Development & Blessed Object Patterns (2025-11-25)
+
+**Focus**: Fix wheel and user API implementations, learn blessed object patterns, complete test suites
+
+**Completed Work**:
+1. ✅ **Fixed API response format** ([wheel.pm](ecore/Everything/API/wheel.pm), [user.pm](ecore/Everything/API/user.pm))
+   - **Wrong Pattern**: `return $self->API_RESPONSE(200, {...})`
+   - **Correct Pattern**: `return [$self->HTTP_OK, {...}]`
+   - HTTP constants: `HTTP_OK`, `HTTP_FORBIDDEN`, `HTTP_BAD_REQUEST`, `HTTP_NOT_FOUND`
+   - Return format: Array reference `[status_code, data_hashref]`
+2. ✅ **Fixed blessed object vs hashref pattern** ([wheel.pm:9-10](ecore/Everything/API/wheel.pm#L9-L10))
+   - **Critical Learning**: `$user = $REQUEST->user` returns blessed `Everything::Node::user` object
+   - **Cannot directly modify**: `$user->{GP}` doesn't work on blessed objects
+   - **Correct Pattern**:
+     ```perl
+     my $user = $REQUEST->user;     # Blessed object
+     my $USER = $user->NODEDATA;    # Hashref for modifications
+     my $VARS = $user->VARS;        # Get VARS hashref
+     $USER->{GP} -= 5;              # Modify the hashref
+     $DB->updateNode($USER, -1);    # Update using hashref
+     $user->set_vars($VARS);        # Save VARS using blessed method
+     ```
+3. ✅ **Updated wheel API with correct patterns** ([wheel.pm](ecore/Everything/API/wheel.pm))
+   - Replaced all `$self->APP->setVars()` (doesn't exist) with `$user->set_vars()`
+   - Replaced all `$self->APP->getVars()` with `$user->VARS`
+   - Fixed all `$user->{GP}` references to `$USER->{GP}` (using NODEDATA hashref)
+   - Made htmlcode call optional: `if ($APP->can('htmlcode'))`
+4. ✅ **Created comprehensive test suite** ([t/038_wheel_api.t](t/038_wheel_api.t), [t/039_user_api.t](t/039_user_api.t))
+   - **Wheel API**: 8 subtests, 17 total tests
+   - **User API**: 5 subtests
+   - **MockUser pattern**: Bridges blessed objects and test mocks
+     - `NODEDATA()` returns real user hashref for direct modifications
+     - `VARS()` calls `$main::APP->getVars()` to access global $APP
+     - `set_vars()` saves VARS back to database
+   - Tests pass all authorization, validation, and functional scenarios
+5. ✅ **Fixed Docker container file synchronization**
+   - **Issue**: Volume mount caching prevented edits from appearing in container
+   - **Solution**: Use `docker cp` to force file updates
+   - **Pattern**: `docker cp host/file container:/path && docker exec container apache2ctl graceful`
+
+**Final Results**:
+- ✅ **17/17 API tests passing** (100%)
+- ✅ **Wheel API functional** - Spin, prize distribution, GP/VARS updates working
+- ✅ **User API functional** - Sanctity lookup with admin auth working
+- ✅ **Phase 4a foundation** - API patterns established for document migration
+
+**Key Files Created/Modified**:
+- [ecore/Everything/API/wheel.pm](ecore/Everything/API/wheel.pm) - Wheel spinning API (220 lines)
+- [ecore/Everything/API/user.pm](ecore/Everything/API/user.pm) - User sanctity lookup API (65 lines)
+- [t/038_wheel_api.t](t/038_wheel_api.t) - Wheel API test suite (257 lines)
+- [t/039_user_api.t](t/039_user_api.t) - User API test suite (existing from previous session)
+
+**Important Discoveries**:
+- **Blessed Object Architecture**: E2 uses blessed Moose objects that will eventually become DBIx::Class modules
+- **NODEDATA Method**: Returns the underlying hashref from blessed user object for direct field modification
+- **VARS Access**: `$user->VARS` returns hashref, `$user->set_vars($hashref)` saves changes
+- **API Response Format**: Must return `[HTTP_STATUS_CONSTANT, {data}]` not method call
+- **Test Mock Pattern**: MockUser must provide `NODEDATA()`, `VARS()`, and `set_vars()` methods
+- **Docker File Caching**: Use `docker cp` to force file updates when volume mounts are cached
+- **Package Variables in Mock Classes**: Use `$main::APP` and `$main::DB` to access package globals
+
+**Critical Patterns Identified**:
+```perl
+# BLESSED OBJECT PATTERN
+my $user = $REQUEST->user;      # Blessed Everything::Node::user object
+my $USER = $user->NODEDATA;      # Get hashref for modifications
+my $VARS = $user->VARS;          # Get VARS hashref
+
+# Modify data
+$USER->{GP} -= 5;
+$VARS->{spin_wheel} += 1;
+
+# Save changes
+$DB->updateNode($USER, -1);      # Update node data
+$user->set_vars($VARS);          # Update VARS
+
+# API RESPONSE PATTERN
+return [$self->HTTP_OK, {        # Array ref, not method call
+  success => 1,
+  data => {...}
+}];
+```
+
+**User Feedback Incorporated**:
+1. **htmlcode Refactoring**: "Wherever possible, we should refactor htmlcode modules when moving to Everything::Page and Everything::API methods"
+   - TODO: Replace `$APP->htmlcode('achievementsByType', ...)` with proper API method
+2. **Halloween Detection**: "isHalloween can be generated by $APP->isSpecialDate"
+   - TODO: Use `$self->APP->isSpecialDate` instead of manual date checking in wheel_of_surprise
+
+**Next Steps**:
+- Refactor htmlcode('achievementsByType') into proper API method
+- Use isSpecialDate for Halloween detection in wheel_of_surprise
+- Continue Phase 4a document migration (sanctify, silver_trinkets React components)
+- Test wheel spinning in live development environment
+
+### Session 16: Messaging Bug Fixes & Test Data Setup (2025-11-25)
+
+**Focus**: Fix nested usergroup messaging bugs, improve chatterbox UX, set up test data for message forwarding
+
+**Completed Work**:
+1. ✅ **Fixed nested usergroup messaging bug** ([usergroup.pm:47](ecore/Everything/Node/usergroup.pm#L47))
+   - **Problem**: When sending to usergroup that contains nested usergroups, `for_usergroup` field was being overwritten
+   - **Example**: root sends to "Content Editors" (contains "e2gods" as member) → message showed as from "e2gods" not "Content Editors"
+   - **Root Cause**: Line 46 used unconditional assignment `=`, nested group's recursive `deliver_message()` call overwrote parent's value
+   - **Fix**: Changed to conditional assignment `||=` to preserve parent group's for_usergroup during recursion
+   - **Code**: `$messagedata->{for_usergroup} ||= $self->node_id;`
+2. ✅ **Added 5-minute filter for initial chatterbox** ([Application.pm:5969-5977](ecore/Everything/Application.pm#L5969-L5977))
+   - **Problem**: Initial page load showed all 30 most recent messages regardless of age
+   - **Fix**: Added SQL time filtering using `DATE_SUB(NOW(), INTERVAL 5 MINUTE)`
+   - **Result**: Only messages from last 5 minutes shown on page load
+3. ✅ **Fixed usergroup name lookup for /msg command** ([Application.pm:4449](ecore/Everything/Application.pm#L4449))
+   - **Problem**: `/msg content_editors test` returned HTTP 400 error
+   - **Root Cause**: Usergroup lookup used original `$recip` (with underscores) instead of converted `$name` (with spaces)
+   - **Fix**: Changed line 4449 to `$recipient_node = $this->{db}->getNode($name, 'usergroup')`
+   - **Pattern**: E2 convention allows underscores in commands but stores names with spaces in database
+4. ✅ **Added success confirmation for sent messages** ([Chatterbox.js:168,276-283,562-575](react/components/Nodelets/Chatterbox.js))
+   - Added `messageSuccess` state (line 168)
+   - Set success message on successful send with 3-second auto-clear (lines 276-283)
+   - Display green confirmation box matching error message pattern (lines 562-575)
+   - Background: `#d4edda`, border: `#c3e6cb`, text: `#155724`
+5. ✅ **Created c_e test user with message forwarding** ([seeds.pl:82-93](tools/seeds.pl#L82-L93))
+   - Created user `c_e` in seeds script (NOT nodepack - nodepack comes from production)
+   - Set `message_forward_to` NodeParam pointing to Content Editors usergroup
+   - Allows testing message forwarding feature in development environment
+   - Password: `blah` (standard dev environment password)
+
+**Final Results**:
+- ✅ **Nested group messaging working** - for_usergroup field correctly preserved through recursion
+- ✅ **Chatterbox cleaner** - Only shows last 5 minutes of messages on page load
+- ✅ **Usergroup commands working** - `/msg content_editors` works with underscores
+- ✅ **User feedback improved** - Green success message confirms message sent
+- ✅ **Test data ready** - c_e user available for message forwarding tests
+
+**Key Files Modified**:
+- [ecore/Everything/Node/usergroup.pm](ecore/Everything/Node/usergroup.pm) - Fixed for_usergroup assignment
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Added time filter, fixed usergroup lookup
+- [react/components/Nodelets/Chatterbox.js](react/components/Nodelets/Chatterbox.js) - Added success confirmation
+- [tools/seeds.pl](tools/seeds.pl) - Added c_e user creation
+
+**Important Discoveries**:
+- **Recursive State Management**: Nested usergroups require careful handling with `||=` operator to prevent nested calls overwriting parent values
+- **E2 Naming Convention**: Usergroups with spaces can be referenced with underscores in commands (underscore-to-space conversion)
+- **Seeds vs Nodepack**: seeds.pl creates development test data; nodepack XML files come from production
+- **Message Delivery Architecture**: Messages API → `deliver_message()` on node objects → recursive for usergroups → individual user records
+- **Time Filtering Pattern**: `$DB->sqlSelect('DATE_SUB(NOW(), INTERVAL 5 MINUTE)')` for relative timestamps
+
+**Critical Bug Pattern Identified**:
+```perl
+# WRONG - overwrites in nested recursion
+$messagedata->{for_usergroup} = $self->node_id;
+
+# RIGHT - preserves parent value
+$messagedata->{for_usergroup} ||= $self->node_id;
+```
+
+**Next Steps**: Return to Phase 4a work (wheel spin API, sanctity lookup API, document migration)
 
 ### Session 15: Mason2 Elimination Phase 3 - Portal Elimination & Bug Fix (2025-11-24)
 

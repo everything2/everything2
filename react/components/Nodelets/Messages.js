@@ -1,7 +1,6 @@
 import React from 'react'
 import NodeletContainer from '../NodeletContainer'
-import ParseLinks from '../ParseLinks'
-import LinkNode from '../LinkNode'
+import MessageList from '../MessageList'
 import MessageModal from '../MessageModal'
 import { useActivityDetection } from '../../hooks/useActivityDetection'
 
@@ -220,191 +219,6 @@ const Messages = (props) => {
     }
   }
 
-  const formatTimestamp = (timestamp) => {
-    const date = new Date(timestamp)
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
-  const renderMessage = (message) => {
-    return (
-      <div
-        key={message.message_id}
-        id={`message_${message.message_id}`}
-        style={{
-          backgroundColor: '#f8f9fa',
-          border: '1px solid #dee2e6',
-          borderRadius: '4px',
-          padding: '8px',
-          marginBottom: '8px',
-          fontSize: '12px'
-        }}
-      >
-        <div style={{ marginBottom: '4px' }}>
-          <strong>
-            <LinkNode
-              id={message.author_user.node_id}
-              display={message.author_user.title}
-            />
-          </strong>
-          <span style={{ color: '#6c757d', fontSize: '11px', marginLeft: '8px' }}>
-            {formatTimestamp(message.timestamp)}
-          </span>
-        </div>
-
-        {message.for_usergroup && (
-          <div style={{ fontSize: '11px', color: '#6c757d', marginBottom: '4px' }}>
-            to group: <LinkNode
-              id={message.for_usergroup.node_id}
-              display={message.for_usergroup.title}
-            />
-          </div>
-        )}
-
-        <div style={{ marginBottom: '6px' }}>
-          <ParseLinks>{message.msgtext}</ParseLinks>
-        </div>
-
-        <div style={{ display: 'flex', gap: '6px', fontSize: '14px', flexWrap: 'wrap' }}>
-          {!message.archive ? (
-            <>
-              <button
-                onClick={() => handleReply(message, false)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  border: '1px solid #667eea',
-                  borderRadius: '3px',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer',
-                  color: '#667eea'
-                }}
-                title="Reply to sender"
-              >
-                ↩
-              </button>
-              {message.for_usergroup && message.for_usergroup.node_id > 0 && (
-                <button
-                  onClick={() => handleReply(message, true)}
-                  style={{
-                    padding: '4px 8px',
-                    fontSize: '14px',
-                    border: '1px solid #667eea',
-                    borderRadius: '3px',
-                    backgroundColor: '#fff',
-                    cursor: 'pointer',
-                    color: '#667eea'
-                  }}
-                  title="Reply to all group members"
-                >
-                  ↩↩
-                </button>
-              )}
-              <button
-                onClick={() => handleArchive(message.message_id)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  border: '1px solid #6c757d',
-                  borderRadius: '3px',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer',
-                  color: '#6c757d'
-                }}
-                title="Archive message"
-              >
-                📦
-              </button>
-              <button
-                onClick={() => handleDelete(message.message_id)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  border: '1px solid #dc3545',
-                  borderRadius: '3px',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer',
-                  color: '#dc3545'
-                }}
-                title="Delete message"
-              >
-                🗑
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => handleReply(message, false)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  border: '1px solid #667eea',
-                  borderRadius: '3px',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer',
-                  color: '#667eea'
-                }}
-                title="Reply to sender"
-              >
-                ↩
-              </button>
-              {message.for_usergroup && message.for_usergroup.node_id > 0 && (
-                <button
-                  onClick={() => handleReply(message, true)}
-                  style={{
-                    padding: '4px 8px',
-                    fontSize: '14px',
-                    border: '1px solid #667eea',
-                    borderRadius: '3px',
-                    backgroundColor: '#fff',
-                    cursor: 'pointer',
-                    color: '#667eea'
-                  }}
-                  title="Reply to all group members"
-                >
-                  ↩↩
-                </button>
-              )}
-              <button
-                onClick={() => handleUnarchive(message.message_id)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  border: '1px solid #6c757d',
-                  borderRadius: '3px',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer',
-                  color: '#6c757d'
-                }}
-                title="Unarchive message"
-              >
-                📂
-              </button>
-              <button
-                onClick={() => handleDelete(message.message_id)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  border: '1px solid #dc3545',
-                  borderRadius: '3px',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer',
-                  color: '#dc3545'
-                }}
-                title="Delete message"
-              >
-                🗑
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    )
-  }
 
   return (
     <NodeletContainer
@@ -464,16 +278,23 @@ const Messages = (props) => {
         </div>
       )}
 
-      {!loading && messages.length === 0 && (
-        <div style={{ padding: '12px', fontSize: '12px', color: '#999', fontStyle: 'italic' }}>
-          No messages
-        </div>
-      )}
-
-      {!loading && messages.length > 0 && (
-        <div>
-          {messages.slice().reverse().map(message => renderMessage(message))}
-        </div>
+      {!loading && (
+        <MessageList
+          messages={messages}
+          onReply={handleReply}
+          onReplyAll={handleReply}
+          onArchive={handleArchive}
+          onUnarchive={handleUnarchive}
+          onDelete={handleDelete}
+          compact={false}
+          showActions={{
+            reply: true,
+            replyAll: true,
+            archive: true,
+            unarchive: true,
+            delete: true
+          }}
+        />
       )}
 
       {/* New Message and Message Inbox buttons */}
