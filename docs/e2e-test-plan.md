@@ -5,6 +5,7 @@
 **Framework:** Playwright + Chromium
 
 ## Quick Links
+- [Test Users & Credentials](#test-users--credentials)
 - [Test Execution](#running-tests)
 - [Current Coverage](#coverage-overview)
 - [Failing Tests](#current-failures)
@@ -38,6 +39,67 @@
 - **P1 (High):** Important features - significant user impact if broken
 - **P2 (Medium):** Nice-to-have features - limited user impact
 - **P3 (Low):** Edge cases and admin-only features
+
+---
+
+## Test Users & Credentials
+
+All E2E test users are created by [tools/seeds.pl](../tools/seeds.pl) during development database initialization.
+
+### Standard Test Users
+
+| Username | Password | Permissions | GP | Use For |
+|----------|----------|-------------|-----|---------|
+| `root` | `blah` | Admin (e2gods) | Variable | Admin features, all permissions, legacy test compatibility |
+| `genericdev` | `blah` | Developer (edev) | Variable | Developer nodelet, normal developer tests |
+| `Cool Man Eddie` | `blah` | Regular user | Variable | Standard user tests, permission blocking |
+| `c_e` | `blah` | Content editor | Variable | Message forwarding tests (forwards to Content Editors) |
+
+### E2E Test Users (Recommended for New Tests)
+
+These users are specifically designed for E2E testing with consistent credentials and clear permission boundaries.
+
+| Username | Password | Permissions | GP | Use For |
+|----------|----------|-------------|-----|---------|
+| `e2e_admin` | `test123` | Admin (e2gods) | 500 | Admin features, god-mode testing |
+| `e2e_editor` | `test123` | Editor (Content Editors) | 300 | Content editing, editor features |
+| `e2e_developer` | `test123` | Developer (edev) | 200 | Developer features, chanop privileges |
+| `e2e_chanop` | `test123` | Chanop (chanops) | 150 | Chatterbox moderation, room management |
+| `e2e_user` | `test123` | Regular user (no groups) | 100 | Standard user functionality |
+| `e2e user space` | `test123` | Regular user (no groups) | 75 | Username with space character testing |
+
+**Note:** All E2E test users use password `test123` for consistency. Use these users for new tests to maintain clear permission boundaries and avoid conflicts with legacy tests.
+
+### Authentication Pattern for Tests
+
+E2 uses cookie-based authentication with hashed passwords. See [CLAUDE.md Cookie Authentication section](../CLAUDE.md#cookie-authentication) for details.
+
+**Quick auth fixture usage:**
+```javascript
+const { test } = require('./fixtures/auth');
+
+// Use pre-authenticated context
+test('my test', async ({ authenticatedPage, authenticatedContext }) => {
+  // Page is already logged in as 'root' user
+  await authenticatedPage.goto('/');
+  // ...
+});
+
+// Or login manually for specific user
+test('editor test', async ({ page }) => {
+  await page.goto('/');
+  // Expand Sign In nodelet if needed
+  const signInHeader = page.locator('h3:has-text("Sign In")');
+  if (await signInHeader.getAttribute('aria-expanded') === 'false') {
+    await signInHeader.click();
+  }
+  // Login
+  await page.fill('#username', 'e2e_editor');
+  await page.fill('#password', 'test123');
+  await page.click('input[type="submit"]');
+  // ...
+});
+```
 
 ---
 

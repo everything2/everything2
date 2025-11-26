@@ -31,8 +31,10 @@ const NewWriteups = (props) => {
   }, [])
 
   // Polling effect - refresh every 5 minutes when active and nodelet is expanded
+  // IMPORTANT: Do not poll for guest users - they see static content from initial page load
   React.useEffect(() => {
-    const shouldPoll = isActive && isMultiTabActive && props.nodeletIsOpen
+    const isGuest = props.user?.guest
+    const shouldPoll = !isGuest && isActive && isMultiTabActive && props.nodeletIsOpen
 
     if (shouldPoll) {
       pollInterval.current = setInterval(() => {
@@ -40,7 +42,7 @@ const NewWriteups = (props) => {
       }, 300000) // 5 minutes
     } else {
       // If we're not polling because nodelet is collapsed, mark that we missed updates
-      if (isActive && isMultiTabActive && !props.nodeletIsOpen) {
+      if (!isGuest && isActive && isMultiTabActive && !props.nodeletIsOpen) {
         missedUpdate.current = true
       }
 
@@ -56,7 +58,7 @@ const NewWriteups = (props) => {
         pollInterval.current = null
       }
     }
-  }, [isActive, isMultiTabActive, props.nodeletIsOpen, loadWriteups])
+  }, [isActive, isMultiTabActive, props.nodeletIsOpen, props.user, loadWriteups])
 
   // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
   React.useEffect(() => {
@@ -66,10 +68,12 @@ const NewWriteups = (props) => {
     }
   }, [props.nodeletIsOpen, loadWriteups])
 
-  // Focus refresh: immediately refresh when page becomes visible
+  // Focus refresh: immediately refresh when page becomes visible (logged-in users only)
   React.useEffect(() => {
+    const isGuest = props.user?.guest
+
     const handleVisibilityChange = () => {
-      if (!document.hidden && isActive) {
+      if (!isGuest && !document.hidden && isActive) {
         loadWriteups()
       }
     }
@@ -79,7 +83,7 @@ const NewWriteups = (props) => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [isActive, loadWriteups])
+  }, [isActive, props.user, loadWriteups])
 
   const filteredWriteups = writeups
     .filter((entry) => !entry.is_junk || !props.noJunk)

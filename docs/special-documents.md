@@ -1,6 +1,6 @@
 # Everything2 Special Document Types Reference
 
-**Last Updated**: 2025-11-20
+**Last Updated**: 2025-11-25
 **Total Documents**: 159 (nodelets excluded)
 
 ## Document Types Summary
@@ -136,7 +136,7 @@
 | Short URL Lookup | Superdoc | `/title/Short+URL+Lookup` | E2 Legacy |
 | show user vars | Superdoc | `/title/show+user+vars` | E2 Legacy |
 | Sign up | Superdoc | `/title/Sign+up` | Mason2 |
-| Silver Trinkets | Superdoc | `/title/Silver+Trinkets` | Mason2 |
+| Silver Trinkets | Superdoc | `/title/Silver+Trinkets` | React |
 | simple usergroup editor | Superdoc | `/title/simple+usergroup+editor` | E2 Legacy |
 | Site Trajectory | Superdoc | `/title/Site+Trajectory` | E2 Legacy |
 | Site Trajectory 2 | Superdoc | `/title/Site+Trajectory+2` | E2 Legacy |
@@ -163,7 +163,7 @@
 | Voting Oracle | Superdoc | `/title/Voting+Oracle` | E2 Legacy |
 | Wharfinger's Linebreaker | Superdoc | `/title/Wharfinger's+Linebreaker` | Mason2 |
 | What to do if E2 goes down | Superdoc | `/title/What+to+do+if+E2+goes+down` | Mason2 |
-| Wheel of Surprise | Superdoc | `/title/Wheel+of+Surprise` | Mason2 |
+| Wheel of Surprise | Superdoc | `/title/Wheel+of+Surprise` | React |
 | word messer-upper | Superdoc | `/title/word+messer-upper` | E2 Legacy |
 | Writeup Search | Superdoc | `/title/Writeup+Search` | E2 Legacy |
 | Writeups by Type | Superdoc | `/title/Writeups+by+Type` | E2 Legacy |
@@ -200,7 +200,8 @@
 - Nodelets are excluded from this list as they display differently in the UI
 - restricted_superdoc requires editor/admin permissions
 - oppressor_superdoc requires highest admin level (god mode)
-- Currently NO superdocs use React - all use E2 Legacy (delegation) or Mason2 (Page) rendering
+- **React Migration**: Silver Trinkets and Wheel of Surprise now use React full-page rendering
+- All other superdocs use E2 Legacy (delegation) or Mason2 (Page) rendering
 
 ---
 *For questions or updates, see [CLAUDE.md](../CLAUDE.md)*

@@ -28,7 +28,10 @@ find({wanted => $wanted, no_chdir => 1}, $dirname);
 
 # Tests that must run sequentially due to shared database state
 # These tests delete/modify global data (public messages, etc.) and cause race conditions
+# Also includes tests that share user accounts (normaluser1, normaluser2) to avoid session conflicts
 my %serial_tests = (
+    "$dirname/008_e2nodes.t" => 1,        # Uses normaluser1/normaluser2, creates/deletes nodes
+    "$dirname/009_writeups.t" => 1,       # Uses normaluser1/normaluser2, creates/deletes writeups
     "$dirname/036_message_opcode.t" => 1,
     "$dirname/037_chatter_api.t" => 1,
 );

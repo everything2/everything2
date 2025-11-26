@@ -11,9 +11,9 @@ This document provides context for AI assistants (like Claude) working on the Ev
 
 ### Testing & Development
 
-**NEVER run Perl tests directly in container** ❌
+**NEVER run Perl tests directly in container without vendor library path** ❌
 ```bash
-# WRONG - missing vendor libs
+# WRONG - missing vendor libs (Moose, DBD::mysql, etc. in /var/libraries/lib/perl5)
 docker exec e2devapp perl -c Application.pm
 docker exec e2devapp prove t/test.t
 ```
@@ -23,8 +23,22 @@ docker exec e2devapp prove t/test.t
 # CORRECT - has all dependencies
 ./docker/devbuild.sh                    # Full rebuild + all tests
 ./tools/parallel-test.sh                # Run tests only
-docker exec e2devapp bash -c "cd /var/everything && prove t/test.t"  # If you must run single test
 ```
+
+**If you must run single test manually, include vendor library path:**
+```bash
+# Add -I /var/libraries/lib/perl5 for vendor libs (Moose, DBD, etc.)
+docker exec e2devapp bash -c "cd /var/everything && perl -I/var/libraries/lib/perl5 -I/var/everything/ecore t/test.t"
+
+# Or with prove:
+docker exec e2devapp bash -c "cd /var/everything && prove -I/var/libraries/lib/perl5 t/test.t"
+```
+
+**Why this matters:**
+- Container has vendor Perl modules in `/var/libraries/lib/perl5` (Moose, Mason, DBD::mysql, etc.)
+- Default @INC doesn't include this path
+- Tests will fail with "Can't locate Moose.pm" without `-I /var/libraries/lib/perl5`
+- `parallel-test.sh` handles this automatically via `t/run.pl`
 
 ### Docker File Synchronization
 
@@ -63,6 +77,53 @@ docker exec e2devapp apache2ctl graceful
 - Solution: ALWAYS `docker cp` after editing ANY file (.pm, .t, .js, etc.) that needs to run in container
 - Alternative: Use `./docker/devbuild.sh` which rebuilds container with fresh files
 
+### JSON UTF-8 Encoding
+
+**CRITICAL: CGI POSTDATA requires explicit UTF-8 decoding** ⚠️
+
+```perl
+# WRONG - CGI->param("POSTDATA") returns raw UTF-8 bytes, not decoded strings
+sub JSON_POSTDATA {
+  my $postdata = $self->POSTDATA;
+  return $self->JSON->decode($postdata);  # ❌ Garbage for emojis/Unicode
+}
+
+# CORRECT - Decode UTF-8 bytes BEFORE JSON parsing
+use Encode qw(decode_utf8);
+
+sub JSON_POSTDATA {
+  my $postdata = $self->POSTDATA;
+  $postdata = decode_utf8($postdata);     # ✅ Decode raw bytes to characters
+  return $self->JSON->decode($postdata);
+}
+```
+
+**Why this matters:**
+- `CGI->param("POSTDATA")` returns **raw UTF-8 bytes**, NOT decoded character strings
+- CGI's `-utf8` flag only affects **form parameters**, not raw POST body
+- Must explicitly `decode_utf8()` before JSON parsing
+- Fixed in [Request.pm:7,39](ecore/Everything/Request.pm#L7)
+- Affects ALL API endpoints that receive JSON POST data (chatter, messages, etc.)
+
+**Symptoms of missing UTF-8 decode:**
+- Emojis display as garbage characters in database (�)
+- Accented letters (é, ñ, ü) become multi-byte gibberish
+- API requests succeed but data is corrupted
+- Legacy Mason2 forms work fine (they use form parameters, not JSON)
+
+**Testing pattern for MockRequest:**
+```perl
+# Mock must return UTF-8 BYTES like real CGI, not character strings
+sub POSTDATA {
+    my $self = shift;
+    return undef unless $self->{_postdata};
+    require JSON;
+    require Encode;
+    my $json_string = JSON->new->encode($self->{_postdata});
+    return Encode::encode_utf8($json_string);  # Return bytes like real CGI
+}
+```
+
 ### Perl::Critic - Finding Code Quality Issues
 
 **ALWAYS run Perl::Critic to find bugs** ✅
@@ -86,6 +147,29 @@ docker exec e2devapp bash -c "cd /var/everything && ./tools/critic.pl ecore/Ever
 - Missing return statements
 - Unused variables
 - Code complexity issues
+
+### NPM Install Permission Fix
+
+**After npm install, fix Playwright CLI permissions** ⚠️
+
+After running `npm install` (or after `git pull` if package-lock.json changed), the Playwright CLI file may lack execute permissions, causing "Permission denied" errors when running E2E tests.
+
+```bash
+# Symptom: "sh: 1: playwright: Permission denied" when running tests
+
+# Fix: Add execute permission to Playwright CLI
+chmod +x node_modules/@playwright/test/cli.js
+
+# Verify it worked:
+ls -la node_modules/@playwright/test/cli.js
+# Should show: -rwxr-xr-x (executable)
+```
+
+**Why this happens:**
+- npm install creates files with permissions based on umask/git config
+- The `.bin/playwright` symlink points to `@playwright/test/cli.js`
+- If cli.js lacks execute permission, npx fails with "Permission denied"
+- This affects both direct `npx playwright` and test runner scripts
 
 ### Webpack Build Mode
 
@@ -251,14 +335,82 @@ my $nodelets = $VARS->{nodelets} || '';
 
 ### Cookie Authentication
 
-**E2 uses special cookie format:**
+**CRITICAL: E2 uses hashed password cookies, NOT plaintext** ⚠️
+
+E2's authentication system uses a cookie named `userpass` (configurable via `$Everything::CONF->cookiepass`) that contains the username and **hashed password**, separated by a pipe character `|`.
+
+**Cookie Structure:**
+```
+userpass = username|hashed_password
+```
+
+**How Authentication Works:**
+
+1. **Login Flow** ([Request.pm:217-225](ecore/Everything/Request.pm#L217)):
+   ```perl
+   # Server creates cookie with hashed password
+   sub make_login_cookie {
+     my ($self, $user) = @_;
+     return $self->cookie(
+       -name => $self->CONF->cookiepass,
+       -value => $user->title."|".$user->passwd,  # passwd is already hashed!
+       -expires => $expires
+     );
+   }
+   ```
+
+2. **Cookie Parsing** ([Request.pm:97-101](ecore/Everything/Request.pm#L97)):
+   ```perl
+   $cookie = $self->cookie($self->CONF->cookiepass);
+   if($cookie) {
+     ($username, $pass) = split(/\|/, $cookie);  # Pipe separator, not tab!
+   }
+   ```
+
+3. **Password Validation** ([Request.pm:133-139](ecore/Everything/Request.pm#L133)):
+   ```perl
+   if($pass eq $user->passwd) {
+     # Salted password accepted
+     # Cookie contains hashed password, compared directly to user.passwd field
+   }
+   ```
+
+**WRONG Authentication Patterns:**
 
 ```bash
-# Cookie format: userpass=username%09password
+# ❌ WRONG - plaintext password with tab separator
 curl -b 'userpass=root%09blah' http://localhost/
 
-# %09 is URL-encoded tab character (separator)
+# ❌ WRONG - plaintext password with pipe separator
+curl -b 'userpass=root|blah' http://localhost/
 ```
+
+**CORRECT Authentication Patterns:**
+
+```bash
+# ✅ Option 1: Get cookie from browser/real login session
+# Login via browser, extract cookie from DevTools, use that cookie
+
+# ✅ Option 2: Use test user cookie from seeds.pl
+# Test users in seeds.pl have known passwords that generate predictable hashes
+
+# ✅ Option 3: For development only - query database for hashed password
+docker exec e2devdb mysql -u root -pblah everything \
+  -e "SELECT title, passwd FROM user WHERE title='root'"
+# Then use: curl -b 'userpass=root|<hashed_passwd_from_db>' http://localhost:9080/
+
+# ✅ Option 4: Use E2E test users with known credentials
+# E2E test users (e2e_admin, e2e_editor, etc.) have password "test123"
+# After logging in once, extract cookie and reuse for tests
+```
+
+**Important Notes:**
+- Cookie name is `userpass` by default (see [Configuration.pm:32](ecore/Everything/Configuration.pm#L32))
+- Separator is pipe `|` character, NOT tab `\t` or URL-encoded tab `%09`
+- Password in cookie is already hashed with salt (see [Application.pm hashString()](ecore/Everything/Application.pm))
+- Never transmit plaintext passwords in cookies
+- For API testing, use real login session cookies or query database for hashed passwords
+- Guest users: no cookie needed, request without cookie defaults to guest user
 
 ### React Component Data Flow
 
@@ -405,6 +557,8 @@ npm test -- --coverage      # With coverage report
 # Tests all 159+ special documents
 # Takes ~10-15 seconds
 # Run this BEFORE full test suite to catch obvious breaks
+# Includes automatic retry logic for transient errors (400, 502, 503, 504)
+# Max 3 retries with exponential backoff (0.5s, 1s, 2s)
 ```
 
 ### Authenticated API Testing
@@ -447,10 +601,18 @@ docker exec e2devapp curl -s 'http://localhost/api/messages/?limit=5' \
 **Common test users in dev environment:**
 | Username | Password | Role | Use For |
 |----------|----------|------|---------|
-| `root` | `blah` | Admin | Admin features, all permissions |
+| `root` | `blah` | Admin (gods + e2gods) | Admin features, all permissions, social management |
+| `e2e_admin` | `test123` | Admin (gods) | E2E testing - admin workflows |
+| `e2e_editor` | `test123` | Editor (Content Editors) | E2E testing - editor workflows |
+| `e2e_developer` | `test123` | Developer (edev) | E2E testing - developer workflows |
+| `e2e_chanop` | `test123` | Chanop (chanops) | E2E testing - chat operator workflows |
+| `e2e_user` | `test123` | Regular user | E2E testing - standard user workflows |
+| `e2e user space` | `test123` | Regular user | E2E testing - usernames with spaces |
 | `genericdev` | `blah` | Developer | Developer nodelet, normal user tests |
 | `Cool Man Eddie` | `blah` | Regular user | Standard user tests |
 | `c_e` | `blah` | Content editor | Message forwarding tests |
+
+**Note**: Root user is in BOTH `gods` (admin group) and `e2gods` (social user management group) - this is required for testing nested usergroup message delivery.
 
 Check `tools/seeds.pl` for complete list of test users.
 
@@ -695,6 +857,209 @@ curl -I http://localhost:9080/react/main.bundle.js 2>&1 | grep "200 OK"
 
 ## Recent Work History
 
+### Session 23: E2E Test Infrastructure & UTF-8 Encoding Fixes (2025-11-25)
+
+**Focus**: Fix E2E login tests, make seeds.pl idempotent, fix UTF-8 emoji encoding, improve smoke test robustness
+
+**Completed Work**:
+1. ✅ **Fixed Playwright CLI Permission Issue**
+   - **Problem**: `sh: 1: playwright: Permission denied` when running E2E tests after npm install
+   - **Root Cause**: `node_modules/@playwright/test/cli.js` lacked execute permission
+   - **Fix**: `chmod +x node_modules/@playwright/test/cli.js`
+   - **Documentation**: Added NPM Install Permission Fix section to [CLAUDE.md:90-111](CLAUDE.md#L90-L111)
+2. ✅ **Made seeds.pl Idempotent** ([seeds.pl:94-187](tools/seeds.pl#L94-L187))
+   - **Problem**: Script failed on re-runs with "Duplicate entry '829913-0'" composite key error
+   - **Root Cause**: `my $max_rank = $DB->sqlSelect(...) || -1` treats 0 as falsy
+   - **Fix**: Changed to `$max_rank = defined($max_rank) ? $max_rank : -1`
+   - **Created**: `add_to_group()` helper function for idempotent group membership
+   - **Result**: Script can now run multiple times without errors
+3. ✅ **Implemented Proper Password Hashing for E2E Users** ([seeds.pl:134-187](tools/seeds.pl#L134-L187))
+   - **Problem**: E2E users had plaintext "test123" passwords instead of hashed
+   - **Fix**: Used `$APP->saltNewPassword("test123")` which returns `($pwhash, $salt)` tuple
+   - **Added**: Else clause to update passwords for existing users (idempotent operation)
+   - **Result**: All 6 E2E users now have 86-character hashed passwords
+4. ✅ **Corrected Admin Group Assignment** ([seeds.pl:94-129](tools/seeds.pl#L94-L129))
+   - **Initial User Feedback**: "For e2e_admin, the admin usergroup is 'gods' (not e2gods)"
+   - **Clarification**: "root should be in both gods and e2gods. e2gods is a social user management group"
+   - **Fix**: Root user now added to BOTH groups:
+     - `gods` (node_id 114) - Admin privileges
+     - `e2gods` (node_id 829913) - Social user management (member of Content Editors)
+   - **E2E test users**: e2e_admin uses only `gods` group
+   - **Why Both**: Root needs both for comprehensive testing (admin features + nested usergroup message delivery)
+   - **Idempotent**: Both group additions check for existing membership before inserting
+5. ✅ **Fixed UTF-8 Emoji Encoding Issues**
+   - **Problem**: Emojis like ❤️ and special characters like … showing as "â¦" (mojibake)
+   - **Root Cause**: `utf8::encode()` calls double-encoding UTF-8 strings from JSON
+   - **Technical Details**:
+     - JSON decode returns Perl character strings with UTF-8 flag set
+     - `utf8::encode()` converts character strings to byte strings
+     - MySQL utf8mb4 expects character strings, not byte strings
+     - When bytes treated as characters, displays as mojibake
+   - **Fixed**: Removed `utf8::encode($message)` from:
+     - [Application.pm:3896](ecore/Everything/Application.pm#L3896) - `sendPublicChatter()`
+     - [opcode.pm:577](ecore/Everything/Delegation/opcode.pm#L577) - `/topic` command
+   - **Result**: Emojis and special characters now display correctly in chatterbox
+6. ✅ **Enabled Headless Browser Mode** ([playwright.config.js:33](playwright.config.js#L33))
+   - **User Request**: "can the default run of the e2e-tests.sh script run these browsers in headless mode? They are popping up a lot and causing distractions."
+   - **Fix**: Added `headless: true` to playwright.config.js use section
+   - **Result**: E2E tests run without visible browser windows
+7. ✅ **Implemented Smoke Test Retry Logic** ([smoke-test.rb:259-368](tools/smoke-test.rb#L259-L368))
+   - **User Request**: "We're getting random 400s in the smoke test, probably timing or threads related. Fix up that test to make it more robust or to retry 400s"
+   - **Implemented**: Comprehensive retry logic with exponential backoff
+   - **Transient error codes**: 400, 502, 503, 504
+   - **Max retries**: 3 attempts
+   - **Backoff delays**: 0.5s, 1s, 2s (exponential)
+   - **Features**:
+     - Retries HTTP transient errors (400, 502, 503, 504)
+     - Retries network exceptions (Net::OpenTimeout, Net::ReadTimeout, Connection reset)
+     - Shows retry attempts in output: "⚠ HTTP 400, retrying (1/3) after 0.5s"
+     - Shows success after retries: "✓ (after 2 retries)"
+     - Reports final failure if all retries exhausted: "✗ HTTP 400 (failed after 3 retries)"
+   - **Result**: Smoke tests now resilient to timing-related transient failures
+8. ✅ **Made Usergroup Message Tests Robust** ([t/037_usergroup_messages.t:171-213](t/037_usergroup_messages.t#L171-L213))
+   - **Problem**: Nested usergroup test failed after database rebuild (root not in e2gods)
+   - **User Guidance**: "make it more robust" + "root should be in both gods and e2gods"
+   - **Fix**: Simplified test to expect seeds.pl to set up correct group membership
+   - **Removed**: Temporary group membership code (no longer needed)
+   - **Result**: Test now passes when database has root in both gods and e2gods
+
+**Final Results**:
+- ✅ **159/159 smoke tests passing** (100% success rate with retry logic)
+- ✅ **Playwright CLI working** - E2E tests run successfully
+- ✅ **seeds.pl idempotent** - Can run multiple times safely
+- ✅ **E2E users authenticated** - All 6 users have proper hashed passwords
+- ✅ **UTF-8 encoding fixed** - Emojis and special characters display correctly
+- ✅ **Headless mode enabled** - No browser window distractions
+- ✅ **Smoke tests robust** - Automatic retry for transient failures
+
+**Key Files Modified**:
+- [node_modules/@playwright/test/cli.js](node_modules/@playwright/test/cli.js) - Fixed execute permission
+- [tools/seeds.pl](tools/seeds.pl) - Idempotent operations, proper password hashing, root in gods+e2gods
+- [t/037_usergroup_messages.t](t/037_usergroup_messages.t) - Simplified nested usergroup test
+- [playwright.config.js](playwright.config.js) - Enabled headless mode
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Removed utf8::encode() from sendPublicChatter()
+- [ecore/Everything/Delegation/opcode.pm](ecore/Everything/Delegation/opcode.pm) - Removed utf8::encode() from /topic command
+- [tools/smoke-test.rb](tools/smoke-test.rb) - Added comprehensive retry logic
+- [CLAUDE.md](CLAUDE.md) - Added NPM Install Permission Fix, updated smoke test documentation, added E2E test users
+
+**Important Discoveries**:
+- **NPM Install Permissions**: After `npm install` or `git pull`, Playwright CLI may lack execute permission
+- **Perl Falsy Values**: 0 evaluates as false in `||` operator - must use `defined()` check for values that can be 0
+- **Composite Primary Keys**: MAX(rank) can return 0, which is valid - don't treat as "no rows"
+- **Password Hashing**: E2 uses `saltNewPassword()` which returns tuple `($pwhash, $salt)`
+- **User Groups Distinction**:
+  - `gods` (node_id 114) - Admin privileges
+  - `e2gods` (node_id 829913) - Social user management (member of Content Editors)
+  - Root needs BOTH for comprehensive testing
+- **UTF-8 Encoding**: JSON decode returns character strings - never call `utf8::encode()` on them before MySQL insert
+- **MySQL utf8mb4**: Expects character strings with UTF-8 flag, not byte strings
+- **Smoke Test Robustness**: Parallel testing can cause timing-related transient errors - retry logic essential
+- **Exponential Backoff**: Start with 0.5s, double each retry (0.5s, 1s, 2s) to avoid overwhelming server
+- **Test Data Assumptions**: Tests should be robust to database rebuild - don't assume transient state, expect seeds.pl to set up correctly
+
+**Critical Patterns Identified**:
+```perl
+# WRONG - treats 0 as falsy
+my $max_rank = $DB->sqlSelect(...) || -1;
+
+# RIGHT - proper defined check
+my $max_rank = $DB->sqlSelect(...);
+$max_rank = defined($max_rank) ? $max_rank : -1;
+
+# WRONG - double-encoding UTF-8
+my $message = $json_data->{message};  # Already UTF-8 character string
+utf8::encode($message);  # Converts to bytes - causes mojibake
+
+# RIGHT - use character string directly
+my $message = $json_data->{message};  # UTF-8 character string
+# Insert directly into MySQL utf8mb4 - no encoding needed
+```
+
+**Next Steps**:
+- **Database rebuild required**: Run `./docker/devbuild.sh` to rebuild database with updated seeds.pl (root in both gods and e2gods)
+- Continue Phase 4a document migrations
+- Monitor E2E test stability with new retry logic
+- Consider extracting more htmlcode modules into API methods
+
+### Session 22: Chatter Configuration, E2E Users & Legacy Code Cleanup (2025-11-25)
+
+**Focus**: Make chatter time window configurable, create E2E test users, fix E2E login tests, remove obsolete nodelet_meta_container
+
+**Completed Work**:
+1. ✅ **Made Chatter Time Window Configurable** ([Configuration.pm:62](ecore/Everything/Configuration.pm#L62), [Application.pm:4404,5996](ecore/Everything/Application.pm#L4404))
+   - Added `chatter_time_window_minutes` configuration option (default: 5 minutes)
+   - Updated `getRecentChatter()` to use `$this->{conf}->chatter_time_window_minutes` instead of hardcoded value
+   - Updated initial page load chatter to use same config
+   - **Problem Solved**: Initial page load showed last 5 minutes, but API refresh showed ALL messages
+   - **Fix**: Both paths now use the same configurable time window
+2. ✅ **Created E2E Test Users** ([seeds.pl:105-187](tools/seeds.pl#L105-L187))
+   - **6 test users** with consistent password `test123`:
+     - `e2e_admin` - Admin (e2gods), 500 GP
+     - `e2e_editor` - Editor (Content Editors), 300 GP
+     - `e2e_developer` - Developer (edev), 200 GP
+     - `e2e_chanop` - Chanop (chanops), 150 GP
+     - `e2e_user` - Regular user, 100 GP
+     - `e2e user space` - Username with space, 75 GP
+   - All users created during database initialization
+   - Clear permission boundaries for testing different access levels
+3. ✅ **Fixed E2E Login Tests** ([navigation.spec.js:31-36](tests/e2e/navigation.spec.js#L31-L36))
+   - **Problem**: `text=root` selector matched 9 elements on page
+   - **Fix**: Check that Sign In form disappears and homenode link appears
+   - Uses specific selectors: `#signin_user`, `a[href="/user/root"]`
+4. ✅ **Created Comprehensive E2E User Tests** ([tests/e2e/e2e-users.spec.js](tests/e2e/e2e-users.spec.js))
+   - Tests all 6 E2E users can login successfully
+   - Tests admin privileges (Master Control access)
+   - Tests regular user restrictions (Master Control blocked)
+   - Handles usernames with spaces correctly (URL encoding)
+   - 10 test scenarios total
+5. ✅ **Removed Obsolete nodelet_meta_container Calls**
+   - Verified htmlcode is empty: `<code></code>` in [nodelet_meta-container.xml](nodepack/htmlcode/nodelet_meta-container.xml)
+   - Verified delegation returns `''`: [htmlcode.pm:979-991](ecore/Everything/Delegation/htmlcode.pm#L979-L991)
+   - Removed from [container.pm:135](ecore/Everything/Delegation/container.pm#L135)
+   - Removed from [document.pm:12249](ecore/Everything/Delegation/document.pm#L12249)
+   - **Reason**: Phase 3 complete - React now owns sidebar rendering
+6. ✅ **Created E2E Test Convenience Script** ([tools/e2e-test.sh](tools/e2e-test.sh))
+   - Checks Docker containers running
+   - Checks dev server responding
+   - Installs Playwright if needed
+   - Provides helpful error messages
+   - Supports: `./tools/e2e-test.sh [--headed|--debug|--ui] [test-name]`
+7. ✅ **Updated E2E Documentation**
+   - Added test users section to [docs/e2e-test-plan.md:44-101](docs/e2e-test-plan.md#L44-L101)
+   - Updated [tests/e2e/README.md](tests/e2e/README.md) with convenience script usage
+   - Documented E2E user credentials and permissions
+
+**Final Results**:
+- ✅ **Chatter time window configurable** - Consistent behavior between initial load and API refresh
+- ✅ **6 E2E test users created** - Complete permission spectrum (admin → regular)
+- ✅ **E2E tests updated** - 26 test scenarios total (16 existing + 10 new E2E user tests)
+- ✅ **Legacy code removed** - nodelet_meta_container fully eliminated
+- ✅ **Testing improved** - Convenient script with pre-flight checks
+
+**Key Files Modified/Created**:
+- [ecore/Everything/Configuration.pm](ecore/Everything/Configuration.pm) - Added chatter_time_window_minutes
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Use config for time window
+- [ecore/Everything/Delegation/container.pm](ecore/Everything/Delegation/container.pm) - Removed meta-container call
+- [ecore/Everything/Delegation/document.pm](ecore/Everything/Delegation/document.pm) - Removed meta-container call
+- [tools/seeds.pl](tools/seeds.pl) - Added 6 E2E test users
+- [tools/e2e-test.sh](tools/e2e-test.sh) - NEW: Convenience test runner
+- [tests/e2e/e2e-users.spec.js](tests/e2e/e2e-users.spec.js) - NEW: E2E user login/permission tests
+- [tests/e2e/navigation.spec.js](tests/e2e/navigation.spec.js) - Fixed login test selector
+- [docs/e2e-test-plan.md](docs/e2e-test-plan.md) - Added test users documentation
+- [tests/e2e/README.md](tests/e2e/README.md) - Updated with convenience script
+
+**Important Discoveries**:
+- **Configuration access pattern**: Use `$this->{conf}->setting` not `$Everything::CONF->setting` in Application.pm
+- **Chatter API inconsistency**: Initial load used time filter, but API refresh didn't - now both consistent
+- **E2E test user strategy**: Dedicated test users with consistent credentials better than reusing legacy users
+- **nodelet_meta_container**: Already dead code (empty/returns ''), just needed call site cleanup
+- **E2E test convenience**: Pre-flight checks (Docker running, server responding) prevent confusing failures
+
+**Next Steps**:
+- Run E2E test suite to verify all tests pass with new users
+- Consider adding more E2E tests for features with 0% coverage (content creation, voting, search)
+- Continue Phase 4a work (React page migration)
+
 ### Session 21: Guest Nodelet Fix - htmlcode.pm Path (2025-11-25)
 
 **Focus**: Complete the guest nodelet consistency fix for delegation-rendered pages (htmlcode.pm path)
@@ -766,6 +1131,182 @@ if ($APP->isGuest($USER)) {
 **Next Steps**:
 - Consider unifying the two rendering paths (Controller vs htmlcode delegation)
 - Continue Phase 4a work (React page migrations)
+
+### Session 24: Test Robustness & UTF-8 Emoji Verification (2025-11-25)
+
+**Focus**: Fix intermittent parallel test failures, add UTF-8 emoji encoding tests, improve documentation
+
+**Completed Work**:
+1. ✅ **Fixed Parallel Test Race Conditions** ([t/run.pl:11-14](t/run.pl#L11-L14))
+   - **Problem**: Tests t/008_e2nodes.t and t/009_writeups.t failing randomly during parallel execution
+   - **Root Cause**: Both tests use normaluser1 and normaluser2, causing session state conflicts when run concurrently
+   - **Fix**: Added both tests to serial_tests hash in t/run.pl
+   - **Verification**: Ran parallel-test.sh 3 times - all passed consistently
+   - **Result**: Now runs 4 tests serially (008, 009, 036, 037), 45 tests in parallel
+2. ✅ **Enhanced Vendor Library Path Documentation** ([CLAUDE.md:14-41](CLAUDE.md#L14-L41))
+   - **User Feedback**: "Remember the gotcha that you need to add the vendor path for libraries"
+   - **Issue**: CLAUDE.md mentioned "missing vendor libs" but didn't explain HOW to fix
+   - **Fix**: Added comprehensive documentation with examples showing `-I /var/libraries/lib/perl5` usage
+   - **Impact**: Future AI assistants and developers will know to use vendor library path
+   - **Critical Pattern**:
+     ```bash
+     # WRONG - missing vendor libs
+     docker exec e2devapp perl -c Application.pm
+
+     # CORRECT - include vendor library path
+     docker exec e2devapp bash -c "cd /var/everything && perl -I/var/libraries/lib/perl5 -c Application.pm"
+     ```
+3. ✅ **Integrated UTF-8 Emoji Tests** ([t/037_chatter_api.t:365-403](t/037_chatter_api.t#L365-L403))
+   - **User Request**: "emojis in chatterbox are still failing. Can you add a perl test for this and fix the underlying issue"
+   - **Implementation**: Added UTF-8 emoji test as 10th subtest in chatter API test suite
+   - **Test Coverage**: 6 assertions verify emoji handling:
+     - Status 200 OK for emoji message
+     - Success flag is true
+     - Message retrieved from database
+     - **Emoji message stored correctly without mojibake** (❤️, …, 🎉)
+     - **Retrieved message has UTF-8 flag set** (`utf8::is_utf8()`)
+     - **Emoji message in API response is correct**
+   - **Result**: All tests passing - UTF-8 encoding from Session 23 confirmed working
+   - **Added**: `use utf8;` and `binmode(STDOUT, ":utf8");` to test file
+4. ✅ **Updated Documentation**
+   - [docs/changelog-2025-11.md](docs/changelog-2025-11.md) - Added Session 24 test infrastructure improvements
+   - Quality metrics updated: 49 Perl tests, 445 React tests, 4 serial + 45 parallel test execution
+
+**Final Results**:
+- ✅ **All 49 Perl tests passing** (100%)
+- ✅ **All 445 React tests passing** (100%)
+- ✅ **Application running** at http://localhost:9080
+- ✅ **Test stability** - 3 consecutive parallel runs passed
+- ✅ **UTF-8 emoji support** - Verified working via automated tests
+
+**Key Files Modified**:
+- [t/run.pl](t/run.pl) - Added 008_e2nodes.t and 009_writeups.t to serial_tests
+- [t/037_chatter_api.t](t/037_chatter_api.t) - Added UTF-8 emoji test subtest
+- [CLAUDE.md](CLAUDE.md) - Expanded vendor library path documentation with examples
+- [docs/changelog-2025-11.md](docs/changelog-2025-11.md) - Added Session 24 summary
+
+**Important Discoveries**:
+- **Parallel Test Race Conditions**: Tests sharing user accounts (normaluser1, normaluser2) must run serially
+- **Vendor Library Path**: Container has modules in `/var/libraries/lib/perl5` (Moose, Mason, DBD::mysql)
+- **Docker Volume Caching**: Use `docker exec e2devapp rm -f` to force file deletion from container
+- **UTF-8 Test Pattern**: Use `use utf8;` + `binmode(STDOUT, ":utf8");` + `utf8::is_utf8()` checks
+- **Session 23 UTF-8 Fix Verified**: Removing `utf8::encode()` calls successfully fixed emoji encoding
+
+**Critical Patterns Identified**:
+```perl
+# VENDOR LIBRARY PATH PATTERN
+docker exec e2devapp bash -c "cd /var/everything && prove -I/var/libraries/lib/perl5 t/test.t"
+
+# UTF-8 TEST PATTERN
+use utf8;
+binmode(STDOUT, ":utf8");
+my $emoji_message = "Test emoji ❤️ and ellipsis … and party 🎉";
+# ... send message, retrieve from DB ...
+ok(utf8::is_utf8($retrieved_msg), "Retrieved message has UTF-8 flag set");
+is($retrieved_msg, $emoji_message, "Emoji message stored correctly without mojibake");
+```
+
+**Next Steps**:
+- Fix E2E test login issues (selector too broad, authentication flow)
+- Continue with remaining E2E test scenarios
+
+---
+
+### Session 25: UTF-8 Encoding Fix & Code Optimization (2025-11-25)
+
+**Focus**: Fix emoji/Unicode corruption in chatterbox, implement lazy loading for React components, make seeds.pl idempotent
+
+**Completed Work**:
+1. ✅ **Fixed UTF-8 Encoding for JSON API Requests** ([Request.pm:7,39](ecore/Everything/Request.pm#L7))
+   - **Critical Bug**: Emojis and Unicode characters corrupted when sent through React chatterbox/messages
+   - **User Report**: "Emoji's sent through the chatterbox interface show up as garbage in the database"
+   - **Root Cause**: `CGI->param("POSTDATA")` returns **raw UTF-8 bytes**, not decoded character strings
+     - CGI module's `-utf8` flag only affects **form parameters**, not raw POST body
+     - JSON parser received UTF-8 bytes instead of Perl character strings
+     - Database has `mysql_enable_utf8mb4 => 1` which expects character strings
+   - **Fix**: Added `use Encode qw(decode_utf8)` and explicit `decode_utf8()` call before JSON parsing
+   - **Impact**: All API endpoints now properly handle Unicode (emojis, accented letters, etc.)
+   - **Testing**: Legacy Mason2 forms worked because they use form parameters (auto-decoded by CGI)
+2. ✅ **Implemented React Lazy Loading for Documents** ([DocumentComponent.js:1-62](react/components/DocumentComponent.js))
+   - Added `React.lazy()` for WheelOfSurprise and SilverTrinkets
+   - Wrapped in `<Suspense>` with loading fallback
+   - Each document creates separate webpack bundle chunk
+   - Prevents main bundle bloat as more documents migrate to React
+3. ✅ **Implemented Selective Lazy Loading for Nodelets** ([E2ReactRoot.js:1-728](react/components/E2ReactRoot.js))
+   - Identified 3 guest-default nodelets (always loaded): Sign In, Recommended Reading, New Writeups
+   - Converted 23 user-preference nodelets to lazy loading
+   - Each lazy nodelet wrapped in individual `<Suspense>` boundary
+   - **Bundle sizes**: Main 1.2MB, largest chunks: MasterControl 77KB, Chatterbox 51KB, Developer 37KB
+4. ✅ **Prevented Guest User API Polling** ([NewWriteups.js:35-86](react/components/Nodelets/NewWriteups.js))
+   - Added `!isGuest` checks to polling interval and visibility change handlers
+   - Guest users see static content from initial page load
+   - Reduces unnecessary server load (no 5-minute polling for guests)
+5. ✅ **Made seeds.pl Idempotent** ([seeds.pl](tools/seeds.pl))
+   - Added existence checks before all database inserts
+   - Pattern: Check with getNode()/sqlSelect(), update if exists, insert if not
+   - **Fixed scope bug**: Changed `$poll_node_id` to `$poll_node->{node_id}` (lines 743, 754, 756)
+   - Can now safely re-run seeds.pl without errors or duplicate data
+6. ✅ **Removed Deprecated Code**
+   - Deleted kaizen.mc, kaizen_ui_preview.pm (deprecated Kaizen UI)
+   - Removed AllPages.pm (unused from Session 18 preload attempt)
+7. ✅ **Updated Documentation**
+   - Added JSON UTF-8 encoding to CLAUDE.md Common Pitfalls
+   - Updated special-documents.md for Silver Trinkets and Wheel of Surprise React status
+
+**Final Results**:
+- ✅ **159/159 smoke tests passing** (100%)
+- ✅ **UTF-8 encoding fixed** - Emojis and Unicode work correctly
+- ✅ **Bundle optimization** - 28 separate chunks, main bundle stays constant at 1.2MB
+- ✅ **Seeds idempotent** - Database can be safely reloaded
+
+**Key Files Modified**:
+- [ecore/Everything/Request.pm](ecore/Everything/Request.pm) - Added decode_utf8() for raw POST body
+- [react/components/DocumentComponent.js](react/components/DocumentComponent.js) - Lazy loading for documents
+- [react/components/E2ReactRoot.js](react/components/E2ReactRoot.js) - Selective lazy loading for nodelets
+- [react/components/Nodelets/NewWriteups.js](react/components/Nodelets/NewWriteups.js) - Guest polling prevention
+- [tools/seeds.pl](tools/seeds.pl) - Idempotency checks throughout
+- [docs/special-documents.md](docs/special-documents.md) - Updated React migration status
+- [CLAUDE.md](CLAUDE.md) - Added JSON UTF-8 encoding section
+
+**Important Discoveries**:
+- **CGI POSTDATA vs Parameters**: `param("POSTDATA")` returns **raw bytes**, form parameters return **decoded strings**
+- **CGI -utf8 Flag Scope**: `-utf8` flag only affects form parameters, NOT raw POST body
+- **Legacy vs React Encoding**: Legacy Mason2 forms worked because they use CGI form parameters (auto-decoded)
+- **Database UTF-8 Handling**: MySQL connection has `mysql_enable_utf8mb4 => 1` which expects Perl character strings
+- **Lazy Loading Strategy**: Eagerly load guest defaults, lazy load user preferences
+- **Guest Resource Optimization**: Guest users should never poll APIs - serve static content only
+- **Idempotency Pattern**: Always check existence before insert: `if (!getNode(...)) { insert } else { update }`
+- **Variable Scope**: Variables declared inside `if` blocks are out of scope later - use object dereference instead
+
+**Critical Bug Pattern Identified**:
+```perl
+# WRONG - CGI POSTDATA returns raw UTF-8 bytes
+sub JSON_POSTDATA {
+  my $postdata = $self->POSTDATA;
+  return $self->JSON->decode($postdata);  # ❌ Mojibake!
+}
+
+# RIGHT - Decode UTF-8 bytes before JSON parsing
+use Encode qw(decode_utf8);
+
+sub JSON_POSTDATA {
+  my $postdata = $self->POSTDATA;
+  $postdata = decode_utf8($postdata);     # ✅ Convert bytes to characters
+  return $self->JSON->decode($postdata);
+}
+```
+
+8. ✅ **Fixed Test Suite MockRequest UTF-8 Encoding** ([t/035_chatroom_api.t:46-53](t/035_chatroom_api.t#L46))
+   - **Problem**: MockRequest::POSTDATA returned JSON-encoded string (character string)
+   - **Real behavior**: CGI returns raw UTF-8 bytes from POST body
+   - **Fix**: Added `Encode::encode_utf8()` to convert character string to bytes
+   - **Pattern**: Mock objects must accurately simulate real behavior including byte/string encoding
+   - All 49 Perl tests passing, all 445 React tests passing
+
+**Next Steps**:
+- Test emoji/Unicode messaging in live environment
+- Monitor bundle sizes as more documents migrate
+- Continue Phase 4a document migrations
 
 ### Session 20: Guest Nodelet Regression Fix & E2E Test Documentation (2025-11-25)
 

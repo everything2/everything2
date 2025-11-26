@@ -47,7 +47,9 @@ package MockRequest {
         my $self = shift;
         return undef unless $self->{_postdata};
         require JSON;
-        return JSON->new->encode($self->{_postdata});
+        require Encode;
+        my $json_string = JSON->new->encode($self->{_postdata});
+        return Encode::encode_utf8($json_string);  # Return bytes like real CGI
     }
     sub JSON_POSTDATA { return $_[0]->{_postdata} }
 }

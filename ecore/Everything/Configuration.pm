@@ -59,6 +59,8 @@ has 'clean_search_words_aggressively' => (isa => 'Bool', is => 'ro', default => 
 
 has 'search_row_limit' => (isa => 'Int', is => 'ro', default => 200);
 
+has 'chatter_time_window_minutes' => (isa => 'Int', is => 'ro', default => 5);
+
 has 'logdirectory' => (isa => 'Str', is => 'ro', default => '/var/log/everything');
 
 has 'use_local_assets' => (isa => 'Bool', is => 'ro', default => '0');
