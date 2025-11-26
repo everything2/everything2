@@ -8,7 +8,8 @@ const QuickReference = (props) => {
   let wiktionarylink = (term) => {return `https://en.wiktionary.org/wiki/${encodeURIComponent(term)}`}
   let googlelink = (term) => {return `https://www.google.com/search?q=${encodeURIComponent(term)}`}
 
-  return(<NodeletContainer title="Quick Reference" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}>
+  return(<NodeletContainer id={props.id}
+      title="Quick Reference" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}>
   <p>Look for more about this topic:</p>
   <ul>
     <li key="quickref_wiki">Try <LinkNode url={wikilink(props.quickRefSearchTerm)} display="Wikipedia" /> or <LinkNode url={wiktionarylink(props.quickRefSearchTerm)} display="Wiktionary" /></li>

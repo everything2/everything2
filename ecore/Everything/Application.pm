@@ -6093,21 +6093,18 @@ sub buildNodeInfoStructure
   }
 
   # Epicenter nodelet
+  # Note: user fields (gp, experience, level, gpOptOut, node_id, title, guest)
+  # are available globally on e2.user - no need to duplicate here
   if($nodelets =~ /262/ and not $this->isGuest($USER))
   {
     $e2->{epicenter} = {};
     $e2->{epicenter}->{votesLeft} = $USER->{votesleft} || 0;
     $e2->{epicenter}->{cools} = $VARS->{cools} || 0;
-    $e2->{epicenter}->{experience} = $USER->{experience} || 0;
-    $e2->{epicenter}->{gp} = $USER->{GP} || 0;
-    $e2->{epicenter}->{level} = $this->getLevel($USER);
-    $e2->{epicenter}->{gpOptOut} = $VARS->{GPoptout} ? \1 : \0;
     $e2->{epicenter}->{localTimeUse} = $VARS->{localTimeUse} ? \1 : \0;
-    $e2->{epicenter}->{userId} = $USER->{node_id};
     $e2->{epicenter}->{userSettingsId} = $this->{conf}->user_settings;
 
-    # Determine help page based on level
-    $e2->{epicenter}->{helpPage} = ($e2->{epicenter}->{level} < 2) ? 'E2 Quick Start' : 'Everything2 Help';
+    # Determine help page based on level (use global e2.user.level)
+    $e2->{epicenter}->{helpPage} = ($e2->{user}->{level} < 2) ? 'E2 Quick Start' : 'Everything2 Help';
 
     # Borgcheck data (React component will handle rendering)
     if($VARS->{borged}) {
@@ -6160,12 +6157,11 @@ sub buildNodeInfoStructure
     }
   }
 
-  # Master Control
-  if($nodelets =~ /1687135/)
+  # Master Control - load for editors/admins (htmlcode will add nodelet to list)
+  # Note: isEditor and isAdmin already set globally on e2.user.editor and e2.user.admin
+  if($this->isEditor($USER) || $this->isAdmin($USER))
   {
     $e2->{masterControl} = {};
-    $e2->{masterControl}->{isEditor} = $this->isEditor($USER) ? \1 : \0;
-    $e2->{masterControl}->{isAdmin} = $this->isAdmin($USER) ? \1 : \0;
 
     if($this->isEditor($USER))
     {
@@ -6721,10 +6717,12 @@ sub buildNodeInfoStructure
       # Automatically enable React page mode when buildReactData exists
       $e2->{reactPageMode} = \1;
 
-      # Merge Page data into e2 structure
-      if ($page_data->{contentData}) {
-        $e2->{contentData} = $page_data->{contentData};
-      }
+      # Wrap page data in contentData structure and add type automatically
+      # The type is derived from the page name (e.g., "wheel_of_surprise")
+      $e2->{contentData} = {
+        type => $page_name,
+        %{$page_data || {}}  # Spread page data into contentData
+      };
     }
   }
 

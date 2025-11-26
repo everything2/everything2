@@ -7,7 +7,8 @@ const Notelet = (props) => {
   if (!props.noteletData) {
     return (
       <NodeletContainer
-        title="Notelet"
+        id={props.id}
+      title="Notelet"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -22,6 +23,7 @@ const Notelet = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Notelet"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

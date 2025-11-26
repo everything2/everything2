@@ -3973,13 +3973,38 @@ sub static_javascript
       $nodeletlist = join(',', @$guest_nodelets);
     }
   } else {
-    # Logged-in users: use PAGELOAD or VARS
+    # Logged-in users: use PAGELOAD, VARS, or fall back to default_nodelets
     $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};
+
+    # If user has no configured nodelets, use default_nodelets
+    if (!$nodeletlist) {
+      my $default_nodelets = $Everything::CONF->default_nodelets;
+      if ($default_nodelets && ref($default_nodelets) eq 'ARRAY' && @$default_nodelets) {
+        $nodeletlist = join(',', @$default_nodelets);
+        $APP->devLog("Using default_nodelets for user " . $USER->{title} . " (no VARS->{nodelets} configured)");
+      }
+    }
   }
 
   # Build nodeletorder array from nodelet IDs
   if ($nodeletlist) {
     my @nodelet_ids = split(',', $nodeletlist);
+
+    # Prepend Master Control for admin/editor users if not already in list
+    if (!$APP->isGuest($USER) && ($APP->isAdmin($USER) || $APP->isEditor($USER))) {
+      my $master_control = $DB->getNode('Master Control', 'nodelet');
+      if ($master_control) {
+        my $master_control_id = $master_control->{node_id};
+        my $has_master_control = grep { $_ == $master_control_id } @nodelet_ids;
+        if (!$has_master_control) {
+          unshift @nodelet_ids, $master_control_id;
+          $APP->devLog("Prepended Master Control for admin/editor user " . $USER->{title});
+        }
+      } else {
+        $APP->devLog("WARNING: Master Control nodelet not found in database");
+      }
+    }
+
     foreach my $nodelet_id (@nodelet_ids) {
       my $nodelet = $DB->getNodeById($nodelet_id);
       if ($nodelet) {

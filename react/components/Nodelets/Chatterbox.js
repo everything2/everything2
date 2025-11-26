@@ -602,6 +602,7 @@ const Chatterbox = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Chatterbox"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

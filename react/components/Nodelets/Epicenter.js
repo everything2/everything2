@@ -7,9 +7,15 @@ import GPGain from '../GPGain'
 import ServerTime from '../ServerTime'
 
 const Epicenter = (props) => {
-  if (props.isGuest) {
+  // Use global user object instead of individual props
+  const isGuest = Boolean(props.user?.guest)
+  const userName = props.user?.title
+  const gpOptOut = Boolean(props.user?.gpOptOut)
+
+  if (isGuest) {
     return (
       <NodeletContainer
+        id={props.id}
         title="Epicenter"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
@@ -43,6 +49,7 @@ const Epicenter = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Epicenter"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}
@@ -67,11 +74,11 @@ const Epicenter = (props) => {
           />
         </li>
         <li title="Your profile">
-          <LinkNode type="user" title={props.userName} params={{ lastnode_id: 0 }} />{' '}
+          <LinkNode type="user" title={userName} params={{ lastnode_id: 0 }} />{' '}
           <small>
             <LinkNode
               type="user"
-              title={props.userName}
+              title={userName}
               display="(edit)"
               params={{ displaytype: 'edit', lastnode_id: 0 }}
             />
@@ -116,7 +123,7 @@ const Epicenter = (props) => {
         </p>
       )}
 
-      {!props.gpOptOut && props.gpGain && (
+      {!gpOptOut && props.gpGain && (
         <p id="gp">
           <GPGain amount={props.gpGain} />
         </p>

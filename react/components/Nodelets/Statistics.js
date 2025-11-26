@@ -20,7 +20,8 @@ const Statistics = (props) => {
   if (!props.statistics) {
     return (
       <NodeletContainer
-        title="Statistics"
+        id={props.id}
+      title="Statistics"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -48,7 +49,8 @@ const Statistics = (props) => {
   }
 
   return (
-    <NodeletContainer title="Statistics" nodeletIsOpen={props.nodeletIsOpen} showNodelet={props.showNodelet}>
+    <NodeletContainer id={props.id}
+      title="Statistics" nodeletIsOpen={props.nodeletIsOpen} showNodelet={props.showNodelet}>
       {personal && Object.keys(personal).length > 0 && (
         <NodeletSection
           nodelet="stat"

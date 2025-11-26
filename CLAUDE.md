@@ -857,6 +857,129 @@ curl -I http://localhost:9080/react/main.bundle.js 2>&1 | grep "200 OK"
 
 ## Recent Work History
 
+### Session 24: E2 Staff Page React Migration (2025-11-25)
+
+**Focus**: Convert E2 Staff page from Mason2 template to React component using Phase 4a pattern
+
+**Completed Work**:
+1. ✅ **Migrated E2 Staff Page to React** ([e2_staff.pm:8-45](ecore/Everything/Page/e2_staff.pm#L8-L45))
+   - Created `buildReactData()` method in Everything::Page::e2_staff
+   - Fetches data from 5 usergroups: Content Editors, gods, e2gods, sigtitle, chanops
+   - Filters for user-type members only (excludes nested usergroups)
+   - Identifies inactive gods (in gods but not in e2gods)
+   - Converts Perl node objects to simple data structures for JSON serialization
+   - **Pattern**: `{title => $_->title, node_id => $_->id, type => 'user'}`
+2. ✅ **Created React E2Staff Component** ([E2Staff.js](react/components/Documents/E2Staff.js))
+   - Displays all 5 staff lists with numbered lists
+   - Uses LinkNode component for consistent user links
+   - Uses ParseLinks for E2 bracket notation in explanatory text
+   - Includes complete power/role explanations from original Mason template
+   - Shows active/inactive gods in separate sections
+   - Lists site leadership team (jaybonci, Tem42, mauler)
+   - Explains staff symbols ($, @, +) and "Who does what" section
+   - Describes what gods CAN and CANNOT do
+3. ✅ **Removed Obsolete display() Methods**
+   - Removed from [e2_staff.pm](ecore/Everything/Page/e2_staff.pm) per user request
+   - Removed from [silver_trinkets.pm](ecore/Everything/Page/silver_trinkets.pm) per user request
+   - Pages now use only `buildReactData()` method (Phase 4a pattern)
+4. ✅ **Fixed Perl::Critic Violations** ([e2_staff.pm](ecore/Everything/Page/e2_staff.pm))
+   - Changed double-quoted literals to single quotes (17 violations)
+   - Fixed double-sigil dereferences: `@$inactive` → `@{$inactive}`
+   - Added `scalar` to grep in boolean context
+   - Stored intermediate variables to avoid method chaining issues
+   - All violations resolved (BRUTAL and CRUEL levels)
+5. ✅ **Updated DocumentComponent Router** ([DocumentComponent.js:16,128-129](react/components/DocumentComponent.js))
+   - Added lazy import for E2Staff component
+   - Added case statement for `'e2_staff'` content type
+   - Component loads on-demand via code splitting
+6. ✅ **Created Comprehensive Test Suite** ([E2Staff.test.js](react/components/Documents/E2Staff.test.js))
+   - **13 tests, 100% passing**
+   - Tests rendering of all 5 staff lists (editors, gods, inactive, sigtitle, chanops)
+   - Tests section headings and explanatory text
+   - Tests staff symbols ($, @, +)
+   - Tests site leadership display
+   - Tests god powers and limitations
+   - Tests empty list handling (graceful degradation)
+   - Tests LinkNode usage for user links
+   - Tests correct number of list items
+   - Uses mocked ParseLinks and LinkNode components
+7. ✅ **Built and Deployed React Bundles**
+   - Webpack build successful in 1755ms
+   - Deployed main.bundle.js and E2Staff lazy bundle to container
+   - Apache gracefully restarted
+   - Application ready for testing at http://localhost:9080
+
+**Final Results**:
+- ✅ **All 13 E2Staff tests passing** (100%)
+- ✅ **Webpack build successful** - No errors or warnings
+- ✅ **Bundles deployed** - Application running with new React component
+- ✅ **Phase 4a pattern confirmed** - Server-side data via buildReactData(), React-only rendering
+
+**Key Files Created/Modified**:
+- [ecore/Everything/Page/e2_staff.pm](ecore/Everything/Page/e2_staff.pm) - Added buildReactData(), removed display()
+- [ecore/Everything/Page/silver_trinkets.pm](ecore/Everything/Page/silver_trinkets.pm) - Removed display()
+- [react/components/Documents/E2Staff.js](react/components/Documents/E2Staff.js) - NEW: React component (198 lines)
+- [react/components/Documents/E2Staff.test.js](react/components/Documents/E2Staff.test.js) - NEW: Test suite (154 lines, 13 tests)
+- [react/components/DocumentComponent.js](react/components/DocumentComponent.js) - Added E2Staff routing
+
+**Important Discoveries**:
+- **Application.pm Wrapping**: Application.pm automatically wraps data in `{contentData: {type: ..., ...data}}` structure, so buildReactData() should return raw data only
+- **Perl::Critic String Literals**: Always use single quotes for non-interpolating strings to avoid "useless interpolation" violations
+- **Grep Boolean Context**: Must use `scalar grep {...}` when using grep in boolean context (if/unless)
+- **Double-Sigil Dereferences**: Modern Perl requires `@{$array_ref}` not `@$array_ref`
+- **Data Transformation Pattern**: Convert Perl node objects to simple hashrefs before JSON serialization
+- **Test Text Matching**: ParseLinks preserves bracket notation, so use flexible regex patterns like `/Content Editor.*Usergroup/`
+- **React.lazy() Pattern**: DocumentComponent uses lazy loading for document components to enable code splitting
+
+**Phase 4a Migration Pattern**:
+```perl
+# Perl Page class
+package Everything::Page::example;
+use Moose;
+extends 'Everything::Page';
+
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+
+  # Fetch data from database/usergroups
+  my $data = $self->APP->get_something();
+
+  # Convert to simple structures (not blessed objects)
+  my $simple_data = [map {
+    { title => $_->title, node_id => $_->id, type => 'user' }
+  } @{$data}];
+
+  # Return raw data (Application.pm wraps it)
+  return { my_data => $simple_data };
+}
+```
+
+```javascript
+// React component
+import React from 'react'
+import LinkNode from '../LinkNode'
+import ParseLinks from '../ParseLinks'
+
+const ExamplePage = ({ data }) => {
+  const { my_data } = data
+
+  return (
+    <div>
+      {my_data.map(item => (
+        <LinkNode key={item.node_id} {...item} />
+      ))}
+    </div>
+  )
+}
+
+export default ExamplePage
+```
+
+**Next Steps**:
+- User will test E2 Staff page in browser at http://localhost:9080/title/E2+Staff
+- Continue Phase 4a migrations for other document types
+- Consider removing more obsolete display() methods from migrated pages
+
 ### Session 23: E2E Test Infrastructure & UTF-8 Encoding Fixes (2025-11-25)
 
 **Focus**: Fix E2E login tests, make seeds.pl idempotent, fix UTF-8 emoji encoding, improve smoke test robustness
@@ -2685,6 +2808,116 @@ All React nodelets follow this established pattern:
    - Maintains framework compatibility
    - React handles all rendering
 ```
+
+#### React Page Pattern (Phase 4a)
+
+**IMPORTANT: New simplified architecture for React-rendered pages (November 2025)**
+
+React pages use a simplified `buildReactData()` pattern where Application.pm automatically adds the `type` field. This eliminates boilerplate from Page classes.
+
+**Pattern Overview:**
+
+```
+1. Page Class (ecore/Everything/Page/*.pm)
+   - Extends Everything::Page
+   - Implements buildReactData($REQUEST) method
+   - Returns data hash (type added automatically)
+
+2. Application.pm Auto-Typing
+   - Wraps page data in contentData structure
+   - Derives type from page name (e.g., "wheel_of_surprise")
+   - Adds to window.e2.contentData
+
+3. Controller Detection
+   - Checks if page class can('buildReactData')
+   - Uses generic react_page.mc template for React pages
+   - Uses page-specific template for Mason2 pages
+
+4. React Component (react/components/Documents/*.js)
+   - Lazy-loaded for code splitting
+   - Registered in DocumentComponent router
+   - Receives data and user props
+
+5. Generic Template (templates/pages/react_page.mc)
+   - Single template serves ALL React pages
+   - No page-specific templates needed
+```
+
+**Implementation Examples:**
+
+**Content-only page (no server data):**
+```perl
+package Everything::Page::about_nobody;
+use Moose;
+extends 'Everything::Page';
+
+sub buildReactData {
+    my ( $self, $REQUEST ) = @_;
+
+    # Type is automatically added by Application.pm
+    return {};
+}
+```
+
+**Page with server-provided data:**
+```perl
+package Everything::Page::wheel_of_surprise;
+use Moose;
+extends 'Everything::Page';
+
+sub buildReactData {
+    my ( $self, $REQUEST ) = @_;
+
+    my $USER = $REQUEST->user;
+
+    # Type is automatically added by Application.pm
+    return {
+        userGP       => $USER->GP || 0,
+        hasGPOptout  => $USER->gp_optout ? 1 : 0,
+        isHalloween  => 0
+    };
+}
+```
+
+**How Application.pm wraps data** ([Application.pm:6724-6729](ecore/Everything/Application.pm#L6724-L6729)):
+```perl
+# Wrap page data in contentData structure and add type automatically
+# The type is derived from the page name (e.g., "wheel_of_surprise")
+$e2->{contentData} = {
+  type => $page_name,
+  %{$page_data || {}}  # Spread page data into contentData
+};
+```
+
+**React component registration** (DocumentComponent.js):
+```javascript
+import { Suspense, lazy } from 'react'
+
+const AboutNobody = lazy(() => import('./Documents/AboutNobody'))
+const WheelOfSurprise = lazy(() => import('./Documents/WheelOfSurprise'))
+
+const DocumentComponent = ({ data, user }) => {
+  const { type } = data
+
+  switch (type) {
+    case 'about_nobody':
+      return <AboutNobody />
+    case 'wheel_of_surprise':
+      return <WheelOfSurprise data={data} user={user} />
+    default:
+      return <div className="document-error">Unknown type</div>
+  }
+}
+```
+
+**Benefits:**
+- **Less boilerplate**: Pages just return data hash
+- **Automatic typing**: Page name becomes type field
+- **Content-only optimization**: No server data? Just `return {}`
+- **Single template**: react_page.mc serves all React pages
+- **Code splitting**: React.lazy() creates separate bundles
+
+See [docs/mason2-elimination-plan.md](docs/mason2-elimination-plan.md) Phase 4a for complete documentation.
 
 #### Data Flow
 

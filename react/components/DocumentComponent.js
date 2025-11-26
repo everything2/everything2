@@ -3,6 +3,8 @@ import React, { Suspense, lazy } from 'react'
 // Lazy load document components - only loaded when needed
 const WheelOfSurprise = lazy(() => import('./Documents/WheelOfSurprise'))
 const SilverTrinkets = lazy(() => import('./Documents/SilverTrinkets'))
+const AboutNobody = lazy(() => import('./Documents/AboutNobody'))
+const E2Staff = lazy(() => import('./Documents/E2Staff'))
 
 /**
  * DocumentComponent - Router for React-migrated documents
@@ -39,6 +41,12 @@ const DocumentComponent = ({ data, user }) => {
 
       case 'silver_trinkets':
         return <SilverTrinkets data={data} user={user} />
+
+      case 'about_nobody':
+        return <AboutNobody />
+
+      case 'e2_staff':
+        return <E2Staff data={data} user={user} />
 
       default:
         return (

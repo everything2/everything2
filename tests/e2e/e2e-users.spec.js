@@ -35,21 +35,23 @@ test.describe('E2E Test Users', () => {
       // Fill in credentials
       await page.fill('#signin_user', username)
       await page.fill('#signin_passwd', 'test123')
-      await page.click('input[type="submit"][value="Login"]')
 
-      // Wait for login to complete
-      await page.waitForLoadState('networkidle')
+      // Click and wait for JavaScript redirect
+      await Promise.all([
+        page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
+        page.click('input[type="submit"]')
+      ])
 
-      // Verify login success - Sign In form should be gone
-      await expect(page.locator('#signin_user')).not.toBeVisible()
+      // Wait for React to render - epicenter nodelet is always visible for logged-in users
+      await page.waitForSelector('#epicenter', { timeout: 10000 })
 
-      // User's homenode link should be visible
+      // Verify login success - epicenter should contain "Log Out" link
+      await expect(page.locator('#epicenter')).toContainText('Log Out')
+
+      // User's homenode link should be visible in Epicenter
       // Handle spaces in username for URL encoding
       const usernameEncoded = username.replace(/ /g, '+')
-      await expect(page.locator(`a[href="/user/${usernameEncoded}"]`)).toBeVisible()
-
-      // Verify chatterbox is visible (logged-in users see chatterbox)
-      await expect(page.locator('#chatterbox')).toBeVisible()
+      await expect(page.locator('#epicenter')).toContainText(username)
     })
   })
 

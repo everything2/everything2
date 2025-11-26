@@ -61,7 +61,8 @@ const RecentNodes = (props) => {
   if (!props.recentNodes || !Array.isArray(props.recentNodes) || props.recentNodes.length === 0) {
     return (
       <NodeletContainer
-        title="Recent Nodes"
+        id={props.id}
+      title="Recent Nodes"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -72,6 +73,7 @@ const RecentNodes = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Recent Nodes"
       showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}

@@ -24,7 +24,8 @@ const OtherUsers = (props) => {
   if (!otherUsersData) {
     return (
       <NodeletContainer
-        title="Other Users"
+        id={props.id}
+      title="Other Users"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -607,7 +608,8 @@ const OtherUsers = (props) => {
   if (userCount === 0) {
     return (
       <NodeletContainer
-        title="Other Users"
+        id={props.id}
+      title="Other Users"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -621,6 +623,7 @@ const OtherUsers = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Other Users"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

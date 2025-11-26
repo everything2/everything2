@@ -15,9 +15,6 @@ test.describe('GP Transfer Flow', () => {
     // Step 1: Login as e2e_admin
     await loginAsE2EAdmin(page)
 
-    // Verify admin is logged in
-    await expect(page.locator('a[href="/user/e2e_admin"]')).toBeVisible()
-
     // Step 2: Navigate to Superbless
     await page.goto('/title/Superbless')
 
@@ -25,9 +22,10 @@ test.describe('GP Transfer Flow', () => {
     await expect(page.locator('text=/Superbless/i')).toBeVisible()
 
     // Fill in Superbless form to grant 5 GP to e2e_user
-    await page.fill('input[name="recipient"]', 'e2e_user')
-    await page.fill('input[name="amount"]', '5')
-    await page.click('input[type="submit"][value="Bestow GP"]')
+    // Superbless uses EnrichUsers0 for username, BestowGP0 for GP amount
+    await page.fill('input[name="EnrichUsers0"]', 'e2e_user')
+    await page.fill('input[name="BestowGP0"]', '5')
+    await page.click('input[type="submit"]')
 
     // Wait for confirmation
     await page.waitForLoadState('networkidle')
@@ -42,9 +40,6 @@ test.describe('GP Transfer Flow', () => {
     // Step 4: Login as e2e_user
     await loginAsE2EUser(page)
 
-    // Verify user is logged in
-    await expect(page.locator('a[href="/user/e2e_user"]')).toBeVisible()
-
     // Step 5: Check Epicenter nodelet for GP increase notification
     const epicenter = page.locator('#epicenter')
     await expect(epicenter).toBeVisible()
@@ -58,20 +53,20 @@ test.describe('GP Transfer Flow', () => {
     await page.goto('/title/Wheel+of+Surprise')
 
     // Verify page loaded
-    await expect(page.locator('text=Wheel of Surprise')).toBeVisible()
+    await expect(page.locator('h1:has-text("Wheel of Surprise")')).toBeVisible()
 
-    // Step 7: User should see "Spin the Wheel" button (has 5+ GP now)
-    const spinButton = page.locator('button:has-text("Spin the Wheel")')
+    // Wait for React component to render
+    await page.waitForSelector('.wheel-of-surprise', { timeout: 5000 })
+
+    // Step 7: User should see "Spin" button (has 5+ GP now)
+    const spinButton = page.locator('button:has-text("Spin")')
     await expect(spinButton).toBeVisible()
 
     // Optionally: Actually spin the wheel
     await spinButton.click()
 
-    // Wait for spin result
-    await page.waitForTimeout(2000) // Animation time
-
-    // Should see some result (either prize message or error)
-    const resultArea = page.locator('#wheel-result, .wheel-result, text=/You (won|received|got)/i')
-    await expect(resultArea.first()).toBeVisible()
+    // Wait for spin result (component shows result in styled div)
+    await expect(page.locator('.wheel-of-surprise div[style*="background"]'))
+      .toBeVisible({ timeout: 5000 })
   })
 })

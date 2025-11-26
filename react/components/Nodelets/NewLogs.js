@@ -5,7 +5,8 @@ import NodeletContainer from '../NodeletContainer'
 
 const NewLogs = (props) => {
 
-  return (<NodeletContainer title="New Logs" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}><ul className="linklist">{props.daylogLinks.map((linkinfo,i) => {
+  return (<NodeletContainer id={props.id}
+      title="New Logs" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}><ul className="linklist">{props.daylogLinks.map((linkinfo,i) => {
     return <li className="loglink" key={"dayloglink"+i}><LinkNode type="e2node" title={linkinfo[0]} display={linkinfo[1]} /></li>
   })}
   </ul>

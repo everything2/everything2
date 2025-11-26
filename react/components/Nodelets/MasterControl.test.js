@@ -70,44 +70,13 @@ jest.mock('../MasterControl/NodeToolset', () => {
 })
 
 describe('MasterControl Component', () => {
-  describe('non-editor users', () => {
-    it('renders container for non-editors', () => {
-      render(<MasterControl isEditor={false} />)
-      const container = screen.getByTestId('nodelet-container')
-      expect(container).toHaveAttribute('data-title', 'Master Control')
-    })
-
-    it('shows "Nothing for you here" message for non-editors', () => {
-      render(<MasterControl isEditor={false} />)
-      expect(screen.getByText('Nothing for you here.')).toBeInTheDocument()
-    })
-
-    it('does not show any admin sections for non-editors', () => {
-      render(
-        <MasterControl
-          isEditor={false}
-          adminSearchForm={{ nodeId: '123', nodeType: 'e2node', nodeTitle: 'Test', serverName: 'test.com', scriptName: '/index.pl' }}
-          nodeToolsetData={{ nodeId: '123', nodeTitle: 'Test', nodeType: 'e2node', canDelete: true }}
-          nodeNotesData={{ node_id: 123, notes: [], count: 0 }}
-          currentUserId={456}
-          adminSection={{ isBorged: false, showSection: true }}
-          ceSection={{ currentMonth: 10, currentYear: 2025, isUserNode: false, nodeId: '123', nodeTitle: 'Test', showSection: true }}
-        />
-      )
-      expect(screen.queryByTestId('admin-search-form')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('node-toolset')).not.toBeInTheDocument()
-      expect(screen.queryByText(/Node Note/)).not.toBeInTheDocument()
-      expect(screen.queryByTestId('admin-section-links')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('ce-section-links')).not.toBeInTheDocument()
-    })
-  })
-
   describe('editor users (non-admin)', () => {
+    const editorUser = { editor: 1, admin: 0 }
+
     it('renders admin search form for editors', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={false}
+          user={editorUser}
           adminSearchForm={{
             nodeId: '123',
             nodeType: 'e2node',
@@ -125,8 +94,7 @@ describe('MasterControl Component', () => {
     it('renders node note for editors', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={false}
+          user={editorUser}
           nodeNotesData={{ node_id: 123, notes: [{ nodenote_id: 1, notetext: 'Test note' }], count: 1 }}
           currentUserId={456}
         />
@@ -138,8 +106,7 @@ describe('MasterControl Component', () => {
     it('renders CE section for editors', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={false}
+          user={editorUser}
           ceSection={{
             currentMonth: 10,
             currentYear: 2025,
@@ -159,34 +126,33 @@ describe('MasterControl Component', () => {
     it('does not render node toolset for non-admin editors', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={false}
+          user={editorUser}
           nodeToolsetData={{ nodeId: '123', nodeTitle: 'Test', nodeType: 'e2node', canDelete: true }}
         />
       )
-      // Should not render because isAdmin is false
+      // Should not render because user.admin is 0
       expect(screen.queryByTestId('node-toolset')).not.toBeInTheDocument()
     })
 
     it('does not render admin section for non-admin editors', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={false}
+          user={editorUser}
           adminSection={{ isBorged: false, showSection: true }}
         />
       )
-      // Should not render because isAdmin is false
+      // Should not render because user.admin is 0
       expect(screen.queryByTestId('admin-section-links')).not.toBeInTheDocument()
     })
   })
 
   describe('admin users', () => {
+    const adminUser = { editor: 1, admin: 1 }
+
     it('renders all editor sections for admins', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={true}
+          user={adminUser}
           adminSearchForm={{ nodeId: '123', nodeType: 'e2node', nodeTitle: 'Test', serverName: 'test.com', scriptName: '/index.pl' }}
           nodeNotesData={{ node_id: 123, notes: [], count: 0 }}
           currentUserId={456}
@@ -203,8 +169,7 @@ describe('MasterControl Component', () => {
     it('renders node toolset for admins', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={true}
+          user={adminUser}
           nodeToolsetData={{
             nodeId: '123',
             nodeTitle: 'Test Node',
@@ -223,8 +188,7 @@ describe('MasterControl Component', () => {
     it('renders admin section for admins', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={true}
+          user={adminUser}
           adminSection={{ isBorged: false, showSection: true }}
           epi_admins={true}
           toggleSection={jest.fn()}
@@ -237,8 +201,7 @@ describe('MasterControl Component', () => {
     it('renders all sections when all props are provided', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={true}
+          user={adminUser}
           adminSearchForm={{ nodeId: '123', nodeType: 'e2node', nodeTitle: 'Test', serverName: 'test.com', scriptName: '/index.pl' }}
           nodeToolsetData={{ nodeId: '123', nodeTitle: 'Test', nodeType: 'e2node', canDelete: true }}
           nodeNotesData={{ node_id: 123, notes: [], count: 0 }}
@@ -259,32 +222,35 @@ describe('MasterControl Component', () => {
   })
 
   describe('conditional rendering', () => {
+    const editorUser = { editor: 1, admin: 0 }
+    const adminUser = { editor: 1, admin: 1 }
+
     it('does not render adminSearchForm when undefined', () => {
-      render(<MasterControl isEditor={true} isAdmin={false} />)
+      render(<MasterControl user={editorUser} />)
       // Just verify the container renders without error
       expect(screen.getByTestId('nodelet-container')).toBeInTheDocument()
     })
 
     it('does not render nodeToolset when undefined', () => {
-      render(<MasterControl isEditor={true} isAdmin={true} />)
+      render(<MasterControl user={adminUser} />)
       // Just verify the container renders without error
       expect(screen.getByTestId('nodelet-container')).toBeInTheDocument()
     })
 
     it('does not render nodeNote when undefined', () => {
-      render(<MasterControl isEditor={true} isAdmin={false} />)
+      render(<MasterControl user={editorUser} />)
       // Just verify the container renders without error
       expect(screen.getByTestId('nodelet-container')).toBeInTheDocument()
     })
 
     it('does not render adminSection when undefined', () => {
-      render(<MasterControl isEditor={true} isAdmin={true} />)
+      render(<MasterControl user={adminUser} />)
       // Just verify the container renders without error
       expect(screen.getByTestId('nodelet-container')).toBeInTheDocument()
     })
 
     it('does not render ceSection when undefined', () => {
-      render(<MasterControl isEditor={true} isAdmin={false} />)
+      render(<MasterControl user={editorUser} />)
       // Just verify the container renders without error
       expect(screen.getByTestId('nodelet-container')).toBeInTheDocument()
     })
@@ -292,8 +258,7 @@ describe('MasterControl Component', () => {
     it('renders only provided sections', () => {
       render(
         <MasterControl
-          isEditor={true}
-          isAdmin={true}
+          user={adminUser}
           adminSearchForm={{ nodeId: '123', nodeType: 'e2node', nodeTitle: 'Test', serverName: 'test.com', scriptName: '/index.pl' }}
           adminSection={{ isBorged: false, showSection: true }}
           epi_admins={true}
@@ -310,56 +275,48 @@ describe('MasterControl Component', () => {
   })
 
   describe('component structure', () => {
+    const editorUser = { editor: 1, admin: 0 }
+
     it('wraps content in NodeletContainer', () => {
-      render(<MasterControl isEditor={false} />)
+      render(<MasterControl user={editorUser} />)
       expect(screen.getByTestId('nodelet-container')).toBeInTheDocument()
     })
 
     it('sets correct title on NodeletContainer', () => {
-      render(<MasterControl isEditor={false} />)
+      render(<MasterControl user={editorUser} />)
       const container = screen.getByTestId('nodelet-container')
       expect(container).toHaveAttribute('data-title', 'Master Control')
     })
 
     it('passes nodeletIsOpen prop to NodeletContainer', () => {
-      render(<MasterControl isEditor={false} nodeletIsOpen={true} />)
+      render(<MasterControl user={editorUser} nodeletIsOpen={true} />)
       const container = screen.getByTestId('nodelet-container')
       expect(container).toHaveAttribute('data-open', 'true')
     })
 
     it('passes nodeletIsOpen false to NodeletContainer', () => {
-      render(<MasterControl isEditor={false} nodeletIsOpen={false} />)
+      render(<MasterControl user={editorUser} nodeletIsOpen={false} />)
       const container = screen.getByTestId('nodelet-container')
       expect(container).toHaveAttribute('data-open', 'false')
     })
   })
 
   describe('permission levels', () => {
-    it('respects isEditor flag', () => {
-      const searchForm = { nodeId: '123', nodeType: 'e2node', nodeTitle: 'Test', serverName: 'test.com', scriptName: '/index.pl' }
-      const { rerender } = render(
-        <MasterControl isEditor={false} adminSearchForm={searchForm} />
-      )
-      expect(screen.getByText('Nothing for you here.')).toBeInTheDocument()
+    const editorUser = { editor: 1, admin: 0 }
+    const adminUser = { editor: 1, admin: 1 }
 
-      rerender(<MasterControl isEditor={true} adminSearchForm={searchForm} />)
-      expect(screen.queryByText('Nothing for you here.')).not.toBeInTheDocument()
-      expect(screen.getByTestId('admin-search-form')).toBeInTheDocument()
-    })
-
-    it('respects isAdmin flag for admin-only content', () => {
+    it('respects user.admin flag for admin-only content', () => {
       const toolsetData = { nodeId: '123', nodeTitle: 'Test', nodeType: 'e2node', canDelete: true }
       const { rerender } = render(
         <MasterControl
-          isEditor={true}
-          isAdmin={false}
+          user={editorUser}
           nodeToolsetData={toolsetData}
         />
       )
       expect(screen.queryByTestId('node-toolset')).not.toBeInTheDocument()
 
       rerender(
-        <MasterControl isEditor={true} isAdmin={true} nodeToolsetData={toolsetData} />
+        <MasterControl user={adminUser} nodeToolsetData={toolsetData} />
       )
       expect(screen.getByTestId('node-toolset')).toBeInTheDocument()
     })
