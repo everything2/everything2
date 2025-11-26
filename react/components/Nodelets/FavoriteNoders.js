@@ -6,7 +6,8 @@ const FavoriteNoders = (props) => {
   if (!props.favoriteWriteups || !Array.isArray(props.favoriteWriteups) || props.favoriteWriteups.length === 0) {
     return (
       <NodeletContainer
-        title="Favorite Noders"
+        id={props.id}
+      title="Favorite Noders"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -24,6 +25,7 @@ const FavoriteNoders = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Favorite Noders"
       showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}

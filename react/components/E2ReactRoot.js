@@ -403,7 +403,8 @@ class E2ReactRoot extends React.Component {
       'vitals': () => (
         <Suspense fallback={<NodeletLoadingFallback />}>
           <Vitals
-            key="vitals"
+            id="vitals"
+              key="vitals"
             maintenance={this.state.vit_maintenance}
             nodeinfo={this.state.vit_nodeinfo}
             list={this.state.vit_list}
@@ -419,16 +420,11 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="epicenter">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <Epicenter
-              isGuest={this.state.user.guest}
-              userName={this.state.user.title}
+              id="epicenter"
+              user={this.state.user}
               votesLeft={this.state.epicenter?.votesLeft}
               cools={this.state.epicenter?.cools}
-              experience={this.state.epicenter?.experience}
-              gp={this.state.epicenter?.gp}
-              level={this.state.epicenter?.level}
-              gpOptOut={this.state.epicenter?.gpOptOut}
               localTimeUse={this.state.epicenter?.localTimeUse}
-              userId={this.state.epicenter?.userId}
               userSettingsId={this.state.epicenter?.userSettingsId}
               helpPage={this.state.epicenter?.helpPage}
               borgcheck={this.state.epicenter?.borgcheck}
@@ -446,7 +442,8 @@ class E2ReactRoot extends React.Component {
       'everything_developer': () => (
         <Suspense fallback={<NodeletLoadingFallback />}>
           <Developer
-            key="everythingdeveloper"
+            id="everything_developer"
+              key="everythingdeveloper"
             user={this.state.user}
             node={this.state.node}
             developerNodelet={this.state.developerNodelet}
@@ -463,7 +460,8 @@ class E2ReactRoot extends React.Component {
       'new_writeups': () => (
         <ErrorBoundary key="newwriteups">
           <NewWriteups
-            newWriteups={this.state.newWriteups}
+            id="new_writeups"
+              newWriteups={this.state.newWriteups}
             limit={this.state.num_newwus}
             noJunk={this.state.nw_nojunk}
             newWriteupsChange={this.newWriteupsChange}
@@ -478,7 +476,8 @@ class E2ReactRoot extends React.Component {
       'recommended_reading': () => (
         <ErrorBoundary key="recommendedreading">
           <RecommendedReading
-            coolnodes={this.state.coolnodes}
+            id="recommended_reading"
+              coolnodes={this.state.coolnodes}
             staffpicks={this.state.staffpicks}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.recommendedreading_show}
@@ -489,7 +488,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="readthis">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <ReadThis
-            coolnodes={this.state.coolnodes}
+            id="read_this"
+              coolnodes={this.state.coolnodes}
             staffpicks={this.state.staffpicks}
             news={this.state.news}
             cwu_show={this.state.rtn_cwu}
@@ -506,7 +506,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="newlogs">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <NewLogs
-            newWriteups={this.state.newWriteups}
+            id="new_logs"
+              newWriteups={this.state.newWriteups}
             daylogLinks={this.state.daylogLinks}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.newlogs_show}
@@ -519,7 +520,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="randomnodes">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <RandomNodes
-            randomNodes={this.state.randomNodes}
+            id="random_nodes"
+              randomNodes={this.state.randomNodes}
             randomNodesPhrase={this.state.randomNodesPhrase}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.randomnodes_show}
@@ -530,7 +532,8 @@ class E2ReactRoot extends React.Component {
       'sign_in': () => (
         <ErrorBoundary key="signin">
           <SignIn
-            nodeletIsOpen={this.state.signin_show}
+            id="sign_in"
+              nodeletIsOpen={this.state.signin_show}
             user={this.state.user}
             loginGoto={this.state.loginGoto}
             loginMessage={this.state.loginMessage}
@@ -541,7 +544,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="neglecteddrafts">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <NeglectedDrafts
-            showNodelet={this.showNodelet}
+            id="neglected_drafts"
+              showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.neglecteddrafts_show}
             neglectedDrafts={this.state.neglectedDrafts}
           />
@@ -552,7 +556,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="quickreference">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <QuickReference
-            showNodelet={this.showNodelet}
+            id="quick_reference"
+              showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.quickreference_show}
             quickRefSearchTerm={this.state.quickRefSearchTerm}
           />
@@ -563,8 +568,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="mastercontrol">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <MasterControl
-            isEditor={this.state.masterControl?.isEditor}
-            isAdmin={this.state.masterControl?.isAdmin}
+            id="master_control"
+              user={this.state.user}
             adminSearchForm={this.state.masterControl?.adminSearchForm}
             nodeToolsetData={this.state.masterControl?.nodeToolsetData}
             nodeNotesData={this.state.masterControl?.nodeNotesData}
@@ -585,7 +590,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="statistics">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <Statistics
-            statistics={this.state.statistics}
+            id="statistics"
+              statistics={this.state.statistics}
             stat_personal={this.state.stat_personal}
             stat_fun={this.state.stat_fun}
             stat_advancement={this.state.stat_advancement}
@@ -600,7 +606,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="categories">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <Categories
-            categories={this.state.categories}
+            id="categories"
+              categories={this.state.categories}
             currentNodeId={this.state.currentNodeId}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.categories_show}
@@ -612,7 +619,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="mostwanted">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <MostWanted
-            bounties={this.state.bounties}
+            id="most_wanted"
+              bounties={this.state.bounties}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.mostwanted_show}
           />
@@ -623,7 +631,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="recentnodes">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <RecentNodes
-            recentNodes={this.state.recentNodes}
+            id="recent_nodes"
+              recentNodes={this.state.recentNodes}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.recentnodes_show}
             onClearTracks={() => this.setState({ recentNodes: [] })}
@@ -635,7 +644,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="favoritenoders">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <FavoriteNoders
-            favoriteWriteups={this.state.favoriteWriteups}
+            id="favorite_noders"
+              favoriteWriteups={this.state.favoriteWriteups}
             favoriteLimit={this.state.favoriteLimit}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.favoritenoders_show}
@@ -647,7 +657,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="personallinks">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <PersonalLinks
-            personalLinks={this.state.personalLinks}
+            id="personal_links"
+              personalLinks={this.state.personalLinks}
             canAddCurrent={this.state.canAddCurrent}
             currentNodeId={this.state.currentNodeId}
             currentNodeTitle={this.state.currentNodeTitle}
@@ -662,6 +673,7 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="currentuserpoll">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <CurrentUserPoll
+              id="current_poll"
               currentPoll={this.state.currentPoll}
               user={this.state.user}
               showNodelet={this.showNodelet}
@@ -674,7 +686,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="usergroupwriteups">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <UsergroupWriteups
-            usergroupData={this.state.usergroupData}
+            id="usergroup_writeups"
+              usergroupData={this.state.usergroupData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.usergroupwriteups_show}
           />
@@ -685,7 +698,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="otherusers">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <OtherUsers
-            otherUsersData={this.state.otherUsersData}
+            id="other_users"
+              otherUsersData={this.state.otherUsersData}
             onOtherUsersDataUpdate={this.updateOtherUsersData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.otherusers_show}
@@ -697,7 +711,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="chatterbox">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <Chatterbox
-            user={this.props.e2?.user}
+            id="chatterbox"
+              user={this.props.e2?.user}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.chatterbox_show}
             borged={this.props.e2?.user?.vars?.borged}
@@ -721,7 +736,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="messages">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <Messages
-            initialMessages={this.props.e2?.messagesData}
+            id="messages"
+              initialMessages={this.props.e2?.messagesData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.messages_show}
           />
@@ -732,7 +748,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="notifications">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <Notifications
-            notificationsData={this.props.e2?.notificationsData}
+            id="notifications"
+              notificationsData={this.props.e2?.notificationsData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.notifications_show}
           />
@@ -743,7 +760,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="forreview">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <ForReview
-            forReviewData={this.props.e2?.forReviewData}
+            id="for_review"
+              forReviewData={this.props.e2?.forReviewData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.forreview_show}
           />
@@ -754,7 +772,8 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="notelet">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <Notelet
-            noteletData={this.state.noteletData}
+            id="notelet"
+              noteletData={this.state.noteletData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.notelet_show}
           />
@@ -783,7 +802,11 @@ class E2ReactRoot extends React.Component {
       {this.state.guest && this.renderNodelet('sign_in')}
 
       {/* Phase 3: Render nodelets directly (React mounts inside sidebar div) */}
-      {nodeletorder.map((nodeletName) => this.renderNodelet(nodeletName))}
+      {nodeletorder.map((nodeletName) => (
+        <React.Fragment key={nodeletName}>
+          {this.renderNodelet(nodeletName)}
+        </React.Fragment>
+      ))}
     </>
   }
 }

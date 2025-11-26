@@ -6,7 +6,8 @@ const Categories = (props) => {
   if (!props.categories || !Array.isArray(props.categories) || props.categories.length === 0) {
     return (
       <NodeletContainer
-        title="Categories"
+        id={props.id}
+      title="Categories"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -19,6 +20,7 @@ const Categories = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Categories"
       showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}

@@ -18,7 +18,8 @@ const Notifications = (props) => {
   if (!notificationsData) {
     return (
       <NodeletContainer
-        title="Notifications"
+        id={props.id}
+      title="Notifications"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -97,6 +98,7 @@ const Notifications = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Notifications"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

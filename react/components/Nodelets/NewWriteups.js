@@ -91,6 +91,7 @@ const NewWriteups = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="New Writeups"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

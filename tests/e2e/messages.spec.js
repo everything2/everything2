@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test')
-const { loginAsRoot } = require('./fixtures/auth')
+const { loginAsE2EAdmin } = require('./fixtures/auth')
 
 test.describe('Mini Messages', () => {
   test('loads initial messages on page load without API call', async ({ page }) => {
@@ -15,7 +15,7 @@ test.describe('Mini Messages', () => {
     })
 
     // Login and navigate to home
-    await loginAsRoot(page)
+    await loginAsE2EAdmin(page)
 
     // Check if mini messages section exists (only if Messages nodelet not in sidebar)
     const miniMessages = page.locator('#chatterbox_messages')
@@ -31,7 +31,7 @@ test.describe('Mini Messages', () => {
   })
 
   test('mini messages only show when Messages nodelet not in sidebar', async ({ page }) => {
-    await loginAsRoot(page)
+    await loginAsE2EAdmin(page)
 
     const miniMessages = page.locator('#chatterbox_messages')
     const messagesNodelet = page.locator('#nodelet_2044453') // Messages nodelet ID

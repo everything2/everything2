@@ -5,7 +5,8 @@ import WriteupEntry from '../WriteupEntry'
 
 const NeglectedDrafts = (props) => {
 
-  return (<NodeletContainer title="Neglected Drafts" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}>
+  return (<NodeletContainer id={props.id}
+      title="Neglected Drafts" showNodelet={props.showNodelet} nodeletIsOpen={props.nodeletIsOpen}>
   <>{
       ['editor','author'].map((type,index) => {
         return (<div key={`neglected_${type}`}><h4>{type[0].toUpperCase() + type.slice(1)} neglect</h4>        

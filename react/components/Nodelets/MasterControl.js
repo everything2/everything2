@@ -8,20 +8,13 @@ import AdminSectionLinks from '../MasterControl/AdminSectionLinks'
 import NodeNotes from '../MasterControl/NodeNotes'
 
 const MasterControl = (props) => {
-  if (!props.isEditor) {
-    return (
-      <NodeletContainer
-        title="Master Control"
-        showNodelet={props.showNodelet}
-        nodeletIsOpen={props.nodeletIsOpen}
-      >
-        <p>Nothing for you here.</p>
-      </NodeletContainer>
-    )
-  }
+  // Note: Application.pm only builds masterControl data for editors/admins
+  // So if this component renders, user is already authorized
+  const isAdmin = Boolean(props.user?.admin)
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Master Control"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}
@@ -37,7 +30,7 @@ const MasterControl = (props) => {
         />
       )}
 
-      {props.isAdmin && props.nodeToolsetData && (
+      {isAdmin && props.nodeToolsetData && (
         <NodeToolset
           nodeId={props.nodeToolsetData.nodeId}
           nodeTitle={props.nodeToolsetData.nodeTitle}
@@ -58,7 +51,7 @@ const MasterControl = (props) => {
         />
       )}
 
-      {props.isAdmin && props.adminSection && (
+      {isAdmin && props.adminSection && (
         <NodeletSection
           nodelet="epi"
           section="admins"

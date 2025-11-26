@@ -584,7 +584,167 @@ Phase 3 is complete and stable. Ready to proceed with **Phase 4**: React owns pa
 
 ---
 
-### Phase 4: REACT OWNS PAGE STRUCTURE (Next Phase)
+### Phase 4: REACT OWNS PAGE STRUCTURE (In Progress)
+
+**Status**: ✅ Phase 4a Complete - Content-only document pattern established
+
+**Goal**: Expand React to own page content, starting with content-only documents
+
+#### Phase 4a: Content-Only Document Migration (COMPLETE ✅)
+
+**Completed**: November 25, 2025
+
+**Pattern Established**: Simplified `buildReactData()` architecture where Application.pm automatically adds the `type` field.
+
+**Core Implementation**:
+
+1. **Application.pm automatically wraps and types page data** ([Application.pm:6724-6729](ecore/Everything/Application.pm#L6724-L6729)):
+   ```perl
+   # Wrap page data in contentData structure and add type automatically
+   # The type is derived from the page name (e.g., "wheel_of_surprise")
+   $e2->{contentData} = {
+     type => $page_name,
+     %{$page_data || {}}  # Spread page data into contentData
+   };
+   ```
+
+2. **Page classes return simplified data structures**:
+
+   **Content-only pages (no server data)**:
+   ```perl
+   package Everything::Page::about_nobody;
+   use Moose;
+   extends 'Everything::Page';
+
+   sub buildReactData {
+       my ( $self, $REQUEST ) = @_;
+
+       # Simple React page - all data generated client-side
+       # Type is automatically added by Application.pm
+       return {};
+   }
+   ```
+
+   **Pages with server-provided data**:
+   ```perl
+   package Everything::Page::wheel_of_surprise;
+   use Moose;
+   extends 'Everything::Page';
+
+   sub buildReactData {
+       my ( $self, $REQUEST ) = @_;
+
+       my $USER = $REQUEST->user;
+
+       my $userGP        = $USER->GP || 0;
+       my $hasGPOptout   = $USER->gp_optout ? 1 : 0;
+       my $isHalloween = 0;
+
+       # Type is automatically added by Application.pm
+       return {
+           result       => undef,
+           isHalloween  => $isHalloween,
+           userGP       => $userGP,
+           hasGPOptout  => $hasGPOptout
+       };
+   }
+   ```
+
+3. **React components registered in DocumentComponent router** ([DocumentComponent.js](react/components/DocumentComponent.js)):
+   ```javascript
+   import { Suspense, lazy } from 'react'
+
+   const AboutNobody = lazy(() => import('./Documents/AboutNobody'))
+   const WheelOfSurprise = lazy(() => import('./Documents/WheelOfSurprise'))
+
+   const DocumentComponent = ({ data, user }) => {
+     const { type } = data
+
+     const renderDocument = () => {
+       switch (type) {
+         case 'about_nobody':
+           return <AboutNobody />
+
+         case 'wheel_of_surprise':
+           return <WheelOfSurprise data={data} user={user} />
+
+         default:
+           return <div className="document-error">Unknown type</div>
+       }
+     }
+
+     return (
+       <Suspense fallback={<div>Loading...</div>}>
+         {renderDocument()}
+       </Suspense>
+     )
+   }
+   ```
+
+4. **Controller detects React pages via `buildReactData()` method** ([superdoc.pm:17-28](ecore/Everything/Controller/superdoc.pm#L17-L28)):
+   ```perl
+   # Check if this page uses React (has buildReactData method)
+   my $page_class = $self->page_class($node);
+   my $is_react_page = $page_class->can('buildReactData');
+
+   my $layout;
+   if ($is_react_page) {
+     # Use generic React container template for React pages
+     $layout = 'react_page';
+   } else {
+     # Use page-specific Mason template for traditional pages
+     $layout = $page_class->template || $self->title_to_page($node->title);
+   }
+   ```
+
+5. **Generic React container template** ([templates/pages/react_page.mc](templates/pages/react_page.mc)):
+   - Single template serves ALL React pages
+   - No page-specific templates needed
+   - Renders `<div id='e2-react-root'></div>` container
+   - PageLayout component handles routing
+
+**Migrated Documents** (Phase 4a):
+- ✅ `about_nobody` - Pure client-side content generation
+- ✅ `wheel_of_surprise` - Server provides GP/optout data, React handles rendering
+- ✅ `silver_trinkets` - Admin sanctity lookup
+- ✅ `sanctify` - User sanctity display
+
+**Benefits of Simplified Pattern**:
+- **Less boilerplate**: Pages just return data hash, no wrapping needed
+- **Automatic typing**: Page name automatically becomes `type` field
+- **Content-only optimization**: Pages with no server data just `return {}`
+- **Consistent pattern**: Same architecture for all React documents
+- **Code splitting**: React.lazy() creates separate bundles per document
+- **Single template**: react_page.mc serves all React pages
+
+**Before Simplification** (redundant):
+```perl
+return {
+  contentData => {
+    type => 'wheel_of_surprise',
+    userGP => $userGP,
+    hasGPOptout => $hasGPOptout
+  }
+};
+```
+
+**After Simplification** (clean):
+```perl
+# Type is automatically added by Application.pm
+return {
+  userGP => $userGP,
+  hasGPOptout => $hasGPOptout
+};
+```
+
+**Next Phase 4 Steps**:
+- Migrate more content-only documents (FAQ pages, help pages, etc.)
+- Migrate interactive documents (search results, user lists, etc.)
+- Create React components for common document patterns
+
+---
+
+### Phase 4b: REACT OWNS PAGE STRUCTURE (Future)
 
 **Goal**: Expand React to own entire page layout, inject Mason2-rendered content as HTML
 

@@ -7,7 +7,8 @@ const MostWanted = (props) => {
   if (!props.bounties || !Array.isArray(props.bounties) || props.bounties.length === 0) {
     return (
       <NodeletContainer
-        title="Most Wanted"
+        id={props.id}
+      title="Most Wanted"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -20,6 +21,7 @@ const MostWanted = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Most Wanted"
       showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}

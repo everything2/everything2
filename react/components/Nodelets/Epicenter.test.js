@@ -52,16 +52,18 @@ describe('Epicenter Component', () => {
   const mockShowNodelet = jest.fn()
 
   const defaultProps = {
-    isGuest: false,
-    userName: 'testuser',
+    user: {
+      guest: false,
+      title: 'testuser',
+      node_id: 123,
+      gp: 50,
+      experience: 1000,
+      level: 3,
+      gpOptOut: false
+    },
     votesLeft: 5,
     cools: 2,
-    experience: 1000,
-    gp: 50,
-    level: 3,
-    gpOptOut: false,
     localTimeUse: false,
-    userId: 123,
     userSettingsId: 456,
     helpPage: 'Everything2 Help',
     borgcheck: null,
@@ -131,7 +133,7 @@ describe('Epicenter Component', () => {
     it('renders only borgcheck for guest users', () => {
       const guestProps = {
         ...defaultProps,
-        isGuest: true,
+        user: { ...defaultProps.user, guest: true },
         borgcheck: '<p>You have been borged!</p>'
       }
 
@@ -144,7 +146,7 @@ describe('Epicenter Component', () => {
     it('renders container even for guests', () => {
       const guestProps = {
         ...defaultProps,
-        isGuest: true
+        user: { ...defaultProps.user, guest: true }
       }
 
       render(<Epicenter {...guestProps} />)
@@ -209,14 +211,14 @@ describe('Epicenter Component', () => {
 
   describe('GP opt-out', () => {
     it('does not render GP display when opted out', () => {
-      const props = { ...defaultProps, gpOptOut: true, gpGain: 5 }
+      const props = { ...defaultProps, user: { ...defaultProps.user, gpOptOut: true }, gpGain: 5 }
       render(<Epicenter {...props} />)
 
       expect(screen.queryByTestId('gp-gain')).not.toBeInTheDocument()
     })
 
     it('renders GP display when not opted out', () => {
-      const props = { ...defaultProps, gpOptOut: false, gpGain: 5 }
+      const props = { ...defaultProps, user: { ...defaultProps.user, gpOptOut: false }, gpGain: 5 }
       render(<Epicenter {...props} />)
 
       expect(screen.getByTestId('gp-gain')).toBeInTheDocument()

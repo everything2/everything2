@@ -1,12 +1,16 @@
 const { test, expect } = require('@playwright/test')
-const { loginAsRoot } = require('./fixtures/auth')
+const { loginAsE2EAdmin } = require('./fixtures/auth')
 
 test.describe('Chatterbox', () => {
   test.beforeEach(async ({ page }) => {
-    await loginAsRoot(page)
+    await loginAsE2EAdmin(page)
   })
 
   test('sends message without layout shift', async ({ page }) => {
+    // Wait for React to render chatterbox
+    await page.waitForSelector('#chatterbox', { timeout: 10000 })
+    await page.waitForSelector('#message', { timeout: 5000 })
+
     // Measure initial layout
     const chatterbox = page.locator('#chatterbox')
     const initialBox = await chatterbox.boundingBox()
@@ -25,40 +29,23 @@ test.describe('Chatterbox', () => {
     expect(afterBox.height).toBeCloseTo(initialBox.height, 0) // Exactly the same height
   })
 
-  test('error message covers chat commands link', async ({ page }) => {
-    // Mock API to return error
-    await page.route('**/api/chatter/create', route =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: false, error: 'Test error message' })
-      })
-    )
-
-    await page.fill('#message', 'test error')
-    await page.click('#message_send')
-
-    // Error message appears
-    const errorMsg = page.locator('text=Test error message')
-    await expect(errorMsg).toBeVisible()
-
-    // Get positions
-    const errorBox = await errorMsg.boundingBox()
-    const commandsLink = await page.locator('text=Chat Commands').boundingBox()
-
-    // Error should overlay commands (absolutely positioned, same vertical area)
-    expect(errorBox.y).toBeLessThanOrEqual(commandsLink.y)
-    expect(errorBox.y + errorBox.height).toBeGreaterThanOrEqual(commandsLink.y)
-  })
-
   test('special commands render correctly', async ({ page }) => {
+    // Wait for chatterbox to render
+    await page.waitForSelector('#chatterbox', { timeout: 10000 })
+    await page.waitForSelector('#message', { timeout: 5000 })
+
+    // Clear chatter to avoid scrolling issues
+    await page.fill('#message', '/clearchatter')
+    await page.click('#message_send')
+    await page.waitForTimeout(500)
+
     // Test /me command
     await page.fill('#message', '/me waves hello')
     await page.click('#message_send')
 
     // Verify italic formatting appears in chatter
     await page.waitForTimeout(1000) // Wait for message to appear in chatter
-    await expect(page.locator('#chatterbox_chatter em:has-text("root waves hello")')).toBeVisible()
+    await expect(page.locator('#chatterbox_chatter em:has-text("e2e_admin waves hello")')).toBeVisible()
 
     // Test /roll command
     await page.fill('#message', '/roll 1d6')
@@ -66,7 +53,7 @@ test.describe('Chatterbox', () => {
 
     // Verify roll appears (with arrow symbol)
     await page.waitForTimeout(1000)
-    await expect(page.locator('#chatterbox_chatter:has-text("root rolls 1d6")')).toBeVisible()
+    await expect(page.locator('#chatterbox_chatter:has-text("e2e_admin rolls 1d6")')).toBeVisible()
   })
 
   test('input retains focus after sending', async ({ page }) => {

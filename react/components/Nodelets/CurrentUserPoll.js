@@ -20,7 +20,8 @@ const CurrentUserPoll = (props) => {
   if (!pollData) {
     return (
       <NodeletContainer
-        title="Current Poll"
+        id={props.id}
+      title="Current Poll"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -136,6 +137,7 @@ const CurrentUserPoll = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Current Poll"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

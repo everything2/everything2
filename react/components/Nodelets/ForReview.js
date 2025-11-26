@@ -14,7 +14,8 @@ const ForReview = (props) => {
   if (!drafts || drafts.length === 0) {
     return (
       <NodeletContainer
-        title="For Review"
+        id={props.id}
+      title="For Review"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -29,6 +30,7 @@ const ForReview = (props) => {
   // Future: Extract this into proper React components with structured data
   return (
     <NodeletContainer
+      id={props.id}
       title="For Review"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

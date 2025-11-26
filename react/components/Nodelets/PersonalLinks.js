@@ -117,7 +117,8 @@ const PersonalLinks = (props) => {
   if (props.isGuest) {
     return (
       <NodeletContainer
-        title="Personal Links"
+        id={props.id}
+      title="Personal Links"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -129,7 +130,8 @@ const PersonalLinks = (props) => {
   if (!personalLinks || !Array.isArray(personalLinks) || personalLinks.length === 0) {
     return (
       <NodeletContainer
-        title="Personal Links"
+        id={props.id}
+      title="Personal Links"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -158,6 +160,7 @@ const PersonalLinks = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Personal Links"
       showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}

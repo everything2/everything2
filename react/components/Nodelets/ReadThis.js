@@ -6,6 +6,7 @@ import NodeletSection from '../NodeletSection'
 const ReadThis = (props) => {
   return (
     <NodeletContainer
+      id={props.id}
       title="ReadThis"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

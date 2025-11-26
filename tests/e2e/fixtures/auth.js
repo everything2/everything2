@@ -23,8 +23,15 @@ async function loginAsRoot(page) {
 
   await page.fill('#signin_user', 'root')
   await page.fill('#signin_passwd', 'blah')
-  await page.click('input[type="submit"][value="Login"]')
-  await page.waitForLoadState('networkidle')
+
+  // Click and wait for JavaScript redirect
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
+    page.click('input[type="submit"]')
+  ])
+
+  // Wait for React to render epicenter (always present for logged-in users)
+  await page.waitForSelector('#epicenter', { timeout: 5000 })
 }
 
 /**
@@ -46,8 +53,15 @@ async function loginAsGenericDev(page) {
 
   await page.fill('#signin_user', 'genericdev')
   await page.fill('#signin_passwd', 'blah')
-  await page.click('input[type="submit"][value="Login"]')
-  await page.waitForLoadState('networkidle')
+
+  // Click and wait for JavaScript redirect
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
+    page.click('input[type="submit"]')
+  ])
+
+  // Wait for React to render epicenter (always present for logged-in users)
+  await page.waitForSelector('#epicenter', { timeout: 5000 })
 }
 
 /**
@@ -69,8 +83,15 @@ async function loginAsE2EAdmin(page) {
 
   await page.fill('#signin_user', 'e2e_admin')
   await page.fill('#signin_passwd', 'test123')
-  await page.click('input[type="submit"][value="Login"]')
-  await page.waitForLoadState('networkidle')
+
+  // Click and wait for JavaScript redirect
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
+    page.click('input[type="submit"]')
+  ])
+
+  // Wait for React to render epicenter (always present for logged-in users)
+  await page.waitForSelector('#epicenter', { timeout: 5000 })
 }
 
 /**
@@ -92,8 +113,15 @@ async function loginAsE2EUser(page) {
 
   await page.fill('#signin_user', 'e2e_user')
   await page.fill('#signin_passwd', 'test123')
-  await page.click('input[type="submit"][value="Login"]')
-  await page.waitForLoadState('networkidle')
+
+  // Click and wait for JavaScript redirect
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
+    page.click('input[type="submit"]')
+  ])
+
+  // Wait for React to render epicenter (always present for logged-in users)
+  await page.waitForSelector('#epicenter', { timeout: 5000 })
 }
 
 /**

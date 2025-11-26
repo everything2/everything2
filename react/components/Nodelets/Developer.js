@@ -49,7 +49,8 @@ const Developer = (props) => {
   }
 
 
-  return <NodeletContainer title="Everything Developer" nodeletIsOpen={props.nodeletIsOpen} showNodelet={props.showNodelet} >
+  return <NodeletContainer id={props.id}
+      title="Everything Developer" nodeletIsOpen={props.nodeletIsOpen} showNodelet={props.showNodelet} >
     <div style={{ paddingLeft: '8px', paddingTop: '4px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
         <FaGithubSquare size={12} style={{ color: '#666', flexShrink: 0 }} />

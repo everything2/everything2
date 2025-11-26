@@ -160,7 +160,8 @@ const SignIn = (props) => {
     </>
   }
 
-  return <NodeletContainer title="Sign In" nodeletIsOpen={props.nodeletIsOpen}>{content}</NodeletContainer>
+  return <NodeletContainer id={props.id}
+      title="Sign In" nodeletIsOpen={props.nodeletIsOpen}>{content}</NodeletContainer>
 
 }
 

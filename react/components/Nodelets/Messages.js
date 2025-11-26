@@ -21,7 +21,8 @@ const Messages = (props) => {
   if (!messages) {
     return (
       <NodeletContainer
-        title="Messages"
+        id={props.id}
+      title="Messages"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -222,6 +223,7 @@ const Messages = (props) => {
 
   return (
     <NodeletContainer
+      id={props.id}
       title="Messages"
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}

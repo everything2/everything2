@@ -11,7 +11,8 @@ const UsergroupWriteups = (props) => {
   if (!props.usergroupData) {
     return (
       <NodeletContainer
-        title="Usergroup Writeups"
+        id={props.id}
+      title="Usergroup Writeups"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -28,7 +29,8 @@ const UsergroupWriteups = (props) => {
   if (isRestricted && !isEditor) {
     return (
       <NodeletContainer
-        title="Usergroup Writeups"
+        id={props.id}
+      title="Usergroup Writeups"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
@@ -44,7 +46,8 @@ const UsergroupWriteups = (props) => {
   }
 
   return (
-    <NodeletContainer title="Usergroup Writeups" showNodelet={props.showNodelet}
+    <NodeletContainer id={props.id}
+      title="Usergroup Writeups" showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}>
       <p align="center" style={{ margin: '8px 0', fontSize: '12px' }}>
         <LinkNode nodeId={currentGroup.node_id} title={currentGroup.title} /> writeups
