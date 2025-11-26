@@ -61,6 +61,39 @@
 
 ## Running Tests
 
+### Convenience Script (Recommended)
+
+```bash
+# Run all E2E tests
+./tools/e2e-test.sh
+
+# Run specific test file
+./tools/e2e-test.sh navigation      # Run navigation.spec.js
+./tools/e2e-test.sh e2e-users       # Run e2e-users.spec.js
+
+# Run in headed mode (see browser)
+./tools/e2e-test.sh --headed
+
+# Run in debug mode (Playwright Inspector)
+./tools/e2e-test.sh --debug
+./tools/e2e-test.sh --debug navigation
+
+# Run in UI mode (interactive)
+./tools/e2e-test.sh --ui
+
+# Get help
+./tools/e2e-test.sh --help
+```
+
+The convenience script automatically:
+- ✓ Checks if Docker containers are running
+- ✓ Checks if dev server is responding
+- ✓ Installs Playwright if needed
+- ✓ Provides helpful error messages
+- ✓ Suggests debugging tips on failure
+
+### Direct NPM Commands
+
 ```bash
 # Run all E2E tests
 npm run test:e2e
@@ -85,6 +118,7 @@ tests/e2e/
 ├── fixtures/
 │   └── auth.js           # Login helpers
 ├── chatterbox.spec.js    # Chatterbox functionality tests
+├── e2e-users.spec.js     # E2E test user login/permission tests
 ├── messages.spec.js      # Mini messages tests
 ├── navigation.spec.js    # Basic navigation tests
 ├── wheel.spec.js         # Wheel of Surprise tests
@@ -92,6 +126,13 @@ tests/e2e/
 ```
 
 ## What's Tested
+
+### E2E Test Users (e2e-users.spec.js)
+- ✓ All 6 E2E test users can login (e2e_admin, e2e_editor, e2e_developer, e2e_chanop, e2e_user, "e2e user space")
+- ✓ e2e_admin has admin privileges (Master Control access)
+- ✓ e2e_editor has editor privileges
+- ✓ e2e_user has no special privileges (Master Control blocked)
+- **Note**: All E2E test users have password `test123` for consistency
 
 ### Chatterbox (chatterbox.spec.js)
 - ✓ Sends message without layout shift

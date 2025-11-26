@@ -3893,7 +3893,6 @@ sub sendPublicChatter
 
   # Truncate to 512 chars for public chatter
   $message = substr($message, 0, 512);
-  utf8::encode($message);
 
   # Check for duplicate message within time window
   my $messageInterval = 480;
@@ -4391,11 +4390,19 @@ sub getRecentChatter
   my $where = "for_user=0";
   # Always filter by room (including room=0 for "outside")
   $where .= " and room=$room";
+
+  # ALWAYS filter by time window (consistency between initial load and API refresh)
+  # If 'since' parameter provided, use that; otherwise use configured time window
   if ($since) {
     # since should be ISO timestamp like "2025-11-24T12:00:00Z"
     $since =~ s/T/ /;
     $since =~ s/Z$//;
     $where .= " and tstamp > '$since'";
+  } else {
+    # Default: use configured chatter time window (default 5 minutes)
+    my $window_minutes = $this->{conf}->chatter_time_window_minutes;
+    my $time_ago = $this->{db}->sqlSelect("DATE_SUB(NOW(), INTERVAL $window_minutes MINUTE)");
+    $where .= " and tstamp > '$time_ago'";
   }
 
   # Fetch recent chatter
@@ -5984,12 +5991,13 @@ sub buildNodeInfoStructure
     }
 
     # Get initial chatter messages for the room (prevents redundant API call on page load)
-    # Only show last 5 minutes of messages
-    my $five_minutes_ago = $this->{db}->sqlSelect('DATE_SUB(NOW(), INTERVAL 5 MINUTE)');
+    # Use configured time window (default 5 minutes)
+    my $window_minutes = $this->{conf}->chatter_time_window_minutes;
+    my $time_ago = $this->{db}->sqlSelect("DATE_SUB(NOW(), INTERVAL $window_minutes MINUTE)");
     my $initialChatter = $this->getRecentChatter({
       room => $USER->{in_room},
       limit => 30,
-      since => $five_minutes_ago
+      since => $time_ago
     });
     $e2->{chatterbox}->{messages} = $initialChatter || [];
 

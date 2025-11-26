@@ -33,11 +33,17 @@ foreach my $user (1..30,"user with space","genericeditor","genericdev","genericc
     # Insert a user like "normaluser1"
     $user = "normaluser$user";
   }
-  print STDERR "Inserting user: $user\n";
-  my $now = POSIX::strftime('%Y-%m-%d %H:%M:%S', gmtime());
-  $DB->insertNode($user,"user",-1,{"lasttime" => $now});
 
   my $author = getNode($user,"user");
+  if (!$author) {
+    print STDERR "Inserting user: $user\n";
+    my $now = POSIX::strftime('%Y-%m-%d %H:%M:%S', gmtime());
+    $DB->insertNode($user,"user",-1,{"lasttime" => $now});
+    $author = getNode($user,"user");
+  } else {
+    print STDERR "User already exists: $user (updating)\n";
+  }
+
   $author->{author_user} = $author->{node_id};
   $author->{passwd} = "blah";
   $author->{doctext} = "Homenode text for $user";
@@ -48,8 +54,12 @@ foreach my $user (1..30,"user with space","genericeditor","genericdev","genericc
 print STDERR "Promoting genericeditor to be a content editor\n";
 my $ce = $DB->getNode("Content Editors","usergroup");
 my $genericed = $DB->getNode("genericeditor","user");
-$DB->insertIntoNodegroup($ce, $DB->getNode("root","user"), $genericed);
-$DB->updateNode($ce,-1);
+my $already_ce = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$ce->{node_id} AND node_id=$genericed->{node_id}");
+if (!$already_ce) {
+  $DB->insertIntoNodegroup($ce, $DB->getNode("root","user"), $genericed);
+  $DB->updateNode($ce,-1);
+}
 $genericed->{vars} ||= "";
 my $genericedv = getVars($genericed);
 $genericedv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708";
@@ -60,8 +70,12 @@ $DB->updateNode($genericed, -1);
 print STDERR "Promoting genericdev to be a developer\n";
 my $dev = $DB->getNode("edev","usergroup");
 my $genericdev = getNode("genericdev","user");
-$DB->insertIntoNodegroup($dev, $DB->getNode("root","user"),$genericdev);
-$DB->updateNode($dev, -1);
+my $already_dev = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$dev->{node_id} AND node_id=$genericdev->{node_id}");
+if (!$already_dev) {
+  $DB->insertIntoNodegroup($dev, $DB->getNode("root","user"),$genericdev);
+  $DB->updateNode($dev, -1);
+}
 my $genericdevv = getVars($genericdev);
 $genericdevv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708,836984";
 $genericdevv->{settings} = '{"notifications":{"2045486":1}}';
@@ -71,8 +85,12 @@ $DB->updateNode($genericdev, -1);
 print STDERR "Promoting genericchanop to be a channel operator\n";
 my $chanops = $DB->getNode("chanops","usergroup");
 my $genericchanop = getNode("genericchanop","user");
-$DB->insertIntoNodegroup($chanops, $DB->getNode("root","user"), $genericchanop);
-$DB->updateNode($chanops, -1);
+my $already_chanop = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$chanops->{node_id} AND node_id=$genericchanop->{node_id}");
+if (!$already_chanop) {
+  $DB->insertIntoNodegroup($chanops, $DB->getNode("root","user"), $genericchanop);
+  $DB->updateNode($chanops, -1);
+}
 my $genericchanopv = getVars($genericchanop);
 $genericchanopv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708";
 $genericchanopv->{settings} = '{"notifications":{"2045486":1}}';
@@ -82,25 +100,200 @@ $DB->updateNode($genericchanop, -1);
 print STDERR "Creating c_e user with message forward to Content Editors\n";
 my $now = POSIX::strftime('%Y-%m-%d %H:%M:%S', gmtime());
 my $content_editors = $DB->getNode("Content Editors","usergroup");
-$DB->insertNode("c_e","user",-1,{
-  "lasttime" => $now,
-  "message_forward_to" => $content_editors->{node_id}
-});
 my $c_e_user = getNode("c_e","user");
+if (!$c_e_user) {
+  $DB->insertNode("c_e","user",-1,{
+    "lasttime" => $now,
+    "message_forward_to" => $content_editors->{node_id}
+  });
+  $c_e_user = getNode("c_e","user");
+} else {
+  print STDERR "c_e user already exists (updating)\n";
+}
 $c_e_user->{author_user} = $c_e_user->{node_id};
 $c_e_user->{passwd} = "blah";
+$c_e_user->{message_forward_to} = $content_editors->{node_id};
 $DB->updateNode($c_e_user, -1);
 
-print STDERR "Adding root user to e2gods usergroup\n";
+print STDERR "Adding root user to gods and e2gods usergroups for testing\n";
+my $gods = $DB->getNode("gods","usergroup");
 my $e2gods = $DB->getNode("e2gods","usergroup");
 my $root_user = $DB->getNode("root","user");
-# Insert into nodegroup table to add root to e2gods
-$DB->sqlInsert("nodegroup", {
-  nodegroup_id => $e2gods->{node_id},
-  node_id => $root_user->{node_id},
-  nodegroup_rank => 0,
-  orderby => 0
-});
+
+# Check if root is already in gods (idempotent operation)
+my $existing_gods = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$gods->{node_id} AND node_id=$root_user->{node_id}");
+if (!$existing_gods) {
+  # Find next available rank in gods
+  my $max_rank = $DB->sqlSelect('MAX(nodegroup_rank)', 'nodegroup',
+    "nodegroup_id=$gods->{node_id}");
+  $max_rank = defined($max_rank) ? $max_rank : -1;
+  $DB->sqlInsert("nodegroup", {
+    nodegroup_id => $gods->{node_id},
+    node_id => $root_user->{node_id},
+    nodegroup_rank => $max_rank + 1,
+    orderby => 0
+  });
+}
+
+# Check if root is already in e2gods (idempotent operation)
+my $existing_e2gods = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$e2gods->{node_id} AND node_id=$root_user->{node_id}");
+if (!$existing_e2gods) {
+  # Find next available rank in e2gods
+  my $max_rank = $DB->sqlSelect('MAX(nodegroup_rank)', 'nodegroup',
+    "nodegroup_id=$e2gods->{node_id}");
+  $max_rank = defined($max_rank) ? $max_rank : -1;
+  $DB->sqlInsert("nodegroup", {
+    nodegroup_id => $e2gods->{node_id},
+    node_id => $root_user->{node_id},
+    nodegroup_rank => $max_rank + 1,
+    orderby => 0
+  });
+}
+
+print STDERR "Creating E2E test users\n";
+$now = POSIX::strftime('%Y-%m-%d %H:%M:%S', gmtime());
+
+# Helper function to add user to group with next available rank
+sub add_to_group {
+  my ($user, $group, $orderby) = @_;
+  my $already_member = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+    "nodegroup_id=$group->{node_id} AND node_id=$user->{node_id}");
+  if (!$already_member) {
+    my $max_rank = $DB->sqlSelect('MAX(nodegroup_rank)', 'nodegroup',
+      "nodegroup_id=$group->{node_id}");
+    $max_rank = defined($max_rank) ? $max_rank : -1;
+    $DB->sqlInsert("nodegroup", {
+      nodegroup_id => $group->{node_id},
+      node_id => $user->{node_id},
+      nodegroup_rank => $max_rank + 1,
+      orderby => $orderby || 0
+    });
+  }
+}
+
+# E2E Admin user (in gods)
+print STDERR "  - e2e_admin (admin via gods)\n";
+my $e2e_admin = getNode("e2e_admin","user");
+if (!$e2e_admin) {
+  $DB->insertNode("e2e_admin","user",-1,{"lasttime" => $now});
+  $e2e_admin = getNode("e2e_admin","user");
+  $e2e_admin->{author_user} = $e2e_admin->{node_id};
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_admin->{passwd} = $pwhash;
+  $e2e_admin->{salt} = $salt;
+  $e2e_admin->{GP} = 500;
+  $DB->updateNode($e2e_admin, -1);
+} else {
+  # Update password if user already exists
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_admin->{passwd} = $pwhash;
+  $e2e_admin->{salt} = $salt;
+  $DB->updateNode($e2e_admin, -1);
+}
+add_to_group($e2e_admin, $gods, 1);
+
+# E2E Editor user (in Content Editors)
+print STDERR "  - e2e_editor (content editor)\n";
+my $e2e_editor = getNode("e2e_editor","user");
+if (!$e2e_editor) {
+  $DB->insertNode("e2e_editor","user",-1,{"lasttime" => $now});
+  $e2e_editor = getNode("e2e_editor","user");
+  $e2e_editor->{author_user} = $e2e_editor->{node_id};
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_editor->{passwd} = $pwhash;
+  $e2e_editor->{salt} = $salt;
+  $e2e_editor->{GP} = 300;
+  $DB->updateNode($e2e_editor, -1);
+} else {
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_editor->{passwd} = $pwhash;
+  $e2e_editor->{salt} = $salt;
+  $DB->updateNode($e2e_editor, -1);
+}
+my $content_editors_group = $DB->getNode("Content Editors","usergroup");
+add_to_group($e2e_editor, $content_editors_group, 2);
+
+# E2E Developer user (in edev)
+print STDERR "  - e2e_developer (developer)\n";
+my $e2e_developer = getNode("e2e_developer","user");
+if (!$e2e_developer) {
+  $DB->insertNode("e2e_developer","user",-1,{"lasttime" => $now});
+  $e2e_developer = getNode("e2e_developer","user");
+  $e2e_developer->{author_user} = $e2e_developer->{node_id};
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_developer->{passwd} = $pwhash;
+  $e2e_developer->{salt} = $salt;
+  $e2e_developer->{GP} = 200;
+  $DB->updateNode($e2e_developer, -1);
+} else {
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_developer->{passwd} = $pwhash;
+  $e2e_developer->{salt} = $salt;
+  $DB->updateNode($e2e_developer, -1);
+}
+my $edev_group = $DB->getNode("edev","usergroup");
+add_to_group($e2e_developer, $edev_group, 0);
+
+# E2E Chanop user (in chanops)
+print STDERR "  - e2e_chanop (channel operator)\n";
+my $e2e_chanop = getNode("e2e_chanop","user");
+if (!$e2e_chanop) {
+  $DB->insertNode("e2e_chanop","user",-1,{"lasttime" => $now});
+  $e2e_chanop = getNode("e2e_chanop","user");
+  $e2e_chanop->{author_user} = $e2e_chanop->{node_id};
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_chanop->{passwd} = $pwhash;
+  $e2e_chanop->{salt} = $salt;
+  $e2e_chanop->{GP} = 150;
+  $DB->updateNode($e2e_chanop, -1);
+} else {
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_chanop->{passwd} = $pwhash;
+  $e2e_chanop->{salt} = $salt;
+  $DB->updateNode($e2e_chanop, -1);
+}
+my $chanops_group = $DB->getNode("chanops","usergroup");
+add_to_group($e2e_chanop, $chanops_group, 0);
+
+# E2E Regular user (no special permissions)
+print STDERR "  - e2e_user (regular user)\n";
+my $e2e_user = getNode("e2e_user","user");
+if (!$e2e_user) {
+  $DB->insertNode("e2e_user","user",-1,{"lasttime" => $now});
+  $e2e_user = getNode("e2e_user","user");
+  $e2e_user->{author_user} = $e2e_user->{node_id};
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_user->{passwd} = $pwhash;
+  $e2e_user->{salt} = $salt;
+  $e2e_user->{GP} = 100;
+  $DB->updateNode($e2e_user, -1);
+} else {
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_user->{passwd} = $pwhash;
+  $e2e_user->{salt} = $salt;
+  $DB->updateNode($e2e_user, -1);
+}
+
+# E2E User with space in username
+print STDERR "  - e2e user space (user with space in name)\n";
+my $e2e_user_space = getNode("e2e user space","user");
+if (!$e2e_user_space) {
+  $DB->insertNode("e2e user space","user",-1,{"lasttime" => $now});
+  $e2e_user_space = getNode("e2e user space","user");
+  $e2e_user_space->{author_user} = $e2e_user_space->{node_id};
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_user_space->{passwd} = $pwhash;
+  $e2e_user_space->{salt} = $salt;
+  $e2e_user_space->{GP} = 75;
+  $DB->updateNode($e2e_user_space, -1);
+} else {
+  my ($pwhash, $salt) = $APP->saltNewPassword("test123");
+  $e2e_user_space->{passwd} = $pwhash;
+  $e2e_user_space->{salt} = $salt;
+  $DB->updateNode($e2e_user_space, -1);
+}
 
 my $types = 
 {
@@ -181,11 +374,15 @@ foreach my $datatype (keys %$datanodes)
       }
       my $writeuptype = getNode($thiswriteup->[1],"writeuptype");
 
-      print STDERR "Inserting writeup: '$thiswriteup->[0] ($writeuptype->{title})'\n";
       my $parent_e2node = getNode($thiswriteup->[0],"e2node");
-      $DB->insertNode("$thiswriteup->[0] ($writeuptype->{title})",$datatype,$authornode, {});
-
       my $writeup = getNode("$thiswriteup->[0] ($writeuptype->{title})",$datatype);
+      if (!$writeup) {
+        print STDERR "Inserting writeup: '$thiswriteup->[0] ($writeuptype->{title})'\n";
+        $DB->insertNode("$thiswriteup->[0] ($writeuptype->{title})",$datatype,$authornode, {});
+        $writeup = getNode("$thiswriteup->[0] ($writeuptype->{title})",$datatype);
+      } else {
+        print STDERR "Writeup already exists: '$thiswriteup->[0] ($writeuptype->{title})' (updating)\n";
+      }
       $writeup->{createtime} = $APP->convertEpochToDate(time());
       $writeup->{doctext} = $thiswriteup->[2];
       $writeup->{document_id} = $writeup->{node_id};
@@ -213,8 +410,13 @@ foreach my $datatype (keys %$datanodes)
       $DB->updateNode($writeup, $authornode);
       if($datatype eq "writeup")
       {
-        $DB->insertIntoNodegroup($parent_e2node,-1,$writeup);
-        $DB->updateNode($parent_e2node, -1);
+        # Check if writeup is already in e2node's nodegroup
+        my $already_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+          "nodegroup_id=$parent_e2node->{node_id} AND node_id=$writeup->{node_id}");
+        if (!$already_in_group) {
+          $DB->insertIntoNodegroup($parent_e2node,-1,$writeup);
+          $DB->updateNode($parent_e2node, -1);
+        }
       }
     }
   }
@@ -235,10 +437,18 @@ foreach my $d("user","editor")
 
   # Insert a nodenote where the notetext is null
   print STDERR "Putting node notes on $d neglect\n";
-  $DB->sqlInsert("nodenote", {"nodenote_nodeid" => $neglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-15*24*60*60),"notetext" => "author requested review"}); 
+  my $existing_note1 = $DB->sqlSelect('COUNT(*)', 'nodenote',
+    "nodenote_nodeid=$neglect->{node_id} AND notetext='author requested review'");
+  if (!$existing_note1) {
+    $DB->sqlInsert("nodenote", {"nodenote_nodeid" => $neglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-15*24*60*60),"notetext" => "author requested review"});
+  }
   if($d eq "user")
   {
-    $DB->sqlInsert("nodenote",{"nodenote_nodeid" => $neglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-10*24*60*60),"notetext" => "looks good","noter_user" => $DB->getNode("root","user")->{node_id}});
+    my $existing_note2 = $DB->sqlSelect('COUNT(*)', 'nodenote',
+      "nodenote_nodeid=$neglect->{node_id} AND notetext='looks good'");
+    if (!$existing_note2) {
+      $DB->sqlInsert("nodenote",{"nodenote_nodeid" => $neglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-10*24*60*60),"notetext" => "looks good","noter_user" => $DB->getNode("root","user")->{node_id}});
+    }
   }
 
 }
@@ -248,25 +458,44 @@ my $oldneglect = $DB->getNode("Really, really old draft, user neglected (thing)"
 $oldneglect->{createtime} = $APP->convertEpochToDate(time()-40*24*60*60);
 $oldneglect->{publishtime} = $oldneglect->{createtime};
 $DB->updateNode($oldneglect, -1);
-$DB->sqlInsert("nodenote", {"nodenote_nodeid" => $oldneglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-30*24*60*60),"notetext" => "author requested review"}); 
-$DB->sqlInsert("nodenote", {"nodenote_nodeid" => $oldneglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-29*24*60*60),"notetext" => "looks good","noter_user" => $DB->getNode("root","user")->{node_id}});
+my $existing_note3 = $DB->sqlSelect('COUNT(*)', 'nodenote',
+  "nodenote_nodeid=$oldneglect->{node_id} AND notetext='author requested review'");
+if (!$existing_note3) {
+  $DB->sqlInsert("nodenote", {"nodenote_nodeid" => $oldneglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-30*24*60*60),"notetext" => "author requested review"});
+}
+my $existing_note4 = $DB->sqlSelect('COUNT(*)', 'nodenote',
+  "nodenote_nodeid=$oldneglect->{node_id} AND notetext='looks good'");
+if (!$existing_note4) {
+  $DB->sqlInsert("nodenote", {"nodenote_nodeid" => $oldneglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-29*24*60*60),"notetext" => "looks good","noter_user" => $DB->getNode("root","user")->{node_id}});
+}
 
 
 
 # Create a document so we can create a new item
 my $frontpage_usergroup = $DB->getNode("News", "usergroup");
 print STDERR "Creating frontpage news item\n";
-$DB->insertNode("Front page news item 1", "document", $DB->getNode("root","user"), {});
 my $document = getNode("Front page news item 1","document");
+if (!$document) {
+  $DB->insertNode("Front page news item 1", "document", $DB->getNode("root","user"), {});
+  $document = getNode("Front page news item 1","document");
+}
 $document->{doctext} = "This is the dawn of a new age. Of Everything. And Anything. <em>Mostly</em> [Everything]";
 $DB->updateNode($document, -1);
-$DB->sqlInsert("weblog",{"weblog_id" => $frontpage_usergroup->{node_id}, "to_node" => $document->{node_id} }); 
+my $existing_weblog = $DB->sqlSelect('COUNT(*)', 'weblog',
+  "weblog_id=$frontpage_usergroup->{node_id} AND to_node=$document->{node_id}");
+if (!$existing_weblog) {
+  $DB->sqlInsert("weblog",{"weblog_id" => $frontpage_usergroup->{node_id}, "to_node" => $document->{node_id} });
+} 
 
 print STDERR "Making some edev news items\n";
 foreach my $title("boring dev announcement 2","interesting dev announcement","lukewarm dev announcement")
 {
   my $n = $DB->getNode($title,"e2node");
-  $DB->sqlInsert("weblog",{"weblog_id" => $dev->{node_id}, "to_node" => $n->{node_id},"linkedby_user" => $genericdev->{node_id}});
+  my $existing_edev_weblog = $DB->sqlSelect('COUNT(*)', 'weblog',
+    "weblog_id=$dev->{node_id} AND to_node=$n->{node_id}");
+  if (!$existing_edev_weblog) {
+    $DB->sqlInsert("weblog",{"weblog_id" => $dev->{node_id}, "to_node" => $n->{node_id},"linkedby_user" => $genericdev->{node_id}});
+  }
 }
 
 
@@ -309,8 +538,12 @@ my $to_cool = ["Quick brown fox","tomato"];
 foreach my $n (@$to_cool)
 {
   my $coolnode = $DB->getNode($n, "e2node");
-  print STDERR "Using editor cool from $genericed->{title} on $coolnode->{title}\n";
-  $DB->sqlInsert("links",{"from_node" => $coolnode->{node_id}, "to_node" => $genericed->{node_id}, "linktype" => $coollink->{node_id}});
+  my $existing_coollink = $DB->sqlSelect('COUNT(*)', 'links',
+    "from_node=$coolnode->{node_id} AND to_node=$genericed->{node_id} AND linktype=$coollink->{node_id}");
+  if (!$existing_coollink) {
+    print STDERR "Using editor cool from $genericed->{title} on $coolnode->{title}\n";
+    $DB->sqlInsert("links",{"from_node" => $coolnode->{node_id}, "to_node" => $genericed->{node_id}, "linktype" => $coollink->{node_id}});
+  }
 }
 
 
@@ -320,69 +553,124 @@ my $root = $DB->getNode("root","user");
 
 ## Insert a node_forward
 # Work around maintenance weirdness
-print STDERR "Inserting a node_foward";
+print STDERR "Inserting a node_foward\n";
 $Everything::HTML::query = new CGI;
 my $potato = $DB->getNode("potato", "e2node");
-my $nf = $DB->insertNode("Goto potato", "node_forward", $root, {});
-$nf = $DB->getNode("Goto potato", "node_forward");
+my $nf = $DB->getNode("Goto potato", "node_forward");
+if (!$nf) {
+  $nf = $DB->insertNode("Goto potato", "node_forward", $root, {});
+  $nf = $DB->getNode("Goto potato", "node_forward");
+}
 $nf->{doctext} = $potato->{node_id};
 $DB->updateNode($nf, -1);
-print STDERR "Inserted node_forward '$nf->{title}' to point to '$potato->{title}' ($potato->{node_id})\n";
+print STDERR "Node_forward '$nf->{title}' points to '$potato->{title}' ($potato->{node_id})\n";
 
 $Everything::HTML::query = undef;
 
 
 ## Create a writeup with a broken writeuptype
-print STDERR "Inserting a node with a broken writeuptype\n";
-my $broken_type_e2node = $DB->insertNode("writeup with a broken type", "e2node", $root);
-$broken_type_e2node = $DB->getNodeById($broken_type_e2node);
+my $broken_type_e2node = $DB->getNode("writeup with a broken type", "e2node");
+if (!$broken_type_e2node) {
+  print STDERR "Inserting a node with a broken writeuptype\n";
+  my $broken_type_e2node_id = $DB->insertNode("writeup with a broken type", "e2node", $root);
+  $broken_type_e2node = $DB->getNodeById($broken_type_e2node_id);
+}
 
-my $broken_type_writeup = $DB->getNodeById($DB->insertNode("writeup with a broken type (thing)", "writeup", $normaluser1));
+my $broken_type_writeup = $DB->getNode("writeup with a broken type (thing)", "writeup");
+if (!$broken_type_writeup) {
+  my $broken_type_writeup_id = $DB->insertNode("writeup with a broken type (thing)", "writeup", $normaluser1);
+  $broken_type_writeup = $DB->getNodeById($broken_type_writeup_id);
+}
 $broken_type_writeup->{parent_e2node} = $broken_type_e2node->{node_id};
 $broken_type_writeup->{wrtype_writeuptype} = 9999;
 $broken_type_writeup->{publishtime} = $broken_type_writeup->{createtime};
 
 $DB->updateNode($broken_type_writeup, -1);
-$DB->insertIntoNodegroup($broken_type_e2node,-1,$broken_type_writeup);
-print STDERR "Inserted writeup with broken type: '$broken_type_writeup->{title}' ($broken_type_writeup->{node_id})\n";
+my $broken_type_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$broken_type_e2node->{node_id} AND node_id=$broken_type_writeup->{node_id}");
+if (!$broken_type_in_group) {
+  $DB->insertIntoNodegroup($broken_type_e2node,-1,$broken_type_writeup);
+}
+print STDERR "Writeup with broken type: '$broken_type_writeup->{title}' ($broken_type_writeup->{node_id})\n";
 
-my $no_parent_writeup = $DB->getNodeById($DB->insertNode("writeup with no parent (thing)", "writeup", $normaluser1));
+my $no_parent_writeup = $DB->getNode("writeup with no parent (thing)", "writeup");
+if (!$no_parent_writeup) {
+  my $no_parent_id = $DB->insertNode("writeup with no parent (thing)", "writeup", $normaluser1);
+  $no_parent_writeup = $DB->getNodeById($no_parent_id);
+}
 $no_parent_writeup->{doctext} = "This writeup is an [orphan]";
 $no_parent_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
 $no_parent_writeup->{publishtime} = $no_parent_writeup->{createtime};
 $DB->updateNode($no_parent_writeup, -1);
-print STDERR "Inserted writeup with no parent: '$no_parent_writeup->{title}'\n";
+print STDERR "Writeup with no parent: '$no_parent_writeup->{title}'\n";
 
-my $broken_nodegroup_e2node = $DB->getNodeById($DB->insertNode("writeup with a broken nodegroup", "e2node", $root));
-my $broken_nodegroup_writeup = $DB->getNodeById($DB->insertNode("writeup with a broken nodegroup (thing)", "writeup", $normaluser1));
+my $broken_nodegroup_e2node = $DB->getNode("writeup with a broken nodegroup", "e2node");
+if (!$broken_nodegroup_e2node) {
+  my $broken_nodegroup_e2node_id = $DB->insertNode("writeup with a broken nodegroup", "e2node", $root);
+  $broken_nodegroup_e2node = $DB->getNodeById($broken_nodegroup_e2node_id);
+}
+my $broken_nodegroup_writeup = $DB->getNode("writeup with a broken nodegroup (thing)", "writeup");
+if (!$broken_nodegroup_writeup) {
+  my $broken_nodegroup_writeup_id = $DB->insertNode("writeup with a broken nodegroup (thing)", "writeup", $normaluser1);
+  $broken_nodegroup_writeup = $DB->getNodeById($broken_nodegroup_writeup_id);
+}
 $broken_nodegroup_writeup->{doctext} = "This is a node that doesn't have the proper [group membership] in [nodegroup], but it has an e2node parent";
 $broken_nodegroup_writeup->{parent_e2node} = $broken_nodegroup_e2node->{node_id};
 $broken_nodegroup_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
 $broken_nodegroup_writeup->{publishtime} = $broken_nodegroup_writeup->{createtime};
-print STDERR "Inserted writeup with no nodegroup registration: '$broken_nodegroup_writeup->{title}'\n";
+$DB->updateNode($broken_nodegroup_writeup, -1);
+print STDERR "Writeup with no nodegroup registration: '$broken_nodegroup_writeup->{title}'\n";
 
-my $no_author_e2node = $DB->getNodeById($DB->insertNode("writeup with no owner","e2node",$root));
-my $no_author_writeup = $DB->getNodeById($DB->insertNode("writeup with no owner (thing)", "writeup", $normaluser1));
+my $no_author_e2node = $DB->getNode("writeup with no owner","e2node");
+if (!$no_author_e2node) {
+  my $no_author_e2node_id = $DB->insertNode("writeup with no owner","e2node",$root);
+  $no_author_e2node = $DB->getNodeById($no_author_e2node_id);
+}
+my $no_author_writeup = $DB->getNode("writeup with no owner (thing)", "writeup");
+if (!$no_author_writeup) {
+  my $no_author_writeup_id = $DB->insertNode("writeup with no owner (thing)", "writeup", $normaluser1);
+  $no_author_writeup = $DB->getNodeById($no_author_writeup_id);
+}
 $no_author_writeup->{author_user} = 0;
 $no_author_writeup->{parent_e2node} = $no_author_e2node->{node_id};
 $no_author_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
 $no_author_writeup->{doctext} = "This writeup has no author to test broken node handling!";
 $no_author_writeup->{publishtime} = $no_author_writeup->{createtime};
-$DB->insertIntoNodegroup($no_author_e2node, -1, $no_author_writeup);
+my $no_author_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$no_author_e2node->{node_id} AND node_id=$no_author_writeup->{node_id}");
+if (!$no_author_in_group) {
+  $DB->insertIntoNodegroup($no_author_e2node, -1, $no_author_writeup);
+}
 $DB->updateNode($no_author_writeup, -1);
-print STDERR "Inserted writeup with no author: '$no_author_writeup->{title}'\n";
+print STDERR "Writeup with no author: '$no_author_writeup->{title}'\n";
 
-my $bad_cool_e2node = $DB->getNodeById($DB->insertNode("writeup with bad cool info", "e2node", $root));
-my $bad_cool_writeup = $DB->getNodeById($DB->insertNode("writeup with bad cool info (thing)", "writeup", $normaluser1));
+my $bad_cool_e2node = $DB->getNode("writeup with bad cool info", "e2node");
+if (!$bad_cool_e2node) {
+  my $bad_cool_e2node_id = $DB->insertNode("writeup with bad cool info", "e2node", $root);
+  $bad_cool_e2node = $DB->getNodeById($bad_cool_e2node_id);
+}
+my $bad_cool_writeup = $DB->getNode("writeup with bad cool info (thing)", "writeup");
+if (!$bad_cool_writeup) {
+  my $bad_cool_writeup_id = $DB->insertNode("writeup with bad cool info (thing)", "writeup", $normaluser1);
+  $bad_cool_writeup = $DB->getNodeById($bad_cool_writeup_id);
+}
 $bad_cool_writeup->{parent_e2node} = $bad_cool_e2node->{node_id};
 $bad_cool_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
 $bad_cool_writeup->{doctext} = "This writeup was [Cool Archive|cooled] by a [ghost]";
 $bad_cool_writeup->{cooled} = 1;
 $bad_cool_writeup->{publishtime} = $bad_cool_writeup->{createtime};
-$DB->insertIntoNodegroup($bad_cool_e2node, -1, $bad_cool_writeup);
+my $bad_cool_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$bad_cool_e2node->{node_id} AND node_id=$bad_cool_writeup->{node_id}");
+if (!$bad_cool_in_group) {
+  $DB->insertIntoNodegroup($bad_cool_e2node, -1, $bad_cool_writeup);
+}
 $DB->updateNode($bad_cool_writeup, -1);
-$DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $bad_cool_writeup->{node_id}, cooledby_user => 9999});
-print STDERR "Inserted writeup with bad cooler: '$bad_cool_writeup->{title}'\n";
+my $existing_bad_cool = $DB->sqlSelect('COUNT(*)', 'coolwriteups',
+  "coolwriteups_id=$bad_cool_writeup->{node_id} AND cooledby_user=9999");
+if (!$existing_bad_cool) {
+  $DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $bad_cool_writeup->{node_id}, cooledby_user => 9999});
+}
+print STDERR "Writeup with bad cooler: '$bad_cool_writeup->{title}'\n";
 
 my $cools = { "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)", "writeup with a broken type (thing)","writeup with no parent (thing)", "writeup with a broken nodegroup (thing)", "writeup with no owner (thing)"]};
 
@@ -394,12 +682,16 @@ foreach my $chinger (keys %$cools)
     my $writeup_node = getNode($writeup, "writeup");
     unless($writeup_node)
     {
-      print STDERR "ERROR: Could not get writeup node '$writeup'"; 
+      print STDERR "ERROR: Could not get writeup node '$writeup'";
       next;
     }
     $writeup_node->{cooled}++;
     updateNode($writeup_node, -1);
-    $DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $writeup_node->{node_id}, cooledby_user => $chinger_node->{node_id}});
+    my $existing_cool = $DB->sqlSelect('COUNT(*)', 'coolwriteups',
+      "coolwriteups_id=$writeup_node->{node_id} AND cooledby_user=$chinger_node->{node_id}");
+    if (!$existing_cool) {
+      $DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $writeup_node->{node_id}, cooledby_user => $chinger_node->{node_id}});
+    }
   }
 }
 
@@ -421,16 +713,20 @@ my @poll_options = (
   "Rust"
 );
 
-# Use insertNode with skip_maintenance=1 to avoid triggering e2poll_create
-# which requires CGI context
-my $poll_node_id = $DB->insertNode($poll_title, "e2poll", $normaluser1, {}, 1);
-unless($poll_node_id) {
-  print STDERR "ERROR: Could not create poll node\n";
-  exit 1;
+# Check if poll already exists
+my $poll_node = $DB->getNode($poll_title, "e2poll");
+if (!$poll_node) {
+  # Use insertNode with skip_maintenance=1 to avoid triggering e2poll_create
+  # which requires CGI context
+  my $poll_node_id = $DB->insertNode($poll_title, "e2poll", $normaluser1, {}, 1);
+  unless($poll_node_id) {
+    print STDERR "ERROR: Could not create poll node\n";
+    exit 1;
+  }
+  $poll_node = $DB->getNodeById($poll_node_id);
+} else {
+  print STDERR "Poll already exists: '$poll_title' (updating)\n";
 }
-
-# Get the poll node and update its fields
-my $poll_node = $DB->getNodeById($poll_node_id);
 $poll_node->{doctext} = join("\n", @poll_options);
 $poll_node->{question} = $poll_title;
 $poll_node->{poll_status} = 'current';
@@ -444,7 +740,7 @@ $poll_node->{totalvotes} = 0;
 # Use sqlUpdate to update the fields directly (avoid maintenance functions)
 $DB->sqlUpdate("document", {
   doctext => join("\n", @poll_options)
-}, "document_id = $poll_node_id");
+}, "document_id = $poll_node->{node_id}");
 
 $DB->sqlUpdate("e2poll", {
   question => $poll_title,
@@ -455,9 +751,9 @@ $DB->sqlUpdate("e2poll", {
   was_dailypoll => 0,
   e2poll_results => "0,0,0,0,0,0",
   totalvotes => 0
-}, "e2poll_id = $poll_node_id");
+}, "e2poll_id = $poll_node->{node_id}");
 
-print STDERR "Created poll '$poll_title' (node_id: $poll_node_id) with status 'current'\n";
+print STDERR "Created poll '$poll_title' (node_id: $poll_node->{node_id}) with status 'current'\n";
 
 # Initialize vote counts to 0 for each option
 my @vote_counts = (0) x scalar(@poll_options);
@@ -488,14 +784,19 @@ foreach my $user_num (sort {$a <=> $b} keys %$poll_votes) {
     next;
   }
 
-  # Insert the vote
-  print STDERR "Recording poll vote: normaluser$user_num voting for option $choice ($poll_options[$choice])\n";
-  $DB->sqlInsert("pollvote", {
-    pollvote_id => $poll_node->{node_id},
-    voter_user => $voter->{node_id},
-    choice => $choice,
-    votetime => $APP->convertEpochToDate(time())
-  });
+  # Check if vote already exists
+  my $existing_vote = $DB->sqlSelect('COUNT(*)', 'pollvote',
+    "pollvote_id=$poll_node->{node_id} AND voter_user=$voter->{node_id}");
+  if (!$existing_vote) {
+    # Insert the vote
+    print STDERR "Recording poll vote: normaluser$user_num voting for option $choice ($poll_options[$choice])\n";
+    $DB->sqlInsert("pollvote", {
+      pollvote_id => $poll_node->{node_id},
+      voter_user => $voter->{node_id},
+      choice => $choice,
+      votetime => $APP->convertEpochToDate(time())
+    });
+  }
 
   # Update vote count
   $vote_counts[$choice]++;
@@ -523,15 +824,21 @@ my @poll_options2 = (
   "Late night (12am-5am)"
 );
 
-my $poll_node_id2 = $DB->insertNode($poll_title2, "e2poll", $normaluser1, {}, 1);
-unless($poll_node_id2) {
-  print STDERR "ERROR: Could not create second poll node\n";
-  exit 1;
+my $poll_node2 = $DB->getNode($poll_title2, "e2poll");
+if (!$poll_node2) {
+  my $poll_node_id2 = $DB->insertNode($poll_title2, "e2poll", $normaluser1, {}, 1);
+  unless($poll_node_id2) {
+    print STDERR "ERROR: Could not create second poll node\n";
+    exit 1;
+  }
+  $poll_node2 = $DB->getNodeById($poll_node_id2);
+} else {
+  print STDERR "Poll already exists: '$poll_title2' (updating)\n";
 }
 
 $DB->sqlUpdate("document", {
   doctext => join("\n", @poll_options2)
-}, "document_id = $poll_node_id2");
+}, "document_id = $poll_node2->{node_id}");
 
 $DB->sqlUpdate("e2poll", {
   question => $poll_title2,
@@ -542,9 +849,9 @@ $DB->sqlUpdate("e2poll", {
   was_dailypoll => 0,
   e2poll_results => "0,0,0,0,0,0",
   totalvotes => 0
-}, "e2poll_id = $poll_node_id2");
+}, "e2poll_id = $poll_node2->{node_id}");
 
-print STDERR "Created poll '$poll_title2' (node_id: $poll_node_id2) with status 'closed'\n";
+print STDERR "Poll '$poll_title2' (node_id: $poll_node2->{node_id}) with status 'closed'\n";
 
 # Have normaluser1-15 vote on this poll
 my @vote_counts2 = (0) x scalar(@poll_options2);
@@ -573,13 +880,17 @@ foreach my $user_num (sort {$a <=> $b} keys %$poll_votes2) {
     next;
   }
 
-  print STDERR "Recording poll vote: normaluser$user_num voting for option $choice ($poll_options2[$choice])\n";
-  $DB->sqlInsert("pollvote", {
-    pollvote_id => $poll_node_id2,
-    voter_user => $voter->{node_id},
-    choice => $choice,
-    votetime => $APP->convertEpochToDate(time())
-  });
+  my $existing_vote2 = $DB->sqlSelect('COUNT(*)', 'pollvote',
+    "pollvote_id=$poll_node2->{node_id} AND voter_user=$voter->{node_id}");
+  if (!$existing_vote2) {
+    print STDERR "Recording poll vote: normaluser$user_num voting for option $choice ($poll_options2[$choice])\n";
+    $DB->sqlInsert("pollvote", {
+      pollvote_id => $poll_node2->{node_id},
+      voter_user => $voter->{node_id},
+      choice => $choice,
+      votetime => $APP->convertEpochToDate(time())
+    });
+  }
 
   $vote_counts2[$choice]++;
   $total_votes2++;
@@ -588,7 +899,7 @@ foreach my $user_num (sort {$a <=> $b} keys %$poll_votes2) {
 $DB->sqlUpdate("e2poll", {
   e2poll_results => join(',', @vote_counts2),
   totalvotes => $total_votes2
-}, "e2poll_id = $poll_node_id2");
+}, "e2poll_id = $poll_node2->{node_id}");
 
 print STDERR "Created poll '$poll_title2' with $total_votes2 votes\n";
 print STDERR "Results: " . join(', ', map { "$poll_options2[$_]: $vote_counts2[$_]" } 0..$#poll_options2) . "\n";
@@ -603,15 +914,21 @@ my @poll_options3 = (
   "Winter"
 );
 
-my $poll_node_id3 = $DB->insertNode($poll_title3, "e2poll", $normaluser1, {}, 1);
-unless($poll_node_id3) {
-  print STDERR "ERROR: Could not create third poll node\n";
-  exit 1;
+my $poll_node3 = $DB->getNode($poll_title3, "e2poll");
+if (!$poll_node3) {
+  my $poll_node_id3 = $DB->insertNode($poll_title3, "e2poll", $normaluser1, {}, 1);
+  unless($poll_node_id3) {
+    print STDERR "ERROR: Could not create third poll node\n";
+    exit 1;
+  }
+  $poll_node3 = $DB->getNodeById($poll_node_id3);
+} else {
+  print STDERR "Poll already exists: '$poll_title3' (updating)\n";
 }
 
 $DB->sqlUpdate("document", {
   doctext => join("\n", @poll_options3)
-}, "document_id = $poll_node_id3");
+}, "document_id = $poll_node3->{node_id}");
 
 $DB->sqlUpdate("e2poll", {
   question => $poll_title3,
@@ -622,6 +939,6 @@ $DB->sqlUpdate("e2poll", {
   was_dailypoll => 0,
   e2poll_results => "0,0,0,0",
   totalvotes => 0
-}, "e2poll_id = $poll_node_id3");
+}, "e2poll_id = $poll_node3->{node_id}");
 
-print STDERR "Created poll '$poll_title3' (node_id: $poll_node_id3) with status 'new' (no votes)\n";
+print STDERR "Poll '$poll_title3' (node_id: $poll_node3->{node_id}) with status 'new' (no votes)\n";

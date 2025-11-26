@@ -166,13 +166,35 @@ The old system architecture makes it increasingly difficult to fix bugs, add fea
 
 ---
 
+## Test Infrastructure Improvements
+
+### Parallel Test Execution Robustness (Session 24)
+**What Changed:** Fixed intermittent test failures during parallel execution and added comprehensive UTF-8 emoji testing.
+
+**Why This Matters:**
+- **Reliability**: Tests that shared user accounts (normaluser1, normaluser2) now run serially to avoid race conditions
+- **UTF-8 Support**: Emojis and special characters (❤️, …, 🎉) now verified to work correctly in chatter messages
+- **Developer Experience**: Consistent test results mean faster development cycles
+
+**Technical Details:**
+- Added t/008_e2nodes.t and t/009_writeups.t to serial test execution (prevents session conflicts)
+- Integrated UTF-8 emoji tests into t/037_chatter_api.t (6 new assertions)
+- Tests verify proper UTF-8 flag setting and mojibake prevention
+- Updated CLAUDE.md with comprehensive vendor library path documentation
+- All 49 Perl tests + 445 React tests passing consistently
+
+**User Impact:** Behind-the-scenes improvement ensuring site features work correctly with international characters and emojis.
+
+---
+
 ## Quality Metrics
 
 - **Security Critical eval() Count:** 0 (down from 22) ✅
-- **Test Suite Size:** 30 Perl tests + 209 React tests + 61 API tests
+- **Test Suite Size:** 49 Perl tests + 445 React tests
 - **React Nodelets Migrated:** 10 of 25 (40% complete)
 - **Code Quality:** All Perl::Critic checks pass (239 tests)
 - **Modernization Progress:** 85% complete
+- **Test Execution:** 4 serial tests, 45 parallel tests (robust against race conditions)
 
 ---
 

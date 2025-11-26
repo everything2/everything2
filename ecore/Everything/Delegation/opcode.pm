@@ -574,7 +574,6 @@ sub message
   } elsif(($isRoot or $isChanop) and $message=~/^\/topic\s+(.*)$/i) {
 
     $message = $1;
-    utf8::encode($message);
 
     my $settingsnode = getNodeById(1149799); #More hard-coded goodness for speed.
     my $topics = getVars($settingsnode);

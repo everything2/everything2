@@ -172,6 +172,7 @@ subtest 'Nested usergroup message delivery' => sub {
   plan tests => 5;
 
   # Test with real nested groups: Content Editors contains e2gods contains root
+  # Note: root should be in both gods (admin) and e2gods (social management) via seeds.pl
   my $content_editors = $DB->getNode('Content Editors', 'usergroup');
   ok($content_editors, 'Got Content Editors usergroup');
 
@@ -199,7 +200,7 @@ subtest 'Nested usergroup message delivery' => sub {
   cmp_ok($root_message_count, '==', 1, 'Root received message via nested usergroup (e2gods)');
 
   # Check total messages - should include all expanded members
-  # Content Editors members: e2gods (contains root) + genericeditor = 2 users total
+  # Content Editors members: e2gods (contains root) + genericeditor + e2e_editor = 3 users minimum
   my $total = $DB->sqlSelect(
     'COUNT(*)',
     'message',

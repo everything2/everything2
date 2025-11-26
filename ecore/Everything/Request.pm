@@ -4,6 +4,7 @@ use strict;
 use Moose;
 use namespace::autoclean;
 use CGI qw(-utf8);
+use Encode qw(decode_utf8);
 
 with 'Everything::Globals';
 
@@ -33,6 +34,10 @@ sub JSON_POSTDATA
   my $self = shift;
   my $postdata = $self->POSTDATA;
   return {} unless $postdata;
+
+  # Decode UTF-8 bytes from raw POST body before JSON parsing
+  $postdata = decode_utf8($postdata);
+
   return $self->JSON->decode($postdata);
 }
 

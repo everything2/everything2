@@ -257,81 +257,113 @@ class SmokeTest
   end
 
   def test_page_quiet(name, path, doc_type, rendering, print_mutex)
-    # Run the test
+    # Retry configuration
+    max_retries = 3
+    retry_delay = 0.5  # seconds
+    transient_codes = [400, 502, 503, 504]
+
+    # Run the test with retry logic
     result = nil
-    begin
-      response = http_get(path)
-      code = response.code.to_i
+    retries = 0
 
-      # Permission denied is only expected for the "Permission Denied" page itself
-      if code == 403 || (code == 200 && response.body.include?("You don't have access to that node.") && name != 'Permission Denied')
-        print_mutex.synchronize { puts "  #{name}... ✗ Permission denied" }
-        @errors << "#{name}: Unexpected permission denial (root should have access)"
-        return :error
-      end
+    loop do
+      begin
+        response = http_get(path)
+        code = response.code.to_i
 
-      if code == 200
-        body = response.body
+        # Permission denied is only expected for the "Permission Denied" page itself
+        if code == 403 || (code == 200 && response.body.include?("You don't have access to that node.") && name != 'Permission Denied')
+          print_mutex.synchronize { puts "  #{name}... ✗ Permission denied" }
+          @errors << "#{name}: Unexpected permission denial (root should have access)"
+          return :error
+        end
 
-        # For XML/JSON API endpoints (tickers), just verify they return XML-like content
-        if rendering == 'XML/JSON API'
-          if body.include?('<?xml') || body.include?('<') || body.include?('{')
-            print_mutex.synchronize { puts "  #{name}... ✓ (API)" }
-            return :pass
-          else
-            print_mutex.synchronize { puts "  #{name}... ✗ Invalid API response" }
-            @errors << "#{name}: API endpoint doesn't return XML/JSON"
+        if code == 200
+          body = response.body
+
+          # For XML/JSON API endpoints (tickers), just verify they return XML-like content
+          if rendering == 'XML/JSON API'
+            if body.include?('<?xml') || body.include?('<') || body.include?('{')
+              retry_msg = retries > 0 ? " (after #{retries} retries)" : ""
+              print_mutex.synchronize { puts "  #{name}... ✓ (API)#{retry_msg}" }
+              return :pass
+            else
+              print_mutex.synchronize { puts "  #{name}... ✗ Invalid API response" }
+              @errors << "#{name}: API endpoint doesn't return XML/JSON"
+              return :error
+            end
+          end
+
+          # Check for fatal errors
+          if body.include?('Software error') || body.include?('Internal Server Error')
+            print_mutex.synchronize { puts "  #{name}... ✗ Fatal error" }
+            @errors << "#{name}: Shows fatal error"
             return :error
           end
-        end
 
-        # Check for fatal errors
-        if body.include?('Software error') || body.include?('Internal Server Error')
-          print_mutex.synchronize { puts "  #{name}... ✗ Fatal error" }
-          @errors << "#{name}: Shows fatal error"
+          # Check for Perl errors
+          if body =~ /at \/.*?\.pm line \d+/
+            print_mutex.synchronize { puts "  #{name}... ✗ Perl error" }
+            error_match = body.match(/(.{0,150}at \/.*?\.pm line \d+.{0,50})/)
+            @errors << "#{name}: Perl error - #{error_match[0]}" if error_match
+            return :error
+          end
+
+          # Check for missing htmlcode errors
+          if body.include?('could not be found as Everything::Delegation::htmlcode')
+            print_mutex.synchronize { puts "  #{name}... ✗ Missing htmlcode" }
+            error_match = body.match(/(.{0,50}could not be found as Everything::Delegation::htmlcode::\w+.{0,50})/)
+            @errors << "#{name}: #{error_match[0]}" if error_match
+            return :error
+          end
+
+          # Check for undefined method errors
+          if body.include?("Can't locate object method")
+            print_mutex.synchronize { puts "  #{name}... ✗ Method error" }
+            error_match = body.match(/(Can't locate object method .{0,100})/)
+            @errors << "#{name}: #{error_match[0]}" if error_match
+            return :error
+          end
+
+          retry_msg = retries > 0 ? " (after #{retries} retries)" : ""
+          print_mutex.synchronize { puts "  #{name}... ✓#{retry_msg}" }
+          return :pass
+        elsif code == 404
+          print_mutex.synchronize { puts "  #{name}... ⚠ Not found" }
+          @warnings << "#{name}: Page not found (may not exist in dev environment)"
+          return :warning
+        elsif transient_codes.include?(code) && retries < max_retries
+          # Transient error - retry after delay
+          retries += 1
+          delay = retry_delay * (2 ** (retries - 1))  # Exponential backoff
+          print_mutex.synchronize { puts "  #{name}... ⚠ HTTP #{code}, retrying (#{retries}/#{max_retries}) after #{delay}s" }
+          sleep(delay)
+          next  # Try again
+        else
+          # Hard error or max retries reached
+          retry_msg = retries > 0 ? " (failed after #{retries} retries)" : ""
+          print_mutex.synchronize { puts "  #{name}... ✗ HTTP #{code}#{retry_msg}" }
+          @errors << "#{name}: HTTP #{code}#{retry_msg}"
           return :error
         end
 
-        # Check for Perl errors
-        if body =~ /at \/.*?\.pm line \d+/
-          print_mutex.synchronize { puts "  #{name}... ✗ Perl error" }
-          error_match = body.match(/(.{0,150}at \/.*?\.pm line \d+.{0,50})/)
-          @errors << "#{name}: Perl error - #{error_match[0]}" if error_match
+      rescue => e
+        # Check if exception is transient (timeout, connection reset, etc.)
+        if (e.is_a?(Net::OpenTimeout) || e.is_a?(Net::ReadTimeout) || e.message.include?('Connection reset')) && retries < max_retries
+          retries += 1
+          delay = retry_delay * (2 ** (retries - 1))
+          print_mutex.synchronize { puts "  #{name}... ⚠ #{e.class}, retrying (#{retries}/#{max_retries}) after #{delay}s" }
+          sleep(delay)
+          next  # Try again
+        else
+          retry_msg = retries > 0 ? " (failed after #{retries} retries)" : ""
+          print_mutex.synchronize { puts "  #{name}... ✗ Exception#{retry_msg}" }
+          @errors << "#{name}: #{e.message}#{retry_msg}"
           return :error
         end
-
-        # Check for missing htmlcode errors
-        if body.include?('could not be found as Everything::Delegation::htmlcode')
-          print_mutex.synchronize { puts "  #{name}... ✗ Missing htmlcode" }
-          error_match = body.match(/(.{0,50}could not be found as Everything::Delegation::htmlcode::\w+.{0,50})/)
-          @errors << "#{name}: #{error_match[0]}" if error_match
-          return :error
-        end
-
-        # Check for undefined method errors
-        if body.include?("Can't locate object method")
-          print_mutex.synchronize { puts "  #{name}... ✗ Method error" }
-          error_match = body.match(/(Can't locate object method .{0,100})/)
-          @errors << "#{name}: #{error_match[0]}" if error_match
-          return :error
-        end
-
-        print_mutex.synchronize { puts "  #{name}... ✓" }
-        return :pass
-      elsif code == 404
-        print_mutex.synchronize { puts "  #{name}... ⚠ Not found" }
-        @warnings << "#{name}: Page not found (may not exist in dev environment)"
-        return :warning
-      else
-        print_mutex.synchronize { puts "  #{name}... ✗ HTTP #{code}" }
-        @errors << "#{name}: HTTP #{code}"
-        return :error
       end
 
-    rescue => e
-      print_mutex.synchronize { puts "  #{name}... ✗ Exception" }
-      @errors << "#{name}: #{e.message}"
-      return :error
+      break  # Exit loop if we reach here (shouldn't happen due to returns)
     end
   end
 

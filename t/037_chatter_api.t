@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use utf8;
 use warnings;
 
 ## no critic (RegularExpressions RequireExtendedFormatting RequireLineBoundaryMatching RequireDotMatchAnything)
@@ -14,6 +15,9 @@ use Test::More;
 use Everything;
 use Everything::Application;
 use Everything::API::chatter;
+
+binmode(STDOUT, ":utf8");
+binmode(STDERR, ":utf8");
 
 # Suppress expected warnings
 $SIG{__WARN__} = sub {
@@ -352,6 +356,50 @@ subtest 'POST /api/chatter/clear_all - non-admin blocked' => sub {
 
     is($status, 403, "Status is 403 FORBIDDEN for non-admin");
     ok($data->{error}, "Error message is present");
+};
+
+#############################################################################
+# Test 10: UTF-8 Emoji Storage in Chatter
+#############################################################################
+
+subtest 'UTF-8 emoji storage in chatter' => sub {
+    plan tests => 6;
+
+    my $user = MockUser->new(
+        NODEDATA => $test_user,
+        node_id => $test_user->{node_id},
+        title => $test_user->{title}
+    );
+
+    # Test message with various UTF-8 characters: emojis, ellipsis, etc.
+    my $emoji_message = "Test emoji ❤️ and ellipsis … and party 🎉";
+
+    my $request = MockRequest->new(
+        user => $user,
+        _postdata => { message => $emoji_message }
+    );
+
+    my ($status, $data) = @{$api->create($request)};
+
+    is($status, 200, "Status is 200 OK for emoji message");
+    is($data->{success}, 1, "Success flag is true");
+
+    # Retrieve the message from database
+    my $latest_msg = $DB->sqlSelect(
+        'msgtext',
+        'message',
+        "author_user=$test_user->{node_id} AND for_user=0",
+        "ORDER BY message_id DESC LIMIT 1"
+    );
+
+    ok($latest_msg, "Message retrieved from database");
+    is($latest_msg, $emoji_message, "Emoji message stored correctly without mojibake");
+
+    # Verify UTF-8 flag is set correctly
+    ok(utf8::is_utf8($latest_msg), "Retrieved message has UTF-8 flag set");
+
+    # Verify emoji appears in returned chatter array
+    is($data->{chatter}->[0]->{msgtext}, $emoji_message, "Emoji message in API response is correct");
 };
 
 # Cleanup

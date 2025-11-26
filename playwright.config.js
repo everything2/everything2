@@ -29,6 +29,9 @@ module.exports = defineConfig({
     // Base URL for all tests
     baseURL: 'http://localhost:9080',
 
+    // Run headless by default (use --headed flag to show browser)
+    headless: true,
+
     // Capture screenshots on failure
     screenshot: 'only-on-failure',
 

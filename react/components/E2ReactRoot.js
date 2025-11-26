@@ -1,36 +1,48 @@
-import React from 'react'
-// Import nodelet components only (NO Portal imports - Phase 3: React owns sidebar)
-import Vitals from './Nodelets/Vitals'
-import Epicenter from './Nodelets/Epicenter'
-import Developer from './Nodelets/Developer'
-import NewWriteups from './Nodelets/NewWriteups'
-import RecommendedReading from './Nodelets/RecommendedReading'
-import ReadThis from './Nodelets/ReadThis'
-import NewLogs from './Nodelets/NewLogs'
-import RandomNodes from './Nodelets/RandomNodes'
+import React, { Suspense, lazy } from 'react'
+
+// EAGER LOADING: Guest-default nodelets (always needed for first page load)
+// These are the nodelets shown to non-logged-in users per guest_nodelets config
 import SignIn from './Nodelets/SignIn'
-import NeglectedDrafts from './Nodelets/NeglectedDrafts'
-import QuickReference from './Nodelets/QuickReference'
-import MasterControl from './Nodelets/MasterControl'
-import Statistics from './Nodelets/Statistics'
-import Notelet from './Nodelets/Notelet'
-import Categories from './Nodelets/Categories'
-import MostWanted from './Nodelets/MostWanted'
-import RecentNodes from './Nodelets/RecentNodes'
-import FavoriteNoders from './Nodelets/FavoriteNoders'
-import PersonalLinks from './Nodelets/PersonalLinks'
-import CurrentUserPoll from './Nodelets/CurrentUserPoll'
-import UsergroupWriteups from './Nodelets/UsergroupWriteups'
-import OtherUsers from './Nodelets/OtherUsers'
-import Chatterbox from './Nodelets/Chatterbox'
-import Messages from './Nodelets/Messages'
-import Notifications from './Nodelets/Notifications'
-import ForReview from './Nodelets/ForReview'
+import RecommendedReading from './Nodelets/RecommendedReading'
+import NewWriteups from './Nodelets/NewWriteups'
+
+// LAZY LOADING: User-preference nodelets (only loaded when user has them enabled)
+// Code splitting creates separate bundles, reducing initial page load time
+const Vitals = lazy(() => import('./Nodelets/Vitals'))
+const Epicenter = lazy(() => import('./Nodelets/Epicenter'))
+const Developer = lazy(() => import('./Nodelets/Developer'))
+const ReadThis = lazy(() => import('./Nodelets/ReadThis'))
+const NewLogs = lazy(() => import('./Nodelets/NewLogs'))
+const RandomNodes = lazy(() => import('./Nodelets/RandomNodes'))
+const NeglectedDrafts = lazy(() => import('./Nodelets/NeglectedDrafts'))
+const QuickReference = lazy(() => import('./Nodelets/QuickReference'))
+const MasterControl = lazy(() => import('./Nodelets/MasterControl'))
+const Statistics = lazy(() => import('./Nodelets/Statistics'))
+const Notelet = lazy(() => import('./Nodelets/Notelet'))
+const Categories = lazy(() => import('./Nodelets/Categories'))
+const MostWanted = lazy(() => import('./Nodelets/MostWanted'))
+const RecentNodes = lazy(() => import('./Nodelets/RecentNodes'))
+const FavoriteNoders = lazy(() => import('./Nodelets/FavoriteNoders'))
+const PersonalLinks = lazy(() => import('./Nodelets/PersonalLinks'))
+const CurrentUserPoll = lazy(() => import('./Nodelets/CurrentUserPoll'))
+const UsergroupWriteups = lazy(() => import('./Nodelets/UsergroupWriteups'))
+const OtherUsers = lazy(() => import('./Nodelets/OtherUsers'))
+const Chatterbox = lazy(() => import('./Nodelets/Chatterbox'))
+const Messages = lazy(() => import('./Nodelets/Messages'))
+const Notifications = lazy(() => import('./Nodelets/Notifications'))
+const ForReview = lazy(() => import('./Nodelets/ForReview'))
 
 import { E2IdleHandler } from './E2IdleHandler'
 import ErrorBoundary from './ErrorBoundary'
 
 const E2Constants = {"defaultGuestNode": 2030780, "defaultNode": 124}
+
+// Loading fallback for lazy-loaded nodelets
+const NodeletLoadingFallback = () => (
+  <div style={{ padding: '10px', textAlign: 'center', color: '#666' }}>
+    <small>Loading...</small>
+  </div>
+)
 
 class E2ReactRoot extends React.Component {
 
@@ -389,58 +401,64 @@ class E2ReactRoot extends React.Component {
   renderNodelet = (nodeletName) => {
     const nodeletComponents = {
       'vitals': () => (
-        <Vitals
-          key="vitals"
-          maintenance={this.state.vit_maintenance}
-          nodeinfo={this.state.vit_nodeinfo}
-          list={this.state.vit_list}
-          nodeutil={this.state.vit_nodeutil}
-          misc={this.state.vit_misc}
-          toggleSection={this.toggleSection}
-          showNodelet={this.showNodelet}
-          nodeletIsOpen={this.state.vitals_show}
-        />
+        <Suspense fallback={<NodeletLoadingFallback />}>
+          <Vitals
+            key="vitals"
+            maintenance={this.state.vit_maintenance}
+            nodeinfo={this.state.vit_nodeinfo}
+            list={this.state.vit_list}
+            nodeutil={this.state.vit_nodeutil}
+            misc={this.state.vit_misc}
+            toggleSection={this.toggleSection}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.vitals_show}
+          />
+        </Suspense>
       ),
       'epicenter': () => (
         <ErrorBoundary key="epicenter">
-          <Epicenter
-            isGuest={this.state.user.guest}
-            userName={this.state.user.title}
-            votesLeft={this.state.epicenter?.votesLeft}
-            cools={this.state.epicenter?.cools}
-            experience={this.state.epicenter?.experience}
-            gp={this.state.epicenter?.gp}
-            level={this.state.epicenter?.level}
-            gpOptOut={this.state.epicenter?.gpOptOut}
-            localTimeUse={this.state.epicenter?.localTimeUse}
-            userId={this.state.epicenter?.userId}
-            userSettingsId={this.state.epicenter?.userSettingsId}
-            helpPage={this.state.epicenter?.helpPage}
-            borgcheck={this.state.epicenter?.borgcheck}
-            experienceGain={this.state.epicenter?.experienceGain}
-            gpGain={this.state.epicenter?.gpGain}
-            randomNodeUrl={this.state.epicenter?.randomNodeUrl}
-            serverTime={this.state.epicenter?.serverTime}
-            localTime={this.state.epicenter?.localTime}
-            showNodelet={this.showNodelet}
-            nodeletIsOpen={this.state.epicenter_show}
-          />
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <Epicenter
+              isGuest={this.state.user.guest}
+              userName={this.state.user.title}
+              votesLeft={this.state.epicenter?.votesLeft}
+              cools={this.state.epicenter?.cools}
+              experience={this.state.epicenter?.experience}
+              gp={this.state.epicenter?.gp}
+              level={this.state.epicenter?.level}
+              gpOptOut={this.state.epicenter?.gpOptOut}
+              localTimeUse={this.state.epicenter?.localTimeUse}
+              userId={this.state.epicenter?.userId}
+              userSettingsId={this.state.epicenter?.userSettingsId}
+              helpPage={this.state.epicenter?.helpPage}
+              borgcheck={this.state.epicenter?.borgcheck}
+              experienceGain={this.state.epicenter?.experienceGain}
+              gpGain={this.state.epicenter?.gpGain}
+              randomNodeUrl={this.state.epicenter?.randomNodeUrl}
+              serverTime={this.state.epicenter?.serverTime}
+              localTime={this.state.epicenter?.localTime}
+              showNodelet={this.showNodelet}
+              nodeletIsOpen={this.state.epicenter_show}
+            />
+          </Suspense>
         </ErrorBoundary>
       ),
       'everything_developer': () => (
-        <Developer
-          key="everythingdeveloper"
-          user={this.state.user}
-          node={this.state.node}
-          developerNodelet={this.state.developerNodelet}
-          lastCommit={this.state.lastCommit}
-          architecture={this.state.architecture}
-          toggleSection={this.toggleSection}
-          util={this.state.edn_util}
-          edev={this.state.edn_edev}
-          showNodelet={this.showNodelet}
-          nodeletIsOpen={this.state.everythingdeveloper_show}
-        />
+        <Suspense fallback={<NodeletLoadingFallback />}>
+          <Developer
+            key="everythingdeveloper"
+            user={this.state.user}
+            node={this.state.node}
+            developerNodelet={this.state.developerNodelet}
+            lastCommit={this.state.lastCommit}
+            architecture={this.state.architecture}
+            toggleSection={this.toggleSection}
+            util={this.state.edn_util}
+            edev={this.state.edn_edev}
+            showNodelet={this.showNodelet}
+            nodeletIsOpen={this.state.everythingdeveloper_show}
+          />
+        </Suspense>
       ),
       'new_writeups': () => (
         <ErrorBoundary key="newwriteups">
@@ -469,7 +487,8 @@ class E2ReactRoot extends React.Component {
       ),
       'read_this': () => (
         <ErrorBoundary key="readthis">
-          <ReadThis
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <ReadThis
             coolnodes={this.state.coolnodes}
             staffpicks={this.state.staffpicks}
             news={this.state.news}
@@ -480,27 +499,32 @@ class E2ReactRoot extends React.Component {
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.readthis_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'new_logs': () => (
         <ErrorBoundary key="newlogs">
-          <NewLogs
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <NewLogs
             newWriteups={this.state.newWriteups}
             daylogLinks={this.state.daylogLinks}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.newlogs_show}
             limit={20}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'random_nodes': () => (
         <ErrorBoundary key="randomnodes">
-          <RandomNodes
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <RandomNodes
             randomNodes={this.state.randomNodes}
             randomNodesPhrase={this.state.randomNodesPhrase}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.randomnodes_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'sign_in': () => (
@@ -515,25 +539,30 @@ class E2ReactRoot extends React.Component {
       ),
       'neglected_drafts': () => (
         <ErrorBoundary key="neglecteddrafts">
-          <NeglectedDrafts
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <NeglectedDrafts
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.neglecteddrafts_show}
             neglectedDrafts={this.state.neglectedDrafts}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'quick_reference': () => (
         <ErrorBoundary key="quickreference">
-          <QuickReference
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <QuickReference
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.quickreference_show}
             quickRefSearchTerm={this.state.quickRefSearchTerm}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'master_control': () => (
         <ErrorBoundary key="mastercontrol">
-          <MasterControl
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <MasterControl
             isEditor={this.state.masterControl?.isEditor}
             isAdmin={this.state.masterControl?.isAdmin}
             adminSearchForm={this.state.masterControl?.adminSearchForm}
@@ -549,11 +578,13 @@ class E2ReactRoot extends React.Component {
             nodeletIsOpen={this.state.mastercontrol_show}
             lastCommit={this.state.lastCommit}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'statistics': () => (
         <ErrorBoundary key="statistics">
-          <Statistics
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <Statistics
             statistics={this.state.statistics}
             stat_personal={this.state.stat_personal}
             stat_fun={this.state.stat_fun}
@@ -562,50 +593,60 @@ class E2ReactRoot extends React.Component {
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.statistics_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'categories': () => (
         <ErrorBoundary key="categories">
-          <Categories
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <Categories
             categories={this.state.categories}
             currentNodeId={this.state.currentNodeId}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.categories_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'most_wanted': () => (
         <ErrorBoundary key="mostwanted">
-          <MostWanted
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <MostWanted
             bounties={this.state.bounties}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.mostwanted_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'recent_nodes': () => (
         <ErrorBoundary key="recentnodes">
-          <RecentNodes
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <RecentNodes
             recentNodes={this.state.recentNodes}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.recentnodes_show}
             onClearTracks={() => this.setState({ recentNodes: [] })}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'favorite_noders': () => (
         <ErrorBoundary key="favoritenoders">
-          <FavoriteNoders
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <FavoriteNoders
             favoriteWriteups={this.state.favoriteWriteups}
             favoriteLimit={this.state.favoriteLimit}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.favoritenoders_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'personal_links': () => (
         <ErrorBoundary key="personallinks">
-          <PersonalLinks
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <PersonalLinks
             personalLinks={this.state.personalLinks}
             canAddCurrent={this.state.canAddCurrent}
             currentNodeId={this.state.currentNodeId}
@@ -614,40 +655,48 @@ class E2ReactRoot extends React.Component {
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.personallinks_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'current_poll': () => (
-        <ErrorBoundary key="currentpoll">
-          <CurrentUserPoll
-            currentPoll={this.state.currentPoll}
-            user={this.state.user}
-            showNodelet={this.showNodelet}
-            nodeletIsOpen={this.state.currentpoll_show}
-          />
+        <ErrorBoundary key="currentuserpoll">
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <CurrentUserPoll
+              currentPoll={this.state.currentPoll}
+              user={this.state.user}
+              showNodelet={this.showNodelet}
+              nodeletIsOpen={this.state.currentpoll_show}
+            />
+          </Suspense>
         </ErrorBoundary>
       ),
       'usergroup_writeups': () => (
         <ErrorBoundary key="usergroupwriteups">
-          <UsergroupWriteups
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <UsergroupWriteups
             usergroupData={this.state.usergroupData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.usergroupwriteups_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'other_users': () => (
         <ErrorBoundary key="otherusers">
-          <OtherUsers
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <OtherUsers
             otherUsersData={this.state.otherUsersData}
             onOtherUsersDataUpdate={this.updateOtherUsersData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.otherusers_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'chatterbox': () => (
         <ErrorBoundary key="chatterbox">
-          <Chatterbox
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <Chatterbox
             user={this.props.e2?.user}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.chatterbox_show}
@@ -665,42 +714,51 @@ class E2ReactRoot extends React.Component {
             currentRoom={this.state.currentRoomId}
             initialMessages={this.props.e2?.chatterbox?.messages}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'messages': () => (
         <ErrorBoundary key="messages">
-          <Messages
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <Messages
             initialMessages={this.props.e2?.messagesData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.messages_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'notifications': () => (
         <ErrorBoundary key="notifications">
-          <Notifications
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <Notifications
             notificationsData={this.props.e2?.notificationsData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.notifications_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'for_review': () => (
         <ErrorBoundary key="forreview">
-          <ForReview
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <ForReview
             forReviewData={this.props.e2?.forReviewData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.forreview_show}
           />
+          </Suspense>
         </ErrorBoundary>
       ),
       'notelet': () => (
         <ErrorBoundary key="notelet">
-          <Notelet
+          <Suspense fallback={<NodeletLoadingFallback />}>
+            <Notelet
             noteletData={this.state.noteletData}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.notelet_show}
           />
+          </Suspense>
         </ErrorBoundary>
       )
     }
