@@ -18,6 +18,20 @@ sub display
     my $page_class = $self->page_class($node);
     my $is_react_page = $page_class->can('buildReactData');
 
+    # Phase 4a: For React pages, build window.e2 data structure
+    if ($is_react_page) {
+      # Build e2 data structure (includes reactPageMode and contentData)
+      my $e2 = $self->APP->buildNodeInfoStructure(
+        $node->NODEDATA,
+        $REQUEST->user->NODEDATA,
+        $REQUEST->user->VARS,
+        $REQUEST->cgi
+      );
+
+      # Add e2 data to controller output for template
+      $controller_output->{e2} = $e2;
+    }
+
     my $layout;
     if ($is_react_page) {
       # Use generic React container template for React pages

@@ -152,9 +152,11 @@ class SmokeTest
       'Decloaker',
       'Drafts',
       'Drafts for review',
+      'Everything\'s Obscure Writeups',
       'Personal Scratchpad',
       'User Preferences',
       'User XML Generator',
+      'Wharfinger\'s Linebreaker',
       'Write User',
       'Profile Settings'
     ]
@@ -242,7 +244,7 @@ class SmokeTest
           end
 
           # Test the page
-          result = test_page_quiet(doc[:title], doc[:path], doc[:type], doc[:rendering], print_mutex)
+          result = test_page_quiet(doc[:title], doc[:path], doc[:type], doc[:rendering], doc[:auth_required], print_mutex)
 
           # Store result thread-safely
           results_mutex.synchronize do
@@ -256,7 +258,7 @@ class SmokeTest
     results
   end
 
-  def test_page_quiet(name, path, doc_type, rendering, print_mutex)
+  def test_page_quiet(name, path, doc_type, rendering, auth_required, print_mutex)
     # Retry configuration
     max_retries = 3
     retry_delay = 0.5  # seconds
@@ -268,8 +270,27 @@ class SmokeTest
 
     loop do
       begin
-        response = http_get(path)
+        # Don't follow redirects for auth-required pages so we can detect 302
+        response = http_get(path, follow_redirects: !auth_required)
         code = response.code.to_i
+
+        # Debug for Everything's Obscure Writeups
+        if name.include?('Obscure')
+          location = response['location'] || response['Location']
+          print_mutex.synchronize {
+            puts "  DEBUG #{name}: auth_required=#{auth_required.inspect} code=#{code} location=#{location.inspect}"
+          }
+        end
+
+        # Auth-required pages expect 302 redirect to login for guests
+        if auth_required && code == 302
+          location = response['location'] || response['Location']
+          if location && location.include?('login')
+            retry_msg = retries > 0 ? " (after #{retries} retries)" : ""
+            print_mutex.synchronize { puts "  #{name}... ✓ (302 to login)#{retry_msg}" }
+            return :pass
+          end
+        end
 
         # Permission denied is only expected for the "Permission Denied" page itself
         if code == 403 || (code == 200 && response.body.include?("You don't have access to that node.") && name != 'Permission Denied')

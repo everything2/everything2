@@ -3,10 +3,6 @@ package Everything::Page::about_nobody;
 use Moose;
 extends 'Everything::Page';
 
-sub display {
-    return {};
-}
-
 sub buildReactData {
     my ( $self, $REQUEST ) = @_;
 

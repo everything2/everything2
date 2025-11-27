@@ -25,7 +25,6 @@ BEGIN {
   *updateNode = *Everything::HTML::updateNode;
   *setVars = *Everything::HTML::setVars;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
-  *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
@@ -973,7 +972,7 @@ sub bucketop
       # Probably has something to do with default vars.  So, we need to assign
       # what we found to a scoped var.
       my $insert = $1;
-      insertIntoNodegroup($group, $USER, $insert);
+      $DB->insertIntoNodegroup($group, $USER, $insert);
     }
   }
 

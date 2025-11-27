@@ -6,14 +6,14 @@ use Everything::Timestamp;
 extends 'Everything::Page';
 with 'Everything::Security::StaffOnly';
 
-sub display
+sub buildReactData
 {
   my ($self, $REQUEST) = @_;
 
   my $numdays = int($REQUEST->param("days")) || 30;
   $numdays = 365 if($numdays > 365);
 
-  my $writeups = [];
+  my @writeups;
 
   foreach my $title ("Content Editors","e2gods")
   {
@@ -22,13 +22,23 @@ sub display
     {
       next unless $user->type->title eq "user";
       my $count = $self->DB->sqlSelect("count(*)", "node", "type_nodetype=117 and author_user=".$user->node_id." and TO_DAYS(NOW())-TO_DAYS(createtime) <=$numdays");
-      push @$writeups, {"user" => $user, "count" => $count};
+
+      push @writeups, {
+        username => $user->title,
+        user_id => $user->node_id,
+        count => int($count)
+      };
     }
   }
 
-  $writeups = [sort {$a->{user}->title cmp $b->{user}->title} @$writeups];
+  # Sort by username
+  @writeups = sort { $a->{username} cmp $b->{username} } @writeups;
 
-  return {writeups => $writeups, numdays => $numdays};
+  return {
+    type => 'manna_from_heaven',
+    writeups => \@writeups,
+    numdays => $numdays
+  };
 }
 
 __PACKAGE__->meta->make_immutable;

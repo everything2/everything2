@@ -78,7 +78,7 @@
 | Everything's Best Writeups | Superdoc | `/title/Everything's+Best+Writeups` | E2 Legacy |
 | Everything's Biggest Stars | Superdoc | `/title/Everything's+Biggest+Stars` | E2 Legacy |
 | Everything's Most Wanted | Superdoc | `/title/Everything's+Most+Wanted` | E2 Legacy |
-| Everything's Obscure Writeups | Superdoc | `/title/Everything's+Obscure+Writeups` | Mason2 |
+| Everything's Obscure Writeups | Superdoc | `/title/Everything's+Obscure+Writeups` | React (302 for guests) |
 | Everything2 Elsewhere | Superdoc | `/title/Everything2+Elsewhere` | Mason2 |
 | Fezisms Generator | Superdoc | `/title/Fezisms+Generator` | Mason2 |
 | Findings: | Superdoc | `/title/Findings:` | E2 Legacy |

@@ -3,13 +3,46 @@ package Everything::Page::ekn;
 use Moose;
 extends 'Everything::Page';
 
-has 'template' => (is => 'ro', default => 'numbered_nodelist');
-has 'records' => (is => 'ro', isa => 'Int', default => 1000);
+has 'records' => ( is => 'ro', isa => 'Int', default => 1000 );
 
-sub display
-{
-  my ($self, $REQUEST, $node) = @_;
-  return {nodelist => $self->APP->newnodes($self->records, $REQUEST->user->is_editor)};
+sub buildReactData {
+    my ( $self, $REQUEST ) = @_;
+
+    my $user  = $REQUEST->user;
+    my $nodes = $self->APP->newnodes( $self->records, $user->is_editor );
+
+    # Convert blessed writeup objects to simple data structures
+    my @nodelist;
+    foreach my $node (@$nodes) {
+        my $parent = $node->parent;
+        my $author = $node->author;
+
+        # Check if parent/author exist and are not null nodes
+        my $has_parent = $parent && ref($parent) ne 'Everything::Node::null';
+        my $has_author = $author && ref($author) ne 'Everything::Node::null';
+
+        # Skip nodes with missing critical data
+        next unless $has_author;
+
+        push @nodelist,
+          {
+            node_id      => $node->node_id,
+            parent_id    => $has_parent ? $parent->node_id : $node->node_id,
+            parent_title => $has_parent ? $parent->title   : $node->title,
+            writeuptype  => $node->writeuptype,
+            publishtime  => $node->publishtime,
+            author_id    => $author->node_id,
+            author_name  => $author->title,
+            notnew       => $node->notnew || 0
+          };
+    }
+
+    return {
+        type        => 'ekn',
+        nodelist    => \@nodelist,
+        records     => $self->records,
+        currentPage => 'EKN'
+    };
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -3953,10 +3953,13 @@ sub static_javascript
 
   if($e2->{user}->{developer} and defined($VARS->{nodelets}) and $VARS->{nodelets} =~ /836984/)
   {
+    $APP->devLog("DEBUG (htmlcode): Inside developerNodelet block");
     my $edev = getNode("edev","usergroup");
     my $page = Everything::HTML::getPage($NODE, scalar($query->param("displaytype")));
+    $APP->devLog("DEBUG (htmlcode): After getPage, page=" . (defined $page ? "defined" : "undef"));
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
-    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}};
+    my $sourceMap = $APP->buildSourceMap($NODE, $page);
+    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}, sourceMap => $sourceMap};
   }
 
   # Phase 3: Build nodeletorder for React sidebar rendering
