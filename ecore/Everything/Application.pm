@@ -6690,7 +6690,8 @@ sub buildNodeInfoStructure
   # Check if this superdoc has a Page class that provides React data
   if ($NODE->{type}->{title} eq 'superdoc' && $user_node) {
     my $page_name = $NODE->{title};
-    $page_name =~ s/ /_/g;  # Convert spaces to underscores for package name
+    $page_name =~ s/['\s]/_/g;  # Convert apostrophes and spaces to underscores
+    $page_name =~ s/_+/_/g;     # Collapse multiple underscores to single
     $page_name = lc($page_name);  # Lowercase for consistency
 
     my $page_class = "Everything::Page::$page_name";
@@ -6727,6 +6728,143 @@ sub buildNodeInfoStructure
   }
 
   return $e2;
+}
+
+sub buildSourceMap
+{
+  my ($this, $NODE, $page) = @_;
+
+  my $sourceMap = {
+    githubRepo => 'https://github.com/everything2/everything2',
+    branch => 'master',
+    commitHash => $this->{conf}->last_commit || 'master',
+    components => []
+  };
+
+  my $nodetype = $NODE->{type}->{title};
+  my $nodetitle = $NODE->{title};
+
+  $this->devLog("buildSourceMap DEBUG: nodetype='$nodetype', title='$nodetitle'");
+
+  # Detect nodelets
+  if ($nodetype eq 'nodelet') {
+    my $component_name = $this->titleToComponentName($nodetitle);
+
+    push @{$sourceMap->{components}}, {
+      type => 'react_component',
+      name => $component_name,
+      path => "react/components/Nodelets/$component_name.js",
+      description => 'React component'
+    };
+
+    push @{$sourceMap->{components}}, {
+      type => 'test',
+      name => "$component_name.test.js",
+      path => "react/components/Nodelets/$component_name.test.js",
+      description => 'Component tests'
+    };
+  }
+  # Detect React documents (superdocs with buildReactData)
+  elsif ($nodetype =~ /^(superdoc|superdocnolinks|restricted_superdoc|oppressor_superdoc|fullpage)$/) {
+    my $page_name = $this->titleToPageFile($nodetitle);
+    my $is_react_page = 0;
+
+    # Check if page class exists and has buildReactData
+    if ($page_name) {
+      my $page_class = "Everything::Page::$page_name";
+      my $page_file = "Everything/Page/$page_name.pm";
+
+      # Check if already loaded or can be loaded
+      if (exists $INC{$page_file} || eval { require $page_file; 1; }) {
+        $is_react_page = $page_class->can('buildReactData');
+      }
+
+      if ($is_react_page) {
+        # React page - show Page class and React component
+        push @{$sourceMap->{components}}, {
+          type => 'page_class',
+          name => $page_name,
+          path => "ecore/Everything/Page/$page_name.pm",
+          description => 'Page class (buildReactData)'
+        };
+
+        # Check for React document component
+        my $doc_component = $this->titleToComponentName($nodetitle);
+        push @{$sourceMap->{components}}, {
+          type => 'react_document',
+          name => $doc_component,
+          path => "react/components/Documents/$doc_component.js",
+          description => 'React document component'
+        };
+      }
+    }
+
+    # Legacy page - show document.pm delegation and htmlpage
+    if (!$is_react_page) {
+      # Find the subroutine name in document.pm
+      my $sub_name = $nodetitle;
+      $sub_name =~ s/\s+/_/g;
+      $sub_name =~ s/[^\w]//g;
+      $sub_name = lc($sub_name);
+
+      push @{$sourceMap->{components}}, {
+        type => 'delegation',
+        name => 'document.pm',
+        path => 'ecore/Everything/Delegation/document.pm',
+        description => "Document delegation (sub $sub_name)"
+      };
+
+      # Add htmlpage delegation if page exists
+      # Note: $page comes from Everything::HTML::getPage() call
+      # For superdocnolinks and some superdocs, this may be undef or empty
+      if ($page && ref($page) eq 'HASH' && $page->{title}) {
+        my $htmlpage_name = $page->{title};
+        $htmlpage_name =~ s/\s+/_/g;
+
+        push @{$sourceMap->{components}}, {
+          type => 'delegation',
+          name => 'htmlpage.pm',
+          path => 'ecore/Everything/Delegation/htmlpage.pm',
+          description => "HTML page delegation (sub $htmlpage_name)"
+        };
+      }
+    }
+  }
+
+  return $sourceMap;
+}
+
+sub titleToComponentName
+{
+  my ($this, $title) = @_;
+
+  # Convert title to PascalCase component name
+  # Examples:
+  #   "chatterbox" -> "Chatterbox"
+  #   "other users" -> "OtherUsers"
+  #   "wheel of surprise" -> "WheelOfSurprise"
+
+  $title =~ s/[^\w\s]//g;  # Remove non-word chars except spaces
+  my @words = split(/\s+/, $title);
+  my $component_name = join('', map { ucfirst(lc($_)) } @words);
+
+  return $component_name;
+}
+
+sub titleToPageFile
+{
+  my ($this, $title) = @_;
+
+  # Convert title to snake_case page file name
+  # Examples:
+  #   "Wheel of Surprise" -> "wheel_of_surprise"
+  #   "Silver Trinkets" -> "silver_trinkets"
+
+  my $filename = lc($title);
+  $filename =~ s/[^\w\s]//g;  # Remove non-word chars except spaces
+  $filename =~ s/\s+/_/g;     # Replace spaces with underscores
+
+  return $filename;
 }
 
 sub author_link

@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import Modal from 'react-modal'
 import NodeletSection from '../NodeletSection'
-import { FaGithubSquare,FaUsers,FaCodeBranch,FaRegFile,FaRegFileCode,FaCubes,FaMicrochip,FaInfoCircle } from "react-icons/fa"
+import { FaGithubSquare,FaUsers,FaCodeBranch,FaRegFile,FaRegFileCode,FaCubes,FaMicrochip,FaInfoCircle,FaCode } from "react-icons/fa"
 import LinkNode from '../LinkNode'
 import TimeDistance from '../TimeDistance'
 import NodeletContainer from '../NodeletContainer'
+import SourceMapModal from '../Developer/SourceMapModal'
 
 import './Developer.css'
 
@@ -13,6 +14,7 @@ const githubUrl = "https://github.com/everything2/everything2"
 const Developer = (props) => {
   const [modalIsOpen, setIsOpen] = React.useState(false)
   const [devVars, setDevVars] = React.useState({})
+  const [sourceMapOpen, setSourceMapOpen] = React.useState(false)
 
   const openModal = () => {
     setIsOpen(true)
@@ -52,66 +54,92 @@ const Developer = (props) => {
   return <NodeletContainer id={props.id}
       title="Everything Developer" nodeletIsOpen={props.nodeletIsOpen} showNodelet={props.showNodelet} >
     <div style={{ paddingLeft: '8px', paddingTop: '4px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
         <FaGithubSquare size={12} style={{ color: '#666', flexShrink: 0 }} />
         <a href={githubUrl}>GitHub</a>
         <FaCodeBranch size={12} style={{ color: '#666', flexShrink: 0, marginLeft: '8px' }} />
         <a href={githubUrl + "/commit/"+props.lastCommit}>{props.lastCommit.substr(0,7)}</a>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
         <FaMicrochip size={12} style={{ color: '#666', flexShrink: 0 }} />
         <span>{props.architecture}</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
         <FaUsers size={12} style={{ color: '#666', flexShrink: 0 }} />
         <LinkNode type="usergroup" title="edev" display="EDev Usergroup" />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-        <FaRegFileCode size={12} style={{ color: '#666', flexShrink: 0 }} />
-        <LinkNode type={props.node.type} title={props.node.title} display="viewcode" params={{displaytype: "viewcode"}} />
-        <span>/</span>
-        <LinkNode type={props.node.type} title={props.node.title} display="xmltrue" params={{displaytype: "xmltrue"}} />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
         <FaCubes size={12} style={{ color: '#666', flexShrink: 0 }} />
         <span>node_id: {props.node.node_id} <small>(<TimeDistance then={props.node.createtime} />)</small></span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
         <FaRegFile size={12} style={{ color: '#666', flexShrink: 0 }} />
-        <span><LinkNode type="nodetype" title={props.node.type} /> (<small>by <LinkNode type="htmlpage" title={props.developerNodelet.page.title} /></small>)</span>
+        <LinkNode type="nodetype" title={props.node.type} />
+      </div>
+      <div style={{ marginBottom: '4px' }}>
+        <button
+          onClick={() => setSourceMapOpen(true)}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            border: '1px solid #4060b0',
+            borderRadius: '4px',
+            backgroundColor: '#f8f9f9',
+            cursor: 'pointer',
+            fontSize: '13px',
+            fontWeight: '500',
+            color: '#4060b0',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#4060b0'
+            e.currentTarget.style.color = 'white'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#f8f9f9'
+            e.currentTarget.style.color = '#4060b0'
+          }}
+        >
+          <FaCode size={14} />
+          <span>View Source Map</span>
+        </button>
+      </div>
+      <div style={{ marginBottom: '4px' }}>
+        <button
+          onClick={openModal}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            border: '1px solid #4060b0',
+            borderRadius: '4px',
+            backgroundColor: '#f8f9f9',
+            cursor: 'pointer',
+            fontSize: '13px',
+            fontWeight: '500',
+            color: '#4060b0',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#4060b0'
+            e.currentTarget.style.color = 'white'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#f8f9f9'
+            e.currentTarget.style.color = '#4060b0'
+          }}
+        >
+          <FaInfoCircle size={14} />
+          <span>Your $VARS</span>
+        </button>
       </div>
     </div>
     <div style={{ marginTop: '15px' }}>
-      <button
-        onClick={openModal}
-        style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '12px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          backgroundColor: '#f9f9f9',
-          cursor: 'pointer',
-          textAlign: 'center',
-          gap: '6px',
-          minHeight: '70px',
-          transition: 'all 0.2s ease'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#e9e9e9'
-          e.currentTarget.style.borderColor = '#999'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#f9f9f9'
-          e.currentTarget.style.borderColor = '#ccc'
-        }}
-      >
-        <FaInfoCircle size={20} />
-        <span>Your $VARS</span>
-      </button>
     </div>
     <br /><br />
     <NodeletSection nodelet="edn" section="edev" title="edev" display={props.edev} toggleSection={props.toggleSection}>
@@ -219,6 +247,12 @@ const Developer = (props) => {
         </div>
       </div>
     </Modal>
+    <SourceMapModal
+      isOpen={sourceMapOpen}
+      onClose={() => setSourceMapOpen(false)}
+      sourceMap={props.developerNodelet?.sourceMap}
+      nodeTitle={props.node?.title}
+    />
   </NodeletContainer>
 }
 

@@ -3,11 +3,11 @@ package Everything::Page::nodeshells;
 use Moose;
 extends 'Everything::Page';
 
-sub display
+sub buildReactData
 {
   my ($self, $REQUEST) = @_;
 
-  my $nodeshells = [];
+  my @nodeshells;
 
   my $csr = $self->DB->sqlSelectMany('node.node_id',
     "node JOIN e2node ON node_id=e2node_id LEFT JOIN nodegroup ON nodegroup_id = node.node_id",
@@ -20,11 +20,18 @@ sub display
     my $node = $self->APP->node_by_id($row->{node_id});
     if(defined($node))
     {
-      push @$nodeshells, $node;
+      push @nodeshells, {
+        node_id => $node->node_id,
+        title => $node->title,
+        createtime => $node->createtime
+      };
     }
   }
 
-  return { nodeshells => $nodeshells };
+  return {
+    type => 'nodeshells',
+    nodeshells => \@nodeshells
+  };
 }
 
 __PACKAGE__->meta->make_immutable;

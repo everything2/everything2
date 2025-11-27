@@ -2,12 +2,58 @@
 
 This document provides context for AI assistants (like Claude) working on the Everything2 codebase. It summarizes recent work, architectural decisions, and important patterns to understand.
 
-**Last Updated**: 2025-11-25
+**Last Updated**: 2025-11-26
 **Maintained By**: Jay Bonci
 
 ## ⚠️ CRITICAL: Common Pitfalls & Required Patterns ⚠️
 
 **READ THIS FIRST - These patterns are repeated mistakes that must be avoided:**
+
+### 🚫 DO NOT ATTEMPT AUTOMATED TESTING WITH AUTHENTICATION 🚫
+
+**CRITICAL: Never try to test features requiring login via curl, automated scripts, or programmatic access** ❌
+
+When you need to verify features that require authentication (developer nodelets, admin features, user-specific data):
+
+**WRONG approaches that waste time:**
+- ❌ Using curl with cookies: `curl -b 'userpass=root%09blah' http://localhost:9080/`
+- ❌ Trying to verify JSON output from authenticated pages
+- ❌ Checking database for user configuration (VARS, nodelets, etc.)
+- ❌ Running browser automation tools without explicit user request
+- ❌ Trying to "test" whether code worked by accessing pages programmatically
+
+**CORRECT approach:**
+- ✅ Deploy the code changes with `docker cp` and `apache2ctl graceful`
+- ✅ Tell the user "Changes deployed. Please test by logging in and accessing the page."
+- ✅ Let the USER verify features that require authentication
+- ✅ Focus your testing on: smoke tests, unit tests, React tests - things that DON'T require login
+
+**Why this rule exists:**
+1. E2's authentication uses salted cookies that are difficult to replicate programmatically
+2. User-specific features (nodelets, preferences, permissions) vary per account
+3. You cannot see the browser UI, so you cannot verify visual features anyway
+4. Attempting automated auth testing leads to rabbit holes of database queries and curl debugging
+5. The user can test logged-in features in 10 seconds - you waste 10+ minutes trying to automate it
+
+**Example - Correct workflow for authenticated features:**
+```
+User: "The source map isn't showing up on legacy pages"
+You: [Read code, identify issue, make fixes, deploy with docker cp]
+You: "I've deployed the fix. The buildSourceMap() method now works for legacy
+      pages via htmlcode.pm. Please log in as a developer and check if the
+      source map appears when you click 'View Source Map' on Settings page."
+User: [Tests in 10 seconds] "Works! Thanks!"
+```
+
+**Example - Wrong workflow (DO NOT DO THIS):**
+```
+User: "The source map isn't showing up on legacy pages"
+You: [Makes fixes]
+You: [Tries curl with cookies - doesn't work]
+You: [Checks database for user nodelets - gets confused]
+You: [Tries different authentication methods - wastes time]
+You: [User gets frustrated: "STOP - you're making the same mistakes"]
+```
 
 ### Testing & Development
 
@@ -97,6 +143,58 @@ sub JSON_POSTDATA {
   return $self->JSON->decode($postdata);
 }
 ```
+
+### React Component Color Palette
+
+**ALWAYS use Kernel Blue stylesheet colors for React components** ✅
+
+When creating React components with inline styles, use the Kernel Blue color palette for consistency with the site's default theme. This will be replaced with CSS variables later, but for now ensures visual harmony.
+
+**Kernel Blue Color Palette** (from www/css/1882070.css):
+```javascript
+// Primary colors
+'#38495e'  // Dark blue-gray (headers, borders, accents)
+'#4060b0'  // Medium blue (links, primary actions)
+'#507898'  // Steel blue (secondary text, muted elements)
+'#3bb5c3'  // Cyan (highlights, special emphasis)
+
+// Backgrounds
+'#f8f9f9'  // Light gray (card backgrounds, content areas)
+'#f9fafa'  // Near-white (alternate backgrounds)
+'#c5cdd7'  // Medium gray (dividers, secondary backgrounds)
+'#eee'     // Light gray (subtle backgrounds)
+
+// Text
+'#111111'  // Near-black (primary text)
+'#333333'  // Dark gray (headings, strong emphasis)
+
+// Borders
+'#d3d3d3'  // Light gray (borders, dividers)
+
+// Status colors
+'#8b0000'  // Dark red (errors, warnings)
+'#ff0000'  // Bright red (critical alerts)
+```
+
+**Example usage:**
+```javascript
+<div style={{
+  backgroundColor: '#f8f9f9',
+  borderLeft: '3px solid #38495e',
+  color: '#111111'
+}}>
+  <h2 style={{ color: '#333333' }}>Heading</h2>
+  <a href="/path" style={{ color: '#4060b0' }}>Link</a>
+  <span style={{ color: '#507898' }}>Muted text</span>
+  <span style={{ color: '#3bb5c3' }}>Highlight</span>
+</div>
+```
+
+**Why this matters:**
+- Maintains visual consistency with the default Kernel Blue theme
+- Will be easier to migrate to CSS variables later
+- Avoids jarring color mismatches between React and Mason2 content
+- Users familiar with site aesthetics won't notice React components
 
 **Why this matters:**
 - `CGI->param("POSTDATA")` returns **raw UTF-8 bytes**, NOT decoded character strings
@@ -856,6 +954,353 @@ curl -I http://localhost:9080/react/main.bundle.js 2>&1 | grep "200 OK"
 ---
 
 ## Recent Work History
+
+### Session 26: Phase 4a React Page Rendering Fix & Apostrophe Handling (2025-11-27)
+
+**Focus**: Fix React page rendering for superdocs, handle apostrophes in page titles
+
+**Completed Work**:
+1. ✅ **Fixed Perl::Critic Violations in Numbered Nodelist Pages**
+   - Fixed duplicate `$has_parent` variable declarations in [e2n.pm](ecore/Everything/Page/e2n.pm), [ekn.pm](ecore/Everything/Page/ekn.pm), [enn.pm](ecore/Everything/Page/enn.pm), [everything_new_nodes.pm](ecore/Everything/Page/everything_new_nodes.pm)
+   - Changed `publishtime_formatted` to `publishtime` to match backend data
+   - Fixed explicit `return undef;` to `return;` in [Controller.pm:315](ecore/Everything/Controller.pm#L315)
+   - All 49 Perl tests passing
+2. ✅ **Fixed Critical Phase 4a Rendering Bug**
+   - **Problem**: superdoc Controller bypassed `buildNodeInfoStructure()`, preventing React pages from rendering
+   - **Root Cause**: superdoc Controller's `display()` method called `$self->layout()` directly without building `window.e2` data
+   - **Impact**: ALL Phase 4a React pages (Wharfinger's Linebreaker, Everything's Obscure Writeups, etc.) showed empty content
+   - **Symptom**: `window.e2.reactPageMode` was `undefined`, no DocumentComponent in React DevTools
+   - **Fix**: Modified [Controller/superdoc.pm:22-32](ecore/Everything/Controller/superdoc.pm#L22-L32) to call `buildNodeInfoStructure()` for React pages:
+     ```perl
+     if ($is_react_page) {
+       my $e2 = $self->APP->buildNodeInfoStructure(
+         $node->NODEDATA,
+         $REQUEST->user->NODEDATA,
+         $REQUEST->user->VARS,
+         $REQUEST->cgi
+       );
+       $controller_output->{e2} = $e2;
+     }
+     ```
+3. ✅ **Fixed Apostrophe Handling in Title-to-Filename Conversion**
+   - **Problem**: "Wharfinger's Linebreaker" → "wharfingers_linebreaker.pm" (wrong) instead of "wharfinger_s_linebreaker.pm" (correct)
+   - **Fix**: Changed [Application.pm:6693-6694](ecore/Everything/Application.pm#L6693-L6694) from:
+     ```perl
+     $page_name =~ s/'//g;   # Remove apostrophes
+     $page_name =~ s/ /_/g;  # Convert spaces
+     ```
+     To:
+     ```perl
+     $page_name =~ s/['\s]/_/g;  # Convert apostrophes and spaces to underscores
+     $page_name =~ s/_+/_/g;     # Collapse multiple underscores
+     ```
+   - Now correctly handles: "Wharfinger's Linebreaker" → "wharfinger_s_linebreaker" ✓
+4. ✅ **Fixed everything_s_obscure_writeups.pm Method Error**
+   - Changed `$node->parent_e2node` (doesn't exist) to `$node->parent` (correct method)
+   - Added null checks for parent and author before accessing properties
+   - Pattern matches other Phase 4a pages (e2n.pm, enn.pm, etc.)
+5. ✅ **Updated Smoke Test for Auth-Required Pages**
+   - Added "Wharfinger's Linebreaker" and "Everything's Obscure Writeups" to `auth_required_pages` list
+   - Modified [smoke-test.rb:274,286-293](tools/smoke-test.rb#L274) to not follow redirects for auth-required pages
+   - Auth-required pages now expect 302 redirect to login instead of 200 OK
+   - Updated [docs/special-documents.md:81](docs/special-documents.md#L81) to note "React (302 for guests)"
+
+**Final Results**:
+- ✅ **Wharfinger's Linebreaker working** - Confirmed by user, React rendering complete
+- ✅ **158/159 smoke tests passing** (Everything's Obscure Writeups expects 302 for guests)
+- ✅ **All 49 Perl tests passing**
+- ✅ **All 569 React tests passing**
+- ✅ **Phase 4a infrastructure functional** - React pages now render correctly
+
+**Key Files Modified**:
+- [ecore/Everything/Controller/superdoc.pm](ecore/Everything/Controller/superdoc.pm) - Added `buildNodeInfoStructure()` call for React pages
+- [ecore/Everything/Application.pm](ecore/Everything/Application.pm) - Fixed apostrophe handling in title conversion
+- [ecore/Everything/Page/everything_s_obscure_writeups.pm](ecore/Everything/Page/everything_s_obscure_writeups.pm) - Fixed parent method call
+- [ecore/Everything/Page/e2n.pm](ecore/Everything/Page/e2n.pm), [ekn.pm](ecore/Everything/Page/ekn.pm), [enn.pm](ecore/Everything/Page/enn.pm), [everything_new_nodes.pm](ecore/Everything/Page/everything_new_nodes.pm) - Perl::Critic fixes
+- [ecore/Everything/Controller.pm](ecore/Everything/Controller.pm) - Fixed explicit undef return
+- [tools/smoke-test.rb](tools/smoke-test.rb) - Added auth-required page handling
+- [docs/special-documents.md](docs/special-documents.md) - Updated Everything's Obscure Writeups status
+
+**Important Discoveries**:
+- **superdoc Controller Bypass**: superdoc Controller's custom `display()` method bypasses base Controller logic, requiring explicit `buildNodeInfoStructure()` call
+- **Apostrophe Conversion Pattern**: Must convert apostrophes to underscores (not remove), then collapse multiple underscores: `s/['\s]/_/g; s/_+/_/g`
+- **Blessed Object Methods**: Writeup nodes use `parent()` method, not `parent_e2node()`
+- **Null Object Pattern**: Always check `ref($obj) ne 'Everything::Node::null'` before accessing properties
+- **Phase 4a Data Flow**: superdoc Controller → `buildNodeInfoStructure()` → `window.e2.reactPageMode` + `window.e2.contentData` → PageLayout → DocumentComponent
+
+**Critical Bug Pattern Identified**:
+```perl
+# WRONG - Bypasses buildNodeInfoStructure()
+my $controller_output = $self->page_class($node)->display($REQUEST, $node);
+my $html = $self->layout("/pages/$layout", %$controller_output, REQUEST => $REQUEST, node => $node);
+
+# RIGHT - Calls buildNodeInfoStructure() for React pages
+if ($is_react_page) {
+  my $e2 = $self->APP->buildNodeInfoStructure(...);
+  $controller_output->{e2} = $e2;
+}
+my $html = $self->layout("/pages/$layout", %$controller_output, REQUEST => $REQUEST, node => $node);
+```
+
+**Next Steps**:
+- Continue Phase 4a document migrations
+- Remove debug code from smoke test
+- Investigate smoke test cookie authentication for better auth-required page testing
+
+### Session 25: Phase 4a Infrastructure & Golden Trinkets Migration (2025-11-26)
+
+**Focus**: Improve DocumentComponent scalability with component map pattern, migrate golden_trinkets page to React
+
+**Completed Work**:
+1. ✅ **Fixed E2E Tests** ([gp-transfer.spec.js](tests/e2e/gp-transfer.spec.js))
+   - Fixed Superbless form field names from incorrect `recipient`/`amount` to correct `EnrichUsers0`/`BestowGP0`
+   - Form uses numbered field pattern for bulk GP grants
+   - E2E test now correctly fills form for GP transfer flow
+2. ✅ **Cleaned Up E2E Tests** ([chatterbox.spec.js](tests/e2e/chatterbox.spec.js))
+   - Removed finicky "error text box not shifting UI" test per user request
+   - Test was unreliable and obvious when manually testing
+3. ✅ **Template Cleanup**
+   - Removed obsolete [e2_staff.mc](templates/pages/e2_staff.mc) Mason template (already migrated to React)
+   - Removed ALL 27 Mason2 nodelet templates (categories.mi through vitals.mi) - Phase 3 complete
+   - Removed [Base.mc](templates/nodelets/Base.mc) Mason2 base class (no longer needed)
+4. ✅ **Created Comprehensive Phase 4a Migration Plan** ([docs/phase4a-page-migration-plan.md](docs/phase4a-page-migration-plan.md))
+   - **Scope**: ALL 24 remaining Mason2 page templates
+   - **Tiers**: 5 tiers based on complexity (Simple → Security Critical)
+   - **Tier 1** (8 pages): Simple display pages, no API needed (12-18 hours)
+   - **Tier 2** (7 pages): Form-based pages with moderate API needs (27-38 hours)
+   - **Tier 3** (7 pages): Complex pages requiring significant refactoring (32-46 hours)
+   - **Tier 4** (1 page): Documentation pages (2-3 hours)
+   - **Tier 5** (1 page): Security critical - sign_up with email verification (16-20 hours)
+   - **Total Estimated Effort**: 89-125 hours (11-16 days)
+   - **API Requirements**: Documented 8 new API endpoints needed
+   - **Refactoring Opportunities**: Username selector pattern, admin lookup pattern, list display patterns
+   - **Migration Order**: Quick wins → Read-only lists → API-driven → Complex pages
+5. ✅ **Refactored DocumentComponent to Component Map Pattern** ([DocumentComponent.js](react/components/DocumentComponent.js))
+   - **Problem**: Switch statement doesn't scale to hundreds of documents
+   - **Solution**: Created `COMPONENT_MAP` object mapping document types to lazy-loaded components
+   - **Pattern**: `document_type: lazy(() => import('./Documents/ComponentName'))`
+   - **Benefits**: Cleaner code, easier to add new documents, O(1) lookup, maintains lazy loading
+   - Replaced 40-line switch statement with 10-line COMPONENT_MAP and 15-line conditional render
+6. ✅ **Migrated Golden Trinkets Page to React** ([golden_trinkets.pm](ecore/Everything/Page/golden_trinkets.pm))
+   - Added `buildReactData()` method providing karma, admin status, user lookup results
+   - Preserves existing `display()` method for backward compatibility
+   - Admin user lookup via `Everything::Form::username` role
+   - Returns structured data: `{karma, isAdmin, forUser, error}`
+7. ✅ **Created GoldenTrinkets React Component** ([GoldenTrinkets.js](react/components/Documents/GoldenTrinkets.js))
+   - Displays karma with three states: zero ("not feeling very special"), negative ("burning sensation"), positive (blessing message)
+   - Admin lookup section with GET form submission (page reload pattern)
+   - Shows lookup results or errors inline
+   - Uses LinkNode for "bless" document link and looked-up user link
+   - Consistent styling with SilverTrinkets (sibling component)
+8. ✅ **Created Comprehensive Test Suite** ([GoldenTrinkets.test.js](react/components/Documents/GoldenTrinkets.test.js))
+   - **11 tests, 100% passing**
+   - Tests karma display (zero, negative, positive)
+   - Tests admin lookup feature (visibility, error display, result display)
+   - Tests form submission (GET method, field names)
+   - Tests edge cases (missing karma, missing isAdmin flag)
+   - Uses mocked LinkNode component
+9. ✅ **Removed Obsolete Mason Template**
+   - Removed [golden_trinkets.mc](templates/pages/golden_trinkets.mc) with `git rm`
+   - Page now uses React via `buildReactData()` method
+10. ✅ **Deployed and Verified**
+    - Webpack build successful (1328ms)
+    - Created new bundle: `react_components_Documents_GoldenTrinkets_js.bundle.js` (8.33 KiB)
+    - Deployed to container, Apache reloaded
+    - **All 159/159 smoke tests passing**
+
+**Final Results**:
+- ✅ **Phase 4a infrastructure complete** - Component map pattern scales to hundreds of documents
+- ✅ **Golden Trinkets migrated** - First Tier 1 page complete
+- ✅ **All 11 React tests passing** (100%)
+- ✅ **All 159 smoke tests passing** (100%)
+- ✅ **Migration plan documented** - Clear roadmap for remaining 23 pages
+
+**Key Files Modified/Created**:
+- [tests/e2e/gp-transfer.spec.js](tests/e2e/gp-transfer.spec.js) - Fixed Superbless form fields
+- [tests/e2e/chatterbox.spec.js](tests/e2e/chatterbox.spec.js) - Removed finicky test
+- [docs/phase4a-page-migration-plan.md](docs/phase4a-page-migration-plan.md) - NEW: Complete migration strategy
+- [react/components/DocumentComponent.js](react/components/DocumentComponent.js) - Refactored to component map pattern
+- [ecore/Everything/Page/golden_trinkets.pm](ecore/Everything/Page/golden_trinkets.pm) - Added buildReactData()
+- [react/components/Documents/GoldenTrinkets.js](react/components/Documents/GoldenTrinkets.js) - NEW: React component
+- [react/components/Documents/GoldenTrinkets.test.js](react/components/Documents/GoldenTrinkets.test.js) - NEW: 11 tests
+- **Deleted**: [templates/pages/e2_staff.mc](templates/pages/e2_staff.mc), [templates/pages/golden_trinkets.mc](templates/pages/golden_trinkets.mc)
+- **Deleted**: All 27 nodelet templates + [Base.mc](templates/nodelets/Base.mc)
+
+**Important Discoveries**:
+- **Component Map Pattern**: Object lookup scales better than switch statement for hundreds of routes
+- **Lazy Loading Preserved**: Component map works seamlessly with `React.lazy()` for code splitting
+- **GET Form Pattern**: Simple admin lookup pages can use GET form submission instead of AJAX for page reload
+- **Tier 1 Template**: Golden Trinkets establishes pattern for other simple display pages
+- **Phase 3 Cleanup**: All Mason2 nodelet infrastructure now completely removed
+- **Scalable Architecture**: Component map can handle 200+ documents without code bloat
+
+**Component Map Pattern**:
+```javascript
+// Scalable pattern for hundreds of documents
+const COMPONENT_MAP = {
+  document_type: lazy(() => import('./Documents/ComponentName')),
+  // Easy to add new documents - just one line per document
+}
+
+const Component = COMPONENT_MAP[type]
+if (Component) {
+  return <Component data={data} user={user} />
+}
+```
+
+**Next Steps**:
+- Continue Tier 1 page migrations
+- Research numbered nodelist (25 and siblings) in document.pm
+- Design reusable NodeList component
+
+### Session 26: Tier 1 Page Migrations & Content-Only Page Optimization Pattern (2025-11-26)
+
+**Focus**: Migrate Tier 1 pages to React, establish content-only page optimization pattern
+
+**Completed Work**:
+1. ✅ **Documented Legacy "25" Page** ([phase4a-page-migration-plan.md](docs/phase4a-page-migration-plan.md))
+   - **Discovery**: "25" is legacy numeric-named page from before proper E2 naming conventions
+   - Exists as [Everything::Page::25](ecore/Everything/Page/25.pm) class
+   - Displays 25 newest nodes via `numbered_nodelist` template
+   - Shares implementation with numbered nodelist family
+   - Will be migrated alongside siblings (10, 15, 25, 50, 100, 150)
+   - Added to Special Case section in migration plan
+2. ✅ **Migrated what_to_do_if_e2_goes_down to React** ([what_to_do_if_e2_goes_down.pm](ecore/Everything/Page/what_to_do_if_e2_goes_down.pm))
+   - Added `buildReactData()` with 93 random suggestions array
+   - Removed `display()` method per user guidance
+   - Removed Mason template with `git rm`
+   - Added comment: "# Mason2 template removed - page now uses React via buildReactData()"
+   - Fixed Perl::Critic trailing comma warning on suggestions array
+3. ✅ **Created WhatToDoIfE2GoesDown React Component** ([WhatToDoIfE2GoesDown.js](react/components/Documents/WhatToDoIfE2GoesDown.js))
+   - Displays random downtime suggestion with large bold formatting
+   - Uses `dangerouslySetInnerHTML` for HTML in suggestions (some contain `<em>` tags)
+   - Default fallback: "Go outside"
+   - Consistent padding and centered layout
+4. ✅ **Created Comprehensive Test Suite** ([WhatToDoIfE2GoesDown.test.js](react/components/Documents/WhatToDoIfE2GoesDown.test.js))
+   - **5 tests, 100% passing**
+   - Tests main message rendering
+   - Tests suggestion formatting (32px bold text)
+   - Tests HTML handling in suggestions (`<em>` tags)
+   - Tests default suggestion fallback
+   - Tests various suggestion types
+5. ✅ **Migrated list_html_tags to React** ([list_html_tags.pm](ecore/Everything/Page/list_html_tags.pm))
+   - Added `buildReactData()` loading from 'approved HTML tags' setting node
+   - Removed `display()` method per user guidance
+   - Removed Mason template with `git rm`
+   - Added comment: "# Mason2 template removed - page now uses React via buildReactData()"
+6. ✅ **Created ListHtmlTags React Component** ([ListHtmlTags.js](react/components/Documents/ListHtmlTags.js))
+   - Displays HTML tag reference with alphabetically sorted tags
+   - Uses `<dl>` definition list for semantic markup
+   - Shows tag name as `<dt>`, attributes as `<dd>`
+   - Hides `<dd>` when attributes value is '1' (tag has no allowed attributes)
+   - Handles empty or missing approvedTags gracefully
+7. ✅ **Created Comprehensive Test Suite** ([ListHtmlTags.test.js](react/components/Documents/ListHtmlTags.test.js))
+   - **6 tests, 100% passing**
+   - Tests introduction message
+   - Tests alphabetical ordering
+   - Tests attribute display
+   - Tests hiding definitions for tags with value "1"
+   - Tests empty and missing data handling
+8. ✅ **Updated DocumentComponent Registry** ([DocumentComponent.js](react/components/DocumentComponent.js))
+   - Added `what_to_do_if_e2_goes_down: lazy(() => import('./Documents/WhatToDoIfE2GoesDown'))`
+   - Added `list_html_tags: lazy(() => import('./Documents/ListHtmlTags'))`
+   - Component map now has 7 migrated documents
+9. ✅ **Deployed and Verified**
+   - Webpack build successful (1282ms)
+   - Deployed bundles to container
+   - **All 159/159 smoke tests passing**
+   - **All React tests passing** (456 total tests including 11 new tests)
+
+**Final Results**:
+- ✅ **2 Tier 1 pages migrated** (what_to_do_if_e2_goes_down, list_html_tags)
+- ✅ **11 tests passing** (5 + 6 new tests, 100%)
+- ✅ **All 159 smoke tests passing** (100%)
+- ✅ **Pattern established** for content-only page migrations
+- ✅ **5 Tier 1 pages remaining** (your_gravatar, is_it_holiday, oblique_strategies_garden, manna_from_heaven, everything_s_obscure_writeups, nodeshells)
+
+**Key Files Modified/Created**:
+- [ecore/Everything/Page/what_to_do_if_e2_goes_down.pm](ecore/Everything/Page/what_to_do_if_e2_goes_down.pm) - Added buildReactData(), removed display()
+- [react/components/Documents/WhatToDoIfE2GoesDown.js](react/components/Documents/WhatToDoIfE2GoesDown.js) - NEW: React component
+- [react/components/Documents/WhatToDoIfE2GoesDown.test.js](react/components/Documents/WhatToDoIfE2GoesDown.test.js) - NEW: 5 tests
+- [ecore/Everything/Page/list_html_tags.pm](ecore/Everything/Page/list_html_tags.pm) - Added buildReactData(), removed display()
+- [react/components/Documents/ListHtmlTags.js](react/components/Documents/ListHtmlTags.js) - NEW: React component
+- [react/components/Documents/ListHtmlTags.test.js](react/components/Documents/ListHtmlTags.test.js) - NEW: 6 tests
+- [react/components/DocumentComponent.js](react/components/DocumentComponent.js) - Added 2 new documents to COMPONENT_MAP
+- [docs/phase4a-page-migration-plan.md](docs/phase4a-page-migration-plan.md) - Documented "25" page special case
+- **Deleted**: [templates/pages/what_to_do_if_e2_goes_down.mc](templates/pages/what_to_do_if_e2_goes_down.mc), [templates/pages/list_html_tags.mc](templates/pages/list_html_tags.mc)
+
+**Important Discoveries**:
+- **Content-Only Page Optimization Pattern**: User emphasized that pure content pages (like what_to_do_if_e2_goes_down) should move data entirely to React to minimize server load and Perl library size
+  - **Current implementation**: Uses `buildReactData()` to pass data from Perl to React
+  - **Optimization opportunity**: For pure static content, move data array directly into React component
+  - **Benefits**: Reduces Perl library size, eliminates server processing, faster page loads
+  - **Next step**: Clean up what_to_do_if_e2_goes_down by moving suggestions array to React component
+- **Display Method Cleanup**: After removing Mason template with `git rm`, also remove `display()` method from Page class
+- **Perl::Critic Compliance**: Trailing commas on list declarations (BRUTAL level enforcement)
+- **HTML in React**: Use `dangerouslySetInnerHTML` when Perl data contains legitimate HTML tags
+- **Definition Lists**: `<dl>`, `<dt>`, `<dd>` provide semantic markup for tag reference documentation
+- **Setting Nodes**: Configuration like 'approved HTML tags' stored in E2 database nodes with VARS field
+
+**Critical Pattern Identified - Content-Only Page Optimization**:
+```perl
+# CURRENT PATTERN (works but not optimal for static content)
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+  my @suggestions = ('Go outside', 'Read a book', ...);  # 93 suggestions
+  return {
+    contentData => {
+      type => 'page_name',
+      suggestion => $suggestions[rand(@suggestions)]
+    }
+  };
+}
+```
+
+```javascript
+// OPTIMIZED PATTERN (for pure static content - to be implemented)
+const WhatToDoIfE2GoesDown = () => {
+  const suggestions = ['Go outside', 'Read a book', ...];  // Move data to React
+  const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+
+  return <div>{suggestion}</div>;
+}
+```
+
+**Benefits of Content-Only Optimization**:
+- ✅ Reduces Perl library size (no data arrays in .pm files)
+- ✅ Eliminates server processing (random selection happens client-side)
+- ✅ Faster page loads (no server-side data generation)
+- ✅ Better for CDN caching (static React bundles)
+- ✅ Simpler architecture (pure client-side rendering)
+
+**Migration Pattern After Template Removal**:
+```perl
+# After git rm templates/pages/page_name.mc
+# Also remove display() method from Page class
+# Add comment explaining removal:
+package Everything::Page::page_name;
+
+use Moose;
+extends 'Everything::Page';
+
+# Mason2 template removed - page now uses React via buildReactData()
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+  return { contentData => { type => 'page_name', ... } };
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
+```
+
+**Next Steps**:
+- Clean up what_to_do_if_e2_goes_down by moving suggestions array to React (demonstrate content-only optimization)
+- Continue Tier 1 migrations: your_gravatar, is_it_holiday, oblique_strategies_garden, manna_from_heaven, everything_s_obscure_writeups, nodeshells
+- Research numbered nodelist (25 and siblings) in Everything::Delegation::document
+- Design reusable NodeList component for numbered nodelist family
+- Migrate 25 and all numbered nodelist siblings together
+- Create shared `UsernameSelector` component for admin lookup pattern
+- Begin Tier 2 API development (ignore list, nodeshell, insurance, node tracker)
 
 ### Session 24: E2 Staff Page React Migration (2025-11-25)
 
