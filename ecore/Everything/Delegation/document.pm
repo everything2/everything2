@@ -5537,7 +5537,9 @@ sub superbless {
         $str .= "</td></tr>";
     }
 
-    $str .= '</table>' . htmlcode('closeform');
+    $str .= '</table>';
+    $str .= '<input type="submit" name="sexisgood" id="superbless_submit" value="submit">';
+    $str .= '</form>';
 
     return $str;
 }
@@ -22410,13 +22412,10 @@ sub ajax_update
     }
 
 
-    if ($mode eq 'markNotificationSeen') {
-        htmlcode('ajaxNotificationSeen',$query->param("notified_id"));
-    }
-
-    if ($mode eq 'checkNotifications') {
-        return to_json(htmlcode('notificationsJSON'));
-    }
+    # REMOVED: Legacy notification modes replaced by React Notifications nodelet
+    # - markNotificationSeen: Now handled by /api/notifications/dismiss
+    # - checkNotifications: Polling removed in commit e6c7fcc58, replaced by React
+    # These mode handlers removed 2025-11-27, htmlcode stubs remain until next production push
 
 
     if ($mode eq 'checkCools') {

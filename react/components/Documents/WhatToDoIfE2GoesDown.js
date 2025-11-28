@@ -102,7 +102,8 @@ const WhatToDoIfE2GoesDown = () => {
     'Clean your tongue',
     'Expel gas from your rectum',
     'Summon a being whose name your feeble human tongue can barely pronounce',
-    "Run! You're free! FREE!"
+    "Run! You're free! FREE!",
+    'Memorize West Side Story'
   ]
 
   // Client-side random selection (was previously done in Perl)
@@ -126,8 +127,9 @@ const WhatToDoIfE2GoesDown = () => {
           fontWeight: 'bold',
           lineHeight: '1.4'
         }}
-        dangerouslySetInnerHTML={{ __html: suggestion }}
-      />
+      >
+        {suggestion}
+      </div>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Modal from 'react-modal'
-import { FaExclamationTriangle, FaTrashAlt, FaEdit, FaBook, FaClone } from 'react-icons/fa'
+import { FaExclamationTriangle, FaTrashAlt, FaEdit, FaBook, FaClone, FaEye } from 'react-icons/fa'
 import LinkNode from '../LinkNode'
 
 const NodeToolset = ({
@@ -105,8 +105,10 @@ const NodeToolset = ({
   }
 
   const isSuperdoc = nodeType === 'nodelet' || nodeType.includes('superdoc')
-  const showEdit = currentDisplay !== 'edit' && currentDisplay !== 'viewcode'
+  const isOnEditPage = currentDisplay === 'edit' || currentDisplay === 'viewcode' || currentDisplay === 'basicedit'
+  const showEdit = !isOnEditPage
   const showHelp = currentDisplay !== 'help'
+  const showAdvancedEdit = isOnEditPage  // Show "Advanced Edit" link when already editing
 
   const buttonStyle = {
     display: 'flex',
@@ -157,7 +159,7 @@ const NodeToolset = ({
         gap: '8px',
         marginBottom: '10px'
       }}>
-        {/* Edit Button */}
+        {/* Edit/Display Button */}
         {showEdit ? (
           <div
             style={buttonStyle}
@@ -184,14 +186,58 @@ const NodeToolset = ({
             />
           </div>
         ) : (
-          <div style={disabledButtonStyle}>
-            <FaEdit size={20} />
-            <span>Edit Node</span>
+          <div
+            style={buttonStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
+              e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
+              e.currentTarget.style.borderColor = '#ccc'
+            }}
+          >
+            <LinkNode
+              nodeId={nodeId}
+              title={nodeTitle}
+              display={
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                  <FaEye size={20} />
+                  <span>Display</span>
+                </div>
+              }
+              style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+            />
           </div>
         )}
 
-        {/* Document Button */}
-        {showHelp ? (
+        {/* Document/Advanced Edit Button */}
+        {showAdvancedEdit ? (
+          <div
+            style={buttonStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
+              e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
+              e.currentTarget.style.borderColor = '#ccc'
+            }}
+          >
+            <LinkNode
+              nodeId={nodeId}
+              title={nodeTitle}
+              display={
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                  <FaBook size={20} />
+                  <span>Advanced Edit</span>
+                </div>
+              }
+              params={{ displaytype: 'basicedit' }}
+              style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+            />
+          </div>
+        ) : showHelp ? (
           <div
             style={buttonStyle}
             onMouseEnter={(e) => {

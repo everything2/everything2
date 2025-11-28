@@ -85,6 +85,21 @@
   - Comprehensive tests for both formats
 - All 222 React tests passing (9 NodeNotes component tests), all 62 API tests passing
 
+**Developer Experience Improvements:**
+- ✅ **Source Map Feature**: Developer nodelet now shows which code files render each page
+  - Works for both modern React pages and legacy delegation pages
+  - Shows component path, description, and direct GitHub links to source code
+  - Displays all contributing components: React components, Page classes, delegations, tests
+  - Modal interface with "View on GitHub" and "Edit on GitHub" buttons
+  - Built-in contribution guide linking to CONTRIBUTING.md
+  - **Technical Implementation**: Moved buildSourceMap() to Application.pm for dual architecture support
+    - Accessible from both Controller.pm (new) and htmlcode.pm (legacy delegation)
+    - Handles blessed objects (Controller) and hashrefs (legacy) correctly
+    - Detects React pages via buildReactData() method existence
+    - Uses Everything::HTML::getPage() for legacy page detection
+  - Makes contributing to E2 significantly easier by showing exactly which files to edit
+  - Developers can quickly navigate from a page to its source code with one click
+
 **Why This Is Critical Now:**
 The old system architecture makes it increasingly difficult to fix bugs, add features, or onboard new developers. Every month we delay migration, the technical debt grows. By establishing the React foundation now, we ensure E2 can continue to evolve and improve for the next generation of noders.
 

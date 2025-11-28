@@ -22,9 +22,15 @@ sub get_all
 {
   my ($self, $REQUEST) = @_;
 
-  my $limit = int($REQUEST->cgi->param("limit")) || undef;
-  my $offset = int($REQUEST->cgi->param("offset")) || undef;
-  my $archive = int($REQUEST->cgi->param("archive")) || 0;
+  my $limit = $REQUEST->cgi->param("limit");
+  $limit = defined($limit) ? int($limit) : undef;
+
+  my $offset = $REQUEST->cgi->param("offset");
+  $offset = defined($offset) ? int($offset) : undef;
+
+  my $archive = $REQUEST->cgi->param("archive");
+  $archive = defined($archive) ? int($archive) : 0;
+
   return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->user->NODEDATA, $limit, $offset, $archive)];
 }
 

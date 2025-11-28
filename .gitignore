@@ -9,3 +9,6 @@ cover_db/
 test-results/
 playwright-report/
 playwright/.cache/
+
+# Build lock file (prevents concurrent builds)
+.devbuild.lock

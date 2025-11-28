@@ -6,6 +6,7 @@
 #   ./docker/devbuild.sh           # Auto-detect: builds DB if needed, always builds app
 #   ./docker/devbuild.sh --db-only # Build only database container
 #   ./docker/devbuild.sh --app-only # Build only application container
+#   ./docker/devbuild.sh --skip-tests # Build app but skip all tests (faster)
 #   ./docker/devbuild.sh --clean   # Clean all containers, images, and network
 #
 # Build Dependencies:
@@ -20,7 +21,9 @@
 # - Use --clean to remove all development containers and start fresh
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 LOG_FILE="/tmp/devbuild.log"
+LOCK_FILE="$PROJECT_ROOT/.devbuild.lock"
 
 # Initialize log file
 echo "=== Everything2 Development Build - $(date) ===" | tee "$LOG_FILE"
@@ -32,11 +35,51 @@ log_and_display() {
   tee -a "$LOG_FILE"
 }
 
+# Helper function to clean up lock file on exit
+cleanup_lock() {
+  if [ -f "$LOCK_FILE" ]; then
+    LOCK_PID=$(cat "$LOCK_FILE" 2>/dev/null)
+    if [ "$LOCK_PID" = "$$" ]; then
+      rm -f "$LOCK_FILE"
+    fi
+  fi
+}
+
+# Set up trap to clean up lock file on exit
+trap cleanup_lock EXIT INT TERM
+
+# Check for existing build lock
+if [ -f "$LOCK_FILE" ]; then
+  LOCK_PID=$(cat "$LOCK_FILE")
+  # Check if the process is still running
+  if kill -0 "$LOCK_PID" 2>/dev/null; then
+    echo "========================================="
+    echo "ERROR: Build already in progress!"
+    echo "========================================="
+    echo "Another devbuild.sh is running (PID: $LOCK_PID)"
+    echo ""
+    echo "If this is an error (stale lock file), you can:"
+    echo "  1. Wait for the other build to complete"
+    echo "  2. Kill the other build: kill $LOCK_PID"
+    echo "  3. Remove stale lock: rm $LOCK_FILE"
+    echo ""
+    exit 1
+  else
+    # Stale lock file - process not running
+    echo "Removing stale lock file (PID $LOCK_PID no longer running)"
+    rm -f "$LOCK_FILE"
+  fi
+fi
+
+# Create lock file with current PID
+echo $$ > "$LOCK_FILE"
+
 # Parse command line arguments
 BUILD_DB=false
 BUILD_APP=false
 FORCE_REBUILD=false
 CLEAN_ONLY=false
+SKIP_TESTS=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -56,9 +99,13 @@ while [[ $# -gt 0 ]]; do
       CLEAN_ONLY=true
       shift
       ;;
+    --skip-tests)
+      SKIP_TESTS=true
+      shift
+      ;;
     *)
       echo "Unknown option: $1"
-      echo "Usage: $0 [--db-only] [--app-only] [--force] [--clean]"
+      echo "Usage: $0 [--db-only] [--app-only] [--skip-tests] [--force] [--clean]"
       exit 1
       ;;
   esac
@@ -222,24 +269,31 @@ if [ "$BUILD_APP" = true ]; then
   build_application
 
   # Run all tests in parallel (smoke + perl + react)
-  echo "========================================="
-  echo "Running test suite..."
-  echo "========================================="
+  if [ "$SKIP_TESTS" = false ]; then
+    echo "========================================="
+    echo "Running test suite..."
+    echo "========================================="
 
-  # Ensure output is not buffered
-  stdbuf -o0 -e0 $SCRIPT_DIR/../tools/parallel-test.sh
-  TEST_EXIT=$?
+    # Ensure output is not buffered
+    stdbuf -o0 -e0 $SCRIPT_DIR/../tools/parallel-test.sh
+    TEST_EXIT=$?
 
-  if [ $TEST_EXIT -ne 0 ]; then
+    if [ $TEST_EXIT -ne 0 ]; then
+      echo ""
+      echo "========================================="
+      echo "TESTS FAILED"
+      echo "========================================="
+      echo "Build completed but tests failed."
+      echo "See output above for details."
+      echo ""
+      echo "To re-run tests: ./tools/parallel-test.sh"
+      exit 1
+    fi
+  else
     echo ""
     echo "========================================="
-    echo "TESTS FAILED"
+    echo "Skipping tests (--skip-tests flag provided)"
     echo "========================================="
-    echo "Build completed but tests failed."
-    echo "See output above for details."
-    echo ""
-    echo "To re-run tests: ./tools/parallel-test.sh"
-    exit 1
   fi
 fi
 

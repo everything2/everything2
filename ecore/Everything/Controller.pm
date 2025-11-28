@@ -131,7 +131,20 @@ sub layout
   # $params = $self->nodelets($REQUEST->user->nodelets, $params);
 
   $self->MASON->set_global('$REQUEST',$REQUEST);
-  return $self->MASON->run($template, $params)->output();
+  my $output = $self->MASON->run($template, $params)->output();
+
+  # Persist VARS changes made during buildNodeInfoStructure (oldGP, oldexp, etc.)
+  # This matches what HTML.pm does at end of request (HTML.pm:720, 739)
+  unless ($REQUEST->is_guest) {
+    my $USER = $REQUEST->user->NODEDATA;
+    my $VARS = $REQUEST->user->VARS;
+    # Update $USER->{vars} to reflect current $VARS hashref before calling setVars()
+    # This ensures setVars() sees the changes and saves them to database
+    $USER->{vars} = Everything::getVarStringFromHash($VARS);
+    Everything::setVars($USER, $VARS);
+  }
+
+  return $output;
 }
 
 sub nodelets

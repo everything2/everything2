@@ -119,6 +119,19 @@ sub add_note
     return [$self->HTTP_INTERNAL_SERVER_ERROR, { error => "Failed to create note" }];
   }
 
+  # Send broadcast notification to all editors/admins subscribed to node note notifications
+  # Note: Node notes are internal editor/admin tools, so writeup owners are NOT notified
+  # Uses broadcast pattern: single notification with user_id=undef (becomes notification_id)
+  # Subscribed users see it via: notified.user_id IN (their_subscribed_notification_ids)
+
+  my $noter_user_id = $REQUEST->user->node_id;
+
+  $self->APP->add_notification('nodenote', undef, {
+    node_id => $node_id,
+    note => $notetext,
+    node_noter => $noter_user_id
+  });
+
   # Return updated notes list
   return $self->get_node_notes($REQUEST, $node_id);
 }

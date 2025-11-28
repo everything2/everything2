@@ -897,7 +897,8 @@ sub node_basicedit_page
 
   pop @$tables;
 
-  foreach my $field (keys %titletype)
+  # Sort fields alphabetically for deterministic display (improves E2E testability)
+  foreach my $field (sort keys %titletype)
   {
     $str .= "$field ($titletype{$field}): ";
 

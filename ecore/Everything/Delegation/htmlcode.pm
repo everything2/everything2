@@ -1342,7 +1342,8 @@ sub show_content
         } elsif ( $xml ) {
           $str .= "<$_>".$APP->encodeHTML( $$N{ $_ } )."</$_>" ;
         } else {
-          $str .= "<span class=\"$_\">".$$N{ $_ }.'</span>' ;
+          my $value = $$N{ $_ } // '';
+          $str .= "<span class=\"$_\">$value</span>" ;
         }
 
         $str .= "\n" ;
@@ -3979,12 +3980,16 @@ sub static_javascript
     # Logged-in users: use PAGELOAD, VARS, or fall back to default_nodelets
     $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};
 
-    # If user has no configured nodelets, use default_nodelets
+    # If user has no configured nodelets, use default_nodelets and persist to VARS
     if (!$nodeletlist) {
       my $default_nodelets = $Everything::CONF->default_nodelets;
       if ($default_nodelets && ref($default_nodelets) eq 'ARRAY' && @$default_nodelets) {
         $nodeletlist = join(',', @$default_nodelets);
-        $APP->devLog("Using default_nodelets for user " . $USER->{title} . " (no VARS->{nodelets} configured)");
+
+        # Persist default nodelets to VARS so they're saved for future page loads
+        $$VARS{nodelets} = $nodeletlist;
+        my $user_node = $APP->node_by_id($USER->{node_id});
+        $user_node->set_vars($VARS) if $user_node && $user_node->can('set_vars');
       }
     }
   }
@@ -11219,124 +11224,11 @@ sub confirmDeleteMessage
 
 sub notificationsJSON
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $limit = 10;
-  my $wrap = shift;
-
-  my $str = undef;
-
-  my $safe_JSON_decode = sub {
-    my $args = { };
-    my $argJSON = shift;
-    # Suppress failed conversion -- return empty hash instead
-    local $SIG{__DIE__} = sub { };
-    $args = JSON::from_json($argJSON);
-    return $args;
-  };
-
-  # hide node notes from non-editors
-  my $isEditor = $APP->isEditor($USER);
-
-  my $otherNotifications = "0";
-
-  if ($$VARS{settings})
-  {
-    my $notificationList = from_json($$VARS{settings})->{notifications};
-    my @notify = ( );
-
-    for (keys %{$notificationList})
-    {
-      next if !htmlcode('canseeNotification', $_);
-      push @notify, $_;
-    }
-
-    $otherNotifications = join(",",@notify) if scalar @notify;
-  }
-
-  my $currentTime = time;
-  my $sqlString = qq|
-    SELECT notified.notification_id, notified.args, notified.notified_id
-    , UNIX_TIMESTAMP(notified.notified_time) 'notified_time'
-    , (hourLimit * 3600 - $currentTime + UNIX_TIMESTAMP(notified.notified_time)) AS timeLimit
-    FROM notified
-    INNER JOIN notification
-    ON notification.notification_id = notified.notification_id
-    LEFT OUTER JOIN notified AS reference
-    ON reference.user_id = $$USER{user_id} 
-    AND reference.reference_notified_id = notified.notified_id
-    AND reference.is_seen = 1
-    WHERE
-    (
-      notified.user_id = $$USER{user_id}
-      AND notified.is_seen = 0
-    ) OR (
-      notified.user_id IN ($otherNotifications)
-      AND reference.is_seen IS NULL
-    )
-    HAVING (timeLimit > 0)
-    ORDER BY notified_id DESC
-    LIMIT $limit|;
-
-  my $dbh = $DB->getDatabaseHandle();
-  my $db_notifieds = $dbh->selectall_arrayref($sqlString, {Slice => {}} );
-  my $notification_list = { };
-  my $notify_count = 1;
-
-  foreach my $notify (@$db_notifieds)
-  {
-    my $notification = getNodeById($$notify{notification_id});
-    my $argJSON = $$notify{args};
-    $argJSON =~ s/'/\'/g;
-    my $args = &$safe_JSON_decode($argJSON);
-
-    # Convert notification title to delegation function name
-    my $notificationTitle = $notification->{title};
-    $notificationTitle =~ s/[\s\-]/_/g;  # Replace spaces and hyphens with underscores
-    $notificationTitle = lc($notificationTitle);
-
-    # Look up delegation function
-    my $renderNotification = Everything::Delegation::notification->can($notificationTitle);
-
-    if (!$renderNotification)
-    {
-      # No delegation found - log error and skip
-      $APP->devLog("ERROR: Notification '$notification->{title}' (expected: $notificationTitle) has no delegation function");
-      next;
-    }
-
-    # Render notification using delegation
-    my $displayText = $renderNotification->($DB, $APP, $args);
-
-    # Check if notification is still valid
-    # Note: Most notifications have empty invalid_check, but we keep the structure for future use
-    # If needed, invalid check functions could be added to the delegation module
-    # For now, we skip invalid_check since all current notifications have empty checks
-
-    my ($pre, $post) = (undef, undef);
-    if ($wrap)
-    {
-      my $liId = "notified_$$notify{notified_id}";
-      $pre = qq'<li class="timestamp_$$notify{notified_time}" id="$liId">';
-      $pre .= qq'<a class="dismiss $liId" title="dismiss notification" href="javascript:;">&#91;x]</a> ';
-      $post = "</li>\n";
-    }
-
-    $$notification_list{$notify_count} = {
-      id => $$notify{notified_id},
-      value => $pre.parseLinks($displayText).$post,
-      timestamp => $$notify{notified_time}};
-    $notify_count++;
-  }
-
-  return $notification_list;
-
+  # DEPRECATED 2025-11-27: Replaced by Application::getRenderedNotifications()
+  # Legacy AJAX polling removed in commit e6c7fcc58
+  # Now handled by React Notifications nodelet + /api/notifications endpoint
+  # Stub remains until next production push, then will be fully deleted
+  return '';
 }
 
 sub ip_lookup_tools
@@ -12200,34 +12092,11 @@ sub nodeletsettingswidget
 
 sub ajaxMarkNotificationSeen
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $notified_id = shift;
-  return 'invalid argument' unless $notified_id =~ /^\d+$/;
-
-  my $for_user = $DB->sqlSelect("user_id", "notified", "notified_id = $notified_id");
-  my $isPersonalNotification = ($for_user == $$USER{user_id});
-
-  if ($isPersonalNotification)
-  {
-    $DB->sqlUpdate("notified",{is_seen => 1}, "notified_id = $notified_id");
-  } else {
-    $DB->sqlInsert("notified",
-      {
-        is_seen => 1
-        , -user_id => $$USER{user_id}
-        , -reference_notified_id => $notified_id
-        , -notified_time => 'now()'
-      });
-  }
-
-  return;
+  # DEPRECATED 2025-11-27: Replaced by /api/notifications/dismiss endpoint
+  # Legacy AJAX polling removed in commit e6c7fcc58
+  # Now handled by React Notifications nodelet dismiss button
+  # Stub remains until next production push, then will be fully deleted
+  return '';
 }
 
 sub coolsJSON

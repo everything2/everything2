@@ -92,7 +92,7 @@ ok($api, "Created notifications API instance");
 #############################################################################
 
 subtest 'Dismiss notification - success' => sub {
-  plan tests => 6;
+  plan tests => 8;
 
   my $root = $DB->getNodeById(1);
   my $notified_id = create_test_notification(1);  # root's notification
@@ -116,6 +116,16 @@ subtest 'Dismiss notification - success' => sub {
   is($data->{notified_id}, $notified_id, 'Returns notified_id');
   ok(exists $data->{notifications}, 'Returns notifications array');
   ok(ref($data->{notifications}) eq 'ARRAY', 'Notifications is an array');
+
+  # Verify notification structure matches React component expectations
+  if (scalar @{$data->{notifications}} > 0) {
+    my $first_notif = $data->{notifications}->[0];
+    ok(exists $first_notif->{notified_id}, 'Notification has notified_id field');
+    ok(exists $first_notif->{html}, 'Notification has html field');
+  } else {
+    pass('No notifications remaining (expected after dismiss)');
+    pass('Skipping html field check');
+  }
 
   # Verify notification was marked as seen
   my $is_seen = $DB->sqlSelect('is_seen', 'notified', "notified_id = $notified_id");

@@ -21,21 +21,7 @@ const OtherUsers = (props) => {
   // Use polled data (which now includes initial data from props)
   const otherUsersData = polledData
 
-  if (!otherUsersData) {
-    return (
-      <NodeletContainer
-        id={props.id}
-      title="Other Users"
-        showNodelet={props.showNodelet}
-        nodeletIsOpen={props.nodeletIsOpen}
-      >
-        <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
-          {pollingLoading ? 'Loading...' : pollingError ? `Error: ${pollingError}` : 'No chat data available'}
-        </p>
-      </NodeletContainer>
-    )
-  }
-
+  // Extract data with defaults - MUST be before any conditional returns to maintain hook order
   const {
     userCount,
     currentRoom,
@@ -47,13 +33,33 @@ const OtherUsers = (props) => {
     suspension,
     canCreateRoom,
     createRoomSuspended
-  } = otherUsersData
+  } = otherUsersData || {}
 
-  // Initialize states from props and sync with updates
+  // Initialize states from props and sync with updates - MUST be before any conditional returns
   React.useEffect(() => {
-    setSelectedRoom(currentRoomId)
-    setIsCloaked(initialCloaked)
+    if (currentRoomId !== undefined) {
+      setSelectedRoom(currentRoomId)
+    }
+    if (initialCloaked !== undefined) {
+      setIsCloaked(initialCloaked)
+    }
   }, [currentRoomId, initialCloaked])
+
+  // NOW we can do conditional returns after all hooks are called
+  if (!otherUsersData) {
+    return (
+      <NodeletContainer
+        id={props.id}
+        title="Other Users"
+        showNodelet={props.showNodelet}
+        nodeletIsOpen={props.nodeletIsOpen}
+      >
+        <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
+          {pollingLoading ? 'Loading...' : pollingError ? `Error: ${pollingError}` : 'No chat data available'}
+        </p>
+      </NodeletContainer>
+    )
+  }
 
   const handleChangeRoom = async () => {
     if (selectedRoom === null || selectedRoom === currentRoomId) return

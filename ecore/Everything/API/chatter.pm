@@ -19,9 +19,15 @@ sub get_all
 {
   my ($self, $REQUEST) = @_;
 
-  my $limit = int($REQUEST->cgi->param("limit")) || 30;
-  my $offset = int($REQUEST->cgi->param("offset")) || 0;
-  my $room = int($REQUEST->cgi->param("room")) || 0;
+  my $limit = $REQUEST->cgi->param("limit");
+  $limit = defined($limit) ? int($limit) : 30;
+
+  my $offset = $REQUEST->cgi->param("offset");
+  $offset = defined($offset) ? int($offset) : 0;
+
+  my $room = $REQUEST->cgi->param("room");
+  $room = defined($room) ? int($room) : 0;
+
   my $since = $REQUEST->cgi->param("since") || undef;
 
   my $params = {
