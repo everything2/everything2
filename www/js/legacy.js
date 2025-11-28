@@ -1284,14 +1284,9 @@ if(! e2.noquickvote)
   // automation
   if (!e2.guest){
 
-	e2.ajax.addList('notifications_list',{ // id of list container
-		getJSON: "notificationsJSON", // htmlcode for list data (required)
-		args: 'wrap', // htmlcode arguments for getJSON
-		idGroup: "notified_", // id stub for individual list items (required):
-		// N.B.: items sent with an id keep it. If it doesn't match the idGroup they will never be removed.
-		period: 45, // seconds between updates (default is above)
-		dismissItem: 'ajaxMarkNotificationSeen' // htmlcode run when item dismissed. arg is id from json
-	});
+	// DEPRECATED: Notifications now handled by React component
+	// Legacy notification polling removed - all users have React Notifications nodelet
+	// e2.ajax.addList('notifications_list',{ ... });
 
 	// LEGACY CHATTERBOX AJAX REMOVED - Now handled by React polling system
 	// See: react/components/Nodelets/Chatterbox.js

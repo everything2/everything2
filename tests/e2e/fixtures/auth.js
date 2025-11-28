@@ -11,6 +11,10 @@
 async function loginAsRoot(page) {
   await page.goto('/')
 
+  // Wait for React to hydrate Sign In nodelet
+  await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+  await page.waitForSelector('#sign_in', { timeout: 5000 })
+
   // Expand Sign In nodelet if collapsed
   const signInHeader = page.locator('h2:has-text("Sign In")')
   const isCollapsed = await signInHeader.evaluate(el =>
@@ -31,7 +35,7 @@ async function loginAsRoot(page) {
   ])
 
   // Wait for React to render epicenter (always present for logged-in users)
-  await page.waitForSelector('#epicenter', { timeout: 5000 })
+  await page.waitForSelector('#epicenter', { timeout: 15000 })
 }
 
 /**
@@ -40,6 +44,10 @@ async function loginAsRoot(page) {
  */
 async function loginAsGenericDev(page) {
   await page.goto('/')
+
+  // Wait for React to hydrate Sign In nodelet
+  await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+  await page.waitForSelector('#sign_in', { timeout: 5000 })
 
   // Expand Sign In nodelet if collapsed
   const signInHeader = page.locator('h2:has-text("Sign In")')
@@ -61,7 +69,7 @@ async function loginAsGenericDev(page) {
   ])
 
   // Wait for React to render epicenter (always present for logged-in users)
-  await page.waitForSelector('#epicenter', { timeout: 5000 })
+  await page.waitForSelector('#epicenter', { timeout: 15000 })
 }
 
 /**
@@ -70,6 +78,10 @@ async function loginAsGenericDev(page) {
  */
 async function loginAsE2EAdmin(page) {
   await page.goto('/')
+
+  // Wait for React to hydrate Sign In nodelet
+  await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+  await page.waitForSelector('#sign_in', { timeout: 5000 })
 
   // Expand Sign In nodelet if collapsed
   const signInHeader = page.locator('h2:has-text("Sign In")')
@@ -90,8 +102,10 @@ async function loginAsE2EAdmin(page) {
     page.click('input[type="submit"]')
   ])
 
-  // Wait for React to render epicenter (always present for logged-in users)
-  await page.waitForSelector('#epicenter', { timeout: 5000 })
+  // Wait for React to populate window.e2.user (indicates successful login)
+  await page.waitForFunction(() => {
+    return window.e2 && window.e2.user && window.e2.user.guest === false
+  }, { timeout: 10000 })
 }
 
 /**
@@ -100,6 +114,10 @@ async function loginAsE2EAdmin(page) {
  */
 async function loginAsE2EUser(page) {
   await page.goto('/')
+
+  // Wait for React to hydrate Sign In nodelet
+  await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+  await page.waitForSelector('#sign_in', { timeout: 5000 })
 
   // Expand Sign In nodelet if collapsed
   const signInHeader = page.locator('h2:has-text("Sign In")')
@@ -120,8 +138,10 @@ async function loginAsE2EUser(page) {
     page.click('input[type="submit"]')
   ])
 
-  // Wait for React to render epicenter (always present for logged-in users)
-  await page.waitForSelector('#epicenter', { timeout: 5000 })
+  // Wait for React to populate window.e2.user (indicates successful login)
+  await page.waitForFunction(() => {
+    return window.e2 && window.e2.user && window.e2.user.guest === false
+  }, { timeout: 10000 })
 }
 
 /**

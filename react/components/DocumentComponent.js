@@ -49,7 +49,14 @@ const COMPONENT_MAP = {
   piercisms_generator: lazy(() => import('./Documents/RandomText')),
 
   // Utility tools
-  wharfinger_s_linebreaker: lazy(() => import('./Documents/WharfingerLinebreaker'))
+  wharfinger_s_linebreaker: lazy(() => import('./Documents/WharfingerLinebreaker')),
+
+  // Holiday checkers (all use same IsItHoliday component)
+  is_it_christmas_yet: lazy(() => import('./Documents/IsItHoliday')),
+  is_it_halloween_yet: lazy(() => import('./Documents/IsItHoliday')),
+  is_it_new_year_s_day_yet: lazy(() => import('./Documents/IsItHoliday')),
+  is_it_new_year_s_eve_yet: lazy(() => import('./Documents/IsItHoliday')),
+  is_it_april_fools_day_yet: lazy(() => import('./Documents/IsItHoliday'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

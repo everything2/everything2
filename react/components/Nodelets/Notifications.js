@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import NodeletContainer from '../NodeletContainer'
+import ParseLinks from '../ParseLinks'
 
 const Notifications = (props) => {
   const { notificationsData: initialData } = props
@@ -30,13 +31,16 @@ const Notifications = (props) => {
     )
   }
 
-  const { notifications, settingsLink, showSettings } = notificationsData
+  const { notifications, showSettings } = notificationsData
 
   // Ensure notifications is always an array and never display empty array as "0"
   const notificationList = Array.isArray(notifications) ? notifications : []
   const hasNotifications = notificationList.length > 0
   // Convert showSettings to proper boolean to prevent rendering "0"
   const shouldShowSettings = Boolean(showSettings)
+
+  // Settings link generated purely in React (no server-rendered HTML)
+  const settingsUrl = '/node/superdoc/Nodelet+Settings#notificationsnodeletsettings'
 
   // Handle dismiss button clicks
   useEffect(() => {
@@ -65,20 +69,11 @@ const Notifications = (props) => {
         if (response.ok) {
           const data = await response.json()
           // Update notifications with server response (contains updated HTML-rendered notifications)
-          // Re-render notifications using the backend's notificationsJSON htmlcode
           if (data.notifications) {
-            // Fetch fresh rendered notifications from the backend
-            const renderResponse = await fetch('/api/notifications/', {
-              credentials: 'same-origin'
-            })
-            if (renderResponse.ok) {
-              // For now, just remove the dismissed notification from current list
-              // Full refresh would require backend to return HTML-rendered notifications
-              setNotificationsData(prev => ({
-                ...prev,
-                notifications: prev.notifications.filter(n => n.notified_id !== notifiedId)
-              }))
-            }
+            setNotificationsData(prev => ({
+              ...prev,
+              notifications: data.notifications
+            }))
           }
         } else {
           console.error('Failed to dismiss notification:', await response.text())
@@ -122,18 +117,31 @@ const Notifications = (props) => {
       )}
 
       {hasNotifications ? (
-        <ul ref={listRef} id="notifications_list" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        <ul ref={listRef} id="notifications_list">
           {notificationList.map((notification, index) => (
             <li
               key={notification.notified_id || index}
-              style={{
-                padding: '8px',
-                borderBottom: '1px solid #f0f0f0',
-                fontSize: '12px',
-                lineHeight: '1.4'
-              }}
-              dangerouslySetInnerHTML={{ __html: notification.html }}
-            />
+              className={`notified_${notification.notified_id}`}
+            >
+              <button
+                className={`dismiss notified_${notification.notified_id}`}
+                style={{
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  fontSize: '14px',
+                  color: '#666',
+                  lineHeight: '1',
+                  fontWeight: 'bold',
+                  marginRight: '2px'
+                }}
+                title="dismiss notification"
+              >
+                ×
+              </button>
+              <ParseLinks text={notification.text} />
+            </li>
           ))}
         </ul>
       ) : (
@@ -142,19 +150,18 @@ const Notifications = (props) => {
         </div>
       )}
 
-      {settingsLink && (
-        <div
-          className="nodeletfoot"
-          style={{
-            borderTop: '1px solid #dee2e6',
-            padding: '8px',
-            marginTop: '8px',
-            fontSize: '11px',
-            textAlign: 'center'
-          }}
-          dangerouslySetInnerHTML={{ __html: settingsLink }}
-        />
-      )}
+      <div
+        className="nodeletfoot"
+        style={{
+          borderTop: '1px solid #dee2e6',
+          padding: '8px',
+          marginTop: '8px',
+          fontSize: '11px',
+          textAlign: 'center'
+        }}
+      >
+        <a href={settingsUrl}>Notification settings</a>
+      </div>
     </NodeletContainer>
   )
 }

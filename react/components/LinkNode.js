@@ -82,7 +82,7 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) =>
     rel="nofollow"
   }
 
-  return React.createElement('a', {className: className, href: url, rel: rel}, display);
+  return React.createElement('a', {className: className, href: url, rel: rel, style: {fontSize: 'inherit'}}, display);
 }
 
 export default LinkNode

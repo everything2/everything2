@@ -202,8 +202,9 @@ sub writeup_update
 
   # only check query parameters if user is actually editing this writeup
   # -- we can also come here if they are publishing a different writeup in this writeup's parent e2node
-  # Also, if run as a script, we don't have $query 
-  if($query && $query->param('node_id')==$$WRITEUP{node_id})
+  # Also, if run as a script, we don't have $query
+  my $param_node_id = $query ? $query->param('node_id') : undef;
+  if($query && defined($param_node_id) && $param_node_id == $$WRITEUP{node_id})
   {
     # Make a notification if someone's about to blank a writeup
     if(defined($query->param('writeup_doctext')))

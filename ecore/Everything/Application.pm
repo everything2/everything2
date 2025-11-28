@@ -3712,6 +3712,7 @@ sub add_notification {
   return 1;
 }
 
+
 sub send_message {
   my ($this, $params) = @_;
 
@@ -3775,10 +3776,10 @@ sub get_messages
   $limit = 15 if ($limit < 0);
   $limit = 100 if ($limit > 100);
 
-  $offset = int($offset);
+  $offset = int($offset // 0);
   $offset ||= 0;
 
-  $archive = int($archive) || 0;
+  $archive = int($archive // 0);
 
   my $where = "for_user=$user->{node_id} AND archive=$archive";
   my $csr = $this->{db}->sqlSelectMany("*","message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
@@ -6116,21 +6117,31 @@ sub buildNodeInfoStructure
     }
 
     # Experience change data (React component will handle rendering)
-    $VARS->{oldexp} ||= $USER->{experience};
+    # Initialize oldexp on first visit (use defined() and numeric check)
+    # Reset if oldexp is non-numeric (handles garbage data from legacy code)
+    $VARS->{oldexp} = $USER->{experience} unless (defined $VARS->{oldexp} && $VARS->{oldexp} =~ /^\d+$/);
     my $expChange = $USER->{experience} - $VARS->{oldexp};
     if($expChange > 0) {
       $e2->{epicenter}->{experienceGain} = $expChange;
-      $VARS->{oldexp} = $USER->{experience};
     }
+    # Always update oldexp to current experience (not just on positive gains)
+    # This ensures oldexp stays in sync even when XP is reset/decreased
+    $VARS->{oldexp} = $USER->{experience};
 
     # GP change data (React component will handle rendering)
     unless($VARS->{GPoptout}) {
-      $VARS->{oldGP} ||= $USER->{GP};
+      # Initialize oldGP on first visit (use defined() and numeric check)
+      # Reset if oldGP is non-numeric (handles garbage data from legacy code)
+      $VARS->{oldGP} = $USER->{GP} unless (defined $VARS->{oldGP} && $VARS->{oldGP} =~ /^\d+$/);
       my $gpChange = $USER->{GP} - $VARS->{oldGP};
+
       if($gpChange > 0) {
         $e2->{epicenter}->{gpGain} = $gpChange;
-        $VARS->{oldGP} = $USER->{GP};
       }
+
+      # Always update oldGP to current GP (not just on positive gains)
+      # This ensures oldGP stays in sync even when GP is reset/decreased
+      $VARS->{oldGP} = $USER->{GP};
     }
 
     # Random node link data
@@ -6183,7 +6194,7 @@ sub buildNodeInfoStructure
         isUserNode => ($$NODE{type}{title} eq 'user'),
         nodeId => $$NODE{node_id},
         nodeTitle => $$NODE{title},
-        showSection => ($VARS->{epi_hideces} != 1)
+        showSection => (($VARS->{epi_hideces} // 0) != 1)
       };
 
       # NodeNote - Get notes data and pass structured data to React
@@ -6220,7 +6231,7 @@ sub buildNodeInfoStructure
         # Admin Section data (React component will handle rendering)
         $e2->{masterControl}->{adminSection} = {
           isBorged => $$VARS{borged} ? \1 : \0,
-          showSection => ($VARS->{epi_hideadmins} != 1)
+          showSection => (($VARS->{epi_hideadmins} // 0) != 1)
         };
       }
     }
@@ -6690,8 +6701,9 @@ sub buildNodeInfoStructure
   # Check if this superdoc has a Page class that provides React data
   if ($NODE->{type}->{title} eq 'superdoc' && $user_node) {
     my $page_name = $NODE->{title};
-    $page_name =~ s/['\s]/_/g;  # Convert apostrophes and spaces to underscores
+    $page_name =~ s/['\s?]/_/g;  # Convert apostrophes, spaces, and question marks to underscores
     $page_name =~ s/_+/_/g;     # Collapse multiple underscores to single
+    $page_name =~ s/_$//;        # Remove trailing underscore
     $page_name = lc($page_name);  # Lowercase for consistency
 
     my $page_class = "Everything::Page::$page_name";
@@ -6726,6 +6738,11 @@ sub buildNodeInfoStructure
       };
     }
   }
+
+  # NOTE: VARS persistence happens in Controller.pm layout() method
+  # (for React flow) or HTML.pm (for legacy flow) at END of request
+  # NOT here in buildNodeInfoStructure - we want VARS changes to persist
+  # across all page loads in the request, then save at the end
 
   return $e2;
 }
@@ -7295,38 +7312,132 @@ sub buildNotificationsData
 {
   my ($this, $NODE, $USER, $VARS, $query) = @_;
 
-  # Pragmatic hybrid approach: Call existing htmlcode to get notification HTML
-  # This preserves the complex notification delegation system while migrating to React
-  # Future enhancement: Extract notification rendering into proper API endpoints
-
   my $showSettings = !$$VARS{settings} && !($$NODE{title} eq 'Nodelet Settings' && $$NODE{type}{title} eq 'superdoc');
 
-  # Get settings link
-  my $settingsLink = Everything::HTML::htmlcode('nodeletsettingswidget','Notifications', 'Notification settings');
-
-  # Get notification list with HTML wrapper
-  my $notification_list = Everything::HTML::htmlcode('notificationsJSON', 'wrap');
-
-  # Convert notification list to array of notification objects
-  my @notifications = ();
-  my $notify_count = 1;
-
-  while (defined $$notification_list{$notify_count}) {
-    my $notify = $$notification_list{$notify_count};
-    push @notifications, {
-      notified_id => $$notify{notified_id} || $notify_count,
-      html => $$notify{value}
-    };
-    $notify_count++;
-  }
+  # Get rendered notifications (pure data, no HTML)
+  my $notifications = $this->getRenderedNotifications($USER, $VARS);
 
   return {
-    notifications => \@notifications,
-    settingsLink => $settingsLink,
+    notifications => $notifications,
     showSettings => $showSettings ? 1 : 0
   };
 }
 
+
+sub getRenderedNotifications
+{
+  my ($this, $USER, $VARS) = @_;
+
+  # Get user's notification subscriptions
+  my $otherNotifications = "0";
+  my $notificationList;
+
+  if ($$VARS{settings})
+  {
+    my $settings = JSON::from_json($$VARS{settings});
+    $notificationList = $settings->{notifications} if $settings;
+    my @notify = ( );
+
+    if ($notificationList && ref($notificationList) eq 'HASH')
+    {
+      for (keys %{$notificationList})
+      {
+        # Check if user can see this notification type
+        next if !Everything::HTML::htmlcode('canseeNotification', $_);
+        push @notify, $_;
+      }
+
+      $otherNotifications = join(",",@notify) if scalar @notify;
+    }
+  }
+
+  # Query notifications from database
+  my $limit = 10;
+  my $currentTime = time;
+  my $sqlString = qq|
+    SELECT notified.notification_id, notified.args, notified.notified_id
+    , UNIX_TIMESTAMP(notified.notified_time) 'notified_time'
+    , (hourLimit * 3600 - $currentTime + UNIX_TIMESTAMP(notified.notified_time)) AS timeLimit
+    FROM notified
+    INNER JOIN notification
+    ON notification.notification_id = notified.notification_id
+    LEFT OUTER JOIN notified AS reference
+    ON reference.user_id = $$USER{user_id}
+    AND reference.reference_notified_id = notified.notified_id
+    AND reference.is_seen = 1
+    WHERE
+    (
+      notified.user_id = $$USER{user_id}
+      AND notified.is_seen = 0
+    ) OR (
+      notified.user_id IN ($otherNotifications)
+      AND reference.is_seen IS NULL
+    )
+    HAVING (timeLimit > 0)
+    ORDER BY notified_id DESC
+    LIMIT $limit|;
+
+  my $dbh = $this->{db}->getDatabaseHandle();
+  my $db_notifieds = $dbh->selectall_arrayref($sqlString, {Slice => {}} );
+
+  # Render each notification
+  my @notifications = ();
+
+  foreach my $notify (@$db_notifieds)
+  {
+    my $notification = $this->{db}->getNodeById($$notify{notification_id});
+    my $argJSON = $$notify{args};
+    $argJSON =~ s/'/\'/g;
+
+    # Parse JSON args
+    my $args = {};
+    local $SIG{__DIE__} = sub { };
+    my $eval_ok = eval { $args = JSON::from_json($argJSON); 1; };
+    $args = {} unless $eval_ok;
+
+    # Convert notification title to delegation function name
+    my $notificationTitle = $notification->{title};
+    $notificationTitle =~ s/[\s\-]/_/g;  # Replace spaces and hyphens with underscores
+    $notificationTitle = lc($notificationTitle);
+
+    # Look up delegation function
+    my $renderNotification = Everything::Delegation::notification->can($notificationTitle);
+
+    if (!$renderNotification)
+    {
+      # No delegation found - log error and skip
+      $this->devLog("ERROR: Notification '$notification->{title}' (expected: $notificationTitle) has no delegation function");
+      next;
+    }
+
+    # Render notification using delegation - returns plain text
+    my $displayText = $renderNotification->($this->{db}, $this, $args);
+
+    # Return structured data (no HTML rendering - pure React)
+    push @notifications, {
+      notified_id => $$notify{notified_id},
+      text => $displayText,  # Plain text with [bracket] links
+      timestamp => $$notify{notified_time}
+    };
+  }
+
+  return \@notifications;
+}
+
+#############################################################################
+# Helper method to generate bracket link from node_id
+# Used by notification delegation functions
+# Returns: "[Node Title]" for ParseLinks to convert to HTML link
+#############################################################################
+
+sub bracketLink
+{
+  my ($this, $node_id) = @_;
+  return '' unless $node_id;
+
+  my $node = $this->{db}->getNodeById($node_id);
+  return $node ? "[$node->{title}]" : '';
+}
 
 sub buildForReviewData
 {
@@ -7336,35 +7447,13 @@ sub buildForReviewData
   my $isEditor = $this->isEditor($USER);
   return { isEditor => 0 } unless $isEditor;
 
-  # Get drafts from DataStash
+  # Get drafts from DataStash (already JSON-safe)
   my $drafts = $this->{db}->stashData("reviewdrafts");
 
-  # Build table HTML using htmlcode (hybrid approach)
-  my %funx = (
-    startline => sub{
-      $_[0] -> {type}{title} = 'draft';
-      '<td>';
-    },
-    notes => sub{
-      $_[0]{latestnote} =~ s/\[user\]//;
-      my $note = $this->encodeHTML($_[0]{latestnote}, 'adv');
-      '<td align="center">'
-      .($_[0]{notecount} ? $this->linkNode($_[0], $_[0]{notecount},
-      {'#' => 'nodenotes', -title => "$_[0]{notecount} notes; latest $note"})
-      : '&nbsp;')
-      .'</td>';
-    }
-  );
-
-  my $tableHtml = "<table><tr><th>Draft</th><th align=\"center\" title=\"node notes\">N?</th></tr>"
-    .Everything::HTML::htmlcode('show content', $drafts
-    , qq!<tr class="&oddrow"> startline, title, byline, "</td>", notes, %funx!)
-    .'</table>';
-
+  # Return structured data for React (no HTML generation)
   return {
     isEditor => 1,
-    drafts => $drafts,
-    tableHtml => $tableHtml
+    drafts => $drafts
   };
 }
 

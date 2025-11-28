@@ -268,7 +268,11 @@ sub nodelets
   {
     $nodeletids = [split(",",$self->VARS->{nodelets})];
   }else{
+    # User has no nodelets configured - persist default nodelets to VARS
     $nodeletids = $self->CONF->default_nodelets;
+    my $VARS = $self->VARS;
+    $VARS->{nodelets} = join(",", @$nodeletids);
+    $self->set_vars($VARS);
   }
 
   foreach my $n (@$nodeletids)

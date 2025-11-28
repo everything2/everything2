@@ -682,7 +682,12 @@ const Chatterbox = (props) => {
       )}
 
       {/* Chatter display - polling-based */}
-      <div id="chatterbox_chatter" style={{ marginBottom: '12px' }}>
+      <div id="chatterbox_chatter" style={{
+        marginBottom: '12px',
+        minHeight: '200px',  // Fixed min height prevents layout shift
+        maxHeight: '400px',
+        overflowY: 'auto'
+      }}>
         {props.publicChatterOff ? (
           <div style={{
             fontSize: '12px',
@@ -717,8 +722,6 @@ const Chatterbox = (props) => {
 
             {chatter.length > 0 && (
               <div style={{
-                maxHeight: '400px',
-                overflowY: 'auto',
                 fontSize: '11px',
                 lineHeight: '1.4'
               }}>

@@ -40,8 +40,6 @@ package Everything::Delegation::notification;
 #
 #############################################################################
 
-use Everything::Globals;
-
 #############################################################################
 # Achievement notification
 # Triggered when user earns an achievement
@@ -76,9 +74,7 @@ sub voting
         $args->{amount} = -1 * $args->{amount};
     }
 
-    if ($args->{node_id}) {
-        $str .= $APP->linkNode($args->{node_id});
-    }
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -94,7 +90,7 @@ sub newcomment
     my ($DB, $APP, $args) = @_;
 
     my $str = "Someone commented on ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -148,7 +144,7 @@ sub cooled
     my ($DB, $APP, $args) = @_;
 
     my $str = "Your writeup ";
-    $str .= $APP->linkNode($args->{writeup_id}) if $args->{writeup_id};
+    $str .= $APP->bracketLink( $args->{writeup_id}) if $args->{writeup_id};
     $str .= " was cooled!";
 
     return $str;
@@ -165,7 +161,7 @@ sub frontpage
     my ($DB, $APP, $args) = @_;
 
     my $str = "Your writeup ";
-    $str .= $APP->linkNode($args->{frontpage_item_id}) if $args->{frontpage_item_id};
+    $str .= $APP->bracketLink( $args->{frontpage_item_id}) if $args->{frontpage_item_id};
     $str .= " made it to the front page!";
 
     return $str;
@@ -182,7 +178,7 @@ sub favorite
     my ($DB, $APP, $args) = @_;
 
     my $str = "Someone favorited ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -198,7 +194,7 @@ sub bookmark
     my ($DB, $APP, $args) = @_;
 
     my $str = "Someone bookmarked ";
-    $str .= $APP->linkNode($args->{writeup_id}) if $args->{writeup_id};
+    $str .= $APP->bracketLink( $args->{writeup_id}) if $args->{writeup_id};
 
     return $str;
 }
@@ -214,7 +210,7 @@ sub mostwanted
     my ($DB, $APP, $args) = @_;
 
     my $str = "Your writeup ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
     $str .= " is on the Most Wanted list";
 
     return $str;
@@ -223,7 +219,7 @@ sub mostwanted
 #############################################################################
 # Draft for review notification
 # Triggered when someone submits a draft for editorial review
-# Args: { node_id => draft_id }
+# Args: { draft_id => node_id } (note: maintenance.pm passes draft_id, not node_id)
 #############################################################################
 
 sub draft_for_review
@@ -231,7 +227,13 @@ sub draft_for_review
     my ($DB, $APP, $args) = @_;
 
     my $str = "New draft submitted for review: ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    # maintenance.pm passes draft_id, not node_id
+    my $draft_id = $args->{draft_id} || $args->{node_id};
+
+    if ($draft_id) {
+        my $node = $DB->getNodeById($draft_id);
+        $str .= "[$node->{title}]" if $node;
+    }
 
     return $str;
 }
@@ -249,7 +251,7 @@ sub writeupedit
     my $str = "";
     $str .= $args->{author} . " " if $args->{author};
     $str .= "edited ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -313,7 +315,7 @@ sub nodenote
     my ($DB, $APP, $args) = @_;
 
     my $str = "Node note added to ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
     $str .= ": " . $args->{note} if $args->{note};
 
     return $str;
@@ -332,7 +334,7 @@ sub newbiewriteup
     my $str = "New user ";
     $str .= $args->{author} . " " if $args->{author};
     $str .= "published their first writeup: ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -348,7 +350,7 @@ sub newdiscussion
     my ($DB, $APP, $args) = @_;
 
     my $str = "New discussion post: ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -364,7 +366,7 @@ sub e2poll
     my ($DB, $APP, $args) = @_;
 
     my $str = "New poll: ";
-    $str .= $APP->linkNode($args->{node_id}) if $args->{node_id};
+    $str .= $APP->bracketLink( $args->{node_id}) if $args->{node_id};
 
     return $str;
 }
@@ -380,7 +382,7 @@ sub weblog
     my ($DB, $APP, $args) = @_;
 
     my $str = "New weblog entry: ";
-    $str .= $APP->linkNode($args->{writeup_id}) if $args->{writeup_id};
+    $str .= $APP->bracketLink( $args->{writeup_id}) if $args->{writeup_id};
 
     return $str;
 }
@@ -397,7 +399,7 @@ sub socialbookmark
 
     my $str = "Your content was shared";
     $str .= " on " . $args->{bookmark_site} if $args->{bookmark_site};
-    $str .= ": " . $APP->linkNode($args->{writeup_id}) if $args->{writeup_id};
+    $str .= ": " . $APP->bracketLink( $args->{writeup_id}) if $args->{writeup_id};
 
     return $str;
 }

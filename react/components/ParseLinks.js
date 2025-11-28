@@ -171,6 +171,7 @@ const ParseLinks = ({ text, children }) => {
           rel="nofollow"
           className="externalLink"
           target="_blank"
+          style={{ fontSize: 'inherit' }}
         >
           {link.display}
         </a>
