@@ -8,6 +8,15 @@ require 'stringio'
 require 'brotli'
 require 'zlib'
 
+# Zstd support is optional - only load if gem is available
+begin
+  require 'zstd-ruby'
+  ZSTD_AVAILABLE = true
+rescue LoadError
+  ZSTD_AVAILABLE = false
+  puts "Warning: zstd-ruby gem not available, skipping zstd compression"
+end
+
 def mem_gzip(data)
   gz = Zlib::GzipWriter.new(StringIO.new)
   gz << data
@@ -78,6 +87,12 @@ assets = {'js' => {}, 'css' => {}, 'react' => {}}
     assets[asset_type][basefile]['gzip'] = mem_gzip(assets[asset_type][basefile]['min'])
     assets[asset_type][basefile]['br'] = Brotli.deflate(assets[asset_type][basefile]['min'])
     assets[asset_type][basefile]['deflate'] = Zlib::Deflate.deflate(assets[asset_type][basefile]['min'])
+
+    # Add zstd compression if available
+    if ZSTD_AVAILABLE
+      assets[asset_type][basefile]['zstd'] = Zstd.compress(assets[asset_type][basefile]['min'], level: 19)
+    end
+
     puts "Minified #{basefile}"
   end
 end
@@ -105,7 +120,10 @@ assets.keys.each do |asset_type|
       content_type = "image/x-icon" 
     end
 
-    ['min','gzip','br','deflate'].each do |upload_type|
+    upload_types = ['min','gzip','br','deflate']
+    upload_types.push('zstd') if ZSTD_AVAILABLE
+
+    upload_types.each do |upload_type|
       content_encoding = {}
       encodingpath = ""
       if(upload_type.eql? 'gzip')
@@ -121,6 +139,11 @@ assets.keys.each do |asset_type|
       if(upload_type.eql? 'deflate')
         content_encoding = {content_encoding: 'deflate'}
         encodingpath = "deflate/"
+      end
+
+      if(upload_type.eql? 'zstd')
+        content_encoding = {content_encoding: 'zstd'}
+        encodingpath = "zstd/"
       end
 
       if testonly.nil?

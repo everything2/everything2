@@ -186,6 +186,7 @@ const Chatterbox = (props) => {
   const { isActive, isMultiTabActive } = useActivityDetection(10)
   const miniMessagesPollInterval = React.useRef(null)
   const miniMessagesMissedUpdate = React.useRef(false)
+  const chatterContainerRef = React.useRef(null)
 
   // Poll at 45s when active, 2m when idle, stop when page not in focus
   // Skip polling when nodelet is collapsed or public chatter is off
@@ -197,6 +198,13 @@ const Chatterbox = (props) => {
     props.currentRoom,   // currentRoom (for change detection)
     props.initialMessages // initialChatter (from backend)
   )
+
+  // Auto-scroll to bottom when new chatter messages arrive
+  React.useEffect(() => {
+    if (chatterContainerRef.current && chatter.length > 0) {
+      chatterContainerRef.current.scrollTop = chatterContainerRef.current.scrollHeight
+    }
+  }, [chatter])
 
   // Polling-based chatter display with fallback to legacy AJAX
   // The Messages component handles private messages when shown separately
@@ -728,10 +736,15 @@ const Chatterbox = (props) => {
             )}
 
             {chatter.length > 0 && (
-              <div style={{
-                fontSize: '11px',
-                lineHeight: '1.4'
-              }}>
+              <div
+                ref={chatterContainerRef}
+                style={{
+                  fontSize: '11px',
+                  lineHeight: '1.4',
+                  maxHeight: '400px',
+                  overflowY: 'auto'
+                }}
+              >
                 {[...chatter].reverse().map((msg) => (
                   <div key={msg.message_id} style={{ padding: '4px 8px', borderBottom: '1px solid #f0f0f0' }}>
                     {parseMessageText(msg)}
@@ -793,6 +806,7 @@ const Chatterbox = (props) => {
                   onChange={(e) => setMessage(e.target.value)}
                   disabled={sending}
                   maxLength={512}
+                  autoComplete="off"
                   style={{
                     flex: 1,
                     padding: '4px 8px',
