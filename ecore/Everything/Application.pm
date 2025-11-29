@@ -31,6 +31,7 @@ use XML::Generator;
 use Compress::Zlib;
 use IO::Compress::Brotli;
 use IO::Compress::Deflate;
+use IO::Compress::Zstd;
 use Encode;
 
 # For updateNewWriteups
@@ -5534,7 +5535,7 @@ sub best_compression_type
 {
   my ($this) = @_;
 
-  foreach my $encoding ("br","deflate","gzip")
+  foreach my $encoding ("zstd","br","deflate","gzip")
   {
     if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /$encoding/)
     {
@@ -5555,7 +5556,12 @@ sub optimally_compress_page
 
   if(defined($best_compression))
   {
-    if($best_compression eq "br")
+    if($best_compression eq "zstd")
+    {
+      my $outpage = undef;
+      IO::Compress::Zstd::zstd(\$page => \$outpage);
+      $page = $outpage;
+    }elsif($best_compression eq "br")
     {
       $page = IO::Compress::Brotli::bro($page);
     }elsif($best_compression eq "deflate") {
