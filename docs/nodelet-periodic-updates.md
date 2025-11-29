@@ -49,7 +49,7 @@ e2.ajax.addList('chatterbox_chatter', {
 | `chatterbox_messages` | `showmessages` | 23s | Private messages in chatterbox |
 | `messages_messages` | `testshowmessages` | 23s | Alternative private messages display |
 | `chatterbox_chatter` | `showchatter` | 11s | Public chat (if autoChat enabled) |
-| `notifications_list` | `notificationsJSON` | 45s | User notifications |
+| ~~`notifications_list`~~ | ~~`notificationsJSON`~~ | ~~45s~~ | **REMOVED** - Now React Notifications nodelet |
 
 #### 2. Nodelet Replacement Updates (via `e2.ajax.periodicalUpdater`)
 
@@ -114,12 +114,7 @@ if (myCookie && myCookie != windowId) {
 
 **Active Polling (to be migrated):**
 ```javascript
-// Line 1287: Notifications (45s)
-e2.ajax.addList('notifications_list', {
-  getJSON: "notificationsJSON",
-  period: 45,
-  // ...
-})
+// Notifications - MIGRATED to React Notifications nodelet ✅
 
 // Line 1296: Chatterbox private messages (23s)
 e2.ajax.addList('chatterbox_messages', {

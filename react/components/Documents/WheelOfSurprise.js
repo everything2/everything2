@@ -11,10 +11,13 @@ const WheelOfSurprise = ({ data, user }) => {
   const [result, setResult] = useState(data.result || null)
   const [spinning, setSpinning] = useState(false)
   const [error, setError] = useState(null)
+  const [fadeOut, setFadeOut] = useState(false)
+  const [currentGP, setCurrentGP] = useState(data.userGP)
 
   const handleSpin = async () => {
     setSpinning(true)
     setError(null)
+    setFadeOut(false)
 
     try {
       const response = await fetch('/api/wheel/spin', {
@@ -34,11 +37,15 @@ const WheelOfSurprise = ({ data, user }) => {
       const resultData = await response.json()
       setResult(resultData.message)
 
-      // Reload page to update GP/stats in sidebar
-      // TODO: Eventually move to state management to avoid full reload
+      // Update GP from API response
+      if (resultData.user && resultData.user.GP !== undefined) {
+        setCurrentGP(resultData.user.GP)
+      }
+
+      // Start fade-out after 2.5 seconds
       setTimeout(() => {
-        window.location.reload()
-      }, 3000)
+        setFadeOut(true)
+      }, 2500)
     } catch (err) {
       console.error('Failed to spin wheel:', err)
       setError(err.message)
@@ -73,12 +80,12 @@ const WheelOfSurprise = ({ data, user }) => {
   }
 
   // Insufficient GP
-  if (!isHalloween && data.userGP < spinCost) {
+  if (!isHalloween && currentGP < spinCost) {
     return (
       <div className="wheel-of-surprise">
         <p>
           Sorry, you don't have enough GP to spin the wheel. You need {spinCost} GP, but you only have{' '}
-          {data.userGP} GP.
+          {currentGP} GP.
         </p>
       </div>
     )
@@ -109,12 +116,6 @@ const WheelOfSurprise = ({ data, user }) => {
         </small>
       </p>
 
-      {result && (
-        <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f0f8ff', border: '1px solid #4a90e2', borderRadius: '5px' }}>
-          <ParseLinks text={result} />
-        </div>
-      )}
-
       {error && (
         <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff3cd', border: '1px solid #ffc107', borderRadius: '5px', color: '#856404' }}>
           Error: {error}
@@ -141,8 +142,22 @@ const WheelOfSurprise = ({ data, user }) => {
       </form>
 
       <p style={{ marginTop: '15px', fontSize: '12px', color: '#666' }}>
-        Current GP: {data.userGP} | Cost per spin: {spinCost} GP
+        Current GP: {currentGP} | Cost per spin: {spinCost} GP
       </p>
+
+      {result && (
+        <div style={{
+          marginTop: '20px',
+          padding: '15px',
+          backgroundColor: '#f0f8ff',
+          border: '1px solid #4a90e2',
+          borderRadius: '5px',
+          opacity: fadeOut ? 0 : 1,
+          transition: 'opacity 0.5s ease-out'
+        }}>
+          <ParseLinks text={result} />
+        </div>
+      )}
     </div>
   )
 }

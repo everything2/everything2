@@ -1,17 +1,36 @@
 # Legacy.js to React Migration Plan
 
 **Created:** 2025-11-24
-**Status:** In Progress
-**Priority:** High (Core modernization effort)
-**File Size:** 3,724 lines of jQuery-based JavaScript
+**Last Updated:** 2025-11-28
+**Status:** ✅ AJAX POLLING ELIMINATED - Core Migration Complete
+**Priority:** Medium (Remaining features are non-critical utilities)
+**File Size:** 3,728 lines of jQuery-based JavaScript
 
 ## Executive Summary
 
 [legacy.js](../www/js/legacy.js) is the primary JavaScript file for Everything2, containing ~3,700 lines of jQuery-based code that handles AJAX updates, form interactions, and UI enhancements. As part of the React migration, we're systematically moving functionality from legacy.js into React components with modern patterns (hooks, polling, state management).
 
+## 🎉 Major Milestone Achieved (2025-11-28)
+
+**ALL legacy AJAX polling has been eliminated!** The core periodic update system that powered Everything2's real-time features for years has been fully migrated to React.
+
+**What This Means:**
+- ✅ **Zero active AJAX polls** - No more `e2.ajax.addList()` calls
+- ✅ **Zero periodical updaters** - No more `periodicalUpdater` instances
+- ✅ **All nodelets use React** - Modern polling hooks with better performance
+- ✅ **Cleaner code** - React hooks are simpler and more maintainable
+- ✅ **Better UX** - Faster polling intervals, activity detection, multi-tab coordination
+
+**Remaining Work:** legacy.js still contains ~3,550 lines of:
+- Form utilities and enhancements
+- Widget system (popups, expandable inputs)
+- jQuery extensions and helpers
+- Page-specific DOM manipulation
+- **None of this is critical path** - Can be migrated incrementally as needed
+
 **Key Insight:** We're using different idle detection methods to track migration progress:
-- **Legacy AJAX:** Uses `ajaxIdle=1` query parameter
-- **React Hooks:** Uses `X-Ajax-Idle: 1` header
+- **Legacy AJAX:** Uses `ajaxIdle=1` query parameter (NO LONGER ACTIVE)
+- **React Hooks:** Uses `X-Ajax-Idle: 1` header (ALL ACTIVE POLLING)
 - This makes it easy to identify which system is making requests
 
 ## What's in Legacy.js

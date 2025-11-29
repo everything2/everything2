@@ -158,7 +158,9 @@ class SmokeTest
       'User XML Generator',
       'Wharfinger\'s Linebreaker',
       'Write User',
-      'Profile Settings'
+      'Profile Settings',
+      'Recent Node Notes',
+      'Your Nodeshells'
     ]
 
     docs_path = File.expand_path('../docs/special-documents.md', __dir__)

@@ -85,7 +85,7 @@ sub layout
   }
 
 
-  my $e2 = $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS, $REQUEST->cgi);
+  my $e2 = $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS, $REQUEST->cgi, $REQUEST);
   $e2->{lastnode_id} = $params->{lastnode_id};
   $e2->{nodeletorder} = \@nodeletorder;
 
@@ -100,17 +100,10 @@ sub layout
 
   $e2->{collapsedNodelets} =~ s/\bsignin\b//;
 
-  # Debug - check condition parts
-  my $is_dev = $e2->{user}->{developer};
-  my $has_nodelet = $REQUEST->user->VARS->{nodelets} || '';
-  $self->APP->devLog("DEBUG: developer=$is_dev, nodelets='$has_nodelet'");
-
   if($e2->{user}->{developer} and $REQUEST->user->VARS->{nodelets} =~ /836984/)
   {
-    $self->APP->devLog("DEBUG: Inside developerNodelet block");
     my $edev = $self->APP->node_by_name("edev","usergroup");
     my $page = Everything::HTML::getPage($node->NODEDATA, $REQUEST->param("displaytype"));
-    $self->APP->devLog("DEBUG: After getPage, page=" . (defined $page ? "defined" : "undef"));
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
     my $sourceMap = $self->APP->buildSourceMap($node->NODEDATA, $page);
     $e2->{developerNodelet} = {

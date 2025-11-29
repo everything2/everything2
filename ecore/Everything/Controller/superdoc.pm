@@ -25,7 +25,8 @@ sub display
         $node->NODEDATA,
         $REQUEST->user->NODEDATA,
         $REQUEST->user->VARS,
-        $REQUEST->cgi
+        $REQUEST->cgi,
+        $REQUEST  # Pass full REQUEST object for buildReactData
       );
 
       # Add e2 data to controller output for template

@@ -56,13 +56,40 @@ const COMPONENT_MAP = {
   is_it_halloween_yet: lazy(() => import('./Documents/IsItHoliday')),
   is_it_new_year_s_day_yet: lazy(() => import('./Documents/IsItHoliday')),
   is_it_new_year_s_eve_yet: lazy(() => import('./Documents/IsItHoliday')),
-  is_it_april_fools_day_yet: lazy(() => import('./Documents/IsItHoliday'))
+  is_it_april_fools_day_yet: lazy(() => import('./Documents/IsItHoliday')),
+
+  // User-specific pages
+  a_year_ago_today: lazy(() => import('./Documents/AYearAgoToday')),
+  node_tracker: lazy(() => import('./Documents/NodeTracker')),
+  node_tracker2: lazy(() => import('./Documents/NodeTracker')),
+  your_ignore_list: lazy(() => import('./Documents/YourIgnoreList')),
+  your_insured_writeups: lazy(() => import('./Documents/YourInsuredWriteups')),
+  your_nodeshells: lazy(() => import('./Documents/YourNodeshells')),
+  recent_node_notes: lazy(() => import('./Documents/RecentNodeNotes')),
+
+  // Help & information pages
+  ipfrom: lazy(() => import('./Documents/Ipfrom')),
+  everything2_elsewhere: lazy(() => import('./Documents/Everything2Elsewhere')),
+  online_only_msg: lazy(() => import('./Documents/OnlineOnlyMsg')),
+  chatterbox_help_topics: lazy(() => import('./Documents/ChatterboxHelpTopics')),
+
+  // Fullscreen chat interface (all variants use same component)
+  chatterlight: lazy(() => import('./Documents/Chatterlight')),
+  chatterlight_classic: lazy(() => import('./Documents/Chatterlight')),
+  chatterlighter: lazy(() => import('./Documents/Chatterlight')),
+
+  // Fun & games
+  everything_quote_server: lazy(() => import('./Documents/EverythingQuoteServer')),
+  e2_rot13_encoder: lazy(() => import('./Documents/E2Rot13Encoder')),
+
+  // Authentication
+  login: lazy(() => import('./Documents/Login'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))
 }
 
-const DocumentComponent = ({ data, user }) => {
+const DocumentComponent = ({ data, user, e2 }) => {
   const { type } = data
 
   // Suspense fallback - shown while component is loading
@@ -78,7 +105,7 @@ const DocumentComponent = ({ data, user }) => {
   // Render component if found, otherwise show error
   const renderDocument = () => {
     if (Component) {
-      return <Component data={data} user={user} />
+      return <Component data={data} user={user} e2={e2} />
     }
 
     return (

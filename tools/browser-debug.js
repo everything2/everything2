@@ -228,6 +228,9 @@ async function createAuthenticatedSession(username) {
   await page.setViewport({ width: 1280, height: 1024 });
 
   console.log(`Logging in as ${username} (${userInfo.role})...`);
+
+  // ALWAYS log in against the root page to ensure Sign In nodelet is present
+  // This handles fullpage layouts (chatterlight) that don't have the standard sidebar
   await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
   // Wait for Sign In nodelet to load, then expand if collapsed
@@ -262,8 +265,11 @@ async function createAuthenticatedSession(username) {
   // E2 login returns HTML with JS redirect, not HTTP 302
   await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 });
 
-  // Wait for React to render epicenter (always present for logged-in users)
-  await page.waitForSelector('#epicenter', { timeout: 5000 });
+  // Wait for authentication to complete by checking for user in window.e2
+  // Don't wait for #epicenter - it doesn't exist in fullpage layouts
+  await page.waitForFunction(() => {
+    return window.e2 && window.e2.user && !window.e2.user.guest;
+  }, { timeout: 5000 });
 
   return { browser, page, userInfo };
 }

@@ -1219,14 +1219,23 @@ sub metaDescription
   if($writeuptext)
   {
     study($writeuptext);
-    $writeuptext =~ s/\[//g;
-    $writeuptext =~ s/\]//g;  
+    # Process E2 soft links: [target|display text] -> display text
+    $writeuptext =~ s/\[[^\[\]\|]+\|([^\[\]]+)\]/$1/g;
+    # Remove remaining simple links: [link] -> link
+    $writeuptext =~ s/\[([^\[\]]+)\]/$1/g;
+    # Strip HTML tags
     $writeuptext =~ s/\<.*?\>//g;
+    # Collapse whitespace
     $writeuptext =~ s/\s+/ /g;
     $writeuptext = $this->encodeHTML($writeuptext);
 
-    $writeuptext = substr($writeuptext,0,155);
-    $writeuptext =~ s/.{3}$/.../;
+    # Truncate to 155 characters at word boundary
+    if (length($writeuptext) > 155) {
+      $writeuptext = substr($writeuptext, 0, 155);
+      # Truncate at last space to avoid cutting mid-word
+      $writeuptext =~ s/\s+\S*$//;
+      $writeuptext .= '...';
+    }
   }else{
     $writeuptext = "Everything2 is a community for fiction, nonfiction, poetry, reviews, and more. Get writing help or enjoy nearly a half million pieces of original writing.";
   } 
@@ -1809,8 +1818,20 @@ sub getVarHashFromStringFast
 {
 	my $this = shift;
 	my $varString = shift;
-	my %vars = (split(/[=&]/, $varString));
+
+	# Return empty hash if varString is undefined or empty
+	return () unless defined($varString) && length($varString) > 0;
+
+	my @parts = split(/[=&]/, $varString);
+
+	# If odd number of elements (malformed string), discard the last orphan element
+	# This handles cases like "key1=value1&key2" by keeping key1=value1 and discarding key2
+	pop @parts if (@parts % 2 != 0);
+
+	my %vars = @parts;
 	foreach (keys %vars) {
+		# Set undefined values to empty string (handles "&var=&var2=1" -> var='', var2='1')
+		$vars{$_} = '' unless defined($vars{$_});
 		$vars{$_} =~ tr/+/ /;
 		$vars{$_} =~ s/\%(..)/chr(hex($1))/ge;
 		if ($vars{$_} eq ' ') { $vars{$_} = ""; }
@@ -3791,6 +3812,39 @@ sub get_messages
   return $records;
 }
 
+sub get_sent_messages
+{
+  my ($this, $user, $limit, $offset, $archive) = @_;
+
+  $this->{db}->getRef($user);
+  return unless defined($user) and defined($user->{node_id});
+
+  $limit = int($limit);
+  $limit ||= 15;
+  $limit = 15 if ($limit < 0);
+  $limit = 100 if ($limit > 100);
+
+  $offset = int($offset // 0);
+  $offset ||= 0;
+
+  $archive = int($archive // 0);
+
+  # Query message_outbox table (legacy behavior)
+  # Outbox messages are stored separately from inbox messages
+  my $where = "author_user=$user->{node_id} AND archive=$archive";
+  my $csr = $this->{db}->sqlSelectMany("*","message_outbox", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
+  my $records = [];
+  while (my $row = $csr->fetchrow_hashref)
+  {
+    # message_outbox doesn't have for_user or for_usergroup fields
+    # Add them as 0 for compatibility with message_json_structure
+    $row->{for_user} = 0;
+    $row->{for_usergroup} = 0;
+    push @$records, $this->message_json_structure($row);
+  }
+  return $records;
+}
+
 sub get_message
 {
   my ($this, $message_id) = @_;
@@ -3984,6 +4038,9 @@ sub processMessageCommand
   elsif ($message =~ /^\/borg\s+(\S+)/i) {
     $result = $this->handleBorgCommand($user, $message, $vars);
   }
+  elsif ($message =~ /^\/help\s*(.*)$/i) {
+    $result = $this->handleHelpCommand($user, $1, $vars);
+  }
   elsif ($message =~ /^\/(whisper|sing|death|sings|me\'s)\s+/i) {
     # Commands that display in showchatter with special formatting
     $result = $this->sendPublicChatter($user, $message, $vars);
@@ -4079,6 +4136,65 @@ sub handlePrivateMessageCommand
   );
 
   return $result->{success};
+}
+
+sub handleHelpCommand
+{
+  my ($this, $user, $topic, $vars) = @_;
+
+  # Load help topics setting node
+  my $help_topics_node = $this->{db}->getNode('help topics', 'setting');
+  unless ($help_topics_node) {
+    return { success => 0, error => 'Help system unavailable' };
+  }
+
+  my $help_vars = $this->getVars($help_topics_node);
+  unless ($help_vars) {
+    return { success => 0, error => 'Help system unavailable' };
+  }
+
+  # Clean up topic (trim whitespace, convert spaces to underscores, lowercase)
+  $topic =~ s/^\s+|\s+$//g;
+  $topic =~ s/\s+/_/g;
+  $topic = lc($topic);
+
+  # If no topic specified, show general help
+  $topic = 'help' unless $topic;
+
+  # Look up topic
+  my $help_text = $help_vars->{$topic};
+  unless ($help_text) {
+    return { success => 0, error => "Unknown help topic: $topic. Try /help for a list of topics." };
+  }
+
+  # Handle alias redirects (topics that start with "/help other_topic")
+  if ($help_text =~ /^\/help\s+(.+)$/i) {
+    # This is an alias, recursively look up the real topic
+    my $redirect_topic = $1;
+    return $this->handleHelpCommand($user, $redirect_topic, $vars);
+  }
+
+  # Decode HTML entities in help text
+  # Help topics are stored with HTML entities like &lt; &gt; &amp;
+  # We need to decode them so they display correctly in React
+  use HTML::Entities;
+  $help_text = decode_entities($help_text);
+
+  # Send help message from Virgil
+  my $virgil = $this->{db}->getNode('Virgil', 'user');
+  unless ($virgil) {
+    return { success => 0, error => 'Help system unavailable (Virgil not found)' };
+  }
+
+  # Send as private message from Virgil to the user
+  my $result = $this->sendPrivateMessage($virgil, $user, $help_text);
+
+  if ($result->{success}) {
+    # Return success with flag to trigger immediate message poll
+    return { success => 1, poll_messages => 1 };
+  } else {
+    return { success => 0, error => "Could not send help message: $result->{error}" };
+  }
 }
 
 sub handleFireballCommand
@@ -4510,12 +4626,20 @@ sub sendPrivateMessage
       $msgtext = "re [$options->{about_node}]: $msgtext";
     }
 
-    # Insert message
+    # Insert inbox message (for recipient)
     $this->{db}->sqlInsert('message', {
       msgtext => $msgtext,
       author_user => $author->{user_id},
       for_user => $recipient_node->{user_id},
       for_usergroup => $options->{for_usergroup} || 0,
+      archive => 0
+    });
+
+    # Insert outbox message (for sender) into message_outbox table
+    # This matches the legacy behavior from Everything::Delegation::htmlcode
+    $this->{db}->sqlInsert('message_outbox', {
+      msgtext => $msgtext,
+      author_user => $author->{user_id},
       archive => 0
     });
 
@@ -4613,6 +4737,16 @@ sub sendUsergroupMessage
       author_user => $author->{user_id},
       for_user => $usergroup->{node_id},
       for_usergroup => $usergroup->{node_id},
+      archive => 0
+    });
+  }
+
+  # Insert outbox message (one entry for all recipients)
+  # This matches the legacy behavior from Everything::Delegation::htmlcode
+  if (@sent_to) {
+    $this->{db}->sqlInsert('message_outbox', {
+      msgtext => $msgtext,
+      author_user => $author->{user_id},
       archive => 0
     });
   }
@@ -5379,7 +5513,10 @@ sub get_user_nodeshells
 
   my $nodeshells = [];
   while(my $row = $csr->fetchrow_hashref) {
-    push @$nodeshells, $this->node_by_id($row->{node_id});
+    push @$nodeshells, {
+      node_id => $row->{node_id},
+      title => $row->{title}
+    };
   }
 
   return $nodeshells;
@@ -5926,7 +6063,7 @@ sub buildOtherUsersData
 
 sub buildNodeInfoStructure
 {
-  my ($this, $NODE, $USER, $VARS, $query) = @_;
+  my ($this, $NODE, $USER, $VARS, $query, $REQUEST) = @_;
 
   # Convert USER hashref to blessed object for use throughout this function
   my $user_node = $this->node_by_id($USER->{node_id});
@@ -6698,13 +6835,13 @@ sub buildNodeInfoStructure
   }
 
   # Phase 4a: React-rendered documents
-  # Check if this superdoc has a Page class that provides React data
-  if ($NODE->{type}->{title} eq 'superdoc' && $user_node) {
+  # Check if this superdoc/fullpage has a Page class that provides React data
+  if (($NODE->{type}->{title} eq 'superdoc' || $NODE->{type}->{title} eq 'fullpage') && $user_node) {
     my $page_name = $NODE->{title};
-    $page_name =~ s/['\s?]/_/g;  # Convert apostrophes, spaces, and question marks to underscores
-    $page_name =~ s/_+/_/g;     # Collapse multiple underscores to single
-    $page_name =~ s/_$//;        # Remove trailing underscore
-    $page_name = lc($page_name);  # Lowercase for consistency
+    $page_name = lc($page_name);  # Lowercase first
+    $page_name =~ s/[\s\/\:\?\']/_/g;  # Convert special chars to underscores (matches Controller.pm)
+    $page_name =~ s/_+/_/g;           # Collapse multiple underscores to single
+    $page_name =~ s/_$//g;            # Remove trailing underscore
 
     my $page_class = "Everything::Page::$page_name";
     my $page_file = "Everything/Page/$page_name.pm";
@@ -6721,13 +6858,14 @@ sub buildNodeInfoStructure
     if ($page_loaded && $page_class->can('new') && $page_class->can('buildReactData')) {
       my $page_instance = $page_class->new();
 
-      # Create minimal REQUEST object for buildReactData
-      # Only needs user attribute - buildReactData expects ($self, $REQUEST)
-      my $REQUEST = Everything::Request->new(user => $user_node);
+      # Use real REQUEST object if available (passed from Controller),
+      # otherwise create minimal REQUEST object for buildReactData
+      my $request_obj = $REQUEST || Everything::Request->new(user => $user_node);
 
-      my $page_data = $page_instance->buildReactData($REQUEST);
+      my $page_data = $page_instance->buildReactData($request_obj);
 
-      # Automatically enable React page mode when buildReactData exists
+      # Automatically enable React page mode for all pages with buildReactData()
+      # Both superdoc and fullpage types use PageLayout for content rendering
       $e2->{reactPageMode} = \1;
 
       # Wrap page data in contentData structure and add type automatically
@@ -6736,6 +6874,32 @@ sub buildNodeInfoStructure
         type => $page_name,
         %{$page_data || {}}  # Spread page data into contentData
       };
+
+      # Build nodelet data for pages with pagenodelets array (fullpage and superdoc)
+      # This handles pages like chatterlight (fullpage) and chatterlighter (superdoc)
+      if ($page_data->{pagenodelets}) {
+        my @pagenodelets = @{$page_data->{pagenodelets}};
+
+        # Check for Notifications nodelet (1930708)
+        if (grep { $_ == 1930708 } @pagenodelets) {
+          $e2->{notificationsData} = $this->buildNotificationsData($NODE, $USER, $VARS, $query);
+        }
+
+        # Check for Other Users nodelet (1969174)
+        if (grep { $_ == 1969174 } @pagenodelets) {
+          $e2->{otherUsersData} = $this->buildOtherUsersData($USER);
+        }
+
+        # Check for Messages nodelet (2044453)
+        if (grep { $_ == 2044453 } @pagenodelets) {
+          $e2->{messagesData} = $this->get_messages($USER, 10, 0);
+        }
+
+        # Check for New Writeups nodelet (263)
+        if (grep { $_ == 263 } @pagenodelets) {
+          $e2->{newWriteups} = $this->filtered_newwriteups($USER);
+        }
+      }
     }
   }
 
@@ -6760,8 +6924,6 @@ sub buildSourceMap
 
   my $nodetype = $NODE->{type}->{title};
   my $nodetitle = $NODE->{title};
-
-  $this->devLog("buildSourceMap DEBUG: nodetype='$nodetype', title='$nodetitle'");
 
   # Detect nodelets
   if ($nodetype eq 'nodelet') {

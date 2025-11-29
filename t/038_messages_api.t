@@ -612,4 +612,259 @@ subtest 'Archive/unarchive permissions enforced' => sub {
     pass('Test cleanup complete');
 };
 
+#############################################################################
+# Test 13: Outbox functionality - get sent messages
+#############################################################################
+
+subtest 'Outbox: Get sent messages' => sub {
+    plan tests => 11;
+
+    # Create an inbox message from user1 to user2
+    my $insert_ok = $DB->sqlInsert('message', {
+        author_user => $test_user1->{node_id},
+        for_user => $test_user2->{node_id},
+        msgtext => 'Test outbox message',
+        '-tstamp' => 'NOW()',
+        archive => 0
+    });
+    ok($insert_ok, 'Message insert successful');
+
+    my ($inbox_message_id) = $DB->sqlSelect('LAST_INSERT_ID()');
+
+    # Create corresponding outbox message in message_outbox table
+    $DB->sqlInsert('message_outbox', {
+        author_user => $test_user1->{node_id},
+        msgtext => 'Test outbox message',
+        '-tstamp' => 'NOW()',
+        archive => 0
+    });
+
+    my ($message_id) = $DB->sqlSelect('LAST_INSERT_ID()');
+    ok($message_id, 'Got outbox message ID');
+
+    # Create mock sender (user1)
+    my $mock_sender = MockUser->new(
+        node_id => $test_user1->{node_id},
+        title => $test_user1->{title},
+        is_guest_flag => 0,
+        NODEDATA => $test_user1,
+    );
+
+    # Test 1: Get inbox (should NOT include sent message)
+    my $mock_cgi_inbox = MockCGI->new(
+        _params => {
+            limit => 100,
+            offset => 0,
+            archive => 0,
+            outbox => 0,
+        },
+    );
+    my $mock_request_inbox = MockRequest->new(
+        user => $mock_sender,
+        _cgi => $mock_cgi_inbox,
+    );
+
+    my $result = $api->get_all($mock_request_inbox);
+    is($result->[0], 200, "Inbox GET returns HTTP 200");
+    is(ref($result->[1]), 'ARRAY', "Inbox returns array");
+
+    # Verify outbox message is NOT in inbox
+    my $found_in_inbox = 0;
+    for my $msg (@{$result->[1]}) {
+        $found_in_inbox = 1 if $msg->{message_id} == $inbox_message_id;
+    }
+    is($found_in_inbox, 0, "Sent message NOT in sender's inbox");
+
+    # Test 2: Get outbox (should include sent message)
+    my $mock_cgi_outbox = MockCGI->new(
+        _params => {
+            limit => 100,
+            offset => 0,
+            archive => 0,
+            outbox => 1,
+        },
+    );
+    my $mock_request_outbox = MockRequest->new(
+        user => $mock_sender,
+        _cgi => $mock_cgi_outbox,
+    );
+
+    $result = $api->get_all($mock_request_outbox);
+    is($result->[0], 200, "Outbox GET returns HTTP 200");
+    is(ref($result->[1]), 'ARRAY', "Outbox returns array");
+
+    # Verify sent message IS in outbox
+    my $found_in_outbox = 0;
+    my $outbox_msg;
+    for my $msg (@{$result->[1]}) {
+        if ($msg->{message_id} == $message_id) {
+            $found_in_outbox = 1;
+            $outbox_msg = $msg;
+            last;
+        }
+    }
+    is($found_in_outbox, 1, "Sent message IS in sender's outbox");
+    ok($outbox_msg, "Found message in outbox");
+    is($outbox_msg->{msgtext}, 'Test outbox message', "Outbox message has correct text");
+
+    # Cleanup
+    $DB->sqlDelete('message', "message_id=$inbox_message_id");
+    $DB->sqlDelete('message_outbox', "message_id=$message_id");
+    pass('Test cleanup complete');
+};
+
+#############################################################################
+# Test 14: Outbox pagination and limits
+#############################################################################
+
+subtest 'Outbox: Pagination and limits' => sub {
+    plan tests => 7;
+
+    # Create 3 test outbox messages in message_outbox table
+    my @message_ids;
+    for my $i (1..3) {
+        $DB->sqlInsert('message_outbox', {
+            author_user => $test_user1->{node_id},
+            msgtext => "Outbox test message $i",
+            '-tstamp' => 'NOW()',
+            archive => 0
+        });
+        my ($msg_id) = $DB->sqlSelect('LAST_INSERT_ID()');
+        push @message_ids, $msg_id;
+    }
+
+    ok(scalar(@message_ids) == 3, 'Created 3 test messages');
+
+    # Create mock sender
+    my $mock_sender = MockUser->new(
+        node_id => $test_user1->{node_id},
+        title => $test_user1->{title},
+        is_guest_flag => 0,
+        NODEDATA => $test_user1,
+    );
+
+    # Test limit parameter
+    my $mock_cgi = MockCGI->new(
+        _params => {
+            limit => 2,
+            offset => 0,
+            outbox => 1,
+        },
+    );
+    my $mock_request = MockRequest->new(
+        user => $mock_sender,
+        _cgi => $mock_cgi,
+    );
+
+    my $result = $api->get_all($mock_request);
+    is($result->[0], 200, "Outbox with limit returns HTTP 200");
+
+    # Count how many of our test messages appear in first page
+    my $count_on_page = 0;
+    for my $msg (@{$result->[1]}) {
+        $count_on_page++ if grep { $_ == $msg->{message_id} } @message_ids;
+    }
+    ok($count_on_page <= 2, "Limit of 2 is respected (got $count_on_page of our messages)");
+
+    # Test offset parameter
+    $mock_cgi->_params->{limit} = 1;
+    $mock_cgi->_params->{offset} = 1;
+
+    $result = $api->get_all($mock_request);
+    is($result->[0], 200, "Outbox with offset returns HTTP 200");
+    is(ref($result->[1]), 'ARRAY', "Outbox with offset returns array");
+
+    # Test default limit (should be 15)
+    $mock_cgi->_params->{limit} = undef;
+    $mock_cgi->_params->{offset} = 0;
+
+    $result = $api->get_all($mock_request);
+    my $count_total = scalar(@{$result->[1]});
+    ok($count_total <= 15, "Default limit of 15 respected (got $count_total messages)");
+
+    # Cleanup
+    for my $msg_id (@message_ids) {
+        $DB->sqlDelete('message_outbox', "message_id=$msg_id");
+    }
+    pass('Test cleanup complete');
+};
+
+#############################################################################
+# Test 15: Outbox archive functionality
+#############################################################################
+
+subtest 'Outbox: Archive parameter' => sub {
+    plan tests => 7;
+
+    # Create archived and non-archived outbox messages in message_outbox table
+    $DB->sqlInsert('message_outbox', {
+        author_user => $test_user1->{node_id},
+        msgtext => 'Outbox non-archived message',
+        '-tstamp' => 'NOW()',
+        archive => 0
+    });
+    my ($non_archived_id) = $DB->sqlSelect('LAST_INSERT_ID()');
+
+    $DB->sqlInsert('message_outbox', {
+        author_user => $test_user1->{node_id},
+        msgtext => 'Outbox archived message',
+        '-tstamp' => 'NOW()',
+        archive => 1
+    });
+    my ($archived_id) = $DB->sqlSelect('LAST_INSERT_ID()');
+
+    ok($non_archived_id && $archived_id, 'Created test messages');
+
+    # Create mock sender
+    my $mock_sender = MockUser->new(
+        node_id => $test_user1->{node_id},
+        title => $test_user1->{title},
+        is_guest_flag => 0,
+        NODEDATA => $test_user1,
+    );
+
+    # Test: Get non-archived outbox (archive=0)
+    my $mock_cgi = MockCGI->new(
+        _params => {
+            limit => 100,
+            archive => 0,
+            outbox => 1,
+        },
+    );
+    my $mock_request = MockRequest->new(
+        user => $mock_sender,
+        _cgi => $mock_cgi,
+    );
+
+    my $result = $api->get_all($mock_request);
+    is($result->[0], 200, "Non-archived outbox returns HTTP 200");
+
+    my $found_non_archived = 0;
+    my $found_archived = 0;
+    for my $msg (@{$result->[1]}) {
+        $found_non_archived = 1 if $msg->{message_id} == $non_archived_id;
+        $found_archived = 1 if $msg->{message_id} == $archived_id;
+    }
+    is($found_non_archived, 1, "Non-archived message IS in non-archived outbox");
+    is($found_archived, 0, "Archived message NOT in non-archived outbox");
+
+    # Test: Get archived outbox (archive=1)
+    $mock_cgi->_params->{archive} = 1;
+
+    $result = $api->get_all($mock_request);
+    is($result->[0], 200, "Archived outbox returns HTTP 200");
+
+    $found_non_archived = 0;
+    $found_archived = 0;
+    for my $msg (@{$result->[1]}) {
+        $found_non_archived = 1 if $msg->{message_id} == $non_archived_id;
+        $found_archived = 1 if $msg->{message_id} == $archived_id;
+    }
+    is($found_non_archived, 0, "Non-archived message NOT in archived outbox");
+    is($found_archived, 1, "Archived message IS in archived outbox");
+
+    # Cleanup
+    $DB->sqlDelete('message_outbox', "message_id IN ($non_archived_id, $archived_id)");
+};
+
 done_testing();

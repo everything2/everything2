@@ -5,7 +5,7 @@ extends 'Everything::Page';
 with 'Everything::Security::NoGuest';
 with 'Everything::Form::username';
 
-sub display
+sub buildReactData
 {
   my ($self, $REQUEST) = @_;
 
@@ -25,7 +25,19 @@ sub display
     $for_user = $REQUEST->user
   }
 
-  return { for_user => $for_user, error => $error };
+  # Get the ignore lists (pass 1 for JSON-safe references)
+  my $ignoring = $for_user->ignoring_messages_from(1);
+  my $ignored_by = $for_user->messages_ignored_by(1);
+
+  return {
+    for_user => {
+      node_id => $for_user->id,
+      title => $for_user->title
+    },
+    error => $error,
+    ignoring_messages_from => $ignoring,
+    messages_ignored_by => $ignored_by
+  };
 }
 
 __PACKAGE__->meta->make_immutable;

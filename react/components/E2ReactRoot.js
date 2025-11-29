@@ -202,7 +202,8 @@ class E2ReactRoot extends React.Component {
 
     managedNodelets.forEach((nodelet) => {
       let keyname = nodelet + "_show"
-      if(initialState['collapsedNodelets'].match(nodelet+'!'))
+      const collapsedNodelets = initialState['collapsedNodelets'] || ''
+      if(collapsedNodelets.match(nodelet+'!'))
       {
         initialState[keyname] = false
       }else{

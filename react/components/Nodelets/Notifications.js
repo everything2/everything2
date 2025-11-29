@@ -1,20 +1,101 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import NodeletContainer from '../NodeletContainer'
 import ParseLinks from '../ParseLinks'
+import { useActivityDetection } from '../../hooks/useActivityDetection'
 
 const Notifications = (props) => {
   const { notificationsData: initialData } = props
   const listRef = useRef(null)
+  const pollInterval = useRef(null)
+  const missedUpdate = useRef(false)
+  const { isActive, isMultiTabActive } = useActivityDetection(10)
 
   // Track current notifications (can be updated after dismiss)
   const [notificationsData, setNotificationsData] = useState(initialData)
+  const [loading, setLoading] = useState(false)
 
-  // Update local state when props change
+  // Update local state when props change (only if new data exists)
+  // DO NOT update if initialData is undefined/null (happens on periodic refresh)
   useEffect(() => {
-    if (initialData) {
+    if (initialData && initialData.notifications) {
       setNotificationsData(initialData)
     }
   }, [initialData])
+
+  // Load notifications from API
+  const loadNotifications = useCallback(async () => {
+    if (loading) return
+
+    setLoading(true)
+    try {
+      const response = await fetch('/api/notifications/', {
+        credentials: 'include',
+        headers: {
+          'X-Ajax-Idle': '1'
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setNotificationsData(data)
+      }
+    } catch (error) {
+      console.error('Error loading notifications:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [loading])
+
+  // Polling effect - refresh every 2 minutes when active and nodelet is expanded
+  useEffect(() => {
+    const shouldPoll = isActive && isMultiTabActive && !loading && props.nodeletIsOpen
+
+    if (shouldPoll) {
+      pollInterval.current = setInterval(() => {
+        loadNotifications()
+      }, 120000) // 2 minutes
+    } else {
+      // If we're not polling because nodelet is collapsed, mark that we missed updates
+      if (isActive && isMultiTabActive && !loading && !props.nodeletIsOpen) {
+        missedUpdate.current = true
+      }
+
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current)
+        pollInterval.current = null
+      }
+    }
+
+    return () => {
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current)
+        pollInterval.current = null
+      }
+    }
+  }, [isActive, isMultiTabActive, loading, props.nodeletIsOpen, loadNotifications])
+
+  // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
+  useEffect(() => {
+    if (props.nodeletIsOpen && missedUpdate.current) {
+      missedUpdate.current = false
+      loadNotifications()
+    }
+  }, [props.nodeletIsOpen, loadNotifications])
+
+  // Focus refresh: immediately refresh when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isActive) {
+        loadNotifications()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [isActive, loadNotifications])
 
   if (!notificationsData) {
     return (

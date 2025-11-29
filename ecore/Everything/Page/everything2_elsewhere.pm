@@ -3,9 +3,9 @@ package Everything::Page::everything2_elsewhere;
 use Moose;
 extends 'Everything::Page';
 
-sub display
+sub buildReactData
 {
-  my ($self) = @_;
+  my ($self, $REQUEST) = @_;
 
   my $maintainer = $self->APP->node_by_name('root','user');
 
@@ -13,7 +13,13 @@ sub display
   {
     $maintainer = $self->APP->node_by_name('Oolong','user');
   }
-  return {maintainer => $maintainer};
+
+  return {
+    maintainer => {
+      node_id => $maintainer->id,
+      title => $maintainer->title
+    }
+  };
 }
 
 __PACKAGE__->meta->make_immutable;

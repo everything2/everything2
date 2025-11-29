@@ -37,6 +37,15 @@ cmp_deeply($response = $eapi->unignore_messages_from_id(113),$unauthorized,"Gues
 foreach my $user("root","normaluser1")
 {
   ok($response = $eapi->login($user,"blah"),"Login as $user");
+
+  # Clean up any existing ignores from previous test runs
+  my $existing_ignores = $eapi->get_ignores();
+  if ($existing_ignores->{code} == 200 && ref($existing_ignores->{messageignore}) eq 'ARRAY') {
+    foreach my $ignored_user (@{$existing_ignores->{messageignore}}) {
+      $eapi->unignore_messages_from_id($ignored_user->{node_id});
+    }
+  }
+
   cmp_deeply($eapi->get_ignores(), $emptyignores,"Initial ignoring set is empty");
   cmp_deeply($eapi->ignore_messages_from("Cool Man Eddie"), $ignored_eddie, "Root: Ignore messages from CME");
   cmp_deeply($eapi->get_ignores(), $ignoring_only_eddie, "Root: Ignoring messages from CME"); 

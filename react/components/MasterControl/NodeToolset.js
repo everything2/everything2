@@ -105,7 +105,7 @@ const NodeToolset = ({
   }
 
   const isSuperdoc = nodeType === 'nodelet' || nodeType.includes('superdoc')
-  const isOnEditPage = currentDisplay === 'edit' || currentDisplay === 'viewcode' || currentDisplay === 'basicedit'
+  const isOnEditPage = currentDisplay === 'edit' || currentDisplay === 'basicedit'
   const showEdit = !isOnEditPage
   const showHelp = currentDisplay !== 'help'
   const showAdvancedEdit = isOnEditPage  // Show "Advanced Edit" link when already editing
@@ -181,7 +181,7 @@ const NodeToolset = ({
                   <span>{isSuperdoc ? 'Edit Code' : 'Edit Node'}</span>
                 </div>
               }
-              params={{ displaytype: isSuperdoc ? 'viewcode' : 'edit' }}
+              params={{ displaytype: 'edit' }}
               style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
             />
           </div>

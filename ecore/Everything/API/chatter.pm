@@ -66,7 +66,12 @@ sub create
     {
       # Success - return the recent chatter to update the client
       my $chatter = $self->APP->getRecentChatter({limit => 1});
-      return [$self->HTTP_OK, {success => 1, chatter => $chatter}];
+      my $response = {success => 1, chatter => $chatter};
+
+      # If command needs immediate message poll (e.g., /help), signal to client
+      $response->{poll_messages} = 1 if $result->{poll_messages};
+
+      return [$self->HTTP_OK, $response];
     }
     else
     {

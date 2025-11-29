@@ -32,8 +32,10 @@ find({wanted => $wanted, no_chdir => 1}, $dirname);
 my %serial_tests = (
     "$dirname/008_e2nodes.t" => 1,        # Uses normaluser1/normaluser2, creates/deletes nodes
     "$dirname/009_writeups.t" => 1,       # Uses normaluser1/normaluser2, creates/deletes writeups
-    "$dirname/036_message_opcode.t" => 1,
-    "$dirname/037_chatter_api.t" => 1,
+    "$dirname/042_message_opcode.t" => 1, # Modifies message table
+    "$dirname/041_online_only_messages.t" => 1, # Modifies message table, creates usergroups
+    "$dirname/043_chatter_api.t" => 1,    # Modifies message table (public chatter)
+    "$dirname/044_message_outbox.t" => 1, # Modifies message table (outbox entries)
 );
 
 # Separate serial and parallel tests

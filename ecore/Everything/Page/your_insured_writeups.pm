@@ -4,7 +4,7 @@ use Moose;
 extends 'Everything::Page';
 with 'Everything::Security::StaffOnly';
 
-sub display
+sub buildReactData
 {
   my ($self, $REQUEST) = @_;
 
@@ -14,10 +14,10 @@ sub display
   while(my $pubwu = $csr->fetchrow_hashref)
   {
     my $wu = $self->APP->node_by_id($pubwu->{publish_id});
-    push @$writeups, $wu if(defined($wu));
+    push @$writeups, $wu->json_reference if(defined($wu));
   }
 
-  return { writeups => $writeups }
+  return { writeups => $writeups };
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -1,0 +1,60 @@
+package Everything::Page::login;
+
+use Moose;
+extends 'Everything::Page';
+
+sub buildReactData
+{
+  my ($self, $REQUEST) = @_;
+
+  my $user = $REQUEST->user;
+  my $op = $REQUEST->param('op') || '';
+  my $lastnode_id = $REQUEST->param('lastnode_id') || 0;
+
+  # Determine login state and message
+  my $state = 'default';
+  my $message = '';
+
+  if ($op eq 'login' && !$user->is_guest) {
+    # Successful login
+    $state = 'success';
+    my $user_ref = $user->json_reference;
+    my $default_node = $self->APP->node_by_id($self->CONF->default_node);
+    my $lastnode_ref = undef;
+
+    if ($lastnode_id) {
+      my $lastnode = $self->APP->node_by_id($lastnode_id);
+      $lastnode_ref = $lastnode->json_reference if $lastnode;
+    }
+
+    return {
+      state => $state,
+      user => $user_ref,
+      defaultNode => $default_node->json_reference,
+      lastNode => $lastnode_ref
+    };
+  } elsif ($op eq 'login') {
+    # Failed login
+    $state = 'error';
+    $message = 'Incorrect username or password. Please try again.';
+  } elsif (!$user->is_guest) {
+    # Already logged in
+    $state = 'already_logged_in';
+    return {
+      state => $state,
+      user => $user->json_reference
+    };
+  }
+
+  # Default login form
+  return {
+    state => $state,
+    message => $message,
+    nodeId => $REQUEST->node->node_id,
+    lastNodeId => $lastnode_id,
+    siteName => $self->CONF->site_name
+  };
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
