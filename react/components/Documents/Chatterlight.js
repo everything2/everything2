@@ -58,10 +58,14 @@ const Chatterlight = ({ data, user, e2 }) => {
             margin: '0 auto',
             display: 'grid',
             gridTemplateColumns: hasNewWriteups ? '1fr 1fr 1fr' : (hasNotifications && hasMessages ? '1fr 1fr' : '1fr'),
-            gap: '12px'
+            gap: '12px',
+            alignItems: 'start'
           }}>
             {hasNotifications && (
-              <div>
+              <div style={{
+                maxHeight: '300px',
+                overflow: 'auto'
+              }}>
                 <Notifications
                   e2={e2}
                   user={user}
@@ -72,7 +76,10 @@ const Chatterlight = ({ data, user, e2 }) => {
               </div>
             )}
             {hasNewWriteups && (
-              <div>
+              <div style={{
+                maxHeight: '300px',
+                overflow: 'auto'
+              }}>
                 <NewWriteups
                   e2={e2}
                   user={user}
@@ -85,7 +92,10 @@ const Chatterlight = ({ data, user, e2 }) => {
               </div>
             )}
             {hasMessages && (
-              <div>
+              <div style={{
+                maxHeight: '300px',
+                overflow: 'auto'
+              }}>
                 <Messages
                   e2={e2}
                   user={user}

@@ -13,8 +13,25 @@ const WheelOfSurprise = ({ data, user }) => {
   const [error, setError] = useState(null)
   const [fadeOut, setFadeOut] = useState(false)
   const [currentGP, setCurrentGP] = useState(data.userGP)
+  const fadeTimerRef = React.useRef(null)
+  const clearTimerRef = React.useRef(null)
 
   const handleSpin = async () => {
+    // Clear any existing timers from previous spins
+    if (fadeTimerRef.current) {
+      clearTimeout(fadeTimerRef.current)
+      fadeTimerRef.current = null
+    }
+    if (clearTimerRef.current) {
+      clearTimeout(clearTimerRef.current)
+      clearTimerRef.current = null
+    }
+
+    // Clear previous result immediately on new spin
+    if (result) {
+      setResult(null)
+    }
+
     setSpinning(true)
     setError(null)
     setFadeOut(false)
@@ -43,8 +60,12 @@ const WheelOfSurprise = ({ data, user }) => {
       }
 
       // Start fade-out after 2.5 seconds
-      setTimeout(() => {
+      fadeTimerRef.current = setTimeout(() => {
         setFadeOut(true)
+        // Clear result completely after fade completes
+        clearTimerRef.current = setTimeout(() => {
+          setResult(null)
+        }, 500) // Match transition duration
       }, 2500)
     } catch (err) {
       console.error('Failed to spin wheel:', err)
