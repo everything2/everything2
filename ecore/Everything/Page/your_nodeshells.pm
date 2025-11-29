@@ -5,7 +5,7 @@ extends 'Everything::Page';
 with 'Everything::Security::NoGuest';
 with 'Everything::Form::username';
 
-sub display
+sub buildReactData
 {
   my ($self, $REQUEST) = @_;
 
@@ -21,8 +21,14 @@ sub display
     $for_user = $REQUEST->user;
   }
 
-
-  return { for_user => $for_user, error => $error, nodeshells => $self->APP->get_user_nodeshells($for_user)}
+  return {
+    for_user => {
+      node_id => $for_user->id,
+      title => $for_user->title
+    },
+    error => $error,
+    nodeshells => $self->APP->get_user_nodeshells($for_user)
+  };
 }
 
 __PACKAGE__->meta->make_immutable;

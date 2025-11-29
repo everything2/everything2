@@ -5,9 +5,9 @@ use Everything::Timestamp;
 extends 'Everything::Page';
 with 'Everything::Security::StaffOnly';
 
-sub display
+sub buildReactData
 {
-  my ($self, $REQUEST) = @_;
+  my ($self, $REQUEST, $node) = @_;
 
   my $onlymynotes = (defined($REQUEST->param('onlymynotes')) and scalar($REQUEST->param('onlymynotes')))?(1):(0);
   my $hidesystemnotes = (defined($REQUEST->param('hidesystemnotes')) and scalar($REQUEST->param('hidesystemnotes')))?(1):(0);
@@ -34,12 +34,27 @@ sub display
 
   while(my $row = $csr->fetchrow_hashref)
   {
-    my $node = $self->APP->node_by_id($row->{nodenote_nodeid});
-    next unless defined($node);
-    push @$notes, {node => $node, timestamp => Everything::Timestamp->new(timestamp => $row->{timestamp}), note => $row->{notetext}};
+    my $notenode = $self->APP->node_by_id($row->{nodenote_nodeid});
+    next unless defined($notenode);
+    push @$notes, {
+      node => {
+        node_id => $notenode->id,
+        title => $notenode->title
+      },
+      timestamp => $row->{timestamp},
+      note => $row->{notetext}
+    };
   }
 
-  return { onlymynotes => $onlymynotes, hidesystemnotes => $hidesystemnotes , total => $totalnotes, page => $page, perpage => $limit, notes => $notes};
+  return {
+    onlymynotes => $onlymynotes,
+    hidesystemnotes => $hidesystemnotes,
+    total => $totalnotes,
+    page => $page,
+    perpage => $limit,
+    notes => $notes,
+    node => $node
+  };
 }
 
 __PACKAGE__->meta->make_immutable;

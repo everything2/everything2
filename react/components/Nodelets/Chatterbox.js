@@ -478,11 +478,17 @@ const Chatterbox = (props) => {
         setMessage('')
         setMessageError(null)
 
-        // Show success message for /msg commands (private messages)
+        // If command needs immediate message poll (e.g., /help), trigger it
+        if (data.poll_messages) {
+          loadMiniMessages()
+        }
+
+        // Show success message for /msg and /help commands
         // since there's no visible feedback in the chatter feed
         const isPrivateMessage = /^\/(msg|message|whisper|small)\s/.test(message.trim())
-        if (isPrivateMessage) {
-          setMessageSuccess('Message sent')
+        const isHelpCommand = /^\/help\s/.test(message.trim())
+        if (isPrivateMessage || isHelpCommand) {
+          setMessageSuccess(isHelpCommand ? 'Help sent to your messages' : 'Message sent')
           setMessageFading(false)
           setMessageEntering(true)
           // Fade in quickly
@@ -555,6 +561,7 @@ const Chatterbox = (props) => {
   const getAvailableCommands = () => {
     const commands = [
       { cmd: '/msg or /tell <user> <text>', desc: 'Send a private message (replace spaces with underscores in usernames)' },
+      { cmd: '/msg? <user> <text>', desc: 'Send online-only message (only sent to online members, unless they have "get online-only messages while offline" enabled in Settings)' },
       { cmd: '/me <action>', desc: 'Perform an action (e.g., "/me waves")' },
       { cmd: '/roll <dice>', desc: 'Roll dice (e.g., "/roll 2d6")' },
       { cmd: '/flip', desc: 'Flip a coin (same as /roll 1d2)' },

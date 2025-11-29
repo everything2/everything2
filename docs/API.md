@@ -89,8 +89,9 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Personal Links | 4 | 4 | ✅ 100% | t/033_personallinks_api.t (18 tests) |
 | Polls | 2 | 2 | ✅ 100% | t/034_poll_api.t (62 tests) |
 | Chatroom | 3 | 3 | ✅ 100% | t/035_chatroom_api.t (TBD tests) |
+| Wheel | 1 | 1 | ✅ 100% | t/047_wheel_api.t (TBD tests) |
 
-**Overall API Test Coverage: ~45%** (30 of ~63 endpoints have dedicated tests)
+**Overall API Test Coverage: ~47%** (31 of ~64 endpoints have dedicated tests)
 
 **Infrastructure Tests:**
 - t/001_api_routing.t - General API routing (2 tests)
@@ -1372,6 +1373,118 @@ curl -X POST https://everything2.com/api/poll/delete_vote \
 - Can delete a single user's vote or all votes for a poll
 - Commonly used in test suites to ensure idempotent test runs
 - Useful for correcting accidental votes or cleaning up test data
+
+## Wheel of Surprise
+
+**Test Coverage: ✅ 100%** (1/1 endpoints tested - t/047_wheel_api.t)
+
+Current version: *1 (beta)*
+
+The Wheel of Surprise API enables users to spin a virtual wheel and receive random prizes. Users spend 5 GP per spin (free on Halloween) and can win GP, easter eggs, tokens, C!s, or nothing. All endpoints return updated user stats to enable real-time UI updates without page reloads.
+
+All wheel methods require logged-in users and return 403 Forbidden for Guest User.
+
+### POST /api/wheel/spin
+
+Spins the Wheel of Surprise and awards a random prize. Deducts spin cost (5 GP, or free on Halloween), increments spin counter, and returns the prize result along with updated user stats.
+
+**POST Data:**
+
+No request body required - this endpoint accepts an empty POST request.
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "100 GP! Sweet!",
+  "prizeType": "gp",
+  "user": {
+    "GP": 145,
+    "spinCount": 42
+  },
+  "vars": {
+    "cools": 3,
+    "tokens": 7,
+    "easter_eggs": 12
+  }
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **message** - Prize result message for display (may contain E2 link syntax like `[node|text]`)
+* **prizeType** - Type of prize awarded: "gp", "easter_egg", "token", "cool", "refund", or "nothing"
+* **user** - Updated user stats object:
+  * **GP** - User's current GP balance after the spin
+  * **spinCount** - Total number of times user has spun the wheel
+* **vars** - Updated user inventory:
+  * **cools** - Number of C!s user currently has
+  * **tokens** - Number of tokens user currently has
+  * **easter_eggs** - Number of easter eggs user currently has
+
+**Prize Distribution:**
+
+The wheel uses a random number generator (0-9999) to determine prizes:
+
+* **38.0%** - Nothing (values 0-3799)
+* **10.0%** - Easter eggs (values 3930-4000, 4000-4950)
+* **20.0%** - Refund/small GP gains (values 6750-9000)
+* **15.0%** - 10 GP (values 6500-6750)
+* **3.5%** - 25 GP (values 5500-6500)
+* **2.6%** - Various special prizes (values 3800-3930, 5240-5500)
+* **1.0%** - Tokens (values 5200-5240)
+* **0.5%** - C!s (values 4950-5000)
+* **Rare** - Jackpots (500 GP at value 5000, 158 GP at values 5000-5006, etc.)
+
+**Error Responses:**
+
+* **403 Forbidden** - User is not logged in, has GP opt-out, or has insufficient GP
+  ```json
+  { "success": 0, "error": "You must be logged in to spin the wheel." }
+  { "success": 0, "error": "Your vow of poverty does not allow you to gamble. You need to opt in to the GP System in order to spin the wheel." }
+  { "success": 0, "error": "You need at least 5 GP to spin the wheel. Come back when you have GP to burn." }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/wheel/spin \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Spin cost is 5 GP normally, 0 GP on Halloween (checked via `isSpecialDate('halloween')`)
+- User must have GP opt-out disabled (`GPoptout` VARS setting)
+- Prize messages are the same as the legacy delegation/document implementation
+- Easter eggs, tokens, and C!s are stored in user VARS (persistent inventory)
+- GP changes are saved to the user node immediately via `updateNode()`
+- Spin count is tracked in `spin_wheel` VARS
+- Achievement system is triggered after successful spin (if available)
+- Security logging records each spin to the Wheel of Surprise node
+- **Returns updated stats** so UI can refresh without page reload - client should update displayed GP, inventory counts, and spin counter from the response
+
+**Frontend Integration:**
+
+The response includes all data needed for the React component to update the UI:
+- Update GP display from `user.GP`
+- Update spin counter from `user.spinCount`
+- Update inventory displays from `vars.cools`, `vars.tokens`, `vars.easter_eggs`
+- Display prize message from `message` (use ParseLinks component for E2 link syntax)
+- No page reload needed - all state updates from API response
+
+**Prize Types:**
+
+* **gp** - User won GP (various amounts from 1 to 500)
+* **easter_egg** - User won one or more easter eggs
+* **token** - User won a token
+* **cool** - User won C!s (1 or 5)
+* **refund** - User got their GP back (no net change)
+* **nothing** - User won nothing (various humorous messages)
 
 ## Sessions
 

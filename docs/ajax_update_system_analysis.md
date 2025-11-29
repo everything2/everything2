@@ -1,10 +1,26 @@
 # Everything2 AJAX Update System Analysis
 
+**Status**: ✅ FULLY MIGRATED - All legacy polling eliminated
+**Last Updated**: 2025-11-28
+
 ## Executive Summary
 
-The ajaxUpdate system is a legacy AJAX framework that handles real-time updates for chatterbox messages, notifications, votes, and other dynamic content. This document analyzes the complete system architecture and documents the delegation improvements made, as well as recommendations for React migration.
+The ajaxUpdate system was a legacy AJAX framework that handled real-time updates for chatterbox messages, notifications, votes, and other dynamic content. **All functionality has been successfully migrated to React** as of November 2025.
 
-**Completed Improvement**: The ajax_update function previously used `eval()` on two opcode nodes ('message' and 'vote'). These have been **replaced with direct delegation calls** to `Everything::Delegation::opcode::message()` and `Everything::Delegation::opcode::vote()`, eliminating the security risks and performance overhead of eval().
+**Completed Improvements**:
+1. ✅ eval() calls replaced with direct delegation (message, vote opcodes)
+2. ✅ Notifications migrated to React Notifications nodelet
+3. ✅ Chatterbox messages migrated to React Chatterbox nodelet
+4. ✅ Chatterbox chatter migrated to React Chatterbox nodelet
+5. ✅ Messages migrated to React Messages nodelet
+6. ✅ Other Users polling migrated to React OtherUsers nodelet
+7. ✅ `notificationsJSON` htmlcode deleted
+8. ✅ `ajaxMarkNotificationSeen` htmlcode deleted
+9. ✅ `showmessages` htmlcode deleted
+10. ✅ `showchatter` htmlcode deleted
+11. ✅ `testshowmessages` htmlcode stubbed (deletion pending)
+
+**Remaining Legacy AJAX**: NONE - All polling systems migrated to React
 
 ---
 
@@ -12,7 +28,7 @@ The ajaxUpdate system is a legacy AJAX framework that handles real-time updates 
 
 ### 1. Client-Side Layer (legacy.js)
 
-**Location**: `/home/jaybonci/projects/everything2/www/js/legacy.js` (lines 891-1281)
+**Location**: `www/js/legacy.js` (lines 891-1281)
 
 The `e2.ajax` object provides the client-side AJAX interface:
 
@@ -48,24 +64,26 @@ Manages dynamic lists of content (chatterbox, notifications, etc.):
 - `e2.ajax.insertListItem()` - Adds items to lists with timestamp sorting
 - `e2.ajax.removeListItem()` - Removes list items with fade animation
 
-#### Active Lists in Use:
+#### Active Lists in Use (Current as of 2025-11-28):
 
-1. **notifications_list** (line 1287) - User notifications
-2. **chatterbox_messages** (line 1296) - Archived messages
-3. **messages_messages** (line 1309) - Private messages
-4. **chatterbox_chatter** (line 1318) - Live chatterbox messages
+1. ~~**notifications_list**~~ - **MIGRATED** to React Notifications nodelet ✅
+2. ~~**chatterbox_messages**~~ - **MIGRATED** to React Chatterbox nodelet ✅
+3. ~~**messages_messages**~~ - **MIGRATED** to React Messages nodelet ✅
+4. ~~**chatterbox_chatter**~~ - **MIGRATED** to React Chatterbox nodelet ✅
+
+**All legacy AJAX lists have been migrated to React!**
 
 #### Periodical Updaters:
 
-- **Other Users** (line 1363) - Updates "Other Users" nodelet showing online users
-- Sleep/wake system (lines 975-1011) - Pauses updates when window is inactive
-- Various robots (periodical updaters) for different content types
+- ~~**Other Users**~~ - **MIGRATED** to React OtherUsers nodelet (2-minute polling) ✅
+
+**All periodical updaters have been migrated to React!**
 
 ---
 
 ### 2. Routing Layer (Everything::HTML)
 
-**Location**: `/home/jaybonci/projects/everything2/ecore/Everything/HTML.pm`
+**Location**: `ecore/Everything/HTML.pm`
 
 **Key Routing Logic** (line 802-813):
 ```perl
@@ -86,7 +104,7 @@ When `displaytype=ajaxupdate`:
 
 ### 3. Server-Side Handler (ajax update page)
 
-**Location**: `/home/jaybonci/projects/everything2/nodepack/htmlpage/ajax_update_page.xml`
+**Location**: `nodepack/htmlpage/ajax_update_page.xml`
 
 ```xml
 <displaytype>ajaxupdate</displaytype>
@@ -100,7 +118,7 @@ This htmlpage delegates to the `ajax_update` function in `Everything::Delegation
 
 ### 4. Main Handler Function (ajax_update)
 
-**Location**: `/home/jaybonci/projects/everything2/ecore/Everything/Delegation/document.pm` (lines 22670-22782)
+**Location**: `ecore/Everything/Delegation/document.pm` (lines 22670-22782)
 
 The ajax_update function routes to different handlers based on the `mode` parameter.
 
@@ -110,154 +128,90 @@ The ajax_update function routes to different handlers based on the `mode` parame
 
 This section documents where each AJAX-enabled list and periodical updater is attached in the codebase, showing which nodelets and pages contain these dynamic elements.
 
-### 1. Notifications List (`notifications_list`)
+### 1. ~~Notifications List~~ (`notifications_list`) - ✅ MIGRATED
 
-**Container Element**: `<ul id="notifications_list">`
+**Status**: **COMPLETELY MIGRATED TO REACT** (2025-11-27)
 
-**Initialization**: `/www/js/legacy.js:1287-1294`
-```javascript
-e2.ajax.addList('notifications_list',{
-    getJSON: "notificationsJSON",
-    args: 'wrap',
-    idGroup: "notified_",
-    period: 45,  // Updates every 45 seconds
-    dismissItem: 'ajaxMarkNotificationSeen'
-});
-```
+**Old System** (REMOVED):
+- Legacy AJAX polling every 45 seconds
+- Used `notificationsJSON` htmlcode (DELETED)
+- Used `ajaxMarkNotificationSeen` htmlcode (DELETED)
 
-**Rendered In**: Notifications Nodelet
-- **File**: `/ecore/Everything/Delegation/nodelet.pm`
-- **Function**: `notifications` (line 936)
-- **Container Creation**: Line 946
-- **Code**: `my $str = qq|<ul id='notifications_list'>|;`
+**New System** (ACTIVE):
+- **Component**: `react/components/Nodelets/Notifications.js`
+- **API**: `GET /api/notifications` (fetch new notifications)
+- **API**: `POST /api/notifications/dismiss` (dismiss notifications)
+- **Polling**: React hooks with idle detection
+- **Rendering**: Application::getRenderedNotifications()
 
-**Purpose**: Displays user notifications (mentions, replies, etc.) with auto-dismiss functionality
-
-**Update Mechanism**:
-- Polls server every 45 seconds
-- Calls `notificationsJSON` htmlcode
-- Auto-removes dismissed items via `ajaxMarkNotificationSeen`
-
-**Availability**: All logged-in users (not shown to guests)
+**Migration Complete**: All functionality replaced
 
 ---
 
-### 2. Chatterbox Messages List (`chatterbox_messages`)
+### 2. ~~Chatterbox Messages List~~ (`chatterbox_messages`) - ✅ MIGRATED
 
-**Container Element**: `<div id="chatterbox_messages">`
+**Status**: **COMPLETELY MIGRATED TO REACT** (2025-11-27)
 
-**Initialization**: `/www/js/legacy.js:1296-1308`
-```javascript
-e2.ajax.addList('chatterbox_messages', {
-    ascending: true,  // Newest at bottom
-    getJSON: 'showmessages',
-    args: ',j',
-    idGroup: 'message_',
-    preserve: 'input:checked',  // Don't remove checked items
-    period: 23,  // Updates every 23 seconds
-    callback: function(){ /* adds HR if messages exist */ }
-});
-```
+**Old System** (REMOVED):
+- Legacy AJAX polling every 23 seconds
+- Used `showmessages` htmlcode
+- Displayed in `<div id="chatterbox_messages">`
 
-**Rendered In**: Chatterbox Nodelet
-- **File**: `/ecore/Everything/Delegation/nodelet.pm`
-- **Function**: `chatterbox` (line 383)
-- **Container Creation**: Line 409
-- **Code**: `$str .= qq|<div id="chatterbox_messages">$msgstr</div>$hr|;`
+**New System** (ACTIVE):
+- **Component**: `react/components/Nodelets/Chatterbox.js` → `MessageList.js`
+- **API**: `GET /api/messages` (fetch messages)
+- **API**: `POST /api/messages/archive` (archive messages)
+- **Polling**: React hooks (useChatterPolling.js) with activity detection
+- **Rendering**: Integrated into React Chatterbox component
 
-**Conditional Display**: Only shown if:
-- User is logged in AND
-- User doesn't have `hideprivmessages` setting enabled AND
-- Separate Messages nodelet is not visible
-
-**Purpose**: Displays private messages within the chatterbox (last 10 messages)
-
-**Update Mechanism**:
-- Polls server every 23 seconds
-- Calls `showmessages` htmlcode with JSON format
-- Preserves checked message items during updates
-- Adds horizontal rule separator if messages exist
-
-**Availability**: Logged-in users with chatterbox enabled
+**Migration Complete**: All functionality replaced, including archive/delete actions
 
 ---
 
-### 3. Messages Messages List (`messages_messages`)
+### 3. ~~Messages List~~ (`messages_messages`) - ✅ MIGRATED
 
-**Container Element**: `<div id="messages_messages">`
+**Status**: **COMPLETELY MIGRATED TO REACT** (2025-11-28)
 
-**Initialization**: `/www/js/legacy.js:1309-1316`
-```javascript
-e2.ajax.addList('messages_messages', {
-    ascending: true,  // Newest at bottom
-    getJSON: 'testshowmessages',
-    args: ',j',
-    idGroup: 'message_',
-    preserve: '.showwidget .open',  // Don't remove open widget items
-    period: 23  // Updates every 23 seconds
-});
-```
+**Old System** (REMOVED):
+- Legacy AJAX polling every 23 seconds
+- Used `testshowmessages` htmlcode (now stubbed)
+- Displayed in `<div id="messages_messages">`
 
-**Rendered In**: Messages Nodelet (standalone)
-- **File**: `/ecore/Everything/Delegation/nodelet.pm`
-- **Function**: `messages` (line 1070)
-- **Container Creation**: Line 1080
-- **Code**: `return qq|<div id="messages_messages">|.htmlcode('testshowmessages').qq|</div>|;`
+**New System** (ACTIVE):
+- **Component**: `react/components/Nodelets/Messages.js`
+- **API**: `GET /api/messages` (fetch messages)
+- **API**: `POST /api/messages/archive` (archive messages)
+- **API**: `DELETE /api/messages/{id}` (delete messages)
+- **Polling**: React hooks with activity detection
+- **Rendering**: Full React component with message list and actions
 
-**Purpose**: Displays private messages in a dedicated Messages nodelet (separate from chatterbox)
-
-**Update Mechanism**:
-- Polls server every 23 seconds
-- Calls `testshowmessages` htmlcode with JSON format
-- Preserves open widget items during updates
-- Used when user has separate Messages nodelet enabled
-
-**Availability**: Logged-in users who have enabled the Messages nodelet
-
-**Note**: This is mutually exclusive with `chatterbox_messages` - users typically have one or the other, not both.
+**Migration Complete**: All functionality replaced, all users now have React Messages nodelet
 
 ---
 
-### 4. Chatterbox Chatter List (`chatterbox_chatter`)
+### 4. ~~Chatterbox Chatter List~~ (`chatterbox_chatter`) - ✅ MIGRATED
 
-**Container Element**: `<div id="chatterbox_chatter">`
+**Status**: **COMPLETELY MIGRATED TO REACT** (2025-11-27)
 
-**Initialization**: `/www/js/legacy.js:1318-1337`
-```javascript
-e2.ajax.addList('chatterbox_chatter', {
-    ascending: true,  // Newest at bottom
-    getJSON: 'showchatter',
-    args: 'json',
-    idGroup: 'chat_',
-    period: e2.autoChat ? 11 : -1,  // 11 seconds if autoChat enabled, else stopped
-    callback: function(){ /* scroll handling and unread counts */ }
-});
-```
+**Old System** (REMOVED):
+- Legacy AJAX polling every 11 seconds
+- Used `showchatter` htmlcode
+- Displayed in `<div id="chatterbox_chatter">`
+- Had complex auto-scroll and unread count logic in legacy.js
 
-**Rendered In**: Chatterbox Nodelet
-- **File**: `/ecore/Everything/Delegation/nodelet.pm`
-- **Function**: `chatterbox` (line 383)
-- **Container Creation**: Line 413
-- **Code**: `$str .= qq|<div id='chatterbox_chatter'>|.htmlcode("showchatter").qq|</div><a name='chatbox'></a>|;`
+**New System** (ACTIVE):
+- **Component**: `react/components/Nodelets/Chatterbox.js`
+- **API**: `GET /api/chatter` (fetch chatter messages)
+- **API**: `POST /api/chatter/create` (send messages)
+- **Polling**: React hooks (useChatterPolling.js) with activity detection
+- **Features**:
+  - Auto-scroll to new messages
+  - Unread count in page title when inactive
+  - Start/stop controls
+  - /msg, /whisper, and all chatterbox commands
+  - Message history with timestamp sorting
 
-**Purpose**: Displays live chat messages in the chatterbox
-
-**Update Mechanism**:
-- Polls server every 11 seconds (if autoChat enabled)
-- Calls `showchatter` htmlcode with JSON format
-- Auto-scrolls to new messages
-- Updates unread message count in page title
-- Can be started/stopped via chatterbox controls
-
-**Special Features**:
-- Timestamp-based sorting for proper message ordering
-- Auto-scroll functionality when new messages arrive
-- Maintains scroll position if user is reading older messages
-- Updates browser title with unread count when window inactive
-
-**Availability**: All logged-in users with chatterbox enabled
-
-**Control**: Updates can be started/stopped via the chatterbox interface (pause/resume button)
+**Migration Complete**: All functionality replaced, including all special features
 
 ---
 
@@ -388,7 +342,7 @@ These systems coexist but do not share state, communicate, or coordinate updates
 
 ### React System Architecture
 
-**Location**: `/home/jaybonci/projects/everything2/react/`
+**Location**: `react/`
 
 **Entry Point**: `react/index.js` - Mounts `E2ReactRoot` component to `#e2-react-root` element
 

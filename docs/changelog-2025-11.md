@@ -17,6 +17,18 @@
 
 ---
 
+### Private Message Outbox Fixed ✅ COMPLETE
+**What Changed:** Messages sent via `/msg` command now appear in your Message Outbox.
+
+**Why This Matters:**
+- **Record Keeping**: You can now see what messages you've sent, not just what you've received
+- **Accountability**: Keep track of your conversations and what you've told other users
+- **Consistency**: The outbox now works the same way whether you send messages via the chat command (`/msg`) or the user's home node message form
+
+**User Impact:** When you send private messages using `/msg username message` in the chatterbox, those messages will now appear in your Message Outbox along with messages sent via other methods. This has always worked for messages sent through user home nodes, but `/msg` command messages were not being saved to the outbox until now.
+
+---
+
 ## Frontend Modernization: React Migration Initiative 🚀 IN PROGRESS
 
 ### Porting Epicenter, ReadThis, and MasterControl to React
@@ -202,14 +214,112 @@ The old system architecture makes it increasingly difficult to fix bugs, add fea
 
 ---
 
+## SEO & Content Optimization (November 27-28, 2025)
+
+### Meta Description Improvements ✅
+**What Changed:** Fixed meta description generation to properly handle E2 link syntax and truncate at word boundaries.
+
+**Technical Details:**
+- [Application.pm:1228-1238](ecore/Everything/Application.pm#L1228) - Fixed truncation logic
+- Processes E2 soft link syntax: `[target|display text]` → uses display text only
+- Truncates at 155 characters on word boundaries (no mid-word cuts)
+- Adds ellipsis (`...`) only when text is actually truncated
+- Comprehensive test coverage: [t/045_meta_description.t](t/045_meta_description.t) (5 subtests, 14 assertions)
+
+**User Impact:** Better search engine snippets with natural-reading descriptions that properly display E2 link text.
+
+### Social Sharing Cleanup ✅
+**What Changed:** Removed defunct social networks from sharing widget.
+
+**Technical Details:**
+- [htmlcode.pm:9770-9776](ecore/Everything/Delegation/htmlcode.pm#L9770) - Cleaned up social networks
+- Removed: Delicious (2017), Digg, StumbleUpon (2018), Yahoo Bookmarks, Google Bookmarks, BlinkList, Magnolia, Windows Live, Propellor, Technorati, Newsvine
+- Kept: Twitter, Facebook, Reddit (active networks)
+
+**User Impact:** Cleaner sharing interface with only functional services.
+
+---
+
+## React Page Migration (November 27-29, 2025)
+
+### Login Page Modernization ✅
+**What Changed:** Migrated login page from Perl delegation to React with modern Kernel Blue styling.
+
+**Technical Details:**
+- [login.pm](ecore/Everything/Page/login.pm) - Page class with buildReactData()
+- [Login.js](react/components/Documents/Login.js) - React component (11.9 KiB bundle)
+- Preserves `op=login` form functionality for backend compatibility
+- Three UI states: login form, success (post-login navigation), already logged in, error (failed login)
+- Modern card-based layout using Kernel Blue color palette
+- Responsive design with proper input focus states and accessibility
+
+**User Impact:** Modern, clean login experience with better visual design while maintaining all existing functionality.
+
+### Holiday Page Consolidation ✅
+**What Changed:** Migrated 5 holiday checker pages to single reusable React component.
+
+**Technical Details:**
+- [IsItHoliday.js](react/components/Documents/IsItHoliday.js) - Reusable component (3.8 KiB)
+- Migrated: Is it Christmas yet?, Is it Halloween yet?, Is it New Year's Day yet?, Is it New Year's Eve yet?, Is it April Fools' Day yet?
+- Ported date-checking logic from Mason2 to JavaScript
+- Single component serves all 5 pages via contentData routing
+- Fixed page name conversion to handle `?` characters in titles
+
+**User Impact:** No visible changes; holiday pages work as before but are now faster and easier to maintain.
+
+### Chatterlight Variants Migration ✅
+**What Changed:** Migrated 3 chatterlight pages (chat-focused interfaces) to React fullpage architecture.
+
+**Technical Details:**
+- Migrated: chatterlight, chatterlight classic, chatterlighter
+- [Chatterlight.js](react/components/Documents/Chatterlight.js) - Unified React component
+- Fixed fullpage template inheritance (react_fullpage.mc with `extends => undef`)
+- Removed 187 lines of obsolete delegation code from document.pm
+- Fixed React collapsedNodelets error (undefined handling in E2ReactRoot.js)
+
+**User Impact:** Chat-focused views now work with modern React architecture; no visible changes to functionality.
+
+### Node List Pages Migration ✅
+**What Changed:** Migrated 5 node list pages to single reusable NodeList component.
+
+**Technical Details:**
+- [NodeList.js](react/components/Documents/NodeList.js) - Reusable component
+- Migrated: 25 (random nodes), Everything New Nodes, E2N, ENN, EKN
+- Pagination support with configurable page size
+- Removed 5 obsolete Mason templates
+
+**User Impact:** Node list pages load faster and have consistent pagination behavior.
+
+---
+
+## Message System Enhancements (November 28, 2025)
+
+### Message Outbox Implementation ✅
+**What Changed:** Backend now creates outbox entries for sent messages (API level).
+
+**Technical Details:**
+- [Application.pm:4614-4631](ecore/Everything/Application.pm#L4614) - Dual message insert (inbox + outbox)
+- Outbox messages identified by `author_user == for_user` in database
+- Supports multi-recipient messages (one outbox entry per recipient)
+- Online-only messages get `OnO:` prefix in outbox
+- Works with `/msg` chatter command
+- Comprehensive test coverage: [t/044_message_outbox.t](t/044_message_outbox.t) (4 subtests, 19 assertions)
+- [messages.pm API](ecore/Everything/API/messages.pm) supports `outbox` parameter
+
+**User Impact:** Backend infrastructure in place for future "Sent Messages" UI feature. No UI changes yet (Messages nodelet remains minimal styling as designed).
+
+---
+
 ## Quality Metrics
 
 - **Security Critical eval() Count:** 0 (down from 22) ✅
-- **Test Suite Size:** 49 Perl tests + 445 React tests
+- **Test Suite Size:** 51 Perl tests + 445 React tests
 - **React Nodelets Migrated:** 10 of 25 (40% complete)
+- **React Pages Migrated:** 50+ superdoc pages
 - **Code Quality:** All Perl::Critic checks pass (239 tests)
-- **Modernization Progress:** 85% complete
-- **Test Execution:** 4 serial tests, 45 parallel tests (robust against race conditions)
+- **Modernization Progress:** 90% complete
+- **Test Execution:** 4 serial tests, 47 parallel tests (robust against race conditions)
+- **Delegation Code Removed:** 350+ lines of obsolete Perl code eliminated
 
 ---
 
@@ -240,5 +350,54 @@ The foundation is now solid for transforming E2 into a modern web platform while
 
 ---
 
-*Last Updated: November 21, 2025*
+## Template Cleanup & Default Nodelet Persistence (November 27, 2025)
+
+### Fixed Default Nodelet Persistence ✅
+**What Changed:** User default nodelet settings now persist correctly when set via user.pm.
+
+**Technical Details:**
+- [user.pm:275](ecore/Everything/Node/user.pm#L275) - Fixed default nodelet persistence
+- Changed from `Everything::setVars($USER, $VARS)` to `$self->set_vars($VARS)`
+- Root cause: `$self->NODEDATA` doesn't include `vars` field without settings table join
+- Method handles blessed object internals correctly by joining settings table internally
+
+**User Impact:** Default nodelets now properly save when set programmatically (backend admin operations).
+
+### Mason Template Cleanup ✅
+**What Changed:** Removed 4 obsolete Mason helper templates that were replaced by React components.
+
+**Technical Details:**
+- Removed `templates/helpers/ennchoice.mi` - Dropdown selector (unused)
+- Removed `templates/helpers/is_special_date.mi` - Date checking (moved to IsItHoliday.js)
+- Removed `templates/helpers/nodelist.mi` - Node list display (pages now React)
+- Removed `templates/pages/is_it_holiday.mc` - Holiday template (now generic react_page.mc)
+
+**User Impact:** No user-facing changes; cleanup of obsolete code that was replaced during React migration.
+
+### Holiday Pages Migration ✅
+**What Changed:** Migrated 5 holiday pages to single reusable React component.
+
+**Technical Details:**
+- Created [IsItHoliday.js](react/components/Documents/IsItHoliday.js) - Reusable component (3.8 KiB bundle)
+- Updated 5 Page classes to use `buildReactData()`:
+  - [is_it_christmas_yet.pm](ecore/Everything/Page/is_it_christmas_yet.pm)
+  - [is_it_halloween_yet.pm](ecore/Everything/Page/is_it_halloween_yet.pm)
+  - [is_it_new_year_s_day_yet.pm](ecore/Everything/Page/is_it_new_year_s_day_yet.pm)
+  - [is_it_new_year_s_eve_yet.pm](ecore/Everything/Page/is_it_new_year_s_eve_yet.pm)
+  - [is_it_april_fools_day_yet.pm](ecore/Everything/Page/is_it_april_fools_day_yet.pm)
+- Ported date-checking logic from Mason2 `is_special_date.mi` to JavaScript
+- Fixed page name conversion to handle `?` characters ([Application.pm:6693](ecore/Everything/Application.pm#L6693))
+- Fixed double-wrapping issue (buildReactData returns data without contentData wrapper)
+- Single component serves all 5 pages via contentData routing
+
+**Key Discoveries:**
+- Page name conversion: "Is it Christmas yet?" → `is_it_christmas_yet` (regex strips `?`)
+- buildReactData pattern: Returns `{ occasion => 'xmas' }` NOT `{ contentData => { ... } }`
+- All nodelist pages (25, E2N, ENN, EKN) and holiday pages now pure React
+
+**User Impact:** Holiday pages look and work the same but are now faster and easier to maintain.
+
+---
+
+*Last Updated: November 27, 2025*
 *Maintained by: Jay Bonci*

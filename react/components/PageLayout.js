@@ -22,7 +22,7 @@ const PageLayout = ({ e2 }) => {
 
   // Case 1: Structured data (React component)
   if (e2.contentData) {
-    return <DocumentComponent data={e2.contentData} user={e2.user} />
+    return <DocumentComponent data={e2.contentData} user={e2.user} e2={e2} />
   }
 
   // Case 2: HTML string (Mason/delegation HTML)

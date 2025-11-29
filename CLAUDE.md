@@ -1061,6 +1061,28 @@ npm test -- --coverage      # With coverage report
 # Max 3 retries with exponential backoff (0.5s, 1s, 2s)
 ```
 
+**Test Parallelization:**
+
+Tests that modify shared database state (message table, public chatter, etc.) MUST run serially to avoid race conditions. The test runner [t/run.pl](t/run.pl#L32-37) maintains a list of serial tests:
+
+```perl
+my %serial_tests = (
+    "$dirname/008_e2nodes.t" => 1,
+    "$dirname/009_writeups.t" => 1,
+    "$dirname/036_message_opcode.t" => 1,
+    "$dirname/043_chatter_api.t" => 1,  # Modifies message table (public chatter)
+);
+```
+
+**When adding new tests:**
+- ✅ Default: Tests run in parallel (14 jobs on 16-core system)
+- ⚠️ Add to `%serial_tests` if test:
+  - Deletes/modifies global database state (public messages, chatter, etc.)
+  - Uses shared test user accounts that could have session conflicts
+  - Has race conditions when run concurrently with other tests
+
+**Symptom of missing serial flag:** Intermittent test failures that pass when run individually but fail in parallel test suite.
+
 ### Testing Container Health
 
 **Use curl ONLY to verify container is responding:**
@@ -1418,51 +1440,11 @@ vim ecore/Everything/Page/my_page.pm
 - Check DocumentComponent has correct route
 - Check component prop destructuring matches data structure
 
-## Recent Work History
+## Recent Work
 
-**Note**: Detailed session history has been moved to [docs/changelog-2025-11.md](docs/changelog-2025-11.md). Only the most recent sessions are kept here for context.
+For detailed work history and completed features, see:
+- [November 2025 Changelog](docs/changelog-2025-11.md) - User-facing summary of changes
+- Git commit history for technical implementation details
 
-### Current Session: Template Cleanup & Holiday Page Migration (2025-11-27)
-
-**Focus**: Remove vestigial Mason templates, migrate holiday pages to React, fix default nodelet persistence
-
-**Completed Work**:
-1. ✅ **Fixed Default Nodelet Persistence**
-   - Changed from `Everything::setVars($USER, $VARS)` to `$self->set_vars($VARS)`
-   - `$self->NODEDATA` doesn't include `vars` field without settings table join
-   - Method handles blessed object internals correctly
-   - File: [user.pm:275](ecore/Everything/Node/user.pm#L275)
-
-2. ✅ **Removed 4 Vestigial Mason Templates**
-   - `templates/helpers/ennchoice.mi` - Dropdown selector (unused)
-   - `templates/helpers/is_special_date.mi` - Date checking (moved to IsItHoliday.js)
-   - `templates/helpers/nodelist.mi` - Node list display (pages now React)
-   - `templates/pages/is_it_holiday.mc` - Holiday template (now generic react_page.mc)
-   - `docs/CLAUDE.md` - Duplicate documentation (CLAUDE.md in root is sufficient)
-
-3. ✅ **Migrated 5 Holiday Pages to React**
-   - Created [IsItHoliday.js](react/components/Documents/IsItHoliday.js) - Reusable component
-   - Ported date-checking logic from Mason to JavaScript
-   - Updated 5 Page classes to use `buildReactData()`:
-     - is_it_christmas_yet.pm
-     - is_it_halloween_yet.pm  
-     - is_it_new_year_s_day_yet.pm
-     - is_it_new_year_s_eve_yet.pm
-     - is_it_april_fools_day_yet.pm
-   - Fixed page name conversion to handle `?` ([Application.pm:6693](ecore/Everything/Application.pm#L6693))
-   - Fixed double-wrapping (buildReactData returns data without contentData wrapper)
-   - Single 3.8 KiB bundle serves all 5 pages
-
-**Key Discoveries**:
-- **Page Name Conversion**: "Is it Christmas yet?" → `is_it_christmas_yet` (regex strips `?`)
-- **buildReactData Pattern**: Returns `{ occasion => 'xmas' }` NOT `{ contentData => { ... } }`
-- **Template Elimination**: All nodelist pages (25, E2N, ENN, EKN) and holiday pages now pure React
-
-**Files Modified**: 10+ files (Page classes, Application.pm, DocumentComponent.js, new IsItHoliday.js)
-**Templates Deleted**: 5 Mason templates
-**Bundle Size**: 3.8 KiB for IsItHoliday component
-
----
-
-*For older session history, see [docs/changelog-2025-11.md](docs/changelog-2025-11.md)*
+Key patterns and workflows are documented above. Avoid repeating past mistakes documented in the "Common Pitfalls" section.
 

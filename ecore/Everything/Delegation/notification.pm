@@ -26,7 +26,7 @@ package Everything::Delegation::notification;
 #     return "Notification text with HTML";
 #   }
 #
-# Note: These functions are called from Everything::Delegation::htmlcode::notificationsJSON
+# Note: These functions are called from Everything::Application::getRenderedNotifications
 #
 # Args parameter:
 #   $args is a hashref containing context-specific data passed when the

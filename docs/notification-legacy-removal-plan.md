@@ -1,8 +1,13 @@
 # Notification Legacy Code Removal Plan
 
-**Status**: PLANNING - Do NOT execute yet
+**Status**: ✅ COMPLETE (2025-11-28)
 **Date**: 2025-11-27
 **Context**: Legacy notification polling system was removed in commit e6c7fcc58, replaced by React Notifications nodelet
+
+**Completion Note**: All orphaned notification code stubs have been removed from production:
+- `notificationsJSON` htmlcode function - DELETED
+- `ajaxMarkNotificationSeen` htmlcode function - DELETED
+- Documentation updated to reflect current architecture
 
 ## Background
 

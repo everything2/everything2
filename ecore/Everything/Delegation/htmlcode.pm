@@ -41,13 +41,13 @@ BEGIN {
 use Time::Local;
 
 # Used by shownewexp, publishwriteup, static_javascript, hasAchieved,
-#  showNewGP, notificationsJSON, Notifications_nodelet_settings,sendPrivateMessage
+#  showNewGP, Notifications_nodelet_settings, sendPrivateMessage
 use JSON;
 
 # Used by hasAchieved for achievement delegation
 use Everything::Delegation::achievement;
 
-# Used by notificationsJSON for notification rendering
+# Used by Application::getRenderedNotifications for notification rendering
 use Everything::Delegation::notification;
 
 # Used by retrieveCorpse for safe deserialization
@@ -9767,9 +9767,13 @@ sub socialBookmarks
 
   my $str = '';
 
-  my @defaultNetworks = ('twitter', 'facebook', 'delicious', 'digg', 'stumbleupon', 'reddit');
+  # Removed defunct social networks (2025-11-28):
+  # delicious (shut down 2017), digg (deprecated), stumbleupon (shut down 2018),
+  # yahoomyweb, googlebookmarks, blinklist, magnolia, windowslive, propellor,
+  # technorati, newsvine (all defunct or discontinued)
+  my @defaultNetworks = ('twitter', 'facebook', 'reddit');
 
-  my @allNetworks = ('twitter', 'facebook', 'delicious', 'yahoomyweb', 'googlebookmarks', 'blinklist', 'magnolia', 'windowslive', 'digg', 'propellor', 'stumbleupon', 'technorati', 'newsvine', 'reddit');
+  my @allNetworks = ('twitter', 'facebook', 'reddit');
 
   my @showNetworks = @defaultNetworks;
   @showNetworks = @allNetworks if $full;
@@ -10926,268 +10930,13 @@ sub listnodecategories
   return '';
 }
 
-# Not actually a 'test'. In production
-#
 sub testshowmessages
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($maxmsgs,$showOpts) = @_;
-  $showOpts = "" unless(defined($showOpts));
-  $maxmsgs = "" unless(defined($maxmsgs));
-
-  my $json = {};
-  my $jsoncount = undef; $jsoncount = 1 if $showOpts =~ /j/;
-
-  # display options
-  $showOpts ||= '';
-  my $noreplylink = {getId(getNode("klaproth","user")) => 1};
-
-  my $showD = $$VARS{pmsgDate} || (index($showOpts,'d')!=-1); #show date
-  my $showT = $$VARS{pmsgTime} || (index($showOpts,'t')!=-1); #show time
-  my $showDT = $showD || $showT;
-  my $showArc = index($showOpts,'a')!=-1;      #show archived messages (usually don't)
-  my $showNotArc = index($showOpts,'A')==-1;   #show non-archive messages (usually do)
-  return unless $showArc || $showNotArc;
-  my $showGroup = index($showOpts,'g')==-1;    #show group messages (usually do)
-  my $showNotGroup = index($showOpts,'G')==-1; #show group messages (usually do)
-  my $canSeeHidden = $APP->isEditor($USER);
-  return unless $showGroup || $showNotGroup;
-
-  return if $APP->isGuest($USER);
-
-  my $showLastOnes = ! ($$VARS{chatterbox_msgs_ascend} || 0); 
-
-  if($maxmsgs =~ /^(.)(\d+)$/)
-  {
-    # force oldest/newest first
-    $maxmsgs=$2;
-    if($1 eq '-')
-    {
-      $showLastOnes=1;
-    } elsif($1 eq '+') {
-      $showLastOnes=0;
-    }
-  }
-
-  $maxmsgs ||= 10;
-  $maxmsgs = 100 if ($maxmsgs > 100);
-
-  my $order = $showLastOnes ? 'DESC' : 'ASC';
-  my $limits = 'for_user='.getId($USER);
-  my $totalMsg = $DB->sqlSelect('COUNT(*)','message',$limits); #total messages for user, archived and not, group and not, from all users
-  my $filterUser = $query->param('fromuser');
-  if($filterUser)
-  {
-    $filterUser = getNode($filterUser, 'user');
-    $filterUser = $filterUser ? $$filterUser{node_id} : 0;
-  }
-
-  $limits .= ' AND author_user='.$filterUser if $filterUser;
-
-  my $filterMinor = ''; #things to only filter for display, and not for the "X more in inbox" message
-  unless($showGroup && $showNotGroup)
-  {
-    $filterMinor .= ' AND for_usergroup=0' unless $showGroup;
-    $filterMinor .= ' AND for_usergroup!=0' unless $showNotGroup;
-  }
-
-  unless($showArc && $showNotArc)
-  {
-    $filterMinor .= ' AND archive=0' unless $showArc;
-    $filterMinor .= ' AND archive!=0' unless $showNotArc;
-  }
-
-  my $csr = $DB->sqlSelectMany('*', 'message', $limits . $filterMinor, "ORDER BY  message_id $order LIMIT $maxmsgs");
-  my $UID = getId($USER) || 0;
-  my $isEDev = $APP->isDeveloper($USER, "nogods");
-
-  my $aid = undef;  #message's author's ID
-  my $message_author = undef; #message's author; have to do this in case sender has been deleted (!)
-  my $ugID = undef;
-  my $UG = undef;
-  my $flags = undef;
-  my $userLink = undef;
-
-  # UIDs for Virgil, CME, Klaproth, and root.
-  my @botlist = qw(1080927 839239 952215 113);
-  my %bots = map{$_ => 1} @botlist;
-
-  my $string = '';
-  my @msgs = @{ $csr->fetchall_arrayref( {} ) };
-  @msgs = reverse @msgs if $showLastOnes;
-  foreach my $MSG (@msgs)
-  {
-    my $text = $$MSG{msgtext};
-
-    # Bots, don't escape HTML for them.
-    unless( exists $bots{$$MSG{author_user}} )
-    {
-      $text = $APP->escapeAngleBrackets($text);
-    }
-
-    $text =~ s/\[([^\]]*?)$/&#91;$1/; #unclosed [ fixer
-    my $timestamp = $$MSG{tstamp};
-    $timestamp =~ s/\D//g;
-    my $str = qq'<div class="privmsg timestamp_$timestamp" id="message_$$MSG{message_id}">';
-
-    $aid = $$MSG{author_user} || 0;
-    if($aid)
-    {
-      $message_author = getNodeById($aid) || 0;
-    } else { 
-      undef $message_author;
-    }
-    my $authorVars = undef; $authorVars = getVars $a if $a;
-    my $name = $message_author ? $$message_author{title} : '?';
-    $name =~ tr/ /_/;
-    $name = $APP->encodeHTML($name);
-
-    if($$VARS{showmessages_replylink} and not $$noreplylink{$$MSG{author_user}})
-    {
-      $str.='<div class="repliable"></div>'
-    }
-
-    $ugID = $$MSG{for_usergroup};
-    $UG = $ugID ? getNodeById($ugID) : undef;
-
-    if($$VARS{showmessages_replylink} and defined($UG) and not $$noreplylink{$$MSG{author_user}})
-    {
-      my $grptitle = $$UG{node_id}==$UID ? '' : $$UG{title};
-      # Grmph. -- wharf
-      $grptitle =~ s/ /_/g;
-      $grptitle =~ s/"/&quot;/g;
-      $grptitle =~ s/'/\\'/g;
-      # Test for ONO. This is moderately cheesy because the message text
-      # could start with "ONO: ", but that's rare in practice. The table
-      # doesn't track ONOness, so the text is all we've got.
-      my $ono = undef; $ono = '?' if $text =~ /^O[nN]O: /;
-    }
-
-    if($showDT)
-    {
-      my $tsflags = 128; # compact timestamp
-      $str .= '<small style="font-family: sans-serif;">';
-      $tsflags |= 1 if !$showT; # hide time 
-      $tsflags |= 2 if !$showD; # hide date
-      $str .= htmlcode('parsetimestamp', "$$MSG{tstamp},$tsflags");
-      $str .= '</small> ';
-    }
-
-    $str .= '(' . linkNode($UG,0,{lastnode_id=>0}) . ') ' if $ugID;
-
-    # N-Wing probably doing too much work...
-    # changes literal '\n' into HTML breaks (slash, then n; not a newline)
-    $text =~ s/\s+\\n\s+/<br>/g;
-
-    if ($$VARS{chatterbox_authorsince} && $message_author && $authorVars)
-    {
-      $str .= '<small>('. htmlcode('timesince', $message_author->{lasttime}, 1). ')</small> ' if (!$$authorVars{hidelastseen} || $canSeeHidden);
-    }
-
-    if($$VARS{powersMsg})
-    {
-      # Separating mere coders from the gods...
-      my $isCommitter = $APP->inUsergroup($aid,'%%','nogods');
-      my $isChanop = $APP->isChanop($aid,"nogods");
-
-      $flags = '';
-      if($APP->isAdmin($aid) && !$APP->getParameter($aid,"hide_chatterbox_staff_symbol"))
-      {
-        $flags .= '@';
-      } elsif($APP->isEditor($aid,"nogods") && !$APP->isAdmin($aid) && !$APP->getParameter($aid,"hide_chatterbox_staff_symbol")) {
-        $flags .= '$';
-      }
-
-      $flags .= '*' if $isCommitter;
-
-      $flags .= '+' if $isChanop;
-
-      $flags .= '%' if $isEDev && $APP->isDeveloper($aid, "nogods");
-      if(length($flags))
-      {
-        $flags = '<small>'.$flags.'</small> ';
-        $str .= $flags;
-      }
-    }
-
-    $userLink = $message_author ? linkNode($message_author, 0) : '?';
-
-    $str .= '<cite>'.$userLink.' says</cite> ' . parseLinks($text,0,1);
-    my $mbid = $$MSG{message_id};
-    my $noReplyWhy = undef;
-    my $replyBox = htmlcode('messageBox', $aid, 0, $mbid, $ugID, \$noReplyWhy);
-    my $replyWidgetOptions = {
-      showwidget => $mbid
-      , '-title' => "Reply to $name"
-      , '-closetitle' => 'hide reply box' };
-    my $removeBox = htmlcode('confirmDeleteMessage', $mbid);
-    my $removeWidgetOptions = {
-      showwidget => "deletemsg_$mbid"
-      , '-title' => "Delete the above message"
-      , '-closetitle' => 'hide delete box'
-      , '-id' => "remove$mbid" };
-    $str .= "<div class='actions'>";
-    if ($replyBox)
-    {
-      $str .=  ""
-      . "<div class='reply'>"
-      . htmlcode('widget', $replyBox, 'div', "Reply", $replyWidgetOptions)
-      . "</div>";
-    } else {
-      $str .=  ""
-      . "<div class='reply'>"
-      . "<a title='" . $APP->encodeHTML($noReplyWhy) . "'>"
-      . "Can't reply"
-      . "</a>"
-      . "</div>";
-    }
-  
-    $str.= ""
-      . '<div class="delete">'
-      . htmlcode('widget', $removeBox, 'div', "Remove", $removeWidgetOptions)
-      . '</div>';
-    $str .= "</div>"; # </div actions>
-    $str .= "</div>"; # </div privmsg>
-
-    unless ($jsoncount)
-    {
-      $string.="$str\n";
-    } else {
-      $$json{$jsoncount} = {
-        value => $str,
-        id => $$MSG{message_id},
-        timestamp => $timestamp
-      };
-      $jsoncount++;
-    }
-  }
-
-  if($totalMsg)
-  {
-    my $MI_node = getNode("Message Inbox", "superdoc");
-    my $str = qq'<p id="message_total$totalMsg" class="timestamp_920101106172500">(you have '.linkNode($MI_node,"$totalMsg private messages").')</p>';
-
-    unless ($jsoncount)
-    {
-      $string.="$str\n";
-    } else {
-      $$json{$jsoncount} = {
-        value => $str,
-        id => "total$totalMsg", # will be replaced if number changes
-        timestamp => '920101106172500' # keep at bottom. 90,000 years should be enough
-      };
-    }
-  }
-
-  return $string unless $jsoncount;
-  return $json;
+  # DEPRECATED 2025-11-28: Replaced by React Messages nodelet
+  # Legacy AJAX polling removed - all users now have React Messages nodelet
+  # Now handled by React Messages nodelet + /api/messages endpoint
+  # Stub remains until next production push, then will be fully deleted
+  return '';
 }
 
 sub confirmDeleteMessage
@@ -11220,15 +10969,6 @@ sub confirmDeleteMessage
   $str.=linkNode( $NODE , 'delete for good' , { op => 'message', $deleteWhat => 'yup', lastnode_id => 0 , -title => "delete the above message" , -class => "action ajax message_$messageID:confirmDeleteMessage:$messageID,deleted" });
 
   return $str;
-}
-
-sub notificationsJSON
-{
-  # DEPRECATED 2025-11-27: Replaced by Application::getRenderedNotifications()
-  # Legacy AJAX polling removed in commit e6c7fcc58
-  # Now handled by React Notifications nodelet + /api/notifications endpoint
-  # Stub remains until next production push, then will be fully deleted
-  return '';
 }
 
 sub ip_lookup_tools
@@ -12088,15 +11828,6 @@ sub nodeletsettingswidget
     # include ajax trigger because the first time it's not inserted together with the nodelet
     $query -> hidden(-name => 'ajaxTrigger', value=>1, class=>"ajax $id:updateNodelet:$safename").
     $query -> submit("submit$id",'Save')."\n</fieldset>\n",'form', $text , {showwidget=>"$id"."settings"}).'</div>';
-}
-
-sub ajaxMarkNotificationSeen
-{
-  # DEPRECATED 2025-11-27: Replaced by /api/notifications/dismiss endpoint
-  # Legacy AJAX polling removed in commit e6c7fcc58
-  # Now handled by React Notifications nodelet dismiss button
-  # Stub remains until next production push, then will be fully deleted
-  return '';
 }
 
 sub coolsJSON

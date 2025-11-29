@@ -31,7 +31,16 @@ sub get_all
   my $archive = $REQUEST->cgi->param("archive");
   $archive = defined($archive) ? int($archive) : 0;
 
-  return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->user->NODEDATA, $limit, $offset, $archive)];
+  my $outbox = $REQUEST->cgi->param("outbox");
+  $outbox = defined($outbox) ? int($outbox) : 0;
+
+  if ($outbox) {
+    # Get sent messages (outbox)
+    return [$self->HTTP_OK, $self->APP->get_sent_messages($REQUEST->user->NODEDATA, $limit, $offset, $archive)];
+  } else {
+    # Get received messages (inbox)
+    return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->user->NODEDATA, $limit, $offset, $archive)];
+  }
 }
 
 sub create

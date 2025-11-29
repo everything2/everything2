@@ -1,23 +1,50 @@
 # Mason2 Elimination Plan: Fixing Double Nodelet Rendering
 
-**Status**: PHASE 1 COMPLETE ✅ | Phase 2 Planning
+**Status**: PHASE 1-3 COMPLETE ✅ | Phase 4a IN PROGRESS
 **Created**: November 21, 2025
 **Phase 1 Completed**: November 21, 2025
-**Last Updated**: November 24, 2025
+**Phase 2 Completed**: November 24, 2025
+**Phase 3 Completed**: November 24, 2025
+**Last Updated**: November 28, 2025
 **Priority**: HIGH - Blocks clean React migration
 
-## Current Status (November 24, 2025)
+## Current Status (November 28, 2025)
 
 **Phase 1**: ✅ **COMPLETE** - All React-migrated nodelets have `react_handled => 1` flag set
+**Phase 2**: ✅ **COMPLETE** - Controller optimization (eliminated redundant method calls)
+**Phase 3**: ✅ **COMPLETE** - React owns sidebar (Portals eliminated, all 26 nodelets migrated)
+**Phase 4a**: ✅ **COMPLETE** - Content-only document pattern established
 
-**React Migration Progress**: 12/25 nodelets migrated (48%)
-- ✅ Migrated: Vitals, SignIn, NewWriteups, RecommendedReading, NewLogs, EverythingDeveloper, NeglectedDrafts, RandomNodes, Epicenter, ReadThis, MasterControl, Chatterbox, Notifications, OtherUsers, ForReview, PersonalLinks
-- ⏳ Remaining: 9 nodelets (Messages, EverythingUserSearch, Bookmarks, Categories, CurrentUserPoll, FavoriteNoders, MostWanted, RecentNodes, UsergroupWriteups)
+**Terminology Clarification**:
+- **Nodelets**: Sidebar components (26 total, ALL migrated to React ✅)
+  - Vitals, SignIn, NewWriteups, RecommendedReading, NewLogs, EverythingDeveloper, NeglectedDrafts, RandomNodes, Epicenter, ReadThis, MasterControl, Chatterbox, Notifications, OtherUsers, ForReview, PersonalLinks, Messages, EverythingUserSearch, Bookmarks, Categories, CurrentUserPoll, FavoriteNoders, MostWanted, RecentNodes, UsergroupWriteups, CoolArchive
+
+- **Pages**: Main content area documents (superdoc/superdocnolinks/restricted_superdoc/oppressor_superdoc types)
+  - ✅ Migrated (18): about_nobody, wheel_of_surprise, silver_trinkets, sanctify, is_it_christmas_yet, is_it_halloween_yet, is_it_new_year_s_day_yet, is_it_new_year_s_eve_yet, is_it_april_fools_day_yet, a_year_ago_today, node_tracker2, your_ignore_list, your_insured_writeups, your_nodeshells, recent_node_notes, ipfrom, everything2_elsewhere, online_only_msg, chatterbox_help_topics
+  - ⏳ Target next: FAQ pages, help pages, user-facing documentation
 
 **API Progress**: Comprehensive API coverage
-- User management, preferences, sessions, nodes, writeups, e2nodes, polls, chatter, messages, notifications, chatroom, nodenotes, personal links, usergroups, hide writeups
+- User management, preferences, sessions, nodes, writeups, e2nodes, polls, chatter, messages (inbox + outbox), notifications, chatroom, nodenotes, personal links, usergroups, hide writeups, user groups, wheel of surprise
 
-**Recent Achievements** (Session 12-13):
+**Recent Achievements** (Session 16):
+- ✅ Migrated 10 additional pages to React (Phase 4a expansion)
+  - User-specific: a_year_ago_today, node_tracker2, your_ignore_list, your_insured_writeups, your_nodeshells, recent_node_notes
+  - Help/Info: ipfrom, everything2_elsewhere, online_only_msg, chatterbox_help_topics
+- ✅ Messages API outbox support implemented (`/api/messages/?outbox=1`)
+- ✅ Comprehensive outbox test coverage (3 new subtests in t/032_messages_api.t)
+- ✅ Online-only messages test created (t/041_online_only_messages.t)
+- ✅ Deleted 10 Mason templates, properly tracked with git rm
+- ✅ Total Phase 4a pages: 18 documents migrated
+
+**Previous Achievements** (Session 14-15):
+- ✅ Broadcast notification system fully implemented for node notes
+- ✅ Notifications API enhanced with permission filtering matching `getRenderedNotifications()`
+- ✅ Node Notes API creates broadcast notifications (single notification visible to all subscribed editors)
+- ✅ Per-user dismiss state for broadcast notifications (reference records pattern)
+- ✅ Comprehensive test coverage (t/040_notifications.t - 8 tests passing)
+- ✅ Notification system working end-to-end (manual testing confirmed)
+
+**Previous Achievements** (Session 12-13):
 - ✅ Chatterbox fully migrated with React polling system (replaced legacy AJAX)
 - ✅ Notifications nodelet migrated with dismiss functionality
 - ✅ OtherUsers nodelet completely rewritten with all 10+ social features restored
@@ -25,7 +52,7 @@
 - ✅ ForReview nodelet migrated
 - ✅ PersonalLinks nodelet migrated
 
-**Next Priority**: Continue nodelet migrations targeting remaining 9 nodelets
+**Next Priority**: Continue nodelet migrations targeting remaining 10 nodelets, expand Phase 4a document migrations
 
 ## Problem Statement
 
@@ -708,6 +735,16 @@ Phase 3 is complete and stable. Ready to proceed with **Phase 4**: React owns pa
 - ✅ `wheel_of_surprise` - Server provides GP/optout data, React handles rendering
 - ✅ `silver_trinkets` - Admin sanctity lookup
 - ✅ `sanctify` - User sanctity display
+- ✅ `a_year_ago_today` - Historical writeup viewer with pagination
+- ✅ `node_tracker2` - Node tracking placeholder
+- ✅ `your_ignore_list` - User ignore list management (staff/self view)
+- ✅ `your_insured_writeups` - Staff-only writeup insurance display
+- ✅ `your_nodeshells` - User's nodeshell display (staff/self view)
+- ✅ `recent_node_notes` - Staff-only editor notes with filtering
+- ✅ `ipfrom` - IP lookup placeholder
+- ✅ `everything2_elsewhere` - Social media links display
+- ✅ `online_only_msg` - Online-only messaging documentation
+- ✅ `chatterbox_help_topics` - Chatterbox help topic list
 
 **Benefits of Simplified Pattern**:
 - **Less boilerplate**: Pages just return data hash, no wrapping needed

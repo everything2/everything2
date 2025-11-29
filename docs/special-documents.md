@@ -30,6 +30,8 @@
 | Buffalo Generator | Superdoc | `/title/Buffalo+Generator` | E2 Legacy |
 | Buffalo Haiku Generator | Superdoc | `/title/Buffalo+Haiku+Generator` | E2 Legacy |
 | Chatterbox help topics | Superdoc | `/title/Chatterbox+help+topics` | Mason2 |
+| chatterlight | Fullpage | `/title/chatterlight` | React |
+| chatterlight classic | Fullpage | `/title/chatterlight+classic` | React |
 | Chatterlighter | Superdoc | `/title/Chatterlighter` | E2 Legacy |
 | Clientdev Home | Superdoc | `/title/Clientdev+Home` | E2 Legacy |
 | Confirm password | Superdoc | `/title/Confirm+password` | E2 Legacy |

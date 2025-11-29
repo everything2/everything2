@@ -176,6 +176,7 @@ sub deliver_message
     }
   }
 
+  # Insert message in recipient's inbox
   $self->DB->sqlInsert("message",{
     "author_user" => $messagedata->{from}->node_id,
     "for_user" => $self->node_id,
@@ -183,6 +184,17 @@ sub deliver_message
     "for_usergroup" => $messagedata->{for_usergroup} || 0,
     "archive" => 0
   });
+
+  # Insert archived copy in sender's outbox (for direct messages only, not usergroup)
+  unless ($messagedata->{for_usergroup}) {
+    $self->DB->sqlInsert("message",{
+      "author_user" => $messagedata->{from}->node_id,
+      "for_user" => $messagedata->{from}->node_id,
+      "msgtext" => $messagedata->{message},
+      "for_usergroup" => 0,
+      "archive" => 1
+    });
+  }
 
   return {"successes" => 1};
 }
