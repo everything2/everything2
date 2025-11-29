@@ -21,6 +21,7 @@ requires 'HTTP::Cookies';
 requires 'HTTP::Request';
 requires 'IO::Compress::Brotli';
 requires 'IO::Compress::Deflate';
+requires 'IO::Compress::Zstd';
 requires 'JSON';
 requires 'JSON::XS';
 requires 'LWP::UserAgent';

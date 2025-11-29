@@ -368,6 +368,34 @@ DISTRIBUTIONS
       strict 0
       vars 0
       warnings 0
+  Compress-Raw-Bzip2-2.214
+    pathname: P/PM/PMQS/Compress-Raw-Bzip2-2.214.tar.gz
+    provides:
+      Compress::Raw::Bzip2 2.214
+    requirements:
+      ExtUtils::MakeMaker 0
+  Compress-Raw-Zlib-2.214
+    pathname: P/PM/PMQS/Compress-Raw-Zlib-2.214.tar.gz
+    provides:
+      Compress::Raw::Zlib 2.214
+    requirements:
+      ExtUtils::MakeMaker 0
+  Compress-Stream-Zstd-0.206
+    pathname: P/PM/PMQS/Compress-Stream-Zstd-0.206.tar.gz
+    provides:
+      Compress::Stream::Zstd 0.206
+      Compress::Stream::Zstd::CompressionContext undef
+      Compress::Stream::Zstd::CompressionDictionary undef
+      Compress::Stream::Zstd::Compressor undef
+      Compress::Stream::Zstd::DecompressionContext undef
+      Compress::Stream::Zstd::DecompressionDictionary undef
+      Compress::Stream::Zstd::Decompressor undef
+    requirements:
+      ExtUtils::CBuilder 0
+      ExtUtils::ParseXS 0
+      Module::Build 0.4005
+      parent 0
+      perl 5.008001
   Config-AWS-0.12
     pathname: J/JJ/JJATRIA/Config-AWS-0.12.tar.gz
     provides:
@@ -1601,6 +1629,47 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       HTTP::Headers 6
       perl 5.008001
+  IO-Compress-2.214
+    pathname: P/PM/PMQS/IO-Compress-2.214.tar.gz
+    provides:
+      Compress::Zlib 2.214
+      File::GlobMapper 1.001
+      IO::Compress 2.214
+      IO::Compress::Adapter::Bzip2 2.214
+      IO::Compress::Adapter::Deflate 2.214
+      IO::Compress::Adapter::Identity 2.214
+      IO::Compress::Base 2.214
+      IO::Compress::Base::Common 2.214
+      IO::Compress::Bzip2 2.214
+      IO::Compress::Deflate 2.214
+      IO::Compress::Gzip 2.214
+      IO::Compress::Gzip::Constants 2.214
+      IO::Compress::RawDeflate 2.214
+      IO::Compress::Zip 2.214
+      IO::Compress::Zip::Constants 2.214
+      IO::Compress::Zlib::Constants 2.214
+      IO::Compress::Zlib::Extra 2.214
+      IO::Uncompress::Adapter::Bunzip2 2.214
+      IO::Uncompress::Adapter::Identity 2.214
+      IO::Uncompress::Adapter::Inflate 2.214
+      IO::Uncompress::AnyInflate 2.214
+      IO::Uncompress::AnyUncompress 2.214
+      IO::Uncompress::Base 2.214
+      IO::Uncompress::Bunzip2 2.214
+      IO::Uncompress::Gunzip 2.214
+      IO::Uncompress::Inflate 2.214
+      IO::Uncompress::RawInflate 2.214
+      IO::Uncompress::Unzip 2.214
+      U64 2.214
+      Zlib::OldDeflate 2.214
+      Zlib::OldInflate 2.214
+    requirements:
+      Compress::Raw::Bzip2 2.214
+      Compress::Raw::Zlib 2.214
+      Encode 0
+      ExtUtils::MakeMaker 0
+      Scalar::Util 0
+      Time::Local 0
   IO-Compress-Brotli-0.019
     pathname: T/TI/TIMLEGGE/IO-Compress-Brotli-0.019.tar.gz
     provides:
@@ -1612,6 +1681,18 @@ DISTRIBUTIONS
       Getopt::Long 0
       Time::HiRes 0
       perl 5.008000
+  IO-Compress-Zstd-2.214
+    pathname: P/PM/PMQS/IO-Compress-Zstd-2.214.tar.gz
+    provides:
+      IO::Compress::Adapter::Zstd 2.214
+      IO::Compress::Zstd 2.214
+      IO::Uncompress::Adapter::UnZstd 2.214
+      IO::Uncompress::UnZstd 2.214
+    requirements:
+      Compress::Stream::Zstd 0
+      ExtUtils::MakeMaker 0
+      IO::Compress::Base 2.214
+      IO::Uncompress::Base 2.214
   IO-HTML-1.004
     pathname: C/CJ/CJM/IO-HTML-1.004.tar.gz
     provides:
