@@ -81,6 +81,7 @@ const COMPONENT_MAP = {
   // Fun & games
   everything_quote_server: lazy(() => import('./Documents/EverythingQuoteServer')),
   e2_rot13_encoder: lazy(() => import('./Documents/E2Rot13Encoder')),
+  e2_color_toy: lazy(() => import('./Documents/E2ColorToy')),
 
   // Utility tools
   text_formatter: lazy(() => import('./Documents/TextFormatter')),
@@ -97,7 +98,10 @@ const COMPONENT_MAP = {
   full_text_search: lazy(() => import('./Documents/FullTextSearch')),
 
   // System nodes (maintenance, etc.)
-  system_node: lazy(() => import('./Documents/SystemNode'))
+  system_node: lazy(() => import('./Documents/SystemNode')),
+
+  // Messaging
+  message_inbox: lazy(() => import('./Documents/MessageInbox'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

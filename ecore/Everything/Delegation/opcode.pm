@@ -20,7 +20,6 @@ BEGIN {
   *isNodetype = *Everything::HTML::isNodetype;
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
-  *insertNodelet = *Everything::HTML::insertNodelet;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *setVars = *Everything::HTML::setVars;
@@ -947,76 +946,8 @@ sub resurrect
   return;
 }
 
-sub bucketop
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return unless isGod($USER);
-  if($query->param("bgroupadd"))
-  {
-    my $group = getNode($query->param("node_id"));
-
-    return unless($group && $$group{type}{grouptable});
-
-    foreach my $param ($query->param)
-    {
-      next unless($param =~ /^bnode_(\d+)$/);
-
-      # For some reason, passing $1 here causes the function to receive undef.
-      # Probably has something to do with default vars.  So, we need to assign
-      # what we found to a scoped var.
-      my $insert = $1;
-      $DB->insertIntoNodegroup($group, $USER, $insert);
-    }
-  }
-
-  if($query->param("bdrop") or $query->param("dropexec"))
-  {
-    my $bucket = $$VARS{nodebucket};
-    foreach my $param ($query->param)
-    {
-      next unless($param =~ /^bnode_(\d+)$/);
-
-      # Remove the numeric id from the bucket list
-      $bucket =~ s/$1,?//;
-      $bucket =~ s/,$//;
-    }
-
-    $$VARS{nodebucket} = $bucket;
-    delete $$VARS{nodebucket} unless($bucket && $bucket ne "");
-  }
-
-  return;
-}
-
-sub addbucket
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  foreach my $bnode ($query->param())
-  {
-    next unless($bnode =~ /^bnode_([0-9]*)$/);
-    next if ($$VARS{nodebucket} =~ /$1/);
-
-    $$VARS{nodebucket} .= "," if($$VARS{nodebucket} && $$VARS{nodebucket} ne "");
-
-    $$VARS{nodebucket} .= $1;
-  }
-
-  return;
-}
+# NOTE: bucketop and addbucket opcodes removed 2025-11-30
+# The nodebucket VARS key is deprecated - see docs/user-vars-reference.md
 
 sub linktrim
 {

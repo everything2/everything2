@@ -256,9 +256,15 @@ const MessageList = (props) => {
     )
   }
 
+  // For compact mode (nodelets), reverse to show oldest first (chat-style)
+  // For full display (Message Inbox page), keep API order (newest first)
+  const displayMessages = compact
+    ? messagesToDisplay.slice().reverse()
+    : messagesToDisplay
+
   return (
     <div style={{ marginBottom: compact ? '0' : '0' }}>
-      {messagesToDisplay.slice().reverse().map(message => renderMessage(message))}
+      {displayMessages.map(message => renderMessage(message))}
     </div>
   )
 }

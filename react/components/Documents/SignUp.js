@@ -83,26 +83,50 @@ const SignUp = ({ data, user, e2 }) => {
   // Client-side validation state
   const [errors, setErrors] = useState({})
 
-  // Load reCAPTCHA script if enabled
+  // Load reCAPTCHA Enterprise script and generate token when ready
   useEffect(() => {
-    if (use_recaptcha && recaptcha_v3_public_key && !window.grecaptcha) {
-      const script = document.createElement('script')
-      script.src = `https://www.google.com/recaptcha/api.js?render=${recaptcha_v3_public_key}`
-      script.async = true
-      document.head.appendChild(script)
+    if (!use_recaptcha || !recaptcha_v3_public_key) {
+      return
     }
-  }, [use_recaptcha, recaptcha_v3_public_key])
 
-  // Generate reCAPTCHA token when form is ready
-  useEffect(() => {
-    if (use_recaptcha && recaptcha_v3_public_key && window.grecaptcha) {
-      window.grecaptcha.ready(() => {
-        window.grecaptcha.execute(recaptcha_v3_public_key, { action: 'signup' })
-          .then(token => {
-            setRecaptchaToken(token)
-          })
-      })
+    const executeRecaptcha = () => {
+      // reCAPTCHA Enterprise uses grecaptcha.enterprise
+      const recaptcha = window.grecaptcha?.enterprise || window.grecaptcha
+      if (recaptcha) {
+        recaptcha.ready(() => {
+          recaptcha.execute(recaptcha_v3_public_key, { action: 'signup' })
+            .then(token => {
+              console.log('reCAPTCHA token generated, length:', token.length)
+              setRecaptchaToken(token)
+            })
+            .catch(err => {
+              console.error('reCAPTCHA token generation failed:', err)
+            })
+        })
+      }
     }
+
+    // Check if script already loaded
+    if (window.grecaptcha) {
+      executeRecaptcha()
+      return
+    }
+
+    // Load the Enterprise script
+    const script = document.createElement('script')
+    script.src = `https://www.google.com/recaptcha/enterprise.js?render=${recaptcha_v3_public_key}`
+    script.async = true
+
+    // Execute reCAPTCHA after script loads
+    script.onload = () => {
+      executeRecaptcha()
+    }
+
+    script.onerror = () => {
+      console.error('Failed to load reCAPTCHA Enterprise script')
+    }
+
+    document.head.appendChild(script)
   }, [use_recaptcha, recaptcha_v3_public_key])
 
   // Check username availability with debounce
@@ -163,6 +187,13 @@ const SignUp = ({ data, user, e2 }) => {
       }
     }
   }, [usernameCheckTimeout])
+
+  // Check initial username availability on mount (for pre-populated form after error)
+  useEffect(() => {
+    if (initialUsername) {
+      checkUsernameAvailability(initialUsername)
+    }
+  }, [initialUsername, checkUsernameAvailability])
 
   // Computed validation states
   const passwordsMatch = password && confirmPassword && password === confirmPassword

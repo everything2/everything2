@@ -8,9 +8,21 @@ import LinkNode from './LinkNode'
  * - New messages
  * - Replies to individual users
  * - Reply-all to usergroup messages
+ * - Send-as-bot functionality for authorized users
  * - Character limit validation (512 chars)
  */
-const MessageModal = ({ isOpen, onClose, replyTo, onSend, initialReplyAll = false }) => {
+const MessageModal = ({
+  isOpen,
+  onClose,
+  replyTo,
+  onSend,
+  initialReplyAll = false,
+  // Send-as-bot props
+  sendAsUser = null,
+  accessibleBots = [],
+  currentUser = null,
+  onSendAsChange = null
+}) => {
   const [message, setMessage] = React.useState('')
   const [recipient, setRecipient] = React.useState('')
   const [replyAll, setReplyAll] = React.useState(false)
@@ -109,6 +121,27 @@ const MessageModal = ({ isOpen, onClose, replyTo, onSend, initialReplyAll = fals
 
   const canReplyAll = replyTo && replyTo.for_usergroup && replyTo.for_usergroup.node_id > 0
 
+  // Determine if send-as selector should be shown
+  // Show when user has access to bots and we have a way to change the selection
+  const canSendAs = accessibleBots && accessibleBots.length > 0 && currentUser && onSendAsChange
+
+  // Build the list of send-as options (current user + accessible bots)
+  const sendAsOptions = canSendAs ? [
+    { node_id: currentUser.node_id, title: currentUser.title, isCurrentUser: true },
+    ...accessibleBots
+  ] : []
+
+  // Determine which user is currently selected for sending
+  const effectiveSendAs = sendAsUser || (currentUser ? currentUser.node_id : null)
+  const sendAsTitle = sendAsOptions.find(opt => opt.node_id === effectiveSendAs)?.title || currentUser?.title
+
+  const handleSendAsChange = (e) => {
+    const newValue = parseInt(e.target.value, 10)
+    if (onSendAsChange) {
+      onSendAsChange(newValue === currentUser.node_id ? null : newValue)
+    }
+  }
+
   return (
     <div
       style={{
@@ -170,6 +203,56 @@ const MessageModal = ({ isOpen, onClose, replyTo, onSend, initialReplyAll = fals
         </div>
 
         <form onSubmit={handleSubmit}>
+          {/* Send As selector - only show when user has access to bots */}
+          {canSendAs && (
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '6px',
+                fontSize: '13px',
+                fontWeight: 'bold',
+                color: '#333'
+              }}>
+                Send as:
+              </label>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <select
+                  value={effectiveSendAs}
+                  onChange={handleSendAsChange}
+                  disabled={sending}
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '4px',
+                    backgroundColor: '#fff',
+                    cursor: sending ? 'not-allowed' : 'pointer',
+                    minWidth: '200px'
+                  }}
+                >
+                  {sendAsOptions.map(opt => (
+                    <option key={opt.node_id} value={opt.node_id}>
+                      {opt.title}{opt.isCurrentUser ? ' (yourself)' : ''}
+                    </option>
+                  ))}
+                </select>
+                {sendAsUser && sendAsUser !== currentUser?.node_id && (
+                  <span style={{
+                    fontSize: '11px',
+                    color: '#667eea',
+                    fontStyle: 'italic'
+                  }}>
+                    Sending as bot
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Recipient */}
           <div style={{ marginBottom: '16px' }}>
             <label style={{

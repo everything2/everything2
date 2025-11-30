@@ -22,7 +22,7 @@ sub zen_stdcontainer
   my $APP = shift;
 
   my $contained_stuff = shift;
-  $contained_stuff ||= "";
+  $contained_stuff ||= '';
 
   my $str = undef;
   $str = qq|<!DOCTYPE html>
@@ -38,7 +38,7 @@ sub zen_stdcontainer
   if (exists(($$VARS{customstyle})) && defined(($$VARS{customstyle}))) {
 	$str .= qq|<style type="text/css">|.$APP->htmlScreen($$VARS{customstyle}).'</style>';
   }
-	
+
   $str .= qq|<link rel="stylesheet" id="printsheet" type="text/css" href="|.htmlcode("linkStylesheet","print").qq|" media="print">|;
   if ($ENV{HTTP_HOST} !~ /^m\.everything2/i) {
     $str .= qq|<base href="|.$APP->basehref().qq|">| if $APP->isGuest($USER);
@@ -64,7 +64,7 @@ sub zen_stdcontainer
       $str.= qq|<meta name="robots" content="noindex, ${no}follow">|;
     }
   }
-  
+
   $str .= htmlcode("metadescriptiontag");
   $str .= qq|<link rel="icon" href="|.$APP->asset_uri("react/assets/favicon.ico").qq|" type="image/vnd.microsoft.icon">
 	<!--[if lt IE 8]><link rel="shortcut icon" href="|.$APP->asset_uri("react/assets/favicon.ico").qq|" type="image/x-icon"><![endif]-->|;
