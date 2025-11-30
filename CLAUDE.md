@@ -2,7 +2,7 @@
 
 This document provides context for AI assistants (like Claude) working on the Everything2 codebase. It summarizes recent work, architectural decisions, and important patterns to understand.
 
-**Last Updated**: 2025-11-27
+**Last Updated**: 2025-11-29
 **Maintained By**: Jay Bonci
 
 ## ⚠️ CRITICAL: Common Pitfalls & Required Patterns ⚠️
@@ -1441,6 +1441,45 @@ vim ecore/Everything/Page/my_page.pm
 - Check component prop destructuring matches data structure
 
 ## Recent Work
+
+### Session: CSS Variables & Notification Fix (2025-11-29)
+
+**Completed**:
+
+1. **CSS Variable System Implementation** 🎨
+   - Created 19 `-var.css` versions of all stylesheets (Kernel Blue, Understatement, Responsive2, etc.)
+   - Implemented `?csstest=1` query parameter for A/B testing without affecting normal users
+   - Modified [Controller.pm:38-49](ecore/Everything/Controller.pm#L38-L49) to detect parameter and swap stylesheet URLs
+   - Designed 20+ standardized CSS variable names (--e2-color-link, --e2-bg-body, --e2-color-primary, etc.)
+   - Created [tools/css-to-vars.pl](tools/css-to-vars.pl) helper script to analyze colors and suggest variable names
+   - Full documentation: [docs/css-variables-testing.md](docs/css-variables-testing.md)
+   - **Impact**: Enables safe stylesheet modernization testing; prepares for dark mode, user customization
+   - **Limitations**: React inline styles still use hardcoded Kernel Blue colors (Phase 3 work)
+
+2. **Document.pm Cleanup** 🧹
+   - Removed 690 lines of legacy code migrated to React:
+     - `suspension_info` (161 lines) → SuspensionInfo.js + suspension.pm API
+     - `giant_teddy_bear_suit` (93 lines) → GiantTeddyBearSuit.js + teddybear.pm API
+     - `text_formatter` (436 lines) → TextFormatter.js component
+   - **Impact**: Reduced codebase complexity, eliminated code duplication
+
+3. **Notification Periodic Update Bug Fix** 🐛
+   - **Problem**: Notifications losing text after 2-minute periodic refresh (showing only "×" button)
+   - **Root Cause**: `/api/notifications/` returned raw DB rows without `text` field; React expected `notification.text`
+   - **Fix**: Modified [notifications.pm:17-32](ecore/Everything/API/notifications.pm#L17-L32) to use `getRenderedNotifications()`
+   - Simplified endpoint from 66 lines to 14 lines by reusing existing rendering logic
+   - **Impact**: Fixes notifications in sidebar, Chatterlight family pages, and all fullpage layouts
+
+**Files Modified**:
+- ecore/Everything/Controller.pm (CSS parameter detection)
+- ecore/Everything/API/notifications.pm (periodic update fix)
+- ecore/Everything/Delegation/document.pm (cleanup)
+- Created: 19× www/css/*-var.css files
+- Created: docs/css-variables-testing.md, tools/css-to-vars.pl
+
+**Test Status**: All tests passing (54 Perl + 567 React = 621 total)
+
+---
 
 For detailed work history and completed features, see:
 - [November 2025 Changelog](docs/changelog-2025-11.md) - User-facing summary of changes

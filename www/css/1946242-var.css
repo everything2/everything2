@@ -1,0 +1,83 @@
+/* 1946242-var.css (Warm understatement by DonJaime - CSS Variables Edition) */
+/* This is a CSS variable-based version for A/B testing with ?csstest=1 */
+
+:root {
+  /* Theme-specific variables will be added as colors are identified */
+  /* For now, this version matches the original stylesheet */
+}
+
+@import url("1965235.css") ;
+/* LINKS */
+:link {
+color: #833 ;
+}
+:visited {
+color: #333 ;
+}
+#softlinks a:hover , #softlinks td:hover {
+color: #833 ;
+background-color: #fffce8 ;
+}
+/* OTHER COLOURS */
+body , #search_form , .slend{
+background-color: #fffefd ;
+color: black ;
+}
+div, p, li, dd , .oddrow {
+background-color: transparent ;
+}
+#header , #chatterlight_search , #e2logo a:after , .nodelet h2 ,
+#loglinks h3 , #cooluserpicks h3 , #staff_picks h3 , #creamofthecool h3 ,
+#everythinguserpoll #mainbody img.oddrow , #currentuserpoll img.oddrow {
+background: #753 ;
+}
+#e2logo :link , #e2logo :visited , #e2logo a:hover #e2logo2 {
+color: white ;
+}
+#creamofthecool #cotc h3 {
+background: white ;
+}
+#e2logo a:hover , #e2logo2 {
+color: #fe9 ;
+}
+.nodelet h2 ,#loglinks h3 ,
+#cooluserpicks h3 , #creamofthecool h3 a:link , #creamofthecool h3 :visited ,
+#staff_picks h3 {
+color: #fe9 ;
+}
+#creamofthecool #cotc h3 :link , #creamofthecool #cotc h3 :visited {
+color: black ;
+}
+body , div , span , p , li , dd , dt , tr , td , a , h1 , h2 , h3 , form ,
+:before , :after {	/* should be every border */
+border-color: #654 ;
+}
+#search_form {
+border-color: #ca8 ;
+}
+#softlinks table, #sl1 {
+background-color: #efece8 ;
+}
+#sl64 {
+background: #da6 ;
+}
+#softlinks td {
+border-style: solid ;
+border-color: #fffcf8 ;
+}/* SOFTLINK COLORS */
+td#sl64{background:#ddaa66;}td#sl63{background:#ddab68;}td#sl62{background:#ddac6a;}td#sl61{background:#ddad6c;}
+td#sl60{background:#deae6e;}td#sl59{background:#deaf70;}td#sl58{background:#deb072;}td#sl57{background:#dfb174;}
+td#sl56{background:#dfb276;}td#sl55{background:#dfb378;}td#sl54{background:#dfb47a;}td#sl53{background:#e0b57c;}
+td#sl52{background:#e0b67e;}td#sl51{background:#e0b780;}td#sl50{background:#e1b882;}td#sl49{background:#e1b984;}
+td#sl48{background:#e1ba87;}td#sl47{background:#e1bb89;}td#sl46{background:#e2bc8b;}td#sl45{background:#e2bd8d;}
+td#sl44{background:#e2be8f;}td#sl43{background:#e3c091;}td#sl42{background:#e3c193;}td#sl41{background:#e3c295;}
+td#sl40{background:#e3c397;}td#sl39{background:#e4c499;}td#sl38{background:#e4c59b;}td#sl37{background:#e4c69d;}
+td#sl36{background:#e5c79f;}td#sl35{background:#e5c8a1;}td#sl34{background:#e5c9a3;}td#sl33{background:#e5caa5;}
+td#sl32{background:#e6cba8;}td#sl31{background:#e6ccaa;}td#sl30{background:#e6cdac;}td#sl29{background:#e7ceae;}
+td#sl28{background:#e7cfb0;}td#sl27{background:#e7d0b2;}td#sl26{background:#e7d1b4;}td#sl25{background:#e8d2b6;}
+td#sl24{background:#e8d3b8;}td#sl23{background:#e8d4ba;}td#sl22{background:#e9d6bc;}td#sl21{background:#e9d7be;}
+td#sl20{background:#e9d8c0;}td#sl19{background:#e9d9c2;}td#sl18{background:#eadac4;}td#sl17{background:#eadbc6;}
+td#sl16{background:#eadcc9;}td#sl15{background:#ebddcb;}td#sl14{background:#ebdecd;}td#sl13{background:#ebdfcf;}
+td#sl12{background:#ebe0d1;}td#sl11{background:#ece1d3;}td#sl10{background:#ece2d5;}td#sl9{background:#ece3d7;}
+td#sl8{background:#ede4d9;}td#sl7{background:#ede5db;}td#sl6{background:#ede6dd;}td#sl5{background:#ede7df;}
+td#sl4{background:#eee8e1;}td#sl3{background:#eee9e3;}td#sl2{background:#eeeae5;}td#sl1{background:#efece8;}

@@ -19,65 +19,12 @@ sub get_all
   my ($self, $REQUEST) = @_;
 
   my $user = $REQUEST->user;
-  my $user_id = $user->NODEDATA->{user_id};
-
-  # Get user's notification subscriptions (for broadcast notifications)
   my $USER = $user->NODEDATA;
   my $VARS = $user->VARS;
-  my $otherNotifications = "0";
-  my $notificationList;
 
-  if ($$VARS{settings})
-  {
-    my $settings = JSON::from_json($$VARS{settings});
-    $notificationList = $settings->{notifications} if $settings;
-    my @notify = ( );
-
-    if ($notificationList && ref($notificationList) eq 'HASH')
-    {
-      for (keys %{$notificationList})
-      {
-        # Check if user can see this notification type (same as getRenderedNotifications)
-        my $notification_node = $self->DB->getNodeById($_);
-        next unless $notification_node;
-        next if !$self->_canseeNotification($notification_node, $USER);
-        push @notify, $_;
-      }
-
-      $otherNotifications = join(",",@notify) if scalar @notify;
-    }
-  }
-
-  # Query for both direct notifications AND broadcast notifications
-  # Direct: user_id = <user_id> AND is_seen = 0
-  # Broadcast: user_id IN (subscribed_notification_ids) AND not dismissed by this user
-  my $query = qq{
-    SELECT notified.notified_id, notified.notification_id, notified.args,
-           notified.notified_time
-    FROM notified
-    LEFT OUTER JOIN notified AS reference
-      ON reference.user_id = ?
-      AND reference.reference_notified_id = notified.notified_id
-      AND reference.is_seen = 1
-    WHERE
-      (
-        notified.user_id = ?
-        AND notified.is_seen = 0
-      ) OR (
-        notified.user_id IN ($otherNotifications)
-        AND reference.is_seen IS NULL
-      )
-    ORDER BY notified.notified_time DESC
-  };
-
-  my $notifications = $self->DB->getDatabaseHandle->selectall_arrayref(
-    $query,
-    { Slice => {} },
-    $user_id,
-    $user_id
-  );
-
-  $self->devLog("Fetched " . scalar(@$notifications) . " notifications for user $user_id");
+  # Use Application.pm's getRenderedNotifications to get properly formatted data
+  # This ensures periodic updates return the same structure as initial page load
+  my $notifications = $self->APP->getRenderedNotifications($USER, $VARS);
 
   return [$self->HTTP_OK, { notifications => $notifications }];
 }

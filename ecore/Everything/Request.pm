@@ -10,6 +10,11 @@ with 'Everything::Globals';
 
 has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method","path_info","script_name"], is => "rw");
 has 'user' => (lazy => 1, builder => "_build_user", isa => "Everything::Node::user", is => "rw", handles => ["is_guest","is_admin","is_developer","is_chanop","is_clientdev","is_editor","VARS"]);
+has 'node' => (is => "rw", isa => "Everything::Node");
+
+# Page class instance - allows reusing the same instance across display() and buildReactData()
+# Critical for form-processing pages like Sign Up that cache state between calls
+has 'page_class_instance' => (is => "rw");
 
 # Pageload is going to go away
 has 'PAGELOAD' => (isa => "HashRef", default => sub { {} }, is => "rw");

@@ -1,0 +1,394 @@
+/* 2041900-var.css (Simplicity by DonJaime - CSS Variables Edition) */
+/* This is a CSS variable-based version for A/B testing with ?csstest=1 */
+
+:root {
+  /* Theme-specific variables will be added as colors are identified */
+  /* For now, this version matches the original stylesheet */
+}
+
+/* LAYOUT */
+body {
+max-width: 50em ;
+padding: 0 15em 0 0 ;
+margin: 0 auto ;
+}
+#header , #footer {
+margin: 0 -15em 0 0 ;
+padding: 0.5em ;
+}
+#header {
+text-align: left ;
+}
+#searchform {
+padding-top: 0.5em ;
+float: right ;
+}
+#e2logo, #searchform div {
+display: inline;
+margin-left: 0.33em;
+}
+.nodetitle {
+margin: 0.25em 0 0 ;
+}
+.actions , .actions li {
+display: inline ;
+margin: 0 ;
+padding: 0 ;
+}
+.actions {
+display: block ; }
+.actions li + li:before {
+content: "\A0\B7\A0" ;
+}
+.topic {
+margin-left: 1em ;
+}
+#mainbody , #sidebar {
+float: left ;
+}
+#mainbody {
+width: 100% ;
+padding: 0 0.5em ;
+}
+#sidebar {
+width: 13.5em ;
+margin: 0 -14.5em 0 0 ;
+}
+.nodelet_title {
+margin: 0.5em 0 0 ;
+padding: 0.25em 0.5em ;
+}
+.nodelet_content {
+padding: 0.5em ;
+}
+.nodelet_content > :last-child {
+margin-bottom: 0 ;
+}
+.nodelet h4 {
+margin: 0.5em 0;
+}
+#footer {
+clear: left ;
+text-align: center ;
+}
+#pageheader {
+padding-bottom: 0.5em ;
+margin-bottom: 0.5em ;
+}
+#pagebody {
+max-width: 43em ;
+margin: 1em auto ;
+}
+.item {
+margin: 0.5em 0 1em ;
+}
+textarea {
+width: 98% ;
+margin: auto ;
+}
+pre {
+overflow: auto ;
+}
+.contentinfo {
+padding: 0.25em 0.5em ;
+}
+div.contentinfo .title, .nodelet .title {
+display: block ;
+text-align: left ;
+}
+.content {
+padding: 0.5em 1em ;
+scroll: auto ;
+}
+.contentfooter {
+text-align: center ;
+}
+.content > :first-child {
+margin-top: 0 ;
+}
+table {
+border-collapse: collapse ;
+margin: 0 ;
+}
+#mainbody table {
+margin: 1em auto ;
+}
+#mainbody .contentinfo table {
+margin: 0 ;
+}
+th , td {
+padding: 0.25em ;
+}
+div.contentinfo th , div.contentinfo td {
+padding: 0 0.125em ;
+}
+.linklist , .linklist li {
+display: block ;
+margin: 0 ;
+padding: 0 ;
+}
+.linklist {
+margin-bottom: 1em ;
+}
+.sectioncontent .linklist{
+margin: 0.25em 0 1em 3em;
+text-indent: -1.5em;
+}
+.morelink {
+text-align: right ;
+}
+/* FRONT PAGE */
+#frontpage {
+max-width: 60em ;
+}
+#welcome_message {
+padding-bottom: 0.5em ;
+}
+#loglinks , #cooluserpicks , #staff_picks {
+float: left ;
+clear: left ;
+width: 14em ;
+}
+#creamofthecool , #frontpage_news {
+margin-left: 14.5em ;
+}
+#frontpage #mainbody .linklist li {
+padding: 0.25em 0 ;
+}
+.weblog .contentinfo {
+position: relative ;
+}
+.weblog .date , .weblog .remove {
+position: absolute ;
+right: 0.5em ;
+}
+.weblog .date {
+top: 0.25em ;
+}
+.weblog .remove {
+bottom: 0.25em ;
+}
+.linkedby {
+display: inline ;
+}
+.linkedby:before {
+content: "| " ;
+}
+/* NODELETS */
+.nodelet .infolist { /* New Writeups and Logs */
+display: block ;
+margin: 0.5em 0 0 ;
+padding: 0 ;
+}
+.nodelet .contentinfo {
+display: block ;
+margin: 0 ;
+padding: 0 0 0.25em 0.25em ;
+}
+.nodelet .title {
+margin-left: -0.25em ;
+padding: 0.125em 0.25em ;
+}
+.nodelet .admin {
+white-space: nowrap;
+}
+#notifications ul , #notifications li {
+display: block ;
+margin: 0 ;
+padding: 0 ;
+}
+#notifications li {
+padding: 0.125em 0.125em 0.125em 1.625em ;
+text-indent: -1.5em;
+}
+/* FONTS */
+body {
+font-family: "Liberation Sans", Helvetica, Arial, sans-serif ;
+}
+* html body {
+font-family: "Arial Unicode MS" , Arial , sans-serif ;
+} /* Exploder fails to look elsewhere for missing glyphs */
+a {
+text-decoration: none ;
+}
+#e2logo, .nodelet_title {
+font-style: italic;
+font-weight: bold;
+}
+#e2logo {
+font-size: 1.8em;
+}
+#e2logo2 {
+font-style: normal ;
+font-size: 50% ;
+vertical-align: sub ;
+}
+#e2logo, h1, h2, h3, h4, div.contentinfo .title {
+font-family: GaramondNo8, Garamond, "Gentium Basic", "DejaVu Serif", serif;
+}
+.content {
+line-height: 140%;
+}
+h1 {
+font-size: 150% ;
+}
+h2 {
+font-size: 130% ;
+}
+h3 {
+font-size: 115% ;
+}
+.title , .nodelet_title , h4 {
+font-size: 100% ;
+}
+#searchform , .nodelet_content , #frontpage #mainbody .linklist , .morelink , .weblog .date, .nodelet .admin, .sentmessage{
+font-size: 90% ;
+}
+.title, dt {
+font-style: normal ;
+font-weight: bold ;
+}
+.mine .title, .hasvoted .title {
+font-weight: normal ;
+}
+/* END FONTS */
+.externalLink {
+background-image: url("https://s3.amazonaws.com/static.everything2.com/simplicity/externalLinkGrayscale.png")
+}
+/* SHININESS & CORNERS */
+#header , .nodelet_title , .contentheader , .nodelet .title {
+background-image: url( "https://s3.amazonaws.com/static.everything2.com/simplicity/topleft.png" ) ;
+background-position: -20px 0 ;
+background-repeat: no-repeat ;
+}
+.nodelet .title {
+background-position: -28px -3px ;
+}
+body , #header , .nodelet_title , .contentheader , .nodelet .title {
+-moz-border-radius-topright: 8px ;
+-webkit-border-top-right-radius: 8px ;
+border-top-right-radius: 8px ;
+-moz-border-radius-bottomright: 8px ;
+-webkit-border-bottom-right-radius: 8px ;
+border-bottom-right-radius: 8px ;
+}
+body {
+-moz-border-radius-bottomleft: 8px ;
+-webkit-border-bottom-left-radius: 8px ;
+border-bottom-left-radius: 8px ;
+}
+body , #header , .nodelet .title {
+-moz-border-radius-topleft: 6px ;
+-webkit-border-top-left-radius: 6px ;
+border-top-left-radius: 6px ;
+}
+/* PRETTY LEFT-BOTTOM THINGIES */
+#mainbody:before , .item .content:before ,
+.nodelet_content:before , .nodelet .type:before {
+content: "\A0" ;
+background-image: url( "https://s3.amazonaws.com/static.everything2.com/simplicity/topleft.png" ) ;
+background-position: 2px -181px ;
+float: left ;
+width: 8px ;
+line-height: 6px ;
+margin-left: -0.5em ;
+margin-bottom: -6px ;
+}
+#mainbody:before, .nodelet .type:before {
+background-position: 0 0 ;
+}
+.nodelet_content:before , .item .content:before {
+display: block ;
+float: none ;
+margin-top: -0.5em ;
+border-bottom: 0.5em solid white ;
+}
+#mainbody:before, .nodelet_content:before , #frontpage .item .content:before {
+background-position: 0 -181px ;
+}
+.nodelet .type:before {
+margin-left: -0.25em ;
+}
+.item .content:before {
+margin-left: -1em ;
+}
+/* COLOURS */
+body , .content {
+background-color: white ;
+color: black ;
+}
+/* Primary colour: green. G-R = R-B */
+#header {
+background-color: #203010 ;
+}
+:link, #header label, #header :link, #header :visited, .nodelet_title {
+color: #243810 ;
+}
+.oddrow ,
+.contentheader , .item .content:before ,
+.nodelet .title , .nodelet .type:before {
+background-color: #dce6c8 ;
+}
+html {
+background-color: #b4bda0;
+}
+#frontpage .item .content , #frontpage .item .morelink {
+border-left: 2px solid #dce6c8 ;
+}
+#pageheader , #frontpage #mainbody .linklist li , #welcome_message ,
+.writeuppage .content , .contentfooter {
+border-bottom: 2px solid #dce6c8 ;
+}
+#footer {
+border-top: 2px solid #dce6c8 ;
+}
+td , .oddrow , hr , .widget {
+border: 2px solid #dce6c8 ;
+}
+.oddrow , .oddrow td {
+border-style: hidden solid ;
+}
+.oddrow td {
+border-left-style: none ; /* none lets other elements impose */
+border-right-color: white ;
+}
+.oddrow , .oddrow td:last-child {
+border-right-color: #dce6c8 ;
+}
+hr {
+border-bottom: none ;
+}
+div.contentinfo th , div.contentinfo td ,
+#softlinks table , #softlinks td {
+border: none ;
+}
+/* Contrast: G-B = 3(R-G) */
+:visited {
+color: #281810 ;
+}
+#header, #mainbody:before,
+.nodelet_title, .nodelet_content:before {
+background-color: #e4d8b4 ;
+}
+body, .nodelet_content {
+border-left: 2px solid #e4d8b4;
+}
+#header {
+margin-left: -2px;
+}/* SOFTLINK COLORS */
+td#sl64{background:#dce6c8;}td#sl63{background:#dce6c8;}td#sl62{background:#dde6c9;}td#sl61{background:#dde7ca;}
+td#sl60{background:#dee7cb;}td#sl59{background:#dee7cc;}td#sl58{background:#dfe8cd;}td#sl57{background:#dfe8ce;}
+td#sl56{background:#e0e9ce;}td#sl55{background:#e1e9cf;}td#sl54{background:#e1e9d0;}td#sl53{background:#e2ead1;}
+td#sl52{background:#e2ead2;}td#sl51{background:#e3ebd3;}td#sl50{background:#e3ebd4;}td#sl49{background:#e4ebd5;}
+td#sl48{background:#e4ecd5;}td#sl47{background:#e5ecd6;}td#sl46{background:#e6edd7;}td#sl45{background:#e6edd8;}
+td#sl44{background:#e7edd9;}td#sl43{background:#e7eeda;}td#sl42{background:#e8eedb;}td#sl41{background:#e8efdc;}
+td#sl40{background:#e9efdc;}td#sl39{background:#e9efdd;}td#sl38{background:#eaf0de;}td#sl37{background:#ebf0df;}
+td#sl36{background:#ebf1e0;}td#sl35{background:#ecf1e1;}td#sl34{background:#ecf1e2;}td#sl33{background:#edf2e3;}
+td#sl32{background:#edf2e3;}td#sl31{background:#eef3e4;}td#sl30{background:#eef3e5;}td#sl29{background:#eff3e6;}
+td#sl28{background:#f0f4e7;}td#sl27{background:#f0f4e8;}td#sl26{background:#f1f5e9;}td#sl25{background:#f1f5ea;}
+td#sl24{background:#f2f5ea;}td#sl23{background:#f2f6eb;}td#sl22{background:#f3f6ec;}td#sl21{background:#f3f7ed;}
+td#sl20{background:#f4f7ee;}td#sl19{background:#f5f7ef;}td#sl18{background:#f5f8f0;}td#sl17{background:#f6f8f1;}
+td#sl16{background:#f6f9f1;}td#sl15{background:#f7f9f2;}td#sl14{background:#f7f9f3;}td#sl13{background:#f8faf4;}
+td#sl12{background:#f8faf5;}td#sl11{background:#f9fbf6;}td#sl10{background:#fafbf7;}td#sl9{background:#fafbf8;}
+td#sl8{background:#fbfcf8;}td#sl7{background:#fbfcf9;}td#sl6{background:#fcfdfa;}td#sl5{background:#fcfdfb;}
+td#sl4{background:#fdfdfc;}td#sl3{background:#fdfefd;}td#sl2{background:#fefefe;}td#sl1{background:#ffffff;}

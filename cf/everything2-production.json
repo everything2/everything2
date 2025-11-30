@@ -2067,6 +2067,18 @@
         "RetentionInDays": 1
       }
     },
+    "E2WAFBotControlExceptionIPSet": {
+      "Type": "AWS::WAFv2::IPSet",
+      "Properties": {
+        "Name": "E2BotControlExceptionIPs",
+        "Scope": "REGIONAL",
+        "IPAddressVersion": "IPV4",
+        "Addresses": [
+          "198.199.106.179/32"
+        ],
+        "Description": "IPs exempted from Bot Control rule"
+      }
+    },
     "E2WAFAcl": {
       "Type": "AWS::WAFv2::WebACL",
       "Properties": {
@@ -2081,25 +2093,6 @@
           "MetricName": "BlockedRequests"
         },
         "Rules": [{
-           "Name": "E2-AWSIPReputationList",
-           "Priority": 1,
-           "OverrideAction": {
-             "None": {}
-           },
-           "Statement": {
-              "ManagedRuleGroupStatement": {
-                 "VendorName": "AWS",
-                 "Name": "AWSManagedRulesAmazonIpReputationList",
-                 "ExcludedRules": []
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "IPReputationBlockedRequests"
-            }
-        },
-        {
            "Name": "E2-AWSBotControl",
            "Priority": 5,
            "OverrideAction": {
@@ -2117,7 +2110,16 @@
                    }
                  ],
                  "RuleActionOverrides": [],
-                 "ExcludedRules": []
+                 "ExcludedRules": [],
+                 "ScopeDownStatement": {
+                   "NotStatement": {
+                     "Statement": {
+                       "IPSetReferenceStatement": {
+                         "Arn": {"Fn::GetAtt": ["E2WAFBotControlExceptionIPSet", "Arn"]}
+                       }
+                     }
+                   }
+                 }
               }
             },
             "VisibilityConfig": {

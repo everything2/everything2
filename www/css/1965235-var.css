@@ -1,0 +1,657 @@
+/* 1965235-var.css (Understatement by DonJaime - depended upon by several understatements - CSS Variables Edition) */
+/* This is a CSS variable-based version for A/B testing with ?csstest=1 */
+
+:root {
+  /* Theme-specific variables will be added as colors are identified */
+  /* For now, this version matches the original stylesheet */
+}
+
+/* James' Zen Stylesheet. Layout only, add colour elsewhere. */
+/* Preliminaries: zero everything. This may have been a bad idea. */
+html , body , div , h1 , h2 , h3 , caption , th , td , form , label ,
+blockquote blockquote , blockquote:first-child:last-child {
+margin: 0 ;
+padding: 0 ;
+text-indent: 0 ;
+width: auto ; /* for bug in writeup heading in FF 3.0.3 */
+}
+table {
+border-collapse: collapse;
+}
+html , body , div , span , p , ul, ol, dl , li , dd , dt , table , tbody , tr , td , th , hr , a , h1 , h2 , h3 , caption , form , label , img , :before , :after { /* every border */
+border-width: 1px ;
+border-style: none ;
+}
+hr {
+border-style: solid none none ;
+}
+#chatterlight_hints , hr.clear {
+display: none;
+}
+/* LAYOUT */
+html {
+padding: 0.125em ;
+}
+body {
+padding: 0 14em 0 0.25em ;	/* for (header)/nodelets/(footer)/air */
+max-width: 50em ;
+margin: 0 auto ;
+position: relative ;
+border-right-style: solid ;
+-moz-border-radius-topright: 0.75em ;
+-webkit-border-top-right-radius: 0.75em ;
+border-top-right-radius: 0.75em ;
+}
+#chatterlight_mainbody {
+padding-top: 3em ;
+}
+#header {
+margin: 0 -14em 0.25em -0.5em ;
+padding: 0.25em 0.25em 0.25em 0 ;
+-moz-border-radius: 0.5em 0.5em 0 0.5em ;
+-webkit-border-radius: 0.5em ;
+-webkit-border-bottom-right-radius: 0 ;
+border-radius: 0.5em ;
+border-bottom-right-radius: 0 ;
+}
+#header , #chatterlight_search {
+height: 2.25em ;
+text-align: left ;
+}
+#chatterlight_search {
+position: absolute ;
+top: 0.25em ;
+right: 0.25em ;
+}
+#e2logo a {
+padding: 0.166em ;
+}
+#search_form {
+border-style: solid ;
+height: 1.5em ;
+padding: 0.25em 0.5em ;
+float: right ;
+-moz-border-radius: 0.5em 0.5em 0 0.5em ;
+-webkit-border-radius: 0.5em ;
+-webkit-border-bottom-right-radius: 0 ;
+border-radius: 0.5em ;
+border-bottom-right-radius: 0 ;
+z-index: 1 ;	/* cover logo in a crunch */
+}
+#mainbody {
+float: left ;
+width: 100% ;
+}
+#pageheader {
+margin-bottom: 1em ;
+}
+.actions , .actions li {
+display: inline ;
+margin: 0 ;
+padding: 0 0.5em 0 0 ;
+}
+.actions {
+display: block ;
+}
+#sidebar , #chatterlight_NW {
+float: left ;
+width: 13.25em ;
+margin: 0 -13.75em 0 0.5em ;
+}
+#footer {
+clear: both ;
+margin: 0 -15em 0 0 ;
+width: auto ;
+padding: 0.5em ;
+text-align: center ;
+border-top-style: solid ;
+}
+/* IE < 7 hacks */
+* html body {
+overflow-x: hidden ;
+overflow-y: auto ; /* IE5.01 needs this */
+border: none ;
+}
+* html #e2logo , * html #chatterlight_search {
+clear: both ;	/* stops it disappearing */
+width: 2000em ;
+height: 3.1em ;
+}
+* html #search_form { /* For IE < 7 */
+clear: both ;	/* stops it disappearing */
+height: 2em ;
+}
+* html #sidebar {
+display: inline ;	/* stops it disappearing */
+width: 12em ;
+}
+/* end IE < 7 hacks */
+/* GENERAL FORMATTING */
+td , th , caption {
+padding: 0.125em 0.25em ;
+vertical-align: top ;
+}
+pre {
+display: block ;
+overflow: auto ; /* avoid page-widening */
+}
+textarea {
+/*	display: block ;*/
+width: 98% ;	/* 100% borks IE6 */
+margin: 0 auto ;
+}
+.oddrow {
+border-top-style: dotted ;
+border-bottom-style: dotted ;
+border-width: 1px ;
+}
+.externalLink { /* get rid of basesheet styling */
+background-image: none ;
+padding: 0 ;
+}
+.externalLink:after {
+content: "\21D7" ;
+}
+.linklist, .nodelet ul.linklist, .linklist li , .infolist, .nodelet ul.infolist , .infolist li {
+display: block ;
+padding: 0 ;
+margin: 0 ;
+list-style: none ;
+}
+.nodeletsection .linklist li {
+margin-left: 1em ;
+}
+ul.linklist {
+margin-bottom: 0.5em ;
+}
+.morelink , .editlink {
+text-align: right ;
+}
+/* USER CONTENT */
+.item {
+margin: 1em auto 0 ;
+border-top-style: solid ;
+}
+.contentinfo {
+padding: 0.25em 0.5em 0.33em ;
+}
+.contentheader {
+border-bottom-style: dotted ;
+}
+.contentfooter {
+border-bottom-style: solid ;
+text-align: center ;
+}
+.debate .contentfooter {
+border-bottom-style: dotted ;
+}
+div.contentinfo td , div.contentinfo th {
+padding: 0 ;
+vertical-align: bottom ;
+}
+.infolist {
+text-align: right ;
+margin-top: 0.25em ;
+border-bottom-style: solid ;
+}
+#pagebody .infolist {
+margin-top: 1em ;
+text-align: left ;
+border-bottom-style: none ;
+}
+#sidebar li.contentinfo {
+border-top-style: solid ;
+padding: 0.16em 0.125em ;
+}
+div.contentinfo .title, .nodelet .title {
+display: block ;
+text-align: left ;
+margin: -0.25em -0.25em 0  ;
+padding: 0.25em 0.25em 0 ;
+}
+.content{
+max-width: 45em ;
+overflow: auto ;
+margin: 0 auto ;
+padding: 0.5em ;
+}
+.item .categories {
+max-width: 53.57em ; /* 45 @ 84% */
+margin-left: auto ;
+margin-right: auto ;
+}
+.content > :first-child {
+margin-top: 0 ;
+padding-top: 0 ;
+}
+.content p , .content table , .content h1 , .content h2 , .content h3 , .content blockquote {
+margin-bottom: 1em ;
+}
+.content table {
+margin-right: auto ;
+margin-left: auto ;
+}
+.content li {
+margin-bottom: 0.5em ;
+}
+.content li ul , .content li ol , .content li dl {
+margin-top: 0.5em ;
+}
+.content td {
+border-style: solid ;
+}
+/* WRITEUPS */
+.e2node .nodetitle { /* to let createdby slide upwards */
+float: left ;
+}
+.e2node .topic , .e2node #cooledby , #pagebody {
+clear: left ;
+}
+.nodetitle {
+overflow: visible ;
+}
+.topic , .createdby , .forward {
+margin: 0 0.555em ; /* 0.5em @ 90% */
+font-weight: normal ;
+}
+.createdby , .forward {
+margin-top: 0.555em ;
+text-align: right ;
+}
+* html .writeuppage .contentheader {
+width: 100% ;
+}
+.writeuppage .content {
+border-bottom-style: dotted ;
+}
+#votefooter {
+text-align: right ;
+margin-bottom: 1em ;
+}
+.wu_footer , .wu_footer tr , .wu_footer td {
+display: inline ;
+vertical-align: middle ;
+padding: 0 ;
+margin-right: -1em ;
+}
+.wu_footer td {
+margin-right: 1em ;
+white-space: nowrap ;
+}
+.contentinfo .sentmessage {
+text-align: center ;
+margin: 0.5em auto 0 ;
+padding-top: 0.5em ;
+border-top-style: dotted ;
+max-width: 54.76em ; /* 46em @ 84% */
+}
+#displaytypelinks {
+margin-top: 1em ;
+text-align: right ;
+}
+#displaytypelinks p {
+display: inline ;
+}
+#softlinks {
+margin: 0.5em 0 ;
+clear: both ;
+}
+#softlinks td {
+padding: 0 ;
+margin: 0 ;
+vertical-align: middle ;
+}
+#softlinks td a {
+display: block ;
+padding: 0.35em ;
+height: 100% ;
+}
+.writeup_add {
+margin: 0.5em 0 ;
+}
+div.nodelet p , .writeup_add p {
+margin-top: 1em ;
+}
+.writeup_add h2 {
+margin-bottom: 1em ;
+}
+/* NODELETS */
+div.nodelet {
+border-left-style: solid ;
+padding-bottom: 0.5em ;
+margin-bottom: 0.5em ;
+-moz-border-radius-topleft: 1em ;
+-webkit-border-top-left-radius: 1em ;
+border-top-left-radius: 1em ;
+}
+.nodelet_title {
+padding: 1px 0.5em ;
+text-align: center ;
+-moz-border-radius: 0.5em 0.5em 0.5em 0 ;
+-webkit-border-radius: 0.5em ;
+-webkit-border-bottom-left-radius: 0 ;
+border-radius: 0.5em ;
+border-bottom-left-radius: 0 ;
+margin: 0 -1px ;	/* bleed over nodelet border */
+}
+div.nodelet h2.open , div.nodelet h2.closed {
+background-image: none ;
+}
+.nodelet_content {
+padding: 0.5em 0 0.5em 0.5em ;
+margin-right: 2px ; /* compensates for borders */
+}
+div.nodelet td {
+padding-bottom: 1px ;
+}
+div.nodelet h4, div.nodelet ul {
+margin: 0.5em 0 ;
+}
+div.nodelet ul {
+margin-left: 0.5em ;
+padding-left: 1em ;
+list-style: circle outside ;
+}
+.nodelet .admin {
+white-space: nowrap;
+}
+#otherusers li {
+list-style: none ;
+}
+#chatterbox_chatter {
+overflow: auto ;
+margin-bottom: 0.25em ;
+}
+#chatterbox input + br {
+display: none ; /* kill break before private-message count if no messages shown */
+}
+#chatterbox #message , #chatterlight_mainbody #message {
+width: 97% ;
+}
+#notifications ul , #notifications li {
+display: block ;
+margin: 0 ;
+padding: 0 ;
+}
+#notifications li {
+padding: 0.125em 0.125em 0.125em 1.625em ;
+text-indent: -1.5em ;
+}
+/* FRONT PAGE */
+#frontpage {
+max-width: 63em ;
+}
+#frontpage #printlink , #welcome_message {
+display: none ;
+}
+#frontpage .nodetitle {
+position: absolute ;		/* get it out of the flow */
+left: 9em ;
+right: 9em ;	/* 10 leaves room for 13em sides @ 140% */
+text-align: center ;
+}
+#frontpage #pageheader {
+margin: 0 ;
+padding: 0 ;
+border: none ;
+}
+* html #frontpage .nodetitle {
+left: 10.125em ;
+right: 0 ;
+}
+#loglinks , #cooluserpicks , #staff_picks , #creamofthecool {
+clear: left ;
+float: left ;
+width: 13em ;
+padding-bottom: 0.5em ;
+margin-bottom: 0.5em ;
+border-right-style: solid ;
+-moz-border-radius-topright: 1em ;
+-webkit-border-top-right-radius: 1em ;
+border-top-right-radius: 1em ;
+}
+#frontpage_news {
+margin-left: 13.5em ;	/* for left-hand column */
+padding-top: 2em ;	/* for title */
+}
+#loglinks h3 , #cooluserpicks h3 , #staff_picks h3 , #creamofthecool h3 {
+padding-right: 0.5em ;
+text-align: center ;
+-moz-border-radius: 0.5em 0.5em 0 0.5em ;
+-webkit-border-radius: 0.5em ;
+-webkit-border-bottom-right-radius: 0 ;
+border-radius: 0.5em ;
+border-bottom-right-radius: 0 ;
+margin: 0 -1px ;	/* bleed over border */
+}
+#frontpage #mainbody .linklist li {
+text-align: center ;
+margin-right: 0.5em ;
+border-bottom-style: solid ;
+}
+#frontpage #mainbody .linklist li a {
+padding: 0.25em 0 ;
+display: block ;
+text-decoration: none ;
+}
+#frontpage #mainbody .morelink {
+margin-right: 0.5em ;
+}
+#frontpage #mainbody #creamofthecool .morelink {
+margin-right: 0 ;
+}
+#creamofthecool .item {
+padding-right: 0.5em ;
+}
+#creamofthecool .content {
+padding-left: 0.5em ;
+}
+/* FRONTPAGENEWS and WEBLOGS */
+#frontpage_news_title {
+margin-bottom: 0.5em ;
+}
+.weblog .contentinfo {
+position: relative ;
+}
+.weblog .date , .weblog .remove {
+position: absolute ;
+top: 0.25em ;
+right: 0.5em ;
+}
+.weblog .remove {
+top: auto ;
+bottom: 0.25em ;
+}
+.linkedby {
+display: inline ;
+}
+.linkedby:before {
+content: "| " ;
+}
+/* HOMENODE */
+#homenodeheader {
+margin-top: 1em ;
+overflow: auto ;
+text-align: center ;
+}
+#homenodepicbox , #homenodeheader dl {
+display: inline-block ;
+margin: 0 auto ;
+}
+#userimage {
+max-width: 100% ;
+margin-bottom: 0.5em ;
+}
+#homenodeheader dl {
+max-width: 30em ;
+}
+#homenodepicbox p { /* edit link */
+width: 7em ;
+}
+#homenodeheader dt , #homenodeheader dd {
+display: block ;
+padding: 0.25em ;
+margin: 0 auto ;
+}
+#homenodeheader dt {
+margin-top: 1px ;
+text-align: left ;
+float: left ;
+clear: left ;
+padding-right: 0.5em ;
+}
+#homenodeheader dd {
+min-width: 15em ;
+border-top-style: dotted ;
+text-align: right ;
+}
+#homenodeheader dd form {
+clear: left ;
+}
+#homenodetext {
+clear: both ;
+border-top-style: solid ;
+}
+#bookmarks .linklist li {
+padding: 0 0 0.5em 3em ;
+border-style: none ;
+}
+/* USER POLL */
+#everythinguserpoll #mainbody img.oddrow , #currentuserpoll img.oddrow { /* results */
+border-style: solid ;
+}
+#everythinguserpoll #mainbody td + td {
+text-align: right ;
+}
+/* CHATTERLIGHT */
+#chatterlight_mainbody #chatterbox_nodelet {
+float: left ;
+}
+#chatterlight_mainbody #links {
+position: absolute ;
+bottom: -1.5em ;
+left: 0.5em ;
+}
+#chatterlight_mainbody #links p {
+height: 1.5em ;
+margin: 0 ;
+}
+#chatterlight_NW {
+float: right ;
+}
+body:after {
+clear: both ;
+display: block ;
+content: " " ;
+}
+#chatterlight_credit , #chatterlight_Notifications {
+display: none ;
+}
+/* FONTS */
+body {
+font-family: sans-serif ;
+}
+* html body {
+font-family: "Arial Unicode MS" , sans-serif ;
+} /* Exploder fails to look elsewhere for missing glyphs */
+h1 , h2 , h3 , caption , h4 , #homenodeheader dt, .item .title, .infolist .title {
+font-weight: bold ;
+}
+.infolist .hasvoted .title, .infolist .mine .title {
+font-weight: normal;
+}
+a {
+text-decoration: none ;
+}
+#e2logo a {
+font-style: italic ;
+font-size: 125% ;
+}
+#e2logo2 {
+font-style: normal ;
+font-size: 50% ;
+vertical-align: sub ;
+}
+h1 {
+font-size: 140% ;
+}
+h2 {
+font-size: 116% ;
+}
+h3 , caption , #experience , .nodelet_title , #loglinks:before {
+font-size: 108% ;
+}
+big big big big big big , #frontpage big big big ,
+small small small small {
+font-size: 100% ;
+}
+.topic , .createdby , .forward , .nodelet_content , .writeuppage .contentfooter small , #footer ,
+#homenodeheader dl , #displaytypelinks , .title , .type ,
+#mainbody .linklist , #creamofthecool .item {
+font-size: 90% ;
+}
+pre, tt , #search_form * , #search_form label ,
+.writeuppage .contentfooter ,
+.weblog .item .date , .remove , .linkedby ,
+#creamofthecool .content ,
+.morelink , .editlink ,
+div.nodelet .morelink,
+.nodelet .admin {
+font-size: 84% ;
+}
+.content , .content * {
+line-height: 1.4em ;
+}
+.contentinfo cite {
+font-style: normal ;
+}
+.author {
+font-style: italic ;
+}
+.nodeshell a {
+opacity: 0.5 ;
+}
+/* PRINT LAYOUT. If they fix the browser. Or for IE8... (credit where it's due) */
+@media print {
+#header , #footer , .topic , #displaytypelinks, .writeuppage .contentfooter ,
+#votefooter , #softlinks , .writeup_add , #sidebar {
+display: none !important ;
+}
+body {
+background: white !important ;
+width: 100% ;
+margin: 0 ;
+padding: 0 ;
+}
+body , body .content {
+border: none ;
+}
+.contentheader {
+page-break-after: avoid ;
+}
+table , tr , td {
+page-break-inside: auto ;
+page-break-before: avoid ;
+}
+.content td , .content th {
+page-break-inside: avoid ;
+page-break-before: auto ;
+}
+}
+/* SOFTLINK COLORS */
+td#sl64{background:#aaaaaa;}td#sl63{background:#ababab;}td#sl62{background:#acacac;}td#sl61{background:#aeaeae;}
+td#sl60{background:#afafaf;}td#sl59{background:#b0b0b0;}td#sl58{background:#b2b2b2;}td#sl57{background:#b3b3b3;}
+td#sl56{background:#b4b4b4;}td#sl55{background:#b6b6b6;}td#sl54{background:#b7b7b7;}td#sl53{background:#b8b8b8;}
+td#sl52{background:#bababa;}td#sl51{background:#bbbbbb;}td#sl50{background:#bcbcbc;}td#sl49{background:#bebebe;}
+td#sl48{background:#bfbfbf;}td#sl47{background:#c0c0c0;}td#sl46{background:#c2c2c2;}td#sl45{background:#c3c3c3;}
+td#sl44{background:#c4c4c4;}td#sl43{background:#c6c6c6;}td#sl42{background:#c7c7c7;}td#sl41{background:#c9c9c9;}
+td#sl40{background:#cacaca;}td#sl39{background:#cbcbcb;}td#sl38{background:#cdcdcd;}td#sl37{background:#cecece;}
+td#sl36{background:#cfcfcf;}td#sl35{background:#d1d1d1;}td#sl34{background:#d2d2d2;}td#sl33{background:#d3d3d3;}
+td#sl32{background:#d5d5d5;}td#sl31{background:#d6d6d6;}td#sl30{background:#d7d7d7;}td#sl29{background:#d9d9d9;}
+td#sl28{background:#dadada;}td#sl27{background:#dbdbdb;}td#sl26{background:#dddddd;}td#sl25{background:#dedede;}
+td#sl24{background:#dfdfdf;}td#sl23{background:#e1e1e1;}td#sl22{background:#e2e2e2;}td#sl21{background:#e4e4e4;}
+td#sl20{background:#e5e5e5;}td#sl19{background:#e6e6e6;}td#sl18{background:#e8e8e8;}td#sl17{background:#e9e9e9;}
+td#sl16{background:#eaeaea;}td#sl15{background:#ececec;}td#sl14{background:#ededed;}td#sl13{background:#eeeeee;}
+td#sl12{background:#f0f0f0;}td#sl11{background:#f1f1f1;}td#sl10{background:#f2f2f2;}td#sl9{background:#f4f4f4;}
+td#sl8{background:#f5f5f5;}td#sl7{background:#f6f6f6;}td#sl6{background:#f8f8f8;}td#sl5{background:#f9f9f9;}
+td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;}td#sl1{background:#ffffff;}

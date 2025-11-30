@@ -18,6 +18,9 @@ has 'this_page' => (is => 'ro', default => sub { my ($self) = shift; return $sel
 
 has 'valid_for_days' => (is => 'ro', default => 10);
 
+# Cache the result from display() so buildReactData doesn't reprocess the form
+has '_display_result' => (is => 'rw', isa => 'HashRef', predicate => '_has_display_result');
+
 sub security_log
 {
   my ($self, $message) = @_;
@@ -79,6 +82,9 @@ sub display
 {
   my ($self, $REQUEST, $node) = @_;
 
+  # Return cached result if already processed (prevents double form processing)
+  return $self->_display_result if $self->_has_display_result;
+
   my $recaptcha_token = $REQUEST->param('recaptcha_token');
   my $recaptcha_response = undef;
   my $enforce_recaptcha = 1;
@@ -98,6 +104,7 @@ sub display
   my %names = ();
 
   my ($username, $email, $pass) = ('','','');
+
   if(!$self->is_form_submitted($REQUEST))
   {
     $prompt = "Please fill in all fields";
@@ -219,7 +226,21 @@ sub display
 
   if($prompt ne '')
   {
-    return {"prompt" => $prompt, "username" => $username, "email" => $email, "seed" => time + $self->formlife, "use_recaptcha" => $use_recaptcha, "recaptcha_v3_public_key" => $self->CONF->recaptcha_v3_public_key};
+    my $formtime = time;
+    my $result = {
+      "prompt" => $prompt,
+      "username" => $username,
+      "email" => $email,
+      "formtime" => $formtime,
+      "formsignature" => $self->formsignature($formtime),
+      "email_confirm_field" => $self->hash_item('email', $formtime),
+      "pass_confirm_field" => $self->hash_item('pass', $formtime),
+      "use_recaptcha" => $use_recaptcha,
+      "recaptcha_v3_public_key" => $self->CONF->recaptcha_v3_public_key,
+      "type" => "sign_up"
+    };
+    $self->_display_result($result);
+    return $result;
   }
 
   # all tests passed: create account
@@ -229,7 +250,9 @@ sub display
   {
     $self->security_log('Failed to create new user: username '.$self->APP->encodeHTML($username, 1));
     $prompt = 'Sorry, something just went horribly wrong. Your account has not been created. Please try again';
-    return {"prompt" => $prompt};
+    my $result = {"prompt" => $prompt, "type" => "sign_up"};
+    $self->_display_result($result);
+    return $result;
   }
 
   $self->security_log('Created user '.$self->APP->linkNode($new_user));
@@ -250,7 +273,17 @@ sub display
   }
 
   $self->APP->set_spam_threshold($new_user, $recaptcha_response->{score});
-  return {"success" => 1, "username" => $username, "linkvalid" => $self->valid_for_days};
+  my $result = {"success" => 1, "username" => $username, "linkvalid" => $self->valid_for_days, "type" => "sign_up"};
+  $self->_display_result($result);
+  return $result;
+}
+
+sub buildReactData
+{
+  my ($self, $REQUEST) = @_;
+
+  # Call existing display() method which returns perfect React data structure
+  return $self->display($REQUEST, $REQUEST->node);
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -21,6 +21,9 @@ sub display
 
     # Phase 4a: For React pages, build window.e2 data structure
     if ($is_react_page) {
+      # Set node on REQUEST for buildReactData access
+      $REQUEST->node($node);
+
       # Build e2 data structure (includes reactPageMode and contentData)
       my $e2 = $self->APP->buildNodeInfoStructure(
         $node->NODEDATA,

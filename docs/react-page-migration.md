@@ -971,6 +971,195 @@ When migrating a Mason2 page to React:
 
 ---
 
+## Current Migration Status
+
+**Last Updated**: 2025-11-29
+
+### Summary
+
+| Component | Count | Status |
+|-----------|-------|--------|
+| Document delegation functions | 225 | Legacy (in document.pm) |
+| HTMLpage delegation functions | 100 | Legacy (in htmlpage.pm) |
+| Page classes created | 48 | ✅ Migrated to Page pattern |
+| React components | ~45 | ✅ Rendering via React |
+| DocumentComponent routes | 48 | ✅ Registered in router |
+
+### Document Delegation Categories
+
+The 225 document functions fall into these categories:
+
+#### 1. XML/JSON Tickers (27 functions) - **Deprecation Candidates**
+Legacy API endpoints that predate REST. Many can be deprecated or converted to proper `/api/` endpoints.
+
+```
+available_rooms_xml_ticker, chatterbox_xml_ticker, client_version_xml_ticker,
+cool_archive_atom_feed, cool_nodes_xml_ticker, cool_nodes_xml_ticker_ii,
+e2_xml_search_interface, editor_cools_xml_ticker, everything_s_best_users_xml_ticker,
+maintenance_nodes_xml_ticker, my_votes_xml_ticker, new_nodes_xml_ticker,
+new_writeups_atom_feed, new_writeups_xml_ticker, node_heaven_xml_ticker,
+other_users_xml_ticker_ii, personal_session_xml_ticker, podcast_rss_feed,
+random_nodes_xml_ticker, raw_vars_xml_ticker, time_since_xml_ticker,
+universal_message_xml_ticker, universal_message_json_ticker, user_information_xml,
+user_search_xml_ticker, user_search_xml_ticker_ii, xml_interfaces_ticker
+```
+
+**Strategy**: Audit usage, deprecate unused, convert essential ones to `/api/` endpoints.
+
+#### 2. Admin/Editor Tools (27 functions) - **Low Priority**
+Staff-only tools with limited user base. Migrate last.
+
+```
+e2_bouncer, e2node_reparenter, enrichify, faq_editor, feed_edb, fiery_teddy_bear_suit,
+gp_optouts, ip_blacklist, ip_hunter, klaproth_van_lines, mass_ip_blacklister,
+nate_s_secret_unborg_doc, new_user_images, node_forbiddance, node_heaven_title_search,
+node_notes_by_editor, nodetype_changer, renunciation_chainsaw, security_monitor,
+server_telemetry, spam_cannon, sql_prompt, the_borg_clinic, the_killing_floor,
+the_killing_floor_ii, the_node_crypt, the_old_hooked_pole, the_oracle,
+the_oracle_classic, usergroup_press_gang, users_with_infravision, viewvars,
+who_killed_what, yet_another_secret_laboratory
+```
+
+**Strategy**: Keep as Mason2 until end of migration, then batch convert.
+
+#### 3. User Settings/Personal Pages (20 functions) - **HIGH PRIORITY**
+Frequently accessed by users. Good migration candidates.
+
+```
+admin_settings, advanced_settings, confirm_password, drafts, drafts_for_review,
+message_inbox, message_inbox_2, message_outbox, my_achievements, my_big_writeup_list,
+my_recent_writeups, nodelet_settings, notelet_editor, old_writeup_settings,
+reset_password, settings, super_mailbox, your_filled_nodeshells
+```
+
+**Already migrated**: sign_up, login, your_gravatar, your_ignore_list, your_insured_writeups, your_nodeshells
+
+**Strategy**: Migrate these next - high user impact, moderate complexity.
+
+#### 4. Content Browse/Archive Pages (31 functions) - **MEDIUM PRIORITY**
+Read-mostly pages, good for React's strengths.
+
+```
+alphabetizer, between_the_cracks, bounty_hunters_wanted, cool_archive, display_categories,
+duplicates_found_, everything_data_pages, everything_document_directory, everything_finger,
+everything_poll_archive, everything_poll_directory, everything_s_best_users,
+everything_s_best_writeups, everything_user_search, findings_, fresh_blood, freshly_bloodied,
+level_distribution, list_nodes_of_type, news_archives, node_backup, nodes_of_the_year,
+page_of_cool, popular_registries, random_nodeshells, recent_registry_entries,
+recent_users, registry_information, the_catwalk, the_registries, the_well_of_cool,
+topic_archive, writeup_search, writeups_by_type
+```
+
+**Strategy**: Good candidates for batching - many share similar "list of nodes" patterns.
+
+#### 5. Fun/Games/Interactive (15 functions) - **MEDIUM PRIORITY**
+User engagement features.
+
+```
+ask_everything__do_i_have_the_swine_flu_, blind_voting_booth, buffalo_generator,
+buffalo_haiku_generator, do_you_c__what_i_c_, e2_color_toy, e2_gift_shop,
+e2_marble_shop, e2_penny_jar, e2_sperm_counter, e2_word_counter, everything_i_ching,
+teddisms_generator, the_tokenator, word_messer_upper
+```
+
+**Already migrated**: e2_rot13_encoder, everything_quote_server, wheel_of_surprise, fezisms_generator, piercisms_generator
+
+**Strategy**: Fun quick wins - often simple, high engagement value.
+
+#### 6. Chat/Messaging (10 functions) - **PARTIALLY DONE**
+
+```
+available_rooms, create_room, go_outside, inboxlight, squawkbox, squawkbox_update
+```
+
+**Already migrated**: chatterlight, chatterlight_classic, chatterlighter, online_only_msg, chatterbox_help_topics
+
+**Strategy**: Complete chat ecosystem migration.
+
+#### 7. Statistics/Graphs (10 functions) - **LOW PRIORITY**
+Data visualization pages.
+
+```
+database_lag_o_meter, everything_statistics, noding_speedometer, reputation_graph,
+reputation_graph_horizontal, site_trajectory, site_trajectory_2, user_statistics,
+voting_data, voting_oracle
+```
+
+**Strategy**: May need charting library integration. Defer until core pages done.
+
+### HTMLpage Delegation Functions (100 functions)
+
+These handle display/edit pages for different node types. Categories:
+
+#### Display Pages (node type viewers)
+```
+*_display_page functions (achievement, category, collaboration, container,
+datastash, dbtable, debatecomment, document, draft, e2client, e2node, e2poll,
+edevdoc, fullpage, htmlcode, htmlpage, jsonexport, mail, maintenance, mysqlproc,
+node, node_forward, node_help, nodegroup, nodelet, nodetype, notification,
+plaindoc, podcast, recording, registry, room, setting, stylesheet, superdoc,
+superdocnolinks, ticker, user, usergroup, writeup)
+```
+
+**Strategy**: Most can remain as-is. Focus on `superdoc_display_page` which drives most content.
+
+#### Edit Pages (node type editors)
+```
+*_edit_page functions - Staff/admin use only
+```
+
+**Strategy**: Low priority - admin tools, keep in Mason2 until late in migration.
+
+### Recommended Migration Order
+
+#### Phase 1: User Settings (High Impact)
+1. `settings` / `admin_settings` / `advanced_settings` - User preferences
+2. `message_inbox` / `message_inbox_2` / `message_outbox` - Messaging
+3. `drafts` / `drafts_for_review` - Writing workflow
+4. `nodelet_settings` - Sidebar customization
+
+#### Phase 2: Content Discovery
+1. `cool_archive` - Historical cooled content
+2. `writeup_search` - Content search (already have full_text_search)
+3. `everything_user_search` - User search
+4. `writeups_by_type` - Browse by category
+
+#### Phase 3: Engagement Features
+1. `e2_gift_shop` / `e2_penny_jar` - GP system
+2. `e2_color_toy` / `the_costume_shop` / `theme_nirvana` - Theming
+3. `available_rooms` / `create_room` - Chat management
+
+#### Phase 4: Admin Tools (Last)
+- Migrate staff tools in batch
+- Consider keeping some as Mason2 if rarely used
+
+### Quick Wins (Simple Pages)
+
+These have minimal logic and can be migrated quickly:
+
+```perl
+# Simple static/display pages
+permission_denied, nothing_found, welcome_to_everything
+
+# Simple generators (pattern: random text output)
+buffalo_generator, buffalo_haiku_generator, teddisms_generator
+
+# Simple info pages
+e2_acceptable_use_policy, edev_faq, macro_faq
+```
+
+### Deprecated/Unused Candidates
+
+Audit these for removal rather than migration:
+
+```
+# Legacy XML tickers - check if any clients still use them
+# Old versions of pages (e.g., if message_inbox_2 replaces message_inbox)
+# Seasonal/event pages that may be defunct
+```
+
+---
+
 ## Additional Resources
 
 - [React Migration Strategy](react-migration-strategy.md) - Overall migration roadmap
@@ -991,4 +1180,4 @@ When in doubt:
 6. Test with different user contexts
 
 **Maintainer**: Jay Bonci
-**Last Review**: 2025-11-25
+**Last Review**: 2025-11-29

@@ -2,6 +2,81 @@
 
 **For communication to users - Non-technical summary**
 
+## Notification Periodic Update Bug Fixed (2025-11-29) 🐛 NEW
+
+### Bug Fix: Notifications Disappearing After Periodic Refresh
+**What Changed:** Fixed a bug where the Notifications nodelet would lose all notification text after the 2-minute periodic refresh, showing only the dismiss "×" button.
+
+**What Was Broken:**
+- Periodic updates (every 2 minutes when active and nodelet expanded) were returning raw database rows instead of rendered notification text
+- Initial page load worked correctly (using `buildNotificationsData()`)
+- Periodic refresh used different API endpoint that wasn't rendering the notification text
+- React component expected `notification.text` field but API was returning database fields like `notified_id`, `args`, `notification_id`
+- Result: After periodic refresh, notifications would show only "×" button with no text
+
+**The Fix:**
+- Modified `/api/notifications/` endpoint to use `Application.pm::getRenderedNotifications()`
+- Now both initial load and periodic updates use the same rendering logic
+- Both endpoints return consistent data structure with rendered `text` field
+- Affects all places Notifications nodelet appears:
+  - Main sidebar
+  - Chatterlight family pages (chatterlight, chatterlight classic, chatterlighter)
+  - Any fullpage layouts with notifications
+
+**User Impact:**
+- Notifications will no longer lose their text after 2 minutes
+- Periodic updates now work correctly across all page types
+- No more mysterious "×" buttons with no associated notification text
+
+**Technical Details:**
+- File: [ecore/Everything/API/notifications.pm:17-32](ecore/Everything/API/notifications.pm#L17-L32)
+- Simplified `get_all` endpoint from 66 lines to 14 lines by reusing existing rendering logic
+- Eliminated code duplication between initial load and periodic refresh
+
+---
+
+## CSS Variable System & Theme Testing (2025-11-29) 🎨 NEW
+
+### A/B Testing for Stylesheet Modernization
+**What Changed:** Implemented CSS variable-based theming system with `?csstest=1` parameter for non-disruptive testing.
+
+**Why This Matters:**
+- **User Choice Preservation**: All 19 user stylesheets remain unchanged - no one's theme will break
+- **Future-Proofing**: CSS variables enable modern features like real-time theme customization and dark mode
+- **Safe Testing**: Users can opt-in to test new variable-based stylesheets without affecting normal browsing
+- **React Compatibility**: Prepares themes to work properly with new React components
+
+**Technical Implementation:**
+- Created 19 `-var.css` versions of all stylesheets (Kernel Blue, Understatement family, Responsive2, etc.)
+- Modified Controller.pm to detect `?csstest=1` and load variable versions
+- Designed 20+ standardized CSS variable names (--e2-color-link, --e2-bg-body, etc.)
+- Full documentation: docs/css-variables-testing.md
+
+**User Impact:**
+- No visible changes to normal site usage
+- Add `?csstest=1` to any URL to preview variable-based stylesheets
+- Report any visual differences - helps validate the modernization is working correctly
+- Future: Will enable user-customizable theme colors without admin intervention
+
+---
+
+### Document Functions Cleanup
+**What Changed:** Removed 690 lines of legacy code from document.pm that were migrated to React.
+
+**Functions Removed:**
+- `suspension_info` (161 lines) - Now SuspensionInfo.js + suspension.pm API
+- `giant_teddy_bear_suit` (93 lines) - Now GiantTeddyBearSuit.js + teddybear.pm API
+- `text_formatter` (436 lines) - Now TextFormatter.js component
+
+**Why This Matters:**
+- **Cleaner Codebase**: Reduces complexity and potential for bugs
+- **Single Source of Truth**: Each feature now has one implementation, not two
+- **Maintainability**: Future updates only need to touch React code, not Perl
+
+**User Impact:** None - these features work exactly the same, just with cleaner backend code.
+
+---
+
 ## Major Security & Performance Improvements
 
 ### Code Security Overhaul (eval() Removal Campaign) ✅ COMPLETE
