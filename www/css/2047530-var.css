@@ -1,3 +1,5 @@
+@import url("2047469.css");
+
 /* 2047530-var.css (Responsive2 by in10se - CSS Variables Edition) */
 /* This is a CSS variable-based version for A/B testing with ?csstest=1 */
 
@@ -5,8 +7,6 @@
   /* Theme-specific variables will be added as colors are identified */
   /* For now, this version matches the original stylesheet */
 }
-
-@import url("2047469.css");
 html
 {
 margin: 24px 2%;

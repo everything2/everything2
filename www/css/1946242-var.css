@@ -1,3 +1,5 @@
+@import url("1965235.css") ;
+
 /* 1946242-var.css (Warm understatement by DonJaime - CSS Variables Edition) */
 /* This is a CSS variable-based version for A/B testing with ?csstest=1 */
 
@@ -5,8 +7,6 @@
   /* Theme-specific variables will be added as colors are identified */
   /* For now, this version matches the original stylesheet */
 }
-
-@import url("1965235.css") ;
 /* LINKS */
 :link {
 color: #833 ;
