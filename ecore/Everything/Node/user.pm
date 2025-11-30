@@ -185,16 +185,8 @@ sub deliver_message
     "archive" => 0
   });
 
-  # Insert archived copy in sender's outbox (for direct messages only, not usergroup)
-  unless ($messagedata->{for_usergroup}) {
-    $self->DB->sqlInsert("message",{
-      "author_user" => $messagedata->{from}->node_id,
-      "for_user" => $messagedata->{from}->node_id,
-      "msgtext" => $messagedata->{message},
-      "for_usergroup" => 0,
-      "archive" => 1
-    });
-  }
+  # Note: Outbox entry is created in API::messages::create, not here
+  # This allows one outbox entry per send operation, not per recipient
 
   return {"successes" => 1};
 }

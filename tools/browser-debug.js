@@ -46,7 +46,22 @@
 
 const puppeteer = require('puppeteer');
 
+// Default base URL - can be overridden with E2_URL environment variable
+// For reCAPTCHA testing in dev, use: E2_URL=http://development.everything2.com:9080
 const BASE_URL = process.env.E2_URL || 'http://localhost:9080';
+const DEV_URL = 'http://development.everything2.com:9080';
+
+/**
+ * Get the base URL to use for authentication
+ * If the target URL is for development.everything2.com, use that for auth
+ * Otherwise use BASE_URL
+ */
+function getBaseUrlForAuth(targetUrl) {
+  if (targetUrl && targetUrl.includes('development.everything2.com')) {
+    return DEV_URL;
+  }
+  return BASE_URL;
+}
 
 // Test user credentials from tools/seeds.pl
 const TEST_USERS = {
@@ -215,10 +230,15 @@ function validateUser(username) {
 
 /**
  * Helper function to create authenticated browser session
+ * @param {string} username - The username to log in as
+ * @param {string} targetUrl - Optional target URL (used to determine which base URL to use for auth)
  */
-async function createAuthenticatedSession(username) {
+async function createAuthenticatedSession(username, targetUrl = null) {
   const userInfo = validateUser(username);
   const password = userInfo.password;
+
+  // Determine which base URL to use based on target URL
+  const authBaseUrl = getBaseUrlForAuth(targetUrl);
 
   const browser = await puppeteer.launch({
     headless: true,
@@ -227,11 +247,11 @@ async function createAuthenticatedSession(username) {
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 1024 });
 
-  console.log(`Logging in as ${username} (${userInfo.role})...`);
+  console.log(`Logging in as ${username} (${userInfo.role}) via ${authBaseUrl}...`);
 
   // ALWAYS log in against the root page to ensure Sign In nodelet is present
   // This handles fullpage layouts (chatterlight) that don't have the standard sidebar
-  await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await page.goto(authBaseUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
   // Wait for Sign In nodelet to load, then expand if collapsed
   await page.waitForSelector('#signin_user', { timeout: 5000 });
@@ -307,7 +327,7 @@ async function loginAndScreenshot(username) {
 }
 
 async function fetchAsUser(username, url = BASE_URL) {
-  const { browser, page, userInfo } = await createAuthenticatedSession(username);
+  const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
 
   console.log(`Navigating to ${url}...`);
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
@@ -321,7 +341,7 @@ async function fetchAsUser(username, url = BASE_URL) {
 }
 
 async function screenshotAsUser(username, url = BASE_URL) {
-  const { browser, page, userInfo } = await createAuthenticatedSession(username);
+  const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
 
   console.log(`Navigating to ${url}...`);
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
@@ -340,7 +360,7 @@ async function screenshotAsUser(username, url = BASE_URL) {
 }
 
 async function getHtmlAsUser(username, url = BASE_URL) {
-  const { browser, page, userInfo } = await createAuthenticatedSession(username);
+  const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
 
   // Navigate to target URL
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });

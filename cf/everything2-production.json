@@ -546,6 +546,11 @@
             {
               "Effect": "Allow",
               "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/recaptcha_enterprise_api_key"]]}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
               "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/infected_ips_secret"]]}
             },
             {
