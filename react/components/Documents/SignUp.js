@@ -75,6 +75,7 @@ const SignUp = ({ data, user, e2 }) => {
   const [confirmEmail, setConfirmEmail] = useState('')
   const [recaptchaToken, setRecaptchaToken] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [recaptchaReady, setRecaptchaReady] = useState(!use_recaptcha) // Ready immediately if not using reCAPTCHA
 
   // Username availability state
   const [usernameStatus, setUsernameStatus] = useState('idle') // idle, checking, available, taken, invalid
@@ -83,32 +84,27 @@ const SignUp = ({ data, user, e2 }) => {
   // Client-side validation state
   const [errors, setErrors] = useState({})
 
-  // Load reCAPTCHA Enterprise script and generate token when ready
+  // Load reCAPTCHA Enterprise script and mark ready when loaded
   useEffect(() => {
     if (!use_recaptcha || !recaptcha_v3_public_key) {
+      setRecaptchaReady(true)
       return
     }
 
-    const executeRecaptcha = () => {
+    const markReady = () => {
       // reCAPTCHA Enterprise uses grecaptcha.enterprise
       const recaptcha = window.grecaptcha?.enterprise || window.grecaptcha
       if (recaptcha) {
         recaptcha.ready(() => {
-          recaptcha.execute(recaptcha_v3_public_key, { action: 'signup' })
-            .then(token => {
-              console.log('reCAPTCHA token generated, length:', token.length)
-              setRecaptchaToken(token)
-            })
-            .catch(err => {
-              console.error('reCAPTCHA token generation failed:', err)
-            })
+          console.log('reCAPTCHA is ready')
+          setRecaptchaReady(true)
         })
       }
     }
 
     // Check if script already loaded
     if (window.grecaptcha) {
-      executeRecaptcha()
+      markReady()
       return
     }
 
@@ -117,13 +113,15 @@ const SignUp = ({ data, user, e2 }) => {
     script.src = `https://www.google.com/recaptcha/enterprise.js?render=${recaptcha_v3_public_key}`
     script.async = true
 
-    // Execute reCAPTCHA after script loads
+    // Mark ready after script loads
     script.onload = () => {
-      executeRecaptcha()
+      markReady()
     }
 
     script.onerror = () => {
       console.error('Failed to load reCAPTCHA Enterprise script')
+      // Still allow form submission - server will reject if token missing
+      setRecaptchaReady(true)
     }
 
     document.head.appendChild(script)
@@ -204,6 +202,7 @@ const SignUp = ({ data, user, e2 }) => {
   // Check if form is valid for submission
   const isFormValid = () => {
     return (
+      recaptchaReady &&
       username &&
       usernameStatus === 'available' &&
       password &&
@@ -256,16 +255,50 @@ const SignUp = ({ data, user, e2 }) => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    // Always prevent default - we'll submit programmatically after getting fresh token
+    e.preventDefault()
+
     // Validate client-side first
     if (!validateForm()) {
-      e.preventDefault()
       return
     }
 
     setIsSubmitting(true)
-    // Allow form to submit naturally - server will process and return result
-    // This ensures form data is available when buildReactData is called
+
+    // If reCAPTCHA is enabled, get a fresh token right before submission
+    // Tokens expire after ~2 minutes, so we must generate fresh ones
+    if (use_recaptcha && recaptcha_v3_public_key) {
+      try {
+        const recaptcha = window.grecaptcha?.enterprise || window.grecaptcha
+        if (recaptcha) {
+          const freshToken = await new Promise((resolve, reject) => {
+            recaptcha.ready(() => {
+              recaptcha.execute(recaptcha_v3_public_key, { action: 'signup' })
+                .then(resolve)
+                .catch(reject)
+            })
+          })
+          console.log('Fresh reCAPTCHA token generated, length:', freshToken.length)
+          setRecaptchaToken(freshToken)
+
+          // Update the hidden field directly since state update is async
+          const form = document.getElementById('signupform')
+          const tokenInput = form.querySelector('input[name="recaptcha_token"]')
+          if (tokenInput) {
+            tokenInput.value = freshToken
+          }
+        }
+      } catch (err) {
+        console.error('Failed to generate fresh reCAPTCHA token:', err)
+        setIsSubmitting(false)
+        setErrors({ submit: 'Failed to verify you are human. Please try again.' })
+        return
+      }
+    }
+
+    // Now submit the form
+    document.getElementById('signupform').submit()
   }
 
   // Username status indicator

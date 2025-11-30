@@ -342,6 +342,7 @@ sub display
 
   if($prompt ne '')
   {
+    $self->devLog("sign_up display: RETURNING ERROR - prompt='$prompt', username='$username'");
     my $formtime = time;
     my $result = {
       "prompt" => $prompt,
@@ -389,6 +390,7 @@ sub display
   }
 
   $self->APP->set_spam_threshold($new_user, $recaptcha_response->{score});
+  $self->devLog("sign_up display: SUCCESS - user created: $username");
   my $result = {"success" => 1, "username" => $username, "linkvalid" => $self->valid_for_days, "type" => "sign_up"};
   $self->_display_result($result);
   return $result;
@@ -398,8 +400,11 @@ sub buildReactData
 {
   my ($self, $REQUEST) = @_;
 
+  $self->devLog("sign_up buildReactData: CALLED");
   # Call existing display() method which returns perfect React data structure
-  return $self->display($REQUEST, $REQUEST->node);
+  my $result = $self->display($REQUEST, $REQUEST->node);
+  $self->devLog("sign_up buildReactData: RETURNING result type=" . ($result->{type} // 'undef') . ", success=" . ($result->{success} // '0') . ", prompt='" . ($result->{prompt} // '') . "'");
+  return $result;
 }
 
 __PACKAGE__->meta->make_immutable;

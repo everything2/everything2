@@ -105,7 +105,22 @@ sub create
             }
           }
 
-          return [$self->HTTP_OK, $deliver_to_node->deliver_message({"from" => $sender, "message" => $data->{message}})]
+          my $result = $deliver_to_node->deliver_message({"from" => $sender, "message" => $data->{message}});
+
+          # Create outbox entry for sender
+          # Format: you said "message" to [recipient] or [groupname] (usergroup)
+          my $recipient_label = '[' . $deliver_to_node->title . ']';
+          if ($deliver_to_node->type->title eq 'usergroup') {
+            $recipient_label .= ' (usergroup)';
+          }
+          my $outbox_msg = 'you said "' . $data->{message} . '" to ' . $recipient_label;
+          $self->DB->sqlInsert("message_outbox", {
+            "author_user" => $sender->node_id,
+            "msgtext" => $outbox_msg,
+            "archive" => 0
+          });
+
+          return [$self->HTTP_OK, $result]
         }else{
           $self->devLog("Can't send message due to not having delivery_message endpoint on node type ".$deliver_to_node->type.". Returning BAD REQUEST");
           return [$self->HTTP_BAD_REQUEST];

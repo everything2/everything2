@@ -1190,119 +1190,6 @@ sub bounty_hunters_wanted {
     return $str;
 }
 
-sub buffalo_generator {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    my @verbNouns = qw(Buffalo buffalo police bream perch char people dice cod smelt pants);
-    my @intermediatePunctuation = ( ',', ';', ',', ':', '...' );
-    my @finalPunctuation        = ( '.', '!', '?' );
-
-    my $str      = '';
-    my $sentence = '';
-
-    @verbNouns = ('buffalo') if ( $query->param('onlybuffalo') );
-
-    while (1) {
-        $sentence = '';
-        while (1) {
-            $sentence .= $verbNouns[ int( rand(@verbNouns) ) ];
-            last if ( rand(1) < 0.1 );
-            $sentence .=
-              $intermediatePunctuation[ int( rand(@intermediatePunctuation) ) ]
-              if ( rand(1) < 0.25 );
-            $sentence .= ' ';
-        }
-        $sentence = ucfirst($sentence);
-        $sentence .= $finalPunctuation[ int( rand(@finalPunctuation) ) ] . ' ';
-        $str      .= $sentence;
-        last if ( rand(1) < 0.4 );
-    }
-
-    $str .=
-        q|<ul><li>|
-      . linkNode( $NODE, 'MOAR', { moar => 'more' } )
-      . q|</li>|;
-    $str .=
-        q|<li>|
-      . linkNode( $NODE, 'Only buffalo', { onlybuffalo => 'true' } )
-      . q|</li>|;
-    $str .=
-        q|<li>|
-      . linkNodeTitle('Buffalo Haiku Generator|In haiku form')
-      . q|</li>|;
-    $str .=
-      q|<li>|
-      . linkNodeTitle('Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo|...what?'
-      ) . q|</li></ul>|;
-
-    return $str;
-
-}
-
-sub buffalo_haiku_generator {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    my @verbNouns = qw(Buffalo buffalo police people bream perch char dice cod smelt pants);
-    my @wordLength =
-      ( 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 );
-    my @intermediatePunctuation = ( ',', ';', ',', ':', '...' );
-    my @finalPunctuation        = ( '.', '!', '?' );
-    my @lineLength              = ( 5,   7,   5 );
-    my $str                     = '';
-    my $sentence                = '';
-
-    @verbNouns = ('buffalo') if ( $query->param('onlybuffalo') );
-
-    $sentence = '<p style="text-align:center">';
-    for ( my $i = 0 ; $i < 3 ; $i++ ) {
-        my $syllables = 0;
-        while ( $syllables < $lineLength[$i] ) {
-            my $wordNumber = ( rand(@verbNouns) );
-            if ( $syllables + $wordLength[$wordNumber] > $lineLength[$i] ) {
-                $wordNumber =
-                  ( 4 + rand( @verbNouns - 4 ) );    # Pick a one-syllable word.
-            }
-            $syllables += $wordLength[$wordNumber];
-            $sentence .= $verbNouns[$wordNumber];
-            $sentence .=
-              $intermediatePunctuation[ int( rand(@intermediatePunctuation) ) ]
-              if ( rand(1) < 0.1 );
-            $sentence .= ' ';
-        }
-        $sentence .= q|<br />|;
-    }
-    $sentence = ucfirst($sentence);
-    $str .= $sentence . q|</p>|;
-
-    $str .=
-        q|<ul><li>|
-      . linkNode( $NODE, 'Furthermore!', { moar => 'further' } )
-      . q|</li>|;
-    $str .=
-        q|<li>|
-      . linkNodeTitle('Buffalo Generator|More buffalo, less haiku')
-      . q|</li>|;
-    $str .=
-      q|<li>|
-      . linkNodeTitle(
-        'Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo')
-      . q|</li></ul>|;
-
-    return $str;
-}
-
 sub clientdev_home {
     my $DB       = shift;
     my $query    = shift;
@@ -1950,25 +1837,6 @@ qq|<p>Slow/Million Queries is a decent barometer of how much lag the Database is
     return $str;
 }
 
-sub decloaker {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    my $str = q|<p><em>Or to drown my clothes, and say I was stripped.</em> --- [Parolles]</p>|;
-
-    return qq|$str The Treaty of Algeron prohibits your presence.|
-      if $APP->isGuest($USER);
-    $APP->uncloak( $USER, $VARS );
-    $str .= '...like a new-born babe....';
-
-    return $str;
-}
-
 sub display_categories {
     my $DB       = shift;
     my $query    = shift;
@@ -2581,45 +2449,6 @@ and may be interactive or help keep the site running.</p>|;
     return $str;
 }
 
-sub e2_acceptable_use_policy {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    return qq|<center><h1>Acceptable Use Policy</h1></center>
-
-<hr />
-
-<p>By using this website, you implicitly agree to the following condition(s):</p>
-
-<ol>
-<li>[Be cool]. Do not harass other users in any way (i.e., in the chatterbox, via /msg, in writeups, in the creation of nodeshells or in any other way). "Harassment" is defined as:
-  <ul><li>Threatening (an)other user(s) in any way, and/or</li>
-      <li>Creating additional accounts intended to annoy other users</li>
-  </ul></li>
-<li>Do not flood the chatterbox or the New Writeups list ("spamming").</li>
-</ol>
-
-<p>By willfully violating (at the discretion of the administration) any of the above condition(s), you may be subjected to the following actions:</p>
-
-<ul>
-<li>You may be forbidden from noding for as long as deemed necessary by the administration.</li>
-<li>You may be forbidden from using the chatterbox for as long as deemed necessary by the administration.</li>
-<li>Your account may be locked and made inaccessible.</li>
-<li>Your IP address/hostname may be banned from accessing our webservers.</li>
-<li>Depending on the severity of the violation(s), a complaint may be made to your internet service provider.</li>
-</ul>
-
-<p>Attempting to circumvent any disciplinary action <b>by any means</b> will most assuredly result in a complaint being made to your internet service provider.</p>
-
-<p><small><small>Last revised: 23 April 2008</small></small></p>|;
-
-}
-
 sub e2_bouncer {
     my $DB       = shift;
     my $query    = shift;
@@ -2999,31 +2828,6 @@ sub e2_penny_jar {
 
         }
     }
-
-    return $str;
-}
-
-sub e2_rot13_encoder {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    my $str =
-qq|<p>This is the E2 Rot13 Encoder.  It also does decoding.  You can just paste the stuff you want swapped around in the little box and click the buttons. It's really quite simple.  Enjoy!</p>|;
-
-    $str .=
-      qq|<form name="myform"><textarea name="rotter" rows="30" cols="80">|;
-
-    my $n = getNodeById( $query->param("lastnode_id") );
-    if ( defined($n) and $$n{type}{title} eq "writeup" ) {
-        $str .= encodeHTML( $$n{doctext} );
-    }
-    $str .=
-qq|</textarea><br><input type="button" name="e2_rot13_encoder" value="Rot13 Encode"><input type="button" name="e2_rot13_encoder" value="Rot13 Decode"></form><br><br><br><br><br><br><small><p align="right">Thanks to [mblase] for the function update.</p></small>|;
 
     return $str;
 }
@@ -4317,10 +4121,6 @@ sub everything_poll_directory {
 
 }
 
-sub everything_quote_server {
-    return q|<br><br><b><font size="3"><div id="quoteserver" align="center"></div></font></b><br><br><br>|;
-}
-
 sub everything_user_poll {
     return htmlcode('showcurrentpoll');
 }
@@ -5484,72 +5284,6 @@ sub level_distribution {
     return $str;
 }
 
-sub manna_from_heaven {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    my $numDays = $query->param("days") || 30;
-
-    my $str =
-        "<form method='get'><input type='hidden' name='node_id' value='"
-      . $$NODE{node_id}
-      . "' /><input type='text' value='$numDays' name='days' /><input type='submit' name='sexisgood' value='Change Days' /></form>";
-    my $usergroup = getNodeById(923653);    #content editors node
-
-    my $wuCount;
-    my $wuTotal = 0;
-
-    $str .= q|<table width='25%'><tr><th width='80%' >User</th><th width='20%'>Writeups</th></tr>|;
-
-    foreach ( @{ $$usergroup{group} } ) {
-        my $u = getNodeById($_);
-        next if $$u{title} eq 'e2gods';
-        $wuCount = $DB->sqlSelect( 'count(*)', 'node',
-                'type_nodetype=117 and author_user='
-              . $_
-              . " and TO_DAYS(NOW())-TO_DAYS(createtime) <=$numDays" );
-        $wuTotal += $wuCount;
-        $str .=
-            q|<tr><td><b>|
-          . linkNode($u)
-          . q|</b></td><td>|
-          . linkNode( getNode( 'everything user search', 'superdoc' ),
-            " $wuCount",
-            { usersearch => $$u{title}, orderby => 'createtime DESC' } )
-          . q|</td></tr>|;
-    }
-
-    $usergroup = getNodeById(829913);    # e2gods
-
-    foreach ( @{ $usergroup->{group} } ) {
-        my $u = getNodeById($_);
-        $wuCount = $DB->sqlSelect( 'count(*)', 'node',
-                'type_nodetype=117 and author_user='
-              . $_
-              . " and TO_DAYS(NOW())-TO_DAYS(createtime) <=$numDays" );
-        $wuTotal += $wuCount;
-        $str .=
-            q|<tr><td><b>|
-          . linkNode($u)
-          . q|</b></td><td>|
-          . linkNode( getNode( 'everything user search', 'superdoc' ),
-            " $wuCount",
-            { usersearch => $u->{title}, orderby => 'createtime DESC' } )
-          . q|</td></tr>|;
-    }
-
-    $str .= qq|<tr><td><b>Total</b></td><td>$wuTotal</td></tr>|;
-    $str .= q|</table>|;
-
-    return $str;
-
-}
-
 sub content_reports {
     my $DB       = shift;
     my $query    = shift;
@@ -6545,48 +6279,6 @@ sub websterbless
 
     $output .= $str.q|</table>|.htmlcode('closeform');
     return $output;
-}
-
-sub login
-{
-    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-
-    my $str = '';
-    if($query->param('op') eq 'login' && !$APP->isGuest($USER))
-    {
-        $str.= "Hey.  Glad you're back.  Would you like to go to your ".linkNode($USER, 'home node').' or to '.linkNode($Everything::CONF->default_node).'?<br />';
-        $str .= '...or back to '.linkNode($query->param('lastnode_id')).'?<br />' if ($query->param('lastnode_id'));
-        return $str;
-    } elsif ($query->param('op') eq 'login') {
-        $str .= q|Oops.  You must have the wrong login or password or something:<p>|;
-    } elsif (!$APP->isGuest($USER)) {
-        $str.=q|Hey, |.linkNode($USER).q|...  this is where you log in:<p>|;
-    }else {
-        $str .=q|Welcome to |.$Everything::CONF->site_name.q|.  Authenticate yourself:<p>|;
-    }
-
-    #security fix
-    my $pass = $query->param('passwd');
-    $pass =~ s/./\*/g;
-    $query->param('passwd', $pass);
-
-    $str .= q|<form method="POST" action="|.$ENV{SCRIPT_NAME}.q|" id="loginsuperdoc">|.
-        q|<input type="hidden" name="op" value="login" />|.
-        $query->hidden('node_id', getId($NODE))."\n".
-        $query->hidden('lastnode_id', scalar($query->param('lastnode_id')))."\n".
-
-    $query->textfield (-name => 'user',
-        -size => 20,
-        -maxlength => 20) . q|<br>| .
-    $query->password_field(-name => 'passwd',
-        -size => 20,
-        -maxlength => 240) .q|<br>|.
-    $query->checkbox('expires', '', '+10y', 'save me a permanent cookie, cowboy!').
-    $query->submit('sexisgood', 'submit') .
-    $query->end_form;
-    $str.=q{[Reset password[superdoc]|Forgot your password or username?]};
-    $str.=q{<p>Don't have an account? [Sign up[superdoc]|Create one]!};
-    return $str;
 }
 
 sub sanctify_user
@@ -14251,515 +13943,6 @@ sub historical_iron_noder_stats {
     return $str;
 }
 
-sub node_tracker {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    my $str = '<p><em>Finally, its time had come.</em></p>
-
-<p>This is essentially a port of [cow of doom]\'s node tracker.
-Obviously there\'s been some interface modification since we\'ve got a
-direct line to the e2 database, but he did most of the heavy lifting,
-and should be lauded for his hard work, [pbuh].</p>
-
-<p>This is in beta, and things may change at any moment. To that end,
-I haven\'t really messed with any of the data being collected (or much of anything else),
-so if there\'s a feature you would like here or something seems off (especially if things are broken!),
-please let [kthejoker|me] know.  Thanks.</p>
-
-<p>P.S.: Do <strong>not</strong> sit here and refresh this page constantly.
-It\'s not the heaviest page on the site, but it\'s not exactly the lightest either, okay?
-I will hunt you down. So just visit it every once in a while, marvel at your greatness,
-hit "update" to save the new data, and then head back out into the nodegel. Cool? - k</p>
-
-';
-
-#'
-
-return "Sorry, for logged in users only" if ($APP->isGuest($USER));
-
-my $trackerStr;
-my %info;
-my %oldinfo;
-my %node;
-my %oldnode;
-my %types;
-my @reps;
-my @wudata;
-my $minmerit;
-my $maxmerit;
-my @nodes;
-my $line=' 'x65;
-
-my ($head, $didhead, $change);
-
-
-local * uniq = sub {
-# takes a list argument
-# assumes the list is sorted (use sort() if not)
-# returns that list with duplicates removed
-# examples: @foo=uniq(@sorted); @foo=uniq(sort(@random));
-  my (@list, @result);
-  @list = @_; @result = ();
-  foreach (@list) {
-    if ((!@result) || ($result[-1] != $_)) {push(@result,$_);}
-  }
-  return(@result);
-};
-
-my $userid=$$USER{user_id};
-#my $userid = $query->param('userid') if $query->param('userid');
-
-
-local * getOldInfo = sub {
-my $tData = $DB->sqlSelect("tracker_data","nodetracker","tracker_user=$userid limit 1");
-return 0 unless $tData;
-return 1 if ($tData eq 'data');
-my @tD = split(/\n/,$tData);
-my $iData = shift(@tD);
-my $dStr;
-($oldinfo{xp}, $oldinfo{nodes}, $oldinfo{cools}, $oldinfo{totalrep}, $oldinfo{merit},
-         $oldinfo{devotion}, $oldinfo{average}, $oldinfo{median}, $oldinfo{upvotes}, $oldinfo{downvotes},
-         $oldinfo{maxcools},$oldinfo{maxvotes})  = split(/:/,$iData);
-
-    $oldinfo{xp} = $oldinfo{xp} || 0;
-    $oldinfo{cools} = $oldinfo{cools} ||0;
-    $oldinfo{totalrep} = $oldinfo{totalrep} || 0;
-    $oldinfo{nodes} = $oldinfo{nodes} ||0;
-    $oldinfo{merit} = $oldinfo{merit} || 0;
-    $oldinfo{devotion} = $oldinfo{devotion} || 0;
-    $oldinfo{average} = $oldinfo{average} || 0;
-    $oldinfo{median} = $oldinfo{median} || 0;
-    $oldinfo{upvotes} = $oldinfo{upvotes} || 0;
-    $oldinfo{downvotes} = $oldinfo{downvotes} || 0;
-    $oldinfo{maxcools} = $oldinfo{maxcools} || 0;
-    $oldinfo{maxvotes} = $oldinfo{maxvotes} || 0;
-    chomp($oldinfo{xp}, $oldinfo{nodes}, $oldinfo{cools}, $oldinfo{totalrep},$oldinfo{merit},
-              $oldinfo{devotion}, $oldinfo{average}, $oldinfo{median}, $oldinfo{upvotes}, $oldinfo{downvotes},
-              $oldinfo{maxcools},$oldinfo{maxvotes});
-    if ($oldinfo{nodes}) {
-            $oldinfo{wnf} = (($oldinfo{totalrep}+(10*$oldinfo{cools}))/$oldinfo{nodes});
-            $oldinfo{nodefu} = $oldinfo{xp}/$oldinfo{nodes};
-            $oldinfo{coolratio} = ($oldinfo{cools}*100)/$oldinfo{nodes};
-        }
-
-foreach (@tD) {
-           chomp;
-            if (/^(\d+):(-?\d+):(\d+):(.+):(\d+):(\d+)$/) {
-                @{$oldnode{$1}} = ($2,$3,$4,$5,$6);
-            }
-            elsif (/^(\d+):(-?\d+):(\d+):(.*)$/) {
-                @{$oldnode{$1}} = ($2,$3,$4,0,0);
-            }
-
-            if ($oldinfo{maxrep} <= 0) {$oldinfo{maxrep}=$oldinfo{minrep}=$2;}
-            if ($2 > $oldinfo{maxrep}) {$oldinfo{maxrep}=$2;}
-            if ($2 < $oldinfo{minrep}) {$oldinfo{minrep}=$2;}
-}
-
-$oldinfo{votes} = $oldinfo{upvotes} + $oldinfo{downvotes};
-
-     return 1;
-
-};
-
-local * infodiff = sub {
-   my $arg = $_[0];
-    my $diff_str = $info{$arg};
-    $oldinfo{$arg} = 0 unless defined($oldinfo{$arg});
- if ($oldinfo{$arg} != $info{$arg}) {
-        $diff_str .= " (".($info{$arg}>$oldinfo{$arg}?'+':'');
-        $diff_str .= ($info{$arg}-$oldinfo{$arg}).")";
-    }
-    return $diff_str;
-};
-
-local * infodiff_fp = sub {
-    my $arg = $_[0];
-    my $perc = $_[1];
-
-    my $diff_str = sprintf "%1.2f", $info{$arg};
-    if (defined($perc)) {$diff_str .= '%';}
-
-    $oldinfo{$arg} = 0 unless defined($oldinfo{$arg});
-
-    my $diff = $info{$arg} - $oldinfo{$arg};
-    if (($diff > 0.001) || ($diff < -0.001)) {
-        $diff_str .= " (";
-        $diff_str .= "+" if ($diff > 0);
-        $diff_str .= sprintf "%1.3f%s)", $diff, defined($perc) ? "%" : "";
-    }
-    return($diff_str);
-};
-
-local * MakeEven = sub{
-    my ($aref) = @_;
-    my $len = 0;
-    my $pipetext = 0; # length of undisplayed pipe link text
-    # find max length of the array contents
-    # note that hard/pipe link code artificially extends this with undisplayed characters
-    foreach (@$aref) {
-        $pipetext = 0;
-        if (m/\[(.*?\|)/) {
-            $pipetext = length($1);
-            }
-        $len = (length($_) - $pipetext) if ((length($_) - $pipetext) > $len)
-    }
-    foreach (@$aref) {
-        if (m/--$/) {
-            $_ .= "-" x ($len - length($_)) if($len - length($_) > 0);
-        }
-        else {
-            $_ .= " " x ($len - length($_)) if($len - length($_) > 0);
-        }
-        # hard link characters are counted but not displayed
-        # add spaces too account for them
-        if (m/\[/) {
-            $_ .= " ";
-            if (m/\]/) { $_ .= " "; }
-        }
-    }
-};
-
-local * getCurrentInfo = sub {
-
-$info{xp} = $$USER{experience};
-my $csr= $DB->sqlSelectMany(
-  "node.node_id, node.reputation, writeup.cooled, parent_node.title, type_node.title AS type"
-  , 'node
-      JOIN writeup ON node.node_id = writeup.writeup_id
-    JOIN node AS parent_node ON parent_node.node_id = writeup.parent_e2node
-    JOIN node AS type_node ON  type_node.node_id = writeup.wrtype_writeuptype'
-  , "node.author_user = $userid AND node.type_nodetype=117"
-  , 'ORDER BY writeup.publishtime DESC'
-);
-
-my $nStr = 'test';
-while (my $N = $csr->fetchrow_hashref) {
-        my %n;
-
-my ($name, $type) = ($$N{title}, $$N{type});
-
-        if (($name eq "E2 Nuke Request") or
-            ($name eq "Edit these E2 titles") or
-            ($name eq "Nodeshells marked for destruction") or
-            ($name eq "Broken Nodes")) {
-                next;
-        }
-
-        $n{name} = $name;
-        $n{type} = $type;
-        $n{node_id} = $$N{node_id};
-        $n{reputation} = $$N{reputation};
-        $n{cooled} = $$N{cooled};
-
-        my ($votescast) = $DB->sqlSelect('count(*)', 'vote', 'vote_id='.$$N{node_id});
-        $n{upvotes} = ($votescast + $$N{reputation})/2;
-        $n{downvotes} = ($votescast - $$N{reputation})/2;
-
-        if (int($n{upvotes}) != $n{upvotes}) {
-            $n{downvotes} = $DB->sqlSelect('count(*)', 'vote', 'vote_id='.$$N{node_id}.' and weight=-1');
-            $n{upvotes} = $votescast - $n{downvotes};
-            $n{reputation} = $n{upvotes} - $n{downvotes};
-        }
-
-        $n{votes} = $n{downvotes} + $n{upvotes};
-
-        $types{$type} = 0 unless defined($types{$type});
-        $types{$type}++;
-        $info{nodes}++;
-
-        push(@reps, $n{reputation});
-        $info{totalrep} += $n{reputation};
-        $info{cools} += $n{cooled};
-        $info{downvotes} += $n{downvotes};
-        $info{upvotes} += $n{upvotes};
-
-        if ($info{nodes} == 1) {
-            $info{maxrep}=$info{minrep}=$n{reputation};
-            $info{maxvotes}=$n{votes};
-            $info{maxcools}=$n{cooled};
-        }
-
-        if ($n{reputation} > $info{maxrep}) {$info{maxrep}=$n{reputation}}
-        if ($n{reputation} < $info{minrep}) {$info{minrep}=$n{reputation}}
-        if ($n{votes} > $info{maxvotes}) {$info{maxvotes} = $n{votes}}
-        if ($n{cooled} > $info{maxcools}) {$info{maxcools} = $n{cooled}}
-
-        $node{$n{node_id}} = [$n{reputation},$n{cooled},$name,$n{upvotes},$n{downvotes}];
-
-    }
-    $info{votes} = $info{upvotes} + $info{downvotes};
-
-    return $nStr;
-
-};
-
-local * meritCalc = sub {
-
-my @rep2 = sort {$a <=> $b} @reps;
-
-my $sz = 0 + @rep2;
-return unless $sz;
-my $stt = int(($sz)/4);
-my $stp = int(($sz*3)/4 + 0.5);
-my $tot = 0;
-my $tot2 = 0;
-
-my @counts;
-
-for (my $i=0; $i<500; ++$i) {
-   push @counts, 0;
-}
-
-for (my $i=$stt; $i<$stp; ++$i) {
-   my $rep = $rep2[$i];
-   $tot += $rep;
-   $counts[$rep]++ if ($rep >= 0);
-}
-
-
-for (my $i=0; $i<500; ++$i) {
-   $counts[$i] = 0;
-}
-my $minrep = $rep2[0];
-
-for (my $i=0; $i<$sz; ++$i) {
-   my $rep = $rep2[$i];
-   $tot2 += $rep;
-   $counts[$rep - $minrep]++;
-}
-
-
-$info{average} = $tot2/$sz;
-$info{median} = $rep2[$sz/2];
-$info{merit} = $tot/($stp-$stt);
-$info{devotion} = int($info{merit} * @rep2 + 0.5);
-$minmerit = $rep2[$stt];
-$maxmerit = $rep2[$stp-1];
-
-
-if ($info{nodes}) {
-  $info{wnf} = (($info{totalrep}+(10*$info{cools}))/$info{nodes});
-  $info{nodefu} = $info{xp}/$info{nodes};
-  $info{coolratio} = ($info{cools}*100)/$info{nodes};
-}
-};
-
-local * trackerOverview = sub {
-$trackerStr .= sprintf("
-        E2 USER INFO: last update %s
-\n",
-       $DB->sqlSelect("lasttime","nodetracker","tracker_user=$userid limit 1"));
-
-
-
-my @c1;
-my @c2;
-my @c3;
-
-push @c1, "Nodes:     "    . infodiff('nodes');
-push @c2, "XP:          "  . infodiff('xp');
-push @c3, "Cools:       "  . infodiff('cools');
-
-push @c1, "Max Rep:   "    . infodiff('maxrep');
-push @c2, "Min Rep:     "  . infodiff('minrep');
-push @c3, "Total Rep:   "  . infodiff('totalrep');
-
-push @c1, "[Node-Fu]:   "  . infodiff_fp('nodefu');
-push @c2, "[Node-Fu|WNF]:         "        . infodiff_fp('wnf');
-push @c3, "Cool Ratio:  "  . infodiff_fp('coolratio', 'yes');
-
-push @c1, "[Merit]:     "  . infodiff_fp('merit');
-push @c2, "Average Rep: "  . infodiff_fp('average');
-push @c3, "Median rep:  "  . infodiff('median');
-
-push @c1, "Up votes:  "     . infodiff('upvotes');
-push @c2, "[Devotion]:    " . infodiff('devotion');
-push @c3, "Merit Range: $minmerit to $maxmerit";
-
-push @c1, "Max Cools: "   . infodiff('maxcools');
-push @c2, "Down votes:  " . infodiff('downvotes');
-push @c3, "Votes:       " . infodiff('votes');
-
-push @c1, "Max Votes: "   . infodiff('maxvotes');
-
-
-MakeEven(\@c1);
-MakeEven(\@c2);
-
-for (my $i=0; $i<7; ++$i) {
-    $trackerStr .= "$c1[$i]   $c2[$i]   $c3[$i]\n";
-}
-
-$trackerStr .= "\n</pre><tt>";
-};
-
-
-
-
-
-local * trackerNodes = sub {
-
-
-if ($info{nodes}) {
-  foreach (keys %types) {
-    $trackerStr .= sprintf("%s: %3.1f%%  ",$_,(100 * $types{$_})/($info{nodes}));
-  }
-}
-
-
-$trackerStr .= "\n$line\n</tt><pre>";
-
-$head="
-        Published/Removed/Renamed:
-Change      Title\n$line\n";
-$didhead = 0;
-
-foreach (uniq(sort({$b<=>$a} keys(%node),keys(%oldnode)))) {
-    if (!exists($oldnode{$_})) {
-        if (!$didhead) {$trackerStr .= $head; $didhead = 1;}
-        $trackerStr .= sprintf("Published | %s\n",$node{$_}->[2]);
-        $oldnode{$_} = [0,0,$node{$_}->[2]];
-        push @nodes, $_;
-    } elsif (!exists($node{$_})) {
-        if (!$didhead) {$trackerStr .= $head; $didhead = 1;}
-        $trackerStr .= sprintf("Removed   | %s\n",$oldnode{$_}->[2]);
-    } else {
-        if ($node{$_}->[0] != $oldnode{$_}->[0]) {push (@nodes, $_);}
-        if ($node{$_}->[1] != $oldnode{$_}->[1]) {push (@nodes, $_);}
-        if ($node{$_}->[3] != $oldnode{$_}->[3]) {push (@nodes, $_);}
-        if ($node{$_}->[4] != $oldnode{$_}->[4]) {push (@nodes, $_);}
-        if ($node{$_}->[2] ne $oldnode{$_}->[2]) {
-            if (!$didhead) {$trackerStr .= $head; $didhead = 1;}
-            $trackerStr .= sprintf("Renamed   | %s->%s\n",$oldnode{$_}->[2],$node{$_}->[2]);
-        }
-    }
-}
-$change = undef;
-if ($didhead) {$trackerStr .= $line."\n"; $change = 1;}
-};
-
-local * trackerRep = sub {
-
-$head="
-        Reputation Changes / Cools:\n";
-
-$didhead = 0;
-my (@a1, @a2, @a3, @a4, @a5, @a6);
-
-
-foreach (uniq(@nodes)) {
-  if (!$didhead) {
-      $trackerStr .= $head;
-      $didhead = 1;
-
-      push @a1, "Rep";
-      push @a1, "   ";
-      push @a2, "+/-";
-      push @a2, "   ";
-      push @a3, "C!";
-      push @a3, "  ";
-      push @a4, "+/-";
-      push @a4, "   ";
-      push @a5, "Title";
-      push @a5, "    ";
-push @a6, " ";
-push @a6, " ";
-  }
-  $oldnode{$_}->[3] = 0 unless defined($oldnode{$_}->[3]);
-  $oldnode{$_}->[4] = 0 unless defined($oldnode{$_}->[4]);
-  my $d  = $node{$_}->[0]-$oldnode{$_}->[0];
-  my $d1 = $node{$_}->[3]-$oldnode{$_}->[3];
-  my $d2 = $node{$_}->[4]-$oldnode{$_}->[4];
-  my $dcool = $node{$_}->[1] - $oldnode{$_}->[1];
-  if ($node{$_}->[3] && $node{$_}->[4]) {
-      push @a1, sprintf "%+i (%+i/%+i)", $node{$_}->[0], $node{$_}->[3], -$node{$_}->[4];
-  }
-  else {
-      push @a1, sprintf "%+i", $node{$_}->[0];
-  }
-  if ($d1 and $d2) {
-      push @a2, sprintf "%+i (%+i/%+i)", $d, $d1, -$d2;
-  }
-  else {
-      push @a2, sprintf "%+i", $d;
-  }
-  push @a3, sprintf "%i", $node{$_}->[1];
-  if ($dcool) {
-      push @a4, sprintf "%+i", $dcool;
-  }
-  else {
-      push @a4, "";
-  }
-  push @a5, $node{$_}->[2];
-push @a6, $_;
-}
-
-if ($didhead) {
-
-    MakeEven(\@a1);
-    MakeEven(\@a2);
-    MakeEven(\@a3);
-    MakeEven(\@a4);
-
-    for (my $i=0; $i < @a1; ++$i) {
-        $trackerStr .= "$a1[$i]  $a2[$i]  $a3[$i]  $a4[$i]  ";
-        if ($a6[$i] ne " ") {
-                $trackerStr .= linkNode($a6[$i],"$a5[$i]")."\n";
-        }
-        else {
-                $trackerStr .= "$a5[$i] $a6[$i]\n";
-        }
-    }
-    $trackerStr .= "\n";
-}
-elsif (!$change) {
-  $trackerStr .= "No nodes changed.\n";
-}
-};
-
-local * updateTracker = sub {
-
- my $tStr = "$info{xp}:$info{nodes}:$info{cools}:$info{totalrep}:".
-  "$info{merit}:$info{devotion}:$info{average}:$info{median}:$info{upvotes}:$info{downvotes}:".
-  "$info{maxcools}:$info{maxvotes}\n";
-   foreach (sort {$b<=>$a} keys(%node)) {
-    $tStr .= "$_:".join(":",@{$node{$_}})."\n";
-  }
-$DB->sqlUpdate("nodetracker",{tracker_data => $tStr, -lasttime => 'now()', -hits => 'hits + 1' },"tracker_user=$userid limit 1");
-
-return $tStr;
-
-};
-
-
-
-my $hasOld = getOldInfo();
-if (!$hasOld) {
-$DB->sqlInsert("nodetracker",{tracker_user => $userid, tracker_data => 'data'});
-}
-getCurrentInfo();
-meritCalc();
-
-if ($query->param("update")) {
-updateTracker();
-getOldInfo();
-}
-
-trackerOverview();
-
-trackerNodes();
-
-trackerRep();
-
-my $finalStr = "<pre>".$trackerStr."</pre>";
-
-$finalStr .=htmlcode('openform');
-$finalStr.=$query->submit("update","Update");
-$finalStr.=$query->end_form;
-
-return $str."<br /><br />".$finalStr;
-}
 
 sub e2_word_counter {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
@@ -21359,6 +20542,516 @@ sub universal_message_json_ticker
     $messages -> {msglist} = { msg => $msglist };
 
     return encode_json({"messages" => $messages});
+}
+
+sub node_tracker {
+    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
+
+    my $str = '<p><em>Finally, its time had come.</em></p>
+
+<p>This is essentially a port of [cow of doom]\'s node tracker.
+Obviously there\'s been some interface modification since we\'ve got a
+direct line to the e2 database, but he did most of the heavy lifting,
+and should be lauded for his hard work, [pbuh].</p>
+
+<p>This is in beta, and things may change at any moment. To that end,
+I haven\'t really messed with any of the data being collected (or much of anything else),
+so if there\'s a feature you would like here or something seems off (especially if things are broken!),
+please let [kthejoker|me] know.  Thanks.</p>
+
+<p>P.S.: Do <strong>not</strong> sit here and refresh this page constantly.
+It\'s not the heaviest page on the site, but it\'s not exactly the lightest either, okay?
+I will hunt you down. So just visit it every once in a while, marvel at your greatness,
+hit "update" to save the new data, and then head back out into the nodegel. Cool? - k</p>
+
+';
+
+#'
+
+return "Sorry, for logged in users only" if ($APP->isGuest($USER));
+
+my $trackerStr;
+my %info;
+my %oldinfo;
+my %node;
+my %oldnode;
+my %types;
+my @reps;
+my @wudata;
+my $minmerit;
+my $maxmerit;
+my @nodes;
+my $line=' 'x65;
+
+my ($head, $didhead, $change);
+
+
+local * uniq = sub {
+# takes a list argument
+# assumes the list is sorted (use sort() if not)
+# returns that list with duplicates removed
+# examples: @foo=uniq(@sorted); @foo=uniq(sort(@random));
+  my (@list, @result);
+  @list = @_; @result = ();
+  foreach (@list) {
+    if ((!@result) || ($result[-1] != $_)) {push(@result,$_);}
+  }
+  return(@result);
+};
+
+my $userid=$$USER{user_id};
+#my $userid = $query->param('userid') if $query->param('userid');
+
+
+local * getOldInfo = sub {
+my $tData = $DB->sqlSelect("tracker_data","nodetracker","tracker_user=$userid limit 1");
+return 0 unless $tData;
+return 1 if ($tData eq 'data');
+my @tD = split(/\n/,$tData);
+my $iData = shift(@tD);
+my $dStr;
+($oldinfo{xp}, $oldinfo{nodes}, $oldinfo{cools}, $oldinfo{totalrep}, $oldinfo{merit},
+         $oldinfo{devotion}, $oldinfo{average}, $oldinfo{median}, $oldinfo{upvotes}, $oldinfo{downvotes},
+         $oldinfo{maxcools},$oldinfo{maxvotes})  = split(/:/,$iData);
+
+    $oldinfo{xp} = $oldinfo{xp} || 0;
+    $oldinfo{cools} = $oldinfo{cools} ||0;
+    $oldinfo{totalrep} = $oldinfo{totalrep} || 0;
+    $oldinfo{nodes} = $oldinfo{nodes} ||0;
+    $oldinfo{merit} = $oldinfo{merit} || 0;
+    $oldinfo{devotion} = $oldinfo{devotion} || 0;
+    $oldinfo{average} = $oldinfo{average} || 0;
+    $oldinfo{median} = $oldinfo{median} || 0;
+    $oldinfo{upvotes} = $oldinfo{upvotes} || 0;
+    $oldinfo{downvotes} = $oldinfo{downvotes} || 0;
+    $oldinfo{maxcools} = $oldinfo{maxcools} || 0;
+    $oldinfo{maxvotes} = $oldinfo{maxvotes} || 0;
+    chomp($oldinfo{xp}, $oldinfo{nodes}, $oldinfo{cools}, $oldinfo{totalrep},$oldinfo{merit},
+              $oldinfo{devotion}, $oldinfo{average}, $oldinfo{median}, $oldinfo{upvotes}, $oldinfo{downvotes},
+              $oldinfo{maxcools},$oldinfo{maxvotes});
+    if ($oldinfo{nodes}) {
+            $oldinfo{wnf} = (($oldinfo{totalrep}+(10*$oldinfo{cools}))/$oldinfo{nodes});
+            $oldinfo{nodefu} = $oldinfo{xp}/$oldinfo{nodes};
+            $oldinfo{coolratio} = ($oldinfo{cools}*100)/$oldinfo{nodes};
+        }
+
+foreach (@tD) {
+           chomp;
+            if (/^(\d+):(-?\d+):(\d+):(.+):(\d+):(\d+)$/) {
+                @{$oldnode{$1}} = ($2,$3,$4,$5,$6);
+            }
+            elsif (/^(\d+):(-?\d+):(\d+):(.*)$/) {
+                @{$oldnode{$1}} = ($2,$3,$4,0,0);
+            }
+
+            if ($oldinfo{maxrep} <= 0) {$oldinfo{maxrep}=$oldinfo{minrep}=$2;}
+            if ($2 > $oldinfo{maxrep}) {$oldinfo{maxrep}=$2;}
+            if ($2 < $oldinfo{minrep}) {$oldinfo{minrep}=$2;}
+}
+
+$oldinfo{votes} = $oldinfo{upvotes} + $oldinfo{downvotes};
+
+     return 1;
+
+};
+
+local * infodiff = sub {
+   my $arg = $_[0];
+    my $diff_str = $info{$arg};
+    $oldinfo{$arg} = 0 unless defined($oldinfo{$arg});
+ if ($oldinfo{$arg} != $info{$arg}) {
+        $diff_str .= " (".($info{$arg}>$oldinfo{$arg}?'+':'');
+        $diff_str .= ($info{$arg}-$oldinfo{$arg}).")";
+    }
+    return $diff_str;
+};
+
+local * infodiff_fp = sub {
+    my $arg = $_[0];
+    my $perc = $_[1];
+
+    my $diff_str = sprintf "%1.2f", $info{$arg};
+    if (defined($perc)) {$diff_str .= '%';}
+
+    $oldinfo{$arg} = 0 unless defined($oldinfo{$arg});
+
+    my $diff = $info{$arg} - $oldinfo{$arg};
+    if (($diff > 0.001) || ($diff < -0.001)) {
+        $diff_str .= " (";
+        $diff_str .= "+" if ($diff > 0);
+        $diff_str .= sprintf "%1.3f%s)", $diff, defined($perc) ? "%" : "";
+    }
+    return($diff_str);
+};
+
+local * MakeEven = sub{
+    my ($aref) = @_;
+    my $len = 0;
+    my $pipetext = 0; # length of undisplayed pipe link text
+    # find max length of the array contents
+    # note that hard/pipe link code artificially extends this with undisplayed characters
+    foreach (@$aref) {
+        $pipetext = 0;
+        if (m/\[(.*?\|)/) {
+            $pipetext = length($1);
+            }
+        $len = (length($_) - $pipetext) if ((length($_) - $pipetext) > $len)
+    }
+    foreach (@$aref) {
+        if (m/--$/) {
+            $_ .= "-" x ($len - length($_)) if($len - length($_) > 0);
+        }
+        else {
+            $_ .= " " x ($len - length($_)) if($len - length($_) > 0);
+        }
+        # hard link characters are counted but not displayed
+        # add spaces too account for them
+        if (m/\[/) {
+            $_ .= " ";
+            if (m/\]/) { $_ .= " "; }
+        }
+    }
+};
+
+local * getCurrentInfo = sub {
+
+$info{xp} = $$USER{experience};
+my $csr= $DB->sqlSelectMany(
+  "node.node_id, node.reputation, writeup.cooled, parent_node.title, type_node.title AS type"
+  , 'node
+      JOIN writeup ON node.node_id = writeup.writeup_id
+    JOIN node AS parent_node ON parent_node.node_id = writeup.parent_e2node
+    JOIN node AS type_node ON  type_node.node_id = writeup.wrtype_writeuptype'
+  , "node.author_user = $userid AND node.type_nodetype=117"
+  , 'ORDER BY writeup.publishtime DESC'
+);
+
+my $nStr = 'test';
+while (my $N = $csr->fetchrow_hashref) {
+        my %n;
+
+my ($name, $type) = ($$N{title}, $$N{type});
+
+        if (($name eq "E2 Nuke Request") or
+            ($name eq "Edit these E2 titles") or
+            ($name eq "Nodeshells marked for destruction") or
+            ($name eq "Broken Nodes")) {
+                next;
+        }
+
+        $n{name} = $name;
+        $n{type} = $type;
+        $n{node_id} = $$N{node_id};
+        $n{reputation} = $$N{reputation};
+        $n{cooled} = $$N{cooled};
+
+        my ($votescast) = $DB->sqlSelect('count(*)', 'vote', 'vote_id='.$$N{node_id});
+        $n{upvotes} = ($votescast + $$N{reputation})/2;
+        $n{downvotes} = ($votescast - $$N{reputation})/2;
+
+        if (int($n{upvotes}) != $n{upvotes}) {
+            $n{downvotes} = $DB->sqlSelect('count(*)', 'vote', 'vote_id='.$$N{node_id}.' and weight=-1');
+            $n{upvotes} = $votescast - $n{downvotes};
+            $n{reputation} = $n{upvotes} - $n{downvotes};
+        }
+
+        $n{votes} = $n{downvotes} + $n{upvotes};
+
+        $types{$type} = 0 unless defined($types{$type});
+        $types{$type}++;
+        $info{nodes}++;
+
+        push(@reps, $n{reputation});
+        $info{totalrep} += $n{reputation};
+        $info{cools} += $n{cooled};
+        $info{downvotes} += $n{downvotes};
+        $info{upvotes} += $n{upvotes};
+
+        if ($info{nodes} == 1) {
+            $info{maxrep}=$info{minrep}=$n{reputation};
+            $info{maxvotes}=$n{votes};
+            $info{maxcools}=$n{cooled};
+        }
+
+        if ($n{reputation} > $info{maxrep}) {$info{maxrep}=$n{reputation}}
+        if ($n{reputation} < $info{minrep}) {$info{minrep}=$n{reputation}}
+        if ($n{votes} > $info{maxvotes}) {$info{maxvotes} = $n{votes}}
+        if ($n{cooled} > $info{maxcools}) {$info{maxcools} = $n{cooled}}
+
+        $node{$n{node_id}} = [$n{reputation},$n{cooled},$name,$n{upvotes},$n{downvotes}];
+
+    }
+    $info{votes} = $info{upvotes} + $info{downvotes};
+
+    return $nStr;
+
+};
+
+local * meritCalc = sub {
+
+my @rep2 = sort {$a <=> $b} @reps;
+
+my $sz = 0 + @rep2;
+return unless $sz;
+my $stt = int(($sz)/4);
+my $stp = int(($sz*3)/4 + 0.5);
+my $tot = 0;
+my $tot2 = 0;
+
+my @counts;
+
+for (my $i=0; $i<500; ++$i) {
+   push @counts, 0;
+}
+
+for (my $i=$stt; $i<$stp; ++$i) {
+   my $rep = $rep2[$i];
+   $tot += $rep;
+   $counts[$rep]++ if ($rep >= 0);
+}
+
+
+for (my $i=0; $i<500; ++$i) {
+   $counts[$i] = 0;
+}
+my $minrep = $rep2[0];
+
+for (my $i=0; $i<$sz; ++$i) {
+   my $rep = $rep2[$i];
+   $tot2 += $rep;
+   $counts[$rep - $minrep]++;
+}
+
+
+$info{average} = $tot2/$sz;
+$info{median} = $rep2[$sz/2];
+$info{merit} = $tot/($stp-$stt);
+$info{devotion} = int($info{merit} * @rep2 + 0.5);
+$minmerit = $rep2[$stt];
+$maxmerit = $rep2[$stp-1];
+
+
+if ($info{nodes}) {
+  $info{wnf} = (($info{totalrep}+(10*$info{cools}))/$info{nodes});
+  $info{nodefu} = $info{xp}/$info{nodes};
+  $info{coolratio} = ($info{cools}*100)/$info{nodes};
+}
+};
+
+local * trackerOverview = sub {
+$trackerStr .= sprintf("
+        E2 USER INFO: last update %s
+\n",
+       $DB->sqlSelect("lasttime","nodetracker","tracker_user=$userid limit 1"));
+
+
+
+my @c1;
+my @c2;
+my @c3;
+
+push @c1, "Nodes:     "    . infodiff('nodes');
+push @c2, "XP:          "  . infodiff('xp');
+push @c3, "Cools:       "  . infodiff('cools');
+
+push @c1, "Max Rep:   "    . infodiff('maxrep');
+push @c2, "Min Rep:     "  . infodiff('minrep');
+push @c3, "Total Rep:   "  . infodiff('totalrep');
+
+push @c1, "[Node-Fu]:   "  . infodiff_fp('nodefu');
+push @c2, "[Node-Fu|WNF]:         "        . infodiff_fp('wnf');
+push @c3, "Cool Ratio:  "  . infodiff_fp('coolratio', 'yes');
+
+push @c1, "[Merit]:     "  . infodiff_fp('merit');
+push @c2, "Average Rep: "  . infodiff_fp('average');
+push @c3, "Median rep:  "  . infodiff('median');
+
+push @c1, "Up votes:  "     . infodiff('upvotes');
+push @c2, "[Devotion]:    " . infodiff('devotion');
+push @c3, "Merit Range: $minmerit to $maxmerit";
+
+push @c1, "Max Cools: "   . infodiff('maxcools');
+push @c2, "Down votes:  " . infodiff('downvotes');
+push @c3, "Votes:       " . infodiff('votes');
+
+push @c1, "Max Votes: "   . infodiff('maxvotes');
+
+
+MakeEven(\@c1);
+MakeEven(\@c2);
+
+for (my $i=0; $i<7; ++$i) {
+    $trackerStr .= "$c1[$i]   $c2[$i]   $c3[$i]\n";
+}
+
+$trackerStr .= "\n</pre><tt>";
+};
+
+
+
+
+
+local * trackerNodes = sub {
+
+
+if ($info{nodes}) {
+  foreach (keys %types) {
+    $trackerStr .= sprintf("%s: %3.1f%%  ",$_,(100 * $types{$_})/($info{nodes}));
+  }
+}
+
+
+$trackerStr .= "\n$line\n</tt><pre>";
+
+$head="
+        Published/Removed/Renamed:
+Change      Title\n$line\n";
+$didhead = 0;
+
+foreach (uniq(sort({$b<=>$a} keys(%node),keys(%oldnode)))) {
+    if (!exists($oldnode{$_})) {
+        if (!$didhead) {$trackerStr .= $head; $didhead = 1;}
+        $trackerStr .= sprintf("Published | %s\n",$node{$_}->[2]);
+        $oldnode{$_} = [0,0,$node{$_}->[2]];
+        push @nodes, $_;
+    } elsif (!exists($node{$_})) {
+        if (!$didhead) {$trackerStr .= $head; $didhead = 1;}
+        $trackerStr .= sprintf("Removed   | %s\n",$oldnode{$_}->[2]);
+    } else {
+        if ($node{$_}->[0] != $oldnode{$_}->[0]) {push (@nodes, $_);}
+        if ($node{$_}->[1] != $oldnode{$_}->[1]) {push (@nodes, $_);}
+        if ($node{$_}->[3] != $oldnode{$_}->[3]) {push (@nodes, $_);}
+        if ($node{$_}->[4] != $oldnode{$_}->[4]) {push (@nodes, $_);}
+        if ($node{$_}->[2] ne $oldnode{$_}->[2]) {
+            if (!$didhead) {$trackerStr .= $head; $didhead = 1;}
+            $trackerStr .= sprintf("Renamed   | %s->%s\n",$oldnode{$_}->[2],$node{$_}->[2]);
+        }
+    }
+}
+$change = undef;
+if ($didhead) {$trackerStr .= $line."\n"; $change = 1;}
+};
+
+local * trackerRep = sub {
+
+$head="
+        Reputation Changes / Cools:\n";
+
+$didhead = 0;
+my (@a1, @a2, @a3, @a4, @a5, @a6);
+
+
+foreach (uniq(@nodes)) {
+  if (!$didhead) {
+      $trackerStr .= $head;
+      $didhead = 1;
+
+      push @a1, "Rep";
+      push @a1, "   ";
+      push @a2, "+/-";
+      push @a2, "   ";
+      push @a3, "C!";
+      push @a3, "  ";
+      push @a4, "+/-";
+      push @a4, "   ";
+      push @a5, "Title";
+      push @a5, "    ";
+push @a6, " ";
+push @a6, " ";
+  }
+  $oldnode{$_}->[3] = 0 unless defined($oldnode{$_}->[3]);
+  $oldnode{$_}->[4] = 0 unless defined($oldnode{$_}->[4]);
+  my $d  = $node{$_}->[0]-$oldnode{$_}->[0];
+  my $d1 = $node{$_}->[3]-$oldnode{$_}->[3];
+  my $d2 = $node{$_}->[4]-$oldnode{$_}->[4];
+  my $dcool = $node{$_}->[1] - $oldnode{$_}->[1];
+  if ($node{$_}->[3] && $node{$_}->[4]) {
+      push @a1, sprintf "%+i (%+i/%+i)", $node{$_}->[0], $node{$_}->[3], -$node{$_}->[4];
+  }
+  else {
+      push @a1, sprintf "%+i", $node{$_}->[0];
+  }
+  if ($d1 and $d2) {
+      push @a2, sprintf "%+i (%+i/%+i)", $d, $d1, -$d2;
+  }
+  else {
+      push @a2, sprintf "%+i", $d;
+  }
+  push @a3, sprintf "%i", $node{$_}->[1];
+  if ($dcool) {
+      push @a4, sprintf "%+i", $dcool;
+  }
+  else {
+      push @a4, "";
+  }
+  push @a5, $node{$_}->[2];
+push @a6, $_;
+}
+
+if ($didhead) {
+
+    MakeEven(\@a1);
+    MakeEven(\@a2);
+    MakeEven(\@a3);
+    MakeEven(\@a4);
+
+    for (my $i=0; $i < @a1; ++$i) {
+        $trackerStr .= "$a1[$i]  $a2[$i]  $a3[$i]  $a4[$i]  ";
+        if ($a6[$i] ne " ") {
+                $trackerStr .= linkNode($a6[$i],"$a5[$i]")."\n";
+        }
+        else {
+                $trackerStr .= "$a5[$i] $a6[$i]\n";
+        }
+    }
+    $trackerStr .= "\n";
+}
+elsif (!$change) {
+  $trackerStr .= "No nodes changed.\n";
+}
+};
+
+local * updateTracker = sub {
+
+ my $tStr = "$info{xp}:$info{nodes}:$info{cools}:$info{totalrep}:".
+  "$info{merit}:$info{devotion}:$info{average}:$info{median}:$info{upvotes}:$info{downvotes}:".
+  "$info{maxcools}:$info{maxvotes}\n";
+   foreach (sort {$b<=>$a} keys(%node)) {
+    $tStr .= "$_:".join(":",@{$node{$_}})."\n";
+  }
+$DB->sqlUpdate("nodetracker",{tracker_data => $tStr, -lasttime => 'now()', -hits => 'hits + 1' },"tracker_user=$userid limit 1");
+
+return $tStr;
+
+};
+
+
+
+my $hasOld = getOldInfo();
+if (!$hasOld) {
+$DB->sqlInsert("nodetracker",{tracker_user => $userid, tracker_data => 'data'});
+}
+getCurrentInfo();
+meritCalc();
+
+if ($query->param("update")) {
+updateTracker();
+getOldInfo();
+}
+
+trackerOverview();
+
+trackerNodes();
+
+trackerRep();
+
+my $finalStr = "<pre>".$trackerStr."</pre>";
+
+$finalStr .=htmlcode('openform');
+$finalStr.=$query->submit("update","Update");
+$finalStr.=$query->end_form;
+
+return $str."<br /><br />".$finalStr;
 }
 
 1;

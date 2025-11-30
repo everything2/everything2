@@ -84,6 +84,8 @@ const COMPONENT_MAP = {
   everything_quote_server: lazy(() => import('./Documents/EverythingQuoteServer')),
   e2_rot13_encoder: lazy(() => import('./Documents/E2Rot13Encoder')),
   e2_color_toy: lazy(() => import('./Documents/E2ColorToy')),
+  buffalo_generator: lazy(() => import('./Documents/BuffaloGenerator')),
+  buffalo_haiku_generator: lazy(() => import('./Documents/BuffaloGenerator')),
 
   // Utility tools
   text_formatter: lazy(() => import('./Documents/TextFormatter')),
@@ -111,7 +113,13 @@ const COMPONENT_MAP = {
   system_node: lazy(() => import('./Documents/SystemNode')),
 
   // Messaging
-  message_inbox: lazy(() => import('./Documents/MessageInbox'))
+  message_inbox: lazy(() => import('./Documents/MessageInbox')),
+
+  // User visibility
+  decloaker: lazy(() => import('./Documents/Decloaker')),
+
+  // Policy pages
+  e2_acceptable_use_policy: lazy(() => import('./Documents/AcceptableUsePolicy'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))
