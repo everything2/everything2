@@ -21,7 +21,6 @@ BEGIN {
   *isNodetype = *Everything::HTML::isNodetype;
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
-  *insertNodelet = *Everything::HTML::insertNodelet;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *setVars = *Everything::HTML::setVars;
@@ -4352,94 +4351,6 @@ sub generatehex
   return $str."</table>";
 }
 
-# Changeroom is the room changing widget
-# TODO: Develop a notion of public accounts
-#
-sub changeroom
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return if $APP->isGuest($USER);
-  return if $$USER{title} eq 'everyone';
-
-  my $str = "";
-  $str = ' instant ajax chatterbox_chatter:#' if $query and $query -> param('ajaxTrigger') and defined $query->param('changeroom')	and $query->param('changeroom') != $$USER{in_room};
-  my $RM = getNode('e2 rooms', 'nodegroup');
-  my @rooms = @{ $$RM{group}  };
-  my @aprrooms = ();
-  my %aprlabel = ();
-  my ($nodelet) = @_ ;
-  $nodelet =~ s/ /+/g;
-
-  foreach(@rooms) {
-    my $R = getNodeById($_);
-    next unless $APP->canEnterRoom( $R, $USER, $VARS );
-    if(defined $query->param('changeroom') and $query->param('changeroom') == $_ and $$USER{in_room} != $_)
-    {
-      $APP->changeRoom($USER, $R);
-    }
-
-    push @aprrooms, $_;
-    $aprlabel{$_} = $$R{title};
-  }
-
-  return unless @aprrooms;
-
-  push @aprrooms, '0';
-  $aprlabel{0}='outside';
-
-  if(defined $query->param('changeroom') and $query->param('changeroom') == 0)
-  {
-    $APP->changeRoom($USER, 0);
-  }
-
-  my $isCloaker = $APP->userCanCloak($USER);
-  if($query->param('sexiscool') and $isCloaker)
-  {
-    if($query->param('cloaked'))
-    {
-      $APP->cloak($USER, $VARS);
-    } else {
-      $APP->uncloak($USER, $VARS);
-    }
-  }
-
-  my $id = $nodelet ;
-  $id =~ s/\W//g ;
-  $nodelet = ":$nodelet" if $nodelet ;
-  my $ajax = 'ajax '.( $nodelet ? lc($id).':updateNodelet' : 'room_options:changeroom' ).'?ajaxTrigger=1&' ;
-  $str ="<div class='nodelet_section$str' id='room_options'>";
-  $str.="<h4 class='ns_title'>Room Options</h4>";
-  $str.=htmlcode('openform');
-  $str.=$query->checkbox(-name=>'cloaked', checked=>$$VARS{visible}, value=>1, label=>'cloaked', class=>$ajax."sexiscool=1&cloaked=/$nodelet") if $isCloaker;
-
-  #$str.=htmlcode('lockroom').' '.htmlcode('createroom');
-  $str.=' '.htmlcode('createroom').q|<br />|;
-
-  if(my $suspensioninfo = $APP->isSuspended($USER,"changeroom"))
-  {
-    if(defined($suspensioninfo->{ends}) and $suspensioninfo->{ends} != 0)
-    {
-      $str.='You are locked here for '.($APP->convertDateToEpoch($suspensioninfo->{ends})-time).' seconds.';
-    }else{
-      $str.='You are locked here indefinitely.';
-    }
-  }else{
-
-    $str.='<br>';
-    $str.=$query->popup_menu(-name=>'changeroom', Values=>\@aprrooms, default=>$$USER{in_room}, labels=>\%aprlabel,class=>$ajax."changeroom=/$nodelet");
-    $str.=$query->submit('sexiscool','go');
-    $str.='</form></div>';
-  }
-  return $str;
-}
-
 # Createroom, likely moving to a controller
 #
 sub createroom
@@ -4928,7 +4839,7 @@ sub showchatter
     {
       delete $$VARS{publicchatteroff};
     } else {
-      $nochat = '<em>your earplugs are in ('.linkNode($NODE,'remove them',{'RemoveEarPlugs'=>1, -class => "ajax chatterbox:updateNodelet:Chatterbox"}).')</em>';
+      $nochat = '<em>your earplugs are in ('.linkNode($NODE,'remove them',{'RemoveEarPlugs'=>1}).')</em>';
     }
   }
 
@@ -6860,11 +6771,6 @@ sub nwuamount
 
   return '' if ( $APP->isGuest($USER) );
   my ($nodelet,$noAdminNoJunkOption) = @_ ;
-  $nodelet ||= 'New Writeups';
-  $nodelet =~ s/\s/+/g;
-  my $nodeletId = lc($nodelet) ;
-  $nodeletId =~ s/\W// ;
-  my $ajax = "ajax $nodeletId:updateNodelet?op=/&nw_nojunk=/&amount=/:$nodelet" ;
 
   my @amount = (1, 5, 10, 15, 20, 25, 30, 40);
   $$VARS{num_newwus} ||= 15 ;
@@ -6872,9 +6778,9 @@ sub nwuamount
   my $str = htmlcode('openform');
 
   $str.="\n\t<input type='hidden' name='op' value='changewucount'>";
-  $str .= $query -> popup_menu( -name=>'amount', Values=>\@amount, default=>$$VARS{num_newwus}, class=> $ajax ) ;
+  $str .= $query -> popup_menu( -name=>'amount', Values=>\@amount, default=>$$VARS{num_newwus} ) ;
   $str.="\n\t".$query->submit("lifeisgood","show");
-  $str.="\n\t".$query->checkbox(-name=>"nw_nojunk", checked=>$$VARS{nw_nojunk}, value=>'1', label=>"No junk", class=>$ajax) if(not $noAdminNoJunkOption and $APP->isEditor($USER));
+  $str.="\n\t".$query->checkbox(-name=>"nw_nojunk", checked=>$$VARS{nw_nojunk}, value=>'1', label=>"No junk") if(not $noAdminNoJunkOption and $APP->isEditor($USER));
   $str.="\n".$query->end_form;
   return $str;
 }
@@ -9097,34 +9003,6 @@ sub favorite_noder
   }
 }
 
-sub updateNodelet
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($nodelet) = @_;
-  return unless $nodelet;
-
-  $nodelet = getNode($nodelet,'nodelet');
-  return unless $nodelet;
-  return insertNodelet($nodelet);
-}
-
-# DEPRECATED: Use $APP->hasAchieved() instead
-# This htmlcode stub remains for backwards compatibility only.
-# All callers have been migrated to Application.pm method.
-# Safe to remove after confirming no external callers exist.
-sub hasAchieved
-{
-  my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-  my ($ACH, $user_id, $force) = @_;
-  return $APP->hasAchieved($ACH, $user_id, $force);
-}
 
 sub show_node_forward
 {
@@ -10890,15 +10768,6 @@ sub listnodecategories
   return '';
 }
 
-sub testshowmessages
-{
-  # DEPRECATED 2025-11-28: Replaced by React Messages nodelet
-  # Legacy AJAX polling removed - all users now have React Messages nodelet
-  # Now handled by React Messages nodelet + /api/messages endpoint
-  # Stub remains until next production push, then will be fully deleted
-  return '';
-}
-
 sub confirmDeleteMessage
 {
   my $DB = shift;
@@ -11785,8 +11654,7 @@ sub nodeletsettingswidget
     # and to provide an offset parent to put the widget in the right place
     htmlcode('widget', "<fieldset><legend>$text</legend>\n$content<br>\n".
     $query -> hidden('sexisgood','1').
-    # include ajax trigger because the first time it's not inserted together with the nodelet
-    $query -> hidden(-name => 'ajaxTrigger', value=>1, class=>"ajax $id:updateNodelet:$safename").
+    $query -> hidden(-name => 'ajaxTrigger', value=>1).
     $query -> submit("submit$id",'Save')."\n</fieldset>\n",'form', $text , {showwidget=>"$id"."settings"}).'</div>';
 }
 

@@ -33,7 +33,6 @@ BEGIN {
   *isNodetype = *Everything::HTML::isNodetype;
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
-  *insertNodelet = *Everything::HTML::insertNodelet;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *setVars = *Everything::HTML::setVars;
@@ -85,24 +84,6 @@ sub container_edit_page
   $str .= qq|container html:<br>|.htmlcode("textarea","context");
 
   return $str; 
-}
-
-sub nodelet_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return '' if $APP->isGuest($USER);
-  $PAGELOAD->{ pagenodelets } = $$VARS{ nodelets } ;
-  $PAGELOAD->{ pagenodelets } =~ s/\b$$NODE{node_id}\b,?//;
-  delete $PAGELOAD->{pagenodelets} if $PAGELOAD->{pagenodelets} eq $$VARS{nodelets};
-
-  return Everything::HTML::insertNodelet($NODE);
 }
 
 sub document_display_page
@@ -4216,7 +4197,6 @@ sub ajax_update_page
   my $something = '.+' ;
 
   my %valid = (
-    updateNodelet => 	[ $title ], #nodelet name
     nodeletsection =>	[ $title, $title, $title, "($title)?", '\\w*', '\\w*' ], # ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent)
     ilikeit =>			[ $node_id ],
     coolit => 			[],
@@ -4232,7 +4212,6 @@ sub ajax_update_page
     drafttools => 		[ $node_id , $anything ], #writeup_id, flag for open widget
     writeupmessage => 	[ $anything , $node_id ], #parameter name for message, writeup_id
     writeupcools => 	[ $node_id ], #writeup_id
-    changeroom => 		[ $title ], #nodelet name
     showmessages =>		[ $node_id , '\\w*' ], #max message number, show options
     testshowmessages =>		[ $node_id , '\\w*' ], #max message number, show options
     showchatter =>		[ $anything ], # flag to send JSON
@@ -4377,36 +4356,10 @@ sub node_listnodelets_page
 
 sub node_shownodelet_page
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return '' if $APP->isGuest($USER);
-
-  my $nodelet_id = $query->param('nodelet_id');
-  my $current_nodelet = getNode($nodelet_id);
-  if (!$current_nodelet) {
-    return 'no nodelet to show';
-  }
-
-  my $nl = insertNodelet($current_nodelet);
-
-  # Nasty hack: if a nodelet links back to the same node preserving
-  # the displaytype, the 'shownodelet' display type will be
-  # meaningless without the nodelet_id to show. So reinsert it
-  # anywhere within a tag.
-  $nl =~ s/(<[^>]*\bdisplaytype=shownodelet\b)/$1&nodelet_id=$nodelet_id/g;
-  # Also insert a hidden 'nodelet_id' next to any input that sets a displaytype of 'shownodelet'.
-  $nl =~ s{
-    (<input\b[^>]*\bname=(|'|")displaytype(|'|")[^>]*value=(|'|")shownodelet(|'|")
-    | <input\b[^>]*\bvalue=(|'|")shownodelet(|'|")[^>]*\bname=(|'|")displaytype(|'|"))
-  }{<INPUT TYPE="hidden" NAME="nodelet_id" VALUE="$nodelet_id" />$1}gxi;
-
-  return $nl;
+  # DEPRECATED: This display type is no longer used. Nodelets are now
+  # rendered via React. This stub remains until the node shownodelet page
+  # htmlpage node is deleted from production.
+  return '<div class="notice">This page is deprecated. Nodelets are now displayed in the sidebar.</div>';
 }
 
 sub stylesheet_serve_page

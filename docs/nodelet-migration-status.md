@@ -484,56 +484,31 @@ Nodelet components
   - Notelet: 39 tests
   - Other nodelets and components: ~207 tests
 
-## ⚠️ insertNodelet() Legacy Call Sites
+## ✅ insertNodelet() Legacy Call Sites - RESOLVED
 
-**Issue**: Migrated nodelets now return empty string from Perl stubs. Any code calling `insertNodelet()` directly will receive empty output.
+**Status**: RESOLVED (2025-11-30)
 
-**Impact**: "Chatterlight" pages that use insertNodelet() to render nodelets may be broken for migrated nodelets.
+The chatterlight family of pages has been fully migrated to React:
+- ✅ `chatterlighter` → [Everything::Page::chatterlighter](../ecore/Everything/Page/chatterlighter.pm) + [Chatterlight.js](../react/components/Documents/Chatterlight.js)
+- ✅ `chatterlight` → [Everything::Page::chatterlight](../ecore/Everything/Page/chatterlight.pm) + [Chatterlight.js](../react/components/Documents/Chatterlight.js)
+- ✅ `chatterlight_classic` → [Everything::Page::chatterlight_classic](../ecore/Everything/Page/chatterlight_classic.pm) + [Chatterlight.js](../react/components/Documents/Chatterlight.js)
 
-### Affected Functions in document.pm
+These pages now use the fullpage controller pattern with `buildReactData()` and render entirely via React. No legacy `insertNodelet()` calls remain for these pages.
 
-| Function | Line | Nodelet Called | Migration Status | Impact |
-|----------|------|----------------|------------------|--------|
-| `chatterlighter` | 1495 | Chatterbox | ✅ Migrated | **BROKEN** - Returns empty string |
-| `chatterlight` | 22863 | Notifications | ❌ Not migrated | Working (still renders) |
-| `chatterlight` | 22874 | New Writeups | ✅ Migrated | **BROKEN** - Returns empty string |
-| `chatterlight_classic` | 22917 | Chatterbox | ✅ Migrated | **BROKEN** - Returns empty string |
-| `chatterlight_classic` | 22926 | New Writeups | ✅ Migrated | **BROKEN** - Returns empty string |
+### Remaining insertNodelet() Call Sites
 
-### Other insertNodelet() Call Sites
+The following call sites still exist but are unrelated to chatterlight pages:
 
 | File | Line | Context | Status |
 |------|------|---------|--------|
-| htmlpage.pm | 105 | Display nodelet htmlpage | ⚠️ May be affected |
-| htmlpage.pm | 4395 | Nodelet container rendering | ⚠️ May be affected |
-| htmlcode.pm | 1040 | Nodelet container rendering | ⚠️ May be affected |
-| htmlcode.pm | 9100 | Return nodelet output | ⚠️ May be affected |
+| htmlpage.pm | 105 | Display nodelet htmlpage | Legacy sidebar rendering |
+| htmlpage.pm | 4395 | Nodelet container rendering | Legacy sidebar rendering |
+| htmlcode.pm | 1040 | Nodelet container rendering | Legacy sidebar rendering |
+| htmlcode.pm | 9100 | Return nodelet output | Legacy sidebar rendering |
 
-### Resolution Options
+These are used for standard page layouts where Mason2 renders the sidebar via `insertNodelet()`. For React-handled nodelets, these return empty strings and React portals take over rendering.
 
-**Option 1: Migrate chatterlight pages to React** (Recommended)
-- Create dedicated chatterlight React components
-- Remove insertNodelet() calls
-- Use portal-based architecture
-
-**Option 2: Keep specific pages using Perl rendering**
-- Revert affected nodelets to Perl for these specific pages
-- Maintain dual rendering paths
-- Not recommended - increases maintenance burden
-
-**Option 3: Update chatterlight to use portal div targets**
-- Instead of calling insertNodelet(), emit div with nodelet ID
-- React portals will render into those divs
-- Requires updating `react_handled` logic to work on chatterlight pages
-
-### Investigation Needed
-
-To assess full impact, need to:
-1. Test chatterlight pages (chatterlighter, chatterlight, chatterlight_classic)
-2. Check if these pages are still actively used3. Determine if htmlpage/htmlcode insertNodelet calls are affected
-4. Choose resolution strategy and implement fix
-
-**Date Identified**: 2025-11-24 (Session 10)
+**Date Resolved**: 2025-11-30
 
 ## Remaining htmlcode Dependencies in buildNodeInfoStructure
 

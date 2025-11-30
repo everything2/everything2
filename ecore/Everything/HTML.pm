@@ -13,7 +13,6 @@ use Everything;
 use Everything::Delegation::htmlcode;
 use Everything::Delegation::opcode;
 use Everything::Delegation::container;
-use Everything::Delegation::nodelet;
 use Everything::Delegation::htmlpage;
 
 use Everything::Request;
@@ -647,26 +646,6 @@ sub htmlcode {
 		return $returnVal;
 	}
 }
-
-#############################################################################
-sub insertNodelet
-{
-	my ($NODELET) = @_;
-	getRef $NODELET;
-	return "" unless $NODELET;
-
-	my $delegation_name = lc($NODELET->{title});
-        $delegation_name =~ s/ /_/g;
-
-	if(my $delegation = Everything::Delegation::nodelet->can($delegation_name))
-	{
-	  my $nltext = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
-          return $APP->zen_wrap_nodelet($NODELET->{title}, $nltext);
-	}
-
-	return "";
-}
-
 
 #############################################################################
 #	Sub

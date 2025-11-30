@@ -3129,8 +3129,8 @@ sub buildTable
 	my $datavalignment = ($datavalign eq 'top' || $datavalign eq 'middle' || $datavalign eq 'bottom')
 		? ' valign="'.$datavalign.'"' : '';
 	$options=~/class=['"]?(\w+)['"]?/;
-	my $class = $1;
-	
+	my $class = $1 || '';
+
 	my $str='<table '.$width.' class='.$class.'>';
 	
 	$str.='<tr>'.join('',map({'<th>'.$_.'</th>'} @$labels))
@@ -3875,7 +3875,7 @@ sub getVars
 
 sub get_messages
 {
-  my ($this, $user, $limit, $offset, $archive) = @_;
+  my ($this, $user, $limit, $offset, $archive, $for_usergroup_id) = @_;
 
   $this->{db}->getRef($user);
   return unless defined($user) and defined($user->{node_id});
@@ -3891,6 +3891,13 @@ sub get_messages
   $archive = int($archive // 0);
 
   my $where = "for_user=$user->{node_id} AND archive=$archive";
+
+  # Filter by usergroup if specified
+  if (defined($for_usergroup_id) && $for_usergroup_id ne '') {
+    $for_usergroup_id = int($for_usergroup_id);
+    $where .= " AND for_usergroup=$for_usergroup_id";
+  }
+
   my $csr = $this->{db}->sqlSelectMany("*","message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
   my $records = [];
   while (my $row = $csr->fetchrow_hashref)
@@ -4021,6 +4028,33 @@ sub message_archive_set
 
   $this->{db}->sqlUpdate("message",{"archive"=>$value},"message_id=$message->{message_id}");
   return $message->{message_id};
+}
+
+sub get_message_count
+{
+  my ($this, $user, $box_type, $archive, $for_usergroup_id) = @_;
+
+  $this->{db}->getRef($user);
+  return 0 unless defined($user) and defined($user->{node_id});
+
+  $archive = int($archive // 0);
+
+  my $where;
+  if ($box_type eq 'outbox') {
+    $where = "author_user=$user->{node_id} AND archive=$archive";
+    return int($this->{db}->sqlSelect("count(*)", "message_outbox", $where) // 0);
+  } else {
+    # Default to inbox
+    $where = "for_user=$user->{node_id} AND archive=$archive";
+
+    # Filter by usergroup if specified
+    if (defined($for_usergroup_id) && $for_usergroup_id ne '') {
+      $for_usergroup_id = int($for_usergroup_id);
+      $where .= " AND for_usergroup=$for_usergroup_id";
+    }
+
+    return int($this->{db}->sqlSelect("count(*)", "message", $where) // 0);
+  }
 }
 
 sub sendPublicChatter
@@ -6929,9 +6963,9 @@ sub buildNodeInfoStructure
 
   # Phase 4a: React-rendered documents
   # Check if this node type has a Page class that provides React data
-  # Supported types: superdoc, fullpage, restricted_superdoc, maintenance
+  # Supported types: superdoc, superdocnolinks, fullpage, restricted_superdoc, maintenance, nodelet
   my $nodetype = $NODE->{type}->{title};
-  my @react_enabled_types = qw(superdoc fullpage restricted_superdoc maintenance);
+  my @react_enabled_types = qw(superdoc superdocnolinks fullpage restricted_superdoc maintenance nodelet);
   if ((grep { $nodetype eq $_ } @react_enabled_types) && $user_node) {
     my $page_name = $NODE->{title};
     $page_name = lc($page_name);  # Lowercase first
@@ -7006,9 +7040,9 @@ sub buildNodeInfoStructure
           $e2->{newWriteups} = $this->filtered_newwriteups($USER);
         }
       }
-    } elsif ($nodetype eq 'maintenance') {
-      # Maintenance nodes use generic system_node display
-      # They don't have individual Page classes - all maintenance nodes
+    } elsif ($nodetype eq 'maintenance' || $nodetype eq 'nodelet') {
+      # Maintenance and nodelet nodes use generic system_node display
+      # They don't have individual Page classes - all nodes of these types
       # share the same SystemNode React component
       $e2->{reactPageMode} = \1;
       $e2->{contentData} = {
@@ -7127,8 +7161,8 @@ sub buildSourceMap
       }
     }
   }
-  # Handle maintenance and other system node types
-  elsif ($nodetype eq 'maintenance' || $nodetype eq 'htmlcode' || $nodetype eq 'htmlpage') {
+  # Handle maintenance, nodelet and other system node types
+  elsif ($nodetype eq 'maintenance' || $nodetype eq 'nodelet' || $nodetype eq 'htmlcode' || $nodetype eq 'htmlpage') {
     # Show controller for this node type
     my $controller_class = "Everything::Controller::$nodetype";
     push @{$sourceMap->{components}}, {

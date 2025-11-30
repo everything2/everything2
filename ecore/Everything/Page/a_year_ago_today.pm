@@ -10,11 +10,11 @@ sub buildReactData
   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
   $year+=1900;
 
-  my $yearsago = $REQUEST->param('yearsago');
+  my $yearsago = $REQUEST->param('yearsago') || '';
   $yearsago =~ s/[^0-9]//g;
   $yearsago||=1;
 
-  my $startat = $REQUEST->param('startat');
+  my $startat = $REQUEST->param('startat') || '';
   $startat =~ s/[^0-9]//g;
   $startat ||=0;
 

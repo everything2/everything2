@@ -191,8 +191,15 @@ has 'google_ads_badwords' => (isa => 'ArrayRef', is => 'ro', default => sub { [
   "cunnilingus"
 ] });
 
+# reCAPTCHA Enterprise configuration
+# API key for server-side verification (from GCP Console -> APIs & Services -> Credentials)
+has 'recaptcha_enterprise_api_key' => (isa => 'Str', is => 'ro', builder => '_build_recaptcha_api_key', lazy => 1);
+# GCP Project ID (public, used in API URL)
+has 'recaptcha_enterprise_project_id' => (isa => 'Str', is => 'ro', default => 'everything2-production');
+# Site key (public, used in browser)
+has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '6LeF2BwsAAAAAMrkwFG7CXJmF6p0hV2swBxYfqc2');
+# Legacy v3 secret key - kept for backward compatibility but no longer used
 has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', builder => '_build_recaptcha', lazy => 1);
-has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '6LcnVKsUAAAAAEeEGV28mfD3lt_XVpFUkOzifWGo');
 
 has 'login_location' => (isa => 'Str', is => 'ro', default => '/node/superdoc/login');
 has 'permission_denied_location' => (isa => 'Str', is => 'ro', lazy => 1, default => sub {"/node/".$_[0]->permission_denied});
@@ -388,6 +395,12 @@ sub _build_recaptcha
 {
   my ($self) = @_;
   return $self->_filesystem_default('recaptcha_v3_secret','');
+}
+
+sub _build_recaptcha_api_key
+{
+  my ($self) = @_;
+  return $self->_filesystem_default('recaptcha_enterprise_api_key','');
 }
 
 sub _filesystem_json_default

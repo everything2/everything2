@@ -14,7 +14,6 @@ sub display
 
   if($permission_result->allowed)
   {
-    $self->devLog("Page permission allowed: ".(ref $permission_result));
     my $controller_output = $page_class->display($REQUEST, $node);
 
     # Check if this page uses React (has buildReactData method)

@@ -4,8 +4,6 @@ use Moose;
 with 'Everything::Globals';
 with 'Everything::HTTP';
 
-use Everything::Delegation::nodelet;
-
 has 'PAGE_TABLE' => (isa => "HashRef", is => "ro", builder => "_build_page_table", lazy => 1);
 
 sub _build_page_table
@@ -98,7 +96,9 @@ sub layout
   }
 
 
-  my $e2 = $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS, $REQUEST->cgi, $REQUEST);
+  # Use e2 data from controller if already built (superdoc.pm builds it for React pages with contentData)
+  # Otherwise build fresh e2 structure
+  my $e2 = $params->{e2} || $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS, $REQUEST->cgi, $REQUEST);
   $e2->{lastnode_id} = $params->{lastnode_id};
   $e2->{nodeletorder} = \@nodeletorder;
 

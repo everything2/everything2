@@ -57,23 +57,124 @@ sub verify_recaptcha_token
   my ($self, $token) = @_;
 
   my $ua = LWP::UserAgent->new;
-  my $verify_url = 'https://www.google.com/recaptcha/api/siteverify';
   my ($remote_ip) = $self->APP->getIp();
-  
-  $self->devLog("Doing recaptcha v3 check: url => $verify_url, token => $token, remote_ip => $remote_ip");
-  my $resp = $ua->post($verify_url, [secret => $self->CONF->recaptcha_v3_secret_key, response => $token, remote_ip => $remote_ip]);
 
-  $self->devLog("Received HTTP response: ".Data::Dumper->Dump([$resp]));
-  if($resp->is_success)
-  {
+  # Check for Enterprise API configuration first, fall back to legacy siteverify
+  my $api_key = $self->CONF->recaptcha_enterprise_api_key;
+  my $project_id = $self->CONF->recaptcha_enterprise_project_id;
+  my $legacy_secret = $self->CONF->recaptcha_v3_secret_key;
+  my $site_key = $self->CONF->recaptcha_v3_public_key;
+
+  # Debug: log configuration
+  my $token_len = length($token // '');
+  my $token_preview = $token ? substr($token, 0, 20) . '...' : '(empty)';
+
+  $self->devLog("verify_recaptcha_token: token length=$token_len, preview=$token_preview");
+  $self->devLog("verify_recaptcha_token: remote_ip=$remote_ip");
+
+  # Use Enterprise Assessment API if configured, otherwise use legacy siteverify
+  if ($api_key && $project_id) {
+    return $self->_verify_recaptcha_enterprise($ua, $token, $api_key, $project_id, $site_key, $remote_ip);
+  } elsif ($legacy_secret) {
+    return $self->_verify_recaptcha_legacy($ua, $token, $legacy_secret, $remote_ip);
+  } else {
+    $self->devLog("reCAPTCHA not configured: no Enterprise API key/project or legacy secret");
+    $self->security_log("reCAPTCHA not configured");
+    return 0;
+  }
+}
+
+# Legacy siteverify endpoint (works with Enterprise legacy secret keys)
+sub _verify_recaptcha_legacy
+{
+  my ($self, $ua, $token, $secret_key, $remote_ip) = @_;
+
+  my $secret_preview = $secret_key ? substr($secret_key, 0, 10) . '...' : '(empty)';
+  $self->devLog("verify_recaptcha_token (legacy siteverify): secret=$secret_preview");
+
+  my $verify_url = 'https://www.google.com/recaptcha/api/siteverify';
+  my $resp = $ua->post($verify_url, [
+    secret => $secret_key,
+    response => $token,
+    remoteip => $remote_ip
+  ]);
+
+  $self->devLog("Received HTTP response: status=" . $resp->status_line);
+
+  if ($resp->is_success) {
     my $json = JSON::decode_json($resp->decoded_content);
-    if($json->{success})
-    {
-      return $json;
-    }else{
+    $self->devLog("reCAPTCHA legacy response: " . $resp->decoded_content);
+
+    if ($json->{success}) {
+      return $json;  # Already has {success, score, action, hostname}
+    } else {
+      my $error_codes = $json->{'error-codes'} || [];
+      $self->security_log("reCAPTCHA verification failed: " . join(', ', @$error_codes));
+      $self->devLog("reCAPTCHA error-codes: " . join(', ', @$error_codes));
       return 0;
     }
-  }else{
+  } else {
+    $self->security_log("reCAPTCHA HTTP request failed: " . $resp->status_line);
+    $self->devLog("reCAPTCHA HTTP error: " . $resp->status_line);
+    return 0;
+  }
+}
+
+# Enterprise Assessment API (requires GCP API key and project ID)
+sub _verify_recaptcha_enterprise
+{
+  my ($self, $ua, $token, $api_key, $project_id, $site_key, $remote_ip) = @_;
+
+  my $api_key_preview = $api_key ? substr($api_key, 0, 10) . '...' : '(empty)';
+  $self->devLog("verify_recaptcha_token (Enterprise API): api_key=$api_key_preview, project=$project_id");
+
+  my $verify_url = "https://recaptchaenterprise.googleapis.com/v1/projects/$project_id/assessments?key=$api_key";
+
+  my $request_body = JSON::encode_json({
+    event => {
+      token => $token,
+      siteKey => $site_key,
+      userIpAddress => $remote_ip,
+      expectedAction => 'signup'
+    }
+  });
+
+  $self->devLog("verify_recaptcha_token: POST to $verify_url");
+
+  my $resp = $ua->post(
+    $verify_url,
+    'Content-Type' => 'application/json; charset=utf-8',
+    Content => $request_body
+  );
+
+  $self->devLog("Received HTTP response: status=" . $resp->status_line);
+
+  if ($resp->is_success) {
+    my $json = JSON::decode_json($resp->decoded_content);
+    $self->devLog("reCAPTCHA Enterprise response: " . $resp->decoded_content);
+
+    my $token_valid = $json->{tokenProperties}{valid};
+    my $score = $json->{riskAnalysis}{score};
+    my $reasons = $json->{riskAnalysis}{reasons} || [];
+
+    if ($token_valid) {
+      return {
+        success => 1,
+        score => $score,
+        action => $json->{tokenProperties}{action},
+        hostname => $json->{tokenProperties}{hostname},
+        reasons => $reasons
+      };
+    } else {
+      my $invalid_reason = $json->{tokenProperties}{invalidReason} || 'unknown';
+      $self->security_log("reCAPTCHA token invalid: $invalid_reason");
+      $self->devLog("reCAPTCHA token invalid: $invalid_reason");
+      return 0;
+    }
+  } else {
+    $self->security_log("reCAPTCHA Enterprise HTTP request failed: " . $resp->status_line);
+    $self->devLog("reCAPTCHA Enterprise HTTP error: " . $resp->status_line);
+    $self->devLog("Response body: " . ($resp->decoded_content // 'empty'));
     return 0;
   }
 }
@@ -85,6 +186,18 @@ sub display
   # Return cached result if already processed (prevents double form processing)
   return $self->_display_result if $self->_has_display_result;
 
+  # Debug logging for reCAPTCHA Enterprise configuration
+  my $api_key = $self->CONF->recaptcha_enterprise_api_key;
+  my $project_id = $self->CONF->recaptcha_enterprise_project_id;
+  my $public_key = $self->CONF->recaptcha_v3_public_key;
+  my $api_key_masked = $api_key ? substr($api_key, 0, 10) . '...' : '(empty)';
+  my $api_key_len = length($api_key // '');
+  $self->devLog("sign_up Page: recaptcha_enterprise_api_key loaded = $api_key_masked ($api_key_len chars)");
+  $self->devLog("sign_up Page: recaptcha_enterprise_project_id = " . ($project_id // '(empty)'));
+  $self->devLog("sign_up Page: recaptcha_v3_public_key (site key) = $public_key");
+  $self->devLog("sign_up Page: is_production = " . ($self->CONF->is_production ? 'true' : 'false'));
+  $self->devLog("sign_up Page: HTTP_HOST = " . ($ENV{HTTP_HOST} // 'undef'));
+
   my $recaptcha_token = $REQUEST->param('recaptcha_token');
   my $recaptcha_response = undef;
   my $enforce_recaptcha = 1;
@@ -93,6 +206,9 @@ sub display
   if($self->CONF->is_production or $ENV{HTTP_HOST} =~ /^development\.everything2\.com:?\d?/)
   {
     $use_recaptcha = 1;
+    $self->devLog("sign_up Page: recaptcha ENABLED (production or development.everything2.com)");
+  }else{
+    $self->devLog("sign_up Page: recaptcha DISABLED (not production, HTTP_HOST doesn't match development.everything2.com)");
   }
 
   my $invalidName = '^\W+$|[\[\]\<\>\&\{\}\|\/\\\]| .*_|_.* |\s\s|^\s|\s$';

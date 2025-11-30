@@ -368,26 +368,53 @@ Returns the display of e2nodes/:id of the newly created object
 
 Current version: *1 (beta)*
 
-Retrieves, sends, and sets status on messages
+Retrieves, sends, and sets status on messages. Supports viewing bot inboxes (Cool Man Eddie, Klaproth, etc.) for authorized users and filtering by usergroup.
 
 ### /api/messages
 
 Returns the top 15 messages ordered by newest first.
 
-Takes two optional GET parameters for pagination
-* *limit* - Number of messages to return at a time. If left blank defaults to 15. Maximum of 100
-* *offset* - Offset of the number of messages to return from DESC sorting
+Takes the following optional GET parameters:
+* **limit** - Number of messages to return at a time. If left blank defaults to 15. Maximum of 100
+* **offset** - Offset of the number of messages to return from DESC sorting
+* **for_user** - Node ID of user whose inbox to view. Used for viewing bot inboxes. Requires authorization (user must have access to that bot's inbox via the `bot inboxes` setting - see Bot Inbox Access below)
+* **for_usergroup** - Node ID of usergroup to filter by. Only returns messages sent to the specified usergroup. Must be 0 or a valid usergroup ID
+* **archived** - Set to 1 to retrieve archived messages instead of active messages (default: 0)
+* **box** - Message box type: "inbox" (default) or "outbox" for sent messages
 
 Messages have the following keys:
 
 * **message_id** - The internal message identifier
 * **timestamp** - The creation time of the message in ISO format
-* **for_user** - The node reference of the receving user. This is almost certainly the logged in user, though in future versions, admins should be able to check system accounts (root, CME, Klaproth)
-* **author_user** - The node reference of the sending user.
+* **for_user** - The node reference of the receiving user. This is the logged in user, or when viewing a bot inbox, the bot user
+* **author_user** - The node reference of the sending user
 * **msgtext** - The text of the message
-* **for_usergroup** - The node reference of the group the message was send to. Missing if not a usergroup message
+* **for_usergroup** - The node reference of the group the message was sent to. Missing if not a usergroup message
 
 Users who are not logged in should expect to receive 401 Unauthorized
+
+#### Bot Inbox Access
+
+Authorized users can view the inboxes of system bots (Cool Man Eddie, Klaproth, EDB, etc.) using the `for_user` parameter. Authorization is controlled by the `bot inboxes` setting node, which maps bot usernames to required usergroups:
+
+```
+Cool Man Eddie → Content Editors
+Klaproth → Content Editors
+EDB → Content Editors
+Content_Salvage → CST_Group
+Virgil → e2docs
+```
+
+Admins have access to all bot inboxes regardless of usergroup membership.
+
+**Example - View Cool Man Eddie's inbox:**
+```bash
+curl https://everything2.com/api/messages?for_user=51&limit=25 \
+  -H "Cookie: userpass=..."
+```
+
+**Error Responses:**
+* **403 Forbidden** - User doesn't have access to the requested bot inbox
 
 ### /api/messages/:id
 
@@ -415,12 +442,55 @@ Return parameters the same as action/delete
 
 ### /api/messages/create
 
-Sends a message. At this time, will accept a usergroup in "for", but will not deliver it.
+Sends a message. Supports sending messages to users, usergroups, and sending as a bot (for authorized users).
 
-Accepts a JSON post with the following parameters
-* **for** - The name of the user to have the message delivered to
-* **for_id** - More precise and preferred version of the user to be sent. Is ignored if this and **for** are sent at the same time.
-* **message** - The message text to send
+Accepts a JSON POST with the following parameters:
+* **for** - The name of the user or usergroup to have the message delivered to
+* **for_id** - More precise and preferred version of the user to be sent. Takes precedence over **for** if both are provided
+* **message** - The message text to send (max 512 characters)
+* **send_as** - (Optional) Node ID of a bot user to send the message as. Requires authorization (user must have access to that bot's inbox via the `bot inboxes` setting). If not provided, message is sent as the current user
+
+**Send-as-Bot Feature:**
+
+Authorized users (editors, admins, etc.) can send messages as system bots using the `send_as` parameter. This is useful for bot operators who need to respond to messages received in bot inboxes.
+
+**Example - Send message as Cool Man Eddie:**
+```bash
+curl -X POST https://everything2.com/api/messages/create \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"for": "someuser", "message": "Hello from CME!", "send_as": 51}'
+```
+
+**Error Responses:**
+* **403 Forbidden** - User doesn't have permission to send as the specified bot
+
+### /api/messages/count
+
+Returns the count of messages in the user's inbox or outbox. Useful for pagination and showing unread counts.
+
+Takes the following optional GET parameters:
+* **for_user** - Node ID of user whose inbox to count. Used for viewing bot inbox counts. Requires authorization (see Bot Inbox Access above)
+* **for_usergroup** - Node ID of usergroup to filter by. Only counts messages sent to the specified usergroup
+* **archived** - Set to 1 to count archived messages instead of active messages (default: 0)
+* **box** - Message box type: "inbox" (default) or "outbox" for sent messages
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "count": 42,
+  "box": "inbox",
+  "archived": 0
+}
+```
+
+**Response Keys:**
+* **count** - Number of messages matching the criteria
+* **box** - The box type counted ("inbox" or "outbox")
+* **archived** - Whether archived messages were counted (0 or 1)
 
 ## Message Ignores
 
