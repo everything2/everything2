@@ -25,7 +25,7 @@ if ENV['E2_DOCKER'].nil? or !ENV['E2_DOCKER'].eql? "development"
 
   # Download actual secrets and infected_ips (used by Everything::Configuration)
   # Apache blocks (banned_ips, banned_ipblocks, banned_user_agents) now in source control
-  ['recaptcha_v3_secret', 'infected_ips_secret'].each do |value|
+  ['recaptcha_v3_secret', 'recaptcha_enterprise_api_key', 'infected_ips_secret'].each do |value|
     STDERR.puts "Downloading secret '#{value}' to disk"
     s3client.get_object(response_target: "#{location}/#{value}", bucket: secretsbucket, key: value)
   end

@@ -1,7 +1,7 @@
-FROM ubuntu:24.04
+# Stage 1: Dependencies (cached separately)
+FROM ubuntu:24.04 AS deps
 
 ARG ARCH=x64
-ARG CODEBUILD_RESOLVED_SOURCE_VERSION
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc cmake unzip && rm -rf /var/lib/apt/lists/*
 ENV TZ=Etc/UTC
@@ -24,7 +24,7 @@ RUN chown root:root /etc/everything
 RUN chown www-data:www-data /var/mason /var/log/everything /etc/apache2/logs
 RUN chmod 0755 /var/mason
 
-# Perl
+# Perl dependencies (only changes when cpanfile or vendor/cache changes)
 COPY ./vendor/cache/ /var/bootstrap/cache/
 COPY ./cpanfile /var/bootstrap
 RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest --cpanfile=/var/bootstrap/cpanfile .
@@ -33,17 +33,22 @@ RUN cpanm -L /var/libraries --from "/var/bootstrap/cache" --installdeps --notest
 RUN curl -L "https://nodejs.org/download/release/v20.19.2/node-v20.19.2-linux-$ARCH.tar.xz" | xz -cd | tar xv --strip-components=1 -C /usr
 RUN /usr/bin/npm install -g npm@latest
 
+# Node dependencies (only changes when package.json/package-lock.json changes)
+WORKDIR /var/everything
+COPY package.json package-lock.json ./
+RUN /usr/bin/npm install
+
+# Stage 2: Final image with application code
+FROM deps AS final
+
+ARG CODEBUILD_RESOLVED_SOURCE_VERSION
+
 COPY ./tools/generate-self-signed-cert.rb /var/bootstrap
 COPY ./etc/templates/* /var/bootstrap/etc/
 RUN ruby /var/bootstrap/generate-self-signed-cert.rb
 
 COPY docker/e2app/apache2_wrapper.rb /etc/everything
 RUN chmod +x /etc/everything/apache2_wrapper.rb
-
-# Install Node dependencies (separate layer for better caching)
-WORKDIR /var/everything
-COPY package.json package-lock.json ./
-RUN /usr/bin/npm install
 
 # Copy application code
 COPY ./ /var/everything

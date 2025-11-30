@@ -107,14 +107,21 @@ test.describe('GP Transfer Flow', () => {
     await page.goto('/title/Superbless')
     await expect(page.locator('h1:has-text("Superbless")')).toBeVisible()
 
-    // Fill in Superbless form to grant 5 GP to e2e_user
-    await page.fill('input[name="EnrichUsers0"]', 'e2e_user')
-    await page.fill('input[name="BestowGP0"]', '5')
-    await page.click('#superbless_submit')
+    // Wait for React component to load
+    await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
 
-    // Wait for form submission to complete
-    await page.waitForLoadState('networkidle', { timeout: 10000 })
-    await expect(page.locator('h1:has-text("Superbless")')).toBeVisible({ timeout: 5000 })
+    // Fill in the first row of the React form (username and GP amount)
+    const usernameInputs = page.locator('input[placeholder="Enter username"]')
+    const gpInputs = page.locator('input[type="number"]')
+
+    await usernameInputs.first().fill('e2e_user')
+    await gpInputs.first().fill('5')
+
+    // Submit the form
+    await page.click('button:has-text("Superbless")')
+
+    // Wait for results to appear
+    await expect(page.locator('text=was given 5 GP')).toBeVisible({ timeout: 10000 })
 
     // Step 8: Logout
     await logout(page)

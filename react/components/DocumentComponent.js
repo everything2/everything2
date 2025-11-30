@@ -44,9 +44,11 @@ const COMPONENT_MAP = {
   enn: lazy(() => import('./Documents/NodeList')),
   ekn: lazy(() => import('./Documents/NodeList')),
 
-  // Text generators (reusable RandomText component)
+  // Text generators
   fezisms_generator: lazy(() => import('./Documents/RandomText')),
   piercisms_generator: lazy(() => import('./Documents/RandomText')),
+  teddisms_generator: lazy(() => import('./Documents/TeddismsGenerator')),
+  ask_everything_do_i_have_the_swine_flu: lazy(() => import('./Documents/DoIHaveSwineFlu')),
 
   // Utility tools
   wharfinger_s_linebreaker: lazy(() => import('./Documents/WharfingerLinebreaker')),
@@ -86,8 +88,16 @@ const COMPONENT_MAP = {
   // Utility tools
   text_formatter: lazy(() => import('./Documents/TextFormatter')),
 
-  // Admin tools
-  giant_teddy_bear_suit: lazy(() => import('./Documents/GiantTeddyBearSuit')),
+  // Admin tools - unified AdminBestowTool component
+  admin_bestow_tool: lazy(() => import('./Documents/AdminBestowTool')),
+  superbless: lazy(() => import('./Documents/AdminBestowTool')),
+  xp_superbless: lazy(() => import('./Documents/AdminBestowTool')),
+  giant_teddy_bear_suit: lazy(() => import('./Documents/AdminBestowTool')),
+  fiery_teddy_bear_suit: lazy(() => import('./Documents/AdminBestowTool')),
+  bestow_easter_eggs: lazy(() => import('./Documents/AdminBestowTool')),
+  bestow_cools: lazy(() => import('./Documents/AdminBestowTool')),
+
+  // Admin info pages
   suspension_info: lazy(() => import('./Documents/SuspensionInfo')),
 
   // Authentication

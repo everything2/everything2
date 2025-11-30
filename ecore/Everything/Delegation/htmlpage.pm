@@ -4345,21 +4345,11 @@ sub node_listnodelets_page
     } else {
       $row = '<tr class="evenrow"><td>';
     }
-    $row .= linkNode($NODE, $current_nodelet->{title},
-                   { displaytype => 'shownodelet',
-                     nodelet_id => $_}).'</t></tr>';
+    $row .= linkNode($current_nodelet).'</td></tr>';
     } @nodelets); 
   $str .= '</table></div>';
 
   return $str;
-}
-
-sub node_shownodelet_page
-{
-  # DEPRECATED: This display type is no longer used. Nodelets are now
-  # rendered via React. This stub remains until the node shownodelet page
-  # htmlpage node is deleted from production.
-  return '<div class="notice">This page is deprecated. Nodelets are now displayed in the sidebar.</div>';
 }
 
 sub stylesheet_serve_page

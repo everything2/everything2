@@ -8,6 +8,12 @@ import ParseLinks from './ParseLinks'
  * Used in:
  * - Messages nodelet (full version with 10 messages, archive/inbox toggle)
  * - Chatterbox nodelet (mini version with 5 messages, compact UI)
+ * - Message Inbox page (full page view with pagination)
+ *
+ * Props:
+ * - compact: Controls UI density (timestamps, styling). Default: false
+ * - chatOrder: If true, reverse messages so newest is at BOTTOM (chat-style).
+ *              Default: false (newest at TOP, traditional inbox style)
  */
 const MessageList = (props) => {
   const {
@@ -18,6 +24,7 @@ const MessageList = (props) => {
     onUnarchive,
     onDelete,
     compact = false,
+    chatOrder = false,
     limit = null,
     showActions = {
       reply: true,
@@ -256,9 +263,9 @@ const MessageList = (props) => {
     )
   }
 
-  // For compact mode (nodelets), reverse to show oldest first (chat-style)
-  // For full display (Message Inbox page), keep API order (newest first)
-  const displayMessages = compact
+  // chatOrder=true: reverse to show oldest first (chat-style, newest at bottom)
+  // chatOrder=false: keep API order (newest first, traditional inbox at top)
+  const displayMessages = chatOrder
     ? messagesToDisplay.slice().reverse()
     : messagesToDisplay
 

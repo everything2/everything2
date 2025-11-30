@@ -10,9 +10,8 @@ phases:
       - export BUILDKIT_PROGRESS=plain
       - docker images
       - echo Pulling cached images for layer reuse...
-      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG || echo "No previous image tag cache available"
       - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps || echo "No deps cache available"
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG everything2/e2app:$IMAGE_TAG || true
+      - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG || echo "No previous image tag cache available"
       - echo "Cache verification:"
       - docker images | grep $ECR_REPOSITORY_NAME || echo "No cache images available"
       - echo Installing node elements
@@ -27,11 +26,12 @@ phases:
       - echo Building asset pipeline...
       - npx webpack --config etc/webpack.config.js
       - ./tools/asset_pipeline.rb --assets=$ASSETS_BUCKET
-      - echo Building the Docker image with layer caching...
-      - docker build --pull=false --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG --build-arg="ARCH=$NODEJS_ARCH" --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" -f docker/e2app/Dockerfile . ;
-      - echo Tagging and pushing dependency cache image...
-      - docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps
+      - echo Building deps stage with layer caching...
+      - docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --target deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --build-arg="ARCH=$NODEJS_ARCH" -f docker/e2app/Dockerfile . ;
+      - echo Pushing deps cache image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps || true
+      - echo Building final image with layer caching...
+      - docker build --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:deps --cache-from $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG --build-arg="ARCH=$NODEJS_ARCH" --build-arg="CODEBUILD_RESOLVED_SOURCE_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION" -f docker/e2app/Dockerfile . ;
       - echo Pushing the final Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$IMAGE_TAG ;
   post_build:
