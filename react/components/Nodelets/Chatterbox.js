@@ -684,6 +684,7 @@ const Chatterbox = (props) => {
             onUnarchive={handleUnarchive}
             onDelete={handleDelete}
             compact={false}
+            chatOrder={true}
             limit={5}
             showActions={{
               reply: true,

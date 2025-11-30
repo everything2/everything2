@@ -2,7 +2,76 @@
 
 **For communication to users - Non-technical summary**
 
-## Notification Periodic Update Bug Fixed (2025-11-29) 🐛 NEW
+## reCAPTCHA Enterprise Migration (2025-11-30) 🔒 NEW
+
+### Upgraded to Google reCAPTCHA Enterprise
+**What Changed:** Upgraded the anti-spam protection from reCAPTCHA v3 to reCAPTCHA Enterprise for improved bot detection.
+
+**Why This Matters:**
+- **Better Bot Detection**: Enterprise API provides more accurate risk scores and better protection against sophisticated spam bots
+- **Future-Proofing**: Enterprise is Google's recommended platform for high-traffic sites
+- **Metrics & Monitoring**: Now have access to detailed reCAPTCHA statistics and monitoring tools
+
+**Technical Details:**
+- Updated [SignUp.js](react/components/Documents/SignUp.js) with Enterprise script loading and token generation
+- Fixed race condition where form submission could occur before reCAPTCHA token was ready
+- Added dual-mode verification in [sign_up.pm](ecore/Everything/Page/sign_up.pm) - supports both Enterprise and legacy endpoints
+- Created [recaptcha-stats.rb](tools/recaptcha-stats.rb) monitoring tool for metrics dashboard
+- Fixed username availability check on form error (pre-populated username now validates on mount)
+
+**User Impact:** No visible changes - the signup experience remains the same, but spam protection is now more robust.
+
+---
+
+## Docker Build Optimization (2025-11-30) ⚡ NEW
+
+### CodeBuild Layer Caching Improvements
+**What Changed:** Optimized AWS CodeBuild configuration for better Docker layer caching, significantly reducing build times.
+
+**Technical Details:**
+- Converted Dockerfile to multi-stage build with separate `deps` stage
+- Dependencies stage (apt-get, cpanm, npm install) now cached separately
+- Added `BUILDKIT_INLINE_CACHE=1` for proper cache metadata embedding
+- Deps image pushed to ECR for reuse across builds
+- Build times reduced from ~8 minutes to ~2-3 minutes when dependencies unchanged
+
+**User Impact:** No visible changes - this is infrastructure improvement for faster deployments.
+
+---
+
+## Message Ordering Fix (2025-11-30) 🐛 NEW
+
+### Sidebar Messages Now Display Chat-Style (Newest at Bottom)
+**What Changed:** Fixed message ordering in sidebar components to match chat interface expectations.
+
+**Why This Matters:**
+- **Chat-Style Interface**: Messages nodelet and Chatterbox mini-messages now show newest messages at the bottom (like a chat)
+- **Inbox Unchanged**: Full Message Inbox page keeps newest at top (traditional email style)
+- **Consistency**: Sidebar components now behave like chat interfaces where you read from top to bottom
+
+**Technical Details:**
+- Added `chatOrder` prop to [MessageList.js](react/components/MessageList.js) for independent ordering control
+- Updated Messages nodelet and Chatterbox mini-messages to use `chatOrder={true}`
+- Message Inbox page keeps default `chatOrder={false}` (newest first)
+
+**User Impact:** Private messages in the sidebar now appear in chronological order with newest at bottom, matching natural chat reading flow.
+
+---
+
+## Deprecated Code Cleanup (2025-11-30) 🧹 NEW
+
+### Removed Legacy Nodelet Display Code
+**What Changed:** Removed deprecated `node_shownodelet_page` function from htmlpage.pm after production page was deleted.
+
+**Technical Details:**
+- Removed 7 lines of deprecated stub code from [htmlpage.pm](ecore/Everything/Delegation/htmlpage.pm)
+- Updated nodelet links in `node_listnodelets_page` to point to nodelet info pages instead of deleted display type
+
+**User Impact:** No visible changes - cleanup of obsolete code that was no longer used.
+
+---
+
+## Notification Periodic Update Bug Fixed (2025-11-29) 🐛
 
 ### Bug Fix: Notifications Disappearing After Periodic Refresh
 **What Changed:** Fixed a bug where the Notifications nodelet would lose all notification text after the 2-minute periodic refresh, showing only the dismiss "×" button.
@@ -474,5 +543,5 @@ The foundation is now solid for transforming E2 into a modern web platform while
 
 ---
 
-*Last Updated: November 27, 2025*
+*Last Updated: November 30, 2025*
 *Maintained by: Jay Bonci*

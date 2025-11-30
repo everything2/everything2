@@ -289,6 +289,7 @@ const Messages = (props) => {
           onUnarchive={handleUnarchive}
           onDelete={handleDelete}
           compact={false}
+          chatOrder={true}
           showActions={{
             reply: true,
             replyAll: true,
