@@ -1,7 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Modal from 'react-modal'
-import { FaExclamationTriangle, FaTrashAlt, FaEdit, FaBook, FaClone, FaEye } from 'react-icons/fa'
+import { FaExclamationTriangle, FaTrashAlt, FaEdit, FaBook, FaClone, FaEye, FaSave } from 'react-icons/fa'
 import LinkNode from '../LinkNode'
+
+// System node types that use the modal edit interface instead of legacy edit pages
+const SYSTEM_NODE_TYPES = [
+  'maintenance',
+  'htmlcode',
+  'htmlpage',
+  'nodelet',
+  'nodetype',
+  'superdoc',
+  'restricted_superdoc',
+  'oppressor_superdoc',
+  'fullpage'
+]
 
 const NodeToolset = ({
   nodeId,
@@ -15,10 +28,18 @@ const NodeToolset = ({
 }) => {
   const [nukeModalOpen, setNukeModalOpen] = useState(false)
   const [cloneModalOpen, setCloneModalOpen] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isCloning, setIsCloning] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isLoadingEdit, setIsLoadingEdit] = useState(false)
   const [cloneTitle, setCloneTitle] = useState('')
+  const [editTitle, setEditTitle] = useState('')
+  const [editMaintainer, setEditMaintainer] = useState('')
+  const [originalData, setOriginalData] = useState(null)
   const [error, setError] = useState(null)
+
+  const isSystemNode = SYSTEM_NODE_TYPES.includes(nodeType)
 
   const openNukeModal = () => {
     setNukeModalOpen(true)
@@ -40,6 +61,94 @@ const NodeToolset = ({
     setCloneModalOpen(false)
     setCloneTitle('')
     setError(null)
+  }
+
+  const openEditModal = async () => {
+    setEditModalOpen(true)
+    setError(null)
+    setIsLoadingEdit(true)
+
+    try {
+      const response = await fetch(`/api/admin/node/${nodeId}`, {
+        method: 'GET',
+        credentials: 'include',
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setOriginalData(data)
+        setEditTitle(data.title || '')
+        setEditMaintainer(data.maintainedby_user?.title || '')
+      } else {
+        setError(data.error || 'Failed to load node data')
+      }
+    } catch (err) {
+      setError('Network error: ' + err.message)
+    } finally {
+      setIsLoadingEdit(false)
+    }
+  }
+
+  const closeEditModal = () => {
+    setEditModalOpen(false)
+    setEditTitle('')
+    setEditMaintainer('')
+    setOriginalData(null)
+    setError(null)
+  }
+
+  const handleEdit = async (e) => {
+    e.preventDefault()
+    if (!editTitle.trim()) return
+
+    setIsSaving(true)
+    setError(null)
+
+    try {
+      // Build update payload - only include changed fields
+      const updates = {}
+
+      if (editTitle !== originalData?.title) {
+        updates.title = editTitle
+      }
+
+      // For maintainer, we need to look up the user ID
+      // For now, only update if cleared (null) or unchanged
+      // TODO: Add user autocomplete for maintainer selection
+      if (editMaintainer === '' && originalData?.maintainedby_user) {
+        updates.maintainedby_user = null
+      }
+
+      if (Object.keys(updates).length === 0) {
+        setError('No changes to save')
+        setIsSaving(false)
+        return
+      }
+
+      const response = await fetch(`/api/admin/node/${nodeId}/edit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updates),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Navigate to the new title - if title changed, reload would show "not found"
+        const newTitle = data.title || editTitle
+        window.location.href = `/title/${encodeURIComponent(newTitle)}`
+      } else {
+        setError(data.error || data.message || 'Failed to update node')
+        setIsSaving(false)
+      }
+    } catch (err) {
+      setError('Network error: ' + err.message)
+      setIsSaving(false)
+    }
   }
 
   const handleNuke = async () => {
@@ -161,30 +270,50 @@ const NodeToolset = ({
       }}>
         {/* Edit/Display Button */}
         {showEdit ? (
-          <div
-            style={buttonStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-              e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-              e.currentTarget.style.borderColor = '#ccc'
-            }}
-          >
-            <LinkNode
-              nodeId={nodeId}
-              title={nodeTitle}
-              display={
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                  <FaEdit size={20} />
-                  <span>{isSuperdoc ? 'Edit Code' : 'Edit Node'}</span>
-                </div>
-              }
-              params={{ displaytype: 'edit' }}
-              style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
-            />
-          </div>
+          isSystemNode ? (
+            // System nodes use modal edit
+            <button
+              onClick={openEditModal}
+              style={buttonStyle}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
+                e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
+                e.currentTarget.style.borderColor = '#ccc'
+              }}
+            >
+              <FaEdit size={20} />
+              <span>Edit Node</span>
+            </button>
+          ) : (
+            // Non-system nodes use legacy edit page
+            <div
+              style={buttonStyle}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
+                e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
+                e.currentTarget.style.borderColor = '#ccc'
+              }}
+            >
+              <LinkNode
+                nodeId={nodeId}
+                title={nodeTitle}
+                display={
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                    <FaEdit size={20} />
+                    <span>{isSuperdoc ? 'Edit Code' : 'Edit Node'}</span>
+                  </div>
+                }
+                params={{ displaytype: 'edit' }}
+                style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+              />
+            </div>
+          )
         ) : (
           <div
             style={buttonStyle}
@@ -512,6 +641,151 @@ const NodeToolset = ({
               }}
             >
               <FaClone size={12} /> {isCloning ? 'Cloning...' : 'Clone Node'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Modal - for system node types */}
+      <Modal
+        isOpen={editModalOpen}
+        onRequestClose={closeEditModal}
+        ariaHideApp={false}
+        contentLabel="Edit Node"
+        style={{
+          content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            minWidth: '450px',
+            maxWidth: '600px',
+          },
+        }}
+      >
+        <div>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FaEdit size={20} /> Edit Node
+          </h2>
+
+          {isLoadingEdit ? (
+            <div style={{ margin: '20px 0', textAlign: 'center', color: '#666' }}>
+              Loading node data...
+            </div>
+          ) : (
+            <div style={{ margin: '20px 0', lineHeight: '1.6' }}>
+              <p style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>
+                Editing: <strong>{nodeTitle}</strong><br />
+                <span style={{ fontSize: '0.9em', color: '#666' }}>Type: {nodeType} | ID: {nodeId}</span>
+              </p>
+
+              <form onSubmit={handleEdit}>
+                <div style={{ marginBottom: '15px' }}>
+                  <label htmlFor="edit-title" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Title:
+                  </label>
+                  <input
+                    id="edit-title"
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    disabled={isSaving}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      border: '1px solid #ccc',
+                      borderRadius: '3px',
+                      fontSize: '0.9em',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="Node title"
+                    autoFocus
+                  />
+                </div>
+
+                <div style={{ marginBottom: '15px' }}>
+                  <label htmlFor="edit-maintainer" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Maintained By:
+                  </label>
+                  <input
+                    id="edit-maintainer"
+                    type="text"
+                    value={editMaintainer}
+                    onChange={(e) => setEditMaintainer(e.target.value)}
+                    disabled={isSaving}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      border: '1px solid #ccc',
+                      borderRadius: '3px',
+                      fontSize: '0.9em',
+                      boxSizing: 'border-box',
+                      backgroundColor: '#f9f9f9'
+                    }}
+                    placeholder="Username (read-only for now)"
+                    readOnly
+                    title="Maintainer editing coming soon"
+                  />
+                  <span style={{ fontSize: '0.8em', color: '#666', marginTop: '4px', display: 'block' }}>
+                    Maintainer selection coming in a future update
+                  </span>
+                </div>
+
+                {originalData && (
+                  <div style={{ fontSize: '0.85em', color: '#666', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '3px' }}>
+                    <strong>Author:</strong> {originalData.author_user?.title || 'Unknown'}<br />
+                    <strong>Created:</strong> {originalData.createtime || 'Unknown'}
+                  </div>
+                )}
+              </form>
+            </div>
+          )}
+
+          {error && (
+            <div style={{ color: 'red', padding: '10px', marginBottom: '10px', border: '1px solid red' }}>
+              {error}
+            </div>
+          )}
+
+          <div style={{ textAlign: 'right', marginTop: '20px' }}>
+            <button
+              type="button"
+              onClick={closeEditModal}
+              disabled={isSaving}
+              style={{
+                marginRight: '10px',
+                padding: '6px 16px',
+                backgroundColor: '#f5f5f5',
+                color: '#333',
+                border: '1px solid #ccc',
+                borderRadius: '3px',
+                cursor: isSaving ? 'not-allowed' : 'pointer',
+                fontSize: '0.9em'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleEdit}
+              disabled={isSaving || isLoadingEdit || !editTitle.trim()}
+              style={{
+                padding: '6px 16px',
+                backgroundColor: isSaving || isLoadingEdit || !editTitle.trim() ? '#ccc' : '#5cb85c',
+                color: 'white',
+                border: 'none',
+                borderRadius: '3px',
+                cursor: isSaving || isLoadingEdit || !editTitle.trim() ? 'not-allowed' : 'pointer',
+                fontSize: '0.9em',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                opacity: isSaving || isLoadingEdit || !editTitle.trim() ? 0.6 : 1
+              }}
+            >
+              <FaSave size={12} /> {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>

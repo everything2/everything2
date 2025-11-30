@@ -89,7 +89,7 @@ sub linkStylesheet
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  # Generate a link to a stylesheet, incorporating the version 
+  # Generate a link to a stylesheet, incorporating the version
   # number of the node into the URL. This can be used in conjunction
   # with a far-future expiry time to ensure that a stylesheet is
   # cacheable, yet the most up to date version will always be
@@ -97,13 +97,23 @@ sub linkStylesheet
   my ($n, $displaytype) = @_;
   $displaytype ||= 'view' ;
 
+  # Check for ?csstest=1 parameter to enable CSS variable testing
+  my $css_test_mode = $query && $query->param("csstest");
+
   unless (ref $n) {
     unless ($n =~ /\D/) {
       $n = getNodeById($n);
     } else {
       $n = getNode($n, 'stylesheet');
     }
-    return $APP->asset_uri("$n->{node_id}.css");
+    my $url = $APP->asset_uri("$n->{node_id}.css");
+
+    # If csstest=1, use -var.css version (for CSS variable A/B testing)
+    if ($css_test_mode && $css_test_mode eq "1") {
+      $url =~ s/\.css$/-var.css/;
+    }
+
+    return $url;
   } else {
     return $n;
   }
@@ -2033,7 +2043,7 @@ sub shownewexp
       return;
     }
 
-    htmlcode('achievementsByType','experience');
+    $APP->checkAchievementsByType('experience', $$USER{user_id});
 
     my $notification = getNode('experience','notification')->{node_id};
     if ($$VARS{settings}) {
@@ -2594,7 +2604,7 @@ sub publishwriteup
   $$VARS{numwriteups}++;
   $$VARS{lastnoded} = $$WRITEUP{writeup_id};
 
-  htmlcode('achievementsByType','writeup');
+  $APP->checkAchievementsByType('writeup', $$USER{user_id});
 
   # Inform people who have this person as one of their favorite authors
   my $favoriteNotification = getNode("favorite","notification")->{node_id};
@@ -9105,65 +9115,15 @@ sub updateNodelet
   return insertNodelet($nodelet);
 }
 
+# DEPRECATED: Use $APP->hasAchieved() instead
+# This htmlcode stub remains for backwards compatibility only.
+# All callers have been migrated to Application.pm method.
+# Safe to remove after confirming no external callers exist.
 sub hasAchieved
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
+  my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
   my ($ACH, $user_id, $force) = @_;
-
-  getRef $ACH;
-  $ACH ||= getNode($_[0], 'achievement');
-  return 0 unless $ACH;
-
-  $user_id ||= $$USER{user_id};
-  return unless getNodeById($user_id)->{type}{title} eq 'user';
-
-  $force = undef unless( defined($force) and ($force == 1));
-
-  return 1 if $DB->sqlSelect('count(*)'
-    , 'achieved'
-    , "achieved_user=$user_id
-    AND achieved_achievement=$$ACH{node_id} LIMIT 1");
-
-  return 0 unless $$ACH{achievement_still_available};
-
-  # Check for delegation function
-  my $achtitle = $$ACH{title};
-  $achtitle =~ s/[\s-]/_/g;
-  $achtitle =~ s/[^A-Za-z0-9_]/_/g;
-  $achtitle = lc($achtitle);
-
-  my $result;
-  if(my $delegation = Everything::Delegation::achievement->can($achtitle))
-  {
-    $APP->devLog("Using achievement delegation for '$$ACH{title}' as '$achtitle'");
-    $result = $force || $delegation->($DB, $APP, $user_id);
-  }
-  else
-  {
-    # Achievement not migrated to delegation - log error and return 0
-    $APP->devLog("ERROR: Achievement '$$ACH{title}' (expected: $achtitle) has no delegation function");
-    return 0;
-  }
-
-  if ($result == 1)
-  {
-    $DB->sqlInsert("achieved",{achieved_user => $user_id, achieved_achievement => $$ACH{node_id}});
-
-    my $notification = getNode("achievement","notification")->{node_id};
-    if ($$VARS{settings} && from_json($$VARS{settings})->{notifications}->{$notification})
-    {
-      htmlcode('addNotification', $notification, $user_id, {achievement_id => $$ACH{node_id}});
-    }
-  }
-
-  return $result;
+  return $APP->hasAchieved($ACH, $user_id, $force);
 }
 
 sub show_node_forward
@@ -9217,7 +9177,7 @@ sub achievementsByType
     # forget about blah100 if we haven't got blah050:
     next if $$a{subtype} && $$a{subtype} eq $finishedgroup;
 
-    my $result = htmlcode('hasAchieved', $a, $user_id);
+    my $result = $APP->hasAchieved($a, $user_id);
     $finishedgroup = ($$a{subtype} || '') unless $result;
 
     $str.=linkNode($a)." - $result<br>" if $debug;

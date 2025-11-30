@@ -35,10 +35,23 @@ sub layout
 
   my $canonical_url = "https://".$self->CONF->canonical_web_server.$params->{node}->canonical_url;
 
-  $params->{basesheet} = $basesheet->cdn_link;
-  $params->{zensheet} = $zensheet->cdn_link;
+  # Check for ?csstest=1 parameter to enable CSS variable testing
+  my $css_test_mode = $REQUEST->param("csstest");
+  my $basesheet_url = $basesheet->cdn_link;
+  my $zensheet_url = $zensheet->cdn_link;
+  my $printsheet_url = $printsheet->cdn_link;
+
+  # If csstest=1, use -var.css versions (fallback to regular if -var doesn't exist)
+  if ($css_test_mode && $css_test_mode eq "1") {
+    $basesheet_url =~ s/\.css$/-var.css/;
+    $zensheet_url =~ s/\.css$/-var.css/;
+    # Don't convert print stylesheet - it's unsupported
+  }
+
+  $params->{basesheet} = $basesheet_url;
+  $params->{zensheet} = $zensheet_url;
   $params->{customstyle} = $customstyle;
-  $params->{printsheet} = $printsheet->cdn_link;
+  $params->{printsheet} = $printsheet_url;
   $params->{basehref} = ($REQUEST->is_guest)?($self->APP->basehref):(undef);
   $params->{canonical_url} = $canonical_url;
   $params->{metadescription} = $node->metadescription;

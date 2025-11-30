@@ -279,8 +279,8 @@ sub vote
     $APP->castVote(getId($N), $USER, $val, 0, $VSETTINGS);
 
 
-    htmlcode('achievementsByType','vote,'.$$USER{user_id});
-    htmlcode('achievementsByType','reputation,'.$$N{author_user});
+    $APP->checkAchievementsByType('vote', $$USER{user_id});
+    $APP->checkAchievementsByType('reputation', $$N{author_user});
 
 
     last unless $$USER{votesleft};
@@ -317,7 +317,7 @@ sub bless
   $$U{gp} += $gp;
   $$U{karma} += 1;
 
-  htmlcode('achievementsByType','karma');
+  $APP->checkAchievementsByType('karma', $$U{user_id});
 
   $APP->securityLog(getNode("bless","opcode"), $USER, "$$U{title} was blessed 10GP by $$USER{title}");
 
@@ -787,8 +787,8 @@ sub cool
     });
   }
 
-  htmlcode('achievementsByType','cool,'.$uid);
-  htmlcode('achievementsByType','cool,'.$$COOL{author_user});
+  $APP->checkAchievementsByType('cool', $uid);
+  $APP->checkAchievementsByType('cool', $$COOL{author_user});
 
   return;
 }

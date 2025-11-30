@@ -213,10 +213,8 @@ sub spin {
     "[$USER->{title}] spun the [Wheel of Surprise]."
   );
 
-  # Check for achievements (if htmlcode available)
-  if ($APP->can('htmlcode')) {
-    $APP->htmlcode('achievementsByType', "miscellaneous,$USER->{user_id}");
-  }
+  # Check for achievements
+  $APP->checkAchievementsByType('miscellaneous', $USER->{user_id});
 
   return [$self->HTTP_OK, {
     success => 1,

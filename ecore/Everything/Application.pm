@@ -3734,6 +3734,93 @@ sub add_notification {
   return 1;
 }
 
+# Check achievements by type for a user
+# This is a port of htmlcode::achievementsByType to Application.pm
+# so it can be called from API classes without symbol table pollution
+sub checkAchievementsByType {
+  my ($this, $aType, $user_id) = @_;
+  return unless $aType;
+
+  my $db = $this->{db};
+
+  # Parse optional user_id from comma-separated aType (e.g., "miscellaneous,12345")
+  if ($aType =~ /,/) {
+    ($aType, $user_id) = split(/,/, $aType, 2);
+  }
+
+  my @achList = $db->getNodeWhere({achievement_type => $aType}, 'achievement', 'subtype, title ASC');
+  return unless @achList;
+
+  my $finishedgroup = '';
+
+  foreach my $a (@achList) {
+    # Skip achievements in groups we've already failed
+    next if $a->{subtype} && $a->{subtype} eq $finishedgroup;
+
+    my $result = $this->hasAchieved($a, $user_id);
+    $finishedgroup = ($a->{subtype} || '') unless $result;
+  }
+
+  return;
+}
+
+# Check if user has achieved a specific achievement
+# This is a port of htmlcode::hasAchieved to Application.pm
+sub hasAchieved {
+  my ($this, $ACH, $user_id, $force) = @_;
+
+  my $db = $this->{db};
+
+  # Get achievement node if passed as ID
+  $db->getRef($ACH);
+  return 0 unless $ACH;
+
+  return 0 unless $user_id;
+  my $target_user = $db->getNodeById($user_id);
+  return 0 unless $target_user && $target_user->{type}{title} eq 'user';
+
+  $force = undef unless (defined($force) && ($force == 1));
+
+  # Check if already achieved
+  return 1 if $db->sqlSelect('count(*)',
+    'achieved',
+    "achieved_user=$user_id AND achieved_achievement=$ACH->{node_id} LIMIT 1");
+
+  return 0 unless $ACH->{achievement_still_available};
+
+  # Check for delegation function
+  my $achtitle = $ACH->{title};
+  $achtitle =~ s/[\s-]/_/g;
+  $achtitle =~ s/[^A-Za-z0-9_]/_/g;
+  $achtitle = lc($achtitle);
+
+  my $result;
+  if (my $delegation = Everything::Delegation::achievement->can($achtitle)) {
+    $result = $force || $delegation->($db, $this, $user_id);
+  } else {
+    # Achievement not migrated to delegation
+    return 0;
+  }
+
+  if ($result == 1) {
+    $db->sqlInsert("achieved", {
+      achieved_user => $user_id,
+      achieved_achievement => $ACH->{node_id}
+    });
+
+    # Add notification if user has subscribed
+    my $target_VARS = $this->getVars($target_user);
+    my $notification = $db->getNode("achievement", "notification");
+    if ($notification && $target_VARS->{settings}) {
+      my $settings = from_json($target_VARS->{settings});
+      if ($settings && $settings->{notifications} && $settings->{notifications}{$notification->{node_id}}) {
+        $this->add_notification($notification->{node_id}, $user_id, {achievement_id => $ACH->{node_id}});
+      }
+    }
+  }
+
+  return $result;
+}
 
 sub send_message {
   my ($this, $params) = @_;
@@ -6841,8 +6928,11 @@ sub buildNodeInfoStructure
   }
 
   # Phase 4a: React-rendered documents
-  # Check if this superdoc/fullpage has a Page class that provides React data
-  if (($NODE->{type}->{title} eq 'superdoc' || $NODE->{type}->{title} eq 'fullpage') && $user_node) {
+  # Check if this node type has a Page class that provides React data
+  # Supported types: superdoc, fullpage, restricted_superdoc, maintenance
+  my $nodetype = $NODE->{type}->{title};
+  my @react_enabled_types = qw(superdoc fullpage restricted_superdoc maintenance);
+  if ((grep { $nodetype eq $_ } @react_enabled_types) && $user_node) {
     my $page_name = $NODE->{title};
     $page_name = lc($page_name);  # Lowercase first
     $page_name =~ s/[\s\/\:\?\']/_/g;  # Convert special chars to underscores (matches Controller.pm)
@@ -6862,11 +6952,21 @@ sub buildNodeInfoStructure
 
     # Check if Page class exists and has buildReactData method
     if ($page_loaded && $page_class->can('new') && $page_class->can('buildReactData')) {
-      my $page_instance = $page_class->new();
-
       # Use real REQUEST object if available (passed from Controller),
       # otherwise create minimal REQUEST object for buildReactData
-      my $request_obj = $REQUEST || Everything::Request->new(user => $user_node);
+      my $request_obj = $REQUEST;
+      if (!$request_obj) {
+        # Create minimal REQUEST with user and node
+        my $node_obj = $this->node_by_id($NODE->{node_id});
+        $request_obj = Everything::Request->new(user => $user_node, node => $node_obj);
+      }
+
+      # Reuse existing page_class_instance from REQUEST if available
+      # This is critical for form-processing pages like Sign Up that cache state
+      # between display() and buildReactData() calls
+      my $page_instance = ($request_obj && $request_obj->can('page_class_instance') && $request_obj->page_class_instance)
+        ? $request_obj->page_class_instance
+        : $page_class->new();
 
       my $page_data = $page_instance->buildReactData($request_obj);
 
@@ -6906,6 +7006,18 @@ sub buildNodeInfoStructure
           $e2->{newWriteups} = $this->filtered_newwriteups($USER);
         }
       }
+    } elsif ($nodetype eq 'maintenance') {
+      # Maintenance nodes use generic system_node display
+      # They don't have individual Page classes - all maintenance nodes
+      # share the same SystemNode React component
+      $e2->{reactPageMode} = \1;
+      $e2->{contentData} = {
+        type => 'system_node',
+        nodeType => $nodetype,
+        nodeTitle => $NODE->{title},
+        nodeId => $NODE->{node_id},
+        sourceMap => $this->buildSourceMap($NODE, undef)
+      };
     }
   }
 
@@ -7011,6 +7123,38 @@ sub buildSourceMap
           name => 'htmlpage.pm',
           path => 'ecore/Everything/Delegation/htmlpage.pm',
           description => "HTML page delegation (sub $htmlpage_name)"
+        };
+      }
+    }
+  }
+  # Handle maintenance and other system node types
+  elsif ($nodetype eq 'maintenance' || $nodetype eq 'htmlcode' || $nodetype eq 'htmlpage') {
+    # Show controller for this node type
+    my $controller_class = "Everything::Controller::$nodetype";
+    push @{$sourceMap->{components}}, {
+      type => 'controller',
+      name => $controller_class,
+      path => "ecore/Everything/Controller/$nodetype.pm",
+      description => 'Controller class'
+    };
+
+    # Show React component for system nodes
+    push @{$sourceMap->{components}}, {
+      type => 'react_component',
+      name => 'SystemNode',
+      path => 'react/components/Documents/SystemNode.js',
+      description => 'Generic system node display component'
+    };
+
+    # Show node type table(s) if it has one (sqltable can be comma-separated)
+    if ($NODE->{type}->{sqltable}) {
+      my @tables = split(/,/, $NODE->{type}->{sqltable});
+      for my $table_name (@tables) {
+        push @{$sourceMap->{components}}, {
+          type => 'database_table',
+          name => $table_name,
+          path => "nodepack/dbtable/$table_name.xml",
+          description => 'Node type table: ' . $table_name
         };
       }
     }
@@ -7491,6 +7635,31 @@ sub buildNotificationsData
   };
 }
 
+#############################################################################
+# Helper method: Check if user can see a notification type
+# Takes explicit $USER parameter instead of relying on global $USER
+# This is used by getRenderedNotifications to avoid global state dependency
+#############################################################################
+sub _canseeNotification
+{
+  my ($this, $notification_id, $USER) = @_;
+
+  my $notification = $this->{db}->getNodeById($notification_id);
+  return 0 unless $notification;
+
+  my $uid = $$USER{node_id} || $$USER{user_id};
+  my $isCE = $this->isEditor($USER);
+  my $isCoder = $this->inUsergroup($uid, "edev", "nogods") || $this->inUsergroup($uid, 'e2coders', "nogods");
+  my $isChanop = $this->isChanop($uid, "nogods");
+
+  return 0 if (!$isCE && ($$notification{description} =~ /node note/));
+  return 0 if (!$isCE && ($$notification{description} =~ /new user/));
+  return 0 if (!$isCE && ($$notification{description} =~ /(?:blanks|removes) a writeup/));
+  return 0 if (!$isCE && ($$notification{description} =~ /review of a draft/));
+  return 0 if (!$isChanop && ($$notification{description} =~ /chanop/));
+
+  return 1;
+}
 
 sub getRenderedNotifications
 {
@@ -7511,7 +7680,8 @@ sub getRenderedNotifications
       for (keys %{$notificationList})
       {
         # Check if user can see this notification type
-        next if !Everything::HTML::htmlcode('canseeNotification', $_);
+        # Use local method instead of htmlcode to avoid global $USER dependency
+        next if !$this->_canseeNotification($_, $USER);
         push @notify, $_;
       }
 

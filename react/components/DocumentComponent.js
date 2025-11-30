@@ -82,8 +82,22 @@ const COMPONENT_MAP = {
   everything_quote_server: lazy(() => import('./Documents/EverythingQuoteServer')),
   e2_rot13_encoder: lazy(() => import('./Documents/E2Rot13Encoder')),
 
+  // Utility tools
+  text_formatter: lazy(() => import('./Documents/TextFormatter')),
+
+  // Admin tools
+  giant_teddy_bear_suit: lazy(() => import('./Documents/GiantTeddyBearSuit')),
+  suspension_info: lazy(() => import('./Documents/SuspensionInfo')),
+
   // Authentication
-  login: lazy(() => import('./Documents/Login'))
+  login: lazy(() => import('./Documents/Login')),
+  sign_up: lazy(() => import('./Documents/SignUp')),
+
+  // Search
+  full_text_search: lazy(() => import('./Documents/FullTextSearch')),
+
+  // System nodes (maintenance, etc.)
+  system_node: lazy(() => import('./Documents/SystemNode'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))
