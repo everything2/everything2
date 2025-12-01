@@ -1501,7 +1501,7 @@ sub getAllTypes
 	my $node_id;
 	my $TYPE = $this->getType('nodetype');
 
-	$sql = "SELECT node_id FROM node WHERE type_nodetype = " . $$TYPE{node_id};
+	$sql = 'SELECT node_id FROM node WHERE type_nodetype = ' . $$TYPE{node_id};
 	$cursor = $this->{dbh}->prepare($sql);
 	if($cursor && $cursor->execute())
 	{
@@ -1616,7 +1616,7 @@ SELECT TABLE_NAME, ORDINAL_POSITION, COLUMN_NAME
 sub tableExists
 {
 	my ($this, $tableName) = @_;
-	my $cursor = $this->{dbh}->prepare("SHOW TABLES");
+	my $cursor = $this->{dbh}->prepare('SHOW TABLES');
 	my $table;
 	my $exists = 0;
 
@@ -1650,7 +1650,7 @@ sub tableExists
 sub createNodeTable
 {
 	my ($this, $table) = @_;
-	my $tableid = $table . "_id";
+	my $tableid = $table . '_id';
 	my $result;
 
 	return -1 if($this->tableExists($table));
@@ -1684,21 +1684,21 @@ sub dropNodeTable
 	# of these, could cause the entire system to break.  If you really
 	# want to drop one of these, do it from the command line.
 	my @nodrop = (
-		"container",
-		"document",
-		"htmlcode",
-		"htmlpage",
-		"image",
-		"links",
-		"maintenance",
-		"node",
-		"nodegroup",
-		"nodelet",
-		"nodetype",
-		"note",
-		"rating",
-		"user",
-		"useractionlog" );
+		'container',
+		'document',
+		'htmlcode',
+		'htmlpage',
+		'image',
+		'links',
+		'maintenance',
+		'node',
+		'nodegroup',
+		'nodelet',
+		'nodetype',
+		'note',
+		'rating',
+		'user',
+		'useractionlog' );
 
 	foreach (@nodrop)
 	{
@@ -1738,7 +1738,7 @@ sub addFieldToTable
 	my ($this, $table, $fieldname, $type, $primary, $default) = @_;
 	my $sql;
 
-	return 0 if(($table eq "") || ($fieldname eq "") || ($type eq ""));
+	return 0 if(($table eq '') || ($fieldname eq '') || ($type eq ''));
 
     if(not defined $default)
 	{
@@ -1748,13 +1748,13 @@ sub addFieldToTable
 		}
 		else
 		{
-			$default = "";
+			$default = '';
 		}
 	}
 	elsif($type =~ /^text/i)
 	{
 		# Text blobs cannot have default strings.  They need to be empty.
-		$default = "";
+		$default = '';
 	}
 	
 	$sql = "ALTER TABLE $table ADD $fieldname $type";
@@ -1773,7 +1773,7 @@ sub addFieldToTable
 
 		foreach my $field (@fields)
 		{
-			push @prikeys, $$field{Field} if($$field{Key} eq "PRI");
+			push @prikeys, $$field{Field} if($$field{Key} eq 'PRI');
 		}
 
 		$this->executeQuery("ALTER TABLE $table DROP PRIMARY KEY") if(@prikeys > 0);
@@ -1865,21 +1865,21 @@ sub quote
 sub genWhereString
 {
 	my ($this, $WHERE, $TYPE, $orderby) = @_;
-	my $wherestr = "";
+	my $wherestr = '';
 	my $tempstr;
-	
+
 	if (UNIVERSAL::isa($WHERE,'HASH')) {
 	foreach my $key (keys %$WHERE)
 	{
-		$tempstr = "";
+		$tempstr = '';
 
 		# if your where hash includes a hash to a node, you probably really
 		# want to compare the ID of the node, not the hash reference.
-		if (UNIVERSAL::isa($$WHERE{$key}, "HASH"))
+		if (UNIVERSAL::isa($$WHERE{$key}, 'HASH'))
 		{
 			$$WHERE{$key} = $this->getId($$WHERE{$key});
 		}
-		
+
 		# If $key starts with a '-', it means its a single value.
 		if ($key =~ /^(\-?)LIKE\-/)
 		{
@@ -1893,37 +1893,37 @@ sub genWhereString
 			$tempstr .= "$key LIKE $value";
 		}
 		elsif ($key =~ /^\-/)
-		{ 
+		{
 			$key =~ s/^\-//;
-			$tempstr .= $key . '=' . $$WHERE{'-' . $key}; 
+			$tempstr .= $key . '=' . $$WHERE{'-' . $key};
 		}
 		else
 		{
 			#if we have a list, we join each item with ORs
-			if (ref ($$WHERE{$key}) eq "ARRAY")
+			if (ref ($$WHERE{$key}) eq 'ARRAY')
 			{
 				my $LIST = $$WHERE{$key};
-				my $orstr = "";
+				my $orstr = '';
 
 				foreach my $item (@$LIST)
 				{
-					$orstr .= " or " if($orstr ne "");
+					$orstr .= ' or ' if($orstr ne '');
 					$item = $this->getId($item);
-					$orstr .= $key . '=' . $this->quote($item); 
+					$orstr .= $key . '=' . $this->quote($item);
 				}
 
-				$tempstr .= "(" . $orstr . ")";
+				$tempstr .= '(' . $orstr . ')';
 			}
 			elsif($$WHERE{$key})
 			{
 				$tempstr .= $key . '=' . $this->quote($$WHERE{$key});
 			}
 		}
-		
-		if($tempstr ne "")
+
+		if($tempstr ne '')
 		{
 			#different elements are joined together with ANDS
-			$wherestr .= " && \n" if($wherestr ne "");
+			$wherestr .= " && \n" if($wherestr ne '');
 			$wherestr .= $tempstr;
 		}
 	}
@@ -1931,7 +1931,7 @@ sub genWhereString
 
 	if(defined $TYPE)
 	{
-		$wherestr .= " &&" if($wherestr ne "");
+		$wherestr .= ' &&' if($wherestr ne '');
 		$wherestr .= " type_nodetype=$$TYPE{node_id}";
 	}
 
@@ -1967,7 +1967,7 @@ sub deriveType
 	if(not defined $$NODETYPE{sqltablelist})
 	{
 		# We'll want a cleaner way of doing this, for now this suppresses errors on bootstrap
-		$$NODETYPE{sqltablelist} = "";
+		$$NODETYPE{sqltablelist} = '';
 	}
 
 	$PARENT = $this->getType($$NODETYPE{extends_nodetype});
@@ -1981,26 +1981,26 @@ sub deriveType
 			# anyway. (if more custom fields are added, add them
 			# here.  We don't want to inherit them.)
 			my %skipfields = (
-				"tableArray" => 1,
-				"resolvedInheritance" => 1 );
-			
+				'tableArray' => 1,
+				'resolvedInheritance' => 1 );
+
 			next if(exists $skipfields{$field});
 			next if(not defined $$NODETYPE{$field});
 			# If a field in a nodetype is '-1', this field is derived from
 			# its parent.
-			if($$NODETYPE{$field} eq "-1")
+			if($$NODETYPE{$field} eq '-1')
 			{
 				$$NODETYPE{$field} = $$PARENT{$field};
 			}
-			elsif(($field eq "sqltablelist") && defined($$PARENT{$field}))
+			elsif(($field eq 'sqltablelist') && defined($$PARENT{$field}))
 			{
 				# Inherited sqltables are added onto the list.  Derived
 				# nodetypes "extend" parent nodetypes.
-				$$NODETYPE{$field} .= "," if($$NODETYPE{$field} ne "");
+				$$NODETYPE{$field} .= ',' if($$NODETYPE{$field} ne '');
 				$$NODETYPE{$field} .= "$$PARENT{$field}";
 			}
-			elsif(($field eq "grouptable") && defined($$PARENT{$field}) &&
-				($$NODETYPE{$field} eq ""))
+			elsif(($field eq 'grouptable') && defined($$PARENT{$field}) &&
+				($$NODETYPE{$field} eq ''))
 			{
 				# We are inheriting from a group nodetype and we have not
 				# specified a grouptable, so we will use the same table
@@ -2051,7 +2051,7 @@ sub getNodetypeTables
 	my $tables;
 	my @tablelist;
 	my @nodupes;
-	my $warn = "";
+	my $warn = '';
 
 	if(defined $$TYPE{tableArray})
 	{
@@ -2061,19 +2061,19 @@ sub getNodetypeTables
 
 	$tables = $$TYPE{sqltablelist};
 
-	if((defined $tables) && ($tables ne ""))
+	if((defined $tables) && ($tables ne ''))
 	{
 		my %tablehash;
-		
+
 		# remove all spaces (table names should not have spaces in them)
 		$tables =~ s/ //g;
 
-		# Remove any crap that the user may put in there (stray commas, etc). 
+		# Remove any crap that the user may put in there (stray commas, etc).
 		$tables =~ s/,{2,}/,/g;
 		$tables =~ s/^,//;
 		$tables =~ s/,$//;
-		
-		@tablelist = split ",", $tables;
+
+		@tablelist = split ',', $tables;
 
 		# Make sure there are no dupes!
 		foreach (@tablelist)
@@ -2093,10 +2093,10 @@ sub getNodetypeTables
 			$warn .= "table '$_' : $tablehash{$_}\n" if($tablehash{$_} > 1);
 			push @nodupes, $_;
 		}
-		
-		if($warn ne "")
+
+		if($warn ne '')
 		{
-			$warn = "WARNING: Duplicate tables for nodetype " .
+			$warn = 'WARNING: Duplicate tables for nodetype ' .
 				$$TYPE{title} . ":\n" . $warn;
 
 			Everything::printLog($warn);
@@ -2127,8 +2127,8 @@ sub findMaintenance
 	# If the maintenance nodetype has not been loaded, don't try to do
 	# any thing (the only time this should happen is when we are
 	# importing everything from scratch).
-	return 0 if(not defined $this->getType("maintenance")); 
-	
+	return 0 if(not defined $this->getType('maintenance'));
+
 	# Maintenance code is inherited by derived nodetypes.  This will
 	# find a maintenance code from parent nodetypes (if necessary).
 	do
@@ -2137,9 +2137,9 @@ sub findMaintenance
 
 		%WHEREHASH = (
 			-maintain_nodetype => $$TYPE{node_id}, maintaintype => $op);
-		
-		$maintain = $this->selectNodeWhere(\%WHEREHASH, 
-			$this->getType("maintenance"));
+
+		$maintain = $this->selectNodeWhere(\%WHEREHASH,
+			$this->getType('maintenance'));
 
 		if(not defined $maintain)
 		{
@@ -2216,7 +2216,7 @@ sub getId
 {
 	my ($this, $arg) = @_;
 
-	if (UNIVERSAL::isa($arg, "HASH")) {$arg = $$arg{node_id};}  
+	if (UNIVERSAL::isa($arg, 'HASH')) {$arg = $$arg{node_id};}
 	return $arg;
 }
 
@@ -2267,11 +2267,11 @@ sub isNodetype
 {
 	my ($this, $NODE) = @_;
 	$this->getRef($NODE);
-	
+
 	return 0 if (not ref $NODE);
 
 	# If this node's type is a nodetype, its a nodetype.
-	my $TYPE = $this->getType("nodetype");
+	my $TYPE = $this->getType('nodetype');
 	return ($$NODE{type_nodetype} == $$TYPE{node_id});
 }
 
@@ -2594,7 +2594,7 @@ sub insertIntoNodegroup
 		# If rank exists, increment it.  Otherwise, start it off at zero.
 		$nodegroup_rank = ((defined $nodegroup_rank) ? $nodegroup_rank+1 : 0);
 
-		$this->sqlInsert($groupTable, { $groupTable . "_id" => $$NODE{node_id}, 
+		$this->sqlInsert($groupTable, { $groupTable . '_id' => $$NODE{node_id},
 			$nodegroup_rank_column => $nodegroup_rank, node_id => $$INSERT{node_id},
 			orderby => $orderby});
 
@@ -2687,17 +2687,17 @@ sub createMysqlProcedure
 {
 	my ($this, $procname, $parameters, $procbody, $type, $testonly) = @_;
 
-	$parameters = "" unless defined($parameters);
+	$parameters = '' unless defined($parameters);
 
 	return unless defined($procname) and defined($procbody);
 	return unless $procname =~ /\S/ and $procbody =~ /\S/;
 
-	$type = "PROCEDURE" unless(defined $type and $type ne "");
+	$type = 'PROCEDURE' unless(defined $type and $type ne '');
 	$procbody =~ s/\r\n/\n/smg;
 	if(!$testonly)
 	{
 		my $testresult = $this->createMysqlProcedure("ecore_test_$procname", $parameters, $procbody, $type, 1);
-		if(ref $testresult ne "ARRAY" or $testresult->[0] == 0) 
+		if(ref $testresult ne 'ARRAY' or $testresult->[0] == 0)
 		{
 			return [0,$this->{dbh}->errstr];
 		}else{
@@ -2709,14 +2709,14 @@ sub createMysqlProcedure
 	$this->{dbh}->{'RaiseError'} = 1;
 	$this->dropMysqlProcedure($procname, $type);
 
-	my $create_procedure = "";
+	my $create_procedure = '';
 	$create_procedure .= "CREATE $type $procname($parameters)\n";
 	$create_procedure .= "BEGIN\n";
 	$create_procedure .= "$procbody\n";
 	$create_procedure .= "END\n";
 
 
-	my $return_value = [1,""];
+	my $return_value = [1,''];
 	try {
 		eval {
 			$this->{dbh}->do($create_procedure);
@@ -2737,9 +2737,9 @@ sub createMysqlProcedure
 sub dropMysqlProcedure
 {
 	my ($this, $procname, $type) = @_;
-	
+
 	return unless defined($procname) and $procname =~ /\S/;
-	$type = "PROCEDURE" unless(defined $type and $type ne "");
+	$type = 'PROCEDURE' unless(defined $type and $type ne '');
 
 	return $this->{dbh}->do("DROP $type IF EXISTS $procname");
 }
@@ -2753,7 +2753,7 @@ sub getNodeParam
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	if(ref $NODE eq "")
+	if(ref $NODE eq '')
 	{
 		$node_id = $NODE;
 	}else{
@@ -2765,7 +2765,7 @@ sub getNodeParam
 	my $result = $this->{cache}->getCachedNodeParam($node_id, $paramname);
 
 	return $result if defined $result;
-	my ($paramvalue) = $this->sqlSelect("paramvalue","nodeparam","node_id=".$this->quote($node_id)." and paramkey=".$this->quote($paramname));
+	my ($paramvalue) = $this->sqlSelect('paramvalue','nodeparam','node_id='.$this->quote($node_id).' and paramkey='.$this->quote($paramname));
 	$this->{cache}->setCachedNodeParam($node_id, $paramname, $paramvalue);
 
 	return $paramvalue;
@@ -2779,7 +2779,7 @@ sub getNodeParams
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	if(ref $NODE eq "")
+	if(ref $NODE eq '')
 	{
 		$node_id = $NODE;
 	}else{
@@ -2789,7 +2789,7 @@ sub getNodeParams
 	return unless $node_id;
 
 	my $params;
-	my $csr = $this->sqlSelectMany("*","nodeparam","node_id=".$this->quote($node_id));
+	my $csr = $this->sqlSelectMany('*','nodeparam','node_id='.$this->quote($node_id));
 	while(my $row = $csr->fetchrow_hashref())
 	{
 		$params->{$row->{paramkey}} = $row->{paramvalue};
@@ -2808,7 +2808,7 @@ sub setNodeParam
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	if(ref $NODE eq "")
+	if(ref $NODE eq '')
 	{
 		$node_id = $NODE;
 	}else{
@@ -2816,7 +2816,7 @@ sub setNodeParam
 	}
 
 	return unless $node_id;
-	$this->executeQuery("INSERT into nodeparam VALUES(".join(",",$this->quote($node_id),$this->quote($paramname),$this->quote($paramvalue)).") ON DUPLICATE KEY UPDATE paramvalue=".$this->quote($paramvalue));
+	$this->executeQuery('INSERT into nodeparam VALUES('.join(',',$this->quote($node_id),$this->quote($paramname),$this->quote($paramvalue)).') ON DUPLICATE KEY UPDATE paramvalue='.$this->quote($paramvalue));
 	return $this->{cache}->setCachedNodeParam($node_id, $paramname, $paramvalue);
 }
 
@@ -2825,13 +2825,13 @@ sub getNodesWithParam
 	my ($this, $paramname, $paramvalue) = @_;
 	return unless defined($paramname);
 
-	my $select_param_value = "";
+	my $select_param_value = '';
 	if(defined $paramvalue)
 	{
-		$select_param_value = " and paramvalue=".$this->quote($paramvalue);
+		$select_param_value = ' and paramvalue='.$this->quote($paramvalue);
 	}
 
-	my $csr = $this->sqlSelectMany("node_id","nodeparam","paramkey=".$this->quote($paramname).$select_param_value);
+	my $csr = $this->sqlSelectMany('node_id','nodeparam','paramkey='.$this->quote($paramname).$select_param_value);
 	my $output;
 	while(my $row = $csr->fetchrow_arrayref())
 	{
@@ -2849,7 +2849,7 @@ sub deleteNodeParam
 	my $node_id;
 	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	if(ref $NODE eq "")
+	if(ref $NODE eq '')
 	{
 		$node_id = $NODE;
 	}else{
@@ -2858,7 +2858,7 @@ sub deleteNodeParam
 
 	return unless $node_id;
 
-	$this->sqlDelete("nodeparam","node_id=".$this->quote($node_id)." and paramkey=".$this->quote($paramname));
+	$this->sqlDelete('nodeparam','node_id='.$this->quote($node_id).' and paramkey='.$this->quote($paramname));
 	return $this->{cache}->deleteCachedNodeParam($node_id,$paramname);
 }
 
@@ -2867,7 +2867,7 @@ sub stashData
   my ($this, $stash_name, $stash_values) = @_;
 
   # TODO: Add to permanent cache
-  my $stashnode = $this->getNode($stash_name, "datastash");
+  my $stashnode = $this->getNode($stash_name, 'datastash');
   return unless $stashnode;
 
   my $json = JSON->new;

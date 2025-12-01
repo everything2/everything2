@@ -119,7 +119,10 @@ const COMPONENT_MAP = {
   decloaker: lazy(() => import('./Documents/Decloaker')),
 
   // Policy pages
-  e2_acceptable_use_policy: lazy(() => import('./Documents/AcceptableUsePolicy'))
+  e2_acceptable_use_policy: lazy(() => import('./Documents/AcceptableUsePolicy')),
+
+  // Content discovery
+  everything_user_search: lazy(() => import('./Documents/UserSearch'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

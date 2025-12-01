@@ -66,99 +66,99 @@ BEGIN {
 			'validate' => 'integer',
 		},
 		# TODO: Add test
-		"hide_chatterbox_staff_symbol" =>
+		'hide_chatterbox_staff_symbol' =>
 		{
-			"on" => ["user"],
-			"description" => "Hides the '\@' or '\$' symbol in the Other Users nodelet",
-			"assignable" => ["admin"],
-			"validate" => "set_only",
+			'on' => ['user'],
+			'description' => q{Hides the '@' or '$' symbol in the Other Users nodelet},
+			'assignable' => ['admin'],
+			'validate' => 'set_only',
 		},
 
-		"prevent_nuke" => 
+		'prevent_nuke' =>
 		{
-			"description" => "Prevent the node from being nuked, via the Nuke node key",
-			"assignable" => ["admin"],
-			"validate" => "set_only",
-		},
-
-		#TODO: Add test
-		"allow_message_archive" =>
-		{
-			"on" => ["usergroup"],
-			"description" => "On usergroups, allow the messages to be archived",
-			"assignable" => ["admin"],
-			"validate" => "set_only",
+			'description' => 'Prevent the node from being nuked, via the Nuke node key',
+			'assignable' => ['admin'],
+			'validate' => 'set_only',
 		},
 
 		#TODO: Add test
-		"usergroup_owner" =>
+		'allow_message_archive' =>
 		{
-			"on" => ["usergroup"],
-			"description" => "On usergroups, set the owner",
-			"assignable" => ["admin"],
-			"validate" => "integer",
+			'on' => ['usergroup'],
+			'description' => 'On usergroups, allow the messages to be archived',
+			'assignable' => ['admin'],
+			'validate' => 'set_only',
 		},
 
-		"prevent_vote" =>
+		#TODO: Add test
+		'usergroup_owner' =>
 		{
-			"on" => ["e2node", "writeup"],
-			"description" => "On e2nodes, writeups contained therein are no longer votable. On writeups, that writeup is unvotable",
-			"assignable" => ["admin"],
-			"validate" => "set_only",
+			'on' => ['usergroup'],
+			'description' => 'On usergroups, set the owner',
+			'assignable' => ['admin'],
+			'validate' => 'integer',
 		},
 
-		"allow_book_parameters" =>
+		'prevent_vote' =>
 		{
-			"on" => ["writeup"],
-			"description" => "Mark this writeup as being about a book, allowing other parameters",
-			"assignable" => ["admin"],
-			"validate" => "set_only", 
+			'on' => ['e2node', 'writeup'],
+			'description' => 'On e2nodes, writeups contained therein are no longer votable. On writeups, that writeup is unvotable',
+			'assignable' => ['admin'],
+			'validate' => 'set_only',
+		},
+
+		'allow_book_parameters' =>
+		{
+			'on' => ['writeup'],
+			'description' => 'Mark this writeup as being about a book, allowing other parameters',
+			'assignable' => ['admin'],
+			'validate' => 'set_only',
 		},
 
 		# TODO: Write a validator for book isbns
-		"book_isbn" =>
+		'book_isbn' =>
 		{
-			"on" => ["writeup"],
-			"description" => "Mark this writeup as referring to a particular book isbn-10 or isbn-13",
-			"assignable" => ["admin"],
-			"validate" => "isbn",
+			'on' => ['writeup'],
+			'description' => 'Mark this writeup as referring to a particular book isbn-10 or isbn-13',
+			'assignable' => ['admin'],
+			'validate' => 'isbn',
 		},
 
-		"book_edition" =>
+		'book_edition' =>
 		{
-			"on" => ["writeup"],
-			"description" => "Mark this as being about a book of a particular edition",
-			"assignable" => ["admin"],
+			'on' => ['writeup'],
+			'description' => 'Mark this as being about a book of a particular edition',
+			'assignable' => ['admin'],
 		},
 
-		"book_numpages" =>
+		'book_numpages' =>
 		{
-			"on" => ["writeup"],
-			"description" => "Mark this as being about a book with a particular number of pages",
-			"assignable" => ["admin"],
-			"validate" => "integer",
+			'on' => ['writeup'],
+			'description' => 'Mark this as being about a book with a particular number of pages',
+			'assignable' => ['admin'],
+			'validate' => 'integer',
 		},
 
-		"book_author" =>
+		'book_author' =>
 		{
-			"on" => ["writeup"],
-			"description" => "Mark this as being about a book with this author",
-			"assignable" => ["admin"],
+			'on' => ['writeup'],
+			'description' => 'Mark this as being about a book with this author',
+			'assignable' => ['admin'],
 		},
-		"supported_sheet" =>
+		'supported_sheet' =>
 		{
-			"on" => ["stylesheet"],
-			"description" => "Supported for general use",
-			"assignable" => ["admin"],
-			"validate" => "integer",
+			'on' => ['stylesheet'],
+			'description' => 'Supported for general use',
+			'assignable' => ['admin'],
+			'validate' => 'integer',
 		},
-                "depended_upon_sheet" =>
-                {
-			"on" => ["stylesheet"],
-			"description" => "Sheet is protected as it is required by a supported sheet",
-			"assignable" => ["admin"],
-			"validate" => "integer",
-                },
+		'depended_upon_sheet' =>
+		{
+			'on' => ['stylesheet'],
+			'description' => 'Sheet is protected as it is required by a supported sheet',
+			'assignable' => ['admin'],
+			'validate' => 'integer',
+		},
 		"last_update" =>
 		{
 			"on" => ["datastash"],
