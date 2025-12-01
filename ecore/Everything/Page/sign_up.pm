@@ -221,6 +221,11 @@ sub display
 
   my ($username, $email, $pass) = ('','','');
 
+  # Debug: log form submission check
+  my $formtime_param = $REQUEST->param('formtime');
+  my $request_method = $REQUEST->cgi->request_method // 'unknown';
+  $self->devLog("sign_up: request_method=$request_method, formtime_param=" . ($formtime_param // 'undef') . ", is_form_submitted=" . ($self->is_form_submitted($REQUEST) ? 'yes' : 'no'));
+
   if(!$self->is_form_submitted($REQUEST))
   {
     $prompt = "Please fill in all fields";

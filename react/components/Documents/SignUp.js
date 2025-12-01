@@ -270,24 +270,36 @@ const SignUp = ({ data, user, e2 }) => {
     // Tokens expire after ~2 minutes, so we must generate fresh ones
     if (use_recaptcha && recaptcha_v3_public_key) {
       try {
+        // Wait for reCAPTCHA to be available (may still be loading)
         const recaptcha = window.grecaptcha?.enterprise || window.grecaptcha
-        if (recaptcha) {
-          const freshToken = await new Promise((resolve, reject) => {
-            recaptcha.ready(() => {
-              recaptcha.execute(recaptcha_v3_public_key, { action: 'signup' })
-                .then(resolve)
-                .catch(reject)
-            })
-          })
-          console.log('Fresh reCAPTCHA token generated, length:', freshToken.length)
-          setRecaptchaToken(freshToken)
-
-          // Update the hidden field directly since state update is async
-          const form = document.getElementById('signupform')
-          const tokenInput = form.querySelector('input[name="recaptcha_token"]')
-          if (tokenInput) {
-            tokenInput.value = freshToken
+        if (!recaptcha) {
+          // reCAPTCHA not loaded yet - wait a moment and retry
+          console.log('reCAPTCHA not ready, waiting...')
+          await new Promise(resolve => setTimeout(resolve, 500))
+          const retryRecaptcha = window.grecaptcha?.enterprise || window.grecaptcha
+          if (!retryRecaptcha) {
+            setIsSubmitting(false)
+            setErrors({ submit: 'reCAPTCHA is still loading. Please try again in a moment.' })
+            return
           }
+        }
+
+        const recaptchaObj = window.grecaptcha?.enterprise || window.grecaptcha
+        const freshToken = await new Promise((resolve, reject) => {
+          recaptchaObj.ready(() => {
+            recaptchaObj.execute(recaptcha_v3_public_key, { action: 'signup' })
+              .then(resolve)
+              .catch(reject)
+          })
+        })
+        console.log('Fresh reCAPTCHA token generated, length:', freshToken.length)
+        setRecaptchaToken(freshToken)
+
+        // Update the hidden field directly since state update is async
+        const form = document.getElementById('signupform')
+        const tokenInput = form.querySelector('input[name="recaptcha_token"]')
+        if (tokenInput) {
+          tokenInput.value = freshToken
         }
       } catch (err) {
         console.error('Failed to generate fresh reCAPTCHA token:', err)
@@ -296,6 +308,10 @@ const SignUp = ({ data, user, e2 }) => {
         return
       }
     }
+
+    // Small delay to ensure DOM updates are complete before form submission
+    // This helps prevent race conditions when console is not open
+    await new Promise(resolve => setTimeout(resolve, 100))
 
     // Now submit the form
     document.getElementById('signupform').submit()

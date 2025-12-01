@@ -52,7 +52,7 @@ sub has_valid_formsignature {
     if($self->formsignature($formtime) eq $REQUEST->param($self->signaturefield))
     {
       my $formage = time - $formtime;
-      if($formage > 0 and $formage < $self->formlife)
+      if($formage >= 0 and $formage < $self->formlife)
       {
         return 1;
       }
