@@ -20,13 +20,41 @@ has 'page_class_instance' => (is => "rw");
 has 'PAGELOAD' => (isa => "HashRef", default => sub { {} }, is => "rw");
 has 'NODE' => (is => "rw", isa => "HashRef");
 
+# Cache raw STDIN for PUT/PATCH/DELETE requests
+# Must be read BEFORE CGI.pm is initialized, as CGI consumes STDIN
+# This is initialized at BUILD time, not lazily
+has '_raw_stdin_cache' => (is => "ro", default => '');
+
+sub BUILD
+{
+  my $self = shift;
+  my $method = uc($ENV{REQUEST_METHOD} || 'GET');
+  my $content_length = $ENV{CONTENT_LENGTH} || 0;
+
+  # For PUT/PATCH/DELETE with a body, read STDIN before CGI.pm can consume it
+  if ($method =~ /^(PUT|PATCH|DELETE)$/ && $content_length > 0) {
+    my $data = '';
+    read(STDIN, $data, $content_length);
+    $self->{_raw_stdin_cache} = $data;
+  }
+
+  return;
+}
+
 sub POSTDATA
 {
   my $self = shift;
-  my $encoding = $ENV{CONTENT_TYPE};
+  my $encoding = $ENV{CONTENT_TYPE} || '';
+  my $method = uc($ENV{REQUEST_METHOD} || 'GET');
 
   if($encoding =~ m|^application/json|)
   {
+    # For PUT/PATCH/DELETE, use our cached STDIN (read at BUILD time)
+    if ($method =~ /^(PUT|PATCH|DELETE)$/) {
+      return $self->_raw_stdin_cache;
+    }
+
+    # For POST, CGI.pm handles it fine
     return $self->param("POSTDATA");
   }elsif($encoding =~ m|^application/x-www-form-urlencoded|)
   {

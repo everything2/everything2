@@ -1,22 +1,5 @@
 <node>
-  <code>my $ed_id = $$args{ed_id};
-my $wu_id = $$args{wu_id};
-my $explanation = $$args{explanation};
-
-#Would eds really try to abuse tags here?
-$explanation =~ s/\&lt;/\&amp;lt\;/g;
-$explanation =~ s/\&gt;/\&amp;gt\;/g;
-
-my $out = 'Your writeup titled &quot;'.linkNode($wu_id).'&quot; was edited by '.linkNode($ed_id);
-
-if($explanation){
-  $out .= &quot; who says, \&quot;$explanation\&quot;&quot;;
-}
-else{
-  $out .= &quot;. Contact &quot;.linkNode($ed_id).&quot; directly for further details.&quot;;
-}
-
-return $out;</code>
+  <code></code>
   <description>an [Content Editors|editor] edits one of your writeups.</description>
   <invalid_check></invalid_check>
   <node_id>1981770</node_id>

@@ -1,0 +1,16 @@
+<node>
+  <_create_table_statement>CREATE TABLE `autosave` (
+  `autosave_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `author_user` int NOT NULL,
+  `node_id` int NOT NULL,
+  `doctext` mediumtext COLLATE utf8mb4_unicode_ci,
+  `createtime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `save_type` enum('auto','manual') COLLATE utf8mb4_unicode_ci DEFAULT 'auto',
+  PRIMARY KEY (`autosave_id`),
+  KEY `idx_author_node` (`author_user`,`node_id`,`createtime`),
+  KEY `idx_cleanup` (`author_user`,`node_id`,`autosave_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci</_create_table_statement>
+  <node_id>2212856</node_id>
+  <title>autosave</title>
+  <type_nodetype>148</type_nodetype>
+</node>

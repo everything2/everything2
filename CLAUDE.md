@@ -2,7 +2,7 @@
 
 Context for AI assistants working on the Everything2 codebase.
 
-**Last Updated**: 2025-11-30
+**Last Updated**: 2025-12-01
 **Maintained By**: Jay Bonci
 
 ## ⚠️ CRITICAL: Common Pitfalls ⚠️
@@ -211,6 +211,40 @@ test('descriptive name', async ({ page }) => {
   // Clear before: /clearchatter
   // Restore resources: spin costs 5 GP, sanctify grants 10 GP
 })
+```
+
+---
+
+## Current Work: E2 Editor Beta
+
+The E2 Editor Beta (`/title/E2%20Editor%20Beta`) is a Tiptap-based editor with:
+- Draft management (create, save, load, autosave)
+- Version history with restore capability
+- **Client-side HTML sanitization** using DOMPurify
+
+### Client-Side Preview Rendering
+
+Preview now renders entirely client-side (no server round-trip):
+- `react/components/Editor/E2HtmlSanitizer.js` - DOMPurify-based sanitizer
+- Matches Perl `get_html_rules()` in `Application.pm` (47 tags, all attributes)
+- Parses E2 `[link]` and `[link|display]` syntax to anchor tags
+- 98 comprehensive security tests cover XSS prevention
+
+### Key Files
+- `react/components/Documents/EditorBeta.js` - Main editor component
+- `react/components/Editor/E2HtmlSanitizer.js` - Client-side sanitizer
+- `ecore/Everything/Page/e2_editor_beta.pm` - Page class
+- `ecore/Everything/API/drafts.pm` - Draft API
+
+### PUT/PATCH/DELETE Request Body Fix
+
+CGI.pm only reads STDIN for POST. Fixed in `Request.pm`:
+```perl
+# In BUILD method - reads STDIN before CGI.pm consumes it
+if ($method =~ /^(PUT|PATCH|DELETE)$/ && $content_length > 0) {
+  read(STDIN, $data, $content_length);
+  $self->{_raw_stdin_cache} = $data;
+}
 ```
 
 ---

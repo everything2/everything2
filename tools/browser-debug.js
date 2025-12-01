@@ -15,6 +15,7 @@
  *   fetch [username] [url]     - Fetch URL as authenticated user, output page info
  *   screenshot-as [username] [url] - Take screenshot as authenticated user
  *   html [username] [url]      - Fetch URL as authenticated user, output raw HTML
+ *   post [username] [url] [json] - POST JSON to API endpoint as authenticated user
  *
  * Available Test Users (from tools/seeds.pl):
  *   root              - Admin (gods + e2gods), password: blah
@@ -330,7 +331,17 @@ async function fetchAsUser(username, url = BASE_URL) {
   const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
 
   console.log(`Navigating to ${url}...`);
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+
+  // Wait for React lazy-loaded components to finish loading
+  // The "Loading..." text is React Suspense's fallback
+  await page.waitForFunction(() => {
+    const pageRoot = document.querySelector('#e2-react-page-root');
+    // Wait until the loading placeholder is gone
+    return !pageRoot || !pageRoot.textContent.includes('Loading...');
+  }, { timeout: 10000 }).catch(() => {
+    console.log('Note: React components may still be loading');
+  });
 
   const pageInfo = await extractPageInfo(page);
   console.log('\n=== Page Info ===');
@@ -344,7 +355,15 @@ async function screenshotAsUser(username, url = BASE_URL) {
   const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
 
   console.log(`Navigating to ${url}...`);
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+
+  // Wait for React lazy-loaded components to finish loading
+  await page.waitForFunction(() => {
+    const pageRoot = document.querySelector('#e2-react-page-root');
+    return !pageRoot || !pageRoot.textContent.includes('Loading...');
+  }, { timeout: 10000 }).catch(() => {
+    console.log('Note: React components may still be loading');
+  });
 
   const filename = `/tmp/e2-${username.replace(/\s+/g, '_')}-${Date.now()}.png`;
   await page.screenshot({ path: filename, fullPage: true });
@@ -363,7 +382,13 @@ async function getHtmlAsUser(username, url = BASE_URL) {
   const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
 
   // Navigate to target URL
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+
+  // Wait for React lazy-loaded components to finish loading
+  await page.waitForFunction(() => {
+    const pageRoot = document.querySelector('#e2-react-page-root');
+    return !pageRoot || !pageRoot.textContent.includes('Loading...');
+  }, { timeout: 10000 }).catch(() => {});
 
   // Get full HTML content
   const html = await page.content();
@@ -396,6 +421,72 @@ async function fetchAsGuest(url = BASE_URL) {
 
   await browser.close();
   return pageInfo;
+}
+
+/**
+ * POST JSON to an API endpoint as authenticated user
+ */
+async function postAsUser(username, url, jsonData) {
+  return await httpRequestAsUser(username, url, jsonData, 'POST');
+}
+
+/**
+ * PUT JSON to an API endpoint as authenticated user
+ */
+async function putAsUser(username, url, jsonData) {
+  return await httpRequestAsUser(username, url, jsonData, 'PUT');
+}
+
+/**
+ * Generic HTTP request (POST/PUT) to an API endpoint as authenticated user
+ */
+async function httpRequestAsUser(username, url, jsonData, method) {
+  const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
+
+  console.log(`${method}ing to ${url}...`);
+
+  // Parse JSON data if it's a string
+  let dataObj = jsonData;
+  if (typeof jsonData === 'string') {
+    try {
+      dataObj = JSON.parse(jsonData);
+    } catch (e) {
+      console.error('Invalid JSON:', e.message);
+      await browser.close();
+      throw e;
+    }
+  }
+
+  // Make the HTTP request from within the browser context
+  const result = await page.evaluate(async (apiUrl, data, httpMethod) => {
+    try {
+      const response = await fetch(apiUrl, {
+        method: httpMethod,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const text = await response.text();
+      let parsedData;
+      try {
+        parsedData = JSON.parse(text);
+      } catch (e) {
+        parsedData = text;
+      }
+      return {
+        status: response.status,
+        statusText: response.statusText,
+        data: parsedData
+      };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }, url, dataObj, method);
+
+  console.log(`\n=== ${method} Result ===`);
+  console.log(JSON.stringify(result, null, 2));
+
+  await browser.close();
+  return result;
 }
 
 /**
@@ -479,6 +570,36 @@ async function main() {
         await getHtmlAsUser(arg1, arg2);
         break;
 
+      case 'post':
+        if (!arg1 || !arg2) {
+          console.error('Usage: post [username] [url] [json]');
+          console.error('Example: post e2e_admin http://localhost:9080/api/drafts \'{"title":"Test","doctext":"content"}\'');
+          process.exit(1);
+        }
+        // JSON data is the 5th argument (index 5)
+        const jsonDataPost = process.argv[5];
+        if (!jsonDataPost) {
+          console.error('JSON data required');
+          process.exit(1);
+        }
+        await postAsUser(arg1, arg2, jsonDataPost);
+        break;
+
+      case 'put':
+        if (!arg1 || !arg2) {
+          console.error('Usage: put [username] [url] [json]');
+          console.error('Example: put e2e_admin http://localhost:9080/api/drafts/123 \'{"title":"Test","doctext":"content"}\'');
+          process.exit(1);
+        }
+        // JSON data is the 5th argument (index 5)
+        const jsonDataPut = process.argv[5];
+        if (!jsonDataPut) {
+          console.error('JSON data required');
+          process.exit(1);
+        }
+        await putAsUser(arg1, arg2, jsonDataPut);
+        break;
+
       case 'guest-fetch':
         await fetchAsGuest(arg1);
         break;
@@ -499,6 +620,7 @@ async function main() {
         console.log('  fetch [username] [url]          - Fetch URL as user, show page info');
         console.log('  screenshot-as [username] [url]  - Take screenshot as user');
         console.log('  html [username] [url]           - Fetch URL as user, output raw HTML');
+        console.log('  post [username] [url] [json]    - POST JSON to API as user');
         console.log('\nRun "node tools/browser-debug.js login" to see available test users');
         process.exit(1);
     }
@@ -521,6 +643,7 @@ module.exports = {
   fetchAsUser,
   screenshotAsUser,
   getHtmlAsUser,
+  postAsUser,
   fetchAsGuest,
   getHtmlAsGuest
 };

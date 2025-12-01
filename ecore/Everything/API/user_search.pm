@@ -134,6 +134,7 @@ sub search {
             node.reputation,
             node.hits,
             writeup.parent_e2node,
+            parent.title AS parent_title,
             writeup.cooled,
             writeup.notnew AS hidden,
             writeup.publishtime,
@@ -143,6 +144,7 @@ sub search {
         FROM node
         JOIN writeup ON writeup.writeup_id = node.node_id
         JOIN node AS type ON type.node_id = writeup.wrtype_writeuptype
+        LEFT JOIN node AS parent ON parent.node_id = writeup.parent_e2node
         $vote_join
         WHERE node.author_user = ?
         AND node.type_nodetype = ?
@@ -156,18 +158,11 @@ sub search {
 
     my @writeups;
     while ( my $row = $sth->fetchrow_hashref ) {
-        # Get parent e2node title
-        my $parent_title = '';
-        if ( $row->{parent_e2node} ) {
-            my $parent = $self->DB->getNodeById( $row->{parent_e2node} );
-            $parent_title = $parent->{title} if $parent;
-        }
-
         my $writeup = {
             node_id      => $row->{node_id},
             title        => $row->{title},
             parent_id    => $row->{parent_e2node},
-            parent_title => $parent_title,
+            parent_title => $row->{parent_title} || '',
             writeup_type => $row->{writeup_type},
             cools        => $row->{cooled} || 0,
             publishtime  => $row->{publishtime},
