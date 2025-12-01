@@ -7,13 +7,12 @@ import React, { useState, useEffect, useCallback } from 'react'
  * - Username availability checking via API
  * - Real-time password/email confirmation matching with checkmarks
  * - reCAPTCHA v3 integration (production only)
- * - Form signature (CSRF protection)
- * - Success state with activation instructions
+ * - API-based form submission (no page reload)
+ * - Inline error display with specific messages
  *
  * Security:
- * - All validation/anti-spam logic stays server-side in sign_up.pm
- * - Field hashing for password/email confirmation
- * - reCAPTCHA token submitted with form
+ * - All validation/anti-spam logic stays server-side in signup API
+ * - reCAPTCHA token generated fresh at submission time
  */
 
 // Fixed-width icon container to prevent layout shift
@@ -54,17 +53,10 @@ const IconPlaceholder = () => (
 
 const SignUp = ({ data, user, e2 }) => {
   const {
-    prompt: initialPrompt = 'Please fill in all fields',
     username: initialUsername = '',
     email: initialEmail = '',
-    formtime,
-    formsignature,
-    email_confirm_field,
-    pass_confirm_field,
     use_recaptcha = false,
-    recaptcha_v3_public_key = '',
-    success = false,
-    linkvalid = 0
+    recaptcha_v3_public_key = ''
   } = data
 
   // Form state
@@ -73,18 +65,23 @@ const SignUp = ({ data, user, e2 }) => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [email, setEmail] = useState(initialEmail)
   const [confirmEmail, setConfirmEmail] = useState('')
-  const [recaptchaToken, setRecaptchaToken] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [recaptchaReady, setRecaptchaReady] = useState(!use_recaptcha) // Ready immediately if not using reCAPTCHA
+  const [recaptchaReady, setRecaptchaReady] = useState(!use_recaptcha)
+
+  // Result state
+  const [success, setSuccess] = useState(data.success || false)
+  const [createdUsername, setCreatedUsername] = useState(data.username || '')
+  const [linkValid, setLinkValid] = useState(data.linkvalid || 10)
 
   // Username availability state
   const [usernameStatus, setUsernameStatus] = useState('idle') // idle, checking, available, taken, invalid
   const [usernameCheckTimeout, setUsernameCheckTimeout] = useState(null)
 
-  // Client-side validation state
+  // Error state
   const [errors, setErrors] = useState({})
+  const [serverError, setServerError] = useState('')
 
-  // Load reCAPTCHA Enterprise script and mark ready when loaded
+  // Load reCAPTCHA Enterprise script
   useEffect(() => {
     if (!use_recaptcha || !recaptcha_v3_public_key) {
       setRecaptchaReady(true)
@@ -92,36 +89,26 @@ const SignUp = ({ data, user, e2 }) => {
     }
 
     const markReady = () => {
-      // reCAPTCHA Enterprise uses grecaptcha.enterprise
       const recaptcha = window.grecaptcha?.enterprise || window.grecaptcha
       if (recaptcha) {
         recaptcha.ready(() => {
-          console.log('reCAPTCHA is ready')
           setRecaptchaReady(true)
         })
       }
     }
 
-    // Check if script already loaded
     if (window.grecaptcha) {
       markReady()
       return
     }
 
-    // Load the Enterprise script
     const script = document.createElement('script')
     script.src = `https://www.google.com/recaptcha/enterprise.js?render=${recaptcha_v3_public_key}`
     script.async = true
-
-    // Mark ready after script loads
-    script.onload = () => {
-      markReady()
-    }
-
+    script.onload = markReady
     script.onerror = () => {
-      console.error('Failed to load reCAPTCHA Enterprise script')
-      // Still allow form submission - server will reject if token missing
-      setRecaptchaReady(true)
+      console.error('Failed to load reCAPTCHA script')
+      setRecaptchaReady(true) // Allow submission, server will reject
     }
 
     document.head.appendChild(script)
@@ -145,11 +132,11 @@ const SignUp = ({ data, user, e2 }) => {
 
     try {
       const response = await fetch(`/api/user/available/${encodeURIComponent(name)}`)
-      const data = await response.json()
+      const result = await response.json()
 
-      if (data.available) {
+      if (result.available) {
         setUsernameStatus('available')
-      } else if (data.reason === 'invalid_format') {
+      } else if (result.reason === 'invalid_format') {
         setUsernameStatus('invalid')
       } else {
         setUsernameStatus('taken')
@@ -165,12 +152,10 @@ const SignUp = ({ data, user, e2 }) => {
     const newUsername = e.target.value
     setUsername(newUsername)
 
-    // Clear existing timeout
     if (usernameCheckTimeout) {
       clearTimeout(usernameCheckTimeout)
     }
 
-    // Set new timeout for API call (500ms debounce)
     const timeout = setTimeout(() => {
       checkUsernameAvailability(newUsername)
     }, 500)
@@ -186,7 +171,7 @@ const SignUp = ({ data, user, e2 }) => {
     }
   }, [usernameCheckTimeout])
 
-  // Check initial username availability on mount (for pre-populated form after error)
+  // Check initial username on mount
   useEffect(() => {
     if (initialUsername) {
       checkUsernameAvailability(initialUsername)
@@ -199,7 +184,7 @@ const SignUp = ({ data, user, e2 }) => {
   const emailsMatch = email && confirmEmail && email === confirmEmail
   const emailsMismatch = email && confirmEmail && email !== confirmEmail
 
-  // Check if form is valid for submission
+  // Check if form is valid
   const isFormValid = () => {
     return (
       recaptchaReady &&
@@ -216,7 +201,6 @@ const SignUp = ({ data, user, e2 }) => {
   const validateForm = () => {
     const newErrors = {}
 
-    // Username validation
     const invalidNamePattern = /^\W+$|[\[\]<>&{}|\/\\]| .*_|_.* |\s\s|^\s|\s$/
     if (!username) {
       newErrors.username = 'Username is required'
@@ -228,7 +212,6 @@ const SignUp = ({ data, user, e2 }) => {
       newErrors.username = 'Please wait for username check to complete'
     }
 
-    // Password validation
     if (!password) {
       newErrors.password = 'Password is required'
     }
@@ -238,7 +221,6 @@ const SignUp = ({ data, user, e2 }) => {
       newErrors.confirmPassword = 'Passwords do not match'
     }
 
-    // Email validation
     const emailPattern = /.+@[\w\d.-]+\.[\w]+$/
     if (!email) {
       newErrors.email = 'Email is required'
@@ -255,66 +237,96 @@ const SignUp = ({ data, user, e2 }) => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e) => {
-    // Always prevent default - we'll submit programmatically after getting fresh token
-    e.preventDefault()
+  // Map server error codes to user-friendly messages
+  const getErrorMessage = (error, message) => {
+    const errorMessages = {
+      invalid_username: 'Username contains invalid characters',
+      username_taken: 'That username is already taken. Please choose another.',
+      invalid_password: 'Password is required',
+      invalid_email: 'Please enter a valid email address',
+      email_spam: 'Sign up rejected. Please contact support.',
+      email_locked: 'Sign up rejected. Please contact support.',
+      ip_blacklisted: 'Sign up rejected. Please contact support.',
+      infected: 'Sign up rejected. Please contact support.',
+      recaptcha_missing: 'Verification failed. Please refresh and try again.',
+      recaptcha_failed: 'Could not verify you are human. Please try again.',
+      recaptcha_score: 'Sign up rejected due to spam detection.',
+      creation_failed: 'Account creation failed. Please try again.',
+      invalid_json: 'Request error. Please refresh and try again.'
+    }
+    return errorMessages[error] || message || 'An error occurred. Please try again.'
+  }
 
-    // Validate client-side first
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setServerError('')
+
     if (!validateForm()) {
       return
     }
 
     setIsSubmitting(true)
 
-    // If reCAPTCHA is enabled, get a fresh token right before submission
-    // Tokens expire after ~2 minutes, so we must generate fresh ones
-    if (use_recaptcha && recaptcha_v3_public_key) {
-      try {
-        // Wait for reCAPTCHA to be available (may still be loading)
+    try {
+      // Get fresh reCAPTCHA token if enabled
+      let recaptchaToken = ''
+      if (use_recaptcha && recaptcha_v3_public_key) {
         const recaptcha = window.grecaptcha?.enterprise || window.grecaptcha
         if (!recaptcha) {
-          // reCAPTCHA not loaded yet - wait a moment and retry
-          console.log('reCAPTCHA not ready, waiting...')
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const retryRecaptcha = window.grecaptcha?.enterprise || window.grecaptcha
-          if (!retryRecaptcha) {
-            setIsSubmitting(false)
-            setErrors({ submit: 'reCAPTCHA is still loading. Please try again in a moment.' })
-            return
-          }
+          setIsSubmitting(false)
+          setServerError('reCAPTCHA is still loading. Please try again.')
+          return
         }
 
-        const recaptchaObj = window.grecaptcha?.enterprise || window.grecaptcha
-        const freshToken = await new Promise((resolve, reject) => {
-          recaptchaObj.ready(() => {
-            recaptchaObj.execute(recaptcha_v3_public_key, { action: 'signup' })
+        recaptchaToken = await new Promise((resolve, reject) => {
+          recaptcha.ready(() => {
+            recaptcha.execute(recaptcha_v3_public_key, { action: 'signup' })
               .then(resolve)
               .catch(reject)
           })
         })
-        console.log('Fresh reCAPTCHA token generated, length:', freshToken.length)
-        setRecaptchaToken(freshToken)
-
-        // Update the hidden field directly since state update is async
-        const form = document.getElementById('signupform')
-        const tokenInput = form.querySelector('input[name="recaptcha_token"]')
-        if (tokenInput) {
-          tokenInput.value = freshToken
-        }
-      } catch (err) {
-        console.error('Failed to generate fresh reCAPTCHA token:', err)
-        setIsSubmitting(false)
-        setErrors({ submit: 'Failed to verify you are human. Please try again.' })
-        return
       }
+
+      // Submit to API
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          email,
+          recaptcha_token: recaptchaToken
+        })
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setSuccess(true)
+        setCreatedUsername(result.username)
+        setLinkValid(result.linkvalid || 10)
+      } else {
+        // Handle specific errors
+        if (result.error === 'username_taken') {
+          setUsernameStatus('taken')
+          setErrors({ username: getErrorMessage(result.error, result.message) })
+        } else if (result.error === 'invalid_username') {
+          setUsernameStatus('invalid')
+          setErrors({ username: getErrorMessage(result.error, result.message) })
+        } else if (result.error === 'invalid_email') {
+          setErrors({ email: getErrorMessage(result.error, result.message) })
+        } else {
+          setServerError(getErrorMessage(result.error, result.message))
+        }
+      }
+    } catch (err) {
+      console.error('Signup failed:', err)
+      setServerError('Network error. Please check your connection and try again.')
+    } finally {
+      setIsSubmitting(false)
     }
-
-    // Small delay to ensure DOM updates are complete before form submission
-    // This helps prevent race conditions when console is not open
-    await new Promise(resolve => setTimeout(resolve, 100))
-
-    // Now submit the form
-    document.getElementById('signupform').submit()
   }
 
   // Username status indicator
@@ -325,7 +337,6 @@ const SignUp = ({ data, user, e2 }) => {
       case 'available':
         return <CheckIcon />
       case 'taken':
-        return <XIcon />
       case 'invalid':
         return <XIcon />
       default:
@@ -337,11 +348,11 @@ const SignUp = ({ data, user, e2 }) => {
   if (success) {
     return (
       <div style={{ maxWidth: '40em', margin: '2em auto', padding: '0 1em' }}>
-        <h3 style={{ color: '#38495e' }}>Welcome to Everything2, {username}</h3>
+        <h3 style={{ color: '#38495e' }}>Welcome to Everything2, {createdUsername}</h3>
         <p>
           Your new user account has been created, and an email has been sent to the address you provided.
           You cannot use your account until you have followed the link in the email to activate it.
-          This link will expire in {linkvalid} days.
+          This link will expire in {linkValid} days.
         </p>
         <p>
           The email contains some useful information, so please read it carefully, print it out on
@@ -354,7 +365,7 @@ const SignUp = ({ data, user, e2 }) => {
   // Form state
   return (
     <div style={{ maxWidth: '40em', margin: '2em auto', padding: '0 1em' }}>
-      <form id="signupform" method="POST" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <fieldset style={{
           border: '1px solid #d3d3d3',
           borderRadius: '4px',
@@ -370,17 +381,21 @@ const SignUp = ({ data, user, e2 }) => {
             Sign Up
           </legend>
 
-          {initialPrompt && (
-            <p style={{
-              color: initialPrompt.includes('rejected') || initialPrompt.includes('error') ? '#8b0000' : '#333',
-              marginBottom: '1em'
-            }}>
-              {initialPrompt}
-            </p>
-          )}
+          <p style={{ marginBottom: '1em', color: '#333' }}>
+            Please fill in all fields
+          </p>
 
-          {errors.submit && (
-            <p style={{ color: '#8b0000', marginBottom: '1em' }}>{errors.submit}</p>
+          {serverError && (
+            <p style={{
+              color: '#8b0000',
+              marginBottom: '1em',
+              padding: '10px',
+              backgroundColor: '#fff0f0',
+              border: '1px solid #ffcccc',
+              borderRadius: '4px'
+            }}>
+              {serverError}
+            </p>
           )}
 
           <div style={{ textAlign: 'right' }}>
@@ -391,7 +406,6 @@ const SignUp = ({ data, user, e2 }) => {
               </span>
               <input
                 type="text"
-                name="username"
                 value={username}
                 onChange={handleUsernameChange}
                 maxLength={20}
@@ -433,7 +447,6 @@ const SignUp = ({ data, user, e2 }) => {
               </span>
               <input
                 type="password"
-                name="pass"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 maxLength={240}
@@ -454,14 +467,13 @@ const SignUp = ({ data, user, e2 }) => {
               </div>
             )}
 
-            {/* Confirm Password - field name is server-generated hash */}
+            {/* Confirm Password */}
             <label style={{ display: 'block', marginBottom: '0.75em' }}>
               <span style={{ display: 'inline-block', width: '150px', textAlign: 'left' }}>
                 Confirm password:
               </span>
               <input
                 type="password"
-                name={pass_confirm_field}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 maxLength={240}
@@ -493,7 +505,6 @@ const SignUp = ({ data, user, e2 }) => {
               </span>
               <input
                 type="email"
-                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 maxLength={240}
@@ -514,14 +525,13 @@ const SignUp = ({ data, user, e2 }) => {
               </div>
             )}
 
-            {/* Confirm Email - field name is server-generated hash */}
+            {/* Confirm Email */}
             <label style={{ display: 'block', marginBottom: '1em' }}>
               <span style={{ display: 'inline-block', width: '150px', textAlign: 'left' }}>
                 Confirm email:
               </span>
               <input
                 type="email"
-                name={email_confirm_field}
                 value={confirmEmail}
                 onChange={(e) => setConfirmEmail(e.target.value)}
                 maxLength={240}
@@ -546,22 +556,8 @@ const SignUp = ({ data, user, e2 }) => {
               </div>
             )}
 
-            {/* Node ID - required for POST routing */}
-            <input type="hidden" name="node_id" value={e2?.node_id} />
-
-            {/* Form time and signature (CSRF protection) - server-provided values */}
-            <input type="hidden" name="formtime" value={formtime} />
-            <input type="hidden" name="formsignature" value={formsignature} />
-
-            {/* reCAPTCHA token */}
-            {Boolean(use_recaptcha) && (
-              <input type="hidden" name="recaptcha_token" value={recaptchaToken} />
-            )}
-
-            <input
+            <button
               type="submit"
-              name="beseech"
-              value="Create new account"
               disabled={isSubmitting || !isFormValid()}
               style={{
                 padding: '8px 16px',
@@ -573,7 +569,9 @@ const SignUp = ({ data, user, e2 }) => {
                 fontSize: '1em',
                 fontWeight: 'bold'
               }}
-            />
+            >
+              {isSubmitting ? 'Creating account...' : 'Create new account'}
+            </button>
           </div>
         </fieldset>
       </form>

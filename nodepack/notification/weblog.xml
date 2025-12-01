@@ -1,5 +1,5 @@
 <node>
-  <code>return linkNode($$args{writeup_id}).&quot; was added to the &lt;b&gt;&quot;.linkNode($$args{group_id}).&quot;&lt;/b&gt; weblog.&quot;;</code>
+  <code></code>
   <description>a node is [weblogged] to a usergroup you belong to.</description>
   <hourLimit>168</hourLimit>
   <invalid_check></invalid_check>

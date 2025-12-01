@@ -1,17 +1,5 @@
 <node>
-  <code>my $str;
-if ($$args{weight} &gt; 0) {
-  $str .= &quot;Someone upvoted &quot;;
-}
-else {
-  $str .= &quot;Someone downvoted &quot;;
-  $$args{amount} = -1 * $$args{amount};
-}
-
-if ($$args{node_id}) {
-  $str .= linkNode($$args{node_id});
-}
-return $str;</code>
+  <code></code>
   <description>a writeup of yours gets [Voting/Experience system|voted] on.</description>
   <invalid_check></invalid_check>
   <node_id>1961735</node_id>

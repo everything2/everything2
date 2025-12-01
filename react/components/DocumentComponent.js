@@ -122,7 +122,10 @@ const COMPONENT_MAP = {
   e2_acceptable_use_policy: lazy(() => import('./Documents/AcceptableUsePolicy')),
 
   // Content discovery
-  everything_user_search: lazy(() => import('./Documents/UserSearch'))
+  everything_user_search: lazy(() => import('./Documents/UserSearch')),
+
+  // Editor beta (Tiptap testing)
+  e2_editor_beta: lazy(() => import('./Documents/EditorBeta'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

@@ -1,5 +1,5 @@
 <node>
-  <code>return &quot;Your writeup &quot;.linkNode($$args{writeup_id}).&quot; was bookmarked on &quot;.$$args{bookmark_site}.&quot; by &quot;.linkNode($$args{bookmark_user});</code>
+  <code></code>
   <description>a writeup of yours gets [social bookmarking|bookmarked on an external site].</description>
   <hourLimit>168</hourLimit>
   <invalid_check></invalid_check>

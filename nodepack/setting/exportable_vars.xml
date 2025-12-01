@@ -39,6 +39,10 @@
     <value>1</value>
   </vars>
   <vars>
+    <key>mitextarea</key>
+    <value>1</value>
+  </vars>
+  <vars>
     <key>noSoftLinks</key>
     <value>1</value>
   </vars>
