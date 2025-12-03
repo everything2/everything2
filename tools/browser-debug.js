@@ -16,6 +16,7 @@
  *   screenshot-as [username] [url] - Take screenshot as authenticated user
  *   html [username] [url]      - Fetch URL as authenticated user, output raw HTML
  *   post [username] [url] [json] - POST JSON to API endpoint as authenticated user
+ *   delete [username] [url]     - DELETE request to API endpoint as authenticated user
  *
  * Available Test Users (from tools/seeds.pl):
  *   root              - Admin (gods + e2gods), password: blah
@@ -438,16 +439,23 @@ async function putAsUser(username, url, jsonData) {
 }
 
 /**
- * Generic HTTP request (POST/PUT) to an API endpoint as authenticated user
+ * DELETE request to an API endpoint as authenticated user
+ */
+async function deleteAsUser(username, url) {
+  return await httpRequestAsUser(username, url, null, 'DELETE');
+}
+
+/**
+ * Generic HTTP request (POST/PUT/DELETE) to an API endpoint as authenticated user
  */
 async function httpRequestAsUser(username, url, jsonData, method) {
   const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
 
-  console.log(`${method}ing to ${url}...`);
+  console.log(`${method} request to ${url}...`);
 
   // Parse JSON data if it's a string
   let dataObj = jsonData;
-  if (typeof jsonData === 'string') {
+  if (jsonData && typeof jsonData === 'string') {
     try {
       dataObj = JSON.parse(jsonData);
     } catch (e) {
@@ -457,14 +465,28 @@ async function httpRequestAsUser(username, url, jsonData, method) {
     }
   }
 
+  // Navigate to a base page to ensure we have a proper context
+  // This is important for fetch to work with credentials
+  const baseUrl = getBaseUrlForAuth(url);
+  if (!page.url().startsWith(baseUrl)) {
+    await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 10000 });
+  }
+
   // Make the HTTP request from within the browser context
   const result = await page.evaluate(async (apiUrl, data, httpMethod) => {
     try {
-      const response = await fetch(apiUrl, {
+      const fetchOptions = {
         method: httpMethod,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+        credentials: 'same-origin'
+      };
+
+      // Only add body for methods that support it
+      if (data && httpMethod !== 'GET' && httpMethod !== 'DELETE') {
+        fetchOptions.headers = { 'Content-Type': 'application/json' };
+        fetchOptions.body = JSON.stringify(data);
+      }
+
+      const response = await fetch(apiUrl, fetchOptions);
       const text = await response.text();
       let parsedData;
       try {
@@ -600,6 +622,15 @@ async function main() {
         await putAsUser(arg1, arg2, jsonDataPut);
         break;
 
+      case 'delete':
+        if (!arg1 || !arg2) {
+          console.error('Usage: delete [username] [url]');
+          console.error('Example: delete e2e_admin http://localhost:9080/api/userinteractions/123/action/delete');
+          process.exit(1);
+        }
+        await deleteAsUser(arg1, arg2);
+        break;
+
       case 'guest-fetch':
         await fetchAsGuest(arg1);
         break;
@@ -621,6 +652,7 @@ async function main() {
         console.log('  screenshot-as [username] [url]  - Take screenshot as user');
         console.log('  html [username] [url]           - Fetch URL as user, output raw HTML');
         console.log('  post [username] [url] [json]    - POST JSON to API as user');
+        console.log('  delete [username] [url]         - DELETE request to API as user');
         console.log('\nRun "node tools/browser-debug.js login" to see available test users');
         process.exit(1);
     }
@@ -644,6 +676,7 @@ module.exports = {
   screenshotAsUser,
   getHtmlAsUser,
   postAsUser,
+  deleteAsUser,
   fetchAsGuest,
   getHtmlAsGuest
 };

@@ -408,6 +408,14 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 					this.href = this.href.replace( /([?&])&|&$/ , "$1" ) ;
 				}
 				this.href = this.href.replace( /\bconfirmop=/ , parname + '=' );
+			}else if (this.className && /\bconfirmop=/.test(this.className)){
+				// Handle AJAX requests where query is in className (e.g., voting buttons)
+				var parname = /\bnotanop\b=([^?&]*)/.exec( this.className ) || 'op';
+				if (parname.index){ // notanop
+					parname = parname[1] ;
+					this.className = this.className.replace( /\bnotanop\b=([^?&]*)/ , '');
+				}
+				this.className = this.className.replace( /\bconfirmop=/ , parname + '=' );
 			}else{
 				this.name = this.form.notanop ? this.form.notanop.value : 'op';
 			}
@@ -1083,7 +1091,8 @@ if(! e2.noquickvote)
 			this.originalValue = this.value;
 		}else{
 			var bindEvent = (tag != 'select' ? 'click' : 'change');
-			if (/[?&]confirmop=/.test(this.href) && tag != 'a')// links already done
+			// Check both href and className for confirmop (AJAX voting uses className)
+			if ((/[?&]confirmop=/.test(this.href) || /[?&]confirmop=/.test(this.className)) && tag != 'a')// links already done
 				$this.bind(bindEvent, e2.confirmop);
 			$this.bind(bindEvent, e2.ajax.triggerUpdate);
 		}
@@ -1162,8 +1171,6 @@ if(! e2.noquickvote)
 				query[name] = (value && 
                     value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 					) || query[name] || '';
-
-			console.log(query[name])
 		}
 
 		// remember a couple of things for later:

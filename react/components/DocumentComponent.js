@@ -125,7 +125,20 @@ const COMPONENT_MAP = {
   everything_user_search: lazy(() => import('./Documents/UserSearch')),
 
   // Editor beta (Tiptap testing)
-  e2_editor_beta: lazy(() => import('./Documents/EditorBeta'))
+  e2_editor_beta: lazy(() => import('./Documents/EditorBeta')),
+
+  // Settings (unified interface for all settings pages)
+  settings: lazy(() => import('./Documents/Settings')),
+
+  // User blocking interface
+  pit_of_abomination: lazy(() => import('./Documents/PitOfAbomination')),
+
+  // Statistics & analytics
+  site_trajectory: lazy(() => import('./Documents/SiteTrajectory')),
+
+  // Help & documentation
+  voting_experience_system: lazy(() => import('./Documents/VotingExperienceSystem')),
+  user_relations: lazy(() => import('./Documents/UserRelations'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

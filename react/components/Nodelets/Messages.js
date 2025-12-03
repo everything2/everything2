@@ -210,6 +210,34 @@ const Messages = (props) => {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
+      // Check response body for blocking/error indicators
+      const data = await response.json()
+
+      // Check if user is being ignored (complete block)
+      if (data.ignores) {
+        throw new Error(`${recipient} is ignoring you`)
+      }
+
+      // Check for partial usergroup blocks (warnings, not errors)
+      if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+        // Count blocked members
+        const blockedCount = data.errors.length
+        const warningMsg = blockedCount === 1
+          ? `Message sent, but 1 user is blocking you`
+          : `Message sent, but ${blockedCount} users are blocking you`
+
+        // Refresh messages list
+        await loadMessages(showArchived)
+
+        // Return warning for partial success
+        return { success: true, warning: warningMsg }
+      }
+
+      // Check for other errors (complete failures)
+      if (data.errortext) {
+        throw new Error(data.errortext)
+      }
+
       // Refresh messages list
       await loadMessages(showArchived)
 

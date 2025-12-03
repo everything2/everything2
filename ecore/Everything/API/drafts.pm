@@ -82,6 +82,14 @@ sub list_drafts {
     my $user_id = $REQUEST->user->node_id;
     my $DB = $self->DB;
 
+    # Get pagination parameters from query string
+    my $limit = int($REQUEST->param('limit') || 20);
+    my $offset = int($REQUEST->param('offset') || 0);
+
+    # Sanity checks
+    $limit = 20 if $limit < 1 || $limit > 100;
+    $offset = 0 if $offset < 0;
+
     my $draft_type = $DB->getType('draft');
     my $draft_type_id = $draft_type->{node_id};
 
@@ -95,15 +103,27 @@ sub list_drafts {
         WHERE node.author_user = ?
         AND node.type_nodetype = ?
         ORDER BY node.createtime DESC
-        LIMIT 50
+        LIMIT ? OFFSET ?
     |;
 
     my $rows = $DB->{dbh}->selectall_arrayref($sql, { Slice => {} },
-        $user_id, $draft_type_id);
+        $user_id, $draft_type_id, $limit, $offset);
+
+    # Get total count for pagination metadata
+    my $total = $DB->{dbh}->selectrow_array(
+        'SELECT COUNT(*) FROM node WHERE author_user = ? AND type_nodetype = ?',
+        {}, $user_id, $draft_type_id
+    );
 
     return [$self->HTTP_OK, {
         success => 1,
-        drafts => $rows || []
+        drafts => $rows || [],
+        pagination => {
+            limit => $limit,
+            offset => $offset,
+            total => $total || 0,
+            has_more => ($offset + $limit) < ($total || 0)
+        }
     }];
 }
 

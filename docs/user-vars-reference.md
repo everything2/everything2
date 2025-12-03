@@ -117,6 +117,10 @@ $user->set_vars($VARS);
 | `chatmacro_*` | String | User-defined chat macros (dynamic keys) | htmlcode.pm |
 | `hidemsgme` | Boolean | Prevent "send message" on homenode | document.pm |
 | `showmessages_replylink` | Boolean | Show reply shortcut (default: enabled) | htmlcode.pm |
+| `informmsgignore` | 0/1/2/3 | **DEPRECATED** Block notification method: 0=private message, 1=chatterbox (deprecated), 2=both (deprecated), 3=none. Values 1 and 2 are treated as 0 (private message only). Modern implementation shows error directly in chatterbox when user tries to send message to blocked user. | Application.pm, preferences.pm |
+| `sortmyinbox` | Boolean | **DEPRECATED** Sort messages in inbox. Modern Message Inbox always sorts by most recent first (newest at top). Setting no longer has any effect. | document.pm, preferences.pm |
+| `noTypoCheck` | Boolean | **DEPRECATED** Check for chatterbox command typos (e.g., /mgs instead of /msg). Modern chatterbox automatically validates all commands - messages starting with "/" are processed as commands and show errors if invalid. Protection is now built-in. | document.pm, preferences.pm |
+| `nonodeletcollapser` | Boolean | **DEPRECATED** Disable nodelet collapsing. Modern React nodelets always have collapsing enabled - clicking nodelet titles toggles content visibility. This is a core UX feature that cannot be disabled. | Application.pm, preferences.pm |
 
 ### Vitals Nodelet Preferences
 
@@ -163,6 +167,12 @@ $user->set_vars($VARS);
 | `settings_useTinyMCE` | Boolean | Enable WYSIWYG editor | Controller.pm |
 | `autoChat` | Boolean | Auto-chat feature flag | Controller.pm |
 | `inactiveWindowMarker` | Boolean | Inactive window marker flag | Controller.pm |
+
+### Editor Preferences
+
+| Key | Type | Description | Files |
+|-----|------|-------------|-------|
+| `tiptap_editor_raw` | Boolean (0/1) | Default to raw HTML mode in E2 Editor Beta (0=rich text, 1=HTML) | API/preferences.pm, Page/e2_editor_beta.pm |
 
 ### Utility Tool Settings
 

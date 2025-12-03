@@ -168,6 +168,7 @@ const Chatterbox = (props) => {
   const [sending, setSending] = React.useState(false)
   const [showCommands, setShowCommands] = React.useState(false)
   const [messageError, setMessageError] = React.useState(null)
+  const [messageWarning, setMessageWarning] = React.useState(null)
   const [messageSuccess, setMessageSuccess] = React.useState(null)
   const [messageFading, setMessageFading] = React.useState(false)
   const [messageEntering, setMessageEntering] = React.useState(false)
@@ -289,6 +290,34 @@ const Chatterbox = (props) => {
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      // Check response body for blocking/error indicators
+      const data = await response.json()
+
+      // Check if user is being ignored (complete block)
+      if (data.ignores) {
+        throw new Error(`${recipient} is ignoring you`)
+      }
+
+      // Check for partial usergroup blocks (warnings, not errors)
+      if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+        // Count blocked members
+        const blockedCount = data.errors.length
+        const warningMsg = blockedCount === 1
+          ? `Message sent, but 1 user is blocking you`
+          : `Message sent, but ${blockedCount} users are blocking you`
+
+        // Refresh mini-messages list
+        await loadMiniMessages()
+
+        // Return warning for partial success
+        return { success: true, warning: warningMsg }
+      }
+
+      // Check for other errors (complete failures)
+      if (data.errortext) {
+        throw new Error(data.errortext)
       }
 
       // Refresh mini-messages list
@@ -491,26 +520,51 @@ const Chatterbox = (props) => {
           loadMiniMessages()
         }
 
-        // Show success message for /msg and /help commands
-        // since there's no visible feedback in the chatter feed
-        const isPrivateMessage = /^\/(msg|message|whisper|small)\s/.test(message.trim())
-        const isHelpCommand = /^\/help\s/.test(message.trim())
-        if (isPrivateMessage || isHelpCommand) {
-          setMessageSuccess(isHelpCommand ? 'Help sent to your messages' : 'Message sent')
+        // Check for warnings (partial usergroup blocks)
+        if (data.warning) {
+          setMessageWarning(data.warning)
           setMessageFading(false)
           setMessageEntering(true)
           // Fade in quickly
           setTimeout(() => setMessageEntering(false), 150)
-          // Auto-clear success with fade-out after 3 seconds
+          // Auto-clear warning with fade-out after 5 seconds
           setTimeout(() => {
             setMessageFading(true)
             setTimeout(() => {
-              setMessageSuccess(null)
+              setMessageWarning(null)
               setMessageFading(false)
             }, 300)
-          }, 3000)
+          }, 5000)
         } else {
-          setMessageSuccess(null) // No success message - user sees immediate feedback in chatter
+          setMessageWarning(null)
+        }
+
+        // Show success message for /msg and /help commands (unless there's a warning)
+        // since there's no visible feedback in the chatter feed
+        if (!data.warning) {
+          const isPrivateMessage = /^\/(msg|message|whisper|small)\s/.test(message.trim())
+          const isHelpCommand = /^\/help\s/.test(message.trim())
+          if (isPrivateMessage || isHelpCommand) {
+            setMessageSuccess(isHelpCommand ? 'Help sent to your messages' : 'Message sent')
+            setMessageFading(false)
+            setMessageEntering(true)
+            // Fade in quickly
+            setTimeout(() => setMessageEntering(false), 150)
+            // Auto-clear success with fade-out after 3 seconds
+            setTimeout(() => {
+              setMessageFading(true)
+              setTimeout(() => {
+                setMessageSuccess(null)
+                setMessageFading(false)
+              }, 300)
+            }, 3000)
+          } else {
+            // No success message - user sees immediate feedback in chatter
+            setMessageSuccess(null)
+          }
+        } else {
+          // Warning already shows feedback - don't show success
+          setMessageSuccess(null)
         }
 
         // Refresh chatter display to show new message
@@ -518,6 +572,7 @@ const Chatterbox = (props) => {
       } else {
         // Message was not posted - show error to user and clear input
         setMessageError(data.error || 'Message not posted')
+        setMessageWarning(null)
         setMessage('')
         setMessageFading(false)
         setMessageEntering(true)
@@ -916,6 +971,27 @@ const Chatterbox = (props) => {
               zIndex: 1
             }}>
               {messageSuccess}
+            </div>
+          )}
+
+          {messageWarning && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: '12px',
+              right: '12px',
+              padding: '8px 12px',
+              backgroundColor: '#fff3cd',
+              border: '1px solid #ffc107',
+              borderRadius: '4px',
+              color: '#856404',
+              fontSize: '12px',
+              textAlign: 'center',
+              opacity: messageFading ? 0 : (messageEntering ? 0 : 1),
+              transition: messageFading ? 'opacity 0.3s ease-out' : 'opacity 0.15s ease-in',
+              zIndex: 1
+            }}>
+              {messageWarning}
             </div>
           )}
 

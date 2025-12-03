@@ -34,7 +34,8 @@ sub get_all
     limit => $limit,
     offset => $offset,
     room => $room,
-    since => $since
+    since => $since,
+    user => $REQUEST->user ? $REQUEST->user->NODEDATA : undef
   };
 
   return [$self->HTTP_OK, $self->APP->getRecentChatter($params)];
@@ -65,11 +66,17 @@ sub create
     if ($result->{success})
     {
       # Success - return the recent chatter to update the client
-      my $chatter = $self->APP->getRecentChatter({limit => 1});
+      my $chatter = $self->APP->getRecentChatter({
+        limit => 1,
+        user => $REQUEST->user ? $REQUEST->user->NODEDATA : undef
+      });
       my $response = {success => 1, chatter => $chatter};
 
       # If command needs immediate message poll (e.g., /help), signal to client
       $response->{poll_messages} = 1 if $result->{poll_messages};
+
+      # Pass through warnings (e.g., partial usergroup blocks)
+      $response->{warning} = $result->{warning} if $result->{warning};
 
       return [$self->HTTP_OK, $response];
     }
@@ -84,7 +91,10 @@ sub create
   # Legacy behavior: truthy/falsy result (for backward compatibility)
   if ($result)
   {
-    my $chatter = $self->APP->getRecentChatter({limit => 1});
+    my $chatter = $self->APP->getRecentChatter({
+      limit => 1,
+      user => $REQUEST->user ? $REQUEST->user->NODEDATA : undef
+    });
     return [$self->HTTP_OK, {success => 1, chatter => $chatter}];
   }
   else

@@ -2,6 +2,7 @@ package Everything::API::messages;
 
 use Moose;
 use namespace::autoclean;
+use JSON;
 extends 'Everything::API';
 
 ## no critic (ProhibitBuiltinHomonyms)
@@ -120,7 +121,23 @@ sub create
             "archive" => 0
           });
 
-          return [$self->HTTP_OK, $result]
+          # Transform usergroup blocking response to frontend format
+          # usergroup.deliver_message returns: {successes => N, errors => N, ignores => N}
+          # user.deliver_message returns: {ignores => 1} when blocked
+          # Frontend expects: {errors => [...]} for array, {ignores => 1} for complete block
+
+          my $response = {%$result};  # Copy result
+          if ($result->{ignores} && $result->{ignores} > 0 && $result->{successes} && $result->{successes} > 0) {
+            # Partial usergroup block - some members delivered, some blocked
+            # Convert ignores count to errors array for frontend compatibility
+            $response->{errors} = [];
+            for (my $i = 0; $i < $result->{ignores}; $i++) {
+              push @{$response->{errors}}, "User is blocking you";
+            }
+            delete $response->{ignores};  # Remove ignores to avoid confusion
+          }
+
+          return [$self->HTTP_OK, $response]
         }else{
           $self->devLog("Can't send message due to not having delivery_message endpoint on node type ".$deliver_to_node->type.". Returning BAD REQUEST");
           return [$self->HTTP_BAD_REQUEST];

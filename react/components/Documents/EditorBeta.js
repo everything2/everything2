@@ -8,6 +8,7 @@ import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
+import TextAlign from '@tiptap/extension-text-align';
 import { E2Link, convertToE2Syntax } from '../Editor/E2LinkExtension';
 import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
@@ -297,9 +298,10 @@ const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
  * - Version history popup to view/restore previous versions
  */
 const EditorBeta = ({ data }) => {
-  const { approvedTags, canAccess, username, drafts: initialDrafts, statuses = [] } = data || {};
+  const { approvedTags, canAccess, username, drafts: initialDrafts, pagination: initialPagination, statuses = [], preferRawHtml } = data || {};
   // Handle null/undefined drafts gracefully
   const safeDrafts = initialDrafts || [];
+  const safePagination = initialPagination || { offset: 0, limit: 20, total: 0, has_more: false };
 
   // State
   const [showPreview, setShowPreview] = useState(false);
@@ -316,8 +318,10 @@ const EditorBeta = ({ data }) => {
   const [lastSaveTime, setLastSaveTime] = useState(null);
   const [lastSaveType, setLastSaveType] = useState(null); // 'manual' or 'auto'
   const [showVersionHistory, setShowVersionHistory] = useState(false);
-  const [editMode, setEditMode] = useState('rich'); // 'rich' or 'html'
+  const [editMode, setEditMode] = useState(preferRawHtml ? 'html' : 'rich'); // 'rich' or 'html'
   const [rawHtmlContent, setRawHtmlContent] = useState('');
+  const [pagination, setPagination] = useState(safePagination);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // Refs for autosave
   const autosaveTimerRef = useRef(null);
@@ -351,6 +355,10 @@ const EditorBeta = ({ data }) => {
       TableRow,
       TableCell,
       TableHeader,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+        alignments: ['left', 'center', 'right']
+      }),
       E2Link
     ],
     content: defaultContent,
@@ -370,20 +378,29 @@ const EditorBeta = ({ data }) => {
     return editor ? convertToE2Syntax(editor.getHTML()) : '';
   }, [editor, editMode, rawHtmlContent]);
 
-  // Toggle between rich and HTML editing modes
+  // Toggle between rich and HTML editing modes and save preference
   const toggleEditMode = useCallback(() => {
+    const newMode = editMode === 'rich' ? 'html' : 'rich';
+
     if (editMode === 'rich') {
       // Switching to HTML mode - capture current rich content
       const html = editor ? convertToE2Syntax(editor.getHTML()) : '';
       setRawHtmlContent(html);
-      setEditMode('html');
     } else {
       // Switching to rich mode - load HTML content into editor
       if (editor) {
         editor.commands.setContent(rawHtmlContent);
       }
-      setEditMode('rich');
     }
+
+    setEditMode(newMode);
+
+    // Save preference to server (fire-and-forget)
+    fetch('/api/preferences/set', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tiptap_editor_raw: newMode === 'html' ? 1 : 0 })
+    }).catch(err => console.error('Failed to save editor mode preference:', err));
   }, [editor, editMode, rawHtmlContent]);
 
   // Client-side preview rendering with E2 link parsing
@@ -629,6 +646,29 @@ const EditorBeta = ({ data }) => {
     setShowPreview(!showPreview);
   }, [showPreview, renderPreview]);
 
+  // Load more drafts (pagination)
+  const loadMoreDrafts = useCallback(async () => {
+    setLoadingMore(true);
+    try {
+      const nextOffset = pagination.offset + pagination.limit;
+      const response = await fetch(`/api/drafts?limit=${pagination.limit}&offset=${nextOffset}`);
+      const result = await response.json();
+
+      if (result.success && result.drafts) {
+        // Append new drafts to existing list
+        setDrafts(prev => [...prev, ...result.drafts]);
+
+        // Update pagination metadata
+        if (result.pagination) {
+          setPagination(result.pagination);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load more drafts:', err);
+    }
+    setLoadingMore(false);
+  }, [pagination]);
+
   if (!canAccess) {
     return (
       <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
@@ -692,31 +732,54 @@ const EditorBeta = ({ data }) => {
             {drafts.length === 0 ? (
               <p style={{ color: '#888', fontSize: '14px' }}>No drafts yet. Your drafts will appear here.</p>
             ) : (
-              <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                {drafts.map((draft) => (
-                  <div
-                    key={draft.node_id}
-                    onClick={() => loadDraft(draft)}
+              <>
+                <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                  {drafts.map((draft) => (
+                    <div
+                      key={draft.node_id}
+                      onClick={() => loadDraft(draft)}
+                      style={{
+                        padding: '10px',
+                        marginBottom: '8px',
+                        backgroundColor: selectedDraft?.node_id === draft.node_id ? '#e8f4f8' : '#f8f9f9',
+                        border: selectedDraft?.node_id === draft.node_id ? '1px solid #3bb5c3' : '1px solid #ddd',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ fontWeight: '500', color: '#111', marginBottom: '4px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {draft.title}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#666', display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: getStatusColor(draft.status) }}>{draft.status}</span>
+                        <span>{draft.createtime?.split(' ')[0]}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Load More button */}
+                {pagination.has_more && (
+                  <button
+                    onClick={loadMoreDrafts}
+                    disabled={loadingMore}
                     style={{
-                      padding: '10px',
-                      marginBottom: '8px',
-                      backgroundColor: selectedDraft?.node_id === draft.node_id ? '#e8f4f8' : '#f8f9f9',
-                      border: selectedDraft?.node_id === draft.node_id ? '1px solid #3bb5c3' : '1px solid #ddd',
+                      marginTop: '10px',
+                      padding: '8px 12px',
+                      backgroundColor: loadingMore ? '#999' : '#f8f9f9',
+                      color: loadingMore ? '#fff' : '#555',
+                      border: '1px solid #ccc',
                       borderRadius: '4px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease'
+                      cursor: loadingMore ? 'wait' : 'pointer',
+                      fontSize: '13px',
+                      width: '100%'
                     }}
                   >
-                    <div style={{ fontWeight: '500', color: '#111', marginBottom: '4px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {draft.title}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#666', display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: getStatusColor(draft.status) }}>{draft.status}</span>
-                      <span>{draft.createtime?.split(' ')[0]}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    {loadingMore ? 'Loading...' : 'Load More Drafts'}
+                  </button>
+                )}
+              </>
             )}
 
             <button

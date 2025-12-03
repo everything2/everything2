@@ -164,16 +164,14 @@ sub deliver_message
 {
   my ($self, $messagedata) = @_;
 
-  # Check if recipient is ignoring sender (unless it's a usergroup message)
-  unless ($messagedata->{for_usergroup}) {
-    my $ignoring = $self->DB->sqlSelect(
-      'COUNT(*)',
-      'messageignore',
-      'messageignore_id='.$self->node_id.' AND ignore_node='.$messagedata->{from}->node_id
-    );
-    if ($ignoring) {
-      return {"ignores" => 1};
-    }
+  # Check if recipient is ignoring sender
+  my $ignoring = $self->DB->sqlSelect(
+    'COUNT(*)',
+    'messageignore',
+    'messageignore_id='.$self->node_id.' AND ignore_node='.$messagedata->{from}->node_id
+  );
+  if ($ignoring) {
+    return {"ignores" => 1};
   }
 
   # Insert message in recipient's inbox

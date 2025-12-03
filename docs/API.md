@@ -79,6 +79,8 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Usergroups | 9 | 0 | ❌ 0% | None |
 | Writeups | 7 | 0 | ❌ 0% | None |
 | E2nodes | 7 | 0 | ❌ 0% | None |
+| Drafts | 5 | 0 | ❌ 0% | None |
+| Autosave | 4 | 0 | ❌ 0% | None |
 | Messages | 6 | 6 | ✅ 100% | t/032_messages_api.t (37 tests) |
 | Message Ignores | 4 | 0 | ❌ 0% | None |
 | System Utilities | 1 | 0 | ❌ 0% | None |
@@ -91,7 +93,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Chatroom | 3 | 3 | ✅ 100% | t/035_chatroom_api.t (TBD tests) |
 | Wheel | 1 | 1 | ✅ 100% | t/047_wheel_api.t (TBD tests) |
 
-**Overall API Test Coverage: ~47%** (31 of ~64 endpoints have dedicated tests)
+**Overall API Test Coverage: ~42%** (31 of ~73 endpoints have dedicated tests)
 
 **Infrastructure Tests:**
 - t/001_api_routing.t - General API routing (2 tests)
@@ -358,6 +360,557 @@ Returns the display of e2nodes/:id of the newly created object
 
 ## Drafts
 
+**Test Coverage: ❌ 0%** (0/5 endpoints tested)
+
+Current version: *1 (beta)*
+
+Manages user drafts for the E2 Editor Beta. Drafts are nodes of type "draft" that allow users to compose and revise content before publishing. Supports CRUD operations, pagination, and publication status management.
+
+All draft methods require logged-in users and return 401 Unauthorized for Guest User.
+
+### GET /api/drafts
+
+Returns a paginated list of the current user's drafts, ordered by most recently modified first.
+
+**Query Parameters:**
+* **limit** - Number of drafts to return (optional, default: 20, max: 100)
+* **offset** - Number of drafts to skip for pagination (optional, default: 0)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "drafts": [
+    {
+      "node_id": 2213271,
+      "title": "Test draft to create",
+      "createtime": "2025-12-01 06:46:52",
+      "publication_status": 2035425,
+      "status_title": "private"
+    }
+  ],
+  "pagination": {
+    "limit": 20,
+    "offset": 0,
+    "total": 12,
+    "has_more": false
+  }
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **drafts** - Array of draft summary objects
+* **pagination** - Pagination metadata object:
+  * **limit** - Number of items requested
+  * **offset** - Starting position in results
+  * **total** - Total number of drafts user has
+  * **has_more** - Boolean indicating if more drafts are available
+
+**Draft Object Keys:**
+* **node_id** - Draft's unique identifier
+* **title** - Draft title
+* **createtime** - When the draft was created (MySQL datetime format)
+* **publication_status** - Node ID of the publication status
+* **status_title** - Human-readable status (private, shared, findable, review)
+
+**Example Request:**
+
+```bash
+curl https://everything2.com/api/drafts?limit=20&offset=0 \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Drafts are ordered by `createtime DESC` (newest first)
+- Limit is clamped between 1 and 100
+- Offset must be non-negative
+- Total count query runs separately for accurate pagination metadata
+
+### GET /api/drafts/:id
+
+Retrieves the full content and metadata for a specific draft.
+
+**URL Parameters:**
+* **id** - The node_id of the draft (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "draft": {
+    "node_id": 2213271,
+    "title": "Test draft to create",
+    "doctext": "<p>Draft content here</p>",
+    "status": "private",
+    "createtime": "2025-12-01 06:46:52"
+  }
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **draft** - Draft object with:
+  * **node_id** - Draft's unique identifier
+  * **title** - Draft title
+  * **doctext** - Full HTML content of the draft
+  * **status** - Human-readable publication status
+  * **createtime** - Creation timestamp
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid draft ID
+* **403 Forbidden** - User doesn't own the draft and is not an editor
+* **404 Not Found** - Draft doesn't exist
+
+**Example Request:**
+
+```bash
+curl https://everything2.com/api/drafts/2213271 \
+  -H "Cookie: userpass=..."
+```
+
+### POST /api/drafts
+
+Creates a new draft with the specified title and optional initial content.
+
+**Request Body (JSON):**
+* **title** - Draft title (required, will be cleaned via `cleanNodeName()`)
+* **doctext** - Initial draft content (optional, defaults to empty string)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "draft": {
+    "node_id": 2213272,
+    "title": "My New Draft",
+    "status": "private"
+  }
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **draft** - Newly created draft object with node_id, title, and status
+
+**Validation:**
+* Title is cleaned via `cleanNodeName()` - defaults to "untitled draft" if empty
+* Duplicate titles are handled by appending " (N)" where N increments
+* All new drafts default to "private" publication status
+* Draft type and default status are looked up from the database (not hardcoded)
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid JSON in request body
+* **401 Unauthorized** - User is not logged in
+* **500 Internal Server Error** - Failed to create draft node
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/drafts \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"title": "My Draft", "doctext": "<p>Initial content</p>"}'
+```
+
+**Implementation Notes:**
+
+- Uses `insertNode()` to create the draft node with proper type and ownership
+- Document content is stored in the `document` table (joined on `document_id`)
+- Publication status is stored in the `draft` table
+- Title uniqueness check prevents conflicts for the same user
+
+### PUT /api/drafts/:id
+
+Updates an existing draft's content, title, or publication status.
+
+**URL Parameters:**
+* **id** - The node_id of the draft to update (required)
+
+**Request Body (JSON):**
+
+At least one of the following fields must be provided:
+* **title** - New title (optional, will be cleaned and checked for uniqueness)
+* **doctext** - New content (optional, current version is stashed before update)
+* **status** - New publication status (optional, must be a valid publication_status node name)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "updated": {
+    "title": "Updated Title",
+    "doctext": 1,
+    "status": "findable"
+  },
+  "draft_id": 2213271
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **updated** - Object showing which fields were updated
+* **draft_id** - The ID of the updated draft
+
+**Version History:**
+
+When updating `doctext`, the current content is automatically saved to version history before being overwritten:
+- Saved to the `autosave` table with `save_type = 'manual'`
+- Only saved if current content differs from new content
+- Old versions are automatically pruned (keeps last 20)
+
+**Status Change Notifications:**
+
+When changing status to "review", a node note is automatically created:
+- Note text: "author requested review"
+- `noter_user` set to 0 (system note)
+- Timestamp set to NOW()
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid draft ID or JSON
+* **403 Forbidden** - User doesn't own the draft
+* **404 Not Found** - Draft doesn't exist
+
+**Example Request:**
+
+```bash
+curl -X PUT https://everything2.com/api/drafts/2213271 \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"title": "Updated Title", "status": "findable"}'
+```
+
+**Implementation Notes:**
+
+- Title updates check for duplicates and auto-append " (N)" if needed
+- Content updates trigger version history stashing
+- Status changes validate against known publication_status nodes
+- Multiple fields can be updated in a single request
+- Updates use direct SQL (not `updateNode()`) for performance
+
+## Autosave
+
+**Test Coverage: ❌ 0%** (0/4 endpoints tested)
+
+Current version: *1 (beta)*
+
+Handles automatic and manual saving of editor content with version history. The autosave system stores previous versions in the `autosave` table, keeping the last 20 versions per user+node combination. Used by the E2 Editor Beta for both autosave functionality and version history.
+
+All autosave methods require logged-in users with edit permissions on the node.
+
+### POST /api/autosave
+
+Saves content for a node, automatically stashing the previous version to history.
+
+**Request Body (JSON):**
+* **node_id** - The node to save (required, must be positive integer)
+* **doctext** - Content to save (required, can be empty string)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "saved": 1,
+  "autosave_id": 123,
+  "save_type": "auto"
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **saved** - Boolean (1/0) indicating whether content was actually saved (0 if no changes detected)
+* **autosave_id** - ID of the autosave history entry (only present if previous content was stashed)
+* **save_type** - Always "auto" for this endpoint
+
+**Behavior:**
+
+1. **Permission Check**: Verifies user can edit the node (owner, editor, or admin)
+2. **Change Detection**: Compares new content with current content in `document` table
+3. **No-Op If Unchanged**: Returns `success: 1, saved: 0` if content matches
+4. **Stash Previous Version**: If content differs, saves current content to `autosave` table before updating
+5. **Update Document**: Writes new content to `document` table
+6. **Prune Old Versions**: Keeps only the last 20 autosave entries per user+node
+
+**Error Responses:**
+
+* **400 Bad Request** - Missing or invalid node_id
+  ```json
+  { "success": 0, "error": "invalid_node_id", "message": "..." }
+  ```
+
+* **403 Forbidden** - User doesn't have permission to edit
+  ```json
+  { "success": 0, "error": "permission_denied", "message": "..." }
+  ```
+
+* **404 Not Found** - Node doesn't exist
+  ```json
+  { "success": 0, "error": "node_not_found", "message": "..." }
+  ```
+
+* **500 Internal Server Error** - Database operation failed
+  ```json
+  { "success": 0, "error": "stash_failed", "message": "..." }
+  { "success": 0, "error": "update_failed", "message": "..." }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/autosave \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"node_id": 2213271, "doctext": "<p>Updated content</p>"}'
+```
+
+**Implementation Notes:**
+
+- Used by E2 Editor Beta for autosave every 60 seconds
+- Prevents unnecessary database writes by detecting unchanged content
+- Version history is created BEFORE updating to preserve the previous state
+- Autosave pruning runs after every save to maintain 20-version limit
+- All autosaves are marked with `save_type = 'auto'` to distinguish from manual saves
+
+### GET /api/autosave/:node_id
+
+Retrieves all autosaved versions for a specific node, including full content.
+
+**URL Parameters:**
+* **node_id** - The node ID to get autosaves for (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "node_id": 2213271,
+  "autosaves": [
+    {
+      "autosave_id": 456,
+      "doctext": "<p>Version 3 content</p>",
+      "createtime": "2025-12-01 14:30:00",
+      "save_type": "auto"
+    },
+    {
+      "autosave_id": 455,
+      "doctext": "<p>Version 2 content</p>",
+      "createtime": "2025-12-01 14:29:00",
+      "save_type": "manual"
+    }
+  ]
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **node_id** - The requested node ID
+* **autosaves** - Array of autosave objects (max 20, most recent first)
+
+**Autosave Object Keys:**
+* **autosave_id** - Unique identifier for this version
+* **doctext** - Full HTML content of this version
+* **createtime** - When this version was saved (MySQL datetime)
+* **save_type** - "auto" (autosave) or "manual" (explicit save/restore)
+
+**Example Request:**
+
+```bash
+curl https://everything2.com/api/autosave/2213271 \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Only returns autosaves created by the current user for the specified node
+- Results are ordered by `createtime DESC` (most recent first)
+- Limit is enforced by `max_autosaves_per_node` (default: 20)
+- Includes full `doctext` for restoration purposes
+
+### GET /api/autosave/:node_id/history
+
+Retrieves version history metadata without full content (optimized for list views).
+
+**URL Parameters:**
+* **node_id** - The node ID to get history for (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "node_id": 2213271,
+  "versions": [
+    {
+      "autosave_id": 456,
+      "createtime": "2025-12-01 14:30:00",
+      "save_type": "auto",
+      "content_length": 1234,
+      "preview": "<p>Version 3 content</p>..."
+    }
+  ]
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **node_id** - The requested node ID
+* **versions** - Array of version metadata objects (max 20, most recent first)
+
+**Version Object Keys:**
+* **autosave_id** - Unique identifier for this version
+* **createtime** - When this version was saved
+* **save_type** - "auto" or "manual"
+* **content_length** - Size of the doctext in bytes
+* **preview** - First 100 characters of the doctext
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid node_id
+* **403 Forbidden** - User doesn't own the draft
+  ```json
+  { "success": 0, "error": "permission_denied",
+    "message": "You can only view history for your own drafts" }
+  ```
+
+**Example Request:**
+
+```bash
+curl https://everything2.com/api/autosave/2213271/history \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Optimized for version history UI - doesn't fetch full content
+- Uses `LENGTH(doctext)` and `LEFT(doctext, 100)` in SQL for efficiency
+- Verifies ownership before returning history
+- Used by E2 Editor Beta's "Version History" modal
+
+### POST /api/autosave/:autosave_id/restore
+
+Restores a previous version from history to the main document.
+
+**URL Parameters:**
+* **autosave_id** - The autosave entry ID to restore (required)
+
+**Request Body:**
+
+None required - empty POST request.
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "restored_from": 456,
+  "node_id": 2213271
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **restored_from** - The autosave_id that was restored
+* **node_id** - The node that was updated
+
+**Behavior:**
+
+1. **Fetch Version**: Retrieves the autosave entry with full content
+2. **Verify Ownership**: Ensures user owns the autosave
+3. **Stash Current**: Saves current document content to autosave with `save_type = 'manual'` before restoring
+4. **Restore Content**: Updates document table with the restored content
+5. **Prune History**: Keeps only last 20 versions after stash
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid autosave_id
+* **403 Forbidden** - User doesn't own the version
+* **404 Not Found** - Version doesn't exist
+* **405 Method Not Allowed** - Used GET/PUT/DELETE instead of POST
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/autosave/456/restore \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Current content is ALWAYS stashed before restoring (unless identical)
+- Stashed content is marked `save_type = 'manual'` to indicate explicit user action
+- After restore, the document table contains the restored version
+- The restored version remains in autosave history
+- Version history pruning maintains 20-version limit
+
+### DELETE /api/autosave/:autosave_id
+
+Deletes a specific autosave entry from version history.
+
+**URL Parameters:**
+* **autosave_id** - The autosave entry ID to delete (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "deleted": 456
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **deleted** - The autosave_id that was deleted
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid autosave_id
+* **403 Forbidden** - User doesn't own the autosave (unless admin)
+* **404 Not Found** - Autosave entry doesn't exist
+
+**Example Request:**
+
+```bash
+curl -X DELETE https://everything2.com/api/autosave/456 \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Only the autosave author can delete their own entries
+- Admins can delete any autosave entry
+- Deletion is permanent and cannot be undone
+- Does not affect the main document content
+- Useful for pruning unwanted versions from history
+
 ## Documents
 
 ## Superdocument
@@ -461,6 +1014,29 @@ curl -X POST https://everything2.com/api/messages/create \
   -H "Cookie: userpass=..." \
   -d '{"for": "someuser", "message": "Hello from CME!", "send_as": 51}'
 ```
+
+**Message Blocking Responses:**
+
+The API returns different responses based on whether messages are blocked:
+
+* **Complete block** (direct message to blocking user):
+  ```json
+  {"ignores": 1}
+  ```
+  Frontend should display error: "{recipient} is ignoring you"
+
+* **Partial block** (usergroup message where some members block you):
+  ```json
+  {"successes": 2, "errors": ["User is blocking you"], "ignores": 0}
+  ```
+  Frontend should display warning: "Message sent, but 1 user is blocking you" (or "N users" for multiple)
+
+* **Success** (no blocks):
+  ```json
+  {"successes": 3}
+  ```
+
+The `errors` array contains one entry per blocked member in a usergroup. The message is still delivered to non-blocking members (tracked in `successes`).
 
 **Error Responses:**
 * **403 Forbidden** - User doesn't have permission to send as the specified bot
