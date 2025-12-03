@@ -8,8 +8,8 @@ import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
-import TextAlign from '@tiptap/extension-text-align';
 import { E2Link, convertToE2Syntax } from '../Editor/E2LinkExtension';
+import { E2TextAlign } from '../Editor/E2TextAlignExtension';
 import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
 import '../Editor/E2Editor.css';
@@ -355,7 +355,7 @@ const EditorBeta = ({ data }) => {
       TableRow,
       TableCell,
       TableHeader,
-      TextAlign.configure({
+      E2TextAlign.configure({
         types: ['heading', 'paragraph'],
         alignments: ['left', 'center', 'right']
       }),
@@ -760,7 +760,7 @@ const EditorBeta = ({ data }) => {
                 </div>
 
                 {/* Load More button */}
-                {pagination.has_more && (
+                {Boolean(pagination.has_more) && (
                   <button
                     onClick={loadMoreDrafts}
                     disabled={loadingMore}
