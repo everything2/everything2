@@ -96,9 +96,11 @@ sub list_drafts {
     my $sql = q|
         SELECT node.node_id, node.title, node.createtime,
                draft.publication_status,
-               ps.title AS status_title
+               ps.title AS status_title,
+               document.doctext
         FROM node
         JOIN draft ON draft.draft_id = node.node_id
+        JOIN document ON document.document_id = node.node_id
         LEFT JOIN node AS ps ON ps.node_id = draft.publication_status
         WHERE node.author_user = ?
         AND node.type_nodetype = ?
@@ -109,6 +111,17 @@ sub list_drafts {
     my $rows = $DB->{dbh}->selectall_arrayref($sql, { Slice => {} },
         $user_id, $draft_type_id, $limit, $offset);
 
+    # Transform rows to match expected format (status instead of status_title)
+    my @drafts = map {
+        {
+            node_id => $_->{node_id},
+            title => $_->{title},
+            createtime => $_->{createtime},
+            status => $_->{status_title} || 'unknown',
+            doctext => $_->{doctext} || ''
+        }
+    } @$rows;
+
     # Get total count for pagination metadata
     my $total = $DB->{dbh}->selectrow_array(
         'SELECT COUNT(*) FROM node WHERE author_user = ? AND type_nodetype = ?',
@@ -117,7 +130,7 @@ sub list_drafts {
 
     return [$self->HTTP_OK, {
         success => 1,
-        drafts => $rows || [],
+        drafts => \@drafts,
         pagination => {
             limit => $limit,
             offset => $offset,

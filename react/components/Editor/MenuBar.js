@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { FaAlignLeft, FaAlignCenter, FaAlignRight } from 'react-icons/fa';
 
 /**
  * MenuBar - Toolbar for the Tiptap editor
@@ -207,30 +208,21 @@ const MenuBar = ({ editor }) => {
           style={buttonStyle(editor.isActive({ textAlign: 'left' }))}
           title="Align Left"
         >
-          <span style={{ display: 'inline-block', width: '14px', textAlign: 'left', fontSize: '11px', lineHeight: 1 }}>
-            <span style={{ display: 'block' }}>━━</span>
-            <span style={{ display: 'block' }}>━</span>
-          </span>
+          <FaAlignLeft style={{ verticalAlign: 'middle' }} />
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
           style={buttonStyle(editor.isActive({ textAlign: 'center' }))}
           title="Align Center"
         >
-          <span style={{ display: 'inline-block', width: '14px', textAlign: 'center', fontSize: '11px', lineHeight: 1 }}>
-            <span style={{ display: 'block' }}>━━</span>
-            <span style={{ display: 'block' }}>━</span>
-          </span>
+          <FaAlignCenter style={{ verticalAlign: 'middle' }} />
         </button>
         <button
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
           style={buttonStyle(editor.isActive({ textAlign: 'right' }))}
           title="Align Right"
         >
-          <span style={{ display: 'inline-block', width: '14px', textAlign: 'right', fontSize: '11px', lineHeight: 1 }}>
-            <span style={{ display: 'block' }}>━━</span>
-            <span style={{ display: 'block' }}>━</span>
-          </span>
+          <FaAlignRight style={{ verticalAlign: 'middle' }} />
         </button>
       </div>
 
