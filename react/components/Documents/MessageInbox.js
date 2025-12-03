@@ -45,12 +45,19 @@ const MessageInbox = ({ data }) => {
     )
   }
 
-  // Core state
-  const [activeTab, setActiveTab] = React.useState('inbox')
+  // Core state - default to inbox unless page specifies outbox
+  const defaultTab = data.defaultTab || 'inbox'
+  const [activeTab, setActiveTab] = React.useState(defaultTab)
   const [showArchived, setShowArchived] = React.useState(false)
-  const [messages, setMessages] = React.useState(data.inbox?.messages || [])
-  const [totalCount, setTotalCount] = React.useState(data.inbox?.count || 0)
-  const [archivedCount, setArchivedCount] = React.useState(data.inbox?.archivedCount || 0)
+  const [messages, setMessages] = React.useState(
+    defaultTab === 'outbox' ? (data.outbox?.messages || []) : (data.inbox?.messages || [])
+  )
+  const [totalCount, setTotalCount] = React.useState(
+    defaultTab === 'outbox' ? (data.outbox?.count || 0) : (data.inbox?.count || 0)
+  )
+  const [archivedCount, setArchivedCount] = React.useState(
+    defaultTab === 'outbox' ? (data.outbox?.archivedCount || 0) : (data.inbox?.archivedCount || 0)
+  )
   const [outboxCount, setOutboxCount] = React.useState(data.outbox?.count || 0)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(null)
@@ -340,6 +347,36 @@ const MessageInbox = ({ data }) => {
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      // Check response body for blocking/error indicators
+      const data = await response.json()
+
+      // Check if user is being ignored (complete block)
+      if (data.ignores) {
+        throw new Error(`${recipient} is ignoring you`)
+      }
+
+      // Check for partial usergroup blocks (warnings, not errors)
+      if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+        // Count blocked members
+        const blockedCount = data.errors.length
+        const warningMsg = blockedCount === 1
+          ? `Message sent, but 1 user is blocking you`
+          : `Message sent, but ${blockedCount} users are blocking you`
+
+        // Refresh if on sent messages tab
+        if (activeTab === 'outbox') {
+          loadMessages('outbox', false, page)
+        }
+
+        // Return warning for partial success
+        return { success: true, warning: warningMsg }
+      }
+
+      // Check for other errors (complete failures)
+      if (data.errortext) {
+        throw new Error(data.errortext)
       }
 
       // Refresh if on sent messages tab

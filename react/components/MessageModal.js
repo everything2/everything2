@@ -28,6 +28,7 @@ const MessageModal = ({
   const [replyAll, setReplyAll] = React.useState(false)
   const [sending, setSending] = React.useState(false)
   const [error, setError] = React.useState(null)
+  const [warning, setWarning] = React.useState(null)
   const textareaRef = React.useRef(null)
 
   // Initialize form when modal opens
@@ -44,6 +45,7 @@ const MessageModal = ({
       }
       setMessage('')
       setError(null)
+      setWarning(null)
 
       // Focus textarea after render
       setTimeout(() => {
@@ -74,6 +76,7 @@ const MessageModal = ({
 
     setSending(true)
     setError(null)
+    setWarning(null)
 
     try {
       let targetRecipient = recipient
@@ -87,17 +90,24 @@ const MessageModal = ({
         }
       }
 
-      const success = await onSend(targetRecipient, message.trim())
+      const result = await onSend(targetRecipient, message.trim())
 
-      if (success) {
-        // Close modal on success
-        onClose()
+      if (result === true || result?.success) {
+        // Check for warnings (partial success)
+        if (result?.warning) {
+          setWarning(result.warning)
+          setSending(false)
+          // Don't close modal - let user see warning and decide to close
+        } else {
+          // Complete success - close modal
+          onClose()
+        }
       } else {
         setError('Failed to send message. Please try again.')
+        setSending(false)
       }
     } catch (err) {
       setError(err.message || 'Failed to send message')
-    } finally {
       setSending(false)
     }
   }
@@ -396,6 +406,21 @@ const MessageModal = ({
               marginBottom: '16px'
             }}>
               {error}
+            </div>
+          )}
+
+          {/* Warning message */}
+          {warning && (
+            <div style={{
+              padding: '8px 12px',
+              backgroundColor: '#fff3cd',
+              border: '1px solid #ffc107',
+              borderRadius: '4px',
+              color: '#856404',
+              fontSize: '12px',
+              marginBottom: '16px'
+            }}>
+              {warning}
             </div>
           )}
 

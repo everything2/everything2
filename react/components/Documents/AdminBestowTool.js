@@ -22,6 +22,7 @@ import React, { useState, useCallback } from 'react'
  * - button_text: Text for submit button (default "Submit")
  * - button_text_loading: Text while submitting (default "Processing...")
  * - note_text: Optional note text shown at bottom of form
+ * - prefill_username: Username to pre-fill in the first row (for self-service tools)
  */
 const AdminBestowTool = ({ data, user }) => {
   const {
@@ -40,18 +41,19 @@ const AdminBestowTool = ({ data, user }) => {
     api_endpoint,
     button_text = 'Submit',
     button_text_loading = 'Processing...',
-    note_text
+    note_text,
+    prefill_username
   } = data
 
   // Initialize rows with usernames and optional amounts
   const createEmptyRows = useCallback(() => {
-    return Array(row_count).fill(null).map(() => ({
-      username: '',
+    return Array(row_count).fill(null).map((_, index) => ({
+      username: (index === 0 && prefill_username) ? prefill_username : '',
       amount: default_amount || ''
     }))
-  }, [row_count, default_amount])
+  }, [row_count, default_amount, prefill_username])
 
-  const [rows, setRows] = useState(createEmptyRows)
+  const [rows, setRows] = useState(() => createEmptyRows())
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
 

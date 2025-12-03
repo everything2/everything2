@@ -304,12 +304,16 @@ sub grant_cools
                 "$USER->{title} bestowed $amount cools to themselves"
             );
 
+            my $cools_word = $amount == 1 ? 'cool' : 'cools';
+            my $were_was = $amount == 1 ? 'was' : 'were';
+            my $total_cools_word = $VARS->{cools} == 1 ? 'cool' : 'cools';
+
             push @results, {
                 username => $USER->{title},
                 success => 1,
                 amount => $amount,
                 new_total => $VARS->{cools},
-                message => "$amount cools were bestowed to you (now have $VARS->{cools} cools)"
+                message => "$amount $cools_word $were_was bestowed to you (now have $VARS->{cools} $total_cools_word)"
             };
         } else {
             # Get target user's vars and update
@@ -326,12 +330,16 @@ sub grant_cools
                 "$target_user->{title} was given $amount cools by $USER->{title}"
             );
 
+            my $cools_word = $amount == 1 ? 'cool' : 'cools';
+            my $were_was = $amount == 1 ? 'was' : 'were';
+            my $total_cools_word = $target_vars->{cools} == 1 ? 'cool' : 'cools';
+
             push @results, {
                 username => $target_user->{title},
                 success => 1,
                 amount => $amount,
                 new_total => $target_vars->{cools},
-                message => "$amount cools were bestowed to $target_user->{title} (now has $target_vars->{cools} cools)"
+                message => "$amount $cools_word $were_was bestowed to $target_user->{title} (now has $target_vars->{cools} $total_cools_word)"
             };
         }
     }

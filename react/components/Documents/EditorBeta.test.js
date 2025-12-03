@@ -75,8 +75,20 @@ jest.mock('@tiptap/extension-table-header', () => ({
   default: {},
 }))
 
+jest.mock('@tiptap/extension-text-align', () => ({
+  __esModule: true,
+  default: {
+    configure: jest.fn(() => ({})),
+  },
+}))
+
 // Mock fetch for API calls
-global.fetch = jest.fn()
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ success: true }),
+  })
+)
 
 describe('EditorBeta', () => {
   const mockData = {
@@ -94,7 +106,14 @@ describe('EditorBeta', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    // Reset fetch mock with default successful response
     global.fetch.mockReset()
+    global.fetch.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      })
+    )
   })
 
   describe('access control', () => {
@@ -441,6 +460,30 @@ describe('EditorBeta', () => {
 
       // HTML mode indicator should be gone
       expect(screen.queryByText(/Editing raw HTML/)).not.toBeInTheDocument()
+    })
+
+    it('respects preferRawHtml prop to start in HTML mode', () => {
+      render(<EditorBeta data={{ ...mockData, preferRawHtml: true }} />)
+
+      // Should start in HTML mode
+      expect(screen.getByText(/Editing raw HTML/)).toBeInTheDocument()
+    })
+
+    it('saves preference when mode is toggled', () => {
+      render(<EditorBeta data={mockData} />)
+
+      const toggle = screen.getByText('Rich').parentElement
+      fireEvent.click(toggle)
+
+      // Should have called fetch to save preference
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/preferences/set',
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tiptap_editor_raw: 1 })
+        })
+      )
     })
   })
 

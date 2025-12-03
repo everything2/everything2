@@ -4176,13 +4176,13 @@ sub processMessageCommand
     $result = $this->sendPublicChatter($user, $message, $vars);
   }
 
-  # Handle error responses from command handlers
-  # If handler returns hashref with {success => 0, error => "..."}, propagate error
-  if (ref($result) eq 'HASH' && exists $result->{success} && !$result->{success}) {
-    return $result;  # Return error hashref
+  # Handle responses from command handlers
+  if (ref($result) eq 'HASH' && exists $result->{success}) {
+    # Pass through structured responses (success, error, warning, etc.)
+    return $result;
   }
 
-  # Otherwise, convert truthy/falsy to success response
+  # Convert truthy/falsy to success response for legacy handlers
   return $result ? { success => 1 } : { success => 0, error => 'Message not posted' };
 }
 
@@ -4257,7 +4257,24 @@ sub handlePrivateMessageCommand
     { online_only => $is_ono }
   );
 
-  return $result->{success};
+  # Check if any users blocked the message
+  if ($result->{errors} && @{$result->{errors}}) {
+    # Check if message was sent to anyone (partial success for usergroup)
+    if ($result->{sent_to} && @{$result->{sent_to}}) {
+      # Partial success - some members blocked, but message delivered to others
+      my $blocked_count = scalar @{$result->{errors}};
+      my $warning_msg = $blocked_count == 1
+        ? "Message sent, but 1 user is blocking you"
+        : "Message sent, but $blocked_count users are blocking you";
+      return { success => 1, warning => $warning_msg };
+    } else {
+      # Complete failure - all recipients blocked (direct message)
+      my $error_msg = join(', ', @{$result->{errors}});
+      return { success => 0, error => $error_msg };
+    }
+  }
+
+  return $result->{success} ? { success => 1 } : { success => 0, error => 'Message not sent' };
 }
 
 sub handleHelpCommand
@@ -4619,6 +4636,7 @@ sub getRecentChatter
   my $offset = int($params->{offset} || 0);
   my $room = int($params->{room} || 0);
   my $since = $params->{since}; # Optional timestamp for incremental updates
+  my $user = $params->{user}; # Optional user for filtering blocked authors
 
   # Enforce limits
   $limit = 30 if ($limit < 1);
@@ -4647,8 +4665,26 @@ sub getRecentChatter
   # Fetch recent chatter
   my $csr = $this->{db}->sqlSelectMany("*", "message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
   my $records = [];
+
+  # Get list of users this user has blocked (if user provided)
+  my %blocked_users = ();
+  if ($user && $user->{user_id}) {
+    my $block_csr = $this->{db}->sqlSelectMany(
+      'ignore_node',
+      'messageignore',
+      'messageignore_id=' . int($user->{user_id})
+    );
+    while (my ($blocked_id) = $block_csr->fetchrow) {
+      $blocked_users{$blocked_id} = 1;
+    }
+    $block_csr->finish;
+  }
+
   while (my $row = $csr->fetchrow_hashref)
   {
+    # Skip messages from blocked users
+    next if $blocked_users{$row->{author_user}};
+
     push @$records, $this->message_json_structure($row);
   }
 
@@ -4715,6 +4751,12 @@ sub sendPrivateMessage
       my $result = $this->sendUsergroupMessage($author, $recipient_node, $message, $options);
       if ($result->{success}) {
         push @sent_to, @{$result->{sent_to}};
+        # Track users who blocked the sender within the usergroup
+        if ($result->{blocked_by} && @{$result->{blocked_by}}) {
+          foreach my $blocked_user (@{$result->{blocked_by}}) {
+            push @errors, "$blocked_user is ignoring you";
+          }
+        }
       } else {
         push @errors, $result->{error};
       }
@@ -4809,6 +4851,18 @@ sub sendUsergroupMessage
   # Filter out users who are ignoring the usergroup
   @members = grep { !exists($ignores{$_->{user_id}}) } @members;
 
+  # Check for users who are ignoring the author individually (for usergroup messages)
+  my @blocked_by_members = ();
+  my @unblocked_members = ();
+  foreach my $member (@members) {
+    if ($this->userIgnoresMessagesFrom($member->{user_id}, $author->{user_id})) {
+      push @blocked_by_members, $member;
+    } else {
+      push @unblocked_members, $member;
+    }
+  }
+  @members = @unblocked_members;
+
   # Handle online-only restriction
   if ($options->{online_only}) {
     my %onlines = ();
@@ -4875,7 +4929,8 @@ sub sendUsergroupMessage
 
   return {
     success => 1,
-    sent_to => \@sent_to
+    sent_to => \@sent_to,
+    blocked_by => [map { $_->{title} } @blocked_by_members]
   };
 }
 
@@ -5782,6 +5837,22 @@ sub filtered_newwriteups
   my $iseditor = $this->isEditor($USER);
   my $isguest = $this->isGuest($USER);
 
+  # Get list of unfavorite user IDs for filtering (users whose writeups should be hidden)
+  my %unfavorite_users;
+  if(not $isguest)
+  {
+    my $VARS = Everything::getVars($USER);
+    if($VARS->{unfavoriteusers})
+    {
+      my @unfavorites = split(/,/, $VARS->{unfavoriteusers});
+      foreach my $uid (@unfavorites)
+      {
+        $uid =~ s/^\s+|\s+$//g; # trim whitespace
+        $unfavorite_users{$uid} = 1 if $uid =~ /^\d+$/;
+      }
+    }
+  }
+
   my $writeupsdata = $this->{db}->stashData("newwriteups");
   $writeupsdata = [] unless(defined($writeupsdata) and UNIVERSAL::isa($writeupsdata,"ARRAY"));
 
@@ -5791,6 +5862,13 @@ sub filtered_newwriteups
   while($count < $limit and $count < scalar(@$writeupsdata))
   {
     my $wu = $writeupsdata->[$count];
+
+    # Skip writeups from unfavorite users
+    if(not $isguest and $wu->{author} and $unfavorite_users{$wu->{author}{node_id}})
+    {
+      $count++;
+      next;
+    }
 
     if($iseditor or (not $wu->{notnew} and not $wu->{is_junk}))
     {
@@ -6262,7 +6340,8 @@ sub buildNodeInfoStructure
     my $initialChatter = $this->getRecentChatter({
       room => $USER->{in_room},
       limit => 30,
-      since => $time_ago
+      since => $time_ago,
+      user => $USER
     });
     $e2->{chatterbox}->{messages} = $initialChatter || [];
 

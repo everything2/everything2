@@ -80,6 +80,7 @@ sub buildReactData
 
   return {
     type => 'message_inbox',
+    defaultTab => 'inbox',  # Default to inbox tab
     inbox => {
       messages => $inbox_messages,
       count => $inbox_count,

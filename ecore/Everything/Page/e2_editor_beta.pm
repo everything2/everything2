@@ -18,12 +18,20 @@ sub buildReactData {
     # Open to all logged-in users
     my $can_access = $user && !$user->is_guest ? 1 : 0;
 
-    # Get user's drafts if logged in
+    # Get user's drafts if logged in (initial page load - first 20)
     my @drafts;
+    my $pagination = { offset => 0, limit => 20, total => 0, has_more => 0 };
+
     if ($can_access) {
         my $user_id = $user->node_id;
         my $draft_type = $DB->getType('draft');
         my $draft_type_id = $draft_type->{node_id};
+
+        # Get total count
+        my $total = $DB->{dbh}->selectrow_array(
+            'SELECT COUNT(*) FROM node WHERE author_user = ? AND type_nodetype = ?',
+            {}, $user_id, $draft_type_id
+        ) || 0;
 
         my $sql = q|
             SELECT node.node_id, node.title, node.createtime,
@@ -37,7 +45,7 @@ sub buildReactData {
             WHERE node.author_user = ?
             AND node.type_nodetype = ?
             ORDER BY node.createtime DESC
-            LIMIT 50
+            LIMIT 20
         |;
 
         my $sth = $DB->{dbh}->prepare($sql);
@@ -52,6 +60,14 @@ sub buildReactData {
                 doctext => $row->{doctext} || ''
             };
         }
+
+        # Set pagination metadata
+        $pagination = {
+            offset => 0,
+            limit => 20,
+            total => $total,
+            has_more => (20 < $total) ? 1 : 0
+        };
     }
 
     # Get available publication statuses for the dropdown
@@ -66,13 +82,21 @@ sub buildReactData {
         }
     }
 
+    # Get user preference for raw HTML editing mode
+    my $prefer_raw_html = 0;
+    if ($can_access) {
+        $prefer_raw_html = $user->VARS->{tiptap_editor_raw} ? 1 : 0;
+    }
+
     return {
         type => 'e2_editor_beta',
         approvedTags => \@tags,
         canAccess => $can_access,
         username => $user ? $user->title : undef,
         drafts => \@drafts,
-        statuses => \@statuses
+        pagination => $pagination,
+        statuses => \@statuses,
+        preferRawHtml => $prefer_raw_html
     };
 }
 

@@ -34,6 +34,10 @@ my $sender_node = $APP->node_by_id($sender->{node_id});
 my $recipient_node = $APP->node_by_id($recipient->{node_id});
 my $eddie_node = $APP->node_by_id($eddie->{node_id});
 
+# Clear any existing blocks for test users from previous test runs
+$DB->sqlDelete('messageignore', "messageignore_id IN ($sender->{user_id}, $recipient->{user_id}, $eddie->{user_id})");
+$DB->sqlDelete('messageignore', "ignore_node IN ($sender->{user_id}, $recipient->{user_id}, $eddie->{user_id})");
+
 subtest 'User ignoring direct message' => sub {
   plan tests => 5;
 
@@ -344,6 +348,10 @@ subtest 'Usergroup archive copy creation' => sub {
   $DB->sqlDelete('nodegroup', "node_id=$ug_node->{node_id}");
   $DB->sqlDelete('node', "node_id=$ug_node->{node_id}");
 };
+
+# Final cleanup: remove any lingering message blocks for test users
+$DB->sqlDelete('messageignore', "messageignore_id IN ($sender->{user_id}, $recipient->{user_id}, $eddie->{user_id})");
+$DB->sqlDelete('messageignore', "ignore_node IN ($sender->{user_id}, $recipient->{user_id}, $eddie->{user_id})");
 
 # Reset root user to "outside" room
 $DB->sqlUpdate('user', { in_room => 0 }, "user_id=$sender->{user_id}");

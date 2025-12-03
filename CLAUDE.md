@@ -2,7 +2,7 @@
 
 Context for AI assistants working on the Everything2 codebase.
 
-**Last Updated**: 2025-12-01
+**Last Updated**: 2025-12-02
 **Maintained By**: Jay Bonci
 
 ## ⚠️ CRITICAL: Common Pitfalls ⚠️
@@ -90,11 +90,44 @@ View: `docker exec e2devapp tail -f /tmp/development.log`
 # Hashref → Blessed: $APP->node_by_id($USER->{node_id})
 ```
 
-### API Response Format
+### JSON-Serializable Node Data
+
+**CRITICAL**: When returning node data in JSON responses (APIs, Page buildReactData), the `type` field MUST be extracted as a string:
 
 ```perl
-return [$self->HTTP_OK, { data => 'value' }];  # NOT $self->API_RESPONSE()
+# ❌ WRONG - Will cause JSON nesting depth error
+my $node = $DB->getNodeById($id);
+return { type => $node->{type} };  # type is a hashref!
+
+# ✅ CORRECT - Extract the string title
+my $node = $DB->getNodeById($id);
+return { type => $node->{type}{title} };  # Returns 'user', 'writeup', etc.
 ```
+
+**Why**: Nodes loaded via `getNodeById()`/`getNode()` have `type` as a hashref like `{title => 'user', node_id => 123, ...}`. Including this directly in JSON responses causes "json text or perl structure exceeds maximum nesting level" errors due to circular references.
+
+**Pattern**: Always extract scalar values from nested hashrefs before JSON serialization.
+
+### API Response Format
+
+**CRITICAL (mod_perl workaround)**: Always return `HTTP_OK` (200) for API responses, even for application errors. Apache/mod_perl appends HTML error pages to non-200 responses, corrupting JSON.
+
+```perl
+# ✅ CORRECT - Return 200 with success field for application errors
+return [$self->HTTP_OK, {success => 1, data => 'value'}];           # Success
+return [$self->HTTP_OK, {success => 0, error => 'User not found'}]; # App error
+
+# ❌ WRONG - Apache appends HTML error page to JSON, corrupting response
+return [$self->HTTP_BAD_REQUEST, {error => 'Bad input'}];   # Corrupted!
+return [$self->HTTP_NOT_FOUND, {error => 'Not found'}];     # Corrupted!
+```
+
+**Why**: When returning non-200 HTTP status codes (4xx, 5xx), Apache appends its default HTML error page to the JSON response body, causing browser JSON parsing to fail with "Failed to fetch" or decoding errors. This will be fixed when migrating to FastCGI.
+
+**Pattern**:
+- Success: `{success => 1, ...data...}`
+- Error: `{success => 0, error => "message"}`
+- React checks `data.success` to determine result
 
 ### Everything::Page Pattern
 
@@ -249,4 +282,9 @@ if ($method =~ /^(PUT|PATCH|DELETE)$/ && $content_length > 0) {
 
 ---
 
-For detailed work history, see [November 2025 Changelog](docs/changelog-2025-11.md).
+## Recent Work
+
+### December 2025
+- **Pit of Abomination modernization**: Unified user blocking interface (writeup hiding + message blocking)
+- **User Interactions API**: RESTful API for managing blocked users (`/api/userinteractions`)
+- Fixed JSON encoding issues with nested node type hashrefs in API/Page responses

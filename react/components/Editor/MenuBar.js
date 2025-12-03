@@ -200,6 +200,40 @@ const MenuBar = ({ editor }) => {
         </button>
       </div>
 
+      {/* Text alignment */}
+      <div style={groupStyle}>
+        <button
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          style={buttonStyle(editor.isActive({ textAlign: 'left' }))}
+          title="Align Left"
+        >
+          <span style={{ display: 'inline-block', width: '14px', textAlign: 'left', fontSize: '11px', lineHeight: 1 }}>
+            <span style={{ display: 'block' }}>━━</span>
+            <span style={{ display: 'block' }}>━</span>
+          </span>
+        </button>
+        <button
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          style={buttonStyle(editor.isActive({ textAlign: 'center' }))}
+          title="Align Center"
+        >
+          <span style={{ display: 'inline-block', width: '14px', textAlign: 'center', fontSize: '11px', lineHeight: 1 }}>
+            <span style={{ display: 'block' }}>━━</span>
+            <span style={{ display: 'block' }}>━</span>
+          </span>
+        </button>
+        <button
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          style={buttonStyle(editor.isActive({ textAlign: 'right' }))}
+          title="Align Right"
+        >
+          <span style={{ display: 'inline-block', width: '14px', textAlign: 'right', fontSize: '11px', lineHeight: 1 }}>
+            <span style={{ display: 'block' }}>━━</span>
+            <span style={{ display: 'block' }}>━</span>
+          </span>
+        </button>
+      </div>
+
       {/* E2 Link */}
       <div style={groupStyle}>
         <button

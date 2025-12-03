@@ -36,6 +36,8 @@ my %serial_tests = (
     "$dirname/041_online_only_messages.t" => 1, # Modifies message table, creates usergroups
     "$dirname/043_chatter_api.t" => 1,    # Modifies message table (public chatter)
     "$dirname/044_message_outbox.t" => 1, # Modifies message table (outbox entries)
+    "$dirname/046_message_ignores_delivery.t" => 1, # Modifies messageignore table (root/guest user)
+    "$dirname/047_message_block_notifications.t" => 1, # Modifies messageignore table (root/guest user)
 );
 
 # Separate serial and parallel tests

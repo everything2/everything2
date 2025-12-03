@@ -817,6 +817,15 @@ sub superdoc_display_page
     return $PAGELOAD->{noparsecodelinks} ? $output : parseLinks($output);
   }
 
+  # Check if React Page class exists before showing error
+  my $page_module = "Everything::Page::$doctitle";
+  eval "require $page_module";
+  if (!$@ && $page_module->can('buildReactData')) {
+    $APP->devLog("Found React Page class $page_module for '$NODE->{title}', letting Router handle it");
+    # Return empty string to signal Router to handle React rendering
+    return "";
+  }
+
   return "Error: Document delegation not implemented for '$NODE->{title}' (expected: $doctitle)";
 }
 
