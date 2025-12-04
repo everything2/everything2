@@ -557,49 +557,13 @@ sub debate_create
 
 sub e2poll_create
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ( $POLL ) = @_;
-
-  $DB->getRef( $POLL );
-
-  unless ($$POLL{title} && $query -> param('e2poll_question'))
-  {
-    $DB->nukeNode($POLL, -1);
-    $query->param('node_id', getId(getNode('Everything Poll Creator', 'superdoc')));
-    return;
-  }
-
-  $$POLL{poll_author}=$$POLL{author_user};
-  $$POLL{author_user} = getId(getNode('Content Editors', 'usergroup'));
-
-  # this node no longer belongs to its author. So if the author is a normal user, they can't update it any more
-  # so e2poll_question will get lost. So:
-  $$POLL{question} = $query->param('e2poll_question');
-
-  my @doctext = ();
-  $$POLL{e2poll_results} = 0;
-
-  for (1 .. 12)
-  {
-    if (my $queryVal = $query->param("option$_"))
-    {
-      push @doctext, $queryVal;
-      $$POLL{e2poll_results} .= ',0';
-    }
-  };
-
-  push @doctext, 'None of the above';
-  $POLL->{doctext} = join "\n\n", @doctext;
-  $POLL->{poll_status} = 'new';
-
-  $DB->updateNode( $POLL, -1 );
+  # DEPRECATED: Poll creation is now handled by Everything::API::poll_creator
+  # This maintenance function is hollowed out to prevent legacy CGI-based poll creation
+  # All polls should be created through the modern React UI at /title/Everything%20Poll%20Creator
+  # which uses the API endpoint /api/poll_creator/create
+  #
+  # Keeping this function as a no-op to avoid breaking any legacy code that might
+  # still reference it, but it no longer performs any operations.
   return;
 }
 

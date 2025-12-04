@@ -138,44 +138,10 @@ sub metadescriptiontag
 #
 sub admin_searchform
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($PARAM) = @_;
-
-  my $nid = getId($NODE) || '';
-  return unless $APP->isEditor($USER);
-
-  my $servername = $Everything::CONF->server_hostname;
-  my $str = "<span class='var_label'>node_id:</span> <span class='var_value'>$nid</span>
-			<span class='var_label'>nodetype:</span> <span class='var_value'>".linkNode($$NODE{type})."</span>
-			<span class='var_label'>Server:</span> <span class='var_value'>$servername</span>";
-
-  $str .= $query->start_form('POST',$query->script_name);
-
-  $str .= '<label for ="node">Name:</label> '.q|<input type="text" name="node" id="node" value="|.$APP->encodeHTML($NODE->{title}).q|" size="18" maxlength="80" />|.$query->submit('name_button', 'go').$query->end_form;
-
-  $str .= $query->start_form('POST',$query->script_name).'<label for="node_id">ID:</label> '.
-  $query->textfield(
-    -name => 'node_id',
-    -id => 'node_id',
-    -default => $nid,
-    -size => 12,
-    -maxlength => 80).
-  $query->submit('id_button', 'go');
-
-  $str.= $query->end_form;
-
-  return '<div class="nodelet_section">
-    <h4 class="ns_title">Node Info</h4>
-    <span class="rightmenu">'.$str.'
-    </span>
-    </div>';
+  # Stubbed out - replaced by React MasterControl component
+  # This function was part of Master Control which is now fully implemented in React
+  # See: react/components/MasterControl/AdminSearchForm.js
+  return '';
 }
 
 # This wraps around the googleads code, even though we could just dump it into the template eventually
@@ -4396,7 +4362,7 @@ sub firmlinks
     unless($currentnode and $$currentnode{group} and $nwriteups = @{$currentnode->{group}})
     {
       $parentstr .= 'This node is unparented. ';
-      $parentstr .= $APP->isEditor($USER)? linkNode(getNode('Magical Writeup Reparenter', 'superdoc'), 'Reparent it.', {old_writeup_id => $$NODE{node_id}})
+      $parentstr .= $APP->isEditor($USER)? linkNode(getNode('Magical Writeup Reparenter', 'oppressor_superdoc'), 'Reparent it.', {old_writeup_id => $$NODE{node_id}})
         : 'Please contact an editor to have this repaired.';
       return "$parentstr</div>";
     }
@@ -6746,7 +6712,7 @@ sub admin_toolset
     }
   } elsif($nt eq 'writeup' && $$VARS{nokillpopup}) {
     # mauler and riverrun don't get a writeup admin widget:
-    $newStr .= $query -> li(linkNode(getNode('Magical Writeup Reparenter', 'superdoc')
+    $newStr .= $query -> li(linkNode(getNode('Magical Writeup Reparenter', 'oppressor_superdoc')
       , 'Reparent&hellip;'
       , {old_writeup_id => $NODE->{node_id}}))
       .$query -> li(linkNode(getNode('Renunciation Chainsaw', 'oppressor_superdoc')
@@ -9273,7 +9239,7 @@ sub writeuptools
 
   if ($isEditor)
   {
-    $reassign = linkNode(getNode('Magical Writeup Reparenter', 'superdoc'), 'Reparent&hellip;', {old_writeup_id => $n})
+    $reassign = linkNode(getNode('Magical Writeup Reparenter', 'oppressor_superdoc'), 'Reparent&hellip;', {old_writeup_id => $n})
       .' &nbsp; '
       .linkNode(getNode('Renunciation Chainsaw', 'oppressor_superdoc'), 'Change author&hellip;', {wu_id => $n});
 
@@ -10770,34 +10736,10 @@ sub listnodecategories
 
 sub confirmDeleteMessage
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($messageID,$actioned) = @_;
-
-  if ($actioned and $actioned eq "deleted")
-  {
-    return "Message deleted";
-  }
-  if ($actioned and $actioned eq "archived")
-  {
-    return "Message archived";
-  }
-
-  my $archiveWhat="archive_$messageID";
-
-  my $str = linkNode( $NODE , 'Archive message' , { op => 'message', $archiveWhat => 'yup', lastnode_id => 0 , -title => "archive the above message" , -class => "action ajax message_$messageID:confirmDeleteMessage:$messageID,archived" }).' or ';
-
-  my $deleteWhat="deletemsg_$messageID";
-
-  $str.=linkNode( $NODE , 'delete for good' , { op => 'message', $deleteWhat => 'yup', lastnode_id => 0 , -title => "delete the above message" , -class => "action ajax message_$messageID:confirmDeleteMessage:$messageID,deleted" });
-
-  return $str;
+  # Stubbed out - replaced by React MessageInbox component
+  # Message archive/delete operations now use /api/messages/ endpoints
+  # See: react/components/Documents/MessageInbox.js
+  return '';
 }
 
 sub ip_lookup_tools
@@ -11873,7 +11815,7 @@ sub e2nodetools
         # failed rename
         my $reason = getNode($newTitle, 'e2node');
         $str .= $reason ? linkNode($reason).' already exists. '
-          .linkNode(getNode('Magical Writeup Reparenter', 'superdoc')
+          .linkNode(getNode('Magical Writeup Reparenter', 'oppressor_superdoc')
           , 'Move all writeups &hellip;'
           , {old_e2node_id => $$NODE{node_id}
           , new_e2node_id => $$reason{node_id}
@@ -11897,6 +11839,8 @@ sub e2nodetools
 
 sub showcurrentpoll
 {
+  # Stubbed out for page use - replaced by React EverythingUserPoll component
+  # Still called by CurrentUserPoll nodelet which has its own React implementation
   my $DB = shift;
   my $query = shift;
   my $NODE = shift;
@@ -12373,7 +12317,7 @@ sub ordernode
   }
 
   $str .= '<button name="op" value="repair_e2node_noreorder" type="submit">Repair without reordering</button></p>'
-    .linkNode(getNode('Magical Writeup Reparenter', 'superdoc')
+    .linkNode(getNode('Magical Writeup Reparenter', 'oppressor_superdoc')
       , 'Reparent writeups&hellip;'
       , {old_e2node_id => $$NODE{node_id}});
 

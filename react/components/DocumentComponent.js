@@ -138,7 +138,17 @@ const COMPONENT_MAP = {
 
   // Help & documentation
   voting_experience_system: lazy(() => import('./Documents/VotingExperienceSystem')),
-  user_relations: lazy(() => import('./Documents/UserRelations'))
+  user_relations: lazy(() => import('./Documents/UserRelations')),
+
+  // Content discovery & editorial
+  cool_archive: lazy(() => import('./Documents/CoolArchive')),
+  page_of_cool: lazy(() => import('./Documents/PageOfCool')),
+
+  // Community features - Polls
+  everything_poll_creator: lazy(() => import('./Documents/EverythingPollCreator')),
+  everything_poll_directory: lazy(() => import('./Documents/EverythingPollDirectory')),
+  everything_poll_archive: lazy(() => import('./Documents/EverythingPollArchive')),
+  everything_user_poll: lazy(() => import('./Documents/EverythingUserPoll'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))
