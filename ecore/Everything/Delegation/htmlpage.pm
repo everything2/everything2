@@ -819,8 +819,12 @@ sub superdoc_display_page
 
   # Check if React Page class exists before showing error
   my $page_module = "Everything::Page::$doctitle";
-  eval "require $page_module";
-  if (!$@ && $page_module->can('buildReactData')) {
+  my $page_exists = eval {
+    require Module::Load;
+    Module::Load::load($page_module);
+    1;
+  };
+  if ($page_exists && $page_module->can('buildReactData')) {
     $APP->devLog("Found React Page class $page_module for '$NODE->{title}', letting Router handle it");
     # Return empty string to signal Router to handle React rendering
     return "";
@@ -4231,7 +4235,7 @@ sub ajax_update_page
     listnodecategories 		=>[ $node_id ],
     zenDisplayUserInfo		=>[],
     messageBox				=>[ $node_id, $anything, $title, $node_id ],
-    confirmDeleteMessage	=>[ $node_id, $title ],
+    # confirmDeleteMessage	=>[ $node_id, $title ], # Stubbed - now in React MessageInbox
     nodeletsettingswidget	=>[ $title, $title ], #nodelet name, link text
     homenodeinfectedinfo	=> [],
     "user searcher"		=> [ $something ],
