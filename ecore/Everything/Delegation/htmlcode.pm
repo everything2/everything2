@@ -10734,14 +10734,6 @@ sub listnodecategories
   return '';
 }
 
-sub confirmDeleteMessage
-{
-  # Stubbed out - replaced by React MessageInbox component
-  # Message archive/delete operations now use /api/messages/ endpoints
-  # See: react/components/Documents/MessageInbox.js
-  return '';
-}
-
 sub ip_lookup_tools
 {
   my $DB = shift;
@@ -11837,36 +11829,6 @@ sub e2nodetools
   }
 }
 
-sub showcurrentpoll
-{
-  # Stubbed out for page use - replaced by React EverythingUserPoll component
-  # Still called by CurrentUserPoll nodelet which has its own React implementation
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $inNodelet = shift;
-
-  my @POLL = getNodeWhere({poll_status => 'current'}, 'e2poll');
-  return 'No current poll.' unless @POLL;
-
-  my $str = htmlcode('showpoll', $POLL[0]);
-
-  $str .= $inNodelet ? '<div class="nodeletfoot">': '<p align="right" class="morelink">';
-
-  $str .= parseLinks('[Everything Poll Archive[superdoc]|Past polls]
-    | [Everything Poll Directory[superdoc]|Future polls]
-    | [Everything Poll Creator[superdoc]|New poll]
-    <br> [Polls[by Virgil]|About polls]');
-
-  $str .= $inNodelet? '</div>': '</p>';
-
-  return $str;
-}
 
 sub showpoll
 {

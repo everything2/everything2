@@ -27,6 +27,8 @@ class SmokeTest
     test_key_superdocs
     test_react_initialization
     test_nodelets
+    test_xml_tickers
+    test_xml_displaytypes
 
     report_results
   end
@@ -528,6 +530,186 @@ class SmokeTest
     rescue => e
       puts "✗ Exception"
       @errors << "Nodelet test failed: #{e.message}"
+    end
+  end
+
+  def test_xml_tickers
+    print "Testing XML tickers... "
+
+    # Define all XML tickers with their expected characteristics
+    tickers = [
+      {name: 'Client Version XML Ticker', root: 'clientregistry', elements: ['client', 'version']},
+      {name: 'Available Rooms XML Ticker', root: 'e2rooms', elements: ['roomlist']},
+      {name: 'Cool Nodes XML Ticker II', root: 'coolwriteups', elements: ['cool', 'writeup']},
+      {name: 'Editor Cools XML Ticker', root: 'editorcools', elements: ['edselection']},
+      {name: 'Everything\'s Best Users XML Ticker', root: 'EBU', elements: ['bestuser']},
+      {name: 'Maintenance Nodes XML Ticker', root: 'maintenance', elements: ['e2link']},
+      {name: 'My Votes XML Ticker', root: 'votes', elements: ['vote']},
+      {name: 'New Writeups XML Ticker', root: 'newwriteups', elements: ['wu', 'e2link']},
+      {name: 'Node Heaven XML Ticker', root: 'nodeheaven', elements: ['nodeangel']},
+      {name: 'Other Users XML Ticker II', root: 'otherusers', elements: ['user']},
+      {name: 'Personal Session XML Ticker', root: 'e2session', elements: ['currentuser', 'servertime']},
+      {name: 'Random Nodes XML Ticker', root: 'randomnodes', elements: ['wit', 'e2link']},
+      {name: 'Raw Vars XML Ticker', root: 'vars', elements: ['key']},
+      {name: 'Time Since XML Ticker', root: 'timesince', elements: ['lasttimes']},
+      {name: 'Universal Message XML Ticker', root: 'messages', elements: ['room', 'topic']},
+      {name: 'User Search XML Ticker II', root: 'usersearch', elements: ['wu']},
+      {name: 'XML Interfaces Ticker', root: 'xmlcaps', elements: ['this', 'xmlexport']},
+      # Atom/RSS feeds
+      {name: 'Cool Archive Atom Feed', root: 'feed', elements: ['title', 'entry'], xmlns: true},
+      {name: 'New Writeups Atom Feed', root: 'feed', elements: ['title', 'entry'], xmlns: true},
+      {name: 'Podcast RSS Feed', root: 'rss', elements: ['channel', 'item']},
+    ]
+
+    passed = 0
+    failed = 0
+
+    tickers.each do |ticker|
+      # URL-encode ticker name
+      encoded_name = URI.encode_www_form_component(ticker[:name])
+      path = "/node/ticker/#{encoded_name}"
+
+      begin
+        response = http_get(path)
+        body = response.body
+
+        # Check HTTP status
+        unless response.code.to_i == 200
+          @errors << "#{ticker[:name]}: HTTP #{response.code}"
+          failed += 1
+          next
+        end
+
+        # Check for XML declaration
+        unless body.start_with?('<?xml')
+          @errors << "#{ticker[:name]}: Missing XML declaration"
+          failed += 1
+          next
+        end
+
+        # Check for root element
+        unless body.include?("<#{ticker[:root]}")
+          @errors << "#{ticker[:name]}: Missing root element <#{ticker[:root]}>"
+          failed += 1
+          next
+        end
+
+        # Check for key elements (field ordering validation)
+        missing_elements = []
+        ticker[:elements].each do |element|
+          unless body.include?("<#{element}")
+            missing_elements << element
+          end
+        end
+
+        if missing_elements.any?
+          @warnings << "#{ticker[:name]}: Missing elements: #{missing_elements.join(', ')}"
+        end
+
+        # Check for xmlns if expected (Atom/RSS)
+        if ticker[:xmlns] && !body.include?('xmlns=')
+          @warnings << "#{ticker[:name]}: Missing xmlns declaration"
+        end
+
+        # Check for Perl errors in XML
+        if body.include?('at /var/everything') || body.include?('line ')
+          @errors << "#{ticker[:name]}: Contains Perl error"
+          failed += 1
+          next
+        end
+
+        # Validate field ordering by checking first occurrence positions
+        if ticker[:elements].length >= 2
+          positions = ticker[:elements].map { |el| body.index("<#{el}") }.compact
+          unless positions == positions.sort
+            @warnings << "#{ticker[:name]}: Field ordering may have changed (#{ticker[:elements].take(3).join(' → ')})"
+          end
+        end
+
+        passed += 1
+
+      rescue => e
+        @errors << "#{ticker[:name]}: Exception - #{e.message}"
+        failed += 1
+      end
+    end
+
+    if failed == 0
+      puts "✓ #{passed}/#{tickers.length} tickers passed"
+    else
+      puts "✗ #{failed} failed, #{passed} passed"
+    end
+  end
+
+  def test_xml_displaytypes
+    print "Testing displaytype=xml/xmltrue... "
+
+    # Test critical node types using seed data
+    tests = [
+      # displaytype=xml tests - uses Everything::XML::node2xml format with <NODE> wrapper
+      {path: '/user/normaluser1/writeups/lazy%20dog?displaytype=xml', name: 'writeup (xml)', must_include: ['<NODE>', '<INFO>rendered by Everything::Node->to_xml()</INFO>', '<title']},
+      {path: '/title/lazy%20dog?displaytype=xml', name: 'e2node (xml)', must_include: ['<NODE>', '<title', 'lazy dog']},
+
+      # displaytype=xmltrue tests - uses form representation with <node> wrapper
+      {path: '/user/normaluser1/writeups/lazy%20dog?displaytype=xmltrue', name: 'writeup (xmltrue)', must_include: ['<node node_id', '<type>writeup</type>', '<doctext>']},
+      {path: '/title/lazy%20dog?displaytype=xmltrue', name: 'e2node (xmltrue)', must_include: ['<node node_id', '<type>']},
+    ]
+
+    passed = 0
+    failed = 0
+
+    tests.each do |test|
+      begin
+        response = http_get(test[:path])
+        body = response.body
+
+        # Check HTTP status
+        unless response.code.to_i == 200
+          @errors << "#{test[:name]}: HTTP #{response.code}"
+          failed += 1
+          next
+        end
+
+        # Check for XML declaration
+        unless body.start_with?('<?xml') || body.include?('<?xml')
+          @errors << "#{test[:name]}: Missing XML declaration"
+          failed += 1
+          next
+        end
+
+        # Check for required elements
+        missing = []
+        test[:must_include].each do |required|
+          unless body.include?(required)
+            missing << required
+          end
+        end
+
+        if missing.any?
+          @errors << "#{test[:name]}: Missing required elements: #{missing.join(', ')}"
+          failed += 1
+          next
+        end
+
+        # Check for Perl errors
+        if body.include?('at /var/everything') || body =~ /at .*?\.pm line \d+/
+          @errors << "#{test[:name]}: Contains Perl error"
+          failed += 1
+          next
+        end
+
+        passed += 1
+
+      rescue => e
+        @errors << "#{test[:name]}: Exception - #{e.message}"
+        failed += 1
+      end
+    end
+
+    if failed == 0
+      puts "✓ #{passed}/#{tests.length} displaytype tests passed"
+    else
+      puts "✗ #{failed} failed, #{passed} passed"
     end
   end
 

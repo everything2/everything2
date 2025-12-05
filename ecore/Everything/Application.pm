@@ -7908,4 +7908,30 @@ sub buildForReviewData
   };
 }
 
+sub xml_escape
+{
+  my ($this, $str) = @_;
+  return unless defined $str;
+
+  # Escape XML special characters using HTML entity convention
+  $str =~ s/\&/\&amp\;/g;
+  $str =~ s/\</\&lt\;/g;
+  $str =~ s/\>/\&gt\;/g;
+
+  return $str;
+}
+
+sub xml_unescape
+{
+  my ($this, $str) = @_;
+  return unless defined $str;
+
+  # Unescape XML entities
+  $str =~ s/\&amp\;/\&/g;
+  $str =~ s/\&lt\;/\</g;
+  $str =~ s/\&gt\;/\>/g;
+
+  return $str;
+}
+
 1;

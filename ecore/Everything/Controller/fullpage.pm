@@ -15,6 +15,13 @@ sub display
   {
     my $controller_output = $self->page_class($node)->display($REQUEST, $node);
 
+    # Check if Page class returned an HTTP response array (e.g., XML tickers)
+    # instead of a controller hashref
+    if (ref($controller_output) eq 'ARRAY') {
+      # Page class returned HTTP response directly - pass it through
+      return $controller_output;
+    }
+
     # Check if this page uses React (has buildReactData method)
     my $page_class = $self->page_class($node);
     my $is_react_page = $page_class->can('buildReactData');

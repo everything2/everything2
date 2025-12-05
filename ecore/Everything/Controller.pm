@@ -4,6 +4,8 @@ use Moose;
 with 'Everything::Globals';
 with 'Everything::HTTP';
 
+use Everything::HTML;
+
 has 'PAGE_TABLE' => (isa => "HashRef", is => "ro", builder => "_build_page_table", lazy => 1);
 
 sub _build_page_table
@@ -17,6 +19,28 @@ sub display
   my ($self, $REQUEST) = @_;
 
   return [$self->HTTP_UNIMPLEMENTED];
+}
+
+sub xml
+{
+  my ($self, $REQUEST, $node) = @_;
+
+  my $xml = $node->to_xml();
+  my $output = qq|<?xml version="1.0" standalone="yes"?>\n$xml|;
+
+  return [$self->HTTP_OK, $output, {type => 'application/xml'}];
+}
+
+sub xmltrue
+{
+  my ($self, $REQUEST, $node) = @_;
+
+  my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+  $str .= Everything::HTML::htmlcode("xmlheader") .
+          Everything::HTML::htmlcode("formxml") .
+          Everything::HTML::htmlcode("xmlfooter");
+
+  return [$self->HTTP_OK, $str, {type => 'application/xml'}];
 }
 
 sub layout

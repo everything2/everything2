@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 # Used by writeup_xml_page, e2node_xml_page
-use Everything::XML;
 
 # Used by room_display_page
 use POSIX qw(ceil floor);
@@ -638,8 +637,9 @@ sub writeup_xml_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return node2xml($NODE, ['reputation'])."" unless canUpdateNode($USER, $NODE);
-  return node2xml($NODE, [])."";
+  my $node = $APP->node_by_id($NODE->{node_id});
+  my $xml = canUpdateNode($USER, $NODE) ? $node->to_xml([]) : $node->to_xml(['reputation']);
+  return qq|<?xml version="1.0" standalone="yes"?>\n$xml|;
 }
 
 sub e2node_edit_page
@@ -1545,8 +1545,9 @@ sub node_xml_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return qq|<?xml version="1.0" standalone="yes"?><error><message>You can only use the XML displaytype on your own writeups.</message></error>|;
-
+  my $node = $APP->node_by_id($NODE->{node_id});
+  my $xml = $node->to_xml();
+  return qq|<?xml version="1.0" standalone="yes"?>\n$xml|;
 }
 
 sub mail_edit_page
@@ -1609,16 +1610,16 @@ sub e2node_xml_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  use Everything::XML;
   my $except = ['reputation'];
 
   my $str = "";
-  foreach (@{ $$NODE{group}})
+  foreach (@{ $NODE->{group}})
   {
-    $str.= node2xml($_, $except)."\n";
+    my $wu = $APP->node_by_id($_);
+    $str .= $wu->to_xml($except) . "\n";
   }
 
-  return $str;
+  return qq|<?xml version="1.0" standalone="yes"?>\n$str|;
 }
 
 sub node_forward_display_page
