@@ -5,6 +5,7 @@ use CGI qw(-utf8);
 use URI::Escape;
 use Everything::Link;
 use Everything::Node::null;
+use XML::Generator;
 
 with 'Everything::Globals';
 
@@ -305,6 +306,151 @@ sub clone
 
   # Return the new node object
   return $self->APP->node_by_id($new_node_id);
+}
+
+sub to_xml
+{
+  my ($self, $except) = @_;
+
+  $except ||= [];
+  my $NODE = $self->NODEDATA;
+
+  # Create a copy of the node so we can modify it
+  my %newhash = %$NODE;
+  my $N = \%newhash;
+
+  # Fields to exclude from XML export
+  my @NOFIELDS = ('hits',
+    'createtime',
+    'table',
+    'type',
+    'lasttime',
+    'lockedby_user',
+    'locktime',
+    'tableArray',
+    'resolvedInheritance', 'passwd', 'nltext', 'sqltablelist');
+
+  push @NOFIELDS, @$except if $except;
+
+  # Remove excluded fields
+  foreach (@NOFIELDS) {
+    delete $N->{$_} if exists $N->{$_};
+  }
+
+  # Remove all fields ending in _id (node references stored as IDs)
+  foreach (keys %$N) {
+    delete $N->{$_} if /_id$/;
+  }
+
+  my $XMLGEN = XML::Generator->new();
+  my $str = "";
+  $str .= $XMLGEN->INFO('rendered by Everything::Node->to_xml()') . "\n";
+
+  # Get table information for field attributes
+  my @tables = Everything::getTables($NODE);
+  push @tables, 'node';
+
+  my %fieldtable;
+  foreach my $table (@tables) {
+    my @fields = $self->DB->getFields($table);
+    foreach (@fields) {
+      $fieldtable{$_} = $table if (exists $N->{$_});
+    }
+  }
+
+  # Generate XML for each field
+  my @keys = sort {$a cmp $b} (keys %$N);
+  foreach my $field (@keys) {
+    my %attr = (table => $fieldtable{$field});
+    $str .= "\t";
+
+    if (ref $N->{$field} eq "ARRAY") {
+      # Handle group fields (arrays of node references)
+      delete $attr{table};
+      $str .= $self->_group_to_xml($field, $N->{$field}, \%attr, $XMLGEN);
+    } elsif ($field eq 'vars') {
+      # Handle vars hash
+      $str .= $self->_vars_to_xml($field, Everything::getVars($N), \%attr, $XMLGEN);
+    } elsif ($field =~ /_\w+$/ and defined($N->{$field}) and $N->{$field} =~ /^\d+$/) {
+      # Handle node references (fields ending with underscore+word that contain numeric IDs)
+      $str .= $self->_noderef_to_xml($field, $N->{$field}, \%attr, $XMLGEN);
+    } else {
+      # Regular field
+      $str .= $self->_gen_tag($field, $N->{$field}, \%attr, 0, $XMLGEN);
+    }
+  }
+
+  return $XMLGEN->NODE($str);
+}
+
+sub _gen_tag
+{
+  my ($self, $tag, $content, $PARAMS, $embedXML, $XMLGEN) = @_;
+  return unless $tag;
+  $PARAMS ||= {};
+
+  if (defined($content)) {
+    unless ($embedXML) {
+      $content = $self->APP->xml_escape($content);
+    }
+  }
+
+  return $XMLGEN->$tag($PARAMS, $content) . "\n";
+}
+
+sub _vars_to_xml
+{
+  my ($self, $tag, $VARS, $PARAMS, $XMLGEN) = @_;
+  $PARAMS ||= {};
+  my $varstr = "";
+
+  foreach my $key (keys %$VARS) {
+    $varstr .= "\t\t";
+    if ($key =~ /_(\w+)$/ and $VARS->{$key} =~ /^\d+$/) {
+      # This is a node reference
+      $varstr .= $self->_noderef_to_xml($key, $VARS->{$key}, {}, $XMLGEN);
+    } else {
+      $varstr .= $self->_gen_tag($key, $VARS->{$key}, {}, 0, $XMLGEN);
+    }
+  }
+
+  return $self->_gen_tag($tag, "\n" . $varstr . "\t", $PARAMS, 1, $XMLGEN);
+}
+
+sub _group_to_xml
+{
+  my ($self, $tag, $group, $PARAMS, $XMLGEN) = @_;
+  $PARAMS ||= {};
+  my $ingroup = "";
+  my $count = 1;
+
+  foreach (@$group) {
+    my $localtag = "groupnode" . $count++;
+    $ingroup .= "\t\t" . $self->_noderef_to_xml($localtag, $_, {table => 'nodegroup'}, $XMLGEN);
+  }
+
+  return $self->_gen_tag($tag, "\n" . $ingroup . "\t", $PARAMS, 1, $XMLGEN);
+}
+
+sub _noderef_to_xml
+{
+  my ($self, $tag, $node_id, $PARAMS, $XMLGEN) = @_;
+  $PARAMS ||= {};
+
+  my $POINTED_TO = $self->DB->getNodeById($node_id);
+  my ($title, $typetitle);
+
+  if (keys %$POINTED_TO) {
+    $title = $POINTED_TO->{title};
+    $typetitle = $POINTED_TO->{type}{title};
+  } else {
+    # This can happen with the '-1' field values when nodetypes are inherited
+    $title = $node_id;
+    $typetitle = "literal_value";
+  }
+
+  $PARAMS->{type} = $typetitle;
+  return $self->_gen_tag($tag, $title, $PARAMS, 0, $XMLGEN);
 }
 
 __PACKAGE__->meta->make_immutable;

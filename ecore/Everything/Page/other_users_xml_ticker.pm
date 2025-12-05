@@ -6,7 +6,6 @@ extends 'Everything::Page';
 has 'mimetype' => (default => 'application/xml', 'is' => 'ro');
 
 use XML::Generator;
-use Everything::XML;
 
 #TODO: Remove me
 use Everything::HTML;
@@ -51,11 +50,11 @@ sub display
       $rooms{$N->{room_id}} = $ROOM->title;
     }
 
-    $str.="\n\t".$XG->user({room =>$rooms{$$N{room_id}}, user_id => $$N{member_user},username=>Everything::XML::makeXmlSafe($$N{nick})},"\n");
+    $str.="\n\t".$XG->user({room =>$rooms{$$N{room_id}}, user_id => $$N{member_user},username=>$self->APP->xml_escape($$N{nick})},"\n");
 
   }
 
-  return [$self->HTTP_OK, $XG->OTHER_USERS($str), {"type" => $self->mimetype}];
+  return [$self->HTTP_OK, qq{<?xml version="1.0"?>\n} . $XG->OTHER_USERS($str), {"type" => $self->mimetype}];
 
 }
 
