@@ -148,7 +148,26 @@ const COMPONENT_MAP = {
   everything_poll_creator: lazy(() => import('./Documents/EverythingPollCreator')),
   everything_poll_directory: lazy(() => import('./Documents/EverythingPollDirectory')),
   everything_poll_archive: lazy(() => import('./Documents/EverythingPollArchive')),
-  everything_user_poll: lazy(() => import('./Documents/EverythingUserPoll'))
+  everything_user_poll: lazy(() => import('./Documents/EverythingUserPoll')),
+
+  // Admin tools - SQL interface
+  sql_prompt: lazy(() => import('./Documents/SQLPrompt')),
+
+  // User statistics & rankings
+  everything_s_best_users: lazy(() => import('./Documents/EverythingsBestUsers')),
+  everything_s_best_writeups: lazy(() => import('./Documents/EverythingsBestWriteups')),
+  everything_s_biggest_stars: lazy(() => import('./Documents/EverythingsBiggestStars')),
+  level_distribution: lazy(() => import('./Documents/LevelDistribution')),
+
+  // Tools & utilities
+  e2_sperm_counter: lazy(() => import('./Documents/E2SpermCounter')),
+  e2_source_code_formatter: lazy(() => import('./Documents/E2SourceCodeFormatter')),
+  e2_marble_shop: lazy(() => import('./Documents/E2MarbleShop')),
+  e2_penny_jar: lazy(() => import('./Documents/E2PennyJar')),
+
+  // Developer resources
+  edev_faq: lazy(() => import('./Documents/EdevFAQ')),
+  edev_documentation_index: lazy(() => import('./Documents/EdevDocumentationIndex'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))
