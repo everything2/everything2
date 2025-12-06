@@ -1,11 +1,11 @@
 # Everything2 Special Document Types Reference
 
-**Last Updated**: 2025-12-05
-**Total Documents**: 262 documents across all types
+**Last Updated**: 2025-12-06
+**Total Documents**: 261 documents across all types
 
 ## Document Types Summary
 
-- **Superdoc**: 153 documents (public/user access)
+- **Superdoc**: 152 documents (public/user access)
 - **Oppressor Superdoc**: 22 documents (editor+ access)
 - **Restricted Superdoc**: 51 documents (admin access - gods level)
 - **Fullpage**: 15 documents (fullscreen interfaces)
@@ -14,9 +14,9 @@
 
 ## React Migration Status
 
-- **Total React Pages**: 85 documents migrated (32% complete)
-- **Documents Remaining**: 177 documents to migrate (68%)
-  - Superdoc: ~68 remaining
+- **Total React Pages**: 93 documents migrated (36% complete)
+- **Documents Remaining**: 168 documents to migrate (64%)
+  - Superdoc: ~59 remaining
   - Oppressor Superdoc: ~22 remaining (all E2 Legacy)
   - Restricted Superdoc: ~43 remaining (8 migrated to React)
   - Fullpage: ~12 remaining (3 migrated to React)
@@ -26,7 +26,7 @@
 
 ## Superdoc
 
-**Total**: 153 documents
+**Total**: 152 documents
 
 | Document | Type | URL | Rendering |
 |----------|------|-----|-----------|
@@ -37,7 +37,7 @@
 | Advanced Settings | Superdoc | `/title/Advanced+Settings` | React |
 | alphabetizer | Superdoc | `/title/alphabetizer` | E2 Legacy |
 | Ask Everything: Do I have the Swine Flu? | Superdoc | `/title/Ask+Everything:+Do+I+have+the+Swine+Flu?` | React |
-| Available Rooms | Superdoc | `/title/Available+Rooms` | E2 Legacy |
+| Available Rooms | Superdoc | `/title/Available+Rooms` | React |
 | bad spellings listing | Superdoc | `/title/bad+spellings+listing` | E2 Legacy |
 | bestow easter eggs | Superdoc | `/title/bestow+easter+eggs` | React |
 | Between the Cracks | Superdoc | `/title/Between+the+Cracks` | E2 Legacy |
@@ -55,13 +55,13 @@
 | Create a Registry | Superdoc | `/title/Create+a+Registry` | E2 Legacy |
 | Create Category | Superdoc | `/title/Create+Category` | E2 Legacy |
 | Create Room | Superdoc | `/title/Create+Room` | E2 Legacy |
-| Database Lag-o-meter | Superdoc | `/title/Database+Lag-o-meter` | E2 Legacy |
+| Database Lag-o-meter | Superdoc | `/title/Database+Lag-o-meter` | React |
 | Decloaker | Superdoc | `/title/Decloaker` | React |
 | Display Categories | Superdoc | `/title/Display+Categories` | E2 Legacy |
 | Do You C! What I C? | Superdoc | `/title/Do+You+C!+What+I+C?` | E2 Legacy |
 | Drafts | Superdoc | `/title/Drafts` | E2 Legacy |
 | Drafts for review | Superdoc | `/title/Drafts+for+review` | E2 Legacy |
-| Duplicates Found: | Superdoc | `/title/Duplicates+Found:` | E2 Legacy |
+| Duplicates Found: | Superdoc | `/title/Duplicates+Found:` | React |
 | E2 Acceptable Use Policy | Superdoc | `/title/E2+Acceptable+Use+Policy` | React |
 | E2 Bouncer | Superdoc | `/title/E2+Bouncer` | E2 Legacy |
 | E2 Collaboration Nodes | Superdoc | `/title/E2+Collaboration+Nodes` | E2 Legacy |
@@ -99,7 +99,7 @@
 | Everything's Obscure Writeups | Superdoc | `/title/Everything's+Obscure+Writeups` | React (302 for guests) |
 | Everything2 Elsewhere | Superdoc | `/title/Everything2+Elsewhere` | React |
 | Fezisms Generator | Superdoc | `/title/Fezisms+Generator` | React |
-| Findings: | Superdoc | `/title/Findings:` | E2 Legacy |
+| Findings: | Superdoc | `/title/Findings:` | React |
 | Golden Trinkets | Superdoc | `/title/Golden+Trinkets` | React |
 | historical iron noder stats | Superdoc | `/title/historical+iron+noder+stats` | E2 Legacy |
 | iron noder progress | Superdoc | `/title/iron+noder+progress` | E2 Legacy |
@@ -122,7 +122,6 @@
 | My Achievements | Superdoc | `/title/My+Achievements` | E2 Legacy |
 | My Big Writeup List | Superdoc | `/title/My+Big+Writeup+List` | E2 Legacy |
 | My Recent Writeups | Superdoc | `/title/My+Recent+Writeups` | React |
-| New Logs Nodelet | Superdoc | `/title/New+Logs+Nodelet` | E2 Legacy |
 | News Archives | Superdoc | `/title/News+Archives` | E2 Legacy |
 | News for noders. Stuff that matters. | Superdoc | `/title/News+for+noders.+Stuff+that+matters.` | E2 Legacy |
 | Node backup | Superdoc | `/title/Node+backup` | E2 Legacy |
@@ -132,16 +131,16 @@
 | Nodeshells | Superdoc | `/title/Nodeshells` | React |
 | Noding speedometer | Superdoc | `/title/Noding+speedometer` | E2 Legacy |
 | Notelet Editor | Superdoc | `/title/Notelet+Editor` | E2 Legacy |
-| Nothing Found | Superdoc | `/title/Nothing+Found` | E2 Legacy |
+| Nothing Found | Superdoc | `/title/Nothing+Found` | React |
 | oblique strategies garden | Superdoc | `/title/oblique+strategies+garden` | React |
 | Old Writeup Settings | Superdoc | `/title/Old+Writeup+Settings` | React |
 | online only /msg | Superdoc | `/title/online+only+/msg` | React |
 | Page of Cool | Superdoc | `/title/Page+of+Cool` | React |
-| Permission Denied | Superdoc | `/title/Permission+Denied` | E2 Legacy |
+| Permission Denied | Superdoc | `/title/Permission+Denied` | React |
 | Piercisms Generator | Superdoc | `/title/Piercisms+Generator` | React |
 | Pit of Abomination | Superdoc | `/title/Pit+of+Abomination` | React |
 | Popular Registries | Superdoc | `/title/Popular+Registries` | E2 Legacy |
-| Random nodeshells | Superdoc | `/title/Random+nodeshells` | E2 Legacy |
+| Random nodeshells | Superdoc | `/title/Random+nodeshells` | React |
 | Recalculate XP | Superdoc | `/title/Recalculate+XP` | E2 Legacy |
 | Recent Node Notes | Superdoc | `/title/Recent+Node+Notes` | React |
 | Recent Registry Entries | Superdoc | `/title/Recent+Registry+Entries` | E2 Legacy |
@@ -159,7 +158,7 @@
 | Site Trajectory | Superdoc | `/title/Site+Trajectory` | React |
 | Site Trajectory 2 | Superdoc | `/title/Site+Trajectory+2` | React |
 | Spam Cannon | Superdoc | `/title/Spam+Cannon` | E2 Legacy |
-| super mailbox | Superdoc | `/title/super+mailbox` | E2 Legacy |
+| super mailbox | Superdoc | `/title/super+mailbox` | React |
 | Superbless | Superdoc | `/title/Superbless` | React |
 | Suspension Info | Superdoc | `/title/Suspension+Info` | React |
 | Teddisms Generator | Superdoc | `/title/Teddisms+Generator` | React |

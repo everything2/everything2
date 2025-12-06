@@ -2,7 +2,7 @@
 
 Context for AI assistants working on the Everything2 codebase.
 
-**Last Updated**: 2025-12-02
+**Last Updated**: 2025-12-06
 **Maintained By**: Jay Bonci
 
 ## ⚠️ CRITICAL: Common Pitfalls ⚠️
@@ -164,6 +164,58 @@ my $id = $node->{node_id};
 
 ---
 
+## 🎯 Architectural Goals
+
+### Eliminate Everything::Delegation Modules
+
+**GOAL**: Remove all `Everything::Delegation::*` modules from the codebase entirely.
+
+**Rules**:
+- **NEVER** call delegation functions from controllers (Everything::Page, Everything::API)
+- **ESPECIALLY FORBIDDEN** for document delegation functions (`Everything::Delegation::document::*`)
+- Controllers must implement logic directly in `buildReactData()` or extract to Application.pm methods
+- **Temporary exception**: `Everything::Delegation::htmlcode::*` functions MAY be called during migration for backwards compatibility
+
+**Rationale**:
+- Delegation modules are legacy code patterns from the Mason1/Mason2 era
+- They use hashrefs instead of blessed objects, creating type confusion
+- They bypass proper access control and security checks
+- They cannot be properly tested or type-checked
+- React migration eliminates the need for these rendering helpers
+
+**Migration Pattern**:
+```perl
+# ❌ BAD - Calling delegation from Page controller
+sub buildReactData {
+    my ($self, $REQUEST) = @_;
+    my $html = Everything::Delegation::document::my_doc(
+        $self->DB, $query, $NODE, $USER, $USERVARS, undef, $self->APP
+    );
+    return { html => $html };
+}
+
+# ✅ GOOD - Implement logic in Page class
+sub buildReactData {
+    my ($self, $REQUEST) = @_;
+    my $data = $self->APP->getSomeData($REQUEST->user);
+    return {
+        type => 'my_doc',
+        items => $data
+    };
+}
+
+# ✅ ACCEPTABLE (temporary) - Extract to Application.pm
+sub buildReactData {
+    my ($self, $REQUEST) = @_;
+    my $result = $self->APP->processMyDocument($REQUEST);
+    return $result;
+}
+```
+
+**Current State**: Several Page classes still call delegation functions temporarily. These must be refactored before the delegation modules can be fully removed.
+
+---
+
 ## Development Operations
 
 ### Running Tests
@@ -248,43 +300,21 @@ test('descriptive name', async ({ page }) => {
 
 ---
 
-## Current Work: E2 Editor Beta
+## Recent Completed Work
 
-The E2 Editor Beta (`/title/E2%20Editor%20Beta`) is a Tiptap-based editor with:
-- Draft management (create, save, load, autosave)
-- Version history with restore capability
-- **Client-side HTML sanitization** using DOMPurify
+### React Document Migrations (December 2025)
+- **93 documents migrated** (36% complete): Ongoing conversion from E2 Legacy delegation to React Page classes
+- Recent migrations: Permission Denied, Super Mailbox, Available Rooms, Random Nodeshells, Database Lag-o-meter, Nothing Found, Duplicates Found, Findings
 
-### Client-Side Preview Rendering
+### E2 Editor Beta (November 2025)
+- Tiptap-based editor with draft management, version history, autosave
+- Client-side HTML sanitization using DOMPurify (`react/components/Editor/E2HtmlSanitizer.js`)
+- PUT/PATCH/DELETE request body fix in `Request.pm` (reads STDIN before CGI.pm consumes it)
 
-Preview now renders entirely client-side (no server round-trip):
-- `react/components/Editor/E2HtmlSanitizer.js` - DOMPurify-based sanitizer
-- Matches Perl `get_html_rules()` in `Application.pm` (47 tags, all attributes)
-- Parses E2 `[link]` and `[link|display]` syntax to anchor tags
-- 98 comprehensive security tests cover XSS prevention
-
-### Key Files
-- `react/components/Documents/EditorBeta.js` - Main editor component
-- `react/components/Editor/E2HtmlSanitizer.js` - Client-side sanitizer
-- `ecore/Everything/Page/e2_editor_beta.pm` - Page class
-- `ecore/Everything/API/drafts.pm` - Draft API
-
-### PUT/PATCH/DELETE Request Body Fix
-
-CGI.pm only reads STDIN for POST. Fixed in `Request.pm`:
-```perl
-# In BUILD method - reads STDIN before CGI.pm consumes it
-if ($method =~ /^(PUT|PATCH|DELETE)$/ && $content_length > 0) {
-  read(STDIN, $data, $content_length);
-  $self->{_raw_stdin_cache} = $data;
-}
-```
-
----
-
-## Recent Work
-
-### December 2025
+### User Blocking & Interactions (December 2025)
 - **Pit of Abomination modernization**: Unified user blocking interface (writeup hiding + message blocking)
 - **User Interactions API**: RESTful API for managing blocked users (`/api/userinteractions`)
-- Fixed JSON encoding issues with nested node type hashrefs in API/Page responses
+
+### XML/Ticker Migrations (December 2025)
+- All 21 XML tickers migrated to Page classes with proper Content-Type headers
+- 2 ATOM feeds migrated with E2-specific link conversions

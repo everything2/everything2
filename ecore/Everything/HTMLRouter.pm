@@ -44,6 +44,12 @@ sub route_node
   $displaytype ||= "display";
 
   my $node = $self->APP->node_by_id($NODE->{node_id});
+
+  # Preserve the 'group' field if it exists (used for duplicates_found page)
+  if (exists $NODE->{group}) {
+    $node->NODEDATA->{group} = $NODE->{group};
+  }
+
   return $self->output($REQUEST, $self->CONTROLLER_TABLE->{$node->type->title}->$displaytype($REQUEST, $node));
 }
 
