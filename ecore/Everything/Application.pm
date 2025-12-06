@@ -7048,7 +7048,7 @@ sub buildNodeInfoStructure
   if ((grep { $nodetype eq $_ } @react_enabled_types) && $user_node) {
     my $page_name = $NODE->{title};
     $page_name = lc($page_name);  # Lowercase first
-    $page_name =~ s/[\s\/\:\?\']/_/g;  # Convert special chars to underscores (matches Controller.pm)
+    $page_name =~ s/[\s\/\:\?\'\-]/_/g;  # Convert special chars to underscores (matches Controller.pm)
     $page_name =~ s/_+/_/g;           # Collapse multiple underscores to single
     $page_name =~ s/_$//g;            # Remove trailing underscore
 
@@ -7297,14 +7297,16 @@ sub titleToPageFile
 {
   my ($this, $title) = @_;
 
-  # Convert title to snake_case page file name
+  # Convert title to snake_case page file name (matches Controller.pm title_to_page logic)
   # Examples:
   #   "Wheel of Surprise" -> "wheel_of_surprise"
   #   "Silver Trinkets" -> "silver_trinkets"
+  #   "Database Lag-o-meter" -> "database_lag_o_meter"
 
   my $filename = lc($title);
-  $filename =~ s/[^\w\s]//g;  # Remove non-word chars except spaces
-  $filename =~ s/\s+/_/g;     # Replace spaces with underscores
+  $filename =~ s/[\s\/\:\?\'\-]/_/g;  # Convert special chars to underscores
+  $filename =~ s/_+/_/g;              # Collapse multiple underscores to single
+  $filename =~ s/_$//g;               # Remove trailing underscore
 
   return $filename;
 }

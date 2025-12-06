@@ -70,7 +70,11 @@ package MockUser {
     has 'node_id' => (is => 'rw');
     has 'title' => (is => 'rw');
     has 'is_guest_flag' => (is => 'rw', default => 0);
+    has 'is_admin_flag' => (is => 'rw', default => 0);
+    has 'is_editor_flag' => (is => 'rw', default => 0);
     sub is_guest { return shift->is_guest_flag; }
+    sub is_admin { return shift->is_admin_flag; }
+    sub is_editor { return shift->is_editor_flag; }
 }
 
 # Mock CGI object for testing query parameters

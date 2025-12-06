@@ -11,6 +11,7 @@ sub buildReactData
   my $DB = $self->DB;
   my $user = $REQUEST->user;
   my $VARS = $REQUEST->VARS;
+  my $query = $REQUEST->cgi;
 
   # Guest users can't access message inbox
   if ($user->is_guest) {
@@ -23,6 +24,10 @@ sub buildReactData
 
   my $is_admin = $user->is_admin;
   my $is_editor = $user->is_editor;
+
+  # Check for spy_user parameter (viewing another user's inbox)
+  my $spy_user_name = $query->param('spy_user');
+  my $viewing_bot = undef;
 
   # Get bot inboxes configuration - maps bot username to required usergroup
   # Only editors and above can access bot inboxes
@@ -40,11 +45,17 @@ sub buildReactData
       if ($is_admin || ($group_node && $DB->isApproved($user->NODEDATA, $group_node))) {
         my $bot_user = $DB->getNode($bot_name, 'user');
         if ($bot_user) {
-          push @accessible_bots, {
+          my $bot_info = {
             node_id => $bot_user->{node_id},
             title => $bot_user->{title},
             requiredGroup => $required_group
           };
+          push @accessible_bots, $bot_info;
+
+          # If this is the spy_user, set it as viewing_bot
+          if ($spy_user_name && $bot_user->{title} eq $spy_user_name) {
+            $viewing_bot = $bot_info;
+          }
         }
       }
     }
@@ -68,12 +79,17 @@ sub buildReactData
     }
   }
 
-  # Get initial inbox messages (first page)
-  my $inbox_messages = $APP->get_messages($user->NODEDATA, 25, 0, 0);
-  my $inbox_count = $APP->get_message_count($user->NODEDATA, 'inbox', 0);
-  my $inbox_archived_count = $APP->get_message_count($user->NODEDATA, 'inbox', 1);
+  # Determine which user's inbox to display (current user or bot)
+  my $target_user_data = $viewing_bot ?
+    $DB->getNodeById($viewing_bot->{node_id}) :
+    $user->NODEDATA;
 
-  # Get initial outbox messages (first page)
+  # Get initial inbox messages (first page)
+  my $inbox_messages = $APP->get_messages($target_user_data, 25, 0, 0);
+  my $inbox_count = $APP->get_message_count($target_user_data, 'inbox', 0);
+  my $inbox_archived_count = $APP->get_message_count($target_user_data, 'inbox', 1);
+
+  # Get initial outbox messages (first page) - always for current user, not bot
   my $outbox_messages = $APP->get_sent_messages($user->NODEDATA, 25, 0, 0);
   my $outbox_count = $APP->get_message_count($user->NODEDATA, 'outbox', 0);
   my $outbox_archived_count = $APP->get_message_count($user->NODEDATA, 'outbox', 1);
@@ -97,7 +113,8 @@ sub buildReactData
     currentUser => {
       node_id => $user->node_id,
       title => $user->title
-    }
+    },
+    viewingBot => $viewing_bot  # Initial bot inbox to display (if spy_user param present)
   };
 }
 

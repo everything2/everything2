@@ -262,7 +262,22 @@ sub _message_operation_okay
     return [$self->HTTP_FORBIDDEN];
   }
 
-  if($self->APP->can_see_message($REQUEST->user->NODEDATA, $message))
+  # Allow access if:
+  # 1. Message belongs to the logged-in user, OR
+  # 2. User has permission to manage the bot inbox that owns this message
+  my $can_access = $self->APP->can_see_message($REQUEST->user->NODEDATA, $message);
+
+  # If not the user's own message, check if they can access the bot inbox
+  unless ($can_access) {
+    if ($message->{for_user} && $message->{for_user}->{node_id}) {
+      $can_access = $self->_can_access_bot_inbox($REQUEST, $message->{for_user}->{node_id});
+      if ($can_access) {
+        $self->devLog("User has bot inbox access for message_id=$id, for_user=" . $message->{for_user}->{node_id});
+      }
+    }
+  }
+
+  if($can_access)
   {
     my $return = $self->$orig($message);
     if(UNIVERSAL::isa($return, "HASH"))

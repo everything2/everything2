@@ -39,7 +39,12 @@ sub buildReactData {
 
     # Calculate one year ago timestamp
     my $one_year_ago = time() - 31536000;
-    my $one_year_ago_formatted = $APP->DateTimeLocal($one_year_ago);
+
+    # Format the date (simple format without user timezone preferences)
+    my @months = qw(January February March April May June July August September October November December);
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday) = localtime($one_year_ago);
+    my $one_year_ago_formatted = ('Sun','Mon','Tues','Wednes','Thurs','Fri','Satur')[$wday].'day, ' .
+                                  $months[$mon] . ' ' . $mday . ', ' . (1900+$year);
 
     # Build exclusion list for maintenance nodes
     my $not_in = "";

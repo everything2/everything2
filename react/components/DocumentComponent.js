@@ -75,6 +75,14 @@ const COMPONENT_MAP = {
   everything2_elsewhere: lazy(() => import('./Documents/Everything2Elsewhere')),
   online_only_msg: lazy(() => import('./Documents/OnlineOnlyMsg')),
   chatterbox_help_topics: lazy(() => import('./Documents/ChatterboxHelpTopics')),
+  permission_denied: lazy(() => import('./Documents/PermissionDenied')),
+  super_mailbox: lazy(() => import('./Documents/SuperMailbox')),
+  available_rooms: lazy(() => import('./Documents/AvailableRooms')),
+  random_nodeshells: lazy(() => import('./Documents/RandomNodeshells')),
+  database_lag_o_meter: lazy(() => import('./Documents/DatabaseLagOMeter')),
+  nothing_found: lazy(() => import('./Documents/NothingFound')),
+  duplicates_found: lazy(() => import('./Documents/DuplicatesFound')),
+  findings: lazy(() => import('./Documents/Findings')),
 
   // Fullscreen chat interface (all variants use same component)
   chatterlight: lazy(() => import('./Documents/Chatterlight')),

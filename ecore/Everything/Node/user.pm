@@ -530,7 +530,8 @@ sub request_guard_parameters
   my ($self, $scope) = @_;
 
   my $rand = rand(999999999);
-  my $nonce = Digest::MD5::md5_hex($self->passwd.' ' .$self->email.$rand);
+  my $email = $self->email || '';
+  my $nonce = Digest::MD5::md5_hex($self->passwd.' ' .$email.$rand);
 
   return {$scope.'_nonce' => $nonce, $scope.'_seed' => $rand};
 }

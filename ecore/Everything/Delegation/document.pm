@@ -1089,62 +1089,6 @@ sub create_room {
     return $str;
 }
 
-sub database_lag_o_meter {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    my $str = q|<p>|;
-
-    my %stats = ();
-    my %vars  = ();
-
-    my $csr = $DB->{dbh}->prepare('show status');
-    $csr->execute;
-
-    while ( my ( $key, $val ) = $csr->fetchrow ) {
-        $stats{$key} = $val;
-    }
-
-    $csr->finish;
-    $csr = $DB->{dbh}->prepare('show variables');
-    $csr->execute;
-    while ( my ( $key, $val ) = $csr->fetchrow ) {
-        $vars{$key} = $val;
-    }
-
-    $csr->finish;
-
-    $stats{smq} =
-      sprintf( "%.2f", 1000000 * $stats{Slow_queries} / $stats{Queries} );
-    my $time = $stats{Uptime};
-    my ( $d, $h, $m, $s ) = ( 0, 0, 0, 0 );
-
-    $d    += int( $time / ( 60 * 60 * 24 ) );
-    $time -= $d * ( 60 * 60 * 24 );
-    $h    += int( $time / ( 60 * 60 ) );
-    $time -= $h * ( 60 * 60 );
-    $m    += int( $time / (60) );
-    $time -= $m * (60);
-    $s    += int($time);
-
-    my $uptime = sprintf( "%d+%02d:%02d:%02d", $d, $h, $m, $s );
-
-    $str .=
-      "Uptime: $uptime<br>Queries: " . $APP->commifyNumber( $stats{Queries} );
-    $str .= "<br>Slow (>$vars{long_query_time} sec): ";
-    $str .= $APP->commifyNumber( $stats{Slow_queries} );
-    $str .= qq|<br>Slow/Million: $stats{smq}<br>|;
-
-    $str .=
-qq|<p>Slow/Million Queries is a decent barometer of how much lag the Database is hitting.  Rising=bad, falling=good.|;
-    return $str;
-}
-
 sub display_categories {
     my $DB       = shift;
     my $query    = shift;
@@ -13585,3 +13529,4 @@ sub universal_message_json_ticker
     return encode_json({"messages" => $messages});
 }
 
+1;

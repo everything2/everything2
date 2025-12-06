@@ -556,7 +556,7 @@ sub nodeName
 		my @canread;
 		my ($e2node, $node_forward, $draftCount) = (undef, undef, 0);
 		foreach (@{ $select_group}) {
-			next unless canReadNode($user_id, $_);
+			next unless canReadNode($USER, $_);
 			getRef($_);
 			$e2node = $_ if $$_{type}{title} eq 'e2node';
 			$node_forward = $_ if $$_{type}{title} eq 'node_forward';
@@ -584,8 +584,10 @@ sub nodeName
 
 		#we found multiple nodes with that name.  ick
 		$NODE = getNodeById( $Everything::CONF->default_duplicates_node );
-		
-		$$NODE{group} = \@canread;
+
+		# Extract node_ids from the hashrefs for the group
+		my @node_ids = map { $$_{node_id} } @canread;
+		$$NODE{group} = \@node_ids;
 		return displayPage($NODE, $user_id);
 	}
 }
@@ -844,13 +846,10 @@ sub gotoNode
 		}
 
 		if ($safeToRedirect) {
-			my $url = $redirQuery->url(-base => 1, -rewrite => 1);
 			my $noQuotes = 1;
 
-			# For port redirection that might happen without Apache's knowledge before we
-			#  got here, remove the por from the URL. (Yes, this is lame.)
-			$url =~ s!(://[^/]+):\d+!$1!;
-			$url .= urlGen({%{$redirQuery->Vars}}, $noQuotes, $NODE);
+			# Generate relative URL without hostname/port for proper development environment support
+			my $url = urlGen({%{$redirQuery->Vars}}, $noQuotes, $NODE);
 
 			$redirQuery->redirect(
 				-uri => $url

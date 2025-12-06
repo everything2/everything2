@@ -65,7 +65,7 @@ const MessageInbox = ({ data }) => {
   const pageSize = data.pageSize || 25
 
   // Filtering state
-  const [viewingBot, setViewingBot] = React.useState(null) // Bot user being viewed
+  const [viewingBot, setViewingBot] = React.useState(data.viewingBot || null) // Bot user being viewed (from spy_user param)
   const [filterUsergroup, setFilterUsergroup] = React.useState(null) // Usergroup filter
   const [showFilters, setShowFilters] = React.useState(false) // Collapsible filter panel
 
