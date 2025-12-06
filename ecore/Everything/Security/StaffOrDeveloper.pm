@@ -13,7 +13,7 @@ sub check_permission
 
   my $user = $REQUEST->user;
 
-  # Allow editors (staff)
+  # Allow editors (staff) - includes admins via is_editor check
   if($user->is_editor)
   {
     return Everything::PermissionResult::OK->new;
@@ -21,12 +21,6 @@ sub check_permission
 
   # Allow developers (edev group)
   if($user->is_developer)
-  {
-    return Everything::PermissionResult::OK->new;
-  }
-
-  # Allow admins (gods group)
-  if($user->is_admin)
   {
     return Everything::PermissionResult::OK->new;
   }

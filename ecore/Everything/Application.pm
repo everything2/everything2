@@ -7042,9 +7042,9 @@ sub buildNodeInfoStructure
 
   # Phase 4a: React-rendered documents
   # Check if this node type has a Page class that provides React data
-  # Supported types: superdoc, superdocnolinks, fullpage, restricted_superdoc, maintenance, nodelet
+  # Supported types: superdoc, superdocnolinks, fullpage, restricted_superdoc, oppressor_superdoc, maintenance, nodelet
   my $nodetype = $NODE->{type}->{title};
-  my @react_enabled_types = qw(superdoc superdocnolinks fullpage restricted_superdoc maintenance nodelet);
+  my @react_enabled_types = qw(superdoc superdocnolinks fullpage restricted_superdoc oppressor_superdoc maintenance nodelet);
   if ((grep { $nodetype eq $_ } @react_enabled_types) && $user_node) {
     my $page_name = $NODE->{title};
     $page_name = lc($page_name);  # Lowercase first

@@ -46,6 +46,7 @@ const MessageModal = ({
       setMessage('')
       setError(null)
       setWarning(null)
+      setSending(false)  // Reset sending state when modal opens
 
       // Focus textarea after render
       setTimeout(() => {

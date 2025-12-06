@@ -127,6 +127,15 @@ sub search {
             LIMIT 1) AS has_note";
     }
 
+    # Vote spread (upvotes/downvotes) - only for viewing your own writeups
+    my $vote_spread_select = '';
+    if ($is_self) {
+        $vote_spread_select = qq{,
+            (SELECT COUNT(*) FROM vote WHERE vote.vote_id = node.node_id AND vote.weight > 0) AS upvotes,
+            (SELECT COUNT(*) FROM vote WHERE vote.vote_id = node.node_id AND vote.weight < 0) AS downvotes
+        };
+    }
+
     my $writeups_sql = qq|
         SELECT
             node.node_id,
@@ -141,6 +150,7 @@ sub search {
             type.title AS writeup_type
             $vote_select
             $note_select
+            $vote_spread_select
         FROM node
         JOIN writeup ON writeup.writeup_id = node.node_id
         JOIN node AS type ON type.node_id = writeup.wrtype_writeuptype
@@ -192,6 +202,12 @@ sub search {
         # Include note indicator for editors
         if ($is_editor) {
             $writeup->{has_note} = $row->{has_note} ? 1 : 0;
+        }
+
+        # Include vote spread for self
+        if ($is_self) {
+            $writeup->{upvotes} = $row->{upvotes} || 0;
+            $writeup->{downvotes} = $row->{downvotes} || 0;
         }
 
         push @writeups, $writeup;
