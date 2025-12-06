@@ -68,6 +68,7 @@ const COMPONENT_MAP = {
   your_insured_writeups: lazy(() => import('./Documents/YourInsuredWriteups')),
   your_nodeshells: lazy(() => import('./Documents/YourNodeshells')),
   recent_node_notes: lazy(() => import('./Documents/RecentNodeNotes')),
+  my_recent_writeups: lazy(() => import('./Documents/MyRecentWriteups')),
 
   // Help & information pages
   ipfrom: lazy(() => import('./Documents/Ipfrom')),
@@ -167,7 +168,17 @@ const COMPONENT_MAP = {
 
   // Developer resources
   edev_faq: lazy(() => import('./Documents/EdevFAQ')),
-  edev_documentation_index: lazy(() => import('./Documents/EdevDocumentationIndex'))
+  edev_documentation_index: lazy(() => import('./Documents/EdevDocumentationIndex')),
+  everything_data_pages: lazy(() => import('./Documents/EverythingDataPages')),
+
+  // Editorial tools
+  editor_endorsements: lazy(() => import('./Documents/EditorEndorsements')),
+
+  // Community features - Who's online
+  everything_finger: lazy(() => import('./Documents/EverythingFinger')),
+
+  // Admin tools
+  list_nodes_of_type: lazy(() => import('./Documents/ListNodesOfType'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

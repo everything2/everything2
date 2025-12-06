@@ -1,11 +1,11 @@
 # Everything2 Special Document Types Reference
 
 **Last Updated**: 2025-12-05
-**Total Documents**: 264 documents across all types
+**Total Documents**: 262 documents across all types
 
 ## Document Types Summary
 
-- **Superdoc**: 155 documents (public/user access)
+- **Superdoc**: 153 documents (public/user access)
 - **Oppressor Superdoc**: 22 documents (editor+ access)
 - **Restricted Superdoc**: 51 documents (admin access - gods level)
 - **Fullpage**: 15 documents (fullscreen interfaces)
@@ -14,9 +14,9 @@
 
 ## React Migration Status
 
-- **Total React Pages**: 80 documents migrated (30% complete)
-- **Documents Remaining**: 184 documents to migrate (70%)
-  - Superdoc: ~75 remaining
+- **Total React Pages**: 85 documents migrated (32% complete)
+- **Documents Remaining**: 177 documents to migrate (68%)
+  - Superdoc: ~68 remaining
   - Oppressor Superdoc: ~22 remaining (all E2 Legacy)
   - Restricted Superdoc: ~43 remaining (8 migrated to React)
   - Fullpage: ~12 remaining (3 migrated to React)
@@ -26,7 +26,7 @@
 
 ## Superdoc
 
-**Total**: 155 documents
+**Total**: 153 documents
 
 | Document | Type | URL | Rendering |
 |----------|------|-----|-----------|
@@ -78,12 +78,12 @@
 | Edev Documentation Index | Superdoc | `/title/Edev+Documentation+Index` | React |
 | EDev FAQ | Superdoc | `/title/EDev+FAQ` | React |
 | Edit weblog menu | Superdoc | `/title/Edit+weblog+menu` | E2 Legacy |
-| Editor Endorsements | Superdoc | `/title/Editor+Endorsements` | E2 Legacy |
+| Editor Endorsements | Superdoc | `/title/Editor+Endorsements` | React |
 | EKN | Superdoc | `/title/EKN` | React |
 | ENN | Superdoc | `/title/ENN` | React |
-| Everything Data Pages | Superdoc | `/title/Everything+Data+Pages` | E2 Legacy |
+| Everything Data Pages | Superdoc | `/title/Everything+Data+Pages` | React |
 | Everything Document Directory | Superdoc | `/title/Everything+Document+Directory` | E2 Legacy |
-| Everything Finger | Superdoc | `/title/Everything+Finger` | E2 Legacy |
+| Everything Finger | Superdoc | `/title/Everything+Finger` | React |
 | Everything I Ching | Superdoc | `/title/Everything+I+Ching` | E2 Legacy |
 | Everything New Nodes | Superdoc | `/title/Everything+New+Nodes` | React |
 | Everything Poll Archive | Superdoc | `/title/Everything+Poll+Archive` | React |
@@ -93,7 +93,7 @@
 | Everything User Poll | Superdoc | `/title/Everything+User+Poll` | React |
 | Everything User Search | Superdoc | `/title/Everything+User+Search` | React |
 | Everything's Best Users | Superdoc | `/title/Everything's+Best+Users` | React |
-| Everything's Best Writeups | Superdoc | `/title/Everything's+Best+Writeups` | React |
+| Everything's Best Writeups | Oppressor Superdoc | `/title/Everything's+Best+Writeups` | React |
 | Everything's Biggest Stars | Superdoc | `/title/Everything's+Biggest+Stars` | React |
 | Everything's Most Wanted | Superdoc | `/title/Everything's+Most+Wanted` | E2 Legacy |
 | Everything's Obscure Writeups | Superdoc | `/title/Everything's+Obscure+Writeups` | React (302 for guests) |
@@ -110,7 +110,7 @@
 | Is it New Year's Eve yet? | Superdoc | `/title/Is+it+New+Year's+Eve+yet?` | React |
 | Level Distribution | Superdoc | `/title/Level+Distribution` | React |
 | List HTML tags | Superdoc | `/title/List+HTML+tags` | React |
-| List Nodes of Type | Superdoc | `/title/List+Nodes+of+Type` | E2 Legacy |
+| List Nodes of Type | Superdoc | `/title/List+Nodes+of+Type` | React |
 | Log Archive | Superdoc | `/title/Log+Archive` | E2 Legacy |
 | login | Superdoc | `/title/login` | React |
 | M-Noder Cocktail Lounge | Superdoc | `/title/M-Noder+Cocktail+Lounge` | E2 Legacy |
@@ -121,7 +121,7 @@
 | Message Outbox | Superdoc | `/title/Message+Outbox` | React |
 | My Achievements | Superdoc | `/title/My+Achievements` | E2 Legacy |
 | My Big Writeup List | Superdoc | `/title/My+Big+Writeup+List` | E2 Legacy |
-| My Recent Writeups | Superdoc | `/title/My+Recent+Writeups` | E2 Legacy |
+| My Recent Writeups | Superdoc | `/title/My+Recent+Writeups` | React |
 | New Logs Nodelet | Superdoc | `/title/New+Logs+Nodelet` | E2 Legacy |
 | News Archives | Superdoc | `/title/News+Archives` | E2 Legacy |
 | News for noders. Stuff that matters. | Superdoc | `/title/News+for+noders.+Stuff+that+matters.` | E2 Legacy |
@@ -163,8 +163,6 @@
 | Superbless | Superdoc | `/title/Superbless` | React |
 | Suspension Info | Superdoc | `/title/Suspension+Info` | React |
 | Teddisms Generator | Superdoc | `/title/Teddisms+Generator` | React |
-| test superdoc | Superdoc | `/title/test+superdoc` | E2 Legacy |
-| test superdoc 2 | Superdoc | `/title/test+superdoc+2` | E2 Legacy |
 | Text Formatter | Superdoc | `/title/Text+Formatter` | React |
 | The Catwalk | Superdoc | `/title/The+Catwalk` | E2 Legacy |
 | The Costume Shop | Superdoc | `/title/The+Costume+Shop` | E2 Legacy |

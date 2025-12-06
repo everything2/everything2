@@ -10,6 +10,7 @@ import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import { E2Link, convertToE2Syntax } from '../Editor/E2LinkExtension';
 import { E2TextAlign } from '../Editor/E2TextAlignExtension';
+import { RawBracket, convertRawBracketsToEntities } from '../Editor/RawBracketExtension';
 import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
 import '../Editor/E2Editor.css';
@@ -359,7 +360,8 @@ const EditorBeta = ({ data }) => {
         types: ['heading', 'paragraph'],
         alignments: ['left', 'center', 'right']
       }),
-      E2Link
+      E2Link,
+      RawBracket
     ],
     content: defaultContent,
     editorProps: {
@@ -375,7 +377,12 @@ const EditorBeta = ({ data }) => {
     if (editMode === 'html') {
       return rawHtmlContent;
     }
-    return editor ? convertToE2Syntax(editor.getHTML()) : '';
+    if (editor) {
+      const html = editor.getHTML();
+      const withEntities = convertRawBracketsToEntities(html);
+      return convertToE2Syntax(withEntities);
+    }
+    return '';
   }, [editor, editMode, rawHtmlContent]);
 
   // Toggle between rich and HTML editing modes and save preference
@@ -384,8 +391,11 @@ const EditorBeta = ({ data }) => {
 
     if (editMode === 'rich') {
       // Switching to HTML mode - capture current rich content
-      const html = editor ? convertToE2Syntax(editor.getHTML()) : '';
-      setRawHtmlContent(html);
+      if (editor) {
+        const html = editor.getHTML();
+        const withEntities = convertRawBracketsToEntities(html);
+        setRawHtmlContent(convertToE2Syntax(withEntities));
+      }
     } else {
       // Switching to rich mode - load HTML content into editor
       if (editor) {

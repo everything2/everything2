@@ -244,6 +244,24 @@ const MenuBar = ({ editor }) => {
         </button>
       </div>
 
+      {/* Raw Brackets */}
+      <div style={groupStyle}>
+        <button
+          onClick={() => editor.chain().focus().insertRawLeftBracket().run()}
+          style={buttonStyle(false)}
+          title="Insert Raw Left Bracket (won't be parsed as link)"
+        >
+          &#91;
+        </button>
+        <button
+          onClick={() => editor.chain().focus().insertRawRightBracket().run()}
+          style={buttonStyle(false)}
+          title="Insert Raw Right Bracket (won't be parsed as link)"
+        >
+          &#93;
+        </button>
+      </div>
+
       {/* Table */}
       <div style={groupStyle}>
         <button

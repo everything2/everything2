@@ -463,6 +463,9 @@ const UserSearch = ({ data, user }) => {
                           Reputation{results.can_see_rep === 1 && getSortIndicator('reputation')}
                         </th>
                       )}
+                      {results.is_self === 1 && (
+                        <th style={styles.th} title="Vote spread (upvotes/downvotes)">Votes</th>
+                      )}
                       {results.is_self !== 1 && !user?.guest && (
                         <th style={styles.th} title="Your vote on this writeup">Your Vote</th>
                       )}
@@ -521,6 +524,19 @@ const UserSearch = ({ data, user }) => {
                             {wu.reputation !== undefined ? (
                               <span style={wu.reputation >= 0 ? styles.repPositive : styles.repNegative}>
                                 {wu.reputation}
+                              </span>
+                            ) : (
+                              <span style={styles.repHidden}>-</span>
+                            )}
+                          </td>
+                        )}
+                        {results.is_self === 1 && (
+                          <td style={styles.tdCenter}>
+                            {wu.upvotes !== undefined && wu.downvotes !== undefined ? (
+                              <span style={styles.voteSpread}>
+                                <span style={styles.voteUp}>+{wu.upvotes}</span>
+                                {' / '}
+                                <span style={styles.voteDown}>−{wu.downvotes}</span>
                               </span>
                             ) : (
                               <span style={styles.repHidden}>-</span>
@@ -781,6 +797,10 @@ const styles = {
   voteDown: {
     color: '#dc3545',
     fontWeight: 'bold'
+  },
+  voteSpread: {
+    fontSize: '13px',
+    whiteSpace: 'nowrap'
   },
   hiddenIndicator: {
     color: '#ffc107',
