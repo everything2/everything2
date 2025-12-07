@@ -233,13 +233,13 @@ const CurrentUserPoll = (props) => {
                       </tr>
                       <tr>
                         <td colSpan="3" style={{ padding: '0' }}>
-                          <img
+                          <div
                             className="oddrow"
-                            src="https://s3.amazonaws.com/static.everything2.com/dot.gif"
-                            height="8"
-                            width={barWidth}
-                            alt=""
-                            style={{ display: 'block' }}
+                            style={{
+                              height: '8px',
+                              width: `${barWidth}px`,
+                              display: 'block'
+                            }}
                           />
                         </td>
                       </tr>

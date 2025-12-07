@@ -253,11 +253,11 @@ font-weight: normal ;
 }
 /* END FONTS */
 .externalLink {
-background-image: url("https://s3.amazonaws.com/static.everything2.com/simplicity/externalLinkGrayscale.png")
+background-image: url("../static/simplicity/externalLinkGrayscale.png")
 }
 /* SHININESS & CORNERS */
 #header , .nodelet_title , .contentheader , .nodelet .title {
-background-image: url( "https://s3.amazonaws.com/static.everything2.com/simplicity/topleft.png" ) ;
+background-image: url( "../static/simplicity/topleft.png" ) ;
 background-position: -20px 0 ;
 background-repeat: no-repeat ;
 }
@@ -286,7 +286,7 @@ border-top-left-radius: 6px ;
 #mainbody:before , .item .content:before ,
 .nodelet_content:before , .nodelet .type:before {
 content: "\A0" ;
-background-image: url( "https://s3.amazonaws.com/static.everything2.com/simplicity/topleft.png" ) ;
+background-image: url( "../static/simplicity/topleft.png" ) ;
 background-position: 2px -181px ;
 float: left ;
 width: 8px ;

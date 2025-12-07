@@ -37,16 +37,13 @@ sub display {
     my $query = $REQUEST->cgi;
     my $USER = $REQUEST->user->NODEDATA;
 
-    my $msglimit = int($query->param("msglimit")); # to prevent against nasty SQL injection attacks. mkb thanks call
-    if ($msglimit !~ /^[0-9]*$/)
-    {
-        $msglimit = 0;
-    }
+    my $msglimit_raw = $query->param("msglimit") // '';
+    my $msglimit = ($msglimit_raw =~ /^[0-9]+$/) ? int($msglimit_raw) : 0;
 
-    my $for_node = $query->param("for_node");
+    my $for_node = $query->param("for_node") // '';
     my $backtime = $query->param("backtime");
     my $nosort = $query->param("nosort");
-    my $lnp = $query->param("links_noparse");
+    my $lnp = $query->param("links_noparse") // 0;
 
     $for_node = $USER->{user_id} if ($for_node eq "me");
 

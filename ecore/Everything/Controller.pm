@@ -81,7 +81,7 @@ sub layout
   $params->{body_class} = $node->type->title;
 
   $params->{default_javascript} = [$self->APP->asset_uri("react/main.bundle.js"),$self->APP->asset_uri("legacy.js")];
-  $params->{favicon} = $self->APP->asset_uri("react/assets/favicon.ico");
+  $params->{favicon} = $self->APP->asset_uri("static/favicon.ico");
 
   my $lastnode = $REQUEST->param("lastnode_id");
   if($lastnode)
@@ -137,7 +137,8 @@ sub layout
 
   $e2->{collapsedNodelets} =~ s/\bsignin\b// if $e2->{collapsedNodelets};
 
-  if($e2->{user}->{developer} and $REQUEST->user->VARS->{nodelets} =~ /836984/)
+  my $nodelets_var = $REQUEST->user->VARS->{nodelets} // '';
+  if($e2->{user}->{developer} and $nodelets_var =~ /836984/)
   {
     my $edev = $self->APP->node_by_name("edev","usergroup");
     my $page = Everything::HTML::getPage($node->NODEDATA, $REQUEST->param("displaytype"));
@@ -230,7 +231,7 @@ sub title_to_page
   my ($self, $title) = @_;
 
   $title = lc($title);
-  $title =~ s/[\s\/\:\?\'\-\!]/_/g;
+  $title =~ s/[\s\/\:\?\'\-\!\.]/_/g;
   $title =~ s/_+/_/g;
   $title =~ s/_$//g;
   return $title;

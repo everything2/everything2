@@ -54,7 +54,7 @@
 | Cool Archive | Superdoc | `/title/Cool+Archive` | React |
 | Create a Registry | Superdoc | `/title/Create+a+Registry` | E2 Legacy |
 | Create Category | Superdoc | `/title/Create+Category` | E2 Legacy |
-| Create Room | Superdoc | `/title/Create+Room` | E2 Legacy |
+| Create Room | Superdoc | `/title/Create+Room` | React |
 | Database Lag-o-meter | Superdoc | `/title/Database+Lag-o-meter` | React |
 | Decloaker | Superdoc | `/title/Decloaker` | React |
 | Display Categories | Superdoc | `/title/Display+Categories` | E2 Legacy |
@@ -63,7 +63,7 @@
 | Drafts for review | Superdoc | `/title/Drafts+for+review` | E2 Legacy |
 | Duplicates Found: | Superdoc | `/title/Duplicates+Found:` | React |
 | E2 Acceptable Use Policy | Superdoc | `/title/E2+Acceptable+Use+Policy` | React |
-| E2 Bouncer | Superdoc | `/title/E2+Bouncer` | E2 Legacy |
+| E2 Bouncer | Superdoc | `/title/E2+Bouncer` | React |
 | E2 Collaboration Nodes | Superdoc | `/title/E2+Collaboration+Nodes` | E2 Legacy |
 | E2 Full Text Search | Superdoc | `/title/E2+Full+Text+Search` | React |
 | E2 Gift Shop | Superdoc | `/title/E2+Gift+Shop` | E2 Legacy |
@@ -124,7 +124,7 @@
 | My Big Writeup List | Superdoc | `/title/My+Big+Writeup+List` | E2 Legacy |
 | My Recent Writeups | Superdoc | `/title/My+Recent+Writeups` | React |
 | News Archives | Superdoc | `/title/News+Archives` | E2 Legacy |
-| News for noders. Stuff that matters. | Superdoc | `/title/News+for+noders.+Stuff+that+matters.` | E2 Legacy |
+| News for noders. Stuff that matters. | Superdoc | `/title/News+for+noders.+Stuff+that+matters.` | React |
 | Node backup | Superdoc | `/title/Node+backup` | E2 Legacy |
 | Node Tracker | Superdoc | `/title/Node+Tracker` | React |
 | Nodelet Settings | Superdoc | `/title/Nodelet+Settings` | React |

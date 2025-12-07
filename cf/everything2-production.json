@@ -201,7 +201,7 @@
         "Type": "CNAME",
         "TTL": "900",
         "ResourceRecords": [
-          "everything2.com"
+          "d3hgg69yh1kthz.cloudfront.net"
         ]
       }
     },
@@ -1314,7 +1314,7 @@
       "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
       "Properties": {
         "ListenerArn": {"Ref": "ELBContainerizedAppHTTPSListener"},
-        "Priority": 1,
+        "Priority": 50,
         "Actions": [{
           "TargetGroupArn": {"Ref": "FargateTargetGroup"},
           "Type": "forward"

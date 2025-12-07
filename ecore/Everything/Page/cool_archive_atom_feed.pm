@@ -54,7 +54,7 @@ sub display {
 
     my $limit = 25;
 
-    my $orderby = $query->param('orderby');
+    my $orderby = $query->param('orderby') // '';
     my $useraction = $query->param('useraction');
     my $place = $query->param('place');
     $place ||= 0;

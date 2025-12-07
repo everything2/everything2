@@ -66,8 +66,8 @@ sub zen_stdcontainer
   }
 
   $str .= htmlcode("metadescriptiontag");
-  $str .= qq|<link rel="icon" href="|.$APP->asset_uri("react/assets/favicon.ico").qq|" type="image/vnd.microsoft.icon">
-	<!--[if lt IE 8]><link rel="shortcut icon" href="|.$APP->asset_uri("react/assets/favicon.ico").qq|" type="image/x-icon"><![endif]-->|;
+  $str .= qq|<link rel="icon" href="|.$APP->asset_uri("static/favicon.ico").qq|" type="image/vnd.microsoft.icon">
+	<!--[if lt IE 8]><link rel="shortcut icon" href="|.$APP->asset_uri("static/favicon.ico").qq|" type="image/x-icon"><![endif]-->|;
 
   if ($$NODE{title} eq "Cool Archive") {
     $str.= '<link rel="alternate" type="application/atom+xml" title="Everything2 Cool Archive" href="/node/ticker/Cool+Archive+Atom+Feed'

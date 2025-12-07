@@ -24,7 +24,7 @@ background-color: #fff;
 color: #151500;
 }
 body {
-background-image: url("https://s3.amazonaws.com/static.everything2.com/bookwormier/e2bg.jpg");
+background-image: url("../static/bookwormier/e2bg.jpg");
 }
 /* darker detailing/backgrounds */
 /*.nodelet_title,
@@ -215,7 +215,7 @@ input#node_search {
 margin-top: 15px;
 float: left;
 padding-left: 20px;
-background-image: url(https://s3.amazonaws.com/static.everything2.com/bookwormier/magnifier.png);
+background-image: url(../static/bookwormier/magnifier.png);
 background-repeat: no-repeat;
 font-size: 12px;
 }
@@ -250,7 +250,7 @@ margin: 0px;
 padding: 0px;
 }
 div#e2logo {
-background-image: url(https://s3.amazonaws.com/static.everything2.com/bookwormier/e2logo.gif);
+background-image: url(../static/bookwormier/e2logo.gif);
 background-repeat: no-repeat;
 width: 250px;
 height: 50px;
@@ -299,7 +299,7 @@ font-size: 80%;
 width: 16px;
 height: 16px;
 overflow: hidden;
-background-image: url(https://s3.amazonaws.com/static.everything2.com/bookwormier/printer.png);
+background-image: url(../static/bookwormier/printer.png);
 float: right;
 }
 p#printlink a {

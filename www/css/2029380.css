@@ -1,36 +1,36 @@
 /* 2029380.css (Pamphleteer by ascorbic) */
 @font-face {
 font-family: 'Essays 1743';
-src: url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/essays1743-webfont.eot');
-src: local('Essays 1743'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/essays1743-webfont.woff') format('woff'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/essays1743-webfont.ttf') format('truetype');
+src: url('../static/pamphleteer/essays1743-webfont.eot');
+src: local('Essays 1743'),url('../static/pamphleteer/essays1743-webfont.woff') format('woff'),url('../static/pamphleteer/essays1743-webfont.ttf') format('truetype');
 font-weight: normal;
 font-style: normal
 }
 @font-face {
 font-family: 'Essays 1743';
-src: url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/essays1743-italic-webfont.eot');
-src: local('Essays 1743'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/essays1743-italic-webfont.woff') format('woff'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/essays1743-italic-webfont.ttf') format('truetype');
+src: url('../static/pamphleteer/essays1743-italic-webfont.eot');
+src: local('Essays 1743'),url('../static/pamphleteer/essays1743-italic-webfont.woff') format('woff'),url('../static/pamphleteer/essays1743-italic-webfont.ttf') format('truetype');
 font-weight: normal;
 font-style: italic
 }
 @font-face {
 font-family: 'Linux Libertine';
-src: url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_re-4.7.5-webfont.eot');
-src: local('Linux Libertine'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_re-4.7.5-webfont.woff') format('woff'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_re-4.7.5-webfont.ttf') format('truetype');
+src: url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.eot');
+src: local('Linux Libertine'),url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.woff') format('woff'),url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.ttf') format('truetype');
 font-weight: normal;
 font-style: normal
 }
 @font-face {
 font-family: 'Linux Libertine';
-src: url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_bd-4.1.5-webfont.eot');
-src: local('Linux Libertine'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_bd-4.1.5-webfont.woff') format('woff'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_bd-4.1.5-webfont.ttf') format('truetype');
+src: url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.eot');
+src: local('Linux Libertine'),url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.woff') format('woff'),url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.ttf') format('truetype');
 font-weight: bold;
 font-style: normal
 }
 @font-face {
 font-family: 'Linux Libertine';
-src: url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_it-4.2.6-webfont.eot');
-src: local('Linux Libertine'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_it-4.2.6-webfont.woff') format('woff'),url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/linlibertine_it-4.2.6-webfont.ttf') format('truetype');
+src: url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.eot');
+src: local('Linux Libertine'),url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.woff') format('woff'),url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.ttf') format('truetype');
 font-weight: normal;
 font-style: italic
 }

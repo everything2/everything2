@@ -478,7 +478,7 @@ sub showdebate
   my $displaymodelink = '';
 
   if ( $displaymode != 0 ) {
-    my %othermode = (); %othermode = (displaytype=>'compact') unless $query->param( 'displaytype' ) eq 'compact';
+    my %othermode = (); %othermode = (displaytype=>'compact') unless ($query->param( 'displaytype' ) // '') eq 'compact';
     my $modedesc = %othermode ? 'compact' : 'display full';
     $displaymodelink = linkNode($NODE, $modedesc, \(%othermode, title=>$modedesc)).' | '.
    linkNode($NODE, 'feed', {displaytype => 'atom', lastnode_id => ''}) . ' | ';
@@ -4301,13 +4301,14 @@ sub generatehex
 
   my $str = "<table width=100% bgcolor=white border=0 cellpadding=3 cellspacing=0>";
 
+  my $assets_base = $APP->{conf}->assets_location . "/static";
   my $rows = "";
   while (my $letter = chop $hex) {
     my $row = "<tr><td align=center><img width=128 height=14 src=";
     if (uc($letter) eq 'B') {
-      $row .="https://s3.amazonaws.com/static.everything2.com/broke.gif";
+      $row .="$assets_base/broke.gif";
     } else {
-      $row .="https://s3.amazonaws.com/static.everything2.com/full.gif";
+      $row .="$assets_base/full.gif";
     }
     $row.="></td></tr>";
     $rows = $row.$rows;
@@ -6244,10 +6245,11 @@ sub displayWriteupInfo
   };
 
   local *music = sub {
+    my $assets_base = $APP->{conf}->assets_location . "/static";
     return ''
       . '<button title="Add additional World Cup content"'
       . ' onClick="flatify(this);return false;">'
-      . '<img src="https://s3.amazonaws.com/static.everything2.com/futbol.png">'
+      . '<img src="' . $assets_base . '/futbol.png">'
       . '</button>';
   };
 
@@ -10998,6 +11000,7 @@ sub homenodeinfectedinfo
 
   return "" unless $APP->isEditor($USER);
 
+  my $assets_base = $APP->{conf}->assets_location . "/static";
   my $infectedHTML = "";
 
   if (htmlcode('isInfected', $NODE))
@@ -11007,7 +11010,7 @@ sub homenodeinfectedinfo
     $infectionLink = linkNode($infectionExplanation, $infectionLink);
     $infectedHTML .= qq|;
       <div>
-      <img src="https://s3.amazonaws.com/static.everything2.com/biohazard.png" alt="Biohazard Sign" title="User is infected">
+      <img src="$assets_base/biohazard.png" alt="Biohazard Sign" title="User is infected">
       <p>
       This user is $infectionLink.
       </p>
@@ -11022,7 +11025,7 @@ sub homenodeinfectedinfo
         . $query->hidden("confirmop", 'cure_infection')
         . $query->hidden("cure_user_id", $$NODE{node_id})
         . '<button class="ajax homenode_infection:homenodeinfectedinfo?op=cure_infection&cure_user_id=/&cure_infection_seed=/&cure_infection_nonce=/&confirmmsg=/#Are+you+sure+you+wish+to+cure+this+user&apos;s+infection">
-          <img src="https://s3.amazonaws.com/static.everything2.com/physician.png" alt="Physician Sign">
+          <img src="' . $assets_base . '/physician.png" alt="Physician Sign">
            <p>Cure User</p> </button>'
         . '</form>'
         . "</div>\n";
@@ -11033,7 +11036,7 @@ sub homenodeinfectedinfo
     return "";
   } else {
     $infectedHTML .= qq|;
-     <img src="http://static.everything2.com/physician.png" alt="Physician Sign">
+     <img src="$assets_base/physician.png" alt="Physician Sign">
      <p>Infection cured.</p>|;
   }
 
@@ -11898,11 +11901,11 @@ sub showpoll
     my $i = 0;
     while($options[$i])
     {
+      my $bar_width = sprintf("%2.0f",($results[$i]/$votedivider)*180);
       $str.='<tr><td>'.($i == $vote ? '<b>' : '').$options[$i].($i ==$vote ? '</b>' : '').'</td>
         <td align="right">&nbsp;'.$results[$i].'&nbsp;</td>
         <td align="right">'.sprintf("%2.2f",($results[$i]/$votedivider)*100).'%</td></tr>';
-      $str.="<tr><td colspan='3'><img class='oddrow' src='https://s3.amazonaws.com/static.everything2.com/dot.gif' height='8' width='"
-        .sprintf("%2.0f",($results[$i]/$votedivider)*180)."' /></td></tr>";
+      $str.="<tr><td colspan='3'><div class='oddrow' style='height:8px;width:${bar_width}px;'></div></td></tr>";
       $i++;
     }
     $str.='<tr><td><b>Total</b></td>

@@ -49,7 +49,7 @@ big big big big big big {
 font-size: 100%;
 }
 .externalLink {
-background:transparent url(https://s3.amazonaws.com/static.everything2.com/external.png) no-repeat scroll right center;
+background:transparent url(../static/external.png) no-repeat scroll right center;
 padding-right:13px;
 /* This is the external link icon used by Wikimedia, used under the GPL as spelt out here:
 https://commons.wikimedia.org/wiki/File:Icon_External_Link.png */
@@ -110,7 +110,7 @@ cursor: pointer ;
 }
 .open , .closed {
 padding-left: 13px ;
-background-image: url( "https://s3.amazonaws.com/static.everything2.com/triangles.png" ) ;
+background-image: url( "../static/triangles.png" ) ;
 background-repeat: no-repeat ;
 }
 .open {
@@ -168,7 +168,7 @@ border: none;
 }
 .social_button {
 float: left; /* why is this here? */
-background-image: url( "https://s3.amazonaws.com/static.everything2.com/socialcombined.gif" ) ;
+background-image: url( "../static/socialcombined.gif" ) ;
 background-repeat: no-repeat ;
 padding: 0;
 margin: 2px;

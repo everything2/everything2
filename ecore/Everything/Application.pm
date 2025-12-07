@@ -5768,6 +5768,10 @@ sub asset_uri
       if($asset =~ /react/)
       {
         return "/$asset";
+      }elsif($asset =~ /^static\//)
+      {
+        # Static assets served directly from /static/ path
+        return "/$asset";
       }else{
         return "/$ext/$asset";
       }
@@ -7053,7 +7057,7 @@ sub buildNodeInfoStructure
   if ((grep { $nodetype eq $_ } @react_enabled_types) && $user_node) {
     my $page_name = $NODE->{title};
     $page_name = lc($page_name);  # Lowercase first
-    $page_name =~ s/[\s\/\:\?\'\-\!]/_/g;  # Convert special chars to underscores (matches Controller.pm)
+    $page_name =~ s/[\s\/\:\?\'\-\!\.]/_/g;  # Convert special chars to underscores (matches Controller.pm)
     $page_name =~ s/_+/_/g;           # Collapse multiple underscores to single
     $page_name =~ s/_$//g;            # Remove trailing underscore
 

@@ -28,17 +28,6 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ["style-loader","css-loader"],
-      },
-      {
-        test: /\.(svg|png|gif|jpg|ico)$/i,
-        include: path.resolve(__dirname, '../react/assets'),
-        use: [{
-          loader: 'file-loader',
-          options: {
-            outputPath: 'assets/',
-            name: '[name].[ext]'
-          }
-        }]
       }
     ]
   }
