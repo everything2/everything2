@@ -1,6 +1,6 @@
 # Everything2 Special Document Types Reference
 
-**Last Updated**: 2025-12-06
+**Last Updated**: 2025-12-07
 **Total Documents**: 261 documents across all types
 
 ## Document Types Summary
@@ -14,10 +14,10 @@
 
 ## React Migration Status
 
-- **Total React Pages**: 93 documents migrated (36% complete)
-- **Documents Remaining**: 168 documents to migrate (64%)
-  - Superdoc: ~59 remaining
-  - Oppressor Superdoc: ~22 remaining (all E2 Legacy)
+- **Total React Pages**: 99 documents migrated (38% complete)
+- **Documents Remaining**: 162 documents to migrate (62%)
+  - Superdoc: ~53 remaining
+  - Oppressor Superdoc: ~19 remaining (3 migrated to React)
   - Restricted Superdoc: ~43 remaining (8 migrated to React)
   - Fullpage: ~12 remaining (3 migrated to React)
   - Ticker: 0 remaining (all 21 use XML/JSON API - considered complete)
@@ -58,7 +58,7 @@
 | Database Lag-o-meter | Superdoc | `/title/Database+Lag-o-meter` | React |
 | Decloaker | Superdoc | `/title/Decloaker` | React |
 | Display Categories | Superdoc | `/title/Display+Categories` | E2 Legacy |
-| Do You C! What I C? | Superdoc | `/title/Do+You+C!+What+I+C?` | E2 Legacy |
+| Do You C! What I C? | Superdoc | `/title/Do+You+C!+What+I+C?` | React |
 | Drafts | Superdoc | `/title/Drafts` | E2 Legacy |
 | Drafts for review | Superdoc | `/title/Drafts+for+review` | E2 Legacy |
 | Duplicates Found: | Superdoc | `/title/Duplicates+Found:` | React |
@@ -72,6 +72,7 @@
 | E2 Rot13 Encoder | Superdoc | `/title/E2+Rot13+Encoder` | React |
 | E2 Source Code Formatter | Superdoc | `/title/E2+Source+Code+Formatter` | React |
 | E2 Sperm Counter | Superdoc | `/title/E2+Sperm+Counter` | React |
+| E2 Word Counter | Superdocnolinks | `/title/E2+Word+Counter` | React |
 | E2 staff | Superdoc | `/title/E2+staff` | React |
 | E2 Ticket Center | Superdoc | `/title/E2+Ticket+Center` | E2 Legacy |
 | E2N | Superdoc | `/title/E2N` | React |
@@ -166,14 +167,14 @@
 | The Catwalk | Superdoc | `/title/The+Catwalk` | E2 Legacy |
 | The Costume Shop | Superdoc | `/title/The+Costume+Shop` | E2 Legacy |
 | The Everything2 Voting/Experience System | Superdoc | `/title/The+Everything2+Voting/Experience+System` | React |
-| The Recommender | Superdoc | `/title/The+Recommender` | E2 Legacy |
+| The Recommender | Superdoc | `/title/The+Recommender` | React |
 | The Registries | Superdoc | `/title/The+Registries` | E2 Legacy |
 | Theme Nirvana | Superdoc | `/title/Theme+Nirvana` | E2 Legacy |
 | Topic Archive | Superdoc | `/title/Topic+Archive` | E2 Legacy |
 | Usergroup discussions | Superdoc | `/title/Usergroup+discussions` | E2 Legacy |
 | usergroup message archive | Superdoc | `/title/usergroup+message+archive` | E2 Legacy |
 | Usergroup Picks | Superdoc | `/title/Usergroup+Picks` | E2 Legacy |
-| Voting Oracle | Superdoc | `/title/Voting+Oracle` | E2 Legacy |
+| Voting Oracle | Superdoc | `/title/Voting+Oracle` | React |
 | Wharfinger's Linebreaker | Superdoc | `/title/Wharfinger's+Linebreaker` | React |
 | What to do if E2 goes down | Superdoc | `/title/What+to+do+if+E2+goes+down` | React |
 | Wheel of Surprise | Superdoc | `/title/Wheel+of+Surprise` | React |
@@ -267,7 +268,7 @@
 | Node Row | Oppressor Superdoc | `/title/Node+Row` | E2 Legacy |
 | Quick Rename | Oppressor Superdoc | `/title/Quick+Rename` | E2 Legacy |
 | Recalculated Users | Oppressor Superdoc | `/title/Recalculated+Users` | E2 Legacy |
-| Recent Users | Oppressor Superdoc | `/title/Recent+Users` | E2 Legacy |
+| Recent Users | Oppressor Superdoc | `/title/Recent+Users` | React |
 | Renunciation Chainsaw | Oppressor Superdoc | `/title/Renunciation+Chainsaw` | E2 Legacy |
 | Security Monitor | Oppressor Superdoc | `/title/Security+Monitor` | E2 Legacy |
 | Server Telemetry | Oppressor Superdoc | `/title/Server+Telemetry` | E2 Legacy |
@@ -275,7 +276,7 @@
 | The Oracle | Oppressor Superdoc | `/title/The+Oracle` | E2 Legacy |
 | Websterbless | Oppressor Superdoc | `/title/Websterbless` | E2 Legacy |
 | What Does What | Oppressor Superdoc | `/title/What+Does+What` | E2 Legacy |
-| Who is Doing What | Oppressor Superdoc | `/title/Who+is+Doing+What` | E2 Legacy |
+| Who is Doing What | Oppressor Superdoc | `/title/Who+is+Doing+What` | React |
 
 ## Fullpage
 
@@ -356,7 +357,7 @@
   - Superdoc: Public or user-level access
   - Oppressor Superdoc: Editor+ permissions required
   - Restricted Superdoc: God-level admin only (highest permission level)
-- **React Migration Progress**: 77 documents (34%) now use React rendering
+- **React Migration Progress**: 99 documents (38%) now use React rendering
   - Major conversions include Message Inbox, Settings, Chatterlight, polls, generators
   - Many holiday pages (Christmas, Halloween, New Year's, etc.)
   - User management pages (Pit of Abomination, Your ignore list, etc.)
@@ -368,6 +369,13 @@
   - ATOM feeds: 2 feeds migrated to Page classes (completed Dec 2025)
   - Message Inbox: Unified inbox/outbox interface (Nov 2025)
   - Pit of Abomination: User blocking interface (Dec 2025)
+  - **December 7, 2025 Session**:
+    - Do You C! What I C?: Cool-based recommendations (fixed and completed)
+    - The Recommender: Bookmark-based recommendations engine
+    - Voting Oracle: User voting statistics display
+    - Who is Doing What: Admin tool for recent node activity (Oppressor)
+    - Recent Users: Users logged in within 24 hours (Oppressor)
+    - E2 Word Counter: Live word counting tool with enhanced statistics
 
 ---
 *For questions or updates, see [CLAUDE.md](../CLAUDE.md)*

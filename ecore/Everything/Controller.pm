@@ -230,7 +230,7 @@ sub title_to_page
   my ($self, $title) = @_;
 
   $title = lc($title);
-  $title =~ s/[\s\/\:\?\'\-]/_/g;
+  $title =~ s/[\s\/\:\?\'\-\!]/_/g;
   $title =~ s/_+/_/g;
   $title =~ s/_$//g;
   return $title;

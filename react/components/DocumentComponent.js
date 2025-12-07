@@ -181,6 +181,17 @@ const COMPONENT_MAP = {
 
   // Editorial tools
   editor_endorsements: lazy(() => import('./Documents/EditorEndorsements')),
+  content_reports: lazy(() => import('./Documents/ContentReports')),
+  everything_document_directory: lazy(() => import('./Documents/EverythingDocumentDirectory')),
+  drafts_for_review: lazy(() => import('./Documents/DraftsForReview')),
+  bad_spellings_listing: lazy(() => import('./Documents/BadSpellingsListing')),
+  alphabetizer: lazy(() => import('./Documents/Alphabetizer')),
+  do_you_c_what_i_c: lazy(() => import('./Documents/DoYouCWhatIC')),
+  the_recommender: lazy(() => import('./Documents/TheRecommender')),
+  voting_oracle: lazy(() => import('./Documents/VotingOracle')),
+  who_is_doing_what: lazy(() => import('./Documents/WhoIsDoingWhat')),
+  recent_users: lazy(() => import('./Documents/RecentUsers')),
+  e2_word_counter: lazy(() => import('./Documents/E2WordCounter')),
 
   // Community features - Who's online
   everything_finger: lazy(() => import('./Documents/EverythingFinger')),
