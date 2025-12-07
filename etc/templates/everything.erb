@@ -108,7 +108,7 @@ coreconfig+="
 		# Health check endpoint - redirect /health to /health.pl
 		RewriteRule ^health$                   /health.pl [L,QSA]
 
-		RewriteRule ^favicon.ico$		   /react/assets/favicon.ico [L]
+		RewriteRule ^favicon.ico$		   /static/favicon.ico [L]
 
 		RewriteRule ^node/(\\d+)/(\\w+)/?$           index.pl?node_id=$1&displaytype=$2  [L,QSA,BCTLS]
 		RewriteRule ^node/(\\d+)([^&]*)/?$          index.pl?node_id=$1$2                [L,QSA,BCTLS]

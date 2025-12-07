@@ -146,6 +146,8 @@ class SmokeTest
 
     # Pages that require authentication (NoGuest security trait)
     # These pages will redirect to login if accessed without valid session
+    # Also includes pages that require special permissions (chanop, editor, admin)
+    # which show permission-denied style content to unauthorized users
     auth_required_pages = [
       'Silver Trinkets',
       'Golden Trinkets',
@@ -162,7 +164,9 @@ class SmokeTest
       'Write User',
       'Profile Settings',
       'Recent Node Notes',
-      'Your Nodeshells'
+      'Your Nodeshells',
+      'E2 Bouncer',  # Chanop only
+      'Create Room',  # Level-gated
     ]
 
     docs_path = File.expand_path('../docs/special-documents.md', __dir__)

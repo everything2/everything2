@@ -1,31 +1,33 @@
 #!/usr/bin/env ruby
 # Query Uninitialized Value Errors from CloudWatch Logs
-# Filters by build ID (git commit hash) to show only errors from current/specified build
 #
 # Usage:
-#   ./tools/uninitialized-errors.rb                    # Current build (from last_commit)
-#   ./tools/uninitialized-errors.rb --build abc1234   # Specific build
-#   ./tools/uninitialized-errors.rb --all             # All builds
+#   ./tools/uninitialized-errors.rb                    # Last 6 hours
 #   ./tools/uninitialized-errors.rb --hours 24        # Last 24 hours
+#   ./tools/uninitialized-errors.rb --build f113da0   # Filter by build
+#   ./tools/uninitialized-errors.rb --since-commit    # Since current commit time
+#   ./tools/uninitialized-errors.rb --group-by file   # Group by source file
 
 require 'json'
 require 'optparse'
 require 'time'
 
+LOG_GROUP = '/aws/events/e2-uninitialized-errors'
+
 options = {
-  region: 'us-east-1',
+  region: 'us-west-2',
   profile: nil,
   build: nil,
-  all_builds: false,
   hours: 6,
+  since_commit: false,
   limit: 100,
-  group_by: 'message'  # message, file, build
+  group_by: 'message'  # message, file, url, build
 }
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
 
-  opts.on("-r", "--region REGION", "AWS region (default: us-east-1)") do |r|
+  opts.on("-r", "--region REGION", "AWS region (default: us-west-2)") do |r|
     options[:region] = r
   end
 
@@ -33,23 +35,23 @@ OptionParser.new do |opts|
     options[:profile] = p
   end
 
-  opts.on("-b", "--build BUILD_ID", "Filter by build ID (git commit hash)") do |b|
+  opts.on("-b", "--build BUILD_ID", "Filter by build ID (full or short hash)") do |b|
     options[:build] = b
-  end
-
-  opts.on("-a", "--all", "Show all builds (don't filter by build ID)") do
-    options[:all_builds] = true
   end
 
   opts.on("-H", "--hours HOURS", Integer, "Hours to look back (default: 6)") do |h|
     options[:hours] = h
   end
 
+  opts.on("-s", "--since-commit [COMMIT]", "Look back since commit time (default: HEAD)") do |c|
+    options[:since_commit] = c || 'HEAD'
+  end
+
   opts.on("-l", "--limit N", Integer, "Max events to retrieve (default: 100)") do |l|
     options[:limit] = l
   end
 
-  opts.on("-g", "--group-by TYPE", "Group by: message, file, build (default: message)") do |g|
+  opts.on("-g", "--group-by TYPE", "Group by: message, file, url, build (default: message)") do |g|
     options[:group_by] = g
   end
 
@@ -57,11 +59,15 @@ OptionParser.new do |opts|
     puts opts
     puts
     puts "Examples:"
-    puts "  #{$0}                           # Current build, last 6 hours"
-    puts "  #{$0} --build abc1234           # Specific build"
-    puts "  #{$0} --all --hours 24          # All builds, last 24 hours"
+    puts "  #{$0}                           # Last 6 hours"
+    puts "  #{$0} --hours 24                # Last 24 hours"
+    puts "  #{$0} --since-commit            # Since HEAD commit time"
+    puts "  #{$0} --since-commit abc1234    # Since specific commit time"
+    puts "  #{$0} --build f113da0           # Filter by build"
     puts "  #{$0} --group-by file           # Group errors by source file"
+    puts "  #{$0} --group-by url            # Group errors by URL"
     puts "  #{$0} --group-by build          # Show error counts per build"
+    puts "  #{$0} --limit 500               # Get more events"
     exit
   end
 end.parse!
@@ -73,14 +79,17 @@ def aws_cmd(options)
   cmd
 end
 
-def get_current_build
-  # Try to read from /etc/everything/last_commit (in container)
-  if File.exist?('/etc/everything/last_commit')
-    return File.read('/etc/everything/last_commit').strip
-  end
+def get_commit_time(commit_ref)
+  # Get Unix timestamp of a commit
+  timestamp = `git log -1 --format='%ct' #{commit_ref} 2>/dev/null`.strip
+  return nil if timestamp.empty?
+  timestamp.to_i
+end
 
-  # Fall back to git
-  `git rev-parse HEAD 2>/dev/null`.strip
+def get_commit_short_hash(commit_ref)
+  # Match the 7-char format used in production build_id_short
+  hash = `git log -1 --format='%H' #{commit_ref} 2>/dev/null`.strip
+  hash[0..6]
 end
 
 def format_time(timestamp_ms)
@@ -103,195 +112,132 @@ def normalize_message(message)
   # Normalize variable names and values to group similar errors
   message
     .gsub(/\$\w+/, '$VAR')           # Replace variable names
-    .gsub(/in (?:string|numeric|concatenation|sprintf|pack)/, 'in OPERATION')
+    .gsub(/in (?:string|numeric|concatenation|sprintf|pack|substitution|pattern match|exists)/, 'in OPERATION')
     .gsub(/line \d+/, 'line N')      # Normalize line numbers for grouping
+end
+
+def short_url(url)
+  return 'N/A' unless url
+  url.gsub('https://everything2.com', '').gsub('https://www.everything2.com', '').gsub('http://localhost:9080', '')[0..60]
 end
 
 puts "E2 Uninitialized Value Error Analysis"
 puts "=" * 60
-
-# Determine build ID to filter
-build_id = nil
-unless options[:all_builds]
-  build_id = options[:build] || get_current_build
-  if build_id.empty?
-    puts "Warning: Could not determine current build ID. Use --build or --all"
-    build_id = nil
-  else
-    puts "Build ID: #{build_id[0..6]}... (#{build_id})"
-  end
-end
+puts "Log group: #{LOG_GROUP}"
+puts "Region: #{options[:region]}"
 
 # Calculate time range
 end_time = (Time.now.to_f * 1000).to_i
-start_time = ((Time.now - options[:hours] * 3600).to_f * 1000).to_i
-puts "Time range: Last #{options[:hours]} hours"
-puts "Region: #{options[:region]}"
-puts
+start_time = nil
+time_description = nil
 
-# The uninitialized errors go to CloudWatch Logs via EventBridge
-# Log group is typically /aws/events/e2-uninitialized or similar
-# First, let's find the right log group
-
-log_groups_cmd = "#{aws_cmd(options)} logs describe-log-groups " \
-                 "--log-group-name-prefix /aws/events " \
-                 "--output json 2>&1"
-
-log_groups_result = `#{log_groups_cmd}`
-
-unless $?.success?
-  # Try alternative - direct EventBridge events might be in a different location
-  puts "Note: Could not find /aws/events log groups"
-  puts "Checking for CloudWatch Logs Insights query capability..."
-  puts
+if options[:since_commit]
+  commit_time = get_commit_time(options[:since_commit])
+  if commit_time
+    start_time = commit_time * 1000
+    commit_hash = get_commit_short_hash(options[:since_commit])
+    time_description = "Since commit #{commit_hash} (#{Time.at(commit_time).strftime('%Y-%m-%d %H:%M:%S')})"
+    # Auto-set build filter if not specified
+    options[:build] ||= commit_hash
+  else
+    puts "Error: Could not find commit '#{options[:since_commit]}'"
+    exit 1
+  end
+else
+  start_time = ((Time.now - options[:hours] * 3600).to_f * 1000).to_i
+  time_description = "Last #{options[:hours]} hours"
 end
 
-# Use CloudWatch Logs Insights to query
-# The events from com.everything2.uninitialized eventbus get logged somewhere
-# Let's try to find logs that contain our error pattern
+puts "Time range: #{time_description}"
+puts "Build filter: #{options[:build] || 'none'}"
+puts "Limit: #{options[:limit]} events"
+puts
 
-# First, let's check what log groups exist
-puts "Searching for E2 error log groups..."
+# Build filter pattern - include build_id_short if filtering by build
+# Uses CloudWatch JSON filter pattern syntax
+filter_pattern = nil
+if options[:build]
+  # Filter by build_id_short in the JSON detail object
+  filter_pattern = '{ $.detail.build_id_short = "' + options[:build] + '" }'
+end
 
-all_groups_cmd = "#{aws_cmd(options)} logs describe-log-groups --output json"
-all_groups_json = `#{all_groups_cmd} 2>&1`
+# Query the log group directly
+filter_cmd = "#{aws_cmd(options)} logs filter-log-events " \
+             "--log-group-name '#{LOG_GROUP}' " \
+             "--start-time #{start_time} " \
+             "--end-time #{end_time} " \
+             "--limit #{options[:limit]} " \
+             "--output json"
+filter_cmd += " --filter-pattern '#{filter_pattern}'" if filter_pattern
+filter_cmd += " 2>&1"
+
+puts "Querying CloudWatch Logs..."
+result = `#{filter_cmd}`
 
 unless $?.success?
-  puts "Error: #{all_groups_json}"
+  puts "Error querying logs:"
+  puts result
   exit 1
 end
 
-all_groups = JSON.parse(all_groups_json)['logGroups'] || []
-
-# Look for likely candidates
-e2_groups = all_groups.select do |g|
-  name = g['logGroupName']
-  name.include?('e2') || name.include?('everything') || name.include?('uninitialized') || name.include?('error')
-end
-
-if e2_groups.empty?
-  puts "No E2-related log groups found."
-  puts
-  puts "Available log groups:"
-  all_groups.first(20).each { |g| puts "  - #{g['logGroupName']}" }
-  puts
-  puts "The uninitialized errors are sent to CloudWatch Events (EventBridge)"
-  puts "event bus 'com.everything2.uninitialized', not CloudWatch Logs."
-  puts
-  puts "To query EventBridge events, you need to set up a CloudWatch Logs"
-  puts "target for the event bus, or use EventBridge archive/replay."
-  puts
-  puts "Quick setup command:"
-  puts "  aws events put-rule --name e2-uninitialized-to-logs \\"
-  puts "    --event-bus-name com.everything2.uninitialized \\"
-  puts "    --event-pattern '{\"source\":[\"e2.webapp\"]}'"
-  puts
-  puts "  aws logs create-log-group --log-group-name /aws/events/e2-uninitialized"
-  puts
-  puts "  aws events put-targets --rule e2-uninitialized-to-logs \\"
-  puts "    --event-bus-name com.everything2.uninitialized \\"
-  puts "    --targets 'Id=logs,Arn=arn:aws:logs:REGION:ACCOUNT:/aws/events/e2-uninitialized'"
-  exit 0
-end
-
-puts "Found #{e2_groups.length} potential log groups:"
-e2_groups.each { |g| puts "  - #{g['logGroupName']}" }
-puts
-
-# Try to query each group for uninitialized errors
-events = []
-
-e2_groups.each do |group|
-  log_group = group['logGroupName']
-  puts "Querying #{log_group}..."
-
-  # Build filter pattern
-  filter_pattern = '"Use of uninitialized value"'
-  if build_id && !options[:all_builds]
-    filter_pattern = "\"Use of uninitialized value\" \"#{build_id[0..6]}\""
-  end
-
-  filter_cmd = "#{aws_cmd(options)} logs filter-log-events " \
-               "--log-group-name '#{log_group}' " \
-               "--start-time #{start_time} " \
-               "--end-time #{end_time} " \
-               "--filter-pattern '#{filter_pattern}' " \
-               "--limit #{options[:limit]} " \
-               "--output json 2>&1"
-
-  result = `#{filter_cmd}`
-
-  if $?.success?
-    data = JSON.parse(result)
-    group_events = data['events'] || []
-    puts "  Found #{group_events.length} events"
-    events.concat(group_events.map { |e| e.merge('logGroup' => log_group) })
-  else
-    puts "  Error: #{result[0..100]}..."
-  end
-end
+data = JSON.parse(result)
+events = data['events'] || []
 
 if events.empty?
   puts
   puts "No uninitialized value errors found in the specified time range."
   puts
-  puts "This could mean:"
-  puts "  1. No errors occurred (good!)"
-  puts "  2. Events are in a different log group"
-  puts "  3. EventBridge events aren't being logged to CloudWatch Logs"
+  puts "This is good news! No warnings were logged."
   exit 0
 end
 
-puts
-puts "=" * 60
-puts "RESULTS: #{events.length} uninitialized value errors"
-puts "=" * 60
+puts "Found #{events.length} events"
 puts
 
-# Parse and group events
+# Parse events from EventBridge JSON format
 parsed_events = events.map do |event|
   message = event['message'] || ''
 
-  # Try to parse as JSON (EventBridge format)
+  # Parse EventBridge JSON wrapper
   detail = {}
   begin
     parsed = JSON.parse(message)
-    detail = parsed['detail'] || parsed
+    detail = parsed['detail'] || {}
   rescue JSON::ParserError
     detail = { 'message' => message }
   end
 
   {
     timestamp: event['timestamp'],
-    log_group: event['logGroup'],
     message: detail['message'] || message,
-    build_id: detail['build_id'] || detail['build_id_short'] || 'unknown',
-    build_id_short: (detail['build_id'] || '')[0..6],
     url: detail['url'],
     user: detail['user'],
-    node_id: detail['node_id'],
-    title: detail['title'],
+    request_method: detail['request_method'],
+    params: detail['params'] || {},
     callstack: detail['callstack'] || [],
+    build_id: detail['build_id'],
+    build_id_short: detail['build_id_short'] || (detail['build_id'] ? detail['build_id'][0..6] : 'unknown'),
     file: extract_file_from_message(detail['message'] || message)
   }
 end
 
-# Filter by build if specified
-if build_id && !options[:all_builds]
-  short_build = build_id[0..6]
-  parsed_events = parsed_events.select { |e| e[:build_id_short] == short_build || e[:build_id] == build_id }
-  puts "Filtered to build #{short_build}: #{parsed_events.length} events"
-  puts
-end
+puts "=" * 60
+puts "RESULTS: #{parsed_events.length} uninitialized value errors"
+puts "=" * 60
+puts
 
 case options[:group_by]
 when 'build'
-  # Group by build ID
+  # Group by build
   by_build = parsed_events.group_by { |e| e[:build_id_short] }
   puts "ERRORS BY BUILD:"
   puts "-" * 40
   by_build.sort_by { |_, v| -v.length }.each do |build, evts|
+    puts
     puts "#{build}: #{evts.length} errors"
+    # Show top files for this build
+    files = evts.group_by { |e| e[:file] }.sort_by { |_, v| -v.length }.first(3)
+    files.each { |f, e| puts "  #{f}: #{e.length}" }
   end
 
 when 'file'
@@ -302,10 +248,22 @@ when 'file'
   by_file.sort_by { |_, v| -v.length }.first(20).each do |file, evts|
     puts
     puts "#{file}: #{evts.length} errors"
-    # Show sample messages
-    evts.first(3).each do |e|
-      puts "  - #{e[:message][0..80]}..."
-    end
+    # Show sample URLs
+    urls = evts.map { |e| short_url(e[:url]) }.compact.uniq.first(3)
+    puts "  Sample URLs: #{urls.join(', ')}" unless urls.empty?
+  end
+
+when 'url'
+  # Group by URL (normalized)
+  by_url = parsed_events.group_by { |e| short_url(e[:url]) }
+  puts "ERRORS BY URL:"
+  puts "-" * 40
+  by_url.sort_by { |_, v| -v.length }.first(20).each do |url, evts|
+    puts
+    puts "[#{evts.length}x] #{url}"
+    # Show files involved
+    files = evts.map { |e| e[:file] }.uniq.first(3)
+    puts "  Files: #{files.join(', ')}"
   end
 
 else  # 'message' (default)
@@ -315,9 +273,10 @@ else  # 'message' (default)
   puts "-" * 40
   by_message.sort_by { |_, v| -v.length }.first(20).each do |pattern, evts|
     puts
-    puts "[#{evts.length}x] #{evts.first[:message][0..100]}"
+    puts "[#{evts.length}x] #{evts.first[:message].strip[0..100]}"
     puts "     File: #{evts.first[:file]}"
-    puts "     URLs: #{evts.map { |e| e[:url] }.compact.uniq.first(3).join(', ')}"
+    urls = evts.map { |e| short_url(e[:url]) }.compact.uniq.first(3)
+    puts "     URLs: #{urls.join(', ')}" unless urls.empty?
   end
 end
 
@@ -330,8 +289,15 @@ parsed_events.sort_by { |e| -(e[:timestamp] || 0) }.first(10).each do |event|
   puts
   puts "Time: #{format_time(event[:timestamp])}"
   puts "Build: #{event[:build_id_short]}"
-  puts "URL: #{event[:url]}" if event[:url]
+  puts "URL: #{short_url(event[:url])}" if event[:url]
   puts "User: #{event[:user]}" if event[:user]
-  puts "Message: #{event[:message][0..120]}"
+  puts "Message: #{event[:message].strip[0..100]}"
   puts "File: #{event[:file]}"
+  if event[:callstack] && !event[:callstack].empty?
+    # Show just the relevant E2 stack frames
+    e2_frames = event[:callstack].select { |f| f.include?('/var/everything/') }.last(3)
+    unless e2_frames.empty?
+      puts "Stack: #{e2_frames.join(' <- ')}"
+    end
+  end
 end

@@ -205,6 +205,80 @@ describe('E2HtmlSanitizer', () => {
       })
     })
 
+    describe('typed link syntax [nodetitle[nodetype]]', () => {
+      it('converts [title[type]] to /type/title URL', () => {
+        const result = parseE2Links('[jaybonci[user]]')
+        expect(result).toContain('<a href="/user/jaybonci"')
+        expect(result).toContain('class="e2-link"')
+        expect(result).toContain('jaybonci</a>')
+      })
+
+      it('handles space before inner bracket', () => {
+        const result = parseE2Links('[jaybonci [user]]')
+        expect(result).toContain('<a href="/user/jaybonci"')
+      })
+
+      it('handles spaces inside inner bracket', () => {
+        const result = parseE2Links('[jaybonci[ user ]]')
+        expect(result).toContain('<a href="/user/jaybonci"')
+      })
+
+      it('handles spaces both places', () => {
+        const result = parseE2Links('[jaybonci [ user ]]')
+        expect(result).toContain('<a href="/user/jaybonci"')
+      })
+
+      it('lowercases nodetype in URL', () => {
+        const result = parseE2Links('[Test Node[SUPERDOC]]')
+        expect(result).toContain('<a href="/superdoc/Test%20Node"')
+      })
+
+      it('handles writeup type', () => {
+        const result = parseE2Links('[lazy dog[writeup]]')
+        expect(result).toContain('<a href="/writeup/lazy%20dog"')
+      })
+
+      it('handles e2node type', () => {
+        const result = parseE2Links('[Test Title[e2node]]')
+        expect(result).toContain('<a href="/e2node/Test%20Title"')
+      })
+
+      it('handles room type', () => {
+        const result = parseE2Links('[Political Asylum[room]]')
+        expect(result).toContain('<a href="/room/Political%20Asylum"')
+      })
+
+      it('handles multiple typed links', () => {
+        const result = parseE2Links('[user1[user]] and [user2[user]]')
+        expect(result).toContain('<a href="/user/user1"')
+        expect(result).toContain('<a href="/user/user2"')
+      })
+
+      it('handles mixed typed and regular links', () => {
+        const result = parseE2Links('[jaybonci[user]] wrote [a writeup]')
+        expect(result).toContain('<a href="/user/jaybonci"')
+        expect(result).toContain('<a href="/title/a%20writeup"')
+      })
+
+      it('does not convert empty inner brackets', () => {
+        expect(parseE2Links('[title[]]')).toBe('[title[]]')
+      })
+
+      it('does not convert whitespace-only inner brackets', () => {
+        expect(parseE2Links('[title[ ]]')).toBe('[title[ ]]')
+      })
+
+      it('URL-encodes special characters in title', () => {
+        const result = parseE2Links('[Node & Co.[user]]')
+        expect(result).toContain('/user/Node%20%26%20Co.')
+      })
+
+      it('escapes HTML in display text', () => {
+        const result = parseE2Links('[<script>[user]]')
+        expect(result).toContain('&lt;script&gt;</a>')
+      })
+    })
+
     describe('pipe separator handling', () => {
       it('handles pipe at start of content', () => {
         const result = parseE2Links('[|display only]')

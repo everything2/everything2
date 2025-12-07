@@ -98,8 +98,10 @@ const DOMPURIFY_CONFIG = {
  * Parse E2 [link] syntax into HTML anchor tags
  *
  * Supports:
- * - [nodename] -> link to node with nodename as display text
- * - [nodename|display text] -> link to node with custom display text
+ * - [nodename] -> link to /title/nodename
+ * - [nodename|display text] -> link to /title/nodename with custom display text
+ * - [nodename[nodetype]] -> link to /nodetype/nodename (e.g., [jaybonci[user]] -> /user/jaybonci)
+ * - [nodename [nodetype]] -> same as above, allows space before inner bracket
  *
  * @param {string} text - Text containing E2 link syntax
  * @returns {string} - Text with links converted to anchor tags
@@ -107,9 +109,24 @@ const DOMPURIFY_CONFIG = {
 export function parseE2Links(text) {
   if (!text) return ''
 
-  // Match [content] but handle [title|display] format
+  // First pass: Handle [nodetitle[nodetype]] format (typed links)
+  // Allows optional spaces: [title[type]], [title [type]], [title[ type ]]
+  let result = text.replace(
+    /\[([^\[\]|]+?)\s*\[\s*([^\[\]]+?)\s*\]\]/g,
+    (match, title, nodetype) => {
+      const trimmedTitle = title.trim()
+      const trimmedType = nodetype.trim().toLowerCase()
+      if (!trimmedTitle || !trimmedType) return match
+
+      const encodedTitle = encodeURIComponent(trimmedTitle)
+      // Use /nodetype/nodename format
+      return `<a href="/${trimmedType}/${encodedTitle}" class="e2-link">${escapeHtml(trimmedTitle)}</a>`
+    }
+  )
+
+  // Second pass: Handle [title] and [title|display] format (standard links)
   // Don't match empty brackets or brackets with only whitespace
-  return text.replace(
+  result = result.replace(
     /\[([^\[\]|]+)(?:\|([^\[\]]+))?\]/g,
     (match, title, displayText) => {
       const trimmedTitle = title.trim()
@@ -121,6 +138,8 @@ export function parseE2Links(text) {
       return `<a href="/title/${encodedTitle}" class="e2-link">${escapeHtml(display)}</a>`
     }
   )
+
+  return result
 }
 
 /**

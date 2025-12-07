@@ -4604,7 +4604,7 @@ sub noding_speedometer
         . '%" border=0 cellpadding=0 cellspacing=0 bgcolor="'
         . $color . '">';
     $str .=
-        '<tr><td><img src="https://s3.amazonaws.com/static.everything2.com/clear.gif" width=1 height=13 alt="" border=0>';
+        '<tr><td><div style="width:1px;height:13px;"></div>';
     $str .=
         '</td></tr></table></td></tr></table></td></tr></table></td></tr></table></p>';
     $str .= '<p align="center">' . $comment . '</p>';
@@ -6107,8 +6107,8 @@ sub guest_front_page {
 
     $html .= '
     <link rel="stylesheet" id="printsheet" type="text/css" href="' . htmlcode('linkStylesheet', 'print') . '" media="print">
-    <link rel="icon" href="' . $APP->asset_uri("react/assets/favicon.ico") . '" type="image/vnd.microsoft.icon">
-    <!--[if lt IE 8]><link rel="shortcut icon" href="' . $APP->asset_uri("react/assets/favicon.ico") . '" type="image/x-icon"><![endif]-->
+    <link rel="icon" href="' . $APP->asset_uri("static/favicon.ico") . '" type="image/vnd.microsoft.icon">
+    <!--[if lt IE 8]><link rel="shortcut icon" href="' . $APP->asset_uri("static/favicon.ico") . '" type="image/x-icon"><![endif]-->
     <link rel="alternate" type="application/atom+xml" title="Everything2 New Writeups" href="/node/ticker/New+Writeups+Atom+Feed">
 </head>
 

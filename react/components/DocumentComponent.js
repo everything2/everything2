@@ -193,6 +193,13 @@ const COMPONENT_MAP = {
   recent_users: lazy(() => import('./Documents/RecentUsers')),
   e2_word_counter: lazy(() => import('./Documents/E2WordCounter')),
   spam_cannon: lazy(() => import('./Documents/SpamCannon')),
+  e2_bouncer: lazy(() => import('./Documents/E2Bouncer')),
+
+  // Chat room management
+  create_room: lazy(() => import('./Documents/CreateRoom')),
+
+  // News & announcements
+  news_for_noders: lazy(() => import('./Documents/NewsForNoders')),
 
   // Community features - Who's online
   everything_finger: lazy(() => import('./Documents/EverythingFinger')),

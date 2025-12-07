@@ -21,11 +21,11 @@
         "DomainName": "everything2.com",
         "ValidationMethod": "DNS",
         "SubjectAlternativeNames": [
-          "www.everything2.com",
+          "*.everything2.com",
           "everything2.net",
-          "www.everything2.net",
+          "*.everything2.net",
           "everything2.org",
-          "www.everything2.org"
+          "*.everything2.org"
         ]
       }
     },
@@ -214,6 +214,7 @@
           "Aliases": [
             "everything2.com",
             "www.everything2.com",
+            "m.everything2.com",
             "everything2.net",
             "www.everything2.net",
             "everything2.org",

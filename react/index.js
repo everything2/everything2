@@ -1,5 +1,4 @@
 import React from 'react'
-import './assets/favicon.ico'
 
 import { createRoot } from 'react-dom/client'
 const E2ReactRoot = React.lazy(() => import('./components/E2ReactRoot'))
