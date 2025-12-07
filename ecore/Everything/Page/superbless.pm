@@ -7,7 +7,7 @@ extends 'Everything::Page';
 
 React page for Superbless - grants GP to users.
 
-Editors and above can use this tool to grant GP to any user.
+Now a restricted_superdoc nodetype (permissions handled at node type level).
 Uses the unified AdminBestowTool React component.
 
 =cut
@@ -16,15 +16,12 @@ sub buildReactData
 {
     my ($self, $REQUEST) = @_;
 
-    my $APP = $self->APP;
-    my $user = $REQUEST->user;
-
+    # No permission check needed - restricted_superdoc type handles access control
     return {
         type => 'admin_bestow_tool',
         title => 'Superbless',
         description => 'Grant GP to users. Positive values give GP, negative values remove GP. Karma is adjusted accordingly.',
-        has_permission => $APP->isEditor($user->NODEDATA) ? 1 : 0,
-        permission_error => 'You have not yet learned that spell.',
+        has_permission => 1,  # Access already verified by superdoc permissions
         resource_name => 'GP',
         show_amount_input => 1,
         allow_negative => 1,

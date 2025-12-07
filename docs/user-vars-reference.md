@@ -184,6 +184,7 @@ $user->set_vars($VARS);
 | `alphabetizer_format` | Boolean | Convert to E2 links | document.pm |
 | `sqlprompt_wrap` | 0-3 | SQL output format | document.pm |
 | `sqlprompt_nocount` | Boolean | Hide row count in SQL | document.pm |
+| `EDD_Sort` | String | Sort order preference for Everything Document Directory (0=default, idA/idD=node_id asc/desc, nameA/nameD=title asc/desc, authorA/authorD=author asc/desc, createA/createD=createtime asc/desc) | Page/everything_document_directory.pm |
 
 ### Modern Settings (JSON)
 

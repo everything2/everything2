@@ -1,7 +1,7 @@
 # Everything2 AJAX Update System Analysis
 
 **Status**: ✅ FULLY MIGRATED - All legacy polling eliminated
-**Last Updated**: 2025-11-28
+**Last Updated**: 2025-12-07
 
 ## Executive Summary
 
@@ -19,8 +19,45 @@ The ajaxUpdate system was a legacy AJAX framework that handled real-time updates
 9. ✅ `showmessages` htmlcode deleted
 10. ✅ `showchatter` htmlcode deleted
 11. ✅ `testshowmessages` htmlcode stubbed (deletion pending)
+12. ✅ Removed 6 unused ajax_update modes: `update`, `getlastmessage`, `checkCools`, `checkMessages`, `checkFeedItems`, `deleteFeedItem` (2025-12-07)
 
 **Remaining Legacy AJAX**: NONE - All polling systems migrated to React
+
+## ajax_update Mode Status
+
+### Removed Modes (2025-12-07)
+
+The following modes were removed as they had no frontend callers:
+
+| Mode | Reason | Replacement |
+|------|--------|-------------|
+| `getlastmessage` | Not called by frontend | React Chatterbox manages message IDs internally |
+| `update` | Already retired | Was returning error message |
+| `checkCools` | Not called by frontend | React manages cool nodes via initial page data |
+| `checkMessages` | Not called by frontend | React Messages nodelet uses /api/messages |
+| `checkFeedItems` | Not called by frontend | User feed feature unused/deprecated |
+| `deleteFeedItem` | Not called by frontend | User feed feature unused/deprecated |
+
+### Previously Removed (2025-11-27)
+
+| Mode | Replacement |
+|------|-------------|
+| `markNotificationSeen` | /api/notifications/dismiss |
+| `checkNotifications` | React Notifications nodelet |
+
+### Active Modes (Still In Use)
+
+| Mode | Usage | Notes |
+|------|-------|-------|
+| `message` | Chatterbox message sending | Still used by legacy.js for /msg commands |
+| `vote` | Voting on writeups | Still used by vote buttons in legacy.js |
+| `getNodeInfo` | Node field lookup | May be used by legacy features |
+| `annotate` | Annotation management | Used by writeup annotation feature |
+
+### Future Cleanup
+
+1. **Next**: Remove `coolsJSON` and `userFeedJSON` htmlcodes (no longer called)
+2. **Future**: Migrate remaining modes (`message`, `vote`, `getNodeInfo`, `annotate`) to /api/ endpoints
 
 ---
 
