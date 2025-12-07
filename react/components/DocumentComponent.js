@@ -192,6 +192,7 @@ const COMPONENT_MAP = {
   who_is_doing_what: lazy(() => import('./Documents/WhoIsDoingWhat')),
   recent_users: lazy(() => import('./Documents/RecentUsers')),
   e2_word_counter: lazy(() => import('./Documents/E2WordCounter')),
+  spam_cannon: lazy(() => import('./Documents/SpamCannon')),
 
   // Community features - Who's online
   everything_finger: lazy(() => import('./Documents/EverythingFinger')),

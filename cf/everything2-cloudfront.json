@@ -1,0 +1,320 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "E2 CloudFront distribution with WAF - must be deployed to us-east-1",
+  "Parameters": {
+    "ALBDomainName": {
+      "Type": "String",
+      "Description": "Domain name of the ALB origin (e.g., E2-Containerized-Frontend-ELB-123456.us-west-2.elb.amazonaws.com)",
+      "AllowedPattern": "^[a-zA-Z0-9-]+\\.us-west-2\\.elb\\.amazonaws\\.com$"
+    },
+    "BotControlExceptionIP": {
+      "Type": "String",
+      "Default": "198.199.106.179/32",
+      "Description": "IP address exempted from Bot Control (e.g., monitoring service)"
+    }
+  },
+  "Resources": {
+    "E2CloudFrontCertificate": {
+      "Type": "AWS::CertificateManager::Certificate",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "DomainName": "everything2.com",
+        "ValidationMethod": "DNS",
+        "SubjectAlternativeNames": [
+          "www.everything2.com",
+          "everything2.net",
+          "www.everything2.net",
+          "everything2.org",
+          "www.everything2.org"
+        ]
+      }
+    },
+
+    "E2CloudFrontWAFIPSet": {
+      "Type": "AWS::WAFv2::IPSet",
+      "Properties": {
+        "Name": "E2CloudFrontBotControlExceptionIPs",
+        "Scope": "CLOUDFRONT",
+        "IPAddressVersion": "IPV4",
+        "Addresses": [
+          {"Ref": "BotControlExceptionIP"}
+        ],
+        "Description": "IPs exempted from Bot Control rule"
+      }
+    },
+
+    "E2CloudFrontWAF": {
+      "Type": "AWS::WAFv2::WebACL",
+      "Properties": {
+        "Name": "E2CloudFrontWAF",
+        "Scope": "CLOUDFRONT",
+        "DefaultAction": {
+          "Allow": {}
+        },
+        "VisibilityConfig": {
+          "SampledRequestsEnabled": false,
+          "CloudWatchMetricsEnabled": true,
+          "MetricName": "E2CloudFrontBlockedRequests"
+        },
+        "Rules": [
+          {
+            "Name": "E2-CF-AWSBotControl",
+            "Priority": 5,
+            "OverrideAction": {
+              "None": {}
+            },
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "VendorName": "AWS",
+                "Name": "AWSManagedRulesBotControlRuleSet",
+                "ManagedRuleGroupConfigs": [
+                  {
+                    "AWSManagedRulesBotControlRuleSet": {
+                      "InspectionLevel": "COMMON"
+                    }
+                  }
+                ],
+                "RuleActionOverrides": [],
+                "ExcludedRules": [],
+                "ScopeDownStatement": {
+                  "NotStatement": {
+                    "Statement": {
+                      "IPSetReferenceStatement": {
+                        "Arn": {"Fn::GetAtt": ["E2CloudFrontWAFIPSet", "Arn"]}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "E2CFBotBlockedRequests"
+            }
+          },
+          {
+            "Name": "E2-CF-RateLimit",
+            "Priority": 10,
+            "Statement": {
+              "RateBasedStatement": {
+                "Limit": 500,
+                "AggregateKeyType": "IP",
+                "EvaluationWindowSec": 60
+              }
+            },
+            "Action": {
+              "Block": {}
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "E2CFRateBlockedRequests"
+            }
+          }
+        ]
+      }
+    },
+
+    "E2PageCachePolicy": {
+      "Type": "AWS::CloudFront::CachePolicy",
+      "Properties": {
+        "CachePolicyConfig": {
+          "Name": "E2-Page-Cache-Policy",
+          "Comment": "Cache pages by userpass cookie and content-affecting query params",
+          "DefaultTTL": 300,
+          "MaxTTL": 3600,
+          "MinTTL": 120,
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "whitelist",
+              "Cookies": ["userpass"]
+            },
+            "HeadersConfig": {
+              "HeaderBehavior": "none"
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "whitelist",
+              "QueryStrings": [
+                "node_id",
+                "node",
+                "displaytype",
+                "type",
+                "searchtype",
+                "keywords",
+                "page",
+                "offset",
+                "limit"
+              ]
+            },
+            "EnableAcceptEncodingGzip": true,
+            "EnableAcceptEncodingBrotli": true
+          }
+        }
+      }
+    },
+
+
+    "E2OriginRequestPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "E2-Origin-Request-Policy",
+          "Comment": "Forward all necessary headers/cookies to origin",
+          "CookiesConfig": {
+            "CookieBehavior": "all"
+          },
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": [
+              "Host",
+              "Accept",
+              "Accept-Language",
+              "Referer",
+              "User-Agent",
+              "CloudFront-Viewer-Country",
+              "CloudFront-Is-Mobile-Viewer",
+              "CloudFront-Is-Tablet-Viewer",
+              "CloudFront-Is-Desktop-Viewer",
+              "X-Forwarded-For"
+            ]
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "all"
+          }
+        }
+      }
+    },
+
+    "E2CloudFrontMonitoringSubscription": {
+      "Type": "AWS::CloudFront::MonitoringSubscription",
+      "DependsOn": "E2CloudFrontDistribution",
+      "Properties": {
+        "DistributionId": {"Ref": "E2CloudFrontDistribution"},
+        "MonitoringSubscription": {
+          "RealtimeMetricsSubscriptionConfig": {
+            "RealtimeMetricsSubscriptionStatus": "Enabled"
+          }
+        }
+      }
+    },
+
+    "E2CloudFrontDistribution": {
+      "Type": "AWS::CloudFront::Distribution",
+      "DependsOn": ["E2CloudFrontWAF", "E2CloudFrontCertificate"],
+      "Properties": {
+        "DistributionConfig": {
+          "Comment": "Everything2 CloudFront Distribution",
+          "Enabled": true,
+          "HttpVersion": "http2and3",
+          "IPV6Enabled": true,
+          "PriceClass": "PriceClass_100",
+          "WebACLId": {"Fn::GetAtt": ["E2CloudFrontWAF", "Arn"]},
+
+          "Aliases": [
+            "everything2.com",
+            "www.everything2.com",
+            "everything2.net",
+            "www.everything2.net",
+            "everything2.org",
+            "www.everything2.org"
+          ],
+
+          "ViewerCertificate": {
+            "AcmCertificateArn": {"Ref": "E2CloudFrontCertificate"},
+            "SslSupportMethod": "sni-only",
+            "MinimumProtocolVersion": "TLSv1.2_2021"
+          },
+
+          "Origins": [
+            {
+              "Id": "E2-ALB-Origin",
+              "DomainName": {"Ref": "ALBDomainName"},
+              "CustomOriginConfig": {
+                "HTTPPort": 80,
+                "HTTPSPort": 443,
+                "OriginProtocolPolicy": "https-only",
+                "OriginSSLProtocols": ["TLSv1.2"],
+                "OriginReadTimeout": 60,
+                "OriginKeepaliveTimeout": 5
+              },
+              "OriginCustomHeaders": [
+                {
+                  "HeaderName": "X-Origin-Verify",
+                  "HeaderValue": "e2-cloudfront-origin-2025"
+                }
+              ]
+            }
+          ],
+
+          "DefaultCacheBehavior": {
+            "TargetOriginId": "E2-ALB-Origin",
+            "ViewerProtocolPolicy": "redirect-to-https",
+            "AllowedMethods": ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+            "CachedMethods": ["GET", "HEAD", "OPTIONS"],
+            "Compress": true,
+            "CachePolicyId": {"Ref": "E2PageCachePolicy"},
+            "OriginRequestPolicyId": {"Ref": "E2OriginRequestPolicy"}
+          },
+
+          "CacheBehaviors": [
+            {
+              "PathPattern": "/api/*",
+              "TargetOriginId": "E2-ALB-Origin",
+              "ViewerProtocolPolicy": "redirect-to-https",
+              "AllowedMethods": ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+              "CachedMethods": ["GET", "HEAD"],
+              "Compress": true,
+              "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3"
+            },
+            {
+              "PathPattern": "/op/*",
+              "TargetOriginId": "E2-ALB-Origin",
+              "ViewerProtocolPolicy": "redirect-to-https",
+              "AllowedMethods": ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+              "CachedMethods": ["GET", "HEAD"],
+              "Compress": true,
+              "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+              "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3"
+            }
+          ],
+
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 503,
+              "ErrorCachingMinTTL": 0
+            },
+            {
+              "ErrorCode": 502,
+              "ErrorCachingMinTTL": 0
+            },
+            {
+              "ErrorCode": 504,
+              "ErrorCachingMinTTL": 0
+            }
+          ]
+        }
+      }
+    }
+  },
+
+  "Outputs": {
+    "CloudFrontDomainName": {
+      "Description": "CloudFront distribution domain name - update Route53 to point here",
+      "Value": {"Fn::GetAtt": ["E2CloudFrontDistribution", "DomainName"]}
+    },
+    "CloudFrontDistributionId": {
+      "Description": "CloudFront distribution ID",
+      "Value": {"Ref": "E2CloudFrontDistribution"}
+    },
+    "WAFWebACLArn": {
+      "Description": "WAF WebACL ARN",
+      "Value": {"Fn::GetAtt": ["E2CloudFrontWAF", "Arn"]}
+    },
+    "CertificateArn": {
+      "Description": "ACM Certificate ARN (must be validated via DNS)",
+      "Value": {"Ref": "E2CloudFrontCertificate"}
+    }
+  }
+}

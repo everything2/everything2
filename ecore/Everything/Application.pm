@@ -5485,6 +5485,11 @@ sub send_cloudwatch_event
   {
     my $events = Paws->service('CloudWatchEvents', "region" => $this->{conf}->current_region);
     my $detail = {"type" => $eventtype, "message" => $eventdetail, "callstack" => [$this->getCallStack]};
+
+    # Add build ID for correlating errors with code versions
+    $detail->{build_id} = $this->{conf}->last_commit || 'unknown';
+    $detail->{build_id_short} = $this->{conf}->last_commit_short || 'unknown';
+
     if(defined($Everything::HTML::USER))
     {
       $detail->{user} = $Everything::HTML::USER->{title};

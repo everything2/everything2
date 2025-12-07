@@ -135,7 +135,7 @@ sub layout
     $e2->{$_} = $REQUEST->VARS->{$_} if ($REQUEST->VARS->{$_});
   }
 
-  $e2->{collapsedNodelets} =~ s/\bsignin\b//;
+  $e2->{collapsedNodelets} =~ s/\bsignin\b// if $e2->{collapsedNodelets};
 
   if($e2->{user}->{developer} and $REQUEST->user->VARS->{nodelets} =~ /836984/)
   {

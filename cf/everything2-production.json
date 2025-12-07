@@ -1,6 +1,16 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "E2 production resources",
+  "Parameters": {
+    "CloudFrontDomainName": {
+      "Type": "String",
+      "Description": "CloudFront distribution domain name (e.g., d3hgg69yh1kthz.cloudfront.net)",
+      "Default": ""
+    }
+  },
+  "Conditions": {
+    "UseCloudFront": {"Fn::Not": [{"Fn::Equals": [{"Ref": "CloudFrontDomainName"}, ""]}]}
+  },
   "Mappings" : {
     "RegionMap" : {
       "us-east-1" : { "S3hostedzoneID" : "Z3AQBSTGFYJSTF", "websiteendpoint" : "s3-website-us-east-1.amazonaws.com", "ELBAccountID": "127311923021"},
@@ -92,8 +102,8 @@
         "Name": "everything2.com",
         "HostedZoneName": "everything2.com.",
         "AliasTarget": {
-          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
-          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
       }
@@ -105,8 +115,8 @@
         "Name": "www.everything2.com",
         "HostedZoneName": "everything2.com.",
         "AliasTarget": {
-          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
-          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
       }
@@ -220,8 +230,8 @@
         "Name": "everything2.org",
         "HostedZoneName": "everything2.org.",
         "AliasTarget": {
-          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
-          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
       }
@@ -232,8 +242,8 @@
         "Name": "www.everything2.org",
         "HostedZoneName": "everything2.org.",
         "AliasTarget": {
-          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
-          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
       }
@@ -251,8 +261,8 @@
         "Name": "everything2.net",
         "HostedZoneName": "everything2.net.",
         "AliasTarget": {
-          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
-          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
       }
@@ -263,8 +273,8 @@
         "Name": "www.everything2.net",
         "HostedZoneName": "everything2.net.",
         "AliasTarget": {
-          "HostedZoneId": {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]},
-          "DNSName": {"Fn::GetAtt": [ "ContainerizedFrontendELB", "DNSName"]}
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
       }
@@ -1285,8 +1295,12 @@
       "Properties": {
         "DefaultActions": [
           {
-            "TargetGroupArn": {"Ref": "FargateTargetGroup"},
-            "Type": "forward"
+            "Type": "fixed-response",
+            "FixedResponseConfig": {
+              "StatusCode": "403",
+              "ContentType": "text/plain",
+              "MessageBody": "Direct access not allowed"
+            }
           }
         ],
         "Certificates": [{"CertificateArn": {"Ref": "E2ELBCertificate"}}],
@@ -1294,6 +1308,24 @@
         "Port": "443",
         "Protocol": "HTTPS",
         "SslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
+      }
+    },
+    "ELBOriginVerifyRule": {
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+      "Properties": {
+        "ListenerArn": {"Ref": "ELBContainerizedAppHTTPSListener"},
+        "Priority": 1,
+        "Actions": [{
+          "TargetGroupArn": {"Ref": "FargateTargetGroup"},
+          "Type": "forward"
+        }],
+        "Conditions": [{
+          "Field": "http-header",
+          "HttpHeaderConfig": {
+            "HttpHeaderName": "X-Origin-Verify",
+            "Values": ["e2-cloudfront-origin-2025"]
+          }
+        }]
       }
     },
     "ELBContainerizedAppRewriteAltDomains": {
@@ -2063,123 +2095,21 @@
           }
         }]
       }
-    },
-    "E2WAFLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": "aws-waf-logs-e2",
-        "RetentionInDays": 1
+    }
+  },
+  "Outputs": {
+    "ELBDNSName": {
+      "Description": "ALB DNS name for CloudFront origin configuration",
+      "Value": {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]},
+      "Export": {
+        "Name": "E2-ALB-DNSName"
       }
     },
-    "E2WAFBotControlExceptionIPSet": {
-      "Type": "AWS::WAFv2::IPSet",
-      "Properties": {
-        "Name": "E2BotControlExceptionIPs",
-        "Scope": "REGIONAL",
-        "IPAddressVersion": "IPV4",
-        "Addresses": [
-          "198.199.106.179/32"
-        ],
-        "Description": "IPs exempted from Bot Control rule"
-      }
-    },
-    "E2WAFAcl": {
-      "Type": "AWS::WAFv2::WebACL",
-      "Properties": {
-        "Name": "E2ALBWAF",
-        "Scope": "REGIONAL",
-        "DefaultAction": {
-          "Allow": {}
-        },
-        "VisibilityConfig": {
-          "SampledRequestsEnabled": false,
-          "CloudWatchMetricsEnabled": true,
-          "MetricName": "BlockedRequests"
-        },
-        "Rules": [{
-           "Name": "E2-AWSBotControl",
-           "Priority": 5,
-           "OverrideAction": {
-             "None": {}
-           },
-           "Statement": {
-              "ManagedRuleGroupStatement": {
-                 "VendorName": "AWS",
-                 "Name": "AWSManagedRulesBotControlRuleSet",
-                 "ManagedRuleGroupConfigs": [
-                   {
-                     "AWSManagedRulesBotControlRuleSet": {
-                       "InspectionLevel": "COMMON"
-                     }
-                   }
-                 ],
-                 "RuleActionOverrides": [],
-                 "ExcludedRules": [],
-                 "ScopeDownStatement": {
-                   "NotStatement": {
-                     "Statement": {
-                       "IPSetReferenceStatement": {
-                         "Arn": {"Fn::GetAtt": ["E2WAFBotControlExceptionIPSet", "Arn"]}
-                       }
-                     }
-                   }
-                 }
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "BlockedRequests"
-            }
-        },
-        {
-          "Name": "E2-RateLimit",
-          "Priority": 10,
-          "Statement": {
-            "RateBasedStatement": {
-              "Limit": 500,
-              "AggregateKeyType": "IP",
-              "EvaluationWindowSec": 60
-            }
-          },
-          "Action": {
-            "Block": {}
-          },
-          "VisibilityConfig": {
-            "SampledRequestsEnabled": true,
-            "CloudWatchMetricsEnabled": true,
-            "MetricName": "RateBlockedRequests"
-          }
-        }]
-      }
-    },
-    "E2WAFAclAssociation": {
-      "Type": "AWS::WAFv2::WebACLAssociation",
-      "Properties": {
-        "ResourceArn": {"Fn::GetAtt": ["ContainerizedFrontendELB","LoadBalancerArn"]},
-        "WebACLArn": {"Fn::GetAtt": ["E2WAFAcl","Arn"]}
-      }
-    },
-    "E2WAFLoggingConfiguration": {
-      "Type": "AWS::WAFv2::LoggingConfiguration",
-      "Properties": {
-        "ResourceArn": {"Fn::GetAtt": ["E2WAFAcl","Arn"]},
-        "LogDestinationConfigs": [{"Fn::GetAtt": ["E2WAFLogGroup","Arn"]}],
-        "LoggingFilter": {
-          "DefaultBehavior": "DROP",
-          "Filters": [
-            {
-              "Behavior": "KEEP",
-              "Requirement": "MEETS_ANY",
-              "Conditions": [{
-                "ActionCondition": {
-                  "Action": "BLOCK"
-                }
-              }]
-            }
-          ]
-        }
+    "VPCId": {
+      "Description": "VPC ID",
+      "Value": {"Ref": "AppVPC"},
+      "Export": {
+        "Name": "E2-VPC-ID"
       }
     }
   }

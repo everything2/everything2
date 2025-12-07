@@ -164,6 +164,18 @@ sub deliver_message
 {
   my ($self, $messagedata) = @_;
 
+  # Handle message forwarding - if this user forwards messages to another,
+  # recursively call deliver_message on the target
+  if (my $forward_to = $self->message_forward_to) {
+    # Prevent infinite recursion
+    $messagedata->{recurse_counter} ||= 0;
+    $messagedata->{recurse_counter}++;
+    if ($messagedata->{recurse_counter} > 10) {
+      return {"errors" => 1, "errortext" => ["Message forwarding recursion limit reached"]};
+    }
+    return $forward_to->deliver_message($messagedata);
+  }
+
   # Check if recipient is ignoring sender
   my $ignoring = $self->DB->sqlSelect(
     'COUNT(*)',
