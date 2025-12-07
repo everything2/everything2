@@ -55,6 +55,31 @@ puts "Using asset bucket: #{asset_bucket}"
 everydir = File.expand_path(__dir__ + "/..")
 
 assets = {'js' => {}, 'css' => {}, 'react' => {}}
+static_assets = {}  # Separate hash for static assets (no minification/compression)
+
+# MIME type mapping for static assets
+STATIC_MIME_TYPES = {
+  '.ttf' => 'font/ttf',
+  '.woff' => 'font/woff',
+  '.woff2' => 'font/woff2',
+  '.eot' => 'application/vnd.ms-fontobject',
+  '.otf' => 'font/otf',
+  '.png' => 'image/png',
+  '.gif' => 'image/gif',
+  '.jpg' => 'image/jpeg',
+  '.jpeg' => 'image/jpeg',
+  '.svg' => 'image/svg+xml',
+  '.ico' => 'image/x-icon',
+  '.webp' => 'image/webp',
+  '.css' => 'text/css',
+  '.js' => 'application/javascript',
+  '.json' => 'application/json',
+  '.txt' => 'text/plain',
+  '.html' => 'text/html',
+  '.htm' => 'text/html',
+  '.xml' => 'application/xml',
+  '.swf' => 'application/x-shockwave-flash'
+}.freeze
 
 ['js','css','react'].each do |asset_type|
   Dir["#{everydir}/www/#{asset_type}/**/**"].each do |f|
@@ -96,6 +121,27 @@ assets = {'js' => {}, 'css' => {}, 'react' => {}}
     puts "Minified #{basefile}"
   end
 end
+
+# Process static assets (fonts, images) - no minification or compression
+# These are binary files that are already optimized
+Dir["#{everydir}/www/static/**/*"].each do |f|
+  next if File.directory?(f)
+  basefile = f.gsub(/^#{everydir}\/www\/static\//, "")
+
+  # Read file content as binary
+  content = File.binread(f)
+  ext = File.extname(f).downcase
+  content_type = STATIC_MIME_TYPES[ext] || 'application/octet-stream'
+
+  static_assets[basefile] = {
+    'content' => content,
+    'content_type' => content_type
+  }
+
+  puts "Static asset: #{basefile} (#{content_type}, #{content.bytesize} bytes)"
+end
+
+puts "Found #{static_assets.size} static assets"
 
 git_history = []
 
@@ -164,6 +210,34 @@ assets.keys.each do |asset_type|
     end
   end
 end
+
+# Upload static assets (fonts, images) - no compression variants
+# These go to [commit]/static/[path]
+puts "\nUploading static assets..."
+static_assets.each do |filename, data|
+  to_upload = "#{current_rev}/static/#{filename}"
+
+  if testonly.nil?
+    s3args = {
+      bucket: asset_bucket,
+      key: to_upload,
+      content_type: data['content_type'],
+      body: data['content'],
+      cache_control: "max-age=31536000"
+    }
+    upload_result = s3client.put_object(s3args)
+    if upload_result.etag.nil?
+      puts "File upload failed: #{to_upload}"
+      exit 1
+    else
+      puts "Uploaded: #{to_upload}"
+    end
+  else
+    puts "Test only: would upload #{to_upload} (#{data['content_type']})"
+  end
+end
+
+puts "Static asset upload complete (#{static_assets.size} files)"
 
 if testonly.nil?
   s3client.list_objects_v2(bucket: asset_bucket).contents.each do |file|

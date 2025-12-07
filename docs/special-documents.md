@@ -1,13 +1,13 @@
 # Everything2 Special Document Types Reference
 
 **Last Updated**: 2025-12-07
-**Total Documents**: 261 documents across all types
+**Total Documents**: 260 documents across all types
 
 ## Document Types Summary
 
 - **Superdoc**: 152 documents (public/user access)
 - **Oppressor Superdoc**: 22 documents (editor+ access)
-- **Restricted Superdoc**: 51 documents (admin access - gods level)
+- **Restricted Superdoc**: 50 documents (admin access - gods level)
 - **Fullpage**: 15 documents (fullscreen interfaces)
 - **Ticker**: 21 documents (RSS/Atom/XML feeds)
 - **JSONExport**: 1 document (JSON API endpoint)
@@ -189,12 +189,11 @@
 
 ## Restricted Superdoc
 
-**Total**: 51 documents (god-level admin only)
+**Total**: 50 documents (god-level admin only)
 
 | Document | Type | URL | Rendering |
 |----------|------|-----|-----------|
 | Admin Bestow Tool | Restricted Superdoc | `/title/Admin+Bestow+Tool` | React |
-| Admin Command Center | Restricted Superdoc | `/title/Admin+Command+Center` | E2 Legacy |
 | bestow cools | Restricted Superdoc | `/title/bestow+cools` | React |
 | Bookmark Manager | Restricted Superdoc | `/title/Bookmark+Manager` | E2 Legacy |
 | Cache Dump | Restricted Superdoc | `/title/Cache+Dump` | E2 Legacy |
