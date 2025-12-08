@@ -77,6 +77,9 @@ sub zen_stdcontainer
 	. ( $$NODE{type_nodetype}==15 ? '?foruser='.$$NODE{title} : '' ) . '">';
   }
   
+  # Google Analytics 4
+  $str .= qq|<script async src="https://www.googletagmanager.com/gtag/js?id=G-2GBBBF9ZDK"></script>|;
+
   $str .= qq|</head><body class="|;
   $str .= 'writeuppage ' if $$NODE{e2node_id} || $$NODE{writeup_id} || $$NODE{draft_id};
   $str .= $$NODE{type}{title};

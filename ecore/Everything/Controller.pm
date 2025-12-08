@@ -135,9 +135,9 @@ sub layout
     $e2->{$_} = $REQUEST->VARS->{$_} if ($REQUEST->VARS->{$_});
   }
 
-  $e2->{collapsedNodelets} =~ s/\bsignin\b// if $e2->{collapsedNodelets};
+  $e2->{collapsedNodelets} =~ s/\bsignin\b// if defined $e2->{collapsedNodelets} && $e2->{collapsedNodelets};
 
-  my $nodelets_var = $REQUEST->user->VARS->{nodelets} // '';
+  my $nodelets_var = ($REQUEST->user->VARS && $REQUEST->user->VARS->{nodelets}) // '';
   if($e2->{user}->{developer} and $nodelets_var =~ /836984/)
   {
     my $edev = $self->APP->node_by_name("edev","usergroup");

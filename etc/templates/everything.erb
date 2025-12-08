@@ -45,6 +45,13 @@
 	PerlResponseHandler ModPerl::Registry
 	PerlOptions +ParseHeaders
 
+	# Serve favicon.ico from static directory (browsers request /favicon.ico directly)
+	Alias /favicon.ico /var/everything/www/static/favicon.ico
+	<Location /favicon.ico>
+		Require all granted
+		SetEnv dontlog 1
+	</Location>
+
 	# Health check endpoint - lightweight, no access logging
 	<Location /health.pl>
 		SetEnv dontlog 1

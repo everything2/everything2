@@ -89,7 +89,11 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
   'num_newwus' => Everything::Preference::List->new(default_value => 15, allowed_values => [1,5,10,15,20,25,30,40]),
 
   ## Other preferences
-  'tiptap_editor_raw' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1])
+  'tiptap_editor_raw' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+
+  ## Editor-specific preferences (Admin Settings)
+  'killfloor_showlinks' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'hidenodenotes' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1])
 }});
 
 sub routes
@@ -98,6 +102,7 @@ sub routes
   "set" => "set_preferences",
   "get" => "get_preferences",
   "notifications" => "set_notification_preferences",
+  "admin" => "set_admin_preferences",
   }
 }
 
@@ -267,7 +272,88 @@ sub set_notification_preferences
   }];
 }
 
-around ['set_preferences', 'set_notification_preferences'] => \&Everything::API::unauthorized_if_guest;
+sub set_admin_preferences
+{
+  my ($self, $REQUEST) = @_;
+
+  my $APP = $self->APP;
+  my $user = $REQUEST->user;
+
+  # Only editors can access admin settings
+  unless ($APP->isEditor($user->NODEDATA)) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Admin Settings is only available to Content Editors and gods.'
+    }];
+  }
+
+  my $data = $REQUEST->JSON_POSTDATA;
+
+  unless ($data && ref($data) eq 'HASH') {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Invalid request data'
+    }];
+  }
+
+  my $VARS = $REQUEST->user->VARS;
+
+  # Handle regular settings
+  if ($data->{settings} && ref($data->{settings}) eq 'HASH') {
+    my $settings = $data->{settings};
+    foreach my $key (keys %$settings) {
+      if (defined($self->allowed_preferences->{$key})) {
+        if ($self->allowed_preferences->{$key}->validate($settings->{$key})) {
+          if ($self->allowed_preferences->{$key}->should_delete($settings->{$key})) {
+            delete $VARS->{$key};
+          } else {
+            my $value = $settings->{$key};
+            if (ref($self->allowed_preferences->{$key}) eq 'Everything::Preference::List') {
+              $value = int($value);
+            }
+            $VARS->{$key} = $value;
+          }
+        }
+      }
+    }
+  }
+
+  # Handle macros
+  if ($data->{macros} && ref($data->{macros}) eq 'HASH') {
+    # Define allowed macros
+    my @allowed_macros = qw(room newbie html wukill nv misc1 misc2);
+    my %allowed = map { $_ => 1 } @allowed_macros;
+    my $max_length = 768;
+
+    foreach my $name (keys %{$data->{macros}}) {
+      next unless $allowed{$name};
+      my $var_key = 'chatmacro_' . $name;
+
+      my $value = $data->{macros}{$name};
+
+      if (!defined $value || $value eq '') {
+        # Delete the macro
+        delete $VARS->{$var_key};
+      } else {
+        # Clean and store the macro
+        $value =~ tr/\r/\n/;           # Normalize line endings
+        $value =~ s/\n+/\n/gs;         # Remove multiple newlines
+        $value =~ s/[^\n\x20-\x7e]//gs; # Allow only printable ASCII + newlines
+        $value = substr($value, 0, $max_length);  # Enforce max length
+        $value =~ s/\{/[/gs;           # Convert curly to square brackets
+        $value =~ s/\}/]/gs;
+        $VARS->{$var_key} = $value;
+      }
+    }
+  }
+
+  # Save the updated VARS
+  $REQUEST->user->set_vars($VARS);
+
+  return [$self->HTTP_OK, { success => 1 }];
+}
+
+around ['set_preferences', 'set_notification_preferences', 'set_admin_preferences'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 1;

@@ -415,37 +415,42 @@ const NodeToolset = ({
           <span>Clone Node</span>
         </button>
 
-        {/* Delete Button */}
-        <button
-          onClick={preventNuke ? undefined : openNukeModal}
-          disabled={preventNuke}
-          title={preventNuke ? "This node is protected from deletion (nuke insurance). It is a core system node." : "Delete this node"}
-          style={preventNuke ? disabledButtonStyle : (canDelete ? buttonStyle : disabledButtonStyle)}
-          onMouseEnter={(e) => {
-            if (!preventNuke && canDelete) {
-              e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-              e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!preventNuke && canDelete) {
-              e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-              e.currentTarget.style.borderColor = '#ccc'
-            }
-          }}
-        >
-          <FaTrashAlt size={20} />
-          <span>Delete Node</span>
-        </button>
+        {/* Delete Button - shows warning icon with "Insured" when protected */}
+        {preventNuke ? (
+          <div
+            title="This node is protected from deletion (nuke insurance). It is a core system node."
+            style={{
+              ...disabledButtonStyle,
+              color: '#d9534f'
+            }}
+          >
+            <FaExclamationTriangle size={20} />
+            <span>Insured</span>
+          </div>
+        ) : (
+          <button
+            onClick={canDelete ? openNukeModal : undefined}
+            disabled={!canDelete}
+            title={canDelete ? "Delete this node" : "Cannot delete this node"}
+            style={canDelete ? buttonStyle : disabledButtonStyle}
+            onMouseEnter={(e) => {
+              if (canDelete) {
+                e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
+                e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (canDelete) {
+                e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
+                e.currentTarget.style.borderColor = '#ccc'
+              }
+            }}
+          >
+            <FaTrashAlt size={20} />
+            <span>Delete Node</span>
+          </button>
+        )}
       </div>
-
-      {/* Nuke Insurance Warning */}
-      {preventNuke && canDelete && (
-        <div style={{ fontSize: '0.9em', color: '#d9534f', marginTop: '8px', display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
-          <FaExclamationTriangle size={12} style={{ marginTop: '2px', flexShrink: 0 }} />
-          <span><strong>Nuke Insurance:</strong> This node is protected from deletion as it is a core system node.</span>
-        </div>
-      )}
 
       {/* Writeup Warning */}
       {isWriteup && !preventNuke && canDelete && (

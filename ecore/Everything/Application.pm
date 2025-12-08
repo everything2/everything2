@@ -1181,11 +1181,12 @@ sub isGuest
   my $userid = undef;
   if(ref $user eq "")
   {
-    $userid = $user; 
+    $userid = $user;
   }else{
     $userid = $user->{node_id};
   }
 
+  return 0 unless defined $userid;
   return ($this->{conf}->guest_user == $userid);
 }
 
@@ -1601,6 +1602,7 @@ sub canSeeDraft
 		$draft = $this->{db}->getNodeById($draft);
 	}
 
+	return 0 unless $draft && defined $draft->{author_user};
 	return 1 if $user->{node_id} == $draft->{author_user};
 
 	# we may not have a complete node. Get needed info
@@ -4163,6 +4165,9 @@ sub processMessageCommand
   elsif ($message =~ /^\/help\s*(.*)$/i) {
     $result = $this->handleHelpCommand($user, $1, $vars);
   }
+  elsif ($message =~ /^\/macro\s+(.+)$/i) {
+    $result = $this->handleMacroCommand($user, $1, $vars);
+  }
   elsif ($message =~ /^\/(whisper|sing|death|sings|me\'s)\s+/i) {
     # Commands that display in showchatter with special formatting
     $result = $this->sendPublicChatter($user, $message, $vars);
@@ -4625,6 +4630,110 @@ sub handleEasterEggCommand
 
   # Not a valid command - silently fail
   return;
+}
+
+sub handleMacroCommand
+{
+  my ($this, $user, $args, $vars) = @_;
+
+  # Macros are editor-only
+  unless ($this->isEditor($user)) {
+    return { success => 0, error => "Sorry, you aren't allowed to use macros yet." };
+  }
+
+  # Parse: macroname [param1 param2 ...]
+  my ($macro_name, $params) = $args =~ /^(\S+)\s*(.*)?$/;
+  return { success => 0, error => "Invalid macro syntax. Use: /macro name [params]" } unless $macro_name;
+
+  # Validate macro name
+  unless ($macro_name =~ /^[A-Za-z0-9_\-]+$/) {
+    return { success => 0, error => "\"$macro_name\" isn't a valid macro name" };
+  }
+
+  # Check if macro exists in user vars
+  my $macro_text = $vars->{'chatmacro_' . $macro_name};
+  unless ($macro_text) {
+    return { success => 0, error => "\"$macro_name\" doesn't exist. Define Macros in Admin Settings." };
+  }
+
+  # Execute the macro
+  return $this->executeMacro($user, $macro_name, $macro_text, $params // '', $vars);
+}
+
+sub executeMacro
+{
+  my ($this, $user, $macro_name, $macro_text, $params, $vars) = @_;
+
+  my $username = $user->{title};
+  $username =~ s/ /_/g;
+
+  # Build args array: $0 = username, $1+ = params
+  my @args = ($username);
+  push @args, split(/\s+/, $params) if $params;
+
+  my $messages_sent = 0;
+  my @errors = ();
+
+  # Process each line of the macro
+  my @lines = split(/\n/, $macro_text);
+  for my $line (@lines) {
+    # Skip empty lines and comments
+    next if $line =~ /^\s*$/;
+    next if $line =~ /^\s*#/;
+
+    # Only /say commands are supported
+    next unless $line =~ /^\s*\/say\s+(.+)$/i;
+    my $command = $1;
+
+    # Expand variables
+    my @parts = split(/\s+/, $command);
+    my @expanded = ();
+
+    for my $part (@parts) {
+      if ($part =~ /^\$(\d+)\+$/) {
+        # $N+ means arg N and everything after
+        my $n = $1;
+        push @expanded, @args[$n .. $#args] if $n <= $#args;
+      }
+      elsif ($part =~ /^\$(\d+)$/) {
+        # $N means arg N
+        my $n = $1;
+        push @expanded, $args[$n] if defined $args[$n];
+      }
+      elsif ($part =~ /^\$\*$/) {
+        # $* means all params (excluding $0)
+        push @expanded, @args[1 .. $#args] if @args > 1;
+      }
+      else {
+        # Convert curly braces to square brackets (legacy compatibility)
+        $part =~ s/\{/[/g;
+        $part =~ s/\}/]/g;
+        push @expanded, $part;
+      }
+    }
+
+    my $expanded_message = join(' ', @expanded);
+    next unless $expanded_message;
+
+    # Process the expanded message as a command
+    my $result = $this->processMessageCommand($user, $expanded_message, $vars);
+    if (ref($result) eq 'HASH' && $result->{success}) {
+      $messages_sent++;
+    }
+    elsif (ref($result) eq 'HASH' && $result->{error}) {
+      push @errors, $result->{error};
+    }
+  }
+
+  if ($messages_sent > 0) {
+    return { success => 1, info => "Macro '$macro_name' executed ($messages_sent message(s) sent)" };
+  }
+  elsif (@errors) {
+    return { success => 0, error => "Macro '$macro_name' failed: " . join('; ', @errors) };
+  }
+  else {
+    return { success => 0, error => "Macro '$macro_name' produced no output" };
+  }
 }
 
 sub getRecentChatter
@@ -5777,6 +5886,12 @@ sub asset_uri
       }
     }else{
       $asset =~ s/^\/?react\///;
+
+      # Static assets (favicon.ico, etc.) don't use compression prefix
+      if($asset =~ /^static\//)
+      {
+        return $Everything::CONF->assets_location."/$asset";
+      }
     }
   }
 
@@ -6550,14 +6665,17 @@ sub buildNodeInfoStructure
       };
 
       # NodeNote - Get notes data and pass structured data to React
-      my $notes = $this->getNodeNotes($NODE);
-      $e2->{masterControl}->{nodeNotesData} = {
-        node_id => $NODE->{node_id},
-        node_title => $NODE->{title},
-        node_type => $NODE->{type}{title},
-        notes => $notes,
-        count => scalar(@$notes),
-      };
+      # Only load if hidenodenotes preference is not set
+      unless ($VARS->{hidenodenotes}) {
+        my $notes = $this->getNodeNotes($NODE);
+        $e2->{masterControl}->{nodeNotesData} = {
+          node_id => $NODE->{node_id},
+          node_title => $NODE->{title},
+          node_type => $NODE->{type}{title},
+          notes => $notes,
+          count => scalar(@$notes),
+        };
+      }
       $e2->{currentUserId} = $USER->{node_id};
 
       if($this->isAdmin($USER))

@@ -2377,7 +2377,10 @@ sub isApproved
 	return 1 if(not defined($NOGODS) and $this->isGod($USER));
 
 	my $user_id = $this->getId($USER);
-	return 1 if ($user_id == $this->getId($NODE));
+	return 0 unless defined $user_id;
+	my $node_id = $this->getId($NODE);
+	return 0 unless defined $node_id;
+	return 1 if ($user_id == $node_id);
 
 	#you're always approved if it's yourself...
 

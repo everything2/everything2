@@ -539,13 +539,16 @@ const Chatterbox = (props) => {
           setMessageWarning(null)
         }
 
-        // Show success message for /msg and /help commands (unless there's a warning)
-        // since there's no visible feedback in the chatter feed
+        // Show success message for /msg, /help, and /macro commands (unless there's a warning)
+        // since there's no visible feedback in the chatter feed for these
         if (!data.warning) {
           const isPrivateMessage = /^\/(msg|message|whisper|small)\s/.test(message.trim())
           const isHelpCommand = /^\/help\s/.test(message.trim())
-          if (isPrivateMessage || isHelpCommand) {
-            setMessageSuccess(isHelpCommand ? 'Help sent to your messages' : 'Message sent')
+          const isMacroCommand = /^\/macro\s/.test(message.trim())
+          if (isPrivateMessage || isHelpCommand || isMacroCommand) {
+            // Use info from server if available (e.g., macro results), otherwise default message
+            const successMsg = data.info || (isHelpCommand ? 'Help sent to your messages' : 'Message sent')
+            setMessageSuccess(successMsg)
             setMessageFading(false)
             setMessageEntering(true)
             // Fade in quickly

@@ -199,6 +199,12 @@ $user->set_vars($VARS);
 
 These keys are no longer used and can be cleaned up from user settings:
 
+### Removed in 2025-12 (React Migration)
+
+| Key | Status | Notes | Removal Date |
+|-----|--------|-------|--------------|
+| `killfloor_showlinks` | **DEPRECATED** | Add HTML links in killing floor display for copy/paste. The killing floor mechanism is no longer used. | 2025-12-07 |
+
 ### Removed in 2025-11 (Nodelet Migration)
 
 | Key | Status | Notes | Removal Date |
