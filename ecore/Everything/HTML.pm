@@ -860,7 +860,7 @@ sub gotoNode
 				-uri => $url
 				, -nph => 0
 				, -status => 303
-				, '-Cache-Control' => 'private, no-cache, no-store'
+				, -Cache_Control => 'private, no-cache, no-store'
 			);
 			return;
 		}

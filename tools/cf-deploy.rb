@@ -62,6 +62,8 @@ class CFDeploy
       cache_stats
     when 'ecs-status'
       ecs_status
+    when 'invalidate'
+      invalidate_cache(target)
     when 'help', '-h', '--help', nil
       help
     else
@@ -341,6 +343,68 @@ class CFDeploy
         puts "  #{time_label} UTC  N/A"
       end
     end
+  end
+
+  def invalidate_cache(paths)
+    dist_id = get_cloudfront_distribution_id
+    unless dist_id
+      # Try to find distribution by alias if stack output not available
+      dist_id = find_distribution_by_alias('everything2.com')
+    end
+
+    unless dist_id
+      puts "CloudFront distribution not found."
+      exit 1
+    end
+
+    # Default to invalidate everything if no paths specified
+    paths ||= '/*'
+
+    # Handle multiple paths separated by spaces
+    path_list = paths.split(/\s+/)
+
+    puts "CloudFront Cache Invalidation"
+    puts "=" * 60
+    puts "Distribution: #{dist_id}"
+    puts "Paths: #{path_list.join(', ')}"
+    puts
+
+    cmd = [
+      'aws', 'cloudfront', 'create-invalidation',
+      '--distribution-id', dist_id,
+      '--paths', *path_list
+    ]
+
+    stdout, status = Open3.capture2(*cmd)
+    unless status.success?
+      puts "Failed to create invalidation"
+      exit 1
+    end
+
+    data = JSON.parse(stdout)
+    invalidation = data['Invalidation']
+
+    puts "Invalidation created!"
+    puts "  ID:     #{invalidation['Id']}"
+    puts "  Status: #{invalidation['Status']}"
+    puts "  Time:   #{invalidation['CreateTime']}"
+    puts
+    puts "Invalidation typically takes 1-5 minutes to complete globally."
+    puts "Check status with: aws cloudfront get-invalidation --distribution-id #{dist_id} --id #{invalidation['Id']}"
+  end
+
+  def find_distribution_by_alias(alias_name)
+    cmd = [
+      'aws', 'cloudfront', 'list-distributions',
+      '--query', "DistributionList.Items[?contains(Aliases.Items, `#{alias_name}`)].Id",
+      '--output', 'text'
+    ]
+    stdout, status = Open3.capture2(*cmd, err: '/dev/null')
+    return nil unless status.success?
+    dist_id = stdout.strip
+    dist_id.empty? ? nil : dist_id
+  rescue
+    nil
   end
 
   def ecs_status
@@ -729,6 +793,7 @@ class CFDeploy
         diff <stack>   Preview changes (create changeset)
         cache-stats    Show CloudFront cache hit rate and metrics
         ecs-status     Show ECS service health and resource utilization
+        invalidate [paths] Invalidate CloudFront cache (default: /*)
         help           Show this help
 
       Stacks:
@@ -749,6 +814,8 @@ class CFDeploy
         ./tools/cf-deploy.rb outputs cloudfront   # Show CloudFront outputs
         ./tools/cf-deploy.rb cache-stats          # Show cache hit rate
         ./tools/cf-deploy.rb ecs-status           # Show ECS health
+        ./tools/cf-deploy.rb invalidate           # Invalidate all cache
+        ./tools/cf-deploy.rb invalidate '/title/*' # Invalidate specific paths
 
       Notes:
         - CloudFront stack requires production stack to be deployed first
