@@ -558,6 +558,7 @@ class SmokeTest
       {name: 'Time Since XML Ticker', root: 'timesince', elements: ['lasttimes']},
       {name: 'Universal Message XML Ticker', root: 'messages', elements: ['room', 'topic']},
       {name: 'User Search XML Ticker II', root: 'usersearch', elements: ['wu']},
+      {name: 'E2 XML Search Interface', root: 'searchinterface', elements: ['searchinfo', 'searchresults'], params: '?keywords=test'},
       {name: 'XML Interfaces Ticker', root: 'xmlcaps', elements: ['this', 'xmlexport']},
       # Atom/RSS feeds
       {name: 'Cool Archive Atom Feed', root: 'feed', elements: ['title', 'entry'], xmlns: true},
@@ -572,6 +573,7 @@ class SmokeTest
       # URL-encode ticker name
       encoded_name = URI.encode_www_form_component(ticker[:name])
       path = "/node/ticker/#{encoded_name}"
+      path += ticker[:params] if ticker[:params]
 
       begin
         response = http_get(path)

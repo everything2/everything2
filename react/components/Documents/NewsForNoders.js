@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 /**
  * News for Noders - Displays announcements from the News usergroup
  *
  * Shows weblog entries with title, author, date, and content.
  * Supports pagination for viewing older/newer entries.
+ * Admins can remove entries via a confirmation modal.
  */
 const NewsForNoders = ({ data, e2 }) => {
   const {
-    entries = [],
+    entries: initialEntries = [],
+    weblog_id = 0,
+    can_remove = false,
     has_older = false,
     has_newer = false,
     next_older = 0,
@@ -16,7 +19,47 @@ const NewsForNoders = ({ data, e2 }) => {
     error = null
   } = data;
 
+  const [entries, setEntries] = useState(initialEntries);
+  const [confirmModal, setConfirmModal] = useState(null);
+  const [removing, setRemoving] = useState(false);
+
   const currentNodeId = e2?.node_id || data.node_id;
+
+  const handleRemoveClick = (entry) => {
+    setConfirmModal(entry);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!confirmModal || removing) return;
+
+    setRemoving(true);
+    try {
+      const response = await fetch(`/api/weblog/${weblog_id}/${confirmModal.node_id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Remove the entry from the local state
+        setEntries(entries.filter(e => e.node_id !== confirmModal.node_id));
+        setConfirmModal(null);
+      } else {
+        alert('Failed to remove entry: ' + (result.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to remove entry: ' + err.message);
+    } finally {
+      setRemoving(false);
+    }
+  };
+
+  const handleCancelRemove = () => {
+    setConfirmModal(null);
+  };
 
   if (error) {
     return (
@@ -42,12 +85,33 @@ const NewsForNoders = ({ data, e2 }) => {
         {entries.map((entry, index) => (
           <div key={entry.node_id || index} style={styles.item}>
             <div style={styles.header}>
-              <a
-                href={`/node/document/${encodeURIComponent(entry.title)}`}
-                style={styles.title}
-              >
-                {entry.title}
-              </a>
+              <div style={styles.headerTop}>
+                <a
+                  href={`/node/document/${encodeURIComponent(entry.title)}`}
+                  style={styles.title}
+                >
+                  {entry.title}
+                </a>
+                {Boolean(can_remove) && (
+                  <button
+                    onClick={() => handleRemoveClick(entry)}
+                    style={styles.removeButton}
+                    title="Remove from weblog"
+                    onMouseOver={e => {
+                      e.target.style.background = '#fff0f0';
+                      e.target.style.borderColor = '#dc3545';
+                      e.target.style.color = '#dc3545';
+                    }}
+                    onMouseOut={e => {
+                      e.target.style.background = '#f8f9f9';
+                      e.target.style.borderColor = '#dee2e6';
+                      e.target.style.color = '#888888';
+                    }}
+                  >
+                    remove
+                  </button>
+                )}
+              </div>
               <cite style={styles.byline}>
                 by{' '}
                 <a
@@ -77,7 +141,7 @@ const NewsForNoders = ({ data, e2 }) => {
                 href={`/node/${currentNodeId}?nextweblog=${next_newer}`}
                 style={styles.navLink}
               >
-                ← newer
+                &larr; newer
               </a>
             )}
             {Boolean(has_newer && has_older) && <span style={styles.separator}> | </span>}
@@ -86,7 +150,7 @@ const NewsForNoders = ({ data, e2 }) => {
                 href={`/node/${currentNodeId}?nextweblog=${next_older}`}
                 style={styles.navLink}
               >
-                older →
+                older &rarr;
               </a>
             )}
           </div>
@@ -97,6 +161,37 @@ const NewsForNoders = ({ data, e2 }) => {
           </a>
         </p>
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div style={styles.modalOverlay} onClick={handleCancelRemove}>
+          <div style={styles.modal} onClick={e => e.stopPropagation()}>
+            <h3 style={styles.modalTitle}>Remove Entry</h3>
+            <p style={styles.modalText}>
+              Are you sure you want to remove &ldquo;{confirmModal.title}&rdquo; from this weblog?
+            </p>
+            <p style={styles.modalNote}>
+              This will not delete the document, just remove it from the weblog.
+            </p>
+            <div style={styles.modalButtons}>
+              <button
+                onClick={handleCancelRemove}
+                style={styles.cancelButton}
+                disabled={removing}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmRemove}
+                style={styles.confirmButton}
+                disabled={removing}
+              >
+                {removing ? 'Removing...' : 'Remove'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -133,10 +228,7 @@ const styles = {
   container: {
     maxWidth: '800px',
     margin: '0 auto',
-    padding: '10px 20px',
-    fontSize: '14px',
-    lineHeight: '1.6',
-    color: '#111111'
+    padding: '10px 20px'
   },
   weblog: {
     marginBottom: '20px'
@@ -151,17 +243,34 @@ const styles = {
     backgroundColor: '#f8f9f9',
     borderRadius: '4px'
   },
+  headerTop: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: '10px'
+  },
   title: {
     display: 'block',
-    fontSize: '16px',
     fontWeight: 'bold',
     color: '#4060b0',
     textDecoration: 'none',
-    marginBottom: '4px'
+    marginBottom: '4px',
+    flex: 1
+  },
+  removeButton: {
+    background: '#f8f9f9',
+    border: '1px solid #dee2e6',
+    borderRadius: '3px',
+    color: '#888888',
+    fontSize: '11px',
+    cursor: 'pointer',
+    padding: '3px 8px',
+    textDecoration: 'none',
+    transition: 'all 0.15s ease',
+    flexShrink: 0
   },
   byline: {
     display: 'block',
-    fontSize: '13px',
     color: '#507898',
     fontStyle: 'normal'
   },
@@ -171,14 +280,11 @@ const styles = {
   },
   date: {
     display: 'block',
-    fontSize: '12px',
     color: '#888888',
     marginTop: '4px'
   },
   content: {
-    padding: '0 8px',
-    fontSize: '14px',
-    lineHeight: '1.7'
+    padding: '0 8px'
   },
   moreLink: {
     textAlign: 'center',
@@ -218,6 +324,67 @@ const styles = {
     color: '#888888',
     fontStyle: 'italic',
     padding: '40px 0'
+  },
+  // Modal styles
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000
+  },
+  modal: {
+    backgroundColor: '#ffffff',
+    borderRadius: '8px',
+    padding: '24px',
+    maxWidth: '400px',
+    width: '90%',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+  },
+  modalTitle: {
+    margin: '0 0 16px 0',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#38495e'
+  },
+  modalText: {
+    margin: '0 0 8px 0',
+    fontSize: '14px',
+    color: '#111111'
+  },
+  modalNote: {
+    margin: '0 0 20px 0',
+    fontSize: '12px',
+    color: '#888888',
+    fontStyle: 'italic'
+  },
+  modalButtons: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '10px'
+  },
+  cancelButton: {
+    padding: '8px 16px',
+    border: '1px solid #dee2e6',
+    borderRadius: '4px',
+    backgroundColor: '#ffffff',
+    color: '#38495e',
+    cursor: 'pointer',
+    fontSize: '14px'
+  },
+  confirmButton: {
+    padding: '8px 16px',
+    border: 'none',
+    borderRadius: '4px',
+    backgroundColor: '#dc3545',
+    color: '#ffffff',
+    cursor: 'pointer',
+    fontSize: '14px'
   }
 };
 

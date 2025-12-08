@@ -556,11 +556,16 @@ sub nodeName
 		my @canread;
 		my ($e2node, $node_forward, $draftCount) = (undef, undef, 0);
 		foreach (@{ $select_group}) {
-			next unless canReadNode($USER, $_);
 			getRef($_);
+			# Drafts have special permission handling - use canSeeDraft instead of canReadNode
+			if ($$_{type}{title} eq 'draft') {
+				next unless $APP->canSeeDraft($USER, $_, 'find');
+				$draftCount++;
+			} else {
+				next unless canReadNode($USER, $_);
+			}
 			$e2node = $_ if $$_{type}{title} eq 'e2node';
 			$node_forward = $_ if $$_{type}{title} eq 'node_forward';
-			$draftCount++ if $$_{type}{title} eq 'draft';
 			push @canread, $_;
 		}
 

@@ -68,7 +68,7 @@ sub _build_pagetitle
 <!--[if lt IE 8]><link rel="shortcut icon" href="<% $.favicon %>" type="image/x-icon"><![endif]-->
 <link rel="alternate" type="application/atom+xml" title="<% $.atom_feed->[0] %>" href="<% $.atom_feed->[1] %>">
 <meta content="width=device-width,initial-scale=1.0,user-scalable=1" name="viewport">
-
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2GBBBF9ZDK"></script>
 </head>
 <body class="<% $.body_class %>" itemscope itemtype="http://schema.org/WebPage">
 <& 'googleads', no_ads => $.no_ads &>

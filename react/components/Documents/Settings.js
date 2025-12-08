@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -16,6 +16,9 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import UserInteractionsManager from '../UserInteractions/UserInteractionsManager'
+
+// Maximum length for macros (from legacy system)
+const MAX_MACRO_LENGTH = 768
 
 /**
  * SortableNodeletItem - Draggable nodelet item component with remove button
@@ -135,6 +138,12 @@ function Settings({ data }) {
     return prefs
   })
 
+  // Editor preferences state (Admin tab - editors only)
+  const [editorPrefs, setEditorPrefs] = useState(data.editorPreferences || {})
+
+  // Macros state (Admin tab - editors only)
+  const [macros, setMacros] = useState(data.macros || [])
+
   // Drag-and-drop sensors
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -176,8 +185,14 @@ function Settings({ data }) {
     // Check if nodelet settings changed
     const nodeletSettingsChanged = JSON.stringify(nodeletSettings) !== JSON.stringify(data.nodeletSettings || {})
 
-    setIsDirty(prefsChanged || advancedPrefsChanged || nodeletsChanged || notifsChanged || nodeletSettingsChanged)
-  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings])
+    // Check if editor preferences changed (admin tab)
+    const editorPrefsChanged = JSON.stringify(editorPrefs) !== JSON.stringify(data.editorPreferences || {})
+
+    // Check if macros changed (admin tab)
+    const macrosChanged = JSON.stringify(macros) !== JSON.stringify(data.macros || [])
+
+    setIsDirty(prefsChanged || advancedPrefsChanged || nodeletsChanged || notifsChanged || nodeletSettingsChanged || editorPrefsChanged || macrosChanged)
+  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros])
 
   // Handle preference toggle (for checkboxes)
   const handleTogglePref = useCallback((prefKey) => {
@@ -209,6 +224,28 @@ function Settings({ data }) {
       ...prev,
       [prefKey]: value
     }))
+  }, [])
+
+  // Handle editor preference toggle (Admin tab)
+  const handleToggleEditorPref = useCallback((prefKey) => {
+    setEditorPrefs(prev => ({
+      ...prev,
+      [prefKey]: prev[prefKey] ? 0 : 1
+    }))
+  }, [])
+
+  // Handle macro enabled toggle (Admin tab)
+  const handleToggleMacro = useCallback((macroName) => {
+    setMacros(prev => prev.map(m =>
+      m.name === macroName ? { ...m, enabled: m.enabled ? 0 : 1 } : m
+    ))
+  }, [])
+
+  // Handle macro text change (Admin tab)
+  const handleMacroTextChange = useCallback((macroName, newText) => {
+    setMacros(prev => prev.map(m =>
+      m.name === macroName ? { ...m, text: newText } : m
+    ))
   }, [])
 
   // Handle drag end for nodelets
@@ -367,6 +404,47 @@ function Settings({ data }) {
         }
       }
 
+      // Save admin settings (editor preferences + macros) if changed
+      const editorPrefsChanged = JSON.stringify(editorPrefs) !== JSON.stringify(data.editorPreferences || {})
+      const macrosChanged = JSON.stringify(macros) !== JSON.stringify(data.macros || [])
+
+      if (editorPrefsChanged || macrosChanged) {
+        // Build the admin settings payload
+        const adminPayload = {
+          settings: { ...editorPrefs },
+          macros: {}
+        }
+
+        // Add macros to payload
+        macros.forEach(macro => {
+          if (macro.enabled) {
+            // Convert curly braces to square brackets for storage
+            let text = macro.text
+            text = text.replace(/\{/g, '[')
+            text = text.replace(/\}/g, ']')
+            // Clean up line endings
+            text = text.replace(/\r/g, '\n')
+            text = text.replace(/\n+/g, '\n')
+            // Limit length
+            text = text.substring(0, MAX_MACRO_LENGTH)
+            adminPayload.macros[macro.name] = text
+          } else {
+            adminPayload.macros[macro.name] = null // Will delete the macro
+          }
+        })
+
+        const adminResponse = await fetch('/api/preferences/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(adminPayload)
+        })
+
+        const adminResult = await adminResponse.json()
+        if (!adminResult.success) {
+          throw new Error(adminResult.error || 'Failed to save admin settings')
+        }
+      }
+
       setSaveSuccess(true)
       setIsDirty(false)
 
@@ -377,7 +455,7 @@ function Settings({ data }) {
     } finally {
       setIsSaving(false)
     }
-  }, [settingsPrefs, nodelets, notificationPrefs, data.settingsPreferences, data.nodelets, data.notificationPreferences])
+  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros])
 
   // Warn about unsaved changes
   useEffect(() => {
@@ -453,7 +531,8 @@ function Settings({ data }) {
         borderBottom: '1px solid #ddd',
         marginBottom: '20px',
         display: 'flex',
-        gap: '20px'
+        gap: '20px',
+        alignItems: 'center'
       }}>
         <button
           onClick={() => setActiveTab('settings')}
@@ -497,6 +576,41 @@ function Settings({ data }) {
         >
           Nodelets
         </button>
+        {Boolean(data.isEditor) && (
+          <button
+            onClick={() => setActiveTab('admin')}
+            style={{
+              padding: '10px 16px',
+              border: 'none',
+              borderBottom: activeTab === 'admin' ? '2px solid #4060b0' : '2px solid transparent',
+              background: 'none',
+              cursor: 'pointer',
+              fontWeight: activeTab === 'admin' ? 'bold' : 'normal',
+              color: activeTab === 'admin' ? '#4060b0' : '#38495e'
+            }}
+          >
+            Admin
+          </button>
+        )}
+
+        {/* Spacer to push Profile link to the right */}
+        <div style={{ flex: 1 }} />
+
+        {/* Profile link */}
+        {data.currentUser && (
+          <a
+            href={`/node/${data.currentUser.node_id}?displaytype=edit`}
+            style={{
+              padding: '10px 16px',
+              color: '#4060b0',
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            Profile
+          </a>
+        )}
       </div>
 
       {/* Settings tab - Tab 1 from legacy settings function */}
@@ -1338,6 +1452,109 @@ function Settings({ data }) {
               </div>
             </label>
           </fieldset>
+        </div>
+      )}
+
+      {/* Admin tab - editors only */}
+      {activeTab === 'admin' && Boolean(data.isEditor) && (
+        <div>
+          <h2 style={{ marginBottom: '16px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+            Editor Settings
+          </h2>
+
+          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
+            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Editor Options</legend>
+
+            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={editorPrefs.hidenodenotes === 1}
+                onChange={() => handleToggleEditorPref('hidenodenotes')}
+                style={{ marginRight: '8px' }}
+              />
+              <strong>Hide Node Notes</strong>
+              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+                Don't display node notes on writeup pages
+              </div>
+            </label>
+          </fieldset>
+
+          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+            Chatterbox Macros
+          </h2>
+
+          <p style={{ marginBottom: '16px', color: '#507898', fontSize: '14px' }}>
+            Macros allow you to quickly send predefined messages in the chatterbox.
+            Enable a macro by checking "Use", then customize the text.
+          </p>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
+              <thead>
+                <tr>
+                  <th style={{ backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', padding: '8px', textAlign: 'left', width: '50px' }}>Use?</th>
+                  <th style={{ backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', padding: '8px', textAlign: 'left', width: '80px' }}>Name</th>
+                  <th style={{ backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', padding: '8px', textAlign: 'left' }}>Text</th>
+                </tr>
+              </thead>
+              <tbody>
+                {macros.map((macro) => (
+                  <tr key={macro.name}>
+                    <td style={{ border: '1px solid #dee2e6', padding: '8px', textAlign: 'center', verticalAlign: 'top' }}>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(macro.enabled)}
+                        onChange={() => handleToggleMacro(macro.name)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </td>
+                    <td style={{ border: '1px solid #dee2e6', padding: '8px', verticalAlign: 'top', whiteSpace: 'nowrap' }}>
+                      <code>{macro.name}</code>
+                    </td>
+                    <td style={{ border: '1px solid #dee2e6', padding: '8px', verticalAlign: 'top' }}>
+                      <textarea
+                        value={macro.text}
+                        onChange={(e) => handleMacroTextChange(macro.name, e.target.value)}
+                        rows={6}
+                        maxLength={MAX_MACRO_LENGTH}
+                        style={{
+                          width: '100%',
+                          minWidth: '400px',
+                          fontFamily: 'monospace',
+                          fontSize: '13px',
+                          padding: '8px',
+                          border: '1px solid #dee2e6',
+                          borderRadius: '4px',
+                          resize: 'vertical'
+                        }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ color: '#507898', fontSize: '14px', lineHeight: '1.5' }}>
+            <p>
+              If you will use a macro, make sure the "Use" column is checked.
+              If you won't use it, uncheck it, and it will be deleted.
+              The text in the "macro" area of a "non-use" macro is the default text,
+              although you can change it (but be sure to check the "use" checkbox if you want to keep it).
+            </p>
+            <p style={{ marginTop: '8px' }}>
+              Each macro must currently begin with <code>/say</code> (which indicates that you're saying something).
+              Note: each macro is limited to {MAX_MACRO_LENGTH} characters.
+            </p>
+            <p style={{ marginTop: '8px' }}>
+              Note: instead of square brackets, [ and ],
+              you'll have to use curly brackets, {'{'} and {'}'} instead.
+            </p>
+            <p style={{ marginTop: '8px' }}>
+              There is more information about macros at{' '}
+              <a href="/title/macro%20FAQ" style={{ color: '#4060b0', textDecoration: 'none' }}>macro FAQ</a>.
+            </p>
+          </div>
         </div>
       )}
     </div>

@@ -774,6 +774,7 @@ sub groupUncache {
 
 sub existsInGroupCache {
 	my ($this, $NODE, $nid) = @_;
+	return 0 unless defined $nid;
 	return exists($this->{groupCache}->{$$NODE{node_id}}->{$nid});
 }
 

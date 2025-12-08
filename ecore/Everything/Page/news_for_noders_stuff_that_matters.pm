@@ -26,6 +26,7 @@ sub buildReactData {
     my $DB = $self->DB;
     my $APP = $self->APP;
     my $query = $REQUEST->cgi;
+    my $user = $REQUEST->user;
 
     # Get the News usergroup
     my $news_group = $DB->getNode('News', 'usergroup');
@@ -33,6 +34,15 @@ sub buildReactData {
         unless $news_group;
 
     my $log_id = $news_group->{node_id};
+
+    # Check if user can remove entries (admin or usergroup owner)
+    my $can_remove = 0;
+    unless ($user->is_guest) {
+        $can_remove = 1 if $APP->isAdmin($user->NODEDATA);
+        # Also check if user is usergroup owner
+        my $owner_id = $APP->getParameter($log_id, 'usergroup_owner');
+        $can_remove = 1 if $owner_id && $user->node_id == $owner_id;
+    }
 
     # Pagination
     my $interval = 10;
@@ -89,6 +99,8 @@ sub buildReactData {
     return {
         type => 'news_for_noders',
         entries => \@entries,
+        weblog_id => int($log_id),
+        can_remove => $can_remove ? 1 : 0,
         has_older => $has_older ? 1 : 0,
         has_newer => $offset > 0 ? 1 : 0,
         next_older => $end_at + $interval,

@@ -1,6 +1,6 @@
 # Everything2 Special Document Types Reference
 
-**Last Updated**: 2025-12-07
+**Last Updated**: 2025-12-08
 **Total Documents**: 260 documents across all types
 
 ## Document Types Summary
@@ -14,11 +14,11 @@
 
 ## React Migration Status
 
-- **Total React Pages**: 99 documents migrated (38% complete)
-- **Documents Remaining**: 162 documents to migrate (62%)
-  - Superdoc: ~53 remaining
+- **Total React Pages**: 120 documents migrated (46% complete)
+- **Documents Remaining**: 119 documents to migrate (46%)
+  - Superdoc: ~46 remaining
   - Oppressor Superdoc: ~19 remaining (3 migrated to React)
-  - Restricted Superdoc: ~43 remaining (8 migrated to React)
+  - Restricted Superdoc: ~41 remaining (9 migrated to React)
   - Fullpage: ~12 remaining (3 migrated to React)
   - Ticker: 0 remaining (all 21 use XML/JSON API - considered complete)
   - JSONExport: 1 remaining
@@ -33,15 +33,15 @@
 | 25 | Superdoc | `/title/25` | React |
 | A Year Ago Today | Superdoc | `/title/A+Year+Ago+Today` | React |
 | about nobody | Superdoc | `/title/about+nobody` | React |
-| Admin Settings | Superdoc | `/title/Admin+Settings` | E2 Legacy |
+| Admin Settings | Superdoc | `/title/Admin+Settings` | React |
 | Advanced Settings | Superdoc | `/title/Advanced+Settings` | React |
 | alphabetizer | Superdoc | `/title/alphabetizer` | E2 Legacy |
 | Ask Everything: Do I have the Swine Flu? | Superdoc | `/title/Ask+Everything:+Do+I+have+the+Swine+Flu?` | React |
 | Available Rooms | Superdoc | `/title/Available+Rooms` | React |
 | bad spellings listing | Superdoc | `/title/bad+spellings+listing` | E2 Legacy |
 | bestow easter eggs | Superdoc | `/title/bestow+easter+eggs` | React |
-| Between the Cracks | Superdoc | `/title/Between+the+Cracks` | E2 Legacy |
-| Blind Voting Booth | Superdoc | `/title/Blind+Voting+Booth` | E2 Legacy |
+| Between the Cracks | Superdoc | `/title/Between+the+Cracks` | React |
+| Blind Voting Booth | Superdoc | `/title/Blind+Voting+Booth` | React |
 | Bounty Hunters Wanted | Superdoc | `/title/Bounty+Hunters+Wanted` | E2 Legacy |
 | Buffalo Generator | Superdoc | `/title/Buffalo+Generator` | React |
 | Buffalo Haiku Generator | Superdoc | `/title/Buffalo+Haiku+Generator` | React |
@@ -115,7 +115,7 @@
 | Log Archive | Superdoc | `/title/Log+Archive` | E2 Legacy |
 | login | Superdoc | `/title/login` | React |
 | M-Noder Cocktail Lounge | Superdoc | `/title/M-Noder+Cocktail+Lounge` | E2 Legacy |
-| macro FAQ | Superdoc | `/title/macro+FAQ` | E2 Legacy |
+| macro FAQ | Superdoc | `/title/macro+FAQ` | React |
 | Manna from heaven | Superdoc | `/title/Manna+from+heaven` | React |
 | Message Inbox | Superdoc | `/title/Message+Inbox` | React |
 | Message Inbox 2 | Superdoc | `/title/Message+Inbox+2` | Deprecated (use Message Inbox) |
@@ -146,8 +146,8 @@
 | Recent Node Notes | Superdoc | `/title/Recent+Node+Notes` | React |
 | Recent Registry Entries | Superdoc | `/title/Recent+Registry+Entries` | E2 Legacy |
 | Registry Information | Superdoc | `/title/Registry+Information` | E2 Legacy |
-| Reputation Graph | Superdoc | `/title/Reputation+Graph` | E2 Legacy |
-| Reputation Graph Horizontal | Superdoc | `/title/Reputation+Graph+Horizontal` | E2 Legacy |
+| Reputation Graph | Superdoc | `/title/Reputation+Graph` | React |
+| Reputation Graph Horizontal | Superdoc | `/title/Reputation+Graph+Horizontal` | React |
 | Reset password | Superdoc | `/title/Reset+password` | E2 Legacy |
 | Sanctify user | Superdoc | `/title/Sanctify+user` | React |
 | Settings | Superdoc | `/title/Settings` | React |
@@ -210,7 +210,7 @@
 | Feed eDB | Restricted Superdoc | `/title/Feed+eDB` | E2 Legacy |
 | Fiery Teddy Bear Suit | Restricted Superdoc | `/title/Fiery+Teddy+Bear+Suit` | React |
 | Giant Teddy Bear Suit | Restricted Superdoc | `/title/Giant+Teddy+Bear+Suit` | React |
-| GNL | Restricted Superdoc | `/title/GNL` | E2 Legacy |
+| GNL | Restricted Superdoc | `/title/GNL` | React |
 | GP Optouts | Restricted Superdoc | `/title/GP+Optouts` | E2 Legacy |
 | ip2name | Restricted Superdoc | `/title/ip2name` | E2 Legacy |
 | IP Blacklist | Restricted Superdoc | `/title/IP+Blacklist` | E2 Legacy |
@@ -375,6 +375,20 @@
     - Who is Doing What: Admin tool for recent node activity (Oppressor)
     - Recent Users: Users logged in within 24 hours (Oppressor)
     - E2 Word Counter: Live word counting tool with enhanced statistics
+  - **December 8, 2025 Session**:
+    - Admin Settings: Unified into Settings component as Admin tab
+    - Blind Voting Booth: Anonymous writeup voting interface
+    - macro FAQ: Chatterbox macro documentation
+    - List Nodes of Type: Node type browser for editors
+    - News for noders. Stuff that matters.: News weblog display
+    - GNL (Gigantic Node Lister): Admin node browser reusing ListNodesOfType
+    - Create Room: Room creation interface
+    - Enrichify: GP bestowing tool (already React, removed delegation)
+    - Reputation Graph & Reputation Graph Horizontal: Unified component with layout parameter
+    - Old Writeup Settings: Already React, removed delegation code
+    - Between the Cracks: Neglected writeups finder with filters (~126 lines)
+    - E2 XML Search Interface: XML search API using XML::Generator (~51 lines)
+    - Legacy delegation code removed for all above pages (~1837 lines)
 
 ---
 *For questions or updates, see [CLAUDE.md](../CLAUDE.md)*

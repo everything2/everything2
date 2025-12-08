@@ -78,6 +78,9 @@ sub create
       # Pass through warnings (e.g., partial usergroup blocks)
       $response->{warning} = $result->{warning} if $result->{warning};
 
+      # Pass through info messages (e.g., macro execution results)
+      $response->{info} = $result->{info} if $result->{info};
+
       return [$self->HTTP_OK, $response];
     }
     else

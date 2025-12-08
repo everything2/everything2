@@ -205,7 +205,23 @@ const COMPONENT_MAP = {
   everything_finger: lazy(() => import('./Documents/EverythingFinger')),
 
   // Admin tools
-  list_nodes_of_type: lazy(() => import('./Documents/ListNodesOfType'))
+  list_nodes_of_type: lazy(() => import('./Documents/ListNodesOfType')),
+  gnl: lazy(() => import('./Documents/ListNodesOfType')),
+
+  // Help & documentation
+  macro_faq: lazy(() => import('./Documents/MacroFaq')),
+
+  // Admin settings (uses unified Settings component with defaultTab='admin')
+  admin_settings: lazy(() => import('./Documents/Settings')),
+
+  // Voting
+  blind_voting_booth: lazy(() => import('./Documents/BlindVotingBooth')),
+
+  // Reputation visualization (both layouts use same component)
+  reputation_graph: lazy(() => import('./Documents/ReputationGraph')),
+
+  // Content discovery
+  between_the_cracks: lazy(() => import('./Documents/BetweenTheCracks'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

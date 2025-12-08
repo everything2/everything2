@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const ListNodesOfType = ({ data, user }) => {
-  const { access_denied, message, node_types = [], is_admin, is_editor, user_id } = data;
+  const { access_denied, message, node_types = [], is_admin, is_editor, user_id, type } = data;
+
+  // GNL (Gigantic Node Lister) uses same component but shows different title
+  const isGNL = type === 'gnl';
+  const pageTitle = isGNL ? 'Gigantic Node Lister' : 'List Nodes of Type';
 
   if (access_denied) {
     return (
@@ -109,7 +113,7 @@ const ListNodesOfType = ({ data, user }) => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>List Nodes of Type</h2>
+      <h2 style={styles.title}>{pageTitle}</h2>
       
       <div style={styles.section}>
         <label style={styles.label}>

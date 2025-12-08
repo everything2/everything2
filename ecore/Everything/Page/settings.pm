@@ -229,7 +229,10 @@ sub buildReactData
     }
   }
 
-  return {
+  # Check if user is an editor (for showing Admin Settings tab)
+  my $is_editor = $APP->isEditor($user->NODEDATA) ? 1 : 0;
+
+  my $response = {
     type => 'settings',
     settingsPreferences => \%settings_prefs,
     advancedPreferences => \%advanced_prefs,
@@ -238,11 +241,57 @@ sub buildReactData
     notificationPreferences => \@all_notifications,
     blockedUsers => \@blocked_users,
     nodeletSettings => \%nodelet_settings,
+    isEditor => $is_editor,
     currentUser => {
-      node_id => $user->node_id,
+      node_id => int($user->node_id),
       title => $user->title
     }
   };
+
+  # Add admin settings data for editors
+  if ($is_editor) {
+    # Editor-specific settings
+    $response->{editorPreferences} = {
+      hidenodenotes => int($VARS->{hidenodenotes} || 0)
+    };
+
+    # Macro definitions with defaults
+    my %default_macros = (
+      'room' => '/say /msg $1 Just so you know - you are not in the default room, where most people stay. To get back into the main room, either visit [go outside], or: go to the top of the "other users" nodelet, pick "outside" from the dropdown list, and press the "Go" button.',
+      'newbie' => "/say /msg \$1 Hello, your writeups could use a little work. Read [Everything University] and [Everything FAQ] to improve your current and future writeups. \$2+\n/say /msg \$1 If you have any questions, you can send me a private message by typing this in the chatterbox: /msg \$0 (Your message here.)",
+      'html' => '/say /msg $1 Your writeups could be improved by using some HTML tags, such as <p> , which starts a new paragraph. [Everything FAQ: Can I use HTML in my writeups?] lists the tags allowed here, and [E2 HTML tags] shows you how to use them.',
+      'wukill' => '/say /msg $1 FYI - I removed your writeup $2+',
+      'nv' => '/say /msg $1 Hey, I know that you probably didn\'t mean to, but advertising your writeups ("[nodevertising]") in the chatterbox isn\'t cool. Imagine if everyone did that - there would be no room for chatter.',
+      'misc1' => "/say /msg \$0 Use this for your own custom macro. See [macro FAQ] for information about macros.\n/say /msg \$0 If you have an idea of another thing to add that would be wanted by many people, give N-Wing a /msg.",
+      'misc2' => '/say /msg $0 Yup, this is an area for another custom macro.'
+    );
+
+    # Get user's current macros (or defaults if not defined)
+    my @macros;
+    foreach my $name (sort keys %default_macros) {
+      my $var_key = 'chatmacro_' . $name;
+      my $text = $VARS->{$var_key};
+      my $enabled = defined $text && length($text) > 0 ? 1 : 0;
+
+      # Use default if not defined
+      $text = $default_macros{$name} unless $enabled;
+
+      # Convert square brackets to curly for display (legacy workaround)
+      $text =~ s/\[/{/g;
+      $text =~ s/\]/}/g;
+
+      push @macros, {
+        name => $name,
+        text => $text,
+        enabled => $enabled
+      };
+    }
+
+    $response->{macros} = \@macros;
+    $response->{maxMacroLength} = 768;
+  }
+
+  return $response;
 }
 
 __PACKAGE__->meta->make_immutable;
