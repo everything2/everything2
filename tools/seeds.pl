@@ -51,6 +51,15 @@ foreach my $user (1..30,"user with space","genericeditor","genericdev","genericc
   $DB->updateNode($author, -1);
 }
 
+print STDERR "Setting normaluser20 to opt out of GP system\n";
+my $normaluser20 = $DB->getNode("normaluser20", "user");
+if ($normaluser20) {
+  my $nu20vars = getVars($normaluser20);
+  $nu20vars->{GPoptout} = 1;
+  setVars($normaluser20, $nu20vars);
+  $DB->updateNode($normaluser20, -1);
+}
+
 print STDERR "Promoting genericeditor to be a content editor\n";
 my $ce = $DB->getNode("Content Editors","usergroup");
 my $genericed = $DB->getNode("genericeditor","user");

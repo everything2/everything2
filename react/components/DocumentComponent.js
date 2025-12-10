@@ -52,6 +52,7 @@ const COMPONENT_MAP = {
 
   // Utility tools
   wharfinger_s_linebreaker: lazy(() => import('./Documents/WharfingerLinebreaker')),
+  word_messer_upper: lazy(() => import('./Documents/WordMesserUpper')),
 
   // Holiday checkers (all use same IsItHoliday component)
   is_it_christmas_yet: lazy(() => import('./Documents/IsItHoliday')),
@@ -166,6 +167,7 @@ const COMPONENT_MAP = {
   everything_s_best_users: lazy(() => import('./Documents/EverythingsBestUsers')),
   everything_s_best_writeups: lazy(() => import('./Documents/EverythingsBestWriteups')),
   everything_s_biggest_stars: lazy(() => import('./Documents/EverythingsBiggestStars')),
+  everything_s_richest_noders: lazy(() => import('./Documents/EverythingSRichestNoders')),
   level_distribution: lazy(() => import('./Documents/LevelDistribution')),
 
   // Tools & utilities
@@ -231,7 +233,35 @@ const COMPONENT_MAP = {
   create_a_registry: lazy(() => import('./Documents/CreateARegistry')),
 
   // Iron Noder (both use same component, differentiated by is_historical flag)
-  iron_noder_progress: lazy(() => import('./Documents/IronNoderProgress'))
+  iron_noder_progress: lazy(() => import('./Documents/IronNoderProgress')),
+
+  // CSS demonstration & testing
+  zenmastery: lazy(() => import('./Documents/Zenmastery')),
+
+  // User content tracking
+  your_filled_nodeshells: lazy(() => import('./Documents/YourFilledNodeshells')),
+  nodes_of_the_year: lazy(() => import('./Documents/NodesOfTheYear')),
+
+  // Server diagnostics
+  server_telemetry: lazy(() => import('./Documents/ServerTelemetry')),
+
+  // Publications & discussions
+  everything_publication_directory: lazy(() => import('./Documents/EverythingPublicationDirectory')),
+
+  // Client development
+  clientdev_home: lazy(() => import('./Documents/ClientdevHome')),
+
+  // Admin tools
+  faq_editor: lazy(() => import('./Documents/FAQEditor')),
+  gp_optouts: lazy(() => import('./Documents/GpOptouts')),
+
+  // User statistics & tools
+  noding_speedometer: lazy(() => import('./Documents/NodingSpeedometer')),
+  notelet_editor: lazy(() => import('./Documents/NoteletEditor')),
+
+  // Deprecated editorial tools (preserved for site integrity)
+  the_killing_floor: lazy(() => import('./Documents/TheKillingFloor')),
+  the_killing_floor_ii: lazy(() => import('./Documents/TheKillingFloor'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))
