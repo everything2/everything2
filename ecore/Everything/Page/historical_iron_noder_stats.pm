@@ -245,24 +245,14 @@ sub _is_daylog_node {
 sub _get_available_years {
     my ($self, $DB) = @_;
 
-    # Find all ironnoders* usergroups
-    my $usergroup_type = $DB->getType('usergroup');
-    return () unless $usergroup_type;
-
-    my $csr = $DB->sqlSelectMany(
-        'title',
-        'node',
-        "type_nodetype = " . $usergroup_type->{node_id} . " AND title LIKE 'ironnoders%'",
-        'ORDER BY title DESC'
-    );
-
-    return () unless $csr;
-
+    # Return all years from 2013 to current year
+    # Iron Noder challenge has run annually since 2008, but user requested 2013+
+    my $current_year = (localtime)[5] + 1900;
     my @years = ();
-    while (my $row = $csr->fetchrow_hashref()) {
-        if ($row->{title} =~ /^ironnoders(\d{4})$/) {
-            push @years, int($1);
-        }
+
+    # Generate years from 2013 to current year
+    for (my $year = $current_year; $year >= 2013; $year--) {
+        push @years, $year;
     }
 
     return @years;

@@ -38,6 +38,16 @@ const Chatterlight = ({ data, user, e2 }) => {
   const hasNewWriteups = nodeletIds.includes(NEW_WRITEUPS_ID)
   const hasAnyHeaderNodelet = hasNotifications || hasMessages || hasNewWriteups
 
+  // Ref for Messages scroll container
+  const messagesContainerRef = React.useRef(null)
+
+  // Auto-scroll Messages to bottom when messages change
+  React.useEffect(() => {
+    if (messagesContainerRef.current && e2?.messagesData?.length > 0) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
+  }, [e2?.messagesData])
+
   return (
     <div style={{
       display: 'flex',
@@ -92,10 +102,13 @@ const Chatterlight = ({ data, user, e2 }) => {
               </div>
             )}
             {hasMessages && (
-              <div style={{
-                maxHeight: '300px',
-                overflow: 'auto'
-              }}>
+              <div
+                ref={messagesContainerRef}
+                style={{
+                  maxHeight: '300px',
+                  overflow: 'auto'
+                }}
+              >
                 <Messages
                   e2={e2}
                   user={user}
