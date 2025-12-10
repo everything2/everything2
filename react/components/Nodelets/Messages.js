@@ -226,8 +226,10 @@ const Messages = (props) => {
           ? `Message sent, but 1 user is blocking you`
           : `Message sent, but ${blockedCount} users are blocking you`
 
-        // Refresh messages list
-        await loadMessages(showArchived)
+        // Refresh messages list if sending to a usergroup (sender receives own message)
+        if (data.poll_messages) {
+          await loadMessages(showArchived)
+        }
 
         // Return warning for partial success
         return { success: true, warning: warningMsg }
@@ -238,8 +240,10 @@ const Messages = (props) => {
         throw new Error(data.errortext)
       }
 
-      // Refresh messages list
-      await loadMessages(showArchived)
+      // Refresh messages list if sending to a usergroup (sender receives own message)
+      if (data.poll_messages) {
+        await loadMessages(showArchived)
+      }
 
       return true
     } catch (err) {

@@ -52,7 +52,7 @@
 | Clientdev Home | Superdoc | `/title/Clientdev+Home` | E2 Legacy |
 | Confirm password | Superdoc | `/title/Confirm+password` | E2 Legacy |
 | Cool Archive | Superdoc | `/title/Cool+Archive` | React |
-| Create a Registry | Superdoc | `/title/Create+a+Registry` | E2 Legacy |
+| Create a Registry | Superdoc | `/title/Create+a+Registry` | React |
 | Create Category | Superdoc | `/title/Create+Category` | E2 Legacy |
 | Create Room | Superdoc | `/title/Create+Room` | React |
 | Database Lag-o-meter | Superdoc | `/title/Database+Lag-o-meter` | React |
@@ -102,8 +102,8 @@
 | Fezisms Generator | Superdoc | `/title/Fezisms+Generator` | React |
 | Findings: | Superdoc | `/title/Findings:` | React |
 | Golden Trinkets | Superdoc | `/title/Golden+Trinkets` | React |
-| historical iron noder stats | Superdoc | `/title/historical+iron+noder+stats` | E2 Legacy |
-| iron noder progress | Superdoc | `/title/iron+noder+progress` | E2 Legacy |
+| historical iron noder stats | Superdoc | `/title/historical+iron+noder+stats` | React |
+| iron noder progress | Superdoc | `/title/iron+noder+progress` | React |
 | Is it April Fools' Day yet? | Superdoc | `/title/Is+it+April+Fools'+Day+yet?` | React |
 | Is it Christmas yet? | Superdoc | `/title/Is+it+Christmas+yet?` | React |
 | Is it Halloween yet? | Superdoc | `/title/Is+it+Halloween+yet?` | React |
@@ -140,12 +140,12 @@
 | Permission Denied | Superdoc | `/title/Permission+Denied` | React |
 | Piercisms Generator | Superdoc | `/title/Piercisms+Generator` | React |
 | Pit of Abomination | Superdoc | `/title/Pit+of+Abomination` | React |
-| Popular Registries | Superdoc | `/title/Popular+Registries` | E2 Legacy |
+| Popular Registries | Superdoc | `/title/Popular+Registries` | React |
 | Random nodeshells | Superdoc | `/title/Random+nodeshells` | React |
 | Recalculate XP | Superdoc | `/title/Recalculate+XP` | E2 Legacy |
 | Recent Node Notes | Superdoc | `/title/Recent+Node+Notes` | React |
-| Recent Registry Entries | Superdoc | `/title/Recent+Registry+Entries` | E2 Legacy |
-| Registry Information | Superdoc | `/title/Registry+Information` | E2 Legacy |
+| Recent Registry Entries | Superdoc | `/title/Recent+Registry+Entries` | React |
+| Registry Information | Superdoc | `/title/Registry+Information` | React |
 | Reputation Graph | Superdoc | `/title/Reputation+Graph` | React |
 | Reputation Graph Horizontal | Superdoc | `/title/Reputation+Graph+Horizontal` | React |
 | Reset password | Superdoc | `/title/Reset+password` | E2 Legacy |
@@ -168,7 +168,7 @@
 | The Costume Shop | Superdoc | `/title/The+Costume+Shop` | E2 Legacy |
 | The Everything2 Voting/Experience System | Superdoc | `/title/The+Everything2+Voting/Experience+System` | React |
 | The Recommender | Superdoc | `/title/The+Recommender` | React |
-| The Registries | Superdoc | `/title/The+Registries` | E2 Legacy |
+| The Registries | Superdoc | `/title/The+Registries` | React |
 | Theme Nirvana | Superdoc | `/title/Theme+Nirvana` | E2 Legacy |
 | Topic Archive | Superdoc | `/title/Topic+Archive` | E2 Legacy |
 | Usergroup discussions | Superdoc | `/title/Usergroup+discussions` | E2 Legacy |
@@ -389,6 +389,8 @@
     - Between the Cracks: Neglected writeups finder with filters (~126 lines)
     - E2 XML Search Interface: XML search API using XML::Generator (~51 lines)
     - Legacy delegation code removed for all above pages (~1837 lines)
+    - Iron Noder Progress & Historical Iron Noder Stats: Unified component with is_historical flag
+    - Registry pages: The Registries, Popular Registries, Recent Registry Entries, Registry Information, Create a Registry
 
 ---
 *For questions or updates, see [CLAUDE.md](../CLAUDE.md)*

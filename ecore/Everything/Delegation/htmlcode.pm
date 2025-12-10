@@ -11901,10 +11901,11 @@ sub showpoll
     my $i = 0;
     while($options[$i])
     {
-      my $bar_width = sprintf("%2.0f",($results[$i]/$votedivider)*180);
+      my $result_count = $results[$i] // 0;
+      my $bar_width = sprintf("%2.0f",($result_count/$votedivider)*180);
       $str.='<tr><td>'.($i == $vote ? '<b>' : '').$options[$i].($i ==$vote ? '</b>' : '').'</td>
-        <td align="right">&nbsp;'.$results[$i].'&nbsp;</td>
-        <td align="right">'.sprintf("%2.2f",($results[$i]/$votedivider)*100).'%</td></tr>';
+        <td align="right">&nbsp;'.$result_count.'&nbsp;</td>
+        <td align="right">'.sprintf("%2.2f",($result_count/$votedivider)*100).'%</td></tr>';
       $str.="<tr><td colspan='3'><div class='oddrow' style='height:8px;width:${bar_width}px;'></div></td></tr>";
       $i++;
     }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const ListNodesOfType = ({ data, user }) => {
-  const { access_denied, message, node_types = [], is_admin, is_editor, user_id, type } = data;
+  const { access_denied, message, node_types = [], default_type = '', is_admin, is_editor, user_id, type } = data;
 
   // GNL (Gigantic Node Lister) uses same component but shows different title
   const isGNL = type === 'gnl';
@@ -17,7 +17,8 @@ const ListNodesOfType = ({ data, user }) => {
     );
   }
 
-  const [selectedType, setSelectedType] = useState('');
+  // Convert to string for controlled select element (HTML select values are always strings)
+  const [selectedType, setSelectedType] = useState(default_type ? String(default_type) : '');
   const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -28,6 +29,22 @@ const ListNodesOfType = ({ data, user }) => {
   const [sort2, setSort2] = useState('0');
   const [filterUser, setFilterUser] = useState('');
   const [filterUserNot, setFilterUserNot] = useState(false);
+
+  const saveTypePreference = async (typeId) => {
+    if (!typeId) return;
+
+    try {
+      await fetch('/api/preferences/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          updates: [{ key: 'ListNodesOfType_Type', value: typeId }]
+        })
+      });
+    } catch (err) {
+      console.error('Failed to save type preference:', err);
+    }
+  };
 
   const fetchNodes = async () => {
     if (!selectedType) return;
@@ -118,10 +135,23 @@ const ListNodesOfType = ({ data, user }) => {
       <div style={styles.section}>
         <label style={styles.label}>
           nodetype:{' '}
-          <select value={selectedType} onChange={(e) => { setSelectedType(e.target.value); setOffset(0); }} style={styles.select}>
+          <select
+            value={selectedType}
+            onChange={(e) => {
+              const newType = e.target.value;
+              setSelectedType(newType);
+              setOffset(0);
+              if (newType) {
+                saveTypePreference(newType);
+              }
+            }}
+            style={styles.select}
+          >
             <option value="">Choose a node type...</option>
             {node_types.map((type) => (
-              <option key={type.node_id} value={type.node_id}>{type.title}</option>
+              <option key={type.node_id} value={String(type.node_id)}>
+                {type.title}
+              </option>
             ))}
           </select>
         </label>

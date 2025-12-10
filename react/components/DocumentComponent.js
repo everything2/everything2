@@ -221,7 +221,17 @@ const COMPONENT_MAP = {
   reputation_graph: lazy(() => import('./Documents/ReputationGraph')),
 
   // Content discovery
-  between_the_cracks: lazy(() => import('./Documents/BetweenTheCracks'))
+  between_the_cracks: lazy(() => import('./Documents/BetweenTheCracks')),
+
+  // Registries
+  popular_registries: lazy(() => import('./Documents/PopularRegistries')),
+  recent_registry_entries: lazy(() => import('./Documents/RecentRegistryEntries')),
+  registry_information: lazy(() => import('./Documents/RegistryInformation')),
+  the_registries: lazy(() => import('./Documents/TheRegistries')),
+  create_a_registry: lazy(() => import('./Documents/CreateARegistry')),
+
+  // Iron Noder (both use same component, differentiated by is_historical flag)
+  iron_noder_progress: lazy(() => import('./Documents/IronNoderProgress'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

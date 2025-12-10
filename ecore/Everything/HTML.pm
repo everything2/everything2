@@ -951,6 +951,17 @@ sub printHeader
 
         $extras->{'X-Frame-Options'} = "sameorigin";
 
+        # Set Cache-Control based on user login state
+        # Logged-in users get private, no-cache to prevent CloudFront caching
+        # This ensures user-specific content (random nodes, personal data) is fresh
+        if ($APP->isGuest($USER)) {
+            # Guests can be cached by CloudFront (controlled by CloudFront policy)
+            $extras->{'Cache-Control'} = "public, max-age=300";
+        } else {
+            # Logged-in users should never be cached
+            $extras->{'Cache-Control'} = "private, no-cache, no-store, must-revalidate";
+        }
+
 	if($ENV{SCRIPT_NAME}) {
 		$query->header(-type=> $datatype,
 			       -content_length => $len,

@@ -1603,6 +1603,7 @@ sub canSeeDraft
 	}
 
 	return 0 unless $draft && defined $draft->{author_user};
+	return 0 unless defined $user->{node_id};
 	return 1 if $user->{node_id} == $draft->{author_user};
 
 	# we may not have a complete node. Get needed info
@@ -1641,9 +1642,10 @@ sub canSeeDraft
 	my @collab_names = split ',', $$draft{collaborators};
 	my $UG = undef;
 
+	my $user_title = $user->{title} // '';
 	foreach (@collab_names){
 		$_ =~ s/^\s*|\s*$//g;
-		return 1 if lc($_) eq lc($$user{title}) or lc($_) eq 'everybody';
+		return 1 if lc($_) eq lc($user_title) or lc($_) eq 'everybody';
 		if ($UG = $this->{db}->getNode($_, 'usergroup')){
 			my $collab_ids = { map {$_->{node_id}} @{$this->{db}->selectNodegroupFlat($UG)} };
  				return 1 if exists $collab_ids->{$$user{node_id}};
@@ -4271,7 +4273,8 @@ sub handlePrivateMessageCommand
       my $warning_msg = $blocked_count == 1
         ? "Message sent, but 1 user is blocking you"
         : "Message sent, but $blocked_count users are blocking you";
-      return { success => 1, warning => $warning_msg };
+      # User is in the usergroup so they'll receive their own message - trigger poll
+      return { success => 1, warning => $warning_msg, poll_messages => 1 };
     } else {
       # Complete failure - all recipients blocked (direct message)
       my $error_msg = join(', ', @{$result->{errors}});
@@ -4279,7 +4282,11 @@ sub handlePrivateMessageCommand
     }
   }
 
-  return $result->{success} ? { success => 1 } : { success => 0, error => 'Message not sent' };
+  # If sent to usergroup (result includes sent_to array), trigger message poll
+  # since the sender is a member and will receive their own message
+  my $poll_messages = ($result->{sent_to} && @{$result->{sent_to}}) ? 1 : 0;
+
+  return $result->{success} ? { success => 1, poll_messages => $poll_messages } : { success => 0, error => 'Message not sent' };
 }
 
 sub handleHelpCommand
