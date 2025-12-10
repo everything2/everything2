@@ -26,7 +26,7 @@ my $realyear = $year+1900;
 my $rootlog = "root log: $months->[$mon] $realyear";
 my $daylog = "$months->[$mon] $mday, $realyear";
 
-foreach my $user (1..30,"user with space","genericeditor","genericdev","genericchanop")
+foreach my $user (1..30,"user with space","genericeditor","genericdev","genericchanop","genericdocs")
 {
   if($user =~ /^\d/)
   {
@@ -81,6 +81,21 @@ $genericdevv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,168
 $genericdevv->{settings} = '{"notifications":{"2045486":1}}';
 setVars($genericdev,$genericdevv);
 $DB->updateNode($genericdev, -1);
+
+print STDERR "Promoting genericdocs to e2docs group\n";
+my $e2docs = $DB->getNode("E2Docs","usergroup");
+my $genericdocs = getNode("genericdocs","user");
+my $already_docs = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$e2docs->{node_id} AND node_id=$genericdocs->{node_id}");
+if (!$already_docs) {
+  $DB->insertIntoNodegroup($e2docs, $DB->getNode("root","user"), $genericdocs);
+  $DB->updateNode($e2docs, -1);
+}
+my $genericdocsv = getVars($genericdocs);
+$genericdocsv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708";
+$genericdocsv->{settings} = '{"notifications":{"2045486":1}}';
+setVars($genericdocs, $genericdocsv);
+$DB->updateNode($genericdocs, -1);
 
 print STDERR "Promoting genericchanop to be a channel operator\n";
 my $chanops = $DB->getNode("chanops","usergroup");
@@ -942,3 +957,170 @@ $DB->sqlUpdate("e2poll", {
 }, "e2poll_id = $poll_node3->{node_id}");
 
 print STDERR "Poll '$poll_title3' (node_id: $poll_node3->{node_id}) with status 'new' (no votes)\n";
+
+# ============================================================
+# Iron Noder Test Data
+# Create ironnoders usergroup and populate with test writeups
+# Creates data for current year (if Nov/Dec) AND previous year
+# ============================================================
+print STDERR "\n=== Creating Iron Noder test data ===\n";
+
+# Determine which years to create data for
+# Always create previous year for historical testing
+# Also create current year if we're in November or December
+my @iron_years = ($realyear - 1);  # Always include last year
+if ($mon >= 10) {  # November (10) or December (11) - 0-indexed
+  push @iron_years, $realyear;
+  print STDERR "Current month is Nov/Dec, creating data for both $realyear and " . ($realyear - 1) . "\n";
+} else {
+  print STDERR "Creating Iron Noder data for November " . ($realyear - 1) . " (historical only)\n";
+}
+
+# Create the ironnoders usergroup (generic, for current year)
+my $ironnoders = $DB->getNode("ironnoders", "usergroup");
+if (!$ironnoders) {
+  print STDERR "Creating ironnoders usergroup\n";
+  my $ironnoders_id = $DB->insertNode("ironnoders", "usergroup", $root, {});
+  $ironnoders = $DB->getNodeById($ironnoders_id);
+}
+
+# Create year-specific groups for each year we're seeding
+my %ironnoders_by_year;
+foreach my $yr (@iron_years) {
+  my $group_name = "ironnoders$yr";
+  my $group = $DB->getNode($group_name, "usergroup");
+  if (!$group) {
+    print STDERR "Creating $group_name usergroup\n";
+    my $group_id = $DB->insertNode($group_name, "usergroup", $root, {});
+    $group = $DB->getNodeById($group_id);
+  }
+  $ironnoders_by_year{$yr} = $group;
+}
+
+# Iron Noder participants configuration
+# Format: username => number of writeups to create (30+ = iron noder!)
+my %iron_participants = (
+  "normaluser1" => 35,   # Iron Noder! Over 30
+  "normaluser2" => 30,   # Iron Noder! Exactly 30
+  "normaluser3" => 25,   # Close but not quite
+  "normaluser4" => 15,   # Halfway there
+  "normaluser5" => 8,    # Some participation
+  "normaluser6" => 3,    # Minimal participation
+);
+
+# Add participants to all usergroups
+foreach my $username (keys %iron_participants) {
+  my $user = $DB->getNode($username, "user");
+  next unless $user;
+
+  # Add to current ironnoders group
+  add_to_group($user, $ironnoders, 0);
+
+  # Add to each year-specific group
+  foreach my $yr (@iron_years) {
+    add_to_group($user, $ironnoders_by_year{$yr}, 0);
+  }
+}
+print STDERR "Added " . scalar(keys %iron_participants) . " participants to ironnoders groups\n";
+
+# Create November writeups for each participant, for each year
+my $writeup_type = $DB->getType("writeup");
+my $thing_type = $DB->getNode("thing", "writeuptype");
+my $log_type = $DB->getNode("log", "writeuptype");
+
+foreach my $iron_year (@iron_years) {
+  print STDERR "\n--- Creating writeups for November $iron_year ---\n";
+
+  foreach my $username (sort keys %iron_participants) {
+    my $num_writeups = $iron_participants{$username};
+    my $author = $DB->getNode($username, "user");
+    next unless $author;
+
+    print STDERR "Creating $num_writeups Iron Noder writeups for $username ($iron_year)\n";
+
+    for my $i (1..$num_writeups) {
+      my $title = "Iron Noder $iron_year - $username writeup $i";
+
+      # Create e2node if needed
+      my $e2node = $DB->getNode($title, "e2node");
+      if (!$e2node) {
+        my $e2node_id = $DB->insertNode($title, "e2node", $author, {});
+        $e2node = $DB->getNodeById($e2node_id);
+      }
+
+      # Create writeup if needed
+      my $writeup_title = "$title (thing)";
+      my $writeup = $DB->getNode($writeup_title, "writeup");
+      if (!$writeup) {
+        my $writeup_id = $DB->insertNode($writeup_title, "writeup", $author, {});
+        $writeup = $DB->getNodeById($writeup_id);
+      }
+
+      # Set writeup properties
+      $writeup->{doctext} = "This is Iron Noder writeup #$i by $username for November $iron_year. " .
+                            "The [Iron Noder] challenge requires 30 writeups during November!";
+      $writeup->{parent_e2node} = $e2node->{node_id};
+      $writeup->{wrtype_writeuptype} = $thing_type->{node_id};
+
+      # Spread writeups across November (day 1-30)
+      my $day = (($i - 1) % 30) + 1;
+      my $publish_date = sprintf("%04d-11-%02d 12:00:00", $iron_year, $day);
+      $writeup->{publishtime} = $publish_date;
+      $writeup->{createtime} = $publish_date;
+
+      $DB->updateNode($writeup, $author);
+
+      # Add to e2node's nodegroup
+      my $in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+        "nodegroup_id=$e2node->{node_id} AND node_id=$writeup->{node_id}");
+      if (!$in_group) {
+        $DB->insertIntoNodegroup($e2node, -1, $writeup);
+      }
+    }
+  }
+
+  # Also add some daylog writeups to test the max_daylogs limit (for normaluser1)
+  print STDERR "Creating daylog writeups for Iron Noder daylog limit testing ($iron_year)\n";
+  my $daylog_author = $DB->getNode("normaluser1", "user");
+  for my $day (1..8) {
+    # Create daylog title in format "November DD, YYYY"
+    my $daylog_title = sprintf("November %d, %d", $day, $iron_year);
+
+    my $e2node = $DB->getNode($daylog_title, "e2node");
+    if (!$e2node) {
+      my $e2node_id = $DB->insertNode($daylog_title, "e2node", $daylog_author, {});
+      $e2node = $DB->getNodeById($e2node_id);
+    }
+
+    my $writeup_title = "$daylog_title (log)";
+    my $writeup = $DB->getNode($writeup_title, "writeup");
+    if (!$writeup) {
+      my $writeup_id = $DB->insertNode($writeup_title, "writeup", $daylog_author, {});
+      $writeup = $DB->getNodeById($writeup_id);
+    }
+
+    $writeup->{doctext} = "Daylog entry for November $day, $iron_year. " .
+                          "Testing the Iron Noder daylog limit (max 5 count toward total).";
+    $writeup->{parent_e2node} = $e2node->{node_id};
+    $writeup->{wrtype_writeuptype} = $log_type->{node_id};
+
+    my $publish_date = sprintf("%04d-11-%02d 10:00:00", $iron_year, $day);
+    $writeup->{publishtime} = $publish_date;
+    $writeup->{createtime} = $publish_date;
+
+    $DB->updateNode($writeup, $daylog_author);
+
+    my $in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+      "nodegroup_id=$e2node->{node_id} AND node_id=$writeup->{node_id}");
+    if (!$in_group) {
+      $DB->insertIntoNodegroup($e2node, -1, $writeup);
+    }
+  }
+  print STDERR "Created 8 daylog writeups for normaluser1 (only 5 should count) for $iron_year\n";
+}
+
+print STDERR "\n=== Iron Noder test data complete ===\n";
+print STDERR "  - ironnoders group: participants for current year\n";
+print STDERR "  - Years with data: " . join(", ", @iron_years) . "\n";
+print STDERR "  - Iron Noders (30+): normaluser1, normaluser2\n";
+print STDERR "  - Other participants: normaluser3-6\n";

@@ -185,6 +185,7 @@ $user->set_vars($VARS);
 | `sqlprompt_wrap` | 0-3 | SQL output format | document.pm |
 | `sqlprompt_nocount` | Boolean | Hide row count in SQL | document.pm |
 | `EDD_Sort` | String | Sort order preference for Everything Document Directory (0=default, idA/idD=node_id asc/desc, nameA/nameD=title asc/desc, authorA/authorD=author asc/desc, createA/createD=createtime asc/desc) | Page/everything_document_directory.pm |
+| `ListNodesOfType_Type` | Integer | Last selected node type ID in List Nodes of Type tool. Set via setvars_ListNodesOfType_Type URL parameter (from nodetype display page links) or automatically saved when user selects a type. | Page/list_nodes_of_type.pm, Documents/ListNodesOfType.js |
 
 ### Modern Settings (JSON)
 

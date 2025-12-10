@@ -73,7 +73,8 @@ package MockCGI {
 
 package main;
 
-# Get Virgil bot user (commonly used bot for testing)
+# Get Virgil bot user (used for testing because genericdocs is in e2docs group)
+# The 'bot inboxes' setting requires 'e2docs' group for Virgil access
 my $bot_user = $DB->getNode("Virgil", "user");
 ok($bot_user, "Got Virgil bot user");
 
@@ -89,15 +90,15 @@ my $admin_user = MockUser->new(
 );
 ok($admin_user->is_admin, "Admin user has is_admin flag");
 
-# Create mock editor user based on real e2e_admin user
-my $e2e_admin_node_data = $DB->getNodeById(2212892);
+# Create mock editor user based on genericdocs (in e2docs group, can access Virgil inbox)
+my $genericdocs_node_data = $DB->getNode("genericdocs", "user");
 my $editor_user = MockUser->new(
-    node_id => $e2e_admin_node_data->{node_id},
-    title => $e2e_admin_node_data->{title},
+    node_id => $genericdocs_node_data->{node_id},
+    title => $genericdocs_node_data->{title},
     is_guest_flag => 0,
     is_admin_flag => 0,
     is_editor_flag => 1,
-    NODEDATA => $e2e_admin_node_data
+    NODEDATA => $genericdocs_node_data
 );
 ok($editor_user->is_editor, "Editor user has is_editor flag");
 

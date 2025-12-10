@@ -58,7 +58,6 @@ use Everything::S3;
 use IO::Compress::Zip;
 use utf8;
 
-
 sub bounty_hunters_wanted {
     my $DB       = shift;
     my $query    = shift;
@@ -304,63 +303,6 @@ sub confirm_password {
 
 }
 
-
-sub create_a_registry {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    my $str = q|<p>Registries are places where people can share snippets of information about themselves, like their [email address] or [favourite vegetables].</p>|;
-
-    $str .= q|<p>Before you create any new registries, you should have a look at [the registries] we already have.</p>|;
-
-    $str .= htmlcode('openform');
-
-    if ( $query->param('sexisgood') ) {
-        return $str;
-    }
-
-    if ( $APP->getLevel($USER) < 8 ) {
-        return q{You would need to be [The Everything2 Voting/Experience System|level 8] to create a registry.}
-          unless $APP->getLevel($USER);
-
-    }
-
-    my $labels = [ 'key', 'value' ];
-    my $rows   = [
-        {
-            'key'   => 'Title',
-            'value' =>
-              '<input type="text" name="node" size="40" maxlength="255">
-      <input type="hidden" name="op" value="new">
-      <input type="hidden" name="type" value="registry">
-      <input type="hidden" name="displaytype" value="display">'
-        },
-        {
-            'key'   => 'Description',
-            'value' =>
-              '<textarea name="registry_doctext" rows="7" cols="50"></textarea>'
-        },
-        {
-            'key'   => 'Answer style',
-            'value' => $query->popup_menu(
-                -name   => 'registry_input_style',
-                -values => [ 'text', 'yes/no', 'date' ]
-            )
-        },
-        {
-            'key'   => ' ',
-            'value' => '<input type="submit" name="sexisgood" value="create">'
-        }
-    ];
-    $str .= $APP->buildTable( $labels, $rows, 'nolabels' );
-    $str .= q|</form>|;
-    return $str;
-}
 
 sub create_category {
     my $DB       = shift;
@@ -820,139 +762,6 @@ qq|<p>[${username}[user]] has no drafts visible to you.</p>$showhidenukedlink|;
     $str .= qq|</form>|;
 
     return $str;
-}
-
-sub e2_bouncer {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    return "Permission Denied" unless $APP->isChanop($USER);
-
-    my $header = '<p>...a.k.a [Nerf] Borg.</p>';
-
-    $header .= htmlcode( 'openform2', 'bouncer' );
-
-    my @stuff2 = (
-        "Yeah, yeah, get a room...",
-        "I'll take door number three...",
-        "Hey, that's a llama back there!",
-        "Three doors, down, on your right, just past [Political Asylum]",
-        "They can't ALL be locked!?",
-        "Why be so stuffed up in a room? [Go outside]!"
-    );
-
-    # $roommenu gets put into the $table
-    my $roommenu =
-      '<select name="roomname"><option name="outside">outside</option>';
-
-    # The rest of this builds the list of rooms for the bottom.
-    my $str2 =
-        "<hr><p align=\"center\">"
-      . ( $stuff2[ rand(@stuff2) ] )
-      . "</p><br>"
-      . "<p align=\"left\">Visit room: </p>";
-
-    my $csr2 = $DB->sqlSelectMany( "node_id, title",
-        "node", "type_nodetype=" . getId( getType("room") ) );
-    my $rooms2 = {};
-    while ( my $ROW2 = $csr2->fetchrow_hashref() ) {
-        $$rooms2{ lc( $$ROW2{title} ) } = $$ROW2{node_id};
-    }
-
-    $str2 .= "<ul><li>[Go Outside|outside]</li>";
-    foreach ( sort( keys %$rooms2 ) ) {
-        my $nodehash = getNodeById( $$rooms2{$_} );
-        $str2 .= "<li>" . linkNode($nodehash);
-        $roommenu .=
-            '<option name='
-          . $nodehash->{'title'} . '>'
-          . $nodehash->{'title'}
-          . '</option>';
-    }
-
-    $roommenu .= '</select>';
-    $str2     .= "</ul>";
-
-    my $table =
-qq|<table><tr><td valign="top" align="right" width="80"><p>Move user(s)</p>|;
-    $table .=
-qq|<p><i>Put each username on its own line, and don\'t hardlink them.</i></p>|;
-    $table .= qq|</td><td><textarea name="usernames" rows="20" cols="30">|;
-    $table .= $query->param('usernames');
-    $table .= qq|</textarea></td></tr><tr>|;
-    $table .= qq|<td valign="top" align="right">to room</td>|;
-    $table .= qq|<td valign="top" align="right">$roommenu</td></tr>|;
-    $table .= qq|<tr><td valign="top" colspan="2" align="right">|;
-    $table .=
-      qq|<input type="submit" name="sexisgood" value="submit" /></form>|;
-    $table .= qq|</td></tr></table>|;
-
-    if (   defined $query->param('usernames')
-        && defined $query->param('roomname') )
-    {
-        my $usernames = $query->param('usernames');
-        my $roomname  = $query->param('roomname');
-        my $room      = getNode( $roomname, 'room' );
-        my $str       = '';
-
-        if ( !$room && !( $roomname eq 'outside' ) ) {
-            return
-                '<p><font color="#c00000">Room <b>"'
-              . $roomname
-              . '"</b> does not exist.</font></p>';
-        }
-        elsif ( $roomname eq 'outside' ) {
-            $room = 0;
-            $str .= "<p>Moving users outside into the main room.</p>\n";
-        }
-        else {
-            $str .=
-                "<p>Moving users to room <b>"
-              . linkNode( $$room{'node_id'} )
-              . ":</b></p>\n";
-        }
-
-        # Remove whitespace from beginning and end of each line
-        $usernames =~ s/\s*\n\s*/\n/g;
-
-        my @users = split( '\n', $usernames );
-
-        $str .= "<ol>\n";
-
-        my $count = 0;
-
-        foreach my $username (@users) {
-            my $user = getNode( $username, 'user' );
-
-            if ($user) {
-                $APP->changeRoom( $user, $room );
-                $str .= '<li>' . linkNode( $$user{'node_id'} ) . "</li>\n";
-            }
-            else {
-                $str .=
-                    "<li><font color=\" #c00000\">User <b>\""
-                  . $username
-                  . "\"</b> does not exist.</font></li>\n";
-            }
-
-            ++$count;
-        }
-
-        $str .= "</ol>\n";
-
-        $str .= "<p>No users specified.</p>\n" if ( $count == 0 );
-
-        return $header . $table . $str . $str2;
-    }
-    else {
-        return $header . $table . $str2;
-    }
-
 }
 
 sub e2_collaboration_nodes {
@@ -4947,46 +4756,6 @@ sub usergroup_discussions
     return $text;
 }
 
-sub popular_registries
-{
-    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-    my $text = '';
-
-    $text .= '<table align="center">
-<tr>
-<th>Registry</th>
-<th># Submissions</th>
-</tr>';
-
-    my $rows;
-    my $row;
-    my $str    = '';
-    my $queryText;
-    my $limit  = 25;
-    my $r;
-
-    $queryText =
-        'select for_registry,COUNT(for_registry) AS ctr FROM registration GROUP BY for_registry ORDER BY ctr DESC LIMIT '
-      . $limit;
-    $rows = $DB->{dbh}->prepare($queryText)
-      or return $rows->errstr;
-    $rows->execute()
-      or return $rows->errstr;
-
-    while ( $row = $rows->fetchrow_arrayref ) {
-        $r = getNodeById( $$row[0] );
-        $str .= '<tr>
-      <td>' . linkNode($r) . '</td>
-      <td style="text-align:center">' . $$row[1] . '</td>
-      </tr>';
-    }
-
-    $text .= $str;
-    $text .= '</table>';
-
-    return $text;
-}
-
 sub mark_all_discussions_as_read
 {
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
@@ -6260,71 +6029,6 @@ sub recent_registry_entries
     }
 
     return $APP->buildTable( $labels, $rows, 'class="registries"', 'center' );
-}
-
-sub registry_information
-{
-    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-
-    my $csr    = undef;
-    my $labels = undef;
-    my $rows   = undef;
-    my $ref    = undef;
-
-    return "You'd see something here if you had an account." if $APP->isGuest($USER);
-
-    $csr = $DB->sqlSelectMany( '*', 'registration', "from_user=$USER->{user_id}" )
-        || return "SQL Problem.  Please notify a [coder].";
-
-    $labels = [ 'Registry', 'Data', 'Comments', 'Profile?' ];
-    while ( $ref = $csr->fetchrow_hashref() ) {
-        push @$rows,
-            {
-            'Registry'  => linkNode( $ref->{for_registry} ),
-            'Data'      => $APP->htmlScreen( $ref->{data} ),
-            'Comments'  => $APP->htmlScreen( $ref->{comments} ),
-            'Profile?'  => [ 'No', 'Yes' ]->[ $ref->{in_user_profile} ]
-            };
-    }
-
-    if ($rows) {
-        return "<p>To add more registry entries, check out [The Registries[superdoc]].</p>"
-            . $APP->buildTable( $labels, $rows );
-    }
-    else {
-        return '<div style="text-align:center;font-weight:bold;margin:20px;'
-            . "You haven't added your data to any registries yet.<br>"
-            . "To add some, visit [The Registries[superdoc]]."
-            . "</div>";
-    }
-}
-
-sub the_registries
-{
-    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-
-    my $csr = undef;
-    my $str = undef;
-    my $ref = undef;
-    my $id  = undef;
-
-    return "...first, you'd better log in." if $APP->isGuest($USER);
-
-    $csr = $DB->sqlSelectMany(
-        'registry.registry_id',
-        'registry, registration WHERE registry.registry_id = registration.for_registry GROUP BY registration.for_registry',
-        '', 'ORDER BY registration.tstamp DESC LIMIT 100'
-    ) || return 'SQL Error (prepare).  Please notify a [coder]';
-
-    $str = "<ul>";
-    while ( $ref = $csr->fetchrow_hashref() ) {
-        $id = $ref->{registry_id};
-        $str .= "<li>" . linkNode($id) . "</li>";
-    }
-    $str .= "</ul>";
-    $str .= "<p>(Registries are listed in order of most recent entry)</p>";
-
-    return $str;
 }
 
 sub writeup_search
@@ -9116,12 +8820,6 @@ sub ajax_update
 
     return '';
 }
-
-
-
-
-
-
 
 sub universal_message_json_ticker
 {

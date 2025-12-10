@@ -308,8 +308,10 @@ const Chatterbox = (props) => {
           ? `Message sent, but 1 user is blocking you`
           : `Message sent, but ${blockedCount} users are blocking you`
 
-        // Refresh mini-messages list
-        await loadMiniMessages()
+        // Refresh mini-messages list if sending to a usergroup (sender receives own message)
+        if (data.poll_messages) {
+          await loadMiniMessages()
+        }
 
         // Return warning for partial success
         return { success: true, warning: warningMsg }
@@ -320,8 +322,10 @@ const Chatterbox = (props) => {
         throw new Error(data.errortext)
       }
 
-      // Refresh mini-messages list
-      await loadMiniMessages()
+      // Refresh mini-messages list if sending to a usergroup (sender receives own message)
+      if (data.poll_messages) {
+        await loadMiniMessages()
+      }
 
       return true
     } catch (err) {

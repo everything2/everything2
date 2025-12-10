@@ -121,14 +121,13 @@
       "Properties": {
         "CachePolicyConfig": {
           "Name": "E2-Page-Cache-Policy",
-          "Comment": "Cache pages by userpass cookie and content-affecting query params",
+          "Comment": "Cache pages - origin controls caching via Cache-Control headers",
           "DefaultTTL": 300,
           "MaxTTL": 3600,
-          "MinTTL": 120,
+          "MinTTL": 0,
           "ParametersInCacheKeyAndForwardedToOrigin": {
             "CookiesConfig": {
-              "CookieBehavior": "whitelist",
-              "Cookies": ["userpass"]
+              "CookieBehavior": "none"
             },
             "HeadersConfig": {
               "HeaderBehavior": "none"

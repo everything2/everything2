@@ -127,6 +127,13 @@ sub create
           # Frontend expects: {errors => [...]} for array, {ignores => 1} for complete block
 
           my $response = {%$result};  # Copy result
+
+          # If sending to a usergroup, the sender is a member and will receive
+          # their own message - signal frontend to refresh messages immediately
+          if ($deliver_to_node->type->title eq 'usergroup') {
+            $response->{poll_messages} = 1;
+          }
+
           if ($result->{ignores} && $result->{ignores} > 0 && $result->{successes} && $result->{successes} > 0) {
             # Partial usergroup block - some members delivered, some blocked
             # Convert ignores count to errors array for frontend compatibility
