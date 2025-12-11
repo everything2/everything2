@@ -162,7 +162,7 @@ sub formcontainer
     $query->hidden('displaytype') .
     $query->hidden('node_id', getId($NODE));
 
-  if ($NODE && $$NODE{type} && $query->param('displaytype') eq 'edit') {
+  if ($NODE && $$NODE{type} && ($query->param('displaytype') // '') eq 'edit') {
     my $type = $$NODE{type}{title};
     $str.=htmlcode('verifyRequestForm', "edit_$type");
   } 

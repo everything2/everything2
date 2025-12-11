@@ -14,15 +14,16 @@
 
 ## React Migration Status
 
-- **Total React Pages**: 140 documents migrated (54% complete)
-- **Documents Remaining**: 101 documents to migrate (39%)
-  - Superdoc: ~42 remaining
-  - Oppressor Superdoc: ~17 remaining (5 migrated to React)
-  - Restricted Superdoc: ~35 remaining (15 migrated to React - 2 deprecated)
+- **Total React Pages**: 148 documents migrated (57% complete)
+- **Documents Remaining**: 93 documents to migrate (36%)
+  - Superdoc: ~40 remaining (108 migrated to React)
+  - Oppressor Superdoc: ~15 remaining (7 migrated to React - 1 deprecated)
+  - Restricted Superdoc: ~31 remaining (19 migrated to React - 2 deprecated)
   - Fullpage: ~6 remaining (9 migrated to React)
   - Ticker: 0 remaining (all 21 use XML/JSON API - considered complete)
   - JSONExport: 1 remaining
-- **E2 Legacy (Delegation)**: Remaining documents use the legacy delegation system
+- **E2 Legacy (Delegation)**: 50 delegation functions remaining in document.pm
+- **Delegation Functions Removed**: 182 functions migrated (78% complete)
 
 ## Superdoc
 
@@ -53,7 +54,7 @@
 | Confirm password | Superdoc | `/title/Confirm+password` | E2 Legacy |
 | Cool Archive | Superdoc | `/title/Cool+Archive` | React |
 | Create a Registry | Superdoc | `/title/Create+a+Registry` | React |
-| Create Category | Superdoc | `/title/Create+Category` | E2 Legacy |
+| Create Category | Superdoc | `/title/Create+Category` | React |
 | Create Room | Superdoc | `/title/Create+Room` | React |
 | Database Lag-o-meter | Superdoc | `/title/Database+Lag-o-meter` | React |
 | Decloaker | Superdoc | `/title/Decloaker` | React |
@@ -85,7 +86,7 @@
 | Everything Data Pages | Superdoc | `/title/Everything+Data+Pages` | React |
 | Everything Document Directory | Superdoc | `/title/Everything+Document+Directory` | E2 Legacy |
 | Everything Finger | Superdoc | `/title/Everything+Finger` | React |
-| Everything I Ching | Superdoc | `/title/Everything+I+Ching` | E2 Legacy |
+| Everything I Ching | Superdoc | `/title/Everything+I+Ching` | React |
 | Everything New Nodes | Superdoc | `/title/Everything+New+Nodes` | React |
 | Everything Poll Archive | Superdoc | `/title/Everything+Poll+Archive` | React |
 | Everything Poll Creator | Superdoc | `/title/Everything+Poll+Creator` | React |
@@ -213,16 +214,16 @@
 | GNL | Restricted Superdoc | `/title/GNL` | React |
 | GP Optouts | Restricted Superdoc | `/title/GP+Optouts` | React |
 | ip2name | Restricted Superdoc | `/title/ip2name` | E2 Legacy |
-| IP Blacklist | Restricted Superdoc | `/title/IP+Blacklist` | E2 Legacy |
-| IP Hunter | Restricted Superdoc | `/title/IP+Hunter` | E2 Legacy |
+| IP Blacklist | Restricted Superdoc | `/title/IP+Blacklist` | React |
+| IP Hunter | Restricted Superdoc | `/title/IP+Hunter` | React |
 | ipfrom | Restricted Superdoc | `/title/ipfrom` | React |
 | Klaproth Van Lines | Restricted Superdoc | `/title/Klaproth+Van+Lines` | E2 Legacy |
-| Mass IP Blacklister | Restricted Superdoc | `/title/Mass+IP+Blacklister` | E2 Legacy |
+| Mass IP Blacklister | Restricted Superdoc | `/title/Mass+IP+Blacklister` | React |
 | Most Active Usergroups | Restricted Superdoc | `/title/Most+Active+Usergroups` | E2 Legacy |
 | Nate's Secret Unborg Doc | Restricted Superdoc | `/title/Nate's+Secret+Unborg+Doc` | E2 Legacy |
 | New User Images | Restricted Superdoc | `/title/New+User+Images` | E2 Legacy |
 | Node Forbiddance | Restricted Superdoc | `/title/Node+Forbiddance` | E2 Legacy |
-| Node Heaven Title Search | Restricted Superdoc | `/title/Node+Heaven+Title+Search` | E2 Legacy |
+| Node Heaven Title Search | Restricted Superdoc | `/title/Node+Heaven+Title+Search` | React |
 | Node Notes by Editor | Restricted Superdoc | `/title/Node+Notes+by+Editor` | E2 Legacy |
 | Nodetype Changer | Restricted Superdoc | `/title/Nodetype+Changer` | E2 Legacy |
 | SQL Prompt | Restricted Superdoc | `/title/SQL+Prompt` | React |
@@ -265,7 +266,7 @@
 | Magical Writeup Reparenter | Oppressor Superdoc | `/title/Magical+Writeup+Reparenter` | E2 Legacy |
 | Mark All Discussions as Read | Oppressor Superdoc | `/title/Mark+All+Discussions+as+Read` | E2 Legacy |
 | Node Parameter Editor | Oppressor Superdoc | `/title/Node+Parameter+Editor` | E2 Legacy |
-| Node Row | Oppressor Superdoc | `/title/Node+Row` | E2 Legacy |
+| Node Row | Oppressor Superdoc | `/title/Node+Row` | React (deprecated) |
 | Quick Rename | Oppressor Superdoc | `/title/Quick+Rename` | E2 Legacy |
 | Recalculated Users | Oppressor Superdoc | `/title/Recalculated+Users` | E2 Legacy |
 | Recent Users | Oppressor Superdoc | `/title/Recent+Users` | React |
@@ -274,7 +275,7 @@
 | Server Telemetry | Oppressor Superdoc | `/title/Server+Telemetry` | React |
 | The Nodeshell Hopper | Oppressor Superdoc | `/title/The+Nodeshell+Hopper` | E2 Legacy |
 | The Oracle | Oppressor Superdoc | `/title/The+Oracle` | E2 Legacy |
-| Websterbless | Oppressor Superdoc | `/title/Websterbless` | E2 Legacy |
+| Websterbless | Oppressor Superdoc | `/title/Websterbless` | React |
 | What Does What | Oppressor Superdoc | `/title/What+Does+What` | E2 Legacy |
 | Who is Doing What | Oppressor Superdoc | `/title/Who+is+Doing+What` | React |
 
@@ -392,6 +393,12 @@
     - Legacy delegation code removed for all above pages (~1837 lines)
     - Iron Noder Progress & Historical Iron Noder Stats: Unified component with is_historical flag
     - Registry pages: The Registries, Popular Registries, Recent Registry Entries, Registry Information, Create a Registry
+  - **December 10, 2025 Session**:
+    - IP Hunter: Admin tool for tracking IP addresses and user login history (105 lines removed from delegation)
+    - IP Blacklist: IP blacklist management with CIDR range support (160 lines removed from delegation)
+    - Mass IP Blacklister: Bulk IP blacklist management tool (73 lines removed from delegation)
+    - Node Row: Deprecated editorial tool for managing removed writeups (26 lines removed from delegation)
+    - Form value preservation: Both IP Blacklist tools now preserve form values on validation errors
 
 ---
 *For questions or updates, see [CLAUDE.md](../CLAUDE.md)*

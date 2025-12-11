@@ -318,3 +318,10 @@ test('descriptive name', async ({ page }) => {
 ### XML/Ticker Migrations (December 2025)
 - All 21 XML tickers migrated to Page classes with proper Content-Type headers
 - 2 ATOM feeds migrated with E2-specific link conversions
+
+### JSONExport Controller & Migration (December 2025)
+- **New Everything::Controller::jsonexport**: Routes jsonexport node types to Page classes
+- **Universal Message JSON Ticker migrated**: RESTful JSON API for chat/message retrieval
+  - Comprehensive test suite: `t/049_universal_message_json_ticker.t` (8 test suites, 60+ assertions)
+  - SQL injection protection, room access control, UTF-8 encoding
+  - Returns data structures (Router handles JSON encoding)

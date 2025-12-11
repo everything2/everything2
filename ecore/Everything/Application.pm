@@ -1603,7 +1603,7 @@ sub canSeeDraft
 	}
 
 	return 0 unless $draft && defined $draft->{author_user};
-	return 0 unless defined $user->{node_id};
+	return 0 unless $user && defined $user->{node_id};
 	return 1 if $user->{node_id} == $draft->{author_user};
 
 	# we may not have a complete node. Get needed info
@@ -1639,7 +1639,7 @@ sub canSeeDraft
 	return 1 if($status eq 'findable' and $disposition eq "find");;
 
 	# shared draft or edit check. Check if this user can see/edit
-	my @collab_names = split ',', $$draft{collaborators};
+	my @collab_names = split ',', ($$draft{collaborators} // '');
 	my $UG = undef;
 
 	my $user_title = $user->{title} // '';
@@ -1677,6 +1677,7 @@ sub cleanNodeName
 	my ($this, $nodename, $removeSpaces) = @_;
 
 	$removeSpaces = 1 if !defined $removeSpaces;
+	$nodename //= '';
 
 	# For some reason, searching for ? hoses the search engine.
 	$nodename = "" if($nodename eq "?");
