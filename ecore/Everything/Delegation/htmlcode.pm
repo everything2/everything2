@@ -759,6 +759,7 @@ sub listcode
   }
 
   $code = $APP->listCode($code, 1);
+  $code //= '';
 
   # This searches for [{ text }] nodelet section calls and replaces the text with a link.
   $code =~ s/\&\#91;\{\s*(nodeletsection)\s*:\s*([^,\s}]*)\s*,\s*([^,\s}]*)(.*?)\}\&\#93;/"[\{<a href=".urlGen({node=>$1, type=>'htmlcode'}).">$1<\/a>:<a href=".urlGen({node=> $2 . "section_" . $3, type=>'htmlcode'}).">$2, $3<\/a>$4\}]"/egs;
@@ -3196,8 +3197,9 @@ sub parsetimestamp
 
   my ($timestamp,$flags)=@_;
   $flags = ($flags || 0)+0;
+  $timestamp //= '';
   my ($date, $time, $yy, $mm, $dd, $hrs, $min, $sec) = (undef,undef,undef,undef,undef,undef,undef,undef);
- 
+
   if($timestamp =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/)
   {
     ($yy, $mm, $dd, $hrs, $min, $sec) = ($1, $2, $3, $4, $5, $6);
@@ -3551,7 +3553,7 @@ sub weblog
   my $uid = getId( $USER ) ;
   my $canRemove = $APP->isAdmin($USER) ;
   my $isCE = $canRemove || $APP->isEditor($USER) ;
-  $canRemove ||= ( $$USER{ node_id } == $APP -> getParameter($NODE, 'usergroup_owner') ) ;
+  $canRemove ||= ( $$USER{ node_id } == ($APP -> getParameter($NODE, 'usergroup_owner') // 0) ) ;
 
   # linkedby: 0=show (default), 1=CE can see, 2=root can see, 3 or anything else=nobody can see
   # BUG: 2 -> owner can see if CE even if not root
@@ -11296,7 +11298,7 @@ sub weblogform
   }
 
   my $sourceid = undef;
-  if ( $query -> param( 'op' ) eq 'weblog' and $query -> param( 'target' ) == $$N{ node_id } )
+  if ( ($query -> param( 'op' ) // '') eq 'weblog' and ($query -> param( 'target' ) // 0) == $$N{ node_id } )
   {
     $sourceid = $query -> param( 'source' ) ;
     if ( $sourceid )

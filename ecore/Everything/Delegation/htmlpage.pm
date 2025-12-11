@@ -2494,35 +2494,9 @@ sub datastash_display_page
   return qq|<pre>|.$json->pretty->encode($json->decode($NODE->{vars} || "[{}]")).qq|</pre>|;
 }
 
-sub jsonexport_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  # Convert node title to delegation function name
-  my $functionName = $$NODE{title};
-  $functionName =~ s/[\s\-]/_/g;  # Replace spaces and hyphens with underscores
-  $functionName =~ s/[^A-Za-z0-9_]/_/g;  # Replace non-alphanumeric with underscores
-  $functionName = lc($functionName);
-
-  # Look up delegation function in Everything::Delegation::document
-  my $delegation = Everything::Delegation::document->can($functionName);
-
-  if (!$delegation)
-  {
-    # No delegation found - log error and return empty JSON
-    $APP->devLog("ERROR: jsonexport '$$NODE{title}' (expected: $functionName) has no delegation function");
-    return encode_json({error => "No delegation function found"});
-  }
-
-  # Call delegation function and return result (delegation returns JSON string)
-  return $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
-}
+# REMOVED (2025-12-10): jsonexport_display_page delegation (29 lines)
+# Now handled by Everything::Controller::jsonexport
+# The controller routes jsonexport nodes to Page classes (e.g., Everything::Page::universal_message_json_ticker)
 
 sub document_linkview_page
 {

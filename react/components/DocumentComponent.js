@@ -96,6 +96,7 @@ const COMPONENT_MAP = {
   e2_color_toy: lazy(() => import('./Documents/E2ColorToy')),
   buffalo_generator: lazy(() => import('./Documents/BuffaloGenerator')),
   buffalo_haiku_generator: lazy(() => import('./Documents/BuffaloGenerator')),
+  everything_i_ching: lazy(() => import('./Documents/EverythingIChing')),
 
   // Utility tools
   text_formatter: lazy(() => import('./Documents/TextFormatter')),
@@ -104,6 +105,7 @@ const COMPONENT_MAP = {
   admin_bestow_tool: lazy(() => import('./Documents/AdminBestowTool')),
   superbless: lazy(() => import('./Documents/AdminBestowTool')),
   xp_superbless: lazy(() => import('./Documents/AdminBestowTool')),
+  websterbless: lazy(() => import('./Documents/Websterbless')),
   giant_teddy_bear_suit: lazy(() => import('./Documents/AdminBestowTool')),
   fiery_teddy_bear_suit: lazy(() => import('./Documents/AdminBestowTool')),
   bestow_easter_eggs: lazy(() => import('./Documents/AdminBestowTool')),
@@ -134,6 +136,9 @@ const COMPONENT_MAP = {
   // Content discovery
   everything_user_search: lazy(() => import('./Documents/UserSearch')),
 
+  // Category system
+  create_category: lazy(() => import('./Documents/CreateCategory')),
+
   // Editor beta (Tiptap testing)
   e2_editor_beta: lazy(() => import('./Documents/EditorBeta')),
 
@@ -145,6 +150,7 @@ const COMPONENT_MAP = {
 
   // Statistics & analytics
   site_trajectory: lazy(() => import('./Documents/SiteTrajectory')),
+  everything_statistics: lazy(() => import('./Documents/EverythingStatistics')),
 
   // Help & documentation
   voting_experience_system: lazy(() => import('./Documents/VotingExperienceSystem')),
@@ -169,12 +175,14 @@ const COMPONENT_MAP = {
   everything_s_biggest_stars: lazy(() => import('./Documents/EverythingsBiggestStars')),
   everything_s_richest_noders: lazy(() => import('./Documents/EverythingSRichestNoders')),
   level_distribution: lazy(() => import('./Documents/LevelDistribution')),
+  my_big_writeup_list: lazy(() => import('./Documents/MyBigWriteupList')),
 
   // Tools & utilities
   e2_sperm_counter: lazy(() => import('./Documents/E2SpermCounter')),
   e2_source_code_formatter: lazy(() => import('./Documents/E2SourceCodeFormatter')),
   e2_marble_shop: lazy(() => import('./Documents/E2MarbleShop')),
   e2_penny_jar: lazy(() => import('./Documents/E2PennyJar')),
+  my_achievements: lazy(() => import('./Documents/MyAchievements')),
 
   // Developer resources
   edev_faq: lazy(() => import('./Documents/EdevFAQ')),
@@ -209,6 +217,8 @@ const COMPONENT_MAP = {
   // Admin tools
   list_nodes_of_type: lazy(() => import('./Documents/ListNodesOfType')),
   gnl: lazy(() => import('./Documents/ListNodesOfType')),
+  magical_writeup_reparenter: lazy(() => import('./Documents/MagicalWriteupReparenter')),
+  log_archive: lazy(() => import('./Documents/LogArchive')),
 
   // Help & documentation
   macro_faq: lazy(() => import('./Documents/MacroFaq')),
@@ -254,6 +264,10 @@ const COMPONENT_MAP = {
   // Admin tools
   faq_editor: lazy(() => import('./Documents/FAQEditor')),
   gp_optouts: lazy(() => import('./Documents/GpOptouts')),
+  ip_hunter: lazy(() => import('./Documents/IpHunter')),
+  ip_blacklist: lazy(() => import('./Documents/IpBlacklist')),
+  mass_ip_blacklister: lazy(() => import('./Documents/MassIpBlacklister')),
+  node_heaven_title_search: lazy(() => import('./Documents/NodeHeavenTitleSearch')),
 
   // User statistics & tools
   noding_speedometer: lazy(() => import('./Documents/NodingSpeedometer')),
@@ -261,7 +275,8 @@ const COMPONENT_MAP = {
 
   // Deprecated editorial tools (preserved for site integrity)
   the_killing_floor: lazy(() => import('./Documents/TheKillingFloor')),
-  the_killing_floor_ii: lazy(() => import('./Documents/TheKillingFloor'))
+  the_killing_floor_ii: lazy(() => import('./Documents/TheKillingFloor')),
+  node_row: lazy(() => import('./Documents/NodeRow'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))
