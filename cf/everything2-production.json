@@ -1069,6 +1069,33 @@
         "BucketName": "nodepack.everything2.com"
       }
     },
+    "WriteupExportBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "e2-writeup-exports"
+      }
+    },
+    "WriteupExportS3Policy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows writeup export cron jobs to write to the export bucket",
+        "ManagedPolicyName": "WriteupExportS3Policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["s3:PutObject","s3:DeleteObject","s3:GetObject"],
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "WriteupExportBucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": {"Fn::GetAtt": ["WriteupExportBucket", "Arn"]}
+          }]
+        }
+      }
+    },
     "NodepackS3Policy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "DeletionPolicy": "Retain",
@@ -1413,7 +1440,8 @@
             {"Ref": "CloudWatchEventsWritePolicy"},
             {"Ref": "HealthCheckLogWritePolicy"},
             {"Ref": "NodepackS3Policy"},
-            {"Ref": "SitemapBucketWritePolicy"}
+            {"Ref": "SitemapBucketWritePolicy"},
+            {"Ref": "WriteupExportS3Policy"}
         ],
         "Path": "/",
         "RoleName": "E2-App-Fargate-Task-Role"

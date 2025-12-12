@@ -298,7 +298,15 @@ const COMPONENT_MAP = {
   // Admin/editor moderation tools
   node_forbiddance: lazy(() => import('./Documents/NodeForbiddance')),
   the_old_hooked_pole: lazy(() => import('./Documents/TheOldHookedPole')),
-  altar_of_sacrifice: lazy(() => import('./Documents/AltarOfSacrifice'))
+  altar_of_sacrifice: lazy(() => import('./Documents/AltarOfSacrifice')),
+
+  // User management tools
+  fresh_blood: lazy(() => import('./Documents/FreshBlood')),
+  freshly_bloodied: lazy(() => import('./Documents/FreshlyBloodied')),
+  mark_all_discussions_as_read: lazy(() => import('./Documents/MarkAllDiscussionsAsRead')),
+
+  // Admin diagnostic tools
+  cache_dump: lazy(() => import('./Documents/CacheDump'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

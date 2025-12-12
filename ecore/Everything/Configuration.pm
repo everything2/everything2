@@ -47,7 +47,8 @@ has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {
   "deployedassets" => Everything::S3::BucketConfig->new("bucket" => "deployed.everything2.com"),
   "nodebackup" => Everything::S3::BucketConfig->new("bucket" => "nodebackup.everything2.com"),
   "sitemap" => Everything::S3::BucketConfig->new("bucket" => "sitemap.everything2.com"),
-  "jscss" => Everything::S3::BucketConfig->new("bucket" => "jscssw.everything2.com") }});
+  "jscss" => Everything::S3::BucketConfig->new("bucket" => "jscssw.everything2.com"),
+  "writeup_export" => Everything::S3::BucketConfig->new("bucket" => "e2-writeup-exports") }});
 
 has 'assets_location' => (isa => 'Str', is => 'ro', builder => '_build_assets_location', lazy => 1);
 
@@ -68,20 +69,47 @@ has 'use_local_assets' => (isa => 'Bool', is => 'ro', default => '0');
 has 'github_url' => (isa => 'Str', is => 'ro', default => 'https://github.com/everything2/everything2');
 has 'last_commit' => (isa => 'Str', is => 'ro', builder => '_build_last_commit', lazy => 1);
 
-has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
-  "usergroup" => 1,
-  "container" => 1,
-  "htmlcode" => 1,
-  "maintenance" => 1,
-  "setting" => 1,
-  "fullpage" => 1,
+# static_cache: Types that NEVER need version checks - only change via deployment.
+# These are "code nodes" where the database row identifies which Perl module to run.
+# Changes to these require an ECS task restart to take effect.
+has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
+  # Core type definitions
   "nodetype" => 1,
   "writeuptype" => 1,
   "linktype" => 1,
   "sustype" => 1,
+
+  # Structural/template types
   "nodelet" => 1,
+  "container" => 1,
+  "theme" => 1,
+
+  # Code-backed types (delegation modules)
+  "htmlcode" => 1,
+  "htmlpage" => 1,
+  "maintenance" => 1,
+
+  # Code-backed document types (Page/Controller classes)
+  "fullpage" => 1,
+  "superdoc" => 1,
+  "superdocnolinks" => 1,
+  "restricted_superdoc" => 1,
+  "oppressor_superdoc" => 1,
+  "ticker" => 1,
+  "jsonexport" => 1,
+
+  # Other code-controlled types
+  "achievement" => 1,
+  "opcode" => 1,
+} });
+
+# permanent_cache: Types that are cached permanently (never evicted by LRU)
+# but still need version checks because they can change at runtime.
+has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
+  "usergroup" => 1,
+  "setting" => 1,
   "datastash" => 1,
-  "theme" => 1
+  "room" => 1,
 } });
 
 has 'nosearch_words' => (isa => 'HashRef', is => 'ro', default => sub { {

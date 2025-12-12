@@ -195,7 +195,7 @@
 |----------|------|-----|-----------|
 | Admin Bestow Tool | Restricted Superdoc | `/title/Admin+Bestow+Tool` | React |
 | bestow cools | Restricted Superdoc | `/title/bestow+cools` | React |
-| Cache Dump | Restricted Superdoc | `/title/Cache+Dump` | E2 Legacy |
+| Cache Dump | Restricted Superdoc | `/title/Cache+Dump` | React |
 | Caja de Arena | Restricted Superdoc | `/title/Caja+de+Arena` | E2 Legacy |
 | Costume Remover | Restricted Superdoc | `/title/Costume+Remover` | E2 Legacy |
 | Create Node | Restricted Superdoc | `/title/Create+Node` | React |
@@ -238,7 +238,7 @@
 | Usergroup Message Archive Manager | Restricted Superdoc | `/title/Usergroup+Message+Archive+Manager` | E2 Legacy |
 | Usergroup Press Gang | Restricted Superdoc | `/title/Usergroup+Press+Gang` | E2 Legacy |
 | Users with Infravision | Restricted Superdoc | `/title/Users+with+Infravision` | E2 Legacy |
-| Viewvars | Restricted Superdoc | `/title/Viewvars` | E2 Legacy |
+| Viewvars | Restricted Superdoc | `/title/Viewvars` | React |
 | Voting Data | Restricted Superdoc | `/title/Voting+Data` | E2 Legacy |
 | Who Killed What | Restricted Superdoc | `/title/Who+Killed+What` | E2 Legacy |
 | Yet Another Secret Laboratory | Restricted Superdoc | `/title/Yet+Another+Secret+Laboratory` | E2 Legacy |
@@ -253,12 +253,12 @@
 | Content Reports | Oppressor Superdoc | `/title/Content+Reports` | React |
 | Everything2 User Relations (E2Contact and Chanops) | Oppressor Superdoc | `/title/Everything2+User+Relations+(E2Contact+and+Chanops)` | React |
 | Everything Publication Directory | Oppressor Superdoc | `/title/Everything+Publication+Directory` | React |
-| Fresh Blood | Oppressor Superdoc | `/title/Fresh+Blood` | E2 Legacy |
-| Freshly Bloodied | Oppressor Superdoc | `/title/Freshly+Bloodied` | E2 Legacy |
+| Fresh Blood | Oppressor Superdoc | `/title/Fresh+Blood` | React |
+| Freshly Bloodied | Oppressor Superdoc | `/title/Freshly+Bloodied` | React |
 | Homenode Inspector | Oppressor Superdoc | `/title/Homenode+Inspector` | E2 Legacy |
 | Magical Writeup Reparenter | Oppressor Superdoc | `/title/Magical+Writeup+Reparenter` | React |
-| Mark All Discussions as Read | Oppressor Superdoc | `/title/Mark+All+Discussions+as+Read` | E2 Legacy |
-| Node Parameter Editor | Oppressor Superdoc | `/title/Node+Parameter+Editor` | E2 Legacy |
+| Mark All Discussions as Read | Oppressor Superdoc | `/title/Mark+All+Discussions+as+Read` | React |
+| Node Parameter Editor | Oppressor Superdoc | `/title/Node+Parameter+Editor` | API |
 | Node Row | Oppressor Superdoc | `/title/Node+Row` | React (deprecated) |
 | Quick Rename | Oppressor Superdoc | `/title/Quick+Rename` | E2 Legacy |
 | Recalculated Users | Oppressor Superdoc | `/title/Recalculated+Users` | E2 Legacy |

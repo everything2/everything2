@@ -662,10 +662,17 @@ sub searchNodeName {
 	$TYPE=[$TYPE] if (UNIVERSAL::isa($TYPE,'HASH'));
 
 	if(ref($TYPE) eq 'ARRAY' and @$TYPE) {
-		foreach(@$TYPE) { $cooltypes{$this->{db}->getId($_)} = 1 }
-		$typestr .= $typePrefix . $this->{db}->getId(shift @$TYPE);
+		foreach(@$TYPE) {
+			my $id = $this->{db}->getId($_);
+			$cooltypes{$id} = 1 if defined $id;
+		}
+		my $first_id = $this->{db}->getId(shift @$TYPE);
+		$typestr .= $typePrefix . $first_id if defined $first_id;
 		$typePrefix = ", ";
-		foreach(@$TYPE) { $typestr .= $typePrefix . $this->{db}->getId($_); }
+		foreach(@$TYPE) {
+			my $id = $this->{db}->getId($_);
+			$typestr .= $typePrefix . $id if defined $id;
+		}
 	}
 	
 	my @words = ();
@@ -1205,7 +1212,7 @@ sub metaDescription
     foreach my $writeup(@{$node->{group}})
     {
       my $thisWU = $this->{db}->getNodeById($writeup);
-      if($thisWU->{wrtype_writeuptype} == $lede->{node_id})
+      if(($thisWU->{wrtype_writeuptype} // 0) == $lede->{node_id})
       {
         $writeuptext = $thisWU->{doctext};
 	last;
@@ -1289,86 +1296,16 @@ sub encodeHTML
 
 sub isSpider
 {
-	my ($this, $agent, $addr) = @_;
+	my ($this) = @_;
 
-	$agent ||= $ENV{HTTP_USER_AGENT};
-	$agent ||= "";
-
-	$addr ||= $ENV{HTTP_X_FORWARDED_FOR};
-	$addr ||= $ENV{REMOTE_ADDR};
-	$addr ||= "";
-	
-	my $result = $this->{db}->{cache}->pageCacheGet("isSpider|$agent|$addr");
-	if(defined $result)
-	{
-		return $result;
-	}
-	$result = $this->_isSpiderCheck($agent, $addr);
-	$this->{db}->{cache}->pageCacheSet("isSpider|$agent|$addr",$result);
-	return $result;
-}
-	
-sub _isSpiderCheck
-{
-	my ($this, $agent, $addr) = @_;
-	study $agent;
-
-	return 1 if ($agent =~ m/AdsBot/);
-	return 1 if ($agent =~ /Ask Jeeves\/Teoma/);	# HTTP_USER_AGENT=Mozilla/5.0 (compatible; Ask Jeeves/Teoma; +http://about.ask.com/en/docs/about/webmasters.shtml), IP forwarded 66.235.124.34
-	return 1 if ($agent =~ m/Baiduspider/);
-	return 1 if ($agent =~ m/BOTW/);
-	return 1 if ($agent =~ m/Charlotte/); # searchme.com's spider, which also appears more than once below - hopefully this should cover all of it...
-	return 1 if ($agent =~ m/DBLBot/);
-	return 1 if ($agent =~ m/DotBot/); # HTTP_USER_AGENT=Mozilla/5.0 (compatible; DotBot/1.1; http://www.dotnetdotcom.org/, crawler@dotnetdotcom.org), IP forwarded 208.115.111.244
-	return 1 if ($agent =~ m/fscals/);
-	return 1 if ($agent =~ m/FunWeb/); # HTTP_USER_AGENT=Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; FunWebProducts; .NET CLR 2.0.50727), IP forwarded 91.184.161.105
-	return 1 if ($agent =~ m/Googlebot/i);
-	return 1 if ($agent =~ m/Gigabot/);
-	return 1 if ($agent =~ m/heritrix/); # open-sourced IA crawler/archiver
-	return 1 if ($agent =~ m=Java/1\.6\.0_10=);
-	return 1 if ($agent =~ m/LiteFinder/);
-	return 1 if ($agent =~ m/msnbot/);
-	return 1 if ($agent =~ m/Nutch/);
-	return 1 if ($agent =~ m/ScoutJet/);
-	return 1 if ($agent =~ /^Sosospider/);	#'Sosospider+(+http://help.soso.com/webspider.htm)', 124.115.4.192
-	return 1 if ($agent =~ m/SurveyBot/);
-	return 1 if ($agent =~ m/Twenga/);
-	return 1 if ($agent =~ m/Twiceler/);
-	return 1 if ($agent =~ m/VoilaBot/i);
-	return 1 if ($agent =~ m/Yahoo! Slurp/);
-
-	return 1 if ($agent =~ m/spider/); # Let's hope there's never a legitimate browser with 'spider' or 'crawler' in its useragent string.
-	return 1 if ($agent =~ m/crawler/); # Let's hope there's never a legitimate browser with 'spider' or 'crawler' in its useragent string.
-
-	#get user agent name (everything before first slash)
-	if($agent =~ m!^([^/]+)/!) {
-
-	my $agentName = $1;
-
-	return 1 if $agentName eq 'OmniExplorer_Bot';	#'OmniExplorer_Bot/6.10.13 (+http://www.omni-explorer.com) WorldIndexer'
-	return 1 if $agentName eq 'voyager-hc';	#'voyager-hc/1.0'
-	return 1 if $agentName eq 'voyager';	#'voyager/1.0 (+http://www.kosmix.com/html/crawler.html)'
-	return 1 if $agentName eq 'ia_archiver';	#'ia_archiver' (Alexa)
-	return 1 if $agentName eq 'GurujiBot';	#'GurujiBot/1.0' (+http://www.guruji.com/en/WebmasterFAQ.html), 72.20.109.36
-	return 1 if $agentName eq 'ichiro';	#'ichiro/3.0 (http://help.goo.ne.jp/door/crawler.html', 210.150.10.100
-	return 1 if $agentName eq 'Sogou web spider';	#'Sogou web spider/4.0(+http://www.sogou.com/docs/help/webmasters.htm#07)', 220.181.19.164
-	return 1 if $agentName eq 'DotBot'; # (http://www.dotnetdotcom.org/) - also added 208.115.111.245
-	return 1 if $agentName eq 'Gigabot'; # Gigabot/3.0 (http://www.gigablast.com/spider.html), IP forwarded 66.231.189.152
-	return 1 if $agentName eq 'Yeti'; # Yeti/1.0 (+http://help.naver.com/robots/), IP forwarded 61.247.222.55)
-	return 1 if $agentName eq 'ia_archiver'; # ia_archiver, IP forwarded 209.234.171.37 (Alexa)
+	# Check AWS WAF Bot Control header (set by CloudFront WAF)
+	# This is the authoritative source - AWS maintains bot detection
+	my $waf_bot_detected = $ENV{HTTP_X_AMZN_WAF_BOT_DETECTED};
+	if (defined $waf_bot_detected) {
+		return $waf_bot_detected eq 'true' ? 1 : 0;
 	}
 
-
-	return 1 if ($addr =~ m/69\.118\.193\.20/);
-	return 1 if ($addr =~ m/121\.14\.96\./);
-	return 1 if ($addr =~ m/77\.88\.27\.25/);
-	return 1 if ($addr =~ m/202\.55\.83\.4/);
-	return 1 if ($addr =~ m/208\.115\.111\.245/); # DotBot
-	return 1 if ($addr =~ m/79\.222\.96\.110/); # HTTP_USER_AGENT=Mozilla/5.0 (compatible; AdShadow +http://adshadow.de)
-	return 1 if ($addr =~ m/208\.111\.154\./); # Mozilla/5.0 (X11; U; Linux i686 (x86_64); en-US; rv:1.8.1.11) Gecko/20080109 (Charlotte/0.9t; http://www.searchme.com/support/), IP forwarded 208.111.154.103) - also 208.111.154.15, among other addresses, but should be blocked above
-	return 1 if ($addr =~ m/72\.44\.56\.161/); # Mozilla/5.0 (compatible; zermelo; +http://www.powerset.com) [email:paul@page-store.com,crawl@powerset.com], IP forwarded 72.44.56.161)
-	return 1 if ($addr =~ m/96\.228\.37\.192/); # (HTTP_USER_AGENT=Mozilla/5.0 (compatible; FSC/1.0 +http://fscals.com), IP forwarded 96.228.37.192
-
+	# No WAF header means local dev or direct ALB access - assume not a spider
 	return 0;
 }
 
@@ -7576,7 +7513,7 @@ sub parse_timestamp
   }
 
   # I repeat: let's hear it for fudge!
-  return "<em>never</em>" unless (int($yy)>0 and int($mm)>-1 and int($dd)>0);
+  return "<em>never</em>" unless (defined $yy && $yy =~ /^\d+$/ && int($yy)>0 && defined $mm && $mm =~ /^-?\d+$/ && int($mm)>-1 && defined $dd && $dd =~ /^\d+$/ && int($dd)>0);
 
   my $epoch_secs = timelocal( $sec, $min, $hrs, $dd, $mm, $yy);
 

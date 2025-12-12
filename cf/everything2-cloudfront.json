@@ -175,7 +175,10 @@
               "CloudFront-Is-Mobile-Viewer",
               "CloudFront-Is-Tablet-Viewer",
               "CloudFront-Is-Desktop-Viewer",
-              "X-Forwarded-For"
+              "X-Forwarded-For",
+              "x-amzn-waf-bot-detected",
+              "x-amzn-waf-bot-category",
+              "x-amzn-waf-bot-name"
             ]
           },
           "QueryStringsConfig": {

@@ -3,20 +3,12 @@ package Everything::Delegation::document;
 use strict;
 use warnings;
 
-# Used in: reputation_graph, reputation_graph_horizontal
-use Date::Parse;
-
 # Used in: findings_, sql_prompt
 use Time::HiRes;
 
 # Used in: ajax_update
 use JSON;
 use Everything::Delegation::opcode;
-
-# Used in: chatterbox_xml_ticker, cool_nodes_xml_ticker, new_nodes_xml_ticker,
-#          private_message_xml_ticker, rdf_search, user_information_xml,
-#          user_search_xml_ticker
-use XML::Generator;
 
 # Used in: dr_nates_secret_lab_2 (resurrect, opencoffin), nodeheaven for safe deserialization
 use Everything::Serialization qw(safe_deserialize_dumper);
@@ -44,12 +36,6 @@ BEGIN {
 
 # Used by your_gravatar, recent_users
 use Digest::MD5;
-
-# Used by Log Archive
-use DateTime;
-
-# Used by reputation_graph, reputation_graph_horizontal
-use Date::Parse;
 
 # Used by Node Backup
 use Everything::S3;
@@ -248,7 +234,7 @@ sub display_categories {
     my $usergroupType = getId( getType('usergroup') );
     my $categoryType  = getId( getType('category') );
 
-    my $order = $query->param('o');
+    my $order = $query->param('o') // '';
 
     $str .= q|<form method="get" action="/index.pl">|;
     $str .= q|<input type="hidden" name="node_id" value="| . getId($NODE);
@@ -709,10 +695,6 @@ sub e2_gift_shop {
 
     return $str;
 }
-
-
-
-
 
 sub e2_ticket_center {
     my $DB       = shift;
@@ -1361,83 +1343,6 @@ sub node_backup
     return $str;
 }
 
-sub cache_dump
-{
-    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-
-    my $output = q|This is what the cache contains<br>|;
-    $output .= q|(Process ID: |.$$.q|)<br /><p>|;
-
-    my $cache = $DB->getCache()->dumpCache();
-    my $num = $DB->getCache()->getCacheSize();
-    $output .= "Cache size: $num";
-
-    $output .= q|<ul>|;
-
-    my $typestats;
-
-    foreach my $cache_entry (@$cache)
-    {
-        next unless $cache_entry;
-
-        my $item = $cache_entry->[0];
-        my $extrainfo = [];
-
-        $typestats->{$item->{type}->{title}} ||= 0;
-        $typestats->{$item->{type}->{title}}++;
-
-        push @{$extrainfo}, $item->{type}->{title};
-
-        if($cache_entry->[1]->{permanent})
-        {
-            push @{$extrainfo}, 'permanent';
-        }
-
-        if(exists($item->{group}))
-        {
-            push @{$extrainfo}, scalar(@{$item->{group}}). q| items in group|;
-        }
-
-        if(exists($DB->{cache}->{groupCache}->{$item->{node_id}}))
-        {
-            push @$extrainfo, scalar(keys %{$DB->{cache}->{groupCache}->{$item->{node_id}}}).q| items in groupCache|;
-        }
-
-        $output .= "<li> $item->{title} (".join(' , ',@$extrainfo).')';
-    }
-
-    $output .= q|</ul><br /><br />Counts: <ul>|;
-
-    foreach my $key(keys %$typestats)
-    {
-        $output .= "<li>$key: ".$typestats->{$key}
-    }
-
-    $output .= q|</ul>|;
-    $output .= q|Pagecache:<ul>|;
-
-    foreach my $key (keys %{$DB->{cache}->{pagecache}})
-    {
-        $output .= "<li>$key: ".$DB->{cache}->{pagecache}->{$key};
-    }
-
-    $output .= q|</ul>|;
-    return $output;
-
-}
-
-# the_tokenator - Migrated to React
-# See: Everything::Page::the_tokenator
-# React component: TheTokenator.js
-
-# go_outside - Migrated to React
-# See: Everything::Page::go_outside
-# React component: GoOutside.js
-
-# ip2name - Migrated to React
-# See: Everything::Page::ip2name
-# React component: Ip2name.js
-
 sub usergroup_picks
 {
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
@@ -1949,96 +1854,7 @@ sub costume_remover
     return $text;
 }
 
-sub mark_all_discussions_as_read
-{
-    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-    my $str = '';
-
-    my $uid = $$USER{node_id};
-    my $isRoot = $APP->isAdmin($USER);
-    my $isCE = $APP->isEditor($USER);
-
-    # Usergroup IDs
-    my ($ce_id, $gods_id) = (923653, 114);
-
-    my $doneCE = $query->param("mark_ce_read");
-    if (!$doneCE) {
-        $str .= "<p>Apply pressure to the hypertext if you want to mark all of
-  your old CE debates as read (and the new ones too,
-  everything!).</p>";
-
-        $str .= "<p><center>\n";
-        $str .= linkNode($NODE, "Mark CE Debates as Read", {"mark_ce_read" => 1}) . "\n";
-        $str .= "</center></p>\n";
-    }
-    else {
-        my $csr = $DB->sqlSelectMany("root_debatecomment", "debatecomment",
-                                     "restricted=$ce_id",
-                                     "GROUP BY root_debatecomment");
-        while (my $row = $csr->fetchrow_hashref) {
-            my $debate = $row->{root_debatecomment};
-            my $lastread = $DB->sqlSelect("dateread",
-                                          "lastreaddebate",
-                                          "user_id=$uid and
-                                           debateroot_id=$debate");
-            if ($lastread) {
-                $DB->sqlUpdate("lastreaddebate",
-                               {-dateread => "NOW()"},
-                               "user_id=$uid and
-                                debateroot_id=$debate");
-            }
-            else {
-                $DB->sqlInsert("lastreaddebate",
-                               {"user_id" => $uid,
-                                "debateroot_id" => $debate,
-                                -dateread => "NOW()"}
-                              );
-            }
-        }
-        $str .= 'It is done. All of your CE debates have been marked
-           as read. Hopefully there\'s never a reason to do this
-           again. <br />';
-    }
-
-    my $doneRoot = $query->param("mark_admin_read");
-    if (!$doneRoot && $isRoot) {
-        $str .= "<p>It appears you are like a god amongst men. You may do the same but to your admin debates.</p>";
-
-        $str .= "<p><center>\n";
-        $str .= linkNode($NODE, "Mark Admin Debates as Read", {"mark_admin_read" => 1}) . "\n";
-        $str .= "</center></p>\n";
-    }
-    elsif ($doneRoot && $isRoot) {
-        my $csr = $DB->sqlSelectMany("root_debatecomment", "debatecomment",
-                                     "restricted=$gods_id",
-                                     "GROUP BY root_debatecomment");
-        while (my $row = $csr->fetchrow_hashref) {
-            my $debate = $row->{root_debatecomment};
-            my $lastread = $DB->sqlSelect("dateread",
-                                          "lastreaddebate",
-                                          "user_id=$uid and
-                                           debateroot_id=$debate");
-            if ($lastread) {
-                $DB->sqlUpdate("lastreaddebate",
-                               {-dateread => "NOW()"},
-                               "user_id=$uid and
-                                debateroot_id=$debate");
-            }
-            else {
-                $DB->sqlInsert("lastreaddebate",
-                               {"user_id" => $uid,
-                                "debateroot_id" => $debate,
-                                -dateread => "NOW()"}
-                              );
-            }
-        }
-        $str .= 'It is done. All of your admin debates have been marked
-           as read. Hopefully there\'s never a reason to do this
-           again. <br />';
-    }
-
-    return $str;
-}
+# mark_all_discussions_as_read - MIGRATED TO Everything::Page::mark_all_discussions_as_read (December 2025)
 
 sub guest_front_page {
     my $DB       = shift;
@@ -2975,180 +2791,8 @@ sub writeup_search
     return $str;
 }
 
-# Oppressor Superdoc functions (editor+ access)
-# Restored 2025-12-11 from commit eae8f7b34
-
-sub fresh_blood {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    my $usertype = getId(getType('user'));
-
-    my $sql = "select count(*) from `node` where `type_nodetype` = $usertype and `createtime` > date_sub(now(), interval 1 week)";
-    my $usr = $DB->{dbh}->prepare($sql);
-    $usr->execute or return 'Oh dear. Database oops';
-    my ($numUser) = $usr->fetchrow();
-
-    $sql = "select count(*) from `user`, `node` where `user_id` = `node_id` and `createtime` > date_sub(now(), interval 1 week) and `lasttime` > 0";
-    $usr = $DB->{dbh}->prepare($sql);
-    $usr->execute or return 'Oh dear. Database oops';
-    my ($numLoggedIn) = $usr->fetchrow();
-
-    return 'nobody ever comes this way' if ($numLoggedIn == 0 || $numUser == 0);
-
-    my $start = int($query->param('start'));
-    $start ||= 0;
-
-    $sql = qq|
-
-SELECT `user_id`, `nick`, `title`,`createtime`, `lasttime`
-  , (SELECT `notetext`
-      FROM nodenote
-      WHERE nodenote_nodeid = user_id LIMIT 1
-    ) 'notetext'
-  FROM `node`
-  JOIN `user`
-    ON `node_id`=`user_id`
-  WHERE `createtime` > date_sub(now(), interval 1 week)
-  ORDER BY createtime
-  DESC LIMIT ?, 50 |;
-
-    $usr = $DB->{dbh}->prepare($sql);
-    $usr->execute($start) or return 'Oh dear. Database oops';
-
-    my $row = 1;
-    my $last = $start + 50;
-    if ($last > $numUser) {
-        $last = $numUser;
-    }
-
-    my $str = "<p>In the past week, $numUser users enrolled. Of those $numLoggedIn logged-in.</p>";
-    my $nav = "<p style='text-align: center'>";
-
-    if ($start > 0) {
-        $nav .= '&laquo ' . linkNode($NODE, 'Later', {'start' => $start - 50}) . ' ';
-    }
-
-    for (my $i = 0; $i < $numUser; $i += 50) {
-        $nav .= ($i == $start) ? "<b>$i</b>" : linkNode($NODE, $i ? $i : 1, {'start' => $i});
-        $nav .= ' ';
-    }
-
-    if ($last < $numUser) {
-        $nav .= linkNode($NODE, 'Earlier', {'start' => $start + 50}) . ' &raquo;</p>';
-    }
-
-    $str .= $nav;
-
-    $str .= "<table style='width: 100%; border-top: 1px gray solid'><tr><th>Joined</th><th>User</th><th>Last logged in</th><th>Node note</th></tr>\n";
-    $usr->fetchrow_hashref;
-    while (my $N = $usr->fetchrow_hashref) {
-        my $login = htmlcode('timesince', $N->{lasttime});
-        my $create = htmlcode('timesince', $N->{createtime});
-
-        $str .= sprintf("\t<tr class='%s'><td>%s</td><td><a href=%s>%s</a></td><td>%s</td><td>%s</td></tr>\n",
-            $row ? 'oddrow' : 'evenrow',
-            $create,
-            "/node/$N->{user_id}",
-            $N->{title},
-            $login eq '?' ? 'never' : $login,
-            $N->{notetext},
-        );
-        $row = !$row;
-    }
-    $str .= '</table>' . $nav;
-
-    return $str;
-}
-
-sub freshly_bloodied {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    my $usertype = getId(getType('user'));
-
-    my $sql = "select count(*) from `node` where `type_nodetype` = $usertype and `createtime` > date_sub(now(), interval 1 week)";
-    my $usr = $DB->{dbh}->prepare($sql);
-    $usr->execute or return 'Oh dear. Database oops';
-    my ($numUser) = $usr->fetchrow();
-
-    $sql = "select count(*) from `user`, `node` where `user_id` = `node_id` and `createtime` > date_sub(now(), interval 1 week) AND `acctlock` != 0";
-    $usr = $DB->{dbh}->prepare($sql);
-    $usr->execute or return 'Oh dear. Database oops';
-    my ($numLocked) = $usr->fetchrow();
-
-    return 'nobody ever comes this way' if ($numLocked == 0 || $numUser == 0);
-
-    my $start = int($query->param('start'));
-    $start ||= 0;
-
-    $sql = qq|
-
-SELECT `user`.`user_id`, `user`.`nick`
-  , `node`.`createtime`, `user`.`validemail`, `user`.`lasttime`
-  , `locker`.`node_id` AS locker_id
-  , `locker`.`title` AS locker_name
-  , (SELECT `notetext`
-      FROM `nodenote`
-      WHERE `nodenote_nodeid` = `user`.`user_id` LIMIT 1
-    ) 'notetext'
-  FROM `node`
-  JOIN `user`
-    ON `node`.`node_id` = `user`.`user_id`
-  JOIN `node` AS `locker`
-    ON `locker`.`node_id` = `user`.`acctlock`
-  WHERE `node`.`createtime` > date_sub(now(), interval 1 week)
-    AND `user`.`acctlock` != 0
-  ORDER BY `node`.`createtime`
-  DESC LIMIT ?, 50|;
-
-    $usr = $DB->{dbh}->prepare($sql);
-    $usr->execute($start) or return 'Oh dear. Database oops';
-
-    my $row = 1;
-    my $last = $start + 50;
-    if ($last > $numLocked) {
-        $last = $numLocked;
-    }
-
-    my $str = "<p>In the past week, $numUser users enrolled. Of those $numLocked were locked.</p>";
-    my $nav = "<p style='text-align: center'>";
-
-    if ($start > 0) {
-        $nav .= '&laquo ' . linkNode($NODE, 'Later', {'start' => $start - 50}) . ' ';
-    }
-
-    for (my $i = 0; $i < $numLocked; $i += 50) {
-        $nav .= ($i == $start) ? "<b>$i</b>" : linkNode($NODE, $i ? $i : 1, {'start' => $i});
-        $nav .= ' ';
-    }
-
-    if ($last < $numLocked) {
-        $nav .= linkNode($NODE, 'Earlier', {'start' => $start + 50}) . ' &raquo;</p>';
-    }
-
-    $str .= $nav;
-
-    $str .= "<table style='width: 100%; border-top: 1px gray solid'><tr><th>Joined</th><th>User</th><th>Last logged in</th><th>Node note</th><th>Locked By</th><th>Validated</th></tr>\n";
-    $usr->fetchrow_hashref;
-    while (my $N = $usr->fetchrow_hashref) {
-        my $login = htmlcode('timesince', $N->{lasttime});
-        my $create = htmlcode('timesince', $N->{createtime});
-
-        $str .= sprintf("\t<tr class='%s'><td>%s</td><td><a href=%s>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n",
-            $row ? 'oddrow' : 'evenrow',
-            $create,
-            "/node/$N->{user_id}",
-            $N->{nick},
-            $login eq '?' ? 'never' : $login,
-            linkNode(getNodeById($N->{locker_id}), $N->{locker_name}),
-            $N->{notetext},
-            $N->{validemail}
-        );
-        $row = !$row;
-    }
-    $str .= '</table>' . $nav;
-
-    return $str;
-}
+# fresh_blood - MIGRATED TO Everything::Page::fresh_blood (December 2025)
+# freshly_bloodied - MIGRATED TO Everything::Page::freshly_bloodied (December 2025)
 
 sub homenode_inspector {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
@@ -4476,17 +4120,7 @@ Who needs to be looked at?<br>
     return $str;
 }
 
-sub viewvars {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    my $str = '';
-
-    foreach (keys %$VARS) {
-        $str .= "$_ : $VARS->{$_}<br>";
-    }
-
-    return $str;
-}
+# viewvars - MIGRATED TO Everything::Page::viewvars (December 2025)
 
 sub who_killed_what {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;

@@ -3215,7 +3215,7 @@ sub parsetimestamp
   }
 
   # I repeat: let's hear it for fudge!
-  return "<em>never</em>" unless (defined $yy && int($yy)>0 && defined $mm && int($mm)>-1 && defined $dd && int($dd)>0);
+  return "<em>never</em>" unless (defined $yy && $yy =~ /^\d+$/ && int($yy)>0 && defined $mm && $mm =~ /^-?\d+$/ && int($mm)>-1 && defined $dd && $dd =~ /^\d+$/ && int($dd)>0);
 
   my $epoch_secs = timelocal( $sec, $min, $hrs, $dd, $mm, $yy);
 
