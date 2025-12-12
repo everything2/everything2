@@ -35,7 +35,7 @@ const MyAchievements = ({ data }) => {
         <strong>{total_count}</strong> achievements:
       </p>
 
-      {achieved.length > 0 && (
+      {Boolean(achieved.length) && (
         <ul style={styles.list}>
           {achieved.map((achievement, index) => (
             <li key={achievement.id || index} dangerouslySetInnerHTML={{ __html: achievement.display }} />
@@ -57,7 +57,7 @@ const MyAchievements = ({ data }) => {
         </p>
       )}
 
-      {debug_mode && (
+      {Boolean(debug_mode) && (
         <div style={styles.debugSection}>
           <h3 style={styles.heading}>Debug: Achievements By Type</h3>
           <table style={styles.debugTable}>

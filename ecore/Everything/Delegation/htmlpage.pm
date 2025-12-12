@@ -1420,7 +1420,7 @@ sub usergroup_display_page
 
     $str.="<br>This group of $i member"
       .($i==1?'':'s')
-      ." is led by  $users[0]$leavingnote";
+      ." is led by  ".($users[0] // 'unknown').$leavingnote;
   } else {
     $str = '<em>This usergroup is lonely.</em>';
   }

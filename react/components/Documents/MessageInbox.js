@@ -1,7 +1,18 @@
 import React from 'react'
+import DOMPurify from 'dompurify'
 import MessageList from '../MessageList'
 import MessageModal from '../MessageModal'
 import ParseLinks from '../ParseLinks'
+
+// Sanitize legacy HTML messages - only allow <a> tags with href attribute
+// Legacy messages from sendPrivateMessage htmlcode contain pre-parsed HTML links
+const sanitizeMessageHtml = (html) => {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['a', 'em', 'strong', 'b', 'i'],
+    ALLOWED_ATTR: ['href', 'title'],
+    ALLOW_DATA_ATTR: false
+  })
+}
 
 /**
  * MessageInbox - Full-page message management
@@ -477,7 +488,12 @@ const MessageInbox = ({ data }) => {
         </div>
 
         <div style={{ marginBottom: '8px', fontSize: '13px' }}>
-          <ParseLinks>{message.msgtext}</ParseLinks>
+          {/* Legacy messages contain HTML, new messages use bracket syntax */}
+          {message.msgtext && message.msgtext.includes('<a ') ? (
+            <span dangerouslySetInnerHTML={{ __html: sanitizeMessageHtml(message.msgtext) }} />
+          ) : (
+            <ParseLinks>{message.msgtext}</ParseLinks>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: '6px', fontSize: '14px' }}>

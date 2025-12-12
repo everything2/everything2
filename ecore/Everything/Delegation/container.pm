@@ -163,8 +163,8 @@ sub formcontainer
     $query->hidden('node_id', getId($NODE));
 
   if ($NODE && $$NODE{type} && ($query->param('displaytype') // '') eq 'edit') {
-    my $type = $$NODE{type}{title};
-    $str.=htmlcode('verifyRequestForm', "edit_$type");
+    my $type = ref($$NODE{type}) eq 'HASH' ? $$NODE{type}{title} : $$NODE{type};
+    $str.=htmlcode('verifyRequestForm', "edit_$type") if $type;
   } 
 
   $str.=$contained_stuff;

@@ -218,7 +218,16 @@ const COMPONENT_MAP = {
   list_nodes_of_type: lazy(() => import('./Documents/ListNodesOfType')),
   gnl: lazy(() => import('./Documents/ListNodesOfType')),
   magical_writeup_reparenter: lazy(() => import('./Documents/MagicalWriteupReparenter')),
+  klaproth_van_lines: lazy(() => import('./Documents/KlaprothVanLines')),
   log_archive: lazy(() => import('./Documents/LogArchive')),
+  ip2name: lazy(() => import('./Documents/Ip2name')),
+  the_tokenator: lazy(() => import('./Documents/TheTokenator')),
+  create_node: lazy(() => import('./Documents/CreateNode')),
+  bounty_hunters_wanted: lazy(() => import('./Documents/BountyHuntersWanted')),
+  go_outside: lazy(() => import('./Documents/GoOutside')),
+  everything_s_most_wanted: lazy(() => import('./Documents/EverythingsMostWanted')),
+  simple_usergroup_editor: lazy(() => import('./Documents/SimpleUsergroupEditor')),
+  show_user_vars: lazy(() => import('./Documents/ShowUserVars')),
 
   // Help & documentation
   macro_faq: lazy(() => import('./Documents/MacroFaq')),
@@ -276,7 +285,20 @@ const COMPONENT_MAP = {
   // Deprecated editorial tools (preserved for site integrity)
   the_killing_floor: lazy(() => import('./Documents/TheKillingFloor')),
   the_killing_floor_ii: lazy(() => import('./Documents/TheKillingFloor')),
-  node_row: lazy(() => import('./Documents/NodeRow'))
+  node_row: lazy(() => import('./Documents/NodeRow')),
+
+  // EDB/borg tools
+  feed_edb: lazy(() => import('./Documents/FeedEdb')),
+  nate_s_secret_unborg_doc: lazy(() => import('./Documents/NatesSecretUnborgDoc')),
+
+  // Usergroup tools
+  usergroup_discussions: lazy(() => import('./Documents/UsergroupDiscussions')),
+  usergroup_message_archive: lazy(() => import('./Documents/UsergroupMessageArchive')),
+
+  // Admin/editor moderation tools
+  node_forbiddance: lazy(() => import('./Documents/NodeForbiddance')),
+  the_old_hooked_pole: lazy(() => import('./Documents/TheOldHookedPole')),
+  altar_of_sacrifice: lazy(() => import('./Documents/AltarOfSacrifice'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

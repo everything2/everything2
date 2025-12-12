@@ -1,33 +1,34 @@
 # Everything2 Special Document Types Reference
 
-**Last Updated**: 2025-12-10
-**Total Documents**: 260 documents across all types
+**Last Updated**: 2025-12-11
+**Total Documents**: 261 documents across all types
 
 ## Document Types Summary
 
 - **Superdoc**: 152 documents (public/user access)
-- **Oppressor Superdoc**: 22 documents (editor+ access)
-- **Restricted Superdoc**: 50 documents (admin access - gods level)
-- **Fullpage**: 15 documents (fullscreen interfaces)
+- **Superdocnolinks**: 7 documents (no link formatting)
+- **Oppressor Superdoc**: 23 documents (editor+ access)
+- **Restricted Superdoc**: 51 documents (admin access - gods level)
+- **Fullpage**: 14 documents (fullscreen interfaces)
 - **Ticker**: 21 documents (RSS/Atom/XML feeds)
 - **JSONExport**: 1 document (JSON API endpoint)
 
 ## React Migration Status
 
-- **Total React Pages**: 148 documents migrated (57% complete)
-- **Documents Remaining**: 93 documents to migrate (36%)
-  - Superdoc: ~40 remaining (108 migrated to React)
-  - Oppressor Superdoc: ~15 remaining (7 migrated to React - 1 deprecated)
-  - Restricted Superdoc: ~31 remaining (19 migrated to React - 2 deprecated)
-  - Fullpage: ~6 remaining (9 migrated to React)
-  - Ticker: 0 remaining (all 21 use XML/JSON API - considered complete)
-  - JSONExport: 1 remaining
-- **E2 Legacy (Delegation)**: 50 delegation functions remaining in document.pm
-- **Delegation Functions Removed**: 182 functions migrated (78% complete)
+- **Total React Pages**: 168 documents migrated (65% complete)
+- **Documents Remaining**: 62 documents to migrate
+  - Superdoc: ~27 remaining (React or E2 Legacy)
+  - Oppressor Superdoc: ~10 remaining (React or E2 Legacy)
+  - Restricted Superdoc: ~25 remaining (React or E2 Legacy)
+  - Fullpage: ~3 remaining (React or E2 Legacy)
+  - Ticker: 0 remaining (all 21 use XML/JSON API - complete)
+  - JSONExport: 0 remaining (1 migrated)
+- **E2 Legacy (Delegation)**: 56 delegation functions remaining in document.pm
+- **PROTOTYPE PAGES**: 0 (all 5 removed from production Dec 2025)
 
 ## Superdoc
 
-**Total**: 152 documents
+**Total**: 150 documents
 
 | Document | Type | URL | Rendering |
 |----------|------|-----|-----------|
@@ -36,14 +37,14 @@
 | about nobody | Superdoc | `/title/about+nobody` | React |
 | Admin Settings | Superdoc | `/title/Admin+Settings` | React |
 | Advanced Settings | Superdoc | `/title/Advanced+Settings` | React |
-| alphabetizer | Superdoc | `/title/alphabetizer` | E2 Legacy |
+| alphabetizer | Superdoc | `/title/alphabetizer` | React |
 | Ask Everything: Do I have the Swine Flu? | Superdoc | `/title/Ask+Everything:+Do+I+have+the+Swine+Flu?` | React |
 | Available Rooms | Superdoc | `/title/Available+Rooms` | React |
-| bad spellings listing | Superdoc | `/title/bad+spellings+listing` | E2 Legacy |
+| bad spellings listing | Superdoc | `/title/bad+spellings+listing` | React |
 | bestow easter eggs | Superdoc | `/title/bestow+easter+eggs` | React |
 | Between the Cracks | Superdoc | `/title/Between+the+Cracks` | React |
 | Blind Voting Booth | Superdoc | `/title/Blind+Voting+Booth` | React |
-| Bounty Hunters Wanted | Superdoc | `/title/Bounty+Hunters+Wanted` | E2 Legacy |
+| Bounty Hunters Wanted | Superdoc | `/title/Bounty+Hunters+Wanted` | React |
 | Buffalo Generator | Superdoc | `/title/Buffalo+Generator` | React |
 | Buffalo Haiku Generator | Superdoc | `/title/Buffalo+Haiku+Generator` | React |
 | Chatterbox help topics | Superdoc | `/title/Chatterbox+help+topics` | React |
@@ -61,7 +62,7 @@
 | Display Categories | Superdoc | `/title/Display+Categories` | E2 Legacy |
 | Do You C! What I C? | Superdoc | `/title/Do+You+C!+What+I+C?` | React |
 | Drafts | Superdoc | `/title/Drafts` | E2 Legacy |
-| Drafts for review | Superdoc | `/title/Drafts+for+review` | E2 Legacy |
+| Drafts for review | Superdoc | `/title/Drafts+for+review` | React |
 | Duplicates Found: | Superdoc | `/title/Duplicates+Found:` | React |
 | E2 Acceptable Use Policy | Superdoc | `/title/E2+Acceptable+Use+Policy` | React |
 | E2 Bouncer | Superdoc | `/title/E2+Bouncer` | React |
@@ -73,7 +74,6 @@
 | E2 Rot13 Encoder | Superdoc | `/title/E2+Rot13+Encoder` | React |
 | E2 Source Code Formatter | Superdoc | `/title/E2+Source+Code+Formatter` | React |
 | E2 Sperm Counter | Superdoc | `/title/E2+Sperm+Counter` | React |
-| E2 Word Counter | Superdocnolinks | `/title/E2+Word+Counter` | React |
 | E2 staff | Superdoc | `/title/E2+staff` | React |
 | E2 Ticket Center | Superdoc | `/title/E2+Ticket+Center` | E2 Legacy |
 | E2N | Superdoc | `/title/E2N` | React |
@@ -84,7 +84,7 @@
 | EKN | Superdoc | `/title/EKN` | React |
 | ENN | Superdoc | `/title/ENN` | React |
 | Everything Data Pages | Superdoc | `/title/Everything+Data+Pages` | React |
-| Everything Document Directory | Superdoc | `/title/Everything+Document+Directory` | E2 Legacy |
+| Everything Document Directory | Superdoc | `/title/Everything+Document+Directory` | React |
 | Everything Finger | Superdoc | `/title/Everything+Finger` | React |
 | Everything I Ching | Superdoc | `/title/Everything+I+Ching` | React |
 | Everything New Nodes | Superdoc | `/title/Everything+New+Nodes` | React |
@@ -97,7 +97,7 @@
 | Everything's Best Users | Superdoc | `/title/Everything's+Best+Users` | React |
 | Everything's Best Writeups | Oppressor Superdoc | `/title/Everything's+Best+Writeups` | React |
 | Everything's Biggest Stars | Superdoc | `/title/Everything's+Biggest+Stars` | React |
-| Everything's Most Wanted | Superdoc | `/title/Everything's+Most+Wanted` | E2 Legacy |
+| Everything's Most Wanted | Superdoc | `/title/Everything's+Most+Wanted` | React |
 | Everything's Obscure Writeups | Superdoc | `/title/Everything's+Obscure+Writeups` | React (302 for guests) |
 | Everything2 Elsewhere | Superdoc | `/title/Everything2+Elsewhere` | React |
 | Fezisms Generator | Superdoc | `/title/Fezisms+Generator` | React |
@@ -113,16 +113,15 @@
 | Level Distribution | Superdoc | `/title/Level+Distribution` | React |
 | List HTML tags | Superdoc | `/title/List+HTML+tags` | React |
 | List Nodes of Type | Superdoc | `/title/List+Nodes+of+Type` | React |
-| Log Archive | Superdoc | `/title/Log+Archive` | E2 Legacy |
+| Log Archive | Superdoc | `/title/Log+Archive` | React |
 | login | Superdoc | `/title/login` | React |
-| M-Noder Cocktail Lounge | Superdoc | `/title/M-Noder+Cocktail+Lounge` | E2 Legacy |
 | macro FAQ | Superdoc | `/title/macro+FAQ` | React |
 | Manna from heaven | Superdoc | `/title/Manna+from+heaven` | React |
 | Message Inbox | Superdoc | `/title/Message+Inbox` | React |
 | Message Inbox 2 | Superdoc | `/title/Message+Inbox+2` | Deprecated (use Message Inbox) |
 | Message Outbox | Superdoc | `/title/Message+Outbox` | React |
-| My Achievements | Superdoc | `/title/My+Achievements` | E2 Legacy |
-| My Big Writeup List | Superdoc | `/title/My+Big+Writeup+List` | E2 Legacy |
+| My Achievements | Superdoc | `/title/My+Achievements` | React |
+| My Big Writeup List | Superdoc | `/title/My+Big+Writeup+List` | React |
 | My Recent Writeups | Superdoc | `/title/My+Recent+Writeups` | React |
 | News Archives | Superdoc | `/title/News+Archives` | E2 Legacy |
 | News for noders. Stuff that matters. | Superdoc | `/title/News+for+noders.+Stuff+that+matters.` | React |
@@ -153,13 +152,13 @@
 | Sanctify user | Superdoc | `/title/Sanctify+user` | React |
 | Settings | Superdoc | `/title/Settings` | React |
 | Short URL Lookup | Superdoc | `/title/Short+URL+Lookup` | E2 Legacy |
-| show user vars | Superdoc | `/title/show+user+vars` | E2 Legacy |
+| show user vars | Superdoc | `/title/show+user+vars` | React |
 | Sign up | Superdoc | `/title/Sign+up` | React |
 | Silver Trinkets | Superdoc | `/title/Silver+Trinkets` | React |
-| simple usergroup editor | Superdoc | `/title/simple+usergroup+editor` | E2 Legacy |
+| simple usergroup editor | Superdoc | `/title/simple+usergroup+editor` | React |
 | Site Trajectory | Superdoc | `/title/Site+Trajectory` | React |
 | Site Trajectory 2 | Superdoc | `/title/Site+Trajectory+2` | React |
-| Spam Cannon | Superdoc | `/title/Spam+Cannon` | E2 Legacy |
+| Spam Cannon | Superdoc | `/title/Spam+Cannon` | React |
 | super mailbox | Superdoc | `/title/super+mailbox` | React |
 | Superbless | Superdoc | `/title/Superbless` | React |
 | Suspension Info | Superdoc | `/title/Suspension+Info` | React |
@@ -172,8 +171,8 @@
 | The Registries | Superdoc | `/title/The+Registries` | React |
 | Theme Nirvana | Superdoc | `/title/Theme+Nirvana` | E2 Legacy |
 | Topic Archive | Superdoc | `/title/Topic+Archive` | E2 Legacy |
-| Usergroup discussions | Superdoc | `/title/Usergroup+discussions` | E2 Legacy |
-| usergroup message archive | Superdoc | `/title/usergroup+message+archive` | E2 Legacy |
+| Usergroup discussions | Superdoc | `/title/Usergroup+discussions` | React |
+| usergroup message archive | Superdoc | `/title/usergroup+message+archive` | React |
 | Usergroup Picks | Superdoc | `/title/Usergroup+Picks` | E2 Legacy |
 | Voting Oracle | Superdoc | `/title/Voting+Oracle` | React |
 | Wharfinger's Linebreaker | Superdoc | `/title/Wharfinger's+Linebreaker` | React |
@@ -190,39 +189,36 @@
 
 ## Restricted Superdoc
 
-**Total**: 50 documents (god-level admin only)
+**Total**: 45 documents (god-level admin only)
 
 | Document | Type | URL | Rendering |
 |----------|------|-----|-----------|
 | Admin Bestow Tool | Restricted Superdoc | `/title/Admin+Bestow+Tool` | React |
 | bestow cools | Restricted Superdoc | `/title/bestow+cools` | React |
-| Bookmark Manager | Restricted Superdoc | `/title/Bookmark+Manager` | E2 Legacy |
 | Cache Dump | Restricted Superdoc | `/title/Cache+Dump` | E2 Legacy |
 | Caja de Arena | Restricted Superdoc | `/title/Caja+de+Arena` | E2 Legacy |
 | Costume Remover | Restricted Superdoc | `/title/Costume+Remover` | E2 Legacy |
-| Create Node | Restricted Superdoc | `/title/Create+Node` | E2 Legacy |
+| Create Node | Restricted Superdoc | `/title/Create+Node` | React |
 | Dr. Nate's Secret Lab | Restricted Superdoc | `/title/Dr.+Nate's+Secret+Lab` | E2 Legacy |
-| E2Node Reparenter | Restricted Superdoc | `/title/E2Node+Reparenter` | E2 Legacy |
-| Enrichify | Restricted Superdoc | `/title/Enrichify` | E2 Legacy |
-| Everything2 Time Travel Wormhole | Restricted Superdoc | `/title/Everything2+Time+Travel+Wormhole` | E2 Legacy |
+| E2Node Reparenter | Restricted Superdoc | `/title/E2Node+Reparenter` | React |
+| Enrichify | Restricted Superdoc | `/title/Enrichify` | React |
 | Everything's Richest Noders | Restricted Superdoc | `/title/Everything's+Richest+Noders` | React |
-| Everything Statistics | Restricted Superdoc | `/title/Everything+Statistics` | E2 Legacy |
+| Everything Statistics | Restricted Superdoc | `/title/Everything+Statistics` | React |
 | FAQ Editor | Restricted Superdoc | `/title/FAQ+Editor` | React |
-| Feed eDB | Restricted Superdoc | `/title/Feed+eDB` | E2 Legacy |
+| Feed eDB | Restricted Superdoc | `/title/Feed+eDB` | React |
 | Fiery Teddy Bear Suit | Restricted Superdoc | `/title/Fiery+Teddy+Bear+Suit` | React |
 | Giant Teddy Bear Suit | Restricted Superdoc | `/title/Giant+Teddy+Bear+Suit` | React |
 | GNL | Restricted Superdoc | `/title/GNL` | React |
 | GP Optouts | Restricted Superdoc | `/title/GP+Optouts` | React |
-| ip2name | Restricted Superdoc | `/title/ip2name` | E2 Legacy |
+| ip2name | Restricted Superdoc | `/title/ip2name` | React |
 | IP Blacklist | Restricted Superdoc | `/title/IP+Blacklist` | React |
 | IP Hunter | Restricted Superdoc | `/title/IP+Hunter` | React |
 | ipfrom | Restricted Superdoc | `/title/ipfrom` | React |
-| Klaproth Van Lines | Restricted Superdoc | `/title/Klaproth+Van+Lines` | E2 Legacy |
+| Klaproth Van Lines | Restricted Superdoc | `/title/Klaproth+Van+Lines` | React |
 | Mass IP Blacklister | Restricted Superdoc | `/title/Mass+IP+Blacklister` | React |
-| Most Active Usergroups | Restricted Superdoc | `/title/Most+Active+Usergroups` | E2 Legacy |
-| Nate's Secret Unborg Doc | Restricted Superdoc | `/title/Nate's+Secret+Unborg+Doc` | E2 Legacy |
+| Nate's Secret Unborg Doc | Restricted Superdoc | `/title/Nate's+Secret+Unborg+Doc` | React |
 | New User Images | Restricted Superdoc | `/title/New+User+Images` | E2 Legacy |
-| Node Forbiddance | Restricted Superdoc | `/title/Node+Forbiddance` | E2 Legacy |
+| Node Forbiddance | Restricted Superdoc | `/title/Node+Forbiddance` | React |
 | Node Heaven Title Search | Restricted Superdoc | `/title/Node+Heaven+Title+Search` | React |
 | Node Notes by Editor | Restricted Superdoc | `/title/Node+Notes+by+Editor` | E2 Legacy |
 | Nodetype Changer | Restricted Superdoc | `/title/Nodetype+Changer` | E2 Legacy |
@@ -231,12 +227,11 @@
 | Superbless | Restricted Superdoc | `/title/Superbless` | React |
 | The Borg Clinic | Restricted Superdoc | `/title/The+Borg+Clinic` | E2 Legacy |
 | The Killing Floor | Restricted Superdoc | `/title/The+Killing+Floor` | React (deprecated) |
-| the killing floor II | Restricted Superdoc | `/title/the+killing+floor+II` | React (deprecated) |
 | The Node Crypt | Restricted Superdoc | `/title/The+Node+Crypt` | E2 Legacy |
-| The Old Hooked Pole | Restricted Superdoc | `/title/The+Old+Hooked+Pole` | E2 Legacy |
+| The Old Hooked Pole | Restricted Superdoc | `/title/The+Old+Hooked+Pole` | React |
 | The Oracle Classic | Restricted Superdoc | `/title/The+Oracle+Classic` | E2 Legacy |
-| The Tokenator | Restricted Superdoc | `/title/The+Tokenator` | E2 Legacy |
-| The Well of Cool | Restricted Superdoc | `/title/The+Well+of+Cool` | E2 Legacy |
+| The Tokenator | Restricted Superdoc | `/title/The+Tokenator` | React |
+| The Well of Cool | Restricted Superdoc | `/title/The+Well+of+Cool` | React |
 | TypeVersion Controls | Restricted Superdoc | `/title/TypeVersion+Controls` | E2 Legacy |
 | User Statistics | Restricted Superdoc | `/title/User+Statistics` | E2 Legacy |
 | Usergroup Attendance Monitor | Restricted Superdoc | `/title/Usergroup+Attendance+Monitor` | E2 Legacy |
@@ -246,8 +241,6 @@
 | Viewvars | Restricted Superdoc | `/title/Viewvars` | E2 Legacy |
 | Voting Data | Restricted Superdoc | `/title/Voting+Data` | E2 Legacy |
 | Who Killed What | Restricted Superdoc | `/title/Who+Killed+What` | E2 Legacy |
-| Writeup Functionality | Restricted Superdoc | `/title/Writeup+Functionality` | E2 Legacy |
-| XP Superbless | Restricted Superdoc | `/title/XP+Superbless` | React |
 | Yet Another Secret Laboratory | Restricted Superdoc | `/title/Yet+Another+Secret+Laboratory` | E2 Legacy |
 
 ## Oppressor Superdoc
@@ -256,14 +249,14 @@
 
 | Document | Type | URL | Rendering |
 |----------|------|-----|-----------|
-| Altar of Sacrifice | Oppressor Superdoc | `/title/Altar+of+Sacrifice` | E2 Legacy |
-| Content Reports | Oppressor Superdoc | `/title/Content+Reports` | E2 Legacy |
-| Everything2 User Relations (E2Contact and Chanops) | Oppressor Superdoc | `/title/Everything2+User+Relations+(E2Contact+and+Chanops)` | E2 Legacy |
+| Altar of Sacrifice | Oppressor Superdoc | `/title/Altar+of+Sacrifice` | React |
+| Content Reports | Oppressor Superdoc | `/title/Content+Reports` | React |
+| Everything2 User Relations (E2Contact and Chanops) | Oppressor Superdoc | `/title/Everything2+User+Relations+(E2Contact+and+Chanops)` | React |
 | Everything Publication Directory | Oppressor Superdoc | `/title/Everything+Publication+Directory` | React |
 | Fresh Blood | Oppressor Superdoc | `/title/Fresh+Blood` | E2 Legacy |
 | Freshly Bloodied | Oppressor Superdoc | `/title/Freshly+Bloodied` | E2 Legacy |
 | Homenode Inspector | Oppressor Superdoc | `/title/Homenode+Inspector` | E2 Legacy |
-| Magical Writeup Reparenter | Oppressor Superdoc | `/title/Magical+Writeup+Reparenter` | E2 Legacy |
+| Magical Writeup Reparenter | Oppressor Superdoc | `/title/Magical+Writeup+Reparenter` | React |
 | Mark All Discussions as Read | Oppressor Superdoc | `/title/Mark+All+Discussions+as+Read` | E2 Legacy |
 | Node Parameter Editor | Oppressor Superdoc | `/title/Node+Parameter+Editor` | E2 Legacy |
 | Node Row | Oppressor Superdoc | `/title/Node+Row` | React (deprecated) |
@@ -291,13 +284,13 @@
 | chatterlight classic | Fullpage | `/title/chatterlight+classic` | React |
 | chatterlighter | Fullpage | `/title/chatterlighter` | React |
 | Cool Nodes XML Ticker | Fullpage | `/title/Cool+Nodes+XML+Ticker` | XML/JSON API |
-| eqs nohtml | Fullpage | `/title/eqs+nohtml` | E2 Legacy |
+| eqs nohtml | Fullpage | `/title/eqs+nohtml` | React |
 | Guest Front Page | Fullpage | `/title/Guest+Front+Page` | E2 Legacy |
 | inboxlight | Fullpage | `/title/inboxlight` | E2 Legacy |
 | New Nodes XML Ticker | Fullpage | `/title/New+Nodes+XML+Ticker` | XML/JSON API |
 | Other Users XML Ticker | Fullpage | `/title/Other+Users+XML+Ticker` | XML/JSON API |
 | Private Message XML Ticker | Fullpage | `/title/Private+Message+XML+Ticker` | XML/JSON API |
-| RDF Search | Fullpage | `/title/RDF+Search` | E2 Legacy |
+| RDF Search | Fullpage | `/title/RDF+Search` | React |
 | User Information XML | Fullpage | `/title/User+Information+XML` | XML/JSON API |
 | User Search XML Ticker | Fullpage | `/title/User+Search+XML+Ticker` | XML/JSON API |
 
@@ -337,13 +330,32 @@
 |----------|------|-----|-----------|
 | Universal Message JSON Ticker | JSONExport | `/title/Universal+Message+JSON+Ticker` | XML/JSON API |
 
+## Superdocnolinks
+
+**Total**: 7 documents (no automatic link formatting)
+
+| Document | Type | URL | Rendering |
+|----------|------|-----|-----------|
+| E2 Color Toy | Superdocnolinks | `/title/E2+Color+Toy` | React |
+| E2 Word Counter | Superdocnolinks | `/title/E2+Word+Counter` | React |
+| Go Outside | Superdocnolinks | `/title/Go+Outside` | React |
+| Style Defacer | Superdocnolinks | `/title/Style+Defacer` | E2 Legacy |
+| The Killing Floor II | Superdocnolinks | `/title/The+Killing+Floor+II` | React (deprecated) |
+| Welcome to Everything | Superdocnolinks | `/title/Welcome+to+Everything` | E2 Legacy |
+| Zenmastery | Superdocnolinks | `/title/Zenmastery` | React |
+
+## Migration Process
+
+For any new documents that need implementation:
+1. Create a Page class in `ecore/Everything/Page/<name>.pm`
+2. Create a React component in `react/components/Documents/<Name>.js`
+3. Register in `react/components/DocumentComponent.js`
+
 ## Rendering Methods
 
 - **React**: Modern client-side rendering with JSON data loading
-- **Mason2**: Server-side rendering using Everything::Page elements
 - **E2 Legacy**: Traditional delegation system (Everything::Delegation)
 - **XML/JSON API**: Structured data endpoints (tickers)
-- **Fullpage Template**: Standalone interface pages
 
 ## URL Encoding Notes
 
@@ -358,7 +370,7 @@
   - Superdoc: Public or user-level access
   - Oppressor Superdoc: Editor+ permissions required
   - Restricted Superdoc: God-level admin only (highest permission level)
-- **React Migration Progress**: 99 documents (38%) now use React rendering
+- **React Migration Progress**: 167 documents (64%) now use React rendering
   - Major conversions include Message Inbox, Settings, Chatterlight, polls, generators
   - Many holiday pages (Christmas, Halloween, New Year's, etc.)
   - User management pages (Pit of Abomination, Your ignore list, etc.)
@@ -394,11 +406,24 @@
     - Iron Noder Progress & Historical Iron Noder Stats: Unified component with is_historical flag
     - Registry pages: The Registries, Popular Registries, Recent Registry Entries, Registry Information, Create a Registry
   - **December 10, 2025 Session**:
-    - IP Hunter: Admin tool for tracking IP addresses and user login history (105 lines removed from delegation)
-    - IP Blacklist: IP blacklist management with CIDR range support (160 lines removed from delegation)
-    - Mass IP Blacklister: Bulk IP blacklist management tool (73 lines removed from delegation)
-    - Node Row: Deprecated editorial tool for managing removed writeups (26 lines removed from delegation)
+    - IP Hunter: Admin tool for tracking IP addresses and user login history
+    - IP Blacklist: IP blacklist management with CIDR range support
+    - Mass IP Blacklister: Bulk IP blacklist management tool
+    - Node Row: Deprecated editorial tool for managing removed writeups
     - Form value preservation: Both IP Blacklist tools now preserve form values on validation errors
+    - Feed eDB: Admin EDB borg testing tool
+    - Nate's Secret Unborg Doc: Instant admin unborg tool
+    - Usergroup discussions: View/create usergroup discussions
+    - usergroup message archive: View archived usergroup messages
+    - Node Forbiddance: Admin forbid/unforbid users from node creation
+    - The Old Hooked Pole: Editor mass user deletion/locking tool
+    - show user vars: User variable debugging tool
+  - **December 11, 2025 Session**:
+    - Altar of Sacrifice: Restored from git history (was accidentally removed)
+    - My Achievements: Fixed stray zero rendering bug (Perl 0 vs React falsy)
+    - **AUDIT COMPLETED**: Found 31 orphaned pages with no implementation
+    - Document inventory updated with Superdocnolinks section
+    - All document types now tracked: superdoc, restricted_superdoc, oppressor_superdoc, ticker, fullpage, jsonexport, superdocnolinks
 
 ---
 *For questions or updates, see [CLAUDE.md](../CLAUDE.md)*
