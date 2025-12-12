@@ -37,15 +37,12 @@ const parseMessageText = (msg) => {
   // /sing or /sings → <username> ♪ song ♫
   if (text.match(/^\/sings?\b\s?(.*)/i)) {
     const match = text.match(/^\/sings?\b\s?(.*)/i)
-    const notes = ['♫', '♪', '♫♪', '♪♫']
-    const randomNote1 = notes[Math.floor(Math.random() * notes.length)]
-    const randomNote2 = notes[Math.floor(Math.random() * notes.length)]
     return (
       <>
         {'<'}
         <LinkNode type={author.type} title={author.title} />
         {'> '}
-        <em>{randomNote1} <ParseLinks text={match[1]} /> {randomNote2}</em>
+        <em>♪ <ParseLinks text={match[1]} /> ♫</em>
       </>
     )
   }

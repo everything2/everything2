@@ -1256,7 +1256,7 @@ sub show_content
       my $text = $N->{ doctext } ;
 
       # For superdocs, use delegation
-      if ( exists( $$N{ type } ) and ( $$N{ type_nodetype } eq "14" or $$N{ type }{ extends_nodetype } eq "14" ) ) {
+      if ( exists( $$N{ type } ) and ( ($$N{ type_nodetype } // '') eq "14" or ($$N{ type }{ extends_nodetype } // '') eq "14" ) ) {
         my $doctitle = $$N{title};
         $doctitle =~ s/[\s-]/_/g;
         $doctitle = lc($doctitle);
@@ -3215,7 +3215,7 @@ sub parsetimestamp
   }
 
   # I repeat: let's hear it for fudge!
-  return "<em>never</em>" unless (int($yy)>0 and int($mm)>-1 and int($dd)>0);
+  return "<em>never</em>" unless (defined $yy && int($yy)>0 && defined $mm && int($mm)>-1 && defined $dd && int($dd)>0);
 
   my $epoch_secs = timelocal( $sec, $min, $hrs, $dd, $mm, $yy);
 
@@ -3570,7 +3570,7 @@ sub weblog
     $instructions .= ', linkedby' ;
     $weblogspecials{ linkedby } = sub {
       my $N = shift ;
-      return '<div class="linkedby">linked by '.linkNode( $$N{linkedby_user}, '', {lastnode_id =>0} ).'</div>' unless $$N{linkedby_user}==$$N{author_user} ;
+      return '<div class="linkedby">linked by '.linkNode( $$N{linkedby_user}, '', {lastnode_id =>0} ).'</div>' unless ($$N{linkedby_user} // 0) == ($$N{author_user} // 0) ;
       return '' ;
     } ;
   }
@@ -5738,7 +5738,7 @@ sub writeupcools
       ++$count ;
       my $CG = getNodeById( $$_{ cooledby_user } ) ;
       my $t = ( $CG ? linkNode( $CG ) : '?' ) ;
-      if ( $$CG{user_id} == $$USER{ user_id } )
+      if ( $CG && ($$CG{user_id} // 0) == $$USER{ user_id } )
       {
         push @people, '<strong>'.$t.'</strong> (#'.$count.')' ;
       } else {
@@ -5752,7 +5752,7 @@ sub writeupcools
     $coolers =~ s/((?:.*?,){5})/$1<br>/g ;
   }
 
-  $query->param( 'showwidget' , 'showCs'.$$N{ node_id } ) if $query->param('op') eq 'cool' and $query->param('cool_id') == $$N{ node_id } ;
+  $query->param( 'showwidget' , 'showCs'.$$N{ node_id } ) if ($query->param('op') // '') eq 'cool' and ($query->param('cool_id') // 0) == $$N{ node_id } ;
 
   return '<span id="cools'.$$N{node_id}.'" class="cools">'.htmlcode( 'widget' , '<small>This writeup has been cooled by: &nbsp;</small><br>
     '.$coolers , 'span ' , $coolnum , { showwidget => 'showCs'.$$N{ node_id } , -title => 'show who gave the C!s' , -closetitle => 'hide cools' } ) .
