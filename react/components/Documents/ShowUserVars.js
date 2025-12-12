@@ -6,7 +6,7 @@ import LinkNode from '../LinkNode'
  * Admin/Developer tool.
  */
 const ShowUserVars = ({ data }) => {
-  const { access_denied, message, is_admin, inspect_user, vars_data, user_data } = data
+  const { access_denied, message, is_admin, inspect_user, vars_data, user_data, viewvars_mode } = data
 
   const [username, setUsername] = useState(inspect_user?.title || '')
 
@@ -27,7 +27,11 @@ const ShowUserVars = ({ data }) => {
     <div style={styles.container}>
       <h2 style={styles.title}>Show User Vars</h2>
 
-      {is_admin ? (
+      {viewvars_mode ? (
+        <p>
+          Showing variables for: <LinkNode nodeId={inspect_user.node_id} title={inspect_user.title} />
+        </p>
+      ) : is_admin ? (
         <form method="GET" style={styles.form}>
           <input type="hidden" name="node_id" value={nodeId} />
           <label>

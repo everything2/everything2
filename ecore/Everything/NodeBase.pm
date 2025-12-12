@@ -474,7 +474,9 @@ sub getNode
 	if(defined $NODE and $selectop ne 'nocache')
 	{
 		my $perm = 0;
-		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
+		my $type_title = $$NODE{type}{title};
+		$perm = 1 if exists $Everything::CONF->static_cache->{$type_title}
+		          || exists $Everything::CONF->permanent_cache->{$type_title};
 		$this->{cache}->cacheNode($NODE, $perm);
 	}
 
@@ -558,7 +560,9 @@ sub getNodeById
 	if($selectop ne 'nocache')
 	{
 		my $perm = 0;
-		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
+		my $type_title = $$NODE{type}{title};
+		$perm = 1 if exists $Everything::CONF->static_cache->{$type_title}
+		          || exists $Everything::CONF->permanent_cache->{$type_title};
 
 		$this->{cache}->cacheNode($NODE, $perm);
 	}

@@ -107,8 +107,6 @@ sub new
 
 	$this->{paramcache} = {};
 
-	$this->{pagecache} = {};
-
 	return $this;
 }
 
@@ -613,6 +611,10 @@ sub isSameVersion
 {
 	my ($this, $NODE) = @_;
 
+	# Skip version check entirely for static_cache types.
+	# These are "code nodes" that only change via deployment.
+	return 1 if(exists $Everything::CONF->static_cache->{$$NODE{type}{title}});
+
 	return 1 if(exists $$this{typeVerified}{$$NODE{type}{node_id}});
 	return 1 if(exists $$this{verified}{$$NODE{node_id}});
 
@@ -622,6 +624,11 @@ sub isSameVersion
 		$$this{verified}{$$NODE{node_id}} = 1;
 	    return 1;
 	}
+
+	# Version mismatch - also invalidate groupCache for this node.
+	# This ensures usergroup membership changes propagate correctly.
+	delete $this->{groupCache}{$$NODE{node_id}};
+
 	return 0;
 }
 
@@ -683,55 +690,55 @@ sub resetCache
   my ($this) = @_;
 
   $this->{paramcache} = {};
-  $this->{pagecache} = {};
   $this->{verified} = {};
   $this->{typeVerified} = {};
 
-  my %newVersion = ();
-  my @confirmTypes = ();
-
-  if (my $csr = $this->{nodeBase}->sqlSelectMany('*', "typeversion"))
-  {
-    while (my $N = $csr->fetchrow_hashref)
-    {
-      if (exists $this->{typeVersion}{$$N{typeversion_id}})
-      {
-        if ($this->{typeVersion}{$$N{typeversion_id}} == $$N{version})
-        {
-          $this->{typeVerified}{$$N{typeversion_id}} = 1;
-        } else {
-          push @confirmTypes, $$N{typeversion_id};
-        }
-      } else {
-        push @confirmTypes, $$N{typeversion_id};
-      }
-
-      #if the typeversion haven't changed, we can verify the type
-      $newVersion{$$N{typeversion_id}} = $$N{version};
-    }
-    $csr->finish;
-  }
-
-  # some types that are typeVersion have changed, or have just been added 
-  # to typeversion.  we need to remove any stale data from that type
-  foreach my $nodetype_id (@confirmTypes)
-  {
-    my $typename = $this->{nodeBase}->sqlSelect('title', 'node', "node_id=$nodetype_id");
-    foreach my $nodename (keys %{ $this->{typeCache}{$typename} })
-    {
-      my $NODE = $this->{nodeQueue}->getItem($this->{typeCache}{$typename}{$nodename});
-      if (not $this->isSameVersion($NODE))
-      {
-        #$this->{nodeBase}->getNode($$NODE{node_id}, 'force');	
-        $this->removeNode($NODE);
-      }
-    }
-
-    $this->{typeVerified}{$nodetype_id} = 1;
-  }
-
-  $this->{typeVersion} = \%newVersion;
-  #replace the typeVersion with the most recent table
+  # DISABLED December 2025: typeversion bulk invalidation adds per-pageload
+  # database overhead for a feature rarely used. Individual node versioning
+  # via the `version` table handles invalidation correctly. The static_cache
+  # optimization already skips version checks for code-backed types.
+  # If no performance issues arise, this code can be fully removed.
+  #
+  # my %newVersion = ();
+  # my @confirmTypes = ();
+  #
+  # if (my $csr = $this->{nodeBase}->sqlSelectMany('*', "typeversion"))
+  # {
+  #   while (my $N = $csr->fetchrow_hashref)
+  #   {
+  #     if (exists $this->{typeVersion}{$$N{typeversion_id}})
+  #     {
+  #       if ($this->{typeVersion}{$$N{typeversion_id}} == $$N{version})
+  #       {
+  #         $this->{typeVerified}{$$N{typeversion_id}} = 1;
+  #       } else {
+  #         push @confirmTypes, $$N{typeversion_id};
+  #       }
+  #     } else {
+  #       push @confirmTypes, $$N{typeversion_id};
+  #     }
+  #
+  #     $newVersion{$$N{typeversion_id}} = $$N{version};
+  #   }
+  #   $csr->finish;
+  # }
+  #
+  # foreach my $nodetype_id (@confirmTypes)
+  # {
+  #   my $typename = $this->{nodeBase}->sqlSelect('title', 'node', "node_id=$nodetype_id");
+  #   foreach my $nodename (keys %{ $this->{typeCache}{$typename} })
+  #   {
+  #     my $NODE = $this->{nodeQueue}->getItem($this->{typeCache}{$typename}{$nodename});
+  #     if (not $this->isSameVersion($NODE))
+  #     {
+  #       $this->removeNode($NODE);
+  #     }
+  #   }
+  #
+  #   $this->{typeVerified}{$nodetype_id} = 1;
+  # }
+  #
+  # $this->{typeVersion} = \%newVersion;
 
   return;
 }
@@ -776,16 +783,6 @@ sub existsInGroupCache {
 	my ($this, $NODE, $nid) = @_;
 	return 0 unless defined $nid;
 	return exists($this->{groupCache}->{$$NODE{node_id}}->{$nid});
-}
-
-sub pageCacheSet {
-	my ($this, $key, $value) = @_;
-	return $this->{pagecache}->{$key} = $value;
-}
-
-sub pageCacheGet {
-	my ($this, $key) = @_;
-	return $this->{pagecache}->{$key};
 }
 
 #############################################################################
