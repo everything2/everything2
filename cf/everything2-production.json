@@ -50,6 +50,60 @@
         "BucketName": "nodebackup.everything2.com"
       }
     },
+    "SnapshotExportBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "e2-snapshot-exports",
+        "LifecycleConfiguration": {
+          "Rules": [{
+            "Id": "DeleteOldExports",
+            "Status": "Enabled",
+            "ExpirationInDays": 30
+          }]
+        }
+      }
+    },
+    "SnapshotExportKMSKey": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "Description": "E2 RDS Snapshot Export Encryption",
+        "KeyPolicy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "Enable IAM User Permissions",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {"Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"}
+              },
+              "Action": "kms:*",
+              "Resource": "*"
+            },
+            {
+              "Sid": "Allow RDS to use the key",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "rds.amazonaws.com"
+              },
+              "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+                "kms:CreateGrant"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    },
+    "SnapshotExportKMSKeyAlias": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/e2-snapshot-export",
+        "TargetKeyId": {"Ref": "SnapshotExportKMSKey"}
+      }
+    },
     "StaticAssetBucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
@@ -619,7 +673,7 @@
         "EnablePerformanceInsights": true,
         "DeletionProtection": true,
         "DBSubnetGroupName": {"Ref": "EverythingDBSubnetGroup"},
-        "StorageType": "gp2",
+        "StorageType": "gp3",
         "VPCSecurityGroups": [{"Fn::GetAtt": ["AppVPC","DefaultSecurityGroup"]}, {"Ref": "MainDBSecurityGroup"}],
         "DBParameterGroupName": {"Ref": "EverythingDB80Parameters"},
 	"OptionGroupName": {"Ref": "DB80OptionGroup"},
@@ -1213,6 +1267,47 @@
         }]
       }
     },
+    "E2HeavyJobFargateTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "Cpu": 1024,
+        "Memory": 4096,
+        "Family": "e2heavyjob-family",
+        "ExecutionRoleArn": {"Ref": "E2TaskExecutionRole"},
+        "RequiresCompatibilities": ["FARGATE"],
+        "NetworkMode": "awsvpc",
+        "RuntimePlatform": {
+          "CpuArchitecture": "ARM64",
+          "OperatingSystemFamily": "LINUX"
+        },
+        "TaskRoleArn": {"Ref": "AppFargateTaskRole"},
+        "ContainerDefinitions": [{
+          "Name": "e2app",
+          "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistryARM","RepositoryUri"]},"latest"]]},
+          "Memory": 4096,
+          "Essential": true,
+          "LogConfiguration": {
+            "LogDriver": "awslogs",
+            "Options": {
+              "awslogs-group": "/aws/fargate/fargate-heavyjob-awslogs",
+              "awslogs-region": {"Ref": "AWS::Region"},
+              "awslogs-stream-prefix": "e2-heavyjob"
+            }
+          },
+          "Ulimits": [{
+            "HardLimit": 8192,
+            "Name": "nofile",
+            "SoftLimit": 8192
+          }],
+          "Environment": [
+            {
+              "Name": "E2_DBSERV",
+              "Value": {"Fn::GetAtt": ["EverythingDB","Endpoint.Address"]}
+            }
+          ]
+        }]
+      }
+    },
     "FargateServiceLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
@@ -1224,6 +1319,13 @@
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "LogGroupName": "/aws/fargate/fargate-cron-awslogs",
+        "RetentionInDays": 3
+      }
+    },
+    "FargateHeavyJobLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/fargate/fargate-heavyjob-awslogs",
         "RetentionInDays": 3
       }
     },
@@ -1501,8 +1603,8 @@
         "ResourceId": {"Fn::Join": ["/",["service",{"Ref": "ECSAppCluster"},{"Fn::GetAtt": ["ECSFargateAppService","Name"]}]]},
         "ServiceNamespace": "ecs",
         "ScalableDimension": "ecs:service:DesiredCount",
-        "MinCapacity": 2,
-        "MaxCapacity": 6
+        "MinCapacity": 1,
+        "MaxCapacity": 4
       }
     },
     "FargateAppAutoScalingPolicy": {
@@ -1513,8 +1615,8 @@
         "PolicyType": "TargetTrackingScaling",
         "ScalingTargetId": {"Ref": "FargateAppScalableTarget"},
         "TargetTrackingScalingPolicyConfiguration": {
-          "TargetValue": 80,
-          "ScaleInCooldown": 60,
+          "TargetValue": 60,
+          "ScaleInCooldown": 300,
           "ScaleOutCooldown": 60,
           "PredefinedMetricSpecification": {
             "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
@@ -2104,7 +2206,7 @@
           "Version": "2012-10-17",
           "Statement": {
             "Effect": "Allow",
-            "Principal": {"Service": "rds.amazonaws.com"},
+            "Principal": {"Service": ["rds.amazonaws.com", "export.rds.amazonaws.com"]},
             "Action": "sts:AssumeRole"
           }
         },
@@ -2112,11 +2214,22 @@
           "PolicyName": "s3-write-to-snapshots",
           "PolicyDocument": {
             "Version": "2012-10-17",
-            "Statement": {
+            "Statement": [{
               "Effect": "Allow",
-              "Action": ["s3:*"],
-              "Resource": {"Fn::GetAtt": ["MysqlRDSSnapshotBucket", "Arn"]}
-            }
+              "Action": [
+                "s3:PutObject*",
+                "s3:GetObject*",
+                "s3:DeleteObject*",
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+              ],
+              "Resource": [
+                {"Fn::GetAtt": ["MysqlRDSSnapshotBucket", "Arn"]},
+                {"Fn::Join": ["", [{"Fn::GetAtt": ["MysqlRDSSnapshotBucket", "Arn"]}, "/*"]]},
+                {"Fn::GetAtt": ["SnapshotExportBucket", "Arn"]},
+                {"Fn::Join": ["", [{"Fn::GetAtt": ["SnapshotExportBucket", "Arn"]}, "/*"]]}
+              ]
+            }]
           }
         }]
       }

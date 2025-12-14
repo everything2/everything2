@@ -41,10 +41,15 @@ run_perl_tests() {
 
     echo ""
     echo "=== Running Perl Unit Tests ==="
-    timeout 120 docker exec e2devapp perl -I /var/everything/ecore -I /var/libraries/lib/perl5 /var/everything/t/run.pl 2>&1
+    # Run timeout INSIDE container to avoid exit code propagation issues
+    # between timeout -> docker exec -> perl boundaries
+    docker exec e2devapp timeout 120 perl -I /var/everything/ecore -I /var/libraries/lib/perl5 /var/everything/t/run.pl 2>&1
     PERL_TEST_EXIT=$?
     if [ $PERL_TEST_EXIT -eq 0 ]; then
       echo -e "${GREEN}✓ Perl tests passed${NC}"
+    elif [ $PERL_TEST_EXIT -eq 124 ]; then
+      echo -e "${RED}✗ Perl tests timed out${NC}"
+      exit 1
     else
       echo -e "${RED}✗ Perl tests failed${NC}"
       exit 1

@@ -24,7 +24,8 @@ require 'fileutils'
 REGION = 'us-west-2'
 BUCKET = 'e2-writeup-exports'
 CLUSTER = 'E2-App-ECS-Cluster'
-TASK_FAMILY = 'e2cron-family'
+TASK_FAMILY_NORMAL = 'e2cron-family'
+TASK_FAMILY_HEAVY = 'e2heavyjob-family'
 CRON_SCRIPT = '/var/everything/cron/cron_extract_writeup_content.pl'
 OUTPUT_DIR = 'tmp/writeup-exports'
 
@@ -140,6 +141,12 @@ def run_ecs_task(options)
   puts "  Security Groups: #{vpc_config[:security_groups].join(', ')}"
   puts
 
+  # Use heavy job task family for --full exports (requires more memory)
+  task_family = options[:full] ? TASK_FAMILY_HEAVY : TASK_FAMILY_NORMAL
+  puts "Task family: #{task_family}"
+  puts "  (Using heavy job task with 4GB memory)" if options[:full]
+  puts
+
   puts "Starting ECS task..."
 
   # Build the network configuration JSON
@@ -167,7 +174,7 @@ def run_ecs_task(options)
 
   result = run_aws(options, "ecs", "run-task",
                    "--cluster", CLUSTER,
-                   "--task-definition", TASK_FAMILY,
+                   "--task-definition", task_family,
                    "--launch-type", "FARGATE",
                    "--network-configuration", network_config.to_json,
                    "--overrides", overrides.to_json)
@@ -243,21 +250,29 @@ end
 def check_task_status(options)
   puts "Checking for running tasks..."
 
-  result = run_aws(options, "ecs", "list-tasks",
-                   "--cluster", CLUSTER,
-                   "--family", TASK_FAMILY)
+  # Check both task families
+  all_task_arns = []
 
-  unless result
-    STDERR.puts "Error: Could not list tasks"
-    exit 1
+  [TASK_FAMILY_NORMAL, TASK_FAMILY_HEAVY].each do |family|
+    result = run_aws(options, "ecs", "list-tasks",
+                     "--cluster", CLUSTER,
+                     "--family", family)
+
+    unless result
+      STDERR.puts "Error: Could not list tasks for #{family}"
+      next
+    end
+
+    task_arns = result['taskArns'] || []
+    all_task_arns.concat(task_arns)
   end
 
-  task_arns = result['taskArns'] || []
-
-  if task_arns.empty?
-    puts "No tasks currently running for #{TASK_FAMILY}"
+  if all_task_arns.empty?
+    puts "No tasks currently running for writeup export"
     return
   end
+
+  task_arns = all_task_arns
 
   result = run_aws(options, "ecs", "describe-tasks",
                    "--cluster", CLUSTER,
