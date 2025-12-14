@@ -12,7 +12,10 @@ const TheOldHookedPole = ({ data }) => {
     results,
     saved_users,
     show_form,
-    node_id
+    node_id,
+    prefill,
+    polehash_nonce,
+    polehash_seed
   } = data
 
   if (!is_editor) {
@@ -77,7 +80,9 @@ const TheOldHookedPole = ({ data }) => {
           </div>
 
           <form method="post" style={styles.form}>
-            <input type="hidden" name="polehash" value="1" />
+            <input type="hidden" name="node_id" value={node_id} />
+            <input type="hidden" name="polehash_nonce" value={polehash_nonce} />
+            <input type="hidden" name="polehash_seed" value={polehash_seed} />
 
             {saved_users && saved_users.length > 0 && (
               <fieldset style={styles.fieldset}>
@@ -99,6 +104,7 @@ const TheOldHookedPole = ({ data }) => {
                 cols="30"
                 style={styles.textarea}
                 placeholder="Enter usernames, one per line"
+                defaultValue={prefill || ''}
               />
               <br /><br />
               <button type="submit" style={styles.button}>

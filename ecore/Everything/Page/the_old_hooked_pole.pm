@@ -181,6 +181,12 @@ $input_table
         }
     }
 
+    # Get prefill username for linking from spam detection tools
+    my $prefill = $query->param('prefill') || '';
+
+    # Generate security hash for form submission
+    my $hash_data = htmlcode('verifyRequestHash', 'polehash');
+
     return {
         type           => 'the_old_hooked_pole',
         is_editor      => 1,
@@ -189,7 +195,10 @@ $input_table
         smite          => $smite,
         detonate       => $detonate,
         show_form      => !$smite && !$detonate,
-        node_id        => $NODE->NODEDATA->{node_id}
+        node_id        => $NODE->NODEDATA->{node_id},
+        prefill        => $prefill,
+        polehash_nonce => $hash_data->{polehash_nonce},
+        polehash_seed  => $hash_data->{polehash_seed}
     };
 }
 

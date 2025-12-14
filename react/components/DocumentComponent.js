@@ -306,7 +306,35 @@ const COMPONENT_MAP = {
   mark_all_discussions_as_read: lazy(() => import('./Documents/MarkAllDiscussionsAsRead')),
 
   // Admin diagnostic tools
-  cache_dump: lazy(() => import('./Documents/CacheDump'))
+  cache_dump: lazy(() => import('./Documents/CacheDump')),
+
+  // Voting and statistics
+  voting_data: lazy(() => import('./Documents/VotingData')),
+  user_statistics: lazy(() => import('./Documents/UserStatistics')),
+  who_killed_what: lazy(() => import('./Documents/WhoKilledWhat')),
+
+  // User variable tools (both use same component)
+  the_oracle: lazy(() => import('./Documents/TheOracle')),
+  the_oracle_classic: lazy(() => import('./Documents/TheOracle')),
+
+  // Admin info tools
+  users_with_infravision: lazy(() => import('./Documents/UsersWithInfravision')),
+
+  // Admin node/user management
+  the_borg_clinic: lazy(() => import('./Documents/TheBorgClinic')),
+  usergroup_attendance_monitor: lazy(() => import('./Documents/UsergroupAttendanceMonitor')),
+  the_node_crypt: lazy(() => import('./Documents/TheNodeCrypt')),
+  nodetype_changer: lazy(() => import('./Documents/NodetypeChanger')),
+  node_notes_by_editor: lazy(() => import('./Documents/NodeNotesByEditor')),
+  usergroup_message_archive_manager: lazy(() => import('./Documents/UsergroupMessageArchiveManager')),
+
+  // Admin security & moderation tools
+  security_monitor: lazy(() => import('./Documents/SecurityMonitor')),
+  renunciation_chainsaw: lazy(() => import('./Documents/RenunciationChainsaw')),
+  node_parameter_editor: lazy(() => import('./Documents/NodeParameterEditor')),
+  homenode_inspector: lazy(() => import('./Documents/HomenodeInspector')),
+  style_defacer: lazy(() => import('./Documents/StyleDefacer')),
+  caja_de_arena: lazy(() => import('./Documents/CajaDeArena'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

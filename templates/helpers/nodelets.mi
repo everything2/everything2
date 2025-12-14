@@ -1,7 +1,0 @@
-<%class>
-  has 'nodelets' => (required => 1);
-  has 'nodeletorder' => (required => 1);
-</%class>
-% foreach my $nodelet (@{$.nodeletorder}) {
-<% $m->construct("/nodelets/$nodelet.mi", %{$.nodelets->{$nodelet}}, 'm' => $m)->handle %>
-% }

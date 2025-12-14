@@ -1,8 +1,0 @@
-<%class>
-  has 'node' => (required => 1);
-</%class>
-% if ( $.node->type->title eq "writeup" ) {
-<% $.node->title %> by <% $.node->author->title %> 
-% } else {
-<% $.node->title %>
-% }

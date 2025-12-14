@@ -1,4 +1,0 @@
-<%class>
-has 'title' => (default => "Random Node");
-</%class>
-<a href="/?op=randomnode;garbage=<% int(rand(100000)) %>"><% $.title %></a>

@@ -23,7 +23,7 @@ require 'fileutils'
 
 REGION = 'us-west-2'
 BUCKET = 'e2-writeup-exports'
-CLUSTER = 'E2-App-Cluster'
+CLUSTER = 'E2-App-ECS-Cluster'
 TASK_FAMILY = 'e2cron-family'
 CRON_SCRIPT = '/var/everything/cron/cron_extract_writeup_content.pl'
 OUTPUT_DIR = 'tmp/writeup-exports'
@@ -32,7 +32,9 @@ options = {
   download_only: false,
   status: false,
   wait: true,
-  profile: nil
+  profile: nil,
+  sample_only: false,
+  full: false
 }
 
 OptionParser.new do |opts|
@@ -54,16 +56,29 @@ OptionParser.new do |opts|
     options[:profile] = p
   end
 
+  opts.on("--sample-only", "Only extract 1000 random sample (fastest, lowest memory)") do
+    options[:sample_only] = true
+  end
+
+  opts.on("--full", "Include full writeup export (WARNING: very memory intensive!)") do
+    options[:full] = true
+  end
+
   opts.on("-h", "--help", "Show this help") do
     puts opts
     puts
     puts "This tool runs the writeup content extraction cron job in production"
     puts "and downloads the resulting JSON files for link parsing analysis."
     puts
+    puts "Extraction modes:"
+    puts "  (default)       Sample (1000) + Recent (30 days) - memory safe"
+    puts "  --sample-only   Just 1000 random writeups - fastest"
+    puts "  --full          All writeups - requires lots of memory!"
+    puts
     puts "Output files are saved to: #{OUTPUT_DIR}/"
     puts "  - writeup-content-sample.json  (1000 random writeups)"
-    puts "  - writeup-content-recent.json  (last 30 days)"
-    puts "  - writeup-content-full.json.gz (all writeups, compressed)"
+    puts "  - writeup-content-recent.json  (last 30 days, unless --sample-only)"
+    puts "  - writeup-content-full.json.gz (all writeups, only with --full)"
     puts "  - manifest.json                (export metadata)"
     puts
     puts "After downloading, analyze with:"
@@ -136,12 +151,16 @@ def run_ecs_task(options)
     }
   }
 
-  # Build command override to run the cron script
+  # Build command override to run the cron script with appropriate flags
+  cron_args = ["perl", CRON_SCRIPT]
+  cron_args << "--sample-only" if options[:sample_only]
+  cron_args << "--full" if options[:full]
+
   overrides = {
     containerOverrides: [
       {
         name: "e2app",
-        command: ["perl", CRON_SCRIPT]
+        command: cron_args
       }
     ]
   }
