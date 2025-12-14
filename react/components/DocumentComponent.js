@@ -23,6 +23,10 @@ import React, { Suspense, lazy } from 'react'
 // Component registry - maps document type to lazy-loaded React component
 // Add new migrated documents here as they are converted from Mason to React
 const COMPONENT_MAP = {
+  // Core node types (writeups and e2nodes)
+  writeup: lazy(() => import('./Documents/Writeup')),
+  e2node: lazy(() => import('./Documents/E2Node')),
+
   // Phase 4a migrations
   wheel_of_surprise: lazy(() => import('./Documents/WheelOfSurprise')),
   silver_trinkets: lazy(() => import('./Documents/SilverTrinkets')),

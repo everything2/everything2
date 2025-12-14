@@ -673,6 +673,27 @@ sub displayPage
 	getRef $NODE, $USER;
 	die "NO NODE!" unless $NODE;
 	$GNODE = $NODE;
+
+	# Fast-path for HEAD requests: return appropriate status without full rendering
+	# This saves significant DB/CPU load from bots checking link existence
+	if ($ENV{REQUEST_METHOD} eq 'HEAD') {
+		my $status = 200;
+		my $status_text = 'OK';
+
+		if ($NODE->{node_id} == $Everything::CONF->not_found_node) {
+			$status = 404;
+			$status_text = 'Not Found';
+		} elsif ($NODE->{node_id} == $Everything::CONF->permission_denied) {
+			$status = 403;
+			$status_text = 'Forbidden';
+		}
+
+		print "Status: $status $status_text\n";
+		print "Content-Type: text/html; charset=utf-8\n";
+		print "X-E2-Head-Optimized: 1\n\n";
+		return;
+	}
+
 	my $isGuest = 0;
 	my $page = "";
 	$isGuest = 1 if $APP->isGuest($user_id);
@@ -766,6 +787,27 @@ sub gotoNode
                 # if you can't see a draft, you don't need/want to know it's there
                 $NODE = getNodeById($Everything::CONF->not_found_node);
         }
+
+	# Fast-path for HEAD requests: return appropriate status without full rendering
+	# This saves significant DB/CPU load from bots checking link existence
+	if ($ENV{REQUEST_METHOD} eq 'HEAD') {
+		my $status = 200;
+		my $status_text = 'OK';
+
+		if ($NODE->{node_id} == $Everything::CONF->not_found_node) {
+			$status = 404;
+			$status_text = 'Not Found';
+		} elsif ($NODE->{node_id} == $Everything::CONF->permission_denied) {
+			$status = 403;
+			$status_text = 'Forbidden';
+		}
+
+		print "Status: $status $status_text\n";
+		print "Content-Type: text/html; charset=utf-8\n";
+		print "X-E2-Head-Optimized: 1\n\n";
+		return;
+	}
+
 	#these are contingencies various things that could go wrong
 
 	my $displaytype = $query->param("displaytype");

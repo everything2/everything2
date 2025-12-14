@@ -3611,7 +3611,36 @@ sub getRandomNodesMany {
   $count = int($count);
   $count = 20 if ($count > 20);
 
-  my $csr = $this->{db}->sqlSelectMany("e2node_id", "e2node", "exists(select 1 from nodegroup where nodegroup_id=e2node_id) order by RAND() limit $count;");
+  # Optimized random selection using OFFSET instead of ORDER BY RAND()
+  # This avoids creating temporary tables and sorting the entire result set
+
+  # Get total count of eligible nodes (cached for 5 minutes to avoid repeated COUNT queries)
+  my $cache_key = 'random_nodes_total_count';
+  my $total_count = $this->{cache}->get($cache_key);
+
+  unless (defined $total_count) {
+    my ($count_result) = $this->{db}->sqlSelect(
+      "COUNT(*)",
+      "e2node",
+      "exists(select 1 from nodegroup where nodegroup_id=e2node_id)"
+    );
+    $total_count = $count_result || 0;
+    $this->{cache}->set($cache_key, $total_count, 300); # Cache for 5 minutes
+  }
+
+  return [] if $total_count == 0;
+
+  # Calculate random offset, ensuring we don't go past the end
+  my $max_offset = $total_count - $count;
+  $max_offset = 0 if $max_offset < 0;
+  my $offset = int(rand($max_offset + 1));
+
+  # Fetch nodes using offset (much faster than ORDER BY RAND())
+  my $csr = $this->{db}->sqlSelectMany(
+    "e2node_id",
+    "e2node",
+    "exists(select 1 from nodegroup where nodegroup_id=e2node_id) LIMIT $count OFFSET $offset"
+  );
 
   my $response = [];
   while(my $row = $csr->fetchrow_arrayref)
@@ -7115,9 +7144,11 @@ sub buildNodeInfoStructure
   # Phase 4a: React-rendered documents
   # Check if this node type has a Page class that provides React data
   # Supported types: superdoc, superdocnolinks, fullpage, restricted_superdoc, oppressor_superdoc, maintenance, nodelet
+  # Note: writeup and e2node are handled directly by their controllers (Everything::Controller::writeup, e2node)
   my $nodetype = $NODE->{type}->{title};
   my @react_enabled_types = qw(superdoc superdocnolinks fullpage restricted_superdoc oppressor_superdoc maintenance nodelet);
   if ((grep { $nodetype eq $_ } @react_enabled_types) && $user_node) {
+    # Derive page name from node title
     my $page_name = $NODE->{title};
     $page_name = lc($page_name);  # Lowercase first
     $page_name =~ s/[\s\/\:\?\'\-\!\.]/_/g;  # Convert special chars to underscores (matches Controller.pm)

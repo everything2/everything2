@@ -9,15 +9,21 @@ ec2client = Aws::EC2::Client.new(region: 'us-west-2')
 ecsclient = Aws::ECS::Client.new(region: 'us-west-2')
 job = nil
 extra = ''
-opts = GetoptLong.new(['--job','-j',GetoptLong::REQUIRED_ARGUMENT],['--extra','-e',GetoptLong::REQUIRED_ARGUMENT])
+task_family = nil
+opts = GetoptLong.new(['--job','-j',GetoptLong::REQUIRED_ARGUMENT],['--extra','-e',GetoptLong::REQUIRED_ARGUMENT],['--task-family','-t',GetoptLong::REQUIRED_ARGUMENT])
 opts.each do |opt,arg|
   case opt
     when '--job'
       job = arg
     when '--extra'
       extra = arg
+    when '--task-family'
+      task_family = arg
   end
 end
+
+# Default to regular cron task family
+task_family ||= 'e2cron-family'
 
 subnet_placement=nil
 security_group=nil
@@ -51,4 +57,4 @@ if job.nil?
   exit
 end
 
-pp ecsclient.run_task(cluster: "E2-App-ECS-Cluster", task_definition: "e2cron-family", overrides: {container_overrides: [{name: "e2app", command: ["/usr/bin/perl","/var/everything/cron/#{job}.pl","#{extra}"]}]}, network_configuration: {awsvpc_configuration: {subnets: [subnet_placement], security_groups: [security_group], assign_public_ip: "ENABLED"}}, capacity_provider_strategy: [{capacity_provider: "FARGATE", weight: 1}])
+pp ecsclient.run_task(cluster: "E2-App-ECS-Cluster", task_definition: task_family, overrides: {container_overrides: [{name: "e2app", command: ["/usr/bin/perl","/var/everything/cron/#{job}.pl","#{extra}"]}]}, network_configuration: {awsvpc_configuration: {subnets: [subnet_placement], security_groups: [security_group], assign_public_ip: "ENABLED"}}, capacity_provider_strategy: [{capacity_provider: "FARGATE", weight: 1}])
