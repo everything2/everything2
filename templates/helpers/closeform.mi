@@ -1,4 +1,0 @@
-<%class>
-  has 'button' => (isa => 'Str', default => 'submit');
-</%class>
-<input type="submit" value="<% $.button %>"></form>

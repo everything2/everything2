@@ -1,9 +1,0 @@
-<%class>
-  has 'to' => (isa => 'Everything::Node', required => 1);
-  has 'node' => (isa => 'Everything::Node', required => 1);
-</%class>
-<& 'openform' , node => $.node, id => "messagebox" &>
-<input type="hidden" name="for_id" value="<% $.to->id %>">
-<textarea name="message" class="expandable" rows="1" columns="24" style="overflow: hidden; margin: 2px; padding: 1px; font-family: system-ui; height: 13px; width: 168px; font-size: 11px; vertical-align: top;"></textarea><input type="submit" name="submitbutton" value="submit"><div><input type="hidden" name=".cgifields" value="msggrpowner<% $.to->id %>_msgfieldcc"></div>
-</form>
-<p id="messageboxresult"></p>

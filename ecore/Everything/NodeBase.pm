@@ -2390,6 +2390,11 @@ sub isApproved
 
 	$this->getRef($NODE);
 
+	# Only cache and check group membership for actual group nodes.
+	# Non-group nodes (like users) have no members besides themselves,
+	# and caching them pollutes the groupCache with user nodes.
+	return 0 unless $this->isGroup($$NODE{type});
+
 	# If we short circuit out the flattening, it's a performance gain
 	$this->groupCache($NODE, $this->selectNodegroupFlat($NODE)) unless $this->hasGroupCache($NODE);
 	return $this->existsInGroupCache($NODE, $user_id);

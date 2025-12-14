@@ -1,6 +1,6 @@
 # Everything2 Special Document Types Reference
 
-**Last Updated**: 2025-12-11
+**Last Updated**: 2025-12-12
 **Total Documents**: 261 documents across all types
 
 ## Document Types Summary
@@ -15,15 +15,15 @@
 
 ## React Migration Status
 
-- **Total React Pages**: 168 documents migrated (65% complete)
-- **Documents Remaining**: 62 documents to migrate
+- **Total React Pages**: 175 documents migrated (67% complete)
+- **Documents Remaining**: 55 documents to migrate
   - Superdoc: ~27 remaining (React or E2 Legacy)
   - Oppressor Superdoc: ~10 remaining (React or E2 Legacy)
-  - Restricted Superdoc: ~25 remaining (React or E2 Legacy)
+  - Restricted Superdoc: ~18 remaining (React or E2 Legacy)
   - Fullpage: ~3 remaining (React or E2 Legacy)
   - Ticker: 0 remaining (all 21 use XML/JSON API - complete)
   - JSONExport: 0 remaining (1 migrated)
-- **E2 Legacy (Delegation)**: 56 delegation functions remaining in document.pm
+- **E2 Legacy (Delegation)**: 49 delegation functions remaining in document.pm
 - **PROTOTYPE PAGES**: 0 (all 5 removed from production Dec 2025)
 
 ## Superdoc
@@ -220,27 +220,28 @@
 | New User Images | Restricted Superdoc | `/title/New+User+Images` | E2 Legacy |
 | Node Forbiddance | Restricted Superdoc | `/title/Node+Forbiddance` | React |
 | Node Heaven Title Search | Restricted Superdoc | `/title/Node+Heaven+Title+Search` | React |
-| Node Notes by Editor | Restricted Superdoc | `/title/Node+Notes+by+Editor` | E2 Legacy |
-| Nodetype Changer | Restricted Superdoc | `/title/Nodetype+Changer` | E2 Legacy |
+| Node Notes by Editor | Restricted Superdoc | `/title/Node+Notes+by+Editor` | React |
+| Nodetype Changer | Restricted Superdoc | `/title/Nodetype+Changer` | React |
 | SQL Prompt | Restricted Superdoc | `/title/SQL+Prompt` | React |
 | Suspension Info | Restricted Superdoc | `/title/Suspension+Info` | React |
 | Superbless | Restricted Superdoc | `/title/Superbless` | React |
-| The Borg Clinic | Restricted Superdoc | `/title/The+Borg+Clinic` | E2 Legacy |
+| The Borg Clinic | Restricted Superdoc | `/title/The+Borg+Clinic` | React |
 | The Killing Floor | Restricted Superdoc | `/title/The+Killing+Floor` | React (deprecated) |
-| The Node Crypt | Restricted Superdoc | `/title/The+Node+Crypt` | E2 Legacy |
+| The Node Crypt | Restricted Superdoc | `/title/The+Node+Crypt` | React |
 | The Old Hooked Pole | Restricted Superdoc | `/title/The+Old+Hooked+Pole` | React |
-| The Oracle Classic | Restricted Superdoc | `/title/The+Oracle+Classic` | E2 Legacy |
+| The Oracle | Restricted Superdoc | `/title/The+Oracle` | React |
+| The Oracle Classic | Restricted Superdoc | `/title/The+Oracle+Classic` | React |
 | The Tokenator | Restricted Superdoc | `/title/The+Tokenator` | React |
 | The Well of Cool | Restricted Superdoc | `/title/The+Well+of+Cool` | React |
 | TypeVersion Controls | Restricted Superdoc | `/title/TypeVersion+Controls` | E2 Legacy |
-| User Statistics | Restricted Superdoc | `/title/User+Statistics` | E2 Legacy |
-| Usergroup Attendance Monitor | Restricted Superdoc | `/title/Usergroup+Attendance+Monitor` | E2 Legacy |
-| Usergroup Message Archive Manager | Restricted Superdoc | `/title/Usergroup+Message+Archive+Manager` | E2 Legacy |
-| Usergroup Press Gang | Restricted Superdoc | `/title/Usergroup+Press+Gang` | E2 Legacy |
-| Users with Infravision | Restricted Superdoc | `/title/Users+with+Infravision` | E2 Legacy |
+| User Statistics | Restricted Superdoc | `/title/User+Statistics` | React |
+| Usergroup Attendance Monitor | Restricted Superdoc | `/title/Usergroup+Attendance+Monitor` | React |
+| Usergroup Message Archive Manager | Restricted Superdoc | `/title/Usergroup+Message+Archive+Manager` | React |
+| Usergroup Press Gang | Restricted Superdoc | `/title/Usergroup+Press+Gang` | React |
+| Users with Infravision | Restricted Superdoc | `/title/Users+with+Infravision` | React |
 | Viewvars | Restricted Superdoc | `/title/Viewvars` | React |
-| Voting Data | Restricted Superdoc | `/title/Voting+Data` | E2 Legacy |
-| Who Killed What | Restricted Superdoc | `/title/Who+Killed+What` | E2 Legacy |
+| Voting Data | Restricted Superdoc | `/title/Voting+Data` | React |
+| Who Killed What | Restricted Superdoc | `/title/Who+Killed+What` | React |
 | Yet Another Secret Laboratory | Restricted Superdoc | `/title/Yet+Another+Secret+Laboratory` | E2 Legacy |
 
 ## Oppressor Superdoc
