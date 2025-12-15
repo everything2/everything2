@@ -1,6 +1,7 @@
 package Everything::Page::findings;
 
 use Moose;
+use Readonly;
 extends 'Everything::Page';
 
 =head1 NAME
@@ -19,6 +20,9 @@ of findings with nodeshells marked specially.
 Returns data about search findings.
 
 =cut
+
+Readonly my $EXCERPT_LENGTH => 200;
+Readonly my $EXCERPT_COUNT => 10;
 
 sub buildReactData {
     my ($self, $REQUEST) = @_;
@@ -74,6 +78,8 @@ sub buildReactData {
 
     # Process findings
     my @findings = ();
+    my $excerpt_count = 0;
+
     foreach my $ND (@{$NODE->{group} || []}) {
         next unless $DB->canReadNode($USER, $ND);
         my $cur_type = $ND->{type}{title};
@@ -96,12 +102,24 @@ sub buildReactData {
             $is_nodeshell = !exists $filled_node_ids{$ND->{node_id}};
         }
 
-        push @findings, {
+        my $finding = {
             node_id => $ND->{node_id},
             title => $ND->{title},
             type => $cur_type,
             is_nodeshell => $is_nodeshell
         };
+
+        # For guests, add excerpts to first N non-nodeshell e2nodes
+        # DISABLED: Re-enable after stability fixes deployed
+        # if ($is_guest && $cur_type eq 'e2node' && !$is_nodeshell && $excerpt_count < $EXCERPT_COUNT) {
+        #     my $excerpt = $self->_get_writeup_excerpt($ND->{node_id});
+        #     if ($excerpt) {
+        #         $finding->{excerpt} = $excerpt;
+        #         $excerpt_count++;
+        #     }
+        # }
+
+        push @findings, $finding;
     }
 
     return {
@@ -109,8 +127,52 @@ sub buildReactData {
         search_term => $title,
         findings => \@findings,
         lastnode_id => $lastnode_id,
-        is_guest => $is_guest
+        is_guest => $is_guest,
+        has_excerpts => $excerpt_count > 0
     };
+}
+
+sub _get_writeup_excerpt {
+    my ($self, $e2node_id) = @_;
+
+    my $DB = $self->DB;
+
+    # Get first writeup for this e2node
+    my $sql = "SELECT node_id FROM nodegroup WHERE nodegroup_id = ? ORDER BY orderby LIMIT 1";
+    my ($writeup_id) = $DB->{dbh}->selectrow_array($sql, undef, $e2node_id);
+
+    return unless $writeup_id;
+
+    # Get writeup doctext
+    my $writeup = $DB->getNodeById($writeup_id);
+    return unless $writeup && $writeup->{doctext};
+
+    my $text = $writeup->{doctext};
+
+    # Strip HTML tags
+    $text =~ s/<[^>]+>//g;
+
+    # Decode common HTML entities
+    $text =~ s/&nbsp;/ /g;
+    $text =~ s/&amp;/&/g;
+    $text =~ s/&lt;/</g;
+    $text =~ s/&gt;/>/g;
+    $text =~ s/&quot;/"/g;
+
+    # Collapse whitespace
+    $text =~ s/\s+/ /g;
+    $text =~ s/^\s+//;
+    $text =~ s/\s+$//;
+
+    # Truncate to excerpt length
+    if (length($text) > $EXCERPT_LENGTH) {
+        $text = substr($text, 0, $EXCERPT_LENGTH);
+        # Try to break at word boundary
+        $text =~ s/\s+\S*$//;
+        $text .= '...';
+    }
+
+    return $text;
 }
 
 __PACKAGE__->meta->make_immutable;

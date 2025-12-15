@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 
+const INITIAL_DISPLAY_COUNT = 10;
+
 const Findings = ({ data }) => {
-  const { no_search_term, message, search_term, findings = [], lastnode_id, is_guest } = data;
+  const { no_search_term, message, search_term, findings = [], lastnode_id, is_guest, has_excerpts } = data;
 
   const [searchValue, setSearchValue] = useState(search_term || '');
   const [soundex, setSoundex] = useState(false);
   const [matchAll, setMatchAll] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+
+  // Determine which findings to display
+  const displayedFindings = showAll ? findings : findings.slice(0, INITIAL_DISPLAY_COUNT);
+  const hasMore = findings.length > INITIAL_DISPLAY_COUNT;
 
   if (no_search_term) {
     return (
@@ -25,7 +32,7 @@ const Findings = ({ data }) => {
       </p>
 
       <ul style={styles.findingsList}>
-        {findings.map((finding) => (
+        {displayedFindings.map((finding) => (
           <li
             key={finding.node_id}
             className={finding.is_nodeshell ? 'nodeshell' : ''}
@@ -35,9 +42,21 @@ const Findings = ({ data }) => {
               {finding.title}
             </a>
             {finding.type !== 'e2node' && <span> ({finding.type})</span>}
+            {finding.excerpt && (
+              <p style={styles.excerpt}>{finding.excerpt}</p>
+            )}
           </li>
         ))}
       </ul>
+
+      {hasMore && !showAll && (
+        <button
+          onClick={() => setShowAll(true)}
+          style={styles.showMoreButton}
+        >
+          Show {findings.length - INITIAL_DISPLAY_COUNT} more results
+        </button>
+      )}
 
       {findings.length === 0 && (
         <p style={styles.noResults}>No results found.</p>
@@ -150,6 +169,24 @@ const styles = {
   nodeshellItem: {
     color: '#999999',
     fontStyle: 'italic'
+  },
+  excerpt: {
+    fontSize: '14px',
+    color: '#555555',
+    margin: '4px 0 12px 0',
+    lineHeight: '1.5',
+    fontStyle: 'normal'
+  },
+  showMoreButton: {
+    display: 'block',
+    margin: '20px auto',
+    padding: '10px 20px',
+    background: '#4060b0',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '14px'
   },
   noResults: {
     fontSize: '16px',

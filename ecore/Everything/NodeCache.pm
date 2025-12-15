@@ -573,6 +573,12 @@ sub removeNodeFromHash
 			$this->{stats}{evictions}{$type}++;
 		}
 
+		# Break circular reference: nodetype nodes have $NODE->{type} = $NODE
+		# This prevents memory leaks when nodes are evicted from cache
+		if (ref($$NODE{type}) eq 'HASH' && $$NODE{type} == $NODE) {
+			delete $$NODE{type};
+		}
+
 		# Remove this hash entry
 		delete ($this->{typeCache}{$type}{$title});
 		delete ($this->{idCache}{$$NODE{node_id}});
