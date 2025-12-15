@@ -1499,7 +1499,7 @@
           }
         },
         "DesiredCount": 2,
-        "HealthCheckGracePeriodSeconds": 60,
+        "HealthCheckGracePeriodSeconds": 120,
         "TaskDefinition": {"Ref": "E2AppFargateTaskDefinition"},
         "CapacityProviderStrategy": [{
           "CapacityProvider": "FARGATE",
@@ -1555,7 +1555,7 @@
         "TargetGroupAttributes": [
           {
             "Key": "deregistration_delay.timeout_seconds",
-            "Value": "10"
+            "Value": "30"
           }
         ]
       }

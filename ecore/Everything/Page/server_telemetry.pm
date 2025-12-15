@@ -31,7 +31,7 @@ sub buildReactData {
     my $vmstat = `vmstat`;
     my $uptime = `uptime`;
     my $health_check = `/var/everything/tools/container-health-check.pl --debug-cloudwatch 2>&1`;
-    my $apache_config = `cat /etc/apache2/everything.conf`;
+    my $apache_config = `cat /etc/apache2/apache2.conf`;
 
     # Memory analysis from /proc - works without special permissions
     # Reads VmRSS (resident set size) for each apache2 process
