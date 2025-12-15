@@ -154,7 +154,7 @@
             "Name": "AWS-AWSManagedRulesBotControlRuleSet",
             "Priority": 3,
             "OverrideAction": {
-              "None": {}
+              "Count": {}
             },
             "Statement": {
               "ManagedRuleGroupStatement": {
@@ -250,7 +250,7 @@
             },
             "Statement": {
               "RateBasedStatement": {
-                "Limit": 500,
+                "Limit": 400,
                 "AggregateKeyType": "IP"
               }
             },

@@ -668,16 +668,6 @@ function Settings({ data }) {
             <label style={{ display: 'block', marginTop: '16px', cursor: 'pointer' }}>
               <input
                 type="checkbox"
-                checked={!(settingsPrefs.noreplacevotebuttons === 1)}
-                onChange={() => handleTogglePref('noreplacevotebuttons')}
-                style={{ marginRight: '8px' }}
-              />
-              <strong>Replace +/- voting buttons with Up/Down buttons</strong>
-            </label>
-
-            <label style={{ display: 'block', marginTop: '12px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
                 checked={settingsPrefs.votesafety === 1}
                 onChange={() => handleTogglePref('votesafety')}
                 style={{ marginRight: '8px' }}

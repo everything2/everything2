@@ -5,11 +5,10 @@ import LinkNode from './LinkNode'
 /**
  * E2NodeDisplay - Renders an e2node with all its writeups
  *
- * Displays:
- * - E2node title
- * - All writeups under this e2node
- * - Softlinks
- * - Created by info
+ * Structure matches legacy htmlpage e2node_display_page:
+ * - E2node title and created by info
+ * - All writeups via WriteupDisplay (show_content + displayWriteupInfo)
+ * - Softlinks in a 4-column table (legacy softlink htmlcode)
  *
  * Usage:
  *   <E2NodeDisplay e2node={e2nodeData} user={userData} />
@@ -24,22 +23,15 @@ const E2NodeDisplay = ({ e2node, user }) => {
     createdby
   } = e2node
 
+  const hasWriteups = group && group.length > 0
+
   return (
     <div className="e2node-display">
-      {/* E2node header */}
-      <div className="e2node-header">
-        <h1 className="e2node-title" style={{ fontSize: 'inherit' }}>{title}</h1>
-
-        {createdby && (
-          <div className="e2node-meta">
-            Created by <LinkNode type="user" title={createdby.title} />
-          </div>
-        )}
-      </div>
+      {/* E2node header - title and createdby already displayed by zen.mc #pageheader */}
 
       {/* Writeups */}
       <div className="e2node-writeups">
-        {group && group.length > 0 ? (
+        {hasWriteups ? (
           group.map((writeup) => (
             <WriteupDisplay
               key={writeup.node_id}
@@ -48,28 +40,78 @@ const E2NodeDisplay = ({ e2node, user }) => {
             />
           ))
         ) : (
-          <p>No writeups yet.</p>
+          <p className="no-writeups">There are no writeups for this node yet.</p>
         )}
       </div>
 
-      {/* Softlinks */}
+      {/* Softlinks - 4-column table matching legacy softlink htmlcode */}
       {softlinks && softlinks.length > 0 && (
-        <div className="softlinks">
-          <h3>Softlinks:</h3>
-          <ul>
-            {softlinks.map((link) => (
-              <li key={link.node_id}>
-                <LinkNode
-                  nodeId={link.node_id}
-                  title={link.title}
-                  type={link.type || 'e2node'}
-                />
-                {link.hits && <span className="hits"> ({link.hits})</span>}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <SoftlinksTable softlinks={softlinks} />
       )}
+    </div>
+  )
+}
+
+/**
+ * SoftlinksTable - Renders softlinks in a 4-column table
+ *
+ * Matches legacy htmlcode softlink structure:
+ * - 4-column table layout
+ * - Gradient background colors (white to gray) based on position
+ * - sw{hits} class for each cell
+ */
+const SoftlinksTable = ({ softlinks }) => {
+  const numCols = 4
+
+  // Calculate gradient color (white to gray based on position)
+  const getGradientColor = (index, total) => {
+    const maxVal = 255
+    const minVal = 170
+    const step = total > 0 ? (maxVal - minVal) / total : 0
+    const val = Math.round(maxVal - step * index)
+    return `rgb(${val}, ${val}, ${val})`
+  }
+
+  // Split softlinks into rows of 4
+  const rows = []
+  for (let i = 0; i < softlinks.length; i += numCols) {
+    rows.push(softlinks.slice(i, i + numCols))
+  }
+
+  return (
+    <div className="softlinks">
+      <table cellPadding="10" cellSpacing="0" border="0" width="100%">
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((link, colIndex) => {
+                const globalIndex = rowIndex * numCols + colIndex
+                const bgColor = getGradientColor(globalIndex, softlinks.length)
+
+                return (
+                  <td
+                    key={link.node_id}
+                    className={`sw${link.hits}`}
+                    style={{ backgroundColor: bgColor }}
+                  >
+                    <LinkNode
+                      nodeId={link.node_id}
+                      title={link.title}
+                      type={link.type || 'e2node'}
+                    />
+                  </td>
+                )
+              })}
+              {/* Fill remaining cells in last row */}
+              {row.length < numCols &&
+                Array.from({ length: numCols - row.length }).map((_, i) => (
+                  <td key={`empty-${i}`} className="slend">&nbsp;</td>
+                ))
+              }
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }

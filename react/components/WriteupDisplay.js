@@ -1,6 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { FaCaretUp, FaCaretDown, FaEnvelope } from 'react-icons/fa'
 import ParseLinks from './ParseLinks'
 import LinkNode from './LinkNode'
+import AdminModal from './AdminModal'
+import MessageModal from './MessageModal'
+import ConfirmModal from './ConfirmModal'
 import { renderE2Content } from './Editor/E2HtmlSanitizer'
 
 /**
@@ -33,7 +37,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
   } = writeup
 
   // State for reputation/votes (can be updated without page reload)
-  const [voteState, setVoteState] = React.useState({
+  const [voteState, setVoteState] = useState({
     reputation: writeup.reputation,
     upvotes: writeup.upvotes,
     downvotes: writeup.downvotes,
@@ -41,10 +45,20 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
   })
 
   // State for C!s
-  const [coolState, setCoolState] = React.useState({
+  const [coolState, setCoolState] = useState({
     cools: writeup.cools || [],
     hasCooled: writeup.cools && writeup.cools.some(c => c.node_id === user?.node_id)
   })
+
+  // State for admin modal
+  const [adminModalOpen, setAdminModalOpen] = useState(false)
+
+  // State for message modal
+  const [messageModalOpen, setMessageModalOpen] = useState(false)
+
+  // State for vote/cool confirmation modals
+  const [pendingVote, setPendingVote] = useState(null) // { weight: 1 or -1 }
+  const [pendingCool, setPendingCool] = useState(false)
 
   // Render doctext with E2 HTML sanitization and link parsing
   const renderDoctext = (text) => {
@@ -58,11 +72,17 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
   }
 
   const isGuest = !user || user.is_guest
-  const isAuthor = user && author && user.node_id === author.node_id
+  // Use == for comparison since node_id may be string or number
+  const isAuthor = user && author && String(user.node_id) === String(author.node_id)
+  const isEditor = user?.is_editor
   const canVote = !isGuest && !isAuthor
   // Use Boolean() to avoid rendering "0" when can_cool is Perl's numeric 0
   const canCool = Boolean(user && user.can_cool && !isAuthor && !isGuest)
   const coolCount = coolState.cools?.length || 0
+  // Show admin tools for editors or the writeup author
+  const showAdminTools = isEditor || isAuthor
+  // Can message author if logged in and not messaging yourself
+  const canMessage = !isGuest && !isAuthor && author
 
   // Format date like legacy htmlcode parsetimestamp
   const formatDate = (timestamp) => {
@@ -77,6 +97,51 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
     })
   }
 
+  // Format time since last seen (matches legacy htmlcode timesince)
+  const formatTimeSince = (timestamp) => {
+    if (!timestamp) return null
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : new Date(timestamp * 1000)
+    if (isNaN(date.getTime())) return null
+
+    const now = new Date()
+    const seconds = Math.floor((now - date) / 1000)
+
+    if (seconds < 60) return 'moments ago'
+    if (seconds < 3600) {
+      const mins = Math.floor(seconds / 60)
+      return `${mins} minute${mins === 1 ? '' : 's'} ago`
+    }
+    if (seconds < 86400) {
+      const hours = Math.floor(seconds / 3600)
+      return `${hours} hour${hours === 1 ? '' : 's'} ago`
+    }
+    if (seconds < 604800) {
+      const days = Math.floor(seconds / 86400)
+      return `${days} day${days === 1 ? '' : 's'} ago`
+    }
+    if (seconds < 2592000) {
+      const weeks = Math.floor(seconds / 604800)
+      return `${weeks} week${weeks === 1 ? '' : 's'} ago`
+    }
+    if (seconds < 31536000) {
+      const months = Math.floor(seconds / 2592000)
+      return `${months} month${months === 1 ? '' : 's'} ago`
+    }
+    const years = Math.floor(seconds / 31536000)
+    return `${years} year${years === 1 ? '' : 's'} ago`
+  }
+
+  // Determine if we should show author's last seen time
+  // Conditions: not a bot, user hasn't disabled it, and author allows it (or viewer is editor)
+  const shouldShowAuthorSince = () => {
+    if (!author?.lasttime) return false
+    if (author.is_bot) return false
+    if (user?.info_authorsince_off) return false
+    if (author.hidelastseen && !isEditor) return false
+    if (isGuest) return false
+    return true
+  }
+
   return (
     // Use .item class for consistent styling with legacy CSS
     <div className="item writeup" id={`writeup_${node_id}`}>
@@ -89,7 +154,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
               {/* Type: (writeuptype) linking to this writeup */}
               <td className="wu_type">
                 <span className="type">
-                  (<LinkNode nodeId={node_id} title={writeuptype || 'writeup'} />)
+                  (<LinkNode id={node_id} display={writeuptype || 'writeup'} />)
                 </span>
               </td>
               {/* Author with anchor for hash links */}
@@ -98,6 +163,11 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
                 <strong>
                   <LinkNode type="user" title={author?.title} className="author" />
                 </strong>
+                {shouldShowAuthorSince() && (
+                  <small style={{ marginLeft: '4px', color: '#888' }}>
+                    ({formatTimeSince(author.lasttime)})
+                  </small>
+                )}
               </td>
               {/* Creation date */}
               <td style={{ textAlign: 'right' }} className="wu_dtcreate">
@@ -122,33 +192,104 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
           <table border="0" cellPadding="0" cellSpacing="0" width="100%">
             <tbody>
               <tr className="wu_footer">
-                {/* Voting controls - matches legacy voteit htmlcode */}
+                {/* Tools cell - admin gear and message icon on left */}
+                {(showAdminTools || canMessage) && (
+                  <td style={{ textAlign: 'left' }} className="wu_tools">
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                      {showAdminTools && (
+                        <button
+                          onClick={() => setAdminModalOpen(true)}
+                          title="Admin tools"
+                          className="admin-gear"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            color: '#507898',
+                            padding: '2px 4px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          &#9881;
+                        </button>
+                      )}
+                      {canMessage && (
+                        <button
+                          onClick={() => setMessageModalOpen(true)}
+                          title={`Message ${author.title}`}
+                          className="message-icon"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            color: '#507898',
+                            padding: '2px 4px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          <FaEnvelope />
+                        </button>
+                      )}
+                    </span>
+                  </td>
+                )}
+                {/* Voting controls - modern icon buttons */}
                 {showVoting && canVote && (
                   <td className="wu_vote">
-                    <small>
-                      <span className="vote_buttons">
-                        <input
-                          type="radio"
-                          name={`vote_${node_id}`}
-                          value="1"
-                          id={`vote_${node_id}_up`}
-                          checked={voteState.userVote === 1}
-                          disabled={voteState.userVote !== null}
-                          onChange={() => handleVote(node_id, 1, setVoteState)}
-                        />
-                        <label htmlFor={`vote_${node_id}_up`}>+</label>
-                        <input
-                          type="radio"
-                          name={`vote_${node_id}`}
-                          value="-1"
-                          id={`vote_${node_id}_down`}
-                          checked={voteState.userVote === -1}
-                          disabled={voteState.userVote !== null}
-                          onChange={() => handleVote(node_id, -1, setVoteState)}
-                        />
-                        <label htmlFor={`vote_${node_id}_down`}>-</label>
-                      </span>
-                    </small>
+                    <span className="vote_buttons">
+                      <button
+                        onClick={() => {
+                          if (user?.votesafety) {
+                            setPendingVote({ weight: 1 })
+                          } else {
+                            handleVote(node_id, 1, setVoteState)
+                          }
+                        }}
+                        disabled={voteState.userVote !== null}
+                        title="Upvote"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: voteState.userVote !== null ? 'default' : 'pointer',
+                          padding: '0 2px',
+                          color: voteState.userVote === 1 ? '#4a4' : '#507898',
+                          opacity: voteState.userVote !== null && voteState.userVote !== 1 ? 0.4 : 1,
+                          fontSize: '20px',
+                          verticalAlign: 'middle'
+                        }}
+                      >
+                        <FaCaretUp />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (user?.votesafety) {
+                            setPendingVote({ weight: -1 })
+                          } else {
+                            handleVote(node_id, -1, setVoteState)
+                          }
+                        }}
+                        disabled={voteState.userVote !== null}
+                        title="Downvote"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: voteState.userVote !== null ? 'default' : 'pointer',
+                          padding: '0 2px',
+                          color: voteState.userVote === -1 ? '#a44' : '#507898',
+                          opacity: voteState.userVote !== null && voteState.userVote !== -1 ? 0.4 : 1,
+                          fontSize: '20px',
+                          verticalAlign: 'middle'
+                        }}
+                      >
+                        <FaCaretDown />
+                      </button>
+                    </span>
                   </td>
                 )}
 
@@ -178,7 +319,11 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
                           title={`C! ${author?.title || 'this'}'s writeup`}
                           onClick={(e) => {
                             e.preventDefault()
-                            handleCool(node_id, user, setCoolState)
+                            if (user?.coolsafety) {
+                              setPendingCool(true)
+                            } else {
+                              handleCool(node_id, user, setCoolState)
+                            }
                           }}
                         >
                           C?
@@ -201,6 +346,66 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true 
           </table>
         </div>
       )}
+
+      {/* Admin modal */}
+      {showAdminTools && (
+        <AdminModal
+          writeup={writeup}
+          user={user}
+          isOpen={adminModalOpen}
+          onClose={() => setAdminModalOpen(false)}
+        />
+      )}
+
+      {/* Message modal for messaging the author */}
+      {canMessage && (
+        <MessageModal
+          isOpen={messageModalOpen}
+          onClose={() => setMessageModalOpen(false)}
+          replyTo={{ author_user: { title: author.title, type: 'user' } }}
+          onSend={async (recipient, message) => {
+            const response = await fetch('/api/messages', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ recipient, message })
+            })
+            const data = await response.json()
+            if (!data.success) {
+              throw new Error(data.error || 'Failed to send message')
+            }
+            return data
+          }}
+          currentUser={user}
+        />
+      )}
+
+      {/* Vote confirmation modal */}
+      <ConfirmModal
+        isOpen={pendingVote !== null}
+        onClose={() => setPendingVote(null)}
+        onConfirm={() => {
+          handleVote(node_id, pendingVote.weight, setVoteState)
+          setPendingVote(null)
+        }}
+        title={pendingVote?.weight === 1 ? 'Confirm Upvote' : 'Confirm Downvote'}
+        message={`Are you sure you want to ${pendingVote?.weight === 1 ? 'upvote' : 'downvote'} this writeup by ${author?.title || 'this author'}?`}
+        confirmText={pendingVote?.weight === 1 ? 'Upvote' : 'Downvote'}
+        confirmColor={pendingVote?.weight === 1 ? '#4a4' : '#a44'}
+      />
+
+      {/* Cool confirmation modal */}
+      <ConfirmModal
+        isOpen={pendingCool}
+        onClose={() => setPendingCool(false)}
+        onConfirm={() => {
+          handleCool(node_id, user, setCoolState)
+          setPendingCool(false)
+        }}
+        title="Confirm C!"
+        message={`Are you sure you want to C! this writeup by ${author?.title || 'this author'}? This action cannot be undone.`}
+        confirmText="C!"
+        confirmColor="#667eea"
+      />
     </div>
   )
 }

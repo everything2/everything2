@@ -99,9 +99,9 @@ SetEnvIf Request_URI "^/robots\.txt$" dontlog
 </IfDefine>
 
 <IfDefine E2_PRODUCTION>
-Define E2StartServers 15
-Define E2MinSpareServers 15
-Define E2MaxSpareServers 25
+Define E2StartServers 10
+Define E2MinSpareServers 10
+Define E2MaxSpareServers 15
 Define E2MaxRequestWorkers 40
 Define E2MaxConnections 10000
 </IfDefine>

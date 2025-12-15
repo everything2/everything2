@@ -30,6 +30,26 @@ sub single_writeup_display
 
   $values->{writeuptype} = $self->writeuptype;
 
+  # Add author lasttime data for logged-in users
+  # Used for "time since author was here" display
+  my $author = $self->author;
+  if($author && !UNIVERSAL::isa($author, "Everything::Node::null"))
+  {
+    my $author_vars = $author->VARS || {};
+
+    # Add lasttime (as ISO date)
+    if($author->lasttime)
+    {
+      $values->{author}{lasttime} = $self->APP->iso_date_format($author->lasttime);
+    }
+
+    # Add hidelastseen flag so React can respect author's privacy setting
+    $values->{author}{hidelastseen} = int($author_vars->{hidelastseen} || 0);
+
+    # Mark if author is a bot (Webster 1913)
+    $values->{author}{is_bot} = ($author->title eq 'Webster 1913') ? 1 : 0;
+  }
+
   return $values if $user->is_guest;
 
   my $vote = $self->user_has_voted($user);

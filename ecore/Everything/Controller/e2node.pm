@@ -16,13 +16,17 @@ sub display {
     my $e2node = $node->json_display($user);
 
     # Build user permissions data
+    my $VARS = $user->VARS;
     my $user_data = {
-        node_id   => $user->node_id,
-        title     => $user->title,
-        is_guest  => $user->is_guest ? 1 : 0,
-        is_editor => $user->is_editor ? 1 : 0,
-        can_vote  => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1 : 0,
-        can_cool  => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1 : 0
+        node_id              => $user->node_id,
+        title                => $user->title,
+        is_guest             => $user->is_guest ? 1 : 0,
+        is_editor            => $user->is_editor ? 1 : 0,
+        can_vote             => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1 : 0,
+        can_cool             => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1 : 0,
+        votesafety           => int($VARS->{votesafety} || 0),
+        coolsafety           => int($VARS->{coolsafety} || 0),
+        info_authorsince_off => int($VARS->{info_authorsince_off} || 0)
     };
 
     # Build contentData for React

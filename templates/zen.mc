@@ -80,6 +80,7 @@ sub _build_pagetitle
  <div id='mainbody' itemprop="mainContentOfPage"><!-- google_ad_section_start -->
   <div id="pageheader">
    <h1 class="nodetitle"><% $.node->title %></h1>
+   <& 'createdby', node => $.node &>
 % if (!$REQUEST->user->is_guest) {
      <ul class="topic actions">
 %   if ($.node->can_be_bookmarked) {

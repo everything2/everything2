@@ -205,6 +205,7 @@ These keys are no longer used and can be cleaned up from user settings:
 | Key | Status | Notes | Removal Date |
 |-----|--------|-------|--------------|
 | `killfloor_showlinks` | **DEPRECATED** | Add HTML links in killing floor display for copy/paste. The killing floor mechanism is no longer used. | 2025-12-07 |
+| `noreplacevotebuttons` | **DEPRECATED** | Toggle between +/- and Up/Down voting buttons. React WriteupDisplay now uses modern caret icons exclusively - the setting has no effect. | 2025-12-15 |
 
 ### Removed in 2025-11 (Nodelet Migration)
 
