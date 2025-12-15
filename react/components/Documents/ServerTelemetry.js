@@ -17,7 +17,8 @@ const ServerTelemetry = ({ data }) => {
     vmstat = '',
     uptime = '',
     health_check = '',
-    apache_config = ''
+    apache_config = '',
+    memory_analysis = ''
   } = data
 
   return (
@@ -27,6 +28,11 @@ const ServerTelemetry = ({ data }) => {
       <section style={styles.section}>
         <h3 style={styles.subheading}>Apache Processes ({apache_count} total)</h3>
         <pre style={styles.pre}>{apache_processes || 'No Apache processes found'}</pre>
+      </section>
+
+      <section style={styles.section}>
+        <h3 style={styles.subheading}>Memory Analysis (PSS/USS)</h3>
+        <pre style={styles.pre}>{memory_analysis || 'No memory analysis available (smem not installed?)'}</pre>
       </section>
 
       <section style={styles.section}>

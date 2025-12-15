@@ -153,13 +153,12 @@ ListenBacklog 511
 	</Directory>
 
 	<IfDefine E2_PRODUCTION>
-		# Limit process size to 350M in production
-		# With 20 workers max, worst case = 20 * 350MB = 7GB
-		# Container has 4GB, so realistically ~10-12 workers at max size
+		# Limit process size to 800M in production (original value)
+		# Reverted to isolate issues - use smem in Server Telemetry to monitor
 		<Perl>
 			use Apache2::SizeLimit;
-			$Apache2::SizeLimit::MAX_PROCESS_SIZE = 350000;
-			$Apache2::SizeLimit::CHECK_EVERY_N_REQUESTS = 10;
+			$Apache2::SizeLimit::MAX_PROCESS_SIZE = 800000;
+			$Apache2::SizeLimit::CHECK_EVERY_N_REQUESTS = 20;
 		</Perl>
 		PerlCleanupHandler Apache2::SizeLimit
 	</IfDefine>
