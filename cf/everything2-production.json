@@ -367,6 +367,13 @@
         "EnableDnsSupport": true
       }
     },
+    "AppVPCIPv6CidrBlock": {
+      "Type": "AWS::EC2::VPCCidrBlock",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"},
+        "AmazonProvidedIpv6CidrBlock": true
+      }
+    },
     "AppVPCIGW": {
       "Type": "AWS::EC2::InternetGateway",
       "DeletionPolicy": "Retain"
@@ -377,6 +384,45 @@
       "Properties": {
         "InternetGatewayId": { "Ref": "AppVPCIGW" },
         "VpcId": {"Ref": "AppVPC"}
+      }
+    },
+    "AppVPCPublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"},
+        "Tags": [{"Key": "Name", "Value": "E2-Public-Route-Table"}]
+      }
+    },
+    "AppVPCPublicRouteIPv4": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "AppVPCIGWAttach",
+      "Properties": {
+        "RouteTableId": {"Ref": "AppVPCPublicRouteTable"},
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {"Ref": "AppVPCIGW"}
+      }
+    },
+    "AppVPCPublicRouteIPv6": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": ["AppVPCIGWAttach", "AppVPCIPv6CidrBlock"],
+      "Properties": {
+        "RouteTableId": {"Ref": "AppVPCPublicRouteTable"},
+        "DestinationIpv6CidrBlock": "::/0",
+        "GatewayId": {"Ref": "AppVPCIGW"}
+      }
+    },
+    "AppVPCSubnet1RouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {"Ref": "AppVPCPublicRouteTable"},
+        "SubnetId": {"Ref": "AppVPCSubnet1"}
+      }
+    },
+    "AppVPCSubnet2RouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {"Ref": "AppVPCPublicRouteTable"},
+        "SubnetId": {"Ref": "AppVPCSubnet2"}
       }
     },
     "ELBFrontendSecurityGroup": {
@@ -397,6 +443,18 @@
               "FromPort": "443",
               "ToPort": "443",
               "CidrIp": "0.0.0.0/0",
+              "IpProtocol": "tcp"
+          },
+          {
+             "FromPort": "80",
+             "ToPort": "80",
+             "CidrIpv6": "::/0",
+             "IpProtocol": "tcp"
+          },
+          {
+              "FromPort": "443",
+              "ToPort": "443",
+              "CidrIpv6": "::/0",
               "IpProtocol": "tcp"
           }
         ]
@@ -445,20 +503,26 @@
     "AppVPCSubnet1": {
       "Type": "AWS::EC2::Subnet",
       "DeletionPolicy": "Retain",
+      "DependsOn": "AppVPCIPv6CidrBlock",
       "Properties": {
         "VpcId": {"Ref": "AppVPC"},
         "MapPublicIpOnLaunch": true,
         "CidrBlock": "10.0.1.0/24",
+        "Ipv6CidrBlock": {"Fn::Select": [0, {"Fn::Cidr": [{"Fn::Select": [0, {"Fn::GetAtt": ["AppVPC", "Ipv6CidrBlocks"]}]}, 256, 64]}]},
+        "AssignIpv6AddressOnCreation": true,
         "AvailabilityZone": "us-west-2a"
       }
     },
     "AppVPCSubnet2": {
       "Type": "AWS::EC2::Subnet",
       "DeletionPolicy": "Retain",
+      "DependsOn": "AppVPCIPv6CidrBlock",
       "Properties": {
         "VpcId": {"Ref": "AppVPC"},
         "MapPublicIpOnLaunch": true,
         "CidrBlock": "10.0.2.0/24",
+        "Ipv6CidrBlock": {"Fn::Select": [1, {"Fn::Cidr": [{"Fn::Select": [0, {"Fn::GetAtt": ["AppVPC", "Ipv6CidrBlocks"]}]}, 256, 64]}]},
+        "AssignIpv6AddressOnCreation": true,
         "AvailabilityZone": "us-west-2b"
       }
     },
@@ -1376,8 +1440,10 @@
     "ContainerizedFrontendELB": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "DeletionPolicy": "Retain",
+      "DependsOn": ["AppVPCIPv6CidrBlock", "AppVPCSubnet1", "AppVPCSubnet2"],
       "Properties": {
         "Name": "E2-Containerized-Frontend-ELB",
+        "IpAddressType": "dualstack",
         "Subnets": [{"Ref": "AppVPCSubnet1"},{"Ref": "AppVPCSubnet2"}],
         "SecurityGroups": [{"Ref": "ELBFrontendSecurityGroup"}],
         "LoadBalancerAttributes": [

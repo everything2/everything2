@@ -9,6 +9,211 @@
     }
   },
   "Resources": {
+    "E2WAFWebACL": {
+      "Type": "AWS::WAFv2::WebACL",
+      "Properties": {
+        "Name": "E2-CloudFront-WAF",
+        "Description": "WAF WebACL for Everything2 CloudFront distribution",
+        "Scope": "CLOUDFRONT",
+        "DefaultAction": {
+          "Allow": {}
+        },
+        "VisibilityConfig": {
+          "SampledRequestsEnabled": true,
+          "CloudWatchMetricsEnabled": true,
+          "MetricName": "E2CloudFrontWAF"
+        },
+        "Rules": [
+          {
+            "Name": "AWS-AWSManagedRulesCommonRuleSet",
+            "Priority": 1,
+            "OverrideAction": {
+              "None": {}
+            },
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "VendorName": "AWS",
+                "Name": "AWSManagedRulesCommonRuleSet",
+                "ScopeDownStatement": {
+                  "NotStatement": {
+                    "Statement": {
+                      "ByteMatchStatement": {
+                        "SearchString": "/api/sessions",
+                        "FieldToMatch": {
+                          "UriPath": {}
+                        },
+                        "TextTransformations": [
+                          {
+                            "Priority": 0,
+                            "Type": "LOWERCASE"
+                          }
+                        ],
+                        "PositionalConstraint": "STARTS_WITH"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AWSManagedRulesCommonRuleSetMetric"
+            }
+          },
+          {
+            "Name": "AWS-AWSManagedRulesKnownBadInputsRuleSet",
+            "Priority": 2,
+            "OverrideAction": {
+              "None": {}
+            },
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "VendorName": "AWS",
+                "Name": "AWSManagedRulesKnownBadInputsRuleSet"
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AWSManagedRulesKnownBadInputsRuleSetMetric"
+            }
+          },
+          {
+            "Name": "AWS-AWSManagedRulesBotControlRuleSet",
+            "Priority": 3,
+            "OverrideAction": {
+              "None": {}
+            },
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "VendorName": "AWS",
+                "Name": "AWSManagedRulesBotControlRuleSet",
+                "ManagedRuleGroupConfigs": [
+                  {
+                    "AWSManagedRulesBotControlRuleSet": {
+                      "InspectionLevel": "COMMON"
+                    }
+                  }
+                ],
+                "ScopeDownStatement": {
+                  "NotStatement": {
+                    "Statement": {
+                      "ByteMatchStatement": {
+                        "SearchString": "/api/sessions",
+                        "FieldToMatch": {
+                          "UriPath": {}
+                        },
+                        "TextTransformations": [
+                          {
+                            "Priority": 0,
+                            "Type": "LOWERCASE"
+                          }
+                        ],
+                        "PositionalConstraint": "STARTS_WITH"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AWSManagedRulesBotControlRuleSetMetric"
+            }
+          },
+          {
+            "Name": "RateLimitRule",
+            "Priority": 4,
+            "Action": {
+              "Block": {}
+            },
+            "Statement": {
+              "RateBasedStatement": {
+                "Limit": 2000,
+                "AggregateKeyType": "IP"
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "RateLimitRuleMetric"
+            }
+          },
+          {
+            "Name": "BlockBadUserAgents",
+            "Priority": 5,
+            "Action": {
+              "Block": {}
+            },
+            "Statement": {
+              "OrStatement": {
+                "Statements": [
+                  {
+                    "ByteMatchStatement": {
+                      "SearchString": "aiohttp",
+                      "FieldToMatch": {
+                        "SingleHeader": {
+                          "Name": "user-agent"
+                        }
+                      },
+                      "TextTransformations": [
+                        {
+                          "Priority": 0,
+                          "Type": "LOWERCASE"
+                        }
+                      ],
+                      "PositionalConstraint": "CONTAINS"
+                    }
+                  },
+                  {
+                    "ByteMatchStatement": {
+                      "SearchString": "blexbot",
+                      "FieldToMatch": {
+                        "SingleHeader": {
+                          "Name": "user-agent"
+                        }
+                      },
+                      "TextTransformations": [
+                        {
+                          "Priority": 0,
+                          "Type": "LOWERCASE"
+                        }
+                      ],
+                      "PositionalConstraint": "CONTAINS"
+                    }
+                  },
+                  {
+                    "ByteMatchStatement": {
+                      "SearchString": "dataforseobot",
+                      "FieldToMatch": {
+                        "SingleHeader": {
+                          "Name": "user-agent"
+                        }
+                      },
+                      "TextTransformations": [
+                        {
+                          "Priority": 0,
+                          "Type": "LOWERCASE"
+                        }
+                      ],
+                      "PositionalConstraint": "CONTAINS"
+                    }
+                  }
+                ]
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "BlockBadUserAgentsMetric"
+            }
+          }
+        ]
+      }
+    },
+
     "E2CloudFrontCertificate": {
       "Type": "AWS::CertificateManager::Certificate",
       "DeletionPolicy": "Retain",
@@ -112,9 +317,10 @@
 
     "E2CloudFrontDistribution": {
       "Type": "AWS::CloudFront::Distribution",
-      "DependsOn": ["E2CloudFrontCertificate"],
+      "DependsOn": ["E2CloudFrontCertificate", "E2WAFWebACL"],
       "Properties": {
         "DistributionConfig": {
+          "WebACLId": {"Fn::GetAtt": ["E2WAFWebACL", "Arn"]},
           "Comment": "Everything2 CloudFront Distribution",
           "Enabled": true,
           "HttpVersion": "http2and3",
@@ -222,6 +428,10 @@
     "CertificateArn": {
       "Description": "ACM Certificate ARN (must be validated via DNS)",
       "Value": {"Ref": "E2CloudFrontCertificate"}
+    },
+    "WAFWebACLArn": {
+      "Description": "WAF WebACL ARN",
+      "Value": {"Fn::GetAtt": ["E2WAFWebACL", "Arn"]}
     }
   }
 }

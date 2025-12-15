@@ -37,9 +37,14 @@ sub deliver_message
   }
 
   # Check if sender is member of usergroup
-  my $sender_hash = ref($messagedata->{from}) ? $messagedata->{from}->NODEDATA : $messagedata->{from};
-  unless ($self->APP->inUsergroup($sender_hash, $self->NODEDATA)) {
-    return {"errors" => 1, "errortext" => ["You are not a member of ".$self->title]};
+  # Skip this check if for_usergroup is already set - this means we're being called
+  # as an embedded/nested usergroup from a parent group, and the parent already
+  # verified membership
+  unless ($messagedata->{for_usergroup}) {
+    my $sender_hash = ref($messagedata->{from}) ? $messagedata->{from}->NODEDATA : $messagedata->{from};
+    unless ($self->APP->inUsergroup($sender_hash, $self->NODEDATA)) {
+      return {"errors" => 1, "errortext" => ["You are not a member of ".$self->title]};
+    }
   }
 
   # Set for_usergroup field so replies work correctly
