@@ -212,6 +212,50 @@ subtest 'Nested usergroup message delivery' => sub {
   $DB->sqlDelete('message', "author_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}");
 };
 
+subtest 'Non-god editor can send to nested e2gods members' => sub {
+  plan tests => 6;
+
+  # This tests the key scenario: genericeditor is in Content Editors but NOT in e2gods.
+  # When genericeditor sends to Content Editors, root (who is in e2gods) should still
+  # receive the message, even though genericeditor couldn't send directly to e2gods.
+
+  my $genericeditor = $DB->getNode('genericeditor', 'user');
+  ok($genericeditor, 'Got genericeditor user');
+
+  my $content_editors = $DB->getNode('Content Editors', 'usergroup');
+  ok($content_editors, 'Got Content Editors usergroup');
+
+  my $e2gods = $DB->getNode('e2gods', 'usergroup');
+  ok($e2gods, 'Got e2gods usergroup');
+
+  # Verify genericeditor is NOT in e2gods (the nested group)
+  my $in_e2gods = $APP->inUsergroup($genericeditor, $e2gods);
+  ok(!$in_e2gods, 'genericeditor is NOT a member of e2gods');
+
+  # Clear previous messages
+  $DB->sqlDelete('message', "author_user=$genericeditor->{user_id} AND for_usergroup=$content_editors->{node_id}");
+
+  # Send message to Content Editors as genericeditor
+  my $result = $APP->sendPrivateMessage(
+    $genericeditor,
+    ['Content Editors'],
+    'Test from non-god editor'
+  );
+
+  ok($result->{success}, 'genericeditor can send to Content Editors');
+
+  # Check that root (in e2gods) received the message
+  my $root_message = $DB->sqlSelect(
+    'COUNT(*)',
+    'message',
+    "author_user=$genericeditor->{user_id} AND for_user=$sender->{user_id} AND for_usergroup=$content_editors->{node_id}"
+  );
+  cmp_ok($root_message, '==', 1, 'root (in e2gods) received message from genericeditor');
+
+  # Cleanup
+  $DB->sqlDelete('message', "author_user=$genericeditor->{user_id} AND for_usergroup=$content_editors->{node_id}");
+};
+
 subtest 'Message forwarding (chatterbox forward)' => sub {
   plan tests => 6;
 
