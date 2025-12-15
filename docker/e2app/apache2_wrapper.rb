@@ -15,8 +15,7 @@ unless Dir.exist? bootstrap
   exit
 end
 
-files = [{template: "#{bootstrap}/apache2.conf.erb", file: '/etc/apache2/apache2.conf'},
-	 {template: "#{bootstrap}/everything.erb", file: '/etc/apache2/everything.conf'}]
+files = [{template: "#{bootstrap}/apache2.conf.erb", file: '/etc/apache2/apache2.conf'}]
 
 if ENV['E2_DOCKER'].nil? or !ENV['E2_DOCKER'].eql? "development"
   s3client = Aws::S3::Client.new(region: 'us-west-2');

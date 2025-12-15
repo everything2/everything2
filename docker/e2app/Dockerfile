@@ -19,7 +19,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "/tm
 RUN mkdir -p /var/libraries /etc/everything /var/mason /var/log/everything /etc/apache2/logs /var/everything /var/bootstrap/cache
 RUN rm -f /etc/apache2/mods-enabled/mpm_event.*
 RUN rm -rf /etc/apache2/sites-enabled /etc/apache2/sites-available /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available
-RUN for i in deflate rewrite authz_core proxy proxy_http ssl perl mpm_prefork socache_shmcb status; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
+RUN for i in deflate rewrite authz_core proxy proxy_http perl mpm_prefork status; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
 RUN chown root:root /etc/everything
 RUN chown www-data:www-data /var/mason /var/log/everything /etc/apache2/logs
 RUN chmod 0755 /var/mason
@@ -43,9 +43,7 @@ FROM deps AS final
 
 ARG CODEBUILD_RESOLVED_SOURCE_VERSION
 
-COPY ./tools/generate-self-signed-cert.rb /var/bootstrap
 COPY ./etc/templates/* /var/bootstrap/etc/
-RUN ruby /var/bootstrap/generate-self-signed-cert.rb
 
 COPY docker/e2app/apache2_wrapper.rb /etc/everything
 RUN chmod +x /etc/everything/apache2_wrapper.rb
@@ -60,6 +58,5 @@ RUN /usr/bin/npx webpack --config etc/webpack.config.js --mode=development || tr
 RUN if [ -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then echo "$CODEBUILD_RESOLVED_SOURCE_VERSION"; else git -C /var/everything rev-parse HEAD; fi > /etc/everything/last_commit
 
 EXPOSE 80
-EXPOSE 443
 
 CMD ["/etc/everything/apache2_wrapper.rb"]

@@ -1,14 +1,83 @@
 # December 2025 Changelog
 
-**Development Period**: December 1-2, 2025
+**Development Period**: December 1-14, 2025
 
 ## Overview
 
-This month focused on improving message blocking notifications and cleaning up deprecated user preferences from the Settings interface.
+This month focused on infrastructure modernization, security hardening, and performance optimization. Major work included IPv6 dual-stack deployment, CloudFront/WAF integration, and eliminating HTTPS overhead on internal ALB→ECS traffic. Earlier work addressed message blocking notifications and deprecated user preferences cleanup.
 
 ---
 
-## Message Blocking Notifications
+## Infrastructure Modernization (December 14, 2025)
+
+### HTTP-Only Internal Traffic
+
+Switched ALB→ECS communication from HTTPS to HTTP, eliminating TLS overhead on internal traffic since the ALB terminates SSL from the internet.
+
+**Changes:**
+- New HTTP target group (`E2-App-Fargate-HTTP-TG`) on port 80
+- ECS task definition updated to expose only port 80
+- Removed old HTTPS target group
+- Security group cleanup: removed port 443 from `E2AppWebheadSecurityGroup`
+
+**Apache Configuration Consolidation:**
+- Merged `everything.erb` and `apache2.conf.erb` into single `apache2.conf.erb`
+- Removed all SSL configuration (VirtualHost:443, SSL modules, cert generation)
+- Removed `generate-self-signed-cert.rb` script
+- Dockerfile simplified: removed SSL modules (`ssl`, `socache_shmcb`), port 443 exposure
+- `apache2_wrapper.rb` now processes single template
+
+**Performance Tuning:**
+- `MaxKeepAliveRequests` increased from 100 to 500 for better ALB connection reuse
+
+### IPv6 Dual-Stack Deployment (December 13-14, 2025)
+
+Full IPv6 support across the infrastructure stack.
+
+**CloudFormation Changes:**
+- VPC IPv6 CIDR block allocation (`AWS::EC2::VPCCidrBlock`)
+- Subnet IPv6 CIDR assignments for both AZs
+- Route table IPv6 routes (`::/0` to Internet Gateway)
+- ALB `IpAddressType: dualstack`
+- Security groups updated with IPv6 ingress rules (`::/0`)
+
+**DNS:**
+- Added AAAA records for `everything2.com` and `www.everything2.com`
+- Points to CloudFront distribution (dual-stack enabled)
+
+### CloudFront & WAF Integration (December 12-14, 2025)
+
+**CloudFront Distribution:**
+- Origin: ALB with custom header verification (`X-Origin-Verify`)
+- Cache behaviors: Static assets cached, dynamic content passed through
+- IPv6 enabled
+- ACM certificate for SSL termination
+
+**WAF WebACL:**
+- AWS Managed Rules: Common Rule Set, Known Bad Inputs, SQL Injection
+- Rate limiting: 2000 requests/5min per IP
+- Bot control rules
+- **API Sessions Exclusion**: ScopeDownStatement excludes `/api/sessions` from Common Rules (fixes login 403 caused by `passwd` field triggering WAF)
+
+**ALB Listener Rules:**
+- Origin verification: Only forwards requests with valid `X-Origin-Verify` header
+- Direct ALB access returns 403 "Direct access not allowed"
+
+---
+
+## Bug Fixes (December 2025)
+
+### API Sessions 403 Error (#3865)
+
+**Problem**: POST to `/api/sessions/create` was returning 403 Forbidden in production.
+
+**Root Cause**: AWS WAF Common Rules was blocking requests containing `passwd` in the JSON body.
+
+**Fix**: Added ScopeDownStatement to exclude `/api/sessions` path from Common Rules while maintaining protection for other endpoints.
+
+---
+
+## Message Blocking Notifications (December 1-2, 2025)
 
 ### User-Facing Changes
 
@@ -237,4 +306,4 @@ All four settings remain in the database for backward compatibility with legacy 
 
 ---
 
-**Last Updated**: 2025-12-02
+**Last Updated**: 2025-12-14

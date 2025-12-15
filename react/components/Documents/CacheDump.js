@@ -15,6 +15,7 @@ const CacheDump = ({ data = {} }) => {
     num_permanent = 0,
     nodes = [],
     type_stats = [],
+    perf_stats = [],
     group_cache = [],
     group_cache_size = 0,
     error
@@ -52,7 +53,48 @@ const CacheDump = ({ data = {} }) => {
         <strong>Permanent Nodes:</strong> {num_permanent}
       </p>
 
-      <h3>Type Breakdown</h3>
+      <h3>Cache Performance (this process)</h3>
+      <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '0.5em' }}>
+        Hit/miss statistics since process start. High eviction + low hit rate = cache churn.
+      </p>
+      {perf_stats.length === 0 ? (
+        <p><em>No statistics collected yet.</em></p>
+      ) : (
+        <table style={{ marginBottom: '1em' }}>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Hits</th>
+              <th>Misses</th>
+              <th>Stale</th>
+              <th>Evictions</th>
+              <th>Hit Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {perf_stats.map(stat => (
+              <tr key={stat.type}>
+                <td>{stat.type}</td>
+                <td style={{ textAlign: 'right' }}>{stat.hits}</td>
+                <td style={{ textAlign: 'right' }}>{stat.misses}</td>
+                <td style={{ textAlign: 'right' }}>{stat.stale}</td>
+                <td style={{ textAlign: 'right', color: stat.evictions > 10 ? '#c00' : 'inherit' }}>
+                  {stat.evictions}
+                </td>
+                <td style={{
+                  textAlign: 'right',
+                  color: parseFloat(stat.hit_rate) < 50 ? '#c00' : parseFloat(stat.hit_rate) > 90 ? '#090' : 'inherit',
+                  fontWeight: 'bold'
+                }}>
+                  {stat.hit_rate}%
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <h3>Type Breakdown (currently cached)</h3>
       <table style={{ marginBottom: '1em' }}>
         <thead>
           <tr>

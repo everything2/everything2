@@ -2612,4 +2612,35 @@ function edShowExtraCookie() {
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-2GBBBF9ZDK');
+
+// Configure GA4 with user login status custom dimension
+// Requires creating 'user_login_status' custom dimension in GA4 Admin
+var userLoginStatus = (window.e2 && window.e2.guest === 0) ? 'logged_in' : 'guest';
+gtag('config', 'G-2GBBBF9ZDK', {
+  'user_login_status': userLoginStatus
+});
+
+// Ad blocker detection - sends event after page load
+// Requires creating 'ad_status' custom dimension in GA4 Admin
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var adStatus = 'no_ad_slot'; // default: no ad element on page
+    var adElement = document.querySelector('.adsbygoogle');
+
+    if (adElement) {
+      // Ad slot exists, check if it rendered
+      if (adElement.offsetHeight > 0 && adElement.querySelector('iframe')) {
+        adStatus = 'ad_shown';
+      } else if (typeof window.adsbygoogle === 'undefined') {
+        adStatus = 'blocked_script'; // AdSense script blocked
+      } else {
+        adStatus = 'blocked_render'; // Script loaded but ad didn't render
+      }
+    }
+
+    gtag('event', 'ad_check', {
+      'ad_status': adStatus,
+      'user_type': userLoginStatus
+    });
+  }, 3000); // Wait 3s for ads to load
+});

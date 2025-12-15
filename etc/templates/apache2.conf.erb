@@ -1,12 +1,51 @@
+<%
+# Consolidated Apache configuration for E2
+# HTTP only (ALB terminates SSL)
+
+require 'json'
+
+# Load Apache blocks configuration from source control
+blocks_config = '/var/everything/etc/apache_blocks.json'
+ip_blocks = ""
+
+if File.exist?(blocks_config)
+  blocks = JSON.parse(File.read(blocks_config))
+
+  ip_blocks += "\t# Explicit IP address bans\n"
+  if blocks['banned_ips']
+    blocks['banned_ips'].each do |ip|
+      ip_blocks += "\tSetEnvIf X-FORWARDED-FOR \"#{ip}\" denyip\n"
+    end
+  end
+
+  ip_blocks += "\t# IP address block bans\n"
+  if blocks['banned_ipblocks']
+    blocks['banned_ipblocks'].each do |block|
+      ip_blocks += "\tSetEnvIf X-FORWARDED-FOR ^#{block.gsub(".", "\\.")} denyip\n"
+    end
+  end
+
+  ip_blocks += "\t# User agent bans\n"
+  if blocks['banned_user_agents']
+    blocks['banned_user_agents'].each do |ua|
+      ua_quoted = ua.include?(' ') ? "\"#{ua}\"" : ua
+      ip_blocks += "\tBrowserMatchNoCase #{ua_quoted} denyip\n"
+    end
+  end
+else
+  ip_blocks += "\t# WARNING: Apache blocks configuration not found at #{blocks_config}\n"
+end
+
+rotatelogs = '/usr/bin/rotatelogs'
+%>
 Mutex file:${APACHE_LOCK_DIR} default
 PidFile ${APACHE_PID_FILE}
 
 Timeout 300
 KeepAlive On
-MaxKeepAliveRequests 100
+MaxKeepAliveRequests 500
 KeepAliveTimeout 15
 
-# These need to be set in /etc/apache2/envvars
 User ${APACHE_RUN_USER}
 Group ${APACHE_RUN_GROUP}
 
@@ -16,19 +55,14 @@ ServerTokens Prod
 ServerSignature EMail
 TraceEnable Off
 
-# Fargate awareness inside of the app
+# Fargate/Docker environment variables
 PassEnv AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 PassEnv AWS_DEFAULT_REGION
-
-# Docker awareness inside of the app
 PassEnv E2_DOCKER
-# E2 app configuration
 PassEnv E2_MAINTENANCE_MESSAGE
 PassEnv E2_DBSERV
 
-# DON'T RDNS LOOK UP HOST IPS FOR BEST SPEED
 HostnameLookups Off
-# SPECIFY, ENABLE AND PROTECT .htaccess FILES
 AccessFileName .htaccess
 <Files ~ "^\.ht">
 	Order allow,deny
@@ -37,51 +71,38 @@ AccessFileName .htaccess
 </Files>
 
 <% if node["override_configuration"].eql? "development" %>
-  Define E2_DEVELOPMENT
-  UnDefine E2_PRODUCTION
-  PerlPassEnv NYTPROF
-  PerlModule Devel::NYTProf::Apache
+Define E2_DEVELOPMENT
+UnDefine E2_PRODUCTION
+PerlPassEnv NYTPROF
+PerlModule Devel::NYTProf::Apache
 <% else %>
-  Undefine E2_DEVELOPMENT
-  Define E2_PRODUCTION
+Undefine E2_DEVELOPMENT
+Define E2_PRODUCTION
 <% end %>
 
-
-##### INCLUDE ADDITIONAL CONFIGURATION #####
-# Include module configuration:
+# Include module configuration
 Include mods-enabled/*.load
 Include mods-enabled/*.conf
 
+LogLevel warn
+LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
 
-  LogLevel warn
-
-  LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
-  LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%a\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" healthlog
-
-  BrowserMatch "^ELB-HealthChecker" loghealthcheck
-#  CustomLog /etc/apache2/logs/healthcheck.log healthlog env=loghealthcheck
+BrowserMatch "^ELB-HealthChecker" loghealthcheck
 
 <IfDefine E2_DEVELOPMENT>
-
-  # CENTRAL ERROR LOG
-  ErrorLogFormat "{\"time\":\"%{%usec_frac}t\", \"function\" : \"[%-m:%l]\", \"process\" : \"[pid%P]\" ,\"message\" : \"%M\"}"
-  ErrorLog "|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
-  # FILTER OUT THESE LOGS IN APACHE
-  # DON'T LOG LOOPBACK REQUESTS
-  SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
-  # DON'T LOG PROXY CHECK OF SERVER_LIVE, MISSING FAVICON AND ROBOTS.TXT
-  SetEnvIf Request_URI "^/server_live\.html$" dontlog
-  SetEnvIf Request_URI "favicon.ico$" dontlog
-  SetEnvIf Request_URI "^/robots\.txt$" dontlog
-
+ErrorLogFormat "{\"time\":\"%{%usec_frac}t\", \"function\" : \"[%-m:%l]\", \"process\" : \"[pid%P]\" ,\"message\" : \"%M\"}"
+ErrorLog "|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
+SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
+SetEnvIf Request_URI "^/server_live\.html$" dontlog
+SetEnvIf Request_URI "favicon.ico$" dontlog
+SetEnvIf Request_URI "^/robots\.txt$" dontlog
 </IfDefine>
 
 <IfDefine E2_PRODUCTION>
-Define E2StartServers 15
-Define E2MinSpareServers 15
-Define E2MaxSpareServers 20
-#This number can't go higher than what the server can handle
-Define E2MaxRequestWorkers 40
+Define E2StartServers 10
+Define E2MinSpareServers 10
+Define E2MaxSpareServers 15
+Define E2MaxRequestWorkers 20
 Define E2MaxConnections 10000
 </IfDefine>
 
@@ -94,50 +115,147 @@ Define E2MaxConnections 0
 </IfDefine>
 
 <IfModule mpm_prefork_module>
-  StartServers         ${E2StartServers}
-  MinSpareServers      ${E2MinSpareServers}
-  MaxSpareServers      ${E2MaxSpareServers}
-  MaxRequestWorkers    ${E2MaxRequestWorkers}
-  MaxConnectionsPerChild ${E2MaxConnections}
+StartServers         ${E2StartServers}
+MinSpareServers      ${E2MinSpareServers}
+MaxSpareServers      ${E2MaxSpareServers}
+MaxRequestWorkers    ${E2MaxRequestWorkers}
+MaxConnectionsPerChild ${E2MaxConnections}
 </IfModule>
-
 
 PerlSwitches -I/var/everything/ecore -I/var/libraries/lib/perl5
 ServerName everything2.com
 Listen 80
 ListenBacklog 511
 
-<IfModule mod_ssl.c>
-  SSLRandomSeed startup builtin
-  SSLRandomSeed startup file:/dev/urandom 512
-  SSLRandomSeed connect builtin
-  SSLRandomSeed connect file:/dev/urandom 512
-
-  AddType application/x-x509-ca-cert .crt
-  AddType application/x-pkcs7-crl    .crl
-
-  SSLPassPhraseDialog  builtin
-
-  SSLSessionCache        shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)
-  SSLSessionCacheTimeout  300
-
-  SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5:!RC4
-
-  # enable only TLSv1
-  SSLProtocol all -SSLv2 -SSLv3
-
-  Listen 443
-  ListenBacklog 511
-  <VirtualHost _default_:443>
-    SSLEngine on
-    SSLCertificateFile    /etc/apache2/e2.cert
-    SSLCertificateKeyFile /etc/apache2/e2.key
-
-    Include everything.conf
-
-  </VirtualHost>
-</IfModule>
-
+##### MAIN VIRTUALHOST (HTTP ONLY) #####
 <VirtualHost _default_:80>
-  Include everything.conf
+	ServerName everything2.com
+	ServerAdmin e2webmaster@everything2.com
+	DocumentRoot /var/everything/www
+
+	<IfDefine PERLDB>
+		<Perl>
+			use Apache::DB ();
+			Apache::DB->init;
+		</Perl>
+		<Location />
+			PerlFixupHandler Apache::DB
+		</Location>
+	</IfDefine>
+
+	<Perl>
+		use CGI qw(-utf8);
+	</Perl>
+
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+
+	<IfDefine E2_PRODUCTION>
+		# Limit process size to 350M in production
+		# With 20 workers max, worst case = 20 * 350MB = 7GB
+		# Container has 4GB, so realistically ~10-12 workers at max size
+		<Perl>
+			use Apache2::SizeLimit;
+			$Apache2::SizeLimit::MAX_PROCESS_SIZE = 350000;
+			$Apache2::SizeLimit::CHECK_EVERY_N_REQUESTS = 10;
+		</Perl>
+		PerlCleanupHandler Apache2::SizeLimit
+	</IfDefine>
+
+	PerlPassEnv AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
+	PerlPassEnv AWS_DEFAULT_REGION
+	PerlPassEnv E2_DOCKER
+	PerlPassEnv E2_MAINTENANCE_MESSAGE
+	PerlPassEnv E2_DBSERV
+
+	PerlModule Apache2::compat Apache::DBI CGI Everything Everything::HTML
+	PerlResponseHandler ModPerl::Registry
+	PerlOptions +ParseHeaders
+
+	# Serve favicon.ico from static directory
+	Alias /favicon.ico /var/everything/www/static/favicon.ico
+	<Location /favicon.ico>
+		Require all granted
+		SetEnv dontlog 1
+	</Location>
+
+	# Static files directory
+	<Directory /var/everything/www/static/>
+		Require all granted
+		Options -ExecCGI
+	</Directory>
+
+	# Health check endpoint - no access logging
+	<Location /health.pl>
+		SetEnv dontlog 1
+	</Location>
+
+	# Apache server-status for monitoring (localhost only)
+	<Location /server-status>
+		SetHandler server-status
+		Require local
+		SetEnv dontlog 1
+	</Location>
+
+<%= ip_blocks %>
+
+	<Directory /var/everything/www/>
+		DirectoryIndex index.pl
+		AddHandler perl-script .pl
+		Options +ExecCGI +FollowSymLinks
+		AllowOverride None
+		Order allow,deny
+		allow from all
+		deny from env=denyip
+
+		RewriteEngine On
+
+		# Health check endpoint - lightweight Perl check for ALB/ECS
+		RewriteRule ^health$ /health.pl [L,QSA]
+
+		RewriteRule ^favicon.ico$ /static/favicon.ico [L]
+
+		RewriteRule ^node/(\d+)/(\w+)/?$           index.pl?node_id=$1&displaytype=$2  [L,QSA,BCTLS]
+		RewriteRule ^node/(\d+)([^&]*)/?$          index.pl?node_id=$1$2                [L,QSA,BCTLS]
+		RewriteRule ^e2node/(.+)                   /index.pl?node=$1                     [L,QSA,BCTLS]
+		RewriteRule ^node/([^\d][^/]*)$            /index.pl?node=$1                    [L,QSA,BCTLS]
+
+		RewriteRule ^node/([^\W\/]+)/([^&]+).*/?$  index.pl?node=$2&type=$1            [L,QSA,BCTLS]
+		RewriteRule ^title/([^&]+).*/?$            index.pl?node=$1                    [L,QSA,BCTLS]
+
+		RewriteRule ^user/([^&]+)/writeups/([^&]+).*/?$   index.pl?node=$2&type=writeup&author=$1      [L,QSA,BCTLS]
+		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [L,QSA,BCTLS]
+		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [L,QSA,BCTLS]
+
+		# Short URL redirection
+		RewriteRule ^/?s/([^/]+)$                  index.pl?type=superdoc&node=Short+URL+Lookup&short_string=$1
+
+		RewriteCond %{REQUEST_FILENAME}            !-f
+		RewriteRule ^/?stylesheet/([^_]+)_v[0-9]+(_autofix)?\.css      /stylesheet/$1$2.css  [R=307]
+
+		RewriteRule ^/?sitemap/(.+)$               http://sitemap.everything2.com/$1 [P]
+		RewriteRule ^/?sitemap.xml$                http://sitemap.everything2.com/index.xml [P]
+
+		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
+	</Directory>
+
+	ScriptAliasMatch /api/.* /var/everything/www/api/index.pl
+	<Directory /var/everything/www/api/>
+		DirectoryIndex index.pl
+		AddHandler perl-script .pl
+		Options +ExecCGI +FollowSymLinks
+		AllowOverride None
+		Order allow,deny
+		allow from all
+		deny from env=denyip
+	</Directory>
+
+	<IfDefine E2_DEVELOPMENT>
+		ErrorLog "|<%= rotatelogs %> -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
+		CustomLog "|<%= rotatelogs %> -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600" cloudwatch env=!dontlog
+	</IfDefine>
+
+	ServerSignature On
 </VirtualHost>
