@@ -72,6 +72,41 @@ sub buildReactData {
         { type => $_, count => $type_counts{$_} }
     } sort keys %type_counts;
 
+    # Get cache performance statistics
+    my $stats = $cache->getStats();
+    my @perf_stats;
+
+    # Combine all types from hits, misses, evictions, stale
+    my %all_types;
+    for my $category (qw(hits misses evictions stale)) {
+        for my $type (keys %{$stats->{$category}}) {
+            $all_types{$type} = 1;
+        }
+    }
+
+    for my $type (sort keys %all_types) {
+        my $hits = $stats->{hits}{$type} || 0;
+        my $misses = $stats->{misses}{$type} || 0;
+        my $evictions = $stats->{evictions}{$type} || 0;
+        my $stale = $stats->{stale}{$type} || 0;
+        my $total = $hits + $misses + $stale;
+        my $hit_rate = $total > 0 ? sprintf("%.1f", ($hits / $total) * 100) : 0;
+
+        push @perf_stats, {
+            type => $type,
+            hits => int($hits),
+            misses => int($misses),
+            evictions => int($evictions),
+            stale => int($stale),
+            hit_rate => $hit_rate,
+        };
+    }
+
+    # Sort by total requests (hits + misses + stale) descending
+    @perf_stats = sort {
+        ($b->{hits} + $b->{misses} + $b->{stale}) <=> ($a->{hits} + $a->{misses} + $a->{stale})
+    } @perf_stats;
+
     # Build groupCache details - shows which groups have cached membership data
     my @group_cache_entries;
     foreach my $group_id (sort { $a <=> $b } keys %{$cache->{groupCache}}) {
@@ -114,6 +149,7 @@ sub buildReactData {
         num_permanent => $num_permanent,
         nodes => \@nodes,
         type_stats => \@type_stats,
+        perf_stats => \@perf_stats,
         group_cache => \@group_cache_entries,
         group_cache_size => scalar(@group_cache_entries)
     };

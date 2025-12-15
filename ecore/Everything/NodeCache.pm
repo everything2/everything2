@@ -107,6 +107,14 @@ sub new
 
 	$this->{paramcache} = {};
 
+	# Cache statistics tracking (per-process)
+	$this->{stats} = {
+		hits => {},        # hits by typename
+		misses => {},      # misses by typename
+		evictions => {},   # evictions by typename
+		stale => {},       # version mismatches by typename
+	};
+
 	return $this;
 }
 
@@ -213,10 +221,18 @@ sub getCachedNodeByName
 
 		if ($$NODE{title} ne $title) {
 			delete $this->{typeCache}{$typename}{$title};
+			$this->{stats}{misses}{$typename}++;
 			return;
 		}
-		return $NODE if($this->isSameVersion($NODE));
+		if($this->isSameVersion($NODE)) {
+			$this->{stats}{hits}{$typename}++;
+			return $NODE;
+		}
+		# Version mismatch - stale cache entry
+		$this->{stats}{stale}{$typename}++;
+		return;
 	}
+	$this->{stats}{misses}{$typename}++;
 	return;
 }
 
@@ -245,8 +261,17 @@ sub getCachedNodeById
 		$data = $this->{idCache}{$id};
 		$NODE = $this->{nodeQueue}->getItem($data);
 
-		return $NODE if($this->isSameVersion($NODE));
+		my $typename = $$NODE{type}{title} || 'unknown';
+		if($this->isSameVersion($NODE)) {
+			$this->{stats}{hits}{$typename}++;
+			return $NODE;
+		}
+		# Version mismatch - stale cache entry
+		$this->{stats}{stale}{$typename}++;
+		return;
 	}
+	# Can't track typename for misses by ID (we don't know the type yet)
+	$this->{stats}{misses}{'_by_id'}++;
 	return;
 }
 
@@ -514,7 +539,7 @@ sub purgeCache
 		# the cache size under the maximum.
 		my $leastUsed = $this->{nodeQueue}->getNextItem();
 
-		$this->removeNodeFromHash($leastUsed);
+		$this->removeNodeFromHash($leastUsed, 1);  # 1 = is_eviction
 	}
 
 	return 1;
@@ -536,12 +561,17 @@ sub purgeCache
 #
 sub removeNodeFromHash
 {
-	my ($this, $NODE) = @_;
+	my ($this, $NODE, $is_eviction) = @_;
 	my ($type, $title) = ($$NODE{type}{title}, $$NODE{title});
 
 	if (defined $this->{idCache}{$$NODE{node_id}})
 	{
 		my $data = $this->{typeCache}{$type}{$title};
+
+		# Track evictions (when removed due to cache pressure, not explicit removal)
+		if ($is_eviction) {
+			$this->{stats}{evictions}{$type}++;
+		}
 
 		# Remove this hash entry
 		delete ($this->{typeCache}{$type}{$title});
@@ -783,6 +813,44 @@ sub existsInGroupCache {
 	my ($this, $NODE, $nid) = @_;
 	return 0 unless defined $nid;
 	return exists($this->{groupCache}->{$$NODE{node_id}}->{$nid});
+}
+
+
+#############################################################################
+#	Sub
+#		getStats
+#
+#	Purpose
+#		Returns cache statistics (hits, misses, evictions, stale) by nodetype.
+#		Useful for monitoring cache performance and identifying high-churn types.
+#
+#	Returns
+#		Hashref with stats data
+#
+sub getStats
+{
+	my ($this) = @_;
+	return $this->{stats};
+}
+
+
+#############################################################################
+#	Sub
+#		resetStats
+#
+#	Purpose
+#		Reset all cache statistics counters to zero.
+#
+sub resetStats
+{
+	my ($this) = @_;
+	$this->{stats} = {
+		hits => {},
+		misses => {},
+		evictions => {},
+		stale => {},
+	};
+	return 1;
 }
 
 #############################################################################

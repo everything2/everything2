@@ -53,7 +53,8 @@ const CoolArchive = ({ data, user }) => {
   }
 
   // Fetch writeups
-  const fetchWriteups = useCallback(async (reset = false) => {
+  // newOffset parameter is used for pagination to avoid stale closure issues
+  const fetchWriteups = useCallback(async (reset = false, newOffset = null) => {
     // Don't fetch if sort requires user but none provided
     if (sortNeedsUser(sortBy) && !searchUsername) {
       if (reset) {
@@ -67,7 +68,7 @@ const CoolArchive = ({ data, user }) => {
     setError(null)
 
     try {
-      const currentOffset = reset ? 0 : offset
+      const currentOffset = reset ? 0 : (newOffset !== null ? newOffset : offset)
       const params = new URLSearchParams({
         orderby: sortBy,
         useraction: userAction,
@@ -115,8 +116,9 @@ const CoolArchive = ({ data, user }) => {
   // Load more (pagination)
   const loadMore = () => {
     if (!loading && hasMore) {
-      setOffset(prev => prev + pageSize)
-      fetchWriteups(false)
+      const newOffset = offset + pageSize
+      setOffset(newOffset)
+      fetchWriteups(false, newOffset)
     }
   }
 

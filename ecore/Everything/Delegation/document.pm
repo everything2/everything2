@@ -1916,6 +1916,19 @@ sub guest_front_page {
 
 
 <body class="fullpage" id="guestfrontpage">
+    <div class="headerads">
+        <center>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0613380022572506"
+             crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-0613380022572506"
+             data-ad-slot="9636638260"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        </center>
+    </div>
     <div id="header">
            <div id="e2logo"><a href="/title/About+Everything2">Everything<span id="e2logo2">2</span></a></div>
 ';

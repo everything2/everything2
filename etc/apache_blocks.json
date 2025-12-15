@@ -3,7 +3,8 @@
   "banned_user_agents": [
     "BLEXBot/1.0",
     "DataForSeoBot/1.0",
-    "aiohttp"
+    "aiohttp",
+    "HTTrack"
   ],
   "banned_ips": [
     "97.66.136.146",

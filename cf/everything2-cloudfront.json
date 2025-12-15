@@ -9,6 +9,77 @@
     }
   },
   "Resources": {
+    "E2CloudFrontLogsBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "cloudfrontlogs.everything2.com",
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerPreferred"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": false,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": false,
+          "RestrictPublicBuckets": true
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "DeleteOldLogs",
+              "Status": "Enabled",
+              "ExpirationInDays": 7
+            }
+          ]
+        }
+      }
+    },
+
+    "E2CloudFrontLogsBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "DependsOn": "E2CloudFrontLogsBucket",
+      "Properties": {
+        "Bucket": {"Ref": "E2CloudFrontLogsBucket"},
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowCloudFrontLogDelivery",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+              },
+              "Action": "s3:PutObject",
+              "Resource": {"Fn::Sub": "arn:aws:s3:::${E2CloudFrontLogsBucket}/*"},
+              "Condition": {
+                "StringEquals": {
+                  "s3:x-amz-acl": "bucket-owner-full-control",
+                  "aws:SourceAccount": {"Ref": "AWS::AccountId"}
+                }
+              }
+            },
+            {
+              "Sid": "AllowCloudFrontLogDeliveryAclCheck",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+              },
+              "Action": "s3:GetBucketAcl",
+              "Resource": {"Fn::Sub": "arn:aws:s3:::${E2CloudFrontLogsBucket}"},
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": {"Ref": "AWS::AccountId"}
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+
     "E2WAFWebACL": {
       "Type": "AWS::WAFv2::WebACL",
       "Properties": {
@@ -124,14 +195,62 @@
             }
           },
           {
-            "Name": "RateLimitRule",
+            "Name": "AllowCrawlerEssentials",
             "Priority": 4,
+            "Action": {
+              "Allow": {}
+            },
+            "Statement": {
+              "OrStatement": {
+                "Statements": [
+                  {
+                    "ByteMatchStatement": {
+                      "SearchString": "/robots.txt",
+                      "FieldToMatch": {
+                        "UriPath": {}
+                      },
+                      "TextTransformations": [
+                        {
+                          "Priority": 0,
+                          "Type": "LOWERCASE"
+                        }
+                      ],
+                      "PositionalConstraint": "EXACTLY"
+                    }
+                  },
+                  {
+                    "ByteMatchStatement": {
+                      "SearchString": "/sitemap",
+                      "FieldToMatch": {
+                        "UriPath": {}
+                      },
+                      "TextTransformations": [
+                        {
+                          "Priority": 0,
+                          "Type": "LOWERCASE"
+                        }
+                      ],
+                      "PositionalConstraint": "STARTS_WITH"
+                    }
+                  }
+                ]
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AllowCrawlerEssentialsMetric"
+            }
+          },
+          {
+            "Name": "RateLimitRule",
+            "Priority": 5,
             "Action": {
               "Block": {}
             },
             "Statement": {
               "RateBasedStatement": {
-                "Limit": 2000,
+                "Limit": 100,
                 "AggregateKeyType": "IP"
               }
             },
@@ -143,7 +262,7 @@
           },
           {
             "Name": "BlockBadUserAgents",
-            "Priority": 5,
+            "Priority": 6,
             "Action": {
               "Block": {}
             },
@@ -187,6 +306,23 @@
                   {
                     "ByteMatchStatement": {
                       "SearchString": "dataforseobot",
+                      "FieldToMatch": {
+                        "SingleHeader": {
+                          "Name": "user-agent"
+                        }
+                      },
+                      "TextTransformations": [
+                        {
+                          "Priority": 0,
+                          "Type": "LOWERCASE"
+                        }
+                      ],
+                      "PositionalConstraint": "CONTAINS"
+                    }
+                  },
+                  {
+                    "ByteMatchStatement": {
+                      "SearchString": "httrack",
                       "FieldToMatch": {
                         "SingleHeader": {
                           "Name": "user-agent"
@@ -317,12 +453,17 @@
 
     "E2CloudFrontDistribution": {
       "Type": "AWS::CloudFront::Distribution",
-      "DependsOn": ["E2CloudFrontCertificate", "E2WAFWebACL"],
+      "DependsOn": ["E2CloudFrontCertificate", "E2WAFWebACL", "E2CloudFrontLogsBucketPolicy"],
       "Properties": {
         "DistributionConfig": {
           "WebACLId": {"Fn::GetAtt": ["E2WAFWebACL", "Arn"]},
           "Comment": "Everything2 CloudFront Distribution",
           "Enabled": true,
+          "Logging": {
+            "Bucket": {"Fn::GetAtt": ["E2CloudFrontLogsBucket", "DomainName"]},
+            "IncludeCookies": false,
+            "Prefix": "cf-logs/"
+          },
           "HttpVersion": "http2and3",
           "IPV6Enabled": true,
           "PriceClass": "PriceClass_100",
