@@ -93,7 +93,12 @@ sub new
     my $dbname = $Everything::CONF->database;
 	# A connection to this database does not exist.  Create one.
 	my ($user,$pass, $dbserv, $dbport) = ($Everything::CONF->everyuser, $Everything::CONF->everypass, $Everything::CONF->everything_dbserv, $Everything::CONF->everything_dbport);
-	my $dbh_props = {AutoCommit => 1, mysql_enable_utf8mb4 => 1};
+	my $dbh_props = {
+		AutoCommit => 1,
+		mysql_enable_utf8mb4 => 1,
+		mysql_auto_reconnect => 1,  # Auto-reconnect on connection loss
+		PrintError => 1,            # Log errors
+	};
 
 	if($Everything::CONF->environment eq 'development')
 	{
