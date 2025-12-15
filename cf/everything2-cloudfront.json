@@ -250,7 +250,7 @@
             },
             "Statement": {
               "RateBasedStatement": {
-                "Limit": 100,
+                "Limit": 500,
                 "AggregateKeyType": "IP"
               }
             },

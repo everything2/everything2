@@ -162,6 +162,19 @@
         "Type": "A"
       }
     },
+    "E2DotComMainAliasIPv6": {
+      "Type": "AWS::Route53::RecordSet",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
+        },
+        "Type": "AAAA"
+      }
+    },
     "E2DotComWWW": {
       "Type": "AWS::Route53::RecordSet",
       "DeletionPolicy": "Retain",
@@ -173,6 +186,19 @@
           "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
+      }
+    },
+    "E2DotComWWWIPv6": {
+      "Type": "AWS::Route53::RecordSet",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "www.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
+        },
+        "Type": "AAAA"
       }
     },
     "E2DotComAssets": {
@@ -290,6 +316,18 @@
         "Type": "A"
       }
     },
+    "E2DotOrgMainAliasIPv6": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "everything2.org",
+        "HostedZoneName": "everything2.org.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
+        },
+        "Type": "AAAA"
+      }
+    },
     "E2DotOrgWWW": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
@@ -300,6 +338,18 @@
           "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
+      }
+    },
+    "E2DotOrgWWWIPv6": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "www.everything2.org",
+        "HostedZoneName": "everything2.org.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
+        },
+        "Type": "AAAA"
       }
     },
     "E2DotNetR53Zone": {
@@ -321,6 +371,18 @@
         "Type": "A"
       }
     },
+    "E2DotNetMainAliasIPv6": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "everything2.net",
+        "HostedZoneName": "everything2.net.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
+        },
+        "Type": "AAAA"
+      }
+    },
     "E2DotNetWWW": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
@@ -331,6 +393,18 @@
           "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "A"
+      }
+    },
+    "E2DotNetWWWIPv6": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "www.everything2.net",
+        "HostedZoneName": "everything2.net.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::If": ["UseCloudFront", "Z2FDTNDATAQYW2", {"Fn::GetAtt": ["ContainerizedFrontendELB", "CanonicalHostedZoneID"]}]},
+          "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
+        },
+        "Type": "AAAA"
       }
     },
     "E2DotComJSCSSWR53RR": {
@@ -1671,7 +1745,7 @@
         "ResourceId": {"Fn::Join": ["/",["service",{"Ref": "ECSAppCluster"},{"Fn::GetAtt": ["ECSFargateAppService","Name"]}]]},
         "ServiceNamespace": "ecs",
         "ScalableDimension": "ecs:service:DesiredCount",
-        "MinCapacity": 1,
+        "MinCapacity": 2,
         "MaxCapacity": 4
       }
     },
