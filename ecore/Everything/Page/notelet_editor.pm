@@ -100,6 +100,12 @@ sub buildReactData {
     # Get current notelet content
     my $notelet_raw = $VARS->{noteletRaw} || '';
     my $notelet_screened = $VARS->{noteletScreened} || '';
+
+    # Strip script tags to prevent XSS and JSON/script tag injection
+    $notelet_raw =~ s/<script[^>]*>.*?<\/script>//gis;
+    $notelet_raw =~ s/<script[^>]*>//gis;
+    $notelet_raw =~ s/<\/script>//gis;
+
     my $char_count = length($notelet_raw);
 
     # Check if Notelet nodelet is enabled

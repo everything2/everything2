@@ -8035,6 +8035,12 @@ sub screenNotelet
   }
 
   delete $VARS->{'personalScreened'};	#old way
+
+  # Strip <script> tags to prevent user scripts from breaking React pages
+  $work =~ s/<script[^>]*>.*?<\/script>//gis;
+  $work =~ s/<script[^>]*>//gis;  # Also catch unclosed script tags
+  $work =~ s/<\/script>//gis;     # Also catch stray closing tags
+
   if(length($work))
   {
     $VARS->{'noteletScreened'} = $work;

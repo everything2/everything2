@@ -758,6 +758,11 @@
             {
               "Effect": "Allow",
               "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/database_password_secret"]]}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
               "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/banned_user_agents_secret"]]}
             },
             {
