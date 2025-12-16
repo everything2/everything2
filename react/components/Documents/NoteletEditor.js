@@ -19,9 +19,20 @@ const NoteletEditor = ({ data, e2 }) => {
     error = ''
   } = data
 
-  const [noteletRaw, setNoteletRaw] = useState(initialNoteletRaw)
+  // Strip script tags on initial load to allow users to remove legacy scripts
+  const stripScriptTags = (text) => {
+    return text
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<script[^>]*>/gi, '')
+      .replace(/<\/script>/gi, '')  // Also catch stray closing tags
+  }
+
+  const [noteletRaw, setNoteletRaw] = useState(stripScriptTags(initialNoteletRaw))
   const [keepComments, setKeepComments] = useState(initialKeepComments)
   const [showPreview, setShowPreview] = useState(true)
+
+  // Show warning if script tags were stripped
+  const hadScriptTags = initialNoteletRaw !== stripScriptTags(initialNoteletRaw)
 
   const currentLength = noteletRaw.length
   const screenedLength = notelet_screened.length
@@ -67,6 +78,13 @@ const NoteletEditor = ({ data, e2 }) => {
           {' '}What is the notelet? It lets you put notes (or anything, really) into a nodelet.
         </p>
 
+        {hadScriptTags && (
+          <div style={styles.warning_box}>
+            <strong>Note:</strong> Script tags have been automatically removed from your notelet.
+            Script tags are no longer supported as they interfere with the site. Click Submit to save the cleaned version.
+          </div>
+        )}
+
         {success_message && (
           <div style={styles.success}>{success_message}</div>
         )}
@@ -77,20 +95,16 @@ const NoteletEditor = ({ data, e2 }) => {
 
         {/* Notes */}
         <div style={styles.notes}>
-          <p><strong>Notes</strong>:</p>
-          <ol>
-            <li>
-              <code>&lt;!--</code> You may enter comments here. Why would you want comments?
-              Scripting! (But be sure to uncheck "Remove comments.") <code>--&gt;</code>
-            </li>
-            <li>
-              The raw text you enter here is limited to 32768 characters.
-              Anything longer than that will be lost. This raw text will not be changed in any way.
-              As a slight reward for gaining levels, the higher your level, the more of your raw text is used.
-              You are level {user_level}, so your maximum used length is <strong>{max_length}</strong> characters.
-              This means that the first {max_length} characters of your raw text ({keepComments ? '' : 'not '}including comments) will be used for your notelet text.
-            </li>
-          </ol>
+          <p><strong>About Notelets</strong>:</p>
+          <p>
+            Your notelet is a personal space for freeform notes, quick links, and reminders that appears
+            in your nodelet sidebar. You can use basic HTML formatting and E2 softlinks like [node title].
+          </p>
+          <p>
+            The raw text you enter here is limited to 32768 characters.
+            As a reward for gaining levels, more of your raw text is displayed.
+            You are level {user_level}, so your maximum displayed length is <strong>{max_length}</strong> characters.
+          </p>
         </div>
 
         {/* Preview */}
@@ -137,7 +151,7 @@ const NoteletEditor = ({ data, e2 }) => {
                   checked={!keepComments}
                   onChange={(e) => setKeepComments(!e.target.checked)}
                 />
-                {' '}Remove comments
+                {' '}Remove HTML comments
               </label>
               {/* Hidden field to set nodeletKeepComments based on checkbox state */}
               <input
@@ -146,8 +160,8 @@ const NoteletEditor = ({ data, e2 }) => {
                 value={keepComments ? '1' : '0'}
               />
               <span style={styles.checkboxNote}>
-                {' '}(Keep comments in if you're using scripting; otherwise, let them be removed.
-                In either case, any comments in your source area, below, are not changed.)
+                {' '}(HTML comments like <code>&lt;!-- text --&gt;</code> will be stripped from the displayed output.
+                Your source text is never modified.)
               </span>
             </div>
 
@@ -251,6 +265,14 @@ const styles = {
     border: '1px solid #f44336',
     borderRadius: '4px',
     color: '#c62828',
+    marginBottom: '15px'
+  },
+  warning_box: {
+    padding: '12px',
+    backgroundColor: '#fff3cd',
+    border: '1px solid #ffc107',
+    borderRadius: '4px',
+    color: '#856404',
     marginBottom: '15px'
   },
   notes: {

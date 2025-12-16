@@ -6789,6 +6789,11 @@ sub buildNodeInfoStructure
         );
       }
       $content = $VARS->{'noteletScreened'} || '';
+
+      # Strip <script> tags from existing content (legacy cleanup)
+      $content =~ s/<script[^>]*>.*?<\/script>//gis;
+      $content =~ s/<script[^>]*>//gis;
+      $content =~ s/<\/script>//gis;
     }
 
     $e2->{noteletData} = {
