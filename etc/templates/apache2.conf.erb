@@ -101,9 +101,9 @@ SetEnvIf Request_URI "^/robots\.txt$" dontlog
 <IfDefine E2_PRODUCTION>
 Define E2StartServers 10
 Define E2MinSpareServers 10
-Define E2MaxSpareServers 15
-Define E2MaxRequestWorkers 40
-Define E2MaxConnections 10000
+Define E2MaxSpareServers 20
+Define E2MaxRequestWorkers 30
+Define E2MaxConnections 5000
 </IfDefine>
 
 <IfDefine E2_DEVELOPMENT>
@@ -169,7 +169,43 @@ ListenBacklog 511
 	PerlPassEnv E2_MAINTENANCE_MESSAGE
 	PerlPassEnv E2_DBSERV
 
-	PerlModule Apache2::compat Apache::DBI CGI Everything Everything::HTML
+	# Apache::DBI MUST be loaded before DBI to intercept connections
+	# Configure ping timeout to avoid unnecessary connection checks
+	PerlModule Apache::DBI
+	<Perl>
+		# Set ping timeout - only ping if connection idle > 60 seconds
+		# Reduces overhead on every request while catching stale connections
+		Apache::DBI->setPingTimeOut("DBI:mysql", 60);
+	</Perl>
+
+	# Preload modules to maximize shared memory via copy-on-write
+	# Heavy modules loaded before fork are shared across all workers
+	# Core Perl/Apache modules
+	PerlModule Apache2::compat DBI DBD::mysql CGI CGI::Carp
+	# Object system and utilities
+	PerlModule Moose namespace::autoclean Clone Try::Tiny
+	# Date/Time handling
+	PerlModule DateTime DateTime::Format::Strptime Date::Calc Time::Local
+	# JSON (load XS versions for speed)
+	PerlModule JSON JSON::XS Cpanel::JSON::XS JSON::MaybeXS
+	# HTTP/Network
+	PerlModule LWP::UserAgent HTTP::Request HTTP::Cookies URI
+	# HTML processing
+	PerlModule HTML::Scrubber HTML::Defang
+	# Compression
+	PerlModule Compress::Zlib IO::Compress::Brotli IO::Compress::Deflate IO::Compress::Zstd
+	# XML
+	PerlModule XML::Generator XML::Parser XML::Simple
+	# Crypto/Encoding
+	PerlModule Digest::MD5 Digest::SHA Encode
+	# AWS (heavy - loads many sub-modules)
+	PerlModule Paws Ref::Util::XS
+	# Mason templating
+	PerlModule Mason Mason::Plugin::HTMLFilters
+	# Utility modules
+	PerlModule Data::Dumper Carp Devel::Caller Test::Deep::NoTest Module::Pluggable File::Copy
+	# E2 core modules
+	PerlModule Everything Everything::HTML Everything::Application Everything::Request
 	PerlResponseHandler ModPerl::Registry
 	PerlOptions +ParseHeaders
 

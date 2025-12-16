@@ -9,6 +9,20 @@
     }
   },
   "Resources": {
+    "E2BlockedScrapersIPSet": {
+      "Type": "AWS::WAFv2::IPSet",
+      "Properties": {
+        "Name": "E2-Blocked-Scrapers",
+        "Description": "Blocked scraper IP ranges - data center IPs with fake UAs doing burst scraping",
+        "Scope": "CLOUDFRONT",
+        "IPAddressVersion": "IPV4",
+        "Addresses": [
+          "47.79.0.0/16",
+          "202.46.0.0/16"
+        ]
+      }
+    },
+
     "E2CloudFrontLogsBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -95,6 +109,23 @@
           "MetricName": "E2CloudFrontWAF"
         },
         "Rules": [
+          {
+            "Name": "BlockScraperIPs",
+            "Priority": 0,
+            "Action": {
+              "Block": {}
+            },
+            "Statement": {
+              "IPSetReferenceStatement": {
+                "Arn": {"Fn::GetAtt": ["E2BlockedScrapersIPSet", "Arn"]}
+              }
+            },
+            "VisibilityConfig": {
+              "SampledRequestsEnabled": true,
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "BlockScraperIPsMetric"
+            }
+          },
           {
             "Name": "AWS-AWSManagedRulesCommonRuleSet",
             "Priority": 1,
