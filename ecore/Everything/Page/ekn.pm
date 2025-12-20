@@ -14,6 +14,9 @@ sub buildReactData {
     # Convert blessed writeup objects to simple data structures
     my @nodelist;
     foreach my $node (@$nodes) {
+        # Skip non-writeup nodes (shouldn't happen but defensive check)
+        next unless $node && $node->can('parent');
+
         my $parent = $node->parent;
         my $author = $node->author;
 

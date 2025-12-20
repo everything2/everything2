@@ -61,7 +61,7 @@ sub output
     }
   }
 
-  return;
+  return 1; # Indicate success for callers checking route result
 }
 
 __PACKAGE__->meta->make_immutable;

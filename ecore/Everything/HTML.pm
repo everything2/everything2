@@ -721,11 +721,19 @@ sub displayPage
 	{
 		$page = '';
 		# HTMLRouter does the printing
-		$Everything::ROUTER->route_node($NODE, $displaytype || 'display', $REQUEST);
+		my $routed = $Everything::ROUTER->route_node($NODE, $displaytype || 'display', $REQUEST);
 
-		# TODO: Make sure that VARS are set in ROUTER once we're cut over
-		setVars($USER, $VARS) unless $APP->isGuest($USER);
+		if ($routed) {
+			# TODO: Make sure that VARS are set in ROUTER once we're cut over
+			setVars($USER, $VARS) unless $APP->isGuest($USER);
+		} else {
+			# route_node returned undef (e.g., no blessed Node class available)
+			# Fall through to delegation path below
+			$APP->devLog("Router can_route returned true but route_node failed for '$NODE->{title}', falling back to delegation");
+			goto DELEGATION_FALLBACK;
+		}
 	}else{
+		DELEGATION_FALLBACK:
 
 		if(my $delegation = Everything::Delegation::htmlpage->can($pagetitle))
 		{

@@ -19,11 +19,25 @@ sub display {
     my $user_data = {
         node_id   => $user->node_id,
         title     => $user->title,
-        is_guest  => $user->is_guest ? 1 : 0,
+        is_guest  => $user->is_guest  ? 1 : 0,
         is_editor => $user->is_editor ? 1 : 0,
-        can_vote  => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1 : 0,
-        can_cool  => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1 : 0
+        is_admin  => $user->is_admin  ? 1 : 0,
+        can_vote  => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1
+        : 0,
+        can_cool => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1
+        : 0,
+        coolsleft => $user->coolsleft || 0
     };
+
+    # Get parent e2node data for editing (editors or writeup owner)
+    my $parent_e2node_data;
+    my $is_owner = !$user->is_guest && $node->author_user == $user->node_id;
+    if ( $user->is_editor || $is_owner ) {
+        my $parent_node = $node->parent;
+        if ( $parent_node && !UNIVERSAL::isa($parent_node, "Everything::Node::null") ) {
+            $parent_e2node_data = $parent_node->json_display($user);
+        }
+    }
 
     # Build contentData for React
     my $content_data = {
@@ -32,24 +46,29 @@ sub display {
         user    => $user_data
     };
 
+    # Add parent e2node if available (for E2 Node Tools modal)
+    $content_data->{parent_e2node} = $parent_e2node_data if $parent_e2node_data;
+
     # Set node on REQUEST for buildNodeInfoStructure
     $REQUEST->node($node);
 
     # Build e2 data structure
-    my $e2 = $self->APP->buildNodeInfoStructure(
-        $node->NODEDATA,
+    my $e2 =
+      $self->APP->buildNodeInfoStructure( $node->NODEDATA,
         $REQUEST->user->NODEDATA,
-        $REQUEST->user->VARS,
-        $REQUEST->cgi,
-        $REQUEST
-    );
+        $REQUEST->user->VARS, $REQUEST->cgi, $REQUEST );
 
     # Override contentData with our directly-built data
-    $e2->{contentData}    = $content_data;
-    $e2->{reactPageMode}  = \1;
+    $e2->{contentData}   = $content_data;
+    $e2->{reactPageMode} = \1;
 
     # Use react_page layout (includes sidebar/header/footer)
-    my $html = $self->layout( '/pages/react_page', e2 => $e2, REQUEST => $REQUEST, node => $node );
+    my $html = $self->layout(
+        '/pages/react_page',
+        e2      => $e2,
+        REQUEST => $REQUEST,
+        node    => $node
+    );
     return [ $self->HTTP_OK, $html ];
 }
 

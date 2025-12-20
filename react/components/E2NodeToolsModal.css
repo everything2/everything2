@@ -1,0 +1,324 @@
+/**
+ * E2 Node Tools Modal Styles
+ *
+ * Provides styling for the e2node management modal with:
+ * - Left-side menu for tool selection
+ * - Right panel for tool-specific forms
+ * - Responsive layout
+ */
+
+/* Modal overlay */
+.e2node-tools-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal content */
+.e2node-tools-modal {
+  background: white;
+  border-radius: 8px;
+  max-width: 900px;
+  width: 90%;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.e2node-tools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  background: #f5f5f5;
+}
+
+.e2node-tools-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #000;
+}
+
+/* Node info */
+.e2node-tools-node-info {
+  padding: 0.75rem 1.5rem;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.9rem;
+}
+
+/* Content area with menu and panel */
+.e2node-tools-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left menu */
+.e2node-tools-menu {
+  width: 200px;
+  background: #f5f5f5;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.e2node-tools-menu .menu-item {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.e2node-tools-menu .menu-item:hover {
+  background-color: #e0e0e0;
+}
+
+.e2node-tools-menu .menu-item.active {
+  background-color: #fff;
+  font-weight: bold;
+  border-left: 3px solid #4060b0;
+  color: #4060b0;
+}
+
+/* Right panel */
+.e2node-tools-panel {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.e2node-tools-panel h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+/* Messages */
+.e2node-tools-panel .message {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.e2node-tools-panel .message.success {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.e2node-tools-panel .message.error {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.e2node-tools-panel .info-message {
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.e2node-tools-panel .warning-message {
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+/* Forms */
+.e2node-tools-panel .form-group {
+  margin-bottom: 1rem;
+}
+
+.e2node-tools-panel label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.e2node-tools-panel input[type="text"],
+.e2node-tools-panel textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.e2node-tools-panel input[type="text"]:focus,
+.e2node-tools-panel textarea:focus {
+  outline: none;
+  border-color: #4060b0;
+  box-shadow: 0 0 0 2px rgba(64, 96, 176, 0.1);
+}
+
+.e2node-tools-panel textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.e2node-tools-panel .submit-button {
+  background-color: #4060b0;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.e2node-tools-panel .submit-button:hover:not(:disabled) {
+  background-color: #38495e;
+}
+
+.e2node-tools-panel .submit-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.e2node-tools-panel .unlock-button {
+  background-color: #dc3545;
+}
+
+.e2node-tools-panel .unlock-button:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+/* Additional elements */
+.e2node-tools-panel .current-title {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-left: 3px solid #6c757d;
+  font-size: 0.9rem;
+}
+
+.e2node-tools-panel hr {
+  margin: 1.5rem 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+.e2node-tools-panel .lock-reason {
+  background: #f8f9fa;
+  padding: 0.75rem;
+  border-left: 3px solid #ffc107;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+/* Tools button container */
+.e2node-tools-button-container {
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.e2node-tools-button {
+  background-color: #4060b0;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.e2node-tools-button:hover {
+  background-color: #38495e;
+}
+
+.e2node-tools-button-container .tools-context {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .e2node-tools-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .e2node-tools-content {
+    flex-direction: column;
+  }
+
+  .e2node-tools-menu {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0.5rem;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .e2node-tools-menu .menu-item {
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+  }
+
+  .e2node-tools-menu .menu-item.active {
+    border-left: none;
+    border-bottom: 3px solid #4060b0;
+  }
+
+  .e2node-tools-panel {
+    padding: 1rem;
+  }
+}

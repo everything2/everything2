@@ -727,7 +727,8 @@ sub draft_update
 
   # validate new publication_status. Make 'private' if invalid.
   # notify editor(s) if status changed to review:
-  if ($query and $query->param('draft_publication_status') and
+  if ($query && $query->param('draft_publication_status') &&
+    defined($query->param('old_publication_status')) &&
     $query->param('old_publication_status') != $$N{publication_status})
   {
     my $status = getNodeById($$N{publication_status});

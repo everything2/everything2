@@ -647,11 +647,15 @@ sub isSameVersion
 {
 	my ($this, $NODE) = @_;
 
+	# Guard against nodes with missing type data (can happen during bootstrap)
+	my $type_title = $$NODE{type} ? $$NODE{type}{title} : undef;
+	my $type_id = $$NODE{type} ? $$NODE{type}{node_id} : undef;
+
 	# Skip version check entirely for static_cache types.
 	# These are "code nodes" that only change via deployment.
-	return 1 if(exists $Everything::CONF->static_cache->{$$NODE{type}{title}});
+	return 1 if($type_title && exists $Everything::CONF->static_cache->{$type_title});
 
-	return 1 if(exists $$this{typeVerified}{$$NODE{type}{node_id}});
+	return 1 if($type_id && exists $$this{typeVerified}{$type_id});
 	return 1 if(exists $$this{verified}{$$NODE{node_id}});
 
 	my $ver = $this->getGlobalVersion($NODE);

@@ -1,5 +1,9 @@
 import React, { Suspense, lazy } from 'react'
 
+// Eager imports for high-traffic pages (not lazy loaded)
+import Writeup from './Documents/Writeup'
+import E2Node from './Documents/E2Node'
+
 /**
  * DocumentComponent - Router for React-migrated documents
  *
@@ -18,14 +22,24 @@ import React, { Suspense, lazy } from 'react'
  *
  * Scalability: Component map pattern scales to hundreds of documents without
  * creating an unwieldy switch statement.
+ *
+ * Note: writeup and e2node are NOT lazy loaded since they are the most
+ * frequently accessed pages and should be included in the main bundle for
+ * faster initial render.
  */
 
-// Component registry - maps document type to lazy-loaded React component
+// Component registry - maps document type to React component
 // Add new migrated documents here as they are converted from Mason to React
 const COMPONENT_MAP = {
-  // Core node types (writeups and e2nodes)
-  writeup: lazy(() => import('./Documents/Writeup')),
-  e2node: lazy(() => import('./Documents/E2Node')),
+  // Core node types (writeups and e2nodes) - eager loaded for performance
+  writeup: Writeup,
+  e2node: E2Node,
+
+  // Usergroups - migrated from delegation Dec 2025
+  usergroup: lazy(() => import('./Documents/Usergroup')),
+
+  // Nodetypes - migrated from delegation Dec 2025
+  nodetype: lazy(() => import('./Documents/Nodetype')),
 
   // Phase 4a migrations
   wheel_of_surprise: lazy(() => import('./Documents/WheelOfSurprise')),
@@ -145,6 +159,9 @@ const COMPONENT_MAP = {
 
   // Editor beta (Tiptap testing)
   e2_editor_beta: lazy(() => import('./Documents/EditorBeta')),
+
+  // Drafts page (uses same EditorBeta component)
+  drafts: lazy(() => import('./Documents/EditorBeta')),
 
   // Settings (unified interface for all settings pages)
   settings: lazy(() => import('./Documents/Settings')),

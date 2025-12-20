@@ -31,18 +31,22 @@ const Epicenter = (props) => {
     )
   }
 
+  // Get votes and cools from user object (set in Application.pm buildNodeInfoStructure)
+  const coolsLeft = props.user?.coolsleft || 0
+  const votesLeft = props.user?.votesleft || 0
+
   const votesAndCools = []
-  if (props.cools) {
+  if (coolsLeft > 0) {
     votesAndCools.push(
       <span key="cools">
-        <strong id="chingsleft">{props.cools}</strong> C!{props.cools > 1 ? 's' : ''}
+        <strong id="chingsleft">{coolsLeft}</strong> C!{coolsLeft > 1 ? 's' : ''}
       </span>
     )
   }
-  if (props.votesLeft) {
+  if (votesLeft > 0) {
     votesAndCools.push(
       <span key="votes">
-        <strong id="votesleft">{props.votesLeft}</strong> vote{props.votesLeft > 1 ? 's' : ''}
+        <strong id="votesleft">{votesLeft}</strong> vote{votesLeft > 1 ? 's' : ''}
       </span>
     )
   }

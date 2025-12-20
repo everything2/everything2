@@ -515,7 +515,7 @@ qq|<p>[${username}[user]] has no drafts visible to you.</p>$showhidenukedlink|;
         $showcount = "<p>You have $count drafts.</p>" if $navigation;
 
         my $outstr = '';
-        $outstr = "<h2>$title</h2>$showhidenukedlink<br />
+        $outstr = "<h2>" . ($title // '') . "</h2>" . ($showhidenukedlink // '') . "<br />
       $showcount
       <table><tr><th>status</th><th>title</th>$cs</th></tr>
       $drafts
@@ -654,12 +654,12 @@ sub e2_gift_shop {
     $str .= htmlcode("giftshop_star");
     $str .= htmlcode("giftshop_sanctify");
     $str .= htmlcode("giftshop_buyvotes");
-    $str .= htmlcode("giftshop_votes");
-    $str .= htmlcode("giftshop_ching");
-    $str .= htmlcode("giftshop_buyching");
-    $str .= htmlcode("giftshop_topic");
-    $str .= htmlcode("giftshop_buyeggs");
-    $str .= htmlcode("giftshop_eggs");
+    $str .= htmlcode("giftshop_votes") // '';
+    $str .= htmlcode("giftshop_ching") // '';
+    $str .= htmlcode("giftshop_buyching") // '';
+    $str .= htmlcode("giftshop_topic") // '';
+    $str .= htmlcode("giftshop_buyeggs") // '';
+    $str .= htmlcode("giftshop_eggs") // '';
 
     $str .= qq|<p><hr width='300' /></p><p><b>Self Eggsamination</b></p>|;
 
@@ -910,7 +910,7 @@ sub news_archives {
         my $wclause = "weblog_id='$node_id' AND removedby_user=''";
         my $count   = $DB->sqlSelect( 'count(*)', 'weblog', "$wclause" );
         my $link = linkNode( $NODE, $title, { 'view_weblog' => "$node_id" } );
-        $link = "<b>$link</b>" if $node_id == $view_weblog;
+        $link = "<b>$link</b>" if defined($view_weblog) && $node_id == $view_weblog;
         push @labels,
             "$link<br /><font size='1'>($count node"
           . ( $count == 1 ? '' : 's' )

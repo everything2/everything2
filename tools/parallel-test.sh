@@ -51,7 +51,7 @@ run_perl_tests() {
       echo -e "${RED}✗ Perl tests timed out${NC}"
       exit 1
     else
-      echo -e "${RED}✗ Perl tests failed${NC}"
+      echo -e "${RED}✗ Perl tests failed (check serial test section above for failures)${NC}"
       exit 1
     fi
   } > "$PERL_OUTPUT" 2>&1

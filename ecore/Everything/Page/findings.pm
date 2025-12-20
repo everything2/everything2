@@ -21,7 +21,7 @@ Returns data about search findings.
 
 =cut
 
-Readonly my $EXCERPT_LENGTH => 200;
+Readonly my $EXCERPT_LENGTH => 400;
 Readonly my $EXCERPT_COUNT => 10;
 
 sub buildReactData {
@@ -36,7 +36,7 @@ sub buildReactData {
     my $title = $query->param('node') || '';
     my $lastnode_id = $query->param('lastnode_id') || 0;
     my $is_admin = $APP->isAdmin($USER);
-    my $is_guest = $APP->isGuest($USER);
+    my $is_guest = $USER->is_guest;  # Use blessed object method directly
 
     # If no title, return random node suggestion
     unless ($title) {
@@ -46,6 +46,9 @@ sub buildReactData {
             message => 'Psst! Over here!'
         };
     }
+
+    # Check if search term contains dirty words - if so, skip all filtering
+    my $search_has_dirty_word = $self->_contains_dirty_word($title);
 
     my @nodes = ();
 
@@ -67,13 +70,18 @@ sub buildReactData {
         }
     }
 
-    # Find which e2nodes have writeups (not nodeshells)
+    # Find which e2nodes have writeups (not nodeshells) and count them
     my %filled_node_ids = ();
+    my %writeup_counts = ();
     if (@e2node_ids) {
-        my $sql = "SELECT DISTINCT nodegroup_id FROM nodegroup WHERE nodegroup_id IN (" .
-                  join(", ", @e2node_ids) . ")";
-        my @filled = @{$DB->{dbh}->selectcol_arrayref($sql)};
-        @filled_node_ids{@filled} = ();
+        my $sql = "SELECT nodegroup_id, COUNT(*) FROM nodegroup WHERE nodegroup_id IN (" .
+                  join(", ", @e2node_ids) . ") GROUP BY nodegroup_id";
+        my $results = $DB->{dbh}->selectall_arrayref($sql);
+        foreach my $row (@$results) {
+            my ($node_id, $count) = @$row;
+            $filled_node_ids{$node_id} = 1;
+            $writeup_counts{$node_id} = $count;
+        }
     }
 
     # Process findings
@@ -102,6 +110,18 @@ sub buildReactData {
             $is_nodeshell = !exists $filled_node_ids{$ND->{node_id}};
         }
 
+        # Skip nodeshells for guest users
+        next if $is_guest && $is_nodeshell;
+
+        # Track if this node has a dirty title (for potential second pass)
+        my $has_dirty_title = ($cur_type eq 'e2node' && $self->_contains_dirty_word($ND->{title}));
+
+        # For guests only: Filter dirty words UNLESS search term has dirty words
+        if ($is_guest && !$search_has_dirty_word && $has_dirty_title) {
+            # Skip e2nodes with dirty words in title (first pass)
+            next;
+        }
+
         my $finding = {
             node_id => $ND->{node_id},
             title => $ND->{title},
@@ -109,17 +129,73 @@ sub buildReactData {
             is_nodeshell => $is_nodeshell
         };
 
+        # Add writeup count for e2nodes
+        if ($cur_type eq 'e2node' && !$is_nodeshell) {
+            $finding->{writeup_count} = $writeup_counts{$ND->{node_id}} || 0;
+        }
+
         # For guests, add excerpts to first N non-nodeshell e2nodes
-        # DISABLED: Re-enable after stability fixes deployed
-        # if ($is_guest && $cur_type eq 'e2node' && !$is_nodeshell && $excerpt_count < $EXCERPT_COUNT) {
-        #     my $excerpt = $self->_get_writeup_excerpt($ND->{node_id});
-        #     if ($excerpt) {
-        #         $finding->{excerpt} = $excerpt;
-        #         $excerpt_count++;
-        #     }
-        # }
+        if ($is_guest && $cur_type eq 'e2node' && !$is_nodeshell && $excerpt_count < $EXCERPT_COUNT) {
+            my $excerpt = $self->_get_writeup_excerpt($ND->{node_id});
+            if ($excerpt) {
+                # If excerpt contains dirty word AND search doesn't, skip the excerpt
+                if (!$search_has_dirty_word && $self->_contains_dirty_word($excerpt)) {
+                    # Don't add excerpt, but still include in findings list
+                    # excerpt_count doesn't increment, so we can show another excerpt instead
+                } else {
+                    # Clean excerpt - show it
+                    $finding->{excerpt} = $excerpt;
+                    $excerpt_count++;
+                }
+            }
+        }
 
         push @findings, $finding;
+    }
+
+    # If filtering left us with no results, do a second pass including dirty titles
+    # Content discoverability is more important than ad safety for empty results
+    if ($is_guest && !$search_has_dirty_word && scalar(@findings) == 0 && scalar(@nodes) > 0) {
+        $excerpt_count = 0;
+        foreach my $ND (@nodes) {
+            my $cur_type = $ND->{type}{title};
+
+            # Apply same basic filters as first pass
+            next if $cur_type eq 'writeup';
+            next if $cur_type eq 'debatecomment';
+            next if $cur_type eq 'draft' && !$APP->canSeeDraft($USER, $ND, 'find');
+            if ($cur_type eq 'debate' && !$is_admin) {
+                next unless $APP->inUsergroup($USER, $DB->getNodeById($ND->{restricted}));
+            }
+
+            my $is_nodeshell = 0;
+            if ($cur_type eq 'e2node') {
+                $is_nodeshell = !exists $filled_node_ids{$ND->{node_id}};
+            }
+            next if $is_nodeshell;  # Still skip nodeshells
+
+            my $finding = {
+                node_id => $ND->{node_id},
+                title => $ND->{title},
+                type => $cur_type,
+                is_nodeshell => $is_nodeshell
+            };
+
+            if ($cur_type eq 'e2node' && !$is_nodeshell) {
+                $finding->{writeup_count} = $writeup_counts{$ND->{node_id}} || 0;
+            }
+
+            # Add excerpts for all results in fallback mode
+            if ($cur_type eq 'e2node' && !$is_nodeshell && $excerpt_count < $EXCERPT_COUNT) {
+                my $excerpt = $self->_get_writeup_excerpt($ND->{node_id});
+                if ($excerpt) {
+                    $finding->{excerpt} = $excerpt;
+                    $excerpt_count++;
+                }
+            }
+
+            push @findings, $finding;
+        }
     }
 
     return {
@@ -137,8 +213,13 @@ sub _get_writeup_excerpt {
 
     my $DB = $self->DB;
 
-    # Get first writeup for this e2node
-    my $sql = "SELECT node_id FROM nodegroup WHERE nodegroup_id = ? ORDER BY orderby LIMIT 1";
+    # Get highest-rated writeup for this e2node
+    # Join with node table to get reputation, order by reputation DESC (highest first)
+    my $sql = "SELECT ng.node_id FROM nodegroup ng
+               JOIN node n ON ng.node_id = n.node_id
+               WHERE ng.nodegroup_id = ?
+               ORDER BY n.reputation DESC, ng.orderby ASC
+               LIMIT 1";
     my ($writeup_id) = $DB->{dbh}->selectrow_array($sql, undef, $e2node_id);
 
     return unless $writeup_id;
@@ -149,8 +230,17 @@ sub _get_writeup_excerpt {
 
     my $text = $writeup->{doctext};
 
-    # Strip HTML tags
+    # Replace closing paragraph tags with space to preserve paragraph separation
+    $text =~ s/<\/p>/ /gi;
+
+    # Strip remaining HTML tags
     $text =~ s/<[^>]+>//g;
+
+    # Strip E2 link syntax
+    # Handle pipelinks: [target|display text] -> display text
+    $text =~ s/\[[^\|\]]+\|([^\]]+)\]/$1/g;
+    # Handle regular links: [link text] -> link text
+    $text =~ s/\[([^\]]+)\]/$1/g;
 
     # Decode common HTML entities
     $text =~ s/&nbsp;/ /g;
@@ -173,6 +263,29 @@ sub _get_writeup_excerpt {
     }
 
     return $text;
+}
+
+sub _contains_dirty_word {
+    my ($self, $text) = @_;
+
+    return 0 unless defined $text && $text ne '';
+
+    # Get dirty words from configuration
+    my $badwords = $self->CONF->google_ads_badwords;
+
+    # Normalize text for matching (lowercase)
+    my $normalized_text = lc($text);
+
+    # Check each dirty word
+    foreach my $word (@$badwords) {
+        # Use word boundary matching to avoid false positives
+        # e.g., "assistant" shouldn't match "ass"
+        if ($normalized_text =~ /\b\Q$word\E/i) {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 __PACKAGE__->meta->make_immutable;

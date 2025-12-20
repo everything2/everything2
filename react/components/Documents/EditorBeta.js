@@ -13,6 +13,7 @@ import { E2TextAlign } from '../Editor/E2TextAlignExtension';
 import { RawBracket, convertRawBracketsToEntities } from '../Editor/RawBracketExtension';
 import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
+import PublishModal from './PublishModal';
 import '../Editor/E2Editor.css';
 
 // Inline styles for animations
@@ -299,7 +300,7 @@ const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
  * - Version history popup to view/restore previous versions
  */
 const EditorBeta = ({ data }) => {
-  const { approvedTags, canAccess, username, drafts: initialDrafts, pagination: initialPagination, statuses = [], preferRawHtml } = data || {};
+  const { approvedTags, canAccess, username, drafts: initialDrafts, pagination: initialPagination, statuses = [], preferRawHtml, pageTitle = 'Drafts' } = data || {};
   // Handle null/undefined drafts gracefully
   const safeDrafts = initialDrafts || [];
   const safePagination = initialPagination || { offset: 0, limit: 20, total: 0, has_more: false };
@@ -323,26 +324,20 @@ const EditorBeta = ({ data }) => {
   const [rawHtmlContent, setRawHtmlContent] = useState('');
   const [pagination, setPagination] = useState(safePagination);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
 
   // Refs for autosave
   const autosaveTimerRef = useRef(null);
   const lastSavedContentRef = useRef('');
 
   const defaultContent = `
-    <h2>Welcome to the E2 Editor Beta</h2>
-    <p>This is a <strong>test page</strong> for the new <em>Tiptap-based</em> editor.</p>
-    <p>Try out these features:</p>
-    <ul>
-      <li>Bold, italic, underline, strikethrough</li>
-      <li>Headings (h1-h6)</li>
-      <li>Lists (ordered and unordered)</li>
-      <li>Blockquotes</li>
-      <li>Code blocks</li>
-      <li>Tables</li>
-      <li>E2 links: [Test Node]</li>
-    </ul>
-    <p>The editor enforces E2's approved HTML tags through its schema.</p>
+    <h2>Welcome to Your Drafts</h2>
+    <p>Start writing here, or select an existing draft from the sidebar.</p>
+    <p>Your work is automatically saved as you type.</p>
   `;
+
+  // Track if this is the first focus on the editor with default content
+  const hasEditedRef = useRef(false);
 
   const editor = useEditor({
     extensions: [
@@ -368,6 +363,22 @@ const EditorBeta = ({ data }) => {
       attributes: {
         class: 'e2-editor-content',
         spellcheck: 'true'
+      },
+      handleDOMEvents: {
+        focus: (view) => {
+          // Clear default content on first focus if no draft is selected
+          if (!hasEditedRef.current && !selectedDraft) {
+            const currentHtml = view.state.doc.textContent;
+            // Check if content matches the default welcome text
+            if (currentHtml.includes('Welcome to Your Drafts')) {
+              view.dispatch(
+                view.state.tr.delete(0, view.state.doc.content.size)
+              );
+              hasEditedRef.current = true;
+            }
+          }
+          return false; // Don't prevent default
+        }
       }
     }
   });
@@ -533,6 +544,7 @@ const EditorBeta = ({ data }) => {
     setLastSaveTime(null);
     setLastSaveType(null);
     lastSavedContentRef.current = '';
+    hasEditedRef.current = false; // Reset so welcome text clears on focus again
   }, [editor, defaultContent]);
 
   // Save draft (create or update) - manual save
@@ -682,8 +694,8 @@ const EditorBeta = ({ data }) => {
   if (!canAccess) {
     return (
       <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-        <h1>E2 Editor Beta</h1>
-        <p style={{ color: '#c75050' }}>Please log in to use the editor beta.</p>
+        <h1>{pageTitle}</h1>
+        <p style={{ color: '#c75050' }}>Please log in to use the drafts editor.</p>
       </div>
     );
   }
@@ -715,6 +727,18 @@ const EditorBeta = ({ data }) => {
           nodeId={selectedDraft.node_id}
           onClose={() => setShowVersionHistory(false)}
           onRestore={handleVersionRestore}
+        />
+      )}
+
+      {/* Publish Modal */}
+      {showPublishModal && selectedDraft && (
+        <PublishModal
+          draft={selectedDraft}
+          onSuccess={(data) => {
+            // Handle successful publication
+            console.log('Published successfully:', data);
+          }}
+          onClose={() => setShowPublishModal(false)}
         />
       )}
 
@@ -810,7 +834,7 @@ const EditorBeta = ({ data }) => {
         {/* Header with mode toggle in upper right */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
           <div>
-            <h1 style={{ marginBottom: '10px' }}>E2 Editor Beta</h1>
+            <h1 style={{ marginBottom: '10px' }}>{pageTitle}</h1>
             <p style={{ color: '#507898', marginBottom: '0' }}>
               Hello, {username}!
             </p>
@@ -886,9 +910,7 @@ const EditorBeta = ({ data }) => {
               width: '100%',
               minHeight: '400px',
               padding: '12px',
-              backgroundColor: '#1e1e1e',
-              color: '#d4d4d4',
-              border: '1px solid #38495e',
+              border: '1px solid #ccc',
               borderRadius: '4px',
               fontFamily: 'monospace',
               fontSize: '13px',
@@ -1005,8 +1027,34 @@ const EditorBeta = ({ data }) => {
             >
               {saving ? 'Saving...' : (selectedDraft ? 'Save' : 'Create Draft')}
             </button>
+
           </div>
         </div>
+
+        {/* Publish section - only visible when editing a saved draft */}
+        {selectedDraft && (
+          <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #eee' }}>
+            <button
+              onClick={() => setShowPublishModal(true)}
+              disabled={saving}
+              style={{
+                padding: '8px 20px',
+                backgroundColor: saving ? '#999' : '#4060b0',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: saving ? 'wait' : 'pointer',
+                fontSize: '14px',
+                fontWeight: '500'
+              }}
+            >
+              Publish...
+            </button>
+            <span style={{ marginLeft: '10px', fontSize: '12px', color: '#888' }}>
+              Ready to publish this draft as a writeup
+            </span>
+          </div>
+        )}
 
         {/* Preview pane - client-side rendered with E2 links */}
         {showPreview && (
@@ -1071,14 +1119,13 @@ const EditorBeta = ({ data }) => {
                   width: '100%',
                   minHeight: '250px',
                   padding: '12px',
-                  backgroundColor: '#1e1e1e',
-                  color: '#d4d4d4',
+                  border: '1px solid #ccc',
                   borderRadius: '4px',
-                  border: 'none',
                   fontFamily: 'monospace',
                   fontSize: '12px',
                   lineHeight: '1.5',
-                  resize: 'vertical'
+                  resize: 'vertical',
+                  boxSizing: 'border-box'
                 }}
                 onClick={(e) => e.target.select()}
               />

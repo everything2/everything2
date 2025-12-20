@@ -24,10 +24,40 @@ sub display {
         is_editor            => $user->is_editor ? 1 : 0,
         can_vote             => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1 : 0,
         can_cool             => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1 : 0,
+        coolsleft            => $user->coolsleft || 0,
         votesafety           => int($VARS->{votesafety} || 0),
         coolsafety           => int($VARS->{coolsafety} || 0),
         info_authorsince_off => int($VARS->{info_authorsince_off} || 0)
     };
+
+    # Check if user has an existing draft for this e2node title
+    my $existing_draft;
+    if ( !$user->is_guest ) {
+        my $DB         = $self->DB;
+        my $draft_type = $DB->getType('draft');
+        if ($draft_type) {
+            my $draft_row = $DB->{dbh}->selectrow_hashref(
+                q|SELECT node.node_id, node.title, document.doctext
+                  FROM node
+                  JOIN document ON document.document_id = node.node_id
+                  WHERE node.title = ?
+                  AND node.type_nodetype = ?
+                  AND node.author_user = ?
+                  LIMIT 1|,
+                {},
+                $node->title,
+                $draft_type->{node_id},
+                $user->node_id
+            );
+            if ($draft_row) {
+                $existing_draft = {
+                    node_id => $draft_row->{node_id},
+                    title   => $draft_row->{title},
+                    doctext => $draft_row->{doctext} // ''
+                };
+            }
+        }
+    }
 
     # Build contentData for React
     my $content_data = {
@@ -35,6 +65,9 @@ sub display {
         e2node => $e2node,
         user   => $user_data
     };
+
+    # Add existing draft if found
+    $content_data->{existing_draft} = $existing_draft if $existing_draft;
 
     # Set node on REQUEST for buildNodeInfoStructure
     $REQUEST->node($node);

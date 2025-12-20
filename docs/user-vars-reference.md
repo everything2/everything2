@@ -49,8 +49,11 @@ $user->set_vars($VARS);
 | `textareaSize` | 0/1/2 | Writeup editor size (small/medium/large) | htmlcode.pm |
 | `num_newwus` | 1-40 | Number of new writeups to show (default: 15) | Application.pm |
 | `noquickvote` | Boolean | Disable AJAX quick voting | Controller.pm, Application.pm |
+| `nullvote` | Boolean | **DEPRECATED** Allow casting null votes (weight=0) that don't affect reputation. Originally for old browser compatibility, obsolete now that vote swapping is supported. | htmlcode.pm, preferences.pm |
 | `nonodeletcollapser` | Boolean | Disable nodelet collapse buttons | Controller.pm, Application.pm |
 | `nosocialbookmarking` | Boolean | Disable social sharing buttons | document.pm |
+| `noSoftLinks` | Boolean | Hide softlinks from e2node and writeup pages | Node/e2node.pm, htmlcode.pm |
+| `nogradlinks` | Boolean | **SEMI-DEPRECATED** Disable gradient backgrounds on softlinks. Virtual default in Kernel Blue theme (CSS provides solid background). May still be needed for alternate themes that don't override softlink backgrounds. No UI to set this preference. | htmlcode.pm |
 | `hidenodeshells` | Boolean | Hide nodeshell (incomplete) nodes | Application.pm |
 
 ### Writeup Display Format
@@ -60,7 +63,7 @@ $user->set_vars($VARS);
 | `wuhead` | Format codes | Metadata displayed above writeups (c:type,c:author,etc.) | document.pm |
 | `wufoot` | Format codes | Metadata displayed below writeups | document.pm |
 | `nokillpopup` | Boolean | Suppress popup when killing writeups | opcode.pm |
-| `anonymousvote` | 0/1/2 | Voting anonymity (0=show, 1=hide, 2=hide with link) | htmlcode.pm |
+| `anonymousvote` | 0/1/2 | Anti-bias voting: Hide author name until after voting (0=always show, 1=hide until voted, 2=hide with clickable link) | htmlcode.pm, preferences.pm |
 
 ### Time & Localization
 
@@ -206,6 +209,8 @@ These keys are no longer used and can be cleaned up from user settings:
 |-----|--------|-------|--------------|
 | `killfloor_showlinks` | **DEPRECATED** | Add HTML links in killing floor display for copy/paste. The killing floor mechanism is no longer used. | 2025-12-07 |
 | `noreplacevotebuttons` | **DEPRECATED** | Toggle between +/- and Up/Down voting buttons. React WriteupDisplay now uses modern caret icons exclusively - the setting has no effect. | 2025-12-15 |
+| `nullvote` | **DEPRECATED** | Allow casting null votes (weight=0) for old browser compatibility. Vote swapping now allows users to freely change votes without needing null votes. | 2025-12-18 |
+| `nogradlinks` | **SEMI-DEPRECATED** | Disable gradient backgrounds on softlinks. React E2NodeDisplay removed gradient code - Kernel Blue CSS provides solid background (#f8f9f9). Setting may still be needed for alternate themes. No UI to set this preference. | 2025-12-18 |
 
 ### Removed in 2025-11 (Nodelet Migration)
 

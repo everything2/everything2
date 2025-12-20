@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import LinkNode from './LinkNode'
 
 /**
- * AdminModal - Modal dialog for admin/editor tools on writeups
+ * AdminModal - Modal dialog for writeup tools
  *
  * Shows different options based on user permissions:
- * - Authors: Remove writeup (return to draft)
- * - Editors: Hide/unhide, insure, remove, reparent, change author, nodenotes
+ * - Authors: Edit writeup, Remove writeup (return to draft)
+ * - Editors: Edit, Hide/unhide, insure, remove, reparent, change author, nodenotes
  *
  * Usage:
  *   <AdminModal
@@ -14,41 +14,60 @@ import LinkNode from './LinkNode'
  *     user={userData}
  *     isOpen={boolean}
  *     onClose={() => setIsOpen(false)}
+ *     onWriteupUpdate={(updatedWriteup) => {}} // Optional callback when writeup state changes
+ *     onEdit={() => {}} // Optional callback to trigger edit mode
  *   />
  */
-const AdminModal = ({ writeup, user, isOpen, onClose }) => {
+const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit }) => {
   const [removeReason, setRemoveReason] = useState('')
   const [actionStatus, setActionStatus] = useState(null)
+  const [isInsured, setIsInsured] = useState(writeup?.insured || false)
+  const [isHidden, setIsHidden] = useState(writeup?.notnew || false)
 
   if (!isOpen || !writeup) return null
 
-  const isEditor = user?.is_editor
-  const isAuthor = user?.node_id === writeup.author?.node_id
-  const isHidden = writeup.notnew
+  // Use !! to ensure boolean (not 0)
+  const isEditor = !!(user?.editor || user?.is_editor)
+  const isAdmin = !!(user?.admin || user?.is_admin)
+  // Use String() to handle type mismatch between number and string node_id
+  const isAuthor = !!(user && writeup.author && String(user.node_id) === String(writeup.author.node_id))
+  const hasVoted = writeup.vote !== undefined && writeup.vote !== null
+  const hasCooled = writeup.cools && writeup.cools.some(c => String(c.node_id) === String(user?.node_id))
 
   // Close on backdrop click
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      onClose()
+      handleClose()
     }
+  }
+
+  // Handle close - clears action status to prevent stale confirmation messages
+  const handleClose = () => {
+    setActionStatus(null)
+    onClose()
   }
 
   // Handle hide/unhide writeup
   const handleToggleHide = async () => {
-    const op = isHidden ? 'unhidewriteup' : 'hidewriteup'
+    const action = isHidden ? 'show' : 'hide'
     try {
-      const response = await fetch('/api/admin/writeup', {
+      const response = await fetch(`/api/hidewriteups/${writeup.node_id}/action/${action}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          op,
-          writeup_id: writeup.node_id
-        })
+        headers: { 'Content-Type': 'application/json' }
       })
       const data = await response.json()
-      if (data.success) {
-        setActionStatus({ type: 'success', message: `Writeup ${isHidden ? 'unhidden' : 'hidden'}` })
-        setTimeout(() => window.location.reload(), 1000)
+      if (data.node_id) {
+        const newHiddenState = data.notnew
+        setIsHidden(newHiddenState)
+        setActionStatus({
+          type: 'success',
+          message: newHiddenState ? 'Writeup hidden' : 'Writeup unhidden'
+        })
+
+        // Notify parent component of the update
+        if (onWriteupUpdate) {
+          onWriteupUpdate({ ...writeup, notnew: newHiddenState })
+        }
       } else {
         setActionStatus({ type: 'error', message: data.error || 'Action failed' })
       }
@@ -64,12 +83,10 @@ const AdminModal = ({ writeup, user, isOpen, onClose }) => {
       return
     }
     try {
-      const response = await fetch('/api/admin/writeup', {
+      const response = await fetch(`/api/admin/writeup/${writeup.node_id}/remove`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          op: 'remove',
-          writeup_id: writeup.node_id,
           reason: removeReason
         })
       })
@@ -85,23 +102,91 @@ const AdminModal = ({ writeup, user, isOpen, onClose }) => {
     }
   }
 
-  // Handle insure writeup
+  // Handle insure/uninsure writeup
   const handleInsure = async () => {
     try {
-      const response = await fetch('/api/admin/writeup', {
+      const response = await fetch(`/api/admin/writeup/${writeup.node_id}/insure`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          op: 'insure',
-          writeup_id: writeup.node_id
-        })
+        headers: { 'Content-Type': 'application/json' }
       })
       const data = await response.json()
       if (data.success) {
-        setActionStatus({ type: 'success', message: 'Writeup insured' })
-        setTimeout(() => window.location.reload(), 1000)
+        const newInsuredState = data.action === 'insured'
+        setIsInsured(newInsuredState)
+        setActionStatus({
+          type: 'success',
+          message: data.action === 'insured' ? 'Writeup insured' : 'Writeup uninsured'
+        })
+
+        // Notify parent component of the update
+        if (onWriteupUpdate) {
+          const updatedWriteup = {
+            ...writeup,
+            insured: newInsuredState,
+            insured_by: newInsuredState ? data.insured_by : null
+          }
+          onWriteupUpdate(updatedWriteup)
+        }
       } else {
-        setActionStatus({ type: 'error', message: data.error || 'Insure failed' })
+        setActionStatus({ type: 'error', message: data.error || 'Action failed' })
+      }
+    } catch (error) {
+      setActionStatus({ type: 'error', message: error.message })
+    }
+  }
+
+  // Handle remove vote (admin testing only)
+  const handleRemoveVote = async () => {
+    try {
+      const response = await fetch(`/api/admin/writeup/${writeup.node_id}/remove_vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const data = await response.json()
+      if (data.success) {
+        setActionStatus({ type: 'success', message: 'Vote removed' })
+
+        // Notify parent component to update vote state
+        if (onWriteupUpdate) {
+          const updatedWriteup = {
+            ...writeup,
+            vote: null,
+            reputation: (writeup.reputation || 0) - data.vote_removed,
+            upvotes: data.vote_removed === 1 ? (writeup.upvotes || 0) - 1 : writeup.upvotes,
+            downvotes: data.vote_removed === -1 ? (writeup.downvotes || 0) - 1 : writeup.downvotes
+          }
+          onWriteupUpdate(updatedWriteup)
+        }
+      } else {
+        setActionStatus({ type: 'error', message: data.error || 'Remove vote failed' })
+      }
+    } catch (error) {
+      setActionStatus({ type: 'error', message: error.message })
+    }
+  }
+
+  // Handle remove C! (admin testing only)
+  const handleRemoveCool = async () => {
+    try {
+      const response = await fetch(`/api/admin/writeup/${writeup.node_id}/remove_cool`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const data = await response.json()
+      if (data.success) {
+        setActionStatus({ type: 'success', message: 'C! removed' })
+
+        // Notify parent component to update cool state
+        if (onWriteupUpdate) {
+          const updatedCools = (writeup.cools || []).filter(c => String(c.node_id) !== String(user.node_id))
+          const updatedWriteup = {
+            ...writeup,
+            cools: updatedCools
+          }
+          onWriteupUpdate(updatedWriteup)
+        }
+      } else {
+        setActionStatus({ type: 'error', message: data.error || 'Remove C! failed' })
       }
     } catch (error) {
       setActionStatus({ type: 'error', message: error.message })
@@ -112,8 +197,8 @@ const AdminModal = ({ writeup, user, isOpen, onClose }) => {
     <div className="admin-modal-backdrop" onClick={handleBackdropClick} style={styles.backdrop}>
       <div className="admin-modal" style={styles.modal}>
         <div className="admin-modal-header" style={styles.header}>
-          <h3 style={styles.title}>Admin Tools</h3>
-          <button onClick={onClose} style={styles.closeButton}>&times;</button>
+          <h3 style={styles.title}>Writeup Tools</h3>
+          <button onClick={handleClose} style={styles.closeButton}>&times;</button>
         </div>
 
         <div className="admin-modal-content" style={styles.content}>
@@ -135,12 +220,45 @@ const AdminModal = ({ writeup, user, isOpen, onClose }) => {
               <span> by <LinkNode type="user" title={writeup.author.title} /></span>
             )}
             <div style={styles.statusBadge}>
-              Status: {isHidden ? 'Hidden' : 'Published'}
-              {writeup.insured && ' · Insured'}
+              Status: Published
+              {isHidden && ' · Hidden'}
+              {isInsured && ' · Insured'}
             </div>
           </div>
 
-          <hr style={styles.divider} />
+          {/* Edit section - for authors and editors */}
+          {(isAuthor || isEditor) && (
+            <div style={styles.section}>
+              {onEdit ? (
+                <button
+                  onClick={() => {
+                    handleClose()
+                    onEdit()
+                  }}
+                  style={styles.actionButton}
+                >
+                  Edit writeup
+                </button>
+              ) : (
+                <a
+                  href={`/node/${writeup.node_id}`}
+                  style={styles.linkButton}
+                  onClick={(e) => {
+                    // If we're already on this writeup page, just close modal
+                    // The edit icon is visible on the page
+                    if (window.location.pathname.includes(`/node/${writeup.node_id}`)) {
+                      e.preventDefault()
+                      handleClose()
+                      // Scroll to top where edit button is
+                      window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }
+                  }}
+                >
+                  Edit writeup
+                </a>
+              )}
+            </div>
+          )}
 
           {/* Editor actions */}
           {isEditor && (
@@ -151,11 +269,9 @@ const AdminModal = ({ writeup, user, isOpen, onClose }) => {
                 {isHidden ? 'Unhide' : 'Hide'} writeup
               </button>
 
-              {!writeup.insured && (
-                <button onClick={handleInsure} style={styles.actionButton}>
-                  Insure writeup
-                </button>
-              )}
+              <button onClick={handleInsure} style={styles.actionButton}>
+                {isInsured ? 'Uninsure' : 'Insure'} writeup
+              </button>
 
               <a
                 href={`/node/oppressor_superdoc/Magical Writeup Reparenter?old_writeup_id=${writeup.node_id}`}
@@ -173,8 +289,8 @@ const AdminModal = ({ writeup, user, isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Remove section - available to authors and editors */}
-          {(isEditor || isAuthor) && (
+          {/* Remove section - only show if writeup is not insured */}
+          {!isInsured && (isEditor || isAuthor) && (
             <div style={styles.section}>
               <h4 style={styles.sectionTitle}>
                 {isAuthor && !isEditor ? 'Remove Writeup' : 'Remove'}
@@ -201,6 +317,25 @@ const AdminModal = ({ writeup, user, isOpen, onClose }) => {
                 <p style={styles.helpText}>
                   This will unpublish your writeup and return it to draft status.
                 </p>
+              )}
+            </div>
+          )}
+
+          {/* Admin tools */}
+          {isAdmin && (hasVoted || hasCooled) && (
+            <div style={styles.section}>
+              <h4 style={styles.sectionTitle}>Admin Tools</h4>
+
+              {hasVoted && (
+                <button onClick={handleRemoveVote} style={styles.actionButton}>
+                  Remove my vote
+                </button>
+              )}
+
+              {hasCooled && (
+                <button onClick={handleRemoveCool} style={styles.actionButton}>
+                  Remove my C!
+                </button>
               )}
             </div>
           )}
@@ -326,6 +461,35 @@ const styles = {
     fontSize: '12px',
     boxSizing: 'border-box',
     fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif'
+  },
+  inputDisabled: {
+    backgroundColor: '#f0f0f0',
+    color: '#999',
+    cursor: 'not-allowed'
+  },
+  buttonDisabled: {
+    backgroundColor: '#f0f0f0',
+    color: '#999',
+    borderColor: '#ccc',
+    cursor: 'not-allowed',
+    opacity: 0.6
+  },
+  warningBox: {
+    padding: '8px',
+    marginBottom: '8px',
+    backgroundColor: '#fff3cd',
+    border: '1px solid #ffc107',
+    borderRadius: '3px',
+    fontSize: '12px',
+    color: '#856404',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+  },
+  warningIcon: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#dc3545'
   },
   helpText: {
     fontSize: '11px',

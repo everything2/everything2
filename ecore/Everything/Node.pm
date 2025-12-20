@@ -89,7 +89,15 @@ sub json_display
 {
   my $self = shift;
   my $values = $self->json_reference(@_);
-  $values->{author} = $self->author->json_reference;
+
+  # Handle missing/deleted authors gracefully
+  my $author = $self->author;
+  if ($author && $author->can('json_reference')) {
+    $values->{author} = $author->json_reference;
+  } else {
+    $values->{author} = undef;
+  }
+
   $values->{createtime} = $self->APP->iso_date_format($self->createtime);
 
   return $values;

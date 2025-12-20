@@ -2,6 +2,7 @@
 
 use lib qw(/var/libraries/lib/perl5);
 use strict;
+$| = 1;  # Autoflush STDOUT
 use File::Basename;
 use Cwd 'abs_path';
 use TAP::Harness;
@@ -22,7 +23,7 @@ print "Running tests with $parallel_jobs parallel jobs (detected $num_cores core
 
 my $testfiles;
 my $dirname = dirname(abs_path($0));
-my $wanted = sub {$testfiles->{$_}=1 if /\.t$/ and not /\legacy\//};
+my $wanted = sub {$testfiles->{$File::Find::name}=1 if /\.t$/ and not /\legacy\//};
 
 find({wanted => $wanted, no_chdir => 1}, $dirname);
 
@@ -30,14 +31,16 @@ find({wanted => $wanted, no_chdir => 1}, $dirname);
 # These tests delete/modify global data (public messages, etc.) and cause race conditions
 # Also includes tests that share user accounts (normaluser1, normaluser2) to avoid session conflicts
 my %serial_tests = (
+    "$dirname/004_usergroups.t" => 1,     # Creates/modifies usergroups (conflicts with message tests)
     "$dirname/008_e2nodes.t" => 1,        # Uses normaluser1/normaluser2, creates/deletes nodes
     "$dirname/009_writeups.t" => 1,       # Uses normaluser1/normaluser2, creates/deletes writeups
-    "$dirname/042_message_opcode.t" => 1, # Modifies message table
-    "$dirname/041_online_only_messages.t" => 1, # Modifies message table, creates usergroups
-    "$dirname/043_chatter_api.t" => 1,    # Modifies message table (public chatter)
-    "$dirname/044_message_outbox.t" => 1, # Modifies message table (outbox entries)
-    "$dirname/046_message_ignores_delivery.t" => 1, # Modifies messageignore table (root/guest user)
-    "$dirname/047_message_block_notifications.t" => 1, # Modifies messageignore table (root/guest user)
+    "$dirname/036_online_only_messages.t" => 1, # Modifies message table, creates usergroups
+    "$dirname/037_message_opcode.t" => 1, # Modifies message table
+    "$dirname/038_chatter_api.t" => 1,    # Modifies message table (public chatter)
+    "$dirname/039_message_outbox.t" => 1, # Modifies message table (outbox entries)
+    "$dirname/042_usergroup_messages.t" => 1, # Modifies message table, creates usergroups
+    "$dirname/043_message_ignores_delivery.t" => 1, # Modifies messageignore table (root/guest user), creates usergroups
+    "$dirname/044_message_block_notifications.t" => 1, # Modifies messageignore table (root/guest user)
 );
 
 # Separate serial and parallel tests
@@ -46,13 +49,24 @@ my @parallel = grep { !$serial_tests{$_} } sort {$a cmp $b} keys %$testfiles;
 
 my $total_errors = 0;
 
+# Detect if Devel::Cover is loaded and prepare coverage options for child processes
+my @coverage_switches;
+if ($INC{'Devel/Cover.pm'}) {
+    # Devel::Cover is loaded, propagate it to test subprocesses
+    my $cover_db = $ENV{DEVEL_COVER_DB_FORMAT} || '/var/everything/coverage/cover_db';
+    push @coverage_switches,
+        '-MDevel::Cover=-db,' . $cover_db .
+        ',-ignore,^/var/everything/t/,-ignore,^/var/libraries/,-silent,1';
+}
+
 # Run serial tests first (sequentially)
 if (@serial) {
     print "\n--- Running " . scalar(@serial) . " tests serially (shared database state) ---\n";
     my $serial_harness = TAP::Harness->new({
         jobs => 1,
         verbosity => -1,  # -1 = quiet (only show summary), 0 = normal, 1 = verbose
-        lib => ['/var/libraries/lib/perl5'],
+        lib => ['/var/libraries/lib/perl5', '/var/everything/ecore'],
+        (@coverage_switches ? (switches => \@coverage_switches) : ()),
     });
     my $serial_result = $serial_harness->runtests(@serial);
     $total_errors += $serial_result->has_errors ? 1 : 0;
@@ -64,7 +78,8 @@ if (@parallel) {
     my $parallel_harness = TAP::Harness->new({
         jobs => $parallel_jobs,
         verbosity => -1,  # -1 = quiet (only show summary), 0 = normal, 1 = verbose
-        lib => ['/var/libraries/lib/perl5'],
+        lib => ['/var/libraries/lib/perl5', '/var/everything/ecore'],
+        (@coverage_switches ? (switches => \@coverage_switches) : ()),
     });
     my $parallel_result = $parallel_harness->runtests(@parallel);
     $total_errors += $parallel_result->has_errors ? 1 : 0;

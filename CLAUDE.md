@@ -7,13 +7,23 @@ Context for AI assistants working on the Everything2 codebase.
 
 ## ⚠️ CRITICAL: Common Pitfalls ⚠️
 
-### 🚫 DO NOT USE CURL FOR AUTHENTICATED REQUESTS
+### 🚫 DO NOT USE CURL FOR HTML TESTING
 
-Use `browser-debug.js` for all authenticated page fetching:
+**CRITICAL**: curl cannot render React components - it only shows server-generated HTML. Since E2 renders pages client-side with React, curl will NOT show the actual UI that users see.
+
+**Always use `browser-debug.js` for testing HTML output**:
 ```bash
+# For guest (unauthenticated) users
+node tools/browser-debug.js html guest 'http://localhost:9080/node/good%20poetry'
+
+# For authenticated users
 node tools/browser-debug.js html e2e_admin 'http://localhost:9080/title/Superbless'
-node tools/browser-debug.js fetch e2e_admin 'http://localhost:9080/title/Settings'
+node tools/browser-debug.js fetch e2e_user 'http://localhost:9080/title/Settings'
 ```
+
+**curl is ONLY acceptable for**:
+- Liveness checks (is Apache responding?)
+- API endpoint testing (JSON responses)
 
 **Test users**: root (gods, pw:blah), genericdev (edev, pw:blah), e2e_admin (gods, pw:test123), e2e_user (pw:test123)
 

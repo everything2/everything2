@@ -45,6 +45,12 @@ sub route_node
 
   my $node = $self->APP->node_by_id($NODE->{node_id});
 
+  # Handle case where node_by_id returns undef (e.g., no blessed Node class available)
+  unless ($node) {
+    $self->devLog("route_node: node_by_id returned undef for node_id $NODE->{node_id}, falling back to unblessed node");
+    return;
+  }
+
   # Preserve the 'group' field if it exists (used for duplicates_found page)
   if (exists $NODE->{group}) {
     $node->NODEDATA->{group} = $NODE->{group};

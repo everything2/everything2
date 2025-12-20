@@ -7,6 +7,7 @@
 #   ./docker/devbuild.sh --db-only # Build only database container
 #   ./docker/devbuild.sh --app-only # Build only application container
 #   ./docker/devbuild.sh --skip-tests # Build app but skip all tests (faster)
+#   ./docker/devbuild.sh --coverage # Run full build with tests and code coverage
 #   ./docker/devbuild.sh --clean   # Clean all containers, images, and network
 #
 # Build Dependencies:
@@ -80,6 +81,7 @@ BUILD_APP=false
 FORCE_REBUILD=false
 CLEAN_ONLY=false
 SKIP_TESTS=false
+RUN_COVERAGE=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -103,9 +105,13 @@ while [[ $# -gt 0 ]]; do
       SKIP_TESTS=true
       shift
       ;;
+    --coverage)
+      RUN_COVERAGE=true
+      shift
+      ;;
     *)
       echo "Unknown option: $1"
-      echo "Usage: $0 [--db-only] [--app-only] [--skip-tests] [--force] [--clean]"
+      echo "Usage: $0 [--db-only] [--app-only] [--skip-tests] [--coverage] [--force] [--clean]"
       exit 1
       ;;
   esac
@@ -288,6 +294,23 @@ if [ "$BUILD_APP" = true ]; then
       echo ""
       echo "To re-run tests: ./tools/parallel-test.sh"
       exit 1
+    fi
+
+    # Generate coverage reports and badges if --coverage flag provided
+    if [ "$RUN_COVERAGE" = true ]; then
+      echo ""
+      echo "========================================="
+      echo "Generating coverage reports..."
+      echo "========================================="
+
+      # Clean previous coverage data first
+      $SCRIPT_DIR/../tools/coverage.sh clean 2>&1 | log_and_display
+
+      # Run coverage analysis
+      $SCRIPT_DIR/../tools/coverage.sh 2>&1 | log_and_display
+
+      # Generate coverage badges
+      $SCRIPT_DIR/../tools/generate-coverage-badges.sh 2>&1 | log_and_display
     fi
   else
     echo ""

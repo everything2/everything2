@@ -1044,6 +1044,43 @@ function Settings({ data }) {
       {/* Advanced tab */}
       {activeTab === 'advanced' && (
         <div>
+          <h2 style={{ marginBottom: '16px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+            Theme
+          </h2>
+
+          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
+            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Site Theme / Stylesheet</legend>
+            <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+              Choose your site theme. More themes are available at <a href="/title/The%20Catwalk" style={{ color: '#4060b0' }}>The Catwalk</a>.
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <select
+                value={settingsPrefs.userstyle || data.defaultStylesheetId || ''}
+                onChange={(e) => handlePrefChange('userstyle', e.target.value)}
+                style={{
+                  padding: '8px 12px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  minWidth: '200px'
+                }}
+              >
+                {(data.availableStylesheets || []).map(style => (
+                  <option key={style.node_id} value={style.node_id}>
+                    {style.title}
+                  </option>
+                ))}
+              </select>
+
+              {data.currentStylesheet && (
+                <span style={{ fontSize: '13px', color: '#507898' }}>
+                  Current: <strong>{data.currentStylesheet}</strong>
+                </span>
+              )}
+            </div>
+          </fieldset>
+
           <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
             Page Display
           </h2>

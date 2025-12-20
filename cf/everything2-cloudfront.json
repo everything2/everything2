@@ -136,6 +136,14 @@
               "ManagedRuleGroupStatement": {
                 "VendorName": "AWS",
                 "Name": "AWSManagedRulesCommonRuleSet",
+                "RuleActionOverrides": [
+                  {
+                    "Name": "SizeRestrictions_BODY",
+                    "ActionToUse": {
+                      "Count": {}
+                    }
+                  }
+                ],
                 "ScopeDownStatement": {
                   "NotStatement": {
                     "Statement": {

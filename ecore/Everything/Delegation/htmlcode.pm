@@ -7805,7 +7805,7 @@ sub xmlwriteup
   my $au = getNodeById($$wu{author_user});
   $str.="<author user_id=\"$$au{node_id}\">".$APP->encodeHTML($$au{title})."</author>\n";
   $str.="<doctext>";
-  $str.=$APP->encodeHTML(($query->param('links_noparse') == 1)?($$wu{doctext}):(parseLinks($$wu{doctext}))) unless($query->param("no_doctext"));
+  $str.=$APP->encodeHTML((($query->param('links_noparse') || 0) == 1)?($$wu{doctext}):(parseLinks($$wu{doctext}))) unless($query->param("no_doctext"));
   $str.="</doctext>\n";
   $str.="</writeup>\n";
   return $str;
@@ -10258,7 +10258,19 @@ sub page_actions
 
   my $c = undef;
   my @actions = () ;
-  push @actions , $c if $APP->can_edcool($NODE) and $c = htmlcode('coolit','') ;
+
+  # Editor cool button (editors only, for e2node/superdoc/document types)
+  my $ntypet = $$NODE{type}{title};
+  if ($APP->isEditor($USER) && ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document')) {
+    # Check if node is already editor cooled
+    my $is_cooled = $PAGELOAD->{edcoollink} ? 1 : 0;
+    my $node_id = $$NODE{node_id};
+
+    my $color = $is_cooled ? '#f4d03f' : '#999';
+    my $title_text = $is_cooled ? 'Remove editor cool' : 'Add editor cool (endorsement)';
+
+    push @actions, qq{<button onclick="window.toggleEditorCool && window.toggleEditorCool($node_id, this)" style="background: none; border: none; cursor: pointer; padding: 0; color: $color; font-size: 16px;" title="$title_text" data-cooled="$is_cooled">&#9733;</button>};
+  }
 
   if ($$NODE{type}{title} eq 'user')
   {
@@ -10272,7 +10284,24 @@ sub page_actions
     push @actions , $favorite_noder if($favorite_noder);
   }
 
-  my $bookmark_add = ""; $bookmark_add = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) if $APP->can_bookmark($NODE);
+  # Bookmark button (all logged-in users)
+  my $bookmark_add = "";
+  if ($APP->can_bookmark($NODE)) {
+    my $bookmark_type = $DB->getNode('bookmark', 'linktype');
+    my $is_bookmarked = 0;
+    if ($bookmark_type) {
+      my $link = $DB->sqlSelectHashref('*', 'links',
+        "from_node=$$USER{node_id} AND to_node=$$NODE{node_id} AND linktype=" . $bookmark_type->{node_id});
+      $is_bookmarked = $link ? 1 : 0;
+    }
+
+    my $node_id = $$NODE{node_id};
+    my $bookmark_color = $is_bookmarked ? '#4060b0' : '#999';
+    my $bookmark_title = $is_bookmarked ? 'Remove bookmark' : 'Bookmark this page';
+    my $bookmark_icon = $is_bookmarked ? '&#128278;' : '&#128279;';  # Filled vs outline bookmark
+
+    $bookmark_add = qq{<button onclick="window.toggleBookmark && window.toggleBookmark($node_id, this)" style="background: none; border: none; cursor: pointer; padding: 0; color: $bookmark_color; font-size: 16px;" title="$bookmark_title" data-bookmarked="$is_bookmarked">$bookmark_icon</button>};
+  }
   my $categoryform = ""; $categoryform = htmlcode( 'categoryform' ) if $APP->can_category_add($NODE) ;
   my $w = ""; $w = htmlcode( 'weblogform' ) if($$NODE{type}{sqltablelist} =~ /document/ and $$VARS{can_weblog} and $APP->can_weblog($NODE));
 
@@ -12408,7 +12437,7 @@ sub unpublishwriteup
     , reason => $reason
     , %editor});
 
-  $reason = ": $reason" if $reason;
+  $reason = defined($reason) && $reason ? ": $reason" : '';
   htmlcode('addNodenote', $wu, "Removed by $remover$reason");
 
   my $author = getNodeById($$wu{author_user});
@@ -13110,13 +13139,17 @@ sub frontpage_news
   my $APP = shift;
 
   my $str = qq|<div class="weblog">|;
-  
-  my $fpnews = $DB->stashData("frontpagenews");
 
+  my $fpnews = $DB->stashData("frontpagenews");
   my $newsnodes = [];
-  foreach my $N(@$fpnews)
-  {
-    push @$newsnodes, $DB->getNodeById($N->{to_node});
+
+  # stashData may return undef, a scalar, or an arrayref - normalize it
+  if (defined $fpnews) {
+    $fpnews = [$fpnews] unless ref($fpnews) eq 'ARRAY';
+    foreach my $N(@$fpnews)
+    {
+      push @$newsnodes, $DB->getNodeById($N->{to_node});
+    }
   }
 
   my %weblogspecials = ();
@@ -13149,11 +13182,16 @@ sub frontpage_altcontent
   my $APP = shift;
 
   my $str = qq|<div class="cotc">|;
-  my $fpcontent = $DB->stashData("altfrontpagecontent") || [];
+  my $fpcontent = $DB->stashData("altfrontpagecontent");
   my $content = [];
-  foreach my $N(@$fpcontent)
-  {
-    push @$content, $DB->getNodeById($N);
+
+  # stashData may return undef, a scalar, or an arrayref - normalize it
+  if (defined $fpcontent) {
+    $fpcontent = [$fpcontent] unless ref($fpcontent) eq 'ARRAY';
+    foreach my $N(@$fpcontent)
+    {
+      push @$content, $DB->getNodeById($N);
+    }
   }
 
   $str .= htmlcode("show content", $content, 'parenttitle, type, byline,1024-512');

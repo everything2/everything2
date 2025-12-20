@@ -1,9 +1,12 @@
 .DS_Store
 local/**
 
-# Code coverage reports
-coverage/
-cover_db/
+# Code coverage reports (ignore generated data, keep badges and markdown reports)
+coverage/cover_db/
+coverage/html/
+coverage/react/
+!coverage/badges/
+!coverage/*.md
 
 # Playwright E2E test outputs
 test-results/

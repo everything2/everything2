@@ -1,6 +1,6 @@
 # Everything2 Quick Reference
 
-**Date:** 2025-11-07
+**Date:** 2025-12-17
 
 ## 🚀 Quick Start
 
@@ -22,7 +22,8 @@ git push origin master                  # Automatic deploy
 ./tools/shell.sh                        # Get bash shell in container
 
 # Code quality
-CRITIC_FULL=1 ./tools/critic.pl .      # Perl::Critic check
+./tools/critic.pl ecore/File.pm         # Check single file (bugs theme)
+CRITIC_FULL=1 ./tools/critic.pl .       # Full check (core theme)
 
 # Dependency management
 carton install && carton bundle         # Install and vendor Perl deps
@@ -32,21 +33,24 @@ npm run build                          # Build React
 
 ## 📊 Modernization Status
 
-| Priority | Progress | Risk |
-|----------|----------|------|
-| Database Code Removal | 81% | High |
-| SQL Security | 0% | High |
-| Mobile Responsiveness | 0% | Medium |
-| Testing Infrastructure | 5% | Medium |
-| React Modernization | 15% | Low |
-| PSGI/Plack Migration | 0% | High |
+See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) for the comprehensive modernization plan and current status.
 
-## 🎯 Top Priorities
+**Quick Summary (Dec 2025)**:
+- ✅ **Phase 4a Complete**: All 26 nodelets + 21 content pages migrated to React
+- 🔄 **Phase 1**: API modernization in progress (50+ endpoints)
+- 🔄 **Phase 5**: jQuery elimination in progress
+- ⏳ **Phase 6-10**: Planned (guest user optimization, PSGI/Plack, ORM, etc.)
 
-1. **Complete database code removal** (achievements, room criteria, superdocs)
-2. **Fix SQL injection vulnerabilities** (~15 critical issues)
-3. **Add mobile responsive CSS** (zero media queries currently)
-4. **Set up testing infrastructure** (Jest for React, CI/CD gate)
+**Key Achievements**:
+- Mason2 reduced to 3 base templates only
+- All user-facing content pages React-rendered
+- Full-Text Search, Sign Up, and Maintenance Display migrated
+
+## 🎯 Current Priorities
+
+1. **API Modernization** (Phase 1) - RESTful endpoints with comprehensive testing
+2. **Guest User Optimization** (Phase 6) - S3 caching for anonymous users
+3. **PSGI/Plack Migration** (Phase 7) - Eliminate mod_perl dependency
 
 ## 🏗️ Architecture
 
@@ -61,23 +65,45 @@ Deploy:    Docker → AWS CodeBuild → Fargate ECS
 
 ```
 ecore/                          # Perl backend code
-├── Everything/                 # Core modules
-│   ├── Delegation/            # Migrated code (htmlcode, htmlpage, opcode)
+├── Everything/
+│   ├── API/                   # REST API endpoints
+│   ├── Application.pm         # Core application logic
+│   ├── Controller.pm          # Request routing
+│   ├── Delegation/            # Legacy migrated code (htmlcode, etc.)
 │   ├── Node/                  # Node type classes (Moose)
-│   └── API/                   # REST API endpoints
+│   ├── NodeBase/              # Node type database methods
+│   └── Page/                  # Page controllers
 react/                          # React frontend
-├── components/                # React components (29 files)
+├── components/
+│   ├── Documents/             # Page-level components
+│   ├── Nodelets/              # Sidebar nodelet components
+│   └── ...                    # Various feature components
+templates/                      # Mason2 templates (only 3 base templates)
+├── pages/
+│   ├── Base.mc                # Base template class
+│   ├── react_page.mc          # React page wrapper
+│   └── react_fullpage.mc      # Full-page React wrapper
 www/                           # Web-accessible files
 ├── index.pl                   # mod_perl entry point
-├── css/                       # Stylesheets (NO MOBILE CSS!)
-└── react/main.bundle.js       # Compiled React
+├── css/                       # Stylesheets
+└── react/                     # Compiled React bundles
+t/                             # Perl test suite
+├── 0*.t                       # Core tests
+├── 05*.t                      # API tests
+└── 06*.t                      # Feature tests
+docs/                          # Documentation
+├── DEVELOPER-ROADMAP.md       # Master modernization plan
+├── mason2-migration-status.md # React migration status
+└── ...                        # Technical guides
+docker/                        # Docker build and development
+ops/                           # AWS CloudFormation, deployment
+tools/                         # Development utilities
 nodepack/                      # Development seed data (XML)
-docker/                        # Docker build files
-cron/                          # Scheduled tasks (7 cron jobs)
-docs/                          # Documentation and technical guides
 ```
 
-## 🔧 Common Tasks
+## 🔧 Common Development Patterns
+
+**Note:** The "Add Component" sections below represent rapidly evolving patterns. For the most current architectural patterns, see [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md).
 
 ### Add New Moose Class
 
@@ -234,33 +260,56 @@ test('renders component', () => {
 ./docker/run-tests.sh               # Run all tests in container
 ./docker/run-tests.sh 012           # Run specific test by number
 ./docker/run-tests.sh sql           # Run tests matching pattern
-CRITIC_FULL=1 ./tools/critic.pl .   # Code quality
+```
+
+### Code Quality
+```bash
+# Perl::Critic - Check for bugs and code quality issues
+./tools/critic.pl ecore/Everything/Application.pm  # Single file (bugs theme, severity 1)
+CRITIC_FULL=1 ./tools/critic.pl ecore/Path.pm      # Single file (core theme, all policies)
+
+# Default mode (bugs theme):
+#   - Severity 1 (brutal) violations only
+#   - Theme: "bugs" (logic errors, unsafe patterns)
+#   - Mimics application health test in t/001_application_health.t
+#
+# CRITIC_FULL mode (core theme):
+#   - Severity 1 violations only
+#   - Theme: "core" (all Perl::Critic policies)
+#   - More comprehensive style and best practice checks
 ```
 
 ### Code Coverage
 
-⚠️ **Limited by mod_perl**: Coverage currently only tracks test-loaded modules. Full coverage requires PSGI migration (Priority 8).
+✅ **Coverage Now Working**: Mock-based API tests enable proper coverage tracking!
 
 ```bash
-./tools/coverage.sh                 # Run tests with coverage
-./tools/coverage.sh report          # Generate report only
-./tools/coverage.sh clean           # Clean coverage data
+./tools/coverage.sh                      # Run tests with coverage
+./tools/coverage.sh report               # Generate report only
+./tools/coverage.sh clean                # Clean coverage data
+./tools/generate-coverage-badges.sh      # Update coverage badges
 
 # Inside container (manual)
 perl -MDevel::Cover=-db,coverage/cover_db t/run.pl
 cover -report html -outputdir coverage/html
 ```
 
-**Coverage Goals (post-PSGI migration):**
-- Core modules: >80% (Security, API, Application)
-- Business logic: >60% (Node, NodeBase)
-- Legacy code: >40% (Delegation)
+**Current Coverage** (Dec 2025):
+- Mock-based API tests: ✅ Working (23-26% coverage)
+- Coverage tracked for: Everything::API::*, Application.pm, Node classes
+- Badges update automatically during `./docker/devbuild.sh`
+
+**Coverage Goals:**
+- Short-term (Q1 2026): 40% (comprehensive API testing)
+- Long-term (2026): 70% (post-PSGI migration)
 
 **View Reports:**
+- Summary: `coverage/COVERAGE-SUMMARY.md`
+- Badges: ![Perl](../coverage/badges/perl-coverage.svg)
 - HTML: `coverage/html/coverage.html`
 - Text: `cover -report text`
 
-**See:** [Code Coverage Guide](code-coverage.md) for details
+**See:** [Code Coverage Guide](code-coverage.md) and [COVERAGE-SUMMARY.md](../coverage/COVERAGE-SUMMARY.md) for details
 
 ### React Tests
 ```bash
@@ -388,17 +437,11 @@ SHOW PROFILE;                          -- Query profiling
 ### Pulling Logs for Analysis
 
 ```bash
-# Pull e2-app-errors (analyze current issues)
+# Pull e2-app-errors for analysis
 aws logs filter-log-events \
   --log-group-name e2-app-errors \
   --start-time $(date -d '3 days ago' +%s)000 \
   --output json > app-errors-3days.json
-
-# Pull e2-uninitialized-errors (analyze current issues)
-aws logs filter-log-events \
-  --log-group-name e2-uninitialized-errors \
-  --start-time $(date -d '3 days ago' +%s)000 \
-  --output json > uninit-errors-3days.json
 
 # Filter by pattern (e.g., specific error type)
 aws logs filter-log-events \
@@ -411,19 +454,19 @@ aws logs filter-log-events \
   --log-group-name e2-app-errors \
   --start-time $(date -d '24 hours ago' +%s)000 \
   --output json > app-errors-recent.json
+
+# For uninitialized value errors, use the dedicated tool
+# (shows top 10 in production)
 ```
 
 ### Analyzing Error Patterns
 
 ```bash
-# Count error frequency
-jq '.events[].message' app-errors-3days.json | sort | uniq -c | sort -rn | head -20
+# Count error frequency (most common errors)
+jq -r '.events[].message' app-errors-3days.json | sort | uniq -c | sort -rn | head -20
 
 # Extract specific error types
-jq '.events[] | select(.message | contains("uninitialized"))' uninit-errors-3days.json
-
-# Group by time periods
-jq -r '.events[] | "\(.timestamp/1000 | strftime("%Y-%m-%d %H:00")) \(.message)"' app-errors-3days.json | sort
+jq -r '.events[] | select(.message | contains("SQL")) | .message' app-errors-3days.json
 ```
 
 ### Creating CloudWatch Insights Queries
@@ -449,9 +492,8 @@ fields @timestamp, @message
 
 - Modernization Documentation: `docs/` directory
 - Report Issues: GitHub Issues
-- Questions: See team roster
 
 ---
 
-**Quick Reference Version:** 1.1
-**Last Updated:** 2025-11-07
+**Quick Reference Version:** 1.2
+**Last Updated:** 2025-12-17

@@ -90,6 +90,7 @@ sub buildReactData {
 
     return {
         type => 'e2_editor_beta',
+        pageTitle => 'E2 Editor Beta',
         approvedTags => \@tags,
         canAccess => $can_access,
         username => $user ? $user->title : undef,

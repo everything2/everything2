@@ -1,4 +1,5 @@
 import React from 'react'
+import Modal from 'react-modal'
 
 import { createRoot } from 'react-dom/client'
 const E2ReactRoot = React.lazy(() => import('./components/E2ReactRoot'))
@@ -27,6 +28,16 @@ function initReact() {
       return
     }
 
+    // Set app element for react-modal accessibility
+    // Use the wrapper div to avoid hiding the entire page from screen readers
+    const wrapperEl = document.getElementById('wrapper')
+    if (wrapperEl) {
+      Modal.setAppElement(wrapperEl)
+    } else {
+      // Fallback to page container if wrapper not found
+      Modal.setAppElement(pageContainer)
+    }
+
     const pageRoot = createRoot(pageContainer)
     pageRoot.render(
       <React.Suspense fallback={<div>Loading...</div>}>
@@ -53,6 +64,14 @@ function initReact() {
     if (!container) {
       console.error('e2-react-root not found, cannot render E2ReactRoot')
       return
+    }
+
+    // Set app element for react-modal accessibility
+    const wrapperEl = document.getElementById('wrapper')
+    if (wrapperEl) {
+      Modal.setAppElement(wrapperEl)
+    } else {
+      Modal.setAppElement(container)
     }
 
     const root = createRoot(container)
