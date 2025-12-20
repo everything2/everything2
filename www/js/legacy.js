@@ -2644,3 +2644,53 @@ window.addEventListener('load', function() {
     });
   }, 3000); // Wait 3s for ads to load
 });
+
+// Editor cool and bookmark toggle functions for page-level buttons
+// These will be moved to React components when React takes over the page header
+window.toggleEditorCool = async function(nodeId, button) {
+  try {
+    const response = await fetch(`/api/cool/edcool/${nodeId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to toggle editor cool');
+    }
+
+    // Update button state
+    const isCooled = data.edcooled;
+    button.setAttribute('data-cooled', isCooled ? '1' : '0');
+    button.style.color = isCooled ? '#f4d03f' : '#999';
+    button.title = isCooled ? 'Remove editor cool' : 'Add editor cool (endorsement)';
+  } catch (error) {
+    console.error('Error toggling editor cool:', error);
+    alert(`Failed to toggle editor cool: ${error.message}`);
+  }
+};
+
+window.toggleBookmark = async function(nodeId, button) {
+  try {
+    const response = await fetch(`/api/cool/bookmark/${nodeId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to toggle bookmark');
+    }
+
+    // Update button state
+    const isBookmarked = data.bookmarked;
+    button.setAttribute('data-bookmarked', isBookmarked ? '1' : '0');
+    button.style.color = isBookmarked ? '#4060b0' : '#999';
+    button.title = isBookmarked ? 'Remove bookmark' : 'Bookmark this page';
+  } catch (error) {
+    console.error('Error toggling bookmark:', error);
+    alert(`Failed to toggle bookmark: ${error.message}`);
+  }
+};

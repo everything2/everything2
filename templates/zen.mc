@@ -73,6 +73,25 @@ sub _build_pagetitle
 <body class="<% $.body_class %>" itemscope itemtype="http://schema.org/WebPage">
 <& 'googleads', no_ads => $.no_ads &>
 <div id='header'>
+<%perl>
+  # Show epicenterZen linkbar if user doesn't have Epicenter nodelet
+  my $user = $REQUEST->user;
+  my $DB = $REQUEST->DB;
+
+  unless ($user->is_guest) {
+    my $epicenter_nodelet = $DB->getNode('Epicenter', 'nodelet');
+    if ($epicenter_nodelet) {
+      my $epid = $epicenter_nodelet->{node_id};
+      my $nodelets = $user->VARS->{nodelets} || '';
+
+      # If user doesn't have Epicenter nodelet, show the epicenterZen linkbar
+      if ($nodelets !~ /\b$epid\b/) {
+        my $epicenter_html = Everything::HTML::htmlcode('epicenterZen');
+        $m->print($epicenter_html) if $epicenter_html;
+      }
+    }
+  }
+</%perl>
  <& 'searchform', script_name => $.script_name, lastnode => $.lastnode &>
  <div id='e2logo'><a href="/">Everything<span id="e2logo2">2</span></a></div>
 </div>
@@ -80,11 +99,122 @@ sub _build_pagetitle
  <div id='mainbody' itemprop="mainContentOfPage"><!-- google_ad_section_start -->
   <div id="pageheader">
    <h1 class="nodetitle"><% $.node->title %></h1>
+   <& 'createdby', node => $.node &>
+<%perl>
+  # Parent link for writeups - "See all of [parent e2node]"
+  my $node = $.node;
+  my $ntypet = $node->type->title;
+  if ($ntypet eq 'writeup') {
+    my $parent = $node->parent;
+    if ($parent && !UNIVERSAL::isa($parent, "Everything::Node::null")) {
+      my $parent_title = $parent->title;
+      my $APP = $REQUEST->APP;
+      my $writeup_count = $APP->node_by_id($parent->node_id, 'light')->{group} || [];
+      $writeup_count = ref($writeup_count) eq 'ARRAY' ? scalar(@$writeup_count) : 0;
+
+      my $more_text;
+      if ($writeup_count <= 1) {
+        $more_text = 'no other writeups in this node';
+      } elsif ($writeup_count == 2) {
+        $more_text = 'there is 1 more in this node';
+      } else {
+        $more_text = 'there are ' . ($writeup_count - 1) . ' more in this node';
+      }
+
+      # Build a simple link to the parent e2node
+      my $parent_url = "/title/" . $APP->rewriteCleanEscape($parent_title);
+      my $parent_link = qq{<a href="$parent_url">See all of $parent_title</a>};
+      $m->print(qq{<div class="topic" id="parentlink">$parent_link, $more_text.</div>\n});
+    }
+  }
+</%perl>
+<%perl>
+  # Firmlinks for e2nodes and writeup parent e2nodes - "See also:" section
+  # Reuse $node and $ntypet from previous block
+  $node = $.node;
+  $ntypet = $node->type->title;
+  my $target_node;
+
+  # For writeups, show firmlinks from the parent e2node
+  if ($ntypet eq 'writeup') {
+    my $parent = $node->parent;
+    $target_node = $parent if ($parent && !UNIVERSAL::isa($parent, "Everything::Node::null"));
+  }
+  # For e2nodes, show their own firmlinks
+  elsif ($ntypet eq 'e2node') {
+    $target_node = $node;
+  }
+
+  if ($target_node && $target_node->can('firmlinks')) {
+    my $firmlinks = $target_node->firmlinks();
+    if ($firmlinks && @$firmlinks > 0) {
+      my $APP = $REQUEST->APP;
+      my @firmlink_html;
+
+      foreach my $firmlink (@$firmlinks) {
+        my $title = $firmlink->title;
+        my $url = "/title/" . $APP->rewriteCleanEscape($title);
+        my $note_text = $firmlink->{firmlink_note_text} || '';
+        my $link_html = qq{<a href="$url">$title</a>};
+        # Append note text if present (with space prefix, matching legacy behavior)
+        $link_html .= $APP->encodeHTML(" $note_text") if $note_text ne '';
+        push @firmlink_html, $link_html;
+      }
+
+      my $firmlinks_str = join(', ', @firmlink_html);
+      $m->print(qq{<div class="topic" id="firmlink"><strong>See also:</strong> $firmlinks_str</div>\n});
+    }
+  }
+</%perl>
 % if (!$REQUEST->user->is_guest) {
      <ul class="topic actions">
-%   if ($.node->can_be_bookmarked) {
-<& 'bookmark', friendly_pagetype => $.friendly_pagetype, node => $.node, bookmarktext => "Add to bookmarks" &>
-%   }
+<%perl>
+  # Add editor cool and bookmark icon buttons
+  # Reuse $node and $ntypet from previous block
+  $node = $.node;
+  my $user = $REQUEST->user;
+  my $APP = $REQUEST->APP;
+  my $DB = $REQUEST->DB;
+  my $node_id = $node->node_id || 0;
+  $ntypet = $node->type->title;
+
+  # Skip bookmark/cool buttons if node_id is invalid
+  return unless $node_id > 0;
+
+  # Editor cool button (editors only, for e2node/superdoc/document types, if allowed)
+  if ($user->is_editor && ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document') && $APP->can_edcool($node->NODEDATA)) {
+    # Check if node is already editor cooled
+    my $coollink_type = $DB->getNode('coollink', 'linktype');
+    my $is_cooled = 0;
+    if ($coollink_type) {
+      my $link = $DB->sqlSelectHashref('*', 'links',
+        "from_node=$node_id AND linktype=" . $coollink_type->{node_id});
+      $is_cooled = $link ? 1 : 0;
+    }
+
+    my $color = $is_cooled ? '#f4d03f' : '#999';
+    my $title_text = $is_cooled ? 'Remove editor cool' : 'Add editor cool (endorsement)';
+
+    $m->print(qq{       <li><button onclick="window.toggleEditorCool && window.toggleEditorCool($node_id, this)" style="background: none; border: none; cursor: pointer; padding: 0; color: $color; font-size: 16px;" title="$title_text" data-cooled="$is_cooled">&#9733;</button></li>\n});
+  }
+
+  # Bookmark button (all logged-in users, if bookmarking is allowed)
+  if ($APP->can_bookmark($node->NODEDATA)) {
+    my $bookmark_type = $DB->getNode('bookmark', 'linktype');
+    my $is_bookmarked = 0;
+    if ($bookmark_type) {
+      my $link = $DB->sqlSelectHashref('*', 'links',
+        "from_node=" . $user->node_id . " AND to_node=$node_id AND linktype=" . $bookmark_type->{node_id});
+      $is_bookmarked = $link ? 1 : 0;
+    }
+
+    my $bookmark_color = $is_bookmarked ? '#4060b0' : '#999';
+    my $bookmark_title = $is_bookmarked ? 'Remove bookmark' : 'Bookmark this page';
+    my $bookmark_icon = $is_bookmarked ? '&#128278;' : '&#128279;';  # Filled vs outline bookmark
+
+    $m->print(qq{       <li><button onclick="window.toggleBookmark && window.toggleBookmark($node_id, this)" style="background: none; border: none; cursor: pointer; padding: 0; color: $bookmark_color; font-size: 16px;" title="$bookmark_title" data-bookmarked="$is_bookmarked">$bookmark_icon</button></li>\n});
+  }
+</%perl>
 %   if ($.node->can_be_categoried) {
 <& 'category', friendly_pagetype => $.friendly_pagetype, node => $.node &>
 %   }
@@ -93,7 +223,6 @@ sub _build_pagetitle
 %   }
      </ul>
 % }
-   <& 'ed_cooled' , node => $.node &>
   </div>
 
   <% inner() %>

@@ -32,65 +32,92 @@ Create a new draft.
 
 Update an existing draft (content, title, or status).
 
+=head2 POST /api/drafts/:id/publish
+
+Publish a draft as a writeup. Converts the draft node to a writeup node,
+adds it to the parent e2node's nodegroup, and updates all relevant tables.
+
+Uses node locking on the e2node to prevent race conditions.
+
+Request body:
+{
+  "parent_e2node": 123,
+  "wrtype_writeuptype": 456,
+  "feedback_policy_id": 0 (optional),
+  "publishtime": "2025-01-01 00:00:00" (optional, defaults to NOW())
+}
+
+Returns 409 Conflict if e2node is locked by another operation.
+
 =cut
 
 sub routes {
     return {
-        '/'        => 'list_or_create',
-        '/:id'     => 'get_or_update',
-        '/preview' => 'render_preview'
+        '/'            => 'list_or_create',
+        '/:id'         => 'get_or_update',
+        '/:id/parent'  => 'set_parent_e2node(:id)',
+        '/:id/publish' => 'publish_draft(:id)',
+        '/preview'     => 'render_preview'
     };
 }
 
 sub list_or_create {
-    my ($self, $REQUEST) = @_;
+    my ( $self, $REQUEST ) = @_;
 
-    my $method = lc($REQUEST->request_method());
+    my $method = lc( $REQUEST->request_method() );
 
-    if ($method eq 'get') {
+    if ( $method eq 'get' ) {
         return $self->list_drafts($REQUEST);
-    } elsif ($method eq 'post') {
+    }
+    elsif ( $method eq 'post' ) {
         return $self->create_draft($REQUEST);
     }
 
-    return [$self->HTTP_METHOD_NOT_ALLOWED, {
-        success => 0,
-        error => 'method_not_allowed'
-    }];
+    return [
+        $self->HTTP_METHOD_NOT_ALLOWED,
+        {
+            success => 0,
+            error   => 'method_not_allowed'
+        }
+    ];
 }
 
 sub get_or_update {
-    my ($self, $REQUEST, $id) = @_;
+    my ( $self, $REQUEST, $id ) = @_;
 
-    my $method = lc($REQUEST->request_method());
+    my $method = lc( $REQUEST->request_method() );
 
-    if ($method eq 'get') {
-        return $self->get_draft($REQUEST, $id);
-    } elsif ($method eq 'put' || $method eq 'post') {
-        return $self->update_draft($REQUEST, $id);
+    if ( $method eq 'get' ) {
+        return $self->get_draft( $REQUEST, $id );
+    }
+    elsif ( $method eq 'put' || $method eq 'post' ) {
+        return $self->update_draft( $REQUEST, $id );
     }
 
-    return [$self->HTTP_METHOD_NOT_ALLOWED, {
-        success => 0,
-        error => 'method_not_allowed'
-    }];
+    return [
+        $self->HTTP_METHOD_NOT_ALLOWED,
+        {
+            success => 0,
+            error   => 'method_not_allowed'
+        }
+    ];
 }
 
 sub list_drafts {
-    my ($self, $REQUEST) = @_;
+    my ( $self, $REQUEST ) = @_;
 
     my $user_id = $REQUEST->user->node_id;
-    my $DB = $self->DB;
+    my $DB      = $self->DB;
 
     # Get pagination parameters from query string
-    my $limit = int($REQUEST->param('limit') || 20);
-    my $offset = int($REQUEST->param('offset') || 0);
+    my $limit  = int( $REQUEST->param('limit')  || 20 );
+    my $offset = int( $REQUEST->param('offset') || 0 );
 
     # Sanity checks
-    $limit = 20 if $limit < 1 || $limit > 100;
-    $offset = 0 if $offset < 0;
+    $limit  = 20 if $limit < 1 || $limit > 100;
+    $offset = 0  if $offset < 0;
 
-    my $draft_type = $DB->getType('draft');
+    my $draft_type    = $DB->getType('draft');
     my $draft_type_id = $draft_type->{node_id};
 
     my $sql = q|
@@ -108,17 +135,17 @@ sub list_drafts {
         LIMIT ? OFFSET ?
     |;
 
-    my $rows = $DB->{dbh}->selectall_arrayref($sql, { Slice => {} },
-        $user_id, $draft_type_id, $limit, $offset);
+    my $rows = $DB->{dbh}->selectall_arrayref( $sql, { Slice => {} },
+        $user_id, $draft_type_id, $limit, $offset );
 
     # Transform rows to match expected format (status instead of status_title)
     my @drafts = map {
         {
-            node_id => $_->{node_id},
-            title => $_->{title},
+            node_id    => $_->{node_id},
+            title      => $_->{title},
             createtime => $_->{createtime},
-            status => $_->{status_title} || 'unknown',
-            doctext => $_->{doctext} || ''
+            status     => $_->{status_title} || 'unknown',
+            doctext    => $_->{doctext}      || ''
         }
     } @$rows;
 
@@ -128,63 +155,75 @@ sub list_drafts {
         {}, $user_id, $draft_type_id
     );
 
-    return [$self->HTTP_OK, {
-        success => 1,
-        drafts => \@drafts,
-        pagination => {
-            limit => $limit,
-            offset => $offset,
-            total => $total || 0,
-            has_more => ($offset + $limit) < ($total || 0)
+    return [
+        $self->HTTP_OK,
+        {
+            success    => 1,
+            drafts     => \@drafts,
+            pagination => {
+                limit    => $limit,
+                offset   => $offset,
+                total    => $total || 0,
+                has_more => ( $offset + $limit ) < ( $total || 0 )
+            }
         }
-    }];
+    ];
 }
 
 sub get_draft {
-    my ($self, $REQUEST, $draft_id) = @_;
+    my ( $self, $REQUEST, $draft_id ) = @_;
 
-    $draft_id = int($draft_id || 0);
-    return [$self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' }]
-        unless $draft_id > 0;
+    $draft_id = int( $draft_id || 0 );
+    return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
+      unless $draft_id > 0;
 
     my $user_id = $REQUEST->user->node_id;
-    my $DB = $self->DB;
+    my $DB      = $self->DB;
 
     my $draft = $DB->getNodeById($draft_id);
-    return [$self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' }]
-        unless $draft;
+    return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
+      unless $draft;
 
     # Check ownership
-    unless ($draft->{author_user} == $user_id || $self->APP->isEditor($REQUEST->user->NODEDATA)) {
-        return [$self->HTTP_FORBIDDEN, { success => 0, error => 'permission_denied' }];
+    unless ( $draft->{author_user} == $user_id
+        || $self->APP->isEditor( $REQUEST->user->NODEDATA ) )
+    {
+        return [
+            $self->HTTP_FORBIDDEN,
+            { success => 0, error => 'permission_denied' }
+        ];
     }
 
     # Get document text
-    my $doctext = $DB->{dbh}->selectrow_array(
-        'SELECT doctext FROM document WHERE document_id = ?',
-        {}, $draft_id
-    ) || '';
+    my $doctext =
+      $DB->{dbh}
+      ->selectrow_array( 'SELECT doctext FROM document WHERE document_id = ?',
+        {}, $draft_id )
+      || '';
 
     # Get publication status title
     my $status_title = $DB->{dbh}->selectrow_array(
-        'SELECT title FROM node WHERE node_id = (SELECT publication_status FROM draft WHERE draft_id = ?)',
+'SELECT title FROM node WHERE node_id = (SELECT publication_status FROM draft WHERE draft_id = ?)',
         {}, $draft_id
     ) || 'unknown';
 
-    return [$self->HTTP_OK, {
-        success => 1,
-        draft => {
-            node_id => $draft->{node_id},
-            title => $draft->{title},
-            doctext => $doctext,
-            status => $status_title,
-            createtime => $draft->{createtime}
+    return [
+        $self->HTTP_OK,
+        {
+            success => 1,
+            draft   => {
+                node_id    => $draft->{node_id},
+                title      => $draft->{title},
+                doctext    => $doctext,
+                status     => $status_title,
+                createtime => $draft->{createtime}
+            }
         }
-    }];
+    ];
 }
 
 sub create_draft {
-    my ($self, $REQUEST) = @_;
+    my ( $self, $REQUEST ) = @_;
 
     my $postdata = $REQUEST->POSTDATA;
     $postdata = decode_utf8($postdata) if $postdata;
@@ -194,62 +233,77 @@ sub create_draft {
         $data = JSON::decode_json($postdata);
         1;
     };
-    return [$self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_json' }]
-        unless $json_ok && $data;
+    return [ $self->HTTP_BAD_REQUEST,
+        { success => 0, error => 'invalid_json' } ]
+      unless $json_ok && $data;
 
-    my $title = $data->{title} || 'Untitled Draft';
+    my $title   = $data->{title} || 'Untitled Draft';
     my $doctext = $data->{doctext} // '';
 
     my $user_id = $REQUEST->user->node_id;
-    my $DB = $self->DB;
-    my $APP = $self->APP;
+    my $DB      = $self->DB;
+    my $APP     = $self->APP;
 
     # Clean the title
     $title = $APP->cleanNodeName($title) || 'untitled draft';
 
     # Get draft type and default status
-    my $draft_type = $DB->getType('draft');
-    my $private_status = $DB->getNode('private', 'publication_status');
+    my $draft_type     = $DB->getType('draft');
+    my $private_status = $DB->getNode( 'private', 'publication_status' );
 
     # Check for duplicate titles
     my $base_title = $title;
-    my $count = 1;
-    while ($DB->{dbh}->selectrow_array(
-        'SELECT node_id FROM node WHERE title = ? AND type_nodetype = ? AND author_user = ?',
-        {}, $title, $draft_type->{node_id}, $user_id
-    )) {
+    my $count      = 1;
+    while (
+        $DB->{dbh}->selectrow_array(
+'SELECT node_id FROM node WHERE title = ? AND type_nodetype = ? AND author_user = ?',
+            {},
+            $title,
+            $draft_type->{node_id},
+            $user_id
+        )
+      )
+    {
         $title = "$base_title ($count)";
         $count++;
     }
 
-    # Create the draft node
-    # insertNode signature: ($title, $TYPE, $USER, $NODEDATA, $skip_maintenance)
-    # NODEDATA is passed to updateNode after creation, so we can set doctext and publication_status there
+# Create the draft node
+# insertNode signature: ($title, $TYPE, $USER, $NODEDATA, $skip_maintenance)
+# NODEDATA is passed to updateNode after creation, so we can set doctext and publication_status there
     my $nodedata = {
-        doctext => $doctext,
+        doctext            => $doctext,
         publication_status => $private_status->{node_id}
     };
 
-    my $draft_id = $DB->insertNode($title, $draft_type, $REQUEST->user->NODEDATA, $nodedata);
-    return [$self->HTTP_INTERNAL_SERVER_ERROR, { success => 0, error => 'insert_failed' }]
-        unless $draft_id;
+    my $draft_id =
+      $DB->insertNode( $title, $draft_type, $REQUEST->user->NODEDATA,
+        $nodedata );
+    return [
+        $self->HTTP_INTERNAL_SERVER_ERROR,
+        { success => 0, error => 'insert_failed' }
+      ]
+      unless $draft_id;
 
-    return [$self->HTTP_OK, {
-        success => 1,
-        draft => {
-            node_id => $draft_id,
-            title => $title,
-            status => 'private'
+    return [
+        $self->HTTP_OK,
+        {
+            success => 1,
+            draft   => {
+                node_id => $draft_id,
+                title   => $title,
+                status  => 'private'
+            }
         }
-    }];
+    ];
 }
 
 sub update_draft {
-    my ($self, $REQUEST, $draft_id) = @_;
+    my ( $self, $REQUEST, $draft_id ) = @_;
 
-    $draft_id = int($draft_id || 0);
-    return [$self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' }]
-        unless $draft_id > 0;
+    $draft_id = int( $draft_id || 0 );
+    return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
+      unless $draft_id > 0;
 
     my $postdata = $REQUEST->POSTDATA;
     $postdata = decode_utf8($postdata) if $postdata;
@@ -259,118 +313,132 @@ sub update_draft {
         $data = JSON::decode_json($postdata);
         1;
     };
-    return [$self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_json' }]
-        unless $json_ok && $data;
+    return [ $self->HTTP_BAD_REQUEST,
+        { success => 0, error => 'invalid_json' } ]
+      unless $json_ok && $data;
 
     my $user_id = $REQUEST->user->node_id;
-    my $DB = $self->DB;
-    my $APP = $self->APP;
+    my $DB      = $self->DB;
+    my $APP     = $self->APP;
 
     # Get the draft
     my $draft = $DB->getNodeById($draft_id);
-    return [$self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' }]
-        unless $draft && $draft->{type}{title} eq 'draft';
+    return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
+      unless $draft && $draft->{type}{title} eq 'draft';
 
     # Check ownership
-    unless ($draft->{author_user} == $user_id) {
-        return [$self->HTTP_FORBIDDEN, { success => 0, error => 'permission_denied' }];
+    unless ( $draft->{author_user} == $user_id ) {
+        return [
+            $self->HTTP_FORBIDDEN,
+            { success => 0, error => 'permission_denied' }
+        ];
     }
 
     my $updated = {};
 
     # Update doctext if provided
-    if (exists $data->{doctext}) {
+    if ( exists $data->{doctext} ) {
+
         # Stash current content to version history before overwriting
-        my $current_doctext = $DB->{dbh}->selectrow_array(
+        my $current_doctext =
+          $DB->{dbh}->selectrow_array(
             'SELECT doctext FROM document WHERE document_id = ?',
-            {}, $draft_id
-        );
+            {}, $draft_id );
 
         # Only stash if there's existing content and it's different
-        if (defined $current_doctext && $current_doctext ne $data->{doctext}) {
+        if ( defined $current_doctext && $current_doctext ne $data->{doctext} )
+        {
             $DB->{dbh}->do(
-                'INSERT INTO autosave (author_user, node_id, doctext, createtime, save_type) VALUES (?, ?, ?, NOW(), ?)',
+'INSERT INTO autosave (author_user, node_id, doctext, createtime, save_type) VALUES (?, ?, ?, NOW(), ?)',
                 {}, $user_id, $draft_id, $current_doctext, 'manual'
             );
 
             # Prune old versions - keep last 20
-            $self->_prune_version_history($user_id, $draft_id);
+            $self->_prune_version_history( $user_id, $draft_id );
         }
 
         # Update the main document
-        $DB->{dbh}->do(
-            'UPDATE document SET doctext = ? WHERE document_id = ?',
-            {}, $data->{doctext}, $draft_id
-        );
+        $DB->{dbh}->do( 'UPDATE document SET doctext = ? WHERE document_id = ?',
+            {}, $data->{doctext}, $draft_id );
         $updated->{doctext} = 1;
     }
 
     # Update title if provided
-    if (exists $data->{title} && $data->{title} ne $draft->{title}) {
-        my $new_title = $APP->cleanNodeName($data->{title}) || 'untitled draft';
+    if ( exists $data->{title} && $data->{title} ne $draft->{title} ) {
+        my $new_title =
+          $APP->cleanNodeName( $data->{title} ) || 'untitled draft';
 
         # Check for duplicates
         my $base_title = $new_title;
-        my $count = 1;
-        while ($DB->{dbh}->selectrow_array(
-            'SELECT node_id FROM node WHERE title = ? AND type_nodetype = ? AND author_user = ? AND node_id != ?',
-            {}, $new_title, $draft->{type_nodetype}, $user_id, $draft_id
-        )) {
+        my $count      = 1;
+        while (
+            $DB->{dbh}->selectrow_array(
+'SELECT node_id FROM node WHERE title = ? AND type_nodetype = ? AND author_user = ? AND node_id != ?',
+                {},
+                $new_title,
+                $draft->{type_nodetype},
+                $user_id,
+                $draft_id
+            )
+          )
+        {
             $new_title = "$base_title ($count)";
             $count++;
         }
 
-        $DB->{dbh}->do(
-            'UPDATE node SET title = ? WHERE node_id = ?',
-            {}, $new_title, $draft_id
-        );
+        $DB->{dbh}->do( 'UPDATE node SET title = ? WHERE node_id = ?',
+            {}, $new_title, $draft_id );
         $updated->{title} = $new_title;
     }
 
     # Update publication status if provided
-    if (exists $data->{status}) {
-        my $status_node = $DB->getNode($data->{status}, 'publication_status');
+    if ( exists $data->{status} ) {
+        my $status_node = $DB->getNode( $data->{status}, 'publication_status' );
         if ($status_node) {
-            my $old_status = $DB->{dbh}->selectrow_array(
+            my $old_status =
+              $DB->{dbh}->selectrow_array(
                 'SELECT publication_status FROM draft WHERE draft_id = ?',
-                {}, $draft_id
-            );
+                {}, $draft_id );
 
             $DB->{dbh}->do(
                 'UPDATE draft SET publication_status = ? WHERE draft_id = ?',
-                {}, $status_node->{node_id}, $draft_id
-            );
+                {}, $status_node->{node_id}, $draft_id );
             $updated->{status} = $data->{status};
 
             # If changing to review, notify editors
-            if ($data->{status} eq 'review' && $old_status != $status_node->{node_id}) {
-                $self->_notify_review($draft_id, $user_id);
+            if (   $data->{status} eq 'review'
+                && $old_status != $status_node->{node_id} )
+            {
+                $self->_notify_review( $draft_id, $user_id );
             }
         }
     }
 
-    return [$self->HTTP_OK, {
-        success => 1,
-        updated => $updated,
-        draft_id => $draft_id
-    }];
+    return [
+        $self->HTTP_OK,
+        {
+            success  => 1,
+            updated  => $updated,
+            draft_id => $draft_id
+        }
+    ];
 }
 
 sub _notify_review {
-    my ($self, $draft_id, $author_id) = @_;
+    my ( $self, $draft_id, $author_id ) = @_;
 
     # Add a nodenote that author requested review
     my $note_sql = q|
         INSERT INTO nodenote (nodenote_nodeid, noter_user, notetext, timestamp)
         VALUES (?, 0, 'author requested review', NOW())
     |;
-    $self->DB->{dbh}->do($note_sql, {}, $draft_id);
+    $self->DB->{dbh}->do( $note_sql, {}, $draft_id );
 
     return;
 }
 
 sub _prune_version_history {
-    my ($self, $user_id, $node_id, $max) = @_;
+    my ( $self, $user_id, $node_id, $max ) = @_;
 
     $max //= 20;
     my $dbh = $self->DB->{dbh};
@@ -384,15 +452,16 @@ sub _prune_version_history {
         LIMIT ?
     |;
 
-    my $keep_ids = $dbh->selectcol_arrayref($keep_sql, {}, $user_id, $node_id, $max);
+    my $keep_ids =
+      $dbh->selectcol_arrayref( $keep_sql, {}, $user_id, $node_id, $max );
 
-    if ($keep_ids && @$keep_ids) {
-        my $placeholders = join(',', ('?') x scalar(@$keep_ids));
-        my $delete_sql = qq|
+    if ( $keep_ids && @$keep_ids ) {
+        my $placeholders = join( ',', ('?') x scalar(@$keep_ids) );
+        my $delete_sql   = qq|
             DELETE FROM autosave
             WHERE author_user = ? AND node_id = ? AND autosave_id NOT IN ($placeholders)
         |;
-        $dbh->do($delete_sql, {}, $user_id, $node_id, @$keep_ids);
+        $dbh->do( $delete_sql, {}, $user_id, $node_id, @$keep_ids );
     }
 
     return;
@@ -400,7 +469,7 @@ sub _prune_version_history {
 
 # Get available publication statuses for UI
 sub get_statuses {
-    my ($self, $REQUEST) = @_;
+    my ( $self, $REQUEST ) = @_;
 
     my $DB = $self->DB;
 
@@ -409,37 +478,64 @@ sub get_statuses {
 
     my @statuses;
     for my $status_name (@user_statuses) {
-        my $status = $DB->getNode($status_name, 'publication_status');
+        my $status = $DB->getNode( $status_name, 'publication_status' );
         if ($status) {
-            push @statuses, {
-                id => $status->{node_id},
-                name => $status->{title},
-                description => $self->_status_description($status->{title})
-            };
+            push @statuses,
+              {
+                id          => $status->{node_id},
+                name        => $status->{title},
+                description => $self->_status_description( $status->{title} )
+              };
         }
     }
 
-    return [$self->HTTP_OK, {
-        success => 1,
-        statuses => \@statuses
-    }];
+    return [
+        $self->HTTP_OK,
+        {
+            success  => 1,
+            statuses => \@statuses
+        }
+    ];
 }
 
 sub _status_description {
-    my ($self, $status) = @_;
+    my ( $self, $status ) = @_;
 
     my %descriptions = (
-        'private' => 'Only you can see this draft',
-        'shared' => 'Visible to users you specify as collaborators',
+        'private'  => 'Only you can see this draft',
+        'shared'   => 'Visible to users you specify as collaborators',
         'findable' => 'Visible to all logged-in users',
-        'review' => 'Submit for editor review before publishing'
+        'review'   => 'Submit for editor review before publishing'
     );
 
     return $descriptions{$status} || '';
 }
 
-sub render_preview {
-    my ($self, $REQUEST) = @_;
+=head2 POST /api/drafts/:id/parent
+
+Set or change the parent e2node for a draft. If the e2node doesn't exist,
+it will be created automatically.
+
+Request body:
+{
+  "e2node_title": "Name of the e2node"
+}
+
+or:
+{
+  "e2node_id": 12345
+}
+
+Returns the e2node information on success.
+
+=cut
+
+sub set_parent_e2node {
+    my ( $self, $REQUEST, $draft_id ) = @_;
+
+    $draft_id = int( $draft_id || 0 );
+    return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
+      unless $draft_id > 0;
 
     my $postdata = $REQUEST->POSTDATA;
     $postdata = decode_utf8($postdata) if $postdata;
@@ -449,22 +545,391 @@ sub render_preview {
         $data = JSON::decode_json($postdata);
         1;
     };
-    return [$self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_json' }]
-        unless $json_ok && $data;
+    return [ $self->HTTP_BAD_REQUEST,
+        { success => 0, error => 'invalid_json' } ]
+      unless $json_ok && $data;
+
+    my $user_id = $REQUEST->user->node_id;
+    my $DB      = $self->DB;
+    my $APP     = $self->APP;
+
+    # Get the draft
+    my $draft = $DB->getNodeById($draft_id);
+    return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
+      unless $draft && $draft->{type}{title} eq 'draft';
+
+    # Check ownership
+    unless ( $draft->{author_user} == $user_id ) {
+        return [
+            $self->HTTP_FORBIDDEN,
+            { success => 0, error => 'permission_denied' }
+        ];
+    }
+
+    my $e2node;
+    my $e2node_created = 0;
+
+    # Get or create e2node by ID or title
+    if ( my $e2node_id = int( $data->{e2node_id} || 0 ) ) {
+        # Lookup by ID
+        $e2node = $DB->getNodeById($e2node_id);
+        unless ( $e2node && $e2node->{type}{title} eq 'e2node' ) {
+            return [
+                $self->HTTP_BAD_REQUEST,
+                {
+                    success => 0,
+                    error   => 'invalid_e2node',
+                    message => 'E2node with that ID not found'
+                }
+            ];
+        }
+    }
+    elsif ( my $e2node_title = $data->{e2node_title} ) {
+        # Clean the title
+        $e2node_title = $APP->cleanNodeName($e2node_title);
+        unless ($e2node_title) {
+            return [
+                $self->HTTP_BAD_REQUEST,
+                {
+                    success => 0,
+                    error   => 'invalid_title',
+                    message => 'E2node title is invalid'
+                }
+            ];
+        }
+
+        # Try to find existing e2node
+        $e2node = $DB->getNode( $e2node_title, 'e2node' );
+
+        # Create if it doesn't exist
+        unless ($e2node) {
+            my $e2node_type = $DB->getType('e2node');
+            my $e2node_id = $DB->insertNode( $e2node_title, $e2node_type,
+                $REQUEST->user->NODEDATA );
+
+            unless ($e2node_id) {
+                return [
+                    $self->HTTP_INTERNAL_SERVER_ERROR,
+                    {
+                        success => 0,
+                        error   => 'create_failed',
+                        message => 'Failed to create e2node'
+                    }
+                ];
+            }
+
+            $e2node         = $DB->getNodeById($e2node_id);
+            $e2node_created = 1;
+        }
+    }
+    else {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            {
+                success => 0,
+                error   => 'missing_e2node',
+                message => 'Either e2node_id or e2node_title is required'
+            }
+        ];
+    }
+
+    # Note: The draft table doesn't have a parent_e2node column.
+    # The frontend stores the intended parent and passes it during publish.
+
+    # Clear cache
+    $DB->getCache->removeNode($draft);
+
+    return [
+        $self->HTTP_OK,
+        {
+            success => 1,
+            e2node  => {
+                node_id => $e2node->{node_id},
+                title   => $e2node->{title},
+                created => $e2node_created ? JSON::true : JSON::false
+            },
+            message => $e2node_created
+            ? "Created new e2node '$e2node->{title}'"
+            : "Set parent e2node to '$e2node->{title}'"
+        }
+    ];
+}
+
+sub publish_draft {
+    my ( $self, $REQUEST, $draft_id ) = @_;
+
+    $draft_id = int( $draft_id || 0 );
+    return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
+      unless $draft_id > 0;
+
+    my $postdata = $REQUEST->POSTDATA;
+    $postdata = decode_utf8($postdata) if $postdata;
+
+    my $data;
+    my $json_ok = eval {
+        $data = JSON::decode_json($postdata);
+        1;
+    };
+    return [ $self->HTTP_BAD_REQUEST,
+        { success => 0, error => 'invalid_json' } ]
+      unless $json_ok && $data;
+
+    my $user_id = $REQUEST->user->node_id;
+    my $DB      = $self->DB;
+    my $APP     = $self->APP;
+
+    # Get the draft
+    my $draft = $DB->getNodeById($draft_id);
+    return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
+      unless $draft && $draft->{type}{title} eq 'draft';
+
+    # Check ownership
+    unless ( $draft->{author_user} == $user_id ) {
+        return [
+            $self->HTTP_FORBIDDEN,
+            { success => 0, error => 'permission_denied' }
+        ];
+    }
+
+    # Get required data from request
+    my $parent_e2node_id = int( $data->{parent_e2node}      || 0 );
+    my $writeuptype_id   = int( $data->{wrtype_writeuptype} || 0 );
+
+    # Validate parent e2node
+    unless ( $parent_e2node_id > 0 ) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            {
+                success => 0,
+                error   => 'missing_parent',
+                message => 'parent_e2node is required'
+            }
+        ];
+    }
+
+    my $e2node = $DB->getNodeById($parent_e2node_id);
+    unless ( $e2node && $e2node->{type}{title} eq 'e2node' ) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            {
+                success => 0,
+                error   => 'invalid_parent',
+                message => 'Invalid e2node ID'
+            }
+        ];
+    }
+
+    # Check if e2node is locked (soft lock prevents new writeups)
+    my $node_lock = $DB->sqlSelectHashref('*', 'nodelock', "nodelock_node=$parent_e2node_id");
+    if ($node_lock) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 0,
+                error   => 'node_locked',
+                message => 'This node is locked and cannot accept new writeups'
+            }
+        ];
+    }
+
+    # Validate writeup type
+    unless ( $writeuptype_id > 0 ) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            {
+                success => 0,
+                error   => 'missing_writeuptype',
+                message => 'wrtype_writeuptype is required'
+            }
+        ];
+    }
+
+    my $writeuptype = $DB->getNodeById($writeuptype_id);
+    unless ( $writeuptype && $writeuptype->{type}{title} eq 'writeuptype' ) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            {
+                success => 0,
+                error   => 'invalid_writeuptype',
+                message => 'Invalid writeuptype ID'
+            }
+        ];
+    }
+
+    # Get writeup nodetype
+    my $writeup_type = $DB->getType('writeup');
+    unless ($writeup_type) {
+        return [
+            $self->HTTP_INTERNAL_SERVER_ERROR,
+            {
+                success => 0,
+                error   => 'config_error',
+                message => 'writeup nodetype not found'
+            }
+        ];
+    }
+
+# CRITICAL: Start transaction and acquire lock on e2node to prevent race conditions
+# Using SELECT ... FOR UPDATE to lock the e2node row
+    my $dbh = $DB->{dbh};
+
+    # Ensure we're in a transaction
+    $dbh->{AutoCommit} = 0
+      unless defined $dbh->{AutoCommit} && $dbh->{AutoCommit} == 0;
+
+    # Acquire lock on e2node row
+    my $lock_result = eval {
+        $dbh->do( "SELECT node_id FROM node WHERE node_id = ? FOR UPDATE",
+            {}, $e2node->{node_id} );
+    };
+
+    unless ($lock_result) {
+
+        # Rollback on lock failure
+        eval { $dbh->rollback(); } or do {
+            # Log rollback failure but continue with error response
+            $APP->devLog("Rollback failed after lock failure: $@");
+        };
+        return [
+            $self->HTTP_CONFLICT,
+            {
+                success => 0,
+                error   => 'node_locked',
+                message =>
+                  'E2node is locked by another operation. Please try again.'
+            }
+        ];
+    }
+
+    # Convert draft to writeup - update node type
+    my $update_result = $DB->sqlUpdate(
+        'node',
+        {
+            type_nodetype => $writeup_type->{node_id}
+        },
+        "node_id=$draft_id"
+    );
+
+    # Insert into writeup table
+    my $publishtime        = $data->{publishtime} || \'NOW()';
+    my $feedback_policy_id = int( $data->{feedback_policy_id} || 0 );
+
+    $DB->sqlInsert(
+        'writeup',
+        {
+            writeup_id         => $draft_id,
+            parent_e2node      => $parent_e2node_id,
+            wrtype_writeuptype => $writeuptype_id,
+            notnew             => 0, # New writeup, not migrated from old system
+            cooled             => 0, # Not cooled yet
+            publishtime        => $publishtime,
+            feedback_policy_id => $feedback_policy_id
+        }
+    );
+
+    # Delete from draft table (draft-specific data no longer needed)
+    $DB->sqlDelete( 'draft', "draft_id=$draft_id" );
+
+    # Add to e2node's nodegroup
+    # nodegroup_id = the e2node (parent), node_id = the writeup (member)
+    # Get max rank to add at end
+    my ($max_rank) = $DB->sqlSelect( 'MAX(nodegroup_rank)', 'nodegroup',
+        "nodegroup_id=$parent_e2node_id" );
+    my $new_rank = defined($max_rank) ? $max_rank + 1 : 0;
+
+    $DB->sqlInsert(
+        'nodegroup',
+        {
+            nodegroup_id   => $parent_e2node_id,
+            node_id        => $draft_id,
+            nodegroup_rank => $new_rank,
+            orderby        => $new_rank
+        }
+    );
+
+    # Add to newwriteup table for tracking
+    $DB->sqlInsert(
+        'newwriteup',
+        {
+            node_id => $draft_id,
+            notnew  => 0
+        }
+    );
+
+    # Add to publish table for tracking publication
+    $DB->sqlInsert(
+        'publish',
+        {
+            publish_id => $draft_id,
+            publisher  => $user_id
+        }
+    );
+
+    # Update cache - increment version and remove from cache
+    # The node is now in the wrong type cache (was draft, now writeup)
+    $DB->getCache->incrementGlobalVersion($draft);
+    $DB->getCache->removeNode($draft);
+
+    # Commit transaction (releases lock)
+    $DB->{dbh}->commit() unless $DB->{dbh}->{AutoCommit};
+
+    # Update newwriteups cache
+    $APP->updateNewWriteups();
+
+    # Add nodenote
+    eval {
+        $APP->addNodeNote( $draft,
+            "Published from draft by [$REQUEST->user->{title}\[user]]",
+            $REQUEST->user );
+        1;
+    } or do {
+        # Log but don't fail the request if nodenote fails
+        $APP->devLog("Failed to add nodenote for published draft $draft_id: $@");
+    };
+
+    return [
+        $self->HTTP_OK,
+        {
+            success    => 1,
+            writeup_id => $draft_id,
+            e2node_id  => $parent_e2node_id,
+            message    => 'Draft published successfully'
+        }
+    ];
+}
+
+sub render_preview {
+    my ( $self, $REQUEST ) = @_;
+
+    my $postdata = $REQUEST->POSTDATA;
+    $postdata = decode_utf8($postdata) if $postdata;
+
+    my $data;
+    my $json_ok = eval {
+        $data = JSON::decode_json($postdata);
+        1;
+    };
+    return [ $self->HTTP_BAD_REQUEST,
+        { success => 0, error => 'invalid_json' } ]
+      unless $json_ok && $data;
 
     my $html = $data->{html} // '';
 
     # Use E2's parseLinks to convert [link] syntax to actual links
-    my $APP = $self->APP;
+    my $APP      = $self->APP;
     my $rendered = $APP->parseLinks($html);
 
-    return [$self->HTTP_OK, {
-        success => 1,
-        html => $rendered
-    }];
+    return [
+        $self->HTTP_OK,
+        {
+            success => 1,
+            html    => $rendered
+        }
+    ];
 }
 
-around ['list_or_create', 'get_or_update', 'render_preview'] => \&Everything::API::unauthorized_if_guest;
+around [ 'list_or_create', 'get_or_update', 'set_parent_e2node',
+    'publish_draft', 'render_preview' ] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 

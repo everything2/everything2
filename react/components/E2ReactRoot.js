@@ -423,8 +423,6 @@ class E2ReactRoot extends React.Component {
             <Epicenter
               id="epicenter"
               user={this.state.user}
-              votesLeft={this.state.epicenter?.votesLeft}
-              cools={this.state.epicenter?.cools}
               localTimeUse={this.state.epicenter?.localTimeUse}
               userSettingsId={this.state.epicenter?.userSettingsId}
               helpPage={this.state.epicenter?.helpPage}

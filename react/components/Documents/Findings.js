@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 
-const INITIAL_DISPLAY_COUNT = 10;
-
 const Findings = ({ data }) => {
   const { no_search_term, message, search_term, findings = [], lastnode_id, is_guest, has_excerpts } = data;
 
   const [searchValue, setSearchValue] = useState(search_term || '');
   const [soundex, setSoundex] = useState(false);
   const [matchAll, setMatchAll] = useState(false);
-  const [showAll, setShowAll] = useState(false);
-
-  // Determine which findings to display
-  const displayedFindings = showAll ? findings : findings.slice(0, INITIAL_DISPLAY_COUNT);
-  const hasMore = findings.length > INITIAL_DISPLAY_COUNT;
 
   if (no_search_term) {
     return (
@@ -32,7 +25,7 @@ const Findings = ({ data }) => {
       </p>
 
       <ul style={styles.findingsList}>
-        {displayedFindings.map((finding) => (
+        {findings.map((finding) => (
           <li
             key={finding.node_id}
             className={finding.is_nodeshell ? 'nodeshell' : ''}
@@ -42,21 +35,18 @@ const Findings = ({ data }) => {
               {finding.title}
             </a>
             {finding.type !== 'e2node' && <span> ({finding.type})</span>}
+            {finding.writeup_count > 1 && <span> ({finding.writeup_count} entries)</span>}
             {finding.excerpt && (
-              <p style={styles.excerpt}>{finding.excerpt}</p>
+              <a
+                href={`/?node_id=${finding.node_id}${is_guest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}
+                style={styles.excerptLink}
+              >
+                <p style={styles.excerpt}>{finding.excerpt}</p>
+              </a>
             )}
           </li>
         ))}
       </ul>
-
-      {hasMore && !showAll && (
-        <button
-          onClick={() => setShowAll(true)}
-          style={styles.showMoreButton}
-        >
-          Show {findings.length - INITIAL_DISPLAY_COUNT} more results
-        </button>
-      )}
 
       {findings.length === 0 && (
         <p style={styles.noResults}>No results found.</p>
@@ -64,7 +54,11 @@ const Findings = ({ data }) => {
 
       {/* Create new node form */}
       <div style={styles.createSection}>
-        <p>Since we didn't find what you were looking for, you can search again, or create a new draft or e2node (page):</p>
+        <p>
+          {is_guest
+            ? "Since we didn't find what you were looking for, you can search again:"
+            : "Since we didn't find what you were looking for, you can search again, or create a new draft or e2node (page):"}
+        </p>
 
         {/* Search again form */}
         <form method="get" action="/" style={styles.form}>
@@ -108,32 +102,34 @@ const Findings = ({ data }) => {
           </fieldset>
         </form>
 
-        {/* Create new form */}
-        <form method="get" action="/" style={styles.form}>
-          <fieldset style={styles.fieldset}>
-            <legend>Create new...</legend>
-            <small>You can correct the spelling or capitalization here.</small>
-            <br />
-            <input
-              type="text"
-              name="node"
-              defaultValue={search_term}
-              size="50"
-              maxLength="100"
-              style={styles.textInput}
-            />
-            <input type="hidden" name="lastnode_id" value={lastnode_id} />
-            <input type="hidden" name="op" value="new" />
-            {' '}
-            <button type="submit" name="type" value="draft" style={styles.button}>
-              New draft
-            </button>
-            {' '}
-            <button type="submit" name="type" value="e2node" style={styles.button}>
-              New node
-            </button>
-          </fieldset>
-        </form>
+        {/* Create new form - only for logged-in users */}
+        {!is_guest && (
+          <form method="get" action="/" style={styles.form}>
+            <fieldset style={styles.fieldset}>
+              <legend>Create new...</legend>
+              <small>You can correct the spelling or capitalization here.</small>
+              <br />
+              <input
+                type="text"
+                name="node"
+                defaultValue={search_term}
+                size="50"
+                maxLength="100"
+                style={styles.textInput}
+              />
+              <input type="hidden" name="lastnode_id" value={lastnode_id} />
+              <input type="hidden" name="op" value="new" />
+              {' '}
+              <button type="submit" name="type" value="draft" style={styles.button}>
+                New draft
+              </button>
+              {' '}
+              <button type="submit" name="type" value="e2node" style={styles.button}>
+                New node
+              </button>
+            </fieldset>
+          </form>
+        )}
       </div>
     </div>
   );
@@ -177,16 +173,10 @@ const styles = {
     lineHeight: '1.5',
     fontStyle: 'normal'
   },
-  showMoreButton: {
-    display: 'block',
-    margin: '20px auto',
-    padding: '10px 20px',
-    background: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px'
+  excerptLink: {
+    textDecoration: 'none',
+    color: 'inherit',
+    display: 'block'
   },
   noResults: {
     fontSize: '16px',

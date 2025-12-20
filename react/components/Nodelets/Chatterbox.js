@@ -759,7 +759,7 @@ const Chatterbox = (props) => {
       {/* Chatter display - polling-based */}
       <div id="chatterbox_chatter" style={{
         marginBottom: '12px',
-        minHeight: '200px',  // Fixed min height prevents layout shift
+        minHeight: chatter.length > 0 ? '200px' : 'auto',  // Only use min height when there are messages
         maxHeight: '400px',
         overflowY: 'auto'
       }}>
@@ -809,7 +809,7 @@ const Chatterbox = (props) => {
                   <div key={msg.message_id} style={{ padding: '4px 8px', borderBottom: '1px solid #f0f0f0' }}>
                     {parseMessageText(msg)}
                     <span style={{ color: '#999', fontSize: '10px', marginLeft: '8px' }}>
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                     </span>
                   </div>
                 ))}

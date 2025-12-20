@@ -69,35 +69,110 @@ During the rapid development period, we may be changing the APIs, but we will be
 
 This section documents the automated test coverage for each API endpoint. Coverage indicates how many endpoints have dedicated test suites verifying their functionality.
 
+**Last Updated**: 2025-12-17
+
 | API Module | Endpoints | Tested | Coverage | Test File |
 |------------|-----------|--------|----------|-----------|
-| Sessions | 3 | 3 | ✅ 100% | t/002_sessions_api.t (41 tests) |
-| Node Notes | 3 | 3 | ✅ 100% | t/026_nodenotes_api.t (66 tests) |
-| Tests | 1 | 1 | ✅ 100% | t/003_api_versions.t (8 tests) |
-| Nodes | 7 | 1 | ⚠️ 14% | t/027_nodes_api_clone.t (45 tests for clone only) |
-| Users | 7 | 0 | ❌ 0% | None |
-| Usergroups | 9 | 0 | ❌ 0% | None |
-| Writeups | 7 | 0 | ❌ 0% | None |
-| E2nodes | 7 | 0 | ❌ 0% | None |
-| Drafts | 5 | 0 | ❌ 0% | None |
-| Autosave | 4 | 0 | ❌ 0% | None |
-| Messages | 6 | 6 | ✅ 100% | t/032_messages_api.t (37 tests) |
-| Message Ignores | 4 | 0 | ❌ 0% | None |
-| System Utilities | 1 | 0 | ❌ 0% | None |
-| Preferences | 2 | 2 | ✅ 100% | t/030_preferences_api.t (50 tests) |
-| New Writeups | 1 | 1 | ✅ 100% | t/031_newwriteups_api.t (33 tests) |
-| Hide Writeups | 2 | 2 | ✅ 100% | t/029_hidewriteups_api.t (32 tests) |
-| Developer Variables | 1 | 1 | ✅ 100% | t/028_developervars_api.t (23 tests) |
-| Personal Links | 4 | 4 | ✅ 100% | t/033_personallinks_api.t (18 tests) |
-| Polls | 2 | 2 | ✅ 100% | t/034_poll_api.t (62 tests) |
-| Chatroom | 3 | 3 | ✅ 100% | t/035_chatroom_api.t (TBD tests) |
-| Wheel | 1 | 1 | ✅ 100% | t/047_wheel_api.t (TBD tests) |
+| **Core User & Content** |
+| Sessions | 3 | 3 | ✅ 100% | [t/002_sessions_api.t](../t/002_sessions_api.t) (41 tests) |
+| Signup | 1 | 1 | ✅ 100% | [t/063_signup_api.t](../t/063_signup_api.t) (85 tests, MockRequest) |
+| Users | 7 | 1 | ⚠️ 14% | [t/048_user_api.t](../t/048_user_api.t) (partial coverage) |
+| Usergroups | 9 | 3 | ⚠️ 33% | [t/004_usergroups.t](../t/004_usergroups.t) (create, add, remove) |
+| Writeups | 7 | 7 | ✅ 100% | [t/056_writeups_api.t](../t/056_writeups_api.t) (33 tests, MockRequest) |
+| E2nodes | 7 | 7 | ✅ 100% | [t/061_e2nodes_api.t](../t/061_e2nodes_api.t) (23 tests, MockRequest) |
+| Nodes | 7 | 2 | ⚠️ 29% | [t/022_nodes_api_clone.t](../t/022_nodes_api_clone.t), [t/025_nodes_api_delete.t](../t/025_nodes_api_delete.t) |
+| **Editor Features** |
+| Drafts | 5 | 0 | ❌ 0% | None - **HIGH PRIORITY** (E2 Editor Beta) |
+| Autosave | 5 | 0 | ❌ 0% | None - **HIGH PRIORITY** (E2 Editor Beta) |
+| Hide Writeups | 2 | 2 | ✅ 100% | [t/028_hidewriteups_api.t](../t/028_hidewriteups_api.t) (32 tests) |
+| Node Notes | 3 | 3 | ✅ 100% | [t/021_nodenotes_api.t](../t/021_nodenotes_api.t) (66 tests) |
+| Node Parameter | 3 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** |
+| Writeup Reparent | 1 | 1 | ✅ 100% | [t/053_writeup_reparent_api.t](../t/053_writeup_reparent_api.t) |
+| **Messaging & Social** |
+| Messages | 7 | 7 | ✅ 100% | [t/032_messages_api.t](../t/032_messages_api.t) (37 tests) + integration tests |
+| Message Ignores | 4 | 4 | ✅ 100% | [t/059_messageignores_api.t](../t/059_messageignores_api.t) (62 tests, MockRequest) |
+| User Interactions | 3 | 0 | ❌ 0% | None - **HIGH PRIORITY** (blocking) |
+| Notifications | 2 | 2 | ✅ 100% | [t/040_notifications_api.t](../t/040_notifications_api.t) + integration tests |
+| Personal Links | 4 | 4 | ✅ 100% | [t/033_personallinks_api.t](../t/033_personallinks_api.t) (18 tests) |
+| **Chat & Rooms** |
+| Chatroom | 3 | 3 | ✅ 100% | [t/035_chatroom_api.t](../t/035_chatroom_api.t) |
+| Chatter | 2 | 2 | ✅ 100% | [t/038_chatter_api.t](../t/038_chatter_api.t) + [t/027_chatterbox_cleanup.t](../t/027_chatterbox_cleanup.t) |
+| Spamcannon | 1 | 1 | ✅ 100% | [t/052_spamcannon_api.t](../t/052_spamcannon_api.t) (bulk messaging) |
+| Bouncer | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (chanop tool) |
+| **Voting & Reputation** |
+| Vote | 1 | 1 | ✅ 100% | [t/064_vote_api.t](../t/064_vote_api.t) (37 tests, security-focused) |
+| Cool | 3 | 3 | ✅ 100% | [t/062_cool_api.t](../t/062_cool_api.t) (MockRequest) |
+| Cool Archive | 1 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** |
+| Page of Cool | 1 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** |
+| Reputation | 1 | 0 | ❌ 0% | None - **HIGH PRIORITY** (vote analysis) |
+| **Polls** |
+| Poll | 2 | 2 | ✅ 100% | [t/034_poll_api.t](../t/034_poll_api.t) (62 tests) |
+| Poll Creator | 1 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** |
+| Polls | 3 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** (admin) |
+| **User Preferences & Settings** |
+| Preferences | 4 | 4 | ✅ 100% | [t/029_preferences_api.t](../t/029_preferences_api.t) (50 tests) OR [t/057_preferences_api.t](../t/057_preferences_api.t) (32 tests, MockRequest) **DUPLICATE** |
+| Developer Vars | 1 | 1 | ✅ 100% | [t/024_developervars_api.t](../t/024_developervars_api.t) (23 tests) OR [t/058_developervars_api.t](../t/058_developervars_api.t) (11 tests, MockRequest) **DUPLICATE** |
+| Nodelets | 2 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** (UI customization) |
+| **Discovery & Search** |
+| New Writeups | 1 | 1 | ✅ 100% | [t/030_newwriteups_api.t](../t/030_newwriteups_api.t) (33 tests) |
+| User Search | 1 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** |
+| Between the Cracks | 1 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** (voter engagement) |
+| Trajectory | 1 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** (analytics) |
+| Levels | 1 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** (gamification) |
+| **Admin & Moderation** |
+| Admin | 4 | 4 | ✅ 100% | [t/051_admin_api.t](../t/051_admin_api.t) (admin node editing) |
+| System Utilities | 1 | 1 | ✅ 100% | [t/060_systemutilities_api.t](../t/060_systemutilities_api.t) (11 tests, MockRequest) |
+| Superbless | 5 | 0 | ❌ 0% | None - **LOW PRIORITY** (admin grants) |
+| Suspension | 5 | 0 | ❌ 0% | None - **HIGH PRIORITY** (moderation) |
+| Easter Eggs | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (special events) |
+| Teddy Bear | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (fun feature) |
+| List Nodes | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (dev tool) |
+| **Other** |
+| Weblog | 1 | 0 | ❌ 0% | None - **MEDIUM PRIORITY** |
+| Wheel | 1 | 1 | ✅ 100% | [t/045_wheel_api.t](../t/045_wheel_api.t) |
+| Tests | 1 | 1 | ✅ 100% | [t/003_api_versions.t](../t/003_api_versions.t) (8 tests - version testing) |
+| Catchall | 0 | 0 | ⚠️ N/A | Empty placeholder module |
 
-**Overall API Test Coverage: ~42%** (31 of ~73 endpoints have dedicated tests)
+**Overall API Test Coverage: 50%** (25 of 50 modules have tests)
 
-**Infrastructure Tests:**
-- t/001_api_routing.t - General API routing (2 tests)
-- t/025_api_content_encoding.t - Content-Encoding headers (24 tests)
+**Key Metrics:**
+- Total API Modules: 50
+- Fully Tested: 22 modules (44%)
+- Partially Tested: 3 modules (6%)
+- No Tests: 25 modules (50%)
+- Test Files: 27 files
+- Modern MockRequest Tests: 7 files (294 tests total)
+
+**Test Infrastructure:**
+- [t/001_api_routing.t](../t/001_api_routing.t) - General API routing (2 tests)
+- [t/025_api_content_encoding.t](../t/025_api_content_encoding.t) - Content-Encoding headers (24 tests)
+- [t/lib/MockUser.pm](../t/lib/MockUser.pm) - Shared mock user class
+- [t/lib/MockRequest.pm](../t/lib/MockRequest.pm) - Shared mock request class
+
+**Issues to Resolve:**
+1. **Duplicate Test Files**:
+   - developervars: t/024 (23 tests) vs t/058 (11 tests, MockRequest) - **Keep 058 or merge**
+   - preferences: t/029 (50 tests) vs t/057 (32 tests, MockRequest) - **Keep 057 or merge**
+
+2. **High Priority Missing Tests** (Security/Core):
+   - signup.pm - User registration with reCAPTCHA
+   - vote.pm - Core voting system
+   - reputation.pm - Vote analysis
+   - suspension.pm - User moderation
+   - userinteractions.pm - User blocking
+   - drafts.pm - E2 Editor Beta
+   - autosave.pm - E2 Editor Beta
+
+3. **Undocumented APIs** (32 modules not documented in API.md):
+   - admin, betweenthecracks, bouncer, catchall, chatter, cool_archive, easter_eggs
+   - levels, list_nodes, node_parameter, nodelets, notifications, page_of_cool
+   - poll_creator, reputation, signup, spamcannon, superbless, suspension
+   - teddybear, trajectory, user_search, userinteractions, weblog, writeup_reparent
+   - And others - see comprehensive analysis for details
+
+---
+
+**Modernization Status**: ✅ All 50 modules use modern `routes()` method - No legacy `command_post` patterns remain!
 
 ## Node requests
 

@@ -38,18 +38,20 @@ const MessageList = (props) => {
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp)
     if (compact) {
-      // Compact format for mini-messages: "12:34 PM"
+      // Compact format for mini-messages: "14:34" (24-hour time to save space)
       return date.toLocaleTimeString('en-US', {
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: false
       })
     } else {
-      // Full format for Messages nodelet: "Dec 25, 12:34 PM"
+      // Full format for Messages nodelet: "Dec 25, 14:34" (24-hour time)
       return date.toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: false
       })
     }
   }

@@ -30,6 +30,26 @@ sub single_writeup_display
 
   $values->{writeuptype} = $self->writeuptype;
 
+  # Add author lasttime data for logged-in users
+  # Used for "time since author was here" display
+  my $author = $self->author;
+  if($author && !UNIVERSAL::isa($author, "Everything::Node::null"))
+  {
+    my $author_vars = $author->VARS || {};
+
+    # Add lasttime (as ISO date)
+    if($author->lasttime)
+    {
+      $values->{author}{lasttime} = $self->APP->iso_date_format($author->lasttime);
+    }
+
+    # Add hidelastseen flag so React can respect author's privacy setting
+    $values->{author}{hidelastseen} = int($author_vars->{hidelastseen} || 0);
+
+    # Mark if author is a bot (Webster 1913)
+    $values->{author}{is_bot} = ($author->title eq 'Webster 1913') ? 1 : 0;
+  }
+
   return $values if $user->is_guest;
 
   my $vote = $self->user_has_voted($user);
@@ -52,9 +72,82 @@ sub single_writeup_display
     $values->{vote} = $vote->{weight};
   }
 
-  if($self->parent)
+  my $parent = $self->parent;
+  if($parent && !UNIVERSAL::isa($parent, "Everything::Node::null"))
   {
-    $values->{parent} = $self->parent->json_reference;
+    $values->{parent} = $parent->json_reference;
+    # Add writeup count from parent's group
+    my $parent_group = $parent->group || [];
+    $values->{parent}{writeup_count} = scalar(@$parent_group);
+  }
+
+  # Add insured status for editors
+  if($user->is_editor)
+  {
+    my $insured_status = $self->DB->getNode('insured', 'publication_status');
+    if($insured_status)
+    {
+      my $current_status = $self->DB->sqlSelect('publication_status', 'draft', "draft_id=" . $self->node_id);
+      $values->{insured} = ($current_status && $current_status == $insured_status->{node_id}) ? 1 : 0;
+
+      # If insured, get publisher info
+      if($values->{insured})
+      {
+        my $publisher_id = $self->DB->sqlSelect('publisher', 'publish', "publish_id=" . $self->node_id);
+        if($publisher_id)
+        {
+          my $publisher = $self->APP->node_by_id($publisher_id);
+          if($publisher && $publisher->type->title eq 'user')
+          {
+            $values->{insured_by} = {
+              node_id => $publisher->node_id,
+              title => $publisher->title
+            };
+          }
+        }
+      }
+    }
+
+    # Check if the parent e2node has an editor cool
+    if($parent && !UNIVERSAL::isa($parent, "Everything::Node::null"))
+    {
+      my $coollink_type = $self->DB->getNode('coollink', 'linktype');
+      if($coollink_type)
+      {
+        my $edcool_link = $self->DB->sqlSelectHashref('to_node', 'links',
+          'from_node=' . $parent->node_id . ' AND linktype=' . $coollink_type->{node_id} . ' LIMIT 1');
+        $values->{edcooled} = $edcool_link ? 1 : 0;
+      }
+    }
+  }
+
+  # Check if user has bookmarked this writeup
+  if(!$user->is_guest)
+  {
+    my $bookmark_type = $self->DB->getNode('bookmark', 'linktype');
+    if($bookmark_type)
+    {
+      my $bookmark_link = $self->DB->sqlSelectHashref('*', 'links',
+        'from_node=' . $user->node_id . ' AND to_node=' . $self->node_id . ' AND linktype=' . $bookmark_type->{node_id});
+      $values->{bookmarked} = $bookmark_link ? 1 : 0;
+    }
+
+    # Add social sharing information if user hasn't disabled it
+    my $user_vars = $user->VARS;
+    unless($user_vars->{nosocialbookmarking})
+    {
+      # Generate short URL for social sharing
+      my $short_url = $self->APP->create_short_url($self->NODEDATA);
+      my $share_title = $self->title;
+      if($parent && !UNIVERSAL::isa($parent, "Everything::Node::null"))
+      {
+        $share_title = $parent->title;
+      }
+      $values->{social_share} = {
+        short_url => $short_url,
+        title => $share_title
+      };
+    }
   }
 
   return $values;

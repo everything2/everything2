@@ -136,6 +136,14 @@
               "ManagedRuleGroupStatement": {
                 "VendorName": "AWS",
                 "Name": "AWSManagedRulesCommonRuleSet",
+                "RuleActionOverrides": [
+                  {
+                    "Name": "SizeRestrictions_BODY",
+                    "ActionToUse": {
+                      "Count": {}
+                    }
+                  }
+                ],
                 "ScopeDownStatement": {
                   "NotStatement": {
                     "Statement": {
@@ -185,7 +193,7 @@
             "Name": "AWS-AWSManagedRulesBotControlRuleSet",
             "Priority": 3,
             "OverrideAction": {
-              "None": {}
+              "Count": {}
             },
             "Statement": {
               "ManagedRuleGroupStatement": {
@@ -281,7 +289,7 @@
             },
             "Statement": {
               "RateBasedStatement": {
-                "Limit": 500,
+                "Limit": 400,
                 "AggregateKeyType": "IP"
               }
             },

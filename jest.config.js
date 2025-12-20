@@ -45,7 +45,10 @@ module.exports = {
   },
 
   // Coverage reporters
-  coverageReporters: ['text', 'lcov', 'html'],
+  coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
+
+  // Coverage directory
+  coverageDirectory: '<rootDir>/coverage/react',
 
   // Ignore patterns
   testPathIgnorePatterns: ['/node_modules/'],

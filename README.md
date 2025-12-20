@@ -1,5 +1,8 @@
 # Everything2
 
+![Perl Coverage](coverage/badges/perl-coverage.svg)
+![React Coverage](coverage/badges/react-coverage.svg)
+
 Everything2 is a user-submitted content website emphasizing writing and connectivity between entries. Visit us at [everything2.com](https://everything2.com).
 
 ## Getting Started
@@ -58,13 +61,11 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 | SQL Injection Fixes | ✅ Complete | 4/4 critical vulnerabilities fixed |
 | Database Code Removal | 🔄 In Progress | 81% migrated to filesystem |
 | Testing Infrastructure | ✅ Complete | Automated in build process |
-| Code Coverage Tracking | 🔄 Infrastructure Ready | Blocked by mod_perl architecture* |
+| Code Coverage Tracking | ✅ Working | Mock-based tests enable coverage tracking |
 | Mobile Responsiveness | ⚠️ Critical Gap | Zero mobile CSS currently |
 | jQuery Removal | 📋 Planned | jQuery 1.11.1 → React/vanilla JS |
 
-*Requires PSGI/Plack migration for full coverage measurement.
-
-See [docs/status.md](docs/status.md) for detailed progress tracking.
+See [docs/status.md](docs/status.md) for detailed progress tracking and [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for coverage details.
 
 ## Testing
 
@@ -77,9 +78,11 @@ Tests run automatically during `./docker/devbuild.sh`. To run manually:
 ./tools/coverage.sh                # Run tests with code coverage
 ```
 
-**Current Status:** 11/13 test files passing (572/576 tests), Perl::Critic checks passing (235/235 modules).
+**Current Status:** All tests passing, Perl::Critic checks passing (235/235 modules).
 
-**Code Coverage:** 0%* - Infrastructure ready with Devel::Cover, blocked by mod_perl architecture. Requires PSGI/Plack migration for full coverage. See [Code Coverage Guide](docs/code-coverage.md) and [Priority 8: PSGI Migration](docs/modernization-priorities.md#priority-8-psgiplack-migration-) for details.
+**Code Coverage:** ![Perl Coverage](coverage/badges/perl-coverage.svg) ![React Coverage](coverage/badges/react-coverage.svg)
+
+Coverage is now tracked via mock-based API tests and Jest. Badges update automatically during `./docker/devbuild.sh` runs. See [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for detailed coverage reports and [Code Coverage Guide](docs/code-coverage.md) for methodology.
 
 ## Contributing
 
@@ -151,7 +154,7 @@ See the Perl documentation for details on these licenses.
 
 ---
 
-**Last Updated:** 2025-11-08
-**Build Status:** ✅ 11/13 test files passing (572/576 tests), Perl::Critic 235/235 modules
-**Code Coverage:** 📊 Infrastructure configured with Devel::Cover
-**Modernization:** 📚 Comprehensive documentation available in [docs/](docs/)
+**Last Updated:** 2025-12-17
+**Build Status:** ✅ All tests passing, Perl::Critic 235/235 modules
+**Code Coverage:** ![Perl](coverage/badges/perl-coverage.svg) ![React](coverage/badges/react-coverage.svg) - See [COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md)
+**Modernization:** 📚 See [DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) for 12-phase modernization plan

@@ -14,7 +14,7 @@
  *   login [username]           - Login as test user and take screenshot
  *   fetch [username] [url]     - Fetch URL as authenticated user, output page info
  *   screenshot-as [username] [url] - Take screenshot as authenticated user
- *   html [username] [url]      - Fetch URL as authenticated user, output raw HTML
+ *   html [username] [url]      - Fetch URL as user (use "guest" for unauthenticated), output raw HTML
  *   post [username] [url] [json] - POST JSON to API endpoint as authenticated user
  *   delete [username] [url]     - DELETE request to API endpoint as authenticated user
  *
@@ -380,7 +380,21 @@ async function screenshotAsUser(username, url = BASE_URL) {
 }
 
 async function getHtmlAsUser(username, url = BASE_URL) {
-  const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
+  let browser, page;
+
+  // Special case: "guest" means unauthenticated
+  if (username === 'guest') {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 1024 });
+  } else {
+    const session = await createAuthenticatedSession(username, url);
+    browser = session.browser;
+    page = session.page;
+  }
 
   // Navigate to target URL
   await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });

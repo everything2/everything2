@@ -1,7 +1,10 @@
 # Everything2 Modernization Priorities
 
 **Date:** 2025-11-09
+**Last Updated:** 2025-12-17
 **Status:** Planning Phase
+
+> **Note**: See [Developer Roadmap](DEVELOPER-ROADMAP.md) for comprehensive technical roadmap (Dec 2025)
 
 ## Executive Summary
 

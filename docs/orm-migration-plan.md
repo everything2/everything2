@@ -29,14 +29,15 @@ This document outlines a comprehensive plan to migrate Everything2's custom node
 ## Table of Contents
 
 1. [Current Architecture Analysis](#current-architecture-analysis)
-2. [ORM Evaluation](#orm-evaluation)
-3. [Migration Strategy](#migration-strategy)
-4. [Implementation Phases](#implementation-phases)
-5. [Technical Design](#technical-design)
-6. [Risk Mitigation](#risk-mitigation)
-7. [Testing Strategy](#testing-strategy)
-8. [Performance Considerations](#performance-considerations)
-9. [Rollback Plan](#rollback-plan)
+2. [Everything::Node Architecture Evaluation](#everythingnode-architec22ture-evaluation)
+3. [ORM Evaluation](#orm-evaluation)
+4. [Migration Strategy](#migration-strategy)
+5. [Implementation Phases](#implementation-phases)
+6. [Technical Design](#technical-design)
+7. [Risk Mitigation](#risk-mitigation)
+8. [Testing Strategy](#testing-strategy)
+9. [Performance Considerations](#performance-considerations)
+10. [Rollback Plan](#rollback-plan)
 
 ---
 
@@ -124,6 +125,1761 @@ WHERE node_id=123
 - No compile-time type checking
 - Mixed hashref/blessed object usage
 - Inconsistent error handling
+
+---
+
+## Everything::Node Architecture Evaluation
+## Business Logic Encapsulation and ORM Integration Strategy
+
+**Updated**: 2025-12-19
+**Purpose**: Evaluate whether Everything::Node's OO design should be preserved in ORM migration
+**Context**: Post-React migration application cleanup planning
+
+### Executive Recommendation
+
+**PRESERVE and ENHANCE** the Everything::Node object-oriented architecture when migrating to DBIx::Class.
+
+**Key Decision**: Maintain two-layer architecture:
+- **DBIx::Class** = Persistence layer (database access, relationships, queries)
+- **Everything::Node** = Domain layer (business logic, permissions, type behavior)
+
+**Critical Insight**: Everything::Node provides more than just data access - it encapsulates 60+ type-specific classes with business logic that would be lost if eliminated.
+
+### What Everything::Node Provides
+
+#### 1. Type-Specific Behavior Encapsulation
+
+Everything::Node is **NOT** just a thin wrapper around database rows. It provides rich business logic:
+
+**Example: Everything::Node::user** (680 lines)
+
+```perl
+package Everything::Node::user;
+extends 'Everything::Node::document';
+
+# Permission checking methods (NOT in database)
+sub is_guest { ... }
+sub is_editor { ... }
+sub is_admin { ... }
+sub is_chanop { ... }
+
+# Complex business logic
+sub deliver_message {
+  # Handles message forwarding, recursion detection, ignore checks
+  if (my $forward_to = $self->message_forward_to) {
+    $messagedata->{recurse_counter}++;
+    return $forward_to->deliver_message($messagedata);
+  }
+
+  # Check if recipient is ignoring sender
+  my $ignoring = $self->DB->sqlSelect(...)
+  return {"ignores" => 1} if $ignoring;
+
+  # Insert message
+  $self->DB->sqlInsert("message", {...});
+}
+
+# Calculated fields (not stored in database)
+sub numcools {
+  return $self->DB->sqlSelect("count(*)", "coolwriteups",
+    "cooledby_user=".$self->node_id);
+}
+
+sub is_online {
+  return $self->DB->sqlSelect("count(*)", "room",
+    "member_user=".$self->node_id);
+}
+
+# Relationship navigation
+sub usergroup_memberships { ... }  # Returns array of usergroup objects
+sub editable_categories { ... }    # Permission-filtered categories
+sub available_weblogs { ... }      # UI configuration
+```
+
+**Why This Matters**:
+- Controller code: `$user->is_editor` (clean, readable)
+- Without Node classes: `$APP->isEditor($USER)` or scattered SQL
+- Type polymorphism: `$node->json_display` works for ANY node type
+
+#### 2. Permission System Abstraction
+
+**Base Class** (Everything::Node):
+
+```perl
+sub can_read_node {
+  my ($self, $user) = @_;
+  return $self->DB->canReadNode($user->NODEDATA, $self->NODEDATA);
+}
+
+sub can_update_node {
+  my ($self, $user) = @_;
+  return $self->DB->canUpdateNode($user->NODEDATA, $self->NODEDATA);
+}
+```
+
+**Usage in Controllers**:
+```perl
+# Clean, self-documenting
+return [403, {error => 'Forbidden'}] unless $node->can_update_node($user);
+```
+
+**Without Node Classes** (bad):
+```perl
+# Harder to read, permission logic exposed
+return [403, {error => 'Forbidden'}]
+  unless $DB->canUpdateNode($USER, $NODE);
+```
+
+#### 3. JSON Serialization for React
+
+**Base Class**:
+
+```perl
+sub json_reference {
+  return { node_id => ..., title => ..., type => ... };
+}
+
+sub json_display {
+  my $values = $self->json_reference;
+  $values->{author} = $self->author->json_reference;
+  $values->{createtime} = $self->APP->iso_date_format($self->createtime);
+  return $values;
+}
+```
+
+**Type-Specific Overrides** (Everything::Node::writeup):
+
+```perl
+override 'json_display' => sub {
+  my ($self, $user) = @_;
+  my $values = super();
+
+  # Type-specific data
+  $values->{cools} = $self->cools;
+  $values->{writeuptype} = $self->writeuptype;
+
+  # Permission-filtered data (only show rep to voters/author)
+  if ($vote || $self->author_user == $user->node_id) {
+    $values->{reputation} = int($self->reputation);
+    $values->{upvotes} = int($self->upvotes);
+    $values->{downvotes} = int($self->downvotes);
+  }
+
+  # Relationship data
+  $values->{parent} = $self->parent->json_reference;
+  $values->{insured} = 1 if $is_insured;
+
+  return $values;
+};
+```
+
+**Why This Matters**:
+- React components receive clean JSON via `$node->json_display($user)`
+- Type polymorphism: writeup, e2node, user all implement custom serialization
+- User-specific data filtering built-in
+
+#### 4. Type Inheritance Hierarchy
+
+**Example Chain**:
+
+```
+Everything::Node (base)
+  ↓
+Everything::Node::document (adds doctext)
+  ↓ (two branches)
+  ├─ Everything::Node::user
+  └─ Everything::Node::writeup
+```
+
+**Benefits**:
+- Method inheritance: writeup gets document's methods automatically
+- Override points: `json_display` customized per type
+- Shared behavior: all documents have `doctext` accessor
+
+### Three-Layer Architecture (Current)
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Controllers / Page Classes / API Endpoints          │
+│                                                      │
+│ Uses: $user->title, $user->is_editor                │
+│       $writeup->parent->firmlinks                   │
+│       $node->can_update_node($user)                 │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ Everything::Node (Domain Layer - 60+ types)         │
+│                                                      │
+│ ├─ Everything::Node (base - 458 lines)              │
+│ │  - Wraps NODEDATA hashref                         │
+│ │  - OO interface: title, author, type              │
+│ │  - Permissions: can_read, can_update, can_delete  │
+│ │  - CRUD: insert, update, delete                   │
+│ │  - JSON: json_reference, json_display             │
+│ │                                                    │
+│ ├─ Type-Specific Subclasses:                        │
+│ │  - Everything::Node::user (680 lines)             │
+│ │    * is_guest, is_editor, deliver_message         │
+│ │    * experience, GP, karma, coolsleft             │
+│ │  - Everything::Node::writeup (296 lines)          │
+│ │    * parent, reputation, user_has_voted           │
+│ │    * cools, writeuptype, is_junk                  │
+│ │  - Everything::Node::e2node                       │
+│ │    * firmlinks, softlinks, group                  │
+│ │  - ... (50+ more types)                           │
+│ │                                                    │
+│ └─ Key Insight: BUSINESS LOGIC, not just accessors  │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ Everything::NodeBase (Persistence - 2,925 lines)    │
+│                                                      │
+│ - Database abstraction                              │
+│ - getNode, getNodeById, insertNode, updateNode      │
+│ - Multi-table joins for inheritance                 │
+│ - SQL construction and execution                    │
+│ - Returns: hashrefs (NODEDATA)                      │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ MySQL Database                                      │
+└─────────────────────────────────────────────────────┘
+```
+
+### Recommended Post-Migration Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Controllers / Page Classes / API Endpoints          │
+│                                                      │
+│ UNCHANGED - still uses:                             │
+│   $user->title, $user->is_editor                    │
+│   $writeup->parent->firmlinks                       │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ Everything::Node Domain Layer (PRESERVED)           │
+│                                                      │
+│ Changes:                                             │
+│ - NODEDATA now wraps DBIC Result instead of hashref │
+│ - Delegates field access to DBIC                    │
+│ - Business logic UNCHANGED                          │
+│                                                      │
+│ Example:                                             │
+│   sub experience {                                  │
+│     $self->NODEDATA->experience  # DBIC accessor    │
+│   }                                                 │
+│                                                      │
+│   sub is_editor {                                   │
+│     $self->APP->isEditor(...)  # Business logic     │
+│   }                                                 │
+└──────────────────────┬──────────────────────────────┘
+                       │ (wraps)
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ DBIx::Class Persistence Layer (NEW - REPLACES       │
+│                                NodeBase)             │
+│                                                      │
+│ ├─ Everything::Schema::Result::User                 │
+│ │  - Column accessors (auto-generated)              │
+│ │  - Relationships (belongs_to, has_many)           │
+│ │  - Multi-table inheritance (manual joins)         │
+│ │  - NO business logic (pure data access)           │
+│ │                                                    │
+│ ├─ Everything::Schema::Result::Writeup              │
+│ ├─ Everything::Schema::Result::E2node               │
+│ └─ ... (50+ Result classes)                         │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ MySQL Database (unchanged)                          │
+└─────────────────────────────────────────────────────┘
+```
+
+### Responsibility Split
+
+| Layer | Responsibilities | Examples |
+|-------|-----------------|----------|
+| **Controllers** | HTTP, request/response, routing | API endpoints, Page classes |
+| **Everything::Node** | Business logic, permissions, type behavior, JSON | `is_editor()`, `can_update_node()`, `json_display()` |
+| **DBIx::Class** | Database access, relationships, queries | Column accessors, `belongs_to`, `has_many` |
+| **MySQL** | Data storage | Tables, indexes |
+
+**Key Principle**: Domain logic in Node classes, persistence logic in DBIC.
+
+### Migration Strategy: Preserve Node Layer
+
+#### Phase 1: Dual Hashref/DBIC Support
+
+**Goal**: Make Node classes work with both hashrefs (legacy) and DBIC Results (new)
+
+**Before** (hashref access):
+```perl
+sub experience {
+  my $self = shift;
+  return $self->NODEDATA->{experience} || 0;
+}
+```
+
+**After** (dual support):
+```perl
+sub experience {
+  my $self = shift;
+  return $self->_get_field('experience') || 0;
+}
+
+sub _get_field {
+  my ($self, $field) = @_;
+
+  # DBIC Result object
+  if (blessed($self->NODEDATA) && $self->NODEDATA->can($field)) {
+    return $self->NODEDATA->$field;
+  }
+  # Legacy hashref
+  else {
+    return $self->NODEDATA->{$field};
+  }
+}
+```
+
+#### Phase 2: Update Factory Methods
+
+**Before** (NodeBase returns hashref):
+```perl
+sub node_by_id {
+  my ($self, $node_id) = @_;
+  my $hashref = $self->DB->getNodeById($node_id);
+  return $self->_bless_node($hashref);
+}
+```
+
+**After** (DBIC returns Result):
+```perl
+sub node_by_id {
+  my ($self, $node_id) = @_;
+
+  if ($self->CONF->{use_dbic}) {
+    my $result = $self->schema->resultset('Node')->find($node_id);
+    return $self->_bless_node($result);  # Wraps DBIC Result
+  } else {
+    my $hashref = $self->DB->getNodeById($node_id);
+    return $self->_bless_node($hashref);  # Legacy hashref
+  }
+}
+```
+
+**Feature Flag Rollout**:
+```perl
+# Start at 0%, gradually increase
+$Everything::CONF->{use_dbic} = 0;  # NodeBase
+$Everything::CONF->{use_dbic} = 1;  # DBIC
+```
+
+#### Phase 3: Migrate Business Logic to DBIC ResultSets
+
+**Before** (SQL in Node class):
+```perl
+package Everything::Node::user;
+
+sub numcools {
+  my $self = shift;
+  return $self->DB->sqlSelect(
+    "count(*)",
+    "coolwriteups",
+    "cooledby_user=".$self->node_id
+  );
+}
+```
+
+**After** (delegate to DBIC relationship):
+```perl
+package Everything::Node::user;
+
+sub numcools {
+  my $self = shift;
+  return $self->NODEDATA->coolwriteups->count;  # DBIC
+}
+
+# In Everything::Schema::Result::User:
+__PACKAGE__->has_many(
+  coolwriteups => 'Everything::Schema::Result::Coolwriteup',
+  { 'foreign.cooledby_user' => 'self.user_id' }
+);
+```
+
+**Benefits**:
+- Cleaner separation: business logic delegates to persistence
+- Better query optimization (DBIC prefetch)
+- Easier to test (mock DBIC relationships)
+
+### Code Example: User Node with DBIC Backend
+
+```perl
+package Everything::Node::user;
+use Moose;
+extends 'Everything::Node::document';
+
+# NODEDATA is now Everything::Schema::Result::User (DBIC)
+# Inherits: has 'NODEDATA' => (isa => "Object", ...);
+
+# Simple field accessors (delegate to DBIC)
+sub experience { shift->_get_field('experience') || 0 }
+sub GP { shift->_get_field('GP') || 0 }
+sub lasttime { shift->_get_field('lasttime') }
+
+# VARS field (DBIC inflates from JSON automatically)
+sub VARS {
+  my $self = shift;
+  return $self->NODEDATA->vars;  # DBIC inflation
+}
+
+# Business logic (UNCHANGED)
+sub is_guest {
+  my $self = shift;
+  return $self->APP->isGuest($self->NODEDATA->as_hashref) || 0;
+}
+
+sub is_editor {
+  my $self = shift;
+  return $self->APP->isEditor($self->NODEDATA->as_hashref) || 0;
+}
+
+# Complex logic uses DBIC relationships
+sub numcools {
+  my $self = shift;
+  return $self->NODEDATA->coolwriteups_rs->count;
+}
+
+sub usergroup_memberships {
+  my $self = shift;
+  my @groups;
+
+  # DBIC relationship
+  my $rs = $self->NODEDATA->member_of_groups;
+  while (my $group_result = $rs->next) {
+    # Wrap DBIC Result in domain object
+    push @groups, Everything::Node::usergroup->new(
+      NODEDATA => $group_result->group_node
+    );
+  }
+
+  return \@groups;
+}
+
+# Helper for dual hashref/DBIC support
+sub _get_field {
+  my ($self, $field) = @_;
+
+  if (blessed($self->NODEDATA) && $self->NODEDATA->can($field)) {
+    return $self->NODEDATA->$field;  # DBIC
+  } else {
+    return $self->NODEDATA->{$field};  # hashref
+  }
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
+```
+
+### Why Preserve Everything::Node?
+
+#### 1. Existing Controller Code Unchanged
+
+**Current** (thousands of lines across 93+ documents):
+```perl
+my $user = $REQUEST->user;
+return [403, {error => 'Forbidden'}] unless $user->is_editor;
+return [$self->HTTP_OK, { numcools => $user->numcools }];
+```
+
+**After DBIC Migration** (IDENTICAL):
+```perl
+my $user = $REQUEST->user;  # Still Everything::Node::user
+return [403, {error => 'Forbidden'}] unless $user->is_editor;
+return [$self->HTTP_OK, { numcools => $user->numcools }];
+```
+
+**If We Eliminated Node Classes** (MASSIVE REWRITE):
+```perl
+my $user = $schema->resultset('User')->find($user_id);
+# is_editor doesn't exist on DBIC Result - where does it go?
+# Option 1: Scatter in controllers (BAD)
+return [403, {error => 'Forbidden'}]
+  unless $APP->isEditor($user->as_hashref);
+
+# Option 2: Add to Result class (mixes concerns)
+# Option 3: Service objects (another layer anyway)
+```
+
+#### 2. Business Logic Has a Home
+
+**With Node Classes** (GOOD):
+```perl
+package Everything::Node::user;
+
+# Clear ownership: user-specific business logic lives here
+sub deliver_message { ... }
+sub usergroup_memberships { ... }
+sub editable_categories { ... }
+```
+
+**Without Node Classes** (BAD):
+```perl
+# Where does this logic go?
+# - Controllers? (duplicated, hard to test)
+# - DBIC Results? (mixes persistence and business logic)
+# - Service objects? (reinventing Everything::Node)
+```
+
+#### 3. Type Polymorphism
+
+**With Node Classes** (GOOD):
+```perl
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+
+  # Works for user, writeup, e2node, document, etc.
+  my $node = $REQUEST->node;
+  return { node => $node->json_display($REQUEST->user) };
+}
+```
+
+**Without Node Classes** (BAD):
+```perl
+sub buildReactData {
+  # Need type checking everywhere
+  if ($node->result_source->name eq 'User') {
+    return { node => $self->_user_json_display($node, $user) };
+  } elsif ($node->result_source->name eq 'Writeup') {
+    return { node => $self->_writeup_json_display($node, $user) };
+  }
+  # ... 60+ more types
+}
+```
+
+#### 4. Separation of Concerns
+
+**Good Architecture**:
+- **Domain Layer** (Everything::Node): Business logic, permissions, type behavior
+- **Persistence Layer** (DBIx::Class): Database access, relationships, queries
+- **Presentation Layer** (Controllers): HTTP, routing, request/response
+
+**Bad Architecture** (mixing persistence and business logic):
+- **DBIC Results**: Database access AND business logic (hard to test)
+- **Controllers**: Presentation AND business logic (duplication)
+
+### Trade-offs Analysis
+
+#### Option A: Keep Everything::Node + DBIC (RECOMMENDED)
+
+**Pros**:
+- ✅ Existing controller code unchanged (1000s of lines)
+- ✅ Business logic preserved in domain layer
+- ✅ Type polymorphism intact
+- ✅ Clean separation of concerns
+- ✅ Gradual migration with feature flags
+- ✅ Follows "Domain-Driven Design" principles
+
+**Cons**:
+- ⚠️ Two layers to maintain
+- ⚠️ Small performance overhead (wrapper objects)
+- ⚠️ Need to sync Node accessors with DBIC columns
+
+**Verdict**: **Best for E2** - preserves architecture, minimal risk
+
+#### Option B: Eliminate Everything::Node, Use DBIC Only
+
+**Pros**:
+- ✅ One less layer to maintain
+- ✅ Direct DBIC usage (no wrapper overhead)
+
+**Cons**:
+- ❌ Breaks ALL controller code
+- ❌ Loses 60+ type-specific classes
+- ❌ Permission logic scattered
+- ❌ JSON serialization duplicated
+- ❌ No polymorphism
+- ❌ Massive rewrite required
+
+**Verdict**: **Too risky** - entire application rewrite
+
+### Conclusion
+
+**Recommendation**: **PRESERVE Everything::Node** as domain layer, migrate NODEDATA from hashrefs to DBIx::Class Results.
+
+**Why This Works**:
+
+1. **Separation of Concerns**:
+   - DBIx::Class = Persistence (database, relationships, queries)
+   - Everything::Node = Domain (business logic, permissions, types)
+
+2. **Existing Pattern**:
+   - Current: NodeBase (persistence) + Node (domain)
+   - Future: DBIx::Class (persistence) + Node (domain)
+   - Just **replacing** persistence, not redesigning domain
+
+3. **Migration Safety**:
+   - Controllers unchanged (massive de-risking)
+   - Feature flag rollout
+   - Dual hashref/DBIC during transition
+
+4. **Industry Best Practices**:
+   - Domain-Driven Design (domain separate from persistence)
+   - Similar to Rails: ActiveRecord (persistence) + Service Objects (business logic)
+   - Clean Architecture: Entities (Node) vs Data Access (DBIC)
+
+**Implementation Roadmap**:
+
+- **Phase 1** (2-3 months): Generate DBIC schema, add compatibility layer
+- **Phase 2** (3-4 months): Migrate read operations to DBIC
+- **Phase 3** (2-3 months): Migrate write operations to DBIC
+- **Phase 4** (2-3 months): Move business logic SQL to DBIC ResultSets
+- **Phase 5** (1-2 months): Remove NodeBase
+
+**Total**: 10-15 months post-React migration
+
+---
+
+## DBIx::Class Integration Architecture
+
+**Added**: 2025-12-19
+**Purpose**: Define how Everything::Node integrates with DBIx::Class
+**Context**: Two-layer architecture design decisions
+
+### Schema Access Pattern
+
+**Recommendation**: Use **dependency injection** via Everything::Application (NOT global)
+
+#### Why Not Global?
+
+```perl
+# ❌ BAD - Global schema object
+package Everything::Schema;
+our $SCHEMA = Everything::Schema->connect(...);
+
+package Everything::Node;
+sub experience {
+  # Tight coupling to global state
+  return $Everything::Schema::SCHEMA->resultset('User')->find(...);
+}
+```
+
+**Problems**:
+- Tight coupling makes testing difficult
+- Can't swap schema implementations
+- Global state leads to action-at-a-distance bugs
+- Multiple database connections problematic
+
+#### Recommended Pattern: Dependency Injection
+
+```perl
+package Everything::Application;
+
+has 'schema' => (
+  is => 'ro',
+  isa => 'Everything::Schema',
+  lazy => 1,
+  builder => '_build_schema'
+);
+
+sub _build_schema {
+  my $self = shift;
+
+  # Reuse existing database handle
+  my $dbh = $self->DB->getDatabaseHandle;
+
+  # Connect DBIC using existing handle
+  return Everything::Schema->connect(sub { $dbh });
+}
+
+# Factory methods delegate to schema
+sub node_by_id {
+  my ($self, $node_id) = @_;
+
+  if ($self->CONF->{use_dbic}) {
+    # DBIC path
+    my $result = $self->schema->resultset('Node')->find($node_id);
+    return unless $result;
+
+    # Determine subclass based on type
+    my $type_name = $result->nodetype->title;
+    my $class = "Everything::Node::$type_name";
+
+    # Bless DBIC Result into domain object
+    return $class->new(NODEDATA => $result);
+  } else {
+    # Legacy NodeBase path
+    my $hashref = $self->DB->getNodeById($node_id);
+    return $self->_bless_node($hashref);
+  }
+}
+```
+
+**Benefits**:
+- Schema injected through Application object
+- Easy to mock in tests
+- Single connection shared with existing code
+- Feature flag controls DBIC vs NodeBase
+
+#### Node Classes Access Schema via APP
+
+```perl
+package Everything::Node::user;
+
+# Access schema through $self->APP->schema
+sub numcools {
+  my $self = shift;
+
+  if (blessed($self->NODEDATA) && $self->NODEDATA->isa('DBIx::Class::Row')) {
+    # DBIC: Use relationship
+    return $self->NODEDATA->coolwriteups->count;
+  } else {
+    # Legacy: Direct SQL
+    return $self->DB->sqlSelect("count(*)", "coolwriteups",
+      "cooledby_user=" . $self->node_id);
+  }
+}
+```
+
+### Lazy Loading Strategy
+
+**Recommendation**: Let DBIx::Class handle lazy loading automatically. Don't pre-optimize.
+
+#### How DBIC Lazy Loading Works
+
+**Default Behavior**: Only load the primary table, lazy-load relationships on access.
+
+```perl
+# 1. Find writeup - only queries writeup table
+my $writeup = $schema->resultset('Writeup')->find(12345);
+# SQL: SELECT * FROM writeup WHERE writeup_id = 12345
+
+# 2. Access node relationship - triggers lazy load
+my $title = $writeup->node->title;
+# SQL: SELECT * FROM node WHERE node_id = 12345
+
+# 3. Access document relationship - another lazy load
+my $doctext = $writeup->document->doctext;
+# SQL: SELECT * FROM document WHERE document_id = 12345
+```
+
+**Total**: 3 queries (one per table)
+
+#### When Lazy Loading Is Optimal
+
+**Existence Checks**:
+```perl
+# Just need to know if writeup exists
+my $writeup = $schema->resultset('Writeup')->find($id);
+if ($writeup) {
+  # Only 1 query - no joins needed
+  return 1;
+}
+```
+
+**Conditional Access**:
+```perl
+# May or may not need related data
+my $writeup = $schema->resultset('Writeup')->find($id);
+
+# Only query node if we need it
+if ($user->is_guest) {
+  # Guests don't see author info - skip the join
+  return;
+}
+
+# Only executes if we get here
+my $author = $writeup->node->author;
+```
+
+**Single Record Operations**:
+- When displaying one writeup, 3 queries is negligible
+- Overhead of JOIN > benefit for single records
+
+#### When to Use Prefetch (Eager Loading)
+
+**Display Operations** (know you'll need all data):
+```perl
+my $writeup = $schema->resultset('Writeup')->search(
+  { writeup_id => $id },
+  { prefetch => ['node', 'document'] }
+)->single;
+
+# Now these are free (no additional queries):
+my $title = $writeup->node->title;
+my $doctext = $writeup->document->doctext;
+```
+
+**Total**: 1 query with JOINs
+
+**List Operations** (avoid N+1 queries):
+```perl
+# BAD: N+1 queries (lazy loading in loop)
+my @writeups = $schema->resultset('Writeup')->search(
+  { parent_e2node => $e2node_id }
+)->all;
+
+foreach my $wu (@writeups) {
+  print $wu->node->title;  # Queries node table EVERY iteration
+}
+# Total: 1 + N queries (N = number of writeups)
+
+# GOOD: Prefetch to load all at once
+my @writeups = $schema->resultset('Writeup')->search(
+  { parent_e2node => $e2node_id },
+  { prefetch => 'node' }
+)->all;
+
+foreach my $wu (@writeups) {
+  print $wu->node->title;  # No query, already loaded
+}
+# Total: 1 query with JOIN
+```
+
+**Hot Paths** (performance-critical code):
+```perl
+# API endpoints that must be fast
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+
+  # Prefetch everything we know we'll serialize
+  my $writeup = $self->APP->schema->resultset('Writeup')->search(
+    { writeup_id => $id },
+    { prefetch => ['node', 'document', 'e2node', 'writeuptype'] }
+  )->single;
+
+  return { writeup => $writeup->json_display($REQUEST->user) };
+}
+```
+
+### Three-Tier Lazy Loading Architecture
+
+**Layer 1: Everything::Node** (Domain) delegates to NODEDATA
+**Layer 2: DBIx::Class Result** (Persistence) defines relationships
+**Layer 3: Custom ResultSets** (Queries) encapsulate access patterns
+
+#### Layer 1: Node Classes Delegate
+
+```perl
+package Everything::Node::writeup;
+
+# Simple accessor - delegates to NODEDATA
+sub title {
+  my $self = shift;
+  return $self->_get_field('title');  # Might be hashref or DBIC Result
+}
+
+# Complex accessor - uses DBIC relationship
+sub parent {
+  my $self = shift;
+
+  if (blessed($self->NODEDATA) && $self->NODEDATA->isa('DBIx::Class::Row')) {
+    # DBIC: Use relationship (lazy loads e2node)
+    my $e2node_result = $self->NODEDATA->e2node;
+    return Everything::Node::e2node->new(NODEDATA => $e2node_result);
+  } else {
+    # Legacy: Manual load
+    return $self->APP->node_by_id($self->NODEDATA->{parent_e2node});
+  }
+}
+```
+
+#### Layer 2: DBIC Relationships (Lazy by Default)
+
+```perl
+package Everything::Schema::Result::Writeup;
+
+# Define relationships - NOT loaded until accessed
+__PACKAGE__->belongs_to(
+  node => 'Everything::Schema::Result::Node',
+  { 'foreign.node_id' => 'self.writeup_id' }
+);
+
+__PACKAGE__->belongs_to(
+  document => 'Everything::Schema::Result::Document',
+  { 'foreign.document_id' => 'self.writeup_id' }
+);
+
+__PACKAGE__->belongs_to(
+  e2node => 'Everything::Schema::Result::E2node',
+  { 'foreign.e2node_id' => 'self.parent_e2node' },
+  { join_type => 'left' }
+);
+
+__PACKAGE__->belongs_to(
+  writeuptype => 'Everything::Schema::Result::Writeuptype',
+  { 'foreign.writeuptype_id' => 'self.wrtype_writeuptype' },
+  { join_type => 'left' }
+);
+```
+
+#### Layer 3: Custom ResultSets (Access Pattern Optimization)
+
+```perl
+package Everything::Schema::ResultSet::Writeup;
+use base 'DBIx::Class::ResultSet';
+
+# Light load: Just writeup table
+sub find_light {
+  my ($self, $id) = @_;
+  return $self->find($id);
+  # SQL: SELECT * FROM writeup WHERE writeup_id = ?
+  # Use for: Existence checks, conditional access
+}
+
+# Standard load: Include node (most common case)
+sub find_standard {
+  my ($self, $id) = @_;
+  return $self->search(
+    { writeup_id => $id },
+    { prefetch => 'node' }
+  )->single;
+  # SQL: SELECT * FROM writeup JOIN node WHERE writeup_id = ?
+  # Use for: Displaying single writeup with title/author
+}
+
+# Full load: Everything (for editing/admin)
+sub find_full {
+  my ($self, $id) = @_;
+  return $self->search(
+    { writeup_id => $id },
+    { prefetch => ['node', 'document', 'e2node', 'writeuptype'] }
+  )->single;
+  # SQL: SELECT * FROM writeup JOIN node JOIN document JOIN e2node JOIN writeuptype
+  # Use for: Edit page, admin operations
+}
+
+# Batch load: For lists (N+1 prevention)
+sub find_for_e2node {
+  my ($self, $e2node_id) = @_;
+  return $self->search(
+    { parent_e2node => $e2node_id },
+    {
+      prefetch => 'node',
+      order_by => { -desc => 'node.createtime' }
+    }
+  );
+  # SQL: Single query with JOIN
+  # Use for: E2node display with all writeups
+}
+```
+
+#### Factory Method Determines Loading Strategy
+
+```perl
+package Everything::Application;
+
+sub node_by_id {
+  my ($self, $node_id, $load_mode) = @_;
+  $load_mode ||= 'standard';  # Default
+
+  if ($self->CONF->{use_dbic}) {
+    # Determine type
+    my $base_result = $self->schema->resultset('Node')->find($node_id);
+    return unless $base_result;
+
+    my $type_name = $base_result->nodetype->title;
+    my $rs = $self->schema->resultset(ucfirst($type_name));
+
+    # Use appropriate finder based on load mode
+    my $result;
+    if ($load_mode eq 'light') {
+      $result = $rs->find_light($node_id);
+    } elsif ($load_mode eq 'full') {
+      $result = $rs->find_full($node_id);
+    } else {
+      $result = $rs->find_standard($node_id);
+    }
+
+    # Wrap in domain object
+    my $class = "Everything::Node::$type_name";
+    return $class->new(NODEDATA => $result);
+  }
+
+  # Legacy path
+  return $self->_bless_node($self->DB->getNodeById($node_id));
+}
+```
+
+#### Usage Examples
+
+```perl
+# Controller code stays clean
+package Everything::Page::writeup;
+
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+
+  # Standard load: title, author, createtime (prefetches node)
+  my $writeup = $REQUEST->node;  # Uses 'standard' mode
+
+  # Full load: Editing requires all fields
+  if ($REQUEST->param('mode') eq 'edit') {
+    $writeup = $self->APP->node_by_id($writeup->node_id, 'full');
+  }
+
+  return { writeup => $writeup->json_display($REQUEST->user) };
+}
+```
+
+### Performance Comparison
+
+| Operation | NodeBase | DBIC Lazy | DBIC Prefetch | Winner |
+|-----------|----------|-----------|---------------|--------|
+| Existence check | 1 query (multi-join) | 1 query (single table) | 1 query (multi-join) | 🏆 DBIC Lazy |
+| Display single writeup | 1 query (multi-join) | 3 queries (lazy load) | 1 query (multi-join) | 🏆 DBIC Prefetch |
+| Display 100 writeups | 1 query (multi-join) | 300 queries (N+1!) | 1 query (multi-join) | 🏆 DBIC Prefetch |
+| Conditional access | 1 query (wasted join) | 1-3 queries (on-demand) | 3 queries (wasted joins) | 🏆 DBIC Lazy |
+| Memory usage | Low (hashref) | Low (single Result) | High (all Results) | 🏆 DBIC Lazy |
+
+### Integration Example: Complete Flow
+
+```perl
+# 1. User requests writeup page
+GET /node/writeup/My+Title
+
+# 2. Controller loads writeup
+package Everything::Page::writeup;
+
+sub buildReactData {
+  my ($self, $REQUEST) = @_;
+
+  # Factory method determines loading strategy
+  my $writeup = $REQUEST->node;  # Uses 'standard' mode
+
+  # 3. Node class delegates to DBIC Result
+  return {
+    writeup => $writeup->json_display($REQUEST->user),
+    e2node => $writeup->parent->json_reference,  # Lazy loads e2node
+  };
+}
+
+# 4. DBIC Result lazy-loads relationships as needed
+package Everything::Node::writeup;
+
+sub json_display {
+  my ($self, $user) = @_;
+
+  my $values = $self->SUPER::json_display($user);
+
+  # These trigger lazy loads only if NODEDATA is DBIC Result
+  $values->{cools} = $self->cools;  # Query coolwriteups table
+  $values->{writeuptype} = $self->writeuptype;  # Query writeuptype table
+
+  return $values;
+}
+
+# 5. DBIC relationships load on-demand
+package Everything::Schema::Result::Writeup;
+
+__PACKAGE__->has_many(
+  coolwriteups => 'Everything::Schema::Result::Coolwriteup',
+  { 'foreign.coolwriteups_id' => 'self.writeup_id' }
+);
+# Only queries when $writeup->NODEDATA->coolwriteups->count is called
+```
+
+### Migration Strategy: Gradual Optimization
+
+**Phase 1**: Use lazy loading everywhere (simplest, safest)
+- Let DBIC load relationships on-demand
+- No N+1 queries yet (NodeBase does multi-joins anyway)
+- Focus on correctness, not optimization
+
+**Phase 2**: Identify N+1 queries via logging
+```perl
+# Enable query logging in development
+$schema->storage->debug(1);
+
+# Or use DBIx::Class::QueryLog
+use DBIx::Class::QueryLog;
+my $ql = DBIx::Class::QueryLog->new;
+$schema->storage->debugobj($ql);
+$schema->storage->debug(1);
+
+# After request, check for N+1
+my $query_count = $ql->count;
+warn "Executed $query_count queries" if $query_count > 5;
+```
+
+**Phase 3**: Add prefetch where needed
+- List pages: Prefetch to avoid N+1
+- Hot paths: Prefetch for performance
+- Single records: Keep lazy loading
+
+**Phase 4**: Create custom ResultSet finders
+- Encapsulate common patterns (find_light, find_standard, find_full)
+- Let factory method choose appropriate finder
+- Gradually optimize based on real usage
+
+### Key Takeaways
+
+1. **Schema Access**: Inject via `$self->APP->schema`, NOT global
+2. **Lazy Loading**: Let DBIC handle it, don't pre-optimize
+3. **Prefetch**: Only use when you KNOW you'll need the data
+4. **Custom ResultSets**: Encapsulate common access patterns
+5. **Factory Pattern**: Let `node_by_id` choose appropriate loading strategy
+6. **Measure First**: Add query logging, optimize based on data
+
+---
+
+## Eliminating NODEDATA: Direct DBIC Integration
+
+**Added**: 2025-12-19
+**Purpose**: Define end-state architecture eliminating NODEDATA compatibility layer
+**Key Insight**: NODEDATA exists only to wrap raw hashrefs from NodeBase. Once DBIC provides proper objects, NODEDATA becomes unnecessary overhead.
+
+### Current Problem: NODEDATA Is a Compatibility Shim
+
+**Current Architecture** (NODEDATA wraps raw data):
+```perl
+package Everything::Node::user;
+has 'NODEDATA' => (isa => 'HashRef');  # Raw hashref from NodeBase
+
+sub experience {
+  my $self = shift;
+  return $self->NODEDATA->{experience};  # Hashref access
+}
+
+sub is_editor {
+  my $self = shift;
+  return $self->APP->isEditor($self->NODEDATA);  # Pass hashref
+}
+```
+
+**Problem**: NODEDATA exists solely because NodeBase returns raw hashrefs without methods. Once we have DBIC Results (which ARE objects), this wrapper layer is unnecessary overhead.
+
+### End-State Architecture: Everything::Node Extends DBIC Result
+
+**Goal**: Everything::Node classes directly extend DBIC Result classes, adding business logic methods.
+
+```perl
+package Everything::Node::user;
+use Moose;
+extends 'Everything::Schema::Result::User';  # Direct inheritance
+
+# DBIC provides data accessors automatically:
+#   $user->experience (from user table)
+#   $user->GP
+#   $user->lasttime
+#   $user->node->title (via relationship)
+
+# Business logic methods added to Result class
+sub is_editor {
+  my $self = shift;
+  return $self->APP->isEditor($self);
+}
+
+sub deliver_message {
+  my ($self, $messagedata) = @_;
+  # Business logic implementation...
+}
+
+sub numcools {
+  my $self = shift;
+  return $self->coolwriteups->count;  # DBIC relationship
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
+```
+
+**Controller usage (no NODEDATA)**:
+```perl
+my $user = Everything::Node::user->find($id);
+
+return {
+  experience => $user->experience,   # DBIC accessor
+  GP => $user->GP,                   # DBIC accessor
+  numcools => $user->numcools,       # Business logic
+  is_editor => $user->is_editor,     # Business logic
+};
+```
+
+### Migration Path to Eliminate NODEDATA
+
+#### Phase 1: NODEDATA Wraps Hashrefs (Current)
+```perl
+package Everything::Node::user;
+has 'NODEDATA' => (isa => 'HashRef');
+
+sub experience {
+  return shift->NODEDATA->{experience};
+}
+```
+
+#### Phase 2: NODEDATA Wraps DBIC Results (Dual Support)
+```perl
+package Everything::Node::user;
+has 'NODEDATA' => (isa => 'HashRef|DBIx::Class::Row');
+
+sub experience {
+  my $self = shift;
+
+  # Check if DBIC Result
+  if (blessed($self->NODEDATA) && $self->NODEDATA->isa('DBIx::Class::Row')) {
+    return $self->NODEDATA->experience;  # DBIC method
+  } else {
+    return $self->NODEDATA->{experience};  # Hashref
+  }
+}
+```
+
+#### Phase 3: Everything::Node Delegates to DBIC Result
+```perl
+package Everything::Node::user;
+extends 'Everything::Schema::Result::User';
+
+# Thin wrapper - just adds business logic
+sub is_editor {
+  my $self = shift;
+  return $self->APP->isEditor($self);
+}
+
+# Data accessors inherited from DBIC Result
+# No NODEDATA needed!
+```
+
+#### Phase 4: Eliminate NODEDATA Entirely
+- Remove NODEDATA attribute from Everything::Node
+- Everything::Node classes ARE DBIC Results with business logic
+- Controllers work unchanged (same method calls)
+
+### Updated Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Controllers / API Endpoints                         │
+│                                                      │
+│ my $user = Everything::Node::user->find($id);      │
+│ return { coolsleft => $user->coolsleft };          │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ Everything::Node::user                              │
+│ extends Everything::Schema::Result::User            │
+│                                                      │
+│ ┌─────────────────────────────────────────────────┐ │
+│ │ Business Logic Layer (added methods)            │ │
+│ │ - is_editor()                                   │ │
+│ │ - deliver_message()                             │ │
+│ │ - numcools()                                    │ │
+│ │ - coolsleft()                                   │ │
+│ └─────────────────────────────────────────────────┘ │
+│                                                      │
+│ ┌─────────────────────────────────────────────────┐ │
+│ │ DBIC Result Layer (inherited from parent)       │ │
+│ │ - experience() [column accessor]                │ │
+│ │ - GP() [column accessor]                        │ │
+│ │ - lasttime() [column accessor]                  │ │
+│ │ - node() [belongs_to relationship]              │ │
+│ │ - coolwriteups() [has_many relationship]        │ │
+│ └─────────────────────────────────────────────────┘ │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ Everything::Schema::Result::User (pure DBIC)       │
+│ - Column definitions                                │
+│ - Relationships                                     │
+│ - No business logic                                 │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│ MySQL Database                                      │
+└─────────────────────────────────────────────────────┘
+```
+
+### Factory Methods: Everything::Node->find()
+
+Replace `$APP->node_by_id()` with class-level factory:
+
+```perl
+package Everything::Node;
+use Moose::Role;  # Base is now a role, not a class
+
+# Class method factory
+sub find {
+  my ($class, $id, $schema) = @_;
+
+  # If called on base class, determine type from database
+  if ($class eq 'Everything::Node') {
+    my $node_result = $schema->resultset('Node')->find($id);
+    return unless $node_result;
+
+    my $type_name = $node_result->nodetype->title;
+    my $node_class = "Everything::Node::$type_name";
+
+    # Load type-specific result
+    my $result = $schema->resultset(ucfirst($type_name))
+      ->find_standard($id);
+
+    return $result;  # Already blessed as Everything::Node::$type_name
+  }
+  # If called on subclass (Everything::Node::user->find($id))
+  else {
+    my $type = $class;
+    $type =~ s/^Everything::Node:://;
+
+    return $schema->resultset(ucfirst($type))->find_standard($id);
+  }
+}
+
+sub find_by_name {
+  my ($class, $title, $schema) = @_;
+
+  if ($class eq 'Everything::Node') {
+    # Need type parameter
+    die "Cannot find_by_name on base class without type";
+  }
+
+  my $type = $class;
+  $type =~ s/^Everything::Node:://;
+
+  return $schema->resultset(ucfirst($type))->search(
+    { 'node.title' => $title },
+    { prefetch => 'node' }
+  )->single;
+}
+```
+
+**Usage**:
+```perl
+# Generic find (determines type from database)
+my $node = Everything::Node->find(12345, $schema);
+
+# Type-specific find (more efficient)
+my $user = Everything::Node::user->find(12345, $schema);
+my $root = Everything::Node::user->find_by_name('root', $schema);
+
+# Old factory pattern (keep during migration for compatibility)
+my $user = $APP->node_by_id(12345);  # Delegates to Everything::Node->find
+```
+
+### VARS Field: MySQL JSON Column Type
+
+**Recommendation**: Migrate `vars` from TEXT (Storable/base64) to MySQL JSON column type.
+
+**Why MySQL JSON is Superior**:
+
+1. **Queryable**: Filter/search by JSON fields with `JSON_EXTRACT()`
+2. **Indexed**: Add generated columns + indexes on JSON paths
+3. **Type Validation**: MySQL validates JSON structure on INSERT/UPDATE
+4. **Efficient Storage**: Binary format, not base64-encoded text
+5. **Atomic Updates**: Update individual JSON keys without deserializing entire field
+6. **Native Support**: DBIC has built-in JSON inflation/deflation
+
+#### VARS in DBIC Result Class (Persistence Layer)
+
+```perl
+package Everything::Schema::Result::User;
+use base 'DBIx::Class::Core';
+
+__PACKAGE__->load_components(qw/InflateColumn::Serializer/);
+
+__PACKAGE__->add_columns(
+  user_id => { data_type => 'integer' },
+  experience => { data_type => 'integer' },
+  GP => { data_type => 'integer' },
+  lasttime => { data_type => 'datetime', is_nullable => 1 },
+
+  # VARS as MySQL JSON column
+  vars => {
+    data_type => 'json',  # MySQL JSON column type (not TEXT)
+    is_nullable => 1,
+    serializer_class => 'JSON',
+    default_value => '{}',
+    # DBIC automatically:
+    # - Inflates: MySQL JSON → Perl hashref when read
+    # - Deflates: Perl hashref → MySQL JSON when written
+  },
+);
+
+# Relationships
+__PACKAGE__->belongs_to(
+  node => 'Everything::Schema::Result::Node',
+  { 'foreign.node_id' => 'self.user_id' }
+);
+
+__PACKAGE__->has_many(
+  coolwriteups => 'Everything::Schema::Result::Coolwriteup',
+  { 'foreign.cooledby_user' => 'self.user_id' }
+);
+```
+
+**Database migration**:
+```sql
+-- Convert TEXT column to JSON
+ALTER TABLE user MODIFY COLUMN vars JSON;
+
+-- Migrate existing data (if currently Storable base64)
+-- First, convert Storable to JSON using Perl script
+-- Then update column type
+```
+
+#### Everything::Node::user (Business Logic Layer)
+
+```perl
+package Everything::Node::user;
+use Moose;
+extends 'Everything::Schema::Result::User';
+
+with 'Everything::Globals';  # For APP, DB, CONF access
+
+# VARS accessor (delegates to DBIC)
+sub VARS {
+  my $self = shift;
+  return $self->vars || {};  # DBIC automatically inflates JSON → hashref
+}
+
+# Convenience accessors (business logic)
+sub hidelastseen {
+  my $self = shift;
+  return $self->VARS->{hidelastseen} || 0;
+}
+
+sub nosocialbookmarking {
+  my $self = shift;
+  return $self->VARS->{nosocialbookmarking} || 0;
+}
+
+sub set_var {
+  my ($self, $key, $value) = @_;
+  my $vars = $self->VARS;
+  $vars->{$key} = $value;
+  $self->vars($vars);  # DBIC automatically deflates hashref → JSON
+}
+
+sub available_weblogs {
+  my $self = shift;
+  my $weblog_ids = $self->VARS->{weblogs} || [];
+
+  # Load weblog nodes
+  return [
+    map { Everything::Node::weblog->find($_, $self->result_source->schema) }
+    @$weblog_ids
+  ];
+}
+
+# Other business logic...
+sub is_editor {
+  my $self = shift;
+  return $self->APP->isEditor($self);
+}
+
+sub numcools {
+  my $self = shift;
+  return $self->coolwriteups->count;
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
+```
+
+**Controller usage** (unchanged):
+```perl
+my $user = Everything::Node::user->find($id, $schema);
+
+# Read vars (DBIC inflates JSON automatically)
+my $hidelastseen = $user->hidelastseen;
+my $weblogs = $user->available_weblogs;
+
+# Write vars (DBIC deflates to JSON automatically)
+$user->set_var('hidelastseen', 1);
+$user->update;  # MySQL stores as JSON
+```
+
+#### Querying JSON Fields
+
+**Basic JSON queries**:
+```perl
+# Find users who hide their last seen
+my @private_users = $schema->resultset('User')->search(
+  \[ "JSON_EXTRACT(vars, '$.hidelastseen') = ?", 1 ]
+)->all;
+
+# Find users with specific weblog
+my @weblog_users = $schema->resultset('User')->search(
+  \[ "JSON_CONTAINS(vars, ?, '$.weblogs')", $weblog_id ]
+)->all;
+```
+
+**Optimized with generated columns** (for frequently-queried fields):
+```sql
+-- Add generated column for hidelastseen
+ALTER TABLE user ADD COLUMN hidelastseen_computed TINYINT
+  GENERATED ALWAYS AS (COALESCE(JSON_EXTRACT(vars, '$.hidelastseen'), 0)) STORED;
+
+-- Index it for fast queries
+CREATE INDEX idx_hidelastseen ON user(hidelastseen_computed);
+```
+
+```perl
+# Update DBIC Result to include generated column
+package Everything::Schema::Result::User;
+
+__PACKAGE__->add_columns(
+  hidelastseen_computed => {
+    data_type => 'tinyint',
+    is_nullable => 0,
+    # Mark as generated (read-only)
+    is_auto_increment => 0,
+    extra => { generated => 1 },
+  },
+);
+
+# Now query like a normal indexed column (fast!)
+my @private_users = $schema->resultset('User')->search(
+  { hidelastseen_computed => 1 }
+)->all;
+```
+
+#### Migration Strategy for VARS
+
+**Phase 1**: Convert TEXT to JSON column type
+```sql
+-- Backup first!
+CREATE TABLE user_backup AS SELECT * FROM user;
+
+-- Convert column type
+ALTER TABLE user MODIFY COLUMN vars JSON;
+```
+
+**Phase 2**: DBIC inflation/deflation (automatic)
+```perl
+# DBIC Result class handles JSON automatically
+vars => {
+  data_type => 'json',
+  serializer_class => 'JSON',
+}
+```
+
+**Phase 3**: Add generated columns for hot fields
+```sql
+-- For frequently-queried vars
+ALTER TABLE user ADD COLUMN hidelastseen_computed TINYINT
+  GENERATED ALWAYS AS (COALESCE(JSON_EXTRACT(vars, '$.hidelastseen'), 0)) STORED;
+
+CREATE INDEX idx_hidelastseen ON user(hidelastseen_computed);
+```
+
+**Phase 4**: Business logic unchanged
+```perl
+# Everything::Node::user methods work exactly the same
+my $hidelastseen = $user->hidelastseen;  # Reads from JSON
+$user->set_var('hidelastseen', 1);       # Writes to JSON
+```
+
+### Complete Example: User Node Without NODEDATA
+
+```perl
+package Everything::Node::user;
+use Moose;
+extends 'Everything::Schema::Result::User';
+
+with 'Everything::Globals';  # For APP, DB, CONF access
+
+# Class-level factory
+sub find {
+  my ($class, $id, $schema) = @_;
+  $schema ||= Everything::Application->instance->schema;
+  return $schema->resultset('User')->find_standard($id);
+}
+
+sub find_by_name {
+  my ($class, $title, $schema) = @_;
+  $schema ||= Everything::Application->instance->schema;
+  return $schema->resultset('User')->search(
+    { 'node.title' => $title },
+    { prefetch => 'node' }
+  )->single;
+}
+
+# Data accessors inherited from DBIC Result:
+#   $user->experience
+#   $user->GP
+#   $user->lasttime
+#   $user->vars (auto-inflated JSON hashref)
+#   $user->node (belongs_to relationship)
+#   $user->coolwriteups (has_many relationship)
+
+# Business logic methods
+
+sub is_guest {
+  my $self = shift;
+  return $self->node->title eq 'Guest User';
+}
+
+sub is_editor {
+  my $self = shift;
+  return $self->APP->isEditor($self);
+}
+
+sub is_admin {
+  my $self = shift;
+  return $self->in_usergroup('gods');
+}
+
+sub in_usergroup {
+  my ($self, $group_name) = @_;
+  my $group = Everything::Node::usergroup->find_by_name(
+    $group_name,
+    $self->result_source->schema
+  );
+  return 0 unless $group;
+  return $group->has_member($self);
+}
+
+sub numcools {
+  my $self = shift;
+  return $self->coolwriteups->count;
+}
+
+sub coolsleft {
+  my $self = shift;
+  my $total_cools = int($self->experience / 100);
+  my $used_cools = $self->numcools;
+  return $total_cools - $used_cools;
+}
+
+sub deliver_message {
+  my ($self, $messagedata) = @_;
+
+  # Forward if configured
+  if (my $forward_to_id = $self->VARS->{message_forward_user}) {
+    $messagedata->{recurse_counter} ||= 0;
+    return { error => 'Forward loop' } if $messagedata->{recurse_counter} > 5;
+
+    $messagedata->{recurse_counter}++;
+    my $forward_user = Everything::Node::user->find(
+      $forward_to_id,
+      $self->result_source->schema
+    );
+    return $forward_user->deliver_message($messagedata);
+  }
+
+  # Check ignore list (DBIC query)
+  my $ignoring = $self->result_source->schema
+    ->resultset('MessageIgnore')
+    ->search({
+      ignorer => $self->user_id,
+      ignoree => $messagedata->{sender_id}
+    })->count;
+
+  return { ignores => 1 } if $ignoring;
+
+  # Insert message (DBIC create)
+  $self->result_source->schema->resultset('Message')->create({
+    message_to => $self->user_id,
+    message_from => $messagedata->{sender_id},
+    msgtext => $messagedata->{msgtext},
+    tstamp => \'NOW()',
+  });
+
+  return { success => 1 };
+}
+
+# VARS accessor (delegates to DBIC JSON inflation)
+sub VARS {
+  my $self = shift;
+  return $self->vars || {};
+}
+
+sub hidelastseen {
+  my $self = shift;
+  return $self->VARS->{hidelastseen} || 0;
+}
+
+sub set_var {
+  my ($self, $key, $value) = @_;
+  my $vars = $self->VARS;
+  $vars->{$key} = $value;
+  $self->vars($vars);
+}
+
+sub json_display {
+  my ($self, $requesting_user) = @_;
+
+  return {
+    node_id => $self->node->node_id,
+    title => $self->node->title,
+    type => 'user',
+    experience => $self->experience,
+    GP => $self->GP,
+    numcools => $self->numcools,
+    coolsleft => $self->coolsleft,
+    is_editor => $self->is_editor ? 1 : 0,
+    is_admin => $self->is_admin ? 1 : 0,
+    # Privacy: Only show lasttime if user hasn't hidden it
+    ($self->hidelastseen ? () : (
+      lasttime => $self->APP->iso_date_format($self->lasttime)
+    )),
+  };
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
+```
+
+**Controller usage**:
+```perl
+package Everything::API::user;
+
+sub show {
+  my ($self, $REQUEST, $user_id) = @_;
+
+  my $user = Everything::Node::user->find($user_id);
+  return [404, { error => 'User not found' }] unless $user;
+
+  return [$self->HTTP_OK, {
+    user => $user->json_display($REQUEST->user)
+  }];
+}
+
+sub update_settings {
+  my ($self, $REQUEST, $user_id) = @_;
+
+  my $user = Everything::Node::user->find($user_id);
+  return [404, { error => 'User not found' }] unless $user;
+
+  # Update VARS (stored as JSON)
+  $user->set_var('hidelastseen', $REQUEST->param('hidelastseen'));
+  $user->set_var('nosocialbookmarking', $REQUEST->param('nosocialbookmarking'));
+  $user->update;
+
+  return [$self->HTTP_OK, { success => 1 }];
+}
+```
+
+### Benefits of Eliminating NODEDATA
+
+1. **Simpler Architecture**: One less layer of abstraction
+2. **Better Performance**: No wrapper object overhead
+3. **Direct DBIC Access**: Controllers can use DBIC features directly
+4. **Cleaner Code**: `$user->experience` instead of `$user->NODEDATA->{experience}`
+5. **Type Safety**: DBIC column definitions provide type hints
+6. **Easier Testing**: Mock DBIC Results instead of hashrefs
+7. **JSON Queries**: Can filter/search VARS fields directly in SQL
+8. **Better IDE Support**: Method completion works with DBIC accessors
+
+### Migration Checklist
+
+- [ ] **Phase 1**: Add DBIC Result classes with JSON column for vars
+- [ ] **Phase 2**: Make NODEDATA accept both HashRef and DBIC Result
+- [ ] **Phase 3**: Update Everything::Node to extend DBIC Results
+- [ ] **Phase 4**: Add `Everything::Node->find()` factory methods
+- [ ] **Phase 5**: Migrate vars column from TEXT to JSON
+- [ ] **Phase 6**: Remove NODEDATA attribute entirely
+- [ ] **Phase 7**: Update all controllers to use new syntax
+- [ ] **Phase 8**: Deprecate `$APP->node_by_id()` (keep for compatibility)
+- [ ] **Phase 9**: Add generated columns for frequently-queried VARS fields
 
 ---
 

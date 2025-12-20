@@ -2,25 +2,51 @@
 
 ## Overview
 
-This directory contains tooling for measuring and tracking code coverage across the Everything2 Perl codebase using [Devel::Cover](https://metacpan.org/pod/Devel::Cover).
+Everything2 uses [Devel::Cover](https://metacpan.org/pod/Devel::Cover) to measure and track code coverage across the Perl codebase. Coverage reports are generated automatically during development builds and tracked via SVG badges.
 
-## ⚠️ Current Limitation
+## ✅ Current Status (Dec 2025)
 
-**The coverage infrastructure is currently limited by the mod_perl architecture.**
+**Coverage is now working!** The migration from legacy HTTP-based tests to mock-based unit tests has enabled proper code coverage tracking. The Everything::APIClient module has been removed from the codebase.
 
-Most E2 tests make HTTP requests to the Apache/mod_perl server running in the container. Since the application code runs in a separate Apache process, Devel::Cover cannot instrument it. Coverage currently only tracks:
-- Test runner code (t/run.pl)
-- Code executed directly in test processes
+### What's Tracked
 
-**To get full application coverage, we need to migrate to PSGI/Plack** (see [Priority 8 in modernization-priorities.md](../docs/modernization-priorities.md#priority-8-psgiplack-migration-)). PSGI enables in-process testing where the application is loaded directly in the test process, allowing full Devel::Cover instrumentation.
+- ✅ **API Modules** (`Everything::API::*`) - ~24% coverage from mock tests
+- ✅ **Application Logic** (`Everything::Application`) - Tracked via unit tests
+- ✅ **Node Classes** (`Everything::Node::*`) - Tracked when instantiated in tests
+- ✅ **Business Logic** - Any code executed during test runs
 
-**Status:** Infrastructure ready, blocked by architecture. Use for tracking test-loaded modules only until PSGI migration is complete.
+### Current Coverage
+
+![Perl Coverage](../coverage/badges/perl-coverage.svg)
+
+**From just 6 mock-based API tests**: ~24% overall coverage
+- `Everything::API::e2nodes`: 100%
+- `Everything::API::users`: 100%
+- `Everything::API::writeups`: 81.2%
+- `Everything::API::developervars`: 85.7%
+- `Everything::API::preferences`: 46.1%
+
+See [coverage/COVERAGE-SUMMARY.md](../coverage/COVERAGE-SUMMARY.md) for detailed coverage reports.
+
+### Future Coverage
+
+**Full request handler coverage** still requires PSGI/Plack migration (Phase 7), but current mock-based testing provides excellent coverage of business logic, APIs, and core modules.
 
 ## Quick Start
 
+**Coverage runs automatically** during `./docker/devbuild.sh` (unless you use `--skip-tests`).
+
+### Manual Coverage Commands
+
 ```bash
-# Run tests with coverage tracking
+# Run development build with tests and coverage (automatic)
+./docker/devbuild.sh
+
+# Run tests with coverage manually
 ./tools/coverage.sh
+
+# Generate coverage badges
+./tools/generate-coverage-badges.sh
 
 # View HTML report
 open coverage/html/coverage.html
@@ -29,7 +55,9 @@ open coverage/html/coverage.html
 ./tools/coverage.sh clean
 ```
 
-**Note:** Devel::Cover is already included in the vendored dependencies (`vendor/` directory). If you get an error about a missing module, rebuild the Docker container with `./docker/devbuild.sh`.
+**Coverage badges** are automatically updated and embedded in README.md:
+- ![Perl Coverage](../coverage/badges/perl-coverage.svg)
+- ![React Coverage](../coverage/badges/react-coverage.svg)
 
 ## Usage
 
@@ -85,6 +113,20 @@ A text summary is displayed after each coverage run showing:
 - Pod coverage
 
 ## Coverage Goals
+
+### Current (Dec 2025)
+- ✅ **Perl**: ~24% (6 mock-based API tests)
+- ✅ **React**: 0% (Jest infrastructure ready, tests needed)
+
+### Short-term Goals (Q1 2026)
+- 🎯 **Perl**: 40% (comprehensive API testing)
+- 🎯 **React**: 60% (component test coverage)
+
+### Long-term Goals (2026+)
+- 🎯 **Perl**: 70% (after PSGI migration)
+- 🎯 **React**: 80% (full component coverage)
+
+### By Module Type
 
 | Module Type | Target Coverage |
 |-------------|----------------|
@@ -153,26 +195,43 @@ docker exec e2devapp \
 cover -merge_from coverage/cover_db.1 coverage/cover_db.2
 ```
 
-## Integration with CI/CD
+## Integration with Development Workflow
 
-### GitHub Actions (Future)
+### Automated Coverage (Current)
+
+Coverage is **automatically generated** during `./docker/devbuild.sh`:
+1. Tests run in parallel
+2. Coverage data is collected via Devel::Cover
+3. Coverage reports are generated
+4. SVG badges are updated
+5. COVERAGE-SUMMARY.md is regenerated
+
+### Coverage Badges (Active)
+
+Coverage badges are embedded in README.md and auto-updated:
+
+```markdown
+![Perl Coverage](coverage/badges/perl-coverage.svg)
+![React Coverage](coverage/badges/react-coverage.svg)
+```
+
+**Badge Colors:**
+- 🔴 Red: <20%
+- 🟠 Orange: 20-40%
+- 🟡 Yellow: 40-60%
+- 🟢 Yellow-green: 60-80%
+- 💚 Green: ≥80%
+
+### Future: GitHub Actions Integration
 
 ```yaml
 - name: Run tests with coverage
-  run: ./tools/coverage.sh
+  run: ./docker/devbuild.sh
 
-- name: Check coverage threshold
-  run: |
-    docker exec e2devapp \
-      cover -report text -coverage_threshold 70
-```
-
-### Coverage Badges
-
-After implementing automated coverage tracking, add a badge to README.md:
-
-```markdown
-![Coverage](https://img.shields.io/badge/coverage-XX%25-green)
+- name: Upload coverage to Codecov
+  uses: codecov/codecov-action@v3
+  with:
+    files: ./coverage/lcov.info
 ```
 
 ## Troubleshooting
@@ -198,20 +257,57 @@ Large codebases may require more memory. Increase Docker memory allocation in Do
 
 ```
 tools/
-  coverage.sh           # Main coverage script
+  coverage.sh                    # Main coverage script
+  generate-coverage-badges.sh    # Badge generation script
 
 docs/
-  code-coverage.md      # This file
+  code-coverage.md               # This file
 
-coverage/               # Generated coverage data (git-ignored)
-  cover_db/            # Raw coverage database
-  html/                # HTML coverage reports
-    coverage.html      # Main report page
+coverage/                        # Generated coverage data
+  badges/                        # SVG coverage badges (tracked in git)
+    perl-coverage.svg           # Perl coverage badge
+    react-coverage.svg          # React coverage badge
+  cover_db/                      # Raw Perl coverage database (git-ignored)
+  html/                          # HTML coverage reports (git-ignored)
+    coverage.html               # Main Perl report page
+  react/                         # React coverage reports (git-ignored)
+    lcov-report/                # Jest HTML coverage
+  COVERAGE-SUMMARY.md            # Auto-generated coverage summary
 ```
+
+## Mock-Based Testing Enables Coverage
+
+The key breakthrough was **migrating from legacy HTTP-based tests to mock-based unit tests**:
+
+### Before (Legacy HTTP Tests)
+```perl
+# Tests made HTTP requests to Apache/mod_perl server
+# Coverage couldn't track code execution in separate process
+use Everything::APIClient;  # ❌ Module removed
+my $client = Everything::APIClient->new();
+my $result = $client->get('/api/writeups/123');  # ❌ No coverage
+```
+
+### After (Mock-Based Tests)
+```perl
+# Tests directly instantiate and test API classes
+# Coverage tracks all code execution
+use Everything::API::writeups;
+my $api = Everything::API::writeups->new();
+my $result = $api->get_writeup($mock_request);  # ✅ Full coverage!
+```
+
+**Result**: From 0% coverage to 24% coverage with just 6 API tests!
+
+**Cleanup Complete**: All legacy HTTP-based tests and the APIClient module have been removed.
+
+See [api-test-conversion-summary.md](api-test-conversion-summary.md) for migration details.
 
 ## Further Reading
 
+- [coverage/COVERAGE-SUMMARY.md](../coverage/COVERAGE-SUMMARY.md) - Current coverage status
 - [Devel::Cover Documentation](https://metacpan.org/pod/Devel::Cover)
 - [Devel::Cover Tutorial](https://perlmaven.com/code-coverage-with-devel-cover)
 - [Test::More](https://metacpan.org/pod/Test::More) - Test framework
-- [Everything2 Testing Strategy](../docs/quick-reference.md#-testing-strategy)
+- [Everything2 Testing Strategy](quick-reference.md#-testing-strategy)
+- [API Test Conversion Summary](api-test-conversion-summary.md) - How we enabled coverage

@@ -56,6 +56,13 @@ case "${1:-run}" in
         rm -rf "$COVERAGE_DIR"
         mkdir -p "$COVERAGE_DIR"
 
+        # Run React tests with coverage first
+        echo "========================================="
+        echo "Running React tests with coverage..."
+        echo "========================================="
+        npm test -- --coverage --watchAll=false
+        echo ""
+
         # Create coverage directory in container
         docker exec $CONTAINER_NAME mkdir -p /var/everything/coverage
 
@@ -65,10 +72,12 @@ case "${1:-run}" in
         docker cp "$PROJECT_ROOT/ecore/." $CONTAINER_NAME:/var/everything/ecore/
         echo ""
 
-        # Run tests with Devel::Cover
-        echo "Running tests with coverage tracking..."
+        # Run Perl tests with Devel::Cover
+        echo "========================================="
+        echo "Running Perl tests with coverage tracking..."
+        echo "========================================="
         docker exec -w /var/everything $CONTAINER_NAME \
-            perl -I/var/libraries/lib/perl5 -MDevel::Cover=-db,/var/everything/coverage/cover_db,+select,'ecore',+ignore,'^/var/everything/t/' \
+            perl -I/var/libraries/lib/perl5 -I/var/everything/ecore -MDevel::Cover=-db,/var/everything/coverage/cover_db,-ignore,'^/var/everything/t/',-ignore,'^/var/libraries/',-silent,1 \
             t/run.pl
 
         # Copy coverage data back

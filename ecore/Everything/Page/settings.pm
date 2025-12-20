@@ -136,6 +136,39 @@ sub buildReactData
     }
   }
 
+  # Get available stylesheets for theme selection
+  my $stylesheet_type = $DB->getType('stylesheet');
+  my @available_stylesheets;
+  my $current_stylesheet_title = '';
+
+  if ($stylesheet_type) {
+    # Get only "zen" stylesheets (exclude basesheet, print, etc.)
+    # These are stylesheets that users can select as their theme
+    my $csr = $DB->sqlSelectMany(
+      'node_id, title',
+      'node',
+      "type_nodetype=" . $stylesheet_type->{node_id} . " AND title NOT IN ('basesheet', 'print', 'ResponsiveBase', 'Responsive2')",
+      'ORDER BY title'
+    );
+
+    while (my ($id, $title) = $csr->fetchrow_array) {
+      push @available_stylesheets, {
+        node_id => int($id),
+        title => $title
+      };
+
+      # Check if this is the user's current stylesheet
+      if ($VARS->{userstyle} && int($VARS->{userstyle}) == $id) {
+        $current_stylesheet_title = $title;
+      }
+    }
+  }
+
+  # Get default stylesheet
+  my $default_style_name = $Everything::CONF->default_style || 'Kernel Blue';
+  my $default_style = $DB->getNode($default_style_name, 'stylesheet');
+  my $default_style_id = $default_style ? $default_style->{node_id} : 0;
+
   # Get available nodelets for adding
   my $nodelet_type = $DB->getType('nodelet');
   my @available_nodelets;
@@ -241,6 +274,9 @@ sub buildReactData
     notificationPreferences => \@all_notifications,
     blockedUsers => \@blocked_users,
     nodeletSettings => \%nodelet_settings,
+    availableStylesheets => \@available_stylesheets,
+    currentStylesheet => $current_stylesheet_title,
+    defaultStylesheetId => $default_style_id,
     isEditor => $is_editor,
     currentUser => {
       node_id => int($user->node_id),

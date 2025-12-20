@@ -78,7 +78,14 @@ sub layout
   $params->{canonical_url} = $canonical_url;
   $params->{metadescription} = $node->metadescription;
 
-  $params->{body_class} = $node->type->title;
+  # Build body class - add writeuppage for e2node/writeup/draft like legacy container
+  my $type_title = $node->type->title;
+  my $body_class = '';
+  if ($type_title eq 'e2node' || $type_title eq 'writeup' || $type_title eq 'draft') {
+    $body_class = 'writeuppage ';
+  }
+  $body_class .= $type_title;
+  $params->{body_class} = $body_class;
 
   $params->{default_javascript} = [$self->APP->asset_uri("react/main.bundle.js"),$self->APP->asset_uri("legacy.js")];
   $params->{favicon} = $self->APP->asset_uri("static/favicon.ico");

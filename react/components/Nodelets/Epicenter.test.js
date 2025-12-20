@@ -59,10 +59,10 @@ describe('Epicenter Component', () => {
       gp: 50,
       experience: 1000,
       level: 3,
-      gpOptOut: false
+      gpOptOut: false,
+      votesleft: 5,
+      coolsleft: 2
     },
-    votesLeft: 5,
-    cools: 2,
     localTimeUse: false,
     userSettingsId: 456,
     helpPage: 'Everything2 Help',
@@ -158,7 +158,7 @@ describe('Epicenter Component', () => {
 
   describe('votes and cools', () => {
     it('shows singular form for 1 vote', () => {
-      const props = { ...defaultProps, votesLeft: 1, cools: 0 }
+      const props = { ...defaultProps, user: { ...defaultProps.user, votesleft: 1, coolsleft: 0 } }
       const { container } = render(<Epicenter {...props} />)
 
       expect(container.querySelector('#votesleft').textContent).toBe('1')
@@ -167,7 +167,7 @@ describe('Epicenter Component', () => {
     })
 
     it('shows plural form for multiple votes', () => {
-      const props = { ...defaultProps, votesLeft: 5, cools: 0 }
+      const props = { ...defaultProps, user: { ...defaultProps.user, votesleft: 5, coolsleft: 0 } }
       const { container } = render(<Epicenter {...props} />)
 
       expect(container.querySelector('#votesleft').textContent).toBe('5')
@@ -175,7 +175,7 @@ describe('Epicenter Component', () => {
     })
 
     it('shows singular form for 1 cool', () => {
-      const props = { ...defaultProps, votesLeft: 0, cools: 1 }
+      const props = { ...defaultProps, user: { ...defaultProps.user, votesleft: 0, coolsleft: 1 } }
       const { container } = render(<Epicenter {...props} />)
 
       expect(container.querySelector('#chingsleft').textContent).toBe('1')
@@ -184,7 +184,7 @@ describe('Epicenter Component', () => {
     })
 
     it('shows plural form for multiple cools', () => {
-      const props = { ...defaultProps, votesLeft: 0, cools: 3 }
+      const props = { ...defaultProps, user: { ...defaultProps.user, votesleft: 0, coolsleft: 3 } }
       const { container } = render(<Epicenter {...props} />)
 
       expect(container.querySelector('#chingsleft').textContent).toBe('3')
@@ -192,7 +192,7 @@ describe('Epicenter Component', () => {
     })
 
     it('shows both votes and cools when present', () => {
-      const props = { ...defaultProps, votesLeft: 5, cools: 2 }
+      const props = { ...defaultProps, user: { ...defaultProps.user, votesleft: 5, coolsleft: 2 } }
       const { container } = render(<Epicenter {...props} />)
 
       expect(container.querySelector('#chingsleft').textContent).toBe('2')
@@ -202,7 +202,7 @@ describe('Epicenter Component', () => {
     })
 
     it('hides votes/cools section when both are zero', () => {
-      const props = { ...defaultProps, votesLeft: 0, cools: 0 }
+      const props = { ...defaultProps, user: { ...defaultProps.user, votesleft: 0, coolsleft: 0 } }
       const { container } = render(<Epicenter {...props} />)
 
       expect(container.querySelector('#voteschingsleft')).not.toBeInTheDocument()

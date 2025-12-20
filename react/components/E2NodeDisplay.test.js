@@ -16,6 +16,20 @@ jest.mock('./LinkNode', () => {
   }
 })
 
+// Mock InlineWriteupEditor
+jest.mock('./InlineWriteupEditor', () => {
+  return function MockInlineWriteupEditor() {
+    return <div data-testid="inline-editor">Add a Writeup</div>
+  }
+})
+
+// Mock E2NodeToolsModal
+jest.mock('./E2NodeToolsModal', () => {
+  return function MockE2NodeToolsModal() {
+    return null
+  }
+})
+
 describe('E2NodeDisplay Component', () => {
   const mockE2Node = {
     title: 'Test E2Node',
@@ -46,17 +60,19 @@ describe('E2NodeDisplay Component', () => {
   }
 
   describe('rendering', () => {
-    it('renders e2node title', () => {
+    it('does not render e2node title (handled by zen.mc pageheader)', () => {
       render(<E2NodeDisplay e2node={mockE2Node} user={mockUser} />)
 
-      expect(screen.getByText('Test E2Node')).toBeInTheDocument()
+      // Title is not rendered by E2NodeDisplay, it's in zen.mc #pageheader
+      expect(screen.queryByText('Test E2Node')).not.toBeInTheDocument()
     })
 
-    it('renders createdby info', () => {
+    it('does not render createdby info (handled by zen.mc pageheader)', () => {
       render(<E2NodeDisplay e2node={mockE2Node} user={mockUser} />)
 
-      expect(screen.getByText(/Created by/)).toBeInTheDocument()
-      expect(screen.getByText('creator')).toBeInTheDocument()
+      // Createdby info is not rendered by E2NodeDisplay, it's in zen.mc #pageheader
+      expect(screen.queryByText(/Created by/)).not.toBeInTheDocument()
+      expect(screen.queryByText('creator')).not.toBeInTheDocument()
     })
 
     it('renders all writeups', () => {
@@ -68,14 +84,12 @@ describe('E2NodeDisplay Component', () => {
       expect(screen.getByText('Writeup 2')).toBeInTheDocument()
     })
 
-    it('renders softlinks with hit counts', () => {
+    it('renders softlinks', () => {
       render(<E2NodeDisplay e2node={mockE2Node} user={mockUser} />)
 
-      expect(screen.getByText(/Softlinks:/)).toBeInTheDocument()
+      // Softlinks are rendered in a table, no "Softlinks:" label
       expect(screen.getByText('Related Node 1')).toBeInTheDocument()
       expect(screen.getByText('Related Node 2')).toBeInTheDocument()
-      expect(screen.getByText('(5)')).toBeInTheDocument()
-      expect(screen.getByText('(3)')).toBeInTheDocument()
     })
 
     it('shows message when no writeups', () => {
@@ -86,7 +100,7 @@ describe('E2NodeDisplay Component', () => {
 
       render(<E2NodeDisplay e2node={emptyE2Node} user={mockUser} />)
 
-      expect(screen.getByText('No writeups yet.')).toBeInTheDocument()
+      expect(screen.getByText('There are no writeups for this node yet.')).toBeInTheDocument()
     })
 
     it('hides softlinks section when empty', () => {
@@ -97,7 +111,8 @@ describe('E2NodeDisplay Component', () => {
 
       render(<E2NodeDisplay e2node={noSoftlinksE2Node} user={mockUser} />)
 
-      expect(screen.queryByText(/Softlinks:/)).not.toBeInTheDocument()
+      // No softlinks should be rendered
+      expect(screen.queryByText('Related Node 1')).not.toBeInTheDocument()
     })
 
     it('handles missing createdby', () => {
@@ -108,14 +123,15 @@ describe('E2NodeDisplay Component', () => {
 
       render(<E2NodeDisplay e2node={noCreatorE2Node} user={mockUser} />)
 
-      expect(screen.queryByText(/Created by/)).not.toBeInTheDocument()
+      // Component doesn't render createdby, so this just ensures no crash
+      const writeups = screen.getAllByTestId('writeup')
+      expect(writeups).toHaveLength(2)
     })
 
-    it('inherits font styles for title', () => {
-      render(<E2NodeDisplay e2node={mockE2Node} user={mockUser} />)
+    it('renders container with proper class', () => {
+      const { container } = render(<E2NodeDisplay e2node={mockE2Node} user={mockUser} />)
 
-      const title = screen.getByText('Test E2Node')
-      expect(title).toHaveStyle({ fontSize: 'inherit' })
+      expect(container.querySelector('.e2node-display')).toBeInTheDocument()
     })
   })
 
@@ -134,7 +150,8 @@ describe('E2NodeDisplay Component', () => {
 
       render(<E2NodeDisplay e2node={noSoftlinksE2Node} user={mockUser} />)
 
-      expect(screen.queryByText(/Softlinks:/)).not.toBeInTheDocument()
+      // No softlinks should be rendered
+      expect(screen.queryByText('Related Node 1')).not.toBeInTheDocument()
     })
 
     it('handles undefined group', () => {
@@ -145,7 +162,133 @@ describe('E2NodeDisplay Component', () => {
 
       render(<E2NodeDisplay e2node={noGroupE2Node} user={mockUser} />)
 
-      expect(screen.getByText('No writeups yet.')).toBeInTheDocument()
+      expect(screen.getByText('There are no writeups for this node yet.')).toBeInTheDocument()
+    })
+  })
+
+  describe('inline editor visibility', () => {
+    it('shows inline editor for logged-in user without existing writeup on unlocked node', () => {
+      const unlockedE2Node = {
+        ...mockE2Node,
+        locked: false,
+        group: []
+      }
+      const loggedInUser = { node_id: 999, guest: false }
+
+      render(<E2NodeDisplay e2node={unlockedE2Node} user={loggedInUser} />)
+
+      expect(screen.getByTestId('inline-editor')).toBeInTheDocument()
+    })
+
+    it('hides inline editor when node is locked', () => {
+      const lockedE2Node = {
+        ...mockE2Node,
+        locked: true,
+        lock_reason: 'Editorial decision',
+        lock_user_id: 123,
+        group: []
+      }
+      const loggedInUser = { node_id: 999, guest: false }
+
+      render(<E2NodeDisplay e2node={lockedE2Node} user={loggedInUser} />)
+
+      expect(screen.queryByTestId('inline-editor')).not.toBeInTheDocument()
+    })
+
+    it('hides inline editor for guest users even on unlocked nodes', () => {
+      const unlockedE2Node = {
+        ...mockE2Node,
+        locked: false,
+        group: []
+      }
+      const guestUser = { node_id: 0, guest: true }
+
+      render(<E2NodeDisplay e2node={unlockedE2Node} user={guestUser} />)
+
+      expect(screen.queryByTestId('inline-editor')).not.toBeInTheDocument()
+    })
+
+    it('hides inline editor when user already has a writeup on the node', () => {
+      const userId = 999
+      const e2NodeWithUserWriteup = {
+        ...mockE2Node,
+        locked: false,
+        group: [
+          {
+            node_id: 1,
+            title: 'User Writeup',
+            author: { node_id: userId, title: 'testuser' },
+            doctext: 'Content'
+          }
+        ]
+      }
+      const loggedInUser = { node_id: userId, guest: false }
+
+      render(<E2NodeDisplay e2node={e2NodeWithUserWriteup} user={loggedInUser} />)
+
+      expect(screen.queryByTestId('inline-editor')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('locked node warning', () => {
+    it('displays warning box when node is locked with user and reason', () => {
+      const lockedE2Node = {
+        ...mockE2Node,
+        locked: true,
+        lock_reason: 'Editorial decision',
+        lock_user_title: 'SomeEditor',
+        group: []
+      }
+
+      render(<E2NodeDisplay e2node={lockedE2Node} user={mockUser} />)
+
+      expect(screen.getByText(/This node is locked/)).toBeInTheDocument()
+      expect(screen.getByText(/SomeEditor/)).toBeInTheDocument()
+      expect(screen.getByText(/Editorial decision/)).toBeInTheDocument()
+      expect(screen.getByText(/not accepting new contributions/)).toBeInTheDocument()
+    })
+
+    it('displays warning box when node is locked without user title', () => {
+      const lockedE2Node = {
+        ...mockE2Node,
+        locked: true,
+        lock_reason: 'Content freeze',
+        lock_user_title: null,
+        group: []
+      }
+
+      render(<E2NodeDisplay e2node={lockedE2Node} user={mockUser} />)
+
+      expect(screen.getByText(/This node is locked/)).toBeInTheDocument()
+      expect(screen.getByText(/Content freeze/)).toBeInTheDocument()
+      expect(screen.queryByText(/by/)).not.toBeInTheDocument()
+    })
+
+    it('displays warning box when node is locked without reason', () => {
+      const lockedE2Node = {
+        ...mockE2Node,
+        locked: true,
+        lock_reason: null,
+        lock_user_title: 'SomeEditor',
+        group: []
+      }
+
+      render(<E2NodeDisplay e2node={lockedE2Node} user={mockUser} />)
+
+      expect(screen.getByText(/This node is locked/)).toBeInTheDocument()
+      expect(screen.getByText(/SomeEditor/)).toBeInTheDocument()
+    })
+
+    it('does not display warning when node is not locked', () => {
+      const unlockedE2Node = {
+        ...mockE2Node,
+        locked: false,
+        group: []
+      }
+
+      render(<E2NodeDisplay e2node={unlockedE2Node} user={mockUser} />)
+
+      expect(screen.queryByText(/This node is locked/)).not.toBeInTheDocument()
     })
   })
 })

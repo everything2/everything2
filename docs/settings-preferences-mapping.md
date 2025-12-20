@@ -38,7 +38,8 @@ The legacy Settings page consists of three main sections:
   - Options: Off (instant)=1, Supersonic=100, Faster=150, Fast (default)=0, Less fast=300, Medium=400, Slow=600, Slower=800, Glacial=1000
   - Default: 0
 
-- **`noreplacevotebuttons`** (checkbox inverse) - "Replace +/- voting buttons with Up/Down buttons"
+- **`noreplacevotebuttons`** - ~~"Replace +/- voting buttons with Up/Down buttons"~~
+  - **DEPRECATED (2025-12-15)**: React WriteupDisplay now uses modern caret icons exclusively
   - Type: boolean (0/1)
   - Default: 0 (use Up/Down buttons)
 

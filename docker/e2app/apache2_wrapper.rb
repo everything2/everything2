@@ -50,15 +50,17 @@ files.each do |f|
   File.write(f[:file], template.result(bind))
 end
 
-`rm -f /etc/apache2/logs/error_log`
-`ln -s /dev/stderr /etc/apache2/logs/error_log` unless ENV['E2_DOCKER'].eql? "development"
-
 if ENV['E2_DOCKER'].eql? "development"
   # Create development log file with world-writable permissions for tests
   STDERR.puts "Setting up development log file"
   `touch /tmp/development.log`
   `chmod 777 /tmp/development.log`
+  # Link Apache error_log to development.log for easier debugging
+  `rm -f /etc/apache2/logs/error_log`
+  `ln -s /tmp/development.log /etc/apache2/logs/error_log`
   exec("/usr/sbin/apachectl -k start; sleep infinity & wait")
 else
+  `rm -f /etc/apache2/logs/error_log`
+  `ln -s /dev/stderr /etc/apache2/logs/error_log`
   exec("/usr/sbin/apachectl -D FOREGROUND")
 end

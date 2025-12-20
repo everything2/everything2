@@ -120,13 +120,13 @@ describe('EditorBeta', () => {
     it('shows login message when canAccess is false', () => {
       render(<EditorBeta data={{ ...mockData, canAccess: false }} />)
 
-      expect(screen.getByText('Please log in to use the editor beta.')).toBeInTheDocument()
+      expect(screen.getByText('Please log in to use the drafts editor.')).toBeInTheDocument()
     })
 
     it('shows editor when canAccess is true', () => {
       render(<EditorBeta data={mockData} />)
 
-      expect(screen.getByText('E2 Editor Beta')).toBeInTheDocument()
+      expect(screen.getByText('Drafts')).toBeInTheDocument()
       expect(screen.getByText(/Hello, testuser/)).toBeInTheDocument()
     })
   })
@@ -547,7 +547,7 @@ describe('EditorBeta', () => {
       render(<EditorBeta data={{}} />)
 
       // Should show login prompt when canAccess is falsy
-      expect(screen.getByText('Please log in to use the editor beta.')).toBeInTheDocument()
+      expect(screen.getByText('Please log in to use the drafts editor.')).toBeInTheDocument()
     })
 
     it('handles null drafts array gracefully', () => {

@@ -2340,11 +2340,13 @@ sub canDeleteNode {
 sub canUpdateNode {
 	my ($this, $USER, $NODE) = @_;
 	$this->getRef($NODE);
-	my $UID = $this->getId($USER);
 	return 0 if((not defined $NODE) || ($NODE == 0));
 	$EDS ||= $this->getNode('content editors', 'usergroup');
 	my $type = $$NODE{type}{title};
-	return 1 if grep {/^$UID$/} @{ $$EDS{group} } and grep {/^$type$/}('writeup','document','oppressor_document','category');
+	# Check if user is in content editors (using isApproved to handle nested groups)
+	if (grep {/^$type$/}('writeup','document','oppressor_document','category')) {
+		return 1 if $this->isApproved($USER, $EDS);
+	}
 	return $this->isApproved ($USER, $$NODE{author_user});
 }
 

@@ -15,6 +15,9 @@ use LWP::UserAgent;
 # For convertDateToEpoch
 use Date::Calc;
 
+# For addNodeNote
+use Scalar::Util qw(blessed);
+
 # For rewriteCleanEscape, urlGen
 use CGI qw(-utf8);
 
@@ -1186,6 +1189,70 @@ sub securityLog
   return $this->{db}->sqlInsert('seclog', { 'seclog_node' => $$node{node_id}, 'seclog_user'=>$$user{node_id}, 'seclog_details'=>$details});
 }
 
+sub addNodeNote
+{
+  my ($this, $node, $notetext, $user) = @_;
+
+  # Extract node_id - handle both hashrefs and blessed objects
+  my $node_id;
+  if (ref($node))
+  {
+    # Check if it's a blessed object with node_id method
+    if (blessed($node) && $node->can('node_id'))
+    {
+      $node_id = $node->node_id;
+    }
+    else
+    {
+      # Regular hashref
+      $this->{db}->getRef($node);
+      $node_id = $node->{node_id};
+    }
+  }
+  else
+  {
+    $node_id = $node;
+  }
+
+  my $user_id = 0;
+  my $user_title = '';
+
+  if ($user)
+  {
+    # Extract user info - handle both hashrefs and blessed objects
+    if (ref($user))
+    {
+      if (blessed($user) && $user->can('node_id'))
+      {
+        $user_id = $user->node_id;
+        $user_title = $user->title if $user->can('title');
+      }
+      else
+      {
+        $this->{db}->getRef($user);
+        $user_id = $user->{node_id};
+        $user_title = $user->{title} // '';
+      }
+    }
+    else
+    {
+      $user_id = $user;
+    }
+
+    $notetext = "[$user_title\[user]]: $notetext" if $user_title;
+  }
+
+  $this->{db}->sqlInsert("nodenote", {
+    nodenote_nodeid => $node_id,
+    noter_user => $user_id,
+    notetext => $notetext
+  });
+
+  # Note: Omitting addNotification for now as it requires htmlcode delegation
+  # which is not available in Application context
+  return;
+}
+
 sub isGuest
 {
   my ($this, $user) = @_;
@@ -2261,7 +2328,7 @@ sub getNodeNotes
 sub refreshVotesAndCools
 {
   my ($this, $user, $vars) = @_;
-  my ($time) = split " ",$$user{lasttime};
+  my ($time) = split " ", ($$user{lasttime} || '');
 
  if (not $this->isGuest($user)
   and (not exists $$vars{votetime} or $$vars{votetime} ne $time)) {
@@ -3621,7 +3688,12 @@ sub getRandomNodesMany {
 
   # Get total count of eligible nodes (cached for 5 minutes to avoid repeated COUNT queries)
   my $cache_key = 'random_nodes_total_count';
-  my $total_count = $this->{cache}->get($cache_key);
+  my $total_count;
+
+  # Only use cache if it's available
+  if ($this->{cache}) {
+    $total_count = $this->{cache}->get($cache_key);
+  }
 
   unless (defined $total_count) {
     my ($count_result) = $this->{db}->sqlSelect(
@@ -3630,7 +3702,11 @@ sub getRandomNodesMany {
       "exists(select 1 from nodegroup where nodegroup_id=e2node_id)"
     );
     $total_count = $count_result || 0;
-    $this->{cache}->set($cache_key, $total_count, 300); # Cache for 5 minutes
+
+    # Only cache if cache is available
+    if ($this->{cache}) {
+      $this->{cache}->set($cache_key, $total_count, 300); # Cache for 5 minutes
+    }
   }
 
   return [] if $total_count == 0;
@@ -5176,7 +5252,10 @@ sub node_by_id
   my ($this, $id) = @_;
   my $node = $this->{db}->getNodeById($id);
 
-  return unless $node;
+  unless ($node) {
+    $this->devLog("node_by_id: getNodeById returned undef for id $id");
+    return;
+  }
   return $this->get_blessed_node($node);
 }
 
@@ -5184,11 +5263,20 @@ sub get_blessed_node
 {
   my ($this, $node) = @_;
 
-  if(my $class = $Everything::FACTORY->{node}->available($node->{type}->{title}))
+  # Ensure node has a valid type before looking up the class
+  my $type_title = $node->{type} ? $node->{type}->{title} : undef;
+
+  unless ($type_title) {
+    $this->devLog("get_blessed_node: node $node->{node_id} has no type or type title");
+    return;
+  }
+
+  if(my $class = $Everything::FACTORY->{node}->available($type_title))
   {
     return $class->new($node);
   }
 
+  $this->devLog("get_blessed_node: no class available for type '$type_title' (node $node->{node_id})");
   return;
 }
 
@@ -6414,6 +6502,9 @@ sub buildNodeInfoStructure
     $e2->{user}->{gpOptOut} = $VARS->{GPoptout} ? \1 : \0;
     $e2->{user}->{experience} = $USER->{experience} || 0;
     $e2->{user}->{level} = $this->getLevel($USER);
+    # Voting and cooling capacity (needed for WriteupDisplay C! button)
+    $e2->{user}->{votesleft} = $USER->{votesleft} || 0;
+    $e2->{user}->{coolsleft} = int($VARS->{cools} || 0);
   }
 
   # Chatterbox data - room topic and initial messages for current room
@@ -6540,13 +6631,12 @@ sub buildNodeInfoStructure
   }
 
   # Epicenter nodelet
-  # Note: user fields (gp, experience, level, gpOptOut, node_id, title, guest)
+  # Note: user fields (gp, experience, level, gpOptOut, node_id, title, guest, votesleft, coolsleft)
   # are available globally on e2.user - no need to duplicate here
   if($nodelets =~ /262/ and not $this->isGuest($USER))
   {
     $e2->{epicenter} = {};
-    $e2->{epicenter}->{votesLeft} = $USER->{votesleft} || 0;
-    $e2->{epicenter}->{cools} = $VARS->{cools} || 0;
+    # votesLeft and cools now come from e2.user.votesleft and e2.user.coolsleft
     $e2->{epicenter}->{localTimeUse} = $VARS->{localTimeUse} ? \1 : \0;
     $e2->{epicenter}->{userSettingsId} = $this->{conf}->user_settings;
 
@@ -8048,6 +8138,41 @@ sub xml_unescape
   $str =~ s/\&gt\;/\>/g;
 
   return $str;
+}
+
+sub create_short_url
+{
+  my ($this, $node) = @_;
+
+  my $node_id = ref($node) eq 'HASH' ? $node->{node_id} : $node->node_id;
+
+  # Characters for encoding (excludes similar-looking chars)
+  my @encodeChars = qw/
+    a   c d e f   h     k   m n o     r s t u   w x   z
+    A B C D E F G H   J K L M N   P Q R   T U V W X Y Z
+      2 3 4     7 8 9
+  /;
+
+  # Encode node_id to short string
+  my $encode_int = sub {
+    my $val = shift;
+    my $result = '';
+
+    while ($val != 0) {
+      my $next_char_value = $val % scalar(@encodeChars);
+      my $next_char = $encodeChars[$next_char_value];
+      $result = $next_char . $result;
+      $val = int($val / scalar(@encodeChars));
+    }
+
+    $result = '0' if $result eq '';
+    return $result;
+  };
+
+  my $short_string = $encode_int->($node_id);
+  my $short_url = 'https://' . $Everything::CONF->canonical_web_server . '/s/' . $short_string;
+
+  return $short_url;
 }
 
 1;
