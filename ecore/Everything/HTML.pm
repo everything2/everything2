@@ -1001,15 +1001,17 @@ sub printHeader
 
         $extras->{'X-Frame-Options'} = "sameorigin";
 
-        # Set Cache-Control based on user login state
+        # Set Cache-Control based on user login state and cookie presence
         # Logged-in users get private, no-cache to prevent CloudFront caching
         # This ensures user-specific content (random nodes, personal data) is fresh
-        if ($APP->isGuest($USER)) {
-            # Guests can be cached by CloudFront (controlled by CloudFront policy)
-            $extras->{'Cache-Control'} = "public, max-age=300";
-        } else {
-            # Logged-in users should never be cached
+        # Also force no-cache when setting cookies (e.g., logout) to prevent
+        # CloudFront from caching and stripping the Set-Cookie header
+        if ($$USER{cookie} || !$APP->isGuest($USER)) {
+            # Setting cookies or logged-in users should never be cached
             $extras->{'Cache-Control'} = "private, no-cache, no-store, must-revalidate";
+        } else {
+            # Guests without cookie changes can be cached by CloudFront
+            $extras->{'Cache-Control'} = "public, max-age=300";
         }
 
 	if($ENV{SCRIPT_NAME}) {
@@ -1171,8 +1173,14 @@ sub opLogin
 sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
-	my $cookie = $query->cookie(-name => $Everything::CONF->cookiepass, -value => "");
-	my $user_id = $Everything::CONF->guest_user;	
+	# Must set expires to past date for browser to actually delete the cookie
+	my $cookie = $query->cookie(
+		-name => $Everything::CONF->cookiepass,
+		-value => "",
+		-expires => '-1d',
+		-path => '/'
+	);
+	my $user_id = $Everything::CONF->guest_user;
 
 	$USER = getNodeById($user_id);
 	$VARS = getVars($USER);

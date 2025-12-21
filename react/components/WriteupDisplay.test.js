@@ -75,6 +75,15 @@ describe('WriteupDisplay Component', () => {
       expect(screen.queryByText(/Rep:/)).not.toBeInTheDocument()
     })
 
+    it('shows reputation to author even without voting', () => {
+      // Author has same node_id as writeup author
+      const authorUser = { node_id: 456, is_guest: false, is_editor: false }
+      render(<WriteupDisplay writeup={mockWriteup} user={authorUser} />)
+
+      // Author should see reputation spread of their own writeup
+      expect(screen.getByText(/Rep: \+5 \(\+7\/-2\)/)).toBeInTheDocument()
+    })
+
     it('displays C!s when present', () => {
       const writeupWithCools = {
         ...mockWriteup,

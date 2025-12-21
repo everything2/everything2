@@ -312,9 +312,9 @@ describe('Epicenter Component', () => {
       render(<Epicenter {...defaultProps} />)
 
       const linkNodes = screen.getAllByTestId('link-node')
-      // Should have links for: Log Out, User Settings, User Profile, Profile Edit,
-      // Drafts, Voting/XP System, Help
-      expect(linkNodes.length).toBeGreaterThanOrEqual(7)
+      // Should have links for: User Settings, User Profile, Profile Edit,
+      // Drafts, Voting/XP System, Help (Log Out is now a LogoutLink, not a LinkNode)
+      expect(linkNodes.length).toBeGreaterThanOrEqual(6)
     })
   })
 })
