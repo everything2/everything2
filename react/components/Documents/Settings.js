@@ -691,55 +691,6 @@ function Settings({ data }) {
             Your Writeups
           </h2>
 
-          {/* Editing */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Editing</legend>
-
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={settingsPrefs.HideWriteupOnE2node === 1}
-                onChange={() => handleTogglePref('HideWriteupOnE2node')}
-                style={{ marginRight: '8px' }}
-              />
-              <strong>Only show your writeup edit box text on the writeup's own page</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
-                Useful for slow connections
-              </div>
-            </label>
-
-            <label style={{ display: 'block', marginBottom: '16px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={settingsPrefs.settings_useTinyMCE === 1}
-                onChange={() => handleTogglePref('settings_useTinyMCE')}
-                style={{ marginRight: '8px' }}
-              />
-              <strong>Use WYSIWYG content editor to format writeups</strong>
-            </label>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Writeup edit box display size:
-              </label>
-              <select
-                value={settingsPrefs.textareaSize || 0}
-                onChange={(e) => handlePrefChange('textareaSize', parseInt(e.target.value, 10))}
-                style={{
-                  marginLeft: '8px',
-                  padding: '6px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
-              >
-                <option value="0">20 x 60 (Small) (Default)</option>
-                <option value="1">30 x 80 (Medium)</option>
-                <option value="2">50 x 95 (Large)</option>
-              </select>
-            </div>
-          </fieldset>
-
           {/* Writeup Hints */}
           <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
             <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Writeup Hints</legend>
@@ -1466,18 +1417,6 @@ function Settings({ data }) {
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={advancedPrefs.nullvote === 1}
-                onChange={() => handleToggleAdvancedPref('nullvote')}
-                style={{ marginRight: '8px' }}
-              />
-              <strong>Show null vote button</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
-                Some old browsers needed at least one radio-button to be selected
-              </div>
-            </label>
           </fieldset>
         </div>
       )}

@@ -103,6 +103,21 @@ sub is_guest {
     return shift->{user}->is_guest;
 }
 
+=head2 set_postdata($data)
+
+Sets the POST data for this request. Useful for testing multiple
+operations with different data on the same request object.
+
+Example:
+    $request->set_postdata({ title => 'New Title' });
+
+=cut
+
+sub set_postdata {
+    my ($self, $data) = @_;
+    $self->{postdata} = $data;
+}
+
 =head2 JSON_POSTDATA()
 
 Returns the POST data hashref for this request.

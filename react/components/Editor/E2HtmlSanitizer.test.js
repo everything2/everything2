@@ -17,6 +17,7 @@ import {
   formatCompatibilityReport,
   APPROVED_TAGS,
   escapeHtml,
+  breakTags,
 } from './E2HtmlSanitizer'
 
 describe('E2HtmlSanitizer', () => {
@@ -832,6 +833,147 @@ describe('E2HtmlSanitizer', () => {
       const report = formatCompatibilityReport(issues)
       const matches = report.match(/<div>/g)
       expect(matches.length).toBe(1)
+    })
+  })
+
+  // ============================================================
+  // BREAKTAGS FUNCTION (newline to HTML conversion)
+  // ============================================================
+  describe('breakTags', () => {
+    it('returns empty string for null/undefined input', () => {
+      expect(breakTags(null)).toBe('')
+      expect(breakTags(undefined)).toBe('')
+      expect(breakTags('')).toBe('')
+    })
+
+    it('skips conversion if content already has <p> tags', () => {
+      const htmlWithP = '<p>Already formatted</p>\nWith newlines'
+      expect(breakTags(htmlWithP)).toBe(htmlWithP)
+    })
+
+    it('skips conversion if content already has <br> tags', () => {
+      const htmlWithBr = 'Line 1<br>Line 2\nLine 3'
+      expect(breakTags(htmlWithBr)).toBe(htmlWithBr)
+    })
+
+    it('converts single newlines to <br> tags', () => {
+      const input = 'Line 1\nLine 2\nLine 3'
+      const result = breakTags(input)
+      expect(result).toContain('<br>')
+      expect(result).toContain('Line 1')
+      expect(result).toContain('Line 2')
+      expect(result).toContain('Line 3')
+    })
+
+    it('converts double newlines to paragraph breaks', () => {
+      const input = 'Paragraph 1\n\nParagraph 2'
+      const result = breakTags(input)
+      expect(result).toContain('</p>')
+      expect(result).toContain('<p>')
+      expect(result).toContain('Paragraph 1')
+      expect(result).toContain('Paragraph 2')
+    })
+
+    it('wraps content in <p> tags', () => {
+      const input = 'Simple text'
+      const result = breakTags(input)
+      expect(result).toBe('<p>Simple text</p>')
+    })
+
+    it('preserves newlines inside <pre> tags', () => {
+      const input = '<pre>Code\nWith\nNewlines</pre>'
+      const result = breakTags(input)
+      expect(result).toContain('Code\nWith\nNewlines')
+      expect(result).not.toContain('Code<br>')
+    })
+
+    it('preserves newlines inside <ul> tags', () => {
+      const input = '<ul>\n<li>Item 1</li>\n<li>Item 2</li>\n</ul>'
+      const result = breakTags(input)
+      // Newlines inside ul should be preserved
+      expect(result).toContain('<li>Item 1</li>')
+      expect(result).toContain('<li>Item 2</li>')
+    })
+
+    it('preserves newlines inside <ol> tags', () => {
+      const input = '<ol>\n<li>First</li>\n<li>Second</li>\n</ol>'
+      const result = breakTags(input)
+      expect(result).toContain('<li>First</li>')
+    })
+
+    it('preserves newlines inside <table> tags', () => {
+      const input = '<table>\n<tr>\n<td>Cell</td>\n</tr>\n</table>'
+      const result = breakTags(input)
+      expect(result).toContain('<td>Cell</td>')
+    })
+
+    it('preserves newlines inside <dl> tags', () => {
+      const input = '<dl>\n<dt>Term</dt>\n<dd>Definition</dd>\n</dl>'
+      const result = breakTags(input)
+      expect(result).toContain('<dt>Term</dt>')
+      expect(result).toContain('<dd>Definition</dd>')
+    })
+
+    it('handles mixed content with protected and unprotected newlines', () => {
+      const input = 'Intro\n\n<pre>Code\nBlock</pre>\n\nConclusion'
+      const result = breakTags(input)
+      // Pre content should preserve newlines
+      expect(result).toContain('Code\nBlock')
+      // Intro and Conclusion should be in paragraphs
+      expect(result).toContain('Intro')
+      expect(result).toContain('Conclusion')
+    })
+
+    it('trims leading and trailing whitespace', () => {
+      const input = '  \n  Text with whitespace  \n  '
+      const result = breakTags(input)
+      expect(result).toBe('<p>Text with whitespace</p>')
+    })
+
+    it('does not wrap block elements inside <p> tags', () => {
+      const input = 'Text\n\n<h1>Heading</h1>\n\nMore text'
+      const result = breakTags(input)
+      // Should not have <p><h1> or </h1></p>
+      expect(result).not.toContain('<p><h1>')
+      expect(result).not.toContain('</h1></p>')
+    })
+
+    it('handles typical legacy writeup format', () => {
+      const input = `This is a legacy writeup.
+
+It has multiple paragraphs.
+
+And some [links] too.`
+      const result = breakTags(input)
+      expect(result).toContain('<p>This is a legacy writeup.</p>')
+      expect(result).toContain('<p>It has multiple paragraphs.</p>')
+      expect(result).toContain('[links]') // Links are processed later
+    })
+  })
+
+  // ============================================================
+  // RENDERE2CONTENT WITH BREAKTAGS
+  // ============================================================
+  describe('renderE2Content with breakTags', () => {
+    it('applies breakTags by default', () => {
+      const input = 'Line 1\n\nLine 2'
+      const { html } = renderE2Content(input)
+      expect(html).toContain('</p>')
+      expect(html).toContain('<p>')
+    })
+
+    it('can disable breakTags with option', () => {
+      const input = 'Line 1\n\nLine 2'
+      const { html } = renderE2Content(input, { applyBreakTags: false })
+      // Without breakTags, newlines remain as-is (DOMPurify strips them)
+      expect(html).not.toContain('</p>')
+    })
+
+    it('applies breakTags before link parsing', () => {
+      const input = 'Check out [this node]\n\nIt is great'
+      const { html } = renderE2Content(input)
+      expect(html).toContain('<a href="/title/this%20node"')
+      expect(html).toContain('</p>')
     })
   })
 })

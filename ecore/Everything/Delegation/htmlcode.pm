@@ -2691,9 +2691,10 @@ sub editvars
   }
 
 
-  if($query->param('newsetting') ne '' and $query->param('newval') ne ''){
-    my $title = $query->param('newsetting');
-    $$SETTINGS{$title} = $query->param('newval');
+  my $newsetting = $query->param('newsetting') // '';
+  my $newval = $query->param('newval') // '';
+  if($newsetting ne '' and $newval ne ''){
+    $$SETTINGS{$newsetting} = $newval;
   }
 
   setVars ($NODE, $SETTINGS);
@@ -11173,6 +11174,7 @@ sub decode_short_string
   my $APP = shift;
 
   my ($shortString) = @_;
+  return unless defined $shortString && $shortString ne '';
 
   my @encodeChars = qw/
    a   c d e f   h     k   m n o     r s t u   w x   z

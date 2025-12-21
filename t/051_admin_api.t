@@ -2,14 +2,18 @@
 use strict;
 use warnings;
 
+use FindBin;
 use Test::More;
 use JSON;
 
 use lib '/var/libraries/lib/perl5';
 use lib '/var/everything/ecore';
+use lib "$FindBin::Bin/lib";
 
 use Everything;
 use Everything::API::admin;
+use MockUser;
+use MockRequest;
 
 # Initialize E2 system
 initEverything();
@@ -24,44 +28,6 @@ my $regular_user = $DB->getNode('e2e_user', 'user');
 
 # Get a maintenance node to test with
 my $maintenance_node = $DB->getNode('writeup maintenance create', 'maintenance');
-
-# Create mock request and user objects
-{
-  package MockUser;
-  sub new {
-    my ($class, %args) = @_;
-    return bless {
-      node_id => $args{node_id} // 0,
-      title => $args{title} // 'test',
-      is_admin_flag => $args{is_admin_flag} // 0,
-      is_editor_flag => $args{is_editor_flag} // 0,
-      _nodedata => $args{nodedata} // {},
-    }, $class;
-  }
-  sub is_admin { return shift->{is_admin_flag}; }
-  sub is_editor { return shift->{is_editor_flag}; }
-  sub node_id { shift->{node_id} }
-  sub title { shift->{title} }
-  sub NODEDATA { shift->{_nodedata} }
-}
-
-{
-  package MockRequest;
-  sub new {
-    my ($class, %args) = @_;
-    return bless {
-      user => MockUser->new(%args),
-      postdata => $args{postdata},
-    }, $class;
-  }
-  sub user { shift->{user} }
-  sub JSON_POSTDATA { shift->{postdata} }
-  sub set_postdata {
-    my ($self, $data) = @_;
-    $self->{postdata} = $data;
-  }
-  sub is_guest { return 0 }
-}
 
 # Create API instance
 my $api = Everything::API::admin->new();

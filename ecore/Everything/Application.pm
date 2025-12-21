@@ -3932,7 +3932,7 @@ sub get_messages
   $this->{db}->getRef($user);
   return unless defined($user) and defined($user->{node_id});
 
-  $limit = int($limit);
+  $limit = int($limit // 15);
   $limit ||= 15;
   $limit = 15 if ($limit < 0);
   $limit = 100 if ($limit > 100);
