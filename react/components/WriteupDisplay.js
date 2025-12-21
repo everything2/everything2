@@ -369,9 +369,9 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                   </div>
                 </td>
 
-                {/* Reputation display - only show if user has voted */}
+                {/* Reputation display - show if user has voted OR is the author */}
                 <td style={{ textAlign: 'right' }} className="wu_rep">
-                  {voteState.userVote !== null && voteState.userVote !== undefined && (
+                  {(isAuthor || (voteState.userVote !== null && voteState.userVote !== undefined)) && (
                     <small>
                       Rep: {voteState.reputation > 0 && '+'}{voteState.reputation} (+{voteState.upvotes}/-{voteState.downvotes})
                     </small>

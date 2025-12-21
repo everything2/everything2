@@ -172,70 +172,8 @@
             }
           },
           {
-            "Name": "AWS-AWSManagedRulesKnownBadInputsRuleSet",
-            "Priority": 2,
-            "OverrideAction": {
-              "None": {}
-            },
-            "Statement": {
-              "ManagedRuleGroupStatement": {
-                "VendorName": "AWS",
-                "Name": "AWSManagedRulesKnownBadInputsRuleSet"
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "AWSManagedRulesKnownBadInputsRuleSetMetric"
-            }
-          },
-          {
-            "Name": "AWS-AWSManagedRulesBotControlRuleSet",
-            "Priority": 3,
-            "OverrideAction": {
-              "Count": {}
-            },
-            "Statement": {
-              "ManagedRuleGroupStatement": {
-                "VendorName": "AWS",
-                "Name": "AWSManagedRulesBotControlRuleSet",
-                "ManagedRuleGroupConfigs": [
-                  {
-                    "AWSManagedRulesBotControlRuleSet": {
-                      "InspectionLevel": "COMMON"
-                    }
-                  }
-                ],
-                "ScopeDownStatement": {
-                  "NotStatement": {
-                    "Statement": {
-                      "ByteMatchStatement": {
-                        "SearchString": "/api/sessions",
-                        "FieldToMatch": {
-                          "UriPath": {}
-                        },
-                        "TextTransformations": [
-                          {
-                            "Priority": 0,
-                            "Type": "LOWERCASE"
-                          }
-                        ],
-                        "PositionalConstraint": "STARTS_WITH"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "AWSManagedRulesBotControlRuleSetMetric"
-            }
-          },
-          {
             "Name": "AllowCrawlerEssentials",
-            "Priority": 4,
+            "Priority": 2,
             "Action": {
               "Allow": {}
             },
@@ -283,7 +221,7 @@
           },
           {
             "Name": "RateLimitRule",
-            "Priority": 5,
+            "Priority": 3,
             "Action": {
               "Block": {}
             },
@@ -301,7 +239,7 @@
           },
           {
             "Name": "BlockBadUserAgents",
-            "Priority": 6,
+            "Priority": 4,
             "Action": {
               "Block": {}
             },

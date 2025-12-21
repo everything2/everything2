@@ -1,5 +1,6 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
+import LogoutLink from '../LogoutLink'
 import NodeletContainer from '../NodeletContainer'
 import Borgcheck from '../Borgcheck'
 import ExperienceGain from '../ExperienceGain'
@@ -68,7 +69,7 @@ const Epicenter = (props) => {
 
       <ul>
         <li>
-          <LinkNode type="superdoc" title="login" display="Log Out" params={{ op: 'logout' }} />
+          <LogoutLink />
         </li>
         <li title="User Settings">
           <LinkNode

@@ -50,6 +50,19 @@ sub output
     }
   }
 
+  # Include cookies from $USER (set by opcodes like logout)
+  # This mirrors what HTML.pm printHeader does
+  # $USER is a hashref, so we access it as $Everything::HTML::USER->{cookie}
+  my @cookies = ();
+  if ($Everything::HTML::USER && $Everything::HTML::USER->{cookie}) {
+    push @cookies, $Everything::HTML::USER->{cookie};
+  }
+  if (@cookies) {
+    $headers->{cookie} = \@cookies;
+    # Ensure logout responses aren't cached
+    $headers->{'Cache-Control'} = "private, no-cache, no-store, must-revalidate";
+  }
+
   print $REQUEST->header($headers);
   if($data)
   {
