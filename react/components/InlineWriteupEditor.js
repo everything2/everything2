@@ -68,6 +68,7 @@ const InlineWriteupEditor = ({
   const [errorMessage, setErrorMessage] = useState(null);
   const [writeuptypes, setWriteuptypes] = useState([]);
   const [selectedWriteuptype, setSelectedWriteuptype] = useState('thing');
+  const [hideFromNewWriteups, setHideFromNewWriteups] = useState(false);
   const autosaveTimerRef = useRef(null);
   const firstEditRef = useRef(false);
 
@@ -233,7 +234,8 @@ const InlineWriteupEditor = ({
         body: JSON.stringify({
           parent_e2node: e2nodeId,
           wrtype_writeuptype: writeuptypeId,
-          feedback_policy_id: 0
+          feedback_policy_id: 0,
+          notnew: hideFromNewWriteups ? 1 : 0
         })
       });
 
@@ -542,14 +544,15 @@ const InlineWriteupEditor = ({
           </div>
         </div>
 
-        {/* Second row: Writeuptype selector and Publish button (new writeups only) */}
+        {/* Second row: Writeuptype selector, hide checkbox, and Publish button (new writeups only) */}
         {!writeupId && (
           <div style={{
             display: 'flex',
             justifyContent: 'flex-end',
             alignItems: 'center',
             gap: '8px',
-            marginTop: '10px'
+            marginTop: '10px',
+            flexWrap: 'wrap'
           }}>
             <span style={{ fontSize: '13px', color: '#666' }}>Publish as:</span>
             <select
@@ -574,6 +577,21 @@ const InlineWriteupEditor = ({
                 <option value="thing">thing</option>
               )}
             </select>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: '12px',
+              color: '#666',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="checkbox"
+                checked={hideFromNewWriteups}
+                onChange={(e) => setHideFromNewWriteups(e.target.checked)}
+                style={{ marginRight: '4px' }}
+              />
+              Hide from New Writeups
+            </label>
             <button
               onClick={handlePublish}
               disabled={!draftId || publishing || saveStatus === 'saving'}

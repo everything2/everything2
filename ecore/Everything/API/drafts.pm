@@ -44,7 +44,8 @@ Request body:
   "parent_e2node": 123,
   "wrtype_writeuptype": 456,
   "feedback_policy_id": 0 (optional),
-  "publishtime": "2025-01-01 00:00:00" (optional, defaults to NOW())
+  "publishtime": "2025-01-01 00:00:00" (optional, defaults to NOW()),
+  "notnew": 0 (optional, defaults to 0 - set to 1 to hide from New Writeups)
 }
 
 Returns 409 Conflict if e2node is locked by another operation.
@@ -773,9 +774,13 @@ sub publish_draft {
 # Using SELECT ... FOR UPDATE to lock the e2node row
     my $dbh = $DB->{dbh};
 
-    # Ensure we're in a transaction
-    $dbh->{AutoCommit} = 0
-      unless defined $dbh->{AutoCommit} && $dbh->{AutoCommit} == 0;
+    # Save original AutoCommit state to restore after transaction
+    my $orig_autocommit = $dbh->{AutoCommit};
+
+    # Start transaction (if not already in one)
+    if ($orig_autocommit) {
+        $dbh->{AutoCommit} = 0;
+    }
 
     # Acquire lock on e2node row
     my $lock_result = eval {
@@ -785,11 +790,11 @@ sub publish_draft {
 
     unless ($lock_result) {
 
-        # Rollback on lock failure
-        eval { $dbh->rollback(); } or do {
-            # Log rollback failure but continue with error response
-            $APP->devLog("Rollback failed after lock failure: $@");
-        };
+        # Rollback on lock failure and restore AutoCommit
+        my $rollback_ok = eval { $dbh->rollback(); 1 };
+        $APP->devLog("Rollback result: " . ($rollback_ok ? "ok" : "failed")) unless $rollback_ok;
+        $dbh->{AutoCommit} = $orig_autocommit if $orig_autocommit;
+        $APP->devLog("Lock acquisition failed for e2node $parent_e2node_id: $@") if $@;
         return [
             $self->HTTP_CONFLICT,
             {
@@ -811,21 +816,28 @@ sub publish_draft {
     );
 
     # Insert into writeup table
-    my $publishtime        = $data->{publishtime} || \'NOW()';
+    # Note: Use '-' prefix for column name to pass literal SQL (like NOW())
     my $feedback_policy_id = int( $data->{feedback_policy_id} || 0 );
+    my $notnew             = $data->{notnew} ? 1 : 0;
 
-    $DB->sqlInsert(
-        'writeup',
-        {
-            writeup_id         => $draft_id,
-            parent_e2node      => $parent_e2node_id,
-            wrtype_writeuptype => $writeuptype_id,
-            notnew             => 0, # New writeup, not migrated from old system
-            cooled             => 0, # Not cooled yet
-            publishtime        => $publishtime,
-            feedback_policy_id => $feedback_policy_id
-        }
-    );
+    # Build insert hash - use -publishtime for literal SQL
+    my $writeup_data = {
+        writeup_id         => $draft_id,
+        parent_e2node      => $parent_e2node_id,
+        wrtype_writeuptype => $writeuptype_id,
+        notnew             => $notnew,
+        cooled             => 0, # Not cooled yet
+        feedback_policy_id => $feedback_policy_id
+    };
+
+    # Handle publishtime - either user-provided string or NOW()
+    if ($data->{publishtime}) {
+        $writeup_data->{publishtime} = $data->{publishtime};
+    } else {
+        $writeup_data->{'-publishtime'} = 'NOW()';
+    }
+
+    $DB->sqlInsert('writeup', $writeup_data);
 
     # Delete from draft table (draft-specific data no longer needed)
     $DB->sqlDelete( 'draft', "draft_id=$draft_id" );
@@ -852,7 +864,7 @@ sub publish_draft {
         'newwriteup',
         {
             node_id => $draft_id,
-            notnew  => 0
+            notnew  => $notnew
         }
     );
 
@@ -870,8 +882,17 @@ sub publish_draft {
     $DB->getCache->incrementGlobalVersion($draft);
     $DB->getCache->removeNode($draft);
 
-    # Commit transaction (releases lock)
-    $DB->{dbh}->commit() unless $DB->{dbh}->{AutoCommit};
+    # Commit transaction (releases lock) and restore AutoCommit
+    eval {
+        $dbh->commit();
+        $dbh->{AutoCommit} = $orig_autocommit if $orig_autocommit;
+    } or do {
+        my $commit_error = $@ || 'Unknown commit error';
+        $APP->devLog("Commit failed during publish_draft: $commit_error");
+        # Even if commit fails, try to restore AutoCommit
+        my $restore_ok = eval { $dbh->{AutoCommit} = $orig_autocommit if $orig_autocommit; 1 };
+        # Ignore restore errors - we've already logged the commit failure
+    };
 
     # Update newwriteups cache
     $APP->updateNewWriteups();

@@ -60,7 +60,11 @@ const SoftlinksTable = ({ softlinks }) => {
 
 const Writeup = ({ data }) => {
   const [toolsModalOpen, setToolsModalOpen] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+
+  // Check for ?edit=1 query parameter to start in edit mode
+  const urlParams = new URLSearchParams(window.location.search)
+  const startInEditMode = urlParams.get('edit') === '1'
+  const [isEditing, setIsEditing] = useState(startInEditMode)
 
   if (!data) return <div>Loading...</div>
 

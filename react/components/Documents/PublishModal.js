@@ -21,6 +21,7 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
   const [selectedE2node, setSelectedE2node] = useState(null)
   const [writeuptypes, setWriteuptypes] = useState([])
   const [selectedWriteuptype, setSelectedWriteuptype] = useState('thing')
+  const [hideFromNewWriteups, setHideFromNewWriteups] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -143,7 +144,8 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
         body: JSON.stringify({
           parent_e2node: e2nodeId,
           wrtype_writeuptype: writeuptypeResult.node_id,
-          feedback_policy_id: 0
+          feedback_policy_id: 0,
+          notnew: hideFromNewWriteups ? 1 : 0
         })
       })
 
@@ -382,6 +384,37 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
                 <option value="thing">thing</option>
               )}
             </select>
+          </div>
+
+          {/* Hide from New Writeups checkbox */}
+          <div style={{ marginBottom: '20px' }}>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+                fontSize: '13px'
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={hideFromNewWriteups}
+                onChange={(e) => setHideFromNewWriteups(e.target.checked)}
+                style={{ marginRight: '8px' }}
+              />
+              Don't show in New Writeups nodelet
+            </label>
+            <p
+              style={{
+                marginTop: '5px',
+                marginBottom: 0,
+                marginLeft: '24px',
+                fontSize: '12px',
+                color: '#888'
+              }}
+            >
+              Check this to publish without appearing in the New Writeups list (for maintenance, logs, etc.)
+            </p>
           </div>
         </div>
 

@@ -264,6 +264,7 @@ sub tokens100
     my ($DB, $APP, $user_id) = @_;
 
     my $uVars = getVars(getNodeById($user_id));
+    return 0 unless $uVars;
     return 1 if defined($$uVars{tokens_bought}) && $$uVars{tokens_bought} >= 100;
     return 0;
 }
