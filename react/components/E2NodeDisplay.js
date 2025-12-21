@@ -33,8 +33,9 @@ const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
   const showTools = user && user.editor  // user.editor is from e2.user
 
   // Check if user already has a writeup on this node
+  // Note: node_id types may differ (string vs int), so use == for comparison
   const userHasWriteup = user && group && group.some(
-    writeup => writeup.author && writeup.author.node_id === user.node_id
+    writeup => writeup.author && String(writeup.author.node_id) === String(user.node_id)
   )
 
   // Check if node is locked (prevents new writeups)

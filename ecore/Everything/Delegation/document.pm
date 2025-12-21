@@ -215,7 +215,7 @@ sub display_categories {
         $page = 0;
     }
 
-    my $maintainerName = $query->param('m');
+    my $maintainerName = $query->param('m') // '';
     $maintainerName =~ s/^\s+|\s+$//g;
     my $maintainer = undef;
 
@@ -270,7 +270,7 @@ sub display_categories {
 
     my $authorRestrict = '';
     $authorRestrict = "AND n.author_user = $$maintainer{node_id}\n"
-      if ( $maintainer->{node_id} > 0 );
+      if ( $maintainer && $maintainer->{node_id} > 0 );
 
     my $startAt = $page * $count;
 
@@ -651,9 +651,9 @@ sub e2_gift_shop {
 
     my $str = qq|<p>Welcome to the Everything2 Gift Shop!</p>|;
 
-    $str .= htmlcode("giftshop_star");
-    $str .= htmlcode("giftshop_sanctify");
-    $str .= htmlcode("giftshop_buyvotes");
+    $str .= htmlcode("giftshop_star") // '';
+    $str .= htmlcode("giftshop_sanctify") // '';
+    $str .= htmlcode("giftshop_buyvotes") // '';
     $str .= htmlcode("giftshop_votes") // '';
     $str .= htmlcode("giftshop_ching") // '';
     $str .= htmlcode("giftshop_buyching") // '';
@@ -897,7 +897,7 @@ sub news_archives {
     my $isGod        = $APP->isAdmin($USER);
     my $isEd         = $APP->isEditor($USER);
     my $webloggables = getVars( getNode( "webloggables", "setting" ) );
-    my $view_weblog  = $query->param('view_weblog');
+    my $view_weblog  = $query->param('view_weblog') // '';
     my $skipped      = 0;
     my @labels       = ();
 

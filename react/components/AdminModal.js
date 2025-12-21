@@ -241,18 +241,8 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit })
                 </button>
               ) : (
                 <a
-                  href={`/node/${writeup.node_id}`}
+                  href={`/node/${writeup.node_id}?edit=1`}
                   style={styles.linkButton}
-                  onClick={(e) => {
-                    // If we're already on this writeup page, just close modal
-                    // The edit icon is visible on the page
-                    if (window.location.pathname.includes(`/node/${writeup.node_id}`)) {
-                      e.preventDefault()
-                      handleClose()
-                      // Scroll to top where edit button is
-                      window.scrollTo({ top: 0, behavior: 'smooth' })
-                    }
-                  }}
                 >
                   Edit writeup
                 </a>
