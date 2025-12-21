@@ -156,6 +156,75 @@ export function escapeHtml(text) {
 }
 
 /**
+ * Convert plain text newlines to HTML paragraphs and line breaks
+ *
+ * This replicates the Perl breakTags() function from Application.pm.
+ * It only activates for content that doesn't already have <p> or <br> tags,
+ * which indicates legacy plain-text writeups.
+ *
+ * Logic:
+ * 1. Skip if content already has <p> or <br> tags (already formatted)
+ * 2. Protect newlines inside pre, ol, ul, dl, table tags
+ * 3. Convert single newlines to <br>
+ * 4. Convert double newlines / double <br> to paragraph breaks
+ * 5. Wrap everything in <p> tags
+ * 6. Clean up paragraph tags around block elements
+ *
+ * @param {string} text - Text that may contain plain newlines
+ * @returns {string} - Text with newlines converted to HTML
+ */
+export function breakTags(text) {
+  if (!text) return ''
+
+  // If the content already has <p> or <br> tags, it's already formatted
+  // Skip the conversion to avoid double-formatting
+  if (/<\/?p[ >]/i.test(text) || /<br/i.test(text)) {
+    return text
+  }
+
+  // Tags where we should NOT convert newlines (preserve as placeholders)
+  const ignoreTags = ['pre', 'ol', 'ul', 'dl', 'table']
+  const placeholder = '<!-- e2-newline-placeholder -->'
+
+  let result = text
+
+  // Replace newlines inside protected elements with placeholders
+  for (const tag of ignoreTags) {
+    // Match tag with optional attributes and preserve newlines inside
+    const regex = new RegExp(`(<${tag}[^>]*>)([\\s\\S]*?)(<\\/${tag}>)`, 'gi')
+    result = result.replace(regex, (match, openTag, content, closeTag) => {
+      const protectedContent = content.replace(/\n/g, placeholder)
+      return openTag + protectedContent + closeTag
+    })
+  }
+
+  // Trim leading/trailing whitespace
+  result = result.replace(/^\s+/, '').replace(/\s+$/, '')
+
+  // Replace remaining newlines with <br>
+  result = result.replace(/\n/g, '<br>')
+
+  // Convert <br><br> sequences to paragraph breaks
+  result = result.replace(/\s*<br>\s*<br>/g, '</p>\n\n<p>')
+
+  // Wrap in paragraph tags
+  result = '<p>' + result + '</p>'
+
+  // Clean up paragraph tags around block elements
+  // Don't wrap block elements inside paragraphs
+  const blockTags = 'pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|dd|dt|dl|p|table|td|tr|th|tbody|thead'
+  const openBlockRegex = new RegExp(`<p><(${blockTags})`, 'gi')
+  const closeBlockRegex = new RegExp(`</(${blockTags})></p>`, 'gi')
+  result = result.replace(openBlockRegex, '<$1')
+  result = result.replace(closeBlockRegex, '</$1>')
+
+  // Restore protected newlines
+  result = result.replace(new RegExp(placeholder, 'g'), '\n')
+
+  return result
+}
+
+/**
  * Sanitize HTML using DOMPurify with E2's approved tags configuration
  *
  * @param {string} html - Raw HTML to sanitize
@@ -218,14 +287,25 @@ export function sanitizeHtml(html, options = {}) {
  * Render E2 content for preview display
  *
  * This is the main function to use for client-side preview rendering.
- * It sanitizes HTML and parses E2 links in one pass.
+ * It applies breakTags (newline->paragraph conversion), sanitizes HTML,
+ * and parses E2 links.
  *
  * @param {string} html - HTML content with possible E2 [link] syntax
  * @param {Object} options - Options to pass to sanitizeHtml
+ * @param {boolean} options.applyBreakTags - Whether to apply breakTags conversion (default: true)
  * @returns {Object} - { html: renderedHtml, issues: [...] }
  */
 export function renderE2Content(html, options = {}) {
-  return sanitizeHtml(html, { parseLinks: true, ...options })
+  const { applyBreakTags = true, ...sanitizeOptions } = options
+
+  // First, apply breakTags to convert plain-text newlines to HTML
+  // This handles legacy writeups that were written without HTML formatting
+  let processedHtml = html
+  if (applyBreakTags) {
+    processedHtml = breakTags(html)
+  }
+
+  return sanitizeHtml(processedHtml, { parseLinks: true, ...sanitizeOptions })
 }
 
 /**
@@ -280,4 +360,5 @@ export default {
   checkHtmlCompatibility,
   formatCompatibilityReport,
   escapeHtml,
+  breakTags,
 }

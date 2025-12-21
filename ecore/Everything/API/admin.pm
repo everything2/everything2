@@ -426,6 +426,15 @@ sub remove_writeup
   my $APP = $self->APP;
   my $DB = $self->DB;
 
+  # Guest users cannot remove writeups
+  if ($user->is_guest)
+  {
+    return [$self->HTTP_FORBIDDEN, {
+      error => 'Login required',
+      message => 'You must be logged in to remove a writeup'
+    }];
+  }
+
   my $writeup = $APP->node_by_id(int($id));
   unless ($writeup && $writeup->type->title eq 'writeup')
   {
@@ -527,18 +536,19 @@ sub remove_writeup
   }
 
   # Add nodenote
+  my $user_title = $user->title // 'unknown';
   my $note_success = eval {
     if ($is_author && !$is_editor)
     {
-      $APP->addNodeNote($writeup, "Returned to drafts by author [$user->{title}\[user]]", $user);
+      $APP->addNodeNote($writeup, "Returned to drafts by author [$user_title\[user]]", $user);
     }
     elsif ($reason)
     {
-      $APP->addNodeNote($writeup, "Removed by [$user->{title}\[user]]: $reason", $user);
+      $APP->addNodeNote($writeup, "Removed by [$user_title\[user]]: $reason", $user);
     }
     else
     {
-      $APP->addNodeNote($writeup, "Returned to drafts by [$user->{title}\[user]]", $user);
+      $APP->addNodeNote($writeup, "Returned to drafts by [$user_title\[user]]", $user);
     }
     return 1;
   };

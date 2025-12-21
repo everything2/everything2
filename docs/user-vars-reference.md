@@ -46,7 +46,7 @@ $user->set_vars($VARS);
 | Key | Type | Description | Files |
 |-----|------|-------------|-------|
 | `repThreshold` | 0-50 or 'none' | Hide writeups below this reputation | document.pm, htmlcode.pm |
-| `textareaSize` | 0/1/2 | Writeup editor size (small/medium/large) | htmlcode.pm |
+| `textareaSize` | 0/1/2 | **DEPRECATED** Writeup editor size (small/medium/large). React WriteupDisplay uses inline editing - legacy textarea sizing no longer applies. | htmlcode.pm |
 | `num_newwus` | 1-40 | Number of new writeups to show (default: 15) | Application.pm |
 | `noquickvote` | Boolean | Disable AJAX quick voting | Controller.pm, Application.pm |
 | `nullvote` | Boolean | **DEPRECATED** Allow casting null votes (weight=0) that don't affect reputation. Originally for old browser compatibility, obsolete now that vote swapping is supported. | htmlcode.pm, preferences.pm |
@@ -167,7 +167,7 @@ $user->set_vars($VARS);
 | Key | Type | Description | Files |
 |-----|------|-------------|-------|
 | `fxDuration` | Integer | Animation duration (0=instant, 100-1000ms) | Controller.pm |
-| `settings_useTinyMCE` | Boolean | Enable WYSIWYG editor | Controller.pm |
+| `settings_useTinyMCE` | Boolean | **DEPRECATED** Enable WYSIWYG editor. React WriteupDisplay uses inline editing - TinyMCE integration removed. | Controller.pm |
 | `autoChat` | Boolean | Auto-chat feature flag | Controller.pm |
 | `inactiveWindowMarker` | Boolean | Inactive window marker flag | Controller.pm |
 
@@ -211,6 +211,9 @@ These keys are no longer used and can be cleaned up from user settings:
 | `noreplacevotebuttons` | **DEPRECATED** | Toggle between +/- and Up/Down voting buttons. React WriteupDisplay now uses modern caret icons exclusively - the setting has no effect. | 2025-12-15 |
 | `nullvote` | **DEPRECATED** | Allow casting null votes (weight=0) for old browser compatibility. Vote swapping now allows users to freely change votes without needing null votes. | 2025-12-18 |
 | `nogradlinks` | **SEMI-DEPRECATED** | Disable gradient backgrounds on softlinks. React E2NodeDisplay removed gradient code - Kernel Blue CSS provides solid background (#f8f9f9). Setting may still be needed for alternate themes. No UI to set this preference. | 2025-12-18 |
+| `textareaSize` | **DEPRECATED** | Writeup editor size (small/medium/large). React WriteupDisplay uses inline editing - legacy textarea sizing no longer applies. | 2025-12-21 |
+| `settings_useTinyMCE` | **DEPRECATED** | Enable WYSIWYG editor. React WriteupDisplay uses inline editing - TinyMCE integration removed. | 2025-12-21 |
+| `HideWriteupOnE2node` | **DEPRECATED** | Only show writeup edit box on writeup's own page. React WriteupDisplay uses inline editing - this optimization is no longer relevant. | 2025-12-21 |
 
 ### Removed in 2025-11 (Nodelet Migration)
 

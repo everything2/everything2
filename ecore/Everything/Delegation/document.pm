@@ -270,7 +270,7 @@ sub display_categories {
 
     my $authorRestrict = '';
     $authorRestrict = "AND n.author_user = $$maintainer{node_id}\n"
-      if ( $maintainer && $maintainer->{node_id} > 0 );
+      if ( $maintainer && ($maintainer->{node_id} // 0) > 0 );
 
     my $startAt = $page * $count;
 
@@ -2264,7 +2264,7 @@ sub short_url_lookup
 
     return unless $query;
 
-    my $shortString = $query->param('short_string');
+    my $shortString = $query->param('short_string') // '';
     my $redirectNode = htmlcode('decode short string', $shortString);
 
     if (!defined $redirectNode) {

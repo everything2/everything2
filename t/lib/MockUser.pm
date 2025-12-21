@@ -54,10 +54,15 @@ Arguments:
 sub new {
     my ($class, %args) = @_;
 
+    # Default is_guest based on whether a node_id was provided
+    # Users with node_id > 0 are typically logged in (non-guest)
+    my $node_id = $args{node_id} // 0;
+    my $default_guest = ($node_id > 0) ? 0 : 1;
+
     return bless {
-        node_id => $args{node_id} // 0,
-        title => $args{title} // 'Guest User',
-        is_guest_flag => $args{is_guest_flag} // 1,
+        node_id => $node_id,
+        title => $args{title} // ($default_guest ? 'Guest User' : 'test'),
+        is_guest_flag => $args{is_guest_flag} // $default_guest,
         is_admin_flag => $args{is_admin_flag} // 0,
         is_editor_flag => $args{is_editor_flag} // 0,
         is_developer_flag => $args{is_developer_flag} // 0,
