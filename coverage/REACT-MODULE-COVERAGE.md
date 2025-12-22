@@ -1,6 +1,6 @@
 # React Module Coverage Report
 
-**Generated**: 2025-12-21 14:47:37
+**Generated**: 2025-12-22 16:26:26
 
 This report shows test coverage for each React component and module.
 
@@ -212,7 +212,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/YourInsuredWriteups.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/YourNodeshells.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Zenmastery.js | 0% | 100% | 0% | 0% |
-| /home/jaybonci/projects/everything2/react/components/Editor/E2HtmlSanitizer.js | 98.9% | 94.54% | 100% | 98.76% |
+| /home/jaybonci/projects/everything2/react/components/Editor/E2HtmlSanitizer.js | 97.89% | 92.98% | 100% | 98.8% |
 | /home/jaybonci/projects/everything2/react/components/Editor/E2LinkExtension.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Editor/E2TextAlignExtension.js | 12.5% | 0% | 9.09% | 14.28% |
 | /home/jaybonci/projects/everything2/react/components/Editor/MenuBar.js | 0% | 0% | 0% | 0% |
@@ -257,7 +257,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/hooks/useChatterPolling.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/hooks/useOtherUsersPolling.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/hooks/usePolling.js | 0% | 0% | 0% | 0% |
-| **Total** | **18.85%** | **20.25%** | **14.39%** | **19.11%** |
+| **Total** | **18.87%** | **20.26%** | **14.43%** | **19.14%** |
 
 ## How to Improve Coverage
 

@@ -124,6 +124,10 @@ border: none;
 h2 {
 font-size: 210%;
 line-height: 1.3125;
+}
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1 {
+font-size: 266.7%;
 margin: 1.167em 0;
 text-align: center;
 clear: both

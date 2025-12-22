@@ -520,7 +520,8 @@ sub getNodeById
 	my $cachedNode;
 	return unless $N;
 	$selectop ||= '';
-	return -1 if $N == -1;
+	# Check for -1 using string comparison to avoid warnings on non-numeric input
+	return -1 if $N eq '-1';
 	$N = $this->getId($N);
 	$N = int($N);
 	return unless $N;

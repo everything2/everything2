@@ -126,9 +126,57 @@ sub softlinks
   return $softlinks;
 }
 
+sub metadescription
+{
+  my ($self) = @_;
+
+  # Get the highest-rated writeup from this e2node
+  my $group = $self->group || [];
+  return $self->SUPER::metadescription unless scalar(@$group) > 0;
+
+  # Find the writeup with the highest reputation
+  my $best_writeup;
+  my $best_rep = -999999;
+
+  foreach my $writeup (@$group) {
+    my $rep = $writeup->reputation || 0;
+    if ($rep > $best_rep) {
+      $best_rep = $rep;
+      $best_writeup = $writeup;
+    }
+  }
+
+  return $self->SUPER::metadescription unless $best_writeup;
+
+  # Use the writeup's metadescription
+  return $best_writeup->metadescription;
+}
+
+sub publishtime
+{
+  my ($self) = @_;
+
+  # Get the most recent publishtime across all writeups in this e2node
+  my $group = $self->group || [];
+  return unless scalar(@$group) > 0;
+
+  my $most_recent;
+
+  foreach my $writeup (@$group) {
+    my $pt = $writeup->publishtime;
+    next unless $pt && $pt ne '0000-00-00 00:00:00';
+
+    if (!$most_recent || $pt gt $most_recent) {
+      $most_recent = $pt;
+    }
+  }
+
+  return $most_recent;
+}
+
 around 'insert' => sub {
  my ($orig, $self, $user, $data) = @_;
- 
+
  my $newnode = $self->$orig($user, $data);
  $newnode->update($user, {"author_user" => $self->APP->node_by_name("Content Editors","usergroup")->node_id});
  return $newnode;

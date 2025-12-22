@@ -1,13 +1,35 @@
 Sitemap: https://everything2.com/sitemap/index.xml
 
+# Default rules for all crawlers
+User-agent: *
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /static/
+Disallow: /node/supersearch
+Disallow: /node/vote
+Disallow: /node/message
+Disallow: /node/draft
+Disallow: /api/
+
+# Google - ensure it can render pages properly
+User-agent: Googlebot
+Allow: /css/
+Allow: /js/
+Allow: /images/
+
+# Bing
+User-agent: Bingbot
+Allow: /css/
+Allow: /js/
+Allow: /images/
+
+# Block aggressive/unwanted crawlers
 User-Agent: 008
 Disallow: /
 
-user-agent: AhrefsBot
+User-agent: AhrefsBot
 Disallow: /
-
-User-agent: Yandex
-Crawl-delay: 2
 
 User-Agent: GPTBot
 Disallow: /
@@ -15,5 +37,18 @@ Disallow: /
 User-Agent: DotBot
 Disallow: /
 
-User-agent: TerraCotta  
+User-agent: TerraCotta
 Disallow: /
+
+User-Agent: SemrushBot
+Disallow: /
+
+User-Agent: MJ12bot
+Disallow: /
+
+User-Agent: PetalBot
+Disallow: /
+
+# Rate limit Yandex
+User-agent: Yandex
+Crawl-delay: 2

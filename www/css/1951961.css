@@ -200,6 +200,8 @@ font-family: Arial, sans-serif;
 color: black;			}
 h1					{	font-size: 160%;		}
 h2					{	font-size: 130%;		}
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1				{	font-size: 160%;		}
 h3					{	font-size: 110%;		}
 h4					{	font-size: 100%;		}
 h5					{	font-size: 90%;			}

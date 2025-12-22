@@ -26,6 +26,7 @@ $SIG{__WARN__} = sub {
 initEverything('development-docker');
 
 ok($DB, "Database connection established");
+ok($APP, "Application object created");
 
 #############################################################################
 # Test Poll Voting API functionality
@@ -38,14 +39,67 @@ ok($DB, "Database connection established");
 # 5. Vote counting and result updates
 #############################################################################
 
-# Get a normal user for API operations
+# Get test users
 my $test_user = $DB->getNode("normaluser1", "user");
 ok($test_user, "Got test user normaluser1");
 
-# Get the current poll created by seeds.pl
-my @polls = $DB->getNodeWhere({poll_status => 'current'}, 'e2poll');
-my $test_poll = $polls[0];
-ok($test_poll, "Got current poll from seeds");
+my $admin_user = $DB->getNode("root", "user");
+ok($admin_user, "Got admin user");
+
+# Check if e2poll type exists
+my $e2poll_type = $DB->getType('e2poll');
+my $can_test_polls = defined($e2poll_type);
+
+# Create test poll for this test file (self-sufficient, not dependent on seeds)
+my $test_poll;
+my $test_poll_id;
+my $closed_poll;
+my $closed_poll_id;
+
+SKIP: {
+    skip "e2poll type not available", 50 unless $can_test_polls;
+
+    # Create a current poll for voting tests
+    $test_poll_id = $DB->insertNode(
+        "Test Poll for Vote API " . time(),
+        'e2poll',
+        $admin_user,
+        {
+            poll_author => $admin_user->{node_id},
+            question => "What is your test preference?",
+            doctext => "Option A\nOption B\nOption C",
+            poll_status => 'current',
+            totalvotes => 0,
+            e2poll_results => '0,0,0',
+            multiple => 0,
+            is_dailypoll => 0,
+            was_dailypoll => 0
+        }
+    );
+    $test_poll = $DB->getNodeById($test_poll_id) if $test_poll_id;
+    ok($test_poll, "Created test poll with 'current' status");
+
+    # Create a closed poll for closed-poll tests
+    $closed_poll_id = $DB->insertNode(
+        "Test Closed Poll " . time(),
+        'e2poll',
+        $admin_user,
+        {
+            poll_author => $admin_user->{node_id},
+            question => "This poll is closed?",
+            doctext => "Yes\nNo",
+            poll_status => 'closed',
+            totalvotes => 5,
+            e2poll_results => '3,2',
+            multiple => 0,
+            is_dailypoll => 0,
+            was_dailypoll => 0
+        }
+    );
+    $closed_poll = $DB->getNodeById($closed_poll_id) if $closed_poll_id;
+    ok($closed_poll, "Created test poll with 'closed' status");
+
+}  # End initial SKIP block for poll creation
 
 # Helper: Create a mock request object
 package MockRequest {
@@ -88,6 +142,10 @@ package main;
 # Create API instance
 my $api = Everything::API::poll->new();
 ok($api, "Created poll API instance");
+
+# Skip all remaining tests if we couldn't create test polls
+SKIP: {
+    skip "Test poll not available", 40 unless $test_poll;
 
 #############################################################################
 # Test 1: Authorization - guest user blocked
@@ -274,7 +332,22 @@ subtest 'Successful vote submission' => sub {
 subtest 'Prevent duplicate voting' => sub {
     plan tests => 3;
 
-    # Use normaluser1 who has already voted (from seeds.pl)
+    # First, have normaluser1 vote on our test poll
+    my $first_vote_user = MockUser->new(
+        node_id => $test_user->{node_id},
+        title => $test_user->{title},
+    );
+
+    my $first_vote_request = MockRequest->new(
+        user => $first_vote_user,
+        _postdata => {
+            poll_id => $test_poll->{node_id},
+            choice => 0,
+        },
+    );
+    $api->submit_vote($first_vote_request);  # Cast first vote
+
+    # Now try to vote again with the same user
     my $mock_user = MockUser->new(
         node_id => $test_user->{node_id},
         title => $test_user->{title},
@@ -301,13 +374,9 @@ subtest 'Prevent duplicate voting' => sub {
 subtest 'Cannot vote on closed poll' => sub {
     plan tests => 2;
 
-    # Get a closed poll
-    my @closed_polls = $DB->getNodeWhere({poll_status => 'closed'}, 'e2poll');
-
     SKIP: {
-        skip "No closed polls available", 2 unless @closed_polls;
+        skip "No closed poll available", 2 unless $closed_poll;
 
-        my $closed_poll = $closed_polls[0];
         my $voter = $DB->getNode("normaluser3", "user");
         my $mock_user = MockUser->new(
             node_id => $voter->{node_id},
@@ -327,5 +396,23 @@ subtest 'Cannot vote on closed poll' => sub {
         like($result->[1]{error}, qr/not open/i, "Error mentions poll not open");
     }
 };
+
+}  # End main SKIP block
+
+#############################################################################
+# Cleanup - delete test polls
+#############################################################################
+
+if ($test_poll_id) {
+    $DB->sqlDelete('pollvote', "pollvote_id=$test_poll_id");
+    my $poll = $DB->getNodeById($test_poll_id);
+    $DB->nukeNode($poll, -1) if $poll;
+}
+
+if ($closed_poll_id) {
+    $DB->sqlDelete('pollvote', "pollvote_id=$closed_poll_id");
+    my $poll = $DB->getNodeById($closed_poll_id);
+    $DB->nukeNode($poll, -1) if $poll;
+}
 
 done_testing();

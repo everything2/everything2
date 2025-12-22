@@ -64,11 +64,151 @@ sub _build_pagetitle
 <link rel="canonical" href="<% $.canonical_url %>">
 <meta name="robots" content="<% $.meta_robots_index %>,<% $.meta_robots_follow %>">
 <meta name="description" content="<% $.metadescription %>">
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="<% ($.friendly_pagetype eq 'writeup' || $.friendly_pagetype eq 'e2node') ? 'article' : 'website' %>">
+<meta property="og:url" content="<% $.canonical_url %>">
+<meta property="og:title" content="<% $.pagetitle %>">
+<meta property="og:description" content="<% $.metadescription %>">
+<meta property="og:site_name" content="Everything2">
+% if (($.friendly_pagetype eq 'writeup' || $.friendly_pagetype eq 'e2node') && $.node->can('publishtime') && $.node->publishtime) {
+<meta property="article:published_time" content="<% $.node->publishtime %>">
+% }
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="<% $.pagetitle %>">
+<meta name="twitter:description" content="<% $.metadescription %>">
 <link rel="icon" href="<% $.favicon %>" type="image/vnd.microsoft.icon">
 <!--[if lt IE 8]><link rel="shortcut icon" href="<% $.favicon %>" type="image/x-icon"><![endif]-->
 <link rel="alternate" type="application/atom+xml" title="<% $.atom_feed->[0] %>" href="<% $.atom_feed->[1] %>">
 <meta content="width=device-width,initial-scale=1.0,user-scalable=1" name="viewport">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2GBBBF9ZDK"></script>
+<%perl>
+  # Generate JSON-LD structured data for SEO
+  use JSON::MaybeXS;
+  my $node = $.node;
+  my $ntypet = $node->type->title;
+  my $APP = $REQUEST->APP;
+
+  my @json_ld_items;
+
+  # WebSite schema (always include on all pages)
+  push @json_ld_items, {
+    '@type' => 'WebSite',
+    '@id' => 'https://everything2.com/#website',
+    'url' => 'https://everything2.com/',
+    'name' => 'Everything2',
+    'description' => 'Everything2 is a community for fiction, nonfiction, poetry, reviews, and more.',
+    'potentialAction' => {
+      '@type' => 'SearchAction',
+      'target' => {
+        '@type' => 'EntryPoint',
+        'urlTemplate' => 'https://everything2.com/title/{search_term_string}'
+      },
+      'query-input' => 'required name=search_term_string'
+    }
+  };
+
+  # WebPage schema (for all pages)
+  my $webpage_schema = {
+    '@type' => 'WebPage',
+    '@id' => $.canonical_url . '#webpage',
+    'url' => $.canonical_url,
+    'name' => $.pagetitle,
+    'description' => $.metadescription,
+    'isPartOf' => { '@id' => 'https://everything2.com/#website' },
+    'inLanguage' => 'en-US'
+  };
+
+  # Add breadcrumbs for writeups and e2nodes
+  if ($ntypet eq 'writeup' || $ntypet eq 'e2node') {
+    my @breadcrumb_items = (
+      {
+        '@type' => 'ListItem',
+        'position' => 1,
+        'name' => 'Home',
+        'item' => 'https://everything2.com/'
+      }
+    );
+
+    if ($ntypet eq 'writeup') {
+      my $parent = $node->parent;
+      if ($parent && !UNIVERSAL::isa($parent, "Everything::Node::null")) {
+        my $parent_url = 'https://everything2.com/title/' . $APP->rewriteCleanEscape($parent->title);
+        push @breadcrumb_items, {
+          '@type' => 'ListItem',
+          'position' => 2,
+          'name' => $parent->title,
+          'item' => $parent_url
+        };
+        push @breadcrumb_items, {
+          '@type' => 'ListItem',
+          'position' => 3,
+          'name' => $.pagetitle
+        };
+      }
+    } else {
+      push @breadcrumb_items, {
+        '@type' => 'ListItem',
+        'position' => 2,
+        'name' => $node->title
+      };
+    }
+
+    push @json_ld_items, {
+      '@type' => 'BreadcrumbList',
+      'itemListElement' => \@breadcrumb_items
+    };
+  }
+
+  # Article schema for writeups
+  if ($ntypet eq 'writeup') {
+    my $author = $node->author;
+    my $author_name = $author ? $author->title : 'Anonymous';
+    my $author_url = $author ? 'https://everything2.com/user/' . $APP->rewriteCleanEscape($author_name) : undef;
+
+    my $article_schema = {
+      '@type' => 'Article',
+      '@id' => $.canonical_url . '#article',
+      'headline' => $.pagetitle,
+      'description' => $.metadescription,
+      'url' => $.canonical_url,
+      'isPartOf' => { '@id' => $.canonical_url . '#webpage' },
+      'inLanguage' => 'en-US',
+      'author' => {
+        '@type' => 'Person',
+        'name' => $author_name,
+        ($author_url ? ('url' => $author_url) : ())
+      },
+      'publisher' => {
+        '@type' => 'Organization',
+        'name' => 'Everything2',
+        'url' => 'https://everything2.com/'
+      }
+    };
+
+    # Add dates if available
+    if ($node->can('createtime') && $node->createtime) {
+      $article_schema->{datePublished} = $node->createtime;
+    }
+    if ($node->can('updated') && $node->updated) {
+      $article_schema->{dateModified} = $node->updated;
+    }
+
+    push @json_ld_items, $article_schema;
+    $webpage_schema->{mainEntity} = { '@id' => $.canonical_url . '#article' };
+  }
+
+  push @json_ld_items, $webpage_schema;
+
+  # Combine into @graph
+  my $json_ld = {
+    '@context' => 'https://schema.org',
+    '@graph' => \@json_ld_items
+  };
+
+  my $json_ld_str = encode_json($json_ld);
+  $m->print(qq{<script type="application/ld+json">$json_ld_str</script>\n});
+</%perl>
 </head>
 <body class="<% $.body_class %>" itemscope itemtype="http://schema.org/WebPage">
 <& 'googleads', no_ads => $.no_ads &>

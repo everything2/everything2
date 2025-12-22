@@ -32,11 +32,15 @@ describe('E2HtmlSanitizer', () => {
       })
     })
 
-    it('includes all heading tags h1-h6 with align attribute', () => {
-      ;['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(tag => {
+    it('includes heading tags h2-h6 with align attribute (h1 excluded for SEO)', () => {
+      ;['h2', 'h3', 'h4', 'h5', 'h6'].forEach(tag => {
         expect(APPROVED_TAGS).toHaveProperty(tag)
         expect(APPROVED_TAGS[tag]).toEqual(['align'])
       })
+    })
+
+    it('does NOT include h1 (converted to h2 for proper heading hierarchy)', () => {
+      expect(APPROVED_TAGS).not.toHaveProperty('h1')
     })
 
     it('includes table tags with correct attributes', () => {
@@ -82,9 +86,10 @@ describe('E2HtmlSanitizer', () => {
       expect(APPROVED_TAGS.q).toContain('cite')
     })
 
-    it('has exactly 47 approved tags (matching Perl get_html_rules)', () => {
+    it('has exactly 46 approved tags (h1 excluded, converted to h2 for SEO)', () => {
       // This ensures parity with the server-side configuration
-      expect(Object.keys(APPROVED_TAGS).length).toBe(47)
+      // h1 is not in the list - it gets converted to h2.user-h1
+      expect(Object.keys(APPROVED_TAGS).length).toBe(46)
     })
 
     it('does NOT include dangerous tags', () => {
@@ -355,12 +360,57 @@ describe('E2HtmlSanitizer', () => {
         expect(html).toContain('</p>')
       })
 
-      it('preserves all heading levels', () => {
-        ;['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(tag => {
+      it('preserves heading levels h2-h6', () => {
+        ;['h2', 'h3', 'h4', 'h5', 'h6'].forEach(tag => {
           const input = `<${tag}>Heading</${tag}>`
           const { html } = sanitizeHtml(input, { parseLinks: false })
           expect(html).toContain(`<${tag}>`)
         })
+      })
+
+      it('converts h1 to h2 with user-h1 class for SEO hierarchy', () => {
+        const input = '<h1>User Heading</h1>'
+        const { html } = sanitizeHtml(input, { parseLinks: false })
+        expect(html).not.toContain('<h1>')
+        expect(html).toContain('<h2')
+        expect(html).toContain('class="user-h1"')
+        expect(html).toContain('User Heading')
+        expect(html).toContain('</h2>')
+      })
+
+      it('converts h1 with align attribute to h2 with user-h1 class', () => {
+        const input = '<h1 align="center">Centered Heading</h1>'
+        const { html } = sanitizeHtml(input, { parseLinks: false })
+        expect(html).not.toContain('<h1')
+        expect(html).toContain('<h2')
+        expect(html).toContain('class="user-h1"')
+        expect(html).toContain('align=')
+        expect(html).toContain('Centered Heading')
+      })
+
+      it('converts multiple h1 tags to h2', () => {
+        const input = '<h1>First</h1><p>Text</p><h1>Second</h1>'
+        const { html } = sanitizeHtml(input, { parseLinks: false })
+        expect(html).not.toContain('<h1>')
+        expect(html).not.toContain('</h1>')
+        expect((html.match(/class="user-h1"/g) || []).length).toBe(2)
+      })
+
+      it('h1 conversion is display-only - original h1 in source is not modified', () => {
+        // This tests that the conversion happens at render time, not save time
+        // Users can save <h1> tags in their writeups; they're only converted to
+        // <h2 class="user-h1"> when displayed for proper SEO heading hierarchy
+        const userInput = '<h1>My Section</h1><p>Content about my section</p>'
+
+        // The sanitizeHtml function converts h1→h2 for display
+        const { html: displayHtml } = sanitizeHtml(userInput, { parseLinks: false })
+        expect(displayHtml).toContain('class="user-h1"')
+        expect(displayHtml).toContain('<h2')
+        expect(displayHtml).not.toContain('<h1>')
+
+        // But the original input string is unchanged (would be saved as-is)
+        expect(userInput).toContain('<h1>')
+        expect(userInput).not.toContain('user-h1')
       })
 
       it('preserves table structure', () => {
@@ -405,10 +455,17 @@ describe('E2HtmlSanitizer', () => {
     })
 
     describe('approved attributes preservation', () => {
-      it('preserves align on headings', () => {
+      it('preserves align on headings (h2-h6)', () => {
+        const input = '<h2 align="center">Centered</h2>'
+        const { html } = sanitizeHtml(input, { parseLinks: false })
+        expect(html).toContain('align=')
+      })
+
+      it('preserves align when h1 is converted to h2', () => {
         const input = '<h1 align="center">Centered</h1>'
         const { html } = sanitizeHtml(input, { parseLinks: false })
         expect(html).toContain('align=')
+        expect(html).toContain('class="user-h1"')
       })
 
       it('preserves table attributes', () => {
@@ -931,11 +988,11 @@ describe('E2HtmlSanitizer', () => {
     })
 
     it('does not wrap block elements inside <p> tags', () => {
-      const input = 'Text\n\n<h1>Heading</h1>\n\nMore text'
+      const input = 'Text\n\n<h2>Heading</h2>\n\nMore text'
       const result = breakTags(input)
-      // Should not have <p><h1> or </h1></p>
-      expect(result).not.toContain('<p><h1>')
-      expect(result).not.toContain('</h1></p>')
+      // Should not have <p><h2> or </h2></p>
+      expect(result).not.toContain('<p><h2>')
+      expect(result).not.toContain('</h2></p>')
     })
 
     it('handles typical legacy writeup format', () => {

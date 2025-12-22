@@ -57,16 +57,20 @@ Example:
 sub new {
     my ($class, %args) = @_;
 
-    # Extract mock-specific arguments
+    # Extract mock-specific arguments (don't delete vars - MockUser needs it too)
     my $postdata = delete $args{postdata} // {};
     my $request_method = delete $args{request_method} // 'GET';
     my $cookie = delete $args{cookie};
+    my $query_params = delete $args{query_params} // {};
+    my $vars = $args{vars} // {};  # Don't delete - pass to MockUser as well
 
     return bless {
         user => MockUser->new(%args),
         postdata => $postdata,
         request_method => $request_method,
         cookie => $cookie,
+        query_params => $query_params,
+        vars => $vars,
     }, $class;
 }
 
@@ -170,6 +174,34 @@ sub request_method {
     return shift->{request_method};
 }
 
+=head2 VARS()
+
+Returns the VARS hashref for this request.
+
+Example:
+    my $vars = $request->VARS;
+    my $nodelets = $vars->{nodelets};
+
+=cut
+
+sub VARS {
+    return shift->{vars};
+}
+
+=head2 param($name)
+
+Returns a query parameter by name.
+
+Example:
+    my $offset = $request->param('offset');
+
+=cut
+
+sub param {
+    my ($self, $name) = @_;
+    return $self->{query_params}{$name};
+}
+
 =head2 cgi()
 
 Returns a mock CGI object for cookie access.
@@ -182,9 +214,10 @@ Example:
 sub cgi {
     my $self = shift;
 
-    # Return a mock CGI object that supports cookie() method
+    # Return a mock CGI object that supports cookie() and param() methods
     return bless {
-        _cookies => $self->{cookie} || {}
+        _cookies => $self->{cookie} || {},
+        _params => $self->{query_params} || {}
     }, 'MockRequest::CGI';
 }
 
@@ -193,6 +226,11 @@ package MockRequest::CGI;
 sub cookie {
     my ($self, $name) = @_;
     return $self->{_cookies}{$name};
+}
+
+sub param {
+    my ($self, $name) = @_;
+    return $self->{_params}{$name};
 }
 
 package MockRequest;
