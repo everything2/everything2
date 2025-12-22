@@ -21,6 +21,10 @@ font-family: Candara,"Trebuchet MS",sans-serif;
 font-size: 120%;
 font-weight: bold;
 }
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1 {
+font-size: 24px;
+}
 h3 {
 font-size: 100%;
 font-weight: bold;

@@ -243,6 +243,47 @@ sub notnew
   return int($self->NODEDATA->{notnew} || 0);
 }
 
+sub metadescription
+{
+  my ($self) = @_;
+
+  my $doctext = $self->doctext || '';
+
+  # Strip HTML tags
+  $doctext =~ s/<[^>]+>//g;
+
+  # Parse E2 link syntax - keep the display text
+  # [target|display text] -> display text
+  # [simple link] -> simple link
+  $doctext =~ s/\[([^\]|]+)\|([^\]]+)\]/$2/g;  # pipelinks: keep display text
+  $doctext =~ s/\[([^\]]+)\]/$1/g;              # simple links: keep link text
+
+  # Decode common HTML entities
+  $doctext =~ s/&nbsp;/ /g;
+  $doctext =~ s/&amp;/&/g;
+  $doctext =~ s/&lt;/</g;
+  $doctext =~ s/&gt;/>/g;
+  $doctext =~ s/&quot;/"/g;
+  $doctext =~ s/&#39;/'/g;
+
+  # Normalize whitespace
+  $doctext =~ s/\s+/ /g;
+  $doctext =~ s/^\s+|\s+$//g;
+
+  # If no content, fall back to default
+  return $self->SUPER::metadescription unless length($doctext) > 0;
+
+  # Truncate to ~160 characters for meta description (optimal for SEO)
+  if (length($doctext) > 160) {
+    $doctext = substr($doctext, 0, 157);
+    # Try to break at word boundary
+    $doctext =~ s/\s+\S*$//;
+    $doctext .= '...';
+  }
+
+  return $doctext;
+}
+
 sub is_junk
 {
   my ($self) = @_;

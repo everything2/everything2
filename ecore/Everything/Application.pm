@@ -3279,7 +3279,7 @@ sub urlGen {
   delete $$REF{node};
   delete $$REF{nodetype};
   delete $$REF{type};
-  delete $$REF{lastnode_id} if defined $$REF{lastnode_id} && $$REF{lastnode_id} == 0;
+  delete $$REF{lastnode_id} if defined $$REF{lastnode_id} && $$REF{lastnode_id} =~ /^0$|^$/;
   my $anchor = '';
   $anchor = '#'.$$REF{'#'} if $$REF{'#'};
   delete $$REF{'#'};

@@ -65,7 +65,7 @@ sub get_or_update {
         return $self->update_nodelets($REQUEST);
     }
 
-    return [$self->HTTP_METHOD_NOT_ALLOWED, {
+    return [$self->HTTP_UNIMPLEMENTED, {
         success => 0,
         error => 'method_not_allowed',
         message => 'Use GET or POST for this endpoint'

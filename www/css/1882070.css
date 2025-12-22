@@ -113,6 +113,10 @@ h2 , h3.nodelet_title {
 font-size: 130%;
 font-weight: bold;
 }
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1 {
+font-size: 140%;
+}
 h3 {
 font-size: 120%;
 font-weight: bold;

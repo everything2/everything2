@@ -37,6 +37,10 @@ font-size: 140% ;
 h2 {
 font-size: 125% ;
 }
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1 {
+font-size: 140% ;
+}
 h3 {
 font-size: 110% ;
 }

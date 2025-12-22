@@ -81,6 +81,8 @@ margin-bottom: 0;
 */
 h1 { font-size: 184%; }
 h2 { font-size: 150%; }
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1 { font-size: 184%; }
 h3 { font-size: 129%; }
 h4 { font-size: 116%; }
 h5 { font-size: 108%; }

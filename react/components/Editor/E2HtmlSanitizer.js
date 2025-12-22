@@ -16,6 +16,8 @@ import DOMPurify from 'dompurify'
 
 // E2's approved HTML tags and their allowed attributes
 // Derived from the 'approved html tags' setting in the database
+// NOTE: h1 is intentionally excluded - user-submitted h1s are converted to h2
+// to maintain proper heading hierarchy (page title is the only h1)
 export const APPROVED_TAGS = {
   // Text formatting
   b: [],
@@ -47,8 +49,7 @@ export const APPROVED_TAGS = {
   blockquote: ['cite'],
   center: [],
 
-  // Headings
-  h1: ['align'],
+  // Headings (h1 excluded - converted to h2 for SEO hierarchy)
   h2: ['align'],
   h3: ['align'],
   h4: ['align'],
@@ -79,7 +80,8 @@ export const APPROVED_TAGS = {
 
 // Build DOMPurify configuration from APPROVED_TAGS
 const ALLOWED_TAGS = Object.keys(APPROVED_TAGS)
-const ALLOWED_ATTR = [...new Set(Object.values(APPROVED_TAGS).flat())]
+// Include 'class' for user-h1 styling on converted h1→h2
+const ALLOWED_ATTR = [...new Set([...Object.values(APPROVED_TAGS).flat(), 'class'])]
 
 // DOMPurify configuration for E2 content
 const DOMPURIFY_CONFIG = {
@@ -225,6 +227,24 @@ export function breakTags(text) {
 }
 
 /**
+ * Convert h1 tags to h2 for proper heading hierarchy
+ * The page title is the only h1, so user-submitted h1s become h2s
+ * Adds class="user-h1" so they can be styled larger than regular h2s
+ *
+ * @param {string} html - HTML string
+ * @returns {string} - HTML with h1 converted to h2.user-h1
+ */
+function convertH1ToH2(html) {
+  if (!html) return html
+  // Replace opening h1 tags with h2 + user-h1 class for styling
+  // Handles <h1>, <h1 align="center">, </h1>, etc.
+  return html
+    .replace(/<h1>/gi, '<h2 class="user-h1">')
+    .replace(/<h1\s+/gi, '<h2 class="user-h1" ')
+    .replace(/<\/h1>/gi, '</h2>')
+}
+
+/**
  * Sanitize HTML using DOMPurify with E2's approved tags configuration
  *
  * @param {string} html - Raw HTML to sanitize
@@ -240,6 +260,9 @@ export function sanitizeHtml(html, options = {}) {
   if (!html) {
     return { html: '', issues }
   }
+
+  // Convert h1 to h2 for proper heading hierarchy (page title is the only h1)
+  let processedHtml = convertH1ToH2(html)
 
   // Set up hooks to track removed elements if requested
   if (reportIssues) {
@@ -268,7 +291,7 @@ export function sanitizeHtml(html, options = {}) {
   }
 
   // Sanitize the HTML
-  let sanitized = DOMPurify.sanitize(html, DOMPURIFY_CONFIG)
+  let sanitized = DOMPurify.sanitize(processedHtml, DOMPURIFY_CONFIG)
 
   // Clean up hooks
   if (reportIssues) {

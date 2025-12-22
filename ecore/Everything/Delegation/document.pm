@@ -910,7 +910,7 @@ sub news_archives {
         my $wclause = "weblog_id='$node_id' AND removedby_user=''";
         my $count   = $DB->sqlSelect( 'count(*)', 'weblog', "$wclause" );
         my $link = linkNode( $NODE, $title, { 'view_weblog' => "$node_id" } );
-        $link = "<b>$link</b>" if defined($view_weblog) && $node_id == $view_weblog;
+        $link = "<b>$link</b>" if defined($view_weblog) && $view_weblog =~ /^\d+$/ && $node_id == $view_weblog;
         push @labels,
             "$link<br /><font size='1'>($count node"
           . ( $count == 1 ? '' : 's' )

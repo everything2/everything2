@@ -415,7 +415,10 @@ sub updateLinks
 	my $isSoftlink = 0;
         $isSoftlink = 1 if $type == 0 || (UNIVERSAL::isa($type,'HASH') && $$type{title} eq 'guest user link');
 
-	return if (getId($TONODE) || 0) == (getId($FROMNODE) || 0) and $isSoftlink;
+	my $to_id_check = getId($TONODE) || 0;
+	my $from_id_check = getId($FROMNODE) || 0;
+	# Use string comparison when values might not be numeric (handles malformed input)
+	return if $to_id_check eq $from_id_check and $isSoftlink;
 	getRef $TONODE;
 	getRef $FROMNODE;
 

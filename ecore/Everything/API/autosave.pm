@@ -86,7 +86,7 @@ sub get_or_delete {
         return $self->delete_autosave($REQUEST, $id);
     }
 
-    return [$self->HTTP_METHOD_NOT_ALLOWED, {
+    return [$self->HTTP_UNIMPLEMENTED, {
         success => 0,
         error => 'method_not_allowed',
         message => 'Use GET or DELETE for this endpoint'
@@ -317,7 +317,7 @@ sub restore_version {
     # Only allow POST for restore
     my $method = lc($REQUEST->request_method());
     unless ($method eq 'post') {
-        return [$self->HTTP_METHOD_NOT_ALLOWED, {
+        return [$self->HTTP_UNIMPLEMENTED, {
             success => 0,
             error => 'method_not_allowed',
             message => 'Use POST to restore a version'
