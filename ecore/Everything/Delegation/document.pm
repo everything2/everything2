@@ -184,11 +184,6 @@ sub confirm_password {
 
 }
 
-
-# REMOVED (2025-12-10): create_category delegation (112 lines)
-# Now handled by Everything::Page::create_category
-# React component provides interactive category creation form
-
 sub display_categories {
     my $DB       = shift;
     my $query    = shift;
@@ -360,180 +355,6 @@ sub display_categories {
 
     return $str;
 
-}
-
-sub drafts {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    my $str      = qq|<div id="pagebody">|;
-    my $user     = $query->param('other_user');
-    my $username = '';
-
-    my $showhidenukedlink   = undef;
-    my $shownukedlinkparams = {};
-
-    if ($user) {
-        $shownukedlinkparams->{other_user} = $user;
-        my $u = getNode( $user, 'user' );
-        return
-            '<div id="pagebody"><p>No user named "'
-          . $query->escapeHTML($user)
-          . '" found.</p></div>'
-          unless $u;
-        $user = $$u{node_id};
-
-        # record displayed status:
-        $username = $$u{title} unless $user == $$USER{node_id};
-    }
-
-    if ( $query->param('shownuked') ) {
-        $showhidenukedlink =
-          linkNode( $NODE, 'Hide nuked', $shownukedlinkparams );
-    }
-    else {
-        $shownukedlinkparams->{shownuked} = 1;
-        $showhidenukedlink =
-          linkNode( $NODE, 'Show nuked', $shownukedlinkparams );
-    }
-
-    $showhidenukedlink = "<strong>($showhidenukedlink)</strong>";
-
-    $user ||= $$USER{node_id};
-    $query->delete('other_user') unless $username;
-
-    my $status = {};    # plural of Latin 'status' is 'status'
-    my ( $ps, $cansee, $collaborators, $nukeeslast, $title, $showhide, $cs,
-        $nukees )
-      = ( '', '', '', '', '', '', '', '' );
-    my $draftType = getType('draft');
-
-    my $nukedStatus = getNode('nuked', 'publication_status');
-
-    my $draftStatus = "publication_status != $$nukedStatus{node_id}";
-
-    if ( $query->param('shownuked') ) {
-        $draftStatus = "publication_status = $$nukedStatus{node_id}";
-    }
-
-    my $statu = sub {
-        $_[0]->{type} = $draftType;
-        $ps = $_[0]->{publication_status};
-        if ( $$status{$ps} ) {
-            $ps = $$status{$ps};
-        }
-        else {    # only look up each status once
-            $ps = $ps ? $$status{$ps} = getNodeById($ps)->{title} : 'broken';
-            $$status{$ps} = 1 unless $username;  # to track if any of mine nuked
-        }
-        return qq'<td class="status">$ps</td>';
-    };
-
-    my @showit = (
-        'title, author_user, publication_status, collaborators',
-        'node JOIN draft ON node_id = draft_id',
-"author_user = $user AND type_nodetype = $$draftType{node_id} AND $draftStatus",
-        'ORDER BY title'
-    );
-
-    unless ($username) {
-        $title         = 'Your drafts';
-        $cs            = '<th>Collaborators';
-        $collaborators = sub {
-            qq'<td class="collaborators">'
-              . (
-                defined( $_[0]->{collaborators} )
-                ? ( $_[0]->{collaborators} )
-                : ('')
-              ) . '</td>';
-        };
-
-        $showit[-1] =
-            'ORDER BY publication_status='
-          . getId( getNode( 'nuked', 'publication_status' ) )
-          . ', title'
-          if $nukeeslast;
-
-        $showit[-1] .= ' LIMIT 25';
-        unshift @showit, 'show paged content';
-
-    }
-    else {
-        $title  = "${username}'s drafts (visible to you)";
-        $cansee = sub {
-            my $draft = shift;
-            return $APP->canSeeDraft( $USER, $draft, "find" );
-        };
-
-        $cs =
-'<th title="shows whether you or a usergroup you are in is a collaborator on this draft">Collaborator?';
-        $collaborators = sub {
-            my $yes = '&nbsp;';
-            if ( $_[0]->{collaborators} ) {
-                if ( $_[0]->{collaborators} =~
-                    qr/(?:^|,)\s*$$USER{title}\s*(?:$|,)/i )
-                {
-                    $yes = 'you';
-                }
-                elsif ( $ps =
-                    'private' || $APP->canSeeDraft( $USER, $_[0], 'edit' ) )
-                {
-                    $yes = 'group';
-                }
-            }
-            return qq|<td class="collaborators">$yes</td>|;
-        };
-
-        @showit = ( 'show content', $DB->sqlSelectMany(@showit) );
-    }
-
-    my ( $drafts, $navigation, $count ) = htmlcode(
-        @showit, '<tr class="&oddrow"> status, "<td>", title, "</td>", coll'
-        ,
-        cansee => $cansee,
-        status => $statu,
-        coll   => $collaborators
-    );
-
-    if ( $drafts eq '' ) {
-        if ( !$username ) {
-            $str .= qq|<p>You have no drafts.</p>$showhidenukedlink|;
-        }
-        else {
-            $str .=
-qq|<p>[${username}[user]] has no drafts visible to you.</p>$showhidenukedlink|;
-        }
-    }
-    else {
-
-        my $showcount = '';
-        $showcount = "<p>You have $count drafts.</p>" if $navigation;
-
-        my $outstr = '';
-        $outstr = "<h2>" . ($title // '') . "</h2>" . ($showhidenukedlink // '') . "<br />
-      $showcount
-      <table><tr><th>status</th><th>title</th>$cs</th></tr>
-      $drafts
-      </table>
-      $nukees
-      $navigation<br />" if $drafts ne '';
-
-        $str .= $outstr;
-    }
-    $str .= qq|</div>|;                             #pagebody
-    $str .= htmlcode( "openform", "pagefooter" );
-
-    unless ( $query->param('other_user') ) {
-        $str .= htmlcode('editwriteup');
-    }
-    $str .= qq|</form>|;
-
-    return $str;
 }
 
 sub e2_collaboration_nodes {
@@ -883,8 +704,6 @@ sub edit_weblog_menu {
 
 }
 
-
-
 sub news_archives {
     my $DB       = shift;
     my $query    = shift;
@@ -1048,99 +867,9 @@ sub topic_archive {
 
 }
 
-sub writeups_by_type {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    ####################################################################
-    # get all the URL parameters
-
-    my $wuType = abs int( $query->param('wutype') || 0 );
-
-    my $count = $query->param('count') || 50;
-    $count = abs int($count);
-
-    my $page = abs int( $query->param('page') || 0 );
-
-    ####################################################################
-    # Form with list of writeup types and number to show
-
-    my (@WRTYPE) =
-      $DB->getNodeWhere( { type_nodetype => getId( getType('writeuptype') ) } );
-    my %items;
-    map { $items{ $$_{node_id} } = $$_{title} } @WRTYPE;
-
-    my @idlist = sort { $items{$a} cmp $items{$b} } keys %items;
-    unshift @idlist, 0;
-    $items{0} = 'All';
-
-    my $str = htmlcode('openform') . qq|<fieldset><legend>Choose...</legend><input type="hidden" name="page" value="$page"><label><strong>Select Writeup Type:</strong>|
-      . $query->popup_menu( 'wutype', \@idlist, 0, \%items ).q|</label><label> &nbsp; <strong>Number of writeups to display:</strong>|
-      . $query->popup_menu( 'count',
-        [ 10, 25, 50, 75, 100, 150, 200, 250, 500 ], $count )
-      . '</label> &nbsp; '
-      . $query->submit('Get Writeups')
-      . '</fieldset></form>';
-
-    ####################################################################
-    # get writeups
-    #
-
-    my $where = '';
-    $where = "wrtype_writeuptype=$wuType" if $wuType;
-    my $wus = $DB->sqlSelectMany('
-       node.node_id, writeup_id, parent_e2node, publishtime,
-      node.author_user,
-      type.title AS type_title', '
-      writeup
-      JOIN node ON writeup_id = node.node_id
-      JOIN node type ON type.node_id = writeup.wrtype_writeuptype',
-        $where, '
-      ORDER BY publishtime DESC LIMIT ' . ( $page * $count ) . ',' . $count );
-
-    ####################################################################
-    # display
-    #
-
-    $str .= '<table style="margin-left: auto; margin-right: auto;">
-      <tr>
-      <th>Title</th>
-      <th>Author</th>
-      <th>Published</th>
-      </tr>';
-
-    my $oddrow = 1;
-    while ( my $row = $wus->fetchrow_hashref ) {
-        $str .= $APP->writeups_by_type_row( $row, $VARS, ( $oddrow % 1 == 0 ) );
-        $oddrow++;
-    }
-
-    $str .= q|</table>|;
-
-    $str .= '<p class="morelink">';
-    $str .=
-      linkNode( $NODE, '&lt&lt Prev',
-        { wutype => $wuType, page => $page - 1, count => $count } )
-      . ' | '
-      if $page;
-
-    $str .=
-        '<b>Page '
-      . ( $page + 1 )
-      . '</b> | '
-      . linkNode(
-        $NODE,
-        'Next &gt;&gt;',
-        { wutype => $wuType, page => $page + 1, count => $count }
-      ) . '</p>';
-
-    return $str;
-}
+# writeups_by_type - Migrated to React
+# See: Everything::Page::writeups_by_type
+# React component: WriteupsByType.js
 
 
 # simple_usergroup_editor - Migrated to React
@@ -1781,10 +1510,6 @@ sub the_nodeshell_hopper
     return $text;
 }
 
-# REMOVED (2025-12-10): my_big_writeup_list delegation (286 lines)
-# Now handled by Everything::Page::my_big_writeup_list
-# React component provides comprehensive writeup listing with sorting
-
 sub costume_remover
 {
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
@@ -2017,195 +1742,9 @@ sub guest_front_page {
     return $html;
 }
 
-# The Catwalk (superdoc)
-# Browser for all stylesheets/themes on E2
-# Allows sorting, filtering by author, and testing themes
-sub the_catwalk
-{
-    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-
-    # Guest users get simple message
-    return "This page will allow you to customize your view of the site if you sign up for an account."
-        if ( $APP->isGuest($USER) );
-
-    my $str            = undef;
-    my $nodeType       = 1854352;    # Stylesheet nodetype
-    my $selectionTypeID = undef;
-    my $sqlSort        = undef;
-    my $sqlFilterUser  = undef;
-    my $plainTextFilter = undef;
-    my $total          = undef;
-    my $sth            = undef;
-    my $num            = 100;
-    my $listedItems    = undef;
-    my $next           = undef;
-    my $queryText      = undef;
-    my $numCurFound    = 0;
-    my $aID            = undef;
-    my $nextprev       = undef;
-    my $remainder      = undef;
-
-    # Sort options for combo box
-    my $choicelist = [
-        '0',        '(no sorting)',
-        'nameA',    'title, ascending (ABC)',
-        'nameD',    'title, descending (ZYX)',
-        'createA',  'create time, ascending (oldest first)',
-        'createD',  'create time, descending (newest first)',
-    ];
-    my $opt = 'sort order: ';
-    $opt .= htmlcode( 'varsComboBox', 'ListNodesOfType_Sort', 0, @$choicelist );
-
-    $opt .= 'only show things ('
-        . $query->checkbox( 'filter_user_not', 0, 1, 'not' )
-        . ') written by '
-        . $query->textfield('filter_user')
-        . '<br>';
-
-    # Clear custom style if requested
-    if ( defined( $query->param('clearVandalism') ) ) {
-        delete( $$VARS{customstyle} );
-    }
-
-    $str = '';
-
-    # Show current user's stylesheet
-    if ( length( $$VARS{userstyle} ) ) {
-        $str .= "\n<p>What's your style? Currently " . linkNode( $$VARS{userstyle} ) . ".</p>";
-    }
-    $str .= "\n<p>A selection of popular stylesheets can be found at [Theme Nirvana]; below is a list of every stylesheet ever submitted here.</p>";
-
-    # Show customization options
-    if ( length( $$VARS{customstyle} ) ) {
-        $str .= '<p>Note that you have customised your style using the [style defacer], which is going to affect the formatting of any stylesheet you choose. '
-            . linkNode( $NODE, 'Click here to clear that out', { clearVandalism => 'true' } )
-            . ' if that\'s not what you want. If you want to create a whole new stylesheet, visit [the draughty atelier].</p>';
-    }
-    else {
-        $str .= "<p>You can customise your stylesheet at the [style defacer] or, if you're feeling brave, create a whole new stylesheet at [the draughty atelier].</p>";
-    }
-
-    # Form for filtering/sorting
-    $str .= '
-<form method="POST">
-<input type="hidden" name="node_id" value="' . $NODE->{node_id} . '" />
-';
-    $str .= $opt;
-    $str .= $query->submit( 'fetch', 'Fetch!' ) . '
-</form>';
-
-    $selectionTypeID = $VARS->{ListNodesOfType_Type};
-
-    # Helper function to force 0 or 1 from CGI parameter
-    my $cgiBool = sub {
-        my $val = $query->param( $_[0] );
-        return ( defined $val && $val eq '1' ) ? 1 : 0;
-    };
-
-    # Mapping of unsafe VARS sort data into safe SQL
-    my %mapVARStoSQL = (
-        '0'       => '',
-        'nameA'   => 'title ASC',
-        'nameD'   => 'title DESC',
-        'authorA' => 'author_user ASC',
-        'authorD' => 'author_user DESC',
-        'createA' => 'createtime ASC',
-        'createD' => 'createtime DESC',
-    );
-    my $sort_key = $VARS->{ListNodesOfType_Sort} || '0';
-    $sqlSort = $mapVARStoSQL{ $sort_key } || '';
-
-    # Handle user filtering
-    my $filterUserNot = $cgiBool->('filter_user_not');
-    my $filterUser    = ( defined $query->param('filter_user') ) ? $query->param('filter_user') : undef;
-    if ( defined $filterUser ) {
-        $filterUser = getNode( $filterUser, 'user' ) || getNode( $filterUser, 'usergroup' ) || undef;
-    }
-
-    $sqlFilterUser  = '';
-    $plainTextFilter = '';
-    if ( defined $filterUser ) {
-        $sqlFilterUser = ' AND author_user' . ( $filterUserNot ? '!=' : '=' ) . getId($filterUser);
-        $plainTextFilter .= ( $filterUserNot ? ' not' : '' ) . ' created by ' . linkNode( $filterUser, 0, { lastnode_id => 0 } );
-    }
-
-    # Get total count
-    $sth = $DB->{dbh}->prepare( "SELECT COUNT(*) FROM node WHERE type_nodetype='$nodeType'" . $sqlFilterUser );
-    $sth->execute();
-    ($total) = $sth->fetchrow;
-    $str .= $plainTextFilter if length($plainTextFilter);
-
-    # Get paginated list
-    $listedItems = '';
-    $next        = $query->param('next') || '0';
-    $queryText   = "SELECT node_id, title, author_user, createtime FROM node WHERE type_nodetype = '$nodeType'";
-    $queryText .= $sqlFilterUser if length($sqlFilterUser);
-    $queryText .= ' ORDER BY ' . $sqlSort if length($sqlSort);
-    $queryText .= " LIMIT $next, $num";
-
-    $sth = $DB->{dbh}->prepare($queryText);
-    $sth->execute();
-    $numCurFound = 0;
-    while ( my $item = $sth->fetchrow_arrayref ) {
-        ++$numCurFound;
-        $listedItems .= '<tr>';
-        $aID = $$item[2];
-
-        # Show edit link if admin or user viewing page created node
-        $listedItems .= '<td>' . linkNode( @$item[ 0, 1 ], { lastnode_id => 0 } ) . '</td>';
-        $listedItems .= '<td>' . linkNode( $aID, 0, { lastnode_id => 0 } ) . '</td>';
-        my $createTime = @$item[3];
-        $listedItems .= '<td>' . htmlcode( 'parsetimestamp', $createTime . ',1' ) . '</td><td>' . htmlcode( 'timesince', $createTime . ',1,100' ) . '</td>';
-        $listedItems .= '<td>'
-            . (
-            $APP->isGuest($USER)
-            ? '&nbsp;'
-            : '&#91;&nbsp;<a href="/?displaytype=choosetheme&theme='
-                . $$item[0]
-                . '&noscript=1"
-             onfocus="this.href = this.href.replace( \'&noscript=1\' , \'\' ) ;">test</a>&nbsp;]'
-            ) . '</td>';
-        $listedItems .= "</tr>\n";
-    }
-    $str .= ' (Showing items ' . ( $next + 1 ) . ' to ' . ( $next + $numCurFound ) . '.)' if $total;
-    $str .= '</p><p><table border="0">
-<tr><th>title</th><th>author</th><th>created</th><th>age</th><th>&nbsp;</th></tr>
-'
-        . $listedItems . '
-</table></p>
-';
-    return $str if ( $total < $num );
-
-    # Helper function to generate pagination links
-    my $jumpLinkGen = sub {
-        my ( $startNum, $disp ) = @_;
-        my $opts = {
-            'node_id' => $$NODE{node_id},
-            'fetch'   => 1,
-            'next'    => $startNum,
-        };
-        if ( defined $filterUser ) {
-            $$opts{filter_user}     = $$filterUser{title};
-            $$opts{filter_user_not} = $filterUserNot;
-        }
-        return '<a href=' . urlGen($opts) . '>' . $disp . '</a>';
-    };
-
-    $nextprev = '';
-    $remainder = $total - ( $next + $num );
-    if ( $next > 0 ) {
-        $nextprev .= $jumpLinkGen->( $next - $num, 'previous ' . $num ) . "<br />\n";
-    }
-    if ( $remainder < $num and $remainder > 0 ) {
-        $nextprev .= $jumpLinkGen->( $next + $num, 'next ' . $remainder ) . "\n";
-    }
-    elsif ( $remainder > 0 ) {
-        $nextprev .= $jumpLinkGen->( $next + $num, 'next ' . $num ) . "<br />\n";
-    }
-    $str .= qq|<p align="right">$nextprev</p>| if length($nextprev);
-
-    return $str;
-}
+# The Catwalk - Migrated to React
+# See: Everything::Page::the_catwalk
+# React component: TheCatwalk.js
 
 # usergroup_message_archive - Migrated to React
 # See: Everything::Page::usergroup_message_archive
@@ -2437,95 +1976,6 @@ sub the_costume_shop
     return $str;
 }
 
-sub theme_nirvana {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    my $str = "<p>The following is a list of [stylesheet]s for the [zen theme] in order of popularity. You can find additional zen themes on [The Catwalk].</p>\n";
-    my %styles;
-    my $n;
-
-    if(defined($query->param('clearVandalism'))) {
-        delete($$VARS{customstyle});
-    }
-
-    if(length($$VARS{userstyle})) {
-        $str .= "\n<p>Your current stylesheet is ".linkNode($$VARS{userstyle}).".</p>";
-    }
-
-    if(length($$VARS{customstyle})) {
-        $str.='<p>Note that you have customised your style using the [style defacer] or [ekw Shredder], which is going to affect the formatting of any stylesheet you choose. '.linkNode($NODE,'Click here to clear that out',{clearVandalism=>'true'}).' if that\'s not what you want. If you want to create a whole new stylesheet, visit [the draughty atelier].</p>';
-    }
-    else {
-        $str.="<p>You can also customise your stylesheet at the [style defacer] or create a whole new stylesheet at [the draughty atelier].</p>";
-    }
-
-    # ============ same code as choose theme view page =============
-    # only show themes for "active" users (in this case lastseen within 6 months
-    my ($sec,$min,$hour,$mday,$mon,$year) = gmtime(time - 15778800); # 365.25*24*3600/2
-    my $cutoffDate = ($year+1900).'-'.($mon+1)."-$mday";
-    my $defaultStyle = getNode($Everything::CONF->default_style, "stylesheet")->{node_id};
-
-    my $rows = $DB->sqlSelectMany( 'setting.setting_id,setting.vars' ,
-        'setting,user' ,
-        "setting.setting_id=user.user_id
-            AND user.lasttime>='$cutoffDate'
-            AND setting.vars LIKE '%userstyle=%'
-            AND setting.vars NOT LIKE '%userstyle=$defaultStyle%'" ) ;
-
-    my $dbrow ;
-    while($dbrow = $rows->fetchrow_arrayref)
-    {
-       $$dbrow[1] =~ m/userstyle=([0-9]+)/;
-       if (exists($styles{$1}))
-       {
-          $styles{$1} = $styles{$1}+1;
-       }
-       else
-       {
-          $styles{$1} = 1;
-       }
-    }
-
-    my @keys = sort {$styles{$b} <=> $styles{$a}} (keys(%styles)) ;
-    unshift( @keys , $defaultStyle ) ;
-    # ======== end same code ========
-    $styles{ $defaultStyle } = '&#91;default]' ;
-    $str .= '<table align="center">
-       <tr>
-       <th>Stylesheet Name</th>
-       <th>Author</th>
-       <th>Number of Users</th><th>&nbsp;</th>
-       </tr>';
-    my $ctr = 0;
-    foreach (@keys) {
-       $n = getNodeById($_);
-       next unless $n ;
-       $ctr++;
-
-       if ($ctr%2==0)
-       {
-          $str .= '<tr class="evenrow">';
-       }
-       else
-       {
-          $str .= '<tr class="oddrow">';
-       }
-
-       $str .= '<td>'.linkNode($n, '', {lastnode_id=>0}).'</td>
-            <td style="text-align:center">'.linkNode($$n{author_user}, '', {lastnode_id=>0}).'</td>
-            <td style="text-align:right">'.$styles{$_}.'</td>
-            <td>'.
-            ( $APP->isGuest($USER) ? '&nbsp;' :
-                '&#91; <a href="/?displaytype=choosetheme&theme='.$_.'&noscript=1"
-                    onfocus="this.href = this.href.replace( \'&noscript=1\' , \'\' ) ;">test</a> ]' ).'
-            </td>
-          </tr>';
-    }
-    $str .= '</table>';
-
-    return $str;
-}
-
 sub dr__nate_s_secret_lab {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
 
@@ -2648,9 +2098,6 @@ sub ajax_update
 
     return '';
 }
-
-# REMOVED 2025-12-12: Migrated to Everything::Page::renunciation_chainsaw (React)
-# REMOVED 2025-12-12: Migrated to Everything::Page::security_monitor (React)
 
 sub what_does_what {
     my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
@@ -2791,54 +2238,6 @@ sub recalculated_users {
         $str .= '<li>'.$key.'</li>';
     }
     $str .= '</ol>';
-
-    return $str;
-}
-
-sub typeversion_controls {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    my $str = 'Do-na-touch!
-
-';
-    $str .= htmlcode('openform');
-    $str .= '<INPUT type="hidden" name="confirmpage" value="1">';
-
-    my @nodetypes = $DB->getNodeWhere({type_nodetype => 1}, "nodetype");
-    my %TVERSIONS = ();
-    my %NEWVERSIONS = ();
-
-    if (my $csr = $DB->sqlSelectMany("*", 'typeversion')) {
-        while (my $N = $csr->fetchrow_hashref) {
-            $TVERSIONS{$N->{typeversion_id}} = 1;
-        }
-        $csr->finish;
-    }
-
-    if (defined $query->param('confirmpage')) {
-        foreach ($query->param) {
-            next unless /^typeify_(\d+)$/;
-            my $n_id = $1;
-            $NEWVERSIONS{$n_id} = 1;
-            if (not $TVERSIONS{$n_id}) {
-                $DB->sqlInsert("typeversion", {typeversion_id => $n_id, version => 1});
-            }
-        }
-
-        foreach (keys %TVERSIONS) {
-            if (!exists $NEWVERSIONS{$_}) {
-                $DB->sqlDelete("typeversion", "typeversion_id=$_");
-            }
-        }
-    } else {
-        %NEWVERSIONS = %TVERSIONS;
-    }
-
-    foreach (@nodetypes) {
-        $str .= $query->checkbox('typeify_' . getId($_), exists($NEWVERSIONS{getId($_)}), 1, $_->{title}) . "<br>";
-    }
-
-    $str .= htmlcode('closeform');
 
     return $str;
 }

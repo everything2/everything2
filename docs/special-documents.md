@@ -61,7 +61,7 @@
 | Decloaker | Superdoc | `/title/Decloaker` | React |
 | Display Categories | Superdoc | `/title/Display+Categories` | E2 Legacy |
 | Do You C! What I C? | Superdoc | `/title/Do+You+C!+What+I+C?` | React |
-| Drafts | Superdoc | `/title/Drafts` | E2 Legacy |
+| Drafts | Superdoc | `/title/Drafts` | React |
 | Drafts for review | Superdoc | `/title/Drafts+for+review` | React |
 | Duplicates Found: | Superdoc | `/title/Duplicates+Found:` | React |
 | E2 Acceptable Use Policy | Superdoc | `/title/E2+Acceptable+Use+Policy` | React |
@@ -164,12 +164,12 @@
 | Suspension Info | Superdoc | `/title/Suspension+Info` | React |
 | Teddisms Generator | Superdoc | `/title/Teddisms+Generator` | React |
 | Text Formatter | Superdoc | `/title/Text+Formatter` | React |
-| The Catwalk | Superdoc | `/title/The+Catwalk` | E2 Legacy |
+| The Catwalk | Superdoc | `/title/The+Catwalk` | React |
 | The Costume Shop | Superdoc | `/title/The+Costume+Shop` | E2 Legacy |
 | The Everything2 Voting/Experience System | Superdoc | `/title/The+Everything2+Voting/Experience+System` | React |
 | The Recommender | Superdoc | `/title/The+Recommender` | React |
 | The Registries | Superdoc | `/title/The+Registries` | React |
-| Theme Nirvana | Superdoc | `/title/Theme+Nirvana` | E2 Legacy |
+| Theme Nirvana | Superdoc | `/title/Theme+Nirvana` | React |
 | Topic Archive | Superdoc | `/title/Topic+Archive` | E2 Legacy |
 | Usergroup discussions | Superdoc | `/title/Usergroup+discussions` | React |
 | usergroup message archive | Superdoc | `/title/usergroup+message+archive` | React |
@@ -180,7 +180,7 @@
 | Wheel of Surprise | Superdoc | `/title/Wheel+of+Surprise` | React |
 | word messer-upper | Superdoc | `/title/word+messer-upper` | React |
 | Writeup Search | Superdoc | `/title/Writeup+Search` | E2 Legacy |
-| Writeups by Type | Superdoc | `/title/Writeups+by+Type` | E2 Legacy |
+| Writeups by Type | Superdoc | `/title/Writeups+by+Type` | React |
 | Your filled nodeshells | Superdoc | `/title/Your+filled+nodeshells` | React |
 | Your Gravatar | Superdoc | `/title/Your+Gravatar` | React |
 | Your ignore list | Superdoc | `/title/Your+ignore+list` | React |

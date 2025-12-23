@@ -31,7 +31,7 @@ sub display {
 
     # Check if user can view weblog (ify) settings
     my $weblog_setting;
-    if ( $user->is_god ) {
+    if ( $user->is_admin ) {
         my $weblog_node = $self->DB->getNode( 'webloggables', 'setting' );
         if ($weblog_node) {
             my $vars = $self->APP->getVars($weblog_node);
@@ -110,7 +110,6 @@ sub display {
         title     => $user->title,
         is_guest  => $user->is_guest ? 1 : 0,
         is_editor => $user->is_editor ? 1 : 0,
-        is_god    => $user->is_god ? 1 : 0,
         is_admin  => $user->is_admin ? 1 : 0
     };
 

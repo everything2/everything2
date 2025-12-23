@@ -1,6 +1,6 @@
 # React Module Coverage Report
 
-**Generated**: 2025-12-22 22:32:11
+**Generated**: 2025-12-23 11:56:18
 
 This report shows test coverage for each React component and module.
 
@@ -12,7 +12,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/AdminModal.js | 68.96% | 70% | 69.23% | 69.87% |
 | /home/jaybonci/projects/everything2/react/components/Borgcheck.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/ConfirmModal.js | 100% | 100% | 100% | 100% |
-| /home/jaybonci/projects/everything2/react/components/DocumentComponent.js | 7.31% | 100% | 3.55% | 7.31% |
+| /home/jaybonci/projects/everything2/react/components/DocumentComponent.js | 7.21% | 100% | 3.5% | 7.21% |
 | /home/jaybonci/projects/everything2/react/components/E2IdleHandler.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/E2NodeDisplay.js | 89.28% | 92.5% | 63.63% | 88.46% |
 | /home/jaybonci/projects/everything2/react/components/E2NodeToolsModal.js | 33.6% | 29.76% | 35.41% | 34.29% |
@@ -179,6 +179,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/TeddismsGenerator.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/TextFormatter.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/TheBorgClinic.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/TheCatwalk.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/TheKillingFloor.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/TheNodeCrypt.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/TheOldHookedPole.js | 0% | 0% | 0% | 0% |
@@ -186,6 +187,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/TheRecommender.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/TheRegistries.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/TheTokenator.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/ThemeNirvana.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/UserRelations.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/UserSearch.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/UserStatistics.js | 0% | 0% | 0% | 0% |
@@ -206,13 +208,14 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/WhoKilledWhat.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/WordMesserUpper.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Writeup.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/WriteupsByType.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/YourFilledNodeshells.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/YourGravatar.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/Documents/YourIgnoreList.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/YourInsuredWriteups.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/YourNodeshells.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Zenmastery.js | 0% | 100% | 0% | 0% |
-| /home/jaybonci/projects/everything2/react/components/Editor/E2HtmlSanitizer.js | 97.89% | 92.98% | 100% | 98.8% |
+| /home/jaybonci/projects/everything2/react/components/Editor/E2HtmlSanitizer.js | 97.22% | 92.3% | 100% | 98.93% |
 | /home/jaybonci/projects/everything2/react/components/Editor/E2LinkExtension.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Editor/E2TextAlignExtension.js | 12.5% | 0% | 9.09% | 14.28% |
 | /home/jaybonci/projects/everything2/react/components/Editor/MenuBar.js | 0% | 0% | 0% | 0% |
@@ -259,7 +262,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/hooks/usePolling.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/hooks/usePublishDraft.js | 31.7% | 17.5% | 50% | 30.86% |
 | /home/jaybonci/projects/everything2/react/utils/reportClientError.js | 83.58% | 72.34% | 57.14% | 84.84% |
-| **Total** | **19.49%** | **20.59%** | **14.65%** | **19.77%** |
+| **Total** | **19.28%** | **20.35%** | **14.53%** | **19.57%** |
 
 ## How to Improve Coverage
 

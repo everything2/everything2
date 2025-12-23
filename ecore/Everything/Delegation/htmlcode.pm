@@ -13638,7 +13638,10 @@ sub giftshop_topic
     $resultStr = "Sweet, now you have <b>".$$VARS{tokens}."</b> token".($$VARS{tokens} == 1 ? "" :"s");
   }
 
-  if (int($$VARS{tokens}) <= 0)
+  # Editors+ can change topic for free, so bypass token check
+  my $isEditor = $APP->isEditor($USER);
+
+  if (int($$VARS{tokens}) <= 0 && !$isEditor)
   {
     $str .= "<p>You don't have any tokens right now.</p>";
 
@@ -13658,7 +13661,8 @@ sub giftshop_topic
 
   if ($query->param("setTopic"))
   {
-    $$VARS{tokens}--;
+    # Editors+ can change topic for free
+    $$VARS{tokens}-- unless $isEditor;
 
     #possibly limit topic changes to one every 30 minutes?
 

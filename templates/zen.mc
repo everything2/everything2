@@ -242,8 +242,9 @@ sub _build_pagetitle
    <& 'createdby', node => $.node &>
 <%perl>
   # Parent link for writeups - "See all of [parent e2node]"
-  my $node = $.node;
-  my $ntypet = $node->type->title;
+  # Reuse $node and $ntypet from SEO block above
+  $node = $.node;
+  $ntypet = $node->type->title;
   if ($ntypet eq 'writeup') {
     my $parent = $node->parent;
     if ($parent && !UNIVERSAL::isa($parent, "Everything::Node::null")) {
@@ -303,6 +304,60 @@ sub _build_pagetitle
 
       my $firmlinks_str = join(', ', @firmlink_html);
       $m->print(qq{<div class="topic" id="firmlink"><strong>See also:</strong> $firmlinks_str</div>\n});
+    }
+  }
+</%perl>
+<%perl>
+  # "Is also a" feature - show when title matches other node types (user, nodetype, etc.)
+  # Reuse $node and $ntypet from previous block
+  $node = $.node;
+  $ntypet = $node->type->title;
+
+  if ($ntypet eq 'e2node') {
+    my $DB = $REQUEST->DB;
+    my $APP = $REQUEST->APP;
+    my $user = $REQUEST->user;
+    my $checked_title = $node->title;
+
+    # Find all nodes with this exact title
+    my @matching_nodes = $DB->getNodeWhere({ 'title' => $checked_title });
+
+    if (@matching_nodes > 1) {
+      my @other_types;
+
+      foreach my $match (@matching_nodes) {
+        # Skip the current node
+        next if $match->{node_id} == $node->node_id;
+
+        # Skip drafts
+        next if $match->{type}{title} eq 'draft';
+
+        # Check if user can read this node
+        next unless $DB->canReadNode($user->NODEDATA, $match);
+
+        my $type_title = $match->{type}{title};
+        my $link_url = "/node/" . $match->{node_id};
+        my $link_html = qq{<a href="$link_url">$type_title</a>};
+
+        # Special handling for users with message forwarding
+        if ($type_title eq 'user') {
+          my $full_user = $DB->getNodeById($match->{node_id});
+          if ($full_user && $full_user->{message_forward_to}) {
+            my $forward_to = $DB->getNodeById($full_user->{message_forward_to});
+            if ($forward_to) {
+              my $forward_url = "/user/" . $APP->rewriteCleanEscape($forward_to->{title});
+              $link_html .= qq{ (message alias for <a href="$forward_url">$forward_to->{title}</a>)};
+            }
+          }
+        }
+
+        push @other_types, $link_html;
+      }
+
+      if (@other_types > 0) {
+        my $types_str = join(', ', @other_types);
+        $m->print(qq{<div class="topic" id="isalso">("$checked_title" is also a: $types_str.)</div>\n});
+      }
     }
   }
 </%perl>

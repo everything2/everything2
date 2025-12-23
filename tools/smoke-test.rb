@@ -29,6 +29,7 @@ class SmokeTest
     test_nodelets
     test_xml_tickers
     test_xml_displaytypes
+    test_node_forward_redirect
 
     report_results
   end
@@ -716,6 +717,40 @@ class SmokeTest
       puts "✓ #{passed}/#{tests.length} displaytype tests passed"
     else
       puts "✗ #{failed} failed, #{passed} passed"
+    end
+  end
+
+  def test_node_forward_redirect
+    print "Testing node_forward 303 redirect... "
+
+    begin
+      # Test the "Goto potato" node_forward which should redirect to "potato"
+      # Don't follow redirects - we want to verify the 303 status
+      response = http_get('/title/Goto%20potato', follow_redirects: false)
+      code = response.code.to_i
+
+      if code == 303
+        location = response['Location'] || response['location']
+        if location && location.include?('potato')
+          puts "✓ HTTP 303 with correct Location header"
+        else
+          puts "✗ HTTP 303 but wrong Location: #{location}"
+          @errors << "node_forward: Got 303 but Location header incorrect: #{location}"
+        end
+      elsif code == 302
+        puts "✗ HTTP 302 (should be 303)"
+        @errors << "node_forward: Got 302 instead of 303 - redirect may be using old delegation"
+      elsif code == 200
+        puts "✗ HTTP 200 (no redirect)"
+        @errors << "node_forward: Got 200 instead of 303 - controller not being used"
+      else
+        puts "✗ HTTP #{code}"
+        @errors << "node_forward: Unexpected HTTP #{code}"
+      end
+
+    rescue => e
+      puts "✗ Exception"
+      @errors << "node_forward test failed: #{e.message}"
     end
   end
 

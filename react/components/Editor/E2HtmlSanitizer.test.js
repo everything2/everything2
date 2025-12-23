@@ -189,9 +189,11 @@ describe('E2HtmlSanitizer', () => {
         expect(result).toContain('Node &amp; stuff</a>')
       })
 
-      it('escapes HTML in custom display text', () => {
+      it('strips HTML from custom display text (legacy behavior)', () => {
+        // Legacy behavior: HTML tags inside brackets are stripped
         const result = parseE2Links('[node|<b>bold</b>]')
-        expect(result).toContain('&lt;b&gt;bold&lt;/b&gt;</a>')
+        expect(result).toContain('bold</a>')
+        expect(result).not.toContain('<b>')
       })
 
       it('handles quotes in node names', () => {
@@ -279,9 +281,52 @@ describe('E2HtmlSanitizer', () => {
         expect(result).toContain('/user/Node%20%26%20Co.')
       })
 
-      it('escapes HTML in display text', () => {
-        const result = parseE2Links('[<script>[user]]')
-        expect(result).toContain('&lt;script&gt;</a>')
+      it('strips HTML from typed link display text (legacy behavior)', () => {
+        // Legacy behavior: HTML tags inside brackets are stripped
+        const result = parseE2Links('[<b>jaybonci</b>[user]]')
+        expect(result).toBe('<a href="/user/jaybonci" class="e2-link">jaybonci</a>')
+      })
+    })
+
+    describe('HTML inside brackets (legacy behavior)', () => {
+      it('strips HTML from [<big>node</big>] to get link target', () => {
+        const result = parseE2Links('[<big>node</big>]')
+        expect(result).toBe('<a href="/title/node" class="e2-link">node</a>')
+      })
+
+      it('strips nested HTML tags from link brackets', () => {
+        const result = parseE2Links('[<big><big>some node</big></big>]')
+        expect(result).toBe('<a href="/title/some%20node" class="e2-link">some node</a>')
+      })
+
+      it('handles HTML with attributes in brackets', () => {
+        const result = parseE2Links('[<span class="foo">test</span>]')
+        expect(result).toBe('<a href="/title/test" class="e2-link">test</a>')
+      })
+
+      it('does not convert brackets with only HTML tags (no text content)', () => {
+        expect(parseE2Links('[<br>]')).toBe('[<br>]')
+        expect(parseE2Links('[<big></big>]')).toBe('[<big></big>]')
+      })
+
+      it('handles HTML in typed links [node[type]]', () => {
+        const result = parseE2Links('[<b>jaybonci</b>[user]]')
+        expect(result).toBe('<a href="/user/jaybonci" class="e2-link">jaybonci</a>')
+      })
+
+      it('handles HTML in by-author links [title[by user]]', () => {
+        const result = parseE2Links('[<i>April 2, 2012</i>[by wertperch]]')
+        expect(result).toBe('<a href="/user/wertperch/writeups/April%202%2C%202012" class="e2-link">April 2, 2012</a>')
+      })
+
+      it('handles HTML in username of by-author links', () => {
+        const result = parseE2Links('[My Writeup[by <b>author</b>]]')
+        expect(result).toBe('<a href="/user/author/writeups/My%20Writeup" class="e2-link">My Writeup</a>')
+      })
+
+      it('handles mixed HTML and text in brackets', () => {
+        const result = parseE2Links('[this is <b>bold</b> text]')
+        expect(result).toBe('<a href="/title/this%20is%20bold%20text" class="e2-link">this is bold text</a>')
       })
     })
 
@@ -303,6 +348,149 @@ describe('E2HtmlSanitizer', () => {
         // Title gets trimmed, display text preserves leading space
         expect(result).toContain('/title/node')
         expect(result).toContain('display text</a>')
+      })
+    })
+
+    describe('[title[by username]] syntax - writeup by specific author', () => {
+      it('converts basic [title[by username]] to /user/username/writeups/title', () => {
+        const result = parseE2Links('[April 2, 2012[by wertperch]]')
+        expect(result).toContain('<a href="/user/wertperch/writeups/April%202%2C%202012"')
+        expect(result).toContain('class="e2-link"')
+        expect(result).toContain('April 2, 2012</a>')
+      })
+
+      it('converts [title[by username]|display] with custom display text', () => {
+        const result = parseE2Links("[April 2, 2012[by wertperch]|grundoon's memorial]")
+        expect(result).toContain('<a href="/user/wertperch/writeups/April%202%2C%202012"')
+        expect(result).toContain("grundoon&#039;s memorial</a>")
+      })
+
+      it('handles spaces around "by" keyword', () => {
+        const result = parseE2Links('[My Title[ by  some_user ]]')
+        expect(result).toContain('<a href="/user/some_user/writeups/My%20Title"')
+      })
+
+      it('handles space before inner bracket', () => {
+        const result = parseE2Links('[My Title [by someone]]')
+        expect(result).toContain('<a href="/user/someone/writeups/My%20Title"')
+      })
+
+      it('handles spaces everywhere', () => {
+        const result = parseE2Links('[My Title [ by some_user ]]')
+        expect(result).toContain('<a href="/user/some_user/writeups/My%20Title"')
+      })
+
+      it('is case-insensitive for "by" keyword', () => {
+        const result1 = parseE2Links('[Title[BY user1]]')
+        const result2 = parseE2Links('[Title[By user2]]')
+        const result3 = parseE2Links('[Title[bY user3]]')
+        expect(result1).toContain('/user/user1/writeups/Title')
+        expect(result2).toContain('/user/user2/writeups/Title')
+        expect(result3).toContain('/user/user3/writeups/Title')
+      })
+
+      it('URL-encodes special characters in title', () => {
+        const result = parseE2Links('[Title & "special"[by author]]')
+        expect(result).toContain('/user/author/writeups/Title%20%26%20%22special%22')
+      })
+
+      it('URL-encodes special characters in username', () => {
+        const result = parseE2Links('[Some Title[by user name with spaces]]')
+        expect(result).toContain('/user/user%20name%20with%20spaces/writeups/Some%20Title')
+      })
+
+      it('strips HTML in display text (legacy behavior)', () => {
+        // Legacy behavior: HTML tags inside brackets are stripped
+        const result = parseE2Links('[Title[by user]|<b>bold</b> text]')
+        expect(result).toContain('bold text</a>')
+        expect(result).not.toContain('<b>')
+      })
+
+      it('strips HTML from title used as default display (legacy behavior)', () => {
+        // Legacy behavior: HTML tags in title are stripped for display
+        // Note: <stuff> looks like an HTML tag and gets stripped
+        const result = parseE2Links('[Title & <stuff>[by user]]')
+        expect(result).toContain('Title &amp; </a>')
+      })
+
+      it('handles multiple by-author links', () => {
+        const result = parseE2Links('[Node1[by user1]] and [Node2[by user2]]')
+        expect(result).toContain('/user/user1/writeups/Node1')
+        expect(result).toContain('/user/user2/writeups/Node2')
+      })
+
+      it('handles mixed by-author and typed links', () => {
+        const result = parseE2Links('[Node[by author]] wrote by [username[user]]')
+        expect(result).toContain('/user/author/writeups/Node')
+        expect(result).toContain('/user/username')
+        expect(result).not.toContain('/user/username/writeups')
+      })
+
+      it('handles mixed by-author and regular links', () => {
+        const result = parseE2Links('[Writeup[by author]] about [topic]')
+        expect(result).toContain('/user/author/writeups/Writeup')
+        expect(result).toContain('/title/topic')
+      })
+
+      it('handles by-author link with pipe and regular link', () => {
+        const result = parseE2Links('[Title[by user]|custom] see also [other node]')
+        expect(result).toContain('/user/user/writeups/Title')
+        expect(result).toContain('custom</a>')
+        expect(result).toContain('/title/other%20node')
+      })
+
+      it('does not match if "by" keyword is missing', () => {
+        // This should be treated as a regular typed link, not by-author
+        const result = parseE2Links('[Title[user]]')
+        expect(result).toContain('/user/Title')
+        expect(result).not.toContain('/writeups/')
+      })
+
+      it('handles real-world example: grundoon memorial link', () => {
+        const result = parseE2Links("[April 2, 2012[by wertperch]|grundoon's memorial]")
+        expect(result).toContain('<a href="/user/wertperch/writeups/April%202%2C%202012"')
+        expect(result).toContain("grundoon&#039;s memorial</a>")
+      })
+
+      it('handles daylog-style dates', () => {
+        const result = parseE2Links('[December 25, 2023[by santa]]')
+        expect(result).toContain('/user/santa/writeups/December%2025%2C%202023')
+      })
+
+      it('handles usernames with underscores', () => {
+        const result = parseE2Links('[My Writeup[by some_user_name]]')
+        expect(result).toContain('/user/some_user_name/writeups/My%20Writeup')
+      })
+
+      it('handles usernames with numbers', () => {
+        const result = parseE2Links('[My Writeup[by user123]]')
+        expect(result).toContain('/user/user123/writeups/My%20Writeup')
+      })
+
+      it('preserves surrounding text', () => {
+        const result = parseE2Links('Read [Great Writeup[by author]|this] for more info.')
+        expect(result).toBe('Read <a href="/user/author/writeups/Great%20Writeup" class="e2-link">this</a> for more info.')
+      })
+
+      it('handles adjacent by-author links', () => {
+        const result = parseE2Links('[A[by x]][B[by y]]')
+        expect(result).toContain('/user/x/writeups/A')
+        expect(result).toContain('/user/y/writeups/B')
+      })
+
+      it('does not match empty title but inner bracket becomes regular link', () => {
+        // [[by user]] - the [by user] part is a valid regular link
+        const result = parseE2Links('[[by user]]')
+        expect(result).toContain('/title/by%20user')
+        // Outer brackets remain
+        expect(result).toMatch(/^\[.*\]$/)
+      })
+
+      it('does not match empty username but inner bracket becomes regular link', () => {
+        // [Title[by ]] - the [by ] part (with space trimmed) becomes a link to "by"
+        const result = parseE2Links('[Title[by ]]')
+        expect(result).toContain('/title/by')
+        expect(result).toContain('Title')
       })
     })
   })

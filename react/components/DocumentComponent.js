@@ -181,6 +181,10 @@ const COMPONENT_MAP = {
   cool_archive: lazy(() => import('./Documents/CoolArchive')),
   page_of_cool: lazy(() => import('./Documents/PageOfCool')),
 
+  // Theme/stylesheet browsers
+  theme_nirvana: lazy(() => import('./Documents/ThemeNirvana')),
+  the_catwalk: lazy(() => import('./Documents/TheCatwalk')),
+
   // Community features - Polls
   everything_poll_creator: lazy(() => import('./Documents/EverythingPollCreator')),
   everything_poll_directory: lazy(() => import('./Documents/EverythingPollDirectory')),
@@ -197,6 +201,7 @@ const COMPONENT_MAP = {
   everything_s_richest_noders: lazy(() => import('./Documents/EverythingSRichestNoders')),
   level_distribution: lazy(() => import('./Documents/LevelDistribution')),
   my_big_writeup_list: lazy(() => import('./Documents/MyBigWriteupList')),
+  writeups_by_type: lazy(() => import('./Documents/WriteupsByType')),
 
   // Tools & utilities
   e2_sperm_counter: lazy(() => import('./Documents/E2SpermCounter')),

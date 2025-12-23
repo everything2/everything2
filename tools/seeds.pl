@@ -1389,6 +1389,33 @@ print STDERR "Created " . scalar(@nodeshell_titles) . " nodeshells for search te
 print STDERR "\n=== Nodeshell creation complete ===\n";
 
 # ============================================================
+# E2nodes that share names with users (for testing "is also a" feature)
+# These create e2nodes with the same title as existing users
+# ============================================================
+print STDERR "\n=== Creating e2nodes for 'is also a' testing ===\n";
+
+my @user_named_e2nodes = (
+  "root",           # Same name as root user
+  "normaluser1",    # Same name as normaluser1
+  "Content Editors", # Same name as Content Editors usergroup (if exists)
+);
+
+foreach my $title (@user_named_e2nodes) {
+  my $existing_e2node = $DB->getNode($title, "e2node");
+  if (!$existing_e2node) {
+    print STDERR "Creating e2node with user name: '$title'\n";
+    my $e2node_id = $DB->insertNode($title, "e2node", $nodeshell_author, {});
+    if ($e2node_id) {
+      print STDERR "  Created e2node '$title' with node_id $e2node_id\n";
+    }
+  } else {
+    print STDERR "  E2node '$title' already exists\n";
+  }
+}
+
+print STDERR "=== 'Is also a' test e2nodes complete ===\n";
+
+# ============================================================
 # Firmlinks - Semantic relationships between e2nodes
 # Create firmlinks to test the display in zen template and future React
 # ============================================================

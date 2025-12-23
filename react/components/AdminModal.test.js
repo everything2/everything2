@@ -45,6 +45,9 @@ describe('AdminModal', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     fetch.mockClear()
+    // Mock window.location.reload
+    delete window.location
+    window.location = { reload: jest.fn() }
   })
 
   describe('visibility', () => {
