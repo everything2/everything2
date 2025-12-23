@@ -17,6 +17,7 @@
  *   html [username] [url]      - Fetch URL as user (use "guest" for unauthenticated), output raw HTML
  *   post [username] [url] [json] - POST JSON to API endpoint as authenticated user
  *   delete [username] [url]     - DELETE request to API endpoint as authenticated user
+ *   eval [username] [url] [js]  - Evaluate JavaScript in browser context
  *
  * Available Test Users (from tools/seeds.pl):
  *   root              - Admin (gods + e2gods), password: blah
@@ -526,6 +527,68 @@ async function httpRequestAsUser(username, url, jsonData, method) {
 }
 
 /**
+ * Evaluate JavaScript in browser context
+ */
+async function evalInBrowser(username, url, jsCode) {
+  let browser, page;
+
+  // Special case: "guest" means unauthenticated
+  if (username === 'guest') {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 1024 });
+    console.log(`Navigating to ${url} as guest...`);
+  } else {
+    const session = await createAuthenticatedSession(username, url);
+    browser = session.browser;
+    page = session.page;
+    console.log(`Navigating to ${url}...`);
+  }
+
+  // Navigate to target URL
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+
+  // Wait for React lazy-loaded components to finish loading
+  await page.waitForFunction(() => {
+    const pageRoot = document.querySelector('#e2-react-page-root');
+    return !pageRoot || !pageRoot.textContent.includes('Loading...');
+  }, { timeout: 10000 }).catch(() => {});
+
+  console.log(`Evaluating: ${jsCode.substring(0, 100)}${jsCode.length > 100 ? '...' : ''}`);
+
+  // Evaluate the JavaScript code
+  try {
+    const result = await page.evaluate((code) => {
+      try {
+        // Use Function constructor to evaluate the code
+        const fn = new Function(code);
+        const result = fn();
+        // Handle promises
+        if (result && typeof result.then === 'function') {
+          return result.then(r => ({ success: true, result: r }));
+        }
+        return { success: true, result: result };
+      } catch (err) {
+        return { success: false, error: err.message, stack: err.stack };
+      }
+    }, jsCode);
+
+    console.log('\n=== Eval Result ===');
+    console.log(JSON.stringify(result, null, 2));
+
+    await browser.close();
+    return result;
+  } catch (err) {
+    console.error('Evaluation error:', err.message);
+    await browser.close();
+    throw err;
+  }
+}
+
+/**
  * Get HTML for URL as guest (no authentication)
  */
 async function getHtmlAsGuest(url = BASE_URL) {
@@ -645,6 +708,21 @@ async function main() {
         await deleteAsUser(arg1, arg2);
         break;
 
+      case 'eval':
+        if (!arg1 || !arg2) {
+          console.error('Usage: eval [username] [url] [javascript]');
+          console.error('Example: eval guest http://localhost:9080 "return window.e2"');
+          console.error('Example: eval e2e_user http://localhost:9080 "return document.title"');
+          process.exit(1);
+        }
+        const jsCode = process.argv[5];
+        if (!jsCode) {
+          console.error('JavaScript code required');
+          process.exit(1);
+        }
+        await evalInBrowser(arg1, arg2, jsCode);
+        break;
+
       case 'guest-fetch':
         await fetchAsGuest(arg1);
         break;
@@ -667,6 +745,7 @@ async function main() {
         console.log('  html [username] [url]           - Fetch URL as user, output raw HTML');
         console.log('  post [username] [url] [json]    - POST JSON to API as user');
         console.log('  delete [username] [url]         - DELETE request to API as user');
+        console.log('  eval [username] [url] [js]      - Evaluate JavaScript in browser');
         console.log('\nRun "node tools/browser-debug.js login" to see available test users');
         process.exit(1);
     }
@@ -691,6 +770,7 @@ module.exports = {
   getHtmlAsUser,
   postAsUser,
   deleteAsUser,
+  evalInBrowser,
   fetchAsGuest,
   getHtmlAsGuest
 };
