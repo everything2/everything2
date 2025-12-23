@@ -104,6 +104,9 @@ const DOMPURIFY_CONFIG = {
  * - [nodename|display text] -> link to /title/nodename with custom display text
  * - [nodename[nodetype]] -> link to /nodetype/nodename (e.g., [jaybonci[user]] -> /user/jaybonci)
  * - [nodename [nodetype]] -> same as above, allows space before inner bracket
+ * - [title[by username]] -> link to /user/username/writeups/title (writeup by specific author)
+ * - [title[by username]|display] -> same with custom display text
+ * - [<big>node</big>] -> HTML inside brackets is stripped for link, preserved for display
  *
  * @param {string} text - Text containing E2 link syntax
  * @returns {string} - Text with links converted to anchor tags
@@ -111,14 +114,42 @@ const DOMPURIFY_CONFIG = {
 export function parseE2Links(text) {
   if (!text) return ''
 
-  // First pass: Handle [nodetitle[nodetype]] format (typed links)
-  // Allows optional spaces: [title[type]], [title [type]], [title[ type ]]
+  // Helper to strip HTML tags from a string (for extracting link target)
+  const stripHtml = (str) => str.replace(/<[^>]*>/g, '')
+
+  // First pass: Handle [title[by username]] format (writeup by specific author)
+  // This creates links like /user/username/writeups/title
+  // Allows optional display text: [title[by username]|display text]
+  // Requires at least one non-whitespace character in both title and username
+  // Username must contain at least one non-whitespace char: \s*by\s+(\S[^\[\]]*?)\s*
   let result = text.replace(
+    /\[([^\[\]|]+?)\s*\[\s*by\s+(\S[^\[\]]*?)\s*\](?:\|([^\[\]]+))?\]/gi,
+    (match, title, username, displayText) => {
+      const trimmedTitle = stripHtml(title).trim()
+      const trimmedUsername = stripHtml(username).trim()
+      if (!trimmedTitle || !trimmedUsername) return match
+
+      const encodedTitle = encodeURIComponent(trimmedTitle)
+      const encodedUsername = encodeURIComponent(trimmedUsername)
+      // For display, use HTML-containing title if no custom display text
+      const display = displayText ? displayText.trim() : title.trim()
+      // Use /user/username/writeups/title format
+      return `<a href="/user/${encodedUsername}/writeups/${encodedTitle}" class="e2-link">${escapeHtml(stripHtml(display))}</a>`
+    }
+  )
+
+  // Second pass: Handle [nodetitle[nodetype]] format (typed links)
+  // Allows optional spaces: [title[type]], [title [type]], [title[ type ]]
+  // Note: Does NOT match if inner content starts with "by " (that's handled by first pass)
+  result = result.replace(
     /\[([^\[\]|]+?)\s*\[\s*([^\[\]]+?)\s*\]\]/g,
     (match, title, nodetype) => {
-      const trimmedTitle = title.trim()
-      const trimmedType = nodetype.trim().toLowerCase()
+      const trimmedTitle = stripHtml(title).trim()
+      const trimmedType = stripHtml(nodetype).trim().toLowerCase()
       if (!trimmedTitle || !trimmedType) return match
+
+      // Skip if this looks like a failed [title[by username]] pattern
+      if (/^by\s*$/i.test(trimmedType)) return match
 
       const encodedTitle = encodeURIComponent(trimmedTitle)
       // Use /nodetype/nodename format
@@ -126,18 +157,20 @@ export function parseE2Links(text) {
     }
   )
 
-  // Second pass: Handle [title] and [title|display] format (standard links)
-  // Don't match empty brackets or brackets with only whitespace
+  // Third pass: Handle [title] and [title|display] format (standard links)
+  // This handles HTML inside brackets: [<big>node</big>] -> link to "node" with "node" as display
+  // Don't match empty brackets or brackets with only whitespace/HTML
   result = result.replace(
     /\[([^\[\]|]+)(?:\|([^\[\]]+))?\]/g,
     (match, title, displayText) => {
-      const trimmedTitle = title.trim()
-      if (!trimmedTitle) return match // Don't convert empty links
+      // Strip HTML to get the actual link target
+      const strippedTitle = stripHtml(title).trim()
+      if (!strippedTitle) return match // Don't convert empty links or HTML-only content
 
-      const display = (displayText || title).trim()
-      const encodedTitle = encodeURIComponent(trimmedTitle)
+      const display = displayText ? displayText.trim() : strippedTitle
+      const encodedTitle = encodeURIComponent(strippedTitle)
       // Use /title/ URL format which is the standard E2 link format
-      return `<a href="/title/${encodedTitle}" class="e2-link">${escapeHtml(display)}</a>`
+      return `<a href="/title/${encodedTitle}" class="e2-link">${escapeHtml(stripHtml(display))}</a>`
     }
   )
 
