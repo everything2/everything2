@@ -251,14 +251,16 @@ describe('InlineWriteupEditor', () => {
       render(<InlineWriteupEditor {...defaultProps} />)
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith('/api/writeuptypes')
+        // Hook uses fetchWithErrorReporting which calls fetch(url, options)
+        expect(fetch).toHaveBeenCalledWith('/api/writeuptypes', expect.any(Object))
       })
     })
 
     it('does not fetch writeuptypes for existing writeup', () => {
       render(<InlineWriteupEditor {...defaultProps} writeupId={789} />)
 
-      expect(fetch).not.toHaveBeenCalledWith('/api/writeuptypes')
+      // With skip option, the hook doesn't make the fetch call
+      expect(fetch).not.toHaveBeenCalledWith('/api/writeuptypes', expect.any(Object))
     })
 
     it('has writeuptype select for new writeups', async () => {

@@ -1,6 +1,6 @@
 # React Module Coverage Report
 
-**Generated**: 2025-12-22 16:26:26
+**Generated**: 2025-12-22 22:32:11
 
 This report shows test coverage for each React component and module.
 
@@ -21,7 +21,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/ErrorBoundary.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/ExperienceGain.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/GPGain.js | 100% | 100% | 100% | 100% |
-| /home/jaybonci/projects/everything2/react/components/InlineWriteupEditor.js | 53.79% | 65.26% | 48% | 55% |
+| /home/jaybonci/projects/everything2/react/components/InlineWriteupEditor.js | 51.9% | 65.21% | 43.47% | 53.17% |
 | /home/jaybonci/projects/everything2/react/components/LinkNode.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/LogoutLink.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/MasonContent.js | 100% | 100% | 100% | 100% |
@@ -153,7 +153,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/PermissionDenied.js | 0% | 100% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/PitOfAbomination.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/PopularRegistries.js | 0% | 0% | 0% | 0% |
-| /home/jaybonci/projects/everything2/react/components/Documents/PublishModal.js | 1.06% | 0% | 0% | 1.07% |
+| /home/jaybonci/projects/everything2/react/components/Documents/PublishModal.js | 1.38% | 0% | 0% | 1.42% |
 | /home/jaybonci/projects/everything2/react/components/Documents/RandomNodeshells.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/RandomText.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/Documents/RecentNodeNotes.js | 0% | 0% | 0% | 0% |
@@ -257,7 +257,9 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/hooks/useChatterPolling.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/hooks/useOtherUsersPolling.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/hooks/usePolling.js | 0% | 0% | 0% | 0% |
-| **Total** | **18.87%** | **20.26%** | **14.43%** | **19.14%** |
+| /home/jaybonci/projects/everything2/react/hooks/usePublishDraft.js | 31.7% | 17.5% | 50% | 30.86% |
+| /home/jaybonci/projects/everything2/react/utils/reportClientError.js | 83.58% | 72.34% | 57.14% | 84.84% |
+| **Total** | **19.49%** | **20.59%** | **14.65%** | **19.77%** |
 
 ## How to Improve Coverage
 

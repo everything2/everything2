@@ -2,8 +2,13 @@ import React from 'react'
 import Modal from 'react-modal'
 
 import { createRoot } from 'react-dom/client'
+import { setupGlobalErrorHandlers } from './utils/reportClientError'
+
 const E2ReactRoot = React.lazy(() => import('./components/E2ReactRoot'))
 const PageLayout = React.lazy(() => import('./components/PageLayout'))
+
+// Set up global error handlers for uncaught errors
+setupGlobalErrorHandlers()
 
 // Wait for window.e2 to be available before rendering
 function initReact() {

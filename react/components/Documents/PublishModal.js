@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useWriteuptypes, useSetParentE2node, usePublishDraft } from '../../hooks/usePublishDraft'
 
 /**
  * PublishModal - Modal for publishing drafts as writeups
@@ -19,28 +20,38 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
   const [e2nodeTitle, setE2nodeTitle] = useState(draft?.title || '')
   const [suggestions, setSuggestions] = useState([])
   const [selectedE2node, setSelectedE2node] = useState(null)
-  const [writeuptypes, setWriteuptypes] = useState([])
-  const [selectedWriteuptype, setSelectedWriteuptype] = useState('thing')
   const [hideFromNewWriteups, setHideFromNewWriteups] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
   const [showSuggestions, setShowSuggestions] = useState(false)
 
-  // Fetch available writeuptypes on mount
-  useEffect(() => {
-    const fetchWriteuptypes = async () => {
-      try {
-        const response = await fetch('/api/writeuptypes')
-        const result = await response.json()
-        if (result.success && result.writeuptypes) {
-          setWriteuptypes(result.writeuptypes)
-        }
-      } catch (err) {
-        console.error('Failed to fetch writeuptypes:', err)
-      }
+  // Use shared hooks
+  const {
+    writeuptypes,
+    selectedWriteuptypeId,
+    setSelectedWriteuptypeId
+  } = useWriteuptypes()
+
+  const {
+    setParentE2node,
+    loading: settingParent,
+    error: parentError
+  } = useSetParentE2node()
+
+  const {
+    publishDraft,
+    publishing,
+    error: publishError,
+    setError: setPublishError
+  } = usePublishDraft({
+    draftId: draft?.node_id,
+    onSuccess: (result) => {
+      if (onSuccess) onSuccess(result)
+      // Redirect to the e2node page
+      window.location.href = `/title/${encodeURIComponent(e2nodeTitle.trim())}`
     }
-    fetchWriteuptypes()
-  }, [])
+  })
+
+  const loading = settingParent || publishing
+  const error = parentError || publishError
 
   // Debounced autocomplete search
   useEffect(() => {
@@ -89,80 +100,38 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
     if (selectedE2node && selectedE2node.title !== newTitle) {
       setSelectedE2node(null)
     }
-    setError(null)
-  }, [selectedE2node])
+    setPublishError(null)
+  }, [selectedE2node, setPublishError])
 
   // Publish the draft
   const handlePublish = async () => {
     if (!e2nodeTitle.trim()) {
-      setError('Please enter an e2node title')
+      setPublishError('Please enter an e2node title')
       return
     }
 
-    if (!selectedWriteuptype) {
-      setError('Please select a writeup type')
+    if (!selectedWriteuptypeId) {
+      setPublishError('Please select a writeup type')
       return
     }
 
-    setLoading(true)
-    setError(null)
+    // Step 1: Set parent e2node (creates if needed)
+    const parentResult = await setParentE2node(
+      draft.node_id,
+      e2nodeTitle.trim(),
+      selectedE2node?.node_id || null
+    )
 
-    try {
-      // Step 1: Set parent e2node (creates if needed)
-      const parentRes = await fetch(`/api/drafts/${draft.node_id}/parent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          e2node_title: e2nodeTitle.trim(),
-          e2node_id: selectedE2node?.node_id || null
-        })
-      })
-
-      const parentData = await parentRes.json()
-      if (!parentData.success) {
-        throw new Error(parentData.message || parentData.error || 'Failed to set parent e2node')
-      }
-
-      const e2nodeId = parentData.e2node.node_id
-
-      // Step 2: Get writeuptype ID
-      const writeuptypeResponse = await fetch(
-        `/api/nodes/lookup/writeuptype/${encodeURIComponent(selectedWriteuptype)}`
-      )
-      const writeuptypeResult = await writeuptypeResponse.json()
-
-      if (!writeuptypeResult || !writeuptypeResult.node_id) {
-        throw new Error('Could not find writeuptype')
-      }
-
-      // Step 3: Publish draft
-      const publishRes = await fetch(`/api/drafts/${draft.node_id}/publish`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          parent_e2node: e2nodeId,
-          wrtype_writeuptype: writeuptypeResult.node_id,
-          feedback_policy_id: 0,
-          notnew: hideFromNewWriteups ? 1 : 0
-        })
-      })
-
-      const publishData = await publishRes.json()
-      if (publishData.success) {
-        if (onSuccess) {
-          onSuccess(publishData)
-        }
-        // Redirect to the e2node page
-        window.location.href = `/title/${encodeURIComponent(e2nodeTitle.trim())}`
-      } else {
-        throw new Error(publishData.message || publishData.error || 'Publish failed')
-      }
-    } catch (err) {
-      setError(err.message)
-      setLoading(false)
+    if (!parentResult.success) {
+      return
     }
+
+    // Step 2: Publish draft
+    await publishDraft({
+      parentE2nodeId: parentResult.e2node.node_id,
+      writeuptypeId: selectedWriteuptypeId,
+      hideFromNewWriteups
+    })
   }
 
   // Handle keyboard navigation
@@ -361,8 +330,8 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
               Writeup Type
             </label>
             <select
-              value={selectedWriteuptype}
-              onChange={(e) => setSelectedWriteuptype(e.target.value)}
+              value={selectedWriteuptypeId || ''}
+              onChange={(e) => setSelectedWriteuptypeId(Number(e.target.value))}
               style={{
                 width: '100%',
                 padding: '10px 12px',
@@ -376,12 +345,12 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
             >
               {writeuptypes.length > 0 ? (
                 writeuptypes.map((wt) => (
-                  <option key={wt.node_id} value={wt.title}>
+                  <option key={wt.node_id} value={wt.node_id}>
                     {wt.title}
                   </option>
                 ))
               ) : (
-                <option value="thing">thing</option>
+                <option value="">Loading...</option>
               )}
             </select>
           </div>

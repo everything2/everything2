@@ -233,6 +233,20 @@ sub param {
     return $self->{_params}{$name};
 }
 
+sub user_agent {
+    return 'MockBrowser/1.0 (Test Environment)';
+}
+
+sub http {
+    my ($self, $header) = @_;
+    # Return mock values for common HTTP headers
+    return undef;  # No X-Forwarded-For etc in test
+}
+
+sub remote_addr {
+    return '127.0.0.1';
+}
+
 package MockRequest;
 
 =head1 USAGE EXAMPLES

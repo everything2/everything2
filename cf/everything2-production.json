@@ -685,6 +685,33 @@
         }
       }
     },
+    "ClientErrorsLogWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the app containers to write client error reports to CloudWatch",
+        "ManagedPolicyName": "ClientErrorsLogWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "logs:PutLogEvents",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "ClientErrorsLogGroup", "Arn"] }, ":*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "logs:CreateLogStream",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "ClientErrorsLogGroup", "Arn"] }, ":*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "logs:DescribeLogStreams",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "ClientErrorsLogGroup", "Arn"] }, ":*"]]}
+          }]
+        }
+      }
+    },
     "SecretsS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
@@ -1481,6 +1508,13 @@
         "RetentionInDays": 3
       }
     },
+    "ClientErrorsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/e2/client-errors",
+        "RetentionInDays": 7
+      }
+    },
     "ECSFargateAppService": {
       "Type": "AWS::ECS::Service",
       "Properties": {
@@ -1688,6 +1722,7 @@
             {"Ref": "E2AppSecretsAccessPolicy"},
             {"Ref": "CloudWatchEventsWritePolicy"},
             {"Ref": "HealthCheckLogWritePolicy"},
+            {"Ref": "ClientErrorsLogWritePolicy"},
             {"Ref": "NodepackS3Policy"},
             {"Ref": "SitemapBucketWritePolicy"},
             {"Ref": "WriteupExportS3Policy"}

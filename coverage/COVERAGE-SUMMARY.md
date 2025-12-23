@@ -1,17 +1,17 @@
 # Everything2 Code Coverage Summary
 
-**Last Updated**: 2025-12-22 16:26:26
+**Last Updated**: 2025-12-22 22:32:11
 
 ## Overall Coverage
 
 | Language | Coverage | Status |
 |----------|----------|--------|
-| ![Perl Coverage](badges/perl-coverage.svg) | 35.5% | ⚠️ Needs Improvement |
-| ![React Coverage](badges/react-coverage.svg) | 19.14% | ⚠️ Needs Improvement |
+| ![Perl Coverage](badges/perl-coverage.svg) | 35.6% | ⚠️ Needs Improvement |
+| ![React Coverage](badges/react-coverage.svg) | 19.77% | ⚠️ Needs Improvement |
 
 ## Perl Coverage Details
 
-**Total Statement Coverage**: 35.5%
+**Total Statement Coverage**: 35.6%
 
 Coverage data tracked from mock-based API tests. See [code-coverage.md](../docs/code-coverage.md) for full details.
 
@@ -25,7 +25,7 @@ Coverage data tracked from mock-based API tests. See [code-coverage.md](../docs/
 
 ## React Coverage Details
 
-**Total Line Coverage**: 19.14%
+**Total Line Coverage**: 19.77%
 
 Coverage data from Jest test suite.
 
@@ -40,8 +40,8 @@ npm test -- --coverage           # Run Jest with coverage
 ## Coverage Goals
 
 ### Current (Dec 2025)
-- ✅ Perl: 35.5% (mock-based tests working)
-- ✅ React: 19.14% (Jest infrastructure ready)
+- ✅ Perl: 35.6% (mock-based tests working)
+- ✅ React: 19.77% (Jest infrastructure ready)
 
 ### Short-term Goals (Q1 2026)
 - 🎯 Perl: 40% (comprehensive API testing)

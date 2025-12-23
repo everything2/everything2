@@ -12,6 +12,8 @@ import { E2Link, convertToE2Syntax } from './Editor/E2LinkExtension';
 import { E2TextAlign } from './Editor/E2TextAlignExtension';
 import { RawBracket, convertRawBracketsToEntities } from './Editor/RawBracketExtension';
 import MenuBar from './Editor/MenuBar';
+import { useWriteuptypes } from '../hooks/usePublishDraft';
+import { fetchWithErrorReporting } from '../utils/reportClientError';
 import './Editor/E2Editor.css';
 
 /**
@@ -66,29 +68,16 @@ const InlineWriteupEditor = ({
   const [saveStatus, setSaveStatus] = useState('saved'); // 'saved', 'saving', 'unsaved'
   const [publishing, setPublishing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [writeuptypes, setWriteuptypes] = useState([]);
-  const [selectedWriteuptype, setSelectedWriteuptype] = useState('thing');
   const [hideFromNewWriteups, setHideFromNewWriteups] = useState(false);
   const autosaveTimerRef = useRef(null);
   const firstEditRef = useRef(false);
 
-  // Fetch available writeuptypes on mount
-  useEffect(() => {
-    const fetchWriteuptypes = async () => {
-      try {
-        const response = await fetch('/api/writeuptypes');
-        const result = await response.json();
-        if (result.success && result.writeuptypes) {
-          setWriteuptypes(result.writeuptypes);
-        }
-      } catch (err) {
-        console.error('Failed to fetch writeuptypes:', err);
-      }
-    };
-    if (!writeupId) {
-      fetchWriteuptypes();
-    }
-  }, [writeupId]);
+  // Use shared writeuptypes hook (skip for editing existing writeups)
+  const {
+    writeuptypes,
+    selectedWriteuptypeId,
+    setSelectedWriteuptypeId
+  } = useWriteuptypes({ skip: !!writeupId });
 
   // Initialize Tiptap editor
   const editor = useEditor({
@@ -214,30 +203,29 @@ const InlineWriteupEditor = ({
       const content = editorMode === 'rich' ? editor.getHTML() : htmlContent;
       await saveDraft(content);
 
-      // Get writeuptype ID from selection
-      const writeuptypeResponse = await fetch(`/api/nodes/lookup/writeuptype/${encodeURIComponent(selectedWriteuptype)}`);
-      const writeuptypeResult = await writeuptypeResponse.json();
-
-      if (!writeuptypeResult || !writeuptypeResult.node_id) {
-        setErrorMessage('Could not find writeuptype');
+      // Validate writeuptype selection
+      if (!selectedWriteuptypeId) {
+        setErrorMessage('Please select a writeup type');
         setPublishing(false);
         return;
       }
 
-      const writeuptypeId = writeuptypeResult.node_id;
-
-      // Publish draft
-      const response = await fetch(`/api/drafts/${draftId}/publish`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          parent_e2node: e2nodeId,
-          wrtype_writeuptype: writeuptypeId,
-          feedback_policy_id: 0,
-          notnew: hideFromNewWriteups ? 1 : 0
-        })
-      });
+      // Publish draft (using node_id from dropdown)
+      const response = await fetchWithErrorReporting(
+        `/api/drafts/${draftId}/publish`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            parent_e2node: e2nodeId,
+            wrtype_writeuptype: selectedWriteuptypeId,
+            feedback_policy_id: 0,
+            notnew: hideFromNewWriteups ? 1 : 0
+          })
+        },
+        'publishing draft'
+      );
 
       const result = await response.json();
       if (result.success) {
@@ -556,8 +544,8 @@ const InlineWriteupEditor = ({
           }}>
             <span style={{ fontSize: '13px', color: '#666' }}>Publish as:</span>
             <select
-              value={selectedWriteuptype}
-              onChange={(e) => setSelectedWriteuptype(e.target.value)}
+              value={selectedWriteuptypeId || ''}
+              onChange={(e) => setSelectedWriteuptypeId(Number(e.target.value))}
               disabled={!draftId || publishing || saveStatus === 'saving'}
               style={{
                 padding: '6px 10px',
@@ -571,10 +559,10 @@ const InlineWriteupEditor = ({
             >
               {writeuptypes.length > 0 ? (
                 writeuptypes.map(wt => (
-                  <option key={wt.node_id} value={wt.title}>{wt.title}</option>
+                  <option key={wt.node_id} value={wt.node_id}>{wt.title}</option>
                 ))
               ) : (
-                <option value="thing">thing</option>
+                <option value="">Loading...</option>
               )}
             </select>
             <label style={{
