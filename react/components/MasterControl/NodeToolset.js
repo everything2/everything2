@@ -257,7 +257,7 @@ const NodeToolset = ({
       {/* Display node link when not on display page */}
       {currentDisplay !== 'display' && (
         <div style={{ marginBottom: '10px' }}>
-          <LinkNode nodeId={nodeId} title={nodeTitle} />
+          <LinkNode id={nodeId} display={nodeTitle} />
         </div>
       )}
 
@@ -301,8 +301,7 @@ const NodeToolset = ({
               }}
             >
               <LinkNode
-                nodeId={nodeId}
-                title={nodeTitle}
+                id={nodeId}
                 display={
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                     <FaEdit size={20} />
@@ -327,8 +326,7 @@ const NodeToolset = ({
             }}
           >
             <LinkNode
-              nodeId={nodeId}
-              title={nodeTitle}
+              id={nodeId}
               display={
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                   <FaEye size={20} />
@@ -354,8 +352,7 @@ const NodeToolset = ({
             }}
           >
             <LinkNode
-              nodeId={nodeId}
-              title={nodeTitle}
+              id={nodeId}
               display={
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                   <FaBook size={20} />
@@ -379,8 +376,7 @@ const NodeToolset = ({
             }}
           >
             <LinkNode
-              nodeId={nodeId}
-              title={nodeTitle}
+              id={nodeId}
               display={
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                   <FaBook size={20} />

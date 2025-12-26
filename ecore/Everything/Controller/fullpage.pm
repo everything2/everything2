@@ -40,14 +40,36 @@ sub display
         $REQUEST  # Pass full REQUEST object for buildReactData
       );
 
+      # Build nodeletorder for React sidebar (like Controller.pm layout does)
+      my $user_nodelets;
+      if ($REQUEST->user->is_guest) {
+        # Load guest nodelets from config
+        my $guest_nodelet_ids = $self->CONF->guest_nodelets || [];
+        $user_nodelets = [];
+        foreach my $nid (@$guest_nodelet_ids) {
+          my $nodelet = $self->APP->node_by_id($nid);
+          push @$user_nodelets, $nodelet if $nodelet;
+        }
+      } else {
+        $user_nodelets = $REQUEST->user->nodelets || [];
+      }
+
+      my @nodeletorder = ();
+      foreach my $nodelet (@$user_nodelets) {
+        my $title = lc($nodelet->title);
+        $title =~ s/ /_/g;
+        push @nodeletorder, $title;
+      }
+      $e2->{nodeletorder} = \@nodeletorder;
+
       # Add e2 data to controller output for template
       $controller_output->{e2} = $e2;
     }
 
     my $layout;
     if ($is_react_page) {
-      # Use fullpage React template (no sidebar/header/footer)
-      $layout = 'react_fullpage';
+      # Check if Page class specifies a custom template, otherwise use generic react_fullpage
+      $layout = $page_class->template || 'react_fullpage';
       # For React pages, render template directly without E2 layout wrapper
       $self->MASON->set_global('$REQUEST',$REQUEST);
       my $html = $self->MASON->run("/pages/$layout", {

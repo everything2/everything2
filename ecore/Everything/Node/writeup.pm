@@ -281,6 +281,13 @@ sub metadescription
     $doctext .= '...';
   }
 
+  # Re-encode for HTML attribute context
+  # Must escape these characters for safe use in content="..." attributes
+  $doctext =~ s/&/&amp;/g;   # Ampersand first (before adding new entities)
+  $doctext =~ s/"/&quot;/g;  # Double quotes break content="..."
+  $doctext =~ s/</&lt;/g;    # Less-than could start tags
+  $doctext =~ s/>/&gt;/g;    # Greater-than for completeness
+
   return $doctext;
 }
 

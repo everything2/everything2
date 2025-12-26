@@ -18,17 +18,19 @@ jest.mock('@tiptap/react', () => ({
   )
 }))
 
-// Mock Tiptap extensions
-jest.mock('@tiptap/starter-kit', () => jest.fn())
-jest.mock('@tiptap/extension-underline', () => jest.fn())
-jest.mock('@tiptap/extension-subscript', () => jest.fn())
-jest.mock('@tiptap/extension-superscript', () => jest.fn())
-jest.mock('@tiptap/extension-table', () => ({
-  configure: jest.fn(() => ({}))
+// Mock shared editor utilities
+jest.mock('./Editor/useE2Editor', () => ({
+  getE2EditorExtensions: jest.fn(() => []),
+  useEditorMode: jest.fn(() => ({
+    editorMode: 'rich',
+    setEditorMode: jest.fn(),
+    htmlContent: '',
+    setHtmlContent: jest.fn(),
+    handleHtmlChange: jest.fn(),
+    toggleMode: jest.fn(),
+    getCurrentContent: jest.fn(() => '')
+  }))
 }))
-jest.mock('@tiptap/extension-table-row', () => jest.fn())
-jest.mock('@tiptap/extension-table-cell', () => jest.fn())
-jest.mock('@tiptap/extension-table-header', () => jest.fn())
 
 // Mock custom extensions
 jest.mock('./Editor/E2LinkExtension', () => ({
@@ -36,13 +38,10 @@ jest.mock('./Editor/E2LinkExtension', () => ({
   convertToE2Syntax: jest.fn((html) => html)
 }))
 
-jest.mock('./Editor/E2TextAlignExtension', () => ({
-  E2TextAlign: {}
-}))
-
 jest.mock('./Editor/RawBracketExtension', () => ({
   RawBracket: {},
-  convertRawBracketsToEntities: jest.fn((html) => html)
+  convertRawBracketsToEntities: jest.fn((html) => html),
+  convertEntitiesToRawBrackets: jest.fn((html) => html)
 }))
 
 // Mock MenuBar

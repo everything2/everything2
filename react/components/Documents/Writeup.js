@@ -19,8 +19,10 @@ import { FaTools, FaEdit } from 'react-icons/fa'
 /**
  * SoftlinksTable - Displays softlinks from parent e2node in a 4-column table
  * Matches legacy softlink htmlcode behavior
+ * - Nodeshell links (unfilled e2nodes) shown with 'nodeshell' class for logged-in users
+ *   (CSS makes them red to indicate they need content)
  */
-const SoftlinksTable = ({ softlinks }) => {
+const SoftlinksTable = ({ softlinks, isLoggedIn }) => {
   const numCols = 4
 
   // Split softlinks into rows of 4
@@ -35,15 +37,22 @@ const SoftlinksTable = ({ softlinks }) => {
         <tbody>
           {rows.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              {row.map((link) => (
-                <td key={link.node_id}>
-                  <LinkNode
-                    nodeId={link.node_id}
-                    title={link.title}
-                    type={link.type || 'e2node'}
-                  />
-                </td>
-              ))}
+              {row.map((link) => {
+                // Apply nodeshell class for unfilled nodes when user is logged in
+                // Guests don't see the nodeshell styling (they shouldn't know about empty nodes)
+                const isNodeshell = isLoggedIn && link.filled === false
+                const className = isNodeshell ? 'nodeshell' : undefined
+
+                return (
+                  <td key={link.node_id} className={className}>
+                    <LinkNode
+                      nodeId={link.node_id}
+                      title={link.title}
+                      type={link.type || 'e2node'}
+                    />
+                  </td>
+                )
+              })}
               {/* Fill remaining cells in last row */}
               {row.length < numCols &&
                 Array.from({ length: numCols - row.length }).map((_, i) => (
@@ -66,9 +75,15 @@ const Writeup = ({ data }) => {
   const startInEditMode = urlParams.get('edit') === '1'
   const [isEditing, setIsEditing] = useState(startInEditMode)
 
+  // Track current doctext for live updates after editing
+  const [currentDoctext, setCurrentDoctext] = useState(null)
+
   if (!data) return <div>Loading...</div>
 
   const { writeup, user, parent_e2node } = data
+
+  // Use currentDoctext if set (after editing), otherwise use original
+  const displayDoctext = currentDoctext !== null ? currentDoctext : writeup?.doctext
 
   if (!writeup) {
     return <div className="error">Writeup not found</div>
@@ -134,20 +149,44 @@ const Writeup = ({ data }) => {
         <InlineWriteupEditor
           e2nodeId={parent_e2node?.node_id}
           e2nodeTitle={parent_e2node?.title}
-          initialContent={writeup.doctext || ''}
+          initialContent={displayDoctext || ''}
           writeupId={writeup.node_id}
           writeupAuthor={authorName}
           isOwnWriteup={isOwnWriteup}
-          onSave={() => setIsEditing(false)}
-          onCancel={() => setIsEditing(false)}
+          onSave={(newContent) => {
+            // Update the displayed content and exit edit mode
+            if (newContent !== undefined) {
+              setCurrentDoctext(newContent)
+            }
+            setIsEditing(false)
+            // Remove ?edit=1 from URL if present
+            if (window.history.replaceState && urlParams.get('edit') === '1') {
+              const url = new URL(window.location)
+              url.searchParams.delete('edit')
+              window.history.replaceState({}, '', url)
+            }
+          }}
+          onCancel={() => {
+            setIsEditing(false)
+            // Remove ?edit=1 from URL if present
+            if (window.history.replaceState && urlParams.get('edit') === '1') {
+              const url = new URL(window.location)
+              url.searchParams.delete('edit')
+              window.history.replaceState({}, '', url)
+            }
+          }}
         />
       ) : (
-        <WriteupDisplay writeup={writeup} user={user} onEdit={() => setIsEditing(true)} />
+        <WriteupDisplay
+          writeup={{ ...writeup, doctext: displayDoctext }}
+          user={user}
+          onEdit={() => setIsEditing(true)}
+        />
       )}
 
       {/* Softlinks from parent e2node */}
       {softlinks.length > 0 && (
-        <SoftlinksTable softlinks={softlinks} />
+        <SoftlinksTable softlinks={softlinks} isLoggedIn={!isGuest} />
       )}
 
       {/* E2 Node Tools Modal (operates on parent e2node) */}

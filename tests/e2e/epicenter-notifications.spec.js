@@ -200,7 +200,7 @@ test.describe('Epicenter Notifications', () => {
       // Login as e2e_user and navigate to a React page - should NOT see GP notification
       await loginAsE2EUser(page)
       await page.goto('/title/Settings')
-      await expect(page.locator('h1:has-text("Settings")')).toBeVisible()
+      await expect(page.locator('#e2-react-page-root h1:has-text("Settings")')).toBeVisible()
 
       const epicenter = page.locator('#epicenter')
       await expect(epicenter).toBeVisible()
@@ -259,7 +259,7 @@ test.describe('Epicenter Notifications', () => {
       // Login as e2e_user and navigate to a React page - should NOT see experience notification
       await loginAsE2EUser(page)
       await page.goto('/title/Settings')
-      await expect(page.locator('h1:has-text("Settings")')).toBeVisible()
+      await expect(page.locator('#e2-react-page-root h1:has-text("Settings")')).toBeVisible()
 
       const epicenter = page.locator('#epicenter')
       await expect(epicenter).toBeVisible()

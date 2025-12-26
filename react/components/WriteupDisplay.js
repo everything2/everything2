@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { FaCaretUp, FaCaretDown, FaEnvelope, FaStar, FaBookmark, FaFacebookSquare, FaTwitterSquare, FaRedditSquare } from 'react-icons/fa'
 import ParseLinks from './ParseLinks'
 import LinkNode from './LinkNode'
@@ -6,6 +6,121 @@ import AdminModal from './AdminModal'
 import MessageModal from './MessageModal'
 import ConfirmModal from './ConfirmModal'
 import { renderE2Content } from './Editor/E2HtmlSanitizer'
+
+/**
+ * CoolTooltip - Shows who C!ed a writeup on hover or click
+ * Displays immediately on hover (no browser delay) and can be clicked to toggle
+ */
+const CoolTooltip = ({ cools, coolCount, nodeId }) => {
+  const [showTooltip, setShowTooltip] = useState(false)
+  const [isClickLocked, setIsClickLocked] = useState(false)
+  const tooltipRef = useRef(null)
+  const triggerRef = useRef(null)
+
+  // Close tooltip when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isClickLocked && tooltipRef.current && !tooltipRef.current.contains(event.target) &&
+          triggerRef.current && !triggerRef.current.contains(event.target)) {
+        setShowTooltip(false)
+        setIsClickLocked(false)
+      }
+    }
+
+    if (isClickLocked) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isClickLocked])
+
+  const handleClick = (e) => {
+    e.preventDefault()
+    if (isClickLocked) {
+      // Already locked open - close it
+      setShowTooltip(false)
+      setIsClickLocked(false)
+    } else {
+      // Lock it open
+      setShowTooltip(true)
+      setIsClickLocked(true)
+    }
+  }
+
+  const handleMouseEnter = () => {
+    if (!isClickLocked) {
+      setShowTooltip(true)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (!isClickLocked) {
+      setShowTooltip(false)
+    }
+  }
+
+  return (
+    <span
+      ref={triggerRef}
+      id={`cools${nodeId}`}
+      style={{
+        cursor: 'pointer',
+        borderBottom: '1px dotted currentColor',
+        position: 'relative',
+        display: 'inline-block'
+      }}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {coolCount} <b>C!</b>{coolCount === 1 ? '' : 's'}
+
+      {/* Tooltip popup - uses Kernel Blue theme colors */}
+      {showTooltip && cools && cools.length > 0 && (
+        <span
+          ref={tooltipRef}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginBottom: '6px',
+            backgroundColor: '#f8f9fa',
+            color: '#333',
+            padding: '6px 10px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            whiteSpace: 'nowrap',
+            zIndex: 1000,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            border: '1px solid #507898',
+            maxWidth: '300px',
+            textAlign: 'center'
+          }}
+        >
+          {/* Arrow pointing down */}
+          <span
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              borderLeft: '6px solid transparent',
+              borderRight: '6px solid transparent',
+              borderTop: '6px solid #507898'
+            }}
+          />
+          {cools.map((c, i) => (
+            <span key={c.node_id || i}>
+              {i > 0 && ', '}
+              <LinkNode type="user" title={c.title} style={{ color: '#507898' }} />
+            </span>
+          ))}
+        </span>
+      )}
+    </span>
+  )
+}
 
 /**
  * WriteupDisplay - Renders a full writeup with E2 HTML sanitization
@@ -301,18 +416,9 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                 {/* C! display and button - matches legacy writeupcools htmlcode */}
                 <td className="wu_cfull" style={{ verticalAlign: 'middle' }}>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                    {/* Show C! count with tooltip showing coolers on hover */}
+                    {/* Show C! count with tooltip showing coolers on hover/click */}
                     {Boolean(coolCount > 0) && (
-                      <span
-                        id={`cools${node_id}`}
-                        title={coolState.cools.map(c => c.title).join(', ')}
-                        style={{
-                          cursor: 'help',
-                          borderBottom: '1px dotted currentColor'
-                        }}
-                      >
-                        {coolCount} <b>C!</b>{coolCount === 1 ? '' : 's'}
-                      </span>
+                      <CoolTooltip cools={coolState.cools} coolCount={coolCount} nodeId={node_id} />
                     )}
                     {/* C? button for eligible users who haven't cooled yet */}
                     {canCool && !coolState.hasCooled && (
@@ -444,7 +550,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
           onClose={() => setMessageModalOpen(false)}
           replyTo={{ author_user: { title: author.title, type: 'user' } }}
           onSend={async (recipient, message) => {
-            const response = await fetch('/api/messages', {
+            const response = await fetch('/api/messages/create', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ for: recipient, message })

@@ -1,62 +1,18 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import Subscript from '@tiptap/extension-subscript';
-import Superscript from '@tiptap/extension-superscript';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import { E2Link, convertToE2Syntax } from '../Editor/E2LinkExtension';
-import { E2TextAlign } from '../Editor/E2TextAlignExtension';
-import { RawBracket, convertRawBracketsToEntities } from '../Editor/RawBracketExtension';
+import { getE2EditorExtensions } from '../Editor/useE2Editor';
+import { convertToE2Syntax } from '../Editor/E2LinkExtension';
+import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension';
 import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
 import PublishModal from './PublishModal';
 import '../Editor/E2Editor.css';
 
-// Inline styles for animations
+// Inline styles for spinner animation (mode toggle styles now in E2Editor.css)
 const editorStyles = `
   @keyframes e2-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
-
-  .e2-mode-toggle {
-    display: flex;
-    align-items: center;
-    background: #e8e8e8;
-    border-radius: 20px;
-    padding: 3px;
-    position: relative;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .e2-mode-toggle-option {
-    padding: 5px 14px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #666;
-    border-radius: 17px;
-    transition: all 0.2s ease;
-    z-index: 1;
-    position: relative;
-  }
-
-  .e2-mode-toggle-option.active {
-    color: #fff;
-  }
-
-  .e2-mode-toggle-slider {
-    position: absolute;
-    top: 3px;
-    height: calc(100% - 6px);
-    background: #4060b0;
-    border-radius: 17px;
-    transition: all 0.2s ease;
-    z-index: 0;
   }
 `;
 
@@ -340,24 +296,10 @@ const EditorBeta = ({ data }) => {
   const hasEditedRef = useRef(false);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [1, 2, 3, 4, 5, 6] }
-      }),
-      Underline,
-      Subscript,
-      Superscript,
-      Table.configure({ resizable: false }),
-      TableRow,
-      TableCell,
-      TableHeader,
-      E2TextAlign.configure({
-        types: ['heading', 'paragraph'],
-        alignments: ['left', 'center', 'right']
-      }),
-      E2Link,
-      RawBracket
-    ],
+    extensions: getE2EditorExtensions({
+      starterKit: { heading: { levels: [1, 2, 3, 4, 5, 6] } },
+      table: { resizable: false }
+    }),
     content: defaultContent,
     editorProps: {
       attributes: {
@@ -409,8 +351,9 @@ const EditorBeta = ({ data }) => {
       }
     } else {
       // Switching to rich mode - load HTML content into editor
+      // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
       if (editor) {
-        editor.commands.setContent(rawHtmlContent);
+        editor.commands.setContent(convertEntitiesToRawBrackets(rawHtmlContent));
       }
     }
 
@@ -451,9 +394,8 @@ const EditorBeta = ({ data }) => {
 
     // Set up autosave every 60 seconds
     autosaveTimerRef.current = setInterval(async () => {
-      const currentContent = editMode === 'html'
-        ? rawHtmlContent
-        : convertToE2Syntax(editor.getHTML());
+      // Use getCurrentContent to ensure raw brackets are converted to entities
+      const currentContent = getCurrentContent();
 
       // Only autosave if content has changed from last saved version
       if (currentContent !== lastSavedContentRef.current && selectedDraft) {
@@ -499,7 +441,7 @@ const EditorBeta = ({ data }) => {
         clearInterval(autosaveTimerRef.current);
       }
     };
-  }, [editor, selectedDraft, showPreview, renderPreview, editMode, rawHtmlContent]);
+  }, [editor, selectedDraft, showPreview, renderPreview, getCurrentContent]);
 
   // Copy HTML to clipboard
   const copyHtml = useCallback(() => {
@@ -518,8 +460,9 @@ const EditorBeta = ({ data }) => {
       const content = draft.doctext || '<p></p>';
 
       // Load into both rich editor and raw HTML state
+      // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
       if (editor) {
-        editor.commands.setContent(content);
+        editor.commands.setContent(convertEntitiesToRawBrackets(content));
       }
       setRawHtmlContent(content);
 

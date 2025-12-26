@@ -95,15 +95,19 @@ describe('WriteupDisplay Component', () => {
 
       const { container } = render(<WriteupDisplay writeup={writeupWithCools} user={mockUser} />)
 
-      // Cooler names and count should be in the tooltip
+      // Cools span should be present with count
       const coolsSpan = container.querySelector('#cools123')
       expect(coolsSpan).toBeInTheDocument()
-      expect(coolsSpan.title).toBe('cooler1, cooler2')
 
       // Check for C! text (split across elements)
       expect(screen.getByText('C!')).toBeInTheDocument()
       expect(coolsSpan.textContent).toContain('2')
       expect(coolsSpan.textContent).toContain('C!')
+
+      // Tooltip should appear on hover (using CoolTooltip component)
+      fireEvent.mouseEnter(coolsSpan)
+      expect(screen.getByText('cooler1')).toBeInTheDocument()
+      expect(screen.getByText('cooler2')).toBeInTheDocument()
     })
 
     it('handles missing optional fields', () => {

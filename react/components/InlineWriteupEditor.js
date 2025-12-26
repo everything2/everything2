@@ -1,16 +1,9 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import Subscript from '@tiptap/extension-subscript';
-import Superscript from '@tiptap/extension-superscript';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import { E2Link, convertToE2Syntax } from './Editor/E2LinkExtension';
-import { E2TextAlign } from './Editor/E2TextAlignExtension';
-import { RawBracket, convertRawBracketsToEntities } from './Editor/RawBracketExtension';
+import { getE2EditorExtensions } from './Editor/useE2Editor';
+import { convertToE2Syntax } from './Editor/E2LinkExtension';
+import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Editor/RawBracketExtension';
+import { renderE2Content } from './Editor/E2HtmlSanitizer';
 import MenuBar from './Editor/MenuBar';
 import { useWriteuptypes } from '../hooks/usePublishDraft';
 import { fetchWithErrorReporting } from '../utils/reportClientError';
@@ -69,6 +62,8 @@ const InlineWriteupEditor = ({
   const [publishing, setPublishing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [hideFromNewWriteups, setHideFromNewWriteups] = useState(false);
+  const [showPreview, setShowPreview] = useState(true); // Live preview toggle
+  const [previewTrigger, setPreviewTrigger] = useState(0); // Trigger preview updates
   const autosaveTimerRef = useRef(null);
   const firstEditRef = useRef(false);
 
@@ -80,24 +75,16 @@ const InlineWriteupEditor = ({
   } = useWriteuptypes({ skip: !!writeupId });
 
   // Initialize Tiptap editor
+  // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      Subscript,
-      Superscript,
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableCell,
-      TableHeader,
-      E2Link,
-      E2TextAlign,
-      RawBracket
-    ],
-    content: initialContent,
+    extensions: getE2EditorExtensions(),
+    content: convertEntitiesToRawBrackets(initialContent),
     onUpdate: ({ editor: updatedEditor }) => {
       // Mark as unsaved
       setSaveStatus('unsaved');
+
+      // Trigger preview update
+      setPreviewTrigger(prev => prev + 1);
 
       // Skip autosave when editing existing writeup - only manual Update
       if (writeupId) return;
@@ -131,6 +118,9 @@ const InlineWriteupEditor = ({
 
   // Create a new draft
   const createDraft = async (content) => {
+    // Convert raw bracket spans to HTML entities before saving
+    const processedContent = convertRawBracketsToEntities(content);
+
     try {
       const response = await fetch('/api/drafts', {
         method: 'POST',
@@ -138,7 +128,7 @@ const InlineWriteupEditor = ({
         credentials: 'include',
         body: JSON.stringify({
           title: e2nodeTitle,
-          doctext: content
+          doctext: processedContent
         })
       });
 
@@ -160,6 +150,10 @@ const InlineWriteupEditor = ({
 
     setSaveStatus('saving');
 
+    // Convert raw bracket spans to HTML entities before saving
+    // This ensures [text] in the editor saves as &#91;text&#93; in the database
+    const processedContent = convertRawBracketsToEntities(content);
+
     try {
       const endpoint = writeupId
         ? `/api/writeups/${writeupId}/action/update`
@@ -170,7 +164,7 @@ const InlineWriteupEditor = ({
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          doctext: content
+          doctext: processedContent
         })
       });
 
@@ -254,7 +248,8 @@ const InlineWriteupEditor = ({
       setHtmlContent(cleanedHtml);
     } else {
       // Switch to Rich mode - update editor with HTML content
-      editor.commands.setContent(htmlContent);
+      // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
+      editor.commands.setContent(convertEntitiesToRawBrackets(htmlContent));
     }
 
     setEditorMode(newMode);
@@ -280,6 +275,7 @@ const InlineWriteupEditor = ({
     const newHtml = e.target.value;
     setHtmlContent(newHtml);
     setSaveStatus('unsaved');
+    setPreviewTrigger(prev => prev + 1);
 
     // Skip autosave when editing existing writeup - only manual Update
     if (writeupId) return;
@@ -366,37 +362,18 @@ const InlineWriteupEditor = ({
             </span>
           )}
         </div>
-        {/* Mode toggle */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          background: '#e8e8e8',
-          borderRadius: '20px',
-          padding: '3px',
-          cursor: 'pointer',
-          userSelect: 'none'
-        }} onClick={handleModeToggle}
-           title={editorMode === 'rich' ? 'Switch to raw HTML editing' : 'Switch to rich text editing'}>
-          <div style={{
-            padding: '5px 14px',
-            fontSize: '12px',
-            fontWeight: '500',
-            color: editorMode === 'rich' ? '#fff' : '#666',
-            backgroundColor: editorMode === 'rich' ? '#4060b0' : 'transparent',
-            borderRadius: '17px',
-            transition: 'all 0.2s ease'
-          }}>
+        {/* Mode toggle - uses shared CSS from E2Editor.css */}
+        <div
+          className="e2-mode-toggle"
+          onClick={handleModeToggle}
+          title={editorMode === 'rich' ? 'Switch to raw HTML editing' : 'Switch to rich text editing'}
+        >
+          <div className={`e2-mode-toggle-option ${editorMode === 'rich' ? 'active' : ''}`}
+               style={{ backgroundColor: editorMode === 'rich' ? '#4060b0' : 'transparent' }}>
             Rich
           </div>
-          <div style={{
-            padding: '5px 14px',
-            fontSize: '12px',
-            fontWeight: '500',
-            color: editorMode === 'html' ? '#fff' : '#666',
-            backgroundColor: editorMode === 'html' ? '#4060b0' : 'transparent',
-            borderRadius: '17px',
-            transition: 'all 0.2s ease'
-          }}>
+          <div className={`e2-mode-toggle-option ${editorMode === 'html' ? 'active' : ''}`}
+               style={{ backgroundColor: editorMode === 'html' ? '#4060b0' : 'transparent' }}>
             HTML
           </div>
         </div>
@@ -423,7 +400,13 @@ const InlineWriteupEditor = ({
           <MenuBar editor={editor} />
           <div
             style={{ minHeight: '200px', padding: '12px', cursor: 'text' }}
-            onClick={() => editor?.commands.focus()}
+            onClick={(e) => {
+              // Only focus editor when clicking directly on the padding area, not on text
+              // This prevents interfering with text selection inside the editor
+              if (e.target === e.currentTarget) {
+                editor?.commands.focus();
+              }
+            }}
           >
             <EditorContent editor={editor} />
           </div>
@@ -506,13 +489,16 @@ const InlineWriteupEditor = ({
             {writeupId && (
               <button
                 onClick={async () => {
-                  // Save any pending changes before closing
-                  if (saveStatus === 'unsaved') {
-                    const content = editorMode === 'rich' ? editor.getHTML() : htmlContent;
-                    await saveDraft(content);
-                  }
-                  onSave();
-                  window.location.reload();
+                  // Get current content
+                  const content = editorMode === 'rich'
+                    ? convertToE2Syntax(convertRawBracketsToEntities(editor.getHTML()))
+                    : htmlContent;
+
+                  // Save the content
+                  await saveDraft(content);
+
+                  // Call onSave with the new content so parent can update display
+                  onSave(content);
                 }}
                 disabled={saveStatus === 'saving'}
                 style={{
@@ -599,7 +585,100 @@ const InlineWriteupEditor = ({
           </div>
         )}
       </div>
+
+      {/* Live Preview Section */}
+      <div style={{ marginTop: '16px', borderTop: '1px solid #ddd', paddingTop: '12px' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '8px'
+        }}>
+          <h4 style={{ margin: 0, fontSize: '14px', color: '#666', fontWeight: '500' }}>
+            Preview
+          </h4>
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            style={{
+              background: 'none',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              padding: '2px 8px',
+              fontSize: '11px',
+              color: '#666',
+              cursor: 'pointer'
+            }}
+          >
+            {showPreview ? 'Hide' : 'Show'}
+          </button>
+        </div>
+        {showPreview && (
+          <PreviewContent
+            editor={editor}
+            editorMode={editorMode}
+            htmlContent={htmlContent}
+            previewTrigger={previewTrigger}
+          />
+        )}
+      </div>
     </div>
+  );
+};
+
+/**
+ * PreviewContent - Renders live preview of editor content
+ * Updates on each editor change via previewTrigger
+ */
+const PreviewContent = ({ editor, editorMode, htmlContent, previewTrigger }) => {
+  // Get current content from editor or HTML textarea
+  // previewTrigger forces re-computation when editor content changes
+  const currentContent = useMemo(() => {
+    if (editorMode === 'html') {
+      return htmlContent;
+    }
+    if (editor) {
+      const html = editor.getHTML();
+      const withEntities = convertRawBracketsToEntities(html);
+      return convertToE2Syntax(withEntities);
+    }
+    return '';
+  }, [editor, editorMode, htmlContent, previewTrigger]);
+
+  // Render through E2 sanitizer with link parsing
+  const renderedContent = useMemo(() => {
+    if (!currentContent) return '';
+    const { html } = renderE2Content(currentContent);
+    return html;
+  }, [currentContent]);
+
+  if (!currentContent) {
+    return (
+      <div style={{
+        padding: '20px',
+        backgroundColor: '#fff',
+        border: '1px solid #e0e0e0',
+        borderRadius: '4px',
+        color: '#999',
+        fontStyle: 'italic',
+        textAlign: 'center'
+      }}>
+        Start typing to see preview...
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="content"
+      style={{
+        padding: '12px',
+        backgroundColor: '#fff',
+        border: '1px solid #e0e0e0',
+        borderRadius: '4px',
+        lineHeight: '1.6'
+      }}
+      dangerouslySetInnerHTML={{ __html: renderedContent }}
+    />
   );
 };
 

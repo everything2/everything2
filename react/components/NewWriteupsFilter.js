@@ -18,8 +18,10 @@ const NewWriteupsFilter = ({ limit, newWriteupsChange, noJunk, noJunkChange, use
       fontSize: '12px'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <span style={{ color: '#495057' }}>Show:</span>
+        <label htmlFor="newwriteups-limit" style={{ color: '#495057' }}>Show:</label>
         <select
+          id="newwriteups-limit"
+          name="newwriteups-limit"
           value={limit}
           onChange={(event) => newWriteupsChange(event.target.value)}
           style={{
@@ -40,7 +42,7 @@ const NewWriteupsFilter = ({ limit, newWriteupsChange, noJunk, noJunkChange, use
       </div>
 
       {user.editor && (
-        <label style={{
+        <label htmlFor="newwriteups-nojunk" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
@@ -49,6 +51,8 @@ const NewWriteupsFilter = ({ limit, newWriteupsChange, noJunk, noJunkChange, use
         }}>
           <input
             type="checkbox"
+            id="newwriteups-nojunk"
+            name="newwriteups-nojunk"
             onChange={(event) => noJunkChange(event.target.checked)}
             defaultChecked={noJunk}
             style={{ cursor: 'pointer' }}

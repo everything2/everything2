@@ -70,17 +70,28 @@ test.describe('E2E Test Users', () => {
 
     await page.fill('#signin_user', 'e2e_admin')
     await page.fill('#signin_passwd', 'test123')
-    await page.click('input[type="submit"][value="Login"]')
-    await page.waitForLoadState('networkidle')
+
+    // Click and wait for JavaScript redirect (like the successful login tests)
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
+      page.click('input[type="submit"]')
+    ])
+
+    // Wait for React to render - epicenter nodelet is always visible for logged-in users
+    await page.waitForSelector('#epicenter', { timeout: 10000 })
 
     // Navigate to admin page (e.g., Master Control)
     await page.goto('/title/Master+Control')
+    await page.waitForLoadState('networkidle')
+
+    // Wait for React sidebar to render - need to wait for the #e2-react-root inside sidebar
+    await page.waitForSelector('#sidebar #e2-react-root', { timeout: 10000 })
 
     // Admin users should see Master Control nodelet
-    await expect(page.locator('#master_control')).toBeVisible()
+    await expect(page.locator('#master_control')).toBeVisible({ timeout: 10000 })
 
-    // Should see admin-specific features
-    await expect(page.locator('text=/Node Notes|User Search|Server Status/i')).toBeVisible()
+    // Should see admin-specific features (node notes section is always visible in Master Control)
+    await expect(page.locator('#nodenotes')).toBeVisible()
   })
 
   test('e2e_editor has editor privileges', async ({ page }) => {

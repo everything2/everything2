@@ -13,6 +13,7 @@
  */
 
 import DOMPurify from 'dompurify'
+import { parseLinksToHtml, escapeHtml as sharedEscapeHtml } from '../../utils/linkParser'
 
 // E2's approved HTML tags and their allowed attributes
 // Derived from the 'approved html tags' setting in the database
@@ -99,95 +100,22 @@ const DOMPURIFY_CONFIG = {
 /**
  * Parse E2 [link] syntax into HTML anchor tags
  *
- * Supports:
- * - [nodename] -> link to /title/nodename
- * - [nodename|display text] -> link to /title/nodename with custom display text
- * - [nodename[nodetype]] -> link to /nodetype/nodename (e.g., [jaybonci[user]] -> /user/jaybonci)
- * - [nodename [nodetype]] -> same as above, allows space before inner bracket
- * - [title[by username]] -> link to /user/username/writeups/title (writeup by specific author)
- * - [title[by username]|display] -> same with custom display text
- * - [<big>node</big>] -> HTML inside brackets is stripped for link, preserved for display
+ * Uses the shared linkParser utility for consistent behavior across the codebase.
+ * See react/utils/linkParser.js for full documentation of supported syntax.
  *
  * @param {string} text - Text containing E2 link syntax
  * @returns {string} - Text with links converted to anchor tags
  */
 export function parseE2Links(text) {
-  if (!text) return ''
-
-  // Helper to strip HTML tags from a string (for extracting link target)
-  const stripHtml = (str) => str.replace(/<[^>]*>/g, '')
-
-  // First pass: Handle [title[by username]] format (writeup by specific author)
-  // This creates links like /user/username/writeups/title
-  // Allows optional display text: [title[by username]|display text]
-  // Requires at least one non-whitespace character in both title and username
-  // Username must contain at least one non-whitespace char: \s*by\s+(\S[^\[\]]*?)\s*
-  let result = text.replace(
-    /\[([^\[\]|]+?)\s*\[\s*by\s+(\S[^\[\]]*?)\s*\](?:\|([^\[\]]+))?\]/gi,
-    (match, title, username, displayText) => {
-      const trimmedTitle = stripHtml(title).trim()
-      const trimmedUsername = stripHtml(username).trim()
-      if (!trimmedTitle || !trimmedUsername) return match
-
-      const encodedTitle = encodeURIComponent(trimmedTitle)
-      const encodedUsername = encodeURIComponent(trimmedUsername)
-      // For display, use HTML-containing title if no custom display text
-      const display = displayText ? displayText.trim() : title.trim()
-      // Use /user/username/writeups/title format
-      return `<a href="/user/${encodedUsername}/writeups/${encodedTitle}" class="e2-link">${escapeHtml(stripHtml(display))}</a>`
-    }
-  )
-
-  // Second pass: Handle [nodetitle[nodetype]] format (typed links)
-  // Allows optional spaces: [title[type]], [title [type]], [title[ type ]]
-  // Note: Does NOT match if inner content starts with "by " (that's handled by first pass)
-  result = result.replace(
-    /\[([^\[\]|]+?)\s*\[\s*([^\[\]]+?)\s*\]\]/g,
-    (match, title, nodetype) => {
-      const trimmedTitle = stripHtml(title).trim()
-      const trimmedType = stripHtml(nodetype).trim().toLowerCase()
-      if (!trimmedTitle || !trimmedType) return match
-
-      // Skip if this looks like a failed [title[by username]] pattern
-      if (/^by\s*$/i.test(trimmedType)) return match
-
-      const encodedTitle = encodeURIComponent(trimmedTitle)
-      // Use /nodetype/nodename format
-      return `<a href="/${trimmedType}/${encodedTitle}" class="e2-link">${escapeHtml(trimmedTitle)}</a>`
-    }
-  )
-
-  // Third pass: Handle [title] and [title|display] format (standard links)
-  // This handles HTML inside brackets: [<big>node</big>] -> link to "node" with "node" as display
-  // Don't match empty brackets or brackets with only whitespace/HTML
-  result = result.replace(
-    /\[([^\[\]|]+)(?:\|([^\[\]]+))?\]/g,
-    (match, title, displayText) => {
-      // Strip HTML to get the actual link target
-      const strippedTitle = stripHtml(title).trim()
-      if (!strippedTitle) return match // Don't convert empty links or HTML-only content
-
-      const display = displayText ? displayText.trim() : strippedTitle
-      const encodedTitle = encodeURIComponent(strippedTitle)
-      // Use /title/ URL format which is the standard E2 link format
-      return `<a href="/title/${encodedTitle}" class="e2-link">${escapeHtml(stripHtml(display))}</a>`
-    }
-  )
-
-  return result
+  return parseLinksToHtml(text)
 }
 
 /**
  * Escape HTML entities in text
+ * Re-exported from shared linkParser utility for backwards compatibility
  */
 export function escapeHtml(text) {
-  if (!text) return ''
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
+  return sharedEscapeHtml(text)
 }
 
 /**
@@ -277,6 +205,11 @@ function convertH1ToH2(html) {
     .replace(/<\/h1>/gi, '</h2>')
 }
 
+// Placeholders for raw bracket entities during sanitization
+// These must not appear in normal content and survive DOMPurify
+const RAW_LEFT_BRACKET_PLACEHOLDER = '\uE000E2RAWLBRACKET\uE001'
+const RAW_RIGHT_BRACKET_PLACEHOLDER = '\uE000E2RAWRBRACKET\uE001'
+
 /**
  * Sanitize HTML using DOMPurify with E2's approved tags configuration
  *
@@ -296,6 +229,13 @@ export function sanitizeHtml(html, options = {}) {
 
   // Convert h1 to h2 for proper heading hierarchy (page title is the only h1)
   let processedHtml = convertH1ToH2(html)
+
+  // Protect raw bracket entities from being decoded by DOMPurify
+  // &#91; and &#93; are used for literal brackets that shouldn't become E2 links
+  // DOMPurify decodes entities when parsing HTML, so we replace them with placeholders
+  processedHtml = processedHtml
+    .replace(/&#91;/g, RAW_LEFT_BRACKET_PLACEHOLDER)
+    .replace(/&#93;/g, RAW_RIGHT_BRACKET_PLACEHOLDER)
 
   // Set up hooks to track removed elements if requested
   if (reportIssues) {
@@ -335,6 +275,12 @@ export function sanitizeHtml(html, options = {}) {
   if (parseLinks) {
     sanitized = parseE2Links(sanitized)
   }
+
+  // Restore raw bracket entities after link parsing
+  // These should now render as literal [ and ] characters
+  sanitized = sanitized
+    .replace(new RegExp(RAW_LEFT_BRACKET_PLACEHOLDER, 'g'), '[')
+    .replace(new RegExp(RAW_RIGHT_BRACKET_PLACEHOLDER, 'g'), ']')
 
   return { html: sanitized, issues }
 }

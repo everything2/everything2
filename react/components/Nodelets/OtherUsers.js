@@ -312,7 +312,7 @@ const OtherUsers = (props) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {!!canCloak && (
-              <label style={{
+              <label htmlFor="otherusers-cloaked" style={{
                 display: 'flex',
                 alignItems: 'center',
                 fontSize: '11px',
@@ -327,6 +327,8 @@ const OtherUsers = (props) => {
               }}>
                 <input
                   type="checkbox"
+                  id="otherusers-cloaked"
+                  name="otherusers-cloaked"
                   checked={isCloaked}
                   onChange={handleToggleCloak}
                   disabled={isTogglingCloak}
@@ -376,6 +378,8 @@ const OtherUsers = (props) => {
           ) : (
             <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
               <select
+                id="otherusers-room-select"
+                name="otherusers-room-select"
                 value={selectedRoom !== null ? selectedRoom : currentRoomId}
                 onChange={(e) => setSelectedRoom(parseInt(e.target.value))}
                 disabled={isChangingRoom}
@@ -474,7 +478,7 @@ const OtherUsers = (props) => {
 
           <form onSubmit={handleCreateRoom}>
             <div style={{ marginBottom: '16px' }}>
-              <label style={{
+              <label htmlFor="otherusers-new-room-title" style={{
                 display: 'block',
                 marginBottom: '6px',
                 fontSize: '13px',
@@ -485,6 +489,8 @@ const OtherUsers = (props) => {
               </label>
               <input
                 type="text"
+                id="otherusers-new-room-title"
+                name="otherusers-new-room-title"
                 value={newRoomTitle}
                 onChange={(e) => setNewRoomTitle(e.target.value)}
                 maxLength={80}
@@ -505,7 +511,7 @@ const OtherUsers = (props) => {
             </div>
 
             <div style={{ marginBottom: '20px' }}>
-              <label style={{
+              <label htmlFor="otherusers-new-room-desc" style={{
                 display: 'block',
                 marginBottom: '6px',
                 fontSize: '13px',
@@ -515,6 +521,8 @@ const OtherUsers = (props) => {
                 Description
               </label>
               <textarea
+                id="otherusers-new-room-desc"
+                name="otherusers-new-room-desc"
                 value={newRoomDescription}
                 onChange={(e) => setNewRoomDescription(e.target.value)}
                 rows={4}

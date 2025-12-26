@@ -940,4 +940,176 @@ sub cleanup_test_nodes {
     cleanup_test_nodes( $draft_id, $e2node_id );
 }
 
+# Test 20: Published writeup title follows "e2node (writeuptype)" format
+{
+    # Create e2node
+    my $e2node_title = 'Writeup Title Format Test ' . time();
+    my $e2node_id =
+      $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+    ok( $e2node_id, 'Created test e2node for title format test' );
+
+    # Create a draft with a different title (should be overwritten)
+    $regular_request->set_postdata(
+        {
+            title   => 'Some Draft Title',
+            doctext => '<p>Testing that the writeup title is set correctly.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Publish the draft
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $publish_status, $publish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+
+    is( $publish_status, $api->HTTP_OK, 'publish_draft returns HTTP_OK' );
+    ok( $publish_response->{success}, 'publish_draft succeeds' );
+
+    # Verify the writeup title follows the correct format
+    my $writeup_node = $DB->getNodeById($draft_id);
+    my $expected_title = "$e2node_title (idea)";
+    is( $writeup_node->{title}, $expected_title,
+        'Writeup title follows "e2node (writeuptype)" format' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# Test 21: Published writeup appears as user's most recent writeup
+{
+    # Create e2node
+    my $e2node_title = 'Last Writeup Test ' . time();
+    my $e2node_id =
+      $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+    ok( $e2node_id, 'Created test e2node for last writeup test' );
+
+    # Create and publish a draft
+    $regular_request->set_postdata(
+        {
+            title   => $e2node_title,
+            doctext => '<p>This should become the user last writeup.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $publish_status, $publish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+
+    is( $publish_status, $api->HTTP_OK, 'publish_draft returns HTTP_OK' );
+
+    # Query for the user's most recent writeup (same query used by lastnoded)
+    # This verifies the writeup is properly linked to the author and has a publishtime
+    my $last_writeup_id = $DB->sqlSelect(
+        'node_id',
+        'node JOIN writeup ON node_id=writeup_id',
+        "author_user=" . $regular_user->{node_id},
+        "ORDER BY publishtime DESC LIMIT 1"
+    );
+
+    is( $last_writeup_id, $draft_id,
+        'Published writeup appears as user most recent writeup' );
+
+    # Verify the writeup has a valid publishtime
+    my $publishtime = $DB->sqlSelect(
+        'publishtime',
+        'writeup',
+        "writeup_id=$draft_id"
+    );
+    ok( $publishtime && $publishtime ne '0000-00-00 00:00:00',
+        'Published writeup has valid publishtime' );
+
+    # Verify the writeup is in the newwriteup table (for New Writeups display)
+    my $in_newwriteups = $DB->sqlSelect(
+        'node_id',
+        'newwriteup',
+        "node_id=$draft_id"
+    );
+    is( $in_newwriteups, $draft_id,
+        'Published writeup is in newwriteup table' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# Test 22: Multiple writeups by same user - most recent is correct
+{
+    # Create e2node
+    my $e2node_title = 'Multi Writeup Last Test ' . time();
+    my $e2node_id =
+      $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+
+    my @draft_ids;
+
+    # Publish 3 writeups in sequence
+    for my $i ( 1 .. 3 ) {
+        $regular_request->set_postdata(
+            {
+                title   => "$e2node_title - Draft $i",
+                doctext => "<p>Writeup number $i.</p>"
+            }
+        );
+
+        my ( $create_status, $create_response ) =
+          @{ $api->create_draft($regular_request) };
+        my $draft_id = $create_response->{draft}{node_id};
+        push @draft_ids, $draft_id;
+
+        $regular_request->set_postdata(
+            {
+                parent_e2node      => $e2node_id,
+                wrtype_writeuptype => $idea_writeuptype->{node_id}
+            }
+        );
+
+        my ( $publish_status, $publish_response ) =
+          @{ $api->publish_draft( $regular_request, $draft_id ) };
+        is( $publish_status, $api->HTTP_OK, "Writeup $i published" );
+
+        # Small delay to ensure distinct publishtimes
+        # (MySQL datetime has 1-second resolution)
+        select( undef, undef, undef, 0.1 );
+    }
+
+    # Query for the user's most recent writeup
+    my $last_writeup_id = $DB->sqlSelect(
+        'node_id',
+        'node JOIN writeup ON node_id=writeup_id',
+        "author_user=" . $regular_user->{node_id},
+        "ORDER BY publishtime DESC LIMIT 1"
+    );
+
+    # The last published writeup should be the most recent
+    is( $last_writeup_id, $draft_ids[2],
+        'Third (most recent) writeup is returned as last writeup' );
+
+    # Verify all three have distinct publishtimes in correct order
+    my $times = $DB->{dbh}->selectcol_arrayref(
+        "SELECT publishtime FROM writeup WHERE writeup_id IN (?, ?, ?) ORDER BY publishtime ASC",
+        {}, @draft_ids
+    );
+    is( scalar(@$times), 3, 'All three writeups have publishtimes' );
+
+    # Cleanup
+    cleanup_test_nodes( @draft_ids, $e2node_id );
+}
+
 done_testing();

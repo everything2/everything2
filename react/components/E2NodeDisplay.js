@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import WriteupDisplay from './WriteupDisplay'
 import LinkNode from './LinkNode'
 import E2NodeToolsModal from './E2NodeToolsModal'
@@ -13,12 +13,46 @@ import { FaTools } from 'react-icons/fa'
  * - All writeups via WriteupDisplay (show_content + displayWriteupInfo)
  * - Softlinks in a 4-column table (legacy softlink htmlcode)
  * - E2 Node Tools button for editors (opens management modal)
+ * - Hash navigation: Scrolls to specific writeup by author name (e.g., #AuthorName)
  *
  * Usage:
  *   <E2NodeDisplay e2node={e2nodeData} user={userData} existingDraft={draftData} />
  */
 const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
   const [toolsModalOpen, setToolsModalOpen] = useState(false)
+
+  // Handle hash navigation to scroll to specific author's writeup
+  // URLs like /title/Node#AuthorName should scroll to that author's writeup
+  useEffect(() => {
+    if (!e2node || !e2node.group) return
+
+    const hash = window.location.hash
+    if (!hash || hash.length <= 1) return
+
+    // Decode the author name from the hash (remove the # prefix)
+    const authorName = decodeURIComponent(hash.substring(1))
+    if (!authorName) return
+
+    // Find the writeup by this author
+    const writeup = e2node.group.find(w => w.author && w.author.title === authorName)
+    if (!writeup) return
+
+    // Use setTimeout to ensure React has rendered the elements
+    setTimeout(() => {
+      // First try to find the anchor element with the author's name
+      const anchor = document.querySelector(`a[name="${authorName}"]`)
+      if (anchor) {
+        anchor.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        return
+      }
+
+      // Fallback: find the writeup element by ID
+      const writeupElement = document.getElementById(`writeup_${writeup.node_id}`)
+      if (writeupElement) {
+        writeupElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
+  }, [e2node])
 
   if (!e2node) return null
 
@@ -91,7 +125,7 @@ const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
 
       {/* Softlinks - 4-column table matching legacy softlink htmlcode */}
       {softlinks && softlinks.length > 0 && (
-        <SoftlinksTable softlinks={softlinks} />
+        <SoftlinksTable softlinks={softlinks} isLoggedIn={user && !user.guest} />
       )}
 
       {/* Locked node warning - shown where "add a writeup" would go */}
@@ -154,8 +188,10 @@ const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
  * - Background color handled by CSS (#softlinks td { background-color: #f8f9f9; })
  * - No inline gradient styles
  * - Sorted by hits descending (highest first)
+ * - Nodeshell links (unfilled e2nodes) shown with 'nodeshell' class for logged-in users
+ *   (CSS makes them red to indicate they need content)
  */
-const SoftlinksTable = ({ softlinks }) => {
+const SoftlinksTable = ({ softlinks, isLoggedIn }) => {
   const numCols = 4
 
   // Split softlinks into rows of 4
@@ -170,15 +206,22 @@ const SoftlinksTable = ({ softlinks }) => {
         <tbody>
           {rows.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              {row.map((link) => (
-                <td key={link.node_id}>
-                  <LinkNode
-                    nodeId={link.node_id}
-                    title={link.title}
-                    type={link.type || 'e2node'}
-                  />
-                </td>
-              ))}
+              {row.map((link) => {
+                // Apply nodeshell class for unfilled nodes when user is logged in
+                // Guests don't see the nodeshell styling (they shouldn't know about empty nodes)
+                const isNodeshell = isLoggedIn && link.filled === false
+                const className = isNodeshell ? 'nodeshell' : undefined
+
+                return (
+                  <td key={link.node_id} className={className}>
+                    <LinkNode
+                      nodeId={link.node_id}
+                      title={link.title}
+                      type={link.type || 'e2node'}
+                    />
+                  </td>
+                )
+              })}
               {/* Fill remaining cells in last row */}
               {row.length < numCols &&
                 Array.from({ length: numCols - row.length }).map((_, i) => (

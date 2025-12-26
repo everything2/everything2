@@ -286,7 +286,7 @@
 | chatterlighter | Fullpage | `/title/chatterlighter` | React |
 | Cool Nodes XML Ticker | Fullpage | `/title/Cool+Nodes+XML+Ticker` | XML/JSON API |
 | eqs nohtml | Fullpage | `/title/eqs+nohtml` | React |
-| Guest Front Page | Fullpage | `/title/Guest+Front+Page` | E2 Legacy |
+| Guest Front Page | Fullpage | `/title/Guest+Front+Page` | React |
 | inboxlight | Fullpage | `/title/inboxlight` | E2 Legacy |
 | New Nodes XML Ticker | Fullpage | `/title/New+Nodes+XML+Ticker` | XML/JSON API |
 | Other Users XML Ticker | Fullpage | `/title/Other+Users+XML+Ticker` | XML/JSON API |
@@ -342,7 +342,7 @@
 | Go Outside | Superdocnolinks | `/title/Go+Outside` | React |
 | Style Defacer | Superdocnolinks | `/title/Style+Defacer` | E2 Legacy |
 | The Killing Floor II | Superdocnolinks | `/title/The+Killing+Floor+II` | React (deprecated) |
-| Welcome to Everything | Superdocnolinks | `/title/Welcome+to+Everything` | E2 Legacy |
+| Welcome to Everything | Superdocnolinks | `/title/Welcome+to+Everything` | React |
 | Zenmastery | Superdocnolinks | `/title/Zenmastery` | React |
 
 ## Migration Process

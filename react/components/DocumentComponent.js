@@ -360,7 +360,11 @@ const COMPONENT_MAP = {
   node_parameter_editor: lazy(() => import('./Documents/NodeParameterEditor')),
   homenode_inspector: lazy(() => import('./Documents/HomenodeInspector')),
   style_defacer: lazy(() => import('./Documents/StyleDefacer')),
-  caja_de_arena: lazy(() => import('./Documents/CajaDeArena'))
+  caja_de_arena: lazy(() => import('./Documents/CajaDeArena')),
+
+  // Front pages - migrated Dec 2025
+  guest_front_page: lazy(() => import('./Documents/GuestFrontPage')),
+  welcome_to_everything: lazy(() => import('./Documents/WelcomeToEverything'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))
