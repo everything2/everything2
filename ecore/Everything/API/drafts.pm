@@ -806,11 +806,14 @@ sub publish_draft {
         ];
     }
 
-    # Convert draft to writeup - update node type
+    # Convert draft to writeup - update node type and title
+    # Writeup title format: "e2node title (writeuptype)"
+    my $writeup_title = $e2node->{title} . ' (' . $writeuptype->{title} . ')';
     my $update_result = $DB->sqlUpdate(
         'node',
         {
-            type_nodetype => $writeup_type->{node_id}
+            type_nodetype => $writeup_type->{node_id},
+            title         => $writeup_title
         },
         "node_id=$draft_id"
     );

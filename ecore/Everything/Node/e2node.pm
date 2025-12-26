@@ -118,9 +118,27 @@ sub softlinks
 
   $csr->execute;
   my $softlinks = [];
+  my @node_ids;
   while (my $link = $csr->fetchrow_hashref)
   {
     push @$softlinks, {"node_id" => int($link->{to_node}), "title" => $link->{title}, "type" => "e2node", "hits" => int($link->{hits})};
+    push @node_ids, $link->{to_node};
+  }
+
+  # Determine which nodes are "filled" (have writeups in nodegroup)
+  # A nodeshell is an e2node with no writeups - shown in red to logged-in users
+  if (@node_ids) {
+    my $placeholders = join(',', ('?') x scalar(@node_ids));
+    my $filled_ids = $self->DB->{dbh}->selectcol_arrayref(
+      "SELECT DISTINCT nodegroup_id FROM nodegroup WHERE nodegroup_id IN ($placeholders)",
+      {},
+      @node_ids
+    );
+    my %filled_hash = map { $_ => 1 } @$filled_ids;
+
+    foreach my $link (@$softlinks) {
+      $link->{filled} = exists $filled_hash{$link->{node_id}} ? \1 : \0;
+    }
   }
 
   return $softlinks;

@@ -206,3 +206,43 @@
 .e2-editor-content > p:first-child {
   margin-top: 0;
 }
+
+/* ============================================
+   Mode Toggle (Rich/HTML) Component Styles
+   ============================================ */
+
+.e2-mode-toggle {
+  display: flex;
+  align-items: center;
+  background: #e8e8e8;
+  border-radius: 20px;
+  padding: 3px;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.e2-mode-toggle-option {
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  border-radius: 17px;
+  transition: all 0.2s ease;
+  z-index: 1;
+  position: relative;
+}
+
+.e2-mode-toggle-option.active {
+  color: #fff;
+}
+
+.e2-mode-toggle-slider {
+  position: absolute;
+  top: 3px;
+  height: calc(100% - 6px);
+  background: #4060b0;
+  border-radius: 17px;
+  transition: all 0.2s ease;
+  z-index: 0;
+}

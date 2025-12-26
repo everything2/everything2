@@ -30,6 +30,18 @@ jest.mock('../Editor/E2LinkExtension', () => ({
   convertToE2Syntax: jest.fn((html) => html),
 }))
 
+// Mock the RawBracketExtension
+jest.mock('../Editor/RawBracketExtension', () => ({
+  RawBracket: {},
+  convertRawBracketsToEntities: jest.fn((html) => html),
+  convertEntitiesToRawBrackets: jest.fn((html) => html),
+}))
+
+// Mock shared editor utilities
+jest.mock('../Editor/useE2Editor', () => ({
+  getE2EditorExtensions: jest.fn(() => []),
+}))
+
 // Mock StarterKit and other Tiptap extensions
 jest.mock('@tiptap/starter-kit', () => ({
   __esModule: true,

@@ -23,7 +23,7 @@ my $theme = $.e2->{basesheet} || '/css/1882070.css';
   <div id="e2-react-root"></div>
 <%perl>
 use JSON;
-my $json = JSON->new->utf8->allow_nonref;
+my $json = JSON->new->allow_nonref;  # Don't use ->utf8 to avoid double-encoding
 my $e2_json = $json->encode($.e2);
 </%perl>
   <script>

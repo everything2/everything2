@@ -155,6 +155,8 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
                 {note.noter_user ? (
                   <input
                     type="checkbox"
+                    id={`nodenote-select-${note.nodenote_id}`}
+                    name={`nodenote-select-${note.nodenote_id}`}
                     checked={selectedNotes.has(note.nodenote_id)}
                     onChange={() => toggleNoteSelection(note.nodenote_id)}
                     disabled={isSubmitting}
@@ -185,6 +187,8 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
         <p style={{ textAlign: 'right' }}>
           <input
             type="text"
+            id={`nodenote-add-${nodeId}`}
+            name={`nodenote-add-${nodeId}`}
             value={noteText}
             onChange={(e) => setNoteText(e.target.value)}
             maxLength="255"

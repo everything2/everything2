@@ -250,16 +250,20 @@ sub _build_pagetitle
     if ($parent && !UNIVERSAL::isa($parent, "Everything::Node::null")) {
       my $parent_title = $parent->title;
       my $APP = $REQUEST->APP;
-      my $writeup_count = $APP->node_by_id($parent->node_id, 'light')->{group} || [];
-      $writeup_count = ref($writeup_count) eq 'ARRAY' ? scalar(@$writeup_count) : 0;
 
+      # Get writeup count from parent's group
+      my $group = $parent->group || [];
+      my $writeup_count = ref($group) eq 'ARRAY' ? scalar(@$group) : 0;
+
+      # Count of OTHER writeups (excluding this one)
+      my $other_count = $writeup_count - 1;
       my $more_text;
-      if ($writeup_count <= 1) {
+      if ($other_count <= 0) {
         $more_text = 'no other writeups in this node';
-      } elsif ($writeup_count == 2) {
-        $more_text = 'there is 1 more in this node';
+      } elsif ($other_count == 1) {
+        $more_text = 'there is 1 other writeup in this node';
       } else {
-        $more_text = 'there are ' . ($writeup_count - 1) . ' more in this node';
+        $more_text = 'there are ' . $other_count . ' other writeups in this node';
       }
 
       # Build a simple link to the parent e2node
