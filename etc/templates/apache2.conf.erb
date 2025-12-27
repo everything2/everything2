@@ -3,6 +3,25 @@
 # HTTP only (ALB terminates SSL)
 
 require 'json'
+require 'net/http'
+require 'uri'
+
+# Fetch CloudFront IP ranges from AWS
+# These are needed for mod_remoteip to trust X-Forwarded-For headers
+cloudfront_ips = []
+begin
+  uri = URI.parse('https://ip-ranges.amazonaws.com/ip-ranges.json')
+  response = Net::HTTP.get_response(uri)
+  if response.code == '200'
+    aws_ranges = JSON.parse(response.body)
+    cloudfront_ips = aws_ranges['prefixes']
+      .select { |p| p['service'] == 'CLOUDFRONT' }
+      .map { |p| p['ip_prefix'] }
+  end
+rescue => e
+  # If fetch fails, we'll just use the static list below
+  STDERR.puts "Warning: Could not fetch CloudFront IPs: #{e.message}"
+end
 
 # Load Apache blocks configuration from source control
 blocks_config = '/var/everything/etc/apache_blocks.json'
@@ -83,6 +102,81 @@ Define E2_PRODUCTION
 # Include module configuration
 Include mods-enabled/*.load
 Include mods-enabled/*.conf
+
+# mod_remoteip - Use X-Forwarded-For header as client IP
+# Required for mod_evasive to rate-limit by real client IP (not ALB IP)
+<IfModule mod_remoteip.c>
+	RemoteIPHeader X-Forwarded-For
+	# Trust private/internal IPs (ALB, Docker, localhost)
+	RemoteIPTrustedProxy 10.0.0.0/8
+	RemoteIPTrustedProxy 172.16.0.0/12
+	RemoteIPTrustedProxy 192.168.0.0/16
+	RemoteIPTrustedProxy 127.0.0.1
+<% if cloudfront_ips.any? %>
+	# CloudFront IP ranges (fetched from AWS at config generation time)
+<% cloudfront_ips.each do |cidr| %>
+	RemoteIPTrustedProxy <%= cidr %>
+<% end %>
+<% else %>
+	# Fallback CloudFront ranges (if dynamic fetch failed)
+	# These may become stale - prefer dynamic fetch
+	RemoteIPTrustedProxy 120.52.22.96/27
+	RemoteIPTrustedProxy 205.251.249.0/24
+	RemoteIPTrustedProxy 180.163.57.128/26
+	RemoteIPTrustedProxy 204.246.168.0/22
+	RemoteIPTrustedProxy 18.160.0.0/15
+	RemoteIPTrustedProxy 205.251.252.0/23
+	RemoteIPTrustedProxy 54.192.0.0/16
+	RemoteIPTrustedProxy 204.246.173.0/24
+	RemoteIPTrustedProxy 54.230.200.0/21
+	RemoteIPTrustedProxy 130.176.0.0/17
+	RemoteIPTrustedProxy 108.156.0.0/14
+	RemoteIPTrustedProxy 99.86.0.0/16
+	RemoteIPTrustedProxy 13.32.0.0/15
+	RemoteIPTrustedProxy 52.222.128.0/17
+	RemoteIPTrustedProxy 54.230.0.0/17
+	RemoteIPTrustedProxy 54.230.128.0/18
+	RemoteIPTrustedProxy 64.252.64.0/18
+	RemoteIPTrustedProxy 64.252.128.0/18
+	RemoteIPTrustedProxy 99.84.0.0/16
+	RemoteIPTrustedProxy 205.251.254.0/24
+<% end %>
+</IfModule>
+
+# mod_evasive rate limiting configuration
+# Protects against DoS attacks and aggressive scrapers
+# Configured to match WAF rate limits: 400 requests per 5 minutes (~1.3/sec)
+<IfModule mod_evasive20.c>
+	# Hash table size for tracking IPs (larger = more memory, better performance)
+	DOSHashTableSize 3097
+
+	# Per-page limits disabled (set very high) - we only care about overall volume
+	DOSPageCount 999
+	DOSPageInterval 1
+
+	# Site-wide request threshold: block if total requests exceed limit
+	# WAF is 400 requests / 5 minutes = ~1.3/sec
+	# Setting 50 requests / 10 seconds = 5/sec (allows bursts, catches scrapers)
+	DOSSiteCount 50
+	DOSSiteInterval 10
+
+	# How long to block offending IPs (seconds)
+	# Match WAF 5-minute evaluation window
+	DOSBlockingPeriod 300
+
+	# Log blocked requests locally
+	DOSLogDir /var/log/apache2
+
+	# Log blocked IPs to CloudWatch for monitoring
+	# %s is replaced with the blocked IP address
+	DOSSystemCommand "/var/everything/tools/log-rate-limit-block.sh %s"
+
+	# Whitelist ALB health checks and internal IPs
+	DOSWhitelist 127.0.0.1
+	DOSWhitelist 10.*.*.*
+	DOSWhitelist 172.16.*.*
+	DOSWhitelist 192.168.*.*
+</IfModule>
 
 LogLevel warn
 LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
