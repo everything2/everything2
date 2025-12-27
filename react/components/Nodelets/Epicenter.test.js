@@ -69,7 +69,6 @@ describe('Epicenter Component', () => {
     borgcheck: null,
     experienceGain: 10,
     gpGain: 5,
-    randomNodeUrl: '/index.pl?op=randomnode&garbage=12345',
     serverTime: '2025-11-20 12:00:00',
     localTime: null,
     showNodelet: mockShowNodelet,
@@ -283,14 +282,10 @@ describe('Epicenter Component', () => {
   })
 
   describe('HTML content rendering', () => {
-    it('renders random node link', () => {
-      const props = {
-        ...defaultProps,
-        randomNodeUrl: '/index.pl?op=randomnode&garbage=12345'
-      }
-      const { container } = render(<Epicenter {...props} />)
+    it('renders random node link with client-side garbage generation', () => {
+      const { container } = render(<Epicenter {...defaultProps} />)
 
-      const link = container.querySelector('a[href="/index.pl?op=randomnode&garbage=12345"]')
+      const link = container.querySelector('a[href="/?op=randomnode"]')
       expect(link).toBeInTheDocument()
       expect(link.textContent).toBe('Random Node')
     })

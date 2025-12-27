@@ -135,7 +135,7 @@ describe('E2HtmlSanitizer', () => {
 
       it('preserves text around links', () => {
         const result = parseE2Links('Before [link] middle [other|text] after')
-        expect(result).toBe('Before <a href="/title/link" class="e2-link">link</a> middle <a href="/title/other" class="e2-link">text</a> after')
+        expect(result).toBe('Before <a href="/title/link" class="e2-link" title="link">link</a> middle <a href="/title/other" class="e2-link" title="other">text</a> after')
       })
     })
 
@@ -293,24 +293,24 @@ describe('E2HtmlSanitizer', () => {
       it('strips HTML from typed link display text (legacy behavior)', () => {
         // Legacy behavior: HTML tags inside brackets are stripped
         const result = parseE2Links('[<b>jaybonci</b>[user]]')
-        expect(result).toBe('<a href="/user/jaybonci" class="e2-link">jaybonci</a>')
+        expect(result).toBe('<a href="/user/jaybonci" class="e2-link" title="jaybonci">jaybonci</a>')
       })
     })
 
     describe('HTML inside brackets (legacy behavior)', () => {
       it('strips HTML from [<big>node</big>] to get link target', () => {
         const result = parseE2Links('[<big>node</big>]')
-        expect(result).toBe('<a href="/title/node" class="e2-link">node</a>')
+        expect(result).toBe('<a href="/title/node" class="e2-link" title="node">node</a>')
       })
 
       it('strips nested HTML tags from link brackets', () => {
         const result = parseE2Links('[<big><big>some node</big></big>]')
-        expect(result).toBe('<a href="/title/some%20node" class="e2-link">some node</a>')
+        expect(result).toBe('<a href="/title/some%20node" class="e2-link" title="some node">some node</a>')
       })
 
       it('handles HTML with attributes in brackets', () => {
         const result = parseE2Links('[<span class="foo">test</span>]')
-        expect(result).toBe('<a href="/title/test" class="e2-link">test</a>')
+        expect(result).toBe('<a href="/title/test" class="e2-link" title="test">test</a>')
       })
 
       it('does not convert brackets with only HTML tags (no text content)', () => {
@@ -320,22 +320,22 @@ describe('E2HtmlSanitizer', () => {
 
       it('handles HTML in typed links [node[type]]', () => {
         const result = parseE2Links('[<b>jaybonci</b>[user]]')
-        expect(result).toBe('<a href="/user/jaybonci" class="e2-link">jaybonci</a>')
+        expect(result).toBe('<a href="/user/jaybonci" class="e2-link" title="jaybonci">jaybonci</a>')
       })
 
       it('handles HTML in by-author links [title[by user]]', () => {
         const result = parseE2Links('[<i>April 2, 2012</i>[by wertperch]]')
-        expect(result).toBe('<a href="/user/wertperch/writeups/April%202%2C%202012" class="e2-link">April 2, 2012</a>')
+        expect(result).toBe('<a href="/user/wertperch/writeups/April%202%2C%202012" class="e2-link" title="April 2, 2012">April 2, 2012</a>')
       })
 
       it('handles HTML in username of by-author links', () => {
         const result = parseE2Links('[My Writeup[by <b>author</b>]]')
-        expect(result).toBe('<a href="/user/author/writeups/My%20Writeup" class="e2-link">My Writeup</a>')
+        expect(result).toBe('<a href="/user/author/writeups/My%20Writeup" class="e2-link" title="My Writeup">My Writeup</a>')
       })
 
       it('handles mixed HTML and text in brackets', () => {
         const result = parseE2Links('[this is <b>bold</b> text]')
-        expect(result).toBe('<a href="/title/this%20is%20bold%20text" class="e2-link">this is bold text</a>')
+        expect(result).toBe('<a href="/title/this%20is%20bold%20text" class="e2-link" title="this is bold text">this is bold text</a>')
       })
     })
 
@@ -482,7 +482,7 @@ describe('E2HtmlSanitizer', () => {
 
       it('preserves surrounding text', () => {
         const result = parseE2Links('Read [Great Writeup[by author]|this] for more info.')
-        expect(result).toBe('Read <a href="/user/author/writeups/Great%20Writeup" class="e2-link">this</a> for more info.')
+        expect(result).toBe('Read <a href="/user/author/writeups/Great%20Writeup" class="e2-link" title="Great Writeup">this</a> for more info.')
       })
 
       it('handles adjacent by-author links', () => {

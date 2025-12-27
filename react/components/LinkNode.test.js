@@ -110,4 +110,57 @@ describe('LinkNode Component', () => {
       expect(link).not.toHaveAttribute('class');
     });
   });
+
+  describe('hover text (title attribute)', () => {
+    it('shows node title in hover for internal links', () => {
+      render(<LinkNode title="Test Node" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('title', 'Test Node');
+    });
+
+    it('shows target title in hover for pipelinks (display differs from title)', () => {
+      render(<LinkNode title="Actual Target" display="Click Here" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('title', 'Actual Target');
+      expect(link).toHaveTextContent('Click Here');
+    });
+
+    it('shows URL in hover for external links', () => {
+      render(<LinkNode url="https://example.com/path" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('title', 'https://example.com/path');
+    });
+
+    it('shows URL in hover for external links with custom display', () => {
+      render(<LinkNode url="https://reddit.com" display="Reddit" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('title', 'https://reddit.com');
+      expect(link).toHaveTextContent('Reddit');
+    });
+
+    it('shows node title in hover for typed links', () => {
+      render(<LinkNode type="user" title="someuser" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('title', 'someuser');
+    });
+
+    it('shows node title in hover for author writeup links', () => {
+      render(<LinkNode title="My Writeup" author="testuser" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('title', 'My Writeup');
+    });
+
+    it('shows node title in hover for links with anchor', () => {
+      render(<LinkNode title="Discussion" anchor="debatecomment_42" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('title', 'Discussion');
+    });
+
+    it('does not have title attribute for node ID only links', () => {
+      render(<LinkNode id="12345" />);
+      const link = screen.getByRole('link');
+      // No title prop provided, so no hover text
+      expect(link).not.toHaveAttribute('title');
+    });
+  });
 });

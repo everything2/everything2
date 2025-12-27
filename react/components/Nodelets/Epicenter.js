@@ -100,9 +100,15 @@ const Epicenter = (props) => {
           />
         </li>
         <li title="View a randomly selected node">
-          {props.randomNodeUrl && (
-            <a href={props.randomNodeUrl}>Random Node</a>
-          )}
+          <a
+            href="/?op=randomnode"
+            onClick={(e) => {
+              e.preventDefault()
+              window.location.href = `/?op=randomnode&garbage=${Math.floor(Math.random() * 100000)}`
+            }}
+          >
+            Random Node
+          </a>
         </li>
         <li title="Need help?">
           <LinkNode

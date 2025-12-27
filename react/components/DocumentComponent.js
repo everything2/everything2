@@ -366,7 +366,10 @@ const COMPONENT_MAP = {
 
   // Front pages - migrated Dec 2025
   guest_front_page: lazy(() => import('./Documents/GuestFrontPage')),
-  welcome_to_everything: lazy(() => import('./Documents/WelcomeToEverything'))
+  welcome_to_everything: lazy(() => import('./Documents/WelcomeToEverything')),
+
+  // Admin superdoc directory
+  what_does_what: lazy(() => import('./Documents/WhatDoesWhat'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

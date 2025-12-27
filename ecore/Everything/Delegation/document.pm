@@ -863,22 +863,6 @@ sub topic_archive {
 
 }
 
-# writeups_by_type - Migrated to React
-# See: Everything::Page::writeups_by_type
-# React component: WriteupsByType.js
-
-
-# simple_usergroup_editor - Migrated to React
-# See: Everything::Page::simple_usergroup_editor
-# React component: SimpleUsergroupEditor.js
-
-# everything_s_biggest_stars - REMOVED (migrated to Everything::Page::everything_s_richest_noders + React)
-# word_messer_upper - REMOVED (migrated to Everything::Page::word_messer_upper + React)
-# log_archive - REMOVED (migrated to Everything::Page::log_archive + React)
-# show_user_vars - Migrated to React
-# See: Everything::Page::show_user_vars
-# React component: ShowUserVars.js
-
 sub sanctify_user
 {
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
@@ -1139,15 +1123,6 @@ sub usergroup_picks
 
     return $text;
 }
-
-# create_node - Migrated to React
-# See: Everything::Page::create_node
-# React component: CreateNode.js
-
-# everything_s_most_wanted - Migrated to React
-# See: Everything::Page::everything_s_most_wanted
-# React component: EverythingsMostWanted.js
-
 
 sub recalculate_xp
 {
@@ -1575,23 +1550,6 @@ sub costume_remover
     return $text;
 }
 
-# mark_all_discussions_as_read - MIGRATED TO Everything::Page::mark_all_discussions_as_read (December 2025)
-
-# guest_front_page - MIGRATED TO Everything::Page::guest_front_page (December 2025)
-# Template: templates/pages/guest_front_page.mc
-# React component: GuestFrontPage.js
-
-# The Catwalk - Migrated to React
-# See: Everything::Page::the_catwalk
-# React component: TheCatwalk.js
-
-# usergroup_message_archive - Migrated to React
-# See: Everything::Page::usergroup_message_archive
-# React component: UsergroupMessageArchive.js
-
-# welcome_to_everything - MIGRATED TO Everything::Page::welcome_to_everything (December 2025)
-# React component: WelcomeToEverything.js
-
 sub short_url_lookup
 {
     my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
@@ -1860,58 +1818,9 @@ sub ajax_update
         return $query->param('sentmessage');
     }
 
-    if ($mode eq 'getNodeInfo') {
-        my $type = $query->param("type");
-        my $title = $query->param("title");
-        my $field = $query->param("field");
-        return unless ($type && $title && $field);
-
-        my $tempNode = getNode($title,$type);
-        return unless $tempNode;
-
-        return $tempNode->{$field};
-    }
-
     $NODE = getNodeById(124);
 
     return '';
-}
-
-sub what_does_what {
-    my ($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP) = @_;
-
-    return unless $APP->isAdmin($USER);
-
-    my $str = "<p align=\"right\">".linkNode(getNode("superdoc documentation", "setting"), "edit/add documentation", {displaytype => "edit"})."</p>";
-
-    my $documentation = getVars(getNode("superdoc documentation", "setting"));
-
-    $documentation ||= {};
-
-    my @types = ("superdoc","oppressor_superdoc");
-
-    push @types, ("restricted_superdoc", "setting") if $APP->isAdmin($USER);
-    foreach(@types)
-    {
-        $str.="<h1>$_";
-        $str.=" - ".linkNode(getNode("$_ documentation", "setting"), "edit documentation") if $APP->isAdmin($USER);
-        $str.="</h1><table>";
-        my $type = getType($_);
-        my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=$type->{node_id} order by title");
-
-        my $rownum = 1;
-
-        while(my $row = $csr->fetchrow_hashref)
-        {
-            my $N = getNodeById($row->{node_id});
-
-            $str.="<tr".(($rownum % 2)?(" class=\"oddrow\""):(""))."><td><small><strong>".linkNode($N)."</strong></small></td><td><small>($N->{node_id})</small></td><td>".($documentation->{$N->{node_id}} || "<em>none</em>")."</td></tr>";
-            $rownum++;
-        }
-
-        $str.="</table><br>";
-    }
-    return $str;
 }
 
 sub quick_rename {

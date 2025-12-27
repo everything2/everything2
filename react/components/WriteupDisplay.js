@@ -10,10 +10,12 @@ import { renderE2Content } from './Editor/E2HtmlSanitizer'
 /**
  * CoolTooltip - Shows who C!ed a writeup on hover or click
  * Displays immediately on hover (no browser delay) and can be clicked to toggle
+ * Click to lock open and show full list when there are many C!s
  */
 const CoolTooltip = ({ cools, coolCount, nodeId }) => {
   const [showTooltip, setShowTooltip] = useState(false)
   const [isClickLocked, setIsClickLocked] = useState(false)
+  const [showAll, setShowAll] = useState(false)
   const tooltipRef = useRef(null)
   const triggerRef = useRef(null)
 
@@ -24,6 +26,7 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
           triggerRef.current && !triggerRef.current.contains(event.target)) {
         setShowTooltip(false)
         setIsClickLocked(false)
+        setShowAll(false)
       }
     }
 
@@ -39,6 +42,7 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
       // Already locked open - close it
       setShowTooltip(false)
       setIsClickLocked(false)
+      setShowAll(false)
     } else {
       // Lock it open
       setShowTooltip(true)
@@ -55,8 +59,19 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
   const handleMouseLeave = () => {
     if (!isClickLocked) {
       setShowTooltip(false)
+      setShowAll(false)
     }
   }
+
+  const handleShowAll = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setShowAll(true)
+  }
+
+  // Determine how many users to show
+  const displayLimit = showAll ? cools.length : 5
+  const hasMore = cools.length > 5
 
   return (
     <span
@@ -87,15 +102,17 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
             marginBottom: '6px',
             backgroundColor: '#f8f9fa',
             color: '#333',
-            padding: '6px 10px',
+            padding: '8px 12px',
             borderRadius: '4px',
             fontSize: '12px',
-            whiteSpace: 'nowrap',
+            lineHeight: '1.4',
             zIndex: 1000,
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             border: '1px solid #507898',
-            maxWidth: '300px',
-            textAlign: 'center'
+            minWidth: '120px',
+            maxWidth: showAll ? '400px' : '300px',
+            width: 'max-content',
+            textAlign: 'left'
           }}
         >
           {/* Arrow pointing down */}
@@ -110,16 +127,28 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
               borderTop: '6px solid #507898'
             }}
           />
-          {/* Show first 5 users, then "and X others" if more */}
-          {cools.slice(0, 5).map((c, i) => (
+          {/* Show users up to displayLimit */}
+          {cools.slice(0, displayLimit).map((c, i) => (
             <span key={c.node_id || i}>
               {i > 0 && ', '}
               <LinkNode type="user" title={c.title} style={{ color: '#507898' }} />
             </span>
           ))}
-          {cools.length > 5 && (
-            <span style={{ fontStyle: 'italic' }}>
-              {' '}and {cools.length - 5} other{cools.length - 5 === 1 ? '' : 's'}
+          {/* Show "and X others" or "show all" link */}
+          {hasMore && !showAll && (
+            <span>
+              {' '}
+              <a
+                href="#"
+                onClick={handleShowAll}
+                style={{
+                  color: '#507898',
+                  fontStyle: 'italic',
+                  textDecoration: 'underline'
+                }}
+              >
+                and {cools.length - 5} other{cools.length - 5 === 1 ? '' : 's'}...
+              </a>
             </span>
           )}
         </span>

@@ -6684,9 +6684,6 @@ sub buildNodeInfoStructure
       $VARS->{oldGP} = $USER->{GP};
     }
 
-    # Random node link data
-    $e2->{epicenter}->{randomNodeUrl} = '/index.pl?op=randomnode&garbage=' . int(rand(100000));
-
     # Server time data (formatted strings for React component)
     my $NOW = time;
     $e2->{epicenter}->{serverTime} = Everything::HTML::htmlcode('DateTimeLocal', "$NOW,1");

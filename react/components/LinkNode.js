@@ -82,7 +82,28 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) =>
     rel="nofollow"
   }
 
-  return React.createElement('a', {className: className, href: url, rel: rel, style: {fontSize: 'inherit'}}, display);
+  // Build title attribute for hover text (shows link target, useful for pipelinks)
+  // For internal links: show the node title being linked to
+  // For external links: show the URL
+  let hoverTitle = null
+  if (rel === "nofollow") {
+    // External link - show URL in hover
+    hoverTitle = url
+  } else if (title != null) {
+    // Internal link - show the actual node title (decoded for readability)
+    // Decode the double-encoding we did above for the URL
+    hoverTitle = title.replace(/%25([0-9A-F]{2})/gi, (match, hex) => {
+      return decodeURIComponent('%' + hex)
+    })
+  }
+
+  return React.createElement('a', {
+    className: className,
+    href: url,
+    rel: rel || undefined,
+    title: hoverTitle || undefined,
+    style: {fontSize: 'inherit'}
+  }, display);
 }
 
 export default LinkNode

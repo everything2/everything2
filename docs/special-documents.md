@@ -1,6 +1,6 @@
 # Everything2 Special Document Types Reference
 
-**Last Updated**: 2025-12-12
+**Last Updated**: 2025-12-27
 **Total Documents**: 261 documents across all types
 
 ## Document Types Summary
@@ -270,7 +270,7 @@
 | The Nodeshell Hopper | Oppressor Superdoc | `/title/The+Nodeshell+Hopper` | E2 Legacy |
 | The Oracle | Oppressor Superdoc | `/title/The+Oracle` | E2 Legacy |
 | Websterbless | Oppressor Superdoc | `/title/Websterbless` | React |
-| What Does What | Oppressor Superdoc | `/title/What+Does+What` | E2 Legacy |
+| What Does What | Oppressor Superdoc | `/title/What+Does+What` | React |
 | Who is Doing What | Oppressor Superdoc | `/title/Who+is+Doing+What` | React |
 
 ## Fullpage
@@ -425,6 +425,9 @@ For any new documents that need implementation:
     - **AUDIT COMPLETED**: Found 31 orphaned pages with no implementation
     - Document inventory updated with Superdocnolinks section
     - All document types now tracked: superdoc, restricted_superdoc, oppressor_superdoc, ticker, fullpage, jsonexport, superdocnolinks
+  - **December 27, 2025 Session**:
+    - What Does What: Migrated to React with StaffOnly security mixin
+    - Removed what_does_what delegation from document.pm
 
 ---
 *For questions or updates, see [CLAUDE.md](../CLAUDE.md)*
