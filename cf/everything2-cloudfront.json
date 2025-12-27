@@ -9,20 +9,6 @@
     }
   },
   "Resources": {
-    "E2BlockedScrapersIPSet": {
-      "Type": "AWS::WAFv2::IPSet",
-      "Properties": {
-        "Name": "E2-Blocked-Scrapers",
-        "Description": "Blocked scraper IP ranges - data center IPs with fake UAs doing burst scraping",
-        "Scope": "CLOUDFRONT",
-        "IPAddressVersion": "IPV4",
-        "Addresses": [
-          "47.79.0.0/16",
-          "202.46.0.0/16"
-        ]
-      }
-    },
-
     "E2CloudFrontLogsBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -94,239 +80,6 @@
       }
     },
 
-    "E2WAFWebACL": {
-      "Type": "AWS::WAFv2::WebACL",
-      "Properties": {
-        "Name": "E2-CloudFront-WAF",
-        "Description": "WAF WebACL for Everything2 CloudFront distribution",
-        "Scope": "CLOUDFRONT",
-        "DefaultAction": {
-          "Allow": {}
-        },
-        "VisibilityConfig": {
-          "SampledRequestsEnabled": true,
-          "CloudWatchMetricsEnabled": true,
-          "MetricName": "E2CloudFrontWAF"
-        },
-        "Rules": [
-          {
-            "Name": "BlockScraperIPs",
-            "Priority": 0,
-            "Action": {
-              "Block": {}
-            },
-            "Statement": {
-              "IPSetReferenceStatement": {
-                "Arn": {"Fn::GetAtt": ["E2BlockedScrapersIPSet", "Arn"]}
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "BlockScraperIPsMetric"
-            }
-          },
-          {
-            "Name": "AWS-AWSManagedRulesCommonRuleSet",
-            "Priority": 1,
-            "OverrideAction": {
-              "None": {}
-            },
-            "Statement": {
-              "ManagedRuleGroupStatement": {
-                "VendorName": "AWS",
-                "Name": "AWSManagedRulesCommonRuleSet",
-                "RuleActionOverrides": [
-                  {
-                    "Name": "SizeRestrictions_BODY",
-                    "ActionToUse": {
-                      "Count": {}
-                    }
-                  }
-                ],
-                "ScopeDownStatement": {
-                  "NotStatement": {
-                    "Statement": {
-                      "ByteMatchStatement": {
-                        "SearchString": "/api/sessions",
-                        "FieldToMatch": {
-                          "UriPath": {}
-                        },
-                        "TextTransformations": [
-                          {
-                            "Priority": 0,
-                            "Type": "LOWERCASE"
-                          }
-                        ],
-                        "PositionalConstraint": "STARTS_WITH"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "AWSManagedRulesCommonRuleSetMetric"
-            }
-          },
-          {
-            "Name": "AllowCrawlerEssentials",
-            "Priority": 2,
-            "Action": {
-              "Allow": {}
-            },
-            "Statement": {
-              "OrStatement": {
-                "Statements": [
-                  {
-                    "ByteMatchStatement": {
-                      "SearchString": "/robots.txt",
-                      "FieldToMatch": {
-                        "UriPath": {}
-                      },
-                      "TextTransformations": [
-                        {
-                          "Priority": 0,
-                          "Type": "LOWERCASE"
-                        }
-                      ],
-                      "PositionalConstraint": "EXACTLY"
-                    }
-                  },
-                  {
-                    "ByteMatchStatement": {
-                      "SearchString": "/sitemap",
-                      "FieldToMatch": {
-                        "UriPath": {}
-                      },
-                      "TextTransformations": [
-                        {
-                          "Priority": 0,
-                          "Type": "LOWERCASE"
-                        }
-                      ],
-                      "PositionalConstraint": "STARTS_WITH"
-                    }
-                  }
-                ]
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "AllowCrawlerEssentialsMetric"
-            }
-          },
-          {
-            "Name": "RateLimitRule",
-            "Priority": 3,
-            "Action": {
-              "Block": {}
-            },
-            "Statement": {
-              "RateBasedStatement": {
-                "Limit": 400,
-                "AggregateKeyType": "IP"
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "RateLimitRuleMetric"
-            }
-          },
-          {
-            "Name": "BlockBadUserAgents",
-            "Priority": 4,
-            "Action": {
-              "Block": {}
-            },
-            "Statement": {
-              "OrStatement": {
-                "Statements": [
-                  {
-                    "ByteMatchStatement": {
-                      "SearchString": "aiohttp",
-                      "FieldToMatch": {
-                        "SingleHeader": {
-                          "Name": "user-agent"
-                        }
-                      },
-                      "TextTransformations": [
-                        {
-                          "Priority": 0,
-                          "Type": "LOWERCASE"
-                        }
-                      ],
-                      "PositionalConstraint": "CONTAINS"
-                    }
-                  },
-                  {
-                    "ByteMatchStatement": {
-                      "SearchString": "blexbot",
-                      "FieldToMatch": {
-                        "SingleHeader": {
-                          "Name": "user-agent"
-                        }
-                      },
-                      "TextTransformations": [
-                        {
-                          "Priority": 0,
-                          "Type": "LOWERCASE"
-                        }
-                      ],
-                      "PositionalConstraint": "CONTAINS"
-                    }
-                  },
-                  {
-                    "ByteMatchStatement": {
-                      "SearchString": "dataforseobot",
-                      "FieldToMatch": {
-                        "SingleHeader": {
-                          "Name": "user-agent"
-                        }
-                      },
-                      "TextTransformations": [
-                        {
-                          "Priority": 0,
-                          "Type": "LOWERCASE"
-                        }
-                      ],
-                      "PositionalConstraint": "CONTAINS"
-                    }
-                  },
-                  {
-                    "ByteMatchStatement": {
-                      "SearchString": "httrack",
-                      "FieldToMatch": {
-                        "SingleHeader": {
-                          "Name": "user-agent"
-                        }
-                      },
-                      "TextTransformations": [
-                        {
-                          "Priority": 0,
-                          "Type": "LOWERCASE"
-                        }
-                      ],
-                      "PositionalConstraint": "CONTAINS"
-                    }
-                  }
-                ]
-              }
-            },
-            "VisibilityConfig": {
-              "SampledRequestsEnabled": true,
-              "CloudWatchMetricsEnabled": true,
-              "MetricName": "BlockBadUserAgentsMetric"
-            }
-          }
-        ]
-      }
-    },
-
     "E2CloudFrontCertificate": {
       "Type": "AWS::CertificateManager::Certificate",
       "DeletionPolicy": "Retain",
@@ -373,7 +126,9 @@
                 "keywords",
                 "page",
                 "offset",
-                "limit"
+                "limit",
+                "op",
+                "garbage"
               ]
             },
             "EnableAcceptEncodingGzip": true,
@@ -430,10 +185,9 @@
 
     "E2CloudFrontDistribution": {
       "Type": "AWS::CloudFront::Distribution",
-      "DependsOn": ["E2CloudFrontCertificate", "E2WAFWebACL", "E2CloudFrontLogsBucketPolicy"],
+      "DependsOn": ["E2CloudFrontCertificate", "E2CloudFrontLogsBucketPolicy"],
       "Properties": {
         "DistributionConfig": {
-          "WebACLId": {"Fn::GetAtt": ["E2WAFWebACL", "Arn"]},
           "Comment": "Everything2 CloudFront Distribution",
           "Enabled": true,
           "Logging": {
@@ -546,10 +300,6 @@
     "CertificateArn": {
       "Description": "ACM Certificate ARN (must be validated via DNS)",
       "Value": {"Ref": "E2CloudFrontCertificate"}
-    },
-    "WAFWebACLArn": {
-      "Description": "WAF WebACL ARN",
-      "Value": {"Fn::GetAtt": ["E2WAFWebACL", "Arn"]}
     }
   }
 }

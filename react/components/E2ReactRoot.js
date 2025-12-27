@@ -429,7 +429,6 @@ class E2ReactRoot extends React.Component {
               borgcheck={this.state.epicenter?.borgcheck}
               experienceGain={this.state.epicenter?.experienceGain}
               gpGain={this.state.epicenter?.gpGain}
-              randomNodeUrl={this.state.epicenter?.randomNodeUrl}
               serverTime={this.state.epicenter?.serverTime}
               localTime={this.state.epicenter?.localTime}
               showNodelet={this.showNodelet}

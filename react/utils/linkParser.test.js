@@ -278,59 +278,59 @@ describe('linkParser', () => {
   describe('parseLinksToHtml', () => {
     it('converts simple internal link to HTML', () => {
       const result = parseLinksToHtml('[node title]')
-      expect(result).toBe('<a href="/title/node%20title" class="e2-link">node title</a>')
+      expect(result).toBe('<a href="/title/node%20title" class="e2-link" title="node title">node title</a>')
     })
 
     it('converts external link to HTML', () => {
       const result = parseLinksToHtml('[https://reddit.com]')
-      expect(result).toBe('<a href="https://reddit.com" rel="nofollow" class="externalLink" target="_blank">https://reddit.com</a>')
+      expect(result).toBe('<a href="https://reddit.com" rel="nofollow" class="externalLink" target="_blank" title="https://reddit.com">https://reddit.com</a>')
     })
 
     it('converts external link with display text', () => {
       const result = parseLinksToHtml('[https://reddit.com|Reddit]')
-      expect(result).toBe('<a href="https://reddit.com" rel="nofollow" class="externalLink" target="_blank">Reddit</a>')
+      expect(result).toBe('<a href="https://reddit.com" rel="nofollow" class="externalLink" target="_blank" title="https://reddit.com">Reddit</a>')
     })
 
     it('converts external link with empty pipe to [link]', () => {
       const result = parseLinksToHtml('[https://reddit.com|]')
-      expect(result).toBe('<a href="https://reddit.com" rel="nofollow" class="externalLink" target="_blank">[link]</a>')
+      expect(result).toBe('<a href="https://reddit.com" rel="nofollow" class="externalLink" target="_blank" title="https://reddit.com">[link]</a>')
     })
 
     it('converts typed link to HTML', () => {
       const result = parseLinksToHtml('[username[user]]')
-      expect(result).toBe('<a href="/user/username" class="e2-link">username</a>')
+      expect(result).toBe('<a href="/user/username" class="e2-link" title="username">username</a>')
     })
 
     it('converts pipelink to HTML', () => {
       const result = parseLinksToHtml('[target|display text]')
-      expect(result).toBe('<a href="/title/target" class="e2-link">display text</a>')
+      expect(result).toBe('<a href="/title/target" class="e2-link" title="target">display text</a>')
     })
 
     it('converts user writeup link to HTML', () => {
       const result = parseLinksToHtml('[My Post[by author]]')
-      expect(result).toBe('<a href="/user/author/writeups/My%20Post" class="e2-link">My Post</a>')
+      expect(result).toBe('<a href="/user/author/writeups/My%20Post" class="e2-link" title="My Post">My Post</a>')
     })
 
     it('includes anchor for comment links', () => {
       const result = parseLinksToHtml('[Discussion[42]]')
-      expect(result).toBe('<a href="/title/Discussion#debatecomment_42" class="e2-link">Discussion</a>')
+      expect(result).toBe('<a href="/title/Discussion#debatecomment_42" class="e2-link" title="Discussion">Discussion</a>')
     })
 
     it('escapes HTML in display text', () => {
       // HTML tags are stripped from the title and display
       // This matches Perl behavior where tags inside links are removed
       const result = parseLinksToHtml('[<script>alert]')
-      expect(result).toBe('<a href="/title/alert" class="e2-link">alert</a>')
+      expect(result).toBe('<a href="/title/alert" class="e2-link" title="alert">alert</a>')
     })
 
     it('escapes ampersands in display text', () => {
       const result = parseLinksToHtml('[Tom & Jerry]')
-      expect(result).toBe('<a href="/title/Tom%20%26%20Jerry" class="e2-link">Tom &amp; Jerry</a>')
+      expect(result).toBe('<a href="/title/Tom%20%26%20Jerry" class="e2-link" title="Tom &amp; Jerry">Tom &amp; Jerry</a>')
     })
 
     it('preserves text around links', () => {
       const result = parseLinksToHtml('Check out [site] for more')
-      expect(result).toBe('Check out <a href="/title/site" class="e2-link">site</a> for more')
+      expect(result).toBe('Check out <a href="/title/site" class="e2-link" title="site">site</a> for more')
     })
 
     it('handles multiple links in text', () => {
@@ -341,11 +341,60 @@ describe('linkParser', () => {
     })
   })
 
+  describe('parseLinksToHtml - Hover text (title attribute)', () => {
+    it('shows node title in hover for simple internal links', () => {
+      const result = parseLinksToHtml('[some node]')
+      expect(result).toContain('title="some node"')
+    })
+
+    it('shows target title (not display) in hover for pipelinks', () => {
+      const result = parseLinksToHtml('[actual target|shown text]')
+      expect(result).toContain('title="actual target"')
+      expect(result).toContain('>shown text</a>')
+    })
+
+    it('shows URL in hover for external links', () => {
+      const result = parseLinksToHtml('[https://example.com/page]')
+      expect(result).toContain('title="https://example.com/page"')
+    })
+
+    it('shows URL in hover for external links with custom display', () => {
+      const result = parseLinksToHtml('[https://google.com|Search Engine]')
+      expect(result).toContain('title="https://google.com"')
+      expect(result).toContain('>Search Engine</a>')
+    })
+
+    it('shows node title in hover for typed links', () => {
+      const result = parseLinksToHtml('[adminuser[user]]')
+      expect(result).toContain('title="adminuser"')
+    })
+
+    it('shows node title in hover for user writeup links', () => {
+      const result = parseLinksToHtml('[Great Post[by author123]]')
+      expect(result).toContain('title="Great Post"')
+    })
+
+    it('shows node title in hover for comment links', () => {
+      const result = parseLinksToHtml('[Thread Title[99]]')
+      expect(result).toContain('title="Thread Title"')
+    })
+
+    it('escapes HTML entities in hover title', () => {
+      const result = parseLinksToHtml('[Tom & Jerry]')
+      expect(result).toContain('title="Tom &amp; Jerry"')
+    })
+
+    it('escapes quotes in hover title', () => {
+      const result = parseLinksToHtml('[He said "hello"]')
+      expect(result).toContain('title="He said &quot;hello&quot;"')
+    })
+  })
+
   describe('parseLinksToHtml - Regression tests', () => {
     it('does not convert [link] text inside external link display', () => {
       // When external link uses [link] as display, that shouldn't get parsed again
       const result = parseLinksToHtml('[https://reddit.com|]')
-      expect(result).toBe('<a href="https://reddit.com" rel="nofollow" class="externalLink" target="_blank">[link]</a>')
+      expect(result).toBe('<a href="https://reddit.com" rel="nofollow" class="externalLink" target="_blank" title="https://reddit.com">[link]</a>')
       // Should NOT contain nested links
       expect(result).not.toContain('"/title/')
     })
@@ -369,7 +418,7 @@ describe('linkParser', () => {
     it('preserves unmatched brackets', () => {
       const result = parseLinksToHtml('Array[0] = value')
       // This should be treated as text since [0] alone isn't a valid link pattern
-      expect(result).toBe('Array<a href="/title/0" class="e2-link">0</a> = value')
+      expect(result).toBe('Array<a href="/title/0" class="e2-link" title="0">0</a> = value')
     })
   })
 })

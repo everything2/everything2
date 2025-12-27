@@ -309,7 +309,9 @@ export function parseLinksToHtml(text) {
     const escapedDisplay = escapeHtml(segment.display)
 
     if (segment.type === LINK_TYPE.EXTERNAL) {
-      return `<a href="${segment.href}" rel="nofollow" class="externalLink" target="_blank">${escapedDisplay}</a>`
+      // External link - show URL in hover
+      const escapedUrl = escapeHtml(segment.href)
+      return `<a href="${segment.href}" rel="nofollow" class="externalLink" target="_blank" title="${escapedUrl}">${escapedDisplay}</a>`
     }
 
     // Internal links
@@ -318,7 +320,9 @@ export function parseLinksToHtml(text) {
       href += `#${segment.anchor}`
     }
 
-    return `<a href="${href}" class="e2-link">${escapedDisplay}</a>`
+    // Show the link target in hover (useful for pipelinks where display differs from target)
+    const escapedTitle = escapeHtml(segment.title)
+    return `<a href="${href}" class="e2-link" title="${escapedTitle}">${escapedDisplay}</a>`
   }).join('')
 }
 

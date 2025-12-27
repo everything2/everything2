@@ -189,9 +189,6 @@ e2.epicenter = {
   // Optional: if user gained GP
   gpGain: 5,
 
-  // Random node link
-  randomNodeUrl: "/index.pl?op=randomnode&garbage=12345",
-
   // Server time strings
   serverTime: "2025-11-25 12:34:56",
   localTime: "2025-11-25 07:34:56"  // If localTimeUse enabled

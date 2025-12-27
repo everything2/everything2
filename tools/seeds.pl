@@ -882,7 +882,29 @@ if (!$existing_bad_cool) {
 }
 print STDERR "Writeup with bad cooler: '$bad_cool_writeup->{title}'\n";
 
-my $cools = { "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)", "writeup with a broken type (thing)","writeup with no parent (thing)", "writeup with a broken nodegroup (thing)", "writeup with no owner (thing)"]};
+# C! assignments - normaluser1-20 all cool "good poetry" to test tooltip with many C!s
+my $cools = {
+  "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"],
+  "normaluser2" => ["good poetry (poetry)"],
+  "normaluser3" => ["good poetry (poetry)"],
+  "normaluser4" => ["good poetry (poetry)"],
+  "normaluser5" => ["good poetry (poetry)", "Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)", "writeup with a broken type (thing)","writeup with no parent (thing)", "writeup with a broken nodegroup (thing)", "writeup with no owner (thing)"],
+  "normaluser6" => ["good poetry (poetry)"],
+  "normaluser7" => ["good poetry (poetry)"],
+  "normaluser8" => ["good poetry (poetry)"],
+  "normaluser9" => ["good poetry (poetry)"],
+  "normaluser10" => ["good poetry (poetry)"],
+  "normaluser11" => ["good poetry (poetry)"],
+  "normaluser12" => ["good poetry (poetry)"],
+  "normaluser13" => ["good poetry (poetry)"],
+  "normaluser14" => ["good poetry (poetry)"],
+  "normaluser15" => ["good poetry (poetry)"],
+  "normaluser16" => ["good poetry (poetry)"],
+  "normaluser17" => ["good poetry (poetry)"],
+  "normaluser18" => ["good poetry (poetry)"],
+  "normaluser19" => ["good poetry (poetry)"],
+  "normaluser20" => ["good poetry (poetry)"],
+};
 
 foreach my $chinger (keys %$cools)
 {
