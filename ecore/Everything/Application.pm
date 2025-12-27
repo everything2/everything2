@@ -2277,12 +2277,16 @@ sub getNodeNotes
   if ($node_type eq 'writeup')
   {
     # Include e2node & other writeups
+    # Handle case where parent_e2node might be missing (data integrity issue)
+    my $where_clause = "nodenote_nodeid = $$node{node_id}";
+    if ($$node{parent_e2node}) {
+      $where_clause = "(nodenote_nodeid = $$node{node_id}"
+        . " OR nodenote_nodeid = $$node{parent_e2node})";
+    }
     $notelist = $DB->sqlSelectMany(
       'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
       , 'nodenote'
-      , "(nodenote_nodeid = $$node{node_id}"
-      . " OR nodenote_nodeid = $$node{parent_e2node})"
-      . " ORDER BY nodenote_nodeid, timestamp");
+      , "$where_clause ORDER BY nodenote_nodeid, timestamp");
   }
   elsif ($node_type eq 'e2node')
   {

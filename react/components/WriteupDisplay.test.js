@@ -312,4 +312,35 @@ describe('WriteupDisplay Component', () => {
       })
     })
   })
+
+  describe('date display', () => {
+    it('displays publishtime when available', () => {
+      const writeupWithPublishtime = {
+        ...mockWriteup,
+        createtime: '2020-01-15T12:00:00Z',
+        publishtime: '2024-06-15T12:00:00Z'
+      }
+
+      const { container } = render(<WriteupDisplay writeup={writeupWithPublishtime} user={mockUser} />)
+
+      // Should show publishtime (2024), not createtime (2020)
+      const dateCell = container.querySelector('.wu_dtcreate .date')
+      expect(dateCell.textContent).toMatch(/2024/)
+      expect(dateCell.textContent).not.toMatch(/2020/)
+    })
+
+    it('falls back to createtime when publishtime is not available', () => {
+      const writeupWithoutPublishtime = {
+        ...mockWriteup,
+        createtime: '2020-06-15T12:00:00Z',
+        publishtime: null
+      }
+
+      const { container } = render(<WriteupDisplay writeup={writeupWithoutPublishtime} user={mockUser} />)
+
+      // Should show createtime as fallback (2020)
+      const dateCell = container.querySelector('.wu_dtcreate .date')
+      expect(dateCell.textContent).toMatch(/2020/)
+    })
+  })
 })

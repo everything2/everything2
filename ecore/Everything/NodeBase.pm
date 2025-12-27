@@ -2392,11 +2392,15 @@ sub isApproved
 	return 0 unless defined $user_id;
 	my $node_id = $this->getId($NODE);
 	return 0 unless defined $node_id;
+	return 0 unless $node_id;  # Also reject node_id of 0
 	return 1 if ($user_id == $node_id);
 
 	#you're always approved if it's yourself...
 
 	$this->getRef($NODE);
+
+	# Ensure the node was properly resolved with a valid type
+	return 0 unless ref($$NODE{type}) eq 'HASH';
 
 	# Only cache and check group membership for actual group nodes.
 	# Non-group nodes (like users) have no members besides themselves,

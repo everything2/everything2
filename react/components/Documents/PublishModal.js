@@ -1,5 +1,25 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useWriteuptypes, useSetParentE2node, usePublishDraft } from '../../hooks/usePublishDraft'
+
+/**
+ * Parse a draft title to extract e2node title and writeuptype
+ * Writeup titles have format: "e2node title (writeuptype)"
+ * Returns { e2nodeTitle, writeuptypeName } or just { e2nodeTitle } if no suffix
+ */
+const parseDraftTitle = (title) => {
+  if (!title) return { e2nodeTitle: '' }
+
+  // Match pattern: "some title (writeuptype)" where writeuptype is at the end
+  const match = title.match(/^(.+?)\s+\(([^)]+)\)$/)
+  if (match) {
+    return {
+      e2nodeTitle: match[1],
+      writeuptypeName: match[2]
+    }
+  }
+
+  return { e2nodeTitle: title }
+}
 
 /**
  * PublishModal - Modal for publishing drafts as writeups
@@ -10,6 +30,8 @@ import { useWriteuptypes, useSetParentE2node, usePublishDraft } from '../../hook
  * - Creates new e2node if it doesn't exist
  * - Calls set_parent_e2node then publish_draft APIs
  * - Redirects to new writeup on success
+ * - If draft was previously published (title contains writeuptype suffix),
+ *   pre-populates e2node title and pre-selects writeuptype
  *
  * Props:
  * - draft: The draft object to publish ({ node_id, title, ... })
@@ -17,11 +39,15 @@ import { useWriteuptypes, useSetParentE2node, usePublishDraft } from '../../hook
  * - onClose: Callback to close the modal
  */
 const PublishModal = ({ draft, onSuccess, onClose }) => {
-  const [e2nodeTitle, setE2nodeTitle] = useState(draft?.title || '')
+  // Parse the draft title to extract e2node and writeuptype
+  const parsedTitle = parseDraftTitle(draft?.title)
+
+  const [e2nodeTitle, setE2nodeTitle] = useState(parsedTitle.e2nodeTitle || '')
   const [suggestions, setSuggestions] = useState([])
   const [selectedE2node, setSelectedE2node] = useState(null)
   const [hideFromNewWriteups, setHideFromNewWriteups] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const hasSetWriteuptypeFromTitleRef = useRef(false) // Track if we've already set writeuptype from title
 
   // Use shared hooks
   const {
@@ -29,6 +55,24 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
     selectedWriteuptypeId,
     setSelectedWriteuptypeId
   } = useWriteuptypes()
+
+  // When writeuptypes load, pre-select the one from the title (if any)
+  // This overrides the default "thing" selection if we have a writeuptype in the title
+  useEffect(() => {
+    if (
+      parsedTitle.writeuptypeName &&
+      writeuptypes.length > 0 &&
+      !hasSetWriteuptypeFromTitleRef.current
+    ) {
+      const matchingType = writeuptypes.find(
+        wt => wt.title.toLowerCase() === parsedTitle.writeuptypeName.toLowerCase()
+      )
+      if (matchingType) {
+        hasSetWriteuptypeFromTitleRef.current = true
+        setSelectedWriteuptypeId(matchingType.node_id)
+      }
+    }
+  }, [writeuptypes, parsedTitle.writeuptypeName, setSelectedWriteuptypeId])
 
   const {
     setParentE2node,
@@ -206,9 +250,19 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
 
         {/* Body */}
         <div style={{ padding: '20px' }}>
-          <p style={{ marginTop: 0, marginBottom: '15px', color: '#666' }}>
-            Publishing: <strong>{draft?.title}</strong>
-          </p>
+          {/* Dynamic title preview that updates with e2node title and writeup type */}
+          {(() => {
+            const selectedType = writeuptypes.find(wt => wt.node_id === selectedWriteuptypeId)
+            const typeName = selectedType?.title || ''
+            const displayTitle = e2nodeTitle.trim()
+              ? (typeName ? `${e2nodeTitle.trim()} (${typeName})` : e2nodeTitle.trim())
+              : draft?.title || 'Untitled'
+            return (
+              <p style={{ marginTop: 0, marginBottom: '15px', color: '#666' }}>
+                Publishing as: <strong>{displayTitle}</strong>
+              </p>
+            )
+          })()}
 
           {/* Error message */}
           {error && (

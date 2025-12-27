@@ -653,7 +653,8 @@ At least one of the following fields must be provided:
     "doctext": 1,
     "status": "findable"
   },
-  "draft_id": 2213271
+  "draft_id": 2213271,
+  "doctext": "<p>The current content...</p>"
 }
 ```
 
@@ -661,6 +662,7 @@ At least one of the following fields must be provided:
 * **success** - Boolean (1/0) indicating operation succeeded
 * **updated** - Object showing which fields were updated
 * **draft_id** - The ID of the updated draft
+* **doctext** - The current doctext content from the database (source of truth for keeping client state in sync)
 
 **Version History:**
 

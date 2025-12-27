@@ -110,14 +110,52 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
               borderTop: '6px solid #507898'
             }}
           />
-          {cools.map((c, i) => (
+          {/* Show first 5 users, then "and X others" if more */}
+          {cools.slice(0, 5).map((c, i) => (
             <span key={c.node_id || i}>
               {i > 0 && ', '}
               <LinkNode type="user" title={c.title} style={{ color: '#507898' }} />
             </span>
           ))}
+          {cools.length > 5 && (
+            <span style={{ fontStyle: 'italic' }}>
+              {' '}and {cools.length - 5} other{cools.length - 5 === 1 ? '' : 's'}
+            </span>
+          )}
         </span>
       )}
+    </span>
+  )
+}
+
+/**
+ * DraftStatusBadge - Shows the publication status with appropriate styling
+ * Used when displaying draft content via WriteupDisplay
+ */
+const DraftStatusBadge = ({ status }) => {
+  const statusStyles = {
+    private: { backgroundColor: '#6c757d', color: '#fff' },
+    findable: { backgroundColor: '#17a2b8', color: '#fff' },
+    review: { backgroundColor: '#ffc107', color: '#212529' },
+    removed: { backgroundColor: '#dc3545', color: '#fff' },
+    unknown: { backgroundColor: '#6c757d', color: '#fff' }
+  }
+
+  const style = statusStyles[status] || statusStyles.unknown
+
+  return (
+    <span
+      style={{
+        ...style,
+        padding: '2px 8px',
+        borderRadius: '4px',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        marginLeft: '4px'
+      }}
+    >
+      {status}
     </span>
   )
 }
@@ -135,10 +173,20 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
  * - .content for doctext
  * - .contentfooter (table with wu_footer row) for voting/C!s
  *
+ * Props:
+ *   writeup - writeup or draft data object
+ *   user - current user object
+ *   showVoting - whether to show voting controls (default true, should be false for drafts)
+ *   showMetadata - whether to show footer with C!s/rep (default true)
+ *   onEdit - callback for edit action
+ *   isDraft - if true, display as draft with status badge instead of writeuptype
+ *   publicationStatus - draft publication status (private, findable, review, removed)
+ *
  * Usage:
  *   <WriteupDisplay writeup={writeupData} user={userData} />
+ *   <WriteupDisplay writeup={draftData} user={userData} isDraft publicationStatus="private" />
  */
-const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true, onEdit }) => {
+const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true, onEdit, isDraft = false, publicationStatus }) => {
   if (!writeup) return null
 
   const {
@@ -148,8 +196,12 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
     parent,
     doctext,
     writeuptype,
-    createtime
+    createtime,
+    publishtime
   } = writeup
+
+  // Use publishtime if available, otherwise fall back to createtime (for legacy writeups)
+  const displayDate = publishtime || createtime
 
   // State for reputation/votes (can be updated without page reload)
   const [voteState, setVoteState] = useState({
@@ -279,10 +331,17 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
         <table border="0" cellPadding="0" cellSpacing="0" width="100%">
           <tbody>
             <tr className="wu_header">
-              {/* Type: (writeuptype) linking to this writeup */}
+              {/* Type: (writeuptype) linking to this writeup, or (draft) with status badge */}
               <td className="wu_type">
                 <span className="type">
-                  (<LinkNode id={node_id} display={writeuptype || 'writeup'} />)
+                  {isDraft ? (
+                    <>
+                      (<span style={{ fontStyle: 'inherit' }}>draft</span>)
+                      <DraftStatusBadge status={publicationStatus || 'unknown'} />
+                    </>
+                  ) : (
+                    <>(<LinkNode id={node_id} display={writeuptype || 'writeup'} />)</>
+                  )}
                 </span>
               </td>
               {/* Author with anchor for hash links */}
@@ -301,10 +360,10 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                   </small>
                 )}
               </td>
-              {/* Creation date */}
+              {/* Publication/creation date */}
               <td style={{ textAlign: 'right' }} className="wu_dtcreate">
-                <small className="date" title={formatDate(createtime)}>
-                  {formatDate(createtime)}
+                <small className="date" title={formatDate(displayDate)}>
+                  {formatDate(displayDate)}
                 </small>
               </td>
             </tr>
@@ -324,8 +383,16 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
           <table border="0" cellPadding="0" cellSpacing="0" width="100%">
             <tbody>
               <tr className="wu_footer">
-                {/* Tools cell - admin gear and message icon on left */}
-                {(showAdminTools || canMessage) && (
+                {/* Draft message - show instead of tools/voting/C!s for drafts */}
+                {isDraft && (
+                  <td style={{ textAlign: 'left' }} className="wu_tools">
+                    <small style={{ color: '#888' }}>
+                      This is an unpublished draft. Only you and any collaborators can see it.
+                    </small>
+                  </td>
+                )}
+                {/* Tools cell - admin gear and message icon on left (not for drafts) */}
+                {!isDraft && (showAdminTools || canMessage) && (
                   <td style={{ textAlign: 'left' }} className="wu_tools">
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
                       {showAdminTools && (
@@ -371,8 +438,8 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                     </span>
                   </td>
                 )}
-                {/* Voting controls - modern icon buttons */}
-                {showVoting && canVote && (
+                {/* Voting controls - modern icon buttons (not for drafts) */}
+                {!isDraft && showVoting && canVote && (
                   <td className="wu_vote">
                     <span className="vote_buttons">
                       <button
@@ -413,7 +480,8 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                   </td>
                 )}
 
-                {/* C! display and button - matches legacy writeupcools htmlcode */}
+                {/* C! display and button - matches legacy writeupcools htmlcode (not for drafts) */}
+                {!isDraft && (
                 <td className="wu_cfull" style={{ verticalAlign: 'middle' }}>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
                     {/* Show C! count with tooltip showing coolers on hover/click */}
@@ -474,8 +542,10 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                     )}
                   </div>
                 </td>
+                )}
 
-                {/* Reputation display - show if user has voted OR is the author */}
+                {/* Reputation display - show if user has voted OR is the author (not for drafts) */}
+                {!isDraft && (
                 <td style={{ textAlign: 'right' }} className="wu_rep">
                   {(isAuthor || (voteState.userVote !== null && voteState.userVote !== undefined)) && (
                     <small>
@@ -483,6 +553,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                     </small>
                   )}
                 </td>
+                )}
               </tr>
             </tbody>
           </table>
@@ -503,8 +574,8 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
         </div>
       )}
 
-      {/* Admin modal */}
-      {showAdminTools && (
+      {/* Admin modal (writeups only, not drafts) */}
+      {!isDraft && showAdminTools && (
         <AdminModal
           writeup={{ ...writeup, ...writeupState, ...voteState, vote: voteState.userVote, cools: coolState.cools }}
           user={user}
@@ -543,8 +614,8 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
         />
       )}
 
-      {/* Message modal for messaging the author */}
-      {canMessage && (
+      {/* Message modal for messaging the author (writeups only, not drafts) */}
+      {!isDraft && canMessage && (
         <MessageModal
           isOpen={messageModalOpen}
           onClose={() => setMessageModalOpen(false)}
@@ -574,33 +645,37 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
         />
       )}
 
-      {/* Vote confirmation modal */}
-      <ConfirmModal
-        isOpen={pendingVote !== null}
-        onClose={() => setPendingVote(null)}
-        onConfirm={() => {
-          handleVote(node_id, pendingVote.weight, setVoteState, setErrorMessage)
-          setPendingVote(null)
-        }}
-        title={pendingVote?.weight === 1 ? 'Confirm Upvote' : 'Confirm Downvote'}
-        message={`Are you sure you want to ${pendingVote?.weight === 1 ? 'upvote' : 'downvote'} this writeup by ${author?.title || 'this author'}?`}
-        confirmText={pendingVote?.weight === 1 ? 'Upvote' : 'Downvote'}
-        confirmColor={pendingVote?.weight === 1 ? '#4a4' : '#a44'}
-      />
+      {/* Vote confirmation modal (writeups only, not drafts) */}
+      {!isDraft && (
+        <ConfirmModal
+          isOpen={pendingVote !== null}
+          onClose={() => setPendingVote(null)}
+          onConfirm={() => {
+            handleVote(node_id, pendingVote.weight, setVoteState, setErrorMessage)
+            setPendingVote(null)
+          }}
+          title={pendingVote?.weight === 1 ? 'Confirm Upvote' : 'Confirm Downvote'}
+          message={`Are you sure you want to ${pendingVote?.weight === 1 ? 'upvote' : 'downvote'} this writeup by ${author?.title || 'this author'}?`}
+          confirmText={pendingVote?.weight === 1 ? 'Upvote' : 'Downvote'}
+          confirmColor={pendingVote?.weight === 1 ? '#4a4' : '#a44'}
+        />
+      )}
 
-      {/* Cool confirmation modal */}
-      <ConfirmModal
-        isOpen={pendingCool}
-        onClose={() => setPendingCool(false)}
-        onConfirm={() => {
-          handleCool(node_id, user, setCoolState, setErrorMessage)
-          setPendingCool(false)
-        }}
-        title="Confirm C!"
-        message={`Are you sure you want to C! this writeup by ${author?.title || 'this author'}? This action cannot be undone.`}
-        confirmText="C!"
-        confirmColor="#667eea"
-      />
+      {/* Cool confirmation modal (writeups only, not drafts) */}
+      {!isDraft && (
+        <ConfirmModal
+          isOpen={pendingCool}
+          onClose={() => setPendingCool(false)}
+          onConfirm={() => {
+            handleCool(node_id, user, setCoolState, setErrorMessage)
+            setPendingCool(false)
+          }}
+          title="Confirm C!"
+          message={`Are you sure you want to C! this writeup by ${author?.title || 'this author'}? This action cannot be undone.`}
+          confirmText="C!"
+          confirmColor="#667eea"
+        />
+      )}
     </div>
   )
 }

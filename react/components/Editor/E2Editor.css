@@ -25,6 +25,47 @@
   outline: none;
 }
 
+/* ============================================
+   ProseMirror Core Editor Sizing
+   Makes the entire editor area clickable/selectable
+   ============================================ */
+
+/* The ProseMirror element must fill its container so clicks anywhere work */
+.ProseMirror {
+  min-height: 100%;
+  cursor: text;
+}
+
+/* Ensure the editor wrapper container stretches ProseMirror properly */
+.tiptap {
+  display: flex;
+  flex-direction: column;
+  min-height: inherit;
+  height: 100%;
+}
+
+/* Make sure ProseMirror fills available space within the wrapper */
+.tiptap .ProseMirror {
+  flex: 1;
+  min-height: 180px;
+}
+
+/* Editor wrapper container needs to pass through min-height */
+.e2-editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  height: 100%;
+}
+
+/* Make the EditorContent wrapper (tiptap's container) fill the wrapper */
+.e2-editor-wrapper > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: inherit;
+}
+
 /* E2 Link styling in editor */
 .e2-editor-content e2link {
   color: #4060b0;

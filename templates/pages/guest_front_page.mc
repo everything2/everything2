@@ -23,12 +23,15 @@ my $basesheet = $basesheet_node->cdn_link;
 my $zensheet = $zensheet_node->cdn_link;
 my $printsheet = $printsheet_node->cdn_link;
 my $favicon = "/static/favicon.ico";
-</%init>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
+# Only show ads for guest users
+my $is_guest = $.REQUEST->is_guest;
+</%init>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta name="description" content="Everything2 is a community for fiction, nonfiction, poetry, reviews, and more. Encyclopedic articles on all subjects, written by a community of volunteer authors.">
 <title>Everything2</title>
 <link rel="stylesheet" id="basesheet" type="text/css" href="<% $basesheet %>" media="all">
@@ -48,6 +51,7 @@ my $favicon = "/static/favicon.ico";
 
 
 <body class="fullpage" id="guestfrontpage">
+% if ($is_guest) {
     <div class="headerads">
         <center>
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0613380022572506"
@@ -61,6 +65,7 @@ my $favicon = "/static/favicon.ico";
         </script>
         </center>
     </div>
+% }
     <div id="header">
            <div id="e2logo"><a href="/title/About+Everything2">Everything<span id="e2logo2">2</span></a></div>
 <h2 id='tagline'><a href="/title/Everything2+Help">Read with us. Write for us.</a></h2>

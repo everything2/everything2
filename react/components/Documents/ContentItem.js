@@ -82,9 +82,12 @@ const ContentItem = ({
           </a>
         )}
         {showType && type && (
-          <span className="type">
-            (<a href={`/node/${node_id}`}>{type}</a>)
-          </span>
+          <>
+            {' '}
+            <span className="type">
+              (<a href={`/node/${node_id}`}>{type}</a>)
+            </span>
+          </>
         )}
         {showByline && author && (
           <cite>

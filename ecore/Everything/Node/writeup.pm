@@ -30,6 +30,12 @@ sub single_writeup_display
 
   $values->{writeuptype} = $self->writeuptype;
 
+  # Add publishtime for writeups (preferred over createtime for display)
+  if($self->publishtime)
+  {
+    $values->{publishtime} = $self->APP->iso_date_format($self->publishtime);
+  }
+
   # Add author lasttime data for logged-in users
   # Used for "time since author was here" display
   my $author = $self->author;

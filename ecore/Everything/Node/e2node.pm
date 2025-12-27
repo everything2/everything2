@@ -196,6 +196,7 @@ around 'insert' => sub {
  my ($orig, $self, $user, $data) = @_;
 
  my $newnode = $self->$orig($user, $data);
+ return unless $newnode;  # Parent insert failed
  $newnode->update($user, {"author_user" => $self->APP->node_by_name("Content Editors","usergroup")->node_id});
  return $newnode;
 };

@@ -11904,7 +11904,7 @@ sub showpoll
   $str .= '<p><cite>by '.linkNode($$POLL{poll_author}, '', {-class => 'author'}).'</cite>';
 
   $str .= $query -> small(' ('.linkNode($POLL, 'edit', {displaytype => 'edit'}).')')
-    if $$POLL{poll_status} eq 'new' && $query -> param('displaytype') ne 'edit' && canUpdateNode($USER, $POLL);
+    if $$POLL{poll_status} eq 'new' && ($query->param('displaytype') // '') ne 'edit' && canUpdateNode($USER, $POLL);
 
   $str .= '</p><h3>'
     .parseLinks($query -> escapeHTML($$POLL{question})) # question is unsanitised user input...

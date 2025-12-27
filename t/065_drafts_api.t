@@ -215,9 +215,12 @@ sub cleanup_test_nodes {
     is( $writeup_node->{type}{title},
         'writeup', 'Node type changed to writeup' );
 
-    # Step 5: Verify draft table entry is deleted
-    my $draft_row = $DB->sqlSelect( '*', 'draft', "draft_id=$draft_id" );
-    ok( !$draft_row, 'Draft table entry deleted after publication' );
+    # Step 5: Verify draft table entry is kept (writeups extend drafts)
+    my $draft_row = $DB->{dbh}->selectrow_hashref(
+        "SELECT * FROM draft WHERE draft_id = ?", {}, $draft_id
+    );
+    ok( $draft_row, 'Draft table entry preserved after publication' );
+    is( $draft_row->{publication_status}, 0, 'Publication status set to 0 (published)' );
 
     # Step 6: Verify writeup table entry exists
     my $writeup_row =
@@ -1084,9 +1087,9 @@ sub cleanup_test_nodes {
           @{ $api->publish_draft( $regular_request, $draft_id ) };
         is( $publish_status, $api->HTTP_OK, "Writeup $i published" );
 
-        # Small delay to ensure distinct publishtimes
-        # (MySQL datetime has 1-second resolution)
-        select( undef, undef, undef, 0.1 );
+        # MySQL datetime has 1-second resolution, so we need at least 1 second
+        # between publishes to ensure distinct publishtimes
+        sleep(1) if $i < 3;
     }
 
     # Query for the user's most recent writeup
@@ -1110,6 +1113,572 @@ sub cleanup_test_nodes {
 
     # Cleanup
     cleanup_test_nodes( @draft_ids, $e2node_id );
+}
+
+# =============================================================================
+# DELETE DRAFT TESTS
+# =============================================================================
+
+# Test 23: Author can delete their own draft
+{
+    # Create a draft
+    $regular_request->set_postdata(
+        {
+            title   => 'Draft to Delete',
+            doctext => '<p>This draft will be deleted.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    is( $create_status, $api->HTTP_OK, 'Draft created for delete test' );
+    my $draft_id = $create_response->{draft}{node_id};
+    ok( $draft_id, 'Got draft ID' );
+
+    # Verify draft exists
+    my $draft_node = $DB->getNodeById($draft_id);
+    ok( $draft_node, 'Draft exists before deletion' );
+    is( $draft_node->{type}{title}, 'draft', 'Node is a draft' );
+
+    # Delete the draft
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $regular_request, $draft_id ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK' );
+    ok( $delete_response->{success}, 'delete_draft succeeds' );
+    like( $delete_response->{message}, qr/deleted/i, 'Success message mentions deleted' );
+
+    # Verify draft is actually gone
+    my $deleted_node = $DB->getNodeById($draft_id);
+    ok( !$deleted_node, 'Draft no longer exists after deletion' );
+
+    # Verify draft table entry is gone
+    my $draft_row = $DB->sqlSelect( '*', 'draft', "draft_id=$draft_id" );
+    ok( !$draft_row, 'Draft table entry deleted' );
+}
+
+# Test 24: Guest cannot delete drafts
+{
+    # Create a draft as regular user first
+    $regular_request->set_postdata(
+        {
+            title   => 'Draft for Guest Delete Test',
+            doctext => '<p>Guest should not be able to delete this.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Try to delete as guest
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $guest_request, $draft_id ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK for guest (with error)' );
+    ok( !$delete_response->{success}, 'delete_draft fails for guest' );
+    like( $delete_response->{error}, qr/logged in/i, 'Error mentions login requirement' );
+
+    # Verify draft still exists
+    my $draft_node = $DB->getNodeById($draft_id);
+    ok( $draft_node, 'Draft still exists after failed guest delete' );
+
+    # Cleanup
+    cleanup_test_nodes($draft_id);
+}
+
+# Test 25: User cannot delete another user's draft
+{
+    # Create a draft as admin
+    my $admin_request = MockRequest->new(
+        node_id        => $admin_user->{node_id},
+        title          => $admin_user->{title},
+        nodedata       => $admin_user,
+        is_admin_flag  => 1,
+        is_editor_flag => 1,
+        is_guest_flag  => 0
+    );
+
+    $admin_request->set_postdata(
+        {
+            title   => 'Admin Draft for Delete Security Test',
+            doctext => '<p>Regular user should not be able to delete this.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($admin_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+    ok( $draft_id, 'Admin draft created' );
+
+    # Verify admin is the author
+    my $draft_node = $DB->getNodeById($draft_id);
+    is( $draft_node->{author_user}, $admin_user->{node_id},
+        'Admin is the draft author' );
+
+    # Try to delete as regular user (not the author)
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $regular_request, $draft_id ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK (with error)' );
+    ok( !$delete_response->{success}, 'delete_draft fails for non-author' );
+    like( $delete_response->{error}, qr/own drafts/i,
+        'Error mentions can only delete own drafts' );
+
+    # Verify draft still exists
+    my $still_exists = $DB->getNodeById($draft_id);
+    ok( $still_exists, 'Draft still exists after failed unauthorized delete' );
+    is( $still_exists->{author_user}, $admin_user->{node_id},
+        'Draft author unchanged' );
+
+    # Cleanup
+    cleanup_test_nodes($draft_id);
+}
+
+# Test 26: Admin/god can delete any user's draft
+{
+    # Create a draft as regular user
+    $regular_request->set_postdata(
+        {
+            title   => 'User Draft for Admin Delete Test',
+            doctext => '<p>Admin should be able to delete this.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Verify regular user is the author
+    my $draft_node = $DB->getNodeById($draft_id);
+    is( $draft_node->{author_user}, $regular_user->{node_id},
+        'Regular user is the draft author' );
+
+    # Delete as admin (god)
+    my $admin_request = MockRequest->new(
+        node_id        => $admin_user->{node_id},
+        title          => $admin_user->{title},
+        nodedata       => $admin_user,
+        is_admin_flag  => 1,
+        is_editor_flag => 1,
+        is_guest_flag  => 0
+    );
+
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $admin_request, $draft_id ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK for admin' );
+    ok( $delete_response->{success}, 'Admin can delete any user draft' );
+
+    # Verify draft is gone
+    my $deleted_node = $DB->getNodeById($draft_id);
+    ok( !$deleted_node, 'Draft deleted by admin' );
+}
+
+# Test 27: Cannot delete non-existent draft
+{
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $regular_request, 999999999 ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK (with error)' );
+    ok( !$delete_response->{success}, 'delete_draft fails for non-existent draft' );
+    like( $delete_response->{error}, qr/not found/i, 'Error mentions not found' );
+}
+
+# Test 28: Cannot delete a non-draft node type (e.g., writeup)
+{
+    # Create an e2node and writeup directly
+    my $e2node_title = 'E2node for Non-Draft Delete Test ' . time();
+    my $e2node_id =
+      $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+
+    # Create a draft and publish it to make a writeup
+    $regular_request->set_postdata(
+        {
+            title   => $e2node_title,
+            doctext => '<p>This will become a writeup.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Publish the draft (converts to writeup)
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $publish_status, $publish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+    is( $publish_status, $api->HTTP_OK, 'Draft published to writeup' );
+
+    # Verify it's now a writeup
+    my $writeup_node = $DB->getNodeById($draft_id);
+    is( $writeup_node->{type}{title}, 'writeup', 'Node is now a writeup' );
+
+    # Try to delete the writeup using delete_draft (should fail)
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $regular_request, $draft_id ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK (with error)' );
+    ok( !$delete_response->{success}, 'delete_draft fails for writeup' );
+    like( $delete_response->{error}, qr/not a draft/i, 'Error mentions not a draft' );
+
+    # Verify writeup still exists
+    my $still_exists = $DB->getNodeById($draft_id);
+    ok( $still_exists, 'Writeup still exists after failed delete' );
+    is( $still_exists->{type}{title}, 'writeup', 'Node is still a writeup' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# Test 29: Delete removes associated data (autosave, nodenotes, links)
+{
+    # Create a draft
+    $regular_request->set_postdata(
+        {
+            title   => 'Draft with Associated Data',
+            doctext => '<p>This draft has related records.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Add an autosave entry
+    $DB->{dbh}->do(
+        "INSERT INTO autosave (author_user, node_id, doctext, createtime) VALUES (?, ?, 'test autosave', NOW())",
+        {}, $regular_user->{node_id}, $draft_id
+    );
+    $DB->{dbh}->commit();
+
+    # Add a nodenote
+    $DB->{dbh}->do(
+        "INSERT INTO nodenote (nodenote_nodeid, noter_user, notetext, timestamp) VALUES (?, ?, 'test note', NOW())",
+        {}, $draft_id, $regular_user->{node_id}
+    );
+    $DB->{dbh}->commit();
+
+    # Add a link from draft
+    $DB->{dbh}->do(
+        "INSERT INTO links (from_node, to_node, linktype, hits, food) VALUES (?, 1, 0, 0, 0)",
+        {}, $draft_id
+    );
+    $DB->{dbh}->commit();
+
+    # Verify associated data exists
+    my $autosave_count = $DB->{dbh}->selectrow_array(
+        "SELECT COUNT(*) FROM autosave WHERE node_id = ?", {}, $draft_id
+    );
+    is( $autosave_count, 1, 'Autosave entry exists before delete' );
+
+    my $note_count = $DB->{dbh}->selectrow_array(
+        "SELECT COUNT(*) FROM nodenote WHERE nodenote_nodeid = ?", {}, $draft_id
+    );
+    is( $note_count, 1, 'Nodenote exists before delete' );
+
+    my $link_count = $DB->{dbh}->selectrow_array(
+        "SELECT COUNT(*) FROM links WHERE from_node = ?", {}, $draft_id
+    );
+    is( $link_count, 1, 'Link exists before delete' );
+
+    # Delete the draft
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $regular_request, $draft_id ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK' );
+    ok( $delete_response->{success}, 'delete_draft succeeds' );
+
+    # Verify all associated data is cleaned up
+    $autosave_count = $DB->{dbh}->selectrow_array(
+        "SELECT COUNT(*) FROM autosave WHERE node_id = ?", {}, $draft_id
+    );
+    is( $autosave_count, 0, 'Autosave entry deleted' );
+
+    $note_count = $DB->{dbh}->selectrow_array(
+        "SELECT COUNT(*) FROM nodenote WHERE nodenote_nodeid = ?", {}, $draft_id
+    );
+    is( $note_count, 0, 'Nodenote deleted' );
+
+    $link_count = $DB->{dbh}->selectrow_array(
+        "SELECT COUNT(*) FROM links WHERE from_node = ?", {}, $draft_id
+    );
+    is( $link_count, 0, 'Link deleted' );
+}
+
+# Test 30: Delete draft with manually added links - links are cleaned up
+{
+    # Create a draft
+    $regular_request->set_postdata(
+        {
+            title   => 'Draft with Links',
+            doctext => '<p>This draft has links that should be cleaned up.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Manually add a link from draft to another node (simulating a reference)
+    # Note: set_parent_e2node doesn't create links, but the delete should still
+    # clean up any links that exist
+    $DB->{dbh}->do(
+        "INSERT INTO links (from_node, to_node, linktype, hits, food) VALUES (?, 1, 0, 0, 0)",
+        {}, $draft_id
+    );
+    $DB->{dbh}->commit();
+
+    # Verify link exists
+    my $link_count = $DB->{dbh}->selectrow_array(
+        "SELECT COUNT(*) FROM links WHERE from_node = ?", {}, $draft_id
+    );
+    is( $link_count, 1, 'Link exists before delete' );
+
+    # Delete the draft
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $regular_request, $draft_id ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK' );
+    ok( $delete_response->{success}, 'delete_draft succeeds' );
+
+    # Verify link is cleaned up
+    $link_count = $DB->{dbh}->selectrow_array(
+        "SELECT COUNT(*) FROM links WHERE from_node = ?", {}, $draft_id
+    );
+    is( $link_count, 0, 'Link deleted with draft' );
+}
+
+# Test 31: Concurrent delete attempts (idempotent behavior)
+{
+    # Create a draft
+    $regular_request->set_postdata(
+        {
+            title   => 'Draft for Concurrent Delete Test',
+            doctext => '<p>Testing idempotent delete behavior.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # First delete should succeed
+    my ( $delete_status1, $delete_response1 ) =
+      @{ $api->delete_draft( $regular_request, $draft_id ) };
+    is( $delete_status1, $api->HTTP_OK, 'First delete returns HTTP_OK' );
+    ok( $delete_response1->{success}, 'First delete succeeds' );
+
+    # Second delete should fail (draft no longer exists)
+    my ( $delete_status2, $delete_response2 ) =
+      @{ $api->delete_draft( $regular_request, $draft_id ) };
+    is( $delete_status2, $api->HTTP_OK, 'Second delete returns HTTP_OK (with error)' );
+    ok( !$delete_response2->{success}, 'Second delete fails (already deleted)' );
+    like( $delete_response2->{error}, qr/not found/i, 'Error mentions not found' );
+}
+
+# =============================================================================
+# UNPUBLISH/REPUBLISH FLOW TESTS
+# =============================================================================
+
+# Test 32: Unpublish writeup preserves title with writeuptype suffix
+{
+    # Create e2node for this test
+    my $e2node_title = 'Unpublish Test Node ' . time();
+    my $e2node_id    = $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+    ok( $e2node_id, 'Created e2node for unpublish test' );
+
+    # Create and publish a draft
+    $regular_request->set_postdata(
+        {
+            title   => 'Draft for Unpublish Test',
+            doctext => '<p>This will be published then unpublished.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+    ok( $draft_id, 'Draft created for unpublish test' );
+
+    # Publish the draft
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $publish_status, $publish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+    is( $publish_status, $api->HTTP_OK, 'Draft published successfully' );
+
+    # Verify writeup title format
+    my $writeup_node = $DB->getNodeById($draft_id);
+    is( $writeup_node->{type}{title}, 'writeup', 'Node is now a writeup' );
+    my $expected_title = "$e2node_title (idea)";
+    is( $writeup_node->{title}, $expected_title, 'Writeup title has writeuptype suffix' );
+
+    # Now unpublish via admin API (return to drafts)
+    # First we need to use the admin API
+    require Everything::API::admin;
+    my $admin_api = Everything::API::admin->new( APP => $APP, DB => $DB );
+
+    my ( $remove_status, $remove_response ) =
+      @{ $admin_api->remove_writeup( $regular_request, $draft_id ) };
+    is( $remove_status, $admin_api->HTTP_OK, 'remove_writeup returns HTTP_OK' );
+    ok( $remove_response->{success}, 'Writeup removed successfully' );
+
+    # Verify it's now a draft with the original writeup title preserved
+    # Force cache refresh
+    $DB->getCache->removeNode($writeup_node);
+    my $draft_node = $DB->getNodeById($draft_id);
+    is( $draft_node->{type}{title}, 'draft', 'Node is now a draft again' );
+    is( $draft_node->{title}, $expected_title, 'Draft title preserved writeuptype suffix' );
+
+    # The title should still be "Unpublish Test Node (idea)" so React can parse it
+    like( $draft_node->{title}, qr/\(idea\)$/, 'Title ends with (idea) suffix' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# Test 33: Republish with different writeuptype changes title correctly
+{
+    # Create e2node for this test
+    my $e2node_title = 'Republish Test Node ' . time();
+    my $e2node_id    = $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+    ok( $e2node_id, 'Created e2node for republish test' );
+
+    # Create and publish a draft as "idea"
+    $regular_request->set_postdata(
+        {
+            title   => 'Draft for Republish Test',
+            doctext => '<p>This will be published, unpublished, and republished.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Publish as "idea"
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $publish_status, $publish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+    is( $publish_status, $api->HTTP_OK, 'Draft published as idea' );
+
+    my $writeup_node = $DB->getNodeById($draft_id);
+    is( $writeup_node->{title}, "$e2node_title (idea)", 'First publish title is correct' );
+
+    # Unpublish
+    require Everything::API::admin;
+    my $admin_api = Everything::API::admin->new( APP => $APP, DB => $DB );
+
+    my ( $remove_status, $remove_response ) =
+      @{ $admin_api->remove_writeup( $regular_request, $draft_id ) };
+    ok( $remove_response->{success}, 'Writeup removed' );
+
+    # Verify draft title still has the old writeuptype
+    $DB->getCache->removeNode($writeup_node);
+    my $draft_node = $DB->getNodeById($draft_id);
+    is( $draft_node->{title}, "$e2node_title (idea)", 'Draft preserves title with idea suffix' );
+
+    # Now republish with a DIFFERENT writeuptype - "thing" instead of "idea"
+    my $thing_writeuptype = $DB->getNode( 'thing', 'writeuptype' );
+    ok( $thing_writeuptype, 'Got thing writeuptype' );
+
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $thing_writeuptype->{node_id}
+        }
+    );
+
+    my ( $republish_status, $republish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+    is( $republish_status, $api->HTTP_OK, 'Draft republished as thing' );
+    ok( $republish_response->{success}, 'Republish succeeded' );
+
+    # Verify the title now has "thing" instead of "idea"
+    $DB->getCache->removeNode($draft_node);
+    my $republished_node = $DB->getNodeById($draft_id);
+    is( $republished_node->{type}{title}, 'writeup', 'Node is writeup again' );
+    is( $republished_node->{title}, "$e2node_title (thing)", 'Title updated with new writeuptype' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# Test 34: Republish to same e2node with same writeuptype (no duplicate suffix)
+{
+    # Create e2node for this test
+    my $e2node_title = 'No Duplicate Suffix Test ' . time();
+    my $e2node_id    = $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+    ok( $e2node_id, 'Created e2node for no-duplicate test' );
+
+    # Create and publish a draft
+    $regular_request->set_postdata(
+        {
+            title   => 'Draft for No Duplicate Test',
+            doctext => '<p>Testing no duplicate suffix.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Publish as "idea"
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $publish_status, $publish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+    is( $publish_status, $api->HTTP_OK, 'Draft published' );
+
+    # Unpublish
+    require Everything::API::admin;
+    my $admin_api = Everything::API::admin->new( APP => $APP, DB => $DB );
+    $admin_api->remove_writeup( $regular_request, $draft_id );
+
+    # Republish with same writeuptype to same e2node
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $republish_status, $republish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+    is( $republish_status, $api->HTTP_OK, 'Draft republished' );
+
+    # Verify title does NOT have duplicate suffix like "title (idea) (idea)"
+    my $republished_node = $DB->getNodeById($draft_id);
+    is( $republished_node->{title}, "$e2node_title (idea)",
+        'Title has single writeuptype suffix, not duplicated' );
+    unlike( $republished_node->{title}, qr/\(idea\).*\(idea\)/,
+        'No duplicate (idea) suffix' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
 }
 
 done_testing();

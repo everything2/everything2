@@ -333,13 +333,15 @@ sub _build_pagetitle
         # Skip the current node
         next if $match->{node_id} == $node->node_id;
 
+        # Get type title, skip if not available
+        my $type_title = $match->{type}{title} // '';
+        next unless $type_title;
+
         # Skip drafts
-        next if $match->{type}{title} eq 'draft';
+        next if $type_title eq 'draft';
 
         # Check if user can read this node
         next unless $DB->canReadNode($user->NODEDATA, $match);
-
-        my $type_title = $match->{type}{title};
         my $link_url = "/node/" . $match->{node_id};
         my $link_html = qq{<a href="$link_url">$type_title</a>};
 

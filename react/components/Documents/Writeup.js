@@ -98,6 +98,23 @@ const Writeup = ({ data }) => {
   const showTools = isEditor && parent_e2node
   const softlinks = parent_e2node?.softlinks || []
 
+  // Check if user already has a writeup on the parent e2node
+  const parentWriteups = parent_e2node?.group || []
+  const userHasWriteup = user && parentWriteups.some(
+    wu => wu.author && String(wu.author.node_id) === String(user.node_id)
+  )
+
+  // Check if parent e2node is locked
+  const isLocked = !!(parent_e2node?.locked)
+  const lockReason = parent_e2node?.lock_reason
+  const lockUserTitle = parent_e2node?.lock_user_title
+
+  // Show inline editor for adding new writeup if:
+  // - User is logged in (not guest)
+  // - User doesn't already have a writeup on this e2node
+  // - Parent e2node is not locked
+  const showAddWriteupEditor = !isGuest && parent_e2node && !userHasWriteup && !isLocked
+
   return (
     <div className="writeup-page">
       {/* Toolbar - E2 Node Tools for editors, Edit button for editors/owners */}
@@ -197,6 +214,44 @@ const Writeup = ({ data }) => {
           onClose={() => setToolsModalOpen(false)}
           user={user}
         />
+      )}
+
+      {/* Locked node warning - shown where "add a writeup" would go */}
+      {isLocked && !isGuest && (
+        <div className="locked-node-warning" style={{
+          backgroundColor: '#fff3cd',
+          border: '1px solid #ffc107',
+          borderRadius: '4px',
+          padding: '12px 16px',
+          marginTop: '16px',
+          marginBottom: '16px',
+          color: '#856404'
+        }}>
+          <strong>🔒 This node is locked</strong>
+          {lockUserTitle && <span> by <em>{lockUserTitle}</em></span>}
+          {lockReason && <span>: {lockReason}</span>}
+          <div style={{ marginTop: '4px' }}>
+            This node is not accepting new contributions at this time.
+          </div>
+        </div>
+      )}
+
+      {/* Inline writeup editor for adding new writeup to parent e2node */}
+      {showAddWriteupEditor && (
+        <div style={{ marginTop: '24px' }}>
+          <InlineWriteupEditor
+            e2nodeId={parent_e2node.node_id}
+            e2nodeTitle={parent_e2node.title}
+            initialContent=""
+            onPublish={(writeupId) => {
+              // Redirect to the e2node to show all writeups
+              window.location.href = `/title/${encodeURIComponent(parent_e2node.title)}`
+            }}
+            onCancel={() => {
+              // Optional: could hide the editor, but for now do nothing
+            }}
+          />
+        </div>
       )}
     </div>
   )

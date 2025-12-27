@@ -89,7 +89,16 @@ sub report_error {
     }
 
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
+
+    # Handle empty or missing POST data
+    unless ($postdata && length($postdata)) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            { success => 0, error => 'empty_request_body' }
+        ];
+    }
+
+    $postdata = decode_utf8($postdata);
 
     my $data;
     my $json_ok = eval {
