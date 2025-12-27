@@ -5,6 +5,7 @@ import { convertToE2Syntax } from '../Editor/E2LinkExtension';
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension';
 import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
+import PreviewContent from '../Editor/PreviewContent';
 import PublishModal from './PublishModal';
 import '../Editor/E2Editor.css';
 
@@ -262,17 +263,14 @@ const EditorBeta = ({ data }) => {
   const safePagination = initialPagination || { offset: 0, limit: 20, total: 0, has_more: false };
 
   // State
-  const [showPreview, setShowPreview] = useState(false);
-  const [showHtml, setShowHtml] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
+  const [previewTrigger, setPreviewTrigger] = useState(0); // Trigger preview updates
   const [selectedDraft, setSelectedDraft] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [drafts, setDrafts] = useState(safeDrafts);
   const [draftTitle, setDraftTitle] = useState('');
   const [draftStatus, setDraftStatus] = useState('private');
   const [saving, setSaving] = useState(false);
-  const [previewHtml, setPreviewHtml] = useState('');
-  const [previewLoading, setPreviewLoading] = useState(false);
   const [lastSaveTime, setLastSaveTime] = useState(null);
   const [lastSaveType, setLastSaveType] = useState(null); // 'manual' or 'auto'
   const [showVersionHistory, setShowVersionHistory] = useState(false);
@@ -301,6 +299,10 @@ const EditorBeta = ({ data }) => {
       table: { resizable: false }
     }),
     content: defaultContent,
+    onUpdate: () => {
+      // Trigger live preview update
+      setPreviewTrigger(prev => prev + 1);
+    },
     editorProps: {
       attributes: {
         class: 'e2-editor-content',
@@ -367,19 +369,6 @@ const EditorBeta = ({ data }) => {
     }).catch(err => console.error('Failed to save editor mode preference:', err));
   }, [editor, editMode, rawHtmlContent]);
 
-  // Client-side preview rendering with E2 link parsing
-  // Uses DOMPurify for sanitization - no server round-trip needed
-  const renderPreview = useCallback(() => {
-    setPreviewLoading(true);
-    const html = getCurrentContent();
-
-    // Use client-side sanitization and link parsing
-    const { html: renderedHtml } = renderE2Content(html);
-    setPreviewHtml(renderedHtml);
-
-    setPreviewLoading(false);
-  }, [getCurrentContent]);
-
   // Autosave effect - saves directly to main draft, stashing previous version
   // Works with both rich and HTML editing modes
   useEffect(() => {
@@ -424,10 +413,8 @@ const EditorBeta = ({ data }) => {
                 : d
             ));
 
-            // Refresh preview if it's open
-            if (showPreview) {
-              renderPreview();
-            }
+            // Trigger preview update
+            setPreviewTrigger(prev => prev + 1);
           }
         } catch (err) {
           console.error('Autosave failed:', err);
@@ -441,16 +428,7 @@ const EditorBeta = ({ data }) => {
         clearInterval(autosaveTimerRef.current);
       }
     };
-  }, [editor, selectedDraft, showPreview, renderPreview, getCurrentContent]);
-
-  // Copy HTML to clipboard
-  const copyHtml = useCallback(() => {
-    const e2Html = getCurrentContent();
-    navigator.clipboard.writeText(e2Html).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }, [getCurrentContent]);
+  }, [editor, selectedDraft, getCurrentContent, editMode]);
 
   // Load a draft into the editor
   const loadDraft = useCallback((draft) => {
@@ -558,17 +536,15 @@ const EditorBeta = ({ data }) => {
           }
         }
 
-        // Refresh preview if it's open
-        if (showPreview) {
-          renderPreview();
-        }
+        // Trigger preview update
+        setPreviewTrigger(prev => prev + 1);
       }
     } catch (err) {
       console.error('Save failed:', err);
     }
 
     setSaving(false);
-  }, [editor, selectedDraft, draftTitle, draftStatus, drafts, showPreview, renderPreview, editMode, getCurrentContent]);
+  }, [editor, selectedDraft, draftTitle, draftStatus, drafts, editMode, getCurrentContent]);
 
   // Handle restore from version history
   const handleVersionRestore = useCallback(async () => {
@@ -602,14 +578,6 @@ const EditorBeta = ({ data }) => {
       console.error('Failed to reload draft after restore:', err);
     }
   }, [editor, selectedDraft]);
-
-  // Toggle preview and fetch rendered HTML
-  const togglePreview = useCallback(() => {
-    if (!showPreview) {
-      renderPreview();
-    }
-    setShowPreview(!showPreview);
-  }, [showPreview, renderPreview]);
 
   // Load more drafts (pagination)
   const loadMoreDrafts = useCallback(async () => {
@@ -843,12 +811,17 @@ const EditorBeta = ({ data }) => {
         {/* Editor - Rich text or HTML textarea based on mode */}
         {editMode === 'rich' ? (
           <div style={{ border: '1px solid #38495e', borderRadius: '4px', backgroundColor: '#fff' }}>
-            <EditorContent editor={editor} />
+            <div className="e2-editor-wrapper" style={{ minHeight: '400px' }}>
+              <EditorContent editor={editor} />
+            </div>
           </div>
         ) : (
           <textarea
             value={rawHtmlContent}
-            onChange={(e) => setRawHtmlContent(e.target.value)}
+            onChange={(e) => {
+              setRawHtmlContent(e.target.value);
+              setPreviewTrigger(prev => prev + 1);
+            }}
             style={{
               width: '100%',
               minHeight: '400px',
@@ -939,7 +912,7 @@ const EditorBeta = ({ data }) => {
 
             {/* Preview button */}
             <button
-              onClick={togglePreview}
+              onClick={() => setShowPreview(!showPreview)}
               style={{
                 padding: '6px 14px',
                 backgroundColor: showPreview ? '#38495e' : '#f8f9f9',
@@ -950,7 +923,7 @@ const EditorBeta = ({ data }) => {
                 fontSize: '13px'
               }}
             >
-              {previewLoading ? 'Loading...' : (showPreview ? 'Hide Preview' : 'Preview')}
+              {showPreview ? 'Hide Preview' : 'Preview'}
             </button>
 
             {/* Save button */}
@@ -999,98 +972,18 @@ const EditorBeta = ({ data }) => {
           </div>
         )}
 
-        {/* Preview pane - client-side rendered with E2 links */}
+        {/* Live preview pane */}
         {showPreview && (
           <div style={{ marginTop: '20px' }}>
             <h3 style={{ marginBottom: '10px', color: '#38495e', fontSize: '14px' }}>Preview</h3>
-            <div
-              style={{
-                padding: '15px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                backgroundColor: '#fafafa'
-              }}
-              dangerouslySetInnerHTML={{ __html: previewHtml }}
+            <PreviewContent
+              editor={editor}
+              editorMode={editMode}
+              htmlContent={rawHtmlContent}
+              previewTrigger={previewTrigger}
             />
           </div>
         )}
-
-        {/* Divider for less-used features */}
-        <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #ddd' }}>
-          <h4 style={{ marginBottom: '15px', color: '#666', fontSize: '13px', fontWeight: 'normal' }}>HTML Tools</h4>
-
-          {/* HTML action buttons */}
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-            <button
-              onClick={() => setShowHtml(!showHtml)}
-              style={{
-                padding: '6px 14px',
-                backgroundColor: showHtml ? '#38495e' : '#f8f9f9',
-                color: showHtml ? '#fff' : '#555',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px'
-              }}
-            >
-              {showHtml ? 'Hide HTML' : 'Show HTML'}
-            </button>
-
-            <button
-              onClick={copyHtml}
-              style={{
-                padding: '6px 14px',
-                backgroundColor: copied ? '#4caf50' : '#f8f9f9',
-                color: copied ? '#fff' : '#555',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px'
-              }}
-            >
-              {copied ? 'Copied!' : 'Copy HTML'}
-            </button>
-          </div>
-
-          {/* HTML output */}
-          {showHtml && editor && (
-            <div style={{ marginBottom: '20px' }}>
-              <textarea
-                readOnly
-                value={convertToE2Syntax(editor.getHTML())}
-                style={{
-                  width: '100%',
-                  minHeight: '250px',
-                  padding: '12px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontFamily: 'monospace',
-                  fontSize: '12px',
-                  lineHeight: '1.5',
-                  resize: 'vertical',
-                  boxSizing: 'border-box'
-                }}
-                onClick={(e) => e.target.select()}
-              />
-            </div>
-          )}
-
-          {/* Approved tags reference */}
-          <details style={{ marginTop: '15px' }}>
-            <summary style={{ cursor: 'pointer', color: '#666', fontSize: '12px', marginBottom: '10px' }}>
-              E2 Approved HTML Tags
-            </summary>
-            <div style={{ padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px', fontFamily: 'monospace', fontSize: '11px', lineHeight: '1.8' }}>
-              {approvedTags && approvedTags.length > 0
-                ? approvedTags.map((tag) => (
-                    <span key={tag} style={{ display: 'inline-block', padding: '2px 5px', margin: '2px', backgroundColor: '#e3e3e3', borderRadius: '3px' }}>
-                      &lt;{tag}&gt;
-                    </span>
-                  ))
-                : 'Loading tags...'}
-            </div>
-          </details>
-        </div>
       </div>
     </div>
   );

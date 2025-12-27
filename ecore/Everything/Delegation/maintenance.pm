@@ -211,7 +211,7 @@ sub writeup_update
     {
       my $trimmedNewText = $query->param('writeup_doctext');
       $trimmedNewText =~ s/^\s+|\s$//;
-  
+
       return htmlcode('unpublishwriteup', $WRITEUP, 'blanked') unless $trimmedNewText;
 
       htmlcode('addNotification', 'blankedwriteup', 0, {

@@ -42,10 +42,6 @@ use Everything::S3;
 use IO::Compress::Zip;
 use utf8;
 
-# bounty_hunters_wanted - Migrated to React
-# See: Everything::Page::bounty_hunters_wanted
-# React component: BountyHuntersWanted.js
-
 sub confirm_password {
     my $DB       = shift;
     my $query    = shift;
@@ -1581,166 +1577,9 @@ sub costume_remover
 
 # mark_all_discussions_as_read - MIGRATED TO Everything::Page::mark_all_discussions_as_read (December 2025)
 
-sub guest_front_page {
-    my $DB       = shift;
-    my $query    = shift;
-    my $NODE     = shift;
-    my $USER     = shift;
-    my $VARS     = shift;
-    my $PAGELOAD = shift;
-    my $APP      = shift;
-
-    # Ensure guest users have nodelets configured for proper e2 config generation
-    # This ensures buildNodeInfoStructure populates nodelet data correctly
-    unless ($VARS->{nodelets}) {
-        my $guest_nodelets = $Everything::CONF->guest_nodelets;
-        if ($guest_nodelets && ref($guest_nodelets) eq 'ARRAY' && @$guest_nodelets) {
-            $VARS->{nodelets} = join(',', @$guest_nodelets);
-        }
-    }
-
-    # Disable link parsing
-    $PAGELOAD->{noparsecodelinks} = 1;
-
-    my $html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-
-<html lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-';
-
-    # Add meta description tag
-    $html .= htmlcode('metadescriptiontag');
-
-    $html .= '
-<title>Everything2</title>
-<link rel="stylesheet" id="basesheet" type="text/css" href="' . htmlcode('linkStylesheet', 'basesheet') . '" media="all">
-';
-
-    # Add zensheet (user style)
-    $html .= '<link rel="stylesheet" id="zensheet" type="text/css" href="'
-           . htmlcode('linkStylesheet', $$VARS{userstyle} || $Everything::CONF->default_style, 'serve')
-           . '" media="screen,tv,projection">';
-
-    # Add custom style if present
-    if (exists($$VARS{customstyle}) && defined($$VARS{customstyle})) {
-        $html .= '
-    <style type="text/css">
-' . $APP->htmlScreen($$VARS{customstyle}) . '
-    </style>';
-    }
-
-    $html .= '
-    <link rel="stylesheet" id="printsheet" type="text/css" href="' . htmlcode('linkStylesheet', 'print') . '" media="print">
-    <link rel="icon" href="' . $APP->asset_uri("static/favicon.ico") . '" type="image/vnd.microsoft.icon">
-    <!--[if lt IE 8]><link rel="shortcut icon" href="' . $APP->asset_uri("static/favicon.ico") . '" type="image/x-icon"><![endif]-->
-    <link rel="alternate" type="application/atom+xml" title="Everything2 New Writeups" href="/node/ticker/New+Writeups+Atom+Feed">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2GBBBF9ZDK"></script>
-</head>
-
-
-
-<body class="fullpage" id="guestfrontpage">
-    <div class="headerads">
-        <center>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0613380022572506"
-             crossorigin="anonymous"></script>
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:728px;height:90px"
-             data-ad-client="ca-pub-0613380022572506"
-             data-ad-slot="9636638260"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-        </center>
-    </div>
-    <div id="header">
-           <div id="e2logo"><a href="/title/About+Everything2">Everything<span id="e2logo2">2</span></a></div>
-';
-
-    $html .= parseLinks("<h2 id='tagline'>[Everything2 Help|Read with us. Write for us.]</h2>");
-
-    $html .= '
-    </div>
-<div id=\'wrapper\'>
-    <div id=\'mainbody\'>
-
-';
-
-    # Build the main content
-    my $zenStr;
-
-    if ($APP->isGuest($USER)) {
-        $PAGELOAD->{pagenodelets} = getNode('Sign in', 'nodelet')->{node_id};
-        $PAGELOAD->{pagenodelets} .= ',' . getNode('Recommended Reading', 'nodelet')->{node_id};
-        $PAGELOAD->{pagenodelets} .= ',' . getNode('New Writeups', 'nodelet')->{node_id};
-    }
-
-    $zenStr .= "<div id='welcome_message'>";
-    my @wit = (
-        " Defying definition since 1999",
-        " Literary Karaoke",
-        " Writing everything about everything.",
-        " E2, Brute?",
-        " Our fiction is more entertaining than Wikipedia's.",
-        " You will never find a more wretched hive of ponies and buttercups.",
-        " Please try to make more sense than our blurbs.",
-        " Words arranged in interesting ways",
-        " Remove lid. Add water to fill line. Replace lid. Microwave for 1 1/2 minutes. Let cool for 3 minutes.",
-        " Welcome to the rebirth of your desire to write.",
-        " Don't know where this \"writers' site\" crap came from but it sure as hell isn't in the prospectus. ",
-        " Read, write, enjoy.",
-        " Everything2.com has baked you a pie! (Do not eat it.)"
-    );
-
-    $zenStr .= "            <form action='/' method='GET' id='searchform'>
-                <input type='text' placeholder='Search' name='node' id='searchfield'>
-                <button type='submit' id='search'>Search</button>
-            </form>";
-    $zenStr .= "<h3 id='wit'>" . $wit[int(rand(@wit))] . "</h3></div>";
-
-    $zenStr .= '
-     <div id="bestnew">
-        <h3 id="bestnew_title">[Cool Archive|The Best of The Week]</h3>
-        ' . htmlcode('frontpage_altcontent') . '
-      </div>';
-
-    $zenStr .= '
-  <div id="frontpage_news">
-        <h2 id="frontpage_news_title">[News for Noders. Stuff that matters.|News for Noders]</h2>
-   ' . htmlcode('frontpage_news') . '</div>';
-
-    $html .= parseLinks($zenStr);
-
-    # Add sidebar and footer
-    $html .= '
-</div>
-<div id=\'sidebar\'';
-
-    $html .= ' class="pagenodelets"' if $PAGELOAD->{pagenodelets};
-
-    $html .= '>
-<div id="e2-react-root"></div>
-</div>
-
-</div>
-<div id=\'footer\'>
-';
-
-    $html .= htmlcode('zenFooter');
-
-    $html .= '
-</div>
-';
-
-    $html .= htmlcode('static javascript');
-
-    $html .= '
-</body>
-</html>';
-
-    return $html;
-}
+# guest_front_page - MIGRATED TO Everything::Page::guest_front_page (December 2025)
+# Template: templates/pages/guest_front_page.mc
+# React component: GuestFrontPage.js
 
 # The Catwalk - Migrated to React
 # See: Everything::Page::the_catwalk
@@ -1750,52 +1589,8 @@ sub guest_front_page {
 # See: Everything::Page::usergroup_message_archive
 # React component: UsergroupMessageArchive.js
 
-sub welcome_to_everything
-{
-    my ( $DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP ) = @_;
-
-    my $zenStr = undef;
-
-    $zenStr = '<div id="welcome_message">Everything2 is a collection of user-submitted writings about
-    more or less everything. Spend some time looking around and reading, or '
-        . linkNodeTitle('Everything2 Help|learn how to contribute')
-        . '.</div>';
-
-    $zenStr .= '<div id="loglinks">
-<h3>Logs</h3>
-' . htmlcode('daylog') . '
-</div>';
-
-    $zenStr .= '<div id="cooluserpicks">
-<h3>Cool User Picks!</h3>
-' . htmlcode('frontpage_cooluserpicks') . '</div>';
-
-    $zenStr .= '
-    <div id="staff_picks">
-    <h3>Staff Picks</h3>
-' . htmlcode('frontpage_staffpicks')
-        . '</div>'
-        unless ( $APP->isGuest($USER) );
-
-    $zenStr .= '
-     <div id="creamofthecool">
-        <h3 id="creamofthecool_title">'
-        . linkNodeTitle('Cool Archive[superdoc]|Cream of the Cool')
-        . '</h3>
-        ' . htmlcode('frontpage_creamofthecool') . '
-      </div>';
-
-    if ( !$APP->isGuest($USER) ) {
-        $zenStr .= '
-  <div id="frontpage_news">
-        <h2 id="frontpage_news_title">'
-            . linkNodeTitle('News for Noders. Stuff that matters.[superdoc]|News for Noders')
-            . '</h2>
-   ' . htmlcode('frontpage_news') . '</div>';
-    }
-
-    return $zenStr;
-}
+# welcome_to_everything - MIGRATED TO Everything::Page::welcome_to_everything (December 2025)
+# React component: WelcomeToEverything.js
 
 sub short_url_lookup
 {
@@ -2065,11 +1860,6 @@ sub ajax_update
         return $query->param('sentmessage');
     }
 
-    if ($mode eq 'vote') {
-        Everything::Delegation::opcode::vote($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
-        return 0;
-    }
-
     if ($mode eq 'getNodeInfo') {
         my $type = $query->param("type");
         my $title = $query->param("title");
@@ -2081,18 +1871,6 @@ sub ajax_update
 
         return $tempNode->{$field};
     }
-
-    # REMOVED 2025-12-10: Legacy modes no longer called by frontend
-    # - annotate: Annotation feature never implemented in frontend, table empty (removed 2025-12-10)
-    # REMOVED 2025-12-07: Legacy modes no longer called by frontend
-    # - update: Already retired, returned error message
-    # - getlastmessage: React Chatterbox manages message IDs internally
-    # - checkCools: React manages cool nodes via initial page data
-    # - checkMessages: React Messages nodelet uses /api/messages
-    # - checkFeedItems: User feed feature unused/deprecated
-    # - deleteFeedItem: User feed feature unused/deprecated
-    # - markNotificationSeen: Now handled by /api/notifications/dismiss (removed 2025-11-27)
-    # - checkNotifications: Replaced by React Notifications nodelet (removed 2025-11-27)
 
     $NODE = getNodeById(124);
 

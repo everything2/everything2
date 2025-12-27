@@ -492,12 +492,31 @@ sub remove_writeup
   my $node_id = $NODE->{node_id};
   my $E2NODE = $NODE->{parent_e2node} ? $APP->node_by_id($NODE->{parent_e2node}) : undef;
 
-  # Convert writeup to draft - combined update on node and draft tables
-  # This matches legacy unpublishwriteup behavior
-  my $update_result = $DB->sqlUpdate('node, draft', {
-    type_nodetype => $draft_type->{node_id},
-    publication_status => $private_status->{node_id}
-  }, "node_id=$node_id AND draft_id=$node_id");
+  # Convert writeup to draft:
+  # 1. Create draft table row (writeups don't have one, drafts do)
+  # 2. Update node type to draft
+  # 3. Delete writeup table row
+
+  # Check if draft row already exists (shouldn't, but be safe)
+  my $draft_exists = $DB->sqlSelect('draft_id', 'draft', "draft_id=$node_id");
+
+  if (!$draft_exists) {
+    # Create new draft row with private publication status
+    $DB->sqlInsert('draft', {
+      draft_id => $node_id,
+      publication_status => $private_status->{node_id}
+    });
+  } else {
+    # Update existing draft row to private status
+    $DB->sqlUpdate('draft', {
+      publication_status => $private_status->{node_id}
+    }, "draft_id=$node_id");
+  }
+
+  # Update node type to draft
+  $DB->sqlUpdate('node', {
+    type_nodetype => $draft_type->{node_id}
+  }, "node_id=$node_id");
 
   # Explicitly commit the transaction
   $DB->{dbh}->commit() unless $DB->{dbh}->{AutoCommit};

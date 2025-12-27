@@ -90,7 +90,8 @@ sub buildReactData {
 
     foreach my $ND (@{$NODE->{group} || []}) {
         next unless $DB->canReadNode($USER, $ND);
-        my $cur_type = $ND->{type}{title};
+        my $cur_type = $ND->{type}{title} // '';
+        next unless $cur_type;  # Skip nodes without a valid type
 
         # Skip writeups and debatecomments
         next if $cur_type eq 'writeup';
@@ -158,7 +159,8 @@ sub buildReactData {
     if ($is_guest && !$search_has_dirty_word && scalar(@findings) == 0 && scalar(@nodes) > 0) {
         $excerpt_count = 0;
         foreach my $ND (@nodes) {
-            my $cur_type = $ND->{type}{title};
+            my $cur_type = $ND->{type}{title} // '';
+            next unless $cur_type;  # Skip nodes without a valid type
 
             # Apply same basic filters as first pass
             next if $cur_type eq 'writeup';

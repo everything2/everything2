@@ -57,8 +57,8 @@ sub generate_xml {
     my $wherestr = join " AND ",@params;
     my $orderchoices = {"highestrep" => "reputation DESC", "lowestrep" => "reputation ASC", "recentcool" => "tstamp DESC", "oldercool" => "tstamp ASC"};
 
-    my $order = $$orderchoices{$query->param("sort")};
-    $order ||= $$orderchoices{recentcool};
+    my $sort_param = $query->param("sort") // '';
+    my $order = $$orderchoices{$sort_param} // $$orderchoices{recentcool};
     $order = " ORDER BY $order";
 
     my $csr = $self->DB->sqlSelectMany("node_id, cooledby_user", "node, coolwriteups", "$wherestr $order $limit");

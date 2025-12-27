@@ -94,6 +94,9 @@ sub get_or_update {
     elsif ( $method eq 'put' || $method eq 'post' ) {
         return $self->update_draft( $REQUEST, $id );
     }
+    elsif ( $method eq 'delete' ) {
+        return $self->delete_draft( $REQUEST, $id );
+    }
 
     return [
         $self->HTTP_METHOD_NOT_ALLOWED,
@@ -415,14 +418,111 @@ sub update_draft {
         }
     }
 
+    # Fetch current doctext from database to return as source of truth
+    my $current_doctext = $DB->{dbh}->selectrow_array(
+        'SELECT doctext FROM document WHERE document_id = ?',
+        {}, $draft_id
+    );
+
     return [
         $self->HTTP_OK,
         {
             success  => 1,
             updated  => $updated,
-            draft_id => $draft_id
+            draft_id => $draft_id,
+            doctext  => $current_doctext
         }
     ];
+}
+
+# DELETE /api/drafts/:id - Delete a draft (author only)
+sub delete_draft {
+    my ( $self, $REQUEST, $id ) = @_;
+
+    my $user = $REQUEST->user;
+    my $APP  = $self->APP;
+    my $DB   = $self->DB;
+
+    # Must be logged in
+    if ( $user->is_guest ) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 0,
+                error   => 'Must be logged in to delete drafts'
+            }
+        ];
+    }
+
+    # Get the draft
+    my $draft = $DB->getNodeById($id);
+    unless ($draft) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 0,
+                error   => 'Draft not found'
+            }
+        ];
+    }
+
+    # Verify it's a draft type
+    unless ( $draft->{type}{title} eq 'draft' ) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 0,
+                error   => 'Node is not a draft'
+            }
+        ];
+    }
+
+    # Only the author can delete their own drafts (or admins/gods)
+    my $is_author = $draft->{author_user} == $user->node_id;
+    my $is_admin  = $APP->isAdmin( $user->NODEDATA );
+
+    unless ( $is_author || $is_admin ) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 0,
+                error   => 'You can only delete your own drafts'
+            }
+        ];
+    }
+
+    # Delete associated autosave entries
+    my $dbh = $DB->{dbh};
+    $dbh->do( 'DELETE FROM autosave WHERE node_id = ?', {}, $id );
+
+    # Delete associated nodenotes
+    $dbh->do( 'DELETE FROM nodenote WHERE nodenote_nodeid = ?', {}, $id );
+
+    # Delete links to/from this draft
+    $dbh->do( 'DELETE FROM links WHERE from_node = ? OR to_node = ?', {}, $id, $id );
+
+    # Delete the draft node itself
+    # Pass -1 as user (superuser) since we already verified permissions above
+    my $success = $DB->nukeNode($draft, -1);
+
+    if ($success) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 1,
+                message => 'Draft deleted successfully'
+            }
+        ];
+    }
+    else {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 0,
+                error   => 'Failed to delete draft'
+            }
+        ];
+    }
 }
 
 sub _notify_review {
@@ -842,8 +942,12 @@ sub publish_draft {
 
     $DB->sqlInsert('writeup', $writeup_data);
 
-    # Delete from draft table (draft-specific data no longer needed)
-    $DB->sqlDelete( 'draft', "draft_id=$draft_id" );
+    # Update draft table entry - writeups extend drafts so they need the row
+    # Set publication_status to 0 (published/public state) and clear collaborators
+    $DB->sqlUpdate( 'draft', {
+        publication_status => 0,
+        collaborators => ''
+    }, "draft_id=$draft_id" );
 
     # Add to e2node's nodegroup
     # nodegroup_id = the e2node (parent), node_id = the writeup (member)

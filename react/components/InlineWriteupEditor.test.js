@@ -171,18 +171,19 @@ describe('InlineWriteupEditor', () => {
   })
 
   describe('buttons', () => {
-    it('has Cancel button', () => {
+    it('has Done button', () => {
       render(<InlineWriteupEditor {...defaultProps} />)
 
-      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Done' })).toBeInTheDocument()
     })
 
-    it('calls onCancel when Cancel clicked', () => {
-      render(<InlineWriteupEditor {...defaultProps} />)
+    it('calls onSave with current content when Done clicked', () => {
+      render(<InlineWriteupEditor {...defaultProps} initialContent="<p>Test content</p>" />)
 
-      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Done' }))
 
-      expect(defaultProps.onCancel).toHaveBeenCalled()
+      // Done button passes the current editor content to onSave so parent can update display
+      expect(defaultProps.onSave).toHaveBeenCalledWith(expect.stringContaining('Test content'))
     })
 
     it('has Publish button for new writeups', () => {
@@ -272,7 +273,15 @@ describe('InlineWriteupEditor', () => {
 
       render(<InlineWriteupEditor {...defaultProps} />)
 
-      expect(screen.getByText('Publish as:')).toBeInTheDocument()
+      // Should show dynamic publishing preview with e2node title and writeup type
+      expect(screen.getByText(/Publishing:/)).toBeInTheDocument()
+    })
+
+    it('shows e2node title in publishing preview', () => {
+      render(<InlineWriteupEditor {...defaultProps} />)
+
+      // Should show the e2node title in the publishing preview
+      expect(screen.getByText('Test Node')).toBeInTheDocument()
     })
   })
 
@@ -345,6 +354,307 @@ describe('InlineWriteupEditor', () => {
 
       // In rich mode, editor should have content
       expect(screen.getByTestId('editor-content')).toBeInTheDocument()
+    })
+  })
+
+  describe('title parsing for drafts', () => {
+    it('parses writeuptype from title and displays extracted e2node title', async () => {
+      // When e2nodeTitle has format "title (writeuptype)", should extract just the title
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [
+            { node_id: 1, title: 'thing' },
+            { node_id: 2, title: 'poetry' },
+            { node_id: 3, title: 'idea' }
+          ]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeTitle="Quick brown fox (poetry)"
+        />
+      )
+
+      // Should show just the e2node title part in "to" text
+      expect(screen.getByText(/to "Quick brown fox"/)).toBeInTheDocument()
+      // Should NOT show the full title with writeuptype suffix
+      expect(screen.queryByText(/to "Quick brown fox \(poetry\)"/)).not.toBeInTheDocument()
+    })
+
+    it('pre-selects writeuptype from parsed title', async () => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [
+            { node_id: 1, title: 'thing' },
+            { node_id: 2, title: 'poetry' },
+            { node_id: 3, title: 'idea' }
+          ]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeTitle="Quick brown fox (poetry)"
+          draftId={456}
+        />
+      )
+
+      await waitFor(() => {
+        // Find the select element and check its value - poetry should be selected
+        const select = screen.getByRole('combobox')
+        expect(select.value).toBe('2') // poetry's node_id
+      })
+    })
+
+    it('shows publishing preview with parsed title and selected writeuptype', async () => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [
+            { node_id: 1, title: 'thing' },
+            { node_id: 2, title: 'poetry' },
+            { node_id: 3, title: 'idea' }
+          ]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeTitle="Quick brown fox (poetry)"
+          draftId={456}
+        />
+      )
+
+      await waitFor(() => {
+        // Publishing preview should show correctly formatted title
+        expect(screen.getByText('Quick brown fox (poetry)')).toBeInTheDocument()
+      })
+    })
+
+    it('keeps full title when no writeuptype suffix present', () => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [{ node_id: 1, title: 'thing' }]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeTitle="My Simple Title"
+        />
+      )
+
+      expect(screen.getByText(/to "My Simple Title"/)).toBeInTheDocument()
+    })
+
+    it('handles titles with parentheses that are not writeuptypes', () => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [
+            { node_id: 1, title: 'thing' },
+            { node_id: 2, title: 'idea' }
+          ]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeTitle="Something (with parens) in middle"
+        />
+      )
+
+      // Should show the full title since "in middle" is not a valid writeuptype
+      expect(screen.getByText(/to "Something \(with parens\) in middle"/)).toBeInTheDocument()
+    })
+
+    it('auto-selects writeuptype for reverted draft instead of defaulting to thing', async () => {
+      // Simulates a reverted writeup where the draft title contains the original writeuptype
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [
+            { node_id: 1, title: 'thing' },
+            { node_id: 2, title: 'idea' },
+            { node_id: 3, title: 'essay' },
+            { node_id: 4, title: 'poetry' }
+          ]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeTitle="My reverted writeup (essay)"
+          draftId={789}
+        />
+      )
+
+      await waitFor(() => {
+        const select = screen.getByRole('combobox')
+        // Should be essay (node_id 3), NOT thing (node_id 1)
+        expect(select.value).toBe('3')
+      })
+    })
+
+    it('matches writeuptype case-insensitively', async () => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [
+            { node_id: 1, title: 'thing' },
+            { node_id: 2, title: 'Poetry' },  // Capital P
+            { node_id: 3, title: 'idea' }
+          ]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeTitle="My poem (poetry)"  // lowercase in title
+          draftId={456}
+        />
+      )
+
+      await waitFor(() => {
+        const select = screen.getByRole('combobox')
+        // Should match Poetry despite case difference
+        expect(select.value).toBe('2')
+      })
+    })
+
+    it('defaults to thing when writeuptype in title does not match any available type', async () => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [
+            { node_id: 1, title: 'thing' },
+            { node_id: 2, title: 'idea' }
+          ]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeTitle="Old writeup (obsoletetype)"
+          draftId={456}
+        />
+      )
+
+      await waitFor(() => {
+        const select = screen.getByRole('combobox')
+        // Should default to thing since obsoletetype doesn't exist
+        expect(select.value).toBe('1')
+      })
+    })
+  })
+
+  describe('e2node status indicator', () => {
+    it('shows checking status initially when no e2nodeId prop', async () => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [{ node_id: 1, title: 'thing' }]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeId={undefined}
+          draftId={456}
+        />
+      )
+
+      // Should show checking indicator initially
+      expect(screen.getByText('(checking...)')).toBeInTheDocument()
+    })
+
+    it('shows found status when e2nodeId prop is provided', async () => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [{ node_id: 1, title: 'thing' }]
+        })
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeId={123}
+          draftId={456}
+        />
+      )
+
+      // Should show checkmark when e2nodeId is provided
+      expect(screen.getByText('✓')).toBeInTheDocument()
+    })
+
+    it('shows not_found status after lookup fails', async () => {
+      // Mock writeuptypes fetch
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [{ node_id: 1, title: 'thing' }]
+        })
+      })
+      // Mock e2node lookup - 404
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        status: 404
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeId={undefined}
+          draftId={456}
+        />
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText('(new)')).toBeInTheDocument()
+      })
+    })
+
+    it('enables publish button when e2node will be created', async () => {
+      // Mock writeuptypes fetch
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: true,
+          writeuptypes: [{ node_id: 1, title: 'thing' }]
+        })
+      })
+      // Mock e2node lookup - 404
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        status: 404
+      })
+
+      render(
+        <InlineWriteupEditor
+          {...defaultProps}
+          e2nodeId={undefined}
+          draftId={456}
+        />
+      )
+
+      await waitFor(() => {
+        const publishBtn = screen.getByRole('button', { name: 'Publish' })
+        // Button should be enabled even without existing e2node
+        expect(publishBtn).not.toBeDisabled()
+      })
     })
   })
 })

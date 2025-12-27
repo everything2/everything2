@@ -29,10 +29,13 @@ sub display {
         coolsleft => $user->coolsleft || 0
     };
 
-    # Get parent e2node data for editing (editors or writeup owner)
+    # Get parent e2node data for:
+    # 1. Editing (editors or writeup owner)
+    # 2. Adding new writeups (any logged-in user who doesn't have one yet)
     my $parent_e2node_data;
     my $is_owner = !$user->is_guest && $node->author_user == $user->node_id;
-    if ( $user->is_editor || $is_owner ) {
+    # Provide parent data to all logged-in users so they can add writeups
+    if ( !$user->is_guest ) {
         my $parent_node = $node->parent;
         if ( $parent_node && !UNIVERSAL::isa($parent_node, "Everything::Node::null") ) {
             $parent_e2node_data = $parent_node->json_display($user);

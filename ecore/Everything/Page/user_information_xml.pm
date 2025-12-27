@@ -41,7 +41,7 @@ sub generate_xml {
         'sitename'=>$Everything::CONF->site_name,
         'servertime'=>scalar(localtime(time)),
         'node_id'=>$$node{node_id},
-    },'rendered by '.$$node{title}).$nl;
+    },'rendered by '.($$node{title} // 'unknown')).$nl;
 
     my $TYPE_USER = 15;
     my $UID = $self->DB->getId($USER);

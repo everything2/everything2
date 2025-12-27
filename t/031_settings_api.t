@@ -39,9 +39,9 @@ ok($APP, "Application object created");
 # 4. Validation (nodelet IDs must be valid)
 #############################################################################
 
-# Get test user
-my $test_user = $DB->getNode("root", "user");
-ok($test_user, "Got test user (root)");
+# Get test user (use e2e_user instead of root to avoid modifying root's settings)
+my $test_user = $DB->getNode("e2e_user", "user");
+ok($test_user, "Got test user (e2e_user)");
 
 # Get original nodelet order
 my $VARS = Everything::getVars($test_user);
@@ -69,7 +69,7 @@ package MockUser {
             node_id => $node->{node_id},
             title => $node->{title},
             is_guest => 0,
-            is_admin => ($node->{title} eq 'root')
+            is_admin => 0  # Not needed for nodelet tests
         );
     }
 }

@@ -175,10 +175,10 @@ describe('EditorBeta', () => {
       expect(screen.getByRole('option', { name: 'review' })).toBeInTheDocument()
     })
 
-    it('renders Preview button', () => {
+    it('renders Hide Preview button (preview shown by default)', () => {
       render(<EditorBeta data={mockData} />)
 
-      expect(screen.getByRole('button', { name: 'Preview' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Hide Preview' })).toBeInTheDocument()
     })
 
     it('renders Create Draft button when no draft selected', () => {
@@ -187,19 +187,6 @@ describe('EditorBeta', () => {
       expect(screen.getByRole('button', { name: 'Create Draft' })).toBeInTheDocument()
     })
 
-    it('renders HTML Tools section', () => {
-      render(<EditorBeta data={mockData} />)
-
-      expect(screen.getByText('HTML Tools')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Show HTML' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Copy HTML' })).toBeInTheDocument()
-    })
-
-    it('renders approved tags section', () => {
-      render(<EditorBeta data={mockData} />)
-
-      expect(screen.getByText('E2 Approved HTML Tags')).toBeInTheDocument()
-    })
   })
 
   describe('drafts sidebar', () => {
@@ -390,16 +377,12 @@ describe('EditorBeta', () => {
   })
 
   describe('preview functionality', () => {
-    it('renders preview client-side without API call when Preview is clicked', async () => {
+    it('shows preview by default without API call', async () => {
       render(<EditorBeta data={mockData} />)
 
-      const previewButton = screen.getByRole('button', { name: 'Preview' })
-      fireEvent.click(previewButton)
-
-      // Preview should render client-side without any API call
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Hide Preview/i })).toBeInTheDocument()
-      })
+      // Preview should be visible by default
+      expect(screen.getByRole('button', { name: /Hide Preview/i })).toBeInTheDocument()
+      expect(screen.getByText('Preview', { selector: 'h3' })).toBeInTheDocument()
 
       // Should NOT have called the preview API (client-side rendering)
       expect(global.fetch).not.toHaveBeenCalledWith(
@@ -411,31 +394,19 @@ describe('EditorBeta', () => {
     it('toggles preview pane visibility', async () => {
       render(<EditorBeta data={mockData} />)
 
-      // Preview should not be visible initially
+      // Preview should be visible initially
+      expect(screen.getByText('Preview', { selector: 'h3' })).toBeInTheDocument()
+
+      // Click Hide Preview button
+      const hidePreviewButton = screen.getByRole('button', { name: 'Hide Preview' })
+      fireEvent.click(hidePreviewButton)
+
+      // Preview should be hidden
       expect(screen.queryByText('Preview', { selector: 'h3' })).not.toBeInTheDocument()
-
-      // Click Preview button
-      const previewButton = screen.getByRole('button', { name: 'Preview' })
-      fireEvent.click(previewButton)
-
-      // Wait for preview to appear
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Hide Preview/i })).toBeInTheDocument()
-      })
+      expect(screen.getByRole('button', { name: 'Preview' })).toBeInTheDocument()
     })
   })
 
-  describe('HTML tools', () => {
-    it('toggles HTML output visibility', () => {
-      render(<EditorBeta data={mockData} />)
-
-      const showHtmlButton = screen.getByRole('button', { name: 'Show HTML' })
-      fireEvent.click(showHtmlButton)
-
-      // Button text should change
-      expect(screen.getByRole('button', { name: 'Hide HTML' })).toBeInTheDocument()
-    })
-  })
 
   describe('edit mode toggle', () => {
     it('renders Rich/HTML slider toggle', () => {

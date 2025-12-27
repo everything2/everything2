@@ -1,13 +1,33 @@
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { getE2EditorExtensions } from './Editor/useE2Editor';
 import { convertToE2Syntax } from './Editor/E2LinkExtension';
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Editor/RawBracketExtension';
-import { renderE2Content } from './Editor/E2HtmlSanitizer';
 import MenuBar from './Editor/MenuBar';
+import PreviewContent from './Editor/PreviewContent';
 import { useWriteuptypes } from '../hooks/usePublishDraft';
 import { fetchWithErrorReporting } from '../utils/reportClientError';
 import './Editor/E2Editor.css';
+
+/**
+ * Parse a draft title to extract e2node title and writeuptype
+ * Writeup titles have format: "e2node title (writeuptype)"
+ * Returns { e2nodeTitle, writeuptypeName } or just { e2nodeTitle } if no suffix
+ */
+const parseDraftTitle = (title) => {
+  if (!title) return { e2nodeTitle: '' }
+
+  // Match pattern: "some title (writeuptype)" where writeuptype is at the end
+  const match = title.match(/^(.+?)\s+\(([^)]+)\)$/)
+  if (match) {
+    return {
+      e2nodeTitle: match[1],
+      writeuptypeName: match[2]
+    }
+  }
+
+  return { e2nodeTitle: title }
+}
 
 /**
  * InlineWriteupEditor - Inline Tiptap editor for creating/editing writeups on e2node pages
@@ -45,7 +65,7 @@ const getInitialEditorMode = () => {
 
 const InlineWriteupEditor = ({
   e2nodeId,
-  e2nodeTitle,
+  e2nodeTitle: e2nodeTitleProp,
   initialContent = '',
   draftId: initialDraftId = null,
   writeupId = null,
@@ -55,6 +75,10 @@ const InlineWriteupEditor = ({
   onSave = () => {},
   onCancel = () => {}
 }) => {
+  // Parse the e2nodeTitle to extract actual e2node title and writeuptype (if present)
+  const parsedTitle = parseDraftTitle(e2nodeTitleProp)
+  const e2nodeTitle = parsedTitle.e2nodeTitle
+
   const [editorMode, setEditorMode] = useState(getInitialEditorMode); // 'rich' or 'html'
   const [htmlContent, setHtmlContent] = useState(initialContent);
   const [draftId, setDraftId] = useState(initialDraftId);
@@ -64,8 +88,12 @@ const InlineWriteupEditor = ({
   const [hideFromNewWriteups, setHideFromNewWriteups] = useState(false);
   const [showPreview, setShowPreview] = useState(true); // Live preview toggle
   const [previewTrigger, setPreviewTrigger] = useState(0); // Trigger preview updates
+  const [resolvedE2nodeId, setResolvedE2nodeId] = useState(e2nodeId); // Resolved e2node ID (from prop or lookup)
+  const [e2nodeStatus, setE2nodeStatus] = useState(e2nodeId ? 'found' : 'checking'); // 'checking', 'found', 'not_found'
   const autosaveTimerRef = useRef(null);
   const firstEditRef = useRef(false);
+  const lastSavedContentRef = useRef(initialContent); // Track last saved content from server
+  const hasSetWriteuptypeFromTitleRef = useRef(false); // Track if we've already set writeuptype from title
 
   // Use shared writeuptypes hook (skip for editing existing writeups)
   const {
@@ -73,6 +101,67 @@ const InlineWriteupEditor = ({
     selectedWriteuptypeId,
     setSelectedWriteuptypeId
   } = useWriteuptypes({ skip: !!writeupId });
+
+  // When writeuptypes load, pre-select the one from the title (if any)
+  // This overrides the default "thing" selection if we have a writeuptype in the title
+  useEffect(() => {
+    if (
+      parsedTitle.writeuptypeName &&
+      writeuptypes.length > 0 &&
+      !hasSetWriteuptypeFromTitleRef.current
+    ) {
+      const matchingType = writeuptypes.find(
+        wt => wt.title.toLowerCase() === parsedTitle.writeuptypeName.toLowerCase()
+      )
+      if (matchingType) {
+        hasSetWriteuptypeFromTitleRef.current = true
+        setSelectedWriteuptypeId(matchingType.node_id)
+      }
+    }
+  }, [writeuptypes, parsedTitle.writeuptypeName, setSelectedWriteuptypeId])
+
+  // Check if e2node exists when we have a parsed title but no e2nodeId prop
+  useEffect(() => {
+    if (e2nodeId) {
+      // Already have an e2node ID from props
+      setResolvedE2nodeId(e2nodeId);
+      setE2nodeStatus('found');
+      return;
+    }
+
+    if (!e2nodeTitle || writeupId) {
+      // No title to check or editing existing writeup
+      return;
+    }
+
+    // Look up the e2node by title
+    const checkE2node = async () => {
+      try {
+        const response = await fetch(
+          `/api/nodes/lookup/e2node/${encodeURIComponent(e2nodeTitle)}`,
+          { credentials: 'include' }
+        );
+        if (response.ok) {
+          const result = await response.json();
+          if (result.node_id) {
+            setResolvedE2nodeId(result.node_id);
+            setE2nodeStatus('found');
+          } else {
+            setE2nodeStatus('not_found');
+          }
+        } else if (response.status === 404) {
+          setE2nodeStatus('not_found');
+        } else {
+          setE2nodeStatus('not_found');
+        }
+      } catch (err) {
+        console.error('Error checking e2node:', err);
+        setE2nodeStatus('not_found');
+      }
+    };
+
+    checkE2node();
+  }, [e2nodeId, e2nodeTitle, writeupId])
 
   // Initialize Tiptap editor
   // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
@@ -145,8 +234,9 @@ const InlineWriteupEditor = ({
   };
 
   // Save draft content
+  // Returns the saved doctext on success, null on failure
   const saveDraft = async (content) => {
-    if (!draftId && !writeupId) return;
+    if (!draftId && !writeupId) return null;
 
     setSaveStatus('saving');
 
@@ -169,16 +259,32 @@ const InlineWriteupEditor = ({
       });
 
       const result = await response.json();
-      if (result.success) {
+
+      // Handle both response formats:
+      // - Drafts API returns { success: true, doctext: "..." }
+      // - Writeups API returns the node directly { node_id, doctext, ... }
+      const isSuccess = writeupId
+        ? (result.node_id !== undefined)  // Node API returns node object on success
+        : result.success;                  // Drafts API uses success flag
+
+      if (isSuccess) {
         setSaveStatus('saved');
         setErrorMessage(null);
+        // Store the server-returned doctext as source of truth
+        if (result.doctext !== undefined) {
+          lastSavedContentRef.current = result.doctext;
+          return result.doctext;
+        }
+        return lastSavedContentRef.current;
       } else {
         setSaveStatus('unsaved');
-        setErrorMessage(`Save failed: ${result.error}`);
+        setErrorMessage(`Save failed: ${result.error || 'Unknown error'}`);
+        return null;
       }
     } catch (err) {
       setSaveStatus('unsaved');
       setErrorMessage(`Save error: ${err.message}`);
+      return null;
     }
   };
 
@@ -204,7 +310,55 @@ const InlineWriteupEditor = ({
         return;
       }
 
-      // Publish draft (using node_id from dropdown)
+      // Determine the e2node ID to use
+      let targetE2nodeId = resolvedE2nodeId;
+
+      // If no e2node exists, create one first
+      if (!targetE2nodeId && e2nodeTitle) {
+        try {
+          const createResponse = await fetchWithErrorReporting(
+            '/api/e2nodes/create',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ title: e2nodeTitle })
+            },
+            'creating e2node'
+          );
+
+          if (!createResponse.ok) {
+            const errorText = await createResponse.text();
+            setErrorMessage(`Failed to create e2node: ${createResponse.status} ${errorText || createResponse.statusText}`);
+            setPublishing(false);
+            return;
+          }
+
+          const createResult = await createResponse.json();
+          // The nodes API returns the node directly, not wrapped in { success, e2node }
+          if (createResult.node_id) {
+            targetE2nodeId = createResult.node_id;
+            setResolvedE2nodeId(targetE2nodeId);
+            setE2nodeStatus('found');
+          } else {
+            setErrorMessage(`Failed to create e2node: ${createResult.error || createResult.message || 'Unknown error'}`);
+            setPublishing(false);
+            return;
+          }
+        } catch (err) {
+          setErrorMessage(`Error creating e2node: ${err.message}`);
+          setPublishing(false);
+          return;
+        }
+      }
+
+      if (!targetE2nodeId) {
+        setErrorMessage('No e2node available for publishing');
+        setPublishing(false);
+        return;
+      }
+
+      // Publish draft (using resolved or newly created e2node ID)
       const response = await fetchWithErrorReporting(
         `/api/drafts/${draftId}/publish`,
         {
@@ -212,7 +366,7 @@ const InlineWriteupEditor = ({
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({
-            parent_e2node: e2nodeId,
+            parent_e2node: targetE2nodeId,
             wrtype_writeuptype: selectedWriteuptypeId,
             feedback_policy_id: 0,
             notnew: hideFromNewWriteups ? 1 : 0
@@ -224,8 +378,8 @@ const InlineWriteupEditor = ({
       const result = await response.json();
       if (result.success) {
         onPublish(result.writeup_id);
-        // Reload page to show new writeup
-        window.location.reload();
+        // Redirect to the e2node page
+        window.location.href = `/title/${encodeURIComponent(e2nodeTitle)}`;
       } else {
         setErrorMessage(`Publish failed: ${result.error || result.message}`);
         setPublishing(false);
@@ -399,14 +553,8 @@ const InlineWriteupEditor = ({
         <div style={{ border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff' }}>
           <MenuBar editor={editor} />
           <div
-            style={{ minHeight: '200px', padding: '12px', cursor: 'text' }}
-            onClick={(e) => {
-              // Only focus editor when clicking directly on the padding area, not on text
-              // This prevents interfering with text selection inside the editor
-              if (e.target === e.currentTarget) {
-                editor?.commands.focus();
-              }
-            }}
+            className="e2-editor-wrapper"
+            style={{ padding: '12px' }}
           >
             <EditorContent editor={editor} />
           </div>
@@ -450,7 +598,11 @@ const InlineWriteupEditor = ({
 
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
             <button
-              onClick={onCancel}
+              onClick={() => {
+                // When exiting the editor, pass the last saved content from the server
+                // This is the source of truth and ensures display stays in sync with database
+                onSave(lastSavedContentRef.current);
+              }}
               disabled={publishing}
               style={{
                 padding: '6px 16px',
@@ -462,7 +614,7 @@ const InlineWriteupEditor = ({
                 opacity: publishing ? 0.5 : 1
               }}
             >
-              Cancel
+              Done
             </button>
 
             {/* Save button for drafts (new writeups) */}
@@ -494,11 +646,13 @@ const InlineWriteupEditor = ({
                     ? convertToE2Syntax(convertRawBracketsToEntities(editor.getHTML()))
                     : htmlContent;
 
-                  // Save the content
-                  await saveDraft(content);
+                  // Save the content and get the server-returned doctext
+                  const savedContent = await saveDraft(content);
 
-                  // Call onSave with the new content so parent can update display
-                  onSave(content);
+                  // Only call onSave if save was successful
+                  if (savedContent !== null) {
+                    onSave(savedContent);
+                  }
                 }}
                 disabled={saveStatus === 'saving'}
                 style={{
@@ -528,7 +682,32 @@ const InlineWriteupEditor = ({
             marginTop: '10px',
             flexWrap: 'wrap'
           }}>
-            <span style={{ fontSize: '13px', color: '#666' }}>Publish as:</span>
+            {/* Dynamic title preview that updates with selected writeup type */}
+            <span style={{ fontSize: '13px', color: '#666' }}>
+              Publishing: <strong>
+                {e2nodeTitle}
+                {selectedWriteuptypeId && writeuptypes.length > 0 && (
+                  <> ({writeuptypes.find(wt => wt.node_id === selectedWriteuptypeId)?.title || ''})</>
+                )}
+              </strong>
+              {/* E2node status indicator */}
+              {e2nodeStatus === 'checking' && (
+                <span style={{ marginLeft: '6px', color: '#999', fontSize: '12px' }}>
+                  (checking...)
+                </span>
+              )}
+              {e2nodeStatus === 'found' && (
+                <span style={{ marginLeft: '6px', color: '#28a745', fontSize: '14px' }} title="E2node exists">
+                  ✓
+                </span>
+              )}
+              {e2nodeStatus === 'not_found' && (
+                <span style={{ marginLeft: '6px', color: '#fd7e14', fontSize: '12px' }} title="E2node will be created on publish">
+                  (new)
+                </span>
+              )}
+            </span>
+            <span style={{ fontSize: '13px', color: '#999' }}>as</span>
             <select
               value={selectedWriteuptypeId || ''}
               onChange={(e) => setSelectedWriteuptypeId(Number(e.target.value))}
@@ -568,15 +747,16 @@ const InlineWriteupEditor = ({
             </label>
             <button
               onClick={handlePublish}
-              disabled={!draftId || publishing || saveStatus === 'saving'}
+              disabled={!draftId || !e2nodeTitle || e2nodeStatus === 'checking' || publishing || saveStatus === 'saving'}
+              title={e2nodeStatus === 'not_found' ? `Will create new e2node "${e2nodeTitle}"` : ''}
               style={{
                 padding: '6px 16px',
                 fontSize: '13px',
                 border: 'none',
                 borderRadius: '4px',
-                background: (!draftId || publishing || saveStatus === 'saving') ? '#ccc' : '#4060b0',
+                background: (!draftId || !e2nodeTitle || e2nodeStatus === 'checking' || publishing || saveStatus === 'saving') ? '#ccc' : '#4060b0',
                 color: '#fff',
-                cursor: (!draftId || publishing || saveStatus === 'saving') ? 'not-allowed' : 'pointer',
+                cursor: (!draftId || !e2nodeTitle || e2nodeStatus === 'checking' || publishing || saveStatus === 'saving') ? 'not-allowed' : 'pointer',
                 fontWeight: '500'
               }}
             >
@@ -622,63 +802,6 @@ const InlineWriteupEditor = ({
         )}
       </div>
     </div>
-  );
-};
-
-/**
- * PreviewContent - Renders live preview of editor content
- * Updates on each editor change via previewTrigger
- */
-const PreviewContent = ({ editor, editorMode, htmlContent, previewTrigger }) => {
-  // Get current content from editor or HTML textarea
-  // previewTrigger forces re-computation when editor content changes
-  const currentContent = useMemo(() => {
-    if (editorMode === 'html') {
-      return htmlContent;
-    }
-    if (editor) {
-      const html = editor.getHTML();
-      const withEntities = convertRawBracketsToEntities(html);
-      return convertToE2Syntax(withEntities);
-    }
-    return '';
-  }, [editor, editorMode, htmlContent, previewTrigger]);
-
-  // Render through E2 sanitizer with link parsing
-  const renderedContent = useMemo(() => {
-    if (!currentContent) return '';
-    const { html } = renderE2Content(currentContent);
-    return html;
-  }, [currentContent]);
-
-  if (!currentContent) {
-    return (
-      <div style={{
-        padding: '20px',
-        backgroundColor: '#fff',
-        border: '1px solid #e0e0e0',
-        borderRadius: '4px',
-        color: '#999',
-        fontStyle: 'italic',
-        textAlign: 'center'
-      }}>
-        Start typing to see preview...
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="content"
-      style={{
-        padding: '12px',
-        backgroundColor: '#fff',
-        border: '1px solid #e0e0e0',
-        borderRadius: '4px',
-        lineHeight: '1.6'
-      }}
-      dangerouslySetInnerHTML={{ __html: renderedContent }}
-    />
   );
 };
 

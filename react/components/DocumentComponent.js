@@ -3,6 +3,7 @@ import React, { Suspense, lazy } from 'react'
 // Eager imports for high-traffic pages (not lazy loaded)
 import Writeup from './Documents/Writeup'
 import E2Node from './Documents/E2Node'
+import Draft from './Documents/Draft'
 
 /**
  * DocumentComponent - Router for React-migrated documents
@@ -31,9 +32,10 @@ import E2Node from './Documents/E2Node'
 // Component registry - maps document type to React component
 // Add new migrated documents here as they are converted from Mason to React
 const COMPONENT_MAP = {
-  // Core node types (writeups and e2nodes) - eager loaded for performance
+  // Core node types (writeups, e2nodes, drafts) - eager loaded for performance
   writeup: Writeup,
   e2node: E2Node,
+  draft: Draft,
 
   // Usergroups - migrated from delegation Dec 2025
   usergroup: lazy(() => import('./Documents/Usergroup')),

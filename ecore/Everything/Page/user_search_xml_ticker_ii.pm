@@ -59,8 +59,8 @@ sub generate_xml {
         'publication' => "$o publishtime DESC",
         'publication_asc' => "$o publishtime"
     };
-    my $sort = $sortchoices->{$query->param("sort")};
-    $sort ||= $sortchoices->{creation};
+    my $sort_param = $query->param("sort") // '';
+    my $sort = $sortchoices->{$sort_param} // $sortchoices->{creation};
     $sort = "" if $query->param("nosort");
 
     my $wuCount = $self->DB->sqlSelect('count(*)','node',
