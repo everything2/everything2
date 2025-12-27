@@ -712,6 +712,33 @@
         }
       }
     },
+    "RateLimitBlocksLogWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the app containers to log rate-limited IP blocks to CloudWatch",
+        "ManagedPolicyName": "RateLimitBlocksLogWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "logs:PutLogEvents",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "RateLimitBlocksLogGroup", "Arn"] }, ":*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "logs:CreateLogStream",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "RateLimitBlocksLogGroup", "Arn"] }, ":*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "logs:DescribeLogStreams",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "RateLimitBlocksLogGroup", "Arn"] }, ":*"]]}
+          }]
+        }
+      }
+    },
     "SecretsS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
@@ -1515,6 +1542,13 @@
         "RetentionInDays": 7
       }
     },
+    "RateLimitBlocksLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/e2/rate-limit-blocks",
+        "RetentionInDays": 7
+      }
+    },
     "ECSFargateAppService": {
       "Type": "AWS::ECS::Service",
       "Properties": {
@@ -1723,6 +1757,7 @@
             {"Ref": "CloudWatchEventsWritePolicy"},
             {"Ref": "HealthCheckLogWritePolicy"},
             {"Ref": "ClientErrorsLogWritePolicy"},
+            {"Ref": "RateLimitBlocksLogWritePolicy"},
             {"Ref": "NodepackS3Policy"},
             {"Ref": "SitemapBucketWritePolicy"},
             {"Ref": "WriteupExportS3Policy"}
