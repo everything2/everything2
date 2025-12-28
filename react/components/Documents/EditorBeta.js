@@ -306,7 +306,10 @@ const EditorBeta = ({ data }) => {
     editorProps: {
       attributes: {
         class: 'e2-editor-content',
-        spellcheck: 'true'
+        spellcheck: 'true',
+        'aria-label': 'Draft content',
+        'role': 'textbox',
+        'aria-multiline': 'true',
       },
       handleDOMEvents: {
         focus: (view) => {
@@ -811,7 +814,10 @@ const EditorBeta = ({ data }) => {
         {/* Editor - Rich text or HTML textarea based on mode */}
         {editMode === 'rich' ? (
           <div style={{ border: '1px solid #38495e', borderRadius: '4px', backgroundColor: '#fff' }}>
-            <div className="e2-editor-wrapper" style={{ minHeight: '400px' }}>
+            <div
+              className="e2-editor-wrapper"
+              style={{ minHeight: '400px' }}
+            >
               <EditorContent editor={editor} />
             </div>
           </div>
@@ -822,6 +828,7 @@ const EditorBeta = ({ data }) => {
               setRawHtmlContent(e.target.value);
               setPreviewTrigger(prev => prev + 1);
             }}
+            aria-label="Draft content (HTML)"
             style={{
               width: '100%',
               minHeight: '400px',

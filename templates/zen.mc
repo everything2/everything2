@@ -212,7 +212,7 @@ sub _build_pagetitle
 </head>
 <body class="<% $.body_class %>" itemscope itemtype="http://schema.org/WebPage">
 <& 'googleads', no_ads => $.no_ads &>
-<div id='header'>
+<div id='header' role="banner" aria-label="Site header" data-reader-ignore="true">
 <%perl>
   # Show epicenterZen linkbar if user doesn't have Epicenter nodelet
   my $user = $REQUEST->user;
@@ -429,14 +429,14 @@ sub _build_pagetitle
   <% inner() %>
   <!-- google_ad_section_end -->
  </div>
- <div id='sidebar'>
+ <div id='sidebar' role="complementary" aria-label="Sidebar" data-reader-ignore="true">
   <!-- Phase 3: React now renders the entire sidebar (no more Mason2 nodelet loop) -->
   <div id='e2-react-root'></div>
  </div> 
 </div>
-<div id='footer'>
+<footer id='footer' role="contentinfo" aria-label="Site footer" data-reader-ignore="true">
 Everything2 &trade; is brought to you by Everything2 Media, LLC. All content copyright &#169; original author unless stated otherwise.
-</div>
+</footer>
 <& 'static_javascript', nodeinfojson => $.nodeinfojson, default_javascript => $.default_javascript &>
 </body>
 </html>

@@ -32,7 +32,7 @@ const SoftlinksTable = ({ softlinks, isLoggedIn }) => {
   }
 
   return (
-    <div id="softlinks">
+    <nav id="softlinks" aria-label="Related topics" data-reader-ignore="true">
       <table cellPadding="10" cellSpacing="0" border="0" width="100%">
         <tbody>
           {rows.map((row, rowIndex) => (
@@ -63,7 +63,7 @@ const SoftlinksTable = ({ softlinks, isLoggedIn }) => {
           ))}
         </tbody>
       </table>
-    </div>
+    </nav>
   )
 }
 
@@ -118,8 +118,9 @@ const Writeup = ({ data }) => {
   return (
     <div className="writeup-page">
       {/* Toolbar - E2 Node Tools for editors, Edit button for editors/owners */}
+      {/* data-reader-ignore excludes from reading mode */}
       {(showTools || canEdit) && (
-        <div style={{ textAlign: 'right', marginBottom: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+        <nav style={{ textAlign: 'right', marginBottom: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }} aria-label="Editor tools" data-reader-ignore="true">
           {canEdit && !isEditing && (
             <button
               onClick={() => setIsEditing(true)}
@@ -158,47 +159,51 @@ const Writeup = ({ data }) => {
               <FaTools />
             </button>
           )}
-        </div>
+        </nav>
       )}
 
-      {/* Show editor or writeup display */}
+      {/* Show editor or writeup display - wrapped in <main> for Chrome reading mode */}
       {isEditing ? (
-        <InlineWriteupEditor
-          e2nodeId={parent_e2node?.node_id}
-          e2nodeTitle={parent_e2node?.title}
-          initialContent={displayDoctext || ''}
-          writeupId={writeup.node_id}
-          writeupAuthor={authorName}
-          isOwnWriteup={isOwnWriteup}
-          onSave={(newContent) => {
-            // Update the displayed content and exit edit mode
-            if (newContent !== undefined) {
-              setCurrentDoctext(newContent)
-            }
-            setIsEditing(false)
-            // Remove ?edit=1 from URL if present
-            if (window.history.replaceState && urlParams.get('edit') === '1') {
-              const url = new URL(window.location)
-              url.searchParams.delete('edit')
-              window.history.replaceState({}, '', url)
-            }
-          }}
-          onCancel={() => {
-            setIsEditing(false)
-            // Remove ?edit=1 from URL if present
-            if (window.history.replaceState && urlParams.get('edit') === '1') {
-              const url = new URL(window.location)
-              url.searchParams.delete('edit')
-              window.history.replaceState({}, '', url)
-            }
-          }}
-        />
+        <aside aria-label="Edit writeup" data-reader-ignore="true">
+          <InlineWriteupEditor
+            e2nodeId={parent_e2node?.node_id}
+            e2nodeTitle={parent_e2node?.title}
+            initialContent={displayDoctext || ''}
+            writeupId={writeup.node_id}
+            writeupAuthor={authorName}
+            isOwnWriteup={isOwnWriteup}
+            onSave={(newContent) => {
+              // Update the displayed content and exit edit mode
+              if (newContent !== undefined) {
+                setCurrentDoctext(newContent)
+              }
+              setIsEditing(false)
+              // Remove ?edit=1 from URL if present
+              if (window.history.replaceState && urlParams.get('edit') === '1') {
+                const url = new URL(window.location)
+                url.searchParams.delete('edit')
+                window.history.replaceState({}, '', url)
+              }
+            }}
+            onCancel={() => {
+              setIsEditing(false)
+              // Remove ?edit=1 from URL if present
+              if (window.history.replaceState && urlParams.get('edit') === '1') {
+                const url = new URL(window.location)
+                url.searchParams.delete('edit')
+                window.history.replaceState({}, '', url)
+              }
+            }}
+          />
+        </aside>
       ) : (
-        <WriteupDisplay
-          writeup={{ ...writeup, doctext: displayDoctext }}
-          user={user}
-          onEdit={() => setIsEditing(true)}
-        />
+        <main className="writeup-main-content" aria-label="Writeup">
+          <WriteupDisplay
+            writeup={{ ...writeup, doctext: displayDoctext }}
+            user={user}
+            onEdit={() => setIsEditing(true)}
+          />
+        </main>
       )}
 
       {/* Softlinks from parent e2node */}
@@ -237,8 +242,9 @@ const Writeup = ({ data }) => {
       )}
 
       {/* Inline writeup editor for adding new writeup to parent e2node */}
+      {/* data-reader-ignore excludes from reading mode */}
       {showAddWriteupEditor && (
-        <div style={{ marginTop: '24px' }}>
+        <aside style={{ marginTop: '24px' }} aria-label="Write a new writeup" data-reader-ignore="true">
           <InlineWriteupEditor
             e2nodeId={parent_e2node.node_id}
             e2nodeTitle={parent_e2node.title}
@@ -251,7 +257,7 @@ const Writeup = ({ data }) => {
               // Optional: could hide the editor, but for now do nothing
             }}
           />
-        </div>
+        </aside>
       )}
     </div>
   )

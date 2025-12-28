@@ -268,15 +268,12 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
   // State for error messages (vote/cool failures)
   const [errorMessage, setErrorMessage] = useState(null)
 
-  // Render doctext with E2 HTML sanitization and link parsing
-  const renderDoctext = (text) => {
-    if (!text) return null
-
+  // Get sanitized HTML for doctext (used in dangerouslySetInnerHTML)
+  const getSanitizedHtml = (text) => {
+    if (!text) return ''
     // Use E2HtmlSanitizer to sanitize HTML and parse E2 links
     const { html } = renderE2Content(text)
-
-    // Return raw HTML - outer .content div provides styling
-    return <div dangerouslySetInnerHTML={{ __html: html }} />
+    return html
   }
 
   const isGuest = !user || user.guest || user.is_guest
@@ -351,12 +348,22 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
     return true
   }
 
+  // Generate accessible label for the article
+  const articleLabel = isDraft
+    ? `Draft: ${title}`
+    : `${title} by ${author?.title || 'unknown'}`
+
   return (
-    // Use .item class for consistent styling with legacy CSS
-    <div className="item writeup" id={`writeup_${node_id}`}>
-      {/* Writeup header - matches legacy 'show content' with displayWriteupInfo */}
-      {/* Structure: .contentinfo.contentheader > table > tr.wu_header > td cells */}
-      <div className="contentinfo contentheader">
+    <>
+      {/* Use <article> element for semantic HTML (Chrome reading mode) with .item class for styling */}
+      {/* Note: Modals are outside <article> so they don't appear in reading mode */}
+      {/* aria-label provides accessible name for screen readers and reading mode */}
+      {/* itemscope/itemtype provide Schema.org Article microdata for reading mode detection */}
+      <article className="item writeup" id={`writeup_${node_id}`} aria-label={articleLabel} itemScope itemType="https://schema.org/Article">
+        {/* Writeup header - matches legacy 'show content' with displayWriteupInfo */}
+        {/* Structure: .contentinfo.contentheader > table > tr.wu_header > td cells */}
+        {/* data-reader-ignore on header since it's navigation/metadata, not content */}
+        <header className="contentinfo contentheader" data-reader-ignore="true">
         <table border="0" cellPadding="0" cellSpacing="0" width="100%">
           <tbody>
             <tr className="wu_header">
@@ -398,17 +405,20 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
             </tr>
           </tbody>
         </table>
-      </div>
+      </header>
+
+
 
       {/* Writeup content - uses .content class for legacy CSS compatibility */}
-      <div className="content">
-        {renderDoctext(doctext)}
-      </div>
+      {/* itemProp="articleBody" helps Chrome reading mode identify this as main content */}
+      {/* dangerouslySetInnerHTML directly on this div avoids extra wrapper that confuses reading mode */}
+      <div className="content" itemProp="articleBody" dangerouslySetInnerHTML={{ __html: getSanitizedHtml(doctext) }} />
 
       {/* Writeup footer with voting/C!s - matches legacy displayWriteupInfo footer */}
+      {/* Using <footer> element so reading mode parsers exclude it from article content */}
       {/* Structure: .contentinfo.contentfooter > table > tr.wu_footer > td cells */}
       {showMetadata && (
-        <div className="contentinfo contentfooter">
+        <footer className="contentinfo contentfooter" data-reader-ignore="true">
           <table border="0" cellPadding="0" cellSpacing="0" width="100%">
             <tbody>
               <tr className="wu_footer">
@@ -600,8 +610,11 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
               {errorMessage}
             </div>
           )}
-        </div>
+        </footer>
       )}
+      </article>
+
+      {/* Modals are outside <article> so they don't appear in Chrome reading mode */}
 
       {/* Admin modal (writeups only, not drafts) */}
       {!isDraft && showAdminTools && (
@@ -705,7 +718,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
           confirmColor="#667eea"
         />
       )}
-    </div>
+    </>
   )
 }
 
