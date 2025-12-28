@@ -441,6 +441,13 @@ const InlineWriteupEditor = ({
     // Skip autosave when editing existing writeup - only manual Update
     if (writeupId) return;
 
+    // Create draft on first edit (new writeup only) - same logic as TipTap onUpdate
+    if (!firstEditRef.current && !draftId) {
+      firstEditRef.current = true;
+      createDraft(newHtml);
+      return; // createDraft will set draftId, subsequent edits will use saveDraft
+    }
+
     // Schedule autosave for drafts only
     if (autosaveTimerRef.current) {
       clearTimeout(autosaveTimerRef.current);

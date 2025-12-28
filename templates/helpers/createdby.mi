@@ -8,4 +8,6 @@
 % return unless $crby_id;
 % my $crby = $.node->APP->node_by_id($crby_id);
 % return unless $crby;
-<div class="createdby">created by <& 'linknode', node => $crby &></div>
+% my $createtime = $.node->NODEDATA->{createtime} || '';
+% my $tooltip = 'created by ' . $crby->title . ($createtime ? " on $createtime" : '');
+<div class="createdby" title="<% $tooltip %>">created by <& 'linknode', node => $crby &></div>
