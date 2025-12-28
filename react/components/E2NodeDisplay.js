@@ -86,8 +86,9 @@ const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
       {/* E2node header - title and createdby already displayed by zen.mc #pageheader */}
 
       {/* E2 Node Tools button for editors - right-aligned icon */}
+      {/* data-reader-ignore excludes from reading mode */}
       {showTools && (
-        <div style={{ textAlign: 'right', marginBottom: '8px' }}>
+        <nav style={{ textAlign: 'right', marginBottom: '8px' }} aria-label="Editor tools" data-reader-ignore="true">
           <button
             onClick={() => setToolsModalOpen(true)}
             title="Editor node tools"
@@ -105,11 +106,12 @@ const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
           >
             <FaTools />
           </button>
-        </div>
+        </nav>
       )}
 
-      {/* Writeups */}
-      <div className="e2node-writeups">
+      {/* Writeups - wrapped in <main> for Chrome reading mode detection */}
+      {/* aria-label provides accessible name for landmark navigation */}
+      <main className="e2node-writeups" aria-label="Writeups">
         {hasWriteups ? (
           group.map((writeup) => (
             <WriteupDisplay
@@ -121,7 +123,7 @@ const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
         ) : (
           <p className="no-writeups">There are no writeups for this node yet.</p>
         )}
-      </div>
+      </main>
 
       {/* Softlinks - 4-column table matching legacy softlink htmlcode */}
       {softlinks && softlinks.length > 0 && (
@@ -159,8 +161,9 @@ const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
       )}
 
       {/* Inline writeup editor - shown for logged-in users without writeup on this node */}
+      {/* aria-hidden and data-reader-ignore exclude from reading mode and accessibility tree */}
       {showInlineEditor && (
-        <div style={{ marginTop: '24px' }}>
+        <aside style={{ marginTop: '24px' }} aria-label="Write a new writeup" data-reader-ignore="true">
           <InlineWriteupEditor
             e2nodeId={e2node.node_id}
             e2nodeTitle={title}
@@ -174,7 +177,7 @@ const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
               // Optional: could hide the editor, but for now do nothing
             }}
           />
-        </div>
+        </aside>
       )}
     </div>
   )
@@ -201,7 +204,7 @@ const SoftlinksTable = ({ softlinks, isLoggedIn }) => {
   }
 
   return (
-    <div id="softlinks">
+    <nav id="softlinks" aria-label="Related topics" data-reader-ignore="true">
       <table cellPadding="10" cellSpacing="0" border="0" width="100%">
         <tbody>
           {rows.map((row, rowIndex) => (
@@ -232,7 +235,7 @@ const SoftlinksTable = ({ softlinks, isLoggedIn }) => {
           ))}
         </tbody>
       </table>
-    </div>
+    </nav>
   )
 }
 

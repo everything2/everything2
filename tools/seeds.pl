@@ -45,7 +45,9 @@ foreach my $user (1..30,"user with space","genericeditor","genericdev","genericc
   }
 
   $author->{author_user} = $author->{node_id};
-  $author->{passwd} = "blah";
+  my ($pwhash, $salt) = $APP->saltNewPassword("blah");
+  $author->{passwd} = $pwhash;
+  $author->{salt} = $salt;
   $author->{doctext} = "Homenode text for $user";
   $author->{votesleft} = 50;
   $DB->updateNode($author, -1);
@@ -299,6 +301,11 @@ if (!$e2e_user) {
   $e2e_user->{salt} = $salt;
   $DB->updateNode($e2e_user, -1);
 }
+# Configure nodelets for e2e_user (required for t/031_settings_api.t)
+my $e2e_userv = getVars($e2e_user);
+$e2e_userv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708";
+setVars($e2e_user, $e2e_userv);
+$DB->updateNode($e2e_user, -1);
 
 # E2E User with space in username
 print STDERR "  - e2e user space (user with space in name)\n";

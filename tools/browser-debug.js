@@ -18,6 +18,7 @@
  *   post [username] [url] [json] - POST JSON to API endpoint as authenticated user
  *   delete [username] [url]     - DELETE request to API endpoint as authenticated user
  *   eval [username] [url] [js]  - Evaluate JavaScript in browser context
+ *   a11y [username] [url]       - Get accessibility tree for the page
  *
  * Available Test Users (from tools/seeds.pl):
  *   root              - Admin (gods + e2gods), password: blah
@@ -589,6 +590,266 @@ async function evalInBrowser(username, url, jsCode) {
 }
 
 /**
+ * Get accessibility tree for a page
+ * Uses Chrome DevTools Protocol to get the full accessibility tree
+ */
+async function getAccessibilityTree(username, url = BASE_URL) {
+  let browser, page;
+
+  // Special case: "guest" means unauthenticated
+  if (username === 'guest') {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 1024 });
+    console.error(`Navigating to ${url} as guest...`);
+  } else {
+    const session = await createAuthenticatedSession(username, url);
+    browser = session.browser;
+    page = session.page;
+    console.error(`Navigating to ${url}...`);
+  }
+
+  // Navigate to target URL
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+
+  // Wait for React lazy-loaded components to finish loading
+  await page.waitForFunction(() => {
+    const pageRoot = document.querySelector('#e2-react-page-root');
+    return !pageRoot || !pageRoot.textContent.includes('Loading...');
+  }, { timeout: 10000 }).catch(() => {});
+
+  // Get CDP session
+  const client = await page.target().createCDPSession();
+
+  // Enable accessibility domain
+  await client.send('Accessibility.enable');
+
+  // Get the full accessibility tree
+  const { nodes } = await client.send('Accessibility.getFullAXTree');
+
+  // Filter to interesting nodes (skip generic/ignored nodes without names)
+  const interestingNodes = nodes.filter(node => {
+    // Always include landmark roles
+    const landmarkRoles = ['main', 'navigation', 'article', 'banner', 'contentinfo', 'complementary', 'region', 'search'];
+    if (landmarkRoles.includes(node.role?.value)) return true;
+
+    // Include nodes with names
+    if (node.name?.value) return true;
+
+    // Include nodes with specific roles that are meaningful
+    const meaningfulRoles = ['heading', 'link', 'button', 'textbox', 'list', 'listitem', 'table', 'row', 'cell', 'img', 'form'];
+    if (meaningfulRoles.includes(node.role?.value)) return true;
+
+    return false;
+  });
+
+  // Format the tree for readability
+  const formattedNodes = interestingNodes.map(node => ({
+    role: node.role?.value,
+    name: node.name?.value,
+    description: node.description?.value,
+    properties: node.properties?.reduce((acc, prop) => {
+      acc[prop.name] = prop.value?.value;
+      return acc;
+    }, {})
+  }));
+
+  await browser.close();
+
+  // Output JSON to stdout
+  console.log(JSON.stringify(formattedNodes, null, 2));
+
+  return formattedNodes;
+}
+
+/**
+ * Test Chrome's DOM Distiller (reading mode) parsing
+ * Uses Chrome with ReadAnything feature enabled
+ */
+async function testChromeReader(username, url = BASE_URL) {
+  let browser, page;
+
+  // Launch with reading mode features enabled
+  const launchArgs = [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--enable-features=ReadAnything,ReaderMode'
+  ];
+
+  if (username === 'guest') {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: launchArgs
+    });
+    page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 1024 });
+    console.error(`Navigating to ${url} as guest...`);
+  } else {
+    const session = await createAuthenticatedSession(username, url);
+    browser = session.browser;
+    page = session.page;
+    console.error(`Navigating to ${url}...`);
+  }
+
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+
+  // Wait for React to render
+  await page.waitForFunction(() => {
+    const pageRoot = document.querySelector('#e2-react-page-root');
+    return !pageRoot || !pageRoot.textContent.includes('Loading...');
+  }, { timeout: 10000 }).catch(() => {});
+
+  // Check page structure for reading mode
+  const structure = await page.evaluate(() => {
+    const article = document.querySelector('article');
+    const main = document.querySelector('main');
+    const articleBody = document.querySelector('[itemprop="articleBody"]');
+    const h1 = document.querySelector('h1');
+
+    // Find the primary content area
+    let primaryContent = null;
+    let primaryText = '';
+
+    if (articleBody) {
+      primaryContent = 'articleBody';
+      primaryText = articleBody.textContent;
+    } else if (article) {
+      primaryContent = 'article';
+      primaryText = article.textContent;
+    } else if (main) {
+      primaryContent = 'main';
+      primaryText = main.textContent;
+    }
+
+    return {
+      title: document.title,
+      h1Text: h1?.textContent,
+      hasArticle: !!article,
+      articleAriaLabel: article?.getAttribute('aria-label'),
+      hasMain: !!main,
+      mainAriaLabel: main?.getAttribute('aria-label'),
+      hasArticleBody: !!articleBody,
+      primaryContent,
+      contentLength: primaryText?.length || 0,
+      contentPreview: primaryText?.substring(0, 500)?.trim(),
+      // Check for elements that might confuse reader mode
+      sidebarText: document.querySelector('#sidebar')?.textContent?.length || 0,
+      headerText: document.querySelector('#header')?.textContent?.length || 0,
+      footerText: document.querySelector('#footer')?.textContent?.length || 0
+    };
+  });
+
+  console.log('=== CHROME READER MODE ANALYSIS ===\n');
+  console.log(`Page Title: ${structure.title}`);
+  console.log(`H1 Text: ${structure.h1Text}`);
+  console.log(`\n--- Structure ---`);
+  console.log(`Has <article>: ${structure.hasArticle} (aria-label: ${structure.articleAriaLabel || 'none'})`);
+  console.log(`Has <main>: ${structure.hasMain} (aria-label: ${structure.mainAriaLabel || 'none'})`);
+  console.log(`Has [itemprop="articleBody"]: ${structure.hasArticleBody}`);
+  console.log(`\n--- Content ---`);
+  console.log(`Primary content source: ${structure.primaryContent}`);
+  console.log(`Content length: ${structure.contentLength} characters`);
+  console.log(`\n--- Noise (other text on page) ---`);
+  console.log(`Sidebar text: ${structure.sidebarText} chars`);
+  console.log(`Header text: ${structure.headerText} chars`);
+  console.log(`Footer text: ${structure.footerText} chars`);
+  console.log(`\n--- Content Preview ---`);
+  console.log(structure.contentPreview || '(no content found)');
+
+  // Ratio check - content should be significantly larger than noise
+  const noiseTotal = structure.sidebarText + structure.headerText + structure.footerText;
+  const ratio = structure.contentLength / (noiseTotal || 1);
+  console.log(`\n--- Analysis ---`);
+  console.log(`Content/Noise ratio: ${ratio.toFixed(2)} (should be > 1.0 for good detection)`);
+
+  if (ratio < 1.0) {
+    console.log('WARNING: Content may be too short relative to page noise');
+  }
+  if (structure.contentLength < 500) {
+    console.log('WARNING: Content under 500 chars - may not trigger reading mode');
+  }
+
+  await browser.close();
+  return structure;
+}
+
+/**
+ * Test Mozilla Readability parsing on a page
+ * Uses the same algorithm as Firefox Reader View
+ */
+async function testReadability(username, url = BASE_URL) {
+  const { Readability } = require('@mozilla/readability');
+  const { JSDOM } = require('jsdom');
+
+  let browser, page;
+
+  // Special case: "guest" means unauthenticated
+  if (username === 'guest') {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 1024 });
+    console.error(`Navigating to ${url} as guest...`);
+  } else {
+    const session = await createAuthenticatedSession(username, url);
+    browser = session.browser;
+    page = session.page;
+    console.error(`Navigating to ${url}...`);
+  }
+
+  // Navigate to target URL
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+
+  // Wait for React lazy-loaded components to finish loading
+  await page.waitForFunction(() => {
+    const pageRoot = document.querySelector('#e2-react-page-root');
+    return !pageRoot || !pageRoot.textContent.includes('Loading...');
+  }, { timeout: 10000 }).catch(() => {});
+
+  // Get the fully rendered HTML
+  const html = await page.content();
+  await browser.close();
+
+  // Parse with JSDOM (Readability needs a DOM)
+  const dom = new JSDOM(html, { url });
+  const document = dom.window.document;
+
+  // Run Readability
+  const reader = new Readability(document);
+  const article = reader.parse();
+
+  if (!article) {
+    console.log('Readability could not parse this page as an article.');
+    console.log('\nThis usually means:');
+    console.log('  - Not enough text content (need ~500+ characters)');
+    console.log('  - Content is too fragmented across DOM nodes');
+    console.log('  - No clear article structure detected');
+    return null;
+  }
+
+  // Output parsed article info
+  console.log('=== READABILITY PARSE RESULT ===\n');
+  console.log(`Title: ${article.title}`);
+  console.log(`Byline: ${article.byline || '(none)'}`);
+  console.log(`Site Name: ${article.siteName || '(none)'}`);
+  console.log(`Excerpt: ${article.excerpt || '(none)'}`);
+  console.log(`Content Length: ${article.textContent?.length || 0} characters`);
+  console.log(`\n=== EXTRACTED TEXT (first 2000 chars) ===\n`);
+  console.log(article.textContent?.substring(0, 2000) || '(no text)');
+
+  if (article.textContent?.length > 2000) {
+    console.log('\n... [truncated]');
+  }
+
+  return article;
+}
+
+/**
  * Get HTML for URL as guest (no authentication)
  */
 async function getHtmlAsGuest(url = BASE_URL) {
@@ -731,6 +992,39 @@ async function main() {
         await getHtmlAsGuest(arg1);
         break;
 
+      case 'a11y':
+      case 'accessibility':
+        if (!arg1) {
+          console.error('Usage: a11y [username] [url]');
+          console.error('Example: a11y guest http://localhost:9080/title/tomato');
+          console.error('Example: a11y e2e_user http://localhost:9080/title/tomato');
+          process.exit(1);
+        }
+        await getAccessibilityTree(arg1, arg2);
+        break;
+
+      case 'readability':
+      case 'reader':
+        if (!arg1) {
+          console.error('Usage: readability [username] [url]');
+          console.error('Example: readability guest http://localhost:9080/node/2212929');
+          console.error('Example: readability e2e_user http://localhost:9080/title/tomato');
+          console.error('\nTests Mozilla Readability parsing (used by Firefox Reader View)');
+          process.exit(1);
+        }
+        await testReadability(arg1, arg2);
+        break;
+
+      case 'chrome-reader':
+        if (!arg1) {
+          console.error('Usage: chrome-reader [username] [url]');
+          console.error('Example: chrome-reader guest http://localhost:9080/node/2212929');
+          console.error('\nAnalyzes page structure for Chrome reading mode compatibility');
+          process.exit(1);
+        }
+        await testChromeReader(arg1, arg2);
+        break;
+
       default:
         console.log('Unknown command. Available commands:');
         console.log('  screenshot [url]                - Take a screenshot (guest)');
@@ -746,6 +1040,7 @@ async function main() {
         console.log('  post [username] [url] [json]    - POST JSON to API as user');
         console.log('  delete [username] [url]         - DELETE request to API as user');
         console.log('  eval [username] [url] [js]      - Evaluate JavaScript in browser');
+        console.log('  a11y [username] [url]           - Get accessibility tree');
         console.log('\nRun "node tools/browser-debug.js login" to see available test users');
         process.exit(1);
     }
@@ -772,5 +1067,6 @@ module.exports = {
   deleteAsUser,
   evalInBrowser,
   fetchAsGuest,
-  getHtmlAsGuest
+  getHtmlAsGuest,
+  getAccessibilityTree
 };

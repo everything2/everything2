@@ -168,6 +168,13 @@ const InlineWriteupEditor = ({
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
     content: convertEntitiesToRawBrackets(initialContent),
+    editorProps: {
+      attributes: {
+        'aria-label': 'Writeup content',
+        'role': 'textbox',
+        'aria-multiline': 'true',
+      },
+    },
     onUpdate: ({ editor: updatedEditor }) => {
       // Mark as unsaved
       setSaveStatus('unsaved');
@@ -564,6 +571,7 @@ const InlineWriteupEditor = ({
           value={htmlContent}
           onChange={handleHtmlChange}
           placeholder="Enter HTML content here..."
+          aria-label="Writeup content (HTML)"
           style={{
             width: '100%',
             minHeight: '200px',
