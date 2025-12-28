@@ -455,7 +455,7 @@ Returns the display of e2nodes/:id of the newly created object
 
 ## Drafts
 
-**Test Coverage: ❌ 0%** (0/5 endpoints tested)
+**Test Coverage: ❌ 0%** (0/7 endpoints tested)
 
 Current version: *1 (beta)*
 
@@ -700,6 +700,129 @@ curl -X PUT https://everything2.com/api/drafts/2213271 \
 - Status changes validate against known publication_status nodes
 - Multiple fields can be updated in a single request
 - Updates use direct SQL (not `updateNode()`) for performance
+
+### DELETE /api/drafts/:id
+
+Permanently deletes a draft. This action cannot be undone.
+
+**URL Parameters:**
+* **id** - The node_id of the draft to delete (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "Draft deleted successfully",
+  "draft_id": 2213271
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **message** - Human-readable confirmation message
+* **draft_id** - The ID of the deleted draft
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid or missing draft ID
+* **401 Unauthorized** - User is not logged in
+* **403 Forbidden** - User doesn't own the draft (non-editors cannot delete others' drafts)
+* **404 Not Found** - Draft doesn't exist
+
+**Example Request:**
+
+```bash
+curl -X DELETE https://everything2.com/api/drafts/2213271 \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Editors can delete any user's drafts
+- Regular users can only delete their own drafts
+- Deletion removes the node and all associated data (document content, version history)
+- Uses `nukeNode()` for complete removal
+
+### GET /api/drafts/search
+
+Searches the current user's drafts by title and content.
+
+**Query Parameters:**
+* **q** - Search query string (required, minimum 2 characters)
+* **limit** - Maximum number of results to return (optional, default: 20, max: 50)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "drafts": [
+    {
+      "node_id": 2213271,
+      "title": "My Draft About Cats",
+      "createtime": "2025-12-01 06:46:52",
+      "status": "private",
+      "doctext": "<p>Content mentioning cats...</p>"
+    }
+  ],
+  "query": "cats"
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **drafts** - Array of matching draft objects (may be empty)
+* **query** - The search query that was executed
+* **message** - Only present when query is too short
+
+**Draft Object Keys:**
+* **node_id** - Draft's unique identifier
+* **title** - Draft title
+* **createtime** - When the draft was created (MySQL datetime format)
+* **status** - Human-readable publication status
+* **doctext** - Full HTML content of the draft
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+
+**Query Too Short Response:**
+
+When the query is less than 2 characters:
+
+```json
+{
+  "success": 1,
+  "drafts": [],
+  "message": "Search query too short (minimum 2 characters)"
+}
+```
+
+**Example Requests:**
+
+```bash
+# Search for drafts containing "poetry"
+curl "https://everything2.com/api/drafts/search?q=poetry" \
+  -H "Cookie: userpass=..."
+
+# Search with custom limit
+curl "https://everything2.com/api/drafts/search?q=cats&limit=10" \
+  -H "Cookie: userpass=..."
+```
+
+**Implementation Notes:**
+
+- Searches both title and doctext fields using SQL LIKE
+- Case-insensitive matching
+- Special characters (%, _, \) are escaped to prevent SQL injection
+- Results ordered by createtime descending (newest first)
+- Returns full doctext content for each match (client can truncate for display)
+- Uses the existing `authortype` composite index for efficient filtering by user
 
 ## Autosave
 

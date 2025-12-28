@@ -55,6 +55,7 @@ Returns 409 Conflict if e2node is locked by another operation.
 sub routes {
     return {
         '/'            => 'list_or_create',
+        '/search'      => 'search_drafts',
         '/:id'         => 'get_or_update',
         '/:id/parent'  => 'set_parent_e2node(:id)',
         '/:id/publish' => 'publish_draft(:id)',
@@ -170,6 +171,97 @@ sub list_drafts {
                 total    => $total || 0,
                 has_more => ( $offset + $limit ) < ( $total || 0 )
             }
+        }
+    ];
+}
+
+=head2 GET /api/drafts/search
+
+Search user's drafts by title or content.
+
+Query parameters:
+  q - Search query (required, min 2 characters)
+  limit - Maximum results (default 20, max 50)
+
+Returns drafts matching the query in title or doctext.
+
+=cut
+
+sub search_drafts {
+    my ( $self, $REQUEST ) = @_;
+
+    my $user_id = $REQUEST->user->node_id;
+    my $DB      = $self->DB;
+
+    # Get search query
+    my $query = $REQUEST->param('q') || '';
+    $query =~ s/^\s+|\s+$//g;  # Trim whitespace
+
+    # Require at least 2 characters
+    if ( length($query) < 2 ) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 1,
+                drafts  => [],
+                message => 'Search query too short (minimum 2 characters)'
+            }
+        ];
+    }
+
+    # Limit results
+    my $limit = int( $REQUEST->param('limit') || 20 );
+    $limit = 20 if $limit < 1;
+    $limit = 50 if $limit > 50;
+
+    my $draft_type    = $DB->getType('draft');
+    my $draft_type_id = $draft_type->{node_id};
+
+    # Search in both title and doctext using LIKE
+    # Escape special SQL LIKE characters in the query
+    my $escaped_query = $query;
+    $escaped_query =~ s/([%_\\])/\\$1/g;
+    my $search_pattern = '%' . $escaped_query . '%';
+
+    my $sql = q|
+        SELECT node.node_id, node.title, node.createtime,
+               draft.publication_status,
+               ps.title AS status_title,
+               document.doctext
+        FROM node
+        JOIN draft ON draft.draft_id = node.node_id
+        JOIN document ON document.document_id = node.node_id
+        LEFT JOIN node AS ps ON ps.node_id = draft.publication_status
+        WHERE node.author_user = ?
+        AND node.type_nodetype = ?
+        AND (node.title LIKE ? OR document.doctext LIKE ?)
+        ORDER BY node.createtime DESC
+        LIMIT ?
+    |;
+
+    my $rows = $DB->{dbh}->selectall_arrayref(
+        $sql,
+        { Slice => {} },
+        $user_id, $draft_type_id, $search_pattern, $search_pattern, $limit
+    );
+
+    # Transform rows to match expected format
+    my @drafts = map {
+        {
+            node_id    => $_->{node_id},
+            title      => $_->{title},
+            createtime => $_->{createtime},
+            status     => $_->{status_title} || 'unknown',
+            doctext    => $_->{doctext}      || ''
+        }
+    } @$rows;
+
+    return [
+        $self->HTTP_OK,
+        {
+            success => 1,
+            drafts  => \@drafts,
+            query   => $query
         }
     ];
 }
@@ -1056,7 +1148,7 @@ sub render_preview {
     ];
 }
 
-around [ 'list_or_create', 'get_or_update', 'set_parent_e2node',
+around [ 'list_or_create', 'get_or_update', 'search_drafts', 'set_parent_e2node',
     'publish_draft', 'render_preview' ] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;

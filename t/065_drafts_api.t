@@ -85,6 +85,17 @@ my $idea_writeuptype = $DB->getNode( 'idea', 'writeuptype' );
     }
     sub is_guest       { return shift->{user}->is_guest }
     sub request_method { 'POST' }
+
+    sub param {
+        my ( $self, $name ) = @_;
+        return $self->{params}{$name} if exists $self->{params}{$name};
+        return;
+    }
+
+    sub set_params {
+        my ( $self, $params ) = @_;
+        $self->{params} = $params;
+    }
 }
 
 # Create API instance
@@ -1679,6 +1690,457 @@ sub cleanup_test_nodes {
 
     # Cleanup
     cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# =============================================================================
+# SEARCH DRAFTS TESTS
+# =============================================================================
+
+# Test 35: Search drafts by title
+{
+    # Create a draft with searchable title
+    my $unique_title = 'Searchable Quantum Physics ' . time();
+    $regular_request->set_postdata(
+        {
+            title   => $unique_title,
+            doctext => '<p>Just some regular content here.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+    ok( $draft_id, 'Created draft for search test' );
+
+    # Search for it by title
+    $regular_request->set_params( { q => 'Quantum Physics' } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts returns HTTP_OK' );
+    ok( $search_response->{success}, 'search_drafts succeeds' );
+    ok( ref $search_response->{drafts} eq 'ARRAY', 'drafts is an array' );
+
+    # Find our draft in results
+    my ($found) = grep { $_->{node_id} == $draft_id } @{ $search_response->{drafts} };
+    ok( $found, 'Our draft found in search results' );
+    like( $found->{title}, qr/Quantum Physics/, 'Found draft has matching title' );
+
+    # Cleanup
+    cleanup_test_nodes($draft_id);
+}
+
+# Test 36: Search drafts by content (doctext)
+{
+    # Create a draft with searchable content
+    my $unique_content = 'UniqueXyzzyMagicWord' . time();
+    $regular_request->set_postdata(
+        {
+            title   => 'Generic Title ' . time(),
+            doctext => "<p>This contains the word $unique_content embedded in text.</p>"
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+    ok( $draft_id, 'Created draft for content search test' );
+
+    # Search for it by content
+    $regular_request->set_params( { q => $unique_content } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts by content returns HTTP_OK' );
+    ok( $search_response->{success}, 'search_drafts by content succeeds' );
+
+    # Find our draft in results
+    my ($found) = grep { $_->{node_id} == $draft_id } @{ $search_response->{drafts} };
+    ok( $found, 'Draft found by content search' );
+    like( $found->{doctext}, qr/$unique_content/, 'Found draft has matching content' );
+
+    # Cleanup
+    cleanup_test_nodes($draft_id);
+}
+
+# Test 37: Search returns empty for non-matching query
+{
+    $regular_request->set_params( { q => 'ZzzzNonExistentQueryXxxx' . time() } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts returns HTTP_OK for no results' );
+    ok( $search_response->{success}, 'search_drafts succeeds even with no results' );
+    is( scalar @{ $search_response->{drafts} }, 0, 'Empty results for non-matching query' );
+}
+
+# Test 38: Search requires minimum 2 characters
+{
+    $regular_request->set_params( { q => 'a' } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts returns HTTP_OK for short query' );
+    ok( $search_response->{success}, 'search_drafts succeeds (returns message)' );
+    is( scalar @{ $search_response->{drafts} }, 0, 'No results for 1-char query' );
+    like( $search_response->{message}, qr/too short|minimum/i, 'Message indicates query too short' );
+}
+
+# Test 39: Search respects limit parameter
+{
+    # Create multiple drafts
+    my @draft_ids;
+    for my $i ( 1 .. 5 ) {
+        $regular_request->set_postdata(
+            {
+                title   => "Limit Test Draft $i " . time(),
+                doctext => '<p>Content for limit testing.</p>'
+            }
+        );
+        my ( $status, $response ) = @{ $api->create_draft($regular_request) };
+        push @draft_ids, $response->{draft}{node_id};
+    }
+
+    # Search with limit of 2
+    $regular_request->set_params( { q => 'Limit Test Draft', limit => 2 } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts with limit returns HTTP_OK' );
+    ok( $search_response->{success}, 'search_drafts with limit succeeds' );
+    ok( scalar @{ $search_response->{drafts} } <= 2, 'Results respect limit of 2' );
+
+    # Cleanup
+    cleanup_test_nodes(@draft_ids);
+}
+
+# Test 40: Search only returns user's own drafts (security)
+{
+    # Create a draft as admin
+    my $admin_request = MockRequest->new(
+        node_id        => $admin_user->{node_id},
+        title          => $admin_user->{title},
+        nodedata       => $admin_user,
+        is_admin_flag  => 1,
+        is_editor_flag => 1,
+        is_guest_flag  => 0
+    );
+
+    my $admin_unique = 'AdminOnlySecret' . time();
+    $admin_request->set_postdata(
+        {
+            title   => "Admin Draft with $admin_unique",
+            doctext => '<p>Secret admin content.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($admin_request) };
+    my $admin_draft_id = $create_response->{draft}{node_id};
+    ok( $admin_draft_id, 'Created admin draft' );
+
+    # Verify admin is the author
+    my $draft_node = $DB->getNodeById($admin_draft_id);
+    is( $draft_node->{author_user}, $admin_user->{node_id}, 'Admin is draft author' );
+
+    # Now search as regular user - should NOT find admin's draft
+    $regular_request->set_params( { q => $admin_unique } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts returns HTTP_OK' );
+    ok( $search_response->{success}, 'search_drafts succeeds' );
+
+    # Verify admin's draft is NOT in results
+    my ($found) = grep { $_->{node_id} == $admin_draft_id } @{ $search_response->{drafts} };
+    ok( !$found, 'Regular user cannot see admin draft in search results' );
+
+    # Cleanup
+    cleanup_test_nodes($admin_draft_id);
+}
+
+# Test 41: Search handles SQL special characters safely
+{
+    # Create a draft
+    $regular_request->set_postdata(
+        {
+            title   => 'SQL Injection Test Draft ' . time(),
+            doctext => '<p>Normal content here.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Try to inject SQL via search query
+    # The % and _ are LIKE wildcards that should be escaped
+    $regular_request->set_params( { q => "'; DROP TABLE node; --" } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts handles SQL injection attempt' );
+    ok( $search_response->{success}, 'search_drafts succeeds (no crash)' );
+
+    # Verify database is still intact
+    my $node_count = $DB->{dbh}->selectrow_array("SELECT COUNT(*) FROM node");
+    ok( $node_count > 0, 'Database still has nodes (SQL injection failed)' );
+
+    # Cleanup
+    cleanup_test_nodes($draft_id);
+}
+
+# Test 42: Search escapes LIKE wildcards (% and _)
+{
+    # Create a draft with literal % and _ in content
+    my $percent_content = 'Percentage100%Increase' . time();
+    $regular_request->set_postdata(
+        {
+            title   => 'Wildcard Test ' . time(),
+            doctext => "<p>This has $percent_content in it.</p>"
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Search for the exact string with %
+    $regular_request->set_params( { q => '100%Increase' } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts with % in query returns HTTP_OK' );
+    ok( $search_response->{success}, 'search_drafts handles % in query' );
+
+    # Cleanup
+    cleanup_test_nodes($draft_id);
+}
+
+# Test 43: Guest cannot search drafts
+{
+    $guest_request->set_params( { q => 'test search' } );
+
+    # The search_drafts method is wrapped with unauthorized_if_guest
+    # which returns HTTP_UNAUTHORIZED for guests
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($guest_request) };
+
+    # Guest should get unauthorized response
+    is( $search_status, $api->HTTP_UNAUTHORIZED, 'search_drafts returns HTTP_UNAUTHORIZED for guest' );
+    ok( !$search_response->{success}, 'Guest search is not successful' );
+}
+
+# =============================================================================
+# ADDITIONAL SECURITY TESTS FOR DELETE
+# =============================================================================
+
+# Test 44: Cannot delete draft by manipulating node_id in URL
+{
+    # Create drafts for two different users
+    my $admin_request = MockRequest->new(
+        node_id        => $admin_user->{node_id},
+        title          => $admin_user->{title},
+        nodedata       => $admin_user,
+        is_admin_flag  => 1,
+        is_editor_flag => 1,
+        is_guest_flag  => 0
+    );
+
+    # Admin creates a draft
+    $admin_request->set_postdata(
+        {
+            title   => 'Admin Private Draft ' . time(),
+            doctext => '<p>This is admin private content.</p>'
+        }
+    );
+    my ( $admin_create_status, $admin_create_response ) =
+      @{ $api->create_draft($admin_request) };
+    my $admin_draft_id = $admin_create_response->{draft}{node_id};
+
+    # Regular user creates a draft
+    $regular_request->set_postdata(
+        {
+            title   => 'Regular User Draft ' . time(),
+            doctext => '<p>This is regular user content.</p>'
+        }
+    );
+    my ( $user_create_status, $user_create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $user_draft_id = $user_create_response->{draft}{node_id};
+
+    # Regular user tries to delete admin's draft by ID
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $regular_request, $admin_draft_id ) };
+
+    is( $delete_status, $api->HTTP_OK, 'delete_draft returns HTTP_OK' );
+    ok( !$delete_response->{success}, 'Regular user cannot delete admin draft' );
+
+    # Verify admin's draft still exists
+    my $admin_draft = $DB->getNodeById($admin_draft_id);
+    ok( $admin_draft, 'Admin draft still exists after unauthorized delete attempt' );
+
+    # Verify user's draft still exists (wasn't affected)
+    my $user_draft = $DB->getNodeById($user_draft_id);
+    ok( $user_draft, 'User draft still exists' );
+
+    # Cleanup
+    cleanup_test_nodes( $admin_draft_id, $user_draft_id );
+}
+
+# Test 45: Verify delete checks author_user, not just node_id
+{
+    # This verifies the security check is on author_user, not some other field
+
+    # Create a draft as regular user
+    $regular_request->set_postdata(
+        {
+            title   => 'Author Check Draft ' . time(),
+            doctext => '<p>Testing author verification.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Verify the author_user is set correctly
+    my $draft = $DB->getNodeById($draft_id);
+    is( $draft->{author_user}, $regular_user->{node_id},
+        'Draft has correct author_user' );
+
+    # Create a second user request with different user
+    my $other_user = $DB->getNode( 'normaluser1', 'user' );
+    ok( $other_user, 'Got another user for cross-user test' );
+
+    my $other_request = MockRequest->new(
+        node_id        => $other_user->{node_id},
+        title          => $other_user->{title},
+        nodedata       => $other_user,
+        is_admin_flag  => 0,
+        is_editor_flag => 0,
+        is_guest_flag  => 0
+    );
+
+    # Other user tries to delete the draft
+    my ( $delete_status, $delete_response ) =
+      @{ $api->delete_draft( $other_request, $draft_id ) };
+
+    ok( !$delete_response->{success}, 'Other user cannot delete draft' );
+
+    # Verify draft still exists
+    my $still_exists = $DB->getNodeById($draft_id);
+    ok( $still_exists, 'Draft still exists after cross-user delete attempt' );
+
+    # Now the actual author deletes it - should work
+    my ( $owner_delete_status, $owner_delete_response ) =
+      @{ $api->delete_draft( $regular_request, $draft_id ) };
+
+    ok( $owner_delete_response->{success}, 'Author can delete their own draft' );
+
+    # Verify draft is gone
+    my $deleted = $DB->getNodeById($draft_id);
+    ok( !$deleted, 'Draft deleted by author' );
+}
+
+# Test 46: Verify search only searches user's drafts, not writeups or other types
+{
+    # Create a draft
+    my $unique_term = 'SearchTypeTest' . time();
+    $regular_request->set_postdata(
+        {
+            title   => "Draft $unique_term",
+            doctext => '<p>Draft content.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Create an e2node with the same term in title
+    my $e2node_title = "E2Node $unique_term";
+    my $e2node_id = $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+
+    # Search - should only find the draft, not the e2node
+    $regular_request->set_params( { q => $unique_term } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts returns HTTP_OK' );
+
+    # Should find the draft
+    my ($found_draft) = grep { $_->{node_id} == $draft_id } @{ $search_response->{drafts} };
+    ok( $found_draft, 'Draft found in search' );
+
+    # Should NOT find the e2node
+    my ($found_e2node) = grep { $_->{node_id} == $e2node_id } @{ $search_response->{drafts} };
+    ok( !$found_e2node, 'E2node not found in draft search (correct behavior)' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# Test 47: Verify search returns proper draft fields
+{
+    my $test_title = 'Field Test Draft ' . time();
+    my $test_content = '<p><strong>Field test</strong> content here.</p>';
+
+    $regular_request->set_postdata(
+        {
+            title   => $test_title,
+            doctext => $test_content
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Search for the draft
+    $regular_request->set_params( { q => 'Field Test Draft' } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    my ($found) = grep { $_->{node_id} == $draft_id } @{ $search_response->{drafts} };
+    ok( $found, 'Draft found in search' );
+
+    # Verify all expected fields are present
+    ok( exists $found->{node_id}, 'Response has node_id field' );
+    ok( exists $found->{title}, 'Response has title field' );
+    ok( exists $found->{createtime}, 'Response has createtime field' );
+    ok( exists $found->{status}, 'Response has status field' );
+    ok( exists $found->{doctext}, 'Response has doctext field' );
+
+    # Verify field values
+    is( $found->{node_id}, $draft_id, 'node_id is correct' );
+    like( $found->{title}, qr/Field Test Draft/, 'title is correct' );
+    like( $found->{doctext}, qr/Field test/, 'doctext contains expected content' );
+
+    # Cleanup
+    cleanup_test_nodes($draft_id);
+}
+
+# Test 48: Verify search query is returned in response
+{
+    my $search_query = 'test query string';
+    $regular_request->set_params( { q => $search_query } );
+
+    my ( $search_status, $search_response ) =
+      @{ $api->search_drafts($regular_request) };
+
+    is( $search_status, $api->HTTP_OK, 'search_drafts returns HTTP_OK' );
+    is( $search_response->{query}, $search_query, 'Response includes the query string' );
 }
 
 done_testing();

@@ -32,6 +32,69 @@ const SaveSpinner = () => (
   }} />
 );
 
+// Delete Confirmation Modal Component
+const DeleteConfirmModal = ({ draft, onConfirm, onCancel, deleting }) => {
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000
+    }}>
+      <div style={{
+        backgroundColor: '#fff',
+        borderRadius: '8px',
+        width: '90%',
+        maxWidth: '400px',
+        padding: '20px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+      }}>
+        <h3 style={{ margin: '0 0 15px 0', color: '#38495e' }}>Delete Draft?</h3>
+        <p style={{ color: '#555', marginBottom: '20px' }}>
+          Are you sure you want to delete "<strong>{draft.title}</strong>"? This action cannot be undone.
+        </p>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button
+            onClick={onCancel}
+            disabled={deleting}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#f8f9f9',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              cursor: deleting ? 'not-allowed' : 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={deleting}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: deleting ? '#999' : '#c75050',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: deleting ? 'wait' : 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Version History Modal Component
 const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
   const [versions, setVersions] = useState([]);
@@ -279,6 +342,11 @@ const EditorBeta = ({ data }) => {
   const [pagination, setPagination] = useState(safePagination);
   const [loadingMore, setLoadingMore] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
+  const [deleteModalDraft, setDeleteModalDraft] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [searching, setSearching] = useState(false);
 
   // Refs for autosave
   const autosaveTimerRef = useRef(null);
@@ -605,6 +673,90 @@ const EditorBeta = ({ data }) => {
     setLoadingMore(false);
   }, [pagination]);
 
+  // Delete a draft
+  const deleteDraft = useCallback(async (draft) => {
+    setDeleting(true);
+    try {
+      const response = await fetch(`/api/drafts/${draft.node_id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        // Remove from drafts list
+        setDrafts(prev => prev.filter(d => d.node_id !== draft.node_id));
+
+        // If this was the selected draft, clear the editor
+        if (selectedDraft?.node_id === draft.node_id) {
+          clearEditor();
+        }
+
+        // Also remove from search results if present
+        if (searchResults) {
+          setSearchResults(prev => prev.filter(d => d.node_id !== draft.node_id));
+        }
+      } else {
+        console.error('Delete failed:', result.error);
+        alert('Failed to delete draft: ' + (result.error || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Delete failed:', err);
+      alert('Failed to delete draft. Please try again.');
+    }
+    setDeleting(false);
+    setDeleteModalDraft(null);
+  }, [selectedDraft, clearEditor, searchResults]);
+
+  // Search drafts with debounce
+  const searchTimerRef = useRef(null);
+
+  const handleSearchChange = useCallback((e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    // Clear existing timer
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
+    // If empty, clear search results
+    if (!query.trim()) {
+      setSearchResults(null);
+      setSearching(false);
+      return;
+    }
+
+    // Debounce search
+    setSearching(true);
+    searchTimerRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/drafts/search?q=${encodeURIComponent(query.trim())}`);
+        const result = await response.json();
+
+        if (result.success) {
+          setSearchResults(result.drafts);
+        } else {
+          console.error('Search failed:', result.error);
+          setSearchResults([]);
+        }
+      } catch (err) {
+        console.error('Search failed:', err);
+        setSearchResults([]);
+      }
+      setSearching(false);
+    }, 300);
+  }, []);
+
+  // Cleanup search timer on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
+
   if (!canAccess) {
     return (
       <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
@@ -644,6 +796,16 @@ const EditorBeta = ({ data }) => {
         />
       )}
 
+      {/* Delete Confirmation Modal */}
+      {deleteModalDraft && (
+        <DeleteConfirmModal
+          draft={deleteModalDraft}
+          onConfirm={() => deleteDraft(deleteModalDraft)}
+          onCancel={() => setDeleteModalDraft(null)}
+          deleting={deleting}
+        />
+      )}
+
       {/* Publish Modal */}
       {showPublishModal && selectedDraft && (
         <PublishModal
@@ -677,7 +839,102 @@ const EditorBeta = ({ data }) => {
 
         {!sidebarCollapsed && (
           <>
-            {drafts.length === 0 ? (
+            {/* Search bar */}
+            <div style={{ marginBottom: '12px', position: 'relative' }}>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search drafts..."
+                style={{
+                  width: '100%',
+                  padding: '8px 10px',
+                  paddingRight: searching ? '30px' : '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '13px',
+                  boxSizing: 'border-box'
+                }}
+              />
+              {searching && (
+                <span style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#888',
+                  fontSize: '11px'
+                }}>...</span>
+              )}
+            </div>
+
+            {/* Show search results or regular drafts list */}
+            {searchResults !== null ? (
+              // Search results mode
+              <>
+                <div style={{ fontSize: '11px', color: '#666', marginBottom: '8px' }}>
+                  {searchResults.length === 0
+                    ? 'No drafts found'
+                    : `Found ${searchResults.length} draft${searchResults.length === 1 ? '' : 's'}`}
+                </div>
+                <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                  {searchResults.map((draft) => (
+                    <div
+                      key={draft.node_id}
+                      style={{
+                        padding: '10px',
+                        marginBottom: '8px',
+                        backgroundColor: selectedDraft?.node_id === draft.node_id ? '#e8f4f8' : '#f8f9f9',
+                        border: selectedDraft?.node_id === draft.node_id ? '1px solid #3bb5c3' : '1px solid #ddd',
+                        borderRadius: '4px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div
+                        onClick={() => loadDraft(draft)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div style={{ fontWeight: '500', color: '#111', marginBottom: '4px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {draft.title}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ color: getStatusColor(draft.status) }}>{draft.status}</span>
+                          <span>{draft.createtime?.split(' ')[0]}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteModalDraft(draft);
+                        }}
+                        title="Delete draft"
+                        style={{
+                          marginTop: '6px',
+                          padding: '3px 8px',
+                          backgroundColor: 'transparent',
+                          color: '#c75050',
+                          border: '1px solid #c75050',
+                          borderRadius: '3px',
+                          cursor: 'pointer',
+                          fontSize: '11px'
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSearchResults(null);
+                  }}
+                  style={{ marginTop: '10px', padding: '8px 12px', backgroundColor: '#f8f9f9', color: '#555', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', width: '100%' }}
+                >
+                  Clear Search
+                </button>
+              </>
+            ) : drafts.length === 0 ? (
               <p style={{ color: '#888', fontSize: '14px' }}>No drafts yet. Your drafts will appear here.</p>
             ) : (
               <>
@@ -685,24 +942,46 @@ const EditorBeta = ({ data }) => {
                   {drafts.map((draft) => (
                     <div
                       key={draft.node_id}
-                      onClick={() => loadDraft(draft)}
                       style={{
                         padding: '10px',
                         marginBottom: '8px',
                         backgroundColor: selectedDraft?.node_id === draft.node_id ? '#e8f4f8' : '#f8f9f9',
                         border: selectedDraft?.node_id === draft.node_id ? '1px solid #3bb5c3' : '1px solid #ddd',
                         borderRadius: '4px',
-                        cursor: 'pointer',
                         transition: 'all 0.15s ease'
                       }}
                     >
-                      <div style={{ fontWeight: '500', color: '#111', marginBottom: '4px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {draft.title}
+                      <div
+                        onClick={() => loadDraft(draft)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div style={{ fontWeight: '500', color: '#111', marginBottom: '4px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {draft.title}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ color: getStatusColor(draft.status) }}>{draft.status}</span>
+                          <span>{draft.createtime?.split(' ')[0]}</span>
+                        </div>
                       </div>
-                      <div style={{ fontSize: '11px', color: '#666', display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: getStatusColor(draft.status) }}>{draft.status}</span>
-                        <span>{draft.createtime?.split(' ')[0]}</span>
-                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteModalDraft(draft);
+                        }}
+                        title="Delete draft"
+                        style={{
+                          marginTop: '6px',
+                          padding: '3px 8px',
+                          backgroundColor: 'transparent',
+                          color: '#c75050',
+                          border: '1px solid #c75050',
+                          borderRadius: '3px',
+                          cursor: 'pointer',
+                          fontSize: '11px'
+                        }}
+                      >
+                        Delete
+                      </button>
                     </div>
                   ))}
                 </div>
