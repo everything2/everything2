@@ -220,28 +220,29 @@ These provide legacy XML export functionality. Removal depends on whether XML ex
 
 ## Part 5: legacy.js Detailed Analysis
 
-**Current State**: 2,697 lines
+**Current State**: 2,627 lines (was 2,697)
 
 **Already Removed** (December 2025):
 - Lines 1711-2109 (~400 lines) - Legacy chatterbox polling, message parsing, rendering
 - All chatterbox pages (chatterlight, chatterlight_classic, chatterlighter) are now React
+- **Phase J1 Complete (2025-12-29)**: Removed 70 lines of dead jQuery code
 
 ---
 
 ### 5.1 Safe to Remove (Dead Code)
 
-| Function/Section | Lines | Purpose | Evidence |
-|-----------------|-------|---------|----------|
-| `replyToCB()` | 6-19 | Legacy chatterbox reply helper | Only works with `#message` jQuery element that no longer exists; React Chatterbox handles replies |
-| `replyTo()` | 1763-1768 | Message Inbox 2 reply function | Used by legacy `message_inbox_form` - replaced by React MessageInbox |
-| `clearReply()` | 1770-1772 | Message Inbox 2 clear | Used by legacy `message_inbox_form` |
-| `checkAll()` | 1774-1779 | Message Inbox 2 select all | Used by legacy `message_inbox_form` |
-| `ts_getInnerText()` (duplicate) | 1521-1541, 1544-1563 | Table sorting helper | Duplicate function definitions; only used by bookmark sort which is low-traffic |
-| Removed chatter code comments | 1246-1304 | Comments documenting removed code | Can remove these REMOVED: comments |
-| `contentRefreshInterval`, `statusId` | 1719-1720 | Legacy chatterbox globals | No longer used after React migration |
-| `InDebugMode()` | 1714-1716 | Chatterlight debug helper | Only used in removed chatterbox code |
+| Function/Section | Lines | Purpose | Status |
+|-----------------|-------|---------|--------|
+| `replyToCB()` | 6-19 | Legacy chatterbox reply helper | ✅ REMOVED 2025-12-29 |
+| `replyTo()` | 1763-1768 | Message Inbox 2 reply function | ✅ REMOVED 2025-12-29 |
+| `clearReply()` | 1770-1772 | Message Inbox 2 clear | ✅ REMOVED 2025-12-29 |
+| `checkAll()` | 1774-1779 | Message Inbox 2 select all | ✅ REMOVED 2025-12-29 |
+| `ts_getInnerText()` (duplicate) | 1521-1541, 1544-1563 | Table sorting helper | Pending - duplicate function definitions |
+| Removed chatter code comments | 1706-1722 | Comments documenting removed code | ✅ REMOVED 2025-12-29 |
+| `contentRefreshInterval`, `statusId` | 1719-1720 | Legacy chatterbox globals | ✅ REMOVED 2025-12-29 |
+| `InDebugMode()` | 1714-1716 | Chatterlight debug helper | ✅ REMOVED 2025-12-29 |
 
-**Safe to Remove Total**: ~100 lines
+**Phase J1 Complete**: 70 lines removed, ~30 lines remaining (duplicate ts_getInnerText)
 
 ---
 
@@ -652,10 +653,10 @@ These jQuery patterns are no longer active:
 
 ### 6.7 jQuery Removal Phases
 
-**Phase J1: Remove Dead jQuery Code (~100 lines)**
-- Remove `replyToCB()` and chatterbox DOM selectors
-- Remove message inbox legacy handlers
-- No functional impact
+**Phase J1: Remove Dead jQuery Code (~100 lines)** ✅ COMPLETE 2025-12-29
+- ~~Remove `replyToCB()` and chatterbox DOM selectors~~
+- ~~Remove message inbox legacy handlers~~
+- **Result**: 70 lines removed, no functional impact
 
 **Phase J2: Replace jQuery UI Widgets (~200 lines new code)**
 - Implement vanilla JS Sortable for nodelets

@@ -1104,11 +1104,12 @@ sub cleanup_test_nodes {
     }
 
     # Query for the user's most recent writeup
+    # Use node_id DESC as tiebreaker since publishtime has 1-second resolution
     my $last_writeup_id = $DB->sqlSelect(
         'node_id',
         'node JOIN writeup ON node_id=writeup_id',
         "author_user=" . $regular_user->{node_id},
-        "ORDER BY publishtime DESC LIMIT 1"
+        "ORDER BY publishtime DESC, node_id DESC LIMIT 1"
     );
 
     # The last published writeup should be the most recent
