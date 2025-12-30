@@ -125,11 +125,15 @@ sub buildReactData
         }
     }
 
+    # Get prefill_username from URL parameter (for user tools modal integration)
+    my $prefill_username = $query->param('prefill_username') || '';
+
     return {
-        type       => 'websterbless',
-        msg_count  => $msg_count,
-        webster_id => $webster_id,
-        results    => \@results
+        type             => 'websterbless',
+        msg_count        => $msg_count,
+        webster_id       => $webster_id,
+        results          => \@results,
+        prefill_username => $prefill_username
     };
 }
 

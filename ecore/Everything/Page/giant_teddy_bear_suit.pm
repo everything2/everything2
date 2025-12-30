@@ -20,6 +20,9 @@ sub buildReactData
     my $user = $REQUEST->user;
     my $is_admin = $APP->isAdmin($user->NODEDATA) ? 1 : 0;
 
+    # Get prefill_username from URL parameter (for user tools modal integration)
+    my $prefill_username = $REQUEST->param('prefill_username') || '';
+
     return {
         type => 'admin_bestow_tool',
         title => 'Giant Teddy Bear Suit',
@@ -36,7 +39,8 @@ sub buildReactData
         api_endpoint => '/api/teddybear/hug',
         button_text => 'Hug Users',
         button_text_loading => 'Hugging...',
-        note_text => 'Giant Teddy Bear hugs grant 2 GP and post a public hug message to the chatterbox.'
+        note_text => 'Giant Teddy Bear hugs grant 2 GP and post a public hug message to the chatterbox.',
+        prefill_username => $prefill_username
     };
 }
 

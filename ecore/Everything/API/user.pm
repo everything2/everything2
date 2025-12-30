@@ -17,6 +17,11 @@ sub route {
     return $self->check_available($REQUEST, $1);
   }
 
+  # POST /api/user/edit - Update user profile
+  if ($extra eq 'edit' && $method eq 'post') {
+    return $self->edit_profile($REQUEST);
+  }
+
   # Catchall for unmatched routes
   return $self->$method($REQUEST);
 }
@@ -112,6 +117,168 @@ sub check_available
     available => $taken ? 0 : 1,
     username => $username
   }];
+}
+
+=head2 POST /api/user/edit
+
+Update user profile information.
+
+Accepts multipart/form-data with the following fields:
+- realname: User's real name
+- email: User's email address
+- passwd: New password (optional, leave blank to keep current)
+- user_doctext: User's bio/homenode text
+- mission: Mission drive within everything
+- specialties: User's specialties
+- employment: School/company
+- motto: User's motto
+- remove_user_imgsrc: Set to '1' to remove user image
+- imgsrc: File upload for new user image
+- bookmark_remove: Node IDs of bookmarks to remove (can be multiple)
+
+Response:
+{
+  "success": true|false,
+  "error": "Error message if failed"
+}
+
+=cut
+
+sub edit_profile {
+  my ($self, $REQUEST) = @_;
+
+  my $user = $REQUEST->user;
+  my $APP = $self->APP;
+  my $DB = $self->DB;
+
+  # Must be logged in
+  if ($APP->isGuest($user)) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'You must be logged in to edit your profile'
+    }];
+  }
+
+  # Parse JSON POST data
+  my $data = $REQUEST->JSON_POSTDATA;
+  unless ($data) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Missing or invalid JSON POST data'
+    }];
+  }
+
+  # Get the node_id of the user being edited
+  my $node_id = $data->{node_id};
+  unless ($node_id) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Missing node_id parameter'
+    }];
+  }
+
+  # Load the target user node
+  my $target_user = $APP->node_by_id($node_id);
+  unless ($target_user && $target_user->type->title eq 'user') {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Invalid user node'
+    }];
+  }
+
+  # Check permission: can only edit own profile (or admin)
+  unless ($user->node_id == $node_id || $user->is_admin) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'You can only edit your own profile'
+    }];
+  }
+
+  my $nodedata = $target_user->NODEDATA;
+  my $vars = $target_user->VARS || {};
+  my @changes = ();
+
+  # Update text fields in user table
+  foreach my $field ('realname', 'email') {
+    if (exists $data->{$field}) {
+      $nodedata->{$field} = $data->{$field} // '';
+      push @changes, $field;
+    }
+  }
+
+  # Update doctext (bio)
+  if (exists $data->{user_doctext}) {
+    $nodedata->{doctext} = $data->{user_doctext} // '';
+    push @changes, 'doctext';
+  }
+
+  # Update password if provided
+  my $password_changed = 0;
+  if ($data->{passwd} && length($data->{passwd}) > 0) {
+    $target_user->set_password($data->{passwd});
+    push @changes, 'password';
+    $password_changed = 1;
+  }
+
+  # Update VARS fields (mission, specialties, employment, motto)
+  foreach my $varfield ('mission', 'specialties', 'employment', 'motto') {
+    if (exists $data->{$varfield}) {
+      my $value = $data->{$varfield} // '';
+      if (length($value) > 0) {
+        $vars->{$varfield} = $value;
+      } else {
+        delete $vars->{$varfield};
+      }
+      push @changes, $varfield;
+    }
+  }
+
+  # Handle image removal
+  if ($data->{remove_image}) {
+    if ($nodedata->{imgsrc}) {
+      my $old_image = '/var/everything/www/' . $nodedata->{imgsrc};
+      unlink($old_image) if -f $old_image;
+      $nodedata->{imgsrc} = '';
+      push @changes, 'image_removed';
+    }
+  }
+
+  # Handle bookmark removal
+  if ($data->{bookmark_remove}) {
+    my @bookmarks_to_remove = ref($data->{bookmark_remove}) eq 'ARRAY'
+      ? @{$data->{bookmark_remove}}
+      : ($data->{bookmark_remove});
+    if (@bookmarks_to_remove) {
+      my $bookmark_linktype = $APP->node_by_name('bookmark', 'linktype');
+      foreach my $bm_id (@bookmarks_to_remove) {
+        $DB->sqlDelete('links',
+          'from_node=' . $node_id . ' AND to_node=' . int($bm_id) .
+          ' AND linktype=' . $bookmark_linktype->node_id);
+      }
+      push @changes, 'bookmarks_removed:' . scalar(@bookmarks_to_remove);
+    }
+  }
+
+  # Save the changes
+  $DB->updateNode($nodedata, $user->NODEDATA);
+  $target_user->set_vars($vars);
+
+  my $response = [$self->HTTP_OK, {
+    success => 1,
+    changes => \@changes
+  }];
+
+  # If password was changed and user is editing their own profile,
+  # return a new login cookie to keep them logged in
+  if ($password_changed && $user->node_id == $node_id) {
+    my $new_cookie = $REQUEST->cookie(
+      -name => $self->CONF->cookiepass,
+      -value => $target_user->title . '|' . $nodedata->{passwd}
+    );
+    $response->[2] = { cookie => $new_cookie };
+  }
+
+  return $response;
 }
 
 1;

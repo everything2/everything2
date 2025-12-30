@@ -40,6 +40,10 @@ const COMPONENT_MAP = {
   // Usergroups - migrated from delegation Dec 2025
   usergroup: lazy(() => import('./Documents/Usergroup')),
 
+  // Users (homenodes) - migrated from delegation Dec 2025
+  user: lazy(() => import('./Documents/UserDisplay')),
+  user_edit: lazy(() => import('./Documents/UserEdit')),
+
   // Nodetypes - migrated from delegation Dec 2025
   nodetype: lazy(() => import('./Documents/Nodetype')),
 

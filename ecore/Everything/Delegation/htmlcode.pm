@@ -2062,26 +2062,6 @@ sub shownewexp
   return $str;
 }
 
-sub votehead
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $uid=$$USER{node_id};
-  my $canDoStuff = undef;
-  $canDoStuff = $$USER{votesleft} || $APP->isEditor($USER) unless($APP->isGuest($USER));
-  my $str = "";
-  $str.="\n\t".htmlcode('openform2','pagebody');
-  $str.="\n\t\t".'<input type="hidden" name="op" value="vote" />' if $canDoStuff;	#don't bother with vote opcode if user can't vote
-
-  return $str;
-}
-
 # TODO: Don't call the tools htmlcodes by variable procedure, call it explicitly because we kind of manage this codebase via grep
 #
 sub voteit
@@ -3449,37 +3429,6 @@ sub randomnode
   my $rnd = int(rand(100000));
 
   return '<a href='.urlGen({op=>'randomnode', garbage=>$rnd}).">$title</a>";
-}
-
-# On its way to being a template mixin
-#
-sub votefoot
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $uid = $$USER{user_id};
-  return $query->end_form if($$NODE{type}{title} eq "e2node" and not $$NODE{group} or $APP->isGuest($USER));
-  my $isKiller = $APP->isEditor($USER);
-
-  my $voteButton = "";
-  my $killButton = "";
-  my $rowFormat =  '<div id="votefooter">%s%s</div>';
-
-  if( $query->param('numvoteit') && $$USER{votesleft} ) {
-    $voteButton = "<input type='submit' name='sexisgreat' id='votebutton' value='vote!'>";
-  } elsif ( !$APP->isGuest($USER) ) {
-    $voteButton = "<input type='submit' name='sexisgreat' id='blabbutton' value='blab!' title='send writeup messages'>";
-  }
-
-  $killButton = $isKiller && $$NODE{type}{title} ne 'draft' ? "<p><input type='submit' name='node' id='killbutton' value='The Killing Floor II'>" : '';
-
-  return sprintf($rowFormat, $voteButton, $killButton) . $query->end_form;
 }
 
 # One of the many nodeletsection htmlcodes. 
@@ -9916,10 +9865,12 @@ sub verifyRequest
   # checks that the form was a real e2 one
   my ($prefix) = @_;
 
-  my $seed = $query->param($prefix . '_seed');
+  my $seed = scalar($query->param($prefix . '_seed'));
   $seed = '' if not defined($seed);
-  my $test = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $seed);
-  return (defined($query->param($prefix . '_nonce')) and $test eq $query->param($prefix . '_nonce')) ? 1 : 0;
+  my $email = $$USER{email} // '';
+  my $test = md5_hex($$USER{passwd} . ' ' . $email . $seed);
+  my $nonce = scalar($query->param($prefix . '_nonce'));
+  return (defined($nonce) and $test eq $nonce) ? 1 : 0;
 }
 
 sub verifyRequestForm

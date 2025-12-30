@@ -8,9 +8,23 @@ with 'Everything::Node::helper::setting';
 
 override 'json_display' => sub
 {
-  my ($self) = @_;
+  my ($self, $viewer) = @_;
 
   my $values = super();
+
+  # User image
+  if ($self->NODEDATA->{imgsrc}) {
+    $values->{imgsrc} = $self->NODEDATA->{imgsrc};
+  }
+
+  # Bio (doctext from document table)
+  $values->{doctext} = $self->NODEDATA->{doctext} || '';
+
+  # Account lock status (for editor display)
+  if ($self->NODEDATA->{acctlock}) {
+    my $locker = $self->APP->node_by_id($self->NODEDATA->{acctlock});
+    $values->{acctlock} = $locker ? $locker->json_reference : { node_id => $self->NODEDATA->{acctlock} };
+  }
 
   my $bookmarks = $self->APP->get_bookmarks($self->NODEDATA) || [];
   if(scalar @$bookmarks)
@@ -45,6 +59,58 @@ override 'json_display' => sub
   {
     $values->{message_forward_to} = $fwd->json_reference;
   }
+
+  # User settings that affect display
+  my $settings = $self->VARS || {};
+  $values->{hidelastseen}  = $settings->{hidelastseen} ? 1 : 0;
+  $values->{hidelastnoded} = $settings->{hidelastnoded} ? 1 : 0;
+  $values->{hidemsgme}     = $settings->{hidemsgme} ? 1 : 0;
+
+  # Last noded writeup - use database query for accuracy (not cached VARS)
+  unless ($settings->{hidelastnoded}) {
+    # Build exclusion clause for maintenance nodes
+    my $maint_nodes = $self->APP->getMaintenanceNodesForUser($self->NODEDATA);
+    my $maint_str = '';
+    if ($maint_nodes && @$maint_nodes) {
+      $maint_str = ' AND node_id NOT IN (' . join(', ', @$maint_nodes) . ')';
+    }
+
+    # Query for most recent published writeup
+    my $lastnoded_id = $self->DB->sqlSelect(
+      'node_id',
+      'node JOIN writeup ON node_id=writeup_id',
+      'author_user=' . $self->node_id . $maint_str,
+      'ORDER BY publishtime DESC LIMIT 1'
+    );
+
+    if ($lastnoded_id) {
+      my $lastnoded = $self->APP->node_by_id($lastnoded_id);
+      if ($lastnoded) {
+        my $parent = $self->APP->node_by_id($lastnoded->NODEDATA->{parent_e2node});
+        $values->{lastnoded} = {
+          writeup => $lastnoded->json_reference,
+          e2node  => $parent ? $parent->json_reference : undef
+        };
+      }
+    }
+  }
+
+  # Usergroup memberships
+  my @groups;
+  foreach my $group (@{$self->usergroup_memberships || []}) {
+    push @groups, $group->json_reference;
+  }
+  $values->{groups} = \@groups if @groups;
+
+  # Categories maintained
+  my @categories;
+  foreach my $cat (@{$self->editable_categories || []}) {
+    push @categories, $cat->json_reference;
+  }
+  $values->{categories} = \@categories if @categories;
+
+  # C!s spent (cools given to others)
+  $values->{cools_spent} = $self->numcools;
 
   return $values;
 };
@@ -673,6 +739,17 @@ sub gp_optout
 {
   my ($self) = @_;
   return $self->VARS->{GPoptout} || 0;
+}
+
+sub set_password
+{
+  my ($self, $cleartext_password) = @_;
+
+  my ($pwhash, $salt) = $self->APP->saltNewPassword($cleartext_password);
+  $self->NODEDATA->{passwd} = $pwhash;
+  $self->NODEDATA->{salt} = $salt;
+
+  return 1;
 }
 
 __PACKAGE__->meta->make_immutable;

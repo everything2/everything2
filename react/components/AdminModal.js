@@ -311,8 +311,8 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit })
             </div>
           )}
 
-          {/* Admin tools */}
-          {isAdmin && (hasVoted || hasCooled) && (
+          {/* Admin tools - only show if not author (can't vote/cool own writeup) */}
+          {isAdmin && !isAuthor && (
             <div style={styles.section}>
               <h4 style={styles.sectionTitle}>Admin Tools</h4>
 

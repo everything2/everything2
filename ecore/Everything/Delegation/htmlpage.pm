@@ -703,91 +703,8 @@ sub writeup_edit_page
   return $str;
 }
 
-sub classic_user_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  $PAGELOAD->{pageheader} = '<!-- put at end -->'.htmlcode('settingsDocs');
-  my $str = htmlcode('openform').htmlcode('verifyRequestForm', 'edit_user');
-
-  $str .= q|<p align="right">|.linkNode($NODE, 'display', {displaytype=>'display', lastnode_id => undef});
-
-  if(Everything::isApproved($NODE, getNode('users with image', 'nodegroup')) or $APP->getLevel($NODE) >= 1)
-  {
-    my $isMe = getId($NODE)==getId($USER);
-    $str .=  '<p>Your coveted user image<br />';
-
-    $str .= htmlcode('uploaduserimage', 'imgsrc') . '<br />';
-
-    my $k = 'remove_user_imgsrc';
-    if( (defined $query->param('sexisgood')) && (defined $query->param($k)) && ($query->param($k) eq '1') )
-    {
-      $str .= 'image <a href="/'.$$NODE{imgsrc}.'">'.$$NODE{imgsrc}.'</a> will no longer be displayed on '.($isMe?'your':$$NODE{title}.'\'s').' homenode';
-      my $olduserimage= "/var/everything/www/".$$NODE{imgsrc};
-      # Strip fake timestamp/cache-fixing directory from filepath
-      $olduserimage =~ s"/[^/]+?(/[^/]+)$"$1";
-      unlink($olduserimage);
-      $$NODE{imgsrc} = '';
-      $DB->updateNode($NODE, $USER);
-      $query->param($k,'');
-    }
-
-    my $showuserimage = htmlcode('showuserimage','1');
-    $str .= $showuserimage if defined($showuserimage);
-    $str .= '<br />' . $query->checkbox($k, '', '1', 'remove image') if (exists $$NODE{imgsrc}) && length($$NODE{imgsrc});
-  }
-
-  $str .= qq|<p><b>Real Name</b>:|; 
-
-  my $realname = $$NODE{realname};
-  $realname =~ s/\</\&lt\;/g;
-  $realname =~ s/\>/\&gt\;/g;
-  $str .= $realname;
-
-  $str .= qq|<br />|.htmlcode("textfield","realname").qq|</p>|;
-  $str .= qq|<p>Change password:<br />|.htmlcode("password_field","passwd").qq|</p>|;
-
-  $str .= qq|<p><b>Email Address</b>:|; 
-
-  my $email = $$NODE{email};
-  $email =~ s/\</\&lt\;/g;
-  $email =~ s/\>/\&gt\;/g;
-  $str .= $email;
-
-  $str .= qq|<br>|.htmlcode("textfield","email,40").qq|</p>|;
-  $str .= qq|<p><b>User's Bio</b>:</p>|;
-  $str .= qq|<p><textarea id='user_doctext' name='user_doctext' |;
-  $str .= htmlcode('customtextarea','1');
-  $str .= qq| class='formattable' >|;
-  $str .= $APP->encodeHTML($NODE->{doctext});
-  $str .= qq|</textarea></p>|;
-
-
-  $str .= qq|<p>|.htmlcode("editSingleVar","mission,mission drive within everything").qq|</p>|;
-  $str .= qq|<p>|.htmlcode("editSingleVar","specialties").qq|</p>|;
-  $str .= qq|<p>|.htmlcode("editSingleVar","employment","school/company").qq|</p>|;
-  $str .= qq|<p>|.htmlcode("editSingleVar","motto").qq|</p>|;
-  $str .= qq|<p>You can remove your bookmarks:</p>|;
-
-  $str .= qq|<input type="button" value="Check All" id="checkall" style="display:none">|;
-  $str .= htmlcode("showbookmarks","edit");
-
-  $str .= htmlcode("closeform");
-
-  $str .= qq|<p align="center">Your current homenode bio is shown below:</p>|;
-  $str .= qq|<hr class="clear"><table width="100%" id='homenodetext'><tr><td><div class='content'>|;
-  $str .= htmlcode("displayUserText");
-
-  $str .= q|</div></td></tr></table>|;
-
-  return $str;
-}
+# classic_user_edit_page REMOVED - migrated to Everything::Controller::user::edit
+# See react/components/Documents/UserEdit.js
 
 sub superdoc_display_page
 {
@@ -1052,14 +969,6 @@ sub room_display_page
 
   return $str;
 }
-
-# e2node_display_page - MIGRATED TO Everything::Controller::e2node (December 2025)
-# React component: E2NodeDisplay.js
-# Features: writeup display, voting via /api/vote, softlinks, inline editing
-
-# writeup_display_page - MIGRATED TO Everything::Controller::writeup (December 2025)
-# React component: WriteupDisplay.js
-# Features: single writeup display, voting via /api/vote, softlinks, inline editing
 
 sub edevdoc_edit_page
 {
@@ -2536,68 +2445,8 @@ sub dbtable_index_page
   return $str;
 }
 
-sub user_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = htmlcode("setupuservars") || "";
-  $str .= qq|<div id='homenodeheader'>|;
-  $str .= htmlcode("homenodeinfectedinfo") || "";
-  $str .= qq|<div id='homenodepicbox'>|;
-  $str .= htmlcode("showuserimage") || "";
-
-  if(getId($USER) == getId($NODE) and not $APP->isGuest($USER))
-  {
-    $str.= '<p>' . linkNode($NODE, '(edit user information)', {displaytype=>'edit', "-id" => "usereditlink"}) . '</p>';
-  }
-
-  $str .= qq|</div>|;
-  $str .= htmlcode("zenDisplayUserInfo");
-
-  $str .= qq|</div>|;
-  $str .= qq|<hr class='clear'>|;
-  $str .= qq|<table width="100%" id='homenodetext'><tr><td>|;
-
-  my $isignored = $DB->sqlSelect("ignore_node","messageignore","messageignore_id=$$NODE{node_id} and ignore_node=$$USER{node_id}");
-  if(not $isignored and not $APP->isGuest($USER))
-  {
-
-    my $csr = $DB->sqlSelectMany('*','registration',
-      'from_user='.$$NODE{user_id}.' && in_user_profile=1');
-
-    if($csr)
-    {
-      my $labels = ['Registry','Data','Comments'];
-      my $rows = undef;
-
-      while(my $ref = $csr->fetchrow_hashref())
-      {
-        push @$rows,{
-          'Registry'=>linkNode($$ref{for_registry}),
-          'Data'=>$APP->breakTags(parseLinks($APP->htmlScreen($$ref{data}))),
-          'Comments'=>$APP->breakTags(parseLinks($APP->htmlScreen($$ref{comments}))),
-        };
-      }
-      $str .= $APP->buildTable($labels,$rows,'class="registries",nolabels') if($rows);
-    }else{
-      $str .= "SQL problem, tell a [coder]";
-    }
-  }
-
-  $str .= qq|<div class='content'>|;
-  $str .= htmlcode("displayUserText");
-  $str .= qq|</div></td></tr></table>|;
-
-  $str .= htmlcode("showbookmarks");
-
-  return $str;
-}
+# user_display_page REMOVED - migrated to Everything::Controller::user::display
+# See react/components/Documents/UserDisplay.js
 
 sub e2node_softlinks_page
 {

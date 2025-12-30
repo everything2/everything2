@@ -90,6 +90,8 @@ const InlineWriteupEditor = ({
   const [previewTrigger, setPreviewTrigger] = useState(0); // Trigger preview updates
   const [resolvedE2nodeId, setResolvedE2nodeId] = useState(e2nodeId); // Resolved e2node ID (from prop or lookup)
   const [e2nodeStatus, setE2nodeStatus] = useState(e2nodeId ? 'found' : 'checking'); // 'checking', 'found', 'not_found'
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Delete confirmation modal
+  const [deleting, setDeleting] = useState(false); // Delete in progress
   const autosaveTimerRef = useRef(null);
   const firstEditRef = useRef(false);
   const lastSavedContentRef = useRef(initialContent); // Track last saved content from server
@@ -465,6 +467,45 @@ const InlineWriteupEditor = ({
     await saveDraft(content);
   };
 
+  // Delete draft handler
+  const handleDeleteDraft = async () => {
+    if (!draftId) return;
+
+    setDeleting(true);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch(`/api/drafts/${draftId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Reset editor to empty state
+        setDraftId(null);
+        setHtmlContent('');
+        if (editor) {
+          editor.commands.setContent('');
+        }
+        setSaveStatus('saved');
+        setShowDeleteConfirm(false);
+        firstEditRef.current = false;
+        lastSavedContentRef.current = '';
+      } else {
+        setErrorMessage(`Failed to delete draft: ${result.error}`);
+        setShowDeleteConfirm(false);
+      }
+    } catch (err) {
+      setErrorMessage(`Error deleting draft: ${err.message}`);
+      setShowDeleteConfirm(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const getSaveStatusText = () => {
     // If editing existing writeup, show different status
     if (writeupId) {
@@ -612,25 +653,25 @@ const InlineWriteupEditor = ({
           </div>
 
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-            <button
-              onClick={() => {
-                // When exiting the editor, pass the last saved content from the server
-                // This is the source of truth and ensures display stays in sync with database
-                onSave(lastSavedContentRef.current);
-              }}
-              disabled={publishing}
-              style={{
-                padding: '6px 16px',
-                fontSize: '13px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                background: '#fff',
-                cursor: publishing ? 'not-allowed' : 'pointer',
-                opacity: publishing ? 0.5 : 1
-              }}
-            >
-              Done
-            </button>
+            {/* Delete button for drafts (new writeups) */}
+            {!writeupId && draftId && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={publishing || saveStatus === 'saving' || deleting}
+                style={{
+                  padding: '6px 16px',
+                  fontSize: '13px',
+                  border: '1px solid #dc3545',
+                  borderRadius: '4px',
+                  background: '#fff',
+                  color: (publishing || saveStatus === 'saving' || deleting) ? '#999' : '#dc3545',
+                  cursor: (publishing || saveStatus === 'saving' || deleting) ? 'not-allowed' : 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                Delete Draft
+              </button>
+            )}
 
             {/* Save button for drafts (new writeups) */}
             {!writeupId && (
@@ -816,6 +857,71 @@ const InlineWriteupEditor = ({
           />
         )}
       </div>
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            padding: '20px',
+            maxWidth: '400px',
+            width: '90%',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', color: '#333' }}>
+              Delete Draft?
+            </h3>
+            <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#666', lineHeight: '1.5' }}>
+              Are you sure you want to delete this draft? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deleting}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  background: '#fff',
+                  color: '#333',
+                  cursor: deleting ? 'not-allowed' : 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteDraft}
+                disabled={deleting}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  background: deleting ? '#ccc' : '#dc3545',
+                  color: '#fff',
+                  cursor: deleting ? 'not-allowed' : 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

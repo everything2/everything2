@@ -36,10 +36,10 @@ sub buildReactData
     my @results = ();
     my @saved_users = ();
 
-    my $smite = ( $query->param('op') eq 'remove' ) ? 1 : 0;
-    my $username_string = $smite ? $query->param('author') : $query->param('usernames');
-    $smite ||= $query->param('smite') ? 1 : 0;
-    my $detonate = $query->param('detonate') ? 1 : 0;
+    my $smite = ( scalar($query->param('op')) eq 'remove' ) ? 1 : 0;
+    my $username_string = $smite ? scalar($query->param('author')) : scalar($query->param('usernames'));
+    $smite ||= scalar($query->param('smite')) ? 1 : 0;
+    my $detonate = scalar($query->param('detonate')) ? 1 : 0;
 
     # Verify request hash for security
     my $hash_valid = htmlcode('verifyRequest', 'polehash') ? 1 : 0;
@@ -182,7 +182,7 @@ $input_table
     }
 
     # Get prefill username for linking from spam detection tools
-    my $prefill = $query->param('prefill') || '';
+    my $prefill = scalar($query->param('prefill')) || '';
 
     # Generate security hash for form submission
     my $hash_data = htmlcode('verifyRequestHash', 'polehash');

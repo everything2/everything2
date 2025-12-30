@@ -182,6 +182,7 @@ Search user's drafts by title or content.
 Query parameters:
   q - Search query (required, min 2 characters)
   limit - Maximum results (default 20, max 50)
+  other_user - Optional username to search another user's findable drafts
 
 Returns drafts matching the query in title or doctext.
 
@@ -190,12 +191,26 @@ Returns drafts matching the query in title or doctext.
 sub search_drafts {
     my ( $self, $REQUEST ) = @_;
 
-    my $user_id = $REQUEST->user->node_id;
+    my $user    = $REQUEST->user;
+    my $user_id = $user->node_id;
     my $DB      = $self->DB;
+    my $APP     = $self->APP;
+
+    # Check if viewing another user's drafts
+    my $other_user_param = $REQUEST->param('other_user');
+    my $target_user      = undef;
+    my $viewing_other    = 0;
+
+    if ($other_user_param) {
+        $target_user = $DB->getNode( $other_user_param, 'user' );
+        if ( $target_user && $target_user->{node_id} != $user_id ) {
+            $viewing_other = 1;
+        }
+    }
 
     # Get search query
     my $query = $REQUEST->param('q') || '';
-    $query =~ s/^\s+|\s+$//g;  # Trim whitespace
+    $query =~ s/^\s+|\s+$//g;    # Trim whitespace
 
     # Require at least 2 characters
     if ( length($query) < 2 ) {
@@ -223,38 +238,90 @@ sub search_drafts {
     $escaped_query =~ s/([%_\\])/\\$1/g;
     my $search_pattern = '%' . $escaped_query . '%';
 
-    my $sql = q|
-        SELECT node.node_id, node.title, node.createtime,
-               draft.publication_status,
-               ps.title AS status_title,
-               document.doctext
-        FROM node
-        JOIN draft ON draft.draft_id = node.node_id
-        JOIN document ON document.document_id = node.node_id
-        LEFT JOIN node AS ps ON ps.node_id = draft.publication_status
-        WHERE node.author_user = ?
-        AND node.type_nodetype = ?
-        AND (node.title LIKE ? OR document.doctext LIKE ?)
-        ORDER BY node.createtime DESC
-        LIMIT ?
-    |;
+    my @drafts;
 
-    my $rows = $DB->{dbh}->selectall_arrayref(
-        $sql,
-        { Slice => {} },
-        $user_id, $draft_type_id, $search_pattern, $search_pattern, $limit
-    );
+    if ($viewing_other) {
+        # Searching another user's drafts - filter by canSeeDraft
+        my $target_user_id = $target_user->{node_id};
 
-    # Transform rows to match expected format
-    my @drafts = map {
-        {
-            node_id    => $_->{node_id},
-            title      => $_->{title},
-            createtime => $_->{createtime},
-            status     => $_->{status_title} || 'unknown',
-            doctext    => $_->{doctext}      || ''
+        my $sql = q|
+            SELECT node.node_id, node.title, node.createtime,
+                   draft.publication_status, draft.collaborators,
+                   ps.title AS status_title,
+                   document.doctext
+            FROM node
+            JOIN draft ON draft.draft_id = node.node_id
+            JOIN document ON document.document_id = node.node_id
+            LEFT JOIN node AS ps ON ps.node_id = draft.publication_status
+            WHERE node.author_user = ?
+            AND node.type_nodetype = ?
+            AND (node.title LIKE ? OR document.doctext LIKE ?)
+            ORDER BY node.createtime DESC
+        |;
+
+        my $rows = $DB->{dbh}->selectall_arrayref(
+            $sql,
+            { Slice => {} },
+            $target_user_id, $draft_type_id, $search_pattern, $search_pattern
+        );
+
+        # Filter by canSeeDraft with 'find' disposition
+        for my $row (@$rows) {
+            my $draft_check = {
+                node_id            => $row->{node_id},
+                author_user        => $target_user_id,
+                publication_status => $row->{publication_status},
+                collaborators      => $row->{collaborators}
+            };
+
+            if ( $APP->canSeeDraft( $user->NODEDATA, $draft_check, 'find' ) ) {
+                push @drafts,
+                    {
+                    node_id    => $row->{node_id},
+                    title      => $row->{title},
+                    createtime => $row->{createtime},
+                    status     => $row->{status_title} || 'unknown',
+                    doctext    => $row->{doctext} || ''
+                    };
+                last if scalar(@drafts) >= $limit;
+            }
         }
-    } @$rows;
+    }
+    else {
+        # Searching own drafts
+        my $sql = q|
+            SELECT node.node_id, node.title, node.createtime,
+                   draft.publication_status,
+                   ps.title AS status_title,
+                   document.doctext
+            FROM node
+            JOIN draft ON draft.draft_id = node.node_id
+            JOIN document ON document.document_id = node.node_id
+            LEFT JOIN node AS ps ON ps.node_id = draft.publication_status
+            WHERE node.author_user = ?
+            AND node.type_nodetype = ?
+            AND (node.title LIKE ? OR document.doctext LIKE ?)
+            ORDER BY node.createtime DESC
+            LIMIT ?
+        |;
+
+        my $rows = $DB->{dbh}->selectall_arrayref(
+            $sql,
+            { Slice => {} },
+            $user_id, $draft_type_id, $search_pattern, $search_pattern, $limit
+        );
+
+        # Transform rows to match expected format
+        @drafts = map {
+            {
+                node_id    => $_->{node_id},
+                title      => $_->{title},
+                createtime => $_->{createtime},
+                status     => $_->{status_title} || 'unknown',
+                doctext    => $_->{doctext} || ''
+            }
+        } @$rows;
+    }
 
     return [
         $self->HTTP_OK,
@@ -1096,11 +1163,11 @@ sub publish_draft {
     # Update newwriteups cache
     $APP->updateNewWriteups();
 
-    # Add nodenote
+    # Add nodenote to the e2node (not the writeup)
+    # User attribution is added automatically by addNodeNote
     eval {
-        $APP->addNodeNote( $draft,
-            "Published from draft by [$REQUEST->user->{title}\[user]]",
-            $REQUEST->user );
+        my $parent_e2node = $APP->node_by_id($parent_e2node_id);
+        $APP->addNodeNote( $parent_e2node, "Published from draft", $REQUEST->user );
         1;
     } or do {
         # Log but don't fail the request if nodenote fails

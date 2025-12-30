@@ -273,6 +273,99 @@ if ($ordered_doc) {
 }
 
 #############################################################################
+# Test 7: addNodeNote creates notes correctly
+#
+# Note: addNodeNote stores the raw notetext and sets noter_user.
+# The display layer (getNodeNotes) looks up noter_username for display.
+# User attribution is NOT added to notetext - that's handled by the UI.
+#############################################################################
+
+my $addnote_doc = create_test_node("Test AddNodeNote " . time(), "document", {
+    doctext => "Test document for addNodeNote",
+});
+
+ok($addnote_doc, "Created test document for addNodeNote tests");
+
+if ($addnote_doc) {
+    my $addnote_id = $addnote_doc->{node_id};
+    my $user_node = $APP->node_by_id($test_user->{node_id});
+
+    # Test 7a: addNodeNote stores the message as-is (no user prefix in notetext)
+    $APP->addNodeNote($addnote_doc, "Test note message", $user_node);
+
+    $notes = $APP->getNodeNotes($addnote_doc);
+    is(scalar(@$notes), 1, "addNodeNote created one note");
+
+    my $note_text = $notes->[0]{notetext};
+    is($note_text, "Test note message", "Note text is stored as-is without user prefix");
+
+    # Verify noter_username is set by getNodeNotes (for display by UI)
+    is($notes->[0]{noter_username}, $user_node->title, "noter_username is set for display");
+
+    # Test 7b: addNodeNote with hashref user
+    $APP->addNodeNote($addnote_doc, "Hashref user note", $test_user);
+
+    $notes = $APP->getNodeNotes($addnote_doc);
+    is(scalar(@$notes), 2, "Second note created");
+
+    my $second_note = $notes->[1]{notetext};
+    is($second_note, "Hashref user note", "Hashref user note stored as-is");
+
+    # Test 7c: addNodeNote without user (no noter_user set)
+    $APP->addNodeNote($addnote_doc, "No user note", undef);
+
+    $notes = $APP->getNodeNotes($addnote_doc);
+    is(scalar(@$notes), 3, "Third note created");
+
+    my $third_note = $notes->[2]{notetext};
+    is($third_note, "No user note", "Note without user stored correctly");
+    is($notes->[2]{noter_user}, 0, "noter_user is 0 when no user provided");
+
+    # Test 7d: addNodeNote with node_id integer
+    $APP->addNodeNote($addnote_id, "Node ID note", $user_node);
+
+    $notes = $APP->getNodeNotes($addnote_doc);
+    is(scalar(@$notes), 4, "Fourth note created using node_id integer");
+
+    # Test 7e: Verify noter_user is set correctly
+    is($notes->[0]{noter_user}, $test_user->{node_id}, "noter_user field set correctly");
+
+    cleanup_node($addnote_id);
+}
+
+#############################################################################
+# Test 8: User attribution is handled by display layer, not notetext
+#
+# This verifies that addNodeNote stores only the message, and the display
+# layer (getNodeNotes + React UI) handles showing the username.
+#############################################################################
+
+my $display_test_doc = create_test_node("Test Display Attribution " . time(), "document");
+
+if ($display_test_doc) {
+    my $display_id = $display_test_doc->{node_id};
+    my $user_node = $APP->node_by_id($test_user->{node_id});
+    my $user_title = $user_node->title;
+
+    # addNodeNote stores just the message
+    $APP->addNodeNote($display_test_doc, "Published from draft", $user_node);
+
+    $notes = $APP->getNodeNotes($display_test_doc);
+    my $note = $notes->[0];
+
+    # notetext should be the raw message
+    is($note->{notetext}, "Published from draft", "notetext is stored without user prefix");
+
+    # noter_username should be set by getNodeNotes for display
+    is($note->{noter_username}, $user_title, "noter_username set for UI to display");
+
+    # noter_user should be the user's node_id
+    is($note->{noter_user}, $user_node->node_id, "noter_user contains user ID");
+
+    cleanup_node($display_id);
+}
+
+#############################################################################
 # Cleanup
 #############################################################################
 

@@ -133,6 +133,77 @@ ok($result->[1], "Result has data");
 # Note: Group membership verification skipped due to known nodegroup insert
 # race condition in development environment
 
+#############################################################################
+# Test 5: Leave Usergroup - User leaving on their own
+#############################################################################
+
+# First, add normaluser1 back to the group
+$add_request->{postdata} = [$nm1->{node_id}];
+$result = $api->adduser($add_request, $usergroup_id);
+is($result->[0], 200, "Added normaluser1 back to group for leave test");
+
+# Force cache refresh to ensure nodegroup changes are visible
+# This addresses a known race condition in nodegroup operations
+$DB->{cache}->incrementGlobalVersion($usergroup);
+$usergroup = $DB->getNodeById($usergroup_id, 'force');
+
+# Create leave request for normaluser1 - used in multiple tests
+my $leave_request = MockRequest->new(
+  node_id => $nm1->{node_id},
+  title => $nm1->{title},
+  nodedata => $nm1,
+  is_guest_flag => 0,
+  is_admin_flag => 0
+);
+
+# Verify user was actually added before testing leave
+my $is_member = $APP->inUsergroup($nm1->{node_id}, $usergroup);
+
+SKIP: {
+  skip "Skipping leave success test - nodegroup race condition prevented add", 3 unless $is_member;
+
+  $result = $api->leave($leave_request, $usergroup_id);
+  is($result->[0], 200, "Return code on leave is 200");
+  ok($result->[1]{success}, "Leave returned success");
+  like($result->[1]{message}, qr/You have left/, "Leave message is correct");
+}
+
+#############################################################################
+# Test 6: Leave Usergroup - Cannot leave if not a member
+#############################################################################
+
+# Try to leave (or leave again if test 5 ran) - should fail since not a member
+$result = $api->leave($leave_request, $usergroup_id);
+is($result->[0], 400, "Return code is 400 when trying to leave a group you're not in");
+is($result->[1]{success}, 0, "Success is false when not a member");
+like($result->[1]{error}, qr/not a member/, "Error message indicates not a member");
+
+#############################################################################
+# Test 7: Leave Usergroup - Guest cannot leave
+#############################################################################
+
+my $guest_request = MockRequest->new(
+  node_id => 0,
+  title => 'Guest User',
+  nodedata => {},
+  is_guest_flag => 1,
+  is_admin_flag => 0
+);
+
+$result = $api->leave($guest_request, $usergroup_id);
+is($result->[0], 403, "Return code is 403 for guest trying to leave");
+is($result->[1]{success}, 0, "Success is false for guest");
+like($result->[1]{error}, qr/logged in/, "Error message indicates must be logged in");
+
+#############################################################################
+# Test 8: Leave Usergroup - Invalid usergroup ID
+#############################################################################
+
+$result = $api->leave($leave_request, 999999999);
+is($result->[0], 404, "Return code is 404 for invalid usergroup ID");
+is($result->[1]{success}, 0, "Success is false for invalid group");
+like($result->[1]{error}, qr/not found/i, "Error message indicates group not found");
+
 done_testing();
 
 =head1 NAME
@@ -146,6 +217,11 @@ Tests usergroup CRUD operations:
 - Update usergroup description (via inherited nodes.pm update)
 - Add users to usergroup (adduser method)
 - Remove users from usergroup (removeuser method)
+- Leave usergroup (leave method) - user removing themselves
+  - Successful leave when user is a member
+  - Cannot leave a group you're not a member of (400)
+  - Guest users cannot leave groups (403)
+  - Invalid usergroup ID returns 404
 
 Note: Multi-add tests disabled due to known nodegroup insert race condition
 in development environment.
