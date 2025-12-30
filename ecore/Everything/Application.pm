@@ -1215,31 +1215,29 @@ sub addNodeNote
   }
 
   my $user_id = 0;
-  my $user_title = '';
 
   if ($user)
   {
-    # Extract user info - handle both hashrefs and blessed objects
+    # Extract user_id - handle both hashrefs and blessed objects
+    # Note: We only store the user_id in noter_user field.
+    # The display layer (getNodeNotes) looks up the username for display.
+    # Do NOT prepend user attribution to notetext - that causes duplication.
     if (ref($user))
     {
       if (blessed($user) && $user->can('node_id'))
       {
         $user_id = $user->node_id;
-        $user_title = $user->title if $user->can('title');
       }
       else
       {
         $this->{db}->getRef($user);
         $user_id = $user->{node_id};
-        $user_title = $user->{title} // '';
       }
     }
     else
     {
       $user_id = $user;
     }
-
-    $notetext = "[$user_title\[user]]: $notetext" if $user_title;
   }
 
   $this->{db}->sqlInsert("nodenote", {

@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
+import MessageBox from '../MessageBox'
+import ConfirmModal from '../ConfirmModal'
+import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import { FaEnvelope, FaSignOutAlt } from 'react-icons/fa'
 
 /**
@@ -11,6 +14,7 @@ import { FaEnvelope, FaSignOutAlt } from 'react-icons/fa'
 const Usergroup = ({ data, user, e2 }) => {
   const [message, setMessage] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
 
   if (!data || !data.usergroup) return null
 
@@ -28,32 +32,30 @@ const Usergroup = ({ data, user, e2 }) => {
   const hasMembers = group.length > 0
   const isGuest = userData.is_guest
 
-  // Handle leave group
-  const handleLeaveGroup = async (e) => {
-    e.preventDefault()
-    if (!confirm('Are you sure you want to leave this usergroup?')) {
-      return
-    }
-
+  // Handle leave group - called after user confirms in modal
+  const handleLeaveGroup = async () => {
+    setShowLeaveConfirm(false)
     setIsSubmitting(true)
     setMessage(null)
 
     try {
-      // Submit leave group request
-      const formData = new FormData(e.target)
-      const response = await fetch(window.location.href, {
+      const response = await fetch(`/api/usergroups/${usergroup.node_id}/action/leave`, {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin'
       })
 
-      if (response.ok) {
-        // Reload page to show updated state
-        window.location.reload()
+      const result = await response.json()
+
+      if (result.success) {
+        setMessage({ type: 'success', text: result.message })
+        // Reload page after a brief delay to show the success message
+        setTimeout(() => window.location.reload(), 1000)
       } else {
-        setMessage({ type: 'error', text: 'Failed to leave group' })
+        setMessage({ type: 'error', text: result.error || 'Failed to leave group' })
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'An error occurred' })
+      setMessage({ type: 'error', text: 'An error occurred: ' + error.message })
     } finally {
       setIsSubmitting(false)
     }
@@ -175,15 +177,10 @@ const Usergroup = ({ data, user, e2 }) => {
 
       {/* Usergroup description (doctext) */}
       {doctext && (
-        <div className="usergroup-description">
-          <table border="0">
-            <tbody>
-              <tr>
-                <td dangerouslySetInnerHTML={{ __html: doctext }} />
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <div
+          className="usergroup-description content"
+          dangerouslySetInnerHTML={{ __html: renderE2Content(doctext).html }}
+        />
       )}
 
       {/* Member list */}
@@ -248,48 +245,73 @@ const Usergroup = ({ data, user, e2 }) => {
       {/* Leave group button for members */}
       {!isGuest && is_in_group && (
         <div className="usergroup-leave">
-          <form onSubmit={handleLeaveGroup}>
-            <input type="hidden" name="notanop" value="leavegroup" />
-            <input type="hidden" name="confirmop" value="1" />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              title="leave this usergroup"
-            >
-              <FaSignOutAlt /> Leave group
-            </button>
-          </form>
+          <button
+            type="button"
+            onClick={() => setShowLeaveConfirm(true)}
+            disabled={isSubmitting}
+            title="leave this usergroup"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 16px',
+              fontSize: '13px',
+              border: '1px solid #dc3545',
+              borderRadius: '4px',
+              backgroundColor: '#fff',
+              color: '#dc3545',
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              opacity: isSubmitting ? 0.6 : 1
+            }}
+          >
+            <FaSignOutAlt /> {isSubmitting ? 'Leaving...' : 'Leave group'}
+          </button>
         </div>
       )}
 
+      {/* Leave group confirmation modal */}
+      <ConfirmModal
+        isOpen={showLeaveConfirm}
+        onClose={() => setShowLeaveConfirm(false)}
+        onConfirm={handleLeaveGroup}
+        title="Leave Usergroup"
+        message={`Are you sure you want to leave ${usergroup.title}? You will no longer receive messages from this group.`}
+        confirmText="Leave Group"
+        cancelText="Cancel"
+        confirmColor="#dc3545"
+      />
+
       {/* Messaging interface */}
       {!isGuest && (
-        <div className="usergroup-messaging" style={{ border: 'solid black 1px', padding: '2px' }}>
+        <div className="usergroup-messaging">
           {hasMembers && (
             <>
               {/* Message to owner */}
               {owner && owner_index !== undefined && (
-                <div className="msg-owner">
-                  <FaEnvelope /> /msg the group "owner",{' '}
+                <div className="msg-owner" style={{ marginBottom: '8px' }}>
+                  <FaEnvelope style={{ marginRight: '6px' }} />
+                  Message the group owner,{' '}
                   <LinkNode nodeId={owner.node_id} title={owner.title} />
-                  {!is_in_group && ' (they can add you to the group)'}
-                  <MessageField
-                    fieldName={`msggrpowner${owner.node_id},,${usergroup.node_id},${owner.node_id}`}
+                  {!is_in_group && <em> (they can add you to the group)</em>}
+                  :{' '}
+                  <MessageBox
+                    recipientId={owner.node_id}
+                    recipientTitle={owner.title}
                   />
-                  <br />
                 </div>
               )}
 
-              {/* Message to leader */}
-              {group[0] && (
-                <div className="msg-leader">
-                  <FaEnvelope /> /msg the group leader,{' '}
+              {/* Message to leader (only if different from owner) */}
+              {group[0] && (!owner || group[0].node_id !== owner.node_id) && (
+                <div className="msg-leader" style={{ marginBottom: '8px' }}>
+                  <FaEnvelope style={{ marginRight: '6px' }} />
+                  Message the group leader,{' '}
                   <LinkNode nodeId={group[0].node_id} title={group[0].title} />
                   :{' '}
-                  <MessageField
-                    fieldName={`msggrpleader${group[0].node_id},,${usergroup.node_id},${group[0].node_id}`}
+                  <MessageBox
+                    recipientId={group[0].node_id}
+                    recipientTitle={group[0].title}
                   />
-                  <br />
                 </div>
               )}
             </>
@@ -297,60 +319,37 @@ const Usergroup = ({ data, user, e2 }) => {
 
           {/* Message to usergroup (members and admins only) */}
           {(is_in_group || userData.is_admin) && (
-            <div className="msg-usergroup">
+            <div className="msg-usergroup" style={{ marginBottom: '8px' }}>
               {!is_in_group && userData.is_admin && (
-                <p>
-                  (You aren't in this group, but may talk to it anyway, since you're an administrator.
-                  If you want a copy of your /msg, check the "CC" box.)
-                  <br />
+                <p style={{ fontStyle: 'italic', fontSize: '12px', color: '#666' }}>
+                  (You aren't in this group, but may message it as an administrator.)
                 </p>
               )}
-              <FaEnvelope /> /msg the usergroup:{' '}
-              <MessageField fieldName={`ug${usergroup.node_id},,,,${usergroup.node_id}`} />
-              <br />
+              <FaEnvelope style={{ marginRight: '6px' }} />
+              Message the usergroup:{' '}
+              <MessageBox
+                recipientId={usergroup.node_id}
+                recipientTitle={usergroup.title}
+              />
 
               {/* Message count */}
               {message_count > 0 && (
-                <p>
+                <p style={{ marginTop: '8px' }}>
                   <LinkNode
                     nodeId={e2.message_inbox_id || 956209}
-                    title={`you have ${message_count} message${message_count === 1 ? '' : 's'} from this usergroup`}
+                    title={`You have ${message_count} message${message_count === 1 ? '' : 's'} from this usergroup`}
                     queryParams={{ fromgroup: usergroup.title }}
                   />
                 </p>
               )}
             </div>
           )}
-
-          {/* Other messages field */}
-          <div className="msg-other">
-            other /msgs: <MessageField fieldName="0" />
-            <br />
-          </div>
         </div>
       )}
 
       {/* Weblog display - placeholder for legacy htmlcode('weblog') */}
       {/* TODO: Migrate weblog display to React */}
     </div>
-  )
-}
-
-/**
- * MessageField - Renders a message input field
- * Placeholder for legacy htmlcode('msgField', fieldName)
- */
-const MessageField = ({ fieldName }) => {
-  return (
-    <span className="msg-field">
-      <input
-        type="text"
-        name={`message_${fieldName}`}
-        placeholder="message..."
-        size="30"
-      />
-      <button type="button">send</button>
-    </span>
   )
 }
 

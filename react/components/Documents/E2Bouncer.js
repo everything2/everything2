@@ -10,10 +10,11 @@ const E2Bouncer = ({ data, e2 }) => {
   const {
     is_chanop = false,
     rooms = [],
-    quip = ''
+    quip = '',
+    prefill_user = ''
   } = data;
 
-  const [usernames, setUsernames] = useState('');
+  const [usernames, setUsernames] = useState(prefill_user);
   const [selectedRoom, setSelectedRoom] = useState('outside');
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState(null);

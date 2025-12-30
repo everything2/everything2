@@ -18,6 +18,9 @@ sub buildReactData
     my $APP = $self->APP;
     my $user = $REQUEST->user;
 
+    # Get prefill_username from URL parameter (for user tools modal integration)
+    my $prefill_username = $REQUEST->param('prefill_username') || '';
+
     return {
         type => 'admin_bestow_tool',
         title => 'Bestow Easter Eggs',
@@ -31,7 +34,8 @@ sub buildReactData
         api_endpoint => '/api/easter_eggs/bestow',
         button_text => 'Bestow Easter Eggs',
         button_text_loading => 'Bestowing...',
-        note_text => 'Each user receives one easter egg. Users get a message from Cool Man Eddie.'
+        note_text => 'Each user receives one easter egg. Users get a message from Cool Man Eddie.',
+        prefill_username => $prefill_username
     };
 }
 

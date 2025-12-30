@@ -265,6 +265,49 @@ sub buildReactData
   # Check if user is an editor (for showing Admin Settings tab)
   my $is_editor = $APP->isEditor($user->NODEDATA) ? 1 : 0;
 
+  # Get profile data for Edit Profile tab
+  my $user_node = $user->NODEDATA;
+  my $user_vars = $user->VARS || {};
+
+  # Check if user can have an image
+  my $can_have_image = 0;
+  my $users_with_image = $DB->getNode('users with image', 'nodegroup');
+  if ($users_with_image && Everything::isApproved($user_node, $users_with_image)) {
+    $can_have_image = 1;
+  } elsif ($APP->getLevel($user_node) >= 1) {
+    $can_have_image = 1;
+  }
+
+  # Get user bookmarks
+  my @bookmarks;
+  if ($user_vars->{bookmarks}) {
+    my @bookmark_ids = split(/,/, $user_vars->{bookmarks});
+    foreach my $bm_id (@bookmark_ids) {
+      $bm_id =~ s/^\s+|\s+$//g;
+      next unless $bm_id =~ /^\d+$/;
+      my $bm_node = $DB->getNodeById($bm_id);
+      if ($bm_node) {
+        push @bookmarks, {
+          node_id => int($bm_node->{node_id}),
+          title => $bm_node->{title}
+        };
+      }
+    }
+  }
+
+  my %profile_data = (
+    node_id => int($user->node_id),
+    title => $user->title,
+    realname => $user_node->{realname} || '',
+    email => $user_node->{email} || '',
+    doctext => $user_node->{doctext} || '',
+    imgsrc => $user_node->{imgsrc} || '',
+    mission => $user_vars->{mission} || '',
+    specialties => $user_vars->{specialties} || '',
+    employment => $user_vars->{employment} || '',
+    motto => $user_vars->{motto} || '',
+  );
+
   my $response = {
     type => 'settings',
     settingsPreferences => \%settings_prefs,
@@ -281,7 +324,11 @@ sub buildReactData
     currentUser => {
       node_id => int($user->node_id),
       title => $user->title
-    }
+    },
+    # Profile tab data
+    profileData => \%profile_data,
+    canHaveImage => $can_have_image ? 1 : 0,
+    bookmarks => \@bookmarks
   };
 
   # Add admin settings data for editors

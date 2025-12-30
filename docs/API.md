@@ -78,13 +78,13 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Signup | 1 | 1 | ✅ 100% | [t/063_signup_api.t](../t/063_signup_api.t) (85 tests, MockRequest) |
 | Users | 7 | 1 | ⚠️ 14% | [t/048_user_api.t](../t/048_user_api.t) (partial coverage) |
 | User Search | 1 | 1 | ✅ 100% | [t/069_user_search_api.t](../t/069_user_search_api.t) (MockRequest) |
-| Usergroups | 9 | 3 | ⚠️ 33% | [t/004_usergroups.t](../t/004_usergroups.t) (create, add, remove) |
+| Usergroups | 10 | 4 | ⚠️ 40% | [t/004_usergroups.t](../t/004_usergroups.t) (create, add, remove, leave) |
 | Writeups | 7 | 7 | ✅ 100% | [t/056_writeups_api.t](../t/056_writeups_api.t) (33 tests, MockRequest) |
 | E2nodes | 7 | 7 | ✅ 100% | [t/061_e2nodes_api.t](../t/061_e2nodes_api.t) (23 tests, MockRequest) |
 | E2node | 8 | 8 | ✅ 100% | [t/072_e2node_api.t](../t/072_e2node_api.t) (101 tests, MockRequest) - firmlinks, repair, orderlock, title, lock, reorder, softlinks |
 | Nodes | 7 | 2 | ⚠️ 29% | [t/022_nodes_api_clone.t](../t/022_nodes_api_clone.t), [t/025_nodes_api_delete.t](../t/025_nodes_api_delete.t) |
 | **Editor Features** |
-| Drafts | 5 | 5 | ✅ 100% | [t/065_drafts_api.t](../t/065_drafts_api.t) (MockRequest) |
+| Drafts | 7 | 7 | ✅ 100% | [t/065_drafts_api.t](../t/065_drafts_api.t) (238 tests, MockRequest) - list, get, create, update, delete, search, publish |
 | Autosave | 5 | 5 | ✅ 100% | [t/074_autosave_api.t](../t/074_autosave_api.t) (45 tests, MockRequest) - create, get, delete, restore, history |
 | Hide Writeups | 2 | 2 | ✅ 100% | [t/028_hidewriteups_api.t](../t/028_hidewriteups_api.t) (32 tests) |
 | Node Notes | 3 | 3 | ✅ 100% | [t/021_nodenotes_api.t](../t/021_nodenotes_api.t) (66 tests) |
@@ -347,7 +347,7 @@ Returns all of the items returned by /api/nodes/:id for that id, plus the follow
 
 ## Usergroups
 
-**Test Coverage: ❌ 0%** (0/9 endpoints tested)
+**Test Coverage: ⚠️ 40%** (4/10 endpoints tested)
 
 ### /api/usergroups/
 
@@ -388,6 +388,38 @@ Returns 403 FORBIDDEN if the user doesn't have permission on this group
 Returns 401 Unauthorized if the user is not logged in
 
 Returns the node reference if successful
+
+### /api/usergroups/:id/action/leave
+
+**POST only**
+
+Allows a logged-in user to leave a usergroup they are a member of. Unlike `removeuser`, this endpoint does not require admin permissions - any member can remove themselves from a group.
+
+**Request:** No body required (empty POST)
+
+**Response on success (200):**
+```json
+{
+  "success": true,
+  "message": "You have left [usergroup name]"
+}
+```
+
+**Error responses:**
+* **400 Bad Request** - User is not a member of this group
+  ```json
+  { "success": false, "error": "You are not a member of this group" }
+  ```
+* **403 Forbidden** - User is not logged in (guest)
+  ```json
+  { "success": false, "error": "Must be logged in to leave a group" }
+  ```
+* **404 Not Found** - Invalid usergroup ID
+  ```json
+  { "success": false, "error": "Usergroup not found" }
+  ```
+
+**Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 5-8: leave success, not a member, guest forbidden, invalid group)
 
 ## Writeups
 

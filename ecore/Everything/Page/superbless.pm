@@ -16,6 +16,9 @@ sub buildReactData
 {
     my ($self, $REQUEST) = @_;
 
+    # Get prefill_username from URL parameter (for user tools modal integration)
+    my $prefill_username = $REQUEST->param('prefill_username') || '';
+
     # No permission check needed - restricted_superdoc type handles access control
     return {
         type => 'admin_bestow_tool',
@@ -30,7 +33,8 @@ sub buildReactData
         api_endpoint => '/api/superbless/grant_gp',
         button_text => 'Superbless',
         button_text_loading => 'Superblessing...',
-        note_text => 'All GP grants are logged. Karma is adjusted based on the direction of the grant.'
+        note_text => 'All GP grants are logged. Karma is adjusted based on the direction of the grant.',
+        prefill_username => $prefill_username
     };
 }
 

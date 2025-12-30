@@ -128,6 +128,12 @@ sub get
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
+sub post
+{
+  my ($self, $REQUEST) = @_;
+  return [$self->HTTP_UNIMPLEMENTED];
+}
+
 sub route
 {
   my ($self, $REQUEST, $path) = @_;

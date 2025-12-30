@@ -320,7 +320,10 @@ const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
  * - Version history popup to view/restore previous versions
  */
 const EditorBeta = ({ data }) => {
-  const { approvedTags, canAccess, username, drafts: initialDrafts, pagination: initialPagination, statuses = [], preferRawHtml, pageTitle = 'Drafts' } = data || {};
+  const { approvedTags, canAccess, username, drafts: initialDrafts, pagination: initialPagination, statuses = [], preferRawHtml, pageTitle = 'Drafts', viewingOther = false, targetUser = null } = data || {};
+
+  // When viewing another user's drafts, the page is read-only
+  const isReadOnly = viewingOther;
   // Handle null/undefined drafts gracefully
   const safeDrafts = initialDrafts || [];
   const safePagination = initialPagination || { offset: 0, limit: 20, total: 0, has_more: false };
@@ -366,7 +369,8 @@ const EditorBeta = ({ data }) => {
       starterKit: { heading: { levels: [1, 2, 3, 4, 5, 6] } },
       table: { resizable: false }
     }),
-    content: defaultContent,
+    content: isReadOnly ? '' : defaultContent,
+    editable: !isReadOnly,
     onUpdate: () => {
       // Trigger live preview update
       setPreviewTrigger(prev => prev + 1);
@@ -374,15 +378,15 @@ const EditorBeta = ({ data }) => {
     editorProps: {
       attributes: {
         class: 'e2-editor-content',
-        spellcheck: 'true',
+        spellcheck: isReadOnly ? 'false' : 'true',
         'aria-label': 'Draft content',
         'role': 'textbox',
         'aria-multiline': 'true',
       },
       handleDOMEvents: {
         focus: (view) => {
-          // Clear default content on first focus if no draft is selected
-          if (!hasEditedRef.current && !selectedDraft) {
+          // Clear default content on first focus if no draft is selected (not in read-only mode)
+          if (!isReadOnly && !hasEditedRef.current && !selectedDraft) {
             const currentHtml = view.state.doc.textContent;
             // Check if content matches the default welcome text
             if (currentHtml.includes('Welcome to Your Drafts')) {
@@ -731,7 +735,12 @@ const EditorBeta = ({ data }) => {
     setSearching(true);
     searchTimerRef.current = setTimeout(async () => {
       try {
-        const response = await fetch(`/api/drafts/search?q=${encodeURIComponent(query.trim())}`);
+        // Build search URL with optional other_user parameter
+        let searchUrl = `/api/drafts/search?q=${encodeURIComponent(query.trim())}`;
+        if (targetUser?.title) {
+          searchUrl += `&other_user=${encodeURIComponent(targetUser.title)}`;
+        }
+        const response = await fetch(searchUrl);
         const result = await response.json();
 
         if (result.success) {
@@ -746,7 +755,7 @@ const EditorBeta = ({ data }) => {
       }
       setSearching(false);
     }, 300);
-  }, []);
+  }, [targetUser]);
 
   // Cleanup search timer on unmount
   useEffect(() => {
@@ -902,25 +911,27 @@ const EditorBeta = ({ data }) => {
                           <span>{draft.createtime?.split(' ')[0]}</span>
                         </div>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDeleteModalDraft(draft);
-                        }}
-                        title="Delete draft"
-                        style={{
-                          marginTop: '6px',
-                          padding: '3px 8px',
-                          backgroundColor: 'transparent',
-                          color: '#c75050',
-                          border: '1px solid #c75050',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '11px'
-                        }}
-                      >
-                        Delete
-                      </button>
+                      {!isReadOnly && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteModalDraft(draft);
+                          }}
+                          title="Delete draft"
+                          style={{
+                            marginTop: '6px',
+                            padding: '3px 8px',
+                            backgroundColor: 'transparent',
+                            color: '#c75050',
+                            border: '1px solid #c75050',
+                            borderRadius: '3px',
+                            cursor: 'pointer',
+                            fontSize: '11px'
+                          }}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -963,25 +974,27 @@ const EditorBeta = ({ data }) => {
                           <span>{draft.createtime?.split(' ')[0]}</span>
                         </div>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDeleteModalDraft(draft);
-                        }}
-                        title="Delete draft"
-                        style={{
-                          marginTop: '6px',
-                          padding: '3px 8px',
-                          backgroundColor: 'transparent',
-                          color: '#c75050',
-                          border: '1px solid #c75050',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '11px'
-                        }}
-                      >
-                        Delete
-                      </button>
+                      {!isReadOnly && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteModalDraft(draft);
+                          }}
+                          title="Delete draft"
+                          style={{
+                            marginTop: '6px',
+                            padding: '3px 8px',
+                            backgroundColor: 'transparent',
+                            color: '#c75050',
+                            border: '1px solid #c75050',
+                            borderRadius: '3px',
+                            cursor: 'pointer',
+                            fontSize: '11px'
+                          }}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1009,12 +1022,14 @@ const EditorBeta = ({ data }) => {
               </>
             )}
 
-            <button
-              onClick={clearEditor}
-              style={{ marginTop: '10px', padding: '8px 12px', backgroundColor: '#4060b0', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', width: '100%' }}
-            >
-              + New Draft
-            </button>
+            {!isReadOnly && (
+              <button
+                onClick={clearEditor}
+                style={{ marginTop: '10px', padding: '8px 12px', backgroundColor: '#4060b0', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', width: '100%' }}
+              >
+                + New Draft
+              </button>
+            )}
           </>
         )}
       </div>
@@ -1028,9 +1043,15 @@ const EditorBeta = ({ data }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
           <div>
             <h1 style={{ marginBottom: '10px' }}>{pageTitle}</h1>
-            <p style={{ color: '#507898', marginBottom: '0' }}>
-              Hello, {username}!
-            </p>
+            {isReadOnly ? (
+              <p style={{ color: '#507898', marginBottom: '0' }}>
+                Viewing <a href={`/user/${encodeURIComponent(targetUser?.title)}`} style={{ color: '#4060b0' }}>{targetUser?.title}</a>'s findable drafts (read-only)
+              </p>
+            ) : (
+              <p style={{ color: '#507898', marginBottom: '0' }}>
+                Hello, {username}!
+              </p>
+            )}
           </div>
 
           {/* Stylized slider toggle - Rich/HTML */}
@@ -1060,15 +1081,17 @@ const EditorBeta = ({ data }) => {
           <input
             type="text"
             value={draftTitle}
-            onChange={(e) => setDraftTitle(e.target.value)}
-            placeholder="Enter draft title..."
+            onChange={(e) => !isReadOnly && setDraftTitle(e.target.value)}
+            readOnly={isReadOnly}
+            placeholder={isReadOnly ? '' : 'Enter draft title...'}
             style={{
               width: '100%',
               padding: '10px 12px',
               border: '1px solid #ccc',
               borderRadius: '4px',
               fontSize: '16px',
-              fontWeight: '500'
+              fontWeight: '500',
+              backgroundColor: isReadOnly ? '#f8f9f9' : '#fff'
             }}
           />
         </div>
@@ -1104,9 +1127,12 @@ const EditorBeta = ({ data }) => {
           <textarea
             value={rawHtmlContent}
             onChange={(e) => {
-              setRawHtmlContent(e.target.value);
-              setPreviewTrigger(prev => prev + 1);
+              if (!isReadOnly) {
+                setRawHtmlContent(e.target.value);
+                setPreviewTrigger(prev => prev + 1);
+              }
             }}
+            readOnly={isReadOnly}
             aria-label="Draft content (HTML)"
             style={{
               width: '100%',
@@ -1118,10 +1144,11 @@ const EditorBeta = ({ data }) => {
               fontSize: '13px',
               lineHeight: '1.5',
               resize: 'vertical',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              backgroundColor: isReadOnly ? '#f8f9f9' : '#fff'
             }}
             spellCheck={false}
-            placeholder="Enter HTML content here..."
+            placeholder={isReadOnly ? '' : 'Enter HTML content here...'}
           />
         )}
 
@@ -1141,8 +1168,8 @@ const EditorBeta = ({ data }) => {
             alignItems: 'center',
             gap: '10px'
           }}>
-            {/* Version History button - styled consistently */}
-            {selectedDraft && (
+            {/* Version History button - styled consistently (hidden in read-only mode) */}
+            {selectedDraft && !isReadOnly && (
               <button
                 onClick={() => setShowVersionHistory(true)}
                 style={{
@@ -1159,42 +1186,46 @@ const EditorBeta = ({ data }) => {
               </button>
             )}
 
-            {/* Save status indicator - to the right of Version History */}
-            <div style={{ display: 'flex', alignItems: 'center', minWidth: '120px' }}>
-              {saving ? (
-                <>
-                  <SaveSpinner />
-                  <span style={{ color: '#4060b0' }}>Saving...</span>
-                </>
-              ) : lastSaveTime ? (
-                <span style={{ color: '#666' }}>
-                  {lastSaveType === 'auto' ? 'Autosaved' : 'Saved'} at {lastSaveTime}
-                </span>
-              ) : null}
-            </div>
+            {/* Save status indicator - to the right of Version History (hidden in read-only mode) */}
+            {!isReadOnly && (
+              <div style={{ display: 'flex', alignItems: 'center', minWidth: '120px' }}>
+                {saving ? (
+                  <>
+                    <SaveSpinner />
+                    <span style={{ color: '#4060b0' }}>Saving...</span>
+                  </>
+                ) : lastSaveTime ? (
+                  <span style={{ color: '#666' }}>
+                    {lastSaveType === 'auto' ? 'Autosaved' : 'Saved'} at {lastSaveTime}
+                  </span>
+                ) : null}
+              </div>
+            )}
           </div>
 
           {/* Controls - bottom right */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            {/* Status dropdown */}
-            <select
-              value={draftStatus}
-              onChange={(e) => setDraftStatus(e.target.value)}
-              style={{
-                padding: '6px 10px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                fontSize: '13px',
-                backgroundColor: '#fff',
-                color: '#333',
-                cursor: 'pointer'
-              }}
-              title={statusDescriptions[draftStatus]}
-            >
-              {statuses.map((s) => (
-                <option key={s.id} value={s.name}>{s.name}</option>
-              ))}
-            </select>
+            {/* Status dropdown - only when not read-only */}
+            {!isReadOnly && (
+              <select
+                value={draftStatus}
+                onChange={(e) => setDraftStatus(e.target.value)}
+                style={{
+                  padding: '6px 10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '13px',
+                  backgroundColor: '#fff',
+                  color: '#333',
+                  cursor: 'pointer'
+                }}
+                title={statusDescriptions[draftStatus]}
+              >
+                {statuses.map((s) => (
+                  <option key={s.id} value={s.name}>{s.name}</option>
+                ))}
+              </select>
+            )}
 
             {/* Preview button */}
             <button
@@ -1212,29 +1243,31 @@ const EditorBeta = ({ data }) => {
               {showPreview ? 'Hide Preview' : 'Preview'}
             </button>
 
-            {/* Save button */}
-            <button
-              onClick={saveDraft}
-              disabled={saving}
-              style={{
-                padding: '6px 16px',
-                backgroundColor: saving ? '#999' : '#4060b0',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: saving ? 'wait' : 'pointer',
-                fontSize: '13px',
-                fontWeight: '500'
-              }}
-            >
-              {saving ? 'Saving...' : (selectedDraft ? 'Save' : 'Create Draft')}
-            </button>
+            {/* Save button - only when not read-only */}
+            {!isReadOnly && (
+              <button
+                onClick={saveDraft}
+                disabled={saving}
+                style={{
+                  padding: '6px 16px',
+                  backgroundColor: saving ? '#999' : '#4060b0',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: saving ? 'wait' : 'pointer',
+                  fontSize: '13px',
+                  fontWeight: '500'
+                }}
+              >
+                {saving ? 'Saving...' : (selectedDraft ? 'Save' : 'Create Draft')}
+              </button>
+            )}
 
           </div>
         </div>
 
-        {/* Publish section - only visible when editing a saved draft */}
-        {selectedDraft && (
+        {/* Publish section - only visible when editing a saved draft (and not in read-only mode) */}
+        {selectedDraft && !isReadOnly && (
           <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #eee' }}>
             <button
               onClick={() => setShowPublishModal(true)}

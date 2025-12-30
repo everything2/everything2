@@ -318,25 +318,27 @@ SKIP: {
   }
 
   # Test 33: Insure/uninsure created nodenotes (from earlier tests)
+  # Note: Node notes are added to the parent e2node, not the writeup
   {
     # Check that nodenotes were created during earlier tests
     my $nodenote_count = $DB->sqlSelect('COUNT(*)', 'nodenote',
-      "nodenote_nodeid=$writeup_id AND notetext LIKE '%Insured%'");
-    ok($nodenote_count > 0, 'Insure creates nodenote');
+      "nodenote_nodeid=$parent_e2node_id AND notetext LIKE '%Insured%'");
+    ok($nodenote_count > 0, 'Insure creates nodenote on e2node');
   }
 
   # Test 34: Uninsure created nodenote (from earlier tests)
   {
     my $nodenote_count = $DB->sqlSelect('COUNT(*)', 'nodenote',
-      "nodenote_nodeid=$writeup_id AND notetext LIKE '%Uninsured%'");
-    ok($nodenote_count > 0, 'Uninsure creates nodenote');
+      "nodenote_nodeid=$parent_e2node_id AND notetext LIKE '%Uninsured%'");
+    ok($nodenote_count > 0, 'Uninsure creates nodenote on e2node');
   }
 
   # Test 35: Remove created nodenote (from writeup_id2 in earlier test)
+  # Note: Node notes are added to the parent e2node, not the writeup
   {
     my $nodenote_count = $DB->sqlSelect('COUNT(*)', 'nodenote',
-      "nodenote_nodeid=$writeup_id2 AND notetext LIKE '%Removed by%'");
-    ok($nodenote_count > 0, 'Remove creates nodenote with reason');
+      "nodenote_nodeid=$parent_e2node_id AND notetext LIKE '%Removed%'");
+    ok($nodenote_count > 0, 'Remove creates nodenote with reason on e2node');
   }
 
   # Test 36: No duplicate publish entries (verified from earlier tests)
@@ -356,6 +358,7 @@ SKIP: {
   }
 
   # Test 38: Remove as author creates appropriate nodenote
+  # Note: Node notes are added to the parent e2node, not the writeup
   {
     my $author_request = MockRequest->new(
       node_id => $regular_user->{node_id},
@@ -380,9 +383,10 @@ SKIP: {
     $author_request->set_postdata({});
     my $result = $api->remove_writeup($author_request, $writeup_id3);
 
+    # Node notes are added to the parent e2node
     my $nodenote = $DB->sqlSelect('notetext', 'nodenote',
-      "nodenote_nodeid=$writeup_id3 ORDER BY nodenote_id DESC LIMIT 1");
-    like($nodenote, qr/Returned to drafts by author/, 'Author removal creates appropriate nodenote');
+      "nodenote_nodeid=$parent_e2node_id AND notetext LIKE '%Returned to drafts by author%' ORDER BY nodenote_id DESC LIMIT 1");
+    like($nodenote, qr/Returned to drafts by author/, 'Author removal creates appropriate nodenote on e2node');
   }
 
   # Create a fourth writeup for vote/C! removal tests (previous writeups were converted to drafts)
@@ -508,7 +512,155 @@ SKIP: {
   $DB->sqlDelete('node', "node_id IN ($writeup_id, $writeup_id2, $writeup_id4, $parent_e2node_id)");
   $DB->sqlDelete('document', "document_id IN ($writeup_id, $writeup_id2, $writeup_id4)");
   $DB->sqlDelete('publish', "publish_id IN ($writeup_id, $writeup_id2)");
-  $DB->sqlDelete('nodenote', "nodenote_nodeid IN ($writeup_id, $writeup_id2)");
+  # Clean up nodenotes on both writeups and e2node (notes now go to e2node)
+  $DB->sqlDelete('nodenote', "nodenote_nodeid IN ($writeup_id, $writeup_id2, $parent_e2node_id)");
+}
+
+# ========================================================
+# Tests for lock_user and unlock_user (admin-only)
+# These tests run serially to ensure we don't leave any user locked
+# ========================================================
+
+SKIP: {
+  unless ($admin_user && $regular_user) {
+    diag("Skipping lock/unlock tests: required users not found");
+    skip "Unable to run lock/unlock tests", 18;
+  }
+
+  # Ensure the target user starts unlocked
+  my $initial_lock = $regular_user->{acctlock};
+  if ($initial_lock) {
+    $regular_user->{acctlock} = 0;
+    $DB->updateNode($regular_user, -1);
+    diag("Cleaned up pre-existing lock on e2e_user for testing");
+  }
+
+  # Test: Non-admin cannot lock user
+  {
+    $regular_request->set_postdata({});
+    my $result = $api->lock_user($regular_request, $regular_user->{node_id});
+    is($result->[0], $api->HTTP_OK, 'Non-admin lock returns HTTP 200');
+    is($result->[1]->{success}, 0, 'Non-admin lock returns success=0');
+    is($result->[1]->{error}, 'Admin access required', 'Non-admin gets admin access required error for lock');
+  }
+
+  # Test: Editor cannot lock user (editors are not admins)
+  {
+    $editor_request->set_postdata({});
+    my $result = $api->lock_user($editor_request, $regular_user->{node_id});
+    is($result->[0], $api->HTTP_OK, 'Editor lock returns HTTP 200');
+    is($result->[1]->{success}, 0, 'Editor lock returns success=0');
+    is($result->[1]->{error}, 'Admin access required', 'Editor gets admin access required error for lock');
+  }
+
+  # Test: Admin can lock user
+  {
+    $admin_request->set_postdata({});
+    my $result = $api->lock_user($admin_request, $regular_user->{node_id});
+    is($result->[0], $api->HTTP_OK, 'Admin lock returns HTTP 200');
+    is($result->[1]->{success}, 1, 'Admin lock returns success=1');
+    is($result->[1]->{message}, 'Account locked', 'Admin lock returns correct message');
+    is($result->[1]->{user}->{node_id}, $regular_user->{node_id}, 'Lock response includes user node_id');
+    is($result->[1]->{locked_by}->{node_id}, $admin_user->{node_id}, 'Lock response includes who locked');
+
+    # Verify in database
+    my $target = $DB->getNodeById($regular_user->{node_id});
+    is($target->{acctlock}, $admin_user->{node_id}, 'User acctlock set in database');
+  }
+
+  # Test: Cannot lock already locked user
+  {
+    $admin_request->set_postdata({});
+    my $result = $api->lock_user($admin_request, $regular_user->{node_id});
+    is($result->[0], $api->HTTP_OK, 'Lock already-locked user returns HTTP 200');
+    is($result->[1]->{success}, 0, 'Lock already-locked returns success=0');
+    is($result->[1]->{error}, 'Already locked', 'Already locked returns correct error');
+  }
+
+  # Test: Non-admin cannot unlock user
+  {
+    my $other_regular = MockRequest->new(
+      node_id => $editor_user->{node_id},
+      title => $editor_user->{title},
+      nodedata => $editor_user,
+      is_admin_flag => 0,
+      is_editor_flag => 1
+    );
+    $other_regular->set_postdata({});
+    my $result = $api->unlock_user($other_regular, $regular_user->{node_id});
+    is($result->[0], $api->HTTP_OK, 'Non-admin unlock returns HTTP 200');
+    is($result->[1]->{success}, 0, 'Non-admin unlock returns success=0');
+    is($result->[1]->{error}, 'Admin access required', 'Non-admin gets admin access required error for unlock');
+  }
+
+  # Test: Admin can unlock user
+  {
+    $admin_request->set_postdata({});
+    my $result = $api->unlock_user($admin_request, $regular_user->{node_id});
+    is($result->[0], $api->HTTP_OK, 'Admin unlock returns HTTP 200');
+    is($result->[1]->{success}, 1, 'Admin unlock returns success=1');
+    is($result->[1]->{message}, 'Account unlocked', 'Admin unlock returns correct message');
+    is($result->[1]->{user}->{node_id}, $regular_user->{node_id}, 'Unlock response includes user node_id');
+    is($result->[1]->{previously_locked_by}->{node_id}, $admin_user->{node_id}, 'Unlock response includes who had locked');
+
+    # Verify in database
+    my $target = $DB->getNodeById($regular_user->{node_id});
+    is($target->{acctlock}, 0, 'User acctlock cleared in database');
+  }
+
+  # Test: Cannot unlock already unlocked user
+  {
+    $admin_request->set_postdata({});
+    my $result = $api->unlock_user($admin_request, $regular_user->{node_id});
+    is($result->[0], $api->HTTP_OK, 'Unlock already-unlocked user returns HTTP 200');
+    is($result->[1]->{success}, 0, 'Unlock already-unlocked returns success=0');
+    is($result->[1]->{error}, 'Not locked', 'Already unlocked returns correct error');
+  }
+
+  # Test: Cannot lock non-existent user
+  {
+    $admin_request->set_postdata({});
+    my $result = $api->lock_user($admin_request, 999999999);
+    is($result->[0], $api->HTTP_OK, 'Lock non-existent user returns HTTP 200');
+    is($result->[1]->{success}, 0, 'Lock non-existent returns success=0');
+    is($result->[1]->{error}, 'User not found', 'Non-existent user returns user not found');
+  }
+
+  # Test: Cannot unlock non-existent user
+  {
+    $admin_request->set_postdata({});
+    my $result = $api->unlock_user($admin_request, 999999999);
+    is($result->[0], $api->HTTP_OK, 'Unlock non-existent user returns HTTP 200');
+    is($result->[1]->{success}, 0, 'Unlock non-existent returns success=0');
+    is($result->[1]->{error}, 'User not found', 'Non-existent user returns user not found for unlock');
+  }
+
+  # Test: Cannot lock non-user node
+  SKIP: {
+    skip "No maintenance node for non-user test", 3 unless $maintenance_node;
+
+    $admin_request->set_postdata({});
+    my $result = $api->lock_user($admin_request, $maintenance_node->{node_id});
+    is($result->[0], $api->HTTP_OK, 'Lock non-user node returns HTTP 200');
+    is($result->[1]->{success}, 0, 'Lock non-user node returns success=0');
+    is($result->[1]->{error}, 'User not found', 'Non-user node returns user not found');
+  }
+
+  # Final cleanup: ensure user is unlocked
+  my $final_target = $DB->getNodeById($regular_user->{node_id});
+  if ($final_target->{acctlock}) {
+    $final_target->{acctlock} = 0;
+    $DB->updateNode($final_target, -1);
+    diag("Cleanup: Unlocked e2e_user after tests");
+  }
+
+  # Restore initial state if it was locked
+  if ($initial_lock) {
+    my $restore_target = $DB->getNodeById($regular_user->{node_id});
+    $restore_target->{acctlock} = $initial_lock;
+    $DB->updateNode($restore_target, -1);
+    diag("Restored original lock state on e2e_user");
+  }
 }
 
 done_testing();

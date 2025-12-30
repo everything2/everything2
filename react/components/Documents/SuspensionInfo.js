@@ -14,7 +14,11 @@ import ParseLinks from '../ParseLinks'
  * - user: Current user object
  */
 const SuspensionInfo = ({ user }) => {
-  const [username, setUsername] = useState('')
+  // Check for suspendee query parameter to pre-fill username
+  const urlParams = new URLSearchParams(window.location.search)
+  const initialUsername = urlParams.get('suspendee') || ''
+
+  const [username, setUsername] = useState(initialUsername)
   const [lookupData, setLookupData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -25,16 +29,23 @@ const SuspensionInfo = ({ user }) => {
   const isAdmin = user?.is_admin || false
   const hasAccess = isChanop || isEditor || isAdmin
 
-  const handleLookup = async (e) => {
-    e.preventDefault()
-    if (!username.trim()) return
+  // Auto-lookup if suspendee was provided in URL
+  useEffect(() => {
+    if (initialUsername && hasAccess) {
+      // Trigger initial lookup
+      handleLookupByUsername(initialUsername)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleLookupByUsername = async (lookupUsername) => {
+    if (!lookupUsername.trim()) return
 
     setLoading(true)
     setError(null)
     setSuccessMessage(null)
 
     try {
-      const response = await fetch(`/api/suspension/user/${encodeURIComponent(username)}`)
+      const response = await fetch(`/api/suspension/user/${encodeURIComponent(lookupUsername)}`)
       const data = await response.json()
 
       if (response.ok) {
@@ -49,6 +60,11 @@ const SuspensionInfo = ({ user }) => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleLookup = async (e) => {
+    e.preventDefault()
+    handleLookupByUsername(username)
   }
 
   const handleSuspend = async (typeId, typeName) => {

@@ -51,6 +51,15 @@ foreach my $user (1..30,"user with space","genericeditor","genericdev","genericc
   $author->{doctext} = "Homenode text for $user";
   $author->{votesleft} = 50;
   $DB->updateNode($author, -1);
+
+  # Add browser and IP data to normaluser pool for testing admin tools
+  if ($user =~ /^normaluser\d+$/) {
+    my $uservars = getVars($author);
+    $uservars->{browser} = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    $uservars->{ipaddy} = "8.8.8.8";
+    setVars($author, $uservars);
+    $DB->updateNode($author, -1);
+  }
 }
 
 print STDERR "Setting normaluser20 to opt out of GP system\n";
@@ -561,8 +570,8 @@ my $datanodes = {
       # Topics include: cooking, travel, technology, science, history, philosophy, music, art, literature, nature
 
       # Cooking drafts (1-20)
-      ["Perfect sourdough bread technique", "thing", "<p>The art of <strong>sourdough bread</strong> requires patience and practice. Start with a healthy starter that bubbles vigorously. Mix flour, water, and salt in precise ratios. The fermentation process develops complex flavors over 12-24 hours.</p>", "private"],
-      ["Italian pasta secrets", "thing", "<p>Authentic <strong>Italian pasta</strong> begins with semolina flour and fresh eggs. The dough must rest before rolling. Each region has distinct shapes and sauces. Bologna is famous for its rich ragu.</p>", "private"],
+      ["Perfect sourdough bread technique", "thing", "<p>The art of <strong>sourdough bread</strong> requires patience and practice. Start with a healthy starter that bubbles vigorously. Mix flour, water, and salt in precise ratios. The fermentation process develops complex flavors over 12-24 hours.</p>", "findable"],
+      ["Italian pasta secrets", "thing", "<p>Authentic <strong>Italian pasta</strong> begins with semolina flour and fresh eggs. The dough must rest before rolling. Each region has distinct shapes and sauces. Bologna is famous for its rich ragu.</p>", "findable"],
       ["French pastry fundamentals", "idea", "<p>Mastering <strong>French pastry</strong> means understanding laminated doughs. Croissants require precise butter temperature. Choux paste relies on proper hydration. The Maillard reaction creates golden crusts.</p>", "private"],
       ["Asian stir fry mastery", "thing", "<p>The secret to perfect <strong>stir fry</strong> is wok hei - the breath of the wok. High heat, quick cooking, and mise en place are essential. Aromatics go in first, proteins next, vegetables last.</p>", "private"],
       ["Fermentation and preservation", "thing", "<p>Traditional <strong>fermentation</strong> transforms ingredients through beneficial bacteria. Kimchi, sauerkraut, and miso share similar principles. Temperature and salt concentration control the process.</p>", "private"],
@@ -583,8 +592,8 @@ my $datanodes = {
       ["Grilling temperature zones", "thing", "<p>Direct and indirect <strong>grilling zones</strong> offer different cooking methods. Searing happens over high heat. Low and slow suits tough cuts. Resting redistributes juices.</p>", "private"],
 
       # Travel drafts (21-40)
-      ["Exploring hidden Kyoto temples", "thing", "<p>Beyond the famous shrines, <strong>Kyoto</strong> hides quiet temples in residential neighborhoods. Moss gardens require contemplation. Dawn visits avoid crowds. Local buses reach everywhere.</p>", "private"],
-      ["Iceland's ring road adventure", "thing", "<p>Driving <strong>Iceland's ring road</strong> takes at least a week. Waterfalls appear around every bend. Northern lights dance in winter. Summer brings midnight sun.</p>", "private"],
+      ["Exploring hidden Kyoto temples", "thing", "<p>Beyond the famous shrines, <strong>Kyoto</strong> hides quiet temples in residential neighborhoods. Moss gardens require contemplation. Dawn visits avoid crowds. Local buses reach everywhere.</p>", "findable"],
+      ["Iceland's ring road adventure", "thing", "<p>Driving <strong>Iceland's ring road</strong> takes at least a week. Waterfalls appear around every bend. Northern lights dance in winter. Summer brings midnight sun.</p>", "findable"],
       ["Street food tour of Bangkok", "thing", "<p><strong>Bangkok's street food</strong> scene overwhelms the senses. Chinatown offers the best variety. Som tam vendors line Silom. Night markets come alive after dark.</p>", "private"],
       ["Hiking the Camino de Santiago", "essay", "<p>The <strong>Camino de Santiago</strong> transforms pilgrims over 800 kilometers. Albergues provide simple accommodation. Yellow arrows mark the way. Buen Camino greets fellow walkers.</p>", "private"],
       ["Safari planning in Tanzania", "thing", "<p>The <strong>Serengeti migration</strong> follows seasonal rains. Calving season brings predator action. Hot air balloons offer aerial views. Conservation fees support parks.</p>", "private"],
@@ -605,8 +614,8 @@ my $datanodes = {
       ["Central American backpacking", "thing", "<p><strong>Central America</strong> offers budget-friendly adventures. Guatemala's Lake Atitlan mesmerizes. Costa Rica prioritizes ecotourism. Safety concerns vary by country.</p>", "private"],
 
       # Technology drafts (41-60)
-      ["Understanding neural networks", "thing", "<p><strong>Neural networks</strong> loosely mimic brain structure. Layers of nodes process information. Weights adjust during training. Deep learning stacks many layers.</p>", "private"],
-      ["Blockchain beyond cryptocurrency", "idea", "<p><strong>Blockchain technology</strong> enables trustless transactions. Immutable ledgers resist tampering. Smart contracts automate agreements. Energy consumption remains controversial.</p>", "private"],
+      ["Understanding neural networks", "thing", "<p><strong>Neural networks</strong> loosely mimic brain structure. Layers of nodes process information. Weights adjust during training. Deep learning stacks many layers.</p>", "findable"],
+      ["Blockchain beyond cryptocurrency", "idea", "<p><strong>Blockchain technology</strong> enables trustless transactions. Immutable ledgers resist tampering. Smart contracts automate agreements. Energy consumption remains controversial.</p>", "findable"],
       ["Quantum computing explained", "thing", "<p><strong>Quantum computers</strong> exploit superposition and entanglement. Qubits exist in multiple states simultaneously. Certain problems become tractable. Current machines are error-prone.</p>", "private"],
       ["Open source software philosophy", "essay", "<p>The <strong>open source movement</strong> democratizes technology. Collaborative development accelerates innovation. Licensing determines usage rights. Community governance varies widely.</p>", "private"],
       ["Privacy in the digital age", "idea", "<p><strong>Digital privacy</strong> erodes with each convenience. Metadata reveals patterns. Encryption provides protection. Surveillance capitalism profits from data.</p>", "private"],
@@ -627,8 +636,8 @@ my $datanodes = {
       ["Digital twin technology", "thing", "<p><strong>Digital twins</strong> replicate physical systems virtually. Simulation enables optimization. Predictive maintenance reduces costs. Industrial applications lead adoption.</p>", "private"],
 
       # Science drafts (61-80)
-      ["Black holes and spacetime", "thing", "<p><strong>Black holes</strong> warp spacetime to extremes. Event horizons mark points of no return. Hawking radiation implies eventual evaporation. Singularities challenge physics.</p>", "private"],
-      ["Evolution of human consciousness", "idea", "<p>How <strong>consciousness</strong> emerged remains biology's hardest problem. Neurons fire in patterns. Subjective experience defies reduction. Theories abound without consensus.</p>", "private"],
+      ["Black holes and spacetime", "thing", "<p><strong>Black holes</strong> warp spacetime to extremes. Event horizons mark points of no return. Hawking radiation implies eventual evaporation. Singularities challenge physics.</p>", "findable"],
+      ["Evolution of human consciousness", "idea", "<p>How <strong>consciousness</strong> emerged remains biology's hardest problem. Neurons fire in patterns. Subjective experience defies reduction. Theories abound without consensus.</p>", "findable"],
       ["Climate feedback loops", "thing", "<p><strong>Climate feedback</strong> mechanisms amplify or dampen warming. Melting ice reduces reflectivity. Thawing permafrost releases methane. Tipping points may cascade.</p>", "private"],
       ["Microbiome research advances", "thing", "<p>The <strong>gut microbiome</strong> influences more than digestion. Mental health connections emerge. Diet shapes bacterial populations. Fecal transplants treat infections.</p>", "private"],
       ["Dark matter mysteries", "thing", "<p><strong>Dark matter</strong> constitutes most mass yet remains invisible. Gravitational effects reveal its presence. Direct detection experiments continue. Alternative theories exist.</p>", "private"],
@@ -649,8 +658,8 @@ my $datanodes = {
       ["Aging biology mechanisms", "thing", "<p><strong>Biological aging</strong> involves multiple interacting processes. Telomeres shorten with divisions. Cellular senescence accumulates. Intervention research intensifies.</p>", "private"],
 
       # History drafts (81-100)
-      ["Fall of the Roman Empire", "essay", "<p>The <strong>Roman Empire's</strong> decline spanned centuries. Economic troubles weakened armies. Barbarian invasions accelerated collapse. Eastern half survived as Byzantium.</p>", "private"],
-      ["Industrial revolution impacts", "thing", "<p>The <strong>Industrial Revolution</strong> transformed society fundamentally. Factory production replaced crafts. Urban populations exploded. Working conditions were often brutal.</p>", "private"],
+      ["Fall of the Roman Empire", "essay", "<p>The <strong>Roman Empire's</strong> decline spanned centuries. Economic troubles weakened armies. Barbarian invasions accelerated collapse. Eastern half survived as Byzantium.</p>", "findable"],
+      ["Industrial revolution impacts", "thing", "<p>The <strong>Industrial Revolution</strong> transformed society fundamentally. Factory production replaced crafts. Urban populations exploded. Working conditions were often brutal.</p>", "findable"],
       ["Ancient Egyptian mysteries", "thing", "<p>Ancient <strong>Egyptian civilization</strong> lasted three millennia. Pyramid construction methods still debated. Hieroglyphics preserved history. Pharaohs claimed divine status.</p>", "private"],
       ["World War I origins", "thing", "<p><strong>World War I</strong> began with an assassination and alliance obligations. Trench warfare defined the Western Front. Millions died for minimal gains. Empires collapsed.</p>", "private"],
       ["Silk Road trade networks", "thing", "<p>The <strong>Silk Road</strong> connected East and West for centuries. Goods, ideas, and diseases traveled together. Caravanserais provided shelter. Marco Polo popularized the route.</p>", "private"],
@@ -671,8 +680,8 @@ my $datanodes = {
       ["Age of exploration consequences", "thing", "<p>European <strong>exploration</strong> transformed global connections permanently. Indigenous populations collapsed. Columbian exchange spread species. Colonial extraction continued for centuries.</p>", "private"],
 
       # Philosophy drafts (101-120)
-      ["Existentialism core concepts", "essay", "<p><strong>Existentialism</strong> places individual existence before essence. Freedom entails responsibility. Authenticity requires confronting anxiety. Meaning must be created.</p>", "private"],
-      ["Stoic philosophy practice", "thing", "<p><strong>Stoic philosophy</strong> emphasizes what we can control. Emotions follow judgments. Virtue is the only good. Marcus Aurelius practiced what he preached.</p>", "private"],
+      ["Existentialism core concepts", "essay", "<p><strong>Existentialism</strong> places individual existence before essence. Freedom entails responsibility. Authenticity requires confronting anxiety. Meaning must be created.</p>", "findable"],
+      ["Stoic philosophy practice", "thing", "<p><strong>Stoic philosophy</strong> emphasizes what we can control. Emotions follow judgments. Virtue is the only good. Marcus Aurelius practiced what he preached.</p>", "findable"],
       ["Buddhist mindfulness traditions", "thing", "<p><strong>Buddhist mindfulness</strong> cultivates present-moment awareness. Suffering arises from attachment. Meditation trains attention. Compassion extends to all beings.</p>", "private"],
       ["Utilitarian ethics dilemmas", "idea", "<p><strong>Utilitarian ethics</strong> maximizes overall happiness. Trolley problems expose difficulties. Rights may be sacrificed for greater good. Measurement challenges persist.</p>", "private"],
       ["Platonic forms theory", "thing", "<p><strong>Platonic forms</strong> represent perfect ideals. Physical objects merely participate. Knowledge requires recollection. Cave allegory illustrates enlightenment.</p>", "private"],
@@ -693,8 +702,8 @@ my $datanodes = {
       ["Taoism natural philosophy", "thing", "<p><strong>Taoism</strong> emphasizes harmony with natural way. Wu wei means effortless action. Paradox reveals wisdom. Laozi remains enigmatic.</p>", "private"],
 
       # Music drafts (121-140)
-      ["Jazz improvisation techniques", "thing", "<p><strong>Jazz improvisation</strong> balances freedom and structure. Chord changes provide framework. Scales suggest note choices. Listening drives conversation.</p>", "private"],
-      ["Classical music appreciation", "thing", "<p><strong>Classical music</strong> spans centuries of development. Sonata form structures movements. Orchestration creates color. Historical context illuminates meaning.</p>", "private"],
+      ["Jazz improvisation techniques", "thing", "<p><strong>Jazz improvisation</strong> balances freedom and structure. Chord changes provide framework. Scales suggest note choices. Listening drives conversation.</p>", "findable"],
+      ["Classical music appreciation", "thing", "<p><strong>Classical music</strong> spans centuries of development. Sonata form structures movements. Orchestration creates color. Historical context illuminates meaning.</p>", "findable"],
       ["Rock music evolution", "thing", "<p><strong>Rock music</strong> evolved from blues and country. Electric guitars amplified rebellion. Subgenres proliferated endlessly. Stadium concerts became rituals.</p>", "private"],
       ["Electronic music production", "thing", "<p><strong>Electronic music production</strong> requires technical knowledge. Synthesizers generate sound. Sequencers arrange patterns. Mixing balances elements.</p>", "private"],
       ["Folk music traditions worldwide", "thing", "<p><strong>Folk music</strong> preserves cultural heritage. Oral transmission adapts over time. Instruments vary regionally. Revival movements rediscover roots.</p>", "private"],

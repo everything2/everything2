@@ -33,6 +33,8 @@ sub routes
     "writeup/:id/remove" => "remove_writeup(:id)",
     "writeup/:id/remove_vote" => "remove_vote(:id)",
     "writeup/:id/remove_cool" => "remove_cool(:id)",
+    "user/:id/lock" => "lock_user(:id)",
+    "user/:id/unlock" => "unlock_user(:id)",
   }
 }
 
@@ -324,6 +326,7 @@ sub insure_writeup
 
   my $NODE = $writeup->NODEDATA;
   my $author = $APP->node_by_id($NODE->{author_user});
+  my $e2node = $NODE->{parent_e2node} ? $APP->node_by_id($NODE->{parent_e2node}) : undef;
 
   # Get insured publication status ID
   my $insured_status = $DB->getNode('insured', 'publication_status');
@@ -349,8 +352,11 @@ sub insure_writeup
     # Remove from publish table
     $DB->sqlDelete("publish", "publish_id=" . $NODE->{node_id});
 
-    # Add nodenote
-    $APP->addNodeNote($writeup, "Uninsured by [$user->{title}\[user]]", $user);
+    # Add nodenote to e2node (user attribution is added automatically by addNodeNote)
+    if ($e2node)
+    {
+      $APP->addNodeNote($e2node, "Uninsured", $user);
+    }
 
     # Security log
     $APP->securityLog(
@@ -374,8 +380,11 @@ sub insure_writeup
       });
     }
 
-    # Add nodenote
-    $APP->addNodeNote($writeup, "Insured by [$user->{title}\[user]]", $user);
+    # Add nodenote to e2node (user attribution is added automatically by addNodeNote)
+    if ($e2node)
+    {
+      $APP->addNodeNote($e2node, "Insured", $user);
+    }
 
     # Security log
     $APP->securityLog(
@@ -554,29 +563,32 @@ sub remove_writeup
       "to_node=$node_id OR (from_node=$node_id AND linktype=" . $category_linktype->{node_id} . ")");
   }
 
-  # Add nodenote
-  my $user_title = $user->title // 'unknown';
-  my $note_success = eval {
-    if ($is_author && !$is_editor)
-    {
-      $APP->addNodeNote($writeup, "Returned to drafts by author [$user_title\[user]]", $user);
-    }
-    elsif ($reason)
-    {
-      $APP->addNodeNote($writeup, "Removed by [$user_title\[user]]: $reason", $user);
-    }
-    else
-    {
-      $APP->addNodeNote($writeup, "Returned to drafts by [$user_title\[user]]", $user);
-    }
-    return 1;
-  };
-  unless ($note_success)
+  # Add nodenote to the e2node (not the writeup)
+  # User attribution is added automatically by addNodeNote
+  if ($E2NODE)
   {
-    return [$self->HTTP_INTERNAL_SERVER_ERROR, {
-      error => 'Failed to add nodenote',
-      message => "addNodeNote failed: $@"
-    }];
+    my $note_success = eval {
+      if ($is_author && !$is_editor)
+      {
+        $APP->addNodeNote($E2NODE, "Returned to drafts by author", $user);
+      }
+      elsif ($reason)
+      {
+        $APP->addNodeNote($E2NODE, "Removed: $reason", $user);
+      }
+      else
+      {
+        $APP->addNodeNote($E2NODE, "Returned to drafts", $user);
+      }
+      return 1;
+    };
+    unless ($note_success)
+    {
+      return [$self->HTTP_INTERNAL_SERVER_ERROR, {
+        error => 'Failed to add nodenote',
+        message => "addNodeNote failed: $@"
+      }];
+    }
   }
 
   # Security log for editor removals
@@ -730,7 +742,188 @@ sub remove_cool
   }];
 }
 
-around ['insure_writeup', 'remove_writeup', 'remove_vote', 'remove_cool'] => \&Everything::API::unauthorized_if_guest;
+=head2 lock_user
+
+POST /api/admin/user/:id/lock
+
+Lock a user account. This prevents login and marks all their public messages for deletion.
+Admin (god) only.
+
+Response:
+{
+  "success": 1,
+  "message": "Account locked",
+  "user": { "node_id": 123, "title": "username" }
+}
+
+=cut
+
+sub lock_user
+{
+  my ($self, $REQUEST, $id) = @_;
+
+  my $user = $REQUEST->user;
+  my $APP = $self->APP;
+  my $DB = $self->DB;
+
+  # Only admins (gods) can lock accounts
+  unless ($user->is_admin)
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Admin access required',
+      message => 'Only administrators can lock user accounts'
+    }];
+  }
+
+  my $target = $APP->node_by_id(int($id));
+  unless ($target && $target->type->title eq 'user')
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'User not found',
+      message => "No user found with ID $id"
+    }];
+  }
+
+  my $TARGET = $target->NODEDATA;
+
+  # Check if already locked
+  if ($TARGET->{acctlock})
+  {
+    my $locker = $APP->node_by_id($TARGET->{acctlock});
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Already locked',
+      message => 'This account is already locked' . ($locker ? ' by ' . $locker->title : '')
+    }];
+  }
+
+  # Lock the account - set acctlock to the locking admin's user ID
+  $TARGET->{acctlock} = $user->node_id;
+  $DB->updateNode($TARGET, -1);
+
+  # Delete all public messages from locked user
+  $DB->sqlDelete('message', "for_user = 0 AND author_user = $TARGET->{user_id}");
+
+  # Revert all review drafts to 'findable' status
+  my $findable_status = $DB->getNode('findable', 'publication_status');
+  my $review_status = $DB->getNode('review', 'publication_status');
+  if ($findable_status && $review_status)
+  {
+    $DB->sqlUpdate(
+      'draft JOIN node ON draft_id=node_id',
+      { publication_status => $findable_status->{node_id} },
+      "node.author_user = $TARGET->{node_id} AND draft.publication_status = $review_status->{node_id}"
+    );
+  }
+
+  # Security log
+  $APP->securityLog(
+    $DB->getNode("lockaccount", "opcode"),
+    $user->NODEDATA,
+    $target->title . "'s account was locked by " . $user->title
+  );
+
+  return [$self->HTTP_OK, {
+    success => 1,
+    message => 'Account locked',
+    user => {
+      node_id => $target->node_id,
+      title => $target->title
+    },
+    locked_by => {
+      node_id => $user->node_id,
+      title => $user->title
+    }
+  }];
+}
+
+=head2 unlock_user
+
+POST /api/admin/user/:id/unlock
+
+Unlock a user account.
+Admin (god) only.
+
+Response:
+{
+  "success": 1,
+  "message": "Account unlocked",
+  "user": { "node_id": 123, "title": "username" }
+}
+
+=cut
+
+sub unlock_user
+{
+  my ($self, $REQUEST, $id) = @_;
+
+  my $user = $REQUEST->user;
+  my $APP = $self->APP;
+  my $DB = $self->DB;
+
+  # Only admins (gods) can unlock accounts
+  unless ($user->is_admin)
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Admin access required',
+      message => 'Only administrators can unlock user accounts'
+    }];
+  }
+
+  my $target = $APP->node_by_id(int($id));
+  unless ($target && $target->type->title eq 'user')
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'User not found',
+      message => "No user found with ID $id"
+    }];
+  }
+
+  my $TARGET = $target->NODEDATA;
+
+  # Check if not locked
+  unless ($TARGET->{acctlock})
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Not locked',
+      message => 'This account is not locked'
+    }];
+  }
+
+  # Get who locked it before we clear it
+  my $locker = $APP->node_by_id($TARGET->{acctlock});
+
+  # Unlock the account
+  $TARGET->{acctlock} = 0;
+  $DB->updateNode($TARGET, -1);
+
+  # Security log
+  $APP->securityLog(
+    $DB->getNode("unlockaccount", "opcode"),
+    $user->NODEDATA,
+    $target->title . "'s account was unlocked by " . $user->title
+  );
+
+  return [$self->HTTP_OK, {
+    success => 1,
+    message => 'Account unlocked',
+    user => {
+      node_id => $target->node_id,
+      title => $target->title
+    },
+    previously_locked_by => $locker ? {
+      node_id => $locker->node_id,
+      title => $locker->title
+    } : undef
+  }];
+}
+
+around ['insure_writeup', 'remove_writeup', 'remove_vote', 'remove_cool', 'lock_user', 'unlock_user'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 1;

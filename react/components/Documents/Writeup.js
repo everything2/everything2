@@ -80,7 +80,7 @@ const Writeup = ({ data }) => {
 
   if (!data) return <div>Loading...</div>
 
-  const { writeup, user, parent_e2node } = data
+  const { writeup, user, parent_e2node, existing_draft } = data
 
   // Use currentDoctext if set (after editing), otherwise use original
   const displayDoctext = currentDoctext !== null ? currentDoctext : writeup?.doctext
@@ -248,7 +248,8 @@ const Writeup = ({ data }) => {
           <InlineWriteupEditor
             e2nodeId={parent_e2node.node_id}
             e2nodeTitle={parent_e2node.title}
-            initialContent=""
+            initialContent={existing_draft?.doctext || ''}
+            draftId={existing_draft?.node_id || null}
             onPublish={(writeupId) => {
               // Redirect to the e2node to show all writeups
               window.location.href = `/title/${encodeURIComponent(parent_e2node.title)}`

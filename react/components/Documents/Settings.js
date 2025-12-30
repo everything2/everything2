@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { useEditor, EditorContent } from '@tiptap/react'
 import {
   DndContext,
   closestCenter,
@@ -16,9 +17,29 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import UserInteractionsManager from '../UserInteractions/UserInteractionsManager'
+import SettingsNavigation from '../SettingsNavigation'
+import { getE2EditorExtensions } from '../Editor/useE2Editor'
+import { convertToE2Syntax } from '../Editor/E2LinkExtension'
+import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
+import MenuBar from '../Editor/MenuBar'
+import PreviewContent from '../Editor/PreviewContent'
+import EditorModeToggle from '../Editor/EditorModeToggle'
+import LinkNode from '../LinkNode'
+import '../Editor/E2Editor.css'
 
 // Maximum length for macros (from legacy system)
 const MAX_MACRO_LENGTH = 768
+
+// Get initial editor mode from localStorage
+const getInitialEditorMode = () => {
+  try {
+    const stored = localStorage.getItem('e2_editor_mode')
+    if (stored === 'html') return 'html'
+  } catch (e) {
+    // localStorage may not be available
+  }
+  return 'rich'
+}
 
 /**
  * SortableNodeletItem - Draggable nodelet item component with remove button
@@ -102,9 +123,28 @@ function SortableNodeletItem({ id, title, onRemove, onConfigure }) {
 /**
  * Settings - Unified settings interface
  */
+// Get initial tab from URL hash
+const getInitialTab = (defaultTab) => {
+  if (typeof window !== 'undefined') {
+    const hash = window.location.hash.replace('#', '')
+    if (['settings', 'advanced', 'nodelets', 'admin', 'profile'].includes(hash)) {
+      return hash
+    }
+  }
+  return defaultTab || 'settings'
+}
+
 function Settings({ data }) {
-  const [activeTab, setActiveTab] = useState(data.defaultTab || 'settings')
+  const [activeTab, setActiveTab] = useState(() => getInitialTab(data.defaultTab))
   const [isDirty, setIsDirty] = useState(false)
+
+  // Update URL hash when tab changes (for bookmarkable tabs)
+  const handleTabChange = useCallback((tab) => {
+    setActiveTab(tab)
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `#${tab}`)
+    }
+  }, [])
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
   const [saveSuccess, setSaveSuccess] = useState(false)
@@ -143,6 +183,47 @@ function Settings({ data }) {
 
   // Macros state (Admin tab - editors only)
   const [macros, setMacros] = useState(data.macros || [])
+
+  // Profile tab state
+  const [profileData, setProfileData] = useState(() => ({
+    realname: data.profileData?.realname || '',
+    email: data.profileData?.email || '',
+    passwd: '',
+    doctext: data.profileData?.doctext || '',
+    mission: data.profileData?.mission || '',
+    specialties: data.profileData?.specialties || '',
+    employment: data.profileData?.employment || '',
+    motto: data.profileData?.motto || ''
+  }))
+  const [confirmPasswd, setConfirmPasswd] = useState('')
+  const [removeImage, setRemoveImage] = useState(false)
+  const [selectedBookmarks, setSelectedBookmarks] = useState(new Set())
+  const [previewTrigger, setPreviewTrigger] = useState(0)
+
+  // Editor mode state - uses localStorage for persistence
+  const [editorMode, setEditorMode] = useState(getInitialEditorMode)
+  const [htmlContent, setHtmlContent] = useState(data.profileData?.doctext || '')
+
+  // Check if passwords match (both empty counts as matching)
+  const passwordsMatch = profileData.passwd === confirmPasswd
+  const hasPasswordInput = profileData.passwd.length > 0 || confirmPasswd.length > 0
+
+  // Initialize TipTap editor for bio
+  const bioEditor = useEditor({
+    extensions: getE2EditorExtensions(),
+    content: '',
+    onUpdate: () => {
+      setPreviewTrigger(prev => prev + 1)
+    }
+  })
+
+  // Set editor content when it's ready
+  useEffect(() => {
+    if (bioEditor && data.profileData?.doctext) {
+      const withBrackets = convertEntitiesToRawBrackets(data.profileData.doctext)
+      bioEditor.commands.setContent(withBrackets)
+    }
+  }, [bioEditor, data.profileData?.doctext])
 
   // Drag-and-drop sensors
   const sensors = useSensors(
@@ -191,8 +272,23 @@ function Settings({ data }) {
     // Check if macros changed (admin tab)
     const macrosChanged = JSON.stringify(macros) !== JSON.stringify(data.macros || [])
 
-    setIsDirty(prefsChanged || advancedPrefsChanged || nodeletsChanged || notifsChanged || nodeletSettingsChanged || editorPrefsChanged || macrosChanged)
-  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros])
+    // Check if profile changed (profile tab)
+    const originalProfile = {
+      realname: data.profileData?.realname || '',
+      email: data.profileData?.email || '',
+      passwd: '',
+      doctext: data.profileData?.doctext || '',
+      mission: data.profileData?.mission || '',
+      specialties: data.profileData?.specialties || '',
+      employment: data.profileData?.employment || '',
+      motto: data.profileData?.motto || ''
+    }
+    const profileChanged = JSON.stringify(profileData) !== JSON.stringify(originalProfile) ||
+      removeImage ||
+      selectedBookmarks.size > 0
+
+    setIsDirty(prefsChanged || advancedPrefsChanged || nodeletsChanged || notifsChanged || nodeletSettingsChanged || editorPrefsChanged || macrosChanged || profileChanged)
+  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, profileData, removeImage, selectedBookmarks, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros, data.profileData])
 
   // Handle preference toggle (for checkboxes)
   const handleTogglePref = useCallback((prefKey) => {
@@ -247,6 +343,77 @@ function Settings({ data }) {
       m.name === macroName ? { ...m, text: newText } : m
     ))
   }, [])
+
+  // Profile tab handlers
+  const handleProfileInputChange = useCallback((e) => {
+    const { name, value } = e.target
+    setProfileData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }, [])
+
+  const handleHtmlChange = useCallback((e) => {
+    setHtmlContent(e.target.value)
+    setPreviewTrigger(prev => prev + 1)
+  }, [])
+
+  const toggleEditorMode = useCallback(() => {
+    const newMode = editorMode === 'rich' ? 'html' : 'rich'
+
+    if (editorMode === 'rich' && bioEditor) {
+      // Switching to HTML mode - capture current rich content
+      const html = bioEditor.getHTML()
+      const withEntities = convertRawBracketsToEntities(html)
+      setHtmlContent(convertToE2Syntax(withEntities))
+    } else if (editorMode === 'html' && bioEditor) {
+      // Switching to rich mode - load HTML content into editor
+      const withBrackets = convertEntitiesToRawBrackets(htmlContent)
+      bioEditor.commands.setContent(withBrackets)
+    }
+
+    setEditorMode(newMode)
+
+    // Save preference to localStorage
+    try {
+      localStorage.setItem('e2_editor_mode', newMode)
+    } catch (e) {
+      // localStorage may not be available
+    }
+  }, [bioEditor, editorMode, htmlContent])
+
+  const getCurrentBioContent = useCallback(() => {
+    if (editorMode === 'html') {
+      return htmlContent
+    }
+    if (bioEditor) {
+      const html = bioEditor.getHTML()
+      const withEntities = convertRawBracketsToEntities(html)
+      return convertToE2Syntax(withEntities)
+    }
+    return ''
+  }, [bioEditor, editorMode, htmlContent])
+
+  const handleBookmarkToggle = useCallback((nodeId) => {
+    setSelectedBookmarks(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId)
+      } else {
+        newSet.add(nodeId)
+      }
+      return newSet
+    })
+  }, [])
+
+  const handleCheckAllBookmarks = useCallback(() => {
+    const bookmarks = data.bookmarks || []
+    if (selectedBookmarks.size === bookmarks.length) {
+      setSelectedBookmarks(new Set())
+    } else {
+      setSelectedBookmarks(new Set(bookmarks.map(b => b.node_id)))
+    }
+  }, [data.bookmarks, selectedBookmarks.size])
 
   // Handle drag end for nodelets
   const handleDragEnd = useCallback((event) => {
@@ -445,6 +612,72 @@ function Settings({ data }) {
         }
       }
 
+      // Save profile data if changed (profile tab)
+      const originalProfile = {
+        realname: data.profileData?.realname || '',
+        email: data.profileData?.email || '',
+        passwd: '',
+        doctext: data.profileData?.doctext || '',
+        mission: data.profileData?.mission || '',
+        specialties: data.profileData?.specialties || '',
+        employment: data.profileData?.employment || '',
+        motto: data.profileData?.motto || ''
+      }
+
+      const profileChanged = JSON.stringify(profileData) !== JSON.stringify(originalProfile) ||
+        removeImage ||
+        selectedBookmarks.size > 0
+
+      if (profileChanged) {
+        // Validation: passwords must match if password is being changed
+        if (hasPasswordInput && !passwordsMatch) {
+          throw new Error('Passwords do not match')
+        }
+
+        const profilePayload = {
+          user_id: data.currentUser?.node_id,
+          realname: profileData.realname,
+          email: profileData.email,
+          user_doctext: getCurrentBioContent(),
+          mission: profileData.mission,
+          specialties: profileData.specialties,
+          employment: profileData.employment,
+          motto: profileData.motto
+        }
+
+        // Only include password if it's being changed
+        if (profileData.passwd) {
+          profilePayload.passwd = profileData.passwd
+        }
+
+        // Include image removal flag
+        if (removeImage) {
+          profilePayload.remove_imgsrc = true
+        }
+
+        // Include bookmarks to remove
+        if (selectedBookmarks.size > 0) {
+          profilePayload.remove_bookmarks = Array.from(selectedBookmarks)
+        }
+
+        const profileResponse = await fetch('/api/user/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(profilePayload)
+        })
+
+        const profileResult = await profileResponse.json()
+        if (!profileResult.success) {
+          throw new Error(profileResult.error || 'Failed to save profile')
+        }
+
+        // Reset password fields after successful save
+        setProfileData(prev => ({ ...prev, passwd: '' }))
+        setConfirmPasswd('')
+        setRemoveImage(false)
+        setSelectedBookmarks(new Set())
+      }
+
       setSaveSuccess(true)
       setIsDirty(false)
 
@@ -455,7 +688,7 @@ function Settings({ data }) {
     } finally {
       setIsSaving(false)
     }
-  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros])
+  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, profileData, removeImage, selectedBookmarks, hasPasswordInput, passwordsMatch, getCurrentBioContent, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros, data.profileData, data.currentUser])
 
   // Warn about unsaved changes
   useEffect(() => {
@@ -526,92 +759,13 @@ function Settings({ data }) {
         )}
       </div>
 
-      {/* Tab navigation */}
-      <div style={{
-        borderBottom: '1px solid #ddd',
-        marginBottom: '20px',
-        display: 'flex',
-        gap: '20px',
-        alignItems: 'center'
-      }}>
-        <button
-          onClick={() => setActiveTab('settings')}
-          style={{
-            padding: '10px 16px',
-            border: 'none',
-            borderBottom: activeTab === 'settings' ? '2px solid #4060b0' : '2px solid transparent',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'settings' ? 'bold' : 'normal',
-            color: activeTab === 'settings' ? '#4060b0' : '#38495e'
-          }}
-        >
-          Settings
-        </button>
-        <button
-          onClick={() => setActiveTab('advanced')}
-          style={{
-            padding: '10px 16px',
-            border: 'none',
-            borderBottom: activeTab === 'advanced' ? '2px solid #4060b0' : '2px solid transparent',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'advanced' ? 'bold' : 'normal',
-            color: activeTab === 'advanced' ? '#4060b0' : '#38495e'
-          }}
-        >
-          Advanced
-        </button>
-        <button
-          onClick={() => setActiveTab('nodelets')}
-          style={{
-            padding: '10px 16px',
-            border: 'none',
-            borderBottom: activeTab === 'nodelets' ? '2px solid #4060b0' : '2px solid transparent',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'nodelets' ? 'bold' : 'normal',
-            color: activeTab === 'nodelets' ? '#4060b0' : '#38495e'
-          }}
-        >
-          Nodelets
-        </button>
-        {Boolean(data.isEditor) && (
-          <button
-            onClick={() => setActiveTab('admin')}
-            style={{
-              padding: '10px 16px',
-              border: 'none',
-              borderBottom: activeTab === 'admin' ? '2px solid #4060b0' : '2px solid transparent',
-              background: 'none',
-              cursor: 'pointer',
-              fontWeight: activeTab === 'admin' ? 'bold' : 'normal',
-              color: activeTab === 'admin' ? '#4060b0' : '#38495e'
-            }}
-          >
-            Admin
-          </button>
-        )}
-
-        {/* Spacer to push Profile link to the right */}
-        <div style={{ flex: 1 }} />
-
-        {/* Profile link */}
-        {data.currentUser && (
-          <a
-            href={`/node/${data.currentUser.node_id}?displaytype=edit`}
-            style={{
-              padding: '10px 16px',
-              color: '#4060b0',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            Profile
-          </a>
-        )}
-      </div>
+      {/* Tab navigation - shared component */}
+      <SettingsNavigation
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        username={data.currentUser?.title}
+        showAdminTab={Boolean(data.isEditor)}
+      />
 
       {/* Settings tab - Tab 1 from legacy settings function */}
       {activeTab === 'settings' && (
@@ -1521,6 +1675,358 @@ function Settings({ data }) {
               <a href="/title/macro%20FAQ" style={{ color: '#4060b0', textDecoration: 'none' }}>macro FAQ</a>.
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Edit Profile tab */}
+      {activeTab === 'profile' && (
+        <div>
+          {/* Password mismatch warning */}
+          {hasPasswordInput && !passwordsMatch && (
+            <div style={{
+              marginBottom: '20px',
+              padding: '12px',
+              backgroundColor: '#fff3cd',
+              border: '1px solid #ffc107',
+              borderRadius: '4px',
+              color: '#856404'
+            }}>
+              Passwords do not match - please correct before saving
+            </div>
+          )}
+
+          {/* Account Settings Section */}
+          <h2 style={{ marginBottom: '16px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+            Account Settings
+          </h2>
+
+          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
+            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Credentials</legend>
+
+            {/* Real name */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                Real Name
+              </label>
+              <input
+                type="text"
+                name="realname"
+                value={profileData.realname}
+                onChange={handleProfileInputChange}
+                style={{
+                  width: '300px',
+                  padding: '8px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  fontSize: '14px'
+                }}
+              />
+              {data.profileData?.realname && (
+                <div style={{ marginTop: '4px', fontSize: '13px', color: '#507898' }}>
+                  Currently: {data.profileData.realname}
+                </div>
+              )}
+            </div>
+
+            {/* Password */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                Change Password
+              </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input
+                  type="password"
+                  name="passwd"
+                  value={profileData.passwd}
+                  onChange={handleProfileInputChange}
+                  placeholder="Leave blank to keep current"
+                  style={{
+                    width: '300px',
+                    padding: '8px 12px',
+                    border: `1px solid ${hasPasswordInput ? (passwordsMatch ? '#3bb5c3' : '#d9534f') : '#ddd'}`,
+                    borderRadius: '4px',
+                    fontSize: '14px'
+                  }}
+                />
+                {hasPasswordInput && (
+                  <span style={{ color: passwordsMatch ? '#3bb5c3' : '#d9534f', fontSize: '18px' }}>
+                    {passwordsMatch ? '✓' : '✗'}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                Confirm Password
+              </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input
+                  type="password"
+                  value={confirmPasswd}
+                  onChange={(e) => setConfirmPasswd(e.target.value)}
+                  placeholder="Re-enter new password"
+                  style={{
+                    width: '300px',
+                    padding: '8px 12px',
+                    border: `1px solid ${hasPasswordInput ? (passwordsMatch ? '#3bb5c3' : '#d9534f') : '#ddd'}`,
+                    borderRadius: '4px',
+                    fontSize: '14px'
+                  }}
+                />
+                {hasPasswordInput && (
+                  <span style={{ color: passwordsMatch ? '#3bb5c3' : '#d9534f', fontSize: '18px' }}>
+                    {passwordsMatch ? '✓' : '✗'}
+                  </span>
+                )}
+              </div>
+              {hasPasswordInput && !passwordsMatch && (
+                <div style={{ marginTop: '4px', fontSize: '13px', color: '#d9534f' }}>
+                  Passwords do not match
+                </div>
+              )}
+            </div>
+
+            {/* Email */}
+            <div>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={profileData.email}
+                onChange={handleProfileInputChange}
+                style={{
+                  width: '300px',
+                  padding: '8px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  fontSize: '14px'
+                }}
+              />
+              {data.profileData?.email && (
+                <div style={{ marginTop: '4px', fontSize: '13px', color: '#507898' }}>
+                  Currently: {data.profileData.email}
+                </div>
+              )}
+            </div>
+          </fieldset>
+
+          {/* User image section */}
+          {data.profileData?.imgsrc && (
+            <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
+              <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Profile Image</legend>
+              <img
+                src={`/${data.profileData.imgsrc}`}
+                alt={`${data.currentUser?.title}'s image`}
+                style={{ maxWidth: '200px', maxHeight: '200px', display: 'block', marginBottom: '12px', borderRadius: '4px' }}
+              />
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={removeImage}
+                  onChange={(e) => setRemoveImage(e.target.checked)}
+                />
+                <strong>Remove image</strong>
+              </label>
+            </fieldset>
+          )}
+
+          {/* Profile Information Section */}
+          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+            Profile Information
+          </h2>
+
+          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
+            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>About You</legend>
+
+            {/* Mission drive */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                Mission drive within everything
+              </label>
+              <input
+                type="text"
+                name="mission"
+                value={profileData.mission}
+                onChange={handleProfileInputChange}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  fontSize: '14px'
+                }}
+              />
+            </div>
+
+            {/* Specialties */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                Specialties
+              </label>
+              <input
+                type="text"
+                name="specialties"
+                value={profileData.specialties}
+                onChange={handleProfileInputChange}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  fontSize: '14px'
+                }}
+              />
+            </div>
+
+            {/* School/Company */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                School/Company
+              </label>
+              <input
+                type="text"
+                name="employment"
+                value={profileData.employment}
+                onChange={handleProfileInputChange}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  fontSize: '14px'
+                }}
+              />
+            </div>
+
+            {/* Motto */}
+            <div>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+                Motto
+              </label>
+              <input
+                type="text"
+                name="motto"
+                value={profileData.motto}
+                onChange={handleProfileInputChange}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  fontSize: '14px'
+                }}
+              />
+            </div>
+          </fieldset>
+
+          {/* Bookmarks section */}
+          {data.bookmarks && data.bookmarks.length > 0 && (
+            <>
+              <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+                Bookmarks
+              </h2>
+
+              <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
+                <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Manage Bookmarks</legend>
+                <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+                  Select bookmarks to remove from your list.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleCheckAllBookmarks}
+                  style={{
+                    marginBottom: '12px',
+                    padding: '6px 12px',
+                    border: '1px solid #4060b0',
+                    borderRadius: '4px',
+                    backgroundColor: 'white',
+                    color: '#4060b0',
+                    cursor: 'pointer',
+                    fontSize: '13px'
+                  }}
+                >
+                  {selectedBookmarks.size === data.bookmarks.length ? 'Uncheck All' : 'Check All'}
+                </button>
+                <div style={{ maxHeight: '300px', overflow: 'auto', border: '1px solid #eee', borderRadius: '4px', padding: '8px' }}>
+                  {data.bookmarks.map((bookmark) => (
+                    <label key={bookmark.node_id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedBookmarks.has(bookmark.node_id)}
+                        onChange={() => handleBookmarkToggle(bookmark.node_id)}
+                      />
+                      <LinkNode nodeId={bookmark.node_id} title={bookmark.title} />
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </>
+          )}
+
+          {/* User bio with TipTap editor */}
+          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+            Bio
+          </h2>
+
+          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
+            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Your Bio</legend>
+            <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+              Write about yourself. This will appear on your homenode for other users to see.
+            </p>
+
+            {/* Rich/HTML mode toggle - using shared component */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+              <EditorModeToggle mode={editorMode} onToggle={toggleEditorMode} />
+            </div>
+
+            {/* Editor */}
+            {editorMode === 'rich' ? (
+              <div className="e2-editor-container" style={{ border: '1px solid #ddd', borderRadius: '4px' }}>
+                <MenuBar editor={bioEditor} />
+                <EditorContent
+                  editor={bioEditor}
+                  className="e2-editor-content"
+                  style={{
+                    minHeight: '200px',
+                    padding: '10px',
+                    backgroundColor: '#fff'
+                  }}
+                />
+              </div>
+            ) : (
+              <textarea
+                value={htmlContent}
+                onChange={handleHtmlChange}
+                rows={15}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  fontFamily: 'monospace',
+                  fontSize: '13px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  resize: 'vertical'
+                }}
+              />
+            )}
+
+            {/* Live Preview */}
+            <div style={{ marginTop: '16px' }}>
+              <p style={{ fontSize: '13px', color: '#507898', marginBottom: '8px' }}>
+                <strong>Preview:</strong>
+              </p>
+              <PreviewContent
+                editor={bioEditor}
+                editorMode={editorMode}
+                htmlContent={htmlContent}
+                previewTrigger={previewTrigger}
+              />
+            </div>
+          </fieldset>
         </div>
       )}
     </div>

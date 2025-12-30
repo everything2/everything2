@@ -8,12 +8,15 @@ import LinkNode from '../LinkNode'
  * Sends automated thank-you message from Webster 1913
  */
 const Websterbless = ({ data }) => {
-  const { error, msg_count, webster_id, results: initialResults = [] } = data
+  const { error, msg_count, webster_id, results: initialResults = [], prefill_username = '' } = data
 
   const [rows, setRows] = useState(
     Array(5)
       .fill(null)
-      .map(() => ({ username: '', writeup: '' }))
+      .map((_, index) => ({
+        username: index === 0 ? prefill_username : '',
+        writeup: ''
+      }))
   )
   const [results, setResults] = useState(initialResults)
   const [loading, setLoading] = useState(false)

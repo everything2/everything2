@@ -11,19 +11,31 @@ Context for AI assistants working on the Everything2 codebase.
 
 **CRITICAL**: curl cannot render React components - it only shows server-generated HTML. Since E2 renders pages client-side with React, curl will NOT show the actual UI that users see.
 
-**Always use `browser-debug.js` for testing HTML output**:
+**Always use `browser-debug.js` for testing**:
 ```bash
-# For guest (unauthenticated) users
+# HTML/Page testing (renders React components)
 node tools/browser-debug.js html guest 'http://localhost:9080/node/good%20poetry'
-
-# For authenticated users
 node tools/browser-debug.js html e2e_admin 'http://localhost:9080/title/Superbless'
 node tools/browser-debug.js fetch e2e_user 'http://localhost:9080/title/Settings'
+
+# API testing (POST/PUT/DELETE JSON endpoints)
+node tools/browser-debug.js post e2e_admin 'http://localhost:9080/api/drafts' '{"title":"Test"}'
+node tools/browser-debug.js put e2e_admin 'http://localhost:9080/api/drafts/123' '{"title":"Updated"}'
+node tools/browser-debug.js delete e2e_admin 'http://localhost:9080/api/userinteractions/123/action/delete'
+
+# Screenshots
+node tools/browser-debug.js screenshot 'http://localhost:9080'
+node tools/browser-debug.js screenshot-as e2e_admin 'http://localhost:9080/title/Settings'
+
+# Other commands
+node tools/browser-debug.js eval guest 'http://localhost:9080' 'return window.e2'
+node tools/browser-debug.js a11y guest 'http://localhost:9080/title/tomato'
+node tools/browser-debug.js readability guest 'http://localhost:9080/node/2212929'
 ```
 
 **curl is ONLY acceptable for**:
 - Liveness checks (is Apache responding?)
-- API endpoint testing (JSON responses)
+- Direct API endpoint testing when browser context is not needed
 
 **Test users**: root (gods, pw:blah), genericdev (edev, pw:blah), e2e_admin (gods, pw:test123), e2e_user (pw:test123)
 

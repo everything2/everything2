@@ -8,7 +8,7 @@
 BLOCKED_IP="$1"
 LOG_GROUP="/aws/e2/rate-limit-blocks"
 LOG_STREAM="rate-limit-blocks"
-REGION="${AWS_DEFAULT_REGION:-us-east-1}"
+REGION="${AWS_DEFAULT_REGION:-us-west-2}"
 TIMESTAMP=$(date +%s%3N)
 
 # Exit if no IP provided

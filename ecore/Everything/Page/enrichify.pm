@@ -20,6 +20,9 @@ sub buildReactData
     my $APP = $self->APP;
     my $user = $REQUEST->user;
 
+    # Get prefill_username from URL parameter (for user tools modal integration)
+    my $prefill_username = $REQUEST->param('prefill_username') || '';
+
     return {
         type => 'admin_bestow_tool',
         title => 'Enrichify',
@@ -34,7 +37,8 @@ sub buildReactData
         api_endpoint => '/api/superbless/grant_gp',
         button_text => 'Enrichify',
         button_text_loading => 'Enrichifying...',
-        note_text => 'All GP grants are logged. Karma is adjusted based on the direction of the grant.'
+        note_text => 'All GP grants are logged. Karma is adjusted based on the direction of the grant.',
+        prefill_username => $prefill_username
     };
 }
 

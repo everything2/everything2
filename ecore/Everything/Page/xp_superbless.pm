@@ -21,6 +21,9 @@ sub buildReactData
     my $APP = $self->APP;
     my $user = $REQUEST->user;
 
+    # Get prefill_username from URL parameter (for user tools modal integration)
+    my $prefill_username = $REQUEST->param('prefill_username') || '';
+
     return {
         type => 'admin_bestow_tool',
         title => 'XP Superbless (Archived)',
@@ -35,7 +38,8 @@ sub buildReactData
         api_endpoint => '/api/superbless/grant_xp',
         button_text => 'Grant XP',
         button_text_loading => 'Granting XP...',
-        note_text => 'All XP grants are logged and audited. Use [Superbless] for normal GP blessings.'
+        note_text => 'All XP grants are logged and audited. Use [Superbless] for normal GP blessings.',
+        prefill_username => $prefill_username
     };
 }
 

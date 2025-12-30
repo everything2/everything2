@@ -31,6 +31,9 @@ sub buildReactData {
 
     my $is_chanop = $APP->isChanop($USER) ? 1 : 0;
 
+    # Get borguser parameter to pre-fill the username field
+    my $borguser = $REQUEST->param('borguser') || '';
+
     # Get all rooms for the dropdown
     my $room_type = $DB->getNode('room', 'nodetype');
     my @rooms = ();
@@ -64,7 +67,8 @@ sub buildReactData {
         type => 'e2_bouncer',
         is_chanop => $is_chanop,
         rooms => \@rooms,
-        quip => $quips[int(rand(@quips))]
+        quip => $quips[int(rand(@quips))],
+        prefill_user => $borguser
     };
 }
 

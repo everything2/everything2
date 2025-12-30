@@ -1,0 +1,600 @@
+/**
+ * User Tools Modal Styles
+ *
+ * Provides styling for the user management modal with:
+ * - Left-side menu for tool selection
+ * - Right panel for tool-specific content
+ * - Responsive layout
+ */
+
+/* Modal overlay */
+.user-tools-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal content */
+.user-tools-modal {
+  background: white;
+  border-radius: 8px;
+  max-width: 800px;
+  width: 90%;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Container inside modal - enables proper flex layout */
+.user-tools-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 85vh;
+  overflow: hidden;
+}
+
+/* Header */
+.user-tools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  background: #f5f5f5;
+}
+
+.user-tools-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-tools-modal .close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.user-tools-modal .close-button:hover {
+  color: #000;
+}
+
+/* User info bar */
+.user-tools-user-info {
+  padding: 0.75rem 1.5rem;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.9rem;
+}
+
+/* Content area with menu and panel */
+.user-tools-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Left menu */
+.user-tools-menu {
+  width: 180px;
+  min-width: 180px;
+  background: #f5f5f5;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  flex-shrink: 0;
+}
+
+.user-tools-menu .menu-item {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.user-tools-menu .menu-item:hover {
+  background-color: #e0e0e0;
+}
+
+.user-tools-menu .menu-item.active {
+  background-color: #fff;
+  font-weight: bold;
+  border-left: 3px solid #4060b0;
+  color: #4060b0;
+}
+
+/* Right panel */
+.user-tools-panel {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.user-tools-panel h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+/* Info list (definition list) */
+.user-info-panel .info-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+}
+
+.user-info-panel .info-list dt {
+  font-weight: 500;
+  color: #555;
+}
+
+.user-info-panel .info-list dd {
+  margin: 0;
+}
+
+.user-info-panel .info-list code {
+  background: #f0f0f0;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.user-info-panel .info-list code.user-agent {
+  display: block;
+  max-width: 400px;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  font-size: 0.85em;
+}
+
+/* Status badges */
+.user-info-panel .status-active {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.user-info-panel .status-locked {
+  color: #dc3545;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.user-info-panel .status-infected {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Moderation panel */
+.moderation-panel .action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.moderation-panel .action-item {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #4060b0;
+}
+
+.moderation-panel .action-item h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.moderation-panel .action-item p {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.moderation-panel .action-button {
+  display: inline-block;
+  background-color: #4060b0;
+  color: white !important;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.moderation-panel .action-button:hover {
+  background-color: #38495e;
+  text-decoration: none;
+}
+
+.moderation-panel .action-button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.moderation-panel .action-button.lock-button {
+  background-color: #dc3545;
+}
+
+.moderation-panel .action-button.lock-button:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.moderation-panel .action-button.unlock-button {
+  background-color: #28a745;
+}
+
+.moderation-panel .action-button.unlock-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.moderation-panel .action-error {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #fff5f5;
+  border-radius: 4px;
+}
+
+.moderation-panel .action-success {
+  color: #28a745;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #f5fff5;
+  border-radius: 4px;
+}
+
+/* Account Lock Panel - Dedicated panel for account lock/unlock */
+.account-lock-panel h3 {
+  color: #dc3545;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.account-lock-panel .panel-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.account-lock-panel .lock-action-box {
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid;
+}
+
+.account-lock-panel .lock-action-box.locked {
+  background: #fff5f5;
+  border-color: #dc3545;
+}
+
+.account-lock-panel .lock-action-box.unlocked {
+  background: #f8f9fa;
+  border-color: #28a745;
+}
+
+.account-lock-panel .lock-status-warning,
+.account-lock-panel .lock-status-info {
+  margin-bottom: 1rem;
+}
+
+.account-lock-panel .lock-icon {
+  font-size: 1.5rem;
+  color: #dc3545;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.account-lock-panel .lock-icon.unlocked {
+  color: #28a745;
+}
+
+.account-lock-panel .lock-status-warning strong {
+  color: #dc3545;
+  font-size: 1.1rem;
+}
+
+.account-lock-panel .lock-status-info strong {
+  color: #28a745;
+  font-size: 1.1rem;
+}
+
+.account-lock-panel .lock-status-warning p,
+.account-lock-panel .lock-status-info p {
+  margin: 0.5rem 0 0 0;
+  color: #666;
+}
+
+.account-lock-panel .action-error {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #fff5f5;
+  border-radius: 4px;
+}
+
+.account-lock-panel .action-success {
+  color: #28a745;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #f5fff5;
+  border-radius: 4px;
+}
+
+.account-lock-panel .lock-action-button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+}
+
+.account-lock-panel .lock-action-button.lock-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.account-lock-panel .lock-action-button.lock-button:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.account-lock-panel .lock-action-button.unlock-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.account-lock-panel .lock-action-button.unlock-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.account-lock-panel .lock-action-button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+/* Smite Spammer section */
+.account-lock-panel .smite-spammer-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.account-lock-panel .smite-spammer-section h4 {
+  color: #dc3545;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.account-lock-panel .smite-spammer-section p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+}
+
+.account-lock-panel .smite-spammer-section .action-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.account-lock-panel .smite-spammer-section .action-button.danger {
+  background-color: #dc3545;
+  color: white !important;
+  border: none;
+}
+
+.account-lock-panel .smite-spammer-section .action-button.danger:hover {
+  background-color: #c82333;
+  text-decoration: none;
+}
+
+/* Bestow Panel */
+.bestow-panel h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #4060b0;
+}
+
+.bestow-panel .panel-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.bestow-panel .bestow-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bestow-panel .bestow-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #4060b0;
+}
+
+.bestow-panel .bestow-item.danger {
+  border-left-color: #dc3545;
+  background: #fff8f8;
+}
+
+.bestow-panel .bestow-item.archived {
+  border-left-color: #999;
+  background: #f5f5f5;
+  opacity: 0.8;
+}
+
+.bestow-panel .bestow-info {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.bestow-panel .bestow-info h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.bestow-panel .bestow-item.danger .bestow-info h4 {
+  color: #dc3545;
+}
+
+.bestow-panel .bestow-item.archived .bestow-info h4 {
+  color: #666;
+}
+
+.bestow-panel .bestow-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.bestow-panel .action-button {
+  display: inline-block;
+  background-color: #4060b0;
+  color: white !important;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.bestow-panel .action-button:hover {
+  background-color: #38495e;
+  text-decoration: none;
+}
+
+.bestow-panel .action-button.danger {
+  background-color: #dc3545;
+}
+
+.bestow-panel .action-button.danger:hover {
+  background-color: #c82333;
+}
+
+.bestow-panel .bestow-note {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+/* User tools trigger button (icon next to message envelope) */
+.user-tools-trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4060b0;
+  font-size: 1.2rem;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.user-tools-trigger:hover {
+  color: #38495e;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .user-tools-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .user-tools-content {
+    flex-direction: column;
+  }
+
+  .user-tools-menu {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0.5rem;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .user-tools-menu .menu-item {
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+  }
+
+  .user-tools-menu .menu-item.active {
+    border-left: none;
+    border-bottom: 3px solid #4060b0;
+  }
+
+  .user-tools-panel {
+    padding: 1rem;
+  }
+
+  .user-info-panel .info-list {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .user-info-panel .info-list dt {
+    margin-top: 0.75rem;
+  }
+}

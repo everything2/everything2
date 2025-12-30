@@ -171,19 +171,10 @@ describe('InlineWriteupEditor', () => {
   })
 
   describe('buttons', () => {
-    it('has Done button', () => {
-      render(<InlineWriteupEditor {...defaultProps} />)
+    it('has Save button for drafts', () => {
+      render(<InlineWriteupEditor {...defaultProps} draftId={456} />)
 
-      expect(screen.getByRole('button', { name: 'Done' })).toBeInTheDocument()
-    })
-
-    it('calls onSave with current content when Done clicked', () => {
-      render(<InlineWriteupEditor {...defaultProps} initialContent="<p>Test content</p>" />)
-
-      fireEvent.click(screen.getByRole('button', { name: 'Done' }))
-
-      // Done button passes the current editor content to onSave so parent can update display
-      expect(defaultProps.onSave).toHaveBeenCalledWith(expect.stringContaining('Test content'))
+      expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
     })
 
     it('has Publish button for new writeups', () => {
@@ -208,6 +199,45 @@ describe('InlineWriteupEditor', () => {
       render(<InlineWriteupEditor {...defaultProps} writeupId={789} />)
 
       expect(screen.queryByRole('button', { name: 'Publish' })).not.toBeInTheDocument()
+    })
+
+    it('has Delete Draft button when draft exists', () => {
+      render(<InlineWriteupEditor {...defaultProps} draftId={456} />)
+
+      expect(screen.getByRole('button', { name: 'Delete Draft' })).toBeInTheDocument()
+    })
+
+    it('does not show Delete Draft button without draft', () => {
+      render(<InlineWriteupEditor {...defaultProps} />)
+
+      expect(screen.queryByRole('button', { name: 'Delete Draft' })).not.toBeInTheDocument()
+    })
+
+    it('does not show Delete Draft button for existing writeups', () => {
+      render(<InlineWriteupEditor {...defaultProps} writeupId={789} />)
+
+      expect(screen.queryByRole('button', { name: 'Delete Draft' })).not.toBeInTheDocument()
+    })
+
+    it('shows confirmation modal when Delete Draft is clicked', () => {
+      render(<InlineWriteupEditor {...defaultProps} draftId={456} />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete Draft' }))
+
+      expect(screen.getByText('Delete Draft?')).toBeInTheDocument()
+      expect(screen.getByText(/Are you sure you want to delete this draft/)).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument()
+    })
+
+    it('closes confirmation modal when Cancel is clicked', () => {
+      render(<InlineWriteupEditor {...defaultProps} draftId={456} />)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete Draft' }))
+      expect(screen.getByText('Delete Draft?')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+      expect(screen.queryByText('Delete Draft?')).not.toBeInTheDocument()
     })
   })
 

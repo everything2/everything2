@@ -143,9 +143,10 @@ Include mods-enabled/*.conf
 <% end %>
 </IfModule>
 
-# mod_evasive rate limiting configuration
+# mod_evasive rate limiting configuration (production only)
 # Protects against DoS attacks and aggressive scrapers
-# Configured to match WAF rate limits: 400 requests per 5 minutes (~1.3/sec)
+# Disabled in development to avoid rate limiting during testing
+<IfDefine E2_PRODUCTION>
 <IfModule mod_evasive20.c>
 	# Hash table size for tracking IPs (larger = more memory, better performance)
 	DOSHashTableSize 3097
@@ -177,6 +178,7 @@ Include mods-enabled/*.conf
 	DOSWhitelist 172.16.*.*
 	DOSWhitelist 192.168.*.*
 </IfModule>
+</IfDefine>
 
 LogLevel warn
 LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
