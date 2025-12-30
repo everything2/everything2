@@ -1,23 +1,6 @@
 // 1874924.js "default javascript"
 // Used on every pageload
 
-// This function finds the message box and adds in a the chatterbox shortcut
-// to send a private message. It is only used in the chatterbox variants 
-function replyToCB(s, onlineonly) {
-        var mbox = jQuery('#message')[0] ;
-        mbox.value = ( onlineonly ? '/msg? ' : '/msg ' ) + s + " ";
-        // move the cursor to the end of the text box
-        if (mbox.createTextRange) { // IE
-                var r = mbox.createTextRange();
-                r.moveStart('character', mbox.value.length);
-                r.select();
-        } else { // other, in particular webkit
-                mbox.focus();
-                if (mbox.setSelectionRange)
-                        mbox.setSelectionRange(mbox.value.length, mbox.value.length);
-        }
-}
-
 // jQuery BBQ deparam shim
     function e2URL (url) {
       this.url = url;
@@ -1709,36 +1692,6 @@ $("#messagebox").submit(function(event){
   });
 });
 
-/* [My Chatterlight] / 1983409 */
-
-function InDebugMode(){
-   return window.location.href.indexOf("debug")>0;
-}
-
-// General vars
-var contentRefreshInterval = null;
-var statusId = 0;
-
-
-// REMOVED: Legacy chatterbox code (former lines 1711-2109, ~400 lines)
-// All chatterbox pages (chatterlight, chatterlight_classic, chatterlighter) are now React.
-// The legacy jQuery-based chatterbox polling, message parsing, and rendering code
-// is no longer used and has been removed.
-//
-// Removed functions:
-// - RefreshMessageInbox(), ParseMessageInbox()
-// - RefreshChatterbox(), ParseChatterbox(), ParsePublicMessage()
-// - ResizeChatArea(), UpdateChatter(), Talk()
-// - Reply(), GetMsgUsername(), ParseMsgText()
-// - ShowNotification(), GetUserUrl(), GetUserLink()
-//
-// See React components:
-// - react/components/Documents/Chatterlight.js (fullpage chat)
-// - react/components/Nodelets/Chatterbox.js (chatterbox nodelet)
-// - react/components/Nodelets/Messages.js (messages nodelet)
-// - react/components/Nodelets/OtherUsers.js (other users nodelet)
-
-
 function EncodeHtml(t){  
   return $('<div/>').text(t).html();  
 }  
@@ -1754,28 +1707,6 @@ function SwapGravatars(){
       $(this).attr('src', $(this).attr('src').replace('?d=monsterid&', '?d='+g+'&'));
       $(this).attr('src', $(this).attr('src').replace('?d=wavatar&', '?d='+g+'&'));
    });
-}
-
-/* end [My Chatterlight] / 1983409 */
-
-/* [Message Inbox 2] / 1798778 */
-
-function replyTo(s, c) {
-       if (c || document.message_inbox_form.setvar_autofillInbox.checked) {
-          document.message_inbox_form.message.value = "/msg "+s+" ";
-          document.message_inbox_form.message.focus();
-       }
-}
-
-function clearReply() {
-	document.message_inbox_form.message.value = "";
-}
-
-function checkAll(){
-    for (i=0; i < document.message_inbox_form.elements.length; i++) {
-      if(document.message_inbox_form.elements[i].name.substring(0,9) == "deletemsg")
-          {document.message_inbox_form.elements[i].checked=true;}
-    }
 }
 
 /* HTMLToolBar - Editor code, previously node_id 2069738.js */

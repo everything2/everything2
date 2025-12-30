@@ -155,7 +155,11 @@ const UserDisplay = ({ data, e2 }) => {
         {/* User image box - matches legacy #homenodepicbox */}
         <div id="homenodepicbox">
           {user.imgsrc && (
-            <img src={`/${user.imgsrc}`} alt={`${user.title}'s image`} />
+            <img
+              src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
+              alt={`${user.title}'s image`}
+              id="userimage"
+            />
           )}
 
           {/* Edit link for own profile */}

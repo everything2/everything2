@@ -283,7 +283,7 @@ sub _get_writeups_since_last_year {
     my ( $self, $user_id ) = @_;
 
     my $one_year_ago = time() - SECONDS_PER_YEAR;
-    my $formatted    = $self->APP->format_timestamp($one_year_ago);
+    my $formatted    = $self->APP->convertEpochToDate($one_year_ago);
 
     my $count = $self->DB->sqlSelect(
         'count(*)', 'node n, writeup w',
