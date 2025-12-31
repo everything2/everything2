@@ -629,7 +629,6 @@ jq '.events[].message' app-errors-3days.json | sort | uniq -c | sort -rn | head 
 
 - [Modernization Priorities](modernization-priorities.md) - Strategic priorities
 - [Analysis Summary](analysis-summary.md) - Complete technical analysis
-- [Status](status.md) - Current project status
 - [mod_perl/PSGI Analysis](modperl-psgi-analysis.md) - Detailed migration analysis
 
 ---

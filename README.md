@@ -65,7 +65,7 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 | Mobile Responsiveness | ⚠️ Critical Gap | Zero mobile CSS currently |
 | jQuery Removal | 📋 Planned | jQuery 1.11.1 → React/vanilla JS |
 
-See [docs/status.md](docs/status.md) for detailed progress tracking and [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for coverage details.
+See [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for coverage details.
 
 ## Testing
 

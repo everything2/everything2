@@ -27,12 +27,11 @@ Contains the main virtual host configuration, including mod_perl handlers and ac
 ```apache
 Listen 80
 ListenBacklog 511
-
-Listen 443
-ListenBacklog 511
 ```
 
 **Purpose:** Controls the TCP listen queue depth for incoming connections.
+
+**Note:** The application listens only on port 80 (HTTP). TLS termination is handled by CloudFront and the ALB, which forward HTTP traffic to the containers.
 
 **Value:** `511` - Maximum pending connections allowed to queue while Apache workers are busy.
 
@@ -165,53 +164,14 @@ TraceEnable Off
 - Disables HTTP TRACE method
 - Prevents cross-site tracing (XST) attacks
 
-### SSL/TLS Configuration
+### SSL/TLS Architecture
 
-```apache
-<IfModule mod_ssl.c>
-  SSLRandomSeed startup builtin
-  SSLRandomSeed startup file:/dev/urandom 512
-  SSLRandomSeed connect builtin
-  SSLRandomSeed connect file:/dev/urandom 512
+**Note:** As of December 2025, TLS termination is handled entirely at the edge:
+- **CloudFront** terminates client TLS connections (TLS 1.2+ enforced)
+- **ALB** connects to CloudFront via HTTPS
+- **Containers** receive HTTP traffic from ALB on port 80
 
-  SSLSessionCache        shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)
-  SSLSessionCacheTimeout  300
-
-  SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5:!RC4
-
-  # enable only TLSv1
-  SSLProtocol all -SSLv2 -SSLv3
-</IfModule>
-```
-
-**SSLRandomSeed:**
-- Uses `/dev/urandom` for cryptographically secure random numbers
-- 512 bytes at startup and per connection
-- Essential for session keys and encryption
-
-**SSLSessionCache:**
-- Shared memory cache for SSL session resumption
-- 512KB cache size
-- Reduces CPU overhead of TLS handshakes
-- Improves connection performance
-
-**SSLSessionCacheTimeout (300):**
-- 5 minutes session cache lifetime
-- Balances security (shorter = more handshakes) with performance
-
-**SSLCipherSuite:**
-- HIGH: Strong encryption (256-bit AES)
-- MEDIUM: Acceptable encryption (128-bit)
-- !aNULL: Reject anonymous ciphers (no authentication)
-- !MD5: Reject weak MD5-based ciphers
-- !RC4: Reject vulnerable RC4 stream cipher
-
-**SSLProtocol:**
-- Enables TLS 1.0+ (modern browsers support TLS 1.2+)
-- Disables SSLv2 (broken, 1995)
-- Disables SSLv3 (POODLE vulnerability, 2014)
-
-**Note:** Consider updating to `TLSv1.2` minimum for improved security
+Apache no longer handles TLS directly. The SSL module configuration remains in the template for potential future use but is not active in the current architecture. This simplifies container configuration and reduces CPU overhead.
 
 ### Environment Variables
 
@@ -412,7 +372,7 @@ apache2ctl configtest
 **Common issues:**
 - Invalid ERB template syntax in `etc/templates/*.erb`
 - Missing required modules in `mods-enabled/`
-- Port conflicts (80, 443 already bound)
+- Port 80 already bound
 
 ### Workers Recycling Too Frequently
 
@@ -440,7 +400,7 @@ apache2ctl configtest
 curl http://localhost/server-status?auto
 
 # Check listen queue
-ss -ltn | grep ':80\|:443'
+ss -ltn | grep ':80'
 
 # Check container resources
 docker stats e2devapp
@@ -537,23 +497,23 @@ Ruby script that processes ERB templates at container startup:
    - Requires switch from MPM Prefork to MPM Event
    - Not compatible with mod_perl
    - Would require significant refactoring
+   - Note: HTTP/2 is already supported at CloudFront edge
 
-2. **TLS 1.3:**
-   - Update OpenSSL version
-   - Update `SSLProtocol` directive
-   - Test compatibility with CloudFront
-
-3. **Request Coalescing:**
+2. **Request Coalescing:**
    - Implement request queue at application layer
    - Batch similar requests (e.g., multiple users loading same node)
    - Reduce database load
 
-4. **Connection Pooling:**
+3. **Connection Pooling:**
    - Currently using Apache::DBI
    - Consider persistent connection management improvements
    - Monitor connection lifecycle
 
-5. **Graceful Worker Recycling:**
+4. **Graceful Worker Recycling:**
    - Implement signal handling for worker replacement
    - Avoid request interruption during recycling
    - Better memory management without user impact
+
+---
+
+*Last updated: December 2025*

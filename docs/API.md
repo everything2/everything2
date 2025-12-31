@@ -2766,6 +2766,225 @@ curl -X DELETE https://everything2.com/api/personallinks/delete/2 \
 - To remove multiple links, call this endpoint multiple times or use `/update` with the desired final list
 - **Always allowed**: Delete operations are permitted even when the user is over the limits, since deletion always reduces usage
 
+## Categories
+
+Category APIs allow users to manage categories and their membership. Categories can be:
+- **Private**: Owned by a specific user or usergroup
+- **Public**: Owned by Guest User (any logged-in user can add to them)
+
+### GET /api/category/list
+
+Returns categories the user can add nodes to, separated into "your categories" (user-owned or usergroup-owned) and "public categories".
+
+**Query Parameters:**
+* **node_id** - Optional. If provided, excludes categories that already contain this node
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "your_categories": [
+    {
+      "node_id": 12345,
+      "title": "My Category",
+      "author_user": 67890,
+      "author_username": "username"
+    }
+  ],
+  "public_categories": [
+    {
+      "node_id": 23456,
+      "title": "Public Category",
+      "author_user": 779713,
+      "author_username": "Guest User"
+    }
+  ]
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **your_categories** - Array of categories owned by the user or their usergroups
+* **public_categories** - Array of categories owned by Guest User (public)
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+  ```json
+  { "success": 0, "error": "Must be logged in" }
+  ```
+
+### POST /api/category/add_member
+
+Adds a node to a category. User must have permission to add to the category.
+
+**POST Data (JSON):**
+* **category_id** - Node ID of the category (required)
+* **node_id** - Node ID of the node to add (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "Node added to category",
+  "category_title": "Category Name"
+}
+```
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **403 Forbidden** - User cannot add to this category
+  ```json
+  { "success": 0, "error": "You cannot add to this category" }
+  ```
+* **409 Conflict** - Node is already in the category
+  ```json
+  { "success": 0, "error": "Node is already in this category" }
+  ```
+
+### POST /api/category/remove_member
+
+Removes a node from a category. Only category owners (or editors) can remove members.
+
+**POST Data (JSON):**
+* **node_id** - Node ID of the category (required)
+* **member_id** - Node ID of the member to remove (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "Member removed from category"
+}
+```
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **403 Forbidden** - User cannot manage this category
+  ```json
+  { "success": 0, "error": "You cannot manage members of this category" }
+  ```
+
+### POST /api/category/reorder_members
+
+Reorders members within a category. Only category owners (or editors) can reorder.
+
+**POST Data (JSON):**
+* **node_id** - Node ID of the category (required)
+* **member_ids** - Array of member node IDs in desired order (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "Member order updated"
+}
+```
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **403 Forbidden** - User cannot manage this category
+
+### POST /api/category/update
+
+Updates a category's description. User must have permission to edit the category.
+
+**POST Data (JSON):**
+* **node_id** - Node ID of the category (required)
+* **doctext** - New description text (can be empty)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "Category updated successfully"
+}
+```
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **403 Forbidden** - User cannot edit this category
+
+### POST /api/category/update_meta
+
+Updates a category's title and/or owner. **Editors only.**
+
+**POST Data (JSON):**
+* **node_id** - Node ID of the category (required)
+* **title** - New title (optional)
+* **author_user** - New owner's node ID (optional)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "message": "Category settings updated"
+}
+```
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **403 Forbidden** - Only editors can change category settings
+* **409 Conflict** - A category with that title already exists
+
+### GET /api/category/lookup_owner
+
+Looks up a user or usergroup by name for the owner field. **Editors only.**
+
+**Query Parameters:**
+* **name** - Username or usergroup name to look up (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "found": 1,
+  "node_id": 12345,
+  "title": "username",
+  "type": "user"
+}
+```
+
+Or if not found:
+
+```json
+{
+  "success": 1,
+  "found": 0
+}
+```
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **403 Forbidden** - Only editors can lookup owners
+
 ## Searches
 
 ## Tests
