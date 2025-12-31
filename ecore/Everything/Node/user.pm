@@ -662,6 +662,37 @@ sub editable_categories
   return $sorted_categories;
 }
 
+# Returns categories maintained by this user (excludes public/guest_user categories)
+sub maintained_categories
+{
+  my ($self) = @_;
+  my $categories = [];
+
+  my $category = $self->APP->node_by_name('category','nodetype');
+
+  # Only include user's own categories and usergroup categories, NOT guest_user
+  my $category_authors = [$self->node_id];
+
+  foreach my $ug (@{$self->usergroup_memberships})
+  {
+    push @$category_authors,$ug->node_id;
+  }
+
+  my $csr = $self->DB->sqlSelectMany("node_id","node",
+    "author_user IN (".join(',',@$category_authors).") and type_nodetype=".
+    $category->node_id);
+
+  while(my $row = $csr->fetchrow_arrayref)
+  {
+    my $n = $self->APP->node_by_id($row->[0]);
+    next unless $n;
+    push @$categories, $n;
+  }
+
+  my $sorted_categories = [sort {$a->title cmp $b->title} @$categories];
+  return $sorted_categories;
+}
+
 sub available_weblogs
 {
   my ($self) = @_;

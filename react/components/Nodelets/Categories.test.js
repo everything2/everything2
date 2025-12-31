@@ -1,13 +1,16 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Categories from './Categories'
 
+// Mock fetch
+global.fetch = jest.fn()
+
 // Mock the child components
 jest.mock('../NodeletContainer', () => {
-  return function MockNodeletContainer({ title, children, collapsible }) {
+  return function MockNodeletContainer({ title, children }) {
     return (
-      <div data-testid="nodelet-container" data-collapsible={collapsible}>
+      <div data-testid="nodelet-container">
         <div data-testid="nodelet-title">{title}</div>
         <div data-testid="nodelet-content">{children}</div>
       </div>
@@ -16,7 +19,7 @@ jest.mock('../NodeletContainer', () => {
 })
 
 jest.mock('../LinkNode', () => {
-  return function MockLinkNode({ nodeId, title, type, display, lastNodeId }) {
+  return function MockLinkNode({ nodeId, title, type, display }) {
     const displayText = display || title || `Node ${nodeId}`
     return (
       <a
@@ -25,7 +28,6 @@ jest.mock('../LinkNode', () => {
         data-title={title}
         data-type={type}
         data-display={display}
-        data-last-node-id={lastNodeId}
       >
         {displayText}
       </a>
@@ -33,198 +35,274 @@ jest.mock('../LinkNode', () => {
   }
 })
 
+jest.mock('../ConfirmModal', () => {
+  return function MockConfirmModal({ isOpen, onClose, onConfirm, title, message }) {
+    if (!isOpen) return null
+    return (
+      <div data-testid="confirm-modal">
+        <div data-testid="confirm-title">{title}</div>
+        <div data-testid="confirm-message">{message}</div>
+        <button data-testid="confirm-button" onClick={onConfirm}>Confirm</button>
+        <button data-testid="cancel-button" onClick={onClose}>Cancel</button>
+      </div>
+    )
+  }
+})
+
 describe('Categories', () => {
-  const mockCategories = [
+  const mockNodeCategories = [
     {
       node_id: 101,
       title: 'Science Fiction',
       author_user: 201,
-      author_username: 'scifiguy'
+      author_username: 'scifiguy',
+      is_public: 0,
+      can_remove: 1
     },
     {
       node_id: 102,
       title: 'Fantasy',
       author_user: 202,
-      author_username: 'fantasyfan'
+      author_username: 'fantasyfan',
+      is_public: 0,
+      can_remove: 1
     },
     {
       node_id: 103,
-      title: 'Mystery',
-      author_user: 203,
-      author_username: 'detectivefan'
+      title: 'Public Category',
+      author_user: 779713,
+      author_username: 'Guest User',
+      is_public: 1,
+      can_remove: 0
     }
   ]
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('Rendering', () => {
     test('renders nodelet container with title', () => {
-      render(<Categories categories={mockCategories} currentNodeId={100} />)
+      render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
       expect(screen.getByTestId('nodelet-title')).toHaveTextContent('Categories')
     })
 
-    test('renders all categories', () => {
-      render(<Categories categories={mockCategories} currentNodeId={100} />)
+    test('renders all current categories', () => {
+      render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
       expect(screen.getByText(/Science Fiction/)).toBeInTheDocument()
       expect(screen.getByText(/Fantasy/)).toBeInTheDocument()
-      expect(screen.getByText(/Mystery/)).toBeInTheDocument()
+      expect(screen.getByText(/Public Category/)).toBeInTheDocument()
     })
 
-    test('renders category authors', () => {
-      render(<Categories categories={mockCategories} currentNodeId={100} />)
-      expect(screen.getByText(/scifiguy/)).toBeInTheDocument()
-      expect(screen.getByText(/fantasyfan/)).toBeInTheDocument()
-      expect(screen.getByText(/detectivefan/)).toBeInTheDocument()
+    test('renders "In Categories" header when categories exist', () => {
+      render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
+      expect(screen.getByText(/In Categories/)).toBeInTheDocument()
     })
 
-    test('renders add links for each category', () => {
-      const { container } = render(<Categories categories={mockCategories} currentNodeId={100} />)
-      const addLinks = container.querySelectorAll('a:not([data-testid="link-node"])')
-      expect(addLinks).toHaveLength(3)
-      addLinks.forEach(link => {
-        expect(link).toHaveTextContent('add')
-      })
+    test('renders Add to category button', () => {
+      render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
+      expect(screen.getByText(/Add to category/)).toBeInTheDocument()
     })
 
-    test('add links have correct URL format', () => {
-      const currentNodeId = 100
-      const { container } = render(<Categories categories={mockCategories} currentNodeId={currentNodeId} />)
-      const addLinks = container.querySelectorAll('a:not([data-testid="link-node"])')
-
-      addLinks.forEach((link, index) => {
-        const categoryId = mockCategories[index].node_id
-        expect(link.getAttribute('href')).toBe(
-          `/index.pl?op=category&node_id=${currentNodeId}&cid=${categoryId}&nid=${currentNodeId}`
-        )
-      })
-    })
-
-    test('renders Create Category footer link', () => {
-      render(<Categories categories={mockCategories} currentNodeId={100} />)
+    test('renders Create category link in footer', () => {
+      render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
       const links = screen.getAllByTestId('link-node')
       const createLink = links.find(link => link.getAttribute('data-title') === 'Create category')
       expect(createLink).toBeDefined()
-      expect(createLink).toHaveAttribute('data-title', 'Create category')
       expect(createLink).toHaveAttribute('data-type', 'superdoc')
-      expect(createLink).toHaveAttribute('data-display', 'Add a new Category')
-      expect(createLink).toHaveTextContent('Add a new Category')
     })
   })
 
   describe('Empty States', () => {
-    test('renders empty message when categories is undefined', () => {
-      render(<Categories currentNodeId={100} />)
-      expect(screen.getByText(/No categories available/i)).toBeInTheDocument()
+    test('renders "Not in any categories" when nodeCategories is empty', () => {
+      render(<Categories nodeCategories={[]} currentNodeId={100} />)
+      expect(screen.getByText(/Not in any categories/i)).toBeInTheDocument()
     })
 
-    test('renders empty message when categories is null', () => {
-      render(<Categories categories={null} currentNodeId={100} />)
-      expect(screen.getByText(/No categories available/i)).toBeInTheDocument()
+    test('still shows Add to category button when empty', () => {
+      render(<Categories nodeCategories={[]} currentNodeId={100} />)
+      expect(screen.getByText(/Add to category/)).toBeInTheDocument()
     })
 
-    test('renders empty message when categories is not an array', () => {
-      render(<Categories categories="not an array" currentNodeId={100} />)
-      expect(screen.getByText(/No categories available/i)).toBeInTheDocument()
-    })
-
-    test('renders empty message when categories is empty array', () => {
-      render(<Categories categories={[]} currentNodeId={100} />)
-      expect(screen.getByText(/No categories available/i)).toBeInTheDocument()
-    })
-
-    test('empty state still renders nodelet container', () => {
-      render(<Categories currentNodeId={100} />)
+    test('renders nodelet container when empty', () => {
+      render(<Categories nodeCategories={[]} currentNodeId={100} />)
       expect(screen.getByTestId('nodelet-container')).toBeInTheDocument()
       expect(screen.getByTestId('nodelet-title')).toHaveTextContent('Categories')
     })
   })
 
-  describe('Data Structure', () => {
-    test('renders with single category', () => {
-      const singleCategory = [mockCategories[0]]
-      render(<Categories categories={singleCategory} currentNodeId={100} />)
-      expect(screen.getByText(/Science Fiction/)).toBeInTheDocument()
-      expect(screen.getByText(/scifiguy/)).toBeInTheDocument()
+  describe('Remove Functionality', () => {
+    test('shows remove button for categories user can remove', () => {
+      const { container } = render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
+      // Categories with can_remove=1 should have remove buttons
+      const removeButtons = container.querySelectorAll('button[title="Remove from category"]')
+      expect(removeButtons.length).toBe(2) // Science Fiction and Fantasy
     })
 
-    test('handles category without author username gracefully', () => {
-      const categoriesWithoutAuthor = [{
-        node_id: 101,
-        title: 'No Author',
-        author_user: 201
+    test('does not show remove button for public categories', () => {
+      const publicOnly = [{
+        node_id: 103,
+        title: 'Public Category',
+        author_user: 779713,
+        author_username: 'Guest User',
+        is_public: 1,
+        can_remove: 0
       }]
-      render(<Categories categories={categoriesWithoutAuthor} currentNodeId={100} />)
-      expect(screen.getByText(/No Author/)).toBeInTheDocument()
+      const { container } = render(<Categories nodeCategories={publicOnly} currentNodeId={100} />)
+      const removeButtons = container.querySelectorAll('button[title="Remove from category"]')
+      expect(removeButtons.length).toBe(0)
     })
 
-    test('renders categories in order provided', () => {
-      const { container } = render(<Categories categories={mockCategories} currentNodeId={100} />)
-      const listItems = container.querySelectorAll('li')
-      expect(listItems[0]).toHaveTextContent('Science Fiction')
-      expect(listItems[1]).toHaveTextContent('Fantasy')
-      expect(listItems[2]).toHaveTextContent('Mystery')
-    })
-  })
-
-  describe('LinkNode Integration', () => {
-    test('passes correct props to category LinkNode', () => {
-      render(<Categories categories={mockCategories} currentNodeId={100} />)
-      const categoryLinks = screen.getAllByTestId('link-node')
-
-      // First category link (plus author links)
-      expect(categoryLinks[0]).toHaveAttribute('data-node-id', '101')
-      expect(categoryLinks[0]).toHaveAttribute('data-last-node-id', '0')
+    test('clicking remove button opens confirm modal', () => {
+      const { container } = render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
+      const removeButton = container.querySelector('button[title="Remove from category"]')
+      fireEvent.click(removeButton)
+      expect(screen.getByTestId('confirm-modal')).toBeInTheDocument()
+      expect(screen.getByTestId('confirm-title')).toHaveTextContent('Remove from Category')
     })
 
-    test('passes correct props to author LinkNode', () => {
-      render(<Categories categories={mockCategories} currentNodeId={100} />)
-      const links = screen.getAllByTestId('link-node')
-
-      // Second link in first list item is the author
-      expect(links[1]).toHaveAttribute('data-node-id', '201')
-      expect(links[1]).toHaveAttribute('data-last-node-id', '0')
+    test('confirm modal shows category name', () => {
+      const { container } = render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
+      const removeButton = container.querySelector('button[title="Remove from category"]')
+      fireEvent.click(removeButton)
+      expect(screen.getByTestId('confirm-message')).toHaveTextContent(/Science Fiction/)
     })
 
-    test('passes correct props to Create Category LinkNode', () => {
-      render(<Categories categories={mockCategories} currentNodeId={100} />)
+    test('canceling confirm modal closes it', () => {
+      const { container } = render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
+      const removeButton = container.querySelector('button[title="Remove from category"]')
+      fireEvent.click(removeButton)
+      expect(screen.getByTestId('confirm-modal')).toBeInTheDocument()
 
-      // Find the Create Category link by its unique attributes
-      const createLink = screen.getAllByTestId('link-node').find(
-        link => link.getAttribute('data-title') === 'Create category'
-      )
-
-      expect(createLink).toBeDefined()
-      expect(createLink).toHaveAttribute('data-title', 'Create category')
-      expect(createLink).toHaveAttribute('data-type', 'superdoc')
-      expect(createLink).toHaveAttribute('data-display', 'Add a new Category')
+      fireEvent.click(screen.getByTestId('cancel-button'))
+      expect(screen.queryByTestId('confirm-modal')).not.toBeInTheDocument()
     })
   })
 
-  describe('HTML Structure', () => {
-    test('renders list with correct id', () => {
-      const { container } = render(<Categories categories={mockCategories} currentNodeId={100} />)
-      const list = container.querySelector('#nodelists')
-      expect(list).toBeInTheDocument()
-      expect(list.tagName).toBe('UL')
+  describe('Add to Category Modal', () => {
+    test('clicking Add to category opens modal', () => {
+      render(<Categories nodeCategories={mockNodeCategories} currentNodeId={100} />)
+      const addButton = screen.getByText(/Add to category/)
+      fireEvent.click(addButton)
+      expect(screen.getByText('Add to Category')).toBeInTheDocument()
     })
 
-    test('renders correct number of list items', () => {
-      const { container } = render(<Categories categories={mockCategories} currentNodeId={100} />)
-      const listItems = container.querySelectorAll('li')
-      expect(listItems).toHaveLength(mockCategories.length)
+    test('modal loads categories on open', async () => {
+      global.fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: 1,
+          your_categories: [{ node_id: 200, title: 'My Category', author_user: 100, author_username: 'me' }],
+          public_categories: [{ node_id: 201, title: 'Public Cat', author_user: 779713, author_username: 'Guest User' }],
+          other_categories: [],
+          is_editor: 0
+        })
+      })
+
+      render(<Categories nodeCategories={[]} currentNodeId={100} />)
+      const addButton = screen.getByText(/Add to category/)
+      fireEvent.click(addButton)
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/category/list?node_id=100',
+          expect.any(Object)
+        )
+      })
     })
 
-    test('renders footer with correct class', () => {
-      const { container } = render(<Categories categories={mockCategories} currentNodeId={100} />)
-      const footer = container.querySelector('.nodeletfoot')
-      expect(footer).toBeInTheDocument()
+    test('modal shows loading state while fetching', () => {
+      global.fetch.mockImplementation(() => new Promise(() => {})) // Never resolves
+
+      render(<Categories nodeCategories={[]} currentNodeId={100} />)
+      const addButton = screen.getByText(/Add to category/)
+      fireEvent.click(addButton)
+
+      expect(screen.getByText(/Loading categories/)).toBeInTheDocument()
     })
 
-    test('each list item has unique key (no console warnings)', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-      render(<Categories categories={mockCategories} currentNodeId={100} />)
-      expect(consoleSpy).not.toHaveBeenCalledWith(
-        expect.stringContaining('unique "key" prop')
-      )
-      consoleSpy.mockRestore()
+    test('ESC key closes modal', async () => {
+      global.fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: 1,
+          your_categories: [],
+          public_categories: [],
+          other_categories: [],
+          is_editor: 0
+        })
+      })
+
+      render(<Categories nodeCategories={[]} currentNodeId={100} />)
+      const addButton = screen.getByText(/Add to category/)
+      fireEvent.click(addButton)
+
+      // Wait for modal to be fully rendered
+      await waitFor(() => {
+        expect(screen.getByText('Add to Category')).toBeInTheDocument()
+      })
+
+      fireEvent.keyDown(document, { key: 'Escape' })
+
+      await waitFor(() => {
+        expect(screen.queryByText('Add to Category')).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Search Filter', () => {
+    test('search input filters categories', async () => {
+      global.fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: 1,
+          your_categories: [
+            { node_id: 200, title: 'Science Fiction', author_user: 100, author_username: 'me' },
+            { node_id: 201, title: 'Mystery Books', author_user: 100, author_username: 'me' }
+          ],
+          public_categories: [],
+          other_categories: [],
+          is_editor: 0
+        })
+      })
+
+      render(<Categories nodeCategories={[]} currentNodeId={100} />)
+      const addButton = screen.getByText(/Add to category/)
+      fireEvent.click(addButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Science Fiction')).toBeInTheDocument()
+        expect(screen.getByText('Mystery Books')).toBeInTheDocument()
+      })
+
+      const searchInput = screen.getByPlaceholderText(/Search categories/)
+      fireEvent.change(searchInput, { target: { value: 'Science' } })
+
+      expect(screen.getByText('Science Fiction')).toBeInTheDocument()
+      expect(screen.queryByText('Mystery Books')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Editor Features', () => {
+    test('editors see other users categories', async () => {
+      global.fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({
+          success: 1,
+          your_categories: [],
+          public_categories: [],
+          other_categories: [
+            { node_id: 300, title: 'Other User Cat', author_user: 999, author_username: 'otheruser' }
+          ],
+          is_editor: 1
+        })
+      })
+
+      render(<Categories nodeCategories={[]} currentNodeId={100} />)
+      const addButton = screen.getByText(/Add to category/)
+      fireEvent.click(addButton)
+
+      await waitFor(() => {
+        expect(screen.getByText(/Other Users' Categories/)).toBeInTheDocument()
+        expect(screen.getByText('Other User Cat')).toBeInTheDocument()
+        expect(screen.getByText(/by otheruser/)).toBeInTheDocument()
+      })
     })
   })
 
@@ -235,10 +313,12 @@ describe('Categories', () => {
         node_id: 101,
         title: longTitle,
         author_user: 201,
-        author_username: 'testuser'
+        author_username: 'testuser',
+        is_public: 0,
+        can_remove: 1
       }]
-      render(<Categories categories={categoriesWithLongTitle} currentNodeId={100} />)
-      expect(screen.getByText(new RegExp(longTitle))).toBeInTheDocument()
+      render(<Categories nodeCategories={categoriesWithLongTitle} currentNodeId={100} />)
+      expect(screen.getByText(new RegExp(longTitle.substring(0, 50)))).toBeInTheDocument()
     })
 
     test('handles special characters in category title', () => {
@@ -246,17 +326,12 @@ describe('Categories', () => {
         node_id: 101,
         title: 'C++ & Programming <tricks>',
         author_user: 201,
-        author_username: 'coder'
+        author_username: 'coder',
+        is_public: 0,
+        can_remove: 1
       }]
-      render(<Categories categories={specialCategories} currentNodeId={100} />)
+      render(<Categories nodeCategories={specialCategories} currentNodeId={100} />)
       expect(screen.getByText(/C\+\+ & Programming/)).toBeInTheDocument()
-    })
-
-    test('handles missing currentNodeId gracefully', () => {
-      render(<Categories categories={mockCategories} />)
-      const { container } = render(<Categories categories={mockCategories} />)
-      const addLinks = container.querySelectorAll('a:not([data-testid="link-node"])')
-      expect(addLinks[0].getAttribute('href')).toContain('node_id=undefined')
     })
 
     test('handles zero node IDs', () => {
@@ -264,27 +339,62 @@ describe('Categories', () => {
         node_id: 0,
         title: 'Zero Category',
         author_user: 0,
-        author_username: 'root'
+        author_username: 'root',
+        is_public: 0,
+        can_remove: 1
       }]
-      render(<Categories categories={zeroIdCategories} currentNodeId={0} />)
+      render(<Categories nodeCategories={zeroIdCategories} currentNodeId={0} />)
       expect(screen.getByText(/Zero Category/)).toBeInTheDocument()
     })
   })
 
-  describe('Styling', () => {
-    test('list has correct styling attributes', () => {
-      const { container } = render(<Categories categories={mockCategories} currentNodeId={100} />)
-      const list = container.querySelector('#nodelists')
-      expect(list).toHaveStyle({ listStyle: 'disc' })
-      expect(list).toHaveStyle({ paddingLeft: '24px' })
+  describe('API Integration', () => {
+    test('calls updateNodeCategories after successful remove', async () => {
+      const mockUpdate = jest.fn()
+      global.fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: 1 })
+      })
+
+      const { container } = render(
+        <Categories
+          nodeCategories={mockNodeCategories}
+          currentNodeId={100}
+          updateNodeCategories={mockUpdate}
+        />
+      )
+
+      const removeButton = container.querySelector('button[title="Remove from category"]')
+      fireEvent.click(removeButton)
+      fireEvent.click(screen.getByTestId('confirm-button'))
+
+      await waitFor(() => {
+        expect(mockUpdate).toHaveBeenCalled()
+      })
     })
 
-    test('empty state message has correct styling', () => {
-      const { container } = render(<Categories categories={[]} currentNodeId={100} />)
-      const emptyMessage = container.querySelector('p')
-      expect(emptyMessage).toHaveStyle({ padding: '8px' })
-      expect(emptyMessage).toHaveStyle({ color: '#666' })
-      expect(emptyMessage).toHaveStyle({ fontSize: '12px' })
+    test('handles API error gracefully', async () => {
+      const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {})
+      global.fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: 0, error: 'Server error' })
+      })
+
+      const { container } = render(
+        <Categories
+          nodeCategories={mockNodeCategories}
+          currentNodeId={100}
+          updateNodeCategories={jest.fn()}
+        />
+      )
+
+      const removeButton = container.querySelector('button[title="Remove from category"]')
+      fireEvent.click(removeButton)
+      fireEvent.click(screen.getByTestId('confirm-button'))
+
+      await waitFor(() => {
+        expect(alertMock).toHaveBeenCalledWith('Server error')
+      })
+
+      alertMock.mockRestore()
     })
   })
 })

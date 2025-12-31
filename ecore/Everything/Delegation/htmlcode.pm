@@ -2726,77 +2726,6 @@ sub viewcode
   return '<font size="1">'.linkNode($NODE, 'viewcode', {'displaytype'=>'viewcode', 'lastnode_id'=>0}).'</font>';
 }
 
-sub addwriteup
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $canPublishDirectly = 2; # this level doesn't have to create draft first
-
-  if ( $APP->isMaintenanceNode($NODE) ){
-    $canPublishDirectly = -1;
-  }
-
-  # get existing wu or reason for no new posting:
-  my $MINE = undef; #mod_perl safety
-  $MINE = delete $PAGELOAD->{my_writeup}; # saved by [canseewriteup]
-  $MINE ||= htmlcode('nopublishreason', $USER, $NODE);
-  return '<div class="nodelock"><p>'.$MINE.'</p></div>' if($MINE and not UNIVERSAL::isa($MINE,'HASH'));
-
-  # OK: user can post or edit a writeup/draft
-
-  my ($str, $draftStatusLink, $lecture) = ("","","");
-
-  if ($MINE){
-    return '<p>You can edit your contribution to this node at'.linkNode($MINE).'</p>' if $$VARS{HideWriteupOnE2node}; # user doesn't want to see their text
-
-    $str.=$query->start_form(-action => $APP->urlGenNoParams($MINE, 'noQuotes'), -class => 'writeup_add')
-      .$query -> hidden(-name => 'node_id', value => $$MINE{node_id}, -force => 1); # go to existing writeup/draft on edit
-	
-    $draftStatusLink = '<p>'
-      .linkNode($MINE, 'Set draft status...', {
-        -id => "draftstatus$$MINE{node_id}"
-        , -class => "ajax draftstatus$$MINE{node_id}:setdraftstatus?node_id=$$MINE{node_id}:$$MINE{node_id}"
-      }).'</p>' if $$MINE{type}{title} eq 'draft';
-
-  } else {
-    # set default type for [editwriteup]
-    $MINE = {type => {title=>'writeup'}};
-
-    # restricted options and lecture for new users:
-    my $level = $APP->getLevel($USER);
-    if ($level <= $canPublishDirectly){
-      $$MINE{type}{title} = 'draft' if $level < $canPublishDirectly;
-
-      $lecture = '<p class="edithelp">Before publishing a writeup, you '
-        .($$MINE{type}{title} ne 'draft' ? 'should normally ' : '')
-        .'first post it as a '
-        .linkNode(getNode('Drafts','superdoc'), 'draft')
-        .'. This gives you a chance to correct any mistakes in the content or formatting before anyone else
-          reads and can vote on it, or to ask other users to make suggestions or improvements.</p>'
-    }
-
-    $str.=$query->start_form(
-      -action => '/user/'
-      .$APP->rewriteCleanEscape($$USER{title})
-      .'/writeups/'
-      .$APP->rewriteCleanEscape($$NODE{title}),
-        -name=>'wusubform',
-        -class => 'writeup_add')
-      .qq'
-        <input type="hidden" name="node" value="new writeup">
-        <input type="hidden" name="writeup_parent_e2node" value="$$NODE{node_id}">
-        <input type="hidden" name="draft_title" value="$$NODE{title}">';
-  }
-
-  return $str.htmlcode('editwriteup', $MINE, $lecture)."</form>$draftStatusLink";
-}
-
 # Used everywhere
 #  inverse of this is in varcheckboxinverse
 #	checked   : $$VARS is 1
@@ -10332,7 +10261,6 @@ sub canseewriteup
   my $isTarget = undef; $isTarget = delete $PAGELOAD->{notshown}->{targetauthor} if defined($PAGELOAD->{notshown}) and defined($PAGELOAD->{notshown}->{targetauthor}) and $PAGELOAD->{notshown}->{targetauthor} == $$N{author_user};
 
   if ($$N{author_user} == $$USER{user_id}){
-    $PAGELOAD->{my_writeup} ||= $N if $$NODE{type}{title} eq 'e2node'; # used by [addwriteup]
     return 1;
   }
 
@@ -10542,81 +10470,6 @@ sub isInfected
   getRef $patient;
   my $patientVars = getVars($patient);
   return (defined($$patientVars{infected}) and $$patientVars{infected} == 1);
-
-}
-
-sub editwriteup
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($N, $message) = @_;
-
-  $message = "" unless(defined($message));
-  $N ||= {};
-  my $type = $$N{type}{title} || 'draft';
-  my $new = !$$N{node_id};
-
-  my $str = '<fieldset><legend>';
-
-  if ($new){
-    $str .= 'New draft';
-    $str .= '/writeup' if $type eq 'writeup';
-  }else{
-    $str .= 'Edit '.($$N{author_user} == $$USER{node_id} ? 'your ' : 'this ').$type;
-  }
-
-  $str .= '</legend>';
-
-  if ($type eq 'draft' and $$NODE{type}{title} ne 'e2node')
-  {
-    $str .= '<label>Title:'.$query -> textfield(
-      -name => 'draft_title',
-      class => 'draft_title',
-      value => $$N{title},
-      -force => 1,
-      size => 80).'</label><br>';
-    $str .= '<small>You already have a draft or writeup called '
-      .linkNode((getNodeWhere({title => $query -> param('draft_title'),
-        author_user => $$N{author_user}}, 'draft'))[0] ||
-      getNode($query -> param('draft_title'), 'e2node')).'.</small>'
-	if(scalar($query->param('draft_title')) && $APP->cleanNodeName(scalar $query->param('draft_title')) ne $$N{title});
-  }
-
-  $str .= qq'<textarea name="${type}_doctext" id="writeup_doctext" '.htmlcode('customtextarea', '1').' class="formattable">'.$APP->encodeHTML($$N{doctext}).'</textarea>'.$message;
-
-  my $setType = ""; $setType = "\n<p>".htmlcode('setwriteuptype', $$N{wrtype_writeuptype})."</p>" if $type eq 'writeup' && !$APP->isMaintenanceNode($N);
-
-  unless ($new)
-  {
-    $str .= $setType.$query -> submit('sexisgood', "Update $type");
-  }else{
-    $str .= '<input type="hidden" name="op" value="new"><p>';
-
-    if ($type eq 'draft')
-    {
-      $str .= $query -> submit('sexisgood', 'Create draft')
-        .'<input type="hidden" name="type" value="draft"></p>';
-    }else{
-      $str .= $query ->submit('sexisgood', 'submit')
-        .' '.($APP->isMaintenanceNode($N)? '(post immediately as maintenance writeup)'.$query -> hidden('type', 'writeup').$query -> hidden('writeup_notnew', '1')
-        : $query -> radio_group(
-          -name => 'type',
-          values => ['draft', 'writeup'],
-          labels => {draft => 'post as draft', writeup => 'publish immediately'},
-          default => $$VARS{defaultpostwriteup} ? 'writeup' : 'draft',
-          force => 1
-        )).'</p>'.$setType;
-    }
-  }
-
-  return "$str<p class='edithelp'><strong>Some Helpful Links:</strong>".parseLinks('[E2 HTML Tags] &middot;[HTML Symbol Reference] &middot;
-    [Using Unicode on E2] &middot;[Reference Desk]</p></fieldset>');
 
 }
 

@@ -144,7 +144,7 @@ class E2ReactRoot extends React.Component {
       roomTopic: null
     }
 
-    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics", "categories", "currentNodeId", "bounties", "recentNodes", "favoriteWriteups", "favoriteLimit", "personalLinks", "canAddCurrent", "currentNodeTitle", "currentPoll", "usergroupData", "otherUsersData", "noteletData", "messagesData", "notificationsData", "forReviewData", "nodeletorder"]
+    const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics", "categories", "currentNodeId", "nodeCategories", "bounties", "recentNodes", "favoriteWriteups", "favoriteLimit", "personalLinks", "canAddCurrent", "currentNodeTitle", "currentPoll", "usergroupData", "otherUsersData", "noteletData", "messagesData", "notificationsData", "forReviewData", "nodeletorder"]
     const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics","categories","mostwanted","recentnodes","favoritenoders","personallinks","currentpoll","usergroupwriteups","otherusers","chatterbox","messages","notifications","forreview","randomnodes","notelet"]
     const urlParams = new URLSearchParams(window.location.search)
 
@@ -604,12 +604,14 @@ class E2ReactRoot extends React.Component {
         <ErrorBoundary key="categories">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <Categories
-            id="categories"
+              id="categories"
               categories={this.state.categories}
-            currentNodeId={this.state.currentNodeId}
-            showNodelet={this.showNodelet}
-            nodeletIsOpen={this.state.categories_show}
-          />
+              currentNodeId={this.state.currentNodeId}
+              nodeCategories={this.state.nodeCategories}
+              updateNodeCategories={(cats) => this.setState({ nodeCategories: cats })}
+              showNodelet={this.showNodelet}
+              nodeletIsOpen={this.state.categories_show}
+            />
           </Suspense>
         </ErrorBoundary>
       ),

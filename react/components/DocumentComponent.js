@@ -47,6 +47,10 @@ const COMPONENT_MAP = {
   // Nodetypes - migrated from delegation Dec 2025
   nodetype: lazy(() => import('./Documents/Nodetype')),
 
+  // Categories - migrated Dec 2025
+  category: lazy(() => import('./Documents/CategoryDisplay')),
+  category_edit: lazy(() => import('./Documents/CategoryEdit')),
+
   // Phase 4a migrations
   wheel_of_surprise: lazy(() => import('./Documents/WheelOfSurprise')),
   silver_trinkets: lazy(() => import('./Documents/SilverTrinkets')),

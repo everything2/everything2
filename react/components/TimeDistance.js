@@ -1,53 +1,58 @@
 import React from 'react'
 
-const roundGently = (value,precision) => {
-    var multiplier = Math.pow(10, precision || 0);
-    return Math.round(value * multiplier) / multiplier;
-}
-
-const TimeDistance = ({then,now}) => {
-  if(now == undefined)
-  {
-    now = Math.floor(Date.now()/1000)
+/**
+ * TimeDistance - Display time elapsed since/until a Unix timestamp
+ *
+ * Shows the highest significant time unit in a human-readable format.
+ * e.g., "5 minutes ago", "3 hours ago", "2 days ago", "1 week ago"
+ *
+ * @param {number} then - Unix timestamp (seconds since epoch)
+ * @param {number} now - Optional current timestamp for testing
+ */
+const TimeDistance = ({then, now}) => {
+  if (now === undefined) {
+    now = Math.floor(Date.now() / 1000)
   }
-  let suffix = "ago"
-  if(then > now)
-  {
-    suffix = "in the future"
-    let tmp = then
+
+  let suffix = 'ago'
+  if (then > now) {
+    suffix = 'in the future'
+    const tmp = then
     then = now
-    now = tmp 
+    now = tmp
   }
 
-  if(then == 0)
-  {
-    return "forever ago"
+  if (then === 0) {
+    return 'forever ago'
   }
 
-  let timeDiff = now - then;
-  let timeStr = 0
+  const timeDiff = now - then
+  const minutes = Math.floor(timeDiff / 60)
+  const hours = Math.floor(timeDiff / (60 * 60))
+  const days = Math.floor(timeDiff / (60 * 60 * 24))
+  const weeks = Math.floor(days / 7)
+  const months = Math.floor(days / 30)
+  const years = Math.floor(days / 365)
 
-  if(timeDiff < 300)
-  {
-    return "just now"
-  }else if(timeDiff < 60*60)
-  {
-    timeStr = roundGently(timeDiff/60,1)+"m"
-  }else if(timeDiff < 60*60*24)
-  {
-    timeStr = roundGently(timeDiff/(60*60),1)+"h"
-  }else if(timeDiff < 60*60*24*30)
-  {
-    timeStr = roundGently(timeDiff/(60*60*24),1)+"d"
-  }else if(timeDiff < 60*60*24*365)
-  {
-    timeStr = roundGently(timeDiff/(60*60*24*30),1)+"m"
-  }else
-  {
-    timeStr = roundGently(timeDiff/(60*60*24*365),1)+"y"
+  let timeStr
+
+  if (timeDiff < 60) {
+    timeStr = timeDiff === 1 ? '1 second' : `${timeDiff} seconds`
+  } else if (minutes < 60) {
+    timeStr = minutes === 1 ? '1 minute' : `${minutes} minutes`
+  } else if (hours < 24) {
+    timeStr = hours === 1 ? '1 hour' : `${hours} hours`
+  } else if (days < 7) {
+    timeStr = days === 1 ? '1 day' : `${days} days`
+  } else if (weeks < 4) {
+    timeStr = weeks === 1 ? '1 week' : `${weeks} weeks`
+  } else if (months < 12) {
+    timeStr = months === 1 ? '1 month' : `${months} months`
+  } else {
+    timeStr = years === 1 ? '1 year' : `${years} years`
   }
 
-  return <>{timeStr + " "+suffix}</>
+  return <>{timeStr} {suffix}</>
 }
 
 export default TimeDistance

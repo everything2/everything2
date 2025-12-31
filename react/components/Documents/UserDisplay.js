@@ -4,6 +4,7 @@ import LinkNode from '../LinkNode'
 import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import MessageBox from '../MessageBox'
 import UserToolsModal from '../UserToolsModal'
+import TimeSince from '../TimeSince'
 
 /**
  * UserDisplay - Display page for user nodes (homenodes)
@@ -51,30 +52,11 @@ const UserDisplay = ({ data, e2 }) => {
     }
   }
 
-  // Format relative time showing the highest significant unit
-  // e.g., "32 seconds ago", "5 minutes ago", "3 hours ago", "2 days ago"
-  const formatTimeSince = (isoDate) => {
-    if (!isoDate) return null
+  // Check if a date is valid for display
+  const isValidDate = (isoDate) => {
+    if (!isoDate) return false
     const date = new Date(isoDate)
-    // Check for invalid date (epoch 0 or NaN)
-    if (isNaN(date.getTime()) || date.getTime() <= 0) return null
-    const now = new Date()
-    const diffMs = now - date
-    const diffSeconds = Math.floor(diffMs / 1000)
-    const diffMinutes = Math.floor(diffMs / (1000 * 60))
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-    const diffWeeks = Math.floor(diffDays / 7)
-    const diffMonths = Math.floor(diffDays / 30)
-    const diffYears = Math.floor(diffDays / 365)
-
-    if (diffSeconds < 60) return diffSeconds === 1 ? '1 second ago' : `${diffSeconds} seconds ago`
-    if (diffMinutes < 60) return diffMinutes === 1 ? '1 minute ago' : `${diffMinutes} minutes ago`
-    if (diffHours < 24) return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`
-    if (diffDays < 7) return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`
-    if (diffWeeks < 4) return diffWeeks === 1 ? '1 week ago' : `${diffWeeks} weeks ago`
-    if (diffMonths < 12) return diffMonths === 1 ? '1 month ago' : `${diffMonths} months ago`
-    return diffYears === 1 ? '1 year ago' : `${diffYears} years ago`
+    return !isNaN(date.getTime()) && date.getTime() > 0
   }
 
   const formatDate = (isoDate) => {
@@ -194,8 +176,8 @@ const UserDisplay = ({ data, e2 }) => {
           <dt>user since</dt>
           <dd>
             {formatDate(user.createtime)}
-            {formatTimeSince(user.createtime) && (
-              <> ({formatTimeSince(user.createtime)})</>
+            {isValidDate(user.createtime) && (
+              <> (<TimeSince timestamp={user.createtime} />)</>
             )}
           </dd>
 
@@ -205,8 +187,8 @@ const UserDisplay = ({ data, e2 }) => {
               <dt>last seen</dt>
               <dd>
                 {formatDate(user.lasttime)}
-                {formatTimeSince(user.lasttime) && (
-                  <> ({formatTimeSince(user.lasttime)})</>
+                {isValidDate(user.lasttime) && (
+                  <> (<TimeSince timestamp={user.lasttime} />)</>
                 )}
               </dd>
             </>

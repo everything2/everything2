@@ -62,9 +62,9 @@ sub display {
     }
     $profile->{groups} = \@groups;
 
-    # Get categories maintained by this user
+    # Get categories maintained by this user (excludes public/guest_user categories)
     my @categories;
-    foreach my $cat ( @{ $node->editable_categories || [] } ) {
+    foreach my $cat ( @{ $node->maintained_categories || [] } ) {
         push @categories, $cat->json_reference;
     }
     $profile->{categories} = \@categories;

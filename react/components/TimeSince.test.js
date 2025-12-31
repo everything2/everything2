@@ -47,6 +47,27 @@ describe('TimeSince', () => {
     expect(timeDistance).toHaveAttribute('data-then', String(expectedUnix))
   })
 
+  it('converts ISO 8601 datetime string to Unix timestamp', () => {
+    // ISO format: "2025-12-10T19:33:59Z"
+    const isoDatetime = '2025-12-10T19:33:59Z'
+    render(<TimeSince timestamp={isoDatetime} />)
+
+    const timeDistance = screen.getByTestId('time-distance')
+    const expectedUnix = Math.floor(new Date('2025-12-10T19:33:59Z').getTime() / 1000)
+    expect(timeDistance).toHaveAttribute('data-then', String(expectedUnix))
+  })
+
+  it('handles ISO 8601 datetime without Z suffix', () => {
+    // Some ISO formats might not have Z suffix
+    const isoDatetime = '2025-12-10T19:33:59'
+    render(<TimeSince timestamp={isoDatetime} />)
+
+    const timeDistance = screen.getByTestId('time-distance')
+    // Date.parse handles ISO format natively
+    const expectedUnix = Math.floor(new Date(isoDatetime).getTime() / 1000)
+    expect(timeDistance).toHaveAttribute('data-then', String(expectedUnix))
+  })
+
   it('renders TimeDistance component', () => {
     render(<TimeSince timestamp={1702234567} />)
     expect(screen.getByText('mocked time')).toBeInTheDocument()

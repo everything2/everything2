@@ -22,7 +22,6 @@ These documents serve as:
 
 ### Technical Overview
 - **[Analysis Summary](analysis-summary.md)** - Complete architectural overview
-- **[Status](status.md)** - Current progress and priorities
 - **[Modernization Priorities](modernization-priorities.md)** - Strategic roadmap
 
 ### Architecture & Infrastructure
@@ -31,7 +30,6 @@ These documents serve as:
 - [API Documentation](API.md) - API endpoints and usage
 
 ### Security & Modernization
-- [SQL Injection Vulnerabilities](sql-injection-vulnerabilities.md) - Security analysis and fixes needed
 - [SQL Fixes Applied](sql-fixes-applied.md) - ✅ Completed security fixes (4 critical issues)
 - [Inline JavaScript Modernization](inline-javascript-modernization.md) - Asset pipeline integration
 - [jQuery Removal](jquery-removal.md) - Legacy jQuery 1.11.1 → Modern vanilla JS/React

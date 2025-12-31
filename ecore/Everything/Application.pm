@@ -6893,49 +6893,73 @@ sub buildNodeInfoStructure
     };
   }
 
-  # Categories
-  if($nodelets =~ /1935779/ and not $this->isGuest($USER))
+  # Categories nodelet - load categories the current node is in
+  if($nodelets =~ /1935779/)
   {
-    my $GU = $Everything::CONF->guest_user;
-    my $uid = $USER->{user_id};
+    $e2->{currentNodeId} = $NODE->{node_id};
 
-    # Get all usergroups the user is in
-    my $sql = "SELECT DISTINCT ug.node_id
-      FROM node ug, nodegroup ng
-      WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$uid";
+    # Get categories containing this node (for all users, including guest)
+    my $category_linktype = $this->{db}->getNode('category', 'linktype');
+    my $linktype_id = $category_linktype->{node_id};
+    my $guest_user_id = $this->{conf}->guest_user;
+    my $uid = $this->isGuest($USER) ? 0 : $USER->{node_id};
+    my $is_editor = $this->isEditor($USER) ? 1 : 0;
 
-    my $ds = $this->{db}->{dbh}->prepare($sql);
-    $ds->execute();
-    my $inClause = $uid.','.$GU;
-    while(my $n = $ds->fetchrow_hashref)
-    {
-      $inClause .= ','.$n->{node_id};
+    # Get usergroups the user is in (for permission checking)
+    my @user_group_ids = ($uid);
+    unless ($this->isGuest($USER)) {
+      my $sql = "SELECT DISTINCT ug.node_id
+        FROM node ug, nodegroup ng
+        WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$uid";
+      my $ds = $this->{db}->{dbh}->prepare($sql);
+      $ds->execute();
+      while (my $n = $ds->fetchrow_hashref) {
+        push @user_group_ids, $n->{node_id};
+      }
     }
 
-    # Get all categories the user can edit
-    $sql = "SELECT n.node_id, n.title, n.author_user, u.title AS author_username
-      FROM node n
-      LEFT JOIN node u ON n.author_user = u.node_id
-      WHERE n.author_user IN ($inClause)
-      AND n.type_nodetype=1522375
-      AND n.node_id NOT IN (SELECT to_node AS node_id FROM links WHERE from_node=n.node_id)
-      ORDER BY n.title";
-
-    $ds = $this->{db}->{dbh}->prepare($sql);
+    # Get all categories containing this node
+    my $sql = "SELECT c.node_id, c.title, c.author_user, u.title AS author_username
+      FROM links l
+      JOIN node c ON l.from_node = c.node_id
+      LEFT JOIN node u ON c.author_user = u.node_id
+      WHERE l.to_node = $NODE->{node_id} AND l.linktype = $linktype_id
+      ORDER BY c.title";
+    my $ds = $this->{db}->{dbh}->prepare($sql);
     $ds->execute();
-    my @categories = ();
-    while(my $n = $ds->fetchrow_hashref)
-    {
-      push @categories, {
-        node_id => $n->{node_id},
-        title => $n->{title},
-        author_user => $n->{author_user},
-        author_username => $n->{author_username}
+
+    my @current_categories = ();
+    while (my $row = $ds->fetchrow_hashref) {
+      my $is_public = $row->{author_user} == $guest_user_id;
+
+      # Determine if user can remove from this category
+      my $can_remove = 0;
+      unless ($this->isGuest($USER)) {
+        if ($is_editor) {
+          $can_remove = 1;
+        }
+        elsif (!$is_public) {
+          # Check if user owns or is in the owning usergroup
+          foreach my $gid (@user_group_ids) {
+            if ($gid == $row->{author_user}) {
+              $can_remove = 1;
+              last;
+            }
+          }
+        }
+      }
+
+      push @current_categories, {
+        node_id => $row->{node_id},
+        title => $row->{title},
+        author_user => $row->{author_user},
+        author_username => $row->{author_username},
+        is_public => $is_public ? 1 : 0,
+        can_remove => $can_remove
       };
     }
 
-    $e2->{categories} = \@categories;
-    $e2->{currentNodeId} = $NODE->{node_id};
+    $e2->{nodeCategories} = \@current_categories;
   }
 
   # Most Wanted

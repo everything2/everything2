@@ -1936,3 +1936,180 @@ foreach my $from_title (keys %softlink_relationships) {
 
 print STDERR "Created $softlink_count softlinks between e2nodes\n";
 print STDERR "\n=== Softlink creation complete ===\n";
+
+# ============================================================================
+# CATEGORIES
+# ============================================================================
+print STDERR "\n=== Creating categories ===\n";
+
+my $category_type = $DB->getType("category");
+my $category_type_id = $category_type->{node_id};
+my $category_linktype = getNode("category", "linktype")->{node_id};
+my $guest_user = getNode($Everything::CONF->guest_user);
+
+# Helper to create a category and link writeups to it
+sub create_category_with_members {
+  my ($title, $description, $maintainer, $member_titles) = @_;
+
+  # Check if category already exists
+  my $existing = $DB->getNode($title, "category");
+  if ($existing) {
+    print STDERR "Category '$title' already exists (updating members)\n";
+  } else {
+    my $maintainer_id = ref($maintainer) ? $maintainer->{node_id} : $maintainer;
+    print STDERR "Creating category: '$title' (maintainer: $maintainer_id)\n";
+    $DB->insertNode($title, "category", $root_user, {
+      doctext => $description,
+      author_user => $maintainer_id
+    });
+    $existing = $DB->getNode($title, "category");
+  }
+
+  return unless $existing;
+
+  # Add member nodes to category
+  my $added = 0;
+  foreach my $member_title (@$member_titles) {
+    # Try to find as e2node first, then as writeup
+    my $member = $DB->getNode($member_title, "e2node");
+    next unless $member;
+
+    # Check if link already exists
+    my $link_exists = $DB->sqlSelect('COUNT(*)', 'links',
+      "from_node=$existing->{node_id} AND to_node=$member->{node_id} AND linktype=$category_linktype");
+
+    if (!$link_exists) {
+      $DB->sqlInsert("links", {
+        from_node => $existing->{node_id},
+        to_node => $member->{node_id},
+        linktype => $category_linktype,
+        hits => 0,
+        food => 0
+      });
+      $added++;
+    }
+  }
+  print STDERR "  Added $added members to '$title'\n" if $added > 0;
+
+  return $existing;
+}
+
+# Category 1: Coffee Culture (public category - any noder can edit)
+my @coffee_nodes = (
+  "morning brew rituals",
+  "espresso extraction science",
+  "third wave movement",
+  "café culture in Europe",
+  "roasting profiles and chemistry",
+  "sustainable farming practices",
+  "bean processing methods",
+  "pour-over technique mastery",
+  "origin terroir characteristics",
+  "home barista equipment guide",
+  "milk steaming science",
+  "cold brew extraction differences",
+  "historical origins of the beverage",
+  "cupping protocols and evaluation",
+  "grinder burr geometry comparison",
+  "varietal differences in the plant",
+  "water chemistry for optimal extraction",
+  "decaffeination process variations",
+  "flavor wheel and cupping lexicon",
+  "single origin versus blends philosophy",
+  "coffee",  # multi-author node
+);
+
+create_category_with_members(
+  "Coffee Culture",
+  "<p>A comprehensive collection of writeups about <strong>coffee</strong> - from brewing techniques and equipment to the science of extraction, global café culture, and the specialty coffee movement.</p><p>Whether you're interested in perfecting your morning pour-over, understanding coffee origins, or exploring the third wave revolution, this category has something for every coffee enthusiast.</p>",
+  $guest_user,  # Public category - any noder can add
+  \@coffee_nodes
+);
+
+# Category 2: Quantum Physics (maintained by genericdev)
+my @quantum_nodes = (
+  "quantum entanglement explained simply",
+  "quantum superposition in computing",
+  "quantum tunneling through barriers",
+  "quantum field theory fundamentals",
+  "quantum decoherence mechanisms",
+  "quantum cryptography protocols",
+  "quantum error correction codes",
+  "quantum supremacy demonstrations",
+  "quantum sensing and metrology",
+  "quantum machine learning prospects",
+  "quantum dots in nanotechnology",
+  "quantum annealing for optimization",
+  "quantum communication networks",
+  "quantum algorithms for chemistry",
+  "quantum biology emerging evidence",
+  "quantum computing",  # from normaluser4
+);
+
+my $normaluser16 = getNode("normaluser16", "user");
+create_category_with_members(
+  "Quantum Physics",
+  "<p>Explorations of <strong>quantum mechanics</strong> and its applications - from fundamental concepts like entanglement and superposition to cutting-edge technologies in quantum computing, cryptography, and sensing.</p><p>This category covers both theoretical foundations and practical applications of quantum physics.</p>",
+  $normaluser16,  # Maintained by normaluser16 (quantum writeup author)
+  \@quantum_nodes
+);
+
+# Category 3: Unicode Test Data (maintained by root for testing)
+my @unicode_nodes = (
+  "café ☕",
+  "日本語 Japanese",
+  "emoji test 😀",
+  "math symbols ∑∫",
+  "currency test €£¥",
+  "diacritics àéîöü",
+  "arrows ↑→↓←",
+  "music notes ♪♫",
+  'quotes "test"',
+  "unicode spaces",
+  "weather symbols ☀☁",
+  "zodiac signs ♈♉",
+  "hearts and flowers ❤🌸",
+  "animals 🐕🐈",
+  "cyrillic Привет",
+  "greek Ελληνικά",
+  "hebrew עברית",
+  "food emojis 🍕",
+  "tech symbols ⚙️💻",
+);
+
+my $normaluser1 = getNode("normaluser1", "user");
+create_category_with_members(
+  "Unicode and Emoji Test Data",
+  "<p>A collection of writeups containing <strong>Unicode characters</strong>, <strong>emoji</strong>, and international text for testing character encoding and display.</p><p>Includes mathematical symbols, currency signs, arrows, music notes, weather symbols, and text in various languages including Japanese, Greek, Hebrew, and Cyrillic.</p>",
+  $normaluser1,  # Maintained by normaluser1 (unicode writeup author)
+  \@unicode_nodes
+);
+
+# Category 4: Programming Topics (public category)
+my @programming_nodes = (
+  "programming languages",
+  "artificial intelligence",
+  "machine learning",
+  "databases",
+  "cybersecurity",
+  "neural networks",
+  "blockchain technology",
+);
+
+create_category_with_members(
+  "Programming and Technology",
+  "<p>Writeups about <strong>software development</strong>, <strong>programming languages</strong>, and modern technology topics including AI, machine learning, databases, and cybersecurity.</p>",
+  $guest_user,  # Public category
+  \@programming_nodes
+);
+
+# Category 5: Empty category for testing
+my @empty_nodes = ();
+create_category_with_members(
+  "Empty Test Category",
+  "<p>This category intentionally has no members. It exists for testing category display when empty.</p>",
+  $guest_user,  # Public category
+  \@empty_nodes
+);
+
+print STDERR "\n=== Category creation complete ===\n";
