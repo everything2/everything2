@@ -4,7 +4,6 @@
 </%class>
 <script id="nodeinfojson">e2 = <% $.nodeinfojson %></script>
 <script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>
 % foreach my $js (@{$.default_javascript}) {
 <script src="<% $js %>" type="text/javascript"></script>
 % }

@@ -32,7 +32,6 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
 
   ## Settings Tab - Your Writeups
   'HideWriteupOnE2node' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
-  'settings_useTinyMCE' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'textareaSize' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1,2]),
   'nohints' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'nohintSpelling' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),

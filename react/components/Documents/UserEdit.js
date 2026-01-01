@@ -1,5 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
@@ -9,6 +25,64 @@ import EditorModeToggle from '../Editor/EditorModeToggle'
 import SettingsNavigation from '../SettingsNavigation'
 import LinkNode from '../LinkNode'
 import '../Editor/E2Editor.css'
+
+/**
+ * SortableBookmarkItem - Draggable bookmark item with remove button
+ */
+function SortableBookmarkItem({ id, title, onRemove }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    padding: '10px 12px',
+    margin: '4px 0',
+    backgroundColor: isDragging ? '#f0f0f0' : 'white',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    cursor: 'grab',
+    userSelect: 'none',
+    opacity: isDragging ? 0.5 : 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  }
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div style={{ display: 'flex', alignItems: 'center', flex: 1 }} {...attributes} {...listeners}>
+        <span style={{ marginRight: '10px', color: '#507898', fontSize: '14px' }}>☰</span>
+        <LinkNode nodeId={id} title={title} />
+      </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          onRemove(id)
+        }}
+        style={{
+          padding: '4px 10px',
+          fontSize: '14px',
+          border: '1px solid #d9534f',
+          borderRadius: '3px',
+          backgroundColor: 'white',
+          color: '#d9534f',
+          cursor: 'pointer',
+          marginLeft: '12px',
+        }}
+        title="Remove bookmark"
+      >
+        ×
+      </button>
+    </div>
+  )
+}
 
 /**
  * UserEdit - Edit page for user nodes (homenodes)
@@ -47,11 +121,14 @@ const UserEdit = ({ data, e2 }) => {
   })
   const [confirmPasswd, setConfirmPasswd] = useState('')
   const [removeImage, setRemoveImage] = useState(false)
-  const [selectedBookmarks, setSelectedBookmarks] = useState(new Set())
+  const [bookmarks, setBookmarks] = useState([])
+  const [removedBookmarks, setRemovedBookmarks] = useState(new Set())
+  const [savedBookmarkOrder, setSavedBookmarkOrder] = useState(null) // Track last saved order
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [previewTrigger, setPreviewTrigger] = useState(0)
+  const [isDirty, setIsDirty] = useState(false)
 
   // Check if passwords match (both empty counts as matching)
   const passwordsMatch = formData.passwd === confirmPasswd
@@ -69,6 +146,14 @@ const UserEdit = ({ data, e2 }) => {
       setPreviewTrigger(prev => prev + 1)
     }
   })
+
+  // Drag-and-drop sensors for bookmark reordering
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
 
   // Initialize form data from user profile
   useEffect(() => {
@@ -91,8 +176,66 @@ const UserEdit = ({ data, e2 }) => {
         editor.commands.setContent(withBrackets)
       }
       setHtmlContent(doctext)
+
+      // Initialize bookmarks array
+      if (data.user.bookmarks && data.user.bookmarks.length > 0) {
+        setBookmarks(data.user.bookmarks)
+      }
     }
   }, [data?.user, editor])
+
+  // Track if form has unsaved changes
+  useEffect(() => {
+    if (!data?.user) return
+
+    const originalData = {
+      realname: data.user.realname || '',
+      email: data.user.email || '',
+      passwd: '',
+      mission: data.user.mission || '',
+      specialties: data.user.specialties || '',
+      employment: data.user.employment || '',
+      motto: data.user.motto || ''
+    }
+
+    const formChanged =
+      formData.realname !== originalData.realname ||
+      formData.email !== originalData.email ||
+      formData.passwd !== '' ||
+      formData.mission !== originalData.mission ||
+      formData.specialties !== originalData.specialties ||
+      formData.employment !== originalData.employment ||
+      formData.motto !== originalData.motto ||
+      removeImage
+
+    // Check if bookmarks changed (removed or reordered)
+    // Use savedBookmarkOrder as baseline if we've saved, otherwise use original data
+    const baselineBookmarkIds = savedBookmarkOrder || (data.user.bookmarks || []).map(b => b.node_id)
+    const currentBookmarkIds = bookmarks.map(b => b.node_id)
+    const bookmarksChanged = removedBookmarks.size > 0 ||
+      JSON.stringify(baselineBookmarkIds) !== JSON.stringify(currentBookmarkIds)
+
+    // Also check if bio content changed (compare to original doctext)
+    const originalDoctext = data.user.doctext || ''
+    const currentBioContent = editorMode === 'html' ? htmlContent : (editor ? editor.getHTML() : '')
+    const bioChanged = currentBioContent !== '' && currentBioContent !== '<p></p>' &&
+      currentBioContent !== convertEntitiesToRawBrackets(originalDoctext)
+
+    setIsDirty(formChanged || bookmarksChanged || bioChanged)
+  }, [formData, removeImage, bookmarks, removedBookmarks, savedBookmarkOrder, htmlContent, editor, editorMode, data?.user])
+
+  // Warn about unsaved changes on navigation
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = ''
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isDirty])
 
   if (!data || !data.user) return null
 
@@ -154,27 +297,24 @@ const UserEdit = ({ data, e2 }) => {
     return ''
   }, [editor, editorMode, htmlContent])
 
-  const handleBookmarkToggle = (nodeId) => {
-    setSelectedBookmarks(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(nodeId)) {
-        newSet.delete(nodeId)
-      } else {
-        newSet.add(nodeId)
-      }
-      return newSet
-    })
-  }
+  // Handle bookmark removal
+  const handleRemoveBookmark = useCallback((nodeId) => {
+    setBookmarks(prev => prev.filter(b => b.node_id !== nodeId))
+    setRemovedBookmarks(prev => new Set([...prev, nodeId]))
+  }, [])
 
-  const handleCheckAll = () => {
-    if (user.bookmarks && user.bookmarks.length > 0) {
-      if (selectedBookmarks.size === user.bookmarks.length) {
-        setSelectedBookmarks(new Set())
-      } else {
-        setSelectedBookmarks(new Set(user.bookmarks.map(b => b.node_id)))
-      }
+  // Handle drag end for bookmark reordering
+  const handleBookmarkDragEnd = useCallback((event) => {
+    const { active, over } = event
+
+    if (active.id !== over.id) {
+      setBookmarks((items) => {
+        const oldIndex = items.findIndex((item) => item.node_id === active.id)
+        const newIndex = items.findIndex((item) => item.node_id === over.id)
+        return arrayMove(items, oldIndex, newIndex)
+      })
     }
-  }
+  }, [])
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
@@ -199,8 +339,15 @@ const UserEdit = ({ data, e2 }) => {
       }
 
       // Add bookmarks to remove
-      if (selectedBookmarks.size > 0) {
-        submitData.bookmark_remove = Array.from(selectedBookmarks)
+      if (removedBookmarks.size > 0) {
+        submitData.bookmark_remove = Array.from(removedBookmarks)
+      }
+
+      // Add bookmark order (array of node_ids in desired order)
+      const originalBookmarkIds = (data.user.bookmarks || []).map(b => b.node_id)
+      const currentBookmarkIds = bookmarks.map(b => b.node_id)
+      if (JSON.stringify(originalBookmarkIds) !== JSON.stringify(currentBookmarkIds)) {
+        submitData.bookmark_order = currentBookmarkIds
       }
 
       // Submit via API
@@ -217,10 +364,10 @@ const UserEdit = ({ data, e2 }) => {
 
       if (result.success) {
         setSuccess('Profile updated successfully!')
-        setSelectedBookmarks(new Set())
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
+        setRemovedBookmarks(new Set())
+        // Update the saved bookmark order baseline so dirty detection uses the new order
+        setSavedBookmarkOrder(bookmarks.map(b => b.node_id))
+        setIsDirty(false)
       } else {
         setError(result.error || 'Failed to update profile')
       }
@@ -229,7 +376,7 @@ const UserEdit = ({ data, e2 }) => {
     } finally {
       setSaving(false)
     }
-  }, [formData, removeImage, selectedBookmarks, user.node_id, getCurrentContent])
+  }, [formData, removeImage, removedBookmarks, bookmarks, user.node_id, getCurrentContent, data.user.bookmarks])
 
   // Handle tab navigation - navigates to Settings page with hash
   const handleTabChange = useCallback((tab) => {
@@ -286,6 +433,12 @@ const UserEdit = ({ data, e2 }) => {
         {error && (
           <span style={{ color: '#d9534f', fontSize: '14px' }}>
             Error: {error}
+          </span>
+        )}
+
+        {isDirty && !saving && !success && (
+          <span style={{ color: '#507898', fontSize: '14px' }}>
+            You have unsaved changes
           </span>
         )}
       </div>
@@ -540,50 +693,6 @@ const UserEdit = ({ data, e2 }) => {
           </div>
         </fieldset>
 
-        {/* Bookmarks section */}
-        {user.bookmarks && user.bookmarks.length > 0 && (
-          <>
-            <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-              Bookmarks
-            </h2>
-
-            <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-              <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Manage Bookmarks</legend>
-              <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
-                Select bookmarks to remove from your list.
-              </p>
-              <button
-                type="button"
-                onClick={handleCheckAll}
-                style={{
-                  marginBottom: '12px',
-                  padding: '6px 12px',
-                  border: '1px solid #4060b0',
-                  borderRadius: '4px',
-                  backgroundColor: 'white',
-                  color: '#4060b0',
-                  cursor: 'pointer',
-                  fontSize: '13px'
-                }}
-              >
-                {selectedBookmarks.size === user.bookmarks.length ? 'Uncheck All' : 'Check All'}
-              </button>
-              <div style={{ maxHeight: '300px', overflow: 'auto', border: '1px solid #eee', borderRadius: '4px', padding: '8px' }}>
-                {user.bookmarks.map((bookmark) => (
-                  <label key={bookmark.node_id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={selectedBookmarks.has(bookmark.node_id)}
-                      onChange={() => handleBookmarkToggle(bookmark.node_id)}
-                    />
-                    <LinkNode nodeId={bookmark.node_id} title={bookmark.title} />
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          </>
-        )}
-
         {/* User bio with TipTap editor */}
         <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
           Bio
@@ -644,6 +753,50 @@ const UserEdit = ({ data, e2 }) => {
             />
           </div>
         </fieldset>
+
+        {/* Bookmarks section - below bio */}
+        {bookmarks.length > 0 && (
+          <>
+            <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+              Bookmarks
+            </h2>
+
+            <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
+              <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Manage Bookmarks</legend>
+              <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+                Drag to reorder your bookmarks, or click × to remove. Changes are saved when you click "Save Changes".
+              </p>
+
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleBookmarkDragEnd}
+              >
+                <SortableContext
+                  items={bookmarks.map(b => b.node_id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div style={{ maxHeight: '400px', overflow: 'auto' }}>
+                    {bookmarks.map((bookmark) => (
+                      <SortableBookmarkItem
+                        key={bookmark.node_id}
+                        id={bookmark.node_id}
+                        title={bookmark.title}
+                        onRemove={handleRemoveBookmark}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+
+              {bookmarks.length === 0 && (
+                <p style={{ color: '#507898', fontStyle: 'italic' }}>
+                  No bookmarks remaining.
+                </p>
+              )}
+            </fieldset>
+          </>
+        )}
       </form>
     </div>
   )

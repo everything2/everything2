@@ -123,7 +123,7 @@ sub check_available
 
 Update user profile information.
 
-Accepts multipart/form-data with the following fields:
+Accepts JSON with the following fields:
 - realname: User's real name
 - email: User's email address
 - passwd: New password (optional, leave blank to keep current)
@@ -132,13 +132,14 @@ Accepts multipart/form-data with the following fields:
 - specialties: User's specialties
 - employment: School/company
 - motto: User's motto
-- remove_user_imgsrc: Set to '1' to remove user image
-- imgsrc: File upload for new user image
-- bookmark_remove: Node IDs of bookmarks to remove (can be multiple)
+- remove_image: Set to true to remove user image
+- bookmark_remove: Array of node IDs of bookmarks to remove
+- bookmark_order: Array of node IDs in desired order (reorders bookmarks)
 
 Response:
 {
   "success": true|false,
+  "changes": ["field1", "field2", ...],
   "error": "Error message if failed"
 }
 
@@ -256,6 +257,26 @@ sub edit_profile {
           ' AND linktype=' . $bookmark_linktype->node_id);
       }
       push @changes, 'bookmarks_removed:' . scalar(@bookmarks_to_remove);
+    }
+  }
+
+  # Handle bookmark reordering
+  if ($data->{bookmark_order}) {
+    my @bookmark_order = ref($data->{bookmark_order}) eq 'ARRAY'
+      ? @{$data->{bookmark_order}}
+      : ($data->{bookmark_order});
+    if (@bookmark_order) {
+      my $bookmark_linktype = $APP->node_by_name('bookmark', 'linktype');
+      my $linktype_id = $bookmark_linktype->node_id;
+      my $order_value = 10;  # Start at 10, increment by 10
+      foreach my $bm_id (@bookmark_order) {
+        $DB->sqlUpdate('links',
+          { food => $order_value },
+          'from_node=' . int($node_id) . ' AND to_node=' . int($bm_id) .
+          ' AND linktype=' . $linktype_id);
+        $order_value += 10;
+      }
+      push @changes, 'bookmarks_reordered:' . scalar(@bookmark_order);
     }
   }
 

@@ -130,16 +130,17 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Teddy Bear | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (fun feature) |
 | List Nodes | 1 | 1 | ✅ 100% | [t/078_list_nodes_api.t](../t/078_list_nodes_api.t) (MockRequest) - node listing by type |
 | **Other** |
+| Gift Shop | 10 | 10 | ✅ 100% | [t/049_giftshop_api.t](../t/049_giftshop_api.t) (20 tests, MockRequest) - stars, votes, chings, eggs, tokens, topic |
 | Wheel | 1 | 1 | ✅ 100% | [t/045_wheel_api.t](../t/045_wheel_api.t) |
 | Tests | 1 | 1 | ✅ 100% | [t/003_api_versions.t](../t/003_api_versions.t) (8 tests - version testing) |
 | Catchall | 0 | 0 | ⚠️ N/A | Empty placeholder module |
 | Writeuptypes | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (writeup type info) |
 
-**Overall API Test Coverage: 90%** (47 of 52 modules have tests)
+**Overall API Test Coverage: 91%** (48 of 53 modules have tests)
 
 **Key Metrics:**
-- Total API Modules: 52
-- Fully Tested: 44 modules (85%)
+- Total API Modules: 53
+- Fully Tested: 45 modules (85%)
 - Partially Tested: 3 modules (6%)
 - No Tests: 5 modules (10%)
 - Test Files: 47 files
@@ -344,6 +345,102 @@ Returns all of the items returned by /api/nodes/:id for that id, plus the follow
 * **motto** - User-inputted text field for "motto" as listed on homenode
 * **is_online** - Whether the user is online. This is mostly used internally to send ONO messages, but could be used for other features in the future
 * **message_forward_to** - Node reference to message recipient if this is a chatterbox forward
+
+### POST /api/user/edit
+
+Updates a user's profile information. Requires authentication. Users can only edit their own profile unless they are an admin.
+
+**Request Body (JSON):**
+
+```json
+{
+  "node_id": 123456,
+  "realname": "John Doe",
+  "email": "john@example.com",
+  "passwd": "newpassword",
+  "user_doctext": "<p>My bio text</p>",
+  "mission": "To node everything",
+  "specialties": "Writing, coding",
+  "employment": "Everything2 Inc",
+  "motto": "Node all the things!",
+  "remove_image": true,
+  "bookmark_remove": [111, 222, 333],
+  "bookmark_order": [444, 555, 666]
+}
+```
+
+**Parameters:**
+
+* **node_id** (required) - The node_id of the user to edit
+* **realname** - User's real name
+* **email** - User's email address
+* **passwd** - New password (leave blank to keep current)
+* **user_doctext** - Bio/homenode HTML text
+* **mission** - Mission drive within everything
+* **specialties** - User's specialties
+* **employment** - School/company
+* **motto** - User's motto
+* **remove_image** - Set to true to remove the user's profile image
+* **bookmark_remove** - Array of node_ids of bookmarks to remove
+* **bookmark_order** - Array of node_ids in desired display order (reorders bookmarks)
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "changes": ["realname", "email", "doctext", "bookmarks_reordered:5"]
+}
+```
+
+**Error Response (200 OK with success=false):**
+
+```json
+{
+  "success": false,
+  "error": "You can only edit your own profile"
+}
+```
+
+### GET /api/user/sanctity
+
+Admin-only endpoint to get a user's sanctity value.
+
+**Query Parameters:**
+
+* **username** (required) - The username to look up
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "username": "johndoe",
+  "sanctity": 5
+}
+```
+
+### GET /api/user/available/:username
+
+Checks if a username is available for registration.
+
+**Response (200 OK):**
+
+```json
+{
+  "available": true,
+  "username": "newuser"
+}
+```
+
+or
+
+```json
+{
+  "available": false,
+  "username": "existinguser"
+}
+```
 
 ## Usergroups
 
@@ -2383,6 +2480,327 @@ The response includes all data needed for the React component to update the UI:
 * **cool** - User won C!s (1 or 5)
 * **refund** - User got their GP back (no net change)
 * **nothing** - User won nothing (various humorous messages)
+
+## Gift Shop
+
+**Test Coverage: ✅ 100%** (10/10 endpoints tested - t/049_giftshop_api.t)
+
+Current version: *1 (beta)*
+
+The Gift Shop API enables users to purchase and give gifts using GP (Gold Points). Users can give stars, votes, C!s, easter eggs, and buy topic tokens. Different actions have different level requirements and costs.
+
+All gift shop methods require logged-in users and return 403 Forbidden for Guest User.
+
+### GET /api/giftshop/status
+
+Gets the user's current gift shop status including GP, inventory, and level.
+
+**Returns:**
+
+200 OK with JSON object:
+
+```json
+{
+  "success": 1,
+  "gp": 150,
+  "level": 7,
+  "votesLeft": 10,
+  "coolsLeft": 2,
+  "tokens": 1,
+  "easterEggs": 3,
+  "starCost": 45,
+  "canBuyChing": true,
+  "chingCooldownMinutes": 0,
+  "topicSuspended": false,
+  "gpOptOut": false
+}
+```
+
+### POST /api/giftshop/star
+
+Give a star to another user. Costs 25-75 GP based on user level (higher levels pay less).
+
+**Level Requirement:** 1+
+
+**Cost:** `75 - ((level - 1) * 5)` GP, minimum 25 GP
+
+**POST Data:**
+
+```json
+{
+  "recipient": "username",
+  "color": "Gold",
+  "reason": "Great writeup about tomatoes!"
+}
+```
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "a Gold Star has been awarded to username.",
+  "newGP": 105
+}
+```
+
+**Notes:**
+- Sends Cool Man Eddie message to recipient
+- Recipient's star count is incremented
+- Security logged
+
+### POST /api/giftshop/buyvotes
+
+Buy additional votes with GP.
+
+**Level Requirement:** 2+
+
+**Cost:** 1 GP per vote
+
+**POST Data:**
+
+```json
+{
+  "amount": 5
+}
+```
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "You purchased 5 votes.",
+  "newGP": 95,
+  "votesLeft": 15
+}
+```
+
+**Notes:**
+- Purchased votes expire at midnight like normal votes
+
+### POST /api/giftshop/givevotes
+
+Give votes to another user (up to 25 at a time).
+
+**Level Requirement:** 9+
+
+**Cost:** None (uses your existing votes)
+
+**POST Data:**
+
+```json
+{
+  "recipient": "username",
+  "amount": 5,
+  "anonymous": true
+}
+```
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "5 votes given to username.",
+  "votesLeft": 5
+}
+```
+
+**Notes:**
+- Recipient's sanctity is incremented
+- Sends Cool Man Eddie message (anonymous optional)
+
+### POST /api/giftshop/giveching
+
+Give a C! to another user.
+
+**Level Requirement:** 4+ (giver), 1+ (recipient)
+
+**Cost:** None (uses your existing C!)
+
+**POST Data:**
+
+```json
+{
+  "recipient": "username",
+  "anonymous": true
+}
+```
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "A C! has been given to username.",
+  "coolsLeft": 1
+}
+```
+
+### POST /api/giftshop/buyching
+
+Buy a C! for 100 GP. 24-hour cooldown between purchases.
+
+**Level Requirement:** 12+
+
+**Cost:** 100 GP
+
+**POST Data:**
+
+No request body required.
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "You purchased a C!",
+  "newGP": 50,
+  "coolsLeft": 3
+}
+```
+
+**Error Response (cooldown active):**
+
+```json
+{
+  "success": 0,
+  "error": "You can only buy one C! every 24 hours. You can buy another in 3 hours, 45 minutes."
+}
+```
+
+### POST /api/giftshop/buytoken
+
+Buy a topic token for 25 GP.
+
+**Level Requirement:** 6+
+
+**Cost:** 25 GP
+
+**POST Data:**
+
+No request body required.
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "You purchased a token.",
+  "newGP": 75,
+  "tokens": 2
+}
+```
+
+### POST /api/giftshop/settopic
+
+Set the room topic using a token.
+
+**Level Requirement:** 6+ (or Editor)
+
+**Cost:** 1 token (free for Editors)
+
+**POST Data:**
+
+```json
+{
+  "topic": "Welcome to Everything2!"
+}
+```
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "The topic has been updated.",
+  "tokens": 0
+}
+```
+
+**Error Response (suspended):**
+
+```json
+{
+  "success": 0,
+  "error": "Your topic privileges have been suspended."
+}
+```
+
+### POST /api/giftshop/buyeggs
+
+Buy easter eggs (1-5 at a time).
+
+**Level Requirement:** 7+
+
+**Cost:** 25 GP per egg
+
+**POST Data:**
+
+```json
+{
+  "amount": 5
+}
+```
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "You purchased 5 easter eggs.",
+  "newGP": 75,
+  "easterEggs": 8
+}
+```
+
+### POST /api/giftshop/giveegg
+
+Give an easter egg to another user.
+
+**Level Requirement:** 7+
+
+**Cost:** None (uses your existing eggs)
+
+**POST Data:**
+
+```json
+{
+  "recipient": "username",
+  "anonymous": true
+}
+```
+
+**Returns:**
+
+```json
+{
+  "success": 1,
+  "message": "An easter egg has been given to username.",
+  "easterEggs": 2
+}
+```
+
+**Notes:**
+- Sends Cool Man Eddie message (anonymous optional)
+
+### Gift Shop Level Requirements Summary
+
+| Action | Level | Cost |
+|--------|-------|------|
+| Give Star | 1+ | 25-75 GP |
+| Buy Votes | 2+ | 1 GP/vote |
+| Give C! | 4+ | 0 (uses your C!) |
+| Buy Token | 6+ | 25 GP |
+| Set Topic | 6+ | 1 token (free for editors) |
+| Buy Eggs | 7+ | 25 GP/egg |
+| Give Eggs | 7+ | 0 (uses your eggs) |
+| Give Votes | 9+ | 0 (uses your votes) |
+| Sanctify | 11+ | (via Sanctify page) |
+| Buy C! | 12+ | 100 GP (24hr cooldown) |
+
+**GPoptout Note:** Users with GP opt-out enabled cannot use GP-spending features but can still give away existing inventory (votes, C!s, eggs).
 
 ## Sessions
 
