@@ -134,7 +134,7 @@ sub layout
   $e2->{nodeletorder} = \@nodeletorder;
 
   my $cookie = undef;
-  foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
+  foreach ('fxDuration', 'collapsedNodelets', 'autoChat', 'inactiveWindowMarker'){
     if (!$REQUEST->is_guest){
       $REQUEST->VARS->{$_} = $cookie if($cookie = $REQUEST->cookie($_));
       delete $REQUEST->VARS->{$_} if(defined($cookie) and $cookie eq '0');

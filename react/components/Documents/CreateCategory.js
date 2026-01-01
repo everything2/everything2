@@ -1,12 +1,33 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
+import { useEditor, EditorContent } from '@tiptap/react'
+import { getE2EditorExtensions } from '../Editor/useE2Editor'
+import { convertToE2Syntax } from '../Editor/E2LinkExtension'
+import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
+import MenuBar from '../Editor/MenuBar'
+import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
+import '../Editor/E2Editor.css'
 
 /**
  * Create Category - Form for creating new categories
  *
  * Allows users to create categories maintained by themselves, any noder,
  * or any usergroup they belong to.
+ *
+ * Uses TipTap editor for the description with Rich/HTML mode toggle.
  */
+
+// Get initial editor mode from localStorage (same preference as writeup editor)
+const getInitialEditorMode = () => {
+  try {
+    const stored = localStorage.getItem('e2_editor_mode')
+    if (stored === 'html') return 'html'
+  } catch (e) {
+    // localStorage may not be available
+  }
+  return 'rich'
+}
+
 const CreateCategory = ({ data }) => {
   const {
     error,
@@ -22,8 +43,77 @@ const CreateCategory = ({ data }) => {
 
   const [categoryName, setCategoryName] = useState('')
   const [maintainer, setMaintainer] = useState(user_id || '')
-  const [description, setDescription] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Editor state
+  const [editorMode, setEditorMode] = useState(getInitialEditorMode)
+  const [htmlContent, setHtmlContent] = useState('')
+  const [showPreview, setShowPreview] = useState(true)
+  const [previewTrigger, setPreviewTrigger] = useState(0)
+
+  // Initialize TipTap editor
+  const editor = useEditor({
+    extensions: getE2EditorExtensions(),
+    content: '',
+    editable: true,
+    onUpdate: ({ editor }) => {
+      const newContent = editor.getHTML()
+      if (editorMode === 'rich') {
+        setHtmlContent(newContent)
+      }
+      setPreviewTrigger(prev => prev + 1)
+    }
+  })
+
+  // Toggle between rich and HTML modes
+  const handleModeToggle = useCallback(() => {
+    if (!editor) return
+
+    const newMode = editorMode === 'rich' ? 'html' : 'rich'
+
+    if (editorMode === 'rich') {
+      const html = editor.getHTML()
+      const e2Html = convertToE2Syntax(html)
+      const cleanedHtml = convertRawBracketsToEntities(e2Html)
+      setHtmlContent(cleanedHtml)
+    } else {
+      editor.commands.setContent(convertEntitiesToRawBrackets(htmlContent))
+    }
+
+    setEditorMode(newMode)
+
+    try {
+      localStorage.setItem('e2_editor_mode', newMode)
+    } catch (e) {
+      // localStorage may not be available
+    }
+
+    fetch('/api/preferences/set', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ tiptap_editor_raw: newMode === 'html' ? 1 : 0 })
+    }).catch(err => console.error('Failed to save editor mode preference:', err))
+  }, [editor, editorMode, htmlContent])
+
+  // Get current content based on mode
+  const getCurrentContent = useCallback(() => {
+    if (editorMode === 'html') {
+      return htmlContent
+    } else if (editor) {
+      let content = editor.getHTML()
+      content = convertToE2Syntax(content)
+      content = convertRawBracketsToEntities(content)
+      return content
+    }
+    return htmlContent
+  }, [editor, editorMode, htmlContent])
+
+  // Handle HTML textarea changes
+  const handleHtmlChange = (e) => {
+    setHtmlContent(e.target.value)
+    setPreviewTrigger(prev => prev + 1)
+  }
 
   // Show error states
   if (mustLogin) {
@@ -63,7 +153,8 @@ const CreateCategory = ({ data }) => {
       return
     }
 
-    if (!description.trim()) {
+    const description = getCurrentContent()
+    if (!description.trim() || description === '<p></p>') {
       alert('Please enter a category description.')
       return
     }
@@ -184,15 +275,75 @@ const CreateCategory = ({ data }) => {
 
         <fieldset style={styles.fieldset}>
           <legend style={styles.legend}>Category Description</legend>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={10}
-            cols={60}
-            style={styles.textarea}
-            className="formattable"
-            disabled={isSubmitting}
-          />
+
+          {/* Mode toggle - right aligned */}
+          <div style={styles.modeToggleRow}>
+            <div
+              className="e2-mode-toggle"
+              onClick={handleModeToggle}
+              title={editorMode === 'rich' ? 'Switch to raw HTML editing' : 'Switch to rich text editing'}
+            >
+              <div className={`e2-mode-toggle-option ${editorMode === 'rich' ? 'active' : ''}`}
+                   style={{ backgroundColor: editorMode === 'rich' ? '#4060b0' : 'transparent' }}>
+                Rich
+              </div>
+              <div className={`e2-mode-toggle-option ${editorMode === 'html' ? 'active' : ''}`}
+                   style={{ backgroundColor: editorMode === 'html' ? '#4060b0' : 'transparent' }}>
+                HTML
+              </div>
+            </div>
+          </div>
+
+          {/* Rich text editor */}
+          {editorMode === 'rich' && editor && (
+            <div style={styles.editorWrapper}>
+              <MenuBar editor={editor} />
+              <div className="e2-editor-wrapper" style={{ padding: '12px', minHeight: '150px' }}>
+                <EditorContent editor={editor} />
+              </div>
+            </div>
+          )}
+
+          {/* HTML textarea */}
+          {editorMode === 'html' && (
+            <textarea
+              value={htmlContent}
+              onChange={handleHtmlChange}
+              style={styles.htmlTextarea}
+              placeholder="Enter HTML content..."
+              spellCheck={false}
+              disabled={isSubmitting}
+            />
+          )}
+
+          {/* Preview section */}
+          <div style={styles.previewSection}>
+            <div style={styles.previewHeader}>
+              <h4 style={styles.previewTitle}>Preview</h4>
+              <button
+                type="button"
+                onClick={() => setShowPreview(!showPreview)}
+                style={styles.previewToggleButton}
+              >
+                {showPreview ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            {showPreview && (
+              <PreviewContent
+                editor={editor}
+                editorMode={editorMode}
+                htmlContent={htmlContent}
+                previewTrigger={previewTrigger}
+              />
+            )}
+          </div>
+
+          {/* Help text */}
+          <div style={styles.helpText}>
+            <strong>Tip:</strong> You can use{' '}
+            <a className="externalLink" href="/title/E2+Link+Syntax" rel="nofollow" title="/title/E2+Link+Syntax" style={{ fontSize: 'inherit' }}>E2 link syntax</a>{' '}
+            like <code>[node title]</code> or <code>[display text|node title]</code> to create links.
+          </div>
         </fieldset>
 
         <div style={styles.formGroup}>
@@ -278,14 +429,65 @@ const styles = {
     color: '#38495e',
     padding: '0 10px'
   },
-  textarea: {
-    width: '100%',
-    padding: '8px',
-    fontSize: '13px',
+  modeToggleRow: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginBottom: '10px'
+  },
+  editorWrapper: {
     border: '1px solid #ccc',
     borderRadius: '4px',
+    overflow: 'hidden',
+    backgroundColor: '#fff'
+  },
+  htmlTextarea: {
+    width: '100%',
+    minHeight: '200px',
     fontFamily: 'monospace',
-    resize: 'vertical'
+    fontSize: '13px',
+    padding: '12px',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    backgroundColor: '#fff',
+    color: '#333',
+    lineHeight: '1.5',
+    resize: 'vertical',
+    boxSizing: 'border-box'
+  },
+  previewSection: {
+    marginTop: '16px',
+    borderTop: '1px solid #ddd',
+    paddingTop: '12px'
+  },
+  previewHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '8px'
+  },
+  previewTitle: {
+    margin: 0,
+    fontSize: '14px',
+    color: '#666',
+    fontWeight: '500'
+  },
+  previewToggleButton: {
+    background: 'none',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    padding: '2px 8px',
+    fontSize: '11px',
+    color: '#666',
+    cursor: 'pointer'
+  },
+  helpText: {
+    marginTop: '12px',
+    padding: '10px',
+    backgroundColor: '#e3f2fd',
+    border: '1px solid #90caf9',
+    borderRadius: '4px',
+    fontSize: '12px',
+    color: '#1565c0'
   },
   submitButton: {
     padding: '10px 20px',

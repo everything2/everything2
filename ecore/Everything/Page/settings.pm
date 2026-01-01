@@ -52,7 +52,6 @@ sub buildReactData
 
   ## Your Writeups - Editing
   $settings_prefs{HideWriteupOnE2node} = int($VARS->{HideWriteupOnE2node} || 0);
-  $settings_prefs{settings_useTinyMCE} = int($VARS->{settings_useTinyMCE} || 0);
   $settings_prefs{textareaSize} = int($VARS->{textareaSize} || 0);
 
   ## Your Writeups - Hints

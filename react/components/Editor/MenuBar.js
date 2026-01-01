@@ -69,6 +69,7 @@ const MenuBar = ({ editor }) => {
       {/* Text formatting */}
       <div style={groupStyle}>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           style={buttonStyle(editor.isActive('bold'))}
           title="Bold (Ctrl+B)"
@@ -76,6 +77,7 @@ const MenuBar = ({ editor }) => {
           <strong>B</strong>
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           style={buttonStyle(editor.isActive('italic'))}
           title="Italic (Ctrl+I)"
@@ -83,6 +85,7 @@ const MenuBar = ({ editor }) => {
           <em>I</em>
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           style={buttonStyle(editor.isActive('underline'))}
           title="Underline (Ctrl+U)"
@@ -90,6 +93,7 @@ const MenuBar = ({ editor }) => {
           <u>U</u>
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleStrike().run()}
           style={buttonStyle(editor.isActive('strike'))}
           title="Strikethrough"
@@ -97,6 +101,7 @@ const MenuBar = ({ editor }) => {
           <s>S</s>
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleSubscript().run()}
           style={buttonStyle(editor.isActive('subscript'))}
           title="Subscript"
@@ -104,6 +109,7 @@ const MenuBar = ({ editor }) => {
           X<sub>2</sub>
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleSuperscript().run()}
           style={buttonStyle(editor.isActive('superscript'))}
           title="Superscript"
@@ -154,6 +160,7 @@ const MenuBar = ({ editor }) => {
       {/* Lists */}
       <div style={groupStyle}>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           style={buttonStyle(editor.isActive('bulletList'))}
           title="Bullet List"
@@ -161,6 +168,7 @@ const MenuBar = ({ editor }) => {
           •
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           style={buttonStyle(editor.isActive('orderedList'))}
           title="Numbered List"
@@ -172,6 +180,7 @@ const MenuBar = ({ editor }) => {
       {/* Block elements */}
       <div style={groupStyle}>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           style={buttonStyle(editor.isActive('blockquote'))}
           title="Blockquote"
@@ -179,6 +188,7 @@ const MenuBar = ({ editor }) => {
           "
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleCode().run()}
           style={buttonStyle(editor.isActive('code'))}
           title="Inline Code"
@@ -186,6 +196,7 @@ const MenuBar = ({ editor }) => {
           {'</>'}
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           style={buttonStyle(editor.isActive('codeBlock'))}
           title="Code Block"
@@ -193,6 +204,7 @@ const MenuBar = ({ editor }) => {
           {'{ }'}
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
           style={buttonStyle(false)}
           title="Horizontal Rule"
@@ -204,6 +216,7 @@ const MenuBar = ({ editor }) => {
       {/* Text alignment */}
       <div style={groupStyle}>
         <button
+          type="button"
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
           style={buttonStyle(editor.isActive({ textAlign: 'left' }))}
           title="Align Left"
@@ -211,6 +224,7 @@ const MenuBar = ({ editor }) => {
           <FaAlignLeft style={{ verticalAlign: 'middle' }} />
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
           style={buttonStyle(editor.isActive({ textAlign: 'center' }))}
           title="Align Center"
@@ -218,6 +232,7 @@ const MenuBar = ({ editor }) => {
           <FaAlignCenter style={{ verticalAlign: 'middle' }} />
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
           style={buttonStyle(editor.isActive({ textAlign: 'right' }))}
           title="Align Right"
@@ -229,6 +244,7 @@ const MenuBar = ({ editor }) => {
       {/* E2 Link */}
       <div style={groupStyle}>
         <button
+          type="button"
           onClick={() => {
             // Get selected text to pre-fill dialog
             const { from, to } = editor.state.selection;
@@ -247,6 +263,7 @@ const MenuBar = ({ editor }) => {
       {/* Raw Brackets */}
       <div style={groupStyle}>
         <button
+          type="button"
           onClick={() => editor.chain().focus().insertRawLeftBracket().run()}
           style={buttonStyle(false)}
           title="Insert Raw Left Bracket (won't be parsed as link)"
@@ -254,6 +271,7 @@ const MenuBar = ({ editor }) => {
           &#91;
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().insertRawRightBracket().run()}
           style={buttonStyle(false)}
           title="Insert Raw Right Bracket (won't be parsed as link)"
@@ -265,6 +283,7 @@ const MenuBar = ({ editor }) => {
       {/* Table */}
       <div style={groupStyle}>
         <button
+          type="button"
           onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}
           style={buttonStyle(false)}
           title="Insert Table"
@@ -274,6 +293,7 @@ const MenuBar = ({ editor }) => {
         {editor.isActive('table') && (
           <>
             <button
+              type="button"
               onClick={() => editor.chain().focus().addColumnAfter().run()}
               style={buttonStyle(false)}
               title="Add Column"
@@ -281,6 +301,7 @@ const MenuBar = ({ editor }) => {
               +Col
             </button>
             <button
+              type="button"
               onClick={() => editor.chain().focus().addRowAfter().run()}
               style={buttonStyle(false)}
               title="Add Row"
@@ -288,6 +309,7 @@ const MenuBar = ({ editor }) => {
               +Row
             </button>
             <button
+              type="button"
               onClick={() => editor.chain().focus().deleteTable().run()}
               style={buttonStyle(false)}
               title="Delete Table"
@@ -301,6 +323,7 @@ const MenuBar = ({ editor }) => {
       {/* Undo/Redo */}
       <div style={{ ...groupStyle, borderRight: 'none' }}>
         <button
+          type="button"
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
           style={{
@@ -312,6 +335,7 @@ const MenuBar = ({ editor }) => {
           ↩
         </button>
         <button
+          type="button"
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().redo()}
           style={{
@@ -394,6 +418,7 @@ const MenuBar = ({ editor }) => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button
+                type="button"
                 onClick={() => {
                   setShowLinkDialog(false);
                   setLinkTitle('');
@@ -410,6 +435,7 @@ const MenuBar = ({ editor }) => {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={insertLink}
                 disabled={!linkTitle}
                 style={{

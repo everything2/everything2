@@ -229,6 +229,27 @@ class E2ReactRoot extends React.Component {
   componentDidMount() {
     // NewWriteups component now handles its own polling with activity detection
     // this.scheduleCronNewWriteups()
+
+    // Listen for user state updates from other components (e.g., gift shop buying votes)
+    window.addEventListener('e2:userUpdate', this.handleUserUpdate)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('e2:userUpdate', this.handleUserUpdate)
+  }
+
+  handleUserUpdate = (event) => {
+    const updates = event.detail
+    if (updates) {
+      // Update user state with the provided changes
+      this.setState(prevState => ({
+        user: { ...prevState.user, ...updates }
+      }))
+      // Also update window.e2.user for consistency
+      if (window.e2?.user) {
+        Object.assign(window.e2.user, updates)
+      }
+    }
   }
 
   apiEndpoint = () => {

@@ -2113,3 +2113,88 @@ create_category_with_members(
 );
 
 print STDERR "\n=== Category creation complete ===\n";
+
+# ============================================================
+# XP Recalculation Test Data
+# Create a "legacy" user that qualifies for XP recalculation
+# The recalculate_xp function checks: user_id <= 1960662
+# We'll create a user and then update their user_id to simulate
+# a pre-October 2008 account
+# ============================================================
+print STDERR "\n=== Setting up XP Recalculation test data ===\n";
+
+# Create a user for testing XP recalculation
+print STDERR "Creating legacy_user for XP recalculation testing\n";
+my $legacy_user = getNode("legacy_user", "user");
+if (!$legacy_user) {
+  $DB->insertNode("legacy_user", "user", -1, {"lasttime" => $now});
+  $legacy_user = getNode("legacy_user", "user");
+  $legacy_user->{author_user} = $legacy_user->{node_id};
+  my ($pwhash, $salt) = $APP->saltNewPassword("legacy123");
+  $legacy_user->{passwd} = $pwhash;
+  $legacy_user->{salt} = $salt;
+  $legacy_user->{experience} = 500;  # Give them some XP to recalculate
+  $legacy_user->{GP} = 50;
+  $DB->updateNode($legacy_user, -1);
+}
+
+# Update the user_id to be a "legacy" ID (below the magic number 1960662)
+# We'll use 1960000 as a test ID
+my $legacy_user_id = 1960000;
+print STDERR "Setting legacy_user user_id to $legacy_user_id (pre-October 2008)\n";
+$DB->sqlUpdate('user', {user_id => $legacy_user_id}, "user_id = $legacy_user->{node_id}");
+$DB->sqlUpdate('node', {node_id => $legacy_user_id, author_user => $legacy_user_id}, "node_id = $legacy_user->{node_id}");
+
+# Refresh the user object with the new ID
+$legacy_user = $DB->getNodeById($legacy_user_id);
+
+if ($legacy_user) {
+  print STDERR "legacy_user now has user_id: $legacy_user->{node_id}\n";
+
+  # Get writeup type ID (117 is the writeup nodetype)
+  my $writeup_type = $DB->getType('writeup');
+  my $writeup_type_id = $writeup_type ? $writeup_type->{node_id} : 117;
+
+  # Insert a heaven entry (deleted writeup with reputation)
+  # This simulates a writeup that was deleted but had votes
+  print STDERR "Creating heaven entry for legacy_user (reputation: 15)\n";
+  $DB->sqlInsert('heaven', {
+    type_nodetype => $writeup_type_id,
+    title => "Legacy User's Deleted Writeup (thing)",
+    author_user => $legacy_user_id,
+    killa_user => 113,  # root
+    createtime => $APP->convertEpochToDate(time() - 86400 * 30),
+    hits => 50,
+    reputation => 15,
+    data => "This is a test writeup that was 'deleted' to test XP recalculation from Node Heaven."
+  });
+
+  # Insert xpHistoryCache entry (cached upvotes/cools from deleted content)
+  print STDERR "Creating xpHistoryCache entry for legacy_user (upvotes: 10, cools: 2)\n";
+  $DB->sqlInsert('xpHistoryCache', {
+    xpHistoryCache_id => $legacy_user_id,
+    upvotes => 10,
+    cools => 2
+  });
+
+  # Set up user vars (no hasRecalculated flag = eligible)
+  my $legacy_vars = getVars($legacy_user);
+  # Explicitly ensure hasRecalculated is NOT set
+  delete $legacy_vars->{hasRecalculated};
+  setVars($legacy_user, $legacy_vars);
+  $DB->updateNode($legacy_user, -1);
+
+  print STDERR "XP Recalculation test data complete:\n";
+  print STDERR "  - User: legacy_user (user_id: $legacy_user_id)\n";
+  print STDERR "  - Current XP: 500\n";
+  print STDERR "  - Heaven reputation: 15\n";
+  print STDERR "  - Cached upvotes: 10, cached cools: 2\n";
+  print STDERR "  - Expected recalculated XP formula:\n";
+  print STDERR "    (writeups * 5) + (upvotes + cache + heaven) + (cools * 20)\n";
+  print STDERR "    = (0 * 5) + (0 + 10 + 15) + (2 * 20) = 0 + 25 + 40 = 65\n";
+  print STDERR "  - Bonus GP (if recalculated): 500 - 65 = 435 GP\n";
+} else {
+  print STDERR "ERROR: Could not set up legacy_user for XP recalculation testing\n";
+}
+
+print STDERR "\n=== XP Recalculation test data complete ===\n";

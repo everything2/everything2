@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react'
-import { FaUserCog } from 'react-icons/fa'
+import React, { useState } from 'react'
+import { FaUserCog, FaHandHoldingHeart } from 'react-icons/fa'
 import LinkNode from '../LinkNode'
 import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import MessageBox from '../MessageBox'
@@ -13,8 +13,6 @@ import TimeSince from '../TimeSince'
  * Preserves the legacy HTML structure: #homenodeheader, #homenodepicbox, #userinfo dl, etc.
  */
 const UserDisplay = ({ data, e2 }) => {
-  const [bookmarkSort, setBookmarkSort] = useState('nodename')
-  const [bookmarkOrder, setBookmarkOrder] = useState('asc')
   const [isToolsModalOpen, setIsToolsModalOpen] = useState(false)
 
   // Helper to render E2 content with link parsing and HTML entity decoding
@@ -27,30 +25,6 @@ const UserDisplay = ({ data, e2 }) => {
   if (!data || !data.user) return null
 
   const { user, viewer, is_own, is_ignored, message_count, recent_writeup_count, is_infected } = data
-
-  // Sort bookmarks
-  const sortedBookmarks = useMemo(() => {
-    if (!user.bookmarks || user.bookmarks.length === 0) return []
-
-    return [...user.bookmarks].sort((a, b) => {
-      let comparison = 0
-      if (bookmarkSort === 'nodename') {
-        comparison = (a.title || '').toLowerCase().localeCompare((b.title || '').toLowerCase())
-      } else if (bookmarkSort === 'tstamp') {
-        comparison = (a.tstamp || '').localeCompare(b.tstamp || '')
-      }
-      return bookmarkOrder === 'desc' ? -comparison : comparison
-    })
-  }, [user.bookmarks, bookmarkSort, bookmarkOrder])
-
-  const handleSort = (sortBy) => {
-    if (bookmarkSort === sortBy) {
-      setBookmarkOrder(bookmarkOrder === 'asc' ? 'desc' : 'asc')
-    } else {
-      setBookmarkSort(sortBy)
-      setBookmarkOrder('asc')
-    }
-  }
 
   // Check if a date is valid for display
   const isValidDate = (isoDate) => {
@@ -97,6 +71,23 @@ const UserDisplay = ({ data, e2 }) => {
               >
                 <FaUserCog />
               </button>
+            )}
+            {/* Sanctify icon - for Level 11+ users or editors */}
+            {(viewer.is_editor || (e2?.user?.level >= 11)) && (
+              <a
+                href={`/title/Sanctify%20user?recipient=${encodeURIComponent(user.title)}`}
+                title={`Sanctify ${user.title}`}
+                style={{
+                  color: '#4060b0',
+                  fontSize: '1.2rem',
+                  padding: '0.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  textDecoration: 'none'
+                }}
+              >
+                <FaHandHoldingHeart />
+              </a>
             )}
             {/* Message envelope */}
             {!user.hidemsgme && (
@@ -395,26 +386,12 @@ const UserDisplay = ({ data, e2 }) => {
         <div className="bookmarks-section">
           <h2>Bookmarks</h2>
           <ul className="linklist" id="bookmarklist">
-            {sortedBookmarks.map((bookmark) => (
-              <li key={bookmark.node_id} data-tstamp={bookmark.tstamp} data-nodename={bookmark.title?.toLowerCase()}>
+            {user.bookmarks.map((bookmark) => (
+              <li key={bookmark.node_id}>
                 <LinkNode nodeId={bookmark.node_id} title={bookmark.title} />
               </li>
             ))}
           </ul>
-          <p>
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); handleSort('nodename') }}
-            >
-              Sort by name
-            </a>{' '}
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); handleSort('tstamp') }}
-            >
-              Sort by date
-            </a>
-          </p>
         </div>
       )}
 

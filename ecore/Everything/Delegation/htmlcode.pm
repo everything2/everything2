@@ -3796,7 +3796,7 @@ sub static_javascript
   $e2->{lastnode_id} = $lastnode;
 
   my $cookie = undef;
-  foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
+  foreach ('fxDuration', 'collapsedNodelets', 'autoChat', 'inactiveWindowMarker'){
     if (!$APP->isGuest($USER)){
       $$VARS{$_} = $cookie if($cookie = $query->cookie($_));
       delete $$VARS{$_} if(defined($cookie) and $cookie eq '0');
@@ -3883,10 +3883,6 @@ sub static_javascript
   $e2 = JSON->new->encode($e2);
 
   my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';
-
-  unless ($APP->isGuest($USER)){
-      $libraries .= qq|<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>|;
-  }
   $libraries .= qq|<script src="|.$APP->asset_uri("legacy.js").qq|" type="text/javascript"></script>|;
   $libraries .= qq|<script src="|.$APP->asset_uri("react/main.bundle.js").qq|" type="text/javascript"></script>|;
   return qq|

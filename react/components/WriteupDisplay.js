@@ -745,6 +745,13 @@ const handleVote = async (writeupId, weight, setVoteState, setErrorMessage) => {
       upvotes: data.upvotes,
       downvotes: data.downvotes
     }))
+
+    // Update epicenter with new votes remaining
+    if (data.votes_remaining !== undefined) {
+      window.dispatchEvent(new CustomEvent('e2:userUpdate', {
+        detail: { votesleft: data.votes_remaining }
+      }))
+    }
   } catch (error) {
     console.error('Error voting:', error)
     setErrorMessage(`Failed to cast vote: ${error.message}`)
@@ -772,6 +779,13 @@ const handleCool = async (writeupId, user, setCoolState, setErrorMessage) => {
       cools: [...prev.cools, { node_id: user.node_id, title: user.title }],
       hasCooled: true
     }))
+
+    // Update epicenter with new C!s remaining
+    if (data.cools_remaining !== undefined) {
+      window.dispatchEvent(new CustomEvent('e2:userUpdate', {
+        detail: { coolsleft: data.cools_remaining }
+      }))
+    }
   } catch (error) {
     console.error('Error awarding C!:', error)
     setErrorMessage(`Failed to award C!: ${error.message}`)

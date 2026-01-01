@@ -5204,9 +5204,10 @@ sub get_bookmarks
   return [] unless $user_id;
 
   my $linktype=$this->{db}->getId($this->{db}->getNode('bookmark', 'linktype'));
-  my $sqlstring = "from_node=$user_id and linktype=$linktype ORDER BY title";
+  # Order by food (custom ordering) first, then by title for bookmarks without custom order
+  my $sqlstring = "from_node=$user_id and linktype=$linktype ORDER BY food ASC, title ASC";
 
-  my $csr = $this->{db}->sqlSelectMany('to_node, title,
+  my $csr = $this->{db}->sqlSelectMany('to_node, title, food,
     UNIX_TIMESTAMP(createtime) AS tstamp',
     'links JOIN node ON to_node=node_id',
     $sqlstring);

@@ -59,7 +59,7 @@
 | Create Room | Superdoc | `/title/Create+Room` | React |
 | Database Lag-o-meter | Superdoc | `/title/Database+Lag-o-meter` | React |
 | Decloaker | Superdoc | `/title/Decloaker` | React |
-| Display Categories | Superdoc | `/title/Display+Categories` | E2 Legacy |
+| Display Categories | Superdoc | `/title/Display+Categories` | React |
 | Do You C! What I C? | Superdoc | `/title/Do+You+C!+What+I+C?` | React |
 | Drafts | Superdoc | `/title/Drafts` | React |
 | Drafts for review | Superdoc | `/title/Drafts+for+review` | React |
@@ -68,7 +68,7 @@
 | E2 Bouncer | Superdoc | `/title/E2+Bouncer` | React |
 | E2 Collaboration Nodes | Superdoc | `/title/E2+Collaboration+Nodes` | E2 Legacy |
 | E2 Full Text Search | Superdoc | `/title/E2+Full+Text+Search` | React |
-| E2 Gift Shop | Superdoc | `/title/E2+Gift+Shop` | E2 Legacy |
+| E2 Gift Shop | Superdoc | `/title/E2+Gift+Shop` | React |
 | E2 Marble Shop | Superdoc | `/title/E2+Marble+Shop` | React |
 | E2 Penny Jar | Superdoc | `/title/E2+Penny+Jar` | React |
 | E2 Rot13 Encoder | Superdoc | `/title/E2+Rot13+Encoder` | React |
@@ -267,7 +267,7 @@
 | Renunciation Chainsaw | Oppressor Superdoc | `/title/Renunciation+Chainsaw` | E2 Legacy |
 | Security Monitor | Oppressor Superdoc | `/title/Security+Monitor` | E2 Legacy |
 | Server Telemetry | Oppressor Superdoc | `/title/Server+Telemetry` | React |
-| The Nodeshell Hopper | Oppressor Superdoc | `/title/The+Nodeshell+Hopper` | E2 Legacy |
+| The Nodeshell Hopper | Oppressor Superdoc | `/title/The+Nodeshell+Hopper` | React |
 | The Oracle | Oppressor Superdoc | `/title/The+Oracle` | E2 Legacy |
 | Websterbless | Oppressor Superdoc | `/title/Websterbless` | React |
 | What Does What | Oppressor Superdoc | `/title/What+Does+What` | React |
@@ -428,6 +428,18 @@ For any new documents that need implementation:
   - **December 27, 2025 Session**:
     - What Does What: Migrated to React with StaffOnly security mixin
     - Removed what_does_what delegation from document.pm
+  - **December 31, 2025 Session**:
+    - E2 Gift Shop: Migrated to React with API backend (Everything::API::giftshop)
+    - Sanctify user: Migrated to React with API backend (Everything::API::sanctify)
+    - Added sanctify icon to user page header (visible to Level 11+ or editors)
+    - Sanctify form pre-fills recipient from query parameter when linked from user page
+    - Display Categories: Migrated to React with filter/sort/pagination
+    - Removed e2_gift_shop delegation from document.pm (~55 lines removed)
+    - Removed sanctify_user delegation from document.pm (~53 lines removed)
+    - Removed display_categories delegation from document.pm (~172 lines removed)
+    - The Nodeshell Hopper: Migrated to React with API backend (Everything::API::nodeshells)
+    - Removed the_nodeshell_hopper delegation from document.pm (~96 lines removed)
+    - Removed hardcoded exempt node_ids from nodeshell hopper (unused wharfcode)
 
 ---
 *For questions or updates, see [CLAUDE.md](../CLAUDE.md)*

@@ -166,6 +166,7 @@ const COMPONENT_MAP = {
 
   // Category system
   create_category: lazy(() => import('./Documents/CreateCategory')),
+  display_categories: lazy(() => import('./Documents/DisplayCategories')),
 
   // Editor beta (Tiptap testing)
   e2_editor_beta: lazy(() => import('./Documents/EditorBeta')),
@@ -217,6 +218,9 @@ const COMPONENT_MAP = {
   e2_sperm_counter: lazy(() => import('./Documents/E2SpermCounter')),
   e2_source_code_formatter: lazy(() => import('./Documents/E2SourceCodeFormatter')),
   e2_marble_shop: lazy(() => import('./Documents/E2MarbleShop')),
+  e2_gift_shop: lazy(() => import('./Documents/E2GiftShop')),
+  sanctify_user: lazy(() => import('./Documents/SanctifyUser')),
+  sanctify: lazy(() => import('./Documents/SanctifyUser')),
   e2_penny_jar: lazy(() => import('./Documents/E2PennyJar')),
   my_achievements: lazy(() => import('./Documents/MyAchievements')),
 
@@ -377,7 +381,10 @@ const COMPONENT_MAP = {
   welcome_to_everything: lazy(() => import('./Documents/WelcomeToEverything')),
 
   // Admin superdoc directory
-  what_does_what: lazy(() => import('./Documents/WhatDoesWhat'))
+  what_does_what: lazy(() => import('./Documents/WhatDoesWhat')),
+
+  // Admin node management tools
+  the_nodeshell_hopper: lazy(() => import('./Documents/TheNodeshellHopper'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

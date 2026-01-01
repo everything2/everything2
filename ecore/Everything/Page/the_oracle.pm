@@ -101,7 +101,7 @@ sub buildReactData {
 
         # Variables that CEs can see (limited subset)
         my %ce_allowed = map { $_ => 1 } qw(
-            settings_useTinyMCE easter_eggs nodelets userstyle wuhead browser
+            easter_eggs nodelets userstyle wuhead browser
         );
 
         # Variables to skip entirely
@@ -181,9 +181,11 @@ sub buildReactData {
             { var => 'browser',           desc => 'the web browser and operating system the noder is using' },
             { var => 'easter_eggs',       desc => 'how many easter eggs the noder has' },
             { var => 'nodelets',          desc => 'list of nodelets the noder has turned on, node_id and name' },
-            { var => 'settings_useTinyMCE', desc => 'whether or not the noder has tinyMCE turned on' },
             { var => 'userstyle',         desc => 'the Zen stylesheet the noder has active' },
             { var => 'wuhead',            desc => 'the code for displaying the writeupheader' }
+        ];
+        $data->{deprecated_vars} = [
+            { var => 'settings_useTinyMCE', desc => 'DEPRECATED - TinyMCE editor removed, replaced by TipTap editor' }
         ];
     }
 
