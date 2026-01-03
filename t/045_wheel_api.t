@@ -211,7 +211,7 @@ subtest "Insufficient GP blocked" => sub {
 # Test 4: Successful spin
 #############################################################################
 subtest "Successful spin" => sub {
-    plan tests => 8;
+    plan tests => 9;
 
     # Give test user sufficient GP
     my $original_gp = $test_user->{GP};
@@ -248,6 +248,17 @@ subtest "Successful spin" => sub {
     # Note: Can also win exactly 5 GP back (refund), resulting in same GP as before
     ok($response->[1]->{user}->{GP} >= 95 && $response->[1]->{user}->{GP} <= 600,
        "GP is in valid range (95-600) after spin");
+
+    # Check for security log entry (logs to "Wheel of Surprise" superdoc)
+    my $wheel_node = $DB->getNode('Wheel of Surprise', 'superdoc');
+    SKIP: {
+        skip 'Wheel of Surprise superdoc not found', 1 unless $wheel_node;
+        my $seclog = $DB->sqlSelectHashref('*', 'seclog',
+            "seclog_node = $wheel_node->{node_id} AND seclog_user = $test_user->{node_id}",
+            'ORDER BY seclog_id DESC LIMIT 1'
+        );
+        ok($seclog && $seclog->{seclog_details} =~ /spun|won/i, 'Security log entry created for wheel spin');
+    }
 
     # Restore original GP
     $test_user->{GP} = $original_gp;

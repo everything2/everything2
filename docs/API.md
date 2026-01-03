@@ -2715,9 +2715,14 @@ Set the room topic using a token.
 {
   "success": 1,
   "message": "The topic has been updated.",
-  "tokens": 0
+  "tokens": 0,
+  "newTopic": "Welcome to Everything2!"
 }
 ```
+
+**Notes:**
+- The `newTopic` field contains the sanitized topic that was set
+- The frontend dispatches an `e2:roomTopicUpdate` event to immediately update the chatterbox display
 
 **Error Response (suspended):**
 

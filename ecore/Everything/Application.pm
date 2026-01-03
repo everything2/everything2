@@ -1387,13 +1387,22 @@ sub inDevEnvironment
 
 sub node2mail {
 	my ($this, $addr, $node, $html) = @_;
+
+	# Skip sending email in development - no AWS SES access
+	if ($this->inDevEnvironment) {
+		my $subject = $$node{title} // '(no subject)';
+		my $to = ref $addr eq "ARRAY" ? join(", ", @$addr) : ($addr // '(no address)');
+		$this->devLog("node2mail: Skipping email in development. Subject: $subject, To: $to");
+		return "dev-skipped";
+	}
+
 	my @addresses = (ref $addr eq "ARRAY") ? @$addr:($addr);
 	my ($user) = $this->{db}->getNodeWhere({node_id => $$node{author_user}},$this->{db}->getType("user"));
 	my $subject = $$node{title};
 	my $body = $$node{doctext};
 
 	my $from = $this->{conf}->mail_from;
-	
+
 	my $email = Paws->service('SES', region => $this->{conf}->current_region);
 
 	my $response = $email->SendEmail(
@@ -1446,6 +1455,32 @@ sub convertEpochToDate
   return join(" ", join("-",$timedata->[5]+1900,sprintf("%02d",$timedata->[4]+1),sprintf("%02d",$timedata->[3])),join(":",sprintf("%02d", $timedata->[2]),sprintf("%02d",$timedata->[1]),sprintf("%02d", $timedata->[0])));
 }
 
+=head2 inHalloweenPeriod
+
+Check if we're currently in the Halloween period when costumes should display.
+The Halloween period runs from October 25 through November 2.
+
+Can be forced on via Configuration->force_halloween_mode for testing.
+
+Returns: 1 if in Halloween period, 0 otherwise
+
+=cut
+
+sub inHalloweenPeriod
+{
+  my ($this) = @_;
+
+  # Check config flag for testing override
+  return 1 if $Everything::CONF->force_halloween_mode;
+
+  my ($sec, $min, $hour, $mday, $mon, $year) = localtime(time);
+  $mon++;  # localtime returns 0-11, we need 1-12
+
+  # Halloween period: October 25 - November 2
+  return 1 if ($mon == 10 && $mday >= 25);  # Oct 25-31
+  return 1 if ($mon == 11 && $mday <= 2);   # Nov 1-2
+  return 0;
+}
 
 # used as a part of the sendPrivateMessage htmlcode refactor, possibly other places
 # Tested in 003
@@ -6243,11 +6278,13 @@ sub buildOtherUsersData
     }
 
     # Check for Halloween costume
+    # Costumes are stored as string names in $VARS->{costume}, not node IDs
     my $displayUser = $user;
-    my $costume_id = $other_uservars->{e2_hc_costume};
-    if($costume_id && $this->inHalloweenPeriod()) {
-      my $costume = $this->{db}->getNodeById($costume_id);
-      $displayUser = $costume if $costume;
+    my $costume_name = $other_uservars->{costume};
+    if($costume_name && $this->inHalloweenPeriod()) {
+      # Create a pseudo-user structure with just the costume name as title
+      # The actual user link will still point to the real user's node_id
+      $displayUser = { title => $costume_name };
     }
 
     # Check if same user
@@ -7036,7 +7073,7 @@ sub buildNodeInfoStructure
   # Favorite Noders
   if($nodelets =~ /1876005/ and not $this->isGuest($USER))
   {
-    my $wuLimit = int($VARS->{favorite_limit}) || 15;
+    my $wuLimit = ($VARS->{favorite_limit} && $VARS->{favorite_limit} =~ /^\d+$/) ? int($VARS->{favorite_limit}) : 15;
     $wuLimit = 50 if ($wuLimit > 50 || $wuLimit < 1);
 
     my $linktypeFavorite = Everything::getNode('favorite', 'linktype');

@@ -32,8 +32,6 @@ find({wanted => $wanted, no_chdir => 1}, $dirname);
 # Also includes tests that share user accounts (normaluser1, normaluser2) to avoid session conflicts
 my %serial_tests = (
     "$dirname/004_usergroups.t" => 1,     # Creates/modifies usergroups (conflicts with message tests)
-    "$dirname/008_e2nodes.t" => 1,        # Uses normaluser1/normaluser2, creates/deletes nodes
-    "$dirname/009_writeups.t" => 1,       # Uses normaluser1/normaluser2, creates/deletes writeups
     "$dirname/036_online_only_messages.t" => 1, # Modifies message table, creates usergroups
     "$dirname/037_message_opcode.t" => 1, # Modifies message table
     "$dirname/038_chatter_api.t" => 1,    # Modifies message table (public chatter)
@@ -41,6 +39,9 @@ my %serial_tests = (
     "$dirname/042_usergroup_messages.t" => 1, # Modifies message table, creates usergroups
     "$dirname/043_message_ignores_delivery.t" => 1, # Modifies messageignore table (root/guest user), creates usergroups
     "$dirname/044_message_block_notifications.t" => 1, # Modifies messageignore table (root/guest user)
+    "$dirname/049_giftshop_api.t" => 1,   # Uses normaluser1, modifies experience/GP/messages
+    "$dirname/050_sanctify_api.t" => 1,   # Uses normaluser1, modifies experience/GP/messages
+    "$dirname/065_drafts_api.t" => 1,     # Uses normaluser1, queries "most recent writeup" which races with other tests
 );
 
 # Separate serial and parallel tests

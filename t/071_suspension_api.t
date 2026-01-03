@@ -228,7 +228,7 @@ is($result->[0], $api->HTTP_NOT_FOUND, "Non-existent sustype returns 404");
 #############################################################################
 
 SKIP: {
-    skip "No suspension type available for testing", 12 unless $test_sustype;
+    skip "No suspension type available for testing", 14 unless $test_sustype;
 
     # Clean up any existing suspensions for this user/type
     $DB->sqlDelete('suspension',
@@ -259,6 +259,17 @@ SKIP: {
     ok($suspension, "Suspension record exists in database");
     is($suspension->{suspendedby_user}, $admin_user->{node_id}, "Suspended by correct user");
 
+    # Check for security log entry (logs to "Suspension Info" superdoc)
+    my $suspension_node = $DB->getNode('Suspension Info', 'superdoc');
+    SKIP: {
+        skip 'Suspension Info superdoc not found', 1 unless $suspension_node;
+        my $seclog = $DB->sqlSelectHashref('*', 'seclog',
+            "seclog_node = $suspension_node->{node_id} AND seclog_user = $admin_user->{node_id}",
+            'ORDER BY seclog_id DESC LIMIT 1'
+        );
+        ok($seclog && $seclog->{seclog_details} =~ /suspended/, 'Security log entry created for suspension');
+    }
+
     # Try to suspend again (should fail - already suspended)
     $result = $api->suspend_user($admin_request);
     is($result->[0], $api->HTTP_BAD_REQUEST, "Double suspension returns 400");
@@ -277,6 +288,16 @@ SKIP: {
         "suspension_user = $target_user->{node_id} AND suspension_sustype = $test_sustype->{node_id}"
     );
     ok(!$suspension, "Suspension record removed from database");
+
+    # Check for security log entry for unsuspension
+    SKIP: {
+        skip 'Suspension Info superdoc not found for unsuspend check', 1 unless $suspension_node;
+        my $seclog_unsuspend = $DB->sqlSelectHashref('*', 'seclog',
+            "seclog_node = $suspension_node->{node_id} AND seclog_user = $admin_user->{node_id}",
+            'ORDER BY seclog_id DESC LIMIT 1'
+        );
+        ok($seclog_unsuspend && $seclog_unsuspend->{seclog_details} =~ /unsuspended/, 'Security log entry created for unsuspension');
+    }
 
     # Try to unsuspend again (should fail - not suspended)
     # Note: Due to MySQL DBI returning "0E0" (zero but true) for DELETE with no rows,

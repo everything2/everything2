@@ -360,8 +360,8 @@ ListenBacklog 511
 		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [L,QSA,BCTLS]
 		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [L,QSA,BCTLS]
 
-		# Short URL redirection
-		RewriteRule ^/?s/([^/]+)$                  index.pl?type=superdoc&node=Short+URL+Lookup&short_string=$1
+		# Short URL redirection (fullpage type for 303 redirect support)
+		RewriteRule ^/?s/([^/]+)$                  index.pl?type=fullpage&node=Short+URL+Lookup&short_string=$1
 
 		RewriteCond %{REQUEST_FILENAME}            !-f
 		RewriteRule ^/?stylesheet/([^_]+)_v[0-9]+(_autofix)?\.css      /stylesheet/$1$2.css  [R=307]

@@ -25,7 +25,9 @@ const Usergroup = ({ data, user, e2 }) => {
     discussions_node_id,
     weblog_setting,
     message_count,
-    owner_index
+    owner_index,
+    can_bulk_edit,
+    simple_editor_id
   } = data
 
   const { group = [], owner, doctext } = usergroup
@@ -119,10 +121,22 @@ const Usergroup = ({ data, user, e2 }) => {
         </div>
       )}
 
-      {/* Editor tools for gods */}
-      {userData.is_god && (
+      {/* Admin tools for gods */}
+      {userData.is_admin && (
         <div className="usergroup-admin-tools">
           <p>
+            {/* Bulk edit link - not available for gods/e2gods groups */}
+            {can_bulk_edit && simple_editor_id && (
+              <>
+                <LinkNode
+                  nodeId={simple_editor_id}
+                  title="Add/drop multiple users"
+                  queryParams={{ for_usergroup: usergroup.node_id }}
+                />
+                {' | '}
+              </>
+            )}
+
             {/* Weblog/ify settings */}
             {weblog_setting ? (
               <span>Already has ify - <strong>{weblog_setting}</strong></span>

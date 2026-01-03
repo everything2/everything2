@@ -3,13 +3,28 @@
 use strict;
 
 use FindBin;
+use lib "$FindBin::Bin/../ecore";
+use lib "/var/libraries/lib/perl5";
 
 use LWP::UserAgent;
 use HTTP::Request;
 use Test::More;
 use JSON;
-
 use HTTP::Cookies;
+use Everything;
+
+# Initialize database to reset test user password
+initEverything('development-docker');
+
+# Reset normaluser1 password to 'blah' before running tests
+# This ensures test idempotency even if password was changed by other tests
+my $test_user = $DB->getNode("normaluser1", "user");
+if ($test_user) {
+    my ($pwhash, $salt) = $APP->saltNewPassword("blah");
+    $test_user->{passwd} = $pwhash;
+    $test_user->{salt} = $salt;
+    $DB->updateNode($test_user, -1);
+}
 
 my $endpoint = "http://localhost/api/sessions";
 my $json = JSON->new;

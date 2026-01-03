@@ -15,7 +15,7 @@ sub display
   {
     my $controller_output = $self->page_class($node)->display($REQUEST, $node);
 
-    # Check if Page class returned an HTTP response array (e.g., XML tickers)
+    # Check if Page class returned an HTTP response array (e.g., redirect, XML)
     # instead of a controller hashref
     if (ref($controller_output) eq 'ARRAY') {
       # Page class returned HTTP response directly - pass it through

@@ -523,6 +523,8 @@ sub getNodeById
 	# Check for -1 using string comparison to avoid warnings on non-numeric input
 	return -1 if $N eq '-1';
 	$N = $this->getId($N);
+	# Validate that N is numeric before converting to int
+	return unless defined $N && $N =~ /^-?\d+$/;
 	$N = int($N);
 	return unless $N;
 

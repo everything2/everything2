@@ -232,10 +232,13 @@ class E2ReactRoot extends React.Component {
 
     // Listen for user state updates from other components (e.g., gift shop buying votes)
     window.addEventListener('e2:userUpdate', this.handleUserUpdate)
+    // Listen for room topic updates from gift shop
+    window.addEventListener('e2:roomTopicUpdate', this.handleRoomTopicUpdate)
   }
 
   componentWillUnmount() {
     window.removeEventListener('e2:userUpdate', this.handleUserUpdate)
+    window.removeEventListener('e2:roomTopicUpdate', this.handleRoomTopicUpdate)
   }
 
   handleUserUpdate = (event) => {
@@ -249,6 +252,13 @@ class E2ReactRoot extends React.Component {
       if (window.e2?.user) {
         Object.assign(window.e2.user, updates)
       }
+    }
+  }
+
+  handleRoomTopicUpdate = (event) => {
+    const { roomTopic } = event.detail || {}
+    if (roomTopic !== undefined) {
+      this.setState({ roomTopic })
     }
   }
 

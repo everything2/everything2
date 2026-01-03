@@ -1785,15 +1785,9 @@ foreach my $title (@softlink_target_titles) {
   my $existing = $DB->getNode($title, "e2node");
   next if $existing;
 
-  # Create nodeshell
-  my $e2node = $DB->getNode("e2node", "nodetype");
-  my $nodeshell = $DB->sqlInsert("node", {
-    title => $title,
-    type_nodetype => $e2node->{node_id},
-    author_user => $root->{node_id},
-    createtime => $now,
-  });
-  $nodeshell_count++;
+  # Create nodeshell using insertNode to ensure proper table joins
+  my $nodeshell_id = $DB->insertNode($title, "e2node", $root, {});
+  $nodeshell_count++ if $nodeshell_id;
 }
 
 print STDERR "Created $nodeshell_count nodeshells for softlink targets\n";
@@ -2130,7 +2124,7 @@ if (!$legacy_user) {
   $DB->insertNode("legacy_user", "user", -1, {"lasttime" => $now});
   $legacy_user = getNode("legacy_user", "user");
   $legacy_user->{author_user} = $legacy_user->{node_id};
-  my ($pwhash, $salt) = $APP->saltNewPassword("legacy123");
+  my ($pwhash, $salt) = $APP->saltNewPassword("blah");
   $legacy_user->{passwd} = $pwhash;
   $legacy_user->{salt} = $salt;
   $legacy_user->{experience} = 500;  # Give them some XP to recalculate
@@ -2141,9 +2135,20 @@ if (!$legacy_user) {
 # Update the user_id to be a "legacy" ID (below the magic number 1960662)
 # We'll use 1960000 as a test ID
 my $legacy_user_id = 1960000;
-print STDERR "Setting legacy_user user_id to $legacy_user_id (pre-October 2008)\n";
-$DB->sqlUpdate('user', {user_id => $legacy_user_id}, "user_id = $legacy_user->{node_id}");
-$DB->sqlUpdate('node', {node_id => $legacy_user_id, author_user => $legacy_user_id}, "node_id = $legacy_user->{node_id}");
+my $original_id = $legacy_user->{node_id};
+if ($original_id != $legacy_user_id) {
+  print STDERR "Setting legacy_user user_id to $legacy_user_id (pre-October 2008)\n";
+  $DB->sqlUpdate('user', {user_id => $legacy_user_id}, "user_id = $original_id");
+  $DB->sqlUpdate('node', {node_id => $legacy_user_id, author_user => $legacy_user_id}, "node_id = $original_id");
+  # Also update the setting table (for user vars) if it exists with original ID
+  $DB->sqlUpdate('setting', {setting_id => $legacy_user_id}, "setting_id = $original_id");
+}
+# Ensure setting row exists for this user (may not exist for legacy users)
+my ($has_setting) = $DB->sqlSelect('setting_id', 'setting', "setting_id = $legacy_user_id");
+unless ($has_setting) {
+  print STDERR "Creating setting row for legacy_user\n";
+  $DB->sqlInsert('setting', {setting_id => $legacy_user_id, vars => ''});
+}
 
 # Refresh the user object with the new ID
 $legacy_user = $DB->getNodeById($legacy_user_id);

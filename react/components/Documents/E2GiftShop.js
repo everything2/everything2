@@ -738,6 +738,12 @@ const GiftOfTopic = ({ data, user, onUpdate }) => {
         setMessage({ type: 'success', text: 'The topic has been updated. Go now and enjoy the fruits of your labor.' })
         setNewTopic('')
         onUpdate({ tokens: result.tokens })
+        // Dispatch event to update chatterbox room topic immediately
+        if (result.newTopic) {
+          window.dispatchEvent(new CustomEvent('e2:roomTopicUpdate', {
+            detail: { roomTopic: result.newTopic }
+          }))
+        }
       } else {
         setMessage({ type: 'error', text: result.error })
       }

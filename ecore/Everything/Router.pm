@@ -31,7 +31,7 @@ sub output
 
   my $response_code = $output->[0];
   my $data = $output->[1];
-  my $headers = $output->[2];
+  my $headers = $output->[2] || {};
 
   $headers->{status} ||= $response_code;
   $headers->{charset} ||= "utf-8";

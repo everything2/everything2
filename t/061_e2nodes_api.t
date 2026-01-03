@@ -150,4 +150,193 @@ is($result->[1]->{deleted}, $e2node_id, "Delete returns correct node_id");
 $node_check = $DB->getNodeById($e2node_id);
 ok(!$node_check || !$node_check->{node_id}, "E2node no longer exists after admin delete");
 
+#############################################################################
+# Test Bulk Rename API
+#############################################################################
+
+# Create test e2nodes for bulk rename testing
+my $rename_title1 = "Bulk Rename Test Node 1 " . time();
+my $rename_title2 = "Bulk Rename Test Node 2 " . time();
+
+my $rename_request1 = MockRequest->new(
+  node_id => $normaluser1->{node_id},
+  title => $normaluser1->{title},
+  nodedata => $normaluser1,
+  is_guest_flag => 0,
+  is_admin_flag => 0,
+  postdata => { title => $rename_title1 }
+);
+
+$result = $e2nodes_api->create($rename_request1);
+is($result->[0], $e2nodes_api->HTTP_OK, "Created first test node for rename");
+my $rename_node1_id = $result->[1]->{node_id};
+
+my $rename_request2 = MockRequest->new(
+  node_id => $normaluser1->{node_id},
+  title => $normaluser1->{title},
+  nodedata => $normaluser1,
+  is_guest_flag => 0,
+  is_admin_flag => 0,
+  postdata => { title => $rename_title2 }
+);
+
+$result = $e2nodes_api->create($rename_request2);
+is($result->[0], $e2nodes_api->HTTP_OK, "Created second test node for rename");
+my $rename_node2_id = $result->[1]->{node_id};
+
+#############################################################################
+# Test 6: Non-Editor - Cannot Bulk Rename (Permission Denied)
+#############################################################################
+
+my $non_editor_request = MockRequest->new(
+  node_id => $normaluser1->{node_id},
+  title => $normaluser1->{title},
+  nodedata => $normaluser1,
+  is_guest_flag => 0,
+  is_admin_flag => 0,
+  is_editor_flag => 0,
+  postdata => { renames => [{ from => $rename_title1, to => "Should Fail" }] }
+);
+
+$result = $e2nodes_api->bulk_rename($non_editor_request);
+is($result->[0], $e2nodes_api->HTTP_OK, "Non-editor bulk_rename returns HTTP 200");
+is($result->[1]->{success}, 0, "Non-editor bulk_rename fails");
+like($result->[1]->{error}, qr/permission/i, "Error mentions permission denied");
+
+#############################################################################
+# Test 7: Editor - Successful Bulk Rename
+#############################################################################
+
+my $new_title1 = "Renamed Node 1 " . time();
+my $new_title2 = "Renamed Node 2 " . time();
+
+my $editor_request = MockRequest->new(
+  node_id => $root->{node_id},
+  title => $root->{title},
+  nodedata => $root,
+  is_guest_flag => 0,
+  is_admin_flag => 1,
+  is_editor_flag => 1,
+  postdata => {
+    renames => [
+      { from => $rename_title1, to => $new_title1 },
+      { from => $rename_title2, to => $new_title2 }
+    ]
+  }
+);
+
+$result = $e2nodes_api->bulk_rename($editor_request);
+is($result->[0], $e2nodes_api->HTTP_OK, "Editor bulk_rename returns HTTP 200");
+is($result->[1]->{success}, 1, "Editor bulk_rename succeeds");
+ok($result->[1]->{results}, "Results returned");
+is(scalar(@{$result->[1]->{results}}), 2, "Two results returned");
+is($result->[1]->{counts}->{renamed}, 2, "Two nodes renamed");
+
+# Verify the renames in database
+my $renamed_node1 = $DB->getNodeById($rename_node1_id);
+my $renamed_node2 = $DB->getNodeById($rename_node2_id);
+is($renamed_node1->{title}, $new_title1, "First node title updated in database");
+is($renamed_node2->{title}, $new_title2, "Second node title updated in database");
+
+#############################################################################
+# Test 8: Bulk Rename - Node Not Found
+#############################################################################
+
+$editor_request = MockRequest->new(
+  node_id => $root->{node_id},
+  title => $root->{title},
+  nodedata => $root,
+  is_guest_flag => 0,
+  is_admin_flag => 1,
+  is_editor_flag => 1,
+  postdata => {
+    renames => [{ from => "Nonexistent Node XYZ123 " . time(), to => "New Title" }]
+  }
+);
+
+$result = $e2nodes_api->bulk_rename($editor_request);
+is($result->[0], $e2nodes_api->HTTP_OK, "Not found bulk_rename returns HTTP 200");
+is($result->[1]->{success}, 1, "Request succeeds (with not_found status)");
+is($result->[1]->{counts}->{not_found}, 1, "One not_found result");
+is($result->[1]->{results}->[0]->{status}, 'not_found', "Status is not_found");
+
+#############################################################################
+# Test 9: Bulk Rename - Target Already Exists
+#############################################################################
+
+# Try to rename node1 to node2's title (which should fail)
+$editor_request = MockRequest->new(
+  node_id => $root->{node_id},
+  title => $root->{title},
+  nodedata => $root,
+  is_guest_flag => 0,
+  is_admin_flag => 1,
+  is_editor_flag => 1,
+  postdata => {
+    renames => [{ from => $new_title1, to => $new_title2 }]
+  }
+);
+
+$result = $e2nodes_api->bulk_rename($editor_request);
+is($result->[0], $e2nodes_api->HTTP_OK, "Target exists bulk_rename returns HTTP 200");
+is($result->[1]->{success}, 1, "Request succeeds (with target_exists status)");
+is($result->[1]->{counts}->{target_exists}, 1, "One target_exists result");
+is($result->[1]->{results}->[0]->{status}, 'target_exists', "Status is target_exists");
+
+#############################################################################
+# Test 10: Bulk Rename - Same Title (No Change)
+#############################################################################
+
+$editor_request = MockRequest->new(
+  node_id => $root->{node_id},
+  title => $root->{title},
+  nodedata => $root,
+  is_guest_flag => 0,
+  is_admin_flag => 1,
+  is_editor_flag => 1,
+  postdata => {
+    renames => [{ from => $new_title1, to => $new_title1 }]
+  }
+);
+
+$result = $e2nodes_api->bulk_rename($editor_request);
+is($result->[0], $e2nodes_api->HTTP_OK, "Same title bulk_rename returns HTTP 200");
+is($result->[1]->{success}, 1, "Request succeeds (with no_change status)");
+is($result->[1]->{counts}->{no_change}, 1, "One no_change result");
+is($result->[1]->{results}->[0]->{status}, 'no_change', "Status is no_change");
+
+#############################################################################
+# Test 11: Bulk Rename - Invalid Request Body
+#############################################################################
+
+$editor_request = MockRequest->new(
+  node_id => $root->{node_id},
+  title => $root->{title},
+  nodedata => $root,
+  is_guest_flag => 0,
+  is_admin_flag => 1,
+  is_editor_flag => 1,
+  postdata => {}  # Missing renames array
+);
+
+$result = $e2nodes_api->bulk_rename($editor_request);
+is($result->[0], $e2nodes_api->HTTP_OK, "Invalid body bulk_rename returns HTTP 200");
+is($result->[1]->{success}, 0, "Invalid body fails");
+like($result->[1]->{error}, qr/invalid/i, "Error mentions invalid request");
+
+#############################################################################
+# Cleanup: Delete test e2nodes
+#############################################################################
+
+$admin_request = MockRequest->new(
+  node_id => $root->{node_id},
+  title => $root->{title},
+  nodedata => $root,
+  is_guest_flag => 0,
+  is_admin_flag => 1
+);
+
+$nodes_api->delete($admin_request, $rename_node1_id) if $rename_node1_id;
+$nodes_api->delete($admin_request, $rename_node2_id) if $rename_node2_id;
+
 done_testing();
