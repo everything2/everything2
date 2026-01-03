@@ -396,7 +396,7 @@ const UserDisplay = ({ data, e2 }) => {
       )}
 
       {/* User Tools Modal - for editors/chanops */}
-      {(viewer.is_editor || viewer.is_chanop) && (
+      {Boolean(viewer.is_editor || viewer.is_chanop) && (
         <UserToolsModal
           user={user}
           viewer={viewer}

@@ -385,7 +385,7 @@ subtest "GPoptout blocks sanctification" => sub {
 # Test 8: Successful sanctification
 #############################################################################
 subtest "Successful sanctification" => sub {
-  plan tests => 6;
+  plan tests => 7;
 
   $DB->{cache}->removeNode($test_user) if $DB->{cache};
   $test_user = $DB->getNode($test_user->{node_id});
@@ -394,10 +394,15 @@ subtest "Successful sanctification" => sub {
   $test_user->{GP} = 100;
   $DB->updateNode($test_user, -1);
 
-  # Get recipient and save their original GP and sanctity
+  # Get recipient fresh from DB (clear cache to avoid stale data from other tests)
+  my $recipient_node = $DB->getNode('genericdev', 'user');
+  $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
   my $recipient = $DB->getNode('genericdev', 'user');
   my $original_recipient_gp = $recipient->{GP};
   my $original_recipient_sanctity = $recipient->{sanctity} || 0;
+
+  # Record the highest message_id before our action for filtering
+  my $max_msg_before = $DB->sqlSelect('MAX(message_id)', 'message') || 0;
 
   my $user = MockUser->new(
     node_id => $test_user->{node_id},
@@ -430,16 +435,28 @@ subtest "Successful sanctification" => sub {
   $recipient->{sanctity} = $original_recipient_sanctity;
   $DB->updateNode($recipient, -1);
 
-  # Check for Eddie message
+  # Check for Eddie message created after our action
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
   my $msg = $DB->sqlSelectHashref('*', 'message',
-    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}",
+    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before AND msgtext LIKE '%sanctified%'",
     'ORDER BY message_id DESC LIMIT 1'
   );
-  ok($msg && $msg->{msgtext} =~ /sanctified/, 'Eddie message sent for sanctification');
+  ok($msg, 'Eddie message sent for sanctification');
 
-  # Clean up message
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Check for security log entry (logs to "Sanctify user" superdoc)
+  # Look for entry that mentions both the sanctifier and the specific recipient (genericdev)
+  my $sanctify_node = $DB->getNode('Sanctify user', 'superdoc');
+  SKIP: {
+    skip 'Sanctify user superdoc not found', 1 unless $sanctify_node;
+    my $seclog = $DB->sqlSelectHashref('*', 'seclog',
+      "seclog_node = $sanctify_node->{node_id} AND seclog_user = $test_user->{node_id} AND seclog_details LIKE '%genericdev%'",
+      'ORDER BY seclog_id DESC LIMIT 1'
+    );
+    ok($seclog && $seclog->{seclog_details} =~ /sanctified.*genericdev/i, 'Security log entry created for sanctification');
+  }
+
+  # Clean up only our message
+  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before");
 };
 
 #############################################################################
@@ -455,7 +472,9 @@ subtest "Anonymous sanctification" => sub {
   $test_user->{GP} = 100;
   $DB->updateNode($test_user, -1);
 
-  # Get recipient and save their original values
+  # Get recipient fresh from DB (clear cache to avoid stale data from other tests)
+  my $recipient_node = $DB->getNode('genericdev', 'user');
+  $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
   my $recipient = $DB->getNode('genericdev', 'user');
   my $original_recipient_gp = $recipient->{GP};
   my $original_recipient_sanctity = $recipient->{sanctity} || 0;
@@ -463,8 +482,8 @@ subtest "Anonymous sanctification" => sub {
   # Get Eddie for message check
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
 
-  # Clear any existing messages
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Record the highest message_id before our action for filtering
+  my $max_msg_before = $DB->sqlSelect('MAX(message_id)', 'message') || 0;
 
   my $user = MockUser->new(
     node_id => $test_user->{node_id},
@@ -484,9 +503,9 @@ subtest "Anonymous sanctification" => sub {
 
   is($result->[1]->{success}, 1, 'Anonymous sanctification succeeded');
 
-  # Check Eddie message does not include sender name
+  # Check Eddie message created after our action does not include sender name
   my $msg = $DB->sqlSelectHashref('*', 'message',
-    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}",
+    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before",
     'ORDER BY message_id DESC LIMIT 1'
   );
   ok($msg && $msg->{msgtext} =~ /sanctified\]!$/, 'Anonymous message ends with sanctified]!');
@@ -497,8 +516,8 @@ subtest "Anonymous sanctification" => sub {
   $recipient->{sanctity} = $original_recipient_sanctity;
   $DB->updateNode($recipient, -1);
 
-  # Clean up message
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Clean up only our message
+  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before");
 };
 
 #############################################################################

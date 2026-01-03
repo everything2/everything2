@@ -579,6 +579,7 @@ sub set_topic {
     success => 1,
     message => "The topic has been updated.",
     tokens => int($VARS->{tokens} || 0),
+    newTopic => $new_topic,
   }];
 }
 

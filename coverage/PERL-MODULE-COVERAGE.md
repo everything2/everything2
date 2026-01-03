@@ -1,6 +1,6 @@
 # Perl Module Coverage Report
 
-**Generated**: 2025-12-30 22:23:25
+**Generated**: 2026-01-03 11:47:57
 
 This report shows statement coverage for each Perl module in the codebase.
 
@@ -8,49 +8,59 @@ This report shows statement coverage for each Perl module in the codebase.
 
 | Module | Statements | Branches | Conditions | Subroutines | POD | Total |
 |--------|-----------|----------|------------|-------------|-----|-------|
-| ecore/Everything.pm | 49.0 | 21.9 | 4.9 |  |  | 42.0 |
+| ecore/Everything.pm | 49.2 | 23.2 | 4.1 |  |  | 42.2 |
 | ecore/Everything/API.pm | 36.4 | 15.3 | 0.0 |  |  | 34.7 |
 | ecore/Everything/API/admin.pm | 80.0 | 33.3 | 0.0 |  |  | 68.0 |
 | ecore/Everything/API/autosave.pm | 100.0 | 58.3 | 0.0 |  |  | 92.2 |
 | ecore/Everything/API/bouncer.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
 | ecore/Everything/API/catchall.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
-| ecore/Everything/API/category.pm | 58.5 | 27.2 | 0.0 |  |  | 48.8 |
+| ecore/Everything/API/category.pm | 58.2 | 27.2 | 0.0 |  |  | 48.7 |
 | ecore/Everything/API/chatroom.pm | 85.7 | n/a | 0.0 |  |  | 80.0 |
 | ecore/Everything/API/chatter.pm | 85.7 | n/a | 0.0 |  |  | 80.0 |
 | ecore/Everything/API/cool.pm | 88.8 | 50.0 | 0.0 |  |  | 79.2 |
+| ecore/Everything/API/costumes.pm | 71.7 | 62.5 | 0.0 |  |  | 69.8 |
 | ecore/Everything/API/drafts.pm | 36.0 | 11.2 | 0.0 |  |  | 28.6 |
 | ecore/Everything/API/e2node.pm | 69.3 | 40.0 | 0.0 |  |  | 62.2 |
-| ecore/Everything/API/e2nodes.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
+| ecore/Everything/API/e2nodes.pm | 100.0 | 50.0 | 0.0 |  |  | 88.3 |
 | ecore/Everything/API/easter_eggs.pm | 100.0 | 81.8 | 0.0 |  |  | 95.3 |
+| ecore/Everything/API/giftshop.pm | 64.7 | 40.0 | 0.0 |  |  | 58.5 |
 | ecore/Everything/API/levels.pm | 100.0 | 62.5 | 0.0 |  |  | 93.4 |
 | ecore/Everything/API/list_nodes.pm | 100.0 | 88.8 | 0.0 |  |  | 95.2 |
 | ecore/Everything/API/messages.pm | 75.0 | 22.2 | 0.0 |  |  | 66.0 |
 | ecore/Everything/API/newwriteups.pm | 77.7 | n/a | 0.0 |  |  | 71.4 |
+| ecore/Everything/API/nodebackup.pm | 10.3 | 0.0 | 0.0 |  |  | 8.0 |
 | ecore/Everything/API/nodelets.pm | 98.3 | 87.5 | 0.0 |  |  | 95.5 |
 | ecore/Everything/API/nodenotes.pm | 85.7 | n/a | 0.0 |  |  | 80.0 |
 | ecore/Everything/API/nodes.pm | 67.0 | n/a | 0.0 |  |  | 64.3 |
+| ecore/Everything/API/nodeshells.pm | 4.7 | 0.0 | 0.0 |  |  | 4.1 |
+| ecore/Everything/API/password.pm | 6.1 | 0.0 | 0.0 |  |  | 4.3 |
 | ecore/Everything/API/poll.pm | 83.1 | 56.6 | 0.0 |  |  | 74.6 |
 | ecore/Everything/API/polls.pm | 100.0 | 62.9 | 0.0 |  |  | 89.0 |
-| ecore/Everything/API/preferences.pm | 96.1 | n/a | 0.0 |  |  | 91.8 |
-| ecore/Everything/API/reputation.pm | 92.7 | 62.9 | 0.0 |  |  | 84.6 |
+| ecore/Everything/API/preferences.pm | 96.1 | n/a | -0.1 |  |  | 91.8 |
+| ecore/Everything/API/reputation.pm | 95.1 | 66.6 | 0.0 |  |  | 87.3 |
+| ecore/Everything/API/resurrect.pm | 85.7 | n/a | 0.0 |  |  | 80.0 |
+| ecore/Everything/API/sanctify.pm | 89.4 | 46.1 | 0.0 |  |  | 81.5 |
 | ecore/Everything/API/sessions.pm | 15.0 | 0.0 | 0.0 |  |  | 11.1 |
 | ecore/Everything/API/signup.pm | 39.0 | 37.8 | 0.0 |  |  | 37.5 |
 | ecore/Everything/API/spamcannon.pm | 39.2 | 60.0 | 0.0 |  |  | 39.2 |
-| ecore/Everything/API/superbless.pm | 4.1 | 0.0 | 0.0 |  |  | 3.1 |
+| ecore/Everything/API/superbless.pm | 79.3 | 40.0 | 0.0 |  |  | 66.6 |
 | ecore/Everything/API/suspension.pm | 88.3 | 47.6 | 0.0 |  |  | 78.4 |
-| ecore/Everything/API/teddybear.pm | 7.5 | 0.0 | 0.0 |  |  | 5.8 |
+| ecore/Everything/API/teddybear.pm | 100.0 | 50.0 | 0.0 |  |  | 86.9 |
 | ecore/Everything/API/tests.pm | 50.0 | 0.0 | 0.0 |  |  | 38.1 |
 | ecore/Everything/API/trajectory.pm | 100.0 | 66.6 | 0.0 |  |  | 97.9 |
-| ecore/Everything/API/user.pm | 20.0 | 3.2 | 0.0 |  |  | 16.3 |
+| ecore/Everything/API/user.pm | 62.1 | 22.5 | 0.0 |  |  | 52.1 |
 | ecore/Everything/API/user_search.pm | 96.1 | 84.0 | 0.0 |  |  | 89.4 |
 | ecore/Everything/API/usergroups.pm | 85.1 | 66.6 | 0.0 |  |  | 81.4 |
+| ecore/Everything/API/userimages.pm | 10.7 | 0.0 | 0.0 |  |  | 7.6 |
 | ecore/Everything/API/users.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
 | ecore/Everything/API/vote.pm | 95.2 | 88.8 | 0.0 |  |  | 93.2 |
 | ecore/Everything/API/weblog.pm | 66.6 | 37.5 | 0.0 |  |  | 58.7 |
-| ecore/Everything/API/wheel.pm | 24.3 | 9.3 | 0.0 |  |  | 19.2 |
+| ecore/Everything/API/weblogmenu.pm | 85.7 | n/a | 0.0 |  |  | 80.0 |
+| ecore/Everything/API/wheel.pm | 27.6 | 9.3 | 0.0 |  |  | 31.3 |
 | ecore/Everything/API/writeups.pm | 77.7 | 100.0 | 0.0 |  |  | 81.2 |
-| ecore/Everything/Application.pm | 39.0 | 20.8 | 1.0 |  |  | 33.3 |
-| ecore/Everything/CacheQueue.pm | 80.2 | 80.0 | -0.2 |  |  | 81.9 |
+| ecore/Everything/API/xp.pm | 6.1 | 0.0 | 0.0 |  |  | 4.7 |
+| ecore/Everything/Application.pm | 39.7 | 21.0 | 1.0 |  |  | 33.9 |
+| ecore/Everything/CacheQueue.pm | 80.2 | 80.0 | 0.0 |  |  | 81.9 |
 | ecore/Everything/Configuration.pm | 58.5 | 8.3 | 0.0 |  |  | 51.0 |
 | ecore/Everything/Constants.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
 | ecore/Everything/Controller.pm | 4.5 | 0.0 | 0.0 |  |  | 3.7 |
@@ -114,9 +124,9 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Node/useraction.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
 | ecore/Everything/Node/usergroup.pm | 88.5 | 54.5 | 0.0 |  |  | 76.4 |
 | ecore/Everything/Node/writeup.pm | 64.6 | 39.4 | 0.0 |  |  | 55.2 |
-| ecore/Everything/NodeBase.pm | 77.3 | 56.1 | 7.5 |  |  | 71.5 |
-| ecore/Everything/NodeCache.pm | 78.8 | 47.8 | 0.1 |  |  | 74.6 |
-| ecore/Everything/Page.pm | 85.7 | n/a | 0.0 |  |  | 80.0 |
+| ecore/Everything/NodeBase.pm | 77.3 | 55.6 | 5.4 |  |  | 71.4 |
+| ecore/Everything/NodeCache.pm | 78.0 | 47.8 | 0.0 |  |  | 73.9 |
+| ecore/Everything/Page.pm | 85.7 | n/a | -0.0 |  |  | 80.0 |
 | ecore/Everything/Page/25.pm | 20.0 | 0.0 | 0.0 |  |  | 12.9 |
 | ecore/Everything/Page/cache_dump.pm | 4.6 | 0.0 | 0.0 |  |  | 4.1 |
 | ecore/Everything/Page/decloaker.pm | 33.3 | n/a | 0.0 |  |  | 30.7 |
@@ -143,19 +153,18 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/node_row.pm | 7.5 | 0.0 | 0.0 |  |  | 5.5 |
 | ecore/Everything/Page/nodeshells.pm | 27.2 | n/a | 0.0 |  |  | 26.6 |
 | ecore/Everything/Page/rdf_search.pm | 31.5 | n/a | 0.0 |  |  | 30.7 |
-| ecore/Everything/Page/sanctify.pm | 50.0 | n/a | 0.0 |  |  | 50.0 |
 | ecore/Everything/Page/settings.pm | 1.9 | 0.0 | 0.0 |  |  | 1.1 |
 | ecore/Everything/Page/sign_up.pm | 50.0 | 0.0 | 0.0 |  |  | 33.3 |
 | ecore/Everything/Page/sql_prompt.pm | 9.6 | 0.0 | 0.0 |  |  | 8.2 |
 | ecore/Everything/Page/superbless.pm | 50.0 | 0.0 | 0.0 |  |  | 40.0 |
-| ecore/Everything/Page/the_oracle.pm | 4.0 | 0.0 | 0.0 |  |  | 2.5 |
+| ecore/Everything/Page/the_oracle.pm | 3.9 | 0.0 | 0.0 |  |  | 2.5 |
 | ecore/Everything/Page/viewvars.pm | 24.3 | 0.0 | 0.0 |  |  | 19.3 |
 | ecore/Everything/Page/zenmastery.pm | 60.0 | n/a | 0.0 |  |  | 57.1 |
 | ecore/Everything/PluginFactory.pm | 88.3 | 66.6 | 0.3 |  |  | 85.4 |
 | ecore/Everything/Preference.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
 | ecore/Everything/Preference/List.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
-| ecore/Everything/Request.pm | 12.3 | 0.0 | 0.0 |  |  | 8.2 |
-| ecore/Everything/Router.pm | 34.0 | 0.0 | 1.2 |  |  | 25.3 |
+| ecore/Everything/Request.pm | 12.3 | 0.0 | -0.1 |  |  | 8.2 |
+| ecore/Everything/Router.pm | 34.0 | 0.0 | 1.0 |  |  | 24.6 |
 | ecore/Everything/S3.pm | 29.2 | n/a | 1.5 |  |  | 25.0 |
 | ecore/Everything/S3/BucketConfig.pm | 100.0 | n/a | 0.0 |  |  | 100.0 |
 | ecore/Everything/Serialization.pm | 100.0 | n/a | 0.0 |  |  | 97.9 |
@@ -175,11 +184,13 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/API/client_errors.pm |  |  |  |  |  | ecore/Everything/API/client_errors.pm |
 | ecore/Everything/API/cool.pm |  |  |  |  |  | ecore/Everything/API/cool.pm |
 | ecore/Everything/API/cool_archive.pm |  |  |  |  |  | ecore/Everything/API/cool_archive.pm |
+| ecore/Everything/API/costumes.pm |  |  |  |  |  | ecore/Everything/API/costumes.pm |
 | ecore/Everything/API/developervars.pm |  |  |  |  |  | ecore/Everything/API/developervars.pm |
 | ecore/Everything/API/drafts.pm |  |  |  |  |  | ecore/Everything/API/drafts.pm |
 | ecore/Everything/API/e2node.pm |  |  |  |  |  | ecore/Everything/API/e2node.pm |
 | ecore/Everything/API/e2nodes.pm |  |  |  |  |  | ecore/Everything/API/e2nodes.pm |
 | ecore/Everything/API/easter_eggs.pm |  |  |  |  |  | ecore/Everything/API/easter_eggs.pm |
+| ecore/Everything/API/giftshop.pm |  |  |  |  |  | ecore/Everything/API/giftshop.pm |
 | ecore/Everything/API/hidewriteups.pm |  |  |  |  |  | ecore/Everything/API/hidewriteups.pm |
 | ecore/Everything/API/levels.pm |  |  |  |  |  | ecore/Everything/API/levels.pm |
 | ecore/Everything/API/list_nodes.pm |  |  |  |  |  | ecore/Everything/API/list_nodes.pm |
@@ -187,17 +198,22 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/API/messages.pm |  |  |  |  |  | ecore/Everything/API/messages.pm |
 | ecore/Everything/API/newwriteups.pm |  |  |  |  |  | ecore/Everything/API/newwriteups.pm |
 | ecore/Everything/API/node_parameter.pm |  |  |  |  |  | ecore/Everything/API/node_parameter.pm |
+| ecore/Everything/API/nodebackup.pm |  |  |  |  |  | ecore/Everything/API/nodebackup.pm |
 | ecore/Everything/API/nodelets.pm |  |  |  |  |  | ecore/Everything/API/nodelets.pm |
 | ecore/Everything/API/nodenotes.pm |  |  |  |  |  | ecore/Everything/API/nodenotes.pm |
 | ecore/Everything/API/nodes.pm |  |  |  |  |  | ecore/Everything/API/nodes.pm |
+| ecore/Everything/API/nodeshells.pm |  |  |  |  |  | ecore/Everything/API/nodeshells.pm |
 | ecore/Everything/API/notifications.pm |  |  |  |  |  | ecore/Everything/API/notifications.pm |
 | ecore/Everything/API/page_of_cool.pm |  |  |  |  |  | ecore/Everything/API/page_of_cool.pm |
+| ecore/Everything/API/password.pm |  |  |  |  |  | ecore/Everything/API/password.pm |
 | ecore/Everything/API/personallinks.pm |  |  |  |  |  | ecore/Everything/API/personallinks.pm |
 | ecore/Everything/API/poll.pm |  |  |  |  |  | ecore/Everything/API/poll.pm |
 | ecore/Everything/API/poll_creator.pm |  |  |  |  |  | ecore/Everything/API/poll_creator.pm |
 | ecore/Everything/API/polls.pm |  |  |  |  |  | ecore/Everything/API/polls.pm |
 | ecore/Everything/API/preferences.pm |  |  |  |  |  | ecore/Everything/API/preferences.pm |
 | ecore/Everything/API/reputation.pm |  |  |  |  |  | ecore/Everything/API/reputation.pm |
+| ecore/Everything/API/resurrect.pm |  |  |  |  |  | ecore/Everything/API/resurrect.pm |
+| ecore/Everything/API/sanctify.pm |  |  |  |  |  | ecore/Everything/API/sanctify.pm |
 | ecore/Everything/API/sessions.pm |  |  |  |  |  | ecore/Everything/API/sessions.pm |
 | ecore/Everything/API/signup.pm |  |  |  |  |  | ecore/Everything/API/signup.pm |
 | ecore/Everything/API/spamcannon.pm |  |  |  |  |  | ecore/Everything/API/spamcannon.pm |
@@ -209,15 +225,19 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/API/trajectory.pm |  |  |  |  |  | ecore/Everything/API/trajectory.pm |
 | ecore/Everything/API/user.pm |  |  |  |  |  | ecore/Everything/API/user.pm |
 | ecore/Everything/API/user_search.pm |  |  |  |  |  | ecore/Everything/API/user_search.pm |
+| ecore/Everything/API/usergrouppicks.pm |  |  |  |  |  | ecore/Everything/API/usergrouppicks.pm |
 | ecore/Everything/API/usergroups.pm |  |  |  |  |  | ecore/Everything/API/usergroups.pm |
+| ecore/Everything/API/userimages.pm |  |  |  |  |  | ecore/Everything/API/userimages.pm |
 | ecore/Everything/API/userinteractions.pm |  |  |  |  |  | ecore/Everything/API/userinteractions.pm |
 | ecore/Everything/API/users.pm |  |  |  |  |  | ecore/Everything/API/users.pm |
 | ecore/Everything/API/vote.pm |  |  |  |  |  | ecore/Everything/API/vote.pm |
 | ecore/Everything/API/weblog.pm |  |  |  |  |  | ecore/Everything/API/weblog.pm |
+| ecore/Everything/API/weblogmenu.pm |  |  |  |  |  | ecore/Everything/API/weblogmenu.pm |
 | ecore/Everything/API/wheel.pm |  |  |  |  |  | ecore/Everything/API/wheel.pm |
 | ecore/Everything/API/writeup_reparent.pm |  |  |  |  |  | ecore/Everything/API/writeup_reparent.pm |
 | ecore/Everything/API/writeups.pm |  |  |  |  |  | ecore/Everything/API/writeups.pm |
 | ecore/Everything/API/writeuptypes.pm |  |  |  |  |  | ecore/Everything/API/writeuptypes.pm |
+| ecore/Everything/API/xp.pm |  |  |  |  |  | ecore/Everything/API/xp.pm |
 | ecore/Everything/Application.pm |  |  |  |  |  | ecore/Everything/Application.pm |
 | ecore/Everything/CacheQueue.pm |  |  |  |  |  | ecore/Everything/CacheQueue.pm |
 | ecore/Everything/Configuration.pm |  |  |  |  |  | ecore/Everything/Configuration.pm |
@@ -375,26 +395,32 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/chatterlighter.pm |  |  |  |  |  | ecore/Everything/Page/chatterlighter.pm |
 | ecore/Everything/Page/client_version_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/client_version_xml_ticker.pm |
 | ecore/Everything/Page/clientdev_home.pm |  |  |  |  |  | ecore/Everything/Page/clientdev_home.pm |
+| ecore/Everything/Page/confirm_password.pm |  |  |  |  |  | ecore/Everything/Page/confirm_password.pm |
 | ecore/Everything/Page/content_reports.pm |  |  |  |  |  | ecore/Everything/Page/content_reports.pm |
 | ecore/Everything/Page/cool_archive.pm |  |  |  |  |  | ecore/Everything/Page/cool_archive.pm |
 | ecore/Everything/Page/cool_archive_atom_feed.pm |  |  |  |  |  | ecore/Everything/Page/cool_archive_atom_feed.pm |
 | ecore/Everything/Page/cool_nodes_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/cool_nodes_xml_ticker.pm |
 | ecore/Everything/Page/cool_nodes_xml_ticker_ii.pm |  |  |  |  |  | ecore/Everything/Page/cool_nodes_xml_ticker_ii.pm |
+| ecore/Everything/Page/costume_remover.pm |  |  |  |  |  | ecore/Everything/Page/costume_remover.pm |
 | ecore/Everything/Page/create_a_registry.pm |  |  |  |  |  | ecore/Everything/Page/create_a_registry.pm |
 | ecore/Everything/Page/create_category.pm |  |  |  |  |  | ecore/Everything/Page/create_category.pm |
 | ecore/Everything/Page/create_node.pm |  |  |  |  |  | ecore/Everything/Page/create_node.pm |
 | ecore/Everything/Page/create_room.pm |  |  |  |  |  | ecore/Everything/Page/create_room.pm |
 | ecore/Everything/Page/database_lag_o_meter.pm |  |  |  |  |  | ecore/Everything/Page/database_lag_o_meter.pm |
 | ecore/Everything/Page/decloaker.pm |  |  |  |  |  | ecore/Everything/Page/decloaker.pm |
+| ecore/Everything/Page/display_categories.pm |  |  |  |  |  | ecore/Everything/Page/display_categories.pm |
 | ecore/Everything/Page/do_you_c_what_i_c.pm |  |  |  |  |  | ecore/Everything/Page/do_you_c_what_i_c.pm |
+| ecore/Everything/Page/dr_nate_s_secret_lab.pm |  |  |  |  |  | ecore/Everything/Page/dr_nate_s_secret_lab.pm |
 | ecore/Everything/Page/drafts.pm |  |  |  |  |  | ecore/Everything/Page/drafts.pm |
 | ecore/Everything/Page/drafts_for_review.pm |  |  |  |  |  | ecore/Everything/Page/drafts_for_review.pm |
 | ecore/Everything/Page/duplicates_found.pm |  |  |  |  |  | ecore/Everything/Page/duplicates_found.pm |
 | ecore/Everything/Page/e2_acceptable_use_policy.pm |  |  |  |  |  | ecore/Everything/Page/e2_acceptable_use_policy.pm |
 | ecore/Everything/Page/e2_bouncer.pm |  |  |  |  |  | ecore/Everything/Page/e2_bouncer.pm |
+| ecore/Everything/Page/e2_collaboration_nodes.pm |  |  |  |  |  | ecore/Everything/Page/e2_collaboration_nodes.pm |
 | ecore/Everything/Page/e2_color_toy.pm |  |  |  |  |  | ecore/Everything/Page/e2_color_toy.pm |
 | ecore/Everything/Page/e2_editor_beta.pm |  |  |  |  |  | ecore/Everything/Page/e2_editor_beta.pm |
 | ecore/Everything/Page/e2_full_text_search.pm |  |  |  |  |  | ecore/Everything/Page/e2_full_text_search.pm |
+| ecore/Everything/Page/e2_gift_shop.pm |  |  |  |  |  | ecore/Everything/Page/e2_gift_shop.pm |
 | ecore/Everything/Page/e2_marble_shop.pm |  |  |  |  |  | ecore/Everything/Page/e2_marble_shop.pm |
 | ecore/Everything/Page/e2_penny_jar.pm |  |  |  |  |  | ecore/Everything/Page/e2_penny_jar.pm |
 | ecore/Everything/Page/e2_rot13_encoder.pm |  |  |  |  |  | ecore/Everything/Page/e2_rot13_encoder.pm |
@@ -407,6 +433,7 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/e2node_reparenter.pm |  |  |  |  |  | ecore/Everything/Page/e2node_reparenter.pm |
 | ecore/Everything/Page/edev_documentation_index.pm |  |  |  |  |  | ecore/Everything/Page/edev_documentation_index.pm |
 | ecore/Everything/Page/edev_faq.pm |  |  |  |  |  | ecore/Everything/Page/edev_faq.pm |
+| ecore/Everything/Page/edit_weblog_menu.pm |  |  |  |  |  | ecore/Everything/Page/edit_weblog_menu.pm |
 | ecore/Everything/Page/editor_cools_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/editor_cools_xml_ticker.pm |
 | ecore/Everything/Page/editor_endorsements.pm |  |  |  |  |  | ecore/Everything/Page/editor_endorsements.pm |
 | ecore/Everything/Page/ekn.pm |  |  |  |  |  | ecore/Everything/Page/ekn.pm |
@@ -480,9 +507,12 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/my_votes_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/my_votes_xml_ticker.pm |
 | ecore/Everything/Page/nate_s_secret_unborg_doc.pm |  |  |  |  |  | ecore/Everything/Page/nate_s_secret_unborg_doc.pm |
 | ecore/Everything/Page/new_nodes_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/new_nodes_xml_ticker.pm |
+| ecore/Everything/Page/new_user_images.pm |  |  |  |  |  | ecore/Everything/Page/new_user_images.pm |
 | ecore/Everything/Page/new_writeups_atom_feed.pm |  |  |  |  |  | ecore/Everything/Page/new_writeups_atom_feed.pm |
 | ecore/Everything/Page/new_writeups_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/new_writeups_xml_ticker.pm |
+| ecore/Everything/Page/news_archives.pm |  |  |  |  |  | ecore/Everything/Page/news_archives.pm |
 | ecore/Everything/Page/news_for_noders_stuff_that_matters.pm |  |  |  |  |  | ecore/Everything/Page/news_for_noders_stuff_that_matters.pm |
+| ecore/Everything/Page/node_backup.pm |  |  |  |  |  | ecore/Everything/Page/node_backup.pm |
 | ecore/Everything/Page/node_forbiddance.pm |  |  |  |  |  | ecore/Everything/Page/node_forbiddance.pm |
 | ecore/Everything/Page/node_heaven_title_search.pm |  |  |  |  |  | ecore/Everything/Page/node_heaven_title_search.pm |
 | ecore/Everything/Page/node_heaven_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/node_heaven_xml_ticker.pm |
@@ -510,10 +540,13 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/podcast_rss_feed.pm |  |  |  |  |  | ecore/Everything/Page/podcast_rss_feed.pm |
 | ecore/Everything/Page/popular_registries.pm |  |  |  |  |  | ecore/Everything/Page/popular_registries.pm |
 | ecore/Everything/Page/private_message_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/private_message_xml_ticker.pm |
+| ecore/Everything/Page/quick_rename.pm |  |  |  |  |  | ecore/Everything/Page/quick_rename.pm |
 | ecore/Everything/Page/random_nodes_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/random_nodes_xml_ticker.pm |
 | ecore/Everything/Page/random_nodeshells.pm |  |  |  |  |  | ecore/Everything/Page/random_nodeshells.pm |
 | ecore/Everything/Page/raw_vars_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/raw_vars_xml_ticker.pm |
 | ecore/Everything/Page/rdf_search.pm |  |  |  |  |  | ecore/Everything/Page/rdf_search.pm |
+| ecore/Everything/Page/recalculate_xp.pm |  |  |  |  |  | ecore/Everything/Page/recalculate_xp.pm |
+| ecore/Everything/Page/recalculated_users.pm |  |  |  |  |  | ecore/Everything/Page/recalculated_users.pm |
 | ecore/Everything/Page/recent_node_notes.pm |  |  |  |  |  | ecore/Everything/Page/recent_node_notes.pm |
 | ecore/Everything/Page/recent_registry_entries.pm |  |  |  |  |  | ecore/Everything/Page/recent_registry_entries.pm |
 | ecore/Everything/Page/recent_users.pm |  |  |  |  |  | ecore/Everything/Page/recent_users.pm |
@@ -521,10 +554,12 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/renunciation_chainsaw.pm |  |  |  |  |  | ecore/Everything/Page/renunciation_chainsaw.pm |
 | ecore/Everything/Page/reputation_graph.pm |  |  |  |  |  | ecore/Everything/Page/reputation_graph.pm |
 | ecore/Everything/Page/reputation_graph_horizontal.pm |  |  |  |  |  | ecore/Everything/Page/reputation_graph_horizontal.pm |
-| ecore/Everything/Page/sanctify.pm |  |  |  |  |  | ecore/Everything/Page/sanctify.pm |
+| ecore/Everything/Page/reset_password.pm |  |  |  |  |  | ecore/Everything/Page/reset_password.pm |
+| ecore/Everything/Page/sanctify_user.pm |  |  |  |  |  | ecore/Everything/Page/sanctify_user.pm |
 | ecore/Everything/Page/security_monitor.pm |  |  |  |  |  | ecore/Everything/Page/security_monitor.pm |
 | ecore/Everything/Page/server_telemetry.pm |  |  |  |  |  | ecore/Everything/Page/server_telemetry.pm |
 | ecore/Everything/Page/settings.pm |  |  |  |  |  | ecore/Everything/Page/settings.pm |
+| ecore/Everything/Page/short_url_lookup.pm |  |  |  |  |  | ecore/Everything/Page/short_url_lookup.pm |
 | ecore/Everything/Page/show_user_vars.pm |  |  |  |  |  | ecore/Everything/Page/show_user_vars.pm |
 | ecore/Everything/Page/sign_up.pm |  |  |  |  |  | ecore/Everything/Page/sign_up.pm |
 | ecore/Everything/Page/silver_trinkets.pm |  |  |  |  |  | ecore/Everything/Page/silver_trinkets.pm |
@@ -541,10 +576,12 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/text_formatter.pm |  |  |  |  |  | ecore/Everything/Page/text_formatter.pm |
 | ecore/Everything/Page/the_borg_clinic.pm |  |  |  |  |  | ecore/Everything/Page/the_borg_clinic.pm |
 | ecore/Everything/Page/the_catwalk.pm |  |  |  |  |  | ecore/Everything/Page/the_catwalk.pm |
+| ecore/Everything/Page/the_costume_shop.pm |  |  |  |  |  | ecore/Everything/Page/the_costume_shop.pm |
 | ecore/Everything/Page/the_everything2_voting_experience_system.pm |  |  |  |  |  | ecore/Everything/Page/the_everything2_voting_experience_system.pm |
 | ecore/Everything/Page/the_killing_floor.pm |  |  |  |  |  | ecore/Everything/Page/the_killing_floor.pm |
 | ecore/Everything/Page/the_killing_floor_ii.pm |  |  |  |  |  | ecore/Everything/Page/the_killing_floor_ii.pm |
 | ecore/Everything/Page/the_node_crypt.pm |  |  |  |  |  | ecore/Everything/Page/the_node_crypt.pm |
+| ecore/Everything/Page/the_nodeshell_hopper.pm |  |  |  |  |  | ecore/Everything/Page/the_nodeshell_hopper.pm |
 | ecore/Everything/Page/the_old_hooked_pole.pm |  |  |  |  |  | ecore/Everything/Page/the_old_hooked_pole.pm |
 | ecore/Everything/Page/the_oracle.pm |  |  |  |  |  | ecore/Everything/Page/the_oracle.pm |
 | ecore/Everything/Page/the_oracle_classic.pm |  |  |  |  |  | ecore/Everything/Page/the_oracle_classic.pm |
@@ -554,6 +591,7 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/the_well_of_cool.pm |  |  |  |  |  | ecore/Everything/Page/the_well_of_cool.pm |
 | ecore/Everything/Page/theme_nirvana.pm |  |  |  |  |  | ecore/Everything/Page/theme_nirvana.pm |
 | ecore/Everything/Page/time_since_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/time_since_xml_ticker.pm |
+| ecore/Everything/Page/topic_archive.pm |  |  |  |  |  | ecore/Everything/Page/topic_archive.pm |
 | ecore/Everything/Page/universal_message_json_ticker.pm |  |  |  |  |  | ecore/Everything/Page/universal_message_json_ticker.pm |
 | ecore/Everything/Page/universal_message_xml_ticker.pm |  |  |  |  |  | ecore/Everything/Page/universal_message_xml_ticker.pm |
 | ecore/Everything/Page/user_information_xml.pm |  |  |  |  |  | ecore/Everything/Page/user_information_xml.pm |
@@ -564,6 +602,7 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/Page/usergroup_discussions.pm |  |  |  |  |  | ecore/Everything/Page/usergroup_discussions.pm |
 | ecore/Everything/Page/usergroup_message_archive.pm |  |  |  |  |  | ecore/Everything/Page/usergroup_message_archive.pm |
 | ecore/Everything/Page/usergroup_message_archive_manager.pm |  |  |  |  |  | ecore/Everything/Page/usergroup_message_archive_manager.pm |
+| ecore/Everything/Page/usergroup_picks.pm |  |  |  |  |  | ecore/Everything/Page/usergroup_picks.pm |
 | ecore/Everything/Page/usergroup_press_gang.pm |  |  |  |  |  | ecore/Everything/Page/usergroup_press_gang.pm |
 | ecore/Everything/Page/users_with_infravision.pm |  |  |  |  |  | ecore/Everything/Page/users_with_infravision.pm |
 | ecore/Everything/Page/viewvars.pm |  |  |  |  |  | ecore/Everything/Page/viewvars.pm |
@@ -611,7 +650,7 @@ This report shows statement coverage for each Perl module in the codebase.
 | ecore/Everything/dataprovider/nodeparam.pm |  |  |  |  |  | ecore/Everything/dataprovider/nodeparam.pm |
 | ecore/Mason/Plugin/Everything.pm |  |  |  |  |  | ecore/Mason/Plugin/Everything.pm |
 
-| **Total** | **44.4** | **12.1** | **100.0** | **** | **** | **36.5** |
+| **Total** | **47.1** | **13.4** | **100.0** | **** | **** | **38.9** |
 
 ## How to Improve Coverage
 

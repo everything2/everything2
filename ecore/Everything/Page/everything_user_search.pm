@@ -31,8 +31,10 @@ sub buildReactData {
 
     $orderby = $orderby_map{$orderby} if exists $orderby_map{$orderby};
 
-    my $page = int( $query->param('page') || 1 );
-    my $filter_hidden = int( $query->param('filterhidden') || 0 );
+    my $page_param = $query->param('page') // '';
+    my $page = ($page_param =~ /^\d+$/) ? int($page_param) : 1;
+    my $filter_param = $query->param('filterhidden') // '';
+    my $filter_hidden = ($filter_param =~ /^\d+$/) ? int($filter_param) : 0;
 
     return {
         initialUsername  => $username,

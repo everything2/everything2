@@ -66,6 +66,10 @@ has 'logdirectory' => (isa => 'Str', is => 'ro', default => '/var/log/everything
 
 has 'use_local_assets' => (isa => 'Bool', is => 'ro', default => '0');
 
+# Halloween mode testing - set to 1 to force Halloween features (costumes, etc.) regardless of date
+# Note: 'rw' allows tests to enable this temporarily
+has 'force_halloween_mode' => (isa => 'Bool', is => 'rw', default => 0);
+
 has 'github_url' => (isa => 'Str', is => 'ro', default => 'https://github.com/everything2/everything2');
 has 'last_commit' => (isa => 'Str', is => 'ro', builder => '_build_last_commit', lazy => 1);
 

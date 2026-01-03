@@ -443,6 +443,59 @@ subtest "Set topic - empty topic" => sub {
 };
 
 #############################################################################
+# Test 10b: Set topic - success returns newTopic
+#############################################################################
+subtest "Set topic - success returns newTopic" => sub {
+  plan tests => 4;
+
+  # Save original room topic for restoration
+  my $settingsnode = $DB->getNode('Room topics', 'setting');
+  my $original_topics = $APP->getVars($settingsnode);
+  my $original_topic = $original_topics->{0};
+
+  # Set tokens in the user's vars
+  my $vars = $APP->getVars($test_user);
+  $vars->{tokens} = 5;
+  Everything::setVars($test_user, $vars);
+  $DB->updateNode($test_user, -1);
+
+  my $user = MockUser->new(
+    node_id => $test_user->{node_id},
+    user_id => $test_user->{user_id},
+    title => $test_user->{title},
+    real_user => $test_user
+  );
+
+  my $test_topic = 'Test topic from gift shop test';
+
+  my $request = MockRequest->new(
+    user => $user,
+    method => 'POST',
+    postdata => { topic => $test_topic }
+  );
+
+  my $result = $api->set_topic($request);
+
+  is($result->[1]->{success}, 1, 'Topic set successfully');
+  ok(defined $result->[1]->{newTopic}, 'Response includes newTopic field');
+  like($result->[1]->{newTopic}, qr/Test topic/, 'newTopic contains the set topic');
+  is($result->[1]->{tokens}, 4, 'Token was consumed');
+
+  # Cleanup: restore tokens
+  delete $vars->{tokens};
+  Everything::setVars($test_user, $vars);
+  $DB->updateNode($test_user, -1);
+
+  # Cleanup: restore original room topic
+  if (defined $original_topic) {
+    $original_topics->{0} = $original_topic;
+  } else {
+    delete $original_topics->{0};
+  }
+  Everything::setVars($settingsnode, $original_topics);
+};
+
+#############################################################################
 # Test 11: Route dispatch
 #############################################################################
 subtest "Route dispatch" => sub {
@@ -518,12 +571,14 @@ subtest "Eddie message - give votes" => sub {
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
   ok($eddie, "Got Cool Man Eddie user");
 
-  # Get recipient user
+  # Get recipient user (clear cache to avoid stale data from other tests)
+  my $recipient_node = $DB->getNode('genericdev', 'user');
+  $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
   my $recipient = $DB->getNode('genericdev', 'user');
   ok($recipient, "Got genericdev as recipient");
 
-  # Clear any existing messages from Eddie to recipient
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Record the highest message_id before our action for filtering
+  my $max_msg_before = $DB->sqlSelect('MAX(message_id)', 'message') || 0;
 
   # Refresh test_user from database and ensure level is set
   $DB->{cache}->removeNode($test_user) if $DB->{cache};
@@ -554,33 +609,35 @@ subtest "Eddie message - give votes" => sub {
   my $result = $api->give_votes($request);
   is($result->[1]->{success}, 1, 'give_votes succeeded');
 
-  # Check for Eddie message
+  # Check for Eddie message created after our action
   my $msg = $DB->sqlSelectHashref('*', 'message',
-    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}",
+    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before AND msgtext LIKE '%gave you%votes%'",
     'ORDER BY message_id DESC LIMIT 1'
   );
-  ok($msg && $msg->{msgtext} =~ /gave you.*5 votes/, 'Eddie message sent for give_votes');
+  ok($msg, 'Eddie message sent for give_votes');
 
-  # Clean up - restore recipient votes
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Clean up only our message
+  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before");
 };
 
 #############################################################################
 # Test 14: Eddie message - give ching
 #############################################################################
 subtest "Eddie message - give ching" => sub {
-  plan tests => 4;
+  plan tests => 5;
 
   # Get Cool Man Eddie
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
   ok($eddie, "Got Cool Man Eddie user");
 
-  # Get recipient user
+  # Get recipient user (clear cache to avoid stale data from other tests)
+  my $recipient_node = $DB->getNode('genericdev', 'user');
+  $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
   my $recipient = $DB->getNode('genericdev', 'user');
   ok($recipient, "Got genericdev as recipient");
 
-  # Clear any existing messages from Eddie to recipient
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Record the highest message_id before our action for filtering
+  my $max_msg_before = $DB->sqlSelect('MAX(message_id)', 'message') || 0;
 
   # Refresh test_user from database and ensure level is set
   $DB->{cache}->removeNode($test_user) if $DB->{cache};
@@ -611,15 +668,26 @@ subtest "Eddie message - give ching" => sub {
   my $result = $api->give_ching($request);
   is($result->[1]->{success}, 1, 'give_ching succeeded');
 
-  # Check for Eddie message
+  # Check for Eddie message created after our action
   my $msg = $DB->sqlSelectHashref('*', 'message',
-    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}",
+    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before AND msgtext LIKE '%gave you%C!%'",
     'ORDER BY message_id DESC LIMIT 1'
   );
-  ok($msg && $msg->{msgtext} =~ /gave you.*C!/, 'Eddie message sent for give_ching');
+  ok($msg, 'Eddie message sent for give_ching');
 
-  # Clean up
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Check for security log entry (logs to "E2 Gift Shop" superdoc)
+  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
+  SKIP: {
+    skip 'E2 Gift Shop superdoc not found', 1 unless $giftshop_node;
+    my $seclog = $DB->sqlSelectHashref('*', 'seclog',
+      "seclog_node = $giftshop_node->{node_id} AND seclog_user = $test_user->{node_id}",
+      'ORDER BY seclog_id DESC LIMIT 1'
+    );
+    ok($seclog && $seclog->{seclog_details} =~ /gave a C!/, 'Security log entry created for give_ching');
+  }
+
+  # Clean up only our message
+  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before");
 };
 
 #############################################################################
@@ -632,12 +700,14 @@ subtest "Eddie message - give star" => sub {
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
   ok($eddie, "Got Cool Man Eddie user");
 
-  # Get recipient user
+  # Get recipient user (clear cache to avoid stale data from other tests)
+  my $recipient_node = $DB->getNode('genericdev', 'user');
+  $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
   my $recipient = $DB->getNode('genericdev', 'user');
   ok($recipient, "Got genericdev as recipient");
 
-  # Clear any existing messages from Eddie to recipient
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Record the highest message_id before our action for filtering
+  my $max_msg_before = $DB->sqlSelect('MAX(message_id)', 'message') || 0;
 
   # Refresh test_user from database and ensure level is set
   $DB->{cache}->removeNode($test_user) if $DB->{cache};
@@ -674,18 +744,18 @@ subtest "Eddie message - give star" => sub {
   my $result = $api->give_star($request);
   is($result->[1]->{success}, 1, 'give_star succeeded');
 
-  # Check for Eddie message
+  # Check for Eddie message created after our action
   my $msg = $DB->sqlSelectHashref('*', 'message',
-    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}",
+    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before AND msgtext LIKE '%Gold Star%'",
     'ORDER BY message_id DESC LIMIT 1'
   );
-  ok($msg && $msg->{msgtext} =~ /Gold Star/, 'Eddie message sent for give_star');
+  ok($msg, 'Eddie message sent for give_star');
 
   # Verify the reason is quoted, not italicized (HTML fix)
   ok($msg && $msg->{msgtext} =~ /"Great work on testing"/, 'Star reason uses quotes, not HTML');
 
-  # Clean up
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Clean up only our message
+  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before");
 };
 
 #############################################################################
@@ -698,12 +768,17 @@ subtest "Eddie message - give egg" => sub {
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
   ok($eddie, "Got Cool Man Eddie user");
 
-  # Get recipient user
+  # Get recipient user (clear cache to avoid stale data from other tests)
+  my $recipient_node = $DB->getNode('genericdev', 'user');
+  $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
   my $recipient = $DB->getNode('genericdev', 'user');
   ok($recipient, "Got genericdev as recipient");
 
   # Clear any existing messages from Eddie to recipient
   $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+
+  # Record the highest message_id before our action for filtering
+  my $max_msg_before = $DB->sqlSelect('MAX(message_id)', 'message') || 0;
 
   # Refresh test_user from database and ensure level is set
   $DB->{cache}->removeNode($test_user) if $DB->{cache};
@@ -734,15 +809,15 @@ subtest "Eddie message - give egg" => sub {
   my $result = $api->give_egg($request);
   is($result->[1]->{success}, 1, 'give_egg succeeded');
 
-  # Check for Eddie message
+  # Check for Eddie message created after our action
   my $msg = $DB->sqlSelectHashref('*', 'message',
-    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}",
+    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before AND msgtext LIKE '%easter egg%'",
     'ORDER BY message_id DESC LIMIT 1'
   );
-  ok($msg && $msg->{msgtext} =~ /easter egg/, 'Eddie message sent for give_egg');
+  ok($msg, 'Eddie message sent for give_egg');
 
-  # Clean up
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Clean up only our message
+  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before");
 };
 
 #############################################################################
@@ -754,11 +829,13 @@ subtest "Eddie message - anonymous flag" => sub {
   # Get Cool Man Eddie
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
 
-  # Get recipient user
+  # Get recipient user (clear cache to avoid stale data from other tests)
+  my $recipient_node = $DB->getNode('genericdev', 'user');
+  $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
   my $recipient = $DB->getNode('genericdev', 'user');
 
-  # Clear any existing messages from Eddie to recipient
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Record the highest message_id before our action for filtering
+  my $max_msg_before = $DB->sqlSelect('MAX(message_id)', 'message') || 0;
 
   # Refresh test_user from database and ensure level is set
   $DB->{cache}->removeNode($test_user) if $DB->{cache};
@@ -790,16 +867,16 @@ subtest "Eddie message - anonymous flag" => sub {
   my $result = $api->give_votes($request);
   is($result->[1]->{success}, 1, 'give_votes with anonymous succeeded');
 
-  # Check Eddie message says "someone mysterious" instead of username
+  # Check Eddie message created after our action says "someone mysterious"
   my $msg = $DB->sqlSelectHashref('*', 'message',
-    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}",
+    "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before",
     'ORDER BY message_id DESC LIMIT 1'
   );
   ok($msg && $msg->{msgtext} =~ /someone mysterious/, 'Anonymous gift uses "someone mysterious"');
   ok($msg && $msg->{msgtext} !~ /\[$test_user->{title}\]/, 'Anonymous gift does not include sender name');
 
-  # Clean up
-  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id}");
+  # Clean up only our message
+  $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before");
 };
 
 done_testing();

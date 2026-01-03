@@ -234,7 +234,8 @@ sub setVars
 	}
 
 	my $newVarsStr = getVarStringFromHash($varsref);
-	unless ($newVarsStr ne $$NODE{vars})
+	my $currentVars = $$NODE{vars} // '';
+	unless ($newVarsStr ne $currentVars)
         {
           return;
         }

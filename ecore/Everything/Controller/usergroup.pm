@@ -39,6 +39,18 @@ sub display {
         }
     }
 
+    # Check if admin can bulk-add users (not allowed for gods/e2gods groups)
+    my $can_bulk_edit = 0;
+    my $simple_editor_id;
+    if ( $user->is_admin ) {
+        my %no_bulk_edit = map { $_ => 1 } qw(gods e2gods);
+        unless ( $no_bulk_edit{ $node->title } ) {
+            $can_bulk_edit = 1;
+            my $editor_node = $self->DB->getNode( 'simple usergroup editor', 'superdoc' );
+            $simple_editor_id = $editor_node->{node_id} if $editor_node;
+        }
+    }
+
     # Get message count for this usergroup
     my $message_count = 0;
     unless ( $user->VARS->{hidemsgyou} ) {
@@ -126,7 +138,9 @@ sub display {
         discussions_node_id => $discussions_node_id,
         weblog_setting      => $weblog_setting,
         message_count       => $message_count || 0,
-        owner_index         => $owner_index
+        owner_index         => $owner_index,
+        can_bulk_edit       => $can_bulk_edit ? 1 : 0,
+        simple_editor_id    => $simple_editor_id
     };
 
     # Set node on REQUEST for buildNodeInfoStructure

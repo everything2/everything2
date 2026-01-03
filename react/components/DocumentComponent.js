@@ -384,7 +384,49 @@ const COMPONENT_MAP = {
   what_does_what: lazy(() => import('./Documents/WhatDoesWhat')),
 
   // Admin node management tools
-  the_nodeshell_hopper: lazy(() => import('./Documents/TheNodeshellHopper'))
+  the_nodeshell_hopper: lazy(() => import('./Documents/TheNodeshellHopper')),
+
+  // Short URL lookup (error page only - valid URLs get 303 redirect from server)
+  short_url_lookup: lazy(() => import('./Documents/ShortUrlLookup')),
+
+  // Editor bulk rename tool
+  quick_rename: lazy(() => import('./Documents/QuickRename')),
+
+  // Admin pages
+  recalculated_users: lazy(() => import('./Documents/RecalculatedUsers')),
+  new_user_images: lazy(() => import('./Documents/NewUserImages')),
+
+  // Seasonal/special pages
+  the_costume_shop: lazy(() => import('./Documents/TheCostumeShop')),
+
+  // Account management
+  reset_password: lazy(() => import('./Documents/ResetPassword')),
+  recalculate_xp: lazy(() => import('./Documents/RecalculateXp')),
+
+  // Usergroup tools
+  usergroup_picks: lazy(() => import('./Documents/UsergroupPicks')),
+
+  // User content tools
+  node_backup: lazy(() => import('./Documents/NodeBackup')),
+
+  // Archive/log pages
+  topic_archive: lazy(() => import('./Documents/TopicArchive')),
+  news_archives: lazy(() => import('./Documents/NewsArchives')),
+
+  // Authentication/password pages
+  confirm_password: lazy(() => import('./Documents/ConfirmPassword')),
+
+  // Editorial collaboration tools
+  e2_collaboration_nodes: lazy(() => import('./Documents/E2CollaborationNodes')),
+
+  // User weblog visibility settings
+  edit_weblog_menu: lazy(() => import('./Documents/EditWeblogMenu')),
+
+  // Admin costume management
+  costume_remover: lazy(() => import('./Documents/CostumeRemover')),
+
+  // Admin resurrection tool
+  dr_nate_s_secret_lab: lazy(() => import('./Documents/DrNatesSecretLab'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

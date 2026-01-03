@@ -1,6 +1,7 @@
 {
   "canonical_web_server": "development.everything2.com",
   "use_local_assets": 1,
+  "force_halloween_mode": 0,
   "google_ads_badnodes": [
     "123456"
   ]
