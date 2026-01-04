@@ -256,18 +256,18 @@ describe('MessageModal', () => {
       expect(onClose).toHaveBeenCalled()
     })
 
-    it('calls onClose when clicking backdrop', () => {
+    it('does not close when clicking backdrop (for usability)', () => {
       const onClose = jest.fn()
       render(<MessageModal {...defaultProps} onClose={onClose} />)
 
-      // Click the backdrop (outer div)
+      // Click the backdrop (outer div) - should NOT close modal
       const modal = screen.getByRole('heading', { name: 'New Message' }).closest('div[style*="position: fixed"]')
       fireEvent.click(modal)
 
-      expect(onClose).toHaveBeenCalled()
+      expect(onClose).not.toHaveBeenCalled()
     })
 
-    it('does not call onClose when clicking modal content', () => {
+    it('does not close when clicking modal content', () => {
       const onClose = jest.fn()
       render(<MessageModal {...defaultProps} onClose={onClose} />)
 
@@ -276,6 +276,39 @@ describe('MessageModal', () => {
       fireEvent.click(modalContent)
 
       expect(onClose).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('initial message', () => {
+    it('pre-populates message field with initialMessage prop', () => {
+      const initialMsg = 're: Test Node\n\n'
+      render(<MessageModal {...defaultProps} initialMessage={initialMsg} />)
+
+      const textarea = screen.getByPlaceholderText('Type your message here...')
+      expect(textarea.value).toBe(initialMsg)
+    })
+
+    it('shows correct character count with initialMessage', () => {
+      const initialMsg = 're: Test Node\n\n'
+      render(<MessageModal {...defaultProps} initialMessage={initialMsg} />)
+
+      // "re: Test Node\n\n" is 16 characters
+      expect(screen.getByText(`${initialMsg.length} / 512 characters`)).toBeInTheDocument()
+    })
+
+    it('clears initialMessage when modal is closed and reopened without it', () => {
+      const initialMsg = 're: Test Node\n\n'
+      const { rerender } = render(<MessageModal {...defaultProps} initialMessage={initialMsg} />)
+
+      let textarea = screen.getByPlaceholderText('Type your message here...')
+      expect(textarea.value).toBe(initialMsg)
+
+      // Close and reopen without initialMessage
+      rerender(<MessageModal {...defaultProps} isOpen={false} />)
+      rerender(<MessageModal {...defaultProps} isOpen={true} initialMessage="" />)
+
+      textarea = screen.getByPlaceholderText('Type your message here...')
+      expect(textarea.value).toBe('')
     })
   })
 

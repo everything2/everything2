@@ -121,6 +121,9 @@ const UserEdit = ({ data, e2 }) => {
   })
   const [confirmPasswd, setConfirmPasswd] = useState('')
   const [removeImage, setRemoveImage] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [uploadStatus, setUploadStatus] = useState(null)
+  const [uploading, setUploading] = useState(false)
   const [bookmarks, setBookmarks] = useState([])
   const [removedBookmarks, setRemovedBookmarks] = useState(new Set())
   const [savedBookmarkOrder, setSavedBookmarkOrder] = useState(null) // Track last saved order
@@ -315,6 +318,62 @@ const UserEdit = ({ data, e2 }) => {
       })
     }
   }, [])
+
+  // Handle file selection for image upload
+  const handleFileSelect = useCallback((e) => {
+    const file = e.target.files[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.match(/^image\/(jpeg|jpg|gif|png)$/i)) {
+        setUploadStatus({ type: 'error', message: 'Only JPEG, GIF, and PNG images are allowed' })
+        setSelectedFile(null)
+        return
+      }
+      // Validate file size (800KB for regular users)
+      const maxSize = 800 * 1024
+      if (file.size > maxSize) {
+        setUploadStatus({ type: 'error', message: `Image is too large. Maximum size is ${maxSize / 1024}KB` })
+        setSelectedFile(null)
+        return
+      }
+      setSelectedFile(file)
+      setUploadStatus(null)
+    }
+  }, [])
+
+  // Handle image upload
+  const handleImageUpload = useCallback(async () => {
+    if (!selectedFile) return
+
+    setUploading(true)
+    setUploadStatus(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('imgsrc_file', selectedFile)
+
+      const response = await fetch('/api/user/upload-image', {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: formData
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setUploadStatus({ type: 'success', message: result.message })
+        setSelectedFile(null)
+        // Reload the page to show the new image
+        window.location.reload()
+      } else {
+        setUploadStatus({ type: 'error', message: result.error || 'Upload failed' })
+      }
+    } catch (err) {
+      setUploadStatus({ type: 'error', message: err.message || 'An error occurred during upload' })
+    } finally {
+      setUploading(false)
+    }
+  }, [selectedFile])
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
@@ -584,23 +643,92 @@ const UserEdit = ({ data, e2 }) => {
           </div>
         </fieldset>
 
-        {/* User image section */}
-        {user.imgsrc && (
+        {/* User image section - show if user has image or can upload */}
+        {(user.imgsrc || can_have_image) && (
           <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
             <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Profile Image</legend>
-            <img
-              src={`/${user.imgsrc}`}
-              alt={`${user.title}'s image`}
-              style={{ maxWidth: '200px', maxHeight: '200px', display: 'block', marginBottom: '12px', borderRadius: '4px' }}
-            />
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={removeImage}
-                onChange={(e) => setRemoveImage(e.target.checked)}
-              />
-              <strong>Remove image</strong>
-            </label>
+
+            {/* Show current image if exists */}
+            {user.imgsrc && (
+              <div style={{ marginBottom: '16px' }}>
+                <img
+                  src={`/${user.imgsrc}`}
+                  alt={`${user.title}'s image`}
+                  style={{ maxWidth: '200px', maxHeight: '200px', display: 'block', marginBottom: '12px', borderRadius: '4px' }}
+                />
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={removeImage}
+                    onChange={(e) => setRemoveImage(e.target.checked)}
+                  />
+                  <strong>Remove image</strong>
+                </label>
+              </div>
+            )}
+
+            {/* Upload new image section */}
+            {can_have_image && (
+              <div style={{ marginTop: user.imgsrc ? '16px' : 0, paddingTop: user.imgsrc ? '16px' : 0, borderTop: user.imgsrc ? '1px solid #ddd' : 'none' }}>
+                <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+                  Upload a new image. Only JPEG, GIF, and PNG files are allowed (max 800KB).
+                  Large images will be automatically resized.
+                </p>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/gif,image/png"
+                    onChange={handleFileSelect}
+                    style={{ fontSize: '14px' }}
+                  />
+
+                  {selectedFile && (
+                    <button
+                      type="button"
+                      onClick={handleImageUpload}
+                      disabled={uploading}
+                      style={{
+                        padding: '8px 16px',
+                        backgroundColor: uploading ? '#ccc' : '#4060b0',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: uploading ? 'not-allowed' : 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                      }}
+                    >
+                      {uploading ? 'Uploading...' : 'Upload Image'}
+                    </button>
+                  )}
+                </div>
+
+                {selectedFile && (
+                  <div style={{ marginTop: '8px', fontSize: '13px', color: '#507898' }}>
+                    Selected: {selectedFile.name} ({Math.round(selectedFile.size / 1024)}KB)
+                  </div>
+                )}
+
+                {uploadStatus && (
+                  <div style={{
+                    marginTop: '8px',
+                    fontSize: '13px',
+                    color: uploadStatus.type === 'error' ? '#d9534f' : '#3bb5c3',
+                    fontWeight: uploadStatus.type === 'success' ? 'bold' : 'normal'
+                  }}>
+                    {uploadStatus.type === 'success' ? '✓ ' : ''}{uploadStatus.message}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Show message for users who can't upload */}
+            {!can_have_image && !user.imgsrc && (
+              <p style={{ color: '#507898', fontSize: '13px', fontStyle: 'italic' }}>
+                You must reach level 1 to upload a homenode image.
+              </p>
+            )}
           </fieldset>
         )}
 

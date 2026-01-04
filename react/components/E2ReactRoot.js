@@ -172,7 +172,8 @@ class E2ReactRoot extends React.Component {
         const prefKey = nodelet+"_hide"+section;
         // Default to showing section if preference is undefined or 0
         // Hide section only if preference is explicitly set to 1
-        initialState[nodelet+"_"+section] = (e2.display_prefs[prefKey] !== 1);
+        // Use Number() to handle string values from user preferences
+        initialState[nodelet+"_"+section] = (Number(e2.display_prefs[prefKey]) !== 1);
       })
     })
 
@@ -513,11 +514,11 @@ class E2ReactRoot extends React.Component {
           />
         </ErrorBoundary>
       ),
-      'read_this': () => (
+      'readthis': () => (
         <ErrorBoundary key="readthis">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <ReadThis
-            id="read_this"
+            id="readthis"
               coolnodes={this.state.coolnodes}
             staffpicks={this.state.staffpicks}
             news={this.state.news}

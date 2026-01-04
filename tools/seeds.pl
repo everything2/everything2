@@ -1773,6 +1773,14 @@ my @softlink_target_titles = (
 
   # More misc targets
   "backpropagation", "activation functions",
+
+  # Nodes with special characters and HTML entities for encoding tests (GitHub #3950)
+  # These test that LinkNode.js correctly handles entities like &#9608; (█)
+  "Dead bear in \x{2588}\x{2588}\x{2588} \x{2588}\x{2588}\x{2588}\x{2588}\x{2588}",  # Unicode block chars
+  "AT&T history",                                                                     # Ampersand in title
+  "C++ programming",                                                                  # Plus signs
+  "Q&A forum",                                                                        # Another ampersand
+  "Fish & chips",                                                                     # Food with ampersand
 );
 
 my $nodeshell_count = 0;
@@ -1892,6 +1900,17 @@ my %softlink_relationships = (
   "topology" => [{to => "differential geometry", hits => 28}],
   "impressionism" => [{to => "abstract expressionism", hits => 26}],
   "medieval history" => [{to => "renaissance period", hits => 24}],
+
+  # Softlinks for encoding test nodes (GitHub #3950)
+  # These verify that special characters in titles link correctly
+  "potato" => [
+    {to => "tomato", hits => 40},
+    {to => "Dead bear in \x{2588}\x{2588}\x{2588} \x{2588}\x{2588}\x{2588}\x{2588}\x{2588}", hits => 15},
+    {to => "AT&T history", hits => 12},
+    {to => "Q&A forum", hits => 10},
+    {to => "Fish & chips", hits => 8},
+    {to => "C++ programming", hits => 6},
+  ],
 );
 
 my $softlink_count = 0;

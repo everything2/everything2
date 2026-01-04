@@ -6026,7 +6026,7 @@ sub display_preferences
 {
   my ($this, $vars) = @_;
 
-  my $nodelet_sections = {"vit" => [qw(nodeinfo maintenance nodeutil list misc)],"edn" => [qw(edev util)]};
+  my $nodelet_sections = {"vit" => [qw(nodeinfo maintenance nodeutil list misc)],"edn" => [qw(edev util)],"rtn" => [qw(cwu edc nws)]};
 
   my $prefs = {};
   foreach my $nodelet (keys %$nodelet_sections)

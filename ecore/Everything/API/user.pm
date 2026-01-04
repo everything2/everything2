@@ -22,6 +22,11 @@ sub route {
     return $self->edit_profile($REQUEST);
   }
 
+  # POST /api/user/upload-image - Upload homenode image
+  if ($extra eq 'upload-image' && $method eq 'post') {
+    return $self->upload_image($REQUEST);
+  }
+
   # Catchall for unmatched routes
   return $self->$method($REQUEST);
 }
@@ -300,6 +305,224 @@ sub edit_profile {
   }
 
   return $response;
+}
+
+=head2 POST /api/user/upload-image
+
+Upload a homenode image. Accepts multipart/form-data with:
+- imgsrc_file: The image file (JPEG, GIF, or PNG)
+
+The image is:
+- Validated for type (JPEG, GIF, PNG only)
+- Checked against size limits (800KB normal, 1.6MB for gods)
+- Resized if exceeding dimension limits (200x400 normal, 400x800 for level>4 or gods)
+- Uploaded to S3
+- Queued for moderator approval
+
+Response:
+{
+  "success": true|false,
+  "message": "Status message",
+  "error": "Error message if failed"
+}
+
+=cut
+
+sub upload_image {
+  my ($self, $REQUEST) = @_;
+
+  my $user = $REQUEST->user;
+  my $APP = $self->APP;
+  my $DB = $self->DB;
+  my $query = $REQUEST->cgi;
+
+  # Must be logged in
+  if ($APP->isGuest($user)) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'You must be logged in to upload an image'
+    }];
+  }
+
+  # Production only - S3 uploads require AWS credentials
+  unless ($self->CONF->environment eq 'production') {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Image uploads are only available in production'
+    }];
+  }
+
+  my $nodedata = $user->NODEDATA;
+
+  # Check if user is suspended from homenode pics
+  if ($APP->isSuspended($nodedata, 'homenodepic')) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Your homenode image privilege has been suspended'
+    }];
+  }
+
+  # Check if user is allowed to have an image
+  my $can_have_image = 0;
+  my $users_with_image = $DB->getNode('users with image', 'nodegroup');
+  if ($users_with_image && Everything::isApproved($nodedata, $users_with_image)) {
+    $can_have_image = 1;
+  } elsif ($APP->getLevel($nodedata) >= 1) {
+    $can_have_image = 1;
+  }
+
+  unless ($can_have_image) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'You must be level 1 or higher to upload a homenode image'
+    }];
+  }
+
+  # Initialize S3
+  require Everything::S3;
+  my $s3 = Everything::S3->new('homenodeimages');
+  unless ($s3) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Could not connect to image storage'
+    }];
+  }
+
+  # Get uploaded file
+  my $fname = $query->upload('imgsrc_file');
+  unless ($fname) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'No image file uploaded'
+    }];
+  }
+
+  # Validate content type
+  my $upload_info = $query->uploadInfo($fname);
+  unless (UNIVERSAL::isa($upload_info, 'HASH')) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Image upload failed. Please try again.'
+    }];
+  }
+
+  my $content_type = $upload_info->{'Content-Type'} || '';
+  unless ($content_type =~ /(jpeg|jpg|gif|png)$/i) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Only JPEG, GIF, and PNG images are allowed'
+    }];
+  }
+  my $extension = lc($1);
+  $extension = 'jpg' if $extension eq 'jpeg';
+
+  # Size limits
+  my $is_god = $APP->isGod($nodedata);
+  my $user_level = $APP->getLevel($nodedata);
+  my $sizelimit = $is_god ? 1_600_000 : 800_000;
+  my $max_width = ($user_level > 4 || $is_god) ? 400 : 200;
+  my $max_height = ($user_level > 4 || $is_god) ? 800 : 400;
+
+  # Read file data
+  my $buf = join('', <$fname>);
+  my $size = length($buf);
+
+  if ($size > $sizelimit) {
+    my $limit_kb = int($sizelimit / 1000);
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => "Image is too large. Maximum size is ${limit_kb}KB"
+    }];
+  }
+
+  # Write to temp file for ImageMagick
+  my $tmpfile = '/tmp/everythingimage' . $$ . int(rand(10000)) . '.' . $extension;
+  my $outfile;
+  unless (open($outfile, '>', $tmpfile)) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Failed to process image'
+    }];
+  }
+  binmode($outfile);
+  print $outfile $buf;
+  close($outfile);
+
+  # Process with ImageMagick
+  require Image::Magick;
+  my $image = Image::Magick->new();
+  my $read_error = $image->Read($tmpfile);
+  if ($read_error) {
+    unlink($tmpfile);
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Failed to read image file'
+    }];
+  }
+
+  my ($width, $height) = $image->Get('width', 'height');
+  my $proportion = 1;
+  my $resizing = 0;
+
+  if ($width > $max_width) {
+    $proportion = $max_width / $width;
+    $resizing = 1;
+  }
+
+  if ($height > $max_height) {
+    my $height_proportion = $max_height / $height;
+    if ($height_proportion < $proportion) {
+      $proportion = $height_proportion;
+    }
+    $resizing = 1;
+  }
+
+  if ($resizing) {
+    $width = int($width * $proportion);
+    $height = int($height * $proportion);
+    $image->Resize(width => $width, height => $height, filter => 'Lanczos');
+    $image->Write($tmpfile);
+  }
+  undef $image;
+
+  # Build S3 key name from username
+  my $basename = $user->title;
+  $basename =~ s/\W/_/gs;
+
+  # Upload to S3
+  unless ($s3->upload_file($basename, $tmpfile, { content_type => $content_type })) {
+    unlink($tmpfile);
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Failed to upload image. Please try again.'
+    }];
+  }
+
+  # Update user node with image path
+  $nodedata->{imgsrc} = "/$basename";
+  $DB->updateNode($nodedata, $nodedata);
+
+  # Queue for moderator approval
+  $DB->getDatabaseHandle()->do(
+    'REPLACE INTO newuserimage SET newuserimage_id = ?',
+    undef,
+    $user->node_id
+  );
+
+  # Clean up temp file
+  unlink($tmpfile);
+
+  my $message = "$size bytes received!";
+  if ($resizing) {
+    $message .= " Image was resized to ${width}x${height}.";
+  }
+  $message .= ' Your image will be reviewed by moderators.';
+
+  return [$self->HTTP_OK, {
+    success => 1,
+    message => $message,
+    imgsrc => "/$basename"
+  }];
 }
 
 1;

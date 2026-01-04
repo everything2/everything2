@@ -3,6 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { getE2EditorExtensions } from './Editor/useE2Editor';
 import { convertToE2Syntax } from './Editor/E2LinkExtension';
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Editor/RawBracketExtension';
+import { breakTags } from './Editor/E2HtmlSanitizer';
 import MenuBar from './Editor/MenuBar';
 import PreviewContent from './Editor/PreviewContent';
 import { useWriteuptypes } from '../hooks/usePublishDraft';
@@ -411,8 +412,10 @@ const InlineWriteupEditor = ({
       setHtmlContent(cleanedHtml);
     } else {
       // Switch to Rich mode - update editor with HTML content
-      // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
-      editor.commands.setContent(convertEntitiesToRawBrackets(htmlContent));
+      // First apply breakTags to convert plain-text newlines to proper HTML paragraphs
+      // Then convert &#91; and &#93; entities back to parseable spans for TipTap
+      const withBreaks = breakTags(htmlContent);
+      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
     }
 
     setEditorMode(newMode);

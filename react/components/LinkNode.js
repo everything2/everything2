@@ -1,8 +1,38 @@
 import React from 'react'
 
+// Helper to decode HTML entities (numeric and named) to actual characters
+// This is needed because node titles may contain entities like &#9608; (█)
+// which must be decoded before URL encoding
+const decodeHtmlEntities = (str) => {
+  if (!str || typeof str !== 'string') return str
+
+  // First decode numeric entities (&#NNN; or &#xHH;)
+  let decoded = str.replace(/&#(\d+);/g, (match, dec) => {
+    return String.fromCodePoint(parseInt(dec, 10))
+  }).replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => {
+    return String.fromCodePoint(parseInt(hex, 16))
+  })
+
+  // Decode common named entities
+  const namedEntities = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&apos;': "'",
+    '&nbsp;': '\u00A0'
+  }
+  for (const [entity, char] of Object.entries(namedEntities)) {
+    decoded = decoded.split(entity).join(char)
+  }
+
+  return decoded
+}
+
 const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) => {
 
   let rel=""
+  let originalDecodedTitle = null  // Store decoded title for hover text
   if(url == undefined)
   {
     let prefix = ""
@@ -14,8 +44,10 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) =>
         display = title
       }
 
-      // Double-encode to work around E2 routing bugs
-      title = title.replace(/[\&@\+\/\;\?]/g, (match) => {return encodeURIComponent(encodeURIComponent(match))});
+      // Decode HTML entities first, then double-encode special URL characters
+      // This ensures &#9608; becomes █ before encoding, not %2526%25239608%253B
+      originalDecodedTitle = decodeHtmlEntities(title)
+      title = originalDecodedTitle.replace(/[\&@\+\/\;\?]/g, (match) => {return encodeURIComponent(encodeURIComponent(match))});
     }
 
     if(author != undefined)
@@ -89,12 +121,9 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) =>
   if (rel === "nofollow") {
     // External link - show URL in hover
     hoverTitle = url
-  } else if (title != null) {
-    // Internal link - show the actual node title (decoded for readability)
-    // Decode the double-encoding we did above for the URL
-    hoverTitle = title.replace(/%25([0-9A-F]{2})/gi, (match, hex) => {
-      return decodeURIComponent('%' + hex)
-    })
+  } else if (originalDecodedTitle != null) {
+    // Internal link - use the decoded title we saved earlier
+    hoverTitle = originalDecodedTitle
   }
 
   return React.createElement('a', {

@@ -213,14 +213,36 @@ sub get_current_user
 
   my $TIMEOUT_SECONDS = 4 * 60;
 
-  my $sth = $self->DB->getDatabaseHandle()->prepare("CALL update_lastseen(".$user->node_id.");");
-  $sth->execute();
-  my ($seconds_since_last, $now) = $sth->fetchrow_array();
+  # Atomically update user's lasttime and get seconds since last seen
+  # This replaces the update_lastseen stored procedure
+  my $dbh = $self->DB->getDatabaseHandle();
+  my $user_id = $user->node_id;
+  my ($seconds_since_last, $now);
+
+  $dbh->begin_work;
+  my $txn_ok = eval {
+    my $sth = $dbh->prepare("
+      SELECT TIMESTAMPDIFF(SECOND, lasttime, NOW()), NOW()
+      FROM user
+      WHERE user_id = ?
+      FOR UPDATE
+    ");
+    $sth->execute($user_id);
+    ($seconds_since_last, $now) = $sth->fetchrow_array();
+
+    $dbh->do("UPDATE user SET lasttime = NOW() WHERE user_id = ?", undef, $user_id);
+
+    $dbh->commit;
+    1;
+  };
+  if (!$txn_ok) {
+    my $rollback_ok = eval { $dbh->rollback; 1 };
+  }
 
   my $force_room_insert = 0;
 
-  # User has never logged in before, so update_lastseen returns undef as first result
-  if(not defined($seconds_since_last))
+  # User has never logged in before, so seconds_since_last is undef
+  if (not defined($seconds_since_last))
   {
     $force_room_insert = 1;
     $seconds_since_last = 0;

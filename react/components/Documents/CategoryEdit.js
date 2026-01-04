@@ -19,6 +19,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
+import { breakTags } from '../Editor/E2HtmlSanitizer'
 import MenuBar from '../Editor/MenuBar'
 import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
@@ -197,7 +198,9 @@ const CategoryEdit = ({ data }) => {
       const cleanedHtml = convertRawBracketsToEntities(e2Html)
       setHtmlContent(cleanedHtml)
     } else {
-      editor.commands.setContent(convertEntitiesToRawBrackets(htmlContent))
+      // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
+      const withBreaks = breakTags(htmlContent)
+      editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks))
     }
 
     setEditorMode(newMode)
