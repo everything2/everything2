@@ -51,14 +51,10 @@ export default function EdevFAQ({ data }) {
           (which is only viewable by fellow edevites))
         </li>
         <li>
-          You can see the source code for many things here. If you visit something like a{' '}
-          <a href="/title/superdoc">superdoc</a> (for example, this node), if you append{' '}
-          <code>&amp;displaytype=viewcode</code> to the URL, it will show the code that generates
-          that node. When you have the <a href="/title/Everything Developer">Everything Developer</a>{' '}
-          nodelet turned on, you can more easily simply follow the little "viewcode" link
-          (which only displays on nodes you may view the source for). For example, you can see
-          this node's source by going{' '}
-          <a href="?displaytype=viewcode">here</a>
+          You can see the source code for many things here. When you have the{' '}
+          <a href="/title/Everything Developer">Everything Developer</a> nodelet turned on,
+          click the "View Source Map" button to see which files render the current page,
+          with direct links to the source code on GitHub.
         </li>
         <li>
           You can see other random things, like <a href="/title/dbtable">dbtables</a> (nodes and

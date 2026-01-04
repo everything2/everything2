@@ -2706,25 +2706,7 @@ sub editvars
   return $str;
 }
 
-# Used to link the viewcode page in the edev nodelet
-#
-sub viewcode
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return unless $APP->isDeveloper($USER);
-
-  my $ntt = $$NODE{type}{title};
-  return unless ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'nodelet');
-
-  return '<font size="1">'.linkNode($NODE, 'viewcode', {'displaytype'=>'viewcode', 'lastnode_id'=>0}).'</font>';
-}
+# viewcode htmlcode removed - viewcode functionality replaced by SourceMapDisplay in React Developer nodelet
 
 # Used everywhere
 #  inverse of this is in varcheckboxinverse
@@ -6503,106 +6485,7 @@ sub nodenote
     </form></div>';
 }
 
-sub admin_toolset
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return unless $APP->isAdmin($USER);
-
-  my $currentDisplay = $query->param("displaytype") || "display";
-  my $nt = $$NODE{type}{title};
-
-  my $newStr = $query -> h4({class => 'ns_title'}, 'Node Toolset');
-
-  # Clone Node functionality moved to React modal in Master Control nodelet
-  $newStr .= '<ul>';
-
-  $newStr .= $query -> li(linkNode($NODE,"Display Node"))	if ($currentDisplay ne 'display');
-
-  if ($currentDisplay ne 'edit' && $currentDisplay ne 'viewcode')
-  {
-    if ($nt eq'nodelet' || $nt =~ 'superdoc')
-    {
-      $newStr .= $query -> li(linkNode($NODE,"Edit Code",{displaytype => "viewcode"}));
-    } else {
-      $newStr .= $query -> li(linkNode($NODE,"Edit Node",{displaytype => "edit"}));
-    }
-  }
-
-  if ($currentDisplay ne 'help')
-  {
-    if ($DB->sqlSelectHashref("*", "nodehelp", "nodehelp_id=$$NODE{node_id}"))
-    {
-      $newStr .= $query -> li(linkNode($NODE,"Node Documentation",{displaytype => "help"}));
-    } else {
-      $newStr .= $query -> li(linkNode($NODE,"Document Node?",{displaytype => "help"}));
-    }
-  }
-
-  my $spacer = "<li style='list-style: none'><br></li>";
-  my $direWarning = ""; $direWarning = ' (<strong>writeup:</strong> only nuke under exceptional circumstances.
-    Removal is almost certainly a better idea.)' if $nt eq 'writeup';
-
-  $newStr .= $spacer.$query -> li(
-    $query -> a({ href => "/?confirmop=nuke&node_id=$$NODE{node_id}", class => 'action'
-    , title => 'nuke this node' }, 'Delete Node'))
-    .$direWarning
-    .$spacer if canDeleteNode($USER, $NODE) and $nt ne 'draft' and $nt ne 'user';
-
-  if ($nt eq 'user')
-  {
-    my $verify = htmlcode('verifyRequestHash', 'polehash');
-
-    $newStr .= $spacer
-      .$query -> li(linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
-      , 'Detonate noder'
-      , {%$verify
-      , detonate => 1
-      , notanop => 'usernames'
-      , confirmop => $$NODE{title}
-      , -title => 'delete user account if safe, otherwise lock it'
-      , -class => 'action'}))
-      .$query -> li(linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
-      , 'Smite Spammer'
-      , {%$verify
-      , smite => 1
-      , notanop => 'usernames'
-      , confirmop => $$NODE{title}
-      , removereason => 'smiting spammer'
-      , -title => 'detonate this noder, blank their homenode, blacklist their IP where appropriate'
-      , -class => 'action'}))
-      .$spacer
-      .$query -> li(linkNode($NODE, 'bless', { op=>'bless', bless_id=>$$NODE{node_id}}))
-      .$query -> li(linkNode($NODE, 'bestow 25 votes', { op=>'bestow', bestow_id=>$$NODE{node_id} }))
-      .$query -> li(linkNode(getNode('bestow cools', 'restricted_superdoc'), 'bestow cools', {'myuser' => $$NODE{title}}))
-      .$query -> li(linkNode(getNode('Node Forbiddance','restricted_superdoc'), 'forbid', { forbid => $$NODE{node_id}}));
-
-    if ($$NODE{acctlock})
-    {
-      $newStr .=$query -> li(linkNode($NODE, 'Unlock Account', { op=>'unlockaccount', lock_id=>$NODE->{node_id} }));
-    } else {
-      $newStr .= $query -> li(linkNode($NODE, 'Lock Account', {op=>'lockaccount', lock_id=>$NODE->{node_id}}));
-    }
-  } elsif($nt eq 'writeup' && $$VARS{nokillpopup}) {
-    # mauler and riverrun don't get a writeup admin widget:
-    $newStr .= $query -> li(linkNode(getNode('Magical Writeup Reparenter', 'oppressor_superdoc')
-      , 'Reparent&hellip;'
-      , {old_writeup_id => $NODE->{node_id}}))
-      .$query -> li(linkNode(getNode('Renunciation Chainsaw', 'oppressor_superdoc')
-      , 'Change author&hellip;'
-      , {wu_id => $NODE->{node_id}}));
-  }
-
-  $newStr .= '</ul>';
-
-  return $query -> div({id => 'mcadmintools', class => 'nodelet_section'}, $newStr);
-}
+# admin_toolset htmlcode removed - functionality moved to React Master Control nodelet (NodeToolset.js)
 
 sub nwuamount
 {

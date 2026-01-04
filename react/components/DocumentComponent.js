@@ -37,6 +37,9 @@ const COMPONENT_MAP = {
   e2node: E2Node,
   draft: Draft,
 
+  // Documents - generic document display/edit (nodetype 3)
+  document: lazy(() => import('./Documents/Document')),
+
   // Usergroups - migrated from delegation Dec 2025
   usergroup: lazy(() => import('./Documents/Usergroup')),
 
@@ -46,6 +49,21 @@ const COMPONENT_MAP = {
 
   // Nodetypes - migrated from delegation Dec 2025
   nodetype: lazy(() => import('./Documents/Nodetype')),
+
+  // Nodelets - migrated Jan 2026
+  nodelet: lazy(() => import('./Documents/Nodelet')),
+
+  // Containers - migrated Jan 2026
+  container: lazy(() => import('./Documents/Container')),
+
+  // Htmlcodes - migrated Jan 2026
+  htmlcode: lazy(() => import('./Documents/Htmlcode')),
+
+  // Htmlpages - migrated Jan 2026
+  htmlpage: lazy(() => import('./Documents/Htmlpage')),
+
+  // Maintenance - migrated Jan 2026
+  maintenance: lazy(() => import('./Documents/Maintenance')),
 
   // Categories - migrated Dec 2025
   category: lazy(() => import('./Documents/CategoryDisplay')),
@@ -426,7 +444,10 @@ const COMPONENT_MAP = {
   costume_remover: lazy(() => import('./Documents/CostumeRemover')),
 
   // Admin resurrection tool
-  dr_nate_s_secret_lab: lazy(() => import('./Documents/DrNatesSecretLab'))
+  dr_nate_s_secret_lab: lazy(() => import('./Documents/DrNatesSecretLab')),
+
+  // System node editing (gods only) - raw database field editor
+  basicedit: lazy(() => import('./Documents/BasicEdit'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

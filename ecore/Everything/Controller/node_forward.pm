@@ -5,10 +5,7 @@ extends 'Everything::Controller';
 
 # Controller for node_forward nodes
 # Handles HTTP redirects properly (headers before body)
-# Migrated from Everything::Delegation::htmlpage::node_forward_display_page
-#
-# Note: Only handles 'display' - edit falls back to delegation
-# (node_forward_edit_page in htmlpage.pm)
+# Migrated from Everything::Delegation::htmlpage
 
 sub display {
     my ($self, $REQUEST, $node) = @_;
@@ -67,6 +64,12 @@ sub display {
     # Return proper HTTP 303 redirect
     # Controllers return [status, body, headers] - headers are sent BEFORE body
     return [$self->HTTP_SEE_OTHER, '', { 'Location' => $full_url }];
+}
+
+# Edit uses basicedit for raw field editing
+sub edit {
+    my ($self, $REQUEST, $node) = @_;
+    return $self->basicedit($REQUEST, $node);
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -62,7 +62,6 @@ const EverythingDocumentDirectory = ({ data, e2 }) => {
     });
   };
 
-  const showViewcode = permissions.is_developer || permissions.is_admin;
   const showNodeId = permissions.is_developer || permissions.is_admin;
   const showListNodesLink = permissions.is_developer || permissions.is_editor;
 
@@ -145,11 +144,6 @@ const EverythingDocumentDirectory = ({ data, e2 }) => {
       <table style={styles.table}>
         <thead>
           <tr style={styles.headerRow}>
-            {showViewcode && (
-              <th style={styles.th}>
-                <small>viewcode</small>
-              </th>
-            )}
             <th style={styles.th}>title</th>
             <th style={styles.th}>author</th>
             <th style={styles.th}>type</th>
@@ -160,11 +154,6 @@ const EverythingDocumentDirectory = ({ data, e2 }) => {
         <tbody>
           {documents.map((doc, index) => (
             <tr key={doc.node_id} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-              {showViewcode && (
-                <td style={styles.td}>
-                  <a href={`/?node_id=${doc.node_id}&displaytype=viewcode`}>vc</a>
-                </td>
-              )}
               <td style={styles.td}>
                 <a href={`/?node_id=${doc.node_id}`}>{doc.title}</a>
               </td>

@@ -1299,7 +1299,7 @@ sub borg
   ++$$V{numborged};
   $$V{borged}=time;
   setVars($victim,$V) unless $borgSelf;
-  $query->param('borgcount'.$victimID,$$V{numborged}); #shown in [admin toolset]
+  $query->param('borgcount'.$victimID,$$V{numborged});
 
   $DB->sqlUpdate('room',{borgd=>'1'},'member_user='.$victimID);
 

@@ -133,19 +133,19 @@ describe('SourceMapModal', () => {
           type: 'react_component',
           name: 'Component',
           path: 'react/components/Component.js',
-          description: 'React component'
+          description: 'A React component'
         },
         {
           type: 'page_class',
           name: 'page',
           path: 'ecore/Everything/Page/page.pm',
-          description: 'Perl Page Class'
+          description: 'A Perl Page Class module'
         },
         {
           type: 'delegation',
           name: 'document.pm',
           path: 'ecore/Everything/Delegation/document.pm',
-          description: 'Delegation Module'
+          description: 'A Delegation module'
         }
       ]
     }
@@ -159,6 +159,7 @@ describe('SourceMapModal', () => {
       />
     )
 
+    // Type labels should be present (uppercase in the badge)
     expect(screen.getByText('Perl Page Class')).toBeInTheDocument()
     expect(screen.getByText('Delegation Module')).toBeInTheDocument()
   })

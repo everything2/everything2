@@ -105,7 +105,7 @@ sub buildReactData {
         ) 'banned'
         , (SELECT MAX(ipblacklistrange.ipblacklistref_id)
             FROM ipblacklistrange
-            WHERE ip_to_uint(iplog.iplog_ipaddy) BETWEEN min_ip AND max_ip
+            WHERE INET_ATON(iplog.iplog_ipaddy) BETWEEN min_ip AND max_ip
         ) 'banned_ranged'|;
 
         if ( $hunt_name ne '' ) {

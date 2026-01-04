@@ -95,7 +95,6 @@ Production (everything2.com)
   - `deployed.everything2.com` - Deployed assets
   - `nodebackup.everything2.com` - Backup/export data
   - `sitemap.everything2.com` - Sitemap data
-  - `jscssw.everything2.com` - JavaScript/CSS assets
 
 **Networking:**
 - Application Load Balancer (ALB)

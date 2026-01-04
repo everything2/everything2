@@ -37,7 +37,15 @@ sub title
 sub type
 {
   my $self = shift;
-  return $self->APP->node_by_id($self->NODEDATA->{type_nodetype});
+  my $type_nodetype = $self->NODEDATA->{type_nodetype};
+
+  # Handle self-referential nodetype (e.g., nodetype nodetype where type_nodetype == node_id)
+  # This avoids cache issues with node_by_id for node 1
+  if ($type_nodetype == $self->NODEDATA->{node_id}) {
+    return $self;
+  }
+
+  return $self->APP->node_by_id($type_nodetype);
 }
 
 sub author_user

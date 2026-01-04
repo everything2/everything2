@@ -1011,7 +1011,9 @@ sub updateNode
 	# on and update each table individually.
 	my $ORIGINAL_NODE = $this->getNodeById($NODE->{node_id},'nocache');
 
-	$tableArray = $$NODE{type}{tableArray};
+	# Copy tableArray to avoid mutating the cached TYPE object
+	# The original reference is shared across requests in mod_perl
+	$tableArray = [@{$$NODE{type}{tableArray} || []}];
 
 	# The node table is assumed, so its not in the "joined" table array.
 	# However, for this update, we need to add it.
@@ -1276,7 +1278,9 @@ sub nukeNode
 	$this->{cache}->incrementGlobalVersion($NODE);
 	$this->{cache}->removeNode($NODE);
 
-	$tableArray = $$NODE{type}{tableArray};
+	# Copy tableArray to avoid mutating the cached TYPE object
+	# The original reference is shared across requests in mod_perl
+	$tableArray = [@{$$NODE{type}{tableArray} || []}];
 
 	push @$tableArray, 'node';  # the node table is not in there.
 
@@ -1350,8 +1354,9 @@ sub resurrectNode
 	return unless ref($nodeproto) eq 'HASH';
 
 	# Get the tables for this node type
-	my $typetables = $this->getNodetypeTables($tomb->{type_nodetype});
-	return unless $typetables;
+	# Copy the array to avoid mutating the cached TYPE object
+	my $typetables = [@{$this->getNodetypeTables($tomb->{type_nodetype}) || []}];
+	return unless @$typetables || $tomb->{type_nodetype};
 
 	push @$typetables, 'node';
 

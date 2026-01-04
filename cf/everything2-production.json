@@ -134,14 +134,6 @@
         "AccessControl": "PublicRead"
       }
     },
-    "JSCSSBucket": {
-      "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "BucketName": "jscssw.everything2.com",
-        "AccessControl": "PublicRead"
-      }
-    },
     "E2DotComR53Zone": {
       "Type": "AWS::Route53::HostedZone",
       "DeletionPolicy": "Retain",
@@ -405,19 +397,6 @@
           "DNSName": {"Fn::If": ["UseCloudFront", {"Ref": "CloudFrontDomainName"}, {"Fn::GetAtt": ["ContainerizedFrontendELB", "DNSName"]}]}
         },
         "Type": "AAAA"
-      }
-    },
-    "E2DotComJSCSSWR53RR": {
-      "Type": "AWS::Route53::RecordSet",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Name": "jscssw.everything2.com",
-        "HostedZoneName": "everything2.com.",
-        "AliasTarget": {
-          "HostedZoneId": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "S3hostedzoneID"]},
-          "DNSName": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
-        },
-        "Type": "A"
       }
     },
     "DevelopmentR53RR": {
@@ -1639,12 +1618,8 @@
       "Properties": {
         "DefaultActions": [
           {
-            "Type": "fixed-response",
-            "FixedResponseConfig": {
-              "StatusCode": "403",
-              "ContentType": "text/plain",
-              "MessageBody": "Direct access not allowed"
-            }
+            "TargetGroupArn": {"Ref": "FargateTargetGroupHTTP"},
+            "Type": "forward"
           }
         ],
         "Certificates": [{"CertificateArn": {"Ref": "E2ELBCertificate"}}],
@@ -1652,24 +1627,6 @@
         "Port": "443",
         "Protocol": "HTTPS",
         "SslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
-      }
-    },
-    "ELBOriginVerifyRule": {
-      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
-      "Properties": {
-        "ListenerArn": {"Ref": "ELBContainerizedAppHTTPSListener"},
-        "Priority": 50,
-        "Actions": [{
-          "TargetGroupArn": {"Ref": "FargateTargetGroupHTTP"},
-          "Type": "forward"
-        }],
-        "Conditions": [{
-          "Field": "http-header",
-          "HttpHeaderConfig": {
-            "HttpHeaderName": "X-Origin-Verify",
-            "Values": ["e2-cloudfront-origin-2025"]
-          }
-        }]
       }
     },
     "ELBContainerizedAppRewriteAltDomains": {
