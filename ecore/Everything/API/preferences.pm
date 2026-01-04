@@ -87,6 +87,11 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
   'nw_nojunk' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'num_newwus' => Everything::Preference::List->new(default_value => 15, allowed_values => [1,5,10,15,20,25,30,40]),
 
+  ## ReadThis nodelet section visibility
+  'rtn_hidecwu' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'rtn_hideedc' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  'rtn_hidenws' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+
   ## Other preferences
   'tiptap_editor_raw' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
 

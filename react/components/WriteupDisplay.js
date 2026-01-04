@@ -662,6 +662,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
           isOpen={messageModalOpen}
           onClose={() => setMessageModalOpen(false)}
           replyTo={{ author_user: { title: author.title, type: 'user' } }}
+          initialMessage={parent?.title ? `re: ${parent.title}\n\n` : ''}
           onSend={async (recipient, message) => {
             const response = await fetch('/api/messages/create', {
               method: 'POST',

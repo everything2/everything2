@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { getE2EditorExtensions } from '../Editor/useE2Editor';
 import { convertToE2Syntax } from '../Editor/E2LinkExtension';
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension';
-import { renderE2Content } from '../Editor/E2HtmlSanitizer';
+import { renderE2Content, breakTags } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
 import PreviewContent from '../Editor/PreviewContent';
 import PublishModal from './PublishModal';
@@ -428,9 +428,11 @@ const EditorBeta = ({ data }) => {
       }
     } else {
       // Switching to rich mode - load HTML content into editor
-      // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
+      // First apply breakTags to convert plain-text newlines to proper HTML paragraphs
+      // Then convert &#91; and &#93; entities back to parseable spans for TipTap
       if (editor) {
-        editor.commands.setContent(convertEntitiesToRawBrackets(rawHtmlContent));
+        const withBreaks = breakTags(rawHtmlContent);
+        editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
       }
     }
 
@@ -513,9 +515,11 @@ const EditorBeta = ({ data }) => {
       const content = draft.doctext || '<p></p>';
 
       // Load into both rich editor and raw HTML state
-      // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
+      // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
+      // Then convert &#91; and &#93; entities back to parseable spans for TipTap
       if (editor) {
-        editor.commands.setContent(convertEntitiesToRawBrackets(content));
+        const withBreaks = breakTags(content);
+        editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
       }
       setRawHtmlContent(content);
 

@@ -15,6 +15,18 @@ jest.mock('./LinkNode', () => {
   }
 })
 
+// Mock MessageModal to capture props
+jest.mock('./MessageModal', () => {
+  return function MockMessageModal({ isOpen, initialMessage }) {
+    if (!isOpen) return null
+    return (
+      <div data-testid="message-modal" data-initial-message={initialMessage || ''}>
+        Message Modal
+      </div>
+    )
+  }
+})
+
 describe('WriteupDisplay Component', () => {
   const mockWriteup = {
     node_id: 123,
@@ -341,6 +353,47 @@ describe('WriteupDisplay Component', () => {
       // Should show createtime as fallback (2020)
       const dateCell = container.querySelector('.wu_dtcreate .date')
       expect(dateCell.textContent).toMatch(/2020/)
+    })
+  })
+
+  describe('message modal', () => {
+    it('pre-populates message with "re: (parent title)" when clicking message button', () => {
+      const writeupWithParent = {
+        ...mockWriteup,
+        parent: { title: 'My Test Node Title' }
+      }
+
+      const { container } = render(<WriteupDisplay writeup={writeupWithParent} user={mockUser} />)
+
+      // Find and click the message button (envelope icon)
+      // Title is dynamic: "Message ${author.title}"
+      const messageButton = container.querySelector('button.message-icon')
+      expect(messageButton).toBeInTheDocument()
+
+      fireEvent.click(messageButton)
+
+      // Check the MessageModal received the correct initialMessage
+      const modal = screen.getByTestId('message-modal')
+      expect(modal).toHaveAttribute('data-initial-message', 're: My Test Node Title\n\n')
+    })
+
+    it('passes empty initialMessage when writeup has no parent', () => {
+      const writeupWithoutParent = {
+        ...mockWriteup,
+        parent: null
+      }
+
+      const { container } = render(<WriteupDisplay writeup={writeupWithoutParent} user={mockUser} />)
+
+      // Find and click the message button
+      const messageButton = container.querySelector('button.message-icon')
+      expect(messageButton).toBeInTheDocument()
+
+      fireEvent.click(messageButton)
+
+      // Check the MessageModal received empty initialMessage
+      const modal = screen.getByTestId('message-modal')
+      expect(modal).toHaveAttribute('data-initial-message', '')
     })
   })
 })

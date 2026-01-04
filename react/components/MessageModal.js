@@ -17,6 +17,7 @@ const MessageModal = ({
   replyTo,
   onSend,
   initialReplyAll = false,
+  initialMessage = '',
   // Send-as-bot props
   sendAsUser = null,
   accessibleBots = [],
@@ -43,7 +44,7 @@ const MessageModal = ({
         setRecipient('')
         setReplyAll(false)
       }
-      setMessage('')
+      setMessage(initialMessage || '')
       setError(null)
       setWarning(null)
       setSending(false)  // Reset sending state when modal opens
@@ -52,10 +53,14 @@ const MessageModal = ({
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.focus()
+          // If there's initial message text, move cursor to end
+          if (initialMessage) {
+            textareaRef.current.setSelectionRange(initialMessage.length, initialMessage.length)
+          }
         }
       }, 100)
     }
-  }, [isOpen, replyTo, initialReplyAll])
+  }, [isOpen, replyTo, initialReplyAll, initialMessage])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -168,7 +173,6 @@ const MessageModal = ({
         zIndex: 10000,
         padding: '20px'
       }}
-      onClick={handleCancel}
     >
       <div
         style={{
@@ -182,7 +186,6 @@ const MessageModal = ({
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           position: 'relative'
         }}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{

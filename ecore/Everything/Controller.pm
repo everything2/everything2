@@ -221,13 +221,13 @@ sub layout
   my $output = $self->MASON->run($template, $params)->output();
 
   # Persist VARS changes made during buildNodeInfoStructure (oldGP, oldexp, etc.)
-  # This matches what HTML.pm does at end of request (HTML.pm:720, 739)
+  # This matches what HTML.pm does at end of request (HTML.pm:729)
+  # Note: Do NOT update $USER->{vars} before calling setVars() - setVars() compares
+  # the new vars against $USER->{vars} to detect changes. If we update it first,
+  # setVars() thinks nothing changed and returns early without saving.
   unless ($REQUEST->is_guest) {
     my $USER = $REQUEST->user->NODEDATA;
     my $VARS = $REQUEST->user->VARS;
-    # Update $USER->{vars} to reflect current $VARS hashref before calling setVars()
-    # This ensures setVars() sees the changes and saves them to database
-    $USER->{vars} = Everything::getVarStringFromHash($VARS);
     Everything::setVars($USER, $VARS);
   }
 

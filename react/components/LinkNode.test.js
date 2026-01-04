@@ -50,6 +50,34 @@ describe('LinkNode Component', () => {
       expect(link.getAttribute('href')).toContain('%');
     });
 
+    it('handles HTML entities in title (GitHub #3950)', () => {
+      // &#9608; is the block character █
+      render(<LinkNode title="Dead bear in &#9608;&#9608;&#9608;" />);
+      const link = screen.getByRole('link');
+      // Should decode entity to actual character before encoding for URL
+      const href = link.getAttribute('href');
+      // Should NOT contain the malformed double-encoded entity
+      expect(href).not.toContain('%2526%25239608');
+      // Should contain the decoded block characters (█)
+      expect(href).toContain('█');
+    });
+
+    it('handles named HTML entities in title', () => {
+      render(<LinkNode title="AT&amp;T History" />);
+      const link = screen.getByRole('link');
+      const href = link.getAttribute('href');
+      // &amp; should be decoded to & then double-encoded
+      expect(href).toContain('%2526');  // Double-encoded &
+      expect(href).not.toContain('&amp;');
+    });
+
+    it('shows decoded title in hover text for entity titles', () => {
+      render(<LinkNode title="Q&amp;A Forum" display="Q&A" />);
+      const link = screen.getByRole('link');
+      // Hover text should show decoded title
+      expect(link).toHaveAttribute('title', 'Q&A Forum');
+    });
+
     it('adds query parameters', () => {
       render(<LinkNode title="Test" params={{ foo: 'bar', baz: 'qux' }} />);
       const link = screen.getByRole('link');

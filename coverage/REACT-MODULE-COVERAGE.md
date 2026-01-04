@@ -1,6 +1,6 @@
 # React Module Coverage Report
 
-**Generated**: 2026-01-03 18:58:04
+**Generated**: 2026-01-04 11:10:55
 
 This report shows test coverage for each React component and module.
 
@@ -21,13 +21,13 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/ErrorBoundary.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/ExperienceGain.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/GPGain.js | 100% | 100% | 100% | 100% |
-| /home/jaybonci/projects/everything2/react/components/InlineWriteupEditor.js | 48.76% | 64.5% | 61.76% | 49.35% |
-| /home/jaybonci/projects/everything2/react/components/LinkNode.js | 100% | 100% | 100% | 100% |
+| /home/jaybonci/projects/everything2/react/components/InlineWriteupEditor.js | 48.55% | 64.5% | 61.76% | 49.14% |
+| /home/jaybonci/projects/everything2/react/components/LinkNode.js | 94.44% | 97.36% | 66.66% | 96.15% |
 | /home/jaybonci/projects/everything2/react/components/LogoutLink.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/MasonContent.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/MessageBox.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/MessageList.js | 87.5% | 93.24% | 75% | 87.5% |
-| /home/jaybonci/projects/everything2/react/components/MessageModal.js | 87.17% | 86.6% | 91.66% | 86.84% |
+| /home/jaybonci/projects/everything2/react/components/MessageModal.js | 86.07% | 86.32% | 90.9% | 85.71% |
 | /home/jaybonci/projects/everything2/react/components/NewWriteupsFilter.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/NodeletContainer.js | 100% | 75% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/NodeletSection.js | 100% | 100% | 100% | 100% |
@@ -39,7 +39,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/TimeDistance.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/TimeSince.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/UserToolsModal.js | 0% | 0% | 0% | 0% |
-| /home/jaybonci/projects/everything2/react/components/WriteupDisplay.js | 30.69% | 51.57% | 20.93% | 32.59% |
+| /home/jaybonci/projects/everything2/react/components/WriteupDisplay.js | 31.18% | 51.91% | 23.25% | 33.14% |
 | /home/jaybonci/projects/everything2/react/components/WriteupEntry.js | 100% | 97.77% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/Common/WeblogViewer.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Developer/SourceMapDisplay.js | 79.16% | 68.75% | 100% | 79.16% |
@@ -100,7 +100,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/EdevDocumentationIndex.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/EdevFAQ.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/EditWeblogMenu.js | 0% | 0% | 0% | 0% |
-| /home/jaybonci/projects/everything2/react/components/Documents/EditorBeta.js | 44.07% | 49.67% | 32.3% | 45.99% |
+| /home/jaybonci/projects/everything2/react/components/Documents/EditorBeta.js | 44.44% | 49.67% | 32.3% | 46.36% |
 | /home/jaybonci/projects/everything2/react/components/Documents/EditorEndorsements.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Everything2Elsewhere.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/EverythingDataPages.js | 0% | 0% | 0% | 0% |
@@ -308,7 +308,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/hooks/usePublishDraft.js | 31.7% | 17.5% | 50% | 30.86% |
 | /home/jaybonci/projects/everything2/react/utils/linkParser.js | 87.5% | 80.28% | 100% | 86.66% |
 | /home/jaybonci/projects/everything2/react/utils/reportClientError.js | 83.58% | 72.34% | 57.14% | 84.84% |
-| **Total** | **17.97%** | **19.24%** | **14.08%** | **18.24%** |
+| **Total** | **17.98%** | **19.23%** | **14.07%** | **18.26%** |
 
 ## How to Improve Coverage
 
