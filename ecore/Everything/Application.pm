@@ -5302,10 +5302,22 @@ sub get_blessed_node
   my ($this, $node) = @_;
 
   # Ensure node has a valid type before looking up the class
-  my $type_title = $node->{type} ? $node->{type}->{title} : undef;
+  my $type_ref = ref($node->{type});
+  my $type_title;
+
+  if ($type_ref eq 'HASH') {
+    $type_title = $node->{type}->{title};
+  }
+
+  # Handle self-referential nodetypes (node 1 where type_nodetype == node_id)
+  # In this case, the type field might be the same hashref as the node itself
+  if (!$type_title && $node->{type_nodetype} && $node->{type_nodetype} == $node->{node_id}) {
+    # This node IS its own type (e.g., nodetype nodetype)
+    $type_title = $node->{title};
+  }
 
   unless ($type_title) {
-    $this->devLog("get_blessed_node: node $node->{node_id} has no type or type title");
+    $this->devLog("get_blessed_node: node $node->{node_id} has no type or type title (type_ref=$type_ref)");
     return;
   }
 

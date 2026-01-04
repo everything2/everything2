@@ -926,11 +926,37 @@ sub gotoNode
 	# Check if we were just silently redirected from a softlink creation,
 	#  and pass that node_id through
 	if (!$fromNodeLinked) {
-		my $sth = $DB->getDatabaseHandle()->prepare("
-			CALL get_recent_softlink($$USER{node_id}, $$NODE{node_id});
-		");
-		$sth->execute();
-		($fromNodeLinked) = $sth->fetchrow_array();
+		my $dbh = $DB->getDatabaseHandle();
+
+		# Atomically find and mark the oldest unshown softlink creation
+		# This replaces the get_recent_softlink stored procedure
+		$dbh->begin_work;
+		my $txn_ok = eval {
+			my $sth = $dbh->prepare("
+				SELECT softlink_creation_id, from_node
+				FROM softlink_creation
+				WHERE creater_user_id = ?
+					AND to_node = ?
+					AND displayed = 0
+				ORDER BY create_time ASC
+				LIMIT 1
+				FOR UPDATE
+			");
+			$sth->execute($$USER{node_id}, $$NODE{node_id});
+			my ($scid, $from_node) = $sth->fetchrow_array();
+
+			if ($scid) {
+				$dbh->do("UPDATE softlink_creation SET displayed = 1 WHERE softlink_creation_id = ?",
+					undef, $scid);
+				$fromNodeLinked = $from_node;
+			}
+
+			$dbh->commit;
+			1;
+		};
+		if (!$txn_ok) {
+			my $rollback_ok = eval { $dbh->rollback; 1 };
+		}
 	}
 
 	$query->param('softlinkedFrom', $fromNodeLinked);

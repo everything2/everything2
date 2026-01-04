@@ -10,7 +10,7 @@ sub can_route
 
   $displaytype ||= "display";
 
-  unless(grep { $displaytype eq $_ } ("display","edit","xml","xmltrue"))
+  unless(grep { $displaytype eq $_ } ("display","edit","xml","xmltrue","basicedit"))
   {
     $self->devLog("Using banned displaytype: '$displaytype', falling back");
     return 0;
@@ -30,8 +30,6 @@ sub can_route
       $self->devLog("Node type '$nodetype' does not fully support page '$NODE->{title}'");
       return 0;
     }
-    $self->devLog("Can route for: $nodetype with view '$displaytype'");
-    return 1;
   }
 
   $self->devLog("Can NOT route for: $NODE->{type}->{title} with view '$displaytype'");
@@ -43,11 +41,15 @@ sub route_node
   my ($self, $NODE, $displaytype, $REQUEST) = @_;
   $displaytype ||= "display";
 
-  my $node = $self->APP->node_by_id($NODE->{node_id});
+  # Get the nodetype title from the already-loaded $NODE hashref
+  # Don't use $node->type->title as it triggers node_by_id which has cache issues
+  my $nodetype = $NODE->{type}->{title};
 
-  # Handle case where node_by_id returns undef (e.g., no blessed Node class available)
+  # Use get_blessed_node directly to avoid cache issues with node_by_id
+  my $node = $self->APP->get_blessed_node($NODE);
+
   unless ($node) {
-    $self->devLog("route_node: node_by_id returned undef for node_id $NODE->{node_id}, falling back to unblessed node");
+    $self->devLog("route_node: get_blessed_node returned undef for node_id $NODE->{node_id}, type: $nodetype");
     return;
   }
 
@@ -56,7 +58,7 @@ sub route_node
     $node->NODEDATA->{group} = $NODE->{group};
   }
 
-  return $self->output($REQUEST, $self->CONTROLLER_TABLE->{$node->type->title}->$displaytype($REQUEST, $node));
+  return $self->output($REQUEST, $self->CONTROLLER_TABLE->{$nodetype}->$displaytype($REQUEST, $node));
 }
 
 1;

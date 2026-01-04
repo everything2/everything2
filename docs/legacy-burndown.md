@@ -288,7 +288,7 @@ The JS QuickTags system (`edToolbar`/`edButtons`) is a legacy HTML formatting to
 - **Category editing**: ❌ PENDING - Still uses legacy htmlpage with `class="formattable"`
 
 **tinyMCE Status**:
-- External library: `https://s3-us-west-2.amazonaws.com/jscssw.everything2.com/tiny_mce/tiny_mce.js`
+- ✅ **REMOVED** - jscssw.everything2.com bucket deleted
 - User preference `settings_useTinyMCE` still tracked in Controller.pm (line 137)
 - **Marked DEPRECATED** in user-vars-reference.md
 - Cookie deleted on every page load (line 1434): `e2.deleteCookie('settings_useTinyMCE')`
@@ -563,12 +563,12 @@ Everything2 uses jQuery 1.11.1 and jQuery UI 1.11.1 loaded on all authenticated 
 
 ### 6.1 jQuery Loading Summary
 
-| Library | Version | Loaded On | Source |
-|---------|---------|-----------|--------|
-| jQuery | 1.11.1 | All auth pages | `jscssw.everything2.com/jquery.min.1.11.1.js` |
-| jQuery UI | 1.11.1 | All auth pages | `jscssw.everything2.com/jquery-ui-1.11.1.min.js` |
+| Library | Version | Status |
+|---------|---------|--------|
+| jQuery | 1.11.1 | ✅ **REMOVED** - jscssw bucket deleted |
+| jQuery UI | 1.11.1 | ✅ **REMOVED** - jscssw bucket deleted |
 
-**Note**: Guest pages do NOT load jQuery - React handles all guest UI.
+**Note**: jQuery has been fully removed from the codebase. React handles all UI.
 
 ### 6.2 jQuery Usage by Category
 

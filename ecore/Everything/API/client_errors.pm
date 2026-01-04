@@ -237,8 +237,8 @@ sub _log_to_cloudwatch {
         # Ensure log stream exists (create if not)
         try {
             $logs->CreateLogStream(
-                logGroupName => $LOG_GROUP_NAME,
-                logStreamName => $stream_name
+                LogGroupName => $LOG_GROUP_NAME,
+                LogStreamName => $stream_name
             );
         } catch {
             # Stream already exists - that's fine
@@ -246,9 +246,9 @@ sub _log_to_cloudwatch {
 
         # Get sequence token for the stream
         my $streams = $logs->DescribeLogStreams(
-            logGroupName => $LOG_GROUP_NAME,
-            logStreamNamePrefix => $stream_name,
-            limit => 1
+            LogGroupName => $LOG_GROUP_NAME,
+            LogStreamNamePrefix => $stream_name,
+            Limit => 1
         );
 
         my $sequence_token;
@@ -260,16 +260,16 @@ sub _log_to_cloudwatch {
         my $log_message = JSON::encode_json($log_entry);
 
         my %put_params = (
-            logGroupName => $LOG_GROUP_NAME,
-            logStreamName => $stream_name,
-            logEvents => [{
-                timestamp => $log_entry->{timestamp},
-                message => $log_message
+            LogGroupName => $LOG_GROUP_NAME,
+            LogStreamName => $stream_name,
+            LogEvents => [{
+                Timestamp => $log_entry->{timestamp},
+                Message => $log_message
             }]
         );
 
         # Include sequence token if we have one
-        $put_params{sequenceToken} = $sequence_token if $sequence_token;
+        $put_params{SequenceToken} = $sequence_token if $sequence_token;
 
         $logs->PutLogEvents(%put_params);
 

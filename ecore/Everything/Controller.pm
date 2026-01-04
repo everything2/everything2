@@ -31,6 +31,55 @@ sub xml
   return [$self->HTTP_OK, $output, {type => 'application/xml'}];
 }
 
+# basicedit - Gods-only raw database field editor
+# Available for all nodetypes via ?displaytype=basicedit
+sub basicedit
+{
+  my ($self, $REQUEST, $node) = @_;
+  my $user = $REQUEST->user;
+
+  # Only gods can use basicedit
+  unless ($self->APP->isAdmin($user->NODEDATA)) {
+    # Redirect non-gods to regular display
+    return $self->display($REQUEST, $node);
+  }
+
+  # Build content data for SystemNodeEditor React component
+  # Use NODEDATA->{type}->{title} to avoid cache issues with $node->type
+  my $content_data = {
+    type => 'basicedit',
+    node_id => $node->node_id,
+    title => $node->title,
+    nodeType => $node->NODEDATA->{type}->{title},
+  };
+
+  # Set node on REQUEST for buildNodeInfoStructure
+  $REQUEST->node($node);
+
+  # Build e2 data structure
+  my $e2 = $self->APP->buildNodeInfoStructure(
+    $node->NODEDATA,
+    $REQUEST->user->NODEDATA,
+    $REQUEST->user->VARS,
+    $REQUEST->cgi,
+    $REQUEST
+  );
+
+  # Override contentData with our basicedit data
+  $e2->{contentData} = $content_data;
+  $e2->{reactPageMode} = \1;
+
+  # Use react_page layout
+  my $html = $self->layout(
+    '/pages/react_page',
+    e2 => $e2,
+    REQUEST => $REQUEST,
+    node => $node
+  );
+
+  return [$self->HTTP_OK, $html];
+}
+
 sub xmltrue
 {
   my ($self, $REQUEST, $node) = @_;

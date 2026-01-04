@@ -41,179 +41,6 @@ BEGIN {
   *canUpdateNode = *Everything::HTML::canUpdateNode;
 }
 
-sub container_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = '';
-  $str .= q|parent container: |;
-
-  if($NODE->{parent_container})
-  {
-    $str .= linkNode($NODE->{parent_container}) if $NODE->{parent_container};
-  }else{
-    $str .= q|<i>none</i>|;
-  }
-
-  $str .= htmlcode('listcode','content');
-
-  return $str;
-}
-
-sub container_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
- 
-  my $str = "";
-  $str .= qq|title:|.htmlcode("textfield","title");
-  $str .= qq|maintained by:|.htmlcode("node_menu","author_user,user,usergroup").qq|<br>|;
-  $str .= qq|Parent container:|.htmlcode("node_menu","parent_container").qq|<br>|;
-  $str .= qq|container html:<br>|.htmlcode("textarea","context");
-
-  return $str; 
-}
-
-sub document_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|<p align="right">|;
-  $str .= linkNode($NODE, 'edit', {displaytype=>"edit"}) if $APP->isEditor($USER);
-  $str .= qq|</p>|;
-  $str .= qq|<div class="content">|;
-  $str .= htmlcode("parselinks","doctext");
-  $str .= qq|</div>|;
-
-  return $str;
-}
-
-sub document_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = q|<h4>title:</h4>|.htmlcode('textfield','title');
-  $str .= qq|<h4>owner:</h4>|.htmlcode("node_menu","author_user,user,usergroup");
-  $str .= qq|<p><small><strong>Edit the document text:</strong></small><br />|;
-  $str .= htmlcode("textarea","doctext,30,60");
-
-  return $str;
-}
-
-sub htmlcode_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return htmlcode('listcode','code');
-}
-
-sub htmlcode_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|title:|.htmlcode("textfield","title").qq|maintained by:|.htmlcode("node_menu","author_user,user,usergroup").qq|<br />|;
-  
-  $str .= htmlcode("listcode","code"). qq|<p><small><strong>Edit the code:</strong></small><br />|;
-  $str .= htmlcode("textarea","code,30,80");
-
-  return $str;
-}
-
-sub htmlpage_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|<b>pagetype</b>:|; 
-
-  my $N = $DB->getNodeById($$NODE{pagetype_nodetype}, 'light');
-  $str .= linkNode($N);
-  $str .= qq|<br><b>parent container</b>:|;
-  if($NODE->{parent_container})
-  {
-    $str .= linkNode ($$NODE{parent_container});
-  }else{
-    $str .= "<i>none</i>";
-  }
-
-  $str .= qq|<br><b>displaytype</b>:$$NODE{displaytype}<br><b>MIMEtype</b>: $$NODE{mimetype}<p>|;
-  $str .= htmlcode("listcode","page");
-
-  return $str;
-}
-
-sub htmlpage_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|title:|.htmlcode("textfield","title").qq|<br>|;
-  $str .= qq|maintained by:|.htmlcode("node_menu","author_user,user,usergroup").qq|<br>|;
-  $str .= qq|pagetype: |.htmlcode("node_menu","pagetype_nodetype").qq|<br>|;
-  $str .= qq|displaytype: |.htmlcode("textfield","displaytype").qq|<br>|;
-  $str .= qq|parent container: |.htmlcode("node_menu","parent_container").qq|<br>|;
-  $str .= qq|MIME type:|.htmlcode("textfield","mimetype").qq|<br>|;
-  $str .= qq|<table width="100%"><tr><td width="90%"><p><font size=2><b>Edit the page:</b></font><br>|;
-  $str .= htmlcode("textarea","page").qq|</td><td width=10%><font size=2>|;
-
-  my $N = getType($$NODE{pagetype_nodetype});
-  $str .= "<li>";
-  $str .= join "\n<li>", $DB->getFields;
-
-  my @tables = @{ $DB->getNodetypeTables($N) };
-  foreach (@tables) {
-    $str .="\n<li>";
-    $str .= join "\n<li>", $DB->getFields($_);
-  }
-  $str .= qq|</font></td></tr></table>|;
-  return $str;
-}
-
 sub node_display_page
 {
   my $DB = shift;
@@ -289,141 +116,7 @@ sub nodegroup_editor_page
   return $str;
 }
 
-sub nodelet_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|title:|.htmlcode("textfield","title");
-  $str .= qq|maintained by:|.htmlcode("node_menu","author_user","user","usergroup").qq|<br />|;
-  $str .= qq|parent container:|.htmlcode("node_menu","parent_container").qq|<br />|;
-  $str .= qq|update_interval:|.htmlcode("textfield","updateinterval").qq|(in seconds)<br />|;
-  $str .= qq|nodelet code:<br />|;
-  $str .= htmlcode("textarea","nlcode",30,80,"off");
-
-  return $str;
-}
-
-sub nodetype_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|<p><a href=|.urlGen({
-    'node'=>'List Nodes of Type',
-    'type'=>'superdoc',
-    'setvars_ListNodesOfType_Type'=>$$NODE{node_id}
-    }).qq|>List Nodes of Type</a></p>|;
-
-  $str .= qq|<p><strong>Authorized Readers</strong>:|.htmlcode("listgroup","readers_user").
-    htmlcode("displayInherited","readers_user");
-  $str .= qq|<p><strong>Authorized Creators</strong>:|.htmlcode("listgroup","writers_user").
-    htmlcode("displayInherited","writers_user");
-  $str .= qq|<p><strong>Authorized Deleters</strong>:|.htmlcode("listgroup","deleters_user").
-    htmlcode("displayInherited","deleters_user");
-
-  $str .= qq|<p><strong>Restrict Duplicates</strong> (identical titles):|;
-
-  if($$NODE{restrictdupes} == -1)
-  {
-    $str.='parent';
-  } else {
-    $str.=($$NODE{restrictdupes} ? 'Yes':'No');
-  }
-
-  $str .= htmlcode("displayInherited","restrictdups");
-  $str .= qq|<p><strong>Verify edits to maintain security</strong>:|;
-  $str .= ($$NODE{verify_edits} ? 'Yes':'No');
-
-  my $plural = '';
-  my $tablestr = '';
-  if (exists $$NODE{sqltable})
-  {
-    my $tableList = $$NODE{sqltable};
-    my @tables = split /,/, $tableList;
-    $plural = 's' if scalar @tables > 1;
-    $tablestr .= join ', ', map { linkNode(getNode($_, 'dbtable')); } @tables;
-  } else {
-    $tablestr .=  '<i>none</i>';
-  }
-
-  $str .=  "<p><strong>Sql Table$plural</strong>: $tablestr";
-
-  $str .= htmlcode("displayInherited","sqltable");
-  $str .= qq|<p><strong>Extends Nodetype:</strong> |;
-
-  $str .= linkNode ($$NODE{extends_nodetype}) if ($$NODE{extends_nodetype});
-
-  $str .= qq|<p><strong>Relevant pages:</strong><br />|;
-
-  $str .= '<ul>';
-  my @pages = ();
-  push @pages, Everything::HTML::getPages($NODE);
-
-  foreach (@pages)
-  {
-    $str .= '<li>' .linkNode($_) . '</li>';
-  }
-  $str .= qq|</ul>|;
-  $str .= qq|<p><strong>Active Maintenances:</strong><br />|;
-
-  $str .= qq|<ul>|;
-
-  my (@maints) = getNodeWhere ({maintain_nodetype=>getId($NODE)}, getType('maintenance'));
-
-  unless(@maints)
-  {
-    $str .= '<em>no maintenance functions</em>';
-  } else {
-    foreach (@maints)
-    {
-      $str .= '<li>'.linkNode($_).'</li>';
-    }
-  }
-  $str .= '</ul>' ;
-
-  return $str;
-}
-
-sub nodetype_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|<p>readers: |.htmlcode("node_menu","readers_user,user,usergroup,-parent_-1").
-    htmlcode("displayInherited","readers_user");
-  $str .= qq|<p>creators: |.htmlcode("node_menu","writers_user,user,usergroup,-parent_-1").
-    htmlcode("displayInherited","writers_user");
-  $str .= qq|<p>deleters: |.htmlcode("node_menu","deleters_user,user,usergroup,-parent_-1").
-    htmlcode("displayInherited","deleters_user");
-  $str .= qq|<p>sqltable : |.htmlcode("textfield","sqltable").
-    htmlcode("displayInherited","sqltable");
-  $str .= qq|<p>grouptable: |.htmlcode("textfield","grouptable").
-    htmlcode("displayInherited","grouptable");
-  $str .= qq|<p>extends: |.htmlcode("node_menu","extends_nodetype");
-  $str .= qq|<p>restrict nodetype(groups):|.htmlcode("node_menu","restrict_nodetype,nodetype,nodetypegroup").
-    htmlcode("displayInherited","restrict_nodetype");
-  $str .= qq|<p>restrict duplicate titles: |.htmlcode("node_menu","restrictdupes,-yes_1,-no_0,-parent_-1").
-    htmlcode("displayInherited","restrictdupes");
-  $str .= qq|<p>verify edits to maintain security: |.htmlcode("node_menu","verify_edits, -no_0, -yes_1").qq|</p>|;
-
-  return $str;
-}
+# nodelet_edit_page removed - now handled by Everything::Controller::nodelet::edit (basicedit)
 
 sub dbtable_display_page
 {
@@ -527,63 +220,9 @@ sub dbtable_edit_page
   return htmlcode("updatetable",$NODE->{title}).htmlcode("displaytable",$NODE->{title});
 }
 
-# Pushed to templates
-sub maintenance_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
+# maintenance_display_page removed - now handled by Everything::Controller::maintenance::display
 
-  my $str = qq|Maintains:|; 
-
-  my $N = $DB->getNodeById($$NODE{maintain_nodetype}, 'light');
-  $str .= linkNode($N);
-
-  $str .= qq|<br><p>Maintenance operation:|;
-  $str .= qq|$$NODE{maintaintype}|;
-  $str .= qq|<p>|.htmlcode("listcode","code");
-
-  return $str;
-}
-
-sub maintenance_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-
-  my $str = qq|title:|.htmlcode("textfield","title").qq| maintained by:|.
-    htmlcode("node_menu","author_user,user,usergroup").qq|<br>|;
-  $str .= qq|Maintains: |.htmlcode("node_menu","maintain_nodetype").qq|<br>|;
-  $str .= qq|maintaintype: |.htmlcode("textfield","maintaintype").qq|(create, update, or delete)<br>|;
-
-  $str .= qq|<table width=100%><tr><td width=90%><p><FONT SIZE=2><b>Edit the code:</b></FONT><br>|;
-  $str .= htmlcode("textarea","code").qq|</td><td width=10%><font size=2>|;
-
-  my $N = $DB->getNodeById($$NODE{maintain_nodetype});
-  $str .= "<li>";
-  $str .= join "\n<li>", $DB->getFields;
-
-  my @tables = @{ $DB->getNodetypeTables($$NODE{maintain_nodetype}) };
-  foreach (@tables)
-  {
-    $str .="\n<li>";
-    $str .= join "\n<li>", $DB->getFields($_);
-  }
-
-  $str .= qq|</font></td></tr></table>|;
- 
-  return $str;
-}
+# maintenance_edit_page removed - now handled by Everything::Controller::maintenance::edit (basicedit)
 
 sub node_edit_page
 {
@@ -789,7 +428,8 @@ sub node_basicedit_page
   # This code generates the form fields and the stuff that
   # the user sees.
 
-  my $tables = $DB->getNodetypeTables($$NODE{type_nodetype});
+  # Copy the array to avoid mutating the cached TYPE object
+  my $tables = [@{$DB->getNodetypeTables($$NODE{type_nodetype})}];
   my @fields = ();
   my %titletype = ();
 
@@ -992,25 +632,9 @@ sub edevdoc_edit_page
   return $str;
 }
 
-sub nodelet_viewcode_page
-{
-  return htmlcode("listcode","nlcode");
-}
+# nodelet_viewcode_page removed - viewcode functionality replaced by SourceMapDisplay in React
 
-sub superdoc_viewcode_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return unless $APP->isDeveloper($USER);
-
-  return htmlcode('listcode','doctext');
-}
+# superdoc_viewcode_page removed - viewcode functionality replaced by SourceMapDisplay in React
 
 sub usergroup_display_page
 {
@@ -1344,174 +968,11 @@ sub e2node_xml_page
   return qq|<?xml version="1.0" standalone="yes"?>\n$str|;
 }
 
-sub node_forward_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
+# node_forward_display_page removed - now handled by Everything::Controller::node_forward::display
 
-  my $origTitle = $query->param("originalTitle");
-  $origTitle = "" if not defined($origTitle);
-  my $circularLink = ($origTitle eq $$NODE{title});
+# node_forward_edit_page removed - now handled by Everything::Controller::node_forward::edit (basicedit)
 
-  my $targetNodeId = $$NODE{doctext};
-  my $targetNode = undef;
-  if ($targetNodeId ne '') {
-    $targetNode = getNodeById($targetNodeId, 'light');
-  }
-
-  my $badLink = ($circularLink || !$targetNode);
-  $origTitle ||= $$NODE{title};
-
-  my $urlParams = { };
-
-  unless ($APP->isAdmin($USER) && $badLink)
-  {
-    if (!$badLink)
-    {
-      # For good links, forward all users
-      $urlParams = { 'originalTitle' => $origTitle };
-
-    } else {
-
-      # For circular or non-functional links, send non-gods to the search page
-      $urlParams = {
-         'node' => $$NODE{title}
-         , 'match_all' => 1
-      };
-
-    }
-
-    $$urlParams{'lastnode_id'} = $query->param('lastnode_id')
-      if defined $query->param('lastnode_id');
-
-  } else {
-    # For circular or non-functional links, send gods directly to the edit page
-    $targetNode = $NODE;
-    $urlParams = {
-      'displaytype' => 'edit'
-      , 'circularLink' => $circularLink
-    };
-  }
-
-  my $redirect_url = urlGen($urlParams, 'no escape', $targetNode);
-
-  # TODO: Replace with Request goodness
-  $Everything::HTML::HEADER_PARAMS{-status} = 303;
-  $Everything::HTML::HEADER_PARAMS{-location} =
-    (($Everything::CONF->environment eq "development")?('http://'):('https://')) . $ENV{HTTP_HOST} . $redirect_url;
-
-  my $str = qq|<html>
-    <head>
-    <title>$$NODE{title}\@everything2.com</title>
-    <script language="JavaScript">
-    <!--
-      location.href = "$redirect_url";
-    -->
-    </script>
-    <noscript>
-    <meta http-equiv="refresh" content="0; URL='$redirect_url'">
-    </noscript>
-    </head>
-    <body>|;
-
-  # The following is a simple informative display for gods only.
-  # It shoudl never appear unless someone has disabled HTTP,
-  #  META, *and* javascript redirects.
-
-  return $str.qq|</body></html>| unless $APP->isAdmin($USER);
-
-  $str .=
-    '<p>'
-    .  linkNode(
-       $$NODE{ 'node_id' }
-       , "edit <b>$$NODE{ 'title' }</b>"
-       , { 'displaytype' => 'edit' }
-     )
-  . '</p>';
-
-  if ($$NODE{doctext} ne '') {
-    $str .= '<p><strong>forward-to:</strong> '
-      . linkNode( $$NODE{ 'doctext' } )
-      . '</p>'
-  }
-
-  if ($circularLink)
-  {
-    $str .= '<p><strong>This is a circular link!</srong></p>';
-
-  }
-
-  $str.=qq|</body></html>|;
-
-  return $str;
-
-}
-
-sub node_forward_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-
-  my $str = qq|<p><strong>|.(linkNode( getType('node_forward') )).qq|</strong></p>|;
-  $str .= qq|<table><tr><th align="right"><strong>title:</strong></th>|;
-  $str .= qq|<td>|.htmlcode("textfield","title").qq|</td></tr><tr><th align="right"><strong>owner:</strong></th>|;
-  $str .= qq|<td>|.htmlcode("node_menu","author_user,user,usergroup").qq|</td></tr>|;
-  $str .= qq|<tr><th align="right"><strong>forward-to node ID/title:</strong></th>|;
-  $str .= qq|<td>|.htmlcode("textfield","doctext").qq|</td>|;
-  $str .= qq|</tr></table>|;
-
-  if ($query->param('circularLink')) {
-     $str .= "<p><strong>This is a circular link!</strong></p>";
-  } 
-
-  my $targetNodeId = $$NODE{doctext};
-  my $targetNode = undef;
-
-  $str .= "<p>";
-
-  if ($targetNodeId ne '')
-  {
-    $targetNode = getNodeById($targetNodeId, 'light');
-    if ($targetNode)
-    {
-      $str .= "Forwards to: " . linkNode($targetNode);
-    } else {
-      $str .= "The current forward node ID doesn't lead to a valid node.";
-    }
-
-  } else {
-    $str .= "This forward is presently blank.";
-  }
-
-  $str .= "</p>";
-
-  return $str;
-}
-
-sub document_viewcode_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return unless $APP->isDeveloper($USER);
-  return htmlcode('listcode','doctext');
-}
+# document_viewcode_page removed - viewcode functionality replaced by SourceMapDisplay in React
 
 sub debatecomment_display_page
 {
@@ -1549,18 +1010,7 @@ sub ticker_display_page
   return '';
 }
 
-sub plaindoc_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return $NODE->{doctext};
-}
+# plaindoc_display_page removed - plaindoc nodetype deleted from production
 
 sub debatecomment_edit_page
 {
@@ -3460,7 +2910,6 @@ sub ajax_update_page
     coolit => 			[],
     ordernode => 		[],
     favorite_noder =>	[],
-    'admin toolset' =>	[],
     nodenote =>			[ $anything ],
     bookmarkit =>		[ $node_id , $title , $title ], #node_id, link text, link title
     weblogform => 		[ $node_id , $anything ], #writeup_id, flag for in writeup
@@ -3552,63 +3001,7 @@ sub node_editvars_page
   return htmlcode("editvars");
 }
 
-sub node_listnodelets_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return '' if $APP->isGuest($USER);
-
-  my $str = qq|<table><tr><td>|;
-  $str .= htmlcode("zensearchform");
-  $str .= qq|</td></tr></table><div class="nodelet"><div class="nodelet_title">Nodelets</div>|;
-
-  # Duplicated wholesale from [nodelet meta-container]. This should be refactored,
-  # probably much the way it is in pre-1.0
-  #
-
-  unless ( $$VARS{nodelets} ) {
-    #push default nodelets on
-    $VARS->{nodelets} = join(',',@{$Everything::CONF->default_nodelets});
-  }
-
-  my $required = getNode('Master Control', 'nodelet') -> { node_id } ;
-  if( $APP->isEditor($USER) )
-  {
-    # If Master Control is not in the list of nodelets, add it right at the beginning. 
-    $$VARS{ nodelets } = "$required,".$$VARS{ nodelets } unless $$VARS{ nodelets } =~ /\b$required\b/ ;
-  }else{
-    # Otherwise, if it is there, remove it, keeping a comma as required
-    $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 && $2 ? ",":""/ge;
-  }
-
-  my $nodelets = $PAGELOAD->{pagenodelets} || $$VARS{nodelets} ;
-  my @nodelets = ();
-  @nodelets = split(',',$nodelets) if $nodelets ;
-
-  my $n = 1;
-  $str .= qq|<table width="100%">|; 
-
-  $str .= ( join '', map {
-    my $current_nodelet = getNode($_);
-    $n = 1 - $n;
-    my $row = undef;
-    if ($n) {
-      $row = '<tr class="oddrow"><td>';
-    } else {
-      $row = '<tr class="evenrow"><td>';
-    }
-    $row .= linkNode($current_nodelet).'</td></tr>';
-    } @nodelets); 
-  $str .= '</table></div>';
-
-  return $str;
-}
+# node_listnodelets_page removed - legacy functionality no longer used (nodelet customization in Settings)
 
 sub stylesheet_serve_page
 {
@@ -3657,13 +3050,6 @@ sub draft_edit_page
 
   return htmlcode("display draft","display");
 }
-
-# draft_display_page - MIGRATED TO Everything::Controller::draft (December 2025)
-# React component: Draft.js
-# Features: draft display, edit/publish/delete actions, status management
-
-# draft_linkview_page - MIGRATED TO Everything::Controller::draft (December 2025)
-# React component: Draft.js
 
 sub mysqlproc_edit_page
 {

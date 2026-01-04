@@ -173,14 +173,9 @@ class CFDeploy
         params['ALBDomainName'] = $stdin.gets.chomp
       end
     elsif stack_key == 'production'
-      # Fetch CloudFront domain name if cloudfront stack exists
-      cf_domain = get_cloudfront_domain
-      if cf_domain
-        params['CloudFrontDomainName'] = cf_domain
-        puts "Using CloudFront: #{cf_domain}"
-      else
-        puts "CloudFront not deployed - Route53 will point to ALB directly"
-      end
+      # Route53 points directly to ALB (CloudFront disabled)
+      # CloudFront stack is kept available for quick re-enablement if needed
+      puts "Route53 will point to ALB directly (CloudFront bypass mode)"
     end
 
     params

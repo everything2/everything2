@@ -29,6 +29,7 @@ sub routes
   return {
     "node/:id" => "get_node(:id)",
     "node/:id/edit" => "edit_node(:id)",
+    "node/:id/basicedit" => "basicedit_node(:id)",
     "writeup/:id/insure" => "insure_writeup(:id)",
     "writeup/:id/remove" => "remove_writeup(:id)",
     "writeup/:id/remove_vote" => "remove_vote(:id)",
@@ -923,7 +924,180 @@ sub unlock_user
   }];
 }
 
-around ['insure_writeup', 'remove_writeup', 'remove_vote', 'remove_cool', 'lock_user', 'unlock_user'] => \&Everything::API::unauthorized_if_guest;
+=head2 basicedit_node
+
+POST /api/admin/node/:id/basicedit
+
+Update any field on a node. Gods (superusers) only.
+This is the React equivalent of node_basicedit_page.
+
+Request body:
+{
+  "fields": {
+    "field_name": "value",
+    ...
+  }
+}
+
+Response:
+{
+  "success": 1,
+  "message": "Node updated",
+  "node_id": 123,
+  "updatedFields": ["field1", "field2"]
+}
+
+GET request returns node data with all editable fields and their types.
+
+=cut
+
+sub basicedit_node
+{
+  my ($self, $REQUEST, $id) = @_;
+
+  my $user = $REQUEST->user;
+  my $APP = $self->APP;
+  my $DB = $self->DB;
+
+  # Only gods (superusers) can use basicedit
+  unless ($APP->isAdmin($user->NODEDATA))
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Superuser access required',
+      message => 'Only superusers can use basic edit'
+    }];
+  }
+
+  my $node = $APP->node_by_id(int($id));
+  unless ($node)
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Node not found',
+      message => "No node found with ID $id"
+    }];
+  }
+
+  my $NODE = $node->NODEDATA;
+  my $nodetype = $node->type->title;
+
+  # GET request - return node data with field metadata
+  my $method = uc($REQUEST->request_method());
+  if ($method eq 'GET')
+  {
+    # Get all tables for this nodetype
+    # Copy the array to avoid mutating the cached TYPE object
+    my $tables = [@{$DB->getNodetypeTables($NODE->{type_nodetype})}];
+    push @$tables, 'node';
+
+    my %fields = ();
+
+    foreach my $table (@$tables)
+    {
+      my @field_info = $DB->getFieldsHash($table);
+
+      foreach my $field (@field_info)
+      {
+        my $field_name = $field->{Field};
+        my $field_type = $field->{Type};
+
+        # Determine input type based on database type
+        my $input_type = 'text';
+        my $max_length = 256;
+
+        if ($field_type =~ /int/)
+        {
+          $input_type = 'number';
+          $max_length = 15;
+        }
+        elsif ($field_type =~ /char\((\d+)\)/)
+        {
+          $input_type = 'text';
+          $max_length = $1;
+        }
+        elsif ($field_type =~ /text|longtext/)
+        {
+          $input_type = 'textarea';
+          $max_length = undef;
+        }
+        elsif ($field_type =~ /datetime|timestamp/)
+        {
+          $input_type = 'datetime';
+          $max_length = 19;
+        }
+
+        $fields{$field_name} = {
+          value => $NODE->{$field_name},
+          type => $field_type,
+          inputType => $input_type,
+          maxLength => $max_length,
+        };
+      }
+    }
+
+    return [$self->HTTP_OK, {
+      success => 1,
+      node_id => $node->node_id,
+      title => $node->title,
+      nodeType => $nodetype,
+      fields => \%fields,
+    }];
+  }
+
+  # POST request - update node fields
+  my $data = $REQUEST->JSON_POSTDATA;
+  unless ($data && ref($data) eq 'HASH' && $data->{fields})
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Invalid request body',
+      message => 'Request body must contain a "fields" object'
+    }];
+  }
+
+  my $fields_to_update = $data->{fields};
+  my @updated_fields;
+
+  foreach my $field_name (keys %$fields_to_update)
+  {
+    # Skip node_id - it should never be changed
+    next if $field_name eq 'node_id';
+
+    $NODE->{$field_name} = $fields_to_update->{$field_name};
+    push @updated_fields, $field_name;
+  }
+
+  unless (@updated_fields)
+  {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'No changes',
+      message => 'No fields provided for update'
+    }];
+  }
+
+  # Save the node
+  $DB->updateNode($NODE, -1);
+
+  # Log the edit
+  $APP->securityLog(
+    $NODE,
+    $user->NODEDATA,
+    $user->title . " used basicedit on $nodetype '" . $node->title . "'. Fields: " . join(', ', sort @updated_fields)
+  );
+
+  return [$self->HTTP_OK, {
+    success => 1,
+    message => 'Node updated successfully',
+    node_id => $node->node_id,
+    title => $NODE->{title},
+    nodeType => $nodetype,
+    updatedFields => \@updated_fields,
+  }];
+}
+
+around ['insure_writeup', 'remove_writeup', 'remove_vote', 'remove_cool', 'lock_user', 'unlock_user', 'basicedit_node'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 1;

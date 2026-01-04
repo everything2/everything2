@@ -4,12 +4,8 @@ import { FaExclamationTriangle, FaTrashAlt, FaEdit, FaBook, FaClone, FaEye, FaSa
 import LinkNode from '../LinkNode'
 
 // System node types that use the modal edit interface instead of legacy edit pages
+// Note: nodetype, nodelet, container, htmlcode, htmlpage, and maintenance are excluded - they use basicedit for full field editing
 const SYSTEM_NODE_TYPES = [
-  'maintenance',
-  'htmlcode',
-  'htmlpage',
-  'nodelet',
-  'nodetype',
   'superdoc',
   'restricted_superdoc',
   'oppressor_superdoc',
