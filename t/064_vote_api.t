@@ -266,7 +266,37 @@ if ($user3_hash && $user3_hash->{votesleft} > 0) {
 }
 
 #############################################################################
-# Test 11: User with no votes remaining
+# Test 11: Votes are decremented in database after casting a new vote
+#############################################################################
+
+{
+  # Set up a fresh state - delete existing vote and set known vote count
+  $DB->sqlDelete('vote', "voter_user=" . $voter_user_hash->{user_id} . " AND vote_id=$writeup_id");
+  $DB->sqlUpdate('user', { votesleft => 10 }, "user_id=" . $voter_user_hash->{user_id});
+
+  # Verify initial state
+  my $votes_before = $DB->sqlSelect('votesleft', 'user', "user_id=" . $voter_user_hash->{user_id});
+  is($votes_before, 10, "Votes before casting is 10");
+
+  # Clear cache and refresh user hash
+  $DB->getCache->removeNode($voter_user_hash);
+  $voter_user_hash = $DB->getNode("normaluser1", "user");
+  # Manually ensure votesleft reflects DB state (in case getNode uses stale cache)
+  $voter_user_hash->{votesleft} = $DB->sqlSelect('votesleft', 'user', "user_id=" . $voter_user_hash->{user_id});
+
+  $voter_request = TestRequest->new($voter_user_hash, { weight => 1 });
+  $result = $api->cast_vote($voter_request, $writeup_id);
+
+  is($result->[1]{success}, 1, "Vote decrement test: Vote cast successfully");
+  is($result->[1]{votes_remaining}, 9, "Vote decrement test: votes_remaining is 9 in response");
+
+  # Verify the actual database was updated
+  my $votes_after = $DB->sqlSelect('votesleft', 'user', "user_id=" . $voter_user_hash->{user_id});
+  is($votes_after, 9, "Vote decrement test: votesleft in database was decremented from 10 to 9");
+}
+
+#############################################################################
+# Test 12: User with no votes remaining
 #############################################################################
 
 # Set voter to 0 votes

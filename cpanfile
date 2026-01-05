@@ -37,6 +37,7 @@ requires 'Moose';
 requires 'Ref::Util::XS';
 requires 'Cpanel::JSON::XS';
 requires 'JSON::MaybeXS';
+requires 'Mozilla::CA';
 requires 'Paws';
 
 requires 'Test::Deep::NoTest';

@@ -54,12 +54,13 @@ Returns 409 Conflict if e2node is locked by another operation.
 
 sub routes {
     return {
-        '/'            => 'list_or_create',
-        '/search'      => 'search_drafts',
-        '/:id'         => 'get_or_update',
-        '/:id/parent'  => 'set_parent_e2node(:id)',
-        '/:id/publish' => 'publish_draft(:id)',
-        '/preview'     => 'render_preview'
+        '/'              => 'list_or_create',
+        '/search'        => 'search_drafts',
+        '/:id'           => 'get_or_update',
+        '/:id/parent'    => 'set_parent_e2node(:id)',
+        '/:id/publish'   => 'publish_draft(:id)',
+        '/:id/republish' => 'republish_draft(:id)',
+        '/preview'       => 'render_preview'
     };
 }
 
@@ -1215,8 +1216,312 @@ sub render_preview {
     ];
 }
 
+=head2 POST /api/drafts/:id/republish
+
+Republish a removed draft as a writeup.
+
+For editors/admins to restore writeups that were removed.
+- Draft must have publication_status='removed'
+- Only editors or admins can republish
+- Creates e2node if it doesn't exist
+- Uses createtime as publishtime (original publish date)
+- Sets notnew=1 (hidden from New Writeups)
+- Reputation and C!s are reset to zero
+
+Request body:
+{
+  "e2node_title": "title of the e2node",
+  "e2node_id": 123 (optional, use existing e2node),
+  "wrtype_writeuptype": 456
+}
+
+=cut
+
+sub republish_draft {
+    my ( $self, $REQUEST, $draft_id ) = @_;
+
+    $draft_id = int( $draft_id || 0 );
+    return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
+      unless $draft_id > 0;
+
+    my $postdata = $REQUEST->POSTDATA;
+    $postdata = decode_utf8($postdata) if $postdata;
+
+    my $data;
+    my $json_ok = eval {
+        $data = JSON::decode_json($postdata);
+        1;
+    };
+    return [ $self->HTTP_BAD_REQUEST,
+        { success => 0, error => 'invalid_json' } ]
+      unless $json_ok && $data;
+
+    my $user = $REQUEST->user;
+    my $DB   = $self->DB;
+    my $APP  = $self->APP;
+
+    # Only editors or admins can republish
+    unless ( $user->is_editor || $user->is_admin ) {
+        return [
+            $self->HTTP_FORBIDDEN,
+            { success => 0, error => 'Only editors or admins can republish removed drafts' }
+        ];
+    }
+
+    # Get the draft
+    my $draft = $DB->getNodeById($draft_id);
+    return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
+      unless $draft && $draft->{type}{title} eq 'draft';
+
+    # Check that draft is in 'removed' status
+    my $removed_status = $DB->getNode('removed', 'publication_status');
+    unless ( $draft->{publication_status} == $removed_status->{node_id} ) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            { success => 0, error => 'Only removed drafts can be republished' }
+        ];
+    }
+
+    # Get required data from request
+    my $e2node_title = $data->{e2node_title};
+    my $e2node_id    = int( $data->{e2node_id} || 0 );
+    my $writeuptype_id = int( $data->{wrtype_writeuptype} || 0 );
+
+    # Validate e2node title
+    unless ( $e2node_title ) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            {
+                success => 0,
+                error   => 'e2node_title is required'
+            }
+        ];
+    }
+
+    $e2node_title = $APP->cleanNodeName($e2node_title);
+
+    # Validate writeup type
+    unless ( $writeuptype_id > 0 ) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            {
+                success => 0,
+                error   => 'wrtype_writeuptype is required'
+            }
+        ];
+    }
+
+    my $writeuptype = $DB->getNodeById($writeuptype_id);
+    unless ( $writeuptype && $writeuptype->{type}{title} eq 'writeuptype' ) {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            {
+                success => 0,
+                error   => 'Invalid writeuptype ID'
+            }
+        ];
+    }
+
+    # Get or create e2node
+    my $e2node;
+    if ( $e2node_id > 0 ) {
+        $e2node = $DB->getNodeById($e2node_id);
+        unless ( $e2node && $e2node->{type}{title} eq 'e2node' ) {
+            return [
+                $self->HTTP_BAD_REQUEST,
+                { success => 0, error => 'Invalid e2node ID' }
+            ];
+        }
+    } else {
+        # Try to find existing e2node by title
+        $e2node = $DB->getNode( $e2node_title, 'e2node' );
+
+        # Create if it doesn't exist
+        unless ($e2node) {
+            my $e2node_type = $DB->getType('e2node');
+            my $new_e2node_id = $DB->insertNode( $e2node_title, $e2node_type, $user->NODEDATA );
+
+            unless ($new_e2node_id) {
+                return [
+                    $self->HTTP_INTERNAL_SERVER_ERROR,
+                    { success => 0, error => 'Failed to create e2node' }
+                ];
+            }
+
+            $e2node = $DB->getNodeById($new_e2node_id);
+        }
+    }
+
+    my $parent_e2node_id = $e2node->{node_id};
+
+    # Check if e2node is locked
+    my $node_lock = $DB->sqlSelectHashref('*', 'nodelock', "nodelock_node=$parent_e2node_id");
+    if ($node_lock) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 0,
+                error   => 'node_locked',
+                message => 'This node is locked and cannot accept new writeups'
+            }
+        ];
+    }
+
+    # Get writeup nodetype
+    my $writeup_type = $DB->getType('writeup');
+    unless ($writeup_type) {
+        return [
+            $self->HTTP_INTERNAL_SERVER_ERROR,
+            { success => 0, error => 'writeup nodetype not found' }
+        ];
+    }
+
+    # Start transaction and acquire lock on e2node
+    my $dbh = $DB->{dbh};
+    my $orig_autocommit = $dbh->{AutoCommit};
+
+    if ($orig_autocommit) {
+        $dbh->{AutoCommit} = 0;
+    }
+
+    my $lock_result = eval {
+        $dbh->do( "SELECT node_id FROM node WHERE node_id = ? FOR UPDATE",
+            {}, $e2node->{node_id} );
+    };
+
+    unless ($lock_result) {
+        my $rollback_ok = eval { $dbh->rollback(); 1 };
+        $dbh->{AutoCommit} = $orig_autocommit if $orig_autocommit;
+        return [
+            $self->HTTP_CONFLICT,
+            {
+                success => 0,
+                error   => 'node_locked',
+                message => 'E2node is locked by another operation. Please try again.'
+            }
+        ];
+    }
+
+    # Convert draft to writeup - update node type and title
+    my $writeup_title = $e2node->{title} . ' (' . $writeuptype->{title} . ')';
+    $DB->sqlUpdate(
+        'node',
+        {
+            type_nodetype => $writeup_type->{node_id},
+            title         => $writeup_title
+        },
+        "node_id=$draft_id"
+    );
+
+    # Insert into writeup table
+    # Use createtime as publishtime (original publication date)
+    # notnew=1 to hide from New Writeups
+    # cooled=0, reputation starts at 0
+    my $writeup_data = {
+        writeup_id         => $draft_id,
+        parent_e2node      => $parent_e2node_id,
+        wrtype_writeuptype => $writeuptype_id,
+        notnew             => 1,  # Always hide from New Writeups
+        cooled             => 0,
+        feedback_policy_id => 0,
+        publishtime        => $draft->{createtime}  # Use createtime as publishtime
+    };
+
+    $DB->sqlInsert('writeup', $writeup_data);
+
+    # Update draft table - set publication_status to 0 (published)
+    $DB->sqlUpdate( 'draft', {
+        publication_status => 0,
+        collaborators => ''
+    }, "draft_id=$draft_id" );
+
+    # Add to e2node's nodegroup
+    my ($max_rank) = $DB->sqlSelect( 'MAX(nodegroup_rank)', 'nodegroup',
+        "nodegroup_id=$parent_e2node_id" );
+    my $new_rank = defined($max_rank) ? $max_rank + 1 : 0;
+
+    $DB->sqlInsert(
+        'nodegroup',
+        {
+            nodegroup_id   => $parent_e2node_id,
+            node_id        => $draft_id,
+            nodegroup_rank => $new_rank,
+            orderby        => $new_rank
+        }
+    );
+
+    # Add to newwriteup table with notnew=1
+    $DB->sqlInsert(
+        'newwriteup',
+        {
+            node_id => $draft_id,
+            notnew  => 1
+        }
+    );
+
+    # Add to publish table
+    $DB->sqlInsert(
+        'publish',
+        {
+            publish_id => $draft_id,
+            publisher  => $user->node_id
+        }
+    );
+
+    # Remove parent_node link if it exists (no longer needed)
+    my $linktype = $DB->getId($DB->getNode('parent_node', 'linktype'));
+    if ($linktype) {
+        $DB->sqlDelete('links', "from_node=$draft_id AND linktype=$linktype");
+    }
+
+    # Update cache
+    $DB->getCache->incrementGlobalVersion($draft);
+    $DB->getCache->removeNode($draft);
+
+    # Commit transaction
+    eval {
+        $dbh->commit();
+        $dbh->{AutoCommit} = $orig_autocommit if $orig_autocommit;
+    } or do {
+        my $commit_error = $@ || 'Unknown commit error';
+        $APP->devLog("Commit failed during republish_draft: $commit_error");
+        eval { $dbh->{AutoCommit} = $orig_autocommit if $orig_autocommit; 1 } or 1;  ## no critic (RequireCheckingReturnValueOfEval)
+    };
+
+    # Update newwriteups cache
+    $APP->updateNewWriteups();
+
+    # Add nodenote to the e2node
+    eval {
+        my $author = $DB->getNodeById($draft->{author_user});
+        my $author_name = $author ? $author->{title} : 'unknown';
+        $APP->addNodeNote( $e2node, "Republished writeup by $author_name", $user );
+        1;
+    } or do {
+        $APP->devLog("Failed to add nodenote for republished draft $draft_id: $@");
+    };
+
+    # Security log
+    my $author = $DB->getNodeById($draft->{author_user});
+    $APP->securityLog(
+        $DB->getNode('remove', 'opcode') || $draft,
+        $user->NODEDATA,
+        $user->title . " republished \"$writeup_title\" by " . ($author ? $author->{title} : 'unknown')
+    );
+
+    return [
+        $self->HTTP_OK,
+        {
+            success    => 1,
+            writeup_id => $draft_id,
+            e2node_id  => $parent_e2node_id,
+            message    => 'Draft republished successfully'
+        }
+    ];
+}
+
 around [ 'list_or_create', 'get_or_update', 'search_drafts', 'set_parent_e2node',
-    'publish_draft', 'render_preview' ] => \&Everything::API::unauthorized_if_guest;
+    'publish_draft', 'republish_draft', 'render_preview' ] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 

@@ -1,5 +1,6 @@
 package Everything::API::password;
 
+use utf8;
 use Moose;
 extends 'Everything::API';
 
@@ -83,12 +84,27 @@ sub reset_request {
     my %mail_data = %$mail;
 
     # Substitute template variables
+    # Templates may use various formats:
+    # - Unicode guillemets: «name»
+    # - HTML entity guillemets: &#171;name&#187;
+    # - Angle brackets: <name> (stored as &lt;name&gt; in XML)
     my $name = $user->{realname} || $user->{title};
     my $server_name = $ENV{SERVER_NAME} || 'everything2.com';
 
+    # Unicode guillemets format
     $mail_data{doctext} =~ s/«name»/$name/g;
     $mail_data{doctext} =~ s/«link»/$link/g;
     $mail_data{doctext} =~ s/«servername»/$server_name/g;
+
+    # HTML entity guillemets format
+    $mail_data{doctext} =~ s/&#171;name&#187;/$name/g;
+    $mail_data{doctext} =~ s/&#171;link&#187;/$link/g;
+    $mail_data{doctext} =~ s/&#171;servername&#187;/$server_name/g;
+
+    # Angle bracket format (HTML encoded)
+    $mail_data{doctext} =~ s/&lt;name&gt;/$name/g;
+    $mail_data{doctext} =~ s/&lt;link&gt;/$link/g;
+    $mail_data{doctext} =~ s/&lt;servername&gt;/$server_name/g;
 
     # Send email
     $APP->node2mail($user->{email}, \%mail_data, 1);

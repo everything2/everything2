@@ -62,6 +62,7 @@ sub award_cool {
     }
 
     # Award the C! - insert into coolwriteups table
+    my $new_cools_left;
     my $success = eval {
         $self->DB->sqlInsert('coolwriteups', {
             coolwriteups_id => $writeup_id,
@@ -72,6 +73,13 @@ sub award_cool {
         my $WRITEUP = $writeup->NODEDATA;
         $WRITEUP->{cooled}++;
         $self->DB->updateNode($WRITEUP, -1);
+
+        # Decrement user's cools remaining and save immediately
+        my $USER = $user->NODEDATA;
+        my $VARS = $self->APP->getVars($USER);
+        $VARS->{cools}-- if $VARS->{cools} && $VARS->{cools} > 0;
+        Everything::setVars($USER, $VARS);
+        $new_cools_left = int($VARS->{cools} || 0);
 
         # Grant experience to the writeup author
         $self->APP->adjustExp($writeup->author_user, 20);
@@ -98,7 +106,7 @@ sub award_cool {
         success         => 1,
         message         => 'C! awarded successfully',
         writeup_id      => $writeup_id,
-        cools_remaining => $cools_left - 1
+        cools_remaining => $new_cools_left
     }];
 }
 

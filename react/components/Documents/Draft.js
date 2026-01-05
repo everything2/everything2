@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import WriteupDisplay from '../WriteupDisplay'
 import InlineWriteupEditor from '../InlineWriteupEditor'
 import PublishModal from './PublishModal'
+import DraftAdminModal from '../DraftAdminModal'
 import LinkNode from '../LinkNode'
 import { FaEdit, FaTrash, FaPaperPlane } from 'react-icons/fa'
 
@@ -20,6 +21,7 @@ import { FaEdit, FaTrash, FaPaperPlane } from 'react-icons/fa'
  * - Delete button for author
  * - Shows publication status badge
  * - Shows parent e2node if linked
+ * - Admin gear menu for removed drafts (editors/admins) - opens DraftAdminModal
  */
 
 const Draft = ({ data }) => {
@@ -28,6 +30,7 @@ const Draft = ({ data }) => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState(null)
   const [showPublishModal, setShowPublishModal] = useState(false)
+  const [adminModalOpen, setAdminModalOpen] = useState(false)
 
   if (!data) return <div>Loading...</div>
 
@@ -43,7 +46,12 @@ const Draft = ({ data }) => {
   const isGuest = !user || user.is_guest
   const isAuthor = draft.is_author
   const canEdit = draft.can_edit
+  const isEditor = user?.is_editor
+  const isAdmin = user?.is_admin
   const authorName = draft.author?.title || 'Unknown'
+  const isRemoved = draft.publication_status === 'removed'
+  // Editors/admins can use admin tools on removed drafts
+  const showAdminTools = isRemoved && (isEditor || isAdmin)
 
   // Handle delete
   const handleDelete = async () => {
@@ -86,7 +94,7 @@ const Draft = ({ data }) => {
 
   return (
     <div className="draft-page">
-      {/* Toolbar */}
+      {/* Toolbar - show if user can edit */}
       {Boolean(canEdit) && !isEditing && (
         <div style={{ textAlign: 'right', marginBottom: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
           <button
@@ -106,7 +114,7 @@ const Draft = ({ data }) => {
           >
             <FaEdit />
           </button>
-          {Boolean(isAuthor) && (
+          {Boolean(isAuthor) && !isRemoved && (
             <>
               <button
                 onClick={() => setShowPublishModal(true)}
@@ -192,6 +200,8 @@ const Draft = ({ data }) => {
           isDraft
           publicationStatus={draft.publication_status}
           showVoting={false}
+          showAdminToolsOverride={showAdminTools}
+          onAdminGearClick={() => setAdminModalOpen(true)}
         />
       )}
 
@@ -203,6 +213,16 @@ const Draft = ({ data }) => {
             // PublishModal handles redirect on success
           }}
           onClose={() => setShowPublishModal(false)}
+        />
+      )}
+
+      {/* Admin Modal for editors/admins on removed drafts */}
+      {showAdminTools && (
+        <DraftAdminModal
+          draft={draft}
+          user={user}
+          isOpen={adminModalOpen}
+          onClose={() => setAdminModalOpen(false)}
         />
       )}
     </div>

@@ -364,6 +364,53 @@ SKIP: {
     like($result->[1]->{error}, qr/no C!s remaining/i, 'No cools error message is correct');
   }
 
+  # Test 38-41: C!s are decremented after awarding one (integration test with real DB)
+  {
+    # Create a fresh writeup for this test
+    my $decrement_test_title = 'Test Cool Decrement Writeup (idea)';
+    my $decrement_writeup_id = $DB->insertNode($decrement_test_title, $writeup_type, $regular_user, {
+      doctext => 'This is a test writeup for C! decrement testing.',
+      parent_e2node => $parent_e2node_id
+    });
+
+    # Set up the editor user with a known number of C!s
+    my $editor_vars = $APP->getVars($editor_user);
+    my $original_cools = $editor_vars->{cools} || 0;
+    $editor_vars->{cools} = 5;  # Set to known value
+    Everything::setVars($editor_user, $editor_vars);
+
+    # Create a real request using the actual editor user data
+    # We need to create a proper MockUser that returns the real NODEDATA
+    my $real_editor_request = MockRequest->new(
+      node_id => $editor_user->{node_id},
+      title => $editor_user->{title},
+      nodedata => $editor_user,
+      is_admin_flag => 0,
+      is_editor_flag => 1,
+      is_guest_flag => 0,
+      coolsleft => 5
+    );
+
+    # Award the C!
+    my $result = $api->award_cool($real_editor_request, $decrement_writeup_id);
+    is($result->[0], $api->HTTP_OK, 'C! decrement test: API returns HTTP 200');
+    is($result->[1]->{success}, 1, 'C! decrement test: C! awarded successfully');
+
+    # Check the returned cools_remaining
+    is($result->[1]->{cools_remaining}, 4, 'C! decrement test: cools_remaining is decremented in response');
+
+    # Verify the actual database was updated
+    my $updated_vars = $APP->getVars($editor_user);
+    is($updated_vars->{cools}, 4, 'C! decrement test: cools in database was decremented from 5 to 4');
+
+    # Cleanup
+    $editor_vars->{cools} = $original_cools;  # Restore original cools
+    Everything::setVars($editor_user, $editor_vars);
+    $DB->sqlDelete('coolwriteups', "coolwriteups_id=$decrement_writeup_id");
+    $DB->sqlDelete('node', "node_id=$decrement_writeup_id");
+    $DB->sqlDelete('document', "document_id=$decrement_writeup_id");
+  }
+
   # Restore original bookmark setting on writeup nodetype
   if ($original_bookmark_setting) {
     $DB->setNodeParam($writeup_type_node, 'disable_bookmark', $original_bookmark_setting);

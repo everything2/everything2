@@ -1392,41 +1392,6 @@ sub showcollabtext
   return $doctext;
 }
 
-# Probably going to be something that gets encapsulated into an object method
-#
-sub mysqlproctest
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $procname = $NODE->{title};
-  my $parameters = $NODE->{parameters};
-  my $proctext = $NODE->{doctext};
-
-  my $value = $DB->createMysqlProcedure("ecore_test_$procname", $parameters, $proctext, "PROCEDURE", 1);
-  if(not ref $value eq "ARRAY")
-  {
-    return "Creation not attempted";
-  }
-
-  if($value->[0] == 1)
-  {
-    $DB->dropMysqlProcedure("ecore_test_$procname", "PROCEDURE");
-    return "Created successfully";
-  }
-
-  if($value->[0] == 0)
-  {
-    return "Mysql procedure creation failed: ".$value->[1];
-  }
-}
-
-
 # A major piece of page rendering, this can certainly go into a template
 # TODO: Move the badwords stuff to a setting in the production file
 # TODO: Make nodes auto-scan themselves on editing or submission to talk about why
