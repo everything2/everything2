@@ -71,8 +71,8 @@ subtest 'HEAD to existing node by ID returns 200' => sub {
     plan tests => 2;
 
     # Use tomato e2node which exists in dev database
-    my $response = $ua->head("http://localhost/?node_id=2212907");
-    is($response->code, 200, "HEAD to node_id=2212907 (tomato) returns 200");
+    my $response = $ua->head("http://localhost/?node_id=2213609");
+    is($response->code, 200, "HEAD to node_id=2213609 (tomato) returns 200");
     is($response->header('X-E2-Head-Optimized'), 1, "X-E2-Head-Optimized header present");
 };
 

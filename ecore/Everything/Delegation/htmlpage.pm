@@ -2980,22 +2980,6 @@ sub ajax_update_page
 
 }
 
-sub mysqlproc_display_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|<br /><b>CREATE PROCEDURE $NODE->{title}($NODE->{parameters} )</b><br /><b>BEGIN</b><br />|;
-  $str .= qq|<pre>$NODE->{doctext}</pre><b>END</b><br />|;
-
-  return $str;
-}
-
 sub node_editvars_page
 {
   return htmlcode("editvars");
@@ -3049,26 +3033,6 @@ sub draft_edit_page
   my $APP = shift;
 
   return htmlcode("display draft","display");
-}
-
-sub mysqlproc_edit_page
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|<H4>title:</H4>|.htmlcode("textfield","title");
-  $str .= qq|<h4>parameters:|.htmlcode("textfield","parameters,60");
-  $str .= qq|<h4>owner:</h4>|.htmlcode("node_menu","author_user,user,usergroup");
-  $str .= qq|<p><small><strong>Edit the mysql procedure code:</strong></small><br />|;
-  $str .= qq|<br /><br /><em>|.htmlcode("mysqlproctest").qq|</em>|;
-  $str .= htmlcode("textarea","doctext,30,60");
-
-  return $str;
 }
 
 sub draft_restore_page

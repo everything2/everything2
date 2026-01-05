@@ -113,7 +113,7 @@ class E2ReactRoot extends React.Component {
       recentnodes_show: true,
       favoritenoders_show: true,
       personallinks_show: true,
-      currentpoll_show: true,
+      currentuserpoll_show: true,
       usergroupwriteups_show: true,
       otherusers_show: true,
       chatterbox_show: true,
@@ -145,7 +145,7 @@ class E2ReactRoot extends React.Component {
     }
 
     const toplevelkeys = ["user","node","developerNodelet","newWriteups","lastCommit","architecture","collapsedNodelets","coolnodes","staffpicks","daylogLinks", "news", "randomNodes","neglectedDrafts", "quickRefSearchTerm", "epicenter", "masterControl", "statistics", "categories", "currentNodeId", "nodeCategories", "bounties", "recentNodes", "favoriteWriteups", "favoriteLimit", "personalLinks", "canAddCurrent", "currentNodeTitle", "currentPoll", "usergroupData", "otherUsersData", "noteletData", "messagesData", "notificationsData", "forReviewData", "nodeletorder"]
-    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics","categories","mostwanted","recentnodes","favoritenoders","personallinks","currentpoll","usergroupwriteups","otherusers","chatterbox","messages","notifications","forreview","randomnodes","notelet"]
+    const managedNodelets = ["newwriteups","vitals","epicenter","everythingdeveloper","recommendedreading","readthis","newlogs","neglecteddrafts","quickreference","mastercontrol","statistics","categories","mostwanted","recentnodes","favoritenoders","personallinks","currentuserpoll","usergroupwriteups","otherusers","chatterbox","messages","notifications","forreview","randomnodes","notelet"]
     const urlParams = new URLSearchParams(window.location.search)
 
     toplevelkeys.forEach((key) => {
@@ -701,15 +701,15 @@ class E2ReactRoot extends React.Component {
           </Suspense>
         </ErrorBoundary>
       ),
-      'current_poll': () => (
+      'current_user_poll': () => (
         <ErrorBoundary key="currentuserpoll">
           <Suspense fallback={<NodeletLoadingFallback />}>
             <CurrentUserPoll
-              id="current_poll"
+              id="current_user_poll"
               currentPoll={this.state.currentPoll}
               user={this.state.user}
               showNodelet={this.showNodelet}
-              nodeletIsOpen={this.state.currentpoll_show}
+              nodeletIsOpen={this.state.currentuserpoll_show}
             />
           </Suspense>
         </ErrorBoundary>

@@ -489,12 +489,16 @@ sub remove_writeup
     }];
   }
 
-  my $private_status = $DB->getNode('private', 'publication_status');
-  unless ($private_status)
+  # Determine which publication status to use:
+  # - Author removing their own writeup -> private (they can continue editing)
+  # - Editor removing someone else's writeup -> removed (can be republished later)
+  my $status_name = ($is_editor && !$is_author) ? 'removed' : 'private';
+  my $target_status = $DB->getNode($status_name, 'publication_status');
+  unless ($target_status)
   {
     return [$self->HTTP_INTERNAL_SERVER_ERROR, {
       error => 'Configuration error',
-      message => 'private publication_status node not found'
+      message => "$status_name publication_status node not found"
     }];
   }
 
@@ -511,15 +515,15 @@ sub remove_writeup
   my $draft_exists = $DB->sqlSelect('draft_id', 'draft', "draft_id=$node_id");
 
   if (!$draft_exists) {
-    # Create new draft row with private publication status
+    # Create new draft row with appropriate publication status
     $DB->sqlInsert('draft', {
       draft_id => $node_id,
-      publication_status => $private_status->{node_id}
+      publication_status => $target_status->{node_id}
     });
   } else {
-    # Update existing draft row to private status
+    # Update existing draft row to appropriate status
     $DB->sqlUpdate('draft', {
-      publication_status => $private_status->{node_id}
+      publication_status => $target_status->{node_id}
     }, "draft_id=$node_id");
   }
 
@@ -542,6 +546,23 @@ sub remove_writeup
   if ($E2NODE)
   {
     $DB->removeFromNodegroup($E2NODE->NODEDATA, $NODE, -1);
+
+    # For editor removals, create a parent_node link so we know which e2node to republish to
+    if ($is_editor && !$is_author)
+    {
+      my $parent_linktype = $DB->getNode('parent_node', 'linktype');
+      if ($parent_linktype)
+      {
+        # Remove any existing parent_node link first
+        $DB->sqlDelete('links', "from_node=$node_id AND linktype=" . $parent_linktype->{node_id});
+        # Create new parent_node link
+        $DB->sqlInsert('links', {
+          from_node => $node_id,
+          to_node => $E2NODE->node_id,
+          linktype => $parent_linktype->{node_id}
+        });
+      }
+    }
   }
 
   # Cache management - increment version and remove from cache

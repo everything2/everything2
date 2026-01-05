@@ -652,7 +652,7 @@ const UserEdit = ({ data, e2 }) => {
             {user.imgsrc && (
               <div style={{ marginBottom: '16px' }}>
                 <img
-                  src={`/${user.imgsrc}`}
+                  src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
                   alt={`${user.title}'s image`}
                   style={{ maxWidth: '200px', maxHeight: '200px', display: 'block', marginBottom: '12px', borderRadius: '4px' }}
                 />

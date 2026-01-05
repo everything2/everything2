@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use utf8;
 use lib qw(lib);
 use ecoretool::base;
 package ecoretool::bootstrap;
@@ -10,6 +11,7 @@ use Everything;
 use DBI;
 use DBD::mysql;
 use XML::Simple;
+use Encode qw(encode);
 
 sub _inputs
 {
@@ -76,6 +78,7 @@ sub main
 
 	my $newdbh = DBI->connect("DBI:mysql:database=$$options{database};user=$$options{user};password=$$options{password}");
 	die "No database" unless $newdbh;
+	$newdbh->do("SET NAMES utf8mb4");
 	foreach my $file(readdir($dirhandle))
 	{
 		next unless -e "$dbtabledir/$file" and -f "$dbtabledir/$file";
@@ -142,8 +145,8 @@ sub main
 		{
 			next unless -e "$basedir/$nodetype/$file" and -f "$basedir/$nodetype/$file";
 			my $datahandle;
-			open $datahandle,"$basedir/$nodetype/$file";
-			
+			open $datahandle, "$basedir/$nodetype/$file";
+
 			print STDERR "Inserting $basedir/$nodetype/$file...\n";
 			my $obj = $this->get_worker_object($nodetype);
 			my $NODE = $obj->xml_to_node($datahandle);
@@ -191,7 +194,7 @@ sub _values_into_table
 
 	my $node_columns = [];
 	my $table_columns = $this->_get_table_columns($newdbh, $table);
-	
+
 	foreach my $c (@$table_columns)
 	{
 		if(exists($NODE->{$c}))
@@ -201,16 +204,22 @@ sub _values_into_table
 	}
 
 	return unless(scalar(@$node_columns) > 0);
-	
+
 	my $node_bootstrap_template = "INSERT INTO $table (".join(",",@$node_columns).") VALUES(".join(',',split(//,('?'x(@$node_columns)))).")";
 	my $insertdata;
 
 	foreach my $column (@$node_columns)
 	{
-		push @$insertdata, $NODE->{$column};
+		my $value = $NODE->{$column};
+		# Ensure proper UTF-8 encoding for MySQL
+		if (defined($value) && !ref($value)) {
+			utf8::upgrade($value);
+			$value = encode("UTF-8", $value);
+		}
+		push @$insertdata, $value;
 		delete $NODE->{$column};
 	}
-		
+
 	$newdbh->do($node_bootstrap_template, undef, @$insertdata);
 
 	return;

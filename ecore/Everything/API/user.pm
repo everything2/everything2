@@ -417,7 +417,7 @@ sub upload_image {
   $extension = 'jpg' if $extension eq 'jpeg';
 
   # Size limits
-  my $is_god = $APP->isGod($nodedata);
+  my $is_god = $APP->isAdmin($nodedata);
   my $user_level = $APP->getLevel($nodedata);
   my $sizelimit = $is_god ? 1_600_000 : 800_000;
   my $max_width = ($user_level > 4 || $is_god) ? 400 : 200;

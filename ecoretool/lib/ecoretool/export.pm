@@ -133,7 +133,7 @@ sub xml_to_file
 		return;
 	}
 
-	open $handle, ">$$this{basedir}/$type/$outtitle.xml" or die "Open error '$$this{basedir}/$type/$outtitle.xml': $!";
+	open $handle, ">:encoding(UTF-8)", "$$this{basedir}/$type/$outtitle.xml" or die "Open error '$$this{basedir}/$type/$outtitle.xml': $!";
 	print $handle $obj->node_to_xml($node, $dbh, $this->{options});
 	close $handle;
 }

@@ -210,12 +210,15 @@ const DraftStatusBadge = ({ status }) => {
  *   onEdit - callback for edit action
  *   isDraft - if true, display as draft with status badge instead of writeuptype
  *   publicationStatus - draft publication status (private, findable, review, removed)
+ *   showAdminToolsOverride - override to force showing admin tools (for drafts with admin actions)
+ *   onAdminGearClick - callback for admin gear click (for drafts to open their own modal)
  *
  * Usage:
  *   <WriteupDisplay writeup={writeupData} user={userData} />
  *   <WriteupDisplay writeup={draftData} user={userData} isDraft publicationStatus="private" />
+ *   <WriteupDisplay writeup={draftData} isDraft showAdminToolsOverride onAdminGearClick={() => openModal()} />
  */
-const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true, onEdit, isDraft = false, publicationStatus }) => {
+const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true, onEdit, isDraft = false, publicationStatus, showAdminToolsOverride, onAdminGearClick }) => {
   if (!writeup) return null
 
   const {
@@ -286,7 +289,8 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
   const canCool = !isGuest && !isAuthor && (user?.coolsleft || 0) > 0
   const coolCount = coolState.cools?.length || 0
   // Show admin tools for editors or the writeup author (for "Return to drafts")
-  const showAdminTools = isEditor || isAuthor
+  // Also allow override for drafts that have admin actions (like republish)
+  const showAdminTools = showAdminToolsOverride || isEditor || isAuthor
   // Can message author if logged in and not messaging yourself
   const canMessage = !isGuest && !isAuthor && author
 
@@ -422,12 +426,35 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
           <table border="0" cellPadding="0" cellSpacing="0" width="100%">
             <tbody>
               <tr className="wu_footer">
-                {/* Draft message - show instead of tools/voting/C!s for drafts */}
+                {/* Draft message and admin tools - show for drafts */}
                 {isDraft && (
                   <td style={{ textAlign: 'left' }} className="wu_tools">
-                    <small style={{ color: '#888' }}>
-                      This is an unpublished draft. Only you and any collaborators can see it.
-                    </small>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      {/* Admin gear for drafts when callback provided */}
+                      {showAdminTools && onAdminGearClick && (
+                        <button
+                          onClick={onAdminGearClick}
+                          title="Draft tools"
+                          className="admin-gear"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            color: '#507898',
+                            padding: '2px 4px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          &#9881;
+                        </button>
+                      )}
+                      <small style={{ color: '#888' }}>
+                        This is an unpublished draft. Only you and any collaborators can see it.
+                      </small>
+                    </span>
                   </td>
                 )}
                 {/* Tools cell - admin gear and message icon on left (not for drafts) */}

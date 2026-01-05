@@ -298,15 +298,16 @@ SKIP: {
     is($result->[0], $api->HTTP_OK, 'Editor can remove with reason');
     is($result->[1]->{success}, 1, 'Remove with reason returns success');
 
-    # Verify writeup converted to draft with private status
+    # Verify writeup converted to draft with 'removed' status
+    # (Editor removing someone else's writeup uses 'removed' status so it can be republished)
     my $draft_type = $DB->getType('draft');
     my $node_type = $DB->sqlSelect('type_nodetype', 'node', "node_id=$writeup_id2");
     is($node_type, $draft_type->{node_id}, 'Writeup type changed to draft');
 
-    my $private_status = $DB->getNode('private', 'publication_status');
+    my $removed_status = $DB->getNode('removed', 'publication_status');
     my $current_status = $DB->sqlSelect('publication_status', 'draft', "draft_id=$writeup_id2");
-    is($current_status, $private_status->{node_id},
-       'Writeup publication_status is private after editor removal');
+    is($current_status, $removed_status->{node_id},
+       'Writeup publication_status is removed after editor removal');
   }
 
   # Test 31-32: Cannot remove non-existent writeup
