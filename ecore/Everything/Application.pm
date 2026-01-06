@@ -5699,6 +5699,12 @@ sub global_warn_handler
 sub global_die_handler
 {
   my ($this, $error) = @_;
+
+  # Don't log errors that are inside eval blocks - they'll be caught
+  # $^S is true when we're inside an eval, undef during compilation,
+  # and false when we're at runtime outside any eval
+  return if $^S;
+
   $this->devLog("Sent error: $error");
   return $this->send_cloudwatch_event("error", $error || "");
 }

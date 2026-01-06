@@ -288,9 +288,10 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
   // Check coolsleft directly - user needs to have cools remaining and not be guest/author
   const canCool = !isGuest && !isAuthor && (user?.coolsleft || 0) > 0
   const coolCount = coolState.cools?.length || 0
-  // Show admin tools for editors or the writeup author (for "Return to drafts")
+  // Show admin tools (gear menu) for logged-in users - the modal itself determines which actions are available
+  // Includes: editors, authors, voters, coolers, and users who can post to usergroups
   // Also allow override for drafts that have admin actions (like republish)
-  const showAdminTools = showAdminToolsOverride || isEditor || isAuthor
+  const showAdminTools = showAdminToolsOverride || isEditor || isAuthor || (!isGuest && !isDraft)
   // Can message author if logged in and not messaging yourself
   const canMessage = !isGuest && !isAuthor && author
 
@@ -651,6 +652,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
           isOpen={adminModalOpen}
           onClose={() => setAdminModalOpen(false)}
           onEdit={onEdit}
+          availableGroups={window.e2?.usergroupData?.availableGroups || []}
           onWriteupUpdate={(updatedWriteup) => {
             setWriteupState(prev => ({
               ...prev,

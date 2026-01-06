@@ -1,6 +1,8 @@
 package Everything::Page::nothing_found;
 
 use Moose;
+use Readonly;
+use List::Util qw(shuffle);
 extends 'Everything::Page';
 
 =head1 NAME
@@ -13,6 +15,9 @@ Displayed when a node search returns no results. Shows appropriate message based
 on context (nuke operation, URL, search) and provides forms for searching again
 or creating new content.
 
+For guest users, shows a selection of recent "best entries" (from coolnodes) to
+encourage exploration.
+
 =head1 METHODS
 
 =head2 buildReactData($REQUEST)
@@ -20,6 +25,9 @@ or creating new content.
 Returns data for the Nothing Found page, including search term and user permissions.
 
 =cut
+
+Readonly my $EXCERPT_LENGTH => 400;
+Readonly my $BEST_ENTRIES_COUNT => 20;
 
 sub buildReactData {
     my ($self, $REQUEST) = @_;
@@ -86,20 +94,46 @@ sub buildReactData {
         }
     }
 
+    my $is_guest = $USER->is_guest;
+
+    # For guest users, fetch best recent entries to show
+    my @best_entries;
+    if ($is_guest && !$was_nuke) {
+        my $best_recent = $DB->stashData("bestrecentnodes");
+        if ($best_recent && ref($best_recent) eq 'ARRAY' && @$best_recent) {
+            # Shuffle and take 20 entries
+            my @shuffled = shuffle(@$best_recent);
+            my @selected = splice(@shuffled, 0, $BEST_ENTRIES_COUNT);
+
+            foreach my $entry (@selected) {
+                push @best_entries, {
+                    node_id => $entry->{parent_e2node},
+                    writeup_id => $entry->{writeup_id},
+                    title => $entry->{parent_title},
+                    author => {
+                        node_id => $entry->{author_user},
+                        title => $entry->{author_name}
+                    },
+                    excerpt => $entry->{snippet}
+                };
+            }
+        }
+    }
+
     return {
         type => 'nothing_found',
         was_nuke => $was_nuke ? \1 : \0,
         search_term => $node_param,
         is_url => $is_url ? \1 : \0,
         external_link => $external_link,
-        is_guest => $APP->isGuest($USER) ? \1 : \0,
-        is_admin => $is_admin ? \1 : \0,
+        is_guest => $is_guest ? \1 : \0,
         is_editor => $APP->isEditor($USER) ? \1 : \0,
         show_tin_opener => $show_tin_opener ? \1 : \0,
         tinopener_active => $tinopener_active ? \1 : \0,
         tin_opener_message => $tin_opener_message,
         existing_e2node => $existing_e2node,
-        lastnode_id => $lastnode_id
+        lastnode_id => $lastnode_id,
+        best_entries => \@best_entries
     };
 }
 

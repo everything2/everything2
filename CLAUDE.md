@@ -45,12 +45,14 @@ User handles all commits.
 
 ### 🔄 Container Rebuild Workflow
 
+**⚠️ CRITICAL**: The development container does NOT have files volume-mounted. Local file changes are NOT automatically reflected in the container. You MUST rebuild the container to see your changes:
+
 ```bash
-./docker/devbuild.sh --skip-tests  # Quick rebuild
+./docker/devbuild.sh --skip-tests  # Quick rebuild (use this most of the time)
 ./docker/devbuild.sh               # Full rebuild with tests
 ```
 
-**NEVER use docker cp or apache2ctl graceful** - leads to stale state.
+**NEVER use docker cp or apache2ctl graceful** - leads to stale state. Always use `devbuild.sh`.
 
 ### JSON UTF-8 Encoding
 
@@ -89,6 +91,18 @@ return [$self->HTTP_OK, {success => 1, data => 'value'}];           # Success
 return [$self->HTTP_OK, {success => 0, error => 'User not found'}]; # Error
 ```
 
+### 🎨 Kernel Blue Styling
+
+Use the E2 "Kernel Blue" color palette for all React component styling:
+
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Kernel Blue | `#38495e` | Primary text, headers, borders |
+| Link Blue | `#4060b0` | Links, buttons, usergroup indicators |
+| Muted Blue | `#507898` | Secondary text, icons, hints |
+| Light Background | `#e8f4f8` | Hover states, selected items |
+| Cool Teal | `#3bb5c3` | C! indicators, special highlights |
+
 ---
 
 ## Development Quick Reference
@@ -126,9 +140,11 @@ docker exec -it e2devdb mysql -u root -pblah everything
 
 ### Logs
 
+**⚠️ IMPORTANT**: Apache error.log and access.log are always EMPTY in development. All useful logging goes to `/tmp/development.log`:
+
 ```bash
-docker exec e2devapp tail -f /var/log/apache2/error.log   # Perl errors
-docker exec e2devapp tail -f /tmp/development.log         # devLog output
+docker exec e2devapp tail -f /tmp/development.log         # ALL logs go here
+# docker exec e2devapp tail -f /var/log/apache2/error.log # ALWAYS EMPTY - don't use
 ```
 
 ### Debugging with devLog

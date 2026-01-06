@@ -252,8 +252,9 @@ sub _log_to_cloudwatch {
         );
 
         my $sequence_token;
-        if ($streams->logStreams && @{$streams->logStreams}) {
-            $sequence_token = $streams->logStreams->[0]->uploadSequenceToken;
+        # Paws uses CamelCase accessors (LogStreams, UploadSequenceToken)
+        if ($streams->LogStreams && @{$streams->LogStreams}) {
+            $sequence_token = $streams->LogStreams->[0]->UploadSequenceToken;
         }
 
         # Put log event

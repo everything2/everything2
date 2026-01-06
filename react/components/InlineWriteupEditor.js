@@ -621,6 +621,13 @@ const InlineWriteupEditor = ({
         <textarea
           value={htmlContent}
           onChange={handleHtmlChange}
+          onInput={(e) => {
+            // Fallback for voice dictation and other input methods that may bypass onChange
+            // This ensures draft creation happens even with alternative input methods
+            if (e.target.value !== htmlContent) {
+              handleHtmlChange(e);
+            }
+          }}
           placeholder="Enter HTML content here..."
           aria-label="Writeup content (HTML)"
           style={{

@@ -197,7 +197,7 @@ sub layout
   if($e2->{user}->{developer} and $nodelets_var =~ /836984/)
   {
     my $edev = $self->APP->node_by_name("edev","usergroup");
-    my $page = Everything::HTML::getPage($node->NODEDATA, $REQUEST->param("displaytype"));
+    my $page = Everything::HTML::getPage($node->NODEDATA, scalar($REQUEST->param("displaytype")));
     my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
     my $sourceMap = $self->APP->buildSourceMap($node->NODEDATA, $page);
     $e2->{developerNodelet} = {

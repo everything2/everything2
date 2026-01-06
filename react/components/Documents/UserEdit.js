@@ -352,7 +352,17 @@ const UserEdit = ({ data, e2 }) => {
       const formData = new FormData()
       formData.append('imgsrc_file', selectedFile)
 
-      const response = await fetch('/api/user/upload-image', {
+      // If admin is uploading for another user, pass target_user_id
+      let uploadUrl = '/api/user/upload-image'
+      const targetUser = data?.user
+      const currentViewer = data?.viewer
+      const editingOwnProfile = targetUser && currentViewer &&
+        String(currentViewer.node_id) === String(targetUser.node_id)
+      if (!editingOwnProfile && currentViewer?.is_admin && targetUser) {
+        uploadUrl += `?target_user_id=${targetUser.node_id}`
+      }
+
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         credentials: 'same-origin',
         body: formData
@@ -373,7 +383,7 @@ const UserEdit = ({ data, e2 }) => {
     } finally {
       setUploading(false)
     }
-  }, [selectedFile])
+  }, [selectedFile, data])
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
@@ -644,7 +654,7 @@ const UserEdit = ({ data, e2 }) => {
         </fieldset>
 
         {/* User image section - show if user has image or can upload */}
-        {(user.imgsrc || can_have_image) && (
+        {(user.imgsrc || can_have_image) ? (
           <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
             <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Profile Image</legend>
 
@@ -671,8 +681,12 @@ const UserEdit = ({ data, e2 }) => {
             {can_have_image && (
               <div style={{ marginTop: user.imgsrc ? '16px' : 0, paddingTop: user.imgsrc ? '16px' : 0, borderTop: user.imgsrc ? '1px solid #ddd' : 'none' }}>
                 <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
-                  Upload a new image. Only JPEG, GIF, and PNG files are allowed (max 800KB).
-                  Large images will be automatically resized.
+                  {!isOwnProfile && viewer?.is_admin ? (
+                    <>Upload an image for <strong>{user.title}</strong>. Admin uploads skip moderator review.</>
+                  ) : (
+                    <>Upload a new image. Only JPEG, GIF, and PNG files are allowed (max 800KB).
+                    Large images will be automatically resized.</>
+                  )}
                 </p>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -730,7 +744,7 @@ const UserEdit = ({ data, e2 }) => {
               </p>
             )}
           </fieldset>
-        )}
+        ) : null}
 
         {/* Profile Information Section */}
         <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>

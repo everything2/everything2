@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import LinkNode from './LinkNode'
 
 /**
@@ -7,6 +7,7 @@ import LinkNode from './LinkNode'
  * Shows different options based on user permissions:
  * - Authors: Edit writeup, Remove writeup (return to draft)
  * - Editors: Edit, Hide/unhide, insure, remove, reparent, change author, nodenotes
+ * - All logged-in users: Post to usergroup (if they have permission)
  *
  * Usage:
  *   <AdminModal
@@ -16,13 +17,44 @@ import LinkNode from './LinkNode'
  *     onClose={() => setIsOpen(false)}
  *     onWriteupUpdate={(updatedWriteup) => {}} // Optional callback when writeup state changes
  *     onEdit={() => {}} // Optional callback to trigger edit mode
+ *     availableGroups={[{node_id, title}]} // Optional list of usergroups user can post to (fetched if not provided)
  *   />
  */
-const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit }) => {
+const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, availableGroups: propGroups }) => {
   const [removeReason, setRemoveReason] = useState('')
   const [actionStatus, setActionStatus] = useState(null)
   const [isInsured, setIsInsured] = useState(writeup?.insured || false)
   const [isHidden, setIsHidden] = useState(writeup?.notnew || false)
+  const [selectedGroup, setSelectedGroup] = useState('')
+  const [isPostingToGroup, setIsPostingToGroup] = useState(false)
+  const [fetchedGroups, setFetchedGroups] = useState([])
+  const [isLoadingGroups, setIsLoadingGroups] = useState(false)
+
+  // Fetch available groups when modal opens if not provided via props
+  useEffect(() => {
+    if (!isOpen || user?.is_guest || user?.guest) return
+    if (propGroups && propGroups.length > 0) return
+
+    const fetchGroups = async () => {
+      setIsLoadingGroups(true)
+      try {
+        const response = await fetch('/api/weblog/available')
+        const data = await response.json()
+        if (data.success && data.groups) {
+          setFetchedGroups(data.groups)
+        }
+      } catch (error) {
+        console.error('Failed to fetch available groups:', error)
+      } finally {
+        setIsLoadingGroups(false)
+      }
+    }
+
+    fetchGroups()
+  }, [isOpen, user, propGroups])
+
+  // Use prop groups if provided, otherwise use fetched groups
+  const availableGroups = (propGroups && propGroups.length > 0) ? propGroups : fetchedGroups
 
   if (!isOpen || !writeup) return null
 
@@ -193,6 +225,39 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit })
     }
   }
 
+  // Handle post to usergroup
+  const handlePostToGroup = async () => {
+    if (!selectedGroup) {
+      setActionStatus({ type: 'error', message: 'Please select a usergroup' })
+      return
+    }
+
+    setIsPostingToGroup(true)
+
+    try {
+      // Get the group name before the async call
+      const groupName = availableGroups.find(g => String(g.node_id) === String(selectedGroup))?.title || 'usergroup'
+
+      const response = await fetch(`/api/weblog/${selectedGroup}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to_node: writeup.node_id })
+      })
+      const data = await response.json()
+
+      if (data.success) {
+        setActionStatus({ type: 'success', message: `Posted to ${groupName}` })
+        setSelectedGroup('')
+      } else {
+        setActionStatus({ type: 'error', message: data.error || 'Failed to post' })
+      }
+    } catch (error) {
+      setActionStatus({ type: 'error', message: error.message })
+    } finally {
+      setIsPostingToGroup(false)
+    }
+  }
+
   return (
     <div className="admin-modal-backdrop" onClick={handleBackdropClick} style={styles.backdrop}>
       <div className="admin-modal" style={styles.modal}>
@@ -311,8 +376,8 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit })
             </div>
           )}
 
-          {/* Admin tools - only show if not author (can't vote/cool own writeup) */}
-          {isAdmin && !isAuthor && (
+          {/* Admin tools - only show if not author AND has voted or cooled */}
+          {isAdmin && !isAuthor && (hasVoted || hasCooled) && (
             <div style={styles.section}>
               <h4 style={styles.sectionTitle}>Admin Tools</h4>
 
@@ -326,6 +391,50 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit })
                 <button onClick={handleRemoveCool} style={styles.actionButton}>
                   Remove my C!
                 </button>
+              )}
+            </div>
+          )}
+
+          {/* Post to usergroup - show for logged-in users */}
+          {!user?.is_guest && !user?.guest && (isLoadingGroups || (availableGroups && availableGroups.length > 0)) && (
+            <div style={styles.section}>
+              <h4 style={styles.sectionTitle}>Post to Usergroup</h4>
+
+              {isLoadingGroups ? (
+                <p style={styles.helpText}>Loading available groups...</p>
+              ) : (
+                <>
+                  <select
+                    value={selectedGroup}
+                    onChange={(e) => setSelectedGroup(e.target.value)}
+                    style={styles.input}
+                    disabled={isPostingToGroup}
+                  >
+                    <option value="">Select a usergroup...</option>
+                    {availableGroups.map((group) => (
+                      <option key={group.node_id} value={group.node_id}>
+                        {group.ify_display
+                          ? `${group.ify_display} (${group.title})`
+                          : group.title}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    onClick={handlePostToGroup}
+                    disabled={!selectedGroup || isPostingToGroup}
+                    style={{
+                      ...styles.actionButton,
+                      ...(!selectedGroup || isPostingToGroup ? styles.buttonDisabled : {})
+                    }}
+                  >
+                    {isPostingToGroup ? 'Posting...' : 'Post to usergroup'}
+                  </button>
+
+                  <p style={styles.helpText}>
+                    Share this writeup to a usergroup weblog.
+                  </p>
+                </>
               )}
             </div>
           )}

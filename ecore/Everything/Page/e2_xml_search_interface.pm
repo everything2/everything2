@@ -53,7 +53,7 @@ sub generate_xml {
         my $nodes = $APP->searchNodeName($keywords, [$e2ntype->{node_id}], 0, 1);
 
         foreach my $n (@$nodes) {
-            next unless $n->{type_nodetype} == $e2ntype->{node_id};
+            next unless ($n->{type_nodetype} // 0) == $e2ntype->{node_id};
             $results .= $XG->e2link({node_id => $n->{node_id}}, $n->{title}) . "\n";
         }
     }

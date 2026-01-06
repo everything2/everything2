@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
+import AdminCreateNodeLink from '../AdminCreateNodeLink';
 
-const NothingFound = ({ data }) => {
+const NothingFound = ({ data, user }) => {
   const {
     was_nuke,
     search_term,
     is_url,
     external_link,
     is_guest,
-    is_admin,
     is_editor,
     show_tin_opener,
     tinopener_active,
     tin_opener_message,
     existing_e2node,
-    lastnode_id
+    lastnode_id,
+    best_entries = []
   } = data;
 
   const [searchValue, setSearchValue] = useState(search_term || '');
@@ -73,11 +74,42 @@ const NothingFound = ({ data }) => {
 
       {/* Guest user message */}
       {is_guest ? (
-        <p style={styles.guestMessage}>
-          If you <a href="/?node=login">Log in</a> you could create a "{createValue}" node.
-          If you don't already have an account, you can{' '}
-          <a href="/?node=E2%20New%20Users">register here</a>.
-        </p>
+        <>
+          <p style={styles.guestMessage}>
+            If you <a href="/?node=login">Log in</a> you could create a "{createValue}" node.
+            If you don't already have an account, you can{' '}
+            <a href="/?node=Sign%20Up">register here</a>.
+          </p>
+
+          {/* Best entries for guests */}
+          {best_entries.length > 0 && (
+            <div style={styles.bestEntriesSection}>
+              <h3 style={styles.bestEntriesTitle}>
+                We couldn't find what you're looking for, but here are some of our best entries from the past few months:
+              </h3>
+              <ul style={styles.bestEntriesList}>
+                {best_entries.map((entry) => (
+                  <li key={entry.writeup_id} style={styles.bestEntryItem}>
+                    <a href={`/node/${entry.node_id}?lastnode_id=0`} style={styles.bestEntryLink}>
+                      {entry.title}
+                    </a>
+                    {entry.author && (
+                      <span style={styles.bestEntryAuthor}>
+                        {' '}by{' '}
+                        <a href={`/user/${encodeURIComponent(entry.author.title)}`}>
+                          {entry.author.title}
+                        </a>
+                      </span>
+                    )}
+                    {entry.excerpt && (
+                      <p style={styles.bestEntryExcerpt}>{entry.excerpt}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
       ) : existing_e2node ? (
         <p>
           <a href={`/?node_id=${existing_e2node.node_id}`}>{existing_e2node.title}</a> already exists.
@@ -156,16 +188,7 @@ const NothingFound = ({ data }) => {
             </fieldset>
           </form>
 
-          {is_admin && (
-            <p style={styles.adminNote}>
-              Lucky you, you can{' '}
-              <strong>
-                <a href={`/?node=create%20node&newtitle=${encodeURIComponent(createValue)}`}>
-                  create any type of node...
-                </a>
-              </strong>
-            </p>
-          )}
+          <AdminCreateNodeLink user={user} searchTerm={createValue} />
 
           {is_editor && (
             <p style={styles.editorNote}>
@@ -232,14 +255,48 @@ const styles = {
     marginRight: '15px',
     fontSize: '14px'
   },
-  adminNote: {
-    marginTop: '15px',
-    fontSize: '16px'
-  },
   editorNote: {
     marginTop: '15px',
     fontSize: '14px',
     color: '#507898'
+  },
+  bestEntriesSection: {
+    marginTop: '30px',
+    paddingTop: '20px',
+    borderTop: '1px solid #dee2e6'
+  },
+  bestEntriesTitle: {
+    fontSize: '16px',
+    fontWeight: 'normal',
+    color: '#507898',
+    marginBottom: '15px'
+  },
+  bestEntriesList: {
+    listStyleType: 'none',
+    padding: 0,
+    margin: 0
+  },
+  bestEntryItem: {
+    marginBottom: '16px',
+    paddingBottom: '16px',
+    borderBottom: '1px solid #eee'
+  },
+  bestEntryLink: {
+    fontSize: '16px',
+    fontWeight: '500',
+    color: '#4060b0',
+    textDecoration: 'none'
+  },
+  bestEntryAuthor: {
+    fontSize: '14px',
+    color: '#666'
+  },
+  bestEntryExcerpt: {
+    fontSize: '14px',
+    color: '#555',
+    marginTop: '6px',
+    marginBottom: 0,
+    lineHeight: '1.5'
   }
 };
 
