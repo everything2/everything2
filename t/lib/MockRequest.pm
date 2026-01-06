@@ -174,6 +174,11 @@ sub request_method {
     return shift->{request_method};
 }
 
+# Alias for REQUEST_METHOD (uppercase) - used by some API modules
+sub REQUEST_METHOD {
+    return shift->{request_method};
+}
+
 =head2 VARS()
 
 Returns the VARS hashref for this request.

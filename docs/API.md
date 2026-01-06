@@ -444,7 +444,7 @@ or
 
 ## Usergroups
 
-**Test Coverage: ⚠️ 40%** (4/10 endpoints tested)
+**Test Coverage: ✅ 90%** (9/10 endpoints tested)
 
 ### /api/usergroups/
 
@@ -517,6 +517,158 @@ Allows a logged-in user to leave a usergroup they are a member of. Unlike `remov
   ```
 
 **Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 5-8: leave success, not a member, guest forbidden, invalid group)
+
+### /api/usergroups/:id/action/reorder
+
+**POST only** - Requires admin, editor, or owner permission
+
+Reorders members within a usergroup. This is useful for changing the leader (first member) or organizing members in a specific order.
+
+**Request:** Array of node IDs in the desired order
+```json
+[123, 456, 789]
+```
+
+**Response on success (200):**
+```json
+{
+  "success": true,
+  "group": [/* enhanced member data with flags, is_owner, is_current */]
+}
+```
+
+**Error responses:**
+* **200 with error** - Node ID not in group
+  ```json
+  { "success": false, "error": "Node 999 is not in this group" }
+  ```
+* **403 Forbidden** - User doesn't have permission to manage this group
+
+**Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 9-11)
+
+### /api/usergroups/:id/action/search
+
+**GET only** - Requires admin, editor, or owner permission
+
+Searches for users and usergroups that can be added to the group. Returns up to 20 results, excluding users already in the group.
+
+**Query Parameters:**
+* **q** - Search query (minimum 2 characters)
+
+**Response on success (200):**
+```json
+{
+  "success": true,
+  "results": [
+    { "node_id": 123, "title": "username", "type": "user" },
+    { "node_id": 456, "title": "groupname", "type": "usergroup" }
+  ]
+}
+```
+
+**Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 12-13)
+
+### /api/usergroups/:id/action/description
+
+**POST only** - Requires admin, editor, or owner permission
+
+Updates the usergroup's description (doctext).
+
+**Request:**
+```json
+{ "doctext": "New description content" }
+```
+
+**Response on success (200):**
+```json
+{
+  "success": true,
+  "doctext": "New description content"
+}
+```
+
+**Error responses:**
+* **200 with error** - Missing doctext parameter
+  ```json
+  { "success": false, "error": "Missing doctext parameter" }
+  ```
+* **403 Forbidden** - User doesn't have permission
+
+**Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 15-21)
+
+### /api/usergroups/:id/action/transfer_ownership
+
+**POST only** - Requires owner or admin permission
+
+Transfers ownership of a usergroup to another member. The new owner must already be a member of the group.
+
+**Request:**
+```json
+{ "new_owner_id": 12345 }
+```
+
+**Response on success (200):**
+```json
+{
+  "success": true,
+  "message": "Ownership transferred to username",
+  "group": [/* enhanced member data */]
+}
+```
+
+**Error responses:**
+* **200 with error** - New owner is not a member
+  ```json
+  { "success": false, "error": "New owner must be a member of the group" }
+  ```
+* **200 with error** - Missing new_owner_id
+  ```json
+  { "success": false, "error": "Missing new_owner_id parameter" }
+  ```
+* **403 Forbidden** - Only owner can transfer (unless admin)
+  ```json
+  { "success": false, "error": "Only the owner can transfer ownership" }
+  ```
+
+**Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 22-29)
+
+### /api/usergroups/:id/action/weblogify
+
+**POST only** - Requires admin permission
+
+Sets the weblog display name for a usergroup, enabling the "post to usergroup" feature. When a usergroup is weblogified, members can post content to the group's weblog from the AdminModal. The display name appears as the button label (e.g., "Edevify" for E2 Development).
+
+This also updates each member's `can_weblog` setting to include this group.
+
+**Request:**
+```json
+{ "ify_display": "Edevify" }
+```
+
+**Response on success (200):**
+```json
+{
+  "success": true,
+  "message": "Weblog display set to 'Edevify' for E2 Development",
+  "ify_display": "Edevify"
+}
+```
+
+**Error responses:**
+* **200 with error** - Missing ify_display parameter
+  ```json
+  { "success": false, "error": "Missing ify_display parameter" }
+  ```
+* **403 Forbidden** - Only admins can modify weblog settings
+  ```json
+  { "success": false, "error": "Only admins can modify weblog settings" }
+  ```
+* **404 Not Found** - Usergroup not found
+  ```json
+  { "success": false, "error": "Usergroup not found" }
+  ```
+
+**Tests:** [t/004_usergroups.t](../t/004_usergroups.t) (Tests 30-35)
 
 ## Writeups
 

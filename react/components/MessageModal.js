@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import LinkNode from './LinkNode'
 
 /**
  * MessageModal - Modal dialog for composing messages
  *
  * Handles:
- * - New messages
+ * - New messages with autocomplete recipient search
  * - Replies to individual users
  * - Reply-all to usergroup messages
  * - Send-as-bot functionality for authorized users
@@ -24,16 +24,23 @@ const MessageModal = ({
   currentUser = null,
   onSendAsChange = null
 }) => {
-  const [message, setMessage] = React.useState('')
-  const [recipient, setRecipient] = React.useState('')
-  const [replyAll, setReplyAll] = React.useState(false)
-  const [sending, setSending] = React.useState(false)
-  const [error, setError] = React.useState(null)
-  const [warning, setWarning] = React.useState(null)
-  const textareaRef = React.useRef(null)
+  const [message, setMessage] = useState('')
+  const [recipient, setRecipient] = useState('')
+  const [replyAll, setReplyAll] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState(null)
+  const [warning, setWarning] = useState(null)
+  const textareaRef = useRef(null)
+
+  // Autocomplete state
+  const [suggestions, setSuggestions] = useState([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
+  const searchTimeoutRef = useRef(null)
+  const recipientInputRef = useRef(null)
 
   // Initialize form when modal opens
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       if (replyTo) {
         // Replying to an existing message
@@ -47,13 +54,17 @@ const MessageModal = ({
       setMessage(initialMessage || '')
       setError(null)
       setWarning(null)
-      setSending(false)  // Reset sending state when modal opens
+      setSending(false)
+      setSuggestions([])
+      setShowSuggestions(false)
+      setSelectedSuggestionIndex(-1)
 
-      // Focus textarea after render
+      // Focus recipient input for new messages, textarea for replies
       setTimeout(() => {
-        if (textareaRef.current) {
+        if (!replyTo && recipientInputRef.current) {
+          recipientInputRef.current.focus()
+        } else if (textareaRef.current) {
           textareaRef.current.focus()
-          // If there's initial message text, move cursor to end
           if (initialMessage) {
             textareaRef.current.setSelectionRange(initialMessage.length, initialMessage.length)
           }
@@ -61,6 +72,93 @@ const MessageModal = ({
       }, 100)
     }
   }, [isOpen, replyTo, initialReplyAll, initialMessage])
+
+  // Autocomplete: search for message recipients
+  const searchRecipients = useCallback(async (query) => {
+    if (query.length < 2) {
+      setSuggestions([])
+      setShowSuggestions(false)
+      return
+    }
+
+    try {
+      const response = await fetch(
+        `/api/node_search?q=${encodeURIComponent(query)}&scope=message_recipients&limit=10`
+      )
+      const data = await response.json()
+      if (data.success && data.results) {
+        setSuggestions(data.results)
+        setShowSuggestions(data.results.length > 0)
+        setSelectedSuggestionIndex(-1)
+      }
+    } catch (err) {
+      console.error('Recipient search failed:', err)
+      setSuggestions([])
+    }
+  }, [])
+
+  // Handle recipient input change with debounced autocomplete
+  const handleRecipientChange = useCallback((e) => {
+    const newValue = e.target.value
+    setRecipient(newValue)
+
+    // Debounced autocomplete search
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      searchRecipients(newValue.trim())
+    }, 200)
+  }, [searchRecipients])
+
+  // Handle selecting a suggestion
+  const handleSelectSuggestion = useCallback((suggestion) => {
+    setRecipient(suggestion.title)
+    setSuggestions([])
+    setShowSuggestions(false)
+    setSelectedSuggestionIndex(-1)
+    // Focus textarea after selecting recipient
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }, 50)
+  }, [])
+
+  // Handle keyboard navigation in suggestions
+  const handleRecipientKeyDown = useCallback((e) => {
+    if (!showSuggestions || suggestions.length === 0) return
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSelectedSuggestionIndex(prev =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      )
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSelectedSuggestionIndex(prev => prev > 0 ? prev - 1 : -1)
+    } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+      e.preventDefault()
+      handleSelectSuggestion(suggestions[selectedSuggestionIndex])
+    } else if (e.key === 'Escape') {
+      setSuggestions([])
+      setShowSuggestions(false)
+      setSelectedSuggestionIndex(-1)
+    }
+  }, [showSuggestions, suggestions, selectedSuggestionIndex, handleSelectSuggestion])
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (recipientInputRef.current && !recipientInputRef.current.parentElement.contains(e.target)) {
+        setShowSuggestions(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -341,21 +439,90 @@ const MessageModal = ({
                 )}
               </div>
             ) : (
-              <input
-                type="text"
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                disabled={sending}
-                placeholder="Username or usergroup name"
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  fontSize: '13px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '4px',
-                  boxSizing: 'border-box'
-                }}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  ref={recipientInputRef}
+                  type="text"
+                  value={recipient}
+                  onChange={handleRecipientChange}
+                  onKeyDown={handleRecipientKeyDown}
+                  onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                  disabled={sending}
+                  placeholder="Username or usergroup name"
+                  autoComplete="off"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '4px',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                {/* Autocomplete suggestions dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    backgroundColor: '#fff',
+                    border: '1px solid #dee2e6',
+                    borderTop: 'none',
+                    borderRadius: '0 0 4px 4px',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                    zIndex: 100
+                  }}>
+                    {suggestions.map((suggestion, index) => (
+                      <div
+                        key={suggestion.node_id}
+                        onClick={() => handleSelectSuggestion(suggestion)}
+                        onMouseEnter={() => setSelectedSuggestionIndex(index)}
+                        style={{
+                          padding: '8px 12px',
+                          cursor: 'pointer',
+                          fontSize: '13px',
+                          color: '#333',
+                          borderBottom: index < suggestions.length - 1 ? '1px solid #eee' : 'none',
+                          backgroundColor: index === selectedSuggestionIndex ? '#e8f4f8' : '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                      >
+                        {/* User/Group icon */}
+                        <span style={{
+                          fontSize: '14px',
+                          width: '20px',
+                          textAlign: 'center',
+                          color: suggestion.type === 'usergroup' ? '#4060b0' : '#507898'
+                        }}>
+                          {suggestion.type === 'usergroup' ? '👥' : '👤'}
+                        </span>
+                        <span style={{
+                          fontWeight: suggestion.type === 'usergroup' ? 'bold' : 'normal',
+                          flex: 1,
+                          color: '#38495e'
+                        }}>
+                          {suggestion.title}
+                        </span>
+                        {suggestion.type === 'usergroup' && (
+                          <span style={{ fontSize: '11px', color: '#4060b0' }}>
+                            group
+                          </span>
+                        )}
+                        {suggestion.alias && (
+                          <span style={{ fontSize: '11px', color: '#507898', fontStyle: 'italic' }}>
+                            via {suggestion.alias}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </div>
 

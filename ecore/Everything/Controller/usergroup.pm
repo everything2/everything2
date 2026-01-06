@@ -6,6 +6,82 @@ extends 'Everything::Controller';
 # Controller for usergroup nodes
 # Migrated from Everything::Delegation::htmlpage::usergroup_display_page
 
+# Fetch weblog entries for a usergroup
+# Returns array of entry data with linked node info
+sub _fetch_weblog_entries {
+    my ($self, $weblog_id, $user, $limit, $offset) = @_;
+
+    $limit  ||= 3;
+    $offset ||= 0;
+
+    my $DB  = $self->DB;
+    my $APP = $self->APP;
+
+    # Query weblog entries
+    my $sql = "SELECT to_node, linkedby_user, linkedtime
+               FROM weblog
+               WHERE weblog_id = ?
+                 AND removedby_user = 0
+               ORDER BY linkedtime DESC
+               LIMIT ? OFFSET ?";
+
+    my $sth = $DB->getDatabaseHandle()->prepare($sql);
+    $sth->execute($weblog_id, $limit, $offset);
+
+    my @entries;
+    while (my $row = $sth->fetchrow_hashref()) {
+        my $linked_node = $DB->getNodeById($row->{to_node});
+
+        # Skip if node doesn't exist or is a draft (unpublished)
+        next unless $linked_node;
+        next if $linked_node->{type}{title} eq 'draft';
+
+        my $linker = $DB->getNodeById($row->{linkedby_user});
+        my $author = $linked_node->{author_user}
+            ? $DB->getNodeById($linked_node->{author_user})
+            : undef;
+
+        push @entries, {
+            to_node => int($row->{to_node}),
+            title => $linked_node->{title},
+            type => $linked_node->{type}{title},
+            doctext => $linked_node->{doctext} || '',
+            linkedtime => $row->{linkedtime},
+            linkedby => $linker ? {
+                node_id => int($linker->{node_id}),
+                title => $linker->{title}
+            } : undef,
+            author => $author ? {
+                node_id => int($author->{node_id}),
+                title => $author->{title}
+            } : undef,
+            # Include author_user for comparison
+            author_user => $linked_node->{author_user} ? int($linked_node->{author_user}) : undef
+        };
+    }
+
+    return \@entries;
+}
+
+# Check if there are more weblog entries beyond the current page
+sub _has_more_weblog_entries {
+    my ($self, $weblog_id, $offset, $count_fetched) = @_;
+
+    # If we fetched fewer than requested, there are no more
+    return 0 if $count_fetched < 3;
+
+    # Check if there's at least one more entry
+    my $next_count = $self->DB->sqlSelect(
+        'COUNT(*)',
+        'weblog',
+        "weblog_id = ? AND removedby_user = 0",
+        "LIMIT 1 OFFSET ?",
+        [$weblog_id, $offset + $count_fetched]
+    );
+
+    return $next_count ? 1 : 0;
+}
+
 sub display {
     my ( $self, $REQUEST, $node ) = @_;
 
@@ -125,6 +201,43 @@ sub display {
         is_admin  => $user->is_admin ? 1 : 0
     };
 
+    # Fetch initial weblog entries (first 3 for page load)
+    my $weblog_entries = $self->_fetch_weblog_entries($node->node_id, $user, 3, 0);
+    my $has_more_weblog = scalar(@$weblog_entries) >= 3 ? 1 : 0;
+
+    # If we got exactly 3, check if there are actually more
+    if ($has_more_weblog) {
+        my $check_more = $self->DB->sqlSelect(
+            'to_node',
+            'weblog',
+            "weblog_id = " . $node->node_id . " AND removedby_user = 0",
+            "LIMIT 1 OFFSET 3"
+        );
+        $has_more_weblog = $check_more ? 1 : 0;
+    }
+
+    # Determine weblog removal permissions
+    # Admins and usergroup owners can remove entries
+    my $can_remove_weblog = $user->is_admin ? 1 : 0;
+    if (!$can_remove_weblog && $owner_id && $user_id == $owner_id) {
+        $can_remove_weblog = 1;
+    }
+
+    # Determine weblog posting permissions
+    # User can post if they're approved (admin, or member of the group)
+    my $can_post_weblog = 0;
+    unless ($user->is_guest) {
+        $can_post_weblog = Everything::isApproved($user->NODEDATA, $node->NODEDATA) ? 1 : 0;
+    }
+
+    # Determine if user can edit group members (admin or owner)
+    my $can_edit_members = 0;
+    if ($user->is_admin) {
+        $can_edit_members = 1;
+    } elsif ($owner_id && $user_id == $owner_id) {
+        $can_edit_members = 1;
+    }
+
     # Build contentData for React
     my $content_data = {
         type      => 'usergroup',
@@ -140,7 +253,15 @@ sub display {
         message_count       => $message_count || 0,
         owner_index         => $owner_index,
         can_bulk_edit       => $can_bulk_edit ? 1 : 0,
-        simple_editor_id    => $simple_editor_id
+        can_edit_members    => $can_edit_members,
+        simple_editor_id    => $simple_editor_id,
+        weblog => {
+            entries         => $weblog_entries,
+            has_more        => $has_more_weblog,
+            can_remove      => $can_remove_weblog,
+            can_post        => $can_post_weblog,
+            weblog_id       => int($node->node_id)
+        }
     };
 
     # Set node on REQUEST for buildNodeInfoStructure
@@ -163,6 +284,13 @@ sub display {
     my $html =
       $self->layout( '/pages/react_page', e2 => $e2, REQUEST => $REQUEST, node => $node );
     return [ $self->HTTP_OK, $html ];
+}
+
+sub edit {
+    my ($self, $REQUEST, $node) = @_;
+
+    # Usergroup edit uses the standard basicedit form (gods-only)
+    return $self->basicedit($REQUEST, $node);
 }
 
 __PACKAGE__->meta->make_immutable();

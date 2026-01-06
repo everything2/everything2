@@ -97,11 +97,12 @@ describe('MessageModal', () => {
   })
 
   describe('character limit', () => {
-    it('updates character count as user types', async () => {
+    it('updates character count as user types', () => {
       render(<MessageModal {...defaultProps} />)
       const textarea = screen.getByPlaceholderText('Type your message here...')
 
-      await userEvent.type(textarea, 'Hello')
+      // Use fireEvent.change for more reliable state update
+      fireEvent.change(textarea, { target: { value: 'Hello' } })
 
       expect(screen.getByText('5 / 512 characters')).toBeInTheDocument()
     })

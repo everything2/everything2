@@ -96,6 +96,8 @@ if (!$already_dev) {
   $DB->insertIntoNodegroup($dev, $DB->getNode("root","user"),$genericdev);
   $DB->updateNode($dev, -1);
 }
+# Set genericdev as owner of edev (production owner doesn't exist in dev)
+$APP->setParameter($dev, $DB->getNode("root","user"), 'usergroup_owner', $genericdev->{node_id});
 my $genericdevv = getVars($genericdev);
 $genericdevv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708,836984";
 $genericdevv->{settings} = '{"notifications":{"2045486":1}}';
@@ -923,9 +925,9 @@ if (!$existing_weblog) {
 } 
 
 print STDERR "Making some edev news items\n";
-foreach my $title("boring dev announcement 2","interesting dev announcement","lukewarm dev announcement")
+foreach my $title("boring dev announcement 2 (idea)","interesting dev announcement (lede)","lukewarm dev announcement (thing)")
 {
-  my $n = $DB->getNode($title,"e2node");
+  my $n = $DB->getNode($title,"writeup");
   my $existing_edev_weblog = $DB->sqlSelect('COUNT(*)', 'weblog',
     "weblog_id=$dev->{node_id} AND to_node=$n->{node_id}");
   if (!$existing_edev_weblog) {

@@ -352,30 +352,57 @@ sub upload_image {
     }];
   }
 
-  my $nodedata = $user->NODEDATA;
+  # Determine target user (admins can upload for other users)
+  my $target_user_id = $query->param('target_user_id');
+  my $target_user;
+  my $is_admin_action = 0;
 
-  # Check if user is suspended from homenode pics
-  if ($APP->isSuspended($nodedata, 'homenodepic')) {
+  if ($target_user_id && $target_user_id != $user->node_id) {
+    # Uploading for another user - must be admin
+    unless ($user->is_admin) {
+      return [$self->HTTP_OK, {
+        success => 0,
+        error => 'Only admins can upload images for other users'
+      }];
+    }
+    $target_user = $APP->node_by_id($target_user_id);
+    unless ($target_user && $target_user->type->title eq 'user') {
+      return [$self->HTTP_OK, {
+        success => 0,
+        error => 'Invalid target user'
+      }];
+    }
+    $is_admin_action = 1;
+  } else {
+    $target_user = $user;
+  }
+
+  my $nodedata = $target_user->NODEDATA;
+
+  # Check if target user is suspended from homenode pics (skip for admin actions)
+  if (!$is_admin_action && $APP->isSuspended($nodedata, 'homenodepic')) {
     return [$self->HTTP_OK, {
       success => 0,
       error => 'Your homenode image privilege has been suspended'
     }];
   }
 
-  # Check if user is allowed to have an image
-  my $can_have_image = 0;
-  my $users_with_image = $DB->getNode('users with image', 'nodegroup');
-  if ($users_with_image && Everything::isApproved($nodedata, $users_with_image)) {
-    $can_have_image = 1;
-  } elsif ($APP->getLevel($nodedata) >= 1) {
-    $can_have_image = 1;
-  }
+  # Check if user is allowed to have an image (admins bypass this check)
+  unless ($is_admin_action) {
+    my $can_have_image = 0;
+    my $users_with_image = $DB->getNode('users with image', 'nodegroup');
+    if ($users_with_image && Everything::isApproved($nodedata, $users_with_image)) {
+      $can_have_image = 1;
+    } elsif ($APP->getLevel($nodedata) >= 1) {
+      $can_have_image = 1;
+    }
 
-  unless ($can_have_image) {
-    return [$self->HTTP_OK, {
-      success => 0,
-      error => 'You must be level 1 or higher to upload a homenode image'
-    }];
+    unless ($can_have_image) {
+      return [$self->HTTP_OK, {
+        success => 0,
+        error => 'You must be level 1 or higher to upload a homenode image'
+      }];
+    }
   }
 
   # Initialize S3
@@ -416,8 +443,8 @@ sub upload_image {
   my $extension = lc($1);
   $extension = 'jpg' if $extension eq 'jpeg';
 
-  # Size limits
-  my $is_god = $APP->isAdmin($nodedata);
+  # Size limits - use admin limits if admin is uploading for someone else
+  my $is_god = $is_admin_action || $APP->isAdmin($nodedata);
   my $user_level = $APP->getLevel($nodedata);
   my $sizelimit = $is_god ? 1_600_000 : 800_000;
   my $max_width = ($user_level > 4 || $is_god) ? 400 : 200;
@@ -485,8 +512,8 @@ sub upload_image {
   }
   undef $image;
 
-  # Build S3 key name from username
-  my $basename = $user->title;
+  # Build S3 key name from target user's username
+  my $basename = $target_user->title;
   $basename =~ s/\W/_/gs;
 
   # Upload to S3
@@ -502,12 +529,14 @@ sub upload_image {
   $nodedata->{imgsrc} = "/$basename";
   $DB->updateNode($nodedata, $nodedata);
 
-  # Queue for moderator approval
-  $DB->getDatabaseHandle()->do(
-    'REPLACE INTO newuserimage SET newuserimage_id = ?',
-    undef,
-    $user->node_id
-  );
+  # Queue for moderator approval (skip for admin actions - trust the admin)
+  unless ($is_admin_action) {
+    $DB->getDatabaseHandle()->do(
+      'REPLACE INTO newuserimage SET newuserimage_id = ?',
+      undef,
+      $target_user->node_id
+    );
+  }
 
   # Clean up temp file
   unlink($tmpfile);
@@ -516,7 +545,11 @@ sub upload_image {
   if ($resizing) {
     $message .= " Image was resized to ${width}x${height}.";
   }
-  $message .= ' Your image will be reviewed by moderators.';
+  if ($is_admin_action) {
+    $message .= " Image uploaded for " . $target_user->title . ".";
+  } else {
+    $message .= ' Your image will be reviewed by moderators.';
+  }
 
   return [$self->HTTP_OK, {
     success => 1,

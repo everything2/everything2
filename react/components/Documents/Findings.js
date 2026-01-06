@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import AdminCreateNodeLink from '../AdminCreateNodeLink';
 
-const Findings = ({ data }) => {
+const Findings = ({ data, user }) => {
   const { no_search_term, message, search_term, findings = [], lastnode_id, is_guest, has_excerpts } = data;
 
   const [searchValue, setSearchValue] = useState(search_term || '');
@@ -130,6 +131,8 @@ const Findings = ({ data }) => {
             </fieldset>
           </form>
         )}
+
+        <AdminCreateNodeLink user={user} searchTerm={search_term} />
       </div>
     </div>
   );

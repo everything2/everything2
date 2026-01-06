@@ -95,13 +95,13 @@ sub group_add
     }
     unless($found)
     {
-      $self->DB->insertIntoNodegroup($NODE, $user->{NODEDATA}, $item);
+      $self->DB->insertIntoNodegroup($NODE, $user->NODEDATA, $item);
     }
   }
   $self->cache_refresh;
   $self->group($self->_build_group);
 
-  $self->DB->updateNode($self->{NODEDATA}, $user->{NODEDATA});
+  $self->DB->updateNode($self->NODEDATA, $user->NODEDATA);
 
   return $self;
 }

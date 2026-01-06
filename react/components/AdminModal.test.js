@@ -5,6 +5,20 @@ import AdminModal from './AdminModal'
 // Mock fetch globally
 global.fetch = jest.fn()
 
+// Helper to create fetch mock that handles both available groups API and action API
+const createFetchMock = (actionResponse) => {
+  return jest.fn((url) => {
+    if (url === '/api/weblog/available') {
+      return Promise.resolve({
+        json: () => Promise.resolve({ success: true, groups: [] })
+      })
+    }
+    return Promise.resolve({
+      json: () => Promise.resolve(actionResponse)
+    })
+  })
+}
+
 describe('AdminModal', () => {
   const mockWriteup = {
     node_id: 123,
@@ -48,6 +62,18 @@ describe('AdminModal', () => {
     // Mock window.location.reload
     delete window.location
     window.location = { reload: jest.fn() }
+    // Default mock for available groups API (called on modal open)
+    fetch.mockImplementation((url) => {
+      if (url === '/api/weblog/available') {
+        return Promise.resolve({
+          json: () => Promise.resolve({ success: true, groups: [] })
+        })
+      }
+      // Default for other calls
+      return Promise.resolve({
+        json: () => Promise.resolve({ success: true })
+      })
+    })
   })
 
   describe('visibility', () => {
@@ -158,8 +184,15 @@ describe('AdminModal', () => {
 
   describe('hide/unhide action', () => {
     it('calls hide API when clicking hide button', async () => {
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ node_id: 123, notnew: true })
+      fetch.mockImplementation((url) => {
+        if (url === '/api/weblog/available') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, groups: [] })
+          })
+        }
+        return Promise.resolve({
+          json: () => Promise.resolve({ node_id: 123, notnew: true })
+        })
       })
 
       render(<AdminModal {...defaultProps} />)
@@ -174,9 +207,7 @@ describe('AdminModal', () => {
     })
 
     it('shows success message after hiding', async () => {
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ node_id: 123, notnew: true })
-      })
+      global.fetch = createFetchMock({ node_id: 123, notnew: true })
 
       render(<AdminModal {...defaultProps} />)
       fireEvent.click(screen.getByText('Hide writeup'))
@@ -187,9 +218,7 @@ describe('AdminModal', () => {
     })
 
     it('toggles button text to "Unhide" after hiding', async () => {
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ node_id: 123, notnew: true })
-      })
+      global.fetch = createFetchMock({ node_id: 123, notnew: true })
 
       render(<AdminModal {...defaultProps} />)
       fireEvent.click(screen.getByText('Hide writeup'))
@@ -202,9 +231,7 @@ describe('AdminModal', () => {
 
   describe('insure action', () => {
     it('calls insure API when clicking insure button', async () => {
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true, action: 'insured', insured_by: 789 })
-      })
+      global.fetch = createFetchMock({ success: true, action: 'insured', insured_by: 789 })
 
       render(<AdminModal {...defaultProps} />)
       fireEvent.click(screen.getByText('Insure writeup'))
@@ -218,9 +245,7 @@ describe('AdminModal', () => {
     })
 
     it('shows success message after insuring', async () => {
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true, action: 'insured', insured_by: 789 })
-      })
+      global.fetch = createFetchMock({ success: true, action: 'insured', insured_by: 789 })
 
       render(<AdminModal {...defaultProps} />)
       fireEvent.click(screen.getByText('Insure writeup'))
@@ -239,13 +264,13 @@ describe('AdminModal', () => {
       await waitFor(() => {
         expect(screen.getByText('Please provide a reason for removal')).toBeInTheDocument()
       })
-      expect(fetch).not.toHaveBeenCalled()
+      // Only the available groups API should have been called
+      const nonAvailableCalls = fetch.mock.calls.filter(call => call[0] !== '/api/weblog/available')
+      expect(nonAvailableCalls).toHaveLength(0)
     })
 
     it('calls remove API with reason when editor provides one', async () => {
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true })
-      })
+      global.fetch = createFetchMock({ success: true })
 
       render(<AdminModal {...defaultProps} />)
 
@@ -265,15 +290,14 @@ describe('AdminModal', () => {
     })
 
     it('allows author to remove without reason', async () => {
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true })
-      })
+      global.fetch = createFetchMock({ success: true })
 
       render(<AdminModal {...defaultProps} user={mockAuthorUser} />)
       fireEvent.click(screen.getByText('Return to drafts'))
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalled()
+        const removeCalls = fetch.mock.calls.filter(call => call[0].includes('/remove'))
+        expect(removeCalls.length).toBeGreaterThan(0)
       })
     })
   })
@@ -361,9 +385,7 @@ describe('AdminModal', () => {
   describe('onWriteupUpdate callback', () => {
     it('calls onWriteupUpdate after successful hide action', async () => {
       const onWriteupUpdate = jest.fn()
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ node_id: 123, notnew: true })
-      })
+      global.fetch = createFetchMock({ node_id: 123, notnew: true })
 
       render(<AdminModal {...defaultProps} onWriteupUpdate={onWriteupUpdate} />)
       fireEvent.click(screen.getByText('Hide writeup'))
@@ -377,9 +399,7 @@ describe('AdminModal', () => {
 
     it('calls onWriteupUpdate after successful insure action', async () => {
       const onWriteupUpdate = jest.fn()
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true, action: 'insured', insured_by: 789 })
-      })
+      global.fetch = createFetchMock({ success: true, action: 'insured', insured_by: 789 })
 
       render(<AdminModal {...defaultProps} onWriteupUpdate={onWriteupUpdate} />)
       fireEvent.click(screen.getByText('Insure writeup'))
@@ -394,7 +414,14 @@ describe('AdminModal', () => {
 
   describe('error handling', () => {
     it('shows error message when API call fails', async () => {
-      fetch.mockRejectedValueOnce(new Error('Network error'))
+      global.fetch = jest.fn((url) => {
+        if (url === '/api/weblog/available') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, groups: [] })
+          })
+        }
+        return Promise.reject(new Error('Network error'))
+      })
 
       render(<AdminModal {...defaultProps} />)
       fireEvent.click(screen.getByText('Hide writeup'))
@@ -405,9 +432,7 @@ describe('AdminModal', () => {
     })
 
     it('shows error from API response', async () => {
-      fetch.mockResolvedValueOnce({
-        json: () => Promise.resolve({ error: 'Permission denied' })
-      })
+      global.fetch = createFetchMock({ error: 'Permission denied' })
 
       render(<AdminModal {...defaultProps} />)
       fireEvent.click(screen.getByText('Hide writeup'))
@@ -415,6 +440,165 @@ describe('AdminModal', () => {
       await waitFor(() => {
         expect(screen.getByText('Permission denied')).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('post to usergroup', () => {
+    const mockGroups = [
+      { node_id: 100, title: 'E2science' },
+      { node_id: 101, title: 'edev' }
+    ]
+
+    it('shows post to usergroup section when groups are available', async () => {
+      global.fetch = jest.fn((url) => {
+        if (url === '/api/weblog/available') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, groups: mockGroups })
+          })
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: true }) })
+      })
+
+      render(<AdminModal {...defaultProps} />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Post to Usergroup')).toBeInTheDocument()
+      })
+    })
+
+    it('shows loading state while fetching groups', async () => {
+      let resolveGroups
+      global.fetch = jest.fn((url) => {
+        if (url === '/api/weblog/available') {
+          return new Promise((resolve) => {
+            resolveGroups = () => resolve({
+              json: () => Promise.resolve({ success: true, groups: mockGroups })
+            })
+          })
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: true }) })
+      })
+
+      render(<AdminModal {...defaultProps} />)
+
+      expect(screen.getByText('Loading available groups...')).toBeInTheDocument()
+
+      // Resolve the fetch
+      resolveGroups()
+
+      await waitFor(() => {
+        expect(screen.queryByText('Loading available groups...')).not.toBeInTheDocument()
+      })
+    })
+
+    it('shows usergroup dropdown with available groups', async () => {
+      global.fetch = jest.fn((url) => {
+        if (url === '/api/weblog/available') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, groups: mockGroups })
+          })
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: true }) })
+      })
+
+      render(<AdminModal {...defaultProps} />)
+
+      await waitFor(() => {
+        expect(screen.getByText('E2science')).toBeInTheDocument()
+        expect(screen.getByText('edev')).toBeInTheDocument()
+      })
+    })
+
+    it('does not show post to usergroup for guests', async () => {
+      const guestUser = { ...mockEditorUser, is_guest: true }
+
+      render(<AdminModal {...defaultProps} user={guestUser} />)
+
+      // Wait for potential async operations
+      await new Promise(r => setTimeout(r, 100))
+
+      expect(screen.queryByText('Post to Usergroup')).not.toBeInTheDocument()
+    })
+
+    it('calls weblog API when posting to usergroup', async () => {
+      global.fetch = jest.fn((url, options) => {
+        if (url === '/api/weblog/available') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, groups: mockGroups })
+          })
+        }
+        if (url === '/api/weblog/100' && options?.method === 'POST') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, message: 'Entry added to weblog' })
+          })
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: true }) })
+      })
+
+      render(<AdminModal {...defaultProps} />)
+
+      await waitFor(() => {
+        expect(screen.getByText('E2science')).toBeInTheDocument()
+      })
+
+      // Select a usergroup
+      const select = screen.getByRole('combobox')
+      fireEvent.change(select, { target: { value: '100' } })
+
+      // Click post button
+      fireEvent.click(screen.getByText('Post to usergroup'))
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith(
+          '/api/weblog/100',
+          expect.objectContaining({
+            method: 'POST',
+            body: JSON.stringify({ to_node: 123 })
+          })
+        )
+      })
+    })
+
+    it('shows success message after posting to usergroup', async () => {
+      global.fetch = jest.fn((url, options) => {
+        if (url === '/api/weblog/available') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, groups: mockGroups })
+          })
+        }
+        if (url.startsWith('/api/weblog/') && options?.method === 'POST') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, message: 'Entry added to weblog' })
+          })
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: true }) })
+      })
+
+      render(<AdminModal {...defaultProps} />)
+
+      await waitFor(() => {
+        expect(screen.getByText('E2science')).toBeInTheDocument()
+      })
+
+      const select = screen.getByRole('combobox')
+      fireEvent.change(select, { target: { value: '100' } })
+      fireEvent.click(screen.getByText('Post to usergroup'))
+
+      await waitFor(() => {
+        expect(screen.getByText('Posted to E2science')).toBeInTheDocument()
+      })
+    })
+
+    it('uses availableGroups prop if provided instead of fetching', async () => {
+      render(<AdminModal {...defaultProps} availableGroups={mockGroups} />)
+
+      // Should show groups immediately without loading
+      expect(screen.queryByText('Loading available groups...')).not.toBeInTheDocument()
+      expect(screen.getByText('E2science')).toBeInTheDocument()
+      expect(screen.getByText('edev')).toBeInTheDocument()
+
+      // Should not have called the available groups API
+      expect(fetch).not.toHaveBeenCalledWith('/api/weblog/available')
     })
   })
 })

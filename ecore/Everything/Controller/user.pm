@@ -232,13 +232,19 @@ sub edit {
     $profile->{doctext}  = $node->NODEDATA->{doctext} || '';
 
     # Check if user can have an image
+    # Admins can upload for any user, so always allow for admins
     my $can_have_image = 0;
-    my $users_with_image = $self->DB->getNode( 'users with image', 'nodegroup' );
-    if ( $users_with_image && Everything::isApproved( $node->NODEDATA, $users_with_image ) ) {
+    if ( $user->is_admin ) {
         $can_have_image = 1;
     }
-    elsif ( $self->APP->getLevel( $node->NODEDATA ) >= 1 ) {
-        $can_have_image = 1;
+    else {
+        my $users_with_image = $self->DB->getNode( 'users with image', 'nodegroup' );
+        if ( $users_with_image && Everything::isApproved( $node->NODEDATA, $users_with_image ) ) {
+            $can_have_image = 1;
+        }
+        elsif ( $self->APP->getLevel( $node->NODEDATA ) >= 1 ) {
+            $can_have_image = 1;
+        }
     }
 
     # Build viewer data
