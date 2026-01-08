@@ -18,8 +18,8 @@ import { FaTools } from 'react-icons/fa'
  * Usage:
  *   <E2NodeDisplay e2node={e2nodeData} user={userData} existingDraft={draftData} />
  */
-const E2NodeDisplay = ({ e2node, user, existingDraft }) => {
-  const [toolsModalOpen, setToolsModalOpen] = useState(false)
+const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen }) => {
+  const [toolsModalOpen, setToolsModalOpen] = useState(!!startWithToolsModalOpen)
 
   // Handle hash navigation to scroll to specific author's writeup
   // URLs like /title/Node#AuthorName should scroll to that author's writeup

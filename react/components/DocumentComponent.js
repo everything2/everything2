@@ -49,6 +49,7 @@ const COMPONENT_MAP = {
   // Users (homenodes) - migrated from delegation Dec 2025
   user: lazy(() => import('./Documents/UserDisplay')),
   user_edit: lazy(() => import('./Documents/UserEdit')),
+  user_editvars: lazy(() => import('./Documents/UserEditVars')),
 
   // Nodetypes - migrated from delegation Dec 2025
   nodetype: lazy(() => import('./Documents/Nodetype')),
@@ -67,6 +68,12 @@ const COMPONENT_MAP = {
 
   // Maintenance - migrated Jan 2026
   maintenance: lazy(() => import('./Documents/Maintenance')),
+
+  // Achievements - migrated Jan 2026
+  achievement: lazy(() => import('./Documents/Achievement')),
+
+  // Notifications - migrated Jan 2026
+  notification: lazy(() => import('./Documents/Notification')),
 
   // Categories - migrated Dec 2025
   category: lazy(() => import('./Documents/CategoryDisplay')),
@@ -223,8 +230,18 @@ const COMPONENT_MAP = {
   everything_poll_archive: lazy(() => import('./Documents/EverythingPollArchive')),
   everything_user_poll: lazy(() => import('./Documents/EverythingUserPoll')),
 
-  // Admin tools - SQL interface
+  // Admin tools - SQL interface & database
   sql_prompt: lazy(() => import('./Documents/SQLPrompt')),
+  dbtable: lazy(() => import('./Documents/Dbtable')),
+
+  // Chat rooms
+  room: lazy(() => import('./Documents/Room')),
+
+  // Datastash - JSON data cache nodes
+  datastash: lazy(() => import('./Documents/Datastash')),
+
+  // Setting nodes - admin configuration
+  setting: lazy(() => import('./Documents/Setting')),
 
   // User statistics & rankings
   everything_s_best_users: lazy(() => import('./Documents/EverythingsBestUsers')),
@@ -330,6 +347,8 @@ const COMPONENT_MAP = {
 
   // Client development
   clientdev_home: lazy(() => import('./Documents/ClientdevHome')),
+  e2client: lazy(() => import('./Documents/E2client')),
+  e2client_edit: lazy(() => import('./Documents/E2clientEdit')),
 
   // Admin tools
   faq_editor: lazy(() => import('./Documents/FAQEditor')),
@@ -450,7 +469,30 @@ const COMPONENT_MAP = {
   dr_nate_s_secret_lab: lazy(() => import('./Documents/DrNatesSecretLab')),
 
   // System node editing (gods only) - raw database field editor
-  basicedit: lazy(() => import('./Documents/BasicEdit'))
+  basicedit: lazy(() => import('./Documents/BasicEdit')),
+
+  // Stylesheets - CSS themes for E2
+  stylesheet: lazy(() => import('./Documents/Stylesheet')),
+
+  // User polls
+  e2poll: lazy(() => import('./Documents/E2Poll')),
+
+  // XML schemas
+  schema: lazy(() => import('./Documents/Schema')),
+
+  // Nodegroups - migrated Jan 2026
+  nodegroup: lazy(() => import('./Documents/Nodegroup')),
+
+  // Registries - migrated Jan 2026
+  registry: lazy(() => import('./Documents/Registry')),
+
+  // Podcasts - migrated Jan 2026
+  podcast: lazy(() => import('./Documents/Podcast')),
+  podcast_edit: lazy(() => import('./Documents/PodcastEdit')),
+
+  // Recordings - migrated Jan 2026
+  recording: lazy(() => import('./Documents/Recording')),
+  recording_edit: lazy(() => import('./Documents/RecordingEdit'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

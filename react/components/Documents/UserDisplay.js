@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FaUserCog, FaHandHoldingHeart } from 'react-icons/fa'
+import { FaUserCog, FaHandHoldingHeart, FaStar, FaRegStar } from 'react-icons/fa'
 import LinkNode from '../LinkNode'
 import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import MessageBox from '../MessageBox'
@@ -14,6 +14,11 @@ import TimeSince from '../TimeSince'
  */
 const UserDisplay = ({ data, e2 }) => {
   const [isToolsModalOpen, setIsToolsModalOpen] = useState(false)
+  const [isFavorited, setIsFavorited] = useState(data?.is_favorited || false)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
+  const [isInfected, setIsInfected] = useState(data?.is_infected || false)
+  const [cureLoading, setCureLoading] = useState(false)
+  const [cureMessage, setCureMessage] = useState(null)
 
   // Helper to render E2 content with link parsing and HTML entity decoding
   const renderContent = (text) => {
@@ -45,15 +50,70 @@ const UserDisplay = ({ data, e2 }) => {
     })
   }
 
+  // Handle favorite/unfavorite toggle
+  const handleFavoriteToggle = async () => {
+    if (favoriteLoading) return
+    setFavoriteLoading(true)
+
+    try {
+      const action = isFavorited ? 'unfavorite' : 'favorite'
+      const response = await fetch(`/api/favorites/${user.node_id}/action/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const result = await response.json()
+      if (result.success) {
+        setIsFavorited(result.is_favorited)
+      }
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err)
+    } finally {
+      setFavoriteLoading(false)
+    }
+  }
+
+  // Handle cure infection (admin only)
+  const handleCureInfection = async () => {
+    if (cureLoading) return
+    setCureLoading(true)
+    setCureMessage(null)
+
+    try {
+      const response = await fetch('/api/user/cure', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.node_id })
+      })
+      const result = await response.json()
+      if (result.success) {
+        setIsInfected(false)
+        setCureMessage('Infection cured successfully')
+      } else {
+        setCureMessage(result.error || 'Failed to cure infection')
+      }
+    } catch (err) {
+      console.error('Failed to cure infection:', err)
+      setCureMessage('Network error while curing infection')
+    } finally {
+      setCureLoading(false)
+    }
+  }
+
+  // Determine if we should show the icon row
+  const showIconRow = !viewer.is_guest && (
+    !is_own || // Always show for other users
+    viewer.is_editor || viewer.is_chanop || viewer.is_admin // Show for admins on own profile
+  )
+
   return (
     <div className="user-display">
       {/* Homenode header - matches legacy #homenodeheader */}
-      <div id="homenodeheader" style={{ position: 'relative', paddingTop: (!viewer.is_guest && !is_own && (!user.hidemsgme || viewer.is_editor || viewer.is_chanop)) ? '30px' : undefined }}>
-        {/* Message envelope and admin tools icons - show for logged-in users viewing other profiles */}
-        {!viewer.is_guest && !is_own && (
+      <div id="homenodeheader" style={{ position: 'relative', paddingTop: showIconRow ? '30px' : undefined }}>
+        {/* Icon row - admin tools, favorite, sanctify, message */}
+        {showIconRow && (
           <div style={{ position: 'absolute', top: 0, right: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {/* Admin tools icon - for editors/chanops */}
-            {(viewer.is_editor || viewer.is_chanop) && (
+            {/* Admin tools icon - for editors/chanops/admins (including on own profile) */}
+            {(viewer.is_editor || viewer.is_chanop || viewer.is_admin) && (
               <button
                 onClick={() => setIsToolsModalOpen(true)}
                 className="user-tools-trigger"
@@ -72,8 +132,29 @@ const UserDisplay = ({ data, e2 }) => {
                 <FaUserCog />
               </button>
             )}
-            {/* Sanctify icon - for Level 11+ users or editors */}
-            {(viewer.is_editor || (e2?.user?.level >= 11)) && (
+            {/* Favorite icon - for logged-in users viewing other profiles */}
+            {!is_own && (
+              <button
+                onClick={handleFavoriteToggle}
+                disabled={favoriteLoading}
+                title={isFavorited ? `Stop notifications for ${user.title}'s writeups` : `Get notifications for ${user.title}'s writeups`}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: favoriteLoading ? 'wait' : 'pointer',
+                  color: isFavorited ? '#f59e0b' : '#4060b0',
+                  fontSize: '1.2rem',
+                  padding: '0.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  opacity: favoriteLoading ? 0.5 : 1
+                }}
+              >
+                {isFavorited ? <FaStar /> : <FaRegStar />}
+              </button>
+            )}
+            {/* Sanctify icon - for Level 11+ users or editors viewing other profiles */}
+            {!is_own && (viewer.is_editor || (e2?.user?.level >= 11)) && (
               <a
                 href={`/title/Sanctify%20user?recipient=${encodeURIComponent(user.title)}`}
                 title={`Sanctify ${user.title}`}
@@ -89,15 +170,15 @@ const UserDisplay = ({ data, e2 }) => {
                 <FaHandHoldingHeart />
               </a>
             )}
-            {/* Message envelope */}
-            {!user.hidemsgme && (
+            {/* Message envelope - for other profiles only */}
+            {!is_own && !user.hidemsgme && (
               <MessageBox recipientId={user.node_id} recipientTitle={user.title} showAsIcon={true} />
             )}
           </div>
         )}
 
         {/* Infected user warning - primitive bot detection, only visible to editors */}
-        {Boolean(is_infected) && Boolean(viewer.is_editor) && (
+        {Boolean(isInfected) && Boolean(viewer.is_editor) && (
           <div id="homenode_infection" className="warning">
             <div>
               <img src="/static/biohazard.png" alt="Biohazard Sign" title="User is infected" />
@@ -110,8 +191,27 @@ const UserDisplay = ({ data, e2 }) => {
               <div>
                 <img src="/static/physician.png" alt="Physician Sign" />
                 <p>
-                  <em>(Cure functionality available in legacy interface)</em>
+                  <button
+                    onClick={handleCureInfection}
+                    disabled={cureLoading}
+                    style={{
+                      background: '#4060b0',
+                      color: 'white',
+                      border: 'none',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '4px',
+                      cursor: cureLoading ? 'wait' : 'pointer',
+                      opacity: cureLoading ? 0.7 : 1
+                    }}
+                  >
+                    {cureLoading ? 'Curing...' : 'Cure Infection'}
+                  </button>
                 </p>
+                {cureMessage && (
+                  <p style={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
+                    {cureMessage}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -148,7 +248,7 @@ const UserDisplay = ({ data, e2 }) => {
           )}
         </div>
 
-        {/* User info - matches legacy #userinfo dl from zenDisplayUserInfo */}
+        {/* User info */}
         <dl id="userinfo">
           {/* Message forward alias */}
           {user.message_forward_to && (
@@ -395,8 +495,8 @@ const UserDisplay = ({ data, e2 }) => {
         </div>
       )}
 
-      {/* User Tools Modal - for editors/chanops */}
-      {Boolean(viewer.is_editor || viewer.is_chanop) && (
+      {/* User Tools Modal - for editors/chanops/admins (including on own profile) */}
+      {Boolean(viewer.is_editor || viewer.is_chanop || viewer.is_admin) && (
         <UserToolsModal
           user={user}
           viewer={viewer}

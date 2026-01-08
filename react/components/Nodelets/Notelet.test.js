@@ -168,7 +168,7 @@ describe('Notelet', () => {
       expect(editorLink).toHaveAttribute('data-node-type', 'superdoc')
     })
 
-    test('renders Nodelet Settings link when no content', () => {
+    test('renders Settings link when no content', () => {
       const noteletData = {
         isLocked: false,
         hasContent: false,
@@ -177,23 +177,9 @@ describe('Notelet', () => {
       }
       render(<Notelet noteletData={noteletData} showNodelet={mockShowNodelet} nodeletIsOpen={true} />)
       const links = screen.getAllByTestId('link-node')
-      const settingsLink = links.find(link => link.getAttribute('data-title') === 'Nodelet Settings')
+      const settingsLink = links.find(link => link.getAttribute('data-title') === 'Settings')
       expect(settingsLink).toBeDefined()
       expect(settingsLink).toHaveAttribute('data-node-type', 'superdoc')
-    })
-
-    test('renders remove link when no content', () => {
-      const noteletData = {
-        isLocked: false,
-        hasContent: false,
-        content: '',
-        isGuest: false
-      }
-      const { container } = render(<Notelet noteletData={noteletData} showNodelet={mockShowNodelet} nodeletIsOpen={true} />)
-      const removeLink = container.querySelector('#noteletremovallink')
-      expect(removeLink).toBeInTheDocument()
-      expect(removeLink).toHaveAttribute('href', '?op=movenodelet&position=x&nodelet=Notelet')
-      expect(removeLink).toHaveClass('ajax')
     })
 
     test('renders edit link in footer when no content', () => {
@@ -277,7 +263,7 @@ describe('Notelet', () => {
       expect(editorLink).toHaveTextContent('Notelet Editor')
     })
 
-    test('Notelet Settings link has correct props', () => {
+    test('Settings link has correct props', () => {
       const noteletData = {
         isLocked: false,
         hasContent: false,
@@ -286,8 +272,8 @@ describe('Notelet', () => {
       }
       render(<Notelet noteletData={noteletData} showNodelet={mockShowNodelet} nodeletIsOpen={true} />)
       const links = screen.getAllByTestId('link-node')
-      const settingsLink = links.find(link => link.getAttribute('data-title') === 'Nodelet Settings')
-      expect(settingsLink).toHaveAttribute('data-title', 'Nodelet Settings')
+      const settingsLink = links.find(link => link.getAttribute('data-title') === 'Settings')
+      expect(settingsLink).toHaveAttribute('data-title', 'Settings')
       expect(settingsLink).toHaveAttribute('data-node-type', 'superdoc')
     })
 

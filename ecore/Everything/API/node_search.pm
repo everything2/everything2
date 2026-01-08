@@ -26,7 +26,7 @@ sub search {
 
     # Scope determines what types to search
     my $scope = $query->param('scope') || 'users';
-    my @valid_scopes = qw(users usergroups users_and_groups group_addable message_recipients);
+    my @valid_scopes = qw(users usergroups users_and_groups group_addable message_recipients nodegroup_addable all_nodes e2nodes);
 
     unless (grep { $_ eq $scope } @valid_scopes) {
         return [$self->HTTP_OK, {
@@ -42,6 +42,26 @@ sub search {
     # message_recipients scope has special handling
     if ($scope eq 'message_recipients') {
         return $self->_search_message_recipients($REQUEST, $search_term, $limit);
+    }
+
+    # e2nodes scope - search only e2node type
+    # Optional author parameter filters to e2nodes where that author has a writeup
+    if ($scope eq 'e2nodes') {
+        my $author_name = $query->param('author') || '';
+        $author_name =~ s/^\s+|\s+$//g;
+        return $self->_search_e2nodes($REQUEST, $search_term, $limit, $author_name);
+    }
+
+    # nodegroup_addable and all_nodes scope - search all node types
+    if ($scope eq 'nodegroup_addable' || $scope eq 'all_nodes') {
+        my $group_id = int($query->param('group_id') || 0);
+        if ($scope eq 'nodegroup_addable' && !$group_id) {
+            return [$self->HTTP_OK, {
+                success => 0,
+                error => 'group_id parameter is required for nodegroup_addable scope'
+            }];
+        }
+        return $self->_search_all_nodes($REQUEST, $search_term, $limit, $group_id);
     }
 
     # For group_addable scope, we need the group_id to exclude current members
@@ -311,6 +331,161 @@ sub _search_message_recipients {
     }];
 }
 
+# Search e2nodes by title - for recording writeup lookup
+# If author_name is provided, only return e2nodes where that author has a writeup
+sub _search_e2nodes {
+    my ($self, $REQUEST, $search_term, $limit, $author_name) = @_;
+
+    my $DB = $self->DB;
+    my $dbh = $DB->{dbh};
+
+    # Get e2node type ID
+    my $e2node_type = $DB->getType('e2node');
+    unless ($e2node_type) {
+        return [$self->HTTP_OK, {
+            success => 0,
+            error => 'e2node nodetype not found'
+        }];
+    }
+    my $e2node_type_id = $DB->getId($e2node_type);
+
+    # Escape LIKE special characters
+    my $escaped_term = $search_term;
+    $escaped_term =~ s/([%_\\])/\\$1/g;
+    my $search_pattern = $escaped_term . '%';
+
+    my @bind_params;
+    my $sql;
+
+    if ($author_name) {
+        # Look up the author user
+        my $author = $DB->getNode($author_name, 'user');
+        unless ($author) {
+            # Author not found - return empty results (not an error)
+            return [$self->HTTP_OK, {
+                success => 1,
+                results => [],
+                count => 0,
+                scope => 'e2nodes',
+                search_term => $search_term,
+                author => $author_name,
+                author_not_found => 1
+            }];
+        }
+        my $author_id = $author->{node_id};
+
+        # Search e2nodes that have a writeup by this author
+        # Join through writeup table to find e2nodes where author has content
+        $sql = qq{
+            SELECT DISTINCT e2.node_id, e2.title
+            FROM node e2
+            JOIN writeup w ON w.parent_e2node = e2.node_id
+            JOIN node wu ON wu.node_id = w.writeup_id
+            WHERE e2.type_nodetype = ?
+            AND e2.title LIKE ?
+            AND wu.author_user = ?
+            ORDER BY e2.title ASC
+            LIMIT ?
+        };
+        @bind_params = ($e2node_type_id, $search_pattern, $author_id, $limit);
+    } else {
+        # No author filter - search all e2nodes by title prefix
+        $sql = qq{
+            SELECT node_id, title
+            FROM node
+            WHERE type_nodetype = ?
+            AND title LIKE ?
+            ORDER BY title ASC
+            LIMIT ?
+        };
+        @bind_params = ($e2node_type_id, $search_pattern, $limit);
+    }
+
+    my $sth = $dbh->prepare($sql);
+    $sth->execute(@bind_params);
+
+    my @results;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @results, {
+            node_id => int($row->{node_id}),
+            title => $row->{title},
+            type => 'e2node'
+        };
+    }
+
+    my $response = {
+        success => 1,
+        results => \@results,
+        count => scalar(@results),
+        scope => 'e2nodes',
+        search_term => $search_term
+    };
+    $response->{author} = $author_name if $author_name;
+
+    return [$self->HTTP_OK, $response];
+}
+
+# Search all node types - used for nodegroup editing
+sub _search_all_nodes {
+    my ($self, $REQUEST, $search_term, $limit, $group_id) = @_;
+
+    my $DB = $self->DB;
+    my $dbh = $DB->{dbh};
+
+    # Escape LIKE special characters
+    my $escaped_term = $search_term;
+    $escaped_term =~ s/([%_\\])/\\$1/g;
+    my $search_pattern = $escaped_term . '%';
+
+    # Build exclusion clause for nodegroup_addable
+    my $exclude_clause = '';
+    my @bind_params = ($search_pattern);
+
+    if ($group_id) {
+        $exclude_clause = qq{
+            AND n.node_id NOT IN (
+                SELECT node_id FROM nodegroup WHERE nodegroup_id = ?
+            )
+        };
+        push @bind_params, $group_id;
+    }
+
+    push @bind_params, $limit;
+
+    # Search all nodes, joining with nodetype to get type name
+    my $sql = qq{
+        SELECT n.node_id, n.title, nt.title as type_title
+        FROM node n
+        JOIN node nt ON n.type_nodetype = nt.node_id
+        WHERE n.title LIKE ?
+        $exclude_clause
+        ORDER BY n.title ASC
+        LIMIT ?
+    };
+
+    my $sth = $dbh->prepare($sql);
+    $sth->execute(@bind_params);
+
+    my @results;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @results, {
+            node_id => int($row->{node_id}),
+            title => $row->{title},
+            type => $row->{type_title}
+        };
+    }
+
+    my $scope = $group_id ? 'nodegroup_addable' : 'all_nodes';
+
+    return [$self->HTTP_OK, {
+        success => 1,
+        results => \@results,
+        count => scalar(@results),
+        scope => $scope,
+        search_term => $search_term
+    }];
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -358,9 +533,25 @@ Returns users who haven't blocked the sender, usergroups the user can message
 (admins can message any group, others only groups they're in), and expands
 message forward aliases (e.g., c_e -> Content Editors).
 
+=item nodegroup_addable - Search all node types (documents, users, system nodes, etc.)
+that can be added to a nodegroup. Requires group_id parameter to exclude current
+members. Returns type info for icon display.
+
+=item all_nodes - Search all node types without member exclusion. Returns type info.
+
+=item e2nodes - Search only e2node nodes (writeup containers). Used for finding
+writeups by title in recording edit forms. Supports optional author parameter
+to filter to e2nodes where that author has a writeup.
+
 =back
 
-=item group_id (required for group_addable scope)
+=item author (optional, for e2nodes scope only)
+
+Username to filter e2nodes. When provided, only returns e2nodes where the
+specified author has a writeup. Useful for recording edit forms where you
+need to select an e2node that the selected author actually has content in.
+
+=item group_id (required for group_addable and nodegroup_addable scopes)
 
 The usergroup node_id to check membership against.
 

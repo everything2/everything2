@@ -58,5 +58,12 @@ sub display
   }
 }
 
+sub edit {
+    my ($self, $REQUEST, $node) = @_;
+
+    # superdoc edit uses the standard basicedit form
+    return $self->basicedit($REQUEST, $node);
+}
+
 __PACKAGE__->meta->make_immutable();
 1;

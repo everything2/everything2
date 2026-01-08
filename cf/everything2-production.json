@@ -134,6 +134,40 @@
         "AccessControl": "PublicRead"
       }
     },
+    "PodcastS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "podcast.everything2.com",
+        "OwnershipControls": {
+          "Rules": [{
+            "ObjectOwnership": "BucketOwnerPreferred"
+          }]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": false,
+          "BlockPublicPolicy": false,
+          "IgnorePublicAcls": false,
+          "RestrictPublicBuckets": false
+        }
+      }
+    },
+    "PodcastS3BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {"Ref": "PodcastS3Bucket"},
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": {"Fn::Join": ["", [{"Fn::GetAtt": ["PodcastS3Bucket", "Arn"]}, "/*"]]}
+          }]
+        }
+      }
+    },
     "E2DotComR53Zone": {
       "Type": "AWS::Route53::HostedZone",
       "DeletionPolicy": "Retain",
@@ -760,6 +794,11 @@
             "Effect": "Allow",
             "Action": "s3:PutObject",
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "HomenodeImagesS3Bucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "PodcastS3Bucket", "Arn"] }, "/*"]]}
           }]
         }
       }

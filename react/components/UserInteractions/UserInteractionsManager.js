@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
+import UserSearchInput from '../UserSearchInput'
+import ConfirmModal from '../ConfirmModal'
 
 /**
  * UserInteractionsManager - Unified component for managing blocked/unfavorite users
@@ -10,12 +12,12 @@ import PropTypes from 'prop-types'
  */
 const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
   const [blockedUsers, setBlockedUsers] = useState(initialBlocked)
-  const [newUsername, setNewUsername] = useState('')
   const [hideWriteups, setHideWriteups] = useState(true)
   const [blockMessages, setBlockMessages] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, userId: null, username: '' })
 
   const fetchBlockedUsers = useCallback(async () => {
     try {
@@ -31,8 +33,9 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
     }
   }, [])
 
-  const addBlockedUser = useCallback(async () => {
-    if (!newUsername.trim()) {
+  const addBlockedUser = useCallback(async (user) => {
+    const username = user.title
+    if (!username || !username.trim()) {
       setError('Please enter a username')
       return
     }
@@ -47,7 +50,7 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
         body: JSON.stringify({
-          username: newUsername.trim(),
+          username: username.trim(),
           hide_writeups: hideWriteups,
           block_messages: blockMessages
         })
@@ -57,7 +60,6 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
         const data = await response.json()
         if (data.success) {
           setBlockedUsers(prev => [...prev, data])
-          setNewUsername('')
           setSuccess(`Successfully blocked ${data.title}`)
         } else {
           setError(data.error || 'Failed to block user')
@@ -70,7 +72,7 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
     } finally {
       setLoading(false)
     }
-  }, [newUsername, hideWriteups, blockMessages])
+  }, [hideWriteups, blockMessages])
 
   const updateBlockedUser = useCallback(async (userId, updates) => {
     setLoading(true)
@@ -103,10 +105,17 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
     }
   }, [])
 
-  const removeBlockedUser = useCallback(async (userId, username) => {
-    if (!window.confirm(`Remove all blocks for ${username}?`)) {
-      return
-    }
+  const openRemoveModal = useCallback((userId, username) => {
+    setConfirmModal({ isOpen: true, userId, username })
+  }, [])
+
+  const closeRemoveModal = useCallback(() => {
+    setConfirmModal({ isOpen: false, userId: null, username: '' })
+  }, [])
+
+  const confirmRemoveBlockedUser = useCallback(async () => {
+    const { userId, username } = confirmModal
+    if (!userId) return
 
     setLoading(true)
     setError(null)
@@ -128,7 +137,7 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [confirmModal])
 
   const styles = {
     container: {
@@ -158,14 +167,6 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
     },
     inputGroup: {
       marginBottom: '12px'
-    },
-    input: {
-      padding: '6px 8px',
-      border: '1px solid #507898',
-      borderRadius: '3px',
-      fontSize: '10pt',
-      width: '200px',
-      marginRight: '8px'
     },
     checkboxLabel: {
       display: 'inline-flex',
@@ -223,7 +224,6 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
     },
     listItem: {
       padding: '12px',
-      borderBottom: '1px solid #ddd',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between'
@@ -289,22 +289,12 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
       <div style={styles.section}>
         <div style={styles.sectionTitle}>Block a User</div>
         <div style={styles.inputGroup}>
-          <input
-            type="text"
-            style={styles.input}
-            placeholder="Username"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && addBlockedUser()}
+          <UserSearchInput
+            onSelect={addBlockedUser}
+            placeholder="Search for a user to block..."
+            buttonText={loading ? 'Adding...' : 'Block User'}
             disabled={loading}
           />
-          <button
-            style={loading ? styles.buttonDisabled : styles.button}
-            onClick={addBlockedUser}
-            disabled={loading}
-          >
-            {loading ? 'Adding...' : 'Block User'}
-          </button>
         </div>
         <div style={styles.inputGroup}>
           <label style={styles.checkboxLabel}>
@@ -350,8 +340,11 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
           </div>
         ) : (
           <ul style={styles.list}>
-            {blockedUsers.map((user) => (
-              <li key={user.node_id} style={styles.listItem}>
+            {blockedUsers.map((user, index) => (
+              <li key={user.node_id} style={{
+                ...styles.listItem,
+                borderBottom: index === blockedUsers.length - 1 ? 'none' : '1px solid #ddd'
+              }}>
                 <div style={styles.userInfo}>
                   <div>
                     <span style={styles.username}>{user.title}</span>
@@ -388,7 +381,7 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
                 <div style={styles.actions}>
                   <button
                     style={styles.buttonDanger}
-                    onClick={() => removeBlockedUser(user.node_id, user.title)}
+                    onClick={() => openRemoveModal(user.node_id, user.title)}
                     disabled={loading}
                   >
                     Remove
@@ -399,6 +392,17 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
           </ul>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={closeRemoveModal}
+        onConfirm={confirmRemoveBlockedUser}
+        title="Remove Block"
+        message={`Are you sure you want to remove all blocks for ${confirmModal.username}?`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        confirmColor="#c33"
+      />
     </div>
   )
 }

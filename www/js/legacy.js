@@ -871,25 +871,18 @@ if(! e2.noquickvote)
 	// name: htmlcode; value: code to eval to get warning. false = ignore. List from [ajax update page]
 	// id = updateTarget, x = update parameters
 		ilikeit: '"Your message to the author hasn\'t arrived yet"',
-		writeupmessage: "'Your message is being sent'",
-		zenDisplayUserInfo: "'Your message is being sent'",
+		// writeupmessage - REMOVED: React WriteupDisplay + MessageModal + /api/messages/create handles this
 		weblogform: "'A usergroup page is being updated'",
 		categoryform: "'A category is being updated'",
-		writeupcools: "'Your C! is being noted. You may lose it if you don\\'t let it finish'",
 
-		coolit: "'This page is being ' +" +
-			"(x.query.coolme ? 'dunked in liquid helium' : 'thawed')",
+		// coolit - REMOVED: page_actions uses window.toggleEditorCool + /api/cool/edcool handles this
 		bookmarkit: "(x.query.bookmark_id == e2.node_id ? 'This page' : 'A writeup') +" +
 			"' is being added to your bookmarks'",
 
-		favorite_noder: "opcode(x.query.op)",
-		voteit: "opcode(x.query.op)",
+		// favorite_noder - REMOVED: React UserDisplay.js + /api/favorites/:id/action/:action handles this
 		// these we ignore:
 		listnodecategories: 'false', // instant ajax for info/confirmation only
-		nodeletsettingswidget: 'false', // user lost interest in settings
-		 // these shouldn't be needed:
-		changeroom: '', showmessages: '',
-		showchatter: '', displaynltext2: ''
+		changeroom: ''
 	};
 
 	var str;

@@ -76,7 +76,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 | **Core User & Content** |
 | Sessions | 3 | 3 | ✅ 100% | [t/002_sessions_api.t](../t/002_sessions_api.t) (41 tests, integration) |
 | Signup | 1 | 1 | ✅ 100% | [t/063_signup_api.t](../t/063_signup_api.t) (85 tests, MockRequest) |
-| Users | 7 | 1 | ⚠️ 14% | [t/048_user_api.t](../t/048_user_api.t) (partial coverage) |
+| Users | 8 | 2 | ⚠️ 25% | [t/048_user_api.t](../t/048_user_api.t), [t/090_cure_infection_api.t](../t/090_cure_infection_api.t) (cure endpoint) |
 | User Search | 1 | 1 | ✅ 100% | [t/069_user_search_api.t](../t/069_user_search_api.t) (MockRequest) |
 | Usergroups | 10 | 4 | ⚠️ 40% | [t/004_usergroups.t](../t/004_usergroups.t) (create, add, remove, leave) |
 | Writeups | 7 | 7 | ✅ 100% | [t/056_writeups_api.t](../t/056_writeups_api.t) (33 tests, MockRequest) |
@@ -95,6 +95,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Messages | 7 | 7 | ✅ 100% | [t/032_messages_api.t](../t/032_messages_api.t) (37 tests) + integration tests |
 | Message Ignores | 4 | 4 | ✅ 100% | [t/059_messageignores_api.t](../t/059_messageignores_api.t) (62 tests, MockRequest) |
 | User Interactions | 5 | 5 | ✅ 100% | [t/080_userinteractions_api.t](../t/080_userinteractions_api.t) (24 tests, MockRequest) - unified blocking API (hide_writeups, block_messages) |
+| Favorites | 4 | 4 | ✅ 100% | [t/089_favorites_api.t](../t/089_favorites_api.t) (MockRequest) - favorite/unfavorite users |
 | Notifications | 2 | 2 | ✅ 100% | [t/040_notifications_api.t](../t/040_notifications_api.t) + integration tests |
 | Personal Links | 4 | 4 | ✅ 100% | [t/033_personallinks_api.t](../t/033_personallinks_api.t) (18 tests) |
 | **Chat & Rooms** |
@@ -129,6 +130,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Easter Eggs | 1 | 1 | ✅ 100% | [t/079_easter_eggs_api.t](../t/079_easter_eggs_api.t) (MockRequest) - admin bestow feature |
 | Teddy Bear | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (fun feature) |
 | List Nodes | 1 | 1 | ✅ 100% | [t/078_list_nodes_api.t](../t/078_list_nodes_api.t) (MockRequest) - node listing by type |
+| Node Vars | 4 | 4 | ✅ 100% | [t/088_nodevars_api.t](../t/088_nodevars_api.t) (26 tests, MockRequest) - admin CRUD for node settings/vars |
 | **Other** |
 | Gift Shop | 10 | 10 | ✅ 100% | [t/049_giftshop_api.t](../t/049_giftshop_api.t) (20 tests, MockRequest) - stars, votes, chings, eggs, tokens, topic |
 | Wheel | 1 | 1 | ✅ 100% | [t/045_wheel_api.t](../t/045_wheel_api.t) |
@@ -136,16 +138,16 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Catchall | 0 | 0 | ⚠️ N/A | Empty placeholder module |
 | Writeuptypes | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (writeup type info) |
 
-**Overall API Test Coverage: 91%** (48 of 53 modules have tests)
+**Overall API Test Coverage: 93%** (49 of 54 modules have tests)
 
 **Key Metrics:**
-- Total API Modules: 53
-- Fully Tested: 45 modules (85%)
+- Total API Modules: 54
+- Fully Tested: 46 modules (85%)
 - Partially Tested: 3 modules (6%)
-- No Tests: 5 modules (10%)
-- Test Files: 47 files
-- Total Test Assertions: 2,878
-- Modern MockRequest Tests: 26 files
+- No Tests: 5 modules (9%)
+- Test Files: 48 files
+- Total Test Assertions: 2,904
+- Modern MockRequest Tests: 27 files
 
 ### APIs Without Tests (5 remaining)
 
@@ -186,6 +188,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 | t/083_page_of_cool_api.t | page_of_cool | 14 | Cool nodes list, editor endorsements |
 | t/084_poll_creator_api.t | poll_creator | 17 | Poll creation with validation |
 | t/085_trajectory_api.t | trajectory | 12 | Site trajectory statistics |
+| t/088_nodevars_api.t | nodevars | 26 | Admin CRUD for node settings/vars |
 
 **Notes:**
 - Duplicate test files exist for developervars (t/024 vs t/058) and preferences (t/029 vs t/057) - the newer MockRequest versions are preferred
@@ -193,7 +196,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 
 ---
 
-**Modernization Status**: ✅ All 52 modules use modern `routes()` method - No legacy `command_post` patterns remain!
+**Modernization Status**: ✅ All 54 modules use modern `routes()` method - No legacy `command_post` patterns remain!
 
 ## Node requests
 
@@ -439,6 +442,55 @@ or
 {
   "available": false,
   "username": "existinguser"
+}
+```
+
+### POST /api/user/cure
+
+**Test Coverage: ✅ 100%** (7/7 tests in t/090_cure_infection_api.t)
+
+**Admin-only endpoint** for curing user infections. Infection is a primitive bot detection mechanism that flags accounts created with suspicious characteristics (e.g., from known bad IPs, or sharing cookies with locked accounts).
+
+**Request body (JSON):**
+
+```json
+{
+  "user_id": 12345
+}
+```
+
+**Response (200 OK):**
+
+Success:
+```json
+{
+  "success": true,
+  "message": "Infection cured for user SomeUser",
+  "username": "SomeUser"
+}
+```
+
+Error - not admin:
+```json
+{
+  "success": false,
+  "error": "Admin access required to cure infections"
+}
+```
+
+Error - user not infected:
+```json
+{
+  "success": false,
+  "error": "User is not infected"
+}
+```
+
+Error - user not found:
+```json
+{
+  "success": false,
+  "error": "User not found"
 }
 ```
 
@@ -1922,6 +1974,100 @@ curl -X DELETE https://everything2.com/api/nodenotes/123/456/delete \
 - After deletion, returns the full updated notes list for the node
 - Deletion is permanent and cannot be undone
 
+## Favorites
+
+**Test Coverage: ✅ 100%** (4/4 endpoints tested - t/089_favorites_api.t)
+
+Current version: *1 (beta)*
+
+Manages favorite users (following). Favorites allow users to follow other users and receive notifications when they post new writeups (shown in the Favorite Noders nodelet).
+
+This is distinct from the "unfavorite" system (hiding writeups from New Writeups) which is managed by the userinteractions API.
+
+All favorites methods require logged-in users and return 401 Unauthorized for Guest User.
+
+### GET /api/favorites
+
+Returns all users the current user has favorited.
+
+**Response:**
+
+```json
+{
+  "success": 1,
+  "favorites": [
+    {"node_id": 123, "title": "username1"},
+    {"node_id": 456, "title": "username2"}
+  ]
+}
+```
+
+### GET /api/favorites/:id
+
+Returns the favorite status for a specific user.
+
+**Response:**
+
+```json
+{
+  "success": 1,
+  "node_id": 123,
+  "title": "username",
+  "is_favorited": 1
+}
+```
+
+**Errors:**
+- Returns `{"success": 0, "error": "User not found"}` if the target user doesn't exist
+
+### POST /api/favorites/:id/action/favorite
+
+Adds a user to the current user's favorites list (follow).
+
+**Response:**
+
+```json
+{
+  "success": 1,
+  "node_id": 123,
+  "title": "username",
+  "is_favorited": 1
+}
+```
+
+If already favorited:
+```json
+{
+  "success": 1,
+  "node_id": 123,
+  "title": "username",
+  "is_favorited": 1,
+  "message": "Already favorited"
+}
+```
+
+**Errors:**
+- Returns `{"success": 0, "error": "Cannot favorite yourself"}` when trying to favorite own user
+- Returns `{"success": 0, "error": "User not found"}` if the target user doesn't exist
+
+### POST /api/favorites/:id/action/unfavorite
+
+Removes a user from the current user's favorites list (unfollow).
+
+**Response:**
+
+```json
+{
+  "success": 1,
+  "node_id": 123,
+  "title": "username",
+  "is_favorited": 0
+}
+```
+
+**Errors:**
+- Returns `{"success": 0, "error": "User not found"}` if the target user doesn't exist
+
 ## Chatroom
 
 **Test Coverage: ✅ 100%** (3/3 endpoints tested - t/035_chatroom_api.t)
@@ -3340,6 +3486,205 @@ curl -X DELETE https://everything2.com/api/personallinks/delete/2 \
 - Updates the user's VARS immediately
 - To remove multiple links, call this endpoint multiple times or use `/update` with the desired final list
 - **Always allowed**: Delete operations are permitted even when the user is over the limits, since deletion always reduces usage
+
+## Node Vars (Admin)
+
+**Test Coverage: ✅ 100%** (4/4 endpoints tested - t/088_nodevars_api.t)
+
+Current version: *1 (beta)*
+
+Admin-only API for performing CRUD operations on node vars (settings). This API allows administrators to view and modify the key-value settings stored in node vars for any node type that supports them (setting nodes, user nodes, etc.).
+
+**Note:** This API complements the node_parameter API. While node_parameter works with individual node fields, nodevars works with the serialized vars hash stored in the `setting` table.
+
+### GET /api/nodevars/:node_id
+
+Returns all vars (settings) for the specified node.
+
+**URL Parameters:**
+* **node_id** - The node_id of the node to retrieve vars from (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "node_id": 123456,
+  "node_title": "vote settings",
+  "node_type": "setting",
+  "vars": [
+    { "key": "minvotes", "value": "5" },
+    { "key": "votepercent", "value": "0.1" }
+  ],
+  "vars_count": 2
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **node_id** - The requested node ID
+* **node_title** - The title of the node
+* **node_type** - The type of the node
+* **vars** - Array of key-value objects, sorted alphabetically by key
+* **vars_count** - Total number of vars
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **200 OK with success=0** - Access denied (not admin) or invalid node_id
+  ```json
+  { "success": 0, "error": "Access denied. Node vars editing is restricted to administrators." }
+  { "success": 0, "error": "Invalid node_id" }
+  { "success": 0, "error": "Node not found" }
+  ```
+
+**Example Request:**
+
+```bash
+curl https://everything2.com/api/nodevars/123456 \
+  -H "Cookie: userpass=..."
+```
+
+### POST /api/nodevars/:node_id/set
+
+Sets a single var value on the specified node.
+
+**URL Parameters:**
+* **node_id** - The node_id of the node to modify (required)
+
+**POST Data (JSON):**
+* **key** - The var key name (required, must match pattern `^[a-zA-Z_][a-zA-Z0-9_\-]*$`)
+* **value** - The value to set (required for set, omit to delete)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "key": "minvotes",
+  "value": "10",
+  "action": "set"
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **key** - The key that was modified
+* **value** - The new value
+* **action** - "set" or "deleted"
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **200 OK with success=0** - Access denied, invalid key format, or node not found
+  ```json
+  { "success": 0, "error": "Key is required" }
+  { "success": 0, "error": "Invalid key format. Keys must start with a letter or underscore and contain only letters, numbers, underscores, and hyphens." }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/nodevars/123456/set \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"key": "minvotes", "value": "10"}'
+```
+
+### POST /api/nodevars/:node_id/delete
+
+Deletes a single var from the specified node.
+
+**URL Parameters:**
+* **node_id** - The node_id of the node to modify (required)
+
+**POST Data (JSON):**
+* **key** - The var key name to delete (required)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "key": "minvotes",
+  "action": "deleted"
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **key** - The key that was deleted
+* **action** - Always "deleted"
+
+**Error Responses:**
+
+* **401 Unauthorized** - User is not logged in
+* **200 OK with success=0** - Access denied, key not found, or node not found
+  ```json
+  { "success": 0, "error": "Key 'nonexistent' not found" }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/nodevars/123456/delete \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"key": "minvotes"}'
+```
+
+### POST /api/nodevars/:node_id/bulk
+
+Performs bulk updates and deletes on node vars in a single operation.
+
+**URL Parameters:**
+* **node_id** - The node_id of the node to modify (required)
+
+**POST Data (JSON):**
+* **set** - Object of key-value pairs to set (optional)
+* **delete** - Array of key names to delete (optional)
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "updated": ["minvotes", "votepercent"],
+  "deleted": ["oldkey"],
+  "errors": []
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **updated** - Array of keys that were updated
+* **deleted** - Array of keys that were deleted
+* **errors** - Array of error messages for any failed operations
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/nodevars/123456/bulk \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{"set": {"minvotes": "10", "maxvotes": "100"}, "delete": ["oldkey"]}'
+```
+
+**Implementation Notes:**
+
+- All endpoints require admin permissions (checked via `isAdmin()`)
+- Key validation enforces alphanumeric keys starting with letter or underscore
+- Uses `Everything::getVars()` and `Everything::setVars()` for persistence
+- Bulk operations validate each key individually; invalid keys are skipped and reported in errors
+- The API is used by the Setting and UserEditVars React components
 
 ## Categories
 

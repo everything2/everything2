@@ -7,7 +7,7 @@ import ParseLinks from '../ParseLinks'
 import MessageList from '../MessageList'
 import MessageModal from '../MessageModal'
 
-// Parse special message commands for display (mimics legacy showchatter behavior)
+// Parse special message commands for display (/me, /whisper, /sing, /roll, etc.)
 const parseMessageText = (msg) => {
   const text = msg.msgtext
   const author = msg.author_user

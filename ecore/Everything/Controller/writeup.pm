@@ -9,6 +9,33 @@ extends 'Everything::Controller';
 
 sub display {
     my ( $self, $REQUEST, $node ) = @_;
+    return $self->_render_writeup($REQUEST, $node);
+}
+
+sub edit {
+    my ( $self, $REQUEST, $node ) = @_;
+
+    my $user = $REQUEST->user;
+
+    # Check permissions - must be logged in and either the owner or an editor
+    if ($user->is_guest) {
+        return $self->redirect_to_login($REQUEST);
+    }
+
+    my $is_owner = $node->author_user == $user->node_id;
+    my $is_editor = $user->is_editor;
+
+    unless ($is_owner || $is_editor) {
+        # Not authorized to edit - redirect to display
+        return $self->redirect("/?node_id=" . $node->node_id);
+    }
+
+    return $self->_render_writeup($REQUEST, $node, { start_in_edit_mode => \1 });
+}
+
+# Shared rendering logic for display and edit
+sub _render_writeup {
+    my ( $self, $REQUEST, $node, $extra_content_data ) = @_;
 
     my $user = $REQUEST->user;
 
@@ -22,10 +49,8 @@ sub display {
         is_guest  => $user->is_guest  ? 1 : 0,
         is_editor => $user->is_editor ? 1 : 0,
         is_admin  => $user->is_admin  ? 1 : 0,
-        can_vote  => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1
-        : 0,
-        can_cool => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1
-        : 0,
+        can_vote  => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1 : 0,
+        can_cool  => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1 : 0,
         coolsleft => $user->coolsleft || 0
     };
 
@@ -34,8 +59,6 @@ sub display {
     # 2. Adding new writeups (any logged-in user who doesn't have one yet)
     my $parent_e2node_data;
     my $parent_node;
-    my $is_owner = !$user->is_guest && $node->author_user == $user->node_id;
-    # Provide parent data to all logged-in users so they can add writeups
     if ( !$user->is_guest ) {
         $parent_node = $node->parent;
         if ( $parent_node && !UNIVERSAL::isa($parent_node, "Everything::Node::null") ) {
@@ -85,14 +108,22 @@ sub display {
     # Add existing draft if found (for continuing draft on parent e2node)
     $content_data->{existing_draft} = $existing_draft if $existing_draft;
 
+    # Merge in any extra content data (e.g., start_in_edit_mode)
+    if ($extra_content_data) {
+        $content_data = { %$content_data, %$extra_content_data };
+    }
+
     # Set node on REQUEST for buildNodeInfoStructure
     $REQUEST->node($node);
 
     # Build e2 data structure
-    my $e2 =
-      $self->APP->buildNodeInfoStructure( $node->NODEDATA,
+    my $e2 = $self->APP->buildNodeInfoStructure(
+        $node->NODEDATA,
         $REQUEST->user->NODEDATA,
-        $REQUEST->user->VARS, $REQUEST->cgi, $REQUEST );
+        $REQUEST->user->VARS,
+        $REQUEST->cgi,
+        $REQUEST
+    );
 
     # Override contentData with our directly-built data
     $e2->{contentData}   = $content_data;
@@ -106,6 +137,25 @@ sub display {
         node    => $node
     );
     return [ $self->HTTP_OK, $html ];
+}
+
+sub xml {
+    my ($self, $REQUEST, $node) = @_;
+
+    my $user = $REQUEST->user;
+
+    # Check if user can update node (determines whether to show reputation)
+    # Mirrors the logic from htmlpage::writeup_xml_page
+    my $can_update = $self->DB->canUpdateNode($user->NODEDATA, $node->NODEDATA);
+
+    # Generate XML, hiding reputation if user can't update the node
+    my $xml = $can_update
+        ? $node->to_xml([])
+        : $node->to_xml(['reputation']);
+
+    my $content = qq|<?xml version="1.0" standalone="yes"?>\n$xml|;
+
+    return [$self->HTTP_OK, $content, {type => 'application/xml'}];
 }
 
 __PACKAGE__->meta->make_immutable();

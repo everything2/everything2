@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import {
   DndContext,
@@ -132,6 +132,8 @@ const UserEdit = ({ data, e2 }) => {
   const [success, setSuccess] = useState(null)
   const [previewTrigger, setPreviewTrigger] = useState(0)
   const [isDirty, setIsDirty] = useState(false)
+  const [bioModified, setBioModified] = useState(false) // Track if user has modified the bio
+  const editorInitialized = useRef(false) // Track if editor has been initialized with content
 
   // Check if passwords match (both empty counts as matching)
   const passwordsMatch = formData.passwd === confirmPasswd
@@ -147,6 +149,10 @@ const UserEdit = ({ data, e2 }) => {
     content: '',
     onUpdate: () => {
       setPreviewTrigger(prev => prev + 1)
+      // Mark bio as modified when user edits (skip initial content set)
+      if (editorInitialized.current) {
+        setBioModified(true)
+      }
     }
   })
 
@@ -177,6 +183,10 @@ const UserEdit = ({ data, e2 }) => {
       if (editor) {
         const withBrackets = convertEntitiesToRawBrackets(doctext)
         editor.commands.setContent(withBrackets)
+        // Mark editor as initialized after content is set (so onUpdate events are tracked as user edits)
+        setTimeout(() => {
+          editorInitialized.current = true
+        }, 0)
       }
       setHtmlContent(doctext)
 
@@ -218,14 +228,8 @@ const UserEdit = ({ data, e2 }) => {
     const bookmarksChanged = removedBookmarks.size > 0 ||
       JSON.stringify(baselineBookmarkIds) !== JSON.stringify(currentBookmarkIds)
 
-    // Also check if bio content changed (compare to original doctext)
-    const originalDoctext = data.user.doctext || ''
-    const currentBioContent = editorMode === 'html' ? htmlContent : (editor ? editor.getHTML() : '')
-    const bioChanged = currentBioContent !== '' && currentBioContent !== '<p></p>' &&
-      currentBioContent !== convertEntitiesToRawBrackets(originalDoctext)
-
-    setIsDirty(formChanged || bookmarksChanged || bioChanged)
-  }, [formData, removeImage, bookmarks, removedBookmarks, savedBookmarkOrder, htmlContent, editor, editorMode, data?.user])
+    setIsDirty(formChanged || bookmarksChanged || bioModified)
+  }, [formData, removeImage, bookmarks, removedBookmarks, savedBookmarkOrder, data?.user, bioModified])
 
   // Warn about unsaved changes on navigation
   useEffect(() => {
@@ -260,6 +264,7 @@ const UserEdit = ({ data, e2 }) => {
   const onHtmlChange = (e) => {
     setHtmlContent(e.target.value)
     setPreviewTrigger(prev => prev + 1)
+    setBioModified(true)
   }
 
   // Toggle between Rich and HTML modes

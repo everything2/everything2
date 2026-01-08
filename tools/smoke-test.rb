@@ -660,6 +660,9 @@ class SmokeTest
       # displaytype=xmltrue tests - uses form representation with <node> wrapper
       {path: '/user/normaluser1/writeups/lazy%20dog?displaytype=xmltrue', name: 'writeup (xmltrue)', must_include: ['<node node_id', '<type>writeup</type>', '<doctext>']},
       {path: '/title/lazy%20dog?displaytype=xmltrue', name: 'e2node (xmltrue)', must_include: ['<node node_id', '<type>']},
+
+      # displaytype=softlinks - e2node softlinks XML export
+      {path: '/title/tomato?displaytype=softlinks', name: 'e2node (softlinks)', must_include: ['<?xml', '<node node_id', '<softlinks>']},
     ]
 
     passed = 0

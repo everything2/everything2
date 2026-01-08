@@ -1,4 +1,264 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { FaUser, FaTimes } from 'react-icons/fa'
+
+/**
+ * UserSearchField - Inline user search input with dropdown suggestions
+ */
+const UserSearchField = ({ value, onChange, onSubmit, placeholder, colors }) => {
+  const [inputValue, setInputValue] = useState(value || '')
+  const [suggestions, setSuggestions] = useState([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [loading, setLoading] = useState(false)
+
+  const searchTimeoutRef = useRef(null)
+  const containerRef = useRef(null)
+
+  // Sync input with external value changes
+  useEffect(() => {
+    setInputValue(value || '')
+  }, [value])
+
+  // Search for users via API
+  const searchUsers = useCallback(async (query) => {
+    if (query.length < 2) {
+      setSuggestions([])
+      setShowSuggestions(false)
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch(
+        `/api/node_search?q=${encodeURIComponent(query)}&scope=users&limit=10`
+      )
+      const data = await response.json()
+      if (data.success && data.results) {
+        setSuggestions(data.results)
+        setShowSuggestions(data.results.length > 0)
+        setSelectedIndex(-1)
+      }
+    } catch (err) {
+      console.error('User search failed:', err)
+      setSuggestions([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Handle input change with debounced search
+  const handleInputChange = useCallback((e) => {
+    const newValue = e.target.value
+    setInputValue(newValue)
+    onChange(newValue)
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      searchUsers(newValue.trim())
+    }, 200)
+  }, [searchUsers, onChange])
+
+  // Handle selecting a user from suggestions
+  const handleSelectUser = useCallback((user) => {
+    setInputValue(user.title)
+    onChange(user.title)
+    setSuggestions([])
+    setShowSuggestions(false)
+    setSelectedIndex(-1)
+    // Trigger submit when user is selected from dropdown
+    if (onSubmit) {
+      onSubmit(user.title)
+    }
+  }, [onChange, onSubmit])
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter') {
+      if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+        e.preventDefault()
+        handleSelectUser(suggestions[selectedIndex])
+      }
+      // Let form handle Enter if no suggestion selected
+      return
+    }
+
+    if (!showSuggestions || suggestions.length === 0) {
+      return
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSelectedIndex(prev =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      )
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSelectedIndex(prev => prev > 0 ? prev - 1 : -1)
+    } else if (e.key === 'Escape') {
+      setSuggestions([])
+      setShowSuggestions(false)
+      setSelectedIndex(-1)
+    }
+  }, [showSuggestions, suggestions, selectedIndex, handleSelectUser])
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  // Clear button handler
+  const handleClear = () => {
+    setInputValue('')
+    onChange('')
+    setSuggestions([])
+    setShowSuggestions(false)
+  }
+
+  const styles = {
+    container: {
+      position: 'relative',
+      flex: '1',
+      minWidth: '200px'
+    },
+    inputWrapper: {
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center'
+    },
+    icon: {
+      position: 'absolute',
+      left: 10,
+      color: colors?.secondary || '#507898',
+      fontSize: 14,
+      pointerEvents: 'none'
+    },
+    input: {
+      width: '100%',
+      padding: '8px 32px 8px 32px',
+      fontSize: 14,
+      border: `1px solid ${colors?.secondary || '#507898'}`,
+      borderRadius: 4,
+      boxSizing: 'border-box',
+      backgroundColor: '#fff'
+    },
+    loadingIndicator: {
+      position: 'absolute',
+      right: 32,
+      color: colors?.secondary || '#507898',
+      fontSize: 12
+    },
+    clearButton: {
+      position: 'absolute',
+      right: 8,
+      background: 'none',
+      border: 'none',
+      color: '#999',
+      cursor: 'pointer',
+      padding: 4,
+      fontSize: 12,
+      display: 'flex',
+      alignItems: 'center'
+    },
+    dropdown: {
+      position: 'absolute',
+      top: '100%',
+      left: 0,
+      right: 0,
+      backgroundColor: '#fff',
+      border: `1px solid ${colors?.secondary || '#507898'}`,
+      borderTop: 'none',
+      borderRadius: '0 0 4px 4px',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+      maxHeight: 200,
+      overflowY: 'auto',
+      zIndex: 100
+    },
+    suggestionItem: {
+      padding: '10px 12px',
+      cursor: 'pointer',
+      fontSize: 14,
+      color: colors?.primary || '#38495e',
+      borderBottom: '1px solid #eee',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8
+    },
+    suggestionItemSelected: {
+      backgroundColor: '#e8f4f8',
+      color: colors?.highlight || '#4060b0'
+    },
+    suggestionIcon: {
+      fontSize: 12,
+      color: colors?.secondary || '#507898'
+    }
+  }
+
+  return (
+    <div ref={containerRef} style={styles.container}>
+      <div style={styles.inputWrapper}>
+        <FaUser style={styles.icon} />
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+          placeholder={placeholder}
+          style={styles.input}
+          autoComplete="off"
+        />
+        {loading && <span style={styles.loadingIndicator}>...</span>}
+        {inputValue && !loading && (
+          <button
+            type="button"
+            onClick={handleClear}
+            style={styles.clearButton}
+            title="Clear"
+          >
+            <FaTimes />
+          </button>
+        )}
+
+        {/* Suggestions dropdown */}
+        {showSuggestions && suggestions.length > 0 && (
+          <div style={styles.dropdown}>
+            {suggestions.map((user, index) => (
+              <div
+                key={user.node_id}
+                onClick={() => handleSelectUser(user)}
+                onMouseEnter={() => setSelectedIndex(index)}
+                style={{
+                  ...styles.suggestionItem,
+                  ...(index === selectedIndex ? styles.suggestionItemSelected : {})
+                }}
+              >
+                <FaUser style={styles.suggestionIcon} />
+                <span>{user.title}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 /**
  * CoolArchive - Browse the complete archive of editor-selected (C!'ed) content
@@ -187,15 +447,6 @@ const CoolArchive = ({ data, user }) => {
     cursor: 'pointer'
   }
 
-  const inputStyle = {
-    padding: '8px 12px',
-    border: `1px solid ${colors.secondary}`,
-    borderRadius: '4px',
-    fontSize: '14px',
-    backgroundColor: '#fff',
-    color: colors.text
-  }
-
   const buttonStyle = {
     padding: '9px 20px',
     backgroundColor: colors.highlight,
@@ -316,15 +567,18 @@ const CoolArchive = ({ data, user }) => {
               </select>
             </div>
 
-            {/* Username */}
-            <div style={filterGroupStyle}>
+            {/* Username with search */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '1', minWidth: '200px' }}>
               <label style={labelStyle}>User:</label>
-              <input
-                type="text"
+              <UserSearchField
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username..."
-                style={inputStyle}
+                onChange={setUsername}
+                onSubmit={(selectedUsername) => {
+                  setSearchUsername(selectedUsername)
+                  setOffset(0)
+                }}
+                placeholder="Search for user..."
+                colors={colors}
               />
             </div>
 
@@ -362,7 +616,7 @@ const CoolArchive = ({ data, user }) => {
             </thead>
             <tbody>
               {writeups.map((wu, idx) => (
-                <tr key={wu.writeup_id || idx}>
+                <tr key={`${wu.writeup_id}-${wu.cooled_by_id || idx}`}>
                   <td style={tdStyle(idx % 2 === 1)}>
                     <a href={`/node/${wu.parent_node_id}`} style={linkStyle}>
                       {wu.parent_title}

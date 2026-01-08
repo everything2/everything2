@@ -2,6 +2,7 @@ package Everything::Controller::htmlpage;
 
 use Moose;
 extends 'Everything::Controller';
+with 'Everything::Controller::Role::BasicEdit';
 
 # Htmlpage Controller
 #
@@ -127,15 +128,6 @@ sub _is_delegated {
 
     # Check if the sub exists using can()
     return Everything::Delegation::htmlpage->can($sub_name) ? 1 : 0;
-}
-
-# edit - redirect to basicedit for htmlpage editing
-# The legacy htmlpage edit page is replaced by the basicedit functionality
-sub edit {
-    my ($self, $REQUEST, $node) = @_;
-
-    # Redirect to basicedit displaytype
-    return $self->basicedit($REQUEST, $node);
 }
 
 __PACKAGE__->meta->make_immutable;

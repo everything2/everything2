@@ -143,6 +143,19 @@ sub display {
         'cooledby_user=' . $node->node_id
     ) || 0;
 
+    # Check if viewer has favorited this user (for favorite icon)
+    my $is_favorited = 0;
+    if (!$is_guest && !$is_own) {
+        my $linktype = $self->DB->getNode('favorite', 'linktype');
+        if ($linktype) {
+            $is_favorited = $self->DB->sqlSelect(
+                '1',
+                'links',
+                "from_node = $user_id AND to_node = " . $node->node_id . " AND linktype = " . $linktype->{node_id}
+            ) ? 1 : 0;
+        }
+    }
+
     # Build viewing user data
     my $viewer_data = {
         node_id   => $user_id,
@@ -181,6 +194,7 @@ sub display {
         viewer        => $viewer_data,
         is_own        => $is_own ? 1 : 0,
         is_ignored    => $is_ignored,
+        is_favorited  => $is_favorited,
         message_count => $message_count,
         lastnoded     => $lastnoded,
         cools_spent   => $cools_spent,
@@ -353,6 +367,72 @@ sub _setup_user_vars {
     }
 
     return;
+}
+
+sub editvars {
+    my ( $self, $REQUEST, $node ) = @_;
+
+    my $user    = $REQUEST->user;
+    my $user_id = $user->node_id;
+    my $APP     = $self->APP;
+
+    # Only admins can edit user vars directly
+    unless ( $APP->isAdmin($user->NODEDATA) ) {
+        return $self->error_page( $REQUEST, 'Access denied', 'User vars editing is restricted to administrators.' );
+    }
+
+    # Get vars for this user
+    my $vars = Everything::getVars( $node->NODEDATA ) || {};
+
+    # Build sorted list of key-value pairs for display
+    my @vars_list;
+    foreach my $key ( sort keys %$vars ) {
+        push @vars_list, {
+            key   => $key,
+            value => $vars->{$key}
+        };
+    }
+
+    # Build viewer data
+    my $viewer_data = {
+        node_id   => $user_id,
+        title     => $user->title,
+        is_guest  => $user->is_guest ? 1 : 0,
+        is_editor => $user->is_editor ? 1 : 0,
+        is_admin  => $user->is_admin ? 1 : 0
+    };
+
+    # Build contentData for React
+    my $content_data = {
+        type        => 'user_editvars',
+        target_user => {
+            node_id => $node->node_id,
+            title   => $node->title,
+        },
+        vars        => \@vars_list,
+        vars_count  => scalar(@vars_list),
+        viewer      => $viewer_data,
+    };
+
+    # Set node on REQUEST for buildNodeInfoStructure
+    $REQUEST->node($node);
+
+    # Build e2 data structure
+    my $e2 = $APP->buildNodeInfoStructure(
+        $node->NODEDATA,
+        $REQUEST->user->NODEDATA,
+        $REQUEST->user->VARS,
+        $REQUEST->cgi,
+        $REQUEST
+    );
+
+    # Override contentData with our directly-built data
+    $e2->{contentData}   = $content_data;
+    $e2->{reactPageMode} = \1;
+
+    # Use react_page layout
+    my $html = $self->layout( '/pages/react_page', e2 => $e2, REQUEST => $REQUEST, node => $node );
+    return [ $self->HTTP_OK, $html ];
 }
 
 __PACKAGE__->meta->make_immutable();

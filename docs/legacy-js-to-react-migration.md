@@ -616,7 +616,7 @@ class="ajax replyto456:messageBox:123,0,456,0"
 | `nodenote` | Add/update node notes | ✅ **MIGRATED** | `/api/nodenotes/` POST/DELETE (exists) |
 | `ordernode` | Lock/unlock node ordering | ❌ Pending | `/api/nodes/{id}/orderlock` POST |
 | `ajaxEcho` | Generic confirmation echo | ❌ Pending | Handle in React (local feedback) |
-| `homenodeinfectedinfo` | Cure borgification | ❌ Pending | `/api/users/{id}/cure` POST |
+| `homenodeinfectedinfo` | Cure borgification | ✅ **MIGRATED** | `POST /api/user/cure` + React UserDisplay.js |
 | `sanctify` | Mark user as not borged | ❌ Pending | `/api/users/{id}/sanctify` POST |
 | `favorite_noder` | Add/remove favorite noder | ❌ Pending | `/api/favorites/noders` POST/DELETE |
 
