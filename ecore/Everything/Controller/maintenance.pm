@@ -2,6 +2,7 @@ package Everything::Controller::maintenance;
 
 use Moose;
 extends 'Everything::Controller';
+with 'Everything::Controller::Role::BasicEdit';
 
 # Maintenance Controller
 #
@@ -123,21 +124,6 @@ sub display
     node    => $node
   );
   return [$self->HTTP_OK, $html];
-}
-
-sub edit
-{
-  my ($self, $REQUEST, $node) = @_;
-
-  my $user = $REQUEST->user;
-
-  # Maintenance nodes are only editable by staff, developers, or admins
-  unless ($user->is_editor || $user->is_developer || $user->is_admin)
-  {
-    return [$self->HTTP_FOUND, '', {Location => '/title/Permission+Denied'}];
-  }
-
-  return $self->basicedit($REQUEST, $node);
 }
 
 # Check if this maintenance node has a delegated implementation

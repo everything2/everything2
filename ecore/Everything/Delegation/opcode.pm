@@ -670,7 +670,7 @@ sub message
     my $result = $APP->processMessageCommand($USER, $message, $VARS);
 
     # Note: processMessageCommand() returns 1 on success, undef on failure
-    # UI feedback is minimal since most commands provide visual confirmation via showchatter
+    # UI feedback is minimal since most commands provide visual confirmation via React Chatterbox
   }
 
   return;
@@ -1889,21 +1889,6 @@ sub sanctify
     'recipient_id' => $$U{user_id},
     'message' => "Whoa! You’ve been [Sanctify|sanctified]!" });
 
-  return;
-}
-
-sub movenodelet
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  # See htmlcode for useful info on parameters
-  htmlcode('movenodelet',$query->param('nodelet'),$query->param('position'));
   return;
 }
 

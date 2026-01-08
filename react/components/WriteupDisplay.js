@@ -5,6 +5,7 @@ import LinkNode from './LinkNode'
 import AdminModal from './AdminModal'
 import MessageModal from './MessageModal'
 import ConfirmModal from './ConfirmModal'
+import ILikeItButton from './ILikeItButton'
 import { renderE2Content } from './Editor/E2HtmlSanitizer'
 
 /**
@@ -547,7 +548,18 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                   </td>
                 )}
 
-                {/* C! display and button - matches legacy writeupcools htmlcode (not for drafts) */}
+                {/* "I like it!" button for guest users (not for drafts) */}
+                {!isDraft && isGuest && (
+                  <td className="wu_ilikeit">
+                    <ILikeItButton
+                      writeupId={node_id}
+                      isGuest={isGuest}
+                      authorTitle={author?.title}
+                    />
+                  </td>
+                )}
+
+                {/* C! display and button (not for drafts) */}
                 {!isDraft && (
                 <td className="wu_cfull" style={{ verticalAlign: 'middle' }}>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>

@@ -204,6 +204,7 @@ sub list_writeups {
             parent_node_id => $_->{parent_e2node},
             parent_title => $_->{parent_title} || 'Unknown',
             author_name => $_->{author_name} || 'Unknown',
+            cooled_by_id => $_->{cooledby_user},
             cooled_by_name => $_->{cooled_by_name} || 'Unknown',
             writeup_type => $_->{writeup_type},
             reputation => $_->{reputation} || 0,

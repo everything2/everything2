@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AdminCreateNodeLink from '../AdminCreateNodeLink';
+import { decodeHtmlEntities } from '../../utils/textUtils';
 
 const NothingFound = ({ data, user }) => {
   const {
@@ -102,7 +103,7 @@ const NothingFound = ({ data, user }) => {
                       </span>
                     )}
                     {entry.excerpt && (
-                      <p style={styles.bestEntryExcerpt}>{entry.excerpt}</p>
+                      <p style={styles.bestEntryExcerpt}>{decodeHtmlEntities(entry.excerpt)}</p>
                     )}
                   </li>
                 ))}

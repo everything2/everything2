@@ -70,9 +70,9 @@ const SoftlinksTable = ({ softlinks, isLoggedIn }) => {
 const Writeup = ({ data }) => {
   const [toolsModalOpen, setToolsModalOpen] = useState(false)
 
-  // Check for ?edit=1 query parameter to start in edit mode
+  // Check for ?edit=1 query parameter OR start_in_edit_mode from controller (displaytype=edit)
   const urlParams = new URLSearchParams(window.location.search)
-  const startInEditMode = urlParams.get('edit') === '1'
+  const startInEditMode = urlParams.get('edit') === '1' || data?.start_in_edit_mode
   const [isEditing, setIsEditing] = useState(startInEditMode)
 
   // Track current doctext for live updates after editing

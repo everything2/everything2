@@ -32,7 +32,7 @@ sub zen_stdcontainer
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <title>|.$APP->pagetitle($NODE).qq| - Everything2.com</title>
 <link rel="stylesheet" id="basesheet" type="text/css" href="|.htmlcode("linkStylesheet","basesheet").qq|" media="all"><link rel="stylesheet" id="zensheet" type="text/css" href="|
-. htmlcode('linkStylesheet', $APP->get_user_style($USER), 'serve')
+. htmlcode('linkStylesheet', $APP->get_user_style($USER))
 . '" media="screen,tv,projection">' ;
 
   if (exists(($$VARS{customstyle})) && defined(($$VARS{customstyle}))) {

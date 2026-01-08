@@ -2,6 +2,7 @@ package Everything::Controller::node_forward;
 
 use Moose;
 extends 'Everything::Controller';
+with 'Everything::Controller::Role::BasicEdit';
 
 # Controller for node_forward nodes
 # Handles HTTP redirects properly (headers before body)
@@ -64,12 +65,6 @@ sub display {
     # Return proper HTTP 303 redirect
     # Controllers return [status, body, headers] - headers are sent BEFORE body
     return [$self->HTTP_SEE_OTHER, '', { 'Location' => $full_url }];
-}
-
-# Edit uses basicedit for raw field editing
-sub edit {
-    my ($self, $REQUEST, $node) = @_;
-    return $self->basicedit($REQUEST, $node);
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -116,10 +116,10 @@ $user->set_vars($VARS);
 
 | Key | Type | Description | Files |
 |-----|------|-------------|-------|
-| `splitChatter` | Integer | Max character length for chat message splitting | htmlcode.pm |
+| `splitChatter` | Integer | **DEPRECATED** Max character length for chat message splitting. The `chatterSplit` htmlcode that used this setting has been removed. Setting no longer has any effect. | htmlcode.pm |
 | `chatmacro_*` | String | User-defined chat macros (dynamic keys) | htmlcode.pm |
 | `hidemsgme` | Boolean | Prevent "send message" on homenode | document.pm |
-| `showmessages_replylink` | Boolean | Show reply shortcut (default: enabled) | htmlcode.pm |
+| `showmessages_replylink` | Boolean | **DEPRECATED** Show reply shortcut in legacy message display. React Messages nodelet has built-in reply functionality via MessageModal. Setting no longer has any effect. | htmlcode.pm |
 | `informmsgignore` | 0/1/2/3 | **DEPRECATED** Block notification method: 0=private message, 1=chatterbox (deprecated), 2=both (deprecated), 3=none. Values 1 and 2 are treated as 0 (private message only). Modern implementation shows error directly in chatterbox when user tries to send message to blocked user. | Application.pm, preferences.pm |
 | `sortmyinbox` | Boolean | **DEPRECATED** Sort messages in inbox. Modern Message Inbox always sorts by most recent first (newest at top). Setting no longer has any effect. | document.pm, preferences.pm |
 | `noTypoCheck` | Boolean | **DEPRECATED** Check for chatterbox command typos (e.g., /mgs instead of /msg). Modern chatterbox automatically validates all commands - messages starting with "/" are processed as commands and show errors if invalid. Protection is now built-in. | document.pm, preferences.pm |
@@ -214,6 +214,7 @@ These keys are no longer used and can be cleaned up from user settings:
 | `textareaSize` | **DEPRECATED** | Writeup editor size (small/medium/large). React WriteupDisplay uses inline editing - legacy textarea sizing no longer applies. | 2025-12-21 |
 | `settings_useTinyMCE` | **DEPRECATED** | Enable WYSIWYG editor. React WriteupDisplay uses inline editing - TinyMCE integration removed. | 2025-12-21 |
 | `HideWriteupOnE2node` | **DEPRECATED** | Only show writeup edit box on writeup's own page. React WriteupDisplay uses inline editing - this optimization is no longer relevant. | 2025-12-21 |
+| `listcode_smaller` | **DEPRECATED** | Display code listings in smaller font. The `listcode` htmlcode used for viewing database-stored code (htmlcode, container, opcode nodes) has been removed - all code is now on GitHub. | 2026-01-07 |
 
 ### Removed in 2025-11 (Nodelet Migration)
 

@@ -247,6 +247,30 @@ sub buildReactData
     };
   }
 
+  # Get favorite users (using 'favorite' linktype)
+  my @favorite_users;
+  my $favorite_linktype = $DB->getNode('favorite', 'linktype');
+  if ($favorite_linktype) {
+    my $linktype_id = $favorite_linktype->{node_id};
+    my $user_id = $user->node_id;
+
+    my $fav_csr = $DB->sqlSelectMany(
+      'to_node',
+      'links',
+      "from_node = $user_id AND linktype = $linktype_id"
+    );
+
+    while (my ($fav_id) = $fav_csr->fetchrow_array) {
+      my $fav_user = $DB->getNodeById($fav_id);
+      next unless $fav_user && $fav_user->{type}{title} eq 'user';
+
+      push @favorite_users, {
+        node_id => int($fav_user->{node_id}),
+        title => $fav_user->{title}
+      };
+    }
+  }
+
   # Get nodelet-specific settings for active nodelets
   my %nodelet_settings;
   foreach my $nodelet (@nodelets) {
@@ -315,6 +339,7 @@ sub buildReactData
     availableNodelets => \@available_nodelets,
     notificationPreferences => \@all_notifications,
     blockedUsers => \@blocked_users,
+    favoriteUsers => \@favorite_users,
     nodeletSettings => \%nodelet_settings,
     availableStylesheets => \@available_stylesheets,
     currentStylesheet => $current_stylesheet_title,

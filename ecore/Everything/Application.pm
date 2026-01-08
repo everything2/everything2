@@ -3017,39 +3017,6 @@ sub urlGenNoParams {
   return; # Make perlcritic happy
 }
 
-
-#############################################################################
-#	Sub
-#		listCode
-#
-#	Purpose
-#		To list code so that it will not be parsed by Everything or the browser
-#
-#	Parameters
-#		code -- the block of code to display
-#		numbering -- set to true if linenumbers are desired
-#
-sub listCode {
-  my ($this, $code, $numbering) = @_;
-  return unless($code); 
-
-  $code = $this->encodeHTML($code, 1);
-
-  my @lines = split /\n/, $code;
-  my $count = 1;
-
-  if($numbering)
-  {
-    foreach my $ln (@lines) {
-      $ln = sprintf("%4d: %s", $count++, $ln);
-    }
-  }
-
-  return "<pre>" . join ("\n", @lines) . "</pre>";
-}
-
-
-
 #############################################################################
 #       sub
 #               screenTable
@@ -4256,7 +4223,7 @@ sub processMessageCommand
     $result = $this->handleMacroCommand($user, $1, $vars);
   }
   elsif ($message =~ /^\/(whisper|sing|death|sings|me\'s)\s+/i) {
-    # Commands that display in showchatter with special formatting
+    # Commands that display in React Chatterbox with special formatting
     $result = $this->sendPublicChatter($user, $message, $vars);
   }
   elsif ($message =~ /^\//) {
@@ -4284,7 +4251,7 @@ sub handleMeCommand
 
   # /me action → plain action text
   # /me's action → same
-  # Just send the command as-is, showchatter will parse it
+  # Just send the command as-is, React Chatterbox will format it
   return $this->sendPublicChatter($user, $message, $vars);
 }
 
@@ -7118,11 +7085,22 @@ sub buildNodeInfoStructure
         if($node && $node->{node_id})
         {
           my $author = $this->{db}->getNodeById($node->{author_user});
+          my $parent = $this->{db}->getNodeById($node->{parent_e2node});
+
+          # Get writeup type from the writeuptype table
+          my $writeuptype_name = '';
+          if($node->{wrtype_writeuptype})
+          {
+            my $wutype = $this->{db}->getNodeById($node->{wrtype_writeuptype});
+            $writeuptype_name = $wutype->{title} if $wutype;
+          }
+
           push @fav_writeups, {
             node_id => $node->{node_id},
             title => $node->{title},
-            author_id => $node->{author_user},
-            author_name => $author ? $author->{title} : 'Unknown'
+            parent => $parent ? { node_id => $parent->{node_id}, title => $parent->{title} } : undef,
+            author => { node_id => int($node->{author_user}), title => ($author ? $author->{title} : 'Unknown') },
+            writeuptype => $writeuptype_name
           };
         }
       }

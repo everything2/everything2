@@ -285,8 +285,16 @@ const NodeToolset = ({
             </button>
           ) : (
             // Non-system nodes use legacy edit page
-            <div
-              style={buttonStyle}
+            <LinkNode
+              id={nodeId}
+              display={
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                  <FaEdit size={20} />
+                  <span>{isSuperdoc ? 'Edit Code' : 'Edit Node'}</span>
+                </div>
+              }
+              params={{ displaytype: 'edit' }}
+              style={{ ...buttonStyle, textDecoration: 'none', color: 'inherit', display: 'flex' }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
                 e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
@@ -295,23 +303,18 @@ const NodeToolset = ({
                 e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
                 e.currentTarget.style.borderColor = '#ccc'
               }}
-            >
-              <LinkNode
-                id={nodeId}
-                display={
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                    <FaEdit size={20} />
-                    <span>{isSuperdoc ? 'Edit Code' : 'Edit Node'}</span>
-                  </div>
-                }
-                params={{ displaytype: 'edit' }}
-                style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
-              />
-            </div>
+            />
           )
         ) : (
-          <div
-            style={buttonStyle}
+          <LinkNode
+            id={nodeId}
+            display={
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <FaEye size={20} />
+                <span>Display</span>
+              </div>
+            }
+            style={{ ...buttonStyle, textDecoration: 'none', color: 'inherit', display: 'flex' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
               e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
@@ -320,24 +323,21 @@ const NodeToolset = ({
               e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
               e.currentTarget.style.borderColor = '#ccc'
             }}
-          >
-            <LinkNode
-              id={nodeId}
-              display={
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                  <FaEye size={20} />
-                  <span>Display</span>
-                </div>
-              }
-              style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
-            />
-          </div>
+          />
         )}
 
         {/* Document/Advanced Edit Button */}
         {showAdvancedEdit ? (
-          <div
-            style={buttonStyle}
+          <LinkNode
+            id={nodeId}
+            display={
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <FaBook size={20} />
+                <span>Advanced Edit</span>
+              </div>
+            }
+            params={{ displaytype: 'basicedit' }}
+            style={{ ...buttonStyle, textDecoration: 'none', color: 'inherit', display: 'flex' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
               e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
@@ -346,22 +346,18 @@ const NodeToolset = ({
               e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
               e.currentTarget.style.borderColor = '#ccc'
             }}
-          >
-            <LinkNode
-              id={nodeId}
-              display={
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                  <FaBook size={20} />
-                  <span>Advanced Edit</span>
-                </div>
-              }
-              params={{ displaytype: 'basicedit' }}
-              style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
-            />
-          </div>
+          />
         ) : showHelp ? (
-          <div
-            style={buttonStyle}
+          <LinkNode
+            id={nodeId}
+            display={
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <FaBook size={20} />
+                <span>{hasHelp ? 'Documentation' : 'Document Node'}</span>
+              </div>
+            }
+            params={{ displaytype: 'help' }}
+            style={{ ...buttonStyle, textDecoration: 'none', color: 'inherit', display: 'flex' }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
               e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
@@ -370,19 +366,7 @@ const NodeToolset = ({
               e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
               e.currentTarget.style.borderColor = '#ccc'
             }}
-          >
-            <LinkNode
-              id={nodeId}
-              display={
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                  <FaBook size={20} />
-                  <span>{hasHelp ? 'Documentation' : 'Document Node'}</span>
-                </div>
-              }
-              params={{ displaytype: 'help' }}
-              style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
-            />
-          </div>
+          />
         ) : (
           <div style={disabledButtonStyle}>
             <FaBook size={20} />

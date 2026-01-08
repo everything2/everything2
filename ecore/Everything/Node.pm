@@ -336,7 +336,10 @@ sub to_xml
   my $N = \%newhash;
 
   # Fields to exclude from XML export
-  my @NOFIELDS = ('hits',
+  # Includes sensitive user data that should never be exposed publicly
+  my @NOFIELDS = (
+    # Internal/system fields
+    'hits',
     'createtime',
     'table',
     'type',
@@ -344,7 +347,19 @@ sub to_xml
     'lockedby_user',
     'locktime',
     'tableArray',
-    'resolvedInheritance', 'passwd', 'nltext', 'sqltablelist');
+    'resolvedInheritance',
+    'nltext',
+    'sqltablelist',
+    # Sensitive user fields - security critical
+    'passwd',
+    'email',
+    'salt',
+    'user_salt',
+    'validationkey',
+    'session_id',
+    # User vars field may contain sensitive settings
+    'vars',
+  );
 
   push @NOFIELDS, @$except if $except;
 

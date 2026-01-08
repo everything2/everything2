@@ -2,6 +2,7 @@ package Everything::Controller::nodetype;
 
 use Moose;
 extends 'Everything::Controller';
+with 'Everything::Controller::Role::BasicEdit';
 
 # Controller for nodetype nodes
 # Migrated from Everything::Delegation::htmlpage::nodetype_display_page
@@ -186,15 +187,6 @@ sub _getGroupMembers {
     }
 
     return $members;
-}
-
-# edit - redirect to basicedit for nodetype editing
-# The legacy nodetype edit page is replaced by the basicedit functionality
-sub edit {
-    my ($self, $REQUEST, $node) = @_;
-
-    # Redirect to basicedit displaytype
-    return $self->basicedit($REQUEST, $node);
 }
 
 __PACKAGE__->meta->make_immutable();

@@ -1,7 +1,7 @@
 # Everything2 AJAX Update System Analysis
 
 **Status**: ✅ FULLY MIGRATED - All legacy polling eliminated
-**Last Updated**: 2025-12-07
+**Last Updated**: 2026-01-07
 
 ## Executive Summary
 
@@ -20,6 +20,8 @@ The ajaxUpdate system was a legacy AJAX framework that handled real-time updates
 10. ✅ `showchatter` htmlcode deleted
 11. ✅ `testshowmessages` htmlcode stubbed (deletion pending)
 12. ✅ Removed 6 unused ajax_update modes: `update`, `getlastmessage`, `checkCools`, `checkMessages`, `checkFeedItems`, `deleteFeedItem` (2025-12-07)
+13. ✅ `coolsJSON` htmlcode deleted (2026-01-07)
+14. ✅ `ilikeit` migrated to React API endpoint `/api/ilikeit` (2026-01-07)
 
 **Remaining Legacy AJAX**: NONE - All polling systems migrated to React
 
@@ -49,15 +51,23 @@ The following modes were removed as they had no frontend callers:
 
 | Mode | Usage | Notes |
 |------|-------|-------|
-| `message` | Chatterbox message sending | Still used by legacy.js for /msg commands |
-| `vote` | Voting on writeups | Still used by vote buttons in legacy.js |
-| `getNodeInfo` | Node field lookup | May be used by legacy features |
-| `annotate` | Annotation management | Used by writeup annotation feature |
+| `message` | Chatterbox message sending | Only remaining mode in ajax_update |
+
+### Removed/Migrated Modes
+
+| Mode | Replacement | Notes |
+|------|-------------|-------|
+| `vote` | `/api/vote/writeup/:id` | React WriteupDisplay handles voting |
+| `getNodeInfo` | Removed | No longer called |
+| `annotate` | Removed | No longer called |
 
 ### Future Cleanup
 
-1. **Next**: Remove `coolsJSON` and `userFeedJSON` htmlcodes (no longer called)
-2. **Future**: Migrate remaining modes (`message`, `vote`, `getNodeInfo`, `annotate`) to /api/ endpoints
+1. ✅ **DONE**: `coolsJSON` htmlcode removed (2026-01-07)
+2. ✅ **DONE**: `vote` mode removed - React uses `/api/vote` instead
+3. **Next**: Remove `userFeedJSON` htmlcode (no longer called)
+4. **Next**: Remove `message` mode - React Chatterbox uses `/api/chatter/create`
+5. **Future**: Remove ajax_update function entirely when message mode migrated
 
 ---
 
@@ -252,67 +262,31 @@ This section documents where each AJAX-enabled list and periodical updater is at
 
 ---
 
-### 5. Other Users Periodical Updater
+### 5. ~~Other Users Periodical Updater~~ - ✅ MIGRATED
 
-**Initialization**: `/www/js/legacy.js:1363`
-```javascript
-new e2.ajax.periodicalUpdater('otherusers:updateNodelet:Other+Users');
-```
+**Status**: **COMPLETELY MIGRATED TO REACT** (2025)
 
-**Rendered In**: Multiple contexts
-
-#### A. Standard "Other Users" Nodelet
-- **File**: `/ecore/Everything/Delegation/nodelet.pm`
-- **Function**: `other_users` (line 98)
-- **Creation**: Line 108
-- **Code**: `my $str = htmlcode("changeroom","Other Users");`
-
-**Purpose**: Shows list of users currently online, filtered by chatroom
-
-#### B. Chatterlight Interface (AJAX-enabled)
-- **File**: `/ecore/Everything/Delegation/document.pm`
-- **Function**: `chatterlighter` (line 1482)
-- **AJAX Trigger**: Line 1496
-- **Code**:
-  ```perl
-  $str .= q|<span class="instant ajax chatterlight_rooms:updateNodelet:Other+Users"></span>|;
-  $str .= q|<div id="chatterlight_rooms">|;
-  ```
-
-**Update Mechanism**:
-- Uses generic `updateNodelet` htmlcode endpoint
-- Refreshes the entire "Other Users" nodelet
+**Old System** (REMOVED):
+- Legacy AJAX polling via `e2.ajax.periodicalUpdater('otherusers:updateNodelet:Other+Users')`
+- Used `updateNodelet` htmlcode to refresh nodelet content
 - Triggered by room changes via `changeroom` htmlcode
-- Can be manually triggered via AJAX class bindings
 
-**Supporting Functions**:
+**New System** (ACTIVE):
+- **Component**: `react/components/Nodelets/OtherUsers.js`
+- **Polling Hook**: `react/hooks/useOtherUsersPolling.js`
+- **API**: `GET /api/chatroom/` (fetch other users data)
+- **API**: `POST /api/chatroom/change_room` (change rooms)
+- **API**: `POST /api/chatroom/set_cloaked` (toggle cloak)
+- **API**: `POST /api/chatroom/create_room` (create new room)
+- **Polling**: Every 2 minutes with activity detection
+- **Features**:
+  - Room selection and switching
+  - Cloak toggle for eligible users
+  - Create new room dialog
+  - User flags (god, editor, chanop, borged, etc.)
+  - Recent noding/action display
 
-**`changeroom` htmlcode** (`/ecore/Everything/Delegation/htmlcode.pm:4351`)
-- Provides room selection dropdown
-- Triggers chatterbox/nodelet updates on room change
-- AJAX trigger code (line 4365):
-  ```perl
-  $str = ' instant ajax chatterbox_chatter:#' if $query and
-         $query -> param('ajaxTrigger') and
-         defined $query->param('changeroom') and
-         $query->param('changeroom') != $$USER{in_room};
-  ```
-
-**`updateNodelet` htmlcode** (`/ecore/Everything/Delegation/htmlcode.pm:9116`)
-- Simple wrapper that refreshes any nodelet by name
-- Called via AJAX to update nodelet content
-- Code:
-  ```perl
-  sub updateNodelet {
-    my ($nodelet) = @_;
-    return unless $nodelet;
-    $nodelet = getNode($nodelet,'nodelet');
-    return unless $nodelet;
-    return insertNodelet($nodelet);
-  }
-  ```
-
-**Availability**: All users (content varies based on login status and room membership)
+**Migration Complete**: All functionality replaced, legacy periodical updater removed from legacy.js
 
 ---
 
@@ -339,23 +313,26 @@ e2('.dismiss', 'click', e2.ajax.dismissListItem);
 
 ### Summary: AJAX Update Patterns
 
-**Container Detection Pattern**:
-All AJAX lists are registered via `e2.ajax.addList()` and automatically detected when:
+**Status**: ✅ All AJAX polling has been migrated to React
+
+**Legacy Pattern (DEPRECATED)**:
+AJAX lists were registered via `e2.ajax.addList()` and automatically detected when:
 1. DOM element with matching ID is found (e.g., `<div id="chatterbox_chatter">`)
 2. Element is passed through `e2()` function (E2's jQuery enhancement)
 3. List manager is created and starts polling
 
-**Update Frequencies**:
-- **11 seconds**: Chatterbox chatter (when active)
-- **23 seconds**: Private messages (both variants)
-- **45 seconds**: Notifications
-- **Variable**: Other Users (triggered by room changes)
+**React Polling Frequencies** (Current):
+- **Chatterbox chatter**: React polling with activity detection
+- **Private messages**: React polling with activity detection
+- **Notifications**: React polling with activity detection
+- **Other Users**: 2-minute polling via `useOtherUsersPolling` hook
+- **New Writeups**: 3-minute polling
 
-**Guest User Restrictions**:
-All AJAX lists are wrapped in `if (!e2.guest)` check (legacy.js:1285), so guest users get static content only.
+**Guest User Behavior**:
+Guest users see static content and the "I like it!" button (via `/api/ilikeit`).
 
 **Page Availability**:
-These AJAX features are available on ALL pages where the respective nodelets are displayed, typically:
+React nodelets are mounted on ALL pages where the respective nodelets are configured, typically:
 - Main page (guest front page for logged-in users)
 - All node display pages
 - Search results
@@ -364,16 +341,16 @@ These AJAX features are available on ALL pages where the respective nodelets are
 
 ---
 
-## React Integration and Conflicts
+## React Integration
 
-### Overview: Two Parallel Systems
+### Overview: Unified React System
 
-Everything2 currently operates with **two distinct, non-communicating update systems** running in parallel:
+Everything2 has **fully migrated** from the legacy AJAX polling system to React:
 
-1. **Legacy AJAX System** (legacy.js) - Uses `e2.ajax` object with `displaytype=ajaxupdate`
-2. **Modern React System** (react/) - Uses `fetch()` API with `/api/` endpoints
+1. ~~**Legacy AJAX System** (legacy.js)~~ - **DEPRECATED** - Only action handlers remain (vote, message opcodes)
+2. **Modern React System** (react/) - Uses `fetch()` API with `/api/` endpoints - **PRIMARY**
 
-These systems coexist but do not share state, communicate, or coordinate updates.
+All polling-based features now use React components with dedicated API endpoints.
 
 ---
 
@@ -446,35 +423,21 @@ The following nodelets are fully React-based and do NOT use the legacy AJAX syst
 
 ### Legacy AJAX-Managed Features
 
-The following features still use the legacy `e2.ajax` system:
+**All polling features have been migrated to React!**
 
-1. **Chatterbox** (`chatterbox_chatter`)
-   - Updates: Every 11 seconds
-   - Uses: `e2.ajax.addList()` with `showchatter` htmlcode
+1. ~~**Chatterbox** (`chatterbox_chatter`)~~ - ✅ MIGRATED to React Chatterbox nodelet
+2. ~~**Chatterbox Messages** (`chatterbox_messages`)~~ - ✅ MIGRATED to React Chatterbox nodelet
+3. ~~**Messages Nodelet** (`messages_messages`)~~ - ✅ MIGRATED to React Messages nodelet
+4. ~~**Notifications** (`notifications_list`)~~ - ✅ MIGRATED to React Notifications nodelet
+5. ~~**Other Users** (periodical updater)~~ - ✅ MIGRATED to React OtherUsers nodelet
+6. ~~**Voting System**~~ - ✅ MIGRATED to React WriteupDisplay (`/api/vote/writeup/:id`)
 
-2. **Chatterbox Messages** (`chatterbox_messages`)
-   - Updates: Every 23 seconds
-   - Uses: `e2.ajax.addList()` with `showmessages` htmlcode
-
-3. **Messages Nodelet** (`messages_messages`)
-   - Updates: Every 23 seconds
-   - Uses: `e2.ajax.addList()` with `testshowmessages` htmlcode
-
-4. **Notifications** (`notifications_list`)
-   - Updates: Every 45 seconds
-   - Uses: `e2.ajax.addList()` with `notificationsJSON` htmlcode
-
-5. **Other Users** (periodical updater)
-   - Updates: On room changes
-   - Uses: `e2.ajax.periodicalUpdater()` with `updateNodelet` htmlcode
-
-6. **Voting System** (via ajax_update)
-   - Mode: `vote`
-   - Uses: Direct delegation to `Everything::Delegation::opcode::vote()` ✓
+**Only remaining ajax_update mode**:
 
 7. **Message Sending** (via ajax_update)
    - Mode: `message`
-   - Uses: Direct delegation to `Everything::Delegation::opcode::message()` ✓
+   - Uses: Direct delegation to `Everything::Delegation::opcode::message()`
+   - Note: React Chatterbox uses `/api/chatter/create` - this mode can likely be removed
 
 ---
 
@@ -738,35 +701,36 @@ const NewWriteupsPortal = ({children}) => {
 
 #### Recommended Evolution Path
 
-**Phase 1: Complete Current Migration** (Already Underway)
+**Phase 1: Complete Current Migration** ✅ DONE
 - [x] NewWriteups migrated to React
 - [x] Vitals migrated to React
 - [x] Developer migrated to React
 - [x] API endpoints created for migrated features
-- [ ] Replace eval() calls in ajax_update (message, vote modes)
+- [x] Replace eval() calls in ajax_update (message, vote modes)
 
-**Phase 2: Migrate Remaining Legacy AJAX Features**
-- [ ] Create `/api/messages` endpoint (replace showchatter/showmessages htmlcodes)
-- [ ] Create `/api/notifications` endpoint (replace notificationsJSON htmlcode)
-- [ ] Create React Chatterbox component
-- [ ] Create React Messages component
-- [ ] Create React Notifications component
-- [ ] Create React "Other Users" component
+**Phase 2: Migrate Remaining Legacy AJAX Features** ✅ DONE
+- [x] Create `/api/messages` endpoint (replace showchatter/showmessages htmlcodes)
+- [x] Create `/api/notifications` endpoint (replace notificationsJSON htmlcode)
+- [x] Create React Chatterbox component
+- [x] Create React Messages component
+- [x] Create React Notifications component
+- [x] Create React "Other Users" component
+- [x] Create `/api/ilikeit` endpoint (replace ilikeit htmlcode ajax pattern)
 
-**Phase 3: Unified State Management**
-- [ ] Implement WebSocket server for real-time updates
-- [ ] Create shared event bus for cross-component communication
-- [ ] Consolidate idle detection into single system
-- [ ] Implement React Context or Redux for global state
+**Phase 3: Clean Up Legacy Code** (IN PROGRESS)
+- [ ] Remove unused htmlcodes (userFeedJSON, etc.)
+- [ ] Remove legacy polling code from legacy.js
+- [ ] Remove unused ajax_update modes
+- [ ] Consolidate idle detection into React system only
 
-**Phase 4: Deprecate Legacy System**
+**Phase 4: Deprecate Legacy System** (FUTURE)
 - [ ] Remove `e2.ajax` object from legacy.js
 - [ ] Remove `ajax_update` function from document.pm
 - [ ] Remove "ajax update page" htmlpage
 - [ ] Remove displaytype=ajaxupdate routing
 - [ ] Clean up htmlcode functions no longer needed
 
-**Phase 5: Optimize**
+**Phase 5: Optimize** (FUTURE)
 - [ ] Implement GraphQL for flexible data fetching
 - [ ] Add client-side caching (React Query or SWR)
 - [ ] Implement service worker for offline support

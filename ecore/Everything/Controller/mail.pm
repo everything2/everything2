@@ -2,10 +2,10 @@ package Everything::Controller::mail;
 
 use Moose;
 extends 'Everything::Controller';
+with 'Everything::Controller::Role::BasicEdit';
 
 # Controller for mail nodes
 # Migrated from Everything::Delegation::htmlpage::mail_display_page
-# Edit uses standard basicedit form (inherited from base Controller)
 
 sub display {
     my ($self, $REQUEST, $node) = @_;
@@ -76,13 +76,6 @@ sub display {
     );
 
     return [$self->HTTP_OK, $html];
-}
-
-sub edit {
-    my ($self, $REQUEST, $node) = @_;
-
-    # Mail edit uses the standard basicedit form (gods-only)
-    return $self->basicedit($REQUEST, $node);
 }
 
 __PACKAGE__->meta->make_immutable();

@@ -356,11 +356,8 @@ const TheCatwalk = ({ data }) => {
               </td>
               <td style={tdStyle(idx % 2 === 1)}>
                 <a
-                  href={`/?displaytype=choosetheme&theme=${style.node_id}&noscript=1`}
+                  href={`/title/Settings?trytheme=${style.node_id}`}
                   style={testLinkStyle}
-                  onFocus={(e) => {
-                    e.target.href = e.target.href.replace('&noscript=1', '')
-                  }}
                 >
                   [ test ]
                 </a>

@@ -104,6 +104,19 @@ $genericdevv->{settings} = '{"notifications":{"2045486":1}}';
 setVars($genericdev,$genericdevv);
 $DB->updateNode($genericdev, -1);
 
+print STDERR "Adding genericdev to clientdev usergroup\n";
+my $clientdev = $DB->getNode("clientdev","usergroup");
+if ($clientdev) {
+  my $already_clientdev = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+    "nodegroup_id=$clientdev->{node_id} AND node_id=$genericdev->{node_id}");
+  if (!$already_clientdev) {
+    $DB->insertIntoNodegroup($clientdev, $DB->getNode("root","user"), $genericdev);
+    $DB->updateNode($clientdev, -1);
+  }
+} else {
+  print STDERR "WARNING: clientdev usergroup not found - skipping\n";
+}
+
 print STDERR "Promoting genericdocs to e2docs group\n";
 my $e2docs = $DB->getNode("E2Docs","usergroup");
 my $genericdocs = getNode("genericdocs","user");
@@ -2220,3 +2233,92 @@ if ($legacy_user) {
 }
 
 print STDERR "\n=== XP Recalculation test data complete ===\n";
+
+# Create test nodes for various nodetypes that exist in production but not in test
+print STDERR "\n=== Creating test nodes for additional nodetypes ===\n";
+
+# edevdoc - developer documentation
+print STDERR "Creating edevdoc test node\n";
+my $edevdoc = getNode("Test Developer Documentation","edevdoc");
+if (!$edevdoc) {
+  $DB->insertNode("Test Developer Documentation", "edevdoc", $DB->getNode("root","user"), {});
+  $edevdoc = getNode("Test Developer Documentation","edevdoc");
+}
+if ($edevdoc) {
+  $edevdoc->{doctext} = "<p>This is a test edevdoc for developer documentation.</p>\n<p>Edevdocs contain technical documentation for E2 developers.</p>";
+  $DB->updateNode($edevdoc, -1);
+  print STDERR "  - Created: Test Developer Documentation (edevdoc)\n";
+}
+
+# registry - site configuration
+print STDERR "Creating registry test node\n";
+my $registry = getNode("Test Registry Entry","registry");
+if (!$registry) {
+  $DB->insertNode("Test Registry Entry", "registry", $DB->getNode("root","user"), {});
+  $registry = getNode("Test Registry Entry","registry");
+}
+if ($registry) {
+  $registry->{doctext} = "test_value";
+  $DB->updateNode($registry, -1);
+  print STDERR "  - Created: Test Registry Entry (registry)\n";
+}
+
+# podcast - owned by podpeople group
+print STDERR "Creating podcast test node\n";
+my $podpeople = $DB->getNode("podpeople","usergroup");
+my $podcast = getNode("Test Podcast Episode","podcast");
+if (!$podcast) {
+  my $podcast_owner = $podpeople ? $podpeople : $DB->getNode("root","user");
+  $DB->insertNode("Test Podcast Episode", "podcast", $podcast_owner, {});
+  $podcast = getNode("Test Podcast Episode","podcast");
+}
+if ($podcast) {
+  $podcast->{doctext} = "<p>This is a test podcast episode.</p>\n<p>Podcasts are audio content created by the podpeople usergroup.</p>";
+  if ($podpeople) {
+    $podcast->{author_user} = $podpeople->{node_id};
+  }
+  $DB->updateNode($podcast, -1);
+  print STDERR "  - Created: Test Podcast Episode (podcast)\n";
+}
+
+# recording - audio recording
+print STDERR "Creating recording test node\n";
+my $recording = getNode("Test Recording","recording");
+if (!$recording) {
+  $DB->insertNode("Test Recording", "recording", $DB->getNode("root","user"), {});
+  $recording = getNode("Test Recording","recording");
+}
+if ($recording) {
+  $recording->{doctext} = "<p>This is a test recording node.</p>\n<p>Recordings contain audio content metadata.</p>";
+  $DB->updateNode($recording, -1);
+  print STDERR "  - Created: Test Recording (recording)\n";
+}
+
+# e2client - owned by genericdev (who is in clientdev)
+print STDERR "Creating e2client test node\n";
+my $e2client = getNode("Test E2 Client","e2client");
+if (!$e2client) {
+  $DB->insertNode("Test E2 Client", "e2client", $genericdev, {});
+  $e2client = getNode("Test E2 Client","e2client");
+}
+if ($e2client) {
+  $e2client->{doctext} = "<p>This is a test e2client node.</p>\n<p>E2clients are API client applications registered by members of the clientdev group.</p>";
+  $e2client->{author_user} = $genericdev->{node_id};
+  $DB->updateNode($e2client, -1);
+  print STDERR "  - Created: Test E2 Client (e2client) owned by genericdev\n";
+}
+
+# oppressor_document - admin-only documents
+print STDERR "Creating oppressor_document test node\n";
+my $oppressor_doc = getNode("Test Oppressor Document","oppressor_document");
+if (!$oppressor_doc) {
+  $DB->insertNode("Test Oppressor Document", "oppressor_document", $DB->getNode("root","user"), {});
+  $oppressor_doc = getNode("Test Oppressor Document","oppressor_document");
+}
+if ($oppressor_doc) {
+  $oppressor_doc->{doctext} = "<p>This is a test oppressor document.</p>\n<p>Oppressor documents are admin-only documents for site management.</p>";
+  $DB->updateNode($oppressor_doc, -1);
+  print STDERR "  - Created: Test Oppressor Document (oppressor_document)\n";
+}
+
+print STDERR "\n=== Additional nodetype test data complete ===\n";

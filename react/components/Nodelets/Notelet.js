@@ -37,15 +37,8 @@ const Notelet = (props) => {
           {!hasContent ? (
             <div style={{ padding: '8px', fontSize: '12px' }}>
               <p>You currently have no text set for your personal nodelet. You can edit it at{' '}
-                <LinkNode title="Notelet Editor" nodeType="superdoc" /> or<br />
-                <a
-                  href="?op=movenodelet&position=x&nodelet=Notelet"
-                  id="noteletremovallink"
-                  className="ajax"
-                >
-                  remove it here
-                </a> or at your{' '}
-                <LinkNode title="Nodelet Settings" nodeType="superdoc" />.
+                <LinkNode title="Notelet Editor" nodeType="superdoc" /> or manage nodelets in{' '}
+                <LinkNode title="Settings" nodeType="superdoc" />.
               </p>
             </div>
           ) : (

@@ -29,7 +29,11 @@ const decodeHtmlEntities = (str) => {
   return decoded
 }
 
-const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) => {
+// Note: nodeId, nodeType, and titleAttr are destructured but intentionally handled specially -
+// this prevents React warnings when parent components pass these as props
+// titleAttr is used to override the hover title (since 'title' is used for URL generation)
+// nodeType is sometimes passed from parent data but not used in link generation
+const LinkNode = ({type,title,id,display,className,author,anchor,url,params,style,onMouseEnter,onMouseLeave,nodeId,nodeType,titleAttr,...restProps}) => {
 
   let rel=""
   let originalDecodedTitle = null  // Store decoded title for hover text
@@ -115,10 +119,14 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) =>
   }
 
   // Build title attribute for hover text (shows link target, useful for pipelinks)
+  // titleAttr prop overrides automatic title generation
   // For internal links: show the node title being linked to
   // For external links: show the URL
   let hoverTitle = null
-  if (rel === "nofollow") {
+  if (titleAttr) {
+    // Explicit title override provided
+    hoverTitle = titleAttr
+  } else if (rel === "nofollow") {
     // External link - show URL in hover
     hoverTitle = url
   } else if (originalDecodedTitle != null) {
@@ -131,7 +139,10 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params}) =>
     href: url,
     rel: rel || undefined,
     title: hoverTitle || undefined,
-    style: {fontSize: 'inherit'}
+    style: style || {fontSize: 'inherit'},
+    onMouseEnter: onMouseEnter,
+    onMouseLeave: onMouseLeave,
+    ...restProps
   }, display);
 }
 

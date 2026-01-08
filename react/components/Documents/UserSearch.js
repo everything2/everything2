@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import LinkNode from '../LinkNode'
+import UserSearchInput from '../UserSearchInput'
 
 // Notable E2 contributors for suggestions
 const NOTABLE_USERS = [
@@ -49,7 +50,6 @@ const EmptyState = ({ onSelectUser }) => {
  */
 const UserSearch = ({ data, user }) => {
   const [username, setUsername] = useState(data.initialUsername || '')
-  const [searchInput, setSearchInput] = useState(data.initialUsername || '')
   const [orderby, setOrderby] = useState(data.initialOrderby || 'publishtime_desc')
   const [page, setPage] = useState(data.initialPage || 1)
   const [filterHidden, setFilterHidden] = useState(data.initialFilterHidden || 0)
@@ -57,13 +57,6 @@ const UserSearch = ({ data, user }) => {
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-
-  // Autocomplete state
-  const [suggestions, setSuggestions] = useState([])
-  const [showSuggestions, setShowSuggestions] = useState(false)
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
-  const searchTimeoutRef = useRef(null)
-  const inputRef = useRef(null)
 
   // Sort options for dropdown
   const sortOptions = [
@@ -201,15 +194,6 @@ const UserSearch = ({ data, user }) => {
     }
   }, [orderby, page, filterHidden]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSearch = (e) => {
-    e.preventDefault()
-    const trimmedInput = searchInput.trim()
-    if (trimmedInput) {
-      setUsername(trimmedInput)
-      setPage(1)
-    }
-  }
-
   // Effect to trigger search when username changes
   useEffect(() => {
     if (username) {
@@ -227,91 +211,13 @@ const UserSearch = ({ data, user }) => {
     setPage(1)
   }
 
-  // Autocomplete: search for users as user types
-  const searchUsers = useCallback(async (query) => {
-    if (query.length < 2) {
-      setSuggestions([])
-      setShowSuggestions(false)
-      return
+  // Handle user selection from UserSearchInput
+  const handleUserSelect = useCallback((user) => {
+    const selectedUsername = user.title
+    if (selectedUsername) {
+      setUsername(selectedUsername)
+      setPage(1)
     }
-
-    try {
-      const response = await fetch(
-        `/api/node_search?q=${encodeURIComponent(query)}&scope=users&limit=10`
-      )
-      const data = await response.json()
-      if (data.success && data.results) {
-        setSuggestions(data.results)
-        setShowSuggestions(data.results.length > 0)
-        setSelectedSuggestionIndex(-1)
-      }
-    } catch (err) {
-      console.error('User search failed:', err)
-      setSuggestions([])
-    }
-  }, [])
-
-  // Handle input change with debounced autocomplete
-  const handleInputChange = useCallback((e) => {
-    const newValue = e.target.value
-    setSearchInput(newValue)
-
-    // Clear results if user is typing a different name than what was searched
-    if (newValue.trim().toLowerCase() !== username.trim().toLowerCase()) {
-      setResults(null)
-      setError(null)
-    }
-
-    // Debounced autocomplete search
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      searchUsers(newValue.trim())
-    }, 200)
-  }, [username, searchUsers])
-
-  // Handle selecting a suggestion
-  const handleSelectSuggestion = useCallback((suggestion) => {
-    setSearchInput(suggestion.title)
-    setUsername(suggestion.title)
-    setSuggestions([])
-    setShowSuggestions(false)
-    setSelectedSuggestionIndex(-1)
-    setPage(1)
-  }, [])
-
-  // Handle keyboard navigation in suggestions
-  const handleKeyDown = useCallback((e) => {
-    if (!showSuggestions || suggestions.length === 0) return
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setSelectedSuggestionIndex(prev =>
-        prev < suggestions.length - 1 ? prev + 1 : prev
-      )
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setSelectedSuggestionIndex(prev => prev > 0 ? prev - 1 : -1)
-    } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
-      e.preventDefault()
-      handleSelectSuggestion(suggestions[selectedSuggestionIndex])
-    } else if (e.key === 'Escape') {
-      setSuggestions([])
-      setShowSuggestions(false)
-      setSelectedSuggestionIndex(-1)
-    }
-  }, [showSuggestions, suggestions, selectedSuggestionIndex, handleSelectSuggestion])
-
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (inputRef.current && !inputRef.current.contains(e.target)) {
-        setShowSuggestions(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   // Format date
@@ -412,42 +318,17 @@ const UserSearch = ({ data, user }) => {
       </div>
 
       {/* Search Form */}
-      <form onSubmit={handleSearch} style={styles.searchForm}>
+      <div style={styles.searchForm}>
         <div style={styles.searchRow}>
-          <div style={styles.inputGroup} ref={inputRef}>
-            <label htmlFor="username-input" style={styles.label}>Username</label>
-            <div style={styles.autocompleteContainer}>
-              <input
-                id="username-input"
-                type="text"
-                value={searchInput}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-                placeholder="Enter a username..."
-                style={styles.input}
-                autoComplete="off"
-              />
-              {/* Autocomplete suggestions dropdown */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div style={styles.suggestionsDropdown}>
-                  {suggestions.map((suggestion, index) => (
-                    <div
-                      key={suggestion.node_id}
-                      onClick={() => handleSelectSuggestion(suggestion)}
-                      style={{
-                        ...styles.suggestionItem,
-                        ...(index === selectedSuggestionIndex ? styles.suggestionItemSelected : {})
-                      }}
-                      onMouseEnter={() => setSelectedSuggestionIndex(index)}
-                    >
-                      <span style={styles.suggestionIcon}>👤</span>
-                      <span>{suggestion.title}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Username</label>
+            <UserSearchInput
+              onSelect={handleUserSelect}
+              placeholder="Enter a username..."
+              buttonText={loading ? 'Searching...' : 'Search'}
+              disabled={loading}
+              clearOnSelect={false}
+            />
           </div>
 
           <div style={styles.inputGroup}>
@@ -463,12 +344,8 @@ const UserSearch = ({ data, user }) => {
               ))}
             </select>
           </div>
-
-          <button type="submit" style={styles.searchButton} disabled={loading}>
-            {loading ? 'Searching...' : 'Search'}
-          </button>
         </div>
-      </form>
+      </div>
 
       {/* Error */}
       {error && (
@@ -691,10 +568,7 @@ const UserSearch = ({ data, user }) => {
 
       {/* Empty state - shown only when no search has been performed */}
       {!results && !loading && !error && (
-        <EmptyState onSelectUser={(name) => {
-          setSearchInput(name)
-          setUsername(name)
-        }} />
+        <EmptyState onSelectUser={(name) => handleUserSelect({ title: name })} />
       )}
     </div>
   )
@@ -739,57 +613,12 @@ const styles = {
     minWidth: '200px',
     position: 'relative'
   },
-  autocompleteContainer: {
-    position: 'relative'
-  },
-  suggestionsDropdown: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    border: '1px solid #ced4da',
-    borderTop: 'none',
-    borderRadius: '0 0 4px 4px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    maxHeight: '250px',
-    overflowY: 'auto',
-    zIndex: 100
-  },
-  suggestionItem: {
-    padding: '10px 12px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    color: '#38495e',
-    borderBottom: '1px solid #eee',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  suggestionItemSelected: {
-    backgroundColor: '#e8f4f8',
-    color: '#4060b0'
-  },
-  suggestionIcon: {
-    fontSize: '14px',
-    width: '20px',
-    textAlign: 'center',
-    color: '#507898'
-  },
   label: {
     display: 'block',
     fontSize: '13px',
     fontWeight: '500',
     color: '#38495e',
     marginBottom: '6px'
-  },
-  input: {
-    width: '100%',
-    padding: '10px 12px',
-    fontSize: '15px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    boxSizing: 'border-box'
   },
   select: {
     width: '100%',
@@ -799,17 +628,6 @@ const styles = {
     borderRadius: '4px',
     background: 'white',
     cursor: 'pointer'
-  },
-  searchButton: {
-    padding: '10px 24px',
-    fontSize: '15px',
-    fontWeight: '500',
-    color: 'white',
-    background: '#4060b0',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap'
   },
   error: {
     background: '#fee',

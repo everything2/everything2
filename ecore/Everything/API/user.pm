@@ -27,6 +27,11 @@ sub route {
     return $self->upload_image($REQUEST);
   }
 
+  # POST /api/user/cure - Cure user infection (admin only)
+  if ($extra eq 'cure' && $method eq 'post') {
+    return $self->cure_infection($REQUEST);
+  }
+
   # Catchall for unmatched routes
   return $self->$method($REQUEST);
 }
@@ -555,6 +560,101 @@ sub upload_image {
     success => 1,
     message => $message,
     imgsrc => "/$basename"
+  }];
+}
+
+=head2 POST /api/user/cure
+
+Cure a user's infection (remove bot flag). Admin-only endpoint.
+
+Infection is a primitive bot detection mechanism that flags accounts
+created with suspicious characteristics (e.g., from known bad IPs,
+or sharing cookies with locked accounts).
+
+Request body (JSON):
+{
+  "user_id": <node_id of user to cure>
+}
+
+Response:
+{
+  "success": true|false,
+  "message": "Status message",
+  "error": "Error message if failed"
+}
+
+=cut
+
+sub cure_infection {
+  my ($self, $REQUEST) = @_;
+
+  my $user = $REQUEST->user;
+  my $APP = $self->APP;
+  my $DB = $self->DB;
+
+  # Must be logged in
+  if ($APP->isGuest($user)) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'You must be logged in'
+    }];
+  }
+
+  # Admin-only endpoint
+  unless ($user->is_admin) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Admin access required to cure infections'
+    }];
+  }
+
+  # Parse JSON POST data
+  my $data = $REQUEST->JSON_POSTDATA;
+  unless ($data) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Missing or invalid JSON POST data'
+    }];
+  }
+
+  # Get user_id parameter
+  my $target_user_id = $data->{user_id};
+  unless ($target_user_id && $target_user_id =~ /^\d+$/) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Missing or invalid user_id parameter'
+    }];
+  }
+
+  # Load target user
+  my $target_user = $DB->getNodeById(int($target_user_id));
+  unless ($target_user && $target_user->{type}{title} eq 'user') {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'User not found'
+    }];
+  }
+
+  # Check if user is actually infected
+  my $target_vars = Everything::getVars($target_user);
+  unless ($target_vars->{infected}) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'User is not infected'
+    }];
+  }
+
+  # Cure the infection
+  $target_vars->{infected} = 0;
+  Everything::setVars($target_user, $target_vars);
+
+  # Log the action
+  $APP->devLog("Admin " . $user->title . " cured infection for user " . $target_user->{title});
+
+  return [$self->HTTP_OK, {
+    success => 1,
+    message => "Infection cured for user " . $target_user->{title},
+    username => $target_user->{title}
   }];
 }
 

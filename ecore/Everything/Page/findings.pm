@@ -244,12 +244,7 @@ sub _get_writeup_excerpt {
     # Handle regular links: [link text] -> link text
     $text =~ s/\[([^\]]+)\]/$1/g;
 
-    # Decode common HTML entities
-    $text =~ s/&nbsp;/ /g;
-    $text =~ s/&amp;/&/g;
-    $text =~ s/&lt;/</g;
-    $text =~ s/&gt;/>/g;
-    $text =~ s/&quot;/"/g;
+    # HTML entities are decoded on the React side via decodeHtmlEntities()
 
     # Collapse whitespace
     $text =~ s/\s+/ /g;

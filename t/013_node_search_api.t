@@ -571,6 +571,251 @@ SKIP: {
     }
 }
 
+#############################################################################
+# Test 24: e2nodes scope - basic search functionality
+#############################################################################
+
+# First find an e2node to search for
+my $e2node_type = $DB->getType('e2node');
+SKIP: {
+    skip "e2node nodetype not found", 6 unless $e2node_type;
+
+    # Find any e2node to test with
+    my $e2node_sth = $dbh->prepare(qq{
+        SELECT node_id, title FROM node
+        WHERE type_nodetype = ?
+        LIMIT 1
+    });
+    $e2node_sth->execute($e2node_type->{node_id});
+    my $test_e2node = $e2node_sth->fetchrow_hashref();
+
+    skip "No e2nodes found in database", 6 unless $test_e2node;
+
+    # Get first few characters of the title for search
+    my $search_prefix = substr($test_e2node->{title}, 0, 3);
+
+    my $e2nodes_request = MockRequest->new(
+        node_id => $root_user->{node_id},
+        title => $root_user->{title},
+        nodedata => $root_user,
+        is_guest_flag => 0,
+        is_admin_flag => 1,
+        query_params => { q => $search_prefix, scope => 'e2nodes' }
+    );
+
+    $result = $api->search($e2nodes_request);
+    is($result->[0], 200, "e2nodes scope returns 200");
+    is($result->[1]{success}, 1, "e2nodes search was successful");
+    is($result->[1]{scope}, 'e2nodes', "Scope is e2nodes");
+    ok(ref($result->[1]{results}) eq 'ARRAY', "Results is an array");
+
+    # All results should have type 'e2node'
+    my @non_e2node_results = grep { $_->{type} ne 'e2node' } @{$result->[1]{results}};
+    is(scalar(@non_e2node_results), 0, "All results are e2node type");
+
+    # Should find the test e2node if search prefix matches
+    my @matching_results = grep { $_->{title} =~ /^\Q$search_prefix\E/i } @{$result->[1]{results}};
+    ok(scalar(@matching_results) > 0, "Found e2nodes matching search prefix");
+}
+
+#############################################################################
+# Test 25: e2nodes scope - result structure
+#############################################################################
+
+SKIP: {
+    skip "e2node nodetype not found", 4 unless $e2node_type;
+
+    my $e2nodes_structure_request = MockRequest->new(
+        node_id => $root_user->{node_id},
+        title => $root_user->{title},
+        nodedata => $root_user,
+        is_guest_flag => 0,
+        is_admin_flag => 1,
+        query_params => { q => 'a', scope => 'e2nodes', limit => '5' }
+    );
+
+    $result = $api->search($e2nodes_structure_request);
+
+    if ($result->[1]{count} > 0) {
+        my $first = $result->[1]{results}[0];
+        ok(exists $first->{node_id}, "e2node result has node_id");
+        ok(exists $first->{title}, "e2node result has title");
+        ok(exists $first->{type}, "e2node result has type");
+        is($first->{type}, 'e2node', "type is 'e2node'");
+    } else {
+        skip "No e2node results to check structure", 4;
+    }
+}
+
+#############################################################################
+# Test 26: e2nodes scope - does not return users
+#############################################################################
+
+SKIP: {
+    skip "e2node nodetype not found", 2 unless $e2node_type;
+
+    # Search for 'root' which exists as a user but should NOT appear in e2nodes results
+    my $e2nodes_no_users_request = MockRequest->new(
+        node_id => $root_user->{node_id},
+        title => $root_user->{title},
+        nodedata => $root_user,
+        is_guest_flag => 0,
+        is_admin_flag => 1,
+        query_params => { q => 'root', scope => 'e2nodes' }
+    );
+
+    $result = $api->search($e2nodes_no_users_request);
+    is($result->[1]{success}, 1, "e2nodes search for 'root' was successful");
+
+    # Should NOT find users in e2nodes scope
+    my @user_results = grep { $_->{type} eq 'user' } @{$result->[1]{results}};
+    is(scalar(@user_results), 0, "No users in e2nodes scope results");
+}
+
+#############################################################################
+# Test 27: e2nodes scope - limit parameter works
+#############################################################################
+
+SKIP: {
+    skip "e2node nodetype not found", 2 unless $e2node_type;
+
+    my $e2nodes_limit_request = MockRequest->new(
+        node_id => $root_user->{node_id},
+        title => $root_user->{title},
+        nodedata => $root_user,
+        is_guest_flag => 0,
+        is_admin_flag => 1,
+        query_params => { q => 'a', scope => 'e2nodes', limit => '2' }
+    );
+
+    $result = $api->search($e2nodes_limit_request);
+    is($result->[1]{success}, 1, "e2nodes search with limit was successful");
+    ok($result->[1]{count} <= 2, "e2nodes results limited to 2 or fewer");
+}
+
+#############################################################################
+# Test 28: e2nodes scope - SQL injection prevention
+#############################################################################
+
+SKIP: {
+    skip "e2node nodetype not found", 2 unless $e2node_type;
+
+    my $e2nodes_injection_request = MockRequest->new(
+        node_id => $root_user->{node_id},
+        title => $root_user->{title},
+        nodedata => $root_user,
+        is_guest_flag => 0,
+        is_admin_flag => 1,
+        query_params => { q => "test'; DROP TABLE node; --", scope => 'e2nodes' }
+    );
+
+    $result = $api->search($e2nodes_injection_request);
+    is($result->[0], 200, "e2nodes search with SQL injection attempt returns 200");
+    is($result->[1]{success}, 1, "e2nodes search with SQL injection was handled safely");
+}
+
+#############################################################################
+# Test 29: e2nodes scope - author filter with valid author
+#############################################################################
+
+SKIP: {
+    skip "e2node nodetype not found", 4 unless $e2node_type;
+
+    # Find an author who has writeups
+    my $writeup_author_sth = $dbh->prepare(qq{
+        SELECT DISTINCT n.node_id, n.title
+        FROM node n
+        JOIN node wu ON wu.author_user = n.node_id
+        JOIN writeup w ON w.writeup_id = wu.node_id
+        WHERE n.type_nodetype = (SELECT node_id FROM node WHERE title = 'user' AND type_nodetype = 1)
+        LIMIT 1
+    });
+    $writeup_author_sth->execute();
+    my $test_author = $writeup_author_sth->fetchrow_hashref();
+
+    skip "No users with writeups found for author filter test", 4 unless $test_author;
+
+    my $e2nodes_author_request = MockRequest->new(
+        node_id => $root_user->{node_id},
+        title => $root_user->{title},
+        nodedata => $root_user,
+        is_guest_flag => 0,
+        is_admin_flag => 1,
+        query_params => { q => 'a', scope => 'e2nodes', author => $test_author->{title} }
+    );
+
+    $result = $api->search($e2nodes_author_request);
+    is($result->[0], 200, "e2nodes search with author filter returns 200");
+    is($result->[1]{success}, 1, "e2nodes search with author filter was successful");
+    is($result->[1]{author}, $test_author->{title}, "Response includes author parameter");
+    ok(ref($result->[1]{results}) eq 'ARRAY', "Results is an array");
+}
+
+#############################################################################
+# Test 30: e2nodes scope - author filter with non-existent author
+#############################################################################
+
+SKIP: {
+    skip "e2node nodetype not found", 3 unless $e2node_type;
+
+    my $e2nodes_nonexistent_author_request = MockRequest->new(
+        node_id => $root_user->{node_id},
+        title => $root_user->{title},
+        nodedata => $root_user,
+        is_guest_flag => 0,
+        is_admin_flag => 1,
+        query_params => { q => 'test', scope => 'e2nodes', author => 'nonexistent_user_xyz_12345' }
+    );
+
+    $result = $api->search($e2nodes_nonexistent_author_request);
+    is($result->[0], 200, "e2nodes search with non-existent author returns 200");
+    is($result->[1]{success}, 1, "Non-existent author returns success (empty results, not error)");
+    is($result->[1]{count}, 0, "Non-existent author returns zero results");
+}
+
+#############################################################################
+# Test 31: e2nodes scope - author filter only returns relevant e2nodes
+#############################################################################
+
+SKIP: {
+    skip "e2node nodetype not found", 3 unless $e2node_type;
+
+    # Find an author with at least one writeup
+    my $writeup_data_sth = $dbh->prepare(qq{
+        SELECT n.title as author_name, e2.title as e2node_title
+        FROM node n
+        JOIN node wu ON wu.author_user = n.node_id
+        JOIN writeup w ON w.writeup_id = wu.node_id
+        JOIN node e2 ON e2.node_id = w.parent_e2node
+        WHERE n.type_nodetype = (SELECT node_id FROM node WHERE title = 'user' AND type_nodetype = 1)
+        LIMIT 1
+    });
+    $writeup_data_sth->execute();
+    my $writeup_data = $writeup_data_sth->fetchrow_hashref();
+
+    skip "No writeup data found for author filter verification test", 3 unless $writeup_data;
+
+    # Search with a prefix of the e2node title that we know should match
+    my $search_prefix = substr($writeup_data->{e2node_title}, 0, 3);
+
+    my $e2nodes_verify_request = MockRequest->new(
+        node_id => $root_user->{node_id},
+        title => $root_user->{title},
+        nodedata => $root_user,
+        is_guest_flag => 0,
+        is_admin_flag => 1,
+        query_params => { q => $search_prefix, scope => 'e2nodes', author => $writeup_data->{author_name} }
+    );
+
+    $result = $api->search($e2nodes_verify_request);
+    is($result->[1]{success}, 1, "Author filter verification search was successful");
+
+    # Should find at least the e2node we know the author has a writeup in
+    my @matching = grep { $_->{title} eq $writeup_data->{e2node_title} } @{$result->[1]{results}};
+    ok(scalar(@matching) > 0, "Author filter found e2node where author has writeup");
+    is($result->[1]{author}, $writeup_data->{author_name}, "Response includes correct author");
+}
+
 done_testing();
 
 =head1 NAME
@@ -598,6 +843,14 @@ Tests the unified node search API:
 - message_recipients scope (admin can see all usergroups)
 - message_recipients scope (mail forwarding accounts excluded from direct results)
 - message_recipients scope (alias field present for forwarded accounts)
+- e2nodes scope (basic search functionality)
+- e2nodes scope (result structure validation)
+- e2nodes scope (does not return users)
+- e2nodes scope (limit parameter)
+- e2nodes scope (SQL injection prevention)
+- e2nodes scope (author filter with valid author)
+- e2nodes scope (author filter with non-existent author)
+- e2nodes scope (author filter returns only relevant e2nodes)
 
 =head1 AUTHOR
 

@@ -2,10 +2,12 @@ package Everything::Controller::draft;
 
 use Moose;
 extends 'Everything::Controller';
+with 'Everything::Controller::Role::BasicEdit';
 
 # Controller for draft nodes
 # Builds React data for draft display, similar to writeup controller.
 # Replaces legacy htmlpage draft_display_page with React-based rendering.
+# Edit is inline on display page; basicedit available for admins via BasicEdit role.
 
 sub display {
     my ($self, $REQUEST, $node) = @_;
@@ -126,10 +128,10 @@ sub _build_draft_data {
     };
 }
 
-# Indicate this controller fully supports all draft nodes
-sub fully_supports {
-    my ($self, $title) = @_;
-    return 1;  # All drafts use this controller
+# Edit displaytype - drafts are edited inline on the display page
+sub edit {
+    my ($self, $REQUEST, $node) = @_;
+    return $self->display($REQUEST, $node);
 }
 
 __PACKAGE__->meta->make_immutable();

@@ -293,12 +293,14 @@ if (scalar(@{$result->[1]{writeups}}) > 0) {
     ok(defined($writeup->{parent_node_id}), "Writeup has parent_node_id");
     ok(defined($writeup->{parent_title}), "Writeup has parent_title");
     ok(defined($writeup->{author_name}), "Writeup has author_name");
+    ok(defined($writeup->{cooled_by_id}), "Writeup has cooled_by_id (for unique React keys)");
     ok(defined($writeup->{cooled_by_name}), "Writeup has cooled_by_name");
     ok(defined($writeup->{reputation}), "Writeup has reputation");
     ok(defined($writeup->{cooled_count}), "Writeup has cooled_count");
     ok(defined($writeup->{tstamp}), "Writeup has tstamp");
 } else {
     pass("No writeups found (may not have seed data)");
+    pass("Skipping writeup structure checks");
     pass("Skipping writeup structure checks");
     pass("Skipping writeup structure checks");
     pass("Skipping writeup structure checks");

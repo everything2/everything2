@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AdminCreateNodeLink from '../AdminCreateNodeLink';
+import { decodeHtmlEntities } from '../../utils/textUtils';
 
 const Findings = ({ data, user }) => {
   const { no_search_term, message, search_term, findings = [], lastnode_id, is_guest, has_excerpts } = data;
@@ -42,7 +43,7 @@ const Findings = ({ data, user }) => {
                 href={`/?node_id=${finding.node_id}${is_guest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}
                 style={styles.excerptLink}
               >
-                <p style={styles.excerpt}>{finding.excerpt}</p>
+                <p style={styles.excerpt}>{decodeHtmlEntities(finding.excerpt)}</p>
               </a>
             )}
           </li>

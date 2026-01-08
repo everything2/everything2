@@ -2,6 +2,7 @@ package Everything::Controller::container;
 
 use Moose;
 extends 'Everything::Controller';
+with 'Everything::Controller::Role::BasicEdit';
 
 # Container Controller
 #
@@ -90,15 +91,6 @@ sub display {
         node    => $node
     );
     return [$self->HTTP_OK, $html];
-}
-
-# edit - redirect to basicedit for container editing
-# The legacy container edit page is replaced by the basicedit functionality
-sub edit {
-    my ($self, $REQUEST, $node) = @_;
-
-    # Redirect to basicedit displaytype
-    return $self->basicedit($REQUEST, $node);
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -17,6 +17,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import UserInteractionsManager from '../UserInteractions/UserInteractionsManager'
+import FavoriteUsersManager from '../UserInteractions/FavoriteUsersManager'
 import SettingsNavigation from '../SettingsNavigation'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
@@ -134,8 +135,29 @@ const getInitialTab = (defaultTab) => {
   return defaultTab || 'settings'
 }
 
+// Helper to get trytheme from URL (called once during initialization)
+const getTryThemeFromUrl = (availableStylesheets) => {
+  if (typeof window === 'undefined') return null
+  const urlParams = new URLSearchParams(window.location.search)
+  const tryThemeId = urlParams.get('trytheme')
+  if (!tryThemeId) return null
+
+  // Validate that the theme ID is in the available stylesheets
+  const validTheme = (availableStylesheets || []).find(
+    style => String(style.node_id) === tryThemeId
+  )
+  return validTheme ? tryThemeId : null
+}
+
 function Settings({ data }) {
-  const [activeTab, setActiveTab] = useState(() => getInitialTab(data.defaultTab))
+  // Check for trytheme parameter before initializing state
+  const initialTryTheme = useMemo(() => getTryThemeFromUrl(data.availableStylesheets), [])
+
+  const [activeTab, setActiveTab] = useState(() => {
+    // If we have a valid trytheme, start on advanced tab
+    if (initialTryTheme) return 'advanced'
+    return getInitialTab(data.defaultTab)
+  })
   const [isDirty, setIsDirty] = useState(false)
 
   // Update URL hash when tab changes (for bookmarkable tabs)
@@ -150,7 +172,33 @@ function Settings({ data }) {
   const [saveSuccess, setSaveSuccess] = useState(false)
 
   // Settings preferences state (Tab 1)
-  const [settingsPrefs, setSettingsPrefs] = useState(data.settingsPreferences || {})
+  // If trytheme parameter was provided, override userstyle
+  const [settingsPrefs, setSettingsPrefs] = useState(() => {
+    const prefs = data.settingsPreferences || {}
+    if (initialTryTheme) {
+      return { ...prefs, userstyle: initialTryTheme }
+    }
+    return prefs
+  })
+
+  // Handle trytheme: apply CSS and clean up URL after mount
+  useEffect(() => {
+    if (!initialTryTheme) return
+
+    // Apply the theme CSS immediately for preview
+    const zenSheet = document.getElementById('zensheet')
+    if (zenSheet) {
+      zenSheet.href = `/css/${initialTryTheme}.css`
+    }
+
+    // Clean up the URL to remove the trytheme parameter
+    const urlParams = new URLSearchParams(window.location.search)
+    urlParams.delete('trytheme')
+    const newUrl = urlParams.toString()
+      ? `${window.location.pathname}?${urlParams.toString()}#advanced`
+      : `${window.location.pathname}#advanced`
+    window.history.replaceState(null, '', newUrl)
+  }, [initialTryTheme])
 
   // Advanced preferences state (Tab 2)
   const [advancedPrefs, setAdvancedPrefs] = useState(data.advancedPreferences || {})
@@ -163,6 +211,9 @@ function Settings({ data }) {
 
   // Blocked users state
   const [blockedUsers] = useState(data.blockedUsers || [])
+
+  // Favorite users state
+  const [favoriteUsers] = useState(data.favoriteUsers || [])
 
   // Nodelet-specific settings state
   const [nodeletSettings, setNodeletSettings] = useState(data.nodeletSettings || {})
@@ -635,7 +686,7 @@ function Settings({ data }) {
         }
 
         const profilePayload = {
-          user_id: data.currentUser?.node_id,
+          node_id: data.currentUser?.node_id,
           realname: profileData.realname,
           email: profileData.email,
           user_doctext: getCurrentBioContent(),
@@ -652,15 +703,15 @@ function Settings({ data }) {
 
         // Include image removal flag
         if (removeImage) {
-          profilePayload.remove_imgsrc = true
+          profilePayload.remove_image = true
         }
 
         // Include bookmarks to remove
         if (selectedBookmarks.size > 0) {
-          profilePayload.remove_bookmarks = Array.from(selectedBookmarks)
+          profilePayload.bookmark_remove = Array.from(selectedBookmarks)
         }
 
-        const profileResponse = await fetch('/api/user/update', {
+        const profileResponse = await fetch('/api/user/edit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(profilePayload)
@@ -938,6 +989,15 @@ function Settings({ data }) {
           </fieldset>
 
           <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px' }}>
+            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Favorite Users</legend>
+
+            <FavoriteUsersManager
+              initialFavorites={favoriteUsers}
+              currentUser={data.currentUser}
+            />
+          </fieldset>
+
+          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px' }}>
             <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Blocked Users</legend>
 
             <UserInteractionsManager
@@ -1156,10 +1216,11 @@ function Settings({ data }) {
           <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
             <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Site Theme / Stylesheet</legend>
             <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
-              Choose your site theme. More themes are available at <a href="/title/The%20Catwalk" style={{ color: '#4060b0' }}>The Catwalk</a>.
+              Choose your site theme. Click "Preview" to see how it looks, then "Save Changes" to keep it.
+              More themes are available at <a href="/title/The%20Catwalk" style={{ color: '#4060b0' }}>The Catwalk</a> and <a href="/title/Theme%20Nirvana" style={{ color: '#4060b0' }}>Theme Nirvana</a>.
             </p>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <select
                 value={settingsPrefs.userstyle || data.defaultStylesheetId || ''}
                 onChange={(e) => handlePrefChange('userstyle', e.target.value)}
@@ -1177,6 +1238,30 @@ function Settings({ data }) {
                   </option>
                 ))}
               </select>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const themeId = settingsPrefs.userstyle || data.defaultStylesheetId
+                  if (themeId) {
+                    const zenSheet = document.getElementById('zensheet')
+                    if (zenSheet) {
+                      zenSheet.href = `/css/${themeId}.css`
+                    }
+                  }
+                }}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#4060b0',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                Preview
+              </button>
 
               {data.currentStylesheet && (
                 <span style={{ fontSize: '13px', color: '#507898' }}>
