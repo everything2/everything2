@@ -412,13 +412,24 @@ sub _build_everypass
   my $pass = $self->_filesystem_default('database_password_secret', '');
   if($pass eq '' and $self->environment eq 'production')
   {
-    my $service = Paws->service('SecretsManager', region => $self->current_region);
-    foreach my $secret(@{$service->ListSecrets->SecretList})
+    # Suppress DIE handler for Paws calls - internal eval errors shouldn't trigger global handler
+    local $SIG{__DIE__} = sub { };
+
+    my $service = eval { Paws->service('SecretsManager', region => $self->current_region) };
+    return $pass unless $service;
+
+    my $secrets_list = eval { $service->ListSecrets };
+    return $pass unless $secrets_list && $secrets_list->SecretList;
+
+    foreach my $secret(@{$secrets_list->SecretList})
     {
       if($secret->Name eq "E2DBMasterPassword")
       {
-        my $secret = from_json($service->GetSecretValue(SecretId => $secret->ARN)->SecretString);
-        $pass = $secret->{password};
+        my $secret_value = eval { $service->GetSecretValue(SecretId => $secret->ARN) };
+        if ($secret_value && $secret_value->SecretString) {
+          my $secret_data = from_json($secret_value->SecretString);
+          $pass = $secret_data->{password};
+        }
       }
     }
   }

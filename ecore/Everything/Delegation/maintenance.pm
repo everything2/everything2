@@ -330,77 +330,95 @@ sub debatecomment_create
   my ( $COMMENT ) = @_;
   $DB->getRef( $COMMENT );
 
-  # A comment must be inserted in its parent's group, and its 
-  # parent_debatecomment and root_debatecomment fields 
-  # must be initialized correctly.   
+  # When called from API context, $query is undef.
+  # The API (Everything::API::debatecomments) handles setup:
+  # parent_debatecomment, root_debatecomment, restricted, nodegroup insertion,
+  # and reply notifications. Skip to usergroup notifications for API calls.
+  my $PARENT;
+  my $from_api = !$query;
 
-  my $PARENT = $query->param( "debatecomment_parent_debatecomment" );
-  $DB->getRef( $PARENT );
+  if ($from_api) {
+    # API already set up the comment - just get the parent for notifications
+    $PARENT = getNodeById($$COMMENT{parent_debatecomment});
+  } else {
+    # Legacy form-based creation - do full setup
 
-  unless($PARENT) {
-    $DB->nukeNode( $COMMENT, $USER );
-    return;
+    # A comment must be inserted in its parent's group, and its
+    # parent_debatecomment and root_debatecomment fields
+    # must be initialized correctly.
+
+    $PARENT = $query->param( "debatecomment_parent_debatecomment" );
+    $DB->getRef( $PARENT );
+
+    unless($PARENT) {
+      $DB->nukeNode( $COMMENT, $USER );
+      return;
+    }
+
+    # START if($PARENT)
+
+    #TODO somehow: let child be more restrictive than parent
+    my $restrict = $$PARENT{restricted} || 0;
+    if($restrict==0) {
+      $restrict=923653;	#CE hack
+    } elsif($restrict==1) {
+      $restrict=114;	#admin hack
+    }
+
+    my $restrictNode = getNodeById($restrict);
+    unless($restrictNode)
+    {
+      #ack! no group permission somehow!
+      $DB->nukeNode($COMMENT, -1);
+      return;
+    }
+
+    unless(Everything::isApproved($USER, $restrictNode) || $APP->inUsergroup($USER,$restrictNode) )
+    {
+      #not allowed to view parent, so can't post child
+      $DB->nukeNode($COMMENT, -1);
+      return;
+    }
+    $$COMMENT{restricted}=$restrict;
+
+    # my $title = $$PARENT{ 'title' };
+    # $title = 're: ' . $title unless ( $title =~ /^re:/ );
+    # $$COMMENT{ 'title' } = $title;
+    $$COMMENT{ 'parent_debatecomment' } = $PARENT->{node_id};
+
+    my $root_debatecomment = $query->param( 'debatecomment_root_debatecomment' );
+    $$COMMENT{ 'root_debatecomment' } = $root_debatecomment;
+
+    my $parentOwner=$$PARENT{ 'author_user' };
+    my $parentVars = getVars(getNodeById($parentOwner));
+    my $replyer = getNodeById($$COMMENT{ 'author_user' }) -> {'title'};
+    my $msg = "Attention, <a href=\"/user/$replyer\">$replyer</a> just replied to ";
+
+    $msg .= '<a href="'. $APP->urlGenNoParams($root_debatecomment,1) .
+      '#debatecomment_'.$$COMMENT{ 'node_id' }.'">'.$$PARENT{ 'title' }.'</a>.';
+
+    unless ($$parentVars{"no_discussionreplynotify"} or $$COMMENT{ 'author_user' } == $$PARENT{ 'author_user'})
+    {
+      htmlcode('sendPrivateMessage',{
+        'author_id' => getId(getNode("Virgil","user")),
+        'recipient_id' => $parentOwner,
+        'message' => $msg
+        });
+    }
   }
 
-  # START if($PARENT)
-
-  #TODO somehow: let child be more restrictive than parent
-  my $restrict = $$PARENT{restricted} || 0;
-  if($restrict==0) {
-    $restrict=923653;	#CE hack
-  } elsif($restrict==1) {
-    $restrict=114;	#admin hack
-  }
-
-  my $restrictNode = getNodeById($restrict);
-  unless($restrictNode)
-  {
-    #ack! no group permission somehow!
-    $DB->nukeNode($COMMENT, -1);
-    return;
-  }
-
-  unless(Everything::isApproved($USER, $restrictNode) || $APP->inUsergroup($USER,$restrictNode) )
-  {
-    #not allowed to view parent, so can't post child
-    $DB->nukeNode($COMMENT, -1);
-    return;
-  }
-  $$COMMENT{restricted}=$restrict;
-
-  # my $title = $$PARENT{ 'title' };
-  # $title = 're: ' . $title unless ( $title =~ /^re:/ );
-  # $$COMMENT{ 'title' } = $title;
-  $$COMMENT{ 'parent_debatecomment' } = $PARENT->{node_id};
-
-  my $root_debatecomment = $query->param( 'debatecomment_root_debatecomment' );
-  $$COMMENT{ 'root_debatecomment' } = $root_debatecomment;
-
-  my $parentOwner=$$PARENT{ 'author_user' };
-  my $parentVars = getVars(getNodeById($parentOwner));
-  my $replyer = getNodeById($$COMMENT{ 'author_user' }) -> {'title'};
-  my $msg = "Attention, <a href=\"/user/$replyer\">$replyer</a> just replied to ";
-
-  $msg .= '<a href="'. $APP->urlGenNoParams($root_debatecomment,1) .
-    '#debatecomment_'.$$COMMENT{ 'node_id' }.'">'.$$PARENT{ 'title' }.'</a>.';
-
-  unless ($$parentVars{"no_discussionreplynotify"} or $$COMMENT{ 'author_user' } == $$PARENT{ 'author_user'})
-  {
-    htmlcode('sendPrivateMessage',{
-      'author_id' => getId(getNode("Virgil","user")),
-      'recipient_id' => $parentOwner,
-      'message' => $msg
-      });
-  }
-
-  ## BEGIN notification code
+  ## BEGIN notification code - runs for both API and legacy
 
   my $ug_id = $$COMMENT{ 'restricted' };
+  return unless $ug_id;  # Safety check
 
   #notify *all* usergroup members that we have a new reply
   my @uids = split ',', htmlcode('usergroupToUserIds',$ug_id);
 
-  my $replyNotification = getNode("newcomment","notification") -> {node_id};
+  my $replyNotification = getNode("newcomment","notification");
+  return unless $replyNotification;  # Safety check
+  $replyNotification = $replyNotification->{node_id};
+
   foreach my $uid(@uids)
   {
     #Don't notify the creator.
@@ -420,10 +438,10 @@ sub debatecomment_create
       my $user_id = $uid;
       my $argSet = {
         uid => $$USER{node_id},
-        parent => $$PARENT{ 'node_id' },
+        parent => $PARENT ? $$PARENT{ 'node_id' } : $$COMMENT{parent_debatecomment},
         reply => $$COMMENT{ 'node_id' },
         root => $$COMMENT{ 'root_debatecomment' } };
-    
+
       my $argStr = to_json($argSet);
 
       my $addNotifier = htmlcode('addNotification', $notification_id, $user_id, $argStr);
@@ -433,10 +451,12 @@ sub debatecomment_create
 
   ## END notification code
 
+  # Only do these for legacy form-based creation
+  unless ($from_api) {
+    $DB->updateNode( $COMMENT, $USER );
+    $DB->insertIntoNodegroup( $PARENT, -1, [$COMMENT] );
+  }
 
-  $DB->updateNode( $COMMENT, $USER );
-
-  $DB->insertIntoNodegroup( $PARENT, -1, [$COMMENT] );
   return;
 }
 
@@ -489,16 +509,31 @@ sub debate_create
     return;
   }
 
-  my $ug_id = $query->param("debatecomment_restricted");
-  my $ug = getNodeById($ug_id);
+  # Detect API context - $query will be undef when called from API
+  my $from_api = !$query;
 
-  if ($$COMMENT{title} =~ /^\s*$/)
-  {
-    $$COMMENT{title} = "Untitled ". $$ug{title} ." discussion";
-    $DB->updateNode( $COMMENT, $USER );
+  my $ug_id;
+  my $ug;
+  my $announce;
+
+  if ($from_api) {
+    # API already set up the debate - just need to set root_debatecomment
+    $ug_id = $$COMMENT{restricted};
+    $ug = getNodeById($ug_id);
+  } else {
+    # Legacy form-based creation
+    $ug_id = $query->param("debatecomment_restricted");
+    $ug = getNodeById($ug_id);
+
+    if ($$COMMENT{title} =~ /^\s*$/)
+    {
+      $$COMMENT{title} = "Untitled ". $$ug{title} ." discussion";
+      $DB->updateNode( $COMMENT, $USER );
+    }
+
+    $announce = $query->param('announce_to_ug');
   }
 
-  my $announce = $query -> param('announce_to_ug');
   my $notify_ug_id = $ug_id;
 
   #notify e2gods instead of gods
@@ -535,7 +570,7 @@ sub debate_create
 
     if( $notifications{$discussionNotification} )
     {
-      my $argSet = {uid => $$USER{node_id}, 
+      my $argSet = {uid => $$USER{node_id},
         debate_id => $$COMMENT{ 'node_id' },
         gid => $ug_id};
       my $argStr = to_json($argSet);
@@ -546,10 +581,10 @@ sub debate_create
 
   $$COMMENT{ 'root_debatecomment' } = $$COMMENT{ 'node_id' };
 
-  #Since when creating we are taken immediately to the edit page, 
-  #no need to screen the doctext. It'll be screened in the edit page.
-
-  $$COMMENT{'doctext'} = $query -> param('newdebate_text');
+  # Only set doctext from query for legacy form-based creation
+  unless ($from_api) {
+    $$COMMENT{'doctext'} = $query->param('newdebate_text');
+  }
 
   $DB->updateNode( $COMMENT, $USER );
   return;

@@ -2,7 +2,7 @@
 
 This document maps the complete nodetype inheritance hierarchy and indicates whether each type is handled by a React-enabled controller or falls back to legacy delegation.
 
-**Last Updated**: 2026-01-07
+**Last Updated**: 2026-01-08
 
 ## Legend
 
@@ -44,7 +44,7 @@ node (7) - No Controller (base type, handled specially)
 │   │   └── sqltable: roomdata
 │   ├── edevdoc (854232) - Inherits Controller (extends document) → React
 │   ├── node_forward (1147470) - Legacy Controller (HTTP redirect, no page content)
-│   ├── e2client (1261857) - No Controller
+│   ├── e2client (1261857) - React Controller
 │   │   └── sqltable: e2client
 │   ├── sustype (1399991) - No Controller
 │   ├── stylesheet (1854352) - React Controller
@@ -63,12 +63,12 @@ node (7) - No Controller (base type, handled specially)
 ├── nodegroup (8) - No Controller
 │   ├── e2node (116) - React Controller
 │   │   └── sqltable: e2node
-│   │   └── debatecomment (1156105) - No Controller
+│   │   └── debatecomment (1156105) - React Controller
 │   │       └── sqltable: debatecomment
-│   │       └── debate (1157413) - No Controller
+│   │       └── debate (1157413) - Inherits Controller (extends debatecomment) → React
 │   ├── usergroup (16) - React Controller
 │   │   └── sqltable: document
-│   │   └── collaboration (1254859) - No Controller
+│   │   └── collaboration (1254859) - React Controller
 │   │       └── sqltable: collaboration
 │   └── category (1522375) - React Controller
 │       └── sqltable: document
@@ -85,7 +85,7 @@ node (7) - No Controller (base type, handled specially)
 │   └── sqltable: achievement
 ├── notification (1930710) - React Controller
 │   └── sqltable: notification
-├── podcast (1957956) - No Controller
+├── podcast (1957956) - React Controller
 │   └── sqltable: podcast
 └── useraction (2032071) - No Controller
 ```
@@ -100,7 +100,7 @@ linktype (169632) - No Controller
 status (1288633) - No Controller
     └── sqltable: status
 ticket_type (1946032) - No Controller
-recording (1957954) - No Controller
+recording (1957954) - React Controller
     └── sqltable: recording
 license (1981775) - No Controller
 publication_status (2035423) - No Controller
@@ -130,7 +130,7 @@ These types include the `document` sqltable (either directly or through inherita
 | room | 545241 | React | Extends document |
 | edevdoc | 854232 | React (via document) | Extends document |
 | node_forward | 1147470 | Legacy (redirect) | HTTP redirect, no content |
-| e2client | 1261857 | **No Controller** | Extends document |
+| e2client | 1261857 | React | Extends document |
 | sustype | 1399991 | **No Controller** | Extends document |
 | stylesheet | 1854352 | React | Extends document |
 | registry | 1876758 | **No Controller** | Extends document |
@@ -138,7 +138,7 @@ These types include the `document` sqltable (either directly or through inherita
 | writeup_feedback | 2116380 | **No Controller** | Extends document |
 | user | 15 | React | Has document in sqltable |
 | usergroup | 16 | React | Has document sqltable |
-| collaboration | 1254859 | **No Controller** | Extends usergroup |
+| collaboration | 1254859 | React | Extends usergroup |
 | category | 1522375 | React | Has document sqltable |
 
 ## Types Without React Controllers
@@ -146,27 +146,21 @@ These types include the `document` sqltable (either directly or through inherita
 These types may still use legacy `page_header`/`page_actions`:
 
 ### No Controller at All
-- **e2client** (1261857) - Extends document
 - **sustype** (1399991) - Extends document
 - **registry** (1876758) - Extends document
 - **writeup_feedback** (2116380) - Extends document
-- **collaboration** (1254859) - Extends usergroup
-- **debatecomment** (1156105) - Extends e2node
-- **debate** (1157413) - Extends debatecomment
 - **opcode** (415056) - Extends htmlcode
 - **writeuptype** (118) - Standalone
 - **linktype** (169632) - Standalone
 - **status** (1288633) - Standalone
 - **ticket_type** (1946032) - Standalone
-- **recording** (1957954) - Standalone
-- **podcast** (1957956) - Extends node
 - **license** (1981775) - Standalone
 - **publication_status** (2035423) - Standalone
 - **feedback_policy** (2116371) - Standalone
 - **useraction** (2032071) - Extends node
 
-### Has Controller But Falls Back to Legacy
-- **ticker** (1252389) - Controller checks for Page class, falls back to delegation if none exists
+### Has Controller But Special Behavior
+- **ticker** (1252389) - Controller delegates to Page classes; all tickers currently have Page classes
 - **jsonexport** (2100759) - Legacy controller for JSON exports
 - **node_forward** (1147470) - Does HTTP redirect, never renders page content
 
@@ -174,25 +168,19 @@ These types may still use legacy `page_header`/`page_actions`:
 
 ### weblogform / categoryform
 These htmlcodes in `page_actions` check `$$NODE{type}{sqltablelist} =~ /document/`. They could still be reached by:
-- **ticker** nodes without dedicated Page classes
-- **e2client**, **sustype**, **registry**, **writeup_feedback** nodes (no controllers)
-- **collaboration** nodes (no controller, inherits document via usergroup)
+- **sustype**, **registry**, **writeup_feedback** nodes (no controllers)
 
 ### page_actions
 The `page_actions` htmlcode is called from `page_header` which is part of the legacy container system. It's still reachable for any document-inheriting type without a React controller.
 
 ## Migration Status
 
-- **Fully migrated**: 21 types have React controllers
+- **Fully migrated**: 27 types have React controllers
 - **Partially migrated**: 3 types have controllers but may fall back
-- **Not migrated**: 18+ types have no controller and use legacy system
+- **Not migrated**: 12 types have no controller and use legacy system
 
 To fully deprecate legacy `page_actions` features like `weblogform`, controllers would need to be created for:
-1. ticker (or ensure all tickers have Page classes)
-2. e2client
-3. sustype
-4. registry
-5. writeup_feedback
-6. collaboration
-7. debatecomment/debate
-8. Various standalone metadata types (if they need display pages)
+1. sustype
+2. registry
+3. writeup_feedback
+4. Various standalone metadata types (if they need display pages)

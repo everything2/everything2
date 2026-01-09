@@ -53,12 +53,18 @@ sub buildReactData {
             $one_visible_match = undef;
         }
 
+        my $author_name = '';
+        if ($N->{author_user}) {
+            my $author = $DB->getNodeById($N->{author_user});
+            $author_name = $author ? $author->{title} : '';
+        }
+
         push @matches, {
             node_id => $N->{node_id},
             title => $N->{title},
             type => $N->{type}{title},
             author_user => $N->{author_user} || 0,
-            author_name => $N->{author_user} ? $DB->getNodeById($N->{author_user})->{title} : '',
+            author_name => $author_name,
             createtime => $N->{createtime},
             is_current_user => ($N->{author_user} && $N->{author_user} == $current_user_id) ? 1 : 0
         };

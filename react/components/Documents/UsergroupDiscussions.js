@@ -1,5 +1,14 @@
-import React from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
+import { useEditor, EditorContent } from '@tiptap/react'
+import { getE2EditorExtensions } from '../Editor/useE2Editor'
+import { convertToE2Syntax } from '../Editor/E2LinkExtension'
+import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
+import { breakTags } from '../Editor/E2HtmlSanitizer'
+import MenuBar from '../Editor/MenuBar'
+import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
+import { FaComments, FaSpinner, FaBullhorn } from 'react-icons/fa'
+import '../Editor/E2Editor.css'
 
 /**
  * UsergroupDiscussions - View and manage usergroup discussions.
@@ -186,75 +195,286 @@ const UsergroupSelector = ({ usergroups, selectedUsergroup, nodeId }) => (
   </div>
 )
 
-const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => (
-  <div style={styles.newDiscussion}>
-    <hr style={styles.hr} />
-    <p><strong>Choose a title for a new discussion:</strong></p>
-    <form method="post">
-      <input type="hidden" name="op" value="new" />
-      <input type="hidden" name="type" value="debate" />
-      <input type="hidden" name="displaytype" value="edit" />
-      <input type="hidden" name="debate_parent_debatecomment" value="0" />
+// Get initial editor mode from localStorage
+const getInitialEditorMode = () => {
+  try {
+    const stored = localStorage.getItem('e2_editor_mode')
+    if (stored === 'html') return 'html'
+  } catch (e) {
+    // localStorage may not be available
+  }
+  return 'rich'
+}
 
-      <input
-        type="text"
-        name="node"
-        size="50"
-        maxLength="64"
-        style={styles.input}
-      />
-      <br /><br />
+const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
+  const [title, setTitle] = useState('')
+  const [usergroup, setUsergroup] = useState(selectedUsergroup || (usergroups[0]?.node_id || ''))
+  const [announce, setAnnounce] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const [editorMode, setEditorMode] = useState(getInitialEditorMode)
+  const [htmlContent, setHtmlContent] = useState('')
 
-      <label>
-        Choose the usergroup it&apos;s for:
-        <br />
-        <select name="debatecomment_restricted" defaultValue={selectedUsergroup || ''} style={styles.select}>
-          {usergroups.map((ug) => (
-            <option key={ug.node_id} value={ug.node_id}>
-              {ug.title}
-            </option>
-          ))}
-        </select>
-      </label>
-      <br />
+  // Initialize TipTap editor
+  const editor = useEditor({
+    extensions: getE2EditorExtensions(),
+    content: '',
+    editorProps: {
+      attributes: {
+        class: 'e2-editor-content'
+      }
+    }
+  })
 
-      <label style={styles.checkbox}>
-        <input type="checkbox" name="announce_to_ug" value="yup" defaultChecked />
-        Announce new discussion to usergroup
-      </label>
-      <br /><br />
+  // Handle mode toggle
+  const handleModeToggle = useCallback(() => {
+    const newMode = editorMode === 'rich' ? 'html' : 'rich'
 
-      <label>
-        Write the first discussion post:
-        <br />
-        <textarea
-          name="newdebate_text"
-          id="newdebate_text"
-          rows="20"
-          cols="80"
-          style={styles.textarea}
-        />
-      </label>
-      <br />
+    if (editor) {
+      if (editorMode === 'rich') {
+        // Switching to HTML - capture rich content
+        const html = editor.getHTML()
+        const withEntities = convertRawBracketsToEntities(html)
+        setHtmlContent(convertToE2Syntax(withEntities))
+      } else {
+        // Switching to rich - load HTML into editor
+        editor.commands.setContent(breakTags(htmlContent))
+      }
+    }
 
-      <button type="submit" name="sexisgood" value="1" style={styles.button}>
-        Start new discussion!
-      </button>
-    </form>
-  </div>
-)
+    setEditorMode(newMode)
+
+    // Save preference to localStorage
+    try {
+      localStorage.setItem('e2_editor_mode', newMode)
+    } catch (e) {
+      // localStorage may not be available
+    }
+
+    // Persist to server
+    fetch('/api/preferences/set', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tiptap_editor_raw: newMode === 'html' ? 1 : 0 })
+    }).catch(err => console.error('Failed to save editor mode preference:', err))
+  }, [editor, editorMode, htmlContent])
+
+  // Get current doctext content
+  const getCurrentDoctext = () => {
+    if (editorMode === 'html') {
+      return htmlContent
+    }
+    if (editor) {
+      const html = editor.getHTML()
+      const withEntities = convertRawBracketsToEntities(html)
+      return convertToE2Syntax(withEntities)
+    }
+    return ''
+  }
+
+  // Handle HTML textarea change
+  const handleHtmlChange = useCallback((e) => {
+    setHtmlContent(e.target.value)
+    setError(null)
+  }, [])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!title.trim()) {
+      setError('Title is required')
+      return
+    }
+
+    if (!usergroup) {
+      setError('Please select a usergroup')
+      return
+    }
+
+    // Don't save if editor isn't ready in rich mode
+    if (editorMode === 'rich' && !editor) {
+      setError('Editor is still loading, please wait...')
+      return
+    }
+
+    setSaving(true)
+    setError(null)
+    setSuccess(null)
+
+    const doctext = getCurrentDoctext()
+
+    try {
+      const response = await fetch('/api/debatecomments/action/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: title.trim(),
+          doctext: doctext,
+          restricted: parseInt(usergroup, 10),
+          announce: announce
+        })
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setSuccess('Discussion created!')
+
+        // Redirect to the new discussion
+        setTimeout(() => {
+          window.location.href = `/?node_id=${result.node_id}`
+        }, 1000)
+      } else {
+        setError(result.error || 'Failed to create discussion')
+      }
+    } catch (err) {
+      setError('Network error: ' + err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div style={styles.newDiscussion}>
+      <hr style={styles.hr} />
+
+      <div style={styles.formHeader}>
+        <FaComments style={{ color: '#38495e', marginRight: 8, fontSize: 20 }} />
+        <h3 style={styles.formTitle}>Start a New Discussion</h3>
+      </div>
+
+      {/* Messages */}
+      {error && (
+        <div style={styles.errorMessage}>
+          {error}
+        </div>
+      )}
+      {success && (
+        <div style={styles.successMessage}>
+          {success}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        {/* Title */}
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Discussion Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={64}
+            style={styles.titleInput}
+            placeholder="Enter a title for your discussion..."
+            disabled={saving}
+          />
+        </div>
+
+        {/* Usergroup selection */}
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Usergroup</label>
+          <select
+            value={usergroup}
+            onChange={(e) => setUsergroup(e.target.value)}
+            style={styles.select}
+            disabled={saving}
+          >
+            {usergroups.map((ug) => (
+              <option key={ug.node_id} value={ug.node_id}>
+                {ug.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Announce checkbox */}
+        <div style={styles.formGroup}>
+          <label style={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={announce}
+              onChange={(e) => setAnnounce(e.target.checked)}
+              disabled={saving}
+              style={styles.checkbox}
+            />
+            <FaBullhorn style={{ marginRight: 6, color: '#507898' }} />
+            Announce new discussion to usergroup
+          </label>
+        </div>
+
+        {/* Content editor with Rich/HTML toggle */}
+        <div style={styles.formGroup}>
+          <div style={styles.editorHeader}>
+            <label style={styles.label}>First Post</label>
+            <EditorModeToggle
+              mode={editorMode}
+              onToggle={handleModeToggle}
+              disabled={saving}
+            />
+          </div>
+
+          {editorMode === 'rich' ? (
+            <div style={styles.editorContainer}>
+              <MenuBar editor={editor} />
+              <div className="e2-editor-wrapper" style={{ padding: '12px', minHeight: 200 }}>
+                <EditorContent editor={editor} />
+              </div>
+            </div>
+          ) : (
+            <textarea
+              value={htmlContent}
+              onChange={handleHtmlChange}
+              placeholder="Enter HTML content here..."
+              aria-label="Content (HTML)"
+              style={styles.htmlTextarea}
+              spellCheck={false}
+              disabled={saving}
+            />
+          )}
+        </div>
+
+        {/* Submit button */}
+        <button
+          type="submit"
+          disabled={saving}
+          style={{
+            ...styles.button,
+            opacity: saving ? 0.6 : 1,
+            cursor: saving ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {saving ? (
+            <>
+              <FaSpinner className="fa-spin" style={{ marginRight: 8 }} />
+              Creating...
+            </>
+          ) : (
+            <>
+              <FaComments style={{ marginRight: 8 }} />
+              Start New Discussion
+            </>
+          )}
+        </button>
+      </form>
+    </div>
+  )
+}
 
 const styles = {
   container: {
     padding: '10px',
     fontSize: '13px',
     lineHeight: '1.5',
-    color: '#111'
+    color: '#38495e'
   },
   seeAlso: {
     textAlign: 'right',
     fontSize: '12px',
-    marginBottom: '15px'
+    marginBottom: '15px',
+    color: '#507898'
   },
   selector: {
     marginBottom: '20px'
@@ -281,21 +501,25 @@ const styles = {
     marginTop: '15px'
   },
   headerRow: {
-    backgroundColor: '#dddddd'
+    backgroundColor: '#e8f4f8'
   },
   th: {
     textAlign: 'left',
-    padding: '6px 8px',
-    fontWeight: 'bold'
+    padding: '8px 10px',
+    fontWeight: 'bold',
+    color: '#38495e',
+    borderBottom: '2px solid #38495e'
   },
   td: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #e0e0e0'
+    padding: '8px 10px',
+    borderBottom: '1px solid #e8f4f8',
+    color: '#38495e'
   },
   tdSmall: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #e0e0e0',
-    fontSize: '11px'
+    padding: '8px 10px',
+    borderBottom: '1px solid #e8f4f8',
+    fontSize: '11px',
+    color: '#507898'
   },
   link: {
     color: '#4060b0',
@@ -303,63 +527,134 @@ const styles = {
   },
   totalCount: {
     textAlign: 'right',
-    marginTop: '10px'
+    marginTop: '10px',
+    color: '#507898'
   },
   pagination: {
     textAlign: 'right',
-    marginTop: '10px'
+    marginTop: '10px',
+    color: '#507898'
   },
   noDiscussions: {
     textAlign: 'center',
-    padding: '20px'
+    padding: '20px',
+    color: '#507898'
   },
   error: {
     color: '#c62828'
   },
   newDiscussion: {
-    marginTop: '20px'
+    marginTop: '30px'
   },
   hr: {
     border: 'none',
-    borderTop: '1px solid #d3d3d3',
+    borderTop: '2px solid #38495e',
     margin: '20px 0'
   },
-  input: {
-    padding: '6px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    width: '400px'
+  formHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '20px'
+  },
+  formTitle: {
+    margin: 0,
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#38495e'
+  },
+  formGroup: {
+    marginBottom: '16px'
+  },
+  label: {
+    display: 'block',
+    marginBottom: '6px',
+    fontWeight: 'bold',
+    color: '#38495e',
+    fontSize: '14px'
+  },
+  titleInput: {
+    width: '100%',
+    maxWidth: '500px',
+    padding: '10px 12px',
+    fontSize: '14px',
+    border: '1px solid #38495e',
+    borderRadius: '4px',
+    boxSizing: 'border-box',
+    color: '#38495e'
   },
   select: {
-    padding: '6px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    marginTop: '5px'
+    padding: '10px 12px',
+    fontSize: '14px',
+    border: '1px solid #38495e',
+    borderRadius: '4px',
+    color: '#38495e',
+    backgroundColor: '#fff'
+  },
+  checkboxLabel: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+    color: '#38495e',
+    fontSize: '14px'
   },
   checkbox: {
-    marginTop: '10px',
-    display: 'inline-block'
+    marginRight: '8px',
+    width: '16px',
+    height: '16px'
   },
-  textarea: {
+  editorHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '8px'
+  },
+  editorContainer: {
+    border: '1px solid #ced4da',
+    borderRadius: '4px',
+    backgroundColor: '#fff',
+    overflow: 'hidden'
+  },
+  htmlTextarea: {
     width: '100%',
-    maxWidth: '600px',
-    padding: '8px',
+    minHeight: '200px',
+    fontFamily: 'monospace',
     fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    fontFamily: 'inherit',
-    marginTop: '5px'
+    padding: '12px',
+    border: '1px solid #ced4da',
+    borderRadius: '4px',
+    backgroundColor: '#fff',
+    color: '#212529',
+    lineHeight: '1.5',
+    resize: 'vertical',
+    boxSizing: 'border-box'
   },
   button: {
-    padding: '8px 20px',
-    backgroundColor: '#38495e',
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '12px 24px',
+    backgroundColor: '#4060b0',
     color: '#ffffff',
     border: 'none',
-    borderRadius: '3px',
+    borderRadius: '4px',
     cursor: 'pointer',
-    fontSize: '13px'
+    fontSize: '14px',
+    fontWeight: 'bold'
+  },
+  errorMessage: {
+    padding: '12px',
+    backgroundColor: '#f8d7da',
+    border: '1px solid #f5c6cb',
+    borderRadius: '4px',
+    color: '#721c24',
+    marginBottom: '16px'
+  },
+  successMessage: {
+    padding: '12px',
+    backgroundColor: '#d4edda',
+    border: '1px solid #c3e6cb',
+    borderRadius: '4px',
+    color: '#155724',
+    marginBottom: '16px'
   }
 }
 

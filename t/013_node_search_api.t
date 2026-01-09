@@ -816,6 +816,133 @@ SKIP: {
     is($result->[1]{author}, $writeup_data->{author_name}, "Response includes correct author");
 }
 
+#############################################################################
+# Test 32: nodegroup_addable scope - missing group_id
+#############################################################################
+
+my $nodegroup_addable_no_id_request = MockRequest->new(
+    node_id => $root_user->{node_id},
+    title => $root_user->{title},
+    nodedata => $root_user,
+    is_guest_flag => 0,
+    is_admin_flag => 1,
+    query_params => { q => 'root', scope => 'nodegroup_addable' }
+);
+
+$result = $api->search($nodegroup_addable_no_id_request);
+is($result->[0], 200, "nodegroup_addable without group_id returns 200");
+is($result->[1]{success}, 0, "nodegroup_addable without group_id has success=0");
+like($result->[1]{error}, qr/group_id.*required/i, "Error mentions group_id required for nodegroup_addable");
+
+#############################################################################
+# Test 33: nodegroup_addable scope - with group_id (searches all node types)
+#############################################################################
+
+# Use gods group for testing - search for 'room' which are system nodes not in gods
+my $nodegroup_addable_request = MockRequest->new(
+    node_id => $root_user->{node_id},
+    title => $root_user->{title},
+    nodedata => $root_user,
+    is_guest_flag => 0,
+    is_admin_flag => 1,
+    query_params => { q => 'room', scope => 'nodegroup_addable', group_id => $gods_group->{node_id} }
+);
+
+$result = $api->search($nodegroup_addable_request);
+is($result->[0], 200, "nodegroup_addable with group_id returns 200");
+is($result->[1]{success}, 1, "nodegroup_addable search was successful");
+is($result->[1]{scope}, 'nodegroup_addable', "Scope is nodegroup_addable");
+ok(ref($result->[1]{results}) eq 'ARRAY', "Results is an array");
+
+#############################################################################
+# Test 34: nodegroup_addable scope - result structure (includes type info)
+#############################################################################
+
+if ($result->[1]{count} > 0) {
+    my $first = $result->[1]{results}[0];
+    ok(exists $first->{node_id}, "nodegroup_addable result has node_id");
+    ok(exists $first->{title}, "nodegroup_addable result has title");
+    ok(exists $first->{type}, "nodegroup_addable result has type");
+    ok($first->{type}, "type is a non-empty string (e.g., 'user', 'usergroup', 'document', etc.)");
+} else {
+    SKIP: {
+        skip "No nodegroup_addable results to check structure", 4;
+    }
+}
+
+#############################################################################
+# Test 35: nodegroup_addable scope - excludes current group members
+#############################################################################
+
+# root is in gods, so it should NOT appear in results when searching gods group for 'root' exactly
+my $nodegroup_addable_root_request = MockRequest->new(
+    node_id => $root_user->{node_id},
+    title => $root_user->{title},
+    nodedata => $root_user,
+    is_guest_flag => 0,
+    is_admin_flag => 1,
+    query_params => { q => 'root', scope => 'nodegroup_addable', group_id => $gods_group->{node_id} }
+);
+
+my $root_result = $api->search($nodegroup_addable_root_request);
+# root user (node_id 113) is in gods, so if root appears, it should be a DIFFERENT 'root' node
+my @root_user_in_results = grep { $_->{node_id} == $root_user->{node_id} } @{$root_result->[1]{results}};
+is(scalar(@root_user_in_results), 0, "root user is excluded from nodegroup_addable (already in gods)");
+
+#############################################################################
+# Test 36: all_nodes scope - searches without member exclusion
+#############################################################################
+
+my $all_nodes_request = MockRequest->new(
+    node_id => $root_user->{node_id},
+    title => $root_user->{title},
+    nodedata => $root_user,
+    is_guest_flag => 0,
+    is_admin_flag => 1,
+    query_params => { q => 'root', scope => 'all_nodes' }
+);
+
+$result = $api->search($all_nodes_request);
+is($result->[0], 200, "all_nodes scope returns 200");
+is($result->[1]{success}, 1, "all_nodes search was successful");
+is($result->[1]{scope}, 'all_nodes', "Scope is all_nodes");
+
+# all_nodes should find root user (no exclusion)
+my @root_in_all = grep { $_->{title} eq 'root' } @{$result->[1]{results}};
+ok(scalar(@root_in_all) > 0, "all_nodes finds root user (no member exclusion)");
+
+#############################################################################
+# Test 37: all_nodes scope - result structure
+#############################################################################
+
+if ($result->[1]{count} > 0) {
+    my $first = $result->[1]{results}[0];
+    ok(exists $first->{node_id}, "all_nodes result has node_id");
+    ok(exists $first->{title}, "all_nodes result has title");
+    ok(exists $first->{type}, "all_nodes result has type (nodetype title)");
+} else {
+    SKIP: {
+        skip "No all_nodes results to check structure", 3;
+    }
+}
+
+#############################################################################
+# Test 38: nodegroup_addable scope - SQL injection prevention
+#############################################################################
+
+my $nodegroup_addable_injection_request = MockRequest->new(
+    node_id => $root_user->{node_id},
+    title => $root_user->{title},
+    nodedata => $root_user,
+    is_guest_flag => 0,
+    is_admin_flag => 1,
+    query_params => { q => "test'; DROP TABLE node; --", scope => 'nodegroup_addable', group_id => $gods_group->{node_id} }
+);
+
+$result = $api->search($nodegroup_addable_injection_request);
+is($result->[0], 200, "nodegroup_addable search with SQL injection attempt returns 200");
+is($result->[1]{success}, 1, "nodegroup_addable search with SQL injection was handled safely");
+
 done_testing();
 
 =head1 NAME
@@ -851,6 +978,13 @@ Tests the unified node search API:
 - e2nodes scope (author filter with valid author)
 - e2nodes scope (author filter with non-existent author)
 - e2nodes scope (author filter returns only relevant e2nodes)
+- nodegroup_addable scope (requires group_id)
+- nodegroup_addable scope (searches all node types)
+- nodegroup_addable scope (result structure includes type info)
+- nodegroup_addable scope (excludes current group members)
+- all_nodes scope (searches without member exclusion)
+- all_nodes scope (result structure)
+- nodegroup_addable scope (SQL injection prevention)
 
 =head1 AUTHOR
 
