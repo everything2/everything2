@@ -492,7 +492,16 @@ const COMPONENT_MAP = {
 
   // Recordings - migrated Jan 2026
   recording: lazy(() => import('./Documents/Recording')),
-  recording_edit: lazy(() => import('./Documents/RecordingEdit'))
+  recording_edit: lazy(() => import('./Documents/RecordingEdit')),
+
+  // Collaborations - private group documents - migrated Jan 2026
+  collaboration: lazy(() => import('./Documents/Collaboration')),
+  collaborationEdit: lazy(() => import('./Documents/CollaborationEdit')),
+
+  // Debatecomments - usergroup discussion threads - migrated Jan 2026
+  debatecomment: lazy(() => import('./Documents/Debatecomment')),
+  debatecommentEdit: lazy(() => import('./Documents/DebatecommentEdit')),
+  debatecommentReplyto: lazy(() => import('./Documents/DebatecommentEdit'))
 
   // Add new documents here as they are migrated
   // Format: document_type: lazy(() => import('./Documents/ComponentName'))

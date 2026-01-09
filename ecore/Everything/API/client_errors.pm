@@ -227,6 +227,9 @@ sub _log_to_cloudwatch {
     my ($self, $log_entry) = @_;
 
     try {
+        # Suppress DIE handler for Paws calls - internal eval errors shouldn't trigger global handler
+        local $SIG{__DIE__} = sub { };
+
         my $logs = Paws->service('CloudWatchLogs', region => $self->CONF->current_region);
 
         # Use date-based log stream name

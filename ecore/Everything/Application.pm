@@ -1403,26 +1403,33 @@ sub node2mail {
 
 	my $from = $this->{conf}->mail_from;
 
-	my $email = Paws->service('SES', region => $this->{conf}->current_region);
+	# Suppress DIE handler for Paws calls - internal eval errors shouldn't trigger global handler
+	local $SIG{__DIE__} = sub { };
 
-	my $response = $email->SendEmail(
-		'Destination' => {
-			'ToAddresses' => \@addresses,
-		},
-  		'Message' => {
-    			'Body' => {
-      				'Html' => {
-        				'Charset' => 'UTF-8',
-        				'Data' => $body,
-      				},
-    			},
-    			'Subject' => {
-      				'Charset' => 'UTF-8',
-      				'Data' => $subject
-    			}
-  		},
-  		'Source' => $from
-	);
+	my $email = eval { Paws->service('SES', region => $this->{conf}->current_region) };
+	return unless $email;
+
+	my $response = eval {
+		$email->SendEmail(
+			'Destination' => {
+				'ToAddresses' => \@addresses,
+			},
+			'Message' => {
+				'Body' => {
+					'Html' => {
+						'Charset' => 'UTF-8',
+						'Data' => $body,
+					},
+				},
+				'Subject' => {
+					'Charset' => 'UTF-8',
+					'Data' => $subject
+				}
+			},
+			'Source' => $from
+		)
+	};
+	return unless $response;
 	return $response->MessageId;
 }
 
@@ -5529,10 +5536,17 @@ sub sns_notify
 {
   my ($this, $topicname, $subject, $message) = @_;
 
-  my $sns = Paws->service('SNS', 'region' => $this->{conf}->current_region);
+  # Suppress DIE handler for Paws calls - internal eval errors shouldn't trigger global handler
+  local $SIG{__DIE__} = sub { };
+
+  my $sns = eval { Paws->service('SNS', 'region' => $this->{conf}->current_region) };
+  return unless $sns;
+
+  my $topics = eval { $sns->ListTopics };
+  return unless $topics && $topics->Topics;
 
   my $matching_topic_arn;
-  foreach my $topic(@{$sns->ListTopics->Topics})
+  foreach my $topic(@{$topics->Topics})
   {
     if($topic->TopicArn =~ /$topicname$/)
     {
@@ -5541,7 +5555,7 @@ sub sns_notify
     }
   }
   return unless defined $matching_topic_arn;
-  return $sns->Publish(Message => $message, Subject => $subject, TopicArn => $matching_topic_arn);
+  return eval { $sns->Publish(Message => $message, Subject => $subject, TopicArn => $matching_topic_arn) };
 }
 
 sub sitemap_batches
@@ -5682,7 +5696,12 @@ sub send_cloudwatch_event
 
   if($this->{conf}->is_production)
   {
-    my $events = Paws->service('CloudWatchEvents', "region" => $this->{conf}->current_region);
+    # Suppress DIE handler for Paws calls - internal eval errors shouldn't trigger global handler
+    local $SIG{__DIE__} = sub { };
+
+    my $events = eval { Paws->service('CloudWatchEvents', "region" => $this->{conf}->current_region) };
+    return unless $events;  # Silently fail if Paws can't initialize
+
     my $detail = {"type" => $eventtype, "message" => $eventdetail, "callstack" => [$this->getCallStack]};
 
     # Add build ID for correlating errors with code versions
@@ -5709,12 +5728,14 @@ sub send_cloudwatch_event
     my $eventbus = 'com.everything2.errors';
     $eventbus = 'com.everything2.uninitialized' if $detail->{message} =~ /^Use of uninitialized value/;
 
-    my $resp = $events->PutEvents(Entries => [{
-      EventBusName => $eventbus,
-      Detail => JSON->new->utf8->encode($detail),
-      Source => "e2.webapp",
-      DetailType => 'E2 Application Error'
-    }]);
+    my $resp = eval {
+      $events->PutEvents(Entries => [{
+        EventBusName => $eventbus,
+        Detail => JSON->new->utf8->encode($detail),
+        Source => "e2.webapp",
+        DetailType => 'E2 Application Error'
+      }])
+    };
     return $resp;
   }
   return;

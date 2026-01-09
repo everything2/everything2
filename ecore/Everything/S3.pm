@@ -25,7 +25,9 @@ sub new
 		return;
 	}
 
-        $this->{s3} = Paws->service('S3', region => $Everything::CONF->current_region);
+	# Suppress DIE handler for Paws calls - internal eval errors shouldn't trigger global handler
+	local $SIG{__DIE__} = sub { };
+	$this->{s3} = eval { Paws->service('S3', region => $Everything::CONF->current_region) };
 	return unless defined($this->{s3});
 
 	return bless $this,$class;
@@ -40,7 +42,9 @@ sub upload_data
 	{
           @ct = (ContentType => $properties->{content_type});
 	}
-	return $this->{s3}->PutObject(Bucket => $this->{bucket}, Key => $name, Body => $data, @ct);
+	# Suppress DIE handler for Paws calls
+	local $SIG{__DIE__} = sub { };
+	return eval { $this->{s3}->PutObject(Bucket => $this->{bucket}, Key => $name, Body => $data, @ct) };
 }
 
 sub upload_file
@@ -62,13 +66,17 @@ sub upload_file
 sub delete_key
 {
 	my ($this, $name) = @_;
-	return $this->{s3}->DeleteObject(Bucket => $this->{bucket}, Key => $name);
+	# Suppress DIE handler for Paws calls
+	local $SIG{__DIE__} = sub { };
+	return eval { $this->{s3}->DeleteObject(Bucket => $this->{bucket}, Key => $name) };
 }
 
 sub get_key
 {
 	my ($this, $key) = @_;
-        if(my $get_object_output = $this->{s3}->GetObject(Bucket => $this->{bucket}, Key => $key))
+	# Suppress DIE handler for Paws calls
+	local $SIG{__DIE__} = sub { };
+	if(my $get_object_output = eval { $this->{s3}->GetObject(Bucket => $this->{bucket}, Key => $key) })
 	{
           return $get_object_output->Body;
 	}

@@ -15,7 +15,7 @@ sub dispatcher
 
   if(not grep {$method} ("get","put","post","delete","patch"))
   {
-    return $self->output($REQUEST, [$self->HTTP_METHOD_NOT_ALLOWED]); 
+    return $self->output($REQUEST, [$self->HTTP_METHOD_NOT_ALLOWED]);
   }
 
   if($self->CONF->maintenance_message)
