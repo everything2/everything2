@@ -134,6 +134,13 @@ const Findings = ({ data, user }) => {
         )}
 
         <AdminCreateNodeLink user={user} searchTerm={search_term} />
+
+        {/* Full text search link */}
+        <p style={styles.fullTextSearch}>
+          <a href={`/node/superdoc/E2+Full+Text+Search?q=${encodeURIComponent(search_term)}`}>
+            Do a full text search for "{search_term}"
+          </a>
+        </p>
       </div>
     </div>
   );
@@ -223,6 +230,11 @@ const styles = {
   checkbox: {
     marginRight: '15px',
     fontSize: '14px'
+  },
+  fullTextSearch: {
+    marginTop: '20px',
+    fontSize: '14px',
+    color: '#507898'
   }
 };
 

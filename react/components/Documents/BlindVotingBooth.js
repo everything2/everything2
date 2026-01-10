@@ -9,16 +9,15 @@ import { renderE2Content } from '../Editor/E2HtmlSanitizer';
  * - Pass to get a different writeup
  * - After voting, see the author and reputation
  *
- * This component serves as a preview for the full writeup display
- * interface with modern voting controls.
+ * Uses POST /api/vote/writeup/:id for voting.
  */
 const BlindVotingBooth = ({ data }) => {
   const {
     writeup,
     parent,
     author,
-    hasVoted,
-    votesLeft = 0,
+    hasVoted: initialHasVoted,
+    votesLeft: initialVotesLeft = 0,
     nodeId,
     noVotesLeft,
     error,
@@ -28,6 +27,10 @@ const BlindVotingBooth = ({ data }) => {
   const [selectedVote, setSelectedVote] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hoverVote, setHoverVote] = useState(null);
+  const [hasVoted, setHasVoted] = useState(initialHasVoted);
+  const [votesLeft, setVotesLeft] = useState(initialVotesLeft);
+  const [reputation, setReputation] = useState(writeup?.reputation || 0);
+  const [voteError, setVoteError] = useState(null);
 
   // Error states
   if (error === 'guest') {
@@ -105,16 +108,37 @@ const BlindVotingBooth = ({ data }) => {
     window.location.href = `/node/${nodeId}?garbage=${Date.now()}`;
   };
 
-  // Handle vote submission
+  // Handle vote submission via API
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedVote || isSubmitting) return;
 
     setIsSubmitting(true);
+    setVoteError(null);
 
-    // Submit via form to use the existing vote opcode
-    const form = e.target;
-    form.submit();
+    try {
+      const response = await fetch(`/api/vote/writeup/${writeup.node_id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ weight: parseInt(selectedVote, 10) })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setHasVoted(true);
+        setVotesLeft(result.votes_remaining);
+        setReputation(result.reputation);
+      } else {
+        setVoteError(result.error || 'Failed to cast vote');
+      }
+    } catch (err) {
+      setVoteError('Network error: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Get dynamic vote button styles (Kernel Blue palette)
@@ -153,12 +177,11 @@ const BlindVotingBooth = ({ data }) => {
         without knowing who wrote a writeup here, if you so choose.
       </p>
 
-      <form method="POST" action={`/node/${nodeId}`} onSubmit={handleSubmit}>
-        <input type="hidden" name="op" value="vote" />
-        <input type="hidden" name="votedon" value={writeup.node_id} />
-        {selectedVote && (
-          <input type="hidden" name={`vote__${writeup.node_id}`} value={selectedVote} />
-        )}
+      {voteError && (
+        <div style={styles.voteError}>
+          {voteError}
+        </div>
+      )}
 
         {/* Writeup Card */}
         <div style={styles.writeupCard}>
@@ -229,7 +252,8 @@ const BlindVotingBooth = ({ data }) => {
 
                 <div style={styles.voteActions}>
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={handleSubmit}
                     disabled={!selectedVote || isSubmitting}
                     style={{
                       ...styles.submitButton,
@@ -255,9 +279,9 @@ const BlindVotingBooth = ({ data }) => {
                   <span style={styles.reputationLabel}>Reputation</span>
                   <span style={{
                     ...styles.reputationValue,
-                    color: writeup.reputation > 0 ? '#4060b0' : (writeup.reputation < 0 ? '#38495e' : '#507898')
+                    color: reputation > 0 ? '#4060b0' : (reputation < 0 ? '#38495e' : '#507898')
                   }}>
-                    {writeup.reputation > 0 ? '+' : ''}{writeup.reputation}
+                    {reputation > 0 ? '+' : ''}{reputation}
                   </span>
                 </div>
 
@@ -277,7 +301,6 @@ const BlindVotingBooth = ({ data }) => {
             )}
           </div>
         </div>
-      </form>
 
       {/* Votes remaining indicator */}
       {!hasVoted && votesLeft > 0 && (
@@ -474,6 +497,15 @@ const styles = {
     border: '1px solid #f44336',
     borderRadius: '4px',
     textAlign: 'center'
+  },
+  voteError: {
+    padding: '12px 16px',
+    marginBottom: '16px',
+    backgroundColor: '#ffebee',
+    border: '1px solid #f44336',
+    borderRadius: '4px',
+    color: '#c62828',
+    fontSize: '14px'
   },
   notice: {
     padding: '20px',

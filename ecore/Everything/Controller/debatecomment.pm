@@ -61,6 +61,7 @@ sub _update_last_read {
             -dateread => "NOW()"
         });
     }
+    return;
 }
 
 # Build nested children structure recursively

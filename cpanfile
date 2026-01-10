@@ -25,8 +25,6 @@ requires 'IO::Compress::Zstd';
 requires 'JSON';
 requires 'JSON::XS';
 requires 'LWP::UserAgent';
-requires 'Mason';
-requires 'Mason::Plugin::HTMLFilters';
 requires 'Module::Pluggable';
 requires 'Moose';
 

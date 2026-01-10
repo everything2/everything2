@@ -611,7 +611,7 @@ right: 0;
 height: 60px;
 margin: 0px;
 padding: 0 2px 0 20px;
-overflow: hidden; /* IE fix */
+overflow: visible;
 }
 #searchform {
 width: 410px;

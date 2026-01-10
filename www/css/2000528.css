@@ -189,7 +189,7 @@ font-weight: bold;
 div#header {
 width: 100%;
 margin: 0;
-overflow: hidden; /* IE fix */
+overflow: visible;
 }
 #epicenter_zen {
 padding: 2px 2px 2px 2.5em;

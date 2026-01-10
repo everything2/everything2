@@ -8,7 +8,6 @@ has 'DB' => (isa => "Everything::NodeBase", is => "ro", lazy => 1, builder => "_
 has 'APP' => (isa => "Everything::Application", is => "ro", lazy => 1, builder => "_build_APP", handles => ["printLog", "devLog"]);
 has 'FACTORY' => (isa => "HashRef", is => "ro", lazy => 1, builder => "_build_FACTORY");
 has 'JSON' => (isa => "JSON", is => "ro", lazy => 1, builder => "_build_JSON");
-has 'MASON' => (isa => "Mason::Interp", is => "ro", lazy => 1, builder => "_build_MASON");
 
 sub _build_CONF
 {
@@ -33,11 +32,6 @@ sub _build_APP
 sub _build_FACTORY
 {
   return $Everything::FACTORY;
-}
-
-sub _build_MASON
-{
-  return $Everything::MASON;
 }
 
 1;

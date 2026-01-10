@@ -1589,7 +1589,7 @@
             "Subnets": [{"Ref": "AppVPCSubnet1"}]
           }
         },
-        "DesiredCount": 1,
+        "DesiredCount": 2,
         "HealthCheckGracePeriodSeconds": 120,
         "TaskDefinition": {"Ref": "E2AppFargateTaskDefinition"},
         "CapacityProviderStrategy": [{
@@ -1816,7 +1816,7 @@
         "ResourceId": {"Fn::Join": ["/",["service",{"Ref": "ECSAppCluster"},{"Fn::GetAtt": ["ECSFargateAppService","Name"]}]]},
         "ServiceNamespace": "ecs",
         "ScalableDimension": "ecs:service:DesiredCount",
-        "MinCapacity": 1,
+        "MinCapacity": 2,
         "MaxCapacity": 4
       }
     },

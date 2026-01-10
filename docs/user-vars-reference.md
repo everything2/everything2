@@ -48,7 +48,7 @@ $user->set_vars($VARS);
 | `repThreshold` | 0-50 or 'none' | Hide writeups below this reputation | document.pm, htmlcode.pm |
 | `textareaSize` | 0/1/2 | **DEPRECATED** Writeup editor size (small/medium/large). React WriteupDisplay uses inline editing - legacy textarea sizing no longer applies. | htmlcode.pm |
 | `num_newwus` | 1-40 | Number of new writeups to show (default: 15) | Application.pm |
-| `noquickvote` | Boolean | Disable AJAX quick voting | Controller.pm, Application.pm |
+| `noquickvote` | Boolean | **DEPRECATED** Disable AJAX quick voting - see Deprecated section | Controller.pm, Application.pm |
 | `nullvote` | Boolean | **DEPRECATED** Allow casting null votes (weight=0) that don't affect reputation. Originally for old browser compatibility, obsolete now that vote swapping is supported. | htmlcode.pm, preferences.pm |
 | `nonodeletcollapser` | Boolean | Disable nodelet collapse buttons | Controller.pm, Application.pm |
 | `nosocialbookmarking` | Boolean | Disable social sharing buttons | document.pm |
@@ -166,7 +166,7 @@ $user->set_vars($VARS);
 
 | Key | Type | Description | Files |
 |-----|------|-------------|-------|
-| `fxDuration` | Integer | Animation duration (0=instant, 100-1000ms) | Controller.pm |
+| `fxDuration` | Integer | **DEPRECATED** Animation duration - see Deprecated section | Controller.pm |
 | `settings_useTinyMCE` | Boolean | **DEPRECATED** Enable WYSIWYG editor. React WriteupDisplay uses inline editing - TinyMCE integration removed. | Controller.pm |
 | `autoChat` | Boolean | Auto-chat feature flag | Controller.pm |
 | `inactiveWindowMarker` | Boolean | Inactive window marker flag | Controller.pm |
@@ -215,6 +215,8 @@ These keys are no longer used and can be cleaned up from user settings:
 | `settings_useTinyMCE` | **DEPRECATED** | Enable WYSIWYG editor. React WriteupDisplay uses inline editing - TinyMCE integration removed. | 2025-12-21 |
 | `HideWriteupOnE2node` | **DEPRECATED** | Only show writeup edit box on writeup's own page. React WriteupDisplay uses inline editing - this optimization is no longer relevant. | 2025-12-21 |
 | `listcode_smaller` | **DEPRECATED** | Display code listings in smaller font. The `listcode` htmlcode used for viewing database-stored code (htmlcode, container, opcode nodes) has been removed - all code is now on GitHub. | 2026-01-07 |
+| `fxDuration` | **DEPRECATED** | jQuery animation duration (0=instant, 100-1000ms). All AJAX animations have been removed - React components use CSS transitions which ignore this setting. | 2026-01-09 |
+| `noquickvote` | **DEPRECATED** | Toggle between AJAX and page-reload voting. All voting is now React/API-based - there is no page-reload fallback. | 2026-01-09 |
 
 ### Removed in 2025-11 (Nodelet Migration)
 

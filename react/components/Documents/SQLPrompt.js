@@ -67,7 +67,6 @@ export default function SQLPrompt({ data }) {
             onChange={(e) => setQuery(e.target.value)}
             rows={5}
             cols={80}
-            className="expandable"
             style={{
               width: '100%',
               fontFamily: 'monospace',

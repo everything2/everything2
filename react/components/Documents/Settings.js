@@ -826,51 +826,11 @@ function Settings({ data }) {
             Look and Feel
           </h2>
 
-          {/* Quick Functions */}
+          {/* Confirmation Dialogs */}
           <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Quick Functions</legend>
+            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Confirmation Dialogs</legend>
 
             <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={!(settingsPrefs.noquickvote === 1)}
-                onChange={() => handleTogglePref('noquickvote')}
-                style={{ marginRight: '8px' }}
-              />
-              <strong>Enable quick functions (a.k.a. AJAX)</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
-                Voting, cooling, chatting, etc will no longer require complete pageloads. Highly recommended.
-              </div>
-            </label>
-
-            <div style={{ marginTop: '16px', marginLeft: '8px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                On-page transitions:
-              </label>
-              <select
-                value={settingsPrefs.fxDuration || 0}
-                onChange={(e) => handlePrefChange('fxDuration', parseInt(e.target.value, 10))}
-                style={{
-                  marginLeft: '8px',
-                  padding: '6px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
-              >
-                <option value="1">Off (instant)</option>
-                <option value="100">Supersonic</option>
-                <option value="150">Faster</option>
-                <option value="0">Fast (default)</option>
-                <option value="300">Less fast</option>
-                <option value="400">Medium</option>
-                <option value="600">Slow</option>
-                <option value="800">Slower</option>
-                <option value="1000">Glacial</option>
-              </select>
-            </div>
-
-            <label style={{ display: 'block', marginTop: '16px', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={settingsPrefs.votesafety === 1}

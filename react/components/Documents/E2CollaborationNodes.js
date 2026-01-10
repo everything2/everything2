@@ -72,14 +72,6 @@ const styles = {
     marginRight: '20px',
     cursor: 'pointer',
   },
-  note: {
-    marginTop: '30px',
-    padding: '15px',
-    backgroundColor: '#e9ecef',
-    borderRadius: '8px',
-    fontStyle: 'italic',
-    fontSize: '14px',
-  },
 }
 
 const E2CollaborationNodes = ({ data }) => {
@@ -201,11 +193,6 @@ const E2CollaborationNodes = ({ data }) => {
             create
           </button>
         </form>
-      </div>
-
-      <div style={styles.note}>
-        Bug reports and tearful accusations (or admissions) of
-        infidelity go to <a href="/node/470183">wharfinger</a>.
       </div>
     </div>
   )

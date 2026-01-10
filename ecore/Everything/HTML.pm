@@ -12,8 +12,6 @@ use strict;
 use Everything;
 use Everything::Delegation::htmlcode;
 use Everything::Delegation::opcode;
-use Everything::Delegation::container;
-use Everything::Delegation::htmlpage;
 
 use Everything::Request;
 
@@ -604,8 +602,6 @@ sub nodeName
 #
 #	purpose
 #		allow for easy use of htmlcode functions in embedded perl
-#		[{textfield:title,80}] would become:
-#		htmlcode('textfield', 'title,80');
 #
 #	args
 #		[0] the function name
@@ -715,50 +711,12 @@ sub displayPage
 	my $PAGE = getPage($NODE, $displaytype);
 	$NODE->{datatype} = $PAGE->{mimetype};
 
-	my $pagetitle = $PAGE->{title};
-	$pagetitle =~ s/ /_/g;
+	# All routing is handled by HTMLRouter - it always succeeds
+	# (unimplemented pages get a friendly error via React)
+	$page = '';
+	$Everything::ROUTER->route_node($NODE, $displaytype || 'display', $REQUEST);
+	setVars($USER, $VARS) unless $APP->isGuest($USER);
 
-	if($Everything::ROUTER->can_route($NODE, $displaytype))
-	{
-		$page = '';
-		# HTMLRouter does the printing
-		my $routed = $Everything::ROUTER->route_node($NODE, $displaytype || 'display', $REQUEST);
-
-		if ($routed) {
-			# TODO: Make sure that VARS are set in ROUTER once we're cut over
-			setVars($USER, $VARS) unless $APP->isGuest($USER);
-		} else {
-			# route_node returned undef (e.g., no blessed Node class available)
-			# Fall through to delegation path below
-			$APP->devLog("Router can_route returned true but route_node failed for '$NODE->{title}', falling back to delegation");
-			goto DELEGATION_FALLBACK;
-		}
-	}else{
-		DELEGATION_FALLBACK:
-
-		if(my $delegation = Everything::Delegation::htmlpage->can($pagetitle))
-		{
-			$APP->devLog("Using delegated htmlpage for '$pagetitle'");
-			# $NODE twice for legacy reasons though I am not sure if anyone needs it
-			$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $NODE);
-		}else{
-			$page = "<p>Error: Htmlpage delegation not implemented for '$$PAGE{title}' (expected: $pagetitle)</p>";
-		}
-
-        my $container_node = $DB->getNodeById($$PAGE{parent_container});
-
-        if($container_node and my $delegation = Everything::Delegation::container->can($container_node->{title}))
-        {
-          $page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $page);
-        }
-
-		setVars $USER, $VARS unless $APP->isGuest($USER);
-
-        $page = $APP->optimally_compress_page($page);
-		printHeader($$NODE{datatype}, $page, $lastnode);
-		$query->print($page);
-		$page = "";
-	}
 	return;
 }
 
@@ -880,7 +838,12 @@ sub gotoNode
 	$linktype = getNodeById($Everything::CONF->guest_link)
 		if $APP->isGuest($USER);
 
+	# Get lastnode_id from query param first, then fall back to cookie
+	# Cookie-based tracking enables softlink creation with clean SEO-friendly URLs
 	my $lastnode = $query->param('lastnode_id');
+	if (!$lastnode) {
+		$lastnode = $query->cookie('lastnode_id');
+	}
 	my ($fromNodeLinked, $toNodeLinked) =
 		updateLinks($NODE, $lastnode, $linktype, $$USER{user_id});
 

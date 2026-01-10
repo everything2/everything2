@@ -3,16 +3,18 @@ package Everything::Controller::page;
 use Moose;
 extends 'Everything::Controller';
 
-sub fully_supports
-{
-  my ($self, $page) = @_;
-  return 1 if $self->page_exists($page);
-  return;
-}
+use Everything::Page::_unimplemented;
 
-# TODO: Always make sure this returns the same data struct
-# fullpage - Currently raw text
-# superdoc and other "real" controllers - Hashref
+# Lazy-loaded fallback page for unimplemented pages
+has '_unimplemented_page' => (
+  is => 'ro',
+  lazy => 1,
+  builder => '_build_unimplemented_page'
+);
+
+sub _build_unimplemented_page {
+  return Everything::Page::_unimplemented->new;
+}
 
 sub page_delegate
 {
@@ -23,8 +25,17 @@ sub page_delegate
 
 sub page_class
 {
-  my ($self, $node) = @_;
-  return $self->PAGE_TABLE->{$self->title_to_page($node->title)};
+  my ($self, $node, $htmlpage) = @_;
+  my $page_class = $self->PAGE_TABLE->{$self->title_to_page($node->title)};
+
+  # If no Page class exists, use the fallback
+  unless ($page_class) {
+    my $fallback = $self->_unimplemented_page;
+    $fallback->htmlpage($htmlpage) if $htmlpage;
+    return $fallback;
+  }
+
+  return $page_class;
 }
 __PACKAGE__->meta->make_immutable();
 1;

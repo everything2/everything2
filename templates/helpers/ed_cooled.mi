@@ -1,8 +1,0 @@
-<%class>
-  has 'node' => (required => 1);
-</%class>
-% if ( my $edc = $.node->ed_cooled ) {
-<p><div id="cooledby"><strong>cooled by</strong> <& 'linknode', node => $edc->to &></div>
-% } elsif ( $REQUEST->user->is_editor ) {
-<p><div id="cooledby"><& 'linknode', node => $.node, title => 'C!', params => { coolme => 'hellyea' }, class => 'action', innertitle => 'Editor cool this node' &></div>
-% }

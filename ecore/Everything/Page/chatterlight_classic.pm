@@ -12,6 +12,7 @@ sub buildReactData
   my $messages_id = $self->DB->getNode('Messages', 'nodelet')->{node_id};
 
   return {
+    standalone => \1,  # Full-screen layout without header/footer/sidebar
     pagenodelets => [$messages_id]
   };
 }

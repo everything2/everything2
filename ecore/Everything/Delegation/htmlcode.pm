@@ -516,21 +516,7 @@ sub setvar
   return $query->textfield("set$var", $$VARS{$var}, $len);
 }
 
-sub textfield
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($field, $length, $expandable) = @_;
-  $length ||= 20;
-  my @expandable = (); @expandable = ( class => 'expandable' ) if $expandable ;
-  return $query->textfield(-name=>$$NODE{type}{title} .'_'. $field, value=>$$NODE{$field}, size=>$length ,@expandable );
-}
+# textfield htmlcode - REMOVED January 2026: No callers found
 
 sub parselinks
 {
@@ -1605,68 +1591,7 @@ sub displayvars
   return $str
 }
 
-sub editvars
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return "<i>you can't update this node</i>" unless $DB->canUpdateNode($USER, $NODE);
-  my $SETTINGS = getVars($NODE);
-  my @params = $query->param;
-  my $str=''; 
-
-  foreach (@params) {
-    if(/setsetting_(.*)$/) {
-      $$SETTINGS{$1}=$query->param('setsetting_'.$1);
-    }
-  }
-
-  foreach (@params) {
-    if(/delsetting_(.*)$/) { #for s/a/b in 'cloakers'
-      delete $$SETTINGS{$1};
-    }
-  }
-
-
-  my $newsetting = $query->param('newsetting') // '';
-  my $newval = $query->param('newval') // '';
-  if($newsetting ne '' and $newval ne ''){
-    $$SETTINGS{$newsetting} = $newval;
-  }
-
-  setVars ($NODE, $SETTINGS);
-  my @skeys = keys %$SETTINGS;
-  @skeys = sort {$a cmp $b} @skeys;
-
-  my ($keysize, $valsize) = (15, 30);
-  my $oddrow = '';
-
-  $str.="<table class='setvarstable'>\n";
-  $str.="<tr><th>Remove</th><th>Setting</th><th>Value</th></tr>\n";
-  foreach(@skeys) {
-    $oddrow = ($oddrow ? '' : ' class="oddrow"');
-    my $value = $APP->encodeHTML($$SETTINGS{$_});
-
-    #  This breaks if there's a double quote in the text, so we replace with &quot;
-    $value =~ s/\"/&quot;/g;
-    $str.=qq'<tr$oddrow><td><input type="checkbox" name="delsetting_$_"></td>
-      <td class="setting"><b>$_</b></td>
-      <td class="setting"><textarea name="setsetting_$_" class="expandable"
-        cols="$valsize" rows="1">$value</textarea></td></tr>\n';
-  }
-
-  $str.=qq'<tr><td></td>
-    <td><input type="text" name="newsetting" size="$keysize"></td>
-    <td><textarea name="newval" class="expandable" cols="$valsize" rows="1"></textarea></td></tr>\n';
-  $str.="</table>\n";
-
-  return $str;
-}
+# editvars htmlcode - REMOVED January 2026: Now handled by Everything::Controller::user::editvars + React UserEditVars
 
 # newwriteups - Unsure where this is used; tough to tell because of ajax call stuff and because of the number of stylesheets
 #   TODO - Where is this used?
@@ -2346,15 +2271,9 @@ sub static_javascript
 
   $e2->{lastnode_id} = $lastnode;
 
-  my $cookie = undef;
-  foreach ('fxDuration', 'collapsedNodelets', 'autoChat', 'inactiveWindowMarker'){
-    if (!$APP->isGuest($USER)){
-      $$VARS{$_} = $cookie if($cookie = $query->cookie($_));
-      delete $$VARS{$_} if(defined($cookie) and $cookie eq '0');
-    }
-    $e2->{$_} = $$VARS{$_} if ($$VARS{$_});
-  }
-
+  # Pass collapsedNodelets from user preferences to frontend
+  # React handles persistence via preferences API - no cookie sync needed
+  $e2->{collapsedNodelets} = $$VARS{collapsedNodelets} if $$VARS{collapsedNodelets};
   $e2->{collapsedNodelets} ||= "";
   $e2->{collapsedNodelets} =~ s/\bsignin\b// if($query->param('op') and $query->param('op') eq 'login');
 
@@ -2433,9 +2352,7 @@ sub static_javascript
 
   $e2 = JSON->new->encode($e2);
 
-  my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';
-  $libraries .= qq|<script src="|.$APP->asset_uri("legacy.js").qq|" type="text/javascript"></script>|;
-  $libraries .= qq|<script src="|.$APP->asset_uri("react/main.bundle.js").qq|" type="text/javascript"></script>|;
+  my $libraries = qq|<script src="|.$APP->asset_uri("react/main.bundle.js").qq|" type="text/javascript"></script>|;
   return qq|
     <script type='text/javascript' name='nodeinfojson' id='nodeinfojson'>
       e2 = $e2;
@@ -5102,50 +5019,7 @@ sub externalLinkDisplay
   return $str;
 }
 
-sub softlock
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-  my $defaultreason="";
-
-  if($query->param('nodeunlock'))
-  {
-    $defaultreason = $DB->sqlSelect("nodelock_reason", "nodelock", "nodelock_node=$$NODE{node_id}");
-    $DB->sqlDelete("nodelock","nodelock_node=$$NODE{node_id}");
-  }
-
-  if($query->param('nodelock'))
-  {
-    $DB->sqlInsert("nodelock", {
-      nodelock_reason => $query->param('nodelock_reason'),
-      nodelock_user => $$USER{user_id},
-      nodelock_node => $$NODE{node_id}}
-      ) unless ($DB->sqlSelectHashref("*", "nodelock", "nodelock_node=$$NODE{node_id}"));
-  }
-
-  my $nodelock = $DB->sqlSelectHashref("*", "nodelock", "nodelock_node=$$NODE{node_id}");
-  my $str =htmlcode('openform').'<fieldset><legend>Node lock</legend>';
-
-  if($nodelock)
-  {
-    my $locker = getNodeById($$nodelock{nodelock_user});
-    $str .= '(Locked by '.linkNode($locker, $$locker{title}).qq')<input type="hidden" name="nodeunlock" value="$$NODE{node_id}"><input type="submit" value="Unlock this e2node">';
-  } else {
-    $str .= qq'Lock this node because: <input type="hidden" name="nodelock" value="$$NODE{node_id}">
-      <input type="text" size="60" class="expandable" name="nodelock_reason" value="">
-      <input type="submit" value="Lock">';
-  }
-
-  $str .='</fieldset></form>';
-  return $str;
-}
+# softlock htmlcode - REMOVED January 2026: No callers found
 
 sub atomiseNode
 {
@@ -5401,13 +5275,10 @@ sub page_header
     $str .= '<div id="cooledby"><strong>cooled by</strong> '.linkNode($PAGELOAD->{edcoollink}->{to_node})."</div>\n" if $PAGELOAD->{edcoollink} ;
   }
 
-  $str .= htmlcode( 'confirmop' ) if $query -> param( 'confirmop' ) ;
+  # confirmop - REMOVED January 2026: React ConfirmActionModal handles all confirmation dialogs
   $str .= htmlcode('page actions') unless $APP->isGuest($USER) ;
 
-  if($APP->can_category_add($NODE))
-  {
-    $str .= htmlcode('listnodecategories') unless defined $PAGELOAD->{e2nodeCategories}; # i.e. unless writeups have already listed any page categories
-  }
+  # listnodecategories - REMOVED January 2026: React Categories nodelet + /api/category handles this
 
   return qq'<div id="pageheader">
     <h1 class="nodetitle">$$NODE{title}</h1>\n\t'.
@@ -5426,33 +5297,6 @@ sub coolcount
   
   my $user_id = shift;
   return $DB->sqlSelect("count(*)","coolwriteups JOIN node ON coolwriteups_id = node_id","author_user=$user_id and type_nodetype=117");
-}
-
-sub ilikeit
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return if(not $APP->isGuest($USER) or $APP->isSpider());
-
-  my ($WU) = @_;
-  return unless(getRef($WU) and $$WU{type}{title} eq 'writeup');
-
-  my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
-  my $likeExists = $DB->sqlSelect("count(*)","likedit","likedit_ip = '$addr' and likedit_node=$$WU{node_id}");
-  return " <b>Thanks!</b>" if $likeExists || 
-    ( $query->param('op') eq 'ilikeit' && $query->param("like_id") == $$WU{node_id} );
-
-  return linkNode($NODE,'I like it!', {confirmop => 'ilikeit', like_id => $$WU{node_id},
-    -id => "like$$WU{node_id}",
-    -class => "action ajax like$$WU{node_id}:ilikeit:$$WU{node_id}:",
-    -title => 'send a message to the author telling them someone likes their work'} );
-
 }
 
 sub epicenterZen
@@ -5741,73 +5585,13 @@ sub uploadAudio
 
 # TODO: Recheck all of these after e2nodes are in templates
 
-sub page_actions
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $disabled = shift;
-
-  my $c = undef;
-  my @actions = () ;
-
-  # Editor cool button (editors only, for e2node/superdoc/document types)
-  my $ntypet = $$NODE{type}{title};
-  if ($APP->isEditor($USER) && ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document')) {
-    # Check if node is already editor cooled
-    my $is_cooled = $PAGELOAD->{edcoollink} ? 1 : 0;
-    my $node_id = $$NODE{node_id};
-
-    my $color = $is_cooled ? '#f4d03f' : '#999';
-    my $title_text = $is_cooled ? 'Remove editor cool' : 'Add editor cool (endorsement)';
-
-    push @actions, qq{<button onclick="window.toggleEditorCool && window.toggleEditorCool($node_id, this)" style="background: none; border: none; cursor: pointer; padding: 0; color: $color; font-size: 16px;" title="$title_text" data-cooled="$is_cooled">&#9733;</button>};
-  }
-
-  # Bookmark button (all logged-in users)
-  my $bookmark_add = "";
-  if ($APP->can_bookmark($NODE)) {
-    my $bookmark_type = $DB->getNode('bookmark', 'linktype');
-    my $is_bookmarked = 0;
-    if ($bookmark_type) {
-      my $link = $DB->sqlSelectHashref('*', 'links',
-        "from_node=$$USER{node_id} AND to_node=$$NODE{node_id} AND linktype=" . $bookmark_type->{node_id});
-      $is_bookmarked = $link ? 1 : 0;
-    }
-
-    my $node_id = $$NODE{node_id};
-    my $bookmark_color = $is_bookmarked ? '#4060b0' : '#999';
-    my $bookmark_title = $is_bookmarked ? 'Remove bookmark' : 'Bookmark this page';
-    my $bookmark_icon = $is_bookmarked ? '&#128278;' : '&#128279;';  # Filled vs outline bookmark
-
-    $bookmark_add = qq{<button onclick="window.toggleBookmark && window.toggleBookmark($node_id, this)" style="background: none; border: none; cursor: pointer; padding: 0; color: $bookmark_color; font-size: 16px;" title="$bookmark_title" data-bookmarked="$is_bookmarked">$bookmark_icon</button>};
-  }
-  my $categoryform = ""; $categoryform = htmlcode( 'categoryform' ) if $APP->can_category_add($NODE) ;
-  my $w = ""; $w = htmlcode( 'weblogform' ) if($$NODE{type}{sqltablelist} =~ /document/ and $$VARS{can_weblog} and $APP->can_weblog($NODE));
-
-  my $title = 'Add this '.( $$NODE{ type }{ title } eq 'e2node' ? 'entire page' : $$NODE{ type }{ title } ).' to a ' ;
-
-  unless ( $query -> param( 'addto' ) )
-  {
-    push @actions , $bookmark_add if $bookmark_add ;
-    push @actions , htmlcode( 'widget' , $categoryform , 'form' , 'Add to category&hellip;' ,
-      { showwidget => 'category' , -title => $title.'category' } ) if $categoryform ;
-    push @actions , htmlcode( 'widget' , $w , 'form' , 'Add to page&hellip;' ,
-      { showwidget => 'weblog' , -title => $title.' usergroup page' } ) if  $w ;
-  } else {
-    push @actions , htmlcode( 'widget' ,
-      $query -> hidden( 'addto' )."<small>$bookmark_add</small><hr>\n$categoryform\n$w" , 'form' , 'Add to&hellip;' ,
-      { showwidget => 'addto'.$$NODE{ node_id } , -title => $title.'category or usergroup page' } ) ;
-  }
-
-  return '<ul class="topic actions"><li>' . join( "</li>\n<li>" , @actions ) . "</li>\n</ul>\n" if @actions ;
-  return '' ;
-}
+# page_actions - REMOVED January 2026
+# Legacy function that rendered editor cool, bookmark, category, and weblog buttons
+# in the page header. These are now handled by React components in WriteupDisplay.js:
+# - Editor cool: FaStar/FaRegStar icon button (editors only)
+# - Bookmark: FaBookmark/FaRegBookmark icon button (logged-in users)
+# - Add to Category: AddToCategoryModal.js
+# - Add to Page (weblog): AddToWeblogModal.js
 
 sub canseewriteup
 {
@@ -5900,60 +5684,9 @@ sub checkInfected
 
 }
 
-sub confirmop
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $N = $query -> param('like_id') || $query -> param( 'cool_id' ) || $query -> param( 'ins_id' ) || $query -> param('cure_user_id');
-  my $node = undef; $node = getNodeById( $N ) if $N;
-  my $author = ''; $author = getNode( $$node{ author_user } ) if $node ;
-  $author = $$author{ title } if $author ;
-
-  my $polehash_seed = $query -> param('polehash_seed');
-  my $author_to_remove = $query->param('author');
-  $author_to_remove = $APP->encodeHTML($author_to_remove);
-
-  my $confirmop = $query->param('confirmop');
-
-  my %opcodes = (
-    cool => "cool $author"."'s writeup" ,
-    uncoolme => 'uncool this node',
-    insure => "remove the insurance on $author"."'s writeup",
-    ilikeit => "send $author a message saying you like their work",
-    cure_infection => "remove ${author}'s infection",
-    nuke => "delete this $$NODE{type}{title}",
-    nukedraft => "delete this draft",
-    remove => !$polehash_seed ? "return this/these writeups to draft status"
-	: "smite $author_to_remove for a vile spammer"
-    , leavegroup => 'leave this usergroup'
-    , usernames => 'detonate ' . $query->escapeHTML($confirmop)
-  );
-
-  my $str = '<fieldset><legend>Confirm</legend>
-    <p>Do you really want to '.(
-    $opcodes{ $query -> param( 'confirmop' ) } ||
-    $opcodes{ $query -> param( 'notanop' ) } ||
-    'do this'
-    ).'?</p>' ;
-
-  my $paramname = $query -> param( 'notanop' ) || 'op' ;
-  my $paramvalue = $query -> param( 'confirmop' ) ;
-  $query -> delete( 'confirmop' , 'op' , 'notanop' ) ;
-  $str .= qq'<button name="$paramname" value="$paramvalue" type="submit">OK</button>' ;
-  foreach ( $query -> param )
-  {
-    $str .= $query -> hidden( $_ ) if $query -> param( $_ ) ;
-  }
-  $str .= '</fieldset>' ;
-
-  return htmlcode( 'widget' , $str , 'form' , '' , { showwidget => '' } ) ;
-}
+# confirmop - REMOVED January 2026
+# All confirmation dialogs now use React ConfirmActionModal component
+# Operations migrated: cool, uncoolme, insure, cure_infection, nuke, nukedraft, remove, leavegroup, usernames
 
 sub repair_e2node
 {
@@ -5990,111 +5723,6 @@ sub isInfected
   my $patientVars = getVars($patient);
   return (defined($$patientVars{infected}) and $$patientVars{infected} == 1);
 
-}
-
-sub listnodecategories
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($originalN, $isIncludedParent) = @_;
-  my $N = $originalN || $NODE;
-  getRef $N;
-  my $nodeid = $$N{node_id};
-
-  my $category_nodeid = getType('category')->{node_id};
-  my $catlinktype = getNode('category', 'linktype')->{node_id};
-
-  my $dbh = $DB->getDatabaseHandle();
-  return 'No database handle!' unless $dbh;
-  my $sql = "SELECT node.node_id, node.author_user
-    FROM node, links
-    WHERE node.node_id = links.from_node
-    AND links.to_node = $nodeid
-    AND node.type_nodetype = $category_nodeid
-    AND links.linktype = $catlinktype";
-
-  my $ds = $dbh->prepare($sql);
-  $ds->execute() or return $ds->errstr;
-
-  my @items = ();
-  while(my $row = $ds->fetchrow_hashref)
-  {
-    $sql = "SELECT node.node_id
-      FROM node, links
-      WHERE node.node_id = links.to_node
-      AND links.from_node = $$row{node_id}
-      AND links.linktype = $catlinktype
-      ORDER BY links.food, node.title, node.type_nodetype";
-    my $ids = $dbh->prepare($sql);
-    $ids->execute() or return $ids->errstr;
-    my $prev = -2;
-    my $next = -2;
-    while (my $irow = $ids->fetchrow_hashref)
-    {
-      if ($$irow{node_id} == $nodeid)
-      {
-        $next = -1;
-      } elsif ($next == -1) { 
-        $next = $$irow{node_id};
-      } elsif ($next == -2) { 
-        $prev = $$irow{node_id};
-      } else { 
-        last 
-      };
-    }
-
-    my $authorCat = undef; $authorCat = {-class => ' authors'} if $$N{type}{title} eq 'writeup' && $$row{author_user} == $$N{author_user};
-    if ($prev < 0)
-    {
-      $prev = ' ';
-    } else { 
-      $prev = linkNode($prev, '&#xab;', { -title => 'Previous: '.getNodeById($prev)->{title}, -class => 'previous' });
-    }
-    if ($next < 0)
-    {
-      $next = ' ';
-    } else { 
-      $next = linkNode($next, '&#xbb;', { -title => 'Next: '.getNodeById($next)->{title}, -class => 'next' });
-    }
-
-    my $s = "$prev&nbsp;&nbsp;" . linkNode($$row{node_id}, '', $authorCat) . "&nbsp;&nbsp;$next";
-    $s =~ s/^\s+//;
-    $s =~ s/\s+$//;
-    unless ($authorCat)
-    {
-      push @items, $s;
-    }else{
-      unshift @items, $s;
-    }
-  }
-
-
-  # show parent e2node categories along with writeup categories
-  my $parentNodeId = $$N{parent_e2node};
-
-  # prevent recursion from missing or self-referencing parent e2node
-  if ($parentNodeId && $parentNodeId != $originalN && $$N{type}{title} eq 'writeup' && !exists $PAGELOAD->{e2nodeCategories})
-  {
-    $PAGELOAD->{e2nodeCategories} = htmlcode('listnodecategories', $parentNodeId, 'is parent');
-  }
-
-  if (@items || $PAGELOAD->{e2nodeCategories})
-  {
-    my $ies = (@items != 1 ? 'ies' : 'y');
-    my ($c, $addId) = !$isIncludedParent ? ('C', qq' id="categories$nodeid"') : ('Page c', '');
-    my $moggies = ""; $moggies = qq'<h4>${c}ategor$ies:</h4> <ul><li>'.(join '</li><li>', @items).'</li></ul>' if @items;
-    return qq'<div class="categories"$addId">$moggies\n'.($$PAGELOAD{e2nodeCategories}||"").qq'\n</div>';
-  }
-
-  #id so content can be ajaxed in, but no class so no styling that makes it take up space:
-  return qq'<div id="categories$nodeid"></div>' unless $isIncludedParent;
-  return '';
 }
 
 sub ip_lookup_tools
@@ -6454,182 +6082,8 @@ sub urlToNode
   return 'http://' . $ENV{HTTP_HOST} . $redirectPath;
 }
 
-sub weblogform
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ( $N , $inwriteupform ) = @_ ;
-  getRef $N ;
-  $N ||= $NODE ;
-
-
-  $inwriteupform ||= 0;
-  my $options = '' ;
-  my $notification = "";
-
-  unless ( $PAGELOAD->{ cachedweblogoptions } )
-  {
-    my $wls = getVars( getNode( 'webloggables' , 'setting' ) ) ;
-    foreach( split ',' , $$VARS{ can_weblog } )
-    {
-      next if $$VARS{ 'hide_weblog_'.$_ };
-      my $groupTitle = "" ;
-      if ( $$VARS{ nameifyweblogs } )
-      {
-        $groupTitle = $$wls{ $_ } ;
-      } else {
-        my $wl = getNodeById($_,"light") || {title => ''};
-	next unless $wl and exists($wl->{title});
-        $groupTitle = $wl->{title};
-      }
-      $options.="\n\t\t\t<option value=\"$_\">$groupTitle</option>" if $groupTitle;
-    }
-    $PAGELOAD->{ cachedweblogoptions } = $options if $$NODE{type}{title} eq 'e2node' && scalar @{ $$NODE{ group } } > 1 ;
-  } else {
-    $options = $PAGELOAD->{ cachedweblogoptions } ;
-    delete $PAGELOAD->{ cachedweblogoptions } if $$N{ node_id } == ${ $$NODE{ group } }[-1] ;
-  }
-
-  my $sourceid = undef;
-  if ( ($query -> param( 'op' ) // '') eq 'weblog' and ($query -> param( 'target' ) // 0) == $$N{ node_id } )
-  {
-    $sourceid = $query -> param( 'source' ) ;
-    if ( $sourceid )
-    {
-      $options =~ s/$sourceid/$sourceid" selected="selected/ ;
-      my $success = $DB->sqlSelect( "weblog_id" , "weblog" ,"weblog_id=$sourceid and to_node=$$N{ node_id } and linkedby_user=$$USER{ user_id }" ) ;
-      $notification = ( $success ? 'Added ' : 'Failed to add ' ) .
-        "$$N{ title } to ".linkNode( $sourceid ) .
-	( $success ? ' (' .linkNode( $NODE , 'undo' , { op => 'removeweblog' ,
-        source => $sourceid , to_node => $$N{ node_id } ,
-        -class=>"ajax weblogform$$N{node_id}:weblogform:$$N{node_id},$inwriteupform" } ) . ')' : '' ) ;
-    } else {
-      $notification = 'No page chosen: nothing added to anything.' ;
-    }
-  }
-  $notification = "<p><small>$notification</small></p>" if $notification ;
-
-  return linkNodeTitle( 'Edit weblog menu[superdoc]|Edit weblog menu&hellip;' ).$notification if $$VARS{ can_weblog } and not $options ;
-
-  $options = "\n\t\t\t<option value=\"\" selected=\"selected\">Choose&hellip;</option>$options" unless $sourceid ;
-
-  my ( $class , $addnid ) = ("",""); ($class, $addnid) = ( "wuformaction " , $$N{ node_id } ) if $inwriteupform ;
-  $class .= "ajax weblogform$$N{node_id}:weblogform?op=weblog&target=/target$addnid&source=/source$addnid:$$N{node_id},$inwriteupform" ;
-
-  return qq'<fieldset id="weblogform$$N{node_id}"><legend>Add this '	.
-    ( $$N{type}{title} eq 'e2node' ? 'entire page ' : $$N{type}{title} ) .
-    qq' to a usergroup page:</legend>
-    <input type="hidden" name="target$addnid" value="$$N{ node_id }">
-    <select name="source$addnid">
-    $options
-    </select>
-    <button value="weblog" name="'.( $inwriteupform ? qq'wl$addnid" type="button"' : 'op" type="submit"' ) .
-    qq'class="$class">Add</button><br><small>'.linkNodeTitle( 'Edit weblog menu[superdoc]|Edit this menu&hellip;' ) .
-    "</small>$notification</fieldset>" ;
-}
-
-sub categoryform
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return if $APP->getLevel( $USER ) <= 1 && !$APP->isEditor($USER);
-
-  my ( $N , $inwriteupform ) = @_ ;
-  getRef $N ;
-  $N ||= $NODE ;
-
-  $inwriteupform = "" unless(defined($inwriteupform));
-
-  my ($categoryid, $options, $choose, $createcategory, $notification) = (undef,undef,"","","");
-
-  unless ( $PAGELOAD->{ cachedcategoryoptions } )
-  {
-    # get user, guest user, and user's usergroups. No huge list for admins and CEs
-    my $dbh = $DB->getDatabaseHandle();
-    my $inClause = join( ',' , $$USER{ user_id } , $Everything::CONF->guest_user , @{
-      $dbh -> selectcol_arrayref( "SELECT DISTINCT ug.node_id
-      FROM node ug,nodegroup ng WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$$USER{ user_id }" ) } );
-	
-    # get all the categories the user can edit
-    my $nodetype = getNode( 'category' , 'nodetype' ) -> { node_id } ;
-    my $csr = $DB -> sqlSelectMany(
-      'n.node_id, n.title,
-      (select title from node where node_id=n.author_user) as authorname' ,
-      'node n' , "author_user IN ($inClause) AND type_nodetype=$nodetype
-      AND node_id NOT IN (SELECT to_node AS node_id FROM links WHERE from_node=n.node_id)" ,
-      'ORDER BY n.title' ) ;
-
-    while( my $c = $csr -> fetchrow_hashref )
-    {
-      $options .= '<option value="'.$$c{ node_id }.'">'.$$c{ title }." ($$c{ authorname })</option>\n" ;
-    }
-
-    $PAGELOAD->{ cachedcategoryoptions } = $options if $$NODE{type}{title} eq 'e2node' ;
-  } else {
-    $options = $PAGELOAD->{ cachedcategoryoptions } ;
-    delete $PAGELOAD->{ cachedcategoryoptions } if $$N{ node_id } eq $$NODE{ node_id } ; # last call is for page header
-  }
-
-  $categoryid = $query -> param( 'cid' );
-  $choose = qq'<option value="" selected="selected">Choose&hellip;</option>' if $options && !$categoryid;
-  $options .= qq'<option value="new">New category&hellip;</option>';
-  $options =~ s/$categoryid/$categoryid" selected="selected/ if $categoryid;
-
-  if ( ($query->param( 'op' ) || "" ) eq 'category' and ( $query->param('nid') and $query->param( 'nid' ) == $$N{ node_id } ) )
-  {
-    # report on attempt to add to category or provide opportunity to name a new category
-
-    if ($categoryid eq 'new')
-    {
-      $createcategory = $query -> label('<br><small>New category name:</small><br>'.$query -> textfield(-name => 'categorytitle', size => 50));
-      my $newname = $query -> param('categorytitle');
-      if ($newname)
-      {
-        $newname = $APP->cleanNodeName($newname);
-        $notification = ' (A category with this name already exists.)' if getNode($newname, 'category');
-        $newname = $query -> escapeHTML($newname);
-        $notification = "Failed to create new category '$newname'.$notification";
-      }
-    } elsif($categoryid) {
-      my $success = $DB -> sqlSelect( "from_node" , "links" ,
-        "from_node=$categoryid and to_node=$$N{node_id} and linktype="
-        .getNode('category', 'linktype')->{node_id});
-
-      $notification = ($success? qq'<span class="instant ajax categories$$N{node_id}:listnodecategories?a=1:$$N{node_id}:">Added</span> '
-        : 'Failed to add ')."$$N{ title } to ".linkNode($categoryid);
-    } else {
-      $notification = 'No category chosen: nothing added to anything.' ;
-    }
-  }
-
-  $notification = "<p><small>$notification</small></p>" if $notification ;
-
-  my ( $class , $addnid ) = ("",""); ( $class , $addnid ) = ( "wuformaction " , $$N{ node_id } ) if $inwriteupform ;
-
-  $class .= "ajax categoryform$$N{node_id}:categoryform?op=category&nid=/nid$addnid&cid=/cid$addnid"
-    .($createcategory ? '&categorytitle=/' : '')
-    .":$$N{node_id},$inwriteupform";
-
-  return qq'<fieldset id="categoryform$$N{node_id}"><legend>Add this '	.
-    ( $$N{type}{title} eq 'e2node' ? 'entire page ' : $$N{type}{title} ) .
-    qq' to a category:</legend><input type="hidden" name="nid$addnid" value="$$N{ node_id }">
-    <select name="cid$addnid">$choose $options</select>
-    $createcategory
-    <button value="category" name="'.( $inwriteupform ? qq'cat$addnid" type="button"' : 'op" type="submit"' )
-    .qq' class="$class">Add</button> $notification</fieldset>';
-}
+# weblogform htmlcode - REMOVED January 2026: React AddToWeblogModal + /api/weblog handles this
+# categoryform htmlcode - REMOVED January 2026: React AddToCategoryModal + /api/category handles this
 
 sub widget
 {

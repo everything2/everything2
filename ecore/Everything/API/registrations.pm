@@ -371,7 +371,7 @@ sub _get_user_entry {
     "from_user = $user_id AND for_registry = $registry_id"
   );
 
-  return undef unless $row;
+  return unless $row;
 
   return {
     data => $row->{data},

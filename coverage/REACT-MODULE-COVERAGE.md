@@ -1,6 +1,6 @@
 # React Module Coverage Report
 
-**Generated**: 2026-01-06 14:54:23
+**Generated**: 2026-01-09 18:59:46
 
 This report shows test coverage for each React component and module.
 
@@ -9,49 +9,62 @@ This report shows test coverage for each React component and module.
 | Component | Statements | Branches | Functions | Lines |
 |-----------|-----------|----------|-----------|-------|
 | /home/jaybonci/projects/everything2/react/test-utils.js | 8.69% | 7.69% | 15.38% | 9.09% |
+| /home/jaybonci/projects/everything2/react/components/AddToCategoryModal.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/AddToWeblogModal.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/AdminCreateNodeLink.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/AdminModal.js | 74.4% | 73.78% | 78.94% | 74.57% |
 | /home/jaybonci/projects/everything2/react/components/Borgcheck.js | 100% | 100% | 100% | 100% |
+| /home/jaybonci/projects/everything2/react/components/ConfirmActionModal.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/ConfirmModal.js | 100% | 100% | 100% | 100% |
-| /home/jaybonci/projects/everything2/react/components/DocumentComponent.js | 6.14% | 100% | 2.96% | 6.14% |
+| /home/jaybonci/projects/everything2/react/components/DateTimePicker.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/DocumentComponent.js | 5.57% | 100% | 2.68% | 5.57% |
 | /home/jaybonci/projects/everything2/react/components/DraftAdminModal.js | 4.83% | 0% | 0% | 5% |
 | /home/jaybonci/projects/everything2/react/components/E2IdleHandler.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/E2NodeDisplay.js | 64.7% | 75% | 57.14% | 65.9% |
 | /home/jaybonci/projects/everything2/react/components/E2NodeToolsModal.js | 33.6% | 29.76% | 35.41% | 34.29% |
-| /home/jaybonci/projects/everything2/react/components/E2ReactRoot.js | 43.15% | 32.94% | 20.21% | 48.11% |
+| /home/jaybonci/projects/everything2/react/components/E2ReactRoot.js | 45.02% | 35.44% | 20.65% | 50.24% |
 | /home/jaybonci/projects/everything2/react/components/EditorHideWriteup.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/ErrorBoundary.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/ExperienceGain.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/GPGain.js | 100% | 100% | 100% | 100% |
-| /home/jaybonci/projects/everything2/react/components/InlineWriteupEditor.js | 48.16% | 64.01% | 60% | 48.72% |
-| /home/jaybonci/projects/everything2/react/components/LinkNode.js | 94.44% | 97.36% | 66.66% | 96.15% |
+| /home/jaybonci/projects/everything2/react/components/GroupEditorBase.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/ILikeItButton.js | 27.45% | 16.66% | 50% | 28% |
+| /home/jaybonci/projects/everything2/react/components/InlineWriteupEditor.js | 47.38% | 63.53% | 60% | 47.91% |
+| /home/jaybonci/projects/everything2/react/components/LinkNode.js | 92.85% | 95.23% | 66.66% | 94.44% |
 | /home/jaybonci/projects/everything2/react/components/LogoutLink.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/MasonContent.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/MessageBox.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/MessageList.js | 87.5% | 93.24% | 75% | 87.5% |
 | /home/jaybonci/projects/everything2/react/components/MessageModal.js | 64.62% | 62.06% | 56% | 64.78% |
 | /home/jaybonci/projects/everything2/react/components/NewWriteupsFilter.js | 100% | 100% | 100% | 100% |
+| /home/jaybonci/projects/everything2/react/components/NodegroupEditor.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/NodeletContainer.js | 100% | 75% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/NodeletSection.js | 100% | 100% | 100% | 100% |
-| /home/jaybonci/projects/everything2/react/components/PageLayout.js | 100% | 100% | 100% | 100% |
+| /home/jaybonci/projects/everything2/react/components/PageActions.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/PageLayout.js | 92.3% | 90% | 100% | 92.3% |
 | /home/jaybonci/projects/everything2/react/components/ParseLinks.js | 90.9% | 85.71% | 100% | 90.47% |
 | /home/jaybonci/projects/everything2/react/components/ServerTime.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/SettingsNavigation.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/SystemNodeEditor.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/TimeDistance.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/TimeSince.js | 100% | 100% | 100% | 100% |
+| /home/jaybonci/projects/everything2/react/components/UserSearchInput.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/UserToolsModal.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/UsergroupDescriptionEditor.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/UsergroupEditor.js | 80% | 67.59% | 73.8% | 79.74% |
 | /home/jaybonci/projects/everything2/react/components/Weblog.js | 88.13% | 79.31% | 100% | 92.59% |
-| /home/jaybonci/projects/everything2/react/components/WriteupDisplay.js | 31.18% | 52.2% | 23.25% | 33.14% |
+| /home/jaybonci/projects/everything2/react/components/WriteupDisplay.js | 33.51% | 53.16% | 25.64% | 35.58% |
 | /home/jaybonci/projects/everything2/react/components/WriteupEntry.js | 100% | 97.77% | 100% | 100% |
+| /home/jaybonci/projects/everything2/react/components/Actions/BookmarkButton.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Actions/EditorCoolButton.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Actions/index.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Common/WeblogViewer.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Developer/SourceMapDisplay.js | 79.16% | 68.75% | 100% | 79.16% |
 | /home/jaybonci/projects/everything2/react/components/Developer/SourceMapModal.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/Documents/AYearAgoToday.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/AboutNobody.js | 0% | 100% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/AcceptableUsePolicy.js | 0% | 100% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Achievement.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/AdminBestowTool.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/AdminSettings.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Alphabetizer.js | 0% | 0% | 0% | 0% |
@@ -70,6 +83,8 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/ChatterboxHelpTopics.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Chatterlight.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ClientdevHome.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Collaboration.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/CollaborationEdit.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ConfirmPassword.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Container.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ContentItem.js | 0% | 0% | 0% | 0% |
@@ -81,7 +96,12 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/CreateNode.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/CreateRoom.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/DatabaseLagOMeter.js | 0% | 100% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Datastash.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Dbtable.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Debatecomment.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/DebatecommentEdit.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Decloaker.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/DefaultDisplay.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/DisplayCategories.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/DoIHaveSwineFlu.js | 0% | 100% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/DoYouCWhatIC.js | 0% | 0% | 0% | 0% |
@@ -97,11 +117,14 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/E2MarbleShop.js | 0% | 100% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/E2Node.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/E2PennyJar.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/E2Poll.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/E2Rot13Encoder.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/E2SourceCodeFormatter.js | 0% | 100% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/E2SpermCounter.js | 0% | 100% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/E2Staff.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/Documents/E2WordCounter.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/E2client.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/E2clientEdit.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/EdevDocumentationIndex.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/EdevFAQ.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/EditWeblogMenu.js | 0% | 0% | 0% | 0% |
@@ -173,6 +196,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/NodeParameterEditor.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/NodeRow.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/NodeTracker.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Nodegroup.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Nodelet.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/NodesOfTheYear.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Nodeshells.js | 100% | 100% | 100% | 100% |
@@ -181,11 +205,14 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/NodingSpeedometer.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/NoteletEditor.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/NothingFound.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Notification.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ObliqueStrategiesGarden.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/Documents/OnlineOnlyMsg.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/PageOfCool.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/PermissionDenied.js | 0% | 100% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/PitOfAbomination.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Podcast.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/PodcastEdit.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/PopularRegistries.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/PublishModal.js | 56.98% | 54.54% | 52% | 56.17% |
 | /home/jaybonci/projects/everything2/react/components/Documents/QuickRename.js | 0% | 0% | 0% | 0% |
@@ -196,15 +223,21 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/RecentNodeNotes.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/RecentRegistryEntries.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/RecentUsers.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Recording.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/RecordingEdit.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Registry.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/RegistryInformation.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/RenunciationChainsaw.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/RepublishModal.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ReputationGraph.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ResetPassword.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Room.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/SQLPrompt.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/SanctifyUser.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Schema.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/SecurityMonitor.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ServerTelemetry.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Setting.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/Settings.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ShortUrlLookup.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ShowUserVars.js | 0% | 0% | 0% | 0% |
@@ -214,6 +247,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/SiteTrajectory.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/SpamCannon.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/StyleDefacer.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Stylesheet.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/SuperMailbox.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/SuspensionInfo.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/SystemNode.js | 0% | 0% | 0% | 0% |
@@ -232,8 +266,10 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/TheTokenator.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/ThemeNirvana.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/TopicArchive.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/UnimplementedPage.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/UserDisplay.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/UserEdit.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Documents/UserEditVars.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/UserRelations.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/UserSearch.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/UserStatistics.js | 0% | 0% | 0% | 0% |
@@ -256,7 +292,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Documents/WhoIsDoingWhat.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/WhoKilledWhat.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/WordMesserUpper.js | 0% | 0% | 0% | 0% |
-| /home/jaybonci/projects/everything2/react/components/Documents/Writeup.js | 69.64% | 80.48% | 42.85% | 68.51% |
+| /home/jaybonci/projects/everything2/react/components/Documents/Writeup.js | 69.64% | 80.95% | 42.85% | 68.51% |
 | /home/jaybonci/projects/everything2/react/components/Documents/WriteupsByType.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/YourFilledNodeshells.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Documents/YourGravatar.js | 100% | 100% | 100% | 100% |
@@ -272,6 +308,11 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Editor/PreviewContent.js | 94.11% | 87.5% | 100% | 93.75% |
 | /home/jaybonci/projects/everything2/react/components/Editor/RawBracketExtension.js | 5% | 0% | 0% | 5.55% |
 | /home/jaybonci/projects/everything2/react/components/Editor/useE2Editor.js | 7.69% | 0% | 0% | 7.89% |
+| /home/jaybonci/projects/everything2/react/components/Layout/EpicenterZen.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Layout/GoogleAds.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Layout/Header.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Layout/PageHeader.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/Layout/SearchBar.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/MasterControl/AdminSearchForm.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/MasterControl/AdminSectionLinks.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/MasterControl/CESectionLinks.js | 0% | 0% | 0% | 0% |
@@ -306,6 +347,7 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/components/Nodelets/UsergroupWriteups.js | 100% | 100% | 100% | 100% |
 | /home/jaybonci/projects/everything2/react/components/Nodelets/Vitals.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/Poll/PollDisplay.js | 0% | 0% | 0% | 0% |
+| /home/jaybonci/projects/everything2/react/components/UserInteractions/FavoriteUsersManager.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/UserInteractions/UserInteractionsManager.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/components/shared/RegistryFooter.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/hooks/useActivityDetection.js | 62.85% | 0% | 75% | 62.85% |
@@ -313,9 +355,12 @@ This report shows test coverage for each React component and module.
 | /home/jaybonci/projects/everything2/react/hooks/useOtherUsersPolling.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/hooks/usePolling.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/hooks/usePublishDraft.js | 31.7% | 17.5% | 50% | 30.86% |
+| /home/jaybonci/projects/everything2/react/utils/analytics.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/utils/linkParser.js | 87.5% | 80.28% | 100% | 86.66% |
+| /home/jaybonci/projects/everything2/react/utils/nodeTypeIcons.js | 0% | 0% | 0% | 0% |
 | /home/jaybonci/projects/everything2/react/utils/reportClientError.js | 83.58% | 72.34% | 57.14% | 84.84% |
-| **Total** | **19.12%** | **19.75%** | **15.17%** | **19.33%** |
+| /home/jaybonci/projects/everything2/react/utils/textUtils.js | 0% | 0% | 0% | 0% |
+| **Total** | **16.19%** | **16.74%** | **13.12%** | **16.39%** |
 
 ## How to Improve Coverage
 

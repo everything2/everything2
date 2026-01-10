@@ -51,9 +51,21 @@
 const puppeteer = require('puppeteer');
 
 // Default base URL - can be overridden with E2_URL environment variable
-// For reCAPTCHA testing in dev, use: E2_URL=http://development.everything2.com:9080
-const BASE_URL = process.env.E2_URL || 'http://localhost:9080';
+// Use development.everything2.com by default since the auth cookie is set for that domain
+// (development.everything2.com resolves to 127.0.0.1)
+const BASE_URL = process.env.E2_URL || 'http://development.everything2.com:9080';
 const DEV_URL = 'http://development.everything2.com:9080';
+
+/**
+ * Normalize URL to use development.everything2.com instead of localhost
+ * This is required because the auth cookie is set with domain=development.everything2.com
+ * and won't be sent to localhost URLs.
+ */
+function normalizeUrlForAuth(url) {
+  if (!url) return url;
+  // Replace localhost:9080 with development.everything2.com:9080
+  return url.replace(/http:\/\/localhost:9080/g, 'http://development.everything2.com:9080');
+}
 
 /**
  * Get the base URL to use for authentication
@@ -255,10 +267,13 @@ async function createAuthenticatedSession(username, targetUrl = null) {
 
   // ALWAYS log in against the root page to ensure Sign In nodelet is present
   // This handles fullpage layouts (chatterlight) that don't have the standard sidebar
-  await page.goto(authBaseUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await page.goto(authBaseUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
-  // Wait for Sign In nodelet to load, then expand if collapsed
-  await page.waitForSelector('#signin_user', { timeout: 5000 });
+  // Wait for Sign In nodelet header to load (the h2 is always visible even when collapsed)
+  await page.waitForFunction(() => {
+    const headers = Array.from(document.querySelectorAll('h2'));
+    return headers.some(h => h.textContent.includes('Sign In'));
+  }, { timeout: 5000 });
 
   // Check if nodelet is collapsed and expand it
   const signInHeader = await page.evaluateHandle(() => {
@@ -274,9 +289,12 @@ async function createAuthenticatedSession(username, targetUrl = null) {
     );
     if (isCollapsed) {
       await signInHeader.click();
-      await new Promise(resolve => setTimeout(resolve, 300)); // Wait for expand animation
+      await new Promise(resolve => setTimeout(resolve, 500)); // Wait for expand animation
     }
   }
+
+  // Now wait for the signin field to be visible (after expansion)
+  await page.waitForSelector('#signin_user', { visible: true, timeout: 5000 });
 
   // Fill in login form (use IDs from SignIn nodelet)
   await page.type('#signin_user', username);
@@ -331,10 +349,12 @@ async function loginAndScreenshot(username) {
 }
 
 async function fetchAsUser(username, url = BASE_URL) {
-  const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
+  // Normalize URL to use development.everything2.com for cookie compatibility
+  const normalizedUrl = normalizeUrlForAuth(url);
+  const { browser, page, userInfo } = await createAuthenticatedSession(username, normalizedUrl);
 
-  console.log(`Navigating to ${url}...`);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+  console.log(`Navigating to ${normalizedUrl}...`);
+  await page.goto(normalizedUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
   // Wait for React lazy-loaded components to finish loading
   // The "Loading..." text is React Suspense's fallback
@@ -355,10 +375,12 @@ async function fetchAsUser(username, url = BASE_URL) {
 }
 
 async function screenshotAsUser(username, url = BASE_URL) {
-  const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
+  // Normalize URL to use development.everything2.com for cookie compatibility
+  const normalizedUrl = normalizeUrlForAuth(url);
+  const { browser, page, userInfo } = await createAuthenticatedSession(username, normalizedUrl);
 
-  console.log(`Navigating to ${url}...`);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+  console.log(`Navigating to ${normalizedUrl}...`);
+  await page.goto(normalizedUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
   // Wait for React lazy-loaded components to finish loading
   await page.waitForFunction(() => {
@@ -384,6 +406,9 @@ async function screenshotAsUser(username, url = BASE_URL) {
 async function getHtmlAsUser(username, url = BASE_URL) {
   let browser, page;
 
+  // Normalize URL to use development.everything2.com for cookie compatibility
+  const normalizedUrl = normalizeUrlForAuth(url);
+
   // Special case: "guest" means unauthenticated
   if (username === 'guest') {
     browser = await puppeteer.launch({
@@ -393,13 +418,13 @@ async function getHtmlAsUser(username, url = BASE_URL) {
     page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 1024 });
   } else {
-    const session = await createAuthenticatedSession(username, url);
+    const session = await createAuthenticatedSession(username, normalizedUrl);
     browser = session.browser;
     page = session.page;
   }
 
   // Navigate to target URL
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+  await page.goto(normalizedUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
   // Wait for React lazy-loaded components to finish loading
   await page.waitForFunction(() => {
@@ -465,9 +490,11 @@ async function deleteAsUser(username, url) {
  * Generic HTTP request (POST/PUT/DELETE) to an API endpoint as authenticated user
  */
 async function httpRequestAsUser(username, url, jsonData, method) {
-  const { browser, page, userInfo } = await createAuthenticatedSession(username, url);
+  // Normalize URL to use development.everything2.com for cookie compatibility
+  const normalizedUrl = normalizeUrlForAuth(url);
+  const { browser, page, userInfo } = await createAuthenticatedSession(username, normalizedUrl);
 
-  console.log(`${method} request to ${url}...`);
+  console.log(`${method} request to ${normalizedUrl}...`);
 
   // Parse JSON data if it's a string
   let dataObj = jsonData;
@@ -483,7 +510,7 @@ async function httpRequestAsUser(username, url, jsonData, method) {
 
   // Navigate to a base page to ensure we have a proper context
   // This is important for fetch to work with credentials
-  const baseUrl = getBaseUrlForAuth(url);
+  const baseUrl = getBaseUrlForAuth(normalizedUrl);
   if (!page.url().startsWith(baseUrl)) {
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 10000 });
   }
@@ -518,7 +545,7 @@ async function httpRequestAsUser(username, url, jsonData, method) {
     } catch (err) {
       return { error: err.message };
     }
-  }, url, dataObj, method);
+  }, normalizedUrl, dataObj, method);
 
   console.log(`\n=== ${method} Result ===`);
   console.log(JSON.stringify(result, null, 2));
@@ -533,6 +560,9 @@ async function httpRequestAsUser(username, url, jsonData, method) {
 async function evalInBrowser(username, url, jsCode) {
   let browser, page;
 
+  // Normalize URL to use development.everything2.com for cookie compatibility
+  const normalizedUrl = normalizeUrlForAuth(url);
+
   // Special case: "guest" means unauthenticated
   if (username === 'guest') {
     browser = await puppeteer.launch({
@@ -541,16 +571,16 @@ async function evalInBrowser(username, url, jsCode) {
     });
     page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 1024 });
-    console.log(`Navigating to ${url} as guest...`);
+    console.log(`Navigating to ${normalizedUrl} as guest...`);
   } else {
-    const session = await createAuthenticatedSession(username, url);
+    const session = await createAuthenticatedSession(username, normalizedUrl);
     browser = session.browser;
     page = session.page;
-    console.log(`Navigating to ${url}...`);
+    console.log(`Navigating to ${normalizedUrl}...`);
   }
 
   // Navigate to target URL
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+  await page.goto(normalizedUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
   // Wait for React lazy-loaded components to finish loading
   await page.waitForFunction(() => {
@@ -596,6 +626,9 @@ async function evalInBrowser(username, url, jsCode) {
 async function getAccessibilityTree(username, url = BASE_URL) {
   let browser, page;
 
+  // Normalize URL to use development.everything2.com for cookie compatibility
+  const normalizedUrl = normalizeUrlForAuth(url);
+
   // Special case: "guest" means unauthenticated
   if (username === 'guest') {
     browser = await puppeteer.launch({
@@ -604,16 +637,16 @@ async function getAccessibilityTree(username, url = BASE_URL) {
     });
     page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 1024 });
-    console.error(`Navigating to ${url} as guest...`);
+    console.error(`Navigating to ${normalizedUrl} as guest...`);
   } else {
-    const session = await createAuthenticatedSession(username, url);
+    const session = await createAuthenticatedSession(username, normalizedUrl);
     browser = session.browser;
     page = session.page;
-    console.error(`Navigating to ${url}...`);
+    console.error(`Navigating to ${normalizedUrl}...`);
   }
 
   // Navigate to target URL
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+  await page.goto(normalizedUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
   // Wait for React lazy-loaded components to finish loading
   await page.waitForFunction(() => {
@@ -672,6 +705,9 @@ async function getAccessibilityTree(username, url = BASE_URL) {
 async function testChromeReader(username, url = BASE_URL) {
   let browser, page;
 
+  // Normalize URL to use development.everything2.com for cookie compatibility
+  const normalizedUrl = normalizeUrlForAuth(url);
+
   // Launch with reading mode features enabled
   const launchArgs = [
     '--no-sandbox',
@@ -686,15 +722,15 @@ async function testChromeReader(username, url = BASE_URL) {
     });
     page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 1024 });
-    console.error(`Navigating to ${url} as guest...`);
+    console.error(`Navigating to ${normalizedUrl} as guest...`);
   } else {
-    const session = await createAuthenticatedSession(username, url);
+    const session = await createAuthenticatedSession(username, normalizedUrl);
     browser = session.browser;
     page = session.page;
-    console.error(`Navigating to ${url}...`);
+    console.error(`Navigating to ${normalizedUrl}...`);
   }
 
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+  await page.goto(normalizedUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
   // Wait for React to render
   await page.waitForFunction(() => {
@@ -786,6 +822,9 @@ async function testReadability(username, url = BASE_URL) {
 
   let browser, page;
 
+  // Normalize URL to use development.everything2.com for cookie compatibility
+  const normalizedUrl = normalizeUrlForAuth(url);
+
   // Special case: "guest" means unauthenticated
   if (username === 'guest') {
     browser = await puppeteer.launch({
@@ -794,16 +833,16 @@ async function testReadability(username, url = BASE_URL) {
     });
     page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 1024 });
-    console.error(`Navigating to ${url} as guest...`);
+    console.error(`Navigating to ${normalizedUrl} as guest...`);
   } else {
-    const session = await createAuthenticatedSession(username, url);
+    const session = await createAuthenticatedSession(username, normalizedUrl);
     browser = session.browser;
     page = session.page;
-    console.error(`Navigating to ${url}...`);
+    console.error(`Navigating to ${normalizedUrl}...`);
   }
 
   // Navigate to target URL
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+  await page.goto(normalizedUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
   // Wait for React lazy-loaded components to finish loading
   await page.waitForFunction(() => {
@@ -816,7 +855,7 @@ async function testReadability(username, url = BASE_URL) {
   await browser.close();
 
   // Parse with JSDOM (Readability needs a DOM)
-  const dom = new JSDOM(html, { url });
+  const dom = new JSDOM(html, { url: normalizedUrl });
   const document = dom.window.document;
 
   // Run Readability
