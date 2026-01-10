@@ -5,6 +5,7 @@ with 'Everything::Globals';
 with 'Everything::HTTP';
 
 use Everything::HTML;
+use Everything::HTMLShell;
 
 has 'PAGE_TABLE' => (isa => "HashRef", is => "ro", builder => "_build_page_table", lazy => 1);
 
@@ -16,9 +17,71 @@ sub _build_page_table
 
 sub display
 {
-  my ($self, $REQUEST) = @_;
+  my ($self, $REQUEST, $node) = @_;
 
-  return [$self->HTTP_UNIMPLEMENTED];
+  # Default display for nodetypes without specific controllers
+  # Similar to SystemNode but simpler - shows basic node info
+  my $author = $self->APP->node_by_id($node->NODEDATA->{author_user});
+
+  my $content_data = {
+    type => 'default_display',
+    nodeId => $node->node_id,
+    nodeTitle => $node->title,
+    nodeType => $node->NODEDATA->{type}->{title},
+  };
+
+  # Add author if available
+  if ($author) {
+    $content_data->{author} = {
+      node_id => $author->node_id,
+      title => $author->title
+    };
+  }
+
+  # Add createtime if available
+  if ($node->NODEDATA->{createtime}) {
+    $content_data->{createtime} = $node->NODEDATA->{createtime};
+  }
+
+  # Add doctext if this nodetype has it (documents, etc.)
+  if (exists $node->NODEDATA->{doctext} && $node->NODEDATA->{doctext}) {
+    $content_data->{doctext} = $self->APP->htmlScreen($node->NODEDATA->{doctext});
+  }
+
+  # Set node on REQUEST for buildNodeInfoStructure
+  $REQUEST->node($node);
+
+  # Build e2 data structure
+  my $e2 = $self->APP->buildNodeInfoStructure(
+    $node->NODEDATA,
+    $REQUEST->user->NODEDATA,
+    $REQUEST->user->VARS,
+    $REQUEST->cgi,
+    $REQUEST
+  );
+
+  # Override contentData with our default display data
+  $e2->{contentData} = $content_data;
+  $e2->{reactPageMode} = \1;
+
+  # Use react_page layout
+  my $html = $self->layout(
+    '/pages/react_page',
+    e2 => $e2,
+    REQUEST => $REQUEST,
+    node => $node
+  );
+
+  return [$self->HTTP_OK, $html];
+}
+
+sub edit
+{
+  my ($self, $REQUEST, $node) = @_;
+
+  # Default edit - redirect to basicedit for nodetypes without specific edit forms
+  # This provides a universal fallback that gods can use to edit any node type
+  return $self->basicedit($REQUEST, $node);
 }
 
 sub xml
@@ -119,14 +182,6 @@ sub layout
     # Don't convert print stylesheet - it's unsupported
   }
 
-  $params->{basesheet} = $basesheet_url;
-  $params->{zensheet} = $zensheet_url;
-  $params->{customstyle} = $customstyle;
-  $params->{printsheet} = $printsheet_url;
-  $params->{basehref} = ($REQUEST->is_guest)?($self->APP->basehref):(undef);
-  $params->{canonical_url} = $canonical_url;
-  $params->{metadescription} = $node->metadescription;
-
   # Build body class - add writeuppage for e2node/writeup/draft like legacy container
   my $type_title = $node->type->title;
   my $body_class = '';
@@ -134,30 +189,11 @@ sub layout
     $body_class = 'writeuppage ';
   }
   $body_class .= $type_title;
-  $params->{body_class} = $body_class;
 
-  $params->{default_javascript} = [$self->APP->asset_uri("react/main.bundle.js"),$self->APP->asset_uri("legacy.js")];
-  $params->{favicon} = $self->APP->asset_uri("static/favicon.ico");
-
-  my $lastnode = $REQUEST->param("lastnode_id");
-  if($lastnode)
-  {
-    # TODO Should we make sure that lastnode is readable? 
-    $lastnode = $self->APP->node_by_id($lastnode);
-    $lastnode = undef unless $lastnode;
-  }
-  $lastnode ||= $node;
-
-  $params->{lastnode} ||= $lastnode;
-
-  $params->{script_name} = $REQUEST->script_name;
-
-  # Phase 3: React owns sidebar - build nodeletorder for React BEFORE buildNodeInfoStructure
-  # This ensures hasMessagesNodelet flag is available when buildNodeInfoStructure needs it
-  # For guest users, always use guest_nodelets config (ignore any VARS->{nodelets} that might be set)
+  # Build nodeletorder for React sidebar
+  # For guest users, always use guest_nodelets config
   my $user_nodelets;
   if ($REQUEST->user->is_guest) {
-    # Load guest nodelets directly from config as node objects
     my $guest_nodelet_ids = $self->CONF->guest_nodelets || [];
     $user_nodelets = [];
     foreach my $nid (@$guest_nodelet_ids) {
@@ -175,24 +211,16 @@ sub layout
     push @nodeletorder, $title;
   }
 
-
-  # Use e2 data from controller if already built (superdoc.pm builds it for React pages with contentData)
-  # Otherwise build fresh e2 structure
+  # Use e2 data from controller if already built, otherwise build fresh
   my $e2 = $params->{e2} || $self->APP->buildNodeInfoStructure($node->NODEDATA, $REQUEST->user->NODEDATA, $REQUEST->user->VARS, $REQUEST->cgi, $REQUEST);
   $e2->{lastnode_id} = $params->{lastnode_id};
   $e2->{nodeletorder} = \@nodeletorder;
 
-  my $cookie = undef;
-  foreach ('fxDuration', 'collapsedNodelets', 'autoChat', 'inactiveWindowMarker'){
-    if (!$REQUEST->is_guest){
-      $REQUEST->VARS->{$_} = $cookie if($cookie = $REQUEST->cookie($_));
-      delete $REQUEST->VARS->{$_} if(defined($cookie) and $cookie eq '0');
-    }
-    $e2->{$_} = $REQUEST->VARS->{$_} if ($REQUEST->VARS->{$_});
-  }
-
+  # Pass collapsedNodelets from user preferences to frontend
+  $e2->{collapsedNodelets} = $REQUEST->VARS->{collapsedNodelets} if $REQUEST->VARS->{collapsedNodelets};
   $e2->{collapsedNodelets} =~ s/\bsignin\b// if defined $e2->{collapsedNodelets} && $e2->{collapsedNodelets};
 
+  # Developer nodelet for edev members
   my $nodelets_var = ($REQUEST->user->VARS && $REQUEST->user->VARS->{nodelets}) // '';
   if($e2->{user}->{developer} and $nodelets_var =~ /836984/)
   {
@@ -207,24 +235,33 @@ sub layout
     };
   }
 
-  $params->{nodeinfojson} = $self->JSON->encode($e2);
+  # Build shell parameters - controllers can override via $params->{shell_overrides}
+  my %shell_params = (
+    node => $node,
+    REQUEST => $REQUEST,
+    e2_json => $self->JSON->encode($e2),
+    basesheet => $basesheet_url,
+    zensheet => $zensheet_url,
+    printsheet => $printsheet_url,
+    customstyle => $customstyle // '',
+    canonical_url => $canonical_url,
+    react_bundle => $self->APP->asset_uri("react/main.bundle.js"),
+    favicon => $self->APP->asset_uri("static/favicon.ico"),
+    metadescription => $node->metadescription,
+    body_class => $body_class,
+    basehref => ($REQUEST->is_guest) ? ($self->APP->basehref) : '',
+  );
 
-  $params->{no_ads} = 1 unless($REQUEST->is_guest);
+  # Allow controller overrides (e.g., meta_robots_index, meta_robots_follow)
+  if ($params->{shell_overrides}) {
+    %shell_params = (%shell_params, %{$params->{shell_overrides}});
+  }
 
-  # Phase 3: Mason2 templates still require nodeletorder param (even though not used for rendering)
-  $params->{nodeletorder} = \@nodeletorder;
-  $params->{nodelets} = {};  # Empty hash - Mason2 no longer renders nodelets
-
-  # $params = $self->nodelets($REQUEST->user->nodelets, $params);
-
-  $self->MASON->set_global('$REQUEST',$REQUEST);
-  my $output = $self->MASON->run($template, $params)->output();
+  # Generate HTML using HTMLShell (no more Mason!)
+  my $shell = Everything::HTMLShell->new(%shell_params);
+  my $output = $shell->render();
 
   # Persist VARS changes made during buildNodeInfoStructure (oldGP, oldexp, etc.)
-  # This matches what HTML.pm does at end of request (HTML.pm:729)
-  # Note: Do NOT update $USER->{vars} before calling setVars() - setVars() compares
-  # the new vars against $USER->{vars} to detect changes. If we update it first,
-  # setVars() thinks nothing changed and returns early without saving.
   unless ($REQUEST->is_guest) {
     my $USER = $REQUEST->user->NODEDATA;
     my $VARS = $REQUEST->user->VARS;
@@ -232,36 +269,6 @@ sub layout
   }
 
   return $output;
-}
-
-sub nodelets
-{
-  my ($self, $nodelets, $params) = @_;
-  my $REQUEST = $params->{REQUEST};
-  my $node = $params->{node};
-
-  $params->{nodelets} = {};
-  $params->{nodeletorder} ||= [];
-
-  foreach my $nodelet (@{$nodelets|| []})
-  {
-    my $title = lc($nodelet->title);
-    my $id = $title;
-    $title =~ s/ /_/g;
-    $id =~ s/\W//g;
-
-    # ALL nodelets are React-handled now - just add minimal placeholder data
-    # This skips ~100+ redundant DB queries per page load that were building
-    # Mason2 data structures which were discarded by react_handled flags
-    $params->{nodelets}->{$title} = {
-      react_handled => 1,
-      title => $nodelet->title,
-      id => $id,
-      node => $node
-    };
-    push @{$params->{nodeletorder}}, $title;
-  }
-  return $params;
 }
 
 sub epicenter
@@ -291,12 +298,6 @@ sub title_to_page
   $title =~ s/_+/_/g;
   $title =~ s/_$//g;
   return $title;
-}
-
-sub fully_supports
-{
-  my ($self, $title) = @_;
-  return 1;
 }
 
 sub page_exists

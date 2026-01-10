@@ -4,11 +4,12 @@ use Moose;
 extends 'Everything::API';
 
 use POSIX qw(strftime);
+use Readonly;
 
 # API for managing collaborations
 # Collaborations are private group documents with access control and edit locking
 
-use constant LOCK_EXPIRE_SECONDS => 15 * 60;  # 15 minutes
+Readonly my $LOCK_EXPIRE_SECONDS => 15 * 60;  # 15 minutes
 
 sub routes {
     return {
@@ -51,7 +52,7 @@ sub _is_lock_expired {
 
     return 1 unless $locktime && $locktime ne '0000-00-00 00:00:00';
 
-    my $expire_threshold = strftime('%Y-%m-%d %H:%M:%S', localtime(time() - LOCK_EXPIRE_SECONDS));
+    my $expire_threshold = strftime('%Y-%m-%d %H:%M:%S', localtime(time() - $LOCK_EXPIRE_SECONDS));
     return $locktime lt $expire_threshold;
 }
 

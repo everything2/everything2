@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import { FaUsers, FaLock, FaLockOpen, FaEdit, FaTrash, FaGlobe, FaShieldAlt, FaUser } from 'react-icons/fa'
+import ConfirmActionModal from '../ConfirmActionModal'
 
 /**
  * Collaboration - Display page for collaboration nodes
@@ -12,6 +13,9 @@ import { FaUsers, FaLock, FaLockOpen, FaEdit, FaTrash, FaGlobe, FaShieldAlt, FaU
  * - Public/private toggle
  */
 const Collaboration = ({ data }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   if (!data) return null
 
   const {
@@ -26,6 +30,12 @@ const Collaboration = ({ data }) => {
     unlock_msg,
     user
   } = data
+
+  const handleDelete = () => {
+    setIsDeleting(true)
+    // Navigate to the delete action URL
+    window.location.href = `/?node_id=${collaboration.node_id}&op=nuke`
+  }
 
   // Permission denied view
   if (!can_access && !is_public) {
@@ -83,13 +93,13 @@ const Collaboration = ({ data }) => {
               </a>
             ) : null}
             {user.is_admin ? (
-              <a
-                href={`/?node_id=${collaboration.node_id}&confirmop=nuke`}
-                style={styles.deleteLink}
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                style={styles.deleteButton}
               >
                 <FaTrash style={{ marginRight: 4 }} />
                 delete
-              </a>
+              </button>
             ) : null}
           </div>
         ) : null}
@@ -174,6 +184,18 @@ const Collaboration = ({ data }) => {
           ) : null}
         </div>
       )}
+
+      {/* Delete confirmation modal */}
+      <ConfirmActionModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Collaboration"
+        message={`Do you really want to delete this collaboration "${collaboration.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        confirmStyle="danger"
+        isSubmitting={isDeleting}
+      />
     </div>
   )
 }
@@ -234,12 +256,15 @@ const styles = {
     color: '#28a745',
     textDecoration: 'none'
   },
-  deleteLink: {
+  deleteButton: {
     display: 'flex',
     alignItems: 'center',
     fontSize: 14,
     color: '#dc3545',
-    textDecoration: 'none'
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: 0
   },
   unlockMessage: {
     padding: 12,

@@ -102,7 +102,7 @@ const UserDisplay = ({ data, e2 }) => {
   // Determine if we should show the icon row
   const showIconRow = !viewer.is_guest && (
     !is_own || // Always show for other users
-    viewer.is_editor || viewer.is_chanop || viewer.is_admin // Show for admins on own profile
+    Boolean(viewer.is_editor || viewer.is_chanop || viewer.is_admin) // Show for admins on own profile
   )
 
   return (

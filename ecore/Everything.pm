@@ -17,7 +17,6 @@ use strict;
 use warnings;
 use DBI;
 use DateTime;
-use Mason;
 use Everything::NodeBase;
 use Everything::HTMLRouter;
 use Everything::Application;
@@ -29,13 +28,12 @@ use Everything::PluginFactory;
 sub BEGIN
 {
 	use Exporter ();
-	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $CONF $FACTORY $MASON $ROUTER);
+	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $CONF $FACTORY $ROUTER);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
             $APP
     		$DB
 	    	$FACTORY
-            $MASON
             getRef
             getId
             getTables
@@ -79,14 +77,6 @@ sub BEGIN
             );
 
 	$CONF = Everything::Configuration->new;
-	$MASON = Mason->new(
-		data_dir => '/var/mason',
-		comp_root => '/var/everything/templates',
-		base_request_class => 'Everything::Mason::Request',
-		static_source => ($CONF->environment eq 'production'),
-		allow_globals => [qw($REQUEST)],
-		plugins => ['HTMLFilters','Everything']);
-
 	$ROUTER = Everything::HTMLRouter->new();
 
 	foreach my $plugin ("API","Node","DataStash", "Controller", "Page")
@@ -434,17 +424,22 @@ sub updateLinks
 
 	return if $to_id == $from_id;
 
-	my $rows = $DB->sqlUpdate('links',
-			{ -hits => 'hits+1' ,  -food => 'food+1'},
-			"from_node=$from_id && to_node=$to_id && linktype=" .
-			$DB->getDatabaseHandle()->quote($type));
+	# Use INSERT ... ON DUPLICATE KEY UPDATE for both directions to avoid race conditions
+	# and handle partial existing links gracefully
+	my $dbh = $DB->getDatabaseHandle();
+	my $quoted_type = $dbh->quote($type);
 
-	if ($rows eq "0E0") {
-		$DB->sqlInsert("links", {'from_node' => $from_id, 'to_node' => $to_id,
-				'linktype' => $type, 'hits' => 1, 'food' => '500' });
-		$DB->sqlInsert("links", {'from_node' => $to_id, 'to_node' => $from_id,
-				'linktype' => $type, 'hits' => 1, 'food' => '500' });
-	}
+	# Forward direction: from -> to
+	$dbh->do("INSERT INTO links (from_node, to_node, linktype, hits, food)
+		VALUES (?, ?, ?, 1, 500)
+		ON DUPLICATE KEY UPDATE hits = hits + 1, food = food + 1",
+		{}, $from_id, $to_id, $type);
+
+	# Reverse direction: to -> from
+	$dbh->do("INSERT INTO links (from_node, to_node, linktype, hits, food)
+		VALUES (?, ?, ?, 1, 500)
+		ON DUPLICATE KEY UPDATE hits = hits + 1, food = food + 1",
+		{}, $to_id, $from_id, $type);
 
 	if ($user_id) {
 		$DB->sqlInsert("softlink_creation"

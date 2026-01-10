@@ -68,15 +68,10 @@ sub display
 
     my $layout;
     if ($is_react_page) {
-      # Check if Page class specifies a custom template, otherwise use generic react_fullpage
-      $layout = $page_class->template || 'react_fullpage';
-      # For React pages, render template directly without E2 layout wrapper
-      $self->MASON->set_global('$REQUEST',$REQUEST);
-      my $html = $self->MASON->run("/pages/$layout", {
-        e2 => $controller_output->{e2},
-        REQUEST => $REQUEST,
-        node => $node
-      })->output();
+      # Check if Page class specifies a custom template, otherwise use generic react_page
+      $layout = $page_class->template || 'react_page';
+      # Use layout() which sets up HTMLShell parameters for the React page
+      my $html = $self->layout("/pages/$layout", %{$controller_output}, e2 => $controller_output->{e2}, REQUEST => $REQUEST, node => $node);
       return [$self->HTTP_OK,$html];
     } else {
       # Use page-specific template for traditional pages

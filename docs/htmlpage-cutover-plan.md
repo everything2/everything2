@@ -4,18 +4,20 @@
 
 This document outlines the multi-stage procedure to migrate away from the legacy `Everything::Delegation::htmlpage` system to the modern `Everything::Controller` architecture.
 
-## Stage 1: Implement Default Controller Methods
+## Stage 1: Implement Default Controller Methods ✅ COMPLETE
 
 Add fallback methods to the base `Everything::Controller` class that catch nodetypes without their own specific controllers. These mirror the legacy `node_*_page` functions.
 
-### Methods to Implement
+**Completed: January 2026**
 
-| Method | Legacy Function | Behavior |
-|--------|-----------------|----------|
-| `display` | `node_display_page` | Calls `htmlcode("displayNODE")` - shows basic node info |
-| `edit` | `node_edit_page` | Redirect to `basicedit` (or show placeholder message) |
-| `xml` | `node_xml_page` | Already implemented - returns `$node->to_xml()` |
-| `xmltrue` | `node_xmltrue_page` | Already implemented - uses htmlcode xmlheader/formxml/xmlfooter |
+### Methods Implemented
+
+| Method | Legacy Function | Status |
+|--------|-----------------|--------|
+| `display` | `node_display_page` | ✅ Implemented in base Controller |
+| `edit` | `node_edit_page` | ✅ Implemented in base Controller |
+| `xml` | `node_xml_page` | ✅ Already implemented |
+| `xmltrue` | `node_xmltrue_page` | ✅ Already implemented |
 
 ### Implementation Notes
 

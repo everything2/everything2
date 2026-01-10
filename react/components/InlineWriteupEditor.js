@@ -311,7 +311,13 @@ const InlineWriteupEditor = ({
     try {
       // Save current content to draft before publishing
       const content = editorMode === 'rich' ? editor.getHTML() : htmlContent;
-      await saveDraft(content);
+      const saveResult = await saveDraft(content);
+
+      // If save failed, abort publish (saveDraft already set the error message)
+      if (saveResult === null) {
+        setPublishing(false);
+        return;
+      }
 
       // Validate writeuptype selection
       if (!selectedWriteuptypeId) {
@@ -387,6 +393,8 @@ const InlineWriteupEditor = ({
 
       const result = await response.json();
       if (result.success) {
+        // Clear any lingering error messages before redirect
+        setErrorMessage(null);
         onPublish(result.writeup_id);
         // Redirect to the e2node page
         window.location.href = `/title/${encodeURIComponent(e2nodeTitle)}`;

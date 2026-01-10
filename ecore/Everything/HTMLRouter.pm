@@ -3,7 +3,20 @@ package Everything::HTMLRouter;
 use Moose;
 extends 'Everything::Router';
 
-#TODO unblessed node
+# Base controller instance for nodetypes without specific controllers
+# Loaded lazily to avoid circular dependencies at compile time
+has 'BASE_CONTROLLER' => (
+  is => 'ro',
+  lazy => 1,
+  builder => '_build_base_controller'
+);
+
+sub _build_base_controller {
+  my ($self) = @_;
+  require Everything::Controller;
+  return Everything::Controller->new;
+}
+
 sub can_route
 {
   my ($self, $NODE, $displaytype) = @_;
@@ -16,20 +29,18 @@ sub can_route
     return 0;
   }
 
-  $self->devLog("Checking route controller for: $NODE->{type}->{title} with view '$displaytype'");
-
   my $nodetype = $NODE->{type}->{title};
 
+  # Check if there's a specific controller for this nodetype
   if(exists($self->CONTROLLER_TABLE->{$nodetype}) and $self->CONTROLLER_TABLE->{$nodetype}->can($displaytype))
   {
-    if($self->CONTROLLER_TABLE->{$nodetype}->fully_supports($NODE->{title}))
-    {
-      $self->devLog("Node type '$nodetype' has full support for page '$NODE->{title}'");
-      return 1;
-    }else{
-      $self->devLog("Node type '$nodetype' does not fully support page '$NODE->{title}'");
-      return 0;
-    }
+    return 1;
+  }
+
+  # Fall back to base controller for standard displaytypes
+  if($self->BASE_CONTROLLER->can($displaytype))
+  {
+    return 1;
   }
 
   $self->devLog("Can NOT route for: $NODE->{type}->{title} with view '$displaytype'");
@@ -58,7 +69,16 @@ sub route_node
     $node->NODEDATA->{group} = $NODE->{group};
   }
 
-  return $self->output($REQUEST, $self->CONTROLLER_TABLE->{$nodetype}->$displaytype($REQUEST, $node));
+  # Use specific controller if available, otherwise fall back to base controller
+  my $controller;
+  if (exists($self->CONTROLLER_TABLE->{$nodetype}) and $self->CONTROLLER_TABLE->{$nodetype}->can($displaytype)) {
+    $controller = $self->CONTROLLER_TABLE->{$nodetype};
+  } else {
+    $self->devLog("route_node: Using base controller for '$nodetype' with view '$displaytype'");
+    $controller = $self->BASE_CONTROLLER;
+  }
+
+  return $self->output($REQUEST, $controller->$displaytype($REQUEST, $node));
 }
 
 1;

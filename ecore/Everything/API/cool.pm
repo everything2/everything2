@@ -13,7 +13,9 @@ sub routes
   return {
     "writeup/:id" => "award_cool(:id)",
     "edcool/:id" => "toggle_edcool(:id)",
-    "bookmark/:id" => "toggle_bookmark(:id)"
+    "edcool/:id/status" => "edcool_status(:id)",
+    "bookmark/:id" => "toggle_bookmark(:id)",
+    "bookmark/:id/status" => "bookmark_status(:id)"
   };
 }
 
@@ -302,6 +304,77 @@ sub toggle_bookmark
       bookmarked => 1
     }];
   }
+}
+
+sub edcool_status
+{
+  my ($self, $REQUEST, $node_id) = @_;
+  my $user = $REQUEST->user;
+  my $DB = $self->DB;
+
+  # Editors only
+  unless ($user->is_editor) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Editor access required'
+    }];
+  }
+
+  # Get coollink linktype
+  my $coollink_type = $DB->getNode('coollink', 'linktype');
+  unless ($coollink_type) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'System error'
+    }];
+  }
+
+  my $coollink_id = $coollink_type->{node_id};
+
+  # Check if node is editor cooled
+  my $existing_link = $DB->sqlSelectHashref('to_node', 'links',
+    "from_node=$node_id AND linktype=$coollink_id LIMIT 1");
+
+  return [$self->HTTP_OK, {
+    success => 1,
+    edcooled => $existing_link ? 1 : 0
+  }];
+}
+
+sub bookmark_status
+{
+  my ($self, $REQUEST, $node_id) = @_;
+  my $user = $REQUEST->user;
+  my $DB = $self->DB;
+
+  # Guests cannot bookmark
+  if ($user->is_guest) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'Login required'
+    }];
+  }
+
+  # Get bookmark linktype
+  my $bookmark_type = $DB->getNode('bookmark', 'linktype');
+  unless ($bookmark_type) {
+    return [$self->HTTP_OK, {
+      success => 0,
+      error => 'System error'
+    }];
+  }
+
+  my $bookmark_id = $bookmark_type->{node_id};
+  my $user_id = $user->node_id;
+
+  # Check if bookmarked
+  my $existing_link = $DB->sqlSelectHashref('*', 'links',
+    "from_node=$user_id AND to_node=$node_id AND linktype=$bookmark_id");
+
+  return [$self->HTTP_OK, {
+    success => 1,
+    bookmarked => $existing_link ? 1 : 0
+  }];
 }
 
 __PACKAGE__->meta->make_immutable;

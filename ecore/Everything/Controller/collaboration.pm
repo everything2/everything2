@@ -4,6 +4,7 @@ use Moose;
 extends 'Everything::Controller';
 
 use POSIX qw(strftime);
+use Readonly;
 
 # Controller for collaboration nodes
 # Collaborations are private group documents with:
@@ -12,7 +13,7 @@ use POSIX qw(strftime);
 # - Public/private toggle
 # - Member management (who can access)
 
-use constant LOCK_EXPIRE_SECONDS => 15 * 60;  # 15 minutes
+Readonly my $LOCK_EXPIRE_SECONDS => 15 * 60;  # 15 minutes
 
 # Check if user can access the collaboration
 sub _check_access {
@@ -47,7 +48,7 @@ sub _is_lock_expired {
     return 1 unless $locktime && $locktime ne '0000-00-00 00:00:00';
 
     # Parse locktime and compare to expiry threshold
-    my $expire_threshold = strftime('%Y-%m-%d %H:%M:%S', localtime(time() - LOCK_EXPIRE_SECONDS));
+    my $expire_threshold = strftime('%Y-%m-%d %H:%M:%S', localtime(time() - $LOCK_EXPIRE_SECONDS));
 
     # String comparison works for datetime format
     return $locktime lt $expire_threshold;
@@ -60,6 +61,7 @@ sub _clear_lock {
     $node->NODEDATA->{locktime} = '0000-00-00 00:00:00';
     $node->NODEDATA->{lockedby_user} = 0;
     $self->DB->updateNode($node->NODEDATA, -1);
+    return;
 }
 
 # Set lock on a node
@@ -69,6 +71,7 @@ sub _set_lock {
     $node->NODEDATA->{locktime} = strftime('%Y-%m-%d %H:%M:%S', localtime());
     $node->NODEDATA->{lockedby_user} = $user_id;
     $self->DB->updateNode($node->NODEDATA, -1);
+    return;
 }
 
 # Get member list with node info

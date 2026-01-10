@@ -21,6 +21,38 @@ jest.mock('./MasonContent', () => {
   }
 })
 
+// Mock E2ReactRoot (sidebar) - not the focus of these tests
+jest.mock('./E2ReactRoot', () => {
+  return function MockE2ReactRoot() {
+    return <div data-testid="sidebar">Sidebar</div>
+  }
+})
+
+// Mock Layout components
+jest.mock('./Layout/Header', () => {
+  return function MockHeader() {
+    return <div data-testid="header">Header</div>
+  }
+})
+
+jest.mock('./Layout/PageHeader', () => {
+  return function MockPageHeader({ children }) {
+    return <div data-testid="pageheader">{children}</div>
+  }
+})
+
+jest.mock('./Layout/GoogleAds', () => {
+  return function MockGoogleAds() {
+    return null
+  }
+})
+
+jest.mock('./PageActions', () => {
+  return function MockPageActions() {
+    return null
+  }
+})
+
 describe('PageLayout', () => {
   describe('with contentData', () => {
     it('renders DocumentComponent when contentData is provided', () => {

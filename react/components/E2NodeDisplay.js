@@ -88,7 +88,7 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen })
       {/* E2 Node Tools button for editors - right-aligned icon */}
       {/* data-reader-ignore excludes from reading mode */}
       {showTools && (
-        <nav style={{ textAlign: 'right', marginBottom: '8px' }} aria-label="Editor tools" data-reader-ignore="true">
+        <nav style={{ textAlign: 'right', marginBottom: '4px' }} aria-label="Editor tools" data-reader-ignore="true">
           <button
             onClick={() => setToolsModalOpen(true)}
             title="Editor node tools"

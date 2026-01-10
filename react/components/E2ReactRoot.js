@@ -341,26 +341,9 @@ class E2ReactRoot extends React.Component {
     var currentCollapsed = this.state.collapsedNodelets || ''
     var collapsedPref = currentCollapsed.replace(replacement,'')
 
-    // Compatibility with JQuery versions
-    var e2Collapsed = e2['collapsedNodelets'] || ''
-    e2['collapsedNodelets'] = e2Collapsed.replace(replacement,'')
-     let cookies = document.cookie.split(/;\s?/).map(v => v.split('='))
-    cookies.forEach((element,index) => {
-      if(cookies[index][0] == 'collapsedNodelets')
-      {
-        cookies[index][1] = cookies[index][1].replace(replacement,'')
-        if(!showme)
-        {
-          cookies[index][1] += prefname
-        }
-        document.cookie = 'collapsedNodelets='+cookies[index][1]
-      }
-    })
-
     if(!showme)
     {
       collapsedPref += prefname
-      // e2['collapsedNodelets'] += prefname
     }
 
     this.setState({collapsedNodelets: collapsedPref})

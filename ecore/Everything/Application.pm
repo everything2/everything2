@@ -6676,17 +6676,22 @@ sub buildNodeInfoStructure
     $e2->{news} = $final_news;
   }
 
-  # Epicenter nodelet
+  # Epicenter data - always sent for logged-in users (regardless of nodelet)
+  # The Epicenter nodelet ID is 262
   # Note: user fields (gp, experience, level, gpOptOut, node_id, title, guest, votesleft, coolsleft)
   # are available globally on e2.user - no need to duplicate here
-  if($nodelets =~ /262/ and not $this->isGuest($USER))
+  my $has_epicenter_nodelet = ($nodelets =~ /262/);
+
+  if (not $this->isGuest($USER))
   {
     $e2->{epicenter} = {};
-    # votesLeft and cools now come from e2.user.votesleft and e2.user.coolsleft
+
+    # Show EpicenterZen header bar if user doesn't have Epicenter nodelet
+    $e2->{epicenter}->{showEpicenterZen} = $has_epicenter_nodelet ? \0 : \1;
+
+    # Core settings
     $e2->{epicenter}->{localTimeUse} = $VARS->{localTimeUse} ? \1 : \0;
     $e2->{epicenter}->{userSettingsId} = $this->{conf}->user_settings;
-
-    # Determine help page based on level (use global e2.user.level)
     $e2->{epicenter}->{helpPage} = ($e2->{user}->{level} < 2) ? 'E2 Quick Start' : 'Everything2 Help';
 
     # Borgcheck data (React component will handle rendering)
@@ -6734,8 +6739,8 @@ sub buildNodeInfoStructure
     }
   }
 
-  # Epicenter for guests (borgcheck only)
-  if($nodelets =~ /262/ and $this->isGuest($USER))
+  # Epicenter for guests (borgcheck only, if they have the nodelet)
+  if($has_epicenter_nodelet and $this->isGuest($USER))
   {
     $e2->{epicenter} = {};
     if($VARS->{borged}) {
@@ -7420,7 +7425,145 @@ sub buildNodeInfoStructure
   # NOT here in buildNodeInfoStructure - we want VARS changes to persist
   # across all page loads in the request, then save at the end
 
+  # Pageheader data - for React to render the page header section
+  # This includes: createdby, parent link (writeups), firmlinks, "is also a"
+  $e2->{pageheader} = $this->buildPageheaderData($NODE, $USER, $user_node);
+
   return $e2;
+}
+
+sub buildPageheaderData
+{
+  my ($this, $NODE, $USER, $user_node) = @_;
+
+  my $data = {};
+  my $ntypet = $NODE->{type}->{title};
+
+  # Createdby - only for e2nodes and logged-in users
+  if ($ntypet eq 'e2node' && !$this->isGuest($USER)) {
+    my $crby_id = $NODE->{createdby_user} || $NODE->{author_user};
+    if ($crby_id) {
+      my $crby = $this->{db}->getNodeById($crby_id);
+      if ($crby) {
+        $data->{createdby} = {
+          node_id => $crby->{node_id},
+          title => $crby->{title},
+          createtime => $NODE->{createtime} || ''
+        };
+      }
+    }
+  }
+
+  # Parent link - for writeups, "See all of [parent]"
+  if ($ntypet eq 'writeup') {
+    my $parent_id = $NODE->{parent_e2node};
+    if ($parent_id) {
+      my $parent = $this->{db}->getNodeById($parent_id);
+      if ($parent && $parent->{node_id}) {
+        # Get writeup count from parent's group
+        my $group = $parent->{group} || [];
+        my $writeup_count = ref($group) eq 'ARRAY' ? scalar(@$group) : 0;
+        my $other_count = $writeup_count - 1;
+
+        $data->{parentLink} = {
+          node_id => $parent->{node_id},
+          title => $parent->{title},
+          otherWriteupCount => $other_count
+        };
+      }
+    }
+  }
+
+  # Firmlinks - "See also:" section for e2nodes and writeups
+  my $target_node;
+  if ($ntypet eq 'writeup') {
+    my $parent_id = $NODE->{parent_e2node};
+    if ($parent_id) {
+      my $parent = $this->{db}->getNodeById($parent_id);
+      $target_node = $parent if ($parent && $parent->{node_id});
+    }
+  } elsif ($ntypet eq 'e2node') {
+    $target_node = $NODE;
+  }
+
+  if ($target_node) {
+    # Get firmlinks using linktype
+    my $firmlink_type = $this->{db}->getNode('firmlink', 'linktype');
+    if ($firmlink_type) {
+      my $firmlink_id = $firmlink_type->{node_id};
+      my $csr = $this->{db}->sqlSelectMany(
+        'to_node, food',
+        'links',
+        "from_node=$target_node->{node_id} AND linktype=$firmlink_id"
+      );
+
+      my @firmlinks = ();
+      while (my $row = $csr->fetchrow_hashref()) {
+        my $linked_node = $this->{db}->getNodeById($row->{to_node});
+        if ($linked_node && $linked_node->{node_id}) {
+          push @firmlinks, {
+            node_id => $linked_node->{node_id},
+            title => $linked_node->{title},
+            note => $row->{food} || ''
+          };
+        }
+      }
+
+      $data->{firmlinks} = \@firmlinks if @firmlinks;
+    }
+  }
+
+  # "Is also a" - for e2nodes when title matches other node types
+  if ($ntypet eq 'e2node') {
+    my $checked_title = $NODE->{title};
+
+    # Find all nodes with this exact title
+    my @matching_nodes = $this->{db}->getNodeWhere({ 'title' => $checked_title });
+
+    if (@matching_nodes > 1) {
+      my @other_types = ();
+
+      foreach my $match (@matching_nodes) {
+        # Skip the current node
+        next if $match->{node_id} == $NODE->{node_id};
+
+        # Get type title, skip if not available
+        my $type_title = $match->{type}{title} // '';
+        next unless $type_title;
+
+        # Skip drafts
+        next if $type_title eq 'draft';
+
+        # Check if user can read this node
+        next unless $this->{db}->canReadNode($USER, $match);
+
+        my $entry = {
+          node_id => $match->{node_id},
+          type => $type_title
+        };
+
+        # Special handling for users with message forwarding
+        if ($type_title eq 'user') {
+          my $full_user = $this->{db}->getNodeById($match->{node_id});
+          if ($full_user && $full_user->{message_forward_to}) {
+            my $forward_to = $this->{db}->getNodeById($full_user->{message_forward_to});
+            if ($forward_to) {
+              $entry->{forwardTo} = {
+                node_id => $forward_to->{node_id},
+                title => $forward_to->{title}
+              };
+            }
+          }
+        }
+
+        push @other_types, $entry;
+      }
+
+      $data->{isAlso} = \@other_types if @other_types;
+    }
+  }
+
+  return $data;
 }
 
 sub buildSourceMap

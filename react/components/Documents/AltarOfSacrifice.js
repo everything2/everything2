@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import LinkNode from '../LinkNode'
+import ConfirmActionModal from '../ConfirmActionModal'
 
 /**
  * AltarOfSacrifice - Admin tool to remove writeups from a user.
@@ -139,6 +140,11 @@ const StepSelect = ({
     () => new Set(writeups.map(w => w.node_id))
   )
 
+  // Confirmation modal state
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const formRef = useRef(null)
+
   const toggleWriteup = (nodeId) => {
     setSelectedForRemoval(prev => {
       const next = new Set(prev)
@@ -159,10 +165,26 @@ const StepSelect = ({
     setSelectedForRemoval(new Set())
   }
 
+  const handleSubmitClick = (e) => {
+    e.preventDefault()
+    if (selectedForRemoval.size === 0) {
+      return // Nothing to remove
+    }
+    setShowConfirmModal(true)
+  }
+
+  const handleConfirmRemoval = () => {
+    setIsSubmitting(true)
+    // Submit the form with op=remove instead of confirmop=remove
+    if (formRef.current) {
+      formRef.current.submit()
+    }
+  }
+
   const pageDisplay = totalPages > 1 ? `: page ${page}` : ''
 
   return (
-    <form method="post" style={styles.form}>
+    <form method="post" style={styles.form} ref={formRef}>
       <input type="hidden" name="node_id" value={nodeId} />
       <input type="hidden" name="author" value={authorName} />
       <input type="hidden" name="op" value="remove" />
@@ -257,16 +279,28 @@ const StepSelect = ({
 
         <p>
           <button
-            type="submit"
-            name="confirmop"
-            value="remove"
+            type="button"
+            onClick={handleSubmitClick}
             style={styles.dangerButton}
             title="Remove these writeups"
+            disabled={selectedForRemoval.size === 0}
           >
             Let the axe fall
           </button>
         </p>
       </fieldset>
+
+      {/* Confirmation modal */}
+      <ConfirmActionModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmRemoval}
+        title="Confirm Removal"
+        message={`Do you really want to return ${selectedForRemoval.size} writeup${selectedForRemoval.size !== 1 ? 's' : ''} to draft status? This will remove them from public view.`}
+        confirmLabel="Let the axe fall"
+        confirmStyle="danger"
+        isSubmitting={isSubmitting}
+      />
     </form>
   )
 }

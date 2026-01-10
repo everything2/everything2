@@ -42,7 +42,7 @@ class SmokeTest
       response = http_get('/')
       if response.code.to_i == 200
         # Check that we got actual E2 content, not just any 200 response
-        if response.body && (response.body.include?('everything2.com') || response.body.include?('e2-react-root'))
+        if response.body && (response.body.include?('everything2.com') || response.body.include?('e2-react-page-root'))
           puts "✓ Server is running"
         else
           puts "✗ Server returned 200 but unexpected content"
@@ -510,10 +510,10 @@ class SmokeTest
       response = http_get('/')
       body = response.body
 
-      # Check for React root container
-      unless body.include?('e2-react-root')
+      # Check for React root container (where React mounts the full page body)
+      unless body.include?('e2-react-page-root')
         puts "✗ React root container missing"
-        @errors << "React root container (e2-react-root) not found in HTML"
+        @errors << "React root container (e2-react-page-root) not found in HTML"
         return
       end
 

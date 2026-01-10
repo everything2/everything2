@@ -471,6 +471,12 @@ const COMPONENT_MAP = {
   // System node editing (gods only) - raw database field editor
   basicedit: lazy(() => import('./Documents/BasicEdit')),
 
+  // Default fallback display for nodetypes without specific components
+  default_display: lazy(() => import('./Documents/DefaultDisplay')),
+
+  // Unimplemented page - shown when a Page class doesn't exist for a document
+  unimplemented_page: lazy(() => import('./Documents/UnimplementedPage')),
+
   // Stylesheets - CSS themes for E2
   stylesheet: lazy(() => import('./Documents/Stylesheet')),
 

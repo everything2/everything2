@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { FaCaretUp, FaCaretDown, FaEnvelope, FaStar, FaBookmark, FaFacebookSquare, FaTwitterSquare, FaRedditSquare } from 'react-icons/fa'
+import { FaCaretUp, FaCaretDown, FaEnvelope, FaFacebookSquare, FaTwitterSquare, FaRedditSquare } from 'react-icons/fa'
 import ParseLinks from './ParseLinks'
 import LinkNode from './LinkNode'
 import AdminModal from './AdminModal'
@@ -254,12 +254,11 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
   const [adminModalOpen, setAdminModalOpen] = useState(false)
 
   // State for writeup metadata that can change (insured status, etc.)
+  // Note: edcooled and bookmarked are handled by PageActions component
   const [writeupState, setWriteupState] = useState({
     insured: writeup.insured || false,
     insured_by: writeup.insured_by || null,
-    notnew: writeup.notnew || false,
-    edcooled: writeup.edcooled || false,
-    bookmarked: writeup.bookmarked || false
+    notnew: writeup.notnew || false
   })
 
   // State for message modal
@@ -280,7 +279,8 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
     return html
   }
 
-  const isGuest = !user || user.guest || user.is_guest
+  // Use !! to ensure boolean (not 0) since user.guest/is_guest may be 0 from Perl
+  const isGuest = !user || !!user.guest || !!user.is_guest
   // Use String() for comparison since node_id may be string or number
   const isAuthor = !!(user && author && String(user.node_id) === String(author.node_id))
   // Use !! to ensure boolean (not 0) since user.editor/is_editor may be 0
@@ -459,10 +459,11 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                     </span>
                   </td>
                 )}
-                {/* Tools cell - admin gear and message icon on left (not for drafts) */}
-                {!isDraft && (showAdminTools || canMessage) && (
+                {/* Tools cell - action buttons on left (not for drafts) */}
+                {!isDraft && (
                   <td style={{ textAlign: 'left' }} className="wu_tools">
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                      {/* Admin gear */}
                       {showAdminTools && (
                         <button
                           onClick={() => setAdminModalOpen(true)}
@@ -483,6 +484,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                           &#9881;
                         </button>
                       )}
+                      {/* Message author */}
                       {canMessage && (
                         <button
                           onClick={() => setMessageModalOpen(true)}
@@ -503,6 +505,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                           <FaEnvelope />
                         </button>
                       )}
+                      {/* Note: Editor cool, bookmark, category, and weblog buttons are now in PageActions component */}
                     </span>
                   </td>
                 )}
@@ -511,7 +514,13 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                   <td className="wu_vote">
                     <span className="vote_buttons">
                       <button
-                        onClick={() => handleVote(node_id, 1, setVoteState, setErrorMessage)}
+                        onClick={() => {
+                          if (user?.votesafety) {
+                            setPendingVote({ weight: 1 })
+                          } else {
+                            handleVote(node_id, 1, setVoteState, setErrorMessage)
+                          }
+                        }}
                         disabled={voteState.userVote === 1}
                         title="Upvote"
                         style={{
@@ -528,7 +537,13 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                         <FaCaretUp />
                       </button>
                       <button
-                        onClick={() => handleVote(node_id, -1, setVoteState, setErrorMessage)}
+                        onClick={() => {
+                          if (user?.votesafety) {
+                            setPendingVote({ weight: -1 })
+                          } else {
+                            handleVote(node_id, -1, setVoteState, setErrorMessage)
+                          }
+                        }}
                         disabled={voteState.userVote === -1}
                         title="Downvote"
                         style={{
@@ -578,7 +593,11 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                             title={`C! ${author?.title || 'this'}'s writeup`}
                             onClick={(e) => {
                               e.preventDefault()
-                              handleCool(node_id, user, setCoolState, setErrorMessage)
+                              if (user?.coolsafety) {
+                                setPendingCool(true)
+                              } else {
+                                handleCool(node_id, user, setCoolState, setErrorMessage)
+                              }
                             }}
                           >
                             C?
@@ -670,9 +689,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
               ...prev,
               insured: updatedWriteup.insured !== undefined ? updatedWriteup.insured : prev.insured,
               insured_by: updatedWriteup.insured_by !== undefined ? updatedWriteup.insured_by : prev.insured_by,
-              notnew: updatedWriteup.notnew !== undefined ? updatedWriteup.notnew : prev.notnew,
-              edcooled: updatedWriteup.edcooled !== undefined ? updatedWriteup.edcooled : prev.edcooled,
-              bookmarked: updatedWriteup.bookmarked !== undefined ? updatedWriteup.bookmarked : prev.bookmarked
+              notnew: updatedWriteup.notnew !== undefined ? updatedWriteup.notnew : prev.notnew
             }))
 
             // Handle vote state updates
@@ -836,63 +853,6 @@ const handleCool = async (writeupId, user, setCoolState, setErrorMessage) => {
   }
 }
 
-// Editor cool handling function
-const handleEdcool = async (writeupId, setWriteupState) => {
-  try {
-    const response = await fetch(`/api/cool/writeup/${writeupId}/edcool`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    })
-
-    console.log('[handleEdcool] Response status:', response.status, response.statusText)
-
-    if (!response.ok) {
-      const text = await response.text()
-      console.error('[handleEdcool] Error response:', text)
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    console.log('[handleEdcool] Response data:', data)
-
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to toggle editor cool')
-    }
-
-    // Update local state
-    setWriteupState(prev => ({
-      ...prev,
-      edcooled: data.edcooled
-    }))
-  } catch (error) {
-    console.error('[handleEdcool] Error:', error)
-    alert(`Failed to toggle editor cool: ${error.message}`)
-  }
-}
-
-// Bookmark handling function
-const handleBookmark = async (writeupId, setWriteupState) => {
-  try {
-    const response = await fetch(`/api/cool/writeup/${writeupId}/bookmark`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    })
-
-    const data = await response.json()
-
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to toggle bookmark')
-    }
-
-    // Update local state
-    setWriteupState(prev => ({
-      ...prev,
-      bookmarked: data.bookmarked
-    }))
-  } catch (error) {
-    console.error('Error toggling bookmark:', error)
-    alert(`Failed to toggle bookmark: ${error.message}`)
-  }
-}
+// Note: Editor cool and bookmark handling are now in PageActions component
 
 export default WriteupDisplay

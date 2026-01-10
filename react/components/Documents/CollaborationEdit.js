@@ -7,6 +7,7 @@ import { breakTags } from '../Editor/E2HtmlSanitizer'
 import MenuBar from '../Editor/MenuBar'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
+import ConfirmActionModal from '../ConfirmActionModal'
 import { FaUsers, FaUser, FaLock, FaSave, FaSpinner, FaTrash, FaEye, FaLockOpen, FaGlobe, FaTimes, FaSearch } from 'react-icons/fa'
 import '../Editor/E2Editor.css'
 
@@ -58,6 +59,10 @@ const CollaborationEdit = ({ data }) => {
   const [hoveredResult, setHoveredResult] = useState(null)
   const searchTimeoutRef = useRef(null)
   const searchContainerRef = useRef(null)
+
+  // Delete confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Initialize TipTap editor
   const editor = useEditor({
@@ -276,6 +281,12 @@ const CollaborationEdit = ({ data }) => {
     }
   }
 
+  const handleDelete = () => {
+    setIsDeleting(true)
+    // Navigate to the delete action URL
+    window.location.href = `/?node_id=${collaboration.node_id}&op=nuke`
+  }
+
   return (
     <div style={styles.container}>
       {/* Header */}
@@ -292,13 +303,13 @@ const CollaborationEdit = ({ data }) => {
             unlock
           </button>
           {user.is_admin && (
-            <a
-              href={`/?node_id=${collaboration.node_id}&confirmop=nuke`}
-              style={styles.deleteLink}
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              style={styles.deleteButton}
             >
               <FaTrash style={{ marginRight: 4 }} />
               delete
-            </a>
+            </button>
           )}
         </div>
       </div>
@@ -446,6 +457,18 @@ const CollaborationEdit = ({ data }) => {
           <span style={{ marginLeft: 6 }}>{saving ? 'Saving...' : 'Save Changes'}</span>
         </button>
       </div>
+
+      {/* Delete confirmation modal */}
+      <ConfirmActionModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Collaboration"
+        message={`Do you really want to delete this collaboration "${collaboration.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        confirmStyle="danger"
+        isSubmitting={isDeleting}
+      />
     </div>
   )
 }
@@ -494,12 +517,15 @@ const styles = {
     cursor: 'pointer',
     padding: 0
   },
-  deleteLink: {
+  deleteButton: {
     display: 'flex',
     alignItems: 'center',
     fontSize: 14,
     color: '#dc3545',
-    textDecoration: 'none'
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: 0
   },
   lockStatus: {
     display: 'flex',

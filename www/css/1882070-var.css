@@ -39,6 +39,10 @@
   --e2-mobile-tab-selected: #fff;     /* White - selected tab */
   --e2-mobile-tab-link: #eef;         /* Light blue - mobile tab links */
   --e2-mobile-tab-link-visited: #ddf; /* Light purple - visited mobile tab links */
+
+  /* Logo Colors */
+  --e2-logo-text: #fff;               /* White - logo text */
+  --e2-logo-accent: #3bb5c3;          /* Cyan - the "2" in Everything2 (Kernel Blue only) */
 }
 
 /****** COLORS ******/
@@ -226,7 +230,7 @@ text-align: center;
 div#header {
 width: 100%;
 margin: 0;
-overflow: hidden; /* IE fix */
+overflow: visible;
 }
 #epicenter_zen {
 padding: 2px 2px 2px 2.5em;
@@ -277,6 +281,15 @@ background-image: url(../static/e2_tight.gif);
 div#e2logo a {
 display: block;
 padding: 50px 300px; /* means the text doesn't show in the 300x50 window */
+}
+/* React-rendered logo text styling */
+#e2logo a:link,
+#e2logo a:visited {
+color: inherit; /* Inherit header text color */
+text-decoration: none;
+}
+#e2logo .logo-accent {
+color: var(--e2-logo-accent); /* Cyan "2" - Kernel Blue specific */
 }
 #wrapper {
 clear: both;

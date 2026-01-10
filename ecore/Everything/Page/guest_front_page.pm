@@ -8,8 +8,9 @@ extends 'Everything::Page';
 # Shows: Best of The Week (altfrontpagecontent), News for Noders
 # Type: fullpage (renders complete HTML document with header, sidebar, footer)
 
-# Use the guest_front_page template which includes full layout
-sub template { return 'guest_front_page'; }
+# Use HTMLShell for HTML generation (no template needed)
+# This gives us the React header and unified page layout
+sub template { return ''; }
 
 sub buildReactData {
     my ($self, $REQUEST) = @_;
@@ -32,29 +33,31 @@ sub buildReactData {
     my $rec_reading_id = $DB->getNode('Recommended Reading', 'nodelet')->{node_id};
     my $new_writeups_id = $DB->getNode('New Writeups', 'nodelet')->{node_id};
 
-    # Witty taglines for the welcome message
-    my @wit = (
-        "Defying definition since 1999",
-        "Literary Karaoke",
-        "Writing everything about everything.",
-        "E2, Brute?",
-        "Our fiction is more entertaining than Wikipedia's.",
-        "You will never find a more wretched hive of ponies and buttercups.",
-        "Please try to make more sense than our blurbs.",
-        "Words arranged in interesting ways",
-        "Remove lid. Add water to fill line. Replace lid. Microwave for 1 1/2 minutes. Let cool for 3 minutes.",
-        "Welcome to the rebirth of your desire to write.",
-        "Don't know where this \"writers' site\" crap came from but it sure as hell isn't in the prospectus.",
-        "Read, write, enjoy.",
-        "Everything2.com has baked you a pie! (Do not eat it.)"
-    );
+    # Hero section content
+    my $hero = {
+        headline => 'Everything2',
+        tagline => 'A community-driven writing platform since 1999',
+        description => 'Our writers explore everything from personal narratives to technical deep-dives, fiction to philosophy, book reviews to recipes, travel journals to dream logs - all in a space that values craft, curiosity, and genuine human expression.',
+        cta => {
+            text => 'Start Reading',
+            url => '/title/Cool%20Archive'
+        }
+    };
 
     my $data = {
         type => 'guest_front_page',
         is_guest => 1,
-        tagline => $wit[int(rand(@wit))],
+        hidePageHeader => 1,
+        hero => $hero,
         pagenodelets => [$sign_in_id, $rec_reading_id, $new_writeups_id]
     };
+
+    # Build badwords pattern for filtering guest content
+    my $badwords = $Everything::CONF->google_ads_badwords;
+    my $badwords_pattern = '';
+    if ($badwords && ref($badwords) eq 'ARRAY' && @$badwords) {
+        $badwords_pattern = join('|', map { quotemeta($_) } @$badwords);
+    }
 
     # Load Best of The Week (altfrontpagecontent)
     my $altcontent_data = $DB->stashData("altfrontpagecontent");
@@ -75,6 +78,14 @@ sub buildReactData {
             # Get document text
             my $doc = $DB->sqlSelectHashref('doctext', 'document', "document_id = $node_id");
             my $content = $doc->{doctext} || '';
+
+            # Filter out content with badwords for guest users
+            if ($badwords_pattern) {
+                # Check parent title
+                next if $parent && $parent->{title} =~ /\b($badwords_pattern)\b/i;
+                # Check content excerpt
+                next if $content =~ /\b($badwords_pattern)\b/i;
+            }
 
             # Truncate to ~1024 chars for display
             # Send raw doctext - React will parse E2 links client-side
@@ -119,6 +130,12 @@ sub buildReactData {
             # Send raw doctext - React will parse E2 links client-side
             my $doc = $DB->sqlSelectHashref('doctext', 'document', "document_id = $entry->{to_node}");
             my $content = $doc->{doctext} || '';
+
+            # Filter out news with badwords for guest users
+            if ($badwords_pattern) {
+                next if $n->{title} =~ /\b($badwords_pattern)\b/i;
+                next if $content =~ /\b($badwords_pattern)\b/i;
+            }
 
             push @news, {
                 node_id => $n->{node_id},

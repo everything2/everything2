@@ -25,6 +25,7 @@ sub buildReactData
   push @pagenodelets, $messages_id;
 
   return {
+    standalone => \1,  # Full-screen layout without header/footer/sidebar
     pagenodelets => \@pagenodelets
   };
 }

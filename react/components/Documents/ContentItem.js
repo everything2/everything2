@@ -97,12 +97,18 @@ const ContentItem = ({
           </cite>
         )}
         {showDate && createtime && (
-          <span className="date">{formatDate(createtime)}</span>
+          <>
+            {' '}
+            <span className="date">{formatDate(createtime)}</span>
+          </>
         )}
         {showLinkedBy && linkedby && (
-          <span className="linkedby">
-            (linked by <a href={`/user/${encodeURIComponent(linkedby)}`}>{linkedby}</a>)
-          </span>
+          <>
+            {' '}
+            <span className="linkedby">
+              (linked by <a href={`/user/${encodeURIComponent(linkedby)}`}>{linkedby}</a>)
+            </span>
+          </>
         )}
       </div>
 

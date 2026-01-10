@@ -26,7 +26,7 @@ sub search {
 
     # Scope determines what types to search
     my $scope = $query->param('scope') || 'users';
-    my @valid_scopes = qw(users usergroups users_and_groups group_addable message_recipients nodegroup_addable all_nodes e2nodes);
+    my @valid_scopes = qw(users usergroups users_and_groups group_addable message_recipients nodegroup_addable all_nodes e2nodes all);
 
     unless (grep { $_ eq $scope } @valid_scopes) {
         return [$self->HTTP_OK, {
@@ -50,6 +50,13 @@ sub search {
         my $author_name = $query->param('author') || '';
         $author_name =~ s/^\s+|\s+$//g;
         return $self->_search_e2nodes($REQUEST, $search_term, $limit, $author_name);
+    }
+
+    # "all" scope - site-wide search with permission-based type filtering
+    # Admins/devs: any non-writeup node
+    # Regular users: e2nodes, users, usergroups, superdocs, documents, etc.
+    if ($scope eq 'all') {
+        return $self->_search_site_wide($REQUEST, $search_term, $limit);
     }
 
     # nodegroup_addable and all_nodes scope - search all node types
@@ -482,6 +489,154 @@ sub _search_all_nodes {
         results => \@results,
         count => scalar(@results),
         scope => $scope,
+        search_term => $search_term
+    }];
+}
+
+# Common stop words to filter out from live search
+# These words would return too many results with contains matching
+my %STOP_WORDS = map { $_ => 1 } qw(
+    a an the and or but is are was were be been being
+    in on at to for of with by from as into through
+    it its this that these those
+    i me my we us our you your he him his she her they them their
+    what which who whom how when where why
+    all any both each few more most other some such
+    no nor not only own same so than too very
+    can will just should would could may might must
+);
+
+# Site-wide search - permission-based type filtering for the main search bar
+# Admins/devs: any non-writeup node type
+# Regular users: major content types only (e2nodes, users, usergroups, superdocs, etc.)
+# Drafts are filtered by canSeeDraft permission
+sub _search_site_wide {
+    my ($self, $REQUEST, $search_term, $limit) = @_;
+
+    my $DB = $self->DB;
+    my $APP = $self->APP;
+    my $dbh = $DB->{dbh};
+    my $USER = $REQUEST->user->NODEDATA;
+
+    # Check for stop words - if the search term is just a stop word, return empty
+    my $lower_term = lc($search_term);
+    if (exists $STOP_WORDS{$lower_term}) {
+        return [$self->HTTP_OK, {
+            success => 1,
+            results => [],
+            count => 0,
+            scope => 'all',
+            search_term => $search_term
+        }];
+    }
+
+    my $is_admin = $APP->isAdmin($USER);
+    my $is_dev = $APP->isDeveloper($USER);
+
+    # Escape LIKE special characters
+    my $escaped_term = $search_term;
+    $escaped_term =~ s/([%_\\])/\\$1/g;
+    # Use contains matching (%term%) for broader live search results
+    my $search_pattern = '%' . $escaped_term . '%';
+
+    my @results;
+
+    # Also prepare a "starts with" pattern for priority matching
+    my $starts_with_pattern = $escaped_term . '%';
+
+    if ($is_admin || $is_dev) {
+        # Admins/devs: search all non-writeup, non-draft nodes
+        # Writeups and drafts are excluded - they should be accessed via their parent e2node
+        my $writeup_type = $DB->getType('writeup');
+        my $writeup_type_id = $writeup_type ? $DB->getId($writeup_type) : 0;
+        my $draft_type = $DB->getType('draft');
+        my $draft_type_id = $draft_type ? $DB->getId($draft_type) : 0;
+
+        # Search with weighted scoring for discoverability:
+        # - Exact match gets highest priority (3)
+        # - Starts with term gets medium priority (2)
+        # - Contains term gets base priority (1)
+        # Add randomization within each tier to encourage content discovery
+        my $sql = qq{
+            SELECT n.node_id, n.title, nt.title as type_title,
+                CASE
+                    WHEN LOWER(n.title) = LOWER(?) THEN 3
+                    WHEN n.title LIKE ? THEN 2
+                    ELSE 1
+                END as match_priority
+            FROM node n
+            JOIN node nt ON n.type_nodetype = nt.node_id
+            WHERE n.title LIKE ?
+            AND n.type_nodetype NOT IN (?, ?)
+            ORDER BY match_priority DESC, RAND()
+            LIMIT ?
+        };
+
+        my $sth = $dbh->prepare($sql);
+        $sth->execute($search_term, $starts_with_pattern, $search_pattern, $writeup_type_id, $draft_type_id, $limit);
+
+        while (my $row = $sth->fetchrow_hashref) {
+
+            push @results, {
+                node_id => int($row->{node_id}),
+                title => $row->{title},
+                type => $row->{type_title}
+            };
+
+            last if scalar(@results) >= $limit;
+        }
+    } else {
+        # Regular users: search only major content types they should access
+        # Note: oppressor_superdoc is admin-only so not included here
+        my @content_types = qw(
+            e2node user usergroup superdoc superdocnolinks
+            document debate podcast fullpage
+        );
+
+        my @type_ids;
+        foreach my $type_name (@content_types) {
+            my $type = $DB->getType($type_name);
+            push @type_ids, $DB->getId($type) if $type;
+        }
+
+        return [$self->HTTP_OK, { success => 1, results => [], count => 0, scope => 'all' }]
+            unless @type_ids;
+
+        my $type_list = join(',', @type_ids);
+
+        # Search with weighted scoring for discoverability
+        my $sql = qq{
+            SELECT n.node_id, n.title, nt.title as type_title,
+                CASE
+                    WHEN LOWER(n.title) = LOWER(?) THEN 3
+                    WHEN n.title LIKE ? THEN 2
+                    ELSE 1
+                END as match_priority
+            FROM node n
+            JOIN node nt ON n.type_nodetype = nt.node_id
+            WHERE n.title LIKE ?
+            AND n.type_nodetype IN ($type_list)
+            ORDER BY match_priority DESC, RAND()
+            LIMIT ?
+        };
+
+        my $sth = $dbh->prepare($sql);
+        $sth->execute($search_term, $starts_with_pattern, $search_pattern, $limit);
+
+        while (my $row = $sth->fetchrow_hashref) {
+            push @results, {
+                node_id => int($row->{node_id}),
+                title => $row->{title},
+                type => $row->{type_title}
+            };
+        }
+    }
+
+    return [$self->HTTP_OK, {
+        success => 1,
+        results => \@results,
+        count => scalar(@results),
+        scope => 'all',
         search_term => $search_term
     }];
 }

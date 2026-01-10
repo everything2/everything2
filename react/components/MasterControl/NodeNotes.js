@@ -193,7 +193,6 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
             onChange={(e) => setNoteText(e.target.value)}
             maxLength="255"
             size="22"
-            className="expandable"
             placeholder="Add note..."
             disabled={isSubmitting}
             style={{ width: '100%', padding: '4px 6px', border: '1px solid #ccc', borderRadius: '3px', marginBottom: '6px' }}
