@@ -215,7 +215,7 @@ input#node_search {
 margin-top: 15px;
 float: left;
 padding-left: 20px;
-background-image: url(../static/bookwormier/magnifier.png);
+background-image: none; /* React SearchBar has its own icon */
 background-repeat: no-repeat;
 font-size: 12px;
 }
