@@ -116,7 +116,9 @@ const CategoryDisplay = ({ data }) => {
             {Object.entries(membersByType).map(([type, typeMembers]) => (
               <div key={type} style={styles.typeGroup}>
                 <h3 style={styles.typeHeader}>
-                  {type === 'e2node' ? 'E2Nodes' : type.charAt(0).toUpperCase() + type.slice(1) + 's'}
+                  {type === 'e2node' ? 'E2Nodes' :
+                   type === 'category' ? 'Categories' :
+                   type.charAt(0).toUpperCase() + type.slice(1) + 's'}
                   <span style={styles.typeCount}>({typeMembers.length})</span>
                 </h3>
                 <ul style={styles.memberList}>

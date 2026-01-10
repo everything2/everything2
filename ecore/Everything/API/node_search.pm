@@ -559,12 +559,12 @@ sub _search_site_wide {
         my $draft_type = $DB->getType('draft');
         my $draft_type_id = $draft_type ? $DB->getId($draft_type) : 0;
 
-        # Search with weighted scoring for discoverability:
+        # Search with weighted scoring for relevance:
         # - Exact match gets highest priority (3)
         # - Starts with term gets medium priority (2)
         # - Contains term gets base priority (1)
         # Uses FULLTEXT index for fast substring matching on 1M+ nodes
-        # Add randomization within each tier to encourage content discovery
+        # Within each priority tier, sort alphabetically for consistent results
         my $sql = qq{
             SELECT n.node_id, n.title, nt.title as type_title,
                 CASE
@@ -576,7 +576,7 @@ sub _search_site_wide {
             JOIN node nt ON n.type_nodetype = nt.node_id
             WHERE MATCH(n.title) AGAINST(? IN BOOLEAN MODE)
             AND n.type_nodetype NOT IN (?, ?)
-            ORDER BY match_priority DESC, RAND()
+            ORDER BY match_priority DESC, n.title ASC
             LIMIT ?
         };
 
@@ -597,7 +597,7 @@ sub _search_site_wide {
         # Note: oppressor_superdoc is admin-only so not included here
         my @content_types = qw(
             e2node user usergroup superdoc superdocnolinks
-            document debate podcast fullpage
+            document debate podcast fullpage category registry
         );
 
         my @type_ids;
@@ -611,8 +611,9 @@ sub _search_site_wide {
 
         my $type_list = join(',', @type_ids);
 
-        # Search with weighted scoring for discoverability
+        # Search with weighted scoring for relevance
         # Uses FULLTEXT index for fast substring matching on 1M+ nodes
+        # Within each priority tier, sort alphabetically for consistent results
         my $sql = qq{
             SELECT n.node_id, n.title, nt.title as type_title,
                 CASE
@@ -624,7 +625,7 @@ sub _search_site_wide {
             JOIN node nt ON n.type_nodetype = nt.node_id
             WHERE MATCH(n.title) AGAINST(? IN BOOLEAN MODE)
             AND n.type_nodetype IN ($type_list)
-            ORDER BY match_priority DESC, RAND()
+            ORDER BY match_priority DESC, n.title ASC
             LIMIT ?
         };
 

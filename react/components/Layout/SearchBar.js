@@ -48,7 +48,7 @@ const SearchBar = ({
     setLoading(true)
     try {
       const response = await fetch(
-        `/api/node_search?q=${encodeURIComponent(query)}&scope=all&limit=8`
+        `/api/node_search?q=${encodeURIComponent(query)}&scope=all&limit=10`
       )
       const data = await response.json()
       if (data.success && data.results) {
