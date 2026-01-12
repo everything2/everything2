@@ -367,7 +367,7 @@ describe('WriteupDisplay Component', () => {
 
       // Find and click the message button (envelope icon)
       // Title is dynamic: "Message ${author.title}"
-      const messageButton = container.querySelector('button.message-icon')
+      const messageButton = screen.getByTitle(`Message ${writeupWithParent.author.title}`)
       expect(messageButton).toBeInTheDocument()
 
       fireEvent.click(messageButton)
@@ -386,7 +386,7 @@ describe('WriteupDisplay Component', () => {
       const { container } = render(<WriteupDisplay writeup={writeupWithoutParent} user={mockUser} />)
 
       // Find and click the message button
-      const messageButton = container.querySelector('button.message-icon')
+      const messageButton = screen.getByTitle(`Message ${writeupWithoutParent.author.title}`)
       expect(messageButton).toBeInTheDocument()
 
       fireEvent.click(messageButton)

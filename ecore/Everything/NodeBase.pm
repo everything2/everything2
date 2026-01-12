@@ -2210,7 +2210,7 @@ sub nodeMaintenance
         my $maintenance_name = $thisnode->{type}->{title}.'_'.$op;
         if(my $delegation = Everything::Delegation::maintenance->can($maintenance_name))
         {
-		return $delegation->($this, $Everything::HTML::query, $Everything::HTML::GNODE, $Everything::HTML::USER, $Everything::HTML::VARS, $Everything::HTML::PAGELOAD, $Everything::APP, $node_id);
+		return $delegation->($this, $Everything::HTML::query, $Everything::HTML::GNODE, $Everything::HTML::USER, $Everything::HTML::VARS, $Everything::APP, $node_id);
 	}else{
 		return;
 	}

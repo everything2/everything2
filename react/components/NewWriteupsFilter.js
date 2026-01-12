@@ -8,30 +8,15 @@ const NewWriteupsFilter = ({ limit, newWriteupsChange, noJunk, noJunkChange, use
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      padding: '8px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '4px',
-      fontSize: '12px'
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <label htmlFor="newwriteups-limit" style={{ color: '#495057' }}>Show:</label>
+    <div className="newwriteups-filter">
+      <div className="newwriteups-filter-group">
+        <label htmlFor="newwriteups-limit" className="newwriteups-filter-label">Show:</label>
         <select
           id="newwriteups-limit"
           name="newwriteups-limit"
           value={limit}
           onChange={(event) => newWriteupsChange(event.target.value)}
-          style={{
-            padding: '4px 8px',
-            borderRadius: '3px',
-            border: '1px solid #dee2e6',
-            fontSize: '12px',
-            backgroundColor: '#fff',
-            cursor: 'pointer'
-          }}
+          className="newwriteups-filter-select"
         >
           {newWriteupsCount.map((count) => (
             <option value={count} key={`newwupref_${count}`}>
@@ -42,20 +27,13 @@ const NewWriteupsFilter = ({ limit, newWriteupsChange, noJunk, noJunkChange, use
       </div>
 
       {user.editor && (
-        <label htmlFor="newwriteups-nojunk" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          cursor: 'pointer',
-          color: '#495057'
-        }}>
+        <label htmlFor="newwriteups-nojunk" className="newwriteups-filter-checkbox">
           <input
             type="checkbox"
             id="newwriteups-nojunk"
             name="newwriteups-nojunk"
             onChange={(event) => noJunkChange(event.target.checked)}
             defaultChecked={noJunk}
-            style={{ cursor: 'pointer' }}
           />
           <span>No junk</span>
         </label>

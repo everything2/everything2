@@ -235,17 +235,18 @@ const styles = {
   container: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '2px'
+    gap: '4px'
   },
   button: {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    fontSize: '14px',
-    padding: '2px 4px',
+    fontSize: '20px',
+    padding: '4px',
     display: 'inline-flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderRadius: '4px'
   }
 }
 

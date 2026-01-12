@@ -68,7 +68,7 @@ const parseMessageText = (msg) => {
         {'<'}
         <LinkNode type={author.type} title={author.title} />
         {'> '}
-        <span style={{ fontVariant: 'small-caps' }}>
+        <span className="chatter-small-caps">
           <ParseLinks text={match[2]} />
         </span>
       </>
@@ -91,7 +91,7 @@ const parseMessageText = (msg) => {
     }
 
     return (
-      <span style={{ fontVariant: 'small-caps' }}>
+      <span className="chatter-small-caps">
         <LinkNode type={author.type} title={author.title} />
         <ParseLinks text={rollText} />
       </span>
@@ -115,7 +115,7 @@ const parseMessageText = (msg) => {
 
     return (
       <>
-        <span style={{ fontVariant: 'small-caps' }}>
+        <span className="chatter-small-caps">
           <LinkNode type={author.type} title={author.title} />
           {' fireballs '}
           {target}
@@ -136,7 +136,7 @@ const parseMessageText = (msg) => {
     const target = match[1]
     return (
       <>
-        <span style={{ fontVariant: 'small-caps' }}>
+        <span className="chatter-small-caps">
           <LinkNode type={author.type} title={author.title} />
           {' raises the hand of benediction...'}
         </span>
@@ -674,6 +674,14 @@ const Chatterbox = (props) => {
     return commands
   }
 
+  // Build status message class names
+  const getStatusClasses = (type) => {
+    let classes = `chatter-status-message chatter-status-message--${type}`
+    if (messageEntering) classes += ' chatter-status-message--entering'
+    if (messageFading) classes += ' chatter-status-message--fading'
+    return classes
+  }
+
   return (
     <NodeletContainer
       id={props.id}
@@ -683,18 +691,10 @@ const Chatterbox = (props) => {
     >
       {/* Room topic or chat location display */}
       {props.roomName && (
-        <div style={{
-          marginBottom: '12px',
-          padding: '8px',
-          backgroundColor: '#fffbea',
-          border: '1px solid #ffd700',
-          borderRadius: '4px',
-          fontSize: '11px',
-          color: '#333'
-        }}>
+        <div className="chatter-topic">
           {props.roomTopic ? (
             <>
-              <strong style={{ color: '#b8860b' }}>{props.roomName}:</strong>{' '}
+              <strong>{props.roomName}:</strong>{' '}
               <ParseLinks text={props.roomTopic} />
             </>
           ) : (
@@ -705,33 +705,10 @@ const Chatterbox = (props) => {
 
       {/* Private messages section - only shown if Messages nodelet not separately displayed */}
       {props.showMessagesInChatterbox && (
-        <div id="chatterbox_messages" style={{
-          marginBottom: '12px',
-          backgroundColor: '#f8f9fa',
-          border: '1px solid #dee2e6',
-          borderRadius: '4px',
-          padding: '8px'
-        }}>
-          <div style={{
-            fontSize: '11px',
-            fontWeight: 'bold',
-            marginBottom: '8px',
-            paddingBottom: '6px',
-            borderBottom: '1px solid #dee2e6',
-            color: '#495057',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
+        <div id="chatterbox_messages" className="chatter-mini-messages">
+          <div className="chatter-mini-messages-header">
             <span>Recent Messages</span>
-            <a
-              href="/title/Message+Inbox"
-              style={{
-                fontSize: '10px',
-                color: '#667eea',
-                textDecoration: 'none'
-              }}
-            >
+            <a href="/title/Message+Inbox" className="chatter-mini-messages-link">
               view all →
             </a>
           </div>
@@ -757,58 +734,40 @@ const Chatterbox = (props) => {
       )}
 
       {/* Chatter display - polling-based */}
-      <div id="chatterbox_chatter" style={{
-        marginBottom: '12px',
-        minHeight: chatter.length > 0 ? '200px' : 'auto',  // Only use min height when there are messages
-        maxHeight: '400px',
-        overflowY: 'auto'
-      }}>
+      <div
+        id="chatterbox_chatter"
+        className={`chatter-feed${chatter.length > 0 ? ' chatter-feed--has-messages' : ''}`}
+      >
         {props.publicChatterOff ? (
-          <div style={{
-            fontSize: '12px',
-            color: '#856404',
-            backgroundColor: '#fff3cd',
-            border: '1px solid #ffc107',
-            borderRadius: '4px',
-            padding: '12px',
-            textAlign: 'center'
-          }}>
+          <div className="chatter-off-warning">
             You have chatter off. Use <code>/chatteron</code> to enable it.
           </div>
         ) : (
           <>
             {loading && chatter.length === 0 && (
-              <div style={{ fontSize: '11px', color: '#999', padding: '8px', textAlign: 'center' }}>
+              <div className="chatter-loading">
                 Loading chatter...
               </div>
             )}
 
             {error && (
-              <div style={{ fontSize: '11px', color: '#dc3545', padding: '8px' }}>
+              <div className="chatter-error">
                 Error loading chatter: {error}
               </div>
             )}
 
             {chatter.length === 0 && !loading && !error && (
-              <div style={{ fontSize: '11px', color: '#999', padding: '8px', fontStyle: 'italic' }}>
+              <div className="chatter-empty">
                 and all is quiet...
               </div>
             )}
 
             {chatter.length > 0 && (
-              <div
-                ref={chatterContainerRef}
-                style={{
-                  fontSize: '11px',
-                  lineHeight: '1.4',
-                  maxHeight: '400px',
-                  overflowY: 'auto'
-                }}
-              >
+              <div ref={chatterContainerRef} className="chatter-messages">
                 {[...chatter].reverse().map((msg) => (
-                  <div key={msg.message_id} style={{ padding: '4px 8px', borderBottom: '1px solid #f0f0f0' }}>
+                  <div key={msg.message_id} className="chatter-message">
                     {parseMessageText(msg)}
-                    <span style={{ color: '#999', fontSize: '10px', marginLeft: '8px' }}>
+                    <span className="chatter-timestamp">
                       {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                     </span>
                   </div>
@@ -821,42 +780,23 @@ const Chatterbox = (props) => {
 
       {/* Message input form */}
       {!isGuest && (
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          border: '1px solid #dee2e6',
-          borderRadius: '4px',
-          padding: '8px'
-        }}>
+        <div className="chatter-input-container">
           <form onSubmit={handleSubmit} id="chatterbox_input_form">
             {isBorged && borgTimeRemaining > 0 && (
-              <div style={{
-                fontSize: '12px',
-                color: '#dc3545',
-                fontWeight: 'bold',
-                marginBottom: '6px',
-                textAlign: 'center',
-                padding: '8px',
-                backgroundColor: '#fff3cd',
-                border: '1px solid #ffc107',
-                borderRadius: '4px'
-              }}>
+              <div className="chatter-borg-warning">
                 You are borged! {Math.floor(borgTimeRemaining / 60)}:{String(borgTimeRemaining % 60).padStart(2, '0')}
               </div>
             )}
 
             {isChatSuspended && !isBorged && (
-              <div style={{
-                fontSize: '11px',
-                color: '#dc3545',
-                marginBottom: '6px'
-              }}>
+              <div className="chatter-suspended-notice">
                 You are currently suspended from public chat, but you can /msg other users.
               </div>
             )}
 
             {/* Hide input entirely when borged, show only countdown */}
             {!isBorged && (
-              <div style={{ display: 'flex', gap: '6px' }}>
+              <div className="chatter-input-row">
                 <input
                   ref={inputRef}
                   type="text"
@@ -867,28 +807,14 @@ const Chatterbox = (props) => {
                   disabled={sending}
                   maxLength={512}
                   autoComplete="off"
-                  style={{
-                    flex: 1,
-                    padding: '4px 8px',
-                    fontSize: '12px',
-                    borderRadius: '3px',
-                    border: '1px solid #dee2e6',
-                    backgroundColor: '#fff'
-                  }}
+                  className="chatter-input"
                   placeholder="Type a message..."
                 />
                 <button
                   type="submit"
                   id="message_send"
                   disabled={sending || !message.trim()}
-                  style={{
-                    padding: '4px 12px',
-                    fontSize: '12px',
-                    border: '1px solid #dee2e6',
-                    borderRadius: '3px',
-                    backgroundColor: !message.trim() ? '#e9ecef' : '#fff',
-                    cursor: !message.trim() ? 'not-allowed' : 'pointer'
-                  }}
+                  className="chatter-send-btn"
                 >
                   talk
                 </button>
@@ -896,17 +822,12 @@ const Chatterbox = (props) => {
             )}
 
             {props.showHelp && (
-              <div style={{
-                fontSize: '11px',
-                textAlign: 'center',
-                marginTop: '8px',
-                color: '#6c757d'
-              }}>
-                <a href="/title/Chatterbox" style={{ textDecoration: 'none', color: '#667eea' }}>
+              <div className="chatter-help-links">
+                <a href="/title/Chatterbox" className="chatter-help-link">
                   How does this work?
                 </a>
                 {' | '}
-                <a href="/title/Chatterlight" style={{ textDecoration: 'none', color: '#667eea' }}>
+                <a href="/title/Chatterlight" className="chatter-help-link">
                   Chatterlight
                 </a>
               </div>
@@ -916,85 +837,29 @@ const Chatterbox = (props) => {
       )}
 
       {isGuest && (
-        <div style={{
-          padding: '12px',
-          fontSize: '12px',
-          color: '#999',
-          fontStyle: 'italic',
-          textAlign: 'center'
-        }}>
+        <div className="chatter-guest-message">
           Please log in to use the chatterbox
         </div>
       )}
 
       {/* Commands Help Link + Message Container - Fixed height to prevent layout shift */}
       {!isGuest && (
-        <div style={{
-          position: 'relative',
-          minHeight: '40px',
-          marginTop: '8px',
-          textAlign: 'center'
-        }}>
+        <div className="chatter-status-container">
           {/* Error/Success Messages - Absolutely positioned to overlay the link */}
           {messageError && (
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: '12px',
-              right: '12px',
-              padding: '8px 12px',
-              backgroundColor: '#fee',
-              border: '1px solid #fcc',
-              borderRadius: '4px',
-              color: '#c33',
-              fontSize: '12px',
-              textAlign: 'center',
-              opacity: messageFading ? 0 : (messageEntering ? 0 : 1),
-              transition: messageFading ? 'opacity 0.3s ease-out' : 'opacity 0.15s ease-in',
-              zIndex: 1
-            }}>
+            <div className={getStatusClasses('error')}>
               {messageError}
             </div>
           )}
 
           {messageSuccess && (
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: '12px',
-              right: '12px',
-              padding: '8px 12px',
-              backgroundColor: '#d4edda',
-              border: '1px solid #c3e6cb',
-              borderRadius: '4px',
-              color: '#155724',
-              fontSize: '12px',
-              textAlign: 'center',
-              opacity: messageFading ? 0 : (messageEntering ? 0 : 1),
-              transition: messageFading ? 'opacity 0.3s ease-out' : 'opacity 0.15s ease-in',
-              zIndex: 1
-            }}>
+            <div className={getStatusClasses('success')}>
               {messageSuccess}
             </div>
           )}
 
           {messageWarning && (
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: '12px',
-              right: '12px',
-              padding: '8px 12px',
-              backgroundColor: '#fff3cd',
-              border: '1px solid #ffc107',
-              borderRadius: '4px',
-              color: '#856404',
-              fontSize: '12px',
-              textAlign: 'center',
-              opacity: messageFading ? 0 : (messageEntering ? 0 : 1),
-              transition: messageFading ? 'opacity 0.3s ease-out' : 'opacity 0.15s ease-in',
-              zIndex: 1
-            }}>
+            <div className={getStatusClasses('warning')}>
               {messageWarning}
             </div>
           )}
@@ -1002,16 +867,7 @@ const Chatterbox = (props) => {
           {/* Chat Commands Link - In normal flow beneath messages */}
           <button
             onClick={() => setShowCommands(true)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#667eea',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-              fontSize: '11px',
-              padding: '2px 4px',
-              marginTop: '0'
-            }}
+            className="chatter-commands-link"
           >
             Chat Commands
           </button>
@@ -1020,112 +876,44 @@ const Chatterbox = (props) => {
 
       {/* Commands Modal */}
       {showCommands && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000
-          }}
-          onClick={() => setShowCommands(false)}
-        >
-          <div
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '8px',
-              padding: '20px',
-              maxWidth: '900px',
-              maxHeight: '90vh',
-              overflow: 'auto',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-              position: 'relative',
-              width: '90%'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '16px',
-              borderBottom: '2px solid #667eea',
-              paddingBottom: '8px'
-            }}>
-              <h3 style={{ margin: 0, color: '#667eea', fontSize: '18px' }}>
+        <div className="nodelet-modal-overlay" onClick={() => setShowCommands(false)}>
+          <div className="chatter-commands-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="chatter-commands-header">
+              <h3 className="chatter-commands-title">
                 Chat Commands
               </h3>
               <button
                 onClick={() => setShowCommands(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '24px',
-                  cursor: 'pointer',
-                  color: '#999',
-                  padding: '0',
-                  lineHeight: '1'
-                }}
+                className="chatter-commands-close"
               >
                 ×
               </button>
             </div>
 
-            <div style={{ fontSize: '12px', lineHeight: '1.6' }}>
+            <div className="chatter-commands-list">
               {getAvailableCommands().map((command, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: '12px',
-                    paddingBottom: '12px',
-                    borderBottom: index < getAvailableCommands().length - 1 ? '1px solid #eee' : 'none'
-                  }}
-                >
-                  <div style={{
-                    fontFamily: 'monospace',
-                    fontWeight: 'bold',
-                    color: command.restricted ? '#dc3545' : '#667eea',
-                    marginBottom: '4px'
-                  }}>
+                <div key={index} className="chatter-command-item">
+                  <div className={`chatter-command-name${command.restricted ? ' chatter-command-name--restricted' : ''}`}>
                     {command.cmd}
                     {command.restricted && (
-                      <span style={{
-                        fontSize: '10px',
-                        marginLeft: '8px',
-                        padding: '2px 6px',
-                        backgroundColor: '#dc3545',
-                        color: '#fff',
-                        borderRadius: '3px'
-                      }}>
+                      <span className="chatter-command-badge">
                         {isAdmin ? 'ADMIN' : 'CHANOP'}
                       </span>
                     )}
                   </div>
-                  <div style={{ color: '#666' }}>
+                  <div className="chatter-command-desc">
                     {command.desc}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div style={{
-              marginTop: '16px',
-              paddingTop: '16px',
-              borderTop: '2px solid #eee',
-              fontSize: '11px',
-              color: '#999',
-              textAlign: 'center'
-            }}>
-              <p style={{ margin: '4px 0' }}>
+            <div className="chatter-commands-footer">
+              <p>
                 Showing {getAvailableCommands().length} available commands
               </p>
               {(isChanop || isAdmin) && (
-                <p style={{ margin: '4px 0', color: '#dc3545' }}>
+                <p className="chatter-commands-footer--warning">
                   You have elevated privileges - use responsibly
                 </p>
               )}
@@ -1147,66 +935,19 @@ const Chatterbox = (props) => {
 
       {/* Delete confirmation modal for mini-messages */}
       {props.showMessagesInChatterbox && deleteConfirmOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000
-          }}
-          onClick={cancelDelete}
-        >
-          <div
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '8px',
-              padding: '24px',
-              maxWidth: '400px',
-              width: '90%',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+        <div className="nodelet-modal-overlay" onClick={cancelDelete}>
+          <div className="nodelet-modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="nodelet-modal-title">
               Delete Message
             </h3>
-            <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#495057' }}>
+            <p className="nodelet-modal-body">
               Are you sure you want to permanently delete this message? This action cannot be undone.
             </p>
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={cancelDelete}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '4px',
-                  backgroundColor: '#fff',
-                  color: '#495057',
-                  cursor: 'pointer'
-                }}
-              >
+            <div className="nodelet-modal-actions">
+              <button onClick={cancelDelete} className="nodelet-btn">
                 Cancel
               </button>
-              <button
-                onClick={confirmDelete}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  backgroundColor: '#dc3545',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
+              <button onClick={confirmDelete} className="nodelet-btn nodelet-btn--danger">
                 Delete
               </button>
             </div>

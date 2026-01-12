@@ -247,7 +247,6 @@ const MessageModal = ({
 
   // Determine which user is currently selected for sending
   const effectiveSendAs = sendAsUser || (currentUser ? currentUser.node_id : null)
-  const sendAsTitle = sendAsOptions.find(opt => opt.node_id === effectiveSendAs)?.title || currentUser?.title
 
   const handleSendAsChange = (e) => {
     const newValue = parseInt(e.target.value, 10)
@@ -256,59 +255,21 @@ const MessageModal = ({
     }
   }
 
+  // Build character count class
+  const charCountClass = `message-modal-char-count${isOverLimit ? ' message-modal-char-count--over' : (isNearLimit ? ' message-modal-char-count--near' : '')}`
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 10000,
-        padding: '20px'
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: '#fff',
-          borderRadius: '8px',
-          padding: '24px',
-          maxWidth: '600px',
-          width: '100%',
-          maxHeight: '90vh',
-          overflow: 'auto',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          position: 'relative'
-        }}
-      >
+    <div className="message-modal-overlay">
+      <div className="message-modal">
         {/* Header */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '20px',
-          borderBottom: '2px solid #667eea',
-          paddingBottom: '12px'
-        }}>
-          <h3 style={{ margin: 0, color: '#667eea', fontSize: '18px' }}>
+        <div className="message-modal-header">
+          <h3 className="message-modal-title">
             {replyTo ? (replyAll ? 'Reply All' : 'Reply') : 'New Message'}
           </h3>
           <button
             onClick={handleCancel}
             disabled={sending}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '24px',
-              cursor: sending ? 'not-allowed' : 'pointer',
-              color: '#999',
-              padding: '0',
-              lineHeight: '1'
-            }}
+            className="message-modal-close"
           >
             ×
           </button>
@@ -317,34 +278,16 @@ const MessageModal = ({
         <form onSubmit={handleSubmit}>
           {/* Send As selector - only show when user has access to bots */}
           {canSendAs && (
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '6px',
-                fontSize: '13px',
-                fontWeight: 'bold',
-                color: '#333'
-              }}>
+            <div className="message-modal-field">
+              <label className="message-modal-label">
                 Send as:
               </label>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
+              <div className="message-modal-sendas">
                 <select
                   value={effectiveSendAs}
                   onChange={handleSendAsChange}
                   disabled={sending}
-                  style={{
-                    padding: '8px 12px',
-                    fontSize: '13px',
-                    border: '1px solid #dee2e6',
-                    borderRadius: '4px',
-                    backgroundColor: '#fff',
-                    cursor: sending ? 'not-allowed' : 'pointer',
-                    minWidth: '200px'
-                  }}
+                  className="message-modal-sendas-select"
                 >
                   {sendAsOptions.map(opt => (
                     <option key={opt.node_id} value={opt.node_id}>
@@ -353,11 +296,7 @@ const MessageModal = ({
                   ))}
                 </select>
                 {sendAsUser && sendAsUser !== currentUser?.node_id && (
-                  <span style={{
-                    fontSize: '11px',
-                    color: '#667eea',
-                    fontStyle: 'italic'
-                  }}>
+                  <span className="message-modal-sendas-hint">
                     Sending as bot
                   </span>
                 )}
@@ -366,24 +305,12 @@ const MessageModal = ({
           )}
 
           {/* Recipient */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '6px',
-              fontSize: '13px',
-              fontWeight: 'bold',
-              color: '#333'
-            }}>
+          <div className="message-modal-field">
+            <label className="message-modal-label">
               To:
             </label>
             {replyTo ? (
-              <div style={{
-                padding: '8px 12px',
-                backgroundColor: '#f8f9fa',
-                border: '1px solid #dee2e6',
-                borderRadius: '4px',
-                fontSize: '13px'
-              }}>
+              <div className="message-modal-recipient-display">
                 {replyAll ? (
                   <>
                     <LinkNode
@@ -395,16 +322,7 @@ const MessageModal = ({
                         type="button"
                         onClick={toggleReplyAll}
                         disabled={sending}
-                        style={{
-                          marginLeft: '12px',
-                          padding: '2px 8px',
-                          fontSize: '11px',
-                          backgroundColor: '#fff',
-                          border: '1px solid #667eea',
-                          borderRadius: '3px',
-                          color: '#667eea',
-                          cursor: 'pointer'
-                        }}
+                        className="message-modal-toggle-btn"
                       >
                         Switch to individual reply
                       </button>
@@ -421,16 +339,7 @@ const MessageModal = ({
                         type="button"
                         onClick={toggleReplyAll}
                         disabled={sending}
-                        style={{
-                          marginLeft: '12px',
-                          padding: '2px 8px',
-                          fontSize: '11px',
-                          backgroundColor: '#fff',
-                          border: '1px solid #667eea',
-                          borderRadius: '3px',
-                          color: '#667eea',
-                          cursor: 'pointer'
-                        }}
+                        className="message-modal-toggle-btn"
                       >
                         Switch to reply all
                       </button>
@@ -450,71 +359,32 @@ const MessageModal = ({
                   disabled={sending}
                   placeholder="Username or usergroup name"
                   autoComplete="off"
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    fontSize: '13px',
-                    border: '1px solid #dee2e6',
-                    borderRadius: '4px',
-                    boxSizing: 'border-box'
-                  }}
+                  className="message-modal-input"
                 />
                 {/* Autocomplete suggestions dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    backgroundColor: '#fff',
-                    border: '1px solid #dee2e6',
-                    borderTop: 'none',
-                    borderRadius: '0 0 4px 4px',
-                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                    maxHeight: '200px',
-                    overflowY: 'auto',
-                    zIndex: 100
-                  }}>
+                  <div className="message-modal-autocomplete">
                     {suggestions.map((suggestion, index) => (
                       <div
                         key={suggestion.node_id}
                         onClick={() => handleSelectSuggestion(suggestion)}
                         onMouseEnter={() => setSelectedSuggestionIndex(index)}
-                        style={{
-                          padding: '8px 12px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          color: '#333',
-                          borderBottom: index < suggestions.length - 1 ? '1px solid #eee' : 'none',
-                          backgroundColor: index === selectedSuggestionIndex ? '#e8f4f8' : '#fff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px'
-                        }}
+                        className={`message-modal-suggestion${index === selectedSuggestionIndex ? ' message-modal-suggestion--selected' : ''}`}
                       >
                         {/* User/Group icon */}
-                        <span style={{
-                          fontSize: '14px',
-                          width: '20px',
-                          textAlign: 'center',
-                          color: suggestion.type === 'usergroup' ? '#4060b0' : '#507898'
-                        }}>
+                        <span className={`message-modal-suggestion-icon ${suggestion.type === 'usergroup' ? 'message-modal-suggestion-icon--group' : 'message-modal-suggestion-icon--user'}`}>
                           {suggestion.type === 'usergroup' ? '👥' : '👤'}
                         </span>
-                        <span style={{
-                          fontWeight: suggestion.type === 'usergroup' ? 'bold' : 'normal',
-                          flex: 1,
-                          color: '#38495e'
-                        }}>
+                        <span className={`message-modal-suggestion-title${suggestion.type === 'usergroup' ? ' message-modal-suggestion-title--group' : ''}`}>
                           {suggestion.title}
                         </span>
                         {suggestion.type === 'usergroup' && (
-                          <span style={{ fontSize: '11px', color: '#4060b0' }}>
+                          <span className="message-modal-suggestion-badge">
                             group
                           </span>
                         )}
                         {suggestion.alias && (
-                          <span style={{ fontSize: '11px', color: '#507898', fontStyle: 'italic' }}>
+                          <span className="message-modal-suggestion-alias">
                             via {suggestion.alias}
                           </span>
                         )}
@@ -527,14 +397,8 @@ const MessageModal = ({
           </div>
 
           {/* Message */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '6px',
-              fontSize: '13px',
-              fontWeight: 'bold',
-              color: '#333'
-            }}>
+          <div className="message-modal-field">
+            <label className="message-modal-label">
               Message:
             </label>
             <textarea
@@ -544,92 +408,41 @@ const MessageModal = ({
               disabled={sending}
               rows={8}
               placeholder="Type your message here..."
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                fontSize: '13px',
-                border: `1px solid ${isOverLimit ? '#dc3545' : '#dee2e6'}`,
-                borderRadius: '4px',
-                boxSizing: 'border-box',
-                fontFamily: 'inherit',
-                resize: 'vertical'
-              }}
+              className={`message-modal-textarea${isOverLimit ? ' message-modal-textarea--error' : ''}`}
             />
-            <div style={{
-              fontSize: '11px',
-              color: isOverLimit ? '#dc3545' : (isNearLimit ? '#ffc107' : '#6c757d'),
-              marginTop: '4px',
-              textAlign: 'right'
-            }}>
+            <div className={charCountClass}>
               {charCount} / {charLimit} characters
             </div>
           </div>
 
           {/* Error message */}
           {error && (
-            <div style={{
-              padding: '8px 12px',
-              backgroundColor: '#f8d7da',
-              border: '1px solid #f5c6cb',
-              borderRadius: '4px',
-              color: '#721c24',
-              fontSize: '12px',
-              marginBottom: '16px'
-            }}>
+            <div className="message-modal-error">
               {error}
             </div>
           )}
 
           {/* Warning message */}
           {warning && (
-            <div style={{
-              padding: '8px 12px',
-              backgroundColor: '#fff3cd',
-              border: '1px solid #ffc107',
-              borderRadius: '4px',
-              color: '#856404',
-              fontSize: '12px',
-              marginBottom: '16px'
-            }}>
+            <div className="message-modal-warning">
               {warning}
             </div>
           )}
 
           {/* Buttons */}
-          <div style={{
-            display: 'flex',
-            gap: '12px',
-            justifyContent: 'flex-end'
-          }}>
+          <div className="message-modal-actions">
             <button
               type="button"
               onClick={handleCancel}
               disabled={sending}
-              style={{
-                padding: '8px 16px',
-                fontSize: '13px',
-                border: '1px solid #dee2e6',
-                borderRadius: '4px',
-                backgroundColor: '#fff',
-                color: '#495057',
-                cursor: sending ? 'not-allowed' : 'pointer'
-              }}
+              className="message-modal-btn message-modal-btn--cancel"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={sending || isOverLimit || !message.trim()}
-              style={{
-                padding: '8px 16px',
-                fontSize: '13px',
-                border: 'none',
-                borderRadius: '4px',
-                backgroundColor: (sending || isOverLimit || !message.trim()) ? '#e9ecef' : '#667eea',
-                color: (sending || isOverLimit || !message.trim()) ? '#6c757d' : '#fff',
-                cursor: (sending || isOverLimit || !message.trim()) ? 'not-allowed' : 'pointer',
-                fontWeight: 'bold'
-              }}
+              className="message-modal-btn message-modal-btn--send"
             >
               {sending ? 'Sending...' : 'Send Message'}
             </button>

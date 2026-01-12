@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { FaUser, FaTimes } from 'react-icons/fa'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 
 /**
  * UserSearchField - Inline user search input with dropdown suggestions
  */
-const UserSearchField = ({ value, onChange, onSubmit, placeholder, colors }) => {
+const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder, colors }) => {
   const [inputValue, setInputValue] = useState(value || '')
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -216,6 +217,8 @@ const UserSearchField = ({ value, onChange, onSubmit, placeholder, colors }) => 
         <FaUser style={styles.icon} />
         <input
           type="text"
+          id={id}
+          name={name}
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
@@ -270,12 +273,16 @@ const UserSearchField = ({ value, onChange, onSubmit, placeholder, colors }) => 
  * - Modern Kernel Blue UI with responsive design
  */
 const CoolArchive = ({ data, user }) => {
-  const { feed_url } = data || {}
+  const isMobile = useIsMobile()
+
+  // Pre-fill with foruser parameter from URL (e.g., from homenode links)
+  const urlParams = new URLSearchParams(window.location.search)
+  const initialUsername = urlParams.get('foruser') || ''
 
   // Filter state
   const [sortBy, setSortBy] = useState('tstamp DESC')
   const [userAction, setUserAction] = useState('cooled')
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState(initialUsername)
   const [searchUsername, setSearchUsername] = useState('') // Actual username being searched
 
   // Data state
@@ -382,42 +389,32 @@ const CoolArchive = ({ data, user }) => {
     }
   }
 
-  // Styles
+  // Styles - responsive padding
   const containerStyle = {
-    padding: '20px',
-    maxWidth: '1200px',
+    padding: isMobile ? '0' : '20px',
+    maxWidth: isMobile ? '100%' : '1200px',
     margin: '0 auto'
-  }
-
-  const headerStyle = {
-    marginBottom: '30px',
-    borderBottom: `2px solid ${colors.primary}`,
-    paddingBottom: '15px'
-  }
-
-  const titleStyle = {
-    fontSize: '28px',
-    color: colors.primary,
-    marginBottom: '10px'
   }
 
   const introStyle = {
     color: colors.secondary,
     lineHeight: '1.6',
-    marginBottom: '10px'
+    marginTop: 0,
+    marginBottom: isMobile ? '12px' : '16px',
+    fontSize: isMobile ? '14px' : '16px'
   }
 
   const filterBoxStyle = {
     backgroundColor: colors.background,
-    padding: '20px',
-    borderRadius: '8px',
-    marginBottom: '20px',
+    padding: isMobile ? '12px' : '20px',
+    borderRadius: isMobile ? '0' : '8px',
+    marginBottom: isMobile ? '12px' : '20px',
     border: `1px solid ${colors.secondary}20`
   }
 
   const filterRowStyle = {
     display: 'flex',
-    gap: '15px',
+    gap: isMobile ? '10px' : '15px',
     alignItems: 'flex-end',
     flexWrap: 'wrap',
     marginBottom: '10px'
@@ -428,7 +425,7 @@ const CoolArchive = ({ data, user }) => {
     flexDirection: 'column',
     gap: '5px',
     flex: '1',
-    minWidth: '200px'
+    minWidth: isMobile ? '100%' : '200px'
   }
 
   const labelStyle = {
@@ -522,19 +519,11 @@ const CoolArchive = ({ data, user }) => {
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
-      <div style={headerStyle}>
-        <h1 style={titleStyle}>Cool Archive</h1>
-        <p style={introStyle}>
-          Welcome to the Cool Archive page — where you can see the entire library of
-          especially worthwhile content in the mess of Everything history. Enjoy.
-        </p>
-        {feed_url && (
-          <p style={{ fontSize: '12px', color: colors.secondary }}>
-            <a href={feed_url} style={linkStyle}>RSS Feed</a>
-          </p>
-        )}
-      </div>
+      {/* Intro - no H1 since PageHeader already renders the title */}
+      <p style={introStyle}>
+        Browse the complete archive of editor-selected content from Everything2's history.
+        These are the writeups our editors have recognized as especially noteworthy.
+      </p>
 
       {/* Filters */}
       <form onSubmit={handleSearch}>
@@ -542,8 +531,10 @@ const CoolArchive = ({ data, user }) => {
           <div style={filterRowStyle}>
             {/* Sort by */}
             <div style={filterGroupStyle}>
-              <label style={labelStyle}>Order by:</label>
+              <label htmlFor="cool-archive-sort" style={labelStyle}>Order by:</label>
               <select
+                id="cool-archive-sort"
+                name="sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 style={selectStyle}
@@ -556,8 +547,10 @@ const CoolArchive = ({ data, user }) => {
 
             {/* User action */}
             <div style={{ ...filterGroupStyle, flex: '0 0 150px' }}>
-              <label style={labelStyle}>Action:</label>
+              <label htmlFor="cool-archive-action" style={labelStyle}>Action:</label>
               <select
+                id="cool-archive-action"
+                name="action"
                 value={userAction}
                 onChange={(e) => setUserAction(e.target.value)}
                 style={selectStyle}
@@ -569,8 +562,10 @@ const CoolArchive = ({ data, user }) => {
 
             {/* Username with search */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '1', minWidth: '200px' }}>
-              <label style={labelStyle}>User:</label>
+              <label htmlFor="cool-archive-user" style={labelStyle}>User:</label>
               <UserSearchField
+                id="cool-archive-user"
+                name="user"
                 value={username}
                 onChange={setUsername}
                 onSubmit={(selectedUsername) => {

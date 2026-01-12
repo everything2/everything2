@@ -11,18 +11,8 @@ const AcceptableUsePolicy = () => {
     marginBottom: '24px'
   }
 
-  const headerStyle = {
-    textAlign: 'center',
-    marginBottom: '24px'
-  }
-
   return (
-    <div className="document" style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <div style={headerStyle}>
-        <h1 style={{ marginBottom: '8px' }}>Acceptable Use Policy</h1>
-      </div>
-
-      <hr style={{ marginBottom: '24px' }} />
+    <div className="document" style={{ maxWidth: '800px' }}>
 
       <section style={sectionStyle}>
         <p>By using this website, you implicitly agree to the following conditions:</p>

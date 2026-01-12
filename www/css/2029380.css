@@ -1,270 +1,312 @@
 /* 2029380.css (Pamphleteer by ascorbic) */
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules removed for React compatibility - inherits from basesheet */
+
+/* Custom font faces - Essays 1743 and Linux Libertine */
 @font-face {
-font-family: 'Essays 1743';
-src: url('../static/pamphleteer/essays1743-webfont.eot');
-src: local('Essays 1743'),url('../static/pamphleteer/essays1743-webfont.woff') format('woff'),url('../static/pamphleteer/essays1743-webfont.ttf') format('truetype');
-font-weight: normal;
-font-style: normal
+  font-family: 'Essays 1743';
+  src: url('../static/pamphleteer/essays1743-webfont.eot');
+  src: local('Essays 1743'), url('../static/pamphleteer/essays1743-webfont.woff') format('woff'), url('../static/pamphleteer/essays1743-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
+
 @font-face {
-font-family: 'Essays 1743';
-src: url('../static/pamphleteer/essays1743-italic-webfont.eot');
-src: local('Essays 1743'),url('../static/pamphleteer/essays1743-italic-webfont.woff') format('woff'),url('../static/pamphleteer/essays1743-italic-webfont.ttf') format('truetype');
-font-weight: normal;
-font-style: italic
+  font-family: 'Essays 1743';
+  src: url('../static/pamphleteer/essays1743-italic-webfont.eot');
+  src: local('Essays 1743'), url('../static/pamphleteer/essays1743-italic-webfont.woff') format('woff'), url('../static/pamphleteer/essays1743-italic-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
 }
+
 @font-face {
-font-family: 'Linux Libertine';
-src: url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.eot');
-src: local('Linux Libertine'),url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.woff') format('woff'),url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.ttf') format('truetype');
-font-weight: normal;
-font-style: normal
+  font-family: 'Linux Libertine';
+  src: url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.eot');
+  src: local('Linux Libertine'), url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.woff') format('woff'), url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
+
 @font-face {
-font-family: 'Linux Libertine';
-src: url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.eot');
-src: local('Linux Libertine'),url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.woff') format('woff'),url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.ttf') format('truetype');
-font-weight: bold;
-font-style: normal
+  font-family: 'Linux Libertine';
+  src: url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.eot');
+  src: local('Linux Libertine'), url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.woff') format('woff'), url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
 }
+
 @font-face {
-font-family: 'Linux Libertine';
-src: url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.eot');
-src: local('Linux Libertine'),url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.woff') format('woff'),url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.ttf') format('truetype');
-font-weight: normal;
-font-style: italic
+  font-family: 'Linux Libertine';
+  src: url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.eot');
+  src: local('Linux Libertine'), url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.woff') format('woff'), url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
 }
-html {
-overflow-y: scroll;
--webkit-font-smoothing: antialiased
+
+:root {
+  /* Pamphleteer color palette - classic black and white typographic theme */
+  --e2-color-primary: #000000;            /* Black text */
+  --e2-color-link: #000000;               /* Black links with dotted underline */
+  --e2-color-link-visited: RosyBrown;     /* Classic visited link color */
+  --e2-color-link-active: #444444;        /* Dark gray on hover */
+  --e2-color-accent: #667;                /* Gray-blue accent for shadows */
+
+  /* Backgrounds */
+  --e2-bg-body: #ffffff;                  /* White page background */
+  --e2-bg-nodelet: #ffffff;               /* White nodelet background */
+  --e2-bg-header: #ffffff;                /* White header */
+  --e2-bg-hover: #f8f8f8;                 /* Light gray hover */
+  --e2-bg-sidebar: transparent;
+  --e2-bg-oddrow: #f4f4f4;                /* Very light gray for alternating rows */
+
+  /* Text colors */
+  --e2-text-body: #000000;                /* Black text */
+  --e2-text-header: #000000;              /* Black header text */
+  --e2-text-muted: #666666;               /* Gray muted text */
+
+  /* Borders */
+  --e2-border-light: #cccccc;
+  --e2-border-nodelet: #aaaaaa;
+  --e2-border-color: #dddddd;
+  --e2-border-color-light: #eeeeee;
+  --e2-border-color-hover: #888888;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #000000;
+  --e2-btn-primary-text: #ffffff;
+  --e2-btn-secondary-bg: #f4f4f4;
+  --e2-btn-secondary-border: #aaaaaa;
+
+  /* Warning colors */
+  --e2-warning-bg: #fff8dc;
+  --e2-warning-text: #856404;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #f4f4f4;
+  --e2-nodelet-header-text: #000000;
+
+  /* Epicenter */
+  --e2-epicenter-bg: #f4f4f4;
+  --e2-epicenter-text: #000000;
+
+  /* Nodelet controls/filters */
+  --e2-nodelet-filter-bg: #fafafa;
+  --e2-input-bg: #ffffff;
+  --e2-color-muted: #666666;
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #ffffff;
+
+  /* Status colors */
+  --e2-notice-bg: #f8f8f8;
+  --e2-notice-border: #dddddd;
+  --e2-notice-accent: #aaaaaa;
+
+  /* Logo */
+  --e2-logo-text: #000000;
+  --e2-logo-bg: transparent;
 }
-html,body {
-background: #fff;
-color: #000;
-margin: 0;
-padding: 0
-}
-body {
-font: large/1.556 'Linux Libertine',Palatino,'Palatino Linotype','Book Antiqua',Georgia,'Times New Roman',serif;
-word-spacing: .1em;
-max-width: 960px;
-margin: 0 auto;
-padding-bottom: 2em
-}
-.a,.u {
-font: 100%/1 'Arial Unicode MS',FreeSerif,OpenSymbol,'DejaVu Sans',sans-serif
-}
-.baa {
-font: oblique 105% Constantia,Baskerville,Palatino,'Palatino Linotype','URW Palladio L',serif
-}
-.c {
-font-size: medium;
-line-height: 1.75;
-margin: 1.75em 0
-}
-.f img {
-float: left;
-margin-right: 5px;
-margin-bottom: 5px;
--ms-interpolation-mode: bicubic
-}
-p,ol {
-font-size: large;
-margin: 1.556em 0
-}
-#toc ol,#toc li {
-list-style: none;
-margin-left: 0;
-padding-left: 0
-}
-.a {
-font-size: xx-large;
-line-height: .875;
-text-shadow: 0 0 2px #667
-}
-cite {
-font-style: normal
-}
-a {
-text-decoration: none
-}
-a:link {
-color: black;
-border-bottom: 1px dotted
-}
-a:visited {
-color: RosyBrown;
-border-bottom: 1px dotted
-}
-a:link:hover,a:visited:hover {
-border-bottom: 1px solid
-}
-li ol {
-margin: 0
-}
-h1,h2,h3 {
-font-family: 'Essays 1743',Palatino,'Palatino Linotype','Book Antiqua',Georgia,'Times New Roman',serif;
-font-weight: normal;
-text-shadow: 0 0 1px #667
-}
-h1 {
-font-size: 266.7%;
-line-height: 1.1;
-text-align: center;
-width: 100%;
-margin: 1.49em 0
-}
+
+/* ====================================================================
+   LOGO - Text-based logo (override Kernel Blue image)
+   ==================================================================== */
+
 div#e2logo {
-font-size: 30px;
-margin: 30px 0;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
 }
-div#e2logo a:link, h1#e2logo a:visited {
-border: none;
+
+div#e2logo a {
+  padding: 0;
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--e2-logo-text, #000000);
+  text-decoration: none;
+  line-height: 50px;
 }
+
+/* ====================================================================
+   TYPOGRAPHY - Pamphleteer uses Linux Libertine body with Essays 1743 headings
+   ==================================================================== */
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body, table, td, th {
+  font-family: 'Linux Libertine', Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  font-size: large;
+  line-height: 1.556;
+  word-spacing: 0.1em;
+}
+
+h1, h2, h3 {
+  font-family: 'Essays 1743', Palatino, 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  font-weight: normal;
+  text-shadow: 0 0 1px #667;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  clear: both;
+}
+
+h1 {
+  font-size: 50px;
+}
+
 h2 {
-font-size: 210%;
-line-height: 1.3125;
+  font-size: 48px;
 }
+
 /* User-submitted h1s converted to h2 for SEO - style them like h1s */
 h2.user-h1 {
-font-size: 266.7%;
-margin: 1.167em 0;
-text-align: center;
-clear: both
+  font-size: 50px;
+  text-align: center;
+  clear: both;
 }
+
+h3 {
+  font-size: x-large;
+  line-height: 1.167;
+  margin: 1.556em 0;
+}
+
 .writeup_add h2 {
-font-size: 30px;
+  font-size: 30px;
 }
-h3 {
-font-size: x-large;
-line-height: 1.167;
-margin: 1.556em 0;
-text-align: center
+
+cite {
+  font-style: normal;
 }
-h1:before {
-content: '&#8470;' counter(h1) '. '
+
+p, ol {
+  font-size: large;
+  margin: 1.556em 0;
 }
-h1:before {
-content: ''
-}
-h1,h2,h3 {
-padding: 0;
-margin: 0;
-border: 0;
-text-align: center;
-clear: both
-}
-h1 {
-font-size: 50px;
-}
-h2 {
-font-size: 48px
-}
-ol {
-margin: 1em 0 0 0;
-padding: 0
-}
-#epicenter_zen {
-position: absolute;
-bottom: 0;
-display: none;
-}
-.topic.actions {
-list-style-type: none;
-padding: 0;
-width: 300px;
-margin: auto;
-display: none;
-}
-.topic.actions li {
-display: block;
-float: left;
-font-size: 12px;
-margin: 0 10px;
-text-align: center;
-}
-#searchform {
-text-align: center;
-}
-#searchform span {
-display: none;
-}
-.contentheader td {
-display: none;
-text-align: center;
-margin-bottom: 20px;
-}
-.contentheader td.wu_author, .contentheader td.wu_type, .contentheader td.wu_cfull, .contentheader td.wu_dtcreate {
-display: block;
-}
-.contentheader td.wu_type {
-margin: 30px 0 10px 0;
-font-size: 12px;
-}
-.createdby {
-display: none;
-}
-.topic {
-text-align: center;
-font-size: 11px;
-margin-top: 20px;
-}
-@media screen and (max-device-width:480px) {html {
-color: #000
-}
+
+/* ====================================================================
+   COLORS - Using CSS variables
+   ==================================================================== */
+
 body {
-margin: 4px 2px 0 2px
+  color: var(--e2-text-body);
+  background-color: var(--e2-bg-body);
 }
-body,.c,span,.c,p,ol {
-font: normal 12px/18px sans-serif
+
+a {
+  text-decoration: none;
 }
-.baa {
-font: normal 14px/18px serif
+
+a:link {
+  color: var(--e2-color-link);
+  border-bottom: 1px dotted;
 }
-.c,p,ol,h2,h3 {
-margin: 1.75em 0
+
+a:visited {
+  color: var(--e2-color-link-visited);
+  border-bottom: 1px dotted;
 }
-a:link,a:visited {
-text-decoration: underline;
-border: 0
+
+a:link:hover, a:visited:hover {
+  border-bottom: 1px solid;
 }
-a:link:hover,a:visited:hover {
-border: 0
+
+.oddrow {
+  background-color: var(--e2-bg-oddrow);
 }
-h1,h2,h3 {
-padding: 0;
-border: 0;
-letter-spacing: 0;
-text-shadow: 0
+
+/* ====================================================================
+   LOGO STYLING
+   ==================================================================== */
+
+div#e2logo {
+  font-size: 30px;
+  margin: 30px 0;
 }
-h1 {
-margin: 0
+
+div#e2logo a:link, div#e2logo a:visited {
+  border: none;
+  color: var(--e2-logo-text);
 }
-h1 {
-font: normal 18px/18px serif
+
+/* ====================================================================
+   WRITEUPS AND CONTENT
+   ==================================================================== */
+
+.topic {
+  text-align: center;
+  font-size: 11px;
+  margin-top: 20px;
 }
-h2 {
-font: normal 16px/18px serif
+
+.createdby {
+  text-align: center;
 }
-h3 {
-font: normal 14px/18px serif
+
+/* ====================================================================
+   SEARCH FORM
+   ==================================================================== */
+
+#searchform {
+  text-align: center;
 }
-h1:before {
-content: ''
+
+/* ====================================================================
+   EPICENTER ZEN BAR
+   ==================================================================== */
+
+#epicenter_zen {
+  background-color: var(--e2-bg-oddrow);
+  text-align: center;
 }
-.w,form,.a {
-display: none
+
+/* ====================================================================
+   PRINT STYLES
+   ==================================================================== */
+
+@media print {
+  a:link, a:visited {
+    color: inherit;
+    text-decoration: none;
+    border: none;
+  }
+  #sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none; }
 }
-.f img {
-width: 4em;
-height: 4em
+
+/* ====================================================================
+   MOBILE STYLES
+   ==================================================================== */
+
+@media screen and (max-device-width: 480px) {
+  body, .c, span, .c, p, ol {
+    font: normal 12px/18px sans-serif;
+  }
+
+  h1 {
+    font: normal 18px/18px serif;
+  }
+
+  h2 {
+    font: normal 16px/18px serif;
+  }
+
+  h3 {
+    font: normal 14px/18px serif;
+  }
+
+  a:link, a:visited {
+    text-decoration: underline;
+    border: 0;
+  }
 }
-i {
-text-transform: inherit
-}
-i {
-font-style: oblique
-}/* SOFTLINK COLORS */
+
+/* ====================================================================
+   SOFTLINK COLORS - Pamphleteer gradient (gray to white)
+   ==================================================================== */
+
 td#sl64{background:#aaaaaa;}td#sl63{background:#ababab;}td#sl62{background:#acacac;}td#sl61{background:#aeaeae;}
 td#sl60{background:#afafaf;}td#sl59{background:#b0b0b0;}td#sl58{background:#b2b2b2;}td#sl57{background:#b3b3b3;}
 td#sl56{background:#b4b4b4;}td#sl55{background:#b6b6b6;}td#sl54{background:#b7b7b7;}td#sl53{background:#b8b8b8;}
@@ -281,4 +323,3 @@ td#sl16{background:#eaeaea;}td#sl15{background:#ececec;}td#sl14{background:#eded
 td#sl12{background:#f0f0f0;}td#sl11{background:#f1f1f1;}td#sl10{background:#f2f2f2;}td#sl9{background:#f4f4f4;}
 td#sl8{background:#f5f5f5;}td#sl7{background:#f6f6f6;}td#sl6{background:#f8f8f8;}td#sl5{background:#f9f9f9;}
 td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;}td#sl1{background:#ffffff;}
-}

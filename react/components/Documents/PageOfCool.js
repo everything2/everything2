@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 
 /**
  * PageOfCool - Browse recently cooled nodes and editor endorsements
@@ -10,6 +11,7 @@ import React, { useState, useEffect } from 'react'
  * - Modern Kernel Blue UI
  */
 const PageOfCool = ({ data }) => {
+  const isMobile = useIsMobile()
   const { editors = [], initial_coolnodes = [], pagination: initialPagination } = data || {}
 
   // State
@@ -81,29 +83,19 @@ const PageOfCool = ({ data }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // Styles
+  // Styles - responsive
   const containerStyle = {
-    padding: '20px',
-    maxWidth: '1200px',
+    padding: isMobile ? '0' : '20px',
+    maxWidth: isMobile ? '100%' : '1200px',
     margin: '0 auto'
-  }
-
-  const headerStyle = {
-    marginBottom: '30px',
-    borderBottom: `2px solid ${colors.primary}`,
-    paddingBottom: '15px'
-  }
-
-  const titleStyle = {
-    fontSize: '28px',
-    color: colors.primary,
-    marginBottom: '10px'
   }
 
   const introStyle = {
     color: colors.secondary,
     lineHeight: '1.6',
-    marginBottom: '15px'
+    marginTop: 0,
+    marginBottom: isMobile ? '12px' : '15px',
+    fontSize: isMobile ? '14px' : '16px'
   }
 
   const sectionStyle = {
@@ -222,14 +214,11 @@ const PageOfCool = ({ data }) => {
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
-      <div style={headerStyle}>
-        <h1 style={titleStyle}>Page of Cool</h1>
-        <p style={introStyle}>
-          Browse through the latest editor selections below, or choose a specific editor
-          (or former editor) to see what they've endorsed.
-        </p>
-      </div>
+      {/* Intro - no H1 since PageHeader already renders the title */}
+      <p style={introStyle}>
+        Browse through the latest editor selections below, or choose a specific editor
+        (or former editor) to see what they've endorsed.
+      </p>
 
       {/* Editor Selector Section */}
       <div style={sectionStyle}>

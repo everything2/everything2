@@ -53,7 +53,7 @@ const AYearAgoToday = ({ data }) => {
         {count} writeups submitted {yearsago === 1 ? 'a year' : `${yearsago} years`} ago today
       </p>
 
-      <p style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center' }}>
         <table width="70%" style={{ margin: '0 auto' }}>
           <tbody>
             <tr>
@@ -78,11 +78,11 @@ const AYearAgoToday = ({ data }) => {
             </tr>
           </tbody>
         </table>
-      </p>
+      </div>
 
-      <p style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center' }}>
         <hr style={{ width: '200px' }} />
-      </p>
+      </div>
 
       <p style={{ textAlign: 'center' }}>
         {years.map((y, idx) => (

@@ -12,7 +12,7 @@ import E2NodeDisplay from '../E2NodeDisplay'
 const E2Node = ({ data, user }) => {
   if (!data) return <div>Loading...</div>
 
-  const { e2node, existing_draft, start_with_tools_modal_open } = data
+  const { e2node, existing_draft, start_with_tools_modal_open, best_entries } = data
 
   if (!e2node) {
     return <div className="error">E2node not found</div>
@@ -25,6 +25,7 @@ const E2Node = ({ data, user }) => {
         user={user}
         existingDraft={existing_draft}
         startWithToolsModalOpen={start_with_tools_modal_open}
+        bestEntries={best_entries}
       />
     </div>
   )

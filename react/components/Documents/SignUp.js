@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 
 /**
  * SignUp - User registration form
@@ -9,6 +10,7 @@ import React, { useState, useEffect, useCallback } from 'react'
  * - reCAPTCHA v3 integration (production only)
  * - API-based form submission (no page reload)
  * - Inline error display with specific messages
+ * - Responsive layout (stacked on mobile, side-by-side on desktop)
  *
  * Security:
  * - All validation/anti-spam logic stays server-side in signup API
@@ -52,6 +54,7 @@ const IconPlaceholder = () => (
 )
 
 const SignUp = ({ data, user, e2 }) => {
+  const isMobile = useIsMobile()
   const {
     username: initialUsername = '',
     email: initialEmail = '',
@@ -398,160 +401,215 @@ const SignUp = ({ data, user, e2 }) => {
             </p>
           )}
 
-          <div style={{ textAlign: 'right' }}>
+          <div style={{ textAlign: isMobile ? 'left' : 'right' }}>
             {/* Username */}
-            <label style={{ display: 'block', marginBottom: '0.75em' }}>
-              <span style={{ display: 'inline-block', width: '150px', textAlign: 'left' }}>
-                Username:
-              </span>
-              <input
-                type="text"
-                value={username}
-                onChange={handleUsernameChange}
-                maxLength={20}
-                size={30}
-                autoComplete="username"
-                style={{
-                  padding: '4px 8px',
-                  border: (errors.username || usernameStatus === 'taken' || usernameStatus === 'invalid')
-                    ? '1px solid #8b0000'
-                    : usernameStatus === 'available'
-                      ? '1px solid #228b22'
-                      : '1px solid #d3d3d3',
-                  borderRadius: '3px'
-                }}
-                required
-              />
-              {renderUsernameStatus()}
-            </label>
+            <div style={{ marginBottom: '0.75em' }}>
+              <label style={{ display: isMobile ? 'block' : 'inline' }}>
+                <span style={{
+                  display: isMobile ? 'block' : 'inline-block',
+                  width: isMobile ? 'auto' : '150px',
+                  textAlign: 'left',
+                  marginBottom: isMobile ? '4px' : '0'
+                }}>
+                  Username:
+                </span>
+                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={handleUsernameChange}
+                    maxLength={20}
+                    autoComplete="username"
+                    style={{
+                      padding: '6px 10px',
+                      border: (errors.username || usernameStatus === 'taken' || usernameStatus === 'invalid')
+                        ? '1px solid #8b0000'
+                        : usernameStatus === 'available'
+                          ? '1px solid #228b22'
+                          : '1px solid #d3d3d3',
+                      borderRadius: '4px',
+                      width: isMobile ? '100%' : 'auto',
+                      maxWidth: isMobile ? '100%' : '220px',
+                      boxSizing: 'border-box'
+                    }}
+                    required
+                  />
+                  {renderUsernameStatus()}
+                </span>
+              </label>
+            </div>
             {usernameStatus === 'taken' && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: '155px' }}>
+              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
                 Username is already taken
               </div>
             )}
             {usernameStatus === 'invalid' && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: '155px' }}>
+              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
                 Username contains invalid characters
               </div>
             )}
             {errors.username && usernameStatus !== 'taken' && usernameStatus !== 'invalid' && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: '155px' }}>
+              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
                 {errors.username}
               </div>
             )}
 
             {/* Password */}
-            <label style={{ display: 'block', marginBottom: '0.75em' }}>
-              <span style={{ display: 'inline-block', width: '150px', textAlign: 'left' }}>
-                Password:
-              </span>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                maxLength={240}
-                size={30}
-                autoComplete="new-password"
-                style={{
-                  padding: '4px 8px',
-                  border: errors.password ? '1px solid #8b0000' : '1px solid #d3d3d3',
-                  borderRadius: '3px'
-                }}
-                required
-              />
-              {passwordsMatch ? <CheckIcon /> : <IconPlaceholder />}
-            </label>
+            <div style={{ marginBottom: '0.75em' }}>
+              <label style={{ display: isMobile ? 'block' : 'inline' }}>
+                <span style={{
+                  display: isMobile ? 'block' : 'inline-block',
+                  width: isMobile ? 'auto' : '150px',
+                  textAlign: 'left',
+                  marginBottom: isMobile ? '4px' : '0'
+                }}>
+                  Password:
+                </span>
+                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    maxLength={240}
+                    autoComplete="new-password"
+                    style={{
+                      padding: '6px 10px',
+                      border: errors.password ? '1px solid #8b0000' : '1px solid #d3d3d3',
+                      borderRadius: '4px',
+                      width: isMobile ? '100%' : 'auto',
+                      maxWidth: isMobile ? '100%' : '220px',
+                      boxSizing: 'border-box'
+                    }}
+                    required
+                  />
+                  {passwordsMatch ? <CheckIcon /> : <IconPlaceholder />}
+                </span>
+              </label>
+            </div>
             {errors.password && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: '155px' }}>
+              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
                 {errors.password}
               </div>
             )}
 
             {/* Confirm Password */}
-            <label style={{ display: 'block', marginBottom: '0.75em' }}>
-              <span style={{ display: 'inline-block', width: '150px', textAlign: 'left' }}>
-                Confirm password:
-              </span>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                maxLength={240}
-                size={30}
-                autoComplete="new-password"
-                style={{
-                  padding: '4px 8px',
-                  border: passwordsMismatch
-                    ? '1px solid #8b0000'
-                    : passwordsMatch
-                      ? '1px solid #228b22'
-                      : '1px solid #d3d3d3',
-                  borderRadius: '3px'
-                }}
-                required
-              />
-              {passwordsMatch ? <CheckIcon /> : passwordsMismatch ? <XIcon /> : <IconPlaceholder />}
-            </label>
+            <div style={{ marginBottom: '0.75em' }}>
+              <label style={{ display: isMobile ? 'block' : 'inline' }}>
+                <span style={{
+                  display: isMobile ? 'block' : 'inline-block',
+                  width: isMobile ? 'auto' : '150px',
+                  textAlign: 'left',
+                  marginBottom: isMobile ? '4px' : '0'
+                }}>
+                  Confirm password:
+                </span>
+                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    maxLength={240}
+                    autoComplete="new-password"
+                    style={{
+                      padding: '6px 10px',
+                      border: passwordsMismatch
+                        ? '1px solid #8b0000'
+                        : passwordsMatch
+                          ? '1px solid #228b22'
+                          : '1px solid #d3d3d3',
+                      borderRadius: '4px',
+                      width: isMobile ? '100%' : 'auto',
+                      maxWidth: isMobile ? '100%' : '220px',
+                      boxSizing: 'border-box'
+                    }}
+                    required
+                  />
+                  {passwordsMatch ? <CheckIcon /> : passwordsMismatch ? <XIcon /> : <IconPlaceholder />}
+                </span>
+              </label>
+            </div>
             {errors.confirmPassword && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: '155px' }}>
+              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
                 {errors.confirmPassword}
               </div>
             )}
 
             {/* Email */}
-            <label style={{ display: 'block', marginBottom: '0.75em' }}>
-              <span style={{ display: 'inline-block', width: '150px', textAlign: 'left' }}>
-                Email address:
-              </span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                maxLength={240}
-                size={30}
-                autoComplete="email"
-                style={{
-                  padding: '4px 8px',
-                  border: errors.email ? '1px solid #8b0000' : '1px solid #d3d3d3',
-                  borderRadius: '3px'
-                }}
-                required
-              />
-              {emailsMatch ? <CheckIcon /> : <IconPlaceholder />}
-            </label>
+            <div style={{ marginBottom: '0.75em' }}>
+              <label style={{ display: isMobile ? 'block' : 'inline' }}>
+                <span style={{
+                  display: isMobile ? 'block' : 'inline-block',
+                  width: isMobile ? 'auto' : '150px',
+                  textAlign: 'left',
+                  marginBottom: isMobile ? '4px' : '0'
+                }}>
+                  Email address:
+                </span>
+                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    maxLength={240}
+                    autoComplete="email"
+                    style={{
+                      padding: '6px 10px',
+                      border: errors.email ? '1px solid #8b0000' : '1px solid #d3d3d3',
+                      borderRadius: '4px',
+                      width: isMobile ? '100%' : 'auto',
+                      maxWidth: isMobile ? '100%' : '220px',
+                      boxSizing: 'border-box'
+                    }}
+                    required
+                  />
+                  {emailsMatch ? <CheckIcon /> : <IconPlaceholder />}
+                </span>
+              </label>
+            </div>
             {errors.email && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: '155px' }}>
+              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
                 {errors.email}
               </div>
             )}
 
             {/* Confirm Email */}
-            <label style={{ display: 'block', marginBottom: '1em' }}>
-              <span style={{ display: 'inline-block', width: '150px', textAlign: 'left' }}>
-                Confirm email:
-              </span>
-              <input
-                type="email"
-                value={confirmEmail}
-                onChange={(e) => setConfirmEmail(e.target.value)}
-                maxLength={240}
-                size={30}
-                autoComplete="email"
-                style={{
-                  padding: '4px 8px',
-                  border: emailsMismatch
-                    ? '1px solid #8b0000'
-                    : emailsMatch
-                      ? '1px solid #228b22'
-                      : '1px solid #d3d3d3',
-                  borderRadius: '3px'
-                }}
-                required
-              />
-              {emailsMatch ? <CheckIcon /> : emailsMismatch ? <XIcon /> : <IconPlaceholder />}
-            </label>
+            <div style={{ marginBottom: '1em' }}>
+              <label style={{ display: isMobile ? 'block' : 'inline' }}>
+                <span style={{
+                  display: isMobile ? 'block' : 'inline-block',
+                  width: isMobile ? 'auto' : '150px',
+                  textAlign: 'left',
+                  marginBottom: isMobile ? '4px' : '0'
+                }}>
+                  Confirm email:
+                </span>
+                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                  <input
+                    type="email"
+                    value={confirmEmail}
+                    onChange={(e) => setConfirmEmail(e.target.value)}
+                    maxLength={240}
+                    autoComplete="email"
+                    style={{
+                      padding: '6px 10px',
+                      border: emailsMismatch
+                        ? '1px solid #8b0000'
+                        : emailsMatch
+                          ? '1px solid #228b22'
+                          : '1px solid #d3d3d3',
+                      borderRadius: '4px',
+                      width: isMobile ? '100%' : 'auto',
+                      maxWidth: isMobile ? '100%' : '220px',
+                      boxSizing: 'border-box'
+                    }}
+                    required
+                  />
+                  {emailsMatch ? <CheckIcon /> : emailsMismatch ? <XIcon /> : <IconPlaceholder />}
+                </span>
+              </label>
+            </div>
             {errors.confirmEmail && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: '155px' }}>
+              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
                 {errors.confirmEmail}
               </div>
             )}
@@ -560,14 +618,15 @@ const SignUp = ({ data, user, e2 }) => {
               type="submit"
               disabled={isSubmitting || !isFormValid()}
               style={{
-                padding: '8px 16px',
+                padding: '10px 20px',
                 backgroundColor: (isSubmitting || !isFormValid()) ? '#ccc' : '#4060b0',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: (isSubmitting || !isFormValid()) ? 'not-allowed' : 'pointer',
                 fontSize: '1em',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                width: isMobile ? '100%' : 'auto'
               }}
             >
               {isSubmitting ? 'Creating account...' : 'Create new account'}

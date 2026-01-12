@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import LinkNode from '../LinkNode'
 import UserSearchInput from '../UserSearchInput'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 
 // Notable E2 contributors for suggestions
 const NOTABLE_USERS = [
   'Tem42', 'wertperch', 'The Custodian', 'mauler', 'Glowing Fish',
-  'DonJaime', 'Jet-Poop', 'Cletus the Foetus', 'borgo', 'lizardinlaw',
+  'DonJaime', 'Jet-Poop', 'Cletus the Foetus', 'borgo',
   'Simulacron3', 'etouffee', 'lostcauser', 'artman2003', 'Zephronias',
   'JD', 'Pandeism Fish', 'Chord', 'Yurei', 'E2D2', 'Clockmaker'
 ]
@@ -49,6 +50,7 @@ const EmptyState = ({ onSelectUser }) => {
  * Supports sorting, pagination, and filtering.
  */
 const UserSearch = ({ data, user }) => {
+  const isMobile = useIsMobile()
   const [username, setUsername] = useState(data.initialUsername || '')
   const [orderby, setOrderby] = useState(data.initialOrderby || 'publishtime_desc')
   const [page, setPage] = useState(data.initialPage || 1)
@@ -307,6 +309,9 @@ const UserSearch = ({ data, user }) => {
     if (vote === -1) return <span style={styles.voteDown}>−</span>
     return null
   }
+
+  // Responsive styles
+  const styles = getStyles(isMobile)
 
   return (
     <div className="document" style={styles.container}>
@@ -574,11 +579,11 @@ const UserSearch = ({ data, user }) => {
   )
 }
 
-const styles = {
+const getStyles = (isMobile) => ({
   container: {
-    maxWidth: '1000px',
+    maxWidth: isMobile ? '100%' : '1000px',
     margin: '0 auto',
-    padding: '20px'
+    padding: isMobile ? '0' : '20px'
   },
   header: {
     textAlign: 'center',
@@ -847,6 +852,6 @@ const styles = {
     padding: 0,
     font: 'inherit'
   }
-}
+})
 
 export default UserSearch

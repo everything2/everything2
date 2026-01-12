@@ -54,7 +54,7 @@ const OtherUsers = (props) => {
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
+        <p className="otherusers-loading">
           {pollingLoading ? 'Loading...' : pollingError ? `Error: ${pollingError}` : 'No chat data available'}
         </p>
       </NodeletContainer>
@@ -222,7 +222,7 @@ const OtherUsers = (props) => {
               <LinkNode title="E2 FAQ: Chatterbox" type="superdoc" display="Ø" style={{ textDecoration: 'none' }} titleAttr="borged!" />
             )}
             {flag.type === 'invisible' && (
-              <font color="#ff0000">i</font>
+              <span className="otherusers-invisible">i</span>
             )}
             {flag.type === 'room' && (
               <LinkNode id={flag.roomId} display="~" />
@@ -278,53 +278,21 @@ const OtherUsers = (props) => {
   // Render Room Options section with clean, minimalist design
   const renderRoomOptions = () => {
     return (
-      <div style={{
-        background: '#f8f9fa',
-        border: '1px solid #dee2e6',
-        borderRadius: '4px',
-        padding: '12px',
-        marginBottom: '12px'
-      }}>
-        <h4 style={{
-          margin: '0 0 10px 0',
-          fontSize: '13px',
-          fontWeight: '600',
-          color: '#495057',
-          letterSpacing: '0'
-        }}>
+      <div className="otherusers-room-options">
+        <h4 className="otherusers-room-title">
           Room Options
         </h4>
 
         {error && (
-          <div style={{
-            backgroundColor: '#fee',
-            border: '1px solid #fcc',
-            borderRadius: '4px',
-            padding: '8px',
-            marginBottom: '12px',
-            fontSize: '11px',
-            color: '#c33'
-          }}>
+          <div className="otherusers-error">
             {error}
           </div>
         )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="otherusers-controls">
+          <div className="otherusers-controls-row">
             {!!canCloak && (
-              <label htmlFor="otherusers-cloaked" style={{
-                display: 'flex',
-                alignItems: 'center',
-                fontSize: '11px',
-                color: '#6c757d',
-                cursor: 'pointer',
-                padding: '4px 8px',
-                backgroundColor: '#fff',
-                border: '1px solid #dee2e6',
-                borderRadius: '3px',
-                transition: 'border-color 0.2s',
-                flex: '0 0 auto'
-              }}>
+              <label htmlFor="otherusers-cloaked" className="otherusers-cloak-label">
                 <input
                   type="checkbox"
                   id="otherusers-cloaked"
@@ -332,7 +300,6 @@ const OtherUsers = (props) => {
                   checked={isCloaked}
                   onChange={handleToggleCloak}
                   disabled={isTogglingCloak}
-                  style={{ marginRight: '6px' }}
                 />
                 Cloaked
               </label>
@@ -341,20 +308,7 @@ const OtherUsers = (props) => {
             {!!canCreateRoom && !createRoomSuspended && (
               <button
                 onClick={() => setShowCreateDialog(true)}
-                style={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '3px',
-                  padding: '5px 12px',
-                  fontSize: '12px',
-                  color: '#495057',
-                  cursor: 'pointer',
-                  fontWeight: '500',
-                  transition: 'all 0.2s',
-                  flex: '1 1 auto'
-                }}
-                onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#f8f9fa'; e.currentTarget.style.borderColor = '#adb5bd' }}
-                onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.borderColor = '#dee2e6' }}
+                className="otherusers-btn"
               >
                 New Room
               </button>
@@ -362,37 +316,20 @@ const OtherUsers = (props) => {
           </div>
 
           {suspension ? (
-            <div style={{
-              backgroundColor: '#fff',
-              border: '1px solid #dee2e6',
-              borderRadius: '3px',
-              padding: '8px',
-              fontSize: '11px',
-              color: '#6c757d',
-              fontStyle: 'italic'
-            }}>
+            <div className="otherusers-suspension">
               {suspension.type === 'temporary'
                 ? `Locked here for ${suspension.seconds_remaining} seconds`
                 : 'Locked here indefinitely'}
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <div className="otherusers-room-select-row">
               <select
                 id="otherusers-room-select"
                 name="otherusers-room-select"
                 value={selectedRoom !== null ? selectedRoom : currentRoomId}
                 onChange={(e) => setSelectedRoom(parseInt(e.target.value))}
                 disabled={isChangingRoom}
-                style={{
-                  flex: 1,
-                  padding: '6px 8px',
-                  fontSize: '12px',
-                  borderRadius: '3px',
-                  border: '1px solid #dee2e6',
-                  backgroundColor: '#fff',
-                  color: '#495057',
-                  cursor: 'pointer'
-                }}
+                className="otherusers-room-select"
               >
                 {availableRooms.map((room) => (
                   <option key={room.room_id} value={room.room_id}>
@@ -403,18 +340,7 @@ const OtherUsers = (props) => {
               <button
                 onClick={handleChangeRoom}
                 disabled={isChangingRoom || selectedRoom === currentRoomId}
-                style={{
-                  backgroundColor: selectedRoom === currentRoomId ? '#e9ecef' : '#fff',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '3px',
-                  padding: '6px 14px',
-                  fontSize: '12px',
-                  color: selectedRoom === currentRoomId ? '#adb5bd' : '#495057',
-                  cursor: selectedRoom === currentRoomId ? 'not-allowed' : 'pointer',
-                  fontWeight: '500',
-                  transition: 'all 0.2s',
-                  minWidth: '45px'
-                }}
+                className="otherusers-go-btn"
               >
                 {isChangingRoom ? '...' : 'Go'}
               </button>
@@ -430,61 +356,21 @@ const OtherUsers = (props) => {
     if (!showCreateDialog) return null
 
     return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 10000,
-        backdropFilter: 'blur(4px)'
-      }}>
-        <div style={{
-          backgroundColor: '#fff',
-          borderRadius: '12px',
-          padding: '24px',
-          maxWidth: '500px',
-          width: '90%',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
-        }}>
-          <h3 style={{
-            margin: '0 0 20px 0',
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#333',
-            borderBottom: '2px solid #667eea',
-            paddingBottom: '12px'
-          }}>
+      <div className="otherusers-dialog-overlay">
+        <div className="otherusers-dialog">
+          <h3 className="otherusers-dialog-title">
             Create New Room
           </h3>
 
           {error && (
-            <div style={{
-              backgroundColor: '#fee',
-              border: '1px solid #fcc',
-              borderRadius: '6px',
-              padding: '10px',
-              marginBottom: '16px',
-              fontSize: '12px',
-              color: '#c33'
-            }}>
+            <div className="otherusers-error">
               {error}
             </div>
           )}
 
           <form onSubmit={handleCreateRoom}>
-            <div style={{ marginBottom: '16px' }}>
-              <label htmlFor="otherusers-new-room-title" style={{
-                display: 'block',
-                marginBottom: '6px',
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#555'
-              }}>
+            <div className="otherusers-dialog-field">
+              <label htmlFor="otherusers-new-room-title" className="otherusers-dialog-label">
                 Room Name
               </label>
               <input
@@ -495,29 +381,13 @@ const OtherUsers = (props) => {
                 onChange={(e) => setNewRoomTitle(e.target.value)}
                 maxLength={80}
                 placeholder="Enter a unique room name..."
-                style={{
-                  width: '100%',
-                  fontSize: '13px',
-                  padding: '10px',
-                  border: '2px solid #ddd',
-                  borderRadius: '6px',
-                  boxSizing: 'border-box',
-                  transition: 'border-color 0.2s'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
-                onBlur={(e) => e.target.style.borderColor = '#ddd'}
+                className="otherusers-dialog-input"
                 autoFocus
               />
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label htmlFor="otherusers-new-room-desc" style={{
-                display: 'block',
-                marginBottom: '6px',
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#555'
-              }}>
+            <div className="otherusers-dialog-field">
+              <label htmlFor="otherusers-new-room-desc" className="otherusers-dialog-label">
                 Description
               </label>
               <textarea
@@ -527,37 +397,16 @@ const OtherUsers = (props) => {
                 onChange={(e) => setNewRoomDescription(e.target.value)}
                 rows={4}
                 placeholder="Describe your room..."
-                style={{
-                  width: '100%',
-                  fontSize: '13px',
-                  padding: '10px',
-                  border: '2px solid #ddd',
-                  borderRadius: '6px',
-                  boxSizing: 'border-box',
-                  resize: 'vertical',
-                  transition: 'border-color 0.2s',
-                  fontFamily: 'inherit'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
-                onBlur={(e) => e.target.style.borderColor = '#ddd'}
+                className="otherusers-dialog-textarea"
               />
             </div>
 
-            <div style={{
-              backgroundColor: '#f8f9fa',
-              border: '1px solid #dee2e6',
-              borderRadius: '6px',
-              padding: '12px',
-              marginBottom: '20px',
-              fontSize: '11px',
-              color: '#6c757d',
-              lineHeight: '1.5'
-            }}>
+            <div className="otherusers-dialog-note">
               <strong>Note:</strong> Old rooms that are not used will be automatically cleaned up over time.
               Room titles and descriptions are subject to community standards.
             </div>
 
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <div className="otherusers-dialog-actions">
               <button
                 type="button"
                 onClick={() => {
@@ -567,48 +416,14 @@ const OtherUsers = (props) => {
                   setError(null)
                 }}
                 disabled={isCreatingRoom}
-                style={{
-                  fontSize: '13px',
-                  padding: '10px 20px',
-                  border: '2px solid #ddd',
-                  borderRadius: '6px',
-                  backgroundColor: '#fff',
-                  color: '#666',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  transition: 'all 0.2s'
-                }}
-                onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f5'; e.currentTarget.style.borderColor = '#999' }}
-                onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.borderColor = '#ddd' }}
+                className="otherusers-dialog-cancel"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isCreatingRoom || !newRoomTitle.trim()}
-                style={{
-                  fontSize: '13px',
-                  padding: '10px 20px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: '#fff',
-                  cursor: isCreatingRoom || !newRoomTitle.trim() ? 'not-allowed' : 'pointer',
-                  fontWeight: '600',
-                  opacity: isCreatingRoom || !newRoomTitle.trim() ? 0.6 : 1,
-                  transition: 'all 0.2s',
-                  boxShadow: '0 2px 8px rgba(102, 126, 234, 0.4)'
-                }}
-                onMouseOver={(e) => {
-                  if (!isCreatingRoom && newRoomTitle.trim()) {
-                    e.currentTarget.style.transform = 'translateY(-1px)'
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.5)'
-                  }
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(102, 126, 234, 0.4)'
-                }}
+                className="otherusers-dialog-submit"
               >
                 {isCreatingRoom ? 'Creating...' : 'Create Room'}
               </button>
@@ -628,7 +443,7 @@ const OtherUsers = (props) => {
         nodeletIsOpen={props.nodeletIsOpen}
       >
         {renderRoomOptions()}
-        <div style={{ padding: '12px', fontSize: '12px', color: '#999', fontStyle: 'italic' }}>
+        <div className="otherusers-empty">
           There are no noders in this room.
         </div>
       </NodeletContainer>
@@ -644,18 +459,8 @@ const OtherUsers = (props) => {
     >
       {renderRoomOptions()}
 
-      <div style={{
-        backgroundColor: '#f8f9fa',
-        borderRadius: '4px',
-        padding: '6px 8px',
-        marginBottom: '4px'
-      }}>
-        <h4 style={{
-          fontSize: '13px',
-          fontWeight: 'bold',
-          margin: '0',
-          color: '#495057'
-        }}>
+      <div className="otherusers-section-header">
+        <h4 className="otherusers-section-title">
           Your fellow users ({userCount})
         </h4>
       </div>
@@ -663,32 +468,16 @@ const OtherUsers = (props) => {
       {rooms.map((room, roomIndex) => (
         <React.Fragment key={roomIndex}>
           {room.title && (
-            <div style={{
-              fontSize: '12px',
-              fontWeight: '600',
-              marginTop: roomIndex > 0 ? '12px' : '0',
-              marginBottom: '6px',
-              color: '#667eea',
-              borderBottom: '1px solid #e9ecef',
-              paddingBottom: '4px'
-            }}>
+            <div className={`otherusers-room-label${roomIndex > 0 ? ' otherusers-room-label--offset' : ''}`}>
               {room.title}:
             </div>
           )}
-          <ul style={{
-            listStyle: 'none',
-            paddingLeft: '0',
-            margin: '0',
-            fontSize: '12px'
-          }}>
+          <ul className="otherusers-list">
             {room.users.map((user, userIndex) => (
-              <li key={userIndex} style={{
-                marginBottom: '2px',
-                padding: '3px 6px',
-                backgroundColor: user.isCurrentUser ? '#f0f4ff' : 'transparent',
-                borderRadius: '3px',
-                transition: 'background-color 0.2s'
-              }}>
+              <li
+                key={userIndex}
+                className={`otherusers-list-item${user.isCurrentUser ? ' otherusers-list-item--current' : ''}`}
+              >
                 {renderUser(user)}
               </li>
             ))}

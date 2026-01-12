@@ -387,7 +387,9 @@ describe('Messages Component', () => {
         />
       )
 
-      expect(screen.getByText('Inbox')).toBeInTheDocument()
+      // Use getAllByText since there's also an "Inbox" link in the footer
+      const inboxElements = screen.getAllByText('Inbox')
+      expect(inboxElements.length).toBeGreaterThanOrEqual(1)
       expect(screen.getByText('Archived')).toBeInTheDocument()
     })
 
@@ -479,8 +481,8 @@ describe('Messages Component', () => {
         expect(screen.getByText('Archived message')).toBeInTheDocument()
       })
 
-      // Then switch back to inbox
-      const inboxButton = screen.getByText('Inbox')
+      // Then switch back to inbox - get the button specifically, not the link
+      const inboxButton = screen.getByRole('button', { name: 'Inbox' })
       fireEvent.click(inboxButton)
 
       await waitFor(() => {
@@ -506,7 +508,8 @@ describe('Messages Component', () => {
         />
       )
 
-      const inboxButton = screen.getByText('Inbox')
+      // Get the button specifically, not the link
+      const inboxButton = screen.getByRole('button', { name: 'Inbox' })
       expect(inboxButton).toBeDisabled()
     })
 

@@ -190,18 +190,7 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000
-      }}
+      className="publish-modal-overlay"
       onClick={(e) => {
         // Close on backdrop click
         if (e.target === e.currentTarget) {
@@ -210,46 +199,24 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
       }}
     >
       <div
-        style={{
-          backgroundColor: '#fff',
-          borderRadius: '8px',
-          width: '90%',
-          maxWidth: '500px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-          overflow: 'hidden'
-        }}
+        className="publish-modal"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div
-          style={{
-            padding: '15px 20px',
-            borderBottom: '1px solid #ddd',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <h2 style={{ margin: 0, color: '#38495e', fontSize: '18px' }}>
+        <div className="publish-modal-header">
+          <h2 className="publish-modal-title">
             Publish Draft
           </h2>
           <button
             onClick={onClose}
-            style={{
-              padding: '4px 10px',
-              backgroundColor: '#f8f9f9',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
+            className="publish-modal-close-btn"
           >
             Close
           </button>
         </div>
 
         {/* Body */}
-        <div style={{ padding: '20px' }}>
+        <div className="publish-modal-body">
           {/* Dynamic title preview that updates with e2node title and writeup type */}
           {(() => {
             const selectedType = writeuptypes.find(wt => wt.node_id === selectedWriteuptypeId)
@@ -258,7 +225,7 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
               ? (typeName ? `${e2nodeTitle.trim()} (${typeName})` : e2nodeTitle.trim())
               : draft?.title || 'Untitled'
             return (
-              <p style={{ marginTop: 0, marginBottom: '15px', color: '#666' }}>
+              <p className="publish-modal-preview">
                 Publishing as: <strong>{displayTitle}</strong>
               </p>
             )
@@ -266,31 +233,14 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
 
           {/* Error message */}
           {error && (
-            <div
-              style={{
-                padding: '10px',
-                marginBottom: '15px',
-                backgroundColor: '#fee',
-                border: '1px solid #fcc',
-                borderRadius: '4px',
-                color: '#c00',
-                fontSize: '13px'
-              }}
-            >
+            <div className="publish-modal-error">
               {error}
             </div>
           )}
 
           {/* E2node title input */}
-          <div style={{ marginBottom: '15px', position: 'relative' }}>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '5px',
-                fontWeight: '500',
-                fontSize: '13px'
-              }}
-            >
+          <div className="publish-modal-field">
+            <label className="publish-modal-label">
               E2node Title
             </label>
             <input
@@ -301,54 +251,21 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
               onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
               placeholder="Enter the e2node title for this writeup..."
               autoFocus
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
+              className="publish-modal-input"
             />
 
             {/* Suggestions dropdown */}
             {showSuggestions && suggestions.length > 0 && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  right: 0,
-                  backgroundColor: '#fff',
-                  border: '1px solid #ccc',
-                  borderTop: 'none',
-                  borderRadius: '0 0 4px 4px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  maxHeight: '200px',
-                  overflowY: 'auto',
-                  zIndex: 10
-                }}
-              >
+              <div className="publish-modal-suggestions">
                 {suggestions.map((s) => (
                   <div
                     key={s.node_id}
                     onClick={() => handleSelectSuggestion(s)}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #eee',
-                      fontSize: '13px'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#f5f5f5'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = 'transparent'
-                    }}
+                    className="publish-modal-suggestion"
                   >
-                    <div style={{ fontWeight: '500' }}>{s.title}</div>
+                    <div className="publish-modal-suggestion-title">{s.title}</div>
                     {s.writeup_count !== undefined && (
-                      <div style={{ fontSize: '11px', color: '#888' }}>
+                      <div className="publish-modal-suggestion-meta">
                         {s.writeup_count} writeup{s.writeup_count !== 1 ? 's' : ''}
                       </div>
                     )}
@@ -357,14 +274,7 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
               </div>
             )}
 
-            <p
-              style={{
-                marginTop: '5px',
-                marginBottom: 0,
-                fontSize: '12px',
-                color: '#888'
-              }}
-            >
+            <p className="publish-modal-hint">
               {selectedE2node
                 ? 'Adding writeup to existing e2node'
                 : "If this e2node doesn't exist, it will be created automatically."}
@@ -372,30 +282,14 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
           </div>
 
           {/* Writeup type selector */}
-          <div style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '5px',
-                fontWeight: '500',
-                fontSize: '13px'
-              }}
-            >
+          <div className="publish-modal-field publish-modal-field--large">
+            <label className="publish-modal-label">
               Writeup Type
             </label>
             <select
               value={selectedWriteuptypeId || ''}
               onChange={(e) => setSelectedWriteuptypeId(Number(e.target.value))}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                fontSize: '14px',
-                backgroundColor: '#fff',
-                cursor: 'pointer',
-                boxSizing: 'border-box'
-              }}
+              className="publish-modal-select"
             >
               {writeuptypes.length > 0 ? (
                 writeuptypes.map((wt) => (
@@ -410,75 +304,35 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
           </div>
 
           {/* Hide from New Writeups checkbox */}
-          <div style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                cursor: 'pointer',
-                fontSize: '13px'
-              }}
-            >
+          <div className="publish-modal-field publish-modal-field--large">
+            <label className="publish-modal-checkbox-label">
               <input
                 type="checkbox"
                 checked={hideFromNewWriteups}
                 onChange={(e) => setHideFromNewWriteups(e.target.checked)}
-                style={{ marginRight: '8px' }}
+                className="publish-modal-checkbox"
               />
               Don't show in New Writeups nodelet
             </label>
-            <p
-              style={{
-                marginTop: '5px',
-                marginBottom: 0,
-                marginLeft: '24px',
-                fontSize: '12px',
-                color: '#888'
-              }}
-            >
+            <p className="publish-modal-hint publish-modal-hint--indented">
               Check this to publish without appearing in the New Writeups list (for maintenance, logs, etc.)
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div
-          style={{
-            padding: '15px 20px',
-            borderTop: '1px solid #ddd',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '10px'
-          }}
-        >
+        <div className="publish-modal-footer">
           <button
             onClick={onClose}
             disabled={loading}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#f8f9f9',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              opacity: loading ? 0.5 : 1
-            }}
+            className={`publish-modal-cancel-btn${loading ? ' publish-modal-cancel-btn--disabled' : ''}`}
           >
             Cancel
           </button>
           <button
             onClick={handlePublish}
             disabled={loading || !e2nodeTitle.trim()}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: loading || !e2nodeTitle.trim() ? '#999' : '#4060b0',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: loading || !e2nodeTitle.trim() ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
+            className={`publish-modal-submit-btn${loading || !e2nodeTitle.trim() ? ' publish-modal-submit-btn--disabled' : ''}`}
           >
             {loading ? 'Publishing...' : 'Publish'}
           </button>

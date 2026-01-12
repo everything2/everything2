@@ -1,9 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;&lt;big&gt;&lt;strong&gt;Pod People (&lt;code&gt;podpeople&lt;/code&gt;)&lt;/strong&gt;&lt;/big&gt;&lt;/p&gt;
-
-&lt;p&gt;
-This usergroup is for users who create and manage podcasts on Everything2.
-&lt;/p&gt;</doctext>
+  <doctext>For the creation of the [E2 Podcast].</doctext>
   <node_id>1957798</node_id>
   <title>podpeople</title>
   <type_nodetype>16</type_nodetype>

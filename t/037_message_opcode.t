@@ -66,7 +66,7 @@ sub send_message {
 
 	require Everything::Delegation::opcode;
 	return Everything::Delegation::opcode::message(
-		$DB, $query, $NODE, $user, $VARS, undef, $APP
+		$DB, $query, $NODE, $user, $VARS, $APP
 	);
 }
 

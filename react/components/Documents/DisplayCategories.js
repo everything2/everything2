@@ -1,20 +1,12 @@
 import React, { useState, useCallback } from 'react'
 import LinkNode from '../LinkNode'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 
-const styles = {
+const baseStyles = {
   container: {
     maxWidth: '900px',
     margin: '0 auto',
     padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.5rem',
   },
   filterForm: {
     marginBottom: '20px',
@@ -129,6 +121,7 @@ const styles = {
 }
 
 const DisplayCategories = ({ data }) => {
+  const isMobile = useIsMobile()
   const initialData = data.displayCategories || {}
   const {
     categories: initialCategories,
@@ -208,13 +201,56 @@ const DisplayCategories = ({ data }) => {
     }
   }, [page, hasMore, maintainerName, sortOrder])
 
+  // Responsive styles
+  const styles = {
+    ...baseStyles,
+    container: {
+      ...baseStyles.container,
+      padding: isMobile ? '12px' : '20px',
+    },
+    formRow: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      alignItems: isMobile ? 'stretch' : 'center',
+      marginBottom: '10px',
+      gap: isMobile ? '4px' : '10px',
+    },
+    label: {
+      fontWeight: 'bold',
+      minWidth: isMobile ? 'auto' : '120px',
+    },
+    input: {
+      padding: '8px 10px',
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+      fontSize: '14px',
+      width: isMobile ? '100%' : '200px',
+      boxSizing: 'border-box',
+    },
+    select: {
+      padding: '8px 10px',
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+      fontSize: '14px',
+      width: isMobile ? '100%' : 'auto',
+      boxSizing: 'border-box',
+    },
+    hint: {
+      fontSize: '12px',
+      color: '#666',
+      marginLeft: isMobile ? '0' : '10px',
+      marginTop: isMobile ? '2px' : '0',
+    },
+    button: {
+      ...baseStyles.button,
+      width: isMobile ? '100%' : 'auto',
+      marginTop: isMobile ? '10px' : '0',
+    },
+  }
+
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Display Categories</h1>
-      </div>
-
-      <form onSubmit={handleSubmit} style={styles.filterForm}>
+      <form onSubmit={handleSubmit} style={baseStyles.filterForm}>
         <div style={styles.formRow}>
           <label style={styles.label}>Maintained By:</label>
           <input
@@ -224,8 +260,9 @@ const DisplayCategories = ({ data }) => {
             style={styles.input}
             placeholder="Username or usergroup"
           />
-          <span style={styles.hint}>(leave blank to list all categories)</span>
+          {!isMobile && <span style={styles.hint}>(leave blank for all)</span>}
         </div>
+        {isMobile && <span style={styles.hint}>Leave blank to list all categories</span>}
         <div style={styles.formRow}>
           <label style={styles.label}>Sort Order:</label>
           <select
@@ -242,28 +279,28 @@ const DisplayCategories = ({ data }) => {
         </button>
       </form>
 
-      <table style={styles.table}>
+      <table style={baseStyles.table}>
         <thead>
           <tr>
-            <th style={styles.th}>Category</th>
-            <th style={styles.thCenter}>Maintainer</th>
-            {!isGuest && <th style={styles.thCenter}>Can I Contribute?</th>}
+            <th style={baseStyles.th}>Category</th>
+            <th style={baseStyles.thCenter}>Maintainer</th>
+            {!isGuest && <th style={baseStyles.thCenter}>Can I Contribute?</th>}
           </tr>
         </thead>
         <tbody>
           {categories.length === 0 ? (
             <tr>
-              <td colSpan={isGuest ? 2 : 3} style={styles.emptyMessage}>
+              <td colSpan={isGuest ? 2 : 3} style={baseStyles.emptyMessage}>
                 No categories found!
               </td>
             </tr>
           ) : (
             categories.map((cat, index) => (
-              <tr key={cat.node_id} style={index % 2 === 0 ? styles.oddRow : styles.evenRow}>
-                <td style={styles.td}>
+              <tr key={cat.node_id} style={index % 2 === 0 ? baseStyles.oddRow : baseStyles.evenRow}>
+                <td style={baseStyles.td}>
                   <LinkNode type="category" title={cat.title} />
                 </td>
-                <td style={styles.tdCenter}>
+                <td style={baseStyles.tdCenter}>
                   {cat.is_public ? (
                     'Everyone'
                   ) : (
@@ -273,17 +310,17 @@ const DisplayCategories = ({ data }) => {
                         title={cat.maintainer_name}
                       />
                       {cat.is_usergroup && (
-                        <span style={styles.usergroupTag}> (usergroup)</span>
+                        <span style={baseStyles.usergroupTag}> (usergroup)</span>
                       )}
                     </>
                   )}
                 </td>
                 {!isGuest && (
-                  <td style={styles.tdCenter}>
+                  <td style={baseStyles.tdCenter}>
                     {cat.can_contribute ? (
-                      <span style={styles.yesText}>Yes!</span>
+                      <span style={baseStyles.yesText}>Yes!</span>
                     ) : (
-                      <span style={styles.noText}>No</span>
+                      <span style={baseStyles.noText}>No</span>
                     )}
                   </td>
                 )}
@@ -294,19 +331,19 @@ const DisplayCategories = ({ data }) => {
       </table>
 
       {(page > 0 || hasMore) && (
-        <div style={styles.pagination}>
+        <div style={baseStyles.pagination}>
           {page > 0 ? (
-            <a onClick={handlePrevPage} style={styles.pageLink}>
+            <a onClick={handlePrevPage} style={baseStyles.pageLink}>
               &lt;&lt; Previous
             </a>
           ) : (
             <span style={{ color: '#ccc' }}>&lt;&lt; Previous</span>
           )}
           <span>|</span>
-          <span style={styles.currentPage}>Page {page + 1}</span>
+          <span style={baseStyles.currentPage}>Page {page + 1}</span>
           <span>|</span>
           {hasMore ? (
-            <a onClick={handleNextPage} style={styles.pageLink}>
+            <a onClick={handleNextPage} style={baseStyles.pageLink}>
               Next &gt;&gt;
             </a>
           ) : (

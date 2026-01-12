@@ -1,67 +1,183 @@
 /* 1926578.css (Cool understatement by DonJaime) */
-@import url("1965235.css");
-/* LINKS */
-:link {
-color: #009 ;
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules removed for React compatibility - inherits from basesheet */
+
+:root {
+  /* Cool understatement color palette - cool blue/gray theme */
+  --e2-color-primary: #000000;            /* Black text */
+  --e2-color-link: #000099;               /* Blue links */
+  --e2-color-link-visited: #441155;       /* Purple-gray visited */
+  --e2-color-link-active: #770000;        /* Dark red on hover */
+  --e2-color-accent: #445566;             /* Blue-gray accent */
+
+  /* Backgrounds */
+  --e2-bg-body: #fefeff;                  /* Cool off-white page background */
+  --e2-bg-nodelet: #fefeff;               /* Cool off-white nodelet background */
+  --e2-bg-header: #445566;                /* Blue-gray header */
+  --e2-bg-hover: #f4f8ef;                 /* Cool light hover */
+  --e2-bg-sidebar: transparent;
+  --e2-bg-oddrow: transparent;            /* Transparent oddrow */
+
+  /* Text colors */
+  --e2-text-body: #000000;                /* Black text */
+  --e2-text-header: #e8ecef;              /* Light blue-gray header text */
+  --e2-text-muted: #666666;               /* Gray muted text */
+
+  /* Borders */
+  --e2-border-light: #445566;
+  --e2-border-nodelet: #445566;
+  --e2-border-color: #445566;
+  --e2-border-color-light: #88aacc;
+  --e2-border-color-hover: #667788;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #445566;
+  --e2-btn-primary-text: #e8ecef;
+  --e2-btn-secondary-bg: #f4f8ef;
+  --e2-btn-secondary-border: #445566;
+
+  /* Warning colors */
+  --e2-warning-bg: #fff8dc;
+  --e2-warning-text: #856404;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #445566;
+  --e2-nodelet-header-text: #e8ecef;
+
+  /* Epicenter */
+  --e2-epicenter-bg: #445566;
+  --e2-epicenter-text: #e8ecef;
+
+  /* Nodelet controls/filters */
+  --e2-nodelet-filter-bg: #f8fafc;
+  --e2-input-bg: #ffffff;
+  --e2-color-muted: #666666;
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #fefeff;
+
+  /* Status colors */
+  --e2-notice-bg: #f4f8ef;
+  --e2-notice-border: #88aacc;
+  --e2-notice-accent: #667788;
+
+  /* Logo */
+  --e2-logo-text: #ffffff;
+  --e2-logo-hover: #ffff99;
+  --e2-logo-bg: transparent;
 }
-:visited {
-color: #415 ;
+
+/* ====================================================================
+   TYPOGRAPHY - Cool understatement uses sans-serif
+   ==================================================================== */
+
+body, table, td, th {
+  font-family: sans-serif;
 }
+
+h1 {
+  font-size: 140%;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 116%;
+  font-weight: bold;
+}
+
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1 {
+  font-size: 140%;
+}
+
+h3 {
+  font-size: 108%;
+  font-weight: bold;
+}
+
+/* ====================================================================
+   COLORS - Using CSS variables
+   ==================================================================== */
+
+body {
+  color: var(--e2-text-body);
+  background-color: var(--e2-bg-body);
+}
+
+a {
+  text-decoration: none;
+}
+
+a:link {
+  color: var(--e2-color-link);
+}
+
+a:visited {
+  color: var(--e2-color-link-visited);
+}
+
 a:active, a:hover {
-color: #700 ;
+  color: var(--e2-color-link-active);
 }
-#softlinks a:hover , #softlinks td:hover {
-color: #229 ;
-background-color: #f4f8ef ;
+
+.oddrow {
+  background-color: var(--e2-bg-oddrow);
 }
-/* OTHER COLOURS */
-body , #search_form , .slend{
-background-color: #fefeff ;
-color: black ;
+
+/* ====================================================================
+   LOGO - Text-based logo (override Kernel Blue image)
+   ==================================================================== */
+
+div#e2logo {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
 }
-div, p, li, dd , .oddrow {
-background-color: transparent ;
+
+div#e2logo a {
+  padding: 0;
+  font-style: italic;
+  font-size: 125%;
+  color: var(--e2-logo-text, #ffffff);
+  text-decoration: none;
+  line-height: 50px;
 }
-#header , #chatterlight_search , #e2logo a:after , .nodelet h2 ,
-#loglinks h3 , #cooluserpicks h3 , #staff_picks h3 , #creamofthecool h3 ,
-#everythinguserpoll #mainbody img.oddrow , #currentuserpoll img.oddrow {
-background: #456 ;
+
+#e2logo a:link, #e2logo a:visited {
+  color: var(--e2-logo-text);
+  text-decoration: none;
 }
-#creamofthecool #cotc h3 {
-background: white ;
+
+#e2logo a:hover {
+  color: var(--e2-logo-hover, #ffff99);
 }
-#e2logo :link , #e2logo :visited , #e2logo a:hover #e2logo2 {
-color: white ;
+
+/* ====================================================================
+   CONTENT STYLING
+   ==================================================================== */
+
+.content {
+  line-height: 1.4em;
 }
-#e2logo a:hover , #e2logo2 {
-color: #ff9 ;
+
+.nodeshell a {
+  opacity: 0.5;
 }
-.nodelet h2 ,#loglinks h3 ,
-#cooluserpicks h3 , #creamofthecool h3 a:link , #creamofthecool h3 :visited ,
-#staff_picks h3 {
-color: #e8ecef ;
+
+/* ====================================================================
+   PRINT STYLES
+   ==================================================================== */
+
+@media print {
+  a:link { color: inherit; text-decoration: none; }
+  #sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none; }
 }
-#creamofthecool #cotc h3 :link , #creamofthecool #cotc h3 :visited {
-color: black ;
-}
-body , div , span , p , li , ul , ol , dd , dt , table , tr , td , a , h1 , h2 , h3 , form ,
-:before , :after {	/* should be every border */
-border-color: #456 ;
-}
-#search_form {
-border-color: #8ac ;
-}
-#softlinks table, #sl1 {
-background-color: #e8ecef ;
-}
-#sl64 {
-background: #8ac;
-}
-#softlinks td {
-border-style: solid ;
-border-color: #f8fcff ;
-}
-/* SOFTLINK COLORS */
+
+/* ====================================================================
+   SOFTLINK COLORS - Cool understatement gradient (blue-gray)
+   ==================================================================== */
+
 td#sl64{background:#88aacc;}td#sl63{background:#89abcc;}td#sl62{background:#8baccd;}td#sl61{background:#8cadcd;}
 td#sl60{background:#8eaece;}td#sl59{background:#8fafce;}td#sl58{background:#91b0cf;}td#sl57{background:#92b1cf;}
 td#sl56{background:#94b2d0;}td#sl55{background:#95b3d1;}td#sl54{background:#97b4d1;}td#sl53{background:#98b5d2;}

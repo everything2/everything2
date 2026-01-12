@@ -555,29 +555,18 @@ const InlineWriteupEditor = ({
   };
 
   return (
-    <div className="inline-writeup-editor" style={{
-      border: '1px solid #ccc',
-      borderRadius: '4px',
-      padding: '12px',
-      marginTop: '20px',
-      backgroundColor: '#f9f9f9'
-    }}>
+    <div className="inline-editor">
       {/* Editor header - title and mode toggle */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: '10px'
-      }}>
+      <div className="inline-editor-header">
         {/* Title section */}
         <div>
-          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>
+          <h3 className="inline-editor-title">
             {writeupId
               ? (isOwnWriteup ? 'Editing your writeup' : `Editing ${writeupAuthor}'s writeup`)
               : (initialDraftId ? 'Continue your draft' : 'Add a Writeup')}
           </h3>
           {!writeupId && (
-            <span style={{ fontSize: '12px', color: '#666' }}>
+            <span className="inline-editor-subtitle">
               to "{e2nodeTitle}"
             </span>
           )}
@@ -601,27 +590,16 @@ const InlineWriteupEditor = ({
 
       {/* Error message */}
       {errorMessage && (
-        <div style={{
-          padding: '8px',
-          marginBottom: '10px',
-          backgroundColor: '#fee',
-          border: '1px solid #fcc',
-          borderRadius: '4px',
-          color: '#c00',
-          fontSize: '13px'
-        }}>
+        <div className="inline-editor-error">
           {errorMessage}
         </div>
       )}
 
       {/* Editor content */}
       {editorMode === 'rich' ? (
-        <div style={{ border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff' }}>
+        <div className="inline-editor-content">
           <MenuBar editor={editor} />
-          <div
-            className="e2-editor-wrapper"
-            style={{ padding: '12px' }}
-          >
+          <div className="e2-editor-wrapper">
             <EditorContent editor={editor} />
           </div>
         </div>
@@ -638,54 +616,26 @@ const InlineWriteupEditor = ({
           }}
           placeholder="Enter HTML content here..."
           aria-label="Writeup content (HTML)"
-          style={{
-            width: '100%',
-            minHeight: '200px',
-            fontFamily: 'monospace',
-            fontSize: '13px',
-            padding: '12px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            color: '#333',
-            lineHeight: '1.5',
-            resize: 'vertical',
-            boxSizing: 'border-box'
-          }}
+          className="inline-editor-textarea"
           spellCheck={false}
         />
       )}
 
       {/* Footer with save status and actions */}
-      <div style={{ marginTop: '10px' }}>
+      <div className="inline-editor-footer">
         {/* First row: status and Cancel/Save buttons */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '10px'
-        }}>
-          <div style={{ fontSize: '12px', color: '#666' }}>
+        <div className="inline-editor-footer-row">
+          <div className="inline-editor-status">
             {getSaveStatusText()}
           </div>
 
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+          <div className="inline-editor-actions">
             {/* Delete button for drafts (new writeups) */}
             {!writeupId && draftId && (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={publishing || saveStatus === 'saving' || deleting}
-                style={{
-                  padding: '6px 16px',
-                  fontSize: '13px',
-                  border: '1px solid #dc3545',
-                  borderRadius: '4px',
-                  background: '#fff',
-                  color: (publishing || saveStatus === 'saving' || deleting) ? '#999' : '#dc3545',
-                  cursor: (publishing || saveStatus === 'saving' || deleting) ? 'not-allowed' : 'pointer',
-                  fontWeight: '500'
-                }}
+                className="inline-editor-btn inline-editor-btn--delete"
               >
                 Delete Draft
               </button>
@@ -696,16 +646,7 @@ const InlineWriteupEditor = ({
               <button
                 onClick={handleManualSave}
                 disabled={!draftId || publishing || saveStatus === 'saving'}
-                style={{
-                  padding: '6px 16px',
-                  fontSize: '13px',
-                  border: '1px solid #4060b0',
-                  borderRadius: '4px',
-                  background: '#fff',
-                  color: (!draftId || publishing || saveStatus === 'saving') ? '#999' : '#4060b0',
-                  cursor: (!draftId || publishing || saveStatus === 'saving') ? 'not-allowed' : 'pointer',
-                  fontWeight: '500'
-                }}
+                className="inline-editor-btn inline-editor-btn--save"
               >
                 {saveStatus === 'saving' ? 'Saving...' : 'Save'}
               </button>
@@ -729,16 +670,7 @@ const InlineWriteupEditor = ({
                   }
                 }}
                 disabled={saveStatus === 'saving'}
-                style={{
-                  padding: '6px 16px',
-                  fontSize: '13px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  background: saveStatus === 'saving' ? '#ccc' : '#4060b0',
-                  color: '#fff',
-                  cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
-                  fontWeight: '500'
-                }}
+                className="inline-editor-btn inline-editor-btn--primary"
               >
                 {saveStatus === 'saving' ? 'Saving...' : 'Update'}
               </button>
@@ -748,17 +680,10 @@ const InlineWriteupEditor = ({
 
         {/* Second row: Writeuptype selector, hide checkbox, and Publish button (new writeups only) */}
         {!writeupId && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            gap: '8px',
-            marginTop: '10px',
-            flexWrap: 'wrap'
-          }}>
+          <div className="inline-editor-publish-row">
             {/* Dynamic title preview that updates with selected writeup type */}
-            <span style={{ fontSize: '13px', color: '#666' }}>
-              Publishing: <strong>
+            <span className="inline-editor-publish-label">
+              Publishing: <strong className="inline-editor-publish-title">
                 {e2nodeTitle}
                 {selectedWriteuptypeId && writeuptypes.length > 0 && (
                   <> ({writeuptypes.find(wt => wt.node_id === selectedWriteuptypeId)?.title || ''})</>
@@ -766,35 +691,27 @@ const InlineWriteupEditor = ({
               </strong>
               {/* E2node status indicator */}
               {e2nodeStatus === 'checking' && (
-                <span style={{ marginLeft: '6px', color: '#999', fontSize: '12px' }}>
+                <span className="inline-editor-status-indicator inline-editor-status-indicator--checking">
                   (checking...)
                 </span>
               )}
               {e2nodeStatus === 'found' && (
-                <span style={{ marginLeft: '6px', color: '#28a745', fontSize: '14px' }} title="E2node exists">
+                <span className="inline-editor-status-indicator inline-editor-status-indicator--found" title="E2node exists">
                   ✓
                 </span>
               )}
               {e2nodeStatus === 'not_found' && (
-                <span style={{ marginLeft: '6px', color: '#fd7e14', fontSize: '12px' }} title="E2node will be created on publish">
+                <span className="inline-editor-status-indicator inline-editor-status-indicator--new" title="E2node will be created on publish">
                   (new)
                 </span>
               )}
             </span>
-            <span style={{ fontSize: '13px', color: '#999' }}>as</span>
+            <span className="inline-editor-publish-label">as</span>
             <select
               value={selectedWriteuptypeId || ''}
               onChange={(e) => setSelectedWriteuptypeId(Number(e.target.value))}
               disabled={!draftId || publishing || saveStatus === 'saving'}
-              style={{
-                padding: '6px 10px',
-                fontSize: '13px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                background: '#fff',
-                cursor: (!draftId || publishing || saveStatus === 'saving') ? 'not-allowed' : 'pointer',
-                opacity: (!draftId || publishing || saveStatus === 'saving') ? 0.5 : 1
-              }}
+              className="inline-editor-select"
             >
               {writeuptypes.length > 0 ? (
                 writeuptypes.map(wt => (
@@ -804,18 +721,11 @@ const InlineWriteupEditor = ({
                 <option value="">Loading...</option>
               )}
             </select>
-            <label style={{
-              display: 'flex',
-              alignItems: 'center',
-              fontSize: '12px',
-              color: '#666',
-              cursor: 'pointer'
-            }}>
+            <label className="inline-editor-checkbox-label">
               <input
                 type="checkbox"
                 checked={hideFromNewWriteups}
                 onChange={(e) => setHideFromNewWriteups(e.target.checked)}
-                style={{ marginRight: '4px' }}
               />
               Hide from New Writeups
             </label>
@@ -823,16 +733,7 @@ const InlineWriteupEditor = ({
               onClick={handlePublish}
               disabled={!draftId || !e2nodeTitle || e2nodeStatus === 'checking' || publishing || saveStatus === 'saving'}
               title={e2nodeStatus === 'not_found' ? `Will create new e2node "${e2nodeTitle}"` : ''}
-              style={{
-                padding: '6px 16px',
-                fontSize: '13px',
-                border: 'none',
-                borderRadius: '4px',
-                background: (!draftId || !e2nodeTitle || e2nodeStatus === 'checking' || publishing || saveStatus === 'saving') ? '#ccc' : '#4060b0',
-                color: '#fff',
-                cursor: (!draftId || !e2nodeTitle || e2nodeStatus === 'checking' || publishing || saveStatus === 'saving') ? 'not-allowed' : 'pointer',
-                fontWeight: '500'
-              }}
+              className="inline-editor-btn inline-editor-btn--primary"
             >
               {publishing ? 'Publishing...' : 'Publish'}
             </button>
@@ -841,27 +742,14 @@ const InlineWriteupEditor = ({
       </div>
 
       {/* Live Preview Section */}
-      <div style={{ marginTop: '16px', borderTop: '1px solid #ddd', paddingTop: '12px' }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '8px'
-        }}>
-          <h4 style={{ margin: 0, fontSize: '14px', color: '#666', fontWeight: '500' }}>
+      <div className="inline-editor-preview-section">
+        <div className="inline-editor-preview-header">
+          <h4 className="inline-editor-preview-title">
             Preview
           </h4>
           <button
             onClick={() => setShowPreview(!showPreview)}
-            style={{
-              background: 'none',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              padding: '2px 8px',
-              fontSize: '11px',
-              color: '#666',
-              cursor: 'pointer'
-            }}
+            className="inline-editor-preview-toggle"
           >
             {showPreview ? 'Hide' : 'Show'}
           </button>
@@ -878,61 +766,26 @@ const InlineWriteupEditor = ({
 
       {/* Delete confirmation modal */}
       {showDeleteConfirm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            padding: '20px',
-            maxWidth: '400px',
-            width: '90%',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-          }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', color: '#333' }}>
+        <div className="inline-editor-modal-overlay">
+          <div className="inline-editor-modal">
+            <h3 className="inline-editor-modal-title">
               Delete Draft?
             </h3>
-            <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#666', lineHeight: '1.5' }}>
+            <p className="inline-editor-modal-body">
               Are you sure you want to delete this draft? This action cannot be undone.
             </p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <div className="inline-editor-modal-actions">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={deleting}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '14px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  background: '#fff',
-                  color: '#333',
-                  cursor: deleting ? 'not-allowed' : 'pointer'
-                }}
+                className="inline-editor-btn inline-editor-btn--save"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteDraft}
                 disabled={deleting}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '14px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  background: deleting ? '#ccc' : '#dc3545',
-                  color: '#fff',
-                  cursor: deleting ? 'not-allowed' : 'pointer',
-                  fontWeight: '500'
-                }}
+                className="inline-editor-btn inline-editor-btn--delete"
               >
                 {deleting ? 'Deleting...' : 'Delete'}
               </button>

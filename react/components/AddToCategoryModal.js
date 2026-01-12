@@ -124,12 +124,13 @@ const styles = {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    fontSize: '14px',
+    fontSize: '20px',
     color: '#507898',
-    padding: '2px 4px',
+    padding: '4px',
     display: 'inline-flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderRadius: '4px'
   }
 }
 

@@ -16,8 +16,6 @@ has 'node' => (is => "rw", isa => "Everything::Node");
 # Critical for form-processing pages like Sign Up that cache state between calls
 has 'page_class_instance' => (is => "rw");
 
-# Pageload is going to go away
-has 'PAGELOAD' => (isa => "HashRef", default => sub { {} }, is => "rw");
 has 'NODE' => (is => "rw", isa => "HashRef");
 
 # Cache raw STDIN for PUT/PATCH/DELETE requests

@@ -39,26 +39,21 @@ function SortableBookmarkItem({ id, title, onRemove }) {
     isDragging,
   } = useSortable({ id })
 
-  const style = {
+  // Dynamic styles for drag transform (must be inline for DnD kit)
+  const dragStyle = {
     transform: CSS.Transform.toString(transform),
     transition,
-    padding: '10px 12px',
-    margin: '4px 0',
-    backgroundColor: isDragging ? '#f0f0f0' : 'white',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    cursor: 'grab',
-    userSelect: 'none',
     opacity: isDragging ? 0.5 : 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   }
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <div style={{ display: 'flex', alignItems: 'center', flex: 1 }} {...attributes} {...listeners}>
-        <span style={{ marginRight: '10px', color: '#507898', fontSize: '14px' }}>☰</span>
+    <div
+      ref={setNodeRef}
+      className={`user-edit-bookmark-item${isDragging ? ' user-edit-bookmark-item--dragging' : ''}`}
+      style={dragStyle}
+    >
+      <div className="user-edit-bookmark-content" {...attributes} {...listeners}>
+        <span className="user-edit-bookmark-handle">☰</span>
         <LinkNode nodeId={id} title={title} />
       </div>
       <button
@@ -66,16 +61,7 @@ function SortableBookmarkItem({ id, title, onRemove }) {
           e.stopPropagation()
           onRemove(id)
         }}
-        style={{
-          padding: '4px 10px',
-          fontSize: '14px',
-          border: '1px solid #d9534f',
-          borderRadius: '3px',
-          backgroundColor: 'white',
-          color: '#d9534f',
-          cursor: 'pointer',
-          marginLeft: '12px',
-        }}
+        className="user-edit-bookmark-remove"
         title="Remove bookmark"
       >
         ×
@@ -463,55 +449,40 @@ const UserEdit = ({ data, e2 }) => {
   }, [])
 
   return (
-    <div className="user-edit" style={{ padding: '20px', maxWidth: '900px', margin: '0 auto' }}>
-      <h1 style={{ marginBottom: '20px', color: '#111111' }}>Settings</h1>
+    <div className="user-edit">
+      <h1 className="user-edit-title">Settings</h1>
 
       {/* Save button and status - matches Settings layout */}
-      <div style={{
-        marginBottom: '20px',
-        paddingBottom: '20px',
-        borderBottom: '1px solid #ddd',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px'
-      }}>
+      <div className="user-edit-save-bar">
         <button
           type="submit"
           form="profile-form"
           disabled={saving || (hasPasswordInput && !passwordsMatch)}
-          style={{
-            padding: '10px 24px',
-            backgroundColor: (saving || (hasPasswordInput && !passwordsMatch)) ? '#ccc' : '#4060b0',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: (saving || (hasPasswordInput && !passwordsMatch)) ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold'
-          }}
+          className="user-edit-save-btn"
         >
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
 
         {hasPasswordInput && !passwordsMatch && (
-          <span style={{ color: '#d9534f', fontSize: '14px' }}>
+          <span className="user-edit-status user-edit-status--error">
             Passwords must match to save
           </span>
         )}
 
         {success && (
-          <span style={{ color: '#3bb5c3', fontSize: '14px', fontWeight: 'bold' }}>
+          <span className="user-edit-status user-edit-status--success">
             ✓ {success}
           </span>
         )}
 
         {error && (
-          <span style={{ color: '#d9534f', fontSize: '14px' }}>
+          <span className="user-edit-status user-edit-status--error">
             Error: {error}
           </span>
         )}
 
         {isDirty && !saving && !success && (
-          <span style={{ color: '#507898', fontSize: '14px' }}>
+          <span className="user-edit-status user-edit-status--dirty">
             You have unsaved changes
           </span>
         )}
@@ -527,12 +498,8 @@ const UserEdit = ({ data, e2 }) => {
           showAdminTab={Boolean(viewer?.is_editor)}
         />
       ) : (
-        <div style={{
-          borderBottom: '1px solid #ddd',
-          marginBottom: '20px',
-          paddingBottom: '10px'
-        }}>
-          <span style={{ fontWeight: 'bold', color: '#4060b0' }}>
+        <div className="user-edit-admin-header">
+          <span className="user-edit-admin-label">
             Editing profile for: {user.title}
           </span>
         </div>
@@ -540,16 +507,16 @@ const UserEdit = ({ data, e2 }) => {
 
       <form id="profile-form" onSubmit={handleSubmit}>
         {/* Account Settings Section */}
-        <h2 style={{ marginBottom: '16px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+        <h2 className="user-edit-section-title">
           Account Settings
         </h2>
 
-        <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-          <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Credentials</legend>
+        <fieldset className="user-edit-fieldset">
+          <legend className="user-edit-legend">Credentials</legend>
 
           {/* Real name */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+          <div className="user-edit-field">
+            <label className="user-edit-label">
               Real Name
             </label>
             <input
@@ -557,43 +524,31 @@ const UserEdit = ({ data, e2 }) => {
               name="realname"
               value={formData.realname}
               onChange={handleInputChange}
-              style={{
-                width: '300px',
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '14px'
-              }}
+              className="user-edit-input user-edit-input--medium"
             />
             {user.realname && (
-              <div style={{ marginTop: '4px', fontSize: '13px', color: '#507898' }}>
+              <div className="user-edit-hint">
                 Currently: {user.realname}
               </div>
             )}
           </div>
 
           {/* Password */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+          <div className="user-edit-field">
+            <label className="user-edit-label">
               Change Password
             </label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="user-edit-password-row">
               <input
                 type="password"
                 name="passwd"
                 value={formData.passwd}
                 onChange={handleInputChange}
                 placeholder="Leave blank to keep current"
-                style={{
-                  width: '300px',
-                  padding: '8px 12px',
-                  border: `1px solid ${hasPasswordInput ? (passwordsMatch ? '#3bb5c3' : '#d9534f') : '#ddd'}`,
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                className={`user-edit-input user-edit-input--medium${hasPasswordInput ? (passwordsMatch ? ' user-edit-input--valid' : ' user-edit-input--invalid') : ''}`}
               />
               {hasPasswordInput && (
-                <span style={{ color: passwordsMatch ? '#3bb5c3' : '#d9534f', fontSize: '18px' }}>
+                <span className={`user-edit-password-icon${passwordsMatch ? ' user-edit-password-icon--valid' : ' user-edit-password-icon--invalid'}`}>
                   {passwordsMatch ? '✓' : '✗'}
                 </span>
               )}
@@ -601,32 +556,26 @@ const UserEdit = ({ data, e2 }) => {
           </div>
 
           {/* Confirm Password */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+          <div className="user-edit-field">
+            <label className="user-edit-label">
               Confirm Password
             </label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="user-edit-password-row">
               <input
                 type="password"
                 value={confirmPasswd}
                 onChange={(e) => setConfirmPasswd(e.target.value)}
                 placeholder="Re-enter new password"
-                style={{
-                  width: '300px',
-                  padding: '8px 12px',
-                  border: `1px solid ${hasPasswordInput ? (passwordsMatch ? '#3bb5c3' : '#d9534f') : '#ddd'}`,
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                className={`user-edit-input user-edit-input--medium${hasPasswordInput ? (passwordsMatch ? ' user-edit-input--valid' : ' user-edit-input--invalid') : ''}`}
               />
               {hasPasswordInput && (
-                <span style={{ color: passwordsMatch ? '#3bb5c3' : '#d9534f', fontSize: '18px' }}>
+                <span className={`user-edit-password-icon${passwordsMatch ? ' user-edit-password-icon--valid' : ' user-edit-password-icon--invalid'}`}>
                   {passwordsMatch ? '✓' : '✗'}
                 </span>
               )}
             </div>
             {hasPasswordInput && !passwordsMatch && (
-              <div style={{ marginTop: '4px', fontSize: '13px', color: '#d9534f' }}>
+              <div className="user-edit-error-hint">
                 Passwords do not match
               </div>
             )}
@@ -634,7 +583,7 @@ const UserEdit = ({ data, e2 }) => {
 
           {/* Email */}
           <div>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+            <label className="user-edit-label">
               Email Address
             </label>
             <input
@@ -642,16 +591,10 @@ const UserEdit = ({ data, e2 }) => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              style={{
-                width: '300px',
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '14px'
-              }}
+              className="user-edit-input user-edit-input--medium"
             />
             {user.email && (
-              <div style={{ marginTop: '4px', fontSize: '13px', color: '#507898' }}>
+              <div className="user-edit-hint">
                 Currently: {user.email}
               </div>
             )}
@@ -660,18 +603,18 @@ const UserEdit = ({ data, e2 }) => {
 
         {/* User image section - show if user has image or can upload */}
         {(user.imgsrc || can_have_image) ? (
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Profile Image</legend>
+          <fieldset className="user-edit-fieldset">
+            <legend className="user-edit-legend">Profile Image</legend>
 
             {/* Show current image if exists */}
             {user.imgsrc && (
-              <div style={{ marginBottom: '16px' }}>
+              <div className="user-edit-image-current">
                 <img
                   src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
                   alt={`${user.title}'s image`}
-                  style={{ maxWidth: '200px', maxHeight: '200px', display: 'block', marginBottom: '12px', borderRadius: '4px' }}
+                  className="user-edit-image-preview"
                 />
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <label className="user-edit-image-remove-label">
                   <input
                     type="checkbox"
                     checked={removeImage}
@@ -684,8 +627,8 @@ const UserEdit = ({ data, e2 }) => {
 
             {/* Upload new image section */}
             {can_have_image && (
-              <div style={{ marginTop: user.imgsrc ? '16px' : 0, paddingTop: user.imgsrc ? '16px' : 0, borderTop: user.imgsrc ? '1px solid #ddd' : 'none' }}>
-                <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+              <div className={user.imgsrc ? 'user-edit-image-upload user-edit-image-upload--has-current' : 'user-edit-image-upload'}>
+                <p className="user-edit-hint">
                   {!isOwnProfile && viewer?.is_admin ? (
                     <>Upload an image for <strong>{user.title}</strong>. Admin uploads skip moderator review.</>
                   ) : (
@@ -694,12 +637,12 @@ const UserEdit = ({ data, e2 }) => {
                   )}
                 </p>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <div className="user-edit-image-upload-row">
                   <input
                     type="file"
                     accept="image/jpeg,image/jpg,image/gif,image/png"
                     onChange={handleFileSelect}
-                    style={{ fontSize: '14px' }}
+                    className="user-edit-file-input"
                   />
 
                   {selectedFile && (
@@ -707,16 +650,7 @@ const UserEdit = ({ data, e2 }) => {
                       type="button"
                       onClick={handleImageUpload}
                       disabled={uploading}
-                      style={{
-                        padding: '8px 16px',
-                        backgroundColor: uploading ? '#ccc' : '#4060b0',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: uploading ? 'not-allowed' : 'pointer',
-                        fontWeight: 'bold',
-                        fontSize: '14px'
-                      }}
+                      className="user-edit-upload-btn"
                     >
                       {uploading ? 'Uploading...' : 'Upload Image'}
                     </button>
@@ -724,18 +658,13 @@ const UserEdit = ({ data, e2 }) => {
                 </div>
 
                 {selectedFile && (
-                  <div style={{ marginTop: '8px', fontSize: '13px', color: '#507898' }}>
+                  <div className="user-edit-hint">
                     Selected: {selectedFile.name} ({Math.round(selectedFile.size / 1024)}KB)
                   </div>
                 )}
 
                 {uploadStatus && (
-                  <div style={{
-                    marginTop: '8px',
-                    fontSize: '13px',
-                    color: uploadStatus.type === 'error' ? '#d9534f' : '#3bb5c3',
-                    fontWeight: uploadStatus.type === 'success' ? 'bold' : 'normal'
-                  }}>
+                  <div className={`user-edit-upload-status${uploadStatus.type === 'error' ? ' user-edit-upload-status--error' : ' user-edit-upload-status--success'}`}>
                     {uploadStatus.type === 'success' ? '✓ ' : ''}{uploadStatus.message}
                   </div>
                 )}
@@ -744,7 +673,7 @@ const UserEdit = ({ data, e2 }) => {
 
             {/* Show message for users who can't upload */}
             {!can_have_image && !user.imgsrc && (
-              <p style={{ color: '#507898', fontSize: '13px', fontStyle: 'italic' }}>
+              <p className="user-edit-hint user-edit-hint--italic">
                 You must reach level 1 to upload a homenode image.
               </p>
             )}
@@ -752,16 +681,16 @@ const UserEdit = ({ data, e2 }) => {
         ) : null}
 
         {/* Profile Information Section */}
-        <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+        <h2 className="user-edit-section-title user-edit-section-title--spaced">
           Profile Information
         </h2>
 
-        <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-          <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>About You</legend>
+        <fieldset className="user-edit-fieldset">
+          <legend className="user-edit-legend">About You</legend>
 
           {/* Mission drive */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+          <div className="user-edit-field">
+            <label className="user-edit-label">
               Mission drive within everything
             </label>
             <input
@@ -769,19 +698,13 @@ const UserEdit = ({ data, e2 }) => {
               name="mission"
               value={formData.mission}
               onChange={handleInputChange}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '14px'
-              }}
+              className="user-edit-input user-edit-input--full"
             />
           </div>
 
           {/* Specialties */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+          <div className="user-edit-field">
+            <label className="user-edit-label">
               Specialties
             </label>
             <input
@@ -789,19 +712,13 @@ const UserEdit = ({ data, e2 }) => {
               name="specialties"
               value={formData.specialties}
               onChange={handleInputChange}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '14px'
-              }}
+              className="user-edit-input user-edit-input--full"
             />
           </div>
 
           {/* School/Company */}
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+          <div className="user-edit-field">
+            <label className="user-edit-label">
               School/Company
             </label>
             <input
@@ -809,19 +726,13 @@ const UserEdit = ({ data, e2 }) => {
               name="employment"
               value={formData.employment}
               onChange={handleInputChange}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '14px'
-              }}
+              className="user-edit-input user-edit-input--full"
             />
           </div>
 
           {/* Motto */}
           <div>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
+            <label className="user-edit-label">
               Motto
             </label>
             <input
@@ -829,45 +740,34 @@ const UserEdit = ({ data, e2 }) => {
               name="motto"
               value={formData.motto}
               onChange={handleInputChange}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '14px'
-              }}
+              className="user-edit-input user-edit-input--full"
             />
           </div>
         </fieldset>
 
         {/* User bio with TipTap editor */}
-        <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+        <h2 className="user-edit-section-title user-edit-section-title--spaced">
           Bio
         </h2>
 
-        <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-          <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Your Bio</legend>
-          <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+        <fieldset className="user-edit-fieldset">
+          <legend className="user-edit-legend">Your Bio</legend>
+          <p className="user-edit-hint">
             Write about yourself. This will appear on your homenode for other users to see.
           </p>
 
           {/* Rich/HTML mode toggle - using shared component */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+          <div className="user-edit-editor-toggle">
             <EditorModeToggle mode={editorMode} onToggle={toggleMode} />
           </div>
 
           {/* Editor */}
           {editorMode === 'rich' ? (
-            <div className="e2-editor-container" style={{ border: '1px solid #ddd', borderRadius: '4px' }}>
+            <div className="e2-editor-container user-edit-editor-container">
               <MenuBar editor={editor} />
               <EditorContent
                 editor={editor}
-                className="e2-editor-content"
-                style={{
-                  minHeight: '200px',
-                  padding: '10px',
-                  backgroundColor: '#fff'
-                }}
+                className="e2-editor-content user-edit-editor-content"
               />
             </div>
           ) : (
@@ -875,21 +775,13 @@ const UserEdit = ({ data, e2 }) => {
               value={htmlContent}
               onChange={onHtmlChange}
               rows={15}
-              style={{
-                width: '100%',
-                padding: '10px',
-                fontFamily: 'monospace',
-                fontSize: '13px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                resize: 'vertical'
-              }}
+              className="user-edit-html-textarea"
             />
           )}
 
           {/* Live Preview */}
-          <div style={{ marginTop: '16px' }}>
-            <p style={{ fontSize: '13px', color: '#507898', marginBottom: '8px' }}>
+          <div className="user-edit-preview">
+            <p className="user-edit-preview-label">
               <strong>Preview:</strong>
             </p>
             <PreviewContent
@@ -904,13 +796,13 @@ const UserEdit = ({ data, e2 }) => {
         {/* Bookmarks section - below bio */}
         {bookmarks.length > 0 && (
           <>
-            <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
+            <h2 className="user-edit-section-title user-edit-section-title--spaced">
               Bookmarks
             </h2>
 
-            <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-              <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Manage Bookmarks</legend>
-              <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+            <fieldset className="user-edit-fieldset">
+              <legend className="user-edit-legend">Manage Bookmarks</legend>
+              <p className="user-edit-hint">
                 Drag to reorder your bookmarks, or click × to remove. Changes are saved when you click "Save Changes".
               </p>
 
@@ -923,7 +815,7 @@ const UserEdit = ({ data, e2 }) => {
                   items={bookmarks.map(b => b.node_id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div style={{ maxHeight: '400px', overflow: 'auto' }}>
+                  <div className="user-edit-bookmarks-list">
                     {bookmarks.map((bookmark) => (
                       <SortableBookmarkItem
                         key={bookmark.node_id}
@@ -937,7 +829,7 @@ const UserEdit = ({ data, e2 }) => {
               </DndContext>
 
               {bookmarks.length === 0 && (
-                <p style={{ color: '#507898', fontStyle: 'italic' }}>
+                <p className="user-edit-hint user-edit-hint--italic">
                   No bookmarks remaining.
                 </p>
               )}

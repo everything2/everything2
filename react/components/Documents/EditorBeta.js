@@ -19,73 +19,30 @@ const editorStyles = `
 
 // Spinner component for save status
 const SaveSpinner = () => (
-  <span style={{
-    display: 'inline-block',
-    width: '12px',
-    height: '12px',
-    border: '2px solid #ccc',
-    borderTopColor: '#4060b0',
-    borderRadius: '50%',
-    animation: 'e2-spin 0.8s linear infinite',
-    marginRight: '6px',
-    verticalAlign: 'middle'
-  }} />
+  <span className="editor-beta-spinner" />
 );
 
 // Delete Confirmation Modal Component
 const DeleteConfirmModal = ({ draft, onConfirm, onCancel, deleting }) => {
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        backgroundColor: '#fff',
-        borderRadius: '8px',
-        width: '90%',
-        maxWidth: '400px',
-        padding: '20px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-      }}>
-        <h3 style={{ margin: '0 0 15px 0', color: '#38495e' }}>Delete Draft?</h3>
-        <p style={{ color: '#555', marginBottom: '20px' }}>
+    <div className="editor-beta-modal-overlay">
+      <div className="editor-beta-modal">
+        <h3 className="editor-beta-modal-title">Delete Draft?</h3>
+        <p className="editor-beta-modal-body">
           Are you sure you want to delete "<strong>{draft.title}</strong>"? This action cannot be undone.
         </p>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+        <div className="editor-beta-modal-actions">
           <button
             onClick={onCancel}
             disabled={deleting}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#f8f9f9',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              cursor: deleting ? 'not-allowed' : 'pointer',
-              fontSize: '14px'
-            }}
+            className="editor-beta-modal-btn editor-beta-modal-btn--cancel"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={deleting}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: deleting ? '#999' : '#c75050',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: deleting ? 'wait' : 'pointer',
-              fontSize: '14px'
-            }}
+            className="editor-beta-modal-btn editor-beta-modal-btn--danger"
           >
             {deleting ? 'Deleting...' : 'Delete'}
           </button>
@@ -163,65 +120,27 @@ const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        backgroundColor: '#fff',
-        borderRadius: '8px',
-        width: '90%',
-        maxWidth: '1000px',
-        maxHeight: '80vh',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-      }}>
+    <div className="editor-beta-modal-overlay">
+      <div className="editor-beta-modal editor-beta-modal--wide">
         {/* Header */}
-        <div style={{
-          padding: '15px 20px',
-          borderBottom: '1px solid #ddd',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <h2 style={{ margin: 0, color: '#38495e', fontSize: '18px' }}>Version History</h2>
+        <div className="editor-beta-version-modal-header">
+          <h2 className="editor-beta-version-modal-title">Version History</h2>
           <button
             onClick={onClose}
-            style={{
-              padding: '4px 10px',
-              backgroundColor: '#f8f9f9',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
+            className="editor-beta-modal-btn editor-beta-modal-btn--cancel"
           >
             Close
           </button>
         </div>
 
         {/* Content */}
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <div className="editor-beta-version-modal-content">
           {/* Version list */}
-          <div style={{
-            width: '300px',
-            borderRight: '1px solid #ddd',
-            overflowY: 'auto',
-            padding: '10px'
-          }}>
+          <div className="editor-beta-version-list">
             {loading ? (
-              <p style={{ color: '#666', padding: '10px' }}>Loading...</p>
+              <p className="editor-beta-version-empty">Loading...</p>
             ) : versions.length === 0 ? (
-              <p style={{ color: '#888', padding: '10px', fontSize: '13px' }}>
+              <p className="editor-beta-version-empty">
                 No previous versions yet. Version history is created when you save or autosave.
               </p>
             ) : (
@@ -229,29 +148,16 @@ const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
                 <div
                   key={version.autosave_id}
                   onClick={() => loadVersionPreview(version)}
-                  style={{
-                    padding: '10px',
-                    marginBottom: '6px',
-                    backgroundColor: selectedVersion?.autosave_id === version.autosave_id ? '#e8f4f8' : '#f8f9f9',
-                    border: selectedVersion?.autosave_id === version.autosave_id ? '1px solid #3bb5c3' : '1px solid #eee',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
+                  className={`editor-beta-version-item${selectedVersion?.autosave_id === version.autosave_id ? ' editor-beta-version-item--selected' : ''}`}
                 >
-                  <div style={{ fontSize: '13px', color: '#111', marginBottom: '4px' }}>
+                  <div className="editor-beta-version-date">
                     {formatDate(version.createtime)}
                   </div>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <span style={{
-                      fontSize: '10px',
-                      padding: '2px 6px',
-                      borderRadius: '3px',
-                      backgroundColor: version.save_type === 'manual' ? '#4060b0' : '#888',
-                      color: '#fff'
-                    }}>
+                  <div className="editor-beta-version-meta">
+                    <span className={`editor-beta-version-badge ${version.save_type === 'manual' ? 'editor-beta-version-badge--manual' : 'editor-beta-version-badge--auto'}`}>
                       {version.save_type === 'manual' ? 'Saved' : 'Auto'}
                     </span>
-                    <span style={{ fontSize: '11px', color: '#666' }}>
+                    <span className="editor-beta-version-size">
                       {Math.round((version.content_length || 0) / 1024 * 10) / 10} KB
                     </span>
                   </div>
@@ -261,42 +167,28 @@ const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
           </div>
 
           {/* Preview pane */}
-          <div style={{ flex: 1, padding: '15px', overflowY: 'auto' }}>
+          <div className="editor-beta-version-preview">
             {selectedVersion ? (
               <>
-                <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '13px', color: '#666' }}>
+                <div className="editor-beta-version-preview-header">
+                  <span className="editor-beta-version-preview-date">
                     Preview of version from {formatDate(selectedVersion.createtime)}
                   </span>
                   <button
                     onClick={handleRestore}
                     disabled={restoring}
-                    style={{
-                      padding: '6px 16px',
-                      backgroundColor: restoring ? '#999' : '#4caf50',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: restoring ? 'wait' : 'pointer',
-                      fontSize: '13px'
-                    }}
+                    className="editor-beta-modal-btn editor-beta-modal-btn--success"
                   >
                     {restoring ? 'Restoring...' : 'Restore This Version'}
                   </button>
                 </div>
                 <div
-                  style={{
-                    padding: '15px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    backgroundColor: '#fafafa',
-                    minHeight: '200px'
-                  }}
+                  className="editor-beta-version-preview-content"
                   dangerouslySetInnerHTML={{ __html: previewContent }}
                 />
               </>
             ) : (
-              <p style={{ color: '#888', textAlign: 'center', marginTop: '50px' }}>
+              <p className="editor-beta-version-empty">
                 Select a version to preview
               </p>
             )}
@@ -323,16 +215,24 @@ const EditorBeta = ({ data }) => {
   const { approvedTags, canAccess, username, drafts: initialDrafts, pagination: initialPagination, statuses = [], preferRawHtml, pageTitle = 'Drafts', viewingOther = false, targetUser = null } = data || {};
 
   // When viewing another user's drafts, the page is read-only
-  const isReadOnly = viewingOther;
+  // Coerce to boolean to avoid React rendering "0" from Perl
+  const isReadOnly = Boolean(viewingOther);
   // Handle null/undefined drafts gracefully
   const safeDrafts = initialDrafts || [];
   const safePagination = initialPagination || { offset: 0, limit: 20, total: 0, has_more: false };
+
+  // Detect mobile viewport
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768
+  );
 
   // State
   const [showPreview, setShowPreview] = useState(true);
   const [previewTrigger, setPreviewTrigger] = useState(0); // Trigger preview updates
   const [selectedDraft, setSelectedDraft] = useState(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768
+  );
   const [drafts, setDrafts] = useState(safeDrafts);
   const [draftTitle, setDraftTitle] = useState('');
   const [draftStatus, setDraftStatus] = useState('private');
@@ -770,11 +670,21 @@ const EditorBeta = ({ data }) => {
     };
   }, []);
 
+  // Track viewport size for mobile detection
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   if (!canAccess) {
     return (
-      <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      <div className="editor-beta-access-denied">
         <h1>{pageTitle}</h1>
-        <p style={{ color: '#c75050' }}>Please log in to use the drafts editor.</p>
+        <p className="editor-beta-access-denied-msg">Please log in to use the drafts editor.</p>
       </div>
     );
   }
@@ -799,7 +709,7 @@ const EditorBeta = ({ data }) => {
   };
 
   return (
-    <div style={{ display: 'flex', gap: '20px', padding: '20px' }}>
+    <div className={`editor-beta-container${isMobile ? ' editor-beta-container--mobile' : ''}`}>
       {/* Version History Modal */}
       {showVersionHistory && selectedDraft && (
         <VersionHistoryModal
@@ -832,52 +742,33 @@ const EditorBeta = ({ data }) => {
       )}
 
       {/* Drafts Sidebar */}
-      <div style={{
-        width: sidebarCollapsed ? '40px' : '280px',
-        flexShrink: 0,
-        transition: 'width 0.2s ease',
-        borderRight: '1px solid #ddd',
-        paddingRight: sidebarCollapsed ? '0' : '15px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
-          {!sidebarCollapsed && <h3 style={{ margin: 0, color: '#38495e' }}>Your Drafts</h3>}
+      <div className={`editor-beta-sidebar${sidebarCollapsed ? ' editor-beta-sidebar--collapsed' : ''}${isMobile ? ' editor-beta-sidebar--mobile' : ''}${isMobile && !sidebarCollapsed ? ' editor-beta-sidebar--mobile-open' : ''}`}>
+        <div className={`editor-beta-sidebar-header${sidebarCollapsed ? ' editor-beta-sidebar-header--collapsed' : ''}`}>
+          {!sidebarCollapsed && <h3 className={`editor-beta-sidebar-title${isMobile ? ' editor-beta-sidebar-title--mobile' : ''}`}>Your Drafts</h3>}
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            style={{ padding: '4px 8px', backgroundColor: '#f8f9f9', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className={`editor-beta-sidebar-toggle${isMobile ? ' editor-beta-sidebar-toggle--mobile' : ''}${isMobile && sidebarCollapsed ? ' editor-beta-sidebar-toggle--mobile-collapsed' : ''}`}
+            title={sidebarCollapsed ? 'Show drafts' : 'Hide drafts'}
           >
-            {sidebarCollapsed ? '>' : '<'}
+            {sidebarCollapsed
+              ? (isMobile ? 'Show Drafts ▼' : '>')
+              : (isMobile ? 'Hide Drafts ▲' : '<')}
           </button>
         </div>
 
         {!sidebarCollapsed && (
           <>
             {/* Search bar */}
-            <div style={{ marginBottom: '12px', position: 'relative' }}>
+            <div className="editor-beta-search-wrapper">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder="Search drafts..."
-                style={{
-                  width: '100%',
-                  padding: '8px 10px',
-                  paddingRight: searching ? '30px' : '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '13px',
-                  boxSizing: 'border-box'
-                }}
+                className={`editor-beta-search-input${searching ? ' editor-beta-search-input--loading' : ''}`}
               />
               {searching && (
-                <span style={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#888',
-                  fontSize: '11px'
-                }}>...</span>
+                <span className="editor-beta-search-indicator">...</span>
               )}
             </div>
 
@@ -885,32 +776,25 @@ const EditorBeta = ({ data }) => {
             {searchResults !== null ? (
               // Search results mode
               <>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '8px' }}>
+                <div className="editor-beta-search-info">
                   {searchResults.length === 0
                     ? 'No drafts found'
                     : `Found ${searchResults.length} draft${searchResults.length === 1 ? '' : 's'}`}
                 </div>
-                <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                <div className={`editor-beta-drafts-list${isMobile ? ' editor-beta-drafts-list--mobile' : ''}`}>
                   {searchResults.map((draft) => (
                     <div
                       key={draft.node_id}
-                      style={{
-                        padding: '10px',
-                        marginBottom: '8px',
-                        backgroundColor: selectedDraft?.node_id === draft.node_id ? '#e8f4f8' : '#f8f9f9',
-                        border: selectedDraft?.node_id === draft.node_id ? '1px solid #3bb5c3' : '1px solid #ddd',
-                        borderRadius: '4px',
-                        transition: 'all 0.15s ease'
-                      }}
+                      className={`editor-beta-draft-card${selectedDraft?.node_id === draft.node_id ? ' editor-beta-draft-card--selected' : ''}`}
                     >
                       <div
                         onClick={() => loadDraft(draft)}
-                        style={{ cursor: 'pointer' }}
+                        className="editor-beta-draft-card-body"
                       >
-                        <div style={{ fontWeight: '500', color: '#111', marginBottom: '4px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div className="editor-beta-draft-title">
                           {draft.title}
                         </div>
-                        <div style={{ fontSize: '11px', color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="editor-beta-draft-meta">
                           <span style={{ color: getStatusColor(draft.status) }}>{draft.status}</span>
                           <span>{draft.createtime?.split(' ')[0]}</span>
                         </div>
@@ -922,16 +806,7 @@ const EditorBeta = ({ data }) => {
                             setDeleteModalDraft(draft);
                           }}
                           title="Delete draft"
-                          style={{
-                            marginTop: '6px',
-                            padding: '3px 8px',
-                            backgroundColor: 'transparent',
-                            color: '#c75050',
-                            border: '1px solid #c75050',
-                            borderRadius: '3px',
-                            cursor: 'pointer',
-                            fontSize: '11px'
-                          }}
+                          className="editor-beta-delete-btn"
                         >
                           Delete
                         </button>
@@ -944,36 +819,29 @@ const EditorBeta = ({ data }) => {
                     setSearchQuery('');
                     setSearchResults(null);
                   }}
-                  style={{ marginTop: '10px', padding: '8px 12px', backgroundColor: '#f8f9f9', color: '#555', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', width: '100%' }}
+                  className="editor-beta-load-more-btn"
                 >
                   Clear Search
                 </button>
               </>
             ) : drafts.length === 0 ? (
-              <p style={{ color: '#888', fontSize: '14px' }}>No drafts yet. Your drafts will appear here.</p>
+              <p className="editor-beta-no-drafts">No drafts yet. Your drafts will appear here.</p>
             ) : (
               <>
-                <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                <div className={`editor-beta-drafts-list${isMobile ? ' editor-beta-drafts-list--mobile' : ''}`}>
                   {drafts.map((draft) => (
                     <div
                       key={draft.node_id}
-                      style={{
-                        padding: '10px',
-                        marginBottom: '8px',
-                        backgroundColor: selectedDraft?.node_id === draft.node_id ? '#e8f4f8' : '#f8f9f9',
-                        border: selectedDraft?.node_id === draft.node_id ? '1px solid #3bb5c3' : '1px solid #ddd',
-                        borderRadius: '4px',
-                        transition: 'all 0.15s ease'
-                      }}
+                      className={`editor-beta-draft-card${selectedDraft?.node_id === draft.node_id ? ' editor-beta-draft-card--selected' : ''}`}
                     >
                       <div
                         onClick={() => loadDraft(draft)}
-                        style={{ cursor: 'pointer' }}
+                        className="editor-beta-draft-card-body"
                       >
-                        <div style={{ fontWeight: '500', color: '#111', marginBottom: '4px', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div className="editor-beta-draft-title">
                           {draft.title}
                         </div>
-                        <div style={{ fontSize: '11px', color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="editor-beta-draft-meta">
                           <span style={{ color: getStatusColor(draft.status) }}>{draft.status}</span>
                           <span>{draft.createtime?.split(' ')[0]}</span>
                         </div>
@@ -985,16 +853,7 @@ const EditorBeta = ({ data }) => {
                             setDeleteModalDraft(draft);
                           }}
                           title="Delete draft"
-                          style={{
-                            marginTop: '6px',
-                            padding: '3px 8px',
-                            backgroundColor: 'transparent',
-                            color: '#c75050',
-                            border: '1px solid #c75050',
-                            borderRadius: '3px',
-                            cursor: 'pointer',
-                            fontSize: '11px'
-                          }}
+                          className="editor-beta-delete-btn"
                         >
                           Delete
                         </button>
@@ -1008,17 +867,7 @@ const EditorBeta = ({ data }) => {
                   <button
                     onClick={loadMoreDrafts}
                     disabled={loadingMore}
-                    style={{
-                      marginTop: '10px',
-                      padding: '8px 12px',
-                      backgroundColor: loadingMore ? '#999' : '#f8f9f9',
-                      color: loadingMore ? '#fff' : '#555',
-                      border: '1px solid #ccc',
-                      borderRadius: '4px',
-                      cursor: loadingMore ? 'wait' : 'pointer',
-                      fontSize: '13px',
-                      width: '100%'
-                    }}
+                    className="editor-beta-load-more-btn"
                   >
                     {loadingMore ? 'Loading...' : 'Load More Drafts'}
                   </button>
@@ -1029,7 +878,7 @@ const EditorBeta = ({ data }) => {
             {!isReadOnly && (
               <button
                 onClick={clearEditor}
-                style={{ marginTop: '10px', padding: '8px 12px', backgroundColor: '#4060b0', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', width: '100%' }}
+                className="editor-beta-new-draft-btn"
               >
                 + New Draft
               </button>
@@ -1039,24 +888,21 @@ const EditorBeta = ({ data }) => {
       </div>
 
       {/* Main Editor Area */}
-      <div style={{ flex: 1, maxWidth: '900px' }}>
+      <div className="editor-beta-main">
         {/* Inject styles for animations and toggle */}
         <style>{editorStyles}</style>
 
         {/* Header with mode toggle in upper right */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-          <div>
-            <h1 style={{ marginBottom: '10px' }}>{pageTitle}</h1>
-            {isReadOnly ? (
-              <p style={{ color: '#507898', marginBottom: '0' }}>
-                Viewing <a href={`/user/${encodeURIComponent(targetUser?.title)}`} style={{ color: '#4060b0' }}>{targetUser?.title}</a>'s findable drafts (read-only)
-              </p>
-            ) : (
-              <p style={{ color: '#507898', marginBottom: '0' }}>
-                Hello, {username}!
-              </p>
-            )}
-          </div>
+        <div className={`editor-beta-header${isMobile ? ' editor-beta-header--mobile' : ''}`}>
+          {/* Read-only notice when viewing another user's drafts */}
+          {isReadOnly && (
+            <p className="editor-beta-readonly-notice">
+              Viewing <a href={`/user/${encodeURIComponent(targetUser?.title)}`}>{targetUser?.title}</a>'s findable drafts (read-only)
+            </p>
+          )}
+
+          {/* Spacer when not read-only to push toggle to right */}
+          {!isReadOnly && <div className="editor-beta-header-spacer" />}
 
           {/* Stylized slider toggle - Rich/HTML */}
           <div
@@ -1065,11 +911,7 @@ const EditorBeta = ({ data }) => {
             title={editMode === 'rich' ? 'Switch to raw HTML editing' : 'Switch to rich text editing'}
           >
             <div
-              className="e2-mode-toggle-slider"
-              style={{
-                left: editMode === 'rich' ? '3px' : 'calc(50% + 1px)',
-                width: editMode === 'rich' ? '52px' : '52px'
-              }}
+              className={`e2-mode-toggle-slider${editMode === 'rich' ? ' e2-mode-toggle-slider--left' : ' e2-mode-toggle-slider--right'}`}
             />
             <span className={`e2-mode-toggle-option ${editMode === 'rich' ? 'active' : ''}`}>
               Rich
@@ -1081,37 +923,29 @@ const EditorBeta = ({ data }) => {
         </div>
 
         {/* Draft Title */}
-        <div style={{ marginBottom: '15px' }}>
+        <div className={`editor-beta-title-wrapper${isMobile ? ' editor-beta-title-wrapper--mobile' : ''}`}>
           <input
             type="text"
             value={draftTitle}
             onChange={(e) => !isReadOnly && setDraftTitle(e.target.value)}
             readOnly={isReadOnly}
             placeholder={isReadOnly ? '' : 'Enter draft title...'}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              fontSize: '16px',
-              fontWeight: '500',
-              backgroundColor: isReadOnly ? '#f8f9f9' : '#fff'
-            }}
+            className={`editor-beta-title-input${isMobile ? ' editor-beta-title-input--mobile' : ''}${isReadOnly ? ' editor-beta-title-input--readonly' : ''}`}
           />
         </div>
 
         {/* Toolbar row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+        <div className="editor-beta-toolbar-row">
           {/* Menu bar - only show in rich mode */}
           {editMode === 'rich' && editor && (
-            <div style={{ flex: 1 }}>
+            <div className="editor-beta-toolbar-wrapper">
               <MenuBar editor={editor} />
             </div>
           )}
 
           {/* HTML mode indicator */}
           {editMode === 'html' && (
-            <span style={{ fontSize: '12px', color: '#666' }}>
+            <span className="editor-beta-html-hint">
               Editing raw HTML — E2 link syntax: [node name] or [node name|display text]
             </span>
           )}
@@ -1119,10 +953,9 @@ const EditorBeta = ({ data }) => {
 
         {/* Editor - Rich text or HTML textarea based on mode */}
         {editMode === 'rich' ? (
-          <div style={{ border: '1px solid #38495e', borderRadius: '4px', backgroundColor: '#fff' }}>
+          <div className="editor-beta-editor-container">
             <div
-              className="e2-editor-wrapper"
-              style={{ minHeight: '400px' }}
+              className={`e2-editor-wrapper editor-beta-editor-wrapper${isMobile ? ' editor-beta-editor-wrapper--mobile' : ''}`}
             >
               <EditorContent editor={editor} />
             </div>
@@ -1138,53 +971,21 @@ const EditorBeta = ({ data }) => {
             }}
             readOnly={isReadOnly}
             aria-label="Draft content (HTML)"
-            style={{
-              width: '100%',
-              minHeight: '400px',
-              padding: '12px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              fontFamily: 'monospace',
-              fontSize: '13px',
-              lineHeight: '1.5',
-              resize: 'vertical',
-              boxSizing: 'border-box',
-              backgroundColor: isReadOnly ? '#f8f9f9' : '#fff'
-            }}
+            className={`editor-beta-html-textarea${isMobile ? ' editor-beta-html-textarea--mobile' : ''}${isReadOnly ? ' editor-beta-html-textarea--readonly' : ''}`}
             spellCheck={false}
             placeholder={isReadOnly ? '' : 'Enter HTML content here...'}
           />
         )}
 
         {/* Bottom bar: Controls (left) | Status dropdown + actions (right) */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '8px',
-          minHeight: '36px'
-        }}>
+        <div className={`editor-beta-bottom-bar${isMobile ? ' editor-beta-bottom-bar--mobile' : ''}`}>
           {/* Left side: Version History button + Save status */}
-          <div style={{
-            fontSize: '12px',
-            color: '#666',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px'
-          }}>
+          <div className="editor-beta-bottom-left">
             {/* Version History button - styled consistently (hidden in read-only mode) */}
             {selectedDraft && !isReadOnly && (
               <button
                 onClick={() => setShowVersionHistory(true)}
-                style={{
-                  padding: '6px 12px',
-                  backgroundColor: '#f8f9f9',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  color: '#555',
-                  cursor: 'pointer',
-                  fontSize: '12px'
-                }}
+                className="editor-beta-version-btn"
               >
                 Version History
               </button>
@@ -1192,14 +993,14 @@ const EditorBeta = ({ data }) => {
 
             {/* Save status indicator - to the right of Version History (hidden in read-only mode) */}
             {!isReadOnly && (
-              <div style={{ display: 'flex', alignItems: 'center', minWidth: '120px' }}>
+              <div className="editor-beta-save-status">
                 {saving ? (
                   <>
                     <SaveSpinner />
-                    <span style={{ color: '#4060b0' }}>Saving...</span>
+                    <span className="editor-beta-save-status--saving">Saving...</span>
                   </>
                 ) : lastSaveTime ? (
-                  <span style={{ color: '#666' }}>
+                  <span className="editor-beta-save-status--saved">
                     {lastSaveType === 'auto' ? 'Autosaved' : 'Saved'} at {lastSaveTime}
                   </span>
                 ) : null}
@@ -1208,21 +1009,13 @@ const EditorBeta = ({ data }) => {
           </div>
 
           {/* Controls - bottom right */}
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div className={`editor-beta-controls${isMobile ? ' editor-beta-controls--mobile' : ''}`}>
             {/* Status dropdown - only when not read-only */}
             {!isReadOnly && (
               <select
                 value={draftStatus}
                 onChange={(e) => setDraftStatus(e.target.value)}
-                style={{
-                  padding: '6px 10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '13px',
-                  backgroundColor: '#fff',
-                  color: '#333',
-                  cursor: 'pointer'
-                }}
+                className="editor-beta-status-select"
                 title={statusDescriptions[draftStatus]}
               >
                 {statuses.map((s) => (
@@ -1234,15 +1027,7 @@ const EditorBeta = ({ data }) => {
             {/* Preview button */}
             <button
               onClick={() => setShowPreview(!showPreview)}
-              style={{
-                padding: '6px 14px',
-                backgroundColor: showPreview ? '#38495e' : '#f8f9f9',
-                color: showPreview ? '#fff' : '#111',
-                border: '1px solid #38495e',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '13px'
-              }}
+              className={`editor-beta-preview-btn${showPreview ? ' editor-beta-preview-btn--active' : ' editor-beta-preview-btn--inactive'}`}
             >
               {showPreview ? 'Hide Preview' : 'Preview'}
             </button>
@@ -1252,16 +1037,7 @@ const EditorBeta = ({ data }) => {
               <button
                 onClick={saveDraft}
                 disabled={saving}
-                style={{
-                  padding: '6px 16px',
-                  backgroundColor: saving ? '#999' : '#4060b0',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: saving ? 'wait' : 'pointer',
-                  fontSize: '13px',
-                  fontWeight: '500'
-                }}
+                className="editor-beta-save-btn"
               >
                 {saving ? 'Saving...' : (selectedDraft ? 'Save' : 'Create Draft')}
               </button>
@@ -1272,24 +1048,15 @@ const EditorBeta = ({ data }) => {
 
         {/* Publish section - only visible when editing a saved draft (and not in read-only mode) */}
         {selectedDraft && !isReadOnly && (
-          <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #eee' }}>
+          <div className="editor-beta-publish-section">
             <button
               onClick={() => setShowPublishModal(true)}
               disabled={saving}
-              style={{
-                padding: '8px 20px',
-                backgroundColor: saving ? '#999' : '#4060b0',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: saving ? 'wait' : 'pointer',
-                fontSize: '14px',
-                fontWeight: '500'
-              }}
+              className="editor-beta-publish-btn"
             >
               Publish...
             </button>
-            <span style={{ marginLeft: '10px', fontSize: '12px', color: '#888' }}>
+            <span className="editor-beta-publish-hint">
               Ready to publish this draft as a writeup
             </span>
           </div>
@@ -1297,8 +1064,8 @@ const EditorBeta = ({ data }) => {
 
         {/* Live preview pane */}
         {showPreview && (
-          <div style={{ marginTop: '20px' }}>
-            <h3 style={{ marginBottom: '10px', color: '#38495e', fontSize: '14px' }}>Preview</h3>
+          <div className="editor-beta-preview-section">
+            <h3 className="editor-beta-preview-heading">Preview</h3>
             <PreviewContent
               editor={editor}
               editorMode={editMode}

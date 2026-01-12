@@ -1,6 +1,21 @@
 // Jest setup file - runs before all tests
 import '@testing-library/jest-dom';
 
+// Mock window.matchMedia for responsive hooks
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false, // Default to desktop view in tests
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
 // Mock global e2 object that's normally provided by the server
 global.e2 = {
   user: {

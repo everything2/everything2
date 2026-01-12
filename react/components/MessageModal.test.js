@@ -261,8 +261,8 @@ describe('MessageModal', () => {
       const onClose = jest.fn()
       render(<MessageModal {...defaultProps} onClose={onClose} />)
 
-      // Click the backdrop (outer div) - should NOT close modal
-      const modal = screen.getByRole('heading', { name: 'New Message' }).closest('div[style*="position: fixed"]')
+      // Click the backdrop (outer div) - now using CSS class
+      const modal = screen.getByRole('heading', { name: 'New Message' }).closest('.message-modal-overlay')
       fireEvent.click(modal)
 
       expect(onClose).not.toHaveBeenCalled()
@@ -272,8 +272,8 @@ describe('MessageModal', () => {
       const onClose = jest.fn()
       render(<MessageModal {...defaultProps} onClose={onClose} />)
 
-      // Click the modal content
-      const modalContent = screen.getByRole('heading', { name: 'New Message' }).closest('div[style*="background-color: rgb(255, 255, 255)"]')
+      // Click the modal content - now using CSS class
+      const modalContent = screen.getByRole('heading', { name: 'New Message' }).closest('.message-modal')
       fireEvent.click(modalContent)
 
       expect(onClose).not.toHaveBeenCalled()

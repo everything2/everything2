@@ -45,7 +45,6 @@ sub publishdraft
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
   # turn a draft into a writeup and pass it on for insertion into an e2node
 
@@ -130,7 +129,6 @@ sub bookmark
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $node_id = $query->param('bookmark_id');
@@ -225,7 +223,6 @@ sub vote
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $$USER{votesleft};
@@ -300,7 +297,6 @@ sub bless
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless isGod($USER);
@@ -337,7 +333,6 @@ sub curse
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # Currently disabled
@@ -358,7 +353,6 @@ sub bestow
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless isGod($USER);
@@ -381,7 +375,6 @@ sub message
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return if $APP->isGuest($USER);
@@ -684,7 +677,6 @@ sub message_outbox
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # Guests aren't allowed to perform message_outbox actions
@@ -734,7 +726,6 @@ sub cool
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # single-writeup C!
@@ -799,7 +790,6 @@ sub weblog
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $SRC = $query->param("source");
@@ -861,7 +851,6 @@ sub removeweblog
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # This removes one item from a weblog
@@ -902,7 +891,6 @@ sub lockroom
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless isGod($USER);
@@ -930,7 +918,6 @@ sub resurrect
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless isGod($USER);
@@ -956,7 +943,6 @@ sub linktrim
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless htmlcode('verifyRequest', 'linktrim');
@@ -1007,7 +993,6 @@ sub firmlink
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1056,7 +1041,6 @@ sub insure
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1094,7 +1078,6 @@ sub nodenote
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1128,7 +1111,6 @@ sub lockaccount
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless(isGod($USER));
@@ -1146,7 +1128,6 @@ sub unlockaccount
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless(isGod($USER));
@@ -1170,7 +1151,6 @@ sub hidewriteup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1197,7 +1177,6 @@ sub unhidewriteup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1222,7 +1201,6 @@ sub changewucount
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return '' if ( $APP->isGuest($USER) );
@@ -1255,7 +1233,6 @@ sub repair_e2node
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1276,7 +1253,6 @@ sub borg
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # borgs the current node 1 time (iff current node is a user and current user is an admin)
@@ -1313,7 +1289,6 @@ sub flushcbox
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isChanop($USER); # Specifically include gods
@@ -1341,7 +1316,6 @@ sub repair_e2node_noreorder
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1363,7 +1337,6 @@ sub orderlock
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1391,7 +1364,6 @@ sub pollvote
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return if $APP->isGuest($USER);
@@ -1438,7 +1410,6 @@ sub softlock
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $query->param("lockID");
@@ -1468,7 +1439,6 @@ sub weblogify
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $disp = $query->param("ify_display");
@@ -1523,7 +1493,6 @@ sub leadusergroup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $uName = $query->param("new_leader");
@@ -1556,7 +1525,6 @@ sub ilikeit
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return if $APP->isSpider();
@@ -1631,7 +1599,6 @@ sub changeusergroup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # Changes which usergroup is selected for the Usergroup Writeups nodelet.
@@ -1652,7 +1619,6 @@ sub favorite
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $node_id = $query -> param("fave_id");
@@ -1672,7 +1638,6 @@ sub unfavorite
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $node_id = $query -> param("fave_id");
@@ -1694,7 +1659,6 @@ sub category
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return if $APP->isGuest($USER);
@@ -1776,7 +1740,6 @@ sub socialBookmark
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $node_id = $query->param('node_id');
@@ -1860,7 +1823,6 @@ sub sanctify
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return if ($$VARS{GPoptout});
@@ -1899,7 +1861,6 @@ sub cure_infection
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return 0 unless $APP->isAdmin($USER) || !htmlcode('verifyRequest', 'cure_infection');
@@ -1922,7 +1883,6 @@ sub publishdrafttodocument
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $TYPE = getType('document');
@@ -1955,7 +1915,6 @@ sub approve_draft
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -1981,7 +1940,6 @@ sub parameter
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $paramname = $query->param('paramname');
@@ -2013,7 +1971,6 @@ sub remove
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   if (my $wu = $query->param('writeup_id'))

@@ -228,133 +228,20 @@ const Usergroup = ({ data, user, e2 }) => {
     }
   }
 
-  // Styles
-  const styles = {
-    container: {
-      maxWidth: '900px',
-      margin: '0 auto'
-    },
-    message: {
-      padding: '12px 16px',
-      borderRadius: '6px',
-      marginBottom: '16px',
-      fontSize: '14px'
-    },
-    messageSuccess: {
-      backgroundColor: '#d4edda',
-      border: '1px solid #c3e6cb',
-      color: '#155724'
-    },
-    messageError: {
-      backgroundColor: '#f8d7da',
-      border: '1px solid #f5c6cb',
-      color: '#721c24'
-    },
-    card: {
-      backgroundColor: '#fff',
-      border: '1px solid #dee2e6',
-      borderRadius: '8px',
-      marginBottom: '20px',
-      overflow: 'hidden'
-    },
-    cardHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '12px 16px',
-      backgroundColor: '#f8f9fa',
-      borderBottom: '1px solid #dee2e6'
-    },
-    cardTitle: {
-      margin: 0,
-      fontSize: '15px',
-      fontWeight: '600',
-      color: '#495057',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px'
-    },
-    cardBody: {
-      padding: '16px'
-    },
-    editButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '4px',
-      padding: '4px 10px',
-      fontSize: '12px',
-      border: '1px solid #6c757d',
-      borderRadius: '4px',
-      backgroundColor: '#fff',
-      color: '#6c757d',
-      cursor: 'pointer'
-    },
-    primaryButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '8px 16px',
-      fontSize: '13px',
-      border: '1px solid #007bff',
-      borderRadius: '4px',
-      backgroundColor: '#007bff',
-      color: '#fff',
-      cursor: 'pointer',
-      fontWeight: '500'
-    },
-    dangerButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '8px 16px',
-      fontSize: '13px',
-      border: '1px solid #dc3545',
-      borderRadius: '4px',
-      backgroundColor: '#fff',
-      color: '#dc3545',
-      cursor: 'pointer'
-    },
-    memberList: {
-      lineHeight: '1.8'
-    },
-    memberCount: {
-      fontSize: '13px',
-      color: '#6c757d',
-      marginTop: '12px'
-    },
-    messagingRow: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      padding: '10px 0',
-      borderBottom: '1px solid #eee'
-    },
-    adminPanel: {
-      backgroundColor: '#fff3cd',
-      border: '1px solid #ffeeba',
-      borderRadius: '6px',
-      padding: '12px 16px',
-      marginBottom: '16px',
-      fontSize: '13px'
-    }
-  }
 
   return (
-    <div style={styles.container}>
+    <div className="usergroup-container">
       {/* Status messages */}
       {message && (
-        <div style={{
-          ...styles.message,
-          ...(message.type === 'success' ? styles.messageSuccess : styles.messageError)
-        }}>
+        <div className={`usergroup-message usergroup-message--${message.type}`}>
           {message.text}
         </div>
       )}
 
       {/* Admin tools panel */}
       {!!userData.is_admin && (
-        <div style={styles.adminPanel}>
-          <strong style={{ marginRight: '8px' }}><FaCog /> Admin Tools:</strong>
+        <div className="usergroup-admin-panel">
+          <strong className="usergroup-admin-label"><FaCog /> Admin Tools:</strong>
           {weblogSetting && !isEditingIfy ? (
             <span>
               Weblog ify: <strong>{weblogSetting}</strong>
@@ -362,7 +249,7 @@ const Usergroup = ({ data, user, e2 }) => {
                 type="button"
                 onClick={() => setIsEditingIfy(true)}
                 disabled={isSubmitting}
-                style={{ padding: '2px 8px', fontSize: '11px', marginLeft: '8px' }}
+                className="usergroup-admin-btn"
               >
                 Edit
               </button>
@@ -370,29 +257,29 @@ const Usergroup = ({ data, user, e2 }) => {
                 type="button"
                 onClick={handleRemoveIfy}
                 disabled={isSubmitting}
-                style={{ padding: '2px 8px', fontSize: '11px', marginLeft: '4px', color: '#dc3545' }}
+                className="usergroup-admin-btn usergroup-admin-btn--danger"
               >
                 Remove
               </button>
             </span>
           ) : (
-            <form onSubmit={handleWeblogSettings} style={{ display: 'inline' }}>
-              <span style={{ marginRight: '8px' }}>{weblogSetting ? 'Change' : 'Add'} weblog ify:</span>
+            <form onSubmit={handleWeblogSettings} className="usergroup-admin-form">
+              <span className="usergroup-admin-label">{weblogSetting ? 'Change' : 'Add'} weblog ify:</span>
               <input
                 type="text"
                 name="ify_display"
                 placeholder="e.g. Edevify"
                 defaultValue={isEditingIfy ? weblogSetting : ''}
-                style={{ padding: '4px 8px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', marginRight: '8px' }}
+                className="usergroup-admin-input"
               />
-              <button type="submit" disabled={isSubmitting} style={{ padding: '4px 12px', fontSize: '12px' }}>
+              <button type="submit" disabled={isSubmitting} className="usergroup-admin-submit">
                 {weblogSetting ? 'Update' : 'Add'}
               </button>
               {isEditingIfy && (
                 <button
                   type="button"
                   onClick={() => setIsEditingIfy(false)}
-                  style={{ padding: '4px 12px', fontSize: '12px', marginLeft: '4px' }}
+                  className="usergroup-admin-submit"
                 >
                   Cancel
                 </button>
@@ -404,26 +291,26 @@ const Usergroup = ({ data, user, e2 }) => {
 
       {/* Editor tools - owner change */}
       {!!userData.is_editor && (
-        <div style={{ ...styles.adminPanel, backgroundColor: '#e7f3ff', borderColor: '#b8daff' }}>
-          <form onSubmit={handleOwnerChange} style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="usergroup-admin-panel usergroup-admin-panel--editor">
+          <form onSubmit={handleOwnerChange} className="usergroup-editor-form">
             <span>
               <strong>Owner:</strong>{' '}
               {owner ? <LinkNode id={owner.node_id} title={owner.title} /> : 'None'}
             </span>
-            <span style={{ color: '#6c757d' }}>|</span>
+            <span className="usergroup-editor-separator">|</span>
             <span>
               Change to:{' '}
               <input
                 type="text"
                 name="new_leader"
                 placeholder="Username"
-                style={{ padding: '4px 8px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', width: '120px' }}
+                className="usergroup-admin-input usergroup-admin-input--narrow"
               />
-              <button type="submit" disabled={isSubmitting} style={{ padding: '4px 12px', fontSize: '12px', marginLeft: '8px' }}>
+              <button type="submit" disabled={isSubmitting} className="usergroup-admin-submit">
                 Set Owner
               </button>
             </span>
-            <small style={{ color: '#6c757d', width: '100%' }}>
+            <small className="usergroup-editor-note">
               Note: User must be a member before being set as owner.
             </small>
           </form>
@@ -431,12 +318,12 @@ const Usergroup = ({ data, user, e2 }) => {
       )}
 
       {/* Description section */}
-      <div style={styles.card}>
-        <div style={styles.cardHeader}>
-          <h3 style={styles.cardTitle}>
+      <div className="usergroup-card">
+        <div className="usergroup-card-header">
+          <h3 className="usergroup-card-title">
             About this Group
           </h3>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div className="usergroup-header-actions">
             {/* Discussions link for members */}
             {!!is_in_group && !!discussions_node_id && (
               <LinkNode
@@ -449,14 +336,14 @@ const Usergroup = ({ data, user, e2 }) => {
               <button
                 type="button"
                 onClick={() => setShowDescriptionEditor(true)}
-                style={styles.editButton}
+                className="usergroup-edit-btn"
               >
                 <FaEdit /> Edit
               </button>
             )}
           </div>
         </div>
-        <div style={styles.cardBody}>
+        <div className="usergroup-card-body">
           {showDescriptionEditor ? (
             <UsergroupDescriptionEditor
               usergroupId={usergroup.node_id}
@@ -471,7 +358,7 @@ const Usergroup = ({ data, user, e2 }) => {
                 dangerouslySetInnerHTML={{ __html: renderE2Content(doctext).html }}
               />
             ) : (
-              <p style={{ color: '#6c757d', fontStyle: 'italic', margin: 0 }}>
+              <p className="usergroup-empty">
                 No description yet.
                 {!!can_edit_members && ' Click Edit to add one.'}
               </p>
@@ -481,25 +368,25 @@ const Usergroup = ({ data, user, e2 }) => {
       </div>
 
       {/* Members section */}
-      <div style={styles.card}>
-        <div style={styles.cardHeader}>
-          <h3 style={styles.cardTitle}>
+      <div className="usergroup-card">
+        <div className="usergroup-card-header">
+          <h3 className="usergroup-card-title">
             <FaUsers /> Members ({group.length})
           </h3>
           {!!can_edit_members && (
             <button
               type="button"
               onClick={() => setShowMemberEditor(true)}
-              style={styles.editButton}
+              className="usergroup-edit-btn"
             >
               <FaEdit /> Manage
             </button>
           )}
         </div>
-        <div style={styles.cardBody}>
+        <div className="usergroup-card-body">
           {hasMembers ? (
             <>
-              <div style={styles.memberList}>
+              <div className="usergroup-member-list">
                 {group.map((member, index) => {
                   let displayName = (
                     <LinkNode
@@ -521,7 +408,7 @@ const Usergroup = ({ data, user, e2 }) => {
 
                   // Add flags
                   const flagDisplay = member.flags ? (
-                    <small style={{ color: '#6c757d', marginLeft: '2px' }}>
+                    <small className="usergroup-member-flags">
                       {member.flags}
                     </small>
                   ) : null
@@ -535,7 +422,7 @@ const Usergroup = ({ data, user, e2 }) => {
                   )
                 })}
               </div>
-              <p style={styles.memberCount}>
+              <p className="usergroup-member-count">
                 Led by{' '}
                 {group[0] ? (
                   <strong><LinkNode id={group[0].node_id} title={group[0].title} /></strong>
@@ -548,7 +435,7 @@ const Usergroup = ({ data, user, e2 }) => {
               </p>
             </>
           ) : (
-            <p style={{ color: '#6c757d', fontStyle: 'italic', margin: 0 }}>
+            <p className="usergroup-empty">
               This group has no members yet.
             </p>
           )}
@@ -557,16 +444,12 @@ const Usergroup = ({ data, user, e2 }) => {
 
       {/* Actions section for members */}
       {!isGuest && is_in_group && (
-        <div style={{ marginBottom: '20px' }}>
+        <div className="usergroup-actions">
           <button
             type="button"
             onClick={() => setShowLeaveConfirm(true)}
             disabled={isSubmitting}
-            style={{
-              ...styles.dangerButton,
-              opacity: isSubmitting ? 0.6 : 1,
-              cursor: isSubmitting ? 'not-allowed' : 'pointer'
-            }}
+            className="usergroup-danger-btn"
           >
             <FaSignOutAlt /> {isSubmitting ? 'Leaving...' : 'Leave Group'}
           </button>
@@ -575,9 +458,9 @@ const Usergroup = ({ data, user, e2 }) => {
 
       {/* Messaging section */}
       {!isGuest && (
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>
-            <h3 style={styles.cardTitle}>
+        <div className="usergroup-card">
+          <div className="usergroup-card-header">
+            <h3 className="usergroup-card-title">
               <FaComments /> Messaging
             </h3>
             {/* Message count badge */}
@@ -589,17 +472,17 @@ const Usergroup = ({ data, user, e2 }) => {
               />
             )}
           </div>
-          <div style={styles.cardBody}>
+          <div className="usergroup-card-body">
             {!is_in_group && userData.is_admin && (
-              <p style={{ fontStyle: 'italic', fontSize: '12px', color: '#6c757d', marginBottom: '12px' }}>
+              <p className="usergroup-empty" style={{ marginBottom: '12px' }}>
                 You aren't in this group, but may message it as an administrator.
               </p>
             )}
 
             {/* Message the group */}
             {(is_in_group || userData.is_admin) && (
-              <div style={{ ...styles.messagingRow, borderBottom: hasMembers && owner ? '1px solid #eee' : 'none' }}>
-                <FaEnvelope style={{ color: '#6c757d' }} />
+              <div className="usergroup-messaging-row">
+                <FaEnvelope className="usergroup-messaging-icon" />
                 <span>Message the group:</span>
                 <MessageBox
                   recipientId={usergroup.node_id}
@@ -610,11 +493,11 @@ const Usergroup = ({ data, user, e2 }) => {
 
             {/* Message the owner */}
             {hasMembers && owner && (
-              <div style={{ ...styles.messagingRow, borderBottom: 'none' }}>
-                <FaEnvelope style={{ color: '#6c757d' }} />
+              <div className="usergroup-messaging-row">
+                <FaEnvelope className="usergroup-messaging-icon" />
                 <span>
                   Message the owner (<LinkNode id={owner.node_id} title={owner.title} />)
-                  {!is_in_group && <em style={{ fontSize: '12px', color: '#6c757d' }}> — they can add you</em>}:
+                  {!is_in_group && <em className="usergroup-empty"> — they can add you</em>}:
                 </span>
                 <MessageBox
                   recipientId={owner.node_id}
@@ -625,8 +508,8 @@ const Usergroup = ({ data, user, e2 }) => {
 
             {/* Message the leader if different from owner */}
             {hasMembers && group[0] && (!owner || group[0].node_id !== owner.node_id) && (
-              <div style={{ ...styles.messagingRow, borderBottom: 'none' }}>
-                <FaEnvelope style={{ color: '#6c757d' }} />
+              <div className="usergroup-messaging-row">
+                <FaEnvelope className="usergroup-messaging-icon" />
                 <span>
                   Message the leader (<LinkNode id={group[0].node_id} title={group[0].title} />):
                 </span>
@@ -642,13 +525,13 @@ const Usergroup = ({ data, user, e2 }) => {
 
       {/* Weblog section */}
       {weblog && weblog.entries && weblog.entries.length > 0 && (
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>
-            <h3 style={styles.cardTitle}>
+        <div className="usergroup-card">
+          <div className="usergroup-card-header">
+            <h3 className="usergroup-card-title">
               Recent Activity
             </h3>
           </div>
-          <div style={styles.cardBody}>
+          <div className="usergroup-card-body">
             <Weblog weblog={weblog} />
           </div>
         </div>

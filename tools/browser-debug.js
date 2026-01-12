@@ -103,22 +103,38 @@ const TEST_USERS = {
   })).reduce((acc, curr) => ({...acc, ...curr}), {})
 };
 
-async function screenshot(url = BASE_URL) {
+// Mobile viewport presets
+const MOBILE_VIEWPORTS = {
+  'mobile': { width: 375, height: 812, isMobile: true, hasTouch: true },  // iPhone X
+  'tablet': { width: 768, height: 1024, isMobile: true, hasTouch: true }, // iPad
+  'desktop': { width: 1280, height: 1024 }
+};
+
+async function screenshot(url = BASE_URL, viewport = 'desktop') {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
-  await page.setViewport({ width: 1280, height: 1024 });
+  const vp = MOBILE_VIEWPORTS[viewport] || MOBILE_VIEWPORTS.desktop;
+  await page.setViewport(vp);
 
-  console.log(`Navigating to ${url}...`);
+  console.log(`Navigating to ${url} (viewport: ${viewport})...`);
   await page.goto(url, { waitUntil: 'networkidle2' });
 
-  const filename = `/tmp/e2-screenshot-${Date.now()}.png`;
+  const filename = `/tmp/e2-screenshot-${viewport}-${Date.now()}.png`;
   await page.screenshot({ path: filename, fullPage: true });
 
   console.log(`Screenshot saved to: ${filename}`);
 
   await browser.close();
   return filename;
+}
+
+async function screenshotMobile(url = BASE_URL) {
+  return screenshot(url, 'mobile');
+}
+
+async function screenshotTablet(url = BASE_URL) {
+  return screenshot(url, 'tablet');
 }
 
 async function monitorConsole(url = BASE_URL) {
@@ -248,8 +264,9 @@ function validateUser(username) {
  * Helper function to create authenticated browser session
  * @param {string} username - The username to log in as
  * @param {string} targetUrl - Optional target URL (used to determine which base URL to use for auth)
+ * @param {string} viewport - Optional viewport preset ('desktop', 'mobile', 'tablet')
  */
-async function createAuthenticatedSession(username, targetUrl = null) {
+async function createAuthenticatedSession(username, targetUrl = null, viewport = 'desktop') {
   const userInfo = validateUser(username);
   const password = userInfo.password;
 
@@ -261,57 +278,106 @@ async function createAuthenticatedSession(username, targetUrl = null) {
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 1024 });
 
-  console.log(`Logging in as ${username} (${userInfo.role}) via ${authBaseUrl}...`);
+  // Get viewport settings
+  const vp = MOBILE_VIEWPORTS[viewport] || MOBILE_VIEWPORTS.desktop;
+  const isMobileViewport = viewport === 'mobile' || viewport === 'tablet';
 
-  // ALWAYS log in against the root page to ensure Sign In nodelet is present
-  // This handles fullpage layouts (chatterlight) that don't have the standard sidebar
-  await page.goto(authBaseUrl, { waitUntil: 'networkidle0', timeout: 15000 });
+  // For mobile viewports, we need to login at desktop first (Sign In nodelet is in sidebar)
+  // then switch to mobile viewport after authentication
+  if (isMobileViewport) {
+    // Login at desktop viewport first
+    await page.setViewport({ width: 1280, height: 1024 });
+    console.log(`Logging in as ${username} (${userInfo.role}) via ${authBaseUrl}...`);
 
-  // Wait for Sign In nodelet header to load (the h2 is always visible even when collapsed)
-  await page.waitForFunction(() => {
-    const headers = Array.from(document.querySelectorAll('h2'));
-    return headers.some(h => h.textContent.includes('Sign In'));
-  }, { timeout: 5000 });
+    await page.goto(authBaseUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
-  // Check if nodelet is collapsed and expand it
-  const signInHeader = await page.evaluateHandle(() => {
-    // Find the h2 containing "Sign In" text
-    const headers = Array.from(document.querySelectorAll('h2'));
-    return headers.find(h => h.textContent.includes('Sign In'));
-  });
+    // Wait for Sign In nodelet header to load
+    await page.waitForFunction(() => {
+      const headers = Array.from(document.querySelectorAll('h2'));
+      return headers.some(h => h.textContent.includes('Sign In'));
+    }, { timeout: 5000 });
 
-  if (signInHeader) {
-    const isCollapsed = await page.evaluate(el =>
-      el && (el.className.includes('is-closed') || el.getAttribute('aria-expanded') === 'false'),
-      signInHeader
-    );
-    if (isCollapsed) {
-      await signInHeader.click();
-      await new Promise(resolve => setTimeout(resolve, 500)); // Wait for expand animation
+    // Check if nodelet is collapsed and expand it
+    const signInHeader = await page.evaluateHandle(() => {
+      const headers = Array.from(document.querySelectorAll('h2'));
+      return headers.find(h => h.textContent.includes('Sign In'));
+    });
+
+    if (signInHeader) {
+      const isCollapsed = await page.evaluate(el =>
+        el && (el.className.includes('is-closed') || el.getAttribute('aria-expanded') === 'false'),
+        signInHeader
+      );
+      if (isCollapsed) {
+        await signInHeader.click();
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
+
+    await page.waitForSelector('#signin_user', { visible: true, timeout: 5000 });
+    await page.type('#signin_user', username);
+    await page.type('#signin_passwd', password);
+    await page.click('button[type="submit"]');
+    await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 });
+
+    await page.waitForFunction(() => {
+      return window.e2 && window.e2.user && !window.e2.user.guest;
+    }, { timeout: 5000 });
+
+    // Now switch to mobile viewport for subsequent navigation
+    await page.setViewport(vp);
+  } else {
+    // Desktop viewport - standard login flow
+    await page.setViewport(vp);
+    console.log(`Logging in as ${username} (${userInfo.role}) via ${authBaseUrl}...`);
+
+    await page.goto(authBaseUrl, { waitUntil: 'networkidle0', timeout: 15000 });
+
+    // Wait for Sign In nodelet header to load (the h2 is always visible even when collapsed)
+    await page.waitForFunction(() => {
+      const headers = Array.from(document.querySelectorAll('h2'));
+      return headers.some(h => h.textContent.includes('Sign In'));
+    }, { timeout: 5000 });
+
+    // Check if nodelet is collapsed and expand it
+    const signInHeader = await page.evaluateHandle(() => {
+      // Find the h2 containing "Sign In" text
+      const headers = Array.from(document.querySelectorAll('h2'));
+      return headers.find(h => h.textContent.includes('Sign In'));
+    });
+
+    if (signInHeader) {
+      const isCollapsed = await page.evaluate(el =>
+        el && (el.className.includes('is-closed') || el.getAttribute('aria-expanded') === 'false'),
+        signInHeader
+      );
+      if (isCollapsed) {
+        await signInHeader.click();
+        await new Promise(resolve => setTimeout(resolve, 500)); // Wait for expand animation
+      }
+    }
+
+    // Now wait for the signin field to be visible (after expansion)
+    await page.waitForSelector('#signin_user', { visible: true, timeout: 5000 });
+
+    // Fill in login form (use IDs from SignIn nodelet)
+    await page.type('#signin_user', username);
+    await page.type('#signin_passwd', password);
+
+    // Click submit button (React LoginForm uses <button type="submit">)
+    await page.click('button[type="submit"]');
+
+    // Wait for page reload after successful login
+    // React LoginForm calls window.location.reload() on success
+    await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 });
+
+    // Wait for authentication to complete by checking for user in window.e2
+    // Don't wait for #epicenter - it doesn't exist in fullpage layouts
+    await page.waitForFunction(() => {
+      return window.e2 && window.e2.user && !window.e2.user.guest;
+    }, { timeout: 5000 });
   }
-
-  // Now wait for the signin field to be visible (after expansion)
-  await page.waitForSelector('#signin_user', { visible: true, timeout: 5000 });
-
-  // Fill in login form (use IDs from SignIn nodelet)
-  await page.type('#signin_user', username);
-  await page.type('#signin_passwd', password);
-
-  // Click submit button
-  await page.click('input[type="submit"]');
-
-  // Wait for JavaScript redirect to complete
-  // E2 login returns HTML with JS redirect, not HTTP 302
-  await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 });
-
-  // Wait for authentication to complete by checking for user in window.e2
-  // Don't wait for #epicenter - it doesn't exist in fullpage layouts
-  await page.waitForFunction(() => {
-    return window.e2 && window.e2.user && !window.e2.user.guest;
-  }, { timeout: 5000 });
 
   return { browser, page, userInfo };
 }
@@ -374,12 +440,13 @@ async function fetchAsUser(username, url = BASE_URL) {
   return pageInfo;
 }
 
-async function screenshotAsUser(username, url = BASE_URL) {
+async function screenshotAsUser(username, url = BASE_URL, viewport = 'desktop') {
   // Normalize URL to use development.everything2.com for cookie compatibility
   const normalizedUrl = normalizeUrlForAuth(url);
-  const { browser, page, userInfo } = await createAuthenticatedSession(username, normalizedUrl);
+  // Pass viewport to createAuthenticatedSession so it handles mobile login correctly
+  const { browser, page, userInfo } = await createAuthenticatedSession(username, normalizedUrl, viewport);
 
-  console.log(`Navigating to ${normalizedUrl}...`);
+  console.log(`Navigating to ${normalizedUrl} (viewport: ${viewport})...`);
   await page.goto(normalizedUrl, { waitUntil: 'networkidle0', timeout: 15000 });
 
   // Wait for React lazy-loaded components to finish loading
@@ -390,7 +457,7 @@ async function screenshotAsUser(username, url = BASE_URL) {
     console.log('Note: React components may still be loading');
   });
 
-  const filename = `/tmp/e2-${username.replace(/\s+/g, '_')}-${Date.now()}.png`;
+  const filename = `/tmp/e2-${username.replace(/\s+/g, '_')}-${viewport}-${Date.now()}.png`;
   await page.screenshot({ path: filename, fullPage: true });
 
   console.log(`Screenshot saved to: ${filename}`);
@@ -919,7 +986,15 @@ async function main() {
   try {
     switch(command) {
       case 'screenshot':
-        await screenshot(arg1);
+        await screenshot(arg1, 'desktop');
+        break;
+
+      case 'screenshot-mobile':
+        await screenshot(arg1, 'mobile');
+        break;
+
+      case 'screenshot-tablet':
+        await screenshot(arg1, 'tablet');
         break;
 
       case 'console':
@@ -953,11 +1028,23 @@ async function main() {
 
       case 'screenshot-as':
         if (!arg1) {
-          console.error('Usage: screenshot-as [username] [url]');
+          console.error('Usage: screenshot-as [username] [url] [viewport]');
+          console.error('  viewport: desktop (default), mobile, tablet');
           console.error('Example: screenshot-as e2e_developer http://localhost:9080');
+          console.error('Example: screenshot-as e2e_developer http://localhost:9080 mobile');
           process.exit(1);
         }
-        await screenshotAsUser(arg1, arg2);
+        const viewportAs = process.argv[5] || 'desktop';
+        await screenshotAsUser(arg1, arg2, viewportAs);
+        break;
+
+      case 'screenshot-as-mobile':
+        if (!arg1) {
+          console.error('Usage: screenshot-as-mobile [username] [url]');
+          console.error('Example: screenshot-as-mobile e2e_user http://localhost:9080');
+          process.exit(1);
+        }
+        await screenshotAsUser(arg1, arg2, 'mobile');
         break;
 
       case 'html':
@@ -1066,7 +1153,15 @@ async function main() {
 
       default:
         console.log('Unknown command. Available commands:');
+        console.log('\n  Desktop (1280x1024):');
         console.log('  screenshot [url]                - Take a screenshot (guest)');
+        console.log('  screenshot-as [user] [url]      - Take screenshot as user');
+        console.log('\n  Mobile (375x812):');
+        console.log('  screenshot-mobile [url]         - Take mobile screenshot (guest)');
+        console.log('  screenshot-as-mobile [user] [url] - Take mobile screenshot as user');
+        console.log('\n  Tablet (768x1024):');
+        console.log('  screenshot-tablet [url]         - Take tablet screenshot (guest)');
+        console.log('\n  Other commands:');
         console.log('  console [url]                   - Monitor console logs (guest)');
         console.log('  inspect [url] [selector]        - Inspect element (guest)');
         console.log('  check-nodelets [url]            - Check nodelets (guest)');
@@ -1074,7 +1169,6 @@ async function main() {
         console.log('  guest-html [url]                - Fetch URL as guest, output raw HTML');
         console.log('  login [username]                - Login as user and screenshot');
         console.log('  fetch [username] [url]          - Fetch URL as user, show page info');
-        console.log('  screenshot-as [username] [url]  - Take screenshot as user');
         console.log('  html [username] [url]           - Fetch URL as user, output raw HTML');
         console.log('  post [username] [url] [json]    - POST JSON to API as user');
         console.log('  delete [username] [url]         - DELETE request to API as user');

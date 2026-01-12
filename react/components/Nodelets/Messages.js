@@ -26,7 +26,7 @@ const Messages = (props) => {
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
+        <p className="nodelet-empty">
           No messages available
         </p>
       </NodeletContainer>
@@ -261,53 +261,30 @@ const Messages = (props) => {
       nodeletIsOpen={props.nodeletIsOpen}
     >
       {error && (
-        <div style={{
-          backgroundColor: '#fee',
-          border: '1px solid #fcc',
-          borderRadius: '4px',
-          padding: '8px',
-          marginBottom: '8px',
-          fontSize: '11px',
-          color: '#c33'
-        }}>
+        <div className="nodelet-error">
           {error}
         </div>
       )}
 
-      <div style={{ marginBottom: '8px' }}>
+      <div className="messages-toggle-row">
         <button
           onClick={() => loadMessages(false)}
           disabled={loading || !showArchived}
-          style={{
-            padding: '4px 12px',
-            fontSize: '12px',
-            border: '1px solid #dee2e6',
-            borderRadius: '3px',
-            backgroundColor: !showArchived ? '#e9ecef' : '#fff',
-            cursor: !showArchived || loading ? 'not-allowed' : 'pointer',
-            marginRight: '4px'
-          }}
+          className={`nodelet-btn${!showArchived ? ' nodelet-btn--active' : ''}`}
         >
           Inbox
         </button>
         <button
           onClick={() => loadMessages(true)}
           disabled={loading || showArchived}
-          style={{
-            padding: '4px 12px',
-            fontSize: '12px',
-            border: '1px solid #dee2e6',
-            borderRadius: '3px',
-            backgroundColor: showArchived ? '#e9ecef' : '#fff',
-            cursor: showArchived || loading ? 'not-allowed' : 'pointer'
-          }}
+          className={`nodelet-btn${showArchived ? ' nodelet-btn--active' : ''}`}
         >
           Archived
         </button>
       </div>
 
       {loading && (
-        <div style={{ padding: '12px', fontSize: '12px', color: '#999', fontStyle: 'italic', textAlign: 'center' }}>
+        <div className="nodelet-loading">
           Loading messages...
         </div>
       )}
@@ -333,43 +310,18 @@ const Messages = (props) => {
       )}
 
       {/* New Message and Message Inbox buttons */}
-      <div style={{
-        marginTop: '12px',
-        paddingTop: '12px',
-        borderTop: '1px solid #dee2e6',
-        display: 'flex',
-        gap: '8px',
-        justifyContent: 'center'
-      }}>
+      <div className="nodelet-footer nodelet-btn-row">
         <button
           onClick={handleNewMessage}
-          style={{
-            padding: '6px 12px',
-            fontSize: '12px',
-            border: '1px solid #38495e',
-            borderRadius: '4px',
-            backgroundColor: '#38495e',
-            color: '#fff',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
+          className="nodelet-btn nodelet-btn--primary"
         >
-          ✉ Compose
+          Compose
         </button>
         <a
           href="/title/Message+Inbox"
-          style={{
-            padding: '6px 12px',
-            fontSize: '12px',
-            border: '1px solid #dee2e6',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            color: '#495057',
-            textDecoration: 'none',
-            display: 'inline-block'
-          }}
+          className="nodelet-btn nodelet-link-btn"
         >
-          📬 Inbox
+          Inbox
         </a>
       </div>
 
@@ -384,66 +336,19 @@ const Messages = (props) => {
 
       {/* Delete confirmation modal */}
       {deleteConfirmOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000
-          }}
-          onClick={cancelDelete}
-        >
-          <div
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '8px',
-              padding: '24px',
-              maxWidth: '400px',
-              width: '90%',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+        <div className="nodelet-modal-overlay" onClick={cancelDelete}>
+          <div className="nodelet-modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="nodelet-modal-title">
               Delete Message
             </h3>
-            <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#495057' }}>
+            <p className="nodelet-modal-body">
               Are you sure you want to permanently delete this message? This action cannot be undone.
             </p>
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={cancelDelete}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '4px',
-                  backgroundColor: '#fff',
-                  color: '#495057',
-                  cursor: 'pointer'
-                }}
-              >
+            <div className="nodelet-modal-actions">
+              <button onClick={cancelDelete} className="nodelet-btn">
                 Cancel
               </button>
-              <button
-                onClick={confirmDelete}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  backgroundColor: '#dc3545',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
+              <button onClick={confirmDelete} className="nodelet-btn nodelet-btn--danger">
                 Delete
               </button>
             </div>

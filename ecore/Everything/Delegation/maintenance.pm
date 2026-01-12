@@ -24,7 +24,6 @@ sub room_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($N) = @_;
@@ -51,7 +50,6 @@ sub dbtable_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # This gets called for each new dbtable node.  We
@@ -70,7 +68,6 @@ sub dbtable_delete
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
   # This gets called each time a dbtable node gets deleted.
   # We want to delete the associated table here.
@@ -88,7 +85,6 @@ sub writeup_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($WRITEUP) = @_;
@@ -136,7 +132,6 @@ sub e2node_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($E2NODE) = @_;
@@ -156,7 +151,6 @@ sub e2node_update
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($E2NODE) = @_;
@@ -182,7 +176,6 @@ sub writeup_update
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($WRITEUP) = @_;
@@ -256,7 +249,6 @@ sub e2node_delete
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($N) = @_;
@@ -279,7 +271,6 @@ sub debate_delete
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($N) = @_;
@@ -305,7 +296,6 @@ sub writeup_delete
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
 # although writeups should not be nuked, the opcode is still there, and gods may
@@ -324,7 +314,6 @@ sub debatecomment_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ( $COMMENT ) = @_;
@@ -467,7 +456,6 @@ sub debatecomment_delete
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($N) = @_;
@@ -496,7 +484,6 @@ sub debate_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ( $COMMENT ) = @_;
@@ -609,7 +596,6 @@ sub collaboration_update
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($N) = @_;
@@ -635,7 +621,6 @@ sub category_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($CATEGORY) = @_;
@@ -685,7 +670,6 @@ sub node_forward_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($FORWARD) = @_;
@@ -705,7 +689,6 @@ sub user_delete
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($DELETED_USER) = @_;
@@ -725,7 +708,6 @@ sub draft_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($D) = @_;
@@ -754,7 +736,6 @@ sub draft_update
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($N) = @_;
@@ -831,7 +812,6 @@ sub draft_delete
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # get rid of any votes and cools left over from a time as a writeup
@@ -869,7 +849,6 @@ sub node_forward_update
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($FORWARD) = @_;
@@ -896,7 +875,6 @@ sub podcast_create
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($PODCAST) = @_;

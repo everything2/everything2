@@ -1,389 +1,448 @@
-/* 1928497.css (bookworm by ascorbic - unsupported) */
-/*The basics*/
+/* 1928497.css (bookworm by ascorbic) */
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules removed for React compatibility - inherits from basesheet */
+
+:root {
+  /* Bookworm color palette */
+  --e2-color-primary: #193441;           /* Dark blue-green - main text, borders */
+  --e2-color-link: #333399;              /* Blue-purple links */
+  --e2-color-link-visited: #993333;      /* Dark red visited */
+  --e2-color-link-active: #660066;       /* Purple on hover */
+  --e2-color-accent: #91AA9D;            /* Muted sage - headers, nodelet titles */
+
+  /* Backgrounds */
+  --e2-bg-body: #FCFFF5;                 /* Off-white/cream page background */
+  --e2-bg-nodelet: #D1DBBD;              /* Light sage green */
+  --e2-bg-header: #91AA9D;               /* Muted sage */
+  --e2-bg-hover: #e5ebd6;                /* Lighter sage for hover */
+  --e2-bg-sidebar: transparent;
+
+  /* Text colors */
+  --e2-text-body: #193441;               /* Dark blue-green */
+  --e2-text-header: #193441;
+  --e2-text-muted: #3d5a6c;
+
+  /* Borders */
+  --e2-border-light: #91AA9D;
+  --e2-border-nodelet: #91AA9D;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #193441;
+  --e2-btn-primary-text: #FCFFF5;
+  --e2-btn-secondary-bg: #D1DBBD;
+  --e2-btn-secondary-border: #91AA9D;
+
+  /* Warning colors */
+  --e2-warning-bg: #fff8dc;
+  --e2-warning-text: #856404;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #91AA9D;
+  --e2-nodelet-header-text: #193441;
+
+  /* Epicenter */
+  --e2-epicenter-bg: #91AA9D;
+  --e2-epicenter-text: #193441;
+
+  /* Nodelet controls/filters - sage green to match theme */
+  --e2-nodelet-filter-bg: #D1DBBD;         /* Light sage green */
+  --e2-border-color: #91AA9D;              /* Muted sage */
+  --e2-border-color-light: #c8d4b8;        /* Lighter sage for subtle borders */
+  --e2-border-color-hover: #7a9488;        /* Darker sage on hover */
+  --e2-input-bg: #FCFFF5;                  /* Cream background for inputs */
+  --e2-color-muted: #3d5a6c;               /* Muted blue-green text */
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #FCFFF5;
+
+  /* Status colors */
+  --e2-notice-bg: #e8ecd8;                 /* Light sage for notices */
+  --e2-notice-border: #91AA9D;
+  --e2-notice-accent: #4a6350;             /* Dark sage accent */
+}
+
+/* ====================================================================
+   TYPOGRAPHY - Bookworm uses serif fonts
+   ==================================================================== */
+
 body, table, td, th {
-font-family: Georgia,"Hoefler Text","Times New Roman",Times,serif;
-font-size: 13px;
-/* This is a starting point: use relative for the rest */
-word-wrap: break-word;
+  font-family: Georgia, "Hoefler Text", "Times New Roman", Times, serif;
+  font-size: 13px;
+  word-wrap: break-word;
 }
-h1.nodetitle {
-font-family: Candara,"Trebuchet MS",sans-serif;
-font-size: 24px;
+
+h1, h1.nodetitle {
+  font-family: Candara, "Trebuchet MS", sans-serif;
+  font-size: 24px;
 }
+
+/* Override Kernel Blue image logo with text */
 div#e2logo {
-font-family: "Zapfino";
-font-size: 18px;
-margin-top: -5px;
-font-weight: normal;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
+  font-family: "Zapfino", cursive;
+  font-size: 36px;
+  font-weight: normal;
 }
+
+div#e2logo a {
+  padding: 0;
+  color: var(--e2-color-primary, #193441);
+  text-decoration: none;
+  line-height: 50px;
+  font-size: inherit;
+  display: inline;
+}
+
 h2 {
-font-family: Candara,"Trebuchet MS",sans-serif;
-font-size: 120%;
-font-weight: bold;
+  font-family: Candara, "Trebuchet MS", sans-serif;
+  font-size: 120%;
+  font-weight: bold;
 }
+
 /* User-submitted h1s converted to h2 for SEO - style them like h1s */
 h2.user-h1 {
-font-size: 24px;
+  font-size: 24px;
 }
+
 h3 {
-font-size: 100%;
-font-weight: bold;
+  font-size: 100%;
+  font-weight: bold;
 }
+
 big {
-font-size: 110%;
+  font-size: 110%;
 }
+
 small {
-font-size: 90%;
+  font-size: 90%;
 }
-/*Basic structure: this is based on ALA's 'Holy Grail' design. */
-#header {
-height: 30px;
-position: absolute;
-padding: 5px 0;
-top: 3px;
-left: 0;
-right: 261px;
-z-index: 100;
-}
-#wrapper {
-margin: -5px 10px;
-overflow: hidden;
-}
-#mainbody {
-position: relative;
-width: 100%;
-background-color: white;
-border-top: none;
-float: left;
-padding: 50px 10px 10px 5px;
-}
-#sidebar {
-position: relative;
-float: left;
-width: 240px;
-}
-/*Nodelets on right*/
-#wrapper {
-padding-right: 265px;
-}
-#sidebar {
-margin-right: -100%;
-margin-left: 5px;
-}
-/*Nodelets on left*/
-/*
-#wrapper {
-padding-left: 205px;
-}
-#sidebar {
-right: 215px;
-margin-left: -100%;
-}
-* html #left {
-left: 200px;
-}
-*/
-/*end nodelet layout*/
-#footer {
-clear: both;
-width: 100%;
-border-top: 1px #193441 solid;
-text-align: center;
-padding-top: 2px;
-margin-top: 5px;
-font-size: 85%;
-}
-/* Colours, etc */
+
+/* ====================================================================
+   COLORS - Using CSS variables
+   ==================================================================== */
+
 body {
-color: #193441;
-background-color: #FCFFF5;
+  color: var(--e2-text-body);
+  background-color: var(--e2-bg-body);
 }
+
 a:link {
-color: #333399;
+  color: var(--e2-color-link);
 }
+
 a:link.external {
-color: #339933;
+  color: #339933;
 }
+
 a:visited {
-color: #993333;
+  color: var(--e2-color-link-visited);
 }
+
 .oddrow {
-background-color: #D1DBBD;
+  background-color: var(--e2-bg-nodelet);
 }
-/* specifics */
-/* drop cap*/
-.writeup_text:first-letter  {
-font-size: 48px;
-float: left;
-line-height: 60px;
-margin: -5px 10px 0 0;
-text-decoration: none !important;
-color: #193441 !important;
-font-weight: normal !important;
+
+/* ====================================================================
+   DROP CAP STYLING - Bookworm signature feature
+   ==================================================================== */
+
+.writeup_text:first-letter {
+  font-size: 48px;
+  float: left;
+  line-height: 60px;
+  margin: -5px 10px 0 0;
+  text-decoration: none !important;
+  color: var(--e2-color-primary) !important;
+  font-weight: normal !important;
 }
-#e2logo {
-float: left;
-text-align: left;
-font-size: 150%;
-margin: 5px 0 0 20px;
-display: block;
-}
+
+/* ====================================================================
+   LOGO STYLING
+   ==================================================================== */
+
 #e2logo a:link, #e2logo a:visited {
-color: #193441;
+  color: var(--e2-color-primary);
+  text-decoration: none;
 }
-#metalinks {
-margin: 2px;
-padding:  0;
-display: block;
-clear: both;
-text-align: center;
-font-size: 80%;
-}
-#metalinks li {
-display: inline;
-padding-right: 5px;
-margin-left: 5px;
-}
-#e2logo a:link, #e2logo a:visited {
-text-decoration: none;
-}
+
+/* ====================================================================
+   SEARCH FORM
+   ==================================================================== */
+
 #searchform {
-float: right;
-text-align: right;
-padding: 0 5px 5px 0;
-width: 450px;
-font-family: Candara, "Trebuchet MS", sans-serif;
+  font-family: Candara, "Trebuchet MS", sans-serif;
 }
+
 #searchform input {
-float: left;
-margin-top: 4px;
+  background-color: var(--e2-bg-nodelet);
+  color: #369;
 }
+
 #searchform label {
-display: block;
-font-size: 9px;
-float: right;
-clear: right;
-width: 100px;
-text-align: left;
+  font-size: 9px;
 }
-#searchform input {
-background-color: #D1DBBD;
-color: #369;
-margin-right: 2px;
-}
-#searchform input[type=checkbox] {
-margin-top: -1px;
-height: 10px;
-}
+
+/* ====================================================================
+   NODELETS
+   ==================================================================== */
+
 .nodelet {
-clear: both;
-width: 232px;
-padding: 0 2px;
-word-wrap: break-word;
-margin-bottom: 2px;
-background-color: #D1DBBD;
-font-size: 90%;
-font-family: Candara, "Trebuchet MS", sans-serif;
+  word-wrap: break-word;
+  background-color: var(--e2-bg-nodelet);
+  font-size: 90%;
+  font-family: Candara, "Trebuchet MS", sans-serif;
 }
+
 .nodelet td {
-font-size: 90%;
+  font-size: 90%;
 }
-.nodelet h2 {
-display: block;
-margin: 0 -2px;
-text-align: center;
-padding: 1px 0 2px 0;
-background-color: #91AA9D;
+
+.nodelet h2, .nodelet_title {
+  text-align: center;
+  background-color: var(--e2-color-accent);
 }
+
 .nodelet ol, .nodelet ul {
-padding-left: 25px;
+  padding-left: 25px;
 }
+
+/* ====================================================================
+   WRITEUPS
+   ==================================================================== */
+
 .writeup {
-border-bottom: 1px #193441 solid;
-padding-bottom: 5px;
-margin-bottom: 5px;
+  border-bottom: 1px var(--e2-color-primary) solid;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
 }
+
 .createdby {
-text-align: right;
+  text-align: right;
 }
-.writeup_title {
-}
+
 .writeup_text {
-overflow: auto;
+  overflow: auto;
 }
+
 #firmlink, #isalso {
-font-size: 110%;
-text-indent: 30px;
+  font-size: 110%;
+  text-indent: 30px;
 }
-#votebutton, #blabbutton {
-float: left;
-}
-#killbutton {
-float: right;
-}
+
+/* ====================================================================
+   MESSAGE NUMBER (sidebar)
+   ==================================================================== */
+
 #msgnum {
-font-family: Candara,"Trebuchet MS",sans-serif;
-padding: 2px;
-text-align: center;
-word-wrap: break-word;
-margin: 0 0 2px 0;
-background-color: #D1DBBD;
-display: block;
-width: 232px;
-font-size: 90%;
+  font-family: Candara, "Trebuchet MS", sans-serif;
+  padding: 2px;
+  text-align: center;
+  word-wrap: break-word;
+  background-color: var(--e2-bg-nodelet);
+  font-size: 90%;
 }
+
 #msgunarchived {
-font-weight: bold;
+  font-weight: bold;
 }
+
+/* ====================================================================
+   HOMENODE
+   ==================================================================== */
+
 #homenodepicbox {
-width: 50%;
-float: left;
-clear: left;
-overflow: auto;
+  width: 50%;
+  float: left;
+  clear: left;
+  overflow: auto;
 }
+
 #homenodeheader {
-clear: both;
+  clear: both;
 }
+
 #homenodeheader dl {
-display: block;
-width: 50%;
-float: right;
-clear: right;
-margin: 0;
+  display: block;
+  width: 50%;
+  float: right;
+  clear: right;
+  margin: 0;
 }
+
 #homenodeheader dt {
-display: block;
-background-color:  #193441;
-padding: 2px;
-color: white;
+  display: block;
+  background-color: var(--e2-color-primary);
+  padding: 2px;
+  color: white;
 }
+
 #homenodeheader dd {
-margin: 0;
-padding: 2px;
+  margin: 0;
+  padding: 2px;
 }
+
 hr.clear, hr#endwrapper {
-clear: both;
-visibility: hidden;
+  clear: both;
+  visibility: hidden;
 }
+
+/* ====================================================================
+   TEXTAREA
+   ==================================================================== */
+
 textarea {
-width: 100%;
-background-color: #efe;
-font-family: Consolas, "Lucida Console", "Courier New", Courier, monospace;
+  width: 100%;
+  background-color: #efe;
+  font-family: Consolas, "Lucida Console", "Courier New", Courier, monospace;
 }
+
+/* ====================================================================
+   WRITEUP LIST
+   ==================================================================== */
+
 #writeup_list {
-list-style-type: none;
-padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
+
 #nodelet_1322699 ol, #nodelet_1855429 ol {
-padding-left: 25px;
+  padding-left: 25px;
 }
+
 #writeup_list li {
-clear: both;
-word-wrap: break-word;
+  clear: both;
+  word-wrap: break-word;
 }
+
 #writeup_list span.writeupmeta {
-display: block;
-text-align: center;
-padding: 2px;
-clear: both;
-background-color: #D1DBBD;
-margin: 1px -2px;
-border-top: 1px #193441 solid;
+  display: block;
+  text-align: center;
+  padding: 2px;
+  clear: both;
+  background-color: var(--e2-bg-nodelet);
+  margin: 1px -2px;
+  border-top: 1px var(--e2-color-primary) solid;
 }
+
 .wu_hide {
-opacity: .5;
-filter: alpha(opacity=50);
+  opacity: .5;
+  filter: alpha(opacity=50);
 }
+
 .wu_hide:hover {
-opacity: 1;
-filter: alpha(opacity=100);
+  opacity: 1;
+  filter: alpha(opacity=100);
 }
+
 #writeup_list span.type {
-font-size: 90%;
-float: right;
-margin-top: -1.5em;
+  font-size: 90%;
+  float: right;
+  margin-top: -1.5em;
 }
+
 #writeup_list span.title {
-display: block;
-clear: both;
-margin-bottom: 1px;
-background-color: #eeffee;
+  display: block;
+  clear: both;
+  margin-bottom: 1px;
+  background-color: #eeffee;
 }
-#writeup_list span.author {
-}
+
 #writeup_list span.hidden, #writeup_list span.hide {
-font-size: 85%;
-/*	display: block;*/
-margin-left: 3px;
+  font-size: 85%;
+  margin-left: 3px;
 }
-/* Stop ugly formatting! */
+
+/* ====================================================================
+   BLOCKQUOTE STYLING - Bookworm signature decorative quotes
+   ==================================================================== */
+
 blockquote {
-margin: 0;
-border-left: 5px #ddd solid;
-padding-left: 8px;
+  margin: 0;
+  border-left: 5px #ddd solid;
+  padding-left: 8px;
 }
+
 blockquote p[align=justify] {
-text-align: left;
+  text-align: left;
 }
+
 blockquote:before {
-content: '“';
-font-size: 48px;
-float: left;
-line-height: 20px;
-margin-bottom: -20px;
-margin-right: 10px;
-font-weight: bold;
-color: #ddd !important;
+  content: '"';
+  font-size: 48px;
+  float: left;
+  line-height: 20px;
+  margin-bottom: -20px;
+  margin-right: 10px;
+  font-weight: bold;
+  color: #ddd !important;
 }
+
 blockquote:after {
-content: '”';
-font-size: 48px;
-line-height: 20px;
-color: #ddd !important;
-font-weight: bold;
-margin-top: 10px;
-display: inline-block;
+  content: '"';
+  font-size: 48px;
+  line-height: 20px;
+  color: #ddd !important;
+  font-weight: bold;
+  margin-top: 10px;
+  display: inline-block;
 }
-/* I want to see my text! */
+
+/* ====================================================================
+   PREVENT EXCESSIVE NESTING
+   ==================================================================== */
+
 small small {
-font-size: inherit;
+  font-size: inherit;
 }
-/* but not that big! */
+
 big big big {
-font-size: inherit;
+  font-size: inherit;
 }
-/* to stop page-widening */
+
+/* Prevent page-widening */
 pre {
-display: block;
-overflow: auto;
+  display: block;
+  overflow: auto;
 }
+
+/* ====================================================================
+   EPICENTER ZEN BAR
+   ==================================================================== */
+
 #epicenter_zen {
-font-size: 75%;
-text-align: center;
-width: 100%;
-background-color: #91AA9D;
-position: fixed;
-bottom: 0;
-margin: 0;
-left: 0;
-right: 0;
-padding: 3px;
-font-family: Candara,"Trebuchet MS",sans-serif;
-border-top: 1px white solid;
+  font-size: 75%;
+  text-align: center;
+  background-color: var(--e2-color-accent);
+  font-family: Candara, "Trebuchet MS", sans-serif;
+  border-top: 1px white solid;
 }
+
 #epicenter_zen br {
-display: none;
+  display: none;
 }
-#voteInfo {
-padding: 0 200px 0 100px;
-}
-#chatterlight_mainbody { position: absolute; left: 10px; right: 260px}
-#chatterlight_NW { position: absolute; right: 10px; top: 5px } #chatterlight_hints { display: none; } #nodelet_170070 {width:100%}
+
+/* ====================================================================
+   CHATTERLIGHT
+   ==================================================================== */
+
+#chatterlight_hints { display: none; }
+
+/* ====================================================================
+   PRINT STYLES
+   ==================================================================== */
+
 @media print {
-a:link { color: inherit; text-decoration: none}
-#sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none}
-#wrapper {padding: 0}
-}/* SOFTLINK COLORS */
+  a:link { color: inherit; text-decoration: none }
+  #sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none }
+}
+
+/* ====================================================================
+   SOFTLINK COLORS - Bookworm gradient (sage green to cream)
+   ==================================================================== */
+
 td#sl64{background:#d1dbbd;}td#sl63{background:#d1dbbd;}td#sl62{background:#d2dcbe;}td#sl61{background:#d3dcbf;}
 td#sl60{background:#d3ddc0;}td#sl59{background:#d4ddc1;}td#sl58{background:#d5dec2;}td#sl57{background:#d5dfc3;}
 td#sl56{background:#d6dfc4;}td#sl55{background:#d7e0c5;}td#sl54{background:#d7e0c5;}td#sl53{background:#d8e1c6;}

@@ -276,37 +276,19 @@ const FirmlinkPanel = ({ e2node, setMessage, isSubmitting, setIsSubmitting }) =>
 
       {/* Existing firmlinks */}
       {firmlinks && firmlinks.length > 0 && (
-        <div style={{ marginTop: '2rem' }}>
+        <div className="firmlink-existing">
           <h3>Existing Firmlinks</h3>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul className="firmlink-list">
             {firmlinks.map((link) => (
-              <li
-                key={link.node_id}
-                style={{
-                  padding: '0.5rem',
-                  borderBottom: '1px solid #e0e0e0',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
+              <li key={link.node_id} className="firmlink-item">
                 <span>
                   {link.title}
-                  {link.note_text && <span style={{ color: '#666', fontSize: '0.9em' }}> {link.note_text}</span>}
+                  {link.note_text && <span className="firmlink-note"> {link.note_text}</span>}
                 </span>
                 <button
                   onClick={() => handleRemove(link.node_id, link.title, link.note_text)}
                   disabled={isSubmitting}
-                  className="remove-button"
-                  style={{
-                    background: '#dc3545',
-                    color: 'white',
-                    border: 'none',
-                    padding: '0.25rem 0.75rem',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem'
-                  }}
+                  className="firmlink-remove-btn"
                 >
                   Remove
                 </button>
@@ -429,48 +411,34 @@ const SoftlinkPanel = ({ e2node, setMessage, isSubmitting, setIsSubmitting }) =>
   return (
     <div className="softlink-panel">
       <h3>Trim Softlinks</h3>
-      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px' }}>
+      <p className="softlink-description">
         Select softlinks to remove. Shown in order of hit count (highest first).
       </p>
 
       {/* Action buttons at top */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
+      <div className="softlink-actions">
         <button
           onClick={handleDelete}
           disabled={isSubmitting || selectedIds.size === 0}
-          className="submit-button"
-          style={{ backgroundColor: selectedIds.size > 0 ? '#dc3545' : '#ccc' }}
+          className={`submit-button${selectedIds.size > 0 ? ' softlink-delete-btn' : ''}`}
         >
           {isSubmitting ? 'Deleting...' : `Delete Selected (${selectedIds.size})`}
         </button>
         <button
           onClick={handleSelectAll}
           disabled={isSubmitting}
-          className="submit-button"
-          style={{ backgroundColor: '#6c757d' }}
+          className="submit-button softlink-select-all-btn"
         >
           {selectedIds.size === softlinks.length ? 'Deselect All' : 'Select All'}
         </button>
       </div>
 
       {/* Scrollable list of softlinks */}
-      <div style={{
-        maxHeight: '350px',
-        overflowY: 'auto',
-        border: '1px solid #ddd',
-        borderRadius: '4px'
-      }}>
-        {softlinks.map((link, index) => (
+      <div className="softlink-list-container">
+        {softlinks.map((link) => (
           <div
             key={link.node_id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '8px 12px',
-              borderBottom: index < softlinks.length - 1 ? '1px solid #eee' : 'none',
-              backgroundColor: selectedIds.has(link.node_id) ? '#fff3cd' : 'white',
-              cursor: 'pointer'
-            }}
+            className={`softlink-item${selectedIds.has(link.node_id) ? ' softlink-item--selected' : ''}`}
             onClick={() => handleToggle(link.node_id)}
           >
             <input
@@ -478,31 +446,21 @@ const SoftlinkPanel = ({ e2node, setMessage, isSubmitting, setIsSubmitting }) =>
               checked={selectedIds.has(link.node_id)}
               onChange={() => handleToggle(link.node_id)}
               onClick={(e) => e.stopPropagation()}
-              style={{ marginRight: '12px' }}
+              className="softlink-checkbox"
             />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{
-                fontWeight: 500,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
+            <div className="softlink-title-container">
+              <div className="softlink-title">
                 {link.title}
               </div>
             </div>
-            <div style={{
-              fontSize: '0.8rem',
-              color: '#666',
-              marginLeft: '12px',
-              whiteSpace: 'nowrap'
-            }}>
+            <div className="softlink-hits">
               {link.hits} hit{link.hits !== 1 ? 's' : ''}
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{ marginTop: '12px', fontSize: '0.85rem', color: '#666' }}>
+      <div className="softlink-total">
         Total: {softlinks.length} softlink{softlinks.length !== 1 ? 's' : ''}
       </div>
     </div>
@@ -522,21 +480,10 @@ function SortableWriteupItem({ id, writeup }) {
     isDragging,
   } = useSortable({ id })
 
+  // Transform and transition must stay inline for DnD kit
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    padding: '10px 12px',
-    margin: '4px 0',
-    backgroundColor: isDragging ? '#e8f4fc' : 'white',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    cursor: 'grab',
-    userSelect: 'none',
-    opacity: isDragging ? 0.7 : 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    fontSize: '0.9rem',
   }
 
   const authorName = writeup.author?.title || 'Unknown'
@@ -544,11 +491,17 @@ function SortableWriteupItem({ id, writeup }) {
   const reputation = writeup.reputation ?? 0
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <span style={{ color: '#507898', fontSize: '1.1rem' }}>☰</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 500, marginBottom: '2px' }}>{authorName}</div>
-        <div style={{ fontSize: '0.8rem', color: '#666' }}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`sortable-writeup-item${isDragging ? ' sortable-writeup-item--dragging' : ''}`}
+      {...attributes}
+      {...listeners}
+    >
+      <span className="sortable-writeup-handle">☰</span>
+      <div className="sortable-writeup-content">
+        <div className="sortable-writeup-author">{authorName}</div>
+        <div className="sortable-writeup-meta">
           {writeupType} · rep: {reputation}
         </div>
       </div>
@@ -691,7 +644,7 @@ const OrderRepairPanel = ({ e2node, setMessage, isSubmitting, setIsSubmitting })
   return (
     <div className="order-repair-panel">
       <h3>Writeup Order</h3>
-      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px' }}>
+      <p className="order-description">
         Drag writeups to reorder them. Shows author, type, and reputation.
       </p>
 
@@ -705,7 +658,7 @@ const OrderRepairPanel = ({ e2node, setMessage, isSubmitting, setIsSubmitting })
           items={writeups.map(w => w.node_id)}
           strategy={verticalListSortingStrategy}
         >
-          <div style={{ marginBottom: '16px', maxHeight: '300px', overflowY: 'auto' }}>
+          <div className="order-list-container">
             {writeups.map((writeup) => (
               <SortableWriteupItem
                 key={writeup.node_id}
@@ -718,8 +671,8 @@ const OrderRepairPanel = ({ e2node, setMessage, isSubmitting, setIsSubmitting })
       </DndContext>
 
       {/* Lock order checkbox */}
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+      <div className="order-lock-container">
+        <label className="order-lock-label">
           <input
             type="checkbox"
             checked={isOrderLocked}
@@ -733,7 +686,7 @@ const OrderRepairPanel = ({ e2node, setMessage, isSubmitting, setIsSubmitting })
       </div>
 
       {/* Action buttons */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+      <div className="order-actions">
         <button
           onClick={handleSaveOrder}
           disabled={isSubmitting || !hasChanges}
@@ -744,18 +697,17 @@ const OrderRepairPanel = ({ e2node, setMessage, isSubmitting, setIsSubmitting })
         <button
           onClick={handleResetToDefault}
           disabled={isSubmitting}
-          className="submit-button"
-          style={{ backgroundColor: '#6c757d' }}
+          className="submit-button order-reset-btn"
         >
           Reset to Default
         </button>
       </div>
 
-      <hr style={{ margin: '16px 0' }} />
+      <hr className="order-divider" />
 
       {/* Repair section */}
       <div className="repair-section">
-        <p style={{ fontSize: '0.9rem', marginBottom: '8px' }}>
+        <p className="repair-description">
           Repair this node to fix writeup titles and metadata.
         </p>
         <button onClick={handleRepair} disabled={isSubmitting} className="submit-button">
