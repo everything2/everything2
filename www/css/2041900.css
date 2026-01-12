@@ -1,378 +1,272 @@
 /* 2041900.css (Simplicity by DonJaime) */
-/* LAYOUT */
-body {
-max-width: 50em ;
-padding: 0 15em 0 0 ;
-margin: 0 auto ;
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules removed for React compatibility - inherits from basesheet */
+
+:root {
+  /* Simplicity color palette - green theme with beige accents */
+  --e2-color-primary: #000000;            /* Black text */
+  --e2-color-link: #243810;               /* Dark green links */
+  --e2-color-link-visited: #281810;       /* Dark brown visited */
+  --e2-color-link-active: #405020;        /* Lighter green on hover */
+  --e2-color-accent: #dce6c8;             /* Light sage - accents */
+
+  /* Backgrounds */
+  --e2-bg-body: #ffffff;                  /* White page background */
+  --e2-bg-nodelet: #ffffff;               /* White nodelet background */
+  --e2-bg-header: #203010;                /* Dark green header */
+  --e2-bg-hover: #eef4e0;                 /* Very light sage hover */
+  --e2-bg-sidebar: transparent;
+  --e2-bg-oddrow: #dce6c8;                /* Light sage for alternating rows */
+
+  /* Text colors */
+  --e2-text-body: #000000;                /* Black text */
+  --e2-text-header: #ffffff;              /* White header text */
+  --e2-text-muted: #405020;               /* Muted green text */
+
+  /* Borders */
+  --e2-border-light: #dce6c8;
+  --e2-border-nodelet: #e4d8b4;
+  --e2-border-color: #dce6c8;
+  --e2-border-color-light: #eef4e0;
+  --e2-border-color-hover: #c8d4b0;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #203010;
+  --e2-btn-primary-text: #ffffff;
+  --e2-btn-secondary-bg: #dce6c8;
+  --e2-btn-secondary-border: #c8d4b0;
+
+  /* Warning colors */
+  --e2-warning-bg: #fff8dc;
+  --e2-warning-text: #856404;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #e4d8b4;
+  --e2-nodelet-header-text: #243810;
+
+  /* Epicenter */
+  --e2-epicenter-bg: #203010;
+  --e2-epicenter-text: #ffffff;
+
+  /* Nodelet controls/filters */
+  --e2-nodelet-filter-bg: #f5f8f0;
+  --e2-input-bg: #ffffff;
+  --e2-color-muted: #405020;
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #ffffff;
+
+  /* Status colors */
+  --e2-notice-bg: #eef4e0;
+  --e2-notice-border: #dce6c8;
+  --e2-notice-accent: #c8d4b0;
+
+  /* Logo */
+  --e2-logo-text: #ffffff;                /* White text for visibility on dark green header */
+  --e2-logo-bg: transparent;
 }
-#header , #footer {
-margin: 0 -15em 0 0 ;
-padding: 0.5em ;
+
+/* ====================================================================
+   TYPOGRAPHY - Simplicity uses sans-serif body with Garamond headings
+   ==================================================================== */
+
+body, table, td, th {
+  font-family: "Liberation Sans", Helvetica, Arial, sans-serif;
 }
-#header {
-text-align: left ;
-}
-#searchform {
-padding-top: 0.5em ;
-float: right ;
-}
-#e2logo, #searchform div {
-display: inline;
-margin-left: 0.33em;
-}
-.nodetitle {
-margin: 0.25em 0 0 ;
-}
-.actions , .actions li {
-display: inline ;
-margin: 0 ;
-padding: 0 ;
-}
-.actions {
-display: block ; }
-.actions li + li:before {
-content: "\A0\B7\A0" ;
-}
-.topic {
-margin-left: 1em ;
-}
-#mainbody , #sidebar {
-float: left ;
-}
-#mainbody {
-width: 100% ;
-padding: 0 0.5em ;
-}
-#sidebar {
-width: 13.5em ;
-margin: 0 -14.5em 0 0 ;
-}
-.nodelet_title {
-margin: 0.5em 0 0 ;
-padding: 0.25em 0.5em ;
-}
-.nodelet_content {
-padding: 0.5em ;
-}
-.nodelet_content > :last-child {
-margin-bottom: 0 ;
-}
-.nodelet h4 {
-margin: 0.5em 0;
-}
-#footer {
-clear: left ;
-text-align: center ;
-}
-#pageheader {
-padding-bottom: 0.5em ;
-margin-bottom: 0.5em ;
-}
-#pagebody {
-max-width: 43em ;
-margin: 1em auto ;
-}
-.item {
-margin: 0.5em 0 1em ;
-}
-textarea {
-width: 98% ;
-margin: auto ;
-}
-pre {
-overflow: auto ;
-}
-.contentinfo {
-padding: 0.25em 0.5em ;
-}
-div.contentinfo .title, .nodelet .title {
-display: block ;
-text-align: left ;
-}
-.content {
-padding: 0.5em 1em ;
-scroll: auto ;
-}
-.contentfooter {
-text-align: center ;
-}
-.content > :first-child {
-margin-top: 0 ;
-}
-table {
-border-collapse: collapse ;
-margin: 0 ;
-}
-#mainbody table {
-margin: 1em auto ;
-}
-#mainbody .contentinfo table {
-margin: 0 ;
-}
-th , td {
-padding: 0.25em ;
-}
-div.contentinfo th , div.contentinfo td {
-padding: 0 0.125em ;
-}
-.linklist , .linklist li {
-display: block ;
-margin: 0 ;
-padding: 0 ;
-}
-.linklist {
-margin-bottom: 1em ;
-}
-.sectioncontent .linklist{
-margin: 0.25em 0 1em 3em;
-text-indent: -1.5em;
-}
-.morelink {
-text-align: right ;
-}
-/* FRONT PAGE */
-#frontpage {
-max-width: 60em ;
-}
-#welcome_message {
-padding-bottom: 0.5em ;
-}
-#loglinks , #cooluserpicks , #staff_picks {
-float: left ;
-clear: left ;
-width: 14em ;
-}
-#creamofthecool , #frontpage_news {
-margin-left: 14.5em ;
-}
-#frontpage #mainbody .linklist li {
-padding: 0.25em 0 ;
-}
-.weblog .contentinfo {
-position: relative ;
-}
-.weblog .date , .weblog .remove {
-position: absolute ;
-right: 0.5em ;
-}
-.weblog .date {
-top: 0.25em ;
-}
-.weblog .remove {
-bottom: 0.25em ;
-}
-.linkedby {
-display: inline ;
-}
-.linkedby:before {
-content: "| " ;
-}
-/* NODELETS */
-.nodelet .infolist { /* New Writeups and Logs */
-display: block ;
-margin: 0.5em 0 0 ;
-padding: 0 ;
-}
-.nodelet .contentinfo {
-display: block ;
-margin: 0 ;
-padding: 0 0 0.25em 0.25em ;
-}
-.nodelet .title {
-margin-left: -0.25em ;
-padding: 0.125em 0.25em ;
-}
-.nodelet .admin {
-white-space: nowrap;
-}
-#notifications ul , #notifications li {
-display: block ;
-margin: 0 ;
-padding: 0 ;
-}
-#notifications li {
-padding: 0.125em 0.125em 0.125em 1.625em ;
-text-indent: -1.5em;
-}
-/* FONTS */
-body {
-font-family: "Liberation Sans", Helvetica, Arial, sans-serif ;
-}
-* html body {
-font-family: "Arial Unicode MS" , Arial , sans-serif ;
-} /* Exploder fails to look elsewhere for missing glyphs */
-a {
-text-decoration: none ;
-}
-#e2logo, .nodelet_title {
-font-style: italic;
-font-weight: bold;
-}
-#e2logo {
-font-size: 1.8em;
-}
-#e2logo2 {
-font-style: normal ;
-font-size: 50% ;
-vertical-align: sub ;
-}
+
 #e2logo, h1, h2, h3, h4, div.contentinfo .title {
-font-family: GaramondNo8, Garamond, "Gentium Basic", "DejaVu Serif", serif;
+  font-family: GaramondNo8, Garamond, "Gentium Basic", "DejaVu Serif", serif;
 }
-.content {
-line-height: 140%;
+
+#e2logo, .nodelet_title {
+  font-style: italic;
+  font-weight: bold;
 }
+
+#e2logo {
+  font-size: 1.8em;
+}
+
+#e2logo2 {
+  font-style: normal;
+  font-size: 50%;
+  vertical-align: sub;
+}
+
 h1 {
-font-size: 150% ;
+  font-size: 150%;
 }
+
 h2 {
-font-size: 130% ;
+  font-size: 130%;
 }
+
 /* User-submitted h1s converted to h2 for SEO - style them like h1s */
 h2.user-h1 {
-font-size: 150% ;
+  font-size: 150%;
 }
+
 h3 {
-font-size: 115% ;
+  font-size: 115%;
 }
-.title , .nodelet_title , h4 {
-font-size: 100% ;
+
+.title, .nodelet_title, h4 {
+  font-size: 100%;
 }
-#searchform , .nodelet_content , #frontpage #mainbody .linklist , .morelink , .weblog .date, .nodelet .admin, .sentmessage{
-font-size: 90% ;
-}
+
 .title, dt {
-font-style: normal ;
-font-weight: bold ;
+  font-style: normal;
+  font-weight: bold;
 }
+
 .mine .title, .hasvoted .title {
-font-weight: normal ;
+  font-weight: normal;
 }
-/* END FONTS */
-.externalLink {
-background-image: url("../static/simplicity/externalLinkGrayscale.png")
+
+.content {
+  line-height: 140%;
 }
-/* SHININESS & CORNERS */
-#header , .nodelet_title , .contentheader , .nodelet .title {
-background-image: url( "../static/simplicity/topleft.png" ) ;
-background-position: -20px 0 ;
-background-repeat: no-repeat ;
-}
-.nodelet .title {
-background-position: -28px -3px ;
-}
-body , #header , .nodelet_title , .contentheader , .nodelet .title {
--moz-border-radius-topright: 8px ;
--webkit-border-top-right-radius: 8px ;
-border-top-right-radius: 8px ;
--moz-border-radius-bottomright: 8px ;
--webkit-border-bottom-right-radius: 8px ;
-border-bottom-right-radius: 8px ;
-}
+
+/* ====================================================================
+   COLORS - Using CSS variables
+   ==================================================================== */
+
 body {
--moz-border-radius-bottomleft: 8px ;
--webkit-border-bottom-left-radius: 8px ;
-border-bottom-left-radius: 8px ;
+  color: var(--e2-text-body);
+  background-color: var(--e2-bg-body);
 }
-body , #header , .nodelet .title {
--moz-border-radius-topleft: 6px ;
--webkit-border-top-left-radius: 6px ;
-border-top-left-radius: 6px ;
-}
-/* PRETTY LEFT-BOTTOM THINGIES */
-#mainbody:before , .item .content:before ,
-.nodelet_content:before , .nodelet .type:before {
-content: "\A0" ;
-background-image: url( "../static/simplicity/topleft.png" ) ;
-background-position: 2px -181px ;
-float: left ;
-width: 8px ;
-line-height: 6px ;
-margin-left: -0.5em ;
-margin-bottom: -6px ;
-}
-#mainbody:before, .nodelet .type:before {
-background-position: 0 0 ;
-}
-.nodelet_content:before , .item .content:before {
-display: block ;
-float: none ;
-margin-top: -0.5em ;
-border-bottom: 0.5em solid white ;
-}
-#mainbody:before, .nodelet_content:before , #frontpage .item .content:before {
-background-position: 0 -181px ;
-}
-.nodelet .type:before {
-margin-left: -0.25em ;
-}
-.item .content:before {
-margin-left: -1em ;
-}
-/* COLOURS */
-body , .content {
-background-color: white ;
-color: black ;
-}
-/* Primary colour: green. G-R = R-B */
-#header {
-background-color: #203010 ;
-}
-:link, #header label, #header :link, #header :visited, .nodelet_title {
-color: #243810 ;
-}
-.oddrow ,
-.contentheader , .item .content:before ,
-.nodelet .title , .nodelet .type:before {
-background-color: #dce6c8 ;
-}
+
 html {
-background-color: #b4bda0;
+  background-color: #b4bda0;
 }
-#frontpage .item .content , #frontpage .item .morelink {
-border-left: 2px solid #dce6c8 ;
+
+a:link {
+  color: var(--e2-color-link);
+  text-decoration: none;
 }
-#pageheader , #frontpage #mainbody .linklist li , #welcome_message ,
-.writeuppage .content , .contentfooter {
-border-bottom: 2px solid #dce6c8 ;
+
+a:visited {
+  color: var(--e2-color-link-visited);
 }
-#footer {
-border-top: 2px solid #dce6c8 ;
+
+.oddrow {
+  background-color: var(--e2-bg-oddrow);
 }
-td , .oddrow , hr , .widget {
-border: 2px solid #dce6c8 ;
+
+/* ====================================================================
+   LOGO - Text-based logo (override Kernel Blue image)
+   ==================================================================== */
+
+div#e2logo {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
 }
-.oddrow , .oddrow td {
-border-style: hidden solid ;
+
+div#e2logo a {
+  padding: 0;
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--e2-logo-text, #243810);
+  text-decoration: none;
+  line-height: 50px;
+  display: inline;
 }
-.oddrow td {
-border-left-style: none ; /* none lets other elements impose */
-border-right-color: white ;
+
+#e2logo a:link,
+#e2logo a:visited,
+#e2logo a:hover,
+#e2logo a:active {
+  color: var(--e2-logo-text) !important;
+  text-decoration: none;
 }
-.oddrow , .oddrow td:last-child {
-border-right-color: #dce6c8 ;
-}
-hr {
-border-bottom: none ;
-}
-div.contentinfo th , div.contentinfo td ,
-#softlinks table , #softlinks td {
-border: none ;
-}
-/* Contrast: G-B = 3(R-G) */
-:visited {
-color: #281810 ;
-}
-#header, #mainbody:before,
-.nodelet_title, .nodelet_content:before {
-background-color: #e4d8b4 ;
-}
-body, .nodelet_content {
-border-left: 2px solid #e4d8b4;
-}
+
+/* ====================================================================
+   HEADER
+   ==================================================================== */
+
 #header {
-margin-left: -2px;
-}/* SOFTLINK COLORS */
+  background-color: var(--e2-bg-header);
+}
+
+#header label, #header a:link, #header a:visited {
+  color: var(--e2-color-link);
+}
+
+/* ====================================================================
+   NODELETS
+   ==================================================================== */
+
+.nodelet {
+  background-color: var(--e2-bg-nodelet);
+}
+
+.nodelet_title {
+  background-color: var(--e2-nodelet-header-bg);
+  color: var(--e2-nodelet-header-text);
+}
+
+.nodelet .title {
+  background-color: var(--e2-color-accent);
+}
+
+/* ====================================================================
+   BORDERS
+   ==================================================================== */
+
+#pageheader, .writeuppage .content, .contentfooter {
+  border-bottom: 2px solid var(--e2-border-color);
+}
+
+#footer {
+  border-top: 2px solid var(--e2-border-color);
+}
+
+td, hr, .widget {
+  border: 2px solid var(--e2-border-color);
+}
+
+.oddrow, .oddrow td {
+  border-style: hidden solid;
+  border-color: var(--e2-border-color);
+}
+
+hr {
+  border-bottom: none;
+}
+
+/* ====================================================================
+   CONTENT HEADER
+   ==================================================================== */
+
+.contentheader {
+  background-color: var(--e2-color-accent);
+}
+
+/* ====================================================================
+   TEXTAREA
+   ==================================================================== */
+
+textarea {
+  width: 98%;
+  margin: auto;
+  background-color: var(--e2-input-bg);
+}
+
+/* ====================================================================
+   PRINT STYLES
+   ==================================================================== */
+
+@media print {
+  a:link { color: inherit; text-decoration: none; }
+  #sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none; }
+}
+
+/* ====================================================================
+   SOFTLINK COLORS - Simplicity gradient (sage green to white)
+   ==================================================================== */
+
 td#sl64{background:#dce6c8;}td#sl63{background:#dce6c8;}td#sl62{background:#dde6c9;}td#sl61{background:#dde7ca;}
 td#sl60{background:#dee7cb;}td#sl59{background:#dee7cc;}td#sl58{background:#dfe8cd;}td#sl57{background:#dfe8ce;}
 td#sl56{background:#e0e9ce;}td#sl55{background:#e1e9cf;}td#sl54{background:#e1e9d0;}td#sl53{background:#e2ead1;}

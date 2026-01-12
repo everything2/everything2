@@ -206,35 +206,19 @@ const Categories = (props) => {
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}
     >
-      <div style={{ padding: '8px' }}>
+      <div className="categories-content">
         {/* Current categories section */}
         {hasCurrentCategories && (
-          <div style={{ marginBottom: '12px' }}>
-            <div style={{
-              fontSize: '11px',
-              fontWeight: 'bold',
-              color: '#38495e',
-              marginBottom: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <FaList size={10} style={{ color: '#4060b0' }} />
+          <div className="categories-current">
+            <div className="categories-section-header">
+              <FaList size={10} className="categories-header-icon" />
               In Categories:
             </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            <ul className="categories-list">
               {nodeCategories.map(cat => (
                 <li
                   key={cat.node_id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '4px 6px',
-                    fontSize: '12px',
-                    borderBottom: '1px solid #eee',
-                    backgroundColor: removingFrom === cat.node_id ? '#fff3f3' : 'transparent'
-                  }}
+                  className={`categories-item${removingFrom === cat.node_id ? ' categories-item--removing' : ''}`}
                 >
                   <LinkNode
                     nodeId={cat.node_id}
@@ -246,17 +230,7 @@ const Categories = (props) => {
                       onClick={() => promptRemoveFromCategory(cat.node_id, cat.title)}
                       disabled={removingFrom === cat.node_id}
                       title="Remove from category"
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        padding: '2px 4px',
-                        cursor: removingFrom === cat.node_id ? 'wait' : 'pointer',
-                        color: '#999',
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}
-                      onMouseOver={(e) => e.currentTarget.style.color = '#c62828'}
-                      onMouseOut={(e) => e.currentTarget.style.color = '#999'}
+                      className="categories-remove-btn"
                     >
                       {removingFrom === cat.node_id ? (
                         <FaSpinner className="fa-spin" size={10} />
@@ -272,146 +246,57 @@ const Categories = (props) => {
         )}
 
         {!hasCurrentCategories && nodeCategories !== null && nodeCategories !== undefined && (
-          <div style={{
-            padding: '8px',
-            fontSize: '12px',
-            color: '#666',
-            fontStyle: 'italic',
-            textAlign: 'center',
-            marginBottom: '8px'
-          }}>
+          <div className="categories-empty">
             Not in any categories
           </div>
         )}
 
         {/* Add to category button */}
-        <button
-          onClick={openModal}
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            fontSize: '12px',
-            backgroundColor: '#f5f5f5',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px'
-          }}
-        >
+        <button onClick={openModal} className="categories-add-btn">
           <FaPlus size={10} />
           Add to category
         </button>
 
         {/* Footer with create link */}
-        <div style={{ marginTop: '8px', textAlign: 'center' }}>
+        <div className="categories-footer">
           <LinkNode
             title="Create category"
             type="superdoc"
             display="Create new category"
-            style={{ fontSize: '11px' }}
+            className="categories-create-link"
           />
         </div>
       </div>
 
       {/* Add to Category Modal */}
       {isModalOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000,
-            padding: '20px'
-          }}
-          onClick={closeModal}
-        >
-          <div
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '8px',
-              maxWidth: '450px',
-              width: '100%',
-              maxHeight: '80vh',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-              position: 'relative'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="categories-modal-overlay" onClick={closeModal}>
+          <div className="categories-modal" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
-            <div style={{
-              padding: '16px 20px',
-              borderBottom: '2px solid #4060b0',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h3 style={{ margin: 0, color: '#4060b0', fontSize: '16px' }}>
+            <div className="categories-modal-header">
+              <h3 className="categories-modal-title">
                 Add to Category
               </h3>
-              <button
-                onClick={closeModal}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#666',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
+              <button onClick={closeModal} className="categories-modal-close">
                 <FaTimes size={16} />
               </button>
             </div>
 
             {/* Search input */}
             {availableCategories && hasAvailableCategories && (
-              <div style={{ padding: '12px 20px', borderBottom: '1px solid #eee' }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  padding: '6px 10px',
-                  backgroundColor: '#f9f9f9'
-                }}>
-                  <FaSearch size={12} style={{ color: '#999', marginRight: '8px' }} />
+              <div className="categories-modal-search">
+                <div className="categories-search-box">
+                  <FaSearch size={12} className="categories-search-icon" />
                   <input
                     type="text"
                     placeholder="Search categories..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      outline: 'none',
-                      flex: 1,
-                      fontSize: '13px'
-                    }}
+                    className="categories-search-input"
                     autoFocus
                   />
                   {searchFilter && (
-                    <button
-                      onClick={() => setSearchFilter('')}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: '#999',
-                        padding: '2px'
-                      }}
-                    >
+                    <button onClick={() => setSearchFilter('')} className="categories-search-clear">
                       <FaTimes size={10} />
                     </button>
                   )}
@@ -420,66 +305,31 @@ const Categories = (props) => {
             )}
 
             {/* Modal Content */}
-            <div style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '0'
-            }}>
+            <div className="categories-modal-content">
               {isLoading && (
-                <div style={{
-                  padding: '40px 20px',
-                  textAlign: 'center',
-                  color: '#666'
-                }}>
-                  <FaSpinner className="fa-spin" size={20} style={{ marginBottom: '12px' }} />
-                  <div style={{ fontSize: '13px' }}>Loading categories...</div>
+                <div className="categories-modal-loading">
+                  <FaSpinner className="fa-spin" size={20} />
+                  <div>Loading categories...</div>
                 </div>
               )}
 
               {loadError && (
-                <div style={{
-                  padding: '20px',
-                  color: '#c62828',
-                  fontSize: '13px',
-                  textAlign: 'center'
-                }}>
+                <div className="categories-modal-error">
                   {loadError}
-                  <button
-                    onClick={loadAvailableCategories}
-                    style={{
-                      display: 'block',
-                      margin: '12px auto 0',
-                      padding: '6px 12px',
-                      fontSize: '12px',
-                      border: '1px solid #ccc',
-                      borderRadius: '4px',
-                      backgroundColor: '#f5f5f5',
-                      cursor: 'pointer'
-                    }}
-                  >
+                  <button onClick={loadAvailableCategories} className="categories-retry-btn">
                     Retry
                   </button>
                 </div>
               )}
 
               {availableCategories && !hasAvailableCategories && (
-                <div style={{
-                  padding: '40px 20px',
-                  color: '#666',
-                  fontSize: '13px',
-                  textAlign: 'center'
-                }}>
+                <div className="categories-modal-empty">
                   <em>No categories available to add to</em>
                 </div>
               )}
 
               {availableCategories && hasAvailableCategories && !hasFilteredResults && searchFilter && (
-                <div style={{
-                  padding: '40px 20px',
-                  color: '#666',
-                  fontSize: '13px',
-                  textAlign: 'center'
-                }}>
+                <div className="categories-modal-empty">
                   <em>No categories match "{searchFilter}"</em>
                 </div>
               )}
@@ -487,47 +337,21 @@ const Categories = (props) => {
               {/* Your Categories section */}
               {filteredYour.length > 0 && (
                 <div>
-                  <div style={{
-                    padding: '8px 20px',
-                    backgroundColor: '#f0f4f8',
-                    borderBottom: '1px solid #e0e0e0',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    color: '#38495e',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    position: 'sticky',
-                    top: 0
-                  }}>
-                    <FaFolder size={12} style={{ color: '#4060b0' }} />
+                  <div className="categories-section-title">
+                    <FaFolder size={12} className="categories-section-icon" />
                     Your Categories ({filteredYour.length})
                   </div>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <ul className="categories-modal-list">
                     {filteredYour.map(cat => (
                       <li key={cat.node_id}>
                         <button
                           onClick={() => handleAddToCategory(cat.node_id, cat.title)}
                           disabled={addingTo === cat.node_id}
-                          style={{
-                            width: '100%',
-                            padding: '10px 20px',
-                            textAlign: 'left',
-                            border: 'none',
-                            borderBottom: '1px solid #eee',
-                            backgroundColor: 'white',
-                            cursor: addingTo === cat.node_id ? 'wait' : 'pointer',
-                            fontSize: '13px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between'
-                          }}
-                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f5f8ff'}
-                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                          className="categories-select-btn"
                         >
                           <span>{cat.title}</span>
                           {addingTo === cat.node_id && (
-                            <FaSpinner className="fa-spin" size={12} style={{ color: '#4060b0' }} />
+                            <FaSpinner className="fa-spin categories-spinner" size={12} />
                           )}
                         </button>
                       </li>
@@ -539,48 +363,21 @@ const Categories = (props) => {
               {/* Public Categories section */}
               {filteredPublic.length > 0 && (
                 <div>
-                  <div style={{
-                    padding: '8px 20px',
-                    backgroundColor: '#f0f4f8',
-                    borderBottom: '1px solid #e0e0e0',
-                    borderTop: filteredYour.length > 0 ? '1px solid #e0e0e0' : 'none',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    color: '#38495e',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    position: 'sticky',
-                    top: 0
-                  }}>
-                    <FaGlobe size={12} style={{ color: '#4060b0' }} />
+                  <div className={`categories-section-title${filteredYour.length > 0 ? ' categories-section-title--bordered' : ''}`}>
+                    <FaGlobe size={12} className="categories-section-icon" />
                     Public Categories ({filteredPublic.length})
                   </div>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <ul className="categories-modal-list">
                     {filteredPublic.map(cat => (
                       <li key={cat.node_id}>
                         <button
                           onClick={() => handleAddToCategory(cat.node_id, cat.title)}
                           disabled={addingTo === cat.node_id}
-                          style={{
-                            width: '100%',
-                            padding: '10px 20px',
-                            textAlign: 'left',
-                            border: 'none',
-                            borderBottom: '1px solid #eee',
-                            backgroundColor: 'white',
-                            cursor: addingTo === cat.node_id ? 'wait' : 'pointer',
-                            fontSize: '13px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between'
-                          }}
-                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f5f8ff'}
-                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                          className="categories-select-btn"
                         >
                           <span>{cat.title}</span>
                           {addingTo === cat.node_id && (
-                            <FaSpinner className="fa-spin" size={12} style={{ color: '#4060b0' }} />
+                            <FaSpinner className="fa-spin categories-spinner" size={12} />
                           )}
                         </button>
                       </li>
@@ -592,53 +389,26 @@ const Categories = (props) => {
               {/* Other Users' Categories section (editors only) */}
               {filteredOther.length > 0 && (
                 <div>
-                  <div style={{
-                    padding: '8px 20px',
-                    backgroundColor: '#f0f4f8',
-                    borderBottom: '1px solid #e0e0e0',
-                    borderTop: (filteredYour.length > 0 || filteredPublic.length > 0) ? '1px solid #e0e0e0' : 'none',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    color: '#38495e',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    position: 'sticky',
-                    top: 0
-                  }}>
-                    <FaUser size={12} style={{ color: '#4060b0' }} />
+                  <div className={`categories-section-title${(filteredYour.length > 0 || filteredPublic.length > 0) ? ' categories-section-title--bordered' : ''}`}>
+                    <FaUser size={12} className="categories-section-icon" />
                     Other Users' Categories ({filteredOther.length})
                   </div>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <ul className="categories-modal-list">
                     {filteredOther.map(cat => (
                       <li key={cat.node_id}>
                         <button
                           onClick={() => handleAddToCategory(cat.node_id, cat.title)}
                           disabled={addingTo === cat.node_id}
-                          style={{
-                            width: '100%',
-                            padding: '10px 20px',
-                            textAlign: 'left',
-                            border: 'none',
-                            borderBottom: '1px solid #eee',
-                            backgroundColor: 'white',
-                            cursor: addingTo === cat.node_id ? 'wait' : 'pointer',
-                            fontSize: '13px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between'
-                          }}
-                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f5f8ff'}
-                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                          className="categories-select-btn"
                         >
                           <span>
                             {cat.title}
-                            <span style={{ color: '#999', fontSize: '11px', marginLeft: '8px' }}>
+                            <span className="categories-author">
                               by {cat.author_username}
                             </span>
                           </span>
                           {addingTo === cat.node_id && (
-                            <FaSpinner className="fa-spin" size={12} style={{ color: '#4060b0' }} />
+                            <FaSpinner className="fa-spin categories-spinner" size={12} />
                           )}
                         </button>
                       </li>
@@ -649,31 +419,14 @@ const Categories = (props) => {
             </div>
 
             {/* Modal Footer */}
-            <div style={{
-              padding: '12px 20px',
-              borderTop: '1px solid #eee',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
+            <div className="categories-modal-footer">
               <LinkNode
                 title="Create category"
                 type="superdoc"
                 display="Create new category"
-                style={{ fontSize: '12px' }}
+                className="categories-create-link"
               />
-              <button
-                onClick={closeModal}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '4px',
-                  backgroundColor: '#fff',
-                  color: '#495057',
-                  cursor: 'pointer'
-                }}
-              >
+              <button onClick={closeModal} className="categories-cancel-btn">
                 Cancel
               </button>
             </div>

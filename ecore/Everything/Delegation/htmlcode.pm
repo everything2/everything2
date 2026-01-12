@@ -39,8 +39,7 @@ BEGIN {
 # Used by parsetime, parsetimestamp, timesince, giftshop_buyching 
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript, hasAchieved,
-#  showNewGP, sendPrivateMessage
+# Used by shownewexp, publishwriteup, hasAchieved, showNewGP, sendPrivateMessage
 use JSON;
 
 # Used by hasAchieved for achievement delegation
@@ -81,7 +80,6 @@ sub linkStylesheet
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # Generate a URL to a static CSS file.
@@ -120,7 +118,6 @@ sub metadescriptiontag
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return $APP->metaDescription($NODE);
@@ -135,7 +132,6 @@ sub zenadheader
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $ad_text = undef;
@@ -172,7 +168,6 @@ sub displaydebatecomment
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $rootnode = getNodeById( $_[0]->{ 'root_debatecomment' } );
@@ -193,7 +188,6 @@ sub displaydebatecommentcontent
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ( $node, $displaymode, $parent ) = @_;
@@ -249,7 +243,6 @@ sub showdebate
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ( $displaymode ) = @_;
@@ -301,7 +294,6 @@ sub closeform
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return $query->submit("sexisgood", $_[0]||"submit").$query->end_form;
@@ -314,7 +306,6 @@ sub displayNODE
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($limit) = @_;
@@ -354,7 +345,6 @@ sub openform
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($name, $method) = @_;
@@ -386,7 +376,6 @@ sub parsetime
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($field) = @_;
@@ -414,7 +403,6 @@ sub password_field
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($field) = @_;
@@ -463,7 +451,6 @@ sub nodelet_meta_container
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # Phase 3: React owns sidebar content - no need to render nodelet divs
@@ -479,7 +466,6 @@ sub searchform
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($PARAM) = @_; 
@@ -504,7 +490,6 @@ sub setvar
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($var, $len) = @_;
@@ -525,7 +510,6 @@ sub parselinks
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($field) = @_;
@@ -540,7 +524,6 @@ sub textarea
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($field, $rows, $cols, $wrap) = @_;
@@ -608,7 +591,6 @@ sub show_content
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ( $input , $instructions , %infofunctions ) = @_ ;
@@ -718,17 +700,7 @@ sub show_content
       $i-- unless $content[++$i];
       my $text = $N->{ doctext } ;
 
-      # For superdocs, use delegation
-      if ( exists( $$N{ type } ) and ( ($$N{ type_nodetype } // '') eq "14" or ($$N{ type }{ extends_nodetype } // '') eq "14" ) ) {
-        my $doctitle = $$N{title};
-        $doctitle =~ s/[\s-]/_/g;
-        $doctitle = lc($doctitle);
-
-        if(my $delegation = Everything::Delegation::document->can($doctitle)) {
-          $text = $delegation->($DB, $query, $N, $USER, $VARS, $PAGELOAD, $APP);
-        }
-        # If no delegation, $text remains as doctext (empty for migrated superdocs)
-      }
+      # Superdocs now use React Page classes; doctext is empty for migrated superdocs
       $text = $APP->breakTags( $text ) ;
 
       my ( $dots , $morelink ) = ( '' , '' ) ;
@@ -805,7 +777,6 @@ sub usergroupmultipleadd
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $nomulti;
@@ -835,7 +806,6 @@ sub showcollabtext
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ( $field ) = @_;
@@ -867,7 +837,6 @@ sub softlink
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
   my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node
 
@@ -1056,7 +1025,6 @@ sub daylog
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $daylogs = $DB->stashData("dayloglinks");
@@ -1080,7 +1048,6 @@ sub showbookmarks
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($edit, $createform) = @_;
@@ -1152,7 +1119,6 @@ sub e2createnewnode
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $title = $query->param('node');
@@ -1235,7 +1201,6 @@ sub setupuservars
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return if $APP->isGuest($USER);
@@ -1336,7 +1301,6 @@ sub shownewexp
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($shownumbers, $isxml, $newwuonly) = @_;
@@ -1431,7 +1395,6 @@ sub publishwriteup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($WRITEUP, $E2NODE) = @_;
@@ -1564,7 +1527,6 @@ sub displayvars
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $SETTINGS = getVars $NODE;
@@ -1602,7 +1564,6 @@ sub newwriteups
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($limit) = @_;
@@ -1670,7 +1631,6 @@ sub parsetimestamp
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($timestamp,$flags)=@_;
@@ -1779,7 +1739,6 @@ sub node_menu
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($field, @VALUES) = @_;
@@ -1849,7 +1808,6 @@ sub randomnode
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($title) = @_;
@@ -1866,7 +1824,6 @@ sub weblog
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ( $interval, $log_id, $remlabel, $hideLinker, $skipFilterHTML, $listOnly ) = @_ ;
@@ -1969,7 +1926,6 @@ sub writeuphints
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $writeup = undef;
@@ -2253,113 +2209,6 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
   return $str;
 }
 
-sub static_javascript
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $lastnode = $$NODE{node_id};
-  $lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
-  $lastnode = $query->param("lastnode_id")||0 if $$NODE{title} eq 'Findings:' && $$NODE{type}{title} eq 'superdoc';
-
-  my $e2 = $APP->buildNodeInfoStructure($NODE, $USER, $VARS,$query);
-
-  $e2->{lastnode_id} = $lastnode;
-
-  # Pass collapsedNodelets from user preferences to frontend
-  # React handles persistence via preferences API - no cookie sync needed
-  $e2->{collapsedNodelets} = $$VARS{collapsedNodelets} if $$VARS{collapsedNodelets};
-  $e2->{collapsedNodelets} ||= "";
-  $e2->{collapsedNodelets} =~ s/\bsignin\b// if($query->param('op') and $query->param('op') eq 'login');
-
-
-  if($e2->{user}->{developer} and defined($VARS->{nodelets}) and $VARS->{nodelets} =~ /836984/)
-  {
-    $APP->devLog("DEBUG (htmlcode): Inside developerNodelet block");
-    my $edev = getNode("edev","usergroup");
-    my $page = Everything::HTML::getPage($NODE, scalar($query->param("displaytype")));
-    $APP->devLog("DEBUG (htmlcode): After getPage, page=" . (defined $page ? "defined" : "undef"));
-    my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
-    my $sourceMap = $APP->buildSourceMap($NODE, $page);
-    $e2->{developerNodelet} = {page => $page_struct, news => {weblog_id => $edev->{node_id}, weblogs => $APP->weblogs_structure($edev->{node_id})}, sourceMap => $sourceMap};
-  }
-
-  # Phase 3: Build nodeletorder for React sidebar rendering
-  my @nodeletorder = ();
-
-  # Determine nodelet source: guest users ALWAYS use config, others use PAGELOAD or VARS
-  # This prevents guest_front_page document from overriding nodelet display on other pages
-  # See Session 20 bug fix: check guest status FIRST before VARS
-  my $nodeletlist;
-  if ($APP->isGuest($USER)) {
-    # Guest users: build nodeletlist directly from guest_nodelets config
-    my $guest_nodelets = $Everything::CONF->guest_nodelets;
-    if ($guest_nodelets && ref($guest_nodelets) eq 'ARRAY' && @$guest_nodelets) {
-      $nodeletlist = join(',', @$guest_nodelets);
-    }
-  } else {
-    # Logged-in users: use PAGELOAD, VARS, or fall back to default_nodelets
-    $nodeletlist = $PAGELOAD->{pagenodelets} || $$VARS{nodelets};
-
-    # If user has no configured nodelets, use default_nodelets and persist to VARS
-    if (!$nodeletlist) {
-      my $default_nodelets = $Everything::CONF->default_nodelets;
-      if ($default_nodelets && ref($default_nodelets) eq 'ARRAY' && @$default_nodelets) {
-        $nodeletlist = join(',', @$default_nodelets);
-
-        # Persist default nodelets to VARS so they're saved for future page loads
-        $$VARS{nodelets} = $nodeletlist;
-        my $user_node = $APP->node_by_id($USER->{node_id});
-        $user_node->set_vars($VARS) if $user_node && $user_node->can('set_vars');
-      }
-    }
-  }
-
-  # Build nodeletorder array from nodelet IDs
-  if ($nodeletlist) {
-    my @nodelet_ids = split(',', $nodeletlist);
-
-    # Prepend Master Control for admin/editor users if not already in list
-    if (!$APP->isGuest($USER) && ($APP->isAdmin($USER) || $APP->isEditor($USER))) {
-      my $master_control = $DB->getNode('Master Control', 'nodelet');
-      if ($master_control) {
-        my $master_control_id = $master_control->{node_id};
-        my $has_master_control = grep { $_ == $master_control_id } @nodelet_ids;
-        if (!$has_master_control) {
-          unshift @nodelet_ids, $master_control_id;
-          $APP->devLog("Prepended Master Control for admin/editor user " . $USER->{title});
-        }
-      } else {
-        $APP->devLog("WARNING: Master Control nodelet not found in database");
-      }
-    }
-
-    foreach my $nodelet_id (@nodelet_ids) {
-      my $nodelet = $DB->getNodeById($nodelet_id);
-      if ($nodelet) {
-        my $title = lc($nodelet->{title});
-        $title =~ s/ /_/g;
-        push @nodeletorder, $title;
-      }
-    }
-  }
-  $e2->{nodeletorder} = \@nodeletorder;
-
-  $e2 = JSON->new->encode($e2);
-
-  my $libraries = qq|<script src="|.$APP->asset_uri("react/main.bundle.js").qq|" type="text/javascript"></script>|;
-  return qq|
-    <script type='text/javascript' name='nodeinfojson' id='nodeinfojson'>
-      e2 = $e2;
-    </script>
-    $libraries|;
-}
-
 sub zenFooter
 {
   my $DB = shift;
@@ -2367,7 +2216,6 @@ sub zenFooter
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $str=' Everything2 &trade; is brought to you by Everything2 Media, LLC. All content copyright &#169; original author unless stated otherwise.';
@@ -2391,7 +2239,6 @@ sub verifyRequestHash
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   #Generates a hashref used to verify the form submission. Pass a prefix.
@@ -2409,7 +2256,6 @@ sub createdby
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return "" if $APP->isGuest($USER);
@@ -2434,7 +2280,6 @@ sub lockroom
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless isGod($USER);
@@ -2467,7 +2312,6 @@ sub borgcheck
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $$VARS{borged};
@@ -2496,7 +2340,6 @@ sub uploaduserimage
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($field) = @_;
@@ -2616,7 +2459,6 @@ sub generatehex
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($hex)= @_;
@@ -2649,7 +2491,6 @@ sub createroom
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->getLevel($USER) >= $Everything::CONF->create_room_level;
@@ -2668,7 +2509,6 @@ sub firmlinks
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $currentnode = undef;
@@ -2771,7 +2611,6 @@ sub getGravatarMD5
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $gravatarUser = shift;
@@ -2795,7 +2634,6 @@ sub writeupssincelastyear
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($userID) = @_;
@@ -2847,7 +2685,6 @@ sub usergroupToUserIds
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
 
@@ -2872,7 +2709,6 @@ sub explode_ug
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($ug) = @_;
@@ -2899,7 +2735,6 @@ sub unignoreUser
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($uname) = @_;
@@ -2923,70 +2758,6 @@ sub unignoreUser
 
 }
 
-sub zensearchform
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $lastnodeId = $query->param('softlinkedFrom');
-  $lastnodeId ||= $query -> param('lastnode_id') unless $APP->isGuest($USER);
-
-  my $lastnode = undef; 
-  $lastnode = getNodeById($lastnodeId) if defined $lastnodeId;
-  my $default = undef; $default = $$lastnode{title} if $lastnode;
-
-  my $str = $query->start_form(
-    -method => "GET"
-    , -action => $query->script_name
-    , -id => 'search_form'
-    , -role => 'form'
-    ).
-    q|<div class="form-group"><div class="has-feedback has-feedback-left">|.
-    $query->textfield(-name => 'node',
-      value => $default,
-      force => 1,
-      -class => 'form-control',
-      -id => 'node_search',
-      -placeholder => 'Search',
-      -size => 28,
-      -maxlength => 230).qq|<i class="glyphicon glyphicon-search form-control-feedback"></i></div>|;
-
-  my $lnid = undef;
-  $lnid = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup' and $$NODE{parent_e2node} and getNodeById($$NODE{parent_e2node});
-  $lnid ||= getId($NODE);
-
-  $str.='<input type="hidden" name="lastnode_id" value="'.$lnid.'">';
-  $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2" class="btn btn-default">';
-
-
-  $str.=qq|<span id="searchbtngroup">|;
-  $str.=qq'\n<span title="Include near matches in the search results">'.$query->checkbox(
-      -id => "near_match",
-      -name => 'soundex',
-      -value => '1',
-      checked => 0,
-      force => 1,
-      -label => 'Near Matches'
-    ) . "</span>";
-
-  $str.=qq'\n<span title="Show all results, even when there is a page matching the search exactly">'.$query->checkbox(
-      -id => "match_all",
-      -name => 'match_all',
-      -value => '1',
-      checked => 0,
-      force => 1,
-      -label => 'Ignore Exact',
-    ) . "</span>";
-
-  $str.=qq|</span>|; #searchbtngroup
-  return $str . "\n</div></form>";
-}
-
 # Used only on the user display page
 # pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the groups the user belongs to will be returned
 #
@@ -2997,7 +2768,6 @@ sub showUserGroups
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
 
@@ -3065,7 +2835,6 @@ sub in_an_array
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $needle = shift;
@@ -3084,7 +2853,6 @@ sub showuserimage
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $DB->isApproved($NODE, getNode('users with image', 'nodegroup')) or $APP->getLevel($NODE) >= 1;
@@ -3108,7 +2876,6 @@ sub isSpecialDate
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($d) = @_;
@@ -3154,7 +2921,6 @@ sub doChatMacro
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $whichMacro = $_[0];
@@ -3231,7 +2997,7 @@ sub doChatMacro
 
     if(my $delegation = Everything::Delegation::opcode->can("message"))
     {
-      $str .= 'eval='.$delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP); 
+      $str .= 'eval='.$delegation->($DB, $query, $NODE, $USER, $VARS, $APP);
     }
 
     $str .= $result . $sep;
@@ -3255,7 +3021,6 @@ sub timesince
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($timestamp,$shortMode,$fractionalResolution) = @_;
@@ -3330,7 +3095,6 @@ sub usercheck
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($givenTitle) = @_;
@@ -3383,7 +3147,6 @@ sub linkGroupMessages
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # just call this in a usergroup page
@@ -3413,7 +3176,6 @@ sub displayUserText
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $txt = $NODE->{doctext};
@@ -3430,7 +3192,6 @@ sub customtextarea
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   #This takes one of two inputs.
@@ -3474,7 +3235,6 @@ sub nwuamount
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return '' if ( $APP->isGuest($USER) );
@@ -3525,7 +3285,6 @@ sub sendPrivateMessage
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   #
@@ -4322,7 +4081,6 @@ sub formxml
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $ntype = getNodeById($$NODE{type_nodetype});
@@ -4340,7 +4098,6 @@ sub formxml_user
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $str = "";
@@ -4434,7 +4191,6 @@ sub xmlheader
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $str="";
@@ -4457,7 +4213,6 @@ sub xmlfooter
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return "</node>";
@@ -4470,7 +4225,6 @@ sub formxml_e2node
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $grp = $$NODE{group};
@@ -4493,7 +4247,6 @@ sub xmlwriteup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($WRITEUPID) = @_;
@@ -4556,7 +4309,6 @@ sub xmlfirmlinks
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($nid) = @_;
@@ -4581,7 +4333,6 @@ sub formxml_writeup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $str = "";
@@ -4598,7 +4349,6 @@ sub schemalink
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($schemafor) = @_;
@@ -4616,7 +4366,6 @@ sub schemafoot
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return "</xs:schema>";
@@ -4629,7 +4378,6 @@ sub formxml_superdoc
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return "" if (($query->param("no_superdocs") == 1) || ($query->param("no_findings") == 1 && $$NODE{node_id} == $Everything::CONF->search_results));
@@ -4638,15 +4386,8 @@ sub formxml_superdoc
   my $str = "";
   $str.="<superdoctext>\n";
 
-  # Use delegation for superdoc content
-  my $txt = "";
-  my $delegation_name = $$NODE{title};
-  $delegation_name =~ s/[\s\-]/_/g;
-  if (my $delegation = Everything::Delegation::document->can($delegation_name)) {
-    $txt = $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
-  } else {
-    $txt = $$NODE{doctext};
-  }
+  # Superdocs now use React Page classes; doctext is empty for migrated superdocs
+  my $txt = $$NODE{doctext};
 
   $txt = parseLinks($txt) unless($query->param("links_noparse") == 1 or $$NODE{type_title} eq "superdocnolinks");
   $str.= $APP->encodeHTML($txt);
@@ -4661,7 +4402,6 @@ sub xmlnodesuggest
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $retstr = "<sametitles>";
@@ -4705,7 +4445,6 @@ sub screenNotelet
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $work = $VARS->{'noteletRaw'} || $VARS->{'personalRaw'};
@@ -4797,7 +4536,6 @@ sub formxml_usergroup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $txt = $$NODE{doctext};
@@ -4853,7 +4591,6 @@ sub DateTimeLocal
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($useTime, $showServer) = @_;
@@ -4901,7 +4638,6 @@ sub formxml_room
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $entrance="0";
@@ -4922,7 +4658,6 @@ sub formxml_superdocnolinks
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return htmlcode("formxml_superdoc");
@@ -4936,7 +4671,6 @@ sub orderlock
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return unless $APP->isEditor($USER);
@@ -4969,7 +4703,6 @@ sub externalLinkDisplay
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $testURL = $_[0];
@@ -5028,7 +4761,6 @@ sub atomiseNode
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $host = $ENV{HTTP_HOST} || $Everything::CONF->canonical_web_server || "everything2.com";
@@ -5066,7 +4798,6 @@ sub userAtomFeed
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($foruser) = @_;
@@ -5112,7 +4843,6 @@ sub ignoreUser
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($uname) = @_;
@@ -5143,7 +4873,6 @@ sub show_node_forward
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return "" unless ($query && defined $query->param('originalTitle'));
@@ -5168,7 +4897,6 @@ sub achievementsByType
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($aType, $user_id, $debug) = @_;
@@ -5204,7 +4932,6 @@ sub editor_homenode_tools
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $isRoot = $APP->isAdmin($USER);
@@ -5244,47 +4971,6 @@ sub editor_homenode_tools
   return $str;
 }
 
-# TODO: Recheck all of these branches for e2node once e2nodes are in templates
-
-sub page_header
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  # let page inject stuff into the header:
-  my ($str,$after) = ("","");
-  ($str,$after) = split /<!--.*?-->/, $PAGELOAD->{pageheader} if($PAGELOAD->{pageheader});
-
-  my $ntypet = $$NODE{type}{title};
-  if ( $ntypet eq 'e2node' or $ntypet eq 'writeup' )
-  {
-    $str .= htmlcode( 'createdby' )."\n" if $ntypet eq 'e2node' ;
-    $str .= htmlcode( 'firmlinks' )."\n" ;
-    $str .= htmlcode( 'usercheck' )."\n" if $ntypet eq 'e2node' ;
-  }
-
-  if ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document')
-  {
-    my $COOLLINK = getNode('coollink','linktype') -> {node_id};
-    $PAGELOAD->{edcoollink} = $DB->sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1') ;
-    $str .= '<div id="cooledby"><strong>cooled by</strong> '.linkNode($PAGELOAD->{edcoollink}->{to_node})."</div>\n" if $PAGELOAD->{edcoollink} ;
-  }
-
-  # confirmop - REMOVED January 2026: React ConfirmActionModal handles all confirmation dialogs
-  $str .= htmlcode('page actions') unless $APP->isGuest($USER) ;
-
-  # listnodecategories - REMOVED January 2026: React Categories nodelet + /api/category handles this
-
-  return qq'<div id="pageheader">
-    <h1 class="nodetitle">$$NODE{title}</h1>\n\t'.
-    htmlcode( 'show_node_forward' ) . "$str $after</div>" ;
-}
-
 sub coolcount
 {
   my $DB = shift;
@@ -5292,7 +4978,6 @@ sub coolcount
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
   
   my $user_id = shift;
@@ -5306,7 +4991,6 @@ sub epicenterZen
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return if ( $APP->isGuest($USER) );
@@ -5381,7 +5065,6 @@ sub addNotification
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return $APP->add_notification(@_);
@@ -5394,7 +5077,6 @@ sub verifyRequest
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # checks that the form was a real e2 one
@@ -5415,7 +5097,6 @@ sub verifyRequestForm
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # Generates the form fields used to verify the form submission. Pass a prefix.
@@ -5433,7 +5114,6 @@ sub showNewGP
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($shownumbers, $isxml, $newwuonly) = @_;
@@ -5521,7 +5201,6 @@ sub uploadAudio
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($field) =@_;
@@ -5583,77 +5262,6 @@ sub uploadAudio
   return $str;
 }
 
-# TODO: Recheck all of these after e2nodes are in templates
-
-# page_actions - REMOVED January 2026
-# Legacy function that rendered editor cool, bookmark, category, and weblog buttons
-# in the page header. These are now handled by React components in WriteupDisplay.js:
-# - Editor cool: FaStar/FaRegStar icon button (editors only)
-# - Bookmark: FaBookmark/FaRegBookmark icon button (logged-in users)
-# - Add to Category: AddToCategoryModal.js
-# - Add to Page (weblog): AddToWeblogModal.js
-
-sub canseewriteup
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($N) = @_ ;
-  $N ||= $NODE ;
-
-  my $isTarget = undef; $isTarget = delete $PAGELOAD->{notshown}->{targetauthor} if defined($PAGELOAD->{notshown}) and defined($PAGELOAD->{notshown}->{targetauthor}) and $PAGELOAD->{notshown}->{targetauthor} == $$N{author_user};
-
-  if ($$N{author_user} == $$USER{user_id}){
-    return 1;
-  }
-
-  my $param = $query ? $query->param( 'showhidden' ) : "";
-  $param ||= "";
-  my @checks = ('unfavorite', 'lowrep');
-
-  if ($$N{type}{title} eq 'draft'){
-    return 0 if($APP->isGuest($USER) or not $APP->canSeeDraft($USER, $N, 'find'));
-    unshift @checks, 'unpublished';
-  }
-
-  return 1 if $$NODE{node_id} == $$N{node_id} or $isTarget or $param eq $$N{node_id} or $param eq 'all';
-
-  my %tests = (
-    unpublished => sub{
-      getNodeById($$N{publication_status}) -> {title} eq 'review' && $APP->isEditor($USER);
-      },
-
-    unfavorite => sub{ # disliked authors
-      !$$VARS{ unfavoriteusers } ||
-      $$VARS{ unfavoriteusers } !~ /\b$$N{author_user}\b/ ;
-      },
-
-    lowrep => sub{ # reputation threshold
-      my $threshold = $Everything::CONF->writeuplowrepthreshold || 'none' ;
-      $threshold = $$VARS{ repThreshold } || '0' if exists $$VARS{ repThreshold } ; # ecore stores 0 as ''
-      $threshold eq 'none' or $$N{reputation} > $threshold;
-      }
-  );
-
-  foreach ( @checks )
-  {
-    # not keys because priority order is important
-    unless ( &{ $tests{$_} } )
-    {
-      return 1 if $param eq $_ ; # this is the reason it was hidden; we want it shown
-      push @{ $PAGELOAD->{notshown}->{$_} }, $N if defined $PAGELOAD->{notshown} and defined $PAGELOAD->{notshown}->{$_} ;
-      return 0 ;
-    }
-  }
-
-  return 1 ;
-}
-
 sub checkInfected
 {
   my $DB = shift;
@@ -5661,7 +5269,6 @@ sub checkInfected
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # infection arises if user has an old login cookie belonging to a locked account
@@ -5695,7 +5302,6 @@ sub repair_e2node
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   return "" unless $APP->isEditor($USER);
@@ -5715,7 +5321,6 @@ sub isInfected
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
  
   my ($patient) = @_;
@@ -5732,7 +5337,6 @@ sub ip_lookup_tools
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
   # $APP->encodeHTML should be a no-op here, but just in case...
   my $ip = $APP->encodeHTML(shift);
@@ -5753,7 +5357,6 @@ sub blacklistIP
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
 #	purpose
@@ -5813,7 +5416,6 @@ sub check_blacklist
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my @addrs = @_;
@@ -5859,7 +5461,6 @@ sub canseeNotification
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $notification = shift;
@@ -5886,7 +5487,6 @@ sub lock_user_account
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($uid) = @_;
@@ -5915,7 +5515,6 @@ sub googleads
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $node_id = $$NODE{node_id};
@@ -5960,7 +5559,6 @@ sub decode_short_string
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($shortString) = @_;
@@ -6016,7 +5614,6 @@ sub create_short_url
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($urlNode) = @_;
@@ -6070,7 +5667,6 @@ sub urlToNode
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $targetNode = shift;
@@ -6092,7 +5688,6 @@ sub widget
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # first two arguments for the widget, second two for the opener link
@@ -6147,7 +5742,6 @@ sub nopublishreason
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # find any reasons for a user not being able to post a writeup (to an e2node)
@@ -6214,7 +5808,6 @@ sub canpublishas
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   # if an argument: return 1 if current user can publish under this name
@@ -6275,7 +5868,6 @@ sub addNodenote
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($notefor, $notetext, $user) = @_;
@@ -6312,7 +5904,6 @@ sub unpublishwriteup
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my ($wu, $reason) = @_;
@@ -6408,7 +5999,6 @@ sub blacklistedIPs
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
 
   my $str = undef;
@@ -6638,7 +6228,6 @@ sub resurrectNode
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
   
   my ($node_id) = @_;
@@ -6665,7 +6254,6 @@ sub reinsertCorpse
   my $NODE = shift;
   my $USER = shift;
   my $VARS = shift;
-  my $PAGELOAD = shift;
   my $APP = shift;
   
   my ($N) = @_;

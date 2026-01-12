@@ -31,7 +31,6 @@ sub BEGIN {
               $DB
               $NODE
               $VARS
-              $PAGELOAD
               $query
               parseLinks
               htmlFormatErr
@@ -56,7 +55,6 @@ use vars qw($VARS);
 use vars qw($GNODE);
 use vars qw($USER);
 use vars qw($REQUEST);
-use vars qw($PAGELOAD);
 use vars qw(%HEADER_PARAMS);
 
 my $HTTP_ERROR_CODE = 400;
@@ -636,9 +634,9 @@ sub htmlcode {
 	if(my $delegation = Everything::Delegation::htmlcode->can($delegation_name))
 	{
 		if(wantarray) {
-			@returnArray = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP, @savedArgs);
+			@returnArray = $delegation->($DB, $query, $GNODE, $USER, $VARS, $APP, @savedArgs);
 		}else{
-			$returnVal = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP, @savedArgs);
+			$returnVal = $delegation->($DB, $query, $GNODE, $USER, $VARS, $APP, @savedArgs);
 		}
 	}else{
                 return htmlFormatErr("","$htmlcodeName could not be found as Everything::Delegation::htmlcode::$delegation_name");
@@ -1118,7 +1116,6 @@ sub clearGlobals
 	$GNODE = "";
 	$USER = "";
 	$VARS = "";
-        $PAGELOAD = {};
 	$query = "";
 	$REQUEST = undef;
 
@@ -1247,7 +1244,7 @@ sub execOpCode
   if($op ne "new" and $delegation = Everything::Delegation::opcode->can($op))
   {
     $APP->devLog("Using delegated opcode: $op");
-    $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
+    $delegation->($DB, $query, $GNODE, $USER, $VARS, $APP);
     return;
   }
 
@@ -1316,7 +1313,6 @@ sub mod_perlInit
 
 	$USER = $REQUEST->user->NODEDATA;
     $VARS = $REQUEST->user->VARS;
-	$PAGELOAD = $REQUEST->PAGELOAD;
 
          #only for Everything2.com
          if ($query->param("op") eq "randomnode") {

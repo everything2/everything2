@@ -1,5 +1,5 @@
 <node>
-  <deleters_user>114</deleters_user>
+  <deleters_user>-1</deleters_user>
   <extends_nodetype>7</extends_nodetype>
   <grouptable></grouptable>
   <node_id>148</node_id>
@@ -7,5 +7,5 @@
   <sqltable></sqltable>
   <title>dbtable</title>
   <type_nodetype>1</type_nodetype>
-  <writers_user>114</writers_user>
+  <writers_user>-1</writers_user>
 </node>

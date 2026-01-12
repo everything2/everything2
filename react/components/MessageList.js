@@ -58,35 +58,30 @@ const MessageList = (props) => {
 
   const renderMessage = (message) => {
     const isArchived = message.archive
+    const itemClass = compact ? 'message-list-item message-list-item--compact' : 'message-list-item'
+    const timestampClass = compact ? 'message-list-timestamp message-list-timestamp--compact' : 'message-list-timestamp'
+    const contentClass = compact ? 'message-list-content message-list-content--compact' : 'message-list-content'
 
     return (
       <div
         key={message.message_id}
         id={`message_${message.message_id}`}
-        style={{
-          backgroundColor: compact ? '#fff' : '#f8f9fa',
-          border: compact ? 'none' : '1px solid #dee2e6',
-          borderBottom: compact ? '1px solid #eee' : '1px solid #dee2e6',
-          borderRadius: compact ? '0' : '4px',
-          padding: compact ? '6px 8px' : '8px',
-          marginBottom: compact ? '0' : '8px',
-          fontSize: compact ? '11px' : '12px'
-        }}
+        className={itemClass}
       >
-        <div style={{ marginBottom: '4px' }}>
+        <div className="message-list-header">
           <strong>
             <LinkNode
               id={message.author_user.node_id}
               display={message.author_user.title}
             />
           </strong>
-          <span style={{ color: '#6c757d', fontSize: compact ? '10px' : '11px', marginLeft: '8px' }}>
+          <span className={timestampClass}>
             {formatTimestamp(message.timestamp)}
           </span>
         </div>
 
         {message.for_usergroup && !compact && (
-          <div style={{ fontSize: '11px', color: '#6c757d', marginBottom: '4px' }}>
+          <div className="message-list-group-info">
             to group: <LinkNode
               id={message.for_usergroup.node_id}
               display={message.for_usergroup.title}
@@ -94,26 +89,18 @@ const MessageList = (props) => {
           </div>
         )}
 
-        <div style={{ marginBottom: compact ? '4px' : '6px' }}>
+        <div className={contentClass}>
           <ParseLinks>{message.msgtext}</ParseLinks>
         </div>
 
         {!compact && (
-          <div style={{ display: 'flex', gap: '6px', fontSize: '14px', flexWrap: 'wrap' }}>
+          <div className="message-list-actions">
             {!isArchived ? (
               <>
                 {showActions.reply && onReply && (
                   <button
                     onClick={() => onReply(message, false)}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '14px',
-                      border: '1px solid #667eea',
-                      borderRadius: '3px',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      color: '#667eea'
-                    }}
+                    className="message-list-action-btn message-list-action-btn--reply"
                     title="Reply to sender"
                   >
                     ↩
@@ -122,15 +109,7 @@ const MessageList = (props) => {
                 {showActions.replyAll && onReplyAll && message.for_usergroup && message.for_usergroup.node_id > 0 && (
                   <button
                     onClick={() => onReplyAll(message, true)}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '14px',
-                      border: '1px solid #667eea',
-                      borderRadius: '3px',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      color: '#667eea'
-                    }}
+                    className="message-list-action-btn message-list-action-btn--reply"
                     title="Reply to all group members"
                   >
                     ↩↩
@@ -139,15 +118,7 @@ const MessageList = (props) => {
                 {showActions.archive && onArchive && (
                   <button
                     onClick={() => onArchive(message.message_id)}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '14px',
-                      border: '1px solid #6c757d',
-                      borderRadius: '3px',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      color: '#6c757d'
-                    }}
+                    className="message-list-action-btn message-list-action-btn--archive"
                     title="Archive message"
                   >
                     📦
@@ -156,15 +127,7 @@ const MessageList = (props) => {
                 {showActions.delete && onDelete && (
                   <button
                     onClick={() => onDelete(message.message_id)}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '14px',
-                      border: '1px solid #dc3545',
-                      borderRadius: '3px',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      color: '#dc3545'
-                    }}
+                    className="message-list-action-btn message-list-action-btn--delete"
                     title="Delete message"
                   >
                     🗑
@@ -176,15 +139,7 @@ const MessageList = (props) => {
                 {showActions.reply && onReply && (
                   <button
                     onClick={() => onReply(message, false)}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '14px',
-                      border: '1px solid #667eea',
-                      borderRadius: '3px',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      color: '#667eea'
-                    }}
+                    className="message-list-action-btn message-list-action-btn--reply"
                     title="Reply to sender"
                   >
                     ↩
@@ -193,15 +148,7 @@ const MessageList = (props) => {
                 {showActions.replyAll && onReplyAll && message.for_usergroup && message.for_usergroup.node_id > 0 && (
                   <button
                     onClick={() => onReplyAll(message, true)}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '14px',
-                      border: '1px solid #667eea',
-                      borderRadius: '3px',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      color: '#667eea'
-                    }}
+                    className="message-list-action-btn message-list-action-btn--reply"
                     title="Reply to all group members"
                   >
                     ↩↩
@@ -210,15 +157,7 @@ const MessageList = (props) => {
                 {showActions.unarchive && onUnarchive && (
                   <button
                     onClick={() => onUnarchive(message.message_id)}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '14px',
-                      border: '1px solid #6c757d',
-                      borderRadius: '3px',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      color: '#6c757d'
-                    }}
+                    className="message-list-action-btn message-list-action-btn--archive"
                     title="Unarchive message"
                   >
                     📂
@@ -227,15 +166,7 @@ const MessageList = (props) => {
                 {showActions.delete && onDelete && (
                   <button
                     onClick={() => onDelete(message.message_id)}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '14px',
-                      border: '1px solid #dc3545',
-                      borderRadius: '3px',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      color: '#dc3545'
-                    }}
+                    className="message-list-action-btn message-list-action-btn--delete"
                     title="Delete message"
                   >
                     🗑
@@ -252,14 +183,9 @@ const MessageList = (props) => {
   const messagesToDisplay = limit ? messages.slice(0, limit) : messages
 
   if (messagesToDisplay.length === 0) {
+    const emptyClass = compact ? 'message-list-empty message-list-empty--compact' : 'message-list-empty'
     return (
-      <div style={{
-        padding: compact ? '8px' : '12px',
-        fontSize: compact ? '11px' : '12px',
-        color: '#999',
-        fontStyle: 'italic',
-        textAlign: compact ? 'left' : 'center'
-      }}>
+      <div className={emptyClass}>
         No messages
       </div>
     )
@@ -272,7 +198,7 @@ const MessageList = (props) => {
     : messagesToDisplay
 
   return (
-    <div style={{ marginBottom: compact ? '0' : '0' }}>
+    <div>
       {displayMessages.map(message => renderMessage(message))}
     </div>
   )

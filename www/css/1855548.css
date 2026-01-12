@@ -1,0 +1,405 @@
+/* 1855548.css (jukka emulation) */
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules removed for React compatibility - inherits from basesheet */
+
+:root {
+  /* jukka emulation color palette - tan/beige theme with dark blue accents */
+  --e2-color-primary: #000000;            /* Black text */
+  --e2-color-link: #003366;               /* Dark blue links */
+  --e2-color-link-visited: #7f7f66;       /* Brownish gray visited */
+  --e2-color-link-active: #003366;        /* Dark blue on hover */
+  --e2-color-accent: #cccc99;             /* Tan/beige accent */
+
+  /* Backgrounds */
+  --e2-bg-body: #ffffff;                  /* White page background */
+  --e2-bg-nodelet: #ffffff;               /* White nodelet background */
+  --e2-bg-header: #cccc99;                /* Tan header */
+  --e2-bg-hover: #e5e5cc;                 /* Light tan hover */
+  --e2-bg-sidebar: transparent;
+  --e2-bg-oddrow: #cccc99;                /* Tan oddrow */
+
+  /* Text colors */
+  --e2-text-body: #000000;                /* Black text */
+  --e2-text-header: #000000;              /* Black header text */
+  --e2-text-muted: #666666;               /* Gray muted text */
+
+  /* Borders */
+  --e2-border-light: #cccc99;
+  --e2-border-nodelet: #000000;
+  --e2-border-color: #808080;
+  --e2-border-color-light: #cccc99;
+  --e2-border-color-hover: #003366;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #cccc99;
+  --e2-btn-primary-text: #000000;
+  --e2-btn-secondary-bg: #f0f0f0;
+  --e2-btn-secondary-border: #cccc99;
+
+  /* Warning colors */
+  --e2-warning-bg: #fff8dc;
+  --e2-warning-text: #856404;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #7e7e66;
+  --e2-nodelet-header-text: #cece9a;
+
+  /* Epicenter */
+  --e2-epicenter-bg: #cccc99;
+  --e2-epicenter-text: #000000;
+
+  /* Nodelet controls/filters */
+  --e2-nodelet-filter-bg: #f8f8f2;
+  --e2-input-bg: #ffffff;
+  --e2-color-muted: #666666;
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #ffffff;
+
+  /* Status colors */
+  --e2-notice-bg: #f0f0e1;
+  --e2-notice-border: #cccc99;
+  --e2-notice-accent: #7e7e66;
+
+  /* Logo */
+  --e2-logo-text: #000000;
+  --e2-logo-bg: transparent;
+
+  /* Writeup header/footer */
+  --e2-writeup-header-bg: #cccc99;
+  --e2-writeup-header-text: #000000;
+  --e2-writeup-footer-bg: #cccc99;
+  --e2-writeup-footer-text: #000000;
+}
+
+/* ====================================================================
+   TYPOGRAPHY - jukka emulation uses Arial sans-serif
+   ==================================================================== */
+
+body, p, td, th, div {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 12px;
+}
+
+h1 {
+  font-family: arial, sans-serif;
+  font-size: 140%;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 130%;
+  font-weight: bold;
+}
+
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1 {
+  font-size: 140%;
+}
+
+h3 {
+  font-size: 120%;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 100%;
+  font-weight: bold;
+}
+
+h5 {
+  font-size: 90%;
+  font-weight: bold;
+}
+
+h6 {
+  font-size: 80%;
+  font-weight: bold;
+}
+
+tt, pre {
+  font-family: "Courier New", Courier, monospace;
+}
+
+small {
+  font-size: 85%;
+}
+
+big {
+  font-size: 110%;
+}
+
+/* ====================================================================
+   COLORS - Using CSS variables
+   ==================================================================== */
+
+body {
+  color: var(--e2-text-body);
+  background-color: var(--e2-bg-body);
+}
+
+a {
+  text-decoration: none;
+}
+
+a:link {
+  color: var(--e2-color-link);
+}
+
+a:visited {
+  color: var(--e2-color-link-visited);
+}
+
+.oddrow {
+  background-color: var(--e2-bg-oddrow);
+}
+
+/* ====================================================================
+   LOGO - jukka emulation uses the classic e2 logo image
+   ==================================================================== */
+
+div#e2logo {
+  width: 300px;
+  height: 50px; /* exact dimensions of the background image */
+  overflow: hidden; /* sets a window to show the background image */
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-image: url(../static/e2_tight.gif);
+}
+
+div#e2logo a {
+  display: block;
+  padding: 50px 300px; /* hides text behind the image */
+  font-size: 0; /* additional text hiding */
+}
+
+/* ====================================================================
+   HEADER STYLING
+   ==================================================================== */
+
+#header {
+  background-color: var(--e2-bg-header);
+  border-top: 5px solid var(--e2-color-link);
+  padding-bottom: 8px;
+}
+
+/* ====================================================================
+   CONTENT STYLING
+   ==================================================================== */
+
+.content {
+  line-height: 1.4;
+}
+
+#pageheader {
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--e2-border-color);
+}
+
+.createdby {
+  text-align: right;
+}
+
+textarea {
+  width: 100%;
+  font-family: monospace;
+}
+
+/* ====================================================================
+   NODELETS - jukka emulation styling
+   ==================================================================== */
+
+.nodelet {
+  clear: both;
+  padding: 0 2px;
+  word-wrap: break-word;
+  margin-bottom: 2px;
+}
+
+.nodelet h2,
+.nodelet .title {
+  display: block;
+  margin: 7px -2px 0 -2px;
+  text-align: center;
+  font-size: 18px;
+  font-family: "arial narrow", arial, sans-serif;
+  background-color: var(--e2-nodelet-header-bg);
+  color: var(--e2-nodelet-header-text);
+  font-weight: bold;
+}
+
+.nodelet .infolist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nodelet .infolist li {
+  clear: both;
+  margin: 0;
+  padding: 0;
+}
+
+/* ====================================================================
+   WRITEUP STYLING - Using CSS variables
+   ==================================================================== */
+
+.writeuppage .item {
+  border-bottom: 1px solid var(--e2-border-color);
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.item {
+  padding: 10px 0;
+}
+
+.item .contentheader {
+  margin-bottom: 20px;
+}
+
+.item .contentfooter {
+  margin-top: 20px;
+}
+
+.wu_header {
+  background-color: var(--e2-writeup-header-bg);
+  color: var(--e2-writeup-header-text);
+  padding: 2px;
+}
+
+.wu_footer {
+  background-color: var(--e2-writeup-footer-bg);
+  color: var(--e2-writeup-footer-text);
+  padding: 2px;
+}
+
+/* ====================================================================
+   FOOTER STYLING
+   ==================================================================== */
+
+#footer {
+  clear: both;
+  width: 100%;
+  text-align: center;
+  padding-top: 2px;
+  border-top: 5px solid var(--e2-color-link);
+  background-color: var(--e2-bg-header);
+}
+
+/* ====================================================================
+   EPICENTER
+   ==================================================================== */
+
+#epicenter_zen {
+  font-size: 75%;
+  text-align: center;
+  width: 100%;
+  background-color: var(--e2-epicenter-bg);
+  font-family: Candara, "Trebuchet MS", sans-serif;
+  border-top: 1px solid var(--e2-border-color);
+}
+
+#epicenter_zen br {
+  display: none;
+}
+
+#epicenter_zen a:link {
+  color: inherit;
+}
+
+/* ====================================================================
+   NEWS FOR NODERS / WEBLOG STYLING
+   ==================================================================== */
+
+.weblog .title {
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  font-size: 107%;
+}
+
+.weblog .title,
+.weblog .date,
+.weblog .contentinfo cite {
+  display: block;
+}
+
+.weblog .item {
+  border-bottom: solid 2px var(--e2-border-color);
+  margin-bottom: 0.1em;
+}
+
+.weblog .item .contentinfo .title,
+.weblog .item .contentinfo cite,
+.weblog .item .date {
+  background-color: var(--e2-bg-oddrow);
+}
+
+/* ====================================================================
+   SPECIAL CONTENT SECTIONS
+   ==================================================================== */
+
+#creamofthecool .contentinfo {
+  padding: 1px;
+  background-color: var(--e2-bg-oddrow);
+}
+
+#creamofthecool .item {
+  padding-bottom: 8px;
+  border-bottom: solid 2px var(--e2-border-color);
+}
+
+#creamofthecool .item .contentinfo {
+  background-color: var(--e2-bg-oddrow);
+}
+
+/* ====================================================================
+   HOME NODE STYLING
+   ==================================================================== */
+
+#homenodeheader {
+  clear: both;
+  padding: 10px;
+}
+
+#homenodeheader dt {
+  display: block;
+  background-color: var(--e2-bg-oddrow);
+  padding: 1px;
+}
+
+#homenodeheader dd {
+  margin: 0;
+  padding: 1px;
+  text-align: right;
+}
+
+/* ====================================================================
+   PRINT STYLES
+   ==================================================================== */
+
+@media print {
+  a:link { color: inherit; text-decoration: none; }
+  #sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none; }
+}
+
+/* ====================================================================
+   SOFTLINK COLORS - jukka emulation gradient (tan to white)
+   ==================================================================== */
+
+td#sl64{background:#cccc99;}td#sl63{background:#cccc9a;}td#sl62{background:#cdcd9c;}td#sl61{background:#cece9d;}
+td#sl60{background:#cfcf9f;}td#sl59{background:#d0d0a1;}td#sl58{background:#d0d0a2;}td#sl57{background:#d1d1a4;}
+td#sl56{background:#d2d2a5;}td#sl55{background:#d3d3a7;}td#sl54{background:#d4d4a9;}td#sl53{background:#d4d4aa;}
+td#sl52{background:#d5d5ac;}td#sl51{background:#d6d6ae;}td#sl50{background:#d7d7af;}td#sl49{background:#d8d8b1;}
+td#sl48{background:#d8d8b2;}td#sl47{background:#d9d9b4;}td#sl46{background:#dadab6;}td#sl45{background:#dbdbb7;}
+td#sl44{background:#dcdcb9;}td#sl43{background:#ddddbb;}td#sl42{background:#ddddbc;}td#sl41{background:#dedebe;}
+td#sl40{background:#dfdfbf;}td#sl39{background:#e0e0c1;}td#sl38{background:#e1e1c3;}td#sl37{background:#e1e1c4;}
+td#sl36{background:#e2e2c6;}td#sl35{background:#e3e3c7;}td#sl34{background:#e4e4c9;}td#sl33{background:#e5e5cb;}
+td#sl32{background:#e5e5cc;}td#sl31{background:#e6e6ce;}td#sl30{background:#e7e7d0;}td#sl29{background:#e8e8d1;}
+td#sl28{background:#e9e9d3;}td#sl27{background:#e9e9d4;}td#sl26{background:#eaead6;}td#sl25{background:#ebebd8;}
+td#sl24{background:#ececd9;}td#sl23{background:#ededdb;}td#sl22{background:#eeeedd;}td#sl21{background:#eeeede;}
+td#sl20{background:#efefe0;}td#sl19{background:#f0f0e1;}td#sl18{background:#f1f1e3;}td#sl17{background:#f2f2e5;}
+td#sl16{background:#f2f2e6;}td#sl15{background:#f3f3e8;}td#sl14{background:#f4f4e9;}td#sl13{background:#f5f5eb;}
+td#sl12{background:#f6f6ed;}td#sl11{background:#f6f6ee;}td#sl10{background:#f7f7f0;}td#sl9{background:#f8f8f2;}
+td#sl8{background:#f9f9f3;}td#sl7{background:#fafaf5;}td#sl6{background:#fafaf6;}td#sl5{background:#fbfbf8;}
+td#sl4{background:#fcfcfa;}td#sl3{background:#fdfdfb;}td#sl2{background:#fefefd;}td#sl1{background:#ffffff;}

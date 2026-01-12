@@ -3639,13 +3639,13 @@ sub basehref
 {
   my ($this) = @_;
 
+  # Don't generate base href in development - it breaks relative URLs
+  # when accessing via localhost vs development.everything2.com
+  return if !$this->{conf}->is_production;
 
   if ($ENV{HTTP_HOST} !~ /^m\.everything2/i)
   {
-    # This only matters in the development environment
-    my ($port) = $ENV{HTTP_HOST} =~ /(:\d+)$/;
-    $port ||="";
-    return ($this->is_tls()?('https'):('http')).'://'.$this->{conf}->canonical_web_server.$port;
+    return ($this->is_tls()?('https'):('http')).'://'.$this->{conf}->canonical_web_server;
   }
 }
 
@@ -3968,6 +3968,23 @@ sub get_messages
     push @$records, $this->message_json_structure($row);
   }
   return $records;
+}
+
+sub get_unread_message_count
+{
+  my ($this, $user) = @_;
+
+  $this->{db}->getRef($user);
+  return 0 unless defined($user) and defined($user->{node_id});
+
+  # Count unread (non-archived) messages for this user
+  my $count = $this->{db}->sqlSelect(
+    "COUNT(*)",
+    "message",
+    "for_user=$user->{node_id} AND archive=0"
+  );
+
+  return int($count || 0);
 }
 
 sub get_sent_messages
@@ -6489,8 +6506,15 @@ sub buildOtherUsersData
   my $can_create_room = ($user_level >= $required_level || $this->isAdmin($USER) || $is_chanop) ? 1 : 0;
   my $create_room_suspended = $this->isSuspended($USER, 'room') ? 1 : 0;
 
+  # Count users in current room only
+  my $currentRoomUserCount = 0;
+  if (exists $room_users{$current_room_id}) {
+    $currentRoomUserCount = scalar(@{$room_users{$current_room_id}});
+  }
+
   return {
     userCount => $userCount,
+    currentRoomUserCount => $currentRoomUserCount,
     currentRoom => $currentRoom,
     currentRoomId => int($current_room_id),
     rooms => \@rooms,
@@ -6551,6 +6575,8 @@ sub buildNodeInfoStructure
     # Voting and cooling capacity (needed for WriteupDisplay C! button)
     $e2->{user}->{votesleft} = $USER->{votesleft} || 0;
     $e2->{user}->{coolsleft} = int($VARS->{cools} || 0);
+    # Unread message count for inbox badge
+    $e2->{user}->{unreadMessages} = $this->get_unread_message_count($USER);
   }
 
   # Chatterbox data - room topic and initial messages for current room
@@ -6610,19 +6636,14 @@ sub buildNodeInfoStructure
   $e2->{nodetype} = $NODE->{type}->{title};
   $e2->{developerNodelet} = {};
 
-  $e2->{newWriteups} = [];
+  # New Writeups is always loaded - it's core to site navigation (mobile bottom nav)
+  $e2->{newWriteups} = $this->filtered_newwriteups($USER);
 
   my $nodelets = $VARS->{nodelets};
   $nodelets = "" unless defined($nodelets);
 
   # Cover for display on nodelet pages
   $nodelets .= ",$NODE->{node_id}";
-
-  # New Writeups or New Logs
-  if($this->isGuest($USER) or $nodelets =~ /263/ or $nodelets =~ /1923735/)
-  {
-    $e2->{newWriteups} = $this->filtered_newwriteups($USER)
-  }
 
   # The second half of New Logs
   if($nodelets =~ /1923735/)
@@ -6922,7 +6943,6 @@ sub buildNodeInfoStructure
           $NODE,
           $USER,
           $VARS,
-          undef,  # $PAGELOAD
           $this   # $APP
         );
       }
@@ -7400,10 +7420,8 @@ sub buildNodeInfoStructure
           $e2->{messagesData} = $this->get_messages($USER, 10, 0);
         }
 
-        # Check for New Writeups nodelet (263)
-        if (grep { $_ == 263 } @pagenodelets) {
-          $e2->{newWriteups} = $this->filtered_newwriteups($USER);
-        }
+        # Note: newWriteups is loaded unconditionally earlier for all users
+        # since it's core to site navigation (mobile bottom nav)
       }
     } elsif ($nodetype eq 'maintenance' || $nodetype eq 'nodelet') {
       # Maintenance and nodelet nodes use generic system_node display
@@ -7428,6 +7446,20 @@ sub buildNodeInfoStructure
   # Pageheader data - for React to render the page header section
   # This includes: createdby, parent link (writeups), firmlinks, "is also a"
   $e2->{pageheader} = $this->buildPageheaderData($NODE, $USER, $user_node);
+
+  # Global reCAPTCHA config for guest signup modal
+  # This allows AuthModal to show reCAPTCHA-protected signup form
+  if ($this->isGuest($USER)) {
+    my $conf = $this->{conf};
+    my $use_recaptcha = 0;
+    if ($conf->is_production || ($ENV{HTTP_HOST} // '') =~ /^development\.everything2\.com/) {
+      $use_recaptcha = 1;
+    }
+    $e2->{recaptcha} = {
+      enabled => $use_recaptcha ? \1 : \0,
+      publicKey => $conf->recaptcha_v3_public_key // ''
+    };
+  }
 
   return $e2;
 }

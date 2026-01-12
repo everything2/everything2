@@ -1,0 +1,298 @@
+/* 1997552.css (e2gle by someone) */
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules and broken ImageShack image references removed for React compatibility */
+/* Note: Original theme hid many UI elements including catbox - this version is more usable */
+
+:root {
+  /* e2gle color palette - light blue/lavender theme */
+  --e2-color-primary: #000000;            /* Black text */
+  --e2-color-link: #0000cc;               /* Blue links (default) */
+  --e2-color-link-visited: #660099;       /* Purple visited */
+  --e2-color-link-active: #0000ff;        /* Bright blue on hover */
+  --e2-color-accent: #d0d0ff;             /* Light lavender accent */
+
+  /* Backgrounds */
+  --e2-bg-body: #f0efff;                  /* Light blue/lavender page background */
+  --e2-bg-nodelet: #f0efff;               /* Match page background */
+  --e2-bg-header: #f0efff;                /* Match page background */
+  --e2-bg-hover: #e0e0ff;                 /* Slightly darker lavender hover */
+  --e2-bg-sidebar: transparent;
+  --e2-bg-oddrow: #e8e8ff;                /* Lavender for alternating rows */
+
+  /* Text colors */
+  --e2-text-body: #000000;                /* Black text */
+  --e2-text-header: #000000;              /* Black header text */
+  --e2-text-muted: #666666;               /* Gray muted text */
+
+  /* Borders */
+  --e2-border-light: #ccccff;
+  --e2-border-nodelet: #aaaacc;
+  --e2-border-color: #000000;
+  --e2-border-color-light: #d0d0ff;
+  --e2-border-color-hover: #8888cc;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #0000cc;
+  --e2-btn-primary-text: #ffffff;
+  --e2-btn-secondary-bg: #e0e0ff;
+  --e2-btn-secondary-border: #aaaacc;
+
+  /* Warning colors */
+  --e2-warning-bg: #fff8dc;
+  --e2-warning-text: #856404;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #d0d0ff;
+  --e2-nodelet-header-text: #000000;
+
+  /* Epicenter */
+  --e2-epicenter-bg: #f0efff;
+  --e2-epicenter-text: #000000;
+
+  /* Nodelet controls/filters */
+  --e2-nodelet-filter-bg: #e8e8ff;
+  --e2-input-bg: #ffffff;
+  --e2-color-muted: #666666;
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #f8f8ff;
+
+  /* Status colors */
+  --e2-notice-bg: #e8e8ff;
+  --e2-notice-border: #ccccff;
+  --e2-notice-accent: #aaaacc;
+
+  /* Logo */
+  --e2-logo-text: #000000;
+  --e2-logo-bg: transparent;
+
+  /* Writeup sections */
+  --e2-bg-writeup-header: #d0d0ff;       /* Light lavender header */
+  --e2-bg-writeup-content: #f0efff;      /* Match page background */
+  --e2-bg-writeup-footer: #d0d0ff;       /* Light lavender footer */
+  --e2-border-dark: #aaaacc;             /* Lavender-gray border */
+}
+
+/* ====================================================================
+   LOGO - Text-based logo (override Kernel Blue image)
+   ==================================================================== */
+
+div#e2logo {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
+}
+
+div#e2logo a {
+  padding: 0;
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--e2-logo-text, #000000);
+  text-decoration: none;
+  line-height: 50px;
+}
+
+/* ====================================================================
+   TYPOGRAPHY - e2gle uses Calibri/Arial
+   ==================================================================== */
+
+body, p, a, table, td, th,
+.topic, .topic a {
+  font-family: Calibri, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
+code, code a, tt, tt a,
+pre, pre a {
+  font-family: "Courier New", Courier, monospace;
+}
+
+h1 {
+  font-size: 160%;
+}
+
+h2 {
+  font-size: 130%;
+}
+
+/* User-submitted h1s converted to h2 for SEO - style them like h1s */
+h2.user-h1 {
+  font-size: 160%;
+}
+
+h3 {
+  font-size: 110%;
+}
+
+h4 {
+  font-size: 100%;
+}
+
+h5 {
+  font-size: 90%;
+}
+
+h6 {
+  font-size: 80%;
+}
+
+big {
+  font-size: 125%;
+}
+
+small {
+  font-size: 80%;
+}
+
+/* linked h text displays the same size as unlinked */
+h1 a, h2 a, h3 a,
+h4 a, h5 a, h6 a, big a {
+  font-size: 100%;
+}
+
+/* nested i/em tags display as un-italicised text */
+i i, em em, i em, em i {
+  font-style: normal;
+}
+
+/* ====================================================================
+   COLORS - Using CSS variables
+   ==================================================================== */
+
+html {
+  background-color: var(--e2-bg-body);
+}
+
+body {
+  color: var(--e2-text-body);
+  background-color: var(--e2-bg-body);
+}
+
+a:link {
+  color: var(--e2-color-link);
+}
+
+a:visited {
+  color: var(--e2-color-link-visited);
+}
+
+.oddrow {
+  background-color: var(--e2-bg-oddrow);
+}
+
+/* ====================================================================
+   LOGO STYLING
+   ==================================================================== */
+
+#e2logo a {
+  font-size: 36px;
+  color: var(--e2-logo-text);
+}
+
+/* ====================================================================
+   BORDERS
+   ==================================================================== */
+
+hr {
+  border: black 1px;
+  border-style: none none solid none;
+}
+
+/* ====================================================================
+   NODE TITLE
+   ==================================================================== */
+
+.nodetitle {
+  font-size: 25px;
+  text-align: center;
+  border-style: none none solid none;
+  border-width: 1px;
+  padding-bottom: 0.2em;
+  margin-bottom: 1em;
+}
+
+/* ====================================================================
+   FOOTER
+   ==================================================================== */
+
+#footer {
+  margin-top: 1em;
+  border-top: solid 1px;
+  clear: left;
+  width: 100%;
+  text-align: center;
+  line-height: 2em;
+}
+
+/* ====================================================================
+   HOMENODE
+   ==================================================================== */
+
+#homenodeheader dt {
+  font-weight: bold;
+}
+
+#homenodeheader dt:after {
+  content: ": ";
+}
+
+/* ====================================================================
+   WRITEUPS
+   ==================================================================== */
+
+.writeuppage .contentheader,
+.writeuppage .contentheader a {
+  text-align: center;
+}
+
+.sentmessage {
+  font-size: 10px;
+  text-align: left;
+  background-color: var(--e2-bg-body);
+}
+
+/* ====================================================================
+   EPICENTER ZEN BAR
+   ==================================================================== */
+
+#epicenter_zen {
+  background-color: var(--e2-epicenter-bg);
+  text-align: center;
+  border-bottom: solid 1px;
+  padding: 0 0 0.4em 0;
+}
+
+#epicenter_zen br {
+  display: none;
+}
+
+/* ====================================================================
+   PRINT STYLES
+   ==================================================================== */
+
+@media print {
+  a:link { color: inherit; text-decoration: none; }
+  #sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none; }
+}
+
+/* ====================================================================
+   SOFTLINK COLORS - e2gle gradient (gray to white)
+   ==================================================================== */
+
+td#sl64{background:#aaaaaa;}td#sl63{background:#ababab;}td#sl62{background:#acacac;}td#sl61{background:#aeaeae;}
+td#sl60{background:#afafaf;}td#sl59{background:#b0b0b0;}td#sl58{background:#b2b2b2;}td#sl57{background:#b3b3b3;}
+td#sl56{background:#b4b4b4;}td#sl55{background:#b6b6b6;}td#sl54{background:#b7b7b7;}td#sl53{background:#b8b8b8;}
+td#sl52{background:#bababa;}td#sl51{background:#bbbbbb;}td#sl50{background:#bcbcbc;}td#sl49{background:#bebebe;}
+td#sl48{background:#bfbfbf;}td#sl47{background:#c0c0c0;}td#sl46{background:#c2c2c2;}td#sl45{background:#c3c3c3;}
+td#sl44{background:#c4c4c4;}td#sl43{background:#c6c6c6;}td#sl42{background:#c7c7c7;}td#sl41{background:#c9c9c9;}
+td#sl40{background:#cacaca;}td#sl39{background:#cbcbcb;}td#sl38{background:#cdcdcd;}td#sl37{background:#cecece;}
+td#sl36{background:#cfcfcf;}td#sl35{background:#d1d1d1;}td#sl34{background:#d2d2d2;}td#sl33{background:#d3d3d3;}
+td#sl32{background:#d5d5d5;}td#sl31{background:#d6d6d6;}td#sl30{background:#d7d7d7;}td#sl29{background:#d9d9d9;}
+td#sl28{background:#dadada;}td#sl27{background:#dbdbdb;}td#sl26{background:#dddddd;}td#sl25{background:#dedede;}
+td#sl24{background:#dfdfdf;}td#sl23{background:#e1e1e1;}td#sl22{background:#e2e2e2;}td#sl21{background:#e4e4e4;}
+td#sl20{background:#e5e5e5;}td#sl19{background:#e6e6e6;}td#sl18{background:#e8e8e8;}td#sl17{background:#e9e9e9;}
+td#sl16{background:#eaeaea;}td#sl15{background:#ececec;}td#sl14{background:#ededed;}td#sl13{background:#eeeeee;}
+td#sl12{background:#f0f0f0;}td#sl11{background:#f1f1f1;}td#sl10{background:#f2f2f2;}td#sl9{background:#f4f4f4;}
+td#sl8{background:#f5f5f5;}td#sl7{background:#f6f6f6;}td#sl6{background:#f8f8f8;}td#sl5{background:#f9f9f9;}
+td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;}td#sl1{background:#ffffff;}

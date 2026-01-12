@@ -1,441 +1,303 @@
 /* 1926437.css (mikoyan25 by archiewood) */
-/*colours: 00007f, black and #808080 */
-/*= autofix added basic compatibility rules */
-.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
-.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
-.weblog .title, .nodelet .title {font-weight: bold;}
-/*= end autofix added rules */
-#newwriteups.nodelet .contentinfo 	{ 	float: left;
-margin-bottom: 0.5em;
-width: 240px;
-border-style: none none solid none;
-border-width: 1px;
-text-align: right;		}
-#newwriteups.nodelet .nodelet_content .infolist li .title
-{	text-align: left;		}
-#newwriteups.nodelet .nodelet_content .infolist li .type
-{	display: none;			}
-#newwriteups.nodelet .nodelet_content .infolist li cite
-{	float: left;
-clear: left;
-font-size: 10px;		}
-#newwriteups.nodelet .nodelet_content .morelink
-{	float: left;
-clear: left;			}
-/*= Comments containing old/disabled rules start with = for easy finding */
-#header					{
-position: absolute;
-top: 0px;
-left: 0px;
-right: 10px;
-height: 1px;
-z-index: 25;
-padding-left: 10px;
-padding-top: 10px;
-padding-bottom: 10px;		}
-#header #e2logo,
-#frontpage #e2logo 				{
-position: absolute;
-left: 10px;
-top: 5px;
-right: 0px;
-z-index: 50;
-margin-top: 5px;
-padding-bottom: 5px;
-padding-left: 5px;
-font-family: Verdana;
-font-style: italic;
-font-weight: bold;
-font-size: 50px;
-background-color: #00007f;	}
-#e2logo a				{
-color: white;
-text-decoration: none;		}
-#searchform				{
-position: absolute;
-left: 10px;
-top: 86px;
-width: 245px;
-height: 80px;
-padding-top: 8px;
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules removed for React compatibility - inherits from basesheet */
+
+:root {
+  /* mikoyan25 color palette - dark theme with blue accent */
+  --e2-color-primary: #808080;            /* Gray - main text color */
+  --e2-color-link: #808080;               /* Gray links */
+  --e2-color-link-visited: #606060;       /* Darker gray visited */
+  --e2-color-link-active: #a0a0a0;        /* Lighter gray on hover */
+  --e2-color-accent: #00007f;             /* Dark blue - headers, accents */
+
+  /* Backgrounds */
+  --e2-bg-body: #000000;                  /* Black page background */
+  --e2-bg-nodelet: #000000;               /* Black nodelet background */
+  --e2-bg-header: #00007f;                /* Dark blue header/footer */
+  --e2-bg-hover: #101030;                 /* Dark blue-tinted hover */
+  --e2-bg-sidebar: transparent;
+  --e2-bg-oddrow: #00007f;                /* Dark blue for alternating rows */
+
+  /* Text colors */
+  --e2-text-body: #808080;                /* Gray text */
+  --e2-text-header: #ffffff;              /* White header text */
+  --e2-text-muted: #606060;               /* Darker gray muted text */
+
+  /* Borders */
+  --e2-border-light: #00007f;
+  --e2-border-nodelet: #00007f;
+  --e2-border-color: #00007f;
+  --e2-border-color-light: #303080;
+  --e2-border-color-hover: #4040a0;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #00007f;
+  --e2-btn-primary-text: #ffffff;
+  --e2-btn-secondary-bg: #202020;
+  --e2-btn-secondary-border: #00007f;
+
+  /* Warning colors */
+  --e2-warning-bg: #2a2a00;
+  --e2-warning-text: #c0c080;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #00007f;
+  --e2-nodelet-header-text: #ffffff;
+
+  /* Epicenter */
+  --e2-epicenter-bg: transparent;
+  --e2-epicenter-text: #ffffff;
+
+  /* Nodelet controls/filters */
+  --e2-nodelet-filter-bg: #101030;
+  --e2-input-bg: #202020;
+  --e2-color-muted: #606060;
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #101010;
+
+  /* Status colors */
+  --e2-notice-bg: #101030;
+  --e2-notice-border: #00007f;
+  --e2-notice-accent: #4040a0;
+
+  /* Logo */
+  --e2-logo-text: #ffffff;
+  --e2-logo-bg: #00007f;
 }
-#searchform input			{	display: inline;		}
-#frontpage h1				{	margin-top: 0px;		}
-#node_search				{
-display: inline;
-width: 179px;			}
-#search_form span label			{
-float: left;
-clear: left;
-margin-left: 0px;
-margin-top: 5px;
-padding-left: 0px;
-font-family: sans-serif;
-font-size: 75%;
-font-weight: bold;
-text-align: left;		}
-/* 'search' button and 'talk' button in catbox */
-#search_submit,
-#talk_button input			{	width: 52px;			}
-#search_submit				{	padding-bottom: 1px;
-padding-left:	2px;		}
-#message				{	width: 179px;			}
-#chatterbox .nodelet_content		{	overflow: auto;			}
-#notifications				{	width: 240px;
-float: left;
-padding-bottom: 10px;
+
+/* ====================================================================
+   TYPOGRAPHY - mikoyan25 uses Arial
+   ==================================================================== */
+
+body, table, td, th {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
 }
-#epicenter_zen				{
-background-color: transparent;
-color: white;
-position: absolute;
-top: 20px;
-right: 10px;
-text-align: right;
-z-index: 100;			}
-#epicenter_zen a			{
-color: white;
-font-weight: bold;		}
-#epicenter_zen a:hover			{	text-decoration: underline;	}
-#epicenter_zen br			{	display: none;			}
-#epicenter_zen #voteInfo		{	display: block;			}
-#wrapper				{
-position: absolute;
-top: 10px;
-left: 0px;
-width: 100%;
-height: 100%;
-z-index: 0;			}
-#sidebar				{
-position: absolute;
-top: 178px;
-left: 10px;
-width: 240px;
-padding-top: 0px;
-padding-bottom: 10px;
-padding-right: 10px;		}
-#chatterlight_NW 			{
-float: left;
-clear: left;
-width: 240px;
-padding-right: 10px;
-padding-bottom: 10px;
-border-style: none solid none none;
-border: thin;			}
-#mainbody				{
-z-index: 1;
-position: absolute;
-top: 75px;
-left: 260px;
-right: 10px;
-padding-top: 9px;
-padding-left: 10px;		}
-#mainbody h1				{	margin-top: 0px;		}
-#chatterlight_mainbody 			{
-z-index: 1;
-position: absolute;
-top: 0px;
-left: 260px;
-right: 10px;
-padding-top: 10px;
-padding-left: 10px;
+
+h1, h1.nodetitle {
+  font-size: 150%;
+  font-weight: bold;
 }
-#footer,
-.clear,
-#printlink,
-#newwriteups .type,
-#newlogs .type				{	display:none			}
-#newwriteups ul,
-#writeup_faves,
-#newlogs.nodelet ul,
-#coolstaffpicks ul,
-#categories ul,
-#randomnodes ul,
-#usergroupwriteups ul,
-#readthis ul				{	list-style-type: none;		}
-#newwriteups li,
-#newlogs.nodelet li,
-#coolstaffpicks li,
-#categories li,
-#randomnodes li,
-#usergroupwriteups li,
-#readthis li				{	margin-left: -3.3em;		}
-#newlogs .contentinfo 			{	display: block;
-margin-bottom: 0.5em;
-border: thin;
-border-style: none none solid none;}
-#newlogs .title				{	display: block;
-padding-bottom: 0.08em;		}
-#newlogs cite				{	display: block;
-font-size: 80%;			}
-#vitals.nodelet,
-#otherusers.nodelet,
-#currentuserpoll.nodelet,
-#e2zeitgeist.nodelet,
-#newwriteups.nodelet,
-#chatterbox.nodelet,
-#vitals.nodelet,
-#personallinks.nodelet,
-#coolstaffpicks.nodelet,
-#statistics.nodelet,
-#newlogs.nodelet,
-#categories.nodelet,
-#randomnodes.nodelet,
-#usergroupwriteups.nodelet,
-#recentnodes.nodelet,
-#ads.nodelet,
-#notelet.nodelet,
-#readthis.nodelet,
-#quickreference.nodelet,
-#everythingdeveloper.nodelet,
-#notifications.nodelet			{	display: block;
-clear: both;			}
-#notifications li			{	margin-left: -27px;		}
-#writeup_faves li			{
-margin-bottom: 10px;
-padding-bottom: 10px;
-border: thin #808080;
-border-style: none none solid none; }
-#writeup_faves .author{
-display: inline;
-text-align: left;
-background-color: transparent;	}
-#writeup_faves .author a		{
-text-decoration: none;
-font-weight: bold; }
-/*=#writeup_faves .author a:hover,
-#nodelet_91 strong*/
-#writeup_faves .author a:hover,
-#otherusers strong			{	text-decoration: underline;	}
-.topic, .topic a			{
-font-weight: normal;
-text-decoration: none;
-font-size: 12px;		}
-.topic a				{	font-weight: bold;		}
-topic a:hover				{	text-decoration: underline;	}
-body, div, p, li, dd, td, th		{
-background-color: black;
-font-size: 12px;
-font-family: Arial, sans-serif;
-color: #808080;			}
-code					{	font-size: 12px;		}
-h1 					{
-font-size: 150%;
-font-weight: bold;		}
-h2 					{
-font-size: 130%;
-font-weight: bold;		}
+
 /* User-submitted h1s converted to h2 for SEO - style them like h1s */
-h2.user-h1 				{	font-size: 150%;		}
-h3 					{
-font-size: 120%;
-font-weight: bold;		}
-big			 		{	font-size: 110%;		}
-small			 		{	font-size: 90%;			}
-a					{
-color: #808080;
-font-weight: bold;
-text-decoration: none;		}
-a:hover 				{	text-decoration: underline;	}
-.oddrow					{
-color: white;
-background-color: #00007f;	}
-.oddrow td				{
-padding-bottom: 2px;
-padding-top: 2px;
-color: white;			}
-.oddrow a				{
-font-weight: bold;
-color: white;
-text-decoration: none;		}
-.oddrow a:hover				{	text-decoration: underline;	}
-.evenrow td				{
-background-color: #00007f;
-padding-bottom: 2px;
-padding-top: 2px;
-color: white;			}
-.evenrow a				{
-background-color: black;
-margin-bottom: 4px;
-text-decoration: none;
-color: white;			}
-.evenrow a:hover			{	text-decoration: underline;	}
-#softlinks				{
-padding-bottom: 10px;
-border-style: none none solid none;
+h2.user-h1 {
+  font-size: 150%;
 }
-.nodelet h2 				{
-display: block;
-text-align: center;
-background-color: #00007f;
-color: white;			}
-/*=.writeup*/
-.writeuppage .item 				{
-padding-bottom: 10px;
-margin-bottom: 10px;
-margin-top: 20px;
-border: thin;
-border-style: none none solid none;
+
+h2 {
+  font-size: 130%;
+  font-weight: bold;
 }
-td.wu_typeauthorprint span.type,
-td.wu_typeauthorprint span.type a	{ 	display: inline;		}
-#welcome_message			{	padding-bottom: 22px;
-margin-bottom: 0px;		}
-#loglinks				{	display: none;}
-#loglinks h3				{	color: white;
-background-color: #00007f;
-width: 100%;
+
+h3 {
+  font-size: 120%;
+  font-weight: bold;
 }
-#loglinks table				{	width: 100%			}
-#loglinks td				{	width: 25%;
-padding-left: 30px;
-padding-bottom: 10px;		}
-#cooluserpicks				{
-float: left;
-width: 50%;
-list-style-type: none;
-word-wrap: break-word;		}
-#cooluserpicks h3			{
-color: white;
-padding-top: 1px;
-padding-bottom: 1px;
-background-color: #00007f;
-width: 100%;			}
-#cooluserpicks h3 a			{	color: white;			}
-#cooluserpicks h3 a:hover		{	text-decoration: underline;	}
-#cooluserpicks li			{
-font-size: 10px;
-list-style-type: none;
-word-wrap: break-word;
-margin-left: -40px;
-margin-right: 10px;
+
+big {
+  font-size: 110%;
 }
-#cooluserpicks li a			{	font-weight: normal;
+
+small {
+  font-size: 90%;
 }
-#cooluserpicks li a:hover		{	text-decoration: underline;	}
-#staff_picks				{	float: right;
-clear: right;
-width: 50%;			}
-#staff_picks li,
-#staff_picks li a			{	font-weight: normal;
-list-style-type: none;
-word-wrap: break-word;
-font-size: 10px;
-margin-left: -20px;		}
-.staff_pick a:hover			{	text-decoration: underline;	}
-#staff_picks h3 a			{	font-weight: bold;
-font-size: 14px;
-padding-top: 0px;
-padding-bottom: 1px;
-background-color: #00007f;	}
-#staff_picks h3				{	width: 100%
-padding-top: 0px;
-padding-bottom: 2px;
-background-color: #00007f;
-color: white;			}
-#creamofthecool				{	clear: both;			}
-#creamofthecool_title,
-#creamofthecool_title a,
-#creamofthecool_title a .populated	{
-background-color: #00007f;
-font-size: 20px;
-padding-top: 1px;
-padding-bottom: 1px;
-margin-top: 10px;
-margin-bottom: 0px;
-color: white;			}
-#cotc .item,
-#frontpage_news .weblog .item		{	margin-top: 0.5em;		}
-#cotc .contentinfo,
-#frontpage_news .contentinfo		{	border: thin;
-border-style: none none solid none;}
-/*=.cotc_info*/
-#creamofthecool .contentinfo				{
-border: thin;
-border-style: none none solid none;
-padding-top: 10px;
-margin-bottom: 10px;
-margin-left: 0px;
-margin-right: 0px;		}
-#creamofthecool .contentinfo a		{
-text-decoration: none;
-font-weight: bold;		}
-#creamofthecool .contentinfo a:hover	{	text-decoration: underline;	}
-#cotc #creamofthecool .content		{	margin-left: -2px;
-margin-right: 1px;		}
-#cotc #creamofthecool .content a	{	font-weight: bold;
-text-decoration: none;		}
-#cotc #creamofthecool .content a:hover	{	text-decoration: underline;	}
-textarea				{
-width: 100%;			}
-.nodetitle				{
-background-color: #00007f;
-color: white;
-padding-top: 1px;
-padding-bottom: 1px;
-font-size: 20px;		}
-.writeuppage .contentheader a			{
-font-weight: bold;
-text-decoration: none;
+
+code {
+  font-size: 12px;
 }
-.writeuppage .contentheader a:hover			{	text-decoration: underline;	}
-.writeuppage .item .content		{
-margin-top: 10px;
-margin-bottom: 10px;
-line-height: 13pt;		}
-#cooluserpicks .morelink		{	margin-bottom: 10px;		}
-#frontpage_news 			{	float: left;
-clear: both;			}
-#frontpage_news_title 			{	margin-top: 10px;
-font-size: 20px;
-background-color: #00007f;}
-#frontpage_news_title a			{	color: white;
-background-color: #00007f;
-padding-bottom: 0px;
+
+/* ====================================================================
+   COLORS - Using CSS variables
+   ==================================================================== */
+
+body {
+  color: var(--e2-text-body);
+  background-color: var(--e2-bg-body);
 }
-.stylesheet #mainbody form:after	{
-display: block ;
-margin-top: 20px;
-content: "please /msg archiewood if anything doesn't display properly under this theme." ;
-font-weight: bold ;		}
-#homenodepicbox 			{
-width: 50%;
-float: right;
-margin-right: -10px;		}
-#homenodeheader dl 			{
-margin-top: 0px;
-width: 50%;
-float: left;
-clear: left;
-display: block;			}
-#homenodeheader dt 			{
-display: block;
-padding: 2px;
-background-color: #00007f;
-color: white;
+
+a:link {
+  color: var(--e2-color-link);
+  font-weight: bold;
+  text-decoration: none;
 }
-#homenodeheader input			{					}
-#homenodeheader dd 			{	padding: 2px;			}
-#homenodetext 				{
-float: left;
-clear: left;
-padding-top: 10px;
-padding-bottom: 10px;		}
-#bookmarks				{
-float: left;
-clear: left;			}
-.writeup_add				{
-margin-top: 10px;
-margin-bottom: 10px;		}
-.sigil_e2gods, .sigil_e2coders,
-.sigil_edev, .sigil_content_editors	{	font-size: 80%;
-color: white;
-font-weight: bold;		}
-.sigil_chat a:hover			{	text-decoration: underline;	}
-.action_me, .action_sing		{	font-style: italic;		}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: var(--e2-color-link-visited);
+}
+
+.oddrow {
+  background-color: var(--e2-bg-oddrow);
+  color: #ffffff;
+}
+
+.oddrow a {
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.oddrow a:hover {
+  text-decoration: underline;
+}
+
+/* ====================================================================
+   LOGO - Text-based logo (override Kernel Blue image)
+   ==================================================================== */
+
+div#e2logo {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
+  background-color: var(--e2-logo-bg);
+  font-family: Verdana, sans-serif;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 50px;
+}
+
+div#e2logo a {
+  padding: 0;
+  color: var(--e2-logo-text, #ffffff);
+  text-decoration: none;
+  line-height: 50px;
+}
+
+#e2logo a:link, #e2logo a:visited {
+  color: var(--e2-logo-text);
+  text-decoration: none;
+}
+
+/* ====================================================================
+   NODELETS
+   ==================================================================== */
+
+.nodelet {
+  background-color: var(--e2-bg-nodelet);
+}
+
+.nodelet h2, .nodelet_title {
+  display: block;
+  text-align: center;
+  background-color: var(--e2-nodelet-header-bg);
+  color: var(--e2-nodelet-header-text);
+}
+
+/* ====================================================================
+   WRITEUPS
+   ==================================================================== */
+
+.writeup {
+  border-bottom: 1px var(--e2-border-color) solid;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.writeup_text {
+  line-height: 13pt;
+}
+
+/* ====================================================================
+   NODE TITLE
+   ==================================================================== */
+
+h1.nodetitle {
+  background-color: var(--e2-color-accent);
+  color: var(--e2-text-header);
+  padding: 1px 5px;
+  font-size: 20px;
+}
+
+/* ====================================================================
+   TEXTAREA
+   ==================================================================== */
+
+textarea {
+  width: 100%;
+  background-color: var(--e2-input-bg);
+  color: var(--e2-text-body);
+}
+
+/* ====================================================================
+   HOMENODE
+   ==================================================================== */
+
+#homenodeheader dt {
+  display: block;
+  padding: 2px;
+  background-color: var(--e2-color-accent);
+  color: var(--e2-text-header);
+}
+
+#homenodeheader dd {
+  padding: 2px;
+}
+
+/* ====================================================================
+   EPICENTER ZEN BAR
+   ==================================================================== */
+
+#epicenter_zen {
+  background-color: transparent;
+  color: var(--e2-epicenter-text);
+}
+
+#epicenter_zen a {
+  color: var(--e2-epicenter-text);
+  font-weight: bold;
+}
+
+#epicenter_zen a:hover {
+  text-decoration: underline;
+}
+
+#epicenter_zen br {
+  display: none;
+}
+
+/* ====================================================================
+   CHATTER ACTIONS
+   ==================================================================== */
+
+.action_me, .action_sing {
+  font-style: italic;
+}
+
 .action_whisper .text, .action_roll,
 .action_fireball, .action_sanctify,
-.action_egg				{	font-variant: smallcaps;	}/* SOFTLINK COLORS */
+.action_egg {
+  font-variant: small-caps;
+}
+
+/* ====================================================================
+   SIGILS
+   ==================================================================== */
+
+.sigil_e2gods, .sigil_e2coders,
+.sigil_edev, .sigil_content_editors {
+  font-size: 80%;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+/* ====================================================================
+   PRINT STYLES
+   ==================================================================== */
+
+@media print {
+  a:link { color: inherit; text-decoration: none; }
+  #sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none; }
+}
+
+/* ====================================================================
+   SOFTLINK COLORS - mikoyan25 gradient (dark blue to white)
+   ==================================================================== */
+
 td#sl64{background:#00007f;}td#sl63{background:#040481;}td#sl62{background:#080883;}td#sl61{background:#0c0c85;}
 td#sl60{background:#101087;}td#sl59{background:#141489;}td#sl58{background:#18188b;}td#sl57{background:#1c1c8d;}
 td#sl56{background:#20208f;}td#sl55{background:#242491;}td#sl54{background:#282893;}td#sl53{background:#2c2c95;}

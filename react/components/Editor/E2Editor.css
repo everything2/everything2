@@ -56,6 +56,12 @@
   flex-direction: column;
   min-height: 200px;
   height: 100%;
+  padding: 12px;
+}
+
+/* Inline writeup editor base styles */
+.inline-writeup-editor {
+  padding: 12px;
 }
 
 /* Make the EditorContent wrapper (tiptap's container) fill the wrapper */
@@ -261,6 +267,7 @@
   position: relative;
   cursor: pointer;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .e2-mode-toggle-option {
@@ -286,4 +293,46 @@
   border-radius: 17px;
   transition: all 0.2s ease;
   z-index: 0;
+  width: 52px;
+}
+
+.e2-mode-toggle-slider--left {
+  left: 3px;
+}
+
+.e2-mode-toggle-slider--right {
+  left: calc(50% + 1px);
+}
+
+/* ============================================
+   Mobile Responsive Styles
+   ============================================ */
+@media (max-width: 767px) {
+  /* Inline writeup editor - reduce padding on mobile */
+  .inline-writeup-editor {
+    padding: 8px !important;
+    margin-top: 12px !important;
+  }
+
+  /* Editor wrapper - remove extra padding to maximize content width */
+  .inline-writeup-editor .e2-editor-wrapper {
+    padding: 4px !important;
+  }
+
+  /* Editor container that wraps MenuBar and editor */
+  .inline-writeup-editor > div > div {
+    border-radius: 4px;
+  }
+
+  /* Textarea for HTML mode - full width */
+  .inline-writeup-editor textarea {
+    padding: 8px !important;
+  }
+
+  /* Editor content area - less padding on mobile */
+  .inline-writeup-editor .e2-editor-content,
+  .inline-writeup-editor .ProseMirror {
+    min-height: 150px;
+    padding: 8px !important;
+  }
 }

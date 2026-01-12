@@ -169,17 +169,18 @@ sub layout
 
   my $canonical_url = "https://".$self->CONF->canonical_web_server.$params->{node}->canonical_url;
 
-  # Check for ?csstest=1 parameter to enable CSS variable testing
-  my $css_test_mode = $REQUEST->param("csstest");
   my $basesheet_url = $basesheet->cdn_link;
   my $zensheet_url = $zensheet->cdn_link;
   my $printsheet_url = $printsheet->cdn_link;
 
-  # If csstest=1, use -var.css versions (fallback to regular if -var doesn't exist)
-  if ($css_test_mode && $css_test_mode eq "1") {
-    $basesheet_url =~ s/\.css$/-var.css/;
-    $zensheet_url =~ s/\.css$/-var.css/;
-    # Don't convert print stylesheet - it's unsupported
+  # Check if user is using the default theme (Kernel Blue)
+  # If so, skip loading the zensheet since basesheet already has Kernel Blue defaults
+  my $default_style = $self->APP->node_by_name($self->CONF->default_style, "stylesheet");
+  my $is_default_theme = ($zensheet->node_id == $default_style->node_id);
+
+  if ($is_default_theme) {
+    # Don't load a separate zensheet - basesheet has all Kernel Blue defaults
+    $zensheet_url = '';
   }
 
   # Build body class - add writeuppage for e2node/writeup/draft like legacy container

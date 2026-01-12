@@ -2,6 +2,7 @@ package Everything::Controller::e2node;
 
 use Moose;
 extends 'Everything::Controller';
+use List::Util qw(shuffle);
 
 # Controller for e2node nodes
 # Builds React data directly without a Page class intermediary.
@@ -80,6 +81,34 @@ sub _render_e2node {
 
     # Add existing draft if found
     $content_data->{existing_draft} = $existing_draft if $existing_draft;
+
+    # For guest users viewing nodeshells (e2nodes with no writeups),
+    # provide best recent entries to suggest browsing
+    my $writeup_count = $e2node->{group} ? scalar(@{$e2node->{group}}) : 0;
+    if ($user->is_guest && $writeup_count == 0) {
+        my $DB = $self->DB;
+        my $best_recent = $DB->stashData("bestrecentnodes");
+        if ($best_recent && ref($best_recent) eq 'ARRAY' && @$best_recent) {
+            # Shuffle and take 10 entries
+            my @shuffled = shuffle(@$best_recent);
+            my @selected = splice(@shuffled, 0, 10);
+
+            my @best_entries;
+            foreach my $entry (@selected) {
+                push @best_entries, {
+                    node_id => $entry->{parent_e2node},
+                    writeup_id => $entry->{writeup_id},
+                    title => $entry->{parent_title},
+                    author => {
+                        node_id => $entry->{author_user},
+                        title => $entry->{author_name}
+                    },
+                    excerpt => $entry->{snippet}
+                };
+            }
+            $content_data->{best_entries} = \@best_entries;
+        }
+    }
 
     # Merge in any extra content data (e.g., start_with_tools_modal_open)
     if ($extra_content_data) {

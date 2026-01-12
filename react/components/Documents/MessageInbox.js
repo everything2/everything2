@@ -31,25 +31,10 @@ const MessageInbox = ({ data }) => {
   // Handle guest users
   if (data.error === 'guest') {
     return (
-      <div style={{
-        padding: '40px',
-        textAlign: 'center',
-        color: '#6c757d'
-      }}>
-        <h2 style={{ color: '#333', marginBottom: '16px' }}>Message Inbox</h2>
+      <div className="message-inbox-guest">
+        <h2 className="message-inbox-guest-title">Message Inbox</h2>
         <p>{data.message}</p>
-        <a
-          href="/title/Login"
-          style={{
-            display: 'inline-block',
-            marginTop: '16px',
-            padding: '10px 20px',
-            backgroundColor: '#38495e',
-            color: '#fff',
-            textDecoration: 'none',
-            borderRadius: '4px'
-          }}
-        >
+        <a href="/title/Login" className="message-inbox-guest-login">
           Log In
         </a>
       </div>
@@ -415,46 +400,21 @@ const MessageInbox = ({ data }) => {
     if (totalPages <= 1) return null
 
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '12px',
-        padding: '12px',
-        borderTop: '1px solid #dee2e6',
-        borderBottom: '1px solid #dee2e6',
-        marginBottom: '16px'
-      }}>
+      <div className="message-inbox-pagination">
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={!hasPrevPage || loading}
-          style={{
-            padding: '8px 16px',
-            fontSize: '13px',
-            border: '1px solid #dee2e6',
-            borderRadius: '4px',
-            backgroundColor: hasPrevPage && !loading ? '#fff' : '#f8f9fa',
-            color: hasPrevPage && !loading ? '#495057' : '#adb5bd',
-            cursor: hasPrevPage && !loading ? 'pointer' : 'not-allowed'
-          }}
+          className="message-inbox-pagination-btn"
         >
           ← Previous
         </button>
-        <span style={{ color: '#6c757d', fontSize: '13px' }}>
+        <span className="message-inbox-pagination-info">
           Page {page + 1} of {totalPages}
         </span>
         <button
           onClick={() => handlePageChange(page + 1)}
           disabled={!hasNextPage || loading}
-          style={{
-            padding: '8px 16px',
-            fontSize: '13px',
-            border: '1px solid #dee2e6',
-            borderRadius: '4px',
-            backgroundColor: hasNextPage && !loading ? '#fff' : '#f8f9fa',
-            color: hasNextPage && !loading ? '#495057' : '#adb5bd',
-            cursor: hasNextPage && !loading ? 'pointer' : 'not-allowed'
-          }}
+          className="message-inbox-pagination-btn"
         >
           Next →
         </button>
@@ -465,18 +425,9 @@ const MessageInbox = ({ data }) => {
   // Render a sent message (outbox) - simplified, no archive
   const renderSentMessage = (message) => {
     return (
-      <div
-        key={message.message_id}
-        style={{
-          backgroundColor: '#f8f9fa',
-          border: '1px solid #dee2e6',
-          borderRadius: '4px',
-          padding: '12px',
-          marginBottom: '8px'
-        }}
-      >
-        <div style={{ marginBottom: '6px' }}>
-          <span style={{ color: '#6c757d', fontSize: '12px' }}>
+      <div key={message.message_id} className="message-inbox-sent-item">
+        <div className="message-inbox-sent-timestamp">
+          <span>
             {new Date(message.timestamp).toLocaleString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -487,7 +438,7 @@ const MessageInbox = ({ data }) => {
           </span>
         </div>
 
-        <div style={{ marginBottom: '8px', fontSize: '13px' }}>
+        <div className="message-inbox-sent-text">
           {/* Legacy messages contain HTML, new messages use bracket syntax */}
           {message.msgtext && message.msgtext.includes('<a ') ? (
             <span dangerouslySetInnerHTML={{ __html: sanitizeMessageHtml(message.msgtext) }} />
@@ -496,18 +447,10 @@ const MessageInbox = ({ data }) => {
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', fontSize: '14px' }}>
+        <div className="message-inbox-sent-actions">
           <button
             onClick={() => handleDelete(message.message_id, true)}
-            style={{
-              padding: '4px 8px',
-              fontSize: '14px',
-              border: '1px solid #dc3545',
-              borderRadius: '3px',
-              backgroundColor: '#fff',
-              cursor: 'pointer',
-              color: '#dc3545'
-            }}
+            className="message-inbox-delete-btn"
             title="Delete sent message"
           >
             🗑
@@ -526,78 +469,25 @@ const MessageInbox = ({ data }) => {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '20px',
-        paddingBottom: '12px',
-        borderBottom: '2px solid #38495e'
-      }}>
-        <h1 style={{ margin: 0, color: '#333', fontSize: '24px' }}>
-          {viewingBot ? `${viewingBot.title}'s Messages` : 'Messages'}
-        </h1>
-        <button
-          onClick={handleNewMessage}
-          style={{
-            padding: '10px 20px',
-            fontSize: '14px',
-            border: 'none',
-            borderRadius: '4px',
-            backgroundColor: '#38495e',
-            color: '#fff',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          ✉ Compose
-        </button>
-      </div>
-
+    <div className="message-inbox">
       {/* Error display */}
       {error && (
-        <div style={{
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '4px',
-          padding: '12px',
-          marginBottom: '16px',
-          color: '#721c24'
-        }}>
+        <div className="message-inbox-error">
           {error}
         </div>
       )}
 
       {/* Filters bar - only show if there are bots or usergroups available */}
       {(accessibleBots.length > 0 || usergroupsWithMessages.length > 0) && (
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          border: '1px solid #dee2e6',
-          borderRadius: '4px',
-          marginBottom: '16px',
-          overflow: 'hidden'
-        }}>
+        <div className="message-inbox-filters">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            style={{
-              width: '100%',
-              padding: '10px 16px',
-              fontSize: '13px',
-              border: 'none',
-              backgroundColor: 'transparent',
-              color: '#495057',
-              cursor: 'pointer',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
+            className="message-inbox-filters-toggle"
           >
             <span>
               <strong>Filters</strong>
               {(viewingBot || filterUsergroup) && (
-                <span style={{ marginLeft: '8px', color: '#38495e' }}>
+                <span className="message-inbox-filters-active">
                   {viewingBot && `Viewing: ${viewingBot.title}`}
                   {viewingBot && filterUsergroup && ' • '}
                   {filterUsergroup && `Group: ${filterUsergroup.title}`}
@@ -608,17 +498,11 @@ const MessageInbox = ({ data }) => {
           </button>
 
           {showFilters && (
-            <div style={{
-              padding: '16px',
-              borderTop: '1px solid #dee2e6',
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '16px'
-            }}>
+            <div className="message-inbox-filters-panel">
               {/* Bot inbox selector */}
               {accessibleBots.length > 0 && (
-                <div style={{ flex: '1 1 200px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', color: '#6c757d', marginBottom: '4px' }}>
+                <div className="message-inbox-filter-group">
+                  <label className="message-inbox-filter-label">
                     View Inbox For:
                   </label>
                   <select
@@ -632,14 +516,7 @@ const MessageInbox = ({ data }) => {
                         handleBotChange(bot)
                       }
                     }}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      fontSize: '13px',
-                      border: '1px solid #dee2e6',
-                      borderRadius: '4px',
-                      backgroundColor: '#fff'
-                    }}
+                    className="message-inbox-filter-select"
                   >
                     <option value="">{currentUser.title} (me)</option>
                     {accessibleBots.map(bot => (
@@ -653,8 +530,8 @@ const MessageInbox = ({ data }) => {
 
               {/* Usergroup filter */}
               {usergroupsWithMessages.length > 0 && (
-                <div style={{ flex: '1 1 200px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', color: '#6c757d', marginBottom: '4px' }}>
+                <div className="message-inbox-filter-group">
+                  <label className="message-inbox-filter-label">
                     Filter by Group:
                   </label>
                   <select
@@ -668,14 +545,7 @@ const MessageInbox = ({ data }) => {
                         handleUsergroupFilter(ug)
                       }
                     }}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      fontSize: '13px',
-                      border: '1px solid #dee2e6',
-                      borderRadius: '4px',
-                      backgroundColor: '#fff'
-                    }}
+                    className="message-inbox-filter-select"
                   >
                     <option value="">All groups</option>
                     {usergroupsWithMessages.map(ug => (
@@ -689,7 +559,7 @@ const MessageInbox = ({ data }) => {
 
               {/* Clear filters button */}
               {(viewingBot || filterUsergroup) && (
-                <div style={{ flex: '0 0 auto', alignSelf: 'flex-end' }}>
+                <div className="message-inbox-filter-clear">
                   <button
                     onClick={() => {
                       setViewingBot(null)
@@ -698,15 +568,7 @@ const MessageInbox = ({ data }) => {
                       setPage(0)
                       loadMessages('inbox', showArchived, 0, null, null)
                     }}
-                    style={{
-                      padding: '8px 16px',
-                      fontSize: '13px',
-                      border: '1px solid #dee2e6',
-                      borderRadius: '4px',
-                      backgroundColor: '#fff',
-                      color: '#495057',
-                      cursor: 'pointer'
-                    }}
+                    className="message-inbox-clear-btn"
                   >
                     Clear Filters
                   </button>
@@ -718,94 +580,41 @@ const MessageInbox = ({ data }) => {
       )}
 
       {/* Tab navigation */}
-      <div style={{
-        display: 'flex',
-        borderBottom: '1px solid #dee2e6',
-        marginBottom: '16px'
-      }}>
+      <div className="message-inbox-tabs">
         <button
           onClick={() => handleTabChange('inbox')}
-          style={{
-            padding: '12px 24px',
-            fontSize: '14px',
-            border: 'none',
-            borderBottom: activeTab === 'inbox' ? '3px solid #38495e' : '3px solid transparent',
-            backgroundColor: 'transparent',
-            color: activeTab === 'inbox' ? '#38495e' : '#6c757d',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'inbox' ? 'bold' : 'normal',
-            marginBottom: '-1px'
-          }}
+          className={`message-inbox-tab${activeTab === 'inbox' ? ' message-inbox-tab--active' : ''}`}
         >
           📥 {getInboxLabel()}
-          <span style={{
-            marginLeft: '8px',
-            backgroundColor: '#e9ecef',
-            padding: '2px 8px',
-            borderRadius: '10px',
-            fontSize: '12px'
-          }}>
-            {totalCount}
+          <span className="message-inbox-tab-count">
+            ({totalCount})
           </span>
         </button>
         <button
           onClick={() => handleTabChange('outbox')}
-          style={{
-            padding: '12px 24px',
-            fontSize: '14px',
-            border: 'none',
-            borderBottom: activeTab === 'outbox' ? '3px solid #38495e' : '3px solid transparent',
-            backgroundColor: 'transparent',
-            color: activeTab === 'outbox' ? '#38495e' : '#6c757d',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'outbox' ? 'bold' : 'normal',
-            marginBottom: '-1px'
-          }}
+          className={`message-inbox-tab${activeTab === 'outbox' ? ' message-inbox-tab--active' : ''}`}
         >
           📤 Sent
-          <span style={{
-            marginLeft: '8px',
-            backgroundColor: '#e9ecef',
-            padding: '2px 8px',
-            borderRadius: '10px',
-            fontSize: '12px'
-          }}>
-            {outboxCount}
+          <span className="message-inbox-tab-count">
+            ({outboxCount})
           </span>
         </button>
       </div>
 
       {/* Archive toggle - only show for inbox */}
       {activeTab === 'inbox' && (
-        <div style={{ marginBottom: '16px' }}>
+        <div className="message-inbox-archive-toggle">
           <button
             onClick={() => handleArchiveToggle(false)}
             disabled={loading || !showArchived}
-            style={{
-              padding: '6px 16px',
-              fontSize: '13px',
-              border: '1px solid #dee2e6',
-              borderRadius: '3px 0 0 3px',
-              backgroundColor: !showArchived ? '#38495e' : '#fff',
-              color: !showArchived ? '#fff' : '#495057',
-              cursor: !showArchived || loading ? 'default' : 'pointer'
-            }}
+            className={`message-inbox-archive-btn message-inbox-archive-btn--left${!showArchived ? ' message-inbox-archive-btn--active' : ''}`}
           >
             Active ({totalCount})
           </button>
           <button
             onClick={() => handleArchiveToggle(true)}
             disabled={loading || showArchived}
-            style={{
-              padding: '6px 16px',
-              fontSize: '13px',
-              border: '1px solid #dee2e6',
-              borderLeft: 'none',
-              borderRadius: '0 3px 3px 0',
-              backgroundColor: showArchived ? '#38495e' : '#fff',
-              color: showArchived ? '#fff' : '#495057',
-              cursor: showArchived || loading ? 'default' : 'pointer'
-            }}
+            className={`message-inbox-archive-btn message-inbox-archive-btn--right${showArchived ? ' message-inbox-archive-btn--active' : ''}`}
           >
             Archived ({archivedCount})
           </button>
@@ -814,11 +623,7 @@ const MessageInbox = ({ data }) => {
 
       {/* Loading indicator */}
       {loading && (
-        <div style={{
-          padding: '40px',
-          textAlign: 'center',
-          color: '#6c757d'
-        }}>
+        <div className="message-inbox-loading">
           Loading messages...
         </div>
       )}
@@ -849,12 +654,7 @@ const MessageInbox = ({ data }) => {
           ) : (
             <div>
               {messages.length === 0 ? (
-                <div style={{
-                  padding: '40px',
-                  textAlign: 'center',
-                  color: '#6c757d',
-                  fontStyle: 'italic'
-                }}>
+                <div className="message-inbox-empty">
                   No sent messages
                 </div>
               ) : (
@@ -883,66 +683,19 @@ const MessageInbox = ({ data }) => {
 
       {/* Delete confirmation modal */}
       {deleteConfirmOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000
-          }}
-          onClick={cancelDelete}
-        >
-          <div
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '8px',
-              padding: '24px',
-              maxWidth: '400px',
-              width: '90%',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 16px 0', color: '#333', fontSize: '18px' }}>
+        <div className="message-inbox-modal-overlay" onClick={cancelDelete}>
+          <div className="message-inbox-modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="message-inbox-modal-title">
               Delete Message
             </h3>
-            <p style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#495057' }}>
+            <p className="message-inbox-modal-text">
               Are you sure you want to permanently delete this message? This action cannot be undone.
             </p>
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={cancelDelete}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '4px',
-                  backgroundColor: '#fff',
-                  color: '#495057',
-                  cursor: 'pointer'
-                }}
-              >
+            <div className="message-inbox-modal-actions">
+              <button onClick={cancelDelete} className="message-inbox-modal-cancel">
                 Cancel
               </button>
-              <button
-                onClick={confirmDelete}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '13px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  backgroundColor: '#dc3545',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
+              <button onClick={confirmDelete} className="message-inbox-modal-confirm">
                 Delete
               </button>
             </div>

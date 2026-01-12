@@ -25,7 +25,7 @@ const Statistics = (props) => {
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
+        <p className="nodelet-empty">
           No statistics available
         </p>
       </NodeletContainer>
@@ -40,10 +40,10 @@ const Statistics = (props) => {
     }
 
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', paddingLeft: '8px' }}>
-        {icon && React.cloneElement(icon, { size: 12, style: { color: '#666', flexShrink: 0 } })}
-        <span style={{ color: '#666' }}>{label}: </span>
-        <span style={{ fontWeight: 'bold', marginLeft: 'auto' }}>{value}</span>
+      <div className="statistics-stat-row">
+        {icon && React.cloneElement(icon, { size: 12, className: 'statistics-stat-icon' })}
+        <span className="statistics-stat-label">{label}: </span>
+        <span className="statistics-stat-value">{value}</span>
       </div>
     )
   }

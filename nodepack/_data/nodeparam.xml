@@ -210,6 +210,16 @@
     <paramvalue>1</paramvalue>
   </nodeparam>
   <nodeparam>
+    <node_id>1957798</node_id>
+    <paramkey>allow_message_archive</paramkey>
+    <paramvalue>1</paramvalue>
+  </nodeparam>
+  <nodeparam>
+    <node_id>1957798</node_id>
+    <paramkey>usergroup_owner</paramkey>
+    <paramvalue>1682335</paramvalue>
+  </nodeparam>
+  <nodeparam>
     <node_id>1965286</node_id>
     <paramkey>supported_sheet</paramkey>
     <paramvalue>1</paramvalue>

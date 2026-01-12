@@ -14,7 +14,8 @@
   KEY `type` (`type_nodetype`),
   KEY `createtime` (`createtime`),
   KEY `authortype` (`type_nodetype`,`author_user`),
-  KEY `reputation_totalvotes` (`reputation`,`totalvotes`)
+  KEY `reputation_totalvotes` (`reputation`,`totalvotes`),
+  FULLTEXT KEY `title_fulltext` (`title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci PACK_KEYS=1</_create_table_statement>
   <node_id>168</node_id>
   <title>node</title>

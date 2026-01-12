@@ -7,6 +7,7 @@ import { breakTags } from '../Editor/E2HtmlSanitizer'
 import MenuBar from '../Editor/MenuBar'
 import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 import '../Editor/E2Editor.css'
 
 /**
@@ -42,6 +43,7 @@ const CreateCategory = ({ data }) => {
     low_level_warning
   } = data
 
+  const isMobile = useIsMobile()
   const [categoryName, setCategoryName] = useState('')
   const [maintainer, setMaintainer] = useState(user_id || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -195,8 +197,21 @@ const CreateCategory = ({ data }) => {
     }
   }
 
+  // Responsive styles
+  const containerStyle = {
+    ...styles.container,
+    padding: isMobile ? '12px' : '20px'
+  }
+
+  const selectStyle = {
+    ...styles.select,
+    minWidth: isMobile ? 'auto' : '300px',
+    width: isMobile ? '100%' : 'auto',
+    maxWidth: '100%'
+  }
+
   return (
-    <div style={styles.container}>
+    <div style={containerStyle}>
       <p style={styles.breadcrumb}>
         <strong>
           <LinkNode nodeId={null} title="Everything2 Help" url="/title/Everything2+Help" />
@@ -263,7 +278,7 @@ const CreateCategory = ({ data }) => {
           <select
             value={maintainer}
             onChange={(e) => setMaintainer(e.target.value)}
-            style={styles.select}
+            style={selectStyle}
             disabled={isSubmitting}
           >
             <option value={user_id}>Me ({user_title})</option>
@@ -410,7 +425,8 @@ const styles = {
     fontSize: '13px',
     border: '1px solid #ccc',
     borderRadius: '4px',
-    fontFamily: 'inherit'
+    fontFamily: 'inherit',
+    boxSizing: 'border-box'
   },
   select: {
     padding: '8px',

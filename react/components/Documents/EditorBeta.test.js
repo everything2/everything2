@@ -138,8 +138,7 @@ describe('EditorBeta', () => {
     it('shows editor when canAccess is true', () => {
       render(<EditorBeta data={mockData} />)
 
-      expect(screen.getByText('Drafts')).toBeInTheDocument()
-      expect(screen.getByText(/Hello, testuser/)).toBeInTheDocument()
+      expect(screen.getByText('Your Drafts')).toBeInTheDocument()
     })
   })
 

@@ -25,7 +25,7 @@ const CurrentUserPoll = (props) => {
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <p style={{ padding: '8px', fontSize: '12px' }}>No current poll.</p>
+        <p className="poll-empty">No current poll.</p>
       </NodeletContainer>
     )
   }
@@ -142,32 +142,31 @@ const CurrentUserPoll = (props) => {
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}
     >
-      <div style={{ padding: '8px' }}>
-        <h2 style={{ fontSize: '14px', fontWeight: 'bold', margin: '4px 0' }}>
+      <div className="poll-content">
+        <h2 className="poll-title">
           <LinkNode id={poll.node_id} display={poll.title} />
           {poll.poll_status !== 'current' && ` (${poll.poll_status})`}
         </h2>
-        <p style={{ fontSize: '11px', fontStyle: 'italic', margin: '4px 0' }}>
+        <p className="poll-author">
           by <LinkNode id={poll.poll_author} display={poll.author_name} className="author" />
         </p>
-        <h3 style={{ fontSize: '12px', fontWeight: 'bold', margin: '8px 0' }}>
+        <h3 className="poll-question">
           <ParseLinks text={poll.question} />
         </h3>
 
         {showVoting && (
           <form
-            className="e2poll"
+            className="poll-form"
             onSubmit={handleVote}
-            style={{ margin: '8px 0' }}
           >
             {voteError && (
-              <div style={{ color: 'red', fontSize: '11px', marginBottom: '8px' }}>
+              <div className="poll-error">
                 {voteError}
               </div>
             )}
             {poll.options.map((option, index) => (
-              <div key={index} style={{ marginBottom: '4px' }}>
-                <label style={{ fontSize: '12px', cursor: 'pointer' }}>
+              <div key={index} className="poll-option">
+                <label className={`poll-option-label${isVoting ? ' poll-option-label--disabled' : ''}`}>
                   <input
                     type="radio"
                     name="vote_radio"
@@ -175,7 +174,7 @@ const CurrentUserPoll = (props) => {
                     checked={selectedOption === index}
                     onChange={() => setSelectedOption(index)}
                     disabled={isVoting}
-                    style={{ marginRight: '6px' }}
+                    className="poll-radio"
                   />
                   <ParseLinks text={option} />
                 </label>
@@ -185,21 +184,21 @@ const CurrentUserPoll = (props) => {
               type="submit"
               value={isVoting ? 'Voting...' : 'vote'}
               disabled={isVoting || selectedOption === null}
-              style={{ marginTop: '8px', fontSize: '11px' }}
+              className="poll-vote-btn"
             />
           </form>
         )}
 
         {isNew && (
-          <form className="e2poll" style={{ margin: '8px 0' }}>
+          <form className="poll-form">
             {poll.options.map((option, index) => (
-              <div key={index} style={{ marginBottom: '4px' }}>
-                <label style={{ fontSize: '12px' }}>
+              <div key={index} className="poll-option">
+                <label className="poll-option-label poll-option-label--disabled">
                   <input
                     type="radio"
                     name="vote_inactive"
                     disabled
-                    style={{ marginRight: '6px' }}
+                    className="poll-radio"
                   />
                   <ParseLinks text={option} />
                 </label>
@@ -210,7 +209,7 @@ const CurrentUserPoll = (props) => {
 
         {showResults && (
           <>
-            <table className="e2poll" style={{ width: '100%', fontSize: '12px', marginTop: '8px' }}>
+            <table className="poll-results-table">
               <tbody>
                 {poll.options.map((option, index) => {
                   const votes = poll.e2poll_results[index] || 0
@@ -221,25 +220,21 @@ const CurrentUserPoll = (props) => {
                   return (
                     <React.Fragment key={index}>
                       <tr>
-                        <td style={{ padding: '2px' }}>
+                        <td className="poll-results-cell">
                           {isUserVote ? <strong><ParseLinks text={option} /></strong> : <ParseLinks text={option} />}
                         </td>
-                        <td align="right" style={{ padding: '2px' }}>
+                        <td align="right" className="poll-results-cell">
                           &nbsp;{votes}&nbsp;
                         </td>
-                        <td align="right" style={{ padding: '2px' }}>
+                        <td align="right" className="poll-results-cell">
                           {percentage}%
                         </td>
                       </tr>
                       <tr>
-                        <td colSpan="3" style={{ padding: '0' }}>
+                        <td colSpan="3" className="poll-results-bar-cell">
                           <div
-                            className="oddrow"
-                            style={{
-                              height: '8px',
-                              width: `${barWidth}px`,
-                              display: 'block'
-                            }}
+                            className="poll-results-bar"
+                            style={{ width: `${barWidth}px` }}
                           />
                         </td>
                       </tr>
@@ -247,24 +242,24 @@ const CurrentUserPoll = (props) => {
                   )
                 })}
                 <tr>
-                  <td style={{ padding: '2px' }}>
+                  <td className="poll-results-cell">
                     <strong>Total</strong>
                   </td>
-                  <td align="right" style={{ padding: '2px' }}>
+                  <td align="right" className="poll-results-cell">
                     &nbsp;{poll.totalvotes}&nbsp;
                   </td>
-                  <td align="right" style={{ padding: '2px' }}>
+                  <td align="right" className="poll-results-cell">
                     100.00%
                   </td>
                 </tr>
               </tbody>
             </table>
             {isAdmin && hasVoted && (
-              <div style={{ marginTop: '8px' }}>
+              <div className="poll-admin-actions">
                 <button
                   onClick={handleDeleteVote}
                   disabled={isDeleting}
-                  style={{ fontSize: '11px', padding: '2px 8px' }}
+                  className="poll-delete-vote-btn"
                 >
                   {isDeleting ? 'Deleting...' : 'Delete my vote (admin)'}
                 </button>
@@ -274,13 +269,13 @@ const CurrentUserPoll = (props) => {
         )}
 
         {voteError && showResults && (
-          <div style={{ color: 'red', fontSize: '11px', marginTop: '8px' }}>
+          <div className="poll-error poll-error--results">
             {voteError}
           </div>
         )}
       </div>
 
-      <div className="nodeletfoot" style={{ padding: '4px 8px', fontSize: '11px' }}>
+      <div className="nodeletfoot poll-footer">
         <LinkNode title="Everything Poll Archive" type="superdoc" display="Past polls" />
         {' | '}
         <LinkNode title="Everything Poll Directory" type="superdoc" display="Future polls" />

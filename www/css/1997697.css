@@ -1,555 +1,332 @@
 /* 1997697.css (dim jukka emulation by archiewood) */
-/* Fixes from Clockmaker */
-#pageheader {
-padding-bottom: 15px;
-border-bottom: 1px solid gray;
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules and broken image references removed for React compatibility */
+
+:root {
+  /* dim jukka emulation color palette - beige/tan retro theme */
+  --e2-color-primary: #000000;            /* Black text */
+  --e2-color-link: #003366;               /* Navy blue links */
+  --e2-color-link-visited: #7f7f66;       /* Olive brown visited */
+  --e2-color-link-active: #004488;        /* Brighter blue on hover */
+  --e2-color-accent: #cccc99;             /* Tan/olive - accents */
+
+  /* Backgrounds */
+  --e2-bg-body: #ddddbb;                  /* Beige page background */
+  --e2-bg-nodelet: #ddddbb;               /* Beige nodelet background */
+  --e2-bg-header: #cccc99;                /* Tan header */
+  --e2-bg-hover: #e5e5c8;                 /* Lighter beige hover */
+  --e2-bg-sidebar: transparent;
+  --e2-bg-oddrow: #cccc99;                /* Tan for alternating rows */
+
+  /* Text colors */
+  --e2-text-body: #000000;                /* Black text */
+  --e2-text-header: #000000;              /* Black header text */
+  --e2-text-muted: #666655;               /* Muted olive text */
+
+  /* Borders */
+  --e2-border-light: #cccc99;
+  --e2-border-nodelet: #7E7E66;
+  --e2-border-color: gray;
+  --e2-border-color-light: #d5d5b5;
+  --e2-border-color-hover: #b0b088;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #003366;
+  --e2-btn-primary-text: #ffffff;
+  --e2-btn-secondary-bg: #cccc99;
+  --e2-btn-secondary-border: #7E7E66;
+
+  /* Warning colors */
+  --e2-warning-bg: #fff8dc;
+  --e2-warning-text: #856404;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #7E7E66;
+  --e2-nodelet-header-text: #CECE9A;
+
+  /* Epicenter */
+  --e2-epicenter-bg: #cccc99;
+  --e2-epicenter-text: #000000;
+
+  /* Nodelet controls/filters */
+  --e2-nodelet-filter-bg: #e5e5c8;
+  --e2-input-bg: #ffffff;
+  --e2-color-muted: #666655;
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #f0f0e0;
+
+  /* Status colors */
+  --e2-notice-bg: #e5e5c8;
+  --e2-notice-border: #cccc99;
+  --e2-notice-accent: #b0b088;
+
+  /* Logo */
+  --e2-logo-text: #003366;
+  --e2-logo-bg: #cccc99;
 }
-#pagebody .item {
-padding: 10px 0;
+
+/* ====================================================================
+   TYPOGRAPHY - dim jukka uses Arial
+   ==================================================================== */
+
+body, p, td, th, div, table {
+  font-family: arial, helvetica, sans-serif;
+  font-size: 12px;
 }
-#pagebody .item .contentheader {
-margin-bottom: 20px;
-}
-#pagebody .item .contentfooter {
-margin-top: 20px;
-}
-#newwriteups .contentinfo {
-display: table;
-width: 100%;
-}
-#newwriteups .contentinfo .title {
-background-color: #fff;
-text-align: left;
-font-weight: normal;
-float: left;
-width: 77%;
-}
-#newwriteups .contentinfo .type {
-float: right;
-width: 23%;
-font-size: 80%;
-text-align: right;
-}
-#newwriteups .contentinfo cite {
-display: table-header-group;
-color: #cc9;
-text-align: center;
-background-color: #cc9;
-width: 100%;
-padding: 2px;
-}
-#newwriteups .contentinfo cite a {
-background-color: #cc9;
-font-weight: bold;
-display: inline-block;
-margin-left: -1em;
-}
-/* End New Writeups fixes */
-/* archiewood fixed News For Noders headers. */
-.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
-.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
-.weblog .title, .nodelet .title {font-weight: bold;}
-/*= end autofix added rules */
-/* DonJaime added next rule as a quick fix for New Writeups */
-.nodelet .title {
-background-color: #cccc99;
-text-align: center;
-}
-/* belt and braces.. */
-body, p, td, th, div {
-font-family: arial, helvetica, sans-serif;
-font-size: 12px;
-}
+
 h1 {
-font-family: arial, sans-serif;
-font-size: 140%;
-font-weight: bold;
+  font-family: arial, sans-serif;
+  font-size: 140%;
+  font-weight: bold;
 }
+
 h2 {
-font-size: 130%;
-font-weight: bold;
+  font-size: 130%;
+  font-weight: bold;
 }
+
 /* User-submitted h1s converted to h2 for SEO - style them like h1s */
 h2.user-h1 {
-font-size: 140%;
+  font-size: 140%;
 }
+
 h3 {
-font-size: 120%;
-font-weight: bold;
+  font-size: 120%;
+  font-weight: bold;
 }
+
 h4 {
-font-size: 100%;
-font-weight: bold;
+  font-size: 100%;
+  font-weight: bold;
 }
+
 h5 {
-font-size: 90%;
-font-weight: bold;
+  font-size: 90%;
+  font-weight: bold;
 }
+
 h6 {
-font-size: 80%;
-font-weight: bold;
+  font-size: 80%;
+  font-weight: bold;
 }
-/* stuff in page header */
-.topic {
-margin-left: 20px;
-font-size: 12px;
-}
+
 tt, pre {
-font-family: "Courier New", Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
 }
+
 small {
-font-size: 85%;
+  font-size: 85%;
 }
+
 big {
-font-size: 110%;
+  font-size: 110%;
 }
-#header {
-background-image: url(../static/e2_others_02.gif);
-background-position: bottom left;
-background-repeat: no-repeat;
-width: 100%;
-position: absolute;
-top: 0;
-left: 0;
-padding-bottom: 8px;
-border-top: 5px #003366 solid;
-z-index: 100;
-/*    background-color: #cccc99;*/
+
+/* ====================================================================
+   COLORS - Using CSS variables
+   ==================================================================== */
+
+body {
+  color: var(--e2-text-body);
+  background-color: var(--e2-bg-body);
 }
-#wrapper {
-padding-top: 45px;
-/*checked out*/
-padding-left:7px;
-}
-.oddrow  {
-background-color: #cccc99;
-}
-.nodetitle {
-/*    margin-top: 30px;
-margin-left: -5px;*/
-}
-.actions , .actions li {
-display: inline ;
-margin: 0 ;
-padding: 0 ;
-}
-.actions .action {
-padding-right : 5pt ;
-}
-#mainbody {
-position: relative;
-float: left;
-width: 100%;
-border-right: 2px black solid;
-margin-right: -7px;
-padding-right: 5px;
-}
-#mainbody #printlink {display: none;}
-#sidebar {
-position: relative;
-float: left;
-width: 160px;
-border-left: 2px black solid;
-padding-left: 3px;
-}
-/*Nodelets on right*/
-#wrapper {
-padding-right: 172px;
-}
-#sidebar {
-margin-right: -100%;
-margin-left: 5px;
-}
-/*Nodelets on left*/
-/*
-#wrapper {
-padding-left: 205px;
-}
-#sidebar {
-right: 205px;
-margin-left: -100%;
-}
-/* html #left {
-left: 200px;
-}
-*/
-/*end nodelet layout*/
-#footer {
-clear: both;
-width: 100%;
-text-align: center;
-padding-top: 2px;
-border-top: 5px #003366 solid;
-background-color: #cccc99;
-}
-/* Colours, etc */
-body, #sidebar, #wrapper, #mainbody {
-color: black;
-background-color: #ddddbb;
-}
+
 a:link {
-color: #003366;
+  color: var(--e2-color-link);
 }
+
 a:visited {
-color: #7f7f66;
+  color: var(--e2-color-link-visited);
 }
-#welcome_message {
-float: right;
-width: 75%;
-margin-top: 3em;
-font-weight: bold;
+
+.oddrow {
+  background-color: var(--e2-bg-oddrow);
 }
-#loglinks {
-float: right;
-width: 75%;
+
+/* ====================================================================
+   LOGO STYLING - tan background with navy text
+   ==================================================================== */
+
+#e2logo, div#e2logo {
+  background-color: var(--e2-logo-bg);
 }
-#loglinks .linklist {
-text-align: center;
+
+#e2logo a:link, #e2logo a:visited {
+  color: var(--e2-logo-text);
+  text-decoration: none;
 }
-#loglinks li {
-display: inline;
-list-style-type: none;
-margin-left: -55px;
-padding-left: 4em;
-padding-right: 4em;
+
+/* ====================================================================
+   HEADER AND FOOTER
+   ==================================================================== */
+
+#header {
+  border-top: 5px var(--e2-color-link) solid;
 }
-#loglinks h3 {
-display: none;
+
+#footer {
+  border-top: 5px var(--e2-color-link) solid;
+  background-color: var(--e2-color-accent);
 }
-#cooluserpicks {
-float: left;
-width: 23.3%;
-margin-top: -3em;
+
+/* ====================================================================
+   NODELETS
+   ==================================================================== */
+
+.nodelet {
+  background-color: var(--e2-bg-nodelet);
+  word-wrap: break-word;
 }
-#cooluserpicks ul li {
-border-bottom: solid 3px #000000;
-margin-left: -40px;
-list-style-type: none;
-padding: 3px 0 3px 0;
-text-align: center;
+
+.nodelet h2, .nodelet_title {
+  display: block;
+  text-align: center;
+  font-size: 18px;
+  font-family: "arial narrow", arial, sans-serif;
+  background-color: var(--e2-nodelet-header-bg);
+  color: var(--e2-nodelet-header-text);
 }
-#cooluserpicks h3 {
-font-size: 10.5pt;
-margin-left: 0px;
+
+.nodelet .title {
+  background-color: var(--e2-color-accent);
+  text-align: center;
 }
-#staff_picks {
-float: left;
-margin-left: 1.5em;
-text-align: center;
-width: 74%;
+
+/* ====================================================================
+   PAGE HEADER
+   ==================================================================== */
+
+#pageheader {
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--e2-border-color);
 }
-#staff_picks li {
-list-style-type: none;
-margin-left: -40px;
+
+.topic {
+  margin-left: 20px;
+  font-size: 12px;
 }
-#staff_picks .morelink {
-font-weight: bold;
-float: right;
+
+/* ====================================================================
+   WRITEUPS
+   ==================================================================== */
+
+.writeuppage .item {
+  border-bottom: 1px gray solid;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
 }
-#creamofthecool {
-float: left;
+
+.createdby {
+  text-align: right;
 }
-#creamofthecool h2 a {
-font-size: 150%;
+
+#firmlink, #isalso {
+  font-size: 110%;
+  text-indent: 30px;
 }
-#creamofthecool_title {
-font-size: 18px;
+
+/* ====================================================================
+   HOMENODE
+   ==================================================================== */
+
+#homenodeheader dl {
+  background: white;
 }
-#creamofthecool .contentinfo {
-padding: 1px;
-background-color: #cccc99;
+
+#homenodeheader dt {
+  display: block;
+  background-color: var(--e2-color-accent);
+  padding: 1px;
 }
-#creamofthecool .item {
-padding-bottom: 8px;
-border-bottom: solid 2px #000000;
+
+#homenodeheader dd {
+  margin: 0;
+  padding: 1px;
+  text-align: right;
 }
-#creamofthecool .item .contentinfo {
-background-color: #cccc99;
+
+/* ====================================================================
+   TEXTAREA
+   ==================================================================== */
+
+textarea {
+  width: 100%;
+  font-family: monospace;
+  background-color: var(--e2-input-bg);
 }
-#creamofthecool .item .morelink {
-font-weight: bold;
-text-align: right;
+
+/* ====================================================================
+   EPICENTER ZEN BAR
+   ==================================================================== */
+
+#epicenter_zen {
+  font-size: 75%;
+  text-align: center;
+  background-color: var(--e2-color-accent);
+  font-family: Candara, "Trebuchet MS", sans-serif;
+  border-top: 1px black solid;
 }
-#creamofthecool cite {float: right; font-style: normal;}
-.weblog .item{
-border-bottom: solid 2px;
-margin-bottom: 0.1em;
+
+#epicenter_zen br {
+  display: none;
 }
+
+#epicenter_zen a:link {
+  color: inherit;
+}
+
+/* ====================================================================
+   WEBLOG STYLING
+   ==================================================================== */
+
+.weblog .title, .weblog .date, .weblog .contentinfo cite, .nodelet .title {
+  display: block;
+}
+
+.weblog .title {
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  font-size: 107%;
+}
+
+.weblog .item {
+  border-bottom: solid 2px;
+  margin-bottom: 0.1em;
+}
+
 .weblog .item .contentinfo .title,
 .weblog .item .contentinfo cite,
 .weblog .item .date {
-background-color: #cccc99;
+  background-color: var(--e2-color-accent);
 }
-.weblog .item .contentinfo .title{
-float: left;
-clear: left;
-line-height: 30px;
-margin-top: 0;
-width: 70%;
-}
-.weblog .item .contentinfo cite,
-.weblog .item .contentinfo .date{
-float: right;
-clear: right;
-line-height: 15px;
-width: 30%;
-margin-left: -1px;
-border-left: solid 1px;
-border-color: white;
-}
-.weblog .item .content,
-.weblog .item .content a,
-.weblog .item .content table,
-.weblog .morelink,
-.weblog .item .content h3{
-clear: left;
-}
-.remove{
-margin-bottom: 1em;
-}
-#frontpage_news .weblog .item .content{
-margin-right: -1px;
-}
-#frontpage_news h2 a {
-font-size: 150%;
-}
-#frontpage_news {
-float: left;
-}
-#frontpage_news_title{
-font-size: 12px;
-}
-#e2logo {
-float: left;
-margin: 0;
-width: 100%;
-background-image: url(../static/e2_others_01.gif);
-background-color: #cccc99;
-background-repeat: no-repeat;
-}
-#e2logo a {
-filter:alpha(opacity=0);
--moz-opacity: 0;
-opacity: 0;
-width: 350px;
-height: 42px;
-display: block;
-float: left;
-}
-#metalinks {
-margin: 2px;
-padding:  0;
-display: block;
-text-align: center;
-font-size: 80%;
-}
-#metalinks li {
-display: inline;
-padding-right: 5px;
-margin-left: 5px;
-}
-#searchform {
-width: 50%;
-position: absolute;
-right: 10%;
-top: 5px;
-z-index: 10;
-text-align: right;
-}
-#search_form {width: 100%;}
-#searchform form label {
-font-size: 75%;
-clear: left;
-}
-#node_search{
-margin-right: -3px;
-}
-#search_submit {
-width: 49px;
-height: 28px;
-border: 0;
-background: transparent url(../static/search_button.gif) no-repeat center top;
-text-indent: -1000em;
-cursor: pointer; /* hand-shaped cursor */
-cursor: hand; /* for IE 5.x */
-}
-.nodelet {
-clear: both;
-padding: 0 2px;
-word-wrap: break-word;
-margin-bottom: 2px;
-}
-.nodelet h2 {
-display: block;
-margin: 7px -2px 0 -2px;
-text-align: center;
-font-size: 18px;
-font-family: "arial narrow";
-background-color: #7E7E66;
-color: #CECE9A;
-}
-#epicenter h2, #chatterbox h2, #otherusers h2, #newwriteups h2, #vitals h2, #readthis h2, #everythingdeveloper h2, #newwriteupszen h2 {
-margin-top: -26px;
-filter: alpha(opacity=0);
-opacity: 0;
-}
-#epicenter, #chatterbox, #otherusers, #newwriteups, #vitals, #readthis, #everythingdeveloper, #newwriteupszen   {
-padding-top: 26px;
-background-repeat: no-repeat;
-}
-#epicenter {
-background-image: url(../static/epicenter.gif);
-}
-#chatterbox {
-background-image: url(../static/chatterbox.gif);
-}
-#otherusers {
-background-image: url(../static/otherusers.gif);
-}
-#vitals {
-background-image: url(../static/vitals.gif);
-}
-#newwriteups {
-background-image: url(../static/newwriteups.gif);
-}
-#readthis {
-background-image: url(../static/readthis.gif);
-}
-#everythingdeveloper {
-background-image: url(../static/everything_developer.gif);
-}
-#newwriteupszen {
-background-image: url(../static/newwriteups.gif);
-}
-#displaytypelinks {
-text-align: right;
-}
-#softlinks {
-clear: both;
-}
-.writeuppage .item {
-border-bottom: 1px gray solid;
-padding-bottom: 5px;
-margin-bottom: 5px;
-}
-.createdby {
-text-align: right;
-}
-.writeuppage .item .content {
-}
-#firmlink, #isalso {
-font-size: 110%;
-text-indent: 30px;
-}
-#votebutton, #blabbutton {
-float: left;
-}
-#killbutton {
-float: right;
-}
+
+/* ====================================================================
+   MESSAGE NUMBER
+   ==================================================================== */
+
 #msgnum {
-margin: 0;
-margin-bottom: 5px;
+  margin: 0;
+  margin-bottom: 5px;
 }
+
 #msgunarchived {
-font-weight: bold;
+  font-weight: bold;
 }
-#homenodepicbox {
-width: 50%;
-float: left;
-clear: left;
-overflow: auto;
+
+/* ====================================================================
+   PRINT STYLES
+   ==================================================================== */
+
+@media print {
+  a:link { color: inherit; text-decoration: none; }
+  #sidebar, .writeup_add, #search_form, #epicenter_zen, input, label { display: none; }
 }
-#homenodeheader {
-clear: both;
-padding: 10px;
-}
-#homenodeheader dl {
-width: 50%;
-float: right;
-clear: right;
-margin: 0;
-background: white;
-}
-#homenodeheader dt {
-display: block;
-background-color: #cccc99;
-padding: 1px;
-}
-#homenodeheader dd {
-margin: 0;
-padding: 1px;
-text-align: right;
-}
-hr.clear {
-clear: both;
-visibility: hidden;
-}
-textarea {
-width: 100%;
-font-family:monospace;
-}
-#newwriteupszen .nodelet_content {
-width: 100%;
-}
-.infolist .contentinfo {
-clear: both;
-}
-.nodelet .infolist {list-style: none;
-margin: 0;
-padding: 0;
-}
-.nodelet .infolist li {
-clear: both;
-margin: 0;
-padding: 0;
-}
-#epicenter_zen {
-font-size: 75%;
-text-align: center;
-width: 100%;
-background-color: #cccc99;
-position: fixed;
-bottom: 0;
-margin: 0;
-left: 0;
-right: 0;
-padding: 3px;
-font-family: Candara,"Trebuchet MS",sans-serif;
-border-top: 1px black solid;
-}
-#epicenter_zen br {
-display: none;
-}
-#voteInfo {
-padding: 0 200px 0 100px;
-}
-#epicenter_zen a:link {
-color: inherit;
-}
-/* Swap added these for chatterlight */
-#chatterlight_mainbody { float: left; width: 70%; margin-left: 1%; margin-right: 1%}
-#message {width: 95%;}
-#chatterlight_NW { float: left; width: 160px; }
-#chatterlight_hints { display: none; }
-/* SOFTLINK COLORS */
-td#sl64{background:#cccc99;}td#sl63{background:#cccc99;}td#sl62{background:#cccc9a;}td#sl61{background:#cccc9a;}
-td#sl60{background:#cdcd9b;}td#sl59{background:#cdcd9b;}td#sl58{background:#cdcd9c;}td#sl57{background:#cdcd9c;}
-td#sl56{background:#cece9d;}td#sl55{background:#cece9d;}td#sl54{background:#cece9e;}td#sl53{background:#cece9e;}
-td#sl52{background:#cfcf9f;}td#sl51{background:#cfcfa0;}td#sl50{background:#cfcfa0;}td#sl49{background:#d0d0a1;}
-td#sl48{background:#d0d0a1;}td#sl47{background:#d0d0a2;}td#sl46{background:#d0d0a2;}td#sl45{background:#d1d1a3;}
-td#sl44{background:#d1d1a3;}td#sl43{background:#d1d1a4;}td#sl42{background:#d1d1a4;}td#sl41{background:#d2d2a5;}
-td#sl40{background:#d2d2a5;}td#sl39{background:#d2d2a6;}td#sl38{background:#d3d3a7;}td#sl37{background:#d3d3a7;}
-td#sl36{background:#d3d3a8;}td#sl35{background:#d3d3a8;}td#sl34{background:#d4d4a9;}td#sl33{background:#d4d4a9;}
-td#sl32{background:#d4d4aa;}td#sl31{background:#d4d4aa;}td#sl30{background:#d5d5ab;}td#sl29{background:#d5d5ab;}
-td#sl28{background:#d5d5ac;}td#sl27{background:#d5d5ac;}td#sl26{background:#d6d6ad;}td#sl25{background:#d6d6ae;}
-td#sl24{background:#d6d6ae;}td#sl23{background:#d7d7af;}td#sl22{background:#d7d7af;}td#sl21{background:#d7d7b0;}
-td#sl20{background:#d7d7b0;}td#sl19{background:#d8d8b1;}td#sl18{background:#d8d8b1;}td#sl17{background:#d8d8b2;}
-td#sl16{background:#d8d8b2;}td#sl15{background:#d9d9b3;}td#sl14{background:#d9d9b3;}td#sl13{background:#d9d9b4;}
-td#sl12{background:#dadab5;}td#sl11{background:#dadab5;}td#sl10{background:#dadab6;}td#sl9{background:#dadab6;}
-td#sl8{background:#dbdbb7;}td#sl7{background:#dbdbb7;}td#sl6{background:#dbdbb8;}td#sl5{background:#dbdbb8;}
-td#sl4{background:#dcdcb9;}td#sl3{background:#dcdcb9;}td#sl2{background:#dcdcba;}td#sl1{background:#ddddbb;}
-/* SOFTLINK COLORS */
+
+/* ====================================================================
+   SOFTLINK COLORS - dim jukka gradient (tan to beige)
+   ==================================================================== */
+
 td#sl64{background:#cccc99;}td#sl63{background:#cccc99;}td#sl62{background:#cccc9a;}td#sl61{background:#cccc9a;}
 td#sl60{background:#cdcd9b;}td#sl59{background:#cdcd9b;}td#sl58{background:#cdcd9c;}td#sl57{background:#cdcd9c;}
 td#sl56{background:#cece9d;}td#sl55{background:#cece9d;}td#sl54{background:#cece9e;}td#sl53{background:#cece9e;}

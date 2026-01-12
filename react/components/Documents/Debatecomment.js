@@ -95,10 +95,11 @@ const CommentThread = ({ comment, depth = 0, displayMode, canReply }) => {
   )
 }
 
-const Debatecomment = ({ data }) => {
+const Debatecomment = ({ data, user }) => {
   if (!data) return null
 
   // Permission denied view
+  // User info comes from props (passed by DocumentComponent from e2.user)
   if (data.permission_denied) {
     return (
       <div style={styles.container}>
@@ -109,12 +110,12 @@ const Debatecomment = ({ data }) => {
           <p style={{ fontSize: 13, color: '#507898' }}>
             This discussion is restricted to members of a specific usergroup.
           </p>
-          {data.user && !data.user.is_guest && (
+          {user && !user.guest && (
             <p style={{ fontSize: 13, color: '#507898' }}>
-              You are logged in as <strong>{data.user.title}</strong>.
+              You are logged in as <strong>{user.title}</strong>.
             </p>
           )}
-          {data.user && data.user.is_guest && (
+          {user && user.guest && (
             <p style={{ fontSize: 13, color: '#507898' }}>
               Please <a href="/title/log%20in" style={{ color: '#4060b0' }}>log in</a> to see if you have access.
             </p>
@@ -134,8 +135,7 @@ const Debatecomment = ({ data }) => {
     can_edit,
     can_reply,
     display_mode,
-    is_root,
-    user
+    is_root
   } = data
 
   return (

@@ -5,6 +5,7 @@ import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import MessageBox from '../MessageBox'
 import UserToolsModal from '../UserToolsModal'
 import TimeSince from '../TimeSince'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 
 /**
  * UserDisplay - Display page for user nodes (homenodes)
@@ -13,6 +14,7 @@ import TimeSince from '../TimeSince'
  * Preserves the legacy HTML structure: #homenodeheader, #homenodepicbox, #userinfo dl, etc.
  */
 const UserDisplay = ({ data, e2 }) => {
+  const isMobile = useIsMobile()
   const [isToolsModalOpen, setIsToolsModalOpen] = useState(false)
   const [isFavorited, setIsFavorited] = useState(data?.is_favorited || false)
   const [favoriteLoading, setFavoriteLoading] = useState(false)
@@ -225,28 +227,88 @@ const UserDisplay = ({ data, e2 }) => {
           </p>
         )}
 
-        {/* User image box - matches legacy #homenodepicbox */}
-        <div id="homenodepicbox">
-          {user.imgsrc && (
-            <img
-              src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
-              alt={`${user.title}'s image`}
-              id="userimage"
-            />
-          )}
+        {/* Mobile layout: image centered above info */}
+        {isMobile && (
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '16px'
+          }}>
+            {user.imgsrc && (
+              <img
+                src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
+                alt={`${user.title}'s image`}
+                style={{
+                  maxWidth: '80%',
+                  maxHeight: '300px',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  borderRadius: '4px'
+                }}
+              />
+            )}
+            {/* Edit Profile button for own profile - mobile */}
+            {Boolean(is_own) && (
+              <div style={{ marginTop: user.imgsrc ? '12px' : '0' }}>
+                <a
+                  href={`/user/${encodeURIComponent(user.title)}?displaytype=edit`}
+                  style={{
+                    display: 'inline-block',
+                    padding: '8px 16px',
+                    backgroundColor: '#4060b0',
+                    color: '#fff',
+                    borderRadius: '4px',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
+                >
+                  Edit Profile
+                </a>
+              </div>
+            )}
+          </div>
+        )}
 
-          {/* Edit link for own profile */}
-          {Boolean(is_own) && (
-            <p>
-              <a
-                href={`/user/${encodeURIComponent(user.title)}?displaytype=edit`}
-                id="usereditlink"
-              >
-                (edit user information)
-              </a>
-            </p>
-          )}
-        </div>
+        {/* Desktop layout: floated image box (CSS handles float) */}
+        {!isMobile && (
+          <div id="homenodepicbox">
+            {user.imgsrc && (
+              <img
+                src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
+                alt={`${user.title}'s image`}
+                id="userimage"
+                style={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  maxHeight: '400px',
+                  objectFit: 'contain'
+                }}
+              />
+            )}
+
+            {/* Edit Profile button for own profile */}
+            {Boolean(is_own) && (
+              <p style={{ marginTop: user.imgsrc ? '10px' : '0' }}>
+                <a
+                  href={`/user/${encodeURIComponent(user.title)}?displaytype=edit`}
+                  id="usereditlink"
+                  style={{
+                    display: 'inline-block',
+                    padding: '6px 12px',
+                    backgroundColor: '#4060b0',
+                    color: '#fff',
+                    borderRadius: '4px',
+                    textDecoration: 'none',
+                    fontSize: '13px',
+                    fontWeight: '500'
+                  }}
+                >
+                  Edit Profile
+                </a>
+              </p>
+            )}
+          </div>
+        )}
 
         {/* User info */}
         <dl id="userinfo">

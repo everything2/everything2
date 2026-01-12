@@ -1,891 +1,829 @@
 /* 2000528.css (Bookwormier by ascorbic) */
-/*= autofix added rules. adjust to taste: */
-.actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
-.actions { display: block ; }
-/*= end autofix added rules */
-/* autofix added basic compatibility rules */
-.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
-.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
-.weblog .title, .nodelet .title {font-weight: bold;}
-/* end autofix added rules */
-/****** COLOURS ******/
-body,
-th,
-td,
-{
-background-color: #fff;
-color: #151500;
+/* Converted to CSS variables - overrides basesheet defaults */
+/* Layout rules removed for React compatibility - inherits from basesheet */
+
+:root {
+  /* Bookwormier color palette - clean, minimal, sophisticated */
+  --e2-color-primary: #151500;           /* Near black */
+  --e2-color-link: #203860;              /* Dark blue links */
+  --e2-color-link-visited: #507898;      /* Muted blue visited */
+  --e2-color-link-active: #8b0000;       /* Dark red on hover */
+  --e2-color-accent: #5F5F5F;            /* Gray accent */
+
+  /* Backgrounds */
+  --e2-bg-body: #fff;                    /* White */
+  --e2-bg-nodelet: #F9F9F8;              /* Very light gray */
+  --e2-bg-header: #5F5F5F;               /* Gray header */
+  --e2-bg-hover: #f0f0f0;                /* Light gray hover */
+  --e2-bg-sidebar: transparent;
+
+  /* Text colors */
+  --e2-text-body: #151500;               /* Near black */
+  --e2-text-header: #5F5F5F;
+  --e2-text-muted: #666;
+
+  /* Borders */
+  --e2-border-light: #d3d3d3;
+  --e2-border-nodelet: #bbb;
+
+  /* Buttons */
+  --e2-btn-primary-bg: #203860;
+  --e2-btn-primary-text: #fff;
+  --e2-btn-secondary-bg: #F9F9F8;
+  --e2-btn-secondary-border: #bbb;
+
+  /* Warning colors */
+  --e2-warning-bg: #fff8dc;
+  --e2-warning-text: #856404;
+
+  /* Nodelet header */
+  --e2-nodelet-header-bg: #5F5F5F;
+  --e2-nodelet-header-text: #F9F9F8;
+
+  /* Epicenter */
+  --e2-epicenter-bg: #fff;
+  --e2-epicenter-text: #5F5F5F;
+
+  /* Nodelet controls/filters - light gray to match theme */
+  --e2-nodelet-filter-bg: #F9F9F8;         /* Very light gray */
+  --e2-border-color: #bbb;                 /* Gray borders */
+  --e2-border-color-light: #e0e0e0;        /* Lighter gray for subtle borders */
+  --e2-border-color-hover: #888;           /* Darker gray on hover */
+  --e2-input-bg: #fff;                     /* White background for inputs */
+  --e2-color-muted: #666;                  /* Muted gray text */
+
+  /* Dialog/modal backgrounds */
+  --e2-dialog-bg: #fff;
+
+  /* Status colors */
+  --e2-notice-bg: #f5f5f0;                 /* Off-white for notices */
+  --e2-notice-border: #d3d3d3;
+  --e2-notice-accent: #5F5F5F;             /* Gray accent */
+
+  /* Writeup sections */
+  --e2-bg-writeup-header: #e8e8e0;         /* Light gray-tan header */
+  --e2-bg-writeup-content: #fff;           /* White content */
+  --e2-bg-writeup-footer: #e8e8e0;         /* Light gray-tan footer */
+  --e2-border-dark: #5F5F5F;               /* Gray border */
 }
+
+/* ====================================================================
+   LOGO - Text-based logo (override Kernel Blue image)
+   ==================================================================== */
+
+div#e2logo {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
+}
+
+div#e2logo a {
+  padding: 0;
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--e2-color-primary, #151500);
+  text-decoration: none;
+  line-height: 50px;
+}
+
+/* ====================================================================
+   AUTOFIX COMPATIBILITY RULES
+   ==================================================================== */
+
+.actions, .actions li { display: inline; margin: 0; padding: 0 0.5em 0 0; }
+.actions { display: block; }
+
+.weblog .title, .weblog .date, .weblog .contentinfo cite, .nodelet .title { display: block; }
+.weblog .title { margin-bottom: 0.5em; font-weight: bold; font-size: 107%; }
+.weblog .title, .nodelet .title { font-weight: bold; }
+
+/* ====================================================================
+   COLORS
+   ==================================================================== */
+
+body, th, td {
+  background-color: var(--e2-bg-body);
+  color: var(--e2-text-body);
+}
+
 body {
-background-image: url("../static/bookwormier/e2bg.jpg");
+  background-image: url("../static/bookwormier/e2bg.jpg");
 }
-/* darker detailing/backgrounds */
-/*.nodelet_title,
-#header,
-#footer,
-#footer a:link,
-#footer a:visited,*/
+
 #epicenter_zen {
-background-color: #fff;
+  background-color: #fff;
 }
+
 .nodelet {
-font-size: 95%;
+  font-size: 95%;
 }
-/* same color as body */
-#header,
-#footer,
-#footer a:link,
-#footer a:visited,
-#epicenter_zen a:link,
-#epicenter_zen a:visited,
-.nodelet_title  {
-color: #5F5F5F;
+
+#header, #footer, #footer a:link, #footer a:visited,
+#epicenter_zen a:link, #epicenter_zen a:visited, .nodelet_title {
+  color: var(--e2-color-accent);
 }
-/* medium backgrounds/details */
-#searchform label, #epicenter_zen, #footer,.wu_header {
-font-size: 75%;
-font-family: candara, tahoma, sans-serif;
+
+#searchform label, #epicenter_zen, #footer, .wu_header {
+  font-size: 75%;
+  font-family: candara, tahoma, sans-serif;
 }
-/* fractionally darker-than-body */
-.nodelet_title,  .oddrow,
-.oddrow td,
-#homenodeheader dt,
-#cooluserpicks,
-#staff_picks,
-#loglinks,
-#softlinks td,
-.writeuppage .contentheader{
-background-color: #F9F9F8;
+
+.nodelet_title, .oddrow, .oddrow td, #homenodeheader dt,
+#cooluserpicks, #staff_picks, #loglinks, #softlinks td,
+.writeuppage .contentheader {
+  background-color: var(--e2-bg-nodelet);
 }
-/* faint light borders */
-#cooluserpicks,
-#staff_picks,
-#loglinks,
-#softlinks td {
-border-color: #d3d3d3;
+
+#cooluserpicks, #staff_picks, #loglinks, #softlinks td {
+  border-color: var(--e2-border-light);
 }
+
 .nodelet {
-background-color: white;
-border: 1px #bbb solid;
+  background-color: white;
+  border: 1px var(--e2-border-nodelet) solid;
 }
-/* dark horizontal rules */
-.nodetitle,
-#creamofthecool .contentinfo {
-border-bottom-color: #ccc;
+
+.nodetitle, #creamofthecool .contentinfo {
+  border-bottom-color: #ccc;
 }
+
 .weblog .item .content {
-border-top-color: #ccc;
+  border-top-color: #ccc;
 }
-/* miscellaneous */
+
 td {
-background-color: transparent;
+  background-color: transparent;
 }
+
 a:link {
-color: #203860;
+  color: var(--e2-color-link);
 }
+
 a:visited {
-color: #507898;
+  color: var(--e2-color-link-visited);
 }
+
 a:link, a:visited {
-text-decoration: none;
-border-bottom: 1px #ccc dotted;
+  text-decoration: none;
+  border-bottom: 1px #ccc dotted;
 }
-a:active,
-a:hover,
-a:focus {
-border-bottom-style: solid;
+
+a:active, a:hover, a:focus {
+  border-bottom-style: solid;
 }
-/* red */
+
 .nodeshell a {
-color: #8b0000;
+  color: #8b0000;
 }
-.nodeshell a:active,
-.nodeshell a:hover,
-.nodeshell a:focus {
-color: #ff0000;
+
+.nodeshell a:active, .nodeshell a:hover, .nodeshell a:focus {
+  color: #ff0000;
 }
-/****** FORMATTING ******/
+
+/* ====================================================================
+   TYPOGRAPHY - Bookwormier uses elegant serif fonts
+   ==================================================================== */
+
 body {
-margin: 0;
-padding: 0;
-font-family:  "Adobe Caslon Pro", "Adobe Garamond Pro", Garamond, "Garamond Premier Pro", Baskerville, "Hoefler Text", "Lucida Bright", "URW Bookman L", Georgia, serif;
-font-size: 105%;
+  margin: 0;
+  padding: 0;
+  font-family: "Adobe Caslon Pro", "Adobe Garamond Pro", Garamond, "Garamond Premier Pro", Baskerville, "Hoefler Text", "Lucida Bright", "URW Bookman L", Georgia, serif;
+  font-size: 105%;
 }
+
 .writeup_text {
-font-size: 110%;
-line-height: 150%;
+  font-size: 110%;
+  line-height: 150%;
 }
+
 .wu_type {
-padding-left: 15px;
+  padding-left: 15px;
 }
-* html div#header {
-/* Make sure IE6 doesn't go mad with the header */
-width: 100%;
-padding-right: 0;
-padding-left: 0;
-}
+
 table {
-font-size: 100%;
+  font-size: 100%;
 }
-th,
-td {
-margin: 0;
-padding: 0;
+
+th, td {
+  margin: 0;
+  padding: 0;
 }
+
 h1 {
-font-size: 140%;
-font-weight: bold;
+  font-size: 140%;
+  font-weight: bold;
 }
-h2 , h3.nodelet_title {
-font-size: 130%;
-font-weight: bold;
+
+h2, h3.nodelet_title {
+  font-size: 130%;
+  font-weight: bold;
 }
+
 /* User-submitted h1s converted to h2 for SEO - style them like h1s */
 h2.user-h1 {
-font-size: 140%;
+  font-size: 140%;
 }
+
 h3 {
-font-size: 120%;
-font-weight: bold;
+  font-size: 120%;
+  font-weight: bold;
 }
+
 h4 {
-font-size: 100%;
-font-weight: bold;
+  font-size: 100%;
+  font-weight: bold;
 }
+
 h5 {
-font-size: 90%;
-font-weight: bold;
+  font-size: 90%;
+  font-weight: bold;
 }
+
 h6 {
-font-size: 80%;
-font-weight: bold;
+  font-size: 80%;
+  font-weight: bold;
 }
+
 big {
-font-size: 125%;
+  font-size: 125%;
 }
-big big big big, small small small  {
-font-size: 100%; /* cannot nest more than 3 <big> or <small>s */
+
+big big big big, small small small {
+  font-size: 100%;
 }
+
 small {
-font-size: 80%; /* a <big> and a <small> multiply to 100% */
+  font-size: 80%;
 }
+
 /* nested italic tags give normal font */
-i i,
-i em,
-em i,
-em em {
-font-style: normal;
+i i, i em, em i, em em {
+  font-style: normal;
 }
+
 tt {
-font-size: 100%;
+  font-size: 100%;
 }
+
 form {
-margin: 0;
-padding: 0;
+  margin: 0;
+  padding: 0;
 }
+
 dt {
-font-weight: bold;
+  font-weight: bold;
 }
-div#header {
-width: 100%;
-margin: 0;
-overflow: visible;
-}
+
+/* ====================================================================
+   EPICENTER ZEN
+   ==================================================================== */
+
 #epicenter_zen {
-padding: 2px 2px 2px 2.5em;
-border-bottom: 1px solid #c5cdd7;
-text-align: left;
+  padding: 2px 2px 2px 2.5em;
+  border-bottom: 1px solid #c5cdd7;
+  text-align: left;
 }
+
 #epicenter_zen br {
-display: none;
+  display: none;
 }
-div#searchform {
-float: right;
-width: 410px;
-text-align: right;
-padding: 0;
-margin: 5px 2px;
-}
-form#search_form {
-}
-input#node_search {
-margin-top: 15px;
-float: left;
-padding-left: 20px;
-background-image: none; /* React SearchBar has its own icon */
-background-repeat: no-repeat;
-font-size: 12px;
-}
-input#search_submit {
-margin-top: 15px;
-float: left;
-}
+
+/* ====================================================================
+   SEARCH FORM
+   ==================================================================== */
+
 #search_form label {
-display: block;
-font-size: 75%;
-float: right;
-clear: right;
-text-align: left;
-width: 100px;
-margin: 0;
-padding: 0;
-height: 15px;
+  font-size: 75%;
 }
-input#near_match {
-float: left;
-margin: 0px;
-padding: 0px;
-}
-input#match_all {
-float: left;
-margin: 0px;
-padding: 0px;
-}
-input#full_text {
-float: left;
-margin: 0px;
-padding: 0px;
-}
+
+/* ====================================================================
+   LOGO - Bookwormier uses custom logo image
+   ==================================================================== */
+
 div#e2logo {
-background-image: url(../static/bookwormier/e2logo.gif);
-background-repeat: no-repeat;
-width: 250px;
-height: 50px;
-overflow: hidden;
-margin: 5px 20px;
+  background-image: url(../static/bookwormier/e2logo.gif);
+  background-repeat: no-repeat;
+  width: 250px;
+  height: 50px;
+  overflow: hidden;
+  margin: 5px 20px;
 }
-div#e2logo a,
-div#e2logo a:link,
-div#e2logo a:visited,
-div#e2logo a:active {
-display: block;
-font-size: 130%;
-font-style: italic;
-padding-left: 300px;
-text-decoration: none;
-border-bottom: none;
-color: #445;
+
+#e2logo a, #e2logo a:link, #e2logo a:visited, #e2logo a:active {
+  display: block;
+  font-size: 130%;
+  font-style: italic;
+  padding-left: 300px;
+  text-decoration: none;
+  border-bottom: none;
+  color: #445;
 }
-#wrapper {
-clear: both;
-padding-right: 280px; /* sidebar goes in this gap */
-margin: 2px 2px 20px 20px;
-}
+
+/* ====================================================================
+   CONTENT AREAS
+   ==================================================================== */
+
 #mainbody {
-float: left;
-width: 100%;
-margin-bottom: 20px;
-padding: 5px;
-background-color: white;
-border: 1px #bbb solid;
+  background-color: white;
+  border: 1px var(--e2-border-nodelet) solid;
 }
+
 #mainbody > *:first-child {
-margin-top: 0;
+  margin-top: 0;
 }
+
 .nodetitle {
-padding-bottom: 1px;
-border-bottom-width: 1px;
-border-bottom-style: dotted;
-margin: 5px 0 1px;
-padding: 10px 20px;
+  padding-bottom: 1px;
+  border-bottom-width: 1px;
+  border-bottom-style: dotted;
+  margin: 5px 0 1px;
+  padding: 10px 20px;
 }
-/* TODO: introduce print-only styles to deprecate the "printable" view entirely */
-p#printlink {
-text-align: right;
-font-size: 80%;
-width: 16px;
-height: 16px;
-overflow: hidden;
-background-image: url(../static/bookwormier/printer.png);
-float: right;
-}
-p#printlink a {
-padding-left: 100%;
-}
-/*** FRONT PAGE SPECIFIC ***/
+
+/* ====================================================================
+   FRONT PAGE SPECIFIC
+   ==================================================================== */
+
 #welcome_message {
-margin: 20px;
-text-align: center;
-font-weight: bold;
+  margin: 20px;
+  text-align: center;
+  font-weight: bold;
 }
+
 #tagline {
-margin:0px auto;
-font-size:1.2em;
+  margin: 0px auto;
+  font-size: 1.2em;
 }
+
 #wit {
-margin:8px auto;
-font-size:1em;
+  margin: 8px auto;
+  font-size: 1em;
 }
-#loglinks,
-#cooluserpicks,
-#staff_picks {
-max-width: 33%;
-clear: both;
-float: left;
-margin-right: 20px;
-margin-bottom: 2px;
-width: 250px;
-border-width: 1px;
-border-style: solid;
-padding: 5px;
+
+#loglinks, #cooluserpicks, #staff_picks {
+  max-width: 33%;
+  clear: both;
+  float: left;
+  margin-right: 20px;
+  margin-bottom: 2px;
+  width: 250px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 5px;
 }
-#cooluserpicks h3,
-#loglinks h3,
-#staff_picks h3 {
-margin: 0;
+
+#cooluserpicks h3, #loglinks h3, #staff_picks h3 {
+  margin: 0;
 }
-.linklist , .linklist li {
-padding: 0;
-margin: 0;
-display: block ;
-list-style: none outside none;
+
+.linklist, .linklist li {
+  padding: 0;
+  margin: 0;
+  display: block;
+  list-style: none outside none;
 }
+
 #mainbody .linklist {
-margin: 5px 0;
+  margin: 5px 0;
 }
+
 #mainbody .linklist li {
-padding: 1px 0;
-border-bottom-width: 1px;
-border-bottom-style: solid;
-text-align: left;
-border-bottom-color: #d3d3d3;
+  padding: 1px 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  text-align: left;
+  border-bottom-color: var(--e2-border-light);
 }
+
 #mainbody .linklist li a {
-padding: 1px;
-display: block;
-text-decoration: none;
-border-bottom: none;
+  padding: 1px;
+  display: block;
+  text-decoration: none;
+  border-bottom: none;
 }
-.morelink,
-.editlink,
-.sp_more {
-text-align: right;
+
+.morelink, .editlink, .sp_more {
+  text-align: right;
 }
+
 #bestnew {
-margin:8px 60px;
+  margin: 8px 60px;
 }
+
 h3#creamofthecool_title {
-margin: 0 0 10px 0;
+  margin: 0 0 10px 0;
 }
+
 #creamofthecool .content {
-margin: 5px 0;
+  margin: 5px 0;
 }
+
 #cotc {
-overflow: hidden;
+  overflow: hidden;
 }
+
 #creamofthecool .item {
-margin: 0px 0;
+  margin: 0px 0;
 }
+
 #creamofthecool .contentinfo {
-font-weight: bold;
-padding-bottom: 5px;
-border-bottom-width: 1px;
-border-bottom-style: solid;
-margin-bottom: 2px;
+  font-weight: bold;
+  padding-bottom: 5px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  margin-bottom: 2px;
 }
+
 #creamofthecool .contentinfo a {
-text-decoration: none;
-border-bottom: none;
+  text-decoration: none;
+  border-bottom: none;
 }
-#creamofthecool .content {
-}
+
 #creamofthecool .content blockquote {
-margin: 0 5%;
+  margin: 0 5%;
 }
+
 #creamofthecool .morelink {
-text-align: right;
+  text-align: right;
 }
+
 #frontpage_news {
-clear: both;
+  clear: both;
 }
-#frontpage_news h2 {
-}
-/* news entries resemble writeups: */
+
+/* ====================================================================
+   NEWS ENTRIES (weblog)
+   ==================================================================== */
+
 .weblog .item {
-margin: 20px 0;
+  margin: 20px 0;
 }
+
 .weblog .item .title {
-display: inline;
-font-weight: bold;
+  display: inline;
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: none;
 }
-.weblog .item .title {
-text-decoration: none;
-border-bottom: none;
-}
+
 .weblog .item .contentinfo cite {
-margin-left: 5px;
-display: inline;
-font-weight: bold;
+  margin-left: 5px;
+  display: inline;
+  font-weight: bold;
 }
+
 .weblog .item .contentinfo cite a {
-text-decoration: none;
-border-bottom: none;
+  text-decoration: none;
+  border-bottom: none;
 }
+
 .weblog .item .date {
-margin-left: 5px;
-display: inline;
-font-weight: bold;
+  margin-left: 5px;
+  display: inline;
+  font-weight: bold;
 }
+
 .weblog .item .date:before {
-content: "on ";
+  content: "on ";
 }
+
 .remove {
-margin-left: 5px;
-display: inline;
-font-weight: bold;
+  margin-left: 5px;
+  display: inline;
+  font-weight: bold;
 }
+
 .weblog .item .content {
-clear: both;
-margin-top: 3px;
-border-top-width: 1px;
-border-top-style: solid;
-padding: 10px 0;
+  clear: both;
+  margin-top: 3px;
+  border-top-width: 1px;
+  border-top-style: solid;
+  padding: 10px 0;
 }
+
 .weblog .item .content>p {
-margin-top: 0;
+  margin-top: 0;
 }
-/*** END FRONT PAGE ***/
-/*** REGULAR NODES ***/
-#firmlink,
-#isalso,
-.topic {
-margin: 1px 0 0;
-padding: 0;
-font-size: 90%;
-font-weight: normal;
-text-indent: 0px;
+
+/* ====================================================================
+   REGULAR NODES
+   ==================================================================== */
+
+#firmlink, #isalso, .topic {
+  margin: 1px 0 0;
+  padding: 0;
+  font-size: 90%;
+  font-weight: normal;
+  text-indent: 0px;
 }
+
 .createdby {
-margin: 10px 0;
-text-align: right;
+  margin: 10px 0;
+  text-align: right;
 }
+
 .writeuppage .item {
-margin-bottom: 20px;
+  margin-bottom: 20px;
 }
+
 .writeuppage .contentheader {
-padding: 5px;
-/*	border-top-color: #333333;
-border-top-width: 1px;
-border-top-style: solid;
-*/}
-.writeuppage .contentheader td {
+  padding: 5px;
 }
+
 .writeuppage .item .content {
-padding: 20px 70px 10px 70px;
-overflow: auto;
+  padding: 20px 70px 10px 70px;
+  overflow: auto;
 }
+
 p {
-margin: 10px 0;
+  margin: 10px 0;
 }
+
 pre, tt, code, textarea {
-font-family: Consolas, "Andale Mono", "Courier New", monospace;
-font-size: 100%;
+  font-family: Consolas, "Andale Mono", "Courier New", monospace;
+  font-size: 100%;
 }
+
 pre {
-/* to stop page-widening */
-display: block;
-overflow: auto;
+  display: block;
+  overflow: auto;
 }
+
 textarea {
-width: 100%;
-color: #333;
+  width: 100%;
+  color: #333;
 }
+
 ul { list-style: disc; }
 ul ul { list-style: circle; }
 ul ul ul { list-style: square; }
 ul ul ul ul { list-style: disc; }
 ul ul ul ul ul { list-style: circle; }
 ul ul ul ul ul ul { list-style: square; }
+
 .content table {
-border-collapse: collapse;
+  border-collapse: collapse;
 }
-.content th , .content td  {
-border: 1px solid gray;
-padding: 3px;
+
+.content th, .content td {
+  border: 1px solid gray;
+  padding: 3px;
 }
+
 .wu_footer td {
-text-align: center;
-width: 10%;
-padding: 5px;
+  text-align: center;
+  width: 10%;
+  padding: 5px;
 }
+
 #displaytypelinks {
-margin: 5px 0;
-font-size: 90%;
-text-align: right;
+  margin: 5px 0;
+  font-size: 90%;
+  text-align: right;
 }
+
 #displaytypelinks p {
-margin: 0;
+  margin: 0;
 }
-#killbutton,
-#votebutton,
-#blabbutton {
-float: right;
-margin: 5px 0;
-}
+
 #softlinks {
-margin: 5px 0;
-clear: both;
+  margin: 5px 0;
+  clear: both;
 }
+
 #softlinks table {
-border-collapse: collapse;
+  border-collapse: collapse;
 }
+
 #softlinks td {
-border-width: 1px;
-border-style: solid;
-padding: 5px;
-text-align: center;
-width: 25%;
+  border-width: 1px;
+  border-style: solid;
+  padding: 5px;
+  text-align: center;
+  width: 25%;
 }
-#softlinks td a {
-}
-#softlinks td a:hover {
-}
+
 .writeup_add {
-margin: 20px 0;
+  margin: 20px 0;
 }
-/*** END REGULAR NODES ***/
-/*** HOMENODES ***/
-#homenodeheader {
-margin-top: 20px;
-}
+
+/* ====================================================================
+   HOMENODES
+   ==================================================================== */
+
 #homenodepicbox {
-float: left;
+  float: left;
 }
-#userimage {
+
+#homenodeheader {
+  margin-top: 20px;
 }
+
 #homenodeheader dl {
-width: 40%;
-float: right;
-display: block;
+  width: 40%;
+  float: right;
+  display: block;
 }
+
 #homenodeheader dt {
-display: block;
-padding: 2px;
-font-size: 90%;
+  display: block;
+  padding: 2px;
+  font-size: 90%;
 }
+
 #homenodeheader dd {
-padding: 2px;
-margin: 0;
-text-align: right;
-font-size: 90%;
+  padding: 2px;
+  margin: 0;
+  text-align: right;
+  font-size: 90%;
 }
+
 hr.clear {
-/*
-I can only find one place where hr.clear appears
-so I don't know if this will break other pages
-clear: both;
-visibility: hidden;
-*/
-display: none;
+  display: none;
 }
+
 #homenodetext {
-width: 100%;
-clear: both;
+  width: 100%;
+  clear: both;
 }
+
 #homenodetext td {
-padding: 10px 50px;
+  padding: 10px 50px;
 }
+
 #bookmarks {
-padding: 20px 50px;
+  padding: 20px 50px;
 }
-#bookmarks h4 {
-}
-#bookmarks ul {
-}
-#bookmarks li {
-}
-/*** END HOMENODES ***/
-/*** SCRATCHPAD ***/
+
+/* ====================================================================
+   SCRATCHPAD
+   ==================================================================== */
+
 #scratchpadtable {
-border-collapse: collapse;
-border-width: 1px;
+  border-collapse: collapse;
+  border-width: 1px;
 }
+
 #scratchpadtable td {
-padding: 20px;
+  padding: 20px;
 }
-/*** END SCRATCHPAD ***/
-/*** TABLES OF DATA ***/
-.oddrow td,
-.evenrow td {
-padding: 4px;
+
+/* ====================================================================
+   TABLES OF DATA
+   ==================================================================== */
+
+.oddrow td, .evenrow td {
+  padding: 4px;
 }
-/*** END TABLES ***/
+
 #mainbody > *:last-child {
-margin-bottom: 0;
+  margin-bottom: 0;
 }
-#sidebar {
-float: left;
-margin-left: 10px;
-width: 250px;
-margin-right: -100%;
+
+/* ====================================================================
+   NODELETS
+   ==================================================================== */
+
+#msgnum, #msgunarchived {
 }
-/* These appear at the top of the sidebar iff you have no chatterbox nodelet */
-#msgnum,
-#msgunarchived {
-}
+
 .nodelet {
-clear: both;
-padding: 0;
-word-wrap: break-word; /* ? */
-margin-bottom: 2px;
-border-style: 1px #666 solid;
+  clear: both;
+  padding: 0;
+  word-wrap: break-word;
+  margin-bottom: 2px;
 }
+
 .nodelet_title {
-display: block;
-margin: 0;
-padding: 5px 5px 2px 5px;
-text-align: center;
-font-variant: small-caps;
+  display: block;
+  margin: 0;
+  padding: 5px 5px 2px 5px;
+  text-align: center;
+  font-variant: small-caps;
 }
+
 .nodelet_content {
-padding: 5px;
+  padding: 5px;
 }
+
 .nodelet ol, .nodelet ul {
-padding-left: 3px;
-list-style-position: inside;
+  padding-left: 3px;
+  list-style-position: inside;
 }
-/*** NEW WRITEUPS ZEN NODELET (#1868940) ***/
+
+/* NEW WRITEUPS ZEN NODELET (#1868940) */
 .nodelet .infolist {
-margin: 0;
-padding: 0;
-list-style: none outside none;
+  margin: 0;
+  padding: 0;
+  list-style: none outside none;
 }
+
 .nodelet .infolist li {
-margin: 0;
-padding: 1px;
-border-bottom-width: 1px;
-border-bottom-style: solid;
-border-color: #d3d3d3;
+  margin: 0;
+  padding: 1px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-color: var(--e2-border-light);
 }
+
 .nodelet .infolist .contentinfo {
-display: block;
+  display: block;
 }
+
 .nodelet .morelink {
-text-align: right;
+  text-align: right;
 }
-/*** END NEW WRITEUPS ZEN NODELET ***/
-/*** EPICENTER NODELET (#262) ***/
+
+/* EPICENTER NODELET (#262) */
 #epicenter ul {
-margin: 5px;
-padding: 0;
-list-style: disc inside none;
+  margin: 5px;
+  padding: 0;
+  list-style: disc inside none;
 }
-#epicenter li {
-}
+
 #experience {
-font-size: 110%;
+  font-size: 110%;
 }
-/*** END EPICENTER NODELET ***/
-/*** CHATTERBOX NODELET (#170070) ***/
-/* catbox symbols... */
-#chatterbox {
-}
-/*** REMOVED BY BONCI - 2018-04-29
-#chatterbox .nodelet_content {
-overflow: auto;
-}
-***/
+
+/* CHATTERBOX NODELET (#170070) */
 .chat_user {
-display: inline-block;
-margin-top: 0.5em;
+  display: inline-block;
+  margin-top: 0.5em;
 }
+
 input#message {
-width: 90%;
-margin: 0 -1px;
+  width: 90%;
+  margin: 0 -1px;
 }
-/*** END CHATTERBOX NODELET ***/
+
 /* PERSONAL LINKS NODELET */
 #personallinks .linklist {
-margin-bottom: 1em ;
+  margin-bottom: 1em;
 }
+
 #catbox_chatter {
-line-height: 110%;
-font-size: 95%;
+  line-height: 110%;
+  font-size: 95%;
 }
-/*** AD NODELET (#1931151) ***/
+
+/* AD NODELET (#1931151) */
 #ads {
-background-color: white;
+  background-color: white;
 }
+
 #ads h2 {
-display: none;
+  display: none;
 }
-/*** END AD NODELET ***/
+
+/* ====================================================================
+   FOOTER
+   ==================================================================== */
+
 #footer {
-clear: both;
-padding: 5px;
-text-align: center;
+  clear: both;
+  padding: 5px;
+  text-align: center;
 }
-.begheader {
-}
+
 #metalinks {
-display: none;
+  display: none;
 }
-/* CHATTERLIGHT */
-#chatterlight_mainbody {
-float: left;
-width: 75%;
-}
+
+/* ====================================================================
+   CHATTERLIGHT
+   ==================================================================== */
+
 #chatterlight_mainbody #links,
 #chatterlight_mainbody #chatterbox_nodelet,
 #chatterlight_mainbody #chatterlight_search {
-margin: 1em;
+  margin: 1em;
 }
+
 #chatterlight_credit { display: none; }
 #chatterlight_hints { display: none; }
+
 #chatterlight_mainbody .nodelet {
-float: none;
-width: auto;
-padding: 0;
+  float: none;
+  width: auto;
+  padding: 0;
 }
-#chatterlight_NW,
-#chatterlight_Notifications {
-float: left;
-width: 25%;
-}
+
 #chatterlight_NW #newwriteups,
 #chatterlight_Notifications #notifications {
-margin: 1em;
+  margin: 1em;
 }
-#chatterlight_NW .nodelet,
-#chatterlight_Notifications .nodelet {
-float: none;
-width: auto;
-padding: 0;
+
+#chatterlight_NW .nodelet, #chatterlight_Notifications .nodelet {
+  float: none;
+  width: auto;
+  padding: 0;
 }
-/*** Mobile bits ***/
-#mobilewrapper {
-font-family: georgia;
-font-size: 14px;
-}
-#mobilewrapper small {
-font-size: 90%;
-}
-#mobilewrapper div#e2logo {
-background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#5F5F5F), to(black));
-background-repeat: no-repeat;
-width: auto;
-height: 30px;
-overflow: ellipsis;
-top: 0;
-left: 0;
-right: 0;
-padding: 7px 10px 0 10px;
-text-align: center;
-margin: 0;
-}
-#mobilewrapper #homenodeheader dl {
-width: auto;
-clear: both;
-float: none;
-display: block;
-}
-#mobilewrapper #bookmarks {
-padding: 0;
-}
-#mobilewrapper #homenodepicbox img {
-width: 95%;
-margin: auto;
-display: block;
-}
-#mobilewrapper #homenodetext td {
-padding: 0;
-overflow: auto;
-}
-#mobilewrapper #search_form label {
-clear: none;
-}
-#mobilewrapper h1#e2logo .e2logo2 {
-font-size: 10px;
-}
-#mobilewrapper #mainbody {
-padding: 0;
-}
-#mobilewrapper #e2logo2 {
-font-size: 10px;
-font-weight: bold;
-}
-#mobilewrapper h1#e2logo a,
-#mobilewrapper h1#e2logo a:link,
-#mobilewrapper h1#e2logo a:visited,
-#mobilewrapper h1#e2logo a:active {
-font-size: 20px;
-font-style: normal;
-padding: 0;
-text-decoration: none;
-border-bottom: none;
-color: #F9F9F8;
-}
-#mobilewrapper h1.nodetitle {
-font-size: 18px;
-text-align: center;
-margin: 0;
-}
-#mobilewrapper #epicenter_zen {
-display: none;
-}
-#mobilewrapper > #wrapper {
-padding: 0 5px;
-margin: 0;
-overflow: auto;
-}
-#mobilewrapper textarea {
-width: 90%;
-margin: auto;
-height: 100px;
-}
-#mobilewrapper .wu_header td {
-text-align: center;
-}
-#mobilewrapper #softlinks td, #mobilewrapper .wu_footer td , #mobilewrapper .wu_header td  {
-display: block;
-clear: both;
-width: auto;
-}
-.writeuppage #mobilewrapper .item .content {
-padding: 10px;
-overflow: auto;
-}
-#zen_mobiletabs {
-color: transparent;
-margin-left: 5px;
-padding-top: 5px;
-/*	width: 256px;
-margin: auto;*/
-font-size: 0;
-/*	padding-left: 20px;*/
-}
-.zen_mobiletab_selected, .zen_mobiletab {
-display: block;
--webkit-border-top-left-radius: 5px;
--webkit-border-top-right-radius: 5px;
-width: 75px;
-float: left;
-text-align: center;
-font-family: helvetica, sans-serif;
-padding: 4px 0;
-font-size: 14px;
-color: #eeF;
-font-variant: small-caps;
-font-weight: bold;
-border: 1px #bbb solid;
-border-bottom: none;
-margin-right: 1px;
-}
-.zen_mobiletab_selected {
-background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(white), to(#bbb));
-color: black;
-}
-.zen_mobiletab {
-background: white;
-}
-.zen_mobiletab > A:link, .zen_mobiletab > A:visited  {
-color: #555;
-border: none;
-}
-/* Hide stuff */
-#mobilewrapper .createdby, #mobilewrapper td.wu_length, #mobilewrapper td.wu_hits, #mobilewrapper .topic.actions {
-display: none;
-}/* SOFTLINK COLORS */
+
+/* ====================================================================
+   SOFTLINK COLORS - Bookwormier gradient (very subtle light gray)
+   ==================================================================== */
+
 td#sl64{background:#f9f9f8;}td#sl63{background:#f9f9f8;}td#sl62{background:#f9f9f8;}td#sl61{background:#f9f9f8;}
 td#sl60{background:#f9f9f8;}td#sl59{background:#f9f9f8;}td#sl58{background:#f9f9f8;}td#sl57{background:#f9f9f8;}
 td#sl56{background:#f9f9f8;}td#sl55{background:#f9f9f9;}td#sl54{background:#f9f9f9;}td#sl53{background:#fafaf9;}

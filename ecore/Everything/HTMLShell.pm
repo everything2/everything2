@@ -82,7 +82,10 @@ sub _render_head {
 
     # Stylesheets (URLs are system-controlled)
     $html .= qq{<link rel="stylesheet" id="basesheet" type="text/css" href="} . $self->basesheet . qq{" media="all">\n};
-    $html .= qq{<link rel="stylesheet" id="zensheet" type="text/css" href="} . $self->zensheet . qq{" media="screen,tv,projection">\n};
+    # Only include zensheet if user has a non-default theme
+    if ($self->zensheet) {
+        $html .= qq{<link rel="stylesheet" id="zensheet" type="text/css" href="} . $self->zensheet . qq{" media="screen,tv,projection">\n};
+    }
     $html .= qq{<link rel="stylesheet" id="printsheet" type="text/css" href="} . $self->printsheet . qq{" media="print">\n};
 
     # Custom style
@@ -130,6 +133,34 @@ sub _render_head {
 
     # Viewport
     $html .= qq{<meta content="width=device-width,initial-scale=1.0,user-scalable=1" name="viewport">\n};
+
+    # Preconnect hints - establish early connections to external resources
+    # dns-prefetch is fallback for browsers that don't support preconnect
+    $html .= qq{<!-- Preconnect to external resources for faster loading -->\n};
+    $html .= qq{<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>\n};
+    $html .= qq{<link rel="dns-prefetch" href="https://www.googletagmanager.com">\n};
+    $html .= qq{<link rel="preconnect" href="https://www.google-analytics.com" crossorigin>\n};
+    $html .= qq{<link rel="dns-prefetch" href="https://www.google-analytics.com">\n};
+
+    # S3 assets preconnect for production (CSS/JS are loaded from S3)
+    if ($self->CONF->is_production) {
+        my $assets_location = $self->CONF->assets_location;
+        if ($assets_location =~ m{^(https://[^/]+)}) {
+            my $assets_origin = $1;
+            $html .= qq{<link rel="preconnect" href="$assets_origin" crossorigin>\n};
+            $html .= qq{<link rel="dns-prefetch" href="$assets_origin">\n};
+        }
+    }
+
+    # AdSense preconnect for guests
+    if ($self->REQUEST->is_guest) {
+        $html .= qq{<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>\n};
+        $html .= qq{<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">\n};
+        $html .= qq{<link rel="preconnect" href="https://googleads.g.doubleclick.net" crossorigin>\n};
+        $html .= qq{<link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">\n};
+        $html .= qq{<link rel="preconnect" href="https://tpc.googlesyndication.com" crossorigin>\n};
+        $html .= qq{<link rel="dns-prefetch" href="https://tpc.googlesyndication.com">\n};
+    }
 
     # Google Analytics
     $html .= qq{<script async src="https://www.googletagmanager.com/gtag/js?id=G-2GBBBF9ZDK"></script>\n};

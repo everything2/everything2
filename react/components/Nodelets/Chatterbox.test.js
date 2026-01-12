@@ -192,7 +192,7 @@ describe('Chatterbox', () => {
     })
 
     const { container } = render(<Chatterbox showNodelet={true} nodeletIsOpen={true} />)
-    const messages = container.querySelectorAll('[style*="border-bottom"]')
+    const messages = container.querySelectorAll('.chatter-message')
 
     // After reversing, first message should be "Hello world" (oldest)
     expect(messages[0]).toHaveTextContent('Hello world')

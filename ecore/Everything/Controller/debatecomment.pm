@@ -113,15 +113,10 @@ sub display {
 
     unless ($can_access) {
         # Return permission denied
+        # Note: user info available globally via e2.user - no need to duplicate in contentData
         my $content_data = {
             type => 'debatecomment',
-            permission_denied => 1,
-            user => {
-                node_id => $user_id,
-                title => $user->title,
-                is_guest => $user->is_guest ? 1 : 0,
-                is_admin => $user->is_admin ? 1 : 0
-            }
+            permission_denied => 1
         };
 
         $REQUEST->node($node);
@@ -205,13 +200,8 @@ sub display {
         can_edit => $can_edit ? 1 : 0,
         can_reply => ($can_access && !$user->is_guest) ? 1 : 0,
         display_mode => $display_mode,
-        is_root => ($node->node_id == $root_id) ? 1 : 0,
-        user => {
-            node_id => $user_id,
-            title => $user->title,
-            is_guest => $user->is_guest ? 1 : 0,
-            is_admin => $user->is_admin ? 1 : 0
-        }
+        is_root => ($node->node_id == $root_id) ? 1 : 0
+        # Note: user info available globally via e2.user - no need to duplicate in contentData
     };
 
     # Set node on REQUEST for buildNodeInfoStructure
@@ -308,13 +298,8 @@ sub compact {
         can_edit => $can_edit ? 1 : 0,
         can_reply => ($can_access && !$user->is_guest) ? 1 : 0,
         display_mode => 'compact',
-        is_root => ($node->node_id == $root_id) ? 1 : 0,
-        user => {
-            node_id => $user_id,
-            title => $user->title,
-            is_guest => $user->is_guest ? 1 : 0,
-            is_admin => $user->is_admin ? 1 : 0
-        }
+        is_root => ($node->node_id == $root_id) ? 1 : 0
+        # Note: user info available globally via e2.user - no need to duplicate in contentData
     };
 
     # Set node on REQUEST for buildNodeInfoStructure
@@ -352,16 +337,11 @@ sub edit {
 
     unless ($can_access && $can_edit) {
         # Return permission denied
+        # Note: user info available globally via e2.user - no need to duplicate in contentData
         my $content_data = {
             type => 'debatecommentEdit',
             permission_denied => 1,
-            mode => 'edit',
-            user => {
-                node_id => $user_id,
-                title => $user->title,
-                is_guest => $user->is_guest ? 1 : 0,
-                is_admin => $user->is_admin ? 1 : 0
-            }
+            mode => 'edit'
         };
 
         $REQUEST->node($node);
@@ -413,13 +393,8 @@ sub edit {
         usergroup => $usergroup ? {
             node_id => int($restricted_id),
             title => $usergroup->{title}
-        } : undef,
-        user => {
-            node_id => $user_id,
-            title => $user->title,
-            is_guest => $user->is_guest ? 1 : 0,
-            is_admin => $user->is_admin ? 1 : 0
-        }
+        } : undef
+        # Note: user info available globally via e2.user - no need to duplicate in contentData
     };
 
     $REQUEST->node($node);
@@ -451,16 +426,11 @@ sub replyto {
 
     # Guests can't reply
     if ($user->is_guest || !$can_access) {
+        # Note: user info available globally via e2.user - no need to duplicate in contentData
         my $content_data = {
             type => 'debatecommentReplyto',
             permission_denied => 1,
-            mode => 'replyto',
-            user => {
-                node_id => $user_id,
-                title => $user->title,
-                is_guest => $user->is_guest ? 1 : 0,
-                is_admin => $user->is_admin ? 1 : 0
-            }
+            mode => 'replyto'
         };
 
         $REQUEST->node($node);
@@ -521,13 +491,8 @@ sub replyto {
         usergroup => $usergroup ? {
             node_id => int($restricted_id),
             title => $usergroup->{title}
-        } : undef,
-        user => {
-            node_id => $user_id,
-            title => $user->title,
-            is_guest => $user->is_guest ? 1 : 0,
-            is_admin => $user->is_admin ? 1 : 0
-        }
+        } : undef
+        # Note: user info available globally via e2.user - no need to duplicate in contentData
     };
 
     $REQUEST->node($node);

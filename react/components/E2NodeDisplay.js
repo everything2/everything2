@@ -4,6 +4,7 @@ import LinkNode from './LinkNode'
 import E2NodeToolsModal from './E2NodeToolsModal'
 import InlineWriteupEditor from './InlineWriteupEditor'
 import { FaTools } from 'react-icons/fa'
+import { decodeHtmlEntities } from '../utils/textUtils'
 
 /**
  * E2NodeDisplay - Renders an e2node with all its writeups
@@ -18,7 +19,7 @@ import { FaTools } from 'react-icons/fa'
  * Usage:
  *   <E2NodeDisplay e2node={e2nodeData} user={userData} existingDraft={draftData} />
  */
-const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen }) => {
+const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, bestEntries }) => {
   const [toolsModalOpen, setToolsModalOpen] = useState(!!startWithToolsModalOpen)
 
   // Handle hash navigation to scroll to specific author's writeup
@@ -88,21 +89,11 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen })
       {/* E2 Node Tools button for editors - right-aligned icon */}
       {/* data-reader-ignore excludes from reading mode */}
       {showTools && (
-        <nav style={{ textAlign: 'right', marginBottom: '4px' }} aria-label="Editor tools" data-reader-ignore="true">
+        <nav className="e2node-tools-nav" aria-label="Editor tools" data-reader-ignore="true">
           <button
             onClick={() => setToolsModalOpen(true)}
             title="Editor node tools"
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '16px',
-              color: '#507898',
-              padding: '2px 4px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+            className="e2node-tools-btn"
           >
             <FaTools />
           </button>
@@ -120,6 +111,9 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen })
               user={user}
             />
           ))
+        ) : user && user.guest ? (
+          // Guest user nodeshell experience - encourage sign in and offer alternatives
+          <GuestNodeshellMessage e2nodeTitle={title} bestEntries={bestEntries} />
         ) : (
           <p className="no-writeups">There are no writeups for this node yet.</p>
         )}
@@ -132,19 +126,11 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen })
 
       {/* Locked node warning - shown where "add a writeup" would go */}
       {isLocked && (
-        <div className="locked-node-warning" style={{
-          backgroundColor: '#fff3cd',
-          border: '1px solid #ffc107',
-          borderRadius: '4px',
-          padding: '12px 16px',
-          marginTop: '16px',
-          marginBottom: '16px',
-          color: '#856404'
-        }}>
+        <div className="locked-node-warning">
           <strong>🔒 This node is locked</strong>
           {lockUserTitle && <span> by <em>{lockUserTitle}</em></span>}
           {lockReason && <span>: {lockReason}</span>}
-          <div style={{ marginTop: '4px' }}>
+          <div className="locked-node-warning-detail">
             This node is not accepting new contributions at this time.
           </div>
         </div>
@@ -163,7 +149,7 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen })
       {/* Inline writeup editor - shown for logged-in users without writeup on this node */}
       {/* aria-hidden and data-reader-ignore exclude from reading mode and accessibility tree */}
       {showInlineEditor && (
-        <aside style={{ marginTop: '24px' }} aria-label="Write a new writeup" data-reader-ignore="true">
+        <aside className="e2node-inline-editor" aria-label="Write a new writeup" data-reader-ignore="true">
           <InlineWriteupEditor
             e2nodeId={e2node.node_id}
             e2nodeTitle={title}
@@ -178,6 +164,62 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen })
             }}
           />
         </aside>
+      )}
+    </div>
+  )
+}
+
+/**
+ * GuestNodeshellMessage - Friendly message for guests viewing nodeshells
+ *
+ * Shows:
+ * - Explanation that this is a user-created topic without content
+ * - Call to action to sign in and contribute
+ * - Best recent entries as browsing alternatives
+ */
+const GuestNodeshellMessage = ({ e2nodeTitle, bestEntries = [] }) => {
+  return (
+    <div className="guest-nodeshell-message">
+      <p className="guest-nodeshell-explanation">
+        This is a user-created topic that doesn't have any content yet.
+      </p>
+
+      <div className="guest-nodeshell-cta">
+        <p>
+          If you{' '}
+          <a href="/?node=login" className="guest-nodeshell-cta-link">Sign In</a>
+          , you could add something here.
+          {' '}Don't have an account?{' '}
+          <a href="/?node=Sign%20Up" className="guest-nodeshell-cta-link">Register here</a>.
+        </p>
+      </div>
+
+      {bestEntries && bestEntries.length > 0 && (
+        <div className="guest-nodeshell-best-entries">
+          <h3 className="guest-nodeshell-best-title">
+            Or browse some of our highly rated writeups:
+          </h3>
+          <ul className="guest-nodeshell-best-list">
+            {bestEntries.map((entry) => (
+              <li key={entry.writeup_id || entry.node_id} className="guest-nodeshell-best-item">
+                <a href={`/node/${entry.node_id}?lastnode_id=0`} className="guest-nodeshell-best-link">
+                  {entry.title}
+                </a>
+                {entry.author && (
+                  <span className="guest-nodeshell-best-author">
+                    {' '}by{' '}
+                    <a href={`/user/${encodeURIComponent(entry.author.title)}`}>
+                      {entry.author.title}
+                    </a>
+                  </span>
+                )}
+                {entry.excerpt && (
+                  <p className="guest-nodeshell-best-excerpt">{decodeHtmlEntities(entry.excerpt)}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   )

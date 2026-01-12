@@ -5,7 +5,6 @@ import LinkNode from './LinkNode'
 import AdminModal from './AdminModal'
 import MessageModal from './MessageModal'
 import ConfirmModal from './ConfirmModal'
-import ILikeItButton from './ILikeItButton'
 import { renderE2Content } from './Editor/E2HtmlSanitizer'
 
 /**
@@ -78,12 +77,7 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
     <span
       ref={triggerRef}
       id={`cools${nodeId}`}
-      style={{
-        cursor: 'pointer',
-        borderBottom: '1px dotted currentColor',
-        position: 'relative',
-        display: 'inline-block'
-      }}
+      className="writeup-cool-tooltip-trigger"
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -95,44 +89,15 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
         <span
           ref={tooltipRef}
           onClick={(e) => e.stopPropagation()}
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            marginBottom: '6px',
-            backgroundColor: '#f8f9fa',
-            color: '#333',
-            padding: '8px 12px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            lineHeight: '1.4',
-            zIndex: 1000,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            border: '1px solid #507898',
-            minWidth: '120px',
-            maxWidth: showAll ? '400px' : '300px',
-            width: 'max-content',
-            textAlign: 'left'
-          }}
+          className={`writeup-cool-tooltip${showAll ? ' writeup-cool-tooltip--expanded' : ''}`}
         >
           {/* Arrow pointing down */}
-          <span
-            style={{
-              position: 'absolute',
-              top: '100%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              borderLeft: '6px solid transparent',
-              borderRight: '6px solid transparent',
-              borderTop: '6px solid #507898'
-            }}
-          />
+          <span className="writeup-cool-tooltip-arrow" />
           {/* Show users up to displayLimit */}
           {cools.slice(0, displayLimit).map((c, i) => (
             <span key={c.node_id || i}>
               {i > 0 && ', '}
-              <LinkNode type="user" title={c.title} style={{ color: '#507898' }} />
+              <LinkNode type="user" title={c.title} className="writeup-cool-tooltip-link" />
             </span>
           ))}
           {/* Show "and X others" or "show all" link */}
@@ -142,11 +107,7 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
               <a
                 href="#"
                 onClick={handleShowAll}
-                style={{
-                  color: '#507898',
-                  fontStyle: 'italic',
-                  textDecoration: 'underline'
-                }}
+                className="writeup-cool-tooltip-link"
               >
                 and {cools.length - 5} other{cools.length - 5 === 1 ? '' : 's'}...
               </a>
@@ -163,28 +124,12 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
  * Used when displaying draft content via WriteupDisplay
  */
 const DraftStatusBadge = ({ status }) => {
-  const statusStyles = {
-    private: { backgroundColor: '#6c757d', color: '#fff' },
-    findable: { backgroundColor: '#17a2b8', color: '#fff' },
-    review: { backgroundColor: '#ffc107', color: '#212529' },
-    removed: { backgroundColor: '#dc3545', color: '#fff' },
-    unknown: { backgroundColor: '#6c757d', color: '#fff' }
-  }
-
-  const style = statusStyles[status] || statusStyles.unknown
+  const statusClass = ['private', 'findable', 'review', 'removed'].includes(status)
+    ? status
+    : 'private'
 
   return (
-    <span
-      style={{
-        ...style,
-        padding: '2px 8px',
-        borderRadius: '4px',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        marginLeft: '4px'
-      }}
-    >
+    <span className={`writeup-status-badge writeup-status-badge--${statusClass}`}>
       {status}
     </span>
   )
@@ -367,50 +312,46 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
       {/* itemscope/itemtype provide Schema.org Article microdata for reading mode detection */}
       <article className="item writeup" id={`writeup_${node_id}`} aria-label={articleLabel} itemScope itemType="https://schema.org/Article">
         {/* Writeup header - matches legacy 'show content' with displayWriteupInfo */}
-        {/* Structure: .contentinfo.contentheader > table > tr.wu_header > td cells */}
+        {/* Uses CSS classes for responsive layout (see 1882070.css media queries) */}
         {/* data-reader-ignore on header since it's navigation/metadata, not content */}
         <header className="contentinfo contentheader" data-reader-ignore="true">
-        <table border="0" cellPadding="0" cellSpacing="0" width="100%">
-          <tbody>
-            <tr className="wu_header">
-              {/* Type: (writeuptype) linking to this writeup, or (draft) with status badge */}
-              <td className="wu_type">
-                <span className="type">
-                  {isDraft ? (
-                    <>
-                      (<span style={{ fontStyle: 'inherit' }}>draft</span>)
-                      <DraftStatusBadge status={publicationStatus || 'unknown'} />
-                    </>
-                  ) : (
-                    <>(<LinkNode id={node_id} display={writeuptype || 'writeup'} />)</>
-                  )}
-                </span>
-              </td>
-              {/* Author with anchor for hash links */}
-              <td className="wu_author">
-                by <a name={author?.title}></a>
-                <strong>
-                  {author ? (
-                    <LinkNode type="user" title={author.title} className="author" />
-                  ) : (
-                    <span className="author">(no owner)</span>
-                  )}
-                </strong>
-                {shouldShowAuthorSince() && (
-                  <small style={{ marginLeft: '4px', color: '#888' }}>
-                    ({formatTimeSince(author.lasttime)})
-                  </small>
+          <div className="wu_header">
+            {/* Type: (writeuptype) linking to this writeup, or (draft) with status badge */}
+            <span className="wu_type">
+              <span className="type">
+                {isDraft ? (
+                  <>
+                    (<span className="writeup-type-draft">draft</span>)
+                    <DraftStatusBadge status={publicationStatus || 'unknown'} />
+                  </>
+                ) : (
+                  <>(<LinkNode id={node_id} display={writeuptype || 'writeup'} />)</>
                 )}
-              </td>
-              {/* Publication/creation date */}
-              <td style={{ textAlign: 'right' }} className="wu_dtcreate">
-                <small className="date" title={formatDate(displayDate)}>
-                  {formatDate(displayDate)}
+              </span>
+            </span>
+            {/* Author with anchor for hash links */}
+            <span className="wu_author">
+              by <a name={author?.title}></a>
+              <strong>
+                {author ? (
+                  <LinkNode type="user" title={author.title} className="author" />
+                ) : (
+                  <span className="author">(no owner)</span>
+                )}
+              </strong>
+              {shouldShowAuthorSince() && (
+                <small className="wu_author_lastseen">
+                  ({formatTimeSince(author.lasttime)})
                 </small>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              )}
+            </span>
+            {/* Publication/creation date */}
+            <span className="wu_dtcreate">
+              <small className="date" title={formatDate(displayDate)}>
+                {formatDate(displayDate)}
+              </small>
+            </span>
+          </div>
       </header>
 
 
@@ -430,30 +371,19 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
               <tr className="wu_footer">
                 {/* Draft message and admin tools - show for drafts */}
                 {isDraft && (
-                  <td style={{ textAlign: 'left' }} className="wu_tools">
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <td className="wu_tools wu_tools--left">
+                    <span className="wu_tools_inline">
                       {/* Admin gear for drafts when callback provided */}
                       {showAdminTools && onAdminGearClick && (
                         <button
                           onClick={onAdminGearClick}
                           title="Draft tools"
-                          className="admin-gear"
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            color: '#507898',
-                            padding: '2px 4px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
+                          className="writeup-tool-btn"
                         >
                           &#9881;
                         </button>
                       )}
-                      <small style={{ color: '#888' }}>
+                      <small className="writeup-draft-notice">
                         This is an unpublished draft. Only you and any collaborators can see it.
                       </small>
                     </span>
@@ -461,25 +391,14 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                 )}
                 {/* Tools cell - action buttons on left (not for drafts) */}
                 {!isDraft && (
-                  <td style={{ textAlign: 'left' }} className="wu_tools">
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                  <td className="wu_tools wu_tools--left">
+                    <span className="wu_tools_inline wu_tools_inline--tight">
                       {/* Admin gear */}
                       {showAdminTools && (
                         <button
                           onClick={() => setAdminModalOpen(true)}
                           title="Admin tools"
-                          className="admin-gear"
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            color: '#507898',
-                            padding: '2px 4px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
+                          className="writeup-tool-btn"
                         >
                           &#9881;
                         </button>
@@ -489,18 +408,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                         <button
                           onClick={() => setMessageModalOpen(true)}
                           title={`Message ${author.title}`}
-                          className="message-icon"
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            color: '#507898',
-                            padding: '2px 4px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
+                          className="writeup-tool-btn"
                         >
                           <FaEnvelope />
                         </button>
@@ -510,6 +418,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                   </td>
                 )}
                 {/* Voting controls - modern icon buttons (not for drafts) */}
+                {/* Note: Caret icons are naturally smaller, so use 28px to get ~20px visual height */}
                 {!isDraft && showVoting && canVote && (
                   <td className="wu_vote">
                     <span className="vote_buttons">
@@ -523,16 +432,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                         }}
                         disabled={voteState.userVote === 1}
                         title="Upvote"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: voteState.userVote === 1 ? 'default' : 'pointer',
-                          padding: '0 2px',
-                          color: voteState.userVote === 1 ? '#4a4' : '#507898',
-                          opacity: voteState.userVote === 1 ? 1 : (voteState.userVote === -1 ? 0.4 : 1),
-                          fontSize: '20px',
-                          verticalAlign: 'middle'
-                        }}
+                        className={`writeup-vote-btn${voteState.userVote === 1 ? ' writeup-vote-btn--upvote-active' : ''}${voteState.userVote === -1 ? ' writeup-vote-btn--faded' : ''}`}
                       >
                         <FaCaretUp />
                       </button>
@@ -546,16 +446,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                         }}
                         disabled={voteState.userVote === -1}
                         title="Downvote"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: voteState.userVote === -1 ? 'default' : 'pointer',
-                          padding: '0 2px',
-                          color: voteState.userVote === -1 ? '#a44' : '#507898',
-                          opacity: voteState.userVote === -1 ? 1 : (voteState.userVote === 1 ? 0.4 : 1),
-                          fontSize: '20px',
-                          verticalAlign: 'middle'
-                        }}
+                        className={`writeup-vote-btn${voteState.userVote === -1 ? ' writeup-vote-btn--downvote-active' : ''}${voteState.userVote === 1 ? ' writeup-vote-btn--faded' : ''}`}
                       >
                         <FaCaretDown />
                       </button>
@@ -563,21 +454,10 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                   </td>
                 )}
 
-                {/* "I like it!" button for guest users (not for drafts) */}
-                {!isDraft && isGuest && (
-                  <td className="wu_ilikeit">
-                    <ILikeItButton
-                      writeupId={node_id}
-                      isGuest={isGuest}
-                      authorTitle={author?.title}
-                    />
-                  </td>
-                )}
-
                 {/* C! display and button (not for drafts) */}
                 {!isDraft && (
-                <td className="wu_cfull" style={{ verticalAlign: 'middle' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                <td className="wu_cfull">
+                  <div className="wu_cfull_content">
                     {/* Show C! count with tooltip showing coolers on hover/click */}
                     {Boolean(coolCount > 0) && (
                       <CoolTooltip cools={coolState.cools} coolCount={coolCount} nodeId={node_id} />
@@ -585,36 +465,34 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                     {/* C? button for eligible users who haven't cooled yet */}
                     {canCool && !coolState.hasCooled && (
                       <>
-                        {Boolean(coolCount > 0) && <span>·</span>}
-                        <b>
-                          <a
-                            href="#"
-                            className="action"
-                            title={`C! ${author?.title || 'this'}'s writeup`}
-                            onClick={(e) => {
-                              e.preventDefault()
-                              if (user?.coolsafety) {
-                                setPendingCool(true)
-                              } else {
-                                handleCool(node_id, user, setCoolState, setErrorMessage)
-                              }
-                            }}
-                          >
-                            C?
-                          </a>
-                        </b>
+                        {Boolean(coolCount > 0) && <span className="writeup-separator">·</span>}
+                        <a
+                          href="#"
+                          className="writeup-cool-action"
+                          title={`C! ${author?.title || 'this'}'s writeup`}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            if (user?.coolsafety) {
+                              setPendingCool(true)
+                            } else {
+                              handleCool(node_id, user, setCoolState, setErrorMessage)
+                            }
+                          }}
+                        >
+                          C?
+                        </a>
                       </>
                     )}
                     {/* Social sharing links */}
                     {writeup.social_share && (
                       <>
-                        {(Boolean(coolCount > 0) || (canCool && !coolState.hasCooled)) && <span>·</span>}
+                        {(Boolean(coolCount > 0) || (canCool && !coolState.hasCooled)) && <span className="writeup-separator">·</span>}
                         <a
                           href={`https://www.facebook.com/sharer.php?u=${encodeURIComponent(writeup.social_share.short_url)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Share on Facebook"
-                          style={{ color: '#507898', fontSize: '14px', display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}
+                          className="writeup-social-link"
                         >
                           <FaFacebookSquare />
                         </a>
@@ -623,7 +501,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Share on X (Twitter)"
-                          style={{ color: '#507898', fontSize: '14px', display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}
+                          className="writeup-social-link"
                         >
                           <FaTwitterSquare />
                         </a>
@@ -632,7 +510,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Share on Reddit"
-                          style={{ color: '#507898', fontSize: '14px', display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}
+                          className="writeup-social-link"
                         >
                           <FaRedditSquare />
                         </a>
@@ -644,7 +522,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
 
                 {/* Reputation display - show if user has voted OR is the author (not for drafts) */}
                 {!isDraft && (
-                <td style={{ textAlign: 'right' }} className="wu_rep">
+                <td className="wu_rep">
                   {(isAuthor || (voteState.userVote !== null && voteState.userVote !== undefined)) && (
                     <small>
                       Rep: {voteState.reputation > 0 && '+'}{voteState.reputation} (+{voteState.upvotes}/-{voteState.downvotes})
@@ -658,14 +536,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
 
           {/* Error message - red, positioned under C! buttons */}
           {errorMessage && (
-            <div style={{
-              backgroundColor: '#fee',
-              color: '#c00',
-              padding: '8px',
-              marginTop: '8px',
-              fontSize: '12px',
-              borderLeft: '3px solid #c00'
-            }}>
+            <div className="writeup-error">
               {errorMessage}
             </div>
           )}

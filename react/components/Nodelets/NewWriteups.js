@@ -107,13 +107,7 @@ const NewWriteups = (props) => {
       </div>
 
       {writeups.length === 0 ? (
-        <div style={{
-          padding: '16px',
-          textAlign: 'center',
-          fontSize: '12px',
-          color: '#999',
-          fontStyle: 'italic'
-        }}>
+        <div className="newwriteups-empty">
           No writeups yet
         </div>
       ) : (
@@ -130,15 +124,7 @@ const NewWriteups = (props) => {
         </ul>
       )}
 
-      <div
-        className="nodeletfoot morelink"
-        style={{
-          marginTop: '12px',
-          padding: '8px',
-          textAlign: 'center',
-          fontSize: '11px'
-        }}
-      >
+      <div className="nodeletfoot morelink newwriteups-footer">
         (<LinkNode type="superdoc" title="Writeups By Type" display="more" />)
       </div>
     </NodeletContainer>

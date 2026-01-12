@@ -1,129 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import LinkNode from '../LinkNode'
 
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '30px',
-    borderBottom: '2px solid #38495e',
-    paddingBottom: '15px',
-  },
-  title: {
-    fontSize: '28px',
-    fontWeight: '600',
-    color: '#38495e',
-    margin: 0,
-  },
-  section: {
-    marginBottom: '30px',
-    padding: '20px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-    border: '1px solid #dee2e6',
-  },
-  sectionTitle: {
-    fontSize: '18px',
-    fontWeight: '600',
-    color: '#38495e',
-    marginBottom: '15px',
-    paddingBottom: '10px',
-    borderBottom: '1px solid #dee2e6',
-  },
-  divider: {
-    border: 'none',
-    borderTop: '1px solid #dee2e6',
-    margin: '20px auto',
-    width: '300px',
-  },
-  paragraph: {
-    marginBottom: '15px',
-    lineHeight: '1.6',
-    color: '#495057',
-  },
-  form: {
-    marginTop: '15px',
-  },
-  formRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '10px',
-    alignItems: 'center',
-    marginBottom: '10px',
-  },
-  label: {
-    color: '#495057',
-  },
-  input: {
-    padding: '8px 12px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    fontSize: '14px',
-  },
-  inputSmall: {
-    width: '80px',
-    padding: '8px 12px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    fontSize: '14px',
-  },
-  checkbox: {
-    marginRight: '5px',
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#38495e',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '500',
-  },
-  buttonDisabled: {
-    backgroundColor: '#adb5bd',
-    cursor: 'not-allowed',
-  },
-  success: {
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    padding: '12px 16px',
-    borderRadius: '4px',
-    marginTop: '10px',
-    border: '1px solid #c3e6cb',
-  },
-  error: {
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    padding: '12px 16px',
-    borderRadius: '4px',
-    marginTop: '10px',
-    border: '1px solid #f5c6cb',
-  },
-  info: {
-    backgroundColor: '#d1ecf1',
-    color: '#0c5460',
-    padding: '12px 16px',
-    borderRadius: '4px',
-    marginBottom: '15px',
-    border: '1px solid #bee5eb',
-  },
-  highlight: {
-    fontWeight: '600',
-  },
-  selfExam: {
-    marginTop: '30px',
-    padding: '20px',
-    backgroundColor: '#fff3cd',
-    borderRadius: '8px',
-    border: '1px solid #ffc107',
-  },
-}
-
 // Gift of Star section
 const GiftOfStar = ({ data, user, onUpdate }) => {
   const [recipient, setRecipient] = useState('')
@@ -137,9 +14,9 @@ const GiftOfStar = ({ data, user, onUpdate }) => {
   if (gpOptOut) return null
   if (userLevel < 1) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>The Gift of Star</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">The Gift of Star</h3>
+        <p className="giftshop-paragraph">
           Sorry, you must be at least <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 1" /> to purchase a Star.
         </p>
       </div>
@@ -178,59 +55,59 @@ const GiftOfStar = ({ data, user, onUpdate }) => {
   }
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>The Gift of Star</h3>
-      <p style={styles.paragraph}>
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">The Gift of Star</h3>
+      <p className="giftshop-paragraph">
         Because you are Level 1 or higher, you have the power to purchase a Star to reward other users.
-        For Level {userLevel} users, Stars currently cost <span style={styles.highlight}>{starCost} GP</span>.
+        For Level {userLevel} users, Stars currently cost <span className="giftshop-highlight">{starCost} GP</span>.
         {starCost > 25 && ' Gain another level to reduce the Star cost by 5 GP.'}
       </p>
-      <p style={styles.paragraph}>
+      <p className="giftshop-paragraph">
         Giving a user a Star sends them a private message telling them that you have given them a Star
         and informing them of the reason why they earned it.
       </p>
 
       {!canAfford ? (
-        <p style={styles.paragraph}>
-          Sorry, you do not have enough GP to buy a Star right now. Please come back when you have <span style={styles.highlight}>{starCost} GP</span>.
+        <p className="giftshop-paragraph">
+          Sorry, you do not have enough GP to buy a Star right now. Please come back when you have <span className="giftshop-highlight">{starCost} GP</span>.
         </p>
       ) : (
         <>
-          <p style={styles.paragraph}>You have <span style={styles.highlight}>{gp} GP</span>.</p>
-          <form onSubmit={handleSubmit} style={styles.form}>
-            <div style={styles.formRow}>
-              <span style={styles.label}>Yes! Please give a</span>
+          <p className="giftshop-paragraph">You have <span className="giftshop-highlight">{gp} GP</span>.</p>
+          <form onSubmit={handleSubmit} className="giftshop-form">
+            <div className="giftshop-form-row">
+              <span className="giftshop-label">Yes! Please give a</span>
               <input
                 type="text"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                style={{ ...styles.input, width: '100px' }}
+                className="giftshop-input giftshop-input--medium"
                 placeholder="Gold"
               />
-              <span style={styles.label}>Star to noder</span>
+              <span className="giftshop-label">Star to noder</span>
               <input
                 type="text"
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
-                style={{ ...styles.input, width: '150px' }}
+                className="giftshop-input giftshop-input--wide"
                 placeholder="username"
                 required
               />
             </div>
-            <div style={styles.formRow}>
-              <span style={styles.label}>because</span>
+            <div className="giftshop-form-row">
+              <span className="giftshop-label">because</span>
               <input
                 type="text"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                style={{ ...styles.input, flex: 1, minWidth: '200px' }}
+                className="giftshop-input giftshop-input--flex"
                 placeholder="they wrote a great writeup..."
                 required
               />
             </div>
             <button
               type="submit"
-              style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+              className="giftshop-btn"
               disabled={loading}
             >
               {loading ? 'Giving Star...' : 'Star Them!'}
@@ -239,7 +116,7 @@ const GiftOfStar = ({ data, user, onUpdate }) => {
         </>
       )}
       {message && (
-        <div style={message.type === 'success' ? styles.success : styles.error}>
+        <div className={message.type === 'success' ? 'giftshop-success' : 'giftshop-error'}>
           {message.text}
         </div>
       )}
@@ -254,14 +131,14 @@ const GiftOfSanctity = ({ data, user }) => {
   if (userLevel < 11 && !isEditor) return null
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>The Gift of Sanctity</h3>
-      <p style={styles.paragraph}>
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">The Gift of Sanctity</h3>
+      <p className="giftshop-paragraph">
         You are at least <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 11" />,
         so you have the power to <LinkNode type="superdoc" title="Sanctify user" display="Sanctify" /> other users with GP.
         Would you like to <LinkNode type="superdoc" title="Sanctify user" display="sanctify someone" />?
       </p>
-      <p style={styles.paragraph}>
+      <p className="giftshop-paragraph">
         You may also sanctify other users by clicking on the link on their homenode, or by using the /sanctify command in the Chatterbox.
       </p>
     </div>
@@ -279,9 +156,9 @@ const BuyVotes = ({ data, user, onUpdate }) => {
   if (gpOptOut) return null
   if (userLevel < 2) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>The Gift of Votes</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">The Gift of Votes</h3>
+        <p className="giftshop-paragraph">
           You are not a high enough level to buy votes yet. Please come back when you reach <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 2" />!
         </p>
       </div>
@@ -290,9 +167,9 @@ const BuyVotes = ({ data, user, onUpdate }) => {
 
   if (gp < 1) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>The Gift of Votes</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">The Gift of Votes</h3>
+        <p className="giftshop-paragraph">
           You do not have enough GP to buy votes at this time. Please come back when you have more GP!
         </p>
       </div>
@@ -328,30 +205,30 @@ const BuyVotes = ({ data, user, onUpdate }) => {
   }
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>The Gift of Votes</h3>
-      <p style={styles.paragraph}>
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">The Gift of Votes</h3>
+      <p className="giftshop-paragraph">
         Because you are at least <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 2" /> you can also buy additional votes.
-        Each additional vote costs <span style={styles.highlight}>1 GP</span>. You currently have <span style={styles.highlight}>{gp} GP</span>.
+        Each additional vote costs <span className="giftshop-highlight">1 GP</span>. You currently have <span className="giftshop-highlight">{gp} GP</span>.
       </p>
-      <p style={styles.paragraph}>
+      <p className="giftshop-paragraph">
         Please note that these votes will expire and reset at the end of the day, just like normal votes.
       </p>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formRow}>
-          <span style={styles.label}>How many votes would you like to buy?</span>
+      <form onSubmit={handleSubmit} className="giftshop-form">
+        <div className="giftshop-form-row">
+          <span className="giftshop-label">How many votes would you like to buy?</span>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            style={styles.inputSmall}
+            className="giftshop-input giftshop-input--small"
             min="1"
             max={gp}
             required
           />
           <button
             type="submit"
-            style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+            className="giftshop-btn"
             disabled={loading}
           >
             {loading ? 'Buying...' : 'Buy Votes'}
@@ -359,7 +236,7 @@ const BuyVotes = ({ data, user, onUpdate }) => {
         </div>
       </form>
       {message && (
-        <div style={message.type === 'success' ? styles.success : styles.error}>
+        <div className={message.type === 'success' ? 'giftshop-success' : 'giftshop-error'}>
           {message.text}
         </div>
       )}
@@ -380,12 +257,12 @@ const GiveVotes = ({ data, user, onUpdate }) => {
   if (userLevel < 9) return null
   if (votesLeft < 1) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Give Votes</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">Give Votes</h3>
+        <p className="giftshop-paragraph">
           Give the gift of votes! If you happen to have votes to spare, you can give up to 25 of them at a time to another user as a gift.
         </p>
-        <p style={styles.paragraph}>
+        <p className="giftshop-paragraph">
           Sorry, but it looks like you don't have any votes to give away now. Please come back when you have some votes.
         </p>
       </div>
@@ -422,47 +299,47 @@ const GiveVotes = ({ data, user, onUpdate }) => {
   }
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>Give Votes</h3>
-      <p style={styles.paragraph}>
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">Give Votes</h3>
+      <p className="giftshop-paragraph">
         Give the gift of votes! If you happen to have votes to spare, you can give up to 25 of them at a time to another user as a gift. Please use this to encourage newbies.
       </p>
-      <p style={styles.paragraph}>You currently have <span style={styles.highlight}>{votesLeft}</span> votes.</p>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formRow}>
-          <span style={styles.label}>Who's the lucky noder?</span>
+      <p className="giftshop-paragraph">You currently have <span className="giftshop-highlight">{votesLeft}</span> votes.</p>
+      <form onSubmit={handleSubmit} className="giftshop-form">
+        <div className="giftshop-form-row">
+          <span className="giftshop-label">Who's the lucky noder?</span>
           <input
             type="text"
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
-            style={{ ...styles.input, width: '150px' }}
+            className="giftshop-input giftshop-input--wide"
             placeholder="username"
             required
           />
-          <span style={styles.label}>And how many votes?</span>
+          <span className="giftshop-label">And how many votes?</span>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            style={styles.inputSmall}
+            className="giftshop-input giftshop-input--small"
             min="1"
             max="25"
             required
           />
         </div>
-        <div style={styles.formRow}>
+        <div className="giftshop-form-row">
           <label>
             <input
               type="checkbox"
               checked={anonymous}
               onChange={(e) => setAnonymous(e.target.checked)}
-              style={styles.checkbox}
+              className="giftshop-checkbox"
             />
             Give anonymously
           </label>
           <button
             type="submit"
-            style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+            className="giftshop-btn"
             disabled={loading}
           >
             {loading ? 'Giving...' : 'Give Votes!'}
@@ -470,7 +347,7 @@ const GiveVotes = ({ data, user, onUpdate }) => {
         </div>
       </form>
       {message && (
-        <div style={message.type === 'success' ? styles.success : styles.error}>
+        <div className={message.type === 'success' ? 'giftshop-success' : 'giftshop-error'}>
           {message.text}
         </div>
       )}
@@ -489,9 +366,9 @@ const GiftOfChing = ({ data, user, onUpdate }) => {
 
   if (userLevel < 4) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>The Gift of Ching</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">The Gift of Ching</h3>
+        <p className="giftshop-paragraph">
           Sorry, you must be <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 4" /> to give away C!s.
         </p>
       </div>
@@ -500,12 +377,12 @@ const GiftOfChing = ({ data, user, onUpdate }) => {
 
   if (coolsLeft < 1) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>The Gift of Ching</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">The Gift of Ching</h3>
+        <p className="giftshop-paragraph">
           Give the gift of ching! If you happen to have a C! to spare, why not spread the love and give it to a fellow noder?
         </p>
-        <p style={styles.paragraph}>
+        <p className="giftshop-paragraph">
           Sorry, but you don't have a C! to give away. Please come back when you have a C!.
         </p>
       </div>
@@ -541,36 +418,36 @@ const GiftOfChing = ({ data, user, onUpdate }) => {
   }
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>The Gift of Ching</h3>
-      <p style={styles.paragraph}>
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">The Gift of Ching</h3>
+      <p className="giftshop-paragraph">
         Give the gift of ching! If you happen to have a C! to spare, why not spread the love and give it to a fellow noder?
       </p>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formRow}>
-          <span style={styles.label}>Who's the lucky noder?</span>
+      <form onSubmit={handleSubmit} className="giftshop-form">
+        <div className="giftshop-form-row">
+          <span className="giftshop-label">Who's the lucky noder?</span>
           <input
             type="text"
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
-            style={{ ...styles.input, width: '150px' }}
+            className="giftshop-input giftshop-input--wide"
             placeholder="username"
             required
           />
         </div>
-        <div style={styles.formRow}>
+        <div className="giftshop-form-row">
           <label>
             <input
               type="checkbox"
               checked={anonymous}
               onChange={(e) => setAnonymous(e.target.checked)}
-              style={styles.checkbox}
+              className="giftshop-checkbox"
             />
             Give anonymously
           </label>
           <button
             type="submit"
-            style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+            className="giftshop-btn"
             disabled={loading}
           >
             {loading ? 'Giving...' : 'Give C!'}
@@ -578,7 +455,7 @@ const GiftOfChing = ({ data, user, onUpdate }) => {
         </div>
       </form>
       {message && (
-        <div style={message.type === 'success' ? styles.success : styles.error}>
+        <div className={message.type === 'success' ? 'giftshop-success' : 'giftshop-error'}>
           {message.text}
         </div>
       )}
@@ -628,29 +505,29 @@ const BuyChing = ({ data, user, onUpdate }) => {
   }
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>Buy C!</h3>
-      <p style={styles.paragraph}>
-        If you'd like another ching to use or give away, you might be able to buy one for the bargain price of <span style={styles.highlight}>{cost} GP</span>.
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">Buy C!</h3>
+      <p className="giftshop-paragraph">
+        If you'd like another ching to use or give away, you might be able to buy one for the bargain price of <span className="giftshop-highlight">{cost} GP</span>.
         You must be at least <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 12" />, and you can only buy one C! every 24 hours.
       </p>
       {!canBuyChing ? (
-        <p style={styles.paragraph}>
+        <p className="giftshop-paragraph">
           {chingCooldownMinutes > 0
             ? `You bought your last ching recently. You may buy another in ${hours} hours, ${mins} minutes.`
             : 'You just bought a C! Check back tomorrow for another.'}
         </p>
       ) : !canAfford ? (
-        <p style={styles.paragraph}>
+        <p className="giftshop-paragraph">
           Sorry, you must have at least {cost} GP in order to buy a ching.
         </p>
       ) : (
         <>
-          <p style={styles.paragraph}>You currently have <span style={styles.highlight}>{gp} GP</span>.</p>
-          <form onSubmit={handleSubmit} style={styles.form}>
+          <p className="giftshop-paragraph">You currently have <span className="giftshop-highlight">{gp} GP</span>.</p>
+          <form onSubmit={handleSubmit} className="giftshop-form">
             <button
               type="submit"
-              style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+              className="giftshop-btn"
               disabled={loading}
             >
               {loading ? 'Buying...' : 'Buy Ching!'}
@@ -659,7 +536,7 @@ const BuyChing = ({ data, user, onUpdate }) => {
         </>
       )}
       {message && (
-        <div style={message.type === 'success' ? styles.success : styles.error}>
+        <div className={message.type === 'success' ? 'giftshop-success' : 'giftshop-error'}>
           {message.text}
         </div>
       )}
@@ -684,10 +561,10 @@ const GiftOfTopic = ({ data, user, onUpdate }) => {
 
   if (topicSuspended) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>The Gift of Topic</h3>
-        <p style={styles.paragraph}>You currently have <span style={styles.highlight}>{tokens}</span> token{tokens === 1 ? '' : 's'}.</p>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">The Gift of Topic</h3>
+        <p className="giftshop-paragraph">You currently have <span className="giftshop-highlight">{tokens}</span> token{tokens === 1 ? '' : 's'}.</p>
+        <p className="giftshop-paragraph">
           Your topic privileges have been suspended. Ask nicely and maybe they will be restored.
         </p>
       </div>
@@ -755,19 +632,19 @@ const GiftOfTopic = ({ data, user, onUpdate }) => {
   }
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>The Gift of Topic</h3>
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">The Gift of Topic</h3>
 
       {!canSetTopic && !isEditor ? (
         <>
-          <p style={styles.paragraph}>You don't have any tokens right now.</p>
+          <p className="giftshop-paragraph">You don't have any tokens right now.</p>
           {canBuyToken ? (
             <>
-              <p style={styles.paragraph}>Wanna buy one? Only {tokenCost} GP...</p>
-              <form onSubmit={handleBuyToken} style={styles.form}>
+              <p className="giftshop-paragraph">Wanna buy one? Only {tokenCost} GP...</p>
+              <form onSubmit={handleBuyToken} className="giftshop-form">
                 <button
                   type="submit"
-                  style={{ ...styles.button, ...(loadingBuy ? styles.buttonDisabled : {}) }}
+                  className="giftshop-btn"
                   disabled={loadingBuy}
                 >
                   {loadingBuy ? 'Buying...' : 'Buy Token'}
@@ -775,39 +652,39 @@ const GiftOfTopic = ({ data, user, onUpdate }) => {
               </form>
             </>
           ) : (
-            <p style={styles.paragraph}>
-              You can't buy one right now. You need to be at least <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 6" /> and have at least <span style={styles.highlight}>{tokenCost} GP</span>.
+            <p className="giftshop-paragraph">
+              You can't buy one right now. You need to be at least <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 6" /> and have at least <span className="giftshop-highlight">{tokenCost} GP</span>.
             </p>
           )}
         </>
       ) : (
         <>
-          <p style={styles.paragraph}>
-            You currently have <span style={styles.highlight}>{tokens}</span> token{tokens === 1 ? '' : 's'}.
+          <p className="giftshop-paragraph">
+            You currently have <span className="giftshop-highlight">{tokens}</span> token{tokens === 1 ? '' : 's'}.
           </p>
-          <p style={styles.paragraph}>
-            You can update the outside room topic for the low cost of <span style={styles.highlight}>1</span> token
+          <p className="giftshop-paragraph">
+            You can update the outside room topic for the low cost of <span className="giftshop-highlight">1</span> token
             {isEditor && ' (free for editors)'}.
             The only rules are no insults or harassment of noders, no utter nonsense, and no links to NSFW material.
             Violators will lose their topic-setting privileges.
           </p>
           {lastTopicChange && (
-            <p style={styles.paragraph}><strong>Last topic change:</strong> {lastTopicChange}</p>
+            <p className="giftshop-paragraph"><strong>Last topic change:</strong> {lastTopicChange}</p>
           )}
-          <form onSubmit={handleSetTopic} style={styles.form}>
-            <div style={styles.formRow}>
+          <form onSubmit={handleSetTopic} className="giftshop-form">
+            <div className="giftshop-form-row">
               <input
                 type="text"
                 value={newTopic}
                 onChange={(e) => setNewTopic(e.target.value)}
-                style={{ ...styles.input, flex: 1 }}
+                className="giftshop-input giftshop-input--flex"
                 placeholder="New Topic"
                 maxLength={200}
                 required
               />
               <button
                 type="submit"
-                style={{ ...styles.button, ...(loadingSet ? styles.buttonDisabled : {}) }}
+                className="giftshop-btn"
                 disabled={loadingSet}
               >
                 {loadingSet ? 'Setting...' : 'Set The Topic'}
@@ -817,13 +694,13 @@ const GiftOfTopic = ({ data, user, onUpdate }) => {
 
           {!gpOptOut && userLevel >= 6 && gp >= tokenCost && (
             <>
-              <p style={{ ...styles.paragraph, marginTop: '20px' }}>
-                Because you are at least Level 6, you can also buy more tokens. One token costs <span style={styles.highlight}>{tokenCost} GP</span>.
+              <p className="giftshop-paragraph" style={{ marginTop: '20px' }}>
+                Because you are at least Level 6, you can also buy more tokens. One token costs <span className="giftshop-highlight">{tokenCost} GP</span>.
               </p>
-              <form onSubmit={handleBuyToken} style={styles.form}>
+              <form onSubmit={handleBuyToken} className="giftshop-form">
                 <button
                   type="submit"
-                  style={{ ...styles.button, ...(loadingBuy ? styles.buttonDisabled : {}) }}
+                  className="giftshop-btn"
                   disabled={loadingBuy}
                 >
                   {loadingBuy ? 'Buying...' : 'Buy Token'}
@@ -834,7 +711,7 @@ const GiftOfTopic = ({ data, user, onUpdate }) => {
         </>
       )}
       {message && (
-        <div style={message.type === 'success' ? styles.success : styles.error}>
+        <div className={message.type === 'success' ? 'giftshop-success' : 'giftshop-error'}>
           {message.text}
         </div>
       )}
@@ -853,9 +730,9 @@ const BuyEggs = ({ data, user, onUpdate }) => {
   if (gpOptOut) return null
   if (userLevel < 7) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>The Gift of Eggs</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">The Gift of Eggs</h3>
+        <p className="giftshop-paragraph">
           You are not a high enough level to buy easter eggs yet. Please come back when you reach <LinkNode type="superdoc" title="The Everything2 Voting/Experience System" display="Level 7" />.
         </p>
       </div>
@@ -868,9 +745,9 @@ const BuyEggs = ({ data, user, onUpdate }) => {
 
   if (!canAfford) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>The Gift of Eggs</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">The Gift of Eggs</h3>
+        <p className="giftshop-paragraph">
           You do not have enough GP to buy an easter egg right now. Please come back when you have at least {eggCost} GP.
         </p>
       </div>
@@ -905,18 +782,18 @@ const BuyEggs = ({ data, user, onUpdate }) => {
   }
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>The Gift of Eggs</h3>
-      <p style={styles.paragraph}>
-        You also can buy Easter Eggs if you want. Only <span style={styles.highlight}>{eggCost} GP</span> per egg!
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">The Gift of Eggs</h3>
+      <p className="giftshop-paragraph">
+        You also can buy Easter Eggs if you want. Only <span className="giftshop-highlight">{eggCost} GP</span> per egg!
       </p>
-      <p style={styles.paragraph}>
-        You currently have <span style={styles.highlight}>{easterEggs || 'no'}</span> Easter Egg{easterEggs === 1 ? '' : 's'}.
+      <p className="giftshop-paragraph">
+        You currently have <span className="giftshop-highlight">{easterEggs || 'no'}</span> Easter Egg{easterEggs === 1 ? '' : 's'}.
       </p>
-      <div style={{ display: 'flex', gap: '10px' }}>
+      <div className="giftshop-btn-row">
         <button
           onClick={() => handleBuy(1)}
-          style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+          className="giftshop-btn"
           disabled={loading}
         >
           {loading ? 'Buying...' : 'Buy Easter Egg'}
@@ -924,7 +801,7 @@ const BuyEggs = ({ data, user, onUpdate }) => {
         {canAffordFive && (
           <button
             onClick={() => handleBuy(5)}
-            style={{ ...styles.button, ...(loadingFive ? styles.buttonDisabled : {}) }}
+            className="giftshop-btn"
             disabled={loadingFive}
           >
             {loadingFive ? 'Buying...' : 'Buy Five (5) Easter Eggs'}
@@ -932,7 +809,7 @@ const BuyEggs = ({ data, user, onUpdate }) => {
         )}
       </div>
       {message && (
-        <div style={message.type === 'success' ? styles.success : styles.error}>
+        <div className={message.type === 'success' ? 'giftshop-success' : 'giftshop-error'}>
           {message.text}
         </div>
       )}
@@ -952,12 +829,12 @@ const GiveEggs = ({ data, user, onUpdate }) => {
   if (userLevel < 7) return null
   if (easterEggs < 1) {
     return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Give Eggs</h3>
-        <p style={styles.paragraph}>
+      <div className="giftshop-section">
+        <h3 className="giftshop-section-title">Give Eggs</h3>
+        <p className="giftshop-paragraph">
           Give the gift of eggs! If you happen to have some easter eggs to spare, you can give one to another user as a gift.
         </p>
-        <p style={styles.paragraph}>
+        <p className="giftshop-paragraph">
           Sorry, but it looks like you don't have any eggs to give away now. Please come back when you have an egg.
         </p>
       </div>
@@ -993,37 +870,37 @@ const GiveEggs = ({ data, user, onUpdate }) => {
   }
 
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>Give Eggs</h3>
-      <p style={styles.paragraph}>
+    <div className="giftshop-section">
+      <h3 className="giftshop-section-title">Give Eggs</h3>
+      <p className="giftshop-paragraph">
         Give the gift of eggs! If you happen to have some easter eggs to spare, you can give one to another user as a gift.
         Please use this to encourage newbies.
       </p>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formRow}>
-          <span style={styles.label}>Who's the lucky noder?</span>
+      <form onSubmit={handleSubmit} className="giftshop-form">
+        <div className="giftshop-form-row">
+          <span className="giftshop-label">Who's the lucky noder?</span>
           <input
             type="text"
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
-            style={{ ...styles.input, width: '150px' }}
+            className="giftshop-input giftshop-input--wide"
             placeholder="username"
             required
           />
         </div>
-        <div style={styles.formRow}>
+        <div className="giftshop-form-row">
           <label>
             <input
               type="checkbox"
               checked={anonymous}
               onChange={(e) => setAnonymous(e.target.checked)}
-              style={styles.checkbox}
+              className="giftshop-checkbox"
             />
             Give anonymously
           </label>
           <button
             type="submit"
-            style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+            className="giftshop-btn"
             disabled={loading}
           >
             {loading ? 'Giving...' : 'Egg them!'}
@@ -1031,7 +908,7 @@ const GiveEggs = ({ data, user, onUpdate }) => {
         </div>
       </form>
       {message && (
-        <div style={message.type === 'success' ? styles.success : styles.error}>
+        <div className={message.type === 'success' ? 'giftshop-success' : 'giftshop-error'}>
           {message.text}
         </div>
       )}
@@ -1044,15 +921,15 @@ const SelfExamination = ({ data, user }) => {
   const { gpOptOut, gp, easterEggs, tokens } = data
 
   return (
-    <div style={styles.selfExam}>
-      <h3 style={{ ...styles.sectionTitle, borderBottom: '1px solid #ffc107' }}>Self Eggsamination</h3>
+    <div className="giftshop-self-exam">
+      <h3 className="giftshop-section-title">Self Eggsamination</h3>
       {gpOptOut ? (
-        <p style={styles.paragraph}>
-          You currently have <span style={styles.highlight}>{easterEggs || 0}</span> easter egg{easterEggs === 1 ? '' : 's'} and <span style={styles.highlight}>{tokens || 0}</span> token{tokens === 1 ? '' : 's'}.
+        <p className="giftshop-paragraph">
+          You currently have <span className="giftshop-highlight">{easterEggs || 0}</span> easter egg{easterEggs === 1 ? '' : 's'} and <span className="giftshop-highlight">{tokens || 0}</span> token{tokens === 1 ? '' : 's'}.
         </p>
       ) : (
-        <p style={styles.paragraph}>
-          You currently have <span style={styles.highlight}>{gp} GP</span>, <span style={styles.highlight}>{easterEggs || 0}</span> easter egg{easterEggs === 1 ? '' : 's'}, and <span style={styles.highlight}>{tokens || 0}</span> token{tokens === 1 ? '' : 's'}.
+        <p className="giftshop-paragraph">
+          You currently have <span className="giftshop-highlight">{gp} GP</span>, <span className="giftshop-highlight">{easterEggs || 0}</span> easter egg{easterEggs === 1 ? '' : 's'}, and <span className="giftshop-highlight">{tokens || 0}</span> token{tokens === 1 ? '' : 's'}.
         </p>
       )}
     </div>
@@ -1081,9 +958,9 @@ const E2GiftShop = ({ data }) => {
   }, [])
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Welcome to the Everything2 Gift Shop!</h1>
+    <div className="giftshop-container">
+      <div className="giftshop-header">
+        <h1 className="giftshop-title">Welcome to the Everything2 Gift Shop!</h1>
       </div>
 
       <GiftOfStar data={shopData} user={user} onUpdate={handleUpdate} />

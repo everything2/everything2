@@ -64,16 +64,17 @@ const WriteupsByType = ({ data }) => {
 
   // Styles
   const containerStyle = {
-    padding: '20px',
+    padding: '12px',
     maxWidth: '1000px',
-    margin: '0 auto'
+    margin: '0 auto',
+    boxSizing: 'border-box'
   }
 
   const filterBoxStyle = {
     backgroundColor: colors.background,
-    padding: '20px',
+    padding: '12px',
     borderRadius: '8px',
-    marginBottom: '20px',
+    marginBottom: '16px',
     border: `1px solid ${colors.secondary}20`
   }
 
@@ -109,14 +110,14 @@ const WriteupsByType = ({ data }) => {
   const thStyle = {
     backgroundColor: colors.primary,
     color: '#fff',
-    padding: '12px 15px',
+    padding: '10px 12px',
     textAlign: 'left',
     fontSize: '14px',
     fontWeight: '600'
   }
 
   const tdStyle = (isOdd) => ({
-    padding: '10px 15px',
+    padding: '10px 12px',
     borderBottom: '1px solid #eee',
     fontSize: '14px',
     backgroundColor: isOdd ? colors.background : '#fff'
@@ -140,8 +141,8 @@ const WriteupsByType = ({ data }) => {
     justifyContent: 'center',
     alignItems: 'center',
     gap: '15px',
-    marginTop: '20px',
-    padding: '15px',
+    marginTop: '16px',
+    padding: '12px',
     backgroundColor: colors.background,
     borderRadius: '4px'
   }
@@ -165,14 +166,14 @@ const WriteupsByType = ({ data }) => {
             Choose...
           </legend>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '15px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <strong>Select Writeup Type:</strong>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <label style={{ display: 'block' }}>
+              <strong style={{ display: 'block', marginBottom: '6px', fontSize: '14px' }}>Writeup Type:</strong>
               <select
                 name="wutype"
                 value={selectedType}
                 onChange={(e) => setSelectedType(Number(e.target.value))}
-                style={selectStyle}
+                style={{ ...selectStyle, width: '100%', maxWidth: '300px', marginRight: 0, boxSizing: 'border-box' }}
               >
                 {type_options.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -180,13 +181,13 @@ const WriteupsByType = ({ data }) => {
               </select>
             </label>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <strong>Number of writeups to display:</strong>
+            <label style={{ display: 'block' }}>
+              <strong style={{ display: 'block', marginBottom: '6px', fontSize: '14px' }}>Results per page:</strong>
               <select
                 name="count"
                 value={selectedCount}
                 onChange={(e) => setSelectedCount(Number(e.target.value))}
-                style={selectStyle}
+                style={{ ...selectStyle, width: '100%', maxWidth: '120px', marginRight: 0, boxSizing: 'border-box' }}
               >
                 {count_options.map(n => (
                   <option key={n} value={n}>{n}</option>

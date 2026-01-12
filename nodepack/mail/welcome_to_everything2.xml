@@ -1,5 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;&#171;name&#187;,
+  <doctext>&lt;p&gt;&lt;name&gt;,
 &lt;/p&gt;
 &lt;p&gt;Welcome to Everything2, one of the Internet's oldest and largest writing communities. You are receiving this message
 because someone gave this email address when registering on Everything2.
@@ -8,19 +8,19 @@ because someone gave this email address when registering on Everything2.
 If you have only read a little of the site, please take the time to explore it some more before making your
 own contribution. In principle, everything has a place on Everything2, but that doesn't mean there is a place
 for just any old thing. The links at the bottom of writeup pages are a useful way to take a random walk through
-the site and get a feel for it. You may also find &lt;a href=&quot;https://&#171;servername&#187;/title/E2+Quick+Start&quot;&gt;E2 Quick Start&lt;/a&gt; useful reading.&lt;/p&gt;
+the site and get a feel for it. You may also find &lt;a href=&quot;https://&lt;servername&gt;/title/E2+Quick+Start&quot;&gt;E2 Quick Start&lt;/a&gt; useful reading.&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Verifying your account&lt;/b&gt;
 &lt;/p&gt;
 &lt;p&gt;To complete the registration process, click on the following link, or
 copy and paste it into your web browser:
 &lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://&#171;servername&#187;&#171;link&#187;&quot;&gt;https://&#171;servername&#187;&#171;link&#187;&lt;/a&gt;
+&lt;p&gt;&lt;a href=&quot;https://&lt;servername&gt;&lt;link&gt;&quot;&gt;https://&lt;servername&gt;&lt;link&gt;&lt;/a&gt;
 &lt;/p&gt;
 
 &lt;p&gt;All the best,&lt;/p&gt;
 
 &lt;p&gt;The Everything2 Staff&lt;br&gt;
-&#171;servername&#187;
+&lt;servername&gt;
 &lt;/p&gt;</doctext>
   <from_address>accounthelp@everything2.com</from_address>
   <mail_id>2072170</mail_id>

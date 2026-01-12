@@ -55,44 +55,31 @@ function SortableNodeletItem({ id, title, onRemove, onConfigure }) {
     isDragging,
   } = useSortable({ id })
 
+  // Only transform/transition need inline styles (dynamic values from drag state)
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    padding: '12px',
-    margin: '4px 0',
-    backgroundColor: isDragging ? '#f0f0f0' : 'white',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    cursor: 'grab',
-    userSelect: 'none',
     opacity: isDragging ? 0.5 : 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   }
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <div style={{ display: 'flex', alignItems: 'center', flex: 1 }} {...attributes} {...listeners}>
-        <span style={{ marginRight: '8px', color: '#507898' }}>☰</span>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`settings-nodelet-item${isDragging ? ' dragging' : ''}`}
+    >
+      <div className="settings-nodelet-item-content" {...attributes} {...listeners}>
+        <span className="settings-nodelet-item-handle">☰</span>
         <span>{title}</span>
       </div>
-      <div style={{ display: 'flex', gap: '8px' }}>
+      <div className="settings-nodelet-item-actions">
         {onConfigure && (
           <button
             onClick={(e) => {
               e.stopPropagation()
               onConfigure(id, title)
             }}
-            style={{
-              padding: '4px 8px',
-              fontSize: '12px',
-              border: '1px solid #4060b0',
-              borderRadius: '3px',
-              backgroundColor: 'white',
-              color: '#4060b0',
-              cursor: 'pointer',
-            }}
+            className="settings-btn-configure"
             title="Configure preferences"
           >
             ⚙️
@@ -103,15 +90,7 @@ function SortableNodeletItem({ id, title, onRemove, onConfigure }) {
             e.stopPropagation()
             onRemove(id)
           }}
-          style={{
-            padding: '4px 8px',
-            fontSize: '12px',
-            border: '1px solid #d9534f',
-            borderRadius: '3px',
-            backgroundColor: 'white',
-            color: '#d9534f',
-            cursor: 'pointer',
-          }}
+          className="settings-btn-danger"
           title="Remove nodelet"
         >
           ×
@@ -128,7 +107,7 @@ function SortableNodeletItem({ id, title, onRemove, onConfigure }) {
 const getInitialTab = (defaultTab) => {
   if (typeof window !== 'undefined') {
     const hash = window.location.hash.replace('#', '')
-    if (['settings', 'advanced', 'nodelets', 'admin', 'profile'].includes(hash)) {
+    if (['settings', 'advanced', 'nodelets', 'notifications', 'admin', 'profile'].includes(hash)) {
       return hash
     }
   }
@@ -501,7 +480,8 @@ function Settings({ data }) {
   // Determine if a nodelet has configuration options
   const hasConfiguration = useCallback((title) => {
     // Nodelets that have configuration preferences
-    const configurableNodelets = ['Notifications', 'New Writeups']
+    // Note: Notifications config is now in its own dedicated tab
+    const configurableNodelets = ['New Writeups']
     return configurableNodelets.includes(title)
   }, [])
 
@@ -756,55 +736,40 @@ function Settings({ data }) {
 
   if (data.error === 'guest') {
     return (
-      <div style={{ padding: '20px' }}>
+      <div className="settings-guest-message">
         <p>{data.message}</p>
       </div>
     )
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto' }}>
-      <h1 style={{ marginBottom: '20px', color: '#111111' }}>Settings</h1>
+    <div className="settings-page">
+      <h1>Settings</h1>
 
       {/* Save button at top */}
-      <div style={{
-        marginBottom: '20px',
-        paddingBottom: '20px',
-        borderBottom: '1px solid #ddd',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px'
-      }}>
+      <div className="settings-save-area">
         <button
           onClick={handleSave}
           disabled={!isDirty || isSaving}
-          style={{
-            padding: '10px 24px',
-            backgroundColor: isDirty ? '#4060b0' : '#ccc',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: isDirty && !isSaving ? 'pointer' : 'not-allowed',
-            fontWeight: 'bold'
-          }}
+          className="settings-btn-primary"
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
         </button>
 
         {isDirty && !isSaving && (
-          <span style={{ color: '#507898', fontSize: '14px' }}>
+          <span className="settings-status-unsaved">
             You have unsaved changes
           </span>
         )}
 
         {saveSuccess && (
-          <span style={{ color: '#3bb5c3', fontSize: '14px', fontWeight: 'bold' }}>
+          <span className="settings-status-success">
             ✓ Settings saved successfully
           </span>
         )}
 
         {saveError && (
-          <span style={{ color: '#d9534f', fontSize: '14px' }}>
+          <span className="settings-status-error">
             Error: {saveError}
           </span>
         )}
@@ -822,134 +787,112 @@ function Settings({ data }) {
       {activeTab === 'settings' && (
         <div>
           {/* Look and Feel Section */}
-          <h2 style={{ marginBottom: '16px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Look and Feel
-          </h2>
+          <h2>Look and Feel</h2>
 
           {/* Confirmation Dialogs */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Confirmation Dialogs</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Confirmation Dialogs</legend>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={settingsPrefs.votesafety === 1}
                 onChange={() => handleTogglePref('votesafety')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Ask for confirmation when voting</strong>
             </label>
 
-            <label style={{ display: 'block', marginTop: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={settingsPrefs.coolsafety === 1}
                 onChange={() => handleTogglePref('coolsafety')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Ask for confirmation when cooling writeups</strong>
             </label>
           </fieldset>
 
           {/* Your Writeups Section */}
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Your Writeups
-          </h2>
+          <h2 className="settings-section-header">Your Writeups</h2>
 
           {/* Writeup Hints */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Writeup Hints</legend>
-            <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+          <fieldset className="settings-fieldset">
+            <legend>Writeup Hints</legend>
+            <p className="settings-description">
               Check for some common mistakes made in creating or editing writeups.
             </p>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label-compact">
               <input
                 type="checkbox"
                 checked={!(settingsPrefs.nohints === 1)}
                 onChange={() => handleTogglePref('nohints')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Show critical writeup hints</strong>
-              <span style={{ marginLeft: '8px', color: '#507898', fontSize: '13px' }}>(recommended: on)</span>
+              <span className="settings-hint-inline">(recommended: on)</span>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label-compact">
               <input
                 type="checkbox"
                 checked={!(settingsPrefs.nohintSpelling === 1)}
                 onChange={() => handleTogglePref('nohintSpelling')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Check for common misspellings</strong>
-              <span style={{ marginLeft: '8px', color: '#507898', fontSize: '13px' }}>(recommended: on)</span>
+              <span className="settings-hint-inline">(recommended: on)</span>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label-compact">
               <input
                 type="checkbox"
                 checked={!(settingsPrefs.nohintHTML === 1)}
                 onChange={() => handleTogglePref('nohintHTML')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Show HTML hints</strong>
-              <span style={{ marginLeft: '8px', color: '#507898', fontSize: '13px' }}>(recommended: on)</span>
+              <span className="settings-hint-inline">(recommended: on)</span>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label-compact">
               <input
                 type="checkbox"
                 checked={settingsPrefs.hintXHTML === 1}
                 onChange={() => handleTogglePref('hintXHTML')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Show strict HTML hints</strong>
             </label>
 
-            <label style={{ display: 'block', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label-compact">
               <input
                 type="checkbox"
                 checked={settingsPrefs.hintSilly === 1}
                 onChange={() => handleTogglePref('hintSilly')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Show silly hints</strong>
             </label>
           </fieldset>
 
           {/* Other Users Section */}
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Other Users
-          </h2>
+          <h2 className="settings-section-header">Other Users</h2>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Other users' writeups</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Other users' writeups</legend>
 
-            <div style={{ marginBottom: '8px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Anonymous voting:
-              </label>
+            <div className="settings-form-row">
+              <label>Anonymous voting:</label>
               <select
                 value={settingsPrefs.anonymousvote || 0}
                 onChange={(e) => handlePrefChange('anonymousvote', parseInt(e.target.value, 10))}
-                style={{
-                  marginLeft: '8px',
-                  padding: '6px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  maxWidth: '500px'
-                }}
+                className="settings-select"
               >
                 <option value="0">Always show author's username</option>
-                <option value="1">Hide author completely until I have voted on a writeup</option>
-                <option value="2">Hide author's name until I have voted but still link to the author</option>
+                <option value="1">Hide author until I vote</option>
+                <option value="2">Hide name until I vote (still link)</option>
               </select>
             </div>
           </fieldset>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Favorite Users</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Favorite Users</legend>
 
             <FavoriteUsersManager
               initialFavorites={favoriteUsers}
@@ -957,16 +900,16 @@ function Settings({ data }) {
             />
           </fieldset>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Blocked Users</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Blocked Users</legend>
 
             <UserInteractionsManager
               initialBlocked={blockedUsers}
               currentUser={data.currentUser}
             />
 
-            <div style={{ marginTop: '24px', padding: '12px', backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-              <p style={{ margin: 0, fontSize: '13px', color: '#507898' }}>
+            <div className="settings-info-box">
+              <p>
                 <strong>Note:</strong> When you try to send a message to someone who has blocked you, you'll be notified immediately with an error message in the chatterbox or message compose window.
               </p>
             </div>
@@ -977,15 +920,13 @@ function Settings({ data }) {
       {/* Nodelets tab */}
       {activeTab === 'nodelets' && (
         <div>
-          <h2 style={{ marginBottom: '8px', color: '#38495e' }}>Nodelet Management</h2>
-          <p style={{ marginBottom: '20px', color: '#507898', fontSize: '14px' }}>
+          <p className="settings-intro">
             Nodelets are the boxes in your sidebar that provide quick access to different features.
-            Drag and drop to rearrange them in your preferred order. You can also add or remove nodelets,
-            and configure preferences for supported nodelets. Click <strong>Save Changes</strong> when you're done.
+            Drag and drop to rearrange them in your preferred order. Click <strong>Save Changes</strong> when you're done.
           </p>
 
-          <h3 style={{ marginBottom: '12px', color: '#38495e', fontSize: '16px' }}>Active Nodelets</h3>
-          <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+          <h3>Active Nodelets</h3>
+          <p className="settings-description">
             Drag to reorder, click × to remove, or ⚙️ to configure:
           </p>
 
@@ -1013,7 +954,7 @@ function Settings({ data }) {
           </DndContext>
 
           {nodelets.length === 0 && (
-            <p style={{ color: '#507898', fontStyle: 'italic', marginBottom: '24px' }}>
+            <p className="settings-hint" style={{ fontStyle: 'italic', marginBottom: '24px' }}>
               No nodelets active. Add some from the available nodelets below.
             </p>
           )}
@@ -1021,30 +962,16 @@ function Settings({ data }) {
           {/* Available nodelets to add */}
           {availableNodelets.length > 0 && (
             <div style={{ marginTop: '32px' }}>
-              <h3 style={{ marginBottom: '12px', color: '#38495e', fontSize: '16px' }}>Available Nodelets</h3>
-              <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+              <h3>Available Nodelets</h3>
+              <p className="settings-description">
                 Click to add a nodelet to your sidebar:
               </p>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                gap: '8px',
-                marginBottom: '24px'
-              }}>
+              <div className="settings-nodelets-grid">
                 {availableNodelets.map((nodelet) => (
                   <button
                     key={nodelet.node_id}
                     onClick={() => handleAddNodelet(nodelet)}
-                    style={{
-                      padding: '10px 12px',
-                      border: '1px solid #4060b0',
-                      borderRadius: '4px',
-                      backgroundColor: 'white',
-                      color: '#4060b0',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      fontSize: '14px',
-                    }}
+                    className="settings-nodelet-add-btn"
                   >
                     + {nodelet.title}
                   </button>
@@ -1055,80 +982,30 @@ function Settings({ data }) {
 
           {/* Nodelet configuration panel */}
           {configuringNodelet && (
-            <div style={{
-              marginTop: '32px',
-              padding: '20px',
-              border: '2px solid #4060b0',
-              borderRadius: '6px',
-              backgroundColor: '#f8f9f9'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ margin: 0, color: '#38495e', fontSize: '16px' }}>
-                  {configuringNodelet.title} Preferences
-                </h3>
+            <div className="settings-config-panel">
+              <div className="settings-config-panel-header">
+                <h3>{configuringNodelet.title} Preferences</h3>
                 <button
                   onClick={() => setConfiguringNodelet(null)}
-                  style={{
-                    padding: '4px 12px',
-                    border: '1px solid #507898',
-                    borderRadius: '3px',
-                    backgroundColor: 'white',
-                    color: '#507898',
-                    cursor: 'pointer',
-                    fontSize: '14px'
-                  }}
+                  className="settings-btn-secondary settings-btn-sm"
                 >
                   Close
                 </button>
               </div>
 
-              {/* Notifications nodelet preferences */}
-              {configuringNodelet.title === 'Notifications' && (
-                <div>
-                  <p style={{ marginBottom: '16px', color: '#507898', fontSize: '13px' }}>
-                    Choose which types of notifications you want to receive. Enabled notifications will appear in your Notifications nodelet.
-                  </p>
-                  <div style={{ marginLeft: '8px', maxHeight: '400px', overflowY: 'auto' }}>
-                    {(data.notificationPreferences || []).map((notif) => (
-                      <label key={notif.node_id} style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={notificationPrefs[notif.node_id] || false}
-                          onChange={(e) => setNotificationPrefs(prev => ({ ...prev, [notif.node_id]: e.target.checked }))}
-                          style={{ marginRight: '8px' }}
-                        />
-                        <strong>{notif.title}</strong>
-                      </label>
-                    ))}
-                  </div>
-                  {(data.notificationPreferences || []).length === 0 && (
-                    <p style={{ fontSize: '13px', color: '#507898', fontStyle: 'italic' }}>
-                      No notification types available.
-                    </p>
-                  )}
-                </div>
-              )}
-
+              {/* New Writeups nodelet preferences */}
               {configuringNodelet.title === 'New Writeups' && (
                 <div>
-                  <p style={{ marginBottom: '16px', color: '#507898', fontSize: '13px' }}>
+                  <p className="settings-description">
                     Configure how many new writeups to display in the New Writeups nodelet.
                   </p>
                   <div style={{ marginLeft: '8px' }}>
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                        Number of new writeups to show:
-                      </label>
+                    <div className="settings-form-row">
+                      <label>Number of new writeups to show:</label>
                       <select
                         value={nodeletSettings[configuringNodelet.node_id]?.num_newwus || 15}
                         onChange={(e) => handleNodeletSettingChange(configuringNodelet.node_id, 'num_newwus', parseInt(e.target.value, 10))}
-                        style={{
-                          marginLeft: '8px',
-                          padding: '6px 12px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                          fontSize: '14px'
-                        }}
+                        className="settings-select-inline"
                       >
                         <option value="1">1</option>
                         <option value="5">5</option>
@@ -1142,7 +1019,7 @@ function Settings({ data }) {
                     </div>
 
                     {data.currentUser && (data.currentUser.level >= 2 || data.currentUser.title === 'e2e_admin') && (
-                      <label style={{ display: 'block', marginTop: '16px', cursor: 'pointer' }}>
+                      <label className="settings-checkbox-label">
                         <input
                           type="checkbox"
                           checked={(nodeletSettings[configuringNodelet.node_id]?.nw_nojunk || 0) === 1}
@@ -1150,10 +1027,9 @@ function Settings({ data }) {
                             const current = nodeletSettings[configuringNodelet.node_id]?.nw_nojunk || 0
                             handleNodeletSettingChange(configuringNodelet.node_id, 'nw_nojunk', current === 1 ? 0 : 1)
                           }}
-                          style={{ marginRight: '8px' }}
                         />
                         <strong>No junk</strong>
-                        <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+                        <div className="settings-hint-block">
                           Hide low-quality writeups (editors only)
                         </div>
                       </label>
@@ -1166,31 +1042,92 @@ function Settings({ data }) {
         </div>
       )}
 
+      {/* Notifications tab */}
+      {activeTab === 'notifications' && (
+        <div>
+          <h2>Notification Preferences</h2>
+
+          <p className="settings-intro">
+            Choose which types of notifications you want to receive. Enabled notifications will appear in your
+            Notifications nodelet (if added to your sidebar) and in the mobile notifications drawer.
+          </p>
+
+          <fieldset className="settings-fieldset">
+            <legend>Available Notifications</legend>
+
+            {(data.notificationPreferences || []).length > 0 ? (
+              <div className="settings-scroll-list">
+                {(data.notificationPreferences || []).map((notif) => (
+                  <label
+                    key={notif.node_id}
+                    className={`settings-notification-label${notificationPrefs[notif.node_id] ? ' active' : ''}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={notificationPrefs[notif.node_id] || false}
+                      onChange={(e) => setNotificationPrefs(prev => ({ ...prev, [notif.node_id]: e.target.checked }))}
+                    />
+                    <strong>{notif.title}</strong>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <p className="settings-hint" style={{ fontStyle: 'italic' }}>
+                No notification types are currently available. Notification types are configured by site administrators.
+              </p>
+            )}
+          </fieldset>
+
+          <div className="settings-how-to">
+            <h3>How Notifications Work</h3>
+            <ul>
+              <li>Enabled notifications appear in your sidebar's Notifications nodelet</li>
+              <li>On mobile, access notifications via the bell icon in the bottom navigation</li>
+              <li>Dismiss individual notifications by clicking the × button</li>
+              <li>Some notifications link to relevant content - click to view</li>
+            </ul>
+          </div>
+
+          {/* Link to add Notifications nodelet if not present */}
+          {!nodelets.some(n => n.title === 'Notifications') && (
+            <div className="settings-tip-box">
+              <strong>Tip:</strong> Add the Notifications nodelet to your sidebar to see notifications on desktop.
+              <button
+                type="button"
+                onClick={() => {
+                  const notifNodelet = (data.availableNodelets || []).find(n => n.title === 'Notifications')
+                  if (notifNodelet) {
+                    handleAddNodelet(notifNodelet)
+                  }
+                }}
+                className="settings-btn-primary"
+                style={{ marginLeft: '12px', padding: '6px 12px', fontSize: '13px' }}
+              >
+                Add Notifications Nodelet
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Advanced tab */}
       {activeTab === 'advanced' && (
         <div>
-          <h2 style={{ marginBottom: '16px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Theme
-          </h2>
+          <h2 className="settings-section-header">Theme</h2>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Site Theme / Stylesheet</legend>
-            <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+          <fieldset className="settings-fieldset">
+            <legend>Site Theme / Stylesheet</legend>
+            <p className="settings-description">
               Choose your site theme. Click "Preview" to see how it looks, then "Save Changes" to keep it.
-              More themes are available at <a href="/title/The%20Catwalk" style={{ color: '#4060b0' }}>The Catwalk</a> and <a href="/title/Theme%20Nirvana" style={{ color: '#4060b0' }}>Theme Nirvana</a>.
+              More themes are available at <a href="/title/The%20Catwalk" className="settings-link">The Catwalk</a> and <a href="/title/Theme%20Nirvana" className="settings-link">Theme Nirvana</a>.
             </p>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div className="settings-theme-row">
               <select
+                id="settings-theme-selector"
                 value={settingsPrefs.userstyle || data.defaultStylesheetId || ''}
                 onChange={(e) => handlePrefChange('userstyle', e.target.value)}
-                style={{
-                  padding: '8px 12px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  minWidth: '200px'
-                }}
+                className="settings-select"
               >
                 {(data.availableStylesheets || []).map(style => (
                   <option key={style.node_id} value={style.node_id}>
@@ -1204,267 +1141,250 @@ function Settings({ data }) {
                 onClick={() => {
                   const themeId = settingsPrefs.userstyle || data.defaultStylesheetId
                   if (themeId) {
-                    const zenSheet = document.getElementById('zensheet')
-                    if (zenSheet) {
-                      zenSheet.href = `/css/${themeId}.css`
+                    let zenSheet = document.getElementById('zensheet')
+                    // If zensheet doesn't exist (user on default theme), create it
+                    if (!zenSheet) {
+                      zenSheet = document.createElement('link')
+                      zenSheet.id = 'zensheet'
+                      zenSheet.rel = 'stylesheet'
+                      zenSheet.type = 'text/css'
+                      zenSheet.media = 'screen,tv,projection'
+                      // Insert after basesheet
+                      const baseSheet = document.getElementById('basesheet')
+                      if (baseSheet && baseSheet.parentNode) {
+                        baseSheet.parentNode.insertBefore(zenSheet, baseSheet.nextSibling)
+                      } else {
+                        document.head.appendChild(zenSheet)
+                      }
                     }
+                    zenSheet.href = `/css/${themeId}.css`
                   }
                 }}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#4060b0',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '14px'
-                }}
+                className="settings-btn-primary"
               >
                 Preview
               </button>
 
               {data.currentStylesheet && (
-                <span style={{ fontSize: '13px', color: '#507898' }}>
+                <span className="settings-current-value">
                   Current: <strong>{data.currentStylesheet}</strong>
                 </span>
               )}
             </div>
           </fieldset>
 
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Page Display
-          </h2>
+          <h2 className="settings-section-header">Page Display</h2>
 
           {/* Writeup Headers */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Writeup Headers</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Writeup Headers</legend>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.info_authorsince_off === 1)}
                 onChange={() => handleToggleAdvancedPref('info_authorsince_off')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Show how long ago the author was here</strong>
             </label>
           </fieldset>
 
           {/* Homenodes */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Homenodes</legend>
-            <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+          <fieldset className="settings-fieldset">
+            <legend>Homenodes</legend>
+            <p className="settings-description">
               Control what information is displayed on your homenode.
             </p>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.hidemsgme === 1}
                 onChange={() => handleToggleAdvancedPref('hidemsgme')}
-                style={{ marginRight: '8px' }}
               />
               <strong>I am anti-social.</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 So don't display the user /msg box in users' homenodes.
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.hidemsgyou === 1}
                 onChange={() => handleToggleAdvancedPref('hidemsgyou')}
-                style={{ marginRight: '8px' }}
               />
               <strong>No one talks to me either</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 On homenodes, hide the '/msgs from me' link to Message Inbox
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.hidevotedata === 1}
                 onChange={() => handleToggleAdvancedPref('hidevotedata')}
-                style={{ marginRight: '8px' }}
               />
               <strong>I'm careless with my votes and C!s</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 Don't show them on my homenode
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.hidehomenodeUG === 1}
                 onChange={() => handleToggleAdvancedPref('hidehomenodeUG')}
-                style={{ marginRight: '8px' }}
               />
               <strong>I'm a loner, Dottie, a rebel.</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 Don't list my usergroups on my homenode.
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.hidehomenodeUC === 1}
                 onChange={() => handleToggleAdvancedPref('hidehomenodeUC')}
-                style={{ marginRight: '8px' }}
               />
               <strong>I'm a secret librarian.</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 Don't list my categories on my homenode.
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.showrecentwucount === 1}
                 onChange={() => handleToggleAdvancedPref('showrecentwucount')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Let the world know, I'm a fervent noder, and I love it!</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 Show recent writeup count in homenode.
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.hidelastnoded === 1)}
                 onChange={() => handleToggleAdvancedPref('hidelastnoded')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Link to user's most recently created writeup on their homenode</strong>
             </label>
           </fieldset>
 
           {/* Other Display Options */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Other Display Options</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Other Display Options</legend>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.hideauthore2node === 1)}
                 onChange={() => handleToggleAdvancedPref('hideauthore2node')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Show who created a writeup page title (a.k.a. e2node)</strong>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.noSoftLinks === 1}
                 onChange={() => handleToggleAdvancedPref('noSoftLinks')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Hide softlinks</strong>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.nosocialbookmarking === 1)}
                 onChange={() => handleToggleAdvancedPref('nosocialbookmarking')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Allow others to see social bookmarking buttons on my writeups</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 Note: When unchecked, also hides social bookmarking buttons on other people's writeups
               </div>
             </label>
           </fieldset>
 
           {/* Information Section */}
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Information
-          </h2>
+          <h2 className="settings-section-header">Information</h2>
 
           {/* Writeup Maintenance */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Writeup Maintenance</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Writeup Maintenance</legend>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_notify_kill === 1)}
                 onChange={() => handleToggleAdvancedPref('no_notify_kill')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell me when my writeups are deleted</strong>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_editnotification === 1)}
                 onChange={() => handleToggleAdvancedPref('no_editnotification')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell me when my writeups get edited by an editor or administrator</strong>
             </label>
           </fieldset>
 
           {/* Writeup Response */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Writeup Response</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Writeup Response</legend>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_coolnotification === 1)}
                 onChange={() => handleToggleAdvancedPref('no_coolnotification')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell me when my writeups get C!ed ('cooled')</strong>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_likeitnotification === 1)}
                 onChange={() => handleToggleAdvancedPref('no_likeitnotification')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell me when Guest Users like my writeups</strong>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_bookmarknotification === 1)}
                 onChange={() => handleToggleAdvancedPref('no_bookmarknotification')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell me when my writeups get bookmarked on E2</strong>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_bookmarkinformer === 1)}
                 onChange={() => handleToggleAdvancedPref('no_bookmarkinformer')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell others when I bookmark a writeup on E2</strong>
             </label>
 
             {!(advancedPrefs.no_bookmarkinformer === 1) && (
-              <label style={{ display: 'block', marginLeft: '24px', marginTop: '8px', cursor: 'pointer' }}>
+              <label className="settings-checkbox-label settings-checkbox-nested">
                 <input
                   type="checkbox"
                   checked={advancedPrefs.anonymous_bookmark === 1}
                   onChange={() => handleToggleAdvancedPref('anonymous_bookmark')}
-                  style={{ marginRight: '8px' }}
                 />
                 <strong>but do it anonymously</strong>
               </label>
@@ -1472,146 +1392,133 @@ function Settings({ data }) {
           </fieldset>
 
           {/* Social Bookmarking */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Social Bookmarking</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Social Bookmarking</legend>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_socialbookmarknotification === 1)}
                 onChange={() => handleToggleAdvancedPref('no_socialbookmarknotification')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell me when my writeups get bookmarked on a social bookmarking site</strong>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_socialbookmarkinformer === 1)}
                 onChange={() => handleToggleAdvancedPref('no_socialbookmarkinformer')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell others when I bookmark a writeup on a social bookmarking site</strong>
             </label>
           </fieldset>
 
           {/* Other Information */}
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Other Information</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Other Information</legend>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={!(advancedPrefs.no_discussionreplynotify === 1)}
                 onChange={() => handleToggleAdvancedPref('no_discussionreplynotify')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Tell me when someone replies to my usergroup discussion posts</strong>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '8px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.hidelastseen === 1}
                 onChange={() => handleToggleAdvancedPref('hidelastseen')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Don't tell anyone when I was last here</strong>
             </label>
           </fieldset>
 
           {/* Messages Section */}
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Messages
-          </h2>
+          <h2 className="settings-section-header">Messages</h2>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Message Settings</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Message Settings</legend>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.getofflinemsgs === 1}
                 onChange={() => handleToggleAdvancedPref('getofflinemsgs')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Get online-only messages, even while offline</strong>
             </label>
 
-            <div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-              <p style={{ margin: 0, fontSize: '13px', color: '#507898' }}>
+            <div className="settings-info-box">
+              <p>
                 <strong>Note:</strong> The Message Inbox now always displays messages sorted by most recent first (newest at top).
               </p>
             </div>
           </fieldset>
 
           {/* Miscellaneous Section */}
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Miscellaneous
-          </h2>
+          <h2 className="settings-section-header">Miscellaneous</h2>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Chatterbox</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Chatterbox</legend>
 
-            <div style={{ padding: '12px', backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-              <p style={{ margin: 0, fontSize: '13px', color: '#507898' }}>
+            <div className="settings-info-box">
+              <p>
                 <strong>Note:</strong> The modern chatterbox automatically validates all commands. Messages starting with "/" are processed as commands and will show an error if the command is invalid.
               </p>
             </div>
           </fieldset>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '16px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Other Options</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Other Options</legend>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.hidenodeshells === 1}
                 onChange={() => handleToggleAdvancedPref('hidenodeshells')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Hide nodeshells in search results and softlink tables</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 A nodeshell is a page on Everything2 with a title but no content
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.GPoptout === 1}
                 onChange={() => handleToggleAdvancedPref('GPoptout')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Opt me out of the GP System</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 GP is a points reward system
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.defaultpostwriteup === 1}
                 onChange={() => handleToggleAdvancedPref('defaultpostwriteup')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Publish immediately by default</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 Older users may appreciate having 'publish immediately' initially selected instead 'post as draft'
               </div>
             </label>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={advancedPrefs.HideNewWriteups === 1}
                 onChange={() => handleToggleAdvancedPref('HideNewWriteups')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Hide your new writeups by default</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 Some writeups (daylogs, maintenance) always default to hidden
               </div>
             </label>
@@ -1623,75 +1530,60 @@ function Settings({ data }) {
       {/* Admin tab - editors only */}
       {activeTab === 'admin' && Boolean(data.isEditor) && (
         <div>
-          <h2 style={{ marginBottom: '16px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Editor Settings
-          </h2>
+          <h2 className="settings-section-header">Editor Settings</h2>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Editor Options</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Editor Options</legend>
 
-            <label style={{ display: 'block', marginBottom: '12px', cursor: 'pointer' }}>
+            <label className="settings-checkbox-label">
               <input
                 type="checkbox"
                 checked={editorPrefs.hidenodenotes === 1}
                 onChange={() => handleToggleEditorPref('hidenodenotes')}
-                style={{ marginRight: '8px' }}
               />
               <strong>Hide Node Notes</strong>
-              <div style={{ marginLeft: '24px', fontSize: '13px', color: '#507898', marginTop: '4px' }}>
+              <div className="settings-hint-block">
                 Don't display node notes on writeup pages
               </div>
             </label>
           </fieldset>
 
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Chatterbox Macros
-          </h2>
+          <h2 className="settings-section-header">Chatterbox Macros</h2>
 
-          <p style={{ marginBottom: '16px', color: '#507898', fontSize: '14px' }}>
+          <p className="settings-description">
             Macros allow you to quickly send predefined messages in the chatterbox.
             Enable a macro by checking "Use", then customize the text.
           </p>
 
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
+            <table className="settings-macros-table">
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', padding: '8px', textAlign: 'left', width: '50px' }}>Use?</th>
-                  <th style={{ backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', padding: '8px', textAlign: 'left', width: '80px' }}>Name</th>
-                  <th style={{ backgroundColor: '#f8f9f9', border: '1px solid #dee2e6', padding: '8px', textAlign: 'left' }}>Text</th>
+                  <th>Use?</th>
+                  <th>Name</th>
+                  <th>Text</th>
                 </tr>
               </thead>
               <tbody>
                 {macros.map((macro) => (
                   <tr key={macro.name}>
-                    <td style={{ border: '1px solid #dee2e6', padding: '8px', textAlign: 'center', verticalAlign: 'top' }}>
+                    <td>
                       <input
                         type="checkbox"
                         checked={Boolean(macro.enabled)}
                         onChange={() => handleToggleMacro(macro.name)}
-                        style={{ cursor: 'pointer' }}
                       />
                     </td>
-                    <td style={{ border: '1px solid #dee2e6', padding: '8px', verticalAlign: 'top', whiteSpace: 'nowrap' }}>
+                    <td>
                       <code>{macro.name}</code>
                     </td>
-                    <td style={{ border: '1px solid #dee2e6', padding: '8px', verticalAlign: 'top' }}>
+                    <td>
                       <textarea
                         value={macro.text}
                         onChange={(e) => handleMacroTextChange(macro.name, e.target.value)}
                         rows={6}
                         maxLength={MAX_MACRO_LENGTH}
-                        style={{
-                          width: '100%',
-                          minWidth: '400px',
-                          fontFamily: 'monospace',
-                          fontSize: '13px',
-                          padding: '8px',
-                          border: '1px solid #dee2e6',
-                          borderRadius: '4px',
-                          resize: 'vertical'
-                        }}
+                        className="settings-textarea-macro"
                       />
                     </td>
                   </tr>
@@ -1700,24 +1592,24 @@ function Settings({ data }) {
             </table>
           </div>
 
-          <div style={{ color: '#507898', fontSize: '14px', lineHeight: '1.5' }}>
+          <div className="settings-macros-help">
             <p>
               If you will use a macro, make sure the "Use" column is checked.
               If you won't use it, uncheck it, and it will be deleted.
               The text in the "macro" area of a "non-use" macro is the default text,
               although you can change it (but be sure to check the "use" checkbox if you want to keep it).
             </p>
-            <p style={{ marginTop: '8px' }}>
+            <p>
               Each macro must currently begin with <code>/say</code> (which indicates that you're saying something).
               Note: each macro is limited to {MAX_MACRO_LENGTH} characters.
             </p>
-            <p style={{ marginTop: '8px' }}>
+            <p>
               Note: instead of square brackets, [ and ],
               you'll have to use curly brackets, {'{'} and {'}'} instead.
             </p>
-            <p style={{ marginTop: '8px' }}>
+            <p>
               There is more information about macros at{' '}
-              <a href="/title/macro%20FAQ" style={{ color: '#4060b0', textDecoration: 'none' }}>macro FAQ</a>.
+              <a href="/title/macro%20FAQ" className="settings-link">macro FAQ</a>.
             </p>
           </div>
         </div>
@@ -1728,73 +1620,48 @@ function Settings({ data }) {
         <div>
           {/* Password mismatch warning */}
           {hasPasswordInput && !passwordsMatch && (
-            <div style={{
-              marginBottom: '20px',
-              padding: '12px',
-              backgroundColor: '#fff3cd',
-              border: '1px solid #ffc107',
-              borderRadius: '4px',
-              color: '#856404'
-            }}>
+            <div className="settings-warning-box">
               Passwords do not match - please correct before saving
             </div>
           )}
 
           {/* Account Settings Section */}
-          <h2 style={{ marginBottom: '16px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Account Settings
-          </h2>
+          <h2 className="settings-section-header">Account Settings</h2>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Credentials</legend>
+          <fieldset className="settings-fieldset">
+            <legend>Credentials</legend>
 
             {/* Real name */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Real Name
-              </label>
+            <div className="settings-form-row">
+              <label className="settings-form-label">Real Name</label>
               <input
                 type="text"
                 name="realname"
                 value={profileData.realname}
                 onChange={handleProfileInputChange}
-                style={{
-                  width: '300px',
-                  padding: '8px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                className="settings-input-name"
               />
               {data.profileData?.realname && (
-                <div style={{ marginTop: '4px', fontSize: '13px', color: '#507898' }}>
+                <div className="settings-current-value">
                   Currently: {data.profileData.realname}
                 </div>
               )}
             </div>
 
             {/* Password */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Change Password
-              </label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="settings-form-row">
+              <label className="settings-form-label">Change Password</label>
+              <div className="settings-form-row-inline">
                 <input
                   type="password"
                   name="passwd"
                   value={profileData.passwd}
                   onChange={handleProfileInputChange}
                   placeholder="Leave blank to keep current"
-                  style={{
-                    width: '300px',
-                    padding: '8px 12px',
-                    border: `1px solid ${hasPasswordInput ? (passwordsMatch ? '#3bb5c3' : '#d9534f') : '#ddd'}`,
-                    borderRadius: '4px',
-                    fontSize: '14px'
-                  }}
+                  className={`settings-input-password${hasPasswordInput ? (passwordsMatch ? ' match' : ' mismatch') : ''}`}
                 />
                 {hasPasswordInput && (
-                  <span style={{ color: passwordsMatch ? '#3bb5c3' : '#d9534f', fontSize: '18px' }}>
+                  <span className={`settings-password-match-icon${passwordsMatch ? ' match' : ' mismatch'}`}>
                     {passwordsMatch ? '✓' : '✗'}
                   </span>
                 )}
@@ -1802,57 +1669,41 @@ function Settings({ data }) {
             </div>
 
             {/* Confirm Password */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Confirm Password
-              </label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="settings-form-row">
+              <label className="settings-form-label">Confirm Password</label>
+              <div className="settings-form-row-inline">
                 <input
                   type="password"
                   value={confirmPasswd}
                   onChange={(e) => setConfirmPasswd(e.target.value)}
                   placeholder="Re-enter new password"
-                  style={{
-                    width: '300px',
-                    padding: '8px 12px',
-                    border: `1px solid ${hasPasswordInput ? (passwordsMatch ? '#3bb5c3' : '#d9534f') : '#ddd'}`,
-                    borderRadius: '4px',
-                    fontSize: '14px'
-                  }}
+                  className={`settings-input-password${hasPasswordInput ? (passwordsMatch ? ' match' : ' mismatch') : ''}`}
                 />
                 {hasPasswordInput && (
-                  <span style={{ color: passwordsMatch ? '#3bb5c3' : '#d9534f', fontSize: '18px' }}>
+                  <span className={`settings-password-match-icon${passwordsMatch ? ' match' : ' mismatch'}`}>
                     {passwordsMatch ? '✓' : '✗'}
                   </span>
                 )}
               </div>
               {hasPasswordInput && !passwordsMatch && (
-                <div style={{ marginTop: '4px', fontSize: '13px', color: '#d9534f' }}>
+                <div className="settings-password-error">
                   Passwords do not match
                 </div>
               )}
             </div>
 
             {/* Email */}
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Email Address
-              </label>
+            <div className="settings-form-row">
+              <label className="settings-form-label">Email Address</label>
               <input
                 type="email"
                 name="email"
                 value={profileData.email}
                 onChange={handleProfileInputChange}
-                style={{
-                  width: '300px',
-                  padding: '8px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                className="settings-input-name"
               />
               {data.profileData?.email && (
-                <div style={{ marginTop: '4px', fontSize: '13px', color: '#507898' }}>
+                <div className="settings-current-value">
                   Currently: {data.profileData.email}
                 </div>
               )}
@@ -1861,14 +1712,14 @@ function Settings({ data }) {
 
           {/* User image section */}
           {data.profileData?.imgsrc && (
-            <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-              <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Profile Image</legend>
+            <fieldset className="settings-fieldset">
+              <legend>Profile Image</legend>
               <img
                 src={`/${data.profileData.imgsrc}`}
                 alt={`${data.currentUser?.title}'s image`}
-                style={{ maxWidth: '200px', maxHeight: '200px', display: 'block', marginBottom: '12px', borderRadius: '4px' }}
+                className="settings-profile-image"
               />
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <label className="settings-checkbox-label">
                 <input
                   type="checkbox"
                   checked={removeImage}
@@ -1880,90 +1731,56 @@ function Settings({ data }) {
           )}
 
           {/* Profile Information Section */}
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Profile Information
-          </h2>
+          <h2 className="settings-section-header">Profile Information</h2>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>About You</legend>
+          <fieldset className="settings-fieldset">
+            <legend>About You</legend>
 
             {/* Mission drive */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Mission drive within everything
-              </label>
+            <div className="settings-form-row">
+              <label className="settings-form-label">Mission drive within everything</label>
               <input
                 type="text"
                 name="mission"
                 value={profileData.mission}
                 onChange={handleProfileInputChange}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                className="settings-input-wide"
               />
             </div>
 
             {/* Specialties */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Specialties
-              </label>
+            <div className="settings-form-row">
+              <label className="settings-form-label">Specialties</label>
               <input
                 type="text"
                 name="specialties"
                 value={profileData.specialties}
                 onChange={handleProfileInputChange}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                className="settings-input-wide"
               />
             </div>
 
             {/* School/Company */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                School/Company
-              </label>
+            <div className="settings-form-row">
+              <label className="settings-form-label">School/Company</label>
               <input
                 type="text"
                 name="employment"
                 value={profileData.employment}
                 onChange={handleProfileInputChange}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                className="settings-input-wide"
               />
             </div>
 
             {/* Motto */}
-            <div>
-              <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>
-                Motto
-              </label>
+            <div className="settings-form-row">
+              <label className="settings-form-label">Motto</label>
               <input
                 type="text"
                 name="motto"
                 value={profileData.motto}
                 onChange={handleProfileInputChange}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                className="settings-input-wide"
               />
             </div>
           </fieldset>
@@ -1971,34 +1788,23 @@ function Settings({ data }) {
           {/* Bookmarks section */}
           {data.bookmarks && data.bookmarks.length > 0 && (
             <>
-              <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-                Bookmarks
-              </h2>
+              <h2 className="settings-section-header">Bookmarks</h2>
 
-              <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-                <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Manage Bookmarks</legend>
-                <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+              <fieldset className="settings-fieldset">
+                <legend>Manage Bookmarks</legend>
+                <p className="settings-description">
                   Select bookmarks to remove from your list.
                 </p>
                 <button
                   type="button"
                   onClick={handleCheckAllBookmarks}
-                  style={{
-                    marginBottom: '12px',
-                    padding: '6px 12px',
-                    border: '1px solid #4060b0',
-                    borderRadius: '4px',
-                    backgroundColor: 'white',
-                    color: '#4060b0',
-                    cursor: 'pointer',
-                    fontSize: '13px'
-                  }}
+                  className="settings-btn-secondary settings-btn-sm"
                 >
                   {selectedBookmarks.size === data.bookmarks.length ? 'Uncheck All' : 'Check All'}
                 </button>
-                <div style={{ maxHeight: '300px', overflow: 'auto', border: '1px solid #eee', borderRadius: '4px', padding: '8px' }}>
+                <div className="settings-scroll-list-short">
                   {data.bookmarks.map((bookmark) => (
-                    <label key={bookmark.node_id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px', cursor: 'pointer' }}>
+                    <label key={bookmark.node_id} className="settings-bookmark-item">
                       <input
                         type="checkbox"
                         checked={selectedBookmarks.has(bookmark.node_id)}
@@ -2013,33 +1819,26 @@ function Settings({ data }) {
           )}
 
           {/* User bio with TipTap editor */}
-          <h2 style={{ marginBottom: '16px', marginTop: '32px', color: '#111111', borderBottom: '2px solid #38495e', paddingBottom: '8px' }}>
-            Bio
-          </h2>
+          <h2 className="settings-section-header">Bio</h2>
 
-          <fieldset style={{ border: '1px solid #ddd', borderRadius: '6px', padding: '16px', marginBottom: '24px' }}>
-            <legend style={{ fontWeight: 'bold', fontSize: '16px', color: '#38495e', padding: '0 8px' }}>Your Bio</legend>
-            <p style={{ marginBottom: '12px', color: '#507898', fontSize: '13px' }}>
+          <fieldset className="settings-fieldset">
+            <legend>Your Bio</legend>
+            <p className="settings-description">
               Write about yourself. This will appear on your homenode for other users to see.
             </p>
 
             {/* Rich/HTML mode toggle - using shared component */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+            <div className="settings-editor-toggle">
               <EditorModeToggle mode={editorMode} onToggle={toggleEditorMode} />
             </div>
 
             {/* Editor */}
             {editorMode === 'rich' ? (
-              <div className="e2-editor-container" style={{ border: '1px solid #ddd', borderRadius: '4px' }}>
+              <div className="settings-editor-container">
                 <MenuBar editor={bioEditor} />
                 <EditorContent
                   editor={bioEditor}
-                  className="e2-editor-content"
-                  style={{
-                    minHeight: '200px',
-                    padding: '10px',
-                    backgroundColor: '#fff'
-                  }}
+                  className="settings-editor-content"
                 />
               </div>
             ) : (
@@ -2047,21 +1846,13 @@ function Settings({ data }) {
                 value={htmlContent}
                 onChange={handleHtmlChange}
                 rows={15}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  fontFamily: 'monospace',
-                  fontSize: '13px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  resize: 'vertical'
-                }}
+                className="settings-textarea"
               />
             )}
 
             {/* Live Preview */}
             <div style={{ marginTop: '16px' }}>
-              <p style={{ fontSize: '13px', color: '#507898', marginBottom: '8px' }}>
+              <p className="settings-preview-label">
                 <strong>Preview:</strong>
               </p>
               <PreviewContent

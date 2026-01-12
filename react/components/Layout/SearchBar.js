@@ -183,18 +183,21 @@ const SearchBar = ({
     }
   }
 
+  const formClass = compact ? 'search-bar-form search-bar-form--compact' : 'search-bar-form'
+  const inputClass = compact ? 'search-bar-input search-bar-input--compact' : 'search-bar-input'
+
   return (
-    <div ref={containerRef} style={styles.container}>
+    <div ref={containerRef} className="search-bar-container">
       <form
         method="GET"
         action="/"
         id="search_form"
         role="search"
-        style={compact ? styles.formCompact : styles.form}
+        className={formClass}
         onSubmit={handleSubmit}
       >
-        <div style={styles.inputWrapper}>
-          <FaSearch style={styles.searchIcon} aria-hidden="true" />
+        <div className="search-bar-input-wrapper">
+          <FaSearch className="search-bar-icon" aria-hidden="true" />
           <input
             type="text"
             name="node"
@@ -204,31 +207,28 @@ const SearchBar = ({
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             placeholder="Search"
             maxLength={230}
-            style={compact ? styles.inputCompact : styles.input}
+            className={inputClass}
             id="node_search"
             aria-label="Search Everything2"
             autoComplete="off"
           />
-          {loading && <span style={styles.loadingIndicator}>...</span>}
+          {loading && <span className="search-bar-loading">...</span>}
 
           {/* Live search suggestions dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <div style={styles.dropdown}>
+            <div className="search-bar-dropdown">
               {suggestions.map((item, index) => (
                 <div
                   key={`${item.type}-${item.node_id}`}
                   onClick={() => handleSelectSuggestion(item)}
                   onMouseEnter={() => setSelectedIndex(index)}
-                  style={{
-                    ...styles.suggestionItem,
-                    ...(index === selectedIndex ? styles.suggestionItemSelected : {})
-                  }}
+                  className={`search-bar-suggestion${index === selectedIndex ? ' search-bar-suggestion--selected' : ''}`}
                 >
-                  <span style={styles.typeIcon}>{getTypeIcon(item.type)}</span>
-                  <span style={styles.suggestionTitle}>{item.title}</span>
+                  <span className="search-bar-suggestion-icon">{getTypeIcon(item.type)}</span>
+                  <span className="search-bar-suggestion-title">{item.title}</span>
                   {/* Don't show type for e2node since it's the default content type */}
                   {item.type !== 'e2node' && (
-                    <span style={styles.suggestionType}>{getTypeDisplayName(item.type)}</span>
+                    <span className="search-bar-suggestion-type">{getTypeDisplayName(item.type)}</span>
                   )}
                 </div>
               ))}
@@ -236,12 +236,9 @@ const SearchBar = ({
               <div
                 onClick={handleShowAll}
                 onMouseEnter={() => setSelectedIndex(suggestions.length)}
-                style={{
-                  ...styles.showAllItem,
-                  ...(selectedIndex === suggestions.length ? styles.suggestionItemSelected : {})
-                }}
+                className={`search-bar-show-all${selectedIndex === suggestions.length ? ' search-bar-show-all--selected' : ''}`}
               >
-                <FaSearch style={styles.showAllIcon} />
+                <FaSearch className="search-bar-show-all-icon" />
                 <span>Show all results for "<strong>{searchValue}</strong>"</span>
               </div>
             </div>
@@ -251,122 +248,6 @@ const SearchBar = ({
       </form>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    position: 'relative'
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  formCompact: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  inputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    flex: 1
-  },
-  searchIcon: {
-    position: 'absolute',
-    left: 12,
-    color: '#507898',
-    fontSize: 14,
-    pointerEvents: 'none',
-    zIndex: 1
-  },
-  input: {
-    width: '100%',
-    padding: '8px 14px 8px 36px',
-    fontSize: 14,
-    border: '1px solid #507898',
-    borderRadius: 18,
-    color: '#38495e',
-    backgroundColor: '#fff',
-    boxSizing: 'border-box',
-    outline: 'none'
-  },
-  inputCompact: {
-    width: 200,
-    padding: '6px 10px 6px 30px',
-    fontSize: 13,
-    border: '1px solid #507898',
-    borderRadius: 14,
-    color: '#38495e',
-    backgroundColor: '#fff',
-    boxSizing: 'border-box',
-    outline: 'none'
-  },
-  loadingIndicator: {
-    position: 'absolute',
-    right: 12,
-    color: '#507898',
-    fontSize: 12
-  },
-  dropdown: {
-    position: 'absolute',
-    top: 'calc(100% + 4px)',
-    left: 0,
-    right: 0,
-    minWidth: 320,
-    backgroundColor: '#fff',
-    border: '1px solid #ced4da',
-    borderRadius: 12,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    maxHeight: 400,
-    overflowY: 'auto',
-    zIndex: 1000
-  },
-  suggestionItem: {
-    padding: '10px 14px',
-    cursor: 'pointer',
-    fontSize: 14,
-    color: '#38495e',
-    borderBottom: '1px solid #f0f0f0',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10
-  },
-  suggestionItemSelected: {
-    backgroundColor: '#e8f4f8',
-    color: '#4060b0'
-  },
-  typeIcon: {
-    fontSize: 16,
-    width: 24,
-    textAlign: 'center',
-    flexShrink: 0
-  },
-  suggestionTitle: {
-    flex: 1,
-    wordBreak: 'break-word'
-  },
-  suggestionType: {
-    fontSize: 11,
-    color: '#999',
-    textTransform: 'uppercase',
-    flexShrink: 0
-  },
-  showAllItem: {
-    padding: '12px 14px',
-    cursor: 'pointer',
-    fontSize: 14,
-    color: '#4060b0',
-    backgroundColor: '#f8f9fa',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    borderTop: '1px solid #e0e0e0'
-  },
-  showAllIcon: {
-    fontSize: 14,
-    color: '#4060b0'
-  }
 }
 
 export default SearchBar

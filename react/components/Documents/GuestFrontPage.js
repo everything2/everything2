@@ -1,46 +1,65 @@
 import React, { useMemo } from 'react'
 import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 import ContentItem from './ContentItem'
+import NewWriteupsCard from '../NewWriteupsCard'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 
 /**
  * GuestFrontPage - Landing page for non-authenticated users
  *
  * Displays: Hero section with marketing copy, Best of The Week content,
- * and News for Noders section in a two-column layout
+ * and News for Noders section in a two-column layout (stacked on mobile)
  */
-const GuestFrontPage = ({ data }) => {
+const GuestFrontPage = ({ data, e2 }) => {
   const {
     hero = {},
     bestofweek = [],
     news = []
   } = data || {}
 
+  // Get new writeups from e2 global state (always loaded for all users)
+  const newwriteups = e2?.newWriteups || []
+
+  const isMobile = useIsMobile()
+
+  const heroClass = isMobile ? 'guest-hero guest-hero--mobile' : 'guest-hero'
+  const headlineClass = isMobile ? 'guest-hero-headline guest-hero-headline--mobile' : 'guest-hero-headline'
+  const gridClass = isMobile ? 'guest-content-grid guest-content-grid--mobile' : 'guest-content-grid'
+  const secondaryClass = isMobile ? 'guest-secondary-column guest-secondary-column--mobile' : 'guest-secondary-column'
+
   return (
-    <div style={styles.container}>
+    <div className="guest-container">
       {/* Hero Section */}
-      <section style={styles.hero}>
-        <h1 style={styles.heroHeadline}>
-          Everything<span style={styles.hero2}>2</span>
+      <section className={heroClass}>
+        <h1 className={headlineClass}>
+          Everything<span>2</span>
         </h1>
-        <p style={styles.heroTagline}>{hero.tagline}</p>
-        <p style={styles.heroDescription}>{hero.description}</p>
+        <p className="guest-hero-tagline">{hero.tagline}</p>
+        <p className="guest-hero-description">{hero.description}</p>
         {hero.cta && (
-          <a href={hero.cta.url} style={styles.ctaButton}>
+          <a href={hero.cta.url} className="guest-cta-button">
             {hero.cta.text}
           </a>
         )}
       </section>
 
-      {/* Two-column content area */}
-      <div style={styles.contentGrid}>
+      {/* New Writeups card - below hero */}
+      {newwriteups.length > 0 && (
+        <section className="guest-new-writeups-section">
+          <NewWriteupsCard writeups={newwriteups} isMobile={isMobile} limit={10} />
+        </section>
+      )}
+
+      {/* Two-column content area (stacked on mobile) */}
+      <div className={gridClass}>
         {/* Best of The Week - Primary column */}
-        <section style={styles.primaryColumn}>
-          <h2 style={styles.sectionTitle}>
-            <a href="/title/Cool%20Archive" style={styles.sectionLink}>
+        <section className="guest-primary-column">
+          <h2 className="guest-section-title">
+            <a href="/title/Cool%20Archive" className="guest-section-link">
               The Best of The Week
             </a>
           </h2>
-          <div style={styles.cardGrid}>
+          <div className="guest-card-grid">
             {bestofweek.map((item, index) => (
               <FeaturedCard key={item.node_id || index} item={item} />
             ))}
@@ -48,13 +67,13 @@ const GuestFrontPage = ({ data }) => {
         </section>
 
         {/* News for Noders - Secondary column */}
-        <aside style={styles.secondaryColumn}>
-          <h2 style={styles.sectionTitle}>
-            <a href="/title/News%20for%20Noders.%20Stuff%20that%20matters." style={styles.sectionLink}>
+        <aside className={secondaryClass}>
+          <h2 className="guest-section-title">
+            <a href="/title/News%20for%20Noders.%20Stuff%20that%20matters." className="guest-section-link">
               News for Noders
             </a>
           </h2>
-          <div style={styles.newsList}>
+          <div className="guest-news-list">
             {news.map((item, index) => (
               <ContentItem
                 key={item.node_id || index}
@@ -90,171 +109,37 @@ const FeaturedCard = ({ item }) => {
   }, [content])
 
   return (
-    <article style={styles.card}>
-      <header style={styles.cardHeader}>
-        <a href={linkTarget} style={styles.cardTitle}>
+    <article className="guest-featured-card">
+      <header className="guest-card-header">
+        <a href={linkTarget} className="guest-card-title">
           {displayTitle}
         </a>
         {type && (
-          <span style={styles.cardType}>
-            <a href={`/node/${node_id}`} style={styles.cardTypeLink}>{type}</a>
+          <span className="guest-card-type">
+            <a href={`/node/${node_id}`}>{type}</a>
           </span>
         )}
       </header>
       {author && (
-        <div style={styles.cardByline}>
-          by <a href={`/user/${encodeURIComponent(author.title)}`} style={styles.cardAuthor}>
+        <div className="guest-card-byline">
+          by <a href={`/user/${encodeURIComponent(author.title)}`} className="guest-card-author">
             {author.title}
           </a>
         </div>
       )}
       {content && (
         <div
-          style={styles.cardContent}
+          className="guest-card-content"
           dangerouslySetInnerHTML={{ __html: processedContent }}
         />
       )}
       {(truncated === true || truncated === 1) && (
-        <div style={styles.cardMore}>
-          <a href={`/node/${node_id}`} style={styles.cardMoreLink}>Read more</a>
+        <div className="guest-card-more">
+          <a href={`/node/${node_id}`} className="guest-card-more-link">Read more</a>
         </div>
       )}
     </article>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: '100%',
-  },
-  // Hero section
-  hero: {
-    textAlign: 'center',
-    padding: '30px 20px 40px',
-    borderBottom: '2px solid #507898',
-    marginBottom: '25px',
-  },
-  heroHeadline: {
-    fontFamily: 'Georgia, serif',
-    fontSize: '48px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    margin: '0 0 10px 0',
-  },
-  hero2: {
-    color: '#3bb5c3',
-  },
-  heroTagline: {
-    fontSize: '20px',
-    color: '#507898',
-    margin: '0 0 15px 0',
-    fontStyle: 'italic',
-  },
-  heroDescription: {
-    fontSize: '16px',
-    color: '#38495e',
-    maxWidth: '700px',
-    margin: '0 auto 20px',
-    lineHeight: '1.6',
-  },
-  ctaButton: {
-    display: 'inline-block',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    padding: '12px 28px',
-    borderRadius: '4px',
-    textDecoration: 'none',
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  // Content grid
-  contentGrid: {
-    display: 'grid',
-    gridTemplateColumns: '2fr 1fr',
-    gap: '30px',
-  },
-  primaryColumn: {
-    minWidth: 0,
-  },
-  secondaryColumn: {
-    minWidth: 0,
-    borderLeft: '1px solid #e0e0e0',
-    paddingLeft: '25px',
-  },
-  sectionTitle: {
-    fontSize: '20px',
-    color: '#38495e',
-    margin: '0 0 15px 0',
-    paddingBottom: '8px',
-    borderBottom: '1px solid #e8f4f8',
-  },
-  sectionLink: {
-    color: '#4060b0',
-    textDecoration: 'none',
-  },
-  // Card grid for featured items
-  cardGrid: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
-  card: {
-    backgroundColor: '#fafcfd',
-    border: '1px solid #e0e8ec',
-    borderRadius: '6px',
-    padding: '18px',
-  },
-  cardHeader: {
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: '10px',
-    marginBottom: '6px',
-  },
-  cardTitle: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#4060b0',
-    textDecoration: 'none',
-    lineHeight: '1.3',
-  },
-  cardType: {
-    fontSize: '13px',
-    color: '#507898',
-  },
-  cardTypeLink: {
-    color: '#507898',
-    textDecoration: 'none',
-  },
-  cardByline: {
-    fontSize: '14px',
-    color: '#666',
-    marginBottom: '12px',
-  },
-  cardAuthor: {
-    color: '#4060b0',
-    textDecoration: 'none',
-  },
-  cardContent: {
-    fontSize: '15px',
-    lineHeight: '1.6',
-    color: '#38495e',
-  },
-  cardMore: {
-    marginTop: '10px',
-    paddingTop: '10px',
-    borderTop: '1px solid #e8f4f8',
-  },
-  cardMoreLink: {
-    color: '#4060b0',
-    textDecoration: 'none',
-    fontSize: '14px',
-    fontWeight: '500',
-  },
-  newsList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
 }
 
 export default GuestFrontPage
