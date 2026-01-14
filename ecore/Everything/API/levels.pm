@@ -97,10 +97,15 @@ sub get_levels
         elsif ($i < 100) {
             # Normal levels (0-99)
             $level_data->{title} = $TTL->{$i} || '';
-            $level_data->{xp} = int($EXP->{$i} || 0);
-            $level_data->{writeups} = int($WRP->{$i} || 0);
-            $level_data->{votes} = int($VTS->{$i} || 0);
-            $level_data->{cools} = int($C->{$i} || 0);
+            # Use numeric check to avoid warnings on 'NONE' string values in settings
+            my $xp_val = $EXP->{$i};
+            my $wrp_val = $WRP->{$i};
+            my $vts_val = $VTS->{$i};
+            my $c_val = $C->{$i};
+            $level_data->{xp} = (defined $xp_val && $xp_val =~ /^-?\d+$/) ? int($xp_val) : 0;
+            $level_data->{writeups} = (defined $wrp_val && $wrp_val =~ /^-?\d+$/) ? int($wrp_val) : 0;
+            $level_data->{votes} = (defined $vts_val && $vts_val =~ /^-?\d+$/) ? int($vts_val) : $vts_val || 0;
+            $level_data->{cools} = (defined $c_val && $c_val =~ /^-?\d+$/) ? int($c_val) : $c_val || 0;
         }
         else {
             # Transcendent levels (100+)

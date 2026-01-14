@@ -215,35 +215,58 @@ const InlineWriteupEditor = ({
     };
   }, []);
 
-  // Create a new draft
+  // Create a new draft with retry logic for transient network failures
   const createDraft = async (content) => {
     // Convert raw bracket spans to HTML entities before saving
     const processedContent = convertRawBracketsToEntities(content);
 
-    try {
-      const response = await fetch('/api/drafts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          title: e2nodeTitle,
-          doctext: processedContent
-        })
-      });
+    const maxRetries = 3;
+    let lastError = null;
 
-      const result = await response.json();
-      if (result.success) {
-        setDraftId(result.draft.node_id);
-        setSaveStatus('saved');
-      } else {
-        setErrorMessage(`Failed to create draft: ${result.error}`);
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await fetchWithErrorReporting(
+          '/api/drafts',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              title: e2nodeTitle,
+              doctext: processedContent
+            })
+          },
+          'creating draft'
+        );
+
+        const result = await response.json();
+        if (result.success) {
+          setDraftId(result.draft.node_id);
+          setSaveStatus('saved');
+          return; // Success - exit retry loop
+        } else {
+          lastError = result.error || 'Unknown error';
+          // Don't retry on permission/validation errors
+          if (result.error === 'unauthorized' || result.error === 'invalid_title') {
+            break;
+          }
+        }
+      } catch (err) {
+        lastError = err.message;
+        // Network errors are worth retrying
       }
-    } catch (err) {
-      setErrorMessage(`Error creating draft: ${err.message}`);
+
+      // Wait before retry (exponential backoff: 1s, 2s, 4s)
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+      }
     }
+
+    // All retries exhausted
+    setErrorMessage(`Error creating draft: ${lastError}`);
   };
 
-  // Save draft content
+  // Save draft content with retry logic for transient network failures
   // Returns the saved doctext on success, null on failure
   const saveDraft = async (content) => {
     if (!draftId && !writeupId) return null;
@@ -254,51 +277,78 @@ const InlineWriteupEditor = ({
     // This ensures [text] in the editor saves as &#91;text&#93; in the database
     const processedContent = convertRawBracketsToEntities(content);
 
-    try {
-      const endpoint = writeupId
-        ? `/api/writeups/${writeupId}/action/update`
-        : `/api/drafts/${draftId}`;
+    const maxRetries = 3;
+    let lastError = null;
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          doctext: processedContent
-        })
-      });
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const endpoint = writeupId
+          ? `/api/writeups/${writeupId}/action/update`
+          : `/api/drafts/${draftId}`;
 
-      const result = await response.json();
+        const response = await fetchWithErrorReporting(
+          endpoint,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              doctext: processedContent
+            })
+          },
+          'saving draft'
+        );
 
-      // Handle both response formats:
-      // - Drafts API returns { success: true, doctext: "..." }
-      // - Writeups API returns the node directly { node_id, doctext, ... }
-      const isSuccess = writeupId
-        ? (result.node_id !== undefined)  // Node API returns node object on success
-        : result.success;                  // Drafts API uses success flag
+        const result = await response.json();
 
-      if (isSuccess) {
-        setSaveStatus('saved');
-        setErrorMessage(null);
-        // Store the server-returned doctext as source of truth
-        if (result.doctext !== undefined) {
-          lastSavedContentRef.current = result.doctext;
-          return result.doctext;
+        // Handle both response formats:
+        // - Drafts API returns { success: true, doctext: "..." }
+        // - Writeups API returns the node directly { node_id, doctext, ... }
+        const isSuccess = writeupId
+          ? (result.node_id !== undefined)  // Node API returns node object on success
+          : result.success;                  // Drafts API uses success flag
+
+        // Handle already_published gracefully (draft was published between edits)
+        if (result.already_published) {
+          setSaveStatus('saved');
+          setErrorMessage(null);
+          return lastSavedContentRef.current;
         }
-        return lastSavedContentRef.current;
-      } else {
-        setSaveStatus('unsaved');
-        setErrorMessage(`Save failed: ${result.error || 'Unknown error'}`);
-        return null;
+
+        if (isSuccess) {
+          setSaveStatus('saved');
+          setErrorMessage(null);
+          // Store the server-returned doctext as source of truth
+          if (result.doctext !== undefined) {
+            lastSavedContentRef.current = result.doctext;
+            return result.doctext;
+          }
+          return lastSavedContentRef.current;
+        } else {
+          lastError = result.error || 'Unknown error';
+          // Don't retry on permission/validation errors
+          if (result.error === 'permission_denied' || result.error === 'not_a_draft') {
+            break;
+          }
+        }
+      } catch (err) {
+        lastError = err.message;
+        // Network errors are worth retrying
       }
-    } catch (err) {
-      setSaveStatus('unsaved');
-      setErrorMessage(`Save error: ${err.message}`);
-      return null;
+
+      // Wait before retry (exponential backoff: 1s, 2s, 4s)
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+      }
     }
+
+    // All retries exhausted
+    setSaveStatus('unsaved');
+    setErrorMessage(`Save error: ${lastError}`);
+    return null;
   };
 
-  // Publish draft
+  // Publish draft with retry logic for transient failures
   const handlePublish = async () => {
     if (!draftId) {
       setErrorMessage('No draft to publish');
@@ -307,6 +357,12 @@ const InlineWriteupEditor = ({
 
     setPublishing(true);
     setErrorMessage(null);
+
+    // Clear any pending autosave to prevent interference
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current);
+      autosaveTimerRef.current = null;
+    }
 
     try {
       // Save current content to draft before publishing
@@ -374,34 +430,73 @@ const InlineWriteupEditor = ({
         return;
       }
 
-      // Publish draft (using resolved or newly created e2node ID)
-      const response = await fetchWithErrorReporting(
-        `/api/drafts/${draftId}/publish`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            parent_e2node: targetE2nodeId,
-            wrtype_writeuptype: selectedWriteuptypeId,
-            feedback_policy_id: 0,
-            notnew: hideFromNewWriteups ? 1 : 0
-          })
-        },
-        'publishing draft'
-      );
+      // Publish draft with retry logic
+      const maxRetries = 3;
+      let lastError = null;
 
-      const result = await response.json();
-      if (result.success) {
-        // Clear any lingering error messages before redirect
-        setErrorMessage(null);
-        onPublish(result.writeup_id);
-        // Redirect to the e2node page
-        window.location.href = `/title/${encodeURIComponent(e2nodeTitle)}`;
-      } else {
-        setErrorMessage(`Publish failed: ${result.error || result.message}`);
-        setPublishing(false);
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const response = await fetchWithErrorReporting(
+            `/api/drafts/${draftId}/publish`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({
+                parent_e2node: targetE2nodeId,
+                wrtype_writeuptype: selectedWriteuptypeId,
+                feedback_policy_id: 0,
+                notnew: hideFromNewWriteups ? 1 : 0
+              })
+            },
+            'publishing draft'
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Clear any lingering error messages before redirect
+            setErrorMessage(null);
+
+            // Handle both fresh publish and already-published (idempotent) responses
+            const writeupId = result.writeup_id;
+            const e2nodeId = result.e2node_id || targetE2nodeId;
+
+            if (result.already_published) {
+              console.log('Draft was already published, redirecting...');
+            }
+
+            onPublish(writeupId);
+            // Redirect to the e2node page
+            window.location.href = `/title/${encodeURIComponent(e2nodeTitle)}`;
+            return; // Success - exit retry loop
+          } else {
+            // API returned an error response
+            lastError = result.error || result.message || 'Unknown error';
+
+            // Don't retry on permission/validation errors
+            if (result.error === 'permission_denied' ||
+                result.error === 'not_a_draft' ||
+                result.error === 'invalid_writeuptype' ||
+                result.error === 'invalid_parent' ||
+                result.error === 'node_locked') {
+              break; // Don't retry, exit loop
+            }
+          }
+        } catch (err) {
+          lastError = err.message;
+          // Network/parsing errors - worth retrying
+        }
+
+        // Wait before retry (exponential backoff: 1s, 2s, 4s)
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+        }
       }
+
+      // All retries exhausted
+      setErrorMessage(`Publish failed after ${maxRetries} attempts: ${lastError}`);
+      setPublishing(false);
     } catch (err) {
       setErrorMessage(`Publish error: ${err.message}`);
       setPublishing(false);

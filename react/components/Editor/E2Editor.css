@@ -249,8 +249,14 @@
   margin: 0.5em 0;
 }
 
-/* First paragraph no top margin */
-.e2-editor-content > p:first-child {
+/* First element no top margin */
+.e2-editor-content > p:first-child,
+.e2-editor-content > h1:first-child,
+.e2-editor-content > h2:first-child,
+.e2-editor-content > h3:first-child,
+.e2-editor-content > h4:first-child,
+.e2-editor-content > h5:first-child,
+.e2-editor-content > h6:first-child {
   margin-top: 0;
 }
 

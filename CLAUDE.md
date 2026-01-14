@@ -56,9 +56,15 @@ User handles all commits.
 
 ### JSON UTF-8 Encoding
 
+**IMPORTANT**: Do NOT call `decode_utf8` before `JSON::decode_json()`. The `decode_json` function expects UTF-8 bytes and handles decoding internally. Calling `decode_utf8` first causes "Wide character in subroutine entry" errors with non-ASCII characters.
+
 ```perl
-use Encode qw(decode_utf8);
-$postdata = decode_utf8($self->POSTDATA);  # BEFORE JSON parsing
+# CORRECT: Pass raw POSTDATA directly to decode_json
+my $postdata = $REQUEST->POSTDATA;
+my $data = JSON::decode_json($postdata);
+
+# WRONG: decode_utf8 before decode_json breaks non-ASCII characters
+# $postdata = decode_utf8($postdata);  # DON'T DO THIS
 ```
 
 ### Blessed Objects vs Hashrefs

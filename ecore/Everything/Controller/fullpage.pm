@@ -67,16 +67,19 @@ sub display
     }
 
     my $layout;
+    # Check if page class provides shell overrides (e.g., for custom page titles)
+    my $shell_overrides = $page_class->can('shell_overrides') ? $page_class->shell_overrides() : undef;
+
     if ($is_react_page) {
       # Check if Page class specifies a custom template, otherwise use generic react_page
       $layout = $page_class->template || 'react_page';
       # Use layout() which sets up HTMLShell parameters for the React page
-      my $html = $self->layout("/pages/$layout", %{$controller_output}, e2 => $controller_output->{e2}, REQUEST => $REQUEST, node => $node);
+      my $html = $self->layout("/pages/$layout", %{$controller_output}, e2 => $controller_output->{e2}, REQUEST => $REQUEST, node => $node, shell_overrides => $shell_overrides);
       return [$self->HTTP_OK,$html];
     } else {
       # Use page-specific template for traditional pages
       $layout = $page_class->template || $self->title_to_page($node->title);
-      my $html = $self->layout("/pages/$layout", %{$controller_output}, REQUEST => $REQUEST, node => $node);
+      my $html = $self->layout("/pages/$layout", %{$controller_output}, REQUEST => $REQUEST, node => $node, shell_overrides => $shell_overrides);
       return [$self->HTTP_OK,$html];
     }
   } else {

@@ -99,8 +99,9 @@ sub create {
     my $user_id = $REQUEST->user->node_id;
 
     # Parse JSON body
+    # Get raw POSTDATA - do NOT decode_utf8 before decode_json
+    # decode_json expects UTF-8 bytes and handles decoding internally
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
 
     my $data;
     my $json_ok = eval {
@@ -133,6 +134,17 @@ sub create {
             success => 0,
             error => 'node_not_found',
             message => 'Node not found'
+        }];
+    }
+
+    # If the draft was already published (converted to writeup), return success gracefully
+    # This handles the case where autosave fires after publish completed
+    if ($node->{type}{title} eq 'writeup') {
+        return [$self->HTTP_OK, {
+            success => 1,
+            already_published => 1,
+            message => 'Draft was already published as a writeup',
+            saved => 0
         }];
     }
 

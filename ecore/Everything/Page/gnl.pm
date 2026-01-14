@@ -55,9 +55,7 @@ sub buildReactData {
         type => 'gnl',
         access_denied => 0,
         node_types => \@node_types,
-        is_admin => 1,
-        is_editor => 1,
-        user_id => $USER->{node_id}
+        # is_admin, is_editor, user_id removed - duplicates e2.user.admin, e2.user.editor, e2.user.node_id
     };
 }
 

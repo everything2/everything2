@@ -98,7 +98,7 @@ sub report_error {
         ];
     }
 
-    $postdata = decode_utf8($postdata);
+    # do NOT decode_utf8 - decode_json expects UTF-8 bytes
 
     my $data;
     my $json_ok = eval {

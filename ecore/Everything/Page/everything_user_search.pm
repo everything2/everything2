@@ -37,6 +37,7 @@ sub buildReactData {
     my $filter_hidden = ($filter_param =~ /^\d+$/) ? int($filter_param) : 0;
 
     return {
+        type => 'everything_user_search',
         initialUsername  => $username,
         initialOrderby   => $orderby,
         initialPage      => $page,

@@ -19,6 +19,11 @@
   --e2-bg-sidebar: transparent;
   --e2-bg-oddrow: transparent;            /* Transparent oddrow */
 
+  /* Writeup backgrounds - white for minimal theme */
+  --e2-bg-writeup-header: #ffffff;
+  --e2-bg-writeup-content: #ffffff;
+  --e2-bg-writeup-footer: #ffffff;
+
   /* Text colors */
   --e2-text-body: #000000;                /* Black text */
   --e2-text-header: #000000;              /* Black header text (minimal) */
@@ -73,6 +78,7 @@
 
 body, table, td, th {
   font-family: sans-serif;
+  font-size: 100%;  /* Override basesheet's 75% - original Understatement used browser default */
 }
 
 h1 {

@@ -389,8 +389,9 @@ sub get_draft {
 sub create_draft {
     my ( $self, $REQUEST ) = @_;
 
+    # Get raw POSTDATA - do NOT decode_utf8 before decode_json
+    # decode_json expects UTF-8 bytes and handles the decoding internally
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
 
     my $data;
     my $json_ok = eval {
@@ -469,8 +470,9 @@ sub update_draft {
     return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
       unless $draft_id > 0;
 
+    # Get raw POSTDATA - do NOT decode_utf8 before decode_json
+    # decode_json expects UTF-8 bytes and handles decoding internally
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
 
     my $data;
     my $json_ok = eval {
@@ -488,7 +490,25 @@ sub update_draft {
     # Get the draft
     my $draft = $DB->getNodeById($draft_id);
     return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
-      unless $draft && $draft->{type}{title} eq 'draft';
+      unless $draft;
+
+    # If the draft was already published (converted to writeup), return success gracefully
+    # This handles autosave requests that arrive after publish completed
+    if ( $draft->{type}{title} eq 'writeup' ) {
+        return [
+            $self->HTTP_OK,
+            {
+                success           => 1,
+                already_published => 1,
+                writeup_id        => $draft_id,
+                message           => 'Draft was already published as a writeup'
+            }
+        ];
+    }
+
+    # Verify it's actually a draft
+    return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'not_a_draft' } ]
+      unless $draft->{type}{title} eq 'draft';
 
     # Check ownership
     unless ( $draft->{author_user} == $user_id ) {
@@ -798,8 +818,9 @@ sub set_parent_e2node {
     return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
       unless $draft_id > 0;
 
+    # Get raw POSTDATA - do NOT decode_utf8 before decode_json
+    # decode_json expects UTF-8 bytes and handles decoding internally
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
 
     my $data;
     my $json_ok = eval {
@@ -923,8 +944,9 @@ sub publish_draft {
     return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
       unless $draft_id > 0;
 
+    # Get raw POSTDATA - do NOT decode_utf8 before decode_json
+    # decode_json expects UTF-8 bytes and handles decoding internally
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
 
     my $data;
     my $json_ok = eval {
@@ -942,7 +964,31 @@ sub publish_draft {
     # Get the draft
     my $draft = $DB->getNodeById($draft_id);
     return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
-      unless $draft && $draft->{type}{title} eq 'draft';
+      unless $draft;
+
+    # If the draft was already published (converted to writeup), return success gracefully
+    # This handles retry scenarios where the first publish succeeded but client didn't receive response
+    if ( $draft->{type}{title} eq 'writeup' ) {
+        # Get the parent e2node from the writeup table
+        my $parent_id = $DB->{dbh}->selectrow_array(
+            'SELECT parent_e2node FROM writeup WHERE writeup_id = ?',
+            {}, $draft_id
+        );
+        return [
+            $self->HTTP_OK,
+            {
+                success          => 1,
+                already_published => 1,
+                writeup_id       => $draft_id,
+                e2node_id        => $parent_id,
+                message          => 'Draft was already published'
+            }
+        ];
+    }
+
+    # Verify it's actually a draft
+    return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'not_a_draft' } ]
+      unless $draft->{type}{title} eq 'draft';
 
     # Check ownership
     unless ( $draft->{author_user} == $user_id ) {
@@ -1189,8 +1235,8 @@ sub publish_draft {
 sub render_preview {
     my ( $self, $REQUEST ) = @_;
 
+    # Get raw POSTDATA - do NOT decode_utf8 before decode_json
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
 
     my $data;
     my $json_ok = eval {
@@ -1244,8 +1290,8 @@ sub republish_draft {
     return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
       unless $draft_id > 0;
 
+    # Get raw POSTDATA - do NOT decode_utf8 before decode_json
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
 
     my $data;
     my $json_ok = eval {

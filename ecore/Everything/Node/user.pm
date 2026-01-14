@@ -43,7 +43,9 @@ override 'json_display' => sub
 
   foreach my $num("experience","GP","numwriteups","numcools","is_online","level")
   {
-    $values->{$num} = int($self->$num);
+    my $val = $self->$num;
+    # Ensure numeric - some values like level may be non-numeric in edge cases
+    $values->{$num} = (defined $val && $val =~ /^-?\d+$/) ? int($val) : 0;
   }
 
   foreach my $text("mission","motto","employment","specialties","leveltitle")

@@ -67,13 +67,20 @@ export const useWriteuptypes = ({ skip = false } = {}) => {
 /**
  * Hook to handle publishing a draft as a writeup
  *
+ * Features:
+ * - Automatic retry with exponential backoff (up to 3 attempts)
+ * - Idempotent handling - succeeds gracefully if draft was already published
+ * - Distinguishes between retryable errors (network) and non-retryable (validation)
+ *
  * @param {Object} options
  * @param {number} options.draftId - The draft node ID
  * @param {Function} options.onSuccess - Callback on successful publish
+ * @param {number} options.maxRetries - Maximum retry attempts (default: 3)
  */
-export const usePublishDraft = ({ draftId, onSuccess }) => {
+export const usePublishDraft = ({ draftId, onSuccess, maxRetries = 3 }) => {
   const [publishing, setPublishing] = useState(false)
   const [error, setError] = useState(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   const publishDraft = useCallback(async ({
     parentE2nodeId,
@@ -97,54 +104,97 @@ export const usePublishDraft = ({ draftId, onSuccess }) => {
 
     setPublishing(true)
     setError(null)
+    setRetryCount(0)
 
-    try {
-      const response = await fetchWithErrorReporting(
-        `/api/drafts/${draftId}/publish`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            parent_e2node: parentE2nodeId,
-            wrtype_writeuptype: writeuptypeId,
-            feedback_policy_id: 0,
-            notnew: hideFromNewWriteups ? 1 : 0
-          })
-        },
-        'publishing draft'
-      )
+    let lastError = null
 
-      const result = await response.json()
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      setRetryCount(attempt)
 
-      if (result.success) {
-        if (onSuccess) {
-          onSuccess(result)
+      try {
+        const response = await fetchWithErrorReporting(
+          `/api/drafts/${draftId}/publish`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              parent_e2node: parentE2nodeId,
+              wrtype_writeuptype: writeuptypeId,
+              feedback_policy_id: 0,
+              notnew: hideFromNewWriteups ? 1 : 0
+            })
+          },
+          'publishing draft'
+        )
+
+        const result = await response.json()
+
+        if (result.success) {
+          // Handle both fresh publish and already-published (idempotent) responses
+          if (result.already_published) {
+            console.log('Draft was already published (idempotent success)')
+          }
+
+          if (onSuccess) {
+            onSuccess(result)
+          }
+          setPublishing(false)
+          return { success: true, result, alreadyPublished: !!result.already_published }
+        } else {
+          lastError = result.message || result.error || 'Publish failed'
+
+          // Non-retryable errors - exit immediately
+          const nonRetryableErrors = [
+            'permission_denied',
+            'not_a_draft',
+            'invalid_writeuptype',
+            'invalid_parent',
+            'node_locked',
+            'missing_parent',
+            'missing_writeuptype'
+          ]
+
+          if (nonRetryableErrors.includes(result.error)) {
+            setError(lastError)
+            reportClientError('api_error', lastError, {
+              action: 'publishing draft',
+              draft_id: draftId,
+              response_data: result
+            })
+            setPublishing(false)
+            return { success: false, error: lastError }
+          }
         }
-        return { success: true, result }
-      } else {
-        const errorMsg = result.message || result.error || 'Publish failed'
-        setError(errorMsg)
-        reportClientError('api_error', errorMsg, {
-          action: 'publishing draft',
-          draft_id: draftId,
-          response_data: result
-        })
-        return { success: false, error: errorMsg }
+      } catch (err) {
+        lastError = err.message
+        // Network/parsing errors are worth retrying
       }
-    } catch (err) {
-      setError(`Publish error: ${err.message}`)
-      return { success: false, error: err.message }
-    } finally {
-      setPublishing(false)
+
+      // Wait before retry (exponential backoff: 1s, 2s, 4s)
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)))
+      }
     }
-  }, [draftId, onSuccess])
+
+    // All retries exhausted
+    const finalError = `Publish failed after ${maxRetries} attempts: ${lastError}`
+    setError(finalError)
+    reportClientError('api_error', finalError, {
+      action: 'publishing draft (all retries failed)',
+      draft_id: draftId,
+      attempts: maxRetries
+    })
+    setPublishing(false)
+    return { success: false, error: finalError }
+  }, [draftId, onSuccess, maxRetries])
 
   return {
     publishDraft,
     publishing,
     error,
-    setError
+    setError,
+    retryCount
   }
 }
 

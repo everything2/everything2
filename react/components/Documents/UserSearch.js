@@ -18,7 +18,7 @@ const selectRandom = (arr, n) => {
 }
 
 // Empty state component with randomized suggestions
-const EmptyState = ({ onSelectUser }) => {
+const EmptyState = ({ onSelectUser, styles }) => {
   // Randomly select 3 users on mount (useMemo ensures consistent selection during render)
   const suggestedUsers = useMemo(() => selectRandom(NOTABLE_USERS, 3), [])
 
@@ -573,7 +573,10 @@ const UserSearch = ({ data, user }) => {
 
       {/* Empty state - shown only when no search has been performed */}
       {!results && !loading && !error && (
-        <EmptyState onSelectUser={(name) => handleUserSelect({ title: name })} />
+        <EmptyState
+          onSelectUser={(name) => handleUserSelect({ title: name })}
+          styles={styles}
+        />
       )}
     </div>
   )

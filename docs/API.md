@@ -1157,6 +1157,103 @@ curl "https://everything2.com/api/drafts/search?q=cats&limit=10" \
 - Returns full doctext content for each match (client can truncate for display)
 - Uses the existing `authortype` composite index for efficient filtering by user
 
+### POST /api/drafts/:id/publish
+
+Publishes a draft as a writeup, converting it from a draft node to a writeup node.
+
+**URL Parameters:**
+* **:id** - Draft node ID (required)
+
+**Request Body (JSON):**
+* **parent_e2node** - The e2node ID to publish under (required)
+* **wrtype_writeuptype** - The writeuptype node ID (required)
+* **feedback_policy_id** - Feedback policy ID (optional, default: 0)
+* **notnew** - Set to 1 to hide from New Writeups (optional, default: 0)
+* **publishtime** - Custom publish timestamp (optional, defaults to NOW())
+
+**Returns:**
+
+200 OK with JSON object containing:
+
+```json
+{
+  "success": 1,
+  "writeup_id": 2213271,
+  "e2node_id": 123456,
+  "message": "Draft published successfully"
+}
+```
+
+**Idempotent Response:**
+
+If the draft was already published (e.g., retry after network failure), returns:
+
+```json
+{
+  "success": 1,
+  "already_published": 1,
+  "writeup_id": 2213271,
+  "e2node_id": 123456,
+  "message": "Draft was already published"
+}
+```
+
+**Response Keys:**
+* **success** - Boolean (1/0) indicating operation succeeded
+* **writeup_id** - The writeup node ID (same as the original draft ID)
+* **e2node_id** - The parent e2node ID
+* **already_published** - Present and true if draft was previously published
+* **message** - Human-readable status message
+
+**Error Responses:**
+
+* **400 Bad Request** - Invalid or missing parameters
+  ```json
+  { "success": 0, "error": "invalid_id" }
+  { "success": 0, "error": "not_a_draft" }
+  { "success": 0, "error": "missing_parent", "message": "parent_e2node is required" }
+  { "success": 0, "error": "invalid_parent", "message": "Invalid e2node ID" }
+  { "success": 0, "error": "missing_writeuptype", "message": "wrtype_writeuptype is required" }
+  { "success": 0, "error": "invalid_writeuptype", "message": "Invalid writeuptype ID" }
+  ```
+
+* **403 Forbidden** - User doesn't own the draft
+  ```json
+  { "success": 0, "error": "permission_denied" }
+  ```
+
+* **404 Not Found** - Draft doesn't exist
+  ```json
+  { "success": 0, "error": "not_found" }
+  ```
+
+* **409 Conflict** - E2node is locked by another operation
+  ```json
+  { "success": 0, "error": "node_locked", "message": "E2node is locked by another operation. Please try again." }
+  ```
+
+**Example Request:**
+
+```bash
+curl -X POST https://everything2.com/api/drafts/2213271/publish \
+  -H "Content-Type: application/json" \
+  -H "Cookie: userpass=..." \
+  -d '{
+    "parent_e2node": 123456,
+    "wrtype_writeuptype": 789,
+    "notnew": 0
+  }'
+```
+
+**Implementation Notes:**
+
+- Uses row-level locking on the e2node to prevent race conditions
+- Converts the draft node type to writeup type
+- Creates entries in: writeup, nodegroup, newwriteup, publish tables
+- Updates draft table to mark as published (publication_status = 0)
+- Idempotent: safe to retry if the first request succeeded but client didn't receive response
+- Client should implement retry logic with exponential backoff for transient failures
+
 ## Autosave
 
 **Test Coverage: ❌ 0%** (0/4 endpoints tested)
@@ -1193,6 +1290,20 @@ Saves content for a node, automatically stashing the previous version to history
 * **saved** - Boolean (1/0) indicating whether content was actually saved (0 if no changes detected)
 * **autosave_id** - ID of the autosave history entry (only present if previous content was stashed)
 * **save_type** - Always "auto" for this endpoint
+* **already_published** - Present and true if the draft was already published as a writeup
+
+**Idempotent Response:**
+
+If the draft was already published (e.g., autosave fired after publish completed), returns:
+
+```json
+{
+  "success": 1,
+  "already_published": 1,
+  "saved": 0,
+  "message": "Draft was already published as a writeup"
+}
+```
 
 **Behavior:**
 

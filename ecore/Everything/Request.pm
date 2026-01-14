@@ -125,6 +125,7 @@ sub get_current_user
 
   my $username = $inputs->{username} || "";
   my $pass = $inputs->{pass} || "";
+  my $expires = $inputs->{expires} || "";  # For "remember me" - e.g., '+1y'
   my $originalpass = $pass;
   my $cookie = undef;
 
@@ -171,7 +172,7 @@ sub get_current_user
           # Salted password accepted
           unless($cookie)
           {
-            print $self->header({-cookie => $self->make_login_cookie($user)});
+            print $self->header({-cookie => $self->make_login_cookie($user, $expires)});
           }
         }else{
           # Salted password not accepted by default for user
@@ -189,7 +190,7 @@ sub get_current_user
                 $self->APP->updatePassword($user->NODEDATA, $user->passwd);
                 unless($cookie)
                 {
-                  print $self->header({-cookie => $self->make_login_cookie($user)});
+                  print $self->header({-cookie => $self->make_login_cookie($user, $expires)});
                 }
                 # Successfully updated password and logged in
             }
@@ -274,12 +275,9 @@ sub get_api_version
 
 sub make_login_cookie
 {
-  my ($self, $user) = @_;
-  my $expires = '';
-  if($self->cgi->param('expires'))
-  {
-    $expires = $self->cgi->param('expires');
-  }
+  my ($self, $user, $expires) = @_;
+  # Accept expires as parameter (from API login) or fall back to CGI param (legacy form login)
+  $expires ||= $self->cgi->param('expires') || '';
   return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->title."|".$user->passwd, -expires => $expires);
 }
 

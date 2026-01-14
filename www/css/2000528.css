@@ -12,14 +12,14 @@
 
   /* Backgrounds */
   --e2-bg-body: #fff;                    /* White */
-  --e2-bg-nodelet: #F9F9F8;              /* Very light gray */
-  --e2-bg-header: #5F5F5F;               /* Gray header */
+  --e2-bg-nodelet: #F9F9F8;              /* Very light gray-tan */
+  --e2-bg-header: #e8e8e0;               /* Light tan header (matches writeup sections) */
   --e2-bg-hover: #f0f0f0;                /* Light gray hover */
   --e2-bg-sidebar: transparent;
 
   /* Text colors */
   --e2-text-body: #151500;               /* Near black */
-  --e2-text-header: #5F5F5F;
+  --e2-text-header: #151500;             /* Near black for better contrast on tan */
   --e2-text-muted: #666;
 
   /* Borders */
@@ -520,7 +520,7 @@ h3#creamofthecool_title {
 
 .createdby {
   margin: 10px 0;
-  text-align: right;
+  /* Inherits float: right from basesheet instead of text-align: right */
 }
 
 .writeuppage .item {
@@ -572,7 +572,7 @@ ul ul ul ul ul ul { list-style: square; }
 }
 
 .wu_footer td {
-  text-align: center;
+  /* text-align removed - let specific classes (.wu_tools--left, .wu_rep) control alignment */
   width: 10%;
   padding: 5px;
 }

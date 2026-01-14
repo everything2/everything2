@@ -35,7 +35,6 @@ sub buildReactData {
     }
 
     my $USER = $user->NODEDATA;
-    my $is_editor = $APP->isEditor($USER) ? 1 : 0;
     my $votes_left = int($USER->{votesleft} || 0);
 
     # Check if this is a post-vote display (op=vote with votedon param)
@@ -63,7 +62,7 @@ sub buildReactData {
             return {
                 type => 'blind_voting_booth',
                 noVotesLeft => 1,
-                isEditor => $is_editor
+                # isEditor removed - not used by React component
             };
         }
 
@@ -100,7 +99,7 @@ sub buildReactData {
                 type => 'blind_voting_booth',
                 error => 'no_writeups',
                 message => 'Could not find a writeup to vote on. Try again later.',
-                isEditor => $is_editor
+                # isEditor removed - not used by React component
             };
         }
     }
@@ -124,8 +123,8 @@ sub buildReactData {
         } : undef,
         hasVoted => $has_voted ? 1 : 0,
         votesLeft => $votes_left,
-        isEditor => $is_editor,
-        nodeId => int($REQUEST->node->node_id)
+        nodeId => int($REQUEST->node->node_id),
+        # isEditor removed - not used by React component
     };
 
     # Only include author info if they've voted

@@ -2144,4 +2144,167 @@ sub cleanup_test_nodes {
     is( $search_response->{query}, $search_query, 'Response includes the query string' );
 }
 
+# =============================================================================
+# IDEMPOTENT PUBLISH TESTS (for retry safety)
+# =============================================================================
+
+# Test 49: publish_draft is idempotent - second call returns success with already_published
+{
+    # Create e2node
+    my $e2node_title = 'Idempotent Publish Test ' . time();
+    my $e2node_id =
+      $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+    ok( $e2node_id, 'Created e2node for idempotent test' );
+
+    # Create and publish a draft
+    $regular_request->set_postdata(
+        {
+            title   => $e2node_title,
+            doctext => '<p>Testing idempotent publish behavior.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+    ok( $draft_id, 'Draft created for idempotent test' );
+
+    # First publish - should succeed normally
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $publish_status1, $publish_response1 ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+
+    is( $publish_status1, $api->HTTP_OK, 'First publish returns HTTP_OK' );
+    ok( $publish_response1->{success}, 'First publish succeeds' );
+    ok( !$publish_response1->{already_published}, 'First publish is fresh (not already_published)' );
+    is( $publish_response1->{writeup_id}, $draft_id, 'First publish returns correct writeup_id' );
+
+    # Verify node is now a writeup
+    my $node = $DB->getNodeById($draft_id);
+    is( $node->{type}{title}, 'writeup', 'Node is now a writeup' );
+
+    # Second publish (retry) - should succeed with already_published flag
+    my ( $publish_status2, $publish_response2 ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+
+    is( $publish_status2, $api->HTTP_OK, 'Second publish (retry) returns HTTP_OK' );
+    ok( $publish_response2->{success}, 'Second publish (retry) succeeds' );
+    ok( $publish_response2->{already_published}, 'Second publish has already_published flag' );
+    is( $publish_response2->{writeup_id}, $draft_id, 'Second publish returns correct writeup_id' );
+    is( $publish_response2->{e2node_id}, $e2node_id, 'Second publish returns correct e2node_id' );
+    like( $publish_response2->{message}, qr/already published/i, 'Message indicates already published' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# Test 50: update_draft on already-published draft returns success with already_published
+{
+    # Create e2node
+    my $e2node_title = 'Update After Publish Test ' . time();
+    my $e2node_id =
+      $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+
+    # Create and publish a draft
+    $regular_request->set_postdata(
+        {
+            title   => $e2node_title,
+            doctext => '<p>Original content.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # Publish the draft
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id}
+        }
+    );
+
+    my ( $publish_status, $publish_response ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+    ok( $publish_response->{success}, 'Draft published' );
+
+    # Now try to update_draft (simulating autosave after publish)
+    $regular_request->set_postdata(
+        {
+            doctext => '<p>Updated content after publish.</p>'
+        }
+    );
+
+    my ( $update_status, $update_response ) =
+      @{ $api->update_draft( $regular_request, $draft_id ) };
+
+    is( $update_status, $api->HTTP_OK, 'update_draft on published node returns HTTP_OK' );
+    ok( $update_response->{success}, 'update_draft on published node succeeds' );
+    ok( $update_response->{already_published}, 'update_draft returns already_published flag' );
+    is( $update_response->{writeup_id}, $draft_id, 'update_draft returns writeup_id' );
+    like( $update_response->{message}, qr/already published/i, 'Message indicates already published' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
+# Test 51: Retry publish with different parameters still recognizes already published
+{
+    # Create e2node
+    my $e2node_title = 'Retry Different Params Test ' . time();
+    my $e2node_id =
+      $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+
+    # Create and publish a draft
+    $regular_request->set_postdata(
+        {
+            title   => $e2node_title,
+            doctext => '<p>Testing retry with different params.</p>'
+        }
+    );
+
+    my ( $create_status, $create_response ) =
+      @{ $api->create_draft($regular_request) };
+    my $draft_id = $create_response->{draft}{node_id};
+
+    # First publish with notnew=0
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id},
+            notnew             => 0
+        }
+    );
+
+    my ( $publish_status1, $publish_response1 ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+    ok( $publish_response1->{success}, 'First publish succeeds' );
+
+    # Retry with different notnew value (simulating inconsistent retry)
+    $regular_request->set_postdata(
+        {
+            parent_e2node      => $e2node_id,
+            wrtype_writeuptype => $idea_writeuptype->{node_id},
+            notnew             => 1  # Different from first call
+        }
+    );
+
+    my ( $publish_status2, $publish_response2 ) =
+      @{ $api->publish_draft( $regular_request, $draft_id ) };
+
+    is( $publish_status2, $api->HTTP_OK, 'Retry with different params returns HTTP_OK' );
+    ok( $publish_response2->{success}, 'Retry succeeds (idempotent)' );
+    ok( $publish_response2->{already_published}, 'Retry recognizes already published' );
+
+    # Cleanup
+    cleanup_test_nodes( $draft_id, $e2node_id );
+}
+
 done_testing();
