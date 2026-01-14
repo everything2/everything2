@@ -392,4 +392,30 @@ subtest "edit_profile - Bookmark removal" => sub {
     ok(!$still_exists, "Bookmark was removed from database");
 };
 
+#############################################################################
+# Test 11: Everything::Node::user json_display handles non-numeric level gracefully
+#############################################################################
+subtest "json_display handles non-numeric values" => sub {
+    # This test verifies that json_display doesn't produce warnings
+    # when numeric fields contain non-numeric values (e.g., level = ' ')
+
+    my $user_node = $APP->node_by_id($test_user->{node_id});
+    ok($user_node, "Got user node object");
+
+    # Call json_display - it should not produce warnings even if
+    # some values like level are non-numeric
+    my $warnings = '';
+    {
+        local $SIG{__WARN__} = sub { $warnings .= $_[0] };
+        my $display = $user_node->json_display();
+        ok($display, "json_display returns data");
+        ok(defined($display->{level}), "level is defined");
+        ok(defined($display->{experience}), "experience is defined");
+        ok(defined($display->{numwriteups}), "numwriteups is defined");
+    }
+
+    # Check no numeric conversion warnings
+    unlike($warnings, qr/isn't numeric/i, "No 'isn't numeric' warnings from json_display");
+};
+
 done_testing();

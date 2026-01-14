@@ -3694,9 +3694,6 @@ sub getRandomNodesMany {
   $count = int($count);
   $count = 20 if ($count > 20);
 
-  # Optimized random selection using OFFSET instead of ORDER BY RAND()
-  # This avoids creating temporary tables and sorting the entire result set
-
   # Get total count of eligible nodes (cached for 5 minutes to avoid repeated COUNT queries)
   my $cache_key = 'random_nodes_total_count';
   my $total_count;
@@ -3722,24 +3719,34 @@ sub getRandomNodesMany {
 
   return [] if $total_count == 0;
 
-  # Calculate random offset, ensuring we don't go past the end
-  my $max_offset = $total_count - $count;
-  $max_offset = 0 if $max_offset < 0;
-  my $offset = int(rand($max_offset + 1));
-
-  # Fetch nodes using offset (much faster than ORDER BY RAND())
-  my $csr = $this->{db}->sqlSelectMany(
-    "e2node_id",
-    "e2node",
-    "exists(select 1 from nodegroup where nodegroup_id=e2node_id) LIMIT $count OFFSET $offset"
-  );
-
+  # Select truly random individual nodes by picking random offsets for each
+  # This avoids the problem of sequential nodes being thematically related
   my $response = [];
-  while(my $row = $csr->fetchrow_arrayref)
-  {
-    my $n = $this->{db}->getNodeById($row->[0]);
-    push @$response, $n if defined($n);
+  my %seen_ids;  # Track seen node IDs to avoid duplicates
+
+  for (my $i = 0; $i < $count; $i++) {
+    # Try up to 3 times to find a unique node
+    for (my $attempt = 0; $attempt < 3; $attempt++) {
+      my $offset = int(rand($total_count));
+
+      my $node_id = $this->{db}->sqlSelect(
+        "e2node_id",
+        "e2node",
+        "exists(select 1 from nodegroup where nodegroup_id=e2node_id) LIMIT 1 OFFSET $offset"
+      );
+
+      next unless $node_id;
+      next if $seen_ids{$node_id};  # Skip if already selected
+
+      my $n = $this->{db}->getNodeById($node_id);
+      if (defined($n)) {
+        push @$response, $n;
+        $seen_ids{$node_id} = 1;
+        last;  # Found a unique node, move to next
+      }
+    }
   }
+
   return $response;
 }
 

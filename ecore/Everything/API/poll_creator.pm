@@ -44,8 +44,8 @@ sub create_poll {
         error => 'You must be logged in to create polls'
     }] if $REQUEST->user->is_guest;
 
+    # do NOT decode_utf8 - decode_json expects UTF-8 bytes
     my $postdata = $REQUEST->POSTDATA;
-    $postdata = decode_utf8($postdata) if $postdata;
 
     my $data;
     my $json_ok = eval {

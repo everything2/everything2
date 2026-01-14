@@ -19,16 +19,13 @@ sub buildReactData
     my $APP   = $self->APP;
     my $USER  = $REQUEST->user;
     my $query = $REQUEST->cgi;
-    my $NODE  = $REQUEST->node;
-
-    my $node_id = $NODE->NODEDATA->{node_id};
 
     # Security: Editors only
     unless ( $APP->isEditor( $USER->NODEDATA ) ) {
         return {
             type          => 'altar_of_sacrifice',
-            node_id       => $node_id,
-            access_denied => 1
+            access_denied => 1,
+            # node_id removed - use e2.node_id from global state
         };
     }
 
@@ -38,9 +35,9 @@ sub buildReactData
     # If no author specified, show step 1
     unless ( $author_name ) {
         return {
-            type    => 'altar_of_sacrifice',
-            node_id => $node_id,
-            step    => 'input'
+            type => 'altar_of_sacrifice',
+            step => 'input',
+            # node_id removed - use e2.node_id from global state
         };
     }
 
@@ -49,10 +46,10 @@ sub buildReactData
 
     unless ( $author ) {
         return {
-            type    => 'altar_of_sacrifice',
-            node_id => $node_id,
-            step    => 'input',
-            error   => "$author_name is not a user."
+            type  => 'altar_of_sacrifice',
+            step  => 'input',
+            error => "$author_name is not a user.",
+            # node_id removed - use e2.node_id from global state
         };
     }
 
@@ -75,10 +72,10 @@ sub buildReactData
     unless ( $total ) {
         return {
             type        => 'altar_of_sacrifice',
-            node_id     => $node_id,
             step        => 'empty',
             author_id   => $author->{node_id},
-            author_name => $author->{title}
+            author_name => $author->{title},
+            # node_id removed - use e2.node_id from global state
         };
     }
 
@@ -104,7 +101,6 @@ sub buildReactData
 
     return {
         type        => 'altar_of_sacrifice',
-        node_id     => $node_id,
         step        => 'select',
         author_id   => $author->{node_id},
         author_name => $author->{title},
@@ -112,7 +108,8 @@ sub buildReactData
         total       => $total,
         page        => $page,
         per_page    => $per_page,
-        total_pages => $total_pages
+        total_pages => $total_pages,
+        # node_id removed - use e2.node_id from global state
     };
 }
 

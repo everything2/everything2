@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const ListNodesOfType = ({ data, user }) => {
-  const { access_denied, message, node_types = [], default_type = '', is_admin, is_editor, user_id, type } = data;
+  const { access_denied, message, node_types = [], default_type = '', type } = data;
 
   // GNL (Gigantic Node Lister) uses same component but shows different title
   const isGNL = type === 'gnl';

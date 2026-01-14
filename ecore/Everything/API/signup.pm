@@ -99,9 +99,8 @@ sub create_account {
   my $APP = $self->APP;
   my $CONF = $self->CONF;
 
-  # Parse JSON body
+  # Parse JSON body - do NOT decode_utf8 before decode_json
   my $postdata = $REQUEST->POSTDATA;
-  $postdata = decode_utf8($postdata) if $postdata;
 
   my $data;
   my $json_ok = eval {

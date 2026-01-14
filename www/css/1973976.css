@@ -765,8 +765,30 @@ h3#creamofthecool_title {
 
 .contentfooter td {
   text-align: center;
-  width: 10%;
   padding: 5px;
+}
+
+/* Tools cell should be compact - only as wide as content */
+.contentfooter td.wu_tools {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* Vote cell compact */
+.contentfooter td.wu_vote {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* C!/social cell takes remaining space */
+.contentfooter td.wu_cfull {
+  width: auto;
+}
+
+/* Rep cell compact */
+.contentfooter td.wu_rep {
+  width: 1%;
+  white-space: nowrap;
 }
 
 .vote_buttons input + input {
@@ -1552,20 +1574,12 @@ flex-shrink: 0;
   }
 
   /* Better touch targets for inline links in content only */
-  /* Exclude writeup headers (.contentheader) which need compact layout */
+  /* Use padding instead of min-height to avoid breaking paragraph flow */
   .content a,
   .writeup-content a {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-  }
-
-  /* Writeup header links should NOT have touch target inflation */
-  .contentheader a,
-  .wu_header a,
-  .wu_header span {
-    min-height: auto !important;
-    display: inline !important;
+    padding: 8px 0;
+    margin: -8px 0;
+    /* Keep display: inline to preserve text flow */
   }
 
   /* Readable text size */
@@ -2480,7 +2494,9 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
 .e2-header {
   padding: 6px 15px;
   position: relative;
-  z-index: 100;
+  /* z-index removed - was causing stacking issues with modals (z-index 10000) */
+  background-color: var(--e2-bg-header);
+  color: var(--e2-text-header);
 }
 
 .e2-header-main {
@@ -2514,7 +2530,9 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   padding: 8px 12px;
   gap: 12px;
   position: relative;
-  z-index: 100;
+  /* z-index removed - was causing stacking issues with modals (z-index 10000) */
+  background-color: var(--e2-bg-header);
+  color: var(--e2-text-header);
 }
 
 .e2-header-mobile-logo {
@@ -2762,8 +2780,44 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   padding: 20px;
 }
 
+.welcome-container--desktop {
+  max-width: 100%;
+  padding: 20px;
+}
+
 .welcome-container--mobile {
   padding: 12px;
+}
+
+/* Desktop two-column grid layout */
+.welcome-desktop-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.welcome-left-column {
+  min-width: 0;
+}
+
+.welcome-right-column {
+  min-width: 0;
+}
+
+/* Cards in 2x2 grid within left column */
+.welcome-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Override card sizing for grid layout */
+.welcome-cards-grid .welcome-card,
+.welcome-cards-grid .new-writeups-card {
+  flex: none;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .welcome-message {
@@ -5884,11 +5938,13 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   min-height: 20px;
 }
 
-/* Writeup footer cell alignment */
+/* Writeup footer cell alignment - use higher specificity to override .contentfooter td */
+.contentfooter td.wu_tools--left,
 .wu_tools--left {
   text-align: left;
 }
 
+.contentfooter td.wu_rep,
 .wu_rep {
   text-align: right;
 }

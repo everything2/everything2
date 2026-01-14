@@ -37,7 +37,7 @@ sub update_category {
 
   # Parse request body
   my $postdata = $REQUEST->POSTDATA;
-  $postdata = decode_utf8($postdata) if $postdata;
+  # do NOT decode_utf8 - decode_json expects UTF-8 bytes
 
   my $data;
   my $json_ok = eval {
@@ -135,7 +135,7 @@ sub update_category_meta {
 
   # Parse request body
   my $postdata = $REQUEST->POSTDATA;
-  $postdata = decode_utf8($postdata) if $postdata;
+  # do NOT decode_utf8 - decode_json expects UTF-8 bytes
 
   my $data;
   my $json_ok = eval {
@@ -237,7 +237,7 @@ sub reorder_members {
 
   # Parse request body
   my $postdata = $REQUEST->POSTDATA;
-  $postdata = decode_utf8($postdata) if $postdata;
+  # do NOT decode_utf8 - decode_json expects UTF-8 bytes
 
   my $data;
   my $json_ok = eval {
@@ -328,7 +328,7 @@ sub remove_member {
 
   # Parse request body
   my $postdata = $REQUEST->POSTDATA;
-  $postdata = decode_utf8($postdata) if $postdata;
+  # do NOT decode_utf8 - decode_json expects UTF-8 bytes
 
   my $data;
   my $json_ok = eval {
@@ -586,7 +586,7 @@ sub add_member {
 
   # Parse request body
   my $postdata = $REQUEST->POSTDATA;
-  $postdata = decode_utf8($postdata) if $postdata;
+  # do NOT decode_utf8 - decode_json expects UTF-8 bytes
 
   my $data;
   my $json_ok = eval {

@@ -15,7 +15,6 @@ import ConfirmActionModal from '../ConfirmActionModal'
 const AltarOfSacrifice = ({ data }) => {
   const {
     access_denied,
-    node_id,
     step,
     error,
     author_id,
@@ -26,6 +25,9 @@ const AltarOfSacrifice = ({ data }) => {
     per_page,
     total_pages
   } = data
+
+  // Get current page node_id from global state instead of contentData
+  const nodeId = window.e2?.node_id
 
   const [reason, setReason] = useState('')
 
@@ -64,7 +66,7 @@ const AltarOfSacrifice = ({ data }) => {
       </div>
 
       {step === 'input' && (
-        <StepInput nodeId={node_id} error={error} />
+        <StepInput nodeId={nodeId} error={error} />
       )}
 
       {step === 'empty' && (
@@ -73,7 +75,7 @@ const AltarOfSacrifice = ({ data }) => {
 
       {step === 'select' && (
         <StepSelect
-          nodeId={node_id}
+          nodeId={nodeId}
           authorId={author_id}
           authorName={author_name}
           writeups={writeups}

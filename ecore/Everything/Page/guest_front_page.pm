@@ -12,6 +12,13 @@ extends 'Everything::Page';
 # This gives us the React header and unified page layout
 sub template { return ''; }
 
+# Override shell parameters to customize page title
+sub shell_overrides {
+    return {
+        pagetitle => 'Welcome to Everything'
+    };
+}
+
 sub buildReactData {
     my ($self, $REQUEST) = @_;
 

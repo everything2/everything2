@@ -66,7 +66,15 @@ sub create
 
   if($data->{username} and $data->{passwd})
   {
-    if($REQUEST->login(username => $data->{username}, pass => $data->{passwd}))
+    # Pass expires parameter for "remember me" functionality
+    # When set (e.g., '+1y'), creates a persistent cookie instead of session cookie
+    my %login_args = (username => $data->{username}, pass => $data->{passwd});
+    if ($data->{expires})
+    {
+      $login_args{expires} = $data->{expires};
+    }
+
+    if($REQUEST->login(%login_args))
     {
       if(!$REQUEST->is_guest)
       {

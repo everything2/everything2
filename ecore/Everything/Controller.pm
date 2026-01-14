@@ -237,6 +237,12 @@ sub layout
   }
 
   # Build shell parameters - controllers can override via $params->{shell_overrides}
+  # Extract method calls to scalar context to avoid list context issues in hash assignment
+  my $metadesc = $node->metadescription;
+  my $react_bundle_url = $self->APP->asset_uri("react/main.bundle.js");
+  my $favicon_url = $self->APP->asset_uri("static/favicon.ico");
+  my $basehref_val = ($REQUEST->is_guest) ? ($self->APP->basehref) : '';
+
   my %shell_params = (
     node => $node,
     REQUEST => $REQUEST,
@@ -246,14 +252,14 @@ sub layout
     printsheet => $printsheet_url,
     customstyle => $customstyle // '',
     canonical_url => $canonical_url,
-    react_bundle => $self->APP->asset_uri("react/main.bundle.js"),
-    favicon => $self->APP->asset_uri("static/favicon.ico"),
-    metadescription => $node->metadescription,
+    react_bundle => $react_bundle_url,
+    favicon => $favicon_url,
+    metadescription => $metadesc,
     body_class => $body_class,
-    basehref => ($REQUEST->is_guest) ? ($self->APP->basehref) : '',
+    basehref => $basehref_val,
   );
 
-  # Allow controller overrides (e.g., meta_robots_index, meta_robots_follow)
+  # Allow controller overrides (e.g., meta_robots_index, meta_robots_follow, pagetitle)
   if ($params->{shell_overrides}) {
     %shell_params = (%shell_params, %{$params->{shell_overrides}});
   }

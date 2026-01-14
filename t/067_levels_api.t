@@ -156,6 +156,10 @@ my $level_minus1 = $result->[1]{levels}[2];
 is($level_minus1->{level}, -1, "Third level is -1");
 is($level_minus1->{title}, 'Arcanist', "Level -1 is Arcanist");
 
+# Level -1 has 'NONE' for votes and cools - verify no numeric warnings
+is($level_minus1->{votes}, 'NONE', "Level -1 votes is 'NONE' string");
+is($level_minus1->{cools}, 'NONE', "Level -1 cools is 'NONE' string");
+
 #############################################################################
 # Test: High levels (Transcendent)
 #############################################################################

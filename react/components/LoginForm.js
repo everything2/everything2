@@ -33,6 +33,7 @@ const LoginForm = ({
 }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(true)  // Default to checked for better UX
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -42,14 +43,20 @@ const LoginForm = ({
     setIsSubmitting(true)
 
     try {
+      const payload = {
+        username,
+        passwd: password
+      }
+      // Include expires parameter for "remember me" - 1 year cookie
+      if (rememberMe) {
+        payload.expires = '+1y'
+      }
+
       const response = await fetch('/api/sessions/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
-        body: JSON.stringify({
-          username,
-          passwd: password
-        })
+        body: JSON.stringify(payload)
       })
 
       if (response.ok) {
@@ -109,6 +116,15 @@ const LoginForm = ({
           autoComplete="current-password"
           className="login-input"
         />
+
+        <label className="login-checkbox-label-compact">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          <span>Remember me</span>
+        </label>
 
         <button
           type="submit"
@@ -182,6 +198,8 @@ const LoginForm = ({
                 id="signin_expires"
                 name="expires"
                 tabIndex="3"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
               />
               <span>Remember me</span>
             </label>
@@ -247,6 +265,17 @@ const LoginForm = ({
             className="login-input"
             required
           />
+        </label>
+      </div>
+
+      <div className="login-field">
+        <label className="login-checkbox-label">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          <span>Remember me</span>
         </label>
       </div>
 

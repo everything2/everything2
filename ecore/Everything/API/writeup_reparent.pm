@@ -146,9 +146,8 @@ sub handle_post
     my $APP  = $self->APP;
     my $USER = $REQUEST->user;
 
-    # Parse JSON body
+    # Parse JSON body - do NOT decode_utf8 before decode_json
     my $postdata = $REQUEST->POSTDATA || '{}';
-    $postdata = decode_utf8($postdata);
 
     my $data;
     my $eval_success = eval { $data = decode_json($postdata); 1; };

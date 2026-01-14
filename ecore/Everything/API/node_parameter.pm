@@ -115,9 +115,8 @@ sub set_param {
 
     my $DB = $self->DB;
 
-    # Parse JSON body
+    # Parse JSON body - do NOT decode_utf8 before decode_json
     my $postdata = $REQUEST->POSTDATA || '{}';
-    $postdata = decode_utf8($postdata);
 
     my $data;
     my $eval_success = eval { $data = JSON::decode_json($postdata); 1; };
@@ -197,9 +196,8 @@ sub delete_param {
 
     my $DB = $self->DB;
 
-    # Parse JSON body
+    # Parse JSON body - do NOT decode_utf8 before decode_json
     my $postdata = $REQUEST->POSTDATA || '{}';
-    $postdata = decode_utf8($postdata);
 
     my $data;
     my $eval_success = eval { $data = JSON::decode_json($postdata); 1; };
