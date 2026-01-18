@@ -832,8 +832,10 @@ class E2ReactRoot extends React.Component {
       {nodeletorder.map((nodeletName) => (
         <React.Fragment key={nodeletName}>
           {this.renderNodelet(nodeletName)}
-          {/* Ad between recommended_reading and new_writeups for guests */}
+          {/* Ad after recommended_reading for guests */}
           {isGuest && nodeletName === 'recommended_reading' && <SidebarAd show={true} />}
+          {/* Ad after new_writeups for guests */}
+          {isGuest && nodeletName === 'new_writeups' && <SidebarAd show={true} />}
         </React.Fragment>
       ))}
     </>

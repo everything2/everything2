@@ -1076,6 +1076,7 @@ hr.clear {
 
 /* Header banner ad container - responsive for all screen sizes */
 .headerads {
+  width: 100%; /* Required for flex column parent */
   text-align: center;
   margin: 0 auto;
   padding: 5px 0;
@@ -1121,6 +1122,7 @@ hr.clear {
 
 /* Footer ad - just before footer */
 .footer-ad {
+  width: 100%; /* Required for flex column parent */
   margin: 10px auto;
   padding: 10px 0;
   text-align: center;

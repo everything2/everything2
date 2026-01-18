@@ -121,8 +121,8 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, b
                 writeup={writeup}
                 user={user}
               />
-              {/* In-content ad after first writeup (only for guests, when multiple writeups) */}
-              {index === 0 && group.length > 1 && user && user.guest && (
+              {/* In-content ad after each writeup except the last (only for guests, when multiple writeups) */}
+              {index < group.length - 1 && user && user.guest && (
                 <InContentAd show={true} />
               )}
             </React.Fragment>
