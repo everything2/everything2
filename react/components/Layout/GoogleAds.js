@@ -192,8 +192,8 @@ export const GoogleAd = ({ show, slot, width, height, responsive = false, classN
  * This avoids issues with component switching when isMobile changes.
  */
 const GoogleAds = ({ show }) => {
-  // Don't render anything for logged-in users
-  if (!show) return null
+  // Don't render anything for logged-in users or non-ad hosts
+  if (!show || !isAdEnabledHost()) return null
 
   const { slot } = AD_SLOTS.HEADER_MOBILE // Use responsive slot for all sizes
 
@@ -211,25 +211,26 @@ const GoogleAds = ({ show }) => {
 }
 
 /**
- * SidebarAd - Square ad for sidebar (250x250)
+ * SidebarAd - Responsive ad for sidebar
  *
+ * Uses responsive ad unit for better fill rates.
  * Designed to fit in the nodelet sidebar area.
  * Not rendered on mobile (sidebar is not shown on mobile).
  */
 export const SidebarAd = ({ show }) => {
   const isMobile = useIsMobile()
 
-  // Don't render sidebar ads on mobile - sidebar isn't visible
-  if (isMobile) return null
+  // Don't render sidebar ads on mobile, non-ad hosts, or when not showing
+  if (!show || !isAdEnabledHost() || isMobile) return null
 
-  const { slot, width, height } = AD_SLOTS.SIDEBAR_SQUARE
+  const { slot } = AD_SLOTS.HEADER_MOBILE // Use responsive ad for better fill rates
 
   return (
     <GoogleAd
       show={show}
       slot={slot}
-      width={width}
-      height={height}
+      height={250}
+      responsive={true}
       className="sidebar-ad"
       style={{ margin: '0 auto' }}
     />
@@ -243,8 +244,8 @@ export const SidebarAd = ({ show }) => {
  * Only shown for guests viewing pages with multiple writeups.
  */
 export const InContentAd = ({ show }) => {
-  // Don't render anything when not showing ads
-  if (!show) return null
+  // Don't render anything when not showing ads or on non-ad hosts
+  if (!show || !isAdEnabledHost()) return null
 
   const { slot } = AD_SLOTS.HEADER_MOBILE // Reuse responsive ad slot
 
@@ -269,8 +270,8 @@ export const InContentAd = ({ show }) => {
  * Only shown for guests.
  */
 export const FooterAd = ({ show }) => {
-  // Don't render anything when not showing ads
-  if (!show) return null
+  // Don't render anything when not showing ads or on non-ad hosts
+  if (!show || !isAdEnabledHost()) return null
 
   const { slot } = AD_SLOTS.HEADER_MOBILE // Reuse responsive ad slot
 
