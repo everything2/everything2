@@ -30,6 +30,11 @@ jest.mock('./E2NodeToolsModal', () => {
   }
 })
 
+// Mock GoogleAds
+jest.mock('./Layout/GoogleAds', () => ({
+  InContentAd: ({ show }) => show ? <div data-testid="in-content-ad">Ad</div> : null
+}))
+
 describe('E2NodeDisplay Component', () => {
   const mockE2Node = {
     title: 'Test E2Node',
@@ -289,6 +294,67 @@ describe('E2NodeDisplay Component', () => {
       render(<E2NodeDisplay e2node={unlockedE2Node} user={mockUser} />)
 
       expect(screen.queryByText(/This node is locked/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('guest nodeshell experience', () => {
+    const guestUser = { node_id: 0, guest: true }
+    const nodeshellE2Node = {
+      ...mockE2Node,
+      group: []
+    }
+
+    it('shows guest nodeshell message for guest users on empty nodes', () => {
+      render(<E2NodeDisplay e2node={nodeshellE2Node} user={guestUser} />)
+      expect(screen.getByText(/user-created topic that doesn't have any content yet/)).toBeInTheDocument()
+    })
+
+    it('shows sign in CTA for guest users', () => {
+      render(<E2NodeDisplay e2node={nodeshellE2Node} user={guestUser} />)
+      expect(screen.getByRole('link', { name: 'Sign In' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Register here' })).toBeInTheDocument()
+    })
+
+    it('shows best entries when provided', () => {
+      const bestEntries = [
+        { writeup_id: 1, node_id: 100, title: 'Best Entry 1', author: { title: 'Author1' } },
+        { writeup_id: 2, node_id: 101, title: 'Best Entry 2', author: { title: 'Author2' } }
+      ]
+      render(<E2NodeDisplay e2node={nodeshellE2Node} user={guestUser} bestEntries={bestEntries} />)
+      expect(screen.getByText('Best Entry 1')).toBeInTheDocument()
+      expect(screen.getByText('Best Entry 2')).toBeInTheDocument()
+    })
+
+    it('shows ads every 4 items in best entries', () => {
+      const bestEntries = Array.from({ length: 10 }, (_, i) => ({
+        writeup_id: i + 1,
+        node_id: i + 100,
+        title: `Best Entry ${i + 1}`,
+        author: { title: `Author${i + 1}` }
+      }))
+      render(<E2NodeDisplay e2node={nodeshellE2Node} user={guestUser} bestEntries={bestEntries} />)
+      // Ads should appear after items 4 and 8
+      const ads = screen.getAllByTestId('in-content-ad')
+      expect(ads).toHaveLength(2)
+    })
+
+    it('does not show ad after last best entry item', () => {
+      const bestEntries = Array.from({ length: 4 }, (_, i) => ({
+        writeup_id: i + 1,
+        node_id: i + 100,
+        title: `Best Entry ${i + 1}`,
+        author: { title: `Author${i + 1}` }
+      }))
+      render(<E2NodeDisplay e2node={nodeshellE2Node} user={guestUser} bestEntries={bestEntries} />)
+      // With exactly 4 items, no ad should show
+      expect(screen.queryByTestId('in-content-ad')).not.toBeInTheDocument()
+    })
+
+    it('does not show guest nodeshell message for logged-in users', () => {
+      const loggedInUser = { node_id: 999, guest: false }
+      render(<E2NodeDisplay e2node={nodeshellE2Node} user={loggedInUser} />)
+      expect(screen.queryByText(/user-created topic/)).not.toBeInTheDocument()
+      expect(screen.getByText('There are no writeups for this node yet.')).toBeInTheDocument()
     })
   })
 })

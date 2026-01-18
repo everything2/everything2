@@ -5,7 +5,7 @@ import { useIsMobile } from '../../hooks/useMediaQuery'
 /**
  * UserSearchField - Inline user search input with dropdown suggestions
  */
-const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder, colors }) => {
+const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder }) => {
   const [inputValue, setInputValue] = useState(value || '')
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -132,89 +132,10 @@ const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder, col
     setShowSuggestions(false)
   }
 
-  const styles = {
-    container: {
-      position: 'relative',
-      flex: '1',
-      minWidth: '200px'
-    },
-    inputWrapper: {
-      position: 'relative',
-      display: 'flex',
-      alignItems: 'center'
-    },
-    icon: {
-      position: 'absolute',
-      left: 10,
-      color: colors?.secondary || '#507898',
-      fontSize: 14,
-      pointerEvents: 'none'
-    },
-    input: {
-      width: '100%',
-      padding: '8px 32px 8px 32px',
-      fontSize: 14,
-      border: `1px solid ${colors?.secondary || '#507898'}`,
-      borderRadius: 4,
-      boxSizing: 'border-box',
-      backgroundColor: '#fff'
-    },
-    loadingIndicator: {
-      position: 'absolute',
-      right: 32,
-      color: colors?.secondary || '#507898',
-      fontSize: 12
-    },
-    clearButton: {
-      position: 'absolute',
-      right: 8,
-      background: 'none',
-      border: 'none',
-      color: '#999',
-      cursor: 'pointer',
-      padding: 4,
-      fontSize: 12,
-      display: 'flex',
-      alignItems: 'center'
-    },
-    dropdown: {
-      position: 'absolute',
-      top: '100%',
-      left: 0,
-      right: 0,
-      backgroundColor: '#fff',
-      border: `1px solid ${colors?.secondary || '#507898'}`,
-      borderTop: 'none',
-      borderRadius: '0 0 4px 4px',
-      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-      maxHeight: 200,
-      overflowY: 'auto',
-      zIndex: 100
-    },
-    suggestionItem: {
-      padding: '10px 12px',
-      cursor: 'pointer',
-      fontSize: 14,
-      color: colors?.primary || '#38495e',
-      borderBottom: '1px solid #eee',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 8
-    },
-    suggestionItemSelected: {
-      backgroundColor: '#e8f4f8',
-      color: colors?.highlight || '#4060b0'
-    },
-    suggestionIcon: {
-      fontSize: 12,
-      color: colors?.secondary || '#507898'
-    }
-  }
-
   return (
-    <div ref={containerRef} style={styles.container}>
-      <div style={styles.inputWrapper}>
-        <FaUser style={styles.icon} />
+    <div ref={containerRef} className="cool-archive__user-search">
+      <div className="cool-archive__user-search-wrapper">
+        <FaUser className="cool-archive__user-search-icon" />
         <input
           type="text"
           id={id}
@@ -224,15 +145,15 @@ const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder, col
           onKeyDown={handleKeyDown}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           placeholder={placeholder}
-          style={styles.input}
+          className="cool-archive__user-search-input"
           autoComplete="off"
         />
-        {loading && <span style={styles.loadingIndicator}>...</span>}
+        {loading && <span className="cool-archive__user-search-loading">...</span>}
         {inputValue && !loading && (
           <button
             type="button"
             onClick={handleClear}
-            style={styles.clearButton}
+            className="cool-archive__user-search-clear"
             title="Clear"
           >
             <FaTimes />
@@ -241,18 +162,15 @@ const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder, col
 
         {/* Suggestions dropdown */}
         {showSuggestions && suggestions.length > 0 && (
-          <div style={styles.dropdown}>
+          <div className="cool-archive__user-search-dropdown">
             {suggestions.map((user, index) => (
               <div
                 key={user.node_id}
                 onClick={() => handleSelectUser(user)}
                 onMouseEnter={() => setSelectedIndex(index)}
-                style={{
-                  ...styles.suggestionItem,
-                  ...(index === selectedIndex ? styles.suggestionItemSelected : {})
-                }}
+                className={`cool-archive__user-search-item${index === selectedIndex ? ' cool-archive__user-search-item--selected' : ''}`}
               >
-                <FaUser style={styles.suggestionIcon} />
+                <FaUser className="cool-archive__user-search-item-icon" />
                 <span>{user.title}</span>
               </div>
             ))}
@@ -293,16 +211,6 @@ const CoolArchive = ({ data, user }) => {
   const [hasMore, setHasMore] = useState(true)
 
   const pageSize = 50
-
-  // Kernel Blue colors
-  const colors = {
-    primary: '#38495e',
-    secondary: '#507898',
-    highlight: '#4060b0',
-    accent: '#3bb5c3',
-    background: '#f8f9f9',
-    text: '#111111'
-  }
 
   // Sort options
   const sortOptions = [
@@ -389,155 +297,30 @@ const CoolArchive = ({ data, user }) => {
     }
   }
 
-  // Styles - responsive padding
-  const containerStyle = {
-    padding: isMobile ? '0' : '20px',
-    maxWidth: isMobile ? '100%' : '1200px',
-    margin: '0 auto'
-  }
-
-  const introStyle = {
-    color: colors.secondary,
-    lineHeight: '1.6',
-    marginTop: 0,
-    marginBottom: isMobile ? '12px' : '16px',
-    fontSize: isMobile ? '14px' : '16px'
-  }
-
-  const filterBoxStyle = {
-    backgroundColor: colors.background,
-    padding: isMobile ? '12px' : '20px',
-    borderRadius: isMobile ? '0' : '8px',
-    marginBottom: isMobile ? '12px' : '20px',
-    border: `1px solid ${colors.secondary}20`
-  }
-
-  const filterRowStyle = {
-    display: 'flex',
-    gap: isMobile ? '10px' : '15px',
-    alignItems: 'flex-end',
-    flexWrap: 'wrap',
-    marginBottom: '10px'
-  }
-
-  const filterGroupStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '5px',
-    flex: '1',
-    minWidth: isMobile ? '100%' : '200px'
-  }
-
-  const labelStyle = {
-    fontSize: '13px',
-    fontWeight: '600',
-    color: colors.primary
-  }
-
-  const selectStyle = {
-    padding: '8px 12px',
-    border: `1px solid ${colors.secondary}`,
-    borderRadius: '4px',
-    fontSize: '14px',
-    backgroundColor: '#fff',
-    color: colors.text,
-    cursor: 'pointer'
-  }
-
-  const buttonStyle = {
-    padding: '9px 20px',
-    backgroundColor: colors.highlight,
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s'
-  }
-
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    backgroundColor: '#fff',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    borderRadius: '8px',
-    overflow: 'hidden'
-  }
-
-  const thStyle = {
-    backgroundColor: colors.primary,
-    color: '#fff',
-    padding: '12px 15px',
-    textAlign: 'left',
-    fontSize: '14px',
-    fontWeight: '600'
-  }
-
-  const tdStyle = (isOdd) => ({
-    padding: '12px 15px',
-    borderBottom: '1px solid #eee',
-    fontSize: '14px',
-    backgroundColor: isOdd ? colors.background : '#fff'
-  })
-
-  const linkStyle = {
-    color: colors.highlight,
-    textDecoration: 'none',
-    fontWeight: '500'
-  }
-
-  const authorLinkStyle = {
-    color: colors.secondary,
-    textDecoration: 'none'
-  }
-
-  const loadMoreButtonStyle = {
-    ...buttonStyle,
-    width: '100%',
-    marginTop: '20px',
-    padding: '12px',
-    backgroundColor: loading ? '#999' : colors.accent,
-    cursor: loading ? 'wait' : 'pointer'
-  }
-
-  const errorStyle = {
-    padding: '15px',
-    backgroundColor: '#fff5f5',
-    border: '1px solid #feb2b2',
-    borderRadius: '4px',
-    color: '#c53030',
-    marginBottom: '20px'
-  }
-
-  const emptyStyle = {
-    padding: '40px',
-    textAlign: 'center',
-    color: colors.secondary,
-    fontSize: '16px'
-  }
+  // Container class based on mobile
+  const containerClass = `cool-archive${isMobile ? ' cool-archive--mobile' : ''}`
 
   return (
-    <div style={containerStyle}>
+    <div className={containerClass}>
       {/* Intro - no H1 since PageHeader already renders the title */}
-      <p style={introStyle}>
+      <p className="cool-archive__intro">
         Browse the complete archive of editor-selected content from Everything2's history.
         These are the writeups our editors have recognized as especially noteworthy.
       </p>
 
       {/* Filters */}
       <form onSubmit={handleSearch}>
-        <div style={filterBoxStyle}>
-          <div style={filterRowStyle}>
+        <div className="cool-archive__filters">
+          <div className="cool-archive__filter-row">
             {/* Sort by */}
-            <div style={filterGroupStyle}>
-              <label htmlFor="cool-archive-sort" style={labelStyle}>Order by:</label>
+            <div className="cool-archive__filter-group">
+              <label htmlFor="cool-archive-sort" className="cool-archive__label">Order by:</label>
               <select
                 id="cool-archive-sort"
                 name="sort"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                style={selectStyle}
+                className="cool-archive__select"
               >
                 {sortOptions.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -546,14 +329,14 @@ const CoolArchive = ({ data, user }) => {
             </div>
 
             {/* User action */}
-            <div style={{ ...filterGroupStyle, flex: '0 0 150px' }}>
-              <label htmlFor="cool-archive-action" style={labelStyle}>Action:</label>
+            <div className="cool-archive__filter-group cool-archive__filter-group--action">
+              <label htmlFor="cool-archive-action" className="cool-archive__label">Action:</label>
               <select
                 id="cool-archive-action"
                 name="action"
                 value={userAction}
                 onChange={(e) => setUserAction(e.target.value)}
-                style={selectStyle}
+                className="cool-archive__select"
               >
                 <option value="cooled">Cooled by</option>
                 <option value="written">Written by</option>
@@ -561,8 +344,8 @@ const CoolArchive = ({ data, user }) => {
             </div>
 
             {/* Username with search */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '1', minWidth: '200px' }}>
-              <label htmlFor="cool-archive-user" style={labelStyle}>User:</label>
+            <div className="cool-archive__filter-group">
+              <label htmlFor="cool-archive-user" className="cool-archive__label">User:</label>
               <UserSearchField
                 id="cool-archive-user"
                 name="user"
@@ -573,18 +356,17 @@ const CoolArchive = ({ data, user }) => {
                   setOffset(0)
                 }}
                 placeholder="Search for user..."
-                colors={colors}
               />
             </div>
 
             {/* Search button */}
-            <button type="submit" style={buttonStyle}>
+            <button type="submit" className="cool-archive__search-btn">
               Search
             </button>
           </div>
 
           {sortNeedsUser(sortBy) && (
-            <p style={{ fontSize: '12px', color: colors.secondary, marginTop: '10px', marginBottom: '0' }}>
+            <p className="cool-archive__note">
               <strong>Note:</strong> This sort option requires entering a username
             </p>
           )}
@@ -593,7 +375,7 @@ const CoolArchive = ({ data, user }) => {
 
       {/* Error message */}
       {error && (
-        <div style={errorStyle}>
+        <div className="cool-archive__error">
           {error}
         </div>
       )}
@@ -601,34 +383,34 @@ const CoolArchive = ({ data, user }) => {
       {/* Results table */}
       {writeups.length > 0 ? (
         <>
-          <table style={tableStyle}>
+          <table className="cool-archive__table">
             <thead>
               <tr>
-                <th style={thStyle}>Writeup</th>
-                <th style={{ ...thStyle, width: '200px' }}>Written by</th>
-                <th style={{ ...thStyle, width: '200px' }}>Cooled by</th>
+                <th className="cool-archive__th">Writeup</th>
+                <th className="cool-archive__th cool-archive__th--author">Written by</th>
+                <th className="cool-archive__th cool-archive__th--author">Cooled by</th>
               </tr>
             </thead>
             <tbody>
               {writeups.map((wu, idx) => (
                 <tr key={`${wu.writeup_id}-${wu.cooled_by_id || idx}`}>
-                  <td style={tdStyle(idx % 2 === 1)}>
-                    <a href={`/node/${wu.parent_node_id}`} style={linkStyle}>
+                  <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
+                    <a href={`/node/${wu.parent_node_id}`} className="cool-archive__writeup-link">
                       {wu.parent_title}
                     </a>
                     {wu.writeup_type && (
-                      <span style={{ fontSize: '12px', color: colors.secondary, marginLeft: '8px' }}>
+                      <span className="cool-archive__writeup-type">
                         ({wu.writeup_type})
                       </span>
                     )}
                   </td>
-                  <td style={tdStyle(idx % 2 === 1)}>
-                    <a href={`/user/${wu.author_name}`} style={authorLinkStyle}>
+                  <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
+                    <a href={`/user/${wu.author_name}`} className="cool-archive__author-link">
                       {wu.author_name}
                     </a>
                   </td>
-                  <td style={tdStyle(idx % 2 === 1)}>
-                    <a href={`/user/${wu.cooled_by_name}`} style={authorLinkStyle}>
+                  <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
+                    <a href={`/user/${wu.cooled_by_name}`} className="cool-archive__author-link">
                       {wu.cooled_by_name}
                     </a>
                   </td>
@@ -642,20 +424,20 @@ const CoolArchive = ({ data, user }) => {
             <button
               onClick={loadMore}
               disabled={loading}
-              style={loadMoreButtonStyle}
+              className="cool-archive__load-more"
             >
               {loading ? 'Loading...' : `Load Next ${pageSize} Writeups`}
             </button>
           )}
 
           {!hasMore && writeups.length > 0 && (
-            <p style={{ textAlign: 'center', marginTop: '20px', color: colors.secondary }}>
+            <p className="cool-archive__end-results">
               End of results
             </p>
           )}
         </>
       ) : !loading && !error && (
-        <div style={emptyStyle}>
+        <div className="cool-archive__empty">
           {sortNeedsUser(sortBy) && !searchUsername
             ? 'Enter a username to search'
             : 'No writeups found'}
@@ -664,7 +446,7 @@ const CoolArchive = ({ data, user }) => {
 
       {/* Loading indicator */}
       {loading && writeups.length === 0 && (
-        <div style={emptyStyle}>
+        <div className="cool-archive__empty">
           Loading...
         </div>
       )}

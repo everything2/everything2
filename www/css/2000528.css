@@ -15,6 +15,7 @@
   --e2-bg-nodelet: #F9F9F8;              /* Very light gray-tan */
   --e2-bg-header: #e8e8e0;               /* Light tan header (matches writeup sections) */
   --e2-bg-hover: #f0f0f0;                /* Light gray hover */
+  --e2-light-bg: #f5f5f2;                /* Light accent background */
   --e2-bg-sidebar: transparent;
 
   /* Text colors */
@@ -65,6 +66,58 @@
   --e2-bg-writeup-content: #fff;           /* White content */
   --e2-bg-writeup-footer: #e8e8e0;         /* Light gray-tan footer */
   --e2-border-dark: #5F5F5F;               /* Gray border */
+
+  /* Additional overrides to prevent Kernel Blue bleed-through */
+  --e2-bg-content: #fff;                   /* White content areas */
+  --e2-bg-oddrow: #F9F9F8;                 /* Very light gray alternating rows */
+  --e2-bg-table-header: #e8e8e0;           /* Light tan table headers */
+  --e2-bg-table-cell: #fff;                /* White table cells */
+  --e2-bg-scratchpad: #fff;                /* White scratchpad */
+  --e2-border-primary: #bbb;               /* Gray primary borders */
+  --e2-border-medium: #d3d3d3;             /* Light gray section dividers */
+  --e2-softlink-bg: #F9F9F8;               /* Light gray softlink background */
+  --e2-softlink-hover-bg: #f0f0f0;         /* Light gray hover */
+  --e2-text-nodelet-title: #F9F9F8;        /* Light text for nodelet titles */
+
+  /* Mobile navigation - neutral grays */
+  --e2-mobile-tab-bg: #5F5F5F;             /* Gray tab background */
+  --e2-mobile-tab-selected: #fff;          /* White selected tab */
+  --e2-mobile-tab-link: #fff;              /* White tab links */
+  --e2-mobile-tab-link-visited: #e0e0e0;   /* Light gray visited */
+  --e2-mobile-nav-bg: #fff;                /* White nav background */
+  --e2-mobile-nav-border: #d3d3d3;         /* Light gray border */
+  --e2-mobile-nav-icon: #5F5F5F;           /* Gray icons */
+  --e2-mobile-nav-icon-active: #203860;    /* Dark blue active */
+
+  /* Logo */
+  --e2-logo-text: #151500;                 /* Near black logo text */
+  --e2-logo-hover: #5F5F5F;                /* Gray hover */
+
+  /* Epicenter separator */
+  --e2-epicenter-separator: #bbb;          /* Gray separator */
+
+  /* Tabs */
+  --e2-tab-active-bg: #f0f0f0;             /* Light gray active tab */
+  --e2-tab-active-border: #203860;         /* Dark blue border */
+  --e2-tab-inactive-bg: transparent;
+
+  /* Cards/modals */
+  --e2-card-bg: #fff;
+  --e2-card-border: #d3d3d3;
+  --e2-modal-bg: #fff;
+  --e2-modal-header-border: #d3d3d3;
+
+  /* Input styling */
+  --e2-input-text: #151500;
+  --e2-input-border: #bbb;
+  --e2-input-focus-border: #203860;
+  --e2-input-placeholder: #888;
+  --e2-label-text: #151500;
+
+  /* Button variants */
+  --e2-btn-primary-border: #203860;
+  --e2-btn-primary-hover-bg: #1a2d4d;
+  --e2-btn-secondary-text: #151500;
 }
 
 /* ====================================================================
@@ -523,16 +576,21 @@ h3#creamofthecool_title {
   /* Inherits float: right from basesheet instead of text-align: right */
 }
 
+/* Page header padding inside mainbody box - bookwormier-specific */
+#pageheader {
+  padding: 10px 20px 0 20px;
+}
+
 .writeuppage .item {
   margin-bottom: 20px;
 }
 
 .writeuppage .contentheader {
-  padding: 5px;
+  padding: 5px 20px;
 }
 
 .writeuppage .item .content {
-  padding: 20px 70px 10px 70px;
+  padding: 20px 30px 10px 30px;
   overflow: auto;
 }
 
@@ -614,6 +672,7 @@ ul ul ul ul ul ul { list-style: square; }
 
 #homenodepicbox {
   float: left;
+  padding-left: 20px;
 }
 
 #homenodeheader {

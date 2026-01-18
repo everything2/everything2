@@ -27,48 +27,48 @@ These functions have zero external callers and can be safely deleted.
 
 | Function | Lines | Notes |
 |----------|-------|-------|
-| `linkStylesheet` | 76-112 | CSS is now served statically via asset_uri |
-| `metadescriptiontag` | 114-126 | Meta tags now in React shell |
-| `zenadheader` | 128-162 | Legacy zen template header - React replaced |
-| `displaydebatecomment` | 164-182 | Never externally called |
-| `displaydebatecommentcontent` | 184-237 | Never externally called |
-| `showdebate` | 239-288 | Debate display - migrated to React |
-| `closeform` | 290-300 | Legacy form helper - not used |
-| `displayNODE` | 302-339 | Legacy node display - React replaced |
-| `openform` | 341-370 | Legacy form helper - not used |
-| `parsetime` | 372-397 | Only in comments, never called |
-| `password_field` | 399-445 | Legacy form helper - not used |
-| `nodelet_meta_container` | 447-460 | Legacy nodelet wrapper - not used |
-| `searchform` | 462-484 | Search form - migrated to React |
+| ~~`linkStylesheet`~~ | ~~76-112~~ | ~~CSS is now served statically via asset_uri~~ **DELETED** |
+| ~~`metadescriptiontag`~~ | ~~114-126~~ | ~~Meta tags now in React shell~~ **DELETED** |
+| ~~`zenadheader`~~ | ~~128-162~~ | ~~Legacy zen template header - React replaced~~ **DELETED** |
+| ~~`displaydebatecomment`~~ | ~~164-182~~ | ~~Never externally called~~ **DELETED** |
+| ~~`displaydebatecommentcontent`~~ | ~~184-237~~ | ~~Never externally called~~ **DELETED** |
+| ~~`showdebate`~~ | ~~239-288~~ | ~~Debate display - migrated to React~~ **DELETED** |
+| ~~`closeform`~~ | ~~290-300~~ | ~~Legacy form helper - not used~~ **DELETED** |
+| ~~`displayNODE`~~ | ~~302-339~~ | ~~Legacy node display - React replaced~~ **DELETED** |
+| `openform` | 341-370 | Called by softlinks, firmlinks - **KEEP** |
+| ~~`parsetime`~~ | ~~372-397~~ | ~~Only in comments, never called~~ **DELETED** |
+| ~~`password_field`~~ | ~~399-445~~ | ~~Legacy form helper - not used~~ **DELETED** |
+| ~~`nodelet_meta_container`~~ | ~~447-460~~ | ~~Legacy nodelet wrapper - not used~~ **DELETED** |
+| ~~`searchform`~~ | ~~462-484~~ | ~~Search form - migrated to React~~ **DELETED** |
 | `setvar` | 486-504 | Legacy var setter - Settings API replaced |
 | `parselinks` | 506-518 | Only in comments, never called |
 | `show_content` | 587-771 | Major display function - React replaced |
-| `showcollabtext` | 802-831 | Collaboration text display - React replaced |
-| `showbookmarks` | 1044-1113 | Bookmarks display - React replaced |
+| ~~`showcollabtext`~~ | ~~802-831~~ | ~~Collaboration text display - React replaced~~ **DELETED** |
+| ~~`showbookmarks`~~ | ~~1044-1113~~ | ~~Bookmarks display - React replaced~~ **DELETED** |
 | `e2createnewnode` | 1115-1195 | Node creation form - React/API replaced |
-| `displayvars` | 1523-1558 | Debug display of vars - not used |
-| `node_menu` | 1735-1802 | Node menu display - React replaced |
-| `writeuphints` | 1922-2210 | Writeup hints - migrated to Controller |
-| `zenFooter` | 2212-2233 | Legacy zen footer - React replaced |
-| `borgcheck` | 2308-2334 | Only in comments, never called |
-| `uploaduserimage` | 2336-2453 | Image upload - migrated to API |
-| `createroom` | 2487-2503 | Room creation - API replaced |
-| `writeupssincelastyear` | 2630-2679 | Stats function - not used |
-| `showuserimage` | 2849-2870 | Image display - React replaced |
-| `customtextarea` | 3188-3229 | Legacy textarea helper - not used |
-| `nwuamount` | 3231-3279 | New writeup amount - not used |
-| `schemafoot` | 4362-4372 | Schema.org footer - not used |
-| `externalLinkDisplay` | 4699-4755 | External link display - not used |
-| `show_node_forward` | 4869-4891 | Node forward display - not used |
-| `editor_homenode_tools` | 4928-4972 | Editor tools - migrated to React |
-| `uploadAudio` | 5197-5263 | Audio upload - not used |
-| `checkInfected` | 5265-5296 | Infection check - not used |
-| `isInfected` | 5317-5331 | Infection check - not used |
-| `ip_lookup_tools` | 5333-5351 | IP tools display - not used |
+| ~~`displayvars`~~ | ~~1523-1558~~ | ~~Debug display of vars - not used~~ **DELETED** |
+| ~~`node_menu`~~ | ~~1735-1802~~ | ~~Node menu display - React replaced~~ **DELETED** |
+| ~~`writeuphints`~~ | ~~1922-2210~~ | ~~Writeup hints - migrated to Controller~~ **DELETED** |
+| ~~`zenFooter`~~ | ~~2212-2233~~ | ~~Legacy zen footer - React replaced~~ **DELETED** |
+| ~~`borgcheck`~~ | ~~2308-2334~~ | ~~Only in comments, never called~~ **DELETED** |
+| ~~`uploaduserimage`~~ | ~~2336-2453~~ | ~~Image upload - migrated to API~~ **DELETED** |
+| ~~`createroom`~~ | ~~2487-2503~~ | ~~Room creation - API replaced~~ **DELETED** |
+| ~~`writeupssincelastyear`~~ | ~~2630-2679~~ | ~~Stats function - not used~~ **DELETED** |
+| ~~`showuserimage`~~ | ~~2849-2870~~ | ~~Image display - React replaced~~ **DELETED** |
+| ~~`customtextarea`~~ | ~~3188-3229~~ | ~~Legacy textarea helper - not used~~ **DELETED** |
+| ~~`nwuamount`~~ | ~~3231-3279~~ | ~~New writeup amount - not used~~ **DELETED** |
+| ~~`schemafoot`~~ | ~~4362-4372~~ | ~~Schema.org footer - not used~~ **DELETED** |
+| ~~`externalLinkDisplay`~~ | ~~4699-4755~~ | ~~External link display - not used~~ **DELETED** |
+| ~~`show_node_forward`~~ | ~~4869-4891~~ | ~~Node forward display - not used~~ **DELETED** |
+| ~~`editor_homenode_tools`~~ | ~~4928-4972~~ | ~~Editor tools - migrated to React~~ **DELETED** |
+| ~~`uploadAudio`~~ | ~~5197-5263~~ | ~~Audio upload - not used~~ **DELETED** |
+| ~~`checkInfected`~~ | ~~5265-5296~~ | ~~Infection check - not used~~ **DELETED** |
+| ~~`isInfected`~~ | ~~5317-5331~~ | ~~Infection check - not used~~ **DELETED** |
+| ~~`ip_lookup_tools`~~ | ~~5333-5351~~ | ~~Migrated to React UserToolsModal~~ **DELETED** |
 | `check_blacklist` | 5457-5455 | Blacklist check - not used (see blacklistIP) |
 | `canseeNotification` | 5457-5481 | Only in nodepack, never called |
 | `lock_user_account` | 5483-5509 | Account locking - migrated to API |
-| `blacklistedIPs` | 5995-6222 | Blacklist display - not used |
+| ~~`blacklistedIPs`~~ | ~~5995-6222~~ | ~~Blacklist display - not used~~ **DELETED** |
 
 **Total Wave 1**: 42 functions
 
@@ -80,12 +80,12 @@ Delete these AFTER Wave 1 is complete.
 
 | Function | Lines | Called By (Dead) |
 |----------|-------|------------------|
-| `generatehex` | 2455-2485 | `uploaduserimage` |
-| `textarea` | 520-585 | `openform`, `customtextarea` |
-| `in_an_array` | 2831-2847 | `showUserGroups` |
-| `showUserGroups` | 2764-2829 | Internal only |
-| `displayUserText` | 3172-3186 | `formxml_user` |
-| `widget` | 5684-5736 | Internal form helpers |
+| ~~`generatehex`~~ | ~~2455-2485~~ | ~~`uploaduserimage`~~ **DELETED** |
+| ~~`textarea`~~ | ~~520-585~~ | ~~`openform`, `customtextarea`~~ **DELETED** |
+| ~~`in_an_array`~~ | ~~2831-2847~~ | ~~`showUserGroups`~~ **DELETED** |
+| ~~`showUserGroups`~~ | ~~2764-2829~~ | ~~Internal only~~ **DELETED** |
+| `displayUserText` | 3172-3186 | `formxml_user` - **KEEP (still called)** |
+| ~~`widget`~~ | ~~5684-5736~~ | ~~Internal form helpers~~ **DELETED** |
 
 **Total Wave 2**: 6 functions
 

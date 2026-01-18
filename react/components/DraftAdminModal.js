@@ -142,45 +142,41 @@ const DraftAdminModal = ({ draft, user, isOpen, onClose }) => {
   }
 
   return (
-    <div className="admin-modal-backdrop" onClick={handleBackdropClick} style={styles.backdrop}>
-      <div className="admin-modal" style={styles.modal}>
-        <div className="admin-modal-header" style={styles.header}>
-          <h3 style={styles.title}>Draft Tools</h3>
-          <button onClick={handleClose} style={styles.closeButton}>&times;</button>
+    <div className="nodelet-modal-overlay" onClick={handleBackdropClick}>
+      <div className="modal-compact">
+        <div className="modal-compact__header">
+          <h3 className="modal-compact__title">Draft Tools</h3>
+          <button onClick={handleClose} className="modal-compact__close">&times;</button>
         </div>
 
-        <div className="admin-modal-content" style={styles.content}>
+        <div className="modal-compact__content">
           {/* Status message */}
           {actionStatus && (
-            <div style={{
-              ...styles.status,
-              backgroundColor: actionStatus.type === 'error' ? '#fee' : '#efe',
-              color: actionStatus.type === 'error' ? '#c00' : '#060'
-            }}>
+            <div className={`modal-compact__status modal-compact__status--${actionStatus.type}`}>
               {actionStatus.message}
             </div>
           )}
 
           {/* Draft info */}
-          <div style={styles.info}>
+          <div className="modal-compact__info">
             <strong>{draft.title}</strong>
             {draft.author && (
               <span> by <LinkNode type="user" title={draft.author.title} /></span>
             )}
-            <div style={styles.statusBadge}>
+            <div className="modal-compact__info-badge">
               Status: {draft.publication_status}
             </div>
           </div>
 
           {/* Republish section - only for removed drafts */}
           {canRepublish && (
-            <div style={styles.section}>
-              <h4 style={styles.sectionTitle}>Republish Writeup</h4>
+            <div className="modal-compact__section">
+              <h4 className="modal-compact__section-title">Republish Writeup</h4>
 
               {/* Info message */}
-              <div style={styles.infoBox}>
+              <div className="modal-compact__info-box">
                 This will republish the writeup with:
-                <ul style={{ margin: '5px 0 0 0', paddingLeft: '20px' }}>
+                <ul>
                   <li>Hidden from New Writeups nodelet</li>
                   <li>Reputation and C!s reset to zero</li>
                   <li>Original publication date preserved</li>
@@ -188,8 +184,8 @@ const DraftAdminModal = ({ draft, user, isOpen, onClose }) => {
               </div>
 
               {/* E2node title input */}
-              <div style={{ marginBottom: '10px' }}>
-                <label style={styles.label}>E2node Title</label>
+              <div className="modal-compact__form-group">
+                <label className="modal-compact__label">E2node Title</label>
                 <input
                   type="text"
                   value={e2nodeTitle}
@@ -198,23 +194,23 @@ const DraftAdminModal = ({ draft, user, isOpen, onClose }) => {
                     setActionStatus(null)
                   }}
                   placeholder="Enter the e2node title..."
-                  style={styles.input}
+                  className="modal-compact__input"
                   disabled={loading}
                 />
                 {draft?.parent_e2node && (
-                  <p style={styles.helpText}>
+                  <p className="modal-compact__help">
                     Original e2node: {draft.parent_e2node.title}
                   </p>
                 )}
               </div>
 
               {/* Writeup type selector */}
-              <div style={{ marginBottom: '10px' }}>
-                <label style={styles.label}>Writeup Type</label>
+              <div className="modal-compact__form-group">
+                <label className="modal-compact__label">Writeup Type</label>
                 <select
                   value={selectedWriteuptypeId || ''}
                   onChange={(e) => setSelectedWriteuptypeId(Number(e.target.value))}
-                  style={styles.select}
+                  className="modal-compact__select"
                   disabled={loading}
                 >
                   {writeuptypes.length > 0 ? (
@@ -232,10 +228,7 @@ const DraftAdminModal = ({ draft, user, isOpen, onClose }) => {
               <button
                 onClick={handleRepublish}
                 disabled={loading || !e2nodeTitle.trim()}
-                style={{
-                  ...styles.actionButton,
-                  ...(loading || !e2nodeTitle.trim() ? styles.buttonDisabled : {})
-                }}
+                className="modal-compact__action-btn"
               >
                 {loading ? 'Republishing...' : 'Republish writeup'}
               </button>
@@ -244,147 +237,14 @@ const DraftAdminModal = ({ draft, user, isOpen, onClose }) => {
 
           {/* No actions available message */}
           {!canRepublish && (
-            <div style={styles.helpText}>
+            <p className="modal-compact__help">
               No admin actions available for this draft.
-            </div>
+            </p>
           )}
         </div>
       </div>
     </div>
   )
-}
-
-// Styles matching AdminModal (Kernel Blue theme)
-const styles = {
-  backdrop: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000
-  },
-  modal: {
-    backgroundColor: '#fff',
-    border: '1px solid #38495e',
-    maxWidth: '400px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflow: 'auto',
-    fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif',
-    fontSize: '12px'
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '5px 10px',
-    backgroundColor: '#38495e',
-    color: '#f9fafa'
-  },
-  title: {
-    margin: 0,
-    fontSize: '13px',
-    fontWeight: 'bold'
-  },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    fontSize: '18px',
-    cursor: 'pointer',
-    color: '#f9fafa',
-    padding: '0 4px',
-    lineHeight: 1
-  },
-  content: {
-    padding: '10px'
-  },
-  status: {
-    padding: '5px 8px',
-    marginBottom: '10px',
-    fontSize: '11px',
-    border: '1px solid'
-  },
-  info: {
-    marginBottom: '10px',
-    paddingBottom: '10px',
-    borderBottom: '1px dotted #333'
-  },
-  statusBadge: {
-    marginTop: '4px',
-    fontSize: '11px',
-    color: '#507898'
-  },
-  section: {
-    marginBottom: '12px'
-  },
-  sectionTitle: {
-    fontSize: '12px',
-    fontWeight: 'bold',
-    color: '#111',
-    marginBottom: '6px',
-    marginTop: 0
-  },
-  infoBox: {
-    padding: '8px',
-    marginBottom: '10px',
-    backgroundColor: '#e7f3ff',
-    border: '1px solid #b3d9ff',
-    borderRadius: '4px',
-    color: '#004085',
-    fontSize: '11px'
-  },
-  label: {
-    display: 'block',
-    marginBottom: '4px',
-    fontWeight: '500',
-    fontSize: '11px'
-  },
-  input: {
-    width: '100%',
-    padding: '6px',
-    border: '1px solid #d3d3d3',
-    fontSize: '12px',
-    boxSizing: 'border-box',
-    fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif'
-  },
-  select: {
-    width: '100%',
-    padding: '6px',
-    border: '1px solid #d3d3d3',
-    fontSize: '12px',
-    backgroundColor: '#fff',
-    cursor: 'pointer',
-    boxSizing: 'border-box'
-  },
-  actionButton: {
-    display: 'block',
-    width: '100%',
-    padding: '6px 8px',
-    marginBottom: '4px',
-    border: '1px solid #d3d3d3',
-    backgroundColor: '#f8f9f9',
-    cursor: 'pointer',
-    fontSize: '12px',
-    textAlign: 'center',
-    color: '#4060b0'
-  },
-  buttonDisabled: {
-    backgroundColor: '#f0f0f0',
-    color: '#999',
-    borderColor: '#ccc',
-    cursor: 'not-allowed',
-    opacity: 0.6
-  },
-  helpText: {
-    fontSize: '11px',
-    color: '#507898',
-    margin: '4px 0 0 0'
-  }
 }
 
 export default DraftAdminModal

@@ -177,6 +177,40 @@
   font-size: 0.85em;
 }
 
+.user-info-panel .ip-address {
+  font-size: 1.1em;
+  font-weight: 600;
+  font-family: inherit;
+  color: #38495e;
+}
+
+.user-info-panel .ip-lookup-tools {
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+.user-info-panel .ip-lookup-tools a {
+  color: #4060b0;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.user-info-panel .ip-lookup-tools a:hover {
+  text-decoration: underline;
+}
+
+/* Make IP address and browser display more prominent */
+.user-info-panel .info-list dd code {
+  font-size: 1em !important;
+  padding: 3px 8px !important;
+  background: #f4f4f4;
+  border-radius: 3px;
+}
+
+.user-info-panel .info-list code.user-agent {
+  font-size: 0.95em !important;
+}
+
 /* Status badges */
 .user-info-panel .status-active {
   color: #28a745;

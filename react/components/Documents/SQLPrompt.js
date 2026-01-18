@@ -1,54 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 export default function SQLPrompt({ data }) {
-  const [query, setQuery] = useState(data.query || '');
-  const [formatStyle, setFormatStyle] = useState(data.formatStyle || '0');
-  const [hideResults, setHideResults] = useState(data.hideResults || false);
+  const [query, setQuery] = useState(data.query || '')
+  const [formatStyle, setFormatStyle] = useState(data.formatStyle || '0')
+  const [hideResults, setHideResults] = useState(data.hideResults || false)
 
   // Handle unauthorized access
   if (data.error === 'unauthorized') {
     return (
-      <div style={{ padding: '20px', color: '#cc0000' }}>
+      <div className="sql-prompt__denied">
         <h2>Access Denied</h2>
         <p>{data.message}</p>
       </div>
-    );
+    )
   }
 
-  const results = data.results;
+  const results = data.results
 
   // Helper to render cell value based on format style
   const renderCellValue = (cell) => {
-    const value = cell?.value;
-    const isNull = cell?.is_null;
-    const isNodeId = cell?.is_node_id;
+    const value = cell?.value
+    const isNull = cell?.is_null
 
-    if (isNull) return 'NULL';
-    if (value === '') return '';
-    if (isNodeId) return value;
-    return value;
-  };
+    if (isNull) return 'NULL'
+    if (value === '') return ''
+    return value
+  }
 
   // Render results in textarea format (format style 2)
   const renderTextareaFormat = () => {
-    if (!results.rows || results.rows.length === 0) return '';
+    if (!results.rows || results.rows.length === 0) return ''
 
-    let text = '';
+    let text = ''
     // Header row
-    text += results.columns.join('\t') + '\n';
+    text += results.columns.join('\t') + '\n'
 
     // Data rows
     results.rows.forEach((row) => {
-      text += results.columns.map(col => renderCellValue(row[col])).join('\t') + '\n';
-    });
+      text += results.columns.map(col => renderCellValue(row[col])).join('\t') + '\n'
+    })
 
-    return text;
-  };
+    return text
+  }
+
+  const tableClass = formatStyle === '1'
+    ? 'sql-prompt__table sql-prompt__table--full-width'
+    : 'sql-prompt__table'
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'monospace' }}>
-      <h1>SQL Prompt</h1>
-      <p style={{ color: '#666', fontStyle: 'italic' }}>
+    <div className="sql-prompt">
+      <h1 className="sql-prompt__title">SQL Prompt</h1>
+      <p className="sql-prompt__subtitle">
         Restricted administrative interface - Use with extreme caution
       </p>
 
@@ -57,8 +59,8 @@ export default function SQLPrompt({ data }) {
         <input type="hidden" name="displaytype" value="" />
         <input type="hidden" name="sexisgood" value="1" />
 
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+        <div className="sql-prompt__form-group">
+          <label className="sql-prompt__label">
             SQL Query:
           </label>
           <textarea
@@ -67,26 +69,19 @@ export default function SQLPrompt({ data }) {
             onChange={(e) => setQuery(e.target.value)}
             rows={5}
             cols={80}
-            style={{
-              width: '100%',
-              fontFamily: 'monospace',
-              fontSize: '14px',
-              padding: '8px',
-              border: '1px solid #ccc',
-              borderRadius: '4px'
-            }}
+            className="sql-prompt__textarea"
             placeholder="Enter SQL query..."
           />
         </div>
 
-        <div style={{ marginBottom: '15px', display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="sql-prompt__controls">
           <div>
-            <label style={{ marginRight: '8px' }}>Display format:</label>
+            <label>Display format: </label>
             <select
               name="sqlprompt_wrap"
               value={formatStyle}
               onChange={(e) => setFormatStyle(e.target.value)}
-              style={{ padding: '4px 8px' }}
+              className="sql-prompt__select"
             >
               <option value="0">Table view</option>
               <option value="1">Variable width table</option>
@@ -108,15 +103,7 @@ export default function SQLPrompt({ data }) {
           <button
             type="submit"
             disabled={!query.trim()}
-            style={{
-              padding: '6px 16px',
-              backgroundColor: query.trim() ? '#4060b0' : '#999',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: query.trim() ? 'pointer' : 'not-allowed',
-              fontWeight: 'bold'
-            }}
+            className="sql-prompt__submit"
           >
             Execute
           </button>
@@ -125,24 +112,18 @@ export default function SQLPrompt({ data }) {
 
       {/* Display Results */}
       {results && (
-        <div style={{ marginTop: '30px' }}>
+        <div className="sql-prompt__results">
           {results.error ? (
-            <div style={{
-              padding: '15px',
-              backgroundColor: '#ffe6e6',
-              border: '2px solid #cc0000',
-              borderRadius: '4px',
-              color: '#cc0000'
-            }}>
-              <h3 style={{ marginTop: 0 }}>Error ({results.error_type})</h3>
-              <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{results.message}</pre>
-              <p style={{ marginBottom: 0, marginTop: '10px', fontSize: '12px' }}>
+            <div className="sql-prompt__error">
+              <h3>Error ({results.error_type})</h3>
+              <pre>{results.message}</pre>
+              <p className="sql-prompt__fetched">
                 Elapsed time: {results.elapsed_time} seconds
               </p>
             </div>
           ) : (
             <>
-              <div style={{ marginBottom: '10px', fontSize: '14px', color: '#666' }}>
+              <div className="sql-prompt__meta">
                 <strong>Elapsed time:</strong> {results.elapsed_time} seconds
                 {results.affected_rows > 0 && (
                   <span style={{ marginLeft: '20px' }}>
@@ -159,42 +140,27 @@ export default function SQLPrompt({ data }) {
                       readOnly
                       value={renderTextareaFormat()}
                       rows={Math.min(30, results.rows.length + 2)}
-                      style={{
-                        width: '100%',
-                        fontFamily: 'monospace',
-                        fontSize: '12px',
-                        padding: '8px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px'
-                      }}
+                      className="sql-prompt__textarea"
                     />
                     {results.rows_fetched > 0 && (
-                      <p style={{ marginTop: '10px', fontSize: '13px', color: '#666' }}>
+                      <p className="sql-prompt__fetched">
                         Fetched {results.rows_fetched} row{results.rows_fetched > 1 ? 's' : ''}
                       </p>
                     )}
                   </div>
                 ) : (
                   /* Format Styles 0, 1: Table view */
-                  <div style={{ overflowX: 'auto' }}>
+                  <div className="sql-prompt__table-wrapper">
                     <table
+                      className={tableClass}
                       border="1"
                       cellPadding="8"
                       cellSpacing="0"
-                      style={{
-                        borderCollapse: 'collapse',
-                        fontSize: '13px',
-                        width: formatStyle === '1' ? '100%' : 'auto'
-                      }}
                     >
                       <thead>
-                        <tr style={{ backgroundColor: '#CC99CC' }}>
+                        <tr>
                           {results.columns.map((col, idx) => (
-                            <td
-                              key={idx}
-                              align="center"
-                              style={{ fontWeight: 'bold', padding: '8px' }}
-                            >
+                            <td key={idx} align="center">
                               {col}
                             </td>
                           ))}
@@ -202,17 +168,20 @@ export default function SQLPrompt({ data }) {
                       </thead>
                       <tbody>
                         {results.rows.map((row, rowIdx) => (
-                          <tr key={rowIdx} style={{ backgroundColor: rowIdx % 2 === 0 ? '#f9f9f9' : 'white' }}>
+                          <tr
+                            key={rowIdx}
+                            className={rowIdx % 2 === 0 ? 'sql-prompt__row--even' : 'sql-prompt__row--odd'}
+                          >
                             {results.columns.map((col, colIdx) => {
-                              const cell = row[col];
-                              const value = cell?.value;
-                              const isNull = cell?.is_null;
-                              const isNodeId = cell?.is_node_id;
+                              const cell = row[col]
+                              const value = cell?.value
+                              const isNull = cell?.is_null
+                              const isNodeId = cell?.is_node_id
 
                               return (
-                                <td key={colIdx} style={{ padding: '6px' }}>
+                                <td key={colIdx}>
                                   {isNull ? (
-                                    <em style={{ color: '#999' }}>NULL</em>
+                                    <em className="sql-prompt__null">NULL</em>
                                   ) : value === '' ? (
                                     <span>&nbsp;</span>
                                   ) : isNodeId ? (
@@ -223,31 +192,25 @@ export default function SQLPrompt({ data }) {
                                     <code>{value}</code>
                                   )}
                                 </td>
-                              );
+                              )
                             })}
                           </tr>
                         ))}
                       </tbody>
                     </table>
                     {results.rows_fetched > 0 && (
-                      <p style={{ marginTop: '10px', fontSize: '13px', color: '#666' }}>
+                      <p className="sql-prompt__fetched">
                         Fetched {results.rows_fetched} row{results.rows_fetched > 1 ? 's' : ''}
                       </p>
                     )}
                   </div>
                 )
               ) : hideResults ? (
-                <p style={{ fontStyle: 'italic', color: '#666' }}>
+                <p className="sql-prompt__hidden">
                   Results hidden
                 </p>
               ) : (
-                <div style={{
-                  padding: '20px',
-                  textAlign: 'center',
-                  color: '#666',
-                  backgroundColor: '#f5f5f5',
-                  borderRadius: '4px'
-                }}>
+                <div className="sql-prompt__empty">
                   <em>No results found</em>
                 </div>
               )}
@@ -256,18 +219,11 @@ export default function SQLPrompt({ data }) {
         </div>
       )}
 
-      <div style={{
-        marginTop: '40px',
-        padding: '15px',
-        backgroundColor: '#fff3cd',
-        border: '1px solid #ffc107',
-        borderRadius: '4px',
-        fontSize: '13px'
-      }}>
-        <strong>⚠️ Warning:</strong> This interface provides direct SQL access to the database.
+      <div className="sql-prompt__warning">
+        <strong>Warning:</strong> This interface provides direct SQL access to the database.
         Queries can modify or delete data. Always test read-only queries first and use transactions
         for write operations when possible.
       </div>
     </div>
-  );
+  )
 }

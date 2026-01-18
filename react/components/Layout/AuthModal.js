@@ -39,35 +39,35 @@ const AuthModal = ({ onClose, initialTab = 'login', useRecaptcha = false, recapt
     setSignupSuccess({ username, linkValid, email })
   }
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose()
+    }
+  }
+
   return (
-    <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={e => e.stopPropagation()}>
+    <div className="nodelet-modal-overlay" onClick={handleBackdropClick}>
+      <div className="auth-modal" onClick={e => e.stopPropagation()}>
         <button
           type="button"
-          style={styles.closeButton}
+          className="auth-modal__close"
           onClick={onClose}
           aria-label="Close"
         >
           <FaTimes />
         </button>
 
-        <div style={styles.tabs}>
+        <div className="auth-modal__tabs">
           <button
             type="button"
-            style={{
-              ...styles.tab,
-              ...(activeTab === 'login' ? styles.tabActive : {})
-            }}
+            className={`auth-modal__tab${activeTab === 'login' ? ' auth-modal__tab--active' : ''}`}
             onClick={() => setActiveTab('login')}
           >
             Log In
           </button>
           <button
             type="button"
-            style={{
-              ...styles.tab,
-              ...(activeTab === 'signup' ? styles.tabActive : {})
-            }}
+            className={`auth-modal__tab${activeTab === 'signup' ? ' auth-modal__tab--active' : ''}`}
             onClick={() => setActiveTab('signup')}
           >
             Sign Up
@@ -75,12 +75,12 @@ const AuthModal = ({ onClose, initialTab = 'login', useRecaptcha = false, recapt
         </div>
 
         {signupSuccess ? (
-          <div style={styles.successMessage}>
-            <h3 style={{ margin: '0 0 12px 0', color: '#38495e' }}>Welcome, {signupSuccess.username}!</h3>
-            <p style={{ margin: '0 0 8px 0' }}>
+          <div className="auth-modal__success">
+            <h3>Welcome, {signupSuccess.username}!</h3>
+            <p>
               Your account has been created. Check your email ({signupSuccess.email}) for an activation link.
             </p>
-            <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>
+            <p>
               The link will expire in {signupSuccess.linkValid} days.
             </p>
           </div>
@@ -98,69 +98,6 @@ const AuthModal = ({ onClose, initialTab = 'login', useRecaptcha = false, recapt
       </div>
     </div>
   )
-}
-
-const styles = {
-  overlay: {
-    position: 'fixed',
-    inset: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    zIndex: 1002,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '20px'
-  },
-  modal: {
-    backgroundColor: 'white',
-    width: '100%',
-    maxWidth: '400px',
-    borderRadius: '12px',
-    padding: '24px',
-    position: 'relative'
-  },
-  closeButton: {
-    position: 'absolute',
-    top: '12px',
-    right: '12px',
-    background: 'none',
-    border: 'none',
-    color: '#507898',
-    fontSize: '20px',
-    cursor: 'pointer',
-    padding: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  tabs: {
-    display: 'flex',
-    marginBottom: '20px',
-    borderBottom: '2px solid #e0e0e0'
-  },
-  tab: {
-    flex: 1,
-    background: 'none',
-    border: 'none',
-    padding: '12px',
-    fontSize: '16px',
-    fontWeight: 500,
-    color: '#507898',
-    cursor: 'pointer',
-    borderBottom: '2px solid transparent',
-    marginBottom: '-2px'
-  },
-  tabActive: {
-    color: '#4060b0',
-    borderBottom: '2px solid #4060b0'
-  },
-  successMessage: {
-    backgroundColor: '#e8f5e9',
-    border: '1px solid #a5d6a7',
-    borderRadius: '8px',
-    padding: '16px',
-    textAlign: 'center'
-  }
 }
 
 export default AuthModal

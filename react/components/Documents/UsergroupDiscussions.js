@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
@@ -31,8 +31,8 @@ const UsergroupDiscussions = ({ data }) => {
 
   if (is_guest) {
     return (
-      <div style={styles.container}>
-        <p style={styles.seeAlso}>
+      <div className="ug-discussions">
+        <p className="ug-discussions__see-also">
           See also <LinkNode title="usergroup message archive" />
         </p>
         <p>{message}</p>
@@ -42,8 +42,8 @@ const UsergroupDiscussions = ({ data }) => {
 
   if (no_usergroups) {
     return (
-      <div style={styles.container}>
-        <p style={styles.seeAlso}>
+      <div className="ug-discussions">
+        <p className="ug-discussions__see-also">
           See also <LinkNode title="usergroup message archive" />
         </p>
         <p>{message}</p>
@@ -53,8 +53,8 @@ const UsergroupDiscussions = ({ data }) => {
 
   if (access_denied) {
     return (
-      <div style={styles.container}>
-        <p style={styles.seeAlso}>
+      <div className="ug-discussions">
+        <p className="ug-discussions__see-also">
           See also <LinkNode title="usergroup message archive" />
         </p>
         <UsergroupSelector
@@ -62,7 +62,7 @@ const UsergroupDiscussions = ({ data }) => {
           selectedUsergroup={selected_usergroup}
           nodeId={node_id}
         />
-        <p style={styles.error}>{message}</p>
+        <p className="ug-discussions__error">{message}</p>
       </div>
     )
   }
@@ -71,8 +71,8 @@ const UsergroupDiscussions = ({ data }) => {
   const hasPrev = offset > 0
 
   return (
-    <div style={styles.container}>
-      <p style={styles.seeAlso}>
+    <div className="ug-discussions">
+      <p className="ug-discussions__see-also">
         See also <LinkNode title="usergroup message archive" />
       </p>
 
@@ -83,58 +83,58 @@ const UsergroupDiscussions = ({ data }) => {
       />
 
       {discussions.length === 0 ? (
-        <p style={styles.noDiscussions}>There are no discussions!</p>
+        <p className="ug-discussions__no-discussions">There are no discussions!</p>
       ) : (
         <>
-          <table style={styles.table}>
+          <table className="ug-discussions__table">
             <thead>
-              <tr style={styles.headerRow}>
-                <th style={styles.th} colSpan="2">title</th>
-                <th style={styles.th}>usergroup</th>
-                <th style={styles.th}>author</th>
-                <th style={styles.th}>replies</th>
-                <th style={styles.th}>new</th>
-                <th style={styles.th}>last updated</th>
+              <tr className="ug-discussions__header-row">
+                <th className="ug-discussions__th" colSpan="2">title</th>
+                <th className="ug-discussions__th">usergroup</th>
+                <th className="ug-discussions__th">author</th>
+                <th className="ug-discussions__th">replies</th>
+                <th className="ug-discussions__th">new</th>
+                <th className="ug-discussions__th">last updated</th>
               </tr>
             </thead>
             <tbody>
               {discussions.map((disc) => (
                 <tr key={disc.node_id}>
-                  <td style={styles.td}>
+                  <td className="ug-discussions__td">
                     <LinkNode nodeId={disc.node_id} title={disc.title} />
                   </td>
-                  <td style={styles.tdSmall}>
+                  <td className="ug-discussions__td--small">
                     (<a
                       href={`?node_id=${disc.node_id}&displaytype=compact`}
-                      style={styles.link}
+                      className="ug-discussions__link"
                     >
                       compact
                     </a>)
                   </td>
-                  <td style={styles.tdSmall}>
+                  <td className="ug-discussions__td--small">
                     <LinkNode nodeId={disc.usergroup_id} title={disc.usergroup_title} />
                   </td>
-                  <td style={styles.td}>
+                  <td className="ug-discussions__td">
                     <LinkNode nodeId={disc.author_id} title={disc.author_title} />
                   </td>
-                  <td style={styles.td}>{disc.reply_count}</td>
-                  <td style={styles.td}>{disc.unread ? '\u00D7' : ''}</td>
-                  <td style={styles.td}>{disc.last_updated}</td>
+                  <td className="ug-discussions__td">{disc.reply_count}</td>
+                  <td className="ug-discussions__td">{disc.unread ? '\u00D7' : ''}</td>
+                  <td className="ug-discussions__td">{disc.last_updated}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <p style={styles.totalCount}>
+          <p className="ug-discussions__total-count">
             There are {total_discussions} discussions total
           </p>
 
           {(hasPrev || hasMore) && (
-            <div style={styles.pagination}>
+            <div className="ug-discussions__pagination">
               {hasPrev && (
                 <a
                   href={`?node_id=${node_id}&show_ug=${selected_usergroup}&offset=${offset - limit}`}
-                  style={styles.link}
+                  className="ug-discussions__link"
                 >
                   prev {offset - limit + 1} &ndash; {offset}
                 </a>
@@ -145,7 +145,7 @@ const UsergroupDiscussions = ({ data }) => {
               {hasMore && (
                 <a
                   href={`?node_id=${node_id}&show_ug=${selected_usergroup}&offset=${offset + limit}`}
-                  style={styles.link}
+                  className="ug-discussions__link"
                 >
                   next {offset + limit + 1} &ndash; {Math.min(offset + 2 * limit, total_discussions)}
                 </a>
@@ -164,30 +164,24 @@ const UsergroupDiscussions = ({ data }) => {
 }
 
 const UsergroupSelector = ({ usergroups, selectedUsergroup, nodeId }) => (
-  <div style={styles.selector}>
+  <div className="ug-discussions__selector">
     <p>Choose the usergroup to filter by:</p>
-    <div style={styles.usergroupGrid}>
+    <div className="ug-discussions__usergroup-grid">
       {usergroups.map((ug) => (
         <a
           key={ug.node_id}
           href={`?node_id=${nodeId}&show_ug=${ug.node_id}`}
-          style={{
-            ...styles.usergroupLink,
-            fontWeight: selectedUsergroup === ug.node_id ? 'bold' : 'normal'
-          }}
+          className={`ug-discussions__usergroup-link${selectedUsergroup === ug.node_id ? ' ug-discussions__usergroup-link--active' : ''}`}
         >
           {ug.title}
         </a>
       ))}
     </div>
-    <p style={styles.showAll}>
+    <p className="ug-discussions__show-all">
       Or{' '}
       <a
         href={`?node_id=${nodeId}&show_ug=0`}
-        style={{
-          ...styles.link,
-          fontWeight: selectedUsergroup === 0 ? 'bold' : 'normal'
-        }}
+        className={`ug-discussions__link${selectedUsergroup === 0 ? ' ug-discussions__link--active' : ''}`}
       >
         show discussions from all usergroups.
       </a>
@@ -338,48 +332,48 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
   }
 
   return (
-    <div style={styles.newDiscussion}>
-      <hr style={styles.hr} />
+    <div className="ug-discussions__new-discussion">
+      <hr className="ug-discussions__hr" />
 
-      <div style={styles.formHeader}>
-        <FaComments style={{ color: '#38495e', marginRight: 8, fontSize: 20 }} />
-        <h3 style={styles.formTitle}>Start a New Discussion</h3>
+      <div className="ug-discussions__form-header">
+        <FaComments className="ug-discussions__form-header-icon" />
+        <h3 className="ug-discussions__form-title">Start a New Discussion</h3>
       </div>
 
       {/* Messages */}
       {error && (
-        <div style={styles.errorMessage}>
+        <div className="ug-discussions__error-message">
           {error}
         </div>
       )}
       {success && (
-        <div style={styles.successMessage}>
+        <div className="ug-discussions__success-message">
           {success}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         {/* Title */}
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Discussion Title</label>
+        <div className="ug-discussions__form-group">
+          <label className="ug-discussions__label">Discussion Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={64}
-            style={styles.titleInput}
+            className="ug-discussions__title-input"
             placeholder="Enter a title for your discussion..."
             disabled={saving}
           />
         </div>
 
         {/* Usergroup selection */}
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Usergroup</label>
+        <div className="ug-discussions__form-group">
+          <label className="ug-discussions__label">Usergroup</label>
           <select
             value={usergroup}
             onChange={(e) => setUsergroup(e.target.value)}
-            style={styles.select}
+            className="ug-discussions__select"
             disabled={saving}
           >
             {usergroups.map((ug) => (
@@ -391,24 +385,24 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
         </div>
 
         {/* Announce checkbox */}
-        <div style={styles.formGroup}>
-          <label style={styles.checkboxLabel}>
+        <div className="ug-discussions__form-group">
+          <label className="ug-discussions__checkbox-label">
             <input
               type="checkbox"
               checked={announce}
               onChange={(e) => setAnnounce(e.target.checked)}
               disabled={saving}
-              style={styles.checkbox}
+              className="ug-discussions__checkbox"
             />
-            <FaBullhorn style={{ marginRight: 6, color: '#507898' }} />
+            <FaBullhorn className="ug-discussions__announce-icon" />
             Announce new discussion to usergroup
           </label>
         </div>
 
         {/* Content editor with Rich/HTML toggle */}
-        <div style={styles.formGroup}>
-          <div style={styles.editorHeader}>
-            <label style={styles.label}>First Post</label>
+        <div className="ug-discussions__form-group">
+          <div className="ug-discussions__editor-header">
+            <label className="ug-discussions__label">First Post</label>
             <EditorModeToggle
               mode={editorMode}
               onToggle={handleModeToggle}
@@ -417,9 +411,9 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
           </div>
 
           {editorMode === 'rich' ? (
-            <div style={styles.editorContainer}>
+            <div className="ug-discussions__editor-container">
               <MenuBar editor={editor} />
-              <div className="e2-editor-wrapper" style={{ padding: '12px', minHeight: 200 }}>
+              <div className="e2-editor-wrapper ug-discussions__editor-wrapper">
                 <EditorContent editor={editor} />
               </div>
             </div>
@@ -429,7 +423,7 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
               onChange={handleHtmlChange}
               placeholder="Enter HTML content here..."
               aria-label="Content (HTML)"
-              style={styles.htmlTextarea}
+              className="ug-discussions__html-textarea"
               spellCheck={false}
               disabled={saving}
             />
@@ -440,20 +434,16 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
         <button
           type="submit"
           disabled={saving}
-          style={{
-            ...styles.button,
-            opacity: saving ? 0.6 : 1,
-            cursor: saving ? 'not-allowed' : 'pointer'
-          }}
+          className="ug-discussions__submit-btn"
         >
           {saving ? (
             <>
-              <FaSpinner className="fa-spin" style={{ marginRight: 8 }} />
+              <FaSpinner className="fa-spin ug-discussions__submit-btn-icon" />
               Creating...
             </>
           ) : (
             <>
-              <FaComments style={{ marginRight: 8 }} />
+              <FaComments className="ug-discussions__submit-btn-icon" />
               Start New Discussion
             </>
           )}
@@ -461,201 +451,6 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
       </form>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#38495e'
-  },
-  seeAlso: {
-    textAlign: 'right',
-    fontSize: '12px',
-    marginBottom: '15px',
-    color: '#507898'
-  },
-  selector: {
-    marginBottom: '20px'
-  },
-  usergroupGrid: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '10px',
-    justifyContent: 'center',
-    marginTop: '10px'
-  },
-  usergroupLink: {
-    color: '#4060b0',
-    textDecoration: 'none',
-    padding: '4px 8px'
-  },
-  showAll: {
-    textAlign: 'center',
-    marginTop: '10px'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginTop: '15px'
-  },
-  headerRow: {
-    backgroundColor: '#e8f4f8'
-  },
-  th: {
-    textAlign: 'left',
-    padding: '8px 10px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    borderBottom: '2px solid #38495e'
-  },
-  td: {
-    padding: '8px 10px',
-    borderBottom: '1px solid #e8f4f8',
-    color: '#38495e'
-  },
-  tdSmall: {
-    padding: '8px 10px',
-    borderBottom: '1px solid #e8f4f8',
-    fontSize: '11px',
-    color: '#507898'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  totalCount: {
-    textAlign: 'right',
-    marginTop: '10px',
-    color: '#507898'
-  },
-  pagination: {
-    textAlign: 'right',
-    marginTop: '10px',
-    color: '#507898'
-  },
-  noDiscussions: {
-    textAlign: 'center',
-    padding: '20px',
-    color: '#507898'
-  },
-  error: {
-    color: '#c62828'
-  },
-  newDiscussion: {
-    marginTop: '30px'
-  },
-  hr: {
-    border: 'none',
-    borderTop: '2px solid #38495e',
-    margin: '20px 0'
-  },
-  formHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '20px'
-  },
-  formTitle: {
-    margin: 0,
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#38495e'
-  },
-  formGroup: {
-    marginBottom: '16px'
-  },
-  label: {
-    display: 'block',
-    marginBottom: '6px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    fontSize: '14px'
-  },
-  titleInput: {
-    width: '100%',
-    maxWidth: '500px',
-    padding: '10px 12px',
-    fontSize: '14px',
-    border: '1px solid #38495e',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-    color: '#38495e'
-  },
-  select: {
-    padding: '10px 12px',
-    fontSize: '14px',
-    border: '1px solid #38495e',
-    borderRadius: '4px',
-    color: '#38495e',
-    backgroundColor: '#fff'
-  },
-  checkboxLabel: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-    color: '#38495e',
-    fontSize: '14px'
-  },
-  checkbox: {
-    marginRight: '8px',
-    width: '16px',
-    height: '16px'
-  },
-  editorHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '8px'
-  },
-  editorContainer: {
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-    overflow: 'hidden'
-  },
-  htmlTextarea: {
-    width: '100%',
-    minHeight: '200px',
-    fontFamily: 'monospace',
-    fontSize: '13px',
-    padding: '12px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-    color: '#212529',
-    lineHeight: '1.5',
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  button: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '12px 24px',
-    backgroundColor: '#4060b0',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  },
-  errorMessage: {
-    padding: '12px',
-    backgroundColor: '#f8d7da',
-    border: '1px solid #f5c6cb',
-    borderRadius: '4px',
-    color: '#721c24',
-    marginBottom: '16px'
-  },
-  successMessage: {
-    padding: '12px',
-    backgroundColor: '#d4edda',
-    border: '1px solid #c3e6cb',
-    borderRadius: '4px',
-    color: '#155724',
-    marginBottom: '16px'
-  }
 }
 
 export default UsergroupDiscussions

@@ -56,7 +56,6 @@ const CollaborationEdit = ({ data }) => {
   const [searchResults, setSearchResults] = useState([])
   const [isSearching, setIsSearching] = useState(false)
   const [addingMember, setAddingMember] = useState(false)
-  const [hoveredResult, setHoveredResult] = useState(null)
   const searchTimeoutRef = useRef(null)
   const searchContainerRef = useRef(null)
 
@@ -288,24 +287,24 @@ const CollaborationEdit = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="collab-edit">
       {/* Header */}
-      <div style={styles.header}>
-        <FaUsers style={{ color: '#507898', marginRight: 8, fontSize: 20 }} />
-        <span style={styles.headerTitle}>Edit Collaboration: {collaboration.title}</span>
-        <div style={styles.headerActions}>
-          <a href={`/node/${collaboration.node_id}`} style={styles.displayLink}>
+      <div className="collab-edit__header">
+        <FaUsers className="collab-edit__header-icon" />
+        <span className="collab-edit__header-title">Edit Collaboration: {collaboration.title}</span>
+        <div className="collab-edit__header-actions">
+          <a href={`/node/${collaboration.node_id}`} className="collab-edit__display-link">
             <FaEye style={{ marginRight: 4 }} />
             display
           </a>
-          <button onClick={handleUnlock} style={styles.unlockButton}>
+          <button onClick={handleUnlock} className="collab-edit__unlock-btn">
             <FaLockOpen style={{ marginRight: 4 }} />
             unlock
           </button>
           {user.is_admin && (
             <button
               onClick={() => setShowDeleteModal(true)}
-              style={styles.deleteButton}
+              className="collab-edit__delete-btn"
             >
               <FaTrash style={{ marginRight: 4 }} />
               delete
@@ -315,40 +314,35 @@ const CollaborationEdit = ({ data }) => {
       </div>
 
       {/* Lock status */}
-      <div style={styles.lockStatus}>
-        <FaLock style={{ marginRight: 8, color: '#155724' }} />
+      <div className="collab-edit__lock-status">
+        <FaLock className="collab-edit__lock-icon" />
         <span>Locked by you</span>
-        <span style={{ marginLeft: 8, fontSize: 12, color: '#666' }}>
+        <span className="collab-edit__lock-hint">
           (Lock expires after 15 minutes of inactivity)
         </span>
       </div>
 
       {/* Message */}
       {message && (
-        <div style={{
-          ...styles.message,
-          backgroundColor: message.type === 'error' ? '#fee' : '#efe',
-          borderColor: message.type === 'error' ? '#fcc' : '#cec',
-          color: message.type === 'error' ? '#c00' : '#060'
-        }}>
+        <div className={`collab-edit__message collab-edit__message--${message.type}`}>
           {message.text}
         </div>
       )}
 
       {/* Members section (admin/CE only) */}
       {can_manage_members && (
-        <div style={styles.membersSection}>
-          <h3 style={styles.sectionTitle}>
-            <FaUsers style={{ marginRight: 8 }} />
+        <div className="collab-edit__members">
+          <h3 className="collab-edit__section-title">
+            <FaUsers />
             Allowed Users/Groups
           </h3>
-          <div style={styles.membersList}>
+          <div className="collab-edit__members-list">
             {members.map(member => (
-              <span key={member.node_id} style={styles.memberChip}>
+              <span key={member.node_id} className="collab-edit__member-chip">
                 <LinkNode {...member} type={member.type} />
                 <button
                   onClick={() => handleRemoveMember(member.node_id)}
-                  style={styles.removeMemberButton}
+                  className="collab-edit__member-remove"
                   title="Remove"
                 >
                   <FaTimes />
@@ -356,45 +350,40 @@ const CollaborationEdit = ({ data }) => {
               </span>
             ))}
           </div>
-          <div style={styles.searchContainer} ref={searchContainerRef}>
-            <div style={styles.searchInputWrapper}>
-              <FaSearch style={styles.searchIcon} />
+          <div className="collab-edit__search" ref={searchContainerRef}>
+            <div className="collab-edit__search-input-wrapper">
+              <FaSearch className="collab-edit__search-icon" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 placeholder="Search for users or usergroups..."
-                style={styles.searchInput}
+                className="collab-edit__search-input"
                 disabled={addingMember}
               />
-              {isSearching && <FaSpinner className="fa-spin" style={styles.searchSpinner} />}
+              {isSearching && <FaSpinner className="fa-spin collab-edit__search-spinner" />}
             </div>
             {searchResults.length > 0 && (
-              <div style={styles.searchResults}>
+              <div className="collab-edit__search-results">
                 {searchResults.map(result => (
                   <div
                     key={result.node_id}
-                    style={{
-                      ...styles.searchResultItem,
-                      backgroundColor: hoveredResult === result.node_id ? '#e8f4f8' : 'transparent'
-                    }}
+                    className="collab-edit__search-result"
                     onClick={() => handleAddMember(result)}
-                    onMouseEnter={() => setHoveredResult(result.node_id)}
-                    onMouseLeave={() => setHoveredResult(null)}
                   >
                     {result.type === 'usergroup' ? (
-                      <FaUsers style={{ marginRight: 8, color: '#4060b0' }} />
+                      <FaUsers style={{ color: '#4060b0' }} />
                     ) : (
-                      <FaUser style={{ marginRight: 8, color: '#507898' }} />
+                      <FaUser style={{ color: '#507898' }} />
                     )}
                     <span>{result.title}</span>
-                    <span style={styles.resultType}>{result.type}</span>
+                    <span className="collab-edit__result-type">{result.type}</span>
                   </div>
                 ))}
               </div>
             )}
             {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
-              <div style={styles.noResults}>
+              <div className="collab-edit__no-results">
                 No users or usergroups found matching "{searchQuery}"
               </div>
             )}
@@ -403,23 +392,22 @@ const CollaborationEdit = ({ data }) => {
       )}
 
       {/* Public toggle */}
-      <div style={styles.publicToggle}>
-        <label style={styles.checkboxLabel}>
+      <div className="collab-edit__public-toggle">
+        <label className="collab-edit__checkbox-label">
           <input
             type="checkbox"
             checked={isPublic}
             onChange={(e) => setIsPublic(e.target.checked)}
-            style={{ marginRight: 8 }}
           />
-          <FaGlobe style={{ marginRight: 6, color: isPublic ? '#155724' : '#666' }} />
+          <FaGlobe className={`collab-edit__public-icon ${isPublic ? 'collab-edit__public-icon--active' : 'collab-edit__public-icon--inactive'}`} />
           Public (visible to everyone, even without access)
         </label>
       </div>
 
       {/* Editor */}
-      <div style={styles.editorSection}>
-        <div style={styles.editorHeader}>
-          <label style={styles.label}>Content:</label>
+      <div className="collab-edit__editor">
+        <div className="collab-edit__editor-header">
+          <label className="collab-edit__label">Content:</label>
           <EditorModeToggle
             mode={editorMode}
             onToggle={handleModeToggle}
@@ -428,7 +416,7 @@ const CollaborationEdit = ({ data }) => {
         </div>
 
         {editorMode === 'rich' ? (
-          <div style={styles.editorContainer}>
+          <div className="collab-edit__editor-container">
             <MenuBar editor={editor} />
             <div className="e2-editor-wrapper" style={{ padding: '12px', minHeight: 300 }}>
               <EditorContent editor={editor} />
@@ -440,18 +428,18 @@ const CollaborationEdit = ({ data }) => {
             onChange={handleHtmlChange}
             placeholder="Enter HTML content here..."
             aria-label="Content (HTML)"
-            style={styles.htmlTextarea}
+            className="collab-edit__html-textarea"
             spellCheck={false}
           />
         )}
       </div>
 
       {/* Save button */}
-      <div style={styles.buttonRow}>
+      <div className="collab-edit__button-row">
         <button
           onClick={handleSave}
           disabled={saving}
-          style={styles.saveButton}
+          className="collab-edit__save-btn"
         >
           {saving ? <FaSpinner className="fa-spin" /> : <FaSave />}
           <span style={{ marginLeft: 6 }}>{saving ? 'Saving...' : 'Save Changes'}</span>
@@ -471,251 +459,6 @@ const CollaborationEdit = ({ data }) => {
       />
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-    padding: '16px 0'
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottom: '2px solid #38495e'
-  },
-  headerTitle: {
-    flex: 1,
-    minWidth: 200
-  },
-  headerActions: {
-    display: 'flex',
-    gap: 12,
-    alignItems: 'center'
-  },
-  displayLink: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  unlockButton: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    color: '#28a745',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    padding: 0
-  },
-  deleteButton: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    color: '#dc3545',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    padding: 0
-  },
-  lockStatus: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 16,
-    backgroundColor: '#d4edda',
-    border: '1px solid #c3e6cb',
-    borderRadius: 4,
-    color: '#155724'
-  },
-  message: {
-    padding: 12,
-    marginBottom: 16,
-    borderRadius: 4,
-    border: '1px solid'
-  },
-  membersSection: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4,
-    padding: 16,
-    marginBottom: 20
-  },
-  sectionTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginTop: 0,
-    marginBottom: 12
-  },
-  membersList: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 12
-  },
-  memberChip: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    backgroundColor: '#e8f4f8',
-    padding: '4px 8px',
-    borderRadius: 4,
-    fontSize: 13
-  },
-  removeMemberButton: {
-    marginLeft: 6,
-    padding: '2px 4px',
-    background: 'none',
-    border: 'none',
-    color: '#dc3545',
-    cursor: 'pointer',
-    fontSize: 12
-  },
-  searchContainer: {
-    position: 'relative'
-  },
-  searchInputWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    border: '1px solid #38495e',
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    padding: '6px 10px'
-  },
-  searchIcon: {
-    color: '#507898',
-    marginRight: 8,
-    fontSize: 14
-  },
-  searchInput: {
-    flex: 1,
-    border: 'none',
-    outline: 'none',
-    fontSize: 13,
-    color: '#38495e',
-    backgroundColor: 'transparent'
-  },
-  searchSpinner: {
-    color: '#507898',
-    marginLeft: 8,
-    fontSize: 14
-  },
-  searchResults: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    border: '1px solid #38495e',
-    borderTop: 'none',
-    borderRadius: '0 0 4px 4px',
-    maxHeight: 200,
-    overflowY: 'auto',
-    zIndex: 100,
-    boxShadow: '0 4px 8px rgba(56,73,94,0.15)'
-  },
-  searchResultItem: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 12px',
-    cursor: 'pointer',
-    fontSize: 13,
-    color: '#38495e',
-    borderBottom: '1px solid #e8f4f8',
-    transition: 'background-color 0.15s'
-  },
-  resultType: {
-    marginLeft: 'auto',
-    fontSize: 11,
-    color: '#507898',
-    backgroundColor: '#e8f4f8',
-    padding: '2px 6px',
-    borderRadius: 3
-  },
-  noResults: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    border: '1px solid #38495e',
-    borderTop: 'none',
-    borderRadius: '0 0 4px 4px',
-    padding: '12px',
-    fontSize: 13,
-    color: '#507898',
-    textAlign: 'center'
-  },
-  publicToggle: {
-    marginBottom: 16,
-    padding: 12,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4
-  },
-  checkboxLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    cursor: 'pointer'
-  },
-  editorSection: {
-    marginBottom: 16
-  },
-  editorHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8
-  },
-  label: {
-    fontWeight: 'bold',
-    color: '#38495e'
-  },
-  editorContainer: {
-    border: '1px solid #ced4da',
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    overflow: 'hidden'
-  },
-  htmlTextarea: {
-    width: '100%',
-    minHeight: 300,
-    fontFamily: 'monospace',
-    fontSize: 13,
-    padding: 12,
-    border: '1px solid #ced4da',
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    color: '#212529',
-    lineHeight: 1.5,
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  buttonRow: {
-    marginTop: 24
-  },
-  saveButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontSize: 14,
-    fontWeight: 'bold'
-  }
 }
 
 export default CollaborationEdit

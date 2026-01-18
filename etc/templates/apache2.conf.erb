@@ -143,42 +143,33 @@ Include mods-enabled/*.conf
 <% end %>
 </IfModule>
 
-# mod_evasive rate limiting configuration (production only)
+# mod_evasive rate limiting configuration
 # Protects against DoS attacks and aggressive scrapers
-# Disabled in development to avoid rate limiting during testing
-<IfDefine E2_PRODUCTION>
 <IfModule mod_evasive20.c>
-	# Hash table size for tracking IPs (larger = more memory, better performance)
+<% if node["override_configuration"].eql? "development" %>
+	# Development: Very high thresholds to avoid test interference
 	DOSHashTableSize 3097
-
-	# Per-page limits disabled (set very high) - we only care about overall volume
+	DOSPageCount 99999
+	DOSPageInterval 1
+	DOSSiteCount 99999
+	DOSSiteInterval 1
+	DOSBlockingPeriod 1
+<% else %>
+	# Production: Reasonable rate limits
+	DOSHashTableSize 3097
 	DOSPageCount 999
 	DOSPageInterval 1
-
-	# Site-wide request threshold: block if total requests exceed limit
-	# WAF is 400 requests / 5 minutes = ~1.3/sec
-	# Setting 50 requests / 10 seconds = 5/sec (allows bursts, catches scrapers)
 	DOSSiteCount 50
 	DOSSiteInterval 10
-
-	# How long to block offending IPs (seconds)
-	# Match WAF 5-minute evaluation window
 	DOSBlockingPeriod 300
-
-	# Log blocked requests locally
 	DOSLogDir /var/log/apache2
-
-	# Log blocked IPs to CloudWatch for monitoring
-	# %s is replaced with the blocked IP address
 	DOSSystemCommand "/var/everything/tools/log-rate-limit-block.sh %s"
-
-	# Whitelist ALB health checks and internal IPs
 	DOSWhitelist 127.0.0.1
 	DOSWhitelist 10.*.*.*
 	DOSWhitelist 172.16.*.*
 	DOSWhitelist 192.168.*.*
+<% end %>
 </IfModule>
-</IfDefine>
 
 LogLevel warn
 LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch

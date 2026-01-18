@@ -42,9 +42,9 @@ jest.mock('./Layout/PageHeader', () => {
 })
 
 jest.mock('./Layout/GoogleAds', () => {
-  return function MockGoogleAds() {
-    return null
-  }
+  const MockGoogleAds = () => null
+  MockGoogleAds.FooterAd = () => null
+  return MockGoogleAds
 })
 
 jest.mock('./PageActions', () => {

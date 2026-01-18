@@ -121,82 +121,31 @@ const RepublishModal = ({ draft, onSuccess, onClose }) => {
     }
   }
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose()
+    }
+  }
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000
-      }}
-      onClick={(e) => {
-        // Close on backdrop click
-        if (e.target === e.currentTarget) {
-          onClose()
-        }
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: '#fff',
-          borderRadius: '8px',
-          width: '90%',
-          maxWidth: '500px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-          overflow: 'hidden'
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="nodelet-modal-overlay" onClick={handleBackdropClick}>
+      <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div
-          style={{
-            padding: '15px 20px',
-            borderBottom: '1px solid #ddd',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <h2 style={{ margin: 0, color: '#38495e', fontSize: '18px' }}>
+        <div className="modal-dialog__header">
+          <h2 className="modal-dialog__title">
             Republish Removed Writeup
           </h2>
-          <button
-            onClick={onClose}
-            style={{
-              padding: '4px 10px',
-              backgroundColor: '#f8f9f9',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-          >
+          <button onClick={onClose} className="modal-dialog__close">
             Close
           </button>
         </div>
 
         {/* Body */}
-        <div style={{ padding: '20px' }}>
+        <div className="modal-dialog__body">
           {/* Info message */}
-          <div
-            style={{
-              padding: '10px',
-              marginBottom: '15px',
-              backgroundColor: '#e7f3ff',
-              border: '1px solid #b3d9ff',
-              borderRadius: '4px',
-              color: '#004085',
-              fontSize: '13px'
-            }}
-          >
+          <div className="modal-compact__info-box">
             This will republish the writeup with:
-            <ul style={{ margin: '5px 0 0 0', paddingLeft: '20px' }}>
+            <ul>
               <li>Hidden from New Writeups nodelet</li>
               <li>Reputation and C!s reset to zero</li>
               <li>Original publication date preserved</li>
@@ -205,31 +154,14 @@ const RepublishModal = ({ draft, onSuccess, onClose }) => {
 
           {/* Error message */}
           {error && (
-            <div
-              style={{
-                padding: '10px',
-                marginBottom: '15px',
-                backgroundColor: '#fee',
-                border: '1px solid #fcc',
-                borderRadius: '4px',
-                color: '#c00',
-                fontSize: '13px'
-              }}
-            >
+            <div className="modal-compact__status modal-compact__status--error">
               {error}
             </div>
           )}
 
           {/* E2node title input */}
-          <div style={{ marginBottom: '15px' }}>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '5px',
-                fontWeight: '500',
-                fontSize: '13px'
-              }}
-            >
+          <div className="modal-dialog__form-group">
+            <label className="modal-dialog__label">
               E2node Title
             </label>
             <input
@@ -242,54 +174,24 @@ const RepublishModal = ({ draft, onSuccess, onClose }) => {
               onKeyDown={handleKeyDown}
               placeholder="Enter the e2node title for this writeup..."
               autoFocus
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
+              className="modal-dialog__input"
             />
             {draft?.parent_e2node && (
-              <p
-                style={{
-                  marginTop: '5px',
-                  marginBottom: 0,
-                  fontSize: '12px',
-                  color: '#888'
-                }}
-              >
+              <p className="modal-compact__help">
                 Original e2node: {draft.parent_e2node.title}
               </p>
             )}
           </div>
 
           {/* Writeup type selector */}
-          <div style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '5px',
-                fontWeight: '500',
-                fontSize: '13px'
-              }}
-            >
+          <div className="modal-dialog__form-group">
+            <label className="modal-dialog__label">
               Writeup Type
             </label>
             <select
               value={selectedWriteuptypeId || ''}
               onChange={(e) => setSelectedWriteuptypeId(Number(e.target.value))}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                fontSize: '14px',
-                backgroundColor: '#fff',
-                cursor: 'pointer',
-                boxSizing: 'border-box'
-              }}
+              className="modal-dialog__select"
             >
               {writeuptypes.length > 0 ? (
                 writeuptypes.map((wt) => (
@@ -305,43 +207,18 @@ const RepublishModal = ({ draft, onSuccess, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div
-          style={{
-            padding: '15px 20px',
-            borderTop: '1px solid #ddd',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '10px'
-          }}
-        >
+        <div className="modal-dialog__footer">
           <button
             onClick={onClose}
             disabled={loading}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#f8f9f9',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              opacity: loading ? 0.5 : 1
-            }}
+            className="modal-dialog__btn modal-dialog__btn--secondary"
           >
             Cancel
           </button>
           <button
             onClick={handleRepublish}
             disabled={loading || !e2nodeTitle.trim()}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: loading || !e2nodeTitle.trim() ? '#999' : '#28a745',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: loading || !e2nodeTitle.trim() ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
+            className="modal-dialog__btn modal-dialog__btn--primary"
           >
             {loading ? 'Republishing...' : 'Republish'}
           </button>

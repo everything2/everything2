@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 
 /**
@@ -21,16 +21,6 @@ const PageOfCool = ({ data }) => {
   const [coolnodes, setCoolnodes] = useState(initial_coolnodes)
   const [pagination, setPagination] = useState(initialPagination || { offset: 0, limit: 50, total: 0 })
   const [loadingNodes, setLoadingNodes] = useState(false)
-
-  // Kernel Blue colors
-  const colors = {
-    primary: '#38495e',
-    secondary: '#507898',
-    highlight: '#4060b0',
-    accent: '#3bb5c3',
-    background: '#f8f9f9',
-    text: '#111111'
-  }
 
   // Fetch editor endorsements
   const fetchEditorEndorsements = async (editorId) => {
@@ -83,154 +73,28 @@ const PageOfCool = ({ data }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // Styles - responsive
-  const containerStyle = {
-    padding: isMobile ? '0' : '20px',
-    maxWidth: isMobile ? '100%' : '1200px',
-    margin: '0 auto'
-  }
-
-  const introStyle = {
-    color: colors.secondary,
-    lineHeight: '1.6',
-    marginTop: 0,
-    marginBottom: isMobile ? '12px' : '15px',
-    fontSize: isMobile ? '14px' : '16px'
-  }
-
-  const sectionStyle = {
-    marginBottom: '40px'
-  }
-
-  const sectionTitleStyle = {
-    fontSize: '20px',
-    color: colors.primary,
-    marginBottom: '15px',
-    fontWeight: '600'
-  }
-
-  const filterBoxStyle = {
-    backgroundColor: colors.background,
-    padding: '20px',
-    borderRadius: '8px',
-    marginBottom: '20px',
-    border: `1px solid ${colors.secondary}20`
-  }
-
-  const selectStyle = {
-    padding: '10px 15px',
-    border: `1px solid ${colors.secondary}`,
-    borderRadius: '4px',
-    fontSize: '14px',
-    backgroundColor: '#fff',
-    color: colors.text,
-    cursor: 'pointer',
-    width: '100%',
-    maxWidth: '400px'
-  }
-
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    backgroundColor: '#fff',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    borderRadius: '8px',
-    overflow: 'hidden'
-  }
-
-  const thStyle = {
-    backgroundColor: colors.primary,
-    color: '#fff',
-    padding: '12px 15px',
-    textAlign: 'left',
-    fontSize: '14px',
-    fontWeight: '600'
-  }
-
-  const tdStyle = (isOdd) => ({
-    padding: '12px 15px',
-    borderBottom: '1px solid #eee',
-    fontSize: '14px',
-    backgroundColor: isOdd ? colors.background : '#fff'
-  })
-
-  const linkStyle = {
-    color: colors.highlight,
-    textDecoration: 'none',
-    fontWeight: '500'
-  }
-
-  const paginationStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: colors.background,
-    borderRadius: '4px'
-  }
-
-  const buttonStyle = {
-    padding: '8px 16px',
-    backgroundColor: colors.highlight,
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s'
-  }
-
-  const buttonDisabledStyle = {
-    ...buttonStyle,
-    backgroundColor: '#ccc',
-    cursor: 'not-allowed'
-  }
-
-  const listStyle = {
-    listStyleType: 'disc',
-    marginLeft: '20px',
-    lineHeight: '1.8'
-  }
-
-  const listItemStyle = {
-    marginBottom: '8px',
-    color: colors.text
-  }
-
-  const endorsementBoxStyle = {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    marginTop: '15px'
-  }
-
-  const countStyle = {
-    fontSize: '16px',
-    color: colors.secondary,
-    marginBottom: '15px'
-  }
+  const containerClass = isMobile ? 'page-of-cool page-of-cool--mobile' : 'page-of-cool'
+  const introClass = isMobile ? 'page-of-cool__intro page-of-cool__intro--mobile' : 'page-of-cool__intro'
 
   return (
-    <div style={containerStyle}>
+    <div className={containerClass}>
       {/* Intro - no H1 since PageHeader already renders the title */}
-      <p style={introStyle}>
+      <p className={introClass}>
         Browse through the latest editor selections below, or choose a specific editor
         (or former editor) to see what they've endorsed.
       </p>
 
       {/* Editor Selector Section */}
-      <div style={sectionStyle}>
-        <h2 style={sectionTitleStyle}>Editor Endorsements</h2>
-        <div style={filterBoxStyle}>
-          <label style={{ display: 'block', marginBottom: '10px', fontSize: '14px', color: colors.primary, fontWeight: '600' }}>
+      <div className="page-of-cool__section">
+        <h2 className="page-of-cool__section-title">Editor Endorsements</h2>
+        <div className="page-of-cool__filter-box">
+          <label className="page-of-cool__filter-label">
             Select an editor:
           </label>
           <select
             value={selectedEditor}
             onChange={handleEditorChange}
-            style={selectStyle}
+            className="page-of-cool__select"
           >
             <option value="">-- Choose an editor --</option>
             {editors.map(editor => (
@@ -243,33 +107,33 @@ const PageOfCool = ({ data }) => {
 
         {/* Editor Endorsements Results */}
         {loadingEndorsements && (
-          <div style={{ textAlign: 'center', padding: '20px', color: colors.secondary }}>
+          <div className="page-of-cool__loading">
             Loading endorsements...
           </div>
         )}
 
         {editorEndorsements && !loadingEndorsements && (
-          <div style={endorsementBoxStyle}>
-            <p style={countStyle}>
-              <a href={`/user/${editorEndorsements.editor_name}`} style={linkStyle}>
+          <div className="page-of-cool__endorsement-box">
+            <p className="page-of-cool__count">
+              <a href={`/user/${editorEndorsements.editor_name}`} className="page-of-cool__link">
                 {editorEndorsements.editor_name}
               </a>
               {' '}has endorsed {editorEndorsements.count} node{editorEndorsements.count !== 1 ? 's' : ''}
             </p>
             {editorEndorsements.nodes && editorEndorsements.nodes.length > 0 && (
-              <ul style={listStyle}>
+              <ul className="page-of-cool__list">
                 {editorEndorsements.nodes.map((node, idx) => (
-                  <li key={idx} style={listItemStyle}>
-                    <a href={`/node/${node.node_id}`} style={linkStyle}>
+                  <li key={idx} className="page-of-cool__list-item">
+                    <a href={`/node/${node.node_id}`} className="page-of-cool__link">
                       {node.title}
                     </a>
                     {node.writeup_count !== undefined && (
-                      <span style={{ color: colors.secondary, fontSize: '13px' }}>
+                      <span className="page-of-cool__meta">
                         {' '}- {node.writeup_count} writeup{node.writeup_count !== 1 ? 's' : ''}
                       </span>
                     )}
                     {node.type && node.type !== 'e2node' && (
-                      <span style={{ color: colors.secondary, fontSize: '13px' }}>
+                      <span className="page-of-cool__meta">
                         {' '}- ({node.type})
                       </span>
                     )}
@@ -282,37 +146,37 @@ const PageOfCool = ({ data }) => {
       </div>
 
       {/* Recent Cool Nodes Section */}
-      <div style={sectionStyle}>
-        <h2 style={sectionTitleStyle}>Latest Cool Nodes</h2>
+      <div className="page-of-cool__section">
+        <h2 className="page-of-cool__section-title">Latest Cool Nodes</h2>
 
         {loadingNodes ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: colors.secondary }}>
+          <div className="page-of-cool__loading page-of-cool__loading--large">
             Loading...
           </div>
         ) : (
           <>
-            <table style={tableStyle}>
+            <table className="page-of-cool__table">
               <thead>
                 <tr>
-                  <th style={thStyle}>Title</th>
-                  <th style={{ ...thStyle, width: '250px' }}>Cooled by</th>
+                  <th className="page-of-cool__th">Title</th>
+                  <th className="page-of-cool__th page-of-cool__th--cooler">Cooled by</th>
                 </tr>
               </thead>
               <tbody>
                 {coolnodes.map((node, idx) => (
                   <tr key={node.node_id || idx}>
-                    <td style={tdStyle(idx % 2 === 1)}>
-                      <a href={`/node/${node.node_id}`} style={linkStyle}>
+                    <td className={`page-of-cool__td${idx % 2 === 1 ? ' page-of-cool__td--odd' : ''}`}>
+                      <a href={`/node/${node.node_id}`} className="page-of-cool__link">
                         {node.title}
                       </a>
                     </td>
-                    <td style={tdStyle(idx % 2 === 1)}>
+                    <td className={`page-of-cool__td${idx % 2 === 1 ? ' page-of-cool__td--odd' : ''}`}>
                       {node.cooled_by_name ? (
-                        <a href={`/user/${node.cooled_by_name}`} style={linkStyle}>
+                        <a href={`/user/${node.cooled_by_name}`} className="page-of-cool__link">
                           {node.cooled_by_name}
                         </a>
                       ) : (
-                        <span style={{ color: '#999' }}>—</span>
+                        <span className="page-of-cool__empty-cell">—</span>
                       )}
                     </td>
                   </tr>
@@ -321,23 +185,23 @@ const PageOfCool = ({ data }) => {
             </table>
 
             {/* Pagination */}
-            <div style={paginationStyle}>
+            <div className="page-of-cool__pagination">
               <button
                 onClick={() => goToPage(pagination.offset - pagination.limit)}
                 disabled={pagination.offset === 0}
-                style={pagination.offset === 0 ? buttonDisabledStyle : buttonStyle}
+                className="page-of-cool__btn"
               >
                 ← Previous {pagination.limit}
               </button>
 
-              <span style={{ fontSize: '14px', color: colors.secondary, alignSelf: 'center' }}>
+              <span className="page-of-cool__pagination-info">
                 Showing {pagination.offset + 1} - {Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
               </span>
 
               <button
                 onClick={() => goToPage(pagination.offset + pagination.limit)}
                 disabled={pagination.offset + pagination.limit >= pagination.total}
-                style={pagination.offset + pagination.limit >= pagination.total ? buttonDisabledStyle : buttonStyle}
+                className="page-of-cool__btn"
               >
                 Next {pagination.limit} →
               </button>

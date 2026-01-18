@@ -15,6 +15,7 @@
   --e2-bg-nodelet: #ddddbb;               /* Beige nodelet background */
   --e2-bg-header: #cccc99;                /* Tan header */
   --e2-bg-hover: #e5e5c8;                 /* Lighter beige hover */
+  --e2-light-bg: #f0f0e0;                 /* Light accent background */
   --e2-bg-sidebar: transparent;
   --e2-bg-oddrow: #cccc99;                /* Tan for alternating rows */
 

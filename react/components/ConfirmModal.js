@@ -13,8 +13,7 @@ const ConfirmModal = ({
   title = 'Confirm',
   message,
   confirmText = 'Confirm',
-  cancelText = 'Cancel',
-  confirmColor = '#667eea'
+  cancelText = 'Cancel'
 }) => {
   if (!isOpen) return null
 
@@ -23,93 +22,43 @@ const ConfirmModal = ({
     onClose()
   }
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose()
+    }
+  }
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 10000,
-        padding: '20px'
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          backgroundColor: '#fff',
-          borderRadius: '8px',
-          padding: '24px',
-          maxWidth: '400px',
-          width: '100%',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          position: 'relative'
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div style={{
-          marginBottom: '16px',
-          borderBottom: `2px solid ${confirmColor}`,
-          paddingBottom: '12px'
-        }}>
-          <h3 style={{ margin: 0, color: confirmColor, fontSize: '18px' }}>
-            {title}
-          </h3>
-        </div>
+    <div className="nodelet-modal-overlay" onClick={handleBackdropClick}>
+      <div className="modal-compact modal-compact--centered">
+        <div className="modal-compact__content">
+          {/* Header */}
+          <div className="modal-compact__header">
+            <h3 className="modal-compact__title">{title}</h3>
+          </div>
 
-        {/* Message */}
-        <div style={{
-          marginBottom: '24px',
-          fontSize: '14px',
-          color: '#333',
-          lineHeight: '1.5'
-        }}>
-          {message}
-        </div>
+          {/* Message */}
+          <div className="modal-compact__message">
+            {message}
+          </div>
 
-        {/* Buttons */}
-        <div style={{
-          display: 'flex',
-          gap: '12px',
-          justifyContent: 'flex-end'
-        }}>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              padding: '8px 16px',
-              fontSize: '13px',
-              border: '1px solid #dee2e6',
-              borderRadius: '4px',
-              backgroundColor: '#fff',
-              color: '#495057',
-              cursor: 'pointer'
-            }}
-          >
-            {cancelText}
-          </button>
-          <button
-            type="button"
-            onClick={handleConfirm}
-            style={{
-              padding: '8px 16px',
-              fontSize: '13px',
-              border: 'none',
-              borderRadius: '4px',
-              backgroundColor: confirmColor,
-              color: '#fff',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            {confirmText}
-          </button>
+          {/* Buttons */}
+          <div className="modal-compact__btn-row">
+            <button
+              type="button"
+              onClick={onClose}
+              className="modal-compact__btn modal-compact__btn--secondary modal-compact__btn--inline"
+            >
+              {cancelText}
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirm}
+              className="modal-compact__btn modal-compact__btn--inline"
+            >
+              {confirmText}
+            </button>
+          </div>
         </div>
       </div>
     </div>

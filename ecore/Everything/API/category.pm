@@ -699,6 +699,7 @@ sub add_member {
 
 # GET /api/category/node_categories?node_id=X
 # Returns categories that contain this node, with permission info for removal
+# and prev/next navigation within each category
 sub node_categories {
   my ($self, $REQUEST) = @_;
 
@@ -768,13 +769,20 @@ sub node_categories {
       # Public categories: no one can remove (anyone can add, but removal is restricted)
     }
 
+    # Get prev/next navigation within this category
+    my $nav = $self->_get_category_navigation($row->{node_id}, $node_id, $linktype_id);
+
     push @categories, {
       node_id => $row->{node_id},
       title => $row->{title},
       author_user => $row->{author_user},
       author_username => $row->{author_username},
       is_public => $is_public ? 1 : 0,
-      can_remove => $can_remove
+      can_remove => $can_remove,
+      prev_node => $nav->{prev},
+      next_node => $nav->{next},
+      position => $nav->{position},
+      total => $nav->{total}
     };
   }
 
@@ -782,6 +790,58 @@ sub node_categories {
     success => 1,
     categories => \@categories
   }];
+}
+
+# Internal helper: Get prev/next navigation for a node within a category
+# Returns { prev => { node_id, title, type } or undef, next => { ... } or undef, position, total }
+sub _get_category_navigation {
+  my ($self, $category_id, $node_id, $linktype_id) = @_;
+  my $DB = $self->DB;
+
+  # Get all members of this category ordered by food value
+  my $sql = "SELECT l.to_node, n.title, nt.title AS node_type
+    FROM links l
+    JOIN node n ON l.to_node = n.node_id
+    JOIN node nt ON n.type_nodetype = nt.node_id
+    WHERE l.from_node = ? AND l.linktype = ?
+    ORDER BY l.food ASC, n.title ASC";
+
+  my $ds = $DB->{dbh}->prepare($sql);
+  $ds->execute($category_id, $linktype_id);
+
+  my @members = ();
+  my $current_idx = -1;
+  my $idx = 0;
+
+  while (my $row = $ds->fetchrow_hashref) {
+    push @members, {
+      node_id => $row->{to_node},
+      title => $row->{title},
+      type => $row->{node_type}
+    };
+    if ($row->{to_node} == $node_id) {
+      $current_idx = $idx;
+    }
+    $idx++;
+  }
+
+  my $total = scalar @members;
+  my $prev = undef;
+  my $next = undef;
+
+  if ($current_idx > 0) {
+    $prev = $members[$current_idx - 1];
+  }
+  if ($current_idx >= 0 && $current_idx < $total - 1) {
+    $next = $members[$current_idx + 1];
+  }
+
+  return {
+    prev => $prev,
+    next => $next,
+    position => $current_idx + 1,  # 1-indexed for display
+    total => $total
+  };
 }
 
 __PACKAGE__->meta->make_immutable;

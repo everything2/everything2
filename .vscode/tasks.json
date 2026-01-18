@@ -3,12 +3,18 @@
         "tasks": [
                 {
                         "type": "shell",
-                        "command": "./docker/devbuild.sh",
+                        "command": "./docker/devbuild.sh --skip-tests",
                         "group": {
                                 "kind": "build",
                                 "isDefault": true
                         },
-                        "label": "Rebuild web app"
+                        "label": "Quick rebuild (skip tests)"
+                },
+                {
+                        "type": "shell",
+                        "command": "./docker/devbuild.sh",
+                        "group": "build",
+                        "label": "Full rebuild (with tests)"
                 }
         ]
 }

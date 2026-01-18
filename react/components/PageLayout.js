@@ -4,7 +4,7 @@ import MasonContent from './MasonContent'
 import Header from './Layout/Header'
 import PageHeader from './Layout/PageHeader'
 import PageActions from './PageActions'
-import GoogleAds from './Layout/GoogleAds'
+import GoogleAds, { FooterAd } from './Layout/GoogleAds'
 import E2ReactRoot from './E2ReactRoot'
 import MobileBottomNav from './Layout/MobileBottomNav'
 import AuthModal from './Layout/AuthModal'
@@ -107,6 +107,9 @@ const PageLayout = ({ e2 }) => {
           <E2ReactRoot e2={e2} />
         </div>
       </div>
+
+      {/* Footer ad - just before footer, only for guests */}
+      <FooterAd show={showAds} />
 
       {/* Footer - stays at bottom */}
       <footer id="footer" role="contentinfo" aria-label="Site footer" data-reader-ignore="true">

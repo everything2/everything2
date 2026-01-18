@@ -14,6 +14,9 @@ use Test::More;
 use Everything;
 use Everything::Application;
 
+# Generate unique test identifiers to prevent collisions between test runs
+my $test_id = time() . "_" . $$;  # timestamp + process ID
+
 # Suppress expected warnings throughout the test
 $SIG{__WARN__} = sub {
 	my $warning = shift;
@@ -107,7 +110,7 @@ sub cleanup_node {
 # Test 1: Empty notes array for node with no notes
 #############################################################################
 
-my $doc_title = "Test NodeNotes Document " . time();
+my $doc_title = "Test NodeNotes Document " . $test_id;
 my $doc_node = create_test_node($doc_title, "document", {
     doctext => "Test document for node notes",
 });
@@ -151,14 +154,14 @@ SKIP: {
     skip "Writeup or e2node nodetype not available", 8 unless $writeup_type && $e2node_type;
 
     # Create e2node
-    my $e2node_title = "Test E2Node " . time();
+    my $e2node_title = "Test E2Node " . $test_id;
     my $e2node = create_test_node($e2node_title, "e2node");
     skip "Could not create e2node", 8 unless $e2node;
 
     my $e2node_id = $e2node->{node_id};
 
     # Create writeup under e2node
-    my $wu_title = "Test Writeup " . time();
+    my $wu_title = "Test Writeup " . $test_id;
     my $writeup = create_test_node($wu_title, "writeup", {
         doctext => "Test writeup content",
         parent_e2node => $e2node_id,
@@ -192,7 +195,7 @@ SKIP: {
     #############################################################################
 
     # Create second writeup under same e2node
-    my $wu2_title = "Test Writeup 2 " . time();
+    my $wu2_title = "Test Writeup 2 " . $test_id;
     my $writeup2 = create_test_node($wu2_title, "writeup", {
         doctext => "Second writeup content",
         parent_e2node => $e2node_id,
@@ -251,16 +254,16 @@ is(scalar(@$empty_notes), 0, "Returns empty array for undefined node");
 #############################################################################
 
 # Notes should be ordered by timestamp
-my $ordered_doc = create_test_node("Test Ordering " . time(), "document");
+my $ordered_doc = create_test_node("Test Ordering " . $test_id, "document");
 if ($ordered_doc) {
     my $ordered_id = $ordered_doc->{node_id};
 
     # Add notes with explicit timestamps to ensure deterministic ordering
-    # Use timestamps 3, 2, and 1 seconds in the past to test ordering
+    # Use timestamps 30, 20, and 10 seconds in the past to ensure distinct ordering
     my $now = time();
-    add_note_to_node($ordered_id, "First note", undef, $APP->convertEpochToDate($now - 3));
-    add_note_to_node($ordered_id, "Second note", undef, $APP->convertEpochToDate($now - 2));
-    add_note_to_node($ordered_id, "Third note", undef, $APP->convertEpochToDate($now - 1));
+    add_note_to_node($ordered_id, "First note", undef, $APP->convertEpochToDate($now - 30));
+    add_note_to_node($ordered_id, "Second note", undef, $APP->convertEpochToDate($now - 20));
+    add_note_to_node($ordered_id, "Third note", undef, $APP->convertEpochToDate($now - 10));
 
     $notes = $APP->getNodeNotes($ordered_doc);
     is(scalar(@$notes), 3, "Retrieved 3 ordered notes");
@@ -280,7 +283,7 @@ if ($ordered_doc) {
 # User attribution is NOT added to notetext - that's handled by the UI.
 #############################################################################
 
-my $addnote_doc = create_test_node("Test AddNodeNote " . time(), "document", {
+my $addnote_doc = create_test_node("Test AddNodeNote " . $test_id, "document", {
     doctext => "Test document for addNodeNote",
 });
 
@@ -340,7 +343,7 @@ if ($addnote_doc) {
 # layer (getNodeNotes + React UI) handles showing the username.
 #############################################################################
 
-my $display_test_doc = create_test_node("Test Display Attribution " . time(), "document");
+my $display_test_doc = create_test_node("Test Display Attribution " . $test_id, "document");
 
 if ($display_test_doc) {
     my $display_id = $display_test_doc->{node_id};

@@ -22,111 +22,6 @@ import { FaShareSquare } from 'react-icons/fa'
  *   <AddToWeblogButton nodeId={123} nodeTitle="Some Title" nodeType="writeup" user={userData} />
  */
 
-// Styles matching Kernel Blue theme
-const styles = {
-  backdrop: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10000
-  },
-  modal: {
-    backgroundColor: '#fff',
-    border: '1px solid #38495e',
-    maxWidth: '400px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflow: 'auto',
-    fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif',
-    fontSize: '12px'
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '8px 12px',
-    backgroundColor: '#38495e',
-    color: '#f9fafa'
-  },
-  title: {
-    margin: 0,
-    fontSize: '13px',
-    fontWeight: 'bold'
-  },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    fontSize: '18px',
-    cursor: 'pointer',
-    color: '#f9fafa',
-    padding: '0 4px',
-    lineHeight: 1
-  },
-  content: {
-    padding: '12px'
-  },
-  status: {
-    padding: '6px 10px',
-    marginBottom: '12px',
-    fontSize: '11px',
-    border: '1px solid'
-  },
-  select: {
-    width: '100%',
-    padding: '6px',
-    marginBottom: '8px',
-    border: '1px solid #d3d3d3',
-    fontSize: '12px',
-    boxSizing: 'border-box',
-    fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif'
-  },
-  actionButton: {
-    display: 'block',
-    width: '100%',
-    padding: '6px 10px',
-    border: '1px solid #4060b0',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '12px',
-    textAlign: 'center',
-    fontWeight: 'bold'
-  },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-    borderColor: '#ccc',
-    cursor: 'not-allowed'
-  },
-  helpText: {
-    fontSize: '11px',
-    color: '#507898',
-    margin: '4px 0 0 0'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none',
-    fontSize: '11px'
-  },
-  iconButton: {
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '20px',
-    color: '#507898',
-    padding: '4px',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '4px'
-  }
-}
-
 const AddToWeblogModal = ({ nodeId, nodeTitle, nodeType, user, isOpen, onClose }) => {
   const [selectedGroup, setSelectedGroup] = useState('')
   const [isPosting, setIsPosting] = useState(false)
@@ -209,48 +104,44 @@ const AddToWeblogModal = ({ nodeId, nodeTitle, nodeType, user, isOpen, onClose }
   }
 
   return (
-    <div style={styles.backdrop} onClick={handleBackdropClick}>
-      <div style={styles.modal}>
-        <div style={styles.header}>
-          <h3 style={styles.title}>Add to Page</h3>
-          <button onClick={onClose} style={styles.closeButton}>&times;</button>
+    <div className="nodelet-modal-overlay" onClick={handleBackdropClick}>
+      <div className="modal-compact">
+        <div className="modal-compact__header">
+          <h3 className="modal-compact__title">Add to Page</h3>
+          <button onClick={onClose} className="modal-compact__close">&times;</button>
         </div>
 
-        <div style={styles.content}>
+        <div className="modal-compact__content">
           {/* Status message */}
           {actionStatus && (
-            <div style={{
-              ...styles.status,
-              backgroundColor: actionStatus.type === 'error' ? '#fee' : '#efe',
-              color: actionStatus.type === 'error' ? '#c00' : '#060'
-            }}>
+            <div className={`modal-compact__status modal-compact__status--${actionStatus.type}`}>
               {actionStatus.message}
             </div>
           )}
 
           {isLoading ? (
-            <p style={styles.helpText}>Loading usergroups...</p>
+            <p className="modal-compact__help">Loading usergroups...</p>
           ) : groups.length === 0 ? (
             <div>
-              <p style={styles.helpText}>
+              <p className="modal-compact__help">
                 No usergroups available. You need to be a member of a usergroup to post to its weblog.
               </p>
-              <p style={{ ...styles.helpText, marginTop: '8px' }}>
-                <a href="/node/superdoc/Edit%20weblog%20menu" style={styles.link}>
+              <p className="modal-compact__help mt-2">
+                <a href="/node/superdoc/Edit%20weblog%20menu" className="modal-compact__link">
                   Edit weblog menu...
                 </a>
               </p>
             </div>
           ) : (
             <>
-              <p style={{ margin: '0 0 12px 0', fontSize: '12px' }}>
+              <p className="mb-3" style={{ fontSize: '12px', margin: 0 }}>
                 Add <strong>{nodeTitle}</strong> to a usergroup page:
               </p>
 
               <select
                 value={selectedGroup}
                 onChange={(e) => setSelectedGroup(e.target.value)}
-                style={styles.select}
+                className="modal-compact__select"
                 disabled={isPosting}
               >
                 <option value="">Select a usergroup...</option>
@@ -266,16 +157,13 @@ const AddToWeblogModal = ({ nodeId, nodeTitle, nodeType, user, isOpen, onClose }
               <button
                 onClick={handlePostToGroup}
                 disabled={!selectedGroup || isPosting}
-                style={{
-                  ...styles.actionButton,
-                  ...(!selectedGroup || isPosting ? styles.buttonDisabled : {})
-                }}
+                className="modal-compact__btn"
               >
                 {isPosting ? 'Posting...' : 'Post to Page'}
               </button>
 
-              <p style={{ ...styles.helpText, marginTop: '8px' }}>
-                <a href="/node/superdoc/Edit%20weblog%20menu" style={styles.link}>
+              <p className="modal-compact__help mt-2">
+                <a href="/node/superdoc/Edit%20weblog%20menu" className="modal-compact__link">
                   Edit this menu...
                 </a>
               </p>
@@ -307,7 +195,8 @@ export const AddToWeblogButton = ({ nodeId, nodeTitle, nodeType, user, style }) 
       <button
         onClick={() => setIsOpen(true)}
         title="Add to usergroup page"
-        style={{ ...styles.iconButton, ...style }}
+        className="icon-btn"
+        style={style}
       >
         <FaShareSquare />
       </button>

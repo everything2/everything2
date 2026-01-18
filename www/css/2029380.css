@@ -9,6 +9,7 @@
   src: local('Essays 1743'), url('../static/pamphleteer/essays1743-webfont.woff') format('woff'), url('../static/pamphleteer/essays1743-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -17,6 +18,7 @@
   src: local('Essays 1743'), url('../static/pamphleteer/essays1743-italic-webfont.woff') format('woff'), url('../static/pamphleteer/essays1743-italic-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -25,6 +27,7 @@
   src: local('Linux Libertine'), url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.woff') format('woff'), url('../static/pamphleteer/linlibertine_re-4.7.5-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -33,6 +36,7 @@
   src: local('Linux Libertine'), url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.woff') format('woff'), url('../static/pamphleteer/linlibertine_bd-4.1.5-webfont.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -41,6 +45,7 @@
   src: local('Linux Libertine'), url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.woff') format('woff'), url('../static/pamphleteer/linlibertine_it-4.2.6-webfont.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
+  font-display: swap;
 }
 
 :root {
@@ -56,6 +61,7 @@
   --e2-bg-nodelet: #ffffff;               /* White nodelet background */
   --e2-bg-header: #ffffff;                /* White header */
   --e2-bg-hover: #f8f8f8;                 /* Light gray hover */
+  --e2-light-bg: #f5f5f5;                 /* Light accent background */
   --e2-bg-sidebar: transparent;
   --e2-bg-oddrow: #f4f4f4;                /* Very light gray for alternating rows */
 
@@ -84,13 +90,14 @@
   /* Nodelet header */
   --e2-nodelet-header-bg: #f4f4f4;
   --e2-nodelet-header-text: #000000;
+  --e2-text-nodelet-title: #000000;    /* Match logo for better contrast */
 
   /* Epicenter */
   --e2-epicenter-bg: #f4f4f4;
   --e2-epicenter-text: #000000;
 
   /* Nodelet controls/filters */
-  --e2-nodelet-filter-bg: #fafafa;
+  --e2-nodelet-filter-bg: #ffffff;
   --e2-input-bg: #ffffff;
   --e2-color-muted: #666666;
 
@@ -260,7 +267,29 @@ div#e2logo a:link, div#e2logo a:visited {
 
 #epicenter_zen {
   background-color: var(--e2-bg-oddrow);
-  text-align: center;
+  color: var(--e2-text-body);
+}
+
+#epicenter_zen a,
+#epicenter_zen a:link,
+#epicenter_zen a:visited {
+  color: var(--e2-color-link);
+}
+
+#epicenter_zen .ez-separator {
+  color: var(--e2-text-muted);
+}
+
+#epicenter_zen .ez-user-link {
+  color: var(--e2-text-body);
+}
+
+#epicenter_zen .ez-xp-gain {
+  color: #228b22; /* Forest green for Pamphleteer theme */
+}
+
+#epicenter_zen .ez-gp-gain {
+  color: #b8860b; /* Dark goldenrod for Pamphleteer theme */
 }
 
 /* ====================================================================
@@ -301,6 +330,15 @@ div#e2logo a:link, div#e2logo a:visited {
     text-decoration: underline;
     border: 0;
   }
+}
+
+/* ====================================================================
+   CHATTERBOX - Messages section with thin outline
+   ==================================================================== */
+
+.chatter-mini-messages {
+  background-color: transparent;
+  border: 1px solid var(--e2-border-color, #dddddd);
 }
 
 /* ====================================================================

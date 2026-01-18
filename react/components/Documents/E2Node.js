@@ -12,11 +12,15 @@ import E2NodeDisplay from '../E2NodeDisplay'
 const E2Node = ({ data, user }) => {
   if (!data) return <div>Loading...</div>
 
-  const { e2node, existing_draft, start_with_tools_modal_open, best_entries } = data
+  const { e2node, existing_draft, start_with_tools_modal_open, best_entries, categories } = data
 
   if (!e2node) {
     return <div className="error">E2node not found</div>
   }
+
+  // Check for category_id URL parameter to focus on a specific category
+  const urlParams = new URLSearchParams(window.location.search)
+  const focusedCategoryId = urlParams.get('category_id') ? parseInt(urlParams.get('category_id'), 10) : null
 
   return (
     <div className="e2node-page">
@@ -26,6 +30,8 @@ const E2Node = ({ data, user }) => {
         existingDraft={existing_draft}
         startWithToolsModalOpen={start_with_tools_modal_open}
         bestEntries={best_entries}
+        categories={categories}
+        focusedCategoryId={focusedCategoryId}
       />
     </div>
   )

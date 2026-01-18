@@ -296,6 +296,56 @@ sub _render_json_ld {
         $webpage_schema->{mainEntity} = { '@id' => $canonical_url . '#article' };
     }
 
+    # CollectionPage schema for categories
+    if ($ntypet eq 'category') {
+        my $author = $node->author;
+        my $author_name = $author ? $author->title : 'Everything2';
+        my $author_url = $author ? 'https://everything2.com/user/' . $self->APP->rewriteCleanEscape($author_name) : undef;
+
+        # Get member count from category
+        my $category_linktype = $self->DB->getNode('category', 'linktype');
+        my $member_count = 0;
+        if ($category_linktype) {
+            $member_count = $self->DB->sqlSelect(
+                'COUNT(*)',
+                'links',
+                'from_node = ' . $node->node_id . ' AND linktype = ' . $category_linktype->{node_id}
+            ) || 0;
+        }
+
+        my $collection_schema = {
+            '@type' => 'CollectionPage',
+            '@id' => $canonical_url . '#collection',
+            'name' => $node->title,
+            'description' => $metadescription,
+            'url' => $canonical_url,
+            'isPartOf' => { '@id' => $canonical_url . '#webpage' },
+            'inLanguage' => 'en-US',
+            'mainEntity' => {
+                '@type' => 'ItemList',
+                'numberOfItems' => $member_count,
+                'itemListOrder' => 'https://schema.org/ItemListOrderAscending'
+            }
+        };
+
+        # Add author/maintainer
+        if ($author_url) {
+            $collection_schema->{maintainer} = {
+                '@type' => 'Person',
+                'name' => $author_name,
+                'url' => $author_url
+            };
+        }
+
+        # Add dates if available
+        if ($node->can('createtime') && $node->createtime) {
+            $collection_schema->{dateCreated} = $node->createtime;
+        }
+
+        push @json_ld_items, $collection_schema;
+        $webpage_schema->{mainEntity} = { '@id' => $canonical_url . '#collection' };
+    }
+
     push @json_ld_items, $webpage_schema;
 
     # Combine into @graph

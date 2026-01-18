@@ -61,16 +61,33 @@ package MockUser {
     has 'title' => (is => 'rw', default => 'guest');
     has 'is_guest' => (is => 'rw', default => 1);
     has 'is_admin' => (is => 'rw', default => 0);
+    has '_VARS' => (is => 'rw', default => sub { {} });
 
     sub new_from_node {
         my ($class, $node) = @_;
-        return $class->new(
+        my $user = $class->new(
             NODEDATA => $node,
             node_id => $node->{node_id},
             title => $node->{title},
             is_guest => 0,
             is_admin => 0  # Not needed for nodelet tests
         );
+        # Load VARS from database
+        $user->_VARS(Everything::getVars($node));
+        return $user;
+    }
+
+    sub VARS {
+        my $self = shift;
+        return $self->_VARS;
+    }
+
+    sub set_vars {
+        my ($self, $vars) = @_;
+        $self->_VARS($vars);
+        # Save to database like the real User object does
+        Everything::setVars($self->NODEDATA, $vars);
+        $Everything::DB->updateNode($self->NODEDATA, -1);
     }
 }
 

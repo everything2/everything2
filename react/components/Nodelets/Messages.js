@@ -122,8 +122,8 @@ const Messages = (props) => {
         throw new Error('Failed to archive message')
       }
 
-      // Remove message from list
-      setMessages(messages.filter(m => m.message_id !== messageId))
+      // Refresh the message list to get replacement messages
+      await loadMessages(showArchived)
     } catch (err) {
       setError(err.message)
     }
@@ -145,10 +145,11 @@ const Messages = (props) => {
         throw new Error('Failed to delete message')
       }
 
-      // Remove message from list
-      setMessages(messages.filter(m => m.message_id !== messageToDelete))
       setDeleteConfirmOpen(false)
       setMessageToDelete(null)
+
+      // Refresh the message list to get replacement messages
+      await loadMessages(showArchived)
     } catch (err) {
       setError(err.message)
       setDeleteConfirmOpen(false)
@@ -172,8 +173,8 @@ const Messages = (props) => {
         throw new Error('Failed to unarchive message')
       }
 
-      // Remove message from list
-      setMessages(messages.filter(m => m.message_id !== messageId))
+      // Refresh the message list to get replacement messages
+      await loadMessages(showArchived)
     } catch (err) {
       setError(err.message)
     }

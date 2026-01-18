@@ -146,20 +146,20 @@ const SuspensionInfo = ({ user }) => {
 
   if (!hasAccess) {
     return (
-      <div style={{ maxWidth: '800px', margin: '20px auto', padding: '20px' }}>
+      <div className="suspension-info suspension-info--denied">
         <p>Looks like you stumbled upon a page you can't access. Try the <ParseLinks text="[Welcome to Everything|front page]" />.</p>
       </div>
     )
   }
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '20px auto', padding: '20px' }}>
-      <p style={{ marginBottom: '20px' }}>
+    <div className="suspension-info">
+      <p className="suspension-info__see-also">
         <strong>See also:</strong> <ParseLinks text="[Node Forbiddance]" /> to suspend writeup posting privileges.
       </p>
 
-      <form onSubmit={handleLookup} style={{ marginBottom: '20px' }}>
-        <label style={{ marginRight: '10px' }}>
+      <form onSubmit={handleLookup} className="suspension-info__form">
+        <label className="suspension-info__form-label">
           Check suspension info for:
         </label>
         <input
@@ -168,112 +168,61 @@ const SuspensionInfo = ({ user }) => {
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Username"
           disabled={loading}
-          style={{
-            padding: '5px 10px',
-            border: '1px solid #d3d3d3',
-            borderRadius: '3px',
-            marginRight: '10px',
-            width: '200px'
-          }}
+          className="suspension-info__input"
         />
         <button
           type="submit"
           disabled={loading || !username.trim()}
-          style={{
-            padding: '5px 15px',
-            backgroundColor: loading ? '#c5cdd7' : '#38495e',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '3px',
-            cursor: loading || !username.trim() ? 'not-allowed' : 'pointer'
-          }}
+          className="suspension-info__btn"
         >
           {loading ? 'Loading...' : 'Check info'}
         </button>
       </form>
 
       {successMessage && (
-        <div style={{
-          padding: '15px',
-          marginBottom: '20px',
-          backgroundColor: '#f8f9f9',
-          border: '2px solid #38495e',
-          borderRadius: '4px',
-          color: '#38495e',
-          fontSize: '18px',
-          fontWeight: 'bold'
-        }}>
+        <div className="suspension-info__success">
           {successMessage}
         </div>
       )}
 
       {error && (
-        <div style={{
-          padding: '15px',
-          marginBottom: '20px',
-          backgroundColor: '#fff5f5',
-          border: '1px solid #ff0000',
-          borderRadius: '4px',
-          color: '#8b0000'
-        }}>
+        <div className="suspension-info__error">
           {error}
         </div>
       )}
 
       {lookupData && (
-        <div style={{ marginBottom: '30px' }}>
-          <table style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            border: '1px solid #d3d3d3'
-          }}>
+        <div className="suspension-info__results">
+          <table className="suspension-info__table">
             <tbody>
               <tr>
-                <td style={{
-                  padding: '15px',
-                  verticalAlign: 'center',
-                  backgroundColor: '#f8f9f9',
-                  fontWeight: 'bold',
-                  borderRight: '1px solid #d3d3d3'
-                }}>
+                <td className="suspension-info__header-cell">
                   Suspension info for:<br />
-                  <strong style={{ fontSize: '18px', color: '#38495e' }}>
+                  <strong className="suspension-info__username">
                     {lookupData.username}
                   </strong>
                 </td>
 
                 {lookupData.suspensions.map((suspension, index) => (
                   <React.Fragment key={suspension.type_id}>
-                    <td style={{
-                      padding: '15px',
-                      textAlign: 'center',
-                      borderRight: index < lookupData.suspensions.length - 1 ? '1px solid #d3d3d3' : 'none'
-                    }}>
-                      <p style={{ fontWeight: 'bold', marginBottom: '10px' }}>
+                    <td className={`suspension-info__status-cell${index < lookupData.suspensions.length - 1 ? ' suspension-info__status-cell--bordered' : ''}`}>
+                      <p className="suspension-info__type-label">
                         {suspension.type} suspension
                       </p>
 
                       {suspension.suspended ? (
                         <>
-                          <p style={{ fontSize: '12px', color: '#507898', marginBottom: '5px' }}>
+                          <p className="suspension-info__meta">
                             Suspended by <ParseLinks text={`[${suspension.suspended_by}]`} />
                           </p>
-                          <p style={{ fontSize: '11px', color: '#507898', marginBottom: '10px' }}>
+                          <p className="suspension-info__meta suspension-info__meta--small">
                             on {formatDate(suspension.started)}
                           </p>
-                          <p style={{ fontSize: '12px' }}>
+                          <p className="suspension-info__action">
                             <button
                               onClick={() => handleUnsuspend(suspension.type_id, suspension.type)}
                               disabled={loading}
-                              style={{
-                                padding: '5px 10px',
-                                backgroundColor: loading ? '#c5cdd7' : '#4060b0',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '3px',
-                                cursor: loading ? 'not-allowed' : 'pointer',
-                                fontSize: '12px'
-                              }}
+                              className="suspension-info__btn--action suspension-info__btn--unsuspend"
                             >
                               Unsuspend
                             </button>
@@ -281,22 +230,14 @@ const SuspensionInfo = ({ user }) => {
                         </>
                       ) : (
                         <>
-                          <p style={{ fontSize: '12px', fontStyle: 'italic', color: '#507898', marginBottom: '10px' }}>
+                          <p className="suspension-info__no-restriction">
                             No restriction
                           </p>
-                          <p style={{ fontSize: '12px' }}>
+                          <p className="suspension-info__action">
                             <button
                               onClick={() => handleSuspend(suspension.type_id, suspension.type)}
                               disabled={loading}
-                              style={{
-                                padding: '5px 10px',
-                                backgroundColor: loading ? '#c5cdd7' : '#8b0000',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '3px',
-                                cursor: loading ? 'not-allowed' : 'pointer',
-                                fontSize: '12px'
-                              }}
+                              className="suspension-info__btn--action suspension-info__btn--suspend"
                             >
                               Suspend
                             </button>
@@ -312,9 +253,9 @@ const SuspensionInfo = ({ user }) => {
         </div>
       )}
 
-      <hr style={{ margin: '30px 0', border: 'none', borderTop: '1px solid #d3d3d3' }} />
+      <hr className="suspension-info__divider" />
 
-      <div style={{ fontSize: '14px', lineHeight: '1.6' }}>
+      <div className="suspension-info__help">
         <strong>General Information:</strong>
         <p>
           Each type of suspension carries its own weight. More can be added later, but for right
@@ -322,13 +263,13 @@ const SuspensionInfo = ({ user }) => {
         </p>
 
         {lookupData && lookupData.available_types.length > 0 && (
-          <dl style={{ marginTop: '20px' }}>
+          <dl className="suspension-info__types">
             {lookupData.available_types.map((type) => (
               <React.Fragment key={type.node_id}>
-                <dt style={{ fontWeight: 'bold', marginTop: '10px', color: '#38495e' }}>
+                <dt className="suspension-info__type-title">
                   {type.title}
                 </dt>
-                <dd style={{ marginLeft: '20px', color: '#507898' }}>
+                <dd className="suspension-info__type-desc">
                   <ParseLinks text={type.description} />
                 </dd>
               </React.Fragment>
@@ -336,7 +277,7 @@ const SuspensionInfo = ({ user }) => {
           </dl>
         )}
 
-        <p style={{ marginTop: '20px', color: '#507898' }}>
+        <p className="suspension-info__note">
           Keep in mind that the punishment should fit the crime, and that systematic downvoting is
           not a "crime" at all, regardless of what an asshole thing to do that it is. Autovoters,
           C! abusers, etc. Use these sparingly, but as needed.

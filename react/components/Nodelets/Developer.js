@@ -44,7 +44,7 @@ const Developer = (props) => {
         console.log(err)
       })
     return currentVars
-  } 
+  }
 
   const afterOpenModal = async () => {
     const currentVars = await getDevVars()
@@ -53,93 +53,49 @@ const Developer = (props) => {
 
   return <NodeletContainer id={props.id}
       title="Everything Developer" nodeletIsOpen={props.nodeletIsOpen} showNodelet={props.showNodelet} >
-    <div style={{ paddingLeft: '8px', paddingTop: '4px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-        <FaGithubSquare size={12} style={{ color: '#666', flexShrink: 0 }} />
+    <div className="dev-nodelet__content">
+      <div className="dev-nodelet__row">
+        <FaGithubSquare size={12} className="dev-nodelet__icon" />
         <a href={githubUrl}>GitHub</a>
-        <FaCodeBranch size={12} style={{ color: '#666', flexShrink: 0, marginLeft: '8px' }} />
+        <FaCodeBranch size={12} className="dev-nodelet__icon" style={{ marginLeft: '8px' }} />
         <a href={githubUrl + "/commit/"+props.lastCommit}>{props.lastCommit.substr(0,7)}</a>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-        <FaMicrochip size={12} style={{ color: '#666', flexShrink: 0 }} />
+      <div className="dev-nodelet__row">
+        <FaMicrochip size={12} className="dev-nodelet__icon" />
         <span>{props.architecture}</span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-        <FaUsers size={12} style={{ color: '#666', flexShrink: 0 }} />
+      <div className="dev-nodelet__row dev-nodelet__row--spaced">
+        <FaUsers size={12} className="dev-nodelet__icon" />
         <LinkNode type="usergroup" title="edev" display="EDev Usergroup" />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-        <FaCubes size={12} style={{ color: '#666', flexShrink: 0 }} />
+      <div className="dev-nodelet__row">
+        <FaCubes size={12} className="dev-nodelet__icon" />
         <span>node_id: {props.node.node_id} <small>(<TimeDistance then={props.node.createtime} />)</small></span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-        <FaRegFile size={12} style={{ color: '#666', flexShrink: 0 }} />
+      <div className="dev-nodelet__row dev-nodelet__row--spaced">
+        <FaRegFile size={12} className="dev-nodelet__icon" />
         <LinkNode type="nodetype" title={props.node.type} />
       </div>
-      <div style={{ marginBottom: '4px' }}>
+      <div className="dev-nodelet__btn-wrapper">
         <button
           onClick={() => setSourceMapOpen(true)}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '8px 12px',
-            border: '1px solid #4060b0',
-            borderRadius: '4px',
-            backgroundColor: '#f8f9f9',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: '500',
-            color: '#4060b0',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#4060b0'
-            e.currentTarget.style.color = 'white'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#f8f9f9'
-            e.currentTarget.style.color = '#4060b0'
-          }}
+          className="dev-nodelet__btn"
         >
           <FaCode size={14} />
           <span>View Source Map</span>
         </button>
       </div>
-      <div style={{ marginBottom: '4px' }}>
+      <div className="dev-nodelet__btn-wrapper">
         <button
           onClick={openModal}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '8px 12px',
-            border: '1px solid #4060b0',
-            borderRadius: '4px',
-            backgroundColor: '#f8f9f9',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: '500',
-            color: '#4060b0',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#4060b0'
-            e.currentTarget.style.color = 'white'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#f8f9f9'
-            e.currentTarget.style.color = '#4060b0'
-          }}
+          className="dev-nodelet__btn"
         >
           <FaInfoCircle size={14} />
           <span>Your $VARS</span>
         </button>
       </div>
     </div>
-    <div style={{ marginTop: '15px' }}>
+    <div className="dev-nodelet__spacer">
     </div>
     <br /><br />
     <NodeletSection nodelet="edn" section="edev" title="edev" display={props.edev} toggleSection={props.toggleSection}>
@@ -181,66 +137,36 @@ const Developer = (props) => {
       }}
     >
       <div>
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#5bc0de' }}>
+        <h2 className="dev-nodelet__modal-title">
           <FaInfoCircle size={20} /> Your $VARS
         </h2>
 
-        <div style={{ margin: '20px 0', lineHeight: '1.6' }}>
-          <p style={{ marginBottom: '15px' }}>
+        <div className="dev-nodelet__modal-content">
+          <p className="dev-nodelet__modal-intro">
             Developer variables for your current session:
           </p>
           {Object.keys(devVars).length > 0 ? (
-            <ul style={{
-              listStyle: 'none',
-              padding: '10px',
-              backgroundColor: '#f5f5f5',
-              border: '1px solid #ddd',
-              borderRadius: '3px',
-              maxHeight: '400px',
-              overflowY: 'auto'
-            }}>
+            <ul className="dev-nodelet__vars-list">
               {Object.keys(devVars).sort().map((key,idx) => {
                 return (
-                  <li key={"edn_vars_key_"+idx} style={{
-                    padding: '4px 0',
-                    fontFamily: 'monospace',
-                    fontSize: '0.9em'
-                  }}>
+                  <li key={"edn_vars_key_"+idx} className="dev-nodelet__vars-item">
                     <strong>{key}:</strong> {devVars[key]}
                   </li>
                 )
               })}
             </ul>
           ) : (
-            <p style={{
-              padding: '20px',
-              backgroundColor: '#f5f5f5',
-              border: '1px solid #ddd',
-              borderRadius: '3px',
-              textAlign: 'center',
-              color: '#666'
-            }}>
+            <p className="dev-nodelet__vars-loading">
               Loading variables...
             </p>
           )}
         </div>
 
-        <div style={{ textAlign: 'right', marginTop: '20px' }}>
+        <div className="dev-nodelet__modal-footer">
           <button
             type="button"
             onClick={closeModal}
-            style={{
-              padding: '6px 16px',
-              backgroundColor: '#5bc0de',
-              color: 'white',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              fontSize: '0.9em',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
+            className="dev-nodelet__close-btn"
           >
             Close
           </button>

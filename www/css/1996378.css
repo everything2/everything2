@@ -19,6 +19,7 @@
   --e2-bg-table-header: #9cffff;         /* Cyan table headers */
   --e2-bg-table-cell: #99cfff;           /* Light blue table cells */
   --e2-bg-hover: #9cffff;                /* Cyan hover */
+  --e2-light-bg: #e0f4ff;                /* Light accent background */
   --e2-bg-writeup-header: #44bbff;       /* Bright blue writeup headers */
   --e2-bg-writeup-content: #99cfff;      /* Light blue content */
   --e2-bg-writeup-footer: #99cfff;       /* Light blue footer */
@@ -27,7 +28,7 @@
   /* Text colors */
   --e2-text-body: #000033;               /* Near black text */
   --e2-text-header: #dddddd;             /* Light gray header text */
-  --e2-text-nodelet-title: #000033;      /* Dark text on bright nodelet headers */
+  --e2-text-nodelet-title: #dddddd;      /* Match logo color */
   --e2-text-error: #8b0000;              /* Dark red for nodeshell */
   --e2-text-error-hover: #ff0000;        /* Red on hover */
 
@@ -207,3 +208,32 @@ td#sl16{background:#99daff;}td#sl15{background:#99d9ff;}td#sl14{background:#99d8
 td#sl12{background:#99d7ff;}td#sl11{background:#99d6ff;}td#sl10{background:#99d5ff;}td#sl9{background:#99d5ff;}
 td#sl8{background:#99d4ff;}td#sl7{background:#99d3ff;}td#sl6{background:#99d2ff;}td#sl5{background:#99d2ff;}
 td#sl4{background:#99d1ff;}td#sl3{background:#99d0ff;}td#sl2{background:#99cfff;}td#sl1{background:#99cfff;}
+
+/* ====================================================================
+   CHATTERBOX - Messages section with thin outline
+   ==================================================================== */
+
+.chatter-mini-messages {
+  background-color: transparent;
+  border: 1px solid var(--e2-border-primary, #38495e);
+}
+
+.chatter-input-container {
+  background-color: var(--e2-bg-body, #99cfff);
+}
+
+.message-list-item {
+  background-color: var(--e2-bg-body, #99cfff);
+}
+
+.newwriteups-filter {
+  background-color: var(--e2-bg-body, #99cfff);
+}
+
+.otherusers-room-options {
+  background-color: var(--e2-bg-body, #99cfff);
+}
+
+.otherusers-section-header {
+  background-color: var(--e2-bg-body, #99cfff);
+}

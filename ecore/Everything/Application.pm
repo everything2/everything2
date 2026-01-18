@@ -8327,6 +8327,19 @@ sub getRenderedNotifications
       next;
     }
 
+    # Check if notification is still valid (e.g., referenced content still exists)
+    my $validityCheck = Everything::Delegation::notification->can($notificationTitle . "_is_valid");
+    if ($validityCheck)
+    {
+      my $is_valid = $validityCheck->($this->{db}, $this, $args);
+      if (!$is_valid)
+      {
+        # Notification is no longer valid - skip it
+        # Optionally could auto-dismiss here, but for now just skip display
+        next;
+      }
+    }
+
     # Render notification using delegation - returns plain text
     my $displayText = $renderNotification->($this->{db}, $this, $args);
 
@@ -8433,6 +8446,115 @@ sub create_short_url
   my $short_url = 'https://' . $Everything::CONF->canonical_web_server . '/s/' . $short_string;
 
   return $short_url;
+}
+
+# Get categories containing a node with prev/next navigation
+# Returns arrayref of category hashes, each with:
+#   node_id, title, author_user, author_username, is_public
+#   prev_node (hashref with node_id, title, type or undef)
+#   next_node (hashref with node_id, title, type or undef)
+#   position (1-indexed position in category)
+#   total (total items in category)
+sub get_node_categories
+{
+  my ($this, $node_id) = @_;
+
+  return [] unless $node_id;
+
+  my $db = $this->{db};
+  my $guest_user_id = $Everything::CONF->guest_user;
+
+  # Get the category linktype
+  my $category_linktype = $db->getNode('category', 'linktype');
+  return [] unless $category_linktype;
+  my $linktype_id = $category_linktype->{node_id};
+
+  # Get all categories containing this node
+  my $sql = "SELECT c.node_id, c.title, c.author_user, u.title AS author_username
+    FROM links l
+    JOIN node c ON l.from_node = c.node_id
+    LEFT JOIN node u ON c.author_user = u.node_id
+    WHERE l.to_node = ? AND l.linktype = ?
+    ORDER BY c.title";
+
+  my $dbh = $db->getDatabaseHandle();
+  my $ds = $dbh->prepare($sql);
+  $ds->execute($node_id, $linktype_id);
+
+  my @categories = ();
+  while (my $row = $ds->fetchrow_hashref) {
+    my $is_public = $row->{author_user} == $guest_user_id ? 1 : 0;
+
+    # Get prev/next navigation within this category
+    my $nav = $this->_get_category_navigation($row->{node_id}, $node_id, $linktype_id);
+
+    push @categories, {
+      node_id => $row->{node_id},
+      title => $row->{title},
+      author_user => $row->{author_user},
+      author_username => $row->{author_username},
+      is_public => $is_public,
+      prev_node => $nav->{prev},
+      next_node => $nav->{next},
+      position => $nav->{position},
+      total => $nav->{total}
+    };
+  }
+
+  return \@categories;
+}
+
+# Internal helper: Get prev/next navigation for a node within a category
+sub _get_category_navigation
+{
+  my ($this, $category_id, $node_id, $linktype_id) = @_;
+
+  my $dbh = $this->{db}->getDatabaseHandle();
+
+  # Get all members of this category ordered by food value
+  my $sql = "SELECT l.to_node, n.title, nt.title AS node_type
+    FROM links l
+    JOIN node n ON l.to_node = n.node_id
+    JOIN node nt ON n.type_nodetype = nt.node_id
+    WHERE l.from_node = ? AND l.linktype = ?
+    ORDER BY l.food ASC, n.title ASC";
+
+  my $ds = $dbh->prepare($sql);
+  $ds->execute($category_id, $linktype_id);
+
+  my @members = ();
+  my $current_idx = -1;
+  my $idx = 0;
+
+  while (my $row = $ds->fetchrow_hashref) {
+    push @members, {
+      node_id => $row->{to_node},
+      title => $row->{title},
+      type => $row->{node_type}
+    };
+    if ($row->{to_node} == $node_id) {
+      $current_idx = $idx;
+    }
+    $idx++;
+  }
+
+  my $total = scalar @members;
+  my $prev = undef;
+  my $next = undef;
+
+  if ($current_idx > 0) {
+    $prev = $members[$current_idx - 1];
+  }
+  if ($current_idx >= 0 && $current_idx < $total - 1) {
+    $next = $members[$current_idx + 1];
+  }
+
+  return {
+    prev => $prev,
+    next => $next,
+    position => $current_idx + 1,  # 1-indexed for display
+    total => $total
+  };
 }
 
 1;

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import AdminCreateNodeLink from '../AdminCreateNodeLink';
 import { decodeHtmlEntities } from '../../utils/textUtils';
+import { InContentAd } from '../Layout/GoogleAds';
+
+// Show an ad every N items in the best entries list (for guests only)
+const AD_INTERVAL = 4;
 
 const NothingFound = ({ data, user }) => {
   const {
@@ -89,23 +93,31 @@ const NothingFound = ({ data, user }) => {
                 We couldn't find what you're looking for, but here are some of our best entries from the past few months:
               </h3>
               <ul style={styles.bestEntriesList}>
-                {best_entries.map((entry) => (
-                  <li key={entry.writeup_id} style={styles.bestEntryItem}>
-                    <a href={`/node/${entry.node_id}?lastnode_id=0`} style={styles.bestEntryLink}>
-                      {entry.title}
-                    </a>
-                    {entry.author && (
-                      <span style={styles.bestEntryAuthor}>
-                        {' '}by{' '}
-                        <a href={`/user/${encodeURIComponent(entry.author.title)}`}>
-                          {entry.author.title}
-                        </a>
-                      </span>
+                {best_entries.map((entry, index) => (
+                  <React.Fragment key={entry.writeup_id}>
+                    <li style={styles.bestEntryItem}>
+                      <a href={`/node/${entry.node_id}?lastnode_id=0`} style={styles.bestEntryLink}>
+                        {entry.title}
+                      </a>
+                      {entry.author && (
+                        <span style={styles.bestEntryAuthor}>
+                          {' '}by{' '}
+                          <a href={`/user/${encodeURIComponent(entry.author.title)}`}>
+                            {entry.author.title}
+                          </a>
+                        </span>
+                      )}
+                      {entry.excerpt && (
+                        <p style={styles.bestEntryExcerpt}>{decodeHtmlEntities(entry.excerpt)}</p>
+                      )}
+                    </li>
+                    {/* Show ad every AD_INTERVAL items */}
+                    {(index + 1) % AD_INTERVAL === 0 && index < best_entries.length - 1 && (
+                      <li style={styles.adItem}>
+                        <InContentAd show={true} />
+                      </li>
                     )}
-                    {entry.excerpt && (
-                      <p style={styles.bestEntryExcerpt}>{decodeHtmlEntities(entry.excerpt)}</p>
-                    )}
-                  </li>
+                  </React.Fragment>
                 ))}
               </ul>
             </div>
@@ -298,6 +310,11 @@ const styles = {
     marginTop: '6px',
     marginBottom: 0,
     lineHeight: '1.5'
+  },
+  adItem: {
+    listStyleType: 'none',
+    marginBottom: '16px',
+    paddingBottom: '16px'
   }
 };
 

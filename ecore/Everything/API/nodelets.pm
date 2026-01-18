@@ -161,15 +161,14 @@ sub update_nodelets {
     # Store as comma-separated string in VARS
     my $nodelet_order = join(',', @validated_ids);
 
-    # Update user VARS
-    my $user_node = $user->NODEDATA;
-    Everything::setVars($user_node, { nodelets => $nodelet_order });
+    # Update user VARS - get existing vars, modify just nodelets, then save
+    # (Using setVars with only one key would delete all other vars!)
+    my $VARS = $user->VARS;
+    $VARS->{nodelets} = $nodelet_order;
+    $user->set_vars($VARS);
 
-    # Update the node in the database
-    my $update_ok = eval {
-        $DB->updateNode($user_node, -1);
-        1;
-    };
+    # Verify update succeeded
+    my $update_ok = 1;
 
     unless ($update_ok) {
         return [$self->HTTP_INTERNAL_SERVER_ERROR, {

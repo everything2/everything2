@@ -139,156 +139,25 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
     }
   }, [confirmModal])
 
-  const styles = {
-    container: {
-      fontFamily: 'Verdana, Arial, Helvetica, sans-serif',
-      fontSize: '10pt',
-      maxWidth: '800px',
-      margin: '0 auto'
-    },
-    header: {
-      fontSize: '14pt',
-      fontWeight: 'bold',
-      marginBottom: '16px',
-      color: '#38495e'
-    },
-    section: {
-      backgroundColor: '#f8f9f9',
-      border: '1px solid #38495e',
-      borderRadius: '4px',
-      padding: '16px',
-      marginBottom: '16px'
-    },
-    sectionTitle: {
-      fontSize: '11pt',
-      fontWeight: 'bold',
-      marginBottom: '12px',
-      color: '#38495e'
-    },
-    inputGroup: {
-      marginBottom: '12px'
-    },
-    checkboxLabel: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      marginRight: '16px',
-      cursor: 'pointer'
-    },
-    checkbox: {
-      marginRight: '6px'
-    },
-    button: {
-      padding: '6px 16px',
-      backgroundColor: '#4060b0',
-      color: 'white',
-      border: 'none',
-      borderRadius: '3px',
-      fontSize: '10pt',
-      cursor: 'pointer',
-      fontWeight: 'bold'
-    },
-    buttonDisabled: {
-      padding: '6px 16px',
-      backgroundColor: '#ccc',
-      color: '#666',
-      border: 'none',
-      borderRadius: '3px',
-      fontSize: '10pt',
-      cursor: 'not-allowed',
-      fontWeight: 'bold'
-    },
-    buttonSecondary: {
-      padding: '4px 12px',
-      backgroundColor: '#507898',
-      color: 'white',
-      border: 'none',
-      borderRadius: '3px',
-      fontSize: '9pt',
-      cursor: 'pointer',
-      marginLeft: '8px'
-    },
-    buttonDanger: {
-      padding: '4px 12px',
-      backgroundColor: '#c33',
-      color: 'white',
-      border: 'none',
-      borderRadius: '3px',
-      fontSize: '9pt',
-      cursor: 'pointer',
-      marginLeft: '8px'
-    },
-    list: {
-      listStyle: 'none',
-      padding: 0,
-      margin: 0
-    },
-    listItem: {
-      padding: '12px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    },
-    userInfo: {
-      flex: 1
-    },
-    username: {
-      fontWeight: 'bold',
-      color: '#4060b0',
-      marginRight: '12px'
-    },
-    blockTypes: {
-      fontSize: '9pt',
-      color: '#507898',
-      display: 'flex',
-      gap: '12px',
-      marginTop: '4px'
-    },
-    actions: {
-      display: 'flex',
-      gap: '8px'
-    },
-    message: {
-      padding: '8px 12px',
-      borderRadius: '3px',
-      marginBottom: '12px'
-    },
-    error: {
-      backgroundColor: '#fee',
-      color: '#c33',
-      border: '1px solid #c33'
-    },
-    success: {
-      backgroundColor: '#efe',
-      color: '#383',
-      border: '1px solid #383'
-    },
-    emptyState: {
-      textAlign: 'center',
-      padding: '24px',
-      color: '#507898',
-      fontStyle: 'italic'
-    }
-  }
-
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>Manage Blocked Users</div>
+    <div className="user-manager">
+      <div className="user-manager__header">Manage Blocked Users</div>
 
       {error && (
-        <div style={{ ...styles.message, ...styles.error }}>
+        <div className="user-manager__message user-manager__message--error">
           {error}
         </div>
       )}
 
       {success && (
-        <div style={{ ...styles.message, ...styles.success }}>
+        <div className="user-manager__message user-manager__message--success">
           {success}
         </div>
       )}
 
-      <div style={styles.section}>
-        <div style={styles.sectionTitle}>Block a User</div>
-        <div style={styles.inputGroup}>
+      <div className="user-manager__section">
+        <div className="user-manager__section-title">Block a User</div>
+        <div className="user-manager__input-group">
           <UserSearchInput
             onSelect={addBlockedUser}
             placeholder="Search for a user to block..."
@@ -296,33 +165,33 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
             disabled={loading}
           />
         </div>
-        <div style={styles.inputGroup}>
-          <label style={styles.checkboxLabel}>
+        <div className="user-manager__input-group">
+          <label className="user-manager__checkbox-label">
             <input
               type="checkbox"
-              style={styles.checkbox}
+              className="user-manager__checkbox"
               checked={hideWriteups}
               onChange={(e) => setHideWriteups(e.target.checked)}
               disabled={loading}
             />
             <span>
               <strong>Hide writeups</strong>
-              <div style={{ fontSize: '9pt', color: '#507898', marginTop: '2px' }}>
+              <div className="user-manager__checkbox-hint">
                 Don't show their writeups in New Writeups
               </div>
             </span>
           </label>
-          <label style={styles.checkboxLabel}>
+          <label className="user-manager__checkbox-label">
             <input
               type="checkbox"
-              style={styles.checkbox}
+              className="user-manager__checkbox"
               checked={blockMessages}
               onChange={(e) => setBlockMessages(e.target.checked)}
               disabled={loading}
             />
             <span>
               <strong>Block messages</strong>
-              <div style={{ fontSize: '9pt', color: '#507898', marginTop: '2px' }}>
+              <div className="user-manager__checkbox-hint">
                 Block their private messages and chat
               </div>
             </span>
@@ -330,30 +199,27 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
         </div>
       </div>
 
-      <div style={styles.section}>
-        <div style={styles.sectionTitle}>
+      <div className="user-manager__section">
+        <div className="user-manager__section-title">
           Blocked Users ({blockedUsers.length})
         </div>
         {blockedUsers.length === 0 ? (
-          <div style={styles.emptyState}>
+          <div className="user-manager__empty-state">
             No blocked users
           </div>
         ) : (
-          <ul style={styles.list}>
-            {blockedUsers.map((user, index) => (
-              <li key={user.node_id} style={{
-                ...styles.listItem,
-                borderBottom: index === blockedUsers.length - 1 ? 'none' : '1px solid #ddd'
-              }}>
-                <div style={styles.userInfo}>
+          <ul className="user-manager__list">
+            {blockedUsers.map((user) => (
+              <li key={user.node_id} className="user-manager__list-item">
+                <div className="user-manager__user-info">
                   <div>
-                    <span style={styles.username}>{user.title}</span>
+                    <span className="user-manager__username">{user.title}</span>
                   </div>
-                  <div style={styles.blockTypes}>
-                    <label style={styles.checkboxLabel}>
+                  <div className="user-manager__block-types">
+                    <label className="user-manager__checkbox-label">
                       <input
                         type="checkbox"
-                        style={styles.checkbox}
+                        className="user-manager__checkbox"
                         checked={user.hide_writeups === 1}
                         onChange={(e) => updateBlockedUser(user.node_id, {
                           hide_writeups: e.target.checked,
@@ -363,10 +229,10 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
                       />
                       Hide writeups
                     </label>
-                    <label style={styles.checkboxLabel}>
+                    <label className="user-manager__checkbox-label">
                       <input
                         type="checkbox"
-                        style={styles.checkbox}
+                        className="user-manager__checkbox"
                         checked={user.block_messages === 1}
                         onChange={(e) => updateBlockedUser(user.node_id, {
                           hide_writeups: user.hide_writeups,
@@ -378,9 +244,9 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
                     </label>
                   </div>
                 </div>
-                <div style={styles.actions}>
+                <div className="user-manager__actions">
                   <button
-                    style={styles.buttonDanger}
+                    className="user-manager__btn--danger"
                     onClick={() => openRemoveModal(user.node_id, user.title)}
                     disabled={loading}
                   >

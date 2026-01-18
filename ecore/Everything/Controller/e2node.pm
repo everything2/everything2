@@ -72,11 +72,15 @@ sub _render_e2node {
         }
     }
 
+    # Get categories containing this e2node (with prev/next navigation)
+    my $categories = $self->APP->get_node_categories($node->node_id);
+
     # Build contentData for React
     my $content_data = {
-        type   => 'e2node',
-        e2node => $e2node,
-        user   => $user_data
+        type       => 'e2node',
+        e2node     => $e2node,
+        user       => $user_data,
+        categories => $categories
     };
 
     # Add existing draft if found

@@ -60,34 +60,29 @@ function SortableMemberItem({ member, onRemove }) {
     isDragging,
   } = useSortable({ id: member.node_id })
 
+  // Only transform/transition need inline styles (dynamic values from drag state)
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    padding: '10px 12px',
-    margin: '4px 0',
-    backgroundColor: isDragging ? '#f0f4ff' : 'white',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    cursor: 'grab',
-    userSelect: 'none',
     opacity: isDragging ? 0.7 : 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   }
 
   // e2nodes are always owned by Content Editors, so skip showing author for them
   const showAuthor = member.type !== 'e2node'
 
+  const itemClass = isDragging
+    ? 'category-edit__member-item category-edit__member-item--dragging'
+    : 'category-edit__member-item'
+
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <div style={{ display: 'flex', alignItems: 'center', flex: 1, gap: '8px' }}>
-        <span style={{ color: '#4060b0' }}>
+    <div ref={setNodeRef} style={style} className={itemClass} {...attributes} {...listeners}>
+      <div className="category-edit__member-content">
+        <span className="category-edit__member-handle">
           <FaGripVertical size={14} />
         </span>
         <LinkNode nodeId={member.node_id} title={member.title} type={member.type} />
         {showAuthor && (
-          <span style={{ color: '#666', fontSize: '12px' }}>
+          <span className="category-edit__member-author">
             by {member.author}
           </span>
         )}
@@ -99,18 +94,7 @@ function SortableMemberItem({ member, onRemove }) {
           onRemove(member)
         }}
         onPointerDown={(e) => e.stopPropagation()}
-        style={{
-          padding: '4px 8px',
-          fontSize: '12px',
-          border: '1px solid #d9534f',
-          borderRadius: '3px',
-          backgroundColor: 'white',
-          color: '#d9534f',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px'
-        }}
+        className="category-edit__member-remove"
         title="Remove from category"
       >
         <FaTrash size={10} />
@@ -124,8 +108,8 @@ const CategoryEdit = ({ data }) => {
 
   if (!category) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorBox}>Category not found.</div>
+      <div className="category-edit">
+        <div className="category-edit__error">Category not found.</div>
       </div>
     )
   }
@@ -493,26 +477,34 @@ const CategoryEdit = ({ data }) => {
   // Member IDs for sortable context
   const memberIds = useMemo(() => members.map(m => m.node_id), [members])
 
+  // Get input validation class
+  const getOwnerInputClass = () => {
+    let cls = 'category-edit__text-input'
+    if (ownerValidation.valid === true) cls += ' category-edit__text-input--valid'
+    else if (ownerValidation.valid === false) cls += ' category-edit__text-input--invalid'
+    return cls
+  }
+
   return (
-    <div style={styles.container}>
+    <div className="category-edit">
       {/* Header */}
-      <div style={styles.header}>
-        <div style={styles.headerTop}>
-          <div style={styles.titleRow}>
-            <FaFolder size={20} style={{ color: '#4060b0', marginRight: '10px' }} />
-            <h1 style={styles.title}>Editing: {title}</h1>
+      <div className="category-edit__header">
+        <div className="category-edit__header-top">
+          <div className="category-edit__title-row">
+            <FaFolder size={20} className="category-edit__title-icon" />
+            <h1 className="category-edit__title">Editing: {title}</h1>
           </div>
           <a
             href={`/node/${node_id}`}
-            style={styles.viewButton}
+            className="category-edit__view-btn"
             title="View category"
           >
             <FaEye size={14} style={{ marginRight: '6px' }} />
             View
           </a>
         </div>
-        <div style={styles.meta}>
-          <span style={styles.metaItem}>
+        <div className="category-edit__meta">
+          <span>
             {is_public ? 'Public category' : `Maintained by ${author}`}
           </span>
         </div>
@@ -520,62 +512,57 @@ const CategoryEdit = ({ data }) => {
 
       {/* Category Settings Section (editors+ only) */}
       {can_edit_meta && (
-        <div style={styles.settingsSection}>
-          <h2 style={styles.sectionTitle}>Category Settings</h2>
+        <div className="category-edit__settings">
+          <h2 className="category-edit__section-title">Category Settings</h2>
 
-          <div style={styles.formRow}>
-            <label style={styles.label}>Title:</label>
+          <div className="category-edit__form-row">
+            <label className="category-edit__label">Title:</label>
             <input
               type="text"
               value={categoryTitle}
               onChange={handleTitleChange}
-              style={styles.textInput}
+              className="category-edit__text-input"
             />
           </div>
 
-          <div style={styles.formRow}>
-            <label style={styles.checkboxLabel}>
+          <div className="category-edit__form-row">
+            <label className="category-edit__checkbox-label">
               <input
                 type="checkbox"
                 checked={isPublic}
                 onChange={handlePublicToggle}
-                style={{ marginRight: '8px' }}
               />
               Public category (anyone can edit)
             </label>
           </div>
 
           {!isPublic && (
-            <div style={styles.formRow}>
-              <label style={styles.label}>Owner:</label>
-              <div style={styles.ownerInputWrapper}>
+            <div className="category-edit__form-row">
+              <label className="category-edit__label">Owner:</label>
+              <div className="category-edit__owner-wrapper">
                 <input
                   type="text"
                   value={ownerName}
                   onChange={handleOwnerChange}
                   placeholder="Enter username or usergroup"
-                  style={{
-                    ...styles.textInput,
-                    flex: 1,
-                    borderColor: ownerValidation.valid === false ? '#d9534f' :
-                                 ownerValidation.valid === true ? '#5cb85c' : '#ccc'
-                  }}
+                  className={getOwnerInputClass()}
+                  style={{ flex: 1 }}
                 />
                 {ownerValidation.checking && (
-                  <span style={styles.validationIcon}>
-                    <FaSpinner className="fa-spin" size={14} style={{ color: '#666' }} />
+                  <span className="category-edit__validation-icon">
+                    <FaSpinner className="fa-spin" size={14} />
                   </span>
                 )}
                 {ownerValidation.valid === true && !ownerValidation.checking && (
-                  <span style={styles.validationIcon}>
-                    <FaCheck size={14} style={{ color: '#5cb85c' }} />
-                    <span style={{ marginLeft: '4px', fontSize: '11px', color: '#666' }}>
+                  <span className="category-edit__validation-icon category-edit__validation-icon--success">
+                    <FaCheck size={14} />
+                    <span className="category-edit__validation-type">
                       ({ownerValidation.type})
                     </span>
                   </span>
                 )}
                 {ownerValidation.valid === false && !ownerValidation.checking && ownerName && (
-                  <span style={{ ...styles.validationIcon, color: '#d9534f' }}>
+                  <span className="category-edit__validation-icon category-edit__validation-icon--error">
                     Not found
                   </span>
                 )}
@@ -583,24 +570,16 @@ const CategoryEdit = ({ data }) => {
             </div>
           )}
 
-          <div style={styles.settingsActions}>
+          <div className="category-edit__settings-actions">
             {metaSaveStatus && (
-              <span style={{
-                color: metaSaveStatus.type === 'success' ? '#5cb85c' : '#d9534f',
-                fontSize: '12px',
-                marginRight: '10px'
-              }}>
+              <span className={`category-edit__status category-edit__status--${metaSaveStatus.type}`}>
                 {metaSaveStatus.message}
               </span>
             )}
             <button
               onClick={handleSaveMeta}
               disabled={!hasMetaChanges || isMetaSaving || (!isPublic && !ownerValidation.valid)}
-              style={{
-                ...styles.saveSettingsButton,
-                opacity: (!hasMetaChanges || isMetaSaving || (!isPublic && !ownerValidation.valid)) ? 0.5 : 1,
-                cursor: (!hasMetaChanges || isMetaSaving || (!isPublic && !ownerValidation.valid)) ? 'not-allowed' : 'pointer'
-              }}
+              className="category-edit__save-settings-btn"
             >
               {isMetaSaving ? 'Saving...' : 'Save Settings'}
             </button>
@@ -610,11 +589,11 @@ const CategoryEdit = ({ data }) => {
 
       {/* Member Management Section */}
       {can_manage_members && members.length > 0 ? (
-        <div style={styles.membersSection}>
-          <h2 style={styles.sectionTitle}>
+        <div className="category-edit__members">
+          <h2 className="category-edit__section-title">
             Manage Members ({members.length})
           </h2>
-          <p style={styles.membersHelp}>
+          <p className="category-edit__members-help">
             Drag to reorder. Click × to remove.
           </p>
 
@@ -637,13 +616,9 @@ const CategoryEdit = ({ data }) => {
             </SortableContext>
           </DndContext>
 
-          <div style={styles.memberActions}>
+          <div className="category-edit__member-actions">
             {memberSaveStatus && (
-              <span style={{
-                color: memberSaveStatus.type === 'success' ? '#5cb85c' : '#d9534f',
-                fontSize: '12px',
-                marginRight: '10px'
-              }}>
+              <span className={`category-edit__status category-edit__status--${memberSaveStatus.type}`}>
                 {memberSaveStatus.message}
               </span>
             )}
@@ -651,10 +626,7 @@ const CategoryEdit = ({ data }) => {
               <button
                 onClick={handleSaveMemberOrder}
                 disabled={isMemberSaving}
-                style={{
-                  ...styles.saveSettingsButton,
-                  opacity: isMemberSaving ? 0.5 : 1
-                }}
+                className="category-edit__save-settings-btn"
               >
                 {isMemberSaving ? 'Saving...' : 'Save Order'}
               </button>
@@ -664,23 +636,20 @@ const CategoryEdit = ({ data }) => {
       ) : null}
 
       {/* Description Editor Section */}
-      <div style={styles.editorSectionWrapper}>
+      <div className="category-edit__editor-wrapper">
         {/* Toolbar with mode toggle */}
-        <div style={styles.toolbar}>
-          <div style={styles.toolbarLeft}>
+        <div className="category-edit__toolbar">
+          <div className="category-edit__toolbar-left">
             {hasChanges && (
-              <span style={styles.unsavedIndicator}>Unsaved changes</span>
+              <span className="category-edit__unsaved">Unsaved changes</span>
             )}
             {saveStatus && (
-              <span style={{
-                ...styles.saveStatus,
-                color: saveStatus.type === 'success' ? '#22c55e' : '#f44336'
-              }}>
+              <span className={`category-edit__save-status category-edit__save-status--${saveStatus.type}`}>
                 {saveStatus.message}
               </span>
             )}
           </div>
-          <div style={styles.toolbarRight}>
+          <div className="category-edit__toolbar-right">
             {/* Rich/HTML mode toggle - uses shared CSS from E2Editor.css */}
             <div
               className="e2-mode-toggle"
@@ -700,11 +669,11 @@ const CategoryEdit = ({ data }) => {
         </div>
 
         {/* Editor area */}
-        <div style={styles.editorSection}>
-          <h2 style={styles.sectionTitle}>Category Description</h2>
+        <div className="category-edit__editor-section">
+          <h2 className="category-edit__section-title">Category Description</h2>
 
           {editorMode === 'rich' && editor && (
-            <div style={styles.editorWrapper}>
+            <div className="category-edit__editor-container">
               <MenuBar editor={editor} />
               <div className="e2-editor-wrapper" style={{ padding: '12px' }}>
                 <EditorContent editor={editor} />
@@ -716,7 +685,7 @@ const CategoryEdit = ({ data }) => {
             <textarea
               value={htmlContent}
               onChange={handleHtmlChange}
-              style={styles.htmlTextarea}
+              className="category-edit__html-textarea"
               placeholder="Enter HTML content..."
               spellCheck={false}
             />
@@ -724,23 +693,19 @@ const CategoryEdit = ({ data }) => {
         </div>
 
         {/* Action buttons - right aligned like writeup editor */}
-        <div style={styles.actions}>
-          <div style={styles.actionsLeft}>
+        <div className="category-edit__actions">
+          <div className="category-edit__actions-left">
             {/* Status messages on left */}
           </div>
-          <div style={styles.actionsRight}>
-            <button onClick={handleCancel} style={styles.cancelButton}>
+          <div className="category-edit__actions-right">
+            <button onClick={handleCancel} className="category-edit__cancel-btn">
               <FaTimes size={14} style={{ marginRight: '8px' }} />
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={isSaving}
-              style={{
-                ...styles.saveButton,
-                opacity: isSaving ? 0.7 : 1,
-                cursor: isSaving ? 'not-allowed' : 'pointer'
-              }}
+              className="category-edit__save-btn"
             >
               <FaSave size={14} style={{ marginRight: '8px' }} />
               {isSaving ? 'Saving...' : 'Save Description'}
@@ -750,12 +715,12 @@ const CategoryEdit = ({ data }) => {
       </div>
 
       {/* Live Preview Section - same layout as writeup editor */}
-      <div style={styles.previewSection}>
-        <div style={styles.previewHeader}>
-          <h4 style={styles.previewTitle}>Preview</h4>
+      <div className="category-edit__preview">
+        <div className="category-edit__preview-header">
+          <h4 className="category-edit__preview-title">Preview</h4>
           <button
             onClick={() => setShowPreview(!showPreview)}
-            style={styles.previewToggleButton}
+            className="category-edit__preview-toggle"
           >
             {showPreview ? 'Hide' : 'Show'}
           </button>
@@ -771,7 +736,7 @@ const CategoryEdit = ({ data }) => {
       </div>
 
       {/* Help text */}
-      <div style={styles.helpText}>
+      <div className="category-edit__help">
         <p>
           <strong>Tip:</strong> You can use{' '}
           <a className="externalLink" href="/title/E2+Link+Syntax" rel="nofollow" title="/title/E2+Link+Syntax" style={{ fontSize: 'inherit' }}>E2 link syntax</a>{' '}
@@ -780,275 +745,6 @@ const CategoryEdit = ({ data }) => {
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111',
-    padding: '20px',
-    maxWidth: '900px'
-  },
-  errorBox: {
-    padding: '15px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828'
-  },
-  header: {
-    marginBottom: '20px',
-    paddingBottom: '15px',
-    borderBottom: '2px solid #e0e0e0'
-  },
-  headerTop: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '10px'
-  },
-  titleRow: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  viewButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '6px 12px',
-    fontSize: '13px',
-    border: '1px solid #4060b0',
-    borderRadius: '4px',
-    backgroundColor: 'white',
-    color: '#4060b0',
-    textDecoration: 'none',
-    fontWeight: '500',
-    cursor: 'pointer'
-  },
-  title: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    margin: 0
-  },
-  meta: {
-    fontSize: '13px',
-    color: '#666'
-  },
-  metaItem: {},
-  settingsSection: {
-    marginBottom: '24px',
-    padding: '16px',
-    backgroundColor: '#f9f9f9',
-    border: '1px solid #e0e0e0',
-    borderRadius: '4px'
-  },
-  sectionTitle: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: '12px',
-    marginTop: 0
-  },
-  formRow: {
-    marginBottom: '12px'
-  },
-  label: {
-    display: 'block',
-    marginBottom: '4px',
-    fontWeight: '500',
-    color: '#555'
-  },
-  checkboxLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-    color: '#555'
-  },
-  textInput: {
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: '13px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    boxSizing: 'border-box'
-  },
-  ownerInputWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  validationIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '12px'
-  },
-  settingsActions: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginTop: '16px',
-    paddingTop: '12px',
-    borderTop: '1px solid #e0e0e0'
-  },
-  saveSettingsButton: {
-    padding: '6px 16px',
-    fontSize: '13px',
-    border: 'none',
-    borderRadius: '4px',
-    background: '#4060b0',
-    color: '#fff',
-    fontWeight: '500',
-    cursor: 'pointer'
-  },
-  membersSection: {
-    marginBottom: '24px',
-    padding: '16px',
-    backgroundColor: '#fff',
-    border: '1px solid #e0e0e0',
-    borderRadius: '4px'
-  },
-  membersHelp: {
-    fontSize: '12px',
-    color: '#666',
-    marginBottom: '12px',
-    marginTop: 0
-  },
-  memberActions: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginTop: '12px'
-  },
-  editorSectionWrapper: {
-    border: '1px solid #e0e0e0',
-    borderRadius: '4px',
-    padding: '16px',
-    marginBottom: '20px'
-  },
-  toolbar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '15px'
-  },
-  toolbarLeft: {
-    display: 'flex',
-    gap: '10px',
-    alignItems: 'center'
-  },
-  toolbarRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px'
-  },
-  unsavedIndicator: {
-    fontSize: '12px',
-    color: '#f59e0b',
-    fontStyle: 'italic'
-  },
-  saveStatus: {
-    fontSize: '12px',
-    fontWeight: '500'
-  },
-  editorSection: {
-    marginBottom: '20px'
-  },
-  editorWrapper: {
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    overflow: 'hidden',
-    backgroundColor: '#fff'
-  },
-  htmlTextarea: {
-    width: '100%',
-    minHeight: '200px',
-    fontFamily: 'monospace',
-    fontSize: '13px',
-    padding: '12px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-    color: '#333',
-    lineHeight: '1.5',
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  actions: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: '20px',
-    paddingTop: '15px',
-    borderTop: '1px solid #e0e0e0'
-  },
-  actionsLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  },
-  actionsRight: {
-    display: 'flex',
-    gap: '10px'
-  },
-  saveButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '6px 16px',
-    fontSize: '13px',
-    border: 'none',
-    borderRadius: '4px',
-    background: '#4060b0',
-    color: '#fff',
-    fontWeight: '500'
-  },
-  cancelButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '6px 16px',
-    fontSize: '13px',
-    border: '1px solid #666',
-    borderRadius: '4px',
-    background: '#fff',
-    color: '#666',
-    fontWeight: '500',
-    cursor: 'pointer'
-  },
-  previewSection: {
-    marginTop: '16px',
-    borderTop: '1px solid #ddd',
-    paddingTop: '12px'
-  },
-  previewHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '8px'
-  },
-  previewTitle: {
-    margin: 0,
-    fontSize: '14px',
-    color: '#666',
-    fontWeight: '500'
-  },
-  previewToggleButton: {
-    background: 'none',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    padding: '2px 8px',
-    fontSize: '11px',
-    color: '#666',
-    cursor: 'pointer'
-  },
-  helpText: {
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#e3f2fd',
-    border: '1px solid #90caf9',
-    borderRadius: '4px',
-    fontSize: '12px',
-    color: '#1565c0'
-  }
 }
 
 export default CategoryEdit

@@ -47,18 +47,7 @@ const MessageBox = ({ recipientId, recipientTitle, showAsIcon = false }) => {
           type="button"
           onClick={() => setIsModalOpen(true)}
           title={`Send message to ${recipientTitle}`}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: '4px',
-            cursor: 'pointer',
-            fontSize: '18px',
-            color: '#666',
-            lineHeight: 1,
-            opacity: 0.8
-          }}
-          onMouseOver={(e) => { e.target.style.opacity = '1' }}
-          onMouseOut={(e) => { e.target.style.opacity = '0.8' }}
+          className="message-box__icon-btn"
         >
           ✉
         </button>
@@ -66,15 +55,7 @@ const MessageBox = ({ recipientId, recipientTitle, showAsIcon = false }) => {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          style={{
-            padding: '4px 12px',
-            fontSize: '12px',
-            border: '1px solid #667eea',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            color: '#667eea',
-            cursor: 'pointer'
-          }}
+          className="message-box__text-btn"
         >
           Send Message
         </button>

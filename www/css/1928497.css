@@ -15,6 +15,7 @@
   --e2-bg-nodelet: #D1DBBD;              /* Light sage green */
   --e2-bg-header: #91AA9D;               /* Muted sage */
   --e2-bg-hover: #e5ebd6;                /* Lighter sage for hover */
+  --e2-light-bg: #f0f4e8;                /* Light accent background */
   --e2-bg-sidebar: transparent;
 
   /* Text colors */

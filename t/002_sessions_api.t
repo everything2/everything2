@@ -16,14 +16,16 @@ use Everything;
 # Initialize database to reset test user password
 initEverything('development-docker');
 
-# Reset normaluser1 password to 'blah' before running tests
-# This ensures test idempotency even if password was changed by other tests
-my $test_user = $DB->getNode("normaluser1", "user");
-if ($test_user) {
-    my ($pwhash, $salt) = $APP->saltNewPassword("blah");
-    $test_user->{passwd} = $pwhash;
-    $test_user->{salt} = $salt;
-    $DB->updateNode($test_user, -1);
+# Reset test user passwords to 'blah' before running tests
+# This ensures test idempotency even if passwords were changed by other tests
+for my $username ("normaluser1", "root") {
+    my $test_user = $DB->getNode($username, "user");
+    if ($test_user) {
+        my ($pwhash, $salt) = $APP->saltNewPassword("blah");
+        $test_user->{passwd} = $pwhash;
+        $test_user->{salt} = $salt;
+        $DB->updateNode($test_user, -1);
+    }
 }
 
 my $endpoint = "http://localhost/api/sessions";
@@ -101,8 +103,10 @@ ok($response->code == 200, "Session deletes ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
 ok($session->{display}->{is_guest} == 1, "Still guest due to deleted session");
 
-# Alternate form post method
-ok($response = $ua->post("$endpoint/create", {data => $json->encode({"username" => "root","passwd" => "blah"})}));
+# Alternate form post method - use fresh UA to avoid stale cookie state
+my $ua_form = LWP::UserAgent->new();
+$ua_form->cookie_jar(HTTP::Cookies->new());
+ok($response = $ua_form->post("$endpoint/create", {data => $json->encode({"username" => "root","passwd" => "blah"})}));
 ok($response->code == 200, "Session is ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
 ok($session->{display}->{is_guest} == 0, "Not guest anymore due to successful login");

@@ -33,9 +33,9 @@ const AltarOfSacrifice = ({ data }) => {
 
   if (access_denied) {
     return (
-      <div style={styles.container}>
-        <h2 style={styles.title}>Altar of Sacrifice</h2>
-        <div style={styles.errorBox}>
+      <div className="altar">
+        <h2 className="altar__title">Altar of Sacrifice</h2>
+        <div className="altar__error-box">
           <p>This tool is for editors only.</p>
         </div>
       </div>
@@ -43,20 +43,20 @@ const AltarOfSacrifice = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Altar of Sacrifice</h2>
+    <div className="altar">
+      <h2 className="altar__title">Altar of Sacrifice</h2>
 
-      <p style={styles.intro}>
+      <p className="altar__intro">
         Welcome to the mountaintop. Don&apos;t mind the blood.
       </p>
 
-      <p style={styles.note}>
+      <p className="altar__note">
         <strong>N.B.:</strong> This tool <em>will</em> remove the writeups you select.
       </p>
 
-      <div style={styles.instructions}>
-        <h3 style={styles.instructionsTitle}>Instructions</h3>
-        <ol style={styles.instructionsList}>
+      <div className="altar__instructions">
+        <h3 className="altar__instructions-title">Instructions</h3>
+        <ol className="altar__instructions-list">
           <li>Enter a user&apos;s name in the box. Submit.</li>
           <li>Choose which writeups to spare (if any) from the list provided, or choose to remove all writeups at once.</li>
           <li>Confirm that you really want to do this.</li>
@@ -92,33 +92,33 @@ const AltarOfSacrifice = ({ data }) => {
 }
 
 const StepInput = ({ nodeId, error }) => (
-  <form method="get" style={styles.form}>
+  <form method="get" className="altar__form">
     <input type="hidden" name="node_id" value={nodeId} />
-    <fieldset style={styles.fieldset}>
-      <legend style={styles.legend}>Step 1: the victim</legend>
+    <fieldset className="altar__fieldset">
+      <legend className="altar__legend">Step 1: the victim</legend>
 
       {error && (
-        <p style={styles.error}>{error}</p>
+        <p className="altar__error">{error}</p>
       )}
 
-      <label style={styles.label}>
+      <label className="altar__label">
         User name:{' '}
         <input
           type="text"
           name="author"
-          style={styles.input}
+          className="altar__input"
           autoFocus
         />
       </label>
       {' '}
-      <button type="submit" style={styles.button}>Submit</button>
+      <button type="submit" className="altar__btn">Submit</button>
     </fieldset>
   </form>
 )
 
 const StepEmpty = ({ authorId, authorName }) => (
-  <fieldset style={styles.fieldset}>
-    <legend style={styles.legend}>Nothing to do</legend>
+  <fieldset className="altar__fieldset">
+    <legend className="altar__legend">Nothing to do</legend>
     <p>
       <LinkNode id={authorId} display={authorName} /> has no writeups.
     </p>
@@ -186,45 +186,45 @@ const StepSelect = ({
   const pageDisplay = totalPages > 1 ? `: page ${page}` : ''
 
   return (
-    <form method="post" style={styles.form} ref={formRef}>
+    <form method="post" className="altar__form" ref={formRef}>
       <input type="hidden" name="node_id" value={nodeId} />
       <input type="hidden" name="author" value={authorName} />
       <input type="hidden" name="op" value="remove" />
 
-      <fieldset style={styles.fieldset}>
-        <legend style={styles.legend}>Step 2: show mercy (or not)</legend>
+      <fieldset className="altar__fieldset">
+        <legend className="altar__legend">Step 2: show mercy (or not)</legend>
 
-        <h3 style={styles.userTitle}>
+        <h3 className="altar__user-title">
           <LinkNode id={authorId} display={authorName} />&apos;s writeups{pageDisplay}
         </h3>
 
-        <p style={styles.summary}>
+        <p className="altar__summary">
           Showing {writeups.length} of {total} total writeups.
           {' '}{selectedForRemoval.size} selected for removal.
         </p>
 
-        <div style={styles.actions}>
-          <button type="button" onClick={selectAll} style={styles.smallButton}>
+        <div className="altar__actions">
+          <button type="button" onClick={selectAll} className="altar__btn--small">
             Select All
           </button>
           {' '}
-          <button type="button" onClick={selectNone} style={styles.smallButton}>
+          <button type="button" onClick={selectNone} className="altar__btn--small">
             Select None
           </button>
         </div>
 
-        <table style={styles.table}>
+        <table className="altar__table">
           <thead>
             <tr>
-              <th style={styles.thAxe}>axe</th>
-              <th style={styles.thId}>id</th>
-              <th style={styles.th}>title</th>
+              <th className="altar__th--axe">axe</th>
+              <th className="altar__th--id">id</th>
+              <th className="altar__th">title</th>
             </tr>
           </thead>
           <tbody>
             {writeups.map((wu, idx) => (
-              <tr key={wu.node_id} style={idx % 2 === 1 ? styles.oddRow : undefined}>
-                <td style={styles.tdAxe}>
+              <tr key={wu.node_id} className={idx % 2 === 1 ? 'altar__row--odd' : undefined}>
+                <td className="altar__td--axe">
                   <input
                     type="checkbox"
                     name={`removenode${wu.node_id}`}
@@ -233,8 +233,8 @@ const StepSelect = ({
                     onChange={() => toggleWriteup(wu.node_id)}
                   />
                 </td>
-                <td style={styles.tdId}>{wu.node_id}</td>
-                <td style={styles.td}>
+                <td className="altar__td--id">{wu.node_id}</td>
+                <td className="altar__td">
                   <LinkNode id={wu.node_id} display={wu.title} />
                 </td>
               </tr>
@@ -253,7 +253,7 @@ const StepSelect = ({
 
         {/* Remove all option when paginated */}
         {totalPages > 1 && (
-          <p style={styles.removeAllOption}>
+          <p className="altar__remove-all-option">
             <label>
               <input
                 type="checkbox"
@@ -265,7 +265,7 @@ const StepSelect = ({
           </p>
         )}
 
-        <p style={styles.reasonField}>
+        <p className="altar__reason-field">
           <label>
             Reason for removal (optional):{' '}
             <input
@@ -273,7 +273,7 @@ const StepSelect = ({
               name="removereason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              style={styles.reasonInput}
+              className="altar__reason-input"
               size="50"
             />
           </label>
@@ -283,7 +283,7 @@ const StepSelect = ({
           <button
             type="button"
             onClick={handleSubmitClick}
-            style={styles.dangerButton}
+            className="altar__btn--danger"
             title="Remove these writeups"
             disabled={selectedForRemoval.size === 0}
           >
@@ -314,11 +314,11 @@ const Pagination = ({ authorName, page, totalPages }) => {
   }
 
   return (
-    <div style={styles.pagination}>
+    <div className="altar__pagination">
       {page > 1 && (
         <a
           href={`?author=${encodeURIComponent(authorName)}&page=${page - 1}`}
-          style={styles.link}
+          className="altar__link"
         >
           &laquo; Previous
         </a>
@@ -331,7 +331,7 @@ const Pagination = ({ authorName, page, totalPages }) => {
           ) : (
             <a
               href={`?author=${encodeURIComponent(authorName)}&page=${p}`}
-              style={styles.link}
+              className="altar__link"
             >
               {p}
             </a>
@@ -342,191 +342,13 @@ const Pagination = ({ authorName, page, totalPages }) => {
       {page < totalPages && (
         <a
           href={`?author=${encodeURIComponent(authorName)}&page=${page + 1}`}
-          style={styles.link}
+          className="altar__link"
         >
           Next &raquo;
         </a>
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#111'
-  },
-  title: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    margin: '0 0 10px 0',
-    color: '#38495e'
-  },
-  intro: {
-    marginBottom: '10px'
-  },
-  note: {
-    marginBottom: '15px',
-    color: '#c62828'
-  },
-  instructions: {
-    backgroundColor: '#f8f9f9',
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    padding: '15px',
-    marginBottom: '20px'
-  },
-  instructionsTitle: {
-    margin: '0 0 10px 0',
-    fontSize: '14px'
-  },
-  instructionsList: {
-    margin: '0',
-    paddingLeft: '25px'
-  },
-  form: {
-    marginTop: '15px'
-  },
-  fieldset: {
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    padding: '15px'
-  },
-  legend: {
-    fontWeight: 'bold',
-    padding: '0 10px'
-  },
-  label: {
-    marginRight: '10px'
-  },
-  input: {
-    padding: '6px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    width: '200px'
-  },
-  button: {
-    padding: '8px 20px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px'
-  },
-  smallButton: {
-    padding: '4px 12px',
-    backgroundColor: '#f0f0f0',
-    color: '#333',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '12px'
-  },
-  dangerButton: {
-    padding: '10px 25px',
-    backgroundColor: '#c62828',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  },
-  errorBox: {
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    padding: '15px',
-    color: '#c62828'
-  },
-  error: {
-    color: '#c62828',
-    marginBottom: '10px'
-  },
-  userTitle: {
-    fontSize: '16px',
-    margin: '0 0 10px 0'
-  },
-  summary: {
-    color: '#507898',
-    marginBottom: '10px'
-  },
-  actions: {
-    marginBottom: '15px'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginBottom: '15px'
-  },
-  th: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '8px 10px',
-    textAlign: 'left'
-  },
-  thAxe: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '8px 10px',
-    textAlign: 'center',
-    width: '50px'
-  },
-  thId: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '8px 10px',
-    textAlign: 'center',
-    width: '80px'
-  },
-  td: {
-    padding: '6px 10px',
-    borderBottom: '1px solid #e0e0e0'
-  },
-  tdAxe: {
-    padding: '6px 10px',
-    borderBottom: '1px solid #e0e0e0',
-    textAlign: 'center'
-  },
-  tdId: {
-    padding: '6px 10px',
-    borderBottom: '1px solid #e0e0e0',
-    textAlign: 'center',
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    color: '#507898'
-  },
-  oddRow: {
-    backgroundColor: '#f8f9f9'
-  },
-  pagination: {
-    textAlign: 'center',
-    marginBottom: '15px'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  removeAllOption: {
-    backgroundColor: '#fff3e0',
-    border: '1px solid #ff9800',
-    borderRadius: '4px',
-    padding: '10px',
-    marginBottom: '15px'
-  },
-  reasonField: {
-    marginBottom: '15px'
-  },
-  reasonInput: {
-    padding: '6px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px'
-  }
 }
 
 export default AltarOfSacrifice

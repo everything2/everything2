@@ -259,32 +259,28 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
   }
 
   return (
-    <div className="admin-modal-backdrop" onClick={handleBackdropClick} style={styles.backdrop}>
-      <div className="admin-modal" style={styles.modal}>
-        <div className="admin-modal-header" style={styles.header}>
-          <h3 style={styles.title}>Writeup Tools</h3>
-          <button onClick={handleClose} style={styles.closeButton}>&times;</button>
+    <div className="nodelet-modal-overlay" onClick={handleBackdropClick}>
+      <div className="modal-compact">
+        <div className="modal-compact__header">
+          <h3 className="modal-compact__title">Writeup Tools</h3>
+          <button onClick={handleClose} className="modal-compact__close">&times;</button>
         </div>
 
-        <div className="admin-modal-content" style={styles.content}>
+        <div className="modal-compact__content">
           {/* Status message */}
           {actionStatus && (
-            <div style={{
-              ...styles.status,
-              backgroundColor: actionStatus.type === 'error' ? '#fee' : '#efe',
-              color: actionStatus.type === 'error' ? '#c00' : '#060'
-            }}>
+            <div className={`modal-compact__status modal-compact__status--${actionStatus.type}`}>
               {actionStatus.message}
             </div>
           )}
 
           {/* Writeup info */}
-          <div style={styles.info}>
+          <div className="modal-compact__info">
             <strong>{writeup.title}</strong>
             {writeup.author && (
               <span> by <LinkNode type="user" title={writeup.author.title} /></span>
             )}
-            <div style={styles.statusBadge}>
+            <div className="modal-compact__info-badge">
               Status: Published
               {isHidden && ' · Hidden'}
               {isInsured && ' · Insured'}
@@ -293,21 +289,21 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
 
           {/* Edit section - for authors and editors */}
           {(isAuthor || isEditor) && (
-            <div style={styles.section}>
+            <div className="modal-compact__section">
               {onEdit ? (
                 <button
                   onClick={() => {
                     handleClose()
                     onEdit()
                   }}
-                  style={styles.actionButton}
+                  className="modal-compact__action-btn"
                 >
                   Edit writeup
                 </button>
               ) : (
                 <a
                   href={`/node/${writeup.node_id}?edit=1`}
-                  style={styles.linkButton}
+                  className="modal-compact__link-btn"
                 >
                   Edit writeup
                 </a>
@@ -317,27 +313,27 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
 
           {/* Editor actions */}
           {isEditor && (
-            <div style={styles.section}>
-              <h4 style={styles.sectionTitle}>Editor Actions</h4>
+            <div className="modal-compact__section">
+              <h4 className="modal-compact__section-title">Editor Actions</h4>
 
-              <button onClick={handleToggleHide} style={styles.actionButton}>
+              <button onClick={handleToggleHide} className="modal-compact__action-btn">
                 {isHidden ? 'Unhide' : 'Hide'} writeup
               </button>
 
-              <button onClick={handleInsure} style={styles.actionButton}>
+              <button onClick={handleInsure} className="modal-compact__action-btn">
                 {isInsured ? 'Uninsure' : 'Insure'} writeup
               </button>
 
               <a
                 href={`/node/oppressor_superdoc/Magical Writeup Reparenter?old_writeup_id=${writeup.node_id}`}
-                style={styles.linkButton}
+                className="modal-compact__link-btn"
               >
                 Reparent writeup...
               </a>
 
               <a
                 href={`/node/oppressor_superdoc/Renunciation Chainsaw?wu_id=${writeup.node_id}`}
-                style={styles.linkButton}
+                className="modal-compact__link-btn"
               >
                 Change author...
               </a>
@@ -346,8 +342,8 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
 
           {/* Remove section - only show if writeup is not insured */}
           {!isInsured && (isEditor || isAuthor) && (
-            <div style={styles.section}>
-              <h4 style={styles.sectionTitle}>
+            <div className="modal-compact__section">
+              <h4 className="modal-compact__section-title">
                 {isAuthor && !isEditor ? 'Remove Writeup' : 'Remove'}
               </h4>
 
@@ -357,19 +353,19 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
                   placeholder="Reason for removal"
                   value={removeReason}
                   onChange={(e) => setRemoveReason(e.target.value)}
-                  style={styles.input}
+                  className="modal-compact__input"
                 />
               )}
 
               <button
                 onClick={handleRemove}
-                style={{ ...styles.actionButton, ...styles.dangerButton }}
+                className="modal-compact__action-btn modal-compact__action-btn--danger"
               >
                 {isAuthor ? 'Return to drafts' : 'Remove writeup'}
               </button>
 
               {isAuthor && (
-                <p style={styles.helpText}>
+                <p className="modal-compact__help">
                   This will unpublish your writeup and return it to draft status.
                 </p>
               )}
@@ -378,17 +374,17 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
 
           {/* Admin tools - only show if not author AND has voted or cooled */}
           {isAdmin && !isAuthor && (hasVoted || hasCooled) && (
-            <div style={styles.section}>
-              <h4 style={styles.sectionTitle}>Admin Tools</h4>
+            <div className="modal-compact__section">
+              <h4 className="modal-compact__section-title">Admin Tools</h4>
 
               {hasVoted && (
-                <button onClick={handleRemoveVote} style={styles.actionButton}>
+                <button onClick={handleRemoveVote} className="modal-compact__action-btn">
                   Remove my vote
                 </button>
               )}
 
               {hasCooled && (
-                <button onClick={handleRemoveCool} style={styles.actionButton}>
+                <button onClick={handleRemoveCool} className="modal-compact__action-btn">
                   Remove my C!
                 </button>
               )}
@@ -397,17 +393,17 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
 
           {/* Post to usergroup - show for logged-in users */}
           {!user?.is_guest && !user?.guest && (isLoadingGroups || (availableGroups && availableGroups.length > 0)) && (
-            <div style={styles.section}>
-              <h4 style={styles.sectionTitle}>Post to Usergroup</h4>
+            <div className="modal-compact__section">
+              <h4 className="modal-compact__section-title">Post to Usergroup</h4>
 
               {isLoadingGroups ? (
-                <p style={styles.helpText}>Loading available groups...</p>
+                <p className="modal-compact__help">Loading available groups...</p>
               ) : (
                 <>
                   <select
                     value={selectedGroup}
                     onChange={(e) => setSelectedGroup(e.target.value)}
-                    style={styles.input}
+                    className="modal-compact__select"
                     disabled={isPostingToGroup}
                   >
                     <option value="">Select a usergroup...</option>
@@ -423,15 +419,12 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
                   <button
                     onClick={handlePostToGroup}
                     disabled={!selectedGroup || isPostingToGroup}
-                    style={{
-                      ...styles.actionButton,
-                      ...(!selectedGroup || isPostingToGroup ? styles.buttonDisabled : {})
-                    }}
+                    className="modal-compact__action-btn"
                   >
                     {isPostingToGroup ? 'Posting...' : 'Post to usergroup'}
                   </button>
 
-                  <p style={styles.helpText}>
+                  <p className="modal-compact__help">
                     Share this writeup to a usergroup weblog.
                   </p>
                 </>
@@ -442,159 +435,6 @@ const AdminModal = ({ writeup, user, isOpen, onClose, onWriteupUpdate, onEdit, a
       </div>
     </div>
   )
-}
-
-// Styles matching Kernel Blue theme (1882070.css)
-// Colors: primary #38495e, medium #c5cdd7, links #4060b0, border #d3d3d3
-const styles = {
-  backdrop: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000
-  },
-  modal: {
-    backgroundColor: '#fff',
-    border: '1px solid #38495e',
-    maxWidth: '350px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflow: 'auto',
-    fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif',
-    fontSize: '12px'
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '5px 10px',
-    backgroundColor: '#38495e',
-    color: '#f9fafa'
-  },
-  title: {
-    margin: 0,
-    fontSize: '13px',
-    fontWeight: 'bold'
-  },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    fontSize: '18px',
-    cursor: 'pointer',
-    color: '#f9fafa',
-    padding: '0 4px',
-    lineHeight: 1
-  },
-  content: {
-    padding: '10px'
-  },
-  status: {
-    padding: '5px 8px',
-    marginBottom: '10px',
-    fontSize: '11px',
-    border: '1px solid'
-  },
-  info: {
-    marginBottom: '10px',
-    paddingBottom: '10px',
-    borderBottom: '1px dotted #333'
-  },
-  statusBadge: {
-    marginTop: '4px',
-    fontSize: '11px',
-    color: '#507898'
-  },
-  divider: {
-    border: 'none',
-    borderTop: '1px solid #d3d3d3',
-    margin: '10px 0'
-  },
-  section: {
-    marginBottom: '12px'
-  },
-  sectionTitle: {
-    fontSize: '12px',
-    fontWeight: 'bold',
-    color: '#111',
-    marginBottom: '6px',
-    marginTop: 0
-  },
-  actionButton: {
-    display: 'block',
-    width: '100%',
-    padding: '4px 8px',
-    marginBottom: '4px',
-    border: '1px solid #d3d3d3',
-    backgroundColor: '#f8f9f9',
-    cursor: 'pointer',
-    fontSize: '12px',
-    textAlign: 'left',
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  linkButton: {
-    display: 'block',
-    padding: '4px 8px',
-    marginBottom: '4px',
-    border: '1px solid #d3d3d3',
-    backgroundColor: '#f8f9f9',
-    textDecoration: 'none',
-    color: '#4060b0',
-    fontSize: '12px'
-  },
-  dangerButton: {
-    borderColor: '#8b0000',
-    color: '#8b0000'
-  },
-  input: {
-    width: '100%',
-    padding: '4px',
-    marginBottom: '6px',
-    border: '1px solid #d3d3d3',
-    fontSize: '12px',
-    boxSizing: 'border-box',
-    fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif'
-  },
-  inputDisabled: {
-    backgroundColor: '#f0f0f0',
-    color: '#999',
-    cursor: 'not-allowed'
-  },
-  buttonDisabled: {
-    backgroundColor: '#f0f0f0',
-    color: '#999',
-    borderColor: '#ccc',
-    cursor: 'not-allowed',
-    opacity: 0.6
-  },
-  warningBox: {
-    padding: '8px',
-    marginBottom: '8px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '3px',
-    fontSize: '12px',
-    color: '#856404',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px'
-  },
-  warningIcon: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#dc3545'
-  },
-  helpText: {
-    fontSize: '11px',
-    color: '#507898',
-    margin: '4px 0 0 0'
-  }
 }
 
 export default AdminModal
