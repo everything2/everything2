@@ -3,6 +3,7 @@ import WriteupDisplay from '../WriteupDisplay'
 import E2NodeToolsModal from '../E2NodeToolsModal'
 import InlineWriteupEditor from '../InlineWriteupEditor'
 import LinkNode from '../LinkNode'
+import CategoryDisplay from '../CategoryDisplay'
 import { FaTools, FaEdit } from 'react-icons/fa'
 
 /**
@@ -80,7 +81,10 @@ const Writeup = ({ data }) => {
 
   if (!data) return <div>Loading...</div>
 
-  const { writeup, user, parent_e2node, existing_draft } = data
+  const { writeup, user, parent_e2node, existing_draft, categories, parent_categories } = data
+
+  // Check for category_id URL parameter to focus on a specific category
+  const focusedCategoryId = urlParams.get('category_id') ? parseInt(urlParams.get('category_id'), 10) : null
 
   // Use currentDoctext if set (after editing), otherwise use original
   const displayDoctext = currentDoctext !== null ? currentDoctext : writeup?.doctext
@@ -117,6 +121,25 @@ const Writeup = ({ data }) => {
 
   return (
     <div className="writeup-page">
+      {/* Categories this writeup belongs to */}
+      {categories && categories.length > 0 && (
+        <CategoryDisplay
+          categories={categories}
+          focusedCategoryId={focusedCategoryId}
+          className="writeup-categories"
+        />
+      )}
+
+      {/* Categories the parent e2node belongs to (if different from writeup categories) */}
+      {parent_categories && parent_categories.length > 0 && (
+        <CategoryDisplay
+          categories={parent_categories}
+          label="Topic in:"
+          focusedCategoryId={focusedCategoryId}
+          className="writeup-parent-categories"
+        />
+      )}
+
       {/* Toolbar - E2 Node Tools for editors, Edit button for editors/owners */}
       {/* data-reader-ignore excludes from reading mode */}
       {(showTools || canEdit) && (

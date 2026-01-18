@@ -34,12 +34,19 @@ const ForReview = lazy(() => import('./Nodelets/ForReview'))
 
 import { E2IdleHandler } from './E2IdleHandler'
 import ErrorBoundary from './ErrorBoundary'
+import { SidebarAd } from './Layout/GoogleAds'
 
 const E2Constants = {"defaultGuestNode": 2030780, "defaultNode": 124}
 
 // Loading fallback for lazy-loaded nodelets
+// Reserve minimum height to prevent CLS (Cumulative Layout Shift)
 const NodeletLoadingFallback = () => (
-  <div style={{ padding: '10px', textAlign: 'center', color: '#666' }}>
+  <div style={{
+    padding: '10px',
+    textAlign: 'center',
+    color: '#666',
+    minHeight: '100px'  // Reserve space for typical nodelet content
+  }}>
     <small>Loading...</small>
   </div>
 )
@@ -806,6 +813,7 @@ class E2ReactRoot extends React.Component {
     // Get nodeletorder from state (passed from backend via window.e2)
     // Filter out sign_in since it's rendered separately for guests
     const nodeletorder = (this.state.nodeletorder || []).filter(name => name !== 'sign_in')
+    const isGuest = this.state.guest
 
     return <>
       <E2IdleHandler
@@ -814,12 +822,18 @@ class E2ReactRoot extends React.Component {
       />
 
       {/* SignIn rendered separately for guest users (not in nodeletorder) */}
-      {this.state.guest && this.renderNodelet('sign_in')}
+      {isGuest && this.renderNodelet('sign_in')}
+
+      {/* Sidebar ad for guests - shown after sign in nodelet */}
+      {isGuest && <SidebarAd show={true} />}
 
       {/* Phase 3: Render nodelets directly (React mounts inside sidebar div) */}
+      {/* For guests, inject an ad between recommended_reading and new_writeups */}
       {nodeletorder.map((nodeletName) => (
         <React.Fragment key={nodeletName}>
           {this.renderNodelet(nodeletName)}
+          {/* Ad between recommended_reading and new_writeups for guests */}
+          {isGuest && nodeletName === 'recommended_reading' && <SidebarAd show={true} />}
         </React.Fragment>
       ))}
     </>

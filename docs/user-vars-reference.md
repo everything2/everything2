@@ -2,7 +2,7 @@
 
 This document catalogs all known user VARS (settings) stored in the `setting` table's `vars` field. As we migrate away from this legacy storage format toward JSON-based settings, this reference helps track what can be cleaned up.
 
-**Last Updated**: 2026-01-10
+**Last Updated**: 2026-01-17
 
 ## Storage Format
 
@@ -295,11 +295,16 @@ These keys are no longer used and can be cleaned up from user settings:
 | `personalScreened` | **DEPRECATED** | Migrated to `noteletScreened` |
 | `editsize` | **DEPRECATED** | Replaced by `textareaSize` |
 | `ebu_showmerit` | **DEPRECATED** | Merit stat display disabled |
-| `nohints` | **DEPRECATED** | Show critical writeup hints - hints system removed |
-| `nohintSpelling` | **DEPRECATED** | Check for misspellings - hints system removed |
-| `nohintHTML` | **DEPRECATED** | Show HTML hints - hints system removed |
-| `hintXHTML` | **DEPRECATED** | Show strict HTML hints - hints system removed |
-| `hintSilly` | **DEPRECATED** | Show silly hints - hints system removed |
+
+### Removed in 2026-01 (Writeup Hints Removal)
+
+| Key | Status | Notes | Removal Date |
+|-----|--------|-------|--------------|
+| `nohints` | **DEPRECATED** | Show critical writeup hints - hints system removed. UI removed from Settings. | 2026-01-17 |
+| `nohintSpelling` | **DEPRECATED** | Check for misspellings - hints system removed. UI removed from Settings. | 2026-01-17 |
+| `nohintHTML` | **DEPRECATED** | Show HTML hints - hints system removed. UI removed from Settings. | 2026-01-17 |
+| `hintXHTML` | **DEPRECATED** | Show strict HTML hints - hints system removed. UI removed from Settings. | 2026-01-17 |
+| `hintSilly` | **DEPRECATED** | Show silly hints - hints system removed. UI removed from Settings. | 2026-01-17 |
 
 ---
 

@@ -13,14 +13,7 @@ const SourceMapDisplay = ({ sourceMap, title, showContributeBox = true, showDesc
   if (!components || components.length === 0) {
     if (showEmptyState) {
       return (
-        <div style={{
-          padding: '20px',
-          backgroundColor: '#f5f5f5',
-          border: '1px solid #ddd',
-          borderRadius: '4px',
-          textAlign: 'center',
-          color: '#666'
-        }}>
+        <div className="source-map__empty">
           No source components detected for this node type.
         </div>
       )
@@ -40,20 +33,20 @@ const SourceMapDisplay = ({ sourceMap, title, showContributeBox = true, showDesc
     switch (type) {
       case 'react_component':
       case 'react_document':
-        return <FaCode size={14} style={{ color: '#61dafb' }} />
+        return <FaCode size={14} className="source-map__icon--react" />
       case 'test':
-        return <FaVial size={14} style={{ color: '#22c55e' }} />
+        return <FaVial size={14} className="source-map__icon--test" />
       case 'page_class':
       case 'delegation':
-        return <FaFileCode size={14} style={{ color: '#8b5cf6' }} />
+        return <FaFileCode size={14} className="source-map__icon--perl" />
       case 'node_class':
-        return <FaCogs size={14} style={{ color: '#f97316' }} />
+        return <FaCogs size={14} className="source-map__icon--node" />
       case 'controller':
-        return <FaFileCode size={14} style={{ color: '#3b82f6' }} />
+        return <FaFileCode size={14} className="source-map__icon--controller" />
       case 'database_table':
-        return <FaDatabase size={14} style={{ color: '#10b981' }} />
+        return <FaDatabase size={14} className="source-map__icon--database" />
       default:
-        return <FaBook size={14} style={{ color: '#666' }} />
+        return <FaBook size={14} className="source-map__icon--default" />
     }
   }
 
@@ -72,105 +65,49 @@ const SourceMapDisplay = ({ sourceMap, title, showContributeBox = true, showDesc
   }
 
   return (
-    <div style={{
-      marginTop: '30px',
-      padding: '20px',
-      backgroundColor: '#fff',
-      border: '1px solid #4060b0',
-      borderRadius: '6px'
-    }}>
-      <h3 style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        color: '#38495e',
-        marginTop: 0,
-        marginBottom: '15px',
-        fontSize: '16px'
-      }}>
+    <div className="source-map">
+      <h3 className="source-map__title">
         <FaGithub size={18} /> {title || 'Developer Source Map'}
       </h3>
 
       {showDescription && (
-        <p style={{ color: '#666', marginBottom: '15px', lineHeight: '1.5', fontSize: '13px' }}>
+        <p className="source-map__description">
           This shows the source code components that render this page. Click links to view or edit on GitHub.
         </p>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="source-map__components">
         {components.map((component, idx) => (
-          <div
-            key={idx}
-            style={{
-              padding: '12px',
-              backgroundColor: '#f8f9fa',
-              border: '1px solid #dee2e6',
-              borderRadius: '4px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <div key={idx} className="source-map__component">
+            <div className="source-map__component-header">
               {getIconForType(component.type)}
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <div className="source-map__component-content">
+                <div className="source-map__component-title-row">
                   {component.name && (
-                    <span style={{ fontWeight: 'bold', fontSize: '13px', color: '#212529' }}>
+                    <span className="source-map__component-name">
                       {component.name}
                     </span>
                   )}
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '2px 8px',
-                    backgroundColor: '#38495e',
-                    color: '#fff',
-                    borderRadius: '3px',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase'
-                  }}>
+                  <span className="source-map__component-badge">
                     {getTypeLabel(component.type)}
                   </span>
                 </div>
                 {component.description && (
-                  <div style={{ color: '#507898', fontSize: '12px', marginTop: '2px' }}>
+                  <div className="source-map__component-desc">
                     {component.description}
                   </div>
                 )}
               </div>
             </div>
 
-            <div style={{
-              fontFamily: 'monospace',
-              fontSize: '12px',
-              color: '#495057',
-              backgroundColor: '#fff',
-              padding: '8px 12px',
-              borderRadius: '3px',
-              marginBottom: '8px',
-              border: '1px solid #e9ecef',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '8px'
-            }}>
-              <span style={{ wordBreak: 'break-all' }}>{component.path}</span>
-              <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+            <div className="source-map__path-box">
+              <span className="source-map__path">{component.path}</span>
+              <div className="source-map__actions">
                 <a
                   href={getGithubUrl(component.path)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '4px 8px',
-                    backgroundColor: '#0969da',
-                    color: 'white',
-                    textDecoration: 'none',
-                    borderRadius: '3px',
-                    fontSize: '11px',
-                    fontWeight: '500'
-                  }}
+                  className="source-map__btn source-map__btn--view"
                 >
                   <FaGithub size={12} /> View
                 </a>
@@ -178,18 +115,7 @@ const SourceMapDisplay = ({ sourceMap, title, showContributeBox = true, showDesc
                   href={getEditUrl(component.path)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '4px 8px',
-                    backgroundColor: '#22c55e',
-                    color: 'white',
-                    textDecoration: 'none',
-                    borderRadius: '3px',
-                    fontSize: '11px',
-                    fontWeight: '500'
-                  }}
+                  className="source-map__btn source-map__btn--edit"
                 >
                   <FaExternalLinkAlt size={10} /> Edit
                 </a>
@@ -200,20 +126,13 @@ const SourceMapDisplay = ({ sourceMap, title, showContributeBox = true, showDesc
       </div>
 
       {/* Repository Info */}
-      <div style={{
-        marginTop: '15px',
-        padding: '10px 12px',
-        backgroundColor: '#f8f9f9',
-        borderRadius: '3px',
-        fontSize: '12px',
-        color: '#507898'
-      }}>
+      <div className="source-map__repo-info">
         <strong>Repository:</strong>{' '}
         <a
           href={githubRepo}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: '#4060b0', textDecoration: 'none' }}
+          className="source-map__repo-link"
         >
           {githubRepo}
         </a>
@@ -221,31 +140,24 @@ const SourceMapDisplay = ({ sourceMap, title, showContributeBox = true, showDesc
         <strong>Branch:</strong> {branch}
         {' | '}
         <strong>Commit:</strong>{' '}
-        <code style={{ fontSize: '11px', backgroundColor: '#eee', padding: '1px 4px', borderRadius: '2px' }}>
+        <code className="source-map__commit-hash">
           {commitHash?.substring(0, 7)}
         </code>
       </div>
 
       {/* Contribute Box */}
       {showContributeBox && (
-        <div style={{
-          marginTop: '15px',
-          padding: '12px',
-          backgroundColor: '#fff3cd',
-          border: '1px solid #ffc107',
-          borderRadius: '4px'
-        }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#856404', fontSize: '13px' }}>
+        <div className="source-map__contribute">
+          <div className="source-map__contribute-title">
             Want to contribute?
           </div>
-          <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.5', color: '#856404' }}>
+          <p className="source-map__contribute-text">
             Everything2 is open source! You can improve this by submitting a pull request on GitHub.
             See the{' '}
             <a
               href="https://github.com/everything2/everything2/blob/master/CONTRIBUTING.md"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#0969da' }}
             >
               Contributing Guide
             </a>{' '}

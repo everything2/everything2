@@ -126,13 +126,26 @@ const UserInfoPanel = ({ user, viewer, lockStatus }) => {
         {user.lastip && (
           <>
             <dt>Last IP Address</dt>
-            <dd>
-              <code>{user.lastip}</code>
+            <dd className="ip-address">
+              {user.lastip}
               {user.ip_blacklisted === 1 && (
                 <span className="status-blacklisted" style={{ marginLeft: '8px', color: '#d9534f' }}>
                   <FaBan /> Blacklisted
                 </span>
               )}
+            </dd>
+
+            <dt>IP Lookup Tools</dt>
+            <dd className="ip-lookup-tools">
+              <a href={`https://whois.domaintools.com/${user.lastip}`} target="_blank" rel="noopener noreferrer">whois</a>
+              {' - '}
+              <a href={`https://www.google.com/search?q=%22${user.lastip}%22`} target="_blank" rel="noopener noreferrer">Google</a>
+              {' - '}
+              <a href={`https://www.projecthoneypot.org/ip_${user.lastip}`} target="_blank" rel="noopener noreferrer">Project Honeypot</a>
+              {' - '}
+              <a href={`https://www.stopforumspam.com/ipcheck/${user.lastip}`} target="_blank" rel="noopener noreferrer">Stop Forum Spam</a>
+              {' - '}
+              <a href={`https://www.botscout.com/ipcheck.htm?ip=${user.lastip}`} target="_blank" rel="noopener noreferrer">BotScout</a>
             </dd>
           </>
         )}

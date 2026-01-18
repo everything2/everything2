@@ -18,39 +18,29 @@ import React, { useState, useEffect, useCallback } from 'react'
  * @param {boolean} showConfirmEmail - Whether to show email confirmation field (default: false for compact)
  */
 
-// Fixed-width icon container to prevent layout shift
-const iconContainerStyle = {
-  display: 'inline-block',
-  width: '24px',
-  marginLeft: '8px',
-  textAlign: 'center',
-  verticalAlign: 'middle'
-}
-
 // Validation status icons
 const CheckIcon = () => (
-  <span style={iconContainerStyle}>
-    <span style={{ color: '#228b22', fontSize: '1.1em' }} title="Match">&#10003;</span>
+  <span className="signup-form__icon-container">
+    <span className="signup-form__icon--check" title="Match">&#10003;</span>
   </span>
 )
 
 const XIcon = () => (
-  <span style={iconContainerStyle}>
-    <span style={{ color: '#8b0000', fontSize: '1.1em' }} title="Does not match">&#10007;</span>
+  <span className="signup-form__icon-container">
+    <span className="signup-form__icon--x" title="Does not match">&#10007;</span>
   </span>
 )
 
 const SpinnerIcon = () => (
-  <span style={iconContainerStyle}>
-    <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>
-      <span style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid #d3d3d3', borderTopColor: '#4060b0', borderRadius: '50%' }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+  <span className="signup-form__icon-container">
+    <span className="signup-form__spinner">
+      <span className="signup-form__spinner-circle" />
     </span>
   </span>
 )
 
 const IconPlaceholder = () => (
-  <span style={iconContainerStyle}></span>
+  <span className="signup-form__icon-container"></span>
 )
 
 const SignUpForm = ({
@@ -346,70 +336,20 @@ const SignUpForm = ({
     }
   }
 
-  // Compact styles for modal embedding
-  const compactStyles = {
-    form: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '12px'
-    },
-    inputWrapper: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '4px'
-    },
-    input: {
-      flex: 1,
-      padding: '12px',
-      border: '1px solid #e0e0e0',
-      borderRadius: '6px',
-      fontSize: '16px',
-      outline: 'none',
-      boxSizing: 'border-box'
-    },
-    inputError: {
-      border: '1px solid #8b0000'
-    },
-    inputSuccess: {
-      border: '1px solid #228b22'
-    },
-    error: {
-      backgroundColor: '#ffebee',
-      color: '#c62828',
-      padding: '10px 12px',
-      borderRadius: '4px',
-      marginBottom: '8px',
-      fontSize: '14px'
-    },
-    fieldError: {
-      color: '#8b0000',
-      fontSize: '12px',
-      marginTop: '-8px',
-      marginBottom: '4px'
-    },
-    button: {
-      backgroundColor: '#4060b0',
-      color: 'white',
-      border: 'none',
-      padding: '14px',
-      borderRadius: '6px',
-      fontSize: '16px',
-      fontWeight: 500,
-      cursor: 'pointer',
-      marginTop: '4px'
-    },
-    buttonDisabled: {
-      backgroundColor: '#a0b0c0',
-      cursor: 'not-allowed'
-    }
+  // Helper to compute input class names
+  const getInputClass = (hasError, hasSuccess) => {
+    let className = 'signup-form__input'
+    if (hasError) className += ' signup-form__input--error'
+    else if (hasSuccess) className += ' signup-form__input--success'
+    return className
   }
 
   if (compact) {
     return (
-      <form onSubmit={handleSubmit} style={compactStyles.form}>
-        {serverError && <div style={compactStyles.error}>{serverError}</div>}
+      <form onSubmit={handleSubmit} className="signup-form signup-form--compact">
+        {serverError && <div className="signup-form__error-box">{serverError}</div>}
 
-        <div style={compactStyles.inputWrapper}>
+        <div className="signup-form__input-wrapper">
           <input
             type="text"
             placeholder="Username"
@@ -418,19 +358,15 @@ const SignUpForm = ({
             maxLength={20}
             autoComplete="username"
             required
-            style={{
-              ...compactStyles.input,
-              ...(errors.username || usernameStatus === 'taken' || usernameStatus === 'invalid'
-                ? compactStyles.inputError
-                : usernameStatus === 'available'
-                  ? compactStyles.inputSuccess
-                  : {})
-            }}
+            className={getInputClass(
+              errors.username || usernameStatus === 'taken' || usernameStatus === 'invalid',
+              usernameStatus === 'available'
+            )}
           />
           {renderUsernameStatus()}
         </div>
         {(usernameStatus === 'taken' || usernameStatus === 'invalid' || errors.username) && (
-          <div style={compactStyles.fieldError}>
+          <div className="signup-form__field-error">
             {usernameStatus === 'taken' ? 'Username is already taken' :
              usernameStatus === 'invalid' ? 'Username contains invalid characters' :
              errors.username}
@@ -445,14 +381,11 @@ const SignUpForm = ({
           maxLength={240}
           autoComplete="email"
           required
-          style={{
-            ...compactStyles.input,
-            ...(errors.email ? compactStyles.inputError : {})
-          }}
+          className={getInputClass(errors.email, false)}
         />
-        {errors.email && <div style={compactStyles.fieldError}>{errors.email}</div>}
+        {errors.email && <div className="signup-form__field-error">{errors.email}</div>}
 
-        <div style={compactStyles.inputWrapper}>
+        <div className="signup-form__input-wrapper">
           <input
             type="password"
             placeholder="Password"
@@ -461,16 +394,13 @@ const SignUpForm = ({
             maxLength={240}
             autoComplete="new-password"
             required
-            style={{
-              ...compactStyles.input,
-              ...(errors.password ? compactStyles.inputError : {})
-            }}
+            className={getInputClass(errors.password, false)}
           />
           {passwordsMatch ? <CheckIcon /> : <IconPlaceholder />}
         </div>
-        {errors.password && <div style={compactStyles.fieldError}>{errors.password}</div>}
+        {errors.password && <div className="signup-form__field-error">{errors.password}</div>}
 
-        <div style={compactStyles.inputWrapper}>
+        <div className="signup-form__input-wrapper">
           <input
             type="password"
             placeholder="Confirm Password"
@@ -479,26 +409,16 @@ const SignUpForm = ({
             maxLength={240}
             autoComplete="new-password"
             required
-            style={{
-              ...compactStyles.input,
-              ...(passwordsMismatch
-                ? compactStyles.inputError
-                : passwordsMatch
-                  ? compactStyles.inputSuccess
-                  : {})
-            }}
+            className={getInputClass(passwordsMismatch, passwordsMatch)}
           />
           {passwordsMatch ? <CheckIcon /> : passwordsMismatch ? <XIcon /> : <IconPlaceholder />}
         </div>
-        {errors.confirmPassword && <div style={compactStyles.fieldError}>{errors.confirmPassword}</div>}
+        {errors.confirmPassword && <div className="signup-form__field-error">{errors.confirmPassword}</div>}
 
         <button
           type="submit"
           disabled={isSubmitting || !isFormValid()}
-          style={{
-            ...compactStyles.button,
-            ...((isSubmitting || !isFormValid()) ? compactStyles.buttonDisabled : {})
-          }}
+          className="signup-form__btn"
         >
           {isSubmitting ? 'Creating account...' : 'Create Account'}
         </button>
@@ -509,40 +429,30 @@ const SignUpForm = ({
   // Full form layout (used by SignUp.js page - pass through isMobile for responsive)
   // This shouldn't typically be used since SignUp.js has its own layout
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="signup-form">
       {serverError && (
-        <p style={{
-          color: '#8b0000',
-          marginBottom: '1em',
-          padding: '10px',
-          backgroundColor: '#fff0f0',
-          border: '1px solid #ffcccc',
-          borderRadius: '4px'
-        }}>
+        <p className="signup-form__server-error">
           {serverError}
         </p>
       )}
 
       {/* Username */}
-      <div style={{ marginBottom: '0.75em' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ width: '150px' }}>Username:</span>
+      <div className="signup-form__field">
+        <label className="signup-form__label">
+          <span className="signup-form__label-text">Username:</span>
           <input
             type="text"
             value={username}
             onChange={handleUsernameChange}
             maxLength={20}
             autoComplete="username"
-            style={{
-              padding: '6px 10px',
-              border: (errors.username || usernameStatus === 'taken' || usernameStatus === 'invalid')
-                ? '1px solid #8b0000'
+            className={`signup-form__input--full ${
+              (errors.username || usernameStatus === 'taken' || usernameStatus === 'invalid')
+                ? 'signup-form__input--error'
                 : usernameStatus === 'available'
-                  ? '1px solid #228b22'
-                  : '1px solid #d3d3d3',
-              borderRadius: '4px',
-              maxWidth: '220px'
-            }}
+                  ? 'signup-form__input--success'
+                  : ''
+            }`}
             required
           />
           {renderUsernameStatus()}
@@ -550,42 +460,32 @@ const SignUpForm = ({
       </div>
 
       {/* Email */}
-      <div style={{ marginBottom: '0.75em' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ width: '150px' }}>Email:</span>
+      <div className="signup-form__field">
+        <label className="signup-form__label">
+          <span className="signup-form__label-text">Email:</span>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             maxLength={240}
             autoComplete="email"
-            style={{
-              padding: '6px 10px',
-              border: errors.email ? '1px solid #8b0000' : '1px solid #d3d3d3',
-              borderRadius: '4px',
-              maxWidth: '220px'
-            }}
+            className={`signup-form__input--full ${errors.email ? 'signup-form__input--error' : ''}`}
             required
           />
         </label>
       </div>
 
       {/* Password */}
-      <div style={{ marginBottom: '0.75em' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ width: '150px' }}>Password:</span>
+      <div className="signup-form__field">
+        <label className="signup-form__label">
+          <span className="signup-form__label-text">Password:</span>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             maxLength={240}
             autoComplete="new-password"
-            style={{
-              padding: '6px 10px',
-              border: errors.password ? '1px solid #8b0000' : '1px solid #d3d3d3',
-              borderRadius: '4px',
-              maxWidth: '220px'
-            }}
+            className={`signup-form__input--full ${errors.password ? 'signup-form__input--error' : ''}`}
             required
           />
           {passwordsMatch ? <CheckIcon /> : <IconPlaceholder />}
@@ -593,25 +493,22 @@ const SignUpForm = ({
       </div>
 
       {/* Confirm Password */}
-      <div style={{ marginBottom: '0.75em' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ width: '150px' }}>Confirm Password:</span>
+      <div className="signup-form__field">
+        <label className="signup-form__label">
+          <span className="signup-form__label-text">Confirm Password:</span>
           <input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             maxLength={240}
             autoComplete="new-password"
-            style={{
-              padding: '6px 10px',
-              border: passwordsMismatch
-                ? '1px solid #8b0000'
+            className={`signup-form__input--full ${
+              passwordsMismatch
+                ? 'signup-form__input--error'
                 : passwordsMatch
-                  ? '1px solid #228b22'
-                  : '1px solid #d3d3d3',
-              borderRadius: '4px',
-              maxWidth: '220px'
-            }}
+                  ? 'signup-form__input--success'
+                  : ''
+            }`}
             required
           />
           {passwordsMatch ? <CheckIcon /> : passwordsMismatch ? <XIcon /> : <IconPlaceholder />}
@@ -621,16 +518,7 @@ const SignUpForm = ({
       <button
         type="submit"
         disabled={isSubmitting || !isFormValid()}
-        style={{
-          padding: '10px 20px',
-          backgroundColor: (isSubmitting || !isFormValid()) ? '#ccc' : '#4060b0',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: (isSubmitting || !isFormValid()) ? 'not-allowed' : 'pointer',
-          fontSize: '1em',
-          fontWeight: 'bold'
-        }}
+        className="signup-form__submit"
       >
         {isSubmitting ? 'Creating account...' : 'Create new account'}
       </button>

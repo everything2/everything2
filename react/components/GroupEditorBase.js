@@ -198,54 +198,66 @@ export const GroupEditorModal = ({
     }
   }
 
+  // Helper for member item class
+  const getMemberClass = (index) => {
+    let cls = 'group-editor__member'
+    if (dragOverIndex === index) cls += ' group-editor__member--drag-over'
+    if (draggedIndex === index) cls += ' group-editor__member--dragging'
+    return cls
+  }
+
+  // Helper for message class
+  const getMessageClass = () => {
+    if (!message) return ''
+    return message.type === 'error'
+      ? 'group-editor__message group-editor__message--error'
+      : 'group-editor__message group-editor__message--success'
+  }
+
   return (
-    <div style={styles.backdrop}>
-      <div style={styles.modal}>
+    <div className="group-editor__backdrop">
+      <div className="group-editor__modal">
         {/* Header */}
-        <div style={styles.header}>
-          <h3 style={styles.title}>
+        <div className="group-editor__header">
+          <h3 className="group-editor__title">
             {headerIcon}
             {title}
           </h3>
-          <button onClick={handleClose} style={styles.closeButton}>&times;</button>
+          <button onClick={handleClose} className="group-editor__close-btn">&times;</button>
         </div>
 
         {/* Message */}
         {message && (
-          <div style={{
-            ...styles.message,
-            backgroundColor: message.type === 'error' ? '#fee' : '#efe',
-            color: message.type === 'error' ? '#c00' : '#060'
-          }}>
+          <div className={getMessageClass()}>
             {message.text}
           </div>
         )}
 
         {/* Search to add */}
-        <div style={styles.searchSection}>
-          <div style={styles.searchHeader}>
-            <FaPlus style={{ marginRight: '6px' }} />
+        <div className="group-editor__search-section">
+          <div className="group-editor__search-header">
+            <FaPlus />
             {addLabel}
           </div>
-          <div style={styles.searchInputWrapper}>
-            <FaSearch style={styles.searchIcon} />
+          <div className="group-editor__search-wrapper">
+            <FaSearch className="group-editor__search-icon" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder={searchPlaceholder}
-              style={styles.searchInput}
+              className="group-editor__search-input"
             />
-            {isSearching && <span style={styles.searchingText}>Searching...</span>}
+            {isSearching && <span className="group-editor__searching">Searching...</span>}
           </div>
 
           {/* Search results */}
           {searchResults.length > 0 && (
-            <div style={styles.searchResults}>
+            <div className="group-editor__results">
               {searchResults.map((result) => (
                 <div
                   key={result.node_id}
-                  style={styles.searchResult}
+                  className="group-editor__result"
                   onClick={() => handleAdd(result)}
                 >
                   {renderSearchResult(result)}
@@ -256,24 +268,24 @@ export const GroupEditorModal = ({
         </div>
 
         {/* Member list */}
-        <div style={styles.memberSection}>
-          <div style={styles.memberHeader}>
+        <div className="group-editor__member-section">
+          <div className="group-editor__member-header">
             <span>Members ({members.length})</span>
             {hasChanges && (
               <button
                 onClick={handleSaveOrder}
                 disabled={isSaving}
-                style={styles.saveButton}
+                className="group-editor__save-btn"
               >
-                <FaSave style={{ marginRight: '4px' }} />
+                <FaSave />
                 {isSaving ? 'Saving...' : 'Save Order'}
               </button>
             )}
           </div>
 
-          <div style={styles.memberList}>
+          <div className="group-editor__member-list">
             {members.length === 0 ? (
-              <div style={styles.emptyState}>No members in this group</div>
+              <div className="group-editor__empty">No members in this group</div>
             ) : (
               members.map((member, index) => (
                 <div
@@ -284,15 +296,11 @@ export const GroupEditorModal = ({
                   onDragOver={(e) => handleDragOver(e, index)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, index)}
-                  style={{
-                    ...styles.memberItem,
-                    ...(dragOverIndex === index ? styles.memberItemDragOver : {}),
-                    ...(draggedIndex === index ? styles.memberItemDragging : {})
-                  }}
+                  className={getMemberClass(index)}
                 >
-                  <FaGripVertical style={styles.dragHandle} title="Drag to reorder" />
+                  <FaGripVertical className="group-editor__drag-handle" title="Drag to reorder" />
 
-                  <div style={styles.memberInfo}>
+                  <div className="group-editor__member-info">
                     {renderMemberContent(member)}
                   </div>
 
@@ -300,7 +308,7 @@ export const GroupEditorModal = ({
 
                   <button
                     onClick={() => handleRemove(member)}
-                    style={styles.removeButton}
+                    className="group-editor__remove-btn"
                     title={canRemove(member) ? 'Remove' : 'Cannot remove'}
                     disabled={!canRemove(member)}
                   >
@@ -313,274 +321,15 @@ export const GroupEditorModal = ({
         </div>
 
         {/* Footer */}
-        <div style={styles.footer}>
-          <p style={styles.helpText}>{helpText}</p>
-          <button onClick={handleClose} style={styles.doneButton}>
+        <div className="group-editor__footer">
+          <p className="group-editor__help-text">{helpText}</p>
+          <button onClick={handleClose} className="group-editor__done-btn">
             Done
           </button>
         </div>
       </div>
     </div>
   )
-}
-
-export const styles = {
-  backdrop: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10000,
-    padding: '20px'
-  },
-  modal: {
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    maxWidth: '650px',
-    width: '100%',
-    maxHeight: '90vh',
-    display: 'flex',
-    flexDirection: 'column',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px 20px',
-    borderBottom: '2px solid #38495e',
-    backgroundColor: '#f8f9fa'
-  },
-  title: {
-    margin: 0,
-    fontSize: '16px',
-    color: '#38495e',
-    fontWeight: 'bold',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    fontSize: '24px',
-    cursor: 'pointer',
-    color: '#666',
-    padding: '0 4px',
-    lineHeight: 1
-  },
-  message: {
-    padding: '10px 20px',
-    fontSize: '13px',
-    borderBottom: '1px solid #eee'
-  },
-  searchSection: {
-    padding: '16px 20px',
-    borderBottom: '1px solid #eee',
-    position: 'relative'
-  },
-  searchHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: '10px'
-  },
-  searchInputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  searchIcon: {
-    position: 'absolute',
-    left: '10px',
-    color: '#999',
-    fontSize: '14px'
-  },
-  searchInput: {
-    width: '100%',
-    padding: '8px 12px 8px 32px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '14px'
-  },
-  searchingText: {
-    position: 'absolute',
-    right: '10px',
-    fontSize: '12px',
-    color: '#666'
-  },
-  searchResults: {
-    position: 'absolute',
-    left: '20px',
-    right: '20px',
-    marginTop: '4px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    maxHeight: '200px',
-    overflowY: 'auto',
-    backgroundColor: '#fff',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    zIndex: 100
-  },
-  searchResult: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 12px',
-    cursor: 'pointer',
-    borderBottom: '1px solid #eee'
-  },
-  memberSection: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: 0,
-    padding: '16px 20px'
-  },
-  memberHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: '10px'
-  },
-  saveButton: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '6px 12px',
-    fontSize: '12px',
-    border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#28a745',
-    color: '#fff',
-    cursor: 'pointer'
-  },
-  memberList: {
-    flex: 1,
-    overflowY: 'auto',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    minHeight: '200px',
-    maxHeight: '300px'
-  },
-  emptyState: {
-    padding: '20px',
-    textAlign: 'center',
-    color: '#999',
-    fontStyle: 'italic'
-  },
-  memberItem: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 12px',
-    borderBottom: '1px solid #eee',
-    backgroundColor: '#fff',
-    transition: 'background-color 0.2s'
-  },
-  memberItemDragOver: {
-    backgroundColor: '#e3f2fd',
-    borderTop: '2px solid #2196f3'
-  },
-  memberItemDragging: {
-    opacity: 0.5
-  },
-  dragHandle: {
-    color: '#ccc',
-    cursor: 'grab',
-    marginRight: '12px',
-    fontSize: '14px'
-  },
-  memberInfo: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  removeButton: {
-    background: 'none',
-    border: 'none',
-    color: '#dc3545',
-    cursor: 'pointer',
-    padding: '4px 8px',
-    fontSize: '14px',
-    opacity: 0.7
-  },
-  footer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px 20px',
-    borderTop: '1px solid #eee',
-    backgroundColor: '#f8f9fa'
-  },
-  helpText: {
-    margin: 0,
-    fontSize: '12px',
-    color: '#666'
-  },
-  doneButton: {
-    padding: '8px 20px',
-    fontSize: '13px',
-    border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#38495e',
-    color: '#fff',
-    cursor: 'pointer',
-    fontWeight: 'bold'
-  },
-  // Additional shared styles for member content
-  typeIcon: {
-    marginRight: '8px',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  resultTitle: {
-    flex: 1,
-    fontSize: '14px'
-  },
-  resultType: {
-    fontSize: '11px',
-    color: '#999',
-    padding: '2px 6px',
-    backgroundColor: '#f0f0f0',
-    borderRadius: '3px'
-  },
-  typeLabel: {
-    fontSize: '11px',
-    padding: '2px 6px',
-    backgroundColor: '#e8f4f8',
-    color: '#507898',
-    borderRadius: '3px'
-  },
-  authorInfo: {
-    fontSize: '12px',
-    color: '#666'
-  },
-  memberDetails: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '6px'
-  },
-  ownerBadge: {
-    fontSize: '10px',
-    padding: '2px 6px',
-    backgroundColor: '#fff3cd',
-    color: '#856404',
-    borderRadius: '10px',
-    marginLeft: '4px'
-  },
-  memberFlags: {
-    color: '#999',
-    fontSize: '11px'
-  }
 }
 
 export default GroupEditorModal

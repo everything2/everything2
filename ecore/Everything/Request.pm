@@ -66,8 +66,14 @@ sub JSON_POSTDATA
   my $postdata = $self->POSTDATA;
   return {} unless $postdata;
 
-  # Decode UTF-8 bytes from raw POST body before JSON parsing
-  $postdata = decode_utf8($postdata);
+  my $encoding = $ENV{CONTENT_TYPE} || '';
+
+  # Only decode UTF-8 for application/json requests
+  # For form-urlencoded, CGI.pm already handles character decoding
+  if ($encoding =~ m|^application/json|)
+  {
+    $postdata = decode_utf8($postdata);
+  }
 
   return $self->JSON->decode($postdata);
 }

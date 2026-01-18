@@ -131,119 +131,29 @@ const FavoriteUsersManager = ({ initialFavorites = [], currentUser }) => {
     }
   }, [confirmModal])
 
-  const styles = {
-    container: {
-      fontFamily: 'Verdana, Arial, Helvetica, sans-serif',
-      fontSize: '10pt',
-      maxWidth: '800px',
-      margin: '0 auto'
-    },
-    header: {
-      fontSize: '14pt',
-      fontWeight: 'bold',
-      marginBottom: '16px',
-      color: '#38495e'
-    },
-    section: {
-      backgroundColor: '#f8f9f9',
-      border: '1px solid #38495e',
-      borderRadius: '4px',
-      padding: '16px',
-      marginBottom: '16px'
-    },
-    sectionTitle: {
-      fontSize: '11pt',
-      fontWeight: 'bold',
-      marginBottom: '12px',
-      color: '#38495e'
-    },
-    inputGroup: {
-      marginBottom: '12px'
-    },
-    list: {
-      listStyle: 'none',
-      padding: 0,
-      margin: 0
-    },
-    listItem: {
-      padding: '12px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    },
-    userInfo: {
-      flex: 1
-    },
-    username: {
-      fontWeight: 'bold',
-      color: '#4060b0'
-    },
-    actions: {
-      display: 'flex',
-      gap: '8px'
-    },
-    buttonDanger: {
-      padding: '4px 12px',
-      backgroundColor: '#c33',
-      color: 'white',
-      border: 'none',
-      borderRadius: '3px',
-      fontSize: '9pt',
-      cursor: 'pointer',
-      marginLeft: '8px'
-    },
-    message: {
-      padding: '8px 12px',
-      borderRadius: '3px',
-      marginBottom: '12px'
-    },
-    error: {
-      backgroundColor: '#fee',
-      color: '#c33',
-      border: '1px solid #c33'
-    },
-    success: {
-      backgroundColor: '#efe',
-      color: '#383',
-      border: '1px solid #383'
-    },
-    emptyState: {
-      textAlign: 'center',
-      padding: '24px',
-      color: '#507898',
-      fontStyle: 'italic'
-    },
-    description: {
-      fontSize: '9pt',
-      color: '#507898',
-      marginBottom: '12px',
-      lineHeight: '1.4'
-    }
-  }
-
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>Favorite Users</div>
+    <div className="user-manager">
+      <div className="user-manager__header">Favorite Users</div>
 
       {error && (
-        <div style={{ ...styles.message, ...styles.error }}>
+        <div className="user-manager__message user-manager__message--error">
           {error}
         </div>
       )}
 
       {success && (
-        <div style={{ ...styles.message, ...styles.success }}>
+        <div className="user-manager__message user-manager__message--success">
           {success}
         </div>
       )}
 
-      <div style={styles.section}>
-        <div style={styles.sectionTitle}>Follow a User</div>
-        <div style={styles.description}>
+      <div className="user-manager__section">
+        <div className="user-manager__section-title">Follow a User</div>
+        <div className="user-manager__description">
           Follow users to see their recent writeups in the Favorite Noders nodelet.
           You can also favorite users by clicking the star icon on their homenode.
         </div>
-        <div style={styles.inputGroup}>
+        <div className="user-manager__input-group">
           <UserSearchInput
             onSelect={addFavoriteUser}
             placeholder="Search for a user to follow..."
@@ -253,27 +163,24 @@ const FavoriteUsersManager = ({ initialFavorites = [], currentUser }) => {
         </div>
       </div>
 
-      <div style={styles.section}>
-        <div style={styles.sectionTitle}>
+      <div className="user-manager__section">
+        <div className="user-manager__section-title">
           Following ({favoriteUsers.length})
         </div>
         {favoriteUsers.length === 0 ? (
-          <div style={styles.emptyState}>
+          <div className="user-manager__empty-state">
             You're not following anyone yet
           </div>
         ) : (
-          <ul style={styles.list}>
-            {favoriteUsers.map((user, index) => (
-              <li key={user.node_id} style={{
-                ...styles.listItem,
-                borderBottom: index === favoriteUsers.length - 1 ? 'none' : '1px solid #ddd'
-              }}>
-                <div style={styles.userInfo}>
-                  <LinkNode type="user" title={user.title} style={styles.username} />
+          <ul className="user-manager__list">
+            {favoriteUsers.map((user) => (
+              <li key={user.node_id} className="user-manager__list-item">
+                <div className="user-manager__user-info">
+                  <LinkNode type="user" title={user.title} className="user-manager__username-link" />
                 </div>
-                <div style={styles.actions}>
+                <div className="user-manager__actions">
                   <button
-                    style={styles.buttonDanger}
+                    className="user-manager__btn--danger"
                     onClick={() => openRemoveModal(user.node_id, user.title)}
                     disabled={loading}
                   >

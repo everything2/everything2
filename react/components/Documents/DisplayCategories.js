@@ -2,124 +2,6 @@ import React, { useState, useCallback } from 'react'
 import LinkNode from '../LinkNode'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 
-const baseStyles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  filterForm: {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '4px',
-  },
-  formRow: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '10px',
-    gap: '10px',
-  },
-  label: {
-    fontWeight: 'bold',
-    minWidth: '120px',
-  },
-  input: {
-    padding: '6px 10px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '14px',
-    width: '200px',
-  },
-  select: {
-    padding: '6px 10px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '14px',
-  },
-  hint: {
-    fontSize: '12px',
-    color: '#666',
-    marginLeft: '10px',
-  },
-  button: {
-    padding: '8px 16px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginBottom: '20px',
-  },
-  th: {
-    backgroundColor: '#f0f0f0',
-    padding: '10px',
-    textAlign: 'left',
-    borderBottom: '2px solid #ccc',
-    fontWeight: 'bold',
-  },
-  thCenter: {
-    backgroundColor: '#f0f0f0',
-    padding: '10px',
-    textAlign: 'center',
-    borderBottom: '2px solid #ccc',
-    fontWeight: 'bold',
-  },
-  td: {
-    padding: '8px 10px',
-    borderBottom: '1px solid #eee',
-  },
-  tdCenter: {
-    padding: '8px 10px',
-    borderBottom: '1px solid #eee',
-    textAlign: 'center',
-  },
-  oddRow: {
-    backgroundColor: '#fff',
-  },
-  evenRow: {
-    backgroundColor: '#f9f9f9',
-  },
-  yesText: {
-    fontWeight: 'bold',
-    color: '#28a745',
-  },
-  noText: {
-    color: '#666',
-  },
-  pagination: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '15px',
-    marginTop: '20px',
-  },
-  pageLink: {
-    color: '#4060b0',
-    textDecoration: 'none',
-    cursor: 'pointer',
-  },
-  currentPage: {
-    fontWeight: 'bold',
-  },
-  emptyMessage: {
-    padding: '20px',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    color: '#666',
-  },
-  usergroupTag: {
-    fontSize: '12px',
-    color: '#666',
-  },
-}
-
 const DisplayCategories = ({ data }) => {
   const isMobile = useIsMobile()
   const initialData = data.displayCategories || {}
@@ -201,106 +83,84 @@ const DisplayCategories = ({ data }) => {
     }
   }, [page, hasMore, maintainerName, sortOrder])
 
-  // Responsive styles
-  const styles = {
-    ...baseStyles,
-    container: {
-      ...baseStyles.container,
-      padding: isMobile ? '12px' : '20px',
-    },
-    formRow: {
-      display: 'flex',
-      flexDirection: isMobile ? 'column' : 'row',
-      alignItems: isMobile ? 'stretch' : 'center',
-      marginBottom: '10px',
-      gap: isMobile ? '4px' : '10px',
-    },
-    label: {
-      fontWeight: 'bold',
-      minWidth: isMobile ? 'auto' : '120px',
-    },
-    input: {
-      padding: '8px 10px',
-      border: '1px solid #ccc',
-      borderRadius: '4px',
-      fontSize: '14px',
-      width: isMobile ? '100%' : '200px',
-      boxSizing: 'border-box',
-    },
-    select: {
-      padding: '8px 10px',
-      border: '1px solid #ccc',
-      borderRadius: '4px',
-      fontSize: '14px',
-      width: isMobile ? '100%' : 'auto',
-      boxSizing: 'border-box',
-    },
-    hint: {
-      fontSize: '12px',
-      color: '#666',
-      marginLeft: isMobile ? '0' : '10px',
-      marginTop: isMobile ? '2px' : '0',
-    },
-    button: {
-      ...baseStyles.button,
-      width: isMobile ? '100%' : 'auto',
-      marginTop: isMobile ? '10px' : '0',
-    },
-  }
+  const containerClass = isMobile
+    ? 'display-categories display-categories--mobile'
+    : 'display-categories'
+  const formRowClass = isMobile
+    ? 'display-categories__form-row display-categories__form-row--mobile'
+    : 'display-categories__form-row'
+  const labelClass = isMobile
+    ? 'display-categories__label display-categories__label--mobile'
+    : 'display-categories__label'
+  const inputClass = isMobile
+    ? 'display-categories__input display-categories__input--mobile'
+    : 'display-categories__input'
+  const selectClass = isMobile
+    ? 'display-categories__select display-categories__select--mobile'
+    : 'display-categories__select'
+  const hintClass = isMobile
+    ? 'display-categories__hint display-categories__hint--mobile'
+    : 'display-categories__hint'
+  const btnClass = isMobile
+    ? 'display-categories__btn display-categories__btn--mobile'
+    : 'display-categories__btn'
 
   return (
-    <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={baseStyles.filterForm}>
-        <div style={styles.formRow}>
-          <label style={styles.label}>Maintained By:</label>
+    <div className={containerClass}>
+      <form onSubmit={handleSubmit} className="display-categories__filter-form">
+        <div className={formRowClass}>
+          <label className={labelClass}>Maintained By:</label>
           <input
             type="text"
             value={maintainerName}
             onChange={(e) => setMaintainerName(e.target.value)}
-            style={styles.input}
+            className={inputClass}
             placeholder="Username or usergroup"
           />
-          {!isMobile && <span style={styles.hint}>(leave blank for all)</span>}
+          {!isMobile && <span className={hintClass}>(leave blank for all)</span>}
         </div>
-        {isMobile && <span style={styles.hint}>Leave blank to list all categories</span>}
-        <div style={styles.formRow}>
-          <label style={styles.label}>Sort Order:</label>
+        {isMobile && <span className={hintClass}>Leave blank to list all categories</span>}
+        <div className={formRowClass}>
+          <label className={labelClass}>Sort Order:</label>
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            style={styles.select}
+            className={selectClass}
           >
             <option value="">Category Name</option>
             <option value="m">Maintainer</option>
           </select>
         </div>
-        <button type="submit" style={styles.button} disabled={loading}>
+        <button type="submit" className={btnClass} disabled={loading}>
           {loading ? 'Loading...' : 'Submit'}
         </button>
       </form>
 
-      <table style={baseStyles.table}>
+      <table className="display-categories__table">
         <thead>
           <tr>
-            <th style={baseStyles.th}>Category</th>
-            <th style={baseStyles.thCenter}>Maintainer</th>
-            {!isGuest && <th style={baseStyles.thCenter}>Can I Contribute?</th>}
+            <th className="display-categories__th">Category</th>
+            <th className="display-categories__th display-categories__th--center">Maintainer</th>
+            {!isGuest && <th className="display-categories__th display-categories__th--center">Can I Contribute?</th>}
           </tr>
         </thead>
         <tbody>
           {categories.length === 0 ? (
             <tr>
-              <td colSpan={isGuest ? 2 : 3} style={baseStyles.emptyMessage}>
+              <td colSpan={isGuest ? 2 : 3} className="display-categories__empty">
                 No categories found!
               </td>
             </tr>
           ) : (
             categories.map((cat, index) => (
-              <tr key={cat.node_id} style={index % 2 === 0 ? baseStyles.oddRow : baseStyles.evenRow}>
-                <td style={baseStyles.td}>
+              <tr
+                key={cat.node_id}
+                className={index % 2 === 0 ? 'display-categories__row--odd' : 'display-categories__row--even'}
+              >
+                <td className="display-categories__td">
                   <LinkNode type="category" title={cat.title} />
                 </td>
-                <td style={baseStyles.tdCenter}>
+                <td className="display-categories__td display-categories__td--center">
                   {cat.is_public ? (
                     'Everyone'
                   ) : (
@@ -310,17 +170,17 @@ const DisplayCategories = ({ data }) => {
                         title={cat.maintainer_name}
                       />
                       {cat.is_usergroup && (
-                        <span style={baseStyles.usergroupTag}> (usergroup)</span>
+                        <span className="display-categories__usergroup-tag"> (usergroup)</span>
                       )}
                     </>
                   )}
                 </td>
                 {!isGuest && (
-                  <td style={baseStyles.tdCenter}>
+                  <td className="display-categories__td display-categories__td--center">
                     {cat.can_contribute ? (
-                      <span style={baseStyles.yesText}>Yes!</span>
+                      <span className="display-categories__yes">Yes!</span>
                     ) : (
-                      <span style={baseStyles.noText}>No</span>
+                      <span className="display-categories__no">No</span>
                     )}
                   </td>
                 )}
@@ -331,23 +191,23 @@ const DisplayCategories = ({ data }) => {
       </table>
 
       {(page > 0 || hasMore) && (
-        <div style={baseStyles.pagination}>
+        <div className="display-categories__pagination">
           {page > 0 ? (
-            <a onClick={handlePrevPage} style={baseStyles.pageLink}>
+            <a onClick={handlePrevPage} className="display-categories__page-link">
               &lt;&lt; Previous
             </a>
           ) : (
-            <span style={{ color: '#ccc' }}>&lt;&lt; Previous</span>
+            <span className="display-categories__page-link--disabled">&lt;&lt; Previous</span>
           )}
           <span>|</span>
-          <span style={baseStyles.currentPage}>Page {page + 1}</span>
+          <span className="display-categories__current-page">Page {page + 1}</span>
           <span>|</span>
           {hasMore ? (
-            <a onClick={handleNextPage} style={baseStyles.pageLink}>
+            <a onClick={handleNextPage} className="display-categories__page-link">
               Next &gt;&gt;
             </a>
           ) : (
-            <span style={{ color: '#ccc' }}>Next &gt;&gt;</span>
+            <span className="display-categories__page-link--disabled">Next &gt;&gt;</span>
           )}
         </div>
       )}

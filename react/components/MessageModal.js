@@ -402,6 +402,7 @@ const MessageModal = ({
               Message:
             </label>
             <textarea
+              id="message-modal-compose-textarea"
               ref={textareaRef}
               value={message}
               onChange={(e) => setMessage(e.target.value)}

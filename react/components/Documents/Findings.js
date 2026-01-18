@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import AdminCreateNodeLink from '../AdminCreateNodeLink';
 import { decodeHtmlEntities } from '../../utils/textUtils';
+import { InContentAd } from '../Layout/GoogleAds';
+
+// Show an ad every N items in the findings list (for guests only)
+const AD_INTERVAL = 4;
 
 const Findings = ({ data, user }) => {
   const { no_search_term, message, search_term, findings = [], lastnode_id, is_guest, has_excerpts } = data;
@@ -27,25 +31,32 @@ const Findings = ({ data, user }) => {
       </p>
 
       <ul className="findings-list">
-        {findings.map((finding) => (
-          <li
-            key={finding.node_id}
-            className={finding.is_nodeshell ? 'findings-item findings-item--nodeshell' : 'findings-item'}
-          >
-            <a href={`/?node_id=${finding.node_id}${is_guest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}>
-              {finding.title}
-            </a>
-            {finding.type !== 'e2node' && <span> ({finding.type})</span>}
-            {finding.writeup_count > 1 && <span> ({finding.writeup_count} entries)</span>}
-            {finding.excerpt && (
-              <a
-                href={`/?node_id=${finding.node_id}${is_guest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}
-                className="findings-excerpt-link"
-              >
-                <p className="findings-excerpt">{decodeHtmlEntities(finding.excerpt)}</p>
+        {findings.map((finding, index) => (
+          <React.Fragment key={finding.node_id}>
+            <li
+              className={finding.is_nodeshell ? 'findings-item findings-item--nodeshell' : 'findings-item'}
+            >
+              <a href={`/?node_id=${finding.node_id}${is_guest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}>
+                {finding.title}
               </a>
+              {finding.type !== 'e2node' && <span> ({finding.type})</span>}
+              {finding.writeup_count > 1 && <span> ({finding.writeup_count} entries)</span>}
+              {finding.excerpt && (
+                <a
+                  href={`/?node_id=${finding.node_id}${is_guest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}
+                  className="findings-excerpt-link"
+                >
+                  <p className="findings-excerpt">{decodeHtmlEntities(finding.excerpt)}</p>
+                </a>
+              )}
+            </li>
+            {/* Show ad every AD_INTERVAL items for guests */}
+            {is_guest && (index + 1) % AD_INTERVAL === 0 && index < findings.length - 1 && (
+              <li className="findings-ad-item">
+                <InContentAd show={true} />
+              </li>
             )}
-          </li>
+          </React.Fragment>
         ))}
       </ul>
 

@@ -241,7 +241,6 @@ sub grant_cools
     my ($self, $REQUEST) = @_;
 
     my $USER = $REQUEST->user->NODEDATA;
-    my $VARS = $REQUEST->VARS;
     my $APP = $self->APP;
     my $DB = $self->DB;
 
@@ -294,9 +293,17 @@ sub grant_cools
         my $is_self = ($target_user->{node_id} == $USER->{node_id});
 
         if ($is_self) {
-            # Modify in-scope VARS for current user
-            $VARS->{cools} = ($VARS->{cools} || 0) + $amount;
-            $USER->{karma} += 1;
+            # Get fresh node for current user, modify vars, and save
+            # IMPORTANT: We must use the SAME node reference for setVars and updateNode
+            # to avoid updateNode overwriting the vars we just set.
+            my $user_node = $DB->getNodeById($USER->{node_id}, 'force');
+            my $self_vars = Everything::getVars($user_node);
+            $self_vars->{cools} = ($self_vars->{cools} || 0) + $amount;
+            Everything::setVars($user_node, $self_vars);
+
+            # Update karma on the same node we used for setVars
+            $user_node->{karma} = ($user_node->{karma} || 0) + 1;
+            $DB->updateNode($user_node, -1);
 
             $APP->securityLog(
                 $DB->getNode('Bestow Cools', 'restricted_superdoc'),
@@ -306,23 +313,27 @@ sub grant_cools
 
             my $cools_word = $amount == 1 ? 'cool' : 'cools';
             my $were_was = $amount == 1 ? 'was' : 'were';
-            my $total_cools_word = $VARS->{cools} == 1 ? 'cool' : 'cools';
+            my $total_cools_word = $self_vars->{cools} == 1 ? 'cool' : 'cools';
 
             push @results, {
                 username => $USER->{title},
                 success => 1,
                 amount => $amount,
-                new_total => $VARS->{cools},
-                message => "$amount $cools_word $were_was bestowed to you (now have $VARS->{cools} $total_cools_word)"
+                new_total => $self_vars->{cools},
+                message => "$amount $cools_word $were_was bestowed to you (now have $self_vars->{cools} $total_cools_word)"
             };
         } else {
-            # Get target user's vars and update
-            my $target_vars = $DB->getVars($target_user);
+            # Get fresh node and vars, modify, save ALL vars
+            # IMPORTANT: We must use the SAME node reference for setVars and updateNode
+            # to avoid updateNode overwriting the vars we just set.
+            my $target_node = $DB->getNodeById($target_user->{node_id}, 'force');
+            my $target_vars = Everything::getVars($target_node);
             $target_vars->{cools} = ($target_vars->{cools} || 0) + $amount;
-            $DB->setVars($target_user, $target_vars);
+            Everything::setVars($target_node, $target_vars);
 
-            $target_user->{karma} += 1;
-            $DB->updateNode($target_user, -1);
+            # Update karma on the same node we used for setVars
+            $target_node->{karma} = ($target_node->{karma} || 0) + 1;
+            $DB->updateNode($target_node, -1);
 
             $APP->securityLog(
                 $DB->getNode('Bestow Cools', 'restricted_superdoc'),

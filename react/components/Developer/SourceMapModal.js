@@ -15,23 +15,11 @@ const SourceMapModal = ({ isOpen, onClose, sourceMap, nodeTitle }) => {
       onRequestClose={onClose}
       ariaHideApp={false}
       contentLabel="Source Map"
-      style={{
-        content: {
-          top: '50%',
-          left: '50%',
-          right: 'auto',
-          bottom: 'auto',
-          marginRight: '-50%',
-          transform: 'translate(-50%, -50%)',
-          minWidth: '600px',
-          maxWidth: '800px',
-          maxHeight: '80vh',
-          overflow: 'auto',
-          padding: '0'
-        },
-      }}
+      className="modal-compact modal-compact--wide"
+      overlayClassName="nodelet-modal-overlay"
+      style={modalPositioning}
     >
-      <div style={{ padding: '20px' }}>
+      <div className="modal-compact__content">
         <SourceMapDisplay
           sourceMap={sourceMap}
           title={`Source Map: ${nodeTitle}`}
@@ -40,20 +28,11 @@ const SourceMapModal = ({ isOpen, onClose, sourceMap, nodeTitle }) => {
           showEmptyState={true}
         />
 
-        <div style={{ textAlign: 'right', marginTop: '20px' }}>
+        <div className="modal-compact__btn-row mt-4">
           <button
             type="button"
             onClick={onClose}
-            style={{
-              padding: '8px 20px',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
+            className="modal-compact__btn modal-compact__btn--secondary modal-compact__btn--inline"
           >
             Close
           </button>
@@ -61,6 +40,21 @@ const SourceMapModal = ({ isOpen, onClose, sourceMap, nodeTitle }) => {
       </div>
     </Modal>
   )
+}
+
+// react-modal requires positioning styles as objects
+const modalPositioning = {
+  overlay: {},
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    padding: 0,
+    border: 'none'
+  }
 }
 
 export default SourceMapModal

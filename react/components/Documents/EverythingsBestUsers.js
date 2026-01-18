@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export default function EverythingsBestUsers({ data }) {
   const {
@@ -7,37 +7,36 @@ export default function EverythingsBestUsers({ data }) {
     showAddiction = false,
     showNewUsers = false,
     showRecent = false
-  } = data;
+  } = data
 
-  // Sort column based on display options
   const getSortColumn = () => {
-    if (showDevotion) return 'devotion';
-    if (showAddiction) return 'addiction';
-    return 'experience';
-  };
+    if (showDevotion) return 'devotion'
+    if (showAddiction) return 'addiction'
+    return 'experience'
+  }
 
   const getSortLabel = () => {
-    if (showDevotion) return 'Devotion';
-    if (showAddiction) return 'Addiction';
-    return 'Experience';
-  };
+    if (showDevotion) return 'Devotion'
+    if (showAddiction) return 'Addiction'
+    return 'Experience'
+  }
 
-  const sortColumn = getSortColumn();
+  const sortColumn = getSortColumn()
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <p style={{ textAlign: 'right', fontSize: '0.9em' }}>
+    <div className="ebu">
+      <p className="ebu__news-link">
         <small>
           <a href="/title/News+for+noders.+Stuff+that+matters.">News for noders. Stuff that matters.</a>
         </small>
       </p>
 
-      <form method="POST" action="" style={{ marginBottom: '20px' }}>
+      <form method="POST" action="" className="ebu__form">
         <input type="hidden" name="node" value="Everything's Best Users" />
         <input type="hidden" name="displaytype" value="" />
         <input type="hidden" name="sexisgood" value="1" />
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'center' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <div className="ebu__form-controls">
+          <label className="ebu__checkbox-label">
             <input
               type="checkbox"
               name="ebu_showdevotion"
@@ -46,7 +45,7 @@ export default function EverythingsBestUsers({ data }) {
             Display by <a href="/title/devotion">devotion</a>
           </label>
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <label className="ebu__checkbox-label">
             <input
               type="checkbox"
               name="ebu_showaddiction"
@@ -55,7 +54,7 @@ export default function EverythingsBestUsers({ data }) {
             Display by <a href="/title/addiction">addiction</a>
           </label>
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <label className="ebu__checkbox-label">
             <input
               type="checkbox"
               name="ebu_newusers"
@@ -64,7 +63,7 @@ export default function EverythingsBestUsers({ data }) {
             Show New users
           </label>
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <label className="ebu__checkbox-label">
             <input
               type="checkbox"
               name="ebu_showrecent"
@@ -74,54 +73,34 @@ export default function EverythingsBestUsers({ data }) {
           </label>
 
           <input type="hidden" name="gochange" value="foo" />
-          <button
-            type="submit"
-            style={{
-              padding: '5px 15px',
-              backgroundColor: '#4060b0',
-              color: 'white',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}
-          >
+          <button type="submit" className="ebu__submit-btn">
             change
           </button>
         </div>
       </form>
 
-      <p style={{ marginBottom: '15px' }}>
+      <p className="ebu__intro">
         Shake these people's manipulatory appendages. They deserve it.
         <br />
         <em>A drum roll please....</em>
       </p>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table
-          border="0"
-          cellPadding="8"
-          cellSpacing="0"
-          style={{
-            width: '70%',
-            margin: '0 auto',
-            borderCollapse: 'collapse',
-            backgroundColor: '#ffffff'
-          }}
-        >
+      <div className="ebu__table-wrapper">
+        <table className="ebu__table" border="0" cellPadding="8" cellSpacing="0">
           <thead>
-            <tr style={{ backgroundColor: '#ffffff' }}>
-              <th style={{ textAlign: 'center', padding: '10px' }}></th>
-              <th style={{ textAlign: 'left', padding: '10px' }}>User</th>
-              <th style={{ textAlign: 'right', padding: '10px' }}>{getSortLabel()}</th>
-              <th style={{ textAlign: 'right', padding: '10px' }}># Writeups</th>
-              <th style={{ textAlign: 'center', padding: '10px' }}>Rank</th>
-              <th style={{ textAlign: 'center', padding: '10px' }}>Level</th>
+            <tr>
+              <th className="ebu__table th--center"></th>
+              <th className="ebu__table th--left">User</th>
+              <th className="ebu__table th--right">{getSortLabel()}</th>
+              <th className="ebu__table th--right"># Writeups</th>
+              <th className="ebu__table th--center">Rank</th>
+              <th className="ebu__table th--center">Level</th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan="6" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                <td colSpan="6" className="ebu__empty">
                   <em>No users found</em>
                 </td>
               </tr>
@@ -129,31 +108,29 @@ export default function EverythingsBestUsers({ data }) {
               users.map((user, index) => (
                 <tr
                   key={user.node_id}
-                  style={{
-                    backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9f9f9'
-                  }}
+                  className={index % 2 === 0 ? 'ebu__row--even' : 'ebu__row--odd'}
                 >
-                  <td style={{ textAlign: 'center', padding: '8px' }}>
+                  <td className="ebu__table td--center">
                     <small>{index + 1}</small>
                   </td>
-                  <td style={{ padding: '8px' }}>
+                  <td>
                     <a href={`/user/${encodeURIComponent(user.title)}?lastnode_id=`}>
                       {user.title}
                     </a>
                   </td>
-                  <td style={{ textAlign: 'right', padding: '8px' }}>
+                  <td className="ebu__table td--right">
                     {sortColumn === 'addiction'
                       ? (user[sortColumn] || 0).toFixed(2)
                       : (user[sortColumn] || 0)
                     }
                   </td>
-                  <td style={{ textAlign: 'right', padding: '8px' }}>
+                  <td className="ebu__table td--right">
                     {user.writeup_count || 0}
                   </td>
-                  <td style={{ textAlign: 'center', padding: '8px' }}>
+                  <td className="ebu__table td--center">
                     {user.level_title || 'Initiate'}
                   </td>
-                  <td style={{ textAlign: 'center', padding: '8px' }}>
+                  <td className="ebu__table td--center">
                     {user.level_value || 0}
                   </td>
                 </tr>
@@ -163,5 +140,5 @@ export default function EverythingsBestUsers({ data }) {
         </table>
       </div>
     </div>
-  );
+  )
 }

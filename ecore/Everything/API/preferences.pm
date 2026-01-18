@@ -253,9 +253,13 @@ sub set_notification_preferences
   # Update notifications in settings
   $settings->{notifications} = $notifications;
 
-  # Save back to VARS
-  my $settings_json = JSON::encode_json($settings);
-  Everything::setVars($user_node, { settings => $settings_json });
+  # Save back to VARS - IMPORTANT: must pass ALL vars, not just settings,
+  # because setVars() deletes any var not in the passed hash.
+  # Re-read VARS fresh from database to get any changes made since we started.
+  # This prevents race conditions where other preference changes would be lost.
+  my $fresh_vars = Everything::getVars($user_node);
+  $fresh_vars->{settings} = JSON::encode_json($settings);
+  Everything::setVars($user_node, $fresh_vars);
 
   # Update the node
   my $update_ok = eval {

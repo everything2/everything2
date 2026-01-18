@@ -484,4 +484,263 @@ SKIP: {
   };
 }
 
+#############################################################################
+# Test node_categories endpoint (with prev/next navigation)
+#############################################################################
+
+subtest 'node_categories - returns categories containing a node' => sub {
+  my $cat_id = create_test_category("Test Category NodeCats " . time());
+  my $e2node_id = create_test_e2node("Test E2Node NodeCats " . time());
+
+  # Add the e2node to the category
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id,
+    linktype => $category_linktype->{node_id},
+    food => 10
+  });
+
+  my $req = MockRequest->new(
+    node_id => $normal_user->{node_id},
+    title => $normal_user->{title},
+    query_params => { node_id => $e2node_id }
+  );
+  my $result = $category_api->node_categories($req);
+
+  is($result->[0], 200, "HTTP 200 OK");
+  is($result->[1]->{success}, 1, "Request succeeded") or diag("Error: " . ($result->[1]->{error} // 'none'));
+  ok(ref($result->[1]->{categories}) eq 'ARRAY', "categories is an array");
+
+  # Find our test category
+  my $found_cat;
+  foreach my $cat (@{$result->[1]->{categories}}) {
+    if ($cat->{node_id} == $cat_id) {
+      $found_cat = $cat;
+      last;
+    }
+  }
+
+  ok($found_cat, "Found test category in results");
+  ok(exists $found_cat->{title}, "Category has title");
+  ok(exists $found_cat->{author_user}, "Category has author_user");
+  ok(exists $found_cat->{is_public}, "Category has is_public flag");
+};
+
+subtest 'node_categories - includes prev/next navigation' => sub {
+  my $cat_id = create_test_category("Test Category Nav " . time());
+  my $e2node_id1 = create_test_e2node("Test E2Node Nav1 " . time());
+  my $e2node_id2 = create_test_e2node("Test E2Node Nav2 " . time());
+  my $e2node_id3 = create_test_e2node("Test E2Node Nav3 " . time());
+
+  # Add all three nodes to the category with specific order
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id1,
+    linktype => $category_linktype->{node_id},
+    food => 10
+  });
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id2,
+    linktype => $category_linktype->{node_id},
+    food => 20
+  });
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id3,
+    linktype => $category_linktype->{node_id},
+    food => 30
+  });
+
+  # Test middle node (should have both prev and next)
+  my $req = MockRequest->new(
+    node_id => $normal_user->{node_id},
+    title => $normal_user->{title},
+    query_params => { node_id => $e2node_id2 }
+  );
+  my $result = $category_api->node_categories($req);
+
+  is($result->[1]->{success}, 1, "Request succeeded") or diag("Error: " . ($result->[1]->{error} // 'none'));
+
+  my $found_cat;
+  foreach my $cat (@{$result->[1]->{categories}}) {
+    if ($cat->{node_id} == $cat_id) {
+      $found_cat = $cat;
+      last;
+    }
+  }
+
+  ok($found_cat, "Found test category");
+
+  # Check prev/next navigation
+  ok(exists $found_cat->{prev_node}, "Has prev_node field");
+  ok(exists $found_cat->{next_node}, "Has next_node field");
+  ok(exists $found_cat->{position}, "Has position field");
+  ok(exists $found_cat->{total}, "Has total field");
+
+  is($found_cat->{position}, 2, "Position is 2 (middle node)");
+  is($found_cat->{total}, 3, "Total is 3");
+
+  ok($found_cat->{prev_node}, "Has prev node");
+  is($found_cat->{prev_node}->{node_id}, $e2node_id1, "Prev node is correct");
+  ok($found_cat->{prev_node}->{title}, "Prev node has title");
+  ok($found_cat->{prev_node}->{type}, "Prev node has type");
+
+  ok($found_cat->{next_node}, "Has next node");
+  is($found_cat->{next_node}->{node_id}, $e2node_id3, "Next node is correct");
+  ok($found_cat->{next_node}->{title}, "Next node has title");
+  ok($found_cat->{next_node}->{type}, "Next node has type");
+};
+
+subtest 'node_categories - first node has no prev' => sub {
+  my $cat_id = create_test_category("Test Category First " . time());
+  my $e2node_id1 = create_test_e2node("Test E2Node First1 " . time());
+  my $e2node_id2 = create_test_e2node("Test E2Node First2 " . time());
+
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id1,
+    linktype => $category_linktype->{node_id},
+    food => 10
+  });
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id2,
+    linktype => $category_linktype->{node_id},
+    food => 20
+  });
+
+  # Test first node
+  my $req = MockRequest->new(
+    node_id => $normal_user->{node_id},
+    title => $normal_user->{title},
+    query_params => { node_id => $e2node_id1 }
+  );
+  my $result = $category_api->node_categories($req);
+
+  my $found_cat;
+  foreach my $cat (@{$result->[1]->{categories}}) {
+    if ($cat->{node_id} == $cat_id) {
+      $found_cat = $cat;
+      last;
+    }
+  }
+
+  ok($found_cat, "Found test category");
+  is($found_cat->{position}, 1, "Position is 1 (first node)");
+  ok(!$found_cat->{prev_node}, "First node has no prev");
+  ok($found_cat->{next_node}, "First node has next");
+  is($found_cat->{next_node}->{node_id}, $e2node_id2, "Next node is correct");
+};
+
+subtest 'node_categories - last node has no next' => sub {
+  my $cat_id = create_test_category("Test Category Last " . time());
+  my $e2node_id1 = create_test_e2node("Test E2Node Last1 " . time());
+  my $e2node_id2 = create_test_e2node("Test E2Node Last2 " . time());
+
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id1,
+    linktype => $category_linktype->{node_id},
+    food => 10
+  });
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id2,
+    linktype => $category_linktype->{node_id},
+    food => 20
+  });
+
+  # Test last node
+  my $req = MockRequest->new(
+    node_id => $normal_user->{node_id},
+    title => $normal_user->{title},
+    query_params => { node_id => $e2node_id2 }
+  );
+  my $result = $category_api->node_categories($req);
+
+  my $found_cat;
+  foreach my $cat (@{$result->[1]->{categories}}) {
+    if ($cat->{node_id} == $cat_id) {
+      $found_cat = $cat;
+      last;
+    }
+  }
+
+  ok($found_cat, "Found test category");
+  is($found_cat->{position}, 2, "Position is 2 (last node)");
+  ok($found_cat->{prev_node}, "Last node has prev");
+  is($found_cat->{prev_node}->{node_id}, $e2node_id1, "Prev node is correct");
+  ok(!$found_cat->{next_node}, "Last node has no next");
+};
+
+subtest 'node_categories - single item category has no prev/next' => sub {
+  my $cat_id = create_test_category("Test Category Single " . time());
+  my $e2node_id = create_test_e2node("Test E2Node Single " . time());
+
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id,
+    linktype => $category_linktype->{node_id},
+    food => 10
+  });
+
+  my $req = MockRequest->new(
+    node_id => $normal_user->{node_id},
+    title => $normal_user->{title},
+    query_params => { node_id => $e2node_id }
+  );
+  my $result = $category_api->node_categories($req);
+
+  my $found_cat;
+  foreach my $cat (@{$result->[1]->{categories}}) {
+    if ($cat->{node_id} == $cat_id) {
+      $found_cat = $cat;
+      last;
+    }
+  }
+
+  ok($found_cat, "Found test category");
+  is($found_cat->{position}, 1, "Position is 1");
+  is($found_cat->{total}, 1, "Total is 1");
+  ok(!$found_cat->{prev_node}, "Single item has no prev");
+  ok(!$found_cat->{next_node}, "Single item has no next");
+};
+
+#############################################################################
+# Test Application.pm get_node_categories helper
+#############################################################################
+
+subtest 'Application get_node_categories helper' => sub {
+  my $cat_id = create_test_category("Test Category App " . time());
+  my $e2node_id = create_test_e2node("Test E2Node App " . time());
+
+  $DB->sqlInsert('links', {
+    from_node => $cat_id,
+    to_node => $e2node_id,
+    linktype => $category_linktype->{node_id},
+    food => 10
+  });
+
+  # Test the Application helper function
+  my $categories = $APP->get_node_categories($e2node_id);
+
+  ok($categories, "Got categories from Application helper");
+  ok(ref($categories) eq 'ARRAY', "Returns an arrayref");
+
+  my $found_cat;
+  foreach my $cat (@$categories) {
+    if ($cat->{node_id} == $cat_id) {
+      $found_cat = $cat;
+      last;
+    }
+  }
+
+  ok($found_cat, "Found test category");
+  ok(exists $found_cat->{prev_node}, "Has prev_node field");
+  ok(exists $found_cat->{next_node}, "Has next_node field");
+  ok(exists $found_cat->{position}, "Has position field");
+  ok(exists $found_cat->{total}, "Has total field");
+};
+
 done_testing();

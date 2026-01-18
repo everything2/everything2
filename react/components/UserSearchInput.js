@@ -156,10 +156,14 @@ const UserSearchInput = ({
     }
   }, [])
 
+  const btnClass = disabled || !inputValue.trim()
+    ? 'user-search__btn user-search__btn--disabled'
+    : 'user-search__btn'
+
   return (
-    <div ref={containerRef} style={styles.container}>
-      <div style={styles.inputRow}>
-        <div style={styles.inputWrapper}>
+    <div ref={containerRef} className="user-search">
+      <div className="user-search__row">
+        <div className="user-search__input-wrapper">
           <input
             type="text"
             value={inputValue}
@@ -168,26 +172,23 @@ const UserSearchInput = ({
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             placeholder={placeholder}
             disabled={disabled}
-            style={styles.input}
+            className="user-search__input"
             autoComplete="off"
           />
-          {loading && <span style={styles.loadingIndicator}>...</span>}
+          {loading && <span className="user-search__loading">...</span>}
 
           {/* Suggestions dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <div style={styles.dropdown}>
+            <div className="user-search__dropdown">
               {suggestions.map((user, index) => (
                 <div
                   key={user.node_id}
                   onClick={() => handleSelectUser(user)}
                   onMouseEnter={() => setSelectedIndex(index)}
-                  style={{
-                    ...styles.suggestionItem,
-                    ...(index === selectedIndex ? styles.suggestionItemSelected : {})
-                  }}
+                  className={`user-search__suggestion${index === selectedIndex ? ' user-search__suggestion--selected' : ''}`}
                 >
-                  <span style={styles.userIcon}>👤</span>
-                  <span style={styles.userName}>{user.title}</span>
+                  <span className="user-search__user-icon">👤</span>
+                  <span className="user-search__user-name">{user.title}</span>
                 </div>
               ))}
             </div>
@@ -198,103 +199,13 @@ const UserSearchInput = ({
           type="button"
           onClick={handleSubmit}
           disabled={disabled || !inputValue.trim()}
-          style={disabled || !inputValue.trim() ? styles.buttonDisabled : styles.button}
+          className={btnClass}
         >
           {buttonText}
         </button>
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    position: 'relative'
-  },
-  inputRow: {
-    display: 'flex',
-    gap: '8px',
-    alignItems: 'center'
-  },
-  inputWrapper: {
-    position: 'relative',
-    flex: 1
-  },
-  input: {
-    width: '100%',
-    padding: '8px 12px',
-    fontSize: '14px',
-    border: '1px solid #507898',
-    borderRadius: '4px',
-    boxSizing: 'border-box'
-  },
-  loadingIndicator: {
-    position: 'absolute',
-    right: '12px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    color: '#507898',
-    fontSize: '12px'
-  },
-  button: {
-    padding: '8px 16px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '14px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap'
-  },
-  buttonDisabled: {
-    padding: '8px 16px',
-    backgroundColor: '#ccc',
-    color: '#666',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '14px',
-    cursor: 'not-allowed',
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap'
-  },
-  dropdown: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    border: '1px solid #ced4da',
-    borderTop: 'none',
-    borderRadius: '0 0 4px 4px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    maxHeight: '250px',
-    overflowY: 'auto',
-    zIndex: 100
-  },
-  suggestionItem: {
-    padding: '10px 12px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    color: '#38495e',
-    borderBottom: '1px solid #eee',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  suggestionItemSelected: {
-    backgroundColor: '#e8f4f8',
-    color: '#4060b0'
-  },
-  userIcon: {
-    fontSize: '14px',
-    width: '20px',
-    textAlign: 'center',
-    color: '#507898'
-  },
-  userName: {
-    flex: 1
-  }
 }
 
 UserSearchInput.propTypes = {

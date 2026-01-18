@@ -812,65 +812,6 @@ function Settings({ data }) {
             </label>
           </fieldset>
 
-          {/* Your Writeups Section */}
-          <h2 className="settings-section-header">Your Writeups</h2>
-
-          {/* Writeup Hints */}
-          <fieldset className="settings-fieldset">
-            <legend>Writeup Hints</legend>
-            <p className="settings-description">
-              Check for some common mistakes made in creating or editing writeups.
-            </p>
-
-            <label className="settings-checkbox-label-compact">
-              <input
-                type="checkbox"
-                checked={!(settingsPrefs.nohints === 1)}
-                onChange={() => handleTogglePref('nohints')}
-              />
-              <strong>Show critical writeup hints</strong>
-              <span className="settings-hint-inline">(recommended: on)</span>
-            </label>
-
-            <label className="settings-checkbox-label-compact">
-              <input
-                type="checkbox"
-                checked={!(settingsPrefs.nohintSpelling === 1)}
-                onChange={() => handleTogglePref('nohintSpelling')}
-              />
-              <strong>Check for common misspellings</strong>
-              <span className="settings-hint-inline">(recommended: on)</span>
-            </label>
-
-            <label className="settings-checkbox-label-compact">
-              <input
-                type="checkbox"
-                checked={!(settingsPrefs.nohintHTML === 1)}
-                onChange={() => handleTogglePref('nohintHTML')}
-              />
-              <strong>Show HTML hints</strong>
-              <span className="settings-hint-inline">(recommended: on)</span>
-            </label>
-
-            <label className="settings-checkbox-label-compact">
-              <input
-                type="checkbox"
-                checked={settingsPrefs.hintXHTML === 1}
-                onChange={() => handleTogglePref('hintXHTML')}
-              />
-              <strong>Show strict HTML hints</strong>
-            </label>
-
-            <label className="settings-checkbox-label-compact">
-              <input
-                type="checkbox"
-                checked={settingsPrefs.hintSilly === 1}
-                onChange={() => handleTogglePref('hintSilly')}
-              />
-              <strong>Show silly hints</strong>
-            </label>
-          </fieldset>
-
           {/* Other Users Section */}
           <h2 className="settings-section-header">Other Users</h2>
 
@@ -939,7 +880,7 @@ function Settings({ data }) {
               items={nodelets.map(n => n.node_id)}
               strategy={verticalListSortingStrategy}
             >
-              <div style={{ marginBottom: '24px' }}>
+              <div className="settings-spacing-bottom-md">
                 {nodelets.map((nodelet) => (
                   <SortableNodeletItem
                     key={nodelet.node_id}
@@ -954,14 +895,14 @@ function Settings({ data }) {
           </DndContext>
 
           {nodelets.length === 0 && (
-            <p className="settings-hint" style={{ fontStyle: 'italic', marginBottom: '24px' }}>
+            <p className="settings-hint settings-hint--italic settings-spacing-bottom-md">
               No nodelets active. Add some from the available nodelets below.
             </p>
           )}
 
           {/* Available nodelets to add */}
           {availableNodelets.length > 0 && (
-            <div style={{ marginTop: '32px' }}>
+            <div className="settings-spacing-top-lg">
               <h3>Available Nodelets</h3>
               <p className="settings-description">
                 Click to add a nodelet to your sidebar:
@@ -999,7 +940,7 @@ function Settings({ data }) {
                   <p className="settings-description">
                     Configure how many new writeups to display in the New Writeups nodelet.
                   </p>
-                  <div style={{ marginLeft: '8px' }}>
+                  <div className="settings-spacing-left-sm">
                     <div className="settings-form-row">
                       <label>Number of new writeups to show:</label>
                       <select
@@ -1067,12 +1008,17 @@ function Settings({ data }) {
                       checked={notificationPrefs[notif.node_id] || false}
                       onChange={(e) => setNotificationPrefs(prev => ({ ...prev, [notif.node_id]: e.target.checked }))}
                     />
-                    <strong>{notif.title}</strong>
+                    <span className="settings-notification-content">
+                      <strong>{notif.title}</strong>
+                      {notif.description && (
+                        <span className="settings-notification-desc">Notify me when {notif.description}</span>
+                      )}
+                    </span>
                   </label>
                 ))}
               </div>
             ) : (
-              <p className="settings-hint" style={{ fontStyle: 'italic' }}>
+              <p className="settings-hint settings-hint--italic">
                 No notification types are currently available. Notification types are configured by site administrators.
               </p>
             )}
@@ -1100,8 +1046,7 @@ function Settings({ data }) {
                     handleAddNodelet(notifNodelet)
                   }
                 }}
-                className="settings-btn-primary"
-                style={{ marginLeft: '12px', padding: '6px 12px', fontSize: '13px' }}
+                className="settings-btn-primary settings-btn-inline"
               >
                 Add Notifications Nodelet
               </button>
@@ -1555,7 +1500,7 @@ function Settings({ data }) {
             Enable a macro by checking "Use", then customize the text.
           </p>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div className="settings-macros-table-wrapper">
             <table className="settings-macros-table">
               <thead>
                 <tr>
@@ -1851,7 +1796,7 @@ function Settings({ data }) {
             )}
 
             {/* Live Preview */}
-            <div style={{ marginTop: '16px' }}>
+            <div className="settings-spacing-top-md">
               <p className="settings-preview-label">
                 <strong>Preview:</strong>
               </p>

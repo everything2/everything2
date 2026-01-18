@@ -61,7 +61,7 @@ const PageActions = () => {
   }
 
   return (
-    <div className="page-actions" style={styles.container} data-reader-ignore="true">
+    <div className="page-actions action-btn-row" data-reader-ignore="true">
       {showEdcool && (
         <EditorCoolButton nodeId={node.node_id} />
       )}
@@ -144,11 +144,7 @@ const EditorCoolButton = ({ nodeId }) => {
       onClick={handleToggle}
       disabled={isLoading}
       title={isCooled ? 'Remove editor cool' : 'Add editor cool (endorsement)'}
-      style={{
-        ...styles.button,
-        color: isCooled ? '#f4d03f' : '#999',
-        opacity: isLoading ? 0.5 : 1
-      }}
+      className={`icon-btn${isCooled ? ' icon-btn--gold' : ''}`}
     >
       {isCooled ? <FaStar /> : <FaRegStar />}
     </button>
@@ -220,34 +216,11 @@ const BookmarkButton = ({ nodeId }) => {
       onClick={handleToggle}
       disabled={isLoading}
       title={isBookmarked ? 'Remove bookmark' : 'Bookmark this page'}
-      style={{
-        ...styles.button,
-        color: isBookmarked ? '#4060b0' : '#999',
-        opacity: isLoading ? 0.5 : 1
-      }}
+      className={`icon-btn${isBookmarked ? ' icon-btn--active' : ''}`}
     >
       {isBookmarked ? <FaBookmark /> : <FaRegBookmark />}
     </button>
   )
-}
-
-const styles = {
-  container: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '4px'
-  },
-  button: {
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '20px',
-    padding: '4px',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '4px'
-  }
 }
 
 export default PageActions

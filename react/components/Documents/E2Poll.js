@@ -110,140 +110,62 @@ const E2Poll = ({ data, user }) => {
     user_vote
   }
 
-  const styles = {
-    container: {
-      maxWidth: '900px',
-      margin: '0 auto',
-      padding: '0'
-    },
-    actionBar: {
-      display: 'flex',
-      gap: '10px',
-      marginBottom: '20px',
-      flexWrap: 'wrap'
-    },
-    actionButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '8px 16px',
-      backgroundColor: '#4060b0',
-      color: 'white',
-      textDecoration: 'none',
-      borderRadius: '4px',
-      fontSize: '13px',
-      fontWeight: '500',
-      border: 'none',
-      cursor: 'pointer'
-    },
-    actionButtonSecondary: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '8px 16px',
-      backgroundColor: '#507898',
-      color: 'white',
-      textDecoration: 'none',
-      borderRadius: '4px',
-      fontSize: '13px',
-      fontWeight: '500',
-      border: 'none',
-      cursor: 'pointer'
-    },
-    pollContainer: {
-      backgroundColor: '#f8f9fa',
-      borderRadius: '6px',
-      border: '1px solid #dee2e6',
-      padding: '20px',
-      marginBottom: '20px'
-    },
-    statusBadge: {
-      display: 'inline-block',
-      padding: '4px 10px',
-      borderRadius: '12px',
-      fontSize: '12px',
-      fontWeight: '500',
-      marginLeft: '10px'
-    },
-    error: {
-      padding: '15px',
-      backgroundColor: '#fff5f5',
-      border: '1px solid #feb2b2',
-      color: '#c75050',
-      borderRadius: '4px',
-      marginBottom: '20px'
-    },
-    linksSection: {
-      marginTop: '20px',
-      padding: '15px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '6px',
-      border: '1px solid #dee2e6',
-      textAlign: 'right'
-    },
-    link: {
-      color: '#4060b0',
-      textDecoration: 'none',
-      marginLeft: '15px',
-      fontSize: '14px'
-    }
-  }
-
-  // Get status badge style
-  const getStatusStyle = (status) => {
+  // Get status badge class based on status
+  const getStatusBadgeClass = (status) => {
+    const base = 'e2poll__status-badge'
     switch (status) {
       case 'current':
-        return { backgroundColor: '#d4edda', color: '#155724' }
+        return `${base} e2poll__status-badge--current`
       case 'open':
-        return { backgroundColor: '#cce5ff', color: '#004085' }
+        return `${base} e2poll__status-badge--open`
       case 'closed':
-        return { backgroundColor: '#e2e3e5', color: '#383d41' }
+        return `${base} e2poll__status-badge--closed`
       case 'new':
       default:
-        return { backgroundColor: '#fff3cd', color: '#856404' }
+        return `${base} e2poll__status-badge--new`
     }
   }
 
   return (
-    <div style={styles.container}>
+    <div className="e2poll">
       {/* Action Bar */}
-      <div style={styles.actionBar}>
+      <div className="e2poll__action-bar">
         <a
           href="/title/Everything%20Poll%20Directory"
-          style={styles.actionButton}
+          className="e2poll__action-btn"
         >
           <FaList size={12} /> Poll Directory
         </a>
         <a
           href="/title/Everything%20Poll%20Archive"
-          style={styles.actionButtonSecondary}
+          className="e2poll__action-btn e2poll__action-btn--secondary"
         >
           <FaPoll size={12} /> Poll Archive
         </a>
         {!isGuest && (
           <a
             href="/title/Everything%20Poll%20Creator"
-            style={styles.actionButtonSecondary}
+            className="e2poll__action-btn e2poll__action-btn--secondary"
           >
             <FaPlus size={12} /> Create Poll
           </a>
         )}
         <a
           href="/title/Polls"
-          style={styles.actionButtonSecondary}
+          className="e2poll__action-btn e2poll__action-btn--secondary"
         >
           <FaBook size={12} /> About Polls
         </a>
       </div>
 
       {/* Error message */}
-      {error && <div style={styles.error}>{error}</div>}
+      {error && <div className="e2poll__error">{error}</div>}
 
       {/* Poll Display */}
-      <div style={styles.pollContainer}>
+      <div className="e2poll__container">
         {/* Status badge at top */}
-        <div style={{ marginBottom: '15px' }}>
-          <span style={{ ...styles.statusBadge, ...getStatusStyle(poll_status), marginLeft: 0 }}>
+        <div className="e2poll__status-row">
+          <span className={getStatusBadgeClass(poll_status)}>
             {poll_status}
           </span>
         </div>
@@ -261,20 +183,20 @@ const E2Poll = ({ data, user }) => {
       </div>
 
       {/* Links Section */}
-      <div style={styles.linksSection}>
-        <a href="/title/Everything%20Poll%20Archive" style={styles.link}>
+      <div className="e2poll__links">
+        <a href="/title/Everything%20Poll%20Archive" className="e2poll__link">
           Past polls
         </a>
-        <span style={{ color: '#999' }}> | </span>
-        <a href="/title/Everything%20Poll%20Directory" style={styles.link}>
+        <span className="e2poll__link-separator"> | </span>
+        <a href="/title/Everything%20Poll%20Directory" className="e2poll__link">
           Future polls
         </a>
-        <span style={{ color: '#999' }}> | </span>
-        <a href="/title/Everything%20Poll%20Creator" style={styles.link}>
+        <span className="e2poll__link-separator"> | </span>
+        <a href="/title/Everything%20Poll%20Creator" className="e2poll__link">
           New poll
         </a>
-        <span style={{ color: '#999' }}> | </span>
-        <a href="/title/Polls" style={styles.link}>
+        <span className="e2poll__link-separator"> | </span>
+        <a href="/title/Polls" className="e2poll__link">
           About polls
         </a>
       </div>

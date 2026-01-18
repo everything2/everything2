@@ -113,23 +113,13 @@ const UserDisplay = ({ data, e2 }) => {
       <div id="homenodeheader" style={{ position: 'relative', paddingTop: showIconRow ? '30px' : undefined }}>
         {/* Icon row - admin tools, favorite, sanctify, message */}
         {showIconRow && (
-          <div style={{ position: 'absolute', top: 0, right: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="user-display__icon-row">
             {/* Admin tools icon - for editors/chanops/admins (including on own profile) */}
             {(viewer.is_editor || viewer.is_chanop || viewer.is_admin) && (
               <button
                 onClick={() => setIsToolsModalOpen(true)}
-                className="user-tools-trigger"
+                className="user-tools-trigger user-display__icon-btn"
                 title="User Tools"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#4060b0',
-                  fontSize: '1.2rem',
-                  padding: '0.25rem',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
               >
                 <FaUserCog />
               </button>
@@ -140,17 +130,7 @@ const UserDisplay = ({ data, e2 }) => {
                 onClick={handleFavoriteToggle}
                 disabled={favoriteLoading}
                 title={isFavorited ? `Stop notifications for ${user.title}'s writeups` : `Get notifications for ${user.title}'s writeups`}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: favoriteLoading ? 'wait' : 'pointer',
-                  color: isFavorited ? '#f59e0b' : '#4060b0',
-                  fontSize: '1.2rem',
-                  padding: '0.25rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  opacity: favoriteLoading ? 0.5 : 1
-                }}
+                className={`user-display__icon-btn ${isFavorited ? 'user-display__icon-btn--favorited' : 'user-display__icon-btn--favorite'}`}
               >
                 {isFavorited ? <FaStar /> : <FaRegStar />}
               </button>
@@ -160,14 +140,7 @@ const UserDisplay = ({ data, e2 }) => {
               <a
                 href={`/title/Sanctify%20user?recipient=${encodeURIComponent(user.title)}`}
                 title={`Sanctify ${user.title}`}
-                style={{
-                  color: '#4060b0',
-                  fontSize: '1.2rem',
-                  padding: '0.25rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  textDecoration: 'none'
-                }}
+                className="user-display__icon-link"
               >
                 <FaHandHoldingHeart />
               </a>
@@ -196,21 +169,13 @@ const UserDisplay = ({ data, e2 }) => {
                   <button
                     onClick={handleCureInfection}
                     disabled={cureLoading}
-                    style={{
-                      background: '#4060b0',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.5rem 1rem',
-                      borderRadius: '4px',
-                      cursor: cureLoading ? 'wait' : 'pointer',
-                      opacity: cureLoading ? 0.7 : 1
-                    }}
+                    className="user-display__cure-btn"
                   >
                     {cureLoading ? 'Curing...' : 'Cure Infection'}
                   </button>
                 </p>
                 {cureMessage && (
-                  <p style={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
+                  <p className="user-display__cure-message">
                     {cureMessage}
                   </p>
                 )}
@@ -229,38 +194,20 @@ const UserDisplay = ({ data, e2 }) => {
 
         {/* Mobile layout: image centered above info */}
         {isMobile && (
-          <div style={{
-            textAlign: 'center',
-            marginBottom: '16px'
-          }}>
+          <div className="user-display__mobile-image">
             {user.imgsrc && (
               <img
                 src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
                 alt={`${user.title}'s image`}
-                style={{
-                  maxWidth: '80%',
-                  maxHeight: '300px',
-                  height: 'auto',
-                  objectFit: 'contain',
-                  borderRadius: '4px'
-                }}
+                className="user-display__mobile-img"
               />
             )}
             {/* Edit Profile button for own profile - mobile */}
             {Boolean(is_own) && (
-              <div style={{ marginTop: user.imgsrc ? '12px' : '0' }}>
+              <div className={user.imgsrc ? 'user-display__edit-link-wrapper--mobile' : 'user-display__edit-link-wrapper--mobile-no-img'}>
                 <a
                   href={`/user/${encodeURIComponent(user.title)}?displaytype=edit`}
-                  style={{
-                    display: 'inline-block',
-                    padding: '8px 16px',
-                    backgroundColor: '#4060b0',
-                    color: '#fff',
-                    borderRadius: '4px',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
+                  className="user-display__edit-link"
                 >
                   Edit Profile
                 </a>
@@ -277,31 +224,17 @@ const UserDisplay = ({ data, e2 }) => {
                 src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
                 alt={`${user.title}'s image`}
                 id="userimage"
-                style={{
-                  maxWidth: '100%',
-                  height: 'auto',
-                  maxHeight: '400px',
-                  objectFit: 'contain'
-                }}
+                className="user-display__desktop-img"
               />
             )}
 
             {/* Edit Profile button for own profile */}
             {Boolean(is_own) && (
-              <p style={{ marginTop: user.imgsrc ? '10px' : '0' }}>
+              <p className={user.imgsrc ? 'user-display__edit-link-wrapper' : 'user-display__edit-link-wrapper--no-img'}>
                 <a
                   href={`/user/${encodeURIComponent(user.title)}?displaytype=edit`}
                   id="usereditlink"
-                  style={{
-                    display: 'inline-block',
-                    padding: '6px 12px',
-                    backgroundColor: '#4060b0',
-                    color: '#fff',
-                    borderRadius: '4px',
-                    textDecoration: 'none',
-                    fontSize: '13px',
-                    fontWeight: '500'
-                  }}
+                  className="user-display__edit-link user-display__edit-link--desktop"
                 >
                   Edit Profile
                 </a>
@@ -350,7 +283,7 @@ const UserDisplay = ({ data, e2 }) => {
           {/* Number of writeups */}
           <dt>number of write-ups</dt>
           <dd>
-            <a href={`/user/${encodeURIComponent(user.title)}/writeups`} style={{ fontSize: 'inherit' }}>
+            <a href={`/user/${encodeURIComponent(user.title)}/writeups`}>
               {user.numwriteups}
             </a>
           </dd>

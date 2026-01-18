@@ -128,8 +128,10 @@ sub buildReactData
 
     my $nodelet = $DB->getNodeById($node_id);
     if ($nodelet) {
+      # Use the loop variable (which we validated as numeric) to ensure integer type
+      # The 0+ forces numeric context for JSON encoding
       push @nodelets, {
-        node_id => int($nodelet->{node_id}),
+        node_id => 0 + $node_id,
         title => $nodelet->{title}
       };
     }
@@ -189,19 +191,26 @@ sub buildReactData
   }
 
   # Get all notification types for configuration
+  # Include description field and user-friendly descriptions for each notification
   my $notification_type = $DB->getType('notification');
   my @all_notifications;
   if ($notification_type) {
     my $csr = $DB->sqlSelectMany(
-      'node_id, title',
-      'node',
-      'type_nodetype=' . $notification_type->{node_id},
-      'ORDER BY title'
+      'node.node_id, node.title, notification.description',
+      'node JOIN notification ON node.node_id = notification.notification_id',
+      'node.type_nodetype=' . $notification_type->{node_id},
+      'ORDER BY node.title'
     );
-    while (my ($id, $title) = $csr->fetchrow_array) {
+    while (my ($id, $title, $description) = $csr->fetchrow_array) {
+      # Clean up description - remove bracket links for display
+      my $clean_desc = $description || '';
+      $clean_desc =~ s/\[([^\]|]+)\|([^\]]+)\]/$2/g;  # [link|text] -> text
+      $clean_desc =~ s/\[([^\]]+)\]/$1/g;             # [link] -> link
+
       push @all_notifications, {
         node_id => int($id),
         title => $title,
+        description => $clean_desc,
         enabled => $notification_prefs{$id} ? 1 : 0
       };
     }
@@ -331,11 +340,15 @@ sub buildReactData
     motto => $user_vars->{motto} || '',
   );
 
+  # Ensure nodelets have numeric node_ids for JSON encoding
+  # (Perl stringifies scalars used as hash keys, which can affect JSON output)
+  my @nodelets_json = map { { node_id => 0 + $_->{node_id}, title => $_->{title} } } @nodelets;
+
   my $response = {
     type => 'settings',
     settingsPreferences => \%settings_prefs,
     advancedPreferences => \%advanced_prefs,
-    nodelets => \@nodelets,
+    nodelets => \@nodelets_json,
     availableNodelets => \@available_nodelets,
     notificationPreferences => \@all_notifications,
     blockedUsers => \@blocked_users,

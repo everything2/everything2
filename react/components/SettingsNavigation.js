@@ -61,55 +61,45 @@ const SettingsNavigation = ({
     }
   }, [activeTab])
 
-  // Style helper for tabs
-  const getTabStyle = (isActive) => ({
-    padding: '10px 16px',
-    border: 'none',
-    borderBottomWidth: 2,
-    borderBottomStyle: 'solid',
-    borderBottomColor: isActive ? '#4060b0' : 'transparent',
-    background: 'none',
-    cursor: 'pointer',
-    fontWeight: isActive ? 'bold' : 'normal',
-    color: isActive ? '#4060b0' : '#38495e',
-    textDecoration: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    whiteSpace: 'nowrap',
-    flexShrink: 0
-  })
+  // Helper to get tab class
+  const getTabClass = (isActive, isLink = false) => {
+    let cls = 'settings-nav__tab'
+    if (isActive) cls += ' settings-nav__tab--active'
+    if (isLink) cls += ' settings-nav__tab--link'
+    return cls
+  }
 
   return (
-    <div style={styles.container}>
+    <div className="settings-nav">
       {/* Left scroll indicator */}
-      {canScrollLeft && <div style={styles.scrollIndicatorLeft} />}
+      {canScrollLeft && <div className="settings-nav__scroll-left" />}
 
       {/* Scrollable tabs container */}
-      <div ref={scrollRef} style={styles.scrollContainer}>
+      <div ref={scrollRef} className="settings-nav__scroll-container">
         <button
           onClick={() => onTabChange('settings')}
-          style={getTabStyle(activeTab === 'settings')}
+          className={getTabClass(activeTab === 'settings')}
           data-active={activeTab === 'settings'}
         >
           Settings
         </button>
         <button
           onClick={() => onTabChange('advanced')}
-          style={getTabStyle(activeTab === 'advanced')}
+          className={getTabClass(activeTab === 'advanced')}
           data-active={activeTab === 'advanced'}
         >
           Advanced
         </button>
         <button
           onClick={() => onTabChange('nodelets')}
-          style={getTabStyle(activeTab === 'nodelets')}
+          className={getTabClass(activeTab === 'nodelets')}
           data-active={activeTab === 'nodelets'}
         >
           Nodelets
         </button>
         <button
           onClick={() => onTabChange('notifications')}
-          style={getTabStyle(activeTab === 'notifications')}
+          className={getTabClass(activeTab === 'notifications')}
           data-active={activeTab === 'notifications'}
         >
           Notifications
@@ -117,7 +107,7 @@ const SettingsNavigation = ({
         {showAdminTab && (
           <button
             onClick={() => onTabChange('admin')}
-            style={getTabStyle(activeTab === 'admin')}
+            className={getTabClass(activeTab === 'admin')}
             data-active={activeTab === 'admin'}
           >
             Admin
@@ -125,13 +115,13 @@ const SettingsNavigation = ({
         )}
 
         {/* Spacer - only on desktop */}
-        <div style={styles.spacer} />
+        <div className="settings-nav__spacer" />
 
         {/* Edit Profile tab */}
         {username && (
           <button
             onClick={() => onTabChange('profile')}
-            style={getTabStyle(activeTab === 'profile')}
+            className={getTabClass(activeTab === 'profile')}
             data-active={activeTab === 'profile'}
           >
             Edit Profile
@@ -142,10 +132,7 @@ const SettingsNavigation = ({
         {username && (
           <a
             href={`/user/${encodeURIComponent(username)}`}
-            style={{
-              ...getTabStyle(false),
-              marginLeft: '8px'
-            }}
+            className={getTabClass(false, true)}
           >
             View Profile
           </a>
@@ -153,51 +140,9 @@ const SettingsNavigation = ({
       </div>
 
       {/* Right scroll indicator */}
-      {canScrollRight && <div style={styles.scrollIndicatorRight} />}
+      {canScrollRight && <div className="settings-nav__scroll-right" />}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    position: 'relative',
-    marginBottom: '20px'
-  },
-  scrollContainer: {
-    display: 'flex',
-    gap: 0,
-    alignItems: 'center',
-    borderBottom: '1px solid #ddd',
-    overflowX: 'auto',
-    overflowY: 'hidden',
-    WebkitOverflowScrolling: 'touch',
-    scrollbarWidth: 'none',  // Firefox
-    msOverflowStyle: 'none'  // IE/Edge
-  },
-  spacer: {
-    flex: 1,
-    minWidth: 0
-  },
-  scrollIndicatorLeft: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 1, // Account for border
-    width: 30,
-    background: 'linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)',
-    pointerEvents: 'none',
-    zIndex: 1
-  },
-  scrollIndicatorRight: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 1, // Account for border
-    width: 30,
-    background: 'linear-gradient(to left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)',
-    pointerEvents: 'none',
-    zIndex: 1
-  }
 }
 
 export default SettingsNavigation

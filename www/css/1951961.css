@@ -15,6 +15,7 @@
   --e2-bg-nodelet: #808080;               /* Gray nodelet background */
   --e2-bg-header: #000000;                /* Black header/footer */
   --e2-bg-hover: #909090;                 /* Lighter gray hover */
+  --e2-light-bg: #a0a0a0;                 /* Light accent background */
   --e2-bg-sidebar: transparent;
   --e2-bg-oddrow: #000000;                /* Black for alternating rows */
 

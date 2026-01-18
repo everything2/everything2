@@ -35,14 +35,17 @@ sub display {
     }
 
     # Check if current user has voted
+    # Use sqlSelectHashref instead of sqlSelect because sqlSelect returns 0
+    # (the count of an empty array) when no rows are found, which is
+    # indistinguishable from a vote for choice 0 (the first option).
     my $user_vote = undef;
     if (!$user->is_guest) {
-        my $vote = $DB->sqlSelect(
+        my $vote_row = $DB->sqlSelectHashref(
             'choice',
             'pollvote',
             "voter_user=" . $user->node_id . " AND pollvote_id=" . $node->node_id
         );
-        $user_vote = defined($vote) ? int($vote) : undef;
+        $user_vote = $vote_row ? int($vote_row->{choice}) : undef;
     }
 
     # Get author info

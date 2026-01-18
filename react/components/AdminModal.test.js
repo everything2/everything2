@@ -344,8 +344,8 @@ describe('AdminModal', () => {
       const onClose = jest.fn()
       render(<AdminModal {...defaultProps} onClose={onClose} />)
 
-      // Click the backdrop
-      const backdrop = screen.getByText('Writeup Tools').closest('.admin-modal-backdrop')
+      // Click the backdrop overlay element
+      const backdrop = document.querySelector('.nodelet-modal-overlay')
       fireEvent.click(backdrop)
 
       expect(onClose).toHaveBeenCalled()
@@ -356,7 +356,7 @@ describe('AdminModal', () => {
       render(<AdminModal {...defaultProps} onClose={onClose} />)
 
       // Click modal content
-      const modal = screen.getByText('Writeup Tools').closest('.admin-modal')
+      const modal = document.querySelector('.modal-compact')
       fireEvent.click(modal)
 
       expect(onClose).not.toHaveBeenCalled()

@@ -95,9 +95,8 @@ describe('ConfirmModal', () => {
 
       render(<ConfirmModal {...defaultProps} onClose={onClose} />)
 
-      // The backdrop is the outer div with the dark overlay
-      // We need to click directly on it, not on the modal content
-      const backdrop = screen.getByText('Are you sure?').parentElement.parentElement
+      // Find the backdrop overlay element by class
+      const backdrop = document.querySelector('.nodelet-modal-overlay')
       fireEvent.click(backdrop)
 
       expect(onClose).toHaveBeenCalledTimes(1)
@@ -108,8 +107,8 @@ describe('ConfirmModal', () => {
 
       render(<ConfirmModal {...defaultProps} onClose={onClose} />)
 
-      // Click on the modal content itself
-      const modalContent = screen.getByText('Are you sure?').parentElement
+      // Click on the modal content itself (the message div)
+      const modalContent = screen.getByText('Are you sure?')
       fireEvent.click(modalContent)
 
       expect(onClose).not.toHaveBeenCalled()
@@ -117,11 +116,11 @@ describe('ConfirmModal', () => {
   })
 
   describe('styling', () => {
-    it('applies custom confirmColor to title', () => {
-      render(<ConfirmModal {...defaultProps} confirmColor="#dc3545" title="Delete" />)
+    it('uses modal-compact CSS classes', () => {
+      render(<ConfirmModal {...defaultProps} title="Delete" />)
 
       const title = screen.getByRole('heading', { name: 'Delete' })
-      expect(title).toHaveStyle({ color: '#dc3545' })
+      expect(title).toHaveClass('modal-compact__title')
     })
   })
 })

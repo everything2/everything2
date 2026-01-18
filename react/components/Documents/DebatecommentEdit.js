@@ -117,9 +117,9 @@ const DebatecommentEdit = ({ data }) => {
   // Permission denied view
   if (data.permission_denied) {
     return (
-      <div style={styles.container}>
-        <div style={styles.permissionDenied}>
-          <FaExclamationTriangle style={{ fontSize: 48, color: '#dc3545', marginBottom: 16 }} />
+      <div className="dc-edit">
+        <div className="dc-edit__permission-denied">
+          <FaExclamationTriangle className="dc-edit__permission-denied-icon" />
           <h3>Permission Denied</h3>
           <p>You do not have permission to {isReply ? 'reply to' : 'edit'} this discussion.</p>
         </div>
@@ -191,21 +191,21 @@ const DebatecommentEdit = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="dc-edit">
       {/* Header */}
-      <div style={styles.header}>
+      <div className="dc-edit__header">
         {isReply ? (
-          <FaReply style={{ color: '#4060b0', marginRight: 8, fontSize: 24 }} />
+          <FaReply className="dc-edit__header-icon dc-edit__header-icon--reply" />
         ) : (
-          <FaComments style={{ color: '#507898', marginRight: 8, fontSize: 24 }} />
+          <FaComments className="dc-edit__header-icon dc-edit__header-icon--edit" />
         )}
-        <div style={styles.headerInfo}>
-          <h1 style={styles.title}>
+        <div className="dc-edit__header-info">
+          <h1 className="dc-edit__title">
             {isReply ? 'Reply to Discussion' : 'Edit Comment'}
           </h1>
           {data.usergroup && (
-            <span style={styles.usergroupBadge}>
-              <FaUsers style={{ marginRight: 4 }} />
+            <span className="dc-edit__usergroup-badge">
+              <FaUsers className="dc-edit__usergroup-badge-icon" />
               <LinkNode {...data.usergroup} type="usergroup" />
             </span>
           )}
@@ -214,19 +214,19 @@ const DebatecommentEdit = ({ data }) => {
 
       {/* Parent comment preview (for replies) */}
       {isReply && parent && (
-        <div style={styles.parentPreview}>
-          <div style={styles.parentLabel}>Replying to:</div>
-          <div style={styles.parentTitle}>
+        <div className="dc-edit__parent-preview">
+          <div className="dc-edit__parent-label">Replying to:</div>
+          <div className="dc-edit__parent-title">
             <a href={`/?node_id=${parent.node_id}`}>{parent.title}</a>
             {parent.author && (
-              <span style={styles.parentAuthor}>
+              <span className="dc-edit__parent-author">
                 {' '}by <LinkNode {...parent.author} type="user" />
               </span>
             )}
           </div>
           {parent.doctext && (
             <div
-              style={styles.parentContent}
+              className="dc-edit__parent-content"
               dangerouslySetInnerHTML={{ __html: parent.doctext }}
             />
           )}
@@ -235,36 +235,36 @@ const DebatecommentEdit = ({ data }) => {
 
       {/* Messages */}
       {error && (
-        <div style={styles.errorMessage}>
-          <FaExclamationTriangle style={{ marginRight: 8 }} />
+        <div className="dc-edit__error-message">
+          <FaExclamationTriangle className="dc-edit__error-icon" />
           {error}
         </div>
       )}
       {success && (
-        <div style={styles.successMessage}>
+        <div className="dc-edit__success-message">
           {success}
         </div>
       )}
 
       {/* Form */}
-      <div style={styles.form}>
+      <div className="dc-edit__form">
         {/* Title field */}
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Title</label>
+        <div className="dc-edit__form-group">
+          <label className="dc-edit__label">Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            style={styles.input}
+            className="dc-edit__input"
             placeholder="Enter title..."
             disabled={saving}
           />
         </div>
 
         {/* Content editor with Rich/HTML toggle */}
-        <div style={styles.formGroup}>
-          <div style={styles.editorHeader}>
-            <label style={styles.label}>Content</label>
+        <div className="dc-edit__form-group">
+          <div className="dc-edit__editor-header">
+            <label className="dc-edit__label">Content</label>
             <EditorModeToggle
               mode={editorMode}
               onToggle={handleModeToggle}
@@ -273,9 +273,9 @@ const DebatecommentEdit = ({ data }) => {
           </div>
 
           {editorMode === 'rich' ? (
-            <div style={styles.editorContainer}>
+            <div className="dc-edit__editor-container">
               <MenuBar editor={editor} />
-              <div className="e2-editor-wrapper" style={{ padding: '12px', minHeight: 200 }}>
+              <div className="e2-editor-wrapper dc-edit__editor-wrapper">
                 <EditorContent editor={editor} />
               </div>
             </div>
@@ -285,7 +285,7 @@ const DebatecommentEdit = ({ data }) => {
               onChange={handleHtmlChange}
               placeholder="Enter HTML content here..."
               aria-label="Content (HTML)"
-              style={styles.htmlTextarea}
+              className="dc-edit__html-textarea"
               spellCheck={false}
               disabled={saving}
             />
@@ -293,25 +293,21 @@ const DebatecommentEdit = ({ data }) => {
         </div>
 
         {/* Action buttons */}
-        <div style={styles.actions}>
+        <div className="dc-edit__actions">
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{
-              ...styles.saveButton,
-              opacity: saving ? 0.6 : 1,
-              cursor: saving ? 'not-allowed' : 'pointer'
-            }}
+            className="dc-edit__save-btn"
           >
-            {saving ? <FaSpinner className="fa-spin" /> : <FaSave />}
-            <span style={{ marginLeft: 6 }}>{saving ? 'Saving...' : (isReply ? 'Post Reply' : 'Save Changes')}</span>
+            {saving ? <FaSpinner className="fa-spin dc-edit__save-btn-icon" /> : <FaSave className="dc-edit__save-btn-icon" />}
+            {saving ? 'Saving...' : (isReply ? 'Post Reply' : 'Save Changes')}
           </button>
           <button
             onClick={handleCancel}
             disabled={saving}
-            style={styles.cancelButton}
+            className="dc-edit__cancel-btn"
           >
-            <FaTimes style={{ marginRight: 6 }} />
+            <FaTimes className="dc-edit__cancel-btn-icon" />
             Cancel
           </button>
         </div>
@@ -319,7 +315,7 @@ const DebatecommentEdit = ({ data }) => {
 
       {/* Thread navigation */}
       {data.root && (
-        <div style={styles.threadNav}>
+        <div className="dc-edit__thread-nav">
           <a href={`/?node_id=${data.root.node_id}`}>
             &larr; Back to: {data.root.title}
           </a>
@@ -327,186 +323,6 @@ const DebatecommentEdit = ({ data }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-    padding: '16px 0'
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottom: '2px solid #38495e',
-    flexWrap: 'wrap',
-    gap: 8
-  },
-  headerInfo: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    minWidth: 200,
-    flexWrap: 'wrap'
-  },
-  title: {
-    margin: 0,
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#38495e'
-  },
-  usergroupBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontSize: 12,
-    color: '#4060b0',
-    backgroundColor: '#e8f4f8',
-    padding: '2px 8px',
-    borderRadius: 4
-  },
-  parentPreview: {
-    backgroundColor: '#f8f9fa',
-    border: '1px solid #e8f4f8',
-    borderRadius: 4,
-    padding: 16,
-    marginBottom: 20
-  },
-  parentLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#507898',
-    marginBottom: 8
-  },
-  parentTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 8
-  },
-  parentAuthor: {
-    fontWeight: 'normal',
-    fontSize: 14,
-    color: '#507898'
-  },
-  parentContent: {
-    fontSize: 14,
-    color: '#38495e',
-    lineHeight: 1.5,
-    maxHeight: 150,
-    overflow: 'auto',
-    paddingTop: 8,
-    borderTop: '1px solid #e8f4f8'
-  },
-  form: {
-    marginBottom: 20
-  },
-  formGroup: {
-    marginBottom: 16
-  },
-  editorHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8
-  },
-  label: {
-    display: 'block',
-    marginBottom: 6,
-    fontWeight: 'bold',
-    color: '#38495e',
-    fontSize: 14
-  },
-  input: {
-    width: '100%',
-    padding: '10px 12px',
-    border: '1px solid #38495e',
-    borderRadius: 4,
-    fontSize: 14,
-    boxSizing: 'border-box',
-    color: '#38495e'
-  },
-  editorContainer: {
-    border: '1px solid #ced4da',
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    overflow: 'hidden'
-  },
-  htmlTextarea: {
-    width: '100%',
-    minHeight: 200,
-    fontFamily: 'monospace',
-    fontSize: 13,
-    padding: 12,
-    border: '1px solid #ced4da',
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    color: '#212529',
-    lineHeight: 1.5,
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  actions: {
-    display: 'flex',
-    gap: 12,
-    marginTop: 20
-  },
-  saveButton: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: 4,
-    fontSize: 14,
-    fontWeight: 'bold',
-    cursor: 'pointer'
-  },
-  cancelButton: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#507898',
-    color: 'white',
-    border: 'none',
-    borderRadius: 4,
-    fontSize: 14,
-    cursor: 'pointer'
-  },
-  errorMessage: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#f8d7da',
-    border: '1px solid #f5c6cb',
-    borderRadius: 4,
-    color: '#721c24',
-    marginBottom: 16
-  },
-  successMessage: {
-    padding: 12,
-    backgroundColor: '#d4edda',
-    border: '1px solid #c3e6cb',
-    borderRadius: 4,
-    color: '#155724',
-    marginBottom: 16
-  },
-  threadNav: {
-    marginTop: 20,
-    paddingTop: 16,
-    borderTop: '1px solid #e8f4f8',
-    fontSize: 14
-  },
-  permissionDenied: {
-    padding: 40,
-    textAlign: 'center',
-    color: '#507898',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4
-  }
 }
 
 export default DebatecommentEdit

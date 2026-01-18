@@ -95,11 +95,22 @@ sub _render_writeup {
         }
     }
 
+    # Get categories containing this writeup (with prev/next navigation)
+    my $writeup_categories = $self->APP->get_node_categories($node->node_id);
+
+    # Get categories containing the parent e2node (if available)
+    my $parent_categories = [];
+    if ($parent_node && !UNIVERSAL::isa($parent_node, "Everything::Node::null")) {
+        $parent_categories = $self->APP->get_node_categories($parent_node->node_id);
+    }
+
     # Build contentData for React
     my $content_data = {
-        type    => 'writeup',
-        writeup => $writeup,
-        user    => $user_data
+        type              => 'writeup',
+        writeup           => $writeup,
+        user              => $user_data,
+        categories        => $writeup_categories,
+        parent_categories => $parent_categories
     };
 
     # Add parent e2node if available (for E2 Node Tools modal)

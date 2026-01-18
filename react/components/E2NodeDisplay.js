@@ -3,6 +3,8 @@ import WriteupDisplay from './WriteupDisplay'
 import LinkNode from './LinkNode'
 import E2NodeToolsModal from './E2NodeToolsModal'
 import InlineWriteupEditor from './InlineWriteupEditor'
+import CategoryDisplay from './CategoryDisplay'
+import { InContentAd } from './Layout/GoogleAds'
 import { FaTools } from 'react-icons/fa'
 import { decodeHtmlEntities } from '../utils/textUtils'
 
@@ -19,7 +21,7 @@ import { decodeHtmlEntities } from '../utils/textUtils'
  * Usage:
  *   <E2NodeDisplay e2node={e2nodeData} user={userData} existingDraft={draftData} />
  */
-const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, bestEntries }) => {
+const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, bestEntries, categories, focusedCategoryId }) => {
   const [toolsModalOpen, setToolsModalOpen] = useState(!!startWithToolsModalOpen)
 
   // Handle hash navigation to scroll to specific author's writeup
@@ -100,16 +102,30 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, b
         </nav>
       )}
 
+      {/* Categories this e2node belongs to */}
+      {categories && categories.length > 0 && (
+        <CategoryDisplay
+          categories={categories}
+          focusedCategoryId={focusedCategoryId}
+          className="e2node-categories"
+        />
+      )}
+
       {/* Writeups - wrapped in <main> for Chrome reading mode detection */}
       {/* aria-label provides accessible name for landmark navigation */}
       <main className="e2node-writeups" aria-label="Writeups">
         {hasWriteups ? (
-          group.map((writeup) => (
-            <WriteupDisplay
-              key={writeup.node_id}
-              writeup={writeup}
-              user={user}
-            />
+          group.map((writeup, index) => (
+            <React.Fragment key={writeup.node_id}>
+              <WriteupDisplay
+                writeup={writeup}
+                user={user}
+              />
+              {/* In-content ad after first writeup (only for guests, when multiple writeups) */}
+              {index === 0 && group.length > 1 && user && user.guest && (
+                <InContentAd show={true} />
+              )}
+            </React.Fragment>
           ))
         ) : user && user.guest ? (
           // Guest user nodeshell experience - encourage sign in and offer alternatives
@@ -169,6 +185,9 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, b
   )
 }
 
+// Show an ad every N items in the best entries list (for guests only)
+const NODESHELL_AD_INTERVAL = 4
+
 /**
  * GuestNodeshellMessage - Friendly message for guests viewing nodeshells
  *
@@ -176,6 +195,7 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, b
  * - Explanation that this is a user-created topic without content
  * - Call to action to sign in and contribute
  * - Best recent entries as browsing alternatives
+ * - Ads interspersed every few entries
  */
 const GuestNodeshellMessage = ({ e2nodeTitle, bestEntries = [] }) => {
   return (
@@ -200,23 +220,31 @@ const GuestNodeshellMessage = ({ e2nodeTitle, bestEntries = [] }) => {
             Or browse some of our highly rated writeups:
           </h3>
           <ul className="guest-nodeshell-best-list">
-            {bestEntries.map((entry) => (
-              <li key={entry.writeup_id || entry.node_id} className="guest-nodeshell-best-item">
-                <a href={`/node/${entry.node_id}?lastnode_id=0`} className="guest-nodeshell-best-link">
-                  {entry.title}
-                </a>
-                {entry.author && (
-                  <span className="guest-nodeshell-best-author">
-                    {' '}by{' '}
-                    <a href={`/user/${encodeURIComponent(entry.author.title)}`}>
-                      {entry.author.title}
-                    </a>
-                  </span>
+            {bestEntries.map((entry, index) => (
+              <React.Fragment key={entry.writeup_id || entry.node_id}>
+                <li className="guest-nodeshell-best-item">
+                  <a href={`/node/${entry.node_id}?lastnode_id=0`} className="guest-nodeshell-best-link">
+                    {entry.title}
+                  </a>
+                  {entry.author && (
+                    <span className="guest-nodeshell-best-author">
+                      {' '}by{' '}
+                      <a href={`/user/${encodeURIComponent(entry.author.title)}`}>
+                        {entry.author.title}
+                      </a>
+                    </span>
+                  )}
+                  {entry.excerpt && (
+                    <p className="guest-nodeshell-best-excerpt">{decodeHtmlEntities(entry.excerpt)}</p>
+                  )}
+                </li>
+                {/* Show ad every NODESHELL_AD_INTERVAL items */}
+                {(index + 1) % NODESHELL_AD_INTERVAL === 0 && index < bestEntries.length - 1 && (
+                  <li className="guest-nodeshell-ad-item">
+                    <InContentAd show={true} />
+                  </li>
                 )}
-                {entry.excerpt && (
-                  <p className="guest-nodeshell-best-excerpt">{decodeHtmlEntities(entry.excerpt)}</p>
-                )}
-              </li>
+              </React.Fragment>
             ))}
           </ul>
         </div>

@@ -1,7 +1,6 @@
 <node>
-  <code></code>
   <description>an [Content Editors|editor] edits one of your writeups.</description>
-  <invalid_check></invalid_check>
+  <hourLimit>72</hourLimit>
   <node_id>1981770</node_id>
   <title>writeupedit</title>
   <type_nodetype>1930710</type_nodetype>

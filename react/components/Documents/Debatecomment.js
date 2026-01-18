@@ -19,51 +19,50 @@ const CommentThread = ({ comment, depth = 0, displayMode, canReply }) => {
   const hasChildren = comment.children && comment.children.length > 0
   const isFullMode = displayMode === 'full'
 
+  const containerClass = depth > 0
+    ? 'debate__comment debate__comment--nested'
+    : 'debate__comment'
+
   return (
-    <div style={{
-      ...styles.commentContainer,
-      marginLeft: depth > 0 ? 24 : 0,
-      borderLeft: depth > 0 ? '2px solid #e8f4f8' : 'none',
-      paddingLeft: depth > 0 ? 16 : 0
-    }}>
+    <div className={containerClass}>
       {/* Comment header */}
-      <div style={styles.commentHeader}>
+      <div className="debate__comment-header">
         {hasChildren && (
           <button
             onClick={() => setCollapsed(!collapsed)}
-            style={styles.collapseButton}
+            className="debate__collapse-btn"
             title={collapsed ? 'Expand replies' : 'Collapse replies'}
           >
             {collapsed ? <FaChevronRight /> : <FaChevronDown />}
           </button>
         )}
-        <a href={`/?node_id=${comment.node_id}`} style={styles.commentTitle}>
+        <a href={`/?node_id=${comment.node_id}`} className="debate__comment-title">
           {comment.title}
         </a>
         {comment.author && (
-          <span style={styles.authorInfo}>
+          <span className="debate__comment-author">
             by <LinkNode {...comment.author} type="user" />
           </span>
         )}
         {comment.createtime && (
-          <span style={styles.timestamp}>{comment.createtime}</span>
+          <span className="debate__comment-time">{comment.createtime}</span>
         )}
       </div>
 
       {/* Comment content (only in full mode) */}
       {isFullMode && comment.doctext && !collapsed && (
         <div
-          style={styles.commentContent}
+          className="debate__comment-content"
           dangerouslySetInnerHTML={{ __html: renderE2Content(comment.doctext).html }}
         />
       )}
 
       {/* Comment actions */}
       {!collapsed && (
-        <div style={styles.commentActions}>
+        <div className="debate__comment-actions">
           {canReply && (
-            <a href={`/?node_id=${comment.node_id}&displaytype=replyto`} style={styles.actionLink}>
-              <FaReply style={{ marginRight: 4 }} />
+            <a href={`/?node_id=${comment.node_id}&displaytype=replyto`} className="debate__comment-action-link">
+              <FaReply />
               reply
             </a>
           )}
@@ -72,7 +71,7 @@ const CommentThread = ({ comment, depth = 0, displayMode, canReply }) => {
 
       {/* Nested children */}
       {hasChildren && !collapsed && (
-        <div style={styles.childrenContainer}>
+        <div className="debate__comment-children">
           {comment.children.map(child => (
             <CommentThread
               key={child.node_id}
@@ -87,7 +86,7 @@ const CommentThread = ({ comment, depth = 0, displayMode, canReply }) => {
 
       {/* Collapsed indicator */}
       {hasChildren && collapsed && (
-        <div style={styles.collapsedInfo}>
+        <div className="debate__collapsed-info">
           {comment.children.length} {comment.children.length === 1 ? 'reply' : 'replies'} hidden
         </div>
       )}
@@ -102,22 +101,22 @@ const Debatecomment = ({ data, user }) => {
   // User info comes from props (passed by DocumentComponent from e2.user)
   if (data.permission_denied) {
     return (
-      <div style={styles.container}>
-        <div style={styles.permissionDenied}>
-          <FaLock style={{ fontSize: 48, color: '#507898', marginBottom: 16 }} />
-          <h3 style={{ color: '#38495e' }}>Permission Denied</h3>
+      <div className="debate">
+        <div className="debate__permission-denied">
+          <FaLock className="debate__permission-icon" />
+          <h3>Permission Denied</h3>
           <p>You do not have access to view this discussion.</p>
-          <p style={{ fontSize: 13, color: '#507898' }}>
+          <p className="text-small text-muted">
             This discussion is restricted to members of a specific usergroup.
           </p>
           {user && !user.guest && (
-            <p style={{ fontSize: 13, color: '#507898' }}>
+            <p className="text-small text-muted">
               You are logged in as <strong>{user.title}</strong>.
             </p>
           )}
           {user && user.guest && (
-            <p style={{ fontSize: 13, color: '#507898' }}>
-              Please <a href="/title/log%20in" style={{ color: '#4060b0' }}>log in</a> to see if you have access.
+            <p className="text-small text-muted">
+              Please <a href="/title/log%20in" className="text-link">log in</a> to see if you have access.
             </p>
           )}
         </div>
@@ -131,7 +130,6 @@ const Debatecomment = ({ data, user }) => {
     usergroup,
     parent,
     children,
-    can_access,
     can_edit,
     can_reply,
     display_mode,
@@ -139,29 +137,29 @@ const Debatecomment = ({ data, user }) => {
   } = data
 
   return (
-    <div style={styles.container}>
+    <div className="debate">
       {/* Header with usergroup link */}
-      <div style={styles.header}>
-        <FaComments style={{ color: '#507898', marginRight: 8, fontSize: 24 }} />
-        <div style={styles.headerInfo}>
-          <h1 style={styles.title}>{debatecomment.title}</h1>
+      <div className="debate__header">
+        <FaComments className="debate__header-icon" />
+        <div className="debate__header-info">
+          <h1 className="debate__title">{debatecomment.title}</h1>
           {usergroup && (
-            <span style={styles.usergroupBadge}>
-              <FaUsers style={{ marginRight: 4 }} />
+            <span className="debate__usergroup-badge">
+              <FaUsers />
               <LinkNode {...usergroup} type="usergroup" />
             </span>
           )}
         </div>
-        <div style={styles.actions}>
+        <div className="debate__actions">
           {can_edit && (
-            <a href={`/?node_id=${debatecomment.node_id}&displaytype=edit`} style={styles.editLink}>
-              <FaEdit style={{ marginRight: 4 }} />
+            <a href={`/?node_id=${debatecomment.node_id}&displaytype=edit`} className="debate__action-link">
+              <FaEdit />
               edit
             </a>
           )}
           {can_reply && (
-            <a href={`/?node_id=${debatecomment.node_id}&displaytype=replyto`} style={styles.replyLink}>
-              <FaReply style={{ marginRight: 4 }} />
+            <a href={`/?node_id=${debatecomment.node_id}&displaytype=replyto`} className="debate__action-link">
+              <FaReply />
               reply
             </a>
           )}
@@ -170,8 +168,8 @@ const Debatecomment = ({ data, user }) => {
 
       {/* Navigation breadcrumb */}
       {!is_root && root && (
-        <div style={styles.breadcrumb}>
-          <span style={{ color: '#666' }}>Thread:</span>{' '}
+        <div className="debate__breadcrumb">
+          <span>Thread:</span>{' '}
           <a href={`/?node_id=${root.node_id}`}>{root.title}</a>
           {parent && parent.node_id !== root.node_id && (
             <>
@@ -186,20 +184,20 @@ const Debatecomment = ({ data, user }) => {
 
       {/* Author info */}
       {debatecomment.author && (
-        <div style={styles.meta}>
-          <FaUser style={{ marginRight: 6, color: '#507898' }} />
+        <div className="debate__meta">
+          <FaUser />
           Posted by: <LinkNode {...debatecomment.author} type="user" />
           {debatecomment.createtime && (
-            <span style={styles.createtime}> on {debatecomment.createtime}</span>
+            <span className="debate__createtime"> on {debatecomment.createtime}</span>
           )}
         </div>
       )}
 
       {/* Main comment content */}
       {display_mode === 'full' && debatecomment.doctext && (
-        <div style={styles.mainContent}>
+        <div className="debate__main-content">
           <div
-            style={styles.doctext}
+            className="debate__doctext"
             dangerouslySetInnerHTML={{ __html: renderE2Content(debatecomment.doctext).html }}
           />
         </div>
@@ -207,19 +205,19 @@ const Debatecomment = ({ data, user }) => {
 
       {/* Display mode indicator */}
       {display_mode === 'compact' && (
-        <div style={styles.compactNotice}>
+        <div className="debate__compact-notice">
           <a href={`/?node_id=${debatecomment.node_id}`}>View full thread with content</a>
         </div>
       )}
 
       {/* Replies section */}
       {children && children.length > 0 && (
-        <div style={styles.repliesSection}>
-          <h3 style={styles.sectionTitle}>
-            <FaReply style={{ marginRight: 8 }} />
+        <div className="debate__replies">
+          <h3 className="debate__replies-title">
+            <FaReply />
             Replies ({children.length})
           </h3>
-          <div style={styles.repliesList}>
+          <div className="debate__replies-list">
             {children.map(child => (
               <CommentThread
                 key={child.node_id}
@@ -235,10 +233,10 @@ const Debatecomment = ({ data, user }) => {
 
       {/* No replies message */}
       {(!children || children.length === 0) && !!is_root && (
-        <div style={styles.noReplies}>
+        <div className="debate__no-replies">
           <p>No replies yet.</p>
           {can_reply && (
-            <a href={`/?node_id=${debatecomment.node_id}&displaytype=replyto`} style={styles.startReplyLink}>
+            <a href={`/?node_id=${debatecomment.node_id}&displaytype=replyto`} className="debate__start-reply-link">
               Be the first to reply
             </a>
           )}
@@ -246,202 +244,6 @@ const Debatecomment = ({ data, user }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-    padding: '16px 0'
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottom: '2px solid #38495e',
-    flexWrap: 'wrap',
-    gap: 8
-  },
-  headerInfo: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    minWidth: 200,
-    flexWrap: 'wrap'
-  },
-  title: {
-    margin: 0,
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#38495e'
-  },
-  usergroupBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontSize: 12,
-    color: '#4060b0',
-    backgroundColor: '#e8f4f8',
-    padding: '2px 8px',
-    borderRadius: 4
-  },
-  actions: {
-    display: 'flex',
-    gap: 12,
-    alignItems: 'center'
-  },
-  editLink: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  replyLink: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  breadcrumb: {
-    fontSize: 13,
-    color: '#507898',
-    marginBottom: 16,
-    padding: '8px 12px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4
-  },
-  meta: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    color: '#38495e',
-    marginBottom: 20
-  },
-  createtime: {
-    color: '#666',
-    marginLeft: 4
-  },
-  mainContent: {
-    padding: 16,
-    backgroundColor: '#fff',
-    border: '1px solid #e8f4f8',
-    borderRadius: 4,
-    marginBottom: 20
-  },
-  doctext: {
-    lineHeight: 1.6,
-    color: '#38495e'
-  },
-  compactNotice: {
-    padding: 12,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4,
-    marginBottom: 20,
-    textAlign: 'center',
-    fontSize: 14
-  },
-  repliesSection: {
-    marginTop: 24
-  },
-  sectionTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginTop: 0,
-    marginBottom: 16,
-    paddingBottom: 8,
-    borderBottom: '1px solid #e8f4f8'
-  },
-  repliesList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16
-  },
-  noReplies: {
-    padding: 20,
-    textAlign: 'center',
-    color: '#507898',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4
-  },
-  startReplyLink: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  permissionDenied: {
-    padding: 40,
-    textAlign: 'center',
-    color: '#507898',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4
-  },
-  // Comment thread styles
-  commentContainer: {
-    marginBottom: 12
-  },
-  commentHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    flexWrap: 'wrap'
-  },
-  collapseButton: {
-    background: 'none',
-    border: 'none',
-    padding: 4,
-    cursor: 'pointer',
-    color: '#507898',
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 12
-  },
-  commentTitle: {
-    fontWeight: 'bold',
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  authorInfo: {
-    fontSize: 13,
-    color: '#507898'
-  },
-  timestamp: {
-    fontSize: 12,
-    color: '#507898'
-  },
-  commentContent: {
-    marginTop: 8,
-    marginBottom: 8,
-    paddingLeft: 24,
-    lineHeight: 1.5,
-    color: '#38495e'
-  },
-  commentActions: {
-    marginTop: 4,
-    marginBottom: 8,
-    paddingLeft: 24
-  },
-  actionLink: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontSize: 12,
-    color: '#507898',
-    textDecoration: 'none'
-  },
-  childrenContainer: {
-    marginTop: 12
-  },
-  collapsedInfo: {
-    fontSize: 12,
-    color: '#507898',
-    fontStyle: 'italic',
-    marginLeft: 24,
-    marginTop: 4
-  }
 }
 
 export default Debatecomment
