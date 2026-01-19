@@ -964,12 +964,15 @@ sub printHeader
 	my @cookies = ();
 
 	if ($lastnode && $lastnode > 0) {
-		push @cookies, $query->cookie( -name=>'lastnode_id', -value=>'');
+		# Clear the lastnode_id cookie - set path to / to match site-wide cookie handling
+		push @cookies, $query->cookie(-name=>'lastnode_id', -value=>'', -path=>'/');
 
 	} elsif ($lastnode && $lastnode == -1) {
+		# -1 means don't touch the cookie
 
 	} else {
-		push @cookies, $query->cookie('lastnode_id', '');
+		# Clear the lastnode_id cookie - set path to / to match site-wide cookie handling
+		push @cookies, $query->cookie(-name=>'lastnode_id', -value=>'', -path=>'/');
 	}
 	if ($$USER{cookie}) {
 		push @cookies, $$USER{cookie};
