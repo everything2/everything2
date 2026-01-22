@@ -964,15 +964,19 @@ sub printHeader
 	my @cookies = ();
 
 	if ($lastnode && $lastnode > 0) {
-		# Clear the lastnode_id cookie - set path to / to match site-wide cookie handling
-		push @cookies, $query->cookie(-name=>'lastnode_id', -value=>'', -path=>'/');
+		# Clear the lastnode_id cookie - must match all attributes set by client JavaScript:
+		# path=/, SameSite=Lax, and expires in the past for proper deletion
+		# Without matching attributes, Firefox may not properly clear the cookie
+		push @cookies, $query->cookie(-name=>'lastnode_id', -value=>'', -path=>'/', -expires=>'-1d', -samesite=>'Lax');
 
 	} elsif ($lastnode && $lastnode == -1) {
 		# -1 means don't touch the cookie
 
 	} else {
-		# Clear the lastnode_id cookie - set path to / to match site-wide cookie handling
-		push @cookies, $query->cookie(-name=>'lastnode_id', -value=>'', -path=>'/');
+		# Clear the lastnode_id cookie - must match all attributes set by client JavaScript:
+		# path=/, SameSite=Lax, and expires in the past for proper deletion
+		# Without matching attributes, Firefox may not properly clear the cookie
+		push @cookies, $query->cookie(-name=>'lastnode_id', -value=>'', -path=>'/', -expires=>'-1d', -samesite=>'Lax');
 	}
 	if ($$USER{cookie}) {
 		push @cookies, $$USER{cookie};
@@ -1164,11 +1168,13 @@ sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
 	# Must set expires to past date for browser to actually delete the cookie
+	# SameSite=Lax must match the login cookie to ensure proper deletion
 	my $cookie = $query->cookie(
 		-name => $Everything::CONF->cookiepass,
 		-value => "",
 		-expires => '-1d',
-		-path => '/'
+		-path => '/',
+		-samesite => 'Lax'
 	);
 	my $user_id = $Everything::CONF->guest_user;
 

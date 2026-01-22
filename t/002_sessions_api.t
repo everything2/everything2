@@ -95,7 +95,8 @@ ok($session = $json->decode($response->content), "Content accurately decodes");
 ok($session->{display}->{is_guest} == 1, "Guest due to deleted session");
 my $cookiestring = $ua->cookie_jar->as_string;
 my $cookiename = "userpass"; #Taken from Everything::Configuration;
-ok($cookiestring =~ /$cookiename=""/, "Cookie deleted");
+# Cookie should be deleted (empty value) or removed entirely by cookie jar due to past expiration
+ok($cookiestring =~ /$cookiename=""/ || $cookiestring !~ /$cookiename/, "Cookie deleted or removed");
 
 # Deleting session again
 ok($response = $ua->get("$endpoint/delete"));

@@ -284,8 +284,10 @@ sub make_login_cookie
   my ($self, $user, $expires) = @_;
   # Accept expires as parameter (from API login) or fall back to CGI param (legacy form login)
   $expires ||= $self->cgi->param('expires') || '';
-  # IMPORTANT: Always set path to / so cookie works site-wide and matches opLogout
-  return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->title."|".$user->passwd, -expires => $expires, -path => '/');
+  # IMPORTANT: Always set path=/ so cookie works site-wide and matches opLogout
+  # SameSite=Lax is explicit to prevent privacy extensions from stripping cookies
+  # without clear SameSite attributes (browsers default to Lax but extensions may not)
+  return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->title."|".$user->passwd, -expires => $expires, -path => '/', -samesite => 'Lax');
 }
 
 sub truncated_params

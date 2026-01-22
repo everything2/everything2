@@ -50,16 +50,13 @@ sub output
     }
   }
 
-  # Include cookies from $USER (set by opcodes like logout)
-  # This mirrors what HTML.pm printHeader does
-  # $USER is a hashref, so we access it as $Everything::HTML::USER->{cookie}
-  my @cookies = ();
-  if ($Everything::HTML::USER && $Everything::HTML::USER->{cookie}) {
-    push @cookies, $Everything::HTML::USER->{cookie};
-  }
-  if (@cookies) {
-    $headers->{cookie} = \@cookies;
-    # Ensure logout responses aren't cached
+  # Handle cookies passed from API handlers in $output->[2]->{cookie}
+  # NOTE: Do NOT use $Everything::HTML::USER->{cookie} here - that's a stale global
+  # from HTML page requests that persists across mod_perl requests, causing random
+  # logouts when a logout cookie from one user's session gets sent to another user's
+  # API request that happens to land on the same Apache worker.
+  if ($headers->{cookie}) {
+    # Cookie was explicitly set by the API handler - ensure response isn't cached
     $headers->{'Cache-Control'} = "private, no-cache, no-store, must-revalidate";
   }
 
