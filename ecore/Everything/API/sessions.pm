@@ -100,7 +100,9 @@ sub delete
 
   # We only need to delete the cookie; the API exit point is user neutral after this point
   $REQUEST->logout;
-  return [$self->HTTP_OK,$self->user_api_structure($REQUEST), {"cookie" => $REQUEST->cookie(-name => $self->CONF->cookiepass, -value => "")}];
+  # IMPORTANT: Must set path=/ and expires to past date to properly clear the cookie
+  # Without path=/, a new cookie is created at /api/sessions path instead of clearing the site-wide one
+  return [$self->HTTP_OK,$self->user_api_structure($REQUEST), {"cookie" => $REQUEST->cookie(-name => $self->CONF->cookiepass, -value => "", -expires => '-1d', -path => '/')}];
 }
 
 1;

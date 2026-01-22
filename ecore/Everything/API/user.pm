@@ -302,9 +302,15 @@ sub edit_profile {
   # If password was changed and user is editing their own profile,
   # return a new login cookie to keep them logged in
   if ($password_changed && $user->node_id == $node_id) {
+    # IMPORTANT: Must set path=/ to replace the existing site-wide cookie
+    # Without path=/, a new cookie is created at /api/user path, but the old
+    # cookie with path=/ remains and has the OLD password hash, causing logout
+    # SameSite=Lax must match the original login cookie
     my $new_cookie = $REQUEST->cookie(
       -name => $self->CONF->cookiepass,
-      -value => $target_user->title . '|' . $nodedata->{passwd}
+      -value => $target_user->title . '|' . $nodedata->{passwd},
+      -path => '/',
+      -samesite => 'Lax'
     );
     $response->[2] = { cookie => $new_cookie };
   }
