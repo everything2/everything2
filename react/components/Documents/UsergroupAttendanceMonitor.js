@@ -23,7 +23,7 @@ const UsergroupAttendanceMonitor = ({ data }) => {
       </p>
       <p>For now, here is an active, automatic list.</p>
 
-      <hr style={{ width: '30%', margin: '1.5em auto' }} />
+      <hr className="usergroup-attendance-monitor__divider" />
 
       {count === 0 ? (
         <p><em>No inactive usergroup members found.</em></p>
@@ -47,7 +47,7 @@ const UsergroupAttendanceMonitor = ({ data }) => {
         </ul>
       )}
 
-      <p style={{ marginTop: '1em' }}>
+      <p className="usergroup-attendance-monitor__total">
         <strong>Total inactive users:</strong> {count}
       </p>
     </div>

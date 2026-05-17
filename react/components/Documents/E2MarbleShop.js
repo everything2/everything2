@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function E2MarbleShop() {
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', textAlign: 'center' }}>
-      <p style={{ fontSize: '1.5em', marginBottom: '20px' }}>
+    <div className="marble-shop">
+      <p className="marble-shop__message">
         Yes!
         <br />
         We have no marbles!

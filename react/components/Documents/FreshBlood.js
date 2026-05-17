@@ -55,7 +55,7 @@ const FreshBlood = ({ data }) => {
         Of those, <strong>{logged_in_count}</strong> logged in.
       </p>
 
-      <div className="pagination" style={{ textAlign: 'center', margin: '1em 0' }}>
+      <div className="pagination fresh-blood__pagination">
         {hasPrev && (
           <>
             <a href={`?start=${start - page_size}`}>&laquo; Later</a>
@@ -70,7 +70,7 @@ const FreshBlood = ({ data }) => {
         )}
       </div>
 
-      <table style={{ width: '100%', borderTop: '1px gray solid' }}>
+      <table className="fresh-blood__table">
         <thead>
           <tr>
             <th>Joined</th>
@@ -105,7 +105,7 @@ const FreshBlood = ({ data }) => {
         </tbody>
       </table>
 
-      <div className="pagination" style={{ textAlign: 'center', margin: '1em 0' }}>
+      <div className="pagination fresh-blood__pagination">
         {hasPrev && (
           <>
             <a href={`?start=${start - page_size}`}>&laquo; Later</a>

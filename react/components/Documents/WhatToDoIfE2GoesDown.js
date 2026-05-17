@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 
 /**
  * What to Do if E2 Goes Down - Humorous downtime suggestions
+ * Styles in CSS: .what-to-do-if-e2-goes-down__*
  *
  * Phase 4a migration from Mason template what_to_do_if_e2_goes_down.mc
  * Shows: Random suggestion from curated list of activities
@@ -113,21 +114,12 @@ const WhatToDoIfE2GoesDown = () => {
   )
 
   return (
-    <div
-      className="what-to-do-if-e2-goes-down"
-      style={{ textAlign: 'center', padding: '40px 20px' }}
-    >
-      <p style={{ marginBottom: '40px' }}>
+    <div className="what-to-do-if-e2-goes-down">
+      <p className="what-to-do-if-e2-goes-down__intro">
         Hey. <em>It happens</em>. Sit back. Relax. It'll get fixed. If you think that it may not
         have been reported yet, email the e2webmaster account. In the meantime...
       </p>
-      <div
-        style={{
-          fontSize: '32px',
-          fontWeight: 'bold',
-          lineHeight: '1.4'
-        }}
-      >
+      <div className="what-to-do-if-e2-goes-down__suggestion">
         {suggestion}
       </div>
     </div>

@@ -129,7 +129,7 @@ const UserInfoPanel = ({ user, viewer, lockStatus }) => {
             <dd className="ip-address">
               {user.lastip}
               {user.ip_blacklisted === 1 && (
-                <span className="status-blacklisted" style={{ marginLeft: '8px', color: '#d9534f' }}>
+                <span className="status-blacklisted user-tools__blacklist-status">
                   <FaBan /> Blacklisted
                 </span>
               )}

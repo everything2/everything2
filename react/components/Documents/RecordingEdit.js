@@ -4,6 +4,7 @@ import { FaMicrophone, FaSave, FaSpinner, FaPodcast, FaUser, FaTimes, FaFileAlt 
 
 /**
  * UserSearchField - Inline user search input with dropdown suggestions
+ * Styles in CSS: .user-search-field__*
  */
 const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
   const [inputValue, setInputValue] = useState(value || '')
@@ -125,9 +126,9 @@ const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
   }
 
   return (
-    <div ref={containerRef} style={userSearchStyles.container}>
-      <div style={userSearchStyles.inputWrapper}>
-        <FaUser style={userSearchStyles.icon} />
+    <div ref={containerRef} className="user-search-field">
+      <div className="user-search-field__wrapper">
+        <FaUser className="user-search-field__icon" />
         <input
           type="text"
           value={inputValue}
@@ -136,15 +137,15 @@ const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           placeholder={placeholder}
           disabled={disabled}
-          style={userSearchStyles.input}
+          className="user-search-field__input"
           autoComplete="off"
         />
-        {loading && <span style={userSearchStyles.loadingIndicator}>...</span>}
+        {loading && <span className="user-search-field__loading">...</span>}
         {inputValue && !loading && (
           <button
             type="button"
             onClick={handleClear}
-            style={userSearchStyles.clearButton}
+            className="user-search-field__clear"
             title="Clear"
           >
             <FaTimes />
@@ -153,18 +154,15 @@ const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
 
         {/* Suggestions dropdown */}
         {showSuggestions && suggestions.length > 0 && (
-          <div style={userSearchStyles.dropdown}>
+          <div className="user-search-field__dropdown">
             {suggestions.map((user, index) => (
               <div
                 key={user.node_id}
                 onClick={() => handleSelectUser(user)}
                 onMouseEnter={() => setSelectedIndex(index)}
-                style={{
-                  ...userSearchStyles.suggestionItem,
-                  ...(index === selectedIndex ? userSearchStyles.suggestionItemSelected : {})
-                }}
+                className={`user-search-field__option ${index === selectedIndex ? 'user-search-field__option--highlighted' : ''}`}
               >
-                <FaUser style={userSearchStyles.suggestionIcon} />
+                <FaUser className="user-search-field__option-icon" />
                 <span>{user.title}</span>
               </div>
             ))}
@@ -175,85 +173,10 @@ const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
   )
 }
 
-const userSearchStyles = {
-  container: {
-    position: 'relative'
-  },
-  inputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  icon: {
-    position: 'absolute',
-    left: 10,
-    color: '#507898',
-    fontSize: 14,
-    pointerEvents: 'none'
-  },
-  input: {
-    width: '100%',
-    padding: '8px 32px 8px 32px',
-    fontSize: 14,
-    border: '1px solid #507898',
-    borderRadius: 4,
-    boxSizing: 'border-box'
-  },
-  loadingIndicator: {
-    position: 'absolute',
-    right: 32,
-    color: '#507898',
-    fontSize: 12
-  },
-  clearButton: {
-    position: 'absolute',
-    right: 8,
-    background: 'none',
-    border: 'none',
-    color: '#999',
-    cursor: 'pointer',
-    padding: 4,
-    fontSize: 12,
-    display: 'flex',
-    alignItems: 'center'
-  },
-  dropdown: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    border: '1px solid #507898',
-    borderTop: 'none',
-    borderRadius: '0 0 4px 4px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    maxHeight: 200,
-    overflowY: 'auto',
-    zIndex: 100
-  },
-  suggestionItem: {
-    padding: '10px 12px',
-    cursor: 'pointer',
-    fontSize: 14,
-    color: '#38495e',
-    borderBottom: '1px solid #eee',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8
-  },
-  suggestionItemSelected: {
-    backgroundColor: '#e8f4f8',
-    color: '#4060b0'
-  },
-  suggestionIcon: {
-    fontSize: 12,
-    color: '#507898'
-  }
-}
-
 /**
  * E2nodeSearchField - Inline e2node search input with dropdown suggestions
  * When author prop is provided, only shows e2nodes where that author has a writeup
+ * Styles in CSS: .e2node-search-field__*
  */
 const E2nodeSearchField = ({ value, onChange, placeholder, disabled, author }) => {
   const [inputValue, setInputValue] = useState(value || '')
@@ -378,9 +301,9 @@ const E2nodeSearchField = ({ value, onChange, placeholder, disabled, author }) =
   }
 
   return (
-    <div ref={containerRef} style={e2nodeSearchStyles.container}>
-      <div style={e2nodeSearchStyles.inputWrapper}>
-        <FaFileAlt style={e2nodeSearchStyles.icon} />
+    <div ref={containerRef} className="e2node-search-field">
+      <div className="e2node-search-field__wrapper">
+        <FaFileAlt className="e2node-search-field__icon" />
         <input
           type="text"
           value={inputValue}
@@ -389,15 +312,15 @@ const E2nodeSearchField = ({ value, onChange, placeholder, disabled, author }) =
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           placeholder={placeholder}
           disabled={disabled}
-          style={e2nodeSearchStyles.input}
+          className="e2node-search-field__input"
           autoComplete="off"
         />
-        {loading && <span style={e2nodeSearchStyles.loadingIndicator}>...</span>}
+        {loading && <span className="e2node-search-field__loading">...</span>}
         {inputValue && !loading && (
           <button
             type="button"
             onClick={handleClear}
-            style={e2nodeSearchStyles.clearButton}
+            className="e2node-search-field__clear"
             title="Clear"
           >
             <FaTimes />
@@ -406,18 +329,15 @@ const E2nodeSearchField = ({ value, onChange, placeholder, disabled, author }) =
 
         {/* Suggestions dropdown */}
         {showSuggestions && suggestions.length > 0 && (
-          <div style={e2nodeSearchStyles.dropdown}>
+          <div className="e2node-search-field__dropdown">
             {suggestions.map((node, index) => (
               <div
                 key={node.node_id}
                 onClick={() => handleSelectE2node(node)}
                 onMouseEnter={() => setSelectedIndex(index)}
-                style={{
-                  ...e2nodeSearchStyles.suggestionItem,
-                  ...(index === selectedIndex ? e2nodeSearchStyles.suggestionItemSelected : {})
-                }}
+                className={`e2node-search-field__option ${index === selectedIndex ? 'e2node-search-field__option--highlighted' : ''}`}
               >
-                <FaFileAlt style={e2nodeSearchStyles.suggestionIcon} />
+                <FaFileAlt className="e2node-search-field__option-icon" />
                 <span>{node.title}</span>
               </div>
             ))}
@@ -428,84 +348,9 @@ const E2nodeSearchField = ({ value, onChange, placeholder, disabled, author }) =
   )
 }
 
-const e2nodeSearchStyles = {
-  container: {
-    position: 'relative'
-  },
-  inputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  icon: {
-    position: 'absolute',
-    left: 10,
-    color: '#507898',
-    fontSize: 14,
-    pointerEvents: 'none'
-  },
-  input: {
-    width: '100%',
-    padding: '8px 32px 8px 32px',
-    fontSize: 14,
-    border: '1px solid #507898',
-    borderRadius: 4,
-    boxSizing: 'border-box'
-  },
-  loadingIndicator: {
-    position: 'absolute',
-    right: 32,
-    color: '#507898',
-    fontSize: 12
-  },
-  clearButton: {
-    position: 'absolute',
-    right: 8,
-    background: 'none',
-    border: 'none',
-    color: '#999',
-    cursor: 'pointer',
-    padding: 4,
-    fontSize: 12,
-    display: 'flex',
-    alignItems: 'center'
-  },
-  dropdown: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    border: '1px solid #507898',
-    borderTop: 'none',
-    borderRadius: '0 0 4px 4px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    maxHeight: 200,
-    overflowY: 'auto',
-    zIndex: 100
-  },
-  suggestionItem: {
-    padding: '10px 12px',
-    cursor: 'pointer',
-    fontSize: 14,
-    color: '#38495e',
-    borderBottom: '1px solid #eee',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8
-  },
-  suggestionItemSelected: {
-    backgroundColor: '#e8f4f8',
-    color: '#4060b0'
-  },
-  suggestionIcon: {
-    fontSize: 12,
-    color: '#507898'
-  }
-}
-
 /**
  * RecordingEdit - Edit recording information
+ * Styles in CSS: .recording-edit__*
  *
  * Allows editing recording metadata:
  * - Title
@@ -562,81 +407,76 @@ const RecordingEdit = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="recording-edit">
       {/* Header */}
-      <div style={styles.header}>
-        <FaMicrophone style={{ color: '#507898', marginRight: 8, fontSize: 20 }} />
-        <span style={styles.headerTitle}>Edit Recording</span>
-        <a href={`/node/${recording.node_id}`} style={styles.displayLink}>
+      <div className="recording-edit__header">
+        <FaMicrophone className="recording-edit__header-icon" />
+        <span className="recording-edit__header-title">Edit Recording</span>
+        <a href={`/node/${recording.node_id}`} className="recording-edit__back-link">
           display
         </a>
       </div>
 
       {/* Message */}
       {message && (
-        <div style={{
-          ...styles.message,
-          backgroundColor: message.type === 'error' ? '#fee' : '#efe',
-          borderColor: message.type === 'error' ? '#fcc' : '#cec',
-          color: message.type === 'error' ? '#c00' : '#060'
-        }}>
+        <div className={message.type === 'error' ? 'recording-edit__error' : 'recording-edit__success'}>
           {message.text}
         </div>
       )}
 
       {/* Appears in podcast */}
       {recording.appears_in && (
-        <div style={styles.podcastInfo}>
-          <FaPodcast style={{ marginRight: 6, color: '#507898' }} />
+        <div className="recording-edit__podcast-info">
+          <FaPodcast className="recording-edit__podcast-icon" />
           Appears in: <LinkNode nodeId={recording.appears_in.node_id} title={recording.appears_in.title} />
         </div>
       )}
 
       {/* Form */}
-      <div style={styles.form}>
-        <div style={styles.field}>
-          <label style={styles.label}>Title:</label>
+      <div className="recording-edit__form">
+        <div className="recording-edit__field">
+          <label className="recording-edit__label">Title:</label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => handleChange('title', e.target.value)}
-            style={styles.input}
+            className="recording-edit__input"
             maxLength={64}
           />
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Audio Link (URL):</label>
+        <div className="recording-edit__field">
+          <label className="recording-edit__label">Audio Link (URL):</label>
           <input
             type="text"
             value={formData.link}
             onChange={(e) => handleChange('link', e.target.value)}
-            style={styles.input}
+            className="recording-edit__input"
             placeholder="https://..."
           />
-          <div style={styles.hint}>
+          <div className="recording-edit__hint">
             Direct link to the audio file (MP3, etc.)
           </div>
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Read by:</label>
+        <div className="recording-edit__field">
+          <label className="recording-edit__label">Read by:</label>
           <UserSearchField
             value={formData.read_by_name}
             onChange={(value) => handleChange('read_by_name', value)}
             placeholder="Search for user..."
           />
-          <div style={styles.hint}>
+          <div className="recording-edit__hint">
             The user who read/recorded the audio
           </div>
         </div>
 
-        <div style={styles.sectionDivider}>
+        <div className="recording-edit__section-divider">
           <span>Link to Writeup (Optional)</span>
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Writeup Author:</label>
+        <div className="recording-edit__field">
+          <label className="recording-edit__label">Writeup Author:</label>
           <UserSearchField
             value={formData.writeup_author}
             onChange={(value) => handleChange('writeup_author', value)}
@@ -644,8 +484,8 @@ const RecordingEdit = ({ data }) => {
           />
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Writeup Title (e2node name):</label>
+        <div className="recording-edit__field">
+          <label className="recording-edit__label">Writeup Title (e2node name):</label>
           <E2nodeSearchField
             value={formData.writeup_title}
             onChange={(value) => handleChange('writeup_title', value)}
@@ -653,115 +493,26 @@ const RecordingEdit = ({ data }) => {
             author={formData.writeup_author}
             disabled={!formData.writeup_author}
           />
-          <div style={styles.hint}>
+          <div className="recording-edit__hint">
             {formData.writeup_author
               ? `Showing e2nodes where ${formData.writeup_author} has a writeup`
               : 'Select an author above to search for their writeups'}
           </div>
         </div>
 
-        <div style={styles.buttonRow}>
+        <div className="recording-edit__button-row">
           <button
             onClick={handleSave}
             disabled={saving}
-            style={styles.saveButton}
+            className="recording-edit__submit-button"
           >
             {saving ? <FaSpinner className="fa-spin" /> : <FaSave />}
-            <span style={{ marginLeft: 6 }}>{saving ? 'Saving...' : 'Save Changes'}</span>
+            <span className="recording-edit__button-text">{saving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-    padding: '16px 0'
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottom: '2px solid #38495e'
-  },
-  headerTitle: {
-    flex: 1
-  },
-  displayLink: {
-    fontSize: 14,
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  message: {
-    padding: 12,
-    marginBottom: 16,
-    borderRadius: 4,
-    border: '1px solid'
-  },
-  podcastInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 16,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4,
-    fontSize: 14
-  },
-  form: {
-    marginBottom: 24
-  },
-  field: {
-    marginBottom: 16
-  },
-  label: {
-    display: 'block',
-    fontWeight: 'bold',
-    marginBottom: 4,
-    color: '#38495e'
-  },
-  input: {
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: 14,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-    boxSizing: 'border-box'
-  },
-  hint: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#666'
-  },
-  sectionDivider: {
-    margin: '24px 0 16px 0',
-    paddingBottom: 8,
-    borderBottom: '1px solid #ddd',
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#507898'
-  },
-  buttonRow: {
-    marginTop: 24
-  },
-  saveButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontSize: 14,
-    fontWeight: 'bold'
-  }
 }
 
 export default RecordingEdit

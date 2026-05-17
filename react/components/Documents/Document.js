@@ -13,6 +13,7 @@ import '../Editor/E2Editor.css'
 
 /**
  * Document Component - Display and edit documents
+ * Styles in CSS: .document-page__*, .document-editor__*, .document-modal__*
  *
  * Renders document nodes (nodetype 3) with:
  * - Display mode: Shows sanitized HTML content with E2 link parsing
@@ -115,13 +116,13 @@ const Document = ({ data }) => {
       <div className="document-page">
         {/* Action icons for those who can edit or logged-in users */}
         {(Boolean(can_edit) || (user && !user.is_guest)) && (
-          <div style={styles.actionBar}>
+          <div className="document-page__action-bar">
             {/* Weblog button - show for logged-in users */}
             {user && !user.is_guest && (
               <button
                 onClick={() => setShowWeblogModal(true)}
                 title="Add to weblog"
-                style={styles.iconButton}
+                className="document-page__icon-button"
               >
                 <FaRss />
               </button>
@@ -131,7 +132,7 @@ const Document = ({ data }) => {
               <button
                 onClick={handleEdit}
                 title="Edit this document"
-                style={styles.iconButton}
+                className="document-page__icon-button"
               >
                 <FaEdit />
               </button>
@@ -147,7 +148,7 @@ const Document = ({ data }) => {
 
         {/* Document metadata */}
         {document.author && (
-          <div style={{ marginTop: '20px', fontSize: '0.9em', color: '#666', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+          <div className="document-page__metadata">
             Maintained by: <LinkNode nodeId={document.author.node_id} title={document.author.title} type="user" />
           </div>
         )}
@@ -257,34 +258,30 @@ const WeblogModal = ({ nodeId, nodeTitle, onClose }) => {
   }
 
   return (
-    <div onClick={handleBackdropClick} style={modalStyles.backdrop}>
-      <div style={modalStyles.modal}>
-        <div style={modalStyles.header}>
-          <h3 style={modalStyles.title}>Add to Weblog</h3>
-          <button onClick={onClose} style={modalStyles.closeButton}>&times;</button>
+    <div onClick={handleBackdropClick} className="document-modal__backdrop">
+      <div className="document-modal">
+        <div className="document-modal__header">
+          <h3 className="document-modal__title">Add to Weblog</h3>
+          <button onClick={onClose} className="document-modal__close-button">&times;</button>
         </div>
 
-        <div style={modalStyles.content}>
+        <div className="document-modal__content">
           {/* Status message */}
           {actionStatus && (
-            <div style={{
-              ...modalStyles.status,
-              backgroundColor: actionStatus.type === 'error' ? '#fee' : '#efe',
-              color: actionStatus.type === 'error' ? '#c00' : '#060'
-            }}>
+            <div className={`document-modal__status document-modal__status--${actionStatus.type}`}>
               {actionStatus.message}
             </div>
           )}
 
           {/* Document info */}
-          <div style={modalStyles.info}>
+          <div className="document-modal__info">
             <strong>{nodeTitle}</strong>
           </div>
 
           {isLoading ? (
-            <p style={modalStyles.helpText}>Loading available groups...</p>
+            <p className="document-modal__help-text">Loading available groups...</p>
           ) : availableGroups.length === 0 ? (
-            <p style={modalStyles.helpText}>
+            <p className="document-modal__help-text">
               You don't have permission to post to any usergroup weblogs.
             </p>
           ) : (
@@ -292,7 +289,7 @@ const WeblogModal = ({ nodeId, nodeTitle, onClose }) => {
               <select
                 value={selectedGroup}
                 onChange={(e) => setSelectedGroup(e.target.value)}
-                style={modalStyles.input}
+                className="document-modal__input"
                 disabled={isPosting}
               >
                 <option value="">Select a usergroup...</option>
@@ -308,15 +305,12 @@ const WeblogModal = ({ nodeId, nodeTitle, onClose }) => {
               <button
                 onClick={handlePostToGroup}
                 disabled={!selectedGroup || isPosting}
-                style={{
-                  ...modalStyles.actionButton,
-                  ...(!selectedGroup || isPosting ? modalStyles.buttonDisabled : {})
-                }}
+                className={`document-modal__action-button${(!selectedGroup || isPosting) ? ' document-modal__action-button--disabled' : ''}`}
               >
                 {isPosting ? 'Posting...' : 'Post to usergroup'}
               </button>
 
-              <p style={modalStyles.helpText}>
+              <p className="document-modal__help-text">
                 Share this document to a usergroup weblog.
               </p>
             </>
@@ -397,10 +391,10 @@ const DocumentEditor = ({
   }
 
   return (
-    <div className="document-editor e2-editor" style={editorStyles.container}>
+    <div className="document-editor e2-editor document-editor__container">
       {/* Header with title and mode toggle */}
-      <div style={editorStyles.header}>
-        <h3 style={editorStyles.title}>Editing: {document.title}</h3>
+      <div className="document-editor__header">
+        <h3 className="document-editor__title">Editing: {document.title}</h3>
         <EditorModeToggle
           mode={editorMode}
           onToggle={handleModeToggle}
@@ -410,16 +404,16 @@ const DocumentEditor = ({
 
       {/* Error message */}
       {errorMessage && (
-        <div style={editorStyles.errorBox}>
+        <div className="document-editor__error-box">
           Error: {errorMessage}
         </div>
       )}
 
       {/* Editor */}
       {editorMode === 'rich' ? (
-        <div style={editorStyles.editorContainer}>
+        <div className="document-editor__editor-container">
           <MenuBar editor={editor} />
-          <div className="e2-editor-wrapper" style={{ padding: '12px' }}>
+          <div className="e2-editor-wrapper e2-editor-wrapper--padded">
             <EditorContent editor={editor} />
           </div>
         </div>
@@ -430,35 +424,32 @@ const DocumentEditor = ({
             setHtmlContent(e.target.value)
             setPreviewTrigger(prev => prev + 1)
           }}
-          style={editorStyles.textarea}
+          className="document-editor__textarea"
           spellCheck={false}
         />
       )}
 
       {/* Action buttons */}
-      <div style={editorStyles.actionRow}>
+      <div className="document-editor__action-row">
         <button
           onClick={onCancel}
           disabled={saveStatus === 'saving'}
-          style={editorStyles.cancelButton}
+          className="document-editor__cancel-button"
         >
           Cancel
         </button>
         <button
           onClick={onSave}
           disabled={saveStatus === 'saving'}
-          style={{
-            ...editorStyles.saveButton,
-            ...(saveStatus === 'saving' ? editorStyles.buttonDisabled : {})
-          }}
+          className={`document-editor__save-button${saveStatus === 'saving' ? ' document-editor__button--disabled' : ''}`}
         >
           {saveStatus === 'saving' ? 'Saving...' : 'Save'}
         </button>
       </div>
 
       {/* Preview Section */}
-      <div style={editorStyles.previewSection}>
-        <h4 style={editorStyles.previewTitle}>Preview</h4>
+      <div className="document-editor__preview-section">
+        <h4 className="document-editor__preview-title">Preview</h4>
         <PreviewContent
           editor={editor}
           editorMode={editorMode}
@@ -468,213 +459,6 @@ const DocumentEditor = ({
       </div>
     </div>
   )
-}
-
-// Document page styles
-const styles = {
-  actionBar: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '8px',
-    marginBottom: '8px',
-  },
-  iconButton: {
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '16px',
-    color: '#507898',
-    padding: '2px 4px',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-}
-
-// Editor styles
-const editorStyles = {
-  container: {
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    padding: '12px',
-    backgroundColor: '#f9f9f9',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '12px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#38495e',
-  },
-  errorBox: {
-    color: '#dc3545',
-    marginBottom: '10px',
-    padding: '10px',
-    backgroundColor: '#f8d7da',
-    borderRadius: '4px',
-    fontSize: '13px',
-  },
-  editorContainer: {
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-  },
-  textarea: {
-    width: '100%',
-    minHeight: '300px',
-    fontFamily: 'monospace',
-    fontSize: '13px',
-    padding: '12px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-    color: '#333',
-    lineHeight: '1.5',
-    resize: 'vertical',
-    boxSizing: 'border-box',
-  },
-  actionRow: {
-    marginTop: '12px',
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '8px',
-  },
-  saveButton: {
-    padding: '8px 16px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontWeight: '500',
-    fontSize: '13px',
-  },
-  cancelButton: {
-    padding: '8px 16px',
-    backgroundColor: '#fff',
-    color: '#4060b0',
-    border: '1px solid #4060b0',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontWeight: '500',
-    fontSize: '13px',
-  },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-    cursor: 'not-allowed',
-  },
-  previewSection: {
-    marginTop: '16px',
-    borderTop: '1px solid #ddd',
-    paddingTop: '12px',
-  },
-  previewTitle: {
-    margin: '0 0 8px 0',
-    fontSize: '14px',
-    color: '#666',
-    fontWeight: '500',
-  },
-}
-
-// Modal styles - matching AdminModal Kernel Blue theme
-const modalStyles = {
-  backdrop: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: '#fff',
-    border: '1px solid #38495e',
-    maxWidth: '350px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflow: 'auto',
-    fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif',
-    fontSize: '12px',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '5px 10px',
-    backgroundColor: '#38495e',
-    color: '#f9fafa',
-  },
-  title: {
-    margin: 0,
-    fontSize: '13px',
-    fontWeight: 'bold',
-  },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    fontSize: '18px',
-    cursor: 'pointer',
-    color: '#f9fafa',
-    padding: '0 4px',
-    lineHeight: 1,
-  },
-  content: {
-    padding: '10px',
-  },
-  status: {
-    padding: '5px 8px',
-    marginBottom: '10px',
-    fontSize: '11px',
-    border: '1px solid',
-  },
-  info: {
-    marginBottom: '10px',
-    paddingBottom: '10px',
-    borderBottom: '1px dotted #333',
-  },
-  input: {
-    width: '100%',
-    padding: '4px',
-    marginBottom: '6px',
-    border: '1px solid #d3d3d3',
-    fontSize: '12px',
-    boxSizing: 'border-box',
-    fontFamily: 'Verdana, Tahoma, Arial Unicode MS, sans-serif',
-  },
-  actionButton: {
-    display: 'block',
-    width: '100%',
-    padding: '4px 8px',
-    marginBottom: '4px',
-    border: '1px solid #d3d3d3',
-    backgroundColor: '#f8f9f9',
-    cursor: 'pointer',
-    fontSize: '12px',
-    textAlign: 'left',
-    color: '#4060b0',
-    textDecoration: 'none',
-  },
-  buttonDisabled: {
-    backgroundColor: '#f0f0f0',
-    color: '#999',
-    borderColor: '#ccc',
-    cursor: 'not-allowed',
-    opacity: 0.6,
-  },
-  helpText: {
-    fontSize: '11px',
-    color: '#507898',
-    margin: '4px 0 0 0',
-  },
 }
 
 export default Document

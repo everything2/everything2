@@ -383,41 +383,50 @@ const CoolArchive = ({ data, user }) => {
       {/* Results table */}
       {writeups.length > 0 ? (
         <>
-          <table className="cool-archive__table">
-            <thead>
-              <tr>
-                <th className="cool-archive__th">Writeup</th>
-                <th className="cool-archive__th cool-archive__th--author">Written by</th>
-                <th className="cool-archive__th cool-archive__th--author">Cooled by</th>
-              </tr>
-            </thead>
-            <tbody>
-              {writeups.map((wu, idx) => (
-                <tr key={`${wu.writeup_id}-${wu.cooled_by_id || idx}`}>
-                  <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
-                    <a href={`/node/${wu.parent_node_id}`} className="cool-archive__writeup-link">
-                      {wu.parent_title}
-                    </a>
-                    {wu.writeup_type && (
-                      <span className="cool-archive__writeup-type">
-                        ({wu.writeup_type})
-                      </span>
-                    )}
-                  </td>
-                  <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
-                    <a href={`/user/${wu.author_name}`} className="cool-archive__author-link">
-                      {wu.author_name}
-                    </a>
-                  </td>
-                  <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
-                    <a href={`/user/${wu.cooled_by_name}`} className="cool-archive__author-link">
-                      {wu.cooled_by_name}
-                    </a>
-                  </td>
+          <div className="cool-archive__table-container">
+            <table className="cool-archive__table">
+              <thead>
+                <tr>
+                  <th className="cool-archive__th">Writeup</th>
+                  {!isMobile && <th className="cool-archive__th cool-archive__th--author">Written by</th>}
+                  <th className="cool-archive__th cool-archive__th--author">Cooled by</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {writeups.map((wu, idx) => (
+                  <tr key={`${wu.writeup_id}-${wu.cooled_by_id || idx}`}>
+                    <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
+                      <a href={`/node/${wu.parent_node_id}`} className="cool-archive__writeup-link">
+                        {wu.parent_title}
+                      </a>
+                      {wu.writeup_type && (
+                        <span className="cool-archive__writeup-type">
+                          ({wu.writeup_type})
+                        </span>
+                      )}
+                      {isMobile && wu.author_name && (
+                        <span className="cool-archive__inline-author">
+                          {' '}by <a href={`/user/${wu.author_name}`} className="cool-archive__author-link">{wu.author_name}</a>
+                        </span>
+                      )}
+                    </td>
+                    {!isMobile && (
+                      <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
+                        <a href={`/user/${wu.author_name}`} className="cool-archive__author-link">
+                          {wu.author_name}
+                        </a>
+                      </td>
+                    )}
+                    <td className={`cool-archive__td${idx % 2 === 1 ? ' cool-archive__td--odd' : ''}`}>
+                      <a href={`/user/${wu.cooled_by_name}`} className="cool-archive__author-link">
+                        {wu.cooled_by_name}
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Load more button */}
           {hasMore && (

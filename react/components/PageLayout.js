@@ -86,7 +86,7 @@ const PageLayout = ({ e2 }) => {
       </div>
 
       {/* Main wrapper with content and sidebar - grows to fill available space */}
-      <div id="wrapper" style={{ flex: 1 }}>
+      <div id="wrapper">
         <div id="mainbody" itemProp="mainContentOfPage">
           {/* google_ad_section_start */}
           {!e2.contentData?.hidePageHeader && (

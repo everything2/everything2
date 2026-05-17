@@ -3,6 +3,8 @@ import RegistryFooter from '../shared/RegistryFooter'
 
 /**
  * RecentRegistryEntries - Show recent entries across all registries
+ * Styles in CSS: .recent-registry-entries__*
+ *
  * Displays the last 100 registry entries from all registries
  */
 const RecentRegistryEntries = ({ data }) => {
@@ -11,8 +13,8 @@ const RecentRegistryEntries = ({ data }) => {
   // Guest message
   if (is_guest) {
     return (
-      <div style={styles.container}>
-        <p style={styles.guestMessage}>
+      <div className="recent-registry-entries">
+        <p className="recent-registry-entries__guest-message">
           ...would be shown here if you logged in.
         </p>
       </div>
@@ -22,8 +24,8 @@ const RecentRegistryEntries = ({ data }) => {
   // Error message
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="recent-registry-entries">
+        <div className="recent-registry-entries__error">
           <p>{error}</p>
         </div>
       </div>
@@ -31,138 +33,57 @@ const RecentRegistryEntries = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <p style={styles.intro}>
+    <div className="recent-registry-entries">
+      <p className="recent-registry-entries__intro">
         The most recent registry entries from across Everything2.
       </p>
 
-      <table style={styles.table}>
+      <table className="recent-registry-entries__table">
         <thead>
           <tr>
-            <th style={styles.th}>Registry</th>
-            <th style={styles.th}>User</th>
-            <th style={styles.th}>Data</th>
-            <th style={styles.th}>Comments</th>
-            <th style={styles.thCenter}>Profile?</th>
+            <th className="recent-registry-entries__th">Registry</th>
+            <th className="recent-registry-entries__th">User</th>
+            <th className="recent-registry-entries__th">Data</th>
+            <th className="recent-registry-entries__th">Comments</th>
+            <th className="recent-registry-entries__th--center">Profile?</th>
           </tr>
         </thead>
         <tbody>
           {entries.length === 0 ? (
             <tr>
-              <td colSpan="5" style={styles.emptyCell}>
+              <td colSpan="5" className="recent-registry-entries__empty-cell">
                 <em>No registry entries found</em>
               </td>
             </tr>
           ) : (
             entries.map((entry, idx) => (
-              <tr key={`${entry.registry.node_id}-${entry.user.node_id}`} style={idx % 2 === 1 ? styles.evenRow : styles.oddRow}>
-                <td style={styles.td}>
-                  <a href={`/?node_id=${entry.registry.node_id}`} style={styles.link}>
+              <tr key={`${entry.registry.node_id}-${entry.user.node_id}`} className={idx % 2 === 1 ? 'recent-registry-entries__even-row' : 'recent-registry-entries__odd-row'}>
+                <td className="recent-registry-entries__td">
+                  <a href={`/?node_id=${entry.registry.node_id}`} className="recent-registry-entries__link">
                     {entry.registry.title}
                   </a>
                 </td>
-                <td style={styles.td}>
-                  <a href={`/?node_id=${entry.user.node_id}`} style={styles.link}>
+                <td className="recent-registry-entries__td">
+                  <a href={`/?node_id=${entry.user.node_id}`} className="recent-registry-entries__link">
                     {entry.user.title}
                   </a>
                 </td>
-                <td style={styles.td} dangerouslySetInnerHTML={{ __html: entry.data || '-' }} />
-                <td style={styles.td} dangerouslySetInnerHTML={{ __html: entry.comments || '-' }} />
-                <td style={styles.tdCenter}>{entry.in_profile ? 'Yes' : 'No'}</td>
+                <td className="recent-registry-entries__td" dangerouslySetInnerHTML={{ __html: entry.data || '-' }} />
+                <td className="recent-registry-entries__td" dangerouslySetInnerHTML={{ __html: entry.comments || '-' }} />
+                <td className="recent-registry-entries__td--center">{entry.in_profile ? 'Yes' : 'No'}</td>
               </tr>
             ))
           )}
         </tbody>
       </table>
 
-      <div style={styles.summary}>
+      <div className="recent-registry-entries__summary">
         Showing last 100 registry entries.
       </div>
 
       <RegistryFooter currentPage="recent" />
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: '1000px',
-    margin: '0 auto',
-    padding: '20px'
-  },
-  intro: {
-    marginBottom: '20px',
-    color: '#38495e',
-    lineHeight: '1.5'
-  },
-  guestMessage: {
-    padding: '30px',
-    fontStyle: 'italic',
-    color: '#507898',
-    textAlign: 'center',
-    fontSize: '14px'
-  },
-  error: {
-    padding: '20px',
-    background: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-    borderRadius: '4px'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '12px'
-  },
-  th: {
-    padding: '8px 10px',
-    fontWeight: '600',
-    color: '#38495e',
-    background: '#f8f9f9',
-    borderBottom: '2px solid #dee2e6',
-    textAlign: 'left'
-  },
-  thCenter: {
-    padding: '8px 10px',
-    fontWeight: '600',
-    color: '#38495e',
-    background: '#f8f9f9',
-    borderBottom: '2px solid #dee2e6',
-    textAlign: 'center',
-    width: '70px'
-  },
-  td: {
-    padding: '8px 10px',
-    borderBottom: '1px solid #eee',
-    verticalAlign: 'middle'
-  },
-  tdCenter: {
-    padding: '8px 10px',
-    borderBottom: '1px solid #eee',
-    textAlign: 'center',
-    verticalAlign: 'middle'
-  },
-  emptyCell: {
-    padding: '30px',
-    textAlign: 'center',
-    color: '#6c757d'
-  },
-  evenRow: {
-    background: '#f8f9f9'
-  },
-  oddRow: {
-    background: '#fff'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  summary: {
-    fontSize: '12px',
-    color: '#6c757d',
-    textAlign: 'center',
-    marginTop: '20px'
-  }
 }
 
 export default RecentRegistryEntries

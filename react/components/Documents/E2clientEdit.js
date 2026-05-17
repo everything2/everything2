@@ -11,6 +11,7 @@ import '../Editor/E2Editor.css'
 
 /**
  * E2clientEdit - Edit e2client (API client application) information
+ * Styles in CSS: .e2client-edit__*
  *
  * Allows editing:
  * - Title
@@ -155,101 +156,96 @@ const E2clientEdit = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="e2client-edit">
       {/* Header */}
-      <div style={styles.header}>
-        <FaCode style={{ color: '#507898', marginRight: 8, fontSize: 20 }} />
-        <span style={styles.headerTitle}>Edit E2 Client</span>
-        <a href={`/node/${e2client.node_id}`} style={styles.displayLink}>
+      <div className="e2client-edit__header">
+        <FaCode className="e2client-edit__header-icon" />
+        <span className="e2client-edit__header-title">Edit E2 Client</span>
+        <a href={`/node/${e2client.node_id}`} className="e2client-edit__display-link">
           display
         </a>
       </div>
 
       {/* Message */}
       {message && (
-        <div style={{
-          ...styles.message,
-          backgroundColor: message.type === 'error' ? '#fee' : '#efe',
-          borderColor: message.type === 'error' ? '#fcc' : '#cec',
-          color: message.type === 'error' ? '#c00' : '#060'
-        }}>
+        <div className={`e2client-edit__message e2client-edit__message--${message.type}`}>
           {message.text}
         </div>
       )}
 
       {/* Form */}
-      <div style={styles.form}>
-        <div style={styles.field}>
-          <label style={styles.label}>Client Name:</label>
+      <div className="e2client-edit__form">
+        <div className="e2client-edit__field">
+          <label className="e2client-edit__label">Client Name:</label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => handleChange('title', e.target.value)}
-            style={styles.input}
+            className="e2client-edit__input"
             maxLength={240}
           />
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Version:</label>
+        <div className="e2client-edit__field">
+          <label className="e2client-edit__label">Version:</label>
           <input
             type="text"
             value={formData.version}
             onChange={(e) => handleChange('version', e.target.value)}
-            style={styles.input}
+            className="e2client-edit__input"
             maxLength={255}
             placeholder="e.g., 1.0.0"
           />
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Home URL:</label>
+        <div className="e2client-edit__field">
+          <label className="e2client-edit__label">Home URL:</label>
           <input
             type="text"
             value={formData.homeurl}
             onChange={(e) => handleChange('homeurl', e.target.value)}
-            style={styles.input}
+            className="e2client-edit__input"
             maxLength={255}
             placeholder="https://..."
           />
-          <div style={styles.hint}>
+          <div className="e2client-edit__hint">
             Project homepage or documentation URL
           </div>
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Download URL:</label>
+        <div className="e2client-edit__field">
+          <label className="e2client-edit__label">Download URL:</label>
           <input
             type="text"
             value={formData.dlurl}
             onChange={(e) => handleChange('dlurl', e.target.value)}
-            style={styles.input}
+            className="e2client-edit__input"
             maxLength={255}
             placeholder="https://..."
           />
-          <div style={styles.hint}>
+          <div className="e2client-edit__hint">
             Direct download link for the client
           </div>
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Client String:</label>
+        <div className="e2client-edit__field">
+          <label className="e2client-edit__label">Client String:</label>
           <input
             type="text"
             value={formData.clientstr}
             onChange={(e) => handleChange('clientstr', e.target.value)}
-            style={styles.input}
+            className="e2client-edit__input"
             maxLength={255}
             placeholder="e.g., MyClient/1.0"
           />
-          <div style={styles.hint}>
+          <div className="e2client-edit__hint">
             User agent string or identifier used when connecting to E2 API
           </div>
         </div>
 
-        <div style={styles.field}>
-          <div style={styles.descriptionHeader}>
-            <label style={styles.label}>Description:</label>
+        <div className="e2client-edit__field">
+          <div className="e2client-edit__description-header">
+            <label className="e2client-edit__label">Description:</label>
             <EditorModeToggle
               mode={editorMode}
               onToggle={handleModeToggle}
@@ -258,9 +254,9 @@ const E2clientEdit = ({ data }) => {
           </div>
 
           {editorMode === 'rich' ? (
-            <div style={styles.editorContainer}>
+            <div className="e2client-edit__editor-container">
               <MenuBar editor={editor} />
-              <div className="e2-editor-wrapper" style={{ padding: '12px' }}>
+              <div className="e2-editor-wrapper e2client-edit__editor-wrapper-padded">
                 <EditorContent editor={editor} />
               </div>
             </div>
@@ -270,127 +266,29 @@ const E2clientEdit = ({ data }) => {
               onChange={handleHtmlChange}
               placeholder="Enter HTML content here..."
               aria-label="Description content (HTML)"
-              style={styles.htmlTextarea}
+              className="e2client-edit__html-textarea"
               spellCheck={false}
             />
           )}
 
-          <div style={styles.hint}>
+          <div className="e2client-edit__hint">
             Describe what your client does, features, requirements, etc.
           </div>
         </div>
 
-        <div style={styles.buttonRow}>
+        <div className="e2client-edit__button-row">
           <button
             onClick={handleSave}
             disabled={saving}
-            style={styles.saveButton}
+            className="e2client-edit__save-button"
           >
             {saving ? <FaSpinner className="fa-spin" /> : <FaSave />}
-            <span style={{ marginLeft: 6 }}>{saving ? 'Saving...' : 'Save Changes'}</span>
+            <span className="e2client-edit__save-icon">{saving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-    padding: '16px 0'
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottom: '2px solid #38495e'
-  },
-  headerTitle: {
-    flex: 1
-  },
-  displayLink: {
-    fontSize: 14,
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  message: {
-    padding: 12,
-    marginBottom: 16,
-    borderRadius: 4,
-    border: '1px solid'
-  },
-  form: {
-    marginBottom: 24
-  },
-  field: {
-    marginBottom: 16
-  },
-  label: {
-    display: 'block',
-    fontWeight: 'bold',
-    marginBottom: 4,
-    color: '#38495e'
-  },
-  input: {
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: 14,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-    boxSizing: 'border-box'
-  },
-  descriptionHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8
-  },
-  editorContainer: {
-    border: '1px solid #ced4da',
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    overflow: 'hidden'
-  },
-  htmlTextarea: {
-    width: '100%',
-    minHeight: 200,
-    fontFamily: 'monospace',
-    fontSize: 13,
-    padding: 12,
-    border: '1px solid #ced4da',
-    borderRadius: 4,
-    backgroundColor: '#fff',
-    color: '#212529',
-    lineHeight: 1.5,
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  hint: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#666'
-  },
-  buttonRow: {
-    marginTop: 24
-  },
-  saveButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontSize: 14,
-    fontWeight: 'bold'
-  }
 }
 
 export default E2clientEdit

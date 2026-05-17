@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 /**
  * Notelet Editor - Manage user notelet content
+ * Styles in CSS: .notelet-editor__*
  *
  * Provides notelet castrator and editor functionality.
  * Castrator comments out all JS, editor allows content editing with 2000 char limit.
@@ -38,10 +39,10 @@ const NoteletEditor = ({ data, e2 }) => {
   const screenedLength = notelet_screened.length
 
   return (
-    <div style={styles.container}>
+    <div className="notelet-editor">
       {/* Notelet Castrator Section */}
-      <div style={styles.section}>
-        <h3 style={styles.heading}>Notelet Castrator</h3>
+      <div className="notelet-editor__section">
+        <h3 className="notelet-editor__heading">Notelet Castrator</h3>
 
         <p>
           This is the Notelet Castrator. Its purpose is to neuter your Notelet by
@@ -49,28 +50,28 @@ const NoteletEditor = ({ data, e2 }) => {
           Use this tool when your Nodelet is causing problems and there is no other way to fix them.
         </p>
 
-        <form method="post" style={styles.form}>
+        <form method="post" className="notelet-editor__form">
           <input type="hidden" name="node_id" value={e2?.node_id || ''} />
           <input type="hidden" name="YesReallyCastrate" value="1" />
 
           <p>Your notelet contains {char_count} characters.</p>
 
-          <button type="submit" style={styles.dangerButton}>
+          <button type="submit" className="notelet-editor__danger-button">
             Castrate Notelet
           </button>
         </form>
       </div>
 
-      <hr style={styles.separator} />
+      <hr className="notelet-editor__separator" />
 
       {/* Notelet Editor Section */}
-      <div style={styles.section}>
-        <h3 style={styles.heading}>Notelet Editor</h3>
+      <div className="notelet-editor__section">
+        <h3 className="notelet-editor__heading">Notelet Editor</h3>
 
         <p>
           This <strong>Notelet Editor</strong> lets you edit your Notelet. No, not your nodelet, your notelet (your notelet nodelet).
           {!notelet_enabled && (
-            <span style={styles.warning}>
+            <span className="notelet-editor__warning-text">
               {' '}(Note: you currently don't have your Notelet on, so changing things here is rather pointless.
               You can turn on the Notelet nodelet by visiting your user settings.)
             </span>
@@ -79,22 +80,22 @@ const NoteletEditor = ({ data, e2 }) => {
         </p>
 
         {hadScriptTags && (
-          <div style={styles.warning_box}>
+          <div className="notelet-editor__warning-box">
             <strong>Note:</strong> Script tags have been automatically removed from your notelet.
             Script tags are no longer supported as they interfere with the site. Click Submit to save the cleaned version.
           </div>
         )}
 
         {success_message && (
-          <div style={styles.success}>{success_message}</div>
+          <div className="notelet-editor__success">{success_message}</div>
         )}
 
         {error && (
-          <div style={styles.error}>{error}</div>
+          <div className="notelet-editor__error">{error}</div>
         )}
 
         {/* Notes */}
-        <div style={styles.notes}>
+        <div className="notelet-editor__notes">
           <p><strong>About Notelets</strong>:</p>
           <p>
             Your notelet is a personal space for freeform notes, quick links, and reminders that appears
@@ -108,43 +109,43 @@ const NoteletEditor = ({ data, e2 }) => {
         </div>
 
         {/* Preview */}
-        <div style={styles.previewSection}>
+        <div className="notelet-editor__preview-section">
           <p><strong>Preview</strong>:</p>
 
           {!notelet_screened ? (
-            <p style={styles.emptyPreview}>
+            <p className="notelet-editor__empty-preview">
               <em>No text entered for the Notelet nodelet.</em>
             </p>
           ) : showPreview ? (
             <>
-              <p style={styles.previewNote}>
+              <p className="notelet-editor__preview-note">
                 (If you missed a closing tag somewhere, and the bottom part of this page is all messed up,
                 follow this <strong><a href="#" onClick={(e) => { e.preventDefault(); setShowPreview(false); }}>Oops!</a></strong> link to hide the preview.)
               </p>
               <p>
                 Your filtered length is currently {screenedLength} character{screenedLength === 1 ? '' : 's'}.
               </p>
-              <div style={styles.previewBox}>
+              <div className="notelet-editor__preview-box">
                 <div dangerouslySetInnerHTML={{ __html: notelet_screened }} />
               </div>
             </>
           ) : (
-            <p style={styles.emptyPreview}>
+            <p className="notelet-editor__empty-preview">
               <em>Preview hidden. <a href="#" onClick={(e) => { e.preventDefault(); setShowPreview(true); }}>Show preview</a></em>
             </p>
           )}
         </div>
 
         {/* Edit Form */}
-        <div style={styles.editSection}>
+        <div className="notelet-editor__edit-section">
           <p><strong>Edit</strong>:</p>
           <p>Your raw text is {currentLength} character{currentLength === 1 ? '' : 's'}.</p>
 
-          <form method="post" style={styles.form}>
+          <form method="post" className="notelet-editor__form">
             <input type="hidden" name="node_id" value={e2?.node_id || ''} />
             <input type="hidden" name="sexisgood" value="1" />
 
-            <div style={styles.checkboxGroup}>
+            <div className="notelet-editor__checkbox-group">
               <label>
                 <input
                   type="checkbox"
@@ -159,7 +160,7 @@ const NoteletEditor = ({ data, e2 }) => {
                 name="nodeletKeepComments"
                 value={keepComments ? '1' : '0'}
               />
-              <span style={styles.checkboxNote}>
+              <span className="notelet-editor__checkbox-note">
                 {' '}(HTML comments like <code>&lt;!-- text --&gt;</code> will be stripped from the displayed output.
                 Your source text is never modified.)
               </span>
@@ -179,18 +180,18 @@ const NoteletEditor = ({ data, e2 }) => {
                   alert(`You can only have up to ${MAX_RAW} characters in this notelet. You currently have ${newValue.length}. Anything typed past this point will be irretrievably removed.`);
                 }
               }}
-              style={styles.textarea}
+              className="notelet-editor__textarea"
               maxLength={32768}
             />
 
-            <div style={styles.charCounter}>
+            <div className="notelet-editor__char-counter">
               {currentLength} / 32768 characters (first {max_length} will be used)
               {currentLength >= 32768 && (
-                <span style={styles.limitWarning}> (limit reached)</span>
+                <span className="notelet-editor__limit-warning"> (limit reached)</span>
               )}
             </div>
 
-            <button type="submit" name="makethechange" value="1" style={styles.submitButton}>
+            <button type="submit" name="makethechange" value="1" className="notelet-editor__submit-button">
               Submit
             </button>
           </form>
@@ -198,139 +199,6 @@ const NoteletEditor = ({ data, e2 }) => {
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111',
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px'
-  },
-  section: {
-    marginBottom: '30px'
-  },
-  heading: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: '15px'
-  },
-  separator: {
-    border: 'none',
-    borderTop: '1px solid #ccc',
-    margin: '30px 0'
-  },
-  form: {
-    marginTop: '15px'
-  },
-  dangerButton: {
-    padding: '8px 16px',
-    border: '1px solid #dc3545',
-    borderRadius: '4px',
-    backgroundColor: '#dc3545',
-    color: '#fff',
-    fontSize: '13px',
-    cursor: 'pointer',
-    fontWeight: '600'
-  },
-  submitButton: {
-    padding: '8px 16px',
-    border: '1px solid #4060b0',
-    borderRadius: '4px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    fontSize: '13px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    marginTop: '10px'
-  },
-  warning: {
-    color: '#856404',
-    fontStyle: 'italic'
-  },
-  success: {
-    padding: '12px',
-    backgroundColor: '#e8f5e9',
-    border: '1px solid #4caf50',
-    borderRadius: '4px',
-    color: '#2e7d32',
-    marginBottom: '15px'
-  },
-  error: {
-    padding: '12px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828',
-    marginBottom: '15px'
-  },
-  warning_box: {
-    padding: '12px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    color: '#856404',
-    marginBottom: '15px'
-  },
-  notes: {
-    backgroundColor: '#f8f9f9',
-    padding: '15px',
-    borderRadius: '4px',
-    marginBottom: '20px',
-    border: '1px solid #dee2e6'
-  },
-  previewSection: {
-    marginBottom: '25px'
-  },
-  previewNote: {
-    fontSize: '12px',
-    color: '#666'
-  },
-  previewBox: {
-    border: '1px solid #000',
-    padding: '15px',
-    backgroundColor: '#fff',
-    borderRadius: '4px',
-    marginTop: '10px'
-  },
-  emptyPreview: {
-    fontStyle: 'italic',
-    color: '#6c757d'
-  },
-  editSection: {
-    marginTop: '25px'
-  },
-  checkboxGroup: {
-    marginBottom: '10px'
-  },
-  checkboxNote: {
-    fontSize: '12px',
-    color: '#666'
-  },
-  textarea: {
-    width: '100%',
-    maxWidth: '800px',
-    padding: '10px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    fontSize: '13px',
-    fontFamily: 'monospace',
-    lineHeight: '1.5',
-    resize: 'vertical'
-  },
-  charCounter: {
-    fontSize: '12px',
-    color: '#666',
-    marginTop: '5px',
-    marginBottom: '10px'
-  },
-  limitWarning: {
-    color: '#dc3545',
-    fontWeight: 'bold'
-  }
 }
 
 export default NoteletEditor

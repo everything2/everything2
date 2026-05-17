@@ -18,15 +18,6 @@ const PollDisplay = ({ poll, showStatus = false, isOwnPage = false, canEdit = fa
   const [deleting, setDeleting] = useState(false)
   const [selectedOption, setSelectedOption] = useState(null)
 
-  const colors = {
-    primary: '#38495e',
-    secondary: '#507898',
-    highlight: '#4060b0',
-    accent: '#3bb5c3',
-    background: '#f8f9f9',
-    text: '#111111'
-  }
-
   const hasVoted = poll.user_vote !== null && poll.user_vote !== undefined
   const isClosed = poll.poll_status === 'closed'
   const isNew = poll.poll_status === 'new'
@@ -53,89 +44,13 @@ const PollDisplay = ({ poll, showStatus = false, isOwnPage = false, canEdit = fa
     setDeleting(false)
   }
 
-  // Styles
-  const containerStyle = {
-    marginBottom: '30px'
-  }
-
-  const headerStyle = {
-    marginBottom: '10px'
-  }
-
-  const titleStyle = {
-    fontSize: '24px',
-    color: colors.primary,
-    marginBottom: '5px'
-  }
-
-  const linkStyle = {
-    color: colors.highlight,
-    textDecoration: 'none'
-  }
-
-  const authorStyle = {
-    fontSize: '14px',
-    color: colors.secondary,
-    fontStyle: 'italic',
-    marginBottom: '15px'
-  }
-
-  const questionStyle = {
-    fontSize: '18px',
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: '20px'
-  }
-
-  const optionStyle = {
-    marginBottom: '8px',
-    fontSize: '14px'
-  }
-
-  const radioStyle = {
-    marginRight: '8px'
-  }
-
-  const buttonStyle = {
-    padding: '8px 20px',
-    backgroundColor: voting ? '#999' : colors.highlight,
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: voting ? 'wait' : 'pointer',
-    fontSize: '14px',
-    fontWeight: '600',
-    marginTop: '15px'
-  }
-
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginTop: '15px'
-  }
-
-  const rowStyle = {
-    borderBottom: `1px solid ${colors.background}`
-  }
-
-  const cellStyle = {
-    padding: '8px 4px'
-  }
-
-  const barStyle = (percentage) => ({
-    height: '8px',
-    backgroundColor: colors.accent,
-    width: `${Math.min(100, percentage)}%`,
-    marginTop: '4px'
-  })
-
   return (
-    <div style={containerStyle}>
+    <div className="poll-display">
       {/* Title - only show if not on own page */}
       {!isOwnPage && (
-        <div style={headerStyle}>
-          <h2 style={titleStyle}>
-            <a href={`/node/${poll.poll_id}`} style={linkStyle}>
+        <div className="poll-display__header">
+          <h2 className="poll-display__title">
+            <a href={`/node/${poll.poll_id}`} className="poll-display__title-link">
               {poll.title}
             </a>
             {showStatus && ` (${poll.poll_status})`}
@@ -144,23 +59,23 @@ const PollDisplay = ({ poll, showStatus = false, isOwnPage = false, canEdit = fa
       )}
 
       {/* Author */}
-      <div style={authorStyle}>
-        by <a href={`/user/${poll.poll_author.title}`} style={linkStyle}>{poll.poll_author.title}</a>
+      <div className="poll-display__author">
+        by <a href={`/user/${poll.poll_author.title}`} className="poll-display__author-link">{poll.poll_author.title}</a>
         {canEdit && isNew && (
           <small>
-            {' '}(<a href={`/node/${poll.poll_id}?displaytype=edit`} style={linkStyle}>edit</a>)
+            {' '}(<a href={`/node/${poll.poll_id}?displaytype=edit`} className="poll-display__author-link">edit</a>)
           </small>
         )}
       </div>
 
       {/* Question */}
-      <h3 style={questionStyle}>{poll.question}</h3>
+      <h3 className="poll-display__question">{poll.question}</h3>
 
       {/* Voting form or results */}
       {!showResults && !isNew ? (
         <div>
           {poll.options.map((option, idx) => (
-            <div key={idx} style={optionStyle}>
+            <div key={idx} className="poll-display__option">
               <label>
                 <input
                   type="radio"
@@ -168,7 +83,7 @@ const PollDisplay = ({ poll, showStatus = false, isOwnPage = false, canEdit = fa
                   value={idx}
                   checked={selectedOption === idx}
                   onChange={() => setSelectedOption(idx)}
-                  style={radioStyle}
+                  className="poll-display__radio"
                 />
                 {option}
               </label>
@@ -177,7 +92,7 @@ const PollDisplay = ({ poll, showStatus = false, isOwnPage = false, canEdit = fa
           <button
             onClick={handleVote}
             disabled={selectedOption === null || voting}
-            style={buttonStyle}
+            className="poll-display__vote-btn"
           >
             {voting ? 'Voting...' : 'vote'}
           </button>
@@ -185,14 +100,14 @@ const PollDisplay = ({ poll, showStatus = false, isOwnPage = false, canEdit = fa
       ) : isNew ? (
         <div>
           {poll.options.map((option, idx) => (
-            <div key={idx} style={optionStyle}>
-              <input type="radio" disabled style={radioStyle} />
+            <div key={idx} className="poll-display__option">
+              <input type="radio" disabled className="poll-display__radio" />
               {option}
             </div>
           ))}
         </div>
       ) : (
-        <table style={tableStyle}>
+        <table className="poll-display__results-table">
           <tbody>
             {poll.options.map((option, idx) => {
               const votes = poll.results[idx] || 0
@@ -201,31 +116,31 @@ const PollDisplay = ({ poll, showStatus = false, isOwnPage = false, canEdit = fa
 
               return (
                 <React.Fragment key={idx}>
-                  <tr style={rowStyle}>
-                    <td style={cellStyle}>
+                  <tr className="poll-display__result-row">
+                    <td className="poll-display__result-cell">
                       {isUserVote ? <strong>{option}</strong> : option}
                     </td>
-                    <td style={{ ...cellStyle, textAlign: 'right', width: '60px' }}>
+                    <td className="poll-display__result-cell poll-display__result-cell--votes">
                       {votes}
                     </td>
-                    <td style={{ ...cellStyle, textAlign: 'right', width: '60px' }}>
+                    <td className="poll-display__result-cell poll-display__result-cell--percent">
                       {percentage.toFixed(2)}%
                     </td>
                   </tr>
                   <tr>
-                    <td colSpan="3" style={{ padding: '0 4px 8px 4px' }}>
-                      <div style={barStyle(percentage * 1.8)} />
+                    <td colSpan="3" className="poll-display__bar-cell">
+                      <div className="poll-display__bar" style={{ width: `${Math.min(100, percentage * 1.8)}%` }} />
                     </td>
                   </tr>
                 </React.Fragment>
               )
             })}
-            <tr style={{ borderTop: `2px solid ${colors.primary}` }}>
-              <td style={{ ...cellStyle, fontWeight: 'bold' }}>Total</td>
-              <td style={{ ...cellStyle, textAlign: 'right', fontWeight: 'bold' }}>
+            <tr className="poll-display__total-row">
+              <td className="poll-display__total-cell">Total</td>
+              <td className="poll-display__total-cell poll-display__total-cell--right">
                 {poll.totalvotes}
               </td>
-              <td style={{ ...cellStyle, textAlign: 'right', fontWeight: 'bold' }}>
+              <td className="poll-display__total-cell poll-display__total-cell--right">
                 100.00%
               </td>
             </tr>
@@ -235,19 +150,11 @@ const PollDisplay = ({ poll, showStatus = false, isOwnPage = false, canEdit = fa
 
       {/* Admin delete vote button */}
       {isAdmin && hasVoted && showResults && onDeleteVote && (
-        <div style={{ marginTop: '15px' }}>
+        <div className="poll-display__delete-vote">
           <button
             onClick={handleDeleteVote}
             disabled={deleting}
-            style={{
-              padding: '6px 12px',
-              backgroundColor: deleting ? '#999' : colors.error || '#c75050',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: deleting ? 'wait' : 'pointer',
-              fontSize: '12px'
-            }}
+            className="poll-display__delete-btn"
           >
             {deleting ? 'Deleting...' : 'Delete my vote (admin)'}
           </button>

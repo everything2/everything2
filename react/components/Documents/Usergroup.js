@@ -474,7 +474,7 @@ const Usergroup = ({ data, user, e2 }) => {
           </div>
           <div className="usergroup-card-body">
             {!is_in_group && userData.is_admin && (
-              <p className="usergroup-empty" style={{ marginBottom: '12px' }}>
+              <p className="usergroup-empty usergroup-empty--spaced">
                 You aren't in this group, but may message it as an administrator.
               </p>
             )}

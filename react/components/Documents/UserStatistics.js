@@ -30,7 +30,7 @@ const UserStatistics = ({ data }) => {
         <tbody>
           {stats.map((stat, idx) => (
             <tr key={idx}>
-              <td style={{ textAlign: 'right', paddingRight: '10px' }}>
+              <td className="user-statistics__value-cell">
                 <strong>{stat.value.toLocaleString()}</strong>
               </td>
               <td>{stat.label}</td>

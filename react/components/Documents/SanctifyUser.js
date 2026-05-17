@@ -1,117 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import LinkNode from '../LinkNode'
 
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.5rem',
-  },
-  section: {
-    marginBottom: '20px',
-  },
-  paragraph: {
-    marginBottom: '10px',
-    lineHeight: '1.5',
-  },
-  highlight: {
-    fontWeight: 'bold',
-    color: '#006400',
-  },
-  form: {
-    marginTop: '15px',
-    padding: '15px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '4px',
-  },
-  formRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    marginBottom: '10px',
-  },
-  label: {
-    minWidth: '100px',
-    fontWeight: 'bold',
-  },
-  input: {
-    padding: '8px 12px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '14px',
-    width: '200px',
-  },
-  checkboxRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '15px',
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#006400',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-  },
-  buttonDisabled: {
-    backgroundColor: '#999',
-    cursor: 'not-allowed',
-  },
-  message: {
-    padding: '10px 15px',
-    borderRadius: '4px',
-    marginTop: '15px',
-  },
-  success: {
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    border: '1px solid #c3e6cb',
-  },
-  error: {
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-  },
-  infoBox: {
-    padding: '15px',
-    backgroundColor: '#e7f3ff',
-    border: '1px solid #b8daff',
-    borderRadius: '4px',
-    marginBottom: '20px',
-  },
-  warningBox: {
-    padding: '15px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    marginBottom: '20px',
-  },
-  gpDisplay: {
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    color: '#006400',
-    marginBottom: '15px',
-  },
-  backLink: {
-    marginTop: '20px',
-    paddingTop: '15px',
-    borderTop: '1px solid #eee',
-  },
-}
-
+/**
+ * SanctifyUser - GP gifting tool
+ * Styles in CSS: .sanctify-user__*
+ *
+ * Allows users to transfer GP to other users, optionally anonymously.
+ */
 const SanctifyUser = ({ data }) => {
   const initialData = data.sanctify || {}
   const [sanctifyData, setSanctifyData] = useState(initialData)
@@ -183,17 +78,17 @@ const SanctifyUser = ({ data }) => {
     const isOptOut = reason.includes('opted out')
 
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Sanctify User</h1>
+      <div className="sanctify-user">
+        <div className="sanctify-user__header">
+          <h1 className="sanctify-user__title">Sanctify User</h1>
         </div>
-        <div style={styles.warningBox}>
+        <div className="sanctify-user__warning-box">
           {isLevelIssue && (
-            <p style={styles.paragraph}>
+            <p className="sanctify-user__paragraph">
               Who do you think you are? The Pope or something?
             </p>
           )}
-          <p style={styles.paragraph}>
+          <p className="sanctify-user__paragraph">
             {isLevelIssue ? (
               <>
                 Sorry, but you will have to come back when you reach{' '}
@@ -201,7 +96,7 @@ const SanctifyUser = ({ data }) => {
               </>
             ) : isGpIssue ? (
               <>
-                Sorry, but you don't have at least <span style={styles.highlight}>{sanctifyAmount} GP</span> to give away.
+                Sorry, but you don't have at least <span className="sanctify-user__highlight">{sanctifyAmount} GP</span> to give away.
                 Please come back when you have more GP.
               </>
             ) : isOptOut ? (
@@ -214,7 +109,7 @@ const SanctifyUser = ({ data }) => {
             )}
           </p>
         </div>
-        <div style={styles.backLink}>
+        <div className="sanctify-user__back-link">
           <p>Return to the <LinkNode type="superdoc" title="E2 Gift Shop" />.</p>
         </div>
       </div>
@@ -222,40 +117,40 @@ const SanctifyUser = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Sanctify User</h1>
+    <div className="sanctify-user">
+      <div className="sanctify-user__header">
+        <h1 className="sanctify-user__title">Sanctify User</h1>
       </div>
 
-      <div style={styles.infoBox}>
-        <p style={styles.paragraph}>
-          This tool lets you give <span style={styles.highlight}>{sanctifyAmount} GP</span> at a time to any user of your choice.
+      <div className="sanctify-user__info-box">
+        <p className="sanctify-user__paragraph">
+          This tool lets you give <span className="sanctify-user__highlight">{sanctifyAmount} GP</span> at a time to any user of your choice.
           The GP is transferred from your own account to theirs.
         </p>
-        <p style={{ ...styles.paragraph, marginBottom: 0 }}>
+        <p className="sanctify-user__paragraph sanctify-user__paragraph--no-margin">
           Please use it for the good of Everything2!
         </p>
       </div>
 
-      <div style={styles.gpDisplay}>
+      <div className="sanctify-user__gp-display">
         You currently have: {gp} GP
       </div>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formRow}>
-          <label style={styles.label}>Recipient:</label>
+      <form onSubmit={handleSubmit} className="sanctify-user__form">
+        <div className="sanctify-user__form-row">
+          <label className="sanctify-user__label">Recipient:</label>
           <input
             type="text"
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
-            style={styles.input}
+            className="sanctify-user__input"
             placeholder="Username"
             required
             disabled={loading}
           />
         </div>
 
-        <div style={styles.checkboxRow}>
+        <div className="sanctify-user__checkbox-row">
           <input
             type="checkbox"
             id="anonymous"
@@ -268,7 +163,7 @@ const SanctifyUser = ({ data }) => {
 
         <button
           type="submit"
-          style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+          className={`sanctify-user__button ${loading ? 'sanctify-user__button--disabled' : ''}`}
           disabled={loading || !recipient.trim()}
         >
           {loading ? 'Sanctifying...' : 'Sanctify!'}
@@ -276,10 +171,10 @@ const SanctifyUser = ({ data }) => {
       </form>
 
       {message && (
-        <div style={{ ...styles.message, ...(message.type === 'success' ? styles.success : styles.error) }}>
+        <div className={`sanctify-user__message ${message.type === 'success' ? 'sanctify-user__message--success' : 'sanctify-user__message--error'}`}>
           {message.text}
           {message.type === 'success' && (
-            <p style={{ marginTop: '10px', marginBottom: 0 }}>
+            <p className="sanctify-user__message-followup">
               You have <strong>{sanctifyData.gp} GP</strong> left.
               Would you like to sanctify someone else?
             </p>
@@ -287,7 +182,7 @@ const SanctifyUser = ({ data }) => {
         </div>
       )}
 
-      <div style={styles.backLink}>
+      <div className="sanctify-user__back-link">
         <p>Return to the <LinkNode type="superdoc" title="E2 Gift Shop" />.</p>
       </div>
     </div>

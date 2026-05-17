@@ -138,7 +138,7 @@ Max Votes:  ${formatStat(stats.maxvotes)}`}
         </pre>
 
         {type_breakdown.length > 0 && (
-          <div style={{ background: '#f8f9f9', padding: '0.5em', borderRadius: '3px', margin: '1em 0' }}>
+          <div className="node-tracker__type-breakdown">
             {type_breakdown.map(t => `${t.type}: ${t.percentage}%`).join('  ')}
           </div>
         )}
@@ -157,7 +157,7 @@ Change      Title
 
         {changed_nodes.length > 0 && (
           <>
-            <h3 style={{ margin: '1.5em 0 0.5em 0' }}>Reputation Changes / Cools:</h3>
+            <h3 className="node-tracker__section-header">Reputation Changes / Cools:</h3>
             <table>
               <thead>
                 <tr>

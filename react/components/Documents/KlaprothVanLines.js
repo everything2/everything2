@@ -3,6 +3,8 @@ import LinkNode from '../LinkNode'
 
 /**
  * KlaprothVanLines - Bulk reparenting of writeups for a single user.
+ * Styles in CSS: .klaproth-van-lines__*
+ *
  * Admin-only tool that allows reparenting multiple writeups at once.
  *
  * Workflow:
@@ -30,13 +32,12 @@ const KlaprothVanLines = ({ data }) => {
 
   if (access_denied) {
     return (
-      <div style={styles.container}>
-        <h2 style={styles.title}>Klaproth Van Lines</h2>
-        <p style={styles.welcome}>
+      <div className="klaproth-van-lines">
+        <p className="klaproth-van-lines__welcome">
           Welcome to Klaproth Van Lines. This utility will reparent writeups for a single user in
           bulk.
         </p>
-        <div style={styles.errorBox}>
+        <div className="klaproth-van-lines__error-box">
           <p>[Klaproth] has no business with you ... just now.</p>
         </div>
       </div>
@@ -218,19 +219,25 @@ const KlaprothVanLines = ({ data }) => {
     setResults(null)
   }
 
+  const getResultsBoxClass = () => {
+    if (!results) return 'klaproth-van-lines__results-box'
+    if (results.every((r) => r.success)) return 'klaproth-van-lines__results-box klaproth-van-lines__results-box--success'
+    if (results.every((r) => !r.success)) return 'klaproth-van-lines__results-box klaproth-van-lines__results-box--error'
+    return 'klaproth-van-lines__results-box klaproth-van-lines__results-box--mixed'
+  }
+
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Klaproth Van Lines</h2>
-      <p style={styles.welcome}>
+    <div className="klaproth-van-lines">
+      <p className="klaproth-van-lines__welcome">
         Welcome to Klaproth Van Lines. This utility will reparent writeups for a single user in
         bulk.
       </p>
 
       {/* Validation errors */}
       {validationErrors.length > 0 && (
-        <div style={styles.errorBox}>
+        <div className="klaproth-van-lines__error-box">
           <strong>Errors:</strong>
-          <ul style={styles.errorList}>
+          <ul className="klaproth-van-lines__error-list">
             {validationErrors.map((err, idx) => (
               <li key={idx}>{err}</li>
             ))}
@@ -241,137 +248,118 @@ const KlaprothVanLines = ({ data }) => {
       {/* Step 1: Input form */}
       {step === 'input' && (
         <form onSubmit={handleValidate}>
-          <table style={styles.table}>
-            <tbody>
-              <tr>
-                <td colSpan={2} style={styles.td}>
-                  <label>
-                    <strong>Username:</strong>{' '}
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      style={styles.input}
-                      placeholder="Enter username"
-                    />
-                  </label>
-                </td>
-              </tr>
-              <tr>
-                <th style={styles.th}>
+          <div className="klaproth-van-lines__panel">
+            <div className="klaproth-van-lines__username-row">
+              <label>
+                <strong>Username:</strong>{' '}
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="klaproth-van-lines__input"
+                  placeholder="Enter username"
+                />
+              </label>
+            </div>
+            <div className="klaproth-van-lines__columns">
+              <div className="klaproth-van-lines__column">
+                <div className="klaproth-van-lines__th">
                   Source writeup IDs
                   <br />
                   <small>
                     (get &apos;em from the{' '}
                     <LinkNode title="Altar of Sacrifice" />)
                   </small>
-                </th>
-                <th style={styles.th}>Target node names</th>
-              </tr>
-              <tr>
-                <td style={styles.td}>
+                </div>
+                <div className="klaproth-van-lines__td">
                   <textarea
                     value={writeupIds}
                     onChange={(e) => setWriteupIds(e.target.value)}
                     rows={20}
-                    cols={30}
-                    style={styles.textarea}
+                    className="klaproth-van-lines__textarea"
                     placeholder="One writeup ID per line"
                   />
-                </td>
-                <td style={styles.td}>
+                </div>
+              </div>
+              <div className="klaproth-van-lines__column">
+                <div className="klaproth-van-lines__th">Target node names</div>
+                <div className="klaproth-van-lines__td">
                   <textarea
                     value={destinations}
                     onChange={(e) => setDestinations(e.target.value)}
                     rows={20}
-                    cols={30}
-                    style={styles.textarea}
+                    className="klaproth-van-lines__textarea"
                     placeholder="One e2node title per line"
                   />
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={2} style={{ ...styles.td, textAlign: 'center' }}>
-                  <button type="submit" style={styles.button} disabled={isLoading}>
-                    {isLoading ? 'Validating...' : 'Validate'}
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </div>
+              </div>
+            </div>
+            <div className="klaproth-van-lines__td klaproth-van-lines__td--center">
+              <button type="submit" className="klaproth-van-lines__button" disabled={isLoading}>
+                {isLoading ? 'Validating...' : 'Validate'}
+              </button>
+            </div>
+          </div>
         </form>
       )}
 
       {/* Step 2: Preview */}
       {step === 'preview' && validatedData && (
         <div>
-          <table style={styles.table}>
-            <tbody>
-              <tr>
-                <td colSpan={2} style={styles.td}>
-                  The following writeups by <strong>{validatedData.user.title}</strong> are ready to
-                  be reparented. Nothing has happened to them ... yet.
-                </td>
-              </tr>
-              <tr>
-                <th style={styles.th}>Writeups to reparent</th>
-                <th style={styles.th}>New homes</th>
-              </tr>
-              <tr>
-                <td style={styles.td}>
-                  <ol style={styles.list}>
+          <div className="klaproth-van-lines__panel">
+            <div className="klaproth-van-lines__td">
+              The following writeups by <strong>{validatedData.user.title}</strong> are ready to
+              be reparented. Nothing has happened to them ... yet.
+            </div>
+            <div className="klaproth-van-lines__columns">
+              <div className="klaproth-van-lines__column">
+                <div className="klaproth-van-lines__th">Writeups to reparent</div>
+                <div className="klaproth-van-lines__td">
+                  <ol className="klaproth-van-lines__list">
                     {validatedData.writeups.map((wu, idx) => (
                       <li key={idx}>
                         <LinkNode id={wu.node_id} display={wu.title} />
                       </li>
                     ))}
                   </ol>
-                </td>
-                <td style={styles.td}>
-                  <ol style={styles.list}>
+                </div>
+              </div>
+              <div className="klaproth-van-lines__column">
+                <div className="klaproth-van-lines__th">New homes</div>
+                <div className="klaproth-van-lines__td">
+                  <ol className="klaproth-van-lines__list">
                     {validatedData.destinations.map((dest, idx) => (
                       <li key={idx}>
                         <LinkNode id={dest.node_id} display={dest.title} />
                       </li>
                     ))}
                   </ol>
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={2} style={{ ...styles.td, textAlign: 'center' }}>
-                  <button onClick={handleExecute} style={styles.button} disabled={isLoading}>
-                    {isLoading ? 'Moving...' : 'Do it!'}
-                  </button>{' '}
-                  <button onClick={handleReset} style={styles.buttonSecondary} disabled={isLoading}>
-                    Cancel
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </div>
+              </div>
+            </div>
+            <div className="klaproth-van-lines__td klaproth-van-lines__td--center">
+              <button onClick={handleExecute} className="klaproth-van-lines__button" disabled={isLoading}>
+                {isLoading ? 'Moving...' : 'Do it!'}
+              </button>{' '}
+              <button onClick={handleReset} className="klaproth-van-lines__button-secondary" disabled={isLoading}>
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Step 3: Results */}
       {step === 'complete' && results && (
         <div>
-          <div
-            style={{
-              ...styles.resultsBox,
-              ...(results.every((r) => r.success)
-                ? styles.resultsBoxSuccess
-                : results.every((r) => !r.success)
-                  ? styles.resultsBoxError
-                  : styles.resultsBoxMixed)
-            }}
-          >
+          <div className={getResultsBoxClass()}>
             <strong>
               Results: {results.filter((r) => r.success).length} moved,{' '}
               {results.filter((r) => !r.success).length} failed
             </strong>
-            <ul style={styles.resultsList}>
+            <ul className="klaproth-van-lines__results-list">
               {results.map((r, idx) => (
-                <li key={idx} style={r.success ? styles.resultSuccess : styles.resultError}>
+                <li key={idx} className={r.success ? 'klaproth-van-lines__result-success' : 'klaproth-van-lines__result-error'}>
                   {r.success ? (
                     <>
                       {r.old_title} moved to{' '}
@@ -386,8 +374,8 @@ const KlaprothVanLines = ({ data }) => {
               ))}
             </ul>
           </div>
-          <div style={{ textAlign: 'center', marginTop: '15px' }}>
-            <button onClick={handleReset} style={styles.button}>
+          <div className="klaproth-van-lines__actions">
+            <button onClick={handleReset} className="klaproth-van-lines__button">
               Start Over
             </button>
           </div>
@@ -395,119 +383,6 @@ const KlaprothVanLines = ({ data }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#111'
-  },
-  title: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    margin: '0 0 10px 0',
-    color: '#38495e'
-  },
-  welcome: {
-    marginBottom: '15px',
-    color: '#507898'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    border: '1px solid #d3d3d3'
-  },
-  th: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '10px',
-    textAlign: 'left',
-    borderBottom: '1px solid #d3d3d3'
-  },
-  td: {
-    padding: '10px',
-    borderBottom: '1px solid #e0e0e0',
-    verticalAlign: 'top'
-  },
-  input: {
-    padding: '6px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    width: '200px'
-  },
-  textarea: {
-    width: '100%',
-    padding: '8px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    fontFamily: 'monospace',
-    resize: 'vertical'
-  },
-  button: {
-    padding: '8px 20px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px'
-  },
-  buttonSecondary: {
-    padding: '8px 20px',
-    backgroundColor: '#f0f0f0',
-    color: '#333',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px'
-  },
-  errorBox: {
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    padding: '15px',
-    color: '#c62828',
-    marginBottom: '15px'
-  },
-  errorList: {
-    margin: '10px 0 0 0',
-    paddingLeft: '20px'
-  },
-  list: {
-    margin: '0',
-    paddingLeft: '25px'
-  },
-  resultsBox: {
-    padding: '15px',
-    borderRadius: '4px',
-    marginTop: '15px'
-  },
-  resultsBoxSuccess: {
-    backgroundColor: '#e8f5e9',
-    border: '2px solid #4caf50'
-  },
-  resultsBoxError: {
-    backgroundColor: '#ffebee',
-    border: '2px solid #f44336'
-  },
-  resultsBoxMixed: {
-    backgroundColor: '#fff3e0',
-    border: '2px solid #ff9800'
-  },
-  resultsList: {
-    margin: '10px 0 0 0',
-    paddingLeft: '20px'
-  },
-  resultSuccess: {
-    color: '#2e7d32'
-  },
-  resultError: {
-    color: '#c62828'
-  }
 }
 
 export default KlaprothVanLines

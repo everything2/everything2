@@ -95,8 +95,8 @@ const ILikeItButton = ({ writeupId, isGuest, authorTitle }) => {
   // Show "Thanks!" after successful like
   if (status === 'liked') {
     return (
-      <span style={{ color: '#4a4', fontWeight: 'bold', fontSize: '12px' }}>
-        <FaThumbsUp style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+      <span className="ilikeit__success">
+        <FaThumbsUp className="ilikeit__icon" />
         Thanks!
       </span>
     )
@@ -105,7 +105,7 @@ const ILikeItButton = ({ writeupId, isGuest, authorTitle }) => {
   // Show error state
   if (status === 'error' && errorMessage) {
     return (
-      <span style={{ color: '#c00', fontSize: '12px' }}>
+      <span className="ilikeit__error">
         {errorMessage}
       </span>
     )
@@ -117,21 +117,9 @@ const ILikeItButton = ({ writeupId, isGuest, authorTitle }) => {
       onClick={handleClick}
       disabled={status === 'submitting'}
       title={authorTitle ? `Tell ${authorTitle} you appreciate their work` : 'Send appreciation to the author'}
-      style={{
-        background: 'none',
-        border: '1px solid #507898',
-        borderRadius: '4px',
-        cursor: status === 'submitting' ? 'wait' : 'pointer',
-        padding: '2px 8px',
-        color: '#507898',
-        fontSize: '12px',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        opacity: status === 'submitting' ? 0.6 : 1
-      }}
+      className="ilikeit__btn"
     >
-      <FaThumbsUp style={{ fontSize: '10px' }} />
+      <FaThumbsUp className="ilikeit__btn-icon" />
       {status === 'submitting' ? 'Sending...' : 'I like it!'}
     </button>
   )

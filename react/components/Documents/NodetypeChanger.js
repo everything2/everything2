@@ -23,26 +23,26 @@ const NodetypeChanger = ({ data }) => {
   return (
     <div className="nodetype-changer">
       {message && (
-        <p style={{ color: 'green', fontWeight: 'bold' }}>{message}</p>
+        <div className="nodetype-changer__success-message">{message}</div>
       )}
 
       {/* Show target node if we have one */}
       {target_node && (
-        <div style={{ marginBottom: '1.5em' }}>
-          <p>
+        <div className="nodetype-changer__target-section">
+          <div className="nodetype-changer__current-info">
             <strong>{target_node.title}</strong> is currently a:{' '}
             <em>{target_node.current_type}</em>
-          </p>
+          </div>
 
-          <form method="GET">
+          <form method="GET" className="nodetype-changer__form">
             <input type="hidden" name="node_id" value={node_id} />
             <input type="hidden" name="change_id" value={target_node.node_id} />
             <input type="hidden" name="oldtype_id" value={target_node.node_id} />
 
-            <p>
-              <label>
-                Change to:{' '}
-                <select name="new_nodetype" defaultValue={target_node.type_id}>
+            <div className="nodetype-changer__form-group">
+              <label className="nodetype-changer__label">
+                Change to:
+                <select name="new_nodetype" defaultValue={target_node.type_id} className="nodetype-changer__select">
                   {nodetypes.map((nt) => (
                     <option key={nt.node_id} value={nt.node_id}>
                       {nt.title}
@@ -50,64 +50,51 @@ const NodetypeChanger = ({ data }) => {
                   ))}
                 </select>
               </label>
-            </p>
+            </div>
 
-            <p>
-              <button
-                type="submit"
-                name="sexisgood"
-                value="update"
-                style={{
-                  padding: '6px 15px',
-                  backgroundColor: '#38495e',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '3px',
-                  cursor: 'pointer'
-                }}
-              >
-                Update
-              </button>
-            </p>
+            <button
+              type="submit"
+              name="sexisgood"
+              value="update"
+              className="nodetype-changer__submit-btn"
+            >
+              Update Nodetype
+            </button>
           </form>
 
-          <hr style={{ margin: '1.5em 0' }} />
+          <hr className="nodetype-changer__divider" />
         </div>
       )}
 
       {/* Node ID input form */}
-      <form method="GET">
-        <input type="hidden" name="node_id" value={node_id} />
+      <div className="nodetype-changer__search-box">
+        <form method="GET" className="nodetype-changer__form">
+          <input type="hidden" name="node_id" value={node_id} />
 
-        <p>
-          <label>
-            Node Id:{' '}
-            <input
-              type="text"
-              name="oldtype_id"
-              value={nodeId}
-              onChange={(e) => setNodeId(e.target.value)}
-              size={20}
-            />
-          </label>
-          {' '}
+          <div className="nodetype-changer__form-group">
+            <label className="nodetype-changer__label">
+              Node ID:
+              <input
+                type="text"
+                name="oldtype_id"
+                value={nodeId}
+                onChange={(e) => setNodeId(e.target.value)}
+                className="nodetype-changer__input"
+                placeholder="Enter node ID"
+              />
+            </label>
+          </div>
+
           <button
             type="submit"
             name="sexisgood"
             value="get data"
-            style={{
-              padding: '6px 15px',
-              backgroundColor: '#38495e',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}
+            className="nodetype-changer__submit-btn"
           >
             Get Data
           </button>
-        </p>
-      </form>
+        </form>
+      </div>
     </div>
   )
 }

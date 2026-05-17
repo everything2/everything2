@@ -17,11 +17,6 @@ describe('Nodeshells', () => {
     ]
   }
 
-  it('renders the page title', () => {
-    const { getByText } = render(<Nodeshells data={mockData} />)
-    expect(getByText('Nodeshells')).toBeInTheDocument()
-  })
-
   it('renders description', () => {
     const { getByText } = render(<Nodeshells data={mockData} />)
     expect(getByText(/empty containers waiting for content/)).toBeInTheDocument()

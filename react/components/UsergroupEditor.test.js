@@ -102,7 +102,7 @@ describe('UsergroupEditor', () => {
       render(<UsergroupEditor {...defaultProps} onClose={onClose} />)
 
       // Click on the backdrop (outermost div) - should NOT close
-      const backdrop = document.querySelector('[style*="position: fixed"]')
+      const backdrop = document.querySelector('.usergroup-editor__backdrop')
       fireEvent.click(backdrop)
       expect(onClose).not.toHaveBeenCalled()
     })

@@ -51,13 +51,10 @@ const IsItHoliday = ({ data }) => {
   const isToday = isSpecialDate(occasion)
 
   return (
-    <div
-      className="is-it-holiday"
-      style={{ textAlign: 'center', padding: '40px 20px' }}
-    >
+    <div className="is-it-holiday">
       <br />
       <br />
-      <p style={{ fontSize: '64px', fontWeight: 'bold', margin: 0 }}>
+      <p className="is-it-holiday__answer">
         {isToday ? 'YES' : 'NO'}
       </p>
     </div>

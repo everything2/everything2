@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Modal from 'react-modal'
 import { FaExclamationTriangle, FaTrashAlt, FaEdit, FaBook, FaClone, FaEye, FaSave } from 'react-icons/fa'
 import LinkNode from '../LinkNode'
@@ -11,6 +11,27 @@ const SYSTEM_NODE_TYPES = [
   'oppressor_superdoc',
   'fullpage'
 ]
+
+// Modal positioning styles (react-modal requires inline style objects)
+const modalStyle = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    minWidth: '400px',
+    maxWidth: '600px',
+  },
+}
+
+const editModalStyle = {
+  content: {
+    ...modalStyle.content,
+    minWidth: '450px',
+  },
+}
 
 const NodeToolset = ({
   nodeId,
@@ -215,71 +236,24 @@ const NodeToolset = ({
   const showHelp = currentDisplay !== 'help'
   const showAdvancedEdit = isOnEditPage  // Show "Advanced Edit" link when already editing
 
-  const buttonStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '12px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    backgroundColor: '#f9f9f9',
-    cursor: 'pointer',
-    textAlign: 'center',
-    textDecoration: 'none',
-    color: 'inherit',
-    gap: '6px',
-    minHeight: '70px',
-    transition: 'all 0.2s ease'
-  }
-
-  const buttonHoverStyle = {
-    backgroundColor: '#e9e9e9',
-    borderColor: '#999'
-  }
-
-  const disabledButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#f5f5f5',
-    color: '#999',
-    cursor: 'not-allowed',
-    opacity: 0.6
-  }
-
   return (
     <div className="nodelet_section">
       <h4 className="ns_title">Node Toolset</h4>
 
       {/* Display node link when not on display page */}
       {currentDisplay !== 'display' && (
-        <div style={{ marginBottom: '10px' }}>
+        <div className="node-toolset__node-link">
           <LinkNode id={nodeId} display={nodeTitle} />
         </div>
       )}
 
       {/* 2x2 Button Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '8px',
-        marginBottom: '10px'
-      }}>
+      <div className="node-toolset__grid">
         {/* Edit/Display Button */}
         {showEdit ? (
           isSystemNode ? (
             // System nodes use modal edit
-            <button
-              onClick={openEditModal}
-              style={buttonStyle}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-                e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-                e.currentTarget.style.borderColor = '#ccc'
-              }}
-            >
+            <button onClick={openEditModal} className="node-toolset__btn">
               <FaEdit size={20} />
               <span>Edit Node</span>
             </button>
@@ -288,41 +262,25 @@ const NodeToolset = ({
             <LinkNode
               id={nodeId}
               display={
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <span className="node-toolset__btn-content">
                   <FaEdit size={20} />
                   <span>{isSuperdoc ? 'Edit Code' : 'Edit Node'}</span>
-                </div>
+                </span>
               }
               params={{ displaytype: 'edit' }}
-              style={{ ...buttonStyle, textDecoration: 'none', color: 'inherit', display: 'flex' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-                e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-                e.currentTarget.style.borderColor = '#ccc'
-              }}
+              className="node-toolset__btn"
             />
           )
         ) : (
           <LinkNode
             id={nodeId}
             display={
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <span className="node-toolset__btn-content">
                 <FaEye size={20} />
                 <span>Display</span>
-              </div>
+              </span>
             }
-            style={{ ...buttonStyle, textDecoration: 'none', color: 'inherit', display: 'flex' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-              e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-              e.currentTarget.style.borderColor = '#ccc'
-            }}
+            className="node-toolset__btn"
           />
         )}
 
@@ -331,62 +289,35 @@ const NodeToolset = ({
           <LinkNode
             id={nodeId}
             display={
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <span className="node-toolset__btn-content">
                 <FaBook size={20} />
                 <span>Advanced Edit</span>
-              </div>
+              </span>
             }
             params={{ displaytype: 'basicedit' }}
-            style={{ ...buttonStyle, textDecoration: 'none', color: 'inherit', display: 'flex' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-              e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-              e.currentTarget.style.borderColor = '#ccc'
-            }}
+            className="node-toolset__btn"
           />
         ) : showHelp ? (
           <LinkNode
             id={nodeId}
             display={
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <span className="node-toolset__btn-content">
                 <FaBook size={20} />
                 <span>{hasHelp ? 'Documentation' : 'Document Node'}</span>
-              </div>
+              </span>
             }
             params={{ displaytype: 'help' }}
-            style={{ ...buttonStyle, textDecoration: 'none', color: 'inherit', display: 'flex' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-              e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-              e.currentTarget.style.borderColor = '#ccc'
-            }}
+            className="node-toolset__btn"
           />
         ) : (
-          <div style={disabledButtonStyle}>
+          <div className="node-toolset__btn node-toolset__btn--disabled">
             <FaBook size={20} />
             <span>Documentation</span>
           </div>
         )}
 
         {/* Clone Button */}
-        <button
-          onClick={openCloneModal}
-          style={buttonStyle}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-            e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-            e.currentTarget.style.borderColor = '#ccc'
-          }}
-        >
+        <button onClick={openCloneModal} className="node-toolset__btn">
           <FaClone size={20} />
           <span>Clone Node</span>
         </button>
@@ -395,10 +326,7 @@ const NodeToolset = ({
         {preventNuke ? (
           <div
             title="This node is protected from deletion (nuke insurance). It is a core system node."
-            style={{
-              ...disabledButtonStyle,
-              color: '#d9534f'
-            }}
+            className="node-toolset__btn node-toolset__btn--disabled node-toolset__btn--danger"
           >
             <FaExclamationTriangle size={20} />
             <span>Insured</span>
@@ -408,19 +336,7 @@ const NodeToolset = ({
             onClick={canDelete ? openNukeModal : undefined}
             disabled={!canDelete}
             title={canDelete ? "Delete this node" : "Cannot delete this node"}
-            style={canDelete ? buttonStyle : disabledButtonStyle}
-            onMouseEnter={(e) => {
-              if (canDelete) {
-                e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor
-                e.currentTarget.style.borderColor = buttonHoverStyle.borderColor
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (canDelete) {
-                e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor
-                e.currentTarget.style.borderColor = '#ccc'
-              }
-            }}
+            className={canDelete ? 'node-toolset__btn' : 'node-toolset__btn node-toolset__btn--disabled'}
           >
             <FaTrashAlt size={20} />
             <span>Delete Node</span>
@@ -430,36 +346,26 @@ const NodeToolset = ({
 
       {/* Writeup Warning */}
       {isWriteup && !preventNuke && canDelete && (
-        <div style={{ fontSize: '0.9em', color: '#666', marginTop: '8px' }}>
+        <div className="node-toolset__warning">
           <strong>writeup:</strong> only nuke under exceptional circumstances.
           Removal is almost certainly a better idea.
         </div>
       )}
 
+      {/* Nuke Confirmation Modal */}
       <Modal
         isOpen={nukeModalOpen}
         onRequestClose={closeNukeModal}
         ariaHideApp={false}
         contentLabel="Confirm Node Deletion"
-        style={{
-          content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            minWidth: '400px',
-            maxWidth: '600px',
-          },
-        }}
+        style={modalStyle}
       >
         <div>
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#d9534f' }}>
+          <h2 className="node-toolset__modal-title node-toolset__modal-title--danger">
             <FaExclamationTriangle size={20} /> Confirm Node Deletion
           </h2>
 
-          <div style={{ margin: '20px 0', lineHeight: '1.6' }}>
+          <div className="node-toolset__modal-content">
             <p>
               <strong>Warning:</strong> Nuking a node <strong>removes it immediately</strong> and
               should only be used when you know what the consequences might be.
@@ -468,33 +374,20 @@ const NodeToolset = ({
               Deleted nodes can be restored if necessary using the resurrection system,
               but you should still use caution.
             </p>
-            <p style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>
+            <p className="node-toolset__info-box">
               You are about to delete: <br />
               <strong>{nodeTitle}</strong> ({nodeType})
             </p>
           </div>
 
-          {error && (
-            <div style={{ color: 'red', padding: '10px', marginBottom: '10px', border: '1px solid red' }}>
-              {error}
-            </div>
-          )}
+          {error && <div className="node-toolset__error">{error}</div>}
 
-          <div style={{ textAlign: 'right', marginTop: '20px' }}>
+          <div className="node-toolset__modal-footer">
             <button
               type="button"
               onClick={closeNukeModal}
               disabled={isDeleting}
-              style={{
-                marginRight: '10px',
-                padding: '6px 16px',
-                backgroundColor: '#f5f5f5',
-                color: '#333',
-                border: '1px solid #ccc',
-                borderRadius: '3px',
-                cursor: isDeleting ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em'
-              }}
+              className="node-toolset__modal-cancel"
             >
               Cancel
             </button>
@@ -502,19 +395,7 @@ const NodeToolset = ({
               type="button"
               onClick={handleNuke}
               disabled={isDeleting}
-              style={{
-                padding: '6px 16px',
-                backgroundColor: '#d9534f',
-                color: 'white',
-                border: 'none',
-                borderRadius: '3px',
-                cursor: isDeleting ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                opacity: isDeleting ? 0.6 : 1
-              }}
+              className="node-toolset__modal-action node-toolset__modal-action--delete"
             >
               <FaTrashAlt size={12} /> {isDeleting ? 'Deleting...' : 'Delete Node'}
             </button>
@@ -522,41 +403,31 @@ const NodeToolset = ({
         </div>
       </Modal>
 
+      {/* Clone Modal */}
       <Modal
         isOpen={cloneModalOpen}
         onRequestClose={closeCloneModal}
         ariaHideApp={false}
         contentLabel="Clone Node"
-        style={{
-          content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            minWidth: '400px',
-            maxWidth: '600px',
-          },
-        }}
+        style={modalStyle}
       >
         <div>
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h2 className="node-toolset__modal-title">
             <FaClone size={20} /> Clone Node
           </h2>
 
-          <div style={{ margin: '20px 0', lineHeight: '1.6' }}>
+          <div className="node-toolset__modal-content">
             <p>
               Create a copy of this node with a new title. The cloned node will have
               the same content and type as the original.
             </p>
-            <p style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>
+            <p className="node-toolset__info-box">
               Cloning: <br />
               <strong>{nodeTitle}</strong> ({nodeType})
             </p>
 
-            <form onSubmit={handleClone} style={{ marginTop: '15px' }}>
-              <label htmlFor="clone-title" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+            <form onSubmit={handleClone} className="node-toolset__form-group">
+              <label htmlFor="clone-title" className="node-toolset__label">
                 New Node Title:
               </label>
               <input
@@ -565,41 +436,21 @@ const NodeToolset = ({
                 value={cloneTitle}
                 onChange={(e) => setCloneTitle(e.target.value)}
                 disabled={isCloning}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '3px',
-                  fontSize: '0.9em',
-                  boxSizing: 'border-box'
-                }}
+                className="node-toolset__input"
                 placeholder="Enter title for cloned node"
                 autoFocus
               />
             </form>
           </div>
 
-          {error && (
-            <div style={{ color: 'red', padding: '10px', marginBottom: '10px', border: '1px solid red' }}>
-              {error}
-            </div>
-          )}
+          {error && <div className="node-toolset__error">{error}</div>}
 
-          <div style={{ textAlign: 'right', marginTop: '20px' }}>
+          <div className="node-toolset__modal-footer">
             <button
               type="button"
               onClick={closeCloneModal}
               disabled={isCloning}
-              style={{
-                marginRight: '10px',
-                padding: '6px 16px',
-                backgroundColor: '#f5f5f5',
-                color: '#333',
-                border: '1px solid #ccc',
-                borderRadius: '3px',
-                cursor: isCloning ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em'
-              }}
+              className="node-toolset__modal-cancel"
             >
               Cancel
             </button>
@@ -607,19 +458,7 @@ const NodeToolset = ({
               type="button"
               onClick={handleClone}
               disabled={isCloning || !cloneTitle.trim()}
-              style={{
-                padding: '6px 16px',
-                backgroundColor: isCloning || !cloneTitle.trim() ? '#ccc' : '#5bc0de',
-                color: 'white',
-                border: 'none',
-                borderRadius: '3px',
-                cursor: isCloning || !cloneTitle.trim() ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                opacity: isCloning || !cloneTitle.trim() ? 0.6 : 1
-              }}
+              className="node-toolset__modal-action node-toolset__modal-action--clone"
             >
               <FaClone size={12} /> {isCloning ? 'Cloning...' : 'Clone Node'}
             </button>
@@ -633,38 +472,25 @@ const NodeToolset = ({
         onRequestClose={closeEditModal}
         ariaHideApp={false}
         contentLabel="Edit Node"
-        style={{
-          content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            minWidth: '450px',
-            maxWidth: '600px',
-          },
-        }}
+        style={editModalStyle}
       >
         <div>
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h2 className="node-toolset__modal-title">
             <FaEdit size={20} /> Edit Node
           </h2>
 
           {isLoadingEdit ? (
-            <div style={{ margin: '20px 0', textAlign: 'center', color: '#666' }}>
-              Loading node data...
-            </div>
+            <div className="node-toolset__loading">Loading node data...</div>
           ) : (
-            <div style={{ margin: '20px 0', lineHeight: '1.6' }}>
-              <p style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>
+            <div className="node-toolset__modal-content">
+              <p className="node-toolset__info-box">
                 Editing: <strong>{nodeTitle}</strong><br />
-                <span style={{ fontSize: '0.9em', color: '#666' }}>Type: {nodeType} | ID: {nodeId}</span>
+                <span className="node-toolset__edit-info">Type: {nodeType} | ID: {nodeId}</span>
               </p>
 
               <form onSubmit={handleEdit}>
-                <div style={{ marginBottom: '15px' }}>
-                  <label htmlFor="edit-title" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                <div className="node-toolset__form-group">
+                  <label htmlFor="edit-title" className="node-toolset__label">
                     Title:
                   </label>
                   <input
@@ -673,21 +499,14 @@ const NodeToolset = ({
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
                     disabled={isSaving}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      border: '1px solid #ccc',
-                      borderRadius: '3px',
-                      fontSize: '0.9em',
-                      boxSizing: 'border-box'
-                    }}
+                    className="node-toolset__input"
                     placeholder="Node title"
                     autoFocus
                   />
                 </div>
 
-                <div style={{ marginBottom: '15px' }}>
-                  <label htmlFor="edit-maintainer" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                <div className="node-toolset__form-group">
+                  <label htmlFor="edit-maintainer" className="node-toolset__label">
                     Maintained By:
                   </label>
                   <input
@@ -696,26 +515,18 @@ const NodeToolset = ({
                     value={editMaintainer}
                     onChange={(e) => setEditMaintainer(e.target.value)}
                     disabled={isSaving}
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      border: '1px solid #ccc',
-                      borderRadius: '3px',
-                      fontSize: '0.9em',
-                      boxSizing: 'border-box',
-                      backgroundColor: '#f9f9f9'
-                    }}
+                    className="node-toolset__input node-toolset__input--readonly"
                     placeholder="Username (read-only for now)"
                     readOnly
                     title="Maintainer editing coming soon"
                   />
-                  <span style={{ fontSize: '0.8em', color: '#666', marginTop: '4px', display: 'block' }}>
+                  <span className="node-toolset__input-hint">
                     Maintainer selection coming in a future update
                   </span>
                 </div>
 
                 {originalData && (
-                  <div style={{ fontSize: '0.85em', color: '#666', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '3px' }}>
+                  <div className="node-toolset__metadata">
                     <strong>Author:</strong> {originalData.author_user?.title || 'Unknown'}<br />
                     <strong>Created:</strong> {originalData.createtime || 'Unknown'}
                   </div>
@@ -724,27 +535,14 @@ const NodeToolset = ({
             </div>
           )}
 
-          {error && (
-            <div style={{ color: 'red', padding: '10px', marginBottom: '10px', border: '1px solid red' }}>
-              {error}
-            </div>
-          )}
+          {error && <div className="node-toolset__error">{error}</div>}
 
-          <div style={{ textAlign: 'right', marginTop: '20px' }}>
+          <div className="node-toolset__modal-footer">
             <button
               type="button"
               onClick={closeEditModal}
               disabled={isSaving}
-              style={{
-                marginRight: '10px',
-                padding: '6px 16px',
-                backgroundColor: '#f5f5f5',
-                color: '#333',
-                border: '1px solid #ccc',
-                borderRadius: '3px',
-                cursor: isSaving ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em'
-              }}
+              className="node-toolset__modal-cancel"
             >
               Cancel
             </button>
@@ -752,19 +550,7 @@ const NodeToolset = ({
               type="button"
               onClick={handleEdit}
               disabled={isSaving || isLoadingEdit || !editTitle.trim()}
-              style={{
-                padding: '6px 16px',
-                backgroundColor: isSaving || isLoadingEdit || !editTitle.trim() ? '#ccc' : '#5cb85c',
-                color: 'white',
-                border: 'none',
-                borderRadius: '3px',
-                cursor: isSaving || isLoadingEdit || !editTitle.trim() ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                opacity: isSaving || isLoadingEdit || !editTitle.trim() ? 0.6 : 1
-              }}
+              className="node-toolset__modal-action node-toolset__modal-action--save"
             >
               <FaSave size={12} /> {isSaving ? 'Saving...' : 'Save Changes'}
             </button>

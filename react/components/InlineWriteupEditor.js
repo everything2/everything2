@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
+import EditorModeToggle from './Editor/EditorModeToggle';
 import { getE2EditorExtensions } from './Editor/useE2Editor';
 import { convertToE2Syntax } from './Editor/E2LinkExtension';
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Editor/RawBracketExtension';
@@ -641,7 +642,7 @@ const InlineWriteupEditor = ({
         return (
           <span>
             All changes saved to{' '}
-            <a href="/title/Drafts" style={{ color: '#4060b0' }}>Drafts</a>
+            <a href="/title/Drafts" className="inline-editor__drafts-link">Drafts</a>
           </span>
         );
       default:
@@ -666,21 +667,8 @@ const InlineWriteupEditor = ({
             </span>
           )}
         </div>
-        {/* Mode toggle - uses shared CSS from E2Editor.css */}
-        <div
-          className="e2-mode-toggle"
-          onClick={handleModeToggle}
-          title={editorMode === 'rich' ? 'Switch to raw HTML editing' : 'Switch to rich text editing'}
-        >
-          <div className={`e2-mode-toggle-option ${editorMode === 'rich' ? 'active' : ''}`}
-               style={{ backgroundColor: editorMode === 'rich' ? '#4060b0' : 'transparent' }}>
-            Rich
-          </div>
-          <div className={`e2-mode-toggle-option ${editorMode === 'html' ? 'active' : ''}`}
-               style={{ backgroundColor: editorMode === 'html' ? '#4060b0' : 'transparent' }}>
-            HTML
-          </div>
-        </div>
+        {/* Mode toggle - uses shared component */}
+        <EditorModeToggle mode={editorMode} onToggle={handleModeToggle} />
       </div>
 
       {/* Error message */}

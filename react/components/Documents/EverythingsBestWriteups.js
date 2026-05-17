@@ -1,27 +1,31 @@
 import React from 'react';
 
+/**
+ * Everything's Best Writeups - 50 most cooled writeups (staff only)
+ * Styles in CSS: .best-writeups__*
+ */
 export default function EverythingsBestWriteups({ data }) {
   const { writeups = [] } = data;
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <div className="best-writeups">
       <h3>Everything's 50 "Most Cooled" Writeups</h3>
-      <p style={{ fontStyle: 'italic', color: '#666', marginBottom: '20px' }}>
+      <p className="best-writeups__subtitle">
         (Visible only to staff members)
       </p>
 
       {writeups.length === 0 ? (
-        <p style={{ fontStyle: 'italic', color: '#666' }}>
+        <p className="best-writeups__empty">
           No cooled writeups found
         </p>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="best-writeups__table">
           <thead>
-            <tr style={{ backgroundColor: '#CCCCCC' }}>
-              <th style={{ width: '400px', padding: '8px', textAlign: 'left', border: '1px solid #999' }}>
+            <tr className="best-writeups__header-row">
+              <th className="best-writeups__th best-writeups__th--writeup">
                 Writeup
               </th>
-              <th style={{ width: '200px', padding: '8px', textAlign: 'left', border: '1px solid #999' }}>
+              <th className="best-writeups__th best-writeups__th--author">
                 Author
               </th>
             </tr>
@@ -29,7 +33,7 @@ export default function EverythingsBestWriteups({ data }) {
           <tbody>
             {writeups.map((w) => (
               <tr key={w.writeup_id}>
-                <td style={{ padding: '8px', border: '1px solid #ddd' }}>
+                <td className="best-writeups__td">
                   <a href={`/title/${encodeURIComponent(w.writeup_title)}?node_id=${w.writeup_id}`}>
                     {w.writeup_title}
                   </a>
@@ -40,7 +44,7 @@ export default function EverythingsBestWriteups({ data }) {
                   {' '}
                   <strong>{w.cooled}C!</strong>
                 </td>
-                <td style={{ padding: '8px', border: '1px solid #ddd' }}>
+                <td className="best-writeups__td">
                   by{' '}
                   <a href={`/user/${encodeURIComponent(w.author_title)}?lastnode_id=`}>
                     {w.author_title}

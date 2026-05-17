@@ -43,8 +43,8 @@ const NodeList = ({ data, user }) => {
       <h2>{pageTitle}</h2>
 
       {/* Page size selector */}
-      <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-        <form method="post" style={{ display: 'inline' }}>
+      <div className="nodelist__selector-wrapper">
+        <form method="post" className="nodelist__selector-form">
           <input type="hidden" name="type" value="superdoc" />
           <label htmlFor="nodelist-selector">Show: </label>
           <select
@@ -74,23 +74,19 @@ const NodeList = ({ data, user }) => {
 
       {/* Writeup list table */}
       {nodelist && nodelist.length > 0 ? (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+        <table className="nodelist__table">
           <tbody>
             {nodelist.map((writeup, index) => {
               const isOddRow = index % 2 === 0
-              const rowStyle = {
-                backgroundColor: isOddRow ? '#f8f9fa' : 'transparent',
-                borderBottom: '1px solid #dee2e6'
-              }
 
               return (
-                <tr key={writeup.node_id} style={rowStyle} className="contentinfo">
+                <tr key={writeup.node_id} className={`nodelist__row contentinfo ${isOddRow ? 'nodelist__row--odd' : ''}`}>
                   {/* Hide/unhide button (editors only) */}
                   {isEditor && (
-                    <td style={{ padding: '4px 8px', whiteSpace: 'nowrap' }}>
+                    <td className="nodelist__cell--nowrap">
                       <a
                         href={`?op=${writeup.notnew ? 'unhidewriteup' : 'hidewriteup'}&hidewriteup=${writeup.node_id}`}
-                        style={{ fontSize: '0.85em' }}
+                        className="nodelist__hide-link"
                       >
                         {writeup.notnew ? '(un-h!)' : '(h?)'}
                       </a>
@@ -98,7 +94,7 @@ const NodeList = ({ data, user }) => {
                   )}
 
                   {/* Parent e2node + writeuptype */}
-                  <td style={{ padding: '4px 8px' }}>
+                  <td className="nodelist__cell">
                     <a href={`/e2node/${encodeURIComponent(writeup.parent_title)}`} className="title">
                       {writeup.parent_title}
                     </a>
@@ -109,14 +105,14 @@ const NodeList = ({ data, user }) => {
                   </td>
 
                   {/* Publish date */}
-                  <td style={{ padding: '4px 8px', whiteSpace: 'nowrap' }}>
-                    <span className="date" style={{ fontSize: '0.9em', color: '#666' }}>
+                  <td className="nodelist__cell--nowrap">
+                    <span className="date nodelist__date">
                       {writeup.publishtime}
                     </span>
                   </td>
 
                   {/* Author */}
-                  <td style={{ padding: '4px 8px', whiteSpace: 'nowrap' }}>
+                  <td className="nodelist__cell--nowrap">
                     <LinkNode
                       node_id={writeup.author_id}
                       title={writeup.author_name}

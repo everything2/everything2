@@ -32,9 +32,10 @@ const Header = ({
   if (isMobile) {
     return (
       <header className="e2-header-mobile" role="banner">
-        {/* Compact E2 logo - SVG for better performance (saves 24KB font file) */}
+        {/* Mobile logo - shows text "E2" by default, themes can override via CSS */}
         <a href="/" className="e2-header-mobile-logo e2-logo" id="e2logo-mobile">
-          <E2Logo size={28} />
+          <span className="e2-mobile-logo-text">E2</span>
+          <span className="e2-mobile-logo-svg"><E2Logo size={28} /></span>
         </a>
 
         {/* Search bar - takes center stage */}

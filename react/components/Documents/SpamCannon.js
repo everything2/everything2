@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+/**
+ * SpamCannon - Editor tool for bulk messaging
+ * Styles in CSS: .spam-cannon__*
+ */
 const SpamCannon = ({ data, e2 }) => {
   const {
     is_editor = false,
@@ -81,8 +85,8 @@ const SpamCannon = ({ data, e2 }) => {
   // Permission denied
   if (!is_editor) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="spam-cannon">
+        <div className="spam-cannon__error">
           <strong>Permission Denied.</strong>
           <p>The Spam Cannon is only available to Content Editors.</p>
         </div>
@@ -91,32 +95,32 @@ const SpamCannon = ({ data, e2 }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.description}>
+    <div className="spam-cannon">
+      <div className="spam-cannon__description">
         <p>
           The Spam Cannon sends a single /msg to multiple recipients, without having
           to create a usergroup. You can enter usernames or usergroups you're a member of.
         </p>
-        <p style={styles.warning}>
+        <p className="spam-cannon__warning">
           The privilege of using this tool will be revoked if abused.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formRow}>
-          <div style={styles.labelColumn}>
-            <label style={styles.label}>Recipients:</label>
-            <p style={styles.hint}>
+      <form onSubmit={handleSubmit} className="spam-cannon__form">
+        <div className="spam-cannon__form-row">
+          <div className="spam-cannon__label-column">
+            <label className="spam-cannon__label">Recipients:</label>
+            <p className="spam-cannon__hint">
               Put each username on its own line, and don't hardlink them.
               Don't bother with underscores.
             </p>
-            <p style={styles.hint}>
+            <p className="spam-cannon__hint">
               Maximum: {max_recipients} recipients
             </p>
           </div>
-          <div style={styles.inputColumn}>
+          <div className="spam-cannon__input-column">
             <textarea
-              style={styles.textarea}
+              className="spam-cannon__textarea"
               value={recipients}
               onChange={(e) => setRecipients(e.target.value)}
               rows={12}
@@ -126,38 +130,35 @@ const SpamCannon = ({ data, e2 }) => {
           </div>
         </div>
 
-        <div style={styles.formRow}>
-          <div style={styles.labelColumn}>
-            <label style={styles.label}>Message:</label>
-            <p style={styles.hint}>
+        <div className="spam-cannon__form-row">
+          <div className="spam-cannon__label-column">
+            <label className="spam-cannon__label">Message:</label>
+            <p className="spam-cannon__hint">
               Max 243 characters
             </p>
           </div>
-          <div style={styles.inputColumn}>
+          <div className="spam-cannon__input-column">
             <input
               type="text"
-              style={styles.textInput}
+              className="spam-cannon__text-input"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               maxLength={243}
               placeholder="Your message here..."
               disabled={sending}
             />
-            <div style={styles.charCount}>
+            <div className="spam-cannon__char-count">
               {message.length}/243
             </div>
           </div>
         </div>
 
-        <div style={styles.formRow}>
-          <div style={styles.labelColumn}></div>
-          <div style={styles.inputColumn}>
+        <div className="spam-cannon__form-row">
+          <div className="spam-cannon__label-column"></div>
+          <div className="spam-cannon__input-column">
             <button
               type="submit"
-              style={{
-                ...styles.button,
-                ...(sending ? styles.buttonDisabled : {})
-              }}
+              className={`spam-cannon__button${sending ? ' spam-cannon__button--disabled' : ''}`}
               disabled={sending}
             >
               {sending ? 'Sending...' : 'Send'}
@@ -167,19 +168,19 @@ const SpamCannon = ({ data, e2 }) => {
       </form>
 
       {result && (
-        <div style={styles.result}>
+        <div className="spam-cannon__result">
           {result.success ? (
             <>
               {result.sent_to && result.sent_to.length > 0 && (
-                <div style={styles.successBox}>
-                  <h4 style={styles.resultHeading}>Sent message:</h4>
-                  <p style={styles.messagePreview}>{result.message}</p>
+                <div className="spam-cannon__success-box">
+                  <h4 className="spam-cannon__result-heading">Sent message:</h4>
+                  <p className="spam-cannon__message-preview">{result.message}</p>
 
-                  <h4 style={styles.resultHeading}>To users:</h4>
-                  <ul style={styles.userList}>
+                  <h4 className="spam-cannon__result-heading">To users:</h4>
+                  <ul className="spam-cannon__user-list">
                     {result.sent_to.map((username, index) => (
                       <li key={index}>
-                        <a href={`/title/${encodeURIComponent(username)}`} style={styles.userLink}>
+                        <a href={`/title/${encodeURIComponent(username)}`} className="spam-cannon__user-link">
                           {username}
                         </a>
                       </li>
@@ -189,9 +190,9 @@ const SpamCannon = ({ data, e2 }) => {
               )}
 
               {result.errors && result.errors.length > 0 && (
-                <div style={styles.warningBox}>
-                  <h4 style={styles.resultHeading}>Issues:</h4>
-                  <ul style={styles.errorList}>
+                <div className="spam-cannon__warning-box">
+                  <h4 className="spam-cannon__result-heading">Issues:</h4>
+                  <ul className="spam-cannon__error-list">
                     {result.errors.map((err, i) => (
                       <li key={i}>{err}</li>
                     ))}
@@ -200,10 +201,10 @@ const SpamCannon = ({ data, e2 }) => {
               )}
 
               {(!result.sent_to || result.sent_to.length === 0) && (
-                <div style={styles.warningBox}>
+                <div className="spam-cannon__warning-box">
                   <p>No messages were sent.</p>
                   {result.errors && result.errors.length > 0 && (
-                    <ul style={styles.errorList}>
+                    <ul className="spam-cannon__error-list">
                       {result.errors.map((err, i) => (
                         <li key={i}>{err}</li>
                       ))}
@@ -213,7 +214,7 @@ const SpamCannon = ({ data, e2 }) => {
               )}
             </>
           ) : (
-            <div style={styles.errorBox}>
+            <div className="spam-cannon__error-box">
               <strong>Error:</strong> {result.error}
             </div>
           )}
@@ -221,149 +222,6 @@ const SpamCannon = ({ data, e2 }) => {
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  description: {
-    marginBottom: '20px',
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  warning: {
-    color: '#c00000',
-    fontWeight: 'bold',
-    marginBottom: 0
-  },
-  form: {
-    marginBottom: '20px'
-  },
-  formRow: {
-    display: 'flex',
-    marginBottom: '15px'
-  },
-  labelColumn: {
-    width: '150px',
-    paddingRight: '15px',
-    textAlign: 'right'
-  },
-  inputColumn: {
-    flex: 1
-  },
-  label: {
-    fontWeight: 'bold',
-    display: 'block',
-    marginBottom: '5px'
-  },
-  hint: {
-    fontSize: '13px',
-    color: '#507898',
-    fontStyle: 'italic',
-    margin: '5px 0'
-  },
-  textarea: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  textInput: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    boxSizing: 'border-box'
-  },
-  charCount: {
-    fontSize: '12px',
-    color: '#507898',
-    textAlign: 'right',
-    marginTop: '5px'
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    background: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  },
-  buttonDisabled: {
-    background: '#999',
-    cursor: 'not-allowed'
-  },
-  result: {
-    marginTop: '20px'
-  },
-  successBox: {
-    padding: '15px',
-    background: '#e8f5e9',
-    border: '1px solid #4caf50',
-    borderRadius: '4px',
-    marginBottom: '15px'
-  },
-  warningBox: {
-    padding: '15px',
-    background: '#fff3e0',
-    border: '1px solid #ff9800',
-    borderRadius: '4px',
-    marginBottom: '15px'
-  },
-  errorBox: {
-    padding: '15px',
-    background: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px'
-  },
-  error: {
-    padding: '20px',
-    background: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    textAlign: 'center'
-  },
-  resultHeading: {
-    margin: '0 0 10px 0',
-    fontSize: '14px',
-    color: '#38495e'
-  },
-  messagePreview: {
-    padding: '10px',
-    background: 'rgba(255,255,255,0.5)',
-    borderRadius: '4px',
-    marginBottom: '15px',
-    fontStyle: 'italic'
-  },
-  userList: {
-    margin: 0,
-    paddingLeft: '20px'
-  },
-  errorList: {
-    margin: 0,
-    paddingLeft: '20px',
-    color: '#c00000'
-  },
-  userLink: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  }
 };
 
 export default SpamCannon;

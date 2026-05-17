@@ -5,6 +5,7 @@ import PollDisplay from '../Poll/PollDisplay'
 
 /**
  * EverythingPollDirectory - Browse and manage polls in the queue
+ * Styles in CSS: .poll-directory__*
  *
  * Features:
  * - List active polls (not closed)
@@ -28,16 +29,6 @@ const EverythingPollDirectory = ({ data, user }) => {
   const [isDeleting, setIsDeleting] = useState(false)
 
   const limit = 8
-
-  const colors = {
-    primary: '#38495e',
-    secondary: '#507898',
-    highlight: '#4060b0',
-    accent: '#3bb5c3',
-    background: '#f8f9f9',
-    text: '#111111',
-    error: '#c75050'
-  }
 
   useEffect(() => {
     fetchPolls()
@@ -229,92 +220,23 @@ const EverythingPollDirectory = ({ data, user }) => {
     setShowOldPolls(!showOldPolls)
   }
 
-  // Styles
-  const containerStyle = {
-    padding: '20px',
-    maxWidth: '900px',
-    margin: '0 auto'
-  }
-
-  const headerStyle = {
-    marginBottom: '30px',
-    borderBottom: `2px solid ${colors.primary}`,
-    paddingBottom: '15px'
-  }
-
-  const titleStyle = {
-    fontSize: '28px',
-    color: colors.primary,
-    marginBottom: '15px'
-  }
-
-  const linkStyle = {
-    color: colors.highlight,
-    textDecoration: 'none',
-    marginRight: '10px'
-  }
-
-  const buttonLinkStyle = {
-    ...linkStyle,
-    cursor: 'pointer',
-    background: 'none',
-    border: 'none',
-    padding: 0,
-    fontSize: '14px'
-  }
-
-  const adminActionsStyle = {
-    padding: '10px',
-    backgroundColor: colors.background,
-    borderRadius: '4px',
-    marginTop: '10px',
-    fontSize: '14px'
-  }
-
-  const actionButtonStyle = (disabled) => ({
-    padding: '4px 12px',
-    backgroundColor: disabled ? '#999' : colors.accent,
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: disabled ? 'wait' : 'pointer',
-    fontSize: '12px',
-    marginRight: '8px'
-  })
-
-  const paginationStyle = {
-    textAlign: 'right',
-    marginTop: '20px',
-    fontSize: '14px'
-  }
-
-  const errorStyle = {
-    padding: '15px',
-    backgroundColor: '#fff5f5',
-    border: `1px solid #feb2b2`,
-    color: colors.error,
-    borderRadius: '4px',
-    marginBottom: '20px'
-  }
-
-  const loadingStyle = {
-    textAlign: 'center',
-    padding: '40px',
-    color: colors.secondary,
-    fontSize: '16px'
+  const getActionBtnClass = (disabled) => {
+    return disabled
+      ? 'poll-directory__action-btn poll-directory__action-btn--disabled'
+      : 'poll-directory__action-btn'
   }
 
   return (
-    <div style={containerStyle}>
+    <div className="poll-directory">
       {/* Header */}
-      <div style={headerStyle}>
-        <h1 style={titleStyle}>Everything Poll Directory</h1>
+      <div className="poll-directory__header">
+        <h1 className="poll-directory__title">Everything Poll Directory</h1>
         <div>
-          <a href="/node/Everything%20User%20Poll" style={linkStyle}>Current User Poll</a>
+          <a href="/node/Everything%20User%20Poll" className="poll-directory__link">Current User Poll</a>
           {is_admin && (
             <>
               <span> | </span>
-              <button onClick={toggleOldPolls} style={buttonLinkStyle}>
+              <button onClick={toggleOldPolls} className="poll-directory__toggle-btn">
                 {showOldPolls ? 'Hide old polls' : 'Show old polls'}
               </button>
             </>
@@ -323,16 +245,16 @@ const EverythingPollDirectory = ({ data, user }) => {
       </div>
 
       {/* Error message */}
-      {error && <div style={errorStyle}>{error}</div>}
+      {error && <div className="poll-directory__error">{error}</div>}
 
       {/* Loading state */}
-      {loading && <div style={loadingStyle}>Loading polls...</div>}
+      {loading && <div className="poll-directory__loading">Loading polls...</div>}
 
       {/* Polls list */}
       {!loading && (
         <>
           {polls.length === 0 ? (
-            <div style={loadingStyle}>No polls found.</div>
+            <div className="poll-directory__loading">No polls found.</div>
           ) : (
             polls.map((poll) => (
               <div key={poll.poll_id}>
@@ -349,25 +271,25 @@ const EverythingPollDirectory = ({ data, user }) => {
 
                 {/* Admin actions */}
                 {is_admin && (
-                  <div style={adminActionsStyle}>
+                  <div className="poll-directory__admin-actions">
                     {poll.poll_status !== 'current' && (
                       <button
                         onClick={() => handleSetCurrent(poll.poll_id)}
                         disabled={settingCurrent === poll.poll_id}
-                        style={actionButtonStyle(settingCurrent === poll.poll_id)}
+                        className={getActionBtnClass(settingCurrent === poll.poll_id)}
                       >
                         {settingCurrent === poll.poll_id ? 'Setting...' : 'make current'}
                       </button>
                     )}
                     <a
                       href={`/node/${poll.poll_id}?displaytype=edit`}
-                      style={actionButtonStyle(false)}
+                      className="poll-directory__action-btn"
                     >
                       edit
                     </a>
                     <button
                       onClick={() => openDeleteModal(poll)}
-                      style={actionButtonStyle(false)}
+                      className="poll-directory__action-btn"
                     >
                       delete
                     </button>
@@ -379,17 +301,17 @@ const EverythingPollDirectory = ({ data, user }) => {
 
           {/* Pagination */}
           {(startat > 0 || hasMore) && (
-            <div style={paginationStyle}>
+            <div className="poll-directory__pagination">
               {startat > 0 && (
                 <>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handlePrevious() }} style={linkStyle}>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handlePrevious() }} className="poll-directory__link">
                     previous
                   </a>
                   {' '}
                 </>
               )}
               {hasMore && (
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNext() }} style={linkStyle}>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNext() }} className="poll-directory__link">
                   next
                 </a>
               )}
@@ -404,25 +326,15 @@ const EverythingPollDirectory = ({ data, user }) => {
         onRequestClose={closeDeleteModal}
         ariaHideApp={false}
         contentLabel="Confirm Poll Deletion"
-        style={{
-          content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            minWidth: '400px',
-            maxWidth: '600px',
-          },
-        }}
+        className="poll-directory__modal-content"
+        overlayClassName="poll-directory__modal-overlay"
       >
         <div>
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#d9534f' }}>
+          <h2 className="poll-directory__modal-header">
             <FaExclamationTriangle size={20} /> Confirm Node Deletion
           </h2>
 
-          <div style={{ margin: '20px 0', lineHeight: '1.6' }}>
+          <div className="poll-directory__modal-body">
             <p>
               <strong>Warning:</strong> Nuking a node <strong>removes it immediately</strong> and
               should only be used when you know what the consequences might be.
@@ -432,7 +344,7 @@ const EverythingPollDirectory = ({ data, user }) => {
               but you should still use caution.
             </p>
             {pollToDelete && (
-              <p style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>
+              <p className="poll-directory__modal-warning">
                 You are about to delete: <br />
                 <strong>{pollToDelete.title}</strong> (e2poll)
               </p>
@@ -440,26 +352,17 @@ const EverythingPollDirectory = ({ data, user }) => {
           </div>
 
           {error && (
-            <div style={{ color: 'red', padding: '10px', marginBottom: '10px', border: '1px solid red' }}>
+            <div className="poll-directory__modal-error">
               {error}
             </div>
           )}
 
-          <div style={{ textAlign: 'right', marginTop: '20px' }}>
+          <div className="poll-directory__modal-footer">
             <button
               type="button"
               onClick={closeDeleteModal}
               disabled={isDeleting}
-              style={{
-                marginRight: '10px',
-                padding: '6px 16px',
-                backgroundColor: '#f5f5f5',
-                color: '#333',
-                border: '1px solid #ccc',
-                borderRadius: '3px',
-                cursor: isDeleting ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em'
-              }}
+              className="poll-directory__modal-cancel-btn"
             >
               Cancel
             </button>
@@ -467,19 +370,7 @@ const EverythingPollDirectory = ({ data, user }) => {
               type="button"
               onClick={handleDeletePoll}
               disabled={isDeleting}
-              style={{
-                padding: '6px 16px',
-                backgroundColor: '#d9534f',
-                color: 'white',
-                border: 'none',
-                borderRadius: '3px',
-                cursor: isDeleting ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                opacity: isDeleting ? 0.6 : 1
-              }}
+              className="poll-directory__modal-delete-btn"
             >
               <FaTrashAlt size={12} /> {isDeleting ? 'Deleting...' : 'Delete Node'}
             </button>

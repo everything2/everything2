@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 /**
  * ReputationGraph - Monthly reputation visualization for writeups
+ * Styles in CSS: .reputation-graph__*
+ *
  * Supports both horizontal (simple bar) and vertical (table) layouts
  */
 const ReputationGraph = ({ data }) => {
@@ -48,8 +50,8 @@ const ReputationGraph = ({ data }) => {
   // Error state
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="reputation-graph">
+        <div className="reputation-graph__error">
           <p>{error}</p>
         </div>
       </div>
@@ -59,8 +61,8 @@ const ReputationGraph = ({ data }) => {
   // Access denied
   if (!can_view) {
     return (
-      <div style={styles.container}>
-        <div style={styles.accessDenied}>
+      <div className="reputation-graph">
+        <div className="reputation-graph__access-denied">
           <p>You haven't voted on that writeup, so you are not allowed to see its reputation.</p>
           <p>Try clicking on the "Rep Graph" link from a writeup you have already voted on.</p>
         </div>
@@ -71,8 +73,8 @@ const ReputationGraph = ({ data }) => {
   // Loading state
   if (loading) {
     return (
-      <div style={styles.container}>
-        <p style={styles.loading}>Loading reputation data...</p>
+      <div className="reputation-graph">
+        <p className="reputation-graph__loading">Loading reputation data...</p>
       </div>
     );
   }
@@ -80,8 +82,8 @@ const ReputationGraph = ({ data }) => {
   // Fetch error
   if (fetchError) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="reputation-graph">
+        <div className="reputation-graph__error">
           <p>{fetchError}</p>
         </div>
       </div>
@@ -91,8 +93,8 @@ const ReputationGraph = ({ data }) => {
   // Waiting for data
   if (!graphData) {
     return (
-      <div style={styles.container}>
-        <p style={styles.loading}>Loading...</p>
+      <div className="reputation-graph">
+        <p className="reputation-graph__loading">Loading...</p>
       </div>
     );
   }
@@ -100,15 +102,15 @@ const ReputationGraph = ({ data }) => {
   const isHorizontal = layout === 'horizontal';
 
   return (
-    <div style={styles.container}>
-      <p style={styles.intro}>
+    <div className="reputation-graph">
+      <p className="reputation-graph__intro">
         You are viewing the monthly reputation graph for the following writeup:<br />
-        <a href={`/?node_id=${writeup.node_id}`} style={styles.link}>{writeup.title}</a>
+        <a href={`/?node_id=${writeup.node_id}`} className="reputation-graph__link">{writeup.title}</a>
         {' by '}
-        <a href={`/?node_id=${author.node_id}`} style={styles.link}>{author.title}</a>
+        <a href={`/?node_id=${author.node_id}`} className="reputation-graph__link">{author.title}</a>
       </p>
 
-      <p style={styles.hint}>
+      <p className="reputation-graph__hint">
         {isHorizontal
           ? 'Hover your mouse over any of the bars on the graph to see the date and reputation for each month.'
           : 'Monthly breakdown of upvotes and downvotes over time.'}
@@ -121,7 +123,7 @@ const ReputationGraph = ({ data }) => {
       )}
 
       {is_admin && (
-        <p style={styles.adminNote}>
+        <p className="reputation-graph__admin-note">
           NOTE: Admins can view the graph of any writeup by simply appending "&id=&lt;writeup_id&gt;" to the end of the URL
         </p>
       )}
@@ -136,7 +138,7 @@ const HorizontalGraph = ({ data }) => {
   const { months } = data;
 
   if (!months || months.length === 0) {
-    return <p style={styles.empty}>No vote data available.</p>;
+    return <p className="reputation-graph__empty">No vote data available.</p>;
   }
 
   // Find max values for scaling
@@ -145,51 +147,47 @@ const HorizontalGraph = ({ data }) => {
   const scale = Math.min(1, 100 / Math.max(maxPos, maxNeg));
 
   return (
-    <div style={styles.horizontalContainer}>
-      <table style={styles.horizontalTable}>
+    <div className="reputation-graph__horizontal-container">
+      <table className="reputation-graph__horizontal-table">
         <tbody>
           {/* Positive bars row */}
-          <tr style={styles.positiveRow}>
+          <tr>
             {months.map((month, idx) => (
               <td
                 key={`pos-${idx}`}
-                style={styles.horizontalCell}
+                className="reputation-graph__horizontal-cell"
                 title={`${month.label} - Rep: ${month.reputation}`}
               >
                 {month.reputation >= 0 && (
                   <div
-                    style={{
-                      ...styles.posBar,
-                      height: `${Math.max(1, month.reputation * scale)}px`
-                    }}
+                    className="reputation-graph__pos-bar"
+                    style={{ height: `${Math.max(1, month.reputation * scale)}px` }}
                   />
                 )}
               </td>
             ))}
           </tr>
           {/* Negative bars row */}
-          <tr style={styles.negativeRow}>
+          <tr>
             {months.map((month, idx) => (
               <td
                 key={`neg-${idx}`}
-                style={styles.horizontalCell}
+                className="reputation-graph__horizontal-cell"
                 title={`${month.label} - Rep: ${month.reputation}`}
               >
                 {month.reputation < 0 && (
                   <div
-                    style={{
-                      ...styles.negBar,
-                      height: `${Math.max(1, -month.reputation * scale)}px`
-                    }}
+                    className="reputation-graph__neg-bar"
+                    style={{ height: `${Math.max(1, -month.reputation * scale)}px` }}
                   />
                 )}
               </td>
             ))}
           </tr>
           {/* Year labels row */}
-          <tr style={styles.labelRow}>
+          <tr className="reputation-graph__label-row">
             {months.map((month, idx) => (
-              <td key={`label-${idx}`} style={styles.labelCell}>
+              <td key={`label-${idx}`} className="reputation-graph__label-cell">
                 {month.is_january ? '|' : ''}
               </td>
             ))}
@@ -207,7 +205,7 @@ const VerticalGraph = ({ data }) => {
   const { months } = data;
 
   if (!months || months.length === 0) {
-    return <p style={styles.empty}>No vote data available.</p>;
+    return <p className="reputation-graph__empty">No vote data available.</p>;
   }
 
   // Find max values for scaling bars
@@ -216,215 +214,47 @@ const VerticalGraph = ({ data }) => {
   const scale = Math.min(1, 100 / Math.max(maxUp, maxDown));
 
   return (
-    <div style={styles.verticalContainer}>
-      <table style={styles.verticalTable}>
+    <div className="reputation-graph__vertical-container">
+      <table className="reputation-graph__vertical-table">
         <thead>
           <tr>
-            <th style={styles.th}>Date</th>
-            <th style={styles.th} colSpan={2}>Downvotes</th>
-            <th style={styles.th} colSpan={2}>Upvotes</th>
-            <th style={styles.th}>Reputation</th>
+            <th className="reputation-graph__th">Date</th>
+            <th className="reputation-graph__th" colSpan={2}>Downvotes</th>
+            <th className="reputation-graph__th" colSpan={2}>Upvotes</th>
+            <th className="reputation-graph__th">Reputation</th>
           </tr>
         </thead>
         <tbody>
           {months.map((month, idx) => (
             <tr key={idx}>
-              <td style={styles.dateCell}>
+              <td className="reputation-graph__date-cell">
                 {month.is_january ? <strong>{month.label}</strong> : month.label}
               </td>
-              <td style={styles.downvoteLabel}>{month.downvotes}</td>
-              <td style={styles.downvoteGraph}>
+              <td className="reputation-graph__downvote-label">{month.downvotes}</td>
+              <td className="reputation-graph__downvote-graph">
                 {month.downvotes < 0 && (
                   <span
-                    style={{
-                      ...styles.negativeBar,
-                      width: `${Math.abs(month.downvotes) * scale}px`
-                    }}
+                    className="reputation-graph__negative-bar"
+                    style={{ width: `${Math.abs(month.downvotes) * scale}px` }}
                   />
                 )}
               </td>
-              <td style={styles.upvoteGraph}>
+              <td className="reputation-graph__upvote-graph">
                 {month.upvotes > 0 && (
                   <span
-                    style={{
-                      ...styles.positiveBar,
-                      width: `${month.upvotes * scale}px`
-                    }}
+                    className="reputation-graph__positive-bar"
+                    style={{ width: `${month.upvotes * scale}px` }}
                   />
                 )}
               </td>
-              <td style={styles.upvoteLabel}>+{month.upvotes}</td>
-              <td style={styles.reputationLabel}>{month.reputation}</td>
+              <td className="reputation-graph__upvote-label">+{month.upvotes}</td>
+              <td className="reputation-graph__reputation-label">{month.reputation}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px'
-  },
-  intro: {
-    marginBottom: '16px',
-    color: '#38495e'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  hint: {
-    textAlign: 'center',
-    fontSize: '13px',
-    color: '#507898',
-    marginBottom: '20px'
-  },
-  loading: {
-    textAlign: 'center',
-    padding: '40px',
-    color: '#507898'
-  },
-  error: {
-    padding: '20px',
-    background: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-    borderRadius: '4px'
-  },
-  accessDenied: {
-    padding: '20px',
-    background: '#fff3cd',
-    color: '#856404',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    textAlign: 'center'
-  },
-  empty: {
-    textAlign: 'center',
-    padding: '40px',
-    color: '#6c757d',
-    background: '#f8f9f9',
-    borderRadius: '4px'
-  },
-  adminNote: {
-    textAlign: 'center',
-    fontSize: '13px',
-    color: '#507898',
-    marginTop: '20px',
-    fontStyle: 'italic'
-  },
-
-  // Horizontal graph styles
-  horizontalContainer: {
-    overflowX: 'auto',
-    textAlign: 'center'
-  },
-  horizontalTable: {
-    margin: '0 auto',
-    borderCollapse: 'collapse',
-    borderSpacing: '1px'
-  },
-  horizontalCell: {
-    width: '4px',
-    padding: '0 1px',
-    verticalAlign: 'bottom'
-  },
-  positiveRow: {},
-  negativeRow: {},
-  labelRow: {
-    fontWeight: 'bold',
-    fontSize: '11px'
-  },
-  labelCell: {
-    textAlign: 'center',
-    color: '#507898'
-  },
-  posBar: {
-    width: '4px',
-    backgroundColor: '#0c0',
-    borderTop: '2px solid #5a5',
-    borderLeft: '2px solid #5a5',
-    borderBottom: '2px solid #050',
-    borderRight: '2px solid #050'
-  },
-  negBar: {
-    width: '4px',
-    backgroundColor: '#f00',
-    borderTop: '2px solid #f88',
-    borderLeft: '2px solid #f88',
-    borderBottom: '2px solid #800',
-    borderRight: '2px solid #800'
-  },
-
-  // Vertical graph styles
-  verticalContainer: {
-    overflowX: 'auto'
-  },
-  verticalTable: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '13px',
-    margin: '0 auto'
-  },
-  th: {
-    padding: '8px 12px',
-    fontWeight: '600',
-    color: '#38495e',
-    background: '#f8f9f9',
-    borderBottom: '2px solid #dee2e6',
-    textAlign: 'left'
-  },
-  dateCell: {
-    padding: '6px 20px 6px 8px',
-    textAlign: 'right',
-    whiteSpace: 'nowrap'
-  },
-  downvoteLabel: {
-    textAlign: 'right',
-    padding: '6px 4px',
-    color: '#c00'
-  },
-  downvoteGraph: {
-    textAlign: 'right',
-    borderRight: '1px dotted #ccc',
-    padding: '6px 0'
-  },
-  upvoteGraph: {
-    textAlign: 'left',
-    padding: '6px 0'
-  },
-  upvoteLabel: {
-    textAlign: 'left',
-    padding: '6px 4px',
-    color: '#0a0'
-  },
-  reputationLabel: {
-    textAlign: 'right',
-    padding: '6px 8px',
-    fontWeight: 'bold'
-  },
-  negativeBar: {
-    display: 'inline-block',
-    height: '12px',
-    backgroundColor: '#f00',
-    borderTop: '2px solid #f88',
-    borderLeft: '2px solid #f88',
-    borderBottom: '2px solid #800',
-    borderRight: '2px solid #800'
-  },
-  positiveBar: {
-    display: 'inline-block',
-    height: '12px',
-    backgroundColor: '#0a0',
-    borderTop: '2px solid #5a5',
-    borderLeft: '2px solid #5a5',
-    borderBottom: '2px solid #050',
-    borderRight: '2px solid #050'
-  }
 };
 
 export default ReputationGraph;

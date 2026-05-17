@@ -109,152 +109,61 @@ const AdminBestowTool = ({ data, user }) => {
     }
   }, [rows, api_endpoint, fixed_amount, createEmptyRows])
 
-  const containerStyle = {
-    padding: '20px',
-    maxWidth: '700px'
-  }
-
-  const tableStyle = {
-    borderCollapse: 'collapse',
-    width: '100%',
-    marginBottom: '20px'
-  }
-
-  const thStyle = {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '10px',
-    textAlign: 'left',
-    border: '1px solid #38495e'
-  }
-
-  const tdStyle = {
-    border: '1px solid #d3d3d3',
-    padding: '8px'
-  }
-
-  const inputStyle = {
-    width: '100%',
-    padding: '8px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    boxSizing: 'border-box'
-  }
-
-  const amountInputStyle = {
-    ...inputStyle,
-    width: '80px',
-    textAlign: 'center'
-  }
-
-  const buttonStyle = {
-    padding: '10px 20px',
-    backgroundColor: loading ? '#c5cdd7' : '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: loading ? 'not-allowed' : 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  }
-
-  const resultStyle = {
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9f9',
-    borderRadius: '5px'
-  }
-
-  const successStyle = {
-    color: '#228b22',
-    marginBottom: '5px'
-  }
-
-  const errorStyle = {
-    color: '#8b0000',
-    marginBottom: '5px'
-  }
-
-  const descriptionStyle = {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9f9',
-    borderLeft: '3px solid #38495e',
-    borderRadius: '3px',
-    color: '#507898'
-  }
-
-  const noteStyle = {
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9f9',
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    fontSize: '13px',
-    color: '#507898'
-  }
-
   // Permission check
   if (!has_permission) {
     return (
-      <div style={containerStyle}>
-        <p style={{ color: '#8b0000', fontWeight: 'bold' }}>
+      <div className="admin-bestow">
+        <p className="admin-bestow__permission-error">
           {permission_error || 'You do not have permission to use this tool.'}
         </p>
       </div>
     )
   }
 
-  const introStyle = {
-    fontStyle: 'italic',
-    marginBottom: '20px'
-  }
-
   return (
-    <div style={containerStyle}>
+    <div className="admin-bestow">
       {intro_text && (
-        <p style={introStyle}>
+        <p className="admin-bestow__intro">
           <strong>{intro_text}</strong>
         </p>
       )}
 
       {description && (
-        <div style={descriptionStyle}>
+        <div className="admin-bestow__description">
           {description}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
-        <table style={tableStyle}>
+        <table className="admin-bestow__table">
           <thead>
             <tr>
-              <th style={thStyle}>Username</th>
+              <th className="admin-bestow__th">Username</th>
               {!!show_amount_input && (
-                <th style={{ ...thStyle, width: '120px' }}>{resource_name}</th>
+                <th className="admin-bestow__th admin-bestow__th--narrow">{resource_name}</th>
               )}
             </tr>
           </thead>
           <tbody>
             {rows.map((row, index) => (
               <tr key={index}>
-                <td style={tdStyle}>
+                <td className="admin-bestow__td">
                   <input
                     type="text"
                     value={row.username}
                     onChange={(e) => updateRow(index, 'username', e.target.value)}
-                    style={inputStyle}
+                    className="admin-bestow__input userComplete"
                     placeholder="Enter username"
                     disabled={loading}
-                    className="userComplete"
                   />
                 </td>
                 {!!show_amount_input && (
-                  <td style={{ ...tdStyle, width: '120px' }}>
+                  <td className="admin-bestow__td admin-bestow__td--narrow">
                     <input
                       type="number"
                       value={row.amount}
                       onChange={(e) => updateRow(index, 'amount', e.target.value)}
-                      style={amountInputStyle}
+                      className="admin-bestow__input admin-bestow__input--amount"
                       placeholder="0"
                       disabled={loading}
                       min={allow_negative ? undefined : 0}
@@ -268,7 +177,7 @@ const AdminBestowTool = ({ data, user }) => {
 
         <button
           type="submit"
-          style={buttonStyle}
+          className={`admin-bestow__button ${loading ? 'admin-bestow__button--disabled' : ''}`}
           disabled={loading}
         >
           {loading ? button_text_loading : button_text}
@@ -276,16 +185,16 @@ const AdminBestowTool = ({ data, user }) => {
       </form>
 
       {note_text && (
-        <div style={noteStyle}>
+        <div className="admin-bestow__note">
           <strong>Note:</strong> {note_text}
         </div>
       )}
 
       {results.length > 0 && (
-        <div style={resultStyle}>
-          <h4 style={{ marginTop: 0, color: '#38495e' }}>Results:</h4>
+        <div className="admin-bestow__results">
+          <h4 className="admin-bestow__results-title">Results:</h4>
           {results.map((result, index) => (
-            <div key={index} style={result.success ? successStyle : errorStyle}>
+            <div key={index} className={result.success ? 'admin-bestow__result--success' : 'admin-bestow__result--error'}>
               {result.error ? (
                 <span>✗ {result.error}</span>
               ) : result.success ? (

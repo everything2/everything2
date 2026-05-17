@@ -8,11 +8,11 @@ const MostWanted = (props) => {
     return (
       <NodeletContainer
         id={props.id}
-      title="Most Wanted"
+        title="Most Wanted"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <p style={{ padding: '8px', color: '#666', fontSize: '12px' }}>
+        <p className="most-wanted__empty">
           <em>No bounties available</em>
         </p>
       </NodeletContainer>
@@ -24,36 +24,36 @@ const MostWanted = (props) => {
       id={props.id}
       title="Most Wanted"
       showNodelet={props.showNodelet}
-        nodeletIsOpen={props.nodeletIsOpen}
+      nodeletIsOpen={props.nodeletIsOpen}
     >
-      <table className="mytable" style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
+      <table className="mytable most-wanted__table">
         <thead>
           <tr>
-            <th style={{ textAlign: 'left', padding: '4px' }}>Requesting Sheriff</th>
-            <th style={{ textAlign: 'left', padding: '4px' }}>Outlaw Nodeshell</th>
-            <th style={{ textAlign: 'left', padding: '4px' }}>GP Reward (if any)</th>
+            <th className="most-wanted__th">Requesting Sheriff</th>
+            <th className="most-wanted__th">Outlaw Nodeshell</th>
+            <th className="most-wanted__th">GP Reward (if any)</th>
           </tr>
         </thead>
         <tbody>
           {props.bounties.map((bounty, index) => (
             <tr key={index}>
-              <td style={{ padding: '4px' }}>
+              <td className="most-wanted__td">
                 <LinkNode
                   nodeId={bounty.requester_id}
                   title={bounty.requester_name}
                 />
               </td>
-              <td style={{ padding: '4px' }}>
+              <td className="most-wanted__td">
                 <ParseLinks text={bounty.outlaw_nodeshell} />
               </td>
-              <td style={{ padding: '4px' }}>
+              <td className="most-wanted__td">
                 {bounty.reward || ''}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p style={{ fontSize: '11px', marginTop: '8px', padding: '0 4px' }}>
+      <p className="most-wanted__footer">
         <small>
           Fill these nodes and get rewards! More details at{' '}
           <LinkNode title="Everything's Most Wanted" />

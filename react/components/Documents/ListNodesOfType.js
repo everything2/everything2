@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
+/**
+ * ListNodesOfType - Node listing by type (GNL)
+ * Styles in CSS: .list-nodes-of-type__*
+ *
+ * Displays nodes of a selected type with filtering and pagination.
+ */
 const ListNodesOfType = ({ data, user }) => {
   const { access_denied, message, node_types = [], default_type = '', type } = data;
 
@@ -9,8 +15,8 @@ const ListNodesOfType = ({ data, user }) => {
 
   if (access_denied) {
     return (
-      <div style={styles.container}>
-        <div style={styles.accessDenied}>
+      <div className="list-nodes-of-type">
+        <div className="list-nodes-of-type__access-denied">
           <p>{message}</p>
         </div>
       </div>
@@ -129,11 +135,11 @@ const ListNodesOfType = ({ data, user }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>{pageTitle}</h2>
-      
-      <div style={styles.section}>
-        <label style={styles.label}>
+    <div className="list-nodes-of-type">
+      <h2 className="list-nodes-of-type__title">{pageTitle}</h2>
+
+      <div className="list-nodes-of-type__section">
+        <label className="list-nodes-of-type__label">
           nodetype:{' '}
           <select
             value={selectedType}
@@ -145,7 +151,7 @@ const ListNodesOfType = ({ data, user }) => {
                 saveTypePreference(newType);
               }
             }}
-            style={styles.select}
+            className="list-nodes-of-type__select"
           >
             <option value="">Choose a node type...</option>
             {node_types.map((type) => (
@@ -157,92 +163,71 @@ const ListNodesOfType = ({ data, user }) => {
         </label>
       </div>
 
-      <div style={styles.section}>
-        <label style={styles.label}>
+      <div className="list-nodes-of-type__section">
+        <label className="list-nodes-of-type__label">
           sort: 1:{' '}
-          <select value={sort1} onChange={(e) => setSort1(e.target.value)} style={styles.select}>
+          <select value={sort1} onChange={(e) => setSort1(e.target.value)} className="list-nodes-of-type__select">
             {sortOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
           {' '}2:{' '}
-          <select value={sort2} onChange={(e) => setSort2(e.target.value)} style={styles.select}>
+          <select value={sort2} onChange={(e) => setSort2(e.target.value)} className="list-nodes-of-type__select">
             {sortOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
         </label>
       </div>
 
-      <div style={styles.section}>
-        <label style={styles.label}>
+      <div className="list-nodes-of-type__section">
+        <label className="list-nodes-of-type__label">
           <input type="checkbox" checked={filterUserNot} onChange={(e) => setFilterUserNot(e.target.checked)} />{' '}not{' '}
         </label>
         written by{' '}
-        <input type="text" value={filterUser} onChange={(e) => setFilterUser(e.target.value)} placeholder="username" style={styles.input} />
+        <input type="text" value={filterUser} onChange={(e) => setFilterUser(e.target.value)} placeholder="username" className="list-nodes-of-type__input" />
       </div>
 
-      {loading && <p style={styles.loading}>Loading...</p>}
-      {error && <p style={styles.error}>{error}</p>}
+      {loading && <p className="list-nodes-of-type__loading">Loading...</p>}
+      {error && <p className="list-nodes-of-type__error">{error}</p>}
 
       {!loading && nodes.length > 0 && (
         <>
-          <p style={styles.resultInfo}>
+          <p className="list-nodes-of-type__result-info">
             Found <strong>{total}</strong> nodes. (Showing items {offset + 1} to {Math.min(offset + nodes.length, total)}.)
           </p>
-          
-          <table style={styles.table}>
+
+          <table className="list-nodes-of-type__table">
             <thead>
               <tr>
-                <th style={styles.th}>edit</th><th style={styles.th}>title</th><th style={styles.th}>node_id</th>
-                <th style={styles.th}>author</th><th style={styles.th}>created</th><th style={styles.th}>age</th>
+                <th className="list-nodes-of-type__th">edit</th><th className="list-nodes-of-type__th">title</th><th className="list-nodes-of-type__th">node_id</th>
+                <th className="list-nodes-of-type__th">author</th><th className="list-nodes-of-type__th">created</th><th className="list-nodes-of-type__th">age</th>
               </tr>
             </thead>
             <tbody>
               {nodes.map((node, index) => (
-                <tr key={node.node_id} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                  <td style={styles.td}>
+                <tr key={node.node_id} className={index % 2 === 0 ? 'list-nodes-of-type__even-row' : 'list-nodes-of-type__odd-row'}>
+                  <td className="list-nodes-of-type__td">
                     {node.can_edit && <small>(<a href={'/?node_id=' + node.node_id + '&displaytype=edit'}>edit</a>)</small>}
                   </td>
-                  <td style={styles.td}><a href={'/?node_id=' + node.node_id}>{node.title}</a></td>
-                  <td style={styles.td}>{node.node_id}</td>
-                  <td style={styles.td}><a href={'/?node_id=' + node.author_user}>{node.author_name}</a></td>
-                  <td style={styles.td}>{formatDate(node.createtime)}</td>
-                  <td style={styles.td}>{getAge(node.createtime)}</td>
+                  <td className="list-nodes-of-type__td"><a href={'/?node_id=' + node.node_id}>{node.title}</a></td>
+                  <td className="list-nodes-of-type__td">{node.node_id}</td>
+                  <td className="list-nodes-of-type__td"><a href={'/?node_id=' + node.author_user}>{node.author_name}</a></td>
+                  <td className="list-nodes-of-type__td">{formatDate(node.createtime)}</td>
+                  <td className="list-nodes-of-type__td">{getAge(node.createtime)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
           {total > pageSize && (
-            <div style={styles.pagination}>
-              {offset > 0 && <button onClick={() => setOffset(Math.max(0, offset - pageSize))} style={styles.button}>prev {pageSize}</button>}
-              {offset + pageSize < total && <button onClick={() => setOffset(offset + pageSize)} style={styles.button}>next {Math.min(pageSize, total - offset - pageSize)}</button>}
+            <div className="list-nodes-of-type__pagination">
+              {offset > 0 && <button onClick={() => setOffset(Math.max(0, offset - pageSize))} className="list-nodes-of-type__button">prev {pageSize}</button>}
+              {offset + pageSize < total && <button onClick={() => setOffset(offset + pageSize)} className="list-nodes-of-type__button">next {Math.min(pageSize, total - offset - pageSize)}</button>}
             </div>
           )}
         </>
       )}
 
-      {!loading && selectedType && nodes.length === 0 && !error && <p style={styles.empty}>No nodes found for this type.</p>}
+      {!loading && selectedType && nodes.length === 0 && !error && <p className="list-nodes-of-type__empty">No nodes found for this type.</p>}
     </div>
   );
-};
-
-const styles = {
-  container: { maxWidth: '1200px', margin: '0 auto', padding: '20px' },
-  title: { fontSize: '24px', fontWeight: '600', color: '#38495e', marginBottom: '20px' },
-  accessDenied: { padding: '40px', textAlign: 'center', background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '4px', color: '#856404' },
-  section: { marginBottom: '15px', padding: '10px', background: '#f8f9f9', borderRadius: '4px' },
-  label: { fontSize: '14px', color: '#38495e' },
-  select: { padding: '5px 10px', fontSize: '14px', border: '1px solid #dee2e6', borderRadius: '4px', marginLeft: '5px' },
-  input: { padding: '5px 10px', fontSize: '14px', border: '1px solid #dee2e6', borderRadius: '4px', marginLeft: '5px' },
-  resultInfo: { fontSize: '14px', color: '#507898', marginBottom: '15px' },
-  loading: { textAlign: 'center', padding: '40px', color: '#507898' },
-  error: { padding: '15px', background: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb', borderRadius: '4px', marginBottom: '15px' },
-  table: { width: '100%', borderCollapse: 'collapse', fontSize: '14px', background: 'white', border: '1px solid #dee2e6', borderRadius: '4px' },
-  th: { padding: '12px', fontWeight: '600', color: '#38495e', background: '#f8f9f9', borderBottom: '2px solid #dee2e6', textAlign: 'left' },
-  td: { padding: '10px 12px', borderBottom: '1px solid #eee' },
-  evenRow: { background: '#fff' },
-  oddRow: { background: '#fafbfc' },
-  pagination: { marginTop: '20px', textAlign: 'right' },
-  button: { padding: '8px 16px', marginLeft: '10px', background: '#4060b0', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' },
-  empty: { textAlign: 'center', padding: '40px', color: '#6c757d', background: '#f8f9f9', borderRadius: '4px' }
 };
 
 export default ListNodesOfType;

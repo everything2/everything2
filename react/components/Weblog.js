@@ -80,7 +80,7 @@ const WeblogEntry = ({ entry, canRemove, onRemove, weblogId }) => {
                 </span>
               </td>
               {/* Title */}
-              <td className="wu_title" style={{ fontWeight: 'bold' }}>
+              <td className="wu_title weblog-entry__title-cell">
                 <LinkNode nodeId={to_node} title={title} />
               </td>
               {/* Author */}
@@ -95,7 +95,7 @@ const WeblogEntry = ({ entry, canRemove, onRemove, weblogId }) => {
                 )}
               </td>
               {/* Date */}
-              <td style={{ textAlign: 'right' }} className="wu_dtcreate">
+              <td className="wu_dtcreate weblog-entry__date-cell">
                 <small className="date">{formatDate(linkedtime)}</small>
               </td>
             </tr>
@@ -115,32 +115,24 @@ const WeblogEntry = ({ entry, canRemove, onRemove, weblogId }) => {
           <tbody>
             <tr className="wu_footer">
               {/* Linked by attribution */}
-              <td style={{ textAlign: 'left' }}>
+              <td className="weblog-entry__linkedby-cell">
                 {showLinkedBy && (
-                  <small className="linkedby" style={{ color: '#666' }}>
+                  <small className="linkedby weblog-entry__linkedby">
                     linked by{' '}
                     <LinkNode nodeId={linkedby.node_id} title={linkedby.title} type="user" />
                   </small>
                 )}
               </td>
               {/* Remove button for admins/owners */}
-              <td style={{ textAlign: 'right' }}>
+              <td className="weblog-entry__actions-cell">
                 {canRemove && (
                   <button
                     onClick={handleRemoveClick}
                     disabled={isRemoving}
                     title="Remove from weblog"
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: isRemoving ? 'not-allowed' : 'pointer',
-                      color: '#dc3545',
-                      fontSize: '12px',
-                      padding: '2px 6px',
-                      opacity: isRemoving ? 0.5 : 1
-                    }}
+                    className="weblog-entry__remove-btn"
                   >
-                    <FaTrash style={{ marginRight: '4px' }} />
+                    <FaTrash className="weblog-entry__remove-icon" />
                     {isRemoving ? 'removing...' : 'remove'}
                   </button>
                 )}
@@ -218,7 +210,7 @@ const Weblog = ({ weblog, title }) => {
 
   return (
     <div className="weblog">
-      {title && <h3 style={{ marginBottom: '16px' }}>{title}</h3>}
+      {title && <h3 className="weblog__title">{title}</h3>}
 
       {entries.map((entry) => (
         <WeblogEntry
@@ -232,23 +224,11 @@ const Weblog = ({ weblog, title }) => {
 
       {/* Load more button */}
       {hasMore && (
-        <div className="weblog-pagination" style={{ textAlign: 'center', margin: '16px 0' }}>
+        <div className="weblog__pagination">
           <button
             onClick={handleLoadMore}
             disabled={isLoading}
-            style={{
-              padding: '8px 16px',
-              fontSize: '13px',
-              border: '1px solid #507898',
-              borderRadius: '4px',
-              backgroundColor: '#fff',
-              color: '#507898',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.6 : 1,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
+            className="weblog__load-more-btn"
           >
             <FaChevronDown />
             {isLoading ? 'Loading...' : 'Load older entries'}

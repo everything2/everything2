@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 /**
  * Noding Speedometer - Calculate user noding speed
+ * Styles in CSS: .noding-speedometer__*
  *
  * Calculates how fast a user is writing based on their last N writeups,
  * and projects when they'll reach the next level.
@@ -36,56 +37,56 @@ const NodingSpeedometer = ({ data, e2 }) => {
   const hasResults = speed !== undefined
 
   return (
-    <div style={styles.container}>
-      <form method="POST" style={styles.form}>
+    <div className="noding-speedometer">
+      <form method="POST" className="noding-speedometer__form">
         <input type="hidden" name="node_id" value={e2?.node_id || ''} />
         <table>
           <tbody>
             <tr>
-              <td style={styles.label}>Username:</td>
+              <td className="noding-speedometer__label">Username:</td>
               <td>
                 <input
                   type="text"
                   name="speedyuser"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  style={styles.input}
+                  className="noding-speedometer__input"
                 />
               </td>
             </tr>
             <tr>
-              <td style={styles.label}>Nodes to clock:</td>
+              <td className="noding-speedometer__label">Nodes to clock:</td>
               <td>
                 <input
                   type="text"
                   name="clocknodes"
                   value={clockNodes}
                   onChange={(e) => setClockNodes(e.target.value)}
-                  style={styles.input}
+                  className="noding-speedometer__input"
                 />
               </td>
             </tr>
           </tbody>
         </table>
-        <button type="submit" style={styles.submitButton}>
+        <button type="submit" className="noding-speedometer__submit-button">
           Clock Speed
         </button>
       </form>
 
       {error && (
-        <div style={styles.message}>
+        <div className="noding-speedometer__message">
           <p>{error}</p>
         </div>
       )}
 
       {!hasResults && !error && (
-        <p style={styles.message}>
+        <p className="noding-speedometer__message">
           Okay, the radar gun's ready. Who should we clock?
         </p>
       )}
 
       {hasResults && (
-        <div style={styles.results}>
+        <div className="noding-speedometer__results">
           <p>
             {initialUsername} has <strong>{total_writeups}</strong> nodes in total.{' '}
             {total_writeups < initialClockNodes && (
@@ -99,15 +100,15 @@ const NodingSpeedometer = ({ data, e2 }) => {
           </p>
 
           {/* Speedometer visualization */}
-          <div style={styles.speedometerContainer}>
-            <table style={styles.speedometerTable}>
+          <div className="noding-speedometer__speedometer-container">
+            <table className="noding-speedometer__speedometer-table">
               <tbody>
                 <tr>
                   <td>
-                    <table style={styles.innerTable}>
+                    <table className="noding-speedometer__inner-table">
                       <tbody>
                         <tr>
-                          <td style={styles.speedLabel}>
+                          <td className="noding-speedometer__speed-label">
                             <small>
                               <strong>NODING SPEED</strong>
                             </small>
@@ -115,15 +116,15 @@ const NodingSpeedometer = ({ data, e2 }) => {
                         </tr>
                         <tr>
                           <td>
-                            <table style={styles.barContainer}>
+                            <table className="noding-speedometer__bar-container">
                               <tbody>
                                 <tr>
-                                  <td style={styles.barBackground}>
-                                    <table style={{ ...styles.bar, width: `${width}%`, backgroundColor: color }}>
+                                  <td className="noding-speedometer__bar-background">
+                                    <table className="noding-speedometer__bar" style={{ width: `${width}%`, backgroundColor: color }}>
                                       <tbody>
                                         <tr>
                                           <td>
-                                            <div style={styles.barContent} />
+                                            <div className="noding-speedometer__bar-content" />
                                           </td>
                                         </tr>
                                       </tbody>
@@ -142,14 +143,14 @@ const NodingSpeedometer = ({ data, e2 }) => {
             </table>
           </div>
 
-          <p style={styles.comment}>{comment}</p>
+          <p className="noding-speedometer__comment">{comment}</p>
 
-          <hr style={styles.hr} />
+          <hr className="noding-speedometer__hr" />
 
           {/* Level-up projections */}
           {level_data && (
-            <div style={styles.projections}>
-              <p style={styles.projectionsHeading}>
+            <div className="noding-speedometer__projections">
+              <p className="noding-speedometer__projections-heading">
                 <big>
                   <strong>Level-up Projections</strong>
                 </big>
@@ -173,107 +174,6 @@ const NodingSpeedometer = ({ data, e2 }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111'
-  },
-  form: {
-    marginBottom: '20px'
-  },
-  label: {
-    paddingRight: '10px',
-    textAlign: 'right',
-    verticalAlign: 'middle'
-  },
-  input: {
-    padding: '4px 8px',
-    border: '1px solid #dee2e6',
-    borderRadius: '3px',
-    fontSize: '13px',
-    width: '200px'
-  },
-  submitButton: {
-    marginTop: '10px',
-    padding: '6px 12px',
-    border: '1px solid #4060b0',
-    borderRadius: '4px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    fontSize: '13px',
-    cursor: 'pointer',
-    fontWeight: '600'
-  },
-  message: {
-    marginTop: '15px',
-    fontSize: '13px'
-  },
-  results: {
-    marginTop: '20px'
-  },
-  speedometerContainer: {
-    textAlign: 'center',
-    margin: '20px auto'
-  },
-  speedometerTable: {
-    width: '300px',
-    margin: 'auto',
-    cellPadding: 0,
-    cellSpacing: 0,
-    borderCollapse: 'collapse'
-  },
-  innerTable: {
-    width: '100%',
-    border: 0,
-    cellPadding: 0,
-    cellSpacing: 0,
-    borderCollapse: 'collapse'
-  },
-  speedLabel: {
-    textAlign: 'left'
-  },
-  barContainer: {
-    width: '260px',
-    border: 'solid 1px black',
-    cellPadding: 0,
-    cellSpacing: 2,
-    borderCollapse: 'separate',
-    borderSpacing: '2px'
-  },
-  barBackground: {
-    backgroundColor: 'gray',
-    textAlign: 'left',
-    padding: 0
-  },
-  bar: {
-    border: 0,
-    cellPadding: 0,
-    cellSpacing: 0,
-    borderCollapse: 'collapse'
-  },
-  barContent: {
-    width: '1px',
-    height: '13px'
-  },
-  comment: {
-    textAlign: 'center',
-    marginTop: '15px',
-    fontSize: '13px'
-  },
-  hr: {
-    width: '25%',
-    marginTop: '20px',
-    marginBottom: '20px'
-  },
-  projections: {
-    marginTop: '20px'
-  },
-  projectionsHeading: {
-    marginBottom: '10px'
-  }
 }
 
 export default NodingSpeedometer

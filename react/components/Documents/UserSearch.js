@@ -18,20 +18,20 @@ const selectRandom = (arr, n) => {
 }
 
 // Empty state component with randomized suggestions
-const EmptyState = ({ onSelectUser, styles }) => {
+const EmptyState = ({ onSelectUser }) => {
   // Randomly select 3 users on mount (useMemo ensures consistent selection during render)
   const suggestedUsers = useMemo(() => selectRandom(NOTABLE_USERS, 3), [])
 
   return (
-    <div style={styles.emptyState}>
+    <div className="user-search__empty-state">
       <p>Enter a username above to browse their writeups.</p>
-      <p style={styles.hint}>
+      <p className="user-search__hint">
         Try searching for some of E2's notable contributors like{' '}
         {suggestedUsers.map((name, index) => (
           <span key={name}>
             {index > 0 && (index === suggestedUsers.length - 1 ? ', or ' : ', ')}
             <button
-              style={styles.suggestionLink}
+              className="user-search__suggestion-link"
               onClick={() => onSelectUser(name)}
             >
               {name}
@@ -45,6 +45,7 @@ const EmptyState = ({ onSelectUser, styles }) => {
 
 /**
  * Everything User Search - Browse writeups by user
+ * Styles in CSS: .user-search__*
  *
  * A modern, clean interface for discovering content by author.
  * Supports sorting, pagination, and filtering.
@@ -263,27 +264,24 @@ const UserSearch = ({ data, user }) => {
     }
 
     return (
-      <div style={styles.pagination}>
+      <div className="user-search__pagination">
         <button
           onClick={() => setPage(p => Math.max(1, p - 1))}
           disabled={currentPage === 1}
-          style={styles.pageButton}
+          className="user-search__page-btn"
         >
           ← Previous
         </button>
 
-        <div style={styles.pageNumbers}>
+        <div className="user-search__page-numbers">
           {pages.map((p, i) => (
             p === '...' ? (
-              <span key={`ellipsis-${i}`} style={styles.ellipsis}>...</span>
+              <span key={`ellipsis-${i}`} className="user-search__ellipsis">...</span>
             ) : (
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                style={{
-                  ...styles.pageNumber,
-                  ...(p === currentPage ? styles.pageNumberActive : {})
-                }}
+                className={`user-search__page-number${p === currentPage ? ' user-search__page-number--active' : ''}`}
               >
                 {p}
               </button>
@@ -294,7 +292,7 @@ const UserSearch = ({ data, user }) => {
         <button
           onClick={() => setPage(p => Math.min(totalPages, p + 1))}
           disabled={currentPage === totalPages}
-          style={styles.pageButton}
+          className="user-search__page-btn"
         >
           Next →
         </button>
@@ -305,28 +303,43 @@ const UserSearch = ({ data, user }) => {
   // Render vote indicator
   const renderVote = (vote) => {
     if (vote === undefined || vote === null) return null
-    if (vote === 1) return <span style={styles.voteUp}>+</span>
-    if (vote === -1) return <span style={styles.voteDown}>−</span>
+    if (vote === 1) return <span className="user-search__vote-up">+</span>
+    if (vote === -1) return <span className="user-search__vote-down">−</span>
     return null
   }
 
-  // Responsive styles
-  const styles = getStyles(isMobile)
+  // Build th class names
+  const getThClassName = (columnKey, extra = '') => {
+    let className = 'user-search__th'
+    if (extra) className += ` ${extra}`
+    if (isColumnSortable(columnKey)) className += ' user-search__th--sortable'
+    if (isColumnSorted(columnKey)) className += ' user-search__th--sorted'
+    return className
+  }
+
+  // Build td class names
+  const getTdClassName = (columnKey, isCenter = false, isRight = false) => {
+    let className = 'user-search__td'
+    if (isCenter) className += ' user-search__td--center'
+    if (isRight) className += ' user-search__td--right'
+    if (isColumnSorted(columnKey)) className += ' user-search__td--sorted'
+    return className
+  }
 
   return (
-    <div className="document" style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>User Writeups</h1>
-        <p style={styles.subtitle}>
+    <div className={`document user-search${isMobile ? ' user-search--mobile' : ''}`}>
+      <div className="user-search__header">
+        <h1 className="user-search__title">User Writeups</h1>
+        <p className="user-search__subtitle">
           Explore the collected works of Everything2 contributors
         </p>
       </div>
 
       {/* Search Form */}
-      <div style={styles.searchForm}>
-        <div style={styles.searchRow}>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Username</label>
+      <div className="user-search__form">
+        <div className="user-search__form-row">
+          <div className="user-search__input-group">
+            <label className="user-search__label">Username</label>
             <UserSearchInput
               onSelect={handleUserSelect}
               placeholder="Enter a username..."
@@ -336,13 +349,13 @@ const UserSearch = ({ data, user }) => {
             />
           </div>
 
-          <div style={styles.inputGroup}>
-            <label htmlFor="sort-select" style={styles.label}>Sort by</label>
+          <div className="user-search__input-group">
+            <label htmlFor="sort-select" className="user-search__label">Sort by</label>
             <select
               id="sort-select"
               value={orderby}
               onChange={handleSortChange}
-              style={styles.select}
+              className="user-search__select"
             >
               {sortOptions.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -354,21 +367,21 @@ const UserSearch = ({ data, user }) => {
 
       {/* Error */}
       {error && (
-        <div style={styles.error}>
+        <div className="user-search__error">
           {error}
         </div>
       )}
 
       {/* Results */}
       {results && !results.error && (
-        <div style={styles.results}>
+        <div className="user-search__results">
           {/* Results Header */}
-          <div style={styles.resultsHeader}>
-            <div style={styles.resultsInfo}>
-              <h2 style={styles.resultsTitle}>
+          <div className="user-search__results-header">
+            <div className="user-search__results-info">
+              <h2 className="user-search__results-title">
                 <LinkNode type="user" title={results.username} />
               </h2>
-              <span style={styles.resultCount}>
+              <span className="user-search__result-count">
                 {results.total} writeup{results.total !== 1 ? 's' : ''}
                 {results.total > 50 && ` (showing ${(results.page - 1) * 50 + 1}-${Math.min(results.page * 50, results.total)})`}
               </span>
@@ -376,33 +389,24 @@ const UserSearch = ({ data, user }) => {
 
             {/* Filter options for self/editors */}
             {results.can_see_rep === 1 && (
-              <div style={styles.filterButtons}>
-                <span style={styles.filterLabel}>Show:</span>
+              <div className="user-search__filter-buttons">
+                <span className="user-search__filter-label">Show:</span>
                 <button
                   onClick={() => handleFilterChange(0)}
-                  style={{
-                    ...styles.filterButton,
-                    ...(filterHidden === 0 ? styles.filterButtonActive : {})
-                  }}
+                  className={`user-search__filter-btn${filterHidden === 0 ? ' user-search__filter-btn--active' : ''}`}
                 >
                   All
                 </button>
                 <button
                   onClick={() => handleFilterChange(1)}
-                  style={{
-                    ...styles.filterButton,
-                    ...(filterHidden === 1 ? styles.filterButtonActive : {})
-                  }}
+                  className={`user-search__filter-btn${filterHidden === 1 ? ' user-search__filter-btn--active' : ''}`}
                   title="Visible in New Writeups"
                 >
                   Visible
                 </button>
                 <button
                   onClick={() => handleFilterChange(2)}
-                  style={{
-                    ...styles.filterButton,
-                    ...(filterHidden === 2 ? styles.filterButtonActive : {})
-                  }}
+                  className={`user-search__filter-btn${filterHidden === 2 ? ' user-search__filter-btn--active' : ''}`}
                   title="Hidden from New Writeups"
                 >
                   Hidden
@@ -414,28 +418,19 @@ const UserSearch = ({ data, user }) => {
           {/* Writeups Table */}
           {results.writeups.length > 0 ? (
             <>
-              <div style={styles.tableContainer}>
-                <table style={styles.table}>
+              <div className="user-search__table-container">
+                <table className="user-search__table">
                   <thead>
                     <tr>
                       <th
-                        style={{
-                          ...styles.th,
-                          ...styles.sortableHeader,
-                          ...(isColumnSorted('cools') ? styles.sortedColumn : {})
-                        }}
+                        className={getThClassName('cools')}
                         title="Sort by cools received"
                         onClick={() => handleColumnSort('cools')}
                       >
                         Cools{getSortIndicator('cools')}
                       </th>
                       <th
-                        style={{
-                          ...styles.th,
-                          textAlign: 'left',
-                          ...styles.sortableHeader,
-                          ...(isColumnSorted('title') ? styles.sortedColumn : {})
-                        }}
+                        className={getThClassName('title', 'user-search__th--left')}
                         title="Sort by title"
                         onClick={() => handleColumnSort('title')}
                       >
@@ -443,11 +438,7 @@ const UserSearch = ({ data, user }) => {
                       </th>
                       {(results.can_see_rep === 1 || results.is_self !== 1) && (
                         <th
-                          style={{
-                            ...styles.th,
-                            ...(results.can_see_rep === 1 ? styles.sortableHeader : {}),
-                            ...(isColumnSorted('reputation') ? styles.sortedColumn : {})
-                          }}
+                          className={getThClassName('reputation')}
                           title={results.can_see_rep === 1 ? "Sort by reputation" : "Reputation score"}
                           onClick={results.can_see_rep === 1 ? () => handleColumnSort('reputation') : undefined}
                         >
@@ -455,24 +446,19 @@ const UserSearch = ({ data, user }) => {
                         </th>
                       )}
                       {results.is_self === 1 && (
-                        <th style={styles.th} title="Vote spread (upvotes/downvotes)">Votes</th>
+                        <th className="user-search__th" title="Vote spread (upvotes/downvotes)">Votes</th>
                       )}
                       {results.is_self !== 1 && !user?.guest && (
-                        <th style={styles.th} title="Your vote on this writeup">Your Vote</th>
+                        <th className="user-search__th" title="Your vote on this writeup">Your Vote</th>
                       )}
                       {results.can_see_rep === 1 && (
-                        <th style={styles.th} title="Hidden from public view (not sortable)">Hidden</th>
+                        <th className="user-search__th" title="Hidden from public view (not sortable)">Hidden</th>
                       )}
                       {results.is_editor === 1 && (
-                        <th style={styles.th} title="Has editor notes (not sortable)">Notes</th>
+                        <th className="user-search__th" title="Has editor notes (not sortable)">Notes</th>
                       )}
                       <th
-                        style={{
-                          ...styles.th,
-                          textAlign: 'right',
-                          ...styles.sortableHeader,
-                          ...(isColumnSorted('publishtime') ? styles.sortedColumn : {})
-                        }}
+                        className={getThClassName('publishtime', 'user-search__th--right')}
                         title="Sort by publish date"
                         onClick={() => handleColumnSort('publishtime')}
                       >
@@ -482,21 +468,15 @@ const UserSearch = ({ data, user }) => {
                   </thead>
                   <tbody>
                     {results.writeups.map((wu, index) => (
-                      <tr key={wu.node_id} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                        <td style={{
-                          ...styles.tdCenter,
-                          ...(isColumnSorted('cools') ? styles.sortedCell : {})
-                        }}>
+                      <tr key={wu.node_id} className={index % 2 === 0 ? 'user-search__even-row' : 'user-search__odd-row'}>
+                        <td className={getTdClassName('cools', true)}>
                           {wu.cools > 0 && (
-                            <span style={styles.cools}>
+                            <span className="user-search__cools">
                               {wu.cools}C!{wu.cools > 1 ? 's' : ''}
                             </span>
                           )}
                         </td>
-                        <td style={{
-                          ...styles.td,
-                          ...(isColumnSorted('title') ? styles.sortedCell : {})
-                        }}>
+                        <td className={getTdClassName('title')}>
                           <LinkNode
                             type="writeup"
                             title={wu.parent_title || wu.title}
@@ -504,56 +484,50 @@ const UserSearch = ({ data, user }) => {
                             display={wu.parent_title || wu.title}
                           />
                           {wu.writeup_type && (
-                            <span style={styles.writeupType}> ({wu.writeup_type})</span>
+                            <span className="user-search__writeup-type"> ({wu.writeup_type})</span>
                           )}
                         </td>
                         {(results.can_see_rep === 1 || results.is_self !== 1) && (
-                          <td style={{
-                            ...styles.tdCenter,
-                            ...(isColumnSorted('reputation') ? styles.sortedCell : {})
-                          }}>
+                          <td className={getTdClassName('reputation', true)}>
                             {wu.reputation !== undefined ? (
-                              <span style={wu.reputation >= 0 ? styles.repPositive : styles.repNegative}>
+                              <span className={wu.reputation >= 0 ? 'user-search__rep-positive' : 'user-search__rep-negative'}>
                                 {wu.reputation}
                               </span>
                             ) : (
-                              <span style={styles.repHidden}>-</span>
+                              <span className="user-search__rep-hidden">-</span>
                             )}
                           </td>
                         )}
                         {results.is_self === 1 && (
-                          <td style={styles.tdCenter}>
+                          <td className="user-search__td user-search__td--center">
                             {wu.upvotes !== undefined && wu.downvotes !== undefined ? (
-                              <span style={styles.voteSpread}>
-                                <span style={styles.voteUp}>+{wu.upvotes}</span>
+                              <span className="user-search__vote-spread">
+                                <span className="user-search__vote-up">+{wu.upvotes}</span>
                                 {' / '}
-                                <span style={styles.voteDown}>−{wu.downvotes}</span>
+                                <span className="user-search__vote-down">−{wu.downvotes}</span>
                               </span>
                             ) : (
-                              <span style={styles.repHidden}>-</span>
+                              <span className="user-search__rep-hidden">-</span>
                             )}
                           </td>
                         )}
                         {results.is_self !== 1 && !user?.guest && (
-                          <td style={styles.tdCenter}>
+                          <td className="user-search__td user-search__td--center">
                             {renderVote(wu.user_vote)}
                           </td>
                         )}
                         {results.can_see_rep === 1 && (
-                          <td style={styles.tdCenter}>
-                            {wu.hidden ? <span style={styles.hiddenIndicator}>H</span> : ''}
+                          <td className="user-search__td user-search__td--center">
+                            {wu.hidden ? <span className="user-search__hidden-indicator">H</span> : ''}
                           </td>
                         )}
                         {results.is_editor === 1 && (
-                          <td style={styles.tdCenter}>
-                            {wu.has_note ? <span style={styles.noteIndicator}>N</span> : ''}
+                          <td className="user-search__td user-search__td--center">
+                            {wu.has_note ? <span className="user-search__note-indicator">N</span> : ''}
                           </td>
                         )}
-                        <td style={{
-                          ...styles.tdRight,
-                          ...(isColumnSorted('publishtime') ? styles.sortedCell : {})
-                        }}>
-                          <span style={styles.date}>{formatDate(wu.publishtime)}</span>
+                        <td className={getTdClassName('publishtime', false, true)}>
+                          <span className="user-search__date">{formatDate(wu.publishtime)}</span>
                         </td>
                       </tr>
                     ))}
@@ -564,7 +538,7 @@ const UserSearch = ({ data, user }) => {
               {renderPagination()}
             </>
           ) : (
-            <div style={styles.noResults}>
+            <div className="user-search__no-results">
               No writeups found.
             </div>
           )}
@@ -575,286 +549,10 @@ const UserSearch = ({ data, user }) => {
       {!results && !loading && !error && (
         <EmptyState
           onSelectUser={(name) => handleUserSelect({ title: name })}
-          styles={styles}
         />
       )}
     </div>
   )
 }
-
-const getStyles = (isMobile) => ({
-  container: {
-    maxWidth: isMobile ? '100%' : '1000px',
-    margin: '0 auto',
-    padding: isMobile ? '0' : '20px'
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '32px'
-  },
-  title: {
-    fontSize: '28px',
-    fontWeight: '600',
-    color: '#38495e',
-    marginBottom: '8px'
-  },
-  subtitle: {
-    fontSize: '16px',
-    color: '#507898',
-    margin: 0
-  },
-  searchForm: {
-    background: '#f8f9f9',
-    padding: '20px',
-    borderRadius: '8px',
-    marginBottom: '24px',
-    border: '1px solid #dee2e6'
-  },
-  searchRow: {
-    display: 'flex',
-    gap: '16px',
-    alignItems: 'flex-end',
-    flexWrap: 'wrap'
-  },
-  inputGroup: {
-    flex: '1',
-    minWidth: '200px',
-    position: 'relative'
-  },
-  label: {
-    display: 'block',
-    fontSize: '13px',
-    fontWeight: '500',
-    color: '#38495e',
-    marginBottom: '6px'
-  },
-  select: {
-    width: '100%',
-    padding: '10px 12px',
-    fontSize: '15px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    background: 'white',
-    cursor: 'pointer'
-  },
-  error: {
-    background: '#fee',
-    border: '1px solid #fcc',
-    color: '#c33',
-    padding: '12px 16px',
-    borderRadius: '4px',
-    marginBottom: '16px'
-  },
-  results: {
-    marginTop: '24px'
-  },
-  resultsHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '16px',
-    marginBottom: '16px',
-    paddingBottom: '16px',
-    borderBottom: '2px solid #38495e'
-  },
-  resultsInfo: {
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: '12px',
-    flexWrap: 'wrap'
-  },
-  resultsTitle: {
-    fontSize: '20px',
-    fontWeight: '600',
-    color: '#38495e',
-    margin: 0
-  },
-  resultCount: {
-    fontSize: '14px',
-    color: '#507898'
-  },
-  filterButtons: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  filterLabel: {
-    fontSize: '13px',
-    color: '#507898'
-  },
-  filterButton: {
-    padding: '6px 12px',
-    fontSize: '13px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    background: 'white',
-    cursor: 'pointer',
-    color: '#38495e'
-  },
-  filterButtonActive: {
-    background: '#38495e',
-    color: 'white',
-    borderColor: '#38495e'
-  },
-  tableContainer: {
-    overflowX: 'auto'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '14px'
-  },
-  th: {
-    padding: '10px 8px',
-    textAlign: 'center',
-    fontWeight: '600',
-    color: '#38495e',
-    borderBottom: '1px solid #dee2e6',
-    whiteSpace: 'nowrap'
-  },
-  sortableHeader: {
-    cursor: 'pointer',
-    userSelect: 'none',
-    transition: 'background-color 0.15s ease'
-  },
-  sortedColumn: {
-    backgroundColor: '#e8f4f8',
-    color: '#38495e'
-  },
-  sortedCell: {
-    backgroundColor: 'rgba(59, 181, 195, 0.08)'
-  },
-  td: {
-    padding: '10px 8px',
-    borderBottom: '1px solid #eee'
-  },
-  tdCenter: {
-    padding: '10px 8px',
-    textAlign: 'center',
-    borderBottom: '1px solid #eee'
-  },
-  tdRight: {
-    padding: '10px 8px',
-    textAlign: 'right',
-    borderBottom: '1px solid #eee'
-  },
-  evenRow: {
-    background: '#fff'
-  },
-  oddRow: {
-    background: '#f8f9fa'
-  },
-  cools: {
-    color: '#3bb5c3',
-    fontWeight: '600',
-    fontSize: '12px'
-  },
-  writeupType: {
-    color: '#507898',
-    fontSize: '13px'
-  },
-  repPositive: {
-    color: '#28a745'
-  },
-  repNegative: {
-    color: '#dc3545'
-  },
-  repHidden: {
-    color: '#999'
-  },
-  voteUp: {
-    color: '#28a745',
-    fontWeight: 'bold'
-  },
-  voteDown: {
-    color: '#dc3545',
-    fontWeight: 'bold'
-  },
-  voteSpread: {
-    fontSize: '13px',
-    whiteSpace: 'nowrap'
-  },
-  hiddenIndicator: {
-    color: '#ffc107',
-    fontWeight: '600'
-  },
-  noteIndicator: {
-    color: '#17a2b8',
-    fontWeight: '600'
-  },
-  date: {
-    color: '#6c757d',
-    fontSize: '13px',
-    whiteSpace: 'nowrap'
-  },
-  pagination: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '16px',
-    marginTop: '24px',
-    padding: '16px 0'
-  },
-  pageButton: {
-    padding: '8px 16px',
-    fontSize: '14px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    background: 'white',
-    cursor: 'pointer',
-    color: '#38495e'
-  },
-  pageNumbers: {
-    display: 'flex',
-    gap: '4px',
-    alignItems: 'center'
-  },
-  pageNumber: {
-    padding: '8px 12px',
-    fontSize: '14px',
-    border: '1px solid #ced4da',
-    borderRadius: '4px',
-    background: 'white',
-    cursor: 'pointer',
-    color: '#38495e',
-    minWidth: '40px'
-  },
-  pageNumberActive: {
-    background: '#38495e',
-    color: 'white',
-    borderColor: '#38495e'
-  },
-  ellipsis: {
-    padding: '8px 4px',
-    color: '#6c757d'
-  },
-  noResults: {
-    textAlign: 'center',
-    padding: '40px 20px',
-    color: '#6c757d',
-    fontSize: '16px'
-  },
-  emptyState: {
-    textAlign: 'center',
-    padding: '60px 20px',
-    background: '#f8f9f9',
-    borderRadius: '8px',
-    color: '#507898'
-  },
-  hint: {
-    fontSize: '14px',
-    marginTop: '12px'
-  },
-  suggestionLink: {
-    background: 'none',
-    border: 'none',
-    color: '#4060b0',
-    cursor: 'pointer',
-    textDecoration: 'underline',
-    padding: 0,
-    font: 'inherit'
-  }
-})
 
 export default UserSearch

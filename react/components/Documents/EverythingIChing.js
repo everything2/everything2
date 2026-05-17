@@ -4,6 +4,7 @@ import ParseLinks from '../ParseLinks'
 
 /**
  * EverythingIChing - I-Ching hexagram divination tool
+ * Styles in CSS: .e2-iching__*
  *
  * Generates primary and secondary hexagrams using the coin method.
  * Displays hexagrams side-by-side with their corresponding writeup text.
@@ -13,51 +14,51 @@ const EverythingIChing = ({ data }) => {
 
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorBox}>{error}</div>
+      <div className="e2-iching">
+        <div className="e2-iching__error">{error}</div>
       </div>
     )
   }
 
   if (!primary || !secondary) {
     return (
-      <div style={styles.container}>
+      <div className="e2-iching">
         <p>Loading divination...</p>
       </div>
     )
   }
 
   return (
-    <div style={styles.container}>
-      <table style={styles.mainTable}>
+    <div className="e2-iching">
+      <table className="e2-iching__table">
         <thead>
           <tr>
-            <th style={styles.th}>Primary Hexagram</th>
-            <th style={styles.th}>Secondary Hexagram</th>
+            <th className="e2-iching__th">Primary Hexagram</th>
+            <th className="e2-iching__th">Secondary Hexagram</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style={styles.td}>
-              <div style={styles.centered}>
+            <td className="e2-iching__td">
+              <div className="e2-iching__centered">
                 <LinkNode nodeId={primary.node_id} title={primary.title} />
               </div>
             </td>
-            <td style={styles.td}>
-              <div style={styles.centered}>
+            <td className="e2-iching__td">
+              <div className="e2-iching__centered">
                 <LinkNode nodeId={secondary.node_id} title={secondary.title} />
               </div>
             </td>
           </tr>
           <tr>
-            <td style={styles.hexagramCell} colSpan={2}>
-              <table style={styles.hexagramContainer}>
+            <td className="e2-iching__hexagram-cell" colSpan={2}>
+              <table className="e2-iching__hexagram-container">
                 <tbody>
                   <tr>
-                    <td style={styles.hexagramTd}>
+                    <td className="e2-iching__hexagram-td">
                       <Hexagram pattern={primary.pattern} />
                     </td>
-                    <td style={styles.hexagramTd}>
+                    <td className="e2-iching__hexagram-td">
                       <Hexagram pattern={secondary.pattern} />
                     </td>
                   </tr>
@@ -66,25 +67,25 @@ const EverythingIChing = ({ data }) => {
             </td>
           </tr>
           <tr>
-            <td style={styles.textTd}>
+            <td className="e2-iching__text-td">
               <ParseLinks content={primary.text} />
             </td>
-            <td style={styles.textTd}>
+            <td className="e2-iching__text-td">
               <ParseLinks content={secondary.text} />
             </td>
           </tr>
         </tbody>
       </table>
 
-      <div style={styles.footer}>
-        <p style={styles.footerText}>
+      <div className="e2-iching__footer">
+        <p className="e2-iching__footer-text">
           <em>
             The <LinkNode nodeId={window.e2?.node_id} title="Everything I Ching" /> is brought to
             you by <LinkNode title="The Gilded Frame" /> and <LinkNode title="nate" />
           </em>
         </p>
-        <p style={styles.reDivine}>
-          <a href={`?node_id=${window.e2?.node_id || ''}`} style={styles.reDivineLink}>
+        <p className="e2-iching__re-divine">
+          <a href={`?node_id=${window.e2?.node_id || ''}`} className="e2-iching__re-divine-link">
             re-divine
           </a>
         </p>
@@ -103,11 +104,11 @@ const Hexagram = ({ pattern }) => {
   const assetsBase = window.e2?.assets_location || ''
 
   return (
-    <table style={styles.hexTable}>
+    <table className="e2-iching__hex-table">
       <tbody>
         {lines.map((letter, index) => (
           <tr key={index}>
-            <td style={styles.hexTd}>
+            <td className="e2-iching__hex-td">
               <img
                 src={
                   letter.toUpperCase() === 'B'
@@ -117,7 +118,7 @@ const Hexagram = ({ pattern }) => {
                 width={128}
                 height={14}
                 alt={letter === 'B' ? 'Broken line' : 'Full line'}
-                style={styles.hexImage}
+                className="e2-iching__hex-image"
               />
             </td>
           </tr>
@@ -125,102 +126,6 @@ const Hexagram = ({ pattern }) => {
       </tbody>
     </table>
   )
-}
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111'
-  },
-  errorBox: {
-    padding: '15px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828'
-  },
-  mainTable: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    border: '1px solid #d3d3d3'
-  },
-  th: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '10px',
-    textAlign: 'center',
-    border: '1px solid #38495e',
-    width: '50%'
-  },
-  td: {
-    border: '1px solid #d3d3d3',
-    padding: '12px',
-    verticalAlign: 'top',
-    width: '50%'
-  },
-  centered: {
-    textAlign: 'center'
-  },
-  hexagramCell: {
-    backgroundColor: '#000000',
-    border: '1px solid #000000',
-    padding: 0
-  },
-  hexagramContainer: {
-    width: '100%',
-    backgroundColor: '#000000',
-    borderCollapse: 'collapse',
-    padding: 0,
-    border: 'none'
-  },
-  hexagramTd: {
-    textAlign: 'center',
-    width: '50%',
-    padding: '10px',
-    backgroundColor: '#000000',
-    border: 'none'
-  },
-  textTd: {
-    border: '1px solid #d3d3d3',
-    padding: '12px',
-    verticalAlign: 'top',
-    width: '50%'
-  },
-  hexTable: {
-    width: '100%',
-    backgroundColor: '#ffffff',
-    borderCollapse: 'collapse',
-    border: 'none'
-  },
-  hexTd: {
-    textAlign: 'center',
-    padding: '3px',
-    border: 'none'
-  },
-  hexImage: {
-    display: 'block',
-    margin: '0 auto'
-  },
-  footer: {
-    marginTop: '20px'
-  },
-  footerText: {
-    textAlign: 'right',
-    fontStyle: 'italic',
-    marginBottom: '10px'
-  },
-  reDivine: {
-    textAlign: 'center',
-    margin: '20px 0'
-  },
-  reDivineLink: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#4060b0',
-    textDecoration: 'none'
-  }
 }
 
 export default EverythingIChing

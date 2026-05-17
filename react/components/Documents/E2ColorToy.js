@@ -193,218 +193,8 @@ class Color {
   }
 }
 
-// Styles object for better organization
-const styles = {
-  container: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    maxWidth: '800px',
-    margin: '0 auto',
-  },
-  card: {
-    backgroundColor: '#f8f9f9',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px',
-    border: '1px solid #d3d3d3',
-  },
-  cardHeader: {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#38495e',
-    marginBottom: '16px',
-    paddingBottom: '8px',
-    borderBottom: '1px solid #d3d3d3',
-  },
-  mainPreview: {
-    display: 'flex',
-    gap: '20px',
-    marginBottom: '20px',
-    flexWrap: 'wrap',
-  },
-  previewSwatch: {
-    width: '120px',
-    height: '120px',
-    borderRadius: '8px',
-    border: '1px solid #d3d3d3',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '14px',
-    fontWeight: '500',
-    fontFamily: 'monospace',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    transition: 'background-color 0.2s ease',
-  },
-  previewInfo: {
-    flex: '1',
-    minWidth: '200px',
-  },
-  colorValue: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '8px',
-    fontSize: '13px',
-  },
-  colorValueLabel: {
-    width: '60px',
-    color: '#507898',
-  },
-  colorValueCode: {
-    fontFamily: 'monospace',
-    backgroundColor: '#fff',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    border: '1px solid #d3d3d3',
-    cursor: 'pointer',
-  },
-  inputGroup: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '12px',
-    flexWrap: 'wrap',
-  },
-  inputWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-  },
-  inputLabel: {
-    fontSize: '11px',
-    color: '#507898',
-    fontWeight: '500',
-    textTransform: 'uppercase',
-  },
-  input: {
-    width: '70px',
-    padding: '8px 10px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    fontSize: '14px',
-    fontFamily: 'monospace',
-  },
-  inputWide: {
-    width: '120px',
-    padding: '8px 10px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    fontSize: '14px',
-    fontFamily: 'monospace',
-  },
-  button: {
-    padding: '8px 16px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: '500',
-    transition: 'background-color 0.2s ease',
-  },
-  buttonSecondary: {
-    padding: '6px 12px',
-    backgroundColor: '#fff',
-    color: '#4060b0',
-    border: '1px solid #4060b0',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '12px',
-    fontWeight: '500',
-  },
-  slider: {
-    width: '200px',
-    height: '8px',
-    cursor: 'pointer',
-  },
-  sliderRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '12px',
-  },
-  sliderLabel: {
-    width: '80px',
-    fontSize: '13px',
-    color: '#333',
-  },
-  sliderValue: {
-    width: '50px',
-    fontFamily: 'monospace',
-    fontSize: '13px',
-    color: '#507898',
-  },
-  checkbox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    fontSize: '13px',
-    color: '#507898',
-    cursor: 'pointer',
-  },
-  helpText: {
-    fontSize: '12px',
-    color: '#507898',
-    fontStyle: 'italic',
-    marginTop: '8px',
-  },
-  gradientStrip: {
-    display: 'flex',
-    borderRadius: '4px',
-    overflow: 'hidden',
-    border: '1px solid #d3d3d3',
-    marginBottom: '12px',
-  },
-  gradientSwatch: {
-    flex: '1',
-    height: '40px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '10px',
-    fontFamily: 'monospace',
-    cursor: 'pointer',
-    transition: 'transform 0.1s ease',
-  },
-  textarea: {
-    width: '100%',
-    padding: '12px',
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    resize: 'vertical',
-    backgroundColor: '#fff',
-  },
-  copyButton: {
-    padding: '4px 8px',
-    fontSize: '11px',
-    backgroundColor: 'transparent',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    marginLeft: '8px',
-  },
-  twoColumn: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '20px',
-  },
-  fakeColors: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '8px',
-    marginTop: '12px',
-  },
-  fakeColorSwatch: {
-    padding: '6px 12px',
-    borderRadius: '4px',
-    fontSize: '12px',
-    fontFamily: 'monospace',
-    cursor: 'pointer',
-    border: '1px solid #d3d3d3',
-  },
-};
+// Dynamic styles that must remain inline (depend on runtime color values)
+// All other styles are now in CSS classes (colortoy__*)
 
 class E2ColorToy extends Component {
   constructor(props) {
@@ -618,145 +408,133 @@ class E2ColorToy extends Component {
     const contrastColor = previewColorObj.getContrastColor();
 
     return (
-      <div style={styles.container}>
+      <div className="colortoy">
         {/* Main Preview */}
-        <div style={styles.mainPreview}>
+        <div className="colortoy__main-preview">
           <div
-            style={{
-              ...styles.previewSwatch,
-              backgroundColor: previewColor,
-              color: contrastColor,
-            }}
+            className="colortoy__preview-swatch"
+            style={{ backgroundColor: previewColor, color: contrastColor }}
           >
             {previewColor}
           </div>
-          <div style={styles.previewInfo}>
-            <div style={styles.colorValue}>
-              <span style={styles.colorValueLabel}>Hex:</span>
+          <div className="colortoy__preview-info">
+            <div className="colortoy__color-value">
+              <span className="colortoy__color-value-label">Hex:</span>
               <code
-                style={{
-                  ...styles.colorValueCode,
-                  backgroundColor: copyFeedback === 'hex' ? '#d4edda' : '#fff',
-                }}
+                className={`colortoy__color-value-code${copyFeedback === 'hex' ? ' colortoy__color-value-code--copied' : ''}`}
                 onClick={() => this.copyToClipboard(previewColor, 'hex')}
                 title="Click to copy"
               >
                 {previewColor}
               </code>
-              {copyFeedback === 'hex' && <span style={{ marginLeft: '8px', color: '#28a745', fontSize: '12px' }}>Copied!</span>}
+              {copyFeedback === 'hex' && <span className="colortoy__copied-text">Copied!</span>}
             </div>
-            <div style={styles.colorValue}>
-              <span style={styles.colorValueLabel}>RGB:</span>
+            <div className="colortoy__color-value">
+              <span className="colortoy__color-value-label">RGB:</span>
               <code
-                style={{
-                  ...styles.colorValueCode,
-                  backgroundColor: copyFeedback === 'rgb' ? '#d4edda' : '#fff',
-                }}
+                className={`colortoy__color-value-code${copyFeedback === 'rgb' ? ' colortoy__color-value-code--copied' : ''}`}
                 onClick={() => this.copyToClipboard(`rgb(${r}, ${g}, ${b})`, 'rgb')}
                 title="Click to copy"
               >
                 rgb({r}, {g}, {b})
               </code>
             </div>
-            <div style={styles.colorValue}>
-              <span style={styles.colorValueLabel}>HSB:</span>
-              <code style={styles.colorValueCode}>
+            <div className="colortoy__color-value">
+              <span className="colortoy__color-value-label">HSB:</span>
+              <code className="colortoy__color-value-code">
                 {hue}, {sat}%, {bright}%
               </code>
             </div>
           </div>
         </div>
 
-        <div style={styles.twoColumn}>
+        <div className="colortoy__two-column">
           {/* HSB Controls */}
-          <div style={styles.card}>
-            <div style={styles.cardHeader}>HSB (Hue, Saturation, Brightness)</div>
+          <div className="colortoy__card">
+            <div className="colortoy__card-header">HSB (Hue, Saturation, Brightness)</div>
 
-            <div style={styles.sliderRow}>
-              <span style={styles.sliderLabel}>Hue</span>
+            <div className="colortoy__slider-row">
+              <span className="colortoy__slider-label">Hue</span>
               <input
                 type="range"
                 min="0"
                 max="419"
                 value={hue}
                 onChange={(e) => this.handleHSBChange('hue', parseInt(e.target.value, 10))}
-                style={{
-                  ...styles.slider,
-                  background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)',
-                }}
+                className="colortoy__slider colortoy__slider--hue"
               />
-              <span style={styles.sliderValue}>{hue}</span>
+              <span className="colortoy__slider-value">{hue}</span>
             </div>
 
-            <div style={styles.sliderRow}>
-              <span style={styles.sliderLabel}>Saturation</span>
+            <div className="colortoy__slider-row">
+              <span className="colortoy__slider-label">Saturation</span>
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={sat}
                 onChange={(e) => this.handleHSBChange('sat', parseInt(e.target.value, 10))}
-                style={styles.slider}
+                className="colortoy__slider"
               />
-              <span style={styles.sliderValue}>{sat}%</span>
+              <span className="colortoy__slider-value">{sat}%</span>
             </div>
 
-            <div style={styles.sliderRow}>
-              <span style={styles.sliderLabel}>Brightness</span>
+            <div className="colortoy__slider-row">
+              <span className="colortoy__slider-label">Brightness</span>
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={bright}
                 onChange={(e) => this.handleHSBChange('bright', parseInt(e.target.value, 10))}
-                style={styles.slider}
+                className="colortoy__slider"
               />
-              <span style={styles.sliderValue}>{bright}%</span>
+              <span className="colortoy__slider-value">{bright}%</span>
             </div>
 
-            <div style={styles.inputGroup}>
-              <div style={styles.inputWrapper}>
-                <label style={styles.inputLabel}>H (0-419)</label>
+            <div className="colortoy__input-group">
+              <div className="colortoy__input-wrapper">
+                <label className="colortoy__input-label">H (0-419)</label>
                 <input
                   type="text"
                   value={hue}
                   onChange={(e) => this.setState({ hue: e.target.value })}
                   onKeyPress={(e) => this.handleKeyPress(e, this.useHSB)}
-                  style={styles.input}
+                  className="colortoy__input"
                 />
               </div>
-              <div style={styles.inputWrapper}>
-                <label style={styles.inputLabel}>S (0-100)</label>
+              <div className="colortoy__input-wrapper">
+                <label className="colortoy__input-label">S (0-100)</label>
                 <input
                   type="text"
                   value={sat}
                   onChange={(e) => this.setState({ sat: e.target.value })}
                   onKeyPress={(e) => this.handleKeyPress(e, this.useHSB)}
-                  style={styles.input}
+                  className="colortoy__input"
                 />
               </div>
-              <div style={styles.inputWrapper}>
-                <label style={styles.inputLabel}>B (0-100)</label>
+              <div className="colortoy__input-wrapper">
+                <label className="colortoy__input-label">B (0-100)</label>
                 <input
                   type="text"
                   value={bright}
                   onChange={(e) => this.setState({ bright: e.target.value })}
                   onKeyPress={(e) => this.handleKeyPress(e, this.useHSB)}
-                  style={styles.input}
+                  className="colortoy__input"
                 />
               </div>
-              <button onClick={this.useHSB} style={styles.button}>
+              <button onClick={this.useHSB} className="colortoy__btn">
                 Apply
               </button>
             </div>
           </div>
 
           {/* RGB Controls */}
-          <div style={styles.card}>
-            <div style={styles.cardHeader}>RGB (Red, Green, Blue)</div>
+          <div className="colortoy__card">
+            <div className="colortoy__card-header">RGB (Red, Green, Blue)</div>
 
-            <div style={styles.sliderRow}>
-              <span style={{ ...styles.sliderLabel, color: '#c00' }}>Red</span>
+            <div className="colortoy__slider-row">
+              <span className="colortoy__slider-label colortoy__slider-label--red">Red</span>
               <input
                 type="range"
                 min="0"
@@ -766,13 +544,13 @@ class E2ColorToy extends Component {
                   const val = parseInt(e.target.value, 10);
                   this.setState({ r: val }, () => this.useRGB());
                 }}
-                style={{ ...styles.slider, accentColor: '#c00' }}
+                className="colortoy__slider colortoy__slider--red"
               />
-              <span style={styles.sliderValue}>{r}</span>
+              <span className="colortoy__slider-value">{r}</span>
             </div>
 
-            <div style={styles.sliderRow}>
-              <span style={{ ...styles.sliderLabel, color: '#0a0' }}>Green</span>
+            <div className="colortoy__slider-row">
+              <span className="colortoy__slider-label colortoy__slider-label--green">Green</span>
               <input
                 type="range"
                 min="0"
@@ -782,13 +560,13 @@ class E2ColorToy extends Component {
                   const val = parseInt(e.target.value, 10);
                   this.setState({ g: val }, () => this.useRGB());
                 }}
-                style={{ ...styles.slider, accentColor: '#0a0' }}
+                className="colortoy__slider colortoy__slider--green"
               />
-              <span style={styles.sliderValue}>{g}</span>
+              <span className="colortoy__slider-value">{g}</span>
             </div>
 
-            <div style={styles.sliderRow}>
-              <span style={{ ...styles.sliderLabel, color: '#00c' }}>Blue</span>
+            <div className="colortoy__slider-row">
+              <span className="colortoy__slider-label colortoy__slider-label--blue">Blue</span>
               <input
                 type="range"
                 min="0"
@@ -798,43 +576,43 @@ class E2ColorToy extends Component {
                   const val = parseInt(e.target.value, 10);
                   this.setState({ b: val }, () => this.useRGB());
                 }}
-                style={{ ...styles.slider, accentColor: '#00c' }}
+                className="colortoy__slider colortoy__slider--blue"
               />
-              <span style={styles.sliderValue}>{b}</span>
+              <span className="colortoy__slider-value">{b}</span>
             </div>
 
-            <div style={styles.inputGroup}>
-              <div style={styles.inputWrapper}>
-                <label style={{ ...styles.inputLabel, color: '#c00' }}>R (0-255)</label>
+            <div className="colortoy__input-group">
+              <div className="colortoy__input-wrapper">
+                <label className="colortoy__input-label colortoy__input-label--red">R (0-255)</label>
                 <input
                   type="text"
                   value={r}
                   onChange={(e) => this.handleRGBChange('r', e.target.value)}
                   onKeyPress={(e) => this.handleKeyPress(e, this.useRGB)}
-                  style={styles.input}
+                  className="colortoy__input"
                 />
               </div>
-              <div style={styles.inputWrapper}>
-                <label style={{ ...styles.inputLabel, color: '#0a0' }}>G (0-255)</label>
+              <div className="colortoy__input-wrapper">
+                <label className="colortoy__input-label colortoy__input-label--green">G (0-255)</label>
                 <input
                   type="text"
                   value={g}
                   onChange={(e) => this.handleRGBChange('g', e.target.value)}
                   onKeyPress={(e) => this.handleKeyPress(e, this.useRGB)}
-                  style={styles.input}
+                  className="colortoy__input"
                 />
               </div>
-              <div style={styles.inputWrapper}>
-                <label style={{ ...styles.inputLabel, color: '#00c' }}>B (0-255)</label>
+              <div className="colortoy__input-wrapper">
+                <label className="colortoy__input-label colortoy__input-label--blue">B (0-255)</label>
                 <input
                   type="text"
                   value={b}
                   onChange={(e) => this.handleRGBChange('b', e.target.value)}
                   onKeyPress={(e) => this.handleKeyPress(e, this.useRGB)}
-                  style={styles.input}
+                  className="colortoy__input"
                 />
               </div>
-              <button onClick={this.useRGB} style={styles.button}>
+              <button onClick={this.useRGB} className="colortoy__btn">
                 Apply
               </button>
             </div>
@@ -842,24 +620,24 @@ class E2ColorToy extends Component {
         </div>
 
         {/* Hex/Named Input */}
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>Hex / Named Color</div>
-          <div style={styles.inputGroup}>
-            <div style={styles.inputWrapper}>
-              <label style={styles.inputLabel}>Hex or Color Name</label>
+        <div className="colortoy__card">
+          <div className="colortoy__card-header">Hex / Named Color</div>
+          <div className="colortoy__input-group">
+            <div className="colortoy__input-wrapper">
+              <label className="colortoy__input-label">Hex or Color Name</label>
               <input
                 type="text"
                 value={hex}
                 onChange={(e) => this.handleHexChange(e.target.value)}
                 onKeyPress={(e) => this.handleKeyPress(e, this.useHex)}
-                style={styles.inputWide}
+                className="colortoy__input colortoy__input--wide"
                 placeholder="#ff6600 or orange"
               />
             </div>
-            <button onClick={this.useHex} style={styles.button}>
+            <button onClick={this.useHex} className="colortoy__btn">
               Apply
             </button>
-            <label style={styles.checkbox}>
+            <label className="colortoy__checkbox">
               <input
                 type="checkbox"
                 checked={nameToHex}
@@ -868,25 +646,22 @@ class E2ColorToy extends Component {
               Convert names to hex
             </label>
           </div>
-          <p style={styles.helpText}>
+          <p className="colortoy__help-text">
             Accepts hex codes (#ff6600) or <a href="/title/Named+HTML+Colors">HTML color names</a> like <code>dodgerblue</code>, <code>coral</code>, etc.
           </p>
 
           {/* E2 Fake Colors */}
-          <div style={{ marginTop: '16px' }}>
-            <div style={{ fontSize: '12px', color: '#507898', marginBottom: '8px' }}>E2 Custom Colors:</div>
-            <div style={styles.fakeColors}>
+          <div className="colortoy__section">
+            <div className="colortoy__section-label">E2 Custom Colors:</div>
+            <div className="colortoy__fake-colors">
               {['wharfkhaki', 'wharfolive', 'jukkaback', 'jukkaodd', 'jukkabrown'].map(name => {
                 const colorHex = NAMED_COLORS[name];
                 const colorObj = Color.fromString(colorHex);
                 return (
                   <div
                     key={name}
-                    style={{
-                      ...styles.fakeColorSwatch,
-                      backgroundColor: colorHex,
-                      color: colorObj.getContrastColor(),
-                    }}
+                    className="colortoy__fake-color-swatch"
+                    style={{ backgroundColor: colorHex, color: colorObj.getContrastColor() }}
                     onClick={() => this.selectFakeColor(name)}
                     title={`${name} (${colorHex})`}
                   >
@@ -899,52 +674,52 @@ class E2ColorToy extends Component {
         </div>
 
         {/* Gradient Generator */}
-        <div style={styles.card}>
-          <div style={styles.cardHeader}>Gradient Generator</div>
+        <div className="colortoy__card">
+          <div className="colortoy__card-header">Gradient Generator</div>
 
-          <div style={styles.inputGroup}>
-            <div style={styles.inputWrapper}>
-              <label style={styles.inputLabel}>From</label>
+          <div className="colortoy__input-group">
+            <div className="colortoy__input-wrapper">
+              <label className="colortoy__input-label">From</label>
               <input
                 type="text"
                 value={gradFrom}
                 onChange={(e) => this.setState({ gradFrom: e.target.value })}
                 onKeyPress={(e) => this.handleKeyPress(e, this.generateGradient)}
-                style={styles.inputWide}
+                className="colortoy__input colortoy__input--wide"
               />
             </div>
-            <button onClick={this.useForGradFrom} style={styles.buttonSecondary}>
+            <button onClick={this.useForGradFrom} className="colortoy__btn--secondary">
               Use Current
             </button>
-            <div style={styles.inputWrapper}>
-              <label style={styles.inputLabel}>To</label>
+            <div className="colortoy__input-wrapper">
+              <label className="colortoy__input-label">To</label>
               <input
                 type="text"
                 value={gradTo}
                 onChange={(e) => this.setState({ gradTo: e.target.value })}
                 onKeyPress={(e) => this.handleKeyPress(e, this.generateGradient)}
-                style={styles.inputWide}
+                className="colortoy__input colortoy__input--wide"
               />
             </div>
-            <button onClick={this.useForGradTo} style={styles.buttonSecondary}>
+            <button onClick={this.useForGradTo} className="colortoy__btn--secondary">
               Use Current
             </button>
-            <div style={styles.inputWrapper}>
-              <label style={styles.inputLabel}>Steps</label>
+            <div className="colortoy__input-wrapper">
+              <label className="colortoy__input-label">Steps</label>
               <input
                 type="text"
                 value={gradSteps}
                 onChange={(e) => this.setState({ gradSteps: e.target.value })}
                 onKeyPress={(e) => this.handleKeyPress(e, this.generateGradient)}
-                style={{ ...styles.input, width: '50px' }}
+                className="colortoy__input colortoy__input--narrow"
               />
             </div>
-            <button onClick={this.generateGradient} style={styles.button}>
+            <button onClick={this.generateGradient} className="colortoy__btn">
               Generate
             </button>
           </div>
 
-          <label style={{ ...styles.checkbox, marginBottom: '12px' }}>
+          <label className="colortoy__checkbox colortoy__checkbox--margin">
             <input
               type="checkbox"
               checked={gradNameToHex}
@@ -954,17 +729,14 @@ class E2ColorToy extends Component {
           </label>
 
           {/* Gradient Preview Strip */}
-          <div style={styles.gradientStrip}>
+          <div className="colortoy__gradient-strip">
             {gradColors.map((color, idx) => {
               const colorObj = Color.fromString(color);
               return (
                 <div
                   key={idx}
-                  style={{
-                    ...styles.gradientSwatch,
-                    backgroundColor: color,
-                    color: colorObj.getContrastColor(),
-                  }}
+                  className="colortoy__gradient-swatch"
+                  style={{ backgroundColor: color, color: colorObj.getContrastColor() }}
                   onClick={() => this.selectGradientColor(color)}
                   title={`Click to select ${color}`}
                 >
@@ -975,11 +747,11 @@ class E2ColorToy extends Component {
           </div>
 
           {/* Gradient Output */}
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '12px', color: '#507898' }}>Output (one hex per line):</span>
+          <div className="colortoy__output-header">
+            <span className="colortoy__output-label">Output (one hex per line):</span>
             <button
               onClick={() => this.copyToClipboard(gradOutput, 'gradient')}
-              style={styles.copyButton}
+              className="colortoy__copy-btn"
             >
               {copyFeedback === 'gradient' ? 'Copied!' : 'Copy All'}
             </button>
@@ -988,7 +760,7 @@ class E2ColorToy extends Component {
             value={gradOutput}
             readOnly
             rows={Math.min(gradColors.length + 1, 12)}
-            style={styles.textarea}
+            className="colortoy__textarea"
           />
         </div>
       </div>

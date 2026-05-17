@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 /**
  * E2 Bouncer - Chanop tool for bulk user room management
+ * Styles in CSS: .e2-bouncer__*
  *
  * Also known as "Nerf Borg" - a softer way to manage user locations
  * by moving them to different chat rooms instead of borging them.
@@ -79,8 +80,8 @@ const E2Bouncer = ({ data, e2 }) => {
   // Permission denied
   if (!is_chanop) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="e2-bouncer">
+        <div className="e2-bouncer__error">
           <strong>Permission Denied.</strong>
           <p>E2 Bouncer is only available to Channel Operators (Chanops).</p>
         </div>
@@ -89,8 +90,8 @@ const E2Bouncer = ({ data, e2 }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.description}>
+    <div className="e2-bouncer">
+      <div className="e2-bouncer__description">
         <p><em>...a.k.a Nerf Borg.</em></p>
         <p>
           Move users between chat rooms without borging them.
@@ -98,17 +99,17 @@ const E2Bouncer = ({ data, e2 }) => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formRow}>
-          <div style={styles.labelColumn}>
-            <label style={styles.label}>Move user(s):</label>
-            <p style={styles.hint}>
+      <form onSubmit={handleSubmit} className="e2-bouncer__form">
+        <div className="e2-bouncer__form-row">
+          <div className="e2-bouncer__label-column">
+            <label className="e2-bouncer__label">Move user(s):</label>
+            <p className="e2-bouncer__hint">
               Put each username on its own line, and don't hardlink them.
             </p>
           </div>
-          <div style={styles.inputColumn}>
+          <div className="e2-bouncer__input-column">
             <textarea
-              style={styles.textarea}
+              className="e2-bouncer__textarea"
               value={usernames}
               onChange={(e) => setUsernames(e.target.value)}
               rows={12}
@@ -118,13 +119,13 @@ const E2Bouncer = ({ data, e2 }) => {
           </div>
         </div>
 
-        <div style={styles.formRow}>
-          <div style={styles.labelColumn}>
-            <label style={styles.label}>To room:</label>
+        <div className="e2-bouncer__form-row">
+          <div className="e2-bouncer__label-column">
+            <label className="e2-bouncer__label">To room:</label>
           </div>
-          <div style={styles.inputColumn}>
+          <div className="e2-bouncer__input-column">
             <select
-              style={styles.select}
+              className="e2-bouncer__select"
               value={selectedRoom}
               onChange={(e) => setSelectedRoom(e.target.value)}
               disabled={processing}
@@ -139,15 +140,12 @@ const E2Bouncer = ({ data, e2 }) => {
           </div>
         </div>
 
-        <div style={styles.formRow}>
-          <div style={styles.labelColumn}></div>
-          <div style={styles.inputColumn}>
+        <div className="e2-bouncer__form-row">
+          <div className="e2-bouncer__label-column"></div>
+          <div className="e2-bouncer__input-column">
             <button
               type="submit"
-              style={{
-                ...styles.button,
-                ...(processing ? styles.buttonDisabled : {})
-              }}
+              className={`e2-bouncer__button${processing ? ' e2-bouncer__button--disabled' : ''}`}
               disabled={processing}
             >
               {processing ? 'Moving...' : 'Move Users'}
@@ -157,18 +155,18 @@ const E2Bouncer = ({ data, e2 }) => {
       </form>
 
       {result && (
-        <div style={styles.result}>
+        <div className="e2-bouncer__result">
           {result.success ? (
             <>
               {result.moved && result.moved.length > 0 && (
-                <div style={styles.successBox}>
-                  <h4 style={styles.resultHeading}>
+                <div className="e2-bouncer__success-box">
+                  <h4 className="e2-bouncer__result-heading">
                     Moved to {result.room_title}:
                   </h4>
-                  <ol style={styles.userList}>
+                  <ol className="e2-bouncer__user-list">
                     {result.moved.map((username, index) => (
                       <li key={index}>
-                        <a href={`/title/${encodeURIComponent(username)}`} style={styles.userLink}>
+                        <a href={`/title/${encodeURIComponent(username)}`} className="e2-bouncer__user-link">
                           {username}
                         </a>
                       </li>
@@ -178,9 +176,9 @@ const E2Bouncer = ({ data, e2 }) => {
               )}
 
               {result.not_found && result.not_found.length > 0 && (
-                <div style={styles.warningBox}>
-                  <h4 style={styles.resultHeading}>Users not found:</h4>
-                  <ul style={styles.errorList}>
+                <div className="e2-bouncer__warning-box">
+                  <h4 className="e2-bouncer__result-heading">Users not found:</h4>
+                  <ul className="e2-bouncer__error-list">
                     {result.not_found.map((username, i) => (
                       <li key={i}><strong>"{username}"</strong> does not exist</li>
                     ))}
@@ -189,29 +187,29 @@ const E2Bouncer = ({ data, e2 }) => {
               )}
 
               {(!result.moved || result.moved.length === 0) && (
-                <div style={styles.warningBox}>
+                <div className="e2-bouncer__warning-box">
                   <p>No users were moved.</p>
                 </div>
               )}
             </>
           ) : (
-            <div style={styles.errorBox}>
+            <div className="e2-bouncer__error-box">
               <strong>Error:</strong> {result.error}
             </div>
           )}
         </div>
       )}
 
-      <hr style={styles.divider} />
+      <hr className="e2-bouncer__divider" />
 
-      <div style={styles.roomList}>
-        <p style={styles.quip}>{quip}</p>
+      <div className="e2-bouncer__room-list">
+        <p className="e2-bouncer__quip">{quip}</p>
         <p>Visit room:</p>
         <ul>
-          <li><a href="/title/Go%20Outside" style={styles.roomLink}>outside</a></li>
+          <li><a href="/title/Go%20Outside" className="e2-bouncer__room-link">outside</a></li>
           {rooms.map(room => (
             <li key={room.node_id}>
-              <a href={`/title/${encodeURIComponent(room.title)}`} style={styles.roomLink}>
+              <a href={`/title/${encodeURIComponent(room.title)}`} className="e2-bouncer__room-link">
                 {room.title}
               </a>
             </li>
@@ -220,150 +218,6 @@ const E2Bouncer = ({ data, e2 }) => {
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  description: {
-    marginBottom: '20px',
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  form: {
-    marginBottom: '20px'
-  },
-  formRow: {
-    display: 'flex',
-    marginBottom: '15px'
-  },
-  labelColumn: {
-    width: '150px',
-    paddingRight: '15px',
-    textAlign: 'right'
-  },
-  inputColumn: {
-    flex: 1
-  },
-  label: {
-    fontWeight: 'bold',
-    display: 'block',
-    marginBottom: '5px'
-  },
-  hint: {
-    fontSize: '13px',
-    color: '#507898',
-    fontStyle: 'italic',
-    margin: '5px 0'
-  },
-  textarea: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  select: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-    background: 'white'
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    background: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  },
-  buttonDisabled: {
-    background: '#999',
-    cursor: 'not-allowed'
-  },
-  result: {
-    marginTop: '20px'
-  },
-  successBox: {
-    padding: '15px',
-    background: '#e8f5e9',
-    border: '1px solid #4caf50',
-    borderRadius: '4px',
-    marginBottom: '15px'
-  },
-  warningBox: {
-    padding: '15px',
-    background: '#fff3e0',
-    border: '1px solid #ff9800',
-    borderRadius: '4px',
-    marginBottom: '15px'
-  },
-  errorBox: {
-    padding: '15px',
-    background: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px'
-  },
-  error: {
-    padding: '20px',
-    background: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    textAlign: 'center'
-  },
-  resultHeading: {
-    margin: '0 0 10px 0',
-    fontSize: '14px',
-    color: '#38495e'
-  },
-  userList: {
-    margin: 0,
-    paddingLeft: '20px'
-  },
-  errorList: {
-    margin: 0,
-    paddingLeft: '20px',
-    color: '#c00000'
-  },
-  userLink: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  divider: {
-    margin: '30px 0',
-    border: 'none',
-    borderTop: '1px solid #dee2e6'
-  },
-  roomList: {
-    marginTop: '20px'
-  },
-  quip: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-    color: '#507898',
-    marginBottom: '15px'
-  },
-  roomLink: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  }
 };
 
 export default E2Bouncer;

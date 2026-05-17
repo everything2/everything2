@@ -36,21 +36,21 @@ export default function E2SourceCodeFormatter() {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <p style={{ textAlign: 'justify' }}>
+    <div className="source-formatter">
+      <p className="source-formatter__intro">
         You have fallen into the loving arms of the E2 Source Code Formatter.
         Just paste your source code into the box and click the <strong>"Reformat"</strong> button,
         and all your dreams will come true. If you don't know (or don't care) what source code is,
         you won't find this thing useful at all.
       </p>
 
-      <p style={{ textAlign: 'justify' }}>
+      <p className="source-formatter__intro">
         The <strong>"Reformat"</strong> button replaces angle brackets, square brackets, and
         ampersands with appropriate HTML character entities. <strong>"DEformat"</strong> changes
         them back again.
       </p>
 
-      <p style={{ textAlign: 'justify' }}>
+      <p className="source-formatter__intro">
         Because users' screen resolutions vary, we strongly urge you to keep your code &lt;= 80
         columns in width so that it doesn't mess with E2's page formatting. If the lines are far
         too wide, a god may feel compelled to fix the thing -- and most of our gods are not
@@ -60,14 +60,14 @@ export default function E2SourceCodeFormatter() {
         Don't start me on about where the braces go.
       </p>
 
-      <p style={{ textAlign: 'justify' }}>
+      <p className="source-formatter__intro">
         These operations are performed on the entire string, so you'll want to paste in only the
         actual source code part of your writeup. You'll need to supply your own{' '}
         <code>&lt;pre&gt;</code> tags as well. I fussed around with making it{' '}
         <code>&lt;pre&gt;</code>-aware, but that got painful.
       </p>
 
-      <dl style={{ marginBottom: '20px' }}>
+      <dl className="source-formatter__links">
         <dt><strong>Other E2 Formatting Utilities:</strong></dt>
         <dd>
           <strong>
@@ -80,73 +80,41 @@ export default function E2SourceCodeFormatter() {
       <form
         name="codefixer"
         onSubmit={(e) => e.preventDefault()}
-        style={{ marginTop: '20px' }}
+        className="source-formatter__form"
       >
         <textarea
           name="edit"
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          style={{
-            width: '100%',
-            maxWidth: '800px',
-            height: '400px',
-            fontFamily: 'monospace',
-            fontSize: '14px',
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '4px'
-          }}
+          className="source-formatter__textarea"
         />
 
-        <div style={{ marginTop: '10px' }}>
+        <div className="source-formatter__buttons">
           <button
             type="button"
             onClick={handleReformat}
-            style={{
-              padding: '8px 16px',
-              marginRight: '10px',
-              backgroundColor: '#4060b0',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+            className="source-formatter__btn source-formatter__btn--primary"
           >
             Reformat
           </button>
           <button
             type="button"
             onClick={handleDeformat}
-            style={{
-              padding: '8px 16px',
-              marginRight: '10px',
-              backgroundColor: '#507898',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+            className="source-formatter__btn source-formatter__btn--secondary"
           >
             DEformat
           </button>
           <button
             type="button"
             onClick={handleClear}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#666',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+            className="source-formatter__btn source-formatter__btn--muted"
           >
             Clear
           </button>
         </div>
       </form>
 
-      <hr style={{ marginTop: '30px' }} />
+      <hr className="source-formatter__hr" />
     </div>
   );
 }

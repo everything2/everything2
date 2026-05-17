@@ -42,8 +42,10 @@ run_perl_tests() {
     echo ""
     echo "=== Running Perl Unit Tests ==="
     # Run timeout INSIDE container to avoid exit code propagation issues
-    # between timeout -> docker exec -> perl boundaries
-    docker exec e2devapp timeout 120 perl -I /var/everything/ecore -I /var/libraries/lib/perl5 /var/everything/t/run.pl 2>&1
+    # between timeout -> docker exec -> perl boundaries.
+    # 600s ceiling: full suite (94 files, 3527 tests) runs ~230s on a 2-core dev container;
+    # 600s leaves ~2.5x headroom for slower laptops and future test growth.
+    docker exec e2devapp timeout 600 perl -I /var/everything/ecore -I /var/libraries/lib/perl5 /var/everything/t/run.pl 2>&1
     PERL_TEST_EXIT=$?
     if [ $PERL_TEST_EXIT -eq 0 ]; then
       echo -e "${GREEN}✓ Perl tests passed${NC}"

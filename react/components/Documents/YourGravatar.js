@@ -12,7 +12,7 @@ const YourGravatar = ({ data }) => {
         based on your email address (don't worry, we hash it first). These dynamic avatars can be
         generated in one of four styles: default, identicon, monsterid, or wavatar.
       </p>
-      <p style={{ fontSize: '0.9em', color: '#666' }}>
+      <p className="your-gravatar__note">
         <small>
           If you have an account at gravatar.com, but your avatar isn't showing up correctly below,
           be sure you are using the same email address on E2 that you registered with on gravatar.
@@ -21,13 +21,13 @@ const YourGravatar = ({ data }) => {
       </p>
 
       {gravatars.map(({ size, urls }) => (
-        <div key={size} style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <p style={{ fontWeight: 'bold', marginBottom: '10px' }}>{size} pixels</p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <div key={size} className="your-gravatar__size-section">
+          <p className="your-gravatar__size-label">{size} pixels</p>
+          <div className="your-gravatar__grid">
             {urls.map(({ url, style }) => (
-              <div key={style} style={{ textAlign: 'center' }}>
+              <div key={style} className="your-gravatar__item">
                 <img src={url} alt={`${style} style`} title={style} />
-                <div style={{ fontSize: '0.8em', color: '#888', marginTop: '4px' }}>{style}</div>
+                <div className="your-gravatar__style-label">{style}</div>
               </div>
             ))}
           </div>

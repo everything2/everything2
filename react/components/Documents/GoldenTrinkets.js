@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * Golden Trinkets - Display user's karma (blessings received)
+ * Styles in CSS: .golden-trinkets__*
  *
  * Phase 4a migration from Mason template golden_trinkets.mc
  * Shows: User's karma count, admin lookup feature
@@ -14,8 +15,8 @@ const GoldenTrinkets = ({ data, user }) => {
   const error = data.error
 
   return (
-    <div className="golden-trinkets" style={{ padding: '40px 20px', textAlign: 'center' }}>
-      <div style={{ fontSize: '16px', marginBottom: '40px' }}>
+    <div className="golden-trinkets">
+      <div className="golden-trinkets__message">
         {karma === 0 ? (
           <em>You are not feeling very special.</em>
         ) : karma < 0 ? (
@@ -29,47 +30,21 @@ const GoldenTrinkets = ({ data, user }) => {
       </div>
 
       {isAdmin && (
-        <div
-          style={{
-            marginTop: '40px',
-            padding: '20px',
-            backgroundColor: '#f8f9fa',
-            border: '1px solid #dee2e6',
-            borderRadius: '5px',
-            maxWidth: '500px',
-            margin: '40px auto'
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>Admin Lookup</h3>
+        <div className="golden-trinkets__admin-box">
+          <h3 className="golden-trinkets__admin-title">Admin Lookup</h3>
 
           <form method="GET">
-            <div style={{ marginBottom: '10px' }}>
+            <div className="golden-trinkets__form-row">
               <input
                 type="text"
                 name="for_user"
                 placeholder="Enter username"
                 defaultValue=""
-                style={{
-                  padding: '8px 12px',
-                  fontSize: '14px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '3px',
-                  width: '200px'
-                }}
+                className="golden-trinkets__input"
               />
               <button
                 type="submit"
-                style={{
-                  marginLeft: '10px',
-                  padding: '8px 16px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  color: '#fff',
-                  backgroundColor: '#38495e',
-                  border: 'none',
-                  borderRadius: '3px',
-                  cursor: 'pointer'
-                }}
+                className="golden-trinkets__submit-btn"
               >
                 Lookup
               </button>
@@ -77,31 +52,13 @@ const GoldenTrinkets = ({ data, user }) => {
           </form>
 
           {error && (
-            <div
-              style={{
-                marginTop: '10px',
-                padding: '10px',
-                backgroundColor: '#fff3cd',
-                border: '1px solid #ffc107',
-                borderRadius: '3px',
-                color: '#856404'
-              }}
-            >
+            <div className="golden-trinkets__error-box">
               <em>{error}</em>
             </div>
           )}
 
           {forUser && (
-            <div
-              style={{
-                marginTop: '10px',
-                padding: '10px',
-                backgroundColor: '#d4edda',
-                border: '1px solid #c3e6cb',
-                borderRadius: '3px',
-                color: '#155724'
-              }}
-            >
+            <div className="golden-trinkets__result-box">
               <LinkNode title={forUser.username} type="user" />'s karma: {forUser.karma}
             </div>
           )}

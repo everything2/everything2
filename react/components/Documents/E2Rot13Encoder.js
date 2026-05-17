@@ -47,8 +47,8 @@ const E2Rot13Encoder = ({ data }) => {
   }
 
   return (
-    <div>
-      <p style={{ marginBottom: '16px', fontSize: '14px' }}>
+    <div className="rot13-encoder">
+      <p className="rot13-encoder__intro">
         Paste text below and click the button to encode or decode using ROT13.
       </p>
 
@@ -58,31 +58,13 @@ const E2Rot13Encoder = ({ data }) => {
           rows="15"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          style={{
-            width: '100%',
-            maxWidth: '800px',
-            padding: '8px',
-            fontFamily: 'monospace',
-            fontSize: '13px',
-            border: '1px solid #d3d3d3',
-            borderRadius: '4px',
-            boxSizing: 'border-box'
-          }}
+          className="rot13-encoder__textarea"
         />
         <br />
         <button
           type="button"
           onClick={handleEncode}
-          style={{
-            marginTop: '12px',
-            padding: '8px 16px',
-            backgroundColor: '#4060b0',
-            color: 'white',
-            border: '1px solid #38495e',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '14px'
-          }}
+          className="rot13-encoder__button"
         >
           ROT13 Encode/Decode
         </button>

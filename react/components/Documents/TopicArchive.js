@@ -1,78 +1,9 @@
 import React from 'react'
 
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.5rem',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginBottom: '20px',
-  },
-  th: {
-    textAlign: 'left',
-    padding: '10px',
-    border: '1px solid #ddd',
-    backgroundColor: '#f8f9fa',
-    fontWeight: 'bold',
-  },
-  td: {
-    padding: '10px',
-    border: '1px solid #ddd',
-  },
-  time: {
-    fontSize: '12px',
-    color: '#666',
-    whiteSpace: 'nowrap',
-  },
-  pager: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '40px',
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-  },
-  pagerLink: {
-    color: '#007bff',
-    textDecoration: 'none',
-    padding: '8px 16px',
-    border: '1px solid #007bff',
-    borderRadius: '4px',
-  },
-  pagerDisabled: {
-    color: '#999',
-    padding: '8px 16px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-  },
-  empty: {
-    padding: '20px',
-    textAlign: 'center',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-  },
-  error: {
-    padding: '15px',
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    borderRadius: '8px',
-    marginBottom: '20px',
-  },
-}
-
+/**
+ * TopicArchive - Room topic change log
+ * Styles in CSS: .topic-archive__*
+ */
 const TopicArchive = ({ data }) => {
   const archiveData = data || {}
   const {
@@ -87,11 +18,11 @@ const TopicArchive = ({ data }) => {
 
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Topic Archive</h1>
+      <div className="topic-archive">
+        <div className="topic-archive__header">
+          <h1 className="topic-archive__title">Topic Archive</h1>
         </div>
-        <div style={styles.error}>{error}</div>
+        <div className="topic-archive__error">{error}</div>
       </div>
     )
   }
@@ -103,43 +34,43 @@ const TopicArchive = ({ data }) => {
   const rangeEnd = Math.min(startat + entries.length, totalCount)
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Topic Archive</h1>
+    <div className="topic-archive">
+      <div className="topic-archive__header">
+        <h1 className="topic-archive__title">Topic Archive</h1>
       </div>
 
       <p>Log of room topic changes from the E2 Gift Shop.</p>
 
       {entries.length === 0 ? (
-        <div style={styles.empty}>No entries found.</div>
+        <div className="topic-archive__empty">No entries found.</div>
       ) : (
         <>
-          <table style={styles.table}>
+          <table className="topic-archive__table">
             <thead>
               <tr>
-                <th style={styles.th}>Time</th>
-                <th style={styles.th}>Details</th>
+                <th className="topic-archive__th">Time</th>
+                <th className="topic-archive__th">Details</th>
               </tr>
             </thead>
             <tbody>
               {entries.map((entry, index) => (
-                <tr key={index} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                  <td style={styles.td}>
-                    <span style={styles.time}>{entry.time}</span>
+                <tr key={index} className={index % 2 === 0 ? 'topic-archive__row--even' : 'topic-archive__row--odd'}>
+                  <td className="topic-archive__td">
+                    <span className="topic-archive__time">{entry.time}</span>
                   </td>
-                  <td style={styles.td} dangerouslySetInnerHTML={{ __html: entry.details }} />
+                  <td className="topic-archive__td" dangerouslySetInnerHTML={{ __html: entry.details }} />
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div style={styles.pager}>
+          <div className="topic-archive__pager">
             {hasPrev ? (
-              <a href={`?startat=${prevStart}`} style={styles.pagerLink}>
+              <a href={`?startat=${prevStart}`} className="topic-archive__pager-link">
                 Previous ({prevStart + 1}-{startat})
               </a>
             ) : (
-              <span style={styles.pagerDisabled}>Previous</span>
+              <span className="topic-archive__pager-disabled">Previous</span>
             )}
 
             <span>
@@ -147,11 +78,11 @@ const TopicArchive = ({ data }) => {
             </span>
 
             {hasNext ? (
-              <a href={`?startat=${nextStart}`} style={styles.pagerLink}>
+              <a href={`?startat=${nextStart}`} className="topic-archive__pager-link">
                 Next ({nextStart + 1}-{Math.min(nextStart + pageSize, totalCount)})
               </a>
             ) : (
-              <span style={styles.pagerDisabled}>(end of list)</span>
+              <span className="topic-archive__pager-disabled">(end of list)</span>
             )}
           </div>
         </>

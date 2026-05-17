@@ -52,7 +52,7 @@ const RenunciationChainsaw = ({ data }) => {
           )}
 
           {nonexistent.length > 0 && (
-            <span style={{ color: '#c00000' }}>
+            <span className="renunciation-chainsaw__error">
               <dt>&nbsp;</dt>
               <dt>
                 <strong>Nonexistent nodes:</strong> (if you provided writeup titles,
@@ -66,7 +66,7 @@ const RenunciationChainsaw = ({ data }) => {
           )}
 
           {bad_owner.length > 0 && (
-            <span style={{ color: '#c00000' }}>
+            <span className="renunciation-chainsaw__error">
               <dt>&nbsp;</dt>
               <dt>
                 <strong>Wrong <code>author_user</code> (SQL problem; talk to nate):</strong>
@@ -80,7 +80,7 @@ const RenunciationChainsaw = ({ data }) => {
           )}
 
           {bad_type.length > 0 && (
-            <span style={{ color: '#c00000' }}>
+            <span className="renunciation-chainsaw__error">
               <dt>&nbsp;</dt>
               <dt>
                 <strong>Wrong <code>type_nodetype</code> (SQL problem; talk to nate):</strong>
@@ -94,7 +94,7 @@ const RenunciationChainsaw = ({ data }) => {
           )}
 
           {no_writeup.length > 0 && (
-            <span style={{ color: '#c00000' }}>
+            <span className="renunciation-chainsaw__error">
               <dt>&nbsp;</dt>
               <dt>
                 <strong>
@@ -109,7 +109,7 @@ const RenunciationChainsaw = ({ data }) => {
             </span>
           )}
 
-          <p style={{ marginTop: '20px' }}>
+          <p className="renunciation-chainsaw__back-link">
             [ <LinkNode id={node_id} display="back" /> ]
           </p>
         </dl>
@@ -127,7 +127,7 @@ const RenunciationChainsaw = ({ data }) => {
               name="user_name_from"
               id="user_name_from"
               defaultValue={prefill_user || (generated_list ? generated_list.user_title : '')}
-              style={{ width: '200px' }}
+              className="renunciation-chainsaw__input"
             />
             {' '}
             <a
@@ -141,27 +141,19 @@ const RenunciationChainsaw = ({ data }) => {
                 }
                 window.location.href = `/?node_id=${node_id}&nodes_for=${encodeURIComponent(username)}`
               }}
-              style={{
-                padding: '2px 8px',
-                backgroundColor: '#38495e',
-                color: '#fff',
-                textDecoration: 'none',
-                borderRadius: '3px',
-                fontSize: '12px',
-                cursor: 'pointer'
-              }}
+              className="renunciation-chainsaw__generate-btn"
             >
               Generate nodelist
             </a>
           </p>
 
           {list_error && (
-            <p style={{ color: '#c00000', marginTop: '10px' }}>{list_error}</p>
+            <p className="renunciation-chainsaw__list-error">{list_error}</p>
           )}
 
           <p>
             to user<br />
-            <input type="text" name="user_name_to" style={{ width: '200px' }} />
+            <input type="text" name="user_name_to" className="renunciation-chainsaw__input" />
           </p>
 
           <p>The writeups in question:</p>

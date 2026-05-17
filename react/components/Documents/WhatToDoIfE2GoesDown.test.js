@@ -14,12 +14,11 @@ describe('WhatToDoIfE2GoesDown', () => {
   it('renders a suggestion from the suggestions array', () => {
     const { container } = render(<WhatToDoIfE2GoesDown />)
 
-    // Find the suggestion div - it's the second div with style attribute
-    const divs = container.querySelectorAll('div[style]')
-    const suggestionDiv = divs[divs.length - 1] // Last div with style is the suggestion
+    // Find the suggestion div by class name
+    const suggestionDiv = container.querySelector('.what-to-do-if-e2-goes-down__suggestion')
 
-    // Should have bold, large text styling
-    expect(suggestionDiv).toHaveStyle({ fontSize: '32px', fontWeight: 'bold' })
+    // Should exist
+    expect(suggestionDiv).toBeInTheDocument()
 
     // Should contain some non-empty HTML content
     expect(suggestionDiv.innerHTML).toBeTruthy()
@@ -30,8 +29,7 @@ describe('WhatToDoIfE2GoesDown', () => {
     const { container } = render(<WhatToDoIfE2GoesDown />)
 
     // All 93 suggestions are valid - just verify something rendered
-    const divs = container.querySelectorAll('div[style]')
-    const suggestionDiv = divs[divs.length - 1]
+    const suggestionDiv = container.querySelector('.what-to-do-if-e2-goes-down__suggestion')
 
     // Known suggestions that appear frequently (multiple "Go outside" entries)
     const knownSuggestions = [
@@ -75,13 +73,12 @@ describe('WhatToDoIfE2GoesDown', () => {
     const { container, rerender } = render(<WhatToDoIfE2GoesDown />)
 
     // Get initial suggestion text
-    const divs = container.querySelectorAll('div[style]')
-    const initialSuggestion = divs[divs.length - 1].innerHTML
+    const suggestionDiv = container.querySelector('.what-to-do-if-e2-goes-down__suggestion')
+    const initialSuggestion = suggestionDiv.innerHTML
 
     // Re-render should show same suggestion (useMemo with empty deps)
     rerender(<WhatToDoIfE2GoesDown />)
-    const divsAfter = container.querySelectorAll('div[style]')
-    const suggestionAfter = divsAfter[divsAfter.length - 1].innerHTML
+    const suggestionAfter = container.querySelector('.what-to-do-if-e2-goes-down__suggestion').innerHTML
 
     expect(suggestionAfter).toBe(initialSuggestion)
   })

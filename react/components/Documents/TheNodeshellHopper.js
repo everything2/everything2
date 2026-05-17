@@ -1,105 +1,9 @@
 import React, { useState, useCallback } from 'react'
 
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.5rem',
-  },
-  description: {
-    marginBottom: '20px',
-    lineHeight: '1.6',
-  },
-  featureList: {
-    marginBottom: '20px',
-    paddingLeft: '20px',
-  },
-  form: {
-    marginBottom: '20px',
-  },
-  textarea: {
-    width: '100%',
-    minHeight: '300px',
-    padding: '10px',
-    fontFamily: 'monospace',
-    fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    marginBottom: '15px',
-    resize: 'vertical',
-  },
-  button: {
-    padding: '12px 24px',
-    backgroundColor: '#c00',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  buttonDisabled: {
-    backgroundColor: '#999',
-    cursor: 'not-allowed',
-  },
-  results: {
-    marginTop: '20px',
-  },
-  resultItem: {
-    padding: '8px 12px',
-    marginBottom: '4px',
-    borderRadius: '4px',
-    fontFamily: 'monospace',
-    fontSize: '13px',
-  },
-  deleted: {
-    backgroundColor: '#d4edda',
-    color: '#155724',
-  },
-  notFound: {
-    backgroundColor: '#fff3cd',
-    color: '#856404',
-  },
-  notEmpty: {
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-  },
-  hasFirmlink: {
-    backgroundColor: '#cce5ff',
-    color: '#004085',
-  },
-  error: {
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-  },
-  summary: {
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '4px',
-    marginBottom: '20px',
-  },
-  summaryTitle: {
-    margin: '0 0 10px 0',
-    fontSize: '1.1rem',
-  },
-  warning: {
-    padding: '15px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    marginBottom: '20px',
-  },
-}
-
+/**
+ * TheNodeshellHopper - Bulk nodeshell deletion tool
+ * Styles in CSS: .nodeshell-hopper__*
+ */
 const TheNodeshellHopper = () => {
   const [nodeshells, setNodeshells] = useState('')
   const [loading, setLoading] = useState(false)
@@ -148,13 +52,14 @@ const TheNodeshellHopper = () => {
     }
   }, [nodeshells])
 
-  const getResultStyle = (status) => {
+  const getResultClassName = (status) => {
+    const base = 'nodeshell-hopper__result-item'
     switch (status) {
-      case 'deleted': return { ...styles.resultItem, ...styles.deleted }
-      case 'not_found': return { ...styles.resultItem, ...styles.notFound }
-      case 'not_empty': return { ...styles.resultItem, ...styles.notEmpty }
-      case 'has_firmlink': return { ...styles.resultItem, ...styles.hasFirmlink }
-      default: return { ...styles.resultItem, ...styles.error }
+      case 'deleted': return `${base} ${base}--deleted`
+      case 'not_found': return `${base} ${base}--not-found`
+      case 'not_empty': return `${base} ${base}--not-empty`
+      case 'has_firmlink': return `${base} ${base}--has-firmlink`
+      default: return `${base} ${base}--error`
     }
   }
 
@@ -169,12 +74,8 @@ const TheNodeshellHopper = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>The Nodeshell Hopper</h1>
-      </div>
-
-      <div style={styles.description}>
+    <div className="nodeshell-hopper">
+      <div className="nodeshell-hopper__description">
         <p>A smarter nodeshell deletion implementation.</p>
         <p>
           Copy and paste from the nodeshells marked for destruction lists.
@@ -183,28 +84,24 @@ const TheNodeshellHopper = () => {
         <p><strong>Note:</strong> This operation may take some time for large lists.</p>
       </div>
 
-      <ul style={styles.featureList}>
+      <ul className="nodeshell-hopper__feature-list">
         <li>Checks to see if it's an E2node</li>
         <li>Checks to see whether it is empty</li>
         <li>Checks for firmlinks</li>
         <li>Deletes the nodeshell if all checks pass</li>
       </ul>
 
-      <div style={styles.warning}>
-        <strong>Warning:</strong> Deleted nodeshells cannot be recovered. Make sure you review the list carefully before proceeding.
-      </div>
-
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} className="nodeshell-hopper__form">
         <textarea
           value={nodeshells}
           onChange={(e) => setNodeshells(e.target.value)}
-          style={styles.textarea}
+          className="nodeshell-hopper__textarea"
           placeholder="Enter nodeshell titles, one per line..."
           disabled={loading}
         />
         <button
           type="submit"
-          style={{ ...styles.button, ...(loading ? styles.buttonDisabled : {}) }}
+          className={`nodeshell-hopper__button ${loading ? 'nodeshell-hopper__button--disabled' : ''}`}
           disabled={loading || !nodeshells.trim()}
         >
           {loading ? 'Processing...' : 'Whack em all!'}
@@ -212,16 +109,16 @@ const TheNodeshellHopper = () => {
       </form>
 
       {error && (
-        <div style={{ ...styles.resultItem, ...styles.error }}>
+        <div className="nodeshell-hopper__result-item nodeshell-hopper__result-item--error">
           {error}
         </div>
       )}
 
       {results && (
-        <div style={styles.results}>
-          <div style={styles.summary}>
-            <h3 style={styles.summaryTitle}>Results Summary</h3>
-            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+        <div className="nodeshell-hopper__results">
+          <div className="nodeshell-hopper__summary">
+            <h3 className="nodeshell-hopper__summary-title">Results Summary</h3>
+            <ul>
               {results.counts.deleted > 0 && (
                 <li><strong>{results.counts.deleted}</strong> nodeshell{results.counts.deleted !== 1 ? 's' : ''} deleted</li>
               )}
@@ -242,7 +139,7 @@ const TheNodeshellHopper = () => {
 
           <h3>Detailed Results</h3>
           {results.results.map((result, index) => (
-            <div key={index} style={getResultStyle(result.status)}>
+            <div key={index} className={getResultClassName(result.status)}>
               <strong>{result.title}</strong> - [{getStatusLabel(result.status)}] {result.message}
             </div>
           ))}

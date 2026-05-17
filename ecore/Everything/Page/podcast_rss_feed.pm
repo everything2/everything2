@@ -75,6 +75,8 @@ sub display {
             } else {
                 $text = substr($$pod{description}, 0, 1024);
                 $text =~ s/\s+\w*$//gs;
+                # Remove any incomplete HTML tag at the end (truncation may cut mid-tag)
+                $text =~ s/<[^>]*$//;
                 $text = $self->APP->parseLinks($self->APP->htmlScreen($text, $HTML));
                 $text =~ s/\[.*?$//;
             }

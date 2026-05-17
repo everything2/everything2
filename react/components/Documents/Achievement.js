@@ -29,92 +29,24 @@ const Achievement = ({ data, user }) => {
     code_preview
   } = achievement
 
-  const sectionStyle = {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '6px',
-    border: '1px solid #dee2e6'
-  }
-
-  const headerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '10px',
-    color: '#38495e',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  }
-
-  const valueStyle = {
-    color: '#495057',
-    fontSize: '13px'
-  }
-
-  const emptyStyle = {
-    color: '#6c757d',
-    fontStyle: 'italic',
-    fontSize: '13px'
-  }
-
-  const codePreviewStyle = {
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    backgroundColor: '#1e1e1e',
-    color: '#d4d4d4',
-    padding: '12px',
-    borderRadius: '4px',
-    overflow: 'auto',
-    maxHeight: '300px',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all'
-  }
-
-  const badgeStyle = {
-    display: 'inline-block',
-    padding: '3px 8px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    borderRadius: '3px',
-    fontSize: '12px',
-    fontWeight: '500'
-  }
-
-  const availabilityBadgeStyle = {
-    ...badgeStyle,
-    backgroundColor: achievement_still_available ? '#28a745' : '#dc3545'
-  }
-
   return (
     <div className="achievement-display">
       {/* Quick Actions */}
-      <div style={{ marginBottom: '20px' }}>
+      <div className="achievement__actions">
         <a
           href="/title/List%20Nodes%20of%20Type?setvars_ListNodesOfType_Type=achievement"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 16px',
-            backgroundColor: '#4060b0',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontSize: '13px',
-            fontWeight: '500'
-          }}
+          className="achievement__action-btn"
         >
           <FaList size={12} /> List All Achievements
         </a>
       </div>
 
       {/* About Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="achievement__section">
+        <h4 className="achievement__section-title">
           <FaInfoCircle size={16} /> About Achievements
         </h4>
-        <p style={{ ...valueStyle, lineHeight: '1.6', margin: 0 }}>
+        <p className="achievement__value achievement__about">
           Achievements are badges that users earn by completing various tasks or reaching
           milestones on the site. Each achievement has code that determines whether a user
           has earned it. Achievements of the same subtype are checked in title order, stopping
@@ -123,54 +55,54 @@ const Achievement = ({ data, user }) => {
       </div>
 
       {/* Display Text Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="achievement__section">
+        <h4 className="achievement__section-title">
           <FaTrophy size={16} /> Display Text
         </h4>
-        <div style={{ ...valueStyle, padding: '10px', backgroundColor: '#fff', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-          {display || <span style={emptyStyle}>No display text defined</span>}
+        <div className="achievement__value achievement__value--padded">
+          {display || <span className="achievement__empty">No display text defined</span>}
         </div>
       </div>
 
       {/* Configuration Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="achievement__section">
+        <h4 className="achievement__section-title">
           <FaTag size={16} /> Configuration
         </h4>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="achievement__grid">
           <div>
-            <div style={headerStyle}>
+            <div className="achievement__header">
               <FaTag size={12} /> Type
             </div>
-            <div style={valueStyle}>
+            <div className="achievement__value">
               {achievement_type ? (
-                <span style={badgeStyle}>{achievement_type}</span>
+                <span className="achievement__badge">{achievement_type}</span>
               ) : (
-                <span style={emptyStyle}>Not specified</span>
+                <span className="achievement__empty">Not specified</span>
               )}
             </div>
           </div>
 
           <div>
-            <div style={headerStyle}>
+            <div className="achievement__header">
               <FaTag size={12} /> Subtype
             </div>
-            <div style={valueStyle}>
+            <div className="achievement__value">
               {subtype ? (
-                <span style={badgeStyle}>{subtype}</span>
+                <span className="achievement__badge">{subtype}</span>
               ) : (
-                <span style={emptyStyle}>Not specified</span>
+                <span className="achievement__empty">Not specified</span>
               )}
             </div>
           </div>
 
           <div>
-            <div style={headerStyle}>
+            <div className="achievement__header">
               {achievement_still_available ? <FaCheck size={12} /> : <FaTimes size={12} />} Availability
             </div>
-            <div style={valueStyle}>
-              <span style={availabilityBadgeStyle}>
+            <div className="achievement__value">
+              <span className={`achievement__badge ${achievement_still_available ? 'achievement__badge--available' : 'achievement__badge--unavailable'}`}>
                 {achievement_still_available ? 'Still Available' : 'No Longer Available'}
               </span>
             </div>
@@ -180,15 +112,15 @@ const Achievement = ({ data, user }) => {
 
       {/* Code Preview Section (Developer only) */}
       {isDeveloper && code_preview && (
-        <div style={sectionStyle}>
-          <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+        <div className="achievement__section">
+          <h4 className="achievement__section-title">
             <FaCode size={16} /> Code Preview
           </h4>
-          <p style={{ ...valueStyle, marginBottom: '10px', fontSize: '12px', color: '#6c757d' }}>
+          <p className="achievement__code-hint">
             This Perl code determines whether a user has earned this achievement.
             See <LinkNode title="achievementsByType" type="htmlcode" /> for how achievements are checked.
           </p>
-          <div style={codePreviewStyle}>
+          <div className="achievement__code">
             {code_preview}
           </div>
         </div>

@@ -1,94 +1,9 @@
 import React, { useState, useCallback } from 'react'
 
-const styles = {
-  container: {
-    maxWidth: '600px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.5rem',
-  },
-  fieldset: {
-    marginBottom: '20px',
-    padding: '15px',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    backgroundColor: '#f8f9fa',
-  },
-  legend: {
-    fontWeight: 'bold',
-    padding: '0 10px',
-    fontSize: '1.1rem',
-  },
-  checkboxRow: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 0',
-    borderBottom: '1px solid #eee',
-  },
-  checkboxRowLast: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 0',
-  },
-  checkbox: {
-    marginRight: '10px',
-    cursor: 'pointer',
-  },
-  label: {
-    cursor: 'pointer',
-    flex: 1,
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    marginTop: '10px',
-  },
-  buttonDisabled: {
-    padding: '10px 20px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'not-allowed',
-    fontSize: '14px',
-    marginTop: '10px',
-  },
-  message: {
-    padding: '10px',
-    marginTop: '15px',
-    borderRadius: '4px',
-  },
-  success: {
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    border: '1px solid #c3e6cb',
-  },
-  error: {
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-  },
-  emptyState: {
-    padding: '20px',
-    textAlign: 'center',
-    color: '#666',
-    fontStyle: 'italic',
-  },
-}
-
+/**
+ * EditWeblogMenu - Configure weblog visibility and display options
+ * Styles in CSS: .edit-weblog-menu__*
+ */
 const EditWeblogMenu = ({ data }) => {
   const { weblogs = [], nameifyWeblogs: initialNameify = false } = data || {}
 
@@ -146,11 +61,11 @@ const EditWeblogMenu = ({ data }) => {
 
   if (weblogs.length === 0) {
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Edit Weblog Menu</h1>
+      <div className="edit-weblog-menu">
+        <div className="edit-weblog-menu__header">
+          <h1 className="edit-weblog-menu__title">Edit Weblog Menu</h1>
         </div>
-        <div style={styles.emptyState}>
+        <div className="edit-weblog-menu__empty-state">
           You don't have access to any weblogs to configure.
         </div>
       </div>
@@ -158,43 +73,43 @@ const EditWeblogMenu = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Edit Weblog Menu</h1>
+    <div className="edit-weblog-menu">
+      <div className="edit-weblog-menu__header">
+        <h1 className="edit-weblog-menu__title">Edit Weblog Menu</h1>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <fieldset style={styles.fieldset}>
-          <legend style={styles.legend}>Display</legend>
-          <div style={styles.checkboxRowLast}>
+        <fieldset className="edit-weblog-menu__fieldset">
+          <legend className="edit-weblog-menu__legend">Display</legend>
+          <div className="edit-weblog-menu__checkbox-row--last">
             <input
               type="checkbox"
               id="nameifyweblogs"
               checked={nameifyWeblogs}
               onChange={(e) => setNameifyWeblogs(e.target.checked)}
-              style={styles.checkbox}
+              className="edit-weblog-menu__checkbox"
             />
-            <label htmlFor="nameifyweblogs" style={styles.label}>
+            <label htmlFor="nameifyweblogs" className="edit-weblog-menu__label">
               Use dynamic names (-ify!)
             </label>
           </div>
         </fieldset>
 
-        <fieldset style={styles.fieldset}>
-          <legend style={styles.legend}>Show Items</legend>
+        <fieldset className="edit-weblog-menu__fieldset">
+          <legend className="edit-weblog-menu__legend">Show Items</legend>
           {weblogs.map((weblog, index) => (
             <div
               key={weblog.node_id}
-              style={index === weblogs.length - 1 ? styles.checkboxRowLast : styles.checkboxRow}
+              className={index === weblogs.length - 1 ? 'edit-weblog-menu__checkbox-row--last' : 'edit-weblog-menu__checkbox-row'}
             >
               <input
                 type="checkbox"
                 id={`show_${weblog.node_id}`}
                 checked={weblogVisibility[weblog.node_id] || false}
                 onChange={() => handleWeblogToggle(weblog.node_id)}
-                style={styles.checkbox}
+                className="edit-weblog-menu__checkbox"
               />
-              <label htmlFor={`show_${weblog.node_id}`} style={styles.label}>
+              <label htmlFor={`show_${weblog.node_id}`} className="edit-weblog-menu__label">
                 {getWeblogTitle(weblog)}
               </label>
             </div>
@@ -203,7 +118,7 @@ const EditWeblogMenu = ({ data }) => {
 
         <button
           type="submit"
-          style={saving ? styles.buttonDisabled : styles.button}
+          className={`edit-weblog-menu__button${saving ? ' edit-weblog-menu__button--disabled' : ''}`}
           disabled={saving}
         >
           {saving ? 'Saving...' : (nameifyWeblogs ? 'Changeify!' : 'Submit')}
@@ -211,7 +126,7 @@ const EditWeblogMenu = ({ data }) => {
       </form>
 
       {message && (
-        <div style={{ ...styles.message, ...(message.type === 'success' ? styles.success : styles.error) }}>
+        <div className={`edit-weblog-menu__message edit-weblog-menu__message--${message.type}`}>
           {message.text}
         </div>
       )}

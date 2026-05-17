@@ -2,17 +2,18 @@ import React from 'react';
 
 /**
  * AdminCreateNodeLink - Shows "create any type of node" link for admins
+ * Styles in CSS: .admin-create-node-link
  *
  * Used on search results pages (Findings, NothingFound) to give admins
  * quick access to create any node type.
  */
-const AdminCreateNodeLink = ({ user, searchTerm, style }) => {
+const AdminCreateNodeLink = ({ user, searchTerm, className }) => {
   if (!user?.admin) {
     return null;
   }
 
   return (
-    <p style={style || styles.default}>
+    <p className={className || 'admin-create-node-link'}>
       Lucky you, you can{' '}
       <strong>
         <a href={`/?node=create%20node&newtitle=${encodeURIComponent(searchTerm || '')}`}>
@@ -21,13 +22,6 @@ const AdminCreateNodeLink = ({ user, searchTerm, style }) => {
       </strong>
     </p>
   );
-};
-
-const styles = {
-  default: {
-    marginTop: '15px',
-    fontSize: '16px'
-  }
 };
 
 export default AdminCreateNodeLink;

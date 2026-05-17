@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+/**
+ * DoYouCWhatIC - C! recommendation engine
+ * Styles in CSS: .do-you-c__*
+ */
 const DoYouCWhatIC = ({ data, e2 }) => {
   const {
     recommendations = [],
@@ -22,10 +26,10 @@ const DoYouCWhatIC = ({ data, e2 }) => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.explanation}>
-        <h4 style={styles.heading}>What It Does</h4>
-        <ul style={styles.list}>
+    <div className="do-you-c">
+      <div className="do-you-c__explanation">
+        <h4 className="do-you-c__heading">What It Does</h4>
+        <ul className="do-you-c__list">
           <li>Picks up to 100 things you've cooled.</li>
           <li>Finds everyone else who has cooled those things, too, then uses the top 20 of those (your "best friends.")</li>
           <li>Finds the writeups that have been cooled by your "best friends" the most.</li>
@@ -33,85 +37,85 @@ const DoYouCWhatIC = ({ data, e2 }) => {
         </ul>
       </div>
 
-      <form method="POST" onSubmit={handleSubmit} style={styles.form}>
+      <form method="POST" onSubmit={handleSubmit} className="do-you-c__form">
         <input type="hidden" name="node_id" value={e2?.node?.node_id || ''} />
 
-        <div style={styles.formGroup}>
+        <div className="do-you-c__form-group">
           <p>Or you can enter a user name to see what we think <em>they</em> would like:</p>
           <input
             type="text"
             name="cooluser"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={styles.textInput}
+            className="do-you-c__text-input"
             placeholder="username"
             size="15"
             maxLength="30"
           />
         </div>
 
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
+        <div className="do-you-c__form-group">
+          <label className="do-you-c__label">
             Maximum C!s per writeup:{' '}
             <input
               type="number"
               name="maxcools"
               value={maxCoolsInput}
               onChange={(e) => setMaxCoolsInput(e.target.value)}
-              style={styles.numberInput}
+              className="do-you-c__number-input"
               min="1"
               max="100"
             />
           </label>
         </div>
 
-        <button type="submit" style={styles.button}>
+        <button type="submit" className="do-you-c__button">
           Find Recommendations
         </button>
       </form>
 
       {error === 'user_not_found' && (
-        <p style={styles.error}>
+        <p className="do-you-c__error">
           Sorry, no '{target_username}' is found on the system!
         </p>
       )}
 
       {error === 'no_cools' && (
-        <p style={styles.info}>
+        <p className="do-you-c__info">
           {pronoun} haven't cooled anything yet. Sorry - you might like to try{' '}
           <a href="/?node=The+Recommender">The Recommender</a>, which uses bookmarks, instead.
         </p>
       )}
 
       {error === 'no_friends' && (
-        <p style={styles.info}>
+        <p className="do-you-c__info">
           {pronoun} don't have any 'best friends' yet. Sorry.
         </p>
       )}
 
       {!error && recommendations.length === 0 && num_cools_sampled > 0 && (
-        <p style={styles.info}>
+        <p className="do-you-c__info">
           No new recommendations found that match your criteria. Try increasing the maximum C!s allowed.
         </p>
       )}
 
       {recommendations.length > 0 && (
-        <div style={styles.results}>
-          <p style={styles.statsInfo}>
+        <div className="do-you-c__results">
+          <p className="do-you-c__stats-info">
             Based on {num_cools_sampled} cooled writeups and {num_friends} similar users:
           </p>
-          <div style={styles.recommendationList}>
+          <div className="do-you-c__recommendation-list">
             {recommendations.map((rec, index) => (
-              <div key={rec.node_id} style={styles.recommendation}>
-                <a href={`/?node_id=${rec.parent_id}`} style={styles.parentLink}>
+              <div key={rec.node_id} className="do-you-c__recommendation">
+                <a href={`/?node_id=${rec.parent_id}`} className="do-you-c__parent-link">
                   {rec.parent_title}
                 </a>
                 {' '}
-                (<a href={`/?node_id=${rec.node_id}`} style={styles.writeupLink}>
+                (<a href={`/?node_id=${rec.node_id}`} className="do-you-c__writeup-link">
                   {rec.title}
                 </a>)
                 {' '}
-                <span style={styles.coolCount}>
+                <span className="do-you-c__cool-count">
                   [{rec.cooled} C!{rec.cooled !== 1 ? 's' : ''}]
                 </span>
               </div>
@@ -121,122 +125,6 @@ const DoYouCWhatIC = ({ data, e2 }) => {
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  explanation: {
-    marginBottom: '20px',
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  heading: {
-    margin: '0 0 10px 0',
-    fontSize: '18px',
-    color: '#38495e'
-  },
-  list: {
-    margin: '0',
-    paddingLeft: '25px'
-  },
-  form: {
-    marginBottom: '20px',
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  formGroup: {
-    marginBottom: '15px'
-  },
-  label: {
-    fontSize: '14px',
-    color: '#111111'
-  },
-  textInput: {
-    padding: '6px 10px',
-    fontSize: '14px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    marginLeft: '5px'
-  },
-  numberInput: {
-    padding: '6px 10px',
-    fontSize: '14px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    width: '80px',
-    marginLeft: '5px'
-  },
-  button: {
-    padding: '8px 16px',
-    background: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  },
-  error: {
-    color: '#dc3545',
-    fontWeight: 'bold',
-    padding: '10px',
-    background: '#fff5f5',
-    border: '1px solid #dc3545',
-    borderRadius: '4px'
-  },
-  info: {
-    color: '#507898',
-    padding: '10px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  results: {
-    marginTop: '20px'
-  },
-  statsInfo: {
-    fontSize: '14px',
-    color: '#507898',
-    marginBottom: '15px',
-    fontStyle: 'italic'
-  },
-  recommendationList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px'
-  },
-  recommendation: {
-    padding: '10px',
-    background: '#ffffff',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    lineHeight: '1.8'
-  },
-  parentLink: {
-    color: '#4060b0',
-    fontWeight: 'bold',
-    textDecoration: 'none'
-  },
-  writeupLink: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  coolCount: {
-    fontSize: '13px',
-    color: '#507898',
-    fontStyle: 'italic'
-  }
 };
 
 export default DoYouCWhatIC;

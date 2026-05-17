@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * IP Blacklist - Admin tool for managing blocked IP addresses
+ * Styles in CSS: .ip-blacklist__*
  *
  * Manages IP addresses that are barred from creating new accounts.
  * Supports individual IPs and CIDR ranges (e.g., 192.168.1.0/24).
@@ -31,14 +32,14 @@ const IpBlacklist = ({ data, e2 }) => {
   const prevOffset = Math.max(0, offset - page_size)
 
   return (
-    <div style={styles.container}>
-      <p style={styles.intro}>
+    <div className="ip-blacklist">
+      <p className="ip-blacklist__intro">
         This page manages the IP addresses which are barred from <strong>creating new accounts</strong>.
         {' '}Except for very extreme circumstances, we don't block pageloads as{' '}
         <LinkNode nodeId={guest_user_id} title="Guest User" />.
       </p>
 
-      <p style={styles.warning}>
+      <p className="ip-blacklist__warning">
         <strong>
           This tool should ONLY be used to block access at the IP level for users whose primary
           accounts have been locked if they continue to abuse our hospitality.
@@ -47,19 +48,19 @@ const IpBlacklist = ({ data, e2 }) => {
       </p>
 
       {success_message && (
-        <div style={styles.successBox}>{success_message}</div>
+        <div className="ip-blacklist__success">{success_message}</div>
       )}
 
       {error_message && (
-        <div style={styles.errorBox}>{error_message}</div>
+        <div className="ip-blacklist__error">{error_message}</div>
       )}
 
-      <h3 style={styles.heading}>Blacklist an IP</h3>
+      <h3 className="ip-blacklist__heading">Blacklist an IP</h3>
 
-      <form method="post" style={styles.form}>
+      <form method="post" className="ip-blacklist__form">
         <input type="hidden" name="node_id" value={e2?.node_id || ''} />
 
-        <div style={styles.formGroup}>
+        <div className="ip-blacklist__form-group">
           <strong>IP Address</strong>
           <br />
           <input
@@ -67,17 +68,16 @@ const IpBlacklist = ({ data, e2 }) => {
             name="bad_ip"
             value={badIp}
             onChange={(e) => setBadIp(e.target.value)}
-            size="20"
-            style={styles.input}
+            className="ip-blacklist__input"
             placeholder="192.168.1.1 or 192.168.1.0/24"
           />
           <br />
-          <small style={styles.helpText}>
+          <small className="ip-blacklist__help-text">
             Enter a single IP address or CIDR range (e.g., 192.168.1.0/24)
           </small>
         </div>
 
-        <div style={styles.formGroup}>
+        <div className="ip-blacklist__form-group">
           <strong>Reason</strong>
           <br />
           <input
@@ -85,8 +85,7 @@ const IpBlacklist = ({ data, e2 }) => {
             name="block_reason"
             value={blockReason}
             onChange={(e) => setBlockReason(e.target.value)}
-            size="50"
-            style={styles.input}
+            className="ip-blacklist__input"
             placeholder="Reason for blocking this IP"
           />
         </div>
@@ -95,45 +94,45 @@ const IpBlacklist = ({ data, e2 }) => {
           type="submit"
           name="add_ip_block"
           value="Please blacklist this IP"
-          style={styles.submitButton}
+          className="ip-blacklist__submit-button"
         />
       </form>
 
-      <h3 style={styles.heading}>Blacklisted IPs</h3>
+      <h3 className="ip-blacklist__heading">Blacklisted IPs</h3>
 
       {entries.length === 0 ? (
         <p>No blacklisted IPs found.</p>
       ) : (
         <>
-          <p style={styles.pagination}>
+          <p className="ip-blacklist__pagination">
             Showing {offset + 1} - {offset + entries.length} of {total_count}
           </p>
 
-          <table style={styles.table}>
+          <table className="ip-blacklist__table">
             <thead>
               <tr>
-                <th style={styles.th}>IP Address</th>
-                <th style={styles.th}>Reason</th>
-                <th style={styles.th}>Date</th>
-                <th style={styles.th}>Action</th>
+                <th className="ip-blacklist__th">IP Address</th>
+                <th className="ip-blacklist__th">Reason</th>
+                <th className="ip-blacklist__th">Date</th>
+                <th className="ip-blacklist__th">Action</th>
               </tr>
             </thead>
             <tbody>
               {entries.map((entry, idx) => (
-                <tr key={entry.id} style={idx % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                  <td style={styles.td}>{entry.ip_address}</td>
-                  <td style={styles.td}>
+                <tr key={entry.id} className={idx % 2 === 0 ? 'ip-blacklist__row--even' : 'ip-blacklist__row--odd'}>
+                  <td className="ip-blacklist__td">{entry.ip_address}</td>
+                  <td className="ip-blacklist__td">
                     <div dangerouslySetInnerHTML={{ __html: entry.comment }} />
                   </td>
-                  <td style={styles.td}>{entry.timestamp}</td>
-                  <td style={styles.td}>
-                    <form method="post" style={{ display: 'inline' }}>
+                  <td className="ip-blacklist__td">{entry.timestamp}</td>
+                  <td className="ip-blacklist__td">
+                    <form method="post" className="ip-blacklist__remove-form">
                       <input type="hidden" name="node_id" value={e2?.node_id || ''} />
                       <input type="hidden" name="remove_ip_block_ref" value={entry.id} />
                       <input
                         type="submit"
                         value="Remove"
-                        style={styles.removeButton}
+                        className="ip-blacklist__remove-button"
                       />
                     </form>
                   </td>
@@ -143,15 +142,15 @@ const IpBlacklist = ({ data, e2 }) => {
           </table>
 
           {(hasPrev || hasMore) && (
-            <div style={styles.paginationLinks}>
+            <div className="ip-blacklist__pagination-links">
               {hasPrev && (
-                <a href={`?offset=${prevOffset}`} style={styles.link}>
+                <a href={`?offset=${prevOffset}`} className="ip-blacklist__link">
                   ← Previous {page_size}
                 </a>
               )}
-              {hasPrev && hasMore && <span style={{ margin: '0 10px' }}>|</span>}
+              {hasPrev && hasMore && <span className="ip-blacklist__separator">|</span>}
               {hasMore && (
-                <a href={`?offset=${nextOffset}`} style={styles.link}>
+                <a href={`?offset=${nextOffset}`} className="ip-blacklist__link">
                   Next {page_size} →
                 </a>
               )}
@@ -161,119 +160,6 @@ const IpBlacklist = ({ data, e2 }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111',
-    padding: '20px'
-  },
-  intro: {
-    marginBottom: '15px'
-  },
-  warning: {
-    marginBottom: '20px',
-    color: '#c62828'
-  },
-  heading: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginTop: '30px',
-    marginBottom: '15px',
-    borderBottom: '1px solid #38495e',
-    paddingBottom: '5px'
-  },
-  successBox: {
-    padding: '15px',
-    backgroundColor: '#e8f5e9',
-    border: '1px solid #4caf50',
-    borderRadius: '4px',
-    color: '#2e7d32',
-    marginBottom: '20px'
-  },
-  errorBox: {
-    padding: '15px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828',
-    marginBottom: '20px'
-  },
-  form: {
-    marginBottom: '30px'
-  },
-  formGroup: {
-    marginBottom: '15px'
-  },
-  input: {
-    padding: '6px',
-    fontSize: '13px',
-    border: '1px solid #ccc',
-    borderRadius: '3px',
-    marginTop: '5px'
-  },
-  helpText: {
-    color: '#666',
-    fontSize: '11px'
-  },
-  submitButton: {
-    padding: '8px 15px',
-    fontSize: '13px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    marginTop: '10px'
-  },
-  pagination: {
-    fontSize: '12px',
-    color: '#666',
-    marginBottom: '10px'
-  },
-  paginationLinks: {
-    marginTop: '20px',
-    textAlign: 'center'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  table: {
-    borderCollapse: 'collapse',
-    border: '1px solid #38495e',
-    width: '100%'
-  },
-  th: {
-    backgroundColor: '#f0f0f0',
-    padding: '8px',
-    border: '1px solid #38495e',
-    fontWeight: 'bold',
-    textAlign: 'left'
-  },
-  td: {
-    padding: '8px',
-    border: '1px solid #38495e',
-    verticalAlign: 'top'
-  },
-  evenRow: {
-    backgroundColor: '#ffffff'
-  },
-  oddRow: {
-    backgroundColor: '#f8f9f9'
-  },
-  removeButton: {
-    padding: '4px 10px',
-    fontSize: '12px',
-    backgroundColor: '#d32f2f',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer'
-  }
 }
 
 export default IpBlacklist

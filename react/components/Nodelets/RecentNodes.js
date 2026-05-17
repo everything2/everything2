@@ -62,11 +62,11 @@ const RecentNodes = (props) => {
     return (
       <NodeletContainer
         id={props.id}
-      title="Recent Nodes"
+        title="Recent Nodes"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <em style={{ fontSize: '12px', padding: '8px', display: 'block' }}>{saying}</em>
+        <em className="recent-nodes__saying">{saying}</em>
       </NodeletContainer>
     )
   }
@@ -76,12 +76,12 @@ const RecentNodes = (props) => {
       id={props.id}
       title="Recent Nodes"
       showNodelet={props.showNodelet}
-        nodeletIsOpen={props.nodeletIsOpen}
+      nodeletIsOpen={props.nodeletIsOpen}
     >
-      <em style={{ fontSize: '12px', padding: '8px 8px 4px 8px', display: 'block' }}>
+      <em className="recent-nodes__saying recent-nodes__saying--with-list">
         {saying}:
       </em>
-      <ol style={{ paddingLeft: '28px', margin: '4px 0', fontSize: '12px' }}>
+      <ol className="recent-nodes__list">
         {props.recentNodes.map((node, index) => (
           <WriteupEntry
             key={index}
@@ -91,13 +91,13 @@ const RecentNodes = (props) => {
           />
         ))}
       </ol>
-      <form onSubmit={handleClearTracks} className="nodeletfoot" style={{ margin: '8px 4px 4px 4px' }}>
+      <form onSubmit={handleClearTracks} className="nodeletfoot recent-nodes__foot">
         <input
           type="submit"
           name="schwammdrueber"
           value={buttonText}
           disabled={isClearing}
-          style={{ fontSize: '11px', opacity: isClearing ? 0.6 : 1, cursor: isClearing ? 'wait' : 'pointer' }}
+          className="recent-nodes__clear-btn"
         />
       </form>
     </NodeletContainer>

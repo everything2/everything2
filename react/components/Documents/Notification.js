@@ -12,6 +12,7 @@ import { FaList, FaCode, FaBell, FaInfoCircle, FaClock, FaShieldAlt } from 'reac
  * - hourLimit: How long the notification stays visible (0 = never)
  * - code: Perl code to render the notification
  * - invalid_check: Perl code to check if notification should be hidden
+ * Styles are in CSS classes (notification-display__*)
  */
 const Notification = ({ data, user }) => {
   if (!data || !data.notification) return null
@@ -27,58 +28,6 @@ const Notification = ({ data, user }) => {
     invalid_check_preview
   } = notification
 
-  const sectionStyle = {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '6px',
-    border: '1px solid #dee2e6'
-  }
-
-  const headerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '10px',
-    color: '#38495e',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  }
-
-  const valueStyle = {
-    color: '#495057',
-    fontSize: '13px'
-  }
-
-  const emptyStyle = {
-    color: '#6c757d',
-    fontStyle: 'italic',
-    fontSize: '13px'
-  }
-
-  const codePreviewStyle = {
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    backgroundColor: '#1e1e1e',
-    color: '#d4d4d4',
-    padding: '12px',
-    borderRadius: '4px',
-    overflow: 'auto',
-    maxHeight: '300px',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all'
-  }
-
-  const badgeStyle = {
-    display: 'inline-block',
-    padding: '3px 8px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    borderRadius: '3px',
-    fontSize: '12px',
-    fontWeight: '500'
-  }
-
   // Format hour limit display
   const formatHourLimit = (hours) => {
     if (hours === 0 || hours === '0') return 'Never displays'
@@ -86,82 +35,73 @@ const Notification = ({ data, user }) => {
     return `${hours} hours`
   }
 
-  const hourLimitBadgeColor = (hours) => {
-    if (hours === 0 || hours === '0') return '#dc3545' // red - disabled
-    if (hours <= 24) return '#28a745' // green - short duration
-    if (hours <= 168) return '#ffc107' // yellow - medium (up to 1 week)
-    return '#17a2b8' // blue - long duration
+  const getHourLimitBadgeClass = (hours) => {
+    if (hours === 0 || hours === '0') return 'notification-display__badge--disabled'
+    if (hours <= 24) return 'notification-display__badge--short'
+    if (hours <= 168) return 'notification-display__badge--medium'
+    return 'notification-display__badge--long'
   }
 
   return (
     <div className="notification-display">
       {/* Quick Actions */}
-      <div style={{ marginBottom: '20px' }}>
+      <div className="notification-display__actions">
         <a
           href="/title/List%20Nodes%20of%20Type?setvars_ListNodesOfType_Type=notification"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 16px',
-            backgroundColor: '#4060b0',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontSize: '13px',
-            fontWeight: '500'
-          }}
+          className="notification-display__action-btn"
         >
           <FaList size={12} /> List All Notifications
         </a>
       </div>
 
       {/* About Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="notification-display__section">
+        <h4 className="notification-display__section-header">
           <FaInfoCircle size={16} /> About Notifications
         </h4>
-        <p style={{ ...valueStyle, lineHeight: '1.6', margin: 0 }}>
+        <p className="notification-display__text">
           Notification nodes define types of notifications that appear in the Notifications nodelet.
           Each notification has code to render it and an optional invalidation check. Users can
           configure which notifications they see via{' '}
           <LinkNode title="Notifications nodelet settings" type="htmlcode" />.
         </p>
-        <p style={{ ...valueStyle, lineHeight: '1.6', marginTop: '10px', marginBottom: 0, color: '#f59e0b' }}>
+        <p className="notification-display__text notification-display__text--note">
           <strong>Security note:</strong> Changing the description may have implications for{' '}
           <LinkNode title="canseeNotification" type="htmlcode" /> security checks.
         </p>
       </div>
 
       {/* Description Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="notification-display__section">
+        <h4 className="notification-display__section-header">
           <FaBell size={16} /> Description
         </h4>
-        <div style={{ ...valueStyle, padding: '10px', backgroundColor: '#fff', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-          {description || <span style={emptyStyle}>No description defined</span>}
+        <div className="notification-display__value-box">
+          {description || <span className="notification-display__empty">No description defined</span>}
         </div>
-        <p style={{ ...valueStyle, marginTop: '8px', marginBottom: 0, fontSize: '12px', color: '#6c757d' }}>
+        <p className="notification-display__help-text">
           This description is shown in the Notifications nodelet settings.
         </p>
       </div>
 
       {/* Configuration Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="notification-display__section">
+        <h4 className="notification-display__section-header">
           <FaClock size={16} /> Time Limit
         </h4>
 
         <div>
-          <div style={headerStyle}>
+          <div className="notification-display__header">
             <FaClock size={12} /> Maximum Hours
           </div>
-          <div style={valueStyle}>
-            <span style={{ ...badgeStyle, backgroundColor: hourLimitBadgeColor(hourLimit) }}>
+          <div className="notification-display__value">
+            <span
+              className={`notification-display__badge ${getHourLimitBadgeClass(hourLimit)}`}
+            >
               {formatHourLimit(hourLimit)}
             </span>
           </div>
-          <p style={{ ...valueStyle, marginTop: '8px', marginBottom: 0, fontSize: '12px', color: '#6c757d' }}>
+          <p className="notification-display__help-text">
             How long this notification remains visible. Set to 0 to disable display entirely.
           </p>
         </div>
@@ -169,14 +109,14 @@ const Notification = ({ data, user }) => {
 
       {/* Display Code Section (Developer only) */}
       {isDeveloper && code_preview && (
-        <div style={sectionStyle}>
-          <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+        <div className="notification-display__section">
+          <h4 className="notification-display__section-header">
             <FaCode size={16} /> Display Code
           </h4>
-          <p style={{ ...valueStyle, marginBottom: '10px', fontSize: '12px', color: '#6c757d' }}>
+          <p className="notification-display__code-help">
             This Perl code renders the notification content.
           </p>
-          <div style={codePreviewStyle}>
+          <div className="notification-display__code-preview">
             {code_preview}
           </div>
         </div>
@@ -184,14 +124,14 @@ const Notification = ({ data, user }) => {
 
       {/* Invalid Check Code Section (Developer only) */}
       {isDeveloper && invalid_check_preview && (
-        <div style={sectionStyle}>
-          <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+        <div className="notification-display__section">
+          <h4 className="notification-display__section-header">
             <FaShieldAlt size={16} /> Invalidation Check
           </h4>
-          <p style={{ ...valueStyle, marginBottom: '10px', fontSize: '12px', color: '#6c757d' }}>
+          <p className="notification-display__code-help">
             This Perl code determines if the notification should be hidden (e.g., if the triggering event no longer applies).
           </p>
-          <div style={codePreviewStyle}>
+          <div className="notification-display__code-preview">
             {invalid_check_preview}
           </div>
         </div>

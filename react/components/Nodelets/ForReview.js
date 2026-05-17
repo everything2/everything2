@@ -20,7 +20,7 @@ const ForReview = (props) => {
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <div style={{ padding: '12px', fontSize: '12px', fontStyle: 'italic', color: '#999' }}>
+        <div className="for-review__empty">
           No drafts awaiting review
         </div>
       </NodeletContainer>
@@ -34,11 +34,11 @@ const ForReview = (props) => {
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}
     >
-      <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
+      <table className="for-review__table">
         <thead>
-          <tr style={{ borderBottom: '1px solid #dee2e6' }}>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Draft</th>
-            <th style={{ textAlign: 'center', padding: '8px' }} title="node notes">N?</th>
+          <tr className="for-review__header-row">
+            <th className="for-review__th">Draft</th>
+            <th className="for-review__th for-review__th--center" title="node notes">N?</th>
           </tr>
         </thead>
         <tbody>
@@ -49,19 +49,16 @@ const ForReview = (props) => {
             return (
               <tr
                 key={draft.node_id}
-                style={{
-                  backgroundColor: index % 2 === 0 ? '#fff' : '#f8f9fa',
-                  borderBottom: '1px solid #f0f0f0'
-                }}
+                className={`for-review__row ${index % 2 === 0 ? 'for-review__row--even' : 'for-review__row--odd'}`}
               >
-                <td style={{ padding: '8px' }}>
+                <td className="for-review__td">
                   <LinkNode node_id={draft.node_id} title={draft.title} />
                   <br />
-                  <small style={{ color: '#666' }}>
+                  <small className="for-review__author">
                     by <LinkNode node_id={draft.author_user} />
                   </small>
                 </td>
-                <td style={{ textAlign: 'center', padding: '8px' }}>
+                <td className="for-review__td for-review__td--center">
                   {draft.notecount > 0 ? (
                     <a
                       href={`?node_id=${draft.node_id}#nodenotes`}

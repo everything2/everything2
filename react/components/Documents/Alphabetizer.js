@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+/**
+ * Alphabetizer - Text alphabetizing tool
+ * Styles in CSS: .alphabetizer__*
+ */
 const Alphabetizer = ({ data }) => {
   const {
     separator = '0',
@@ -79,18 +83,18 @@ const Alphabetizer = ({ data }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="alphabetizer">
       <p>Go ahead -- one entry per line:</p>
 
-      <form onSubmit={handleProcess} style={styles.form}>
-        <div style={styles.optionsGroup}>
-          <div style={styles.option}>
-            <label style={styles.label}>
+      <form onSubmit={handleProcess} className="alphabetizer__form">
+        <div className="alphabetizer__options-group">
+          <div className="alphabetizer__option">
+            <label className="alphabetizer__label">
               separator:{' '}
               <select
                 value={separatorOption}
                 onChange={(e) => setSeparatorOption(e.target.value)}
-                style={styles.select}
+                className="alphabetizer__select"
               >
                 <option value="0">none (default)</option>
                 <option value="1">&lt;br&gt;</option>
@@ -99,157 +103,65 @@ const Alphabetizer = ({ data }) => {
             </label>
           </div>
 
-          <div style={styles.option}>
-            <label style={styles.checkboxLabel}>
+          <div className="alphabetizer__option">
+            <label className="alphabetizer__checkbox-label">
               <input
                 type="checkbox"
                 checked={reverseSort}
                 onChange={(e) => setReverseSort(e.target.checked)}
-                style={styles.checkbox}
+                className="alphabetizer__checkbox"
               />
               reverse
             </label>
 
-            <label style={styles.checkboxLabel}>
+            <label className="alphabetizer__checkbox-label">
               <input
                 type="checkbox"
                 checked={ignoreCase}
                 onChange={(e) => setIgnoreCase(e.target.checked)}
-                style={styles.checkbox}
+                className="alphabetizer__checkbox"
               />
               ignore case (default yes)
             </label>
           </div>
 
-          <div style={styles.option}>
-            <label style={styles.checkboxLabel}>
+          <div className="alphabetizer__option">
+            <label className="alphabetizer__checkbox-label">
               <input
                 type="checkbox"
                 checked={makeLinks}
                 onChange={(e) => setMakeLinks(e.target.checked)}
-                style={styles.checkbox}
+                className="alphabetizer__checkbox"
               />
               make everything an E2 link
             </label>
           </div>
         </div>
 
-        <div style={styles.textareaGroup}>
+        <div className="alphabetizer__textarea-group">
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             rows={20}
             cols={60}
-            style={styles.textarea}
+            className="alphabetizer__textarea"
             placeholder="Enter text here, one entry per line..."
           />
         </div>
 
-        <button type="submit" style={styles.button}>
+        <button type="submit" className="alphabetizer__button">
           Alphabetize
         </button>
       </form>
 
       {output && (
-        <div style={styles.outputSection}>
-          <h3 style={styles.outputHeader}>Output:</h3>
-          <pre style={styles.output}>{output}</pre>
+        <div className="alphabetizer__output-section">
+          <h3 className="alphabetizer__output-header">Output:</h3>
+          <pre className="alphabetizer__output">{output}</pre>
         </div>
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  form: {
-    marginBottom: '20px'
-  },
-  optionsGroup: {
-    marginBottom: '15px',
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  option: {
-    marginBottom: '10px'
-  },
-  label: {
-    fontSize: '14px',
-    color: '#111111'
-  },
-  select: {
-    padding: '4px 8px',
-    fontSize: '14px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    background: 'white',
-    marginLeft: '5px'
-  },
-  checkboxLabel: {
-    fontSize: '14px',
-    color: '#111111',
-    marginRight: '15px',
-    display: 'inline-block'
-  },
-  checkbox: {
-    marginRight: '5px',
-    cursor: 'pointer'
-  },
-  textareaGroup: {
-    marginBottom: '15px'
-  },
-  textarea: {
-    width: '100%',
-    maxWidth: '100%',
-    padding: '10px',
-    fontSize: '14px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    fontFamily: 'monospace',
-    lineHeight: '1.4'
-  },
-  button: {
-    padding: '8px 16px',
-    background: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  },
-  outputSection: {
-    marginTop: '30px',
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  outputHeader: {
-    margin: '0 0 10px 0',
-    fontSize: '18px',
-    color: '#38495e'
-  },
-  output: {
-    background: 'white',
-    padding: '15px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    fontSize: '14px',
-    lineHeight: '1.6',
-    overflowX: 'auto',
-    whiteSpace: 'pre-wrap',
-    wordWrap: 'break-word'
-  }
 };
 
 export default Alphabetizer;

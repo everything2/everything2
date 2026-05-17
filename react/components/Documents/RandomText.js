@@ -38,10 +38,10 @@ const RandomText = ({ data }) => {
       {title && <h2>{title}</h2>}
       {description && <p>{description}</p>}
 
-      <div style={{ textAlign: 'center', margin: '40px 0' }}>
+      <div className="random-text-generator__display">
         {isFezisms ? (
           // Fezisms: Multi-part horizontal layout (2 columns)
-          <div style={{ fontSize: '1.1em', fontWeight: 'bold' }}>
+          <div className="random-text-generator__text">
             {selectedWit.map((text, index) => (
               <React.Fragment key={index}>
                 <ParseLinks text={text} />
@@ -51,20 +51,16 @@ const RandomText = ({ data }) => {
           </div>
         ) : (
           // Piercisms: Single large centered text
-          <div style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
+          <div className="random-text-generator__text--large">
             <ParseLinks text={selectedWit[0]} />
           </div>
         )}
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '40px' }}>
+      <div className="random-text-generator__button-container">
         <button
           onClick={generateNew}
-          style={{
-            padding: '10px 20px',
-            fontSize: '1em',
-            cursor: 'pointer'
-          }}
+          className="random-text-generator__button"
         >
           Generate Another
         </button>

@@ -1,76 +1,9 @@
 import React, { useState, useCallback } from 'react'
 
-const styles = {
-  container: {
-    maxWidth: '400px',
-    margin: '3em auto 0',
-    padding: '20px',
-  },
-  fieldset: {
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '20px',
-  },
-  legend: {
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    padding: '0 10px',
-  },
-  description: {
-    marginBottom: '20px',
-    lineHeight: '1.5',
-    color: '#666',
-  },
-  formGroup: {
-    marginBottom: '15px',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '5px',
-    fontWeight: 'bold',
-    fontSize: '14px',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '16px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  button: {
-    width: '100%',
-    padding: '12px',
-    backgroundColor: '#5a9fd4',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    marginTop: '10px',
-  },
-  buttonDisabled: {
-    backgroundColor: '#999',
-    cursor: 'not-allowed',
-  },
-  error: {
-    padding: '10px',
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    borderRadius: '4px',
-    marginBottom: '15px',
-  },
-  success: {
-    padding: '20px',
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    borderRadius: '4px',
-    textAlign: 'center',
-    lineHeight: '1.5',
-  },
-}
-
+/**
+ * ResetPassword - Password reset form
+ * Styles in CSS: .reset-password__*
+ */
 const ResetPassword = ({ data }) => {
   const [who, setWho] = useState('')
   const [password, setPassword] = useState('')
@@ -137,10 +70,10 @@ const ResetPassword = ({ data }) => {
 
   if (success) {
     return (
-      <div style={styles.container}>
-        <div style={styles.success}>
+      <div className="reset-password">
+        <div className="reset-password__success">
           <strong>{success}</strong>
-          <p style={{ marginTop: '10px', marginBottom: 0 }}>
+          <p className="reset-password__success-note">
             Check your email for the confirmation link.
           </p>
         </div>
@@ -149,20 +82,20 @@ const ResetPassword = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="reset-password">
       <form onSubmit={handleSubmit}>
-        <fieldset style={styles.fieldset}>
-          <legend style={styles.legend}>Choose new password</legend>
+        <fieldset className="reset-password__fieldset">
+          <legend className="reset-password__legend">Choose new password</legend>
 
-          <p style={styles.description}>
+          <p className="reset-password__description">
             Forgotten your password? Fill in your user name or email address here and choose
             a new password, and we will send you an email containing a link to reset it.
           </p>
 
-          {error && <div style={styles.error}>{error}</div>}
+          {error && <div className="reset-password__error">{error}</div>}
 
-          <div style={styles.formGroup}>
-            <label style={styles.label} htmlFor="who">
+          <div className="reset-password__form-group">
+            <label className="reset-password__label" htmlFor="who">
               Username or email address:
             </label>
             <input
@@ -170,15 +103,15 @@ const ResetPassword = ({ data }) => {
               id="who"
               value={who}
               onChange={(e) => setWho(e.target.value)}
-              style={styles.input}
+              className="reset-password__input"
               maxLength={240}
               disabled={loading}
               autoComplete="username"
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label} htmlFor="password">
+          <div className="reset-password__form-group">
+            <label className="reset-password__label" htmlFor="password">
               New password:
             </label>
             <input
@@ -186,15 +119,15 @@ const ResetPassword = ({ data }) => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
+              className="reset-password__input"
               maxLength={240}
               disabled={loading}
               autoComplete="new-password"
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label} htmlFor="passwordConfirm">
+          <div className="reset-password__form-group">
+            <label className="reset-password__label" htmlFor="passwordConfirm">
               Repeat new password:
             </label>
             <input
@@ -202,7 +135,7 @@ const ResetPassword = ({ data }) => {
               id="passwordConfirm"
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
-              style={styles.input}
+              className="reset-password__input"
               maxLength={240}
               disabled={loading}
               autoComplete="new-password"
@@ -212,10 +145,7 @@ const ResetPassword = ({ data }) => {
           <button
             type="submit"
             disabled={loading}
-            style={{
-              ...styles.button,
-              ...(loading ? styles.buttonDisabled : {})
-            }}
+            className={`reset-password__button${loading ? ' reset-password__button--disabled' : ''}`}
           >
             {loading ? 'Sending...' : 'Submit'}
           </button>

@@ -4,11 +4,11 @@ export default function EverythingsBiggestStars({ data }) {
   const { users = [], limit = 100 } = data;
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <div className="biggest-stars">
       <h3>{limit} Most Starred Noders</h3>
 
       {users.length === 0 ? (
-        <p style={{ fontStyle: 'italic', color: '#666' }}>
+        <p className="biggest-stars__empty">
           No users with stars found
         </p>
       ) : (
@@ -23,8 +23,6 @@ export default function EverythingsBiggestStars({ data }) {
           ))}
         </ol>
       )}
-
-      <hr />
     </div>
   );
 }

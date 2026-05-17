@@ -1,36 +1,33 @@
 import React from 'react';
 
+/**
+ * Level Distribution - Active users at each level
+ * Styles in CSS: .level-distribution__*
+ */
 export default function LevelDistribution({ data }) {
   const { levels = [] } = data;
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <div className="level-distribution">
       <p>
         The following shows the number of active E2 users at each level (based on users logged in over the last month).
       </p>
 
       {levels.length === 0 ? (
-        <p style={{ fontStyle: 'italic', color: '#666' }}>
+        <p className="level-distribution__empty">
           No active users found
         </p>
       ) : (
-        <table
-          align="center"
-          style={{
-            margin: '20px auto',
-            borderCollapse: 'collapse',
-            border: '1px solid #ccc'
-          }}
-        >
+        <table className="level-distribution__table">
           <thead>
-            <tr style={{ backgroundColor: '#f0f0f0' }}>
-              <th style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>
+            <tr>
+              <th className="level-distribution__th">
                 Level
               </th>
-              <th style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>
+              <th className="level-distribution__th">
                 Title
               </th>
-              <th style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'right' }}>
+              <th className="level-distribution__th level-distribution__th--right">
                 Number of Users
               </th>
             </tr>
@@ -39,18 +36,15 @@ export default function LevelDistribution({ data }) {
             {levels.map((levelData, index) => (
               <tr
                 key={levelData.level}
-                className={index % 2 === 0 ? 'evenrow' : 'oddrow'}
-                style={{
-                  backgroundColor: index % 2 === 0 ? '#f9f9f9' : 'white'
-                }}
+                className={index % 2 === 0 ? 'level-distribution__row--even' : 'level-distribution__row--odd'}
               >
-                <td style={{ padding: '8px', border: '1px solid #ccc', textAlign: 'center' }}>
+                <td className="level-distribution__td">
                   {levelData.level}
                 </td>
-                <td style={{ padding: '8px', border: '1px solid #ccc', textAlign: 'center' }}>
+                <td className="level-distribution__td">
                   {levelData.title}
                 </td>
-                <td style={{ padding: '8px', border: '1px solid #ccc', textAlign: 'right' }}>
+                <td className="level-distribution__td level-distribution__td--right">
                   {levelData.count}
                 </td>
               </tr>

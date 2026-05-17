@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * LogArchive - Displays monthly archives of day logs, dream logs, editor logs, and root logs.
+ * Styles in CSS: .log-archive__*
  */
 const LogArchive = ({ data }) => {
   const {
@@ -41,27 +42,27 @@ const LogArchive = ({ data }) => {
     return (
       <>
         <tr>
-          <th colSpan={3} style={styles.sectionHeader}>
-            <h3 style={styles.h3}>{title}</h3>
+          <th colSpan={3} className="log-archive__section-header">
+            <h3 className="log-archive__section-title">{title}</h3>
           </th>
         </tr>
         {logs.length > 0 ? (
           <>
             <tr>
-              <th style={styles.th}>Title</th>
-              <th style={styles.th}>Author</th>
-              <th style={{ ...styles.th, textAlign: 'right' }}>Create Time</th>
+              <th className="log-archive__th">Title</th>
+              <th className="log-archive__th">Author</th>
+              <th className="log-archive__th log-archive__th--right">Create Time</th>
             </tr>
             {logs.map((log, idx) => (
-              <tr key={log.writeup_id} style={idx % 2 === 1 ? styles.evenRow : styles.oddRow}>
-                <td style={styles.td}>
+              <tr key={log.writeup_id} className={idx % 2 === 1 ? 'log-archive__row--even' : 'log-archive__row--odd'}>
+                <td className="log-archive__td">
                   <LinkNode nodeId={log.parent_id} title={log.parent_title} />{' '}
                   (<LinkNode nodeId={log.writeup_id} title={log.writeup_type} />)
                 </td>
-                <td style={styles.td}>
+                <td className="log-archive__td">
                   <LinkNode nodeId={log.author_id} title={log.author_title} />
                 </td>
-                <td style={{ ...styles.td, textAlign: 'right', whiteSpace: 'nowrap' }}>
+                <td className="log-archive__td log-archive__td--right">
                   {log.createtime}
                 </td>
               </tr>
@@ -69,7 +70,7 @@ const LogArchive = ({ data }) => {
           </>
         ) : (
           <tr>
-            <td colSpan={3} style={styles.td}>
+            <td colSpan={3} className="log-archive__td">
               <em>{emptyMessage}</em>
             </td>
           </tr>
@@ -81,15 +82,15 @@ const LogArchive = ({ data }) => {
   const nodeId = window.e2?.node_id || ''
 
   return (
-    <div style={styles.container}>
+    <div className="log-archive">
       {/* Month/Year selector form */}
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formCenter}>
+      <form onSubmit={handleSubmit} className="log-archive__form">
+        <div className="log-archive__form-center">
           <strong>Select Month and Year:</strong>{' '}
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(parseInt(e.target.value, 10))}
-            style={styles.select}
+            className="log-archive__select"
           >
             {months.map((m) => (
               <option key={m.value} value={m.value}>
@@ -100,7 +101,7 @@ const LogArchive = ({ data }) => {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value, 10))}
-            style={styles.select}
+            className="log-archive__select"
           >
             {years.map((y) => (
               <option key={y.value} value={y.value}>
@@ -108,11 +109,10 @@ const LogArchive = ({ data }) => {
               </option>
             ))}
           </select>{' '}
-          <button type="submit" style={styles.button}>
+          <button type="submit" className="log-archive__button">
             Get Logs
           </button>
-          <br />
-          <div style={styles.navLinks}>
+          <div className="log-archive__nav-links">
             {prev_year >= min_year && (
               <a href={`?node_id=${nodeId}&m=${prev_month}&y=${prev_year}`}>
                 &laquo; {prev_month_name} {prev_year}
@@ -129,7 +129,7 @@ const LogArchive = ({ data }) => {
       </form>
 
       {/* Explanation */}
-      <p style={styles.note}>
+      <p className="log-archive__note">
         <small>
           Writeups are displayed based on their titles, and are sorted by &quot;Create Time&quot;.
           <br />
@@ -140,7 +140,7 @@ const LogArchive = ({ data }) => {
       </p>
 
       {/* Log tables */}
-      <table style={styles.table}>
+      <table className="log-archive__table">
         <tbody>
           {renderLogTable(day_logs, 'Day Logs', 'No day logs found')}
           {dream_logs.length > 0 && renderLogTable(dream_logs, 'Dream Logs', '')}
@@ -150,76 +150,6 @@ const LogArchive = ({ data }) => {
       </table>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#111'
-  },
-  form: {
-    marginBottom: '15px'
-  },
-  formCenter: {
-    textAlign: 'center'
-  },
-  select: {
-    padding: '4px 8px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    marginRight: '5px'
-  },
-  button: {
-    padding: '5px 15px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px'
-  },
-  navLinks: {
-    marginTop: '10px'
-  },
-  note: {
-    color: '#507898',
-    marginBottom: '15px'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse'
-  },
-  sectionHeader: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    textAlign: 'center',
-    padding: '5px'
-  },
-  h3: {
-    margin: '5px 0',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  },
-  th: {
-    backgroundColor: '#f0f0f0',
-    padding: '8px',
-    borderBottom: '1px solid #d3d3d3',
-    textAlign: 'left',
-    fontWeight: 'bold'
-  },
-  td: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #e0e0e0'
-  },
-  oddRow: {
-    backgroundColor: '#ffffff'
-  },
-  evenRow: {
-    backgroundColor: '#f8f9f9'
-  }
 }
 
 export default LogArchive

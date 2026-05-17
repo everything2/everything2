@@ -31,11 +31,11 @@ const Mail = ({ data }) => {
   return (
     <div className="mail-page">
       {/* Mail header table */}
-      <table style={{ width: '100%', cellPadding: 0, cellSpacing: 1, border: 0 }}>
+      <table className="mail__table">
         <tbody>
-          <tr style={{ backgroundColor: '#CCCCCC' }}>
-            <th style={{ textAlign: 'left', padding: '4px 8px' }}>To:</th>
-            <td style={{ width: '100%', padding: '4px 8px' }}>
+          <tr className="mail__header-row">
+            <th className="mail__header-cell">To:</th>
+            <td className="mail__data-cell">
               {mail.recipient ? (
                 <LinkNode
                   nodeId={mail.recipient.node_id}
@@ -47,9 +47,9 @@ const Mail = ({ data }) => {
               )}
             </td>
           </tr>
-          <tr style={{ backgroundColor: '#CCCCCC' }}>
-            <th style={{ textAlign: 'left', padding: '4px 8px' }}>From:</th>
-            <td style={{ width: '100%', padding: '4px 8px' }}>
+          <tr className="mail__header-row">
+            <th className="mail__header-cell">From:</th>
+            <td className="mail__data-cell">
               {mail.from_address || <em>nobody</em>}
             </td>
           </tr>
@@ -58,14 +58,13 @@ const Mail = ({ data }) => {
 
       {/* Mail body */}
       <div
-        className="content"
-        style={{ marginTop: '10px' }}
+        className="content mail__body"
         dangerouslySetInnerHTML={{ __html: getSanitizedHtml(mail.doctext) }}
       />
 
       {/* Edit link for admins */}
       {Boolean(can_edit) && (
-        <div style={{ marginTop: '20px', fontSize: '0.9em' }}>
+        <div className="mail__edit-link">
           <a href={`?displaytype=basicedit`}>Edit this mail</a>
         </div>
       )}

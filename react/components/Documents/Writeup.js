@@ -143,22 +143,12 @@ const Writeup = ({ data }) => {
       {/* Toolbar - E2 Node Tools for editors, Edit button for editors/owners */}
       {/* data-reader-ignore excludes from reading mode */}
       {(showTools || canEdit) && (
-        <nav style={{ textAlign: 'right', marginBottom: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }} aria-label="Editor tools" data-reader-ignore="true">
+        <nav className="writeup-page__toolbar" aria-label="Editor tools" data-reader-ignore="true">
           {canEdit && !isEditing && (
             <button
               onClick={() => setIsEditing(true)}
               title={isOwnWriteup ? 'Edit your writeup' : `Edit ${authorName}'s writeup`}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '16px',
-                color: '#507898',
-                padding: '2px 4px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+              className="writeup-page__icon-btn"
             >
               <FaEdit />
             </button>
@@ -167,17 +157,7 @@ const Writeup = ({ data }) => {
             <button
               onClick={() => setToolsModalOpen(true)}
               title={`Editor node tools (applies to parent: ${parent_e2node.title})`}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '16px',
-                color: '#507898',
-                padding: '2px 4px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+              className="writeup-page__icon-btn"
             >
               <FaTools />
             </button>
@@ -246,19 +226,11 @@ const Writeup = ({ data }) => {
 
       {/* Locked node warning - shown where "add a writeup" would go */}
       {isLocked && !isGuest && (
-        <div className="locked-node-warning" style={{
-          backgroundColor: '#fff3cd',
-          border: '1px solid #ffc107',
-          borderRadius: '4px',
-          padding: '12px 16px',
-          marginTop: '16px',
-          marginBottom: '16px',
-          color: '#856404'
-        }}>
+        <div className="writeup-page__locked-warning">
           <strong>🔒 This node is locked</strong>
           {lockUserTitle && <span> by <em>{lockUserTitle}</em></span>}
           {lockReason && <span>: {lockReason}</span>}
-          <div style={{ marginTop: '4px' }}>
+          <div className="writeup-page__locked-detail">
             This node is not accepting new contributions at this time.
           </div>
         </div>
@@ -267,7 +239,7 @@ const Writeup = ({ data }) => {
       {/* Inline writeup editor for adding new writeup to parent e2node */}
       {/* data-reader-ignore excludes from reading mode */}
       {showAddWriteupEditor && (
-        <aside style={{ marginTop: '24px' }} aria-label="Write a new writeup" data-reader-ignore="true">
+        <aside className="writeup-page__add-writeup-section" aria-label="Write a new writeup" data-reader-ignore="true">
           <InlineWriteupEditor
             e2nodeId={parent_e2node.node_id}
             e2nodeTitle={parent_e2node.title}

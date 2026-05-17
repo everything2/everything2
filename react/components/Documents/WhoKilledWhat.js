@@ -39,7 +39,7 @@ const WhoKilledWhat = ({ data }) => {
   return (
     <div className="who-killed-what">
       {/* Search Form */}
-      <form method="GET" style={{ marginBottom: '1.5em' }}>
+      <form method="GET" className="who-killed__form">
         <input type="hidden" name="node_id" value={nodeId} />
 
         <span>And what has </span>
@@ -69,38 +69,31 @@ const WhoKilledWhat = ({ data }) => {
         </select>
 
         <span> </span>
-        <button type="submit" style={{
-          padding: '4px 10px',
-          backgroundColor: '#38495e',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '3px',
-          cursor: 'pointer'
-        }}>
+        <button type="submit" className="who-killed__btn">
           Search
         </button>
       </form>
 
       {/* Results */}
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table className="who-killed__table">
         <thead>
           <tr>
-            <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Time</th>
-            <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Title</th>
-            <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Author User</th>
-            <th style={{ textAlign: 'right', borderBottom: '1px solid #ccc', padding: '4px' }}>Rep</th>
+            <th className="who-killed__th">Time</th>
+            <th className="who-killed__th">Title</th>
+            <th className="who-killed__th">Author User</th>
+            <th className="who-killed__th who-killed__th--right">Rep</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td colSpan={4} style={{ padding: '8px 4px', fontWeight: 'bold' }}>
+            <td colSpan={4} className="who-killed__summary-row">
               Kill count for {target_user}: {total_kills.toLocaleString()}
             </td>
           </tr>
           {kills.map((kill, idx) => (
-            <tr key={kill.node_id} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9f9' }}>
-              <td style={{ padding: '4px' }}>{kill.createtime}</td>
-              <td style={{ padding: '4px' }}>
+            <tr key={kill.node_id} className={idx % 2 === 0 ? 'who-killed__row--even' : 'who-killed__row--odd'}>
+              <td className="who-killed__td">{kill.createtime}</td>
+              <td className="who-killed__td">
                 {node_heaven_id ? (
                   <a href={`?node_id=${node_heaven_id}&visit_id=${kill.node_id}`}>
                     {kill.title}
@@ -109,14 +102,14 @@ const WhoKilledWhat = ({ data }) => {
                   kill.title
                 )}
               </td>
-              <td style={{ padding: '4px' }}>
+              <td className="who-killed__td">
                 {kill.author_id > 0 ? (
                   <LinkNode node_id={kill.author_id} title={kill.author} type="user" />
                 ) : (
                   kill.author
                 )}
               </td>
-              <td style={{ textAlign: 'right', padding: '4px' }}>{kill.reputation}</td>
+              <td className="who-killed__td--right">{kill.reputation}</td>
             </tr>
           ))}
         </tbody>

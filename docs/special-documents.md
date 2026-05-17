@@ -41,7 +41,7 @@
 | Ask Everything: Do I have the Swine Flu? | Superdoc | `/title/Ask+Everything:+Do+I+have+the+Swine+Flu?` | React |
 | Available Rooms | Superdoc | `/title/Available+Rooms` | React |
 | bad spellings listing | Superdoc | `/title/bad+spellings+listing` | React |
-| bestow easter eggs | Superdoc | `/title/bestow+easter+eggs` | React |
+| bestow easter eggs | Superdoc | `/title/bestow+easter+eggs` | React (AdminBestowTool) |
 | Between the Cracks | Superdoc | `/title/Between+the+Cracks` | React |
 | Blind Voting Booth | Superdoc | `/title/Blind+Voting+Booth` | React |
 | Bounty Hunters Wanted | Superdoc | `/title/Bounty+Hunters+Wanted` | React |
@@ -160,7 +160,7 @@
 | Site Trajectory 2 | Superdoc | `/title/Site+Trajectory+2` | React |
 | Spam Cannon | Superdoc | `/title/Spam+Cannon` | React |
 | super mailbox | Superdoc | `/title/super+mailbox` | React |
-| Superbless | Superdoc | `/title/Superbless` | React |
+| Superbless | Superdoc | `/title/Superbless` | React (AdminBestowTool) |
 | Suspension Info | Superdoc | `/title/Suspension+Info` | React |
 | Teddisms Generator | Superdoc | `/title/Teddisms+Generator` | React |
 | Text Formatter | Superdoc | `/title/Text+Formatter` | React |
@@ -193,21 +193,20 @@
 
 | Document | Type | URL | Rendering |
 |----------|------|-----|-----------|
-| Admin Bestow Tool | Restricted Superdoc | `/title/Admin+Bestow+Tool` | React |
-| bestow cools | Restricted Superdoc | `/title/bestow+cools` | React |
+| bestow cools | Restricted Superdoc | `/title/bestow+cools` | React (AdminBestowTool) |
 | Cache Dump | Restricted Superdoc | `/title/Cache+Dump` | React |
 | Caja de Arena | Restricted Superdoc | `/title/Caja+de+Arena` | E2 Legacy |
 | Costume Remover | Restricted Superdoc | `/title/Costume+Remover` | E2 Legacy |
 | Create Node | Restricted Superdoc | `/title/Create+Node` | React |
 | Dr. Nate's Secret Lab | Restricted Superdoc | `/title/Dr.+Nate's+Secret+Lab` | E2 Legacy |
 | E2Node Reparenter | Restricted Superdoc | `/title/E2Node+Reparenter` | React |
-| Enrichify | Restricted Superdoc | `/title/Enrichify` | React |
+| Enrichify | Restricted Superdoc | `/title/Enrichify` | React (AdminBestowTool) |
 | Everything's Richest Noders | Restricted Superdoc | `/title/Everything's+Richest+Noders` | React |
 | Everything Statistics | Restricted Superdoc | `/title/Everything+Statistics` | React |
 | FAQ Editor | Restricted Superdoc | `/title/FAQ+Editor` | React |
 | Feed eDB | Restricted Superdoc | `/title/Feed+eDB` | React |
-| Fiery Teddy Bear Suit | Restricted Superdoc | `/title/Fiery+Teddy+Bear+Suit` | React |
-| Giant Teddy Bear Suit | Restricted Superdoc | `/title/Giant+Teddy+Bear+Suit` | React |
+| Fiery Teddy Bear Suit | Restricted Superdoc | `/title/Fiery+Teddy+Bear+Suit` | React (AdminBestowTool) |
+| Giant Teddy Bear Suit | Restricted Superdoc | `/title/Giant+Teddy+Bear+Suit` | React (AdminBestowTool) |
 | GNL | Restricted Superdoc | `/title/GNL` | React |
 | GP Optouts | Restricted Superdoc | `/title/GP+Optouts` | React |
 | ip2name | Restricted Superdoc | `/title/ip2name` | React |
@@ -224,7 +223,7 @@
 | Nodetype Changer | Restricted Superdoc | `/title/Nodetype+Changer` | React |
 | SQL Prompt | Restricted Superdoc | `/title/SQL+Prompt` | React |
 | Suspension Info | Restricted Superdoc | `/title/Suspension+Info` | React |
-| Superbless | Restricted Superdoc | `/title/Superbless` | React |
+| Superbless | Restricted Superdoc | `/title/Superbless` | React (AdminBestowTool) |
 | The Borg Clinic | Restricted Superdoc | `/title/The+Borg+Clinic` | React |
 | The Killing Floor | Restricted Superdoc | `/title/The+Killing+Floor` | React (deprecated) |
 | The Node Crypt | Restricted Superdoc | `/title/The+Node+Crypt` | React |
@@ -232,7 +231,8 @@
 | The Oracle | Restricted Superdoc | `/title/The+Oracle` | React |
 | The Oracle Classic | Restricted Superdoc | `/title/The+Oracle+Classic` | React |
 | The Tokenator | Restricted Superdoc | `/title/The+Tokenator` | React |
-| The Well of Cool | Restricted Superdoc | `/title/The+Well+of+Cool` | React |
+| The Well of Cool | Restricted Superdoc | `/title/The+Well+of+Cool` | React (AdminBestowTool) |
+| XP Superbless | Restricted Superdoc | `/title/XP+Superbless` | React (AdminBestowTool) |
 | TypeVersion Controls | Restricted Superdoc | `/title/TypeVersion+Controls` | E2 Legacy |
 | User Statistics | Restricted Superdoc | `/title/User+Statistics` | React |
 | Usergroup Attendance Monitor | Restricted Superdoc | `/title/Usergroup+Attendance+Monitor` | React |

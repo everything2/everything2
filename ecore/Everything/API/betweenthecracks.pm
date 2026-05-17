@@ -74,7 +74,7 @@ sub search {
         }
 
         if (defined $min_rep) {
-            $rep_restriction = "AND reputation >= $min_rep";
+            $rep_restriction = "AND COALESCE(node.reputation, 0) >= $min_rep";
         }
     }
 
@@ -84,13 +84,14 @@ sub search {
 
     # Query for writeups the user hasn't voted on with low vote counts
     # wrtype_writeuptype 177599 is "e2node" type to exclude
+    # COALESCE handles NULL totalvotes as 0
     my $query = qq|
-        SELECT title, author_user, createtime, writeup_id, totalvotes
+        SELECT title, author_user, createtime, writeup_id, COALESCE(node.totalvotes, 0) as totalvotes
         FROM writeup
         JOIN node ON writeup.writeup_id = node.node_id
         LEFT OUTER JOIN vote ON vote.vote_id = node.node_id AND vote.voter_user = ?
         WHERE
-            node.totalvotes <= ?
+            COALESCE(node.totalvotes, 0) <= ?
             $rep_restriction
             AND node.author_user <> ?
             AND vote.voter_user IS NULL

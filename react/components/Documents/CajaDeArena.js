@@ -39,7 +39,7 @@ const CajaDeArena = ({ data }) => {
       <form method="GET" action={`/?node_id=${node_id}`}>
         <input type="hidden" name="node_id" value={node_id} />
 
-        <fieldset style={{ marginBottom: '20px', padding: '15px' }}>
+        <fieldset className="caja__fieldset">
           <legend>Sandbox Options</legend>
 
           <label>
@@ -97,12 +97,7 @@ const CajaDeArena = ({ data }) => {
       {items.map((item) => (
         <div
           key={item.node_id}
-          style={{
-            marginBottom: '20px',
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '5px'
-          }}
+          className="caja__result-card"
         >
           <p>
             <strong>
@@ -111,29 +106,17 @@ const CajaDeArena = ({ data }) => {
             {' '}({item.full_length} chars)
           </p>
 
-          <div
-            style={{
-              backgroundColor: '#f9f9f9',
-              padding: '10px',
-              fontFamily: 'monospace',
-              fontSize: '12px',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              maxHeight: '200px',
-              overflow: 'auto'
-            }}
-          >
+          <div className="caja__doctext-preview">
             {item.doctext}
           </div>
 
           {pole_id && (
-            <p style={{ marginTop: '10px' }}>
+            <p className="caja__smite-wrapper">
               <hr />
               <a
                 href={`/?node_id=${pole_id}&prefill=${encodeURIComponent(item.title)}`}
-                className="action"
+                className="action caja__smite-link"
                 title="Open The Old Hooked Pole with this username pre-filled"
-                style={{ color: '#c00' }}
               >
                 Smite Spammer
               </a>
@@ -143,18 +126,18 @@ const CajaDeArena = ({ data }) => {
       ))}
 
       {items.length === 0 && (
-        <p style={{ fontStyle: 'italic', color: '#666' }}>
+        <p className="caja__empty-message">
           No matching homenodes found with current filters.
         </p>
       )}
 
       {/* Pagination */}
       {total_pages > 1 && (
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <div className="caja__pagination">
           {page > 1 && (
             <a
               href={`/?node_id=${node_id}&gonesince=${encodeURIComponent(gonesince)}&showlength=${showlength}${published ? '&published=1' : ''}${extlinks ? '&extlinks=1' : ''}&page=${page - 1}`}
-              style={{ marginRight: '20px' }}
+              className="caja__pagination-prev"
             >
               &laquo; Previous
             </a>
@@ -165,7 +148,7 @@ const CajaDeArena = ({ data }) => {
           {page < total_pages && (
             <a
               href={`/?node_id=${node_id}&gonesince=${encodeURIComponent(gonesince)}&showlength=${showlength}${published ? '&published=1' : ''}${extlinks ? '&extlinks=1' : ''}&page=${page + 1}`}
-              style={{ marginLeft: '20px' }}
+              className="caja__pagination-next"
             >
               Next &raquo;
             </a>

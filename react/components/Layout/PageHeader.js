@@ -4,6 +4,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * PageHeader - Renders the page header section with title, createdby, firmlinks, etc.
+ * Styles in CSS: .page-header__*
  *
  * This component replaces the server-side Mason/Perl rendering of:
  * - Node title (h1)
@@ -29,13 +30,13 @@ const PageHeader = ({ node, pageheader, user, feedUrl, children }) => {
 
   return (
     <div id="pageheader">
-      <div style={styles.titleRow}>
-        <div style={styles.titleWithFeed}>
-          <h1 className="nodetitle" style={styles.title}>{node.title}</h1>
+      <div className="page-header__title-row">
+        <div className="page-header__title-with-feed">
+          <h1 className="nodetitle page-header__title">{node.title}</h1>
           {feedUrl && (
             <a
               href={feedUrl}
-              style={styles.feedIcon}
+              className="page-header__feed-icon"
               title="Subscribe to RSS feed"
               aria-label="RSS Feed"
             >
@@ -43,15 +44,14 @@ const PageHeader = ({ node, pageheader, user, feedUrl, children }) => {
             </a>
           )}
         </div>
-        {children && <div style={styles.actionsWrapper}>{children}</div>}
+        {children && <div className="page-header__actions-wrapper">{children}</div>}
       </div>
 
       {/* Created by - only for e2nodes and logged-in users */}
       {createdby && (
-        <div style={styles.createdbyWrapper}>
+        <div className="page-header__createdby-wrapper">
           <span
-            className="createdby"
-            style={styles.createdby}
+            className="createdby page-header__createdby"
             title={`created by ${createdby.title}${createdby.createtime ? ` on ${createdby.createtime}` : ''}`}
           >
             created by <LinkNode id={createdby.node_id} display={createdby.title} />
@@ -99,57 +99,6 @@ const PageHeader = ({ node, pageheader, user, feedUrl, children }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  titleRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    flexWrap: 'wrap',
-    gap: '4px',
-    borderBottom: '2px solid #507898',
-    paddingBottom: '2px',
-    marginBottom: '2px'
-  },
-  titleWithFeed: {
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: '8px',
-    minWidth: 0,
-    flex: '1 1 auto'
-  },
-  actionsWrapper: {
-    // flex-grow: 1 means it will expand to fill available space on same row,
-    // AND fill entire row when wrapped to its own line
-    flex: '1 0 auto',
-    display: 'flex',
-    justifyContent: 'flex-end'
-  },
-  title: {
-    margin: 0,
-    border: 'none',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    lineHeight: '1.2'
-  },
-  feedIcon: {
-    color: '#507898', // Muted Blue (Kernel Blue palette)
-    fontSize: '20px',
-    textDecoration: 'none',
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '4px', // Better touch target
-    marginLeft: '4px',
-    borderRadius: '4px'
-  },
-  createdbyWrapper: {
-    textAlign: 'left'
-  },
-  createdby: {
-    float: 'none',
-    display: 'block'
-  }
 }
 
 export default PageHeader

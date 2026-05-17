@@ -3,6 +3,7 @@ import { FaEdit, FaPlus, FaTrash, FaSave, FaTimes } from 'react-icons/fa'
 
 /**
  * Setting Component - Display and edit setting node vars
+ * Styles in CSS: .setting__*
  *
  * Admin-only component for viewing and editing key-value pairs
  * stored in a setting node's vars field.
@@ -140,29 +141,38 @@ export default function Setting({ data }) {
 
   // Render value with truncation for long values
   const renderValue = (value) => {
-    if (!value) return <span style={styles.emptyValue}>(empty)</span>
+    if (!value) return <span className="setting__empty-value">(empty)</span>
     const strValue = String(value)
     if (strValue.length > 100) {
       return (
         <span title={strValue}>
           {strValue.substring(0, 100)}...
-          <span style={styles.truncated}> ({strValue.length} chars)</span>
+          <span className="setting__truncated"> ({strValue.length} chars)</span>
         </span>
       )
     }
     return strValue
   }
 
+  // Get status box class based on type
+  const getStatusBoxClass = () => {
+    if (!saveStatus) return 'setting__status-box'
+    const typeClass = saveStatus.type === 'error' ? 'setting__status-box--error' :
+                     saveStatus.type === 'success' ? 'setting__status-box--success' :
+                     'setting__status-box--saving'
+    return `setting__status-box ${typeClass}`
+  }
+
   // Display mode
   if (!isEditing) {
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Setting: {setting.title}</h1>
+      <div className="setting">
+        <div className="setting__header">
+          <h1 className="setting__title">Setting: {setting.title}</h1>
           {user?.is_admin && (
             <button
               onClick={() => setIsEditing(true)}
-              style={styles.editButton}
+              className="setting__edit-button"
               title="Edit settings"
             >
               <FaEdit /> Edit
@@ -171,34 +181,34 @@ export default function Setting({ data }) {
         </div>
 
         {/* Statistics */}
-        <div style={styles.statsBox}>
-          <p style={styles.statLine}>
+        <div className="setting__stats-box">
+          <p className="setting__stat-line">
             <strong>Node ID:</strong> {setting.node_id}
           </p>
-          <p style={styles.statLine}>
+          <p className="setting__stat-line">
             <strong>Variables:</strong> {vars.length}
           </p>
         </div>
 
         {/* Vars Table */}
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Settings Variables</h2>
+        <div className="setting__section">
+          <h2 className="setting__section-title">Settings Variables</h2>
           {vars.length === 0 ? (
-            <p style={styles.noData}>No variables defined.</p>
+            <p className="setting__no-data">No variables defined.</p>
           ) : (
-            <div style={styles.tableWrapper}>
-              <table style={styles.table}>
+            <div className="setting__table-wrapper">
+              <table className="setting__table">
                 <thead>
-                  <tr style={styles.headerRow}>
-                    <th style={styles.th}>Key</th>
-                    <th style={styles.th}>Value</th>
+                  <tr className="setting__header-row">
+                    <th className="setting__th">Key</th>
+                    <th className="setting__th">Value</th>
                   </tr>
                 </thead>
                 <tbody>
                   {vars.map((v, idx) => (
-                    <tr key={v.key} style={idx % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                      <td style={styles.keyCell}>{v.key}</td>
-                      <td style={styles.valueCell}>{renderValue(v.value)}</td>
+                    <tr key={v.key} className={idx % 2 === 0 ? 'setting__even-row' : 'setting__odd-row'}>
+                      <td className="setting__key-cell">{v.key}</td>
+                      <td className="setting__value-cell">{renderValue(v.value)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -212,12 +222,12 @@ export default function Setting({ data }) {
 
   // Edit mode
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Editing: {setting.title}</h1>
+    <div className="setting">
+      <div className="setting__header">
+        <h1 className="setting__title">Editing: {setting.title}</h1>
         <button
           onClick={() => setIsEditing(false)}
-          style={styles.cancelButton}
+          className="setting__cancel-button"
         >
           <FaTimes /> Done
         </button>
@@ -225,85 +235,79 @@ export default function Setting({ data }) {
 
       {/* Status message */}
       {saveStatus && (
-        <div style={{
-          ...styles.statusBox,
-          backgroundColor: saveStatus.type === 'error' ? '#fee' :
-                          saveStatus.type === 'success' ? '#efe' : '#fff3cd',
-          color: saveStatus.type === 'error' ? '#c00' :
-                 saveStatus.type === 'success' ? '#060' : '#856404'
-        }}>
+        <div className={getStatusBoxClass()}>
           {saveStatus.message}
         </div>
       )}
 
       {/* Add new var form */}
-      <div style={styles.addForm}>
-        <h3 style={styles.addFormTitle}>Add New Variable</h3>
-        <div style={styles.addFormRow}>
+      <div className="setting__add-form">
+        <h3 className="setting__add-form-title">Add New Variable</h3>
+        <div className="setting__add-form-row">
           <input
             type="text"
             placeholder="Key"
             value={newKey}
             onChange={(e) => setNewKey(e.target.value)}
-            style={styles.input}
+            className="setting__input"
           />
           <input
             type="text"
             placeholder="Value"
             value={newValue}
             onChange={(e) => setNewValue(e.target.value)}
-            style={{ ...styles.input, flex: 2 }}
+            className="setting__input setting__input--wide"
           />
-          <button onClick={handleAddVar} style={styles.addButton}>
+          <button onClick={handleAddVar} className="setting__add-button">
             <FaPlus /> Add
           </button>
         </div>
       </div>
 
       {/* Vars Table with editing */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Variables ({vars.length})</h2>
+      <div className="setting__section">
+        <h2 className="setting__section-title">Variables ({vars.length})</h2>
         {vars.length === 0 ? (
-          <p style={styles.noData}>No variables defined. Add one above.</p>
+          <p className="setting__no-data">No variables defined. Add one above.</p>
         ) : (
-          <div style={styles.tableWrapper}>
-            <table style={styles.table}>
+          <div className="setting__table-wrapper">
+            <table className="setting__table">
               <thead>
-                <tr style={styles.headerRow}>
-                  <th style={styles.th}>Key</th>
-                  <th style={styles.th}>Value</th>
-                  <th style={{ ...styles.th, width: '120px' }}>Actions</th>
+                <tr className="setting__header-row">
+                  <th className="setting__th">Key</th>
+                  <th className="setting__th">Value</th>
+                  <th className="setting__th setting__th--actions">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {vars.map((v, idx) => (
-                  <tr key={v.key} style={idx % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                    <td style={styles.keyCell}>{v.key}</td>
-                    <td style={styles.valueCell}>
+                  <tr key={v.key} className={idx % 2 === 0 ? 'setting__even-row' : 'setting__odd-row'}>
+                    <td className="setting__key-cell">{v.key}</td>
+                    <td className="setting__value-cell">
                       {editingIndex === idx ? (
                         <textarea
                           value={editValue}
                           onChange={(e) => setEditValue(e.target.value)}
-                          style={styles.editTextarea}
+                          className="setting__edit-textarea"
                           rows={3}
                         />
                       ) : (
                         renderValue(v.value)
                       )}
                     </td>
-                    <td style={styles.actionsCell}>
+                    <td className="setting__actions-cell">
                       {editingIndex === idx ? (
                         <>
                           <button
                             onClick={() => handleUpdateVar(v.key)}
-                            style={styles.saveButton}
+                            className="setting__save-button"
                             title="Save"
                           >
                             <FaSave />
                           </button>
                           <button
                             onClick={cancelEditing}
-                            style={styles.cancelSmallButton}
+                            className="setting__cancel-small-button"
                             title="Cancel"
                           >
                             <FaTimes />
@@ -313,14 +317,14 @@ export default function Setting({ data }) {
                         <>
                           <button
                             onClick={() => startEditing(idx, v.value)}
-                            style={styles.editSmallButton}
+                            className="setting__edit-small-button"
                             title="Edit"
                           >
                             <FaEdit />
                           </button>
                           <button
                             onClick={() => handleDeleteVar(v.key)}
-                            style={styles.deleteButton}
+                            className="setting__delete-button"
                             title="Delete"
                           >
                             <FaTrash />
@@ -337,237 +341,10 @@ export default function Setting({ data }) {
       </div>
 
       {/* Info box */}
-      <div style={styles.infoBox}>
+      <div className="setting__info-box">
         <strong>Note:</strong> Changes are saved immediately when you click Add, Save, or Delete.
         Be careful when modifying settings as they may affect site functionality.
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    maxWidth: '1200px',
-    margin: '0 auto',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    margin: 0,
-  },
-  editButton: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '8px 16px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '500',
-  },
-  cancelButton: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '8px 16px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '500',
-  },
-  statsBox: {
-    backgroundColor: '#f8f9fa',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    padding: '15px 20px',
-    marginBottom: '20px',
-  },
-  statLine: {
-    margin: '8px 0',
-    fontSize: '15px',
-    color: '#333',
-  },
-  section: {
-    marginBottom: '30px',
-  },
-  sectionTitle: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    marginBottom: '15px',
-    color: '#333',
-    borderBottom: '2px solid #4060b0',
-    paddingBottom: '8px',
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '13px',
-  },
-  headerRow: {
-    backgroundColor: '#38495e',
-  },
-  th: {
-    padding: '10px 12px',
-    textAlign: 'left',
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  evenRow: {
-    backgroundColor: '#f9f9f9',
-  },
-  oddRow: {
-    backgroundColor: 'white',
-  },
-  keyCell: {
-    padding: '8px 12px',
-    borderBottom: '1px solid #dee2e6',
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-    color: '#4060b0',
-    width: '200px',
-    verticalAlign: 'top',
-  },
-  valueCell: {
-    padding: '8px 12px',
-    borderBottom: '1px solid #dee2e6',
-    fontFamily: 'monospace',
-    wordBreak: 'break-word',
-    verticalAlign: 'top',
-  },
-  actionsCell: {
-    padding: '8px 12px',
-    borderBottom: '1px solid #dee2e6',
-    textAlign: 'center',
-    whiteSpace: 'nowrap',
-  },
-  emptyValue: {
-    color: '#999',
-    fontStyle: 'italic',
-  },
-  truncated: {
-    color: '#666',
-    fontSize: '11px',
-  },
-  noData: {
-    color: '#666',
-    fontStyle: 'italic',
-    padding: '20px',
-    textAlign: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '4px',
-  },
-  statusBox: {
-    padding: '10px 15px',
-    marginBottom: '15px',
-    borderRadius: '4px',
-    fontSize: '14px',
-  },
-  addForm: {
-    backgroundColor: '#f8f9fa',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    padding: '15px 20px',
-    marginBottom: '20px',
-  },
-  addFormTitle: {
-    margin: '0 0 12px 0',
-    fontSize: '14px',
-    color: '#333',
-  },
-  addFormRow: {
-    display: 'flex',
-    gap: '10px',
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    padding: '8px 12px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '13px',
-    fontFamily: 'monospace',
-  },
-  addButton: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '8px 16px',
-    backgroundColor: '#28a745',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: '500',
-  },
-  editTextarea: {
-    width: '100%',
-    padding: '8px',
-    border: '1px solid #4060b0',
-    borderRadius: '4px',
-    fontSize: '13px',
-    fontFamily: 'monospace',
-    resize: 'vertical',
-  },
-  editSmallButton: {
-    padding: '4px 8px',
-    marginRight: '4px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  saveButton: {
-    padding: '4px 8px',
-    marginRight: '4px',
-    backgroundColor: '#28a745',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  cancelSmallButton: {
-    padding: '4px 8px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  deleteButton: {
-    padding: '4px 8px',
-    backgroundColor: '#dc3545',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  infoBox: {
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    fontSize: '14px',
-    color: '#856404',
-  },
 }

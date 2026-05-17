@@ -1,6 +1,10 @@
 import React from 'react';
 import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 
+/**
+ * Room - Chat room entry/display page
+ * Styles in CSS: .room__*
+ */
 export default function Room({ data }) {
   const { room, is_admin, entered, go_outside_id } = data;
 
@@ -12,13 +16,13 @@ export default function Room({ data }) {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="room">
       {/* Admin lock/unlock toggle */}
       {is_admin === 1 && (
-        <div style={styles.adminControls}>
+        <div className="room__admin-controls">
           <a
             href={`/?node_id=${room.node_id}&roomlocked=${room.roomlocked ? 0 : 1}`}
-            style={styles.lockLink}
+            className="room__lock-link"
           >
             {room.roomlocked ? 'unlock' : 'lock'}
           </a>
@@ -26,7 +30,7 @@ export default function Room({ data }) {
       )}
 
       {/* Entry status message */}
-      <p style={styles.statusMessage}>
+      <p className="room__status-message">
         {entered ? (
           <>You walk into {room.title}</>
         ) : (
@@ -37,45 +41,17 @@ export default function Room({ data }) {
       {/* Room description */}
       {room.doctext && (
         <div
-          style={styles.description}
+          className="room__description"
           dangerouslySetInnerHTML={{ __html: getRenderedDoctext() }}
         />
       )}
 
       {/* Go outside link */}
       {go_outside_id > 0 && (
-        <p style={styles.goOutside}>
+        <p className="room__go-outside">
           (<a href={`/?node_id=${go_outside_id}`}>go outside</a>)
         </p>
       )}
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: '20px',
-    maxWidth: '800px',
-    margin: '0 auto',
-  },
-  adminControls: {
-    marginBottom: '10px',
-  },
-  lockLink: {
-    fontSize: '12px',
-    fontStyle: 'italic',
-    color: '#507898',
-  },
-  statusMessage: {
-    fontSize: '16px',
-    marginBottom: '20px',
-  },
-  description: {
-    marginBottom: '20px',
-    lineHeight: '1.6',
-  },
-  goOutside: {
-    textAlign: 'right',
-    marginTop: '20px',
-  },
-};

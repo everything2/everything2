@@ -6,6 +6,7 @@ import React, { useState } from 'react'
  * Displays a filterable, paginated list of writeups.
  * Users can filter by writeup type (thing, idea, person, etc.)
  * and control how many results to show per page.
+ * Styles are in CSS classes (writeups-by-type__*)
  */
 const WriteupsByType = ({ data }) => {
   const {
@@ -21,16 +22,6 @@ const WriteupsByType = ({ data }) => {
   // Form state
   const [selectedType, setSelectedType] = useState(current_type)
   const [selectedCount, setSelectedCount] = useState(current_count)
-
-  // Kernel Blue colors
-  const colors = {
-    primary: '#38495e',
-    secondary: '#507898',
-    highlight: '#4060b0',
-    accent: '#3bb5c3',
-    background: '#f8f9f9',
-    text: '#111111'
-  }
 
   // Check if date is valid
   const isValidDate = (dateStr) => {
@@ -62,118 +53,34 @@ const WriteupsByType = ({ data }) => {
     return `?${params.toString()}`
   }
 
-  // Styles
-  const containerStyle = {
-    padding: '12px',
-    maxWidth: '1000px',
-    margin: '0 auto',
-    boxSizing: 'border-box'
+  // Helper for table cell classes
+  const tdClass = (isOdd, isRight = false) => {
+    let cls = 'writeups-by-type__td'
+    if (isOdd) cls += ' writeups-by-type__td--odd'
+    if (isRight) cls += ' writeups-by-type__td--right'
+    return cls
   }
-
-  const filterBoxStyle = {
-    backgroundColor: colors.background,
-    padding: '12px',
-    borderRadius: '8px',
-    marginBottom: '16px',
-    border: `1px solid ${colors.secondary}20`
-  }
-
-  const selectStyle = {
-    padding: '8px 12px',
-    border: `1px solid ${colors.secondary}`,
-    borderRadius: '4px',
-    fontSize: '14px',
-    backgroundColor: '#fff',
-    marginRight: '10px'
-  }
-
-  const buttonStyle = {
-    padding: '8px 16px',
-    backgroundColor: colors.highlight,
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer'
-  }
-
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    backgroundColor: '#fff',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    borderRadius: '8px',
-    overflow: 'hidden'
-  }
-
-  const thStyle = {
-    backgroundColor: colors.primary,
-    color: '#fff',
-    padding: '10px 12px',
-    textAlign: 'left',
-    fontSize: '14px',
-    fontWeight: '600'
-  }
-
-  const tdStyle = (isOdd) => ({
-    padding: '10px 12px',
-    borderBottom: '1px solid #eee',
-    fontSize: '14px',
-    backgroundColor: isOdd ? colors.background : '#fff'
-  })
-
-  const linkStyle = {
-    color: colors.highlight,
-    textDecoration: 'none',
-    fontWeight: '500'
-  }
-
-  const typeTagStyle = {
-    display: 'inline-block',
-    fontSize: '12px',
-    color: colors.secondary,
-    marginLeft: '6px'
-  }
-
-  const paginationStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '15px',
-    marginTop: '16px',
-    padding: '12px',
-    backgroundColor: colors.background,
-    borderRadius: '4px'
-  }
-
-  const navLinkStyle = (disabled) => ({
-    color: disabled ? '#ccc' : colors.highlight,
-    textDecoration: 'none',
-    fontWeight: '500',
-    cursor: disabled ? 'default' : 'pointer'
-  })
 
   const hasPrev = current_page > 0
   const hasNext = writeups.length === current_count
 
   return (
-    <div style={containerStyle}>
+    <div className="writeups-by-type">
       {/* Filter Form */}
-      <form method="GET" action="/title/Writeups by Type" style={filterBoxStyle}>
-        <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-          <legend style={{ fontWeight: '600', marginBottom: '15px', fontSize: '16px' }}>
+      <form method="GET" action="/title/Writeups by Type" className="writeups-by-type__filter-box">
+        <fieldset className="writeups-by-type__fieldset">
+          <legend className="writeups-by-type__legend">
             Choose...
           </legend>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <label style={{ display: 'block' }}>
-              <strong style={{ display: 'block', marginBottom: '6px', fontSize: '14px' }}>Writeup Type:</strong>
+          <div className="writeups-by-type__form-body">
+            <label className="writeups-by-type__label">
+              <strong className="writeups-by-type__label-text">Writeup Type:</strong>
               <select
                 name="wutype"
                 value={selectedType}
                 onChange={(e) => setSelectedType(Number(e.target.value))}
-                style={{ ...selectStyle, width: '100%', maxWidth: '300px', marginRight: 0, boxSizing: 'border-box' }}
+                className="writeups-by-type__select writeups-by-type__select--type"
               >
                 {type_options.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -181,13 +88,13 @@ const WriteupsByType = ({ data }) => {
               </select>
             </label>
 
-            <label style={{ display: 'block' }}>
-              <strong style={{ display: 'block', marginBottom: '6px', fontSize: '14px' }}>Results per page:</strong>
+            <label className="writeups-by-type__label">
+              <strong className="writeups-by-type__label-text">Results per page:</strong>
               <select
                 name="count"
                 value={selectedCount}
                 onChange={(e) => setSelectedCount(Number(e.target.value))}
-                style={{ ...selectStyle, width: '100%', maxWidth: '120px', marginRight: 0, boxSizing: 'border-box' }}
+                className="writeups-by-type__select writeups-by-type__select--count"
               >
                 {count_options.map(n => (
                   <option key={n} value={n}>{n}</option>
@@ -196,7 +103,7 @@ const WriteupsByType = ({ data }) => {
             </label>
 
             <input type="hidden" name="page" value="0" />
-            <button type="submit" style={buttonStyle}>
+            <button type="submit" className="writeups-by-type__btn">
               Get Writeups
             </button>
           </div>
@@ -206,38 +113,38 @@ const WriteupsByType = ({ data }) => {
       {/* Results Table */}
       {writeups.length > 0 ? (
         <>
-          <table style={tableStyle}>
+          <table className="writeups-by-type__table">
             <thead>
               <tr>
-                <th style={thStyle}>Title</th>
-                <th style={thStyle}>Author</th>
-                <th style={{ ...thStyle, textAlign: 'right' }}>Published</th>
+                <th className="writeups-by-type__th">Title</th>
+                <th className="writeups-by-type__th">Author</th>
+                <th className="writeups-by-type__th writeups-by-type__th--right">Published</th>
               </tr>
             </thead>
             <tbody>
               {writeups.map((wu, idx) => (
                 <tr key={wu.node_id}>
-                  <td style={tdStyle(idx % 2 === 1)}>
+                  <td className={tdClass(idx % 2 === 1)}>
                     {wu.parent ? (
-                      <a href={`/node/${wu.parent.node_id}`} style={linkStyle}>
+                      <a href={`/node/${wu.parent.node_id}`} className="writeups-by-type__link">
                         {wu.parent.title}
                       </a>
                     ) : (
-                      <span style={{ color: '#999' }}>{wu.title}</span>
+                      <span className="writeups-by-type__muted">{wu.title}</span>
                     )}
-                    <span style={typeTagStyle}>({wu.writeup_type})</span>
+                    <span className="writeups-by-type__type-tag">({wu.writeup_type})</span>
                   </td>
-                  <td style={tdStyle(idx % 2 === 1)}>
+                  <td className={tdClass(idx % 2 === 1)}>
                     {wu.author ? (
-                      <a href={`/user/${encodeURIComponent(wu.author.title)}`} style={linkStyle}>
+                      <a href={`/user/${encodeURIComponent(wu.author.title)}`} className="writeups-by-type__link">
                         {wu.author.title}
                       </a>
                     ) : (
-                      <span style={{ color: '#999' }}>—</span>
+                      <span className="writeups-by-type__muted">—</span>
                     )}
                   </td>
-                  <td style={{ ...tdStyle(idx % 2 === 1), textAlign: 'right' }}>
-                    <small style={{ color: colors.secondary }}>
+                  <td className={tdClass(idx % 2 === 1, true)}>
+                    <small className="writeups-by-type__date">
                       {formatDate(wu.publishtime)}
                     </small>
                   </td>
@@ -247,30 +154,30 @@ const WriteupsByType = ({ data }) => {
           </table>
 
           {/* Pagination */}
-          <div style={paginationStyle}>
+          <div className="writeups-by-type__pagination">
             {hasPrev ? (
-              <a href={buildPageUrl(current_page - 1)} style={navLinkStyle(false)}>
+              <a href={buildPageUrl(current_page - 1)} className="writeups-by-type__nav-link">
                 &lt;&lt; Prev
               </a>
             ) : (
-              <span style={navLinkStyle(true)}>&lt;&lt; Prev</span>
+              <span className="writeups-by-type__nav-link writeups-by-type__nav-link--disabled">&lt;&lt; Prev</span>
             )}
 
-            <span style={{ fontWeight: '600' }}>
+            <span className="writeups-by-type__page-num">
               Page {current_page + 1}
             </span>
 
             {hasNext ? (
-              <a href={buildPageUrl(current_page + 1)} style={navLinkStyle(false)}>
+              <a href={buildPageUrl(current_page + 1)} className="writeups-by-type__nav-link">
                 Next &gt;&gt;
               </a>
             ) : (
-              <span style={navLinkStyle(true)}>Next &gt;&gt;</span>
+              <span className="writeups-by-type__nav-link writeups-by-type__nav-link--disabled">Next &gt;&gt;</span>
             )}
           </div>
         </>
       ) : (
-        <p style={{ textAlign: 'center', color: colors.secondary, padding: '40px' }}>
+        <p className="writeups-by-type__empty">
           No writeups found. Try selecting a different type or adjusting your filters.
         </p>
       )}

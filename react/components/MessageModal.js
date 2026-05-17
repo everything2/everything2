@@ -348,7 +348,7 @@ const MessageModal = ({
                 )}
               </div>
             ) : (
-              <div style={{ position: 'relative' }}>
+              <div className="message-modal__autocomplete-wrapper">
                 <input
                   ref={recipientInputRef}
                   type="text"

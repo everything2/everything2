@@ -1,201 +1,97 @@
-# AI Assistant Context for Everything2
+# Everything2 — AI Assistant Context
 
-Context for AI assistants working on the Everything2 codebase.
+**Last Updated**: 2026-04-28
+**Maintainer**: Jay Bonci (jay@bonci.net)
 
-**Last Updated**: 2025-12-14
-**Maintained By**: Jay Bonci
+This file is a thin layer of non-discoverable context. For anything you can derive by reading code or running `git log`, do that instead. Treat `docs/` as the deeper reference and this file as a finger pointing at it.
 
-## ⚠️ CRITICAL: Common Pitfalls ⚠️
-
-### 🚫 DO NOT USE CURL FOR HTML TESTING
-
-**CRITICAL**: curl cannot render React components - it only shows server-generated HTML. Since E2 renders pages client-side with React, curl will NOT show the actual UI that users see.
-
-**Always use `browser-debug.js` for testing**:
-```bash
-# HTML/Page testing (renders React components)
-node tools/browser-debug.js html guest 'http://localhost:9080/node/good%20poetry'
-node tools/browser-debug.js html e2e_admin 'http://localhost:9080/title/Superbless'
-node tools/browser-debug.js fetch e2e_user 'http://localhost:9080/title/Settings'
-
-# API testing (POST/PUT/DELETE JSON endpoints)
-node tools/browser-debug.js post e2e_admin 'http://localhost:9080/api/drafts' '{"title":"Test"}'
-node tools/browser-debug.js put e2e_admin 'http://localhost:9080/api/drafts/123' '{"title":"Updated"}'
-node tools/browser-debug.js delete e2e_admin 'http://localhost:9080/api/userinteractions/123/action/delete'
-
-# Screenshots
-node tools/browser-debug.js screenshot 'http://localhost:9080'
-node tools/browser-debug.js screenshot-as e2e_admin 'http://localhost:9080/title/Settings'
-
-# Other commands
-node tools/browser-debug.js eval guest 'http://localhost:9080' 'return window.e2'
-node tools/browser-debug.js a11y guest 'http://localhost:9080/title/tomato'
-node tools/browser-debug.js readability guest 'http://localhost:9080/node/2212929'
-```
-
-**curl is ONLY acceptable for**:
-- Liveness checks (is Apache responding?)
-- Direct API endpoint testing when browser context is not needed
-
-**Test users**: root (gods, pw:blah), genericdev (edev, pw:blah), e2e_admin (gods, pw:test123), e2e_user (pw:test123)
-
-### 🚫 NEVER CREATE GIT COMMITS
-
-User handles all commits.
-
-### 🔄 Container Rebuild Workflow
-
-**⚠️ CRITICAL**: The development container does NOT have files volume-mounted. Local file changes are NOT automatically reflected in the container. You MUST rebuild the container to see your changes:
-
-```bash
-./docker/devbuild.sh --skip-tests  # Quick rebuild (use this most of the time)
-./docker/devbuild.sh               # Full rebuild with tests
-```
-
-**NEVER use docker cp or apache2ctl graceful** - leads to stale state. Always use `devbuild.sh`.
-
-### JSON UTF-8 Encoding
-
-**IMPORTANT**: Do NOT call `decode_utf8` before `JSON::decode_json()`. The `decode_json` function expects UTF-8 bytes and handles decoding internally. Calling `decode_utf8` first causes "Wide character in subroutine entry" errors with non-ASCII characters.
-
-```perl
-# CORRECT: Pass raw POSTDATA directly to decode_json
-my $postdata = $REQUEST->POSTDATA;
-my $data = JSON::decode_json($postdata);
-
-# WRONG: decode_utf8 before decode_json breaks non-ASCII characters
-# $postdata = decode_utf8($postdata);  # DON'T DO THIS
-```
-
-### Blessed Objects vs Hashrefs
-
-| Context | Form | Access |
-|---------|------|--------|
-| Controller/Page/API | Blessed (`$REQUEST->user`) | Methods: `$user->title` |
-| Application.pm | Hashref (`$USER`) | Hash: `$USER->{title}` |
-
-```perl
-# Blessed → Hashref: $user->NODEDATA
-# Hashref → Blessed: $APP->node_by_id($USER->{node_id})
-```
-
-### JSON-Serializable Node Data
-
-```perl
-# ❌ WRONG - type is a hashref with circular refs
-return { type => $node->{type} };
-
-# ✅ CORRECT - Extract the string
-return { type => $node->{type}{title} };
-```
-
-### API Response Format
-
-Always return HTTP 200 for API responses (mod_perl appends HTML to non-200):
-```perl
-return [$self->HTTP_OK, {success => 1, data => 'value'}];           # Success
-return [$self->HTTP_OK, {success => 0, error => 'User not found'}]; # Error
-```
-
-### 🎨 Kernel Blue Styling
-
-Use the E2 "Kernel Blue" color palette for all React component styling:
-
-| Color | Hex | Usage |
-|-------|-----|-------|
-| Kernel Blue | `#38495e` | Primary text, headers, borders |
-| Link Blue | `#4060b0` | Links, buttons, usergroup indicators |
-| Muted Blue | `#507898` | Secondary text, icons, hints |
-| Light Background | `#e8f4f8` | Hover states, selected items |
-| Cool Teal | `#3bb5c3` | C! indicators, special highlights |
+E2 is a 1999-vintage Perl/mod_perl/MySQL community writing site mid-modernization: React frontend, AWS Fargate, in-flight migration off the legacy delegation pattern. Solo-maintained.
 
 ---
 
-## Development Quick Reference
+## User preferences (durable)
 
-### Everything::Page Pattern
-
-```perl
-package Everything::Page::my_page;
-use Moose;
-extends 'Everything::Page';
-
-sub buildReactData {
-  my ($self, $REQUEST) = @_;
-  return { type => 'my_page' };  # NO contentData wrapper
-}
-
-__PACKAGE__->meta->make_immutable;
-1;
-```
-
-### Running Tests
-
-```bash
-./docker/devbuild.sh                # Full rebuild + tests
-docker exec e2devapp bash -c "cd /var/everything && prove -I/var/libraries/lib/perl5 t/test.t"
-npm test                            # React tests
-./tools/smoke-test.rb              # Fast smoke test
-```
-
-### Database Access
-
-```bash
-docker exec -it e2devdb mysql -u root -pblah everything
-```
-
-### Logs
-
-**⚠️ IMPORTANT**: Apache error.log and access.log are always EMPTY in development. All useful logging goes to `/tmp/development.log`:
-
-```bash
-docker exec e2devapp tail -f /tmp/development.log         # ALL logs go here
-# docker exec e2devapp tail -f /var/log/apache2/error.log # ALWAYS EMPTY - don't use
-```
-
-### Debugging with devLog
-
-```perl
-$APP->devLog("Debug: value is $value");
-```
-
-### Perl::Critic
-
-```bash
-./tools/critic.pl ecore/Everything/Application.pm        # Bugs only
-CRITIC_FULL=1 ./tools/critic.pl ecore/Everything/Application.pm  # Full
-```
-
-### Container Names
-
-- Application: `e2devapp`
-- Database: `e2devdb`
+- **Never create git commits.** The user handles all commits. Same for `git push`, branch deletion, force push.
+- **Never use destructive shortcuts** (`--no-verify`, `--force`, `git reset --hard`) without explicit instruction.
+- **Programmatic verification over manual visual review.** Manual screenshot inspection across themes/pages caused a multi-month stall in early 2026. Prefer Puppeteer / `tools/computed-style-diff.js` / `tools/mobile-layout-checker.js` style checks over "look at all these screenshots."
+- **Cite-then-trust.** When older docs make claims about codebase state ("15 vulnerabilities", "11 components done"), re-grep first. Stale planning docs are common; treat them as historical scope, not current truth.
 
 ---
 
-## 🎯 Architectural Goals
+## Operational gotchas (non-discoverable)
 
-### Eliminate Everything::Delegation Modules
+| Thing | Reality |
+|---|---|
+| Dev container | Files **not** volume-mounted. Run `./docker/devbuild.sh --skip-tests` to apply local changes. Never `docker cp` or `apache2ctl graceful` — leads to stale state. |
+| Apache logs | `/var/log/apache2/error.log` is **always empty** in dev. All app logging goes to `/tmp/development.log` (`docker exec e2devapp tail -f /tmp/development.log`). |
+| HTML testing | `curl` only returns server-rendered scaffolding; React mounts client-side. Use `tools/browser-debug.js` (it has `--help`). curl is fine for liveness or pure JSON API checks. |
+| Container names | `e2devapp` (Apache+app), `e2devdb` (MySQL). |
+| MySQL access | `docker exec -it e2devdb mysql -u root -pblah everything` |
 
-**NEVER** call delegation functions from controllers (Everything::Page, Everything::API). Controllers must implement logic directly in `buildReactData()` or extract to Application.pm methods.
-
-**Temporary exception**: `Everything::Delegation::htmlcode::*` MAY be called during migration.
+**Test users**: `root` / `genericdev` / `genericeditor` / `genericchanop` use password `blah`. The `e2e_*` user family (`e2e_admin`, `e2e_editor`, `e2e_user`, etc.) uses password `test123`. `normaluser1` through `normaluser30` use `blah`. Full list in `tools/seeds.pl`.
 
 ---
 
-## Recent Completed Work
+## Code-level gotchas (subtle, easy to recreate)
 
-### Infrastructure Modernization (December 2025)
-- **HTTP-only internal traffic**: ALB→ECS switched from HTTPS to HTTP
-- **Apache config consolidation**: Single `apache2.conf.erb`, removed SSL
-- **IPv6 dual-stack**: Full IPv6 support across VPC, ALB, CloudFront
-- **CloudFront/WAF integration**: Rate limiting, bot control, origin verification
-- **API sessions fix (#3865)**: WAF exclusion for `/api/sessions`
+**JSON UTF-8.** `JSON::decode_json` expects raw UTF-8 bytes and decodes internally. Calling `decode_utf8` on POSTDATA *before* `decode_json` produces "Wide character in subroutine entry" with non-ASCII input.
 
-### React Document Migrations (December 2025)
-- **93+ documents migrated** to React Page classes
+**API responses must be HTTP 200.** mod_perl appends HTML to non-200 responses, breaking JSON clients. Return errors as `[$self->HTTP_OK, {success => 0, error => '...'}]`. Never return 4xx/5xx from `Everything::API::*` controllers.
 
-### E2 Editor Beta (November 2025)
-- Tiptap-based editor with draft management, version history, autosave
+**Blessed vs hashref node access.** Controllers (`Everything::Page`, `Everything::API`) get blessed objects: `$user->title`. `Everything::Application.pm` gets raw hashrefs: `$USER->{title}`. Cross-conversion: `$user->NODEDATA` → hashref, `$APP->node_by_id($USER->{node_id})` → blessed.
 
-See [docs/changelog-2025-12.md](docs/changelog-2025-12.md) for detailed changes.
+**Don't ship circular hashrefs in JSON.** `$node->{type}` is itself a node hashref with circular references and will explode the JSON encoder. Extract: `$node->{type}{title}`.
+
+**Don't call `Everything::Delegation::*` from controllers.** Implement logic in `buildReactData()` or extract to `Application.pm`. The delegation modules are being eliminated; the only remaining permitted exception is `Everything::Delegation::htmlcode::*` during migration cleanup.
+
+---
+
+## Visual / styling
+
+The "Kernel Blue" palette is the design system: `#38495e` primary, `#4060b0` link, `#507898` muted text, `#e8f4f8` light bg, `#3bb5c3` cool teal. Driven by CSS variables in `www/css/1973976.css` (basesheet, ~24K lines). Don't use `--e2-text-muted` as a *background* — it's a text color and themes override it inconsistently. Use `--e2-btn-secondary-*` for button backgrounds.
+
+19 stylesheets in `www/css/`. Basesheet (`1973976.css`) carries shared structure; per-theme zensheets override colors. Refactor away from inline `style={{...}}` toward BEM classnames in basesheet is the dominant frontend pattern.
+
+---
+
+## Where to look
+
+| Need | Place |
+|---|---|
+| Project roadmap | [docs/DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) (long; phases drift from reality, cross-check with `git log`) |
+| MySQL migration plan | [docs/mysql-migration-plan.md](docs/mysql-migration-plan.md) (April 2026, fresh) |
+| ORM/DBIx::Class plan | [docs/orm-migration-plan.md](docs/orm-migration-plan.md) (Dec 2025, deferred) |
+| Inline-styles refactor status | [docs/inline-styles-refactor.md](docs/inline-styles-refactor.md), [docs/css-refactor-testing.md](docs/css-refactor-testing.md) |
+| Mobile audit | [docs/mobile-audit.md](docs/mobile-audit.md), `tools/mobile-layout-checker.js` |
+| Schema (current) | `nodepack/dbtable/*.xml` — CREATE TABLE statements, slated for migration to versioned SQL during MySQL work |
+| Special document map | [docs/special-documents.md](docs/special-documents.md) |
+| Active CSS-diff workflow | `tools/computed-style-diff.js --help` |
+
+---
+
+## Tooling
+
+`tools/` has Puppeteer-based debugging utilities. The ones likely to come up:
+
+- `browser-debug.js` — auth + screenshot + DOM inspection. The everyday tool.
+- `computed-style-diff.js` — capture+compare computed styles across pages × themes × viewports. Used to verify the inline-styles refactor without manual screenshot review. Snapshots live in `screenshots/computed-styles/`.
+- `mobile-layout-checker.js` — programmatic mobile layout validation (overflow, touch targets, font sizing).
+- `cls-debug.js` — Cumulative Layout Shift analysis.
+- `mobile-audit.js` — static AST audit of React components for mobile issues.
+- `critic.pl` — Perl::Critic wrapper. `CRITIC_FULL=1` for full ruleset, default is bugs-only.
+
+Test command shortcuts: `./docker/devbuild.sh` (full rebuild + tests), `npm test` (React only), `prove -I/var/libraries/lib/perl5 t/foo.t` inside the container.
+
+---
+
+## Active workstreams (April 2026)
+
+These are pointers; the docs above have detail. State here may go stale — verify with `git log` and `git status` before acting.
+
+**Inline-styles → BEM refactor** is in the working tree (~280 modified files, +23k lines in basesheet CSS). Tests pass. The 200-cell computed-style diff was clean for 60 cells outright; the rest show structured, theme-consistent drift consistent with intentional palette/layout tweaks. Awaiting spot-check sign-off before commit.
+
+**MySQL 8.0.43 → 8.4 LTS migration** has a July 2026 deadline (RDS engine sunset). Decoupled from the broader DBIx::Class ORM cleanup, which is post-deadline. Static audits (April 2026) found zero remaining SQL injection sites, zero reserved-word collisions, zero `utf8mb3` usage — the migration risk surface is much narrower than older docs suggest. Real concerns: `mysql_native_password` deprecation, DBD::mysql/Apache::DBI behavior on 8.4.
+
+**ecoretool/nodepack retirement** is a long-term direction. The user wants it gone eventually; happens organically as each modernization phase displaces a category (schema → SQL migrations, templates → React, settings → JSON). Don't treat it as a standalone project.
+
+For "what shipped recently," run `git log --oneline --since="2 months ago"` rather than relying on a list here that will rot.

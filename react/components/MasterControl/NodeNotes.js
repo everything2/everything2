@@ -3,6 +3,10 @@ import LinkNode from '../LinkNode'
 import ParseLinks from '../ParseLinks'
 import { FaStickyNote, FaPlus, FaTrash, FaClock } from 'react-icons/fa'
 
+/**
+ * NodeNotes - Node notes management in MasterControl
+ * Styles in CSS: .node-notes__*
+ */
 const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
   const [notes, setNotes] = useState(initialNotes || [])
   const [noteText, setNoteText] = useState('')
@@ -121,17 +125,17 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
 
   return (
     <div className="nodelet_section" id="nodenotes">
-      <h4 className="ns_title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <h4 className="ns_title node-notes__title">
         <FaStickyNote size={14} /> Node Notes <em>({notes.length})</em>
       </h4>
 
       {error && (
-        <div style={{ color: 'red', padding: '5px', marginBottom: '10px' }}>
+        <div className="node-notes__error">
           {error}
         </div>
       )}
 
-      <div style={{ whiteSpace: 'normal' }}>
+      <div className="node-notes__content">
         {noteGroups.map((group, groupIndex) => (
           <div key={group.nodeId || `group-${groupIndex}`}>
             {groupIndex > 0 && <hr />}
@@ -151,7 +155,7 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
             )}
 
             {group.notes.map((note) => (
-              <p key={note.nodenote_id} style={{ display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
+              <p key={note.nodenote_id} className="node-notes__entry">
                 {note.noter_user ? (
                   <input
                     type="checkbox"
@@ -160,13 +164,13 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
                     checked={selectedNotes.has(note.nodenote_id)}
                     onChange={() => toggleNoteSelection(note.nodenote_id)}
                     disabled={isSubmitting}
-                    style={{ marginTop: '3px', flexShrink: 0 }}
+                    className="node-notes__checkbox"
                   />
                 ) : (
-                  <span style={{ flexShrink: 0 }}> &bull; </span>
+                  <span className="node-notes__bullet"> &bull; </span>
                 )}
-                <span style={{ flex: 1 }}>
-                  <span style={{ fontSize: '0.9em', color: '#666', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span className="node-notes__text">
+                  <span className="node-notes__timestamp">
                     <FaClock size={10} /> {formatTimestamp(note.timestamp)}
                   </span>
                   {!note.legacy_format && note.noter_username && (
@@ -184,7 +188,7 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
       </div>
 
       <form onSubmit={handleAddNote}>
-        <p style={{ textAlign: 'right' }}>
+        <p className="node-notes__form-row">
           <input
             type="text"
             id={`nodenote-add-${nodeId}`}
@@ -195,25 +199,13 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
             size="22"
             placeholder="Add note..."
             disabled={isSubmitting}
-            style={{ width: '100%', padding: '4px 6px', border: '1px solid #ccc', borderRadius: '3px', marginBottom: '6px' }}
+            className="node-notes__input"
           />
           <br />
           <button
             type="submit"
             disabled={isSubmitting || !noteText.trim()}
-            style={{
-              padding: '4px 12px',
-              backgroundColor: '#5a9fd4',
-              color: 'white',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: isSubmitting || !noteText.trim() ? 'not-allowed' : 'pointer',
-              fontSize: '0.9em',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              opacity: isSubmitting || !noteText.trim() ? 0.6 : 1
-            }}
+            className="node-notes__btn node-notes__btn--add"
           >
             <FaPlus size={10} /> Add Note
           </button>
@@ -222,20 +214,7 @@ const NodeNotes = ({ nodeId, initialNotes, currentUserId }) => {
               type="button"
               onClick={handleDeleteNotes}
               disabled={isSubmitting}
-              style={{
-                marginLeft: '5px',
-                padding: '4px 12px',
-                backgroundColor: '#d9534f',
-                color: 'white',
-                border: 'none',
-                borderRadius: '3px',
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                fontSize: '0.9em',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                opacity: isSubmitting ? 0.6 : 1
-              }}
+              className="node-notes__btn node-notes__btn--delete"
             >
               <FaTrash size={10} /> Delete ({selectedNotes.size})
             </button>

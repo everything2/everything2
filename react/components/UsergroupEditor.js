@@ -4,6 +4,7 @@ import { FaTimes, FaGripVertical, FaPlus, FaSearch, FaUser, FaUsers, FaSave, FaE
 
 /**
  * UsergroupEditor - Modal for managing usergroup members
+ * Styles in CSS: .usergroup-editor__*
  *
  * Allows admins/owners to:
  * - Add users or subgroups
@@ -283,62 +284,58 @@ const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }
   }
 
   return (
-    <div style={styles.backdrop}>
-      <div style={styles.modal}>
+    <div className="usergroup-editor__backdrop">
+      <div className="usergroup-editor__modal">
         {/* Header */}
-        <div style={styles.header}>
-          <h3 style={styles.title}>
+        <div className="usergroup-editor__header">
+          <h3 className="usergroup-editor__title">
             Edit Members: {usergroup.title}
           </h3>
-          <button onClick={handleClose} style={styles.closeButton}>&times;</button>
+          <button onClick={handleClose} className="usergroup-editor__close-button">&times;</button>
         </div>
 
         {/* Message */}
         {message && (
-          <div style={{
-            ...styles.message,
-            backgroundColor: message.type === 'error' ? '#fee' : '#efe',
-            color: message.type === 'error' ? '#c00' : '#060'
-          }}>
+          <div className={`usergroup-editor__message ${message.type === 'error' ? 'usergroup-editor__message--error' : 'usergroup-editor__message--success'}`}>
             {message.text}
           </div>
         )}
 
         {/* Search to add */}
-        <div style={styles.searchSection}>
-          <div style={styles.searchHeader}>
-            <FaPlus style={{ marginRight: '6px' }} />
+        <div className="usergroup-editor__search-section">
+          <div className="usergroup-editor__search-header">
+            <FaPlus className="usergroup-editor__icon-margin-right" />
             Add Member
           </div>
-          <div style={styles.searchInputWrapper}>
-            <FaSearch style={styles.searchIcon} />
+          <div className="usergroup-editor__search-wrapper">
+            <FaSearch className="usergroup-editor__search-icon" />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search for users or usergroups..."
-              style={styles.searchInput}
+              className="usergroup-editor__search-input"
             />
-            {isSearching && <span style={styles.searchingText}>Searching...</span>}
+            {isSearching && <span className="usergroup-editor__searching-text">Searching...</span>}
           </div>
 
           {/* Search results */}
           {searchResults.length > 0 && (
-            <div style={styles.searchResults}>
+            <div className="usergroup-editor__search-results">
               {searchResults.map((result) => (
                 <div
                   key={result.node_id}
-                  style={styles.searchResult}
+                  className="usergroup-editor__search-result"
                   onClick={() => handleAdd(result)}
                 >
                   {result.type === 'user' ? (
-                    <FaUser style={styles.typeIcon} />
+                    <FaUser className="usergroup-editor__type-icon" />
                   ) : (
-                    <FaUsers style={styles.typeIcon} />
+                    <FaUsers className="usergroup-editor__type-icon" />
                   )}
-                  <span style={styles.resultTitle}>{result.title}</span>
-                  <span style={styles.resultType}>{result.type}</span>
+                  <span className="usergroup-editor__result-title">{result.title}</span>
+                  <span className="usergroup-editor__result-type">{result.type}</span>
                 </div>
               ))}
             </div>
@@ -346,89 +343,93 @@ const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }
         </div>
 
         {/* Member list */}
-        <div style={styles.memberSection}>
-          <div style={styles.memberHeader}>
+        <div className="usergroup-editor__member-section">
+          <div className="usergroup-editor__member-header">
             <span>Members ({members.length})</span>
             {hasChanges && (
               <button
                 onClick={handleSaveOrder}
                 disabled={isSaving}
-                style={styles.saveButton}
+                className="usergroup-editor__save-button"
               >
-                <FaSave style={{ marginRight: '4px' }} />
+                <FaSave className="usergroup-editor__icon-margin-right-sm" />
                 {isSaving ? 'Saving...' : 'Save Order'}
               </button>
             )}
           </div>
 
-          <div style={styles.memberList}>
+          <div className="usergroup-editor__member-list">
             {members.length === 0 ? (
-              <div style={styles.emptyState}>No members in this group</div>
+              <div className="usergroup-editor__empty-state">No members in this group</div>
             ) : (
-              members.map((member, index) => (
-                <div
-                  key={member.node_id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, index)}
-                  onDragEnd={handleDragEnd}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={(e) => handleDrop(e, index)}
-                  style={{
-                    ...styles.memberItem,
-                    ...(dragOverIndex === index ? styles.memberItemDragOver : {}),
-                    ...(draggedIndex === index ? styles.memberItemDragging : {})
-                  }}
-                >
-                  <FaGripVertical style={styles.dragHandle} title="Drag to reorder" />
+              members.map((member, index) => {
+                const itemClasses = [
+                  'usergroup-editor__member-item',
+                  dragOverIndex === index ? 'usergroup-editor__member-item--drag-over' : '',
+                  draggedIndex === index ? 'usergroup-editor__member-item--dragging' : ''
+                ].filter(Boolean).join(' ')
 
-                  <div style={styles.memberInfo}>
-                    {member.type === 'usergroup' ? (
-                      <FaUsers style={styles.memberTypeIcon} />
-                    ) : (
-                      <FaUser style={styles.memberTypeIcon} />
-                    )}
-                    <LinkNode nodeId={member.node_id} title={member.title} />
-                    {member.flags && (
-                      <small style={styles.memberFlags}>{member.flags}</small>
-                    )}
-                    {member.is_owner && (
-                      <span style={styles.ownerBadge}>owner</span>
-                    )}
-                  </div>
-
-                  {/* Show Change Owner button for the owner row if current user is owner */}
-                  {member.is_owner && currentUserIsOwner && members.filter(m => m.type !== 'usergroup').length > 1 && (
-                    <button
-                      onClick={() => setShowTransferModal(true)}
-                      style={styles.changeOwnerButton}
-                      title="Transfer ownership to another member"
-                    >
-                      <FaExchangeAlt style={{ marginRight: '4px' }} />
-                      Change Owner
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => handleRemove(member)}
-                    style={styles.removeButton}
-                    title={member.is_owner ? 'Cannot remove owner' : 'Remove member'}
-                    disabled={member.is_owner}
+                return (
+                  <div
+                    key={member.node_id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, index)}
+                    className={itemClasses}
                   >
-                    <FaTimes />
-                  </button>
-                </div>
-              ))
+                    <FaGripVertical className="usergroup-editor__drag-handle" title="Drag to reorder" />
+
+                    <div className="usergroup-editor__member-info">
+                      {member.type === 'usergroup' ? (
+                        <FaUsers className="usergroup-editor__member-type-icon" />
+                      ) : (
+                        <FaUser className="usergroup-editor__member-type-icon" />
+                      )}
+                      <LinkNode nodeId={member.node_id} title={member.title} />
+                      {member.flags && (
+                        <small className="usergroup-editor__member-flags">{member.flags}</small>
+                      )}
+                      {member.is_owner && (
+                        <span className="usergroup-editor__owner-badge">owner</span>
+                      )}
+                    </div>
+
+                    {/* Show Change Owner button for the owner row if current user is owner */}
+                    {member.is_owner && currentUserIsOwner && members.filter(m => m.type !== 'usergroup').length > 1 && (
+                      <button
+                        onClick={() => setShowTransferModal(true)}
+                        className="usergroup-editor__change-owner-button"
+                        title="Transfer ownership to another member"
+                      >
+                        <FaExchangeAlt className="usergroup-editor__icon-margin-right-sm" />
+                        Change Owner
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => handleRemove(member)}
+                      className="usergroup-editor__remove-button"
+                      title={member.is_owner ? 'Cannot remove owner' : 'Remove member'}
+                      disabled={member.is_owner}
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                )
+              })
             )}
           </div>
         </div>
 
         {/* Footer */}
-        <div style={styles.footer}>
-          <p style={styles.helpText}>
+        <div className="usergroup-editor__footer">
+          <p className="usergroup-editor__help-text">
             Drag members to reorder. The first member is the group leader.
           </p>
-          <button onClick={handleClose} style={styles.doneButton}>
+          <button onClick={handleClose} className="usergroup-editor__done-button">
             Done
           </button>
         </div>
@@ -436,41 +437,41 @@ const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }
 
       {/* Transfer Ownership Modal */}
       {showTransferModal && (
-        <div style={styles.backdrop}>
-          <div style={styles.transferModal}>
-            <div style={styles.header}>
-              <h3 style={styles.title}>Transfer Ownership</h3>
-              <button onClick={() => setShowTransferModal(false)} style={styles.closeButton}>&times;</button>
+        <div className="usergroup-editor__backdrop">
+          <div className="usergroup-editor__transfer-modal">
+            <div className="usergroup-editor__header">
+              <h3 className="usergroup-editor__title">Transfer Ownership</h3>
+              <button onClick={() => setShowTransferModal(false)} className="usergroup-editor__close-button">&times;</button>
             </div>
-            <div style={styles.transferContent}>
-              <p style={styles.transferText}>
+            <div className="usergroup-editor__transfer-content">
+              <p className="usergroup-editor__transfer-text">
                 Select a member to become the new owner of <strong>{usergroup.title}</strong>:
               </p>
-              <div style={styles.transferMemberList}>
+              <div className="usergroup-editor__transfer-member-list">
                 {members
                   .filter(m => !m.is_owner && m.type !== 'usergroup')
                   .map(member => (
                     <div
                       key={member.node_id}
-                      style={styles.transferMemberItem}
+                      className="usergroup-editor__transfer-member-item"
                       onClick={() => !isTransferring && handleTransferOwnership(member.node_id)}
                     >
-                      <FaUser style={styles.memberTypeIcon} />
-                      <span style={styles.transferMemberName}>{member.title}</span>
+                      <FaUser className="usergroup-editor__member-type-icon" />
+                      <span className="usergroup-editor__transfer-member-name">{member.title}</span>
                       {member.flags && (
-                        <small style={styles.memberFlags}>{member.flags}</small>
+                        <small className="usergroup-editor__member-flags">{member.flags}</small>
                       )}
                     </div>
                   ))}
               </div>
               {isTransferring && (
-                <div style={styles.transferringMessage}>Transferring ownership...</div>
+                <div className="usergroup-editor__transferring-message">Transferring ownership...</div>
               )}
             </div>
-            <div style={styles.footer}>
+            <div className="usergroup-editor__footer">
               <button
                 onClick={() => setShowTransferModal(false)}
-                style={styles.cancelButton}
+                className="usergroup-editor__cancel-button"
                 disabled={isTransferring}
               >
                 Cancel
@@ -481,340 +482,6 @@ const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }
       )}
     </div>
   )
-}
-
-const styles = {
-  backdrop: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10000,
-    padding: '20px'
-  },
-  modal: {
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    maxWidth: '600px',
-    width: '100%',
-    maxHeight: '90vh',
-    display: 'flex',
-    flexDirection: 'column',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px 20px',
-    borderBottom: '2px solid #38495e',
-    backgroundColor: '#f8f9fa'
-  },
-  title: {
-    margin: 0,
-    fontSize: '16px',
-    color: '#38495e',
-    fontWeight: 'bold'
-  },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    fontSize: '24px',
-    cursor: 'pointer',
-    color: '#666',
-    padding: '0 4px',
-    lineHeight: 1
-  },
-  message: {
-    padding: '10px 20px',
-    fontSize: '13px',
-    borderBottom: '1px solid #eee'
-  },
-  searchSection: {
-    padding: '16px 20px',
-    borderBottom: '1px solid #eee',
-    position: 'relative'
-  },
-  searchHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: '10px'
-  },
-  searchInputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  searchIcon: {
-    position: 'absolute',
-    left: '10px',
-    color: '#999',
-    fontSize: '14px'
-  },
-  searchInput: {
-    width: '100%',
-    padding: '8px 12px 8px 32px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '14px'
-  },
-  searchingText: {
-    position: 'absolute',
-    right: '10px',
-    fontSize: '12px',
-    color: '#666'
-  },
-  searchResults: {
-    position: 'absolute',
-    left: '20px',
-    right: '20px',
-    marginTop: '4px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    maxHeight: '200px',
-    overflowY: 'auto',
-    backgroundColor: '#fff',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    zIndex: 100
-  },
-  searchResult: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 12px',
-    cursor: 'pointer',
-    borderBottom: '1px solid #eee'
-  },
-  typeIcon: {
-    marginRight: '8px',
-    color: '#666',
-    fontSize: '14px'
-  },
-  resultTitle: {
-    flex: 1,
-    fontSize: '14px'
-  },
-  resultType: {
-    fontSize: '11px',
-    color: '#999',
-    textTransform: 'capitalize'
-  },
-  memberSection: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: 0,
-    padding: '16px 20px'
-  },
-  memberHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: '10px'
-  },
-  saveButton: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '6px 12px',
-    fontSize: '12px',
-    border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#28a745',
-    color: '#fff',
-    cursor: 'pointer'
-  },
-  memberList: {
-    flex: 1,
-    overflowY: 'auto',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    minHeight: '200px',
-    maxHeight: '300px'
-  },
-  emptyState: {
-    padding: '20px',
-    textAlign: 'center',
-    color: '#999',
-    fontStyle: 'italic'
-  },
-  memberItem: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 12px',
-    borderBottom: '1px solid #eee',
-    backgroundColor: '#fff',
-    transition: 'background-color 0.2s'
-  },
-  memberItemDragOver: {
-    backgroundColor: '#e3f2fd',
-    borderTop: '2px solid #2196f3'
-  },
-  memberItemDragging: {
-    opacity: 0.5
-  },
-  dragHandle: {
-    color: '#ccc',
-    cursor: 'grab',
-    marginRight: '12px',
-    fontSize: '14px'
-  },
-  memberInfo: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px'
-  },
-  memberTypeIcon: {
-    color: '#666',
-    fontSize: '12px'
-  },
-  memberFlags: {
-    color: '#999',
-    fontSize: '11px'
-  },
-  ownerBadge: {
-    fontSize: '10px',
-    padding: '2px 6px',
-    backgroundColor: '#fff3cd',
-    color: '#856404',
-    borderRadius: '10px',
-    marginLeft: '4px'
-  },
-  removeButton: {
-    background: 'none',
-    border: 'none',
-    color: '#dc3545',
-    cursor: 'pointer',
-    padding: '4px 8px',
-    fontSize: '14px',
-    opacity: 0.7
-  },
-  changeOwnerButton: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '4px 10px',
-    fontSize: '11px',
-    border: '1px solid #17a2b8',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-    color: '#17a2b8',
-    cursor: 'pointer',
-    marginRight: '8px',
-    whiteSpace: 'nowrap'
-  },
-  transferModal: {
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    maxWidth: '400px',
-    width: '100%',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
-  },
-  transferContent: {
-    padding: '20px'
-  },
-  transferText: {
-    margin: '0 0 16px 0',
-    fontSize: '14px',
-    color: '#333'
-  },
-  transferMemberList: {
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    maxHeight: '250px',
-    overflowY: 'auto'
-  },
-  transferMemberItem: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 12px',
-    borderBottom: '1px solid #eee',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s'
-  },
-  transferMemberName: {
-    flex: 1,
-    marginLeft: '8px',
-    fontSize: '14px'
-  },
-  transferringMessage: {
-    marginTop: '12px',
-    fontSize: '13px',
-    color: '#666',
-    textAlign: 'center'
-  },
-  cancelButton: {
-    padding: '8px 16px',
-    fontSize: '13px',
-    border: '1px solid #6c757d',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-    color: '#6c757d',
-    cursor: 'pointer'
-  },
-  footer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px 20px',
-    borderTop: '1px solid #eee',
-    backgroundColor: '#f8f9fa'
-  },
-  helpText: {
-    margin: 0,
-    fontSize: '12px',
-    color: '#666'
-  },
-  doneButton: {
-    padding: '8px 20px',
-    fontSize: '13px',
-    border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#38495e',
-    color: '#fff',
-    cursor: 'pointer',
-    fontWeight: 'bold'
-  }
-}
-
-// Add hover effect via CSS-in-JS workaround
-if (typeof document !== 'undefined') {
-  const styleSheet = document.createElement('style')
-  styleSheet.textContent = `
-    .usergroup-editor-search-result:hover {
-      background-color: #f0f7ff !important;
-    }
-    .usergroup-editor-remove:hover {
-      opacity: 1 !important;
-    }
-    .usergroup-editor-remove:disabled {
-      opacity: 0.3 !important;
-      cursor: not-allowed !important;
-    }
-  `
-  document.head.appendChild(styleSheet)
-
-  // Add hover styles for transfer modal items
-  const transferStyles = document.createElement('style')
-  transferStyles.textContent = `
-    .usergroup-transfer-item:hover {
-      background-color: #e3f2fd !important;
-    }
-    .usergroup-change-owner:hover {
-      background-color: #17a2b8 !important;
-      color: #fff !important;
-    }
-  `
-  document.head.appendChild(transferStyles)
 }
 
 export default UsergroupEditor

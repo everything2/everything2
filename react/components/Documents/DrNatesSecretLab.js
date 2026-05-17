@@ -1,107 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react'
 
-const styles = {
-  container: {
-    maxWidth: '600px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.5rem',
-  },
-  intro: {
-    fontStyle: 'italic',
-    marginBottom: '20px',
-    color: '#666',
-  },
-  form: {
-    padding: '20px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-    marginBottom: '20px',
-  },
-  formGroup: {
-    marginBottom: '15px',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '5px',
-    fontWeight: 'bold',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  radioGroup: {
-    display: 'flex',
-    gap: '20px',
-    marginTop: '5px',
-  },
-  radioLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px',
-    cursor: 'pointer',
-  },
-  button: {
-    padding: '12px 24px',
-    backgroundColor: '#28a745',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  buttonDisabled: {
-    padding: '12px 24px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'not-allowed',
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  result: {
-    padding: '15px',
-    marginTop: '20px',
-    borderRadius: '8px',
-  },
-  success: {
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    border: '1px solid #c3e6cb',
-  },
-  error: {
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-  },
-  nodeLink: {
-    color: '#007bff',
-    textDecoration: 'none',
-  },
-  warning: {
-    padding: '15px',
-    backgroundColor: '#fff3cd',
-    color: '#856404',
-    border: '1px solid #ffeeba',
-    borderRadius: '8px',
-    marginBottom: '20px',
-  },
-}
-
+/**
+ * DrNatesSecretLab - Tool for resurrecting deleted nodes
+ * Styles in CSS: .dr-nates-lab__*
+ *
+ * Allows admins to resurrect nodes from tomb or heaven.
+ */
 const DrNatesSecretLab = ({ data }) => {
   const {
     prefillNodeId = '',
@@ -176,11 +80,11 @@ const DrNatesSecretLab = ({ data }) => {
 
   if (pageError) {
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Dr. Nate's Secret Lab</h1>
+      <div className="dr-nates-lab">
+        <div className="dr-nates-lab__header">
+          <h1 className="dr-nates-lab__title">Dr. Nate's Secret Lab</h1>
         </div>
-        <div style={{ ...styles.result, ...styles.error }}>
+        <div className="dr-nates-lab__result dr-nates-lab__result--error">
           {pageError}
         </div>
       </div>
@@ -188,23 +92,23 @@ const DrNatesSecretLab = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Dr. Nate's Secret Lab</h1>
+    <div className="dr-nates-lab">
+      <div className="dr-nates-lab__header">
+        <h1 className="dr-nates-lab__title">Dr. Nate's Secret Lab</h1>
       </div>
 
-      <p style={styles.intro}>
+      <p className="dr-nates-lab__intro">
         It... it... it... it...
       </p>
 
-      <div style={styles.warning}>
+      <div className="dr-nates-lab__warning">
         <strong>Warning:</strong> This tool resurrects deleted nodes from the tomb or node heaven.
         Use with caution. The resurrected node will be restored to its pre-deletion state.
       </div>
 
-      <form style={styles.form} onSubmit={handleResurrect}>
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="nodeId">
+      <form className="dr-nates-lab__form" onSubmit={handleResurrect}>
+        <div className="dr-nates-lab__form-group">
+          <label className="dr-nates-lab__label" htmlFor="nodeId">
             Node ID to resurrect:
           </label>
           <input
@@ -212,18 +116,18 @@ const DrNatesSecretLab = ({ data }) => {
             id="nodeId"
             value={nodeId}
             onChange={(e) => setNodeId(e.target.value)}
-            style={styles.input}
+            className="dr-nates-lab__input"
             placeholder="Enter the node_id of the deleted node"
             disabled={processing}
           />
         </div>
 
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
+        <div className="dr-nates-lab__form-group">
+          <label className="dr-nates-lab__label">
             Source:
           </label>
-          <div style={styles.radioGroup}>
-            <label style={styles.radioLabel}>
+          <div className="dr-nates-lab__radio-group">
+            <label className="dr-nates-lab__radio-label">
               <input
                 type="radio"
                 name="source"
@@ -234,7 +138,7 @@ const DrNatesSecretLab = ({ data }) => {
               />
               Tomb (recently deleted)
             </label>
-            <label style={styles.radioLabel}>
+            <label className="dr-nates-lab__radio-label">
               <input
                 type="radio"
                 name="source"
@@ -250,7 +154,7 @@ const DrNatesSecretLab = ({ data }) => {
 
         <button
           type="submit"
-          style={processing ? styles.buttonDisabled : styles.button}
+          className={processing ? 'dr-nates-lab__button--disabled' : 'dr-nates-lab__button'}
           disabled={processing}
         >
           {processing ? 'Resurrecting...' : 'Resurrect Node'}
@@ -258,12 +162,12 @@ const DrNatesSecretLab = ({ data }) => {
       </form>
 
       {result && (
-        <div style={{ ...styles.result, ...(result.type === 'success' ? styles.success : styles.error) }}>
+        <div className={`dr-nates-lab__result ${result.type === 'success' ? 'dr-nates-lab__result--success' : 'dr-nates-lab__result--error'}`}>
           {result.type === 'success' ? (
             <>
               <p><strong>Success!</strong> {result.message}</p>
               <p>
-                Resurrected as: <a href={`/node/${result.nodeId}`} style={styles.nodeLink}>
+                Resurrected as: <a href={`/node/${result.nodeId}`} className="dr-nates-lab__node-link">
                   {result.title}
                 </a>
               </p>
@@ -275,7 +179,7 @@ const DrNatesSecretLab = ({ data }) => {
             <>
               <p><strong>Error:</strong> {result.message}</p>
               {result.existingTitle && (
-                <p>Existing node: <a href={`/title/${encodeURIComponent(result.existingTitle)}`} style={styles.nodeLink}>
+                <p>Existing node: <a href={`/title/${encodeURIComponent(result.existingTitle)}`} className="dr-nates-lab__node-link">
                   {result.existingTitle}
                 </a></p>
               )}

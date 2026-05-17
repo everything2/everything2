@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * EverythingStatistics - Site-wide statistics display
+ * Styles in CSS: .everything-statistics__*
  *
  * Shows total counts for nodes, writeups, users, and links
  */
@@ -21,7 +22,7 @@ const EverythingStatistics = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="everything-statistics">
       <p>Total Number of Nodes: {formatNumber(total_nodes)}</p>
       <p>Total Number of Writeups: {formatNumber(total_writeups)}</p>
       <p>Total Number of Users: {formatNumber(total_users)}</p>
@@ -44,15 +45,6 @@ const EverythingStatistics = ({ data }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111'
-  }
 }
 
 export default EverythingStatistics

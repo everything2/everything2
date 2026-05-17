@@ -44,9 +44,9 @@ const TheBorgClinic = ({ data }) => {
         </p>
 
         {Boolean(user_found) && Boolean(show_editor) && (
-          <div style={{ marginTop: '1em', padding: '10px', backgroundColor: '#f8f9f9', border: '1px solid #ddd' }}>
+          <div className="borg-clinic__user-section">
             {Boolean(updated) && (
-              <p style={{ color: 'green', fontWeight: 'bold' }}>Borg count updated!</p>
+              <p className="borg-clinic__updated-message">Borg count updated!</p>
             )}
 
             <p>
@@ -66,7 +66,7 @@ const TheBorgClinic = ({ data }) => {
               </label>
             </p>
 
-            <div style={{ fontSize: '0.85em', color: '#666', marginTop: '0.5em' }}>
+            <div className="borg-clinic__hint">
               <p>Users stay borged for 4 minutes plus two minutes times this number. (4 + (2 × x))</p>
               <p><strong>Quick math (should it ever come to this):</strong></p>
               <ul>
@@ -77,24 +77,14 @@ const TheBorgClinic = ({ data }) => {
               <p>Negative numbers are "borg insurance", meaning that you pop out instantly.</p>
             </div>
 
-            <p style={{ marginTop: '1em' }}>
+            <p className="borg-clinic__another-patient">
               <a href={`/?node_id=${node_id}`}>I'd like another patient</a>
             </p>
           </div>
         )}
 
-        <p style={{ marginTop: '1em' }}>
-          <button
-            type="submit"
-            style={{
-              padding: '6px 15px',
-              backgroundColor: '#38495e',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}
-          >
+        <p className="borg-clinic__submit-row">
+          <button type="submit" className="borg-clinic__submit-btn">
             Do it!
           </button>
         </p>

@@ -11,16 +11,10 @@ const FavoriteNoders = (props) => {
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <div style={{
-          padding: '16px',
-          textAlign: 'center',
-          fontSize: '12px',
-          color: '#999',
-          fontStyle: 'italic'
-        }}>
+        <div className="favorite-noders__empty">
           No recent writeups from your favorite noders.
           <br />
-          <span style={{ fontSize: '11px', marginTop: '8px', display: 'block' }}>
+          <span className="favorite-noders__hint">
             Use the star icon on user profiles to follow noders.
           </span>
         </div>
@@ -40,7 +34,7 @@ const FavoriteNoders = (props) => {
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}
     >
-      <ul className="infolist" style={{ margin: 0 }}>
+      <ul className="infolist favorite-noders__list">
         {displayWriteups.map((entry) => (
           <WriteupEntry
             entry={entry}

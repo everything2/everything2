@@ -1,30 +1,34 @@
 import React from 'react';
 
+/**
+ * ContentReports - Admin content validation reports
+ * Styles in CSS: .content-reports__*
+ */
 const ContentReports = ({ data }) => {
   const { view, description, reports, driver, driver_title, driver_description, nodes, error } = data;
 
   // List view - show all reports
   if (view === 'list') {
     return (
-      <div style={styles.container}>
-        <p style={styles.description}>{description}</p>
+      <div className="content-reports">
+        <p className="content-reports__description">{description}</p>
 
-        <table style={styles.table}>
+        <table className="content-reports__table">
           <thead>
             <tr>
-              <th style={styles.th}>Driver name</th>
-              <th style={{...styles.th, textAlign: 'center'}}>Failure count</th>
+              <th className="content-reports__th">Driver name</th>
+              <th className="content-reports__th content-reports__th--center">Failure count</th>
             </tr>
           </thead>
           <tbody>
             {reports.map((report, index) => (
-              <tr key={report.driver} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                <td style={styles.td}>
+              <tr key={report.driver} className={index % 2 === 0 ? 'content-reports__row--even' : 'content-reports__row--odd'}>
+                <td className="content-reports__td">
                   <a href={`?node=Content+Reports&driver=${encodeURIComponent(report.driver)}`}>
                     {report.title}
                   </a>
                 </td>
-                <td style={{...styles.td, width: '150px', textAlign: 'center'}}>
+                <td className="content-reports__td content-reports__td--center">
                   {report.count}
                 </td>
               </tr>
@@ -39,8 +43,8 @@ const ContentReports = ({ data }) => {
   if (view === 'driver') {
     if (error) {
       return (
-        <div style={styles.container}>
-          <p style={styles.error}>{error}</p>
+        <div className="content-reports">
+          <p className="content-reports__error">{error}</p>
           <p>
             <a href="?node=Content+Reports">Back to Content Reports</a>
           </p>
@@ -49,18 +53,18 @@ const ContentReports = ({ data }) => {
     }
 
     return (
-      <div style={styles.container}>
-        <h2 style={styles.heading}>{driver_title}</h2>
-        <p style={styles.description}>{driver_description}</p>
+      <div className="content-reports">
+        <h2 className="content-reports__heading">{driver_title}</h2>
+        <p className="content-reports__description">{driver_description}</p>
 
         {nodes.length === 0 ? (
           <p>Driver <em>{driver}</em> has no failures</p>
         ) : (
-          <ul style={styles.nodeList}>
+          <ul className="content-reports__node-list">
             {nodes.map((node, index) => (
-              <li key={node.node_id || index} style={styles.nodeItem}>
+              <li key={node.node_id || index} className="content-reports__node-item">
                 {node.error ? (
-                  <span style={styles.error}>{node.error} for id: {node.node_id}</span>
+                  <span className="content-reports__error">{node.error} for id: {node.node_id}</span>
                 ) : (
                   <a href={`/?node_id=${node.node_id}`}>
                     node_id: {node.node_id} title: {node.title} type: {node.type}
@@ -79,61 +83,6 @@ const ContentReports = ({ data }) => {
   }
 
   return null;
-};
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  description: {
-    marginBottom: '20px',
-    color: '#111111'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    margin: '5px',
-    padding: '2px'
-  },
-  th: {
-    padding: '8px',
-    textAlign: 'left',
-    borderBottom: '2px solid #dee2e6',
-    backgroundColor: '#f8f9f9',
-    fontWeight: 'bold'
-  },
-  td: {
-    padding: '4px 8px',
-    borderBottom: '1px solid #dee2e6'
-  },
-  evenRow: {
-    backgroundColor: '#ffffff'
-  },
-  oddRow: {
-    backgroundColor: '#f8f9f9'
-  },
-  heading: {
-    fontSize: '24px',
-    marginBottom: '10px',
-    color: '#111111'
-  },
-  nodeList: {
-    listStyleType: 'disc',
-    paddingLeft: '20px',
-    marginTop: '10px'
-  },
-  nodeItem: {
-    marginBottom: '5px',
-    lineHeight: '1.6'
-  },
-  error: {
-    color: '#dc3545'
-  }
 };
 
 export default ContentReports;

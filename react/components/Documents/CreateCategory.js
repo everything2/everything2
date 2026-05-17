@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
+import EditorModeToggle from '../Editor/EditorModeToggle'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
@@ -12,6 +13,7 @@ import '../Editor/E2Editor.css'
 
 /**
  * Create Category - Form for creating new categories
+ * Styles in CSS: .create-category__*
  *
  * Allows users to create categories maintained by themselves, any noder,
  * or any usergroup they belong to.
@@ -123,8 +125,8 @@ const CreateCategory = ({ data }) => {
   // Show error states
   if (mustLogin) {
     return (
-      <div style={styles.container}>
-        <h3 style={styles.heading}>Create Category</h3>
+      <div className={`create-category${isMobile ? ' create-category--mobile' : ''}`}>
+        <h3 className="create-category__heading">Create Category</h3>
         <p>
           You must be <LinkNode nodeId={null} title="logged in" url="/login" /> to create a category.
         </p>
@@ -134,18 +136,18 @@ const CreateCategory = ({ data }) => {
 
   if (forbidden) {
     return (
-      <div style={styles.container}>
-        <h3 style={styles.heading}>Create Category</h3>
-        <div style={styles.errorBox}>{error}</div>
+      <div className={`create-category${isMobile ? ' create-category--mobile' : ''}`}>
+        <h3 className="create-category__heading">Create Category</h3>
+        <div className="create-category__error-box">{error}</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div style={styles.container}>
-        <h3 style={styles.heading}>Create Category</h3>
-        <div style={styles.errorBox}>{error}</div>
+      <div className={`create-category${isMobile ? ' create-category--mobile' : ''}`}>
+        <h3 className="create-category__heading">Create Category</h3>
+        <div className="create-category__error-box">{error}</div>
       </div>
     )
   }
@@ -197,22 +199,9 @@ const CreateCategory = ({ data }) => {
     }
   }
 
-  // Responsive styles
-  const containerStyle = {
-    ...styles.container,
-    padding: isMobile ? '12px' : '20px'
-  }
-
-  const selectStyle = {
-    ...styles.select,
-    minWidth: isMobile ? 'auto' : '300px',
-    width: isMobile ? '100%' : 'auto',
-    maxWidth: '100%'
-  }
-
   return (
-    <div style={containerStyle}>
-      <p style={styles.breadcrumb}>
+    <div className={`create-category${isMobile ? ' create-category--mobile' : ''}`}>
+      <p className="create-category__breadcrumb">
         <strong>
           <LinkNode nodeId={null} title="Everything2 Help" url="/title/Everything2+Help" />
           {' > '}
@@ -250,14 +239,14 @@ const CreateCategory = ({ data }) => {
       </p>
 
       {low_level_warning === 1 && (
-        <div style={styles.warningBox}>
+        <div className="create-category__warning-box">
           Note that until you are at least Level 2, you can only add your own writeups to categories.
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
+        <div className="create-category__form-group">
+          <label className="create-category__label">
             <strong>Category Name:</strong>
           </label>
           <input
@@ -266,19 +255,19 @@ const CreateCategory = ({ data }) => {
             onChange={(e) => setCategoryName(e.target.value)}
             maxLength={255}
             size={50}
-            style={styles.textInput}
+            className="create-category__text-input"
             disabled={isSubmitting}
           />
         </div>
 
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
+        <div className="create-category__form-group">
+          <label className="create-category__label">
             <strong>Maintainer:</strong>
           </label>
           <select
             value={maintainer}
             onChange={(e) => setMaintainer(e.target.value)}
-            style={selectStyle}
+            className={`create-category__select${isMobile ? ' create-category__select--mobile' : ''}`}
             disabled={isSubmitting}
           >
             <option value={user_id}>Me ({user_title})</option>
@@ -291,32 +280,19 @@ const CreateCategory = ({ data }) => {
           </select>
         </div>
 
-        <fieldset style={styles.fieldset}>
-          <legend style={styles.legend}>Category Description</legend>
+        <fieldset className="create-category__fieldset">
+          <legend className="create-category__legend">Category Description</legend>
 
           {/* Mode toggle - right aligned */}
-          <div style={styles.modeToggleRow}>
-            <div
-              className="e2-mode-toggle"
-              onClick={handleModeToggle}
-              title={editorMode === 'rich' ? 'Switch to raw HTML editing' : 'Switch to rich text editing'}
-            >
-              <div className={`e2-mode-toggle-option ${editorMode === 'rich' ? 'active' : ''}`}
-                   style={{ backgroundColor: editorMode === 'rich' ? '#4060b0' : 'transparent' }}>
-                Rich
-              </div>
-              <div className={`e2-mode-toggle-option ${editorMode === 'html' ? 'active' : ''}`}
-                   style={{ backgroundColor: editorMode === 'html' ? '#4060b0' : 'transparent' }}>
-                HTML
-              </div>
-            </div>
+          <div className="create-category__mode-toggle-row">
+            <EditorModeToggle mode={editorMode} onToggle={handleModeToggle} />
           </div>
 
           {/* Rich text editor */}
           {editorMode === 'rich' && editor && (
-            <div style={styles.editorWrapper}>
+            <div className="create-category__editor-wrapper">
               <MenuBar editor={editor} />
-              <div className="e2-editor-wrapper" style={{ padding: '12px', minHeight: '150px' }}>
+              <div className="e2-editor-wrapper create-category__editor-padded">
                 <EditorContent editor={editor} />
               </div>
             </div>
@@ -327,7 +303,7 @@ const CreateCategory = ({ data }) => {
             <textarea
               value={htmlContent}
               onChange={handleHtmlChange}
-              style={styles.htmlTextarea}
+              className="create-category__html-textarea"
               placeholder="Enter HTML content..."
               spellCheck={false}
               disabled={isSubmitting}
@@ -335,13 +311,13 @@ const CreateCategory = ({ data }) => {
           )}
 
           {/* Preview section */}
-          <div style={styles.previewSection}>
-            <div style={styles.previewHeader}>
-              <h4 style={styles.previewTitle}>Preview</h4>
+          <div className="create-category__preview-section">
+            <div className="create-category__preview-header">
+              <h4 className="create-category__preview-title">Preview</h4>
               <button
                 type="button"
                 onClick={() => setShowPreview(!showPreview)}
-                style={styles.previewToggleButton}
+                className="create-category__preview-toggle-button"
               >
                 {showPreview ? 'Hide' : 'Show'}
               </button>
@@ -357,17 +333,17 @@ const CreateCategory = ({ data }) => {
           </div>
 
           {/* Help text */}
-          <div style={styles.helpText}>
+          <div className="create-category__help-text">
             <strong>Tip:</strong> You can use{' '}
-            <a className="externalLink" href="/title/E2+Link+Syntax" rel="nofollow" title="/title/E2+Link+Syntax" style={{ fontSize: 'inherit' }}>E2 link syntax</a>{' '}
+            <a className="externalLink create-category__help-link" href="/title/E2+Link+Syntax" rel="nofollow" title="/title/E2+Link+Syntax">E2 link syntax</a>{' '}
             like <code>[node title]</code> or <code>[display text|node title]</code> to create links.
           </div>
         </fieldset>
 
-        <div style={styles.formGroup}>
+        <div className="create-category__form-group">
           <button
             type="submit"
-            style={styles.submitButton}
+            className="create-category__submit-button"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Creating...' : 'Create It!'}
@@ -376,148 +352,6 @@ const CreateCategory = ({ data }) => {
       </form>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111',
-    padding: '20px'
-  },
-  breadcrumb: {
-    marginBottom: '15px',
-    fontSize: '14px'
-  },
-  heading: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: '15px'
-  },
-  errorBox: {
-    padding: '15px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828',
-    marginBottom: '20px'
-  },
-  warningBox: {
-    padding: '15px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    color: '#856404',
-    marginBottom: '20px'
-  },
-  formGroup: {
-    marginBottom: '20px'
-  },
-  label: {
-    display: 'block',
-    marginBottom: '8px'
-  },
-  textInput: {
-    width: '100%',
-    maxWidth: '600px',
-    padding: '8px',
-    fontSize: '13px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontFamily: 'inherit',
-    boxSizing: 'border-box'
-  },
-  select: {
-    padding: '8px',
-    fontSize: '13px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    backgroundColor: 'white',
-    minWidth: '300px'
-  },
-  fieldset: {
-    border: '1px solid #38495e',
-    borderRadius: '4px',
-    padding: '15px',
-    marginBottom: '20px'
-  },
-  legend: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    padding: '0 10px'
-  },
-  modeToggleRow: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginBottom: '10px'
-  },
-  editorWrapper: {
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    overflow: 'hidden',
-    backgroundColor: '#fff'
-  },
-  htmlTextarea: {
-    width: '100%',
-    minHeight: '200px',
-    fontFamily: 'monospace',
-    fontSize: '13px',
-    padding: '12px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-    color: '#333',
-    lineHeight: '1.5',
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  previewSection: {
-    marginTop: '16px',
-    borderTop: '1px solid #ddd',
-    paddingTop: '12px'
-  },
-  previewHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '8px'
-  },
-  previewTitle: {
-    margin: 0,
-    fontSize: '14px',
-    color: '#666',
-    fontWeight: '500'
-  },
-  previewToggleButton: {
-    background: 'none',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    padding: '2px 8px',
-    fontSize: '11px',
-    color: '#666',
-    cursor: 'pointer'
-  },
-  helpText: {
-    marginTop: '12px',
-    padding: '10px',
-    backgroundColor: '#e3f2fd',
-    border: '1px solid #90caf9',
-    borderRadius: '4px',
-    fontSize: '12px',
-    color: '#1565c0'
-  },
-  submitButton: {
-    padding: '10px 20px',
-    fontSize: '13px',
-    fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#4060b0',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  }
 }
 
 export default CreateCategory

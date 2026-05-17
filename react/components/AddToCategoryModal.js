@@ -143,7 +143,7 @@ const AddToCategoryModal = ({ nodeId, nodeTitle, nodeType, user, isOpen, onClose
             </p>
           ) : (
             <>
-              <p className="mb-3" style={{ fontSize: '12px', margin: 0 }}>
+              <p className="mb-3 modal-compact__intro">
                 Add <strong>{nodeTitle}</strong> to a category:
               </p>
 

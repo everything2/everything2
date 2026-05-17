@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
+import EditorModeToggle from '../Editor/EditorModeToggle'
 import {
   DndContext,
   closestCenter,
@@ -499,7 +500,7 @@ const CategoryEdit = ({ data }) => {
             className="category-edit__view-btn"
             title="View category"
           >
-            <FaEye size={14} style={{ marginRight: '6px' }} />
+            <FaEye size={14} className="category-edit__icon-margin-right" />
             View
           </a>
         </div>
@@ -545,8 +546,7 @@ const CategoryEdit = ({ data }) => {
                   value={ownerName}
                   onChange={handleOwnerChange}
                   placeholder="Enter username or usergroup"
-                  className={getOwnerInputClass()}
-                  style={{ flex: 1 }}
+                  className={`${getOwnerInputClass()} category-edit__owner-input`}
                 />
                 {ownerValidation.checking && (
                   <span className="category-edit__validation-icon">
@@ -650,21 +650,8 @@ const CategoryEdit = ({ data }) => {
             )}
           </div>
           <div className="category-edit__toolbar-right">
-            {/* Rich/HTML mode toggle - uses shared CSS from E2Editor.css */}
-            <div
-              className="e2-mode-toggle"
-              onClick={handleModeToggle}
-              title={editorMode === 'rich' ? 'Switch to raw HTML editing' : 'Switch to rich text editing'}
-            >
-              <div className={`e2-mode-toggle-option ${editorMode === 'rich' ? 'active' : ''}`}
-                   style={{ backgroundColor: editorMode === 'rich' ? '#4060b0' : 'transparent' }}>
-                Rich
-              </div>
-              <div className={`e2-mode-toggle-option ${editorMode === 'html' ? 'active' : ''}`}
-                   style={{ backgroundColor: editorMode === 'html' ? '#4060b0' : 'transparent' }}>
-                HTML
-              </div>
-            </div>
+            {/* Rich/HTML mode toggle - uses shared component */}
+            <EditorModeToggle mode={editorMode} onToggle={handleModeToggle} />
           </div>
         </div>
 
@@ -675,7 +662,7 @@ const CategoryEdit = ({ data }) => {
           {editorMode === 'rich' && editor && (
             <div className="category-edit__editor-container">
               <MenuBar editor={editor} />
-              <div className="e2-editor-wrapper" style={{ padding: '12px' }}>
+              <div className="e2-editor-wrapper e2-editor-wrapper--padded">
                 <EditorContent editor={editor} />
               </div>
             </div>
@@ -699,7 +686,7 @@ const CategoryEdit = ({ data }) => {
           </div>
           <div className="category-edit__actions-right">
             <button onClick={handleCancel} className="category-edit__cancel-btn">
-              <FaTimes size={14} style={{ marginRight: '8px' }} />
+              <FaTimes size={14} className="category-edit__icon-margin-right-lg" />
               Cancel
             </button>
             <button
@@ -707,7 +694,7 @@ const CategoryEdit = ({ data }) => {
               disabled={isSaving}
               className="category-edit__save-btn"
             >
-              <FaSave size={14} style={{ marginRight: '8px' }} />
+              <FaSave size={14} className="category-edit__icon-margin-right-lg" />
               {isSaving ? 'Saving...' : 'Save Description'}
             </button>
           </div>
@@ -739,7 +726,7 @@ const CategoryEdit = ({ data }) => {
       <div className="category-edit__help">
         <p>
           <strong>Tip:</strong> You can use{' '}
-          <a className="externalLink" href="/title/E2+Link+Syntax" rel="nofollow" title="/title/E2+Link+Syntax" style={{ fontSize: 'inherit' }}>E2 link syntax</a>{' '}
+          <a className="externalLink category-edit__help-link" href="/title/E2+Link+Syntax" rel="nofollow" title="/title/E2+Link+Syntax">E2 link syntax</a>{' '}
           like <code>[node title]</code> or <code>[display text|node title]</code> to create links.
         </p>
       </div>

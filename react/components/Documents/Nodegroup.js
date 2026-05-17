@@ -7,6 +7,7 @@ import { FaEdit, FaFolder } from 'react-icons/fa'
 
 /**
  * Nodegroup - Display page for nodegroup nodes
+ * Styles in CSS: .nodegroup__*
  *
  * Nodegroups are generic containers for any node type.
  * Only admins can edit them.
@@ -42,113 +43,18 @@ const Nodegroup = ({ data, user, e2 }) => {
     }
   }
 
-  // Styles
-  const styles = {
-    container: {
-      maxWidth: '800px',
-      margin: '0 auto'
-    },
-    header: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '16px'
-    },
-    title: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      fontSize: '18px',
-      fontWeight: 'bold',
-      color: '#38495e'
-    },
-    editButton: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '8px 16px',
-      backgroundColor: '#4060b0',
-      color: 'white',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '14px'
-    },
-    description: {
-      backgroundColor: '#f8f9fa',
-      padding: '16px',
-      borderRadius: '4px',
-      marginBottom: '20px',
-      borderLeft: '3px solid #4060b0'
-    },
-    memberCount: {
-      fontSize: '14px',
-      color: '#666',
-      marginBottom: '12px'
-    },
-    memberList: {
-      listStyle: 'none',
-      padding: 0,
-      margin: 0
-    },
-    memberItem: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '10px 12px',
-      borderBottom: '1px solid #eee',
-      backgroundColor: '#fff'
-    },
-    memberIcon: {
-      marginRight: '10px',
-      width: '20px',
-      textAlign: 'center'
-    },
-    memberInfo: {
-      flex: 1
-    },
-    memberTitle: {
-      fontWeight: '500'
-    },
-    memberMeta: {
-      fontSize: '12px',
-      color: '#666',
-      marginTop: '2px'
-    },
-    typeLabel: {
-      display: 'inline-block',
-      padding: '2px 6px',
-      backgroundColor: '#e8f4f8',
-      color: '#507898',
-      borderRadius: '3px',
-      fontSize: '11px',
-      marginLeft: '8px'
-    },
-    emptyState: {
-      textAlign: 'center',
-      padding: '40px 20px',
-      color: '#666',
-      fontStyle: 'italic'
-    },
-    message: {
-      padding: '12px 16px',
-      marginBottom: '16px',
-      borderRadius: '4px',
-      fontSize: '14px'
-    }
-  }
-
   return (
-    <div style={styles.container}>
+    <div className="nodegroup">
       {/* Header with edit button */}
-      <div style={styles.header}>
-        <div style={styles.title}>
-          <FaFolder style={{ color: '#507898' }} />
+      <div className="nodegroup__header">
+        <div className="nodegroup__title">
+          <FaFolder className="nodegroup__title-icon" />
           {nodegroup.title}
         </div>
         {can_edit && (
           <button
             onClick={() => setShowEditor(true)}
-            style={styles.editButton}
+            className="nodegroup__edit-button"
           >
             <FaEdit /> Edit Members
           </button>
@@ -157,11 +63,7 @@ const Nodegroup = ({ data, user, e2 }) => {
 
       {/* Message */}
       {message && (
-        <div style={{
-          ...styles.message,
-          backgroundColor: message.type === 'error' ? '#fee' : '#efe',
-          color: message.type === 'error' ? '#c00' : '#060'
-        }}>
+        <div className={`nodegroup__message nodegroup__message--${message.type}`}>
           {message.text}
         </div>
       )}
@@ -169,7 +71,7 @@ const Nodegroup = ({ data, user, e2 }) => {
       {/* Description */}
       {nodegroup.doctext && (
         <div
-          style={styles.description}
+          className="nodegroup__description"
           dangerouslySetInnerHTML={{
             __html: renderE2Content(nodegroup.doctext)
           }}
@@ -177,7 +79,7 @@ const Nodegroup = ({ data, user, e2 }) => {
       )}
 
       {/* Member count */}
-      <div style={styles.memberCount}>
+      <div className="nodegroup__member-count">
         {hasMembers
           ? `${group.length} member${group.length !== 1 ? 's' : ''}`
           : 'No members'}
@@ -185,19 +87,19 @@ const Nodegroup = ({ data, user, e2 }) => {
 
       {/* Member list */}
       {hasMembers ? (
-        <ul style={styles.memberList}>
+        <ul className="nodegroup__member-list">
           {group.map((member) => (
-            <li key={member.node_id} style={styles.memberItem}>
-              <span style={{ ...styles.memberIcon, ...getNodeTypeIconStyle(member.type) }}>
+            <li key={member.node_id} className="nodegroup__member-item">
+              <span className="nodegroup__member-icon" style={getNodeTypeIconStyle(member.type)}>
                 {getNodeTypeIcon(member.type, { size: 16 })}
               </span>
-              <div style={styles.memberInfo}>
-                <span style={styles.memberTitle}>
+              <div className="nodegroup__member-info">
+                <span className="nodegroup__member-title">
                   <LinkNode nodeId={member.node_id} title={member.title} />
                 </span>
-                <span style={styles.typeLabel}>{member.type}</span>
+                <span className="nodegroup__type-label">{member.type}</span>
                 {member.author && (
-                  <div style={styles.memberMeta}>
+                  <div className="nodegroup__member-meta">
                     by <LinkNode nodeId={member.author.node_id} title={member.author.title} />
                   </div>
                 )}
@@ -206,7 +108,7 @@ const Nodegroup = ({ data, user, e2 }) => {
           ))}
         </ul>
       ) : (
-        <div style={styles.emptyState}>
+        <div className="nodegroup__empty-state">
           This nodegroup is empty.
           {can_edit && ' Click "Edit Members" to add nodes.'}
         </div>

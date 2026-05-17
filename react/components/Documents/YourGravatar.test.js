@@ -86,19 +86,19 @@ describe('YourGravatar', () => {
   it('renders all four styles for each size', () => {
     const { container } = render(<YourGravatar data={mockData} />)
 
-    // Verify all four styles are present as text content
+    // Verify all four styles are present as text content via CSS class
     const styles = ['default', 'identicon', 'monsterid', 'wavatar']
     styles.forEach(style => {
-      const styleElements = container.querySelectorAll(`div[style*="font-size: 0.8em"]`)
+      const styleElements = container.querySelectorAll('.your-gravatar__style-label')
       const hasStyle = Array.from(styleElements).some(el => el.textContent === style)
       expect(hasStyle).toBe(true)
     })
   })
 
-  it('uses flexbox layout for image grid', () => {
+  it('uses CSS classes for image grid layout', () => {
     const { container } = render(<YourGravatar data={mockData} />)
-    const firstGrid = container.querySelector('div[style*="display: flex"]')
+    const firstGrid = container.querySelector('.your-gravatar__grid')
 
-    expect(firstGrid).toHaveStyle({ display: 'flex', justifyContent: 'center' })
+    expect(firstGrid).toBeInTheDocument()
   })
 })

@@ -27,82 +27,29 @@ const Htmlpage = ({ data, user }) => {
     is_delegated
   } = htmlpage
 
-  const sectionStyle = {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '6px',
-    border: '1px solid #dee2e6'
-  }
-
-  const headerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '10px',
-    color: '#38495e',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  }
-
-  const valueStyle = {
-    color: '#495057',
-    fontSize: '13px'
-  }
-
-  const emptyStyle = {
-    color: '#6c757d',
-    fontStyle: 'italic',
-    fontSize: '13px'
-  }
-
-  const codePreviewStyle = {
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    backgroundColor: '#1e1e1e',
-    color: '#d4d4d4',
-    padding: '12px',
-    borderRadius: '4px',
-    overflow: 'auto',
-    maxHeight: '300px',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all'
-  }
-
   return (
     <div className="htmlpage-display">
       {/* Quick Actions */}
-      <div style={{ marginBottom: '20px' }}>
+      <div className="dev-display__actions">
         <a
           href={`/title/List%20Nodes%20of%20Type?setvars_ListNodesOfType_Type=${htmlpage.type_nodetype || 5}`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 16px',
-            backgroundColor: '#4060b0',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontSize: '13px',
-            fontWeight: '500'
-          }}
+          className="dev-display__action-btn"
         >
           <FaList size={12} /> List All Htmlpages
         </a>
       </div>
 
       {/* About Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="dev-display__section">
+        <h4 className="dev-display__header dev-display__header--section">
           <FaInfoCircle size={16} /> About Htmlpages
         </h4>
-        <p style={{ ...valueStyle, lineHeight: '1.6', margin: 0 }}>
+        <p className="dev-display__text dev-display__text--description">
           Htmlpages are legacy page templates that define how nodes of specific types
           are displayed or edited. Most htmlpage functionality has been migrated to
           Everything::Page classes and React document components.
           {is_delegated && (
-            <span style={{ display: 'block', marginTop: '10px', color: '#f59e0b' }}>
+            <span className="dev-display__delegated-warning">
               <strong>This htmlpage is delegated</strong> - its implementation has been moved
               to the codebase. To modify it, submit a pull request on GitHub.
             </span>
@@ -111,53 +58,53 @@ const Htmlpage = ({ data, user }) => {
       </div>
 
       {/* Configuration Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="dev-display__section">
+        <h4 className="dev-display__header dev-display__header--section">
           <FaCogs size={16} /> Configuration
         </h4>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="dev-display__grid">
           <div>
-            <div style={headerStyle}>
+            <div className="dev-display__header">
               <FaFileCode size={12} /> Page Type
             </div>
-            <div style={valueStyle}>
+            <div className="dev-display__text">
               {pagetype_nodetype ? (
                 <LinkNode nodeId={pagetype_nodetype} title={pagetype_title || `Nodetype ${pagetype_nodetype}`} />
               ) : (
-                <span style={emptyStyle}>None</span>
+                <span className="dev-display__text--empty">None</span>
               )}
             </div>
           </div>
 
           <div>
-            <div style={headerStyle}>
+            <div className="dev-display__header">
               <FaCode size={12} /> Display Type
             </div>
-            <div style={valueStyle}>
-              {displaytype || <span style={emptyStyle}>default</span>}
+            <div className="dev-display__text">
+              {displaytype || <span className="dev-display__text--empty">default</span>}
             </div>
           </div>
 
           <div>
-            <div style={headerStyle}>
+            <div className="dev-display__header">
               <FaFolder size={12} /> Parent Container
             </div>
-            <div style={valueStyle}>
+            <div className="dev-display__text">
               {parent_container && parent_container !== 0 ? (
                 <LinkNode nodeId={parent_container} title={`Container ${parent_container}`} />
               ) : (
-                <span style={emptyStyle}>None</span>
+                <span className="dev-display__text--empty">None</span>
               )}
             </div>
           </div>
 
           <div>
-            <div style={headerStyle}>
+            <div className="dev-display__header">
               <FaFileCode size={12} /> MIME Type
             </div>
-            <div style={valueStyle}>
-              {mimetype || <span style={emptyStyle}>text/html</span>}
+            <div className="dev-display__text">
+              {mimetype || <span className="dev-display__text--empty">text/html</span>}
             </div>
           </div>
         </div>
@@ -165,11 +112,11 @@ const Htmlpage = ({ data, user }) => {
 
       {/* Page Code Preview Section (Developer only) */}
       {isDeveloper && page_preview && (
-        <div style={sectionStyle}>
-          <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+        <div className="dev-display__section">
+          <h4 className="dev-display__header dev-display__header--section">
             <FaCode size={16} /> Page Code Preview
           </h4>
-          <div style={codePreviewStyle}>
+          <div className="dev-display__code-preview">
             {page_preview}
           </div>
         </div>
