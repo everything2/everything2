@@ -68,7 +68,9 @@ sub generate
     next unless $title_clean && $snippet_clean;
 
     # Strip HTML from snippet for storage
+    # First remove any incomplete tag from SQL SUBSTRING truncation
     my $clean_snippet = $row->{snippet} || '';
+    $clean_snippet =~ s/<[^>]*$//;
     $clean_snippet =~ s/<[^>]+>//g;
     $clean_snippet =~ s/\s+/ /g;
     $clean_snippet =~ s/^\s+|\s+$//g;

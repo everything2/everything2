@@ -59,7 +59,7 @@ const Statistics = (props) => {
           display={props.stat_personal}
           toggleSection={props.toggleSection}
         >
-          <div style={{ paddingTop: '4px' }}>
+          <div className="statistics__section-content">
             {renderStatRow('XP', personal.xp, <FaStar />)}
             {renderStatRow('Writeups', personal.writeups, <FaPen />)}
             {renderStatRow('Level', personal.level, <FaTrophy />)}
@@ -78,7 +78,7 @@ const Statistics = (props) => {
           display={props.stat_fun}
           toggleSection={props.toggleSection}
         >
-          <div style={{ paddingTop: '4px' }}>
+          <div className="statistics__section-content">
             {renderStatRow('Node-Fu', fun.nodeFu, <FaMagic />)}
             {renderStatRow('Golden Trinkets', fun.goldenTrinkets, <FaTrophy />)}
             {renderStatRow('Silver Trinkets', fun.silverTrinkets, <FaMedal />)}
@@ -97,7 +97,7 @@ const Statistics = (props) => {
           display={props.stat_advancement}
           toggleSection={props.toggleSection}
         >
-          <div style={{ paddingTop: '4px' }}>
+          <div className="statistics__section-content">
             {renderStatRow('Merit', advancement.merit, <FaAward />)}
             {renderStatRow('LF', advancement.lf, <FaChartBar />)}
             {renderStatRow('Devotion', advancement.devotion, <FaHeart />)}

@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-24T19:01:03.081Z",
+  "baseUrl": "http://localhost:9080",
+  "pagesAnalyzed": 12,
+  "files": {
+    "2004473.css": {
+      "totalBytes": 2781,
+      "usedBytes": 0,
+      "pages": 12
+    },
+    "1973976.css": {
+      "totalBytes": 320537,
+      "usedBytes": 26304,
+      "pages": 12
+    }
+  }
+}

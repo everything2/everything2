@@ -96,7 +96,7 @@ const NewWriteups = (props) => {
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}
     >
-      <div style={{ marginBottom: '12px' }}>
+      <div className="newwriteups__filter">
         <NewWriteupsFilter
           limit={props.limit}
           newWriteupsChange={props.newWriteupsChange}
@@ -111,7 +111,7 @@ const NewWriteups = (props) => {
           No writeups yet
         </div>
       ) : (
-        <ul className="infolist" style={{ margin: 0 }}>
+        <ul className="infolist newwriteups__list">
           {filteredWriteups.map((entry) => (
             <WriteupEntry
               entry={entry}

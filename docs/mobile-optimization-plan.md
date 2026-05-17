@@ -1,8 +1,12 @@
 # Mobile Optimization Plan for Everything2
 
 **Created**: 2025-12-21
-**Updated**: 2026-01-09
-**Status**: Ready for Implementation
+**Updated**: 2026-04-27
+**Status**: ✅ SHIPPED (Jan 2026, commit `4afedcb5b`, PR #4020)
+
+> Historical planning doc — kept for reference. The mobile redesign described
+> below shipped in January 2026. For ongoing mobile-specific issues see
+> [mobile-audit.md](mobile-audit.md) and `tools/mobile-layout-checker.js`.
 
 ## Design Vision
 

@@ -8,11 +8,11 @@ const Notelet = (props) => {
     return (
       <NodeletContainer
         id={props.id}
-      title="Notelet"
+        title="Notelet"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <p style={{ padding: '8px', fontSize: '12px', fontStyle: 'italic' }}>
+        <p className="notelet__empty">
           No notelet data available
         </p>
       </NodeletContainer>
@@ -29,20 +29,20 @@ const Notelet = (props) => {
       nodeletIsOpen={props.nodeletIsOpen}
     >
       {isLocked ? (
-        <p style={{ padding: '8px', fontSize: '12px' }}>
+        <p className="notelet__locked">
           Sorry, your Notelet is currently locked, probably because an administrator is working with your account. It should soon be back to normal.
         </p>
       ) : (
         <>
           {!hasContent ? (
-            <div style={{ padding: '8px', fontSize: '12px' }}>
+            <div className="notelet__content">
               <p>You currently have no text set for your personal nodelet. You can edit it at{' '}
                 <LinkNode title="Notelet Editor" nodeType="superdoc" /> or manage nodelets in{' '}
                 <LinkNode title="Settings" nodeType="superdoc" />.
               </p>
             </div>
           ) : (
-            <div style={{ padding: '8px', fontSize: '12px' }}>
+            <div className="notelet__content">
               <ParseLinks>{content}</ParseLinks>
             </div>
           )}

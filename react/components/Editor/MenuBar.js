@@ -5,6 +5,7 @@ import { FaAlignLeft, FaAlignCenter, FaAlignRight } from 'react-icons/fa';
  * MenuBar - Toolbar for the Tiptap editor
  *
  * Provides formatting buttons for all E2-approved HTML features.
+ * Styles are in CSS classes (editor-menubar__*)
  */
 const MenuBar = ({ editor }) => {
   const [showLinkDialog, setShowLinkDialog] = useState(false);
@@ -34,44 +35,22 @@ const MenuBar = ({ editor }) => {
     return null;
   }
 
-  const buttonStyle = (isActive) => ({
-    padding: '4px 8px',
-    margin: '2px',
-    backgroundColor: isActive ? '#38495e' : '#f8f9f9',
-    color: isActive ? '#fff' : '#111',
-    border: '1px solid #ccc',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: isActive ? 'bold' : 'normal',
-    minWidth: '28px'
-  });
-
-  const groupStyle = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    marginRight: '10px',
-    padding: '0 5px',
-    borderRight: '1px solid #ddd'
+  // Helper to get button class based on active state
+  const btnClass = (isActive, isDisabled = false) => {
+    let cls = 'editor-menubar__btn';
+    if (isActive) cls += ' editor-menubar__btn--active';
+    if (isDisabled) cls += ' editor-menubar__btn--disabled';
+    return cls;
   };
 
   return (
-    <div style={{
-      padding: '8px',
-      backgroundColor: '#f5f5f5',
-      borderBottom: '1px solid #38495e',
-      borderTopLeftRadius: '4px',
-      borderTopRightRadius: '4px',
-      display: 'flex',
-      flexWrap: 'wrap',
-      alignItems: 'center'
-    }}>
+    <div className="editor-menubar">
       {/* Text formatting */}
-      <div style={groupStyle}>
+      <div className="editor-menubar__group">
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          style={buttonStyle(editor.isActive('bold'))}
+          className={btnClass(editor.isActive('bold'))}
           title="Bold (Ctrl+B)"
         >
           <strong>B</strong>
@@ -79,7 +58,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          style={buttonStyle(editor.isActive('italic'))}
+          className={btnClass(editor.isActive('italic'))}
           title="Italic (Ctrl+I)"
         >
           <em>I</em>
@@ -87,7 +66,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          style={buttonStyle(editor.isActive('underline'))}
+          className={btnClass(editor.isActive('underline'))}
           title="Underline (Ctrl+U)"
         >
           <u>U</u>
@@ -95,7 +74,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleStrike().run()}
-          style={buttonStyle(editor.isActive('strike'))}
+          className={btnClass(editor.isActive('strike'))}
           title="Strikethrough"
         >
           <s>S</s>
@@ -103,7 +82,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleSubscript().run()}
-          style={buttonStyle(editor.isActive('subscript'))}
+          className={btnClass(editor.isActive('subscript'))}
           title="Subscript"
         >
           X<sub>2</sub>
@@ -111,7 +90,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleSuperscript().run()}
-          style={buttonStyle(editor.isActive('superscript'))}
+          className={btnClass(editor.isActive('superscript'))}
           title="Superscript"
         >
           X<sup>2</sup>
@@ -119,7 +98,7 @@ const MenuBar = ({ editor }) => {
       </div>
 
       {/* Headings */}
-      <div style={groupStyle}>
+      <div className="editor-menubar__group">
         <select
           onChange={(e) => {
             const level = parseInt(e.target.value, 10);
@@ -137,15 +116,7 @@ const MenuBar = ({ editor }) => {
             editor.isActive('heading', { level: 5 }) ? '5' :
             editor.isActive('heading', { level: 6 }) ? '6' : '0'
           }
-          style={{
-            padding: '4px 8px',
-            margin: '2px',
-            border: '1px solid #ccc',
-            borderRadius: '3px',
-            backgroundColor: '#f8f9f9',
-            cursor: 'pointer',
-            fontSize: '13px'
-          }}
+          className="editor-menubar__select"
         >
           <option value="0">Paragraph</option>
           <option value="1">Heading 1</option>
@@ -158,11 +129,11 @@ const MenuBar = ({ editor }) => {
       </div>
 
       {/* Lists */}
-      <div style={groupStyle}>
+      <div className="editor-menubar__group">
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          style={buttonStyle(editor.isActive('bulletList'))}
+          className={btnClass(editor.isActive('bulletList'))}
           title="Bullet List"
         >
           •
@@ -170,7 +141,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          style={buttonStyle(editor.isActive('orderedList'))}
+          className={btnClass(editor.isActive('orderedList'))}
           title="Numbered List"
         >
           1.
@@ -178,11 +149,11 @@ const MenuBar = ({ editor }) => {
       </div>
 
       {/* Block elements */}
-      <div style={groupStyle}>
+      <div className="editor-menubar__group">
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          style={buttonStyle(editor.isActive('blockquote'))}
+          className={btnClass(editor.isActive('blockquote'))}
           title="Blockquote"
         >
           "
@@ -190,7 +161,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleCode().run()}
-          style={buttonStyle(editor.isActive('code'))}
+          className={btnClass(editor.isActive('code'))}
           title="Inline Code"
         >
           {'</>'}
@@ -198,7 +169,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          style={buttonStyle(editor.isActive('codeBlock'))}
+          className={btnClass(editor.isActive('codeBlock'))}
           title="Code Block"
         >
           {'{ }'}
@@ -206,7 +177,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          style={buttonStyle(false)}
+          className={btnClass(false)}
           title="Horizontal Rule"
         >
           ─
@@ -214,35 +185,35 @@ const MenuBar = ({ editor }) => {
       </div>
 
       {/* Text alignment */}
-      <div style={groupStyle}>
+      <div className="editor-menubar__group">
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          style={buttonStyle(editor.isActive({ textAlign: 'left' }))}
+          className={btnClass(editor.isActive({ textAlign: 'left' }))}
           title="Align Left"
         >
-          <FaAlignLeft style={{ verticalAlign: 'middle' }} />
+          <FaAlignLeft className="editor-menubar__icon" />
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          style={buttonStyle(editor.isActive({ textAlign: 'center' }))}
+          className={btnClass(editor.isActive({ textAlign: 'center' }))}
           title="Align Center"
         >
-          <FaAlignCenter style={{ verticalAlign: 'middle' }} />
+          <FaAlignCenter className="editor-menubar__icon" />
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          style={buttonStyle(editor.isActive({ textAlign: 'right' }))}
+          className={btnClass(editor.isActive({ textAlign: 'right' }))}
           title="Align Right"
         >
-          <FaAlignRight style={{ verticalAlign: 'middle' }} />
+          <FaAlignRight className="editor-menubar__icon" />
         </button>
       </div>
 
       {/* E2 Link */}
-      <div style={groupStyle}>
+      <div className="editor-menubar__group">
         <button
           type="button"
           onClick={() => {
@@ -253,7 +224,7 @@ const MenuBar = ({ editor }) => {
             setLinkDisplay(selectedText);
             setShowLinkDialog(true);
           }}
-          style={buttonStyle(editor.isActive('e2link'))}
+          className={btnClass(editor.isActive('e2link'))}
           title="Insert E2 Link (Ctrl+K)"
         >
           [link]
@@ -261,11 +232,11 @@ const MenuBar = ({ editor }) => {
       </div>
 
       {/* Raw Brackets */}
-      <div style={groupStyle}>
+      <div className="editor-menubar__group">
         <button
           type="button"
           onClick={() => editor.chain().focus().insertRawLeftBracket().run()}
-          style={buttonStyle(false)}
+          className={btnClass(false)}
           title="Insert Raw Left Bracket (won't be parsed as link)"
         >
           &#91;
@@ -273,7 +244,7 @@ const MenuBar = ({ editor }) => {
         <button
           type="button"
           onClick={() => editor.chain().focus().insertRawRightBracket().run()}
-          style={buttonStyle(false)}
+          className={btnClass(false)}
           title="Insert Raw Right Bracket (won't be parsed as link)"
         >
           &#93;
@@ -281,11 +252,11 @@ const MenuBar = ({ editor }) => {
       </div>
 
       {/* Table */}
-      <div style={groupStyle}>
+      <div className="editor-menubar__group">
         <button
           type="button"
           onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}
-          style={buttonStyle(false)}
+          className={btnClass(false)}
           title="Insert Table"
         >
           ⊞
@@ -295,7 +266,7 @@ const MenuBar = ({ editor }) => {
             <button
               type="button"
               onClick={() => editor.chain().focus().addColumnAfter().run()}
-              style={buttonStyle(false)}
+              className={btnClass(false)}
               title="Add Column"
             >
               +Col
@@ -303,7 +274,7 @@ const MenuBar = ({ editor }) => {
             <button
               type="button"
               onClick={() => editor.chain().focus().addRowAfter().run()}
-              style={buttonStyle(false)}
+              className={btnClass(false)}
               title="Add Row"
             >
               +Row
@@ -311,7 +282,7 @@ const MenuBar = ({ editor }) => {
             <button
               type="button"
               onClick={() => editor.chain().focus().deleteTable().run()}
-              style={buttonStyle(false)}
+              className={btnClass(false)}
               title="Delete Table"
             >
               ×
@@ -321,15 +292,12 @@ const MenuBar = ({ editor }) => {
       </div>
 
       {/* Undo/Redo */}
-      <div style={{ ...groupStyle, borderRight: 'none' }}>
+      <div className="editor-menubar__group editor-menubar__group--no-border">
         <button
           type="button"
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
-          style={{
-            ...buttonStyle(false),
-            opacity: editor.can().undo() ? 1 : 0.5
-          }}
+          className={btnClass(false, !editor.can().undo())}
           title="Undo (Ctrl+Z)"
         >
           ↩
@@ -338,10 +306,7 @@ const MenuBar = ({ editor }) => {
           type="button"
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().redo()}
-          style={{
-            ...buttonStyle(false),
-            opacity: editor.can().redo() ? 1 : 0.5
-          }}
+          className={btnClass(false, !editor.can().redo())}
           title="Redo (Ctrl+Y)"
         >
           ↪
@@ -350,30 +315,13 @@ const MenuBar = ({ editor }) => {
 
       {/* Link dialog modal */}
       {showLinkDialog && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: '#fff',
-            padding: '20px',
-            borderRadius: '8px',
-            minWidth: '350px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-          }}>
-            <h3 style={{ marginTop: 0, marginBottom: '15px', color: '#38495e' }}>
+        <div className="editor-menubar__modal-overlay">
+          <div className="editor-menubar__modal">
+            <h3 className="editor-menubar__modal-title">
               Insert E2 Link
             </h3>
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+            <div className="editor-menubar__form-group">
+              <label className="editor-menubar__label">
                 Node Title:
               </label>
               <input
@@ -381,19 +329,12 @@ const MenuBar = ({ editor }) => {
                 value={linkTitle}
                 onChange={(e) => setLinkTitle(e.target.value)}
                 placeholder="e.g., Everything2"
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
+                className="editor-menubar__input"
                 autoFocus
               />
             </div>
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+            <div className="editor-menubar__form-group editor-menubar__form-group--last">
+              <label className="editor-menubar__label">
                 Display Text (optional):
               </label>
               <input
@@ -401,14 +342,7 @@ const MenuBar = ({ editor }) => {
                 value={linkDisplay}
                 onChange={(e) => setLinkDisplay(e.target.value)}
                 placeholder="Leave blank to use node title"
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
+                className="editor-menubar__input"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     insertLink();
@@ -416,7 +350,7 @@ const MenuBar = ({ editor }) => {
                 }}
               />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            <div className="editor-menubar__actions">
               <button
                 type="button"
                 onClick={() => {
@@ -424,13 +358,7 @@ const MenuBar = ({ editor }) => {
                   setLinkTitle('');
                   setLinkDisplay('');
                 }}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#f5f5f5',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
+                className="editor-menubar__btn-cancel"
               >
                 Cancel
               </button>
@@ -438,19 +366,12 @@ const MenuBar = ({ editor }) => {
                 type="button"
                 onClick={insertLink}
                 disabled={!linkTitle}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: linkTitle ? '#4060b0' : '#ccc',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: linkTitle ? 'pointer' : 'not-allowed'
-                }}
+                className={`editor-menubar__btn-submit${!linkTitle ? ' editor-menubar__btn-submit--disabled' : ''}`}
               >
                 Insert Link
               </button>
             </div>
-            <div style={{ marginTop: '15px', fontSize: '12px', color: '#666' }}>
+            <div className="editor-menubar__preview">
               <strong>Result:</strong> {linkTitle ? (
                 linkDisplay && linkDisplay !== linkTitle
                   ? `[${linkTitle}|${linkDisplay}]`

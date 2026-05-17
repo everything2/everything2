@@ -1,6 +1,10 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
 
+/**
+ * Manna from Heaven - Staff writeup activity
+ * Styles in CSS: .manna-from-heaven__*
+ */
 const MannaFromHeaven = ({ data }) => {
   const { writeups, numdays } = data
 
@@ -14,38 +18,38 @@ const MannaFromHeaven = ({ data }) => {
         Writeup activity for Content Editors and e2gods over the last {numdays} days.
       </p>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div className="manna-from-heaven__total">
         <strong>Total writeups: {totalWriteups}</strong>
       </div>
 
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table className="manna-from-heaven__table">
         <thead>
-          <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
-            <th style={{ textAlign: 'left', padding: '8px' }}>User</th>
-            <th style={{ textAlign: 'right', padding: '8px' }}>Writeups</th>
+          <tr className="manna-from-heaven__header-row">
+            <th className="manna-from-heaven__th">User</th>
+            <th className="manna-from-heaven__th manna-from-heaven__th--right">Writeups</th>
           </tr>
         </thead>
         <tbody>
           {writeups.map(({ username, user_id, count }) => (
-            <tr key={user_id} style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '8px' }}>
+            <tr key={user_id} className="manna-from-heaven__row">
+              <td className="manna-from-heaven__td">
                 <LinkNode node_id={user_id} title={username} type="user" />
               </td>
-              <td style={{ textAlign: 'right', padding: '8px' }}>
+              <td className="manna-from-heaven__td manna-from-heaven__td--right">
                 {count}
               </td>
             </tr>
           ))}
         </tbody>
         <tfoot>
-          <tr style={{ borderTop: '2px solid #ddd', fontWeight: 'bold' }}>
-            <td style={{ padding: '8px' }}>Total</td>
-            <td style={{ textAlign: 'right', padding: '8px' }}>{totalWriteups}</td>
+          <tr className="manna-from-heaven__footer-row">
+            <td className="manna-from-heaven__td">Total</td>
+            <td className="manna-from-heaven__td manna-from-heaven__td--right">{totalWriteups}</td>
           </tr>
         </tfoot>
       </table>
 
-      <div style={{ marginTop: '20px', fontSize: '0.9em', color: '#666' }}>
+      <div className="manna-from-heaven__time-links">
         <p>
           Change time period:
           {' '}

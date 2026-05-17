@@ -58,17 +58,7 @@ const TheOracle = ({ data }) => {
             />
           </p>
 
-          <button
-            type="submit"
-            style={{
-              padding: '6px 15px',
-              backgroundColor: '#38495e',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}
-          >
+          <button type="submit" className="oracle__btn">
             Save
           </button>
         </form>
@@ -80,22 +70,14 @@ const TheOracle = ({ data }) => {
     <div className="the-oracle">
       {/* Update confirmation */}
       {update_result?.success && (
-        <div
-          style={{
-            marginBottom: '1em',
-            padding: '10px',
-            backgroundColor: '#e8f5e9',
-            border: '1px solid #4caf50',
-            borderRadius: '4px'
-          }}
-        >
+        <div className="oracle__success">
           Updated <strong>{update_result.var}</strong> for{' '}
           <strong>{update_result.user}</strong>
         </div>
       )}
 
       {/* Welcome / Search form */}
-      <form method="GET" style={{ marginBottom: '1.5em' }}>
+      <form method="GET" className="oracle__form">
         <input type="hidden" name="node_id" value={nodeId} />
 
         <p>Welcome to the User Oracle. Please enter a user name</p>
@@ -107,24 +89,14 @@ const TheOracle = ({ data }) => {
           onChange={(e) => setSearchUser(e.target.value)}
           size={30}
         />{' '}
-        <button
-          type="submit"
-          style={{
-            padding: '6px 15px',
-            backgroundColor: '#38495e',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '3px',
-            cursor: 'pointer'
-          }}
-        >
+        <button type="submit" className="oracle__btn">
           Look Up
         </button>
       </form>
 
       {/* CE Help text (only for CEs who aren't admins) */}
       {!classic_mode && ce_help && ce_help.length > 0 && (
-        <div style={{ marginBottom: '1.5em', fontSize: '0.9em' }}>
+        <div className="oracle__ce-help">
           <p>
             As a content editor, you can view an abbreviated list of user settings.
             <br />
@@ -156,32 +128,21 @@ const TheOracle = ({ data }) => {
             />
           </h3>
 
-          <table
-            style={{
-              borderCollapse: 'collapse',
-              width: '100%',
-              border: '0',
-              cellPadding: '2',
-              cellSpacing: '1'
-            }}
-          >
+          <table className="oracle__table">
             <tbody>
               {search_result.vars.map((v, idx) => (
                 <tr
                   key={v.key}
-                  className={idx % 2 === 0 ? 'oddrow' : 'evenrow'}
-                  style={{
-                    backgroundColor: idx % 2 === 0 ? '#f8f9f9' : '#fff'
-                  }}
+                  className={idx % 2 === 0 ? 'oracle__row--even' : 'oracle__row--odd'}
                 >
-                  <td style={{ padding: '4px', verticalAlign: 'top' }}>
+                  <td className="oracle__td">
                     <strong>{v.key}</strong>
                   </td>
-                  <td style={{ padding: '4px', verticalAlign: 'top' }}>=</td>
-                  <td style={{ padding: '4px', verticalAlign: 'top' }}>
+                  <td className="oracle__td">=</td>
+                  <td className="oracle__td">
                     {/* Code formatting for customstyle */}
                     {v.is_code ? (
-                      <pre style={{ fontSize: '0.85em', margin: 0 }}>
+                      <pre className="oracle__code">
                         <small>{v.value}</small>
                       </pre>
                     ) : v.is_nodelet_list && v.value ? (
@@ -243,11 +204,11 @@ const TheOracle = ({ data }) => {
 
                     {/* Resolved list of nodes */}
                     {v.resolved_list && v.resolved_list.length > 0 && (
-                      <div style={{ marginTop: '4px' }}>
+                      <div className="oracle__resolved-list">
                         {v.resolved_list.map((item) => (
                           <div key={item.node_id}>
                             {item.missing ? (
-                              <span style={{ color: 'red' }}>
+                              <span className="oracle__error">
                                 ERROR: Node {item.node_id} not found!
                               </span>
                             ) : (

@@ -129,7 +129,7 @@ const WheelOfSurprise = ({ data, user }) => {
         )}
       </h3>
 
-      <p style={{ fontSize: '11px', color: '#666' }}>
+      <p className="wheel-of-surprise__disclaimer">
         <small>
           {isHalloween
             ? 'Guarantee void in Transylvania.'
@@ -138,7 +138,7 @@ const WheelOfSurprise = ({ data, user }) => {
       </p>
 
       {error && (
-        <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff3cd', border: '1px solid #ffc107', borderRadius: '5px', color: '#856404' }}>
+        <div className="wheel-of-surprise__error">
           Error: {error}
         </div>
       )}
@@ -147,35 +147,18 @@ const WheelOfSurprise = ({ data, user }) => {
         <button
           type="submit"
           disabled={spinning}
-          style={{
-            padding: '10px 20px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            color: '#fff',
-            backgroundColor: spinning ? '#ccc' : '#4a90e2',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: spinning ? 'not-allowed' : 'pointer'
-          }}
+          className="wheel-of-surprise__button"
         >
           {spinning ? 'Spinning...' : 'Spin'}
         </button>
       </form>
 
-      <p style={{ marginTop: '15px', fontSize: '12px', color: '#666' }}>
+      <p className="wheel-of-surprise__gp-info">
         Current GP: {currentGP} | Cost per spin: {spinCost} GP
       </p>
 
       {result && (
-        <div style={{
-          marginTop: '20px',
-          padding: '15px',
-          backgroundColor: '#f0f8ff',
-          border: '1px solid #4a90e2',
-          borderRadius: '5px',
-          opacity: fadeOut ? 0 : 1,
-          transition: 'opacity 0.5s ease-out'
-        }}>
+        <div className={`wheel-of-surprise__result ${fadeOut ? 'wheel-of-surprise__result--fading' : ''}`}>
           <ParseLinks text={result} />
         </div>
       )}

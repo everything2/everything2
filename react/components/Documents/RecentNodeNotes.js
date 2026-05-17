@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * Recent Node Notes - Shows recent editor/admin notes on writeups
+ * Styles in CSS: .recent-node-notes__*
  *
  * Staff only - supports filtering and pagination
  */
@@ -34,9 +35,9 @@ const RecentNodeNotes = ({ data }) => {
     <div className="document">
       <h2>Recent Node Notes</h2>
 
-      <div style={{ marginBottom: '1em', padding: '1em', backgroundColor: '#f8f9f9', borderRadius: '4px' }}>
-        <p style={{ margin: '0 0 0.5em 0' }}><strong>Filter options:</strong></p>
-        <label style={{ display: 'block', marginBottom: '0.5em' }}>
+      <div className="recent-node-notes__filter-box">
+        <p className="recent-node-notes__filter-title"><strong>Filter options:</strong></p>
+        <label className="recent-node-notes__filter-label">
           <input
             type="checkbox"
             checked={onlymynotes}
@@ -50,7 +51,7 @@ const RecentNodeNotes = ({ data }) => {
           />{' '}
           Show only my notes
         </label>
-        <label style={{ display: 'block' }}>
+        <label className="recent-node-notes__filter-label">
           <input
             type="checkbox"
             checked={hidesystemnotes}
@@ -75,21 +76,14 @@ const RecentNodeNotes = ({ data }) => {
       ) : (
         <ol start={page * perpage + 1}>
           {notes.map((note, idx) => (
-            <li key={idx} style={{ marginBottom: '1em' }}>
+            <li key={idx} className="recent-node-notes__list-item">
               {note.node && <LinkNode nodeId={note.node.node_id} title={note.node.title} />}
               <br />
-              <small style={{ color: '#666' }}>
+              <small className="recent-node-notes__timestamp">
                 {note.timestamp && new Date(note.timestamp * 1000).toLocaleString()}
               </small>
               <br />
-              <span style={{
-                display: 'block',
-                marginTop: '0.5em',
-                padding: '0.5em',
-                backgroundColor: '#fffbdd',
-                border: '1px solid #e8e3a8',
-                borderRadius: '3px'
-              }}>
+              <span className="recent-node-notes__note-text">
                 {note.note}
               </span>
             </li>
@@ -97,15 +91,15 @@ const RecentNodeNotes = ({ data }) => {
         </ol>
       )}
 
-      <div style={{ marginTop: '2em', textAlign: 'center' }}>
+      <div className="recent-node-notes__pagination">
         {hasPrev && (
-          <a href={buildUrl({ onlymynotes, hidesystemnotes, page: page - 1 })} style={{ marginRight: '2em' }}>
+          <a href={buildUrl({ onlymynotes, hidesystemnotes, page: page - 1 })} className="recent-node-notes__prev-link">
             ← Previous
           </a>
         )}
         <span>Page {page + 1} of {totalPages}</span>
         {hasNext && (
-          <a href={buildUrl({ onlymynotes, hidesystemnotes, page: page + 1 })} style={{ marginLeft: '2em' }}>
+          <a href={buildUrl({ onlymynotes, hidesystemnotes, page: page + 1 })} className="recent-node-notes__next-link">
             Next →
           </a>
         )}

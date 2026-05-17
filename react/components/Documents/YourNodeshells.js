@@ -13,7 +13,7 @@ const YourNodeshells = ({ data, user }) => {
   return (
     <div className="document">
       {error && (
-        <p style={{ color: '#8b0000', fontStyle: 'italic' }}>{error}</p>
+        <p className="your-nodeshells__error">{error}</p>
       )}
 
       <p>

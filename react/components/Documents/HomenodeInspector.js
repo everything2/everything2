@@ -37,7 +37,7 @@ const HomenodeInspector = ({ data }) => {
       <form method="GET" action={`/?node_id=${node_id}`}>
         <input type="hidden" name="node_id" value={node_id} />
 
-        <fieldset style={{ marginBottom: '20px', padding: '15px' }}>
+        <fieldset className="homenode-inspector__options">
           <legend>Options</legend>
 
           <label>
@@ -97,12 +97,7 @@ const HomenodeInspector = ({ data }) => {
       {items.map((item, idx) => (
         <div
           key={item.node_id}
-          style={{
-            marginBottom: '20px',
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '5px'
-          }}
+          className="homenode-inspector__result-item"
         >
           <p>
             <strong>
@@ -111,28 +106,16 @@ const HomenodeInspector = ({ data }) => {
             {' '}({item.full_length} chars)
           </p>
 
-          <div
-            style={{
-              backgroundColor: '#f9f9f9',
-              padding: '10px',
-              fontFamily: 'monospace',
-              fontSize: '12px',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              maxHeight: '200px',
-              overflow: 'auto'
-            }}
-          >
+          <div className="homenode-inspector__doctext-preview">
             {item.doctext}
           </div>
 
           {pole_id && (
-            <p style={{ marginTop: '10px' }}>
+            <p className="homenode-inspector__smite-link">
               <a
                 href={`/?node_id=${pole_id}&prefill=${encodeURIComponent(item.title)}`}
-                className="action"
+                className="action homenode-inspector__smite-action"
                 title="Open The Old Hooked Pole with this username pre-filled"
-                style={{ color: '#c00' }}
               >
                 Smite Spammer
               </a>
@@ -145,11 +128,11 @@ const HomenodeInspector = ({ data }) => {
 
       {/* Pagination */}
       {total_pages > 1 && (
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <div className="homenode-inspector__pagination">
           {page > 1 && (
             <a
               href={`/?node_id=${node_id}&gonetime=${gonetime}&goneunit=${goneunit}&showlength=${showlength}&maxwus=${maxwus}${extlinks ? '&extlinks=1' : ''}${dotstoo ? '&dotstoo=1' : ''}&page=${page - 1}`}
-              style={{ marginRight: '20px' }}
+              className="homenode-inspector__prev-link"
             >
               &laquo; Previous
             </a>
@@ -160,7 +143,7 @@ const HomenodeInspector = ({ data }) => {
           {page < total_pages && (
             <a
               href={`/?node_id=${node_id}&gonetime=${gonetime}&goneunit=${goneunit}&showlength=${showlength}&maxwus=${maxwus}${extlinks ? '&extlinks=1' : ''}${dotstoo ? '&dotstoo=1' : ''}&page=${page + 1}`}
-              style={{ marginLeft: '20px' }}
+              className="homenode-inspector__next-link"
             >
               Next &raquo;
             </a>

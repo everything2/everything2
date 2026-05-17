@@ -4,6 +4,7 @@ import React from 'react'
  * UsergroupMessageArchiveManager - Manage usergroup message archiving
  *
  * Admin tool for enabling/disabling automatic message archiving for usergroups.
+ * Styles are in CSS classes (ug-archive__*)
  */
 const UsergroupMessageArchiveManager = ({ data }) => {
   const {
@@ -42,7 +43,7 @@ const UsergroupMessageArchiveManager = ({ data }) => {
 
       {/* Show changes if any were made */}
       {changes.length > 0 && (
-        <div style={{ marginBottom: '1em', padding: '10px', backgroundColor: '#f0fff0', border: '1px solid #0a0' }}>
+        <div className="ug-archive__changes">
           <p>Made {changes.length} change{changes.length === 1 ? '' : 's'}:</p>
           <ul>
             {changes.map((c) => (
@@ -56,7 +57,7 @@ const UsergroupMessageArchiveManager = ({ data }) => {
       )}
 
       {/* Stats */}
-      <div style={{ marginBottom: '1em' }}>
+      <div className="ug-archive__stats">
         <p><strong>Stats:</strong></p>
         <ul>
           {num_not_archiving > 0 && (
@@ -72,24 +73,24 @@ const UsergroupMessageArchiveManager = ({ data }) => {
       <form method="POST">
         <input type="hidden" name="node_id" value={node_id} />
 
-        <table style={{ border: '1px solid #ccc', borderCollapse: 'collapse' }}>
+        <table className="ug-archive__table">
           <thead>
             <tr>
-              <th style={{ border: '1px solid #ccc', padding: '4px' }}>change this</th>
-              <th style={{ border: '1px solid #ccc', padding: '4px' }}>usergroup</th>
-              <th style={{ border: '1px solid #ccc', padding: '4px' }}>current status</th>
-              <th style={{ border: '1px solid #ccc', padding: '4px' }}><code>/msg</code>s</th>
+              <th className="ug-archive__th">change this</th>
+              <th className="ug-archive__th">usergroup</th>
+              <th className="ug-archive__th">current status</th>
+              <th className="ug-archive__th"><code>/msg</code>s</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <th colSpan={4} style={{ border: '1px solid #ccc', padding: '4px' }}>
+              <th colSpan={4} className="ug-archive__th">
                 u s e r g r o u p s
               </th>
             </tr>
             {usergroups.map((ug) => (
               <tr key={ug.group_id}>
-                <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+                <td className="ug-archive__td">
                   <input
                     type="checkbox"
                     name={`umam_sure_id_${ug.group_id}`}
@@ -103,13 +104,13 @@ const UsergroupMessageArchiveManager = ({ data }) => {
                     <option value="2">start archiving</option>
                   </select>
                 </td>
-                <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+                <td className="ug-archive__td">
                   <a href={`/?node_id=${ug.group_id}`}>{ug.group_title}</a>
                 </td>
-                <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+                <td className="ug-archive__td">
                   {ug.is_archiving ? 'archiving' : 'not archiving'}
                 </td>
-                <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+                <td className="ug-archive__td">
                   {archive_node_id && (
                     <a href={`/?node_id=${archive_node_id}&viewgroup=${encodeURIComponent(ug.group_title)}`}>
                       (view)
@@ -121,18 +122,8 @@ const UsergroupMessageArchiveManager = ({ data }) => {
           </tbody>
         </table>
 
-        <p style={{ marginTop: '1em' }}>
-          <button
-            type="submit"
-            style={{
-              padding: '6px 15px',
-              backgroundColor: '#38495e',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}
-          >
+        <p className="ug-archive__submit-row">
+          <button type="submit" className="ug-archive__btn">
             Submit
           </button>
         </p>

@@ -5,6 +5,7 @@ import React from 'react'
  *
  * Admin tool for viewing nodes stored in the tomb table after deletion.
  * Allows viewing details and provides resurrection links.
+ * Styles are in CSS classes (node-crypt__*)
  */
 const TheNodeCrypt = ({ data }) => {
   const {
@@ -29,43 +30,43 @@ const TheNodeCrypt = ({ data }) => {
   if (Boolean(viewing_coffin)) {
     return (
       <div className="node-crypt coffin-view">
-        <h2 style={{ textAlign: 'center' }}>
+        <h2 className="node-crypt__heading">
           <a href={`/?node_id=${node_id}`}>close the coffin</a>
         </h2>
 
         {Boolean(is_resurrected) && (
           <>
-            <h2 style={{ textAlign: 'center', color: 'green' }}>
+            <h2 className="node-crypt__heading node-crypt__heading--success">
               This node has already been resurrected!
             </h2>
-            <p style={{ textAlign: 'center' }}>
+            <p className="node-crypt__text-center">
               View it here: <a href={`/?node_id=${coffin_id}`}>{existing_title}</a>
             </p>
           </>
         )}
 
         {!Boolean(is_resurrected) && lab_id && (
-          <h2 style={{ textAlign: 'center' }}>
+          <h2 className="node-crypt__heading">
             <a href={`/?node_id=${lab_id}&olde2nodeid=${coffin_id}`}>RESURRECT</a>
           </h2>
         )}
 
         <p>items: {field_count}</p>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="node-crypt__coffin-table">
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Field</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Value</th>
+              <th className="node-crypt__coffin-th">Field</th>
+              <th className="node-crypt__coffin-th">Value</th>
             </tr>
           </thead>
           <tbody>
             {fields.map((field) => (
               <tr key={field.key}>
-                <td style={{ padding: '4px', verticalAlign: 'top' }}>
+                <td className="node-crypt__coffin-td">
                   <strong>{field.key}</strong>
                 </td>
-                <td style={{ padding: '4px' }}>
+                <td className="node-crypt__coffin-td--value">
                   {Boolean(field.is_node_id) ? (
                     <a href={`/?node_id=${field.value}`}>{field.resolved_title || field.value}</a>
                   ) : (
@@ -89,32 +90,32 @@ const TheNodeCrypt = ({ data }) => {
         nodes may live again.
       </p>
 
-      <table style={{ borderCollapse: 'collapse', border: '1px solid #ccc' }}>
+      <table className="node-crypt__list-table">
         <thead>
           <tr>
-            <th style={{ border: '1px solid #ccc', padding: '4px' }}>Node Title</th>
-            <th style={{ border: '1px solid #ccc', padding: '4px' }}>Type</th>
-            <th style={{ border: '1px solid #ccc', padding: '4px' }}>Author</th>
-            <th style={{ border: '1px solid #ccc', padding: '4px' }}>Killa</th>
+            <th className="node-crypt__list-th">Node Title</th>
+            <th className="node-crypt__list-th">Type</th>
+            <th className="node-crypt__list-th">Author</th>
+            <th className="node-crypt__list-th">Killa</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item) => (
             <tr key={item.node_id}>
-              <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+              <td className="node-crypt__list-td">
                 <a href={`/?node_id=${node_id}&opencoffin=${item.node_id}`}>{item.title}</a>
               </td>
-              <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+              <td className="node-crypt__list-td">
                 <a href={`/?node_id=${item.type_id}&lastnode_id=0`}>{item.type_title}</a>
               </td>
-              <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+              <td className="node-crypt__list-td">
                 {item.author_id ? (
                   <a href={`/?node_id=${item.author_id}&lastnode_id=0`}>{item.author_title}</a>
                 ) : (
                   'none'
                 )}
               </td>
-              <td style={{ border: '1px solid #ccc', padding: '4px' }}>
+              <td className="node-crypt__list-td">
                 {item.killa_id ? (
                   <a href={`/?node_id=${item.killa_id}&lastnode_id=0`}>{item.killa_title}</a>
                 ) : (
@@ -127,7 +128,7 @@ const TheNodeCrypt = ({ data }) => {
       </table>
 
       <p>number of items: {count}</p>
-      <p style={{ textAlign: 'right' }}><em>In pace requiescant.</em></p>
+      <p className="node-crypt__text-right"><em>In pace requiescant.</em></p>
     </div>
   )
 }

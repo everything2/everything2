@@ -313,34 +313,30 @@ describe('MostWanted', () => {
   })
 
   describe('Styling', () => {
-    test('table has correct styling', () => {
+    test('table has correct CSS classes', () => {
       const { container } = render(<MostWanted bounties={mockBounties} />)
       const table = container.querySelector('table')
-      expect(table).toHaveStyle({ width: '100%' })
-      expect(table).toHaveStyle({ fontSize: '12px' })
-      expect(table).toHaveStyle({ borderCollapse: 'collapse' })
+      expect(table).toHaveClass('most-wanted__table')
+      expect(table).toHaveClass('mytable')
     })
 
-    test('footer has correct styling', () => {
+    test('footer has correct CSS class', () => {
       const { container } = render(<MostWanted bounties={mockBounties} />)
       const footer = container.querySelector('p')
-      expect(footer).toHaveStyle({ fontSize: '11px' })
-      expect(footer).toHaveStyle({ marginTop: '8px' })
+      expect(footer).toHaveClass('most-wanted__footer')
     })
 
-    test('empty state message has correct styling', () => {
+    test('empty state message has correct CSS class', () => {
       const { container } = render(<MostWanted bounties={[]} />)
       const emptyMessage = container.querySelector('p')
-      expect(emptyMessage).toHaveStyle({ padding: '8px' })
-      expect(emptyMessage).toHaveStyle({ color: '#666' })
-      expect(emptyMessage).toHaveStyle({ fontSize: '12px' })
+      expect(emptyMessage).toHaveClass('most-wanted__empty')
     })
 
-    test('table headers have left alignment', () => {
+    test('table headers have correct CSS class', () => {
       const { container } = render(<MostWanted bounties={mockBounties} />)
       const headers = container.querySelectorAll('th')
       headers.forEach(header => {
-        expect(header).toHaveStyle({ textAlign: 'left' })
+        expect(header).toHaveClass('most-wanted__th')
       })
     })
   })

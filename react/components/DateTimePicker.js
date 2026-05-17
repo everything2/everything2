@@ -3,6 +3,7 @@ import { FaCalendarAlt, FaClock, FaTimes } from 'react-icons/fa'
 
 /**
  * DateTimePicker - Date and time picker component with calendar popup
+ * Styles in CSS: .date-time-picker__*
  *
  * Props:
  * - value: string in format "YYYY-MM-DD HH:MM:SS" or ISO format
@@ -189,9 +190,9 @@ const DateTimePicker = ({
   const displayValue = value || ''
 
   return (
-    <div ref={containerRef} style={styles.container}>
-      <div style={styles.inputWrapper}>
-        <FaCalendarAlt style={styles.icon} />
+    <div ref={containerRef} className="date-time-picker">
+      <div className="date-time-picker__wrapper">
+        <FaCalendarAlt className="date-time-picker__icon" />
         <input
           type="text"
           value={displayValue}
@@ -199,13 +200,13 @@ const DateTimePicker = ({
           onClick={() => !disabled && setIsOpen(true)}
           disabled={disabled}
           placeholder={placeholder}
-          style={styles.input}
+          className="date-time-picker__input"
         />
         {clearable && displayValue && !disabled && (
           <button
             type="button"
             onClick={handleClear}
-            style={styles.clearButton}
+            className="date-time-picker__clear-button"
             title="Clear"
           >
             <FaTimes />
@@ -214,25 +215,25 @@ const DateTimePicker = ({
       </div>
 
       {isOpen && !disabled && (
-        <div style={styles.dropdown}>
+        <div className="date-time-picker__dropdown">
           {/* Month navigation */}
-          <div style={styles.header}>
-            <button type="button" onClick={prevMonth} style={styles.navButton}>&lt;</button>
-            <span style={styles.monthYear}>
+          <div className="date-time-picker__header">
+            <button type="button" onClick={prevMonth} className="date-time-picker__nav-button">&lt;</button>
+            <span className="date-time-picker__month-year">
               {monthNames[viewDate.getMonth()]} {viewDate.getFullYear()}
             </span>
-            <button type="button" onClick={nextMonth} style={styles.navButton}>&gt;</button>
+            <button type="button" onClick={nextMonth} className="date-time-picker__nav-button">&gt;</button>
           </div>
 
           {/* Day names */}
-          <div style={styles.dayNames}>
+          <div className="date-time-picker__day-names">
             {dayNames.map(d => (
-              <div key={d} style={styles.dayName}>{d}</div>
+              <div key={d} className="date-time-picker__day-name">{d}</div>
             ))}
           </div>
 
           {/* Calendar grid */}
-          <div style={styles.calendarGrid}>
+          <div className="date-time-picker__calendar-grid">
             {calendarDays.map((day, idx) => {
               const isSelected = selectedDate &&
                 day === selectedDate.day &&
@@ -243,16 +244,18 @@ const DateTimePicker = ({
                 new Date().getMonth() === viewDate.getMonth() &&
                 new Date().getFullYear() === viewDate.getFullYear()
 
+              const cellClasses = [
+                'date-time-picker__day-cell',
+                day ? 'date-time-picker__day-cell--active' : '',
+                isSelected ? 'date-time-picker__day-cell--selected' : '',
+                isToday && !isSelected ? 'date-time-picker__day-cell--today' : ''
+              ].filter(Boolean).join(' ')
+
               return (
                 <div
                   key={idx}
                   onClick={() => handleDayClick(day)}
-                  style={{
-                    ...styles.dayCell,
-                    ...(day ? styles.dayCellActive : {}),
-                    ...(isSelected ? styles.dayCellSelected : {}),
-                    ...(isToday && !isSelected ? styles.dayCellToday : {})
-                  }}
+                  className={cellClasses}
                 >
                   {day}
                 </div>
@@ -262,46 +265,46 @@ const DateTimePicker = ({
 
           {/* Time picker */}
           {showTime && (
-            <div style={styles.timeSection}>
-              <FaClock style={styles.timeIcon} />
+            <div className="date-time-picker__time-section">
+              <FaClock className="date-time-picker__time-icon" />
               <input
                 type="number"
                 min="0"
                 max="23"
                 value={selectedDate?.hour ?? ''}
                 onChange={(e) => handleTimeChange('hour', e.target.value)}
-                style={styles.timeInput}
+                className="date-time-picker__time-input"
                 placeholder="HH"
               />
-              <span style={styles.timeSeparator}>:</span>
+              <span className="date-time-picker__time-separator">:</span>
               <input
                 type="number"
                 min="0"
                 max="59"
                 value={selectedDate?.minute ?? ''}
                 onChange={(e) => handleTimeChange('minute', e.target.value)}
-                style={styles.timeInput}
+                className="date-time-picker__time-input"
                 placeholder="MM"
               />
-              <span style={styles.timeSeparator}>:</span>
+              <span className="date-time-picker__time-separator">:</span>
               <input
                 type="number"
                 min="0"
                 max="59"
                 value={selectedDate?.second ?? ''}
                 onChange={(e) => handleTimeChange('second', e.target.value)}
-                style={styles.timeInput}
+                className="date-time-picker__time-input"
                 placeholder="SS"
               />
             </div>
           )}
 
           {/* Quick actions */}
-          <div style={styles.actions}>
-            <button type="button" onClick={handleSetNow} style={styles.actionButton}>
+          <div className="date-time-picker__actions">
+            <button type="button" onClick={handleSetNow} className="date-time-picker__action-button">
               Now
             </button>
-            <button type="button" onClick={() => setIsOpen(false)} style={styles.actionButton}>
+            <button type="button" onClick={() => setIsOpen(false)} className="date-time-picker__action-button">
               Done
             </button>
           </div>
@@ -309,161 +312,6 @@ const DateTimePicker = ({
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    position: 'relative'
-  },
-  inputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  icon: {
-    position: 'absolute',
-    left: 10,
-    color: '#507898',
-    fontSize: 14,
-    pointerEvents: 'none'
-  },
-  input: {
-    width: '100%',
-    padding: '8px 32px 8px 32px',
-    fontSize: 14,
-    border: '1px solid #507898',
-    borderRadius: 4,
-    boxSizing: 'border-box'
-  },
-  clearButton: {
-    position: 'absolute',
-    right: 8,
-    background: 'none',
-    border: 'none',
-    color: '#999',
-    cursor: 'pointer',
-    padding: 4,
-    fontSize: 12,
-    display: 'flex',
-    alignItems: 'center'
-  },
-  dropdown: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    backgroundColor: '#fff',
-    border: '1px solid #507898',
-    borderRadius: 4,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    zIndex: 1000,
-    padding: 12,
-    marginTop: 4,
-    minWidth: 280
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12
-  },
-  navButton: {
-    background: 'none',
-    border: '1px solid #ddd',
-    borderRadius: 4,
-    padding: '4px 10px',
-    cursor: 'pointer',
-    fontSize: 14,
-    color: '#38495e'
-  },
-  monthYear: {
-    fontWeight: 'bold',
-    color: '#38495e',
-    fontSize: 14
-  },
-  dayNames: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(7, 1fr)',
-    gap: 2,
-    marginBottom: 4
-  },
-  dayName: {
-    textAlign: 'center',
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#507898',
-    padding: 4
-  },
-  calendarGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(7, 1fr)',
-    gap: 2
-  },
-  dayCell: {
-    textAlign: 'center',
-    padding: 8,
-    fontSize: 14,
-    borderRadius: 4,
-    minHeight: 32,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  dayCellActive: {
-    cursor: 'pointer',
-    color: '#38495e'
-  },
-  dayCellSelected: {
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    fontWeight: 'bold'
-  },
-  dayCellToday: {
-    backgroundColor: '#e8f4f8',
-    fontWeight: 'bold'
-  },
-  timeSection: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    marginTop: 12,
-    paddingTop: 12,
-    borderTop: '1px solid #eee'
-  },
-  timeIcon: {
-    color: '#507898',
-    marginRight: 8,
-    fontSize: 14
-  },
-  timeInput: {
-    width: 45,
-    padding: '6px 4px',
-    fontSize: 14,
-    border: '1px solid #ddd',
-    borderRadius: 4,
-    textAlign: 'center'
-  },
-  timeSeparator: {
-    fontWeight: 'bold',
-    color: '#38495e'
-  },
-  actions: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: 8,
-    marginTop: 12,
-    paddingTop: 8,
-    borderTop: '1px solid #eee'
-  },
-  actionButton: {
-    padding: '6px 12px',
-    fontSize: 12,
-    backgroundColor: '#507898',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer'
-  }
 }
 
 export default DateTimePicker

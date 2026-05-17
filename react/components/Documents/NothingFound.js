@@ -6,6 +6,10 @@ import { InContentAd } from '../Layout/GoogleAds';
 // Show an ad every N items in the best entries list (for guests only)
 const AD_INTERVAL = 4;
 
+/**
+ * NothingFound - Search results when nothing matches
+ * Styles in CSS: .nothing-found__*
+ */
 const NothingFound = ({ data, user }) => {
   const {
     was_nuke,
@@ -30,7 +34,7 @@ const NothingFound = ({ data, user }) => {
   // Handle successful nuke
   if (was_nuke) {
     return (
-      <div style={styles.container}>
+      <div className="nothing-found">
         <p>Oh good, there's nothing there!</p>
         <p>(It looks like you nuked it.)</p>
       </div>
@@ -40,18 +44,18 @@ const NothingFound = ({ data, user }) => {
   // Handle no search term
   if (!search_term) {
     return (
-      <div style={styles.container}>
+      <div className="nothing-found">
         <p>Hmm... that's odd. There's nothing there!</p>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
+    <div className="nothing-found">
       <p>Sorry, but nothing matching "{search_term}" was found.</p>
 
       {is_url && external_link && (
-        <p style={styles.urlNote}>
+        <p className="nothing-found__url-note">
           (this appears to be an external link:{' '}
           <a href={external_link} target="_blank" rel="noopener noreferrer">
             {external_link}
@@ -60,7 +64,7 @@ const NothingFound = ({ data, user }) => {
       )}
 
       {show_tin_opener && !tinopener_active && (
-        <p style={styles.smallNote}>
+        <p className="nothing-found__small-note">
           <small>
             You could{' '}
             <a href={`${window.location.pathname}${window.location.search}&tinopener=1`}>
@@ -72,7 +76,7 @@ const NothingFound = ({ data, user }) => {
       )}
 
       {show_tin_opener && tinopener_active && tin_opener_message && (
-        <p style={styles.smallNote}>
+        <p className="nothing-found__small-note">
           <small>({tin_opener_message})</small>
         </p>
       )}
@@ -80,7 +84,7 @@ const NothingFound = ({ data, user }) => {
       {/* Guest user message */}
       {is_guest ? (
         <>
-          <p style={styles.guestMessage}>
+          <p className="nothing-found__guest-message">
             If you <a href="/?node=login">Log in</a> you could create a "{createValue}" node.
             If you don't already have an account, you can{' '}
             <a href="/?node=Sign%20Up">register here</a>.
@@ -88,19 +92,19 @@ const NothingFound = ({ data, user }) => {
 
           {/* Best entries for guests */}
           {best_entries.length > 0 && (
-            <div style={styles.bestEntriesSection}>
-              <h3 style={styles.bestEntriesTitle}>
+            <div className="nothing-found__best-entries-section">
+              <h3 className="nothing-found__best-entries-title">
                 We couldn't find what you're looking for, but here are some of our best entries from the past few months:
               </h3>
-              <ul style={styles.bestEntriesList}>
+              <ul className="nothing-found__best-entries-list">
                 {best_entries.map((entry, index) => (
                   <React.Fragment key={entry.writeup_id}>
-                    <li style={styles.bestEntryItem}>
-                      <a href={`/node/${entry.node_id}?lastnode_id=0`} style={styles.bestEntryLink}>
+                    <li className="nothing-found__best-entry-item">
+                      <a href={`/node/${entry.node_id}?lastnode_id=0`} className="nothing-found__best-entry-link">
                         {entry.title}
                       </a>
                       {entry.author && (
-                        <span style={styles.bestEntryAuthor}>
+                        <span className="nothing-found__best-entry-author">
                           {' '}by{' '}
                           <a href={`/user/${encodeURIComponent(entry.author.title)}`}>
                             {entry.author.title}
@@ -108,12 +112,12 @@ const NothingFound = ({ data, user }) => {
                         </span>
                       )}
                       {entry.excerpt && (
-                        <p style={styles.bestEntryExcerpt}>{decodeHtmlEntities(entry.excerpt)}</p>
+                        <p className="nothing-found__best-entry-excerpt">{decodeHtmlEntities(entry.excerpt)}</p>
                       )}
                     </li>
                     {/* Show ad every AD_INTERVAL items */}
                     {(index + 1) % AD_INTERVAL === 0 && index < best_entries.length - 1 && (
-                      <li style={styles.adItem}>
+                      <li className="nothing-found__ad-item">
                         <InContentAd show={true} />
                       </li>
                     )}
@@ -132,8 +136,8 @@ const NothingFound = ({ data, user }) => {
           <p>Since we didn't find what you were looking for, you can search again, or create a new draft or e2node (page):</p>
 
           {/* Search again form */}
-          <form method="get" action="/" style={styles.form}>
-            <fieldset style={styles.fieldset}>
+          <form method="get" action="/" className="nothing-found__form">
+            <fieldset className="nothing-found__fieldset">
               <legend>Search again</legend>
               <input
                 type="text"
@@ -142,15 +146,15 @@ const NothingFound = ({ data, user }) => {
                 onChange={(e) => setSearchValue(e.target.value)}
                 size="50"
                 maxLength="100"
-                style={styles.textInput}
+                className="nothing-found__text-input"
               />
               {' '}
               <input type="hidden" name="lastnode_id" value={lastnode_id} />
-              <button type="submit" name="searchy" value="search" style={styles.button}>
+              <button type="submit" name="searchy" value="search" className="nothing-found__button">
                 search
               </button>
               <br />
-              <label style={styles.checkbox}>
+              <label className="nothing-found__checkbox">
                 <input
                   type="checkbox"
                   name="soundex"
@@ -160,7 +164,7 @@ const NothingFound = ({ data, user }) => {
                 />
                 {' '}Near Matches{' '}
               </label>
-              <label style={styles.checkbox}>
+              <label className="nothing-found__checkbox">
                 <input
                   type="checkbox"
                   name="match_all"
@@ -174,8 +178,8 @@ const NothingFound = ({ data, user }) => {
           </form>
 
           {/* Create new form */}
-          <form method="get" action="/" style={styles.form}>
-            <fieldset style={styles.fieldset}>
+          <form method="get" action="/" className="nothing-found__form">
+            <fieldset className="nothing-found__fieldset">
               <legend>Create new...</legend>
               <small>You can correct the spelling or capitalization here.</small>
               <br />
@@ -186,16 +190,16 @@ const NothingFound = ({ data, user }) => {
                 onChange={(e) => setCreateValue(e.target.value)}
                 size="50"
                 maxLength="100"
-                style={styles.textInput}
+                className="nothing-found__text-input"
               />
               <input type="hidden" name="lastnode_id" value={lastnode_id} />
               <input type="hidden" name="op" value="new" />
               {' '}
-              <button type="submit" name="type" value="draft" style={styles.button}>
+              <button type="submit" name="type" value="draft" className="nothing-found__button">
                 New draft
               </button>
               {' '}
-              <button type="submit" name="type" value="e2node" style={styles.button}>
+              <button type="submit" name="type" value="e2node" className="nothing-found__button">
                 New node
               </button>
             </fieldset>
@@ -204,7 +208,7 @@ const NothingFound = ({ data, user }) => {
           <AdminCreateNodeLink user={user} searchTerm={createValue} />
 
           {is_editor && (
-            <p style={styles.editorNote}>
+            <p className="nothing-found__editor-note">
               If you wish to exercise your Editorial Power to create a document[nodetype], create a draft,
               click on the 'Advanced option(s)' button, and then use the nice shiny 'Publish as document'
               button provided for this purpose.
@@ -214,108 +218,6 @@ const NothingFound = ({ data, user }) => {
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  urlNote: {
-    fontSize: '14px',
-    color: '#507898',
-    marginTop: '10px'
-  },
-  smallNote: {
-    fontSize: '14px',
-    color: '#507898'
-  },
-  guestMessage: {
-    marginTop: '20px'
-  },
-  form: {
-    marginTop: '15px',
-    marginBottom: '15px'
-  },
-  fieldset: {
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    padding: '15px',
-    background: '#f8f9f9'
-  },
-  textInput: {
-    padding: '6px 10px',
-    fontSize: '14px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    marginTop: '10px',
-    marginBottom: '10px'
-  },
-  button: {
-    padding: '6px 12px',
-    background: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px'
-  },
-  checkbox: {
-    marginRight: '15px',
-    fontSize: '14px'
-  },
-  editorNote: {
-    marginTop: '15px',
-    fontSize: '14px',
-    color: '#507898'
-  },
-  bestEntriesSection: {
-    marginTop: '30px',
-    paddingTop: '20px',
-    borderTop: '1px solid #dee2e6'
-  },
-  bestEntriesTitle: {
-    fontSize: '16px',
-    fontWeight: 'normal',
-    color: '#507898',
-    marginBottom: '15px'
-  },
-  bestEntriesList: {
-    listStyleType: 'none',
-    padding: 0,
-    margin: 0
-  },
-  bestEntryItem: {
-    marginBottom: '16px',
-    paddingBottom: '16px',
-    borderBottom: '1px solid #eee'
-  },
-  bestEntryLink: {
-    fontSize: '16px',
-    fontWeight: '500',
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  bestEntryAuthor: {
-    fontSize: '14px',
-    color: '#666'
-  },
-  bestEntryExcerpt: {
-    fontSize: '14px',
-    color: '#555',
-    marginTop: '6px',
-    marginBottom: 0,
-    lineHeight: '1.5'
-  },
-  adItem: {
-    listStyleType: 'none',
-    marginBottom: '16px',
-    paddingBottom: '16px'
-  }
 };
 
 export default NothingFound;

@@ -2,6 +2,7 @@ import React from 'react'
 
 /**
  * FeedEdb - Admin tool for simulating EDB borg status.
+ * Styles in CSS: .feed-edb__*
  * Allows admins to test/debug borg functionality.
  */
 const FeedEdb = ({ data }) => {
@@ -17,29 +18,29 @@ const FeedEdb = ({ data }) => {
 
   if (!is_admin) {
     return (
-      <div style={styles.container}>
+      <div className="feed-edb">
         <p>{message}</p>
       </div>
     )
   }
 
   return (
-    <div style={styles.container}>
+    <div className="feed-edb">
       <p>
         <strong>Your current borged count:</strong> {current_count}
       </p>
 
       {action_taken ? (
-        <div style={styles.actionResult}>
+        <div className="feed-edb__action-result">
           <p>{message}</p>
           <p>
-            <a href={`?node_id=${nodeId}`} style={styles.link}>
+            <a href={`?node_id=${nodeId}`} className="feed-edb__link">
               EDB still hungry
             </a>
           </p>
         </div>
       ) : (
-        <div style={styles.instructions}>
+        <div className="feed-edb__instructions">
           <p>
             This is mainly for the 3 of us that need to play with EDB.
           </p>
@@ -53,14 +54,14 @@ const FeedEdb = ({ data }) => {
           </p>
           <p>Argh, I give up.</p>
 
-          <div style={styles.optionsRow}>
+          <div className="feed-edb__options-row">
             <code>numborgings = ( </code>
             {borg_options.map((opt, idx) => (
               <span key={opt}>
                 {idx > 0 && ', '}
                 <a
                   href={`?node_id=${nodeId}&numborgings=${opt}&lastnode_id=0`}
-                  style={styles.optionLink}
+                  className="feed-edb__option-link"
                 >
                   {opt}
                 </a>
@@ -72,40 +73,6 @@ const FeedEdb = ({ data }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#111'
-  },
-  actionResult: {
-    marginTop: '15px',
-    padding: '10px',
-    backgroundColor: '#f8f9f9',
-    borderRadius: '4px'
-  },
-  instructions: {
-    marginTop: '15px'
-  },
-  optionsRow: {
-    marginTop: '15px',
-    fontFamily: 'monospace'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  optionLink: {
-    color: '#4060b0',
-    textDecoration: 'none',
-    padding: '2px 6px',
-    backgroundColor: '#f0f0f0',
-    borderRadius: '3px',
-    margin: '0 2px'
-  }
 }
 
 export default FeedEdb

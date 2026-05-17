@@ -145,21 +145,10 @@ const UsergroupDescriptionEditor = ({
   }
 
   return (
-    <div className="usergroup-description-editor" style={{
-      backgroundColor: '#f8f9fa',
-      border: '1px solid #dee2e6',
-      borderRadius: '8px',
-      padding: '16px',
-      marginBottom: '20px'
-    }}>
+    <div className="usergroup-description-editor">
       {/* Header with title and mode toggle */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '12px'
-      }}>
-        <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: '#495057' }}>
+      <div className="usergroup-description-editor__header">
+        <h4 className="usergroup-description-editor__title">
           Edit Group Description
         </h4>
         <EditorModeToggle
@@ -171,29 +160,16 @@ const UsergroupDescriptionEditor = ({
 
       {/* Error message */}
       {errorMessage && (
-        <div style={{
-          padding: '8px 12px',
-          marginBottom: '12px',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '4px',
-          color: '#721c24',
-          fontSize: '13px'
-        }}>
+        <div className="usergroup-description-editor__error">
           {errorMessage}
         </div>
       )}
 
       {/* Editor content */}
       {editorMode === 'rich' ? (
-        <div style={{
-          border: '1px solid #ced4da',
-          borderRadius: '4px',
-          backgroundColor: '#fff',
-          overflow: 'hidden'
-        }}>
+        <div className="usergroup-description-editor__rich-wrapper">
           <MenuBar editor={editor} />
-          <div className="e2-editor-wrapper" style={{ padding: '12px' }}>
+          <div className="e2-editor-wrapper usergroup-description-editor__rich-content">
             <EditorContent editor={editor} />
           </div>
         </div>
@@ -203,65 +179,27 @@ const UsergroupDescriptionEditor = ({
           onChange={handleHtmlChange}
           placeholder="Enter HTML content here..."
           aria-label="Description content (HTML)"
-          style={{
-            width: '100%',
-            minHeight: '150px',
-            fontFamily: 'monospace',
-            fontSize: '13px',
-            padding: '12px',
-            border: '1px solid #ced4da',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            color: '#212529',
-            lineHeight: '1.5',
-            resize: 'vertical',
-            boxSizing: 'border-box'
-          }}
+          className="usergroup-description-editor__textarea"
           spellCheck={false}
         />
       )}
 
       {/* Footer with buttons */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        gap: '10px',
-        marginTop: '12px'
-      }}>
+      <div className="usergroup-description-editor__footer">
         {saveStatus === 'saving' && (
-          <span style={{ fontSize: '12px', color: '#6c757d' }}>Saving...</span>
+          <span className="usergroup-description-editor__status">Saving...</span>
         )}
         <button
           onClick={handleCancel}
           disabled={saveStatus === 'saving'}
-          style={{
-            padding: '8px 16px',
-            fontSize: '13px',
-            border: '1px solid #6c757d',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            color: '#6c757d',
-            cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
-            opacity: saveStatus === 'saving' ? 0.6 : 1
-          }}
+          className="usergroup-description-editor__cancel-btn"
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={saveStatus === 'saving'}
-          style={{
-            padding: '8px 16px',
-            fontSize: '13px',
-            border: '1px solid #28a745',
-            borderRadius: '4px',
-            backgroundColor: '#28a745',
-            color: '#fff',
-            cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
-            opacity: saveStatus === 'saving' ? 0.6 : 1,
-            fontWeight: '500'
-          }}
+          className="usergroup-description-editor__save-btn"
         >
           {saveStatus === 'saving' ? 'Saving...' : 'Save Description'}
         </button>

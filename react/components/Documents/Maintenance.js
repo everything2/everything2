@@ -25,103 +25,40 @@ const Maintenance = ({ data, user }) => {
     is_delegated
   } = maintenance
 
-  const sectionStyle = {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '6px',
-    border: '1px solid #dee2e6'
-  }
-
-  const headerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '10px',
-    color: '#38495e',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  }
-
-  const valueStyle = {
-    color: '#495057',
-    fontSize: '13px'
-  }
-
-  const emptyStyle = {
-    color: '#6c757d',
-    fontStyle: 'italic',
-    fontSize: '13px'
-  }
-
-  const codePreviewStyle = {
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    backgroundColor: '#1e1e1e',
-    color: '#d4d4d4',
-    padding: '12px',
-    borderRadius: '4px',
-    overflow: 'auto',
-    maxHeight: '300px',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all'
-  }
-
-  const badgeStyle = {
-    display: 'inline-block',
-    padding: '3px 8px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    borderRadius: '3px',
-    fontSize: '12px',
-    fontWeight: '500',
-    textTransform: 'uppercase'
-  }
-
-  // Color-code maintaintype
-  const getMaintainTypeColor = (type) => {
+  // Get CSS modifier class for maintaintype
+  const getMaintainTypeBadgeClass = (type) => {
+    const baseClass = 'maintenance__badge'
     switch (type?.toLowerCase()) {
-      case 'create': return '#28a745'
-      case 'update': return '#007bff'
-      case 'delete': return '#dc3545'
-      default: return '#6c757d'
+      case 'create': return `${baseClass} maintenance__badge--create`
+      case 'update': return `${baseClass} maintenance__badge--update`
+      case 'delete': return `${baseClass} maintenance__badge--delete`
+      default: return baseClass
     }
   }
 
   return (
     <div className="maintenance-display">
       {/* Quick Actions */}
-      <div style={{ marginBottom: '20px' }}>
+      <div className="dev-display__actions">
         <a
           href={`/title/List%20Nodes%20of%20Type?setvars_ListNodesOfType_Type=${maintenance.type_nodetype || 17}`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 16px',
-            backgroundColor: '#4060b0',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontSize: '13px',
-            fontWeight: '500'
-          }}
+          className="dev-display__action-btn"
         >
           <FaList size={12} /> List All Maintenance Nodes
         </a>
       </div>
 
       {/* About Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="dev-display__section">
+        <h4 className="dev-display__header dev-display__header--section">
           <FaInfoCircle size={16} /> About Maintenance Nodes
         </h4>
-        <p style={{ ...valueStyle, lineHeight: '1.6', margin: 0 }}>
+        <p className="dev-display__text dev-display__text--description">
           Maintenance nodes define automated operations that run during node lifecycle events.
           They contain Perl code that executes when nodes of a specific type are created,
           updated, or deleted.
           {is_delegated && (
-            <span style={{ display: 'block', marginTop: '10px', color: '#f59e0b' }}>
+            <span className="dev-display__delegated-warning">
               <strong>This maintenance is delegated</strong> - its implementation has been moved
               to the codebase. To modify it, submit a pull request on GitHub.
             </span>
@@ -130,36 +67,36 @@ const Maintenance = ({ data, user }) => {
       </div>
 
       {/* Configuration Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="dev-display__section">
+        <h4 className="dev-display__header dev-display__header--section">
           <FaCogs size={16} /> Configuration
         </h4>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="dev-display__grid">
           <div>
-            <div style={headerStyle}>
+            <div className="dev-display__header">
               <FaWrench size={12} /> Maintains Nodetype
             </div>
-            <div style={valueStyle}>
+            <div className="dev-display__text">
               {maintain_nodetype ? (
                 <LinkNode nodeId={maintain_nodetype} title={maintain_nodetype_title || `Nodetype ${maintain_nodetype}`} />
               ) : (
-                <span style={emptyStyle}>None</span>
+                <span className="dev-display__text--empty">None</span>
               )}
             </div>
           </div>
 
           <div>
-            <div style={headerStyle}>
+            <div className="dev-display__header">
               <FaCogs size={12} /> Operation Type
             </div>
-            <div style={valueStyle}>
+            <div className="dev-display__text">
               {maintaintype ? (
-                <span style={{ ...badgeStyle, backgroundColor: getMaintainTypeColor(maintaintype) }}>
+                <span className={getMaintainTypeBadgeClass(maintaintype)}>
                   {maintaintype}
                 </span>
               ) : (
-                <span style={emptyStyle}>Not specified</span>
+                <span className="dev-display__text--empty">Not specified</span>
               )}
             </div>
           </div>
@@ -168,11 +105,11 @@ const Maintenance = ({ data, user }) => {
 
       {/* Code Preview Section (Developer only) */}
       {isDeveloper && code_preview && (
-        <div style={sectionStyle}>
-          <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+        <div className="dev-display__section">
+          <h4 className="dev-display__header dev-display__header--section">
             <FaCode size={16} /> Code Preview
           </h4>
-          <div style={codePreviewStyle}>
+          <div className="dev-display__code-preview">
             {code_preview}
           </div>
         </div>

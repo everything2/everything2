@@ -1,135 +1,12 @@
 import React, { useState, useCallback } from 'react'
 
-const styles = {
-  container: {
-    maxWidth: '700px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.5rem',
-  },
-  intro: {
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-    marginBottom: '20px',
-    lineHeight: '1.6',
-  },
-  username: {
-    fontWeight: 'bold',
-    marginBottom: '15px',
-    fontSize: '1.1rem',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginBottom: '20px',
-  },
-  th: {
-    textAlign: 'left',
-    padding: '10px',
-    border: '1px solid silver',
-    backgroundColor: '#f8f9fa',
-  },
-  td: {
-    padding: '10px',
-    border: '1px solid silver',
-  },
-  tdRight: {
-    padding: '10px',
-    border: '1px solid silver',
-    textAlign: 'right',
-  },
-  oddRow: {
-    backgroundColor: '#ffffff',
-  },
-  evenRow: {
-    backgroundColor: '#f8f9fa',
-  },
-  bonusBox: {
-    padding: '15px',
-    backgroundColor: '#d4edda',
-    border: '1px solid #c3e6cb',
-    borderRadius: '8px',
-    marginBottom: '20px',
-  },
-  ineligible: {
-    padding: '15px',
-    backgroundColor: '#f8d7da',
-    border: '1px solid #f5c6cb',
-    borderRadius: '8px',
-    marginBottom: '20px',
-  },
-  form: {
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffeeba',
-    borderRadius: '8px',
-  },
-  checkbox: {
-    marginRight: '10px',
-  },
-  label: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    marginBottom: '15px',
-    cursor: 'pointer',
-  },
-  labelText: {
-    flex: 1,
-    lineHeight: '1.5',
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  buttonDisabled: {
-    backgroundColor: '#999',
-    cursor: 'not-allowed',
-  },
-  error: {
-    padding: '10px',
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    borderRadius: '4px',
-    marginBottom: '15px',
-  },
-  success: {
-    padding: '15px',
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    borderRadius: '8px',
-    marginBottom: '15px',
-  },
-  adminBox: {
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#cce5ff',
-    borderRadius: '8px',
-  },
-  input: {
-    padding: '8px',
-    fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    marginRight: '10px',
-  },
-}
-
+/**
+ * Recalculate XP - XP recalculation tool
+ * Styles in CSS: .recalculate-xp__*
+ *
+ * Converts user XP total to the new system calculation.
+ * Excess XP is converted to GP bonus.
+ */
 const RecalculateXp = ({ data }) => {
   const xpData = data?.recalculateXp || {}
   const {
@@ -231,11 +108,11 @@ const RecalculateXp = ({ data }) => {
   // Show success result
   if (result) {
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Recalculate XP</h1>
+      <div className="recalculate-xp">
+        <div className="recalculate-xp__header">
+          <h1 className="recalculate-xp__title">Recalculate XP</h1>
         </div>
-        <div style={styles.success}>
+        <div className="recalculate-xp__success">
           <p><strong>{result.message}</strong></p>
           <p>You now have <strong>{result.newXP} XP</strong>
           {result.gpBonus > 0 && (
@@ -247,12 +124,12 @@ const RecalculateXp = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Recalculate XP</h1>
+    <div className="recalculate-xp">
+      <div className="recalculate-xp__header">
+        <h1 className="recalculate-xp__title">Recalculate XP</h1>
       </div>
 
-      <div style={styles.intro}>
+      <div className="recalculate-xp__intro">
         <p>This tool converts your current XP total to the XP total you would have
         if the new system had been in place since the start of your time as a noder.
         Any excess XP will be converted into GP.</p>
@@ -260,29 +137,25 @@ const RecalculateXp = ({ data }) => {
         Each user can only recalculate their XP one time.</p>
       </div>
 
-      {error && <div style={styles.error}>{error}</div>}
+      {error && <div className="recalculate-xp__error">{error}</div>}
 
       {/* Admin lookup */}
       {isAdmin && (
-        <div style={styles.adminBox}>
+        <div className="recalculate-xp__admin-box">
           <strong>Admin: Look up another user</strong>
-          <div style={{ marginTop: '10px' }}>
+          <div className="recalculate-xp__admin-row">
             <input
               type="text"
               value={targetUsername}
               onChange={(e) => setTargetUsername(e.target.value)}
               placeholder="Username"
-              style={styles.input}
+              className="recalculate-xp__input"
               disabled={statsLoading}
             />
             <button
               onClick={handleLookup}
               disabled={statsLoading || !targetUsername.trim()}
-              style={{
-                ...styles.button,
-                ...(statsLoading || !targetUsername.trim() ? styles.buttonDisabled : {}),
-                padding: '8px 15px',
-              }}
+              className={`recalculate-xp__button recalculate-xp__lookup-button ${statsLoading || !targetUsername.trim() ? 'recalculate-xp__button--disabled' : ''}`}
             >
               {statsLoading ? 'Looking up...' : 'Look Up'}
             </button>
@@ -293,35 +166,35 @@ const RecalculateXp = ({ data }) => {
       {/* Stats display */}
       {displayStats.username && (
         <>
-          <div style={styles.username}>User: {displayStats.username}</div>
+          <div className="recalculate-xp__username">User: {displayStats.username}</div>
 
-          <table style={styles.table}>
+          <table className="recalculate-xp__table">
             <tbody>
-              <tr style={styles.oddRow}>
-                <td style={styles.td}>Current XP:</td>
-                <td style={styles.tdRight}>{displayStats.currentXP}</td>
+              <tr className="recalculate-xp__row--odd">
+                <td className="recalculate-xp__td">Current XP:</td>
+                <td className="recalculate-xp__td--right">{displayStats.currentXP}</td>
               </tr>
-              <tr style={styles.evenRow}>
-                <td style={styles.td}>Writeups:</td>
-                <td style={styles.tdRight}>{displayStats.writeupCount}</td>
+              <tr className="recalculate-xp__row--even">
+                <td className="recalculate-xp__td">Writeups:</td>
+                <td className="recalculate-xp__td--right">{displayStats.writeupCount}</td>
               </tr>
-              <tr style={styles.oddRow}>
-                <td style={styles.td}>Upvotes Received:</td>
-                <td style={styles.tdRight}>{displayStats.upvotesReceived}</td>
+              <tr className="recalculate-xp__row--odd">
+                <td className="recalculate-xp__td">Upvotes Received:</td>
+                <td className="recalculate-xp__td--right">{displayStats.upvotesReceived}</td>
               </tr>
-              <tr style={styles.evenRow}>
-                <td style={styles.td}>C!s Received:</td>
-                <td style={styles.tdRight}>{displayStats.coolsReceived}</td>
+              <tr className="recalculate-xp__row--even">
+                <td className="recalculate-xp__td">C!s Received:</td>
+                <td className="recalculate-xp__td--right">{displayStats.coolsReceived}</td>
               </tr>
-              <tr style={styles.oddRow}>
-                <td style={styles.td}><strong>Recalculated XP:</strong></td>
-                <td style={styles.tdRight}><strong>{displayStats.recalculatedXP}</strong></td>
+              <tr className="recalculate-xp__row--odd">
+                <td className="recalculate-xp__td"><strong>Recalculated XP:</strong></td>
+                <td className="recalculate-xp__td--right"><strong>{displayStats.recalculatedXP}</strong></td>
               </tr>
             </tbody>
           </table>
 
           {displayStats.gpBonus > 0 && (
-            <div style={styles.bonusBox}>
+            <div className="recalculate-xp__bonus-box">
               <strong>Recalculation Bonus!</strong> Your current XP is greater than your recalculated XP,
               so if you choose to recalculate you will be awarded a one-time bonus of{' '}
               <strong>{displayStats.gpBonus} GP!</strong>
@@ -329,30 +202,27 @@ const RecalculateXp = ({ data }) => {
           )}
 
           {!displayStats.canRecalculate ? (
-            <div style={styles.ineligible}>
+            <div className="recalculate-xp__ineligible">
               <strong>Not Eligible:</strong> {displayStats.ineligibleReason}
             </div>
           ) : (
-            <div style={styles.form}>
-              <label style={styles.label}>
+            <div className="recalculate-xp__form">
+              <label className="recalculate-xp__label">
                 <input
                   type="checkbox"
                   checked={confirmed}
                   onChange={(e) => setConfirmed(e.target.checked)}
-                  style={styles.checkbox}
+                  className="recalculate-xp__checkbox"
                   disabled={loading}
                 />
-                <span style={styles.labelText}>
+                <span className="recalculate-xp__label-text">
                   I understand that recalculating my stats is permanent, and that I can never go back once I have done so.
                 </span>
               </label>
               <button
                 onClick={handleRecalculate}
                 disabled={loading || !confirmed}
-                style={{
-                  ...styles.button,
-                  ...(loading || !confirmed ? styles.buttonDisabled : {}),
-                }}
+                className={`recalculate-xp__button ${loading || !confirmed ? 'recalculate-xp__button--disabled' : ''}`}
               >
                 {loading ? 'Recalculating...' : 'Recalculate!'}
               </button>

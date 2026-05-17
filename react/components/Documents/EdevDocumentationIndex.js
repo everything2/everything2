@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 
+/**
+ * EdevDocumentationIndex - Developer documentation index page
+ *
+ * Shows list of edev documentation and allows developers to create new docs.
+ * Styles are in CSS classes (edev-docs__*)
+ */
 export default function EdevDocumentationIndex({ data }) {
   const { docs = [], is_developer } = data;
   const [newDocTitle, setNewDocTitle] = useState('');
@@ -34,60 +40,22 @@ export default function EdevDocumentationIndex({ data }) {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h2 style={{
-        color: '#38495e',
-        borderBottom: '2px solid #4060b0',
-        paddingBottom: '10px',
-        marginBottom: '20px'
-      }}>
+    <div className="edev-docs">
+      <h2 className="edev-docs__heading">
         Edev Documentation Index
       </h2>
 
       {docs.length === 0 ? (
-        <p style={{
-          fontStyle: 'italic',
-          color: '#666',
-          padding: '20px',
-          backgroundColor: '#f8f9f9',
-          borderRadius: '4px',
-          textAlign: 'center'
-        }}>
+        <p className="edev-docs__empty">
           Looks pretty lonely...
         </p>
       ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '12px',
-          marginBottom: '30px'
-        }}>
+        <div className="edev-docs__grid">
           {docs.map((doc) => (
             <a
               key={doc.node_id}
               href={`/title/${encodeURIComponent(doc.title)}?node_id=${doc.node_id}`}
-              style={{
-                padding: '12px 16px',
-                backgroundColor: '#f8f9f9',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                textDecoration: 'none',
-                color: '#4060b0',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#e8f4f8';
-                e.currentTarget.style.borderColor = '#4060b0';
-                e.currentTarget.style.transform = 'translateX(4px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f8f9f9';
-                e.currentTarget.style.borderColor = '#ddd';
-                e.currentTarget.style.transform = 'translateX(0)';
-              }}
+              className="edev-docs__doc-link"
             >
               <svg
                 stroke="currentColor"
@@ -97,32 +65,19 @@ export default function EdevDocumentationIndex({ data }) {
                 height="16"
                 width="16"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ flexShrink: 0, color: '#507898' }}
+                className="edev-docs__doc-icon"
               >
                 <path d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm64 236c0 6.6-5.4 12-12 12H108c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12v8zm0-64c0 6.6-5.4 12-12 12H108c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12v8zm0-72v8c0 6.6-5.4 12-12 12H108c-6.6 0-12-5.4-12-12v-8c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm96-114.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"></path>
               </svg>
-              <span style={{ fontWeight: '500' }}>{doc.title}</span>
+              <span className="edev-docs__doc-title">{doc.title}</span>
             </a>
           ))}
         </div>
       )}
 
       {is_developer && (
-        <div style={{
-          marginTop: '30px',
-          padding: '20px',
-          backgroundColor: '#f8f9f9',
-          border: '2px solid #4060b0',
-          borderRadius: '8px'
-        }}>
-          <h3 style={{
-            color: '#38495e',
-            marginTop: 0,
-            marginBottom: '15px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
+        <div className="edev-docs__create-box">
+          <h3 className="edev-docs__create-heading">
             <svg
               stroke="currentColor"
               fill="currentColor"
@@ -131,7 +86,7 @@ export default function EdevDocumentationIndex({ data }) {
               height="20"
               width="20"
               xmlns="http://www.w3.org/2000/svg"
-              style={{ color: '#4060b0' }}
+              className="edev-docs__create-icon"
             >
               <path d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
             </svg>
@@ -139,35 +94,16 @@ export default function EdevDocumentationIndex({ data }) {
           </h3>
 
           <form onSubmit={handleCreateDoc}>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1 }}>
+            <div className="edev-docs__form-row">
+              <div className="edev-docs__input-wrapper">
                 <input
                   type="text"
                   value={newDocTitle}
                   onChange={(e) => setNewDocTitle(e.target.value)}
                   placeholder="Enter document title..."
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#4060b0';
-                    e.target.style.outline = 'none';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#ddd';
-                  }}
+                  className="edev-docs__input"
                 />
-                <p style={{
-                  fontSize: '12px',
-                  color: '#666',
-                  marginTop: '8px',
-                  marginBottom: 0
-                }}>
+                <p className="edev-docs__help-text">
                   Edevdocs are only visible to members of the edev group
                 </p>
               </div>
@@ -175,28 +111,7 @@ export default function EdevDocumentationIndex({ data }) {
               <button
                 type="submit"
                 disabled={!newDocTitle.trim()}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: newDocTitle.trim() ? '#4060b0' : '#ccc',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: newDocTitle.trim() ? 'pointer' : 'not-allowed',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  whiteSpace: 'nowrap',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  if (newDocTitle.trim()) {
-                    e.currentTarget.style.backgroundColor = '#365a9c';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (newDocTitle.trim()) {
-                    e.currentTarget.style.backgroundColor = '#4060b0';
-                  }
-                }}
+                className="edev-docs__submit"
               >
                 Create Doc
               </button>
@@ -205,16 +120,10 @@ export default function EdevDocumentationIndex({ data }) {
         </div>
       )}
 
-      <div style={{
-        marginTop: '30px',
-        padding: '15px',
-        backgroundColor: '#e8f4f8',
-        borderLeft: '4px solid #4060b0',
-        borderRadius: '4px'
-      }}>
-        <p style={{ margin: 0, fontSize: '14px', color: '#38495e' }}>
+      <div className="edev-docs__info-box">
+        <p className="edev-docs__info-text">
           <strong>What are Edevdocs?</strong> These are developer documentation pages that can only be viewed and edited by members of the{' '}
-          <a href="/user/edev" style={{ color: '#4060b0' }}>edev</a> usergroup. They're useful for testing APIs, documenting internal features, or writing experimental JavaScript.
+          <a href="/user/edev" className="edev-docs__info-link">edev</a> usergroup. They're useful for testing APIs, documenting internal features, or writing experimental JavaScript.
         </p>
       </div>
     </div>

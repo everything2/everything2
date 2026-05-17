@@ -3,6 +3,8 @@ import LinkNode from '../LinkNode'
 
 /**
  * Everything's Richest Noders - Display GP wealth distribution
+ * Styles in CSS: .richest-noders__*
+ *
  * Shows top 1500 richest, 10 poorest, and top 10 with statistics
  */
 const EverythingSRichestNoders = ({ data }) => {
@@ -18,83 +20,50 @@ const EverythingSRichestNoders = ({ data }) => {
   } = data
 
   return (
-    <div style={styles.container}>
+    <div className="richest-noders">
       {/* Top 1500 Richest Users */}
-      <h3 style={styles.heading}>{limit_all} Richest Noders</h3>
-      <ol style={styles.list}>
+      <h3 className="richest-noders__heading">{limit_all} Richest Noders</h3>
+      <ol className="richest-noders__list">
         {richest_all.map((user, index) => (
-          <li key={user.user_id} style={styles.listItem}>
+          <li key={user.user_id} className="richest-noders__list-item">
             <LinkNode id={user.user_id} display={user.title} /> ({user.gp}GP)
           </li>
         ))}
       </ol>
 
-      <hr style={styles.divider} />
+      <hr className="richest-noders__divider" />
 
       {/* 10 Poorest Users (excluding 0 GP) */}
-      <h3 style={styles.heading}>{limit_top} Poorest Noders (ignore 0GP)</h3>
-      <ol style={styles.list}>
+      <h3 className="richest-noders__heading">{limit_top} Poorest Noders (ignore 0GP)</h3>
+      <ol className="richest-noders__list">
         {poorest.map((user, index) => (
-          <li key={user.user_id} style={styles.listItem}>
+          <li key={user.user_id} className="richest-noders__list-item">
             <LinkNode id={user.user_id} display={user.title} /> ({user.gp}GP)
           </li>
         ))}
       </ol>
 
-      <hr style={styles.divider} />
+      <hr className="richest-noders__divider" />
 
       {/* Top 10 Richest Users */}
-      <h3 style={styles.heading}>{limit_top} Richest Noders</h3>
-      <ol style={styles.list}>
+      <h3 className="richest-noders__heading">{limit_top} Richest Noders</h3>
+      <ol className="richest-noders__list">
         {richest_top.map((user, index) => (
-          <li key={user.user_id} style={styles.listItem}>
+          <li key={user.user_id} className="richest-noders__list-item">
             <LinkNode id={user.user_id} display={user.title} /> ({user.gp}GP)
           </li>
         ))}
       </ol>
 
       {/* GP Statistics */}
-      <p style={styles.stats}>
+      <p className="richest-noders__stats">
         <strong>Total GP in circulation:</strong> {total_gp.toLocaleString()}
       </p>
-      <p style={styles.stats}>
+      <p className="richest-noders__stats">
         The top {limit_top} users hold {top_percentage.toFixed(2)}% of all the GP
       </p>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111'
-  },
-  heading: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    marginTop: '20px',
-    marginBottom: '12px',
-    color: '#38495e'
-  },
-  list: {
-    paddingLeft: '30px',
-    marginBottom: '12px'
-  },
-  listItem: {
-    marginBottom: '4px'
-  },
-  divider: {
-    border: 'none',
-    borderTop: '1px solid #dee2e6',
-    marginTop: '20px',
-    marginBottom: '20px'
-  },
-  stats: {
-    fontSize: '13px',
-    marginTop: '12px',
-    marginBottom: '8px'
-  }
 }
 
 export default EverythingSRichestNoders

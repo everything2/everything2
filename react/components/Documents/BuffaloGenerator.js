@@ -146,42 +146,11 @@ const BuffaloGenerator = ({ data }) => {
     setContent(isHaiku ? generateHaiku() : generateRegular())
   }
 
-  const containerStyle = {
-    padding: '20px',
-    maxWidth: '700px'
-  }
-
-  const outputStyle = {
-    fontSize: isHaiku ? '1.3em' : '1.2em',
-    lineHeight: '1.6',
-    margin: '30px 0',
-    padding: '20px',
-    backgroundColor: '#f8f9f9',
-    borderRadius: '5px',
-    textAlign: isHaiku ? 'center' : 'left'
-  }
-
-  const buttonStyle = {
-    padding: '10px 20px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    marginRight: '10px'
-  }
-
-  const linkStyle = {
-    color: '#4060b0',
-    textDecoration: 'none',
-    marginLeft: '15px'
-  }
+  const outputClass = `buffalo-generator__output${isHaiku ? ' buffalo-generator__output--haiku' : ''}`
 
   return (
-    <div style={containerStyle}>
-      <div style={outputStyle}>
+    <div className="buffalo-generator">
+      <div className={outputClass}>
         {isHaiku ? (
           // Haiku: three lines, centered
           <div>
@@ -191,12 +160,12 @@ const BuffaloGenerator = ({ data }) => {
           </div>
         ) : (
           // Regular: paragraph
-          <p style={{ margin: 0 }}>{content}</p>
+          <p className="buffalo-generator__output-paragraph">{content}</p>
         )}
       </div>
 
-      <div style={{ marginTop: '30px' }}>
-        <button onClick={handleGenerate} style={buttonStyle}>
+      <div className="buffalo-generator__controls">
+        <button onClick={handleGenerate} className="buffalo-generator__button">
           {isHaiku ? 'Furthermore!' : 'MOAR'}
         </button>
 
@@ -235,7 +204,7 @@ const BuffaloGenerator = ({ data }) => {
                 setContent(result.trim())
               }
             }}
-            style={buttonStyle}
+            className="buffalo-generator__button"
           >
             Only buffalo
           </button>
@@ -244,24 +213,24 @@ const BuffaloGenerator = ({ data }) => {
         {isHaiku ? (
           <button
             onClick={() => { window.location.href = '/title/Buffalo+Generator' }}
-            style={buttonStyle}
+            className="buffalo-generator__button"
           >
             More buffalo, less haiku
           </button>
         ) : (
           <button
             onClick={() => { window.location.href = '/title/Buffalo+Haiku+Generator' }}
-            style={buttonStyle}
+            className="buffalo-generator__button"
           >
             In haiku form
           </button>
         )}
       </div>
 
-      <div style={{ marginTop: '30px', textAlign: 'center' }}>
+      <div className="buffalo-generator__footer">
         <a
           href="/title/Buffalo+buffalo+Buffalo+buffalo+buffalo+buffalo+Buffalo+buffalo"
-          style={linkStyle}
+          className="buffalo-generator__link"
         >
           {isHaiku ? 'Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo' : '...what?'}
         </a>

@@ -5,6 +5,7 @@ import { renderE2Content } from '../Editor/E2HtmlSanitizer'
 
 /**
  * Registry - Display and manage registry entries
+ * Styles in CSS: .registry__*
  *
  * Registries allow users to submit data entries (text, dates, yes/no).
  * Only logged-in users can view and submit entries.
@@ -59,14 +60,14 @@ const Registry = ({ data }) => {
   // Guest view
   if (is_guest) {
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <FaClipboardList style={{ color: '#507898', marginRight: 8 }} />
-          <span style={styles.title}>{registry.title}</span>
+      <div className="registry">
+        <div className="registry__header">
+          <FaClipboardList className="registry__header-icon" />
+          <span className="registry__title">{registry.title}</span>
         </div>
 
-        <div style={styles.guestMessage}>
-          <p style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 16 }}>
+        <div className="registry__guest-message">
+          <p className="registry__guest-center">
             <LinkNode nodeId={null} title="Registry Information" />
           </p>
           <p>Registries are only available to logged in users at this time.</p>
@@ -190,11 +191,11 @@ const Registry = ({ data }) => {
       const days = Array.from({ length: 31 }, (_, i) => i + 1)
 
       return (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="registry__date-row">
           <select
             value={formData.year}
             onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-            style={styles.select}
+            className="registry__select"
           >
             {years.map(y => (
               <option key={y} value={y}>{y === 'secret' ? 'Year (secret)' : y}</option>
@@ -203,7 +204,7 @@ const Registry = ({ data }) => {
           <select
             value={formData.month}
             onChange={(e) => setFormData({ ...formData, month: parseInt(e.target.value, 10) })}
-            style={styles.select}
+            className="registry__select"
           >
             {months.map(m => (
               <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
@@ -212,7 +213,7 @@ const Registry = ({ data }) => {
           <select
             value={formData.day}
             onChange={(e) => setFormData({ ...formData, day: parseInt(e.target.value, 10) })}
-            style={styles.select}
+            className="registry__select"
           >
             {days.map(d => (
               <option key={d} value={d}>{String(d).padStart(2, '0')}</option>
@@ -227,7 +228,7 @@ const Registry = ({ data }) => {
         <select
           value={formData.data}
           onChange={(e) => setFormData({ ...formData, data: e.target.value })}
-          style={styles.select}
+          className="registry__select"
         >
           <option value="">Choose...</option>
           <option value="Yes">Yes</option>
@@ -242,7 +243,7 @@ const Registry = ({ data }) => {
         type="text"
         value={formData.data}
         onChange={(e) => setFormData({ ...formData, data: e.target.value })}
-        style={styles.input}
+        className="registry__input"
         maxLength={255}
         placeholder="Enter your data..."
       />
@@ -250,64 +251,60 @@ const Registry = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="registry">
       {/* Header */}
-      <div style={styles.header}>
-        <FaClipboardList style={{ color: '#507898', marginRight: 8, fontSize: 20 }} />
-        <span style={styles.title}>{registry.title}</span>
+      <div className="registry__header">
+        <FaClipboardList className="registry__header-icon registry__header-icon--lg" />
+        <span className="registry__title">{registry.title}</span>
       </div>
 
       {/* Author and description */}
-      <div style={styles.authorSection}>
+      <div className="registry__author-section">
         <span>Created by <LinkNode nodeId={registry.author.node_id} title={registry.author.title} /></span>
       </div>
 
       {registry.doctext && (
         <div
-          style={styles.description}
+          className="registry__description"
           dangerouslySetInnerHTML={{ __html: renderE2Content(registry.doctext).html }}
         />
       )}
 
       {/* Message */}
       {message && (
-        <div style={{
-          ...styles.message,
-          backgroundColor: message.type === 'error' ? '#fee' : '#efe',
-          color: message.type === 'error' ? '#c00' : '#060'
-        }}>
+        <div className={`registry__message ${message.type === 'error' ? 'registry__message--error' : 'registry__message--success'}`}>
           {message.text}
         </div>
       )}
 
       {/* Entry form */}
-      <div style={styles.formSection}>
-        <h3 style={styles.sectionTitle}>
-          <FaPlus style={{ marginRight: 6 }} />
+      <div className="registry__form-section">
+        <h3 className="registry__section-title">
+          <FaPlus className="registry__section-icon" />
           {userEntry ? 'Update Your Entry' : 'Submit Your Entry'}
         </h3>
 
         <form onSubmit={handleSubmit}>
-          <div style={styles.formRow}>
-            <label style={styles.label}>Your Data:</label>
+          <div className="registry__form-row">
+            <label className="registry__label">Your Data:</label>
             {renderInput()}
           </div>
 
-          <div style={styles.formRow}>
-            <label style={styles.label}>Comments (optional):</label>
+          <div className="registry__form-row">
+            <label className="registry__label">Comments (optional):</label>
             <textarea
               value={formData.comments}
               onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
-              style={styles.textarea}
+              className="registry__textarea"
               maxLength={512}
               placeholder="Add any comments..."
               rows={2}
             />
-            <div style={styles.charCount}>{512 - formData.comments.length} chars left</div>
+            <div className="registry__char-count">{512 - formData.comments.length} chars left</div>
           </div>
 
-          <div style={styles.formRow}>
-            <label style={styles.checkboxLabel}>
+          <div className="registry__form-row">
+            <label className="registry__checkbox-label">
               <input
                 type="checkbox"
                 checked={formData.in_user_profile}
@@ -317,9 +314,9 @@ const Registry = ({ data }) => {
             </label>
           </div>
 
-          <div style={styles.buttonRow}>
-            <button type="submit" style={styles.submitButton} disabled={isSubmitting}>
-              <FaCheck style={{ marginRight: 4 }} />
+          <div className="registry__button-row">
+            <button type="submit" className="registry__submit-button" disabled={isSubmitting}>
+              <FaCheck className="registry__submit-icon" />
               {isSubmitting ? 'Submitting...' : 'Submit'}
             </button>
 
@@ -327,10 +324,10 @@ const Registry = ({ data }) => {
               <button
                 type="button"
                 onClick={handleDeleteOwn}
-                style={styles.deleteButton}
+                className="registry__delete-button"
                 disabled={isSubmitting}
               >
-                <FaTimes style={{ marginRight: 4 }} />
+                <FaTimes className="registry__submit-icon" />
                 Remove My Entry
               </button>
             )}
@@ -339,50 +336,50 @@ const Registry = ({ data }) => {
       </div>
 
       {/* Entries table */}
-      <div style={styles.entriesSection}>
-        <h3 style={styles.sectionTitle}>
-          <FaUser style={{ marginRight: 6 }} />
+      <div className="registry__entries-section">
+        <h3 className="registry__section-title">
+          <FaUser className="registry__section-icon" />
           All Entries ({entries.length})
         </h3>
 
         {entries.length === 0 ? (
-          <div style={styles.emptyState}>
+          <div className="registry__empty-state">
             No users have submitted information to this registry yet.
           </div>
         ) : (
-          <div style={styles.tableWrapper}>
-            <table style={styles.table}>
+          <div className="registry__table-wrapper">
+            <table className="registry__table">
               <thead>
                 <tr>
-                  <th style={styles.th}>User</th>
-                  <th style={styles.th}>Data</th>
-                  <th style={styles.th}>As of</th>
-                  <th style={styles.th}>Comments</th>
-                  <th style={styles.th}>Profile?</th>
-                  {is_admin && <th style={styles.th}>Actions</th>}
+                  <th className="registry__th">User</th>
+                  <th className="registry__th">Data</th>
+                  <th className="registry__th">As of</th>
+                  <th className="registry__th">Comments</th>
+                  <th className="registry__th">Profile?</th>
+                  {is_admin && <th className="registry__th">Actions</th>}
                 </tr>
               </thead>
               <tbody>
                 {entries.map((entry) => (
-                  <tr key={entry.user_id} style={styles.tr}>
-                    <td style={styles.td}>
+                  <tr key={entry.user_id} className="registry__tr">
+                    <td className="registry__td">
                       <LinkNode nodeId={entry.user_id} title={entry.username} />
                     </td>
                     <td
-                      style={styles.td}
+                      className="registry__td"
                       dangerouslySetInnerHTML={{ __html: renderE2Content(entry.data || '').html }}
                     />
-                    <td style={styles.td}>{entry.timestamp}</td>
+                    <td className="registry__td">{entry.timestamp}</td>
                     <td
-                      style={styles.td}
+                      className="registry__td"
                       dangerouslySetInnerHTML={{ __html: entry.comments ? renderE2Content(entry.comments).html : '-' }}
                     />
-                    <td style={styles.td}>{entry.in_user_profile ? 'Yes' : 'No'}</td>
+                    <td className="registry__td">{entry.in_user_profile ? 'Yes' : 'No'}</td>
                     {is_admin && (
-                      <td style={styles.td}>
+                      <td className="registry__td">
                         <button
                           onClick={() => handleAdminDelete(entry.user_id, entry.username)}
-                          style={styles.adminDeleteButton}
+                          className="registry__admin-delete-button"
                           title={`Delete entry for ${entry.username}`}
                           disabled={isSubmitting}
                         >
@@ -399,195 +396,11 @@ const Registry = ({ data }) => {
       </div>
 
       {/* Footer link */}
-      <div style={styles.footer}>
+      <div className="registry__footer">
         <LinkNode nodeId={null} title="Recent Registry Entries">What are other people saying?</LinkNode>
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-    padding: '16px 0'
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 12
-  },
-  title: {
-    flex: 1
-  },
-  authorSection: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: 14,
-    marginBottom: 16
-  },
-  description: {
-    textAlign: 'center',
-    padding: 16,
-    marginBottom: 16,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4,
-    lineHeight: 1.6
-  },
-  guestMessage: {
-    padding: 24,
-    textAlign: 'center',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: 4,
-    color: '#856404'
-  },
-  message: {
-    padding: 10,
-    marginBottom: 16,
-    borderRadius: 4,
-    fontSize: 14
-  },
-  formSection: {
-    backgroundColor: '#f8f9fa',
-    border: '1px solid #ddd',
-    borderRadius: 4,
-    padding: 16,
-    marginBottom: 24
-  },
-  sectionTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginTop: 0,
-    marginBottom: 16
-  },
-  formRow: {
-    marginBottom: 12
-  },
-  label: {
-    display: 'block',
-    marginBottom: 4,
-    fontWeight: 'bold',
-    fontSize: 13,
-    color: '#38495e'
-  },
-  input: {
-    width: '100%',
-    padding: 8,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-    fontSize: 14,
-    boxSizing: 'border-box'
-  },
-  textarea: {
-    width: '100%',
-    padding: 8,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-    fontSize: 14,
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  select: {
-    padding: 8,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-    fontSize: 14
-  },
-  charCount: {
-    fontSize: 11,
-    color: '#999',
-    textAlign: 'right',
-    marginTop: 4
-  },
-  checkboxLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    fontSize: 14,
-    cursor: 'pointer'
-  },
-  buttonRow: {
-    display: 'flex',
-    gap: 12,
-    marginTop: 16
-  },
-  submitButton: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 16px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontSize: 14,
-    fontWeight: 'bold'
-  },
-  deleteButton: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px 16px',
-    backgroundColor: '#507898',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontSize: 14
-  },
-  entriesSection: {
-    marginBottom: 24
-  },
-  emptyState: {
-    textAlign: 'center',
-    padding: 24,
-    color: '#999',
-    fontStyle: 'italic',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4
-  },
-  tableWrapper: {
-    overflowX: 'auto'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: 13
-  },
-  th: {
-    textAlign: 'left',
-    padding: '10px 8px',
-    borderBottom: '2px solid #38495e',
-    backgroundColor: '#f8f9fa',
-    fontWeight: 'bold',
-    color: '#38495e'
-  },
-  tr: {
-    borderBottom: '1px solid #eee'
-  },
-  td: {
-    padding: '10px 8px',
-    verticalAlign: 'top'
-  },
-  adminDeleteButton: {
-    background: 'none',
-    border: 'none',
-    color: '#507898',
-    cursor: 'pointer',
-    padding: 4,
-    fontSize: 14
-  },
-  footer: {
-    textAlign: 'center',
-    padding: 16,
-    fontWeight: 'bold'
-  }
 }
 
 export default Registry

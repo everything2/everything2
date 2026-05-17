@@ -165,20 +165,14 @@ const ObliqueStrategiesGarden = () => {
 
   return (
     <div className="oblique-strategies-garden">
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table className="oblique-strategies__table">
         <tbody>
           {grid.map((row, y) => (
             <tr key={y}>
               {row.map((strategy, x) => (
                 <td
                   key={`${y}-${x}`}
-                  style={{
-                    border: '1px solid #ddd',
-                    padding: '8px',
-                    minHeight: '40px',
-                    verticalAlign: 'top',
-                    fontSize: '0.9em'
-                  }}
+                  className="oblique-strategies__cell"
                 >
                   {strategy}
                 </td>

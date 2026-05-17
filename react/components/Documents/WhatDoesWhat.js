@@ -18,7 +18,7 @@ const WhatDoesWhat = ({ data }) => {
   return (
     <div className="what-does-what">
       {mainDocSettingId && isAdmin && (
-        <p style={{ textAlign: 'right' }}>
+        <p className="what-does-what__edit-link">
           <LinkNode
             id={mainDocSettingId}
             display="edit/add documentation"

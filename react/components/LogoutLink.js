@@ -16,7 +16,7 @@ const LogoutLink = ({ display = 'Log Out', style }) => {
   }
 
   return (
-    <a href="/node/superdoc/login?op=logout" onClick={handleLogout} style={{ cursor: 'pointer', ...style }}>
+    <a href="/node/superdoc/login?op=logout" onClick={handleLogout} className="logout-link" style={style}>
       {display}
     </a>
   )

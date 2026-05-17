@@ -4,7 +4,7 @@ export default function EdevFAQ({ data }) {
   const { is_edev, user_title } = data;
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <div className="edev-faq">
       <p>
         Okey-dokey, here are some FAQs for those in the{' '}
         <a href="/user/edev">edev</a> usergroup.
@@ -96,7 +96,7 @@ export default function EdevFAQ({ data }) {
         <code>/msg edev Hi everybody, I'm Doctor Nick! Have you seen [EDev FAQ] yet?</code>
       </p>
       <p>and (assuming the other person is you), everybody in edev would then get a message that looks something like:</p>
-      <form style={{ marginBottom: '1em' }}>
+      <form className="edev-faq__message-form">
         <input type="checkbox" />
         ([edev]) <i>{user_title} says</i> Hi everybody, I'm Doctor Nick! Have you seen [EDev FAQ] yet?
       </form>

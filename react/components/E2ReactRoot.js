@@ -41,12 +41,7 @@ const E2Constants = {"defaultGuestNode": 2030780, "defaultNode": 124}
 // Loading fallback for lazy-loaded nodelets
 // Reserve minimum height to prevent CLS (Cumulative Layout Shift)
 const NodeletLoadingFallback = () => (
-  <div style={{
-    padding: '10px',
-    textAlign: 'center',
-    color: '#666',
-    minHeight: '100px'  // Reserve space for typical nodelet content
-  }}>
+  <div className="nodelet-loading-fallback">
     <small>Loading...</small>
   </div>
 )

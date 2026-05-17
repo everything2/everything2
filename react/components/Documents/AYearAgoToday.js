@@ -33,7 +33,7 @@ const AYearAgoToday = ({ data }) => {
 
   return (
     <div className="document">
-      <p style={{ textAlign: 'center' }}>Turn the clock back!</p>
+      <p className="year-ago-today__intro">Turn the clock back!</p>
       <br /><br />
 
       <ul>
@@ -53,11 +53,11 @@ const AYearAgoToday = ({ data }) => {
         {count} writeups submitted {yearsago === 1 ? 'a year' : `${yearsago} years`} ago today
       </p>
 
-      <div style={{ textAlign: 'center' }}>
-        <table width="70%" style={{ margin: '0 auto' }}>
+      <div className="year-ago-today__pagination">
+        <table width="70%" className="year-ago-today__pagination-table">
           <tbody>
             <tr>
-              <td width="50%" style={{ textAlign: 'center' }}>
+              <td width="50%" className="year-ago-today__pagination-cell">
                 {hasPrev ? (
                   <a href={buildUrl({ yearsago, startat: startat - perPage })}>
                     {startat - perPage}-{startat}
@@ -66,7 +66,7 @@ const AYearAgoToday = ({ data }) => {
                   <span>{startat - perPage}-{startat}</span>
                 )}
               </td>
-              <td width="50%" style={{ textAlign: 'center' }}>
+              <td width="50%" className="year-ago-today__pagination-cell">
                 {hasNext ? (
                   <a href={buildUrl({ yearsago, startat: startat + perPage })}>
                     {startat + perPage}-{Math.min(startat + perPage * 2, count)}
@@ -80,11 +80,11 @@ const AYearAgoToday = ({ data }) => {
         </table>
       </div>
 
-      <div style={{ textAlign: 'center' }}>
-        <hr style={{ width: '200px' }} />
+      <div className="year-ago-today__divider">
+        <hr className="year-ago-today__divider-line" />
       </div>
 
-      <p style={{ textAlign: 'center' }}>
+      <p className="year-ago-today__years">
         {years.map((y, idx) => (
           <React.Fragment key={y.year}>
             {idx > 0 && ' | '}

@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * MagicalWriteupReparenter - Admin/Editor tool to move writeups between e2nodes
+ * Styles in CSS: .mwr__*
  *
  * Features:
  * - Look up source e2node by ID or title
@@ -31,8 +32,8 @@ const MagicalWriteupReparenter = ({ data }) => {
 
   if (access_denied) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorBox}>
+      <div className="mwr">
+        <div className="mwr__error-box">
           Access denied. This tool is only available to editors and admins.
         </div>
       </div>
@@ -165,25 +166,25 @@ const MagicalWriteupReparenter = ({ data }) => {
 
   const renderWriteupList = (writeups, isSource = true) => {
     if (!writeups || writeups.length === 0) {
-      return <p style={styles.nodeshell}>This e2node is a nodeshell (no writeups).</p>
+      return <p className="mwr__nodeshell">This e2node is a nodeshell (no writeups).</p>
     }
 
     return (
-      <ul style={styles.writeupList}>
+      <ul className="mwr__writeup-list">
         {writeups.map((wu) => (
-          <li key={wu.node_id} style={styles.writeupItem}>
+          <li key={wu.node_id} className="mwr__writeup-item">
             {isSource && (
               <input
                 type="checkbox"
                 checked={Boolean(selectedWriteups[wu.node_id])}
                 onChange={() => handleCheckboxChange(wu.node_id)}
-                style={styles.checkbox}
+                className="mwr__checkbox"
               />
             )}
             <LinkNode nodeId={wu.node_id} title={wu.title} />
             {' by '}
             <LinkNode nodeId={wu.author_id} title={wu.author_title} />
-            <span style={styles.writeupMeta}> (id: {wu.node_id}, type: {wu.writeuptype})</span>
+            <span className="mwr__writeup-meta"> (id: {wu.node_id}, type: {wu.writeuptype})</span>
           </li>
         ))}
       </ul>
@@ -191,12 +192,10 @@ const MagicalWriteupReparenter = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.header}>Magical Writeup Reparenter</h2>
-
+    <div className="mwr">
       {/* Error messages */}
       {errors.length > 0 && (
-        <div style={styles.errorBox}>
+        <div className="mwr__error-box">
           {errors.map((err, idx) => (
             <p key={idx}>{err}</p>
           ))}
@@ -206,22 +205,19 @@ const MagicalWriteupReparenter = ({ data }) => {
       {/* Feedback from reparent operation */}
       {feedback.length > 0 && (
         <div
-          style={{
-            ...styles.feedbackBox,
-            ...(feedback.some((fb) => fb.type === 'error')
-              ? styles.feedbackBoxError
-              : styles.feedbackBoxSuccess)
-          }}
+          className={`mwr__feedback-box ${feedback.some((fb) => fb.type === 'error')
+            ? 'mwr__feedback-box--error'
+            : 'mwr__feedback-box--success'}`}
         >
           {feedback.map((fb, idx) => (
             <p
               key={idx}
-              style={
+              className={
                 fb.type === 'header'
-                  ? styles.feedbackHeader
+                  ? 'mwr__feedback-header'
                   : fb.type === 'error'
-                    ? styles.feedbackError
-                    : styles.feedbackSuccess
+                    ? 'mwr__feedback-error'
+                    : 'mwr__feedback-success'
               }
             >
               {fb.type === 'header' ? <strong>{fb.text}</strong> : fb.text}
@@ -231,39 +227,39 @@ const MagicalWriteupReparenter = ({ data }) => {
       )}
 
       {/* Lookup form */}
-      <form onSubmit={handleLookup} style={styles.form}>
-        <div style={styles.formSection}>
-          <h3 style={styles.sectionHeader}>Source</h3>
-          <div style={styles.formRow}>
-            <label style={styles.label}>
+      <form onSubmit={handleLookup} className="mwr__form">
+        <div className="mwr__form-section">
+          <h3 className="mwr__section-header">Source</h3>
+          <div className="mwr__form-row">
+            <label className="mwr__label">
               E2node ID or title:
               <input
                 type="text"
                 value={oldE2nodeInput}
                 onChange={(e) => setOldE2nodeInput(e.target.value)}
-                style={styles.input}
+                className="mwr__input"
                 placeholder="Enter e2node ID or title"
               />
             </label>
             {old_e2node && (
-              <span style={styles.currentValue}>
+              <span className="mwr__current-value">
                 Current: <LinkNode nodeId={old_e2node.node_id} title={old_e2node.title} />
               </span>
             )}
           </div>
-          <div style={styles.formRow}>
-            <label style={styles.label}>
+          <div className="mwr__form-row">
+            <label className="mwr__label">
               - OR - Writeup ID:
               <input
                 type="text"
                 value={oldWriteupInput}
                 onChange={(e) => setOldWriteupInput(e.target.value)}
-                style={styles.input}
+                className="mwr__input"
                 placeholder="Enter writeup ID"
               />
             </label>
             {old_writeup && !old_e2node && (
-              <span style={styles.orphanWarning}>
+              <span className="mwr__orphan-warning">
                 Writeup <LinkNode nodeId={old_writeup.node_id} title={old_writeup.title} /> is
                 orphaned!
               </span>
@@ -271,26 +267,26 @@ const MagicalWriteupReparenter = ({ data }) => {
           </div>
         </div>
 
-        <div style={styles.formSection}>
-          <h3 style={styles.sectionHeader}>Destination</h3>
-          <div style={styles.formRow}>
-            <label style={styles.label}>
+        <div className="mwr__form-section">
+          <h3 className="mwr__section-header">Destination</h3>
+          <div className="mwr__form-row">
+            <label className="mwr__label">
               E2node ID or title:
               <input
                 type="text"
                 value={newE2nodeInput}
                 onChange={(e) => setNewE2nodeInput(e.target.value)}
-                style={styles.input}
+                className="mwr__input"
                 placeholder="Enter destination e2node ID or title"
               />
             </label>
             {new_e2node && (
-              <span style={styles.currentValue}>
+              <span className="mwr__current-value">
                 Current: <LinkNode nodeId={new_e2node.node_id} title={new_e2node.title} />
               </span>
             )}
             {suggested_parent && !new_e2node && (
-              <span style={styles.suggestion}>
+              <span className="mwr__suggestion">
                 Suggested:{' '}
                 <LinkNode nodeId={suggested_parent.node_id} title={suggested_parent.title} />
               </span>
@@ -298,22 +294,22 @@ const MagicalWriteupReparenter = ({ data }) => {
           </div>
         </div>
 
-        <button type="submit" style={styles.button}>
+        <button type="submit" className="mwr__button">
           Look Up Nodes
         </button>
       </form>
 
       {/* Source writeups */}
       {old_e2node && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionHeader}>
+        <div className="mwr__section">
+          <h3 className="mwr__section-header">
             Writeups in <LinkNode nodeId={old_e2node.node_id} title={old_e2node.title} />
           </h3>
-          <div style={styles.buttonRow}>
-            <button type="button" onClick={handleSelectAll} style={styles.smallButton}>
+          <div className="mwr__button-row">
+            <button type="button" onClick={handleSelectAll} className="mwr__small-button">
               Select All
             </button>
-            <button type="button" onClick={handleSelectNone} style={styles.smallButton}>
+            <button type="button" onClick={handleSelectNone} className="mwr__small-button">
               Select None
             </button>
           </div>
@@ -323,15 +319,15 @@ const MagicalWriteupReparenter = ({ data }) => {
 
       {/* Orphaned writeup */}
       {old_writeup && !old_e2node && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionHeader}>Orphaned Writeup</h3>
-          <ul style={styles.writeupList}>
-            <li style={styles.writeupItem}>
+        <div className="mwr__section">
+          <h3 className="mwr__section-header">Orphaned Writeup</h3>
+          <ul className="mwr__writeup-list">
+            <li className="mwr__writeup-item">
               <input
                 type="checkbox"
                 checked={Boolean(selectedWriteups[old_writeup.node_id])}
                 onChange={() => handleCheckboxChange(old_writeup.node_id)}
-                style={styles.checkbox}
+                className="mwr__checkbox"
               />
               <LinkNode nodeId={old_writeup.node_id} title={old_writeup.title} />
               {' by '}
@@ -343,9 +339,9 @@ const MagicalWriteupReparenter = ({ data }) => {
 
       {/* Destination writeups */}
       {(new_e2node || suggested_parent) && (
-        <div style={styles.section}>
-          <hr style={styles.hr} />
-          <h3 style={styles.sectionHeader}>
+        <div className="mwr__section">
+          <hr className="mwr__hr" />
+          <h3 className="mwr__section-header">
             Destination:{' '}
             <LinkNode
               nodeId={(new_e2node || suggested_parent).node_id}
@@ -358,12 +354,12 @@ const MagicalWriteupReparenter = ({ data }) => {
 
       {/* Reparent button */}
       {(old_e2node || old_writeup) && (new_e2node || suggested_parent) && (
-        <div style={styles.actionSection}>
+        <div className="mwr__action-section">
           <button
             type="button"
             onClick={handleReparent}
             disabled={isLoading}
-            style={isLoading ? styles.buttonDisabled : styles.actionButton}
+            className={isLoading ? 'mwr__button--disabled' : 'mwr__action-button'}
           >
             {isLoading ? 'Moving...' : 'Move Selected Writeups'}
           </button>
@@ -371,7 +367,7 @@ const MagicalWriteupReparenter = ({ data }) => {
       )}
 
       {/* Link to Klaproth Van Lines */}
-      <div style={styles.footer}>
+      <div className="mwr__footer">
         <p>
           Try{' '}
           {kvl_node_id ? (
@@ -384,188 +380,6 @@ const MagicalWriteupReparenter = ({ data }) => {
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111',
-    maxWidth: '900px'
-  },
-  header: {
-    color: '#38495e',
-    marginBottom: '20px'
-  },
-  errorBox: {
-    padding: '15px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828',
-    marginBottom: '20px'
-  },
-  feedbackBox: {
-    padding: '15px',
-    borderRadius: '4px',
-    marginBottom: '20px'
-  },
-  feedbackBoxSuccess: {
-    backgroundColor: '#e8f5e9',
-    border: '2px solid #4caf50'
-  },
-  feedbackBoxError: {
-    backgroundColor: '#ffebee',
-    border: '2px solid #f44336'
-  },
-  feedbackHeader: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    margin: '0 0 10px 0',
-    color: '#333'
-  },
-  feedbackSuccess: {
-    color: '#2e7d32',
-    margin: '5px 0'
-  },
-  feedbackError: {
-    color: '#c62828',
-    margin: '5px 0'
-  },
-  form: {
-    marginBottom: '20px'
-  },
-  formSection: {
-    padding: '15px',
-    backgroundColor: '#f8f9f9',
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    marginBottom: '15px'
-  },
-  sectionHeader: {
-    color: '#38495e',
-    marginTop: '0',
-    marginBottom: '15px',
-    fontSize: '14px'
-  },
-  formRow: {
-    marginBottom: '10px'
-  },
-  label: {
-    display: 'block',
-    marginBottom: '5px'
-  },
-  input: {
-    padding: '8px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    fontSize: '13px',
-    width: '300px',
-    marginLeft: '10px'
-  },
-  currentValue: {
-    marginLeft: '10px',
-    color: '#507898'
-  },
-  orphanWarning: {
-    marginLeft: '10px',
-    color: '#c62828',
-    fontWeight: 'bold'
-  },
-  suggestion: {
-    marginLeft: '10px',
-    color: '#2e7d32',
-    fontStyle: 'italic'
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 'bold'
-  },
-  smallButton: {
-    padding: '5px 10px',
-    backgroundColor: '#507898',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '12px',
-    marginRight: '10px'
-  },
-  actionButton: {
-    padding: '12px 24px',
-    backgroundColor: '#4060b0',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  },
-  buttonDisabled: {
-    padding: '12px 24px',
-    backgroundColor: '#cccccc',
-    color: '#666666',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'not-allowed',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  },
-  buttonRow: {
-    marginBottom: '10px'
-  },
-  section: {
-    marginTop: '20px'
-  },
-  writeupList: {
-    listStyle: 'none',
-    padding: '0',
-    margin: '0'
-  },
-  writeupItem: {
-    padding: '8px',
-    borderBottom: '1px solid #e0e0e0'
-  },
-  checkbox: {
-    marginRight: '10px'
-  },
-  writeupMeta: {
-    color: '#507898',
-    fontSize: '11px',
-    marginLeft: '5px'
-  },
-  nodeshell: {
-    color: '#507898',
-    fontStyle: 'italic'
-  },
-  hr: {
-    border: 'none',
-    borderTop: '1px solid #d3d3d3',
-    margin: '20px 0'
-  },
-  actionSection: {
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#e3f2fd',
-    border: '1px solid #2196f3',
-    borderRadius: '4px',
-    textAlign: 'center'
-  },
-  footer: {
-    marginTop: '30px',
-    padding: '15px',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '4px',
-    fontSize: '12px',
-    color: '#666'
-  }
 }
 
 export default MagicalWriteupReparenter

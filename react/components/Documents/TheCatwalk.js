@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 /**
  * TheCatwalk - Complete stylesheet browser
+ * Styles in CSS: .catwalk__*
  *
  * Displays all stylesheets on E2 with sorting, filtering by author,
  * and pagination. Users can test different themes.
@@ -24,20 +25,10 @@ const TheCatwalk = ({ data }) => {
   const [filterUser, setFilterUser] = useState(filter.user_name || '')
   const [filterUserNot, setFilterUserNot] = useState(filter.is_not || false)
 
-  // Kernel Blue colors
-  const colors = {
-    primary: '#38495e',
-    secondary: '#507898',
-    highlight: '#4060b0',
-    accent: '#3bb5c3',
-    background: '#f8f9f9',
-    text: '#111111'
-  }
-
   // Guest message
   if (is_guest) {
     return (
-      <div style={{ padding: '40px 20px', textAlign: 'center', color: colors.secondary }}>
+      <div className="catwalk__guest-message">
         {message}
       </div>
     )
@@ -82,130 +73,6 @@ const TheCatwalk = ({ data }) => {
     return years === 1 ? '1 year ago' : `${years} years ago`
   }
 
-  // Styles
-  const containerStyle = {
-    padding: '20px',
-    maxWidth: '1100px',
-    margin: '0 auto'
-  }
-
-  const introStyle = {
-    color: colors.text,
-    lineHeight: '1.6',
-    marginBottom: '20px'
-  }
-
-  const currentStyleStyle = {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: colors.background,
-    borderRadius: '6px',
-    borderLeft: `4px solid ${colors.accent}`
-  }
-
-  const customStyleWarningStyle = {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#fff8e1',
-    borderRadius: '6px',
-    border: '1px solid #ffcc02',
-    lineHeight: '1.6'
-  }
-
-  const filterBoxStyle = {
-    backgroundColor: colors.background,
-    padding: '20px',
-    borderRadius: '8px',
-    marginBottom: '20px',
-    border: `1px solid ${colors.secondary}20`
-  }
-
-  const selectStyle = {
-    padding: '8px 12px',
-    border: `1px solid ${colors.secondary}`,
-    borderRadius: '4px',
-    fontSize: '14px',
-    backgroundColor: '#fff',
-    marginRight: '15px'
-  }
-
-  const inputStyle = {
-    padding: '8px 12px',
-    border: `1px solid ${colors.secondary}`,
-    borderRadius: '4px',
-    fontSize: '14px',
-    width: '200px'
-  }
-
-  const buttonStyle = {
-    padding: '8px 16px',
-    backgroundColor: colors.highlight,
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer'
-  }
-
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    backgroundColor: '#fff',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    borderRadius: '8px',
-    overflow: 'hidden'
-  }
-
-  const thStyle = {
-    backgroundColor: colors.primary,
-    color: '#fff',
-    padding: '12px 15px',
-    textAlign: 'left',
-    fontSize: '14px',
-    fontWeight: '600'
-  }
-
-  const tdStyle = (isOdd) => ({
-    padding: '10px 15px',
-    borderBottom: '1px solid #eee',
-    fontSize: '14px',
-    backgroundColor: isOdd ? colors.background : '#fff'
-  })
-
-  const linkStyle = {
-    color: colors.highlight,
-    textDecoration: 'none',
-    fontWeight: '500'
-  }
-
-  const testLinkStyle = {
-    color: colors.secondary,
-    textDecoration: 'none',
-    fontSize: '13px'
-  }
-
-  const paginationStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: colors.background,
-    borderRadius: '4px'
-  }
-
-  const navButtonStyle = (disabled) => ({
-    padding: '8px 16px',
-    backgroundColor: disabled ? '#ccc' : colors.highlight,
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    textDecoration: 'none'
-  })
-
   // Build pagination links with current params
   const buildPageUrl = (newOffset) => {
     const params = new URLSearchParams()
@@ -225,51 +92,50 @@ const TheCatwalk = ({ data }) => {
   const hasNext = offset + limit < total
 
   return (
-    <div style={containerStyle}>
+    <div className="catwalk">
       {current_style && (
-        <div style={currentStyleStyle}>
+        <div className="catwalk__current-style">
           What's your style? Currently{' '}
-          <a href={`/node/${current_style.node_id}`} style={linkStyle}>
+          <a href={`/node/${current_style.node_id}`} className="catwalk__link">
             {current_style.title}
           </a>.
         </div>
       )}
 
-      <p style={introStyle}>
+      <p className="catwalk__intro">
         A selection of popular stylesheets can be found at{' '}
-        <a href="/title/Theme%20Nirvana" style={linkStyle}>Theme Nirvana</a>;
+        <a href="/title/Theme%20Nirvana" className="catwalk__link">Theme Nirvana</a>;
         below is a list of every stylesheet ever submitted here.
       </p>
 
       {has_custom_style ? (
-        <div style={customStyleWarningStyle}>
+        <div className="catwalk__custom-warning">
           Note that you have customised your style using the{' '}
-          <a href="/title/style%20defacer" style={linkStyle}>style defacer</a>,
+          <a href="/title/style%20defacer" className="catwalk__link">style defacer</a>,
           which is going to affect the formatting of any stylesheet you choose.{' '}
-          <a href="?clearVandalism=true" style={linkStyle}>Click here to clear that out</a>{' '}
+          <a href="?clearVandalism=true" className="catwalk__link">Click here to clear that out</a>{' '}
           if that's not what you want. If you want to create a whole new stylesheet,
-          visit <a href="/title/the%20draughty%20atelier" style={linkStyle}>the draughty atelier</a>.
+          visit <a href="/title/the%20draughty%20atelier" className="catwalk__link">the draughty atelier</a>.
         </div>
       ) : (
-        <p style={introStyle}>
+        <p className="catwalk__intro">
           You can customise your stylesheet at the{' '}
-          <a href="/title/style%20defacer" style={linkStyle}>style defacer</a> or,
+          <a href="/title/style%20defacer" className="catwalk__link">style defacer</a> or,
           if you're feeling brave, create a whole new stylesheet at{' '}
-          <a href="/title/the%20draughty%20atelier" style={linkStyle}>the draughty atelier</a>.
+          <a href="/title/the%20draughty%20atelier" className="catwalk__link">the draughty atelier</a>.
         </p>
       )}
 
       {/* Filter/Sort Form */}
-      <form method="POST" style={filterBoxStyle}>
-        <input type="hidden" name="node_id" value={data?.node_id || ''} />
+      <form method="GET" action="/title/The+Catwalk" className="catwalk__filter-box">
 
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ marginRight: '10px', fontWeight: '500' }}>Sort order:</label>
+        <div className="catwalk__filter-row">
+          <label className="catwalk__label">Sort order:</label>
           <select
             name="ListNodesOfType_Sort"
             value={sortValue}
             onChange={(e) => setSortValue(e.target.value)}
-            style={selectStyle}
+            className="catwalk__select"
           >
             {sort_options.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -277,16 +143,16 @@ const TheCatwalk = ({ data }) => {
           </select>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <span style={{ fontWeight: '500' }}>Only show things</span>
-          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        <div className="catwalk__filter-controls">
+          <span className="catwalk__label">Only show things</span>
+          <label className="catwalk__checkbox-label">
             <input
               type="checkbox"
               name="filter_user_not"
               value="1"
               checked={filterUserNot}
               onChange={(e) => setFilterUserNot(e.target.checked)}
-              style={{ marginRight: '5px' }}
+              className="catwalk__checkbox"
             />
             not
           </label>
@@ -297,9 +163,9 @@ const TheCatwalk = ({ data }) => {
             value={filterUser}
             onChange={(e) => setFilterUser(e.target.value)}
             placeholder="username"
-            style={inputStyle}
+            className="catwalk__input"
           />
-          <button type="submit" name="fetch" value="1" style={buttonStyle}>
+          <button type="submit" className="catwalk__btn">
             Fetch!
           </button>
         </div>
@@ -307,90 +173,92 @@ const TheCatwalk = ({ data }) => {
 
       {/* Filter description */}
       {filter.user_name && (
-        <p style={{ ...introStyle, fontStyle: 'italic' }}>
+        <p className="catwalk__intro catwalk__filter-desc">
           {filter.is_not ? 'Not created' : 'Created'} by{' '}
-          <a href={`/user/${filter.user_name}`} style={linkStyle}>{filter.user_name}</a>
+          <a href={`/user/${filter.user_name}`} className="catwalk__link">{filter.user_name}</a>
           {' '}(Showing items {showingStart} to {showingEnd}.)
         </p>
       )}
 
       {!filter.user_name && total > 0 && (
-        <p style={{ ...introStyle, fontStyle: 'italic' }}>
+        <p className="catwalk__intro catwalk__filter-desc">
           Showing items {showingStart} to {showingEnd} of {total}.
         </p>
       )}
 
       {/* Stylesheets Table */}
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={thStyle}>Title</th>
-            <th style={thStyle}>Author</th>
-            <th style={thStyle}>Created</th>
-            <th style={thStyle}>Age</th>
-            <th style={{ ...thStyle, width: '60px' }}>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stylesheets.map((style, idx) => (
-            <tr key={style.node_id}>
-              <td style={tdStyle(idx % 2 === 1)}>
-                <a href={`/node/${style.node_id}`} style={linkStyle}>
-                  {style.title}
-                </a>
-              </td>
-              <td style={tdStyle(idx % 2 === 1)}>
-                {style.author ? (
-                  <a href={`/node/${style.author.node_id}`} style={linkStyle}>
-                    {style.author.title}
-                  </a>
-                ) : (
-                  <span style={{ color: '#999' }}>—</span>
-                )}
-              </td>
-              <td style={tdStyle(idx % 2 === 1)}>
-                {formatDate(style.createtime)}
-              </td>
-              <td style={tdStyle(idx % 2 === 1)}>
-                {timeSince(style.createtime)}
-              </td>
-              <td style={tdStyle(idx % 2 === 1)}>
-                <a
-                  href={`/title/Settings?trytheme=${style.node_id}`}
-                  style={testLinkStyle}
-                >
-                  [ test ]
-                </a>
-              </td>
+      <div className="catwalk__table-container">
+        <table className="catwalk__table">
+          <thead>
+            <tr>
+              <th className="catwalk__th">Title</th>
+              <th className="catwalk__th">Author</th>
+              <th className="catwalk__th">Created</th>
+              <th className="catwalk__th">Age</th>
+              <th className="catwalk__th catwalk__th--narrow">&nbsp;</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {stylesheets.map((style, idx) => (
+              <tr key={style.node_id}>
+                <td className={`catwalk__td ${idx % 2 === 1 ? 'catwalk__td--odd' : 'catwalk__td--even'}`}>
+                  <a href={`/node/${style.node_id}`} className="catwalk__link">
+                    {style.title}
+                  </a>
+                </td>
+                <td className={`catwalk__td ${idx % 2 === 1 ? 'catwalk__td--odd' : 'catwalk__td--even'}`}>
+                  {style.author ? (
+                    <a href={`/node/${style.author.node_id}`} className="catwalk__link">
+                      {style.author.title}
+                    </a>
+                  ) : (
+                    <span className="catwalk__empty">—</span>
+                  )}
+                </td>
+                <td className={`catwalk__td ${idx % 2 === 1 ? 'catwalk__td--odd' : 'catwalk__td--even'}`}>
+                  {formatDate(style.createtime)}
+                </td>
+                <td className={`catwalk__td ${idx % 2 === 1 ? 'catwalk__td--odd' : 'catwalk__td--even'}`}>
+                  {timeSince(style.createtime)}
+                </td>
+                <td className={`catwalk__td ${idx % 2 === 1 ? 'catwalk__td--odd' : 'catwalk__td--even'}`}>
+                  <a
+                    href={`/title/Settings?trytheme=${style.node_id}`}
+                    className="catwalk__test-link"
+                  >
+                    [ test ]
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
       {total > limit && (
-        <div style={paginationStyle}>
+        <div className="catwalk__pagination">
           <div>
             {hasPrev ? (
-              <a href={buildPageUrl(offset - limit)} style={navButtonStyle(false)}>
+              <a href={buildPageUrl(offset - limit)} className="catwalk__nav-btn">
                 ← Previous {limit}
               </a>
             ) : (
-              <span style={navButtonStyle(true)}>← Previous {limit}</span>
+              <span className="catwalk__nav-btn catwalk__nav-btn--disabled">← Previous {limit}</span>
             )}
           </div>
 
-          <span style={{ fontSize: '14px', color: colors.secondary, alignSelf: 'center' }}>
+          <span className="catwalk__page-info">
             {showingStart} - {showingEnd} of {total}
           </span>
 
           <div>
             {hasNext ? (
-              <a href={buildPageUrl(offset + limit)} style={navButtonStyle(false)}>
+              <a href={buildPageUrl(offset + limit)} className="catwalk__nav-btn">
                 Next {Math.min(limit, total - offset - limit)} →
               </a>
             ) : (
-              <span style={navButtonStyle(true)}>Next →</span>
+              <span className="catwalk__nav-btn catwalk__nav-btn--disabled">Next →</span>
             )}
           </div>
         </div>

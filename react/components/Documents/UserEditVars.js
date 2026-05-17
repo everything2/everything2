@@ -4,6 +4,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * UserEditVars Component - Admin tool for editing user vars
+ * Styles in CSS: .user-edit-vars__*
  *
  * Admin-only component for viewing and editing key-value pairs
  * stored in a user's vars field.
@@ -140,14 +141,14 @@ export default function UserEditVars({ data }) {
 
   // Render value with truncation for long values
   const renderValue = (value) => {
-    if (value === null || value === undefined) return <span style={styles.emptyValue}>(null)</span>
-    if (value === '') return <span style={styles.emptyValue}>(empty)</span>
+    if (value === null || value === undefined) return <span className="user-edit-vars__empty-value">(null)</span>
+    if (value === '') return <span className="user-edit-vars__empty-value">(empty)</span>
     const strValue = String(value)
     if (strValue.length > 100) {
       return (
         <span title={strValue}>
           {strValue.substring(0, 100)}...
-          <span style={styles.truncated}> ({strValue.length} chars)</span>
+          <span className="user-edit-vars__truncated"> ({strValue.length} chars)</span>
         </span>
       )
     }
@@ -155,111 +156,105 @@ export default function UserEditVars({ data }) {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="user-edit-vars">
       {/* Header */}
-      <div style={styles.header}>
+      <div className="user-edit-vars__header">
         <div>
-          <h1 style={styles.title}>
+          <h1 className="user-edit-vars__title">
             User Vars: <LinkNode nodeId={target_user.node_id} title={target_user.title} type="user" />
           </h1>
-          <a href={`/node/${target_user.node_id}`} style={styles.backLink}>
-            <FaArrowLeft style={{ marginRight: '6px' }} />
+          <a href={`/node/${target_user.node_id}`} className="user-edit-vars__back-link">
+            <FaArrowLeft className="user-edit-vars__back-icon" />
             Back to homenode
           </a>
         </div>
       </div>
 
       {/* Statistics */}
-      <div style={styles.statsBox}>
-        <p style={styles.statLine}>
+      <div className="user-edit-vars__stats-box">
+        <p className="user-edit-vars__stat-line">
           <strong>User ID:</strong> {target_user.node_id}
         </p>
-        <p style={styles.statLine}>
+        <p className="user-edit-vars__stat-line">
           <strong>Variables:</strong> {vars.length}
         </p>
       </div>
 
       {/* Status message */}
       {saveStatus && (
-        <div style={{
-          ...styles.statusBox,
-          backgroundColor: saveStatus.type === 'error' ? '#fee' :
-                          saveStatus.type === 'success' ? '#efe' : '#fff3cd',
-          color: saveStatus.type === 'error' ? '#c00' :
-                 saveStatus.type === 'success' ? '#060' : '#856404'
-        }}>
+        <div className={`user-edit-vars__status-box user-edit-vars__status-box--${saveStatus.type}`}>
           {saveStatus.message}
         </div>
       )}
 
       {/* Add new var form */}
-      <div style={styles.addForm}>
-        <h3 style={styles.addFormTitle}>Add New Variable</h3>
-        <div style={styles.addFormRow}>
+      <div className="user-edit-vars__add-form">
+        <h3 className="user-edit-vars__add-form-title">Add New Variable</h3>
+        <div className="user-edit-vars__add-form-row">
           <input
             type="text"
             placeholder="Key"
             value={newKey}
             onChange={(e) => setNewKey(e.target.value)}
-            style={styles.input}
+            className="user-edit-vars__input"
           />
           <input
             type="text"
             placeholder="Value"
             value={newValue}
             onChange={(e) => setNewValue(e.target.value)}
-            style={{ ...styles.input, flex: 2 }}
+            className="user-edit-vars__input user-edit-vars__input--wide"
           />
-          <button onClick={handleAddVar} style={styles.addButton}>
+          <button onClick={handleAddVar} className="user-edit-vars__add-button">
             <FaPlus /> Add
           </button>
         </div>
       </div>
 
       {/* Vars Table */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>User Variables ({vars.length})</h2>
+      <div className="user-edit-vars__section">
+        <h2 className="user-edit-vars__section-title">User Variables ({vars.length})</h2>
         {vars.length === 0 ? (
-          <p style={styles.noData}>No variables stored for this user.</p>
+          <p className="user-edit-vars__no-data">No variables stored for this user.</p>
         ) : (
-          <div style={styles.tableWrapper}>
-            <table style={styles.table}>
+          <div className="user-edit-vars__table-wrapper">
+            <table className="user-edit-vars__table">
               <thead>
-                <tr style={styles.headerRow}>
-                  <th style={styles.th}>Key</th>
-                  <th style={styles.th}>Value</th>
-                  <th style={{ ...styles.th, width: '120px' }}>Actions</th>
+                <tr className="user-edit-vars__header-row">
+                  <th className="user-edit-vars__th">Key</th>
+                  <th className="user-edit-vars__th">Value</th>
+                  <th className="user-edit-vars__th user-edit-vars__th--actions">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {vars.map((v, idx) => (
-                  <tr key={v.key} style={idx % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                    <td style={styles.keyCell}>{v.key}</td>
-                    <td style={styles.valueCell}>
+                  <tr key={v.key} className={idx % 2 === 0 ? 'user-edit-vars__even-row' : 'user-edit-vars__odd-row'}>
+                    <td className="user-edit-vars__key-cell">{v.key}</td>
+                    <td className="user-edit-vars__value-cell">
                       {editingIndex === idx ? (
                         <textarea
                           value={editValue}
                           onChange={(e) => setEditValue(e.target.value)}
-                          style={styles.editTextarea}
+                          className="user-edit-vars__edit-textarea"
                           rows={3}
                         />
                       ) : (
                         renderValue(v.value)
                       )}
                     </td>
-                    <td style={styles.actionsCell}>
+                    <td className="user-edit-vars__actions-cell">
                       {editingIndex === idx ? (
                         <>
                           <button
                             onClick={() => handleUpdateVar(v.key)}
-                            style={styles.saveButton}
+                            className="user-edit-vars__save-button"
                             title="Save"
                           >
                             <FaSave />
                           </button>
                           <button
                             onClick={cancelEditing}
-                            style={styles.cancelSmallButton}
+                            className="user-edit-vars__cancel-button"
                             title="Cancel"
                           >
                             <FaTimes />
@@ -269,14 +264,14 @@ export default function UserEditVars({ data }) {
                         <>
                           <button
                             onClick={() => startEditing(idx, v.value)}
-                            style={styles.editSmallButton}
+                            className="user-edit-vars__edit-button"
                             title="Edit"
                           >
                             <FaEdit />
                           </button>
                           <button
                             onClick={() => handleDeleteVar(v.key)}
-                            style={styles.deleteButton}
+                            className="user-edit-vars__delete-button"
                             title="Delete"
                           >
                             <FaTrash />
@@ -293,218 +288,10 @@ export default function UserEditVars({ data }) {
       </div>
 
       {/* Warning box */}
-      <div style={styles.warningBox}>
+      <div className="user-edit-vars__warning-box">
         <strong>Warning:</strong> Modifying user vars directly can cause unexpected behavior.
         Many preferences are stored here. Only make changes if you know what you're doing.
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    maxWidth: '1200px',
-    margin: '0 auto',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '20px',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    margin: '0 0 8px 0',
-  },
-  backLink: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontSize: '14px',
-    color: '#4060b0',
-    textDecoration: 'none',
-  },
-  statsBox: {
-    backgroundColor: '#f8f9fa',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    padding: '15px 20px',
-    marginBottom: '20px',
-  },
-  statLine: {
-    margin: '8px 0',
-    fontSize: '15px',
-    color: '#333',
-  },
-  section: {
-    marginBottom: '30px',
-  },
-  sectionTitle: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    marginBottom: '15px',
-    color: '#333',
-    borderBottom: '2px solid #4060b0',
-    paddingBottom: '8px',
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '13px',
-  },
-  headerRow: {
-    backgroundColor: '#38495e',
-  },
-  th: {
-    padding: '10px 12px',
-    textAlign: 'left',
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  evenRow: {
-    backgroundColor: '#f9f9f9',
-  },
-  oddRow: {
-    backgroundColor: 'white',
-  },
-  keyCell: {
-    padding: '8px 12px',
-    borderBottom: '1px solid #dee2e6',
-    fontFamily: 'monospace',
-    fontWeight: 'bold',
-    color: '#4060b0',
-    width: '200px',
-    verticalAlign: 'top',
-  },
-  valueCell: {
-    padding: '8px 12px',
-    borderBottom: '1px solid #dee2e6',
-    fontFamily: 'monospace',
-    wordBreak: 'break-word',
-    verticalAlign: 'top',
-  },
-  actionsCell: {
-    padding: '8px 12px',
-    borderBottom: '1px solid #dee2e6',
-    textAlign: 'center',
-    whiteSpace: 'nowrap',
-  },
-  emptyValue: {
-    color: '#999',
-    fontStyle: 'italic',
-  },
-  truncated: {
-    color: '#666',
-    fontSize: '11px',
-  },
-  noData: {
-    color: '#666',
-    fontStyle: 'italic',
-    padding: '20px',
-    textAlign: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '4px',
-  },
-  statusBox: {
-    padding: '10px 15px',
-    marginBottom: '15px',
-    borderRadius: '4px',
-    fontSize: '14px',
-  },
-  addForm: {
-    backgroundColor: '#f8f9fa',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    padding: '15px 20px',
-    marginBottom: '20px',
-  },
-  addFormTitle: {
-    margin: '0 0 12px 0',
-    fontSize: '14px',
-    color: '#333',
-  },
-  addFormRow: {
-    display: 'flex',
-    gap: '10px',
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    padding: '8px 12px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '13px',
-    fontFamily: 'monospace',
-  },
-  addButton: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '8px 16px',
-    backgroundColor: '#28a745',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: '500',
-  },
-  editTextarea: {
-    width: '100%',
-    padding: '8px',
-    border: '1px solid #4060b0',
-    borderRadius: '4px',
-    fontSize: '13px',
-    fontFamily: 'monospace',
-    resize: 'vertical',
-  },
-  editSmallButton: {
-    padding: '4px 8px',
-    marginRight: '4px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  saveButton: {
-    padding: '4px 8px',
-    marginRight: '4px',
-    backgroundColor: '#28a745',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  cancelSmallButton: {
-    padding: '4px 8px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  deleteButton: {
-    padding: '4px 8px',
-    backgroundColor: '#dc3545',
-    color: 'white',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  warningBox: {
-    marginTop: '20px',
-    padding: '15px',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    fontSize: '14px',
-    color: '#856404',
-  },
 }

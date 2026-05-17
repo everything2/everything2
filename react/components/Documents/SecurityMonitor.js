@@ -6,6 +6,7 @@ import ParseLinks from '../ParseLinks'
  *
  * Admin tool for viewing security-related actions across the site.
  * Shows categorized logs for various security events.
+ * Styles are in CSS classes (security-monitor__*)
  */
 const SecurityMonitor = ({ data }) => {
   const {
@@ -31,8 +32,8 @@ const SecurityMonitor = ({ data }) => {
   return (
     <div className="security-monitor">
       {/* Category grid */}
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <table style={{ width: '90%', margin: '0 auto' }}>
+      <div className="security-monitor__categories">
+        <table className="security-monitor__category-table">
           <tbody>
             {(() => {
               const rows = []
@@ -40,13 +41,8 @@ const SecurityMonitor = ({ data }) => {
                 rows.push(
                   <tr key={i}>
                     {categories.slice(i, i + 5).map(cat => (
-                      <td key={cat.node_id} style={{ textAlign: 'center' }}>
-                        <div style={{
-                          margin: '0.5em',
-                          padding: '0.5em',
-                          border: '1px solid #555',
-                          borderRadius: '3px'
-                        }}>
+                      <td key={cat.node_id} className="security-monitor__category-cell">
+                        <div className="security-monitor__category-box">
                           <a href={`/?node_id=${node_id}&sectype=${cat.node_id}`}>
                             {cat.name}
                           </a>
@@ -67,27 +63,24 @@ const SecurityMonitor = ({ data }) => {
       {/* Log entries table */}
       {viewing_type && (
         <>
-          <h3 style={{ textAlign: 'center' }}>
+          <h3 className="security-monitor__heading">
             {viewingCategory ? viewingCategory.name : 'Security Log'} Entries
           </h3>
 
-          <div style={{ textAlign: 'center' }}>
-            <table style={{
-              margin: '0 auto',
-              borderCollapse: 'collapse'
-            }} className="logtable">
+          <div className="security-monitor__entries">
+            <table className="security-monitor__log-table logtable">
               <thead>
                 <tr>
-                  <th style={{ padding: '0.5em 1em', borderBottom: '1px solid #aaa', textAlign: 'left' }}>
+                  <th className="security-monitor__th">
                     <strong>Node</strong>
                   </th>
-                  <th style={{ padding: '0.5em 1em', borderBottom: '1px solid #aaa', textAlign: 'left' }}>
+                  <th className="security-monitor__th">
                     <strong>User</strong>
                   </th>
-                  <th style={{ padding: '0.5em 1em', borderBottom: '1px solid #aaa', textAlign: 'left' }}>
+                  <th className="security-monitor__th">
                     <strong>Time</strong>
                   </th>
-                  <th style={{ padding: '0.5em 1em', borderBottom: '1px solid #aaa', textAlign: 'left' }}>
+                  <th className="security-monitor__th">
                     <strong>Details</strong>
                   </th>
                 </tr>
@@ -95,24 +88,24 @@ const SecurityMonitor = ({ data }) => {
               <tbody>
                 {entries.map((entry, idx) => (
                   <tr key={idx}>
-                    <td style={{ padding: '0.5em 1em', borderBottom: '1px solid #aaa' }}>
+                    <td className="security-monitor__td">
                       {entry.node_id ? (
                         <a href={`/?node_id=${entry.node_id}`}>{entry.node_title}</a>
                       ) : (
                         entry.node_title
                       )}
                     </td>
-                    <td style={{ padding: '0.5em 1em', borderBottom: '1px solid #aaa' }}>
+                    <td className="security-monitor__td">
                       {entry.user_id ? (
                         <a href={`/?node_id=${entry.user_id}`}>{entry.user_title}</a>
                       ) : (
                         entry.user_title
                       )}
                     </td>
-                    <td style={{ padding: '0.5em 1em', borderBottom: '1px solid #aaa' }}>
+                    <td className="security-monitor__td">
                       <small>{entry.time}</small>
                     </td>
-                    <td style={{ padding: '0.5em 1em', borderBottom: '1px solid #aaa' }}>
+                    <td className="security-monitor__td">
                       <ParseLinks text={entry.details} />
                     </td>
                   </tr>
@@ -122,12 +115,12 @@ const SecurityMonitor = ({ data }) => {
           </div>
 
           {/* Pagination */}
-          <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <hr style={{ width: '300px', margin: '20px auto' }} />
-            <table style={{ width: '70%', margin: '0 auto' }}>
+          <div className="security-monitor__pagination">
+            <hr className="security-monitor__pagination-hr" />
+            <table className="security-monitor__pagination-table">
               <tbody>
                 <tr>
-                  <td style={{ width: '50%', textAlign: 'center' }}>
+                  <td className="security-monitor__pagination-cell">
                     {startat > 0 ? (
                       <a href={`/?node_id=${node_id}&sectype=${viewing_type}&startat=${startat - page_size}`}>
                         {startat - page_size}-{startat}
@@ -136,7 +129,7 @@ const SecurityMonitor = ({ data }) => {
                       `${startat}-${Math.min(startat + page_size, total)}`
                     )}
                   </td>
-                  <td style={{ width: '50%', textAlign: 'center' }}>
+                  <td className="security-monitor__pagination-cell">
                     {startat + page_size < total ? (
                       <a href={`/?node_id=${node_id}&sectype=${viewing_type}&startat=${startat + page_size}`}>
                         {startat + page_size}-{Math.min(startat + page_size * 2, total)}

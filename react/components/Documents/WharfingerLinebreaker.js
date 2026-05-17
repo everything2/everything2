@@ -52,7 +52,7 @@ const WharfingerLinebreaker = () => {
         <code>&lt;p&gt; &lt;/p&gt;</code> tags, like so:
       </p>
 
-      <pre style={{ backgroundColor: '#f5f5f5', padding: '10px', border: '1px solid #ddd' }}>
+      <pre className="linebreaker__code-example">
         {`<p>Call me Ishmael. Some years ago -- never mind how long
 precisely -- having little or no money in my purse, and
 nothing particular to interest me on shore, I thought I
@@ -104,30 +104,19 @@ world.</p>
         </dd>
       </dl>
 
-      <div style={{ marginTop: '30px', marginBottom: '30px' }}>
+      <div className="linebreaker__form-area">
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={20}
           cols={70}
-          style={{
-            width: '100%',
-            maxWidth: '700px',
-            fontFamily: 'monospace',
-            padding: '10px',
-            border: '1px solid #ccc'
-          }}
+          className="linebreaker__textarea"
         />
 
-        <div style={{ marginTop: '10px' }}>
+        <div className="linebreaker__controls">
           <button
             onClick={handleProcess}
-            style={{
-              padding: '8px 16px',
-              fontSize: '1em',
-              marginRight: '10px',
-              cursor: 'pointer'
-            }}
+            className="linebreaker__submit-btn"
           >
             Add Break Tags
           </button>
@@ -137,7 +126,7 @@ world.</p>
               type="checkbox"
               checked={fixTabs}
               onChange={(e) => setFixTabs(e.target.checked)}
-              style={{ marginRight: '5px' }}
+              className="linebreaker__checkbox"
             />
             Replace indenting with <code>&lt;dd&gt;</code> tag
           </label>

@@ -5,7 +5,7 @@ import './NodeletSection.css'
 const NodeletSection = (props) => {
   return <div id={props.nodelet+"section_"+props.section} className="nodeletsection">
     <div className="sectionheading">
-      <a onClick={(event) => {props.toggleSection(event,props.nodelet+"_"+props.section)}} style={{cursor:'pointer', marginRight: '6px', display: 'inline-flex', alignItems: 'center'}} >
+      <a onClick={(event) => {props.toggleSection(event,props.nodelet+"_"+props.section)}} className="nodelet-section__toggle" >
         {props.display ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />}
       </a>
       <strong>{props.title}</strong>

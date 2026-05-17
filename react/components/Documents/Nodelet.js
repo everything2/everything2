@@ -5,6 +5,7 @@ import { FaList, FaClock, FaCode, FaFolder, FaCogs, FaInfoCircle } from 'react-i
 
 /**
  * Nodelet - Display page for nodelet nodes
+ * Styles in CSS: .nodelet-display__*
  *
  * Modeled after the Nodetype display component.
  * Shows nodelet documentation, configuration, and source map.
@@ -23,48 +24,6 @@ const Nodelet = ({ data, user }) => {
     nltext_preview,
     has_react_component
   } = nodelet
-
-  const sectionStyle = {
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '6px',
-    border: '1px solid #dee2e6'
-  }
-
-  const headerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '10px',
-    color: '#38495e',
-    fontSize: '14px',
-    fontWeight: 'bold'
-  }
-
-  const valueStyle = {
-    color: '#495057',
-    fontSize: '13px'
-  }
-
-  const emptyStyle = {
-    color: '#6c757d',
-    fontStyle: 'italic',
-    fontSize: '13px'
-  }
-
-  const codePreviewStyle = {
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    backgroundColor: '#1e1e1e',
-    color: '#d4d4d4',
-    padding: '12px',
-    borderRadius: '4px',
-    overflow: 'auto',
-    maxHeight: '200px',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all'
-  }
 
   // Format update interval
   const formatUpdateInterval = (interval) => {
@@ -85,40 +44,29 @@ const Nodelet = ({ data, user }) => {
   return (
     <div className="nodelet-display">
       {/* Quick Actions */}
-      <div style={{ marginBottom: '20px' }}>
+      <div className="nodelet-display__actions">
         <a
           href={`/title/List%20Nodes%20of%20Type?setvars_ListNodesOfType_Type=9`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 16px',
-            backgroundColor: '#4060b0',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontSize: '13px',
-            fontWeight: '500'
-          }}
+          className="nodelet-display__list-btn"
         >
           <FaList size={12} /> List All Nodelets
         </a>
       </div>
 
       {/* About Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="nodelet-display__section">
+        <h4 className="nodelet-display__section-header">
           <FaInfoCircle size={16} /> About This Nodelet
         </h4>
-        <p style={{ ...valueStyle, lineHeight: '1.6', margin: 0 }}>
+        <p className="nodelet-display__about nodelet-display__value">
           Nodelets are sidebar widgets that appear in the right column of Everything2 pages.
           They provide quick access to information and features like chat, new writeups, and user stats.
           {has_react_component ? (
-            <span style={{ display: 'block', marginTop: '10px', color: '#22c55e' }}>
+            <span className="nodelet-display__react-notice">
               <strong>This nodelet uses a React component for rendering.</strong>
             </span>
           ) : (
-            <span style={{ display: 'block', marginTop: '10px', color: '#f59e0b' }}>
+            <span className="nodelet-display__legacy-notice">
               This nodelet uses legacy Perl htmlcode for rendering.
             </span>
           )}
@@ -126,28 +74,28 @@ const Nodelet = ({ data, user }) => {
       </div>
 
       {/* Configuration Section */}
-      <div style={sectionStyle}>
-        <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+      <div className="nodelet-display__section">
+        <h4 className="nodelet-display__section-header">
           <FaCogs size={16} /> Configuration
         </h4>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="nodelet-display__grid">
           <div>
-            <div style={headerStyle}>
+            <div className="nodelet-display__header">
               <FaClock size={12} /> Update Interval
             </div>
-            <div style={valueStyle}>{formatUpdateInterval(updateinterval)}</div>
+            <div className="nodelet-display__value">{formatUpdateInterval(updateinterval)}</div>
           </div>
 
           <div>
-            <div style={headerStyle}>
+            <div className="nodelet-display__header">
               <FaFolder size={12} /> Parent Container
             </div>
-            <div style={valueStyle}>
+            <div className="nodelet-display__value">
               {parent_container && parent_container !== 0 ? (
                 <LinkNode nodeId={parent_container} title={`Node ${parent_container}`} />
               ) : (
-                <span style={emptyStyle}>None (top-level nodelet)</span>
+                <span className="nodelet-display__empty">None (top-level nodelet)</span>
               )}
             </div>
           </div>
@@ -156,17 +104,17 @@ const Nodelet = ({ data, user }) => {
 
       {/* Code Preview Section (Developer only) */}
       {isDeveloper && (nlcode_preview || nltext_preview) && (
-        <div style={sectionStyle}>
-          <h4 style={{ ...headerStyle, marginBottom: '15px', fontSize: '15px', borderBottom: '1px solid #dee2e6', paddingBottom: '10px' }}>
+        <div className="nodelet-display__section">
+          <h4 className="nodelet-display__section-header">
             <FaCode size={16} /> Code Preview
           </h4>
 
           {nlcode_preview && (
-            <div style={{ marginBottom: nltext_preview ? '15px' : 0 }}>
-              <div style={{ ...headerStyle, marginBottom: '8px' }}>
+            <div className={nltext_preview ? 'nodelet-display__code-section' : ''}>
+              <div className="nodelet-display__header">
                 <FaCode size={12} /> nlcode (Perl code)
               </div>
-              <div style={codePreviewStyle}>
+              <div className="nodelet-display__code-preview">
                 {nlcode_preview}
               </div>
             </div>
@@ -174,10 +122,10 @@ const Nodelet = ({ data, user }) => {
 
           {nltext_preview && (
             <div>
-              <div style={{ ...headerStyle, marginBottom: '8px' }}>
+              <div className="nodelet-display__header">
                 <FaCode size={12} /> nltext (HTML template)
               </div>
-              <div style={codePreviewStyle}>
+              <div className="nodelet-display__code-preview">
                 {nltext_preview}
               </div>
             </div>

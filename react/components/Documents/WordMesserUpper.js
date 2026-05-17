@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 /**
  * WordMesserUpper - Client-side word shuffler
+ * Styles in CSS: .word-messer-upper__*
  * Pure JavaScript implementation with Fisher-Yates shuffle algorithm
  * No server-side processing required
  */
@@ -60,20 +61,20 @@ const WordMesserUpper = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <p style={styles.intro}>
+    <div className="word-messer-upper">
+      <p className="word-messer-upper__intro">
         Type in something you'd like to see messed up:
       </p>
 
-      <form onSubmit={handleMessUp} style={styles.form}>
-        <div style={styles.breaksControl}>
-          <label style={styles.breaksLabel}>
+      <form onSubmit={handleMessUp} className="word-messer-upper__form">
+        <div className="word-messer-upper__breaks-control">
+          <label className="word-messer-upper__breaks-label">
             insert{' '}
             <input
               type="number"
               value={numBreaks}
               onChange={(e) => setNumBreaks(e.target.value)}
-              style={styles.breaksInput}
+              className="word-messer-upper__breaks-input"
               min="0"
               max="99"
             />
@@ -86,104 +87,25 @@ const WordMesserUpper = () => {
           onChange={(e) => setText(e.target.value)}
           rows={10}
           cols={60}
-          style={styles.textarea}
+          className="word-messer-upper__textarea"
           placeholder="Enter text here..."
         />
 
-        <button type="submit" style={styles.button}>
+        <button type="submit" className="word-messer-upper__button">
           Mess it up!
         </button>
       </form>
 
       {messedText && (
-        <div style={styles.output}>
-          <h3 style={styles.outputHeading}>Messed up text:</h3>
-          <div style={styles.outputText}>
+        <div className="word-messer-upper__output">
+          <h3 className="word-messer-upper__output-heading">Messed up text:</h3>
+          <div className="word-messer-upper__output-text">
             {formatMessedText(messedText)}
           </div>
         </div>
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111'
-  },
-  intro: {
-    marginBottom: '20px',
-    fontSize: '14px',
-    color: '#38495e'
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px'
-  },
-  breaksControl: {
-    marginBottom: '8px'
-  },
-  breaksLabel: {
-    fontSize: '13px',
-    color: '#38495e'
-  },
-  breaksInput: {
-    width: '50px',
-    padding: '4px 8px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    fontSize: '13px',
-    textAlign: 'center'
-  },
-  textarea: {
-    width: '100%',
-    padding: '12px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    fontSize: '13px',
-    fontFamily: 'monospace',
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    alignSelf: 'flex-start'
-  },
-  output: {
-    marginTop: '30px',
-    padding: '20px',
-    backgroundColor: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  outputHeading: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    marginTop: 0,
-    marginBottom: '15px',
-    color: '#38495e'
-  },
-  outputText: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    fontFamily: 'monospace',
-    color: '#111',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word'
-  }
 }
 
 export default WordMesserUpper

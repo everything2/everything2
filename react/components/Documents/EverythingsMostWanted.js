@@ -41,6 +41,8 @@ const renderMessageWithLinks = (message) => {
 
 /**
  * EverythingsMostWanted - Bounty system for filling nodeshells.
+ * Styles in CSS: .emw__*
+ *
  * Users can post bounties, sheriffs/admins can manage them.
  */
 const EverythingsMostWanted = ({ data }) => {
@@ -72,20 +74,14 @@ const EverythingsMostWanted = ({ data }) => {
   const [awarded, setAwarded] = useState('')
 
   return (
-    <div style={styles.container}>
+    <div className="emw">
       {message && (
-        <div style={styles.message}>
+        <div className="emw__message">
           <p>{renderMessageWithLinks(message)}</p>
         </div>
       )}
 
-      <div style={styles.header}>
-        <p style={styles.title}>
-          <strong>Welcome to Everything&apos;s Most Wanted</strong>
-        </p>
-      </div>
-
-      <div style={styles.intro}>
+      <div className="emw__intro">
         <p>
           Howdy stranger! Reckon you have the cojones to take down some of the meanest nodes this
           side of the Rio Grande? Below is a list of the most dangerously unfilled nodes ever to
@@ -102,8 +98,8 @@ const EverythingsMostWanted = ({ data }) => {
 
       {/* User bounty management section */}
       {can_post && (
-        <div style={styles.section}>
-          <hr style={styles.hr} />
+        <div className="emw__section">
+          <hr className="emw__hr" />
 
           {has_bounty ? (
             <div>
@@ -112,17 +108,17 @@ const EverythingsMostWanted = ({ data }) => {
                 been filled by a user, or because you just want to take it down)?
               </p>
               {current_bounty && (
-                <p style={styles.currentBounty}>
+                <p className="emw__current-bounty">
                   Your bounty: <strong><ParseLinks text={current_bounty.outlaw} /></strong> - Reward:{' '}
                   <strong>{current_bounty.reward} GP</strong>
                 </p>
               )}
-              <div style={styles.buttonRow}>
+              <div className="emw__button-row">
                 {!gp_optout && current_bounty?.reward > 0 && (
                   <button
                     type="button"
                     onClick={() => setShowRewardModal(true)}
-                    style={styles.button}
+                    className="emw__button"
                   >
                     Pay out GP reward
                   </button>
@@ -130,15 +126,15 @@ const EverythingsMostWanted = ({ data }) => {
                 <button
                   type="button"
                   onClick={() => setShowAwardModal(true)}
-                  style={styles.button}
+                  className="emw__button"
                 >
                   Pay out custom reward
                 </button>
-                <form method="POST" style={{ display: 'inline' }}>
+                <form method="POST" className="emw__form-inline">
                   <input type="hidden" name="node_id" value={nodeId} />
                   <input type="hidden" name="emw_nonce" value={csrf_nonce} />
                   <input type="hidden" name="emw_seed" value={csrf_seed} />
-                  <button type="submit" name="Remove" value="1" style={styles.button}>
+                  <button type="submit" name="Remove" value="1" className="emw__button">
                     Just remove it
                   </button>
                 </form>
@@ -151,7 +147,7 @@ const EverythingsMostWanted = ({ data }) => {
                 <button
                   type="button"
                   onClick={() => setShowModal(true)}
-                  style={styles.button}
+                  className="emw__button"
                 >
                   Add a Bounty
                 </button>
@@ -163,39 +159,39 @@ const EverythingsMostWanted = ({ data }) => {
 
       {/* Bounty creation modal */}
       {showModal && (
-        <div style={styles.modalOverlay} onClick={() => setShowModal(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <h3 style={styles.modalTitle}>Post a Bounty</h3>
+        <div className="emw__modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="emw__modal" onClick={e => e.stopPropagation()}>
+            <h3 className="emw__modal-title">Post a Bounty</h3>
             <form method="POST">
               <input type="hidden" name="node_id" value={nodeId} />
               <input type="hidden" name="emw_nonce" value={csrf_nonce} />
               <input type="hidden" name="emw_seed" value={csrf_seed} />
               <input type="hidden" name="Yes" value="1" />
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>
+              <div className="emw__form-group">
+                <label className="emw__label">
                   Outlaw Node (nodeshell to be filled):
                   <input
                     type="text"
                     name="outlaw"
                     value={outlawNode}
                     onChange={e => setOutlawNode(e.target.value)}
-                    style={styles.inputFull}
+                    className="emw__input-full"
                     placeholder="Enter nodeshell title"
                     required
                   />
                 </label>
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>
+              <div className="emw__form-group">
+                <label className="emw__label">
                   GP Reward (max {bounty_limit} GP, or 0 for non-GP reward):
                   <input
                     type="number"
                     name="bountyreward"
                     value={gpReward}
                     onChange={e => setGpReward(e.target.value)}
-                    style={styles.inputFull}
+                    className="emw__input-full"
                     min="0"
                     max={bounty_limit}
                     placeholder="0"
@@ -203,28 +199,28 @@ const EverythingsMostWanted = ({ data }) => {
                 </label>
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>
+              <div className="emw__form-group">
+                <label className="emw__label">
                   Comment (describe conditions, other rewards, etc.):
                   <textarea
                     name="bountycomment"
                     value={comment}
                     onChange={e => setComment(e.target.value)}
-                    style={styles.textarea}
+                    className="emw__textarea"
                     rows={3}
                     placeholder="Optional: describe any conditions or non-GP rewards"
                   />
                 </label>
               </div>
 
-              <div style={styles.buttonRow}>
-                <button type="submit" style={styles.button}>
+              <div className="emw__button-row">
+                <button type="submit" className="emw__button">
                   Post Bounty
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  style={styles.cancelButton}
+                  className="emw__cancel-button"
                 >
                   Cancel
                 </button>
@@ -236,38 +232,38 @@ const EverythingsMostWanted = ({ data }) => {
 
       {/* Reward GP modal */}
       {showRewardModal && (
-        <div style={styles.modalOverlay} onClick={() => setShowRewardModal(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <h3 style={styles.modalTitle}>Pay Out GP Reward</h3>
+        <div className="emw__modal-overlay" onClick={() => setShowRewardModal(false)}>
+          <div className="emw__modal" onClick={e => e.stopPropagation()}>
+            <h3 className="emw__modal-title">Pay Out GP Reward</h3>
             <form method="POST">
               <input type="hidden" name="node_id" value={nodeId} />
               <input type="hidden" name="emw_nonce" value={csrf_nonce} />
               <input type="hidden" name="emw_seed" value={csrf_seed} />
               <input type="hidden" name="Reward" value="1" />
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>
+              <div className="emw__form-group">
+                <label className="emw__label">
                   Who filled this bounty?
                   <input
                     type="text"
                     name="rewardee"
                     value={rewardee}
                     onChange={e => setRewardee(e.target.value)}
-                    style={styles.inputFull}
+                    className="emw__input-full"
                     placeholder="Enter username"
                     required
                   />
                 </label>
               </div>
 
-              <div style={styles.buttonRow}>
-                <button type="submit" style={styles.button}>
+              <div className="emw__button-row">
+                <button type="submit" className="emw__button">
                   Pay {current_bounty?.reward || 0} GP
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowRewardModal(false)}
-                  style={styles.cancelButton}
+                  className="emw__cancel-button"
                 >
                   Cancel
                 </button>
@@ -279,59 +275,59 @@ const EverythingsMostWanted = ({ data }) => {
 
       {/* Award custom prize modal */}
       {showAwardModal && (
-        <div style={styles.modalOverlay} onClick={() => setShowAwardModal(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <h3 style={styles.modalTitle}>Pay Out Custom Reward</h3>
+        <div className="emw__modal-overlay" onClick={() => setShowAwardModal(false)}>
+          <div className="emw__modal" onClick={e => e.stopPropagation()}>
+            <h3 className="emw__modal-title">Pay Out Custom Reward</h3>
             <form method="POST">
               <input type="hidden" name="node_id" value={nodeId} />
               <input type="hidden" name="emw_nonce" value={csrf_nonce} />
               <input type="hidden" name="emw_seed" value={csrf_seed} />
               <input type="hidden" name="Award" value="1" />
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>
+              <div className="emw__form-group">
+                <label className="emw__label">
                   Who filled this bounty?
                   <input
                     type="text"
                     name="awardee"
                     value={awardee}
                     onChange={e => setAwardee(e.target.value)}
-                    style={styles.inputFull}
+                    className="emw__input-full"
                     placeholder="Enter username"
                     required
                   />
                 </label>
               </div>
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>
+              <div className="emw__form-group">
+                <label className="emw__label">
                   What are you awarding them?
                   <input
                     type="text"
                     name="awarded"
                     value={awarded}
                     onChange={e => setAwarded(e.target.value)}
-                    style={styles.inputFull}
+                    className="emw__input-full"
                     placeholder="e.g., a C!, postcard, node audit"
                     required
                   />
                 </label>
               </div>
 
-              <p style={styles.note}>
+              <p className="emw__note">
                 {current_bounty?.reward > 0
                   ? `They will also receive ${current_bounty.reward} GP.`
                   : 'No GP reward will be given.'}
               </p>
 
-              <div style={styles.buttonRow}>
-                <button type="submit" style={styles.button}>
+              <div className="emw__button-row">
+                <button type="submit" className="emw__button">
                   Award Prize
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAwardModal(false)}
-                  style={styles.cancelButton}
+                  className="emw__cancel-button"
                 >
                   Cancel
                 </button>
@@ -343,8 +339,8 @@ const EverythingsMostWanted = ({ data }) => {
 
       {/* Sheriff/admin bounty removal section */}
       {(is_sheriff || is_admin) && (
-        <div style={styles.section}>
-          <hr style={styles.hr} />
+        <div className="emw__section">
+          <hr className="emw__hr" />
           {is_admin ? (
             <p>
               Since you are an administrator, you have the authority to delete bounties if
@@ -362,9 +358,9 @@ const EverythingsMostWanted = ({ data }) => {
             <input type="hidden" name="emw_seed" value={csrf_seed} />
             <label>
               Enter the name of a user whose bounty you need to remove:{' '}
-              <input type="text" name="removee" style={styles.input} />
+              <input type="text" name="removee" className="emw__input" />
             </label>{' '}
-            <button type="submit" name="yankify" value="1" style={styles.button}>
+            <button type="submit" name="yankify" value="1" className="emw__button">
               Remove Bounty
             </button>
           </form>
@@ -372,38 +368,38 @@ const EverythingsMostWanted = ({ data }) => {
       )}
 
       {/* Bounty table */}
-      <hr style={styles.hr} />
-      <table style={styles.table}>
+      <hr className="emw__hr" />
+      <table className="emw__table">
         <thead>
           <tr>
-            <th style={styles.th}>Requesting Sheriff</th>
-            <th style={styles.th}>Outlaw Node</th>
-            <th style={styles.th}>Details of the Crime</th>
-            <th style={styles.th}>GP Reward (if any)</th>
+            <th className="emw__th">Requesting Sheriff</th>
+            <th className="emw__th">Outlaw Node</th>
+            <th className="emw__th">Details of the Crime</th>
+            <th className="emw__th">GP Reward (if any)</th>
           </tr>
         </thead>
         <tbody>
           {bounties.length > 0 ? (
             bounties.map((bounty, idx) => (
-              <tr key={bounty.number} style={idx % 2 === 1 ? styles.evenRow : styles.oddRow}>
-                <td style={styles.td}>
+              <tr key={bounty.number} className={idx % 2 === 1 ? 'emw__row--even' : 'emw__row--odd'}>
+                <td className="emw__td">
                   <ParseLinks text={`[${bounty.requester}]`} />
                 </td>
-                <td style={styles.td}>
+                <td className="emw__td">
                   <ParseLinks text={bounty.outlaw} />
                 </td>
                 <td
-                  style={styles.td}
+                  className="emw__td"
                   dangerouslySetInnerHTML={{
                     __html: renderE2Content(bounty.comment || '\u00A0').html
                   }}
                 />
-                <td style={styles.td}>{bounty.reward}</td>
+                <td className="emw__td">{bounty.reward}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={4} style={styles.td}>
+              <td colSpan={4} className="emw__td">
                 <em>No active bounties at this time.</em>
               </td>
             </tr>
@@ -413,10 +409,10 @@ const EverythingsMostWanted = ({ data }) => {
 
       {/* Justice served section */}
       {justice_served.length > 0 && (
-        <div style={styles.section}>
-          <hr style={styles.hr} />
-          <h3 style={styles.subtitle}>Justice Served</h3>
-          <ul style={styles.justiceList}>
+        <div className="emw__section">
+          <hr className="emw__hr" />
+          <h3 className="emw__subtitle">Justice Served</h3>
+          <ul className="emw__justice-list">
             {justice_served.map((entry, idx) => (
               <li key={idx}><ParseLinks text={entry} /></li>
             ))}
@@ -425,172 +421,6 @@ const EverythingsMostWanted = ({ data }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#111'
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '15px'
-  },
-  title: {
-    fontSize: '16px',
-    margin: '0'
-  },
-  intro: {
-    marginBottom: '20px'
-  },
-  section: {
-    marginTop: '15px',
-    marginBottom: '15px'
-  },
-  hr: {
-    width: '50%',
-    border: 'none',
-    borderTop: '1px solid #d3d3d3',
-    margin: '20px auto'
-  },
-  currentBounty: {
-    backgroundColor: '#f8f9f9',
-    padding: '10px',
-    borderRadius: '4px',
-    marginBottom: '15px'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse'
-  },
-  th: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '8px',
-    textAlign: 'left',
-    border: '1px solid silver'
-  },
-  td: {
-    padding: '8px',
-    border: '1px solid silver'
-  },
-  oddRow: {
-    backgroundColor: '#ffffff'
-  },
-  evenRow: {
-    backgroundColor: '#f8f9f9'
-  },
-  input: {
-    padding: '6px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    width: '200px'
-  },
-  button: {
-    padding: '6px 15px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px',
-    marginRight: '5px'
-  },
-  subtitle: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    margin: '10px 0',
-    color: '#38495e'
-  },
-  justiceList: {
-    margin: '10px 0',
-    paddingLeft: '20px'
-  },
-  modalOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000
-  },
-  modal: {
-    backgroundColor: '#ffffff',
-    padding: '20px',
-    borderRadius: '8px',
-    width: '90%',
-    maxWidth: '450px',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-  },
-  modalTitle: {
-    margin: '0 0 15px 0',
-    fontSize: '16px',
-    color: '#38495e'
-  },
-  formGroup: {
-    marginBottom: '15px'
-  },
-  label: {
-    display: 'block',
-    fontSize: '13px',
-    color: '#111'
-  },
-  inputFull: {
-    display: 'block',
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    marginTop: '5px',
-    boxSizing: 'border-box'
-  },
-  textarea: {
-    display: 'block',
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    marginTop: '5px',
-    boxSizing: 'border-box',
-    resize: 'vertical'
-  },
-  buttonRow: {
-    display: 'flex',
-    gap: '10px',
-    marginTop: '20px'
-  },
-  cancelButton: {
-    padding: '6px 15px',
-    backgroundColor: '#d3d3d3',
-    color: '#111',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px'
-  },
-  message: {
-    backgroundColor: '#d4edda',
-    border: '1px solid #c3e6cb',
-    borderRadius: '4px',
-    padding: '10px 15px',
-    marginBottom: '15px',
-    color: '#155724'
-  },
-  note: {
-    fontSize: '12px',
-    color: '#507898',
-    fontStyle: 'italic',
-    marginBottom: '10px'
-  }
 }
 
 export default EverythingsMostWanted

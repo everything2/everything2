@@ -1,13 +1,27 @@
 # Inline Styles Refactoring Tracker
 
+**Last Updated**: 2026-04-27
+**Status**: ⏸️ Refactor done in working tree, blocked on verification
+
 This document tracks the systematic refactoring of inline styles from React components to CSS classes.
 
 **Goal**: Move all inline `style={{...}}` from React components to CSS classes in the basesheet (1973976.css) or component-specific CSS files.
 
-**Started**: ~1200 inline style occurrences across 191 files
-**Remaining**: ~905 inline styles
+## Current State (April 2026)
 
-## Progress Summary
+The bulk of the refactor was completed in a Jan 2026 session and currently sits **uncommitted** in the working tree (~280 modified files, +28,923 / −20,872 lines). Specifically:
+
+- ~200 `react/components/Documents/*.js` files have had their inline `style={{...}}` blocks replaced with `className` references
+- `www/css/1973976.css` (basesheet) has ~23,629 lines of new BEM classes added to back the change
+- All 1,457 React tests pass
+
+**Why it's still uncommitted**: blocked on visual verification across 19 themes × 200+ pages. Manual screenshot review proved unworkable. Use `tools/computed-style-diff.js` (added April 2026) to verify computed-style equivalence programmatically — see workflow in that file's header comment.
+
+The original counts below are from the start of the project and are no longer accurate; the doc is preserved as a snapshot of how the work was scoped.
+
+**Started**: ~1200 inline style occurrences across 191 files
+
+## Progress Summary (original tracker, now stale)
 
 | Status | Count |
 |--------|-------|
@@ -15,7 +29,7 @@ This document tracks the systematic refactoring of inline styles from React comp
 | In Progress | 0 |
 | Pending | 180 |
 
-**Inline styles removed**: ~295
+**Inline styles removed (per original tracker)**: ~295
 
 ## Completed Components
 

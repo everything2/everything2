@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode';
 
 /**
  * Everything Finger - Who's online on Everything2
+ * Styles in CSS: .e2-finger__*
  *
  * Displays list of currently logged-in users with:
  * - Username and nickname
@@ -14,63 +15,63 @@ const EverythingFinger = ({ data }) => {
 
   if (total === 0) {
     return (
-      <div style={styles.container}>
+      <div className="e2-finger">
         <em>No users are logged in!</em>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <p style={styles.intro}>
+    <div className="e2-finger">
+      <div className="e2-finger__header">
+        <p className="e2-finger__intro">
           There are currently <strong>{total}</strong> user{total !== 1 ? 's' : ''} on Everything2
         </p>
       </div>
 
-      <div style={styles.tableWrapper}>
-        <table style={styles.table}>
+      <div className="e2-finger__table-wrapper">
+        <table className="e2-finger__table">
           <thead>
             <tr>
-              <th style={styles.th}>Who</th>
-              <th style={styles.th}>What</th>
-              <th style={styles.th}>Where</th>
+              <th className="e2-finger__th">Who</th>
+              <th className="e2-finger__th">What</th>
+              <th className="e2-finger__th">Where</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user, index) => (
-              <tr key={user.user_id} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
+              <tr key={user.user_id} className={index % 2 === 0 ? 'e2-finger__row--even' : 'e2-finger__row--odd'}>
                 {/* Who - Username */}
-                <td style={styles.td}>
+                <td className="e2-finger__td">
                   <LinkNode type="user" title={user.username} />
                 </td>
 
                 {/* What - Status flags */}
-                <td style={styles.td}>
-                  <div style={styles.flagsContainer}>
+                <td className="e2-finger__td">
+                  <div className="e2-finger__flags">
                     {user.flags.map((flag, idx) => (
                       <span key={idx}>
                         {flag.type === 'invisible' && (
-                          <span style={styles.invisibleFlag}>{flag.label}</span>
+                          <span className="e2-finger__invisible-flag">{flag.label}</span>
                         )}
                         {flag.type === 'admin' && (
-                          <span style={styles.roleFlag} title="Administrator">
+                          <span className="e2-finger__role-flag" title="Administrator">
                             {flag.label}
                           </span>
                         )}
                         {flag.type === 'editor' && (
-                          <span style={styles.roleFlag} title="Content Editor">
+                          <span className="e2-finger__role-flag" title="Content Editor">
                             {flag.label}
                           </span>
                         )}
                         {flag.type === 'developer' && (
-                          <span style={styles.roleFlag} title="Developer">
+                          <span className="e2-finger__role-flag" title="Developer">
                             {flag.label}
                           </span>
                         )}
                         {flag.type === 'newbie' && (
                           <span
-                            style={flag.highlight ? styles.newbieHighlight : styles.newbie}
+                            className={flag.highlight ? 'e2-finger__newbie--highlight' : 'e2-finger__newbie'}
                             title={`Account is ${flag.label} days old`}
                           >
                             {flag.label}
@@ -82,11 +83,11 @@ const EverythingFinger = ({ data }) => {
                 </td>
 
                 {/* Where - Current room */}
-                <td style={styles.td}>
+                <td className="e2-finger__td">
                   {user.room ? (
                     <LinkNode type="room" title={user.room.title} />
                   ) : (
-                    <span style={styles.outside}>outside</span>
+                    <span className="e2-finger__outside">outside</span>
                   )}
                 </td>
               </tr>
@@ -96,80 +97,6 @@ const EverythingFinger = ({ data }) => {
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px'
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '20px'
-  },
-  intro: {
-    fontSize: '16px',
-    color: '#38495e',
-    margin: '0 0 20px 0'
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-    borderRadius: '8px',
-    border: '1px solid #dee2e6'
-  },
-  table: {
-    width: '75%',
-    margin: '0 auto',
-    borderCollapse: 'collapse',
-    fontSize: '14px',
-    background: 'white'
-  },
-  th: {
-    padding: '12px 16px',
-    fontWeight: '600',
-    color: '#38495e',
-    background: '#f8f9f9',
-    borderBottom: '2px solid #dee2e6',
-    textAlign: 'left'
-  },
-  td: {
-    padding: '10px 16px',
-    borderBottom: '1px solid #eee'
-  },
-  evenRow: {
-    background: '#fff'
-  },
-  oddRow: {
-    background: '#fafbfc'
-  },
-  flagsContainer: {
-    display: 'flex',
-    gap: '4px',
-    alignItems: 'center'
-  },
-  invisibleFlag: {
-    color: '#ff0000',
-    fontSize: '13px'
-  },
-  roleFlag: {
-    color: '#38495e',
-    fontWeight: '600',
-    fontSize: '14px'
-  },
-  newbie: {
-    color: '#507898',
-    fontSize: '13px'
-  },
-  newbieHighlight: {
-    color: '#507898',
-    fontSize: '13px',
-    fontWeight: '700'
-  },
-  outside: {
-    color: '#6c757d',
-    fontStyle: 'italic'
-  }
 };
 
 export default EverythingFinger;

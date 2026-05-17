@@ -7,13 +7,7 @@ const SignIn = (props) => {
 
   if (!props.user.guest) {
     content = (
-      <div style={{
-        padding: '16px',
-        textAlign: 'center',
-        fontSize: '12px',
-        fontStyle: 'italic',
-        color: '#495057'
-      }}>
+      <div className="signin__already-logged-in">
         You are already signed in!
       </div>
     )

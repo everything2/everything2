@@ -239,6 +239,16 @@ div#e2logo a:link, div#e2logo a:visited {
   color: var(--e2-logo-text);
 }
 
+/* Mobile logo: show text "E2" instead of SVG */
+@media (max-width: 768px) {
+  .e2-mobile-logo-text {
+    display: inline !important;
+  }
+  .e2-mobile-logo-svg {
+    display: none !important;
+  }
+}
+
 /* ====================================================================
    WRITEUPS AND CONTENT
    ==================================================================== */

@@ -1,98 +1,9 @@
 import React, { useState, useCallback } from 'react'
 
-const styles = {
-  container: {
-    maxWidth: '400px',
-    margin: '50px auto',
-    padding: '20px',
-  },
-  fieldset: {
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '20px',
-  },
-  legend: {
-    fontWeight: 'bold',
-    fontSize: '1.2rem',
-    padding: '0 10px',
-  },
-  prompt: {
-    marginBottom: '20px',
-    lineHeight: '1.5',
-  },
-  formGroup: {
-    marginBottom: '15px',
-    textAlign: 'right',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '10px',
-  },
-  labelText: {
-    display: 'inline-block',
-    width: '80px',
-    textAlign: 'left',
-  },
-  input: {
-    padding: '8px',
-    fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    width: '200px',
-  },
-  inputReadonly: {
-    padding: '8px',
-    fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    width: '200px',
-    backgroundColor: '#f8f9fa',
-  },
-  checkboxGroup: {
-    marginBottom: '15px',
-    textAlign: 'center',
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: 'bold',
-  },
-  buttonDisabled: {
-    backgroundColor: '#999',
-    cursor: 'not-allowed',
-  },
-  message: {
-    padding: '20px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-    textAlign: 'center',
-    lineHeight: '1.6',
-  },
-  success: {
-    padding: '20px',
-    backgroundColor: '#d4edda',
-    border: '1px solid #c3e6cb',
-    borderRadius: '8px',
-    lineHeight: '1.6',
-  },
-  error: {
-    padding: '20px',
-    backgroundColor: '#f8d7da',
-    border: '1px solid #f5c6cb',
-    borderRadius: '8px',
-    lineHeight: '1.6',
-  },
-  link: {
-    color: '#007bff',
-    textDecoration: 'none',
-  },
-}
-
+/**
+ * ConfirmPassword - Login/password confirmation form
+ * Styles in CSS: .confirm-password__*
+ */
 const ConfirmPassword = ({ data }) => {
   const confirmData = data || {}
   const {
@@ -127,8 +38,8 @@ const ConfirmPassword = ({ data }) => {
   // Missing parameters
   if (state === 'missing_params') {
     return (
-      <div style={styles.container}>
-        <div style={styles.message}>
+      <div className="confirm-password">
+        <div className="confirm-password__message">
           <p>{message}</p>
         </div>
       </div>
@@ -138,8 +49,8 @@ const ConfirmPassword = ({ data }) => {
   // Invalid action
   if (state === 'invalid_action') {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="confirm-password">
+        <div className="confirm-password__error">
           <p>{error}</p>
         </div>
       </div>
@@ -149,11 +60,11 @@ const ConfirmPassword = ({ data }) => {
   // Link expired
   if (state === 'expired') {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="confirm-password">
+        <div className="confirm-password__error">
           <p>{message}{' '}
           {renewLink && (
-            <>But you can <a href={renewLink} style={styles.link}>{renewLabel}</a>.</>
+            <>But you can <a href={renewLink} className="confirm-password__link">{renewLabel}</a>.</>
           )}
           </p>
         </div>
@@ -164,11 +75,11 @@ const ConfirmPassword = ({ data }) => {
   // User not found
   if (state === 'no_user') {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="confirm-password">
+        <div className="confirm-password__error">
           <p>{message}{' '}
           {signupLink && (
-            <>But you can <a href={signupLink} style={styles.link}>create a new one</a>.</>
+            <>But you can <a href={signupLink} className="confirm-password__link">create a new one</a>.</>
           )}
           </p>
         </div>
@@ -179,8 +90,8 @@ const ConfirmPassword = ({ data }) => {
   // Locked account
   if (state === 'locked') {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="confirm-password">
+        <div className="confirm-password__error">
           <p>{error}</p>
         </div>
       </div>
@@ -190,8 +101,8 @@ const ConfirmPassword = ({ data }) => {
   // Success - password reset
   if (state === 'success_reset') {
     return (
-      <div style={styles.container}>
-        <div style={styles.success}>
+      <div className="confirm-password">
+        <div className="confirm-password__success">
           <p>{message}</p>
         </div>
       </div>
@@ -201,16 +112,16 @@ const ConfirmPassword = ({ data }) => {
   // Success - account activated
   if (state === 'success_activate') {
     return (
-      <div style={styles.container}>
-        <div style={styles.success}>
+      <div className="confirm-password">
+        <div className="confirm-password__success">
           <p>{message}</p>
           <p>
             Perhaps you'd like to edit{' '}
-            <a href={profileUrl} style={styles.link}>your profile</a>,
+            <a href={profileUrl} className="confirm-password__link">your profile</a>,
             or check out the logged-in users'{' '}
-            <a href="/" style={styles.link}>front page</a>,
+            <a href="/" className="confirm-password__link">front page</a>,
             or maybe just read{' '}
-            <a href="/?op=randomnode" style={styles.link}>something at random</a>.
+            <a href="/?op=randomnode" className="confirm-password__link">something at random</a>.
           </p>
         </div>
       </div>
@@ -220,38 +131,38 @@ const ConfirmPassword = ({ data }) => {
   // Login required
   if (state === 'login_required') {
     return (
-      <div style={styles.container}>
+      <div className="confirm-password">
         <form method="POST" action="/index.pl" onSubmit={handleSubmit}>
-          <fieldset style={styles.fieldset}>
-            <legend style={styles.legend}>Log in</legend>
+          <fieldset className="confirm-password__fieldset">
+            <legend className="confirm-password__legend">Log in</legend>
 
-            <p style={styles.prompt}>{prompt}:</p>
+            <p className="confirm-password__prompt">{prompt}:</p>
 
-            <div style={styles.formGroup}>
-              <label style={styles.label}>
-                <span style={styles.labelText}>Username:</span>
+            <div className="confirm-password__form-group">
+              <label className="confirm-password__label">
+                <span className="confirm-password__label-text">Username:</span>
                 <input
                   type="text"
                   name="user"
                   value={username}
                   readOnly
-                  style={styles.inputReadonly}
+                  className="confirm-password__input confirm-password__input--readonly"
                 />
               </label>
-              <label style={styles.label}>
-                <span style={styles.labelText}>Password:</span>
+              <label className="confirm-password__label">
+                <span className="confirm-password__label-text">Password:</span>
                 <input
                   type="password"
                   name="passwd"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={styles.input}
+                  className="confirm-password__input"
                   autoFocus
                 />
               </label>
             </div>
 
-            <div style={styles.checkboxGroup}>
+            <div className="confirm-password__checkbox-group">
               <label>
                 <input
                   type="checkbox"
@@ -264,15 +175,12 @@ const ConfirmPassword = ({ data }) => {
               </label>
             </div>
 
-            <div style={{ textAlign: 'center' }}>
+            <div className="confirm-password__button-container">
               <button
                 type="submit"
                 name="sockItToMe"
                 disabled={loading || !password.trim()}
-                style={{
-                  ...styles.button,
-                  ...(loading || !password.trim() ? styles.buttonDisabled : {}),
-                }}
+                className={`confirm-password__button${loading || !password.trim() ? ' confirm-password__button--disabled' : ''}`}
               >
                 {loading ? 'Logging in...' : action}
               </button>
@@ -291,8 +199,8 @@ const ConfirmPassword = ({ data }) => {
 
   // Default/unknown state
   return (
-    <div style={styles.container}>
-      <div style={styles.message}>
+    <div className="confirm-password">
+      <div className="confirm-password__message">
         <p>Loading...</p>
       </div>
     </div>

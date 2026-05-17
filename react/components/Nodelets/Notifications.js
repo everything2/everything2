@@ -101,11 +101,11 @@ const Notifications = (props) => {
     return (
       <NodeletContainer
         id={props.id}
-      title="Notifications"
+        title="Notifications"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <div style={{ padding: '12px', fontSize: '12px', fontStyle: 'italic', color: '#999' }}>
+        <div className="notifications__empty">
           No notifications configured
         </div>
       </NodeletContainer>
@@ -180,18 +180,9 @@ const Notifications = (props) => {
       nodeletIsOpen={props.nodeletIsOpen}
     >
       {shouldShowSettings && (
-        <div
-          style={{
-            backgroundColor: '#fffbdd',
-            border: '1px solid #e8e3a8',
-            borderRadius: '4px',
-            padding: '12px',
-            marginBottom: '12px',
-            fontSize: '12px'
-          }}
-        >
+        <div className="notifications__setup-box">
           <strong>Configure notifications</strong>
-          <p style={{ margin: '8px 0 0 0', fontSize: '11px' }}>
+          <p className="notifications__setup-text">
             You haven't configured any notifications yet. Click the settings link below to get started.
           </p>
         </div>
@@ -205,18 +196,7 @@ const Notifications = (props) => {
               className={`notified_${notification.notified_id}`}
             >
               <button
-                className={`dismiss notified_${notification.notified_id}`}
-                style={{
-                  border: 'none',
-                  background: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  fontSize: '14px',
-                  color: '#666',
-                  lineHeight: '1',
-                  fontWeight: 'bold',
-                  marginRight: '2px'
-                }}
+                className={`dismiss notified_${notification.notified_id} notifications__dismiss-btn`}
                 title="dismiss notification"
               >
                 ×
@@ -226,21 +206,12 @@ const Notifications = (props) => {
           ))}
         </ul>
       ) : (
-        <div style={{ padding: '12px', fontSize: '12px', fontStyle: 'italic', color: '#999' }}>
+        <div className="notifications__empty">
           {shouldShowSettings ? 'Configure notifications to get started' : 'No new notifications'}
         </div>
       )}
 
-      <div
-        className="nodeletfoot"
-        style={{
-          borderTop: '1px solid #dee2e6',
-          padding: '8px',
-          marginTop: '8px',
-          fontSize: '11px',
-          textAlign: 'center'
-        }}
-      >
+      <div className="nodeletfoot notifications__foot">
         <a href={settingsUrl}>Notification settings</a>
       </div>
     </NodeletContainer>

@@ -73,7 +73,7 @@ const Login = ({ data }) => {
       />
 
       <div className="login-page__footer">
-        <p style={{ margin: 0 }}>
+        <p>
           Don't have an account?{' '}
           <a href="/title/Sign%20Up" className="login-page__inline-link">Create one</a>!
         </p>

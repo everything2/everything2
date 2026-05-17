@@ -2,12 +2,13 @@ import React from 'react'
 
 /**
  * Zenmastery - CSS demonstration page for styling staff features
+ * Styles in CSS: .zenmastery__*
  * Shows static HTML with staff-only classes and IDs for zen stylesheet testing
  * All forms are neutered, all links go to homepage (for demo purposes)
  */
 const Zenmastery = () => {
   return (
-    <div style={styles.container}>
+    <div className="zenmastery">
       <h2>About this page</h2>
 
       <p>Welcome to Zenmastery, the demonstration node where you can view staff-only options to
@@ -20,19 +21,19 @@ const Zenmastery = () => {
       actually set or change anything.  All links go to the homepage.  These are for demonstration
       purposes only.</p>
 
-      <p>Also see <a href="/?node_id=124" style={styles.link}>The Nodelets</a> for a list of all the available nodelets
+      <p>Also see <a href="/?node_id=124" className="zenmastery__link">The Nodelets</a> for a list of all the available nodelets
       that are not currently in your sidebar.</p>
 
       <h3>New Writeups</h3>
 
-      <p>The staff-only options in <a href="/?node_id=1663" style={styles.link}>New Writeups</a> are:</p>
+      <p>The staff-only options in <a href="/?node_id=1663" className="zenmastery__link">New Writeups</a> are:</p>
       <dl>
         <dt>R:-5</dt><dd>Signals that a writeup currently has a negative rep (Not given a class)</dd>
         <dt>(h?)</dt><dd>Link to "hide" a writeup from New Writeups. Class: 'hide'</dd>
         <dt>(H: un-h!)</dt><dd>Link to "unhide" a writeup from new Writeups. Class: 'hide'</dd>
         <dt>(X)</dt><dd>Marks writeups that have been nuked (Not given a class)</dd>
       </dl>
-      <p>(The same controls are also present in the <a href="/?node_id=2075267" style={styles.link}>New Logs nodelet</a>.)</p>
+      <p>(The same controls are also present in the <a href="/?node_id=2075267" className="zenmastery__link">New Logs nodelet</a>.)</p>
 
       <h3>Master Control</h3>
 
@@ -49,12 +50,12 @@ const Zenmastery = () => {
       with class 'linkedby'. They also get a link allowing them to remove the document from the weblog, with
       class 'remove'.</p>
 
-      <div id="zenmastery_sidebar" style={styles.sidebar}>
+      <div id="zenmastery_sidebar" className="zenmastery__sidebar">
 
         {/* New Writeups Nodelet */}
-        <div className='nodelet' id='newwriteups' style={styles.nodelet}>
-          <h2 className="nodelet_title" style={styles.nodeletTitle}>New Writeups</h2>
-          <div className='nodelet_content' style={styles.nodeletContent}>
+        <div className='nodelet zenmastery__nodelet' id='newwriteups'>
+          <h2 className="nodelet_title zenmastery__nodelet-title">New Writeups</h2>
+          <div className='nodelet_content zenmastery__nodelet-content'>
             <form>
               <input type="hidden" />
               <input type='hidden' />
@@ -79,7 +80,7 @@ const Zenmastery = () => {
               </div>
             </form>
 
-            <ul className="infolist" style={styles.infolist}>
+            <ul className="infolist zenmastery__infolist">
               <li className="contentinfo">
                 <a className="title" href="/">writeup1</a>
                 <span className="type">(<a href="/">idea</a>)</span>
@@ -189,9 +190,9 @@ const Zenmastery = () => {
         </div>
 
         {/* Master Control Nodelet */}
-        <div className='nodelet' id='mastercontrol' style={styles.nodelet}>
-          <h2 className="nodelet_title" style={styles.nodeletTitle}>Master Control</h2>
-          <div className='nodelet_content' style={styles.nodeletContent}>
+        <div className='nodelet zenmastery__nodelet' id='mastercontrol'>
+          <h2 className="nodelet_title zenmastery__nodelet-title">Master Control</h2>
+          <div className='nodelet_content zenmastery__nodelet-content'>
 
             <div className="nodelet_section">
               <h4 className="ns_title">Node Info</h4>
@@ -223,7 +224,7 @@ const Zenmastery = () => {
                 <li><a href='/index.pl'>Edit Code</a></li>
                 <li><a href="/index.pl">Node XML</a></li>
                 <li><a href="/index.pl">Document Node?</a></li>
-                <li style={{listStyle: 'none'}}><br /></li>
+                <li className="zenmastery__list-spacer"><br /></li>
                 <li><a href='/index.pl'>Delete Node</a></li>
               </ul>
             </div>
@@ -249,7 +250,7 @@ const Zenmastery = () => {
 
             <div id="episection_admins" className="nodeletsection">
               <div className="sectionheading">
-                [<a style={{textDecoration: 'none'}} className="ajax" href="/" title="collapse"><tt> - </tt></a>]
+                [<a className="zenmastery__section-toggle ajax" href="/" title="collapse"><tt> - </tt></a>]
                 <strong>Admin</strong>
               </div>
 
@@ -263,7 +264,7 @@ const Zenmastery = () => {
 
             <div id="episection_ces" className="nodeletsection">
               <div className="sectionheading">
-                [<a style={{textDecoration: 'none'}} className="ajax" href="/" title="collapse"><tt> - </tt></a>]
+                [<a className="zenmastery__section-toggle ajax" href="/" title="collapse"><tt> - </tt></a>]
                 <strong>CE</strong>
               </div>
               <div className="sectioncontent">
@@ -317,46 +318,6 @@ const Zenmastery = () => {
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  sidebar: {
-    marginTop: '20px',
-    marginBottom: '20px'
-  },
-  nodelet: {
-    marginBottom: '15px',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    backgroundColor: '#f8f9f9'
-  },
-  nodeletTitle: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    padding: '8px 12px',
-    margin: 0,
-    backgroundColor: '#38495e',
-    color: '#fff',
-    borderTopLeftRadius: '4px',
-    borderTopRightRadius: '4px'
-  },
-  nodeletContent: {
-    padding: '12px'
-  },
-  infolist: {
-    listStyle: 'none',
-    padding: 0,
-    margin: '10px 0'
-  }
 }
 
 export default Zenmastery

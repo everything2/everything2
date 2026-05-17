@@ -126,7 +126,7 @@ export default function SQLPrompt({ data }) {
               <div className="sql-prompt__meta">
                 <strong>Elapsed time:</strong> {results.elapsed_time} seconds
                 {results.affected_rows > 0 && (
-                  <span style={{ marginLeft: '20px' }}>
+                  <span className="sql-prompt__affected-rows">
                     <strong>{results.affected_rows}</strong> row{results.affected_rows > 1 ? 's' : ''} affected
                   </span>
                 )}

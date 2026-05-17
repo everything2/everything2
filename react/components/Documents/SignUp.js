@@ -17,40 +17,30 @@ import { useIsMobile } from '../../hooks/useMediaQuery'
  * - reCAPTCHA token generated fresh at submission time
  */
 
-// Fixed-width icon container to prevent layout shift
-const iconContainerStyle = {
-  display: 'inline-block',
-  width: '24px',
-  marginLeft: '8px',
-  textAlign: 'center',
-  verticalAlign: 'middle'
-}
-
 // Validation status icons
 const CheckIcon = () => (
-  <span style={iconContainerStyle}>
-    <span style={{ color: '#228b22', fontSize: '1.1em' }} title="Match">&#10003;</span>
+  <span className="signup__icon-container">
+    <span className="signup__icon--check" title="Match">&#10003;</span>
   </span>
 )
 
 const XIcon = () => (
-  <span style={iconContainerStyle}>
-    <span style={{ color: '#8b0000', fontSize: '1.1em' }} title="Does not match">&#10007;</span>
+  <span className="signup__icon-container">
+    <span className="signup__icon--x" title="Does not match">&#10007;</span>
   </span>
 )
 
 const SpinnerIcon = () => (
-  <span style={iconContainerStyle}>
-    <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>
-      <span style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid #d3d3d3', borderTopColor: '#4060b0', borderRadius: '50%' }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+  <span className="signup__icon-container">
+    <span className="signup__spinner-wrapper">
+      <span className="signup__spinner" />
     </span>
   </span>
 )
 
 // Empty placeholder to reserve space when no icon shown
 const IconPlaceholder = () => (
-  <span style={iconContainerStyle}></span>
+  <span className="signup__icon-container"></span>
 )
 
 const SignUp = ({ data, user, e2 }) => {
@@ -347,11 +337,20 @@ const SignUp = ({ data, user, e2 }) => {
     }
   }
 
+  // Helper to build input class names
+  const getInputClassName = (hasError, hasSuccess) => {
+    const classes = ['signup__input']
+    if (isMobile) classes.push('signup__input--mobile')
+    if (hasError) classes.push('signup__input--error')
+    if (hasSuccess) classes.push('signup__input--success')
+    return classes.join(' ')
+  }
+
   // Success state
   if (success) {
     return (
-      <div style={{ maxWidth: '40em', margin: '2em auto', padding: '0 1em' }}>
-        <h3 style={{ color: '#38495e' }}>Welcome to Everything2, {createdUsername}</h3>
+      <div className="signup">
+        <h3 className="signup__success-title">Welcome to Everything2, {createdUsername}</h3>
         <p>
           Your new user account has been created, and an email has been sent to the address you provided.
           You cannot use your account until you have followed the link in the email to activate it.
@@ -367,71 +366,35 @@ const SignUp = ({ data, user, e2 }) => {
 
   // Form state
   return (
-    <div style={{ maxWidth: '40em', margin: '2em auto', padding: '0 1em' }}>
+    <div className="signup">
       <form onSubmit={handleSubmit}>
-        <fieldset style={{
-          border: '1px solid #d3d3d3',
-          borderRadius: '4px',
-          padding: '1.5em',
-          margin: '1em 0'
-        }}>
-          <legend style={{
-            padding: '0 0.5em',
-            fontWeight: 'bold',
-            color: '#38495e',
-            fontSize: '1.2em'
-          }}>
-            Sign Up
-          </legend>
+        <fieldset className="signup__fieldset">
+          <legend className="signup__legend">Sign Up</legend>
 
-          <p style={{ marginBottom: '1em', color: '#333' }}>
-            Please fill in all fields
-          </p>
+          <p className="signup__instructions">Please fill in all fields</p>
 
           {serverError && (
-            <p style={{
-              color: '#8b0000',
-              marginBottom: '1em',
-              padding: '10px',
-              backgroundColor: '#fff0f0',
-              border: '1px solid #ffcccc',
-              borderRadius: '4px'
-            }}>
-              {serverError}
-            </p>
+            <p className="signup__server-error">{serverError}</p>
           )}
 
-          <div style={{ textAlign: isMobile ? 'left' : 'right' }}>
+          <div className={isMobile ? 'signup__fields signup__fields--mobile' : 'signup__fields'}>
             {/* Username */}
-            <div style={{ marginBottom: '0.75em' }}>
-              <label style={{ display: isMobile ? 'block' : 'inline' }}>
-                <span style={{
-                  display: isMobile ? 'block' : 'inline-block',
-                  width: isMobile ? 'auto' : '150px',
-                  textAlign: 'left',
-                  marginBottom: isMobile ? '4px' : '0'
-                }}>
+            <div className="signup__row">
+              <label className={isMobile ? 'signup__label signup__label--mobile' : 'signup__label'}>
+                <span className={isMobile ? 'signup__label-text signup__label-text--mobile' : 'signup__label-text'}>
                   Username:
                 </span>
-                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                <span className={isMobile ? 'signup__input-wrapper signup__input-wrapper--mobile' : 'signup__input-wrapper'}>
                   <input
                     type="text"
                     value={username}
                     onChange={handleUsernameChange}
                     maxLength={20}
                     autoComplete="username"
-                    style={{
-                      padding: '6px 10px',
-                      border: (errors.username || usernameStatus === 'taken' || usernameStatus === 'invalid')
-                        ? '1px solid #8b0000'
-                        : usernameStatus === 'available'
-                          ? '1px solid #228b22'
-                          : '1px solid #d3d3d3',
-                      borderRadius: '4px',
-                      width: isMobile ? '100%' : 'auto',
-                      maxWidth: isMobile ? '100%' : '220px',
-                      boxSizing: 'border-box'
-                    }}
+                    className={getInputClassName(
+                      errors.username || usernameStatus === 'taken' || usernameStatus === 'invalid',
+                      usernameStatus === 'available'
+                    )}
                     required
                   />
                   {renderUsernameStatus()}
@@ -439,47 +402,35 @@ const SignUp = ({ data, user, e2 }) => {
               </label>
             </div>
             {usernameStatus === 'taken' && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
+              <div className={isMobile ? 'signup__field-error signup__field-error--mobile' : 'signup__field-error'}>
                 Username is already taken
               </div>
             )}
             {usernameStatus === 'invalid' && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
+              <div className={isMobile ? 'signup__field-error signup__field-error--mobile' : 'signup__field-error'}>
                 Username contains invalid characters
               </div>
             )}
             {errors.username && usernameStatus !== 'taken' && usernameStatus !== 'invalid' && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
+              <div className={isMobile ? 'signup__field-error signup__field-error--mobile' : 'signup__field-error'}>
                 {errors.username}
               </div>
             )}
 
             {/* Password */}
-            <div style={{ marginBottom: '0.75em' }}>
-              <label style={{ display: isMobile ? 'block' : 'inline' }}>
-                <span style={{
-                  display: isMobile ? 'block' : 'inline-block',
-                  width: isMobile ? 'auto' : '150px',
-                  textAlign: 'left',
-                  marginBottom: isMobile ? '4px' : '0'
-                }}>
+            <div className="signup__row">
+              <label className={isMobile ? 'signup__label signup__label--mobile' : 'signup__label'}>
+                <span className={isMobile ? 'signup__label-text signup__label-text--mobile' : 'signup__label-text'}>
                   Password:
                 </span>
-                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                <span className={isMobile ? 'signup__input-wrapper signup__input-wrapper--mobile' : 'signup__input-wrapper'}>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     maxLength={240}
                     autoComplete="new-password"
-                    style={{
-                      padding: '6px 10px',
-                      border: errors.password ? '1px solid #8b0000' : '1px solid #d3d3d3',
-                      borderRadius: '4px',
-                      width: isMobile ? '100%' : 'auto',
-                      maxWidth: isMobile ? '100%' : '220px',
-                      boxSizing: 'border-box'
-                    }}
+                    className={getInputClassName(errors.password, false)}
                     required
                   />
                   {passwordsMatch ? <CheckIcon /> : <IconPlaceholder />}
@@ -487,41 +438,25 @@ const SignUp = ({ data, user, e2 }) => {
               </label>
             </div>
             {errors.password && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
+              <div className={isMobile ? 'signup__field-error signup__field-error--mobile' : 'signup__field-error'}>
                 {errors.password}
               </div>
             )}
 
             {/* Confirm Password */}
-            <div style={{ marginBottom: '0.75em' }}>
-              <label style={{ display: isMobile ? 'block' : 'inline' }}>
-                <span style={{
-                  display: isMobile ? 'block' : 'inline-block',
-                  width: isMobile ? 'auto' : '150px',
-                  textAlign: 'left',
-                  marginBottom: isMobile ? '4px' : '0'
-                }}>
+            <div className="signup__row">
+              <label className={isMobile ? 'signup__label signup__label--mobile' : 'signup__label'}>
+                <span className={isMobile ? 'signup__label-text signup__label-text--mobile' : 'signup__label-text'}>
                   Confirm password:
                 </span>
-                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                <span className={isMobile ? 'signup__input-wrapper signup__input-wrapper--mobile' : 'signup__input-wrapper'}>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     maxLength={240}
                     autoComplete="new-password"
-                    style={{
-                      padding: '6px 10px',
-                      border: passwordsMismatch
-                        ? '1px solid #8b0000'
-                        : passwordsMatch
-                          ? '1px solid #228b22'
-                          : '1px solid #d3d3d3',
-                      borderRadius: '4px',
-                      width: isMobile ? '100%' : 'auto',
-                      maxWidth: isMobile ? '100%' : '220px',
-                      boxSizing: 'border-box'
-                    }}
+                    className={getInputClassName(passwordsMismatch, passwordsMatch)}
                     required
                   />
                   {passwordsMatch ? <CheckIcon /> : passwordsMismatch ? <XIcon /> : <IconPlaceholder />}
@@ -529,37 +464,25 @@ const SignUp = ({ data, user, e2 }) => {
               </label>
             </div>
             {errors.confirmPassword && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
+              <div className={isMobile ? 'signup__field-error signup__field-error--mobile' : 'signup__field-error'}>
                 {errors.confirmPassword}
               </div>
             )}
 
             {/* Email */}
-            <div style={{ marginBottom: '0.75em' }}>
-              <label style={{ display: isMobile ? 'block' : 'inline' }}>
-                <span style={{
-                  display: isMobile ? 'block' : 'inline-block',
-                  width: isMobile ? 'auto' : '150px',
-                  textAlign: 'left',
-                  marginBottom: isMobile ? '4px' : '0'
-                }}>
+            <div className="signup__row">
+              <label className={isMobile ? 'signup__label signup__label--mobile' : 'signup__label'}>
+                <span className={isMobile ? 'signup__label-text signup__label-text--mobile' : 'signup__label-text'}>
                   Email address:
                 </span>
-                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                <span className={isMobile ? 'signup__input-wrapper signup__input-wrapper--mobile' : 'signup__input-wrapper'}>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     maxLength={240}
                     autoComplete="email"
-                    style={{
-                      padding: '6px 10px',
-                      border: errors.email ? '1px solid #8b0000' : '1px solid #d3d3d3',
-                      borderRadius: '4px',
-                      width: isMobile ? '100%' : 'auto',
-                      maxWidth: isMobile ? '100%' : '220px',
-                      boxSizing: 'border-box'
-                    }}
+                    className={getInputClassName(errors.email, false)}
                     required
                   />
                   {emailsMatch ? <CheckIcon /> : <IconPlaceholder />}
@@ -567,41 +490,25 @@ const SignUp = ({ data, user, e2 }) => {
               </label>
             </div>
             {errors.email && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
+              <div className={isMobile ? 'signup__field-error signup__field-error--mobile' : 'signup__field-error'}>
                 {errors.email}
               </div>
             )}
 
             {/* Confirm Email */}
-            <div style={{ marginBottom: '1em' }}>
-              <label style={{ display: isMobile ? 'block' : 'inline' }}>
-                <span style={{
-                  display: isMobile ? 'block' : 'inline-block',
-                  width: isMobile ? 'auto' : '150px',
-                  textAlign: 'left',
-                  marginBottom: isMobile ? '4px' : '0'
-                }}>
+            <div className="signup__row signup__row--last">
+              <label className={isMobile ? 'signup__label signup__label--mobile' : 'signup__label'}>
+                <span className={isMobile ? 'signup__label-text signup__label-text--mobile' : 'signup__label-text'}>
                   Confirm email:
                 </span>
-                <span style={{ display: isMobile ? 'flex' : 'inline', alignItems: 'center', gap: '4px' }}>
+                <span className={isMobile ? 'signup__input-wrapper signup__input-wrapper--mobile' : 'signup__input-wrapper'}>
                   <input
                     type="email"
                     value={confirmEmail}
                     onChange={(e) => setConfirmEmail(e.target.value)}
                     maxLength={240}
                     autoComplete="email"
-                    style={{
-                      padding: '6px 10px',
-                      border: emailsMismatch
-                        ? '1px solid #8b0000'
-                        : emailsMatch
-                          ? '1px solid #228b22'
-                          : '1px solid #d3d3d3',
-                      borderRadius: '4px',
-                      width: isMobile ? '100%' : 'auto',
-                      maxWidth: isMobile ? '100%' : '220px',
-                      boxSizing: 'border-box'
-                    }}
+                    className={getInputClassName(emailsMismatch, emailsMatch)}
                     required
                   />
                   {emailsMatch ? <CheckIcon /> : emailsMismatch ? <XIcon /> : <IconPlaceholder />}
@@ -609,7 +516,7 @@ const SignUp = ({ data, user, e2 }) => {
               </label>
             </div>
             {errors.confirmEmail && (
-              <div style={{ color: '#8b0000', fontSize: '0.9em', marginBottom: '0.5em', textAlign: 'left', paddingLeft: isMobile ? '0' : '155px' }}>
+              <div className={isMobile ? 'signup__field-error signup__field-error--mobile' : 'signup__field-error'}>
                 {errors.confirmEmail}
               </div>
             )}
@@ -617,17 +524,7 @@ const SignUp = ({ data, user, e2 }) => {
             <button
               type="submit"
               disabled={isSubmitting || !isFormValid()}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: (isSubmitting || !isFormValid()) ? '#ccc' : '#4060b0',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: (isSubmitting || !isFormValid()) ? 'not-allowed' : 'pointer',
-                fontSize: '1em',
-                fontWeight: 'bold',
-                width: isMobile ? '100%' : 'auto'
-              }}
+              className={isMobile ? 'signup__submit signup__submit--mobile' : 'signup__submit'}
             >
               {isSubmitting ? 'Creating account...' : 'Create new account'}
             </button>
@@ -636,14 +533,14 @@ const SignUp = ({ data, user, e2 }) => {
       </form>
 
       {/* Policies */}
-      <div style={{ fontSize: '0.95em', lineHeight: '1.6' }}>
-        <h4 style={{ color: '#38495e', marginTop: '2em' }}>Email Privacy Policy</h4>
+      <div className="signup__policies">
+        <h4 className="signup__policy-title">Email Privacy Policy</h4>
         <p>
           We will only use your email to send you an account activation email and for any other
           email services that you specifically request. It will not be disclosed to anyone else.
         </p>
 
-        <h4 style={{ color: '#38495e', marginTop: '2em' }}>Spam Policy</h4>
+        <h4 className="signup__policy-title">Spam Policy</h4>
         <p>We neither perpetrate nor tolerate spam.</p>
         <p>
           New accounts advertizing any product, service or web site (including "personal" sites
@@ -651,7 +548,7 @@ const SignUp = ({ data, user, e2 }) => {
           details may be submitted to public blacklists for the use of other web sites.
         </p>
 
-        <h4 style={{ color: '#38495e', marginTop: '2em' }}>Underage users</h4>
+        <h4 className="signup__policy-title">Underage users</h4>
         <p>
           Everything2 may include member-created content designed for an adult audience. Viewing
           this content does not require an account. For logged-in account holders, Everything2

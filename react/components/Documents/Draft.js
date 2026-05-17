@@ -96,21 +96,11 @@ const Draft = ({ data }) => {
     <div className="draft-page">
       {/* Toolbar - show if user can edit */}
       {Boolean(canEdit) && !isEditing && (
-        <div style={{ textAlign: 'right', marginBottom: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+        <div className="draft-page__toolbar">
           <button
             onClick={() => setIsEditing(true)}
             title={isAuthor ? 'Edit your draft' : `Edit ${authorName}'s draft`}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '16px',
-              color: '#507898',
-              padding: '2px 4px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+            className="draft-page__icon-btn draft-page__icon-btn--edit"
           >
             <FaEdit />
           </button>
@@ -119,17 +109,7 @@ const Draft = ({ data }) => {
               <button
                 onClick={() => setShowPublishModal(true)}
                 title="Publish this draft"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  color: '#28a745',
-                  padding: '2px 4px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
+                className="draft-page__icon-btn draft-page__icon-btn--publish"
               >
                 <FaPaperPlane />
               </button>
@@ -137,18 +117,7 @@ const Draft = ({ data }) => {
                 onClick={handleDelete}
                 disabled={isDeleting}
                 title="Delete this draft"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: isDeleting ? 'wait' : 'pointer',
-                  fontSize: '16px',
-                  color: '#dc3545',
-                  padding: '2px 4px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  opacity: isDeleting ? 0.5 : 1
-                }}
+                className={`draft-page__icon-btn draft-page__icon-btn--delete${isDeleting ? ' draft-page__icon-btn--deleting' : ''}`}
               >
                 <FaTrash />
               </button>
@@ -159,21 +128,21 @@ const Draft = ({ data }) => {
 
       {/* Delete error message */}
       {deleteError && (
-        <div style={{ color: '#dc3545', marginBottom: '10px', padding: '10px', backgroundColor: '#f8d7da', borderRadius: '4px' }}>
+        <div className="draft-page__error">
           Error: {deleteError}
         </div>
       )}
 
       {/* Parent e2node info if linked */}
       {!isEditing && draft.parent_e2node && (
-        <div style={{ padding: '8px 0', fontSize: '13px', color: '#666', borderBottom: '1px solid #eee' }}>
+        <div className="draft-page__meta-info">
           Draft for: <LinkNode nodeId={draft.parent_e2node.node_id} title={draft.parent_e2node.title} type="e2node" />
         </div>
       )}
 
       {/* Collaborators info if present */}
       {!isEditing && draft.collaborators && (
-        <div style={{ padding: '8px 0', fontSize: '13px', color: '#666', borderBottom: '1px solid #eee' }}>
+        <div className="draft-page__meta-info">
           Collaborators: {draft.collaborators}
         </div>
       )}

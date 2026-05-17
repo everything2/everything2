@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * MyBigWriteupList - Comprehensive listing of all writeups by a user
+ * Styles in CSS: .my-big-writeup-list__*
  *
  * Features:
  * - Multiple sorting options (title, type, C!, reputation, date)
@@ -33,7 +34,7 @@ const MyBigWriteupList = ({ data }) => {
 
   if (guest) {
     return (
-      <div style={styles.container}>
+      <div className="my-big-writeup-list">
         <p>
           You need an account to access this node.
           <br />
@@ -46,9 +47,9 @@ const MyBigWriteupList = ({ data }) => {
 
   if (error) {
     return (
-      <div style={styles.container}>
+      <div className="my-big-writeup-list">
         {renderSearchForm()}
-        <div style={styles.errorBox}>{error}</div>
+        <div className="my-big-writeup-list__error-box">{error}</div>
       </div>
     )
   }
@@ -80,12 +81,12 @@ const MyBigWriteupList = ({ data }) => {
     ]
 
     return (
-      <div style={styles.formContainer}>
+      <div className="my-big-writeup-list__form-container">
         <form method="get" onSubmit={handleSubmit}>
           <input type="hidden" name="node_id" value={window.e2?.node_id || ''} />
 
           {is_admin ? (
-            <div style={styles.formRow}>
+            <div className="my-big-writeup-list__form-row">
               <label>
                 Search for user:{' '}
                 <input
@@ -93,26 +94,25 @@ const MyBigWriteupList = ({ data }) => {
                   name="usersearch"
                   value={usersearch}
                   onChange={(e) => setUsersearch(e.target.value)}
-                  style={styles.input}
-                  className="userComplete"
+                  className="my-big-writeup-list__input userComplete"
                 />
               </label>
             </div>
           ) : (
             <>
               <input type="hidden" name="usersearch" value={username} />
-              <div style={styles.formRow}>For: {username}</div>
+              <div className="my-big-writeup-list__form-row">For: {username}</div>
             </>
           )}
 
-          <div style={styles.formRow}>
+          <div className="my-big-writeup-list__form-row">
             <label>
               Order By:{' '}
               <select
                 name="orderby"
                 value={orderBy}
                 onChange={(e) => setOrderBy(e.target.value)}
-                style={styles.select}
+                className="my-big-writeup-list__select"
               >
                 {orderOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -123,7 +123,7 @@ const MyBigWriteupList = ({ data }) => {
             </label>
           </div>
 
-          <div style={styles.formRow}>
+          <div className="my-big-writeup-list__form-row">
             <label>
               <input
                 type="checkbox"
@@ -142,14 +142,14 @@ const MyBigWriteupList = ({ data }) => {
                 name="delimiter"
                 value={delimiter}
                 onChange={(e) => setDelimiter(e.target.value)}
-                style={styles.delimiterInput}
+                className="my-big-writeup-list__delimiter-input"
                 maxLength={1}
               />
             </label>
           </div>
 
-          <div style={styles.formRow}>
-            <button type="submit" name="sexisgood" value="submit" style={styles.button}>
+          <div className="my-big-writeup-list__form-row">
+            <button type="submit" name="sexisgood" value="submit" className="my-big-writeup-list__button">
               Submit
             </button>
           </div>
@@ -182,7 +182,7 @@ const MyBigWriteupList = ({ data }) => {
     return (
       <div>
         {renderSearchForm()}
-        <pre style={styles.pre}>{lines.join('\n')}</pre>
+        <pre className="my-big-writeup-list__pre">{lines.join('\n')}</pre>
       </div>
     )
   }
@@ -205,17 +205,17 @@ const MyBigWriteupList = ({ data }) => {
             <LinkNode nodeId={user_id} title={username} /> has no writeups.
           </p>
         ) : (
-          <table style={styles.table}>
+          <table className="my-big-writeup-list__table">
             <thead>
               <tr>
-                <th style={styles.th} align="left">
+                <th className="my-big-writeup-list__th" align="left">
                   Writeup Title (type)
                 </th>
-                <th style={styles.th}>C!</th>
-                <th style={styles.th} colSpan={2} align="center">
+                <th className="my-big-writeup-list__th">C!</th>
+                <th className="my-big-writeup-list__th" colSpan={2} align="center">
                   Rep
                 </th>
-                <th style={styles.th} align="center">
+                <th className="my-big-writeup-list__th" align="center">
                   Published
                 </th>
               </tr>
@@ -227,25 +227,25 @@ const MyBigWriteupList = ({ data }) => {
                 return (
                   <tr
                     key={index}
-                    style={index % 2 === 1 ? styles.oddRow : {}}
+                    className={index % 2 === 1 ? 'my-big-writeup-list__odd-row' : ''}
                   >
-                    <td style={styles.td} nowrap="nowrap">
+                    <td className="my-big-writeup-list__td" nowrap="nowrap">
                       <LinkNode nodeId={wu.parent_e2node} title={wu.title} />
                     </td>
-                    <td style={styles.td}>
+                    <td className="my-big-writeup-list__td">
                       {wu.cooled ? <strong>{wu.cooled}C!</strong> : ''}
                     </td>
                     {canSeeRep && wu.reputation !== undefined ? (
                       <>
-                        <td style={styles.td}>{wu.reputation || 0}</td>
-                        <td style={styles.tdSmall}>
+                        <td className="my-big-writeup-list__td">{wu.reputation || 0}</td>
+                        <td className="my-big-writeup-list__td my-big-writeup-list__td--small">
                           +{wu.upvotes}/-{wu.downvotes}
                         </td>
                       </>
                     ) : (
-                      <td style={styles.td} colSpan={2}></td>
+                      <td className="my-big-writeup-list__td" colSpan={2}></td>
                     )}
-                    <td style={{ ...styles.td, ...styles.tdRight }} nowrap="nowrap">
+                    <td className="my-big-writeup-list__td my-big-writeup-list__td--right" nowrap="nowrap">
                       <small>{formatTimestamp(wu.publishtime)}</small>
                     </td>
                   </tr>
@@ -259,106 +259,10 @@ const MyBigWriteupList = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="my-big-writeup-list">
       {rawMode ? renderRawData() : renderTable()}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111'
-  },
-  errorBox: {
-    padding: '15px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828',
-    marginTop: '20px'
-  },
-  formContainer: {
-    padding: '15px',
-    backgroundColor: '#f8f9f9',
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    marginBottom: '20px'
-  },
-  formRow: {
-    marginBottom: '10px'
-  },
-  input: {
-    padding: '6px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    fontSize: '13px',
-    minWidth: '200px'
-  },
-  select: {
-    padding: '6px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    fontSize: '13px',
-    minWidth: '250px'
-  },
-  delimiterInput: {
-    padding: '6px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    fontSize: '13px',
-    width: '30px',
-    textAlign: 'center'
-  },
-  button: {
-    padding: '8px 20px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px',
-    fontWeight: 'bold'
-  },
-  pre: {
-    backgroundColor: '#f8f9f9',
-    padding: '15px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '4px',
-    overflow: 'auto',
-    fontSize: '12px',
-    lineHeight: '1.4'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    border: '1px solid #d3d3d3',
-    marginTop: '10px'
-  },
-  th: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '8px',
-    border: '1px solid #38495e',
-    fontSize: '13px'
-  },
-  td: {
-    border: '1px solid #d3d3d3',
-    padding: '6px'
-  },
-  tdSmall: {
-    border: '1px solid #d3d3d3',
-    padding: '6px',
-    fontSize: '11px'
-  },
-  tdRight: {
-    textAlign: 'right'
-  },
-  oddRow: {
-    backgroundColor: '#bbbbff'
-  }
 }
 
 export default MyBigWriteupList

@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * Silver Trinkets - Display user's sanctity (silver trinkets received)
+ * Styles in CSS: .silver-trinkets__*
  *
  * Phase 4a migration from Mason template silver_trinkets.mc
  * Shows: User's sanctity count, admin lookup feature
@@ -47,8 +48,8 @@ const SilverTrinkets = ({ data, user }) => {
   }
 
   return (
-    <div className="silver-trinkets" style={{ padding: '40px 20px', textAlign: 'center' }}>
-      <div style={{ fontSize: '16px', marginBottom: '40px' }}>
+    <div className="silver-trinkets">
+      <div className="silver-trinkets__message">
         {sanctity <= 0 ? (
           <em>You are not feeling very special right now.</em>
         ) : (
@@ -61,46 +62,22 @@ const SilverTrinkets = ({ data, user }) => {
       </div>
 
       {isAdmin && (
-        <div style={{
-          marginTop: '40px',
-          padding: '20px',
-          backgroundColor: '#f8f9fa',
-          border: '1px solid #dee2e6',
-          borderRadius: '5px',
-          maxWidth: '500px',
-          margin: '40px auto'
-        }}>
-          <h3 style={{ marginTop: 0 }}>Admin Lookup</h3>
+        <div className="silver-trinkets__admin-box">
+          <h3 className="silver-trinkets__admin-title">Admin Lookup</h3>
 
           <form onSubmit={handleLookup}>
-            <div style={{ marginBottom: '10px' }}>
+            <div className="silver-trinkets__form-row">
               <input
                 type="text"
                 value={lookupUsername}
                 onChange={(e) => setLookupUsername(e.target.value)}
                 placeholder="Enter username"
-                style={{
-                  padding: '8px 12px',
-                  fontSize: '14px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '3px',
-                  width: '200px'
-                }}
+                className="silver-trinkets__input"
               />
               <button
                 type="submit"
                 disabled={loading || !lookupUsername}
-                style={{
-                  marginLeft: '10px',
-                  padding: '8px 16px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  color: '#fff',
-                  backgroundColor: loading ? '#ccc' : '#38495e',
-                  border: 'none',
-                  borderRadius: '3px',
-                  cursor: loading ? 'not-allowed' : 'pointer'
-                }}
+                className="silver-trinkets__submit-btn"
               >
                 {loading ? 'Looking up...' : 'Lookup'}
               </button>
@@ -108,27 +85,13 @@ const SilverTrinkets = ({ data, user }) => {
           </form>
 
           {lookupError && (
-            <div style={{
-              marginTop: '10px',
-              padding: '10px',
-              backgroundColor: '#fff3cd',
-              border: '1px solid #ffc107',
-              borderRadius: '3px',
-              color: '#856404'
-            }}>
+            <div className="silver-trinkets__error-box">
               <em>{lookupError}</em>
             </div>
           )}
 
           {lookupResult && (
-            <div style={{
-              marginTop: '10px',
-              padding: '10px',
-              backgroundColor: '#d4edda',
-              border: '1px solid #c3e6cb',
-              borderRadius: '3px',
-              color: '#155724'
-            }}>
+            <div className="silver-trinkets__result-box">
               <LinkNode
                 title={lookupResult.username}
                 type="user"

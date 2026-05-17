@@ -1,12 +1,16 @@
 import React from 'react';
 
+/**
+ * DraftsForReview - Editor drafts pending review
+ * Styles in CSS: .drafts-for-review__*
+ */
 const DraftsForReview = ({ data }) => {
   const { drafts = [], is_editor = false, error, message } = data;
 
   // Handle errors
   if (error === 'guest') {
     return (
-      <div style={styles.container}>
+      <div className="drafts-for-review">
         <p>Only <a href="/?node=Sign+Up">logged-in users</a> can see drafts.</p>
       </div>
     );
@@ -14,8 +18,8 @@ const DraftsForReview = ({ data }) => {
 
   if (error === 'config') {
     return (
-      <div style={styles.container}>
-        <p style={styles.error}>{message}</p>
+      <div className="drafts-for-review">
+        <p className="drafts-for-review__error">{message}</p>
       </div>
     );
   }
@@ -40,24 +44,24 @@ const DraftsForReview = ({ data }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="drafts-for-review">
       {drafts.length === 0 ? (
         <p>No drafts are currently awaiting review.</p>
       ) : (
-        <table style={styles.table}>
+        <table className="drafts-for-review__table">
           <thead>
-            <tr style={styles.headerRow}>
-              <th style={styles.th}>Draft</th>
-              <th style={styles.thDate}>For review since</th>
+            <tr>
+              <th className="drafts-for-review__th">Draft</th>
+              <th className="drafts-for-review__th drafts-for-review__th--date">For review since</th>
               {is_editor && (
-                <th style={styles.thNotes}>Notes</th>
+                <th className="drafts-for-review__th drafts-for-review__th--notes">Notes</th>
               )}
             </tr>
           </thead>
           <tbody>
             {drafts.map((draft, index) => (
-              <tr key={index} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                <td style={styles.td}>
+              <tr key={index} className={index % 2 === 0 ? 'drafts-for-review__row--even' : 'drafts-for-review__row--odd'}>
+                <td className="drafts-for-review__td">
                   <a href={`/?node=${encodeURIComponent(draft.title)}`}>
                     {draft.title}
                   </a>
@@ -66,11 +70,11 @@ const DraftsForReview = ({ data }) => {
                     {draft.author}
                   </a>
                 </td>
-                <td style={styles.tdDate}>
+                <td className="drafts-for-review__td drafts-for-review__td--date">
                   {formatDate(draft.publishtime)}
                 </td>
                 {is_editor && (
-                  <td style={styles.tdNotes}>
+                  <td className="drafts-for-review__td drafts-for-review__td--notes">
                     {draft.notecount > 0 ? (
                       <a
                         href={`/?node=${encodeURIComponent(draft.title)}#nodenotes`}
@@ -90,70 +94,6 @@ const DraftsForReview = ({ data }) => {
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '14px'
-  },
-  headerRow: {
-    backgroundColor: '#f8f9f9'
-  },
-  th: {
-    padding: '8px',
-    textAlign: 'left',
-    borderBottom: '2px solid #dee2e6',
-    fontWeight: 'bold'
-  },
-  thDate: {
-    padding: '8px',
-    textAlign: 'right',
-    borderBottom: '2px solid #dee2e6',
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap'
-  },
-  thNotes: {
-    padding: '8px',
-    textAlign: 'center',
-    borderBottom: '2px solid #dee2e6',
-    fontWeight: 'bold',
-    width: '60px'
-  },
-  td: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #dee2e6'
-  },
-  tdDate: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #dee2e6',
-    textAlign: 'right',
-    whiteSpace: 'nowrap'
-  },
-  tdNotes: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #dee2e6',
-    textAlign: 'center',
-    width: '60px'
-  },
-  evenRow: {
-    backgroundColor: '#ffffff'
-  },
-  oddRow: {
-    backgroundColor: '#f8f9f9'
-  },
-  error: {
-    color: '#dc3545'
-  }
 };
 
 export default DraftsForReview;

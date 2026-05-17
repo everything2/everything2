@@ -5,6 +5,7 @@ import { FaEdit, FaFolder, FaUser, FaGlobe, FaUsers, FaClock } from 'react-icons
 
 /**
  * CategoryDisplay - Display component for category nodes
+ * Styles in CSS: .category-display__*
  *
  * Shows category metadata, parsed description, and list of member nodes.
  * Provides edit button for users with permission.
@@ -14,8 +15,8 @@ const CategoryDisplay = ({ data }) => {
 
   if (!category) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorBox}>Category not found.</div>
+      <div className="category-display">
+        <div className="category-display__error-box">Category not found.</div>
       </div>
     )
   }
@@ -40,24 +41,24 @@ const CategoryDisplay = ({ data }) => {
   }, {})
 
   return (
-    <div style={styles.container}>
+    <div className="category-display">
       {/* Header section */}
-      <div style={styles.header}>
-        <div style={styles.titleRow}>
-          <FaFolder size={24} style={{ color: '#4060b0', marginRight: '10px' }} />
-          <h1 style={styles.title}>{title}</h1>
+      <div className="category-display__header">
+        <div className="category-display__title-row">
+          <FaFolder size={24} className="category-display__folder-icon" />
+          <h1 className="category-display__title">{title}</h1>
         </div>
 
-        <div style={styles.meta}>
-          <div style={styles.metaItem}>
+        <div className="category-display__meta">
+          <div className="category-display__meta-item">
             {is_public ? (
               <>
-                <FaGlobe size={12} style={{ marginRight: '6px', color: '#4060b0' }} />
+                <FaGlobe size={12} className="category-display__meta-icon--public" />
                 <span>Public category (anyone can add)</span>
               </>
             ) : (
               <>
-                <FaUser size={12} style={{ marginRight: '6px', color: '#666' }} />
+                <FaUser size={12} className="category-display__meta-icon" />
                 <span>
                   Maintained by{' '}
                   <LinkNode nodeId={author_id} title={author} type={category.author_type || 'user'} display={author} />
@@ -65,25 +66,25 @@ const CategoryDisplay = ({ data }) => {
               </>
             )}
           </div>
-          <div style={styles.metaItem}>
-            <FaClock size={12} style={{ marginRight: '6px', color: '#666' }} />
+          <div className="category-display__meta-item">
+            <FaClock size={12} className="category-display__meta-icon" />
             <span>
               Created <TimeDistance then={createtime} />
             </span>
           </div>
-          <div style={styles.metaItem}>
-            <FaUsers size={12} style={{ marginRight: '6px', color: '#666' }} />
+          <div className="category-display__meta-item">
+            <FaUsers size={12} className="category-display__meta-icon" />
             <span>{member_count} {member_count === 1 ? 'member' : 'members'}</span>
           </div>
         </div>
 
         {can_edit === 1 && (
-          <div style={styles.editButtonContainer}>
+          <div className="category-display__edit-button-container">
             <a
               href={`/node/${node_id}?displaytype=edit`}
-              style={styles.editButton}
+              className="category-display__edit-button"
             >
-              <FaEdit size={14} style={{ marginRight: '6px' }} />
+              <FaEdit size={14} className="category-display__edit-icon" />
               Edit Category
             </a>
           </div>
@@ -92,45 +93,45 @@ const CategoryDisplay = ({ data }) => {
 
       {/* Description section */}
       {description && (
-        <div style={styles.descriptionSection}>
-          <h2 style={styles.sectionTitle}>Description</h2>
-          <div style={styles.descriptionBox} dangerouslySetInnerHTML={{ __html: description }} />
+        <div className="category-display__description-section">
+          <h2 className="category-display__section-title">Description</h2>
+          <div className="category-display__description-box" dangerouslySetInnerHTML={{ __html: description }} />
         </div>
       )}
 
       {/* Members section */}
-      <div style={styles.membersSection}>
-        <h2 style={styles.sectionTitle}>
+      <div className="category-display__members-section">
+        <h2 className="category-display__section-title">
           Members ({member_count})
         </h2>
 
         {members.length === 0 ? (
-          <div style={styles.emptyMembers}>
+          <div className="category-display__empty-members">
             <p>This category has no members yet.</p>
-            <p style={{ fontSize: '12px', color: '#666' }}>
+            <p className="category-display__empty-hint">
               Add nodes to this category using the "Add to category" form on any node page.
             </p>
           </div>
         ) : (
-          <div style={styles.membersList}>
+          <div className="category-display__members-list">
             {Object.entries(membersByType).map(([type, typeMembers]) => (
-              <div key={type} style={styles.typeGroup}>
-                <h3 style={styles.typeHeader}>
+              <div key={type} className="category-display__type-group">
+                <h3 className="category-display__type-header">
                   {type === 'e2node' ? 'E2Nodes' :
                    type === 'category' ? 'Categories' :
                    type.charAt(0).toUpperCase() + type.slice(1) + 's'}
-                  <span style={styles.typeCount}>({typeMembers.length})</span>
+                  <span className="category-display__type-count">({typeMembers.length})</span>
                 </h3>
-                <ul style={styles.memberList}>
+                <ul className="category-display__member-list">
                   {typeMembers.map((member) => (
-                    <li key={member.node_id} style={styles.memberItem}>
+                    <li key={member.node_id} className="category-display__member-item">
                       <LinkNode
                         nodeId={member.node_id}
                         title={member.title}
                         type={member.type}
                       />
                       {member.type !== 'e2node' && (
-                        <span style={styles.memberAuthor}>
+                        <span className="category-display__member-author">
                           {' '}by{' '}
                           <LinkNode
                             nodeId={member.author_id}
@@ -150,121 +151,6 @@ const CategoryDisplay = ({ data }) => {
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111',
-    padding: '20px',
-    maxWidth: '900px'
-  },
-  errorBox: {
-    padding: '15px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828'
-  },
-  header: {
-    marginBottom: '25px',
-    paddingBottom: '15px',
-    borderBottom: '2px solid #e0e0e0'
-  },
-  titleRow: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '15px'
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    margin: 0
-  },
-  meta: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '20px',
-    marginBottom: '15px'
-  },
-  metaItem: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '13px',
-    color: '#555'
-  },
-  editButtonContainer: {
-    marginTop: '10px'
-  },
-  editButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '8px 16px',
-    backgroundColor: '#4060b0',
-    color: 'white',
-    textDecoration: 'none',
-    borderRadius: '4px',
-    fontSize: '13px',
-    fontWeight: '500',
-    transition: 'background-color 0.2s'
-  },
-  descriptionSection: {
-    marginBottom: '25px'
-  },
-  sectionTitle: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: '10px',
-    paddingBottom: '5px',
-    borderBottom: '1px solid #e0e0e0'
-  },
-  descriptionBox: {
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '4px',
-    border: '1px solid #e0e0e0'
-  },
-  membersSection: {
-    marginBottom: '20px'
-  },
-  emptyMembers: {
-    padding: '20px',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '4px',
-    textAlign: 'center',
-    color: '#666'
-  },
-  membersList: {},
-  typeGroup: {
-    marginBottom: '20px'
-  },
-  typeHeader: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: '#555',
-    marginBottom: '8px'
-  },
-  typeCount: {
-    fontWeight: 'normal',
-    color: '#888',
-    marginLeft: '8px'
-  },
-  memberList: {
-    listStyle: 'none',
-    padding: 0,
-    margin: 0
-  },
-  memberItem: {
-    padding: '6px 0',
-    borderBottom: '1px solid #eee'
-  },
-  memberAuthor: {
-    fontSize: '12px',
-    color: '#666'
-  }
 }
 
 export default CategoryDisplay

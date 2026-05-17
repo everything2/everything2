@@ -4,6 +4,7 @@ import React, { useState } from 'react'
  * VotingData - Admin tool for analyzing voting patterns
  *
  * Allows searching by date range or monthly breakdown.
+ * Styles are in CSS classes (voting-data__*)
  */
 const VotingData = ({ data }) => {
   const {
@@ -37,7 +38,7 @@ const VotingData = ({ data }) => {
     <div className="voting-data">
       {/* Results */}
       {search_type === 'date_range' && results.length > 0 && (
-        <div style={{ marginBottom: '1.5em', padding: '10px', backgroundColor: '#f0f8ff', border: '1px solid #4060b0' }}>
+        <div className="voting-data__result-box">
           <strong>Vote Results:</strong> {results[0].count.toLocaleString()} votes
           {results[0].start_date !== results[0].end_date ? (
             <span> from {results[0].start_date} to {results[0].end_date}</span>
@@ -48,27 +49,27 @@ const VotingData = ({ data }) => {
       )}
 
       {search_type === 'monthly' && results.length > 0 && (
-        <div style={{ marginBottom: '1.5em' }}>
+        <div className="voting-data__section">
           <h3>Monthly Breakdown</h3>
-          <table style={{ borderCollapse: 'collapse', width: '300px' }}>
+          <table className="voting-data__table">
             <thead>
               <tr>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Date</th>
-                <th style={{ textAlign: 'right', borderBottom: '1px solid #ccc', padding: '4px' }}>Votes</th>
+                <th className="voting-data__th">Date</th>
+                <th className="voting-data__th voting-data__th--right">Votes</th>
               </tr>
             </thead>
             <tbody>
               {results.map((row, idx) => (
-                <tr key={row.date} style={{ backgroundColor: idx % 2 === 0 ? '#fff' : '#f8f9f9' }}>
-                  <td style={{ padding: '4px' }}>{row.date}</td>
-                  <td style={{ textAlign: 'right', padding: '4px' }}>{row.count.toLocaleString()}</td>
+                <tr key={row.date} className={idx % 2 === 0 ? 'voting-data__row--even' : 'voting-data__row--odd'}>
+                  <td className="voting-data__td">{row.date}</td>
+                  <td className="voting-data__td--right">{row.count.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
-              <tr style={{ fontWeight: 'bold', borderTop: '2px solid #ccc' }}>
-                <td style={{ padding: '4px' }}>Total</td>
-                <td style={{ textAlign: 'right', padding: '4px' }}>
+              <tr className="voting-data__total-row">
+                <td className="voting-data__td">Total</td>
+                <td className="voting-data__td--right">
                   {results.reduce((sum, r) => sum + r.count, 0).toLocaleString()}
                 </td>
               </tr>
@@ -81,9 +82,9 @@ const VotingData = ({ data }) => {
       <form method="GET">
         <input type="hidden" name="node_id" value={nodeId} />
 
-        <div style={{ marginBottom: '1.5em' }}>
+        <div className="voting-data__section">
           <h3>Date Range Search</h3>
-          <div style={{ marginBottom: '0.5em' }}>
+          <div className="voting-data__form-row">
             <label>
               Start Date:{' '}
               <input
@@ -96,7 +97,7 @@ const VotingData = ({ data }) => {
               />
             </label>
           </div>
-          <div style={{ marginBottom: '0.5em' }}>
+          <div className="voting-data__form-row">
             <label>
               End Date:{' '}
               <input
@@ -111,9 +112,9 @@ const VotingData = ({ data }) => {
           </div>
         </div>
 
-        <div style={{ marginBottom: '1.5em' }}>
+        <div className="voting-data__section">
           <h3>Monthly Breakdown</h3>
-          <div style={{ marginBottom: '0.5em' }}>
+          <div className="voting-data__form-row">
             <label>
               Year:{' '}
               <input
@@ -126,7 +127,7 @@ const VotingData = ({ data }) => {
               />
             </label>
           </div>
-          <div style={{ marginBottom: '0.5em' }}>
+          <div className="voting-data__form-row">
             <label>
               Month:{' '}
               <input
@@ -141,14 +142,7 @@ const VotingData = ({ data }) => {
           </div>
         </div>
 
-        <button type="submit" style={{
-          padding: '6px 15px',
-          backgroundColor: '#38495e',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '3px',
-          cursor: 'pointer'
-        }}>
+        <button type="submit" className="voting-data__submit">
           Search
         </button>
       </form>

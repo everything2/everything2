@@ -27,21 +27,21 @@ const MarkAllDiscussionsAsRead = ({ data }) => {
   return (
     <div className="mark-discussions-read">
       {messages.length > 0 && (
-        <div className="success-messages" style={{ marginBottom: '1em' }}>
+        <div className="mark-discussions__messages">
           {messages.map((msg, i) => (
-            <p key={i} style={{ color: 'green' }}>{msg}</p>
+            <p key={i} className="mark-discussions__success">{msg}</p>
           ))}
         </div>
       )}
 
       {!Boolean(ce_marked) && (
-        <div style={{ marginBottom: '2em' }}>
+        <div className="mark-discussions__section">
           <p>
             Apply pressure to the hypertext if you want to mark all of
             your old CE debates as read (and the new ones too, everything!).
           </p>
-          <p style={{ textAlign: 'center' }}>
-            <a href={`${baseUrl}&mark_ce_read=1`}>Mark CE Debates as Read</a>
+          <p className="mark-discussions__link">
+            <a href={`${baseUrl}&mark_ce_read=1`} className="mark-discussions__button">Mark CE Debates as Read</a>
           </p>
         </div>
       )}
@@ -54,19 +54,19 @@ const MarkAllDiscussionsAsRead = ({ data }) => {
       )}
 
       {Boolean(is_admin) && !Boolean(admin_marked) && (
-        <div style={{ marginTop: '2em' }}>
+        <div className="mark-discussions__admin-section">
           <p>
             It appears you are like a god amongst men. You may do the same
             but to your admin debates.
           </p>
-          <p style={{ textAlign: 'center' }}>
-            <a href={`${baseUrl}&mark_admin_read=1`}>Mark Admin Debates as Read</a>
+          <p className="mark-discussions__link">
+            <a href={`${baseUrl}&mark_admin_read=1`} className="mark-discussions__button">Mark Admin Debates as Read</a>
           </p>
         </div>
       )}
 
       {Boolean(is_admin) && Boolean(admin_marked) && (
-        <p style={{ marginTop: '2em' }}>
+        <p className="mark-discussions__done">
           It is done. All of your admin debates have been marked as read.
           Hopefully there's never a reason to do this again.
         </p>

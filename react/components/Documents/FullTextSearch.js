@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 
 /**
  * FullTextSearch - Google Custom Search Engine integration
+ * Styles in CSS: .full-text-search__*
  *
  * Migrated from templates/pages/e2_full_text_search.mc
  *
@@ -52,13 +53,7 @@ const FullTextSearch = ({ data }) => {
 
   return (
     <div className="full-text-search">
-      <div
-        className="cse-branding-right"
-        style={{
-          backgroundColor: '#FFFFFF',
-          color: '#000000'
-        }}
-      >
+      <div className="cse-branding-right full-text-search__branding">
         <div className="cse-branding-form">
           <form action="" id="cse-search-box">
             <div>

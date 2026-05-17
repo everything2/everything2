@@ -57,7 +57,7 @@ const Developer = (props) => {
       <div className="dev-nodelet__row">
         <FaGithubSquare size={12} className="dev-nodelet__icon" />
         <a href={githubUrl}>GitHub</a>
-        <FaCodeBranch size={12} className="dev-nodelet__icon" style={{ marginLeft: '8px' }} />
+        <FaCodeBranch size={12} className="dev-nodelet__icon dev-nodelet__icon--spaced" />
         <a href={githubUrl + "/commit/"+props.lastCommit}>{props.lastCommit.substr(0,7)}</a>
       </div>
       <div className="dev-nodelet__row">

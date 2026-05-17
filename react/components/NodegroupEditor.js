@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import LinkNode from './LinkNode'
-import { GroupEditorModal, styles } from './GroupEditorBase'
+import { GroupEditorModal } from './GroupEditorBase'
 import { getNodeTypeIcon, getNodeTypeIconStyle } from '../utils/nodeTypeIcons'
 import { FaFolder } from 'react-icons/fa'
 
@@ -102,25 +102,25 @@ const NodegroupEditor = ({ isOpen, onClose, nodegroup, onUpdate }) => {
   // Render search result with type icon
   const renderSearchResult = (result) => (
     <>
-      <span style={{ ...styles.typeIcon, ...getNodeTypeIconStyle(result.type) }}>
+      <span className="group-editor__type-icon" style={getNodeTypeIconStyle(result.type)}>
         {getNodeTypeIcon(result.type, { size: 14 })}
       </span>
-      <span style={styles.resultTitle}>{result.title}</span>
-      <span style={styles.resultType}>{result.type}</span>
+      <span className="group-editor__result-title">{result.title}</span>
+      <span className="group-editor__result-type">{result.type}</span>
     </>
   )
 
   // Render member content with type icon and author
   const renderMemberContent = (member) => (
     <>
-      <span style={{ ...styles.typeIcon, ...getNodeTypeIconStyle(member.type) }}>
+      <span className="group-editor__type-icon" style={getNodeTypeIconStyle(member.type)}>
         {getNodeTypeIcon(member.type, { size: 14 })}
       </span>
-      <div style={styles.memberDetails}>
+      <div className="group-editor__member-details">
         <LinkNode nodeId={member.node_id} title={member.title} />
-        <span style={styles.typeLabel}>{member.type}</span>
+        <span className="group-editor__type-label">{member.type}</span>
         {member.author && (
-          <span style={styles.authorInfo}>
+          <span className="group-editor__author-info">
             by <LinkNode nodeId={member.author.node_id} title={member.author.title} />
           </span>
         )}
@@ -133,7 +133,7 @@ const NodegroupEditor = ({ isOpen, onClose, nodegroup, onUpdate }) => {
       isOpen={isOpen}
       onClose={onClose}
       title={`Edit: ${nodegroup.title}`}
-      headerIcon={<FaFolder style={{ marginRight: '8px', color: '#507898' }} />}
+      headerIcon={<FaFolder className="group-editor__header-icon" />}
       searchPlaceholder="Search for any node..."
       addLabel="Add Node"
       helpText="Drag members to reorder. Search for any node type to add."

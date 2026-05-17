@@ -92,7 +92,7 @@ describe('NodeletSection Component', () => {
       );
 
       // Check for SVG icon in the toggle link
-      const toggleLink = container.querySelector('a[style*="cursor"]');
+      const toggleLink = container.querySelector('.nodelet-section__toggle');
       expect(toggleLink).toBeInTheDocument();
       expect(toggleLink.querySelector('svg')).toBeInTheDocument();
     });
@@ -111,7 +111,7 @@ describe('NodeletSection Component', () => {
       );
 
       // Check for SVG icon in the toggle link
-      const toggleLink = container.querySelector('a[style*="cursor"]');
+      const toggleLink = container.querySelector('.nodelet-section__toggle');
       expect(toggleLink).toBeInTheDocument();
       expect(toggleLink.querySelector('svg')).toBeInTheDocument();
     });
@@ -167,7 +167,7 @@ describe('NodeletSection Component', () => {
         </NodeletSection>
       );
 
-      const toggleLink = container.querySelector('a[style*="cursor"]');
+      const toggleLink = container.querySelector('.nodelet-section__toggle');
       fireEvent.click(toggleLink);
 
       expect(mockToggleSection).toHaveBeenCalledTimes(1);
@@ -186,7 +186,7 @@ describe('NodeletSection Component', () => {
         </NodeletSection>
       );
 
-      const toggleLink = container.querySelector('a[style*="cursor"]');
+      const toggleLink = container.querySelector('.nodelet-section__toggle');
       fireEvent.click(toggleLink);
 
       expect(mockToggleSection).toHaveBeenCalledWith(
@@ -195,7 +195,7 @@ describe('NodeletSection Component', () => {
       );
     });
 
-    it('toggle link has pointer cursor', () => {
+    it('toggle link has correct CSS class', () => {
       const { container } = render(
         <NodeletSection
           nodelet="vitals"
@@ -208,8 +208,9 @@ describe('NodeletSection Component', () => {
         </NodeletSection>
       );
 
-      const toggleLink = container.querySelector('a[style*="cursor"]');
-      expect(toggleLink).toHaveStyle({ cursor: 'pointer' });
+      const toggleLink = container.querySelector('.nodelet-section__toggle');
+      expect(toggleLink).toBeInTheDocument();
+      expect(toggleLink).toHaveClass('nodelet-section__toggle');
     });
   });
 

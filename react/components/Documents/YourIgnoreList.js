@@ -14,9 +14,9 @@ const YourIgnoreList = ({ data, user }) => {
   return (
     <div className="document">
       {canCheckOthers && (
-        <div style={{ marginBottom: '1em' }}>
+        <div className="ignore-list__check-form">
           <p>Check on user: {/* TODO: Add username_selector component */}
-            {error && <em style={{ color: '#8b0000', marginLeft: '0.5em' }}>{error}</em>}
+            {error && <em className="ignore-list__error">{error}</em>}
           </p>
         </div>
       )}

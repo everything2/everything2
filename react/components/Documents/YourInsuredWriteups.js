@@ -11,8 +11,6 @@ const YourInsuredWriteups = ({ data }) => {
 
   return (
     <div className="document">
-      <h2>Your Insured Writeups</h2>
-
       {writeups.length === 0 ? (
         <p><em>You have no insured writeups</em></p>
       ) : (
@@ -25,7 +23,7 @@ const YourInsuredWriteups = ({ data }) => {
         </ol>
       )}
 
-      <p style={{ marginTop: '2em', fontSize: '0.9em', color: '#666' }}>
+      <p className="your-insured-writeups__total">
         Total: {writeups.length} insured writeup{writeups.length !== 1 ? 's' : ''}
       </p>
     </div>

@@ -53,24 +53,18 @@ describe('ObliqueStrategiesGarden', () => {
     expect(newCells).toEqual(initialCells)
   })
 
-  it('applies proper table styling', () => {
+  it('applies proper table styling via CSS class', () => {
     const { container } = render(<ObliqueStrategiesGarden />)
 
     const table = container.querySelector('table')
-    expect(table).toHaveStyle({ width: '100%', borderCollapse: 'collapse' })
+    expect(table).toHaveClass('oblique-strategies__table')
   })
 
-  it('applies proper cell styling', () => {
+  it('applies proper cell styling via CSS class', () => {
     const { container } = render(<ObliqueStrategiesGarden />)
 
     const cell = container.querySelector('td')
-    expect(cell).toHaveStyle({
-      border: '1px solid #ddd',
-      padding: '8px',
-      minHeight: '40px',
-      verticalAlign: 'top',
-      fontSize: '0.9em'
-    })
+    expect(cell).toHaveClass('oblique-strategies__cell')
   })
 
   it('has tbody element', () => {

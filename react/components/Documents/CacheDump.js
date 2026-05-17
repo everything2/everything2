@@ -6,6 +6,7 @@ import LinkNode from '../LinkNode'
  *
  * Admin tool showing cached nodes, their types, permanent status,
  * and group membership information.
+ * Styles are in CSS classes (cache-dump__*)
  */
 const CacheDump = ({ data = {} }) => {
   const {
@@ -40,6 +41,14 @@ const CacheDump = ({ data = {} }) => {
     ? Math.round((cache_size / max_size) * 100)
     : 0
 
+  // Helper to get rate class
+  const getRateClass = (rate) => {
+    const rateNum = parseFloat(rate)
+    if (rateNum < 50) return 'cache-dump__td--rate-low'
+    if (rateNum > 90) return 'cache-dump__td--rate-high'
+    return 'cache-dump__td--rate-normal'
+  }
+
   return (
     <div className="cache-dump">
       <h3>Cache Statistics</h3>
@@ -54,13 +63,13 @@ const CacheDump = ({ data = {} }) => {
       </p>
 
       <h3>Cache Performance (this process)</h3>
-      <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '0.5em' }}>
+      <p className="cache-dump__help-text">
         Hit/miss statistics since process start. High eviction + low hit rate = cache churn.
       </p>
       {perf_stats.length === 0 ? (
         <p><em>No statistics collected yet.</em></p>
       ) : (
-        <table style={{ marginBottom: '1em' }}>
+        <table className="cache-dump__perf-table">
           <thead>
             <tr>
               <th>Type</th>
@@ -75,17 +84,13 @@ const CacheDump = ({ data = {} }) => {
             {perf_stats.map(stat => (
               <tr key={stat.type}>
                 <td>{stat.type}</td>
-                <td style={{ textAlign: 'right' }}>{stat.hits}</td>
-                <td style={{ textAlign: 'right' }}>{stat.misses}</td>
-                <td style={{ textAlign: 'right' }}>{stat.stale}</td>
-                <td style={{ textAlign: 'right', color: stat.evictions > 10 ? '#c00' : 'inherit' }}>
+                <td className="cache-dump__td--right">{stat.hits}</td>
+                <td className="cache-dump__td--right">{stat.misses}</td>
+                <td className="cache-dump__td--right">{stat.stale}</td>
+                <td className={stat.evictions > 10 ? 'cache-dump__td--warning' : 'cache-dump__td--right'}>
                   {stat.evictions}
                 </td>
-                <td style={{
-                  textAlign: 'right',
-                  color: parseFloat(stat.hit_rate) < 50 ? '#c00' : parseFloat(stat.hit_rate) > 90 ? '#090' : 'inherit',
-                  fontWeight: 'bold'
-                }}>
+                <td className={getRateClass(stat.hit_rate)}>
                   {stat.hit_rate}%
                 </td>
               </tr>
@@ -95,7 +100,7 @@ const CacheDump = ({ data = {} }) => {
       )}
 
       <h3>Type Breakdown (currently cached)</h3>
-      <table style={{ marginBottom: '1em' }}>
+      <table className="cache-dump__perf-table">
         <thead>
           <tr>
             <th>Type</th>
@@ -112,9 +117,7 @@ const CacheDump = ({ data = {} }) => {
                     e.preventDefault()
                     setFilterType(filterType === stat.type ? '' : stat.type)
                   }}
-                  style={{
-                    fontWeight: filterType === stat.type ? 'bold' : 'normal'
-                  }}
+                  className={filterType === stat.type ? 'cache-dump__filter-link--active' : 'cache-dump__filter-link'}
                 >
                   {stat.type}
                 </a>
@@ -127,7 +130,7 @@ const CacheDump = ({ data = {} }) => {
 
       <h3>Cached Nodes ({filteredNodes.length})</h3>
 
-      <div style={{ marginBottom: '1em' }}>
+      <div className="cache-dump__filter-bar">
         <label>
           <input
             type="checkbox"
@@ -137,7 +140,7 @@ const CacheDump = ({ data = {} }) => {
           {' '}Show permanent only
         </label>
         {filterType && (
-          <span style={{ marginLeft: '1em' }}>
+          <span className="cache-dump__filter-status">
             Filtering by: <strong>{filterType}</strong>
             {' '}
             <a href="#" onClick={(e) => { e.preventDefault(); setFilterType('') }}>
@@ -152,7 +155,7 @@ const CacheDump = ({ data = {} }) => {
           <li key={node.node_id}>
             <LinkNode node_id={node.node_id} title={node.title} />
             {' '}
-            <span style={{ color: '#666' }}>
+            <span className="cache-dump__meta">
               ({node.type}
               {Boolean(node.permanent) && ', permanent'}
               {node.group_size !== undefined && `, ${node.group_size} in group`}
@@ -168,7 +171,7 @@ const CacheDump = ({ data = {} }) => {
       )}
 
       <h3>Group Cache ({group_cache_size} groups)</h3>
-      <p style={{ fontSize: '0.9em', color: '#666' }}>
+      <p className="cache-dump__help-text">
         Cached group membership data for fast permission checks (isApproved, isGod, isEditor, etc.)
       </p>
 
@@ -177,7 +180,7 @@ const CacheDump = ({ data = {} }) => {
       ) : (
         <ul>
           {group_cache.map(group => (
-            <li key={group.group_id} style={{ marginBottom: '0.5em' }}>
+            <li key={group.group_id} className="cache-dump__group-item">
               <a
                 href="#"
                 onClick={(e) => {
@@ -187,24 +190,24 @@ const CacheDump = ({ data = {} }) => {
                     [group.group_id]: !prev[group.group_id]
                   }))
                 }}
-                style={{ fontWeight: 'bold' }}
+                className="cache-dump__expand-link"
               >
                 {expandedGroups[group.group_id] ? '▼' : '▶'}
               </a>
               {' '}
               <LinkNode node_id={group.group_id} title={group.group_title} />
               {' '}
-              <span style={{ color: '#666' }}>
+              <span className="cache-dump__meta">
                 ({group.group_type}, {group.member_count} members cached)
               </span>
 
               {expandedGroups[group.group_id] && (
-                <ul style={{ marginTop: '0.5em' }}>
+                <ul className="cache-dump__member-list">
                   {group.members.map(member => (
                     <li key={member.node_id}>
                       <LinkNode node_id={member.node_id} title={member.title} />
                       {' '}
-                      <span style={{ color: '#999', fontSize: '0.9em' }}>
+                      <span className="cache-dump__meta--small">
                         ({member.type})
                       </span>
                     </li>

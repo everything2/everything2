@@ -3,6 +3,7 @@ import PollDisplay from '../Poll/PollDisplay'
 
 /**
  * EverythingPollArchive - Browse closed/completed polls
+ * Styles in CSS: .poll-archive__*
  *
  * Features:
  * - List closed polls with results
@@ -17,16 +18,6 @@ const EverythingPollArchive = ({ data, user }) => {
   const [hasMore, setHasMore] = useState(false)
 
   const limit = 10
-
-  const colors = {
-    primary: '#38495e',
-    secondary: '#507898',
-    highlight: '#4060b0',
-    accent: '#3bb5c3',
-    background: '#f8f9f9',
-    text: '#111111',
-    error: '#c75050'
-  }
 
   useEffect(() => {
     fetchPolls()
@@ -65,75 +56,28 @@ const EverythingPollArchive = ({ data, user }) => {
     }
   }
 
-  // Styles
-  const containerStyle = {
-    padding: '20px',
-    maxWidth: '900px',
-    margin: '0 auto'
-  }
-
-  const headerStyle = {
-    marginBottom: '30px',
-    borderBottom: `2px solid ${colors.primary}`,
-    paddingBottom: '15px'
-  }
-
-  const titleStyle = {
-    fontSize: '28px',
-    color: colors.primary,
-    marginBottom: '15px'
-  }
-
-  const paginationStyle = {
-    textAlign: 'right',
-    marginTop: '20px',
-    fontSize: '14px'
-  }
-
-  const linkStyle = {
-    color: colors.highlight,
-    textDecoration: 'none',
-    marginRight: '10px'
-  }
-
-  const errorStyle = {
-    padding: '15px',
-    backgroundColor: '#fff5f5',
-    border: `1px solid #feb2b2`,
-    color: colors.error,
-    borderRadius: '4px',
-    marginBottom: '20px'
-  }
-
-  const loadingStyle = {
-    textAlign: 'center',
-    padding: '40px',
-    color: colors.secondary,
-    fontSize: '16px'
-  }
-
   return (
-    <div style={containerStyle}>
+    <div className="poll-archive">
       {/* Header */}
-      <div style={headerStyle}>
-        <h1 style={titleStyle}>Everything Poll Archive</h1>
+      <div className="poll-archive__header">
+        <h1 className="poll-archive__title">Everything Poll Archive</h1>
       </div>
 
       {/* Error message */}
-      {error && <div style={errorStyle}>{error}</div>}
+      {error && <div className="poll-archive__error">{error}</div>}
 
       {/* Loading state */}
-      {loading && <div style={loadingStyle}>Loading polls...</div>}
+      {loading && <div className="poll-archive__loading">Loading polls...</div>}
 
       {/* Polls list */}
       {!loading && (
         <>
           {polls.length === 0 ? (
-            <div style={loadingStyle}>No polls found in the archive.</div>
+            <div className="poll-archive__loading">No polls found in the archive.</div>
           ) : (
-            <ul style={{ listStyleType: 'none', padding: 0 }}>
+            <ul className="poll-archive__list">
               {polls.map((poll) => (
-                <li key={poll.poll_id} style={{ marginBottom: '40px' }}>
+                <li key={poll.poll_id} className="poll-archive__list-item">
                   <PollDisplay
                     poll={poll}
                     showStatus={false}
@@ -147,17 +91,17 @@ const EverythingPollArchive = ({ data, user }) => {
 
           {/* Pagination */}
           {(startat > 0 || hasMore) && (
-            <div style={paginationStyle}>
+            <div className="poll-archive__pagination">
               {startat > 0 && (
                 <>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handlePrevious() }} style={linkStyle}>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handlePrevious() }} className="poll-archive__link">
                     previous
                   </a>
                   {' '}
                 </>
               )}
               {hasMore && (
-                <a href="#" onClick={(e) => { e.preventDefault(); handleNext() }} style={linkStyle}>
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNext() }} className="poll-archive__link">
                   next
                 </a>
               )}

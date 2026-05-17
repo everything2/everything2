@@ -294,11 +294,11 @@ const CollaborationEdit = ({ data }) => {
         <span className="collab-edit__header-title">Edit Collaboration: {collaboration.title}</span>
         <div className="collab-edit__header-actions">
           <a href={`/node/${collaboration.node_id}`} className="collab-edit__display-link">
-            <FaEye style={{ marginRight: 4 }} />
+            <FaEye className="collab-edit__icon-margin" />
             display
           </a>
           <button onClick={handleUnlock} className="collab-edit__unlock-btn">
-            <FaLockOpen style={{ marginRight: 4 }} />
+            <FaLockOpen className="collab-edit__icon-margin" />
             unlock
           </button>
           {user.is_admin && (
@@ -306,7 +306,7 @@ const CollaborationEdit = ({ data }) => {
               onClick={() => setShowDeleteModal(true)}
               className="collab-edit__delete-btn"
             >
-              <FaTrash style={{ marginRight: 4 }} />
+              <FaTrash className="collab-edit__icon-margin" />
               delete
             </button>
           )}
@@ -372,9 +372,9 @@ const CollaborationEdit = ({ data }) => {
                     onClick={() => handleAddMember(result)}
                   >
                     {result.type === 'usergroup' ? (
-                      <FaUsers style={{ color: '#4060b0' }} />
+                      <FaUsers className="collab-edit__result-icon--usergroup" />
                     ) : (
-                      <FaUser style={{ color: '#507898' }} />
+                      <FaUser className="collab-edit__result-icon--user" />
                     )}
                     <span>{result.title}</span>
                     <span className="collab-edit__result-type">{result.type}</span>
@@ -418,7 +418,7 @@ const CollaborationEdit = ({ data }) => {
         {editorMode === 'rich' ? (
           <div className="collab-edit__editor-container">
             <MenuBar editor={editor} />
-            <div className="e2-editor-wrapper" style={{ padding: '12px', minHeight: 300 }}>
+            <div className="e2-editor-wrapper e2-editor-wrapper--padded collab-edit__editor-min-height">
               <EditorContent editor={editor} />
             </div>
           </div>
@@ -442,7 +442,7 @@ const CollaborationEdit = ({ data }) => {
           className="collab-edit__save-btn"
         >
           {saving ? <FaSpinner className="fa-spin" /> : <FaSave />}
-          <span style={{ marginLeft: 6 }}>{saving ? 'Saving...' : 'Save Changes'}</span>
+          <span className="collab-edit__save-btn-text">{saving ? 'Saving...' : 'Save Changes'}</span>
         </button>
       </div>
 

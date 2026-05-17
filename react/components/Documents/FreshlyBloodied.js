@@ -55,7 +55,7 @@ const FreshlyBloodied = ({ data }) => {
         Of those, <strong>{locked_count}</strong> were locked.
       </p>
 
-      <div className="pagination" style={{ textAlign: 'center', margin: '1em 0' }}>
+      <div className="pagination freshly-bloodied__pagination">
         {hasPrev && (
           <>
             <a href={`?start=${start - page_size}`}>&laquo; Later</a>
@@ -70,7 +70,7 @@ const FreshlyBloodied = ({ data }) => {
         )}
       </div>
 
-      <table style={{ width: '100%', borderTop: '1px gray solid' }}>
+      <table className="freshly-bloodied__table">
         <thead>
           <tr>
             <th>Joined</th>
@@ -115,7 +115,7 @@ const FreshlyBloodied = ({ data }) => {
         </tbody>
       </table>
 
-      <div className="pagination" style={{ textAlign: 'center', margin: '1em 0' }}>
+      <div className="pagination freshly-bloodied__pagination">
         {hasPrev && (
           <>
             <a href={`?start=${start - page_size}`}>&laquo; Later</a>

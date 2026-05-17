@@ -5,6 +5,7 @@ import { FaPodcast, FaSave, FaTimes, FaMicrophone, FaPlus, FaSpinner } from 'rea
 
 /**
  * PodcastEdit - Edit podcast information
+ * Styles in CSS: .podcast-edit__*
  *
  * Allows editing podcast metadata (title, description, link, pubdate)
  * and shows associated recordings with link to create new ones.
@@ -87,64 +88,59 @@ const PodcastEdit = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="podcast-edit">
       {/* Header */}
-      <div style={styles.header}>
-        <FaPodcast style={{ color: '#507898', marginRight: 8, fontSize: 20 }} />
-        <span style={styles.headerTitle}>Edit Podcast</span>
-        <a href={`/node/${podcast.node_id}`} style={styles.displayLink}>
+      <div className="podcast-edit__header">
+        <FaPodcast className="podcast-edit__header-icon" />
+        <span className="podcast-edit__header-title">Edit Podcast</span>
+        <a href={`/node/${podcast.node_id}`} className="podcast-edit__back-link">
           display
         </a>
       </div>
 
       {/* Message */}
       {message && (
-        <div style={{
-          ...styles.message,
-          backgroundColor: message.type === 'error' ? '#fee' : '#efe',
-          borderColor: message.type === 'error' ? '#fcc' : '#cec',
-          color: message.type === 'error' ? '#c00' : '#060'
-        }}>
+        <div className={message.type === 'error' ? 'podcast-edit__error' : 'podcast-edit__success'}>
           {message.text}
         </div>
       )}
 
       {/* Form */}
-      <div style={styles.form}>
-        <div style={styles.field}>
-          <label style={styles.label}>Title:</label>
+      <div className="podcast-edit__form">
+        <div className="podcast-edit__field">
+          <label className="podcast-edit__label">Title:</label>
           <input
             type="text"
             value={formData.title}
             onChange={(e) => handleChange('title', e.target.value)}
-            style={styles.input}
+            className="podcast-edit__input"
             maxLength={240}
           />
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>MP3 Link:</label>
+        <div className="podcast-edit__field">
+          <label className="podcast-edit__label">MP3 Link:</label>
           <input
             type="text"
             value={formData.link}
             onChange={(e) => handleChange('link', e.target.value)}
-            style={styles.input}
+            className="podcast-edit__input"
             placeholder="https://..."
           />
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Description:</label>
+        <div className="podcast-edit__field">
+          <label className="podcast-edit__label">Description:</label>
           <textarea
             value={formData.description}
             onChange={(e) => handleChange('description', e.target.value)}
-            style={styles.textarea}
+            className="podcast-edit__textarea"
             rows={10}
           />
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Publication Date:</label>
+        <div className="podcast-edit__field">
+          <label className="podcast-edit__label">Publication Date:</label>
           <DateTimePicker
             value={formData.pubdate}
             onChange={(value) => handleChange('pubdate', value)}
@@ -152,208 +148,68 @@ const PodcastEdit = ({ data }) => {
           />
         </div>
 
-        <div style={styles.buttonRow}>
+        <div className="podcast-edit__button-row">
           <button
             onClick={handleSave}
             disabled={saving}
-            style={styles.saveButton}
+            className="podcast-edit__submit-button"
           >
             {saving ? <FaSpinner className="fa-spin" /> : <FaSave />}
-            <span style={{ marginLeft: 6 }}>{saving ? 'Saving...' : 'Save Changes'}</span>
+            <span className="podcast-edit__button-text">{saving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </div>
 
       {/* Recordings section */}
-      <div style={styles.recordingsSection}>
-        <h3 style={styles.sectionTitle}>
-          <FaMicrophone style={{ marginRight: 6 }} />
+      <div className="podcast-edit__recordings-section">
+        <h3 className="podcast-edit__recordings-header">
+          <FaMicrophone className="podcast-edit__recordings-icon" />
           Recordings ({recordings.length})
         </h3>
 
         {recordings.length > 0 && (
-          <div style={styles.recordingsList}>
+          <ul className="podcast-edit__recordings-list">
             {recordings.map(recording => (
-              <div key={recording.node_id} style={styles.recordingItem}>
-                <LinkNode nodeId={recording.node_id} title={recording.title} />
+              <li key={recording.node_id} className="podcast-edit__recording-item">
+                <span className="podcast-edit__recording-title">
+                  <LinkNode nodeId={recording.node_id} title={recording.title} />
+                </span>
                 <a
                   href={`/?node_id=${recording.node_id}&displaytype=edit`}
-                  style={styles.editRecordingLink}
+                  className="podcast-edit__recording-edit"
                 >
                   edit
                 </a>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
 
         {/* Add new recording */}
-        <div style={styles.newRecordingSection}>
-          <h4 style={styles.newRecordingTitle}>Add a new recording:</h4>
-          <form onSubmit={handleCreateRecording} style={styles.newRecordingForm}>
+        <div className="podcast-edit__add-recording">
+          <h4 className="podcast-edit__add-title">Add a new recording:</h4>
+          <form onSubmit={handleCreateRecording} className="podcast-edit__add-form">
             <input
               type="text"
               value={newRecordingTitle}
               onChange={(e) => setNewRecordingTitle(e.target.value)}
-              style={styles.newRecordingInput}
+              className="podcast-edit__add-input"
               placeholder="Recording title"
               maxLength={64}
             />
             <button
               type="submit"
               disabled={creatingRecording || !newRecordingTitle.trim()}
-              style={styles.createButton}
+              className="podcast-edit__add-button"
             >
               {creatingRecording ? <FaSpinner className="fa-spin" /> : <FaPlus />}
-              <span style={{ marginLeft: 4 }}>create</span>
+              <span className="podcast-edit__add-button-text">create</span>
             </button>
           </form>
         </div>
       </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-    padding: '16px 0'
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 16,
-    paddingBottom: 12,
-    borderBottom: '2px solid #38495e'
-  },
-  headerTitle: {
-    flex: 1
-  },
-  displayLink: {
-    fontSize: 14,
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  message: {
-    padding: 12,
-    marginBottom: 16,
-    borderRadius: 4,
-    border: '1px solid'
-  },
-  form: {
-    marginBottom: 24
-  },
-  field: {
-    marginBottom: 16
-  },
-  label: {
-    display: 'block',
-    fontWeight: 'bold',
-    marginBottom: 4,
-    color: '#38495e'
-  },
-  input: {
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: 14,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-    boxSizing: 'border-box'
-  },
-  textarea: {
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: 14,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-    boxSizing: 'border-box',
-    fontFamily: 'inherit',
-    resize: 'vertical'
-  },
-  buttonRow: {
-    marginTop: 20
-  },
-  saveButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontSize: 14,
-    fontWeight: 'bold'
-  },
-  recordingsSection: {
-    marginTop: 32,
-    paddingTop: 20,
-    borderTop: '1px solid #ddd'
-  },
-  sectionTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 16
-  },
-  recordingsList: {
-    marginBottom: 20
-  },
-  recordingItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '8px 12px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4,
-    marginBottom: 8
-  },
-  editRecordingLink: {
-    fontSize: 12,
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  newRecordingSection: {
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4
-  },
-  newRecordingTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 12,
-    marginTop: 0
-  },
-  newRecordingForm: {
-    display: 'flex',
-    gap: 8
-  },
-  newRecordingInput: {
-    flex: 1,
-    padding: '8px 10px',
-    fontSize: 14,
-    border: '1px solid #ccc',
-    borderRadius: 4
-  },
-  createButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '8px 16px',
-    backgroundColor: '#507898',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-    fontSize: 14
-  }
 }
 
 export default PodcastEdit

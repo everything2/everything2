@@ -205,7 +205,7 @@ describe('NodeList', () => {
     expect(selector.querySelectorAll('option')).toHaveLength(5)
   })
 
-  it('applies striped row styling', () => {
+  it('applies striped row styling via CSS classes', () => {
     const mockData = {
       type: '25',
       nodelist: mockWriteups,
@@ -214,8 +214,8 @@ describe('NodeList', () => {
     }
     const { container } = render(<NodeList data={mockData} user={mockUser} />)
     const rows = container.querySelectorAll('tbody tr')
-    expect(rows[0]).toHaveStyle({ backgroundColor: '#f8f9fa' })
-    expect(rows[1]).toHaveStyle({ backgroundColor: 'transparent' })
+    expect(rows[0]).toHaveClass('nodelist__row--odd')
+    expect(rows[1]).not.toHaveClass('nodelist__row--odd')
   })
 
   it('handles missing user gracefully', () => {

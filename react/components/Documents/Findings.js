@@ -51,7 +51,7 @@ const Findings = ({ data, user }) => {
               )}
             </li>
             {/* Show ad every AD_INTERVAL items for guests */}
-            {is_guest && (index + 1) % AD_INTERVAL === 0 && index < findings.length - 1 && (
+            {!!is_guest && (index + 1) % AD_INTERVAL === 0 && index < findings.length - 1 && (
               <li className="findings-ad-item">
                 <InContentAd show={true} />
               </li>

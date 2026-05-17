@@ -6,7 +6,7 @@ export default function E2PennyJar({ data }) {
 
   if (error) {
     return (
-      <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <div className="penny-jar">
         <p>{error}</p>
       </div>
     );
@@ -47,15 +47,9 @@ export default function E2PennyJar({ data }) {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <div className="penny-jar">
       {message && (
-        <p style={{
-          padding: '10px',
-          backgroundColor: '#e8f4f8',
-          border: '1px solid #4060b0',
-          borderRadius: '4px',
-          marginBottom: '20px'
-        }}>
+        <p className="penny-jar__message">
           {message}
         </p>
       )}
@@ -73,20 +67,11 @@ export default function E2PennyJar({ data }) {
           <p>Would you like to give a penny or take a penny?</p>
 
           {can_interact && (
-            <div style={{ marginTop: '20px' }}>
+            <div className="penny-jar__buttons">
               <button
                 onClick={() => handleAction('give')}
                 disabled={user_gp < 1}
-                style={{
-                  padding: '10px 20px',
-                  marginRight: '10px',
-                  backgroundColor: user_gp < 1 ? '#ccc' : '#4060b0',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: user_gp < 1 ? 'not-allowed' : 'pointer',
-                  fontSize: '14px'
-                }}
+                className="penny-jar__btn penny-jar__btn--give"
                 title={user_gp < 1 ? 'You need at least 1 GP to give' : ''}
               >
                 The more you give the more you get. Give!
@@ -95,15 +80,7 @@ export default function E2PennyJar({ data }) {
               <button
                 onClick={() => handleAction('take')}
                 disabled={pennies_in_jar < 1}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: pennies_in_jar < 1 ? '#ccc' : '#507898',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: pennies_in_jar < 1 ? 'not-allowed' : 'pointer',
-                  fontSize: '14px'
-                }}
+                className="penny-jar__btn penny-jar__btn--take"
               >
                 No! Giving is for the weak. Take!
               </button>
@@ -112,11 +89,11 @@ export default function E2PennyJar({ data }) {
         </div>
       )}
 
-      <p style={{ marginTop: '20px', fontWeight: 'bold' }}>
+      <p className="penny-jar__count">
         {getPennyMessage()}
       </p>
 
-      <p style={{ marginTop: '10px', color: '#666', fontSize: '14px' }}>
+      <p className="penny-jar__gp-status">
         You currently have <strong>{user_gp} GP</strong>.
       </p>
     </div>

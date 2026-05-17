@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * Node Row - Deprecated editorial tool
+ * Styles in CSS: .node-row__*
  *
  * Shows writeups that have been removed from nodes and placed in the editorial queue.
  * This tool is part of the legacy editorial workflow and is scheduled for removal.
@@ -21,8 +22,8 @@ const NodeRow = ({ data }) => {
 
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={styles.errorBox}>{error}</div>
+      <div className="node-row">
+        <div className="node-row__error-box">{error}</div>
       </div>
     )
   }
@@ -32,8 +33,8 @@ const NodeRow = ({ data }) => {
   const nextOffset = offset + interval
 
   return (
-    <div style={styles.container}>
-      <div style={styles.deprecationNotice}>
+    <div className="node-row">
+      <div className="node-row__deprecation-notice">
         <strong>⚠️ DEPRECATED TOOL</strong>
         <p>
           This editorial tool is part of the legacy workflow and is scheduled for removal.
@@ -41,7 +42,7 @@ const NodeRow = ({ data }) => {
         </p>
       </div>
 
-      <div style={styles.stats}>
+      <div className="node-row__stats">
         <p>
           There are <strong>{total_count}</strong> items waiting on Node Row.
           {' '}Of those, you removed <strong>{removed_by_user}</strong>.
@@ -53,34 +54,34 @@ const NodeRow = ({ data }) => {
       ) : (
         <>
           {entries.map((entry, idx) => (
-            <div key={entry.weblog_id} style={styles.entry}>
-              <div style={styles.entryHeader}>
+            <div key={entry.weblog_id} className="node-row__entry">
+              <div className="node-row__entry-header">
                 <LinkNode nodeId={entry.to_node} title={entry.node_title} />
                 {entry.parent_node && (
-                  <span style={styles.parentInfo}>
+                  <span className="node-row__parent-info">
                     {' '}from <LinkNode nodeId={entry.parent_node.node_id} title={entry.parent_node.title} />
                   </span>
                 )}
               </div>
 
-              <div style={styles.entryMeta}>
-                <span style={styles.byline}>
+              <div className="node-row__entry-meta">
+                <span className="node-row__byline">
                   Linked by <LinkNode nodeId={entry.linkedby_user} title={entry.linkedby_title} />
                 </span>
-                <span style={styles.date}>{entry.linkedtime}</span>
+                <span className="node-row__date">{entry.linkedtime}</span>
               </div>
 
               {entry.content && (
                 <div
-                  style={styles.content}
+                  className="node-row__content"
                   dangerouslySetInnerHTML={{ __html: entry.content }}
                 />
               )}
 
-              <div style={styles.actions}>
+              <div className="node-row__actions">
                 <a
                   href={`?node_id=${node_row_id}&source=${node_row_id}&to_node=${entry.to_node}&op=removeweblog`}
-                  style={styles.removeLink}
+                  className="node-row__remove-link"
                 >
                   restore
                 </a>
@@ -89,15 +90,15 @@ const NodeRow = ({ data }) => {
           ))}
 
           {(hasPrev || has_more) && (
-            <div style={styles.pagination}>
+            <div className="node-row__pagination">
               {hasPrev && (
-                <a href={`?offset=${prevOffset}`} style={styles.link}>
+                <a href={`?offset=${prevOffset}`} className="node-row__link">
                   ← newer
                 </a>
               )}
-              {hasPrev && has_more && <span style={{ margin: '0 10px' }}>|</span>}
+              {hasPrev && has_more && <span className="node-row__separator">|</span>}
               {has_more && (
-                <a href={`?offset=${nextOffset}`} style={styles.link}>
+                <a href={`?offset=${nextOffset}`} className="node-row__link">
                   older →
                 </a>
               )}
@@ -107,88 +108,6 @@ const NodeRow = ({ data }) => {
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    fontSize: '13px',
-    lineHeight: '1.6',
-    color: '#111',
-    padding: '20px'
-  },
-  deprecationNotice: {
-    padding: '15px',
-    backgroundColor: '#fff3cd',
-    border: '2px solid #856404',
-    borderRadius: '4px',
-    marginBottom: '20px',
-    color: '#856404'
-  },
-  errorBox: {
-    padding: '15px',
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    color: '#c62828'
-  },
-  stats: {
-    marginBottom: '20px',
-    padding: '10px',
-    backgroundColor: '#f8f9f9',
-    borderRadius: '4px'
-  },
-  entry: {
-    marginBottom: '30px',
-    paddingBottom: '20px',
-    borderBottom: '1px solid #ccc'
-  },
-  entryHeader: {
-    fontSize: '15px',
-    fontWeight: 'bold',
-    marginBottom: '8px'
-  },
-  parentInfo: {
-    fontSize: '13px',
-    fontWeight: 'normal',
-    color: '#666'
-  },
-  entryMeta: {
-    fontSize: '12px',
-    color: '#666',
-    marginBottom: '10px'
-  },
-  byline: {
-    marginRight: '15px'
-  },
-  date: {
-    fontStyle: 'italic'
-  },
-  content: {
-    marginTop: '10px',
-    marginBottom: '10px',
-    padding: '10px',
-    backgroundColor: '#f8f9f9',
-    borderLeft: '3px solid #507898',
-    fontSize: '12px'
-  },
-  actions: {
-    marginTop: '10px'
-  },
-  removeLink: {
-    color: '#4060b0',
-    textDecoration: 'none',
-    fontSize: '12px'
-  },
-  pagination: {
-    marginTop: '30px',
-    textAlign: 'center',
-    padding: '15px'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none',
-    fontWeight: 'bold'
-  }
 }
 
 export default NodeRow

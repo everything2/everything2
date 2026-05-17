@@ -5,6 +5,7 @@ import React, { useState } from 'react'
  *
  * Admin tool to view all node notes created by a specific user,
  * with pagination support.
+ * Styles are in CSS classes (node-notes-editor__*)
  */
 const NodeNotesByEditor = ({ data }) => {
   const {
@@ -34,119 +35,85 @@ const NodeNotesByEditor = ({ data }) => {
     return `/?node_id=${node_id}&targetUser=${encodeURIComponent(target_username)}&gotime=Go!&start=${newStart}&limit=${limit}`
   }
 
-  return (
-    <div className="node-notes-by-editor">
-      {/* Search form */}
-      <form method="GET">
-        <input type="hidden" name="node_id" value={node_id} />
+  const renderPagination = () => {
+    if (!hasPrev && !hasNext) return null
+    return (
+      <div className="node-notes-editor__pagination">
+        {hasPrev && (
+          <a href={buildUrl(prevStart)} className="node-notes-editor__pagination-link">&larr; Previous</a>
+        )}
+        <span className="node-notes-editor__pagination-info">
+          Viewing {start + 1} &ndash; {end} of {total_count}
+        </span>
+        {hasNext && (
+          <a href={buildUrl(nextStart)} className="node-notes-editor__pagination-link">Next &rarr;</a>
+        )}
+      </div>
+    )
+  }
 
-        <p>
-          <label>
-            Editor Username:{' '}
+  return (
+    <div className="node-notes-editor">
+      {/* Search form */}
+      <div className="node-notes-editor__search-box">
+        <form method="GET" className="node-notes-editor__form">
+          <input type="hidden" name="node_id" value={node_id} />
+          <label className="node-notes-editor__label">
+            Editor Username:
             <input
               type="text"
               name="targetUser"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              size={30}
+              className="node-notes-editor__input"
+              placeholder="Enter editor username"
             />
           </label>
-          {' '}
           <button
             type="submit"
             name="gotime"
             value="Go!"
-            style={{
-              padding: '6px 15px',
-              backgroundColor: '#38495e',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}
+            className="node-notes-editor__btn"
           >
-            Go!
+            Search
           </button>
-        </p>
-      </form>
+        </form>
+      </div>
 
       {error && (
-        <p style={{ color: '#c00000' }}><em>{error}</em></p>
+        <div className="node-notes-editor__error-box"><em>{error}</em></div>
       )}
 
       {/* Results */}
       {target_user_id && notes.length > 0 && (
         <>
-          {/* Pagination header */}
-          {(hasPrev || hasNext) && (
-            <table style={{ width: '95%', marginBottom: '1em' }}>
-              <tbody>
-                <tr>
-                  {hasPrev && (
-                    <th style={{ whiteSpace: 'nowrap' }}>
-                      ( <a href={buildUrl(prevStart)}>prev</a> )
-                    </th>
-                  )}
-                  <th style={{ width: '100%', textAlign: 'center' }}>
-                    Viewing {start} through {end} of {total_count}
-                  </th>
-                  {hasNext && (
-                    <th style={{ whiteSpace: 'nowrap' }}>
-                      ( <a href={buildUrl(nextStart)}>next</a> )
-                    </th>
-                  )}
-                </tr>
-              </tbody>
-            </table>
-          )}
+          {renderPagination()}
 
-          {/* Notes table */}
-          <table style={{ width: '95%', borderCollapse: 'collapse' }}>
+          <table className="node-notes-editor__table">
             <thead>
               <tr>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Node</th>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Note</th>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '4px' }}>Time</th>
+                <th className="node-notes-editor__th">Node</th>
+                <th className="node-notes-editor__th">Note</th>
+                <th className="node-notes-editor__th">Time</th>
               </tr>
             </thead>
             <tbody>
               {notes.map((note, idx) => (
-                <tr key={`${note.node_id}-${idx}`}>
-                  <td style={{ padding: '4px', verticalAlign: 'top' }}>
+                <tr key={`${note.node_id}-${idx}`} className={idx % 2 === 1 ? 'node-notes-editor__row--even' : ''}>
+                  <td className="node-notes-editor__td node-notes-editor__td--node">
                     <a href={`/?node_id=${note.node_id}`}>{note.node_title}</a>
                     {note.author_id && (
                       <cite> by <a href={`/?node_id=${note.author_id}`}>{note.author_title}</a></cite>
                     )}
                   </td>
-                  <td style={{ padding: '4px' }} dangerouslySetInnerHTML={{ __html: note.note }} />
-                  <td style={{ padding: '4px', whiteSpace: 'nowrap' }}>{note.timestamp}</td>
+                  <td className="node-notes-editor__td" dangerouslySetInnerHTML={{ __html: note.note }} />
+                  <td className="node-notes-editor__td node-notes-editor__td--time">{note.timestamp}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          {/* Pagination footer */}
-          {(hasPrev || hasNext) && (
-            <table style={{ width: '95%', marginTop: '1em' }}>
-              <tbody>
-                <tr>
-                  {hasPrev && (
-                    <th style={{ whiteSpace: 'nowrap' }}>
-                      ( <a href={buildUrl(prevStart)}>prev</a> )
-                    </th>
-                  )}
-                  <th style={{ width: '100%', textAlign: 'center' }}>
-                    Viewing {start} through {end} of {total_count}
-                  </th>
-                  {hasNext && (
-                    <th style={{ whiteSpace: 'nowrap' }}>
-                      ( <a href={buildUrl(nextStart)}>next</a> )
-                    </th>
-                  )}
-                </tr>
-              </tbody>
-            </table>
-          )}
+          {renderPagination()}
         </>
       )}
 

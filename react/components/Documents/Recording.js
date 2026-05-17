@@ -4,6 +4,7 @@ import { FaMicrophone, FaDownload, FaUser, FaFileAlt, FaPodcast } from 'react-ic
 
 /**
  * Recording - Display recording information
+ * Styles in CSS: .recording__*
  *
  * Shows recording details including:
  * - Audio file link
@@ -15,18 +16,18 @@ const Recording = ({ data }) => {
   const { recording, can_edit } = data
 
   return (
-    <div style={styles.container}>
+    <div className="recording">
       {/* Header */}
-      <div style={styles.header}>
-        <FaMicrophone style={{ color: '#507898', marginRight: 8, fontSize: 20 }} />
-        <span style={styles.title}>{recording.title}</span>
+      <div className="recording__header">
+        <FaMicrophone className="recording__header-icon" />
+        <span className="recording__title">{recording.title}</span>
       </div>
 
       {/* Audio file link */}
       {recording.link && (
-        <div style={styles.downloadSection}>
-          <a href={recording.link} style={styles.downloadLink} target="_blank" rel="noopener noreferrer">
-            <FaDownload style={{ marginRight: 8 }} />
+        <div className="recording__download-section">
+          <a href={recording.link} className="recording__download-link" target="_blank" rel="noopener noreferrer">
+            <FaDownload className="recording__download-icon" />
             audio file
           </a>
         </div>
@@ -34,15 +35,15 @@ const Recording = ({ data }) => {
 
       {/* Recording of (writeup) */}
       {recording.recording_of && (
-        <div style={styles.infoSection}>
-          <h3 style={styles.sectionTitle}>
-            <FaFileAlt style={{ marginRight: 6, color: '#507898' }} />
+        <div className="recording__info-section">
+          <h3 className="recording__section-title">
+            <FaFileAlt className="recording__section-icon" />
             A recording of
           </h3>
-          <div style={styles.infoContent}>
+          <div className="recording__info-content">
             <LinkNode nodeId={recording.recording_of.node_id} title={recording.recording_of.title} />
             {recording.recording_of.author && (
-              <div style={styles.subInfo}>
+              <div className="recording__sub-info">
                 Written by <LinkNode nodeId={recording.recording_of.author.node_id} title={recording.recording_of.author.title} />
               </div>
             )}
@@ -52,12 +53,12 @@ const Recording = ({ data }) => {
 
       {/* Read by */}
       {recording.read_by && (
-        <div style={styles.infoSection}>
-          <h3 style={styles.sectionTitle}>
-            <FaUser style={{ marginRight: 6, color: '#507898' }} />
+        <div className="recording__info-section">
+          <h3 className="recording__section-title">
+            <FaUser className="recording__section-icon" />
             Read by
           </h3>
-          <div style={styles.infoContent}>
+          <div className="recording__info-content">
             <LinkNode nodeId={recording.read_by.node_id} title={recording.read_by.title} />
           </div>
         </div>
@@ -65,12 +66,12 @@ const Recording = ({ data }) => {
 
       {/* Appears in (podcast) */}
       {recording.appears_in && (
-        <div style={styles.infoSection}>
-          <h3 style={styles.sectionTitle}>
-            <FaPodcast style={{ marginRight: 6, color: '#507898' }} />
+        <div className="recording__info-section">
+          <h3 className="recording__section-title">
+            <FaPodcast className="recording__section-icon" />
             Appears in
           </h3>
-          <div style={styles.infoContent}>
+          <div className="recording__info-content">
             <LinkNode nodeId={recording.appears_in.node_id} title={recording.appears_in.title} />
           </div>
         </div>
@@ -78,82 +79,14 @@ const Recording = ({ data }) => {
 
       {/* Edit link */}
       {can_edit === 1 && (
-        <div style={styles.editSection}>
-          <a href={`/?node_id=${recording.node_id}&displaytype=edit&lastnode_id=0`} style={styles.editLink}>
+        <div className="recording__edit-section">
+          <a href={`/?node_id=${recording.node_id}&displaytype=edit&lastnode_id=0`} className="recording__edit-link">
             edit
           </a>
         </div>
       )}
     </div>
   )
-}
-
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: '0 auto',
-    padding: '16px 0'
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 16
-  },
-  title: {
-    flex: 1
-  },
-  downloadSection: {
-    textAlign: 'center',
-    marginBottom: 24
-  },
-  downloadLink: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '12px 24px',
-    backgroundColor: '#4060b0',
-    color: '#fff',
-    textDecoration: 'none',
-    borderRadius: 4,
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  infoSection: {
-    marginBottom: 20,
-    padding: 16,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 4
-  },
-  sectionTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#38495e',
-    marginBottom: 8,
-    marginTop: 0
-  },
-  infoContent: {
-    paddingLeft: 24,
-    fontSize: 15
-  },
-  subInfo: {
-    marginTop: 4,
-    fontSize: 13,
-    color: '#666'
-  },
-  editSection: {
-    textAlign: 'right',
-    marginTop: 16,
-    paddingTop: 16,
-    borderTop: '1px solid #eee'
-  },
-  editLink: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  }
 }
 
 export default Recording

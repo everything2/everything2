@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 /**
  * TheTokenator - Admin tool to give tokens to users.
  * Tokens can be used to reset the chatterbox topic.
+ * Styles in CSS: .tokenator__*
  */
 const TheTokenator = ({ data }) => {
   const { access_denied, results: initialResults } = data
@@ -12,9 +13,9 @@ const TheTokenator = ({ data }) => {
 
   if (access_denied) {
     return (
-      <div style={styles.container}>
-        <h2 style={styles.title}>The Tokenator</h2>
-        <div style={styles.errorBox}>
+      <div className="tokenator">
+        <h2 className="tokenator__title">The Tokenator</h2>
+        <div className="tokenator__error-box">
           <p>Access denied. Admins only.</p>
         </div>
       </div>
@@ -35,15 +36,15 @@ const TheTokenator = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>The Tokenator</h2>
+    <div className="tokenator">
+      <h2 className="tokenator__title">The Tokenator</h2>
 
       {results.length > 0 && (
-        <div style={styles.resultsBox}>
+        <div className="tokenator__results-box">
           {results.map((result, idx) => (
             <p
               key={idx}
-              style={result.success ? styles.resultSuccess : styles.resultError}
+              className={result.success ? 'tokenator__result--success' : 'tokenator__result--error'}
             >
               {result.message}
             </p>
@@ -53,28 +54,28 @@ const TheTokenator = ({ data }) => {
 
       <form method="POST" onSubmit={handleSubmit}>
         <input type="hidden" name="node_id" value={window.e2?.node_id || ''} />
-        <table style={styles.table}>
+        <table className="tokenator__table">
           <tbody>
             <tr>
-              <th style={styles.th}>Tokenate these users</th>
+              <th className="tokenator__th">Tokenate these users</th>
             </tr>
             {users.map((user, idx) => (
               <tr key={idx}>
-                <td style={styles.td}>
+                <td className="tokenator__td">
                   <input
                     type="text"
                     name={`tokenateUser${idx}`}
                     value={user}
                     onChange={(e) => handleUserChange(idx, e.target.value)}
-                    style={styles.input}
+                    className="tokenator__input"
                     placeholder="Username"
                   />
                 </td>
               </tr>
             ))}
             <tr>
-              <td style={{ ...styles.td, textAlign: 'center' }}>
-                <button type="submit" style={styles.button}>
+              <td className="tokenator__td tokenator__td--center">
+                <button type="submit" className="tokenator__button">
                   Give Tokens
                 </button>
               </td>
@@ -84,73 +85,6 @@ const TheTokenator = ({ data }) => {
       </form>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#111'
-  },
-  title: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    margin: '0 0 15px 0',
-    color: '#38495e'
-  },
-  table: {
-    borderCollapse: 'collapse',
-    border: '1px solid #d3d3d3'
-  },
-  th: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '10px',
-    textAlign: 'left'
-  },
-  td: {
-    padding: '8px',
-    borderBottom: '1px solid #e0e0e0'
-  },
-  input: {
-    padding: '6px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    width: '250px'
-  },
-  button: {
-    padding: '8px 20px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px'
-  },
-  resultsBox: {
-    backgroundColor: '#f8f9f9',
-    padding: '10px',
-    borderRadius: '4px',
-    marginBottom: '15px',
-    border: '1px solid #d3d3d3'
-  },
-  resultSuccess: {
-    color: '#2e7d32',
-    margin: '5px 0'
-  },
-  resultError: {
-    color: '#c62828',
-    margin: '5px 0'
-  },
-  errorBox: {
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    padding: '15px',
-    color: '#c62828'
-  }
 }
 
 export default TheTokenator

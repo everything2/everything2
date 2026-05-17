@@ -5,6 +5,7 @@ import React, { useState } from 'react'
  *
  * Admin tool for viewing and editing node parameters.
  * Uses the /api/node_parameter endpoint for CRUD operations.
+ * Styles are in CSS classes (node-param-editor__*)
  */
 const NodeParameterEditor = ({ data }) => {
   const {
@@ -36,7 +37,7 @@ const NodeParameterEditor = ({ data }) => {
           This tool allows you to edit specialized parameters for nodes.
         </p>
         <br /><br />
-        <hr style={{ width: '20%' }} />
+        <hr className="node-param-editor__hr" />
         <br /><br />
         <p>{message}</p>
       </div>
@@ -140,24 +141,21 @@ const NodeParameterEditor = ({ data }) => {
     }
   }
 
+  const statusClass = statusMessage
+    ? `node-param-editor__status node-param-editor__status--${statusMessage.type}`
+    : ''
+
   return (
     <div className="node-parameter-editor">
       <p>
         This tool allows you to edit specialized parameters for nodes.
       </p>
       <br /><br />
-      <hr style={{ width: '20%' }} />
+      <hr className="node-param-editor__hr" />
       <br /><br />
 
       {statusMessage && (
-        <div style={{
-          padding: '10px',
-          marginBottom: '15px',
-          backgroundColor: statusMessage.type === 'success' ? '#d4edda' : '#f8d7da',
-          color: statusMessage.type === 'success' ? '#155724' : '#721c24',
-          border: `1px solid ${statusMessage.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`,
-          borderRadius: '4px'
-        }}>
+        <div className={statusClass}>
           {statusMessage.text}
         </div>
       )}
@@ -166,20 +164,20 @@ const NodeParameterEditor = ({ data }) => {
 
       <ul>
         {availableParams.map(param => (
-          <li key={param.name} style={{ marginBottom: '10px' }}>
+          <li key={param.name} className="node-param-editor__param-item">
             <strong>{param.name}</strong> - {param.description}
             <br />
-            <form onSubmit={(e) => handleAddParam(e, param.name)} style={{ display: 'inline' }}>
+            <form onSubmit={(e) => handleAddParam(e, param.name)} className="node-param-editor__form">
               <input
                 type="text"
                 value={newValues[param.name] || ''}
                 onChange={(e) => handleInputChange(param.name, e.target.value)}
-                style={{ width: '200px' }}
+                className="node-param-editor__input"
                 disabled={loading[param.name]}
               />
               <button
                 type="submit"
-                style={{ marginLeft: '5px' }}
+                className="node-param-editor__btn"
                 disabled={loading[param.name]}
               >
                 {loading[param.name] ? 'adding...' : 'add'}
@@ -190,7 +188,7 @@ const NodeParameterEditor = ({ data }) => {
       </ul>
 
       <br /><br />
-      <hr style={{ width: '20%' }} />
+      <hr className="node-param-editor__hr" />
       <br /><br />
 
       <h3>
@@ -202,16 +200,16 @@ const NodeParameterEditor = ({ data }) => {
       {currentParams.length === 0 ? (
         <p><em>No node parameters</em></p>
       ) : (
-        <table style={{ borderCollapse: 'collapse' }}>
+        <table className="node-param-editor__table">
           <thead>
             <tr>
-              <th style={{ width: '30%', textAlign: 'left', padding: '5px', borderBottom: '1px solid #ccc' }}>
+              <th className="node-param-editor__th node-param-editor__th--name">
                 <strong>Parameter name</strong>
               </th>
-              <th style={{ width: '50%', textAlign: 'left', padding: '5px', borderBottom: '1px solid #ccc' }}>
+              <th className="node-param-editor__th node-param-editor__th--value">
                 <strong>Parameter value</strong>
               </th>
-              <th style={{ textAlign: 'left', padding: '5px', borderBottom: '1px solid #ccc' }}>
+              <th className="node-param-editor__th">
                 X
               </th>
             </tr>
@@ -219,13 +217,13 @@ const NodeParameterEditor = ({ data }) => {
           <tbody>
             {currentParams.map(param => (
               <tr key={param.name}>
-                <td style={{ padding: '5px', borderBottom: '1px solid #eee' }}>
+                <td className="node-param-editor__td">
                   {param.name}
                 </td>
-                <td style={{ padding: '5px', borderBottom: '1px solid #eee' }}>
+                <td className="node-param-editor__td">
                   {param.value}
                 </td>
-                <td style={{ padding: '5px', borderBottom: '1px solid #eee' }}>
+                <td className="node-param-editor__td">
                   <button
                     onClick={(e) => handleDeleteParam(e, param.name)}
                     disabled={loading[`del_${param.name}`]}

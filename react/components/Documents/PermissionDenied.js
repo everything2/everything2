@@ -1,24 +1,17 @@
 import React from 'react';
 
+/**
+ * PermissionDenied - Simple permission denied message display
+ * Styles in CSS: .permission-denied__*
+ */
 const PermissionDenied = ({ data }) => {
   const { message } = data;
 
   return (
-    <div style={styles.container}>
-      <p style={styles.message}>{message}</p>
+    <div className="permission-denied">
+      <p className="permission-denied__message">{message}</p>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: '40px 20px',
-    textAlign: 'center'
-  },
-  message: {
-    fontSize: '16px',
-    color: '#111111'
-  }
 };
 
 export default PermissionDenied;

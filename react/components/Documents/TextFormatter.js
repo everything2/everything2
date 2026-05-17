@@ -250,15 +250,75 @@ Just above this text is a horizontal line.`
 
   const isDeveloper = user?.developerAccess || user?.is_admin
 
+  // Radio option helper for style conversion
+  const StyleOptions = ({ name, value, onChange }) => (
+    <div className="text-formatter__option-choices">
+      {[
+        { value: 'b', label: 'bold' },
+        { value: 'i', label: 'italics' },
+        { value: 'u', label: 'underline' },
+        { value: '', label: 'plain text' },
+        { value: 'ignore', label: "don't convert to HTML" }
+      ].map((option) => (
+        <label key={option.value} className="text-formatter__radio-inline">
+          <input
+            type="radio"
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={() => onChange(option.value)}
+          />{' '}
+          {option.label}
+        </label>
+      ))}
+    </div>
+  )
+
+  // Radio option helper for list conversion
+  const ListOptions = ({ name, value, onChange }) => (
+    <div className="text-formatter__option-choices">
+      <label className="text-formatter__radio-inline">
+        <input
+          type="radio"
+          name={name}
+          value="ul"
+          checked={value === 'ul'}
+          onChange={() => onChange('ul')}
+        />{' '}
+        bulleted lists
+      </label>
+      <label className="text-formatter__radio-inline">
+        <input
+          type="radio"
+          name={name}
+          value="ol"
+          checked={value === 'ol'}
+          onChange={() => onChange('ol')}
+        />{' '}
+        numbered lists
+      </label>
+      <label>
+        <input
+          type="radio"
+          name={name}
+          value="ignore"
+          checked={value === 'ignore'}
+          onChange={() => onChange('ignore')}
+        />{' '}
+        don't convert to lists
+      </label>
+    </div>
+  )
+
   return (
-    <div className="text-formatter" style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <div className="text-formatter">
       {isDeveloper && (
-        <p style={{ color: '#507898', fontSize: '13px' }}>
+        <p className="text-formatter__dev-note">
           Note: this is from [Magical Text Formatter]
         </p>
       )}
 
-      <p align="right" style={{ fontSize: '12px', color: '#507898' }}>
+      <p className="text-formatter__date">
         Last updated Thursday March 21, 2002
       </p>
 
@@ -275,13 +335,13 @@ Just above this text is a horizontal line.`
         be used most often.
       </p>
 
-      <p style={{ fontSize: '13px', color: '#507898' }}>
+      <p className="text-formatter__hint">
         If you have any problems, comments, or whatnot, send a /msg to mblase.
       </p>
 
       <hr />
 
-      <div style={{ marginTop: '20px' }}>
+      <div className="text-formatter__main">
         <p>
           Enter the text to format below.{' '}
           <a
@@ -290,7 +350,7 @@ Just above this text is a horizontal line.`
               e.preventDefault()
               clearBox()
             }}
-            style={{ color: '#4060b0' }}
+            className="text-formatter__clear-link"
           >
             Clear the box
           </a>
@@ -302,52 +362,25 @@ Just above this text is a horizontal line.`
           onChange={(e) => setText(e.target.value)}
           cols="60"
           rows="16"
-          style={{
-            fontFamily: 'monospace',
-            width: '100%',
-            padding: '10px',
-            border: '1px solid #d3d3d3',
-            borderRadius: '3px'
-          }}
+          className="text-formatter__textarea"
         />
 
-        <div style={{ marginTop: '15px' }}>
-          <button
-            onClick={doFormat}
-            style={{
-              padding: '8px 16px',
-              marginRight: '10px',
-              backgroundColor: '#38495e',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}
-          >
+        <div className="text-formatter__buttons">
+          <button onClick={doFormat} className="text-formatter__btn text-formatter__btn--primary">
             Format Text
           </button>
-          <button
-            onClick={undoFormat}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#507898',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}
-          >
+          <button onClick={undoFormat} className="text-formatter__btn text-formatter__btn--secondary">
             Undo
           </button>
         </div>
 
-        <hr style={{ margin: '20px 0' }} />
+        <hr className="text-formatter__divider" />
 
-        <div style={{ fontSize: '14px', lineHeight: '1.8' }}>
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Format new lines using:</strong>
-            <div style={{ marginLeft: '30px', marginTop: '5px' }}>
-              <label style={{ display: 'block', marginBottom: '3px' }}>
+        <div className="text-formatter__options">
+          <div className="text-formatter__option-group">
+            <span className="text-formatter__option-label">Format new lines using:</span>
+            <div className="text-formatter__option-choices">
+              <label className="text-formatter__radio-block">
                 <input
                   type="radio"
                   name="breaks"
@@ -357,7 +390,7 @@ Just above this text is a horizontal line.`
                 />{' '}
                 <tt>&lt;p&gt;...&lt;/p&gt;</tt> paragraph tags at empty lines
               </label>
-              <label style={{ display: 'block' }}>
+              <label className="text-formatter__radio-block">
                 <input
                   type="radio"
                   name="breaks"
@@ -370,190 +403,40 @@ Just above this text is a horizontal line.`
             </div>
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Convert *starred text* to:</strong>
-            <div style={{ marginLeft: '30px', marginTop: '5px' }}>
-              {[
-                { value: 'b', label: 'bold' },
-                { value: 'i', label: 'italics' },
-                { value: 'u', label: 'underline' },
-                { value: '', label: 'plain text' },
-                { value: 'ignore', label: "don't convert to HTML" }
-              ].map((option) => (
-                <label key={option.value} style={{ marginRight: '15px' }}>
-                  <input
-                    type="radio"
-                    name="starred"
-                    value={option.value}
-                    checked={starred === option.value}
-                    onChange={() => setStarred(option.value)}
-                  />{' '}
-                  {option.label}
-                </label>
-              ))}
-            </div>
+          <div className="text-formatter__option-group">
+            <span className="text-formatter__option-label">Convert *starred text* to:</span>
+            <StyleOptions name="starred" value={starred} onChange={setStarred} />
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Convert _underscored text_ to:</strong>
-            <div style={{ marginLeft: '30px', marginTop: '5px' }}>
-              {[
-                { value: 'b', label: 'bold' },
-                { value: 'i', label: 'italics' },
-                { value: 'u', label: 'underline' },
-                { value: '', label: 'plain text' },
-                { value: 'ignore', label: "don't convert to HTML" }
-              ].map((option) => (
-                <label key={option.value} style={{ marginRight: '15px' }}>
-                  <input
-                    type="radio"
-                    name="underlined"
-                    value={option.value}
-                    checked={underlined === option.value}
-                    onChange={() => setUnderlined(option.value)}
-                  />{' '}
-                  {option.label}
-                </label>
-              ))}
-            </div>
+          <div className="text-formatter__option-group">
+            <span className="text-formatter__option-label">Convert _underscored text_ to:</span>
+            <StyleOptions name="underlined" value={underlined} onChange={setUnderlined} />
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Convert /slashed text/ to:</strong>
-            <div style={{ marginLeft: '30px', marginTop: '5px' }}>
-              {[
-                { value: 'b', label: 'bold' },
-                { value: 'i', label: 'italics' },
-                { value: 'u', label: 'underline' },
-                { value: '', label: 'plain text' },
-                { value: 'ignore', label: "don't convert to HTML" }
-              ].map((option) => (
-                <label key={option.value} style={{ marginRight: '15px' }}>
-                  <input
-                    type="radio"
-                    name="slashed"
-                    value={option.value}
-                    checked={slashed === option.value}
-                    onChange={() => setSlashed(option.value)}
-                  />{' '}
-                  {option.label}
-                </label>
-              ))}
-            </div>
+          <div className="text-formatter__option-group">
+            <span className="text-formatter__option-label">Convert /slashed text/ to:</span>
+            <StyleOptions name="slashed" value={slashed} onChange={setSlashed} />
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Convert lines beginning with * or . to:</strong>
-            <div style={{ marginLeft: '30px', marginTop: '5px' }}>
-              <label style={{ marginRight: '15px' }}>
-                <input
-                  type="radio"
-                  name="starlist"
-                  value="ul"
-                  checked={starlist === 'ul'}
-                  onChange={() => setStarlist('ul')}
-                />{' '}
-                bulleted lists
-              </label>
-              <label style={{ marginRight: '15px' }}>
-                <input
-                  type="radio"
-                  name="starlist"
-                  value="ol"
-                  checked={starlist === 'ol'}
-                  onChange={() => setStarlist('ol')}
-                />{' '}
-                numbered lists
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="starlist"
-                  value="ignore"
-                  checked={starlist === 'ignore'}
-                  onChange={() => setStarlist('ignore')}
-                />{' '}
-                don't convert to lists
-              </label>
-            </div>
+          <div className="text-formatter__option-group">
+            <span className="text-formatter__option-label">Convert lines beginning with * or . to:</span>
+            <ListOptions name="starlist" value={starlist} onChange={setStarlist} />
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Convert lines beginning with - or -- to:</strong>
-            <div style={{ marginLeft: '30px', marginTop: '5px' }}>
-              <label style={{ marginRight: '15px' }}>
-                <input
-                  type="radio"
-                  name="dashlist"
-                  value="ul"
-                  checked={dashlist === 'ul'}
-                  onChange={() => setDashlist('ul')}
-                />{' '}
-                bulleted lists
-              </label>
-              <label style={{ marginRight: '15px' }}>
-                <input
-                  type="radio"
-                  name="dashlist"
-                  value="ol"
-                  checked={dashlist === 'ol'}
-                  onChange={() => setDashlist('ol')}
-                />{' '}
-                numbered lists
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="dashlist"
-                  value="ignore"
-                  checked={dashlist === 'ignore'}
-                  onChange={() => setDashlist('ignore')}
-                />{' '}
-                don't convert to lists
-              </label>
-            </div>
+          <div className="text-formatter__option-group">
+            <span className="text-formatter__option-label">Convert lines beginning with - or -- to:</span>
+            <ListOptions name="dashlist" value={dashlist} onChange={setDashlist} />
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Convert lines beginning with 1.2.3. or 1)2)3) to:</strong>
-            <div style={{ marginLeft: '30px', marginTop: '5px' }}>
-              <label style={{ marginRight: '15px' }}>
-                <input
-                  type="radio"
-                  name="numberlist"
-                  value="ul"
-                  checked={numberlist === 'ul'}
-                  onChange={() => setNumberlist('ul')}
-                />{' '}
-                bulleted lists
-              </label>
-              <label style={{ marginRight: '15px' }}>
-                <input
-                  type="radio"
-                  name="numberlist"
-                  value="ol"
-                  checked={numberlist === 'ol'}
-                  onChange={() => setNumberlist('ol')}
-                />{' '}
-                numbered lists
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="numberlist"
-                  value="ignore"
-                  checked={numberlist === 'ignore'}
-                  onChange={() => setNumberlist('ignore')}
-                />{' '}
-                don't convert to lists
-              </label>
-            </div>
+          <div className="text-formatter__option-group">
+            <span className="text-formatter__option-label">Convert lines beginning with 1.2.3. or 1)2)3) to:</span>
+            <ListOptions name="numberlist" value={numberlist} onChange={setNumberlist} />
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Convert other indented text to:</strong>
-            <div style={{ marginLeft: '30px', marginTop: '5px' }}>
-              <label style={{ marginRight: '15px' }}>
+          <div className="text-formatter__option-group">
+            <span className="text-formatter__option-label">Convert other indented text to:</span>
+            <div className="text-formatter__option-choices">
+              <label className="text-formatter__radio-inline">
                 <input
                   type="radio"
                   name="indent"
@@ -563,7 +446,7 @@ Just above this text is a horizontal line.`
                 />{' '}
                 blockquotes
               </label>
-              <label style={{ marginRight: '15px' }}>
+              <label className="text-formatter__radio-inline">
                 <input
                   type="radio"
                   name="indent"
@@ -586,8 +469,8 @@ Just above this text is a horizontal line.`
             </div>
           </div>
 
-          <div style={{ marginTop: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px' }}>
+          <div className="text-formatter__checkboxes">
+            <label className="text-formatter__checkbox">
               <input
                 type="checkbox"
                 checked={horizrule}
@@ -595,7 +478,7 @@ Just above this text is a horizontal line.`
               />{' '}
               Convert rows of hyphens, equals or underscores into <tt>&lt;hr /&gt;</tt> tags
             </label>
-            <label style={{ display: 'block', marginBottom: '5px' }}>
+            <label className="text-formatter__checkbox">
               <input
                 type="checkbox"
                 checked={logicalstyles}
@@ -604,7 +487,7 @@ Just above this text is a horizontal line.`
               Use <strong>&lt;strong&gt;</strong> and <em>&lt;em&gt;</em> instead of{' '}
               <b>&lt;b&gt;</b> and <i>&lt;i&gt;</i>
             </label>
-            <label style={{ display: 'block', marginBottom: '5px' }}>
+            <label className="text-formatter__checkbox">
               <input
                 type="checkbox"
                 checked={curlyquotes}
@@ -612,7 +495,7 @@ Just above this text is a horizontal line.`
               />{' '}
               Convert all "curly quotes" to standard quotes
             </label>
-            <label style={{ display: 'block', marginBottom: '5px' }}>
+            <label className="text-formatter__checkbox">
               <input
                 type="checkbox"
                 checked={brackets}
@@ -620,7 +503,7 @@ Just above this text is a horizontal line.`
               />{' '}
               Convert &#91;brackets&#93; to HTML symbols
             </label>
-            <label style={{ display: 'block', marginBottom: '5px' }}>
+            <label className="text-formatter__checkbox">
               <input
                 type="checkbox"
                 checked={asciichars}
@@ -628,7 +511,7 @@ Just above this text is a horizontal line.`
               />{' '}
               Convert other ASCII characters to HTML symbols
             </label>
-            <label style={{ display: 'block', marginBottom: '5px' }}>
+            <label className="text-formatter__checkbox">
               <input
                 type="checkbox"
                 checked={striptags}

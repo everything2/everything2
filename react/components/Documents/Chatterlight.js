@@ -48,34 +48,21 @@ const Chatterlight = ({ data, user, e2 }) => {
     }
   }, [e2?.messagesData])
 
+  // Determine grid class based on number of header nodelets
+  const getGridClass = () => {
+    if (hasNewWriteups) return 'chatterlight__header-grid chatterlight__header-grid--three-col'
+    if (hasNotifications && hasMessages) return 'chatterlight__header-grid chatterlight__header-grid--two-col'
+    return 'chatterlight__header-grid chatterlight__header-grid--one-col'
+  }
+
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      backgroundColor: '#f8f9f9',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-    }}>
+    <div className="chatterlight">
       {/* Header with optional Notifications, Messages, and New Writeups */}
       {hasAnyHeaderNodelet && (
-        <div style={{
-          borderBottom: '1px solid #d3d3d3',
-          backgroundColor: '#fff',
-          padding: '8px 12px'
-        }}>
-          <div style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: hasNewWriteups ? '1fr 1fr 1fr' : (hasNotifications && hasMessages ? '1fr 1fr' : '1fr'),
-            gap: '12px',
-            alignItems: 'start'
-          }}>
+        <div className="chatterlight__header">
+          <div className={getGridClass()}>
             {hasNotifications && (
-              <div style={{
-                maxHeight: '300px',
-                overflow: 'auto'
-              }}>
+              <div className="chatterlight__header-nodelet">
                 <Notifications
                   e2={e2}
                   user={user}
@@ -86,10 +73,7 @@ const Chatterlight = ({ data, user, e2 }) => {
               </div>
             )}
             {hasNewWriteups && (
-              <div style={{
-                maxHeight: '300px',
-                overflow: 'auto'
-              }}>
+              <div className="chatterlight__header-nodelet">
                 <NewWriteups
                   e2={e2}
                   user={user}
@@ -104,10 +88,7 @@ const Chatterlight = ({ data, user, e2 }) => {
             {hasMessages && (
               <div
                 ref={messagesContainerRef}
-                style={{
-                  maxHeight: '300px',
-                  overflow: 'auto'
-                }}
+                className="chatterlight__header-nodelet"
               >
                 <Messages
                   e2={e2}
@@ -123,23 +104,9 @@ const Chatterlight = ({ data, user, e2 }) => {
       )}
 
       {/* Main chat area - Chatterbox + Other Users side by side */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '12px',
-        padding: '12px',
-        overflow: 'hidden',
-        flexWrap: 'wrap'
-      }}>
+      <div className="chatterlight__main">
         {/* Chatterbox - takes 2/3 width on desktop, full width on mobile */}
-        <div style={{
-          flex: '2 1 500px',
-          minWidth: '300px',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        }}>
+        <div className="chatterlight__chat-area">
           <Chatterbox
             e2={e2}
             user={user}
@@ -149,14 +116,7 @@ const Chatterlight = ({ data, user, e2 }) => {
         </div>
 
         {/* Other Users - takes 1/3 width on desktop, full width on mobile */}
-        <div style={{
-          flex: '1 1 300px',
-          minWidth: '250px',
-          maxWidth: '400px',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'auto'
-        }}>
+        <div className="chatterlight__users-area">
           <OtherUsers
             e2={e2}
             user={user}
@@ -168,27 +128,8 @@ const Chatterlight = ({ data, user, e2 }) => {
       </div>
 
       {/* Footer navigation */}
-      <div style={{
-        padding: '20px',
-        backgroundColor: '#f8f9f9',
-        borderTop: '1px solid #d3d3d3',
-        textAlign: 'center'
-      }}>
-        <a
-          href="/"
-          style={{
-            display: 'inline-block',
-            padding: '12px 24px',
-            backgroundColor: '#4060b0',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontWeight: '500',
-            transition: 'background-color 0.2s'
-          }}
-          onMouseOver={(e) => e.target.style.backgroundColor = '#38495e'}
-          onMouseOut={(e) => e.target.style.backgroundColor = '#4060b0'}
-        >
+      <div className="chatterlight__footer">
+        <a href="/" className="chatterlight__back-link">
           Back to Full Site
         </a>
       </div>

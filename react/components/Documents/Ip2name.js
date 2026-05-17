@@ -3,6 +3,7 @@ import LinkNode from '../LinkNode'
 
 /**
  * Ip2name - Look up users by IP address.
+ * Styles in CSS: .ip2name__*
  * Admin/Editor tool that searches user settings for matching IP addresses.
  */
 const Ip2name = ({ data }) => {
@@ -14,9 +15,8 @@ const Ip2name = ({ data }) => {
 
   if (access_denied) {
     return (
-      <div style={styles.container}>
-        <h2 style={styles.title}>IP2Name</h2>
-        <div style={styles.errorBox}>
+      <div className="ip2name">
+        <div className="ip2name__error-box">
           <p>Access denied. Editors and admins only.</p>
         </div>
       </div>
@@ -33,22 +33,20 @@ const Ip2name = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>IP2Name</h2>
-
-      <p style={styles.warning}>
+    <div className="ip2name">
+      <p className="ip2name__warning">
         Please use me sparingly! I am expensive to run! Note: this probably won&apos;t work too well
         with people that have dynamic IP addresses.
       </p>
 
       {searched && (
-        <div style={styles.results}>
+        <div className="ip2name__results">
           {results.length > 0 ? (
             <>
               <p>
                 <strong>Users found:</strong>
               </p>
-              <ul style={styles.list}>
+              <ul className="ip2name__list">
                 {results.map((user) => (
                   <li key={user.node_id}>
                     <LinkNode nodeId={user.node_id} title={user.title} />
@@ -64,79 +62,23 @@ const Ip2name = ({ data }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} className="ip2name__form">
         <label>
           IP Address:{' '}
           <input
             type="text"
             value={ipaddy}
             onChange={(e) => setIpaddy(e.target.value)}
-            style={styles.input}
+            className="ip2name__input"
             placeholder="e.g. 192.168.1.1"
           />
         </label>{' '}
-        <button type="submit" style={styles.button}>
+        <button type="submit" className="ip2name__button">
           Search
         </button>
       </form>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#111'
-  },
-  title: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    margin: '0 0 10px 0',
-    color: '#38495e'
-  },
-  warning: {
-    color: '#c62828',
-    marginBottom: '15px',
-    fontStyle: 'italic'
-  },
-  form: {
-    marginTop: '15px'
-  },
-  input: {
-    padding: '6px 10px',
-    fontSize: '13px',
-    border: '1px solid #d3d3d3',
-    borderRadius: '3px',
-    width: '200px'
-  },
-  button: {
-    padding: '6px 15px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px'
-  },
-  results: {
-    backgroundColor: '#f8f9f9',
-    padding: '10px',
-    borderRadius: '4px',
-    marginBottom: '15px'
-  },
-  list: {
-    margin: '10px 0 0 0',
-    paddingLeft: '20px'
-  },
-  errorBox: {
-    backgroundColor: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    padding: '15px',
-    color: '#c62828'
-  }
 }
 
 export default Ip2name

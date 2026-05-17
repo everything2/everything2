@@ -518,7 +518,7 @@ const DocumentComponent = ({ data, user, e2 }) => {
 
   // Suspense fallback - shown while component is loading
   const LoadingFallback = () => (
-    <div className="document-loading" style={{ padding: '20px', textAlign: 'center' }}>
+    <div className="document-loading">
       <p>Loading...</p>
     </div>
   )

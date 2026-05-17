@@ -1,12 +1,16 @@
 import React from 'react';
 
+/**
+ * SuperMailbox - Bot message inbox checker
+ * Styles in CSS: .super-mailbox__*
+ */
 const SuperMailbox = ({ data }) => {
   const { access_denied, message, bots = [] } = data;
 
   if (access_denied) {
     return (
-      <div style={styles.container}>
-        <div style={styles.accessDenied}>
+      <div className="super-mailbox">
+        <div className="super-mailbox__access-denied">
           <p>{message}</p>
         </div>
       </div>
@@ -24,12 +28,12 @@ const SuperMailbox = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>The 'bot super mailbox</h3>
-      <p style={styles.description}>
+    <div className="super-mailbox">
+      <h3 className="super-mailbox__title">The 'bot super mailbox</h3>
+      <p className="super-mailbox__description">
         One stop check for msgs to 'bot and support mailboxes. You can see messages for: {botList}
       </p>
-      <ul style={styles.list}>
+      <ul className="super-mailbox__list">
         {bots.map((bot) => (
           bot.message_count > 0 ? (
             <li key={bot.user_id}>
@@ -46,40 +50,6 @@ const SuperMailbox = ({ data }) => {
       </ul>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px'
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: '600',
-    color: '#38495e',
-    marginBottom: '15px'
-  },
-  description: {
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111',
-    marginBottom: '20px'
-  },
-  list: {
-    fontSize: '16px',
-    lineHeight: '1.8',
-    color: '#111111',
-    paddingLeft: '20px'
-  },
-  accessDenied: {
-    padding: '40px',
-    textAlign: 'center',
-    background: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '4px',
-    color: '#856404'
-  }
 };
 
 export default SuperMailbox;

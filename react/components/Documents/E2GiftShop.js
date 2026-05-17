@@ -694,7 +694,7 @@ const GiftOfTopic = ({ data, user, onUpdate }) => {
 
           {!gpOptOut && userLevel >= 6 && gp >= tokenCost && (
             <>
-              <p className="giftshop-paragraph" style={{ marginTop: '20px' }}>
+              <p className="giftshop-paragraph giftshop-paragraph--spaced">
                 Because you are at least Level 6, you can also buy more tokens. One token costs <span className="giftshop-highlight">{tokenCost} GP</span>.
               </p>
               <form onSubmit={handleBuyToken} className="giftshop-form">

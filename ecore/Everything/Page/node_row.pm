@@ -122,7 +122,10 @@ sub getNodeContent {
 
     # Truncate if too long (first 500 characters)
     if ( length($content) > 500 ) {
-        $content = substr( $content, 0, 500 ) . '...';
+        $content = substr( $content, 0, 500 );
+        # Remove any incomplete HTML tag at the end (truncation may cut mid-tag)
+        $content =~ s/<[^>]*$//;
+        $content .= '...';
     }
 
     return $content;

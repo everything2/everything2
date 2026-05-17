@@ -1,5 +1,9 @@
 import React, { useState, useMemo } from 'react';
 
+/**
+ * E2WordCounter - Text word counting tool
+ * Styles in CSS: .word-counter__*
+ */
 const E2WordCounter = ({ data, e2 }) => {
   const [text, setText] = useState('');
 
@@ -62,9 +66,9 @@ const E2WordCounter = ({ data, e2 }) => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.description}>
-        <h4 style={styles.heading}>About This Tool</h4>
+    <div className="word-counter">
+      <div className="word-counter__description">
+        <h4 className="word-counter__heading">About This Tool</h4>
         <p>
           Paste or type your text below to get a live word count and other statistics.
           HTML tags are stripped for counting purposes. Em-dashes (--) and other
@@ -72,24 +76,24 @@ const E2WordCounter = ({ data, e2 }) => {
         </p>
       </div>
 
-      <div style={styles.textareaContainer}>
+      <div className="word-counter__textarea-container">
         <textarea
-          style={styles.textarea}
+          className="word-counter__textarea"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Paste or type your text here..."
           rows={15}
         />
 
-        <div style={styles.statsBar}>
-          <span style={styles.mainStat}>
+        <div className="word-counter__stats-bar">
+          <span className="word-counter__main-stat">
             <strong>{stats.wordCount.toLocaleString()}</strong> word{stats.wordCount !== 1 ? 's' : ''}
           </span>
-          <span style={styles.secondaryStat}>
+          <span className="word-counter__secondary-stat">
             {stats.charCount.toLocaleString()} characters
           </span>
           {text.length > 0 && (
-            <button onClick={handleClear} style={styles.clearButton}>
+            <button onClick={handleClear} className="word-counter__clear-button">
               Clear
             </button>
           )}
@@ -97,48 +101,48 @@ const E2WordCounter = ({ data, e2 }) => {
       </div>
 
       {text.length > 0 && (
-        <div style={styles.detailedStats}>
-          <h4 style={styles.statsHeading}>Detailed Statistics</h4>
-          <div style={styles.statsGrid}>
-            <div style={styles.statBox}>
-              <div style={styles.statValue}>{stats.wordCount.toLocaleString()}</div>
-              <div style={styles.statLabel}>Words</div>
+        <div className="word-counter__detailed-stats">
+          <h4 className="word-counter__stats-heading">Detailed Statistics</h4>
+          <div className="word-counter__stats-grid">
+            <div className="word-counter__stat-box">
+              <div className="word-counter__stat-value">{stats.wordCount.toLocaleString()}</div>
+              <div className="word-counter__stat-label">Words</div>
             </div>
-            <div style={styles.statBox}>
-              <div style={styles.statValue}>{stats.charCount.toLocaleString()}</div>
-              <div style={styles.statLabel}>Characters</div>
+            <div className="word-counter__stat-box">
+              <div className="word-counter__stat-value">{stats.charCount.toLocaleString()}</div>
+              <div className="word-counter__stat-label">Characters</div>
             </div>
-            <div style={styles.statBox}>
-              <div style={styles.statValue}>{stats.charCountNoSpaces.toLocaleString()}</div>
-              <div style={styles.statLabel}>Chars (no spaces)</div>
+            <div className="word-counter__stat-box">
+              <div className="word-counter__stat-value">{stats.charCountNoSpaces.toLocaleString()}</div>
+              <div className="word-counter__stat-label">Chars (no spaces)</div>
             </div>
-            <div style={styles.statBox}>
-              <div style={styles.statValue}>{stats.sentenceCount.toLocaleString()}</div>
-              <div style={styles.statLabel}>Sentences</div>
+            <div className="word-counter__stat-box">
+              <div className="word-counter__stat-value">{stats.sentenceCount.toLocaleString()}</div>
+              <div className="word-counter__stat-label">Sentences</div>
             </div>
-            <div style={styles.statBox}>
-              <div style={styles.statValue}>{stats.paragraphCount.toLocaleString()}</div>
-              <div style={styles.statLabel}>Paragraphs</div>
+            <div className="word-counter__stat-box">
+              <div className="word-counter__stat-value">{stats.paragraphCount.toLocaleString()}</div>
+              <div className="word-counter__stat-label">Paragraphs</div>
             </div>
-            <div style={styles.statBox}>
-              <div style={styles.statValue}>{stats.lineCount.toLocaleString()}</div>
-              <div style={styles.statLabel}>Lines</div>
+            <div className="word-counter__stat-box">
+              <div className="word-counter__stat-value">{stats.lineCount.toLocaleString()}</div>
+              <div className="word-counter__stat-label">Lines</div>
             </div>
-            <div style={styles.statBox}>
-              <div style={styles.statValue}>{stats.avgWordLength}</div>
-              <div style={styles.statLabel}>Avg Word Length</div>
+            <div className="word-counter__stat-box">
+              <div className="word-counter__stat-value">{stats.avgWordLength}</div>
+              <div className="word-counter__stat-label">Avg Word Length</div>
             </div>
-            <div style={styles.statBox}>
-              <div style={styles.statValue}>{stats.readingTimeMinutes} min</div>
-              <div style={styles.statLabel}>Reading Time</div>
+            <div className="word-counter__stat-box">
+              <div className="word-counter__stat-value">{stats.readingTimeMinutes} min</div>
+              <div className="word-counter__stat-label">Reading Time</div>
             </div>
           </div>
         </div>
       )}
 
-      <div style={styles.notes}>
-        <h4 style={styles.notesHeading}>Notes</h4>
-        <ul style={styles.notesList}>
+      <div className="word-counter__notes">
+        <h4 className="word-counter__notes-heading">Notes</h4>
+        <ul className="word-counter__notes-list">
           <li>HTML tags are stripped and don't count toward word totals</li>
           <li>Em-dashes (--) separate words: "foo--bar" counts as 2 words</li>
           <li>Reading time assumes 200 words per minute</li>
@@ -147,121 +151,6 @@ const E2WordCounter = ({ data, e2 }) => {
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  description: {
-    marginBottom: '20px',
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  heading: {
-    margin: '0 0 10px 0',
-    fontSize: '18px',
-    color: '#38495e'
-  },
-  textareaContainer: {
-    marginBottom: '20px'
-  },
-  textarea: {
-    width: '100%',
-    padding: '15px',
-    fontSize: '16px',
-    fontFamily: 'inherit',
-    border: '2px solid #dee2e6',
-    borderRadius: '4px 4px 0 0',
-    resize: 'vertical',
-    minHeight: '200px',
-    boxSizing: 'border-box',
-    lineHeight: '1.6'
-  },
-  statsBar: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px',
-    padding: '12px 15px',
-    background: '#38495e',
-    borderRadius: '0 0 4px 4px',
-    color: 'white'
-  },
-  mainStat: {
-    fontSize: '18px'
-  },
-  secondaryStat: {
-    fontSize: '14px',
-    opacity: 0.8
-  },
-  clearButton: {
-    marginLeft: 'auto',
-    padding: '6px 12px',
-    background: 'transparent',
-    color: 'white',
-    border: '1px solid rgba(255,255,255,0.5)',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px'
-  },
-  detailedStats: {
-    marginBottom: '20px',
-    padding: '20px',
-    background: '#ffffff',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  statsHeading: {
-    margin: '0 0 15px 0',
-    fontSize: '16px',
-    color: '#38495e'
-  },
-  statsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: '15px'
-  },
-  statBox: {
-    padding: '15px',
-    background: '#f8f9f9',
-    borderRadius: '4px',
-    textAlign: 'center'
-  },
-  statValue: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#4060b0',
-    marginBottom: '5px'
-  },
-  statLabel: {
-    fontSize: '12px',
-    color: '#507898',
-    textTransform: 'uppercase'
-  },
-  notes: {
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  notesHeading: {
-    margin: '0 0 10px 0',
-    fontSize: '14px',
-    color: '#507898'
-  },
-  notesList: {
-    margin: 0,
-    paddingLeft: '20px',
-    fontSize: '14px',
-    color: '#507898'
-  }
 };
 
 export default E2WordCounter;

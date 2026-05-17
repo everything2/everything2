@@ -3,6 +3,8 @@ import LinkNode from '../LinkNode'
 
 /**
  * UsergroupMessageArchive - View archived messages sent to usergroups.
+ * Styles in CSS: .usergroup-archive__*
+ *
  * Allows copying messages to personal inbox.
  */
 const UsergroupMessageArchive = ({ data }) => {
@@ -24,8 +26,8 @@ const UsergroupMessageArchive = ({ data }) => {
 
   if (is_guest) {
     return (
-      <div style={styles.container}>
-        <p style={styles.seeAlso}>
+      <div className="usergroup-archive">
+        <p className="usergroup-archive__see-also">
           See also <LinkNode title="Usergroup discussions" />
         </p>
         <p>If you are a member of one of these groups, you can view messages sent to the group.</p>
@@ -35,8 +37,8 @@ const UsergroupMessageArchive = ({ data }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <p style={styles.seeAlso}>
+    <div className="usergroup-archive">
+      <p className="usergroup-archive__see-also">
         See also <LinkNode title="Usergroup discussions" />
       </p>
 
@@ -47,7 +49,7 @@ const UsergroupMessageArchive = ({ data }) => {
           You can edit the usergroups that have messages archived at{' '}
           <a
             href="?node=usergroup+message+archive+manager&type=restricted_superdoc"
-            style={styles.link}
+            className="usergroup-archive__link"
           >
             usergroup message archive manager
           </a>.
@@ -62,14 +64,14 @@ const UsergroupMessageArchive = ({ data }) => {
         {archive_groups.map((g, idx) => (
           <span key={g.node_id}>
             {idx > 0 && ', '}
-            <a href={`?node_id=${node_id}&viewgroup=${encodeURIComponent(g.title)}`} style={styles.link}>
+            <a href={`?node_id=${node_id}&viewgroup=${encodeURIComponent(g.title)}`} className="usergroup-archive__link">
               {g.title}
             </a>
           </span>
         ))}
       </p>
 
-      {error && <p style={styles.error}>{error}</p>}
+      {error && <p className="usergroup-archive__error">{error}</p>}
 
       {selected_group && !error && messages && (
         <MessageDisplay
@@ -179,7 +181,7 @@ const MessageDisplay = ({
         Viewing messages for group <LinkNode id={selectedGroup.node_id} display={selectedGroup.title} />:
       </p>
 
-      <label style={styles.checkbox}>
+      <label className="usergroup-archive__checkbox">
         <input
           type="checkbox"
           name="ugma_resettime"
@@ -191,7 +193,7 @@ const MessageDisplay = ({
       <br />
 
       {copiedCount > 0 && (
-        <p style={styles.copiedMsg}>
+        <p className="usergroup-archive__copied-msg">
           (Copied {copiedCount} group message{copiedCount === 1 ? '' : 's'} to self.)
         </p>
       )}
@@ -202,40 +204,40 @@ const MessageDisplay = ({
         </p>
       )}
 
-      <table style={styles.table}>
+      <table className="usergroup-archive__table">
         <thead>
           <tr>
-            <th style={styles.thCp}>cp</th>
-            <th style={styles.thNum}>#</th>
-            <th style={styles.th}>author</th>
-            <th style={styles.th}>time</th>
-            <th style={styles.th}>message</th>
+            <th className="usergroup-archive__th--cp">cp</th>
+            <th className="usergroup-archive__th--num">#</th>
+            <th className="usergroup-archive__th">author</th>
+            <th className="usergroup-archive__th">time</th>
+            <th className="usergroup-archive__th">message</th>
           </tr>
         </thead>
         <tbody>
           {messages.map((msg) => (
             <tr key={msg.message_id}>
-              <td style={styles.tdCp}>
+              <td className="usergroup-archive__td--cp">
                 <input type="checkbox" name={`cpgroupmsg_${msg.message_id}`} value="copy" />
               </td>
-              <td style={styles.tdNum}>
+              <td className="usergroup-archive__td--num">
                 ({msg.number})
               </td>
-              <td style={styles.tdSmall}>
+              <td className="usergroup-archive__td--small">
                 {msg.author_id ? (
                   <LinkNode id={msg.author_id} display={msg.author_title} />
                 ) : (
                   '?'
                 )}
               </td>
-              <td style={styles.tdTime}>{msg.timestamp}</td>
-              <td style={styles.td} dangerouslySetInnerHTML={{ __html: msg.text }} />
+              <td className="usergroup-archive__td--time">{msg.timestamp}</td>
+              <td className="usergroup-archive__td" dangerouslySetInnerHTML={{ __html: msg.text }} />
             </tr>
           ))}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan="5" style={styles.td}>
+            <td colSpan="5" className="usergroup-archive__td">
               Checking the box in the &quot;cp&quot; column will <strong>c</strong>o<strong>p</strong>y the message[s] to your private message box
             </td>
           </tr>
@@ -243,16 +245,16 @@ const MessageDisplay = ({
       </table>
 
       {paginationLinks.length > 0 && (
-        <div style={styles.pagination}>
+        <div className="usergroup-archive__pagination">
           {paginationLinks.map((link, idx) => (
             <span key={idx}>
               {idx > 0 && ' \u00A0 '}
               [ {link.active ? (
-                <span style={link.current ? styles.currentLink : undefined}>{link.label}</span>
+                <span className={link.current ? 'usergroup-archive__current-link' : undefined}>{link.label}</span>
               ) : (
                 <a
                   href={`?node_id=${nodeId}&viewgroup=${encodeURIComponent(selectedGroup.title)}&startnum=${link.startnum}`}
-                  style={styles.link}
+                  className="usergroup-archive__link"
                 >
                   {link.label}
                 </a>
@@ -262,120 +264,11 @@ const MessageDisplay = ({
         </div>
       )}
 
-      <div style={styles.submitSection}>
-        <button type="submit" style={styles.button}>Copy selected messages</button>
+      <div className="usergroup-archive__submit-section">
+        <button type="submit" className="usergroup-archive__button">Copy selected messages</button>
       </div>
     </form>
   )
-}
-
-const styles = {
-  container: {
-    padding: '10px',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: '#111'
-  },
-  seeAlso: {
-    textAlign: 'right',
-    fontSize: '12px',
-    marginBottom: '15px'
-  },
-  link: {
-    color: '#4060b0',
-    textDecoration: 'none'
-  },
-  error: {
-    color: '#c62828',
-    padding: '10px',
-    backgroundColor: '#ffebee',
-    borderRadius: '4px'
-  },
-  checkbox: {
-    display: 'inline-block',
-    marginBottom: '10px'
-  },
-  copiedMsg: {
-    color: '#2e7d32',
-    fontWeight: 'bold'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginTop: '10px'
-  },
-  th: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '6px 8px',
-    textAlign: 'left'
-  },
-  thCp: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '6px 8px',
-    textAlign: 'center',
-    width: '30px'
-  },
-  thNum: {
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    padding: '6px 8px',
-    textAlign: 'center',
-    width: '40px'
-  },
-  td: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #e0e0e0',
-    verticalAlign: 'top'
-  },
-  tdCp: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #e0e0e0',
-    verticalAlign: 'top',
-    textAlign: 'center'
-  },
-  tdNum: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #e0e0e0',
-    verticalAlign: 'top',
-    textAlign: 'center',
-    color: '#507898',
-    fontSize: '12px'
-  },
-  tdSmall: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #e0e0e0',
-    verticalAlign: 'top',
-    fontSize: '12px'
-  },
-  tdTime: {
-    padding: '6px 8px',
-    borderBottom: '1px solid #e0e0e0',
-    verticalAlign: 'top',
-    fontFamily: 'monospace',
-    fontSize: '12px',
-    whiteSpace: 'nowrap'
-  },
-  pagination: {
-    marginTop: '15px',
-    textAlign: 'center'
-  },
-  currentLink: {
-    fontWeight: 'bold'
-  },
-  submitSection: {
-    marginTop: '15px'
-  },
-  button: {
-    padding: '8px 20px',
-    backgroundColor: '#38495e',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    fontSize: '13px'
-  }
 }
 
 export default UsergroupMessageArchive

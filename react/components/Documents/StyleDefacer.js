@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 /**
  * StyleDefacer - Custom CSS editor
+ * Styles in CSS: .style-defacer__*
  *
  * Allows users to add custom CSS styles that override the default theme.
  * Note: This will eventually be migrated to use CSS variables.
@@ -61,14 +62,7 @@ const StyleDefacer = ({ data }) => {
       </p>
 
       {saved && (
-        <div style={{
-          padding: '10px',
-          backgroundColor: '#d4edda',
-          border: '1px solid #c3e6cb',
-          borderRadius: '4px',
-          marginBottom: '15px',
-          color: '#155724'
-        }}>
+        <div className="style-defacer__success">
           Your custom styles have been saved! Refresh the page to see changes.
         </div>
       )}
@@ -82,11 +76,7 @@ const StyleDefacer = ({ data }) => {
           rows={40}
           value={styleValue}
           onChange={(e) => setStyleValue(e.target.value)}
-          style={{
-            width: '100%',
-            fontFamily: 'monospace',
-            fontSize: '13px'
-          }}
+          className="style-defacer__textarea"
           placeholder="/* Enter your custom CSS here */
 
 /* Example: Change link colors */
@@ -97,23 +87,12 @@ body { background-color: #1a1a1a; }"
         />
         <br />
 
-        <button
-          type="submit"
-          style={{
-            marginTop: '10px',
-            padding: '8px 20px',
-            backgroundColor: '#38495e',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '3px',
-            cursor: 'pointer'
-          }}
-        >
+        <button type="submit" className="style-defacer__submit">
           Throw that paint
         </button>
       </form>
 
-      <div style={{ marginTop: '20px', color: '#666', fontSize: '12px' }}>
+      <div className="style-defacer__tips">
         <p><strong>Tips:</strong></p>
         <ul>
           <li>Your custom CSS is applied after the theme CSS, so it will override theme styles.</li>

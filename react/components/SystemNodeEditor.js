@@ -8,6 +8,8 @@ import { FaSave, FaTimes, FaSpinner } from 'react-icons/fa'
  * field metadata from the admin API. Used by basicedit displaytype
  * for superusers to edit any node's raw database fields.
  *
+ * Styles are in CSS classes (system-node-editor__*)
+ *
  * Props:
  * - nodeId: The node_id to edit
  * - initialFields: Optional initial field data (from controller)
@@ -133,18 +135,8 @@ const SystemNodeEditor = ({ nodeId, initialFields, onSave, onCancel }) => {
 
   // Render input based on field type
   const renderInput = (fieldName, fieldData) => {
-    const { value, inputType, maxLength, type } = fieldData
+    const { value, inputType, maxLength } = fieldData
     const isReadOnly = fieldName === 'node_id'
-
-    const baseStyle = {
-      width: '100%',
-      padding: '6px 8px',
-      fontSize: '13px',
-      fontFamily: 'monospace',
-      border: '1px solid #ccc',
-      borderRadius: '3px',
-      boxSizing: 'border-box',
-    }
 
     if (isReadOnly) {
       return (
@@ -152,7 +144,7 @@ const SystemNodeEditor = ({ nodeId, initialFields, onSave, onCancel }) => {
           type="text"
           value={value ?? ''}
           readOnly
-          style={{ ...baseStyle, backgroundColor: '#f5f5f5', color: '#666' }}
+          className="system-node-editor__input system-node-editor__input--readonly"
         />
       )
     }
@@ -163,7 +155,7 @@ const SystemNodeEditor = ({ nodeId, initialFields, onSave, onCancel }) => {
           value={value ?? ''}
           onChange={(e) => handleFieldChange(fieldName, e.target.value)}
           rows={10}
-          style={{ ...baseStyle, resize: 'vertical', minHeight: '100px' }}
+          className="system-node-editor__textarea"
         />
       )
     }
@@ -175,7 +167,7 @@ const SystemNodeEditor = ({ nodeId, initialFields, onSave, onCancel }) => {
           value={value ?? ''}
           onChange={(e) => handleFieldChange(fieldName, e.target.value)}
           maxLength={maxLength}
-          style={{ ...baseStyle, maxWidth: '200px' }}
+          className="system-node-editor__input system-node-editor__input--number"
         />
       )
     }
@@ -187,14 +179,14 @@ const SystemNodeEditor = ({ nodeId, initialFields, onSave, onCancel }) => {
         value={value ?? ''}
         onChange={(e) => handleFieldChange(fieldName, e.target.value)}
         maxLength={maxLength}
-        style={baseStyle}
+        className="system-node-editor__input"
       />
     )
   }
 
   if (loading) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div className="system-node-editor__loading">
         <FaSpinner className="fa-spin" /> Loading node data...
       </div>
     )
@@ -203,81 +195,54 @@ const SystemNodeEditor = ({ nodeId, initialFields, onSave, onCancel }) => {
   const changedFieldCount = Object.keys(getChangedFields()).length
 
   return (
-    <div className="system-node-editor" style={{ padding: '15px' }}>
+    <div className="system-node-editor">
       {/* Header */}
       {nodeInfo && (
-        <div style={{ marginBottom: '15px', paddingBottom: '10px', borderBottom: '1px solid #ddd' }}>
-          <h3 style={{ margin: 0 }}>
+        <div className="system-node-editor__header">
+          <h3 className="system-node-editor__title">
             Basic Edit: {nodeInfo.title}
           </h3>
-          <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+          <div className="system-node-editor__meta">
             Type: {nodeInfo.nodeType} | Node ID: {nodeInfo.node_id}
           </div>
         </div>
       )}
 
       {/* Warning */}
-      <div style={{
-        padding: '10px',
-        marginBottom: '15px',
-        backgroundColor: '#fff3cd',
-        border: '1px solid #ffc107',
-        borderRadius: '4px',
-        fontSize: '13px',
-      }}>
+      <div className="system-node-editor__warning">
         <strong>Warning:</strong> This is a raw database field editor.
         Incorrect values may cause system errors. Use with caution.
       </div>
 
       {/* Error message */}
       {error && (
-        <div style={{
-          padding: '10px',
-          marginBottom: '15px',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '4px',
-          color: '#721c24',
-        }}>
+        <div className="system-node-editor__error">
           {error}
         </div>
       )}
 
       {/* Success message */}
       {success && (
-        <div style={{
-          padding: '10px',
-          marginBottom: '15px',
-          backgroundColor: '#d4edda',
-          border: '1px solid #c3e6cb',
-          borderRadius: '4px',
-          color: '#155724',
-        }}>
+        <div className="system-node-editor__success">
           {success}
         </div>
       )}
 
       {/* Fields */}
-      <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+      <div className="system-node-editor__fields">
         {Object.keys(fields).sort().map(fieldName => {
           const fieldData = fields[fieldName]
           const isChanged = String(fieldData.value ?? '') !== String(originalFields[fieldName]?.value ?? '')
 
           return (
-            <div key={fieldName} style={{ marginBottom: '12px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '4px',
-                fontSize: '12px',
-                fontWeight: isChanged ? 'bold' : 'normal',
-                color: isChanged ? '#0066cc' : '#333',
-              }}>
+            <div key={fieldName} className="system-node-editor__field">
+              <label className={`system-node-editor__label${isChanged ? ' system-node-editor__label--modified' : ''}`}>
                 {fieldName}
-                <span style={{ fontWeight: 'normal', color: '#999', marginLeft: '8px' }}>
+                <span className="system-node-editor__label-type">
                   ({fieldData.type})
                 </span>
                 {isChanged && (
-                  <span style={{ color: '#0066cc', marginLeft: '8px' }}>*modified</span>
+                  <span className="system-node-editor__label-indicator">*modified</span>
                 )}
               </label>
               {renderInput(fieldName, fieldData)}
@@ -287,28 +252,11 @@ const SystemNodeEditor = ({ nodeId, initialFields, onSave, onCancel }) => {
       </div>
 
       {/* Action buttons */}
-      <div style={{
-        marginTop: '20px',
-        paddingTop: '15px',
-        borderTop: '1px solid #ddd',
-        display: 'flex',
-        gap: '10px',
-        alignItems: 'center',
-      }}>
+      <div className="system-node-editor__actions">
         <button
           onClick={handleSave}
           disabled={saving || changedFieldCount === 0}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: changedFieldCount > 0 ? '#28a745' : '#ccc',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: saving || changedFieldCount === 0 ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-          }}
+          className="system-node-editor__btn system-node-editor__btn--save"
         >
           {saving ? <FaSpinner className="fa-spin" /> : <FaSave />}
           {saving ? 'Saving...' : 'Save Changes'}
@@ -318,24 +266,14 @@ const SystemNodeEditor = ({ nodeId, initialFields, onSave, onCancel }) => {
           <button
             onClick={onCancel}
             disabled={saving}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
+            className="system-node-editor__btn system-node-editor__btn--cancel"
           >
             <FaTimes /> Cancel
           </button>
         )}
 
         {changedFieldCount > 0 && (
-          <span style={{ fontSize: '12px', color: '#666' }}>
+          <span className="system-node-editor__status">
             {changedFieldCount} field{changedFieldCount !== 1 ? 's' : ''} modified
           </span>
         )}

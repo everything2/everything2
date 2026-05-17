@@ -114,11 +114,11 @@ describe('RandomText', () => {
     expect(parsed).toBeInTheDocument()
   })
 
-  it('applies centered styling', () => {
+  it('applies centered styling via CSS class', () => {
     const { container } = render(<RandomText data={mockFezismsData} />)
-    const centerDiv = container.querySelector('div[style*="center"]')
+    const displayDiv = container.querySelector('.random-text-generator__display')
 
-    expect(centerDiv).toBeInTheDocument()
+    expect(displayDiv).toBeInTheDocument()
   })
 
   it('handles missing title gracefully', () => {

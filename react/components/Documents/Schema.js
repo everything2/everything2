@@ -5,6 +5,7 @@ import { FaCode, FaUser, FaCopy, FaCheck, FaEdit, FaProjectDiagram } from 'react
 
 /**
  * Schema - Display page for schema nodes (XML schema definitions)
+ * Styles in CSS: .schema__*
  *
  * Schemas define XML validation rules and extend the ticker nodetype.
  * Only one schema exists: "default xmltrue schema"
@@ -52,170 +53,14 @@ const Schema = ({ data, user }) => {
 
   const lines = formatCode(doctext)
 
-  const styles = {
-    container: {
-      maxWidth: '1000px',
-      margin: '0 auto',
-      padding: '0'
-    },
-    actionBar: {
-      display: 'flex',
-      gap: '10px',
-      marginBottom: '20px',
-      flexWrap: 'wrap'
-    },
-    actionButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '8px 16px',
-      backgroundColor: '#4060b0',
-      color: 'white',
-      textDecoration: 'none',
-      borderRadius: '4px',
-      fontSize: '13px',
-      fontWeight: '500',
-      border: 'none',
-      cursor: 'pointer'
-    },
-    actionButtonSecondary: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '8px 16px',
-      backgroundColor: '#507898',
-      color: 'white',
-      textDecoration: 'none',
-      borderRadius: '4px',
-      fontSize: '13px',
-      fontWeight: '500',
-      border: 'none',
-      cursor: 'pointer'
-    },
-    section: {
-      marginBottom: '20px',
-      padding: '15px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '6px',
-      border: '1px solid #dee2e6'
-    },
-    sectionHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      marginBottom: '15px',
-      color: '#38495e',
-      fontSize: '15px',
-      fontWeight: 'bold',
-      borderBottom: '1px solid #dee2e6',
-      paddingBottom: '10px'
-    },
-    infoGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-      gap: '15px'
-    },
-    infoItem: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '4px'
-    },
-    infoLabel: {
-      fontSize: '12px',
-      color: '#507898',
-      fontWeight: '500',
-      textTransform: 'uppercase'
-    },
-    infoValue: {
-      fontSize: '14px',
-      color: '#333'
-    },
-    codeSection: {
-      marginBottom: '20px'
-    },
-    codeHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '10px'
-    },
-    codeTitle: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      color: '#38495e',
-      fontSize: '15px',
-      fontWeight: 'bold'
-    },
-    copyButton: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '6px 12px',
-      backgroundColor: copied ? '#28a745' : '#6c757d',
-      color: 'white',
-      border: 'none',
-      borderRadius: '4px',
-      fontSize: '12px',
-      cursor: 'pointer',
-      transition: 'background-color 0.2s'
-    },
-    codeContainer: {
-      backgroundColor: '#1e1e1e',
-      borderRadius: '6px',
-      overflow: 'auto',
-      maxHeight: '500px',
-      border: '1px solid #333'
-    },
-    codeTable: {
-      width: '100%',
-      borderCollapse: 'collapse',
-      fontFamily: 'monospace',
-      fontSize: '13px'
-    },
-    lineNumber: {
-      padding: '2px 12px',
-      textAlign: 'right',
-      color: '#858585',
-      backgroundColor: '#252526',
-      borderRight: '1px solid #333',
-      userSelect: 'none',
-      minWidth: '40px'
-    },
-    codeLine: {
-      padding: '2px 12px',
-      color: '#d4d4d4',
-      whiteSpace: 'pre-wrap',
-      wordBreak: 'break-all'
-    },
-    lineCount: {
-      fontSize: '13px',
-      color: '#666'
-    },
-    emptyState: {
-      padding: '40px 20px',
-      textAlign: 'center',
-      color: '#666',
-      fontStyle: 'italic',
-      backgroundColor: '#f5f5f5',
-      borderRadius: '6px'
-    },
-    aboutText: {
-      fontSize: '14px',
-      color: '#495057',
-      lineHeight: '1.6',
-      margin: 0
-    }
-  }
-
   return (
-    <div style={styles.container}>
+    <div className="schema">
       {/* Action Bar */}
-      <div style={styles.actionBar}>
+      <div className="schema__action-bar">
         {isAdmin && (
           <a
             href={`/node/${node_id}?displaytype=edit`}
-            style={{ ...styles.actionButton, backgroundColor: '#dc3545' }}
+            className="schema__action-button schema__action-button--admin"
           >
             <FaEdit size={12} /> Edit (Admin)
           </a>
@@ -223,11 +68,11 @@ const Schema = ({ data, user }) => {
       </div>
 
       {/* About Section */}
-      <div style={styles.section}>
-        <h4 style={styles.sectionHeader}>
+      <div className="schema__section">
+        <h4 className="schema__section-header">
           <FaProjectDiagram size={16} /> About Schemas
         </h4>
-        <p style={styles.aboutText}>
+        <p className="schema__about-text">
           Schemas define XML validation rules for the site's XML output formats.
           They are used by the xmltrue display type to validate generated XML content.
           This schema extends the ticker nodetype, which itself extends document.
@@ -235,48 +80,48 @@ const Schema = ({ data, user }) => {
       </div>
 
       {/* Schema Info Section */}
-      <div style={styles.section}>
-        <h4 style={styles.sectionHeader}>
+      <div className="schema__section">
+        <h4 className="schema__section-header">
           <FaCode size={16} /> Schema Information
         </h4>
-        <div style={styles.infoGrid}>
-          <div style={styles.infoItem}>
-            <span style={styles.infoLabel}>Title</span>
-            <span style={styles.infoValue}>{title}</span>
+        <div className="schema__info-grid">
+          <div className="schema__info-item">
+            <span className="schema__info-label">Title</span>
+            <span className="schema__info-value">{title}</span>
           </div>
-          <div style={styles.infoItem}>
-            <span style={styles.infoLabel}>Maintainer</span>
-            <span style={styles.infoValue}>
+          <div className="schema__info-item">
+            <span className="schema__info-label">Maintainer</span>
+            <span className="schema__info-value">
               {author && author.node_id > 0 ? (
                 <LinkNode nodeId={author.node_id} title={author.title} />
               ) : (
-                <em style={{ color: '#999' }}>Unknown</em>
+                <em className="schema__unknown-author">Unknown</em>
               )}
             </span>
           </div>
           {schemaExtends && (
-            <div style={styles.infoItem}>
-              <span style={styles.infoLabel}>Extends</span>
-              <span style={styles.infoValue}>
+            <div className="schema__info-item">
+              <span className="schema__info-label">Extends</span>
+              <span className="schema__info-value">
                 <LinkNode nodeId={schemaExtends.node_id} title={schemaExtends.title} />
               </span>
             </div>
           )}
-          <div style={styles.infoItem}>
-            <span style={styles.infoLabel}>Lines</span>
-            <span style={styles.infoValue}>{lines.length}</span>
+          <div className="schema__info-item">
+            <span className="schema__info-label">Lines</span>
+            <span className="schema__info-value">{lines.length}</span>
           </div>
         </div>
       </div>
 
       {/* Schema Content Section */}
-      <div style={styles.codeSection}>
-        <div style={styles.codeHeader}>
-          <span style={styles.codeTitle}>
+      <div className="schema__code-section">
+        <div className="schema__code-header">
+          <span className="schema__code-title">
             <FaCode size={14} /> Schema Content
           </span>
           {doctext && (
-            <button onClick={handleCopy} style={styles.copyButton}>
+            <button onClick={handleCopy} className={`schema__copy-button${copied ? ' schema__copy-button--copied' : ''}`}>
               {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
               {copied ? 'Copied!' : 'Copy'}
             </button>
@@ -284,20 +129,20 @@ const Schema = ({ data, user }) => {
         </div>
 
         {doctext ? (
-          <div style={styles.codeContainer}>
-            <table style={styles.codeTable}>
+          <div className="schema__code-container">
+            <table className="schema__code-table">
               <tbody>
                 {lines.map((line, idx) => (
                   <tr key={idx}>
-                    <td style={styles.lineNumber}>{idx + 1}</td>
-                    <td style={styles.codeLine}>{line || ' '}</td>
+                    <td className="schema__line-number">{idx + 1}</td>
+                    <td className="schema__code-line">{line || ' '}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <div style={styles.emptyState}>
+          <div className="schema__empty-state">
             No schema content defined.
           </div>
         )}

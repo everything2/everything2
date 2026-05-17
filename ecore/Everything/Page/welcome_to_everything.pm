@@ -88,6 +88,8 @@ sub buildReactData {
             if (length($content) > 512) {
                 $content = substr($content, 0, 512);
                 $content =~ s/\s+\w*$//; # Don't break words
+                # Remove any incomplete HTML tag at the end (truncation may cut mid-tag)
+                $content =~ s/<[^>]*$//;
                 $truncated = 1;
             }
 

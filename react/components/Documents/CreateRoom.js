@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 /**
  * CreateRoom - Allows users to create new chat rooms
+ * Styles in CSS: .create-room__*
  *
  * Requires a minimum level, admin status, or chanop privileges.
  * Uses the /api/chatroom/create_room endpoint.
@@ -79,9 +80,9 @@ const CreateRoom = ({ data, e2 }) => {
   // Suspended from creating rooms
   if (is_suspended) {
     return (
-      <div style={styles.container}>
-        <div style={styles.warning}>
-          <h2 style={styles.warningHeading}>Suspended</h2>
+      <div className="create-room">
+        <div className="create-room__warning">
+          <h2 className="create-room__warning-heading">Suspended</h2>
           <p>You've been suspended from creating new rooms!</p>
         </div>
       </div>
@@ -91,8 +92,8 @@ const CreateRoom = ({ data, e2 }) => {
   // Permission denied - level too low
   if (!can_create) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>
+      <div className="create-room">
+        <div className="create-room__error">
           <p><em>Too young, my friend.</em></p>
           <p>
             You need to reach level {required_level} to create rooms.
@@ -104,8 +105,8 @@ const CreateRoom = ({ data, e2 }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.description}>
+    <div className="create-room">
+      <div className="create-room__description">
         <p>
           Create a new chat room for the E2 community.
           Choose a descriptive name and optionally add a description
@@ -113,27 +114,27 @@ const CreateRoom = ({ data, e2 }) => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formRow}>
-          <label style={styles.label}>Room name:</label>
+      <form onSubmit={handleSubmit} className="create-room__form">
+        <div className="create-room__form-row">
+          <label className="create-room__label">Room name:</label>
           <input
             type="text"
-            style={styles.textInput}
+            className="create-room__text-input"
             value={roomName}
             onChange={(e) => setRoomName(e.target.value)}
             maxLength={80}
             placeholder="Enter room name..."
             disabled={creating}
           />
-          <div style={styles.charCount}>
+          <div className="create-room__char-count">
             {roomName.length}/80
           </div>
         </div>
 
-        <div style={styles.formRow}>
-          <label style={styles.label}>Description (optional):</label>
+        <div className="create-room__form-row">
+          <label className="create-room__label">Description (optional):</label>
           <textarea
-            style={styles.textarea}
+            className="create-room__textarea"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={5}
@@ -142,13 +143,10 @@ const CreateRoom = ({ data, e2 }) => {
           />
         </div>
 
-        <div style={styles.formRow}>
+        <div className="create-room__form-row">
           <button
             type="submit"
-            style={{
-              ...styles.button,
-              ...(creating ? styles.buttonDisabled : {})
-            }}
+            className={`create-room__button${creating ? ' create-room__button--disabled' : ''}`}
             disabled={creating}
           >
             {creating ? 'Creating...' : 'Create Room'}
@@ -157,10 +155,10 @@ const CreateRoom = ({ data, e2 }) => {
       </form>
 
       {result && (
-        <div style={styles.result}>
+        <div className="create-room__result">
           {result.success ? (
-            <div style={styles.successBox}>
-              <h4 style={styles.resultHeading}>Room Created!</h4>
+            <div className="create-room__success-box">
+              <h4 className="create-room__result-heading">Room Created!</h4>
               <p>
                 Your room <strong>{result.room_title}</strong> has been created
                 and you've been moved there.
@@ -168,14 +166,14 @@ const CreateRoom = ({ data, e2 }) => {
               <p>
                 <a
                   href={`/title/${encodeURIComponent(result.room_title)}`}
-                  style={styles.roomLink}
+                  className="create-room__room-link"
                 >
                   Visit {result.room_title}
                 </a>
               </p>
             </div>
           ) : (
-            <div style={styles.errorBox}>
+            <div className="create-room__error-box">
               <strong>Error:</strong> {result.error}
             </div>
           )}
@@ -183,117 +181,6 @@ const CreateRoom = ({ data, e2 }) => {
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '600px',
-    margin: '0 auto',
-    padding: '20px',
-    fontSize: '16px',
-    lineHeight: '1.6',
-    color: '#111111'
-  },
-  description: {
-    marginBottom: '20px',
-    padding: '15px',
-    background: '#f8f9f9',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px'
-  },
-  form: {
-    marginBottom: '20px'
-  },
-  formRow: {
-    marginBottom: '15px'
-  },
-  label: {
-    fontWeight: 'bold',
-    display: 'block',
-    marginBottom: '8px'
-  },
-  textInput: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '16px',
-    fontFamily: 'inherit',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    boxSizing: 'border-box'
-  },
-  textarea: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    border: '1px solid #dee2e6',
-    borderRadius: '4px',
-    resize: 'vertical',
-    boxSizing: 'border-box'
-  },
-  charCount: {
-    fontSize: '12px',
-    color: '#507898',
-    textAlign: 'right',
-    marginTop: '5px'
-  },
-  button: {
-    padding: '12px 24px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    background: '#4060b0',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  },
-  buttonDisabled: {
-    background: '#999',
-    cursor: 'not-allowed'
-  },
-  result: {
-    marginTop: '20px'
-  },
-  successBox: {
-    padding: '15px',
-    background: '#e8f5e9',
-    border: '1px solid #4caf50',
-    borderRadius: '4px'
-  },
-  errorBox: {
-    padding: '15px',
-    background: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px'
-  },
-  error: {
-    padding: '20px',
-    background: '#ffebee',
-    border: '1px solid #f44336',
-    borderRadius: '4px',
-    textAlign: 'center'
-  },
-  warning: {
-    padding: '20px',
-    background: '#fff3e0',
-    border: '1px solid #ff9800',
-    borderRadius: '4px',
-    textAlign: 'center'
-  },
-  warningHeading: {
-    margin: '0 0 10px 0',
-    color: '#e65100'
-  },
-  resultHeading: {
-    margin: '0 0 10px 0',
-    fontSize: '16px',
-    color: '#2e7d32'
-  },
-  roomLink: {
-    color: '#4060b0',
-    textDecoration: 'none',
-    fontWeight: 'bold'
-  }
 };
 
 export default CreateRoom;

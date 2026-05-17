@@ -328,9 +328,8 @@ describe('Notelet', () => {
         isGuest: false
       }
       const { container } = render(<Notelet noteletData={noteletData} showNodelet={mockShowNodelet} nodeletIsOpen={true} />)
-      const contentDiv = container.querySelector('div[style*="padding: 8px"]')
+      const contentDiv = container.querySelector('.notelet__content')
       expect(contentDiv).toBeInTheDocument()
-      expect(contentDiv).toHaveStyle({ fontSize: '12px' })
     })
 
     test('locked message has proper styling', () => {
@@ -341,8 +340,8 @@ describe('Notelet', () => {
         isGuest: false
       }
       const { container } = render(<Notelet noteletData={noteletData} showNodelet={mockShowNodelet} nodeletIsOpen={true} />)
-      const message = container.querySelector('p')
-      expect(message).toHaveStyle({ padding: '8px', fontSize: '12px' })
+      const message = container.querySelector('.notelet__locked')
+      expect(message).toBeInTheDocument()
     })
 
     test('no content message has proper styling', () => {
@@ -353,9 +352,8 @@ describe('Notelet', () => {
         isGuest: false
       }
       const { container } = render(<Notelet noteletData={noteletData} showNodelet={mockShowNodelet} nodeletIsOpen={true} />)
-      const messageDiv = container.querySelector('div[style*="padding: 8px"]')
+      const messageDiv = container.querySelector('.notelet__content')
       expect(messageDiv).toBeInTheDocument()
-      expect(messageDiv).toHaveStyle({ fontSize: '12px' })
     })
   })
 

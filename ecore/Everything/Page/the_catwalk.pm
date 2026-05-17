@@ -50,8 +50,8 @@ sub buildReactData {
 
     my $has_custom_style = length($VARS->{customstyle} || '') > 0;
 
-    # Get sorting preference from vars
-    my $sort_key = $VARS->{ListNodesOfType_Sort} || '0';
+    # Get sorting preference from query param or vars
+    my $sort_key = $query->param('ListNodesOfType_Sort') || $VARS->{ListNodesOfType_Sort} || '0';
 
     # Handle filter parameters
     my $filter_user = $query->param('filter_user') || '';

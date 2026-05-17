@@ -286,6 +286,7 @@ const RAW_QUOTES = [
 
 /**
  * EverythingQuoteServer - React version of the classic E2 quote server
+ * Styles in CSS: .quote-server__*
  *
  * Displays a random quote from the Everything2 community.
  * This replaces the legacy jQuery implementation that loaded 250+ quotes
@@ -319,58 +320,31 @@ const EverythingQuoteServer = () => {
   }
 
   return (
-    <div style={{
-      maxWidth: '800px',
-      margin: '40px auto',
-      padding: '30px',
-      textAlign: 'center'
-    }}>
-      <h1 style={{
-        fontSize: '28px',
-        color: '#333333',
-        marginBottom: '30px',
-        fontWeight: 'normal'
-      }}>
+    <div className="quote-server">
+      <h1 className="quote-server__title">
         Everything Quote Server
       </h1>
 
-      <div style={{
-        fontSize: '18px',
-        lineHeight: '1.6',
-        color: '#111111',
-        padding: '20px',
-        backgroundColor: '#f8f9f9',
-        borderLeft: '4px solid #4060b0',
-        borderRadius: '4px',
-        minHeight: '100px'
-      }}>
-        <div style={{ marginBottom: currentQuote.attribution ? '12px' : '0' }}>
+      <div className="quote-server__quote-box">
+        <div className={currentQuote.attribution ? 'quote-server__quote-text' : 'quote-server__quote-text--no-attribution'}>
           {formatTextWithLineBreaks(currentQuote.text)}
         </div>
         {currentQuote.attribution && (
-          <div style={{
-            fontSize: '15px',
-            color: '#666',
-            fontStyle: 'italic'
-          }}>
+          <div className="quote-server__attribution">
             —{formatTextWithLineBreaks(currentQuote.attribution)}
           </div>
         )}
       </div>
 
-      <div style={{
-        marginTop: '30px',
-        fontSize: '13px',
-        color: '#666'
-      }}>
-        <p style={{ marginTop: '10px' }}>
+      <div className="quote-server__footer">
+        <p>
           <a
             href="#"
             onClick={(e) => {
               e.preventDefault()
               setCurrentQuote(getRandomQuote())
             }}
-            style={{ color: '#4060b0', textDecoration: 'none' }}
+            className="quote-server__new-quote-link"
           >
             Get another quote
           </a>

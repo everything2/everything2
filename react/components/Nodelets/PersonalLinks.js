@@ -118,11 +118,11 @@ const PersonalLinks = (props) => {
     return (
       <NodeletContainer
         id={props.id}
-      title="Personal Links"
+        title="Personal Links"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        <p style={{ padding: '8px', fontSize: '12px' }}>You must log in first.</p>
+        <p className="personal-links__guest-message">You must log in first.</p>
       </NodeletContainer>
     )
   }
@@ -131,14 +131,14 @@ const PersonalLinks = (props) => {
     return (
       <NodeletContainer
         id={props.id}
-      title="Personal Links"
+        title="Personal Links"
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
         {(error || canAddCurrent) && (
-          <div className="nodeletfoot" style={{ padding: '8px', fontSize: '12px' }}>
+          <div className="nodeletfoot personal-links__foot--empty">
             {error && (
-              <div style={{ color: 'red', fontSize: '11px', marginBottom: '4px' }}>
+              <div className="personal-links__error">
                 {error}
               </div>
             )}
@@ -146,8 +146,7 @@ const PersonalLinks = (props) => {
               <a
                 href="#"
                 onClick={handleAddCurrent}
-                className="action"
-                style={{ cursor: isAdding ? 'wait' : 'pointer' }}
+                className={`action personal-links__add-link${isAdding ? ' personal-links__add-link--adding' : ''}`}
               >
                 {isAdding ? 'adding...' : `add "${currentNodeTitle}"`}
               </a>
@@ -163,11 +162,11 @@ const PersonalLinks = (props) => {
       id={props.id}
       title="Personal Links"
       showNodelet={props.showNodelet}
-        nodeletIsOpen={props.nodeletIsOpen}
+      nodeletIsOpen={props.nodeletIsOpen}
     >
-      <ul className="linklist" style={{ listStyle: 'none', paddingLeft: '8px', margin: '4px 0', fontSize: '12px' }}>
+      <ul className="linklist personal-links__list">
         {personalLinks.map((link, index) => (
-          <li key={index} style={{ marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <li key={index} className="personal-links__item">
             <LinkNode title={link} />
             <a
               href="#"
@@ -175,13 +174,7 @@ const PersonalLinks = (props) => {
                 e.preventDefault()
                 handleDelete(index)
               }}
-              style={{
-                marginLeft: '4px',
-                cursor: deletingIndex === index ? 'wait' : 'pointer',
-                fontSize: '10px',
-                color: '#999',
-                textDecoration: 'none',
-              }}
+              className={`personal-links__delete${deletingIndex === index ? ' personal-links__delete--deleting' : ''}`}
               title="Remove this link"
             >
               {deletingIndex === index ? '...' : '[x]'}
@@ -190,9 +183,9 @@ const PersonalLinks = (props) => {
         ))}
       </ul>
       {(error || canAddCurrent) && (
-        <div className="nodeletfoot" style={{ padding: '4px 8px', fontSize: '11px' }}>
+        <div className="nodeletfoot personal-links__foot">
           {error && (
-            <div style={{ color: 'red', fontSize: '11px', marginBottom: '4px' }}>
+            <div className="personal-links__error">
               {error}
             </div>
           )}
@@ -200,8 +193,7 @@ const PersonalLinks = (props) => {
             <a
               href="#"
               onClick={handleAddCurrent}
-              className="action"
-              style={{ cursor: isAdding ? 'wait' : 'pointer' }}
+              className={`action personal-links__add-link${isAdding ? ' personal-links__add-link--adding' : ''}`}
             >
               {isAdding ? 'adding...' : `add "${currentNodeTitle}"`}
             </a>

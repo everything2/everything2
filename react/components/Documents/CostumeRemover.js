@@ -1,89 +1,9 @@
 import React, { useState, useCallback } from 'react'
 
-const styles = {
-  container: {
-    maxWidth: '600px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-    borderBottom: '1px solid #ccc',
-    paddingBottom: '10px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1.5rem',
-  },
-  description: {
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-    marginBottom: '20px',
-    lineHeight: '1.6',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginBottom: '20px',
-  },
-  th: {
-    textAlign: 'left',
-    padding: '10px',
-    backgroundColor: '#e9ecef',
-    border: '1px solid #ddd',
-    fontWeight: 'bold',
-  },
-  td: {
-    padding: '10px',
-    border: '1px solid #ddd',
-  },
-  input: {
-    width: '100%',
-    padding: '8px',
-    fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#dc3545',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  buttonDisabled: {
-    padding: '10px 20px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'not-allowed',
-    fontSize: '14px',
-  },
-  results: {
-    marginTop: '20px',
-  },
-  resultItem: {
-    padding: '10px',
-    marginBottom: '8px',
-    borderRadius: '4px',
-  },
-  success: {
-    backgroundColor: '#d4edda',
-    color: '#155724',
-    border: '1px solid #c3e6cb',
-  },
-  error: {
-    backgroundColor: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-  },
-}
-
+/**
+ * CostumeRemover - Admin tool to remove user costumes
+ * Styles in CSS: .costume-remover__*
+ */
 const CostumeRemover = ({ data }) => {
   const [usernames, setUsernames] = useState(['', '', '', '', ''])
   const [processing, setProcessing] = useState(false)
@@ -150,12 +70,12 @@ const CostumeRemover = ({ data }) => {
   }, [usernames])
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Costume Remover</h1>
+    <div className="costume-remover">
+      <div className="costume-remover__header">
+        <h1 className="costume-remover__title">Costume Remover</h1>
       </div>
 
-      <div style={styles.description}>
+      <div className="costume-remover__description">
         <p>
           This tool deletes the costume variable for selected users. Use it to remove
           abusively or inappropriately named costumes.
@@ -167,21 +87,21 @@ const CostumeRemover = ({ data }) => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <table style={styles.table}>
+        <table className="costume-remover__table">
           <thead>
             <tr>
-              <th style={styles.th}>Undress these users</th>
+              <th className="costume-remover__th">Undress these users</th>
             </tr>
           </thead>
           <tbody>
             {usernames.map((username, index) => (
               <tr key={index}>
-                <td style={styles.td}>
+                <td className="costume-remover__td">
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => handleUsernameChange(index, e.target.value)}
-                    style={styles.input}
+                    className="costume-remover__input"
                     placeholder="Enter username"
                     disabled={processing}
                   />
@@ -193,7 +113,7 @@ const CostumeRemover = ({ data }) => {
 
         <button
           type="submit"
-          style={processing ? styles.buttonDisabled : styles.button}
+          className={`costume-remover__button ${processing ? 'costume-remover__button--disabled' : ''}`}
           disabled={processing}
         >
           {processing ? 'Processing...' : 'Remove Costumes'}
@@ -201,14 +121,11 @@ const CostumeRemover = ({ data }) => {
       </form>
 
       {results.length > 0 && (
-        <div style={styles.results}>
+        <div className="costume-remover__results">
           {results.map((result, index) => (
             <div
               key={index}
-              style={{
-                ...styles.resultItem,
-                ...(result.type === 'success' ? styles.success : styles.error),
-              }}
+              className={`costume-remover__result-item costume-remover__result-item--${result.type}`}
             >
               {result.message}
             </div>

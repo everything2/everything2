@@ -1,846 +1,238 @@
-# PSGI/Plack Migration Plan - Move from mod_perl to FastCGI
+# PSGI/Plack Migration Plan
 
-**Status**: Planning - Ready for Review
-**Last Updated**: 2025-11-26
-**Author**: Claude Code (based on E2 architecture analysis)
-**Goal**: Migrate from mod_perl to PSGI/Plack with Apache → FastCGI architecture
-
----
-
-## Executive Summary
-
-This document outlines the strategy for migrating Everything2 from mod_perl to PSGI/Plack, using Apache as an HTTP frontend serving FastCGI to the backend. This migration enables:
-
-- **Modern Perl deployment** - PSGI standard used by all modern Perl frameworks
-- **Better scalability** - FastCGI process management independent of Apache
-- **Easier testing** - PSGI apps can run standalone without Apache
-- **API-first architecture** - Clean separation between HTTP layer and application logic
-- **Container-ready** - Simpler Docker deployment without mod_perl complexity
-
-**Architecture Change**:
-```
-BEFORE: Browser → Apache (mod_perl) → Everything::HTML → Perl Application
-AFTER:  Browser → Apache (mod_proxy_fcgi) → FastCGI → Plack → PSGI App → Everything::HTML
-```
+**Status**: Planning (rewritten 2026-04-28)
+**Goal**: Replace mod_perl with PSGI/Plack to reduce per-worker memory footprint, drop Apache::DBI connection bloat, and unblock smaller container shapes on Fargate.
+**Prior version**: Written 2025-11-26 under a different model; that draft assumed direct `Apache2::RequestRec` handler integration that does not exist in this codebase. This plan replaces it.
 
 ---
 
-## Current Architecture Analysis
+## Why migrate
 
-### mod_perl Integration Points
+Production metrics (us-west-2, 7-day average as of 2026-04-28):
 
-**1. Apache Configuration** ([docker/apache/everything2.conf](docker/apache/everything2.conf))
+- Fargate task CPU: **9% avg, 98% peak** on 2 vCPU. Massively over-provisioned on CPU.
+- Fargate task memory: **64% avg, 93% peak** on 4 GB. Memory is the binding constraint.
+- RDS connections: **50 avg, 122 peak**. Each mod_perl prefork child holds one.
+- RDS freeable memory: 0.14–0.28 GB free of 4 GB. Buffer pool is fully saturated and routinely missing to disk.
+
+The shape of the problem is mod_perl's prefork model: each Apache child process holds a full Perl interpreter, the loaded code base, and its `NodeCache` working set. With 60+ workers per task across 2 tasks, that's 120+ copies of everything in memory, and 120+ DB connections during peak. Most of those workers are idle most of the time — that's why CPU averages 9%. PSGI under a tuned process manager (Starman with ~10 workers/task) drops the worker count by ~5×, which lowers both Fargate memory pressure and DB connection pressure together.
+
+The migration is not about features. It's about removing a structural cost multiplier so smaller, cheaper container shapes become viable.
+
+---
+
+## Actual architecture (what the older plan got wrong)
+
+This codebase **does not** use mod_perl as a direct handler. There is no `Everything::HTML->handler($r)`, no `PerlTransHandler`, no `Apache2::Const`, no `Apache2::Cookie`. A grep of `ecore/` for `Apache2::` returns zero matches.
+
+The real wiring (from `etc/templates/apache2.conf.erb`):
+
 ```apache
-PerlModule Everything::HTML
-PerlTransHandler Everything::HTML
+PerlModule Apache::DBI
+PerlModule Apache2::compat DBI DBD::mysql CGI CGI::Carp
+PerlResponseHandler ModPerl::Registry
 ```
 
-**2. Request Handler** ([ecore/Everything/HTML.pm](ecore/Everything/HTML.pm))
-- `sub handler` - mod_perl entry point
-- Direct access to `Apache2::RequestRec` object
-- Uses `Apache2::Const` for HTTP status codes
-- Calls `displayPage()` to generate content
+The app is **CGI-style Perl scripts** (`www/index.pl`, `www/api/index.pl`, `www/health.pl`) running under `ModPerl::Registry`, which compiles each script once per worker and re-runs it as a cached subroutine. Each `.pl` script is two lines:
 
-**3. Dependencies on mod_perl**
 ```perl
-use Apache2::RequestRec;
-use Apache2::RequestUtil;
-use Apache2::Const -compile => qw(OK DECLINED HTTP_NOT_FOUND);
-use Apache2::Cookie;
-```
-
-**4. Request Flow**
-```
-Apache receives HTTP request
-  ↓
-mod_perl calls Everything::HTML->handler($r)
-  ↓
-Extract path, params, cookies from Apache2::RequestRec
-  ↓
-Build Everything::Request object
-  ↓
-Route to Controller (superdoc, htmlpage, etc.)
-  ↓
-Generate Mason2/React content
-  ↓
-Return Apache2::Const::OK
-```
-
----
-
-## Target Architecture
-
-### PSGI/Plack Stack
-
-```
-┌─────────────────────────────────────────────────────┐
-│ Apache (mod_proxy_fcgi)                             │
-│ - Static assets: /react/*.js, /css/*.css, /images/ │
-│ - Proxy to FastCGI: everything else                 │
-└─────────────────────────────────────────────────────┘
-                       ↓ (FastCGI protocol)
-┌─────────────────────────────────────────────────────┐
-│ Plack Server (Starman/Gazelle)                      │
-│ - Process pool (20-50 workers)                      │
-│ - Graceful restarts                                 │
-│ - Hot code reload (dev mode)                        │
-└─────────────────────────────────────────────────────┘
-                       ↓ (PSGI env)
-┌─────────────────────────────────────────────────────┐
-│ PSGI Application (app.psgi)                         │
-│ - Middleware stack                                  │
-│   • Plack::Middleware::Session                      │
-│   • Plack::Middleware::Static (fallback)            │
-│   • Plack::Middleware::ReverseProxy                 │
-│   • Plack::Middleware::AccessLog                    │
-│ - Routes to Everything::HTML                        │
-└─────────────────────────────────────────────────────┘
-                       ↓
-┌─────────────────────────────────────────────────────┐
-│ Everything::HTML (PSGI-compatible)                  │
-│ - Receives PSGI env hash                            │
-│ - Builds Everything::Request from env               │
-│ - Returns PSGI response [status, headers, body]     │
-└─────────────────────────────────────────────────────┘
-```
-
----
-
-## Migration Phases
-
-### Phase 1: Create PSGI Adapter (2-3 days)
-
-**Goal**: Make Everything::HTML work with both mod_perl AND PSGI
-
-**Tasks**:
-
-1. **Create app.psgi** - PSGI application file
-   ```perl
-   #!/usr/bin/env perl
-   use strict;
-   use warnings;
-   use FindBin;
-   use lib "$FindBin::Bin/ecore";
-
-   use Everything::HTML;
-   use Plack::Builder;
-
-   my $app = sub {
-       my $env = shift;
-       return Everything::HTML->psgi_handler($env);
-   };
-
-   builder {
-       enable 'ReverseProxy';
-       enable 'AccessLog', format => 'combined';
-       enable 'Static',
-           path => qr{^/(react|css|images)/},
-           root => './www';
-       $app;
-   };
-   ```
-
-2. **Add PSGI handler to Everything::HTML**
-   ```perl
-   sub psgi_handler {
-       my ($class, $env) = @_;
-
-       # Convert PSGI env to Everything::Request
-       my $request = $class->build_request_from_psgi($env);
-
-       # Generate page (existing logic)
-       my ($status, $headers, $body) = $class->displayPage($request);
-
-       # Return PSGI response
-       return [$status, $headers, [$body]];
-   }
-
-   sub build_request_from_psgi {
-       my ($class, $env) = @_;
-
-       # Extract request info from PSGI env
-       my $uri = $env->{REQUEST_URI};
-       my $method = $env->{REQUEST_METHOD};
-       my $params = $class->parse_query_string($env->{QUERY_STRING});
-       my $cookies = $class->parse_cookies($env->{HTTP_COOKIE});
-
-       # Build Everything::Request object
-       return Everything::Request->new(
-           uri => $uri,
-           method => $method,
-           params => $params,
-           cookies => $cookies,
-           env => $env
-       );
-   }
-   ```
-
-3. **Update Everything::HTML to be dual-mode**
-   - Keep existing `handler()` for mod_perl
-   - Add new `psgi_handler()` for PSGI
-   - Share common logic in `displayPage()`
-
-4. **Cookie handling migration**
-   - Replace `Apache2::Cookie` with `Plack::Request->cookies`
-   - Or use `CGI::Simple::Cookie` for compatibility
-
-5. **Session handling**
-   - Current: Custom session in database
-   - Future: Keep database sessions, use `Plack::Middleware::Session`
-   - Store session ID in cookie
-
-**Deliverables**:
-- ✅ `app.psgi` file
-- ✅ `Everything::HTML->psgi_handler()`
-- ✅ Tests for PSGI handler
-- ✅ Documentation
-
-**Success Criteria**:
-- Can run `plackup app.psgi` in development
-- Basic page rendering works via PSGI
-- Sessions/cookies work
-- Static assets served correctly
-
----
-
-### Phase 2: Apache FastCGI Configuration (1-2 days)
-
-**Goal**: Configure Apache to proxy to PSGI backend via FastCGI
-
-**Tasks**:
-
-1. **Update Apache configuration**
-   ```apache
-   # Disable mod_perl
-   # PerlModule Everything::HTML
-   # PerlTransHandler Everything::HTML
-
-   # Enable FastCGI proxy
-   LoadModule proxy_module modules/mod_proxy.so
-   LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so
-
-   # Serve static assets directly
-   <LocationMatch "^/(react|css|images|favicon.ico)">
-       # Apache serves these directly (fast!)
-   </LocationMatch>
-
-   # Proxy everything else to FastCGI backend
-   <LocationMatch "^/(?!(react|css|images|favicon.ico))">
-       ProxyPass unix:/var/run/e2-fcgi.sock|fcgi://localhost/
-       ProxyPassReverse unix:/var/run/e2-fcgi.sock|fcgi://localhost/
-   </LocationMatch>
-
-   # Or use TCP socket
-   ProxyPass / fcgi://127.0.0.1:9000/
-   ProxyPassReverse / fcgi://127.0.0.1:9000/
-   ```
-
-2. **Choose Plack server** (Recommendation: **Starman**)
-
-   **Option A: Starman** (Recommended)
-   - Mature, battle-tested
-   - Preforking server (like Apache)
-   - Graceful restarts
-   - Good performance
-   ```bash
-   starman --listen /var/run/e2-fcgi.sock --workers 20 app.psgi
-   # or TCP: starman --listen :9000 --workers 20 app.psgi
-   ```
-
-   **Option B: Gazelle**
-   - Faster (uses XS)
-   - Fewer features
-   - Good for high-traffic
-   ```bash
-   plackup -s Gazelle --listen /var/run/e2-fcgi.sock app.psgi
-   ```
-
-   **Option C: uWSGI**
-   - Not pure Perl (Python/C core)
-   - Complex configuration
-   - Overkill for E2
-
-   **Recommendation**: Start with **Starman** - proven, stable, easy to debug
-
-3. **Create systemd service** (`/etc/systemd/system/everything2-psgi.service`)
-   ```ini
-   [Unit]
-   Description=Everything2 PSGI Application
-   After=network.target mysql.service
-
-   [Service]
-   Type=simple
-   User=www-data
-   Group=www-data
-   WorkingDirectory=/var/everything
-   Environment="PERL5LIB=/var/everything/ecore:/var/libraries/lib/perl5"
-   ExecStart=/usr/local/bin/starman \
-       --listen /var/run/e2-fcgi.sock \
-       --workers 20 \
-       --max-requests 1000 \
-       --access-log /var/log/everything2/access.log \
-       --error-log /var/log/everything2/error.log \
-       /var/everything/app.psgi
-   ExecReload=/bin/kill -HUP $MAINPID
-   Restart=always
-   RestartSec=10
-
-   [Install]
-   WantedBy=multi-user.target
-   ```
-
-4. **Docker integration**
-   - Update `docker/devbuild.sh` to start Starman
-   - Separate Apache container from app container (optional)
-   - Use docker-compose multi-container setup
-
-**Deliverables**:
-- ✅ Apache configuration for FastCGI proxy
-- ✅ Systemd service file
-- ✅ Docker configuration updates
-- ✅ Startup/shutdown scripts
-
-**Success Criteria**:
-- Apache proxies to Starman successfully
-- Static assets served by Apache (fast)
-- Dynamic content served by Starman (PSGI)
-- Graceful restart works (`systemctl reload everything2-psgi`)
-
----
-
-### Phase 3: Testing & Validation (3-5 days)
-
-**Goal**: Ensure feature parity between mod_perl and PSGI
-
-**Testing Strategy**:
-
-1. **Automated Testing**
-   - ✅ All Perl tests pass: `prove t/*.t`
-   - ✅ All React tests pass: `npm test`
-   - ✅ Smoke tests pass: `./tools/smoke-test.rb`
-   - ✅ E2E tests pass (if available)
-
-2. **Manual Testing Checklist**
-   - [ ] Login/logout
-   - [ ] Cookie persistence
-   - [ ] Session management
-   - [ ] User voting
-   - [ ] Chatterbox (AJAX polling)
-   - [ ] Message sending
-   - [ ] Node editing
-   - [ ] Admin tools
-   - [ ] File uploads (if any)
-   - [ ] Search functionality
-   - [ ] Cached pages (DataStash)
-
-3. **Performance Testing**
-   - Benchmark mod_perl vs PSGI response times
-   - Load testing with `ab` or `wrk`
-   - Monitor memory usage (PSGI should use less)
-   - Check CPU utilization
-
-4. **Error Handling**
-   - 404 pages work correctly
-   - 500 errors logged properly
-   - Stack traces captured
-   - No information leakage
-
-**Deliverables**:
-- ✅ Test results document
-- ✅ Performance comparison report
-- ✅ Bug fixes for any issues found
-
-**Success Criteria**:
-- Zero regressions in functionality
-- Performance equal or better than mod_perl
-- All error cases handled correctly
-
----
-
-### Phase 4: Production Deployment (1-2 days)
-
-**Goal**: Deploy PSGI to production with zero downtime
-
-**Deployment Strategy**:
-
-1. **Blue-Green Deployment**
-   ```
-   BEFORE:
-   Load Balancer → [Apache (mod_perl) x2]
-
-   TRANSITION:
-   Load Balancer → [Apache (mod_perl) x1] + [Apache+Starman x1]
-
-   AFTER:
-   Load Balancer → [Apache+Starman x2]
-   ```
-
-2. **Rollback Plan**
-   - Keep mod_perl configuration available
-   - Symlink switch for Apache config
-   - Database sessions work with both
-   - Can roll back in < 5 minutes
-
-3. **Monitoring**
-   - Set up alerts for error rates
-   - Monitor response times
-   - Watch memory/CPU usage
-   - Track FastCGI socket errors
-
-4. **Gradual Rollout**
-   - Week 1: 10% traffic to PSGI
-   - Week 2: 50% traffic to PSGI
-   - Week 3: 100% traffic to PSGI
-   - Week 4: Remove mod_perl
-
-**Deliverables**:
-- ✅ Deployment runbook
-- ✅ Rollback procedure
-- ✅ Monitoring dashboards
-- ✅ Post-deployment report
-
-**Success Criteria**:
-- Zero downtime during deployment
-- No increase in error rate
-- Performance maintained or improved
-- Successful rollback test
-
----
-
-## Benefits of PSGI/Plack
-
-### For Development
-
-1. **Faster iteration** - No Apache restart needed
-   ```bash
-   plackup -r app.psgi  # Auto-reloads on file changes
-   ```
-
-2. **Easier debugging** - Run app directly
-   ```bash
-   plackup app.psgi
-   perl -d:NYTProf app.psgi  # Profile easily
-   ```
-
-3. **Standalone testing** - No Apache required
-   ```perl
-   use Plack::Test;
-   use HTTP::Request::Common;
-
-   test_psgi $app, sub {
-       my $cb = shift;
-       my $res = $cb->(GET '/');
-       is $res->code, 200;
-   };
-   ```
-
-4. **Middleware ecosystem** - 200+ CPAN modules
-   - Authentication: `Plack::Middleware::Auth::*`
-   - Caching: `Plack::Middleware::Cache`
-   - Compression: `Plack::Middleware::Deflater`
-   - CORS: `Plack::Middleware::CrossOrigin`
-
-### For Operations
-
-1. **Better resource management**
-   - Workers independent of Apache
-   - Can restart app without Apache
-   - Memory leaks isolated to workers
-
-2. **Easier scaling**
-   - Add workers without changing Apache
-   - Can run multiple PSGI servers
-   - Load balance across servers
-
-3. **Simpler deployment**
-   - No mod_perl compilation
-   - No Apache module dependencies
-   - Faster Docker builds
-
-4. **Modern monitoring**
-   - Standard PSGI middleware for metrics
-   - Easy integration with Prometheus/Grafana
-   - Better error tracking (Sentry, etc.)
-
-### For API Development
-
-1. **Clean separation** - HTTP layer vs application logic
-2. **Easy API routes** - Use `Plack::App::URLMap`
-3. **Versioned APIs** - Mount different apps at `/api/v1`, `/api/v2`
-4. **Middleware for APIs** - Rate limiting, auth, CORS
-
----
-
-## Implementation Details
-
-### Cookie Migration
-
-**Current (mod_perl)**:
-```perl
-use Apache2::Cookie;
-
-my $cookies = Apache2::Cookie->fetch($r);
-my $userpass = $cookies->{userpass}->value if $cookies->{userpass};
-```
-
-**Future (PSGI)**:
-```perl
-use Plack::Request;
-
-my $req = Plack::Request->new($env);
-my $userpass = $req->cookies->{userpass};
-```
-
-**Or use CGI::Simple::Cookie** (no dependencies):
-```perl
-use CGI::Simple::Cookie;
-
-my %cookies = CGI::Simple::Cookie->parse($env->{HTTP_COOKIE});
-my $userpass = $cookies{userpass}->value if $cookies{userpass};
-```
-
-### Session Handling
-
-**Current**: Database-backed sessions (custom implementation)
-
-**Future**: Same database sessions, accessed via PSGI env
-```perl
-use Plack::Middleware::Session;
-use Plack::Session::Store::DBI;
-
-builder {
-    enable 'Session',
-        store => Plack::Session::Store::DBI->new(
-            dbh => $dbh,
-            table => 'session'
-        );
-    $app;
-};
-```
-
-**Or keep existing session code** - just adapt to PSGI env
-
-### Request Object Migration
-
-**Create Everything::Request::PSGI**:
-```perl
-package Everything::Request::PSGI;
-use Moose;
-
-has 'env' => (is => 'ro', required => 1);
-has 'plack_request' => (is => 'ro', lazy => 1, builder => '_build_plack_request');
-
-sub _build_plack_request {
-    my $self = shift;
-    return Plack::Request->new($self->env);
-}
-
-sub param {
-    my ($self, $name) = @_;
-    return $self->plack_request->param($name);
-}
-
-sub cookies {
-    my $self = shift;
-    return $self->plack_request->cookies;
-}
-
-sub method {
-    my $self = shift;
-    return $self->env->{REQUEST_METHOD};
-}
-
-sub uri {
-    my $self = shift;
-    return $self->env->{REQUEST_URI};
-}
-
-sub user_agent {
-    my $self = shift;
-    return $self->env->{HTTP_USER_AGENT};
-}
-```
-
----
-
-## Testing Strategy
-
-### Unit Tests
-
-**Test PSGI handler directly**:
-```perl
-use Test::More;
-use Plack::Test;
-use HTTP::Request::Common;
-
 use Everything::HTML;
-
-my $app = Everything::HTML->to_app;  # Convert to PSGI app
-
-test_psgi $app, sub {
-    my $cb = shift;
-
-    # Test homepage
-    my $res = $cb->(GET '/');
-    is $res->code, 200, 'Homepage returns 200';
-    like $res->content, qr/Everything2/, 'Contains site name';
-
-    # Test login
-    my $login_res = $cb->(POST '/login', [
-        user => 'testuser',
-        passwd => 'testpass'
-    ]);
-    is $login_res->code, 302, 'Login redirects';
-
-    # Test API endpoint
-    my $api_res = $cb->(GET '/api/messages/');
-    is $api_res->code, 200, 'API returns 200';
-    is $api_res->header('Content-Type'), 'application/json';
-};
+mod_perlInit();
 ```
 
-### Integration Tests
+`Everything::Request` is a `Moose` wrapper around `CGI` (CGI.pm), with delegated methods (`param`, `header`, `cookie`, `url`, `request_method`, `path_info`) and direct reads from `$ENV{REQUEST_METHOD}`, `$ENV{CONTENT_LENGTH}`, and `STDIN`. All standard CGI environment.
 
-**Test with real Starman server**:
-```perl
-use Test::TCP;
-use LWP::UserAgent;
+The only actual mod_perl/Apache-specific couplings in the running stack are:
 
-test_tcp(
-    client => sub {
-        my $port = shift;
-        my $ua = LWP::UserAgent->new;
-        my $res = $ua->get("http://localhost:$port/");
-        is $res->code, 200;
-    },
-    server => sub {
-        my $port = shift;
-        exec 'starman', '--port', $port, 'app.psgi';
-    }
-);
-```
+| Module | Purpose | PSGI replacement |
+|---|---|---|
+| `Apache::DBI` | Persistent DB connections across requests (cached in process) | `DBI->connect_cached` or `DBIx::Connector` |
+| `Apache2::SizeLimit` | Kill child when RSS > 800 MB | Starman `--max-requests N` + optional `Plack::Middleware::MemoryUsage` |
+| `Apache2::compat` | Compat layer for CGI.pm under mod_perl | Not needed under PSGI |
+| `ModPerl::Registry` | Compile + cache CGI scripts | Starman directly executes the PSGI app |
 
-### Load Testing
-
-**Apache Bench**:
-```bash
-ab -n 1000 -c 10 http://localhost:9080/
-```
-
-**wrk (better)**:
-```bash
-wrk -t4 -c100 -d30s http://localhost:9080/
-```
-
-**Compare mod_perl vs PSGI** - expect similar or better performance
+That's the entire coupling list. The migration is materially shallower than the prior plan implied — but the operational and deployment work is deeper than that plan assumed.
 
 ---
 
-## Risks & Mitigation
+## Target architecture
 
-### Risk 1: Breaking Changes
+```
+Browser
+   ↓ HTTPS via CloudFront → ALB
+Apache 2.4 (front-end)            ← keep: handles X-Forwarded-For from CloudFront,
+   ↓ mod_proxy_http / fcgi          IP/UA blocks from apache_blocks.json, gzip,
+Starman (PSGI server)               mod_evasive rate limiting, static assets
+   ↓ PSGI env
+Plack app (app.psgi)
+   ↓ thin wrapper
+Everything::HTML::mod_perlInit()  ← entry point, mostly unchanged
+   ↓
+CGI.pm + Everything::Request + Everything::Application + ecore/...
+```
 
-**Risk**: PSGI env different from Apache2::RequestRec
-**Impact**: High - could break core functionality
-**Mitigation**:
-- Comprehensive testing before deploy
-- Keep mod_perl code path during transition
-- Gradual rollout with traffic splitting
-
-### Risk 2: Performance Regression
-
-**Risk**: PSGI slower than mod_perl
-**Impact**: Medium - user experience degrades
-**Mitigation**:
-- Benchmark early and often
-- Profile with NYTProf
-- Optimize hot paths
-- Use faster PSGI server (Gazelle) if needed
-
-### Risk 3: Session Compatibility
-
-**Risk**: Session handling breaks
-**Impact**: High - users logged out
-**Mitigation**:
-- Keep same session storage (database)
-- Test session persistence thoroughly
-- Monitor session errors in production
-
-### Risk 4: Memory Leaks
-
-**Risk**: Workers grow over time
-**Impact**: Medium - requires worker restarts
-**Mitigation**:
-- Set `--max-requests` to recycle workers
-- Monitor worker memory usage
-- Use Devel::Cycle to find leaks
-
-### Risk 5: Deployment Complexity
-
-**Risk**: New deployment process unfamiliar
-**Impact**: Low - can be learned
-**Mitigation**:
-- Document thoroughly
-- Practice in staging
-- Have rollback plan ready
+**Keep Apache in front.** The current Apache config does a lot of non-trivial work: CloudFront IP allowlisting for `mod_remoteip`, `apache_blocks.json`-driven IP/UA bans, `mod_evasive` rate limiting, gzip, static file serving. Throwing Apache out means rebuilding all of that elsewhere — and Starman alone isn't the right tool for those concerns. The migration replaces the *Perl execution layer*, not the HTTP front-end.
 
 ---
 
-## Timeline Estimate
+## What still works untouched after migration
 
-| Phase | Duration | Effort | Dependencies |
-|-------|----------|--------|--------------|
-| Phase 1: PSGI Adapter | 2-3 days | 16-24 hours | None |
-| Phase 2: Apache Config | 1-2 days | 8-16 hours | Phase 1 complete |
-| Phase 3: Testing | 3-5 days | 24-40 hours | Phase 2 complete |
-| Phase 4: Deployment | 1-2 days | 8-16 hours | Phase 3 complete |
-| **Total** | **7-12 days** | **56-96 hours** | Sequential |
+Most of `ecore/`. The PSGI wrapper sets `%ENV` and ties STDIN/STDOUT from the PSGI env hash, then calls `mod_perlInit()` exactly as the CGI scripts do today. CGI.pm reads from `$ENV` and STDIN the same way. `Everything::Request->cgi` builds a CGI object the same way. The vast majority of controllers, models, and the `Everything::Page`/`Everything::API` dispatch system don't know they're running under PSGI.
 
-**Recommended Approach**: 2-week sprint with 1 developer full-time
+This is the key insight that the older plan missed: **because the app is CGI-style, not native mod_perl, PSGI is essentially a different harness around the same Perl entry point.**
 
 ---
 
-## Dependencies
+## What does need to change
 
-### Perl Modules (add to cpanfile)
+1. **A PSGI wrapper script** that bridges `$env` ↔ `%ENV`+STDIN+STDOUT. Roughly 50–100 lines. Lives at `app.psgi`.
 
-```perl
-# PSGI/Plack core
-requires 'Plack', '>= 1.0049';
-requires 'PSGI', '>= 1.102';
+2. **`Apache::DBI` → `DBI->connect_cached` (or `DBIx::Connector`)**. Apache::DBI is invisible — it hooks `DBI->connect` to cache by `(DSN, user, attrs)` per process. Under PSGI/Starman we get the same process persistence, so DBI's native `connect_cached` does the same job. One-line change in the connection setup (likely in `Everything::NodeBase` or wherever the initial connection happens). Add a `disconnect_on_destroy => 0` for pooling. Test that ping-on-fetch is still on.
 
-# PSGI server
-requires 'Starman', '>= 0.4016';  # Recommended
-# OR
-requires 'Gazelle', '>= 0.48';    # Alternative (faster)
+3. **`Apache2::SizeLimit` → Starman `--max-requests N` + memory check**. The current 800 MB SizeLimit recycles workers when they bloat. Starman's `--max-requests 1000` recycles after a fixed request count, which is coarser. Add `Plack::Middleware::MemoryUsage` (or a custom middleware) to enforce a max-RSS-per-worker if the request count approach isn't tight enough.
 
-# Middleware
-requires 'Plack::Middleware::ReverseProxy';
-requires 'Plack::Middleware::Static';
-requires 'Plack::Middleware::AccessLog';
-requires 'Plack::Middleware::Session';
+4. **STDIN for `PUT`/`PATCH`/`DELETE` bodies**. `Everything::Request::BUILD` reads STDIN raw before CGI.pm consumes it. Under PSGI this becomes `read($env->{'psgi.input'}, $data, $content_length)`. Either the PSGI wrapper sets up tied STDIN, or `Everything::Request` learns to prefer `$env->{'psgi.input'}` when present.
 
-# Testing
-requires 'Plack::Test', '0';
-requires 'Test::TCP', '0';
+5. **Apache config trimmed of mod_perl directives**. Remove `PerlModule`, `PerlResponseHandler`, `PerlOptions`, `PerlCleanupHandler`. Add a single `ProxyPass` block to Starman:
 
-# Optional but useful
-requires 'Plack::Middleware::Debug', '0';  # Dev toolbar
-requires 'Starman::Server', '0';  # For systemd integration
-```
+   ```apache
+   ProxyPass / unix:/var/run/starman.sock|fcgi://localhost/ retry=0
+   ProxyPassReverse / unix:/var/run/starman.sock|fcgi://localhost/
+   ```
 
-### System Dependencies
+   Or use HTTP rather than FastCGI — simpler to debug, performance is comparable for in-container loopback. Choose at implementation time.
 
-```bash
-# Already have these (no new dependencies!)
-- Perl 5.x
-- Apache 2.4+
-- mod_proxy
-- mod_proxy_fcgi
-```
+6. **ECS task shape**. The current task runs Apache+mod_perl in one container. PSGI gives two reasonable options:
+
+   - **Single container, supervisord**: Apache + Starman both in one container, supervised. Closest to current deploy shape. Easiest cutover. Recommended.
+   - **Multi-container task**: Two containers in one ECS task definition, sharing the task network. Cleaner separation but more moving parts.
+   - **Two services with internal ALB**: Most complex. No real benefit at this scale.
+
+   Go with single-container/supervisord for the initial migration.
+
+7. **Dev loop**. `./docker/devbuild.sh` rebuilds the container on every change today. PSGI's hot reload (`plackup -r app.psgi`) is faster but doesn't apply when the container itself needs a rebuild. For the dev loop:
+
+   - In development: run Starman with `-r` (auto-reload on file change). Apache in front as today.
+   - Mount the source dir into the container in development only (production still uses baked images).
+   - This needs a `docker-compose.dev.yml` or equivalent.
+
+8. **The `mod_perlInit()` function**. It exists in `Everything::HTML`. Likely does global per-worker setup (DB connection, package globals). Skim it: parts that genuinely need to run once-per-worker should move to a Starman `apppreload`. Parts that run per-request stay where they are.
 
 ---
 
-## Success Metrics
+## What this plan deliberately defers
 
-### Performance
-
-- Response time ≤ mod_perl baseline
-- Memory usage ≤ mod_perl baseline
-- Throughput ≥ mod_perl baseline
-
-### Reliability
-
-- Error rate < 0.1%
-- Uptime > 99.9%
-- Zero data loss
-- Zero session loss
-
-### Developer Experience
-
-- Hot reload works in development
-- Tests run 2x faster (no Apache needed)
-- Deployment time reduced by 50%
+- **Replacing CGI.pm with `Plack::Request`**. CGI.pm works fine on PSGI. The speed and memory wins from migrating to `Plack::Request` are real but modest, and touching every `$REQUEST->param` call site is a large refactor. Defer until there's a specific need.
+- **`Plack::Middleware::Session` for sessions**. The current session system is database-backed and uses CGI.pm cookies — it already works under PSGI as-is. Don't rewrite what isn't broken.
+- **API versioning, GraphQL, WebSockets, microservices**. The older plan listed these as "Future Opportunities." They're unrelated to the migration. Don't conflate. The migration is done when the app serves traffic under Starman with equal or better reliability than mod_perl.
 
 ---
 
-## Future Opportunities (Post-Migration)
+## Phase plan
 
-### 1. API Versioning
+### Phase A — PSGI wrapper, dev only (1–2 weeks)
 
-```perl
-use Plack::App::URLMap;
+Build the minimum viable wrapper to run the app under Starman in dev. Don't touch production.
 
-my $map = Plack::App::URLMap->new;
-$map->map('/api/v1' => $api_v1_app);
-$map->map('/api/v2' => $api_v2_app);
-$map->map('/' => $main_app);
-$map->to_app;
-```
+- [ ] Add `app.psgi` at the repo root (or `psgi/app.psgi`)
+- [ ] Wrapper translates `$env` → `%ENV`, ties `psgi.input` → STDIN, captures STDOUT
+- [ ] Wrapper invokes `mod_perlInit()` and returns `[status, headers, body]`
+- [ ] Add `Plack`, `Starman`, `Plack::Middleware::ReverseProxy` to `cpanfile`
+- [ ] Update `docker/devbuild.sh` to install Plack stack
+- [ ] Run `plackup -s Starman --workers 5 app.psgi` in the dev container, point a browser at it
+- [ ] Smoke test: load homepage, log in, view a node, post a writeup
+- [ ] Capture which controllers/APIs break, fix them in the wrapper (don't touch `ecore/`)
 
-### 2. Microservices
+**Exit criteria**: dev container can serve full E2 traffic under Starman with no `ecore/` changes. Production untouched.
 
-- Extract APIs into separate PSGI apps
-- Run on different servers/ports
-- Scale independently
+### Phase B — Operational equivalents (2–3 weeks)
 
-### 3. GraphQL
+Replace the Apache-specific operational concerns.
 
-```perl
-use Plack::App::GraphQL;
+- [ ] `Apache::DBI` → `DBI->connect_cached` in `Everything::NodeBase` (or wherever). Verify connection re-use under load. Confirm ping-on-fetch behavior.
+- [ ] `Apache2::SizeLimit` → Starman `--max-requests` baseline. Add memory-watcher middleware if RSS still climbs.
+- [ ] Decide single-container vs multi-container ECS task shape. Implement chosen shape in dev.
+- [ ] Update Apache config to proxy to Starman instead of running ModPerl::Registry. Verify all the non-mod_perl Apache features still work: CloudFront `X-Forwarded-For`, IP blocks, mod_evasive, gzip, static files.
+- [ ] Apache config now serves identically in dev and prod.
+- [ ] Run `wrk` or `ab` load test against dev. Compare to mod_perl baseline. Target: equal throughput at lower memory.
 
-builder {
-    mount '/graphql' => Plack::App::GraphQL->new(
-        schema => $schema
-    )->to_app;
-    mount '/' => $main_app;
-};
-```
+**Exit criteria**: dev environment is production-shaped (Apache + Starman, no mod_perl). All test users can do everything they can today. Load test shows comparable throughput.
 
-### 4. WebSocket Support
+### Phase C — Staging + canary (1–2 weeks)
 
-```perl
-use Plack::App::WebSocket;
+The actual deployment work. This is where the older plan was approximately right; preserved here.
 
-# Real-time chatterbox updates via WebSocket
-```
+- [ ] Build a staging Fargate task with the new container image
+- [ ] Add a second ALB target group, register staging task in it
+- [ ] Optional: add a weighted listener rule to send 5% of prod traffic to staging
+- [ ] Watch CloudWatch for error rate, latency, memory, connection counts. Run for ≥48 hours.
+- [ ] Tune Starman worker count (start at 10/task, watch DB connections — target ≤40/task)
+- [ ] Gradually shift traffic: 10% → 50% → 100% over a week
+- [ ] Keep mod_perl task definition available for rollback for 2 more weeks
+- [ ] After 2 weeks clean, retire mod_perl task definition and image build path
 
-### 5. Better Caching
+**Exit criteria**: 100% of production traffic on PSGI for 2 weeks with no rollbacks needed.
 
-```perl
-enable 'Plack::Middleware::Cache',
-    store => Cache::Memcached::Fast->new(...);
-```
+### Phase D — Right-size Fargate (after Phase C, 1 week)
+
+Now that worker count is 5× lower, the 4 GB/2 vCPU task shape is overprovisioned.
+
+- [ ] Measure post-migration memory/CPU shape from CloudWatch
+- [ ] Resize task definition: target 1 vCPU + 2 GB. Run 3 tasks instead of 2 for fault tolerance.
+- [ ] Roll out resized tasks
+- [ ] Watch for a week
+- [ ] If stable, this is the new baseline. Compute Savings Plan commits can be sized to this shape.
+
+**Exit criteria**: production runs on 1 vCPU / 2 GB Fargate tasks at <70% memory utilization with peak CPU <80%.
 
 ---
 
-## Conclusion
+## Realistic total estimate
 
-Migrating from mod_perl to PSGI/Plack is a **low-risk, high-reward** modernization that:
+**5–7 weeks** of focused solo work for Phases A–C. Phase D adds ~1 week.
 
-✅ Enables API-first architecture
-✅ Simplifies development workflow
-✅ Improves deployment flexibility
-✅ Reduces operational complexity
-✅ Opens path to modern Perl ecosystem
+The older plan's "7–12 days" estimate came from misreading the architecture (it imagined a deeper mod_perl coupling that doesn't exist) and underestimating the operational/deployment work. Phase A really is fast (~1 week) once the wrapper concept is right; the slow parts are Phase B's testing and Phase C's careful production rollout.
 
-**Recommendation**: Proceed with migration. Start with Phase 1 (PSGI adapter) to validate approach with minimal risk.
+---
+
+## Cost impact
+
+Today (on-demand): Fargate ~$144/mo at 2 tasks × (2 vCPU + 4 GB).
+After Phase D: Fargate ~$54/mo at 3 tasks × (1 vCPU + 2 GB).
+Net Fargate savings: ~$90/mo.
+
+Plus second-order wins: lower DB connection count → less RDS memory pressure → potentially defer an RDS instance class bump that would otherwise be needed within a year.
+
+---
+
+## Risks
+
+| Risk | Likelihood | Impact | Mitigation |
+|---|---|---|---|
+| Memory leak in Perl code that mod_perl was masking via SizeLimit kills | Medium | High | Aggressive `--max-requests` baseline; memory middleware enabled from day one in Phase B |
+| `mod_perlInit()` has implicit dependencies on mod_perl context | Medium | Medium | Phase A surfaces these; fix them in the wrapper or move them to per-request setup |
+| CGI.pm + Starman interaction has edge cases not seen in dev | Low | Medium | Phase C's 48-hour soak catches most; gradual rollout limits blast radius |
+| ALB target group cutover takes traffic faster than expected | Low | Low | Use weighted listener rules, not target group swap |
+| ECS task definition changes interact poorly with deployment pipeline | Low | Medium | Phase B does the change in dev; Phase C applies it in staging first |
+
+---
+
+## Open questions
+
+1. **Single container vs multi-container ECS task**: confirmed single-container/supervisord is the default plan, but worth reviewing if Apache and Starman scaling needs diverge.
+2. **HTTP vs FastCGI between Apache and Starman**: HTTP is simpler to debug; FastCGI is the "traditional" answer. Performance equivalent at loopback. Decide at Phase B implementation.
+3. **`mod_perlInit()` contents**: need to actually read this function in `Everything::HTML` to know what runs there and what needs PSGI-equivalent treatment.
+4. **Static asset serving**: currently Apache serves `/react/*`, `/css/*`, `/images/*`. CloudFront could take over this in production. Worth doing alongside Phase C as a "while we're here" infrastructure change.
 
 ---
 
 ## References
 
 - [PSGI Specification](https://metacpan.org/pod/PSGI)
-- [Plack Documentation](https://metacpan.org/pod/Plack)
-- [Starman Server](https://metacpan.org/pod/Starman)
-- [Plack::Middleware](https://metacpan.org/pod/Plack::Middleware)
-- [Migrating from mod_perl to PSGI](https://perl.apache.org/docs/2.0/user/porting/compat.html)
-
----
-
-**Next Steps**:
-1. Review this plan with team
-2. Set up development environment for testing
-3. Create Phase 1 PSGI adapter
-4. Validate with smoke tests
-5. Proceed to Phase 2 if successful
+- [Starman](https://metacpan.org/pod/Starman)
+- [Plack::Builder](https://metacpan.org/pod/Plack::Builder)
+- [DBI connect_cached](https://metacpan.org/pod/DBI#connect_cached)
+- [Apache mod_proxy_fcgi](https://httpd.apache.org/docs/current/mod/mod_proxy_fcgi.html)
+- Current Apache config: [etc/templates/apache2.conf.erb](../etc/templates/apache2.conf.erb)
+- Current entry points: [www/index.pl](../www/index.pl), [www/api/index.pl](../www/api/index.pl)
+- Request abstraction: [ecore/Everything/Request.pm](../ecore/Everything/Request.pm)

@@ -160,6 +160,16 @@ div#e2logo a {
   color: var(--e2-logo-hover, #ffff99);
 }
 
+/* Mobile logo: show text "E2" instead of SVG */
+@media (max-width: 768px) {
+  .e2-mobile-logo-text {
+    display: inline !important;
+  }
+  .e2-mobile-logo-svg {
+    display: none !important;
+  }
+}
+
 /* ====================================================================
    CONTENT STYLING
    ==================================================================== */
