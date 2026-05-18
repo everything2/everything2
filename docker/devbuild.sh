@@ -188,18 +188,23 @@ build_app_container() {
   echo "Waiting for container to be ready..."
   sleep 3
 
-  # Additional check: wait for Apache to respond
+  # Additional check: wait for Apache to respond.
+  # Cold mod_perl boot loads the full Moose/Plugin module graph, which can take
+  # 60-90s on a 2-core dev container before Apache is responsive. 180s ceiling
+  # leaves enough slack to surface a real startup failure without nuisance fails.
   echo "Verifying Apache is responding..."
   RETRY=0
-  MAX_RETRIES=30
+  MAX_RETRIES=180
   until curl -sf http://localhost:9080/ > /dev/null 2>&1; do
     RETRY=$((RETRY + 1))
     if [ $RETRY -ge $MAX_RETRIES ]; then
-      echo "ERROR: Apache did not start within 30 seconds"
+      echo "ERROR: Apache did not start within ${MAX_RETRIES} seconds"
       exit 1
     fi
     sleep 1
-    echo "  Still waiting... (attempt $RETRY/$MAX_RETRIES)"
+    if [ $((RETRY % 10)) -eq 0 ]; then
+      echo "  Still waiting... (attempt $RETRY/$MAX_RETRIES)"
+    fi
   done
   echo "Apache is ready!"
   echo ""
