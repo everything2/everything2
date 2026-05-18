@@ -8,13 +8,15 @@ const SerializerMiddleware = require("./SerializerMiddleware");
 
 /** @typedef {EXPECTED_ANY} DeserializedType */
 /** @typedef {EXPECTED_ANY[]} SerializedType */
-/** @typedef {{}} Context */
+/** @typedef {EXPECTED_OBJECT} Context */
 
 /**
+ * Represents SingleItemMiddleware.
  * @extends {SerializerMiddleware<DeserializedType, SerializedType, Context>}
  */
 class SingleItemMiddleware extends SerializerMiddleware {
 	/**
+	 * Serializes this instance into the provided serializer context.
 	 * @param {DeserializedType} data data
 	 * @param {Context} context context object
 	 * @returns {SerializedType | Promise<SerializedType> | null} serialized data
@@ -24,6 +26,7 @@ class SingleItemMiddleware extends SerializerMiddleware {
 	}
 
 	/**
+	 * Restores this instance from the provided deserializer context.
 	 * @param {SerializedType} data data
 	 * @param {Context} context context object
 	 * @returns {DeserializedType | Promise<DeserializedType>} deserialized data

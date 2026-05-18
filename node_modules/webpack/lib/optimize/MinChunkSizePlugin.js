@@ -6,87 +6,97 @@
 "use strict";
 
 const { STAGE_ADVANCED } = require("../OptimizationStages");
-const createSchemaValidation = require("../util/create-schema-validation");
 
 /** @typedef {import("../../declarations/plugins/optimize/MinChunkSizePlugin").MinChunkSizePluginOptions} MinChunkSizePluginOptions */
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compiler")} Compiler */
 
-const validate = createSchemaValidation(
-	require("../../schemas/plugins/optimize/MinChunkSizePlugin.check.js"),
-	() => require("../../schemas/plugins/optimize/MinChunkSizePlugin.json"),
-	{
-		name: "Min Chunk Size Plugin",
-		baseDataPath: "options"
-	}
-);
-
 const PLUGIN_NAME = "MinChunkSizePlugin";
 
 class MinChunkSizePlugin {
 	/**
+	 * Creates an instance of MinChunkSizePlugin.
 	 * @param {MinChunkSizePluginOptions} options options object
 	 */
 	constructor(options) {
-		validate(options);
+		/** @type {MinChunkSizePluginOptions} */
 		this.options = options;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		const options = this.options;
-		const minChunkSize = options.minChunkSize;
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.validate.tap(PLUGIN_NAME, () => {
+			compiler.validate(
+				() => require("../../schemas/plugins/optimize/MinChunkSizePlugin.json"),
+				this.options,
+				{
+					name: "Min Chunk Size Plugin",
+					baseDataPath: "options"
+				},
+				(options) =>
+					require("../../schemas/plugins/optimize/MinChunkSizePlugin.check")(
+						options
+					)
+			);
+		});
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			compilation.hooks.optimizeChunks.tap(
 				{
 					name: PLUGIN_NAME,
 					stage: STAGE_ADVANCED
 				},
-				chunks => {
+				(chunks) => {
 					const chunkGraph = compilation.chunkGraph;
 					const equalOptions = {
 						chunkOverhead: 1,
 						entryChunkMultiplicator: 1
 					};
 
+					/** @type {Map<Chunk, number>} */
 					const chunkSizesMap = new Map();
 					/** @type {[Chunk, Chunk][]} */
 					const combinations = [];
 					/** @type {Chunk[]} */
 					const smallChunks = [];
+					/** @type {Chunk[]} */
 					const visitedChunks = [];
 					for (const a of chunks) {
 						// check if one of the chunks sizes is smaller than the minChunkSize
 						// and filter pairs that can NOT be integrated!
-						if (chunkGraph.getChunkSize(a, equalOptions) < minChunkSize) {
+						if (
+							chunkGraph.getChunkSize(a, equalOptions) <
+							this.options.minChunkSize
+						) {
 							smallChunks.push(a);
 							for (const b of visitedChunks) {
-								if (chunkGraph.canChunksBeIntegrated(b, a))
+								if (chunkGraph.canChunksBeIntegrated(b, a)) {
 									combinations.push([b, a]);
+								}
 							}
 						} else {
 							for (const b of smallChunks) {
-								if (chunkGraph.canChunksBeIntegrated(b, a))
+								if (chunkGraph.canChunksBeIntegrated(b, a)) {
 									combinations.push([b, a]);
+								}
 							}
 						}
-						chunkSizesMap.set(a, chunkGraph.getChunkSize(a, options));
+						chunkSizesMap.set(a, chunkGraph.getChunkSize(a, this.options));
 						visitedChunks.push(a);
 					}
 
 					const sortedSizeFilteredExtendedPairCombinations = combinations
-						.map(pair => {
+						.map((pair) => {
 							// extend combination pairs with size and integrated size
-							const a = chunkSizesMap.get(pair[0]);
-							const b = chunkSizesMap.get(pair[1]);
+							const a = /** @type {number} */ (chunkSizesMap.get(pair[0]));
+							const b = /** @type {number} */ (chunkSizesMap.get(pair[1]));
 							const ab = chunkGraph.getIntegratedChunksSize(
 								pair[0],
 								pair[1],
-								options
+								this.options
 							);
 							/** @type {[number, number, Chunk, Chunk]} */
 							const extendedPair = [a + b - ab, ab, pair[0], pair[1]];
@@ -112,4 +122,5 @@ class MinChunkSizePlugin {
 		});
 	}
 }
+
 module.exports = MinChunkSizePlugin;

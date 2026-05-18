@@ -10,11 +10,15 @@ const { getUsedModuleIdsAndModules } = require("./IdHelpers");
 
 /** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../Module")} Module */
+/** @typedef {import("../Module").ModuleId} ModuleId */
 /** @typedef {import("../util/fs").IntermediateFileSystem} IntermediateFileSystem */
+
+/** @typedef {{ [key: string]: ModuleId }} JSONContent */
 
 const plugin = "SyncModuleIdsPlugin";
 
 /**
+ * Represents the sync module ids plugin runtime component.
  * @typedef {object} SyncModuleIdsPluginOptions
  * @property {string} path path to file
  * @property {string=} context context for module names
@@ -24,40 +28,48 @@ const plugin = "SyncModuleIdsPlugin";
 
 class SyncModuleIdsPlugin {
 	/**
+	 * Creates an instance of SyncModuleIdsPlugin.
 	 * @param {SyncModuleIdsPluginOptions} options options
 	 */
-	constructor({ path, context, test, mode }) {
-		this._path = path;
-		this._context = context;
-		this._test = test || (() => true);
-		const readAndWrite = !mode || mode === "merge" || mode === "update";
-		this._read = readAndWrite || mode === "read";
-		this._write = readAndWrite || mode === "create";
-		this._prune = mode === "update";
+	constructor(options) {
+		/** @type {SyncModuleIdsPluginOptions} */
+		this.options = options;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		/** @type {Map<string, string | number>} */
+		/** @type {Map<string, ModuleId>} */
 		let data;
 		let dataChanged = false;
-		if (this._read) {
-			compiler.hooks.readRecords.tapAsync(plugin, callback => {
+
+		const readAndWrite =
+			!this.options.mode ||
+			this.options.mode === "merge" ||
+			this.options.mode === "update";
+
+		const needRead = readAndWrite || this.options.mode === "read";
+		const needWrite = readAndWrite || this.options.mode === "create";
+		const needPrune = this.options.mode === "update";
+
+		if (needRead) {
+			compiler.hooks.readRecords.tapAsync(plugin, (callback) => {
 				const fs =
 					/** @type {IntermediateFileSystem} */
 					(compiler.intermediateFileSystem);
-				fs.readFile(this._path, (err, buffer) => {
+				fs.readFile(this.options.path, (err, buffer) => {
 					if (err) {
 						if (err.code !== "ENOENT") {
 							return callback(err);
 						}
 						return callback();
 					}
+					/** @type {JSONContent} */
 					const json = JSON.parse(/** @type {Buffer} */ (buffer).toString());
+					/** @type {Map<string, string | number | null>} */
 					data = new Map();
 					for (const key of Object.keys(json)) {
 						data.set(key, json[key]);
@@ -67,31 +79,32 @@ class SyncModuleIdsPlugin {
 				});
 			});
 		}
-		if (this._write) {
-			compiler.hooks.emitRecords.tapAsync(plugin, callback => {
+		if (needWrite) {
+			compiler.hooks.emitRecords.tapAsync(plugin, (callback) => {
 				if (!data || !dataChanged) return callback();
-				/** @type {{[key: string]: string | number}} */
+				/** @type {JSONContent} */
 				const json = {};
-				const sorted = Array.from(data).sort(([a], [b]) => (a < b ? -1 : 1));
+				const sorted = [...data].sort(([a], [b]) => (a < b ? -1 : 1));
 				for (const [key, value] of sorted) {
 					json[key] = value;
 				}
 				const fs =
 					/** @type {IntermediateFileSystem} */
 					(compiler.intermediateFileSystem);
-				fs.writeFile(this._path, JSON.stringify(json), callback);
+				fs.writeFile(this.options.path, JSON.stringify(json), callback);
 			});
 		}
-		compiler.hooks.thisCompilation.tap(plugin, compilation => {
+		compiler.hooks.thisCompilation.tap(plugin, (compilation) => {
 			const associatedObjectForCache = compiler.root;
-			const context = this._context || compiler.context;
-			if (this._read) {
+			const context = this.options.context || compiler.context;
+			const test = this.options.test || (() => true);
+			if (needRead) {
 				compilation.hooks.reviveModules.tap(plugin, (_1, _2) => {
 					if (!data) return;
 					const { chunkGraph } = compilation;
 					const [usedIds, modules] = getUsedModuleIdsAndModules(
 						compilation,
-						this._test
+						test
 					);
 					for (const module of modules) {
 						const name = module.libIdent({
@@ -103,27 +116,27 @@ class SyncModuleIdsPlugin {
 						const idAsString = `${id}`;
 						if (usedIds.has(idAsString)) {
 							const err = new WebpackError(
-								`SyncModuleIdsPlugin: Unable to restore id '${id}' from '${this._path}' as it's already used.`
+								`SyncModuleIdsPlugin: Unable to restore id '${id}' from '${this.options.path}' as it's already used.`
 							);
 							err.module = module;
 							compilation.errors.push(err);
 						}
-						chunkGraph.setModuleId(module, /** @type {string | number} */ (id));
+						chunkGraph.setModuleId(module, /** @type {ModuleId} */ (id));
 						usedIds.add(idAsString);
 					}
 				});
 			}
-			if (this._write) {
-				compilation.hooks.recordModules.tap(plugin, modules => {
+			if (needWrite) {
+				compilation.hooks.recordModules.tap(plugin, (modules) => {
 					const { chunkGraph } = compilation;
 					let oldData = data;
 					if (!oldData) {
 						oldData = data = new Map();
-					} else if (this._prune) {
+					} else if (needPrune) {
 						data = new Map();
 					}
 					for (const module of modules) {
-						if (this._test(module)) {
+						if (test(module)) {
 							const name = module.libIdent({
 								context,
 								associatedObjectForCache

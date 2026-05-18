@@ -11,12 +11,18 @@ const ImportScriptsChunkLoadingRuntimeModule = require("./ImportScriptsChunkLoad
 
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compiler")} Compiler */
+/** @typedef {import("../Module").RuntimeRequirements} RuntimeRequirements */
 
 const PLUGIN_NAME = "ImportScriptsChunkLoadingPlugin";
 
+/**
+ * Enables worker-side chunk loading via `importScripts` and wires in the
+ * runtime helpers needed for startup, loading, and hot updates.
+ */
 class ImportScriptsChunkLoadingPlugin {
 	/**
-	 * Apply the plugin
+	 * Registers compilation hooks that attach the `importScripts` chunk-loading
+	 * runtime and its supporting globals to chunks using that backend.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -25,13 +31,15 @@ class ImportScriptsChunkLoadingPlugin {
 			chunkLoading: "import-scripts",
 			asyncChunkLoading: true
 		}).apply(compiler);
-		compiler.hooks.thisCompilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
 			const globalChunkLoading = compilation.outputOptions.chunkLoading;
 			/**
+			 * Determines whether the chunk resolves additional chunks through the
+			 * worker-side `importScripts` backend.
 			 * @param {Chunk} chunk chunk
 			 * @returns {boolean} true, if wasm loading is enabled for the chunk
 			 */
-			const isEnabledForChunk = chunk => {
+			const isEnabledForChunk = (chunk) => {
 				const options = chunk.getEntryOptions();
 				const chunkLoading =
 					options && options.chunkLoading !== undefined
@@ -39,10 +47,13 @@ class ImportScriptsChunkLoadingPlugin {
 						: globalChunkLoading;
 				return chunkLoading === "import-scripts";
 			};
+			/** @type {WeakSet<Chunk>} */
 			const onceForChunkSet = new WeakSet();
 			/**
+			 * Adds the `importScripts` chunk-loading runtime module to a chunk once
+			 * and records the globals it depends on.
 			 * @param {Chunk} chunk chunk
-			 * @param {Set<string>} set runtime requirements
+			 * @param {RuntimeRequirements} set runtime requirements
 			 */
 			const handler = (chunk, set) => {
 				if (onceForChunkSet.has(chunk)) return;
@@ -104,4 +115,5 @@ class ImportScriptsChunkLoadingPlugin {
 		});
 	}
 }
+
 module.exports = ImportScriptsChunkLoadingPlugin;

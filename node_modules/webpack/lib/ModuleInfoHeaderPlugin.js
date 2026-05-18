@@ -5,7 +5,7 @@
 
 "use strict";
 
-const { ConcatSource, RawSource, CachedSource } = require("webpack-sources");
+const { CachedSource, ConcatSource, RawSource } = require("webpack-sources");
 const { UsageState } = require("./ExportsInfo");
 const Template = require("./Template");
 const CssModulesPlugin = require("./css/CssModulesPlugin");
@@ -18,15 +18,15 @@ const JavascriptModulesPlugin = require("./javascript/JavascriptModulesPlugin");
 /** @typedef {import("./Module")} Module */
 /** @typedef {import("./Module").BuildMeta} BuildMeta */
 /** @typedef {import("./ModuleGraph")} ModuleGraph */
-/** @typedef {import("./ModuleTemplate")} ModuleTemplate */
 /** @typedef {import("./RequestShortener")} RequestShortener */
 
 /**
+ * Join iterable with comma.
  * @template T
  * @param {Iterable<T>} iterable iterable
  * @returns {string} joined with comma
  */
-const joinIterableWithComma = iterable => {
+const joinIterableWithComma = (iterable) => {
 	// This is more performant than Array.from().join(", ")
 	// as it doesn't create an array
 	let str = "";
@@ -43,6 +43,7 @@ const joinIterableWithComma = iterable => {
 };
 
 /**
+ * Print exports info to source.
  * @param {ConcatSource} source output
  * @param {string} indent spacing
  * @param {ExportsInfo} exportsInfo data
@@ -64,6 +65,7 @@ const printExportsInfoToSource = (
 	let alreadyPrintedExports = 0;
 
 	// determine exports to print
+	/** @type {ExportInfo[]} */
 	const printedExports = [];
 	for (const exportInfo of exportsInfo.orderedExports) {
 		if (!alreadyPrinted.has(exportInfo)) {
@@ -94,7 +96,7 @@ const printExportsInfoToSource = (
 						? ` -> ${target.module.readableIdentifier(requestShortener)}${
 								target.export
 									? ` .${target.export
-											.map(e => JSON.stringify(e).slice(1, -1))
+											.map((e) => JSON.stringify(e).slice(1, -1))
 											.join(".")}`
 									: ""
 							}`
@@ -146,26 +148,30 @@ const printExportsInfoToSource = (
 	}
 };
 
-/** @type {WeakMap<RequestShortener, WeakMap<Module, { header: RawSource | undefined, full: WeakMap<Source, CachedSource> }>>} */
+/** @typedef {{ header: RawSource | undefined, full: WeakMap<Source, CachedSource> }} CacheEntry */
+/** @type {WeakMap<RequestShortener, WeakMap<Module, CacheEntry>>} */
 const caches = new WeakMap();
 
 const PLUGIN_NAME = "ModuleInfoHeaderPlugin";
 
 class ModuleInfoHeaderPlugin {
 	/**
+	 * Creates an instance of ModuleInfoHeaderPlugin.
 	 * @param {boolean=} verbose add more information like exports, runtime requirements and bailouts
 	 */
 	constructor(verbose = true) {
+		/** @type {boolean} */
 		this._verbose = verbose;
 	}
 
 	/**
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler
 	 * @returns {void}
 	 */
 	apply(compiler) {
 		const { _verbose: verbose } = this;
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			const javascriptHooks =
 				JavascriptModulesPlugin.getCompilationHooks(compilation);
 			javascriptHooks.renderModulePackage.tap(
@@ -176,6 +182,7 @@ class ModuleInfoHeaderPlugin {
 					{ chunk, chunkGraph, moduleGraph, runtimeTemplate }
 				) => {
 					const { requestShortener } = runtimeTemplate;
+					/** @type {undefined | CacheEntry} */
 					let cacheEntry;
 					let cache = caches.get(requestShortener);
 					if (cache === undefined) {
@@ -257,6 +264,7 @@ class ModuleInfoHeaderPlugin {
 				PLUGIN_NAME,
 				(moduleSource, module, { runtimeTemplate }) => {
 					const { requestShortener } = runtimeTemplate;
+					/** @type {undefined | CacheEntry} */
 					let cacheEntry;
 					let cache = caches.get(requestShortener);
 					if (cache === undefined) {
@@ -298,6 +306,7 @@ class ModuleInfoHeaderPlugin {
 	}
 
 	/**
+	 * Returns the header.
 	 * @param {Module} module the module
 	 * @param {RequestShortener} requestShortener request shortener
 	 * @returns {RawSource} the header
@@ -310,4 +319,5 @@ class ModuleInfoHeaderPlugin {
 		return new RawSource(headerStr);
 	}
 }
+
 module.exports = ModuleInfoHeaderPlugin;

@@ -7,19 +7,17 @@
 
 const { compareChunksNatural } = require("../util/comparators");
 const {
-	getShortChunkName,
-	getLongChunkName,
+	assignAscendingChunkIds,
 	assignNames,
-	getUsedChunkIds,
-	assignAscendingChunkIds
+	getLongChunkName,
+	getShortChunkName,
+	getUsedChunkIds
 } = require("./IdHelpers");
 
-/** @typedef {import("../../declarations/WebpackOptions").OutputNormalized} Output */
-/** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compiler")} Compiler */
-/** @typedef {import("../Module")} Module */
 
 /**
+ * Defines the named chunk ids plugin options type used by this module.
  * @typedef {object} NamedChunkIdsPluginOptions
  * @property {string=} context context
  * @property {string=} delimiter delimiter
@@ -29,37 +27,38 @@ const PLUGIN_NAME = "NamedChunkIdsPlugin";
 
 class NamedChunkIdsPlugin {
 	/**
+	 * Creates an instance of NamedChunkIdsPlugin.
 	 * @param {NamedChunkIdsPluginOptions=} options options
 	 */
-	constructor(options) {
-		this.delimiter = (options && options.delimiter) || "-";
-		this.context = options && options.context;
+	constructor(options = {}) {
+		/** @type {NamedChunkIdsPluginOptions} */
+		this.options = options;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
-			const hashFunction =
-				/** @type {NonNullable<Output["hashFunction"]>} */
-				(compilation.outputOptions.hashFunction);
-			compilation.hooks.chunkIds.tap(PLUGIN_NAME, chunks => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+			const hashFunction = compilation.outputOptions.hashFunction;
+			compilation.hooks.chunkIds.tap(PLUGIN_NAME, (chunks) => {
 				const chunkGraph = compilation.chunkGraph;
-				const context = this.context ? this.context : compiler.context;
-				const delimiter = this.delimiter;
+				const context = this.options.context
+					? this.options.context
+					: compiler.context;
+				const delimiter = this.options.delimiter || "-";
 
 				const unnamedChunks = assignNames(
-					Array.from(chunks).filter(chunk => {
+					[...chunks].filter((chunk) => {
 						if (chunk.name) {
 							chunk.id = chunk.name;
 							chunk.ids = [chunk.name];
 						}
 						return chunk.id === null;
 					}),
-					chunk =>
+					(chunk) =>
 						getShortChunkName(
 							chunk,
 							chunkGraph,
@@ -68,7 +67,7 @@ class NamedChunkIdsPlugin {
 							hashFunction,
 							compiler.root
 						),
-					chunk =>
+					(chunk) =>
 						getLongChunkName(
 							chunk,
 							chunkGraph,

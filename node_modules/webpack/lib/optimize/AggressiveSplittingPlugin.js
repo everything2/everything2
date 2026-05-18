@@ -8,46 +8,40 @@
 const { STAGE_ADVANCED } = require("../OptimizationStages");
 const { intersect } = require("../util/SetHelpers");
 const {
-	compareModulesByIdentifier,
-	compareChunks
+	compareChunks,
+	compareModulesByIdentifier
 } = require("../util/comparators");
-const createSchemaValidation = require("../util/create-schema-validation");
 const identifierUtils = require("../util/identifier");
 
 /** @typedef {import("../../declarations/plugins/optimize/AggressiveSplittingPlugin").AggressiveSplittingPluginOptions} AggressiveSplittingPluginOptions */
 /** @typedef {import("../Chunk")} Chunk */
+/** @typedef {import("../Chunk").ChunkId} ChunkId */
 /** @typedef {import("../ChunkGraph")} ChunkGraph */
 /** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../Module")} Module */
 
-const validate = createSchemaValidation(
-	require("../../schemas/plugins/optimize/AggressiveSplittingPlugin.check.js"),
-	() =>
-		require("../../schemas/plugins/optimize/AggressiveSplittingPlugin.json"),
-	{
-		name: "Aggressive Splitting Plugin",
-		baseDataPath: "options"
-	}
-);
-
 /**
+ * Move module between.
  * @param {ChunkGraph} chunkGraph the chunk graph
  * @param {Chunk} oldChunk the old chunk
  * @param {Chunk} newChunk the new chunk
  * @returns {(module: Module) => void} function to move module between chunks
  */
-const moveModuleBetween = (chunkGraph, oldChunk, newChunk) => module => {
+const moveModuleBetween = (chunkGraph, oldChunk, newChunk) => (module) => {
 	chunkGraph.disconnectChunkAndModule(oldChunk, module);
 	chunkGraph.connectChunkAndModule(newChunk, module);
 };
 
 /**
+ * Checks whether this object is not a entry module.
  * @param {ChunkGraph} chunkGraph the chunk graph
  * @param {Chunk} chunk the chunk
  * @returns {(module: Module) => boolean} filter for entry module
  */
-const isNotAEntryModule = (chunkGraph, chunk) => module =>
+const isNotAEntryModule = (chunkGraph, chunk) => (module) =>
 	!chunkGraph.isEntryModuleInChunk(module, chunk);
+
+/** @typedef {{ id?: NonNullable<Chunk["id"]>, hash?: NonNullable<Chunk["hash"]>, modules: string[], size: number }} SplitData */
 
 /** @type {WeakSet<Chunk>} */
 const recordedChunks = new WeakSet();
@@ -56,27 +50,16 @@ const PLUGIN_NAME = "AggressiveSplittingPlugin";
 
 class AggressiveSplittingPlugin {
 	/**
+	 * Creates an instance of AggressiveSplittingPlugin.
 	 * @param {AggressiveSplittingPluginOptions=} options options object
 	 */
 	constructor(options = {}) {
-		validate(options);
-
+		/** @type {AggressiveSplittingPluginOptions} */
 		this.options = options;
-		if (typeof this.options.minSize !== "number") {
-			this.options.minSize = 30 * 1024;
-		}
-		if (typeof this.options.maxSize !== "number") {
-			this.options.maxSize = 50 * 1024;
-		}
-		if (typeof this.options.chunkOverhead !== "number") {
-			this.options.chunkOverhead = 0;
-		}
-		if (typeof this.options.entryChunkMultiplicator !== "number") {
-			this.options.entryChunkMultiplicator = 1;
-		}
 	}
 
 	/**
+	 * Was chunk recorded.
 	 * @param {Chunk} chunk the chunk to test
 	 * @returns {boolean} true if the chunk was recorded
 	 */
@@ -85,14 +68,29 @@ class AggressiveSplittingPlugin {
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.thisCompilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.validate.tap(PLUGIN_NAME, () => {
+			compiler.validate(
+				() =>
+					require("../../schemas/plugins/optimize/AggressiveSplittingPlugin.json"),
+				this.options,
+				{
+					name: "Aggressive Splitting Plugin",
+					baseDataPath: "options"
+				},
+				(options) =>
+					require("../../schemas/plugins/optimize/AggressiveSplittingPlugin.check")(
+						options
+					)
+			);
+		});
+
+		compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
 			let needAdditionalSeal = false;
-			/** @typedef {{ id?: NonNullable<Chunk["id"]>, hash?: NonNullable<Chunk["hash"]>, modules: Module[], size: number }} SplitData */
 			/** @type {SplitData[]} */
 			let newSplits;
 			/** @type {Set<Chunk>} */
@@ -109,10 +107,12 @@ class AggressiveSplittingPlugin {
 					name: PLUGIN_NAME,
 					stage: STAGE_ADVANCED
 				},
-				chunks => {
+				(chunks) => {
 					const chunkGraph = compilation.chunkGraph;
 					// Precompute stuff
+					/** @type {Map<string, Module>} */
 					const nameToModuleMap = new Map();
+					/** @type {Map<Module, string>} */
 					const moduleToNameMap = new Map();
 					const makePathsRelative =
 						identifierUtils.makePathsRelative.bindContextCache(
@@ -126,33 +126,35 @@ class AggressiveSplittingPlugin {
 					}
 
 					// Check used chunk ids
+					/** @type {Set<ChunkId>} */
 					const usedIds = new Set();
 					for (const chunk of chunks) {
-						usedIds.add(chunk.id);
+						usedIds.add(/** @type {ChunkId} */ (chunk.id));
 					}
 
 					const recordedSplits =
 						(compilation.records && compilation.records.aggressiveSplits) || [];
 					const usedSplits = newSplits
-						? recordedSplits.concat(newSplits)
+						? [...recordedSplits, ...newSplits]
 						: recordedSplits;
 
-					const minSize = /** @type {number} */ (this.options.minSize);
-					const maxSize = /** @type {number} */ (this.options.maxSize);
+					const minSize = this.options.minSize || 30 * 1024;
+					const maxSize = this.options.maxSize || 50 * 1024;
 
 					/**
+					 * Returns true when applied, otherwise false.
 					 * @param {SplitData} splitData split data
 					 * @returns {boolean} true when applied, otherwise false
 					 */
-					const applySplit = splitData => {
+					const applySplit = (splitData) => {
 						// Cannot split if id is already taken
 						if (splitData.id !== undefined && usedIds.has(splitData.id)) {
 							return false;
 						}
 
 						// Get module objects from names
-						const selectedModules = splitData.modules.map(name =>
-							nameToModuleMap.get(name)
+						const selectedModules = splitData.modules.map(
+							(name) => /** @type {Module} */ (nameToModuleMap.get(name))
 						);
 
 						// Does the modules exist at all?
@@ -166,7 +168,7 @@ class AggressiveSplittingPlugin {
 						// get chunks with all modules
 						const selectedChunks = intersect(
 							selectedModules.map(
-								m => new Set(chunkGraph.getModuleChunksIterable(m))
+								(m) => new Set(chunkGraph.getModuleChunksIterable(m))
 							)
 						);
 
@@ -176,11 +178,10 @@ class AggressiveSplittingPlugin {
 						// The found chunk is already the split or similar
 						if (
 							selectedChunks.size === 1 &&
-							chunkGraph.getNumberOfChunkModules(
-								Array.from(selectedChunks)[0]
-							) === selectedModules.length
+							chunkGraph.getNumberOfChunkModules([...selectedChunks][0]) ===
+								selectedModules.length
 						) {
-							const chunk = Array.from(selectedChunks)[0];
+							const chunk = [...selectedChunks][0];
 							if (fromAggressiveSplittingSet.has(chunk)) return false;
 							fromAggressiveSplittingSet.add(chunk);
 							chunkSplitDataMap.set(chunk, splitData);
@@ -217,7 +218,7 @@ class AggressiveSplittingPlugin {
 					// for any chunk which isn't splitted yet, split it and create a new entry
 					// start with the biggest chunk
 					const cmpFn = compareChunks(chunkGraph);
-					const sortedChunks = Array.from(chunks).sort((a, b) => {
+					const sortedChunks = [...chunks].sort((a, b) => {
 						const diff1 =
 							chunkGraph.getChunkModulesSize(b) -
 							chunkGraph.getChunkModulesSize(a);
@@ -238,6 +239,7 @@ class AggressiveSplittingPlugin {
 							const modules = chunkGraph
 								.getOrderedChunkModules(chunk, compareModulesByIdentifier)
 								.filter(isNotAEntryModule(chunkGraph, chunk));
+							/** @type {Module[]} */
 							const selectedModules = [];
 							let selectedModulesSize = 0;
 							for (let k = 0; k < modules.length; k++) {
@@ -253,13 +255,13 @@ class AggressiveSplittingPlugin {
 							/** @type {SplitData} */
 							const splitData = {
 								modules: selectedModules
-									.map(m => moduleToNameMap.get(m))
+									.map((m) => /** @type {string} */ (moduleToNameMap.get(m)))
 									.sort(),
 								size: selectedModulesSize
 							};
 
 							if (applySplit(splitData)) {
-								newSplits = (newSplits || []).concat(splitData);
+								newSplits = [...(newSplits || []), splitData];
 								changed = true;
 							}
 						}
@@ -267,8 +269,9 @@ class AggressiveSplittingPlugin {
 					if (changed) return true;
 				}
 			);
-			compilation.hooks.recordHash.tap(PLUGIN_NAME, records => {
+			compilation.hooks.recordHash.tap(PLUGIN_NAME, (records) => {
 				// 4. save made splittings to records
+				/** @type {Set<SplitData>} */
 				const allSplits = new Set();
 				/** @type {Set<SplitData>} */
 				const invalidSplits = new Set();
@@ -292,7 +295,7 @@ class AggressiveSplittingPlugin {
 					records.aggressiveSplits =
 						/** @type {SplitData[]} */
 						(records.aggressiveSplits).filter(
-							splitData => !invalidSplits.has(splitData)
+							(splitData) => !invalidSplits.has(splitData)
 						);
 					needAdditionalSeal = true;
 				} else {
@@ -323,7 +326,7 @@ class AggressiveSplittingPlugin {
 					}
 
 					// record all splits
-					records.aggressiveSplits = Array.from(allSplits);
+					records.aggressiveSplits = [...allSplits];
 
 					needAdditionalSeal = false;
 				}
@@ -337,4 +340,5 @@ class AggressiveSplittingPlugin {
 		});
 	}
 }
+
 module.exports = AggressiveSplittingPlugin;

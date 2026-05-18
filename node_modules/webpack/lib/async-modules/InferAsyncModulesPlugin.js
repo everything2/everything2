@@ -14,14 +14,14 @@ const PLUGIN_NAME = "InferAsyncModulesPlugin";
 
 class InferAsyncModulesPlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			const { moduleGraph } = compilation;
-			compilation.hooks.finishModules.tap(PLUGIN_NAME, modules => {
+			compilation.hooks.finishModules.tap(PLUGIN_NAME, (modules) => {
 				/** @type {Set<Module>} */
 				const queue = new Set();
 				for (const module of modules) {
@@ -37,7 +37,7 @@ class InferAsyncModulesPlugin {
 					] of moduleGraph.getIncomingConnectionsByOriginModule(module)) {
 						if (
 							connections.some(
-								c =>
+								(c) =>
 									c.dependency instanceof HarmonyImportDependency &&
 									c.isTargetActive(undefined)
 							)

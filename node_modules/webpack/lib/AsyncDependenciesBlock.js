@@ -8,22 +8,19 @@
 const DependenciesBlock = require("./DependenciesBlock");
 const makeSerializable = require("./util/makeSerializable");
 
-/** @typedef {import("./ChunkGraph")} ChunkGraph */
-/** @typedef {import("./ChunkGroup")} ChunkGroup */
 /** @typedef {import("./ChunkGroup").ChunkGroupOptions} ChunkGroupOptions */
 /** @typedef {import("./Dependency").DependencyLocation} DependencyLocation */
 /** @typedef {import("./Dependency").UpdateHashContext} UpdateHashContext */
 /** @typedef {import("./Entrypoint").EntryOptions} EntryOptions */
-/** @typedef {import("./Module")} Module */
 /** @typedef {import("./serialization/ObjectMiddleware").ObjectDeserializerContext} ObjectDeserializerContext */
 /** @typedef {import("./serialization/ObjectMiddleware").ObjectSerializerContext} ObjectSerializerContext */
 /** @typedef {import("./util/Hash")} Hash */
 
-/** @typedef {(ChunkGroupOptions & { entryOptions?: EntryOptions }) | string} GroupOptions */
+/** @typedef {(ChunkGroupOptions & { entryOptions?: EntryOptions } & { circular?: boolean })} GroupOptions */
 
 class AsyncDependenciesBlock extends DependenciesBlock {
 	/**
-	 * @param {GroupOptions | null} groupOptions options for the group
+	 * @param {GroupOptions | string | null} groupOptions options for the group
 	 * @param {(DependencyLocation | null)=} loc the line of code
 	 * @param {(string | null)=} request the request
 	 */
@@ -34,14 +31,22 @@ class AsyncDependenciesBlock extends DependenciesBlock {
 		} else if (!groupOptions) {
 			groupOptions = { name: undefined };
 		}
+		if (typeof groupOptions.circular !== "boolean") {
+			// default allow circular references
+			groupOptions.circular = true;
+		}
+		/** @type {GroupOptions} */
 		this.groupOptions = groupOptions;
+		/** @type {DependencyLocation | null | undefined} */
 		this.loc = loc;
+		/** @type {string | null | undefined} */
 		this.request = request;
+		/** @type {undefined | string} */
 		this._stringifiedGroupOptions = undefined;
 	}
 
 	/**
-	 * @returns {string | null | undefined} The name of the chunk
+	 * @returns {ChunkGroupOptions["name"]} The name of the chunk
 	 */
 	get chunkName() {
 		return this.groupOptions.name;
@@ -59,6 +64,14 @@ class AsyncDependenciesBlock extends DependenciesBlock {
 	}
 
 	/**
+	 * @returns {boolean} Whether circular references are allowed
+	 */
+	get circular() {
+		return Boolean(this.groupOptions.circular);
+	}
+
+	/**
+	 * Updates the hash with the data contributed by this instance.
 	 * @param {Hash} hash the hash used to track dependencies
 	 * @param {UpdateHashContext} context context
 	 * @returns {void}
@@ -76,6 +89,7 @@ class AsyncDependenciesBlock extends DependenciesBlock {
 	}
 
 	/**
+	 * Serializes this instance into the provided serializer context.
 	 * @param {ObjectSerializerContext} context context
 	 */
 	serialize(context) {
@@ -87,6 +101,7 @@ class AsyncDependenciesBlock extends DependenciesBlock {
 	}
 
 	/**
+	 * Restores this instance from the provided deserializer context.
 	 * @param {ObjectDeserializerContext} context context
 	 */
 	deserialize(context) {

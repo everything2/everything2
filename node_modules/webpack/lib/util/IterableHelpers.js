@@ -6,17 +6,20 @@
 "use strict";
 
 /**
+ * Returns last item.
  * @template T
  * @param {Iterable<T>} set a set
  * @returns {T | undefined} last item
  */
-const last = set => {
+const last = (set) => {
+	/** @type {T | undefined} */
 	let last;
 	for (const item of set) last = item;
 	return last;
 };
 
 /**
+ * Returns true, if some items match the filter predicate.
  * @template T
  * @param {Iterable<T>} iterable iterable
  * @param {(value: T) => boolean | null | undefined} filter predicate
@@ -30,16 +33,17 @@ const someInIterable = (iterable, filter) => {
 };
 
 /**
+ * Returns count of items.
  * @template T
  * @param {Iterable<T>} iterable an iterable
  * @returns {number} count of items
  */
-const countIterable = iterable => {
+const countIterable = (iterable) => {
 	let i = 0;
 	for (const _ of iterable) i++;
 	return i;
 };
 
+module.exports.countIterable = countIterable;
 module.exports.last = last;
 module.exports.someInIterable = someInIterable;
-module.exports.countIterable = countIterable;

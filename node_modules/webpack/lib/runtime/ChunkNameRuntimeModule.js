@@ -13,10 +13,12 @@ class ChunkNameRuntimeModule extends RuntimeModule {
 	 */
 	constructor(chunkName) {
 		super("chunkName");
+		/** @type {string} */
 		this.chunkName = chunkName;
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {

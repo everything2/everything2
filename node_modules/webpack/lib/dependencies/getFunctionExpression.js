@@ -10,11 +10,14 @@
 /** @typedef {import("estree").FunctionExpression} FunctionExpression */
 /** @typedef {import("estree").SpreadElement} SpreadElement */
 
+/** @typedef {{ fn: FunctionExpression | ArrowFunctionExpression, expressions: (Expression | SpreadElement)[], needThis: boolean | undefined }} FunctionExpressionResult */
+
 /**
+ * Returns function expression with additional information.
  * @param {Expression | SpreadElement} expr expressions
- * @returns {{fn: FunctionExpression | ArrowFunctionExpression, expressions: (Expression | SpreadElement)[], needThis: boolean | undefined } | undefined} function expression with additional information
+ * @returns {FunctionExpressionResult | undefined} function expression with additional information
  */
-module.exports = expr => {
+module.exports = (expr) => {
 	// <FunctionExpression>
 	if (
 		expr.type === "FunctionExpression" ||

@@ -6,16 +6,19 @@
 "use strict";
 
 /**
+ * Defines the item type used by this module.
  * @template T
  * @typedef {Record<string, string | string[] | T>} Item
  */
 
 /**
+ * Defines the container options format type used by this module.
  * @template T
  * @typedef {(string | Item<T>)[] | Item<T>} ContainerOptionsFormat
  */
 
 /**
+ * Processes the provided t.
  * @template T
  * @template N
  * @param {ContainerOptionsFormat<T>} options options passed by the user
@@ -26,9 +29,10 @@
  */
 const process = (options, normalizeSimple, normalizeOptions, fn) => {
 	/**
+	 * Processes the provided item.
 	 * @param {(string | Item<T>)[]} items items
 	 */
-	const array = items => {
+	const array = (items) => {
 		for (const item of items) {
 			if (typeof item === "string") {
 				fn(item, normalizeSimple(item, item));
@@ -40,9 +44,10 @@ const process = (options, normalizeSimple, normalizeOptions, fn) => {
 		}
 	};
 	/**
+	 * Processes the provided obj.
 	 * @param {Item<T>} obj an object
 	 */
-	const object = obj => {
+	const object = (obj) => {
 		for (const [key, value] of Object.entries(obj)) {
 			if (typeof value === "string" || Array.isArray(value)) {
 				fn(key, normalizeSimple(value, key));
@@ -63,6 +68,7 @@ const process = (options, normalizeSimple, normalizeOptions, fn) => {
 };
 
 /**
+ * Returns parsed options.
  * @template T
  * @template R
  * @param {ContainerOptionsFormat<T>} options options passed by the user
@@ -80,6 +86,7 @@ const parseOptions = (options, normalizeSimple, normalizeOptions) => {
 };
 
 /**
+ * Returns options to spread or pass.
  * @template T
  * @param {string} scope scope name
  * @param {ContainerOptionsFormat<T>} options options passed by the user
@@ -90,8 +97,8 @@ const scope = (scope, options) => {
 	const obj = {};
 	process(
 		options,
-		item => /** @type {string | string[] | T} */ (item),
-		item => /** @type {string | string[] | T} */ (item),
+		(item) => /** @type {string | string[] | T} */ (item),
+		(item) => /** @type {string | string[] | T} */ (item),
 		(key, value) => {
 			obj[
 				key.startsWith("./") ? `${scope}${key.slice(1)}` : `${scope}/${key}`

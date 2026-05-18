@@ -13,15 +13,14 @@ const {
 	resolveByProperty
 } = require("./util/cleverMerge");
 
-/** @typedef {import("enhanced-resolve").ResolveContext} ResolveContext */
 /** @typedef {import("enhanced-resolve").ResolveOptions} ResolveOptions */
-/** @typedef {import("enhanced-resolve").ResolveRequest} ResolveRequest */
 /** @typedef {import("enhanced-resolve").Resolver} Resolver */
 /** @typedef {import("../declarations/WebpackOptions").ResolveOptions} WebpackResolveOptions */
 /** @typedef {import("../declarations/WebpackOptions").ResolvePluginInstance} ResolvePluginInstance */
 
 /** @typedef {WebpackResolveOptions & { dependencyType?: string, resolveToContext?: boolean }} ResolveOptionsWithDependencyType */
 /**
+ * Defines the with options type used by this module.
  * @typedef {object} WithOptions
  * @property {(options: Partial<ResolveOptionsWithDependencyType>) => ResolverWithOptions} withOptions create a resolver with additional/different options
  */
@@ -33,10 +32,11 @@ const {
 const EMPTY_RESOLVE_OPTIONS = {};
 
 /**
+ * Convert to resolve options.
  * @param {ResolveOptionsWithDependencyType} resolveOptionsWithDepType enhanced options
  * @returns {ResolveOptions} merged options
  */
-const convertToResolveOptions = resolveOptionsWithDepType => {
+const convertToResolveOptions = (resolveOptionsWithDepType) => {
 	const { dependencyType, plugins, ...remaining } = resolveOptionsWithDepType;
 
 	// check type compat
@@ -46,7 +46,7 @@ const convertToResolveOptions = resolveOptionsWithDepType => {
 		plugins:
 			plugins &&
 			/** @type {ResolvePluginInstance[]} */ (
-				plugins.filter(item => item !== "...")
+				plugins.filter((item) => item !== "...")
 			)
 	};
 
@@ -71,6 +71,7 @@ const convertToResolveOptions = resolveOptionsWithDepType => {
 };
 
 /**
+ * Represents the resolver factory runtime component.
  * @typedef {object} ResolverCache
  * @property {WeakMap<ResolveOptionsWithDependencyType, ResolverWithOptions>} direct
  * @property {Map<string, ResolverWithOptions>} stringified
@@ -93,6 +94,7 @@ module.exports = class ResolverFactory {
 	}
 
 	/**
+	 * Returns the resolver.
 	 * @param {string} type type of resolver
 	 * @param {ResolveOptionsWithDependencyType=} resolveOptions options
 	 * @returns {ResolverWithOptions} the resolver
@@ -123,6 +125,7 @@ module.exports = class ResolverFactory {
 	}
 
 	/**
+	 * Returns the resolver.
 	 * @param {string} type type of resolver
 	 * @param {ResolveOptionsWithDependencyType} resolveOptionsWithDepType options
 	 * @returns {ResolverWithOptions} the resolver
@@ -142,7 +145,7 @@ module.exports = class ResolverFactory {
 		}
 		/** @type {WeakMap<Partial<ResolveOptionsWithDependencyType>, ResolverWithOptions>} */
 		const childCache = new WeakMap();
-		resolver.withOptions = options => {
+		resolver.withOptions = (options) => {
 			const cacheEntry = childCache.get(options);
 			if (cacheEntry !== undefined) return cacheEntry;
 			const mergedOptions = cachedCleverMerge(originalResolveOptions, options);

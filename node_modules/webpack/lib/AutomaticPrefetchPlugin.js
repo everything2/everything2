@@ -13,9 +13,14 @@ const PrefetchDependency = require("./dependencies/PrefetchDependency");
 
 const PLUGIN_NAME = "AutomaticPrefetchPlugin";
 
+/**
+ * Records modules from one compilation and adds them back as prefetch
+ * dependencies in the next compilation.
+ */
 class AutomaticPrefetchPlugin {
 	/**
-	 * Apply the plugin
+	 * Registers hooks that remember previously built normal modules and enqueue
+	 * them as `PrefetchDependency` requests during the next make phase.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -29,9 +34,9 @@ class AutomaticPrefetchPlugin {
 				);
 			}
 		);
-		/** @type {{context: string | null, request: string}[] | null} */
+		/** @type {{ context: string | null, request: string }[] | null} */
 		let lastModules = null;
-		compiler.hooks.afterCompile.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.afterCompile.tap(PLUGIN_NAME, (compilation) => {
 			lastModules = [];
 
 			for (const m of compilation.modules) {
@@ -54,7 +59,7 @@ class AutomaticPrefetchPlugin {
 						callback
 					);
 				},
-				err => {
+				(err) => {
 					lastModules = null;
 					callback(err);
 				}
@@ -62,4 +67,5 @@ class AutomaticPrefetchPlugin {
 		});
 	}
 }
+
 module.exports = AutomaticPrefetchPlugin;

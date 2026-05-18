@@ -5,16 +5,18 @@
 "use strict";
 
 /**
+ * Defines the function returning type used by this module.
  * @template T
  * @typedef {() => T} FunctionReturning
  */
 
 /**
+ * Returns new function.
  * @template T
  * @param {FunctionReturning<T>} fn memorized function
  * @returns {FunctionReturning<T>} new function
  */
-const memoize = fn => {
+const memoize = (fn) => {
 	let cache = false;
 	/** @type {T | undefined} */
 	let result;

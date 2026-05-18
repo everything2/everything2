@@ -12,7 +12,8 @@ const RuntimeGlobals = require("./RuntimeGlobals");
 const JavascriptModulesPlugin = require("./javascript/JavascriptModulesPlugin");
 
 /** @typedef {import("webpack-sources").Source} Source */
-/** @typedef {import("../declarations/WebpackOptions").OutputNormalized} OutputOptions */
+/** @typedef {import("../declarations/WebpackOptions").DevtoolNamespace} DevtoolNamespace */
+/** @typedef {import("../declarations/WebpackOptions").DevtoolModuleFilenameTemplate} DevtoolModuleFilenameTemplate */
 /** @typedef {import("./Compiler")} Compiler */
 
 /** @type {WeakMap<Source, Source>} */
@@ -29,33 +30,38 @@ const devtoolWarning = new RawSource(`/*
 `);
 
 /**
+ * Defines the eval dev tool module plugin options type used by this module.
  * @typedef {object} EvalDevToolModulePluginOptions
- * @property {OutputOptions["devtoolNamespace"]=} namespace namespace
+ * @property {DevtoolNamespace=} namespace namespace
  * @property {string=} sourceUrlComment source url comment
- * @property {OutputOptions["devtoolModuleFilenameTemplate"]=} moduleFilenameTemplate module filename template
+ * @property {DevtoolModuleFilenameTemplate=} moduleFilenameTemplate module filename template
  */
 
 const PLUGIN_NAME = "EvalDevToolModulePlugin";
 
 class EvalDevToolModulePlugin {
 	/**
+	 * Creates an instance of EvalDevToolModulePlugin.
 	 * @param {EvalDevToolModulePluginOptions=} options options
 	 */
 	constructor(options = {}) {
+		/** @type {DevtoolNamespace} */
 		this.namespace = options.namespace || "";
+		/** @type {string} */
 		this.sourceUrlComment = options.sourceUrlComment || "\n//# sourceURL=[url]";
+		/** @type {DevtoolModuleFilenameTemplate} */
 		this.moduleFilenameTemplate =
 			options.moduleFilenameTemplate ||
 			"webpack://[namespace]/[resourcePath]?[loaders]";
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			const hooks = JavascriptModulesPlugin.getCompilationHooks(compilation);
 			hooks.renderModuleContent.tap(
 				PLUGIN_NAME,
@@ -95,9 +101,9 @@ class EvalDevToolModulePlugin {
 						`eval(${
 							compilation.outputOptions.trustedTypes
 								? `${RuntimeGlobals.createScript}(${JSON.stringify(
-										content + footer
+										`{${content + footer}\n}`
 									)})`
-								: JSON.stringify(content + footer)
+								: JSON.stringify(`{${content + footer}\n}`)
 						});`
 					);
 					cache.set(source, result);
@@ -110,7 +116,7 @@ class EvalDevToolModulePlugin {
 			);
 			hooks.render.tap(
 				PLUGIN_NAME,
-				source => new ConcatSource(devtoolWarning, source)
+				(source) => new ConcatSource(devtoolWarning, source)
 			);
 			hooks.chunkHash.tap(PLUGIN_NAME, (chunk, hash) => {
 				hash.update(PLUGIN_NAME);
@@ -119,7 +125,7 @@ class EvalDevToolModulePlugin {
 			if (compilation.outputOptions.trustedTypes) {
 				compilation.hooks.additionalModuleRuntimeRequirements.tap(
 					PLUGIN_NAME,
-					(module, set, context) => {
+					(module, set, _context) => {
 						set.add(RuntimeGlobals.createScript);
 					}
 				);

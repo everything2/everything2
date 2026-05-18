@@ -9,15 +9,16 @@ const {
 	compareModulesByPreOrderIndexOrIdentifier
 } = require("../util/comparators");
 const {
-	getUsedModuleIdsAndModules,
+	assignDeterministicIds,
 	getFullModuleName,
-	assignDeterministicIds
+	getUsedModuleIdsAndModules
 } = require("./IdHelpers");
 
 /** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../Module")} Module */
 
 /**
+ * Defines the deterministic module ids plugin options type used by this module.
  * @typedef {object} DeterministicModuleIdsPluginOptions
  * @property {string=} context context relative to which module identifiers are computed
  * @property {((module: Module) => boolean)=} test selector function for modules
@@ -31,19 +32,21 @@ const PLUGIN_NAME = "DeterministicModuleIdsPlugin";
 
 class DeterministicModuleIdsPlugin {
 	/**
+	 * Creates an instance of DeterministicModuleIdsPlugin.
 	 * @param {DeterministicModuleIdsPluginOptions=} options options
 	 */
 	constructor(options = {}) {
+		/** @type {DeterministicModuleIdsPluginOptions} */
 		this.options = options;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			compilation.hooks.moduleIds.tap(PLUGIN_NAME, () => {
 				const chunkGraph = compilation.chunkGraph;
 				const context = this.options.context
@@ -61,7 +64,7 @@ class DeterministicModuleIdsPlugin {
 				);
 				assignDeterministicIds(
 					modules,
-					module => getFullModuleName(module, context, compiler.root),
+					(module) => getFullModuleName(module, context, compiler.root),
 					failOnConflict
 						? () => 0
 						: compareModulesByPreOrderIndexOrIdentifier(
@@ -82,12 +85,13 @@ class DeterministicModuleIdsPlugin {
 					usedIds.size,
 					salt
 				);
-				if (failOnConflict && conflicts)
+				if (failOnConflict && conflicts) {
 					throw new Error(
 						`Assigning deterministic module ids has lead to ${conflicts} conflict${
 							conflicts > 1 ? "s" : ""
 						}.\nIncrease the 'maxLength' to increase the id space and make conflicts less likely (recommended when there are many conflicts or application is expected to grow), or add an 'salt' number to try another hash starting value in the same id space (recommended when there is only a single conflict).`
 					);
+				}
 			});
 		});
 	}

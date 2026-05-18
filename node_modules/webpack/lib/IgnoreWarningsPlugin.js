@@ -5,30 +5,34 @@
 
 "use strict";
 
-/** @typedef {import("../declarations/WebpackOptions").IgnoreWarningsNormalized} IgnoreWarningsNormalized */
 /** @typedef {import("./Compiler")} Compiler */
+/** @typedef {import("./Compilation")} Compilation */
+
+/** @typedef {(warning: Error, compilation: Compilation) => boolean} IgnoreFn */
 
 const PLUGIN_NAME = "IgnoreWarningsPlugin";
 
 class IgnoreWarningsPlugin {
 	/**
-	 * @param {IgnoreWarningsNormalized} ignoreWarnings conditions to ignore warnings
+	 * Creates an instance of IgnoreWarningsPlugin.
+	 * @param {IgnoreFn[]} ignoreWarnings conditions to ignore warnings
 	 */
 	constructor(ignoreWarnings) {
+		/** @type {IgnoreFn[]} */
 		this._ignoreWarnings = ignoreWarnings;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
-			compilation.hooks.processWarnings.tap(PLUGIN_NAME, warnings =>
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+			compilation.hooks.processWarnings.tap(PLUGIN_NAME, (warnings) =>
 				warnings.filter(
-					warning =>
-						!this._ignoreWarnings.some(ignore => ignore(warning, compilation))
+					(warning) =>
+						!this._ignoreWarnings.some((ignore) => ignore(warning, compilation))
 				)
 			);
 		});

@@ -5,11 +5,6 @@
 
 "use strict";
 
-const RequireEnsureDependency = require("./RequireEnsureDependency");
-const RequireEnsureItemDependency = require("./RequireEnsureItemDependency");
-
-const RequireEnsureDependenciesBlockParserPlugin = require("./RequireEnsureDependenciesBlockParserPlugin");
-
 const {
 	JAVASCRIPT_MODULE_TYPE_AUTO,
 	JAVASCRIPT_MODULE_TYPE_DYNAMIC
@@ -18,6 +13,9 @@ const {
 	evaluateToString,
 	toConstantDependency
 } = require("../javascript/JavascriptParserHelpers");
+const RequireEnsureDependenciesBlockParserPlugin = require("./RequireEnsureDependenciesBlockParserPlugin");
+const RequireEnsureDependency = require("./RequireEnsureDependency");
+const RequireEnsureItemDependency = require("./RequireEnsureItemDependency");
 
 /** @typedef {import("../../declarations/WebpackOptions").JavascriptParserOptions} JavascriptParserOptions */
 /** @typedef {import("../Compiler")} Compiler */
@@ -27,7 +25,7 @@ const PLUGIN_NAME = "RequireEnsurePlugin";
 
 class RequireEnsurePlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -50,6 +48,7 @@ class RequireEnsurePlugin {
 				);
 
 				/**
+				 * Handles the hook callback for this code path.
 				 * @param {Parser} parser parser parser
 				 * @param {JavascriptParserOptions} parserOptions parserOptions
 				 * @returns {void}
@@ -58,8 +57,9 @@ class RequireEnsurePlugin {
 					if (
 						parserOptions.requireEnsure !== undefined &&
 						!parserOptions.requireEnsure
-					)
+					) {
 						return;
+					}
 
 					new RequireEnsureDependenciesBlockParserPlugin().apply(parser);
 					parser.hooks.evaluateTypeof
@@ -83,4 +83,5 @@ class RequireEnsurePlugin {
 		);
 	}
 }
+
 module.exports = RequireEnsurePlugin;

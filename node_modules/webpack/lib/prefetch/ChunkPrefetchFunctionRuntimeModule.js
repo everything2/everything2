@@ -8,22 +8,23 @@ const RuntimeModule = require("../RuntimeModule");
 const Template = require("../Template");
 
 /** @typedef {import("../Compilation")} Compilation */
-/** @typedef {import("../RuntimeTemplate")} RuntimeTemplate */
 
 class ChunkPrefetchFunctionRuntimeModule extends RuntimeModule {
 	/**
-	 * @param {string} childType TODO
-	 * @param {string} runtimeFunction TODO
-	 * @param {string} runtimeHandlers TODO
+	 * @param {"prefetch" | "preload"} type "prefetch" or "preload" chunk type function
+	 * @param {string} runtimeFunction the runtime function name
+	 * @param {string} runtimeHandlers the runtime handlers
 	 */
-	constructor(childType, runtimeFunction, runtimeHandlers) {
-		super(`chunk ${childType} function`);
-		this.childType = childType;
+	constructor(type, runtimeFunction, runtimeHandlers) {
+		super(`chunk ${type} function`);
+		/** @type {string} */
 		this.runtimeFunction = runtimeFunction;
+		/** @type {string} */
 		this.runtimeHandlers = runtimeHandlers;
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {

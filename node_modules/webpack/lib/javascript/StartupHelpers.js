@@ -13,14 +13,11 @@ const { getAllChunks } = require("./ChunkHelpers");
 /** @typedef {import("../util/Hash")} Hash */
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Chunk").ChunkId} ChunkId */
-/** @typedef {import("../Compilation")} Compilation */
 /** @typedef {import("../ChunkGraph")} ChunkGraph */
 /** @typedef {import("../ChunkGraph").ModuleId} ModuleId */
 /** @typedef {import("../Entrypoint")} Entrypoint */
 /** @typedef {import("../ChunkGraph").EntryModuleWithChunkGroup} EntryModuleWithChunkGroup */
-/** @typedef {import("../ChunkGroup")} ChunkGroup */
 /** @typedef {import("../RuntimeTemplate")} RuntimeTemplate */
-/** @typedef {(string|number)[]} EntryItem */
 
 const EXPORT_PREFIX = `var ${RuntimeGlobals.exports} = `;
 
@@ -28,6 +25,7 @@ const EXPORT_PREFIX = `var ${RuntimeGlobals.exports} = `;
 /** @typedef {ModuleId[]} ModuleIds */
 
 /**
+ * Returns runtime code.
  * @param {ChunkGraph} chunkGraph chunkGraph
  * @param {RuntimeTemplate} runtimeTemplate runtimeTemplate
  * @param {EntryModuleWithChunkGroup[]} entries entries
@@ -51,11 +49,13 @@ module.exports.generateEntryStartup = (
 	];
 
 	/**
+	 * Returns fn to execute.
 	 * @param {ModuleId} id id
 	 * @returns {string} fn to execute
 	 */
-	const runModule = id => `__webpack_exec__(${JSON.stringify(id)})`;
+	const runModule = (id) => `__webpack_exec__(${JSON.stringify(id)})`;
 	/**
+	 * Output combination.
 	 * @param {Chunks} chunks chunks
 	 * @param {ModuleIds} moduleIds module ids
 	 * @param {boolean=} final true when final, otherwise false
@@ -74,7 +74,7 @@ module.exports.generateEntryStartup = (
 					passive
 						? RuntimeGlobals.onChunksLoaded
 						: RuntimeGlobals.startupEntrypoint
-				}(0, ${JSON.stringify(Array.from(chunks, c => c.id))}, ${fn});`
+				}(0, ${JSON.stringify(Array.from(chunks, (c) => c.id))}, ${fn});`
 			);
 			if (final && passive) {
 				runtime.push(`${EXPORT_PREFIX}${RuntimeGlobals.onChunksLoaded}();`);
@@ -134,6 +134,26 @@ module.exports.generateEntryStartup = (
 };
 
 /**
+ * Returns initially fulfilled chunk ids.
+ * @param {Chunk} chunk the chunk
+ * @param {ChunkGraph} chunkGraph the chunk graph
+ * @param {(chunk: Chunk, chunkGraph: ChunkGraph) => boolean} filterFn filter function
+ * @returns {Set<ChunkId>} initially fulfilled chunk ids
+ */
+module.exports.getInitialChunkIds = (chunk, chunkGraph, filterFn) => {
+	/** @type {Set<ChunkId>} */
+	const initialChunkIds = new Set(chunk.ids);
+	for (const c of chunk.getAllInitialChunks()) {
+		if (c === chunk || filterFn(c, chunkGraph)) continue;
+		for (const id of /** @type {ChunkId[]} */ (c.ids)) {
+			initialChunkIds.add(id);
+		}
+	}
+	return initialChunkIds;
+};
+
+/**
+ * Processes the provided hash.
  * @param {Hash} hash the hash to update
  * @param {ChunkGraph} chunkGraph chunkGraph
  * @param {EntryModuleWithChunkGroup[]} entries entries
@@ -160,21 +180,4 @@ module.exports.updateHashForEntryStartup = (
 			hash.update(`${c.id}`);
 		}
 	}
-};
-
-/**
- * @param {Chunk} chunk the chunk
- * @param {ChunkGraph} chunkGraph the chunk graph
- * @param {(chunk: Chunk, chunkGraph: ChunkGraph) => boolean} filterFn filter function
- * @returns {Set<number | string>} initially fulfilled chunk ids
- */
-module.exports.getInitialChunkIds = (chunk, chunkGraph, filterFn) => {
-	const initialChunkIds = new Set(chunk.ids);
-	for (const c of chunk.getAllInitialChunks()) {
-		if (c === chunk || filterFn(c, chunkGraph)) continue;
-		for (const id of /** @type {ChunkId[]} */ (c.ids)) {
-			initialChunkIds.add(id);
-		}
-	}
-	return initialChunkIds;
 };

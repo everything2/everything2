@@ -9,12 +9,13 @@ const ArrayPushCallbackChunkFormatPlugin = require("../javascript/ArrayPushCallb
 const EnableChunkLoadingPlugin = require("../javascript/EnableChunkLoadingPlugin");
 const JsonpChunkLoadingRuntimeModule = require("./JsonpChunkLoadingRuntimeModule");
 
-/** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compilation")} Compilation */
 /** @typedef {import("../Compiler")} Compiler */
 
+// TODO webpack 6 remove this class
 class JsonpTemplatePlugin {
 	/**
+	 * Returns hooks.
 	 * @deprecated use JsonpChunkLoadingRuntimeModule.getCompilationHooks instead
 	 * @param {Compilation} compilation the compilation
 	 * @returns {JsonpChunkLoadingRuntimeModule.JsonpCompilationPluginHooks} hooks
@@ -24,7 +25,7 @@ class JsonpTemplatePlugin {
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */

@@ -69,6 +69,7 @@ const REMOVED = {
 /* cSpell:enable */
 
 /**
+ * Processes the provided schema.
  * @param {Parameters<typeof validate>[0]} schema a json schema
  * @param {Parameters<typeof validate>[1]} options the options that should be validated
  * @param {Parameters<typeof validate>[2]=} validationConfiguration configuration for generating errors
@@ -85,7 +86,7 @@ const validateSchema = (schema, options, validationConfiguration) => {
 				if (
 					children &&
 					children.some(
-						child =>
+						(child) =>
 							child.keyword === "absolutePath" &&
 							child.instancePath === "/output/filename"
 					)
@@ -96,7 +97,7 @@ const validateSchema = (schema, options, validationConfiguration) => {
 				if (
 					children &&
 					children.some(
-						child =>
+						(child) =>
 							child.keyword === "pattern" && child.instancePath === "/devtool"
 					)
 				) {
@@ -173,4 +174,5 @@ const validateSchema = (schema, options, validationConfiguration) => {
 		}
 	);
 };
+
 module.exports = validateSchema;

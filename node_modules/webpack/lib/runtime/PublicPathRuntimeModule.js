@@ -7,19 +7,21 @@
 const RuntimeGlobals = require("../RuntimeGlobals");
 const RuntimeModule = require("../RuntimeModule");
 
-/** @typedef {import("../../declarations/WebpackOptions").OutputNormalized} OutputOptions */
+/** @typedef {import("../../declarations/WebpackOptions").PublicPath} PublicPath */
 /** @typedef {import("../Compilation")} Compilation */
 
 class PublicPathRuntimeModule extends RuntimeModule {
 	/**
-	 * @param {OutputOptions["publicPath"]} publicPath public path
+	 * @param {PublicPath} publicPath public path
 	 */
 	constructor(publicPath) {
 		super("publicPath", RuntimeModule.STAGE_BASIC);
+		/** @type {PublicPath} */
 		this.publicPath = publicPath;
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {

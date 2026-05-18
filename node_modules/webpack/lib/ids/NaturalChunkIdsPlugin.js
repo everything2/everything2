@@ -10,22 +10,22 @@ const { assignAscendingChunkIds } = require("./IdHelpers");
 
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compiler")} Compiler */
-/** @typedef {import("../Module")} Module */
 
 const PLUGIN_NAME = "NaturalChunkIdsPlugin";
 
 class NaturalChunkIdsPlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
-			compilation.hooks.chunkIds.tap(PLUGIN_NAME, chunks => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+			compilation.hooks.chunkIds.tap(PLUGIN_NAME, (chunks) => {
 				const chunkGraph = compilation.chunkGraph;
 				const compareNatural = compareChunksNatural(chunkGraph);
-				const chunksInNaturalOrder = Array.from(chunks).sort(compareNatural);
+				/** @type {Chunk[]} */
+				const chunksInNaturalOrder = [...chunks].sort(compareNatural);
 				assignAscendingChunkIds(chunksInNaturalOrder, compilation);
 			});
 		});

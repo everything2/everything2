@@ -17,10 +17,12 @@ class EnsureChunkRuntimeModule extends RuntimeModule {
 	 */
 	constructor(runtimeRequirements) {
 		super("ensure chunk");
+		/** @type {ReadOnlyRuntimeRequirements} */
 		this.runtimeRequirements = runtimeRequirements;
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {

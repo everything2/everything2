@@ -33,7 +33,7 @@ const THIRTY_TWO_BIGINT = BigInt(32);
  * Parses the module mask and returns the modules represented by it
  * @param {bigint} mask the module mask
  * @param {Module[]} ordinalModules the modules in the order they were added to the mask (LSB is index 0)
- * @returns {Generator<Module>} the modules represented by the mask
+ * @returns {Generator<Module, undefined, undefined>} the modules represented by the mask
  */
 function* getModulesFromMask(mask, ordinalModules) {
 	let offset = 31;
@@ -63,31 +63,36 @@ const PLUGIN_NAME = "RemoveParentModulesPlugin";
 
 class RemoveParentModulesPlugin {
 	/**
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			/**
+			 * Handles the hook callback for this code path.
 			 * @param {Iterable<Chunk>} chunks the chunks
 			 * @param {ChunkGroup[]} chunkGroups the chunk groups
 			 */
 			const handler = (chunks, chunkGroups) => {
 				const chunkGraph = compilation.chunkGraph;
+				/** @type {Set<ChunkGroup>} */
 				const queue = new Set();
+				/** @type {WeakMap<ChunkGroup, bigint | undefined>} */
 				const availableModulesMap = new WeakMap();
 
 				let nextModuleMask = ONE_BIGINT;
+				/** @type {WeakMap<Module, bigint>} */
 				const maskByModule = new WeakMap();
 				/** @type {Module[]} */
 				const ordinalModules = [];
 
 				/**
-				 * Gets or creates a unique mask for a module
+				 * Gets or create module mask.
 				 * @param {Module} mod the module to get the mask for
 				 * @returns {bigint} the module mask to uniquely identify the module
 				 */
-				const getOrCreateModuleMask = mod => {
+				const getOrCreateModuleMask = (mod) => {
 					let id = maskByModule.get(mod);
 					if (id === undefined) {
 						id = nextModuleMask;
@@ -99,6 +104,7 @@ class RemoveParentModulesPlugin {
 				};
 
 				// Initialize masks by chunk and by chunk group for quicker comparisons
+				/** @type {WeakMap<Chunk, bigint>} */
 				const chunkMasks = new WeakMap();
 				for (const chunk of chunks) {
 					let mask = ZERO_BIGINT;
@@ -109,6 +115,7 @@ class RemoveParentModulesPlugin {
 					chunkMasks.set(chunk, mask);
 				}
 
+				/** @type {WeakMap<ChunkGroup, bigint>} */
 				const chunkGroupMasks = new WeakMap();
 				for (const chunkGroup of chunkGroups) {
 					let mask = ZERO_BIGINT;
@@ -143,7 +150,8 @@ class RemoveParentModulesPlugin {
 						const availableModulesInParent = availableModulesMap.get(parent);
 						if (availableModulesInParent !== undefined) {
 							const parentMask =
-								availableModulesInParent | chunkGroupMasks.get(parent);
+								availableModulesInParent |
+								/** @type {bigint} */ (chunkGroupMasks.get(parent));
 							// If we know the available modules in parent: process these
 							if (availableModulesMask === undefined) {
 								// if we have not own info yet: create new entry
@@ -177,11 +185,14 @@ class RemoveParentModulesPlugin {
 
 					const availableModulesSets = Array.from(
 						chunk.groupsIterable,
-						chunkGroup => availableModulesMap.get(chunkGroup)
+						(chunkGroup) => availableModulesMap.get(chunkGroup)
 					);
 					if (availableModulesSets.includes(undefined)) continue; // No info about this chunk group
 
-					const availableModulesMask = intersectMasks(availableModulesSets);
+					const availableModulesMask = intersectMasks(
+						/** @type {bigint[]} */
+						(availableModulesSets)
+					);
 					const toRemoveMask = chunkMask & availableModulesMask;
 					if (toRemoveMask !== ZERO_BIGINT) {
 						for (const module of getModulesFromMask(
@@ -203,4 +214,5 @@ class RemoveParentModulesPlugin {
 		});
 	}
 }
+
 module.exports = RemoveParentModulesPlugin;

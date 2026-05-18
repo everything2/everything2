@@ -11,15 +11,15 @@ const PLUGIN_NAME = "NoEmitOnErrorsPlugin";
 
 class NoEmitOnErrorsPlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.shouldEmit.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.shouldEmit.tap(PLUGIN_NAME, (compilation) => {
 			if (compilation.getStats().hasErrors()) return false;
 		});
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			compilation.hooks.shouldRecord.tap(PLUGIN_NAME, () => {
 				if (compilation.getStats().hasErrors()) return false;
 			});

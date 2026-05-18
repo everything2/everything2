@@ -6,22 +6,25 @@
 "use strict";
 
 /** @typedef {import("../RuntimeTemplate")} RuntimeTemplate */
-/** @typedef {string | number | undefined} SemVerRangeItem */
+/** @typedef {string | number} VersionValue */
+/** @typedef {VersionValue | undefined} SemVerRangeItem */
 /** @typedef {(SemVerRangeItem | SemVerRangeItem[])[]} SemVerRange */
 
 /**
+ * Returns parsed version.
  * @param {string} str version string
  * @returns {SemVerRange} parsed version
  */
-const parseVersion = str => {
+const parseVersion = (str) => {
 	/**
+	 * Returns result.
 	 * @param {str} str str
-	 * @returns {(string | number)[]} result
+	 * @returns {VersionValue[]} result
 	 */
 	var splitAndConvert = function (str) {
 		return str.split(".").map(function (item) {
 			// eslint-disable-next-line eqeqeq
-			return +item == /** @type {EXPECTED_ANY} */ (item) ? +item : item;
+			return +item == /** @type {string | number} */ (item) ? +item : item;
 		});
 	};
 
@@ -29,7 +32,7 @@ const parseVersion = str => {
 		/** @type {RegExpExecArray} */
 		(/^([^-+]+)?(?:-([^+]+))?(?:\+(.+))?$/.exec(str));
 
-	/** @type {(string | number | undefined | [])[]} */
+	/** @type {(VersionValue | undefined | [])[]} */
 	var ver = match[1] ? splitAndConvert(match[1]) : [];
 
 	if (match[2]) {
@@ -48,6 +51,7 @@ module.exports.parseVersion = parseVersion;
 
 /* eslint-disable eqeqeq */
 /**
+ * Returns true, iff a < b.
  * @param {string} a version
  * @param {string} b version
  * @returns {boolean} true, iff a < b
@@ -97,26 +101,29 @@ const versionLt = (a, b) => {
 module.exports.versionLt = versionLt;
 
 /**
+ * Returns parsed range.
  * @param {string} str range string
  * @returns {SemVerRange} parsed range
  */
-module.exports.parseRange = str => {
+module.exports.parseRange = (str) => {
 	/**
+	 * Returns result.
 	 * @param {string} str str
-	 * @returns {(string | number)[]} result
+	 * @returns {VersionValue[]} result
 	 */
-	const splitAndConvert = str => {
+	const splitAndConvert = (str) => {
 		return str
 			.split(".")
-			.map(item => (item !== "NaN" && `${+item}` === item ? +item : item));
+			.map((item) => (item !== "NaN" && `${+item}` === item ? +item : item));
 	};
 
 	// see https://docs.npmjs.com/misc/semver#range-grammar for grammar
 	/**
+	 * Returns the sem ver range item.
 	 * @param {string} str str
 	 * @returns {SemVerRangeItem[]}
 	 */
-	const parsePartial = str => {
+	const parsePartial = (str) => {
 		const match =
 			/** @type {RegExpExecArray} */
 			(/^([^-+]+)?(?:-([^+]+))?(?:\+(.+))?$/.exec(str));
@@ -142,11 +149,12 @@ module.exports.parseRange = str => {
 	};
 
 	/**
+	 * Returns the sem ver range item.
 	 *
 	 * @param {SemVerRangeItem[]} range range
 	 * @returns {SemVerRangeItem[]}
 	 */
-	const toFixed = range => {
+	const toFixed = (range) => {
 		if (range.length === 1) {
 			// Special case for "*" is "x.x.x" instead of "="
 			return [0];
@@ -162,19 +170,21 @@ module.exports.parseRange = str => {
 	};
 
 	/**
+	 * Returns result.
 	 *
 	 * @param {SemVerRangeItem[]} range
 	 * @returns {SemVerRangeItem[]} result
 	 */
-	const negate = range => {
+	const negate = (range) => {
 		return [-(/** @type { [number]} */ (range)[0]) - 1, ...range.slice(1)];
 	};
 
 	/**
+	 * Returns the sem ver range.
 	 * @param {string} str str
 	 * @returns {SemVerRange}
 	 */
-	const parseSimple = str => {
+	const parseSimple = (str) => {
 		// simple       ::= primitive | partial | tilde | caret
 		// primitive    ::= ( '<' | '>' | '>=' | '<=' | '=' | '!' ) ( ' ' ) * partial
 		// tilde        ::= '~' ( ' ' ) * partial
@@ -229,6 +239,7 @@ module.exports.parseRange = str => {
 	};
 
 	/**
+	 * Returns result.
 	 *
 	 * @param {SemVerRangeItem[][]} items items
 	 * @param {number} fn fn
@@ -250,10 +261,11 @@ module.exports.parseRange = str => {
 	};
 
 	/**
+	 * Returns the sem ver range.
 	 * @param {string} str str
 	 * @returns {SemVerRange}
 	 */
-	const parseRange = str => {
+	const parseRange = (str) => {
 		// range      ::= hyphen | simple ( ' ' ( ' ' ) * simple ) * | ''
 		// hyphen     ::= partial ( ' ' ) * ' - ' ( ' ' ) * partial
 		const items = str.split(/\s+-\s+/);
@@ -265,6 +277,7 @@ module.exports.parseRange = str => {
 			const items = [];
 			const r = /[-0-9A-Za-z]\s+/g;
 			var start = 0;
+			/** @type {RegExpExecArray | null} */
 			var match;
 			while ((match = r.exec(str))) {
 				const end = match.index + 1;
@@ -289,10 +302,11 @@ module.exports.parseRange = str => {
 	};
 
 	/**
+	 * Returns the sem ver range.
 	 * @param {string} str str
 	 * @returns {SemVerRange}
 	 */
-	const parseLogicalOr = str => {
+	const parseLogicalOr = (str) => {
 		// range-set  ::= range ( logical-or range ) *
 		// logical-or ::= ( ' ' ) * '||' ( ' ' ) *
 		const items =
@@ -307,10 +321,11 @@ module.exports.parseRange = str => {
 
 /* eslint-disable eqeqeq */
 /**
+ * Returns the string.
  * @param {SemVerRange} range
  * @returns {string}
  */
-const rangeToString = range => {
+const rangeToString = (range) => {
 	var fixCount = /** @type {number} */ (range[0]);
 	var str = "";
 	if (range.length === 1) {
@@ -368,6 +383,7 @@ const rangeToString = range => {
 module.exports.rangeToString = rangeToString;
 
 /**
+ * Returns if version satisfy the range.
  * @param {SemVerRange} range version range
  * @param {string} version the version
  * @returns {boolean} if version satisfy the range
@@ -429,7 +445,7 @@ const satisfy = (range, version) => {
 				/** @type {"s" | "n" | "u" | ""} */
 				(j < range.length ? (typeof range[j])[0] : "");
 
-			/** @type {number | string | undefined} */
+			/** @type {VersionValue | undefined} */
 			var versionValue;
 			/** @type {"n" | "s" | "u" | "o" | undefined} */
 			var versionType;
@@ -470,8 +486,8 @@ const satisfy = (range, version) => {
 						// Handles "cmp" cases
 						if (
 							negated
-								? versionValue > /** @type {(number | string)[]} */ (range)[j]
-								: versionValue < /** @type {(number | string)[]} */ (range)[j]
+								? versionValue > /** @type {VersionValue[]} */ (range)[j]
+								: versionValue < /** @type {VersionValue[]} */ (range)[j]
 						) {
 							return false;
 						}
@@ -529,10 +545,11 @@ const satisfy = (range, version) => {
 module.exports.satisfy = satisfy;
 
 /**
+ * Returns the string.
  * @param {SemVerRange | string | number | false | undefined} json
  * @returns {string}
  */
-module.exports.stringifyHoley = json => {
+module.exports.stringifyHoley = (json) => {
 	switch (typeof json) {
 		case "undefined":
 			return "";
@@ -558,10 +575,10 @@ module.exports.stringifyHoley = json => {
  * @param {RuntimeTemplate} runtimeTemplate
  * @returns {string}
  */
-exports.parseVersionRuntimeCode = runtimeTemplate =>
+exports.parseVersionRuntimeCode = (runtimeTemplate) =>
 	`var parseVersion = ${runtimeTemplate.basicFunction("str", [
 		"// see webpack/lib/util/semver.js for original code",
-		`var p=${runtimeTemplate.supportsArrowFunction() ? "p=>" : "function(p)"}{return p.split(".").map((${runtimeTemplate.supportsArrowFunction() ? "p=>" : "function(p)"}{return+p==p?+p:p}))},n=/^([^-+]+)?(?:-([^+]+))?(?:\\+(.+))?$/.exec(str),r=n[1]?p(n[1]):[];return n[2]&&(r.length++,r.push.apply(r,p(n[2]))),n[3]&&(r.push([]),r.push.apply(r,p(n[3]))),r;`
+		`var p=${runtimeTemplate.supportsArrowFunction() ? "p=>" : "function(p)"}{return p.split(".").map(${runtimeTemplate.supportsArrowFunction() ? "p=>" : "function(p)"}{return+p==p?+p:p})},n=/^([^-+]+)?(?:-([^+]+))?(?:\\+(.+))?$/.exec(str),r=n[1]?p(n[1]):[];return n[2]&&(r.length++,r.push.apply(r,p(n[2]))),n[3]&&(r.push([]),r.push.apply(r,p(n[3]))),r;`
 	])}`;
 //#endregion
 
@@ -570,7 +587,7 @@ exports.parseVersionRuntimeCode = runtimeTemplate =>
  * @param {RuntimeTemplate} runtimeTemplate
  * @returns {string}
  */
-exports.versionLtRuntimeCode = runtimeTemplate =>
+exports.versionLtRuntimeCode = (runtimeTemplate) =>
 	`var versionLt = ${runtimeTemplate.basicFunction("a, b", [
 		"// see webpack/lib/util/semver.js for original code",
 		'a=parseVersion(a),b=parseVersion(b);for(var r=0;;){if(r>=a.length)return r<b.length&&"u"!=(typeof b[r])[0];var e=a[r],n=(typeof e)[0];if(r>=b.length)return"u"==n;var t=b[r],f=(typeof t)[0];if(n!=f)return"o"==n&&"n"==f||("s"==f||"u"==n);if("o"!=n&&"u"!=n&&e!=t)return e<t;r++}'
@@ -582,7 +599,7 @@ exports.versionLtRuntimeCode = runtimeTemplate =>
  * @param {RuntimeTemplate} runtimeTemplate
  * @returns {string}
  */
-exports.rangeToStringRuntimeCode = runtimeTemplate =>
+exports.rangeToStringRuntimeCode = (runtimeTemplate) =>
 	`var rangeToString = ${runtimeTemplate.basicFunction("range", [
 		"// see webpack/lib/util/semver.js for original code",
 		'var r=range[0],n="";if(1===range.length)return"*";if(r+.5){n+=0==r?">=":-1==r?"<":1==r?"^":2==r?"~":r>0?"=":"!=";for(var e=1,a=1;a<range.length;a++){e--,n+="u"==(typeof(t=range[a]))[0]?"-":(e>0?".":"")+(e=2,t)}return n}var g=[];for(a=1;a<range.length;a++){var t=range[a];g.push(0===t?"not("+o()+")":1===t?"("+o()+" || "+o()+")":2===t?g.pop()+" "+g.pop():rangeToString(t))}return o();function o(){return g.pop().replace(/^\\((.+)\\)$/,"$1")}'
@@ -594,7 +611,7 @@ exports.rangeToStringRuntimeCode = runtimeTemplate =>
  * @param {RuntimeTemplate} runtimeTemplate
  * @returns {string}
  */
-exports.satisfyRuntimeCode = runtimeTemplate =>
+exports.satisfyRuntimeCode = (runtimeTemplate) =>
 	`var satisfy = ${runtimeTemplate.basicFunction("range, version", [
 		"// see webpack/lib/util/semver.js for original code",
 		'if(0 in range){version=parseVersion(version);var e=range[0],r=e<0;r&&(e=-e-1);for(var n=0,i=1,a=!0;;i++,n++){var f,s,g=i<range.length?(typeof range[i])[0]:"";if(n>=version.length||"o"==(s=(typeof(f=version[n]))[0]))return!a||("u"==g?i>e&&!r:""==g!=r);if("u"==s){if(!a||"u"!=g)return!1}else if(a)if(g==s)if(i<=e){if(f!=range[i])return!1}else{if(r?f>range[i]:f<range[i])return!1;f!=range[i]&&(a=!1)}else if("s"!=g&&"n"!=g){if(r||i<=e)return!1;a=!1,i--}else{if(i<=e||s<g!=r)return!1;a=!1}else"s"!=g&&"n"!=g&&(a=!1,i--)}}var t=[],o=t.pop.bind(t);for(n=1;n<range.length;n++){var u=range[n];t.push(1==u?o()|o():2==u?o()&o():u?satisfy(u,version):!o())}return!!o();'

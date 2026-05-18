@@ -26,7 +26,7 @@ const PLUGIN_NAME = "RequireContextPlugin";
 
 class RequireContextPlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -49,6 +49,7 @@ class RequireContextPlugin {
 				);
 
 				/**
+				 * Handles the hook callback for this code path.
 				 * @param {Parser} parser parser parser
 				 * @param {JavascriptParserOptions} parserOptions parserOptions
 				 * @returns {void}
@@ -57,8 +58,9 @@ class RequireContextPlugin {
 					if (
 						parserOptions.requireContext !== undefined &&
 						!parserOptions.requireContext
-					)
+					) {
 						return;
+					}
 
 					new RequireContextDependencyParserPlugin().apply(parser);
 				};
@@ -85,6 +87,7 @@ class RequireContextPlugin {
 							)
 						).options;
 
+						/** @type {{ context: string, request: string }[]} */
 						let newItems;
 						if (!finalResolveOptions.fullySpecified) {
 							newItems = [];
@@ -161,4 +164,5 @@ class RequireContextPlugin {
 		);
 	}
 }
+
 module.exports = RequireContextPlugin;

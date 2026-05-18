@@ -9,46 +9,51 @@ const { RawSource } = require("webpack-sources");
 const ConcatenationScope = require("../ConcatenationScope");
 const { UsageState } = require("../ExportsInfo");
 const Generator = require("../Generator");
-const { JS_TYPES } = require("../ModuleSourceTypesConstants");
+const { JAVASCRIPT_TYPES } = require("../ModuleSourceTypeConstants");
 const RuntimeGlobals = require("../RuntimeGlobals");
 
 /** @typedef {import("webpack-sources").Source} Source */
 /** @typedef {import("../../declarations/WebpackOptions").JsonGeneratorOptions} JsonGeneratorOptions */
 /** @typedef {import("../ExportsInfo")} ExportsInfo */
 /** @typedef {import("../Generator").GenerateContext} GenerateContext */
+/** @typedef {import("../Generator").UpdateHashContext} UpdateHashContext */
+/** @typedef {import("../util/Hash")} Hash */
 /** @typedef {import("../Module").ConcatenationBailoutReasonContext} ConcatenationBailoutReasonContext */
+/** @typedef {import("../Module").SourceType} SourceType */
 /** @typedef {import("../Module").SourceTypes} SourceTypes */
 /** @typedef {import("../NormalModule")} NormalModule */
 /** @typedef {import("../util/runtime").RuntimeSpec} RuntimeSpec */
-/** @typedef {import("./JsonData")} JsonData */
-/** @typedef {import("./JsonModulesPlugin").JsonArray} JsonArray */
-/** @typedef {import("./JsonModulesPlugin").JsonObject} JsonObject */
-/** @typedef {import("./JsonModulesPlugin").JsonValue} JsonValue */
+/** @typedef {import("../util/fs").JsonArray} JsonArray */
+/** @typedef {import("../util/fs").JsonObject} JsonObject */
+/** @typedef {import("../util/fs").JsonValue} JsonValue */
 
 /**
+ * Returns stringified data.
  * @param {JsonValue} data Raw JSON data
- * @returns {undefined|string} stringified data
+ * @returns {undefined | string} stringified data
  */
-const stringifySafe = data => {
+const stringifySafe = (data) => {
 	const stringified = JSON.stringify(data);
 	if (!stringified) {
 		return; // Invalid JSON
 	}
 
-	return stringified.replace(/\u2028|\u2029/g, str =>
+	return stringified.replace(/\u2028|\u2029/g, (str) =>
 		str === "\u2029" ? "\\u2029" : "\\u2028"
 	); // invalid in JavaScript but valid JSON
 };
 
 /**
+ * Creates an object for exports info.
  * @param {JsonObject | JsonArray} data Raw JSON data (always an object or array)
  * @param {ExportsInfo} exportsInfo exports info
  * @param {RuntimeSpec} runtime the runtime
  * @returns {JsonObject | JsonArray} reduced data
  */
 const createObjectForExportsInfo = (data, exportsInfo, runtime) => {
-	if (exportsInfo.otherExportsInfo.getUsed(runtime) !== UsageState.Unused)
+	if (exportsInfo.otherExportsInfo.getUsed(runtime) !== UsageState.Unused) {
 		return data;
+	}
 	const isArray = Array.isArray(data);
 	/** @type {JsonObject | JsonArray} */
 	const reducedData = isArray ? [] : {};
@@ -95,13 +100,14 @@ const createObjectForExportsInfo = (data, exportsInfo, runtime) => {
 				8 -
 				(arrayLengthWhenUsed - reducedDataLength) * 2;
 		}
-		if (sizeObjectMinusArray < 0)
+		if (sizeObjectMinusArray < 0) {
 			return Object.assign(
 				arrayLengthWhenUsed === undefined
 					? {}
 					: { length: arrayLengthWhenUsed },
 				reducedData
 			);
+		}
 		/** @type {number} */
 		const generatedLength =
 			arrayLengthWhenUsed !== undefined
@@ -119,24 +125,28 @@ const createObjectForExportsInfo = (data, exportsInfo, runtime) => {
 
 class JsonGenerator extends Generator {
 	/**
+	 * Creates an instance of JsonGenerator.
 	 * @param {JsonGeneratorOptions} options options
 	 */
 	constructor(options) {
 		super();
+		/** @type {JsonGeneratorOptions} */
 		this.options = options;
 	}
 
 	/**
+	 * Returns the source types available for this module.
 	 * @param {NormalModule} module fresh module
 	 * @returns {SourceTypes} available types (do not mutate)
 	 */
 	getTypes(module) {
-		return JS_TYPES;
+		return JAVASCRIPT_TYPES;
 	}
 
 	/**
+	 * Returns the estimated size for the requested source type.
 	 * @param {NormalModule} module the module
-	 * @param {string=} type source type
+	 * @param {SourceType=} type source type
 	 * @returns {number} estimate size of the module
 	 */
 	getSize(module, type) {
@@ -150,6 +160,7 @@ class JsonGenerator extends Generator {
 	}
 
 	/**
+	 * Returns the reason this module cannot be concatenated, when one exists.
 	 * @param {NormalModule} module module for which the bailout reason should be determined
 	 * @param {ConcatenationBailoutReasonContext} context context
 	 * @returns {string | undefined} reason why this module can't be concatenated, undefined when it can be concatenated
@@ -159,6 +170,7 @@ class JsonGenerator extends Generator {
 	}
 
 	/**
+	 * Generates generated code for this runtime module.
 	 * @param {NormalModule} module module for which the code should be generated
 	 * @param {GenerateContext} generateContext context for generate
 	 * @returns {Source | null} generated code
@@ -204,7 +216,7 @@ class JsonGenerator extends Generator {
 		/** @type {string} */
 		let content;
 		if (concatenationScope) {
-			content = `${runtimeTemplate.supportsConst() ? "const" : "var"} ${
+			content = `${runtimeTemplate.renderConst()} ${
 				ConcatenationScope.NAMESPACE_OBJECT_EXPORT
 			} = ${jsonExpr};`;
 			concatenationScope.registerNamespaceExport(
@@ -218,6 +230,7 @@ class JsonGenerator extends Generator {
 	}
 
 	/**
+	 * Generates fallback output for the provided error condition.
 	 * @param {Error} error the error
 	 * @param {NormalModule} module module for which the code should be generated
 	 * @param {GenerateContext} generateContext context for generate
@@ -225,6 +238,17 @@ class JsonGenerator extends Generator {
 	 */
 	generateError(error, module, generateContext) {
 		return new RawSource(`throw new Error(${JSON.stringify(error.message)});`);
+	}
+
+	/**
+	 * Updates the hash with the data contributed by this instance.
+	 * @param {Hash} hash hash that will be modified
+	 * @param {UpdateHashContext} updateHashContext context for updating hash
+	 */
+	updateHash(hash, updateHashContext) {
+		if (this.options.JSONParse) {
+			hash.update("json-parse");
+		}
 	}
 }
 

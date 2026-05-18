@@ -5,7 +5,7 @@
 
 "use strict";
 
-const { URL, fileURLToPath } = require("url");
+const { fileURLToPath } = require("url");
 const { NormalModule } = require("..");
 
 /** @typedef {import("../Compiler")} Compiler */
@@ -14,7 +14,7 @@ const PLUGIN_NAME = "FileUriPlugin";
 
 class FileUriPlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -24,7 +24,7 @@ class FileUriPlugin {
 			(compilation, { normalModuleFactory }) => {
 				normalModuleFactory.hooks.resolveForScheme
 					.for("file")
-					.tap(PLUGIN_NAME, resourceData => {
+					.tap(PLUGIN_NAME, (resourceData) => {
 						const url = new URL(resourceData.resource);
 						const path = fileURLToPath(url);
 						const query = url.search;
@@ -40,8 +40,11 @@ class FileUriPlugin {
 					.for(undefined)
 					.tapAsync(PLUGIN_NAME, (loaderContext, callback) => {
 						const { resourcePath } = loaderContext;
-						loaderContext.addDependency(resourcePath);
-						loaderContext.fs.readFile(resourcePath, callback);
+						loaderContext.fs.readFile(resourcePath, (err, result) => {
+							if (err) return callback(err);
+							loaderContext.addDependency(resourcePath);
+							callback(null, result);
+						});
 					});
 			}
 		);

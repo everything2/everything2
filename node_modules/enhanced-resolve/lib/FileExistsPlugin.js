@@ -31,26 +31,33 @@ module.exports = class FileExistsPlugin {
 				const file = request.path;
 				if (!file) return callback();
 				fs.stat(file, (err, stat) => {
-					if (err || !stat) {
-						if (resolveContext.missingDependencies)
+					// Combine the two miss branches: a stat failure and a
+					// "not a file" result share the same handling — record the
+					// path on `missingDependencies`, log the right reason, then
+					// bail. The error-message ternary picks the wording that
+					// matched the failing condition.
+					if (err || !stat || !stat.isFile()) {
+						if (resolveContext.missingDependencies) {
 							resolveContext.missingDependencies.add(file);
-						if (resolveContext.log) resolveContext.log(file + " doesn't exist");
+						}
+						if (resolveContext.log) {
+							resolveContext.log(
+								err || !stat
+									? `${file} doesn't exist`
+									: `${file} is not a file`,
+							);
+						}
 						return callback();
 					}
-					if (!stat.isFile()) {
-						if (resolveContext.missingDependencies)
-							resolveContext.missingDependencies.add(file);
-						if (resolveContext.log) resolveContext.log(file + " is not a file");
-						return callback();
-					}
-					if (resolveContext.fileDependencies)
+					if (resolveContext.fileDependencies) {
 						resolveContext.fileDependencies.add(file);
+					}
 					resolver.doResolve(
 						target,
 						request,
-						"existing file: " + file,
+						`existing file: ${file}`,
 						resolveContext,
-						callback
+						callback,
 					);
 				});
 			});

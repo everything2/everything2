@@ -16,26 +16,29 @@ const AbstractLibraryPlugin = require("./AbstractLibraryPlugin");
 /** @typedef {import("../../declarations/WebpackOptions").LibraryName} LibraryName */
 /** @typedef {import("../../declarations/WebpackOptions").LibraryOptions} LibraryOptions */
 /** @typedef {import("../../declarations/WebpackOptions").LibraryType} LibraryType */
-/** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../javascript/JavascriptModulesPlugin").RenderContext} RenderContext */
 /** @typedef {import("../ExternalModule").RequestRecord} RequestRecord */
-/** @typedef {import("../util/Hash")} Hash */
+
 /**
+ * Defines the shared type used by this module.
  * @template T
- * @typedef {import("./AbstractLibraryPlugin").LibraryContext<T>}
- * LibraryContext<T>
+ * @typedef {import("./AbstractLibraryPlugin").LibraryContext<T>} LibraryContext<T>
  */
 
 /**
+ * Accessor to object access.
  * @param {string[]} accessor the accessor to convert to path
  * @returns {string} the path
  */
-const accessorToObjectAccess = accessor =>
-	accessor.map(a => `[${JSON.stringify(a)}]`).join("");
+const accessorToObjectAccess = (accessor) =>
+	accessor.map((a) => `[${JSON.stringify(a)}]`).join("");
+
+/** @typedef {string | string[]} Accessor */
 
 /**
- * @param {string|undefined} base the path prefix
- * @param {string|string[]} accessor the accessor
+ * Returns the path.
+ * @param {string | undefined} base the path prefix
+ * @param {Accessor} accessor the accessor
  * @param {string=} joinWith the element separator
  * @returns {string} the path
  */
@@ -47,22 +50,23 @@ const accessorAccess = (base, accessor, joinWith = ", ") => {
 				? base + accessorToObjectAccess(accessors.slice(0, idx + 1))
 				: accessors[0] + accessorToObjectAccess(accessors.slice(1, idx + 1));
 			if (idx === accessors.length - 1) return a;
-			if (idx === 0 && base === undefined)
+			if (idx === 0 && base === undefined) {
 				return `${a} = typeof ${a} === "object" ? ${a} : {}`;
+			}
 			return `${a} = ${a} || {}`;
 		})
 		.join(joinWith);
 };
 
-/** @typedef {string | string[] | LibraryCustomUmdObject} UmdLibraryPluginName */
-
 /**
+ * Defines the umd library plugin options type used by this module.
  * @typedef {object} UmdLibraryPluginOptions
  * @property {LibraryType} type
  * @property {boolean=} optionalAmdExternalAsGlobal
  */
 
 /**
+ * Defines the umd library plugin parsed type used by this module.
  * @typedef {object} UmdLibraryPluginParsed
  * @property {string | string[] | undefined} name
  * @property {LibraryCustomUmdObject} names
@@ -71,11 +75,13 @@ const accessorAccess = (base, accessor, joinWith = ", ") => {
  */
 
 /**
+ * Represents the umd library plugin runtime component.
  * @typedef {UmdLibraryPluginParsed} T
  * @extends {AbstractLibraryPlugin<UmdLibraryPluginParsed>}
  */
 class UmdLibraryPlugin extends AbstractLibraryPlugin {
 	/**
+	 * Creates an instance of UmdLibraryPlugin.
 	 * @param {UmdLibraryPluginOptions} options the plugin option
 	 */
 	constructor(options) {
@@ -84,12 +90,14 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 			type: options.type
 		});
 
+		/** @type {UmdLibraryPluginOptions["optionalAmdExternalAsGlobal"]} */
 		this.optionalAmdExternalAsGlobal = options.optionalAmdExternalAsGlobal;
 	}
 
 	/**
+	 * Returns preprocess as needed by overriding.
 	 * @param {LibraryOptions} library normalized library option
-	 * @returns {T | false} preprocess as needed by overriding
+	 * @returns {T} preprocess as needed by overriding
 	 */
 	parseOptions(library) {
 		/** @type {LibraryName | undefined} */
@@ -117,6 +125,7 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 	}
 
 	/**
+	 * Returns source with library export.
 	 * @param {Source} source source
 	 * @param {RenderContext} renderContext render context
 	 * @param {LibraryContext<T>} libraryContext context
@@ -130,7 +139,7 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 		const modules = chunkGraph
 			.getChunkModules(chunk)
 			.filter(
-				m =>
+				(m) =>
 					m instanceof ExternalModule &&
 					(m.externalType === "umd" || m.externalType === "umd2")
 			);
@@ -147,28 +156,30 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 					requiredExternals.push(m);
 				}
 			}
-			externals = requiredExternals.concat(optionalExternals);
+			externals = [...requiredExternals, ...optionalExternals];
 		} else {
 			requiredExternals = externals;
 		}
 
 		/**
+		 * Returns the replaced keys.
 		 * @param {string} str the string to replace
 		 * @returns {string} the replaced keys
 		 */
-		const replaceKeys = str =>
+		const replaceKeys = (str) =>
 			compilation.getPath(str, {
 				chunk
 			});
 
 		/**
+		 * Externals deps array.
 		 * @param {ExternalModule[]} modules external modules
 		 * @returns {string} result
 		 */
-		const externalsDepsArray = modules =>
+		const externalsDepsArray = (modules) =>
 			`[${replaceKeys(
 				modules
-					.map(m =>
+					.map((m) =>
 						JSON.stringify(
 							typeof m.request === "object"
 								? /** @type {RequestRecord} */
@@ -180,32 +191,36 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 			)}]`;
 
 		/**
+		 * Externals root array.
 		 * @param {ExternalModule[]} modules external modules
 		 * @returns {string} result
 		 */
-		const externalsRootArray = modules =>
+		const externalsRootArray = (modules) =>
 			replaceKeys(
 				modules
-					.map(m => {
+					.map((m) => {
 						let request = m.request;
-						if (typeof request === "object")
+						if (typeof request === "object") {
 							request =
 								/** @type {RequestRecord} */
 								(request).root;
-						return `root${accessorToObjectAccess(/** @type {string[]} */ ([]).concat(request))}`;
+						}
+						return `root${accessorToObjectAccess([
+							...(Array.isArray(request) ? request : [request])
+						])}`;
 					})
 					.join(", ")
 			);
 
 		/**
+		 * Externals require array.
 		 * @param {string} type the type
 		 * @returns {string} external require array
 		 */
-		const externalsRequireArray = type =>
+		const externalsRequireArray = (type) =>
 			replaceKeys(
 				externals
-					.map(m => {
-						let expr;
+					.map((m) => {
 						let request = m.request;
 						if (typeof request === "object") {
 							request =
@@ -217,7 +232,7 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 								`Missing external configuration for type:${type}`
 							);
 						}
-						expr = Array.isArray(request)
+						let expr = Array.isArray(request)
 							? `require(${JSON.stringify(
 									request[0]
 								)})${accessorToObjectAccess(request.slice(1))}`
@@ -231,13 +246,14 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 			);
 
 		/**
+		 * Externals arguments.
 		 * @param {ExternalModule[]} modules external modules
 		 * @returns {string} arguments
 		 */
-		const externalsArguments = modules =>
+		const externalsArguments = (modules) =>
 			modules
 				.map(
-					m =>
+					(m) =>
 						`__WEBPACK_EXTERNAL_MODULE_${Template.toIdentifier(
 							`${chunkGraph.getModuleId(m)}`
 						)}__`
@@ -245,17 +261,19 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 				.join(", ");
 
 		/**
-		 * @param {string| string[]} library library name
+		 * Returns stringified library name.
+		 * @param {Accessor} library library name
 		 * @returns {string} stringified library name
 		 */
-		const libraryName = library =>
+		const libraryName = (library) =>
 			JSON.stringify(
 				replaceKeys(
 					/** @type {string} */
-					(/** @type {string[]} */ ([]).concat(library).pop())
+					([...(Array.isArray(library) ? library : [library])].pop())
 				)
 			);
 
+		/** @type {string} */
 		let amdFactory;
 		if (optionalExternals.length > 0) {
 			const wrapperArguments = externalsArguments(requiredExternals);
@@ -276,13 +294,15 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 		const { auxiliaryComment, namedDefine, names } = options;
 
 		/**
+		 * Gets auxiliary comment.
 		 * @param {keyof LibraryCustomUmdCommentObject} type type
 		 * @returns {string} comment
 		 */
-		const getAuxiliaryComment = type => {
+		const getAuxiliaryComment = (type) => {
 			if (auxiliaryComment) {
-				if (typeof auxiliaryComment === "string")
+				if (typeof auxiliaryComment === "string") {
 					return `\t//${auxiliaryComment}\n`;
+				}
 				if (auxiliaryComment[type]) return `\t//${auxiliaryComment[type]}\n`;
 			}
 			return "";
@@ -315,7 +335,7 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 									"commonjs"
 								)}	else if(typeof exports === 'object')\n` +
 								`		exports[${libraryName(
-									/** @type {string | string[]} */
+									/** @type {Accessor} */
 									(names.commonjs || names.root)
 								)}] = factory(${externalsRequireArray(
 									"commonjs"
@@ -323,7 +343,7 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 								`		${replaceKeys(
 									accessorAccess(
 										"root",
-										/** @type {string | string[]} */
+										/** @type {Accessor} */
 										(names.root || names.commonjs)
 									)
 								)} = factory(${externalsRootArray(externals)});\n`
@@ -335,7 +355,7 @@ class UmdLibraryPlugin extends AbstractLibraryPlugin {
 										: "		var a = factory();\n"
 								}		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];\n` +
 								"	}\n"
-					}})(${runtimeTemplate.outputOptions.globalObject}, ${
+					}})(${runtimeTemplate.globalObject}, ${
 						runtimeTemplate.supportsArrowFunction()
 							? `(${externalsArguments(externals)}) =>`
 							: `function(${externalsArguments(externals)})`

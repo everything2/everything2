@@ -33,31 +33,36 @@ module.exports = class DirectoryExistsPlugin {
 					const directory = request.path;
 					if (!directory) return callback();
 					fs.stat(directory, (err, stat) => {
-						if (err || !stat) {
-							if (resolveContext.missingDependencies)
+						// Combine the two miss branches: a stat failure and a
+						// "not a directory" result share the same handling — record
+						// the path on `missingDependencies`, log the right reason,
+						// then bail. The error-message ternary picks the wording
+						// that matched the failing condition.
+						if (err || !stat || !stat.isDirectory()) {
+							if (resolveContext.missingDependencies) {
 								resolveContext.missingDependencies.add(directory);
-							if (resolveContext.log)
-								resolveContext.log(directory + " doesn't exist");
+							}
+							if (resolveContext.log) {
+								resolveContext.log(
+									err || !stat
+										? `${directory} doesn't exist`
+										: `${directory} is not a directory`,
+								);
+							}
 							return callback();
 						}
-						if (!stat.isDirectory()) {
-							if (resolveContext.missingDependencies)
-								resolveContext.missingDependencies.add(directory);
-							if (resolveContext.log)
-								resolveContext.log(directory + " is not a directory");
-							return callback();
-						}
-						if (resolveContext.fileDependencies)
+						if (resolveContext.fileDependencies) {
 							resolveContext.fileDependencies.add(directory);
+						}
 						resolver.doResolve(
 							target,
 							request,
 							`existing directory ${directory}`,
 							resolveContext,
-							callback
+							callback,
 						);
 					});
-				}
+				},
 			);
 	}
 };

@@ -5,8 +5,7 @@
 
 "use strict";
 
-/** @typedef {import("./fs").InputFileSystem} InputFileSystem */
-/** @typedef {(error: Error|null, result?: Buffer) => void} ErrorFirstCallback */
+/** @typedef {(error: Error | null, result?: Buffer) => void} ErrorFirstCallback */
 
 const backSlashCharCode = "\\".charCodeAt(0);
 const slashCharCode = "/".charCodeAt(0);
@@ -26,7 +25,7 @@ const queryCharCode = "?".charCodeAt(0);
  * e.g. Absolute specifiers like 'file:///user/webpack/index.js'
  * https://tools.ietf.org/html/rfc3986#section-3.1
  * @param {string} specifier specifier
- * @returns {string|undefined} scheme if absolute URL specifier provided
+ * @returns {string | undefined} scheme if absolute URL specifier provided
  */
 function getScheme(specifier) {
 	const start = specifier.charCodeAt(0);
@@ -75,6 +74,7 @@ function getScheme(specifier) {
 }
 
 /**
+ * Returns protocol if absolute URL specifier provided.
  * @param {string} specifier specifier
  * @returns {string | null | undefined} protocol if absolute URL specifier provided
  */
@@ -83,5 +83,5 @@ function getProtocol(specifier) {
 	return scheme === undefined ? undefined : `${scheme}:`;
 }
 
-module.exports.getScheme = getScheme;
 module.exports.getProtocol = getProtocol;
+module.exports.getScheme = getScheme;

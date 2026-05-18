@@ -18,6 +18,7 @@ class ParallelismFactorCalculator {
 	}
 
 	/**
+	 * Processes the provided start.
 	 * @param {number} start range start
 	 * @param {number} end range end
 	 * @param {Callback} callback callback
@@ -31,10 +32,11 @@ class ParallelismFactorCalculator {
 	}
 
 	calculate() {
-		const segments = Array.from(new Set(this._rangePoints)).sort((a, b) =>
+		const segments = [...new Set(this._rangePoints)].sort((a, b) =>
 			a < b ? -1 : 1
 		);
 		const parallelism = segments.map(() => 0);
+		/** @type {number[]} */
 		const rangeStartIndices = [];
 		for (let i = 0; i < this._rangePoints.length; i += 2) {
 			const start = this._rangePoints[i];

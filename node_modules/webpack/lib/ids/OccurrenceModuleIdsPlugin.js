@@ -8,7 +8,6 @@
 const {
 	compareModulesByPreOrderIndexOrIdentifier
 } = require("../util/comparators");
-const createSchemaValidation = require("../util/create-schema-validation");
 const {
 	assignAscendingModuleIds,
 	getUsedModuleIdsAndModules
@@ -17,36 +16,41 @@ const {
 /** @typedef {import("../../declarations/plugins/ids/OccurrenceModuleIdsPlugin").OccurrenceModuleIdsPluginOptions} OccurrenceModuleIdsPluginOptions */
 /** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../Module")} Module */
-/** @typedef {import("../ModuleGraphConnection")} ModuleGraphConnection */
-
-const validate = createSchemaValidation(
-	require("../../schemas/plugins/ids/OccurrenceModuleIdsPlugin.check.js"),
-	() => require("../../schemas/plugins/ids/OccurrenceModuleIdsPlugin.json"),
-	{
-		name: "Occurrence Order Module Ids Plugin",
-		baseDataPath: "options"
-	}
-);
 
 const PLUGIN_NAME = "OccurrenceModuleIdsPlugin";
 
 class OccurrenceModuleIdsPlugin {
 	/**
+	 * Creates an instance of OccurrenceModuleIdsPlugin.
 	 * @param {OccurrenceModuleIdsPluginOptions=} options options object
 	 */
 	constructor(options = {}) {
-		validate(options);
+		/** @type {OccurrenceModuleIdsPluginOptions} */
 		this.options = options;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		const prioritiseInitial = this.options.prioritiseInitial;
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.validate.tap(PLUGIN_NAME, () => {
+			compiler.validate(
+				() =>
+					require("../../schemas/plugins/ids/OccurrenceModuleIdsPlugin.json"),
+				this.options,
+				{
+					name: "Occurrence Order Module Ids Plugin",
+					baseDataPath: "options"
+				},
+				(options) =>
+					require("../../schemas/plugins/ids/OccurrenceModuleIdsPlugin.check")(
+						options
+					)
+			);
+		});
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			const moduleGraph = compilation.moduleGraph;
 
 			compilation.hooks.moduleIds.tap(PLUGIN_NAME, () => {
@@ -55,10 +59,14 @@ class OccurrenceModuleIdsPlugin {
 				const [usedIds, modulesInOccurrenceOrder] =
 					getUsedModuleIdsAndModules(compilation);
 
+				/** @type {Map<Module, number>} */
 				const occursInInitialChunksMap = new Map();
+				/** @type {Map<Module, number>} */
 				const occursInAllChunksMap = new Map();
 
+				/** @type {Map<Module, number>} */
 				const initialChunkChunkMap = new Map();
+				/** @type {Map<Module, number>} */
 				const entryCountMap = new Map();
 				for (const m of modulesInOccurrenceOrder) {
 					let initial = 0;
@@ -72,27 +80,29 @@ class OccurrenceModuleIdsPlugin {
 				}
 
 				/**
+				 * Count occurs in entry.
 				 * @param {Module} module module
 				 * @returns {number} count of occurs
 				 */
-				const countOccursInEntry = module => {
+				const countOccursInEntry = (module) => {
 					let sum = 0;
 					for (const [
 						originModule,
 						connections
 					] of moduleGraph.getIncomingConnectionsByOriginModule(module)) {
 						if (!originModule) continue;
-						if (!connections.some(c => c.isTargetActive(undefined))) continue;
+						if (!connections.some((c) => c.isTargetActive(undefined))) continue;
 						sum += initialChunkChunkMap.get(originModule) || 0;
 					}
 					return sum;
 				};
 
 				/**
+				 * Returns count of occurs.
 				 * @param {Module} module module
 				 * @returns {number} count of occurs
 				 */
-				const countOccurs = module => {
+				const countOccurs = (module) => {
 					let sum = 0;
 					for (const [
 						originModule,
@@ -112,12 +122,12 @@ class OccurrenceModuleIdsPlugin {
 					return sum;
 				};
 
-				if (prioritiseInitial) {
+				if (this.options.prioritiseInitial) {
 					for (const m of modulesInOccurrenceOrder) {
 						const result =
 							countOccursInEntry(m) +
-							initialChunkChunkMap.get(m) +
-							entryCountMap.get(m);
+							/** @type {number} */ (initialChunkChunkMap.get(m)) +
+							/** @type {number} */ (entryCountMap.get(m));
 						occursInInitialChunksMap.set(m, result);
 					}
 				}
@@ -126,7 +136,7 @@ class OccurrenceModuleIdsPlugin {
 					const result =
 						countOccurs(m) +
 						chunkGraph.getNumberOfModuleChunks(m) +
-						entryCountMap.get(m);
+						/** @type {number} */ (entryCountMap.get(m));
 					occursInAllChunksMap.set(m, result);
 				}
 
@@ -135,14 +145,18 @@ class OccurrenceModuleIdsPlugin {
 				);
 
 				modulesInOccurrenceOrder.sort((a, b) => {
-					if (prioritiseInitial) {
-						const aEntryOccurs = occursInInitialChunksMap.get(a);
-						const bEntryOccurs = occursInInitialChunksMap.get(b);
+					if (this.options.prioritiseInitial) {
+						const aEntryOccurs =
+							/** @type {number} */
+							(occursInInitialChunksMap.get(a));
+						const bEntryOccurs =
+							/** @type {number} */
+							(occursInInitialChunksMap.get(b));
 						if (aEntryOccurs > bEntryOccurs) return -1;
 						if (aEntryOccurs < bEntryOccurs) return 1;
 					}
-					const aOccurs = occursInAllChunksMap.get(a);
-					const bOccurs = occursInAllChunksMap.get(b);
+					const aOccurs = /** @type {number} */ (occursInAllChunksMap.get(a));
+					const bOccurs = /** @type {number} */ (occursInAllChunksMap.get(b));
 					if (aOccurs > bOccurs) return -1;
 					if (aOccurs < bOccurs) return 1;
 					return naturalCompare(a, b);

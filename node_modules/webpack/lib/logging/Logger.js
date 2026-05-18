@@ -30,62 +30,76 @@ const LogType = Object.freeze({
 module.exports.LogType = LogType;
 
 /** @typedef {typeof LogType[keyof typeof LogType]} LogTypeEnum */
+/** @typedef {Map<string | undefined, [number, number]>} TimersMap */
 
 const LOG_SYMBOL = Symbol("webpack logger raw log method");
 const TIMERS_SYMBOL = Symbol("webpack logger times");
 const TIMERS_AGGREGATES_SYMBOL = Symbol("webpack logger aggregated times");
 
+/** @typedef {EXPECTED_ANY[]} Args */
+/** @typedef {(type: LogTypeEnum, args?: Args) => void} LogFn */
+/** @typedef {(name: string | (() => string)) => WebpackLogger} GetChildLogger */
+
 class WebpackLogger {
 	/**
-	 * @param {(type: LogTypeEnum, args?: EXPECTED_ANY[]) => void} log log function
-	 * @param {(name: string | (() => string)) => WebpackLogger} getChildLogger function to create child logger
+	 * Creates an instance of WebpackLogger.
+	 * @param {LogFn} log log function
+	 * @param {GetChildLogger} getChildLogger function to create child logger
 	 */
 	constructor(log, getChildLogger) {
+		/** @type {LogFn} */
 		this[LOG_SYMBOL] = log;
+		/** @type {GetChildLogger} */
 		this.getChildLogger = getChildLogger;
 	}
 
 	/**
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided arg.
+	 * @param {Args} args args
 	 */
 	error(...args) {
 		this[LOG_SYMBOL](LogType.error, args);
 	}
 
 	/**
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided arg.
+	 * @param {Args} args args
 	 */
 	warn(...args) {
 		this[LOG_SYMBOL](LogType.warn, args);
 	}
 
 	/**
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided arg.
+	 * @param {Args} args args
 	 */
 	info(...args) {
 		this[LOG_SYMBOL](LogType.info, args);
 	}
 
 	/**
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided arg.
+	 * @param {Args} args args
 	 */
 	log(...args) {
 		this[LOG_SYMBOL](LogType.log, args);
 	}
 
 	/**
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided arg.
+	 * @param {Args} args args
 	 */
 	debug(...args) {
 		this[LOG_SYMBOL](LogType.debug, args);
 	}
 
 	/**
-	 * @param {EXPECTED_ANY} assertion assertion
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided condition.
+	 * @param {boolean=} condition condition
+	 * @param {Args} args args
 	 */
-	assert(assertion, ...args) {
-		if (!assertion) {
+	assert(condition, ...args) {
+		if (!condition) {
 			this[LOG_SYMBOL](LogType.error, args);
 		}
 	}
@@ -99,21 +113,24 @@ class WebpackLogger {
 	}
 
 	/**
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided arg.
+	 * @param {Args} args args
 	 */
 	status(...args) {
 		this[LOG_SYMBOL](LogType.status, args);
 	}
 
 	/**
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided arg.
+	 * @param {Args} args args
 	 */
 	group(...args) {
 		this[LOG_SYMBOL](LogType.group, args);
 	}
 
 	/**
-	 * @param {...EXPECTED_ANY} args args
+	 * Processes the provided arg.
+	 * @param {Args} args args
 	 */
 	groupCollapsed(...args) {
 		this[LOG_SYMBOL](LogType.groupCollapsed, args);
@@ -124,6 +141,7 @@ class WebpackLogger {
 	}
 
 	/**
+	 * Processes the provided label.
 	 * @param {string=} label label
 	 */
 	profile(label) {
@@ -131,6 +149,7 @@ class WebpackLogger {
 	}
 
 	/**
+	 * Processes the provided label.
 	 * @param {string=} label label
 	 */
 	profileEnd(label) {
@@ -138,15 +157,17 @@ class WebpackLogger {
 	}
 
 	/**
+	 * Processes the provided label.
 	 * @param {string} label label
 	 */
 	time(label) {
-		/** @type {Map<string | undefined, [number, number]>} */
+		/** @type {TimersMap} */
 		this[TIMERS_SYMBOL] = this[TIMERS_SYMBOL] || new Map();
 		this[TIMERS_SYMBOL].set(label, process.hrtime());
 	}
 
 	/**
+	 * Processes the provided label.
 	 * @param {string=} label label
 	 */
 	timeLog(label) {
@@ -159,6 +180,7 @@ class WebpackLogger {
 	}
 
 	/**
+	 * Processes the provided label.
 	 * @param {string=} label label
 	 */
 	timeEnd(label) {
@@ -167,12 +189,13 @@ class WebpackLogger {
 			throw new Error(`No such label '${label}' for WebpackLogger.timeEnd()`);
 		}
 		const time = process.hrtime(prev);
-		/** @type {Map<string | undefined, [number, number]>} */
+		/** @type {TimersMap} */
 		(this[TIMERS_SYMBOL]).delete(label);
 		this[LOG_SYMBOL](LogType.time, [label, ...time]);
 	}
 
 	/**
+	 * Processes the provided label.
 	 * @param {string=} label label
 	 */
 	timeAggregate(label) {
@@ -183,9 +206,9 @@ class WebpackLogger {
 			);
 		}
 		const time = process.hrtime(prev);
-		/** @type {Map<string | undefined, [number, number]>} */
+		/** @type {TimersMap} */
 		(this[TIMERS_SYMBOL]).delete(label);
-		/** @type {Map<string | undefined, [number, number]>} */
+		/** @type {TimersMap} */
 		this[TIMERS_AGGREGATES_SYMBOL] =
 			this[TIMERS_AGGREGATES_SYMBOL] || new Map();
 		const current = this[TIMERS_AGGREGATES_SYMBOL].get(label);
@@ -202,6 +225,7 @@ class WebpackLogger {
 	}
 
 	/**
+	 * Time aggregate end.
 	 * @param {string=} label label
 	 */
 	timeAggregateEnd(label) {
