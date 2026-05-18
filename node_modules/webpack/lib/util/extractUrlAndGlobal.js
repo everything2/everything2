@@ -6,6 +6,7 @@
 "use strict";
 
 /**
+ * Returns script url and its global variable.
  * @param {string} urlAndGlobal the script request
  * @returns {string[]} script url and its global variable
  */
@@ -14,5 +15,5 @@ module.exports = function extractUrlAndGlobal(urlAndGlobal) {
 	if (index <= 0 || index === urlAndGlobal.length - 1) {
 		throw new Error(`Invalid request "${urlAndGlobal}"`);
 	}
-	return [urlAndGlobal.substring(index + 1), urlAndGlobal.substring(0, index)];
+	return [urlAndGlobal.slice(index + 1), urlAndGlobal.slice(0, index)];
 };

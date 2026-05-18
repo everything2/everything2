@@ -8,7 +8,7 @@
 const RuntimeGlobals = require("../RuntimeGlobals");
 const RuntimeModule = require("../RuntimeModule");
 
-/** @typedef {import("../../declarations/WebpackOptions").EntryDescriptionNormalized} EntryDescriptionNormalized */
+/** @typedef {import("../../declarations/WebpackOptions").EntryDescriptionNormalized} EntryDescription */
 /** @typedef {import("../Chunk")} Chunk */
 
 class BaseUriRuntimeModule extends RuntimeModule {
@@ -17,12 +17,13 @@ class BaseUriRuntimeModule extends RuntimeModule {
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {
 		const chunk = /** @type {Chunk} */ (this.chunk);
 		const options =
-			/** @type {EntryDescriptionNormalized} */
+			/** @type {EntryDescription} */
 			(chunk.getEntryOptions());
 		return `${RuntimeGlobals.baseURI} = ${
 			options.baseUri === undefined

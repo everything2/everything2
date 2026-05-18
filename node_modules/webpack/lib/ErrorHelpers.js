@@ -10,6 +10,7 @@ const loaderFlag = "LOADER_EXECUTION";
 const webpackOptionsFlag = "WEBPACK_OPTIONS";
 
 /**
+ * Returns stack trace without the specified flag included.
  * @param {string} stack stack trace
  * @param {string} flag flag to cut off
  * @returns {string} stack trace without the specified flag included
@@ -25,18 +26,21 @@ const cutOffByFlag = (stack, flag) => {
 };
 
 /**
+ * Cut off loader execution.
  * @param {string} stack stack trace
  * @returns {string} stack trace without the loader execution flag included
  */
-const cutOffLoaderExecution = stack => cutOffByFlag(stack, loaderFlag);
+const cutOffLoaderExecution = (stack) => cutOffByFlag(stack, loaderFlag);
 
 /**
+ * Cut off webpack options.
  * @param {string} stack stack trace
  * @returns {string} stack trace without the webpack options flag included
  */
-const cutOffWebpackOptions = stack => cutOffByFlag(stack, webpackOptionsFlag);
+const cutOffWebpackOptions = (stack) => cutOffByFlag(stack, webpackOptionsFlag);
 
 /**
+ * Cut off multiline message.
  * @param {string} stack stack trace
  * @param {string} message error message
  * @returns {string} stack trace without the message included
@@ -56,6 +60,7 @@ const cutOffMultilineMessage = (stack, message) => {
 };
 
 /**
+ * Returns stack trace without the message included.
  * @param {string} stack stack trace
  * @param {string} message error message
  * @returns {string} stack trace without the message included
@@ -70,6 +75,7 @@ const cutOffMessage = (stack, message) => {
 };
 
 /**
+ * Returns stack trace without the loader execution flag and message included.
  * @param {string} stack stack trace
  * @param {string} message error message
  * @returns {string} stack trace without the loader execution flag and message included
@@ -81,6 +87,7 @@ const cleanUp = (stack, message) => {
 };
 
 /**
+ * Clean up webpack options.
  * @param {string} stack stack trace
  * @param {string} message error message
  * @returns {string} stack trace without the webpack options flag and message included
@@ -91,10 +98,10 @@ const cleanUpWebpackOptions = (stack, message) => {
 	return stack;
 };
 
-module.exports.cutOffByFlag = cutOffByFlag;
-module.exports.cutOffLoaderExecution = cutOffLoaderExecution;
-module.exports.cutOffWebpackOptions = cutOffWebpackOptions;
-module.exports.cutOffMultilineMessage = cutOffMultilineMessage;
-module.exports.cutOffMessage = cutOffMessage;
 module.exports.cleanUp = cleanUp;
 module.exports.cleanUpWebpackOptions = cleanUpWebpackOptions;
+module.exports.cutOffByFlag = cutOffByFlag;
+module.exports.cutOffLoaderExecution = cutOffLoaderExecution;
+module.exports.cutOffMessage = cutOffMessage;
+module.exports.cutOffMultilineMessage = cutOffMultilineMessage;
+module.exports.cutOffWebpackOptions = cutOffWebpackOptions;

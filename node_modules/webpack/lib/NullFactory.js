@@ -12,6 +12,7 @@ const ModuleFactory = require("./ModuleFactory");
 
 class NullFactory extends ModuleFactory {
 	/**
+	 * Processes the provided data.
 	 * @param {ModuleFactoryCreateData} data data object
 	 * @param {ModuleFactoryCallback} callback callback
 	 * @returns {void}
@@ -20,4 +21,5 @@ class NullFactory extends ModuleFactory {
 		return callback();
 	}
 }
+
 module.exports = NullFactory;

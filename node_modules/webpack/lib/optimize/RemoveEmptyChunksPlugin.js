@@ -5,7 +5,7 @@
 
 "use strict";
 
-const { STAGE_BASIC, STAGE_ADVANCED } = require("../OptimizationStages");
+const { STAGE_ADVANCED, STAGE_BASIC } = require("../OptimizationStages");
 
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compiler")} Compiler */
@@ -14,17 +14,18 @@ const PLUGIN_NAME = "RemoveEmptyChunksPlugin";
 
 class RemoveEmptyChunksPlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			/**
+			 * Handles the hook callback for this code path.
 			 * @param {Iterable<Chunk>} chunks the chunks array
 			 * @returns {void}
 			 */
-			const handler = chunks => {
+			const handler = (chunks) => {
 				const chunkGraph = compilation.chunkGraph;
 				for (const chunk of chunks) {
 					if (
@@ -38,7 +39,6 @@ class RemoveEmptyChunksPlugin {
 				}
 			};
 
-			// TODO do it once
 			compilation.hooks.optimizeChunks.tap(
 				{
 					name: PLUGIN_NAME,
@@ -56,4 +56,5 @@ class RemoveEmptyChunksPlugin {
 		});
 	}
 }
+
 module.exports = RemoveEmptyChunksPlugin;

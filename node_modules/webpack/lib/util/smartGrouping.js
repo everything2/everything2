@@ -6,6 +6,7 @@
 "use strict";
 
 /**
+ * Defines the group options type used by this module.
  * @typedef {object} GroupOptions
  * @property {boolean=} groupChildren
  * @property {boolean=} force
@@ -13,42 +14,59 @@
  */
 
 /**
- * @template T
- * @template R
+ * Defines the group config type used by this module.
+ * @template I
+ * @template G
  * @typedef {object} GroupConfig
- * @property {(item: T) => string[] | undefined} getKeys
- * @property {(key: string, children: (R | T)[], items: T[]) => R} createGroup
- * @property {(name: string, items: T[]) => GroupOptions=} getOptions
+ * @property {(item: I) => string[] | undefined} getKeys
+ * @property {(name: string, items: I[]) => GroupOptions=} getOptions
+ * @property {(key: string, children: I[], items: I[]) => G} createGroup
  */
 
 /**
- * @template T
- * @template R
+ * Defines the group type used by this module.
+ * @template I
+ * @template G
+ * @typedef {{ config: GroupConfig<I, G>, name: string, alreadyGrouped: boolean, items: Items<I, G> | undefined }} Group
+ */
+
+/**
+ * Defines the groups type used by this module.
+ * @template I, G
+ * @typedef {Set<Group<I, G>>} Groups
+ */
+
+/**
+ * Defines the item with groups type used by this module.
+ * @template I
+ * @template G
  * @typedef {object} ItemWithGroups
- * @property {T} item
- * @property {Set<Group<T, R>>} groups
+ * @property {I} item
+ * @property {Groups<I, G>} groups
  */
 
 /**
- * @template T
- * @template R
- * @typedef {{ config: GroupConfig<T, R>, name: string, alreadyGrouped: boolean, items: Set<ItemWithGroups<T, R>> | undefined }} Group
+ * Defines the items type used by this module.
+ * @template T, G
+ * @typedef {Set<ItemWithGroups<T, G>>} Items
  */
 
 /**
- * @template T
+ * Returns grouped items.
+ * @template I
+ * @template G
  * @template R
- * @param {T[]} items the list of items
- * @param {GroupConfig<T, R>[]} groupConfigs configuration
- * @returns {(R | T)[]} grouped items
+ * @param {I[]} items the list of items
+ * @param {GroupConfig<I, G>[]} groupConfigs configuration
+ * @returns {(I | G)[]} grouped items
  */
 const smartGrouping = (items, groupConfigs) => {
-	/** @type {Set<ItemWithGroups<T, R>>} */
+	/** @type {Items<I, G>} */
 	const itemsWithGroups = new Set();
-	/** @type {Map<string, Group<T, R>>} */
+	/** @type {Map<string, Group<I, G>>} */
 	const allGroups = new Map();
 	for (const item of items) {
-		/** @type {Set<Group<T, R>>} */
+		/** @type {Groups<I, G>} */
 		const groups = new Set();
 		for (let i = 0; i < groupConfigs.length; i++) {
 			const groupConfig = groupConfigs[i];
@@ -77,11 +95,13 @@ const smartGrouping = (items, groupConfigs) => {
 			groups
 		});
 	}
+
 	/**
-	 * @param {Set<ItemWithGroups<T, R>>} itemsWithGroups input items with groups
-	 * @returns {(T | R)[]} groups items
+	 * Returns groups items.
+	 * @param {Items<I, G>} itemsWithGroups input items with groups
+	 * @returns {(I | G)[]} groups items
 	 */
-	const runGrouping = itemsWithGroups => {
+	const runGrouping = (itemsWithGroups) => {
 		const totalSize = itemsWithGroups.size;
 		for (const entry of itemsWithGroups) {
 			for (const group of entry.groups) {
@@ -94,7 +114,7 @@ const smartGrouping = (items, groupConfigs) => {
 				}
 			}
 		}
-		/** @type {Map<Group<T, R>, { items: Set<ItemWithGroups<T, R>>, options: GroupOptions | false | undefined, used: boolean }>} */
+		/** @type {Map<Group<I, G>, { items: Items<I, G>, options: GroupOptions | false | undefined, used: boolean }>} */
 		const groupMap = new Map();
 		for (const group of allGroups.values()) {
 			if (group.items) {
@@ -107,13 +127,15 @@ const smartGrouping = (items, groupConfigs) => {
 				});
 			}
 		}
-		/** @type {(T | R)[]} */
+		/** @type {(I | G)[]} */
 		const results = [];
 		for (;;) {
-			/** @type {Group<T, R> | undefined} */
+			/** @type {Group<I, G> | undefined} */
 			let bestGroup;
 			let bestGroupSize = -1;
+			/** @type {Items<I, G> | undefined} */
 			let bestGroupItems;
+			/** @type {GroupOptions | false | undefined} */
 			let bestGroupOptions;
 			for (const [group, state] of groupMap) {
 				const { items, used } = state;
@@ -192,8 +214,9 @@ const smartGrouping = (items, groupConfigs) => {
 			bestGroup.alreadyGrouped = true;
 			const children = groupChildren ? runGrouping(items) : allItems;
 			bestGroup.alreadyGrouped = false;
-
-			results.push(groupConfig.createGroup(key, children, allItems));
+			results.push(
+				groupConfig.createGroup(key, /** @type {I[]} */ (children), allItems)
+			);
 		}
 		for (const { item } of itemsWithGroups) {
 			results.push(item);

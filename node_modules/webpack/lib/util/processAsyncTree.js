@@ -6,6 +6,10 @@
 "use strict";
 
 /**
+ * Walks a dynamically expanding async work tree with bounded concurrency.
+ * Each processed item may enqueue more items through `push`, allowing callers
+ * to model breadth-first or depth-first discovery without managing the queue
+ * themselves.
  * @template T
  * @template {Error} E
  * @param {Iterable<T>} items initial items
@@ -15,16 +19,18 @@
  * @returns {void}
  */
 const processAsyncTree = (items, concurrency, processor, callback) => {
-	const queue = Array.from(items);
+	const queue = [...items];
 	if (queue.length === 0) return callback();
 	let processing = 0;
 	let finished = false;
 	let processScheduled = true;
 
 	/**
+	 * Enqueues a newly discovered item and schedules queue processing when the
+	 * current concurrency budget allows more work to start.
 	 * @param {T} item item
 	 */
-	const push = item => {
+	const push = (item) => {
 		queue.push(item);
 		if (!processScheduled && processing < concurrency) {
 			processScheduled = true;
@@ -33,9 +39,11 @@ const processAsyncTree = (items, concurrency, processor, callback) => {
 	};
 
 	/**
+	 * Handles completion of a single processor call, propagating the first
+	 * error and scheduling more queued work when possible.
 	 * @param {E | null | undefined} err error
 	 */
-	const processorCallback = err => {
+	const processorCallback = (err) => {
 		processing--;
 		if (err && !finished) {
 			finished = true;

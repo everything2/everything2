@@ -9,19 +9,21 @@ const RuntimeModule = require("../RuntimeModule");
 const Template = require("../Template");
 
 /** @typedef {import("../Chunk")} Chunk */
+/** @typedef {import("../Chunk").ChunkChildOfTypeInOrder} ChunkChildOfTypeInOrder */
 /** @typedef {import("../Compilation")} Compilation */
-/** @typedef {import("../RuntimeTemplate")} RuntimeTemplate */
 
 class ChunkPrefetchStartupRuntimeModule extends RuntimeModule {
 	/**
-	 * @param {{ onChunks: Chunk[], chunks: Set<Chunk> }[]} startupChunks chunk ids to trigger when chunks are loaded
+	 * @param {ChunkChildOfTypeInOrder[]} startupChunks chunk ids to trigger when chunks are loaded
 	 */
 	constructor(startupChunks) {
 		super("startup prefetch", RuntimeModule.STAGE_TRIGGER);
+		/** @type {ChunkChildOfTypeInOrder[]} */
 		this.startupChunks = startupChunks;
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {
@@ -34,16 +36,16 @@ class ChunkPrefetchStartupRuntimeModule extends RuntimeModule {
 				({ onChunks, chunks }) =>
 					`${RuntimeGlobals.onChunksLoaded}(0, ${JSON.stringify(
 						// This need to include itself to delay execution after this chunk has been fully loaded
-						onChunks.filter(c => c === chunk).map(c => c.id)
+						onChunks.filter((c) => c === chunk).map((c) => c.id)
 					)}, ${runtimeTemplate.basicFunction(
 						"",
 						chunks.size < 3
 							? Array.from(
 									chunks,
-									c =>
+									(c) =>
 										`${RuntimeGlobals.prefetchChunk}(${JSON.stringify(c.id)});`
 								)
-							: `${JSON.stringify(Array.from(chunks, c => c.id))}.map(${
+							: `${JSON.stringify(Array.from(chunks, (c) => c.id))}.map(${
 									RuntimeGlobals.prefetchChunk
 								});`
 					)}, 5);`

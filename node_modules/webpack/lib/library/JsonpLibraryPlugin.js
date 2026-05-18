@@ -13,27 +13,35 @@ const AbstractLibraryPlugin = require("./AbstractLibraryPlugin");
 /** @typedef {import("../../declarations/WebpackOptions").LibraryType} LibraryType */
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compilation").ChunkHashContext} ChunkHashContext */
-/** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../javascript/JavascriptModulesPlugin").RenderContext} RenderContext */
 /** @typedef {import("../util/Hash")} Hash */
-/** @template T @typedef {import("./AbstractLibraryPlugin").LibraryContext<T>} LibraryContext<T> */
 
 /**
+ * Defines the shared type used by this module.
+ * @template T
+ * @typedef {import("./AbstractLibraryPlugin").LibraryContext<T>} LibraryContext<T>
+ */
+
+/**
+ * Defines the jsonp library plugin options type used by this module.
  * @typedef {object} JsonpLibraryPluginOptions
  * @property {LibraryType} type
  */
 
 /**
+ * Defines the jsonp library plugin parsed type used by this module.
  * @typedef {object} JsonpLibraryPluginParsed
  * @property {string} name
  */
 
 /**
+ * Represents the jsonp library plugin runtime component.
  * @typedef {JsonpLibraryPluginParsed} T
  * @extends {AbstractLibraryPlugin<JsonpLibraryPluginParsed>}
  */
 class JsonpLibraryPlugin extends AbstractLibraryPlugin {
 	/**
+	 * Creates an instance of JsonpLibraryPlugin.
 	 * @param {JsonpLibraryPluginOptions} options the plugin options
 	 */
 	constructor(options) {
@@ -44,8 +52,9 @@ class JsonpLibraryPlugin extends AbstractLibraryPlugin {
 	}
 
 	/**
+	 * Returns preprocess as needed by overriding.
 	 * @param {LibraryOptions} library normalized library option
-	 * @returns {T | false} preprocess as needed by overriding
+	 * @returns {T} preprocess as needed by overriding
 	 */
 	parseOptions(library) {
 		const { name } = library;
@@ -61,6 +70,7 @@ class JsonpLibraryPlugin extends AbstractLibraryPlugin {
 	}
 
 	/**
+	 * Returns source with library export.
 	 * @param {Source} source source
 	 * @param {RenderContext} renderContext render context
 	 * @param {LibraryContext<T>} libraryContext context
@@ -74,6 +84,7 @@ class JsonpLibraryPlugin extends AbstractLibraryPlugin {
 	}
 
 	/**
+	 * Processes the provided chunk.
 	 * @param {Chunk} chunk the chunk
 	 * @param {Hash} hash hash
 	 * @param {ChunkHashContext} chunkHashContext chunk hash context

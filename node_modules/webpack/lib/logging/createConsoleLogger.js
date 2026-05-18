@@ -10,48 +10,52 @@ const { LogType } = require("./Logger");
 /** @typedef {import("../../declarations/WebpackOptions").FilterItemTypes} FilterItemTypes */
 /** @typedef {import("../../declarations/WebpackOptions").FilterTypes} FilterTypes */
 /** @typedef {import("./Logger").LogTypeEnum} LogTypeEnum */
+/** @typedef {import("./Logger").Args} Args */
 
 /** @typedef {(item: string) => boolean} FilterFunction */
-/** @typedef {(value: string, type: LogTypeEnum, args?: EXPECTED_ANY[]) => void} LoggingFunction */
+/** @typedef {(value: string, type: LogTypeEnum, args?: Args) => void} LoggingFunction */
 
 /**
+ * Defines the logger console type used by this module.
  * @typedef {object} LoggerConsole
  * @property {() => void} clear
  * @property {() => void} trace
- * @property {(...args: EXPECTED_ANY[]) => void} info
- * @property {(...args: EXPECTED_ANY[]) => void} log
- * @property {(...args: EXPECTED_ANY[]) => void} warn
- * @property {(...args: EXPECTED_ANY[]) => void} error
- * @property {(...args: EXPECTED_ANY[]) => void=} debug
- * @property {(...args: EXPECTED_ANY[]) => void=} group
- * @property {(...args: EXPECTED_ANY[]) => void=} groupCollapsed
- * @property {(...args: EXPECTED_ANY[]) => void=} groupEnd
- * @property {(...args: EXPECTED_ANY[]) => void=} status
- * @property {(...args: EXPECTED_ANY[]) => void=} profile
- * @property {(...args: EXPECTED_ANY[]) => void=} profileEnd
- * @property {(...args: EXPECTED_ANY[]) => void=} logTime
+ * @property {(...args: Args) => void} info
+ * @property {(...args: Args) => void} log
+ * @property {(...args: Args) => void} warn
+ * @property {(...args: Args) => void} error
+ * @property {(...args: Args) => void=} debug
+ * @property {(...args: Args) => void=} group
+ * @property {(...args: Args) => void=} groupCollapsed
+ * @property {(...args: Args) => void=} groupEnd
+ * @property {(...args: Args) => void=} status
+ * @property {(...args: Args) => void=} profile
+ * @property {(...args: Args) => void=} profileEnd
+ * @property {(...args: Args) => void=} logTime
  */
 
 /**
+ * Defines the logger options type used by this module.
  * @typedef {object} LoggerOptions
- * @property {false|true|"none"|"error"|"warn"|"info"|"log"|"verbose"} level loglevel
- * @property {FilterTypes|boolean} debug filter for debug logging
+ * @property {false | true | "none" | "error" | "warn" | "info" | "log" | "verbose"} level loglevel
+ * @property {FilterTypes | boolean} debug filter for debug logging
  * @property {LoggerConsole} console the console to log to
  */
 
 /**
+ * Filter to function.
  * @param {FilterItemTypes} item an input item
  * @returns {FilterFunction | undefined} filter function
  */
-const filterToFunction = item => {
+const filterToFunction = (item) => {
 	if (typeof item === "string") {
 		const regExp = new RegExp(
 			`[\\\\/]${item.replace(/[-[\]{}()*+?.\\^$|]/g, "\\$&")}([\\\\/]|$|!|\\?)`
 		);
-		return ident => regExp.test(ident);
+		return (ident) => regExp.test(ident);
 	}
 	if (item && typeof item === "object" && typeof item.test === "function") {
-		return ident => item.test(ident);
+		return (ident) => item.test(ident);
 	}
 	if (typeof item === "function") {
 		return item;
@@ -62,6 +66,7 @@ const filterToFunction = item => {
 };
 
 /**
+ * Enumerates the available values.
  * @enum {number}
  */
 const LogLevel = {
@@ -76,6 +81,7 @@ const LogLevel = {
 };
 
 /**
+ * Returns logging function.
  * @param {LoggerOptions} options options object
  * @returns {LoggingFunction} logging function
  */
@@ -85,19 +91,25 @@ module.exports = ({ level = "info", debug = false, console }) => {
 		(
 			typeof debug === "boolean"
 				? [() => debug]
-				: /** @type {FilterItemTypes[]} */ ([])
-						.concat(debug)
-						.map(filterToFunction)
+				: /** @type {FilterItemTypes[]} */ ([
+						...(Array.isArray(debug) ? debug : [debug])
+					]).map(filterToFunction)
 		);
 	const loglevel = LogLevel[`${level}`] || 0;
 
 	/**
+	 * Processes the provided name.
 	 * @param {string} name name of the logger
 	 * @param {LogTypeEnum} type type of the log entry
-	 * @param {EXPECTED_ANY[]=} args arguments of the log entry
+	 * @param {Args=} args arguments of the log entry
 	 * @returns {void}
 	 */
 	const logger = (name, type, args) => {
+		/**
+		 * Returns labeled args.
+		 * @template T
+		 * @returns {[string?, ...T[]]} labeled args
+		 */
 		const labeledArgs = () => {
 			if (Array.isArray(args)) {
 				if (args.length > 0 && typeof args[0] === "string") {
@@ -107,7 +119,7 @@ module.exports = ({ level = "info", debug = false, console }) => {
 			}
 			return [];
 		};
-		const debug = debugFilters.some(f => f(name));
+		const debug = debugFilters.some((f) => f(name));
 		switch (type) {
 			case LogType.debug:
 				if (!debug) return;

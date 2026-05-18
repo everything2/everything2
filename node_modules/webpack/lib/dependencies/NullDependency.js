@@ -12,12 +12,15 @@ const DependencyTemplate = require("../DependencyTemplate");
 /** @typedef {import("../Dependency").TRANSITIVE} TRANSITIVE */
 /** @typedef {import("../DependencyTemplate").DependencyTemplateContext} DependencyTemplateContext */
 
+/** @typedef {string[]} RawRuntimeRequirements */
+
 class NullDependency extends Dependency {
 	get type() {
 		return "null";
 	}
 
 	/**
+	 * Could affect referencing module.
 	 * @returns {boolean | TRANSITIVE} true, when changes to the referenced module could affect the referencing module; TRANSITIVE, when changes to the referenced module could affect referencing modules of the referencing module
 	 */
 	couldAffectReferencingModule() {
@@ -29,6 +32,7 @@ NullDependency.Template = class NullDependencyTemplate extends (
 	DependencyTemplate
 ) {
 	/**
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Dependency} dependency the dependency for which the template should be applied
 	 * @param {ReplaceSource} source the current replace source which can be modified
 	 * @param {DependencyTemplateContext} templateContext the context object

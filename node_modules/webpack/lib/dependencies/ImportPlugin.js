@@ -24,7 +24,7 @@ const PLUGIN_NAME = "ImportPlugin";
 
 class ImportPlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -69,13 +69,15 @@ class ImportPlugin {
 				);
 
 				/**
+				 * Handles the hook callback for this code path.
 				 * @param {Parser} parser parser parser
 				 * @param {JavascriptParserOptions} parserOptions parserOptions
 				 * @returns {void}
 				 */
 				const handler = (parser, parserOptions) => {
-					if (parserOptions.import !== undefined && !parserOptions.import)
+					if (parserOptions.import !== undefined && !parserOptions.import) {
 						return;
+					}
 
 					new ImportParserPlugin(parserOptions).apply(parser);
 				};
@@ -93,4 +95,5 @@ class ImportPlugin {
 		);
 	}
 }
+
 module.exports = ImportPlugin;

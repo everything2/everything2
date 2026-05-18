@@ -9,52 +9,48 @@ const { DEFAULTS } = require("../config/defaults");
 const {
 	compareModulesByPreOrderIndexOrIdentifier
 } = require("../util/comparators");
-const createSchemaValidation = require("../util/create-schema-validation");
 const createHash = require("../util/createHash");
 const {
-	getUsedModuleIdsAndModules,
-	getFullModuleName
+	getFullModuleName,
+	getUsedModuleIdsAndModules
 } = require("./IdHelpers");
 
-/** @typedef {import("../../declarations/plugins/HashedModuleIdsPlugin").HashedModuleIdsPluginOptions} HashedModuleIdsPluginOptions */
+/** @typedef {import("../../declarations/plugins/ids/HashedModuleIdsPlugin").HashedModuleIdsPluginOptions} HashedModuleIdsPluginOptions */
 /** @typedef {import("../Compiler")} Compiler */
-
-const validate = createSchemaValidation(
-	require("../../schemas/plugins/HashedModuleIdsPlugin.check.js"),
-	() => require("../../schemas/plugins/HashedModuleIdsPlugin.json"),
-	{
-		name: "Hashed Module Ids Plugin",
-		baseDataPath: "options"
-	}
-);
 
 const PLUGIN_NAME = "HashedModuleIdsPlugin";
 
 class HashedModuleIdsPlugin {
 	/**
+	 * Creates an instance of HashedModuleIdsPlugin.
 	 * @param {HashedModuleIdsPluginOptions=} options options object
 	 */
 	constructor(options = {}) {
-		validate(options);
-
 		/** @type {HashedModuleIdsPluginOptions} */
-		this.options = {
-			context: undefined,
-			hashFunction: DEFAULTS.HASH_FUNCTION,
-			hashDigest: "base64",
-			hashDigestLength: 4,
-			...options
-		};
+		this.options = options;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		const options = this.options;
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.validate.tap(PLUGIN_NAME, () => {
+			compiler.validate(
+				() => require("../../schemas/plugins/ids/HashedModuleIdsPlugin.json"),
+				this.options,
+				{
+					name: "Hashed Module Ids Plugin",
+					baseDataPath: "options"
+				},
+				(options) =>
+					require("../../schemas/plugins/ids/HashedModuleIdsPlugin.check")(
+						options
+					)
+			);
+		});
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			compilation.hooks.moduleIds.tap(PLUGIN_NAME, () => {
 				const chunkGraph = compilation.chunkGraph;
 				const context = this.options.context
@@ -68,17 +64,14 @@ class HashedModuleIdsPlugin {
 				for (const module of modulesInNaturalOrder) {
 					const ident = getFullModuleName(module, context, compiler.root);
 					const hash = createHash(
-						/** @type {NonNullable<HashedModuleIdsPluginOptions["hashFunction"]>} */ (
-							options.hashFunction
-						)
+						this.options.hashFunction || DEFAULTS.HASH_FUNCTION
 					);
 					hash.update(ident || "");
-					const hashId = /** @type {string} */ (
-						hash.digest(options.hashDigest)
-					);
-					let len = options.hashDigestLength;
-					while (usedIds.has(hashId.slice(0, len)))
+					const hashId = hash.digest(this.options.hashDigest || "base64");
+					let len = this.options.hashDigestLength || 4;
+					while (usedIds.has(hashId.slice(0, len))) {
 						/** @type {number} */ (len)++;
+					}
 					const moduleId = hashId.slice(0, len);
 					chunkGraph.setModuleId(module, moduleId);
 					usedIds.add(moduleId);

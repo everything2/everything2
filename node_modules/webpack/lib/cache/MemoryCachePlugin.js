@@ -7,15 +7,13 @@
 
 const Cache = require("../Cache");
 
-/** @typedef {import("webpack-sources").Source} Source */
 /** @typedef {import("../Cache").Data} Data */
 /** @typedef {import("../Cache").Etag} Etag */
 /** @typedef {import("../Compiler")} Compiler */
-/** @typedef {import("../Module")} Module */
 
 class MemoryCachePlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -55,4 +53,5 @@ class MemoryCachePlugin {
 		);
 	}
 }
+
 module.exports = MemoryCachePlugin;

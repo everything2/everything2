@@ -5,6 +5,8 @@
 
 "use strict";
 
+const { isRelativeRequest } = require("./util/path");
+
 /** @typedef {import("./Resolver")} Resolver */
 /** @typedef {import("./Resolver").ResolveRequest} ResolveRequest */
 
@@ -18,19 +20,22 @@ module.exports = function getInnerRequest(resolver, request) {
 		typeof request.__innerRequest === "string" &&
 		request.__innerRequest_request === request.request &&
 		request.__innerRequest_relativePath === request.relativePath
-	)
+	) {
 		return request.__innerRequest;
-	/** @type {string|undefined} */
+	}
+	/** @type {string | undefined} */
 	let innerRequest;
 	if (request.request) {
 		innerRequest = request.request;
-		if (/^\.\.?(?:\/|$)/.test(innerRequest) && request.relativePath) {
+		if (request.relativePath && isRelativeRequest(innerRequest)) {
 			innerRequest = resolver.join(request.relativePath, innerRequest);
 		}
 	} else {
 		innerRequest = request.relativePath;
 	}
+	// eslint-disable-next-line camelcase
 	request.__innerRequest_request = request.request;
+	// eslint-disable-next-line camelcase
 	request.__innerRequest_relativePath = request.relativePath;
 	return (request.__innerRequest = /** @type {string} */ (innerRequest));
 };

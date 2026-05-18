@@ -5,8 +5,6 @@
 
 "use strict";
 
-const basename = require("./getPaths").basename;
-
 /** @typedef {import("./Resolver")} Resolver */
 /** @typedef {import("./Resolver").ResolveRequest} ResolveRequest */
 /** @typedef {import("./Resolver").ResolveStepHook} ResolveStepHook */
@@ -31,7 +29,7 @@ module.exports = class CloneBasenamePlugin {
 			.getHook(this.source)
 			.tapAsync("CloneBasenamePlugin", (request, resolveContext, callback) => {
 				const requestPath = /** @type {string} */ (request.path);
-				const filename = /** @type {string} */ (basename(requestPath));
+				const filename = resolver.basename(requestPath);
 				const filePath = resolver.join(requestPath, filename);
 				/** @type {ResolveRequest} */
 				const obj = {
@@ -39,14 +37,14 @@ module.exports = class CloneBasenamePlugin {
 					path: filePath,
 					relativePath:
 						request.relativePath &&
-						resolver.join(request.relativePath, filename)
+						resolver.join(request.relativePath, filename),
 				};
 				resolver.doResolve(
 					target,
 					obj,
-					"using path: " + filePath,
+					`using path: ${filePath}`,
 					resolveContext,
-					callback
+					callback,
 				);
 			});
 	}

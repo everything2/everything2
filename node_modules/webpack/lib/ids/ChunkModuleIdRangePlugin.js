@@ -7,13 +7,16 @@
 
 const { find } = require("../util/SetHelpers");
 const {
-	compareModulesByPreOrderIndexOrIdentifier,
-	compareModulesByPostOrderIndexOrIdentifier
+	compareModulesByPostOrderIndexOrIdentifier,
+	compareModulesByPreOrderIndexOrIdentifier
 } = require("../util/comparators");
 
 /** @typedef {import("../Compiler")} Compiler */
+/** @typedef {import("../Module")} Module */
+/** @typedef {import("../ChunkGraph").ModuleComparator} ModuleComparator */
 
 /**
+ * Defines the chunk module id range plugin options type used by this module.
  * @typedef {object} ChunkModuleIdRangePluginOptions
  * @property {string} name the chunk name
  * @property {("index" | "index2" | "preOrderIndex" | "postOrderIndex")=} order order
@@ -25,37 +28,40 @@ const PLUGIN_NAME = "ChunkModuleIdRangePlugin";
 
 class ChunkModuleIdRangePlugin {
 	/**
+	 * Creates an instance of ChunkModuleIdRangePlugin.
 	 * @param {ChunkModuleIdRangePluginOptions} options options object
 	 */
 	constructor(options) {
+		/** @type {ChunkModuleIdRangePluginOptions} */
 		this.options = options;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		const options = this.options;
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			const moduleGraph = compilation.moduleGraph;
-			compilation.hooks.moduleIds.tap(PLUGIN_NAME, modules => {
+			compilation.hooks.moduleIds.tap(PLUGIN_NAME, (modules) => {
 				const chunkGraph = compilation.chunkGraph;
 				const chunk = find(
 					compilation.chunks,
-					chunk => chunk.name === options.name
+					(chunk) => chunk.name === this.options.name
 				);
 				if (!chunk) {
 					throw new Error(
-						`${PLUGIN_NAME}: Chunk with name '${options.name}"' was not found`
+						`${PLUGIN_NAME}: Chunk with name '${this.options.name}"' was not found`
 					);
 				}
 
+				/** @type {Module[]} */
 				let chunkModules;
-				if (options.order) {
+				if (this.options.order) {
+					/** @type {ModuleComparator} */
 					let cmpFn;
-					switch (options.order) {
+					switch (this.options.order) {
 						case "index":
 						case "preOrderIndex":
 							cmpFn = compareModulesByPreOrderIndexOrIdentifier(moduleGraph);
@@ -69,21 +75,22 @@ class ChunkModuleIdRangePlugin {
 					}
 					chunkModules = chunkGraph.getOrderedChunkModules(chunk, cmpFn);
 				} else {
-					chunkModules = Array.from(modules)
-						.filter(m => chunkGraph.isModuleInChunk(m, chunk))
+					chunkModules = [...modules]
+						.filter((m) => chunkGraph.isModuleInChunk(m, chunk))
 						.sort(compareModulesByPreOrderIndexOrIdentifier(moduleGraph));
 				}
 
-				let currentId = options.start || 0;
+				let currentId = this.options.start || 0;
 				for (let i = 0; i < chunkModules.length; i++) {
 					const m = chunkModules[i];
 					if (m.needId && chunkGraph.getModuleId(m) === null) {
 						chunkGraph.setModuleId(m, currentId++);
 					}
-					if (options.end && currentId > options.end) break;
+					if (this.options.end && currentId > this.options.end) break;
 				}
 			});
 		});
 	}
 }
+
 module.exports = ChunkModuleIdRangePlugin;

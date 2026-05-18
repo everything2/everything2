@@ -9,7 +9,7 @@ const { RawSource } = require("webpack-sources");
 const { UsageState } = require("../ExportsInfo");
 const Generator = require("../Generator");
 const InitFragment = require("../InitFragment");
-const { WEBASSEMBLY_TYPES } = require("../ModuleSourceTypesConstants");
+const { WEBASSEMBLY_TYPES } = require("../ModuleSourceTypeConstants");
 const RuntimeGlobals = require("../RuntimeGlobals");
 const Template = require("../Template");
 const ModuleDependency = require("../dependencies/ModuleDependency");
@@ -17,16 +17,15 @@ const WebAssemblyExportImportedDependency = require("../dependencies/WebAssembly
 const WebAssemblyImportDependency = require("../dependencies/WebAssemblyImportDependency");
 
 /** @typedef {import("webpack-sources").Source} Source */
-/** @typedef {import("../Dependency")} Dependency */
-/** @typedef {import("../DependencyTemplates")} DependencyTemplates */
 /** @typedef {import("../Generator").GenerateContext} GenerateContext */
 /** @typedef {import("../Module")} Module */
+/** @typedef {import("../Module").SourceType} SourceType */
 /** @typedef {import("../Module").SourceTypes} SourceTypes */
 /** @typedef {import("../NormalModule")} NormalModule */
-/** @typedef {import("../RuntimeTemplate")} RuntimeTemplate */
 
 class WebAssemblyJavascriptGenerator extends Generator {
 	/**
+	 * Returns the source types available for this module.
 	 * @param {NormalModule} module fresh module
 	 * @returns {SourceTypes} available types (do not mutate)
 	 */
@@ -35,8 +34,9 @@ class WebAssemblyJavascriptGenerator extends Generator {
 	}
 
 	/**
+	 * Returns the estimated size for the requested source type.
 	 * @param {NormalModule} module the module
-	 * @param {string=} type source type
+	 * @param {SourceType=} type source type
 	 * @returns {number} estimate size of the module
 	 */
 	getSize(module, type) {
@@ -44,6 +44,7 @@ class WebAssemblyJavascriptGenerator extends Generator {
 	}
 
 	/**
+	 * Generates generated code for this runtime module.
 	 * @param {NormalModule} module module for which the code should be generated
 	 * @param {GenerateContext} generateContext context for generate
 	 * @returns {Source | null} generated code
@@ -56,24 +57,29 @@ class WebAssemblyJavascriptGenerator extends Generator {
 			runtimeRequirements,
 			runtime
 		} = generateContext;
-		/** @type {InitFragment<InitFragment<string>>[]} */
+		/** @type {InitFragment<GenerateContext>[]} */
 		const initFragments = [];
 
 		const exportsInfo = moduleGraph.getExportsInfo(module);
 
 		let needExportsCopy = false;
+		/** @typedef {{ dependency: ModuleDependency | undefined, importVar: string, index: number, request: string | undefined, names: Set<string>, reexports: string[] }} ImportData */
+		/** @type {Map<Module, ImportData>} */
 		const importedModules = new Map();
+		/** @type {string[]} */
 		const initParams = [];
 		let index = 0;
 		for (const dep of module.dependencies) {
 			const moduleDep =
 				dep && dep instanceof ModuleDependency ? dep : undefined;
-			if (moduleGraph.getModule(dep)) {
-				let importData = importedModules.get(moduleGraph.getModule(dep));
+			const mod = moduleGraph.getModule(dep);
+			if (mod) {
+				let importData = importedModules.get(mod);
 				if (importData === undefined) {
 					importedModules.set(
-						moduleGraph.getModule(dep),
+						mod,
 						(importData = {
+							dependency: moduleDep,
 							importVar: `m${index}`,
 							index,
 							request: (moduleDep && moduleDep.userRequest) || undefined,
@@ -97,6 +103,7 @@ class WebAssemblyJavascriptGenerator extends Generator {
 								initParams.push(
 									runtimeTemplate.exportFromImport({
 										moduleGraph,
+										chunkGraph,
 										module: importedModule,
 										request: dep.request,
 										importVar: importData.importVar,
@@ -108,7 +115,8 @@ class WebAssemblyJavascriptGenerator extends Generator {
 										defaultInterop: true,
 										initFragments,
 										runtime,
-										runtimeRequirements
+										runtimeRequirements,
+										dependency: dep
 									})
 								);
 							}
@@ -129,6 +137,7 @@ class WebAssemblyJavascriptGenerator extends Generator {
 							`${exportProp} = ${runtimeTemplate.exportFromImport({
 								moduleGraph,
 								module: /** @type {Module} */ (moduleGraph.getModule(dep)),
+								chunkGraph,
 								request: dep.request,
 								importVar: importData.importVar,
 								originModule: module,
@@ -139,7 +148,8 @@ class WebAssemblyJavascriptGenerator extends Generator {
 								defaultInterop: true,
 								initFragments,
 								runtime,
-								runtimeRequirements
+								runtimeRequirements,
+								dependency: dep
 							})};`,
 							`if(WebAssembly.Global) ${exportProp} = ` +
 								`new WebAssembly.Global({ value: ${JSON.stringify(
@@ -155,14 +165,16 @@ class WebAssemblyJavascriptGenerator extends Generator {
 		const importsCode = Template.asString(
 			Array.from(
 				importedModules,
-				([module, { importVar, request, reexports }]) => {
+				([module, { importVar, request, reexports, dependency }]) => {
 					const importStatement = runtimeTemplate.importStatement({
 						module,
+						moduleGraph,
 						chunkGraph,
 						request,
 						importVar,
 						originModule: module,
-						runtimeRequirements
+						runtimeRequirements,
+						dependency
 					});
 					return importStatement[0] + importStatement[1] + reexports.join("\n");
 				}
@@ -214,6 +226,7 @@ class WebAssemblyJavascriptGenerator extends Generator {
 	}
 
 	/**
+	 * Generates fallback output for the provided error condition.
 	 * @param {Error} error the error
 	 * @param {NormalModule} module module for which the code should be generated
 	 * @param {GenerateContext} generateContext context for generate

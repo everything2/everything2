@@ -15,29 +15,36 @@ const AbstractLibraryPlugin = require("./AbstractLibraryPlugin");
 /** @typedef {import("../../declarations/WebpackOptions").LibraryType} LibraryType */
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compilation").ChunkHashContext} ChunkHashContext */
-/** @typedef {import("../Compiler")} Compiler */
 /** @typedef {import("../javascript/JavascriptModulesPlugin").RenderContext} RenderContext */
 /** @typedef {import("../util/Hash")} Hash */
-/** @template T @typedef {import("./AbstractLibraryPlugin").LibraryContext<T>} LibraryContext<T> */
+/**
+ * Defines the shared type used by this module.
+ * @template T
+ * @typedef {import("./AbstractLibraryPlugin").LibraryContext<T>} LibraryContext<T>
+ */
 
 /**
+ * Defines the amd library plugin options type used by this module.
  * @typedef {object} AmdLibraryPluginOptions
  * @property {LibraryType} type
  * @property {boolean=} requireAsWrapper
  */
 
 /**
+ * Defines the amd library plugin parsed type used by this module.
  * @typedef {object} AmdLibraryPluginParsed
  * @property {string} name
  * @property {string} amdContainer
  */
 
 /**
+ * Represents the amd library plugin runtime component.
  * @typedef {AmdLibraryPluginParsed} T
  * @extends {AbstractLibraryPlugin<AmdLibraryPluginParsed>}
  */
 class AmdLibraryPlugin extends AbstractLibraryPlugin {
 	/**
+	 * Creates an instance of AmdLibraryPlugin.
 	 * @param {AmdLibraryPluginOptions} options the plugin options
 	 */
 	constructor(options) {
@@ -45,12 +52,14 @@ class AmdLibraryPlugin extends AbstractLibraryPlugin {
 			pluginName: "AmdLibraryPlugin",
 			type: options.type
 		});
+		/** @type {AmdLibraryPluginOptions["requireAsWrapper"]} */
 		this.requireAsWrapper = options.requireAsWrapper;
 	}
 
 	/**
+	 * Returns preprocess as needed by overriding.
 	 * @param {LibraryOptions} library normalized library option
-	 * @returns {T | false} preprocess as needed by overriding
+	 * @returns {T} preprocess as needed by overriding
 	 */
 	parseOptions(library) {
 		const { name, amdContainer } = library;
@@ -71,6 +80,7 @@ class AmdLibraryPlugin extends AbstractLibraryPlugin {
 	}
 
 	/**
+	 * Returns source with library export.
 	 * @param {Source} source source
 	 * @param {RenderContext} renderContext render context
 	 * @param {LibraryContext<T>} libraryContext context
@@ -85,13 +95,13 @@ class AmdLibraryPlugin extends AbstractLibraryPlugin {
 		const modules = chunkGraph
 			.getChunkModules(chunk)
 			.filter(
-				m =>
+				(m) =>
 					m instanceof ExternalModule &&
 					(m.externalType === "amd" || m.externalType === "amd-require")
 			);
 		const externals = /** @type {ExternalModule[]} */ (modules);
 		const externalsDepsArray = JSON.stringify(
-			externals.map(m =>
+			externals.map((m) =>
 				typeof m.request === "object" && !Array.isArray(m.request)
 					? m.request.amd
 					: m.request
@@ -99,7 +109,7 @@ class AmdLibraryPlugin extends AbstractLibraryPlugin {
 		);
 		const externalsArguments = externals
 			.map(
-				m =>
+				(m) =>
 					`__WEBPACK_EXTERNAL_MODULE_${Template.toIdentifier(
 						`${chunkGraph.getModuleId(m)}`
 					)}__`
@@ -152,6 +162,7 @@ class AmdLibraryPlugin extends AbstractLibraryPlugin {
 	}
 
 	/**
+	 * Processes the provided chunk.
 	 * @param {Chunk} chunk the chunk
 	 * @param {Hash} hash hash
 	 * @param {ChunkHashContext} chunkHashContext chunk hash context

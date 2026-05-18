@@ -6,22 +6,24 @@
 "use strict";
 
 /**
- * @param {Array<number>} array array of numbers
+ * Returns sum of all numbers in array.
+ * @param {number[]} array array of numbers
  * @returns {number} sum of all numbers in array
  */
-const arraySum = array => {
+const arraySum = (array) => {
 	let sum = 0;
 	for (const item of array) sum += item;
 	return sum;
 };
 
 /**
- * @param {EXPECTED_ANY[]} args items to be truncated
+ * Returns truncated args.
+ * @param {string[]} args items to be truncated
  * @param {number} maxLength maximum length of args including spaces between
  * @returns {string[]} truncated args
  */
 const truncateArgs = (args, maxLength) => {
-	const lengths = args.map(a => `${a}`.length);
+	const lengths = args.map((a) => `${a}`.length);
 	const availableLength = maxLength - lengths.length + 1;
 
 	if (availableLength > 0 && args.length === 1) {
@@ -34,7 +36,7 @@ const truncateArgs = (args, maxLength) => {
 	}
 
 	// Check if there is space for at least 4 chars per arg
-	if (availableLength < arraySum(lengths.map(i => Math.min(i, 6)))) {
+	if (availableLength < arraySum(lengths.map((i) => Math.min(i, 6)))) {
 		// remove args
 		if (args.length > 1) return truncateArgs(args.slice(0, -1), maxLength);
 		return [];
@@ -48,7 +50,7 @@ const truncateArgs = (args, maxLength) => {
 	// Try to remove chars from the longest items until it fits
 	while (currentLength > availableLength) {
 		const maxLength = Math.max(...lengths);
-		const shorterItems = lengths.filter(l => l !== maxLength);
+		const shorterItems = lengths.filter((l) => l !== maxLength);
 		const nextToMaxLength =
 			shorterItems.length > 0 ? Math.max(...shorterItems) : 0;
 		const maxReduce = maxLength - nextToMaxLength;

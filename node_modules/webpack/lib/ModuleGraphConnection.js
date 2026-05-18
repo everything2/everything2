@@ -23,6 +23,7 @@ const CIRCULAR_CONNECTION = Symbol("circular connection");
 /** @typedef {boolean | typeof TRANSITIVE_ONLY | typeof CIRCULAR_CONNECTION} ConnectionState */
 
 /**
+ * Adds connection states.
  * @param {ConnectionState} a first
  * @param {ConnectionState} b second
  * @returns {ConnectionState} merged
@@ -37,6 +38,7 @@ const addConnectionStates = (a, b) => {
 };
 
 /**
+ * Intersect connection states.
  * @param {ConnectionState} a first
  * @param {ConnectionState} b second
  * @returns {ConnectionState} intersected
@@ -52,12 +54,13 @@ const intersectConnectionStates = (a, b) => {
 
 class ModuleGraphConnection {
 	/**
-	 * @param {Module|null} originModule the referencing module
-	 * @param {Dependency|null} dependency the referencing dependency
+	 * Creates an instance of ModuleGraphConnection.
+	 * @param {Module | null} originModule the referencing module
+	 * @param {Dependency | null} dependency the referencing dependency
 	 * @param {Module} module the referenced module
 	 * @param {string=} explanation some extra detail
 	 * @param {boolean=} weak the reference is weak
-	 * @param {false | null | GetConditionFn | undefined} condition condition for the connection
+	 * @param {false | null | GetConditionFn=} condition condition for the connection
 	 */
 	constructor(
 		originModule,
@@ -67,14 +70,23 @@ class ModuleGraphConnection {
 		weak = false,
 		condition = undefined
 	) {
+		/** @type {Module | null} */
 		this.originModule = originModule;
+		/** @type {Module | null} */
 		this.resolvedOriginModule = originModule;
+		/** @type {Dependency | null} */
 		this.dependency = dependency;
+		/** @type {Module} */
 		this.resolvedModule = module;
+		/** @type {Module} */
 		this.module = module;
+		/** @type {boolean | undefined} */
 		this.weak = weak;
+		/** @type {boolean} */
 		this.conditional = Boolean(condition);
+		/** @type {boolean} */
 		this._active = condition !== false;
+		/** @type {false | null | GetConditionFn | undefined} */
 		this.condition = condition || undefined;
 		/** @type {Set<string> | undefined} */
 		this.explanations = undefined;
@@ -102,6 +114,7 @@ class ModuleGraphConnection {
 	}
 
 	/**
+	 * Adds the provided condition to the module graph connection.
 	 * @param {GetConditionFn} condition condition for the connection
 	 * @returns {void}
 	 */
@@ -120,6 +133,7 @@ class ModuleGraphConnection {
 	}
 
 	/**
+	 * Adds the provided explanation to the module graph connection.
 	 * @param {string} explanation the explanation to add
 	 * @returns {void}
 	 */
@@ -132,10 +146,11 @@ class ModuleGraphConnection {
 
 	get explanation() {
 		if (this.explanations === undefined) return "";
-		return Array.from(this.explanations).join(" ");
+		return [...this.explanations].join(" ");
 	}
 
 	/**
+	 * Checks whether this module graph connection is active.
 	 * @param {RuntimeSpec} runtime the runtime
 	 * @returns {boolean} true, if the connection is active
 	 */
@@ -148,6 +163,7 @@ class ModuleGraphConnection {
 	}
 
 	/**
+	 * Checks whether this module graph connection is target active.
 	 * @param {RuntimeSpec} runtime the runtime
 	 * @returns {boolean} true, if the connection is active
 	 */
@@ -159,6 +175,7 @@ class ModuleGraphConnection {
 	}
 
 	/**
+	 * Returns true: fully active, false: inactive, TRANSITIVE: direct module inactive, but transitive connection maybe active.
 	 * @param {RuntimeSpec} runtime the runtime
 	 * @returns {ConnectionState} true: fully active, false: inactive, TRANSITIVE: direct module inactive, but transitive connection maybe active
 	 */
@@ -168,6 +185,7 @@ class ModuleGraphConnection {
 	}
 
 	/**
+	 * Updates active using the provided value.
 	 * @param {boolean} value active or not
 	 * @returns {void}
 	 */
@@ -175,25 +193,16 @@ class ModuleGraphConnection {
 		this.conditional = false;
 		this._active = value;
 	}
-
-	// TODO webpack 5 remove
-	get active() {
-		throw new Error("Use getActiveState instead");
-	}
-
-	set active(value) {
-		throw new Error("Use setActive instead");
-	}
 }
 
 /** @typedef {typeof TRANSITIVE_ONLY} TRANSITIVE_ONLY */
 /** @typedef {typeof CIRCULAR_CONNECTION} CIRCULAR_CONNECTION */
 
 module.exports = ModuleGraphConnection;
-module.exports.addConnectionStates = addConnectionStates;
-module.exports.TRANSITIVE_ONLY = /** @type {typeof TRANSITIVE_ONLY} */ (
-	TRANSITIVE_ONLY
-);
 module.exports.CIRCULAR_CONNECTION = /** @type {typeof CIRCULAR_CONNECTION} */ (
 	CIRCULAR_CONNECTION
 );
+module.exports.TRANSITIVE_ONLY = /** @type {typeof TRANSITIVE_ONLY} */ (
+	TRANSITIVE_ONLY
+);
+module.exports.addConnectionStates = addConnectionStates;

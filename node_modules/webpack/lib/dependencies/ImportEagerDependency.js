@@ -10,23 +10,25 @@ const ImportDependency = require("./ImportDependency");
 
 /** @typedef {import("webpack-sources").ReplaceSource} ReplaceSource */
 /** @typedef {import("../Dependency")} Dependency */
-/** @typedef {import("../Dependency").ReferencedExport} ReferencedExport */
 /** @typedef {import("../DependencyTemplate").DependencyTemplateContext} DependencyTemplateContext */
 /** @typedef {import("../Module")} Module */
 /** @typedef {import("../Module").BuildMeta} BuildMeta */
-/** @typedef {import("../ModuleGraph")} ModuleGraph */
 /** @typedef {import("../javascript/JavascriptParser").ImportAttributes} ImportAttributes */
 /** @typedef {import("../javascript/JavascriptParser").Range} Range */
+/** @typedef {ImportDependency.RawReferencedExports} RawReferencedExports */
+/** @typedef {import("./ImportPhase").ImportPhaseType} ImportPhaseType */
 
 class ImportEagerDependency extends ImportDependency {
 	/**
+	 * Creates an instance of ImportEagerDependency.
 	 * @param {string} request the request
 	 * @param {Range} range expression range
-	 * @param {(string[][] | null)=} referencedExports list of referenced exports
+	 * @param {RawReferencedExports | null} referencedExports list of referenced exports
+	 * @param {ImportPhaseType} phase import phase
 	 * @param {ImportAttributes=} attributes import attributes
 	 */
-	constructor(request, range, referencedExports, attributes) {
-		super(request, range, referencedExports, attributes);
+	constructor(request, range, referencedExports, phase, attributes) {
+		super(request, range, referencedExports, phase, attributes);
 	}
 
 	get type() {
@@ -47,6 +49,7 @@ ImportEagerDependency.Template = class ImportEagerDependencyTemplate extends (
 	ImportDependency.Template
 ) {
 	/**
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Dependency} dependency the dependency for which the template should be applied
 	 * @param {ReplaceSource} source the current replace source which can be modified
 	 * @param {DependencyTemplateContext} templateContext the context object
@@ -64,6 +67,7 @@ ImportEagerDependency.Template = class ImportEagerDependencyTemplate extends (
 			request: dep.request,
 			strict: /** @type {BuildMeta} */ (module.buildMeta).strictHarmonyModule,
 			message: "import() eager",
+			dependency: dep,
 			runtimeRequirements
 		});
 

@@ -11,7 +11,7 @@ const makeSerializable = require("../util/makeSerializable");
 const ModuleDependency = require("./ModuleDependency");
 
 /** @typedef {import("webpack-sources").ReplaceSource} ReplaceSource */
-/** @typedef {import("../Dependency").ReferencedExport} ReferencedExport */
+/** @typedef {import("../Dependency").ReferencedExports} ReferencedExports */
 /** @typedef {import("../DependencyTemplate").DependencyTemplateContext} DependencyTemplateContext */
 /** @typedef {import("../ModuleGraph")} ModuleGraph */
 /** @typedef {import("../javascript/JavascriptParser").Range} Range */
@@ -19,6 +19,7 @@ const ModuleDependency = require("./ModuleDependency");
 
 class RequireIncludeDependency extends ModuleDependency {
 	/**
+	 * Creates an instance of RequireIncludeDependency.
 	 * @param {string} request the request string
 	 * @param {Range} range location in source code
 	 */
@@ -32,7 +33,7 @@ class RequireIncludeDependency extends ModuleDependency {
 	 * Returns list of exports referenced by this dependency
 	 * @param {ModuleGraph} moduleGraph module graph
 	 * @param {RuntimeSpec} runtime the runtime for which the module is analysed
-	 * @returns {(string[] | ReferencedExport)[]} referenced exports
+	 * @returns {ReferencedExports} referenced exports
 	 */
 	getReferencedExports(moduleGraph, runtime) {
 		// This doesn't use any export
@@ -57,6 +58,7 @@ RequireIncludeDependency.Template = class RequireIncludeDependencyTemplate exten
 	ModuleDependency.Template
 ) {
 	/**
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Dependency} dependency the dependency for which the template should be applied
 	 * @param {ReplaceSource} source the current replace source which can be modified
 	 * @param {DependencyTemplateContext} templateContext the context object

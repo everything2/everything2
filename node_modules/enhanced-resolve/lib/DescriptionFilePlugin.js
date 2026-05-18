@@ -11,6 +11,8 @@ const DescriptionFileUtils = require("./DescriptionFileUtils");
 /** @typedef {import("./Resolver").ResolveRequest} ResolveRequest */
 /** @typedef {import("./Resolver").ResolveStepHook} ResolveStepHook */
 
+const BACKSLASH_G = /\\/g;
+
 module.exports = class DescriptionFilePlugin {
 	/**
 	 * @param {string | ResolveStepHook} source source
@@ -36,7 +38,7 @@ module.exports = class DescriptionFilePlugin {
 			.tapAsync(
 				"DescriptionFilePlugin",
 				(request, resolveContext, callback) => {
-					const path = request.path;
+					const { path } = request;
 					if (!path) return callback();
 					const directory = this.pathIsFile
 						? DescriptionFileUtils.cdUp(path)
@@ -50,37 +52,40 @@ module.exports = class DescriptionFilePlugin {
 							? {
 									path: request.descriptionFilePath,
 									content: request.descriptionFileData,
-									directory: /** @type {string} */ (request.descriptionFileRoot)
-							  }
+									directory:
+										/** @type {string} */
+										(request.descriptionFileRoot),
+								}
 							: undefined,
 						resolveContext,
 						(err, result) => {
 							if (err) return callback(err);
 							if (!result) {
-								if (resolveContext.log)
+								if (resolveContext.log) {
 									resolveContext.log(
-										`No description file found in ${directory} or above`
+										`No description file found in ${directory} or above`,
 									);
+								}
 								return callback();
 							}
-							const relativePath =
-								"." + path.slice(result.directory.length).replace(/\\/g, "/");
+							const rawRelative = path.slice(result.directory.length);
+							const relativePath = `.${
+								rawRelative.includes("\\")
+									? rawRelative.replace(BACKSLASH_G, "/")
+									: rawRelative
+							}`;
 							/** @type {ResolveRequest} */
 							const obj = {
 								...request,
 								descriptionFilePath: result.path,
 								descriptionFileData: result.content,
 								descriptionFileRoot: result.directory,
-								relativePath: relativePath
+								relativePath,
 							};
 							resolver.doResolve(
 								target,
 								obj,
-								"using description file: " +
-									result.path +
-									" (relative path: " +
-									relativePath +
-									")",
+								`using description file: ${result.path} (relative path: ${relativePath})`,
 								resolveContext,
 								(err, result) => {
 									if (err) return callback(err);
@@ -88,11 +93,11 @@ module.exports = class DescriptionFilePlugin {
 									// Don't allow other processing
 									if (result === undefined) return callback(null, null);
 									callback(null, result);
-								}
+								},
 							);
-						}
+						},
 					);
-				}
+				},
 			);
 	}
 };

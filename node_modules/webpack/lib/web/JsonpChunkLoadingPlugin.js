@@ -10,23 +10,32 @@ const JsonpChunkLoadingRuntimeModule = require("./JsonpChunkLoadingRuntimeModule
 
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compiler")} Compiler */
+/** @typedef {import("../Module").RuntimeRequirements} RuntimeRequirements */
 
 const PLUGIN_NAME = "JsonpChunkLoadingPlugin";
 
+/**
+ * Enables browser-side JavaScript chunk loading through the JSONP runtime and
+ * adds the supporting runtime requirements for matching chunks.
+ */
 class JsonpChunkLoadingPlugin {
 	/**
-	 * Apply the plugin
+	 * Registers compilation hooks that attach the JSONP chunk-loading runtime
+	 * module and its dependent runtime globals to chunks using `chunkLoading:
+	 * "jsonp"`.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.thisCompilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
 			const globalChunkLoading = compilation.outputOptions.chunkLoading;
 			/**
+			 * Determines whether the chunk resolves JavaScript chunks through the
+			 * JSONP loading backend.
 			 * @param {Chunk} chunk chunk
 			 * @returns {boolean} true, if wasm loading is enabled for the chunk
 			 */
-			const isEnabledForChunk = chunk => {
+			const isEnabledForChunk = (chunk) => {
 				const options = chunk.getEntryOptions();
 				const chunkLoading =
 					options && options.chunkLoading !== undefined
@@ -34,10 +43,13 @@ class JsonpChunkLoadingPlugin {
 						: globalChunkLoading;
 				return chunkLoading === "jsonp";
 			};
+			/** @type {WeakSet<Chunk>} */
 			const onceForChunkSet = new WeakSet();
 			/**
+			 * Adds the JSONP runtime module to a chunk once, along with the core
+			 * runtime globals it relies on.
 			 * @param {Chunk} chunk chunk
-			 * @param {Set<string>} set runtime requirements
+			 * @param {RuntimeRequirements} set runtime requirements
 			 */
 			const handler = (chunk, set) => {
 				if (onceForChunkSet.has(chunk)) return;

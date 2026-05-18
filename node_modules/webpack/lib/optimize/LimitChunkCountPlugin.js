@@ -8,22 +8,13 @@
 const { STAGE_ADVANCED } = require("../OptimizationStages");
 const LazyBucketSortedSet = require("../util/LazyBucketSortedSet");
 const { compareChunks } = require("../util/comparators");
-const createSchemaValidation = require("../util/create-schema-validation");
 
 /** @typedef {import("../../declarations/plugins/optimize/LimitChunkCountPlugin").LimitChunkCountPluginOptions} LimitChunkCountPluginOptions */
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../Compiler")} Compiler */
 
-const validate = createSchemaValidation(
-	require("../../schemas/plugins/optimize/LimitChunkCountPlugin.check.js"),
-	() => require("../../schemas/plugins/optimize/LimitChunkCountPlugin.json"),
-	{
-		name: "Limit Chunk Count Plugin",
-		baseDataPath: "options"
-	}
-);
-
 /**
+ * Defines the chunk combination type used by this module.
  * @typedef {object} ChunkCombination
  * @property {boolean} deleted this is set to true when combination was removed
  * @property {number} sizeDiff
@@ -37,6 +28,7 @@ const validate = createSchemaValidation(
  */
 
 /**
+ * Adds the provided map to this object.
  * @template K, V
  * @param {Map<K, Set<V>>} map map
  * @param {K} key key
@@ -55,28 +47,45 @@ const PLUGIN_NAME = "LimitChunkCountPlugin";
 
 class LimitChunkCountPlugin {
 	/**
+	 * Creates an instance of LimitChunkCountPlugin.
 	 * @param {LimitChunkCountPluginOptions=} options options object
 	 */
-	constructor(options) {
-		validate(options);
-		this.options = /** @type {LimitChunkCountPluginOptions} */ (options);
+	constructor(options = { maxChunks: 1 }) {
+		/** @type {LimitChunkCountPluginOptions} */
+		this.options = options;
 	}
 
 	/**
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the webpack compiler
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		const options = this.options;
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.validate.tap(PLUGIN_NAME, () => {
+			compiler.validate(
+				() =>
+					require("../../schemas/plugins/optimize/LimitChunkCountPlugin.json"),
+				this.options,
+				{
+					name: "Limit Chunk Count Plugin",
+					baseDataPath: "options"
+				},
+				(options) =>
+					require("../../schemas/plugins/optimize/LimitChunkCountPlugin.check")(
+						options
+					)
+			);
+		});
+
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
 			compilation.hooks.optimizeChunks.tap(
 				{
 					name: PLUGIN_NAME,
 					stage: STAGE_ADVANCED
 				},
-				chunks => {
+				(chunks) => {
 					const chunkGraph = compilation.chunkGraph;
-					const maxChunks = options.maxChunks;
+					const maxChunks = this.options.maxChunks;
 					if (!maxChunks) return;
 					if (maxChunks < 1) return;
 					if (compilation.chunks.size <= maxChunks) return;
@@ -85,7 +94,8 @@ class LimitChunkCountPlugin {
 
 					// order chunks in a deterministic way
 					const compareChunksWithGraph = compareChunks(chunkGraph);
-					const orderedChunks = Array.from(chunks).sort(compareChunksWithGraph);
+					/** @type {Chunk[]} */
+					const orderedChunks = [...chunks].sort(compareChunksWithGraph);
 
 					// create a lazy sorted data structure to keep all combinations
 					// this is large. Size = chunks * (chunks - 1) / 2
@@ -94,16 +104,18 @@ class LimitChunkCountPlugin {
 					/** @type {LazyBucketSortedSet<ChunkCombination, number>} */
 					const combinations = new LazyBucketSortedSet(
 						// Layer 1: ordered by largest size benefit
-						c => c.sizeDiff,
+						(c) => c.sizeDiff,
 						(a, b) => b - a,
 
 						// Layer 2: ordered by smallest combined size
 						/**
+						 * Handles the stage callback for this hook.
 						 * @param {ChunkCombination} c combination
 						 * @returns {number} integrated size
 						 */
-						c => c.integratedSize,
+						(c) => c.integratedSize,
 						/**
+						 * Handles the callback logic for this hook.
 						 * @param {number} a a
 						 * @param {number} b b
 						 * @returns {number} result
@@ -112,11 +124,13 @@ class LimitChunkCountPlugin {
 
 						// Layer 3: ordered by position difference in orderedChunk (-> to be deterministic)
 						/**
+						 * Handles the callback logic for this hook.
 						 * @param {ChunkCombination} c combination
 						 * @returns {number} position difference
 						 */
-						c => c.bIdx - c.aIdx,
+						(c) => c.bIdx - c.aIdx,
 						/**
+						 * Handles the callback logic for this hook.
 						 * @param {number} a a
 						 * @param {number} b b
 						 * @returns {number} result
@@ -125,6 +139,7 @@ class LimitChunkCountPlugin {
 
 						// Layer 4: ordered by position in orderedChunk (-> to be deterministic)
 						/**
+						 * Handles the callback logic for this hook.
 						 * @param {ChunkCombination} a a
 						 * @param {ChunkCombination} b b
 						 * @returns {number} result
@@ -148,11 +163,11 @@ class LimitChunkCountPlugin {
 							const integratedSize = chunkGraph.getIntegratedChunksSize(
 								a,
 								b,
-								options
+								this.options
 							);
 
-							const aSize = chunkGraph.getChunkSize(a, options);
-							const bSize = chunkGraph.getChunkSize(b, options);
+							const aSize = chunkGraph.getChunkSize(a, this.options);
+							const bSize = chunkGraph.getChunkSize(b, this.options);
 							/** @type {ChunkCombination} */
 							const c = {
 								deleted: false,
@@ -250,7 +265,7 @@ class LimitChunkCountPlugin {
 									const newIntegratedSize = chunkGraph.getIntegratedChunksSize(
 										a,
 										combination.b,
-										options
+										this.options
 									);
 									const finishUpdate = combinations.startUpdate(combination);
 									combination.a = a;
@@ -269,7 +284,7 @@ class LimitChunkCountPlugin {
 									const newIntegratedSize = chunkGraph.getIntegratedChunksSize(
 										combination.a,
 										a,
-										options
+										this.options
 									);
 
 									const finishUpdate = combinations.startUpdate(combination);
@@ -296,4 +311,5 @@ class LimitChunkCountPlugin {
 		});
 	}
 }
+
 module.exports = LimitChunkCountPlugin;

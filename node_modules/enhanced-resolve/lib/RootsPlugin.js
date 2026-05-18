@@ -18,7 +18,7 @@ class RootsPlugin {
 	 * @param {string | ResolveStepHook} target target hook
 	 */
 	constructor(source, roots, target) {
-		this.roots = Array.from(roots);
+		this.roots = [...roots];
 		this.source = source;
 		this.target = target;
 	}
@@ -41,7 +41,7 @@ class RootsPlugin {
 					this.roots,
 					/**
 					 * @param {string} root root
-					 * @param {(err?: null|Error, result?: null|ResolveRequest) => void} callback callback
+					 * @param {(err?: null | Error, result?: null | ResolveRequest) => void} callback callback
 					 * @returns {void}
 					 */
 					(root, callback) => {
@@ -50,17 +50,17 @@ class RootsPlugin {
 						const obj = {
 							...request,
 							path,
-							relativePath: request.relativePath && path
+							relativePath: request.relativePath && path,
 						};
 						resolver.doResolve(
 							target,
 							obj,
 							`root path ${root}`,
 							resolveContext,
-							callback
+							callback,
 						);
 					},
-					callback
+					callback,
 				);
 			});
 	}

@@ -19,11 +19,14 @@ class GetMainFilenameRuntimeModule extends RuntimeModule {
 	 */
 	constructor(name, global, filename) {
 		super(`get ${name} filename`);
+		/** @type {string} */
 		this.global = global;
+		/** @type {string} */
 		this.filename = filename;
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {
@@ -33,7 +36,7 @@ class GetMainFilenameRuntimeModule extends RuntimeModule {
 		const { runtimeTemplate } = compilation;
 		const url = compilation.getPath(JSON.stringify(filename), {
 			hash: `" + ${RuntimeGlobals.getFullHash}() + "`,
-			hashWithLength: length =>
+			hashWithLength: (length) =>
 				`" + ${RuntimeGlobals.getFullHash}().slice(0, ${length}) + "`,
 			chunk,
 			runtime: chunk.runtime

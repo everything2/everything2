@@ -7,14 +7,13 @@
 const RuntimeGlobals = require("../RuntimeGlobals");
 const RuntimeModule = require("../RuntimeModule");
 
-/** @typedef {import("../Compilation")} Compilation */
-
 class SystemContextRuntimeModule extends RuntimeModule {
 	constructor() {
 		super("__system_context__");
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {

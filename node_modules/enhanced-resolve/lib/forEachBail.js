@@ -12,7 +12,7 @@
  * @template Z
  * @callback Iterator
  * @param {T} item item
- * @param {(err?: null|Error, result?: null|Z) => void} callback callback
+ * @param {(err?: null | Error, result?: null | Z) => void} callback callback
  * @param {number} i index
  * @returns {void}
  */
@@ -22,7 +22,7 @@
  * @template Z
  * @param {T[]} array array
  * @param {Iterator<T, Z>} iterator iterator
- * @param {(err?: null|Error, result?: null|Z, i?: number) => void} callback callback after all items are iterated
+ * @param {(err?: null | Error, result?: null | Z, i?: number) => void} callback callback after all items are iterated
  * @returns {void}
  */
 module.exports = function forEachBail(array, iterator, callback) {
@@ -30,8 +30,8 @@ module.exports = function forEachBail(array, iterator, callback) {
 
 	let i = 0;
 	const next = () => {
-		/** @type {boolean|undefined} */
-		let loop = undefined;
+		/** @type {boolean | undefined} */
+		let loop;
 		iterator(
 			array[i++],
 			(err, result) => {
@@ -41,7 +41,7 @@ module.exports = function forEachBail(array, iterator, callback) {
 				if (loop === false) while (next());
 				loop = true;
 			},
-			i
+			i,
 		);
 		if (!loop) loop = false;
 		return loop;

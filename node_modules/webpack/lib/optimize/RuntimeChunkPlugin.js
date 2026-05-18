@@ -7,7 +7,6 @@
 
 /** @typedef {import("../Compilation").EntryData} EntryData */
 /** @typedef {import("../Compiler")} Compiler */
-/** @typedef {import("../Entrypoint")} Entrypoint */
 
 const PLUGIN_NAME = "RuntimeChunkPlugin";
 
@@ -15,23 +14,24 @@ const PLUGIN_NAME = "RuntimeChunkPlugin";
 
 class RuntimeChunkPlugin {
 	/**
+	 * Creates an instance of RuntimeChunkPlugin.
 	 * @param {{ name?: RuntimeChunkFunction }=} options options
 	 */
-	constructor(options) {
+	constructor(options = {}) {
+		/** @type {{ name: string | RuntimeChunkFunction }} */
 		this.options = {
-			/** @type {RuntimeChunkFunction} */
-			name: entrypoint => `runtime~${entrypoint.name}`,
+			name: (entrypoint) => `runtime~${entrypoint.name}`,
 			...options
 		};
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
-		compiler.hooks.thisCompilation.tap(PLUGIN_NAME, compilation => {
+		compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
 			compilation.hooks.addEntry.tap(PLUGIN_NAME, (_, { name: entryName }) => {
 				if (entryName === undefined) return;
 				const data =
@@ -39,9 +39,7 @@ class RuntimeChunkPlugin {
 					(compilation.entries.get(entryName));
 				if (data.options.runtime === undefined && !data.options.dependOn) {
 					// Determine runtime chunk name
-					let name =
-						/** @type {string | RuntimeChunkFunction} */
-						(this.options.name);
+					let name = this.options.name;
 					if (typeof name === "function") {
 						name = name({ name: entryName });
 					}

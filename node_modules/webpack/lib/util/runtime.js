@@ -10,17 +10,21 @@ const SortableSet = require("./SortableSet");
 /** @typedef {import("../Compilation")} Compilation */
 /** @typedef {import("../Entrypoint").EntryOptions} EntryOptions */
 
-/** @typedef {string | SortableSet<string> | undefined} RuntimeSpec */
+/** @typedef {SortableSet<string>} RuntimeSpecSortableSet */
+/** @typedef {string | RuntimeSpecSortableSet | undefined} RuntimeSpec */
 /** @typedef {RuntimeSpec | boolean} RuntimeCondition */
 
 /**
+ * Gets entry runtime.
  * @param {Compilation} compilation the compilation
  * @param {string} name name of the entry
  * @param {EntryOptions=} options optionally already received entry options
  * @returns {RuntimeSpec} runtime
  */
-module.exports.getEntryRuntime = (compilation, name, options) => {
+const getEntryRuntime = (compilation, name, options) => {
+	/** @type {EntryOptions["dependOn"]} */
 	let dependOn;
+	/** @type {EntryOptions["runtime"]} */
 	let runtime;
 	if (options) {
 		({ dependOn, runtime } = options);
@@ -51,6 +55,7 @@ module.exports.getEntryRuntime = (compilation, name, options) => {
 };
 
 /**
+ * Processes the provided runtime.
  * @param {RuntimeSpec} runtime runtime
  * @param {(runtime: string | undefined) => void} fn functor
  * @param {boolean} deterministicOrder enforce a deterministic order
@@ -68,73 +73,76 @@ const forEachRuntime = (runtime, fn, deterministicOrder = false) => {
 		}
 	}
 };
-module.exports.forEachRuntime = forEachRuntime;
 
 /**
+ * Returns runtime key.
  * @template T
- * @param {SortableSet<T>} set set
+ * @param {Exclude<RuntimeSpec, undefined | string>} set set
  * @returns {string} runtime key
  */
-const getRuntimesKey = set => {
+const getRuntimesKey = (set) => {
 	set.sort();
-	return Array.from(set).join("\n");
+	return [...set].join("\n");
 };
 
 /**
+ * Returns key of runtimes.
  * @param {RuntimeSpec} runtime runtime(s)
  * @returns {string} key of runtimes
  */
-const getRuntimeKey = runtime => {
+const getRuntimeKey = (runtime) => {
 	if (runtime === undefined) return "*";
 	if (typeof runtime === "string") return runtime;
 	return runtime.getFromUnorderedCache(getRuntimesKey);
 };
-module.exports.getRuntimeKey = getRuntimeKey;
 
 /**
+ * Returns runtime(s).
  * @param {string} key key of runtimes
  * @returns {RuntimeSpec} runtime(s)
  */
-const keyToRuntime = key => {
+const keyToRuntime = (key) => {
 	if (key === "*") return;
 	const items = key.split("\n");
 	if (items.length === 1) return items[0];
 	return new SortableSet(items);
 };
-module.exports.keyToRuntime = keyToRuntime;
 
 /**
+ * Gets runtimes string.
  * @template T
- * @param {SortableSet<T>} set set
+ * @param {Exclude<RuntimeSpec, undefined | string>} set set
  * @returns {string} runtime string
  */
-const getRuntimesString = set => {
+const getRuntimesString = (set) => {
 	set.sort();
-	return Array.from(set).join("+");
+	return [...set].join("+");
 };
 
 /**
+ * Returns readable version.
  * @param {RuntimeSpec} runtime runtime(s)
  * @returns {string} readable version
  */
-const runtimeToString = runtime => {
+const runtimeToString = (runtime) => {
 	if (runtime === undefined) return "*";
 	if (typeof runtime === "string") return runtime;
 	return runtime.getFromUnorderedCache(getRuntimesString);
 };
-module.exports.runtimeToString = runtimeToString;
 
 /**
+ * Runtime condition to string.
  * @param {RuntimeCondition} runtimeCondition runtime condition
  * @returns {string} readable version
  */
-module.exports.runtimeConditionToString = runtimeCondition => {
+const runtimeConditionToString = (runtimeCondition) => {
 	if (runtimeCondition === true) return "true";
 	if (runtimeCondition === false) return "false";
 	return runtimeToString(runtimeCondition);
 };
 
 /**
+ * Returns true, when they are equal.
  * @param {RuntimeSpec} a first
  * @param {RuntimeSpec} b second
  * @returns {boolean} true, when they are equal
@@ -163,14 +171,14 @@ const runtimeEqual = (a, b) => {
 		if (aV.value !== bV.value) return false;
 	}
 };
-module.exports.runtimeEqual = runtimeEqual;
 
 /**
+ * Compares the provided values and returns their ordering.
  * @param {RuntimeSpec} a first
  * @param {RuntimeSpec} b second
- * @returns {-1|0|1} compare
+ * @returns {-1 | 0 | 1} compare
  */
-module.exports.compareRuntime = (a, b) => {
+const compareRuntime = (a, b) => {
 	if (a === b) {
 		return 0;
 	} else if (a === undefined) {
@@ -186,6 +194,7 @@ module.exports.compareRuntime = (a, b) => {
 };
 
 /**
+ * Merges the provided values into a single result.
  * @param {RuntimeSpec} a first
  * @param {RuntimeSpec} b second
  * @returns {RuntimeSpec} merged
@@ -199,6 +208,7 @@ const mergeRuntime = (a, b) => {
 		return a;
 	} else if (typeof a === "string") {
 		if (typeof b === "string") {
+			/** @type {RuntimeSpecSortableSet} */
 			const set = new SortableSet();
 			set.add(a);
 			set.add(b);
@@ -206,30 +216,33 @@ const mergeRuntime = (a, b) => {
 		} else if (b.has(a)) {
 			return b;
 		}
+		/** @type {RuntimeSpecSortableSet} */
 		const set = new SortableSet(b);
 		set.add(a);
 		return set;
 	}
 	if (typeof b === "string") {
 		if (a.has(b)) return a;
+		/** @type {RuntimeSpecSortableSet} */
 		const set = new SortableSet(a);
 		set.add(b);
 		return set;
 	}
+	/** @type {RuntimeSpecSortableSet} */
 	const set = new SortableSet(a);
 	for (const item of b) set.add(item);
 	if (set.size === a.size) return a;
 	return set;
 };
-module.exports.mergeRuntime = mergeRuntime;
 
 /**
+ * Merges runtime condition.
  * @param {RuntimeCondition} a first
  * @param {RuntimeCondition} b second
  * @param {RuntimeSpec} runtime full runtime
  * @returns {RuntimeCondition} result
  */
-module.exports.mergeRuntimeCondition = (a, b, runtime) => {
+const mergeRuntimeCondition = (a, b, runtime) => {
 	if (a === false) return b;
 	if (b === false) return a;
 	if (a === true || b === true) return true;
@@ -245,12 +258,13 @@ module.exports.mergeRuntimeCondition = (a, b, runtime) => {
 };
 
 /**
+ * Merges runtime condition non false.
  * @param {RuntimeSpec | true} a first
  * @param {RuntimeSpec | true} b second
  * @param {RuntimeSpec} runtime full runtime
  * @returns {RuntimeSpec | true} result
  */
-module.exports.mergeRuntimeConditionNonFalse = (a, b, runtime) => {
+const mergeRuntimeConditionNonFalse = (a, b, runtime) => {
 	if (a === true || b === true) return true;
 	const merged = mergeRuntime(a, b);
 	if (merged === undefined) return;
@@ -264,6 +278,7 @@ module.exports.mergeRuntimeConditionNonFalse = (a, b, runtime) => {
 };
 
 /**
+ * Merges runtime owned.
  * @param {RuntimeSpec} a first (may be modified)
  * @param {RuntimeSpec} b second
  * @returns {RuntimeSpec} merged
@@ -277,14 +292,17 @@ const mergeRuntimeOwned = (a, b) => {
 		if (typeof b === "string") {
 			return b;
 		}
+		/** @type {RuntimeSpecSortableSet} */
 		return new SortableSet(b);
 	} else if (typeof a === "string") {
 		if (typeof b === "string") {
+			/** @type {RuntimeSpecSortableSet} */
 			const set = new SortableSet();
 			set.add(a);
 			set.add(b);
 			return set;
 		}
+		/** @type {RuntimeSpecSortableSet} */
 		const set = new SortableSet(b);
 		set.add(a);
 		return set;
@@ -296,14 +314,14 @@ const mergeRuntimeOwned = (a, b) => {
 	for (const item of b) a.add(item);
 	return a;
 };
-module.exports.mergeRuntimeOwned = mergeRuntimeOwned;
 
 /**
+ * Returns merged.
  * @param {RuntimeSpec} a first
  * @param {RuntimeSpec} b second
  * @returns {RuntimeSpec} merged
  */
-module.exports.intersectRuntime = (a, b) => {
+const intersectRuntime = (a, b) => {
 	if (a === undefined) {
 		return b;
 	} else if (b === undefined) {
@@ -322,6 +340,7 @@ module.exports.intersectRuntime = (a, b) => {
 		if (a.has(b)) return b;
 		return;
 	}
+	/** @type {RuntimeSpecSortableSet} */
 	const set = new SortableSet();
 	for (const item of b) {
 		if (a.has(item)) set.add(item);
@@ -335,6 +354,7 @@ module.exports.intersectRuntime = (a, b) => {
 };
 
 /**
+ * Returns result.
  * @param {RuntimeSpec} a first
  * @param {RuntimeSpec} b second
  * @returns {RuntimeSpec} result
@@ -361,10 +381,12 @@ const subtractRuntime = (a, b) => {
 				if (item !== b) return item;
 			}
 		}
+		/** @type {RuntimeSpecSortableSet} */
 		const set = new SortableSet(a);
 		set.delete(b);
 		return set;
 	}
+	/** @type {RuntimeSpecSortableSet} */
 	const set = new SortableSet();
 	for (const item of a) {
 		if (!b.has(item)) set.add(item);
@@ -376,15 +398,15 @@ const subtractRuntime = (a, b) => {
 	}
 	return set;
 };
-module.exports.subtractRuntime = subtractRuntime;
 
 /**
+ * Subtract runtime condition.
  * @param {RuntimeCondition} a first
  * @param {RuntimeCondition} b second
  * @param {RuntimeSpec} runtime runtime
  * @returns {RuntimeCondition} result
  */
-module.exports.subtractRuntimeCondition = (a, b, runtime) => {
+const subtractRuntimeCondition = (a, b, runtime) => {
 	if (b === true) return false;
 	if (b === false) return a;
 	if (a === false) return false;
@@ -393,15 +415,17 @@ module.exports.subtractRuntimeCondition = (a, b, runtime) => {
 };
 
 /**
+ * Returns true/false if filter is constant for all runtimes, otherwise runtimes that are active.
  * @param {RuntimeSpec} runtime runtime
  * @param {(runtime?: RuntimeSpec) => boolean} filter filter function
  * @returns {boolean | RuntimeSpec} true/false if filter is constant for all runtimes, otherwise runtimes that are active
  */
-module.exports.filterRuntime = (runtime, filter) => {
+const filterRuntime = (runtime, filter) => {
 	if (runtime === undefined) return filter();
 	if (typeof runtime === "string") return filter(runtime);
 	let some = false;
 	let every = true;
+	/** @type {RuntimeSpec} */
 	let result;
 	for (const r of runtime) {
 		const v = filter(r);
@@ -418,16 +442,19 @@ module.exports.filterRuntime = (runtime, filter) => {
 };
 
 /**
+ * Defines the runtime spec map inner map type used by this module.
  * @template T
  * @typedef {Map<string, T>} RuntimeSpecMapInnerMap
  */
 
 /**
+ * Represents RuntimeSpecMap.
  * @template T
  * @template [R=T]
  */
 class RuntimeSpecMap {
 	/**
+	 * Creates an instance of RuntimeSpecMap.
 	 * @param {RuntimeSpecMap<T, R>=} clone copy form this
 	 */
 	constructor(clone) {
@@ -442,6 +469,7 @@ class RuntimeSpecMap {
 	}
 
 	/**
+	 * Returns value.
 	 * @param {RuntimeSpec} runtime the runtimes
 	 * @returns {R | undefined} value
 	 */
@@ -461,6 +489,7 @@ class RuntimeSpecMap {
 	}
 
 	/**
+	 * Returns true, when the runtime is stored.
 	 * @param {RuntimeSpec} runtime the runtimes
 	 * @returns {boolean} true, when the runtime is stored
 	 */
@@ -478,6 +507,7 @@ class RuntimeSpecMap {
 	}
 
 	/**
+	 * Updates default using the provided runtime.
 	 * @param {RuntimeSpec} runtime the runtimes
 	 * @param {R} value the value
 	 */
@@ -509,6 +539,7 @@ class RuntimeSpecMap {
 	}
 
 	/**
+	 * Returns the new value.
 	 * @param {RuntimeSpec} runtime the runtimes
 	 * @param {() => R} computer function to compute the value
 	 * @returns {R} the new value
@@ -551,6 +582,7 @@ class RuntimeSpecMap {
 	}
 
 	/**
+	 * Processes the provided runtime.
 	 * @param {RuntimeSpec} runtime the runtimes
 	 */
 	delete(runtime) {
@@ -571,6 +603,7 @@ class RuntimeSpecMap {
 	}
 
 	/**
+	 * Processes the provided runtime.
 	 * @param {RuntimeSpec} runtime the runtimes
 	 * @param {(value: R | undefined) => R} fn function to update the value
 	 */
@@ -604,9 +637,10 @@ class RuntimeSpecMap {
 					/** @type {RuntimeSpecMapInnerMap<R>} */
 					(this._map).get(key);
 				const newValue = fn(oldValue);
-				if (newValue !== oldValue)
+				if (newValue !== oldValue) {
 					/** @type {RuntimeSpecMapInnerMap<R>} */
 					(this._map).set(key, newValue);
+				}
 			}
 		}
 	}
@@ -627,6 +661,7 @@ class RuntimeSpecMap {
 	}
 
 	/**
+	 * Returns values.
 	 * @returns {IterableIterator<R>} values
 	 */
 	values() {
@@ -649,10 +684,9 @@ class RuntimeSpecMap {
 	}
 }
 
-module.exports.RuntimeSpecMap = RuntimeSpecMap;
-
 class RuntimeSpecSet {
 	/**
+	 * Creates an instance of RuntimeSpecSet.
 	 * @param {Iterable<RuntimeSpec>=} iterable iterable
 	 */
 	constructor(iterable) {
@@ -666,6 +700,7 @@ class RuntimeSpecSet {
 	}
 
 	/**
+	 * Processes the provided runtime.
 	 * @param {RuntimeSpec} runtime runtime
 	 */
 	add(runtime) {
@@ -673,6 +708,7 @@ class RuntimeSpecSet {
 	}
 
 	/**
+	 * Returns true, when the runtime exists.
 	 * @param {RuntimeSpec} runtime runtime
 	 * @returns {boolean} true, when the runtime exists
 	 */
@@ -681,6 +717,7 @@ class RuntimeSpecSet {
 	}
 
 	/**
+	 * Returns iterable iterator.
 	 * @returns {IterableIterator<RuntimeSpec>} iterable iterator
 	 */
 	[Symbol.iterator]() {
@@ -692,4 +729,21 @@ class RuntimeSpecSet {
 	}
 }
 
+module.exports.RuntimeSpecMap = RuntimeSpecMap;
 module.exports.RuntimeSpecSet = RuntimeSpecSet;
+module.exports.compareRuntime = compareRuntime;
+module.exports.filterRuntime = filterRuntime;
+module.exports.forEachRuntime = forEachRuntime;
+module.exports.getEntryRuntime = getEntryRuntime;
+module.exports.getRuntimeKey = getRuntimeKey;
+module.exports.intersectRuntime = intersectRuntime;
+module.exports.keyToRuntime = keyToRuntime;
+module.exports.mergeRuntime = mergeRuntime;
+module.exports.mergeRuntimeCondition = mergeRuntimeCondition;
+module.exports.mergeRuntimeConditionNonFalse = mergeRuntimeConditionNonFalse;
+module.exports.mergeRuntimeOwned = mergeRuntimeOwned;
+module.exports.runtimeConditionToString = runtimeConditionToString;
+module.exports.runtimeEqual = runtimeEqual;
+module.exports.runtimeToString = runtimeToString;
+module.exports.subtractRuntime = subtractRuntime;
+module.exports.subtractRuntimeCondition = subtractRuntimeCondition;

@@ -12,7 +12,7 @@ const EnableChunkLoadingPlugin = require("../javascript/EnableChunkLoadingPlugin
 
 class WebWorkerTemplatePlugin {
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -22,4 +22,5 @@ class WebWorkerTemplatePlugin {
 		new EnableChunkLoadingPlugin("import-scripts").apply(compiler);
 	}
 }
+
 module.exports = WebWorkerTemplatePlugin;

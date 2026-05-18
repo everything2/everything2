@@ -15,24 +15,28 @@ const INVALID = END_SEGMENT_BIT | 0x02;
 const DATA_MASK = 0x1f;
 
 const ccToValue = new Uint8Array("z".charCodeAt(0) + 1);
-{
-	ccToValue.fill(INVALID);
-	for (let i = 0; i < ALPHABET.length; i++) {
-		ccToValue[ALPHABET.charCodeAt(i)] = i;
-	}
-	ccToValue[",".charCodeAt(0)] = END_SEGMENT_BIT;
-	ccToValue[";".charCodeAt(0)] = NEXT_LINE;
+
+ccToValue.fill(INVALID);
+
+for (let i = 0; i < ALPHABET.length; i++) {
+	ccToValue[ALPHABET.charCodeAt(i)] = i;
 }
+
+ccToValue[",".charCodeAt(0)] = END_SEGMENT_BIT;
+ccToValue[";".charCodeAt(0)] = NEXT_LINE;
+
 const ccMax = ccToValue.length - 1;
+
+/** @typedef {(generatedLine: number, generatedColumn: number, sourceIndex: number, originalLine: number, originalColumn: number, nameIndex: number) => void} OnMapping */
 
 /**
  * @param {string} mappings the mappings string
- * @param {function(number, number, number, number, number, number): void} onMapping called for each mapping
+ * @param {OnMapping} onMapping called for each mapping
  * @returns {void}
  */
 const readMappings = (mappings, onMapping) => {
-	// generatedColumn, [sourceIndex, originalLine, orignalColumn, [nameIndex]]
-	const currentData = new Uint32Array([0, 0, 1, 0, 0]);
+	// generatedColumn, [sourceIndex, originalLine, originalColumn, [nameIndex]]
+	const currentData = new Int32Array([0, 0, 1, 0, 0]);
 	let currentDataPos = 0;
 	// currentValue will include a sign bit at bit 0
 	let currentValue = 0;
@@ -55,7 +59,7 @@ const readMappings = (mappings, onMapping) => {
 						currentData[1],
 						currentData[2],
 						currentData[3],
-						-1
+						-1,
 					);
 				} else if (currentDataPos === 5) {
 					onMapping(
@@ -64,9 +68,12 @@ const readMappings = (mappings, onMapping) => {
 						currentData[1],
 						currentData[2],
 						currentData[3],
-						currentData[4]
+						currentData[4],
 					);
 				}
+				// Direct typed-array index is faster here than destructuring,
+				// which would invoke the Int32Array iterator protocol.
+				// eslint-disable-next-line prefer-destructuring
 				generatedColumn = currentData[0];
 			}
 			currentDataPos = 0;
@@ -99,7 +106,7 @@ const readMappings = (mappings, onMapping) => {
 			currentData[1],
 			currentData[2],
 			currentData[3],
-			-1
+			-1,
 		);
 	} else if (currentDataPos === 5) {
 		onMapping(
@@ -108,7 +115,7 @@ const readMappings = (mappings, onMapping) => {
 			currentData[1],
 			currentData[2],
 			currentData[3],
-			currentData[4]
+			currentData[4],
 		);
 	}
 };

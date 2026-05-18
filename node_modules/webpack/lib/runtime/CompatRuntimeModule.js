@@ -10,15 +10,16 @@ const RuntimeModule = require("../RuntimeModule");
 /** @typedef {import("../Chunk")} Chunk */
 /** @typedef {import("../ChunkGraph")} ChunkGraph */
 /** @typedef {import("../Compilation")} Compilation */
-/** @typedef {import("../MainTemplate")} MainTemplate */
 
 class CompatRuntimeModule extends RuntimeModule {
 	constructor() {
 		super("compat", RuntimeModule.STAGE_ATTACH);
+		/** @type {boolean} */
 		this.fullHash = true;
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {
@@ -72,6 +73,7 @@ class CompatRuntimeModule extends RuntimeModule {
 	}
 
 	/**
+	 * Returns true, if the runtime module should get it's own scope.
 	 * @returns {boolean} true, if the runtime module should get it's own scope
 	 */
 	shouldIsolate() {

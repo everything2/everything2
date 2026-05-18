@@ -9,10 +9,11 @@ const memoize = require("./memoize");
 
 /** @typedef {import("../serialization/BinaryMiddleware").MEASURE_END_OPERATION_TYPE} MEASURE_END_OPERATION */
 /** @typedef {import("../serialization/BinaryMiddleware").MEASURE_START_OPERATION_TYPE} MEASURE_START_OPERATION */
-/** @typedef {typeof import("../util/Hash")} Hash */
+/** @typedef {import("../util/Hash").HashFunction} HashFunction */
 /** @typedef {import("../util/fs").IntermediateFileSystem} IntermediateFileSystem */
 
 /**
+ * Defines the serializer type used by this module.
  * @template D, S, C
  * @typedef {import("../serialization/Serializer")<D, S, C>} Serializer
  */
@@ -41,7 +42,8 @@ const registerSerializers = memoize(() => {
 	// Load internal paths with a relative require
 	// This allows bundling all internal serializers
 	const internalSerializables = require("./internalSerializables");
-	getObjectMiddleware().registerLoader(/^webpack\/lib\//, req => {
+
+	getObjectMiddleware().registerLoader(/^webpack\/lib\//, (req) => {
 		const loader =
 			internalSerializables[
 				/** @type {keyof import("./internalSerializables")} */
@@ -94,9 +96,9 @@ module.exports = {
 		return /** @type {Serializer<EXPECTED_ANY, EXPECTED_ANY, EXPECTED_ANY>} */ (
 			buffersSerializer = new Serializer([
 				new SingleItemMiddleware(),
-				new (getObjectMiddleware())(context => {
+				new (getObjectMiddleware())((context) => {
 					if ("write" in context) {
-						context.writeLazy = value => {
+						context.writeLazy = (value) => {
 							context.write(
 								SerializerMiddleware.createLazy(value, binaryMiddleware)
 							);
@@ -108,15 +110,18 @@ module.exports = {
 		);
 	},
 	/**
+	 * Creates a file serializer.
 	 * @template D, S, C
 	 * @param {IntermediateFileSystem} fs filesystem
-	 * @param {string | Hash} hashFunction hash function to use
+	 * @param {HashFunction} hashFunction hash function to use
 	 * @returns {Serializer<D, S, C>} file serializer
 	 */
 	createFileSerializer: (fs, hashFunction) => {
 		registerSerializers();
 		const Serializer = getSerializer();
+
 		const FileMiddleware = require("../serialization/FileMiddleware");
+
 		const fileMiddleware = new FileMiddleware(fs, hashFunction);
 		const binaryMiddleware = getBinaryMiddlewareInstance();
 		const SerializerMiddleware = getSerializerMiddleware();
@@ -124,9 +129,9 @@ module.exports = {
 		return /** @type {Serializer<D, S, C>} */ (
 			new Serializer([
 				new SingleItemMiddleware(),
-				new (getObjectMiddleware())(context => {
+				new (getObjectMiddleware())((context) => {
 					if ("write" in context) {
-						context.writeLazy = value => {
+						context.writeLazy = (value) => {
 							context.write(
 								SerializerMiddleware.createLazy(value, binaryMiddleware)
 							);

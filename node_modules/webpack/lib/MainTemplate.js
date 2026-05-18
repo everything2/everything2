@@ -5,13 +5,12 @@
 
 "use strict";
 
-const { SyncWaterfallHook } = require("tapable");
 const util = require("util");
+const { SyncWaterfallHook } = require("tapable");
 const RuntimeGlobals = require("./RuntimeGlobals");
 const memoize = require("./util/memoize");
 
 /** @typedef {import("tapable").Tap} Tap */
-/** @typedef {import("webpack-sources").ConcatSource} ConcatSource */
 /** @typedef {import("webpack-sources").Source} Source */
 /** @typedef {import("../declarations/WebpackOptions").Output} OutputOptions */
 /** @typedef {import("./ModuleTemplate")} ModuleTemplate */
@@ -19,20 +18,15 @@ const memoize = require("./util/memoize");
 /** @typedef {import("./Compilation")} Compilation */
 /** @typedef {import("./Compilation").AssetInfo} AssetInfo */
 /** @typedef {import("./Compilation").InterpolatedPathAndAssetInfo} InterpolatedPathAndAssetInfo */
-/** @typedef {import("./Module")} Module} */
-/** @typedef {import("./util/Hash")} Hash} */
-/** @typedef {import("./DependencyTemplates")} DependencyTemplates} */
-/** @typedef {import("./javascript/JavascriptModulesPlugin").RenderContext} RenderContext} */
-/** @typedef {import("./javascript/JavascriptModulesPlugin").RenderBootstrapContext} RenderBootstrapContext} */
-/** @typedef {import("./javascript/JavascriptModulesPlugin").ChunkHashContext} ChunkHashContext} */
-/** @typedef {import("./RuntimeTemplate")} RuntimeTemplate} */
-/** @typedef {import("./ModuleGraph")} ModuleGraph} */
-/** @typedef {import("./ChunkGraph")} ChunkGraph} */
-/** @typedef {import("./Template").RenderManifestOptions} RenderManifestOptions} */
-/** @typedef {import("./Template").RenderManifestEntry} RenderManifestEntry} */
-/** @typedef {import("./TemplatedPathPlugin").TemplatePath} TemplatePath} */
-/** @typedef {import("./TemplatedPathPlugin").PathData} PathData} */
+/** @typedef {import("./util/Hash")} Hash */
+/** @typedef {import("./DependencyTemplates")} DependencyTemplates */
+/** @typedef {import("./javascript/JavascriptModulesPlugin").RenderBootstrapContext} RenderBootstrapContext */
+/** @typedef {import("./Template").RenderManifestOptions} RenderManifestOptions */
+/** @typedef {import("./Template").RenderManifestEntry} RenderManifestEntry */
+/** @typedef {import("./TemplatedPathPlugin").TemplatePath} TemplatePath */
+/** @typedef {import("./TemplatedPathPlugin").PathData} PathData */
 /**
+ * Defines the if set type used by this module.
  * @template T
  * @typedef {import("tapable").IfSet<T>} IfSet
  */
@@ -50,6 +44,7 @@ const getLoadScriptRuntimeModule = memoize(() =>
 // TODO webpack 6 remove this class
 class MainTemplate {
 	/**
+	 * Creates an instance of MainTemplate.
 	 * @param {OutputOptions} outputOptions output options for the MainTemplate
 	 * @param {Compilation} compilation the compilation
 	 */
@@ -60,6 +55,7 @@ class MainTemplate {
 			renderManifest: {
 				tap: util.deprecate(
 					/**
+					 * Handles the callback logic for this hook.
 					 * @template AdditionalOptions
 					 * @param {string | Tap & IfSet<AdditionalOptions>} options options
 					 * @param {(renderManifestEntries: RenderManifestEntry[], renderManifestOptions: RenderManifestOptions) => RenderManifestEntry[]} fn fn
@@ -94,6 +90,7 @@ class MainTemplate {
 			require: {
 				tap: util.deprecate(
 					/**
+					 * Handles the callback logic for this hook.
 					 * @template AdditionalOptions
 					 * @param {string | Tap & IfSet<AdditionalOptions>} options options
 					 * @param {(value: string, renderBootstrapContext: RenderBootstrapContext) => string} fn fn
@@ -131,6 +128,7 @@ class MainTemplate {
 			render: {
 				tap: util.deprecate(
 					/**
+					 * Handles the callback logic for this hook.
 					 * @template AdditionalOptions
 					 * @param {string | Tap & IfSet<AdditionalOptions>} options options
 					 * @param {(source: Source, chunk: Chunk, hash: string | undefined, moduleTemplate: ModuleTemplate, dependencyTemplates: DependencyTemplates) => Source} fn fn
@@ -163,6 +161,7 @@ class MainTemplate {
 			renderWithEntry: {
 				tap: util.deprecate(
 					/**
+					 * Handles the callback logic for this hook.
 					 * @template AdditionalOptions
 					 * @param {string | Tap & IfSet<AdditionalOptions>} options options
 					 * @param {(source: Source, chunk: Chunk, hash: string | undefined) => Source} fn fn
@@ -189,6 +188,7 @@ class MainTemplate {
 			assetPath: {
 				tap: util.deprecate(
 					/**
+					 * Handles the callback logic for this hook.
 					 * @template AdditionalOptions
 					 * @param {string | Tap & IfSet<AdditionalOptions>} options options
 					 * @param {(value: string, path: PathData, assetInfo: AssetInfo | undefined) => string} fn fn
@@ -201,6 +201,7 @@ class MainTemplate {
 				),
 				call: util.deprecate(
 					/**
+					 * Handles the call callback for this hook.
 					 * @param {TemplatePath} filename used to get asset path with hash
 					 * @param {PathData} options context data
 					 * @returns {string} interpolated path
@@ -213,6 +214,7 @@ class MainTemplate {
 			hash: {
 				tap: util.deprecate(
 					/**
+					 * Handles the callback logic for this hook.
 					 * @template AdditionalOptions
 					 * @param {string | Tap & IfSet<AdditionalOptions>} options options
 					 * @param {(hash: Hash) => void} fn fn
@@ -227,6 +229,7 @@ class MainTemplate {
 			hashForChunk: {
 				tap: util.deprecate(
 					/**
+					 * Handles the callback logic for this hook.
 					 * @template AdditionalOptions
 					 * @param {string | Tap & IfSet<AdditionalOptions>} options options
 					 * @param {(hash: Hash, chunk: Chunk) => void} fn fn
@@ -302,6 +305,7 @@ class MainTemplate {
 
 		this.renderCurrentHashCode = util.deprecate(
 			/**
+			 * Handles the require ensure callback for this hook.
 			 * @deprecated
 			 * @param {string} hash the hash
 			 * @param {number=} length length of the hash
@@ -321,20 +325,18 @@ class MainTemplate {
 
 		this.getPublicPath = util.deprecate(
 			/**
+			 * Handles the callback logic for this hook.
 			 * @param {PathData} options context data
 			 * @returns {string} interpolated path
-			 */ options =>
-				compilation.getAssetPath(
-					/** @type {string} */
-					(compilation.outputOptions.publicPath),
-					options
-				),
+			 */ (options) =>
+				compilation.getAssetPath(compilation.outputOptions.publicPath, options),
 			"MainTemplate.getPublicPath is deprecated (use Compilation.getAssetPath(compilation.outputOptions.publicPath, options) instead)",
 			"DEP_WEBPACK_MAIN_TEMPLATE_GET_PUBLIC_PATH"
 		);
 
 		this.getAssetPath = util.deprecate(
 			/**
+			 * Handles the callback logic for this hook.
 			 * @param {TemplatePath} path used to get asset path with hash
 			 * @param {PathData} options context data
 			 * @returns {string} interpolated path
@@ -346,6 +348,7 @@ class MainTemplate {
 
 		this.getAssetPathWithInfo = util.deprecate(
 			/**
+			 * Handles the callback logic for this hook.
 			 * @param {TemplatePath} path used to get asset path with hash
 			 * @param {PathData} options context data
 			 * @returns {InterpolatedPathAndAssetInfo} interpolated path and asset info
@@ -368,10 +371,11 @@ Object.defineProperty(MainTemplate.prototype, "requireFn", {
 Object.defineProperty(MainTemplate.prototype, "outputOptions", {
 	get: util.deprecate(
 		/**
+		 * Returns output options.
 		 * @this {MainTemplate}
 		 * @returns {OutputOptions} output options
 		 */
-		function () {
+		function outputOptions() {
 			return this._outputOptions;
 		},
 		"MainTemplate.outputOptions is deprecated (use Compilation.outputOptions instead)",

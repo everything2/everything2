@@ -7,18 +7,17 @@
 
 const { compareModulesByIdentifier } = require("../util/comparators");
 const {
-	getShortModuleName,
-	getLongModuleName,
+	assignAscendingModuleIds,
 	assignNames,
-	getUsedModuleIdsAndModules,
-	assignAscendingModuleIds
+	getLongModuleName,
+	getShortModuleName,
+	getUsedModuleIdsAndModules
 } = require("./IdHelpers");
 
-/** @typedef {import("../../declarations/WebpackOptions").OutputNormalized} Output */
 /** @typedef {import("../Compiler")} Compiler */
-/** @typedef {import("../Module")} Module */
 
 /**
+ * Defines the named module ids plugin options type used by this module.
  * @typedef {object} NamedModuleIdsPluginOptions
  * @property {string=} context context
  */
@@ -27,23 +26,23 @@ const PLUGIN_NAME = "NamedModuleIdsPlugin";
 
 class NamedModuleIdsPlugin {
 	/**
+	 * Creates an instance of NamedModuleIdsPlugin.
 	 * @param {NamedModuleIdsPluginOptions=} options options
 	 */
 	constructor(options = {}) {
+		/** @type {NamedModuleIdsPluginOptions} */
 		this.options = options;
 	}
 
 	/**
-	 * Apply the plugin
+	 * Applies the plugin by registering its hooks on the compiler.
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
 	apply(compiler) {
 		const { root } = compiler;
-		compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
-			const hashFunction =
-				/** @type {NonNullable<Output["hashFunction"]>} */
-				(compilation.outputOptions.hashFunction);
+		compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+			const hashFunction = compilation.outputOptions.hashFunction;
 			compilation.hooks.moduleIds.tap(PLUGIN_NAME, () => {
 				const chunkGraph = compilation.chunkGraph;
 				const context = this.options.context
@@ -53,7 +52,7 @@ class NamedModuleIdsPlugin {
 				const [usedIds, modules] = getUsedModuleIdsAndModules(compilation);
 				const unnamedModules = assignNames(
 					modules,
-					m => getShortModuleName(m, context, root),
+					(m) => getShortModuleName(m, context, root),
 					(m, shortName) =>
 						getLongModuleName(shortName, m, context, hashFunction, root),
 					compareModulesByIdentifier,

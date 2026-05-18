@@ -16,14 +16,16 @@ class RuntimeIdRuntimeModule extends RuntimeModule {
 	}
 
 	/**
+	 * Generates runtime code for this runtime module.
 	 * @returns {string | null} runtime code
 	 */
 	generate() {
 		const chunkGraph = /** @type {ChunkGraph} */ (this.chunkGraph);
 		const chunk = /** @type {Chunk} */ (this.chunk);
 		const runtime = chunk.runtime;
-		if (typeof runtime !== "string")
+		if (typeof runtime !== "string") {
 			throw new Error("RuntimeIdRuntimeModule must be in a single runtime");
+		}
 		const id = chunkGraph.getRuntimeId(runtime);
 		return `${RuntimeGlobals.runtimeId} = ${JSON.stringify(id)};`;
 	}

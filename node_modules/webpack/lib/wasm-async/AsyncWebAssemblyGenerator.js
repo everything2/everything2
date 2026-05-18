@@ -7,28 +7,33 @@
 
 const { RawSource } = require("webpack-sources");
 const Generator = require("../Generator");
-const { WEBASSEMBLY_TYPES } = require("../ModuleSourceTypesConstants");
+const { WEBASSEMBLY_TYPES } = require("../ModuleSourceTypeConstants");
 
 /** @typedef {import("webpack-sources").Source} Source */
 /** @typedef {import("../Generator").GenerateContext} GenerateContext */
+/** @typedef {import("../Module").SourceType} SourceType */
 /** @typedef {import("../Module").SourceTypes} SourceTypes */
 /** @typedef {import("../NormalModule")} NormalModule */
 
 /**
+ * Represents the async web assembly generator runtime component.
  * @typedef {object} AsyncWebAssemblyGeneratorOptions
  * @property {boolean=} mangleImports mangle imports
  */
 
 class AsyncWebAssemblyGenerator extends Generator {
 	/**
+	 * Creates an instance of AsyncWebAssemblyGenerator.
 	 * @param {AsyncWebAssemblyGeneratorOptions} options options
 	 */
 	constructor(options) {
 		super();
+		/** @type {AsyncWebAssemblyGeneratorOptions} */
 		this.options = options;
 	}
 
 	/**
+	 * Returns the source types available for this module.
 	 * @param {NormalModule} module fresh module
 	 * @returns {SourceTypes} available types (do not mutate)
 	 */
@@ -37,8 +42,9 @@ class AsyncWebAssemblyGenerator extends Generator {
 	}
 
 	/**
+	 * Returns the estimated size for the requested source type.
 	 * @param {NormalModule} module the module
-	 * @param {string=} type source type
+	 * @param {SourceType=} type source type
 	 * @returns {number} estimate size of the module
 	 */
 	getSize(module, type) {
@@ -50,6 +56,7 @@ class AsyncWebAssemblyGenerator extends Generator {
 	}
 
 	/**
+	 * Generates generated code for this runtime module.
 	 * @param {NormalModule} module module for which the code should be generated
 	 * @param {GenerateContext} generateContext context for generate
 	 * @returns {Source | null} generated code
@@ -59,6 +66,7 @@ class AsyncWebAssemblyGenerator extends Generator {
 	}
 
 	/**
+	 * Generates fallback output for the provided error condition.
 	 * @param {Error} error the error
 	 * @param {NormalModule} module module for which the code should be generated
 	 * @param {GenerateContext} generateContext context for generate

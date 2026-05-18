@@ -7,9 +7,10 @@
 
 const LocalModule = require("./LocalModule");
 
-/** @typedef {import("../javascript/JavascriptParser").ParserState} ParserState */
+/** @typedef {import("../javascript/JavascriptParser").JavascriptParserState} JavascriptParserState */
 
 /**
+ * Returns resolved module.
  * @param {string} parent parent module
  * @param {string} mod module to resolve
  * @returns {string} resolved module
@@ -34,7 +35,8 @@ const lookup = (parent, mod) => {
 };
 
 /**
- * @param {ParserState} state parser state
+ * Returns local module.
+ * @param {JavascriptParserState} state parser state
  * @param {string} name name
  * @returns {LocalModule} local module
  */
@@ -48,7 +50,8 @@ module.exports.addLocalModule = (state, name) => {
 };
 
 /**
- * @param {ParserState} state parser state
+ * Returns local module or null.
+ * @param {JavascriptParserState} state parser state
  * @param {string} name name
  * @param {string=} namedModule named module
  * @returns {LocalModule | null} local module or null
