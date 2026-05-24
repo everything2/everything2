@@ -184,12 +184,15 @@ const UserSearch = ({ data, user }) => {
     }
   }, [username, orderby, page, filterHidden])
 
-  // Fetch on initial load if username provided
+  // Single fetch trigger: username changes (covers initial mount when
+  // initialUsername is set — useState seeds it, this effect picks it up).
+  // Previously a separate [] -deps effect also fired on mount, producing
+  // two concurrent requests for the same data on URL-loaded pages.
   useEffect(() => {
-    if (data.initialUsername) {
+    if (username) {
       fetchWriteups()
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [username]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Refetch when sort/filter/page changes (but only if we have results)
   useEffect(() => {
@@ -197,13 +200,6 @@ const UserSearch = ({ data, user }) => {
       fetchWriteups()
     }
   }, [orderby, page, filterHidden]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Effect to trigger search when username changes
-  useEffect(() => {
-    if (username) {
-      fetchWriteups()
-    }
-  }, [username]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSortChange = (e) => {
     setOrderby(e.target.value)
