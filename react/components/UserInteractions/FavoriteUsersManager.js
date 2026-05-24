@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import UserSearchInput from '../UserSearchInput'
 import LinkNode from '../LinkNode'
-import ConfirmModal from '../ConfirmModal'
+import ConfirmActionModal from '../ConfirmActionModal'
 
 /**
  * FavoriteUsersManager - Component for managing favorite users (following)
@@ -193,15 +193,14 @@ const FavoriteUsersManager = ({ initialFavorites = [], currentUser }) => {
         )}
       </div>
 
-      <ConfirmModal
+      <ConfirmActionModal
         isOpen={confirmModal.isOpen}
         onClose={closeRemoveModal}
         onConfirm={confirmRemoveFavoriteUser}
         title="Unfollow User"
         message={`Are you sure you want to stop following ${confirmModal.username}?`}
-        confirmText="Unfollow"
-        cancelText="Cancel"
-        confirmColor="#c33"
+        confirmLabel="Unfollow"
+        closeOnConfirm
       />
     </div>
   )

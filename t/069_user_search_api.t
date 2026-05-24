@@ -391,6 +391,90 @@ $result = $api->search($request);
 ok($result->[1]{per_page} >= 1, "Per page has minimum value");
 
 #############################################################################
+# Test: oldest-first sort returns results
+# Regression: under the earlier query plan, sorting by publishtime ASC
+# returned an empty list even though `total` reported a non-zero count.
+#############################################################################
+
+{
+    no warnings 'redefine';
+    *MockRequest::cgi = sub {
+        return MockCGI->new(
+            username => $search_user->{title},
+            orderby => 'publishtime_asc',
+            per_page => 10,
+        );
+    };
+}
+
+$result = $api->search($request);
+is($result->[0], $api->HTTP_OK, "publishtime_asc returns HTTP 200");
+ok($result->[1]{total} > 0, "publishtime_asc reports non-zero total");
+ok(scalar(@{$result->[1]{writeups}}) > 0,
+   "publishtime_asc actually returns writeup rows (not just a total)");
+
+# Sanity-check ASC ordering
+if (scalar(@{$result->[1]{writeups}}) >= 2) {
+    my @times = map { $_->{publishtime} } @{$result->[1]{writeups}};
+    my @sorted = sort @times;
+    is_deeply(\@times, \@sorted, "publishtime_asc returns rows in ascending order");
+}
+
+#############################################################################
+# Test: writeup with no writeup_type (wrtype_writeuptype = 0) still appears
+# Regression: an INNER JOIN to the type's node row silently dropped any
+# writeup whose wrtype_writeuptype pointed at no real node (e.g. 0). The
+# COUNT query didn't include that join, so `total` and the returned row
+# count would disagree.
+#############################################################################
+
+my $untyped_e2node_title = "Test Untyped Writeup Node " . time();
+my $untyped_e2node_id = $DB->insertNode(
+    $untyped_e2node_title,
+    'e2node',
+    $search_user,
+    { title => $untyped_e2node_title }
+);
+my $untyped_writeup_id = $DB->insertNode(
+    $untyped_e2node_title,
+    'writeup',
+    $search_user,
+    {
+        parent_e2node => $untyped_e2node_id,
+        doctext => "Writeup with no writeup type set.",
+        publishtime => "2020-01-01 12:00:00",  # oldest, so we can find it via ASC
+        notnew => 0,
+    }
+);
+ok($untyped_writeup_id, "Inserted untyped test writeup");
+
+# Force wrtype_writeuptype to 0 (insertNode may have set a default)
+$DB->sqlUpdate('writeup', { wrtype_writeuptype => 0 },
+    "writeup_id = $untyped_writeup_id");
+
+push @test_writeup_ids,
+    { writeup_id => $untyped_writeup_id, e2node_id => $untyped_e2node_id };
+
+{
+    no warnings 'redefine';
+    *MockRequest::cgi = sub {
+        return MockCGI->new(
+            username => $search_user->{title},
+            orderby => 'publishtime_asc',
+            per_page => 10,
+        );
+    };
+}
+
+$result = $api->search($request);
+my %ids = map { $_->{node_id} => $_ } @{$result->[1]{writeups}};
+ok(exists $ids{$untyped_writeup_id},
+   "Writeup with wrtype_writeuptype = 0 appears in user_search results");
+ok(!defined($ids{$untyped_writeup_id}{writeup_type})
+   || $ids{$untyped_writeup_id}{writeup_type} eq '',
+   "Untyped writeup serializes writeup_type as null/empty rather than being dropped");
+
+#############################################################################
 # Cleanup
 #############################################################################
 

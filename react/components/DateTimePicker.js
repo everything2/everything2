@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { FaCalendarAlt, FaClock, FaTimes } from 'react-icons/fa'
+import { useClickOutside } from '../hooks/useClickOutside'
 
 /**
  * DateTimePicker - Date and time picker component with calendar popup
@@ -79,15 +80,7 @@ const DateTimePicker = ({
   }, [value])
 
   // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setIsOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  useClickOutside(containerRef, () => setIsOpen(false))
 
   // Get days in month
   const getDaysInMonth = (year, month) => {

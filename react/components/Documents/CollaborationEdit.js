@@ -9,6 +9,8 @@ import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
 import ConfirmActionModal from '../ConfirmActionModal'
 import { FaUsers, FaUser, FaLock, FaSave, FaSpinner, FaTrash, FaEye, FaLockOpen, FaGlobe, FaTimes, FaSearch } from 'react-icons/fa'
+import { useAutocompleteSearch } from '../../hooks/useAutocompleteSearch'
+import { useClickOutside } from '../../hooks/useClickOutside'
 import '../Editor/E2Editor.css'
 
 /**
@@ -53,11 +55,32 @@ const CollaborationEdit = ({ data }) => {
 
   // Member management state (admin/CE only)
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [isSearching, setIsSearching] = useState(false)
   const [addingMember, setAddingMember] = useState(false)
-  const searchTimeoutRef = useRef(null)
   const searchContainerRef = useRef(null)
+
+  // Members ref so the (memoized) search callback can read the
+  // current local member list when filtering out already-added rows.
+  const membersRef = useRef([])
+
+  // Debounce / abort / stale-guard live in useAutocompleteSearch.
+  const collaborationId = collaboration.node_id
+  const searchMembers = useCallback(async (query, { signal }) => {
+    const response = await fetch(
+      `/api/node_search?q=${encodeURIComponent(query)}&scope=group_addable&group_id=${collaborationId}`,
+      { signal }
+    )
+    const data = await response.json()
+    if (!data.success) return []
+    const currentIds = new Set(membersRef.current.map(m => m.node_id))
+    return data.results.filter(r => !currentIds.has(r.node_id))
+  }, [collaborationId])
+  const {
+    results: searchResults,
+    setResults: setSearchResults,
+    loading: isSearching,
+    triggerSearch,
+    clearResults: clearSearchResults,
+  } = useAutocompleteSearch({ search: searchMembers, debounceMs: 300 })
 
   // Delete confirmation modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -79,45 +102,15 @@ const CollaborationEdit = ({ data }) => {
     setHtmlContent(collaboration.doctext || '')
   }, [collaboration.doctext])
 
-  // Close search results when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
-        setSearchResults([])
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  // Keep membersRef synced for the search callback.
+  useEffect(() => { membersRef.current = members }, [members])
+
+  useClickOutside(searchContainerRef, clearSearchResults)
 
   // Live search for members
-  const handleSearch = async (query) => {
+  const handleSearch = (query) => {
     setSearchQuery(query)
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-    if (query.length < 2) {
-      setSearchResults([])
-      return
-    }
-    searchTimeoutRef.current = setTimeout(async () => {
-      setIsSearching(true)
-      try {
-        const response = await fetch(
-          `/api/node_search?q=${encodeURIComponent(query)}&scope=group_addable&group_id=${collaboration.node_id}`
-        )
-        const data = await response.json()
-        if (data.success) {
-          // Filter out current members
-          const currentIds = new Set(members.map(m => m.node_id))
-          setSearchResults(data.results.filter(r => !currentIds.has(r.node_id)))
-        }
-      } catch (error) {
-        console.error('Search failed:', error)
-      } finally {
-        setIsSearching(false)
-      }
-    }, 300)
+    triggerSearch(query)
   }
 
   // Handle mode toggle

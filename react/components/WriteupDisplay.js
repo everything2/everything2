@@ -4,7 +4,7 @@ import ParseLinks from './ParseLinks'
 import LinkNode from './LinkNode'
 import AdminModal from './AdminModal'
 import MessageModal from './MessageModal'
-import ConfirmModal from './ConfirmModal'
+import ConfirmActionModal from './ConfirmActionModal'
 import { renderE2Content } from './Editor/E2HtmlSanitizer'
 import { formatDate } from '../utils/dateFormat'
 
@@ -609,33 +609,29 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
 
       {/* Vote confirmation modal (writeups only, not drafts) */}
       {!isDraft && (
-        <ConfirmModal
+        <ConfirmActionModal
           isOpen={pendingVote !== null}
           onClose={() => setPendingVote(null)}
-          onConfirm={() => {
-            handleVote(node_id, pendingVote.weight, setVoteState, setErrorMessage)
-            setPendingVote(null)
-          }}
+          onConfirm={() => handleVote(node_id, pendingVote.weight, setVoteState, setErrorMessage)}
           title={pendingVote?.weight === 1 ? 'Confirm Upvote' : 'Confirm Downvote'}
           message={`Are you sure you want to ${pendingVote?.weight === 1 ? 'upvote' : 'downvote'} this writeup by ${author?.title || 'this author'}?`}
-          confirmText={pendingVote?.weight === 1 ? 'Upvote' : 'Downvote'}
-          confirmColor={pendingVote?.weight === 1 ? '#4a4' : '#a44'}
+          confirmLabel={pendingVote?.weight === 1 ? 'Upvote' : 'Downvote'}
+          confirmStyle="default"
+          closeOnConfirm
         />
       )}
 
       {/* Cool confirmation modal (writeups only, not drafts) */}
       {!isDraft && (
-        <ConfirmModal
+        <ConfirmActionModal
           isOpen={pendingCool}
           onClose={() => setPendingCool(false)}
-          onConfirm={() => {
-            handleCool(node_id, user, setCoolState, setErrorMessage)
-            setPendingCool(false)
-          }}
+          onConfirm={() => handleCool(node_id, user, setCoolState, setErrorMessage)}
           title="Confirm C!"
           message={`Are you sure you want to C! this writeup by ${author?.title || 'this author'}? This action cannot be undone.`}
-          confirmText="C!"
-          confirmColor="#667eea"
+          confirmLabel="C!"
+          confirmStyle="default"
+          closeOnConfirm
         />
       )}
     </>

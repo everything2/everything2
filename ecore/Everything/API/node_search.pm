@@ -107,8 +107,8 @@ sub search {
 
         # Build exclusion clause for group_addable
         my $exclude_clause = '';
-        # Build bind params in SQL order: type_id, search_pattern, [group_id], limit
-        my @bind_params = ($type_id, $search_pattern);
+        # Bind params in SQL order: exact-match arg (CASE), type_id, search_pattern, [group_id], limit
+        my @bind_params = ($search_term, $type_id, $search_pattern);
 
         if ($scope eq 'group_addable' && $group_id) {
             # Exclude nodes that are already members of the group
@@ -122,14 +122,17 @@ sub search {
 
         push @bind_params, $limit;
 
-        # Search by title prefix (case-insensitive)
+        # Prefix match, with exact-match rows promoted to the top so autocomplete
+        # behaves predictably (#4043). LOWER() on both sides keeps the equality
+        # explicitly case-insensitive regardless of column collation.
         my $sql = qq{
-            SELECT node.node_id, node.title
+            SELECT node.node_id, node.title,
+                CASE WHEN LOWER(node.title) = LOWER(?) THEN 2 ELSE 1 END AS match_priority
             FROM node
             WHERE node.type_nodetype = ?
             AND node.title LIKE ?
             $exclude_clause
-            ORDER BY node.title ASC
+            ORDER BY match_priority DESC, node.title ASC
             LIMIT ?
         };
 
@@ -140,14 +143,18 @@ sub search {
             push @results, {
                 node_id => int($row->{node_id}),
                 title => $row->{title},
-                type => $type_name
+                type => $type_name,
+                _priority => $row->{match_priority},
             };
         }
     }
 
-    # Sort combined results by title and limit
-    @results = sort { lc($a->{title}) cmp lc($b->{title}) } @results;
+    # Merge sort across types: exact matches first, then alphabetical
+    @results = sort {
+        ($b->{_priority} <=> $a->{_priority}) || (lc($a->{title}) cmp lc($b->{title}))
+    } @results;
     @results = @results[0 .. ($limit - 1)] if @results > $limit;
+    delete $_->{_priority} for @results;
 
     return [$self->HTTP_OK, {
         success => 1,

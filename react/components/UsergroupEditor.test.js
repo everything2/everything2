@@ -146,7 +146,10 @@ describe('UsergroupEditor', () => {
       fireEvent.change(searchInput, { target: { value: 'test' } })
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/node_search?q=test'))
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/api/node_search?q=test'),
+          expect.objectContaining({ signal: expect.anything() })
+        )
       })
 
       await waitFor(() => {

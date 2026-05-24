@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import LinkNode from '../LinkNode'
 import { FaMicrophone, FaSave, FaSpinner, FaPodcast, FaUser, FaTimes, FaFileAlt } from 'react-icons/fa'
+import { useAutocompleteSearch } from '../../hooks/useAutocompleteSearch'
+import { useClickOutside } from '../../hooks/useClickOutside'
 
 /**
  * UserSearchField - Inline user search input with dropdown suggestions
@@ -8,12 +10,9 @@ import { FaMicrophone, FaSave, FaSpinner, FaPodcast, FaUser, FaTimes, FaFileAlt 
  */
 const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
   const [inputValue, setInputValue] = useState(value || '')
-  const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const [loading, setLoading] = useState(false)
 
-  const searchTimeoutRef = useRef(null)
   const containerRef = useRef(null)
 
   // Sync input with external value changes
@@ -21,55 +20,46 @@ const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
     setInputValue(value || '')
   }, [value])
 
-  // Search for users via API
-  const searchUsers = useCallback(async (query) => {
-    if (query.length < 2) {
-      setSuggestions([])
-      setShowSuggestions(false)
-      return
-    }
-
-    setLoading(true)
-    try {
-      const response = await fetch(
-        `/api/node_search?q=${encodeURIComponent(query)}&scope=users&limit=10`
-      )
-      const data = await response.json()
-      if (data.success && data.results) {
-        setSuggestions(data.results)
-        setShowSuggestions(data.results.length > 0)
-        setSelectedIndex(-1)
-      }
-    } catch (err) {
-      console.error('User search failed:', err)
-      setSuggestions([])
-    } finally {
-      setLoading(false)
-    }
+  // Fetch lifecycle (debounce / abort / stale-guard) lives in the hook.
+  const searchUsers = useCallback(async (query, { signal }) => {
+    const response = await fetch(
+      `/api/node_search?q=${encodeURIComponent(query)}&scope=users&limit=10`,
+      { signal }
+    )
+    const data = await response.json()
+    return data.success && data.results ? data.results : []
   }, [])
+  const {
+    results: suggestions,
+    loading,
+    triggerSearch,
+    clearResults,
+  } = useAutocompleteSearch({ search: searchUsers })
 
-  // Handle input change with debounced search
+  useEffect(() => {
+    if (suggestions.length > 0) {
+      setShowSuggestions(true)
+      setSelectedIndex(-1)
+    }
+  }, [suggestions])
+
   const handleInputChange = useCallback((e) => {
     const newValue = e.target.value
     setInputValue(newValue)
     onChange(newValue)
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      searchUsers(newValue.trim())
-    }, 200)
-  }, [searchUsers, onChange])
+    const trimmed = newValue.trim()
+    if (trimmed.length < 2) setShowSuggestions(false)
+    triggerSearch(trimmed)
+  }, [triggerSearch, onChange])
 
   // Handle selecting a user from suggestions
   const handleSelectUser = useCallback((user) => {
     setInputValue(user.title)
     onChange(user.title)
-    setSuggestions([])
+    clearResults()
     setShowSuggestions(false)
     setSelectedIndex(-1)
-  }, [onChange])
+  }, [onChange, clearResults])
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e) => {
@@ -91,37 +81,19 @@ const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
         handleSelectUser(suggestions[selectedIndex])
       }
     } else if (e.key === 'Escape') {
-      setSuggestions([])
+      clearResults()
       setShowSuggestions(false)
       setSelectedIndex(-1)
     }
-  }, [showSuggestions, suggestions, selectedIndex, handleSelectUser])
+  }, [showSuggestions, suggestions, selectedIndex, handleSelectUser, clearResults])
 
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setShowSuggestions(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
-      }
-    }
-  }, [])
+  useClickOutside(containerRef, () => setShowSuggestions(false))
 
   // Clear button handler
   const handleClear = () => {
     setInputValue('')
     onChange('')
-    setSuggestions([])
+    clearResults()
     setShowSuggestions(false)
   }
 
@@ -180,12 +152,9 @@ const UserSearchField = ({ value, onChange, placeholder, disabled }) => {
  */
 const E2nodeSearchField = ({ value, onChange, placeholder, disabled, author }) => {
   const [inputValue, setInputValue] = useState(value || '')
-  const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const [loading, setLoading] = useState(false)
 
-  const searchTimeoutRef = useRef(null)
   const containerRef = useRef(null)
 
   // Sync input with external value changes
@@ -193,58 +162,44 @@ const E2nodeSearchField = ({ value, onChange, placeholder, disabled, author }) =
     setInputValue(value || '')
   }, [value])
 
-  // Search for e2nodes via API
-  const searchE2nodes = useCallback(async (query) => {
-    if (query.length < 2) {
-      setSuggestions([])
-      setShowSuggestions(false)
-      return
-    }
-
-    setLoading(true)
-    try {
-      // Build URL with optional author filter
-      let url = `/api/node_search?q=${encodeURIComponent(query)}&scope=e2nodes&limit=10`
-      if (author) {
-        url += `&author=${encodeURIComponent(author)}`
-      }
-      const response = await fetch(url)
-      const data = await response.json()
-      if (data.success && data.results) {
-        setSuggestions(data.results)
-        setShowSuggestions(data.results.length > 0)
-        setSelectedIndex(-1)
-      }
-    } catch (err) {
-      console.error('E2node search failed:', err)
-      setSuggestions([])
-    } finally {
-      setLoading(false)
-    }
+  const searchE2nodes = useCallback(async (query, { signal }) => {
+    let url = `/api/node_search?q=${encodeURIComponent(query)}&scope=e2nodes&limit=10`
+    if (author) url += `&author=${encodeURIComponent(author)}`
+    const response = await fetch(url, { signal })
+    const data = await response.json()
+    return data.success && data.results ? data.results : []
   }, [author])
+  const {
+    results: suggestions,
+    loading,
+    triggerSearch,
+    clearResults,
+  } = useAutocompleteSearch({ search: searchE2nodes })
 
-  // Handle input change with debounced search
+  useEffect(() => {
+    if (suggestions.length > 0) {
+      setShowSuggestions(true)
+      setSelectedIndex(-1)
+    }
+  }, [suggestions])
+
   const handleInputChange = useCallback((e) => {
     const newValue = e.target.value
     setInputValue(newValue)
     onChange(newValue)
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      searchE2nodes(newValue.trim())
-    }, 200)
-  }, [searchE2nodes, onChange])
+    const trimmed = newValue.trim()
+    if (trimmed.length < 2) setShowSuggestions(false)
+    triggerSearch(trimmed)
+  }, [triggerSearch, onChange])
 
   // Handle selecting an e2node from suggestions
   const handleSelectE2node = useCallback((node) => {
     setInputValue(node.title)
     onChange(node.title)
-    setSuggestions([])
+    clearResults()
     setShowSuggestions(false)
     setSelectedIndex(-1)
-  }, [onChange])
+  }, [onChange, clearResults])
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e) => {
@@ -266,37 +221,19 @@ const E2nodeSearchField = ({ value, onChange, placeholder, disabled, author }) =
         handleSelectE2node(suggestions[selectedIndex])
       }
     } else if (e.key === 'Escape') {
-      setSuggestions([])
+      clearResults()
       setShowSuggestions(false)
       setSelectedIndex(-1)
     }
-  }, [showSuggestions, suggestions, selectedIndex, handleSelectE2node])
+  }, [showSuggestions, suggestions, selectedIndex, handleSelectE2node, clearResults])
 
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setShowSuggestions(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
-      }
-    }
-  }, [])
+  useClickOutside(containerRef, () => setShowSuggestions(false))
 
   // Clear button handler
   const handleClear = () => {
     setInputValue('')
     onChange('')
-    setSuggestions([])
+    clearResults()
     setShowSuggestions(false)
   }
 

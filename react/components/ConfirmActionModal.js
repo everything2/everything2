@@ -17,6 +17,9 @@ import Modal from 'react-modal'
  *   cancelLabel - Label for cancel button (default: "Cancel")
  *   confirmStyle - Style variant for confirm button: "danger" (red) or "default" (blue)
  *   isSubmitting - Boolean to show loading state on confirm button
+ *   closeOnConfirm - If true, calls onClose() after onConfirm() returns. Use
+ *     for synchronous confirmations (votes, removes); leave false for async
+ *     operations that want to keep the modal open while showing isSubmitting.
  */
 const ConfirmActionModal = ({
   isOpen,
@@ -27,13 +30,14 @@ const ConfirmActionModal = ({
   confirmLabel = 'OK',
   cancelLabel = 'Cancel',
   confirmStyle = 'danger',
-  isSubmitting = false
+  isSubmitting = false,
+  closeOnConfirm = false
 }) => {
   const handleConfirm = (e) => {
     e.preventDefault()
-    if (!isSubmitting) {
-      onConfirm()
-    }
+    if (isSubmitting) return
+    onConfirm()
+    if (closeOnConfirm) onClose()
   }
 
   const confirmBtnClass = confirmStyle === 'danger'

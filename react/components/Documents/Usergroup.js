@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 import MessageBox from '../MessageBox'
-import ConfirmModal from '../ConfirmModal'
+import ConfirmActionModal from '../ConfirmActionModal'
 import Weblog from '../Weblog'
 import UsergroupEditor from '../UsergroupEditor'
 import UsergroupDescriptionEditor from '../UsergroupDescriptionEditor'
@@ -538,15 +538,14 @@ const Usergroup = ({ data, user, e2 }) => {
       )}
 
       {/* Leave group confirmation modal */}
-      <ConfirmModal
+      <ConfirmActionModal
         isOpen={showLeaveConfirm}
         onClose={() => setShowLeaveConfirm(false)}
         onConfirm={handleLeaveGroup}
         title="Leave Usergroup"
         message={`Are you sure you want to leave ${usergroup.title}? You will no longer receive messages from this group.`}
-        confirmText="Leave Group"
-        cancelText="Cancel"
-        confirmColor="#dc3545"
+        confirmLabel="Leave Group"
+        closeOnConfirm
       />
 
       {/* Member editor modal */}

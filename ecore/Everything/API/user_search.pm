@@ -171,7 +171,7 @@ sub search {
         ) AS picks
         JOIN node ON node.node_id = picks.node_id
         JOIN writeup ON writeup.writeup_id = node.node_id
-        JOIN node AS type ON type.node_id = writeup.wrtype_writeuptype
+        LEFT JOIN node AS type ON type.node_id = writeup.wrtype_writeuptype
         LEFT JOIN node AS parent ON parent.node_id = writeup.parent_e2node
         $vote_join
         ORDER BY picks.rn
