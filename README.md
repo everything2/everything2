@@ -20,10 +20,10 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 
 ## Architecture
 
-- **Backend:** Perl 5.38 + mod_perl2 + Apache2 + MySQL 8.0
-- **Frontend:** React 18.2.0 + Webpack (with legacy jQuery being phased out)
-- **Infrastructure:** AWS Fargate ECS, CodeBuild CI/CD, S3 asset storage
-- **Development:** Docker containers with automated testing
+- **Backend:** Perl 5.38 + mod_perl2 + Apache2 + MySQL 8.0 (migrating to 8.4 LTS by July 2026)
+- **Frontend:** React 18.3 + Webpack 5 (jQuery fully retired; legacy Mason templates fully retired)
+- **Infrastructure:** AWS Fargate ECS, CodeBuild CI/CD, S3 asset storage, RDS MySQL
+- **Development:** Docker containers (`e2devapp`, `e2devdb`) with automated testing
 
 ## Repository Structure
 
@@ -31,41 +31,50 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 |-----------|---------|
 | [ecore/](ecore/) | Core Everything libraries (Perl/Moose OOP) |
 | [react/](react/) | React 18 frontend components |
-| [templates/](templates/) | Mason2 server-side templates |
 | [www/](www/) | Static web assets (CSS, JS, images) |
 | [t/](t/) | Test suite (automated in build) |
 | [docker/](docker/) | Development and production containers |
-| [docs/](docs/) | 📚 **Comprehensive documentation and guides** |
+| [nodepack/](nodepack/) | Node/schema artifacts (XML dumps from production) |
+| [tools/](tools/) | Puppeteer/Perl utilities for debugging, coverage, layout checks |
+| [docs/](docs/) | **Comprehensive documentation and guides** |
 
 [View all directories →](docs/GETTING_STARTED.md#repository-structure)
 
 ## Documentation
 
 ### For Developers
-- **[Getting Started](docs/GETTING_STARTED.md)** - Development setup and workflow
-- **[Coding Standards](docs/coding-standards.md)** - Perl/JavaScript style guide
-- **[Quick Reference](docs/quick-reference.md)** - Common commands and patterns
+- **[Getting Started](docs/GETTING_STARTED.md)** — Development setup and workflow
+- **[Coding Standards](docs/coding-standards.md)** — Perl/JavaScript style guide
+- **[Quick Reference](docs/quick-reference.md)** — Common commands and patterns
+- **[Code Coverage Guide](docs/code-coverage.md)** — Coverage tooling and methodology
 
-### Technical Analysis
-- **[Analysis Summary](docs/analysis-summary.md)** - Complete architectural overview ⭐
-- **[Modernization Priorities](docs/modernization-priorities.md)** - Strategic roadmap
-- **[React Analysis](docs/react-analysis.md)** - Frontend implementation
-- **[Infrastructure Overview](docs/infrastructure-overview.md)** - AWS/Docker deployment
+### Strategy & Architecture
+- **[Developer Roadmap](docs/DEVELOPER-ROADMAP.md)** ⭐ — Strategic priorities, 11-phase sequencing, current status
+- **[MySQL 8.4 Migration Plan](docs/mysql-migration-plan.md)** — Active workstream (deadline 2026-07-31)
+- **[PSGI/Plack Migration Plan](docs/psgi-plack-migration-plan.md)** — Next major backend work
+- **[ORM Migration Plan](docs/orm-migration-plan.md)** — NodeBase modernization strategy
+- **[Infrastructure Overview](docs/infrastructure-overview.md)** — AWS/Docker deployment
+- **[React Analysis](docs/react-analysis.md)** — Frontend implementation notes
 
 **[Browse all documentation →](docs/README.md)**
 
 ## Current Modernization Status
 
-| Priority | Status | Progress |
-|----------|--------|----------|
-| SQL Injection Fixes | ✅ Complete | 4/4 critical vulnerabilities fixed |
-| Database Code Removal | 🔄 In Progress | 81% migrated to filesystem |
-| Testing Infrastructure | ✅ Complete | Automated in build process |
-| Code Coverage Tracking | ✅ Working | Mock-based tests enable coverage tracking |
-| Mobile Responsiveness | ⚠️ Critical Gap | Zero mobile CSS currently |
-| jQuery Removal | 📋 Planned | jQuery 1.11.1 → React/vanilla JS |
+| Workstream | Status | Notes |
+|------------|--------|-------|
+| SQL Injection Audit | ✅ Complete | Apr 2026 audit: zero remaining vulnerable sites |
+| jQuery Removal | ✅ Complete | Fully retired; React covers all interactive UI |
+| Mason Template Removal | ✅ Complete | `templates/` no longer carries server-rendered views |
+| Inline-styles → BEM CSS Refactor | ✅ Landed | ~280-file refactor merged Apr–May 2026 |
+| Mobile Redesign | ✅ Shipped | Bottom-nav layout, mobile audit tooling in `tools/` |
+| Date/Timezone Standardization | ✅ Done | 18 components migrated to `react/utils/dateFormat.js` |
+| Testing Infrastructure | ✅ Stable | Automated via `./docker/devbuild.sh` |
+| Code Coverage | ✅ Tracked | Perl 47.9% / React tracked via Jest |
+| **MySQL 8.4 Migration** | 🔄 In progress | Hard deadline 2026-07-31; 17 schema-fix issues open |
+| PSGI/Plack Migration | 📋 Planned | Post-MySQL; ~$90/mo Fargate savings |
+| DBIx::Class / Schema Migrations | 📋 Deferred | Post-PSGI; modernize NodeBase in place first |
 
-See [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for coverage details.
+See [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for coverage details and [docs/DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) for full sequencing rationale.
 
 ## Testing
 
@@ -78,11 +87,11 @@ Tests run automatically during `./docker/devbuild.sh`. To run manually:
 ./tools/coverage.sh                # Run tests with code coverage
 ```
 
-**Current Status:** All tests passing, Perl::Critic checks passing (235/235 modules).
+**Current Status:** All tests passing; Perl::Critic checks passing.
 
 **Code Coverage:** ![Perl Coverage](coverage/badges/perl-coverage.svg) ![React Coverage](coverage/badges/react-coverage.svg)
 
-Coverage is now tracked via mock-based API tests and Jest. Badges update automatically during `./docker/devbuild.sh` runs. See [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for detailed coverage reports and [Code Coverage Guide](docs/code-coverage.md) for methodology.
+Coverage is tracked via Devel::Cover (Perl) and Jest (React). Badges update automatically during `./docker/devbuild.sh --coverage` runs. See [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for detailed reports and [docs/code-coverage.md](docs/code-coverage.md) for methodology.
 
 ## Contributing
 
@@ -95,47 +104,50 @@ Coverage is now tracked via mock-based API tests and Jest. Badges update automat
 7. Submit a pull request referencing the issue
 
 **Branch naming convention:** `issue/ISSUE_NUMBER/short-description`
-- Example: `issue/3597/broken-rdf-feed`
+- Example: `issue/4048/new-writeups-anchor`
 
 See [Contributing Guide](docs/GETTING_STARTED.md#contributing) for full details.
 
 ## Technology Stack
 
 **Backend:**
-- Perl 5.38 with Moose (100+ modules)
-- mod_perl2 + Apache2
-- MySQL 8.0+ with DBI
-- Mason2 templating
+- Perl 5.38 with Moose
+- mod_perl2 + Apache2 (CGI-style scripts via `ModPerl::Registry`)
+- MySQL 8.0 → migrating to 8.4 LTS
+- DBI with `Apache::DBI` for connection reuse
 
 **Frontend:**
-- React 18.2.0 (29 components)
+- React 18.3 (~80 top-level components + ~250 Document components)
 - Webpack 5 asset bundling
-- Legacy jQuery 1.11.1 (being removed)
+- DOMPurify for sanitized HTML rendering
+- Shared utilities under `react/utils/` (e.g. `dateFormat.js`)
 
 **Infrastructure:**
 - AWS Fargate ECS (container orchestration)
 - AWS CodeBuild (CI/CD)
-- Docker (development + production)
-- S3 (asset storage with versioning)
+- AWS RDS MySQL
+- AWS S3 (asset storage with versioning)
+- Cloudflare (CDN/edge)
 
 **Development:**
 - Carton (Perl dependency management)
 - npm (Node.js dependencies)
-- Test::More (Perl testing)
-- perlcritic (code quality)
+- Test::More + Devel::Cover (Perl testing & coverage)
+- Jest (React testing & coverage)
+- Perl::Critic (code quality)
+- Puppeteer-based debugging tools in `tools/`
 
 ## Security
 
-We take security seriously. If you discover a security vulnerability:
+If you discover a security vulnerability:
 
 1. **Do NOT** open a public GitHub issue
-2. Contact the maintainers privately
-3. See [SECURITY.md](docs/SECURITY.md) for details (if available)
+2. Contact the maintainer privately at jay@bonci.net
 
 **Recent Security Work:**
-- ✅ Fixed 4 critical SQL injection vulnerabilities (2025-11-07)
-- ✅ Added comprehensive test coverage for security fixes
-- 🔄 Ongoing: Database code removal (eliminates eval security risks)
+- ✅ April 2026 SQL injection re-audit: zero vulnerable sites remaining
+- ✅ Test coverage in place for security-sensitive code paths
+- 🔄 Ongoing: NodeBase modernization to eliminate raw-SQL call sites in controllers
 
 ## License
 
@@ -154,7 +166,7 @@ See the Perl documentation for details on these licenses.
 
 ---
 
-**Last Updated:** 2025-12-17
-**Build Status:** ✅ All tests passing, Perl::Critic 235/235 modules
-**Code Coverage:** ![Perl](coverage/badges/perl-coverage.svg) ![React](coverage/badges/react-coverage.svg) - See [COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md)
-**Modernization:** 📚 See [DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) for 12-phase modernization plan
+**Last Updated:** 2026-05-24
+**Build Status:** ✅ All tests passing
+**Code Coverage:** ![Perl](coverage/badges/perl-coverage.svg) ![React](coverage/badges/react-coverage.svg) — see [COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md)
+**Modernization:** 📚 See [DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) for the 11-phase strategic plan

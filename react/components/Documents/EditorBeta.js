@@ -8,6 +8,7 @@ import MenuBar from '../Editor/MenuBar';
 import PreviewContent from '../Editor/PreviewContent';
 import PublishModal from './PublishModal';
 import '../Editor/E2Editor.css';
+import { formatDateTime } from '../../utils/dateFormat';
 
 // Inline styles for spinner animation (mode toggle styles now in E2Editor.css)
 const editorStyles = `
@@ -114,10 +115,7 @@ const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
     setRestoring(false);
   };
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleString();
-  };
+  const formatDate = (dateStr) => formatDateTime(dateStr) ?? '';
 
   return (
     <div className="editor-beta-modal-overlay">

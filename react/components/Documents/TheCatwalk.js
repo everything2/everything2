@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { formatShortDate } from '../../utils/dateFormat'
 
 /**
  * TheCatwalk - Complete stylesheet browser
@@ -34,25 +35,13 @@ const TheCatwalk = ({ data }) => {
     )
   }
 
-  // Check if date is valid (not 0000-00-00 or invalid)
+  // Date validity + UTC-aware formatting delegate to shared utility.
+  // MySQL zero-date ("0000-00-00 00:00:00") and ISO epoch-0 both return null.
   const isValidDate = (dateStr) => {
-    if (!dateStr) return false
-    // MySQL zero date
-    if (dateStr.startsWith('0000-00-00')) return false
-    const date = new Date(dateStr)
-    return !isNaN(date.getTime())
+    if (typeof dateStr === 'string' && dateStr.startsWith('0000-00-00')) return false
+    return formatShortDate(dateStr) !== null
   }
-
-  // Format date
-  const formatDate = (dateStr) => {
-    if (!isValidDate(dateStr)) return '—'
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+  const formatDate = (dateStr) => isValidDate(dateStr) ? formatShortDate(dateStr) : '—'
 
   // Calculate time since
   const timeSince = (dateStr) => {

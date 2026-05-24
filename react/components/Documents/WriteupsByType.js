@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { formatDateTime } from '../../utils/dateFormat'
 
 /**
  * WriteupsByType - Browse writeups filtered by writeup type
@@ -23,26 +24,13 @@ const WriteupsByType = ({ data }) => {
   const [selectedType, setSelectedType] = useState(current_type)
   const [selectedCount, setSelectedCount] = useState(current_count)
 
-  // Check if date is valid
+  // Date validity + UTC-aware formatting delegate to shared utility.
+  // MySQL zero-date ("0000-00-00 00:00:00") is rejected explicitly.
   const isValidDate = (dateStr) => {
-    if (!dateStr) return false
-    if (dateStr.startsWith('0000-00-00')) return false
-    const date = new Date(dateStr)
-    return !isNaN(date.getTime())
+    if (typeof dateStr === 'string' && dateStr.startsWith('0000-00-00')) return false
+    return formatDateTime(dateStr) !== null
   }
-
-  // Format date for display
-  const formatDate = (dateStr) => {
-    if (!isValidDate(dateStr)) return '—'
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
+  const formatDate = (dateStr) => isValidDate(dateStr) ? formatDateTime(dateStr) : '—'
 
   // Build pagination URL
   const buildPageUrl = (pageNum) => {

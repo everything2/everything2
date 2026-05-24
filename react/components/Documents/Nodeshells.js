@@ -1,5 +1,6 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
+import { formatShortDate } from '../../utils/dateFormat'
 
 const Nodeshells = ({ data }) => {
   const { nodeshells } = data
@@ -23,7 +24,7 @@ const Nodeshells = ({ data }) => {
               <li key={node_id} className="nodeshells__item">
                 <LinkNode node_id={node_id} title={title} type="e2node" />
                 <div className="nodeshells__created">
-                  Created: {new Date(createtime).toLocaleDateString()}
+                  Created: {formatShortDate(createtime) ?? '?'}
                 </div>
               </li>
             ))}

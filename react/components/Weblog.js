@@ -3,6 +3,7 @@ import LinkNode from './LinkNode'
 import ConfirmModal from './ConfirmModal'
 import { renderE2Content } from './Editor/E2HtmlSanitizer'
 import { FaTrash, FaChevronDown } from 'react-icons/fa'
+import { formatDate } from '../utils/dateFormat'
 
 /**
  * WeblogEntry - Displays a single weblog entry
@@ -15,16 +16,7 @@ const WeblogEntry = ({ entry, canRemove, onRemove, weblogId }) => {
   const { to_node, title, type, doctext, linkedtime, linkedby, author, author_user } = entry
 
   // Format date like legacy htmlcode parsetimestamp
-  const formatDate = (timestamp) => {
-    if (!timestamp) return null
-    const date = new Date(timestamp)
-    if (isNaN(date.getTime())) return null
-    return date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    })
-  }
+  // Date formatting delegates to shared UTC-aware utility (utils/dateFormat).
 
   // Get sanitized HTML content
   const getSanitizedHtml = (content) => {

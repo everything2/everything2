@@ -44,6 +44,8 @@ E2 is a 1999-vintage Perl/mod_perl/MySQL community writing site mid-modernizatio
 
 **Don't call `Everything::Delegation::*` from controllers.** Implement logic in `buildReactData()` or extract to `Application.pm`. The delegation modules are being eliminated; the only remaining permitted exception is `Everything::Delegation::htmlcode::*` during migration cleanup.
 
+**Format dates through `react/utils/dateFormat.js`, not `toLocaleDateString` directly.** Server stores all timestamps in UTC (Apache runs `TZ='+0000'`), but JS `toLocaleDateString` defaults to the *viewer's* local timezone — so a UTC timestamp late in the day renders as the next day for viewers east of UTC. Use `formatDate(input)` (long form), `formatShortDate`, `formatDateTime`, or `formatTime`. All default to `timeZone: 'UTC'`. Issue #4056 was caused by ignoring this; same bug pattern existed in ~18 components before the cleanup.
+
 ---
 
 ## Visual / styling
