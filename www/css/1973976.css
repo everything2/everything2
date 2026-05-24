@@ -3036,36 +3036,71 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   padding: 0;
 }
 
-.new-writeups-item {
-  padding: 6px 0;
+/* Per-item styling — scoped to .contentinfo (what WriteupEntry renders) so the
+   card and sidebar nodelet share the same component but the card keeps its
+   2-line "card" feel: title+type on one line, "by author" wrapped underneath.
+   Plus card-specific padding/dividers/typography. */
+.new-writeups-card-body .infolist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.new-writeups-card-body .contentinfo {
+  display: block;
+  padding: 8px 0;
   border-bottom: 1px solid var(--e2-border-light, #e8f4f8);
   font-size: 14px;
   line-height: 1.4;
 }
 
-.new-writeups-item:last-child {
+.new-writeups-card-body .contentinfo:last-child {
   border-bottom: none;
 }
 
-.new-writeups-link {
+.new-writeups-card-body .contentinfo a.title {
   color: var(--e2-color-link, #4060b0);
   text-decoration: none;
+  font-weight: 500;
 }
 
-.new-writeups-type {
+.new-writeups-card-body .contentinfo a.title:hover {
+  text-decoration: underline;
+}
+
+.new-writeups-card-body .contentinfo .type {
   color: var(--e2-color-muted, #507898);
   font-size: 12px;
-  margin-left: 4px;
+  margin-left: 6px;
 }
 
-.new-writeups-author {
+.new-writeups-card-body .contentinfo .type a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.new-writeups-card-body .contentinfo .type a:hover {
+  text-decoration: underline;
+}
+
+/* "by author" on its own line — this is what makes the card feel like a card
+   rather than a compressed nodelet row. WriteupEntry wraps the byline in <cite>
+   which is inline by default; we promote it to a block-level element. */
+.new-writeups-card-body .contentinfo cite {
+  display: block;
   color: #666;
   font-size: 12px;
+  font-style: normal;
+  margin-top: 2px;
 }
 
-.new-writeups-author-link {
+.new-writeups-card-body .contentinfo cite a {
   color: var(--e2-color-link, #4060b0);
   text-decoration: none;
+}
+
+.new-writeups-card-body .contentinfo cite a:hover {
+  text-decoration: underline;
 }
 
 .new-writeups-more {

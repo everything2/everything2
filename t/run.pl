@@ -42,6 +42,8 @@ my %serial_tests = (
     "$dirname/049_giftshop_api.t" => 1,   # Uses normaluser1, modifies experience/GP/messages
     "$dirname/050_sanctify_api.t" => 1,   # Uses normaluser1, modifies experience/GP/messages
     "$dirname/065_drafts_api.t" => 1,     # Uses normaluser1, queries "most recent writeup" which races with other tests
+    "$dirname/021_nodenotes_api.t" => 1,  # Uses shared root user, modifies nodenote table; races with other root-using tests
+    "$dirname/058_notification_preferences_isolation.t" => 1, # Reads/writes user VARS; asserts cross-call preservation which races with other VARS-mutating tests
 );
 
 # Separate serial and parallel tests

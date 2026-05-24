@@ -1,10 +1,17 @@
 import React from 'react'
+import WriteupEntry from './WriteupEntry'
+import LinkNode from './LinkNode'
 
 /**
  * NewWriteupsCard - A card display of new writeups for front pages
  *
  * Used in: Guest Front Page (below hero), Welcome to Everything (first card)
- * Displays a simplified list of recent writeups with title, type, and author
+ *
+ * Renders each writeup with the same `WriteupEntry` component the sidebar
+ * `NewWriteups` nodelet uses, so links (title, type, author) behave identically
+ * across surfaces — including the in-page `#AuthorName` / `#writeup_<id>` anchors
+ * that E2NodeDisplay's hash handler uses to scroll to the specific writeup
+ * (issue #4048).
  */
 const NewWriteupsCard = ({ writeups = [], isMobile = false, limit = 10 }) => {
   const displayWriteups = writeups.slice(0, limit)
@@ -21,56 +28,22 @@ const NewWriteupsCard = ({ writeups = [], isMobile = false, limit = 10 }) => {
     <div className={cardClass}>
       <h3 className="new-writeups-card-header">New Writeups</h3>
       <div className="new-writeups-card-body">
-        <ul className="new-writeups-list">
-          {displayWriteups.map((entry, index) => {
-            const parent = entry.parent
-            const author = entry.author
-            const writeuptype = entry.writeuptype
-
-            return (
-              <li
-                key={entry.node_id || index}
-                className="new-writeups-item"
-              >
-                <div>
-                  {parent ? (
-                    <a
-                      href={`/title/${encodeURIComponent(parent.title)}`}
-                      className="new-writeups-link"
-                    >
-                      {parent.title}
-                    </a>
-                  ) : (
-                    <a
-                      href={`/node/${entry.node_id}`}
-                      className="new-writeups-link"
-                    >
-                      {entry.title}
-                    </a>
-                  )}
-                  {writeuptype && (
-                    <span className="new-writeups-type">({writeuptype})</span>
-                  )}
-                </div>
-                {author && (
-                  <div className="new-writeups-author">
-                    by{' '}
-                    <a
-                      href={`/user/${encodeURIComponent(author.title)}`}
-                      className="new-writeups-author-link"
-                    >
-                      {author.title}
-                    </a>
-                  </div>
-                )}
-              </li>
-            )
-          })}
+        <ul className="infolist new-writeups-list">
+          {displayWriteups.map((entry, index) => (
+            <WriteupEntry
+              entry={entry}
+              key={entry.node_id || index}
+              mode="full"
+            />
+          ))}
         </ul>
         <div className="new-writeups-more">
-          <a href="/title/Writeups%20By%20Type" className="new-writeups-more-link">
-            more writeups
-          </a>
+          <LinkNode
+            type="superdoc"
+            title="Writeups By Type"
+            display="more writeups"
+            className="new-writeups-more-link"
+          />
         </div>
       </div>
     </div>
