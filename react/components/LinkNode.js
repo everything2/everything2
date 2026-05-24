@@ -98,7 +98,9 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params,styl
       paramstring = '?'+paramstring
     }
 
-    if(anchor !== undefined)
+    // Skip null/empty anchors (not just undefined) — `<LinkNode anchor={author?.title} />`
+    // passes null when author is missing, which would otherwise render as `#null`.
+    if(anchor !== undefined && anchor !== null && anchor !== '')
     {
       paramstring = paramstring+"#"+anchor
     }
