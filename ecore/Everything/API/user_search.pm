@@ -136,6 +136,12 @@ sub search {
         };
     }
 
+    # Deferred-join pattern: pick the page of winning node_ids first using
+    # node.authortype, then join the display columns onto just those rows.
+    # Without this, the optimizer leads with `writeup` (full table scan of
+    # millions of rows in prod) before filtering by author. ROW_NUMBER pins
+    # the inner order so the outer re-sort preserves it — especially needed
+    # for ORDER BY RAND(), which would otherwise reshuffle.
     my $writeups_sql = qq|
         SELECT
             node.node_id,
@@ -151,16 +157,24 @@ sub search {
             $vote_select
             $note_select
             $vote_spread_select
-        FROM node
+        FROM (
+            SELECT
+                node.node_id,
+                ROW_NUMBER() OVER (ORDER BY $sql_order, node.node_id ASC) AS rn
+            FROM node
+            JOIN writeup ON writeup.writeup_id = node.node_id
+            WHERE node.author_user = ?
+            AND node.type_nodetype = ?
+            $filter_clause
+            ORDER BY $sql_order, node.node_id ASC
+            LIMIT ? OFFSET ?
+        ) AS picks
+        JOIN node ON node.node_id = picks.node_id
         JOIN writeup ON writeup.writeup_id = node.node_id
         JOIN node AS type ON type.node_id = writeup.wrtype_writeuptype
         LEFT JOIN node AS parent ON parent.node_id = writeup.parent_e2node
         $vote_join
-        WHERE node.author_user = ?
-        AND node.type_nodetype = ?
-        $filter_clause
-        ORDER BY $sql_order, node.node_id ASC
-        LIMIT ? OFFSET ?
+        ORDER BY picks.rn
     |;
 
     my $sth = $self->DB->{dbh}->prepare($writeups_sql);
