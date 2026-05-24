@@ -81,7 +81,8 @@ describe('SearchBar', () => {
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/node_search?q=test')
+          expect.stringContaining('/api/node_search?q=test'),
+          expect.objectContaining({ signal: expect.anything() })
         )
       })
     })
@@ -156,7 +157,7 @@ describe('SearchBar', () => {
       })
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Search failed:',
+        'Autocomplete search failed:',
         expect.any(Error)
       )
 
@@ -183,7 +184,8 @@ describe('SearchBar', () => {
         expect(fetch).toHaveBeenCalledTimes(1)
       })
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('q=test')
+        expect.stringContaining('q=test'),
+        expect.objectContaining({ signal: expect.anything() })
       )
     })
   })

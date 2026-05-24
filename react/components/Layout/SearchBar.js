@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { FaSearch } from 'react-icons/fa'
+import { useAutocompleteSearch } from '../../hooks/useAutocompleteSearch'
+import { useClickOutside } from '../../hooks/useClickOutside'
 
 /**
  * SearchBar - Site search component with live autocomplete
@@ -19,13 +21,34 @@ const SearchBar = ({
   compact = false
 }) => {
   const [searchValue, setSearchValue] = useState(initialValue)
-  const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const [loading, setLoading] = useState(false)
 
-  const searchTimeoutRef = useRef(null)
   const containerRef = useRef(null)
+
+  // Debounce / abort / stale-guard live in useAutocompleteSearch.
+  const searchNodes = useCallback(async (query, { signal }) => {
+    const response = await fetch(
+      `/api/node_search?q=${encodeURIComponent(query)}&scope=all&limit=10`,
+      { signal }
+    )
+    const data = await response.json()
+    return data.success && data.results ? data.results : []
+  }, [])
+  const {
+    results: suggestions,
+    loading,
+    triggerSearch,
+    clearResults,
+  } = useAutocompleteSearch({ search: searchNodes })
+
+  // Open dropdown when fresh results arrive.
+  useEffect(() => {
+    if (suggestions.length > 0) {
+      setShowSuggestions(true)
+      setSelectedIndex(-1)
+    }
+  }, [suggestions])
 
   // Total items includes suggestions + "show all" option
   const totalItems = suggestions.length + (suggestions.length > 0 ? 1 : 0)
@@ -37,45 +60,13 @@ const SearchBar = ({
     }
   }, [lastNodeId])
 
-  // Search for nodes via API
-  const searchNodes = useCallback(async (query) => {
-    if (query.length < 2) {
-      setSuggestions([])
-      setShowSuggestions(false)
-      return
-    }
-
-    setLoading(true)
-    try {
-      const response = await fetch(
-        `/api/node_search?q=${encodeURIComponent(query)}&scope=all&limit=10`
-      )
-      const data = await response.json()
-      if (data.success && data.results) {
-        setSuggestions(data.results)
-        setShowSuggestions(data.results.length > 0)
-        setSelectedIndex(-1)
-      }
-    } catch (err) {
-      console.error('Search failed:', err)
-      setSuggestions([])
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
   const handleInputChange = useCallback((e) => {
     const newValue = e.target.value
     setSearchValue(newValue)
-
-    // Debounced live search
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      searchNodes(newValue.trim())
-    }, 200)
-  }, [searchNodes])
+    const trimmed = newValue.trim()
+    if (trimmed.length < 2) setShowSuggestions(false)
+    triggerSearch(trimmed)
+  }, [triggerSearch])
 
   // Navigate to a selected suggestion
   const handleSelectSuggestion = useCallback((suggestion) => {
@@ -122,31 +113,13 @@ const SearchBar = ({
         handleShowAll()
       }
     } else if (e.key === 'Escape') {
-      setSuggestions([])
+      clearResults()
       setShowSuggestions(false)
       setSelectedIndex(-1)
     }
-  }, [showSuggestions, suggestions, selectedIndex, totalItems, handleSelectSuggestion, handleShowAll])
+  }, [showSuggestions, suggestions, selectedIndex, totalItems, handleSelectSuggestion, handleShowAll, clearResults])
 
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setShowSuggestions(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
-      }
-    }
-  }, [])
+  useClickOutside(containerRef, () => setShowSuggestions(false))
 
   // Get icon for node type
   const getTypeIcon = (type) => {

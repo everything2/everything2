@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import LinkNode from './LinkNode'
+import { useAutocompleteSearch } from '../hooks/useAutocompleteSearch'
+import { useClickOutside } from '../hooks/useClickOutside'
 
 /**
  * MessageModal - Modal dialog for composing messages
@@ -32,12 +34,33 @@ const MessageModal = ({
   const [warning, setWarning] = useState(null)
   const textareaRef = useRef(null)
 
-  // Autocomplete state
-  const [suggestions, setSuggestions] = useState([])
+  // Autocomplete state — fetch lifecycle (debounce / abort / stale-guard)
+  // lives in useAutocompleteSearch; visibility + selection live here.
+  const searchRecipients = useCallback(async (query, { signal }) => {
+    const response = await fetch(
+      `/api/node_search?q=${encodeURIComponent(query)}&scope=message_recipients&limit=10`,
+      { signal }
+    )
+    const data = await response.json()
+    return data.success && data.results ? data.results : []
+  }, [])
+  const {
+    results: suggestions,
+    triggerSearch: triggerRecipientSearch,
+    clearResults: clearSuggestions,
+  } = useAutocompleteSearch({ search: searchRecipients })
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
-  const searchTimeoutRef = useRef(null)
   const recipientInputRef = useRef(null)
+  const recipientWrapperRef = useRef(null)
+
+  // Open dropdown whenever fresh results arrive.
+  useEffect(() => {
+    if (suggestions.length > 0) {
+      setShowSuggestions(true)
+      setSelectedSuggestionIndex(-1)
+    }
+  }, [suggestions])
 
   // Initialize form when modal opens
   useEffect(() => {
@@ -55,7 +78,7 @@ const MessageModal = ({
       setError(null)
       setWarning(null)
       setSending(false)
-      setSuggestions([])
+      clearSuggestions()
       setShowSuggestions(false)
       setSelectedSuggestionIndex(-1)
 
@@ -73,48 +96,19 @@ const MessageModal = ({
     }
   }, [isOpen, replyTo, initialReplyAll, initialMessage])
 
-  // Autocomplete: search for message recipients
-  const searchRecipients = useCallback(async (query) => {
-    if (query.length < 2) {
-      setSuggestions([])
-      setShowSuggestions(false)
-      return
-    }
-
-    try {
-      const response = await fetch(
-        `/api/node_search?q=${encodeURIComponent(query)}&scope=message_recipients&limit=10`
-      )
-      const data = await response.json()
-      if (data.success && data.results) {
-        setSuggestions(data.results)
-        setShowSuggestions(data.results.length > 0)
-        setSelectedSuggestionIndex(-1)
-      }
-    } catch (err) {
-      console.error('Recipient search failed:', err)
-      setSuggestions([])
-    }
-  }, [])
-
-  // Handle recipient input change with debounced autocomplete
+  // Handle recipient input change — defers debounce + fetch to the hook.
   const handleRecipientChange = useCallback((e) => {
     const newValue = e.target.value
     setRecipient(newValue)
-
-    // Debounced autocomplete search
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      searchRecipients(newValue.trim())
-    }, 200)
-  }, [searchRecipients])
+    const trimmed = newValue.trim()
+    if (trimmed.length < 2) setShowSuggestions(false)
+    triggerRecipientSearch(trimmed)
+  }, [triggerRecipientSearch])
 
   // Handle selecting a suggestion
   const handleSelectSuggestion = useCallback((suggestion) => {
     setRecipient(suggestion.title)
-    setSuggestions([])
+    clearSuggestions()
     setShowSuggestions(false)
     setSelectedSuggestionIndex(-1)
     // Focus textarea after selecting recipient
@@ -123,7 +117,7 @@ const MessageModal = ({
         textareaRef.current.focus()
       }
     }, 50)
-  }, [])
+  }, [clearSuggestions])
 
   // Handle keyboard navigation in suggestions
   const handleRecipientKeyDown = useCallback((e) => {
@@ -141,24 +135,13 @@ const MessageModal = ({
       e.preventDefault()
       handleSelectSuggestion(suggestions[selectedSuggestionIndex])
     } else if (e.key === 'Escape') {
-      setSuggestions([])
+      clearSuggestions()
       setShowSuggestions(false)
       setSelectedSuggestionIndex(-1)
     }
-  }, [showSuggestions, suggestions, selectedSuggestionIndex, handleSelectSuggestion])
+  }, [showSuggestions, suggestions, selectedSuggestionIndex, handleSelectSuggestion, clearSuggestions])
 
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (recipientInputRef.current && !recipientInputRef.current.parentElement.contains(e.target)) {
-        setShowSuggestions(false)
-      }
-    }
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen])
+  useClickOutside(recipientWrapperRef, () => setShowSuggestions(false), isOpen)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -348,7 +331,7 @@ const MessageModal = ({
                 )}
               </div>
             ) : (
-              <div className="message-modal__autocomplete-wrapper">
+              <div className="message-modal__autocomplete-wrapper" ref={recipientWrapperRef}>
                 <input
                   ref={recipientInputRef}
                   type="text"

@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import LinkNode from './LinkNode'
 import { FaTimes, FaGripVertical, FaPlus, FaSearch, FaSave } from 'react-icons/fa'
+import { useAutocompleteSearch } from '../hooks/useAutocompleteSearch'
 
 /**
  * GroupEditorBase - Shared modal infrastructure for group editors
@@ -23,7 +24,9 @@ import { FaTimes, FaGripVertical, FaPlus, FaSearch, FaSave } from 'react-icons/f
  * - renderMemberContent: function(member) - render member-specific content
  * - renderMemberExtra: function(member, index) - render extra content (e.g., owner badge)
  * - canRemove: function(member) - check if member can be removed
- * - onSearch: async function(query) - perform search
+ * - onSearch: async function(query, {signal}) - perform search; honor signal
+ *   for cancellation if possible. Returning a Promise is required; cancelling
+ *   via signal lets stale requests stop early when the user keeps typing.
  * - onAdd: async function(item) - add a member
  * - onRemove: async function(member) - remove a member
  * - renderSearchResult: function(result) - render search result item
@@ -50,51 +53,47 @@ export const GroupEditorModal = ({
   setMessage
 }) => {
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [isSearching, setIsSearching] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState(null)
   const [dragOverIndex, setDragOverIndex] = useState(null)
   const [hasChanges, setHasChanges] = useState(false)
-  const searchTimeoutRef = useRef(null)
+
+  // Keep current-members visible to the (memoized) search callback without
+  // re-creating it on every member update.
+  const membersRef = useRef(members)
+  useEffect(() => { membersRef.current = members }, [members])
+
+  // Debounce / abort / stale-guard live in useAutocompleteSearch. We wrap
+  // the caller-supplied onSearch so the signal is forwarded and the
+  // already-member filter is applied uniformly across consumers.
+  const wrappedSearch = useCallback(async (query, { signal }) => {
+    const results = await onSearch(query, { signal })
+    const currentIds = new Set(membersRef.current.map(m => m.node_id))
+    return (results || []).filter(r => !currentIds.has(r.node_id))
+  }, [onSearch])
+  const {
+    results: searchResults,
+    setResults: setSearchResults,
+    loading: isSearching,
+    triggerSearch,
+    clearResults: clearSearchResults,
+  } = useAutocompleteSearch({ search: wrappedSearch, debounceMs: 300 })
 
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
       setHasChanges(false)
       setSearchQuery('')
-      setSearchResults([])
+      clearSearchResults()
     }
-  }, [isOpen])
+  }, [isOpen, clearSearchResults])
 
   if (!isOpen) return null
 
-  // Handle search
-  const handleSearch = async (query) => {
+  // Handle search — delegates the fetch lifecycle to the hook.
+  const handleSearch = (query) => {
     setSearchQuery(query)
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-
-    if (query.length < 2) {
-      setSearchResults([])
-      return
-    }
-
-    searchTimeoutRef.current = setTimeout(async () => {
-      setIsSearching(true)
-      try {
-        const results = await onSearch(query)
-        // Filter out current members
-        const currentIds = new Set(members.map(m => m.node_id))
-        setSearchResults(results.filter(r => !currentIds.has(r.node_id)))
-      } catch (error) {
-        console.error('Search failed:', error)
-      } finally {
-        setIsSearching(false)
-      }
-    }, 300)
+    triggerSearch(query)
   }
 
   // Handle add

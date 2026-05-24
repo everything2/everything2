@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import LinkNode from './LinkNode'
 import { FaTimes, FaGripVertical, FaPlus, FaSearch, FaUser, FaUsers, FaSave, FaExchangeAlt } from 'react-icons/fa'
+import { useAutocompleteSearch } from '../hooks/useAutocompleteSearch'
 
 /**
  * UsergroupEditor - Modal for managing usergroup members
@@ -22,8 +23,6 @@ import { FaTimes, FaGripVertical, FaPlus, FaSearch, FaUser, FaUsers, FaSave, FaE
 const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }) => {
   const [members, setMembers] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [isSearching, setIsSearching] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState(null)
   const [draggedIndex, setDraggedIndex] = useState(null)
@@ -31,8 +30,33 @@ const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }
   const [hasChanges, setHasChanges] = useState(false)
   const [showTransferModal, setShowTransferModal] = useState(false)
   const [isTransferring, setIsTransferring] = useState(false)
-  const searchTimeoutRef = useRef(null)
   const searchInputRef = useRef(null)
+
+  // Members ref so the search callback (memoized once) can read the
+  // current local member list when filtering out already-added rows.
+  const membersRef = useRef(members)
+  useEffect(() => { membersRef.current = members }, [members])
+
+  // Debounce / abort / stale-guard live in useAutocompleteSearch.
+  const groupId = usergroup?.node_id
+  const searchMembers = useCallback(async (query, { signal }) => {
+    if (!groupId) return []
+    const response = await fetch(
+      `/api/node_search?q=${encodeURIComponent(query)}&scope=group_addable&group_id=${groupId}`,
+      { signal }
+    )
+    const data = await response.json()
+    if (!data.success) return []
+    const currentIds = new Set(membersRef.current.map(m => m.node_id))
+    return data.results.filter(r => !currentIds.has(r.node_id))
+  }, [groupId])
+  const {
+    results: searchResults,
+    setResults: setSearchResults,
+    loading: isSearching,
+    triggerSearch,
+    clearResults: clearSearchResults,
+  } = useAutocompleteSearch({ search: searchMembers, debounceMs: 300 })
 
   // Check if current user is the owner
   const currentUserIsOwner = members.some(m => m.is_owner && m.node_id === currentUserId)
@@ -50,45 +74,16 @@ const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }
       setHasChanges(false)
       setMessage(null)
       setSearchQuery('')
-      setSearchResults([])
+      clearSearchResults()
     }
-  }, [isOpen, usergroup])
+  }, [isOpen, usergroup, clearSearchResults])
 
   if (!isOpen || !usergroup) return null
 
   // Handle search for users/usergroups
-  const handleSearch = async (query) => {
+  const handleSearch = (query) => {
     setSearchQuery(query)
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-
-    if (query.length < 2) {
-      setSearchResults([])
-      return
-    }
-
-    searchTimeoutRef.current = setTimeout(async () => {
-      setIsSearching(true)
-      try {
-        // Use unified node_search API with group_addable scope to exclude current members
-        const response = await fetch(
-          `/api/node_search?q=${encodeURIComponent(query)}&scope=group_addable&group_id=${usergroup.node_id}`
-        )
-        const data = await response.json()
-        if (data.success) {
-          // Filter out any that are already in our current local members list
-          // (in case of recently added members not yet persisted)
-          const currentIds = new Set(members.map(m => m.node_id))
-          setSearchResults(data.results.filter(r => !currentIds.has(r.node_id)))
-        }
-      } catch (error) {
-        console.error('Search failed:', error)
-      } finally {
-        setIsSearching(false)
-      }
-    }, 300)
+    triggerSearch(query)
   }
 
   // Add a member

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import LinkNode from './LinkNode'
-import ConfirmModal from './ConfirmModal'
+import ConfirmActionModal from './ConfirmActionModal'
 import { renderE2Content } from './Editor/E2HtmlSanitizer'
 import { FaTrash, FaChevronDown } from 'react-icons/fa'
 import { formatDate } from '../utils/dateFormat'
@@ -135,15 +135,14 @@ const WeblogEntry = ({ entry, canRemove, onRemove, weblogId }) => {
       </footer>
 
       {/* Confirm removal modal */}
-      <ConfirmModal
+      <ConfirmActionModal
         isOpen={showConfirm}
         onClose={() => setShowConfirm(false)}
         onConfirm={handleConfirmRemove}
         title="Remove Weblog Entry"
         message={`Are you sure you want to remove "${title}" from this weblog?`}
-        confirmText="Remove"
-        cancelText="Cancel"
-        confirmColor="#dc3545"
+        confirmLabel="Remove"
+        closeOnConfirm
       />
     </article>
   )

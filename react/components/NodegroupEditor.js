@@ -40,10 +40,12 @@ const NodegroupEditor = ({ isOpen, onClose, nodegroup, onUpdate }) => {
 
   if (!isOpen || !nodegroup) return null
 
-  // Search for any node type
-  const handleSearch = async (query) => {
+  // Search for any node type. The signal lets the editor cancel this fetch
+  // when the user keeps typing — see useAutocompleteSearch.
+  const handleSearch = async (query, { signal } = {}) => {
     const response = await fetch(
-      `/api/node_search?q=${encodeURIComponent(query)}&scope=nodegroup_addable&group_id=${nodegroup.node_id}`
+      `/api/node_search?q=${encodeURIComponent(query)}&scope=nodegroup_addable&group_id=${nodegroup.node_id}`,
+      { signal }
     )
     const data = await response.json()
     return data.success ? data.results : []

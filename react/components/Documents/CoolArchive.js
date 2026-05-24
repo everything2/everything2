@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { FaUser, FaTimes } from 'react-icons/fa'
 import { useIsMobile } from '../../hooks/useMediaQuery'
+import { useAutocompleteSearch } from '../../hooks/useAutocompleteSearch'
+import { useClickOutside } from '../../hooks/useClickOutside'
 
 /**
  * UserSearchField - Inline user search input with dropdown suggestions
  */
 const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder }) => {
   const [inputValue, setInputValue] = useState(value || '')
-  const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const [loading, setLoading] = useState(false)
 
-  const searchTimeoutRef = useRef(null)
   const containerRef = useRef(null)
 
   // Sync input with external value changes
@@ -20,59 +19,51 @@ const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder }) =
     setInputValue(value || '')
   }, [value])
 
-  // Search for users via API
-  const searchUsers = useCallback(async (query) => {
-    if (query.length < 2) {
-      setSuggestions([])
-      setShowSuggestions(false)
-      return
-    }
-
-    setLoading(true)
-    try {
-      const response = await fetch(
-        `/api/node_search?q=${encodeURIComponent(query)}&scope=users&limit=10`
-      )
-      const data = await response.json()
-      if (data.success && data.results) {
-        setSuggestions(data.results)
-        setShowSuggestions(data.results.length > 0)
-        setSelectedIndex(-1)
-      }
-    } catch (err) {
-      console.error('User search failed:', err)
-      setSuggestions([])
-    } finally {
-      setLoading(false)
-    }
+  // Debounce/abort/stale-guard live in useAutocompleteSearch.
+  const searchUsers = useCallback(async (query, { signal }) => {
+    const response = await fetch(
+      `/api/node_search?q=${encodeURIComponent(query)}&scope=users&limit=10`,
+      { signal }
+    )
+    const data = await response.json()
+    return data.success && data.results ? data.results : []
   }, [])
+  const {
+    results: suggestions,
+    loading,
+    triggerSearch,
+    clearResults,
+  } = useAutocompleteSearch({ search: searchUsers })
 
-  // Handle input change with debounced search
+  // Open dropdown when fresh results arrive.
+  useEffect(() => {
+    if (suggestions.length > 0) {
+      setShowSuggestions(true)
+      setSelectedIndex(-1)
+    }
+  }, [suggestions])
+
   const handleInputChange = useCallback((e) => {
     const newValue = e.target.value
     setInputValue(newValue)
     onChange(newValue)
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current)
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      searchUsers(newValue.trim())
-    }, 200)
-  }, [searchUsers, onChange])
+    const trimmed = newValue.trim()
+    if (trimmed.length < 2) setShowSuggestions(false)
+    triggerSearch(trimmed)
+  }, [triggerSearch, onChange])
 
   // Handle selecting a user from suggestions
   const handleSelectUser = useCallback((user) => {
     setInputValue(user.title)
     onChange(user.title)
-    setSuggestions([])
+    clearResults()
     setShowSuggestions(false)
     setSelectedIndex(-1)
     // Trigger submit when user is selected from dropdown
     if (onSubmit) {
       onSubmit(user.title)
     }
-  }, [onChange, onSubmit])
+  }, [onChange, onSubmit, clearResults])
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e) => {
@@ -98,37 +89,19 @@ const UserSearchField = ({ id, name, value, onChange, onSubmit, placeholder }) =
       e.preventDefault()
       setSelectedIndex(prev => prev > 0 ? prev - 1 : -1)
     } else if (e.key === 'Escape') {
-      setSuggestions([])
+      clearResults()
       setShowSuggestions(false)
       setSelectedIndex(-1)
     }
-  }, [showSuggestions, suggestions, selectedIndex, handleSelectUser])
+  }, [showSuggestions, suggestions, selectedIndex, handleSelectUser, clearResults])
 
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setShowSuggestions(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current)
-      }
-    }
-  }, [])
+  useClickOutside(containerRef, () => setShowSuggestions(false))
 
   // Clear button handler
   const handleClear = () => {
     setInputValue('')
     onChange('')
-    setSuggestions([])
+    clearResults()
     setShowSuggestions(false)
   }
 

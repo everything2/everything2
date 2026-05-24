@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import NodeletContainer from '../NodeletContainer'
 import LinkNode from '../LinkNode'
-import ConfirmModal from '../ConfirmModal'
+import ConfirmActionModal from '../ConfirmActionModal'
 import { FaPlus, FaSpinner, FaFolder, FaGlobe, FaTimes, FaList, FaSearch, FaUser } from 'react-icons/fa'
 import { fetchWithErrorReporting } from '../../utils/reportClientError'
 
@@ -435,7 +435,7 @@ const Categories = (props) => {
       )}
 
       {/* Confirm Remove Modal */}
-      <ConfirmModal
+      <ConfirmActionModal
         isOpen={confirmRemove !== null}
         onClose={() => setConfirmRemove(null)}
         onConfirm={handleRemoveFromCategory}
@@ -445,9 +445,8 @@ const Categories = (props) => {
             Remove this node from <strong>"{confirmRemove.title}"</strong>?
           </>
         ) : ''}
-        confirmText="Remove"
-        cancelText="Cancel"
-        confirmColor="#c62828"
+        confirmLabel="Remove"
+        closeOnConfirm
       />
     </NodeletContainer>
   )

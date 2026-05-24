@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import UserSearchInput from '../UserSearchInput'
-import ConfirmModal from '../ConfirmModal'
+import ConfirmActionModal from '../ConfirmActionModal'
 
 /**
  * UserInteractionsManager - Unified component for managing blocked/unfavorite users
@@ -259,15 +259,14 @@ const UserInteractionsManager = ({ initialBlocked = [], currentUser }) => {
         )}
       </div>
 
-      <ConfirmModal
+      <ConfirmActionModal
         isOpen={confirmModal.isOpen}
         onClose={closeRemoveModal}
         onConfirm={confirmRemoveBlockedUser}
         title="Remove Block"
         message={`Are you sure you want to remove all blocks for ${confirmModal.username}?`}
-        confirmText="Remove"
-        cancelText="Cancel"
-        confirmColor="#c33"
+        confirmLabel="Remove"
+        closeOnConfirm
       />
     </div>
   )

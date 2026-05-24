@@ -35,14 +35,18 @@ jest.mock('../LinkNode', () => {
   }
 })
 
-jest.mock('../ConfirmModal', () => {
-  return function MockConfirmModal({ isOpen, onClose, onConfirm, title, message }) {
+jest.mock('../ConfirmActionModal', () => {
+  return function MockConfirmActionModal({ isOpen, onClose, onConfirm, title, message, closeOnConfirm }) {
     if (!isOpen) return null
+    const handleConfirm = () => {
+      onConfirm()
+      if (closeOnConfirm) onClose()
+    }
     return (
       <div data-testid="confirm-modal">
         <div data-testid="confirm-title">{title}</div>
         <div data-testid="confirm-message">{message}</div>
-        <button data-testid="confirm-button" onClick={onConfirm}>Confirm</button>
+        <button data-testid="confirm-button" onClick={handleConfirm}>Confirm</button>
         <button data-testid="cancel-button" onClick={onClose}>Cancel</button>
       </div>
     )
