@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatDateTime } from '../../utils/dateFormat';
 
 /**
  * ListNodesOfType - Node listing by type (GNL)
@@ -102,15 +103,9 @@ const ListNodesOfType = ({ data, user }) => {
   ];
 
   function formatDate(createtime) {
-    // Handle invalid SQL dates (0000-00-00 00:00:00)
-    if (!createtime || createtime.startsWith('0000-00-00')) {
-      return '—';
-    }
-    const created = new Date(createtime);
-    if (isNaN(created.getTime())) {
-      return '—';
-    }
-    return created.toLocaleString();
+    // Handle invalid SQL dates ("0000-00-00 00:00:00") + null/invalid via utility.
+    if (typeof createtime === 'string' && createtime.startsWith('0000-00-00')) return '—';
+    return formatDateTime(createtime) ?? '—';
   }
 
   function getAge(createtime) {

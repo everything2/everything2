@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatDateTime } from '../../utils/dateFormat';
 
 /**
  * DraftsForReview - Editor drafts pending review
@@ -25,17 +26,7 @@ const DraftsForReview = ({ data }) => {
   }
 
   // Format timestamp to readable date
-  const formatDate = (timestamp) => {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  const formatDate = (timestamp) => formatDateTime(timestamp) ?? '';
 
   // Format latest note for tooltip
   const formatNote = (noteText) => {

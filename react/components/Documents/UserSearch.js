@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import LinkNode from '../LinkNode'
 import UserSearchInput from '../UserSearchInput'
 import { useIsMobile } from '../../hooks/useMediaQuery'
+import { formatShortDate } from '../../utils/dateFormat'
 
 // Notable E2 contributors for suggestions
 const NOTABLE_USERS = [
@@ -224,15 +225,7 @@ const UserSearch = ({ data, user }) => {
   }, [])
 
   // Format date
-  const formatDate = (dateStr) => {
-    if (!dateStr) return ''
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+  const formatDate = (dateStr) => formatShortDate(dateStr) ?? ''
 
   // Render pagination
   const renderPagination = () => {

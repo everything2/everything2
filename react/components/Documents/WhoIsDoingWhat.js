@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatDateTime } from '../../utils/dateFormat';
 
 /**
  * Who Is Doing What - Recent nodes viewer
@@ -35,16 +36,8 @@ const WhoIsDoingWhat = ({ data, e2 }) => {
     form.submit();
   };
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  // Admin tool — shows month/day/time but skips year to save space.
+  const formatDate = (dateStr) => formatDateTime(dateStr, { year: undefined }) ?? '';
 
   // Group nodes by type for summary
   const typeCount = {};

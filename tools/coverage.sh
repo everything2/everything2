@@ -76,9 +76,14 @@ case "${1:-run}" in
         echo "========================================="
         echo "Running Perl tests with coverage tracking..."
         echo "========================================="
+        # `|| true` is critical: under Devel::Cover, t/run.pl may exit non-zero
+        # even when tests pass (instrumentation warnings, etc.). Without it, set -e
+        # kills this script before the docker cp below, leaving cover_db in the
+        # container and 0% coverage on the host. Even if tests genuinely failed,
+        # we still want the partial coverage data we DO have.
         docker exec -w /var/everything $CONTAINER_NAME \
             perl -I/var/libraries/lib/perl5 -I/var/everything/ecore -MDevel::Cover=-db,/var/everything/coverage/cover_db,-ignore,'^/var/everything/t/',-ignore,'^/var/libraries/',-silent,1 \
-            t/run.pl
+            t/run.pl || true
 
         # Copy coverage data back
         echo ""

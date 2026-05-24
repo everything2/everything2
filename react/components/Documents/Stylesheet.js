@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 import SourceMapDisplay from '../Developer/SourceMapDisplay'
 import { FaList, FaCode, FaCss3Alt, FaInfoCircle, FaUser, FaClock, FaCheckCircle, FaTimesCircle, FaExternalLinkAlt, FaEdit, FaCopy, FaEye } from 'react-icons/fa'
+import { formatShortDate } from '../../utils/dateFormat'
 
 /**
  * Stylesheet - Display page for stylesheet nodes (CSS themes)
@@ -45,18 +46,7 @@ const Stylesheet = ({ data, user }) => {
   }
 
   // Format date
-  const formatDate = (dateStr) => {
-    if (!dateStr || dateStr === '0000-00-00 00:00:00') return 'Unknown'
-    try {
-      return new Date(dateStr).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      })
-    } catch {
-      return dateStr
-    }
-  }
+  const formatDate = (dateStr) => formatShortDate(dateStr) ?? 'Unknown'
 
   // Copy CSS to clipboard
   const handleCopy = async () => {

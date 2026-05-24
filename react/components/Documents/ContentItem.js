@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { renderE2Content } from '../Editor/E2HtmlSanitizer'
+import { formatShortDate } from '../../utils/dateFormat'
 
 /**
  * ContentItem - Renders a content item (writeup, news post, etc.)
@@ -46,16 +47,7 @@ const ContentItem = ({
   const linkTarget = parent ? `/node/${parent.node_id}` : `/node/${node_id}`
 
   // Format date if needed
-  const formatDate = (dateStr) => {
-    if (!dateStr) return ''
-    const date = new Date(dateStr)
-    if (isNaN(date.getTime())) return ''
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+  const formatDate = (dateStr) => formatShortDate(dateStr) ?? ''
 
   // Process content through E2 sanitizer and link parser
   // This handles raw doctext from the server and converts E2 [link] syntax

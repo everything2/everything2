@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
+import { formatDateTime } from '../../utils/dateFormat'
 
 /**
  * Clientdev Home - E2 Client Development homepage
@@ -260,31 +261,20 @@ const ClientdevHome = ({ data, e2 }) => {
 }
 
 /**
- * Format a MySQL datetime string for display
+ * Format a MySQL datetime string for display.
+ * Verbose dev-tool layout: "Mon Dec 06 2025 00:22:26".
  */
 function formatDate(dateStr) {
-  if (!dateStr) return ''
-
-  try {
-    // MySQL datetime format: "2025-12-06 00:22:26"
-    const date = new Date(dateStr.replace(' ', 'T') + 'Z')
-    if (isNaN(date.getTime())) return dateStr
-
-    const options = {
-      weekday: 'short',
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    }
-
-    return date.toLocaleString('en-US', options).replace(',', '')
-  } catch (e) {
-    return dateStr
-  }
+  return formatDateTime(dateStr, {
+    weekday: 'short',
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  })?.replace(',', '') ?? (dateStr ?? '')
 }
 
 export default ClientdevHome

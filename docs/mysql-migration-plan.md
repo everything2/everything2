@@ -1,11 +1,19 @@
 # MySQL RDS Migration & SQL Cleanup Plan
 
 **Created**: 2026-04-27
+**Last updated**: 2026-05-24
 **Owner**: Jay Bonci
-**Deadline**: July 2026 (RDS engine version sunset)
-**Current**: MySQL 8.0.43 in production (`cf/everything2-production.json`)
-**Target**: MySQL 8.4 LTS
-**Status**: Planning
+**Deadline**: **2026-07-31** — RDS end of standard support for MySQL 8.0 major version
+**Current**: MySQL 8.0.44 in production (`cf/everything2-production.json` still says 8.0.43; RDS auto-patched a minor)
+**Target**: **MySQL 8.4.9** (latest 8.4 LTS on RDS, end-of-standard-support 2027-05-08)
+**Status**: Planning — Phase 0 starts week of 2026-05-27
+
+## Cost of missing the deadline
+
+After 2026-07-31, RDS Extended Support pricing applies: **+$0.10/vCPU-hour**.
+On our `db.t4g.medium` (2 vCPU): **+$146/month** added to the current $50/mo RDS line — roughly tripling the database cost. Year-3 pricing (2028-08-01) is higher. Extended Support ends entirely 2029-07-31, at which point AWS forces an upgrade.
+
+The penalty alone exceeds the projected savings from the entire PSGI migration, so missing the date is materially worse than slipping any other planned work.
 
 ---
 

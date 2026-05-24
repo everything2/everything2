@@ -6,6 +6,7 @@ import AdminModal from './AdminModal'
 import MessageModal from './MessageModal'
 import ConfirmModal from './ConfirmModal'
 import { renderE2Content } from './Editor/E2HtmlSanitizer'
+import { formatDate } from '../utils/dateFormat'
 
 /**
  * CoolTooltip - Shows who C!ed a writeup on hover or click
@@ -241,18 +242,7 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
   // Can message author if logged in and not messaging yourself
   const canMessage = !isGuest && !isAuthor && author
 
-  // Format date like legacy htmlcode parsetimestamp
-  const formatDate = (timestamp) => {
-    if (!timestamp) return null
-    // Handle both ISO strings and epoch seconds
-    const date = typeof timestamp === 'string' ? new Date(timestamp) : new Date(timestamp * 1000)
-    if (isNaN(date.getTime())) return null
-    return date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    })
-  }
+  // Date formatting delegates to shared UTC-aware utility (utils/dateFormat).
 
   // Format time since last seen (matches legacy htmlcode timesince)
   const formatTimeSince = (timestamp) => {

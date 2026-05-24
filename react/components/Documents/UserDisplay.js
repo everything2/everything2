@@ -6,6 +6,7 @@ import MessageBox from '../MessageBox'
 import UserToolsModal from '../UserToolsModal'
 import TimeSince from '../TimeSince'
 import { useIsMobile } from '../../hooks/useMediaQuery'
+import { formatDate as formatUtcDate, isValidDate as isValidUtcDate } from '../../utils/dateFormat'
 
 /**
  * UserDisplay - Display page for user nodes (homenodes)
@@ -33,24 +34,10 @@ const UserDisplay = ({ data, e2 }) => {
 
   const { user, viewer, is_own, is_ignored, message_count, recent_writeup_count, is_infected } = data
 
-  // Check if a date is valid for display
-  const isValidDate = (isoDate) => {
-    if (!isoDate) return false
-    const date = new Date(isoDate)
-    return !isNaN(date.getTime()) && date.getTime() > 0
-  }
-
-  const formatDate = (isoDate) => {
-    if (!isoDate) return <em>forever</em>
-    const date = new Date(isoDate)
-    // Check for invalid date (epoch 0 or NaN)
-    if (isNaN(date.getTime()) || date.getTime() <= 0) return <em>forever</em>
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+  // Shared UTC-aware date helpers (utils/dateFormat). Return JSX fallback here
+  // because legacy E2 used `forever` as the sentinel for "no date".
+  const isValidDate = isValidUtcDate
+  const formatDate = (isoDate) => formatUtcDate(isoDate) ?? <em>forever</em>
 
   // Handle favorite/unfavorite toggle
   const handleFavoriteToggle = async () => {

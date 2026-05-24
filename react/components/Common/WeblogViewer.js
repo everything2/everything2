@@ -1,10 +1,7 @@
 import React, { useState, useCallback } from 'react'
+import { formatDateTime } from '../../utils/dateFormat'
 
-const formatDate = (timestamp) => {
-  if (!timestamp) return 'unknown'
-  const date = new Date(timestamp)
-  return date.toLocaleString()
-}
+const formatDate = (timestamp) => formatDateTime(timestamp) ?? 'unknown'
 
 /**
  * WeblogViewer - Shared component for viewing weblog archives

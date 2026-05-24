@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatShortDate } from '../../utils/dateFormat';
 
 /**
  * EverythingDocumentDirectory - Document listing and filtering
@@ -56,15 +57,7 @@ const EverythingDocumentDirectory = ({ data, e2 }) => {
   };
 
   // Format timestamp to readable date
-  const formatDate = (timestamp) => {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+  const formatDate = (timestamp) => formatShortDate(timestamp) ?? '';
 
   const showNodeId = permissions.is_developer || permissions.is_admin;
   const showListNodesLink = permissions.is_developer || permissions.is_editor;

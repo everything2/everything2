@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
+import { formatShortDate } from '../../utils/dateFormat'
 
 /**
  * Nodes of the Year - Best writeups by year
@@ -33,14 +34,7 @@ const NodesOfTheYear = ({ data }) => {
     window.location.href = `?${params.toString()}`
   }
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+  const formatDate = (dateStr) => formatShortDate(dateStr) ?? ''
 
   const orderOptions = [
     { value: 'cooled DESC,reputation DESC', label: 'C!, then reputation' },
