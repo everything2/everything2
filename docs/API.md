@@ -333,7 +333,7 @@ Always returns UNIMPLEMENTED
 Returns all of the items returned by /api/nodes/:id for that id, plus the following:
 
 * **doctext** - The user's homenode text
-* **numcools** - The number of C!s the user has spent
+* **cools_spent** - The number of C!s the user has spent (previously also published as `numcools`; the duplicate `numcools` field was removed in #3957)
 * **experience** - The experience of the user
 * **GP** - The GP of the user
 * **level** - The current level of the user

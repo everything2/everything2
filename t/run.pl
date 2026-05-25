@@ -32,6 +32,8 @@ find({wanted => $wanted, no_chdir => 1}, $dirname);
 # Also includes tests that share user accounts (normaluser1, normaluser2) to avoid session conflicts
 my %serial_tests = (
     "$dirname/004_usergroups.t" => 1,     # Creates/modifies usergroups (conflicts with message tests)
+    "$dirname/008_message_clean_whitespace.t" => 1, # Inserts/asserts message rows; races with other message tests under -j2
+    "$dirname/032_messages_api.t" => 1,    # Inserts/deletes messages + outbox; races with other message tests under -j2
     "$dirname/036_online_only_messages.t" => 1, # Modifies message table, creates usergroups
     "$dirname/037_message_opcode.t" => 1, # Modifies message table
     "$dirname/038_chatter_api.t" => 1,    # Modifies message table (public chatter)

@@ -418,4 +418,19 @@ subtest "json_display handles non-numeric values" => sub {
     unlike($warnings, qr/isn't numeric/i, "No 'isn't numeric' warnings from json_display");
 };
 
+#############################################################################
+# Regression: #3957 — json_display ships cools_spent (descriptive name)
+# but NOT the legacy `numcools` duplicate that used to ride along with it.
+# Both keys carried the same value before the cleanup.
+#############################################################################
+subtest "json_display: cools_spent only, no numcools duplicate (#3957)" => sub {
+    my $user_node = $APP->node_by_id($test_user->{node_id});
+    ok($user_node, "Got user node object");
+
+    my $display = $user_node->json_display();
+    ok(exists $display->{cools_spent}, "json_display includes cools_spent");
+    ok(!exists $display->{numcools},
+        "json_display does NOT include numcools (deduped against cools_spent)");
+};
+
 done_testing();

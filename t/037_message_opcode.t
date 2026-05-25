@@ -251,22 +251,36 @@ subtest 'Message actions - archive and unarchive' => sub {
 # the raw "/cmd target" into chat verbatim. The handler now substitutes
 # the action text from the 'egg commands' setting node and emits it as
 # a /me-style action so the React chatterbox renders it correctly.
+#
+# Concurrency notes (flakiness hardening, May 2026):
+# * Egg choice was originally `(keys %$egg_vars)[0]`. Perl hash key order
+#   varies between runs, so different runs picked different eggs — some
+#   contained regex metacharacters or non-ASCII that broke the like()
+#   assertions. We now sort and filter to "safe" eggs deterministically.
+# * Reading back the row by `ORDER BY message_id DESC LIMIT 1` raced
+#   against any other parallel test sending public chatter as root in
+#   the same window. We now look up rows by msgtext substring so we
+#   always find OUR row regardless of what else is happening.
+# * `sqlDelete('message', 'for_user=0')` wiped chatter belonging to
+#   other concurrently-running test files. Dropped — no longer needed.
 subtest 'Easter egg commands - action text substitution' => sub {
-	plan tests => 6;
-
 	my $egg_setting = $DB->getNode('egg commands', 'setting');
 	plan skip_all => "No 'egg commands' setting in this env" unless $egg_setting;
 
 	my $egg_vars = $APP->getVars($egg_setting);
 	plan skip_all => "egg commands setting has no vars" unless $egg_vars && %$egg_vars;
 
-	# Pick one egg with a ~ placeholder and one without, so we cover
-	# both substitution branches. Fall back if specific keys aren't set
-	# in this environment.
-	my $with_tilde = ( grep { ( $egg_vars->{$_} // '' ) =~ /~/ } keys %$egg_vars )[0];
-	my $no_tilde   = ( grep { ( $egg_vars->{$_} // '' ) !~ /~/ && length( $egg_vars->{$_} // '' ) } keys %$egg_vars )[0];
-	plan skip_all => "Couldn't find both ~ and non-~ egg samples"
+	# Restrict to eggs whose action text is plain ASCII / safe punctuation
+	# so substring matching and regex quoting behave predictably. Sort the
+	# survivors so the choice is the same on every run.
+	my @safe = sort grep {
+		( $egg_vars->{$_} // '' ) =~ m{\A[\w\s.,!?'"~/-]+\z}
+	} keys %$egg_vars;
+	my $with_tilde = ( grep { $egg_vars->{$_} =~ /~/ } @safe )[0];
+	my $no_tilde   = ( grep { $egg_vars->{$_} !~ /~/ } @safe )[0];
+	plan skip_all => "Couldn't find both ~ and non-~ safe eggs"
 		unless $with_tilde && $no_tilde;
+	plan tests => 6;
 
 	# Give the sender enough eggs to spend (root)
 	my $sender_vars = Everything::getVars($user1);
@@ -276,28 +290,38 @@ subtest 'Easter egg commands - action text substitution' => sub {
 	# Use $user3 (Cool Man Eddie) as the target — it exists and isn't the sender
 	my $target = $user3->{title};
 
+	# Look up OUR row by msgtext substring rather than "the latest from
+	# this author" so other parallel tests don't trick us into asserting
+	# against their chatter.
+	my $find_by_substr = sub {
+		my ($author_id, $needle) = @_;
+		my $like = $DB->{dbh}->quote('%' . $needle . '%');
+		return $DB->sqlSelectHashref(
+			'*', 'message',
+			"author_user=$author_id AND for_user=0 AND msgtext LIKE $like",
+			'ORDER BY message_id DESC LIMIT 1'
+		);
+	};
+
 	# 1) Egg with ~ placeholder: substitute target in place
-	$DB->sqlDelete( 'message', 'for_user=0' );
+	my $expected_w = $egg_vars->{$with_tilde};
+	$expected_w =~ s/~/$target/g;
 	send_message( $user1, { message => "/$with_tilde $target", sendto => 0 } );
-	my $msg = $DB->sqlSelectHashref( '*', 'message',
-		'author_user=' . $user1->{node_id} . ' AND for_user=0',
-		'ORDER BY message_id DESC LIMIT 1' );
+	my $msg = $find_by_substr->( $user1->{node_id}, $expected_w );
 	ok( $msg, "egg /$with_tilde produced a chatter row" );
-	like( $msg->{msgtext}, qr{^/me\b}, 'emitted as /me action (not raw /cmd)' );
-	my $expected = $egg_vars->{$with_tilde};
-	$expected =~ s/~/$target/g;
-	like( $msg->{msgtext}, qr/\Q$expected\E/,
+	like( ( $msg ? $msg->{msgtext} : '' ), qr{^/me\b},
+		'emitted as /me action (not raw /cmd)' );
+	like( ( $msg ? $msg->{msgtext} : '' ), qr/\Q$expected_w\E/,
 		"~ placeholder substituted with target ($with_tilde -> $target)" );
 
 	# 2) Egg without ~ placeholder: target appended
-	$DB->sqlDelete( 'message', 'for_user=0' );
+	my $expected_n = $egg_vars->{$no_tilde} . ' ' . $target;
 	send_message( $user1, { message => "/$no_tilde $target", sendto => 0 } );
-	$msg = $DB->sqlSelectHashref( '*', 'message',
-		'author_user=' . $user1->{node_id} . ' AND for_user=0',
-		'ORDER BY message_id DESC LIMIT 1' );
+	$msg = $find_by_substr->( $user1->{node_id}, $expected_n );
 	ok( $msg, "egg /$no_tilde produced a chatter row" );
-	like( $msg->{msgtext}, qr{^/me\b}, 'emitted as /me action' );
-	like( $msg->{msgtext}, qr/\Q$egg_vars->{$no_tilde}\E \Q$target\E/,
+	like( ( $msg ? $msg->{msgtext} : '' ), qr{^/me\b},
+		'emitted as /me action' );
+	like( ( $msg ? $msg->{msgtext} : '' ), qr/\Q$expected_n\E/,
 		"non-~ egg appends target ($no_tilde $target)" );
 };
 
@@ -305,6 +329,11 @@ subtest 'Easter egg commands - action text substitution' => sub {
 # return the generic "Message not posted" with no row inserted. Each
 # real failure now returns a specific error, and an unknown command
 # (not actually an egg) falls through to plain chatter.
+#
+# Same concurrency hardening as the substitution subtest: pick the
+# probe egg deterministically; find OUR fallthrough chatter row by a
+# unique probe string rather than "latest from author"; don't bulk
+# delete shared chatter.
 subtest 'Easter egg commands - failure modes give specific feedback' => sub {
 	plan tests => 4;
 
@@ -312,7 +341,7 @@ subtest 'Easter egg commands - failure modes give specific feedback' => sub {
 	plan skip_all => "No 'egg commands' setting in this env" unless $egg_setting;
 
 	my $egg_vars = $APP->getVars($egg_setting);
-	my $known_egg = ( grep { length( $egg_vars->{$_} // '' ) } keys %$egg_vars )[0];
+	my $known_egg = ( sort grep { length( $egg_vars->{$_} // '' ) } keys %$egg_vars )[0];
 	plan skip_all => "no usable egg in this env" unless $known_egg;
 
 	# Give the sender eggs so failures aren't masked by "out of eggs"
@@ -320,18 +349,21 @@ subtest 'Easter egg commands - failure modes give specific feedback' => sub {
 	$sender_vars->{easter_eggs} = 5;
 	Everything::setVars( $user1, $sender_vars );
 
-	# 1) Unknown command → falls through to plain chatter (no error)
-	$DB->sqlDelete( 'message', 'for_user=0' );
+	# 1) Unknown command → falls through to plain chatter (no error).
+	#    Use a uniquely-tagged command name so we can find OUR row
+	#    without colliding with parallel tests.
+	my $probe = 'definitelynotanegg_' . $$ . '_' . time();
 	send_message( $user1,
-		{ message => '/definitelynotanegg someuser', sendto => 0 } );
+		{ message => "/$probe someuser", sendto => 0 } );
+	my $like = $DB->{dbh}->quote("%/$probe%");
 	my $msg = $DB->sqlSelectHashref( '*', 'message',
-		'author_user=' . $user1->{node_id} . ' AND for_user=0',
+		'author_user=' . $user1->{node_id}
+			. " AND for_user=0 AND msgtext LIKE $like",
 		'ORDER BY message_id DESC LIMIT 1' );
-	like( $msg && $msg->{msgtext}, qr{^/definitelynotanegg\b},
+	like( $msg && $msg->{msgtext}, qr{^/\Q$probe\E\b},
 		'unknown slash-command falls through to plain chatter' );
 
 	# 2) Known egg + nonexistent target → specific error, no chatter row
-	$DB->sqlDelete( 'message', 'for_user=0' );
 	my $result = $APP->processMessageCommand( $user1,
 		"/$known_egg user_that_does_not_exist_12345", $sender_vars );
 	is( $result->{success}, 0, 'unknown target returns success=0' );
