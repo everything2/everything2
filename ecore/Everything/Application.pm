@@ -3975,7 +3975,14 @@ sub get_messages
     $where .= " AND author_user=$from_user_id";
   }
 
-  my $csr = $this->{db}->sqlSelectMany("*","message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
+  # Sort by message_id (auto-increment, monotonic with insert order) rather
+  # than tstamp. `message.tstamp` has `ON UPDATE CURRENT_TIMESTAMP` in its
+  # column definition, so archiving a row bumps it — sorting archived
+  # messages by tstamp would put most-recently-archived first instead of
+  # most-recently-received (#4005). message_id has no such side effect.
+  # The display timestamp is still bumped on archive; tracked separately
+  # in the schema migration that drops the ON UPDATE clause.
+  my $csr = $this->{db}->sqlSelectMany("*","message", $where, "ORDER BY message_id DESC LIMIT $limit OFFSET $offset");
   my $records = [];
   while (my $row = $csr->fetchrow_hashref)
   {
@@ -4045,8 +4052,11 @@ sub get_sent_messages
     $where .= " AND EXISTS (SELECT 1 FROM message m WHERE $inner_where)";
   }
 
+  # Same reason as get_messages: message_outbox.tstamp has ON UPDATE
+  # CURRENT_TIMESTAMP and would mis-sort archived sent rows by archive
+  # time. message_id sorts by insert order regardless. (#4005)
   my $sql = "SELECT * FROM message_outbox WHERE $where "
-          . "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset";
+          . "ORDER BY message_id DESC LIMIT $limit OFFSET $offset";
   my $sth = $dbh->prepare($sql);
   $sth->execute;
   my @rows;
