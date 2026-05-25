@@ -27,6 +27,16 @@ jest.mock('./MessageModal', () => {
   }
 })
 
+// Mock ConfirmActionModal so we can observe vote/cool safety modals
+// without rendering react-modal's actual DOM (jsdom + react-modal trip
+// each other up over document.body portal handling).
+jest.mock('./ConfirmActionModal', () => {
+  return function MockConfirmActionModal({ isOpen, title }) {
+    if (!isOpen) return null
+    return <div data-testid="confirm-action-modal">{title}</div>
+  }
+})
+
 describe('WriteupDisplay Component', () => {
   const mockWriteup = {
     node_id: 123,
@@ -223,6 +233,93 @@ describe('WriteupDisplay Component', () => {
       render(<WriteupDisplay writeup={mockWriteup} user={mockUser} showVoting={false} />)
 
       expect(screen.queryByLabelText('+')).not.toBeInTheDocument()
+    })
+  })
+
+  // Regression coverage for #4052 (cool) and #3613 (vote): the C? / vote
+  // buttons must check the user's safety preference and pop a confirmation
+  // modal instead of acting immediately. The fields live on the global
+  // e2.user (Application.pm fills coolsafety + votesafety there); these
+  // tests pin the contract WriteupDisplay relies on.
+  describe('cool / vote confirmation safety prefs', () => {
+    const writeupByOther = {
+      ...mockWriteup,
+      node_id: 123,
+      author: { node_id: 999, title: 'someoneelse' }
+    }
+
+    beforeEach(() => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true })
+      })
+    })
+    afterEach(() => {
+      delete global.fetch
+    })
+
+    it('opens cool confirmation modal when user.coolsafety is 1', () => {
+      const userWithCoolsafety = {
+        node_id: 789, is_guest: false, is_editor: false,
+        coolsleft: 5, coolsafety: 1
+      }
+      const { container } = render(
+        <WriteupDisplay writeup={writeupByOther} user={userWithCoolsafety} />
+      )
+
+      const coolLink = container.querySelector('.writeup-cool-action')
+      expect(coolLink).toBeInTheDocument()
+      fireEvent.click(coolLink)
+
+      expect(screen.getByTestId('confirm-action-modal')).toHaveTextContent('Confirm C!')
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
+
+    it('cools immediately when user.coolsafety is missing (the pre-fix bug)', () => {
+      const userWithoutCoolsafety = {
+        node_id: 789, is_guest: false, is_editor: false,
+        coolsleft: 5
+      }
+      const { container } = render(
+        <WriteupDisplay writeup={writeupByOther} user={userWithoutCoolsafety} />
+      )
+
+      fireEvent.click(container.querySelector('.writeup-cool-action'))
+
+      expect(screen.queryByTestId('confirm-action-modal')).not.toBeInTheDocument()
+      expect(global.fetch).toHaveBeenCalled()
+    })
+
+    it('opens vote confirmation modal when user.votesafety is 1', () => {
+      const userWithVotesafety = {
+        node_id: 789, is_guest: false, is_editor: false,
+        votesleft: 10, votesafety: 1
+      }
+      const { container } = render(
+        <WriteupDisplay writeup={writeupByOther} user={userWithVotesafety} />
+      )
+
+      const upvoteBtn = container.querySelectorAll('.wu_vote button')[0]
+      expect(upvoteBtn).toBeInTheDocument()
+      fireEvent.click(upvoteBtn)
+
+      expect(screen.getByTestId('confirm-action-modal')).toHaveTextContent(/Confirm Upvote/)
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
+
+    it('votes immediately when user.votesafety is missing (the pre-fix bug)', () => {
+      const userWithoutVotesafety = {
+        node_id: 789, is_guest: false, is_editor: false,
+        votesleft: 10
+      }
+      const { container } = render(
+        <WriteupDisplay writeup={writeupByOther} user={userWithoutVotesafety} />
+      )
+
+      fireEvent.click(container.querySelectorAll('.wu_vote button')[0])
+
+      expect(screen.queryByTestId('confirm-action-modal')).not.toBeInTheDocument()
+      expect(global.fetch).toHaveBeenCalled()
     })
   })
 
