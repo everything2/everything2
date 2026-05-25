@@ -247,4 +247,102 @@ subtest 'Message actions - archive and unarchive' => sub {
 	is($msg->{archive}, 0, 'Message is unarchived');
 };
 
+# Regression coverage for #4058: easter-egg commands previously dropped
+# the raw "/cmd target" into chat verbatim. The handler now substitutes
+# the action text from the 'egg commands' setting node and emits it as
+# a /me-style action so the React chatterbox renders it correctly.
+subtest 'Easter egg commands - action text substitution' => sub {
+	plan tests => 6;
+
+	my $egg_setting = $DB->getNode('egg commands', 'setting');
+	plan skip_all => "No 'egg commands' setting in this env" unless $egg_setting;
+
+	my $egg_vars = $APP->getVars($egg_setting);
+	plan skip_all => "egg commands setting has no vars" unless $egg_vars && %$egg_vars;
+
+	# Pick one egg with a ~ placeholder and one without, so we cover
+	# both substitution branches. Fall back if specific keys aren't set
+	# in this environment.
+	my $with_tilde = ( grep { ( $egg_vars->{$_} // '' ) =~ /~/ } keys %$egg_vars )[0];
+	my $no_tilde   = ( grep { ( $egg_vars->{$_} // '' ) !~ /~/ && length( $egg_vars->{$_} // '' ) } keys %$egg_vars )[0];
+	plan skip_all => "Couldn't find both ~ and non-~ egg samples"
+		unless $with_tilde && $no_tilde;
+
+	# Give the sender enough eggs to spend (root)
+	my $sender_vars = Everything::getVars($user1);
+	$sender_vars->{easter_eggs} = 5;
+	Everything::setVars( $user1, $sender_vars );
+
+	# Use $user3 (Cool Man Eddie) as the target — it exists and isn't the sender
+	my $target = $user3->{title};
+
+	# 1) Egg with ~ placeholder: substitute target in place
+	$DB->sqlDelete( 'message', 'for_user=0' );
+	send_message( $user1, { message => "/$with_tilde $target", sendto => 0 } );
+	my $msg = $DB->sqlSelectHashref( '*', 'message',
+		'author_user=' . $user1->{node_id} . ' AND for_user=0',
+		'ORDER BY message_id DESC LIMIT 1' );
+	ok( $msg, "egg /$with_tilde produced a chatter row" );
+	like( $msg->{msgtext}, qr{^/me\b}, 'emitted as /me action (not raw /cmd)' );
+	my $expected = $egg_vars->{$with_tilde};
+	$expected =~ s/~/$target/g;
+	like( $msg->{msgtext}, qr/\Q$expected\E/,
+		"~ placeholder substituted with target ($with_tilde -> $target)" );
+
+	# 2) Egg without ~ placeholder: target appended
+	$DB->sqlDelete( 'message', 'for_user=0' );
+	send_message( $user1, { message => "/$no_tilde $target", sendto => 0 } );
+	$msg = $DB->sqlSelectHashref( '*', 'message',
+		'author_user=' . $user1->{node_id} . ' AND for_user=0',
+		'ORDER BY message_id DESC LIMIT 1' );
+	ok( $msg, "egg /$no_tilde produced a chatter row" );
+	like( $msg->{msgtext}, qr{^/me\b}, 'emitted as /me action' );
+	like( $msg->{msgtext}, qr/\Q$egg_vars->{$no_tilde}\E \Q$target\E/,
+		"non-~ egg appends target ($no_tilde $target)" );
+};
+
+# Regression coverage for #4058 follow-up: failure modes used to all
+# return the generic "Message not posted" with no row inserted. Each
+# real failure now returns a specific error, and an unknown command
+# (not actually an egg) falls through to plain chatter.
+subtest 'Easter egg commands - failure modes give specific feedback' => sub {
+	plan tests => 4;
+
+	my $egg_setting = $DB->getNode('egg commands', 'setting');
+	plan skip_all => "No 'egg commands' setting in this env" unless $egg_setting;
+
+	my $egg_vars = $APP->getVars($egg_setting);
+	my $known_egg = ( grep { length( $egg_vars->{$_} // '' ) } keys %$egg_vars )[0];
+	plan skip_all => "no usable egg in this env" unless $known_egg;
+
+	# Give the sender eggs so failures aren't masked by "out of eggs"
+	my $sender_vars = Everything::getVars($user1);
+	$sender_vars->{easter_eggs} = 5;
+	Everything::setVars( $user1, $sender_vars );
+
+	# 1) Unknown command → falls through to plain chatter (no error)
+	$DB->sqlDelete( 'message', 'for_user=0' );
+	send_message( $user1,
+		{ message => '/definitelynotanegg someuser', sendto => 0 } );
+	my $msg = $DB->sqlSelectHashref( '*', 'message',
+		'author_user=' . $user1->{node_id} . ' AND for_user=0',
+		'ORDER BY message_id DESC LIMIT 1' );
+	like( $msg && $msg->{msgtext}, qr{^/definitelynotanegg\b},
+		'unknown slash-command falls through to plain chatter' );
+
+	# 2) Known egg + nonexistent target → specific error, no chatter row
+	$DB->sqlDelete( 'message', 'for_user=0' );
+	my $result = $APP->processMessageCommand( $user1,
+		"/$known_egg user_that_does_not_exist_12345", $sender_vars );
+	is( $result->{success}, 0, 'unknown target returns success=0' );
+	like( $result->{error}, qr/not found/i,
+		'error mentions the user was not found' );
+
+	# 3) Known egg + self target → specific error
+	$result = $APP->processMessageCommand( $user1,
+		"/$known_egg $user1->{title}", $sender_vars );
+	like( $result->{error}, qr/yourself/i,
+		'self-target error mentions yourself' );
+};
+
 done_testing();

@@ -167,9 +167,10 @@ export default function Setting({ data }) {
   if (!isEditing) {
     return (
       <div className="setting">
-        <div className="setting__header">
-          <h1 className="setting__title">Setting: {setting.title}</h1>
-          {user?.is_admin && (
+        {/* Page title is already rendered by PageHeader; only show the
+            Edit button (admins) here as the page action. */}
+        {user?.is_admin && (
+          <div className="setting__header">
             <button
               onClick={() => setIsEditing(true)}
               className="setting__edit-button"
@@ -177,8 +178,8 @@ export default function Setting({ data }) {
             >
               <FaEdit /> Edit
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Statistics */}
         <div className="setting__stats-box">
@@ -223,8 +224,9 @@ export default function Setting({ data }) {
   // Edit mode
   return (
     <div className="setting">
+      {/* Page title is already rendered by PageHeader; only show the
+          Done button as the page action. */}
       <div className="setting__header">
-        <h1 className="setting__title">Editing: {setting.title}</h1>
         <button
           onClick={() => setIsEditing(false)}
           className="setting__cancel-button"
