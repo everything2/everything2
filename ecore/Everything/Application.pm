@@ -4672,54 +4672,72 @@ sub handleEasterEggCommand
 {
   my ($this, $user, $message, $vars) = @_;
 
-  # Check if this is a valid easter egg command
+  # If the 'egg commands' setting is missing or empty we can't recognize
+  # any eggs — treat the message as plain chatter so users aren't blocked
+  # from saying things that happen to start with a slash.
   my $egg_commands = $this->{db}->getNode('egg commands', 'setting');
-  return unless $egg_commands;
+  my $egg_vars = $egg_commands ? $this->getVars($egg_commands) : undef;
 
-  my $egg_vars = $this->getVars($egg_commands);
-  return unless $egg_vars;
+  # Recognise a slash-command shape. With no target we can't possibly be
+  # an egg, so fall through to plain chatter immediately.
+  return $this->sendPublicChatter($user, $message, $vars)
+    unless $message =~ /^\/(\S+)\s+(.+?)\s*$/;
 
-  # Parse command: /command target
-  if ($message =~ /^\/(\S+)\s+(.+?)\s*$/) {
-    my $phrase = $1;
-    my $target_name = $2;
+  my $phrase      = $1;
+  my $target_name = $2;
 
-    # Try without last character if not found (plurals)
-    my $phrase_key = $phrase;
-    $phrase_key = substr($phrase, 0, -1) unless $egg_vars->{$phrase};
+  # Look up the command. Try without trailing 's' if not found (plurals).
+  my $phrase_key  = $phrase;
+  $phrase_key = substr( $phrase, 0, -1 )
+    if $egg_vars && !$egg_vars->{$phrase};
 
-    if ($egg_vars->{$phrase_key}) {
-      # Valid easter egg command
-
-      # Check easter eggs
-      unless ($vars->{easter_eggs} && $vars->{easter_eggs} > 0) {
-        return;
-      }
-
-      # Find recipient
-      my $recipient = $this->{db}->getNode($target_name, 'user');
-      unless ($recipient) {
-        $target_name =~ s/_/ /g;
-        $recipient = $this->{db}->getNode($target_name, 'user');
-      }
-
-      return unless $recipient;
-
-      # Can't use on yourself
-      return if $recipient->{user_id} == $user->{user_id};
-
-      # Consume egg and award GP
-      $vars->{easter_eggs}--;
-      $this->adjustGP($recipient, 3);
-
-      # Send chatter message
-      my $msg = "/$phrase_key $target_name";
-      return $this->sendPublicChatter($user, $msg, $vars);
-    }
+  # Not a known egg at all → fall through to plain chatter (e.g. "/foo bar"
+  # should just post as "<author> /foo bar" rather than the generic
+  # "Message not posted" error the dispatcher would otherwise produce).
+  unless ( $egg_vars && $egg_vars->{$phrase_key} ) {
+    return $this->sendPublicChatter( $user, $message, $vars );
   }
 
-  # Not a valid command - silently fail
-  return;
+  # From here down it IS a known egg — return specific errors so users
+  # know why the command didn't fire (#4058).
+  unless ( $vars->{easter_eggs} && $vars->{easter_eggs} > 0 ) {
+    return { success => 0,
+      error => "You're out of easter eggs. Visit the Gift Shop for more." };
+  }
+
+  # Find recipient (allow underscores → spaces for chat ergonomics)
+  my $recipient = $this->{db}->getNode( $target_name, 'user' );
+  unless ($recipient) {
+    ( my $with_spaces = $target_name ) =~ tr/_/ /;
+    $recipient = $this->{db}->getNode( $with_spaces, 'user' );
+    $target_name = $with_spaces if $recipient;
+  }
+
+  unless ($recipient) {
+    return { success => 0, error => qq|User "$target_name" not found.| };
+  }
+
+  if ( $recipient->{user_id} == $user->{user_id} ) {
+    return { success => 0, error => "You can't use an easter egg on yourself." };
+  }
+
+  # Consume egg and award GP
+  $vars->{easter_eggs}--;
+  $this->adjustGP( $recipient, 3 );
+
+  # Substitute the action text from the egg commands setting and emit
+  # as a /me-style action, so the React chatterbox renders it via the
+  # existing /me handler instead of dropping the raw "/cmd target" into
+  # chat verbatim. Convention in the setting blob: if the action text
+  # contains '~', substitute target there; otherwise append.
+  my $action_text = $egg_vars->{$phrase_key};
+  my $msg;
+  if ( $action_text =~ /~/ ) {
+    ( $msg = $action_text ) =~ s/~/$target_name/g;
+  } else {
+    $msg = "$action_text $target_name";
+  }
+  return $this->sendPublicChatter( $user, "/me $msg", $vars );
 }
 
 sub handleMacroCommand

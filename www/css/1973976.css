@@ -32215,24 +32215,19 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .setting {
-  padding: 20px;
-  font-family: system-ui, -apple-system, sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin — let #mainbody size and pad
+     this document the same way it sizes every other page. The earlier
+     `max-width: 1200px` + `padding: 20px` blew past mainbody's actual
+     width (mainbody loses width to the nodelet column) and produced
+     odd gutters where the document overflowed in both directions.
+     Inherit site font (Verdana) too — was overriding to system-ui. */
 }
 
 .setting__header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-bottom: 20px;
-}
-
-.setting__title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #38495e;
-  margin: 0;
+  margin-bottom: 15px;
 }
 
 .setting__edit-button {
@@ -32272,8 +32267,8 @@ a.node-toolset__btn {
 }
 
 .setting__stats-box {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
+  background-color: var(--e2-bg-nodelet);
+  border: 1px solid var(--e2-border-light);
   border-radius: 4px;
   padding: 15px 20px;
   margin-bottom: 20px;
@@ -32281,8 +32276,7 @@ a.node-toolset__btn {
 
 .setting__stat-line {
   margin: 8px 0;
-  font-size: 15px;
-  color: #333;
+  font-size: 1.1em;
 }
 
 .setting__section {
