@@ -41,7 +41,11 @@ override 'json_display' => sub
     }
   }
 
-  foreach my $num("experience","GP","numwriteups","numcools","is_online","level")
+  # `numcools` was dropped from this list (#3957) — it duplicated the
+  # descriptively-named `cools_spent` field set below. The `numcools`
+  # *method* is still used internally to compute `cools_spent`; we just
+  # don't ship the same value under two keys in the user JSON anymore.
+  foreach my $num("experience","GP","numwriteups","is_online","level")
   {
     my $val = $self->$num;
     # Ensure numeric - some values like level may be non-numeric in edge cases
