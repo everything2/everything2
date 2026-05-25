@@ -61,22 +61,54 @@ sub buildReactData
     }
   }
 
-  # Get usergroups that have messages for this user (for filtering)
+  # Build the set of usergroups this user can reasonably filter their
+  # inbox by. Union of:
+  #   (a) groups they have a usergroup-addressed message FROM in their inbox
+  #       (covers "used to be a member but got messages then"), and
+  #   (b) groups they are currently a member of (covers groups they could
+  #       reasonably receive new mail in even if they haven't yet).
+  # Admins/editors naturally inherit (b) by virtue of belonging to the
+  # privileged usergroups. We deliberately do NOT enumerate every usergroup
+  # on the site for non-members; the filter only wants suggestions the
+  # user could plausibly want to act on.
   my $usergroup_type = $DB->getType('usergroup');
-  my $usergroups_with_messages = [];
+  my $accessible_usergroups = [];
   if ($usergroup_type) {
-    my $csr = $DB->sqlSelectMany(
+    my %seen;
+    my $user_id = $user->node_id;
+    my $type_id = $usergroup_type->{node_id};
+
+    # (a) groups the user has received messages from
+    my $msg_csr = $DB->sqlSelectMany(
       'DISTINCT node.node_id, node.title',
-      'message LEFT JOIN node ON for_usergroup = node.node_id AND type_nodetype=' . $usergroup_type->{node_id},
-      'for_user=' . $user->node_id . ' AND for_usergroup != 0 AND node.node_id IS NOT NULL',
-      'ORDER BY node.title'
+      "message JOIN node ON for_usergroup = node.node_id AND node.type_nodetype=$type_id",
+      "for_user=$user_id AND for_usergroup != 0"
     );
-    while (my $row = $csr->fetchrow_hashref) {
-      push @$usergroups_with_messages, {
-        node_id => $row->{node_id},
-        title => $row->{title}
+    while (my $row = $msg_csr->fetchrow_hashref) {
+      next if $seen{$row->{node_id}}++;
+      push @$accessible_usergroups, {
+        node_id => int($row->{node_id}),
+        title   => $row->{title},
       };
     }
+
+    # (b) groups the user is currently a member of
+    my $mem_csr = $DB->sqlSelectMany(
+      'DISTINCT node.node_id, node.title',
+      "nodegroup JOIN node ON nodegroup.nodegroup_id = node.node_id "
+        . "AND node.type_nodetype=$type_id",
+      "nodegroup.node_id=$user_id"
+    );
+    while (my $row = $mem_csr->fetchrow_hashref) {
+      next if $seen{$row->{node_id}}++;
+      push @$accessible_usergroups, {
+        node_id => int($row->{node_id}),
+        title   => $row->{title},
+      };
+    }
+
+    @$accessible_usergroups
+      = sort { lc( $a->{title} ) cmp lc( $b->{title} ) } @$accessible_usergroups;
   }
 
   # Determine which user's inbox to display (current user or bot)
@@ -84,15 +116,36 @@ sub buildReactData
     $DB->getNodeById($viewing_bot->{node_id}) :
     $user->NODEDATA;
 
-  # Get initial inbox messages (first page)
-  my $inbox_messages = $APP->get_messages($target_user_data, 25, 0, 0);
-  my $inbox_count = $APP->get_message_count($target_user_data, 'inbox', 0);
-  my $inbox_archived_count = $APP->get_message_count($target_user_data, 'inbox', 1);
+  # Sender filter — `?fromuser=alice` on this page (set by the "/msgs from me"
+  # link on homenodes, #4042). Resolve username → user node here so React
+  # can render a filter chip and pass the id back on subsequent API calls
+  # without re-doing the lookup.
+  my $fromuser_param = $query->param('fromuser');
+  my $from_user = undef;
+  my $from_user_id = undef;
+  if ( defined $fromuser_param && length $fromuser_param ) {
+    $from_user = $DB->getNode( $fromuser_param, 'user' );
+    if ($from_user) {
+      $from_user_id = $from_user->{node_id};
+    }
+  }
 
-  # Get initial outbox messages (first page) - always for current user, not bot
-  my $outbox_messages = $APP->get_sent_messages($user->NODEDATA, 25, 0, 0);
-  my $outbox_count = $APP->get_message_count($user->NODEDATA, 'outbox', 0);
-  my $outbox_archived_count = $APP->get_message_count($user->NODEDATA, 'outbox', 1);
+  # Get initial inbox messages (first page) — applies the sender filter
+  # if one was supplied AND resolved to a real user.
+  my $inbox_messages = $APP->get_messages($target_user_data, 25, 0, 0, undef, $from_user_id);
+  my $inbox_count = $APP->get_message_count($target_user_data, 'inbox', 0, undef, $from_user_id);
+  my $inbox_archived_count = $APP->get_message_count($target_user_data, 'inbox', 1, undef, $from_user_id);
+
+  # Get initial outbox messages. Mirror the inbox-side bot-impersonation:
+  # when an editor has switched to a bot's inbox via ?spy_user=<bot>, the
+  # Sent tab should also show messages SENT BY that bot, not by the
+  # editor. Otherwise the bot-inbox view is half-blind.
+  # If ?fromuser= was supplied, treat it as the recipient filter for Sent
+  # so the page lands with the same logical filter active on either tab.
+  my $outbox_author = $target_user_data;
+  my $outbox_messages = $APP->get_sent_messages($outbox_author, 25, 0, 0, $from_user_id, undef);
+  my $outbox_count = $APP->get_message_count($outbox_author, 'outbox', 0, undef, undef, $from_user_id);
+  my $outbox_archived_count = $APP->get_message_count($outbox_author, 'outbox', 1, undef, undef, $from_user_id);
 
   return {
     type => 'message_inbox',
@@ -109,12 +162,20 @@ sub buildReactData
     },
     pageSize => 25,
     accessibleBots => \@accessible_bots,
-    usergroupsWithMessages => $usergroups_with_messages,
+    # Preserve the legacy key for any unmigrated callers; React now reads
+    # accessibleUsergroups (broader: includes current-membership as well).
+    usergroupsWithMessages => $accessible_usergroups,
+    accessibleUsergroups   => $accessible_usergroups,
     currentUser => {
       node_id => $user->node_id,
       title => $user->title
     },
-    viewingBot => $viewing_bot  # Initial bot inbox to display (if spy_user param present)
+    viewingBot => $viewing_bot,  # Initial bot inbox to display (if spy_user param present)
+    # Initial sender filter (null if no ?fromuser= or it didn't resolve)
+    fromUser => $from_user ? {
+      node_id => $from_user->{node_id},
+      title   => $from_user->{title},
+    } : undef,
   };
 }
 

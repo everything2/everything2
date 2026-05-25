@@ -101,8 +101,10 @@ const UserDisplay = ({ data, e2 }) => {
         {/* Icon row - admin tools, favorite, sanctify, message */}
         {showIconRow && (
           <div className="user-display__icon-row">
-            {/* Admin tools icon - for editors/chanops/admins (including on own profile) */}
-            {(viewer.is_editor || viewer.is_chanop || viewer.is_admin) && (
+            {/* Admin tools icon - for editors/chanops/admins (including on own profile).
+                `!!` coerces — these come from Perl as 0/1 numbers, so a falsy
+                `||` chain ends with the literal `0` and React would render it. */}
+            {!!(viewer.is_editor || viewer.is_chanop || viewer.is_admin) && (
               <button
                 onClick={() => setIsToolsModalOpen(true)}
                 className="user-tools-trigger user-display__icon-btn"
@@ -149,7 +151,7 @@ const UserDisplay = ({ data, e2 }) => {
                 <LinkNode type="oppressor_superdoc" title="Infected Users" display="infected" />.
               </p>
             </div>
-            {viewer.is_admin && (
+            {!!viewer.is_admin && (
               <div>
                 <img src="/static/physician.png" alt="Physician Sign" />
                 <p>
@@ -172,7 +174,7 @@ const UserDisplay = ({ data, e2 }) => {
         )}
 
         {/* Account lock warning for editors */}
-        {user.acctlock && viewer.is_editor && (
+        {user.acctlock && !!viewer.is_editor && (
           <p>
             <big><strong>Account locked</strong></big> by{' '}
             <LinkNode nodeId={user.acctlock.node_id} title={user.acctlock.title} />

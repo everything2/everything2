@@ -126,7 +126,6 @@ $user->set_vars($VARS);
 | `oldGP` | Integer | Cached GP for change detection notifications | - | Application.pm |
 | `oldexp` | Integer | Cached XP for change detection notifications | - | Application.pm |
 | `numwriteups` | Integer | Cached writeup count for Node-Fu calculation | - | Application.pm |
-| `favorite_limit` | Integer | How many favorites to show | 15 | document.pm |
 
 ### Game Systems
 
@@ -253,6 +252,12 @@ Some "preferences" aren't stored in VARS:
 ## Deprecated VARS Keys
 
 These keys are no longer used and can be cleaned up from user settings:
+
+### Removed in 2026-05 (Favorite Noders Cap)
+
+| Key | Status | Notes | Removal Date |
+|-----|--------|-------|--------------|
+| `favorite_limit` | **DEPRECATED** | How many favorite-noder writeups to fetch per page. Server now hardcodes 5 to match the React nodelet's display cap (#3765). Previously defaulted to 15 and could be bumped to 50, causing wasted DB lookups + payload on every page load. | 2026-05-25 |
 
 ### Removed in 2026-01 (React Migration Completion)
 

@@ -871,4 +871,80 @@ subtest 'Outbox: Archive parameter' => sub {
     $DB->sqlDelete('message_outbox', "message_id IN ($non_archived_id, $archived_id)");
 };
 
+# Regression coverage for #4042: "/msgs from me" link on a homenode now
+# threads ?fromuser=alice → ?from_user=<alice_id> → SQL author_user filter.
+# Previously the param was ignored and the inbox showed everything.
+subtest 'Inbox: filter by sender via from_user param' => sub {
+    plan tests => 6;
+
+    # Seed three messages to test_user1's inbox: two from test_user2, one
+    # from test_user3 (which exists from earlier subtest setup).
+    my $other_user = $DB->getNode( 'Cool Man Eddie', 'user' )
+        || $DB->getNode( 'guest user', 'user' );
+    plan skip_all => 'need a second message sender available'
+        unless $other_user
+        && $other_user->{node_id} != $test_user2->{node_id};
+
+    $DB->sqlDelete( 'message',
+        "for_user=$test_user1->{node_id}" );
+
+    my @from_t2;
+    for ( 1 .. 2 ) {
+        $DB->sqlInsert( 'message', {
+            for_user    => $test_user1->{node_id},
+            author_user => $test_user2->{node_id},
+            msgtext     => "from t2 #$_",
+        } );
+        push @from_t2, $DB->sqlSelect('LAST_INSERT_ID()');
+    }
+    $DB->sqlInsert( 'message', {
+        for_user    => $test_user1->{node_id},
+        author_user => $other_user->{node_id},
+        msgtext     => 'from other',
+    } );
+    my $from_other_id = $DB->sqlSelect('LAST_INSERT_ID()');
+
+    my $mock_user = MockUser->new(
+        node_id       => $test_user1->{node_id},
+        title         => $test_user1->{title},
+        is_guest_flag => 0,
+        NODEDATA      => $test_user1,
+    );
+
+    # No filter → see all 3
+    my $unfiltered = $api->get_all( MockRequest->new(
+        user => $mock_user,
+        _cgi => MockCGI->new( _params => {} ),
+    ) );
+    is( scalar( @{ $unfiltered->[1] } ), 3,
+        'unfiltered inbox returns all 3 messages' );
+
+    # Filter by test_user2 → only their 2
+    my $filtered = $api->get_all( MockRequest->new(
+        user => $mock_user,
+        _cgi => MockCGI->new(
+            _params => { from_user => $test_user2->{node_id} } ),
+    ) );
+    is( scalar( @{ $filtered->[1] } ), 2,
+        'from_user filter returns only that sender\'s messages' );
+    my %by_id = map { $_->{message_id} => 1 } @{ $filtered->[1] };
+    ok( $by_id{ $from_t2[0] }, 'filter includes first t2 message' );
+    ok( $by_id{ $from_t2[1] }, 'filter includes second t2 message' );
+    ok( !$by_id{$from_other_id},
+        'filter excludes messages from other senders' );
+
+    # Count endpoint applies the same filter
+    my $count_resp = $api->get_count( MockRequest->new(
+        user => $mock_user,
+        _cgi => MockCGI->new(
+            _params => { from_user => $test_user2->{node_id} } ),
+    ) );
+    is( $count_resp->[1]{count}, 2,
+        'count endpoint honors from_user filter' );
+
+    # Cleanup
+    $DB->sqlDelete( 'message',
+        "for_user=$test_user1->{node_id}" );
+};
+
 done_testing();
