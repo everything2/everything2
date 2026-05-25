@@ -42,17 +42,12 @@ sub _render_writeup {
     # Build writeup data using Node methods
     my $writeup = $node->single_writeup_display($user);
 
-    # Build user permissions data
-    my $user_data = {
-        node_id   => $user->node_id,
-        title     => $user->title,
-        is_guest  => $user->is_guest  ? 1 : 0,
-        is_editor => $user->is_editor ? 1 : 0,
-        is_admin  => $user->is_admin  ? 1 : 0,
-        can_vote  => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1 : 0,
-        can_cool  => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1 : 0,
-        coolsleft => $user->coolsleft || 0
-    };
+    # Build user permissions data. The fields shared with the e2node
+    # controller (safety prefs, author-since toggle, etc.) come from the
+    # base class to keep the two writeup-rendering paths in sync; adding a
+    # new pref in one place would otherwise silently miss the other.
+    my $user_data = $self->build_writeup_viewer_data($user);
+    $user_data->{is_admin} = $user->is_admin ? 1 : 0;
 
     # Get parent e2node data for:
     # 1. Editing (editors or writeup owner)

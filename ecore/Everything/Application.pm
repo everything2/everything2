@@ -6582,6 +6582,12 @@ sub buildNodeInfoStructure
     # Voting and cooling capacity (needed for WriteupDisplay C! button)
     $e2->{user}->{votesleft} = $USER->{votesleft} || 0;
     $e2->{user}->{coolsleft} = int($VARS->{cools} || 0);
+    # Confirm-before-acting preferences. WriteupDisplay reads these off the
+    # global user object (passed via PageLayout) — without them, the C? / vote
+    # buttons act immediately even when the user has the safety pref on.
+    # Fixes #4052 (cool) and #3613 (vote).
+    $e2->{user}->{coolsafety} = int($VARS->{coolsafety} || 0);
+    $e2->{user}->{votesafety} = int($VARS->{votesafety} || 0);
     # Unread message count for inbox badge
     $e2->{user}->{unreadMessages} = $this->get_unread_message_count($USER);
   }

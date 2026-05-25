@@ -296,6 +296,41 @@ sub epicenter
   return $params;
 }
 
+=head2 build_writeup_viewer_data($user)
+
+Returns the user-permissions/preferences hash that any page rendering
+C<react/components/WriteupDisplay.js> needs to thread through as the
+C<user> prop. Single source of truth for the shape — the e2node, writeup,
+and any future writeup-rendering controllers should call this rather than
+hand-rolling their own block, otherwise a pref added in one path silently
+breaks the others (see #4052 / #3613 for the historical drift).
+
+Controllers can extend the returned hashref with controller-specific
+fields (e.g. C<is_admin> on the standalone writeup page).
+
+=cut
+
+sub build_writeup_viewer_data
+{
+  my ($self, $user) = @_;
+
+  my $VARS = $user->is_guest ? {} : ( $user->VARS || {} );
+  my $coolsleft = $user->coolsleft || 0;
+  my $votesleft = $user->votesleft || 0;
+  return {
+    node_id              => $user->node_id,
+    title                => $user->title,
+    is_guest             => $user->is_guest  ? 1 : 0,
+    is_editor            => $user->is_editor ? 1 : 0,
+    can_vote             => ( !$user->is_guest && $votesleft > 0 ) ? 1 : 0,
+    can_cool             => ( !$user->is_guest && $coolsleft > 0 ) ? 1 : 0,
+    coolsleft            => $coolsleft,
+    votesafety           => int( $VARS->{votesafety} || 0 ),
+    coolsafety           => int( $VARS->{coolsafety} || 0 ),
+    info_authorsince_off => int( $VARS->{info_authorsince_off} || 0 ),
+  };
+}
+
 sub title_to_page
 {
   my ($self, $title) = @_;

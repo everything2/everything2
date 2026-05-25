@@ -28,20 +28,9 @@ sub _render_e2node {
     # Build e2node data using Node methods (includes all writeups, softlinks, etc.)
     my $e2node = $node->json_display($user);
 
-    # Build user permissions data
-    my $VARS = $user->VARS;
-    my $user_data = {
-        node_id              => $user->node_id,
-        title                => $user->title,
-        is_guest             => $user->is_guest ? 1 : 0,
-        is_editor            => $user->is_editor ? 1 : 0,
-        can_vote             => ( !$user->is_guest && ( $user->votesleft || 0 ) > 0 ) ? 1 : 0,
-        can_cool             => ( !$user->is_guest && ( $user->coolsleft || 0 ) > 0 ) ? 1 : 0,
-        coolsleft            => $user->coolsleft || 0,
-        votesafety           => int($VARS->{votesafety} || 0),
-        coolsafety           => int($VARS->{coolsafety} || 0),
-        info_authorsince_off => int($VARS->{info_authorsince_off} || 0)
-    };
+    # Build user permissions data. Shared with the writeup controller via
+    # the base class so the two paths can't drift (was #4052 / #3613).
+    my $user_data = $self->build_writeup_viewer_data($user);
 
     # Check if user has an existing draft for this e2node title
     my $existing_draft;
