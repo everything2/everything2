@@ -22,10 +22,10 @@ const FavoriteNoders = (props) => {
     )
   }
 
-  // TODO: Remove this hard limit once issue #3765 is fixed
-  // https://github.com/everything2/everything2/issues/3765
-  // This will require a new API similar to the new writeups API
-  const displayWriteups = props.favoriteWriteups.slice(0, 10)
+  // Cap at 5 to keep the nodelet compact (#3765). Initial data is
+  // server-baked into props alongside the rest of the page state —
+  // no API fetch on page load (load-balancer hygiene).
+  const displayWriteups = props.favoriteWriteups.slice(0, 5)
 
   return (
     <NodeletContainer

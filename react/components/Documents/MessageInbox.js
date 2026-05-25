@@ -1,8 +1,10 @@
 import React from 'react'
 import DOMPurify from 'dompurify'
+import LinkNode from '../LinkNode'
 import MessageList from '../MessageList'
 import MessageModal from '../MessageModal'
 import ParseLinks from '../ParseLinks'
+import UserSearchInput from '../UserSearchInput'
 
 // Sanitize legacy HTML messages - only allow <a> tags with href attribute
 // Legacy messages from sendPrivateMessage htmlcode contain pre-parsed HTML links
@@ -63,11 +65,17 @@ const MessageInbox = ({ data }) => {
   // Filtering state
   const [viewingBot, setViewingBot] = React.useState(data.viewingBot || null) // Bot user being viewed (from spy_user param)
   const [filterUsergroup, setFilterUsergroup] = React.useState(null) // Usergroup filter
+  const [fromUser, setFromUser] = React.useState(data.fromUser || null) // Sender filter from "/msgs from me" link (#4042)
   const [showFilters, setShowFilters] = React.useState(false) // Collapsible filter panel
 
   // Bot and usergroup data from server
   const accessibleBots = data.accessibleBots || []
-  const usergroupsWithMessages = data.usergroupsWithMessages || []
+  // The usergroup picker now offers any group the user is in or has received
+  // mail from — server pre-computes the union to avoid suggesting groups
+  // they couldn't reasonably want to filter on.
+  const accessibleUsergroups = data.accessibleUsergroups
+    || data.usergroupsWithMessages
+    || []
   const currentUser = data.currentUser || {}
 
   // Modal state
@@ -81,26 +89,35 @@ const MessageInbox = ({ data }) => {
   const [messageToDelete, setMessageToDelete] = React.useState(null)
   const [isOutboxDelete, setIsOutboxDelete] = React.useState(false)
 
-  // Build API params based on current filters
+  // Build API params based on current filters.
+  // The same `fromUser` state powers both tabs: it's the "other party" in
+  // the message, so it maps to `from_user` on inbox (sender) and `to_user`
+  // on outbox (recipient). `viewingBot` maps to `for_user` on BOTH tabs:
+  // on inbox it's "show that bot's inbox", on outbox it's "show that
+  // bot's sent items" (server uses target_user for both paths).
   const buildApiParams = React.useCallback((tab, archived, pageNum) => {
     const params = new URLSearchParams()
     params.set('limit', pageSize.toString())
 
     if (tab === 'outbox') {
       params.set('outbox', '1')
+      if (viewingBot) params.set('for_user', viewingBot.node_id.toString())
+      if (fromUser) params.set('to_user', fromUser.node_id.toString())
+      if (filterUsergroup) params.set('for_usergroup', filterUsergroup.node_id.toString())
     } else {
       if (archived) params.set('archive', '1')
       if (viewingBot) params.set('for_user', viewingBot.node_id.toString())
       if (filterUsergroup) params.set('for_usergroup', filterUsergroup.node_id.toString())
+      if (fromUser) params.set('from_user', fromUser.node_id.toString())
     }
 
     if (pageNum > 0) params.set('offset', (pageNum * pageSize).toString())
 
     return params.toString()
-  }, [pageSize, viewingBot, filterUsergroup])
+  }, [pageSize, viewingBot, filterUsergroup, fromUser])
 
   // Load messages when tab, archive filter, or page changes
-  const loadMessages = React.useCallback(async (tab, archived, pageNum, botUser = viewingBot, ugFilter = filterUsergroup) => {
+  const loadMessages = React.useCallback(async (tab, archived, pageNum, botUser = viewingBot, ugFilter = filterUsergroup, senderFilter = fromUser) => {
     setLoading(true)
     setError(null)
 
@@ -110,10 +127,17 @@ const MessageInbox = ({ data }) => {
 
       if (tab === 'outbox') {
         params.set('outbox', '1')
+        // botUser surfaces the bot's outbox (mirrors the inbox path);
+        // senderFilter doubles as the recipient filter on Sent —
+        // see buildApiParams comment for the rationale.
+        if (botUser) params.set('for_user', botUser.node_id.toString())
+        if (senderFilter) params.set('to_user', senderFilter.node_id.toString())
+        if (ugFilter) params.set('for_usergroup', ugFilter.node_id.toString())
       } else {
         if (archived) params.set('archive', '1')
         if (botUser) params.set('for_user', botUser.node_id.toString())
         if (ugFilter) params.set('for_usergroup', ugFilter.node_id.toString())
+        if (senderFilter) params.set('from_user', senderFilter.node_id.toString())
       }
 
       if (pageNum > 0) params.set('offset', (pageNum * pageSize).toString())
@@ -133,53 +157,60 @@ const MessageInbox = ({ data }) => {
       const messageData = await response.json()
       setMessages(messageData)
 
-      // Fetch counts based on tab
-      if (tab === 'inbox') {
-        const countParams = new URLSearchParams()
-        if (botUser) countParams.set('for_user', botUser.node_id.toString())
-        if (ugFilter) countParams.set('for_usergroup', ugFilter.node_id.toString())
+      // Always refresh BOTH tabs' counts so the inactive tab's badge
+      // doesn't go stale when filters change. The three count requests
+      // are independent — fire them in parallel.
+      const inboxParams = new URLSearchParams()
+      if (botUser) inboxParams.set('for_user', botUser.node_id.toString())
+      if (ugFilter) inboxParams.set('for_usergroup', ugFilter.node_id.toString())
+      if (senderFilter) inboxParams.set('from_user', senderFilter.node_id.toString())
 
-        // Fetch active count
-        const activeResponse = await fetch(`/api/messages/count?${countParams.toString()}`, { credentials: 'include' })
-        if (activeResponse.ok) {
-          const activeData = await activeResponse.json()
-          setTotalCount(activeData.count)
-        }
+      const inboxArchivedParams = new URLSearchParams(inboxParams)
+      inboxArchivedParams.set('archive', '1')
 
-        // Fetch archived count
-        countParams.set('archive', '1')
-        const archivedResponse = await fetch(`/api/messages/count?${countParams.toString()}`, { credentials: 'include' })
-        if (archivedResponse.ok) {
-          const archivedData = await archivedResponse.json()
-          setArchivedCount(archivedData.count)
-        }
-      } else {
-        // Fetch outbox count
-        const outboxResponse = await fetch('/api/messages/count?outbox=1', { credentials: 'include' })
-        if (outboxResponse.ok) {
-          const outboxData = await outboxResponse.json()
-          setOutboxCount(outboxData.count)
-        }
+      const outboxParams = new URLSearchParams()
+      outboxParams.set('outbox', '1')
+      if (botUser) outboxParams.set('for_user', botUser.node_id.toString())
+      if (senderFilter) outboxParams.set('to_user', senderFilter.node_id.toString())
+      if (ugFilter) outboxParams.set('for_usergroup', ugFilter.node_id.toString())
+
+      const [inboxResp, inboxArchivedResp, outboxResp] = await Promise.all([
+        fetch(`/api/messages/count?${inboxParams.toString()}`, { credentials: 'include' }),
+        fetch(`/api/messages/count?${inboxArchivedParams.toString()}`, { credentials: 'include' }),
+        fetch(`/api/messages/count?${outboxParams.toString()}`, { credentials: 'include' }),
+      ])
+
+      if (inboxResp.ok) {
+        const data = await inboxResp.json()
+        setTotalCount(data.count)
+      }
+      if (inboxArchivedResp.ok) {
+        const data = await inboxArchivedResp.json()
+        setArchivedCount(data.count)
+      }
+      if (outboxResp.ok) {
+        const data = await outboxResp.json()
+        setOutboxCount(data.count)
       }
     } catch (err) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
-  }, [pageSize, viewingBot, filterUsergroup])
+  }, [pageSize, viewingBot, filterUsergroup, fromUser])
 
-  // Handle tab change
+  // Handle tab change. All three filters persist across tabs now:
+  // - fromUser doubles as recipient filter on Sent
+  // - filterUsergroup applies on both
+  // - viewingBot surfaces the bot's inbox OR outbox depending on tab —
+  //   editors moderating a shared bot account get both halves of the
+  //   conversation view.
   const handleTabChange = (tab) => {
     if (tab !== activeTab) {
       setActiveTab(tab)
       setShowArchived(false)
       setPage(0)
-      // Clear bot view when switching to outbox
-      if (tab === 'outbox') {
-        setViewingBot(null)
-        setFilterUsergroup(null)
-      }
-      loadMessages(tab, false, 0, tab === 'outbox' ? null : viewingBot, tab === 'outbox' ? null : filterUsergroup)
+      loadMessages(tab, false, 0, viewingBot, filterUsergroup, fromUser)
     }
   }
 
@@ -197,16 +228,48 @@ const MessageInbox = ({ data }) => {
     setViewingBot(bot)
     setPage(0)
     setShowArchived(false)
-    // When viewing bot inbox, set sendAsUser to that bot by default
+    // When viewing-as a bot, default the compose "send as" to that bot
+    // so replies go out under the bot's identity, matching the inbox/outbox
+    // view the editor is looking at.
     setSendAsUser(bot)
-    loadMessages('inbox', false, 0, bot, filterUsergroup)
+    // Apply to whichever tab is open — viewingBot is meaningful on both
+    // now (bot's inbox vs. bot's sent items).
+    loadMessages(activeTab, false, 0, bot, filterUsergroup, fromUser)
   }
 
-  // Handle usergroup filter
+  // Handle usergroup filter — applies to whichever tab is active. On Sent
+  // the outbox path switches to the `message` table so the for_usergroup
+  // column is queryable; `message_outbox` doesn't carry that field.
   const handleUsergroupFilter = (ug) => {
     setFilterUsergroup(ug)
     setPage(0)
-    loadMessages('inbox', showArchived, 0, viewingBot, ug)
+    loadMessages(activeTab, showArchived, 0, viewingBot, ug)
+  }
+
+  // Clear the sender/recipient filter (#4042 — originally only set by
+  // /msgs from me on homenodes; now also settable via the autosuggest).
+  // Strip ?fromuser=... from the URL so a refresh doesn't bring it back
+  // when the user has explicitly cleared it.
+  const handleClearFromUser = () => {
+    setFromUser(null)
+    setPage(0)
+    if (typeof window !== 'undefined' && window.history?.replaceState) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('fromuser')
+      window.history.replaceState({}, '', url.toString())
+    }
+    loadMessages(activeTab, showArchived, 0, viewingBot, filterUsergroup, null)
+  }
+
+  // Pick a sender (or recipient on Sent) from the autosuggest in the
+  // filter panel. UserSearchInput hands us {node_id, title} (node_id may
+  // be null if typed text didn't resolve — guard against that).
+  const handleFromUserSelect = (selected) => {
+    if (!selected || !selected.node_id) return
+    const next = { node_id: selected.node_id, title: selected.title }
+    setFromUser(next)
+    setPage(0)
+    loadMessages(activeTab, showArchived, 0, viewingBot, filterUsergroup, next)
   }
 
   // Handle pagination
@@ -424,10 +487,33 @@ const MessageInbox = ({ data }) => {
 
   // Render a sent message (outbox) - simplified, no archive
   const renderSentMessage = (message) => {
+    // Recipient line — populated server-side from the message table when
+    // available. For group sends we show the group; for 1:1 we show the
+    // recipient user; for unrecoverable rows (recipient deleted their
+    // copy and the original `message` row is gone) we fall back to a
+    // plain "Sent" so the row still renders.
+    const groupRef = message.for_usergroup && message.for_usergroup.node_id > 0
+      ? message.for_usergroup
+      : null
+    const userRef = !groupRef
+      && message.for_user
+      && message.for_user.node_id > 0
+      ? message.for_user
+      : null
+
     return (
       <div key={message.message_id} className="message-inbox-sent-item">
-        <div className="message-inbox-sent-timestamp">
-          <span>
+        <div className="message-inbox-sent-header">
+          <strong className="message-inbox-sent-recipient">
+            {groupRef ? (
+              <>To group: <LinkNode id={groupRef.node_id} display={groupRef.title} /></>
+            ) : userRef ? (
+              <>To: <LinkNode id={userRef.node_id} display={userRef.title} /></>
+            ) : (
+              <span className="message-inbox-sent-recipient--unknown">Sent</span>
+            )}
+          </strong>
+          <span className="message-inbox-sent-timestamp">
             {new Date(message.timestamp).toLocaleString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -477,103 +563,165 @@ const MessageInbox = ({ data }) => {
         </div>
       )}
 
-      {/* Filters bar - only show if there are bots or usergroups available */}
-      {(accessibleBots.length > 0 || usergroupsWithMessages.length > 0) && (
-        <div className="message-inbox-filters">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="message-inbox-filters-toggle"
-          >
-            <span>
-              <strong>Filters</strong>
-              {(viewingBot || filterUsergroup) && (
-                <span className="message-inbox-filters-active">
-                  {viewingBot && `Viewing: ${viewingBot.title}`}
-                  {viewingBot && filterUsergroup && ' • '}
-                  {filterUsergroup && `Group: ${filterUsergroup.title}`}
-                </span>
-              )}
-            </span>
-            <span>{showFilters ? '▲' : '▼'}</span>
-          </button>
+      {/* Filters bar — always visible to any logged-in viewer. Previously
+          we hid the entire panel unless the user was an editor (bot inbox)
+          or had pre-existing usergroup messages, which meant regular users
+          couldn't reach the sender filter at all. */}
+      <div className="message-inbox-filters">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="message-inbox-filters-toggle"
+        >
+          <span>
+            <strong>Filters</strong>
+            {(viewingBot || filterUsergroup || fromUser) && (
+              <span className="message-inbox-filters-active">
+                {[
+                  viewingBot && `Viewing: ${viewingBot.title}`,
+                  fromUser && `${activeTab === 'outbox' ? 'To' : 'From'}: ${fromUser.title}`,
+                  filterUsergroup && `Group: ${filterUsergroup.title}`,
+                ].filter(Boolean).join(' • ')}
+              </span>
+            )}
+          </span>
+          <span>{showFilters ? '▲' : '▼'}</span>
+        </button>
 
-          {showFilters && (
-            <div className="message-inbox-filters-panel">
-              {/* Bot inbox selector */}
-              {accessibleBots.length > 0 && (
-                <div className="message-inbox-filter-group">
-                  <label className="message-inbox-filter-label">
-                    View Inbox For:
-                  </label>
-                  <select
-                    value={viewingBot?.node_id || ''}
-                    onChange={(e) => {
-                      const botId = e.target.value
-                      if (botId === '') {
-                        handleBotChange(null)
-                      } else {
-                        const bot = accessibleBots.find(b => b.node_id.toString() === botId)
-                        handleBotChange(bot)
-                      }
-                    }}
-                    className="message-inbox-filter-select"
-                  >
-                    <option value="">{currentUser.title} (me)</option>
-                    {accessibleBots.map(bot => (
-                      <option key={bot.node_id} value={bot.node_id}>
-                        {bot.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+        {showFilters && (
+          <div className="message-inbox-filters-panel">
+            {/* Bot inbox selector — editors / admins only */}
+            {accessibleBots.length > 0 && (
+              <div className="message-inbox-filter-group">
+                <label className="message-inbox-filter-label">
+                  View Inbox For:
+                </label>
+                <select
+                  value={viewingBot?.node_id || ''}
+                  onChange={(e) => {
+                    const botId = e.target.value
+                    if (botId === '') {
+                      handleBotChange(null)
+                    } else {
+                      const bot = accessibleBots.find(b => b.node_id.toString() === botId)
+                      handleBotChange(bot)
+                    }
+                  }}
+                  className="message-inbox-filter-select"
+                >
+                  <option value="">{currentUser.title} (me)</option>
+                  {accessibleBots.map(bot => (
+                    <option key={bot.node_id} value={bot.node_id}>
+                      {bot.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-              {/* Usergroup filter */}
-              {usergroupsWithMessages.length > 0 && (
-                <div className="message-inbox-filter-group">
-                  <label className="message-inbox-filter-label">
-                    Filter by Group:
-                  </label>
-                  <select
-                    value={filterUsergroup?.node_id || ''}
-                    onChange={(e) => {
-                      const ugId = e.target.value
-                      if (ugId === '') {
-                        handleUsergroupFilter(null)
-                      } else {
-                        const ug = usergroupsWithMessages.find(u => u.node_id.toString() === ugId)
-                        handleUsergroupFilter(ug)
-                      }
-                    }}
-                    className="message-inbox-filter-select"
-                  >
-                    <option value="">All groups</option>
-                    {usergroupsWithMessages.map(ug => (
-                      <option key={ug.node_id} value={ug.node_id}>
-                        {ug.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+            {/* Other-party filter — autosuggest against /api/node_search?scope=users.
+                The label swaps to match the active tab: Sender on Inbox
+                (filter by message author), Recipient on Sent (filter by
+                message destination). The underlying state persists across
+                tabs so switching keeps the filter applied. */}
+            <div className="message-inbox-filter-group">
+              <label className="message-inbox-filter-label">
+                {activeTab === 'outbox' ? 'Filter by Recipient:' : 'Filter by Sender:'}
+              </label>
+              <UserSearchInput
+                key={fromUser?.node_id || 'no-from-user'}
+                onSelect={handleFromUserSelect}
+                placeholder="Type a username..."
+                clearOnSelect={false}
+                showButton={false}
+              />
+            </div>
 
-              {/* Clear filters button */}
-              {(viewingBot || filterUsergroup) && (
-                <div className="message-inbox-filter-clear">
-                  <button
-                    onClick={() => {
-                      setViewingBot(null)
-                      setFilterUsergroup(null)
-                      setSendAsUser(null)
-                      setPage(0)
-                      loadMessages('inbox', showArchived, 0, null, null)
-                    }}
-                    className="message-inbox-clear-btn"
-                  >
-                    Clear Filters
-                  </button>
-                </div>
-              )}
+            {/* Sent to Usergroup filter — bounded to groups the user is
+                in or has received messages from (computed server-side as
+                accessibleUsergroups). Hidden if they have none. */}
+            {accessibleUsergroups.length > 0 && (
+              <div className="message-inbox-filter-group">
+                <label className="message-inbox-filter-label">
+                  Sent to Usergroup:
+                </label>
+                <select
+                  value={filterUsergroup?.node_id || ''}
+                  onChange={(e) => {
+                    const ugId = e.target.value
+                    if (ugId === '') {
+                      handleUsergroupFilter(null)
+                    } else {
+                      const ug = accessibleUsergroups.find(u => u.node_id.toString() === ugId)
+                      handleUsergroupFilter(ug)
+                    }
+                  }}
+                  className="message-inbox-filter-select"
+                >
+                  <option value="">All groups</option>
+                  {accessibleUsergroups.map(ug => (
+                    <option key={ug.node_id} value={ug.node_id}>
+                      {ug.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Active-filter chip row. Surfaces whichever filters are currently
+          in effect so the user can see at a glance why the list is narrowed
+          and clear any filter independently. Persists across pagination
+          and tab switches. The fromUser chip swaps "From" → "To" on the
+          Sent tab since the same state means recipient there. */}
+      {(viewingBot || fromUser || filterUsergroup) && (
+        <div className="message-inbox-filter-chips">
+          {viewingBot && (
+            <div className="message-inbox-filter-chip">
+              Viewing as <strong>{viewingBot.title}</strong>
+              <button
+                type="button"
+                onClick={() => handleBotChange(null)}
+                className="message-inbox-filter-chip-clear"
+                title={`Switch back to ${currentUser.title}'s ${activeTab === 'outbox' ? 'sent items' : 'inbox'}`}
+                aria-label="Clear bot inbox selection"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          {fromUser && (
+            <div className="message-inbox-filter-chip">
+              {activeTab === 'outbox' ? 'To ' : 'From '}
+              <strong>{fromUser.title}</strong>
+              <button
+                type="button"
+                onClick={handleClearFromUser}
+                className="message-inbox-filter-chip-clear"
+                title={activeTab === 'outbox'
+                  ? 'Show messages sent to anyone'
+                  : 'Show messages from all senders'}
+                aria-label={activeTab === 'outbox'
+                  ? 'Clear recipient filter'
+                  : 'Clear sender filter'}
+              >
+                ×
+              </button>
+            </div>
+          )}
+          {filterUsergroup && (
+            <div className="message-inbox-filter-chip">
+              Group <strong>{filterUsergroup.title}</strong>
+              <button
+                type="button"
+                onClick={() => handleUsergroupFilter(null)}
+                className="message-inbox-filter-chip-clear"
+                title="Show messages from all usergroups"
+                aria-label="Clear usergroup filter"
+              >
+                ×
+              </button>
             </div>
           )}
         </div>

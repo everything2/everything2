@@ -39,6 +39,8 @@ sub get_all
 
   my $for_user_id = $REQUEST->cgi->param("for_user");
   my $for_usergroup_id = $REQUEST->cgi->param("for_usergroup");
+  my $from_user_id = $REQUEST->cgi->param("from_user");
+  my $to_user_id = $REQUEST->cgi->param("to_user");
 
   # Determine which user's messages to fetch
   my $target_user = $REQUEST->user->NODEDATA;
@@ -57,11 +59,20 @@ sub get_all
   }
 
   if ($outbox) {
-    # Get sent messages (outbox) - always from the actual logged in user
-    return [$self->HTTP_OK, $self->APP->get_sent_messages($REQUEST->user->NODEDATA, $limit, $offset, $archive)];
+    # Sent tab. By default the author is the viewer, but when a bot
+    # inbox is being viewed (for_user gated by the same bot-access
+    # check above), surface the bot's outbox so editors get a complete
+    # view of conversations the bot is part of. The Sent UI uses
+    # `sendAsUser` to send-AS-the-bot already; this is its read-side
+    # counterpart.
+    # to_user / for_usergroup mirror the inbox-side from_user /
+    # for_usergroup filters so the React side can use the same chip-row
+    # state for both tabs.
+    my $outbox_author = $target_user || $REQUEST->user->NODEDATA;
+    return [$self->HTTP_OK, $self->APP->get_sent_messages($outbox_author, $limit, $offset, $archive, $to_user_id, $for_usergroup_id)];
   } else {
-    # Get received messages (inbox) with optional usergroup filter
-    return [$self->HTTP_OK, $self->APP->get_messages($target_user, $limit, $offset, $archive, $for_usergroup_id)];
+    # Get received messages (inbox) with optional usergroup + sender filters
+    return [$self->HTTP_OK, $self->APP->get_messages($target_user, $limit, $offset, $archive, $for_usergroup_id, $from_user_id)];
   }
 }
 
@@ -199,6 +210,8 @@ sub get_count
 
   my $for_user_id = $REQUEST->cgi->param("for_user");
   my $for_usergroup_id = $REQUEST->cgi->param("for_usergroup");
+  my $from_user_id = $REQUEST->cgi->param("from_user");
+  my $to_user_id = $REQUEST->cgi->param("to_user");
 
   # Determine which user's messages to count
   my $target_user = $REQUEST->user->NODEDATA;
@@ -214,8 +227,11 @@ sub get_count
     }
   }
 
+  # target_user already accounts for bot-inbox viewing (and auth checked
+  # above), so this lets the count match whatever inbox/outbox the user
+  # is viewing — including a bot's outbox when impersonating.
   my $box_type = $outbox ? 'outbox' : 'inbox';
-  my $count = $self->APP->get_message_count($target_user, $box_type, $archive, $for_usergroup_id);
+  my $count = $self->APP->get_message_count($target_user, $box_type, $archive, $for_usergroup_id, $from_user_id, $to_user_id);
 
   return [$self->HTTP_OK, { count => $count, box => $box_type, archive => $archive }];
 }

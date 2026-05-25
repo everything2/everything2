@@ -17,7 +17,17 @@ const UserSearchInput = ({
   placeholder = 'Search for a user...',
   buttonText = 'Add',
   disabled = false,
-  clearOnSelect = true
+  clearOnSelect = true,
+  // Lets this component power non-user pickers too (e.g. usergroups for
+  // the inbox sender/group filters). Defaults to 'users' so every existing
+  // caller continues to behave exactly the same.
+  scope = 'users',
+  // Hide the trailing submit button. For callers like the message-inbox
+  // sender filter, picking a suggestion (or pressing Enter on one) is the
+  // entire interaction — a "Filter" button just adds clutter and offers a
+  // submit path that the consumer doesn't want (typing arbitrary text and
+  // clicking the button submits something they can't act on).
+  showButton = true
 }) => {
   const [inputValue, setInputValue] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -28,12 +38,12 @@ const UserSearchInput = ({
   // Debounce / abort / stale-guard live in useAutocompleteSearch.
   const searchUsers = useCallback(async (query, { signal }) => {
     const response = await fetch(
-      `/api/node_search?q=${encodeURIComponent(query)}&scope=users&limit=10`,
+      `/api/node_search?q=${encodeURIComponent(query)}&scope=${encodeURIComponent(scope)}&limit=10`,
       { signal }
     )
     const data = await response.json()
     return data.success && data.results ? data.results : []
-  }, [])
+  }, [scope])
   const {
     results: suggestions,
     loading,
@@ -134,7 +144,7 @@ const UserSearchInput = ({
     : 'user-search__btn'
 
   return (
-    <div ref={containerRef} className="user-search">
+    <div ref={containerRef} className="user-search-input">
       <div className="user-search__row">
         <div className="user-search__input-wrapper">
           <input
@@ -168,14 +178,16 @@ const UserSearchInput = ({
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={disabled || !inputValue.trim()}
-          className={btnClass}
-        >
-          {buttonText}
-        </button>
+        {showButton && (
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={disabled || !inputValue.trim()}
+            className={btnClass}
+          >
+            {buttonText}
+          </button>
+        )}
       </div>
     </div>
   )
@@ -183,6 +195,8 @@ const UserSearchInput = ({
 
 UserSearchInput.propTypes = {
   onSelect: PropTypes.func.isRequired,
+  showButton: PropTypes.bool,
+  scope: PropTypes.string,
   placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   disabled: PropTypes.bool,

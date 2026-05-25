@@ -8450,7 +8450,8 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   border: 1px solid var(--e2-border-color, #dee2e6);
   border-radius: 4px;
   margin-bottom: 16px;
-  overflow: hidden;
+  /* No overflow:hidden — was clipping the autosuggest dropdown so the
+     suggestion list disappeared behind the filter box's bottom edge. */
 }
 
 .message-inbox-filters-toggle {
@@ -8464,8 +8465,16 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* Match the container's rounded corners — visible now that the parent
+     no longer clips. */
+  border-radius: 4px 4px 0 0;
 }
 
+/* Filter expand/collapse panel body. JSX renders `.message-inbox-filters-panel`;
+   the legacy `.message-inbox-filters-content` selector was a no-op (mismatched
+   classname) which is why earlier the contents had no padding and looked
+   "scrunched" against the box edges. */
+.message-inbox-filters-panel,
 .message-inbox-filters-content {
   padding: 16px;
   border-top: 1px solid var(--e2-border-color, #dee2e6);
@@ -8475,7 +8484,14 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
 }
 
 .message-inbox-filter-group {
-  flex: 1 1 200px;
+  flex: 1 1 220px;
+  min-width: 0;
+  /* Stack label-over-control so every column has the same shape, and
+     align bottoms so the controls themselves line up horizontally across
+     columns of mixed sizes (select vs UserSearchInput with its button). */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .message-inbox-filter-label {
@@ -8487,14 +8503,40 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
 
 .message-inbox-filter-select {
   width: 100%;
-  padding: 8px 12px;
+  /* Heights are tuned to match UserSearchInput's input (and its Filter
+     button), which is the tallest control in the row, so a select and an
+     autosuggest don't render at noticeably different heights. */
+  height: 36px;
+  padding: 0 12px;
   font-size: 13px;
   border: 1px solid var(--e2-border-color, #dee2e6);
   border-radius: 4px;
   background-color: var(--e2-input-bg, #fff);
   color: var(--e2-color-primary, #333);
+  box-sizing: border-box;
 }
 
+/* Allow the UserSearchInput suggestions popup to escape the filter
+   panel rather than being clipped below the box. */
+.message-inbox-filter-group .user-search-input,
+.message-inbox-filter-group .user-search__input-wrapper {
+  position: relative;
+}
+.message-inbox-filter-group .user-search__dropdown {
+  z-index: 50;
+}
+
+/* "Filters active" pill that appears in the collapsed toggle. */
+.message-inbox-filters-active {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: var(--e2-light-bg);
+  font-size: 0.85em;
+  color: var(--e2-color-primary);
+}
+
+.message-inbox-filter-clear,
 .message-inbox-clear-filters {
   padding: 8px 16px;
   font-size: 13px;
@@ -8504,6 +8546,47 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   color: var(--e2-color-primary, #495057);
   cursor: pointer;
   align-self: flex-end;
+}
+
+/* Row of dismissible chips that surfaces whichever filters are currently
+   active (bot inbox, sender, usergroup). Sits above the tabs so it's
+   obvious WHY the inbox is showing a subset, and persists across pagination
+   and tab toggles. The fromUser chip (#4042) was the first; expanded here
+   to cover bot + usergroup so the bot selection is just as discoverable. */
+.message-inbox-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.message-inbox-filter-chip,
+.message-inbox-fromuser-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: var(--e2-light-bg);
+  border: 1px solid var(--e2-border-light);
+  border-radius: 999px;
+  font-size: 0.95em;
+  color: var(--e2-color-primary);
+}
+
+.message-inbox-filter-chip-clear,
+.message-inbox-fromuser-chip-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  line-height: 1;
+  padding: 0 4px;
+  color: var(--e2-color-primary);
+}
+
+.message-inbox-filter-chip-clear:hover,
+.message-inbox-fromuser-chip-clear:hover {
+  color: #c33;
 }
 
 /* Tabs */
@@ -8608,6 +8691,32 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   border-radius: 4px;
   padding: 12px;
   margin-bottom: 8px;
+}
+
+/* Header row for a Sent message: recipient label on the left, timestamp
+   on the right. Mirrors the inbox MessageList header layout. */
+.message-inbox-sent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.message-inbox-sent-recipient {
+  color: var(--e2-color-primary);
+}
+
+.message-inbox-sent-recipient--unknown {
+  color: var(--e2-color-muted, #6c757d);
+  font-style: italic;
+  font-weight: normal;
+}
+
+.message-inbox-sent-timestamp {
+  color: var(--e2-color-muted, #6c757d);
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .message-inbox-sent-date {
@@ -13367,7 +13476,13 @@ a.e2poll__action-btn:active {
    USER SEARCH INPUT - Autocomplete user search
    ========================================================================== */
 
-.user-search {
+/* UserSearchInput component root. Renamed from `.user-search` to avoid a
+   class-name collision with the standalone "User Search" page (which sets
+   padding/margin/max-width on its own `.user-search` root). Before the
+   rename, embedding UserSearchInput anywhere inside a page that also
+   loaded the page styles gave it 20px padding + auto margins, inflating
+   the rendered height and offsetting it horizontally. */
+.user-search-input {
   position: relative;
 }
 

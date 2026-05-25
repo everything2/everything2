@@ -3945,7 +3945,7 @@ sub getVars
 
 sub get_messages
 {
-  my ($this, $user, $limit, $offset, $archive, $for_usergroup_id) = @_;
+  my ($this, $user, $limit, $offset, $archive, $for_usergroup_id, $from_user_id) = @_;
 
   $this->{db}->getRef($user);
   return unless defined($user) and defined($user->{node_id});
@@ -3966,6 +3966,13 @@ sub get_messages
   if (defined($for_usergroup_id) && $for_usergroup_id ne '') {
     $for_usergroup_id = int($for_usergroup_id);
     $where .= " AND for_usergroup=$for_usergroup_id";
+  }
+
+  # Filter by sender if specified (powers the "/msgs from me" link
+  # on homenodes — see Page::message_inbox).
+  if (defined($from_user_id) && $from_user_id ne '') {
+    $from_user_id = int($from_user_id);
+    $where .= " AND author_user=$from_user_id";
   }
 
   my $csr = $this->{db}->sqlSelectMany("*","message", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
@@ -3996,7 +4003,7 @@ sub get_unread_message_count
 
 sub get_sent_messages
 {
-  my ($this, $user, $limit, $offset, $archive) = @_;
+  my ($this, $user, $limit, $offset, $archive, $to_user_id, $for_usergroup_id) = @_;
 
   $this->{db}->getRef($user);
   return unless defined($user) and defined($user->{node_id});
@@ -4010,21 +4017,81 @@ sub get_sent_messages
   $offset ||= 0;
 
   $archive = int($archive // 0);
+  my $author_id = $user->{node_id};
 
-  # Query message_outbox table (legacy behavior)
-  # Outbox messages are stored separately from inbox messages
-  my $where = "author_user=$user->{node_id} AND archive=$archive";
-  my $csr = $this->{db}->sqlSelectMany("*","message_outbox", $where, "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
-  my $records = [];
-  while (my $row = $csr->fetchrow_hashref)
-  {
-    # message_outbox doesn't have for_user or for_usergroup fields
-    # Add them as 0 for compatibility with message_json_structure
+  my $has_to_user = defined($to_user_id) && $to_user_id ne '' && int($to_user_id) > 0;
+  my $has_ug     = defined($for_usergroup_id) && $for_usergroup_id ne '' && int($for_usergroup_id) > 0;
+  my $dbh = $this->{db}->{dbh};
+
+  # Sent is always backed by message_outbox: one row per send event,
+  # regardless of how many recipients (group sends write 1 outbox row +
+  # N message rows; we want the 1, not the N). When filtering by
+  # recipient or group, we join to `message` only as a semi-lookup —
+  # which (tstamp, msgtext) tuples match the filter — and apply that
+  # restriction to message_outbox.
+  #
+  # Caveat: if the recipient has deleted their copy, the corresponding
+  # `message` row is gone, so a recipient/group filter can't find it.
+  # That row drops out of the filtered Sent view. Unfiltered Sent still
+  # surfaces it (since message_outbox is intact).
+  my $where = "author_user=$author_id AND archive=$archive";
+  if ($has_to_user || $has_ug) {
+    my @inner = ("m.author_user=$author_id",
+                 "m.tstamp = message_outbox.tstamp",
+                 "m.msgtext = message_outbox.msgtext");
+    push @inner, 'm.for_user=' . int($to_user_id) if $has_to_user;
+    push @inner, 'm.for_usergroup=' . int($for_usergroup_id) if $has_ug;
+    my $inner_where = join ' AND ', @inner;
+    $where .= " AND EXISTS (SELECT 1 FROM message m WHERE $inner_where)";
+  }
+
+  my $sql = "SELECT * FROM message_outbox WHERE $where "
+          . "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset";
+  my $sth = $dbh->prepare($sql);
+  $sth->execute;
+  my @rows;
+  while (my $row = $sth->fetchrow_hashref) {
     $row->{for_user} = 0;
     $row->{for_usergroup} = 0;
-    push @$records, $this->message_json_structure($row);
+    push @rows, $row;
   }
-  return $records;
+
+  # Enrich rows with recipient / group info from `message` so the UI can
+  # show "Sent to X" / "Sent to group: Y". Best-effort: a row whose
+  # `message` counterpart has been deleted by the recipient just renders
+  # with a generic "Sent" label.
+  if (@rows) {
+    my @tstamps = map { $dbh->quote($_->{tstamp}) } @rows;
+    my $tstamp_list = join ',', @tstamps;
+    my $enrich = $this->{db}->sqlSelectMany(
+      'tstamp, msgtext, for_user, for_usergroup',
+      'message',
+      "author_user=$author_id AND tstamp IN ($tstamp_list)"
+    );
+    my %lookup;
+    while (my $m = $enrich->fetchrow_hashref) {
+      # Key by (tstamp, msgtext). A group send writes one outbox row
+      # but N message rows (one per recipient); they all share these
+      # fields and the same for_usergroup, so picking any of them
+      # yields the correct group display.
+      my $key = $m->{tstamp} . '|' . ($m->{msgtext} // '');
+      # Prefer rows with a group set (so group sends display "to group: X").
+      if ( !$lookup{$key} || ( $m->{for_usergroup} && !$lookup{$key}{for_usergroup} ) ) {
+        $lookup{$key} = $m;
+      }
+    }
+    for my $row (@rows) {
+      my $key = $row->{tstamp} . '|' . ($row->{msgtext} // '');
+      next unless my $m = $lookup{$key};
+      if ( $m->{for_usergroup} && $m->{for_usergroup} > 0 ) {
+        $row->{for_usergroup} = $m->{for_usergroup};
+      } else {
+        $row->{for_user} = $m->{for_user} || 0;
+      }
+    }
+  }
+
+  return [ map { $this->message_json_structure($_) } @rows ];
 }
 
 sub get_message
@@ -4119,16 +4186,32 @@ sub message_archive_set
 
 sub get_message_count
 {
-  my ($this, $user, $box_type, $archive, $for_usergroup_id) = @_;
+  my ($this, $user, $box_type, $archive, $for_usergroup_id, $from_user_id, $to_user_id) = @_;
 
   $this->{db}->getRef($user);
   return 0 unless defined($user) and defined($user->{node_id});
 
   $archive = int($archive // 0);
+  my $user_id = $user->{node_id};
 
   my $where;
   if ($box_type eq 'outbox') {
-    $where = "author_user=$user->{node_id} AND archive=$archive";
+    my $has_to_user = defined($to_user_id) && $to_user_id ne '' && int($to_user_id) > 0;
+    my $has_ug      = defined($for_usergroup_id) && $for_usergroup_id ne '' && int($for_usergroup_id) > 0;
+    # Mirror get_sent_messages: Sent is always backed by message_outbox
+    # so the row count == send-event count (no group-send fan-out). For
+    # filtered counts we use an EXISTS join into `message` to restrict
+    # to outbox rows whose recipient/group the filter matches.
+    $where = "author_user=$user_id AND archive=$archive";
+    if ($has_to_user || $has_ug) {
+      my @inner = ("m.author_user=$user_id",
+                   "m.tstamp = message_outbox.tstamp",
+                   "m.msgtext = message_outbox.msgtext");
+      push @inner, 'm.for_user=' . int($to_user_id) if $has_to_user;
+      push @inner, 'm.for_usergroup=' . int($for_usergroup_id) if $has_ug;
+      my $inner_where = join ' AND ', @inner;
+      $where .= " AND EXISTS (SELECT 1 FROM message m WHERE $inner_where)";
+    }
     return int($this->{db}->sqlSelect("count(*)", "message_outbox", $where) // 0);
   } else {
     # Default to inbox
@@ -4138,6 +4221,13 @@ sub get_message_count
     if (defined($for_usergroup_id) && $for_usergroup_id ne '') {
       $for_usergroup_id = int($for_usergroup_id);
       $where .= " AND for_usergroup=$for_usergroup_id";
+    }
+
+    # Filter by sender if specified (matches the equivalent filter in
+    # get_messages — keeps counts and listings in sync for "/msgs from me").
+    if (defined($from_user_id) && $from_user_id ne '') {
+      $from_user_id = int($from_user_id);
+      $where .= " AND author_user=$from_user_id";
     }
 
     return int($this->{db}->sqlSelect("count(*)", "message", $where) // 0);
@@ -7135,8 +7225,11 @@ sub buildNodeInfoStructure
   # Favorite Noders
   if($nodelets =~ /1876005/ and not $this->isGuest($USER))
   {
-    my $wuLimit = ($VARS->{favorite_limit} && $VARS->{favorite_limit} =~ /^\d+$/) ? int($VARS->{favorite_limit}) : 15;
-    $wuLimit = 50 if ($wuLimit > 50 || $wuLimit < 1);
+    # Hard cap at 5 to match the React nodelet's display limit (#3765).
+    # Previously this defaulted to 15 and could be bumped to 50 via a user
+    # var, hydrating 50 nodes worth of writeup/author/parent/wrtype lookups
+    # per page load — then React threw away all but 5.
+    my $wuLimit = 5;
 
     my $linktypeFavorite = Everything::getNode('favorite', 'linktype');
     if($linktypeFavorite)
@@ -7183,7 +7276,6 @@ sub buildNodeInfoStructure
       }
 
       $e2->{favoriteWriteups} = \@fav_writeups;
-      $e2->{favoriteLimit} = $wuLimit;
     }
   }
 

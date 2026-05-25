@@ -26,6 +26,11 @@ const MessageList = (props) => {
     compact = false,
     chatOrder = false,
     limit = null,
+    // When true (Sent tab), render the recipient (or group) in the header
+    // instead of the author — the author is always the viewing user there
+    // so showing it is just noise. Defaults to false to preserve every
+    // existing caller's behavior.
+    showRecipient = false,
     showActions = {
       reply: true,
       replyAll: true,
@@ -70,17 +75,40 @@ const MessageList = (props) => {
       >
         <div className="message-list-header">
           <strong>
-            <LinkNode
-              id={message.author_user.node_id}
-              display={message.author_user.title}
-            />
+            {showRecipient ? (
+              // On Sent: prefer the group when it's a group send, then
+              // the recipient user, then a placeholder when we couldn't
+              // recover that info (e.g., recipient deleted their copy
+              // and the original `message` row is gone).
+              message.for_usergroup && message.for_usergroup.node_id > 0 ? (
+                <>To group: <LinkNode
+                  id={message.for_usergroup.node_id}
+                  display={message.for_usergroup.title}
+                /></>
+              ) : message.for_user && message.for_user.node_id > 0 ? (
+                <>To: <LinkNode
+                  id={message.for_user.node_id}
+                  display={message.for_user.title}
+                /></>
+              ) : (
+                <span className="message-list-recipient-unknown">Sent</span>
+              )
+            ) : (
+              <LinkNode
+                id={message.author_user.node_id}
+                display={message.author_user.title}
+              />
+            )}
           </strong>
           <span className={timestampClass}>
             {formatTimestamp(message.timestamp)}
           </span>
         </div>
 
-        {message.for_usergroup && !compact && (
+        {/* Redundant on Sent — the header above already names the group.
+            Keep the existing "to group" line on Inbox so the recipient
+            still sees which group they got the message in. */}
+        {!showRecipient && message.for_usergroup && !compact && (
           <div className="message-list-group-info">
             to group: <LinkNode
               id={message.for_usergroup.node_id}
