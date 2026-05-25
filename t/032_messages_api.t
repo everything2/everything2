@@ -947,4 +947,36 @@ subtest 'Inbox: filter by sender via from_user param' => sub {
         "for_user=$test_user1->{node_id}" );
 };
 
+# Regression coverage for #4005 / #4111: archiving a message must not
+# bump `message.tstamp`. Pre-fix, `tstamp` had `ON UPDATE CURRENT_TIMESTAMP`
+# which made archived rows show their archive time instead of their
+# receive time AND mis-sort the archived inbox. After the schema fix
+# (drop ON UPDATE), an archive UPDATE preserves tstamp.
+subtest 'Archive does not bump message.tstamp (#4005 / #4111)' => sub {
+    plan tests => 3;
+
+    $DB->sqlDelete( 'message', "for_user=$test_user1->{node_id}" );
+
+    my $original_ts = '2026-01-01 12:00:00';
+    $DB->sqlInsert( 'message', {
+        msgtext     => 'archive-tstamp regression probe',
+        author_user => $test_user2->{node_id},
+        for_user    => $test_user1->{node_id},
+        tstamp      => $original_ts,
+    } );
+    my $id = $DB->sqlSelect('LAST_INSERT_ID()');
+    ok( $id, 'seeded test message with explicit tstamp' );
+
+    # Archive via the production code path (same UPDATE the React API hits).
+    $APP->message_archive_set( { message_id => $id }, 1 );
+
+    my $row = $DB->sqlSelectHashref( 'tstamp, archive', 'message',
+        "message_id=$id" );
+    is( $row->{archive}, 1, 'archive flag flipped to 1' );
+    is( $row->{tstamp}, $original_ts,
+        'tstamp preserved through archive UPDATE (not auto-bumped)' );
+
+    $DB->sqlDelete( 'message', "message_id=$id" );
+};
+
 done_testing();
