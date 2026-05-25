@@ -3,7 +3,7 @@
   `message_id` int NOT NULL AUTO_INCREMENT,
   `msgtext` mediumtext,
   `author_user` int NOT NULL DEFAULT '0',
-  `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `for_user` int NOT NULL DEFAULT '0',
   `room` int NOT NULL DEFAULT '0',
   `archive` tinyint(1) NOT NULL DEFAULT '0',

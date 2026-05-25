@@ -30,6 +30,10 @@
     <value>1278018700</value>
   </vars>
   <vars>
+    <key>spin_wheel</key>
+    <value>1</value>
+  </vars>
+  <vars>
     <key>wufoot</key>
     <value>c:social,c:vote,c:cfull</value>
   </vars>
