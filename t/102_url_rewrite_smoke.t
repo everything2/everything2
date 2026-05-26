@@ -71,6 +71,17 @@ sub fetch_ok {
 }
 
 #############################################################################
+# /title/Foo+Bar — legacy '+'-as-space convention used by hard-coded links
+# like Messages.js's inbox link (#4143).
+#############################################################################
+{
+	# Message Inbox is a real superdoc on prod and seeded in dev.
+	my $body = fetch_ok('/title/Message+Inbox', '/title/<name>+<name>');
+	like($body // '', qr/Message\s+Inbox/i,
+		'/title/Message+Inbox resolves to the Message Inbox superdoc');
+}
+
+#############################################################################
 # /e2node/<name>
 #############################################################################
 {
