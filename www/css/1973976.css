@@ -17027,7 +17027,6 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .colortoy {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -18324,7 +18323,6 @@ a.node-toolset__btn {
 
 .edev-docs {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .edev-docs__heading {
@@ -19412,7 +19410,6 @@ a.node-toolset__btn {
 
 .source-formatter {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .source-formatter__intro {
@@ -24510,7 +24507,6 @@ a.node-toolset__btn {
 
 .datastash {
   padding: 20px;
-  font-family: system-ui, -apple-system, sans-serif;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -31395,10 +31391,11 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .user-edit-vars {
-  padding: 20px;
-  font-family: system-ui, -apple-system, sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin — let #mainbody size and pad
+     this document like every other page. Earlier `max-width: 1200px` +
+     `padding: 20px` blew past mainbody's actual width (mainbody loses
+     width to the nodelet column) and produced odd gutters where the
+     document overflowed in both directions. Same pattern as .setting. */
 }
 
 .user-edit-vars__header {
@@ -32963,10 +32960,11 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .dbtable {
-  padding: 20px;
-  font-family: system-ui, -apple-system, sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin — let #mainbody size and pad
+     this document like every other page. Earlier `max-width: 1200px` +
+     `padding: 20px` blew past mainbody's actual width (mainbody loses
+     width to the nodelet column) and produced odd gutters where the
+     document overflowed in both directions. Same pattern as .setting. */
 }
 
 .dbtable__title {
@@ -35582,7 +35580,6 @@ a.node-toolset__btn {
 
 .best-writeups {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .best-writeups__subtitle {
@@ -36059,7 +36056,6 @@ a.node-toolset__btn {
   flex-direction: column;
   height: 100vh;
   background-color: #f8f9f9;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .chatterlight__header {
@@ -37484,7 +37480,6 @@ a.node-toolset__btn {
 /* E2PennyJar - Donation page */
 .penny-jar {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .penny-jar__message {
@@ -37575,7 +37570,6 @@ a.node-toolset__btn {
 /* E2SpermCounter - Counter display */
 .sperm-counter {
   padding: 20px;
-  font-family: Arial, sans-serif;
   text-align: center;
 }
 
@@ -38051,7 +38045,6 @@ a.node-toolset__btn {
 /* EdevFAQ.js */
 .edev-faq {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 @media (max-width: 767px) {
@@ -38715,7 +38708,6 @@ a.node-toolset__btn {
 /* Phase 15: EverythingsBiggestStars.js */
 .biggest-stars {
   padding: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .biggest-stars__empty {
@@ -38770,7 +38762,6 @@ a.node-toolset__btn {
 /* Phase 16: E2MarbleShop.js */
 .marble-shop {
   padding: 20px;
-  font-family: Arial, sans-serif;
   text-align: center;
 }
 
