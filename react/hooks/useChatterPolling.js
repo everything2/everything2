@@ -55,7 +55,13 @@ export const useChatterPolling = (activeIntervalMs = 45000, idleIntervalMs = 120
           'X-Ajax-Idle': '1',
           'Accept': 'application/json'
         },
-        credentials: 'same-origin'
+        credentials: 'same-origin',
+        // Chromium aggressively caches GETs when the URL is identical
+        // across polls (e.g. when `since` hasn't advanced because no new
+        // messages arrived) — Firefox doesn't, which is why the bug only
+        // showed there (#4061). no-store keeps the response out of disk
+        // *and* memory cache; the server doesn't set Cache-Control.
+        cache: 'no-store'
       })
 
       if (!response.ok) {

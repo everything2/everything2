@@ -23,7 +23,11 @@ export const useOtherUsersPolling = (pollIntervalMs = 120000, initialData = null
           'X-Ajax-Idle': '1',
           'Accept': 'application/json'
         },
-        credentials: 'same-origin'
+        credentials: 'same-origin',
+        // See useChatterPolling for context (#4061) — same Chromium caching
+        // risk applies to any polled GET whose URL doesn't change between
+        // refreshes.
+        cache: 'no-store'
       })
 
       if (!response.ok) {

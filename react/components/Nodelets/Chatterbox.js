@@ -179,6 +179,7 @@ const Chatterbox = (props) => {
   const [isReplyAll, setIsReplyAll] = React.useState(false)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false)
   const [messageToDelete, setMessageToDelete] = React.useState(null)
+  const [removingIds, setRemovingIds] = React.useState(() => new Set())
 
   // Activity detection for mini-messages polling
   const { isActive, isMultiTabActive } = useActivityDetection(10)
@@ -249,7 +250,11 @@ const Chatterbox = (props) => {
         credentials: 'include',
         headers: {
           'X-Ajax-Idle': '1'
-        }
+        },
+        // See useChatterPolling for context (#4061) — same Chromium caching
+        // risk applies to any polled GET whose URL doesn't change between
+        // refreshes.
+        cache: 'no-store'
       })
 
       if (!response.ok) {
@@ -331,40 +336,55 @@ const Chatterbox = (props) => {
     }
   }
 
-  const handleArchive = async (messageId) => {
+  // Animate a mini-message out before refreshing the list (#4102).
+  // Must match the .message-list-item--removing CSS animation duration.
+  const REMOVE_ANIMATION_MS = 250
+  const removeMiniWithAnimation = async (messageId, doApiCall, errorLabel) => {
+    if (removingIds.has(messageId)) return
+    setRemovingIds(prev => {
+      const next = new Set(prev)
+      next.add(messageId)
+      return next
+    })
     try {
-      const response = await fetch(`/api/messages/${messageId}/action/archive`, {
-        method: 'POST',
-        credentials: 'include'
-      })
-
+      const [response] = await Promise.all([
+        doApiCall(),
+        new Promise(resolve => setTimeout(resolve, REMOVE_ANIMATION_MS))
+      ])
       if (!response.ok) {
-        throw new Error('Failed to archive message')
+        throw new Error(errorLabel)
       }
-
-      // Refresh the message list to get replacement messages
       await loadMiniMessages()
     } catch (err) {
-      console.error('Archive error:', err)
+      console.error(errorLabel + ':', err)
+    } finally {
+      setRemovingIds(prev => {
+        if (!prev.has(messageId)) return prev
+        const next = new Set(prev)
+        next.delete(messageId)
+        return next
+      })
     }
   }
 
-  const handleUnarchive = async (messageId) => {
-    try {
-      const response = await fetch(`/api/messages/${messageId}/action/unarchive`, {
+  const handleArchive = (messageId) => {
+    removeMiniWithAnimation(messageId,
+      () => fetch(`/api/messages/${messageId}/action/archive`, {
         method: 'POST',
         credentials: 'include'
-      })
+      }),
+      'Archive error'
+    )
+  }
 
-      if (!response.ok) {
-        throw new Error('Failed to unarchive message')
-      }
-
-      // Refresh the message list to get replacement messages
-      await loadMiniMessages()
-    } catch (err) {
-      console.error('Unarchive error:', err)
-    }
+  const handleUnarchive = (messageId) => {
+    removeMiniWithAnimation(messageId,
+      () => fetch(`/api/messages/${messageId}/action/unarchive`, {
+        method: 'POST',
+        credentials: 'include'
+      }),
+      'Unarchive error'
+    )
   }
 
   const handleDelete = (messageId) => {
@@ -372,27 +392,18 @@ const Chatterbox = (props) => {
     setDeleteConfirmOpen(true)
   }
 
-  const confirmDelete = async () => {
-    try {
-      const response = await fetch(`/api/messages/${messageToDelete}/action/delete`, {
+  const confirmDelete = () => {
+    const id = messageToDelete
+    setDeleteConfirmOpen(false)
+    setMessageToDelete(null)
+    if (id == null) return
+    removeMiniWithAnimation(id,
+      () => fetch(`/api/messages/${id}/action/delete`, {
         method: 'POST',
         credentials: 'include'
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete message')
-      }
-
-      setDeleteConfirmOpen(false)
-      setMessageToDelete(null)
-
-      // Refresh the message list to get replacement messages
-      await loadMiniMessages()
-    } catch (err) {
-      console.error('Delete error:', err)
-      setDeleteConfirmOpen(false)
-      setMessageToDelete(null)
-    }
+      }),
+      'Delete error'
+    )
   }
 
   const cancelDelete = () => {
@@ -723,6 +734,7 @@ const Chatterbox = (props) => {
             compact={false}
             chatOrder={true}
             limit={5}
+            removingIds={removingIds}
             showActions={{
               reply: true,
               replyAll: true,

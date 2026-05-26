@@ -8797,6 +8797,8 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   padding: 8px;
   margin-bottom: 8px;
   font-size: 12px;
+  /* Clip content while max-height transitions on exit. */
+  overflow: hidden;
   /* Animation support for slide-in effect */
   animation: message-slide-in 0.3s ease-out;
 }
@@ -8817,6 +8819,33 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
     padding-top: 8px;
     padding-bottom: 8px;
     margin-bottom: 8px;
+  }
+}
+
+/* Exit animation when a message is archived/deleted (#4102).
+   Mirrors message-slide-in so the surrounding rows collapse smoothly
+   instead of snapping into place. Duration is short enough (~250ms)
+   that the API call typically completes inside the same window. */
+.message-list-item--removing {
+  animation: message-slide-out 0.25s ease-in forwards;
+}
+
+@keyframes message-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
 }
 
@@ -8846,6 +8875,27 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
     max-height: 150px;
     padding-top: 6px;
     padding-bottom: 8px;
+  }
+}
+
+.message-list-item--compact.message-list-item--removing {
+  animation: message-slide-out-compact 0.25s ease-in forwards;
+}
+
+@keyframes message-slide-out-compact {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 150px;
+    padding-top: 6px;
+    padding-bottom: 8px;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 

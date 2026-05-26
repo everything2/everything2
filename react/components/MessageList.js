@@ -31,6 +31,10 @@ const MessageList = (props) => {
     // so showing it is just noise. Defaults to false to preserve every
     // existing caller's behavior.
     showRecipient = false,
+    // Set of message_ids currently animating out (archive/delete). Items
+    // in this set get .message-list-item--removing so they fade+collapse
+    // before being dropped from props.messages on the next refresh (#4102).
+    removingIds = null,
     showActions = {
       reply: true,
       replyAll: true,
@@ -63,7 +67,9 @@ const MessageList = (props) => {
 
   const renderMessage = (message) => {
     const isArchived = message.archive
-    const itemClass = compact ? 'message-list-item message-list-item--compact' : 'message-list-item'
+    const isRemoving = removingIds && removingIds.has(message.message_id)
+    let itemClass = compact ? 'message-list-item message-list-item--compact' : 'message-list-item'
+    if (isRemoving) itemClass += ' message-list-item--removing'
     const timestampClass = compact ? 'message-list-timestamp message-list-timestamp--compact' : 'message-list-timestamp'
     const contentClass = compact ? 'message-list-content message-list-content--compact' : 'message-list-content'
 
