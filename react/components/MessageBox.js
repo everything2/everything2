@@ -43,13 +43,17 @@ const MessageBox = ({ recipientId, recipientTitle, showAsIcon = false }) => {
   return (
     <>
       {showAsIcon ? (
+        // showAsIcon is the homenode chip — keeps the envelope but adds a
+        // "Message" label so users know what the button does (#4008,
+        // discoverability fix).
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
           title={`Send message to ${recipientTitle}`}
-          className="message-box__icon-btn"
+          className="message-box__icon-btn user-display__icon-btn"
         >
-          ✉
+          <span aria-hidden="true">✉</span>
+          <span className="user-display__icon-label">Message</span>
         </button>
       ) : (
         <button
