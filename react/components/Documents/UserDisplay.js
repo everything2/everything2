@@ -96,50 +96,56 @@ const UserDisplay = ({ data, e2 }) => {
 
   return (
     <div className="user-display">
-      {/* Homenode header - matches legacy #homenodeheader */}
-      <div id="homenodeheader" style={{ position: 'relative', paddingTop: showIconRow ? '30px' : undefined }}>
-        {/* Icon row - admin tools, favorite, sanctify, message */}
-        {showIconRow && (
-          <div className="user-display__icon-row">
-            {/* Admin tools icon - for editors/chanops/admins (including on own profile).
-                `!!` coerces — these come from Perl as 0/1 numbers, so a falsy
-                `||` chain ends with the literal `0` and React would render it. */}
-            {!!(viewer.is_editor || viewer.is_chanop || viewer.is_admin) && (
-              <button
-                onClick={() => setIsToolsModalOpen(true)}
-                className="user-tools-trigger user-display__icon-btn"
-                title="User Tools"
-              >
-                <FaUserCog />
-              </button>
-            )}
-            {/* Favorite icon - for logged-in users viewing other profiles */}
-            {!is_own && (
-              <button
-                onClick={handleFavoriteToggle}
-                disabled={favoriteLoading}
-                title={isFavorited ? `Stop notifications for ${user.title}'s writeups` : `Get notifications for ${user.title}'s writeups`}
-                className={`user-display__icon-btn ${isFavorited ? 'user-display__icon-btn--favorited' : 'user-display__icon-btn--favorite'}`}
-              >
-                {isFavorited ? <FaStar /> : <FaRegStar />}
-              </button>
-            )}
-            {/* Sanctify icon - for Level 11+ users or editors viewing other profiles */}
-            {!is_own && (viewer.is_editor || (e2?.user?.level >= 11)) && (
-              <a
-                href={`/title/Sanctify%20user?recipient=${encodeURIComponent(user.title)}`}
-                title={`Sanctify ${user.title}`}
-                className="user-display__icon-link"
-              >
-                <FaHandHoldingHeart />
-              </a>
-            )}
-            {/* Message envelope - for other profiles only */}
-            {!is_own && !user.hidemsgme && (
-              <MessageBox recipientId={user.node_id} recipientTitle={user.title} showAsIcon={true} />
-            )}
-          </div>
-        )}
+      {/* Homenode action chips — moved out of #homenodeheader (was absolutely
+          positioned in the top-right corner, where the icons were too easy to
+          miss; #4008, also fool4luv 2026-01-20). Now a top strip that flows
+          above the header, with one-word labels per chip, wrapping naturally
+          on narrow viewports. */}
+      {showIconRow && (
+        <div className="user-display__icon-row">
+          {/* `!!` coerces — these come from Perl as 0/1 numbers, so a falsy
+              `||` chain ends with the literal `0` and React would render it. */}
+          {!!(viewer.is_editor || viewer.is_chanop || viewer.is_admin) && (
+            <button
+              onClick={() => setIsToolsModalOpen(true)}
+              className="user-tools-trigger user-display__icon-btn"
+              title="User Tools"
+            >
+              <FaUserCog />
+              <span className="user-display__icon-label">Admin</span>
+            </button>
+          )}
+          {!is_own && (
+            <button
+              onClick={handleFavoriteToggle}
+              disabled={favoriteLoading}
+              title={isFavorited ? `Stop notifications for ${user.title}'s writeups` : `Get notifications for ${user.title}'s writeups`}
+              className={`user-display__icon-btn ${isFavorited ? 'user-display__icon-btn--favorited' : 'user-display__icon-btn--favorite'}`}
+            >
+              {isFavorited ? <FaStar /> : <FaRegStar />}
+              <span className="user-display__icon-label">{isFavorited ? 'Favorited' : 'Favorite'}</span>
+            </button>
+          )}
+          {!is_own && (viewer.is_editor || (e2?.user?.level >= 11)) && (
+            <a
+              href={`/title/Sanctify%20user?recipient=${encodeURIComponent(user.title)}`}
+              title={`Sanctify ${user.title}`}
+              className="user-display__icon-link"
+            >
+              <FaHandHoldingHeart />
+              <span className="user-display__icon-label">Sanctify</span>
+            </a>
+          )}
+          {!is_own && !user.hidemsgme && (
+            <MessageBox recipientId={user.node_id} recipientTitle={user.title} showAsIcon={true} />
+          )}
+        </div>
+      )}
+
+      {/* Homenode header - matches legacy #homenodeheader. Icon row was
+          previously absolutely positioned inside this div; now lives above
+          it as a top strip (#4008). */}
+      <div id="homenodeheader">
 
         {/* Infected user warning - primitive bot detection, only visible to editors */}
         {Boolean(isInfected) && Boolean(viewer.is_editor) && (

@@ -386,9 +386,18 @@ div#header {
   margin: 0;
   font-size: 12px;
   line-height: 1.4;
-  /* Break out of body's 95% width and center margin to be flush with viewport */
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
+  /* Break out of body's 95% width and center margin to be flush with viewport.
+     Exposed as CSS variables so style-defacer users can opt out of the
+     viewport breakout without needing !important (#4033). Defaults are
+     unchanged for the 99% of users who don't touch CSS; a custom stylesheet
+     can override with e.g.:
+       :root {
+         --epicenter-zen-width: 100%;
+         --epicenter-zen-margin-left: 0;
+       }
+  */
+  width: var(--epicenter-zen-width, 100vw);
+  margin-left: var(--epicenter-zen-margin-left, calc(-50vw + 50%));
   box-sizing: border-box;
 }
 
@@ -15096,54 +15105,78 @@ a.settings-nav__tab:active {
    ========================================================================== */
 
 /* Icon row - positioned in top right of header */
+/* Homenode action chips (#4008): icon + one-word label, top strip above
+   the username header. Was an icon-only row absolutely positioned in the
+   top-right corner; users (fool4luv, Jet-Poop) couldn't tell what the
+   envelope did. Now in document flow with visible labels, mirrors
+   .nodelet-btn theming so all 19 themes pick up colors without per-theme
+   work. Flex-wrap means chips spill to a second line on narrow screens
+   instead of clipping. */
 .user-display__icon-row {
-  position: absolute;
-  top: 0;
-  right: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 
-.user-display__icon-btn {
-  background: none;
-  border: none;
+/* Shared chip body: button (.btn) and anchor (.link) variants. Matches the
+   .nodelet-btn pattern. */
+.user-display__icon-btn,
+.user-display__icon-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 4px 10px;
+  font-size: 12px;
+  line-height: 1;
+  border: 1px solid var(--e2-border-color, #c5cdd7);
+  border-radius: var(--e2-radius-sm, 3px);
+  background-color: var(--e2-input-bg, #fff);
+  color: var(--e2-color-primary, #38495e);
   cursor: pointer;
-  color: var(--e2-link-color, #4060b0);
-  font-size: 1.2rem;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
+  text-decoration: none;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.user-display__icon-btn:hover {
-  color: var(--e2-link-hover-color, #334d8c);
+.user-display__icon-btn:hover:not(:disabled),
+.user-display__icon-link:hover {
+  background-color: var(--e2-nodelet-filter-bg, #f8f9fa);
+  border-color: var(--e2-border-color-hover, #8a9baf);
+  color: var(--e2-color-primary, #38495e);
 }
 
+/* Glyph sizing — keep slightly larger than the label, like .nodelet-btn icons. */
+.user-display__icon-btn > svg,
+.user-display__icon-link > svg {
+  font-size: 14px;
+}
+
+.user-display__icon-label {
+  font-weight: 500;
+}
+
+/* Favorite tints — base is the standard chip; --favorited highlights the
+   active state in the favorite color so it reads as "on". */
 .user-display__icon-btn--favorite {
-  color: var(--e2-link-color, #4060b0);
+  /* No override — uses the default chip palette. */
 }
 
 .user-display__icon-btn--favorited {
   color: var(--e2-favorite-color, #f59e0b);
+  border-color: var(--e2-favorite-color, #f59e0b);
+}
+
+.user-display__icon-btn--favorited:hover:not(:disabled) {
+  color: var(--e2-favorite-color, #f59e0b);
+  border-color: var(--e2-favorite-color, #f59e0b);
+  background-color: var(--e2-nodelet-filter-bg, #f8f9fa);
 }
 
 .user-display__icon-btn:disabled {
   cursor: wait;
-  opacity: 0.5;
-}
-
-.user-display__icon-link {
-  color: var(--e2-link-color, #4060b0);
-  font-size: 1.2rem;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-}
-
-.user-display__icon-link:hover {
-  color: var(--e2-link-hover-color, #334d8c);
+  opacity: 0.6;
 }
 
 /* Cure infection button */
