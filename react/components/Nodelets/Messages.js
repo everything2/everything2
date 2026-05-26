@@ -4,6 +4,10 @@ import MessageList from '../MessageList'
 import MessageModal from '../MessageModal'
 import { useActivityDetection } from '../../hooks/useActivityDetection'
 
+// Must match the .message-list-item--removing animation duration in CSS.
+// Bump both together if you change the timing.
+const REMOVE_ANIMATION_MS = 250
+
 const Messages = (props) => {
   const [messages, setMessages] = React.useState(props.initialMessages || [])
   const [loading, setLoading] = React.useState(false)
@@ -14,6 +18,7 @@ const Messages = (props) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false)
   const [messageToDelete, setMessageToDelete] = React.useState(null)
   const [isReplyAll, setIsReplyAll] = React.useState(false)
+  const [removingIds, setRemovingIds] = React.useState(() => new Set())
   const { isActive, isMultiTabActive } = useActivityDetection(10)
   const pollInterval = React.useRef(null)
   const missedUpdate = React.useRef(false)
@@ -33,8 +38,14 @@ const Messages = (props) => {
     )
   }
 
-  const loadMessages = React.useCallback(async (archived = false) => {
-    setLoading(true)
+  // `silent` skips toggling the loading state, which otherwise unmounts
+  // <MessageList> behind the {loading && ...} / {!loading && ...} conditional.
+  // That unmount remounts every message on refresh and re-runs the
+  // message-slide-in keyframe — the "list pops back in" reflow after a
+  // delete/archive animation (#4102). The Inbox/Archived tab buttons still
+  // call with silent=false because the spinner is the point there.
+  const loadMessages = React.useCallback(async (archived = false, silent = false) => {
+    if (!silent) setLoading(true)
     setError(null)
 
     try {
@@ -43,7 +54,11 @@ const Messages = (props) => {
         credentials: 'include',
         headers: {
           'X-Ajax-Idle': '1'
-        }
+        },
+        // See useChatterPolling for context (#4061) — same Chromium caching
+        // risk applies to any polled GET whose URL doesn't change between
+        // refreshes.
+        cache: 'no-store'
       })
 
       if (!response.ok) {
@@ -56,7 +71,7 @@ const Messages = (props) => {
     } catch (err) {
       setError(err.message)
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }, [])
 
@@ -66,7 +81,7 @@ const Messages = (props) => {
 
     if (shouldPoll) {
       pollInterval.current = setInterval(() => {
-        loadMessages(showArchived)
+        loadMessages(showArchived, true)
       }, 120000) // 2 minutes
     } else {
       // If we're not polling because nodelet is collapsed, mark that we missed updates
@@ -92,7 +107,7 @@ const Messages = (props) => {
   React.useEffect(() => {
     if (props.nodeletIsOpen && missedUpdate.current) {
       missedUpdate.current = false
-      loadMessages(showArchived)
+      loadMessages(showArchived, true)
     }
   }, [props.nodeletIsOpen, showArchived, loadMessages])
 
@@ -100,7 +115,7 @@ const Messages = (props) => {
   React.useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden && isActive) {
-        loadMessages(showArchived)
+        loadMessages(showArchived, true)
       }
     }
 
@@ -111,22 +126,46 @@ const Messages = (props) => {
     }
   }, [isActive, showArchived, loadMessages])
 
-  const handleArchive = async (messageId) => {
+  // Animate a message out before refreshing the list (#4102). The exit
+  // animation runs in parallel with the API call; we only swap in the
+  // new list once both finish so surrounding rows collapse smoothly
+  // rather than snapping after the row vanishes.
+  const removeWithAnimation = async (messageId, doApiCall, errorLabel) => {
+    if (removingIds.has(messageId)) return
+    setRemovingIds(prev => {
+      const next = new Set(prev)
+      next.add(messageId)
+      return next
+    })
     try {
-      const response = await fetch(`/api/messages/${messageId}/action/archive`, {
-        method: 'POST',
-        credentials: 'include'
-      })
-
+      const [response] = await Promise.all([
+        doApiCall(),
+        new Promise(resolve => setTimeout(resolve, REMOVE_ANIMATION_MS))
+      ])
       if (!response.ok) {
-        throw new Error('Failed to archive message')
+        throw new Error(errorLabel)
       }
-
-      // Refresh the message list to get replacement messages
-      await loadMessages(showArchived)
+      await loadMessages(showArchived, true)
     } catch (err) {
       setError(err.message)
+    } finally {
+      setRemovingIds(prev => {
+        if (!prev.has(messageId)) return prev
+        const next = new Set(prev)
+        next.delete(messageId)
+        return next
+      })
     }
+  }
+
+  const handleArchive = (messageId) => {
+    removeWithAnimation(messageId,
+      () => fetch(`/api/messages/${messageId}/action/archive`, {
+        method: 'POST',
+        credentials: 'include'
+      }),
+      'Failed to archive message'
+    )
   }
 
   const handleDelete = (messageId) => {
@@ -134,27 +173,18 @@ const Messages = (props) => {
     setDeleteConfirmOpen(true)
   }
 
-  const confirmDelete = async () => {
-    try {
-      const response = await fetch(`/api/messages/${messageToDelete}/action/delete`, {
+  const confirmDelete = () => {
+    const id = messageToDelete
+    setDeleteConfirmOpen(false)
+    setMessageToDelete(null)
+    if (id == null) return
+    removeWithAnimation(id,
+      () => fetch(`/api/messages/${id}/action/delete`, {
         method: 'POST',
         credentials: 'include'
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete message')
-      }
-
-      setDeleteConfirmOpen(false)
-      setMessageToDelete(null)
-
-      // Refresh the message list to get replacement messages
-      await loadMessages(showArchived)
-    } catch (err) {
-      setError(err.message)
-      setDeleteConfirmOpen(false)
-      setMessageToDelete(null)
-    }
+      }),
+      'Failed to delete message'
+    )
   }
 
   const cancelDelete = () => {
@@ -162,22 +192,14 @@ const Messages = (props) => {
     setMessageToDelete(null)
   }
 
-  const handleUnarchive = async (messageId) => {
-    try {
-      const response = await fetch(`/api/messages/${messageId}/action/unarchive`, {
+  const handleUnarchive = (messageId) => {
+    removeWithAnimation(messageId,
+      () => fetch(`/api/messages/${messageId}/action/unarchive`, {
         method: 'POST',
         credentials: 'include'
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to unarchive message')
-      }
-
-      // Refresh the message list to get replacement messages
-      await loadMessages(showArchived)
-    } catch (err) {
-      setError(err.message)
-    }
+      }),
+      'Failed to unarchive message'
+    )
   }
 
   const handleReply = (message, replyAll = false) => {
@@ -229,7 +251,7 @@ const Messages = (props) => {
 
         // Refresh messages list if sending to a usergroup (sender receives own message)
         if (data.poll_messages) {
-          await loadMessages(showArchived)
+          await loadMessages(showArchived, true)
         }
 
         // Return warning for partial success
@@ -300,6 +322,7 @@ const Messages = (props) => {
           onDelete={handleDelete}
           compact={false}
           chatOrder={true}
+          removingIds={removingIds}
           showActions={{
             reply: true,
             replyAll: true,
