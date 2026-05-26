@@ -182,7 +182,7 @@ const Chatterbox = (props) => {
   const [removingIds, setRemovingIds] = React.useState(() => new Set())
 
   // Activity detection for mini-messages polling
-  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const { isActive, isTabVisible } = useActivityDetection(10)
   const miniMessagesPollInterval = React.useRef(null)
   const miniMessagesMissedUpdate = React.useRef(false)
   const chatterContainerRef = React.useRef(null)
@@ -415,7 +415,7 @@ const Chatterbox = (props) => {
   React.useEffect(() => {
     if (!props.showMessagesInChatterbox) return
 
-    const shouldPoll = isActive && isMultiTabActive && props.nodeletIsOpen
+    const shouldPoll = isActive && isTabVisible && props.nodeletIsOpen
 
     if (shouldPoll) {
       miniMessagesPollInterval.current = setInterval(() => {
@@ -423,7 +423,7 @@ const Chatterbox = (props) => {
       }, 120000) // 2 minutes
     } else {
       // If we're not polling because nodelet is collapsed, mark that we missed updates
-      if (isActive && isMultiTabActive && !props.nodeletIsOpen) {
+      if (isActive && isTabVisible && !props.nodeletIsOpen) {
         miniMessagesMissedUpdate.current = true
       }
 
@@ -439,7 +439,7 @@ const Chatterbox = (props) => {
         miniMessagesPollInterval.current = null
       }
     }
-  }, [isActive, isMultiTabActive, props.nodeletIsOpen, props.showMessagesInChatterbox, loadMiniMessages])
+  }, [isActive, isTabVisible, props.nodeletIsOpen, props.showMessagesInChatterbox, loadMiniMessages])
 
   // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
   React.useEffect(() => {

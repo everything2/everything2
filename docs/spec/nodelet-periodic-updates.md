@@ -36,22 +36,23 @@ The system uses **individual polling per nodelet with shared activity detection*
 The `useActivityDetection` hook provides:
 
 ```javascript
-const { isActive, isRecentlyActive, isMultiTabActive } = useActivityDetection(10)
+const { isActive, isRecentlyActive, isTabVisible } = useActivityDetection(10)
 ```
 
 | State | Meaning |
 |-------|---------|
 | `isActive` | User has interacted within last N minutes (default: 10) |
 | `isRecentlyActive` | User has interacted within last 60 seconds |
-| `isMultiTabActive` | This tab is the active polling tab (via cookie) |
+| `isTabVisible` | This tab is currently the foreground tab in its window (`document.visibilityState`) |
 
 ### Events Monitored
 
-- `mousedown`, `keydown`, `scroll`, `touchstart`
+- `mousedown`, `keydown`, `scroll`, `touchstart` — for `isActive` / `isRecentlyActive`
+- `visibilitychange` — for `isTabVisible`
 
-### Multi-Tab Detection
+### Multi-Tab Behavior
 
-Uses `lastActiveWindow` cookie to prevent duplicate polling across browser tabs. Only the most recently active tab polls.
+Each tab polls independently while in the foreground, and stops polling when the tab is hidden. This replaced an earlier cookie-based "last active tab wins" heuristic that silently muted polling in all-but-one tabs when you had multiple E2 tabs open (#4061 — Chromium chatterbox not refreshing).
 
 ---
 
@@ -83,18 +84,18 @@ Nodelets stop polling when collapsed to reduce unnecessary requests.
 const MyNodelet = (props) => {
   const missedUpdate = React.useRef(false)
   const pollInterval = React.useRef(null)
-  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const { isActive, isTabVisible } = useActivityDetection(10)
 
   // Polling effect
   React.useEffect(() => {
-    const shouldPoll = isActive && isMultiTabActive && props.nodeletIsOpen
+    const shouldPoll = isActive && isTabVisible && props.nodeletIsOpen
 
     if (shouldPoll) {
       pollInterval.current = setInterval(() => {
         loadData()
       }, INTERVAL_MS)
     } else {
-      if (isActive && isMultiTabActive && !props.nodeletIsOpen) {
+      if (isActive && isTabVisible && !props.nodeletIsOpen) {
         missedUpdate.current = true
       }
       if (pollInterval.current) {
@@ -108,7 +109,7 @@ const MyNodelet = (props) => {
         clearInterval(pollInterval.current)
       }
     }
-  }, [isActive, isMultiTabActive, props.nodeletIsOpen])
+  }, [isActive, isTabVisible, props.nodeletIsOpen])
 
   // Refresh on uncollapse
   React.useEffect(() => {

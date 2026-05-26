@@ -17,7 +17,7 @@ export const useOtherUsersPolling = (pollIntervalMs = 120000, initialData = null
   const [otherUsersData, setOtherUsersData] = useState(initialData)
   const [loading, setLoading] = useState(!initialData)
   const [error, setError] = useState(null)
-  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const { isActive, isTabVisible } = useActivityDetection(10)
   const pollInterval = useRef(null)
 
   const fetchOtherUsers = async () => {
@@ -67,7 +67,7 @@ export const useOtherUsersPolling = (pollIntervalMs = 120000, initialData = null
     // 1. User is active (not idle for 10+ minutes)
     // 2. This is the active tab (multi-tab detection)
     // 3. Not currently loading
-    const shouldPoll = isActive && isMultiTabActive && !loading
+    const shouldPoll = isActive && isTabVisible && !loading
 
     if (shouldPoll) {
       pollInterval.current = setInterval(() => {
@@ -86,7 +86,7 @@ export const useOtherUsersPolling = (pollIntervalMs = 120000, initialData = null
         pollInterval.current = null
       }
     }
-  }, [isActive, isMultiTabActive, loading, pollIntervalMs])
+  }, [isActive, isTabVisible, loading, pollIntervalMs])
 
   return { otherUsersData, loading, error, refresh, setOtherUsersData }
 }

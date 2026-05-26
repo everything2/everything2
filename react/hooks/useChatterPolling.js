@@ -16,7 +16,7 @@ export const useChatterPolling = (activeIntervalMs = 45000, idleIntervalMs = 120
   const [chatter, setChatter] = useState(initialChatter || [])
   const [loading, setLoading] = useState(!initialChatter)
   const [error, setError] = useState(null)
-  const { isActive, isRecentlyActive, isMultiTabActive } = useActivityDetection(10)
+  const { isActive, isRecentlyActive, isTabVisible } = useActivityDetection(10)
   const lastTimestamp = useRef(null)
   const pollInterval = useRef(null)
   const missedUpdate = useRef(false)
@@ -128,7 +128,7 @@ export const useChatterPolling = (activeIntervalMs = 45000, idleIntervalMs = 120
     // 2. This is the active tab (page is in focus)
     // 3. Not currently loading
     // 4. Nodelet is expanded (not collapsed)
-    const shouldPoll = isActive && isMultiTabActive && !loading && nodeletIsOpen
+    const shouldPoll = isActive && isTabVisible && !loading && nodeletIsOpen
 
     if (shouldPoll) {
       // Use active interval (45s) if recently active, idle interval (2m) otherwise
@@ -139,7 +139,7 @@ export const useChatterPolling = (activeIntervalMs = 45000, idleIntervalMs = 120
       }, currentInterval)
     } else {
       // If we're not polling because nodelet is collapsed, mark that we missed updates
-      if (isActive && isMultiTabActive && !loading && !nodeletIsOpen) {
+      if (isActive && isTabVisible && !loading && !nodeletIsOpen) {
         missedUpdate.current = true
       }
 
@@ -155,7 +155,7 @@ export const useChatterPolling = (activeIntervalMs = 45000, idleIntervalMs = 120
         pollInterval.current = null
       }
     }
-  }, [isActive, isRecentlyActive, isMultiTabActive, loading, nodeletIsOpen, activeIntervalMs, idleIntervalMs])
+  }, [isActive, isRecentlyActive, isTabVisible, loading, nodeletIsOpen, activeIntervalMs, idleIntervalMs])
 
   // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
   useEffect(() => {

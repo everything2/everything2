@@ -8,7 +8,7 @@ const Notifications = (props) => {
   const listRef = useRef(null)
   const pollInterval = useRef(null)
   const missedUpdate = useRef(false)
-  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const { isActive, isTabVisible } = useActivityDetection(10)
 
   // Track current notifications (can be updated after dismiss)
   const [notificationsData, setNotificationsData] = useState(initialData)
@@ -48,7 +48,7 @@ const Notifications = (props) => {
 
   // Polling effect - refresh every 2 minutes when active and nodelet is expanded
   useEffect(() => {
-    const shouldPoll = isActive && isMultiTabActive && !loading && props.nodeletIsOpen
+    const shouldPoll = isActive && isTabVisible && !loading && props.nodeletIsOpen
 
     if (shouldPoll) {
       pollInterval.current = setInterval(() => {
@@ -56,7 +56,7 @@ const Notifications = (props) => {
       }, 120000) // 2 minutes
     } else {
       // If we're not polling because nodelet is collapsed, mark that we missed updates
-      if (isActive && isMultiTabActive && !loading && !props.nodeletIsOpen) {
+      if (isActive && isTabVisible && !loading && !props.nodeletIsOpen) {
         missedUpdate.current = true
       }
 
@@ -72,7 +72,7 @@ const Notifications = (props) => {
         pollInterval.current = null
       }
     }
-  }, [isActive, isMultiTabActive, loading, props.nodeletIsOpen, loadNotifications])
+  }, [isActive, isTabVisible, loading, props.nodeletIsOpen, loadNotifications])
 
   // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
   useEffect(() => {

@@ -40,7 +40,7 @@ jest.mock('../MessageModal', () => {
 jest.mock('../../hooks/useActivityDetection', () => ({
   useActivityDetection: () => ({
     isActive: true,
-    isMultiTabActive: false  // Disable polling in tests
+    isTabVisible: false  // Disable polling in tests
   })
 }))
 
