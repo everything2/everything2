@@ -1320,6 +1320,19 @@ sub mod_perlInit
 
 	$query = $REQUEST->cgi;
 
+	# #4060: rebuild node/type/author params from REQUEST_URI when the
+	# title-bearing rewrite rules in apache2.conf can't faithfully convey
+	# them. Apache URL-decodes the path before mod_rewrite matches it, then
+	# inserts the decoded $N directly into the new query string — so a title
+	# containing '&' (e.g. "Sense & Sensibility", sent as %20%26%20 in the
+	# URI) ends up as literal `?node=Sense & Sensibility` and CGI truncates
+	# at the bare '&'. The [B] flag's defaults preserve '&' as a query
+	# separator, [B=&] drops default space escaping, and chaining them double-
+	# encodes. The clean fix is to re-derive the canonical title from the
+	# unmodified REQUEST_URI here. Matches the existing route patterns; any
+	# %XX escapes are decoded once (Apache leaves them alone in REQUEST_URI).
+	_recover_route_params_from_request_uri($query);
+
 	$USER = $REQUEST->user->NODEDATA;
     $VARS = $REQUEST->user->VARS;
 
@@ -1341,7 +1354,83 @@ sub mod_perlInit
 }
 
 #####################
-# sub 
+# sub
+#   _recover_route_params_from_request_uri
+#
+# purpose
+#   Re-derive node/type/author CGI params from the raw REQUEST_URI when
+#   the title-bearing apache2.conf rewrites have lost characters to query-
+#   string parsing. Primary case (#4060): titles containing '&' end up as
+#   `?node=Sense & Sensibility`, and CGI truncates at the literal '&' to
+#   `node=Sense `. Apache leaves REQUEST_URI untouched (still %26-encoded),
+#   so we re-extract from there and overwrite the params.
+#
+#   Patterns mirror the rewrites in etc/templates/apache2.conf.erb. Any
+#   path component captured here is percent-decoded once before being
+#   stuffed back into the CGI params (CGI->param values are already-decoded
+#   strings).
+sub _recover_route_params_from_request_uri
+{
+	my ($q) = @_;
+	my $uri = $ENV{REQUEST_URI};
+	return unless defined $uri && length $uri;
+
+	# Drop query string and any fragment — we only care about the path.
+	$uri =~ s/[?#].*$//;
+
+	# %XX → byte; '+' is *not* a space here because we're in path context
+	# (form-style + only applies to query strings).
+	my $decode = sub {
+		my $s = shift;
+		return '' unless defined $s;
+		$s =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
+		return $s;
+	};
+
+	# Order matters: more-specific patterns first so /user/X/writeups/Y
+	# isn't shadowed by /user/X.
+	if ($uri =~ m{^/?user/(.+?)/writeups/(.+?)/?$}) {
+		$q->param('author', $decode->($1));
+		$q->param('node',   $decode->($2));
+		$q->param('type',   'writeup');
+	}
+	elsif ($uri =~ m{^/?user/(.+?)/writeups/?$}) {
+		$q->param('usersearch', $decode->($1));
+		$q->param('node',       'everything user search');
+		$q->param('type',       'superdoc');
+	}
+	elsif ($uri =~ m{^/?user/(.+?)/?$}) {
+		$q->param('node', $decode->($1));
+		$q->param('type', 'user');
+	}
+	elsif ($uri =~ m{^/?title/(.+?)/?$}) {
+		$q->param('node', $decode->($1));
+	}
+	elsif ($uri =~ m{^/?e2node/(.+?)/?$}) {
+		$q->param('node', $decode->($1));
+	}
+	elsif ($uri =~ m{^/?node/(\d+)/(\w+)/?$}) {
+		# node_id + displaytype — both already alphanumeric, no recovery needed
+	}
+	elsif ($uri =~ m{^/?node/([^\d/][^/]*)/?$}) {
+		$q->param('node', $decode->($1));
+	}
+	elsif ($uri =~ m{^/?node/([^/]+)/(.+?)/?$}) {
+		# /node/<type>/<title>
+		my ($type, $title) = ($1, $2);
+		# Only recover if the first segment is a real type word, not a node_id —
+		# numeric ids are already routed correctly.
+		if ($type !~ /^\d+$/) {
+			$q->param('type', $decode->($type));
+			$q->param('node', $decode->($title));
+		}
+	}
+
+	return;
+}
+
+#####################
+# sub
 #   process_vars_set
 #
 # purpose

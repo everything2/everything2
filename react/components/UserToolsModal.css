@@ -572,23 +572,6 @@
   border: 1px solid #e0e0e0;
 }
 
-/* User tools trigger button (icon next to message envelope) */
-.user-tools-trigger {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #4060b0;
-  font-size: 1.2rem;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s;
-}
-
-.user-tools-trigger:hover {
-  color: #38495e;
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .user-tools-modal {
