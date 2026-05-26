@@ -1,6 +1,7 @@
 import React from 'react'
 import LinkNode from './LinkNode'
 import ParseLinks from './ParseLinks'
+import { formatMessageTimestamp } from '../utils/dateFormat'
 
 /**
  * MessageList - Reusable component for displaying private messages
@@ -44,26 +45,11 @@ const MessageList = (props) => {
     }
   } = props
 
-  const formatTimestamp = (timestamp) => {
-    const date = new Date(timestamp)
-    if (compact) {
-      // Compact format for mini-messages: "14:34" (24-hour time to save space)
-      return date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      })
-    } else {
-      // Full format for Messages nodelet: "Dec 25, 14:34" (24-hour time)
-      return date.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      })
-    }
-  }
+  // Three-tier display via shared helper: today=time, this-year=Mon/Day+time,
+  // older=Mon/Day/Year+time. Compact variant drops the time on non-today
+  // entries — used by the chatterbox mini-messages strip where vertical
+  // space is tight.
+  const formatTimestamp = (timestamp) => formatMessageTimestamp(timestamp, { compact })
 
   const renderMessage = (message) => {
     const isArchived = message.archive

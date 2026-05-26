@@ -6,6 +6,7 @@ import LinkNode from '../LinkNode'
 import ParseLinks from '../ParseLinks'
 import MessageList from '../MessageList'
 import MessageModal from '../MessageModal'
+import { formatMessageTimestamp } from '../../utils/dateFormat'
 
 // Parse special message commands for display (/me, /whisper, /sing, /roll, etc.)
 const parseMessageText = (msg) => {
@@ -781,7 +782,7 @@ const Chatterbox = (props) => {
                   <div key={msg.message_id} className="chatter-message">
                     {parseMessageText(msg)}
                     <span className="chatter-timestamp">
-                      {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                      {formatMessageTimestamp(msg.timestamp)}
                     </span>
                   </div>
                 ))}

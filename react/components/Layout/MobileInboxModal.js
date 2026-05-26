@@ -3,6 +3,7 @@ import { FaTimes, FaInbox, FaArchive, FaPen, FaReply, FaReplyAll, FaTrash } from
 import LinkNode from '../LinkNode'
 import ParseLinks from '../ParseLinks'
 import MessageModal from '../MessageModal'
+import { formatMessageTimestamp } from '../../utils/dateFormat'
 
 /**
  * MobileInboxModal - Full-screen mobile inbox for messages
@@ -214,27 +215,9 @@ const MobileInboxModal = ({ isOpen, onClose, initialMessages = [], onMessagesUpd
     }
   }
 
-  const formatTimestamp = (timestamp) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const isToday = date.toDateString() === now.toDateString()
-
-    if (isToday) {
-      return date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      })
-    }
-
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })
-  }
+  // Three-tier display (today / this year / older with year) via shared
+  // helper; mobile keeps the 12-hour format that's conventional on phones.
+  const formatTimestamp = (timestamp) => formatMessageTimestamp(timestamp, { hour12: true })
 
   if (!isOpen) return null
 

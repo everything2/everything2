@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { FaTimes, FaComments, FaUsers, FaPaperPlane } from 'react-icons/fa'
 import LinkNode from '../LinkNode'
 import ParseLinks from '../ParseLinks'
+import { formatMessageTimestamp } from '../../utils/dateFormat'
 
 /**
  * MobileChatModal - Full-screen mobile chat drawer
@@ -385,11 +386,7 @@ const MobileChatModal = ({
                         {parseMessageText(msg)}
                       </div>
                       <span className="mobile-chat-timestamp">
-                        {new Date(msg.timestamp).toLocaleTimeString('en-US', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour12: false
-                        })}
+                        {formatMessageTimestamp(msg.timestamp)}
                       </span>
                     </div>
                   ))
