@@ -17,7 +17,7 @@ export const usePolling = (fetchFunction, pollIntervalMs = 120000, options = {})
   const [data, setData] = useState(initialData)
   const [loading, setLoading] = useState(!initialData)
   const [error, setError] = useState(null)
-  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const { isActive, isTabVisible } = useActivityDetection(10)
   const pollInterval = useRef(null)
   const isMounted = useRef(true)
 
@@ -58,7 +58,7 @@ export const usePolling = (fetchFunction, pollIntervalMs = 120000, options = {})
     // 1. User is active (not idle for 10+ minutes)
     // 2. This is the active tab (page is in focus)
     // 3. Not currently loading
-    const shouldPoll = isActive && isMultiTabActive && !loading
+    const shouldPoll = isActive && isTabVisible && !loading
 
     if (shouldPoll) {
       pollInterval.current = setInterval(() => {
@@ -77,7 +77,7 @@ export const usePolling = (fetchFunction, pollIntervalMs = 120000, options = {})
         pollInterval.current = null
       }
     }
-  }, [isActive, isMultiTabActive, loading, pollIntervalMs, fetchData])
+  }, [isActive, isTabVisible, loading, pollIntervalMs, fetchData])
 
   // Focus refresh: immediately refresh when page becomes visible
   useEffect(() => {

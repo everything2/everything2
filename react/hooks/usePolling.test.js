@@ -21,7 +21,7 @@ describe('usePolling', () => {
     // Default: user is active and tab is focused
     useActivityDetection.mockReturnValue({
       isActive: true,
-      isMultiTabActive: true
+      isTabVisible: true
     })
 
     // Mock document.hidden
@@ -130,7 +130,7 @@ describe('usePolling', () => {
       // User becomes inactive
       useActivityDetection.mockReturnValue({
         isActive: false,
-        isMultiTabActive: true
+        isTabVisible: true
       })
       rerender()
 
@@ -154,7 +154,7 @@ describe('usePolling', () => {
       // Tab loses focus
       useActivityDetection.mockReturnValue({
         isActive: true,
-        isMultiTabActive: false
+        isTabVisible: false
       })
       rerender()
 
@@ -178,7 +178,7 @@ describe('usePolling', () => {
       // User becomes inactive
       useActivityDetection.mockReturnValue({
         isActive: false,
-        isMultiTabActive: true
+        isTabVisible: true
       })
       rerender()
 
@@ -191,7 +191,7 @@ describe('usePolling', () => {
       // User becomes active again
       useActivityDetection.mockReturnValue({
         isActive: true,
-        isMultiTabActive: true
+        isTabVisible: true
       })
       rerender()
 
@@ -304,7 +304,7 @@ describe('usePolling', () => {
       // User becomes inactive
       useActivityDetection.mockReturnValue({
         isActive: false,
-        isMultiTabActive: true
+        isTabVisible: true
       })
       rerender()
 

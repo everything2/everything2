@@ -19,7 +19,7 @@ const Messages = (props) => {
   const [messageToDelete, setMessageToDelete] = React.useState(null)
   const [isReplyAll, setIsReplyAll] = React.useState(false)
   const [removingIds, setRemovingIds] = React.useState(() => new Set())
-  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const { isActive, isTabVisible } = useActivityDetection(10)
   const pollInterval = React.useRef(null)
   const missedUpdate = React.useRef(false)
 
@@ -77,7 +77,7 @@ const Messages = (props) => {
 
   // Polling effect - refresh every 2 minutes when active and nodelet is expanded
   React.useEffect(() => {
-    const shouldPoll = isActive && isMultiTabActive && !loading && props.nodeletIsOpen
+    const shouldPoll = isActive && isTabVisible && !loading && props.nodeletIsOpen
 
     if (shouldPoll) {
       pollInterval.current = setInterval(() => {
@@ -85,7 +85,7 @@ const Messages = (props) => {
       }, 120000) // 2 minutes
     } else {
       // If we're not polling because nodelet is collapsed, mark that we missed updates
-      if (isActive && isMultiTabActive && !loading && !props.nodeletIsOpen) {
+      if (isActive && isTabVisible && !loading && !props.nodeletIsOpen) {
         missedUpdate.current = true
       }
 
@@ -101,7 +101,7 @@ const Messages = (props) => {
         pollInterval.current = null
       }
     }
-  }, [isActive, isMultiTabActive, loading, props.nodeletIsOpen, showArchived, loadMessages])
+  }, [isActive, isTabVisible, loading, props.nodeletIsOpen, showArchived, loadMessages])
 
   // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
   React.useEffect(() => {

@@ -7,7 +7,7 @@ import { useActivityDetection } from '../../hooks/useActivityDetection'
 
 const NewWriteups = (props) => {
   const [writeups, setWriteups] = React.useState(props.newWriteups || [])
-  const { isActive, isMultiTabActive } = useActivityDetection(10)
+  const { isActive, isTabVisible } = useActivityDetection(10)
   const pollInterval = React.useRef(null)
   const missedUpdate = React.useRef(false)
 
@@ -34,7 +34,7 @@ const NewWriteups = (props) => {
   // IMPORTANT: Do not poll for guest users - they see static content from initial page load
   React.useEffect(() => {
     const isGuest = props.user?.guest
-    const shouldPoll = !isGuest && isActive && isMultiTabActive && props.nodeletIsOpen
+    const shouldPoll = !isGuest && isActive && isTabVisible && props.nodeletIsOpen
 
     if (shouldPoll) {
       pollInterval.current = setInterval(() => {
@@ -42,7 +42,7 @@ const NewWriteups = (props) => {
       }, 300000) // 5 minutes
     } else {
       // If we're not polling because nodelet is collapsed, mark that we missed updates
-      if (!isGuest && isActive && isMultiTabActive && !props.nodeletIsOpen) {
+      if (!isGuest && isActive && isTabVisible && !props.nodeletIsOpen) {
         missedUpdate.current = true
       }
 
@@ -58,7 +58,7 @@ const NewWriteups = (props) => {
         pollInterval.current = null
       }
     }
-  }, [isActive, isMultiTabActive, props.nodeletIsOpen, props.user, loadWriteups])
+  }, [isActive, isTabVisible, props.nodeletIsOpen, props.user, loadWriteups])
 
   // Uncollapse detection: refresh immediately when nodelet is uncollapsed after missing updates
   React.useEffect(() => {
