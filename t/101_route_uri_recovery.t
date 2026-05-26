@@ -148,6 +148,36 @@ sub recover {
 }
 
 #############################################################################
+# #4143: '+' in the path must decode to space (legacy E2 convention used by
+# hard-coded URLs like Messages.js's /title/Message+Inbox). Apache + CGI used
+# to handle this for free; once the helper started overriding CGI params from
+# REQUEST_URI, it had to honor the same convention or the inbox link 404s.
+#############################################################################
+{
+	my $p = recover('/title/Message+Inbox');
+	is($p->{node}, 'Message Inbox',
+		'/title/Foo+Bar decodes "+" to space — the #4143 inbox link case');
+}
+{
+	# Encoded plus survives as a literal plus — the "C++" guarantee that
+	# justifies decoding bare '+' as space in the first place.
+	my $p = recover('/title/C%2B%2B');
+	is($p->{node}, 'C++',
+		'/title/ preserves %2B as literal "+" (C++ titles still work)');
+}
+{
+	# Mixed: encoded plus AND bare plus in the same captured segment.
+	my $p = recover('/title/foo+bar%2Bbaz');
+	is($p->{node}, 'foo bar+baz',
+		'/title/ handles bare "+" and "%2B" independently in one segment');
+}
+{
+	# /user/Foo+Bar route also has to honor the convention.
+	my $p = recover('/user/user+with+plus');
+	is($p->{node}, 'user with plus', '/user/ decodes "+" to space');
+}
+
+#############################################################################
 # Defensive: missing / empty REQUEST_URI is a no-op
 #############################################################################
 {

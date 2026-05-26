@@ -1378,11 +1378,21 @@ sub _recover_route_params_from_request_uri
 	# Drop query string and any fragment — we only care about the path.
 	$uri =~ s/[?#].*$//;
 
-	# %XX → byte; '+' is *not* a space here because we're in path context
-	# (form-style + only applies to query strings).
+	# Legacy E2 URLs use '+' to mean space in the path (e.g. the
+	# hard-coded /title/Message+Inbox link in Messages.js). Strict RFC 3986
+	# would say '+' is only a space in query strings, not paths — but the
+	# rest of the stack (Apache rewrite + CGI form decoding) has always
+	# honored '+'-as-space here, so this helper has to match or it
+	# overwrites CGI's correct decode with a broken one (#4143). Safe
+	# because LinkNode always emits literal '+' as '%2B', so a title
+	# like "C++" round-trips correctly either way.
+	#
+	# Order matters: transliterate '+' before %XX decoding so an encoded
+	# '%2B' survives as a literal '+' in the result.
 	my $decode = sub {
 		my $s = shift;
 		return '' unless defined $s;
+		$s =~ tr/+/ /;
 		$s =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
 		return $s;
 	};
