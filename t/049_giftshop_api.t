@@ -89,14 +89,12 @@ package MockUser {
 
   sub set_vars {
     my ($self, $vars) = @_;
+    # Delegate to Everything::setVars so the blob is URL-encoded and
+    # joined with '&' — hand-rolling the format (e.g. join("\n", @pairs))
+    # produced corrupt vars on the real user because the parser
+    # (getVarHashFromStringFast) splits on [=&], not newlines.
     if ($self->{real_user}) {
-      my @pairs;
-      foreach my $key (keys %$vars) {
-        my $value = $vars->{$key};
-        push @pairs, "$key=$value" if defined $value;
-      }
-      my $vars_string = join("\n", @pairs);
-      $self->{real_user}->{vars} = $vars_string;
+      Everything::setVars($self->{real_user}, $vars);
       $main::DB->updateNode($self->{real_user}, -1);
     } else {
       $self->{_vars} = $vars;
