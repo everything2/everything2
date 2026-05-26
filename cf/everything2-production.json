@@ -943,6 +943,86 @@
         "TargetType": "AWS::RDS::DBInstance"
       }
     },
+    "ReadonlyQueryLambdaSG": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "GroupDescription": "ENI security group for the e2-readonly-query Lambda",
+        "GroupName": "e2-readonly-query-lambda-sg",
+        "VpcId": {"Ref": "AppVPC"}
+      }
+    },
+    "MainDBSecurityGroupReadonlyQueryIngress": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "GroupId": {"Fn::GetAtt": ["MainDBSecurityGroup", "GroupId"]},
+        "SourceSecurityGroupId": {"Fn::GetAtt": ["ReadonlyQueryLambdaSG", "GroupId"]},
+        "FromPort": 3306,
+        "ToPort": 3306,
+        "IpProtocol": "tcp",
+        "Description": "Allow e2-readonly-query Lambda to reach RDS"
+      }
+    },
+    "ReadonlyQueryLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RoleName": "e2-readonly-query-lambda-role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+        ],
+        "Policies": [{
+          "PolicyName": "ReadDBPasswordFromS3",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join": ["", [{"Fn::GetAtt": ["SecretsS3Bucket", "Arn"]}, "/database_password_secret"]]}
+            }]
+          }
+        }]
+      }
+    },
+    "ReadonlyQueryLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": "e2-readonly-query",
+        "Description": "Ad-hoc read-only SQL queries against the production database. Code is deployed separately via tools/aws/readonly-query-lambda/deploy-code.sh — CFN only manages the placeholder + surrounding infra.",
+        "Runtime": "python3.11",
+        "Handler": "index.handler",
+        "Role": {"Fn::GetAtt": ["ReadonlyQueryLambdaRole", "Arn"]},
+        "Timeout": 30,
+        "MemorySize": 256,
+        "VpcConfig": {
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}, {"Ref": "AppVPCSubnet4"}],
+          "SecurityGroupIds": [{"Fn::GetAtt": ["ReadonlyQueryLambdaSG", "GroupId"]}]
+        },
+        "Environment": {
+          "Variables": {
+            "DB_PASSWORD_BUCKET": {"Ref": "SecretsS3Bucket"},
+            "DB_PASSWORD_KEY": "database_password_secret",
+            "DB_HOST": {"Fn::GetAtt": ["EverythingDB", "Endpoint.Address"]},
+            "DB_PORT": {"Fn::GetAtt": ["EverythingDB", "Endpoint.Port"]},
+            "DB_USER": "everyuser",
+            "DB_NAME": "everything"
+          }
+        },
+        "Code": {
+          "ZipFile": "def handler(event, context):\n    return {'error': 'Lambda code not yet deployed. Run tools/aws/readonly-query-lambda/deploy-code.sh.'}\n"
+        }
+      }
+    },
     "SitemapBucketWritePolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "DeletionPolicy": "Retain",
@@ -1072,6 +1152,16 @@
       "Properties": {
         "RouteTableId": {"Ref": "AppVPCRouteTable"},
         "SubnetId": {"Ref": "AppVPCSubnet4"}
+      }
+    },
+    "S3GatewayEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"},
+        "ServiceName": {"Fn::Sub": "com.amazonaws.${AWS::Region}.s3"},
+        "VpcEndpointType": "Gateway",
+        "RouteTableIds": [{"Ref": "AppVPCRouteTable"}]
       }
     },
     "E2AppECRRegistry": {
