@@ -420,5 +420,36 @@ describe('linkParser', () => {
       // This should be treated as text since [0] alone isn't a valid link pattern
       expect(result).toBe('Array<a href="/title/0" class="e2-link" title="0">0</a> = value')
     })
+
+    // #4060 — DOMPurify entity-encodes '&' before parseLinks runs over the
+    // sanitized HTML. Without decoding entities inside bracket content, a
+    // title like "Sense & Sensibility" reaches the link builder as
+    // "Sense &amp; Sensibility" and produces a dead URL plus a display
+    // showing the literal text "&amp".
+    it('decodes &amp; inside bracket content so titles with & link correctly (#4060)', () => {
+      const result = parseLinksToHtml('[Sense &amp; Sensibility]')
+      // URL uses the decoded title — single %26 (encoded &), no literal "amp"
+      expect(result).toContain('href="/title/Sense%20%26%20Sensibility"')
+      // Display text shows a single escaped entity that browsers render as "&"
+      expect(result).toContain('>Sense &amp; Sensibility<')
+      // No double-escaped "amp" should leak through to either attribute or text
+      expect(result).not.toContain('amp;amp')
+      expect(result).not.toContain('%26amp')
+    })
+
+    it('decodes &amp; in pipelinks too', () => {
+      const result = parseLinksToHtml('[Sense &amp; Sensibility|sense and sensibility]')
+      expect(result).toContain('href="/title/Sense%20%26%20Sensibility"')
+      expect(result).toContain('>sense and sensibility<')
+    })
+
+    it('does not double-decode entities that survive DOMPurify', () => {
+      // If a user literally typed "&amp;amp;" hoping to encode "&amp;", the
+      // first decode turns it into "&amp;", which is what they wanted. We do
+      // not run the decoder twice.
+      const result = parseLinksToHtml('[X &amp;amp; Y]')
+      // After one decode: "X &amp; Y" → encoded URL has %26amp%3B (literal "&amp;")
+      expect(result).toContain('href="/title/X%20%26amp%3B%20Y"')
+    })
   })
 })

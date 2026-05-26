@@ -1137,6 +1137,35 @@ if (!$existing_bad_cool) {
 }
 print STDERR "Writeup with bad cooler: '$bad_cool_writeup->{title}'\n";
 
+# Ampersand-titled e2node + writeup -- fixture for #4060 (Cannot link &).
+# DOMPurify entity-encodes '&' to '&amp;' on the React side before the link
+# parser runs; without entity decoding inside bracket content, the href and
+# display text end up containing the literal text "amp". This fixture lets us
+# verify the fix in dev (prod data has nodes like "Willy Wonka & the Chocolate
+# Factory" but the seed DB doesn't carry those). The writeup body exercises
+# three link forms: bare bracket, pipelink, and a non-ampersand control.
+my $amp_e2node = $DB->getNode("Sense & Sensibility", "e2node");
+if (!$amp_e2node) {
+  my $amp_e2node_id = $DB->insertNode("Sense & Sensibility", "e2node", $root);
+  $amp_e2node = $DB->getNodeById($amp_e2node_id);
+}
+my $amp_writeup = $DB->getNode("Sense & Sensibility (thing)", "writeup");
+if (!$amp_writeup) {
+  my $amp_writeup_id = $DB->insertNode("Sense & Sensibility (thing)", "writeup", $normaluser1);
+  $amp_writeup = $DB->getNodeById($amp_writeup_id);
+}
+$amp_writeup->{parent_e2node} = $amp_e2node->{node_id};
+$amp_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
+$amp_writeup->{doctext} = "Self-link by title: [Sense & Sensibility]. Pipelink: [Sense & Sensibility|read the novel]. Non-ampersand control: [good poetry].";
+$amp_writeup->{publishtime} = $amp_writeup->{createtime};
+my $amp_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$amp_e2node->{node_id} AND node_id=$amp_writeup->{node_id}");
+if (!$amp_in_group) {
+  $DB->insertIntoNodegroup($amp_e2node, -1, $amp_writeup);
+}
+$DB->updateNode($amp_writeup, -1);
+print STDERR "Ampersand test fixture (#4060): '$amp_writeup->{title}'\n";
+
 # C! assignments - normaluser1-20 all cool "good poetry" to test tooltip with many C!s
 my $cools = {
   "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"],

@@ -46,8 +46,13 @@ describe('LinkNode Component', () => {
     it('handles special characters in title', () => {
       render(<LinkNode title="Test & Node @ Plus+" />);
       const link = screen.getByRole('link');
-      // Special characters should be double-encoded
-      expect(link.getAttribute('href')).toContain('%');
+      const href = link.getAttribute('href');
+      // Special URL chars are single-encoded — the server-side helper
+      // _recover_route_params_from_request_uri decodes once on the way in.
+      expect(href).toContain('%26');   // &
+      expect(href).toContain('%40');   // @
+      expect(href).toContain('%2B');   // +
+      expect(href).not.toContain('%2526'); // not double-encoded
     });
 
     it('handles HTML entities in title (GitHub #3950)', () => {
@@ -56,8 +61,8 @@ describe('LinkNode Component', () => {
       const link = screen.getByRole('link');
       // Should decode entity to actual character before encoding for URL
       const href = link.getAttribute('href');
-      // Should NOT contain the malformed double-encoded entity
-      expect(href).not.toContain('%2526%25239608');
+      // Should NOT contain the malformed encoded entity
+      expect(href).not.toContain('%26%239608');
       // Should contain the decoded block characters (█)
       expect(href).toContain('█');
     });
@@ -66,9 +71,22 @@ describe('LinkNode Component', () => {
       render(<LinkNode title="AT&amp;T History" />);
       const link = screen.getByRole('link');
       const href = link.getAttribute('href');
-      // &amp; should be decoded to & then double-encoded
-      expect(href).toContain('%2526');  // Double-encoded &
+      // &amp; should decode to & then single-encode to %26.
+      expect(href).toContain('%26');
+      expect(href).not.toContain('%2526');  // no double-encoding
       expect(href).not.toContain('&amp;');
+    });
+
+    it('produces a URL that the server route-recovery helper can resolve (GitHub #4060)', () => {
+      // Mirrors the #4060 regression: titles with '&' on the front page.
+      // The href must be /title/Sense%20%26%20Sensibility (or with literal
+      // space — browsers encode that on navigation), NOT the legacy
+      // /title/Sense %2526 Sensibility that decoded to "Sense %26 Sensibility"
+      // server-side and missed the lookup.
+      render(<LinkNode title="Sense & Sensibility" />);
+      const href = screen.getByRole('link').getAttribute('href');
+      expect(href).toContain('%26');
+      expect(href).not.toContain('%2526');
     });
 
     it('shows decoded title in hover text for entity titles', () => {

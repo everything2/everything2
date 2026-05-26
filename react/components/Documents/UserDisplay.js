@@ -108,7 +108,7 @@ const UserDisplay = ({ data, e2 }) => {
           {!!(viewer.is_editor || viewer.is_chanop || viewer.is_admin) && (
             <button
               onClick={() => setIsToolsModalOpen(true)}
-              className="user-tools-trigger user-display__icon-btn"
+              className="user-display__icon-btn"
               title="User Tools"
             >
               <FaUserCog />

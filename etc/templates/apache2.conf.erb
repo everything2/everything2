@@ -337,17 +337,30 @@ ListenBacklog 511
 
 		RewriteRule ^favicon.ico$ /static/favicon.ico [L]
 
+		# Title-bearing patterns use [^?]+ rather than [^&]+ because mod_rewrite
+		# URL-decodes the path before matching. A title containing '&' (URL-
+		# encoded as %26 in the request) decodes to a literal '&' here, which
+		# [^&]+ would truncate at — breaking navigation to nodes like "Sense &
+		# Sensibility" (#4060). '?' is the query-string boundary that's already
+		# stripped from mod_rewrite's input, but kept as a defensive sentinel.
+		#
+		# mod_rewrite cannot safely re-encode '&' in $N before substituting
+		# into the new query string (the [B] flag deliberately preserves '&'
+		# as a query separator, and [B=&] drops default space escaping). So
+		# the mod_perlInit handler in ecore/Everything/HTML.pm re-extracts the
+		# canonical title from $ENV{REQUEST_URI} (the raw, encoded URI Apache
+		# never touches) and overrides any truncated CGI param. See #4060.
 		RewriteRule ^node/(\d+)/(\w+)/?$           index.pl?node_id=$1&displaytype=$2  [L,QSA,BCTLS]
-		RewriteRule ^node/(\d+)([^&]*)/?$          index.pl?node_id=$1$2                [L,QSA,BCTLS]
+		RewriteRule ^node/(\d+)([^?]*)/?$          index.pl?node_id=$1$2                [L,QSA,BCTLS]
 		RewriteRule ^e2node/(.+)                   /index.pl?node=$1                     [L,QSA,BCTLS]
 		RewriteRule ^node/([^\d][^/]*)$            /index.pl?node=$1                    [L,QSA,BCTLS]
 
-		RewriteRule ^node/([^\W\/]+)/([^&]+).*/?$  index.pl?node=$2&type=$1            [L,QSA,BCTLS]
-		RewriteRule ^title/([^&]+).*/?$            index.pl?node=$1                    [L,QSA,BCTLS]
+		RewriteRule ^node/([^\W\/]+)/([^?]+).*/?$  index.pl?node=$2&type=$1            [L,QSA,BCTLS]
+		RewriteRule ^title/([^?]+).*/?$            index.pl?node=$1                    [L,QSA,BCTLS]
 
-		RewriteRule ^user/([^&]+)/writeups/([^&]+).*/?$   index.pl?node=$2&type=writeup&author=$1      [L,QSA,BCTLS]
-		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [L,QSA,BCTLS]
-		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [L,QSA,BCTLS]
+		RewriteRule ^user/([^?]+)/writeups/([^?]+).*/?$   index.pl?node=$2&type=writeup&author=$1      [L,QSA,BCTLS]
+		RewriteRule ^user/([^?]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [L,QSA,BCTLS]
+		RewriteRule ^user/([^?]+).*/?$             index.pl?node=$1&type=user          [L,QSA,BCTLS]
 
 		# Short URL redirection (fullpage type for 303 redirect support)
 		RewriteRule ^/?s/([^/]+)$                  index.pl?type=fullpage&node=Short+URL+Lookup&short_string=$1

@@ -43,6 +43,32 @@ export function stripHtml(str) {
 }
 
 /**
+ * Decode common HTML entities back to their literal characters. Required
+ * inside link bracket content because DOMPurify entity-encodes characters
+ * like '&' before parseLinks runs over the sanitized HTML — without this,
+ * a node title like "Sense & Sensibility" would reach the link builder as
+ * "Sense &amp; Sensibility", producing a dead URL and a display string
+ * containing the literal text "&amp" (#4060).
+ *
+ * Bracket entities (&#91; / &#93;) are NOT decoded here; they're handled
+ * separately via placeholders in sanitizeHtml so users can still escape
+ * literal brackets in writeups without triggering link parsing.
+ *
+ * @param {string} text - Text possibly containing HTML entities
+ * @returns {string} - Text with common entities decoded
+ */
+export function decodeHtmlEntities(text) {
+  if (!text) return ''
+  return text
+    // &amp; must run first — otherwise &amp;lt; would decode to &lt; → < (wrong)
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+}
+
+/**
  * Link types returned by the parser
  */
 export const LINK_TYPE = {
@@ -63,7 +89,11 @@ export const LINK_TYPE = {
 export function parseLinkContent(content, fullMatch) {
   if (!content) return null
 
-  const trimmedContent = content.trim()
+  // Decode HTML entities first — DOMPurify ran upstream and entity-encoded
+  // characters like '&' for HTML safety, but the title/display text inside
+  // brackets needs to be the literal character so the URL builder and the
+  // visible display text are correct (#4060).
+  const trimmedContent = decodeHtmlEntities(content).trim()
   if (!trimmedContent) return null
 
   // Check for external URL

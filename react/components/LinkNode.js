@@ -48,10 +48,14 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params,styl
         display = title
       }
 
-      // Decode HTML entities first, then double-encode special URL characters
-      // This ensures &#9608; becomes █ before encoding, not %2526%25239608%253B
+      // Decode HTML entities first, then single-encode special URL characters.
+      // Decoding `&amp;` → `&` before encoding avoids `%2526...` garbage in the
+      // href. The server-side path-recovery helper
+      // Everything::HTML::_recover_route_params_from_request_uri (#4060) decodes
+      // REQUEST_URI exactly once, so double-encoding here would now resolve to
+      // literal "%26" in the looked-up node title and miss every node.
       originalDecodedTitle = decodeHtmlEntities(title)
-      title = originalDecodedTitle.replace(/[\&@\+\/\;\?]/g, (match) => {return encodeURIComponent(encodeURIComponent(match))});
+      title = originalDecodedTitle.replace(/[\&@\+\/\;\?]/g, (match) => {return encodeURIComponent(match)});
     }
 
     if(author != undefined)
