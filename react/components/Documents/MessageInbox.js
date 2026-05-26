@@ -5,6 +5,7 @@ import MessageList from '../MessageList'
 import MessageModal from '../MessageModal'
 import ParseLinks from '../ParseLinks'
 import UserSearchInput from '../UserSearchInput'
+import { formatMessageTimestamp } from '../../utils/dateFormat'
 
 // Sanitize legacy HTML messages - only allow <a> tags with href attribute
 // Legacy messages from sendPrivateMessage htmlcode contain pre-parsed HTML links
@@ -514,13 +515,7 @@ const MessageInbox = ({ data }) => {
             )}
           </strong>
           <span className="message-inbox-sent-timestamp">
-            {new Date(message.timestamp).toLocaleString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
+            {formatMessageTimestamp(message.timestamp)}
           </span>
         </div>
 

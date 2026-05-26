@@ -131,6 +131,71 @@ export function formatTime(input, options = {}) {
 }
 
 /**
+ * Smart timestamp for message UIs (private message lists, sent tab, mobile
+ * drawers). Returns just enough date context for the message's age so that
+ * returning users can tell a message from this morning apart from one from
+ * 2019 without every entry shouting a full year.
+ *
+ *   Same day            → "14:34"
+ *   This year           → "Mar 5, 14:34"          (compact: "Mar 5")
+ *   Previous year+      → "Mar 5, 2024, 14:34"    (compact: "Mar 5, 2024")
+ *
+ * Unlike formatDate/formatShortDate/etc., this renders in the *viewer's local
+ * timezone*. For messages, "when did this arrive for me" is the right answer;
+ * UTC is the right answer for calendar-date metadata on writeups and profiles.
+ * The same-day comparison uses local TZ too so a 23:50 UTC message doesn't
+ * render as "Apr 15" while being classified as "today" by UTC math.
+ *
+ * 24-hour time everywhere to match the existing inline message-UI conventions.
+ *
+ * @param {*} input timestamp (any shape accepted by toDate)
+ * @param {Object} [options]
+ * @param {boolean} [options.compact=false] omit the time portion on older
+ *   messages (chat-style lists where time is the primary at-a-glance signal).
+ * @param {boolean} [options.hour12=false] use 12-hour format ("2:34 PM").
+ *   Default is 24-hour to match the desktop message UI convention; mobile
+ *   passes true.
+ * @returns {string|null} formatted string, or null for invalid input
+ */
+export function formatMessageTimestamp(input, options = {}) {
+  const date = toDate(input)
+  if (!date) return null
+
+  const compact = options.compact === true
+  const hour12 = options.hour12 === true
+  // 12h conventionally uses single-digit hour ("2:34 PM"); 24h uses two-digit
+  // ("02:34"). Matches the convention in the legacy bespoke formatters.
+  const hour = hour12 ? 'numeric' : '2-digit'
+  const timeOpts = { hour, minute: '2-digit', hour12 }
+
+  const now = new Date()
+
+  const sameLocalDay = (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  )
+
+  if (sameLocalDay) {
+    return date.toLocaleTimeString(DEFAULT_LOCALE, timeOpts)
+  }
+
+  const sameYear = date.getFullYear() === now.getFullYear()
+
+  if (compact) {
+    return date.toLocaleDateString(DEFAULT_LOCALE, sameYear
+      ? { month: 'short', day: 'numeric' }
+      : { year: 'numeric', month: 'short', day: 'numeric' }
+    )
+  }
+
+  return date.toLocaleString(DEFAULT_LOCALE, sameYear
+    ? { month: 'short', day: 'numeric', ...timeOpts }
+    : { year: 'numeric', month: 'short', day: 'numeric', ...timeOpts }
+  )
+}
+
+/**
  * Whether the input parses to a valid, non-epoch-zero date.
  * Useful for conditionally rendering "(<TimeSince>)" alongside `formatDate`.
  */

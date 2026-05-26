@@ -3,6 +3,7 @@ import {
   formatShortDate,
   formatDateTime,
   formatTime,
+  formatMessageTimestamp,
   isValidDate,
   __toDate,
 } from './dateFormat'
@@ -92,6 +93,80 @@ describe('dateFormat utility', () => {
   describe('__toDate (internal)', () => {
     it('rejects Date instances with NaN time', () => {
       expect(__toDate(new Date('garbage'))).toBeNull()
+    })
+  })
+
+  describe('formatMessageTimestamp (3-tier message UI)', () => {
+    // Pin "now" so the today / this-year / older branches are deterministic.
+    // 2026-05-26 in local time matches the dev TZ at test time and keeps the
+    // tier boundaries crisp regardless of where the test runs.
+    let realDate
+    beforeEach(() => {
+      realDate = global.Date
+      const FAKE_NOW = new realDate(2026, 4, 26, 12, 0, 0) // May 26, 2026 local
+      global.Date = class extends realDate {
+        constructor(...args) {
+          if (args.length === 0) return new realDate(FAKE_NOW)
+          return new realDate(...args)
+        }
+        static now() { return FAKE_NOW.getTime() }
+      }
+      global.Date.UTC = realDate.UTC
+      global.Date.parse = realDate.parse
+    })
+    afterEach(() => {
+      global.Date = realDate
+    })
+
+    it('today → time only (24h)', () => {
+      // Use a local-time message earlier today
+      const today = '2026-05-26T14:34:00'  // no Z → parsed as local
+      expect(formatMessageTimestamp(today)).toBe('14:34')
+    })
+
+    it('this year, not today → month + day + time, no year', () => {
+      const mar = '2026-03-05T14:34:00'
+      const out = formatMessageTimestamp(mar)
+      expect(out).toContain('Mar 5')
+      expect(out).toContain('14:34')
+      expect(out).not.toContain('2026')
+    })
+
+    it('previous year → year is shown alongside month + day + time (#4123)', () => {
+      const old = '2024-03-05T14:34:00'
+      const out = formatMessageTimestamp(old)
+      expect(out).toContain('Mar 5')
+      expect(out).toContain('2024')
+      expect(out).toContain('14:34')
+    })
+
+    it('compact mode drops the time on non-today entries', () => {
+      const thisYear = '2026-03-05T14:34:00'
+      const lastYear = '2024-03-05T14:34:00'
+      expect(formatMessageTimestamp(thisYear, { compact: true })).not.toContain('14:34')
+      expect(formatMessageTimestamp(thisYear, { compact: true })).toContain('Mar 5')
+      expect(formatMessageTimestamp(lastYear, { compact: true })).toContain('2024')
+    })
+
+    it('compact mode still shows time-only for today (the at-a-glance signal)', () => {
+      const today = '2026-05-26T14:34:00'
+      expect(formatMessageTimestamp(today, { compact: true })).toBe('14:34')
+    })
+
+    it('hour12 option uses 12-hour format with single-digit hour (mobile convention)', () => {
+      const today = '2026-05-26T14:34:00'
+      const out = formatMessageTimestamp(today, { hour12: true })
+      // Locale-dependent, but should contain a PM marker and "2:34" not "02:34"
+      expect(out).toMatch(/2:34/)
+      expect(out).toMatch(/PM/i)
+    })
+
+    it('returns null for null / invalid / epoch-0 input', () => {
+      expect(formatMessageTimestamp(null)).toBeNull()
+      expect(formatMessageTimestamp(undefined)).toBeNull()
+      expect(formatMessageTimestamp('')).toBeNull()
+      expect(formatMessageTimestamp('not a date')).toBeNull()
+      expect(formatMessageTimestamp(0)).toBeNull()
     })
   })
 })
