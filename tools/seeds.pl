@@ -1166,6 +1166,35 @@ if (!$amp_in_group) {
 $DB->updateNode($amp_writeup, -1);
 print STDERR "Ampersand test fixture (#4060): '$amp_writeup->{title}'\n";
 
+# Multi-space e2node fixture -- #3418 (titles with consecutive spaces).
+# The title intentionally has two spaces after the period so we can verify the
+# basesheet's `white-space: pre-wrap` rule keeps the runs intact through DOM
+# copy. Without that rule, browsers collapse the run on render and the
+# clipboard gets the single-space form, which won't match the actual title.
+my $multispace_title = "I was raised on red pepper and blood.  I am so hot if you strike me I will light like a match.";
+my $ms_e2node = $DB->getNode($multispace_title, "e2node");
+if (!$ms_e2node) {
+  my $ms_e2node_id = $DB->insertNode($multispace_title, "e2node", $root);
+  $ms_e2node = $DB->getNodeById($ms_e2node_id);
+}
+my $ms_writeup_title = "$multispace_title (thing)";
+my $ms_writeup = $DB->getNode($ms_writeup_title, "writeup");
+if (!$ms_writeup) {
+  my $ms_writeup_id = $DB->insertNode($ms_writeup_title, "writeup", $normaluser1);
+  $ms_writeup = $DB->getNodeById($ms_writeup_id);
+}
+$ms_writeup->{parent_e2node} = $ms_e2node->{node_id};
+$ms_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
+$ms_writeup->{doctext} = "A short body so the e2node renders as a normal node and not a nodeshell.";
+$ms_writeup->{publishtime} = $ms_writeup->{createtime};
+my $ms_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$ms_e2node->{node_id} AND node_id=$ms_writeup->{node_id}");
+if (!$ms_in_group) {
+  $DB->insertIntoNodegroup($ms_e2node, -1, $ms_writeup);
+}
+$DB->updateNode($ms_writeup, -1);
+print STDERR "Multi-space test fixture (#3418): '$ms_e2node->{title}'\n";
+
 # C! assignments - normaluser1-20 all cool "good poetry" to test tooltip with many C!s
 my $cools = {
   "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"],
