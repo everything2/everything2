@@ -82,6 +82,14 @@ The "Kernel Blue" palette is the design system: `#38495e` primary, `#4060b0` lin
 - `mobile-audit.js` — static AST audit of React components for mobile issues.
 - `critic.pl` — Perl::Critic wrapper. `CRITIC_FULL=1` for full ruleset, default is bugs-only.
 
+**Production DB queries (read-only)**: `tools/aws/readonly-query-lambda/` is an AWS Lambda you can invoke for ad-hoc SELECT/SHOW/EXPLAIN against the prod database. Single-statement only, auto-LIMITed, banned-construct-rejected, 25s server-side cap. Invoke pattern:
+```bash
+aws lambda invoke --function-name e2-readonly-query --region us-west-2 \
+  --payload '{"sql":"SELECT user, host, plugin FROM mysql.user"}' \
+  --cli-binary-format raw-in-base64-out /tmp/out.json && cat /tmp/out.json | jq
+```
+Useful for finding rows that would break under the MySQL 8.4 migration (the README has a catalog of audit queries). The Lambda runs as `everyuser` (full app grants) — handler-side validation is the safety perimeter, so don't try to defeat it.
+
 Test command shortcuts: `./docker/devbuild.sh` (full rebuild + tests), `npm test` (React only), `prove -I/var/libraries/lib/perl5 t/foo.t` inside the container.
 
 ---
