@@ -584,6 +584,22 @@ p#printlink {
   font-size: 107%;
 }
 
+/* #3418: Preserve consecutive whitespace in node titles so copy-paste into
+   the search box round-trips. Default `white-space: normal` collapses
+   `"foo.  bar"` to `"foo. bar"` when the browser renders text, and the copy
+   operation grabs the collapsed form — so titles with multiple spaces become
+   un-searchable. `pre-wrap` keeps the runs intact while still wrapping at
+   word boundaries. Scoped narrowly to elements whose text content is a node
+   title the user is likely to copy. */
+.nodetitle,
+.page-header__title,
+h1.nodetitle,
+.contentinfo a.title,
+.findings-item > a,
+.infolist a {
+  white-space: pre-wrap;
+}
+
 .contentinfo a {
   text-decoration: none;
 }
