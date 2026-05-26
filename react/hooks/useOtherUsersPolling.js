@@ -7,7 +7,11 @@ import { useActivityDetection } from './useActivityDetection'
  *
  * @param {number} pollIntervalMs - Milliseconds between polls (default: 120000 = 2 minutes)
  * @param {object} initialData - Initial data to use (skips initial API call if provided)
- * @returns {Object} { otherUsersData, loading, error, refresh } - Other users state and refresh function
+ * @returns {Object} { otherUsersData, loading, error, refresh, setOtherUsersData }
+ *   - setOtherUsersData lets callers inject the fresh otherUsersData payload
+ *     that POST endpoints (change_room, set_cloaked, create_room) return in
+ *     their responses, so we don't need an extra GET round-trip to see the
+ *     change reflected in the polled state.
  */
 export const useOtherUsersPolling = (pollIntervalMs = 120000, initialData = null) => {
   const [otherUsersData, setOtherUsersData] = useState(initialData)
@@ -84,5 +88,5 @@ export const useOtherUsersPolling = (pollIntervalMs = 120000, initialData = null
     }
   }, [isActive, isMultiTabActive, loading, pollIntervalMs])
 
-  return { otherUsersData, loading, error, refresh }
+  return { otherUsersData, loading, error, refresh, setOtherUsersData }
 }

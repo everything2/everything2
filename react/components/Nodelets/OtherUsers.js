@@ -16,7 +16,7 @@ const OtherUsers = (props) => {
 
   // Use polling hook for automatic updates every 2 minutes
   // Pass initial data from props to skip initial API call
-  const { otherUsersData: polledData, loading: pollingLoading, error: pollingError, refresh } = useOtherUsersPolling(120000, props.otherUsersData)
+  const { otherUsersData: polledData, loading: pollingLoading, error: pollingError, refresh, setOtherUsersData } = useOtherUsersPolling(120000, props.otherUsersData)
 
   // Use polled data (which now includes initial data from props)
   const otherUsersData = polledData
@@ -61,9 +61,13 @@ const OtherUsers = (props) => {
     )
   }
 
-  const handleChangeRoom = async () => {
-    if (selectedRoom === null || selectedRoom === currentRoomId) return
+  // Fires on dropdown change (no more [Go] button). targetRoomId is the
+  // newly selected id; selectedRoom is the optimistic local state so the
+  // dropdown doesn't visually snap back during the API round-trip.
+  const handleChangeRoom = async (targetRoomId) => {
+    if (targetRoomId === null || targetRoomId === currentRoomId) return
 
+    setSelectedRoom(targetRoomId)
     setIsChangingRoom(true)
     setError(null)
 
@@ -74,7 +78,7 @@ const OtherUsers = (props) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          room_id: selectedRoom
+          room_id: targetRoomId
         }),
         credentials: 'include'
       })
@@ -85,18 +89,22 @@ const OtherUsers = (props) => {
         throw new Error(data.error || 'Failed to change room')
       }
 
-      // Update state with new room data from API (pass full response to get room_name and room_topic)
-      if (data.otherUsersData && props.onOtherUsersDataUpdate) {
-        props.onOtherUsersDataUpdate(data)
-      } else {
-        // Fallback to reload if callback not provided
+      // Sync the polled state directly from the response (no extra GET needed —
+      // the change_room endpoint already returns updated otherUsersData).
+      // Also pass the full response up so the parent can update room_name and
+      // room_topic for the page-level title display.
+      if (data.otherUsersData) {
+        setOtherUsersData(data.otherUsersData)
+        if (props.onOtherUsersDataUpdate) {
+          props.onOtherUsersDataUpdate(data)
+        }
+      } else if (!props.onOtherUsersDataUpdate) {
+        // Fallback to reload if neither path is available
         window.location.reload()
       }
-
-      // Refresh polling data immediately to get updated room info
-      refresh()
     } catch (error) {
       setError(error.message)
+      setSelectedRoom(currentRoomId) // Revert optimistic selection
     } finally {
       setIsChangingRoom(false)
     }
@@ -105,6 +113,12 @@ const OtherUsers = (props) => {
   const handleToggleCloak = async (e) => {
     const checked = e.target.checked
 
+    // Optimistic update — flip the checkbox immediately so the click
+    // feels responsive. Because <input checked={isCloaked}> is controlled,
+    // not flipping until after the await caused React to render the box
+    // back to its old state for the entire API round-trip (~100-300ms),
+    // making the click look like it did nothing. Roll back in catch.
+    setIsCloaked(checked)
     setIsTogglingCloak(true)
     setError(null)
 
@@ -126,15 +140,19 @@ const OtherUsers = (props) => {
         throw new Error(data.error || 'Failed to toggle cloak')
       }
 
-      setIsCloaked(checked)
-
-      // Update otherUsersData with new cloak status
-      if (data.otherUsersData && props.onOtherUsersDataUpdate) {
-        props.onOtherUsersDataUpdate(data.otherUsersData)
+      // Sync the polled state directly from the response so the user list
+      // re-renders with (or without) the invisible flag immediately. Without
+      // this the cloak icon wouldn't appear until the next 2-minute poll
+      // because the polling hook never re-read props.otherUsersData.
+      if (data.otherUsersData) {
+        setOtherUsersData(data.otherUsersData)
+        if (props.onOtherUsersDataUpdate) {
+          props.onOtherUsersDataUpdate(data.otherUsersData)
+        }
       }
     } catch (error) {
       setError(error.message)
-      setIsCloaked(!checked) // Revert on error
+      setIsCloaked(!checked) // Revert optimistic flip
     } finally {
       setIsTogglingCloak(false)
     }
@@ -322,29 +340,20 @@ const OtherUsers = (props) => {
                 : 'Locked here indefinitely'}
             </div>
           ) : (
-            <div className="otherusers-room-select-row">
-              <select
-                id="otherusers-room-select"
-                name="otherusers-room-select"
-                value={selectedRoom !== null ? selectedRoom : currentRoomId}
-                onChange={(e) => setSelectedRoom(parseInt(e.target.value))}
-                disabled={isChangingRoom}
-                className="otherusers-room-select"
-              >
-                {availableRooms.map((room) => (
-                  <option key={room.room_id} value={room.room_id}>
-                    {room.title}
-                  </option>
-                ))}
-              </select>
-              <button
-                onClick={handleChangeRoom}
-                disabled={isChangingRoom || selectedRoom === currentRoomId}
-                className="otherusers-go-btn"
-              >
-                {isChangingRoom ? '...' : 'Go'}
-              </button>
-            </div>
+            <select
+              id="otherusers-room-select"
+              name="otherusers-room-select"
+              value={selectedRoom !== null ? selectedRoom : currentRoomId}
+              onChange={(e) => handleChangeRoom(parseInt(e.target.value))}
+              disabled={isChangingRoom}
+              className="otherusers-room-select"
+            >
+              {availableRooms.map((room) => (
+                <option key={room.room_id} value={room.room_id}>
+                  {room.title}
+                </option>
+              ))}
+            </select>
           )}
         </div>
       </div>
@@ -467,7 +476,11 @@ const OtherUsers = (props) => {
 
       {rooms.map((room, roomIndex) => (
         <React.Fragment key={roomIndex}>
-          {room.title && (
+          {/* Suppress the per-room header when there's only one room with
+              users — it's redundant noise above the single user list.
+              Backend now always populates room.title for API honesty (#3990),
+              so the "should we render a header" decision lives here. */}
+          {room.title && rooms.length > 1 && (
             <div className={`otherusers-room-label${roomIndex > 0 ? ' otherusers-room-label--offset' : ''}`}>
               {room.title}:
             </div>

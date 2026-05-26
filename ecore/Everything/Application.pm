@@ -6534,19 +6534,20 @@ sub buildOtherUsersData
     $userCount++;
   }
 
-  # Build rooms array with headers
+  # Build rooms array. Always populate title (#3990) — when the viewer
+  # was the only person in their room, the old "only set when >1 room"
+  # gate left rooms[0].title as an empty string while currentRoom
+  # reported the real name, which is a confusing API contract. Whether
+  # to render a header is a presentation choice, so we leave it to the
+  # client (OtherUsers.js / MobileChatModal.js gate on rooms.length > 1).
   my @rooms = ();
   foreach my $roomId (sort { ($b == $current_room_id) <=> ($a == $current_room_id) || $b <=> $a } keys %room_users) {
-    my $roomTitle = '';
-
-    # Only show room header if not current room or if multiple rooms
-    if(scalar(keys %room_users) > 1) {
-      if($roomId == 0) {
-        $roomTitle = 'Outside';
-      } else {
-        my $room = $this->{db}->getNodeById($roomId);
-        $roomTitle = ($room && $room->{type}{title} eq 'room') ? $room->{title} : 'Unknown Room';
-      }
+    my $roomTitle;
+    if($roomId == 0) {
+      $roomTitle = 'Outside';
+    } else {
+      my $room = $this->{db}->getNodeById($roomId);
+      $roomTitle = ($room && $room->{type}{title} eq 'room') ? $room->{title} : 'Unknown Room';
     }
 
     push @rooms, {

@@ -566,6 +566,91 @@ describe('Messages Component', () => {
     })
   })
 
+  describe('React 19 regression guards', () => {
+    // These tests pin behavior that's easy to silently regress under a
+    // React 19 upgrade (StrictMode double-effects, Suspense changes,
+    // automatic batching tweaks). If one of these breaks, the chatterbox
+    // UX broke before any user can tell us.
+
+    test('silent refresh after archive reuses survivor DOM node (no remount, no re-animation) — #4102', async () => {
+      const initial = [
+        {
+          message_id: 1,
+          author_user: { node_id: 100, title: 'sender' },
+          msgtext: 'message to archive',
+          timestamp: '2025-11-24T10:00:00Z',
+          archive: 0
+        },
+        {
+          message_id: 2,
+          author_user: { node_id: 101, title: 'sender' },
+          msgtext: 'survivor message',
+          timestamp: '2025-11-24T11:00:00Z',
+          archive: 0
+        }
+      ]
+
+      // After archive: API returns the survivor only.
+      global.fetch
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ success: true }) }) // archive POST
+        .mockResolvedValueOnce({                                                    // silent loadMessages refresh
+          ok: true,
+          json: async () => [initial[1]]
+        })
+
+      render(
+        <Messages
+          initialMessages={initial}
+          showNodelet={mockShowNodelet}
+          nodeletIsOpen={true}
+        />
+      )
+
+      const survivorBefore = document.getElementById('message_2')
+      expect(survivorBefore).not.toBeNull()
+      // Stamp the actual Element so we can prove React reused it instead of
+      // unmounting/remounting the whole MessageList after the refresh.
+      survivorBefore.dataset.reflowProbe = 'kept'
+
+      // No loading spinner during silent refresh (the original reflow bug).
+      // Two messages → two archive buttons; the first one is on message_1.
+      const archiveButton = screen.getAllByTitle('Archive message')[0]
+      fireEvent.click(archiveButton)
+      expect(screen.queryByText('Loading messages...')).not.toBeInTheDocument()
+
+      await waitFor(() => {
+        expect(screen.queryByText('message to archive')).not.toBeInTheDocument()
+      })
+
+      const survivorAfter = document.getElementById('message_2')
+      expect(survivorAfter).toBe(survivorBefore)               // same Element ref
+      expect(survivorAfter.dataset.reflowProbe).toBe('kept')   // stamp survived
+
+      // And the spinner never flashed during the silent refresh.
+      expect(screen.queryByText('Loading messages...')).not.toBeInTheDocument()
+    })
+
+    test('Inbox/Archived tab toggle DOES show loading spinner (silent mode is opt-in)', async () => {
+      // Pin the inverse so a future "always-silent" refactor doesn't strip
+      // user-facing loading feedback from the tab switch path.
+      global.fetch.mockImplementationOnce(() => new Promise(() => {})) // never resolves
+
+      render(
+        <Messages
+          initialMessages={[]}
+          showNodelet={mockShowNodelet}
+          nodeletIsOpen={true}
+        />
+      )
+
+      fireEvent.click(screen.getByText('Archived'))
+
+      await waitFor(() => {
+        expect(screen.getByText('Loading messages...')).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('Multiple Messages', () => {
     test('renders multiple messages in order', () => {
       const messages = [
