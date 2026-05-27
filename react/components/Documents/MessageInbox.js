@@ -5,6 +5,7 @@ import MessageList from '../MessageList'
 import MessageModal from '../MessageModal'
 import ParseLinks from '../ParseLinks'
 import UserSearchInput from '../UserSearchInput'
+import ConfirmActionModal from '../ConfirmActionModal'
 import { formatMessageTimestamp } from '../../utils/dateFormat'
 
 // Sanitize legacy HTML messages - only allow <a> tags with href attribute
@@ -824,27 +825,21 @@ const MessageInbox = ({ data }) => {
         onSendAsChange={setSendAsUser}
       />
 
-      {/* Delete confirmation modal */}
-      {deleteConfirmOpen && (
-        <div className="message-inbox-modal-overlay" onClick={cancelDelete}>
-          <div className="message-inbox-modal" onClick={(e) => e.stopPropagation()}>
-            <h3 className="message-inbox-modal-title">
-              Delete Message
-            </h3>
-            <p className="message-inbox-modal-text">
-              Are you sure you want to permanently delete this message? This action cannot be undone.
-            </p>
-            <div className="message-inbox-modal-actions">
-              <button onClick={cancelDelete} className="message-inbox-modal-cancel">
-                Cancel
-              </button>
-              <button onClick={confirmDelete} className="message-inbox-modal-confirm">
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete confirmation modal. Was a hand-rolled overlay div using
+          message-inbox-modal-* classes that never had matching CSS rules
+          after the Jan 2026 inline-styles → BEM refactor (commit 9c6e30ab6) —
+          which is why the modal rendered inline at the bottom of the page
+          instead of as a centered overlay. Swapped to the shared
+          ConfirmActionModal so this can't drift out of sync again. */}
+      <ConfirmActionModal
+        isOpen={deleteConfirmOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Message"
+        message="Are you sure you want to permanently delete this message? This action cannot be undone."
+        confirmLabel="Delete"
+        confirmStyle="danger"
+      />
     </div>
   )
 }
