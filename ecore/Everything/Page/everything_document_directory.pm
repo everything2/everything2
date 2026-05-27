@@ -157,6 +157,16 @@ sub buildReactData {
         };
     }
 
+    # Mirror the role gating from the filter block above so the client can
+    # populate the type-filter <select> with exactly the types this user is
+    # allowed to choose (#4100). Single source of truth — if a type is added
+    # to the filter switch above, add it here too.
+    my @available_nodetypes = qw(superdoc document superdocnolinks);
+    push @available_nodetypes, 'oppressor_superdoc'   if $is_editor;
+    push @available_nodetypes, 'restricted_superdoc'  if $is_admin;
+    push @available_nodetypes, 'restricted_testdoc'   if $is_admin;
+    push @available_nodetypes, 'Edevdoc'              if $is_developer;
+
     return {
         type => 'everything_document_directory',
         documents => \@documents,
@@ -166,6 +176,7 @@ sub buildReactData {
         current_sort => $sort_order,
         filter_user => $filter_user_title,
         filter_nodetype => $filtered_type,
+        available_nodetypes => \@available_nodetypes,
         permissions => {
             is_admin => $is_admin ? 1 : 0,
             is_editor => $is_editor ? 1 : 0,

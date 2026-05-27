@@ -14,6 +14,7 @@ const EverythingDocumentDirectory = ({ data, e2 }) => {
     current_sort = '0',
     filter_user = '',
     filter_nodetype = '',
+    available_nodetypes = [],
     permissions = {},
     error,
     message
@@ -111,14 +112,21 @@ const EverythingDocumentDirectory = ({ data, e2 }) => {
         <div className="doc-directory__form-group">
           <label className="doc-directory__label">
             only show nodes of type{' '}
-            <input
-              type="text"
+            {/* Was a free-text input; users had to know the exact slug.
+                Server-side filter only honors a closed set of types gated
+                on role — replaced with a <select> populated from
+                available_nodetypes (#4100). */}
+            <select
               name="filter_nodetype"
               value={filterNodetype}
               onChange={(e) => setFilterNodetype(e.target.value)}
-              className="doc-directory__text-input"
-              placeholder="nodetype"
-            />
+              className="doc-directory__select"
+            >
+              <option value="">(all types)</option>
+              {available_nodetypes.map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
           </label>
         </div>
 
