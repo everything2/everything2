@@ -5045,9 +5045,32 @@ sub sendPrivateMessage
   my @errors = ();
 
   foreach my $recip (@recipient_list) {
-    # Get recipient node if string provided
-    my $recipient_node = $recip;
-    if (!ref($recip)) {
+    # Resolve recipient to a fully-loaded node hashref. Three forms accepted:
+    #   * integer node_id (cool.pm-style: pass $writeup->author_user)
+    #   * full hashref already loaded from DB
+    #   * stub hashref like { user_id => N } (sanctify.pm-style)
+    #   * string title (legacy /msg parsing)
+    # The defensive re-fetch on stubs is critical: without it, system-bot
+    # callers that build { user_id => N } and pass it in silently bypass
+    # message_forward_to because the stub has no such field. See #4142.
+    my $recipient_node;
+    if (ref($recip) eq 'HASH') {
+      # If the hashref doesn't carry message_forward_to (i.e., it wasn't
+      # round-tripped through getNodeById), re-fetch by id so forwarding +
+      # ignore checks see the real columns.
+      if (!exists $recip->{message_forward_to}
+          && ($recip->{user_id} || $recip->{node_id})) {
+        $recipient_node =
+          $this->{db}->getNodeById($recip->{user_id} || $recip->{node_id});
+      } else {
+        $recipient_node = $recip;
+      }
+    }
+    elsif (defined $recip && $recip =~ /^\d+$/) {
+      # Bare numeric node id.
+      $recipient_node = $this->{db}->getNodeById($recip);
+    }
+    else {
       my $name = $recip;
       my $name_with_spaces = $name;
       $name_with_spaces =~ s/_/ /g;
@@ -5057,11 +5080,11 @@ sub sendPrivateMessage
       $recipient_node = $this->{db}->getNode($name_with_spaces, 'user') unless $recipient_node;
       $recipient_node = $this->{db}->getNode($name, 'usergroup') unless $recipient_node;
       $recipient_node = $this->{db}->getNode($name_with_spaces, 'usergroup') unless $recipient_node;
+    }
 
-      unless ($recipient_node) {
-        push @errors, "Recipient not found: $recip";
-        next;
-      }
+    unless ($recipient_node) {
+      push @errors, "Recipient not found: $recip";
+      next;
     }
 
     # Check message forwarding
