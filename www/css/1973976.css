@@ -7038,6 +7038,26 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   text-align: left;
 }
 
+/* Portaled variant (#4139). When the popup is rendered into document.body
+   to escape ancestor overflow clipping, it uses position: fixed with JS-
+   computed coordinates instead of being anchored to the trigger. The
+   transform/bottom/left from the base rule no longer apply — JS sets top
+   and left absolutely. */
+.writeup-cool-tooltip--portaled {
+  position: fixed;
+  bottom: auto;
+  left: 0;       /* placeholder; overridden inline by JS */
+  top: 0;        /* placeholder; overridden inline by JS */
+  transform: none;
+  margin-bottom: 0;
+  max-width: min(300px, calc(100vw - 16px));
+  box-sizing: border-box;
+}
+
+.writeup-cool-tooltip--portaled.writeup-cool-tooltip--expanded {
+  max-width: min(400px, calc(100vw - 16px));
+}
+
 .writeup-cool-tooltip--expanded {
   max-width: 400px;
 }
