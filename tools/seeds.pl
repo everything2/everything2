@@ -1195,6 +1195,35 @@ if (!$ms_in_group) {
 $DB->updateNode($ms_writeup, -1);
 print STDERR "Multi-space test fixture (#3418): '$ms_e2node->{title}'\n";
 
+# Apostrophe-titled e2node fixture -- #4145 (server-side double-encoding).
+# Clockmaker reported (2026-05-27) that searching for "Neiboku's Secret
+# Library" infinite-looped through the redirect-to-canonical path because
+# rewriteCleanEscape was double-encoding the apostrophe. Same title is used
+# verbatim so the smoke test reproduces the exact reported case.
+my $apos_title = "Neiboku's Secret Library";
+my $apos_e2node = $DB->getNode($apos_title, "e2node");
+if (!$apos_e2node) {
+  my $apos_e2node_id = $DB->insertNode($apos_title, "e2node", $root);
+  $apos_e2node = $DB->getNodeById($apos_e2node_id);
+}
+my $apos_wu_title = "$apos_title (thing)";
+my $apos_writeup = $DB->getNode($apos_wu_title, "writeup");
+if (!$apos_writeup) {
+  my $apos_writeup_id = $DB->insertNode($apos_wu_title, "writeup", $normaluser1);
+  $apos_writeup = $DB->getNodeById($apos_writeup_id);
+}
+$apos_writeup->{parent_e2node} = $apos_e2node->{node_id};
+$apos_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
+$apos_writeup->{doctext} = "A short body so the e2node is not a nodeshell.";
+$apos_writeup->{publishtime} = $apos_writeup->{createtime};
+my $apos_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$apos_e2node->{node_id} AND node_id=$apos_writeup->{node_id}");
+if (!$apos_in_group) {
+  $DB->insertIntoNodegroup($apos_e2node, -1, $apos_writeup);
+}
+$DB->updateNode($apos_writeup, -1);
+print STDERR "Apostrophe test fixture (#4145): '$apos_e2node->{title}'\n";
+
 # C! assignments - normaluser1-20 all cool "good poetry" to test tooltip with many C!s
 my $cools = {
   "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"],

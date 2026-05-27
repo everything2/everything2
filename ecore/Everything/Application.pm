@@ -2955,12 +2955,22 @@ sub breakTags
 }
 
 sub rewriteCleanEscape {
-  my ($this,$string) = @_;
-  $string = CGI::escape(CGI::escape($string));
-  # Make spaces more readable
-  # But not for spaces at the start/end or next to other spaces
-  $string = "" if not defined($string);
-  $string =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;
+  my ($this, $string) = @_;
+  return "" if not defined($string);
+  # Single-encode. This used to double-encode (CGI::escape(CGI::escape(...)))
+  # as a survival hack so titles with URL-special chars made it through the
+  # old Apache→CGI→template round-trip. Once
+  # Everything::HTML::_recover_route_params_from_request_uri started reading
+  # REQUEST_URI directly and decoding once (#4060), double-encoded URLs
+  # decoded to literal %XX in the looked-up title and missed every node —
+  # the redirect-to-canonical path silently looped users on any title with
+  # an apostrophe or ampersand (#4145, reported by Clockmaker 2026-05-27).
+  # Must stay in sync with react/components/LinkNode.js and the helper.
+  $string = CGI::escape($string);
+  # Cosmetic: collapse mid-string %20 to '+' for readability. The helper
+  # decodes '+'→space, so this round-trips losslessly. Skip at start/end
+  # and inside %20 runs — '+'s there parse oddly and look strange in URLs.
+  $string =~ s/(?<!^)(?<!\%20)\%20(?!$)(?!\%20)/\+/gs;
   return $string;
 }
 
