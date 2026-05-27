@@ -79,14 +79,21 @@ const ConfirmActionModal = ({
   )
 }
 
-// react-modal requires style objects for positioning, but we use CSS classes for everything else
+// react-modal requires style objects for positioning, but we use CSS classes for everything else.
+//
+// `position: absolute` MUST be set here. Per react-modal's source (when a
+// `className` prop is given, the default content styles are discarded), so
+// without this the modal computes to `position: static` and falls into the
+// flex overlay's normal flow, after which the `transform: translate(-50%)`
+// shifts it off-screen. Symptom was the modal rendering with its left edge
+// at roughly -50px on mobile while looking fine on desktop — a flex-layout
+// + transform interaction. See #4139 / Star Trek #9: Triangle vote modal.
 const modalStyles = {
   overlay: {
     // Let CSS class handle styling via overlayClassName
   },
   content: {
-    // Let CSS class handle styling via className
-    // Only provide positioning overrides needed by react-modal
+    position: 'absolute',
     top: '50%',
     left: '50%',
     right: 'auto',

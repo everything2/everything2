@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { FaCaretUp, FaCaretDown, FaEnvelope, FaFacebookSquare, FaTwitterSquare, FaRedditSquare } from 'react-icons/fa'
 import ParseLinks from './ParseLinks'
 import LinkNode from './LinkNode'
@@ -17,8 +18,44 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
   const [showTooltip, setShowTooltip] = useState(false)
   const [isClickLocked, setIsClickLocked] = useState(false)
   const [showAll, setShowAll] = useState(false)
+  const [tooltipPos, setTooltipPos] = useState(null)
   const tooltipRef = useRef(null)
   const triggerRef = useRef(null)
+
+  // Tooltip is portaled into document.body so ancestor overflow:auto on the
+  // writeup footer table can't clip it (#4139). Because the popup escapes
+  // the trigger's DOM ancestry, we compute its absolute viewport position
+  // from the trigger's bounding rect each time the popup opens or its size
+  // changes. position: fixed avoids being shifted by document scroll.
+  useEffect(() => {
+    if (!showTooltip || !triggerRef.current) {
+      setTooltipPos(null)
+      return
+    }
+    const compute = () => {
+      const trig = triggerRef.current
+      if (!trig) return
+      const t = trig.getBoundingClientRect()
+      const tip = tooltipRef.current
+      const tipW = tip ? tip.offsetWidth : 240
+      const tipH = tip ? tip.offsetHeight : 60
+      // Center on trigger horizontally; clamp 8px from viewport edges.
+      let left = t.left + t.width / 2 - tipW / 2
+      left = Math.max(8, Math.min(left, window.innerWidth - tipW - 8))
+      // Prefer above the trigger; flip below if there's no room.
+      let top = t.top - tipH - 6
+      if (top < 8) top = t.bottom + 6
+      setTooltipPos({ top, left })
+    }
+    compute()
+    // Recompute on resize/scroll because position: fixed coords are viewport-relative.
+    window.addEventListener('resize', compute)
+    window.addEventListener('scroll', compute, true)
+    return () => {
+      window.removeEventListener('resize', compute)
+      window.removeEventListener('scroll', compute, true)
+    }
+  }, [showTooltip, showAll, cools && cools.length])
 
   // Close tooltip when clicking outside
   useEffect(() => {
@@ -85,15 +122,17 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
     >
       {coolCount} <b>C!</b>{coolCount === 1 ? '' : 's'}
 
-      {/* Tooltip popup - uses Kernel Blue theme colors */}
-      {showTooltip && cools && cools.length > 0 && (
+      {/* Tooltip popup — portaled into document.body so the writeup footer
+          table's overflow:auto (and any other clipping ancestor) can't
+          obscure it on mobile (#4139). JS-computed position because we've
+          escaped the trigger's DOM ancestry. */}
+      {showTooltip && cools && cools.length > 0 && createPortal(
         <span
           ref={tooltipRef}
           onClick={(e) => e.stopPropagation()}
-          className={`writeup-cool-tooltip${showAll ? ' writeup-cool-tooltip--expanded' : ''}`}
+          className={`writeup-cool-tooltip writeup-cool-tooltip--portaled${showAll ? ' writeup-cool-tooltip--expanded' : ''}`}
+          style={tooltipPos ? { top: `${tooltipPos.top}px`, left: `${tooltipPos.left}px` } : { visibility: 'hidden' }}
         >
-          {/* Arrow pointing down */}
-          <span className="writeup-cool-tooltip-arrow" />
           {/* Show users up to displayLimit */}
           {cools.slice(0, displayLimit).map((c, i) => (
             <span key={c.node_id || i}>
@@ -114,7 +153,8 @@ const CoolTooltip = ({ cools, coolCount, nodeId }) => {
               </a>
             </span>
           )}
-        </span>
+        </span>,
+        document.body
       )}
     </span>
   )
