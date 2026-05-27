@@ -27,7 +27,11 @@ const UserToolsModal = ({ user, viewer, isOpen, onClose }) => {
 
   const tools = [
     { id: 'info', label: 'User Info', icon: FaInfoCircle },
-    { id: 'moderation', label: 'Moderation', icon: FaGavel }
+    { id: 'moderation', label: 'Moderation', icon: FaGavel },
+    // Blocks tab (#4133) — read-only view of who this user ignores and
+    // who ignores them. Editor/chanop-gated; data only populated by the
+    // controller for the same audience.
+    { id: 'blocks', label: 'Blocks', icon: FaBan }
   ]
 
   // Add Bestow tab for editors and admins
@@ -95,6 +99,10 @@ const UserToolsModal = ({ user, viewer, isOpen, onClose }) => {
 
             {selectedTool === 'moderation' && (
               <ModerationPanel user={user} viewer={viewer} />
+            )}
+
+            {selectedTool === 'blocks' && (
+              <BlocksPanel user={user} />
             )}
 
             {selectedTool === 'bestow' && (
@@ -279,6 +287,67 @@ const ModerationPanel = ({ user, viewer }) => {
         )}
 
       </div>
+    </div>
+  )
+}
+
+/**
+ * BlocksPanel — read-only view of who this user blocks (ignoring) and
+ * who blocks them (ignored_by). Surfaces messageignore data that used
+ * to live on the deleted Mason `your_ignore_list.mc` page (#4133).
+ *
+ * Data is populated by Everything::Controller::user for editors/chanops
+ * only — so this panel can trust that `user.ignoring` / `user.ignored_by`
+ * are present whenever the panel is reachable (the tab is also gated by
+ * the parent modal's viewer-role check).
+ */
+const BlocksPanel = ({ user }) => {
+  const ignoring   = Array.isArray(user.ignoring)   ? user.ignoring   : []
+  const ignoredBy  = Array.isArray(user.ignored_by) ? user.ignored_by : []
+
+  // Render a single block-list section. Both directions use the same
+  // markup; only the header text and dataset differ.
+  const Section = ({ heading, entries, emptyMessage }) => (
+    <section className="blocks-panel__section">
+      <h4 className="blocks-panel__heading">{heading}</h4>
+      {entries.length === 0 ? (
+        <p className="blocks-panel__empty"><em>{emptyMessage}</em></p>
+      ) : (
+        <ol className="blocks-panel__list">
+          {entries.map(entry => (
+            <li key={entry.node_id} className="blocks-panel__item">
+              <LinkNode
+                type={entry.type || 'user'}
+                title={entry.title}
+                className="blocks-panel__link"
+              />
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  )
+
+  return (
+    <div className="blocks-panel">
+      <h3>Message Blocks</h3>
+      <p className="blocks-panel__intro">
+        Read-only view of who <strong>{user.title}</strong> has blocked and
+        who has blocked them. To change blocks, the user themselves must use
+        the <LinkNode type="superdoc" title="Pit of Abomination" display="Pit of Abomination" /> page.
+      </p>
+
+      <Section
+        heading={`${user.title} is ignoring`}
+        entries={ignoring}
+        emptyMessage="no one"
+      />
+
+      <Section
+        heading={`Users ignoring ${user.title}`}
+        entries={ignoredBy}
+        emptyMessage="no one"
+      />
     </div>
   )
 }

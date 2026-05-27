@@ -185,6 +185,13 @@ sub display {
         if ($target_vars->{ipaddy}) {
             $profile->{ip_blacklisted} = $self->APP->is_ip_blacklisted($target_vars->{ipaddy}) ? 1 : 0;
         }
+
+        # Block lists for the Blocks panel in UserToolsModal (#4133). Two
+        # directions: users this person ignores, and users that ignore this
+        # person. Data plumbing lives on Everything::Node::user. Editor-
+        # gated for mediation review; the panel itself is read-only.
+        $profile->{ignoring}    = $node->ignoring_messages_from(1);
+        $profile->{ignored_by}  = $node->messages_ignored_by(1);
     }
 
     # Build contentData for React
