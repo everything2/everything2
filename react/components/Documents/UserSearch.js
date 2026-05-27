@@ -465,7 +465,7 @@ const UserSearch = ({ data, user }) => {
                             </span>
                           )}
                         </td>
-                        <td className={getTdClassName('title')}>
+                        <td className={`${getTdClassName('title')} user-search__td--title`}>
                           <LinkNode
                             type="writeup"
                             title={wu.parent_title || wu.title}

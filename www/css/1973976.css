@@ -34927,13 +34927,18 @@ a.node-toolset__btn {
   color: #999;
 }
 
+/* Vote up/down indicators. Up uses Kernel Blue's active-teal accent
+   (--e2-color-active = #3bb5c3) rather than Bootstrap green so it
+   stays in palette across themes. Down keeps red — strong-negative
+   signal is conventional, and themes override --e2-text-error
+   anyway. */
 .user-search__vote-up {
-  color: #28a745;
+  color: var(--e2-color-active, #3bb5c3);
   font-weight: bold;
 }
 
 .user-search__vote-down {
-  color: #dc3545;
+  color: var(--e2-text-error, #dc3545);
   font-weight: bold;
 }
 
@@ -35033,6 +35038,77 @@ a.node-toolset__btn {
   text-decoration: underline;
   padding: 0;
   font: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   #3821 — Mobile stacked-card layout for the writeups table
+   --------------------------------------------------------------------------
+   At desktop widths the table fits 4 columns comfortably. Below 600px
+   the columns collapse to ~90px each and titles wrap into 4–5 lines.
+   This block converts the table to a stacked card layout per row so
+   titles get full row width.
+
+   Class gate: `.user-search--mobile` (toggled by UserSearch.js via the
+   useIsMobile() hook). Using the class instead of @media so the
+   breakpoint matches what JS treats as mobile.
+   -------------------------------------------------------------------------- */
+.user-search--mobile .user-search__table,
+.user-search--mobile .user-search__table tbody,
+.user-search--mobile .user-search__table tr {
+  display: block;
+  width: 100%;
+}
+
+/* Hide the column headers — labels are implicit in the stacked layout. */
+.user-search--mobile .user-search__table thead {
+  display: none;
+}
+
+/* Each writeup row becomes a card laid out as flex so we can re-order
+   the title above the metadata strip regardless of DOM order (Cools
+   precedes Title in markup). box-sizing: border-box is required —
+   without it the 100% width plus padding + border push the right edge
+   off the viewport on 375px. */
+.user-search--mobile .user-search__table tr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: white;
+  box-sizing: border-box;
+}
+
+/* Non-title cells form the metadata strip on the second line. */
+.user-search--mobile .user-search__td {
+  padding: 2px 0;
+  text-align: left !important;
+  border: none;
+  font-size: 13px;
+  color: #507898;
+}
+
+/* Title hoists to its own row at the top. flex-basis: 100% + order: -1
+   pulls it above Cools in DOM order; the other cells then sit on the
+   row below in their natural order (Cools, Rep, Date). */
+.user-search--mobile .user-search__td--title {
+  order: -1;
+  flex-basis: 100%;
+  font-size: 15px;
+  font-weight: 500;
+  color: #38495e;
+  margin-bottom: 6px;
+}
+
+/* Touch-target sizing for the form inputs (was 32–34px, below the 44px
+   minimum). Same scope so it's clear these came together. */
+.user-search--mobile .user-search__input,
+.user-search--mobile .user-search__btn,
+.user-search--mobile .user-search__select {
+  min-height: 44px;
 }
 
 /* ==========================================================================
