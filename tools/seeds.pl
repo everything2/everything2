@@ -1224,6 +1224,34 @@ if (!$apos_in_group) {
 $DB->updateNode($apos_writeup, -1);
 print STDERR "Apostrophe test fixture (#4145): '$apos_e2node->{title}'\n";
 
+# Hash-titled e2node fixture -- #4132 (JD/cruxfau: Star Trek #9: Triangle).
+# A bare '#' in an href makes browsers truncate at the fragment, so the
+# server only saw "/title/Star Trek " until LinkNode learned to encode '#'.
+# Seeded so the smoke test can verify the round-trip end-to-end.
+my $hash_title = "Star Trek #9: Triangle";
+my $hash_e2node = $DB->getNode($hash_title, "e2node");
+if (!$hash_e2node) {
+  my $hash_e2node_id = $DB->insertNode($hash_title, "e2node", $root);
+  $hash_e2node = $DB->getNodeById($hash_e2node_id);
+}
+my $hash_wu_title = "$hash_title (review)";
+my $hash_writeup = $DB->getNode($hash_wu_title, "writeup");
+if (!$hash_writeup) {
+  my $hash_writeup_id = $DB->insertNode($hash_wu_title, "writeup", $normaluser1);
+  $hash_writeup = $DB->getNodeById($hash_writeup_id);
+}
+$hash_writeup->{parent_e2node} = $hash_e2node->{node_id};
+$hash_writeup->{wrtype_writeuptype} = $thing_writeuptype->{node_id};
+$hash_writeup->{doctext} = "A short body so the e2node is not a nodeshell.";
+$hash_writeup->{publishtime} = $hash_writeup->{createtime};
+my $hash_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+  "nodegroup_id=$hash_e2node->{node_id} AND node_id=$hash_writeup->{node_id}");
+if (!$hash_in_group) {
+  $DB->insertIntoNodegroup($hash_e2node, -1, $hash_writeup);
+}
+$DB->updateNode($hash_writeup, -1);
+print STDERR "Hash test fixture (#4132): '$hash_e2node->{title}'\n";
+
 # C! assignments - normaluser1-20 all cool "good poetry" to test tooltip with many C!s
 my $cools = {
   "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"],

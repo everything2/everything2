@@ -271,6 +271,19 @@ sub resolve_and_check {
 }
 
 {
+	# Hash in title — JD/cruxfau case (#4132). Single % verifies that the
+	# encoded URL round-trips correctly: LinkNode emits '%23' for '#', the
+	# server-side helper decodes it back to '#' for lookup.
+	my $hash = $DB->getNode('Star Trek #9: Triangle', 'e2node');
+	if ($hash) {
+		resolve_and_check('Star Trek #9: Triangle',
+			qr/Star\s+Trek\s+#9/i);
+	} else {
+		diag('skipping hash case — fixture not present (re-run qareload)');
+	}
+}
+
+{
 	# Multi-space title — #3418 fixture. Verifies both that
 	# rewriteCleanEscape preserves the run (as %20%20) and that the helper
 	# decodes it back to a real double space.
