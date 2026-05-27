@@ -48,16 +48,15 @@ sub buildReactData
                 next;
             }
 
-            # Send notification via Cool Man Eddie
+            # Send notification via Cool Man Eddie. Route through
+            # sendPrivateMessage so message_forward_to and messageignore
+            # apply uniformly with every other system bot (#4142).
             my $cme = $DB->getNode( 'Cool Man Eddie', 'user' );
             if ($cme) {
-                $DB->sqlInsert(
-                    'message',
-                    {
-                        msgtext     => 'Whoa! Somebody has given you a [token]! Use it to [E2 Gift Shop|reset the chatterbox topic].',
-                        author_user => $cme->{node_id},
-                        for_user    => $target_user->{node_id}
-                    }
+                $APP->sendPrivateMessage(
+                    $cme,
+                    $target_user,
+                    'Whoa! Somebody has given you a [token]! Use it to [E2 Gift Shop|reset the chatterbox topic].',
                 );
             }
 

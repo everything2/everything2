@@ -1580,8 +1580,16 @@ sub ilikeit
   {
     my $msgText = 'Hey, sweet! Someone likes your writeup titled "[' . getNode($$LIKE{parent_e2node})->{title} . ']!"';
 
+    # Path is currently disabled (ilikeit is shelved pending other bug
+    # investigations). Fixed the stray comma in 'msgtext' => , $msgText —
+    # that parses as msgtext=>undef and an orphan $msgText key, producing
+    # blank-text messages if this ever fired. Pre-emptive cleanup so the
+    # syntax isn't waiting to bite us when the feature is re-enabled. When
+    # we wire it back up, this should route through
+    # Everything::Application::sendPrivateMessage like every other system-
+    # bot path (#4142), not stay as a raw insert.
     $DB->sqlInsert('message',{
-      'msgtext' => , $msgText,
+      'msgtext' => $msgText,
       'author_user' => getId(getNode('Cool Man Eddie', 'user')),
       'for_user' => $$LIKE{author_user},
       'for_usergroup' => 0,

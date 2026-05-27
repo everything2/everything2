@@ -67,12 +67,18 @@ sub bestow
         $target_vars->{easter_eggs} = ($target_vars->{easter_eggs} || 0) + 1;
         $target_user->set_vars($target_vars);
 
-        # Send notification via Cool Man Eddie
-        $self->APP->sendPrivateMessage(
-            $target_user->NODEDATA,
-            'Far out! Somebody has given you an [easter egg].',
-            'Cool Man Eddie'
-        );
+        # Send notification via Cool Man Eddie. Args were previously in the
+        # wrong order (recipient as author, message as recipient, author-
+        # name as message) — sendPrivateMessage's signature is
+        # (author, recipient, message, options). #4142 fix.
+        my $cme = $self->DB->getNode('Cool Man Eddie', 'user');
+        if ($cme) {
+            $self->APP->sendPrivateMessage(
+                $cme,
+                $target_user->NODEDATA,
+                'Far out! Somebody has given you an [easter egg].',
+            );
+        }
 
         my $target_title = $target_user->title;
         push @results, {

@@ -93,15 +93,26 @@ sub award_cool {
         return [$self->HTTP_OK, { success => 0, error => 'Failed to award C!' }];
     }
 
-    # Send Cool Man Eddie message to the writeup author
+    # Send Cool Man Eddie message to the writeup author. Two opt-out gates:
+    #   1. The author's no_coolnotification user-var (per-author setting —
+    #      "don't notify me when my writeups are cooled"). Lives here in the
+    #      cool API because it's cool-specific, not a general message rule.
+    #   2. message_forward_to / messageignore / etc., handled by
+    #      sendPrivateMessage. The previous raw sqlInsert bypassed all of
+    #      these and was the root of #4142 — cool notifications addressed to
+    #      Decaversal Studios never reached Jet-Poop's forwarded inbox.
     my $eddie = $self->DB->getNode('Cool Man Eddie', 'user');
     my $parent = $writeup->parent;
     if ($eddie && $parent) {
-        $self->DB->sqlInsert('message', {
-            'author_user' => $eddie->{node_id},
-            'for_user' => $writeup->author_user,
-            'msgtext' => 'Hey, [' . $user->title . '[user]] just cooled [' . $parent->title . '], baby!',
-        });
+        my $author_vars = $self->APP->getVars(
+            $self->DB->getNodeById($writeup->author_user));
+        unless ($author_vars && $author_vars->{no_coolnotification}) {
+            $self->APP->sendPrivateMessage(
+                $eddie,
+                $writeup->author_user,
+                'Hey, [' . $user->title . '[user]] just cooled [' . $parent->title . '], baby!',
+            );
+        }
     }
 
     return [$self->HTTP_OK, {
@@ -281,19 +292,23 @@ sub toggle_bookmark
       food => 0
     });
 
-    # Send Cool Man Eddie message for writeups (if author hasn't disabled it)
+    # Send Cool Man Eddie message for writeups. Two opt-out gates, same
+    # structure as award_cool above (#4142):
+    #   1. no_bookmarkinformer user-var on the author (bookmark-specific
+    #      opt-out, stays caller-side because it's bookmark-only logic)
+    #   2. message_forward_to / messageignore — handled by sendPrivateMessage
     if ($node->type->title eq 'writeup') {
       my $eddie = $DB->getNode('Cool Man Eddie', 'user');
       my $author = $APP->node_by_id($node->author_user);
       my $author_vars = $author ? $author->VARS : {};
 
-      # Only send if: user isn't bookmarking their own writeup, author hasn't disabled notifications, and Eddie exists
+      # Skip if: user is bookmarking own writeup, author opted out, or Eddie missing.
       if ($eddie && $author && $user_id != $node->author_user && !$author_vars->{no_bookmarkinformer}) {
-        $DB->sqlInsert('message', {
-          'author_user' => $eddie->{node_id},
-          'for_user' => $node->author_user,
-          'msgtext' => 'Yo, your writeup [' . $node->title . '] was bookmarked. Dig it, baby.',
-        });
+        $APP->sendPrivateMessage(
+          $eddie,
+          $node->author_user,
+          'Yo, your writeup [' . $node->title . '] was bookmarked. Dig it, baby.',
+        );
       }
     }
 
