@@ -49,8 +49,13 @@ const WriteupsByType = ({ data }) => {
     return cls
   }
 
-  const hasPrev = current_page > 0
-  const hasNext = writeups.length === current_count
+  // Coerce defensively — the server has been seen to return current_count
+  // as a stringy "10" (CGI::param preserves the string flag through int()),
+  // which would silently break the === comparison and disable Next.
+  const pageNum  = Number(current_page) || 0
+  const countNum = Number(current_count) || 0
+  const hasPrev  = pageNum > 0
+  const hasNext  = countNum > 0 && writeups.length === countNum
 
   return (
     <div className="writeups-by-type">
@@ -144,7 +149,7 @@ const WriteupsByType = ({ data }) => {
           {/* Pagination */}
           <div className="writeups-by-type__pagination">
             {hasPrev ? (
-              <a href={buildPageUrl(current_page - 1)} className="writeups-by-type__nav-link">
+              <a href={buildPageUrl(pageNum - 1)} className="writeups-by-type__nav-link">
                 &lt;&lt; Prev
               </a>
             ) : (
@@ -152,11 +157,11 @@ const WriteupsByType = ({ data }) => {
             )}
 
             <span className="writeups-by-type__page-num">
-              Page {current_page + 1}
+              Page {pageNum + 1}
             </span>
 
             {hasNext ? (
-              <a href={buildPageUrl(current_page + 1)} className="writeups-by-type__nav-link">
+              <a href={buildPageUrl(pageNum + 1)} className="writeups-by-type__nav-link">
                 Next &gt;&gt;
               </a>
             ) : (

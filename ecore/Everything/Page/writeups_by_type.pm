@@ -86,15 +86,20 @@ sub buildReactData {
     # Count options for dropdown
     my @count_options = (10, 25, 50, 75, 100, 150, 200, 250, 500);
 
+    # Numeric coercion via "+ 0" forces JSON to serialize these as numbers.
+    # CGI::param returns strings; int() preserves the string flag on its
+    # output internally, so JSON would otherwise emit "current_count":"10"
+    # instead of 10. The React side's hasNext check uses ===, so a stringy
+    # count silently disables the Next link.
     return {
         type => 'writeups_by_type',
         writeups => \@writeups,
         type_options => \@type_options,
         count_options => \@count_options,
-        current_type => $wuType,
+        current_type => $wuType + 0,
         current_type_name => $selected_type_name,
-        current_count => $count,
-        current_page => $page
+        current_count => $count + 0,
+        current_page => $page + 0
     };
 }
 
