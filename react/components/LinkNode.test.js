@@ -89,6 +89,17 @@ describe('LinkNode Component', () => {
       expect(href).not.toContain('%2526');
     });
 
+    it('encodes # so titles with hashes survive the browser fragment cut (GitHub #4132)', () => {
+      // Bare # in an href makes the browser treat everything after it as
+      // the URL fragment and never send it to the server. Title
+      // "Star Trek #9: Triangle" silently became "/title/Star Trek " on
+      // the wire (reported by JD/cruxfau).
+      render(<LinkNode title="Star Trek #9: Triangle" />);
+      const href = screen.getByRole('link').getAttribute('href');
+      expect(href).toContain('%23');
+      expect(href).not.toMatch(/\/title\/[^?]*#9/);
+    });
+
     it('shows decoded title in hover text for entity titles', () => {
       render(<LinkNode title="Q&amp;A Forum" display="Q&A" />);
       const link = screen.getByRole('link');

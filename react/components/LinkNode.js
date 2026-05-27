@@ -54,8 +54,13 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params,styl
       // Everything::HTML::_recover_route_params_from_request_uri (#4060) decodes
       // REQUEST_URI exactly once, so double-encoding here would now resolve to
       // literal "%26" in the looked-up node title and miss every node.
+      //
+      // '#' is in the set because an unencoded '#' makes the browser treat
+      // everything after it as a URL fragment and never send it to the
+      // server — so titles like "Star Trek #9: Triangle" silently truncate
+      // to "/title/Star Trek " on the wire (#4132).
       originalDecodedTitle = decodeHtmlEntities(title)
-      title = originalDecodedTitle.replace(/[\&@\+\/\;\?]/g, (match) => {return encodeURIComponent(match)});
+      title = originalDecodedTitle.replace(/[\&@\+\/\;\?#]/g, (match) => {return encodeURIComponent(match)});
     }
 
     if(author != undefined)
