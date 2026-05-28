@@ -1,5 +1,80 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { FaAlignLeft, FaAlignCenter, FaAlignRight } from 'react-icons/fa';
+
+/**
+ * LiteralCharDropdown - menu for inserting characters that the parser would
+ * otherwise eat: [, ] (E2 link syntax) and <, > (HTML-tag-shaped, stripped by
+ * the sanitizer). Each item invokes the corresponding insertRaw* command on
+ * the editor; they serialize to &#91;/&#93;/&#60;/&#62; entities via
+ * convertRawBracketsToEntities and survive the sanitizer's placeholder pass.
+ */
+const LITERAL_CHARS = [
+  { label: '[',  command: 'insertRawLeftBracket',  title: 'Insert literal [ (won’t be parsed as E2 link)' },
+  { label: ']',  command: 'insertRawRightBracket', title: 'Insert literal ] (won’t be parsed as E2 link)' },
+  { label: '<',  command: 'insertRawLessThan',    title: 'Insert literal < (won’t be stripped as HTML tag)' },
+  { label: '>',  command: 'insertRawGreaterThan', title: 'Insert literal > (won’t be stripped as HTML tag)' },
+];
+
+const LiteralCharDropdown = ({ editor }) => {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocClick = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    const onKeyDown = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
+
+  const insert = (commandName) => {
+    if (!editor) return;
+    const chain = editor.chain().focus();
+    if (typeof chain[commandName] === 'function') {
+      chain[commandName]().run();
+    }
+    setOpen(false);
+  };
+
+  return (
+    <div className="editor-menubar__dropdown" ref={wrapperRef}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="editor-menubar__btn"
+        title="Insert literal punctuation"
+        aria-haspopup="menu"
+        aria-expanded={open}
+      >
+        {'[<…>]'}
+      </button>
+      {open && (
+        <div className="editor-menubar__dropdown-menu" role="menu">
+          {LITERAL_CHARS.map(item => (
+            <button
+              key={item.command}
+              type="button"
+              role="menuitem"
+              onClick={() => insert(item.command)}
+              className="editor-menubar__dropdown-item"
+              title={item.title}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 /**
  * MenuBar - Toolbar for the Tiptap editor
@@ -231,24 +306,9 @@ const MenuBar = ({ editor }) => {
         </button>
       </div>
 
-      {/* Raw Brackets */}
+      {/* Literal punctuation (chars the parser would otherwise eat) */}
       <div className="editor-menubar__group">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().insertRawLeftBracket().run()}
-          className={btnClass(false)}
-          title="Insert Raw Left Bracket (won't be parsed as link)"
-        >
-          &#91;
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().insertRawRightBracket().run()}
-          className={btnClass(false)}
-          title="Insert Raw Right Bracket (won't be parsed as link)"
-        >
-          &#93;
-        </button>
+        <LiteralCharDropdown editor={editor} />
       </div>
 
       {/* Table */}

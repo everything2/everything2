@@ -205,10 +205,23 @@ function convertH1ToH2(html) {
     .replace(/<\/h1>/gi, '</h2>')
 }
 
-// Placeholders for raw bracket entities during sanitization
-// These must not appear in normal content and survive DOMPurify
+// Placeholders for raw-literal entities during sanitization. DOMPurify decodes
+// HTML entities while parsing \u2014 so `&#91;`/`&#93;` for bracketed text would
+// become literal `[`/`]` and the E2 link parser would then see them as links,
+// and `&#60;`/`&#62;` would become `<`/`>` and look like (probably unknown)
+// tags that DOMPurify itself then strips. Replace with placeholders before
+// DOMPurify, then restore after.
+//
+// Restoration char differs by type:
+// - `[`/`]` restore to the literal char because the browser HTML renderer
+//   doesn't care about them.
+// - `<`/`>` restore to the entity form (`&lt;`/`&gt;`) because the eventual
+//   serialized HTML needs them entity-encoded \u2014 restoring to a literal `<`
+//   would re-introduce the original parse-as-tag bug at the next innerHTML.
 const RAW_LEFT_BRACKET_PLACEHOLDER = '\uE000E2RAWLBRACKET\uE001'
 const RAW_RIGHT_BRACKET_PLACEHOLDER = '\uE000E2RAWRBRACKET\uE001'
+const RAW_LT_PLACEHOLDER = '\uE000E2RAWLT\uE001'
+const RAW_GT_PLACEHOLDER = '\uE000E2RAWGT\uE001'
 
 /**
  * Sanitize HTML using DOMPurify with E2's approved tags configuration
@@ -230,12 +243,14 @@ export function sanitizeHtml(html, options = {}) {
   // Convert h1 to h2 for proper heading hierarchy (page title is the only h1)
   let processedHtml = convertH1ToH2(html)
 
-  // Protect raw bracket entities from being decoded by DOMPurify
-  // &#91; and &#93; are used for literal brackets that shouldn't become E2 links
-  // DOMPurify decodes entities when parsing HTML, so we replace them with placeholders
+  // Protect raw-literal entities from DOMPurify's parse-time decode.
+  // - &#91; / &#93; survive so the E2 link parser ignores them ([text] vs &#91;text&#93;).
+  // - &#60; / &#62; survive so DOMPurify doesn't see `<text>` and strip it as a tag.
   processedHtml = processedHtml
     .replace(/&#91;/g, RAW_LEFT_BRACKET_PLACEHOLDER)
     .replace(/&#93;/g, RAW_RIGHT_BRACKET_PLACEHOLDER)
+    .replace(/&#60;/g, RAW_LT_PLACEHOLDER)
+    .replace(/&#62;/g, RAW_GT_PLACEHOLDER)
 
   // Set up hooks to track removed elements if requested
   if (reportIssues) {
@@ -276,11 +291,13 @@ export function sanitizeHtml(html, options = {}) {
     sanitized = parseE2Links(sanitized)
   }
 
-  // Restore raw bracket entities after link parsing
-  // These should now render as literal [ and ] characters
+  // Restore raw-literal placeholders. See the RAW_*_PLACEHOLDER comment block
+  // above for why `<`/`>` restore to the entity form and `[`/`]` restore literal.
   sanitized = sanitized
     .replace(new RegExp(RAW_LEFT_BRACKET_PLACEHOLDER, 'g'), '[')
     .replace(new RegExp(RAW_RIGHT_BRACKET_PLACEHOLDER, 'g'), ']')
+    .replace(new RegExp(RAW_LT_PLACEHOLDER, 'g'), '&lt;')
+    .replace(new RegExp(RAW_GT_PLACEHOLDER, 'g'), '&gt;')
 
   return { html: sanitized, issues }
 }

@@ -1281,4 +1281,35 @@ And some [links] too.`
       expect(html).not.toContain('<a href')
     })
   })
+
+  describe('raw angle-bracket entity preservation (issue #4168)', () => {
+    it('preserves &#60; / &#62; as &lt; / &gt; (display would render as literal < / >)', () => {
+      // Without placeholder protection, DOMPurify decodes &#60; to `<`, sees
+      // `<int>` as an unknown tag, and strips it — losing the user's content.
+      const input = 'C++ template: vector&#60;int&#62; v'
+      const { html } = sanitizeHtml(input)
+      expect(html).toContain('&lt;int&gt;')
+      expect(html).not.toContain('<int>')
+    })
+
+    it('preserves &#60; without a matching &#62; (open-ended)', () => {
+      const input = 'comparison: a &#60; b is true'
+      const { html } = sanitizeHtml(input)
+      expect(html).toContain('a &lt; b')
+    })
+
+    it('coexists with &#91; / &#93; in the same content', () => {
+      const input = 'Use &#91;vector&#60;int&#62;&#93; for typed arrays'
+      const { html } = sanitizeHtml(input)
+      expect(html).toContain('[vector&lt;int&gt;]')
+      expect(html).not.toContain('<a href')
+    })
+
+    it('survives renderE2Content (the breakTags+sanitize entrypoint)', () => {
+      const input = 'pseudo: &#60;your-name-here&#62; goes in slot'
+      const { html } = renderE2Content(input)
+      expect(html).toContain('&lt;your-name-here&gt;')
+      expect(html).not.toContain('<your-name-here>')
+    })
+  })
 })

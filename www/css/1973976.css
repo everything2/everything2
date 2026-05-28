@@ -17680,6 +17680,41 @@ a.node-toolset__btn {
   color: #666;
 }
 
+.editor-menubar__dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.editor-menubar__dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  min-width: 36px;
+  margin-top: 2px;
+}
+
+.editor-menubar__dropdown-item {
+  padding: 6px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: monospace;
+  font-size: 14px;
+  color: #333;
+}
+
+.editor-menubar__dropdown-item:hover {
+  background-color: #e8f4f8;
+}
+
 /* Mobile: let buttons flow individually instead of wrapping as groups */
 @media (max-width: 600px) {
   .editor-menubar {
