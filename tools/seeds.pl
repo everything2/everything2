@@ -1260,6 +1260,50 @@ if (!$hash_in_group) {
 $DB->updateNode($hash_writeup, -1);
 print STDERR "Hash test fixture (#4132): '$hash_e2node->{title}'\n";
 
+# Editor cools fixture -- #3737. The 'editor cools XML ticker' iterates the
+# 'coolnodes' nodegroup and joins to the 'links' table where linktype is
+# 'coollink' and from_node is a coolnodes member. In prod the data shape
+# is populated by editor activity; dev had bad seed state (coolnodes group
+# contained random utility pages with no coollinks pointing FROM them),
+# so the ticker output looked empty and led to a not-broken report. Seed
+# a few real picks so the ticker has data in dev.
+{
+  my $cn_group = $DB->getNode('coolnodes', 'nodegroup');
+  my $coollink = $DB->getNode('coollink', 'linktype');
+  if ($cn_group && $coollink) {
+    my @editor_picks = (
+      ['good poetry',          $genericed],
+      ['Quick brown fox',      $genericed],
+      ['tomato',               $genericed],
+    );
+    for my $pick (@editor_picks) {
+      my ($title, $endorser) = @$pick;
+      my $e2 = $DB->getNode($title, 'e2node');
+      next unless $e2;
+      # Add to coolnodes nodegroup if not already a member.
+      my $already_in_group = $DB->sqlSelect('COUNT(*)', 'nodegroup',
+        "nodegroup_id=$cn_group->{node_id} AND node_id=$e2->{node_id}");
+      unless ($already_in_group) {
+        $DB->insertIntoNodegroup($cn_group, -1, $e2);
+      }
+      # Add the coollink row pointing e2node -> endorser if not present.
+      my $link_exists = $DB->sqlSelect('COUNT(*)', 'links',
+        "from_node=$e2->{node_id} AND to_node=$endorser->{node_id} AND linktype=$coollink->{node_id}");
+      unless ($link_exists) {
+        $DB->sqlInsert('links', {
+          from_node => $e2->{node_id},
+          to_node   => $endorser->{node_id},
+          linktype  => $coollink->{node_id},
+          hits      => 0,
+          food      => 0,
+        });
+      }
+    }
+    print STDERR "Editor cools ticker fixture (#3737): seeded coollinks for "
+      . join(', ', map { qq{'$_->[0]'} } @editor_picks) . "\n";
+  }
+}
+
 # C! assignments - normaluser1-20 all cool "good poetry" to test tooltip with many C!s
 my $cools = {
   "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"],

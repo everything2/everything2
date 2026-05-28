@@ -220,4 +220,28 @@ describe('LinkNode Component', () => {
       expect(link).not.toHaveAttribute('title');
     });
   });
+
+  describe('nodeId is a synonym for id', () => {
+    // Server-keyed `node_id` data is usually passed in as `nodeId={...}`.
+    // Without the synonym, those calls silently fell back to title-based
+    // URLs and broke for drafts/private/exotic-title nodes (the Chinese
+    // bookmark case that surfaced this).
+    it('uses nodeId to build /node/N URL when id is missing', () => {
+      render(<LinkNode nodeId="2198231" title="美国国家安全局" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('href', '/node/2198231');
+    });
+
+    it('id wins when both id and nodeId are passed', () => {
+      render(<LinkNode id="111" nodeId="222" title="ambiguous" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('href', '/node/111');
+    });
+
+    it('falls back to /title/<title> when neither id nor nodeId is set', () => {
+      render(<LinkNode title="example" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveAttribute('href', '/title/example');
+    });
+  });
 });
