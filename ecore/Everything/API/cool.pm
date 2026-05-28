@@ -71,9 +71,15 @@ sub award_cool {
             cooledby_user => $user->node_id
         });
 
-        # Increment the cooled count on the writeup
+        # Sync the cached cool count from the coolwriteups table. Was a
+        # `$cooled++` delta, but historical delta paths accumulated drift
+        # (#4011 / cluster #4137). SUM-rebuild matches the reconciliation
+        # job at jobs/job_reconcile_rep_and_cools.pl.
         my $WRITEUP = $writeup->NODEDATA;
-        $WRITEUP->{cooled}++;
+        $WRITEUP->{cooled} = $self->DB->sqlSelect(
+            'COUNT(*)', 'coolwriteups',
+            "coolwriteups_id=$writeup_id"
+        ) // 0;
         $self->DB->updateNode($WRITEUP, -1);
 
         # Decrement user's cools remaining and save immediately

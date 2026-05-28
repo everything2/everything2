@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import PageLayout from './PageLayout'
 
 // Mock DocumentComponent
@@ -9,6 +9,12 @@ jest.mock('./DocumentComponent', () => {
       <div data-testid="document-component">
         Document: {data?.type || 'unknown'}
         {user && <span> - User: {user.title}</span>}
+        {user && user.votesleft !== undefined && (
+          <span data-testid="doc-votesleft">{user.votesleft}</span>
+        )}
+        {user && user.coolsleft !== undefined && (
+          <span data-testid="doc-coolsleft">{user.coolsleft}</span>
+        )}
       </div>
     )
   }
@@ -145,6 +151,34 @@ describe('PageLayout', () => {
 
       // Empty string is falsy, so should show fallback
       expect(screen.getByText('No content available')).toBeInTheDocument()
+    })
+  })
+
+  describe('e2:userUpdate event', () => {
+    it('refreshes user-derived props when e2:userUpdate fires', () => {
+      const e2 = {
+        contentData: { type: 'writeup' },
+        user: { node_id: 123, title: 'testuser', votesleft: 10, coolsleft: 3 }
+      }
+
+      render(<PageLayout e2={e2} />)
+      expect(screen.getByTestId('doc-votesleft')).toHaveTextContent('10')
+      expect(screen.getByTestId('doc-coolsleft')).toHaveTextContent('3')
+
+      act(() => {
+        window.dispatchEvent(new CustomEvent('e2:userUpdate', {
+          detail: { votesleft: 9 }
+        }))
+      })
+      expect(screen.getByTestId('doc-votesleft')).toHaveTextContent('9')
+      expect(screen.getByTestId('doc-coolsleft')).toHaveTextContent('3')
+
+      act(() => {
+        window.dispatchEvent(new CustomEvent('e2:userUpdate', {
+          detail: { coolsleft: 2 }
+        }))
+      })
+      expect(screen.getByTestId('doc-coolsleft')).toHaveTextContent('2')
     })
   })
 

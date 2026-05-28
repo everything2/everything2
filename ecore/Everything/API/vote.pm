@@ -109,18 +109,23 @@ sub cast_vote {
         );
     }
 
-    # Recalculate reputation by summing all vote weights (safest approach)
-    # This ensures accuracy after vote changes/deletions
+    # Recalculate reputation by summing all vote weights — source of truth
+    # rather than delta math. See the reconciliation job at
+    # jobs/job_reconcile_rep_and_cools.pl and the rep cluster (#4137 et al).
+    #
+    # updateNode (rather than raw sqlUpdate on the node table) is required
+    # so NodeCache::incrementGlobalVersion ticks the version table and
+    # other Apache webheads invalidate their cached copy. Without that,
+    # stale rep keeps serving from per-webhead memory until TTL.
     my $new_reputation =
-      $self->DB->sqlSelect( 'SUM(weight)', 'vote', 'vote_id=' . $writeup_id )
-      || 0;
-
-    # Update the node's reputation field with the recalculated value
-    $self->DB->sqlUpdate(
-        'node',
-        { reputation => $new_reputation },
-        'node_id=' . $writeup_id
-    );
+      $self->DB->sqlSelect( 'COALESCE(SUM(weight),0)', 'vote',
+                            'vote_id=' . $writeup_id ) // 0;
+    my $WRITEUP = $self->APP->node_by_id($writeup_id);
+    my $NODE    = $WRITEUP ? $WRITEUP->NODEDATA : undef;
+    if ($NODE) {
+        $NODE->{reputation} = $new_reputation;
+        $self->DB->updateNode($NODE, -1);
+    }
 
     # Get updated vote counts (these are calculated on-the-fly from vote table)
     my $updated_writeup = $self->APP->node_by_id($writeup_id);
