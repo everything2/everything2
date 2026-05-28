@@ -681,9 +681,14 @@ sub remove_vote
   # Remove the vote
   $DB->sqlDelete("vote", "voter_user=" . $user->node_id . " AND vote_id=" . $writeup->node_id);
 
-  # Update reputation
+  # Sync rep from source of truth instead of delta math. See cluster
+  # #4137 et al — delta accumulated drift over years from missed/concurrent
+  # write paths.
   my $NODE = $writeup->NODEDATA;
-  $NODE->{reputation} = ($NODE->{reputation} || 0) - $vote->{weight};
+  $NODE->{reputation} = $DB->sqlSelect(
+      'COALESCE(SUM(weight),0)', 'vote',
+      'vote_id=' . $writeup->node_id
+  ) // 0;
   $DB->updateNode($NODE, -1);
 
   # Restore user's vote
@@ -746,10 +751,14 @@ sub remove_cool
   # Remove the C!
   $DB->sqlDelete("coolwriteups", "cooledby_user=" . $user->node_id . " AND coolwriteups_id=" . $writeup->node_id);
 
-  # Decrement the cooled count on the writeup
+  # Sync the cool count from source of truth (#4137 cluster). Was delta
+  # math (`cooled - 1`, clamped to 0) which silently drifted when sibling
+  # paths inserted/deleted coolwriteups rows without coming through here.
   my $WRITEUP = $writeup->NODEDATA;
-  $WRITEUP->{cooled} = ($WRITEUP->{cooled} || 0) - 1;
-  $WRITEUP->{cooled} = 0 if $WRITEUP->{cooled} < 0;  # Prevent negative
+  $WRITEUP->{cooled} = $DB->sqlSelect(
+      'COUNT(*)', 'coolwriteups',
+      'coolwriteups_id=' . $writeup->node_id
+  ) // 0;
   $DB->updateNode($WRITEUP, -1);
 
   # Restore user's C!

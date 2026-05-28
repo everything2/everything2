@@ -2440,13 +2440,23 @@ sub hasVoted {
 #
 #	adjustRepAndVoteCount
 #
-#	adjust reputation points for a node as well as vote count, potentially
+#	Sync the cached node.reputation field from the vote table, then adjust
+#	the totalvotes counter by $voteChange. $pts is unused (kept for caller
+#	compatibility — it was the old delta amount).
+#
+#	Source-of-truth recompute, not delta math. The historical delta path
+#	accumulated drift any time a sibling code path inserted/deleted a
+#	vote without going through here (#4137 et al). Reconciliation job at
+#	jobs/job_reconcile_rep_and_cools.pl uses the same SUM(weight) shape.
 #
 sub adjustRepAndVoteCount {
 	my ($this, $node, $pts, $voteChange) = @_;
 	$this->{db}->getRef($node);
 
-	$$node{reputation} += $pts;
+	$$node{reputation} = $this->{db}->sqlSelect(
+		'COALESCE(SUM(weight),0)', 'vote',
+		'vote_id=' . $this->{db}->getId($node)
+	) // 0;
 	# Rely on updateNode to discard invalid hash entries since
 	#  not all voteable nodes may have a totalvotes column
 	$$node{totalvotes} ||= 0;

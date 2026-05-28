@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import DocumentComponent from './DocumentComponent'
 import MasonContent from './MasonContent'
 import Header from './Layout/Header'
@@ -26,6 +26,22 @@ const PageLayout = ({ e2 }) => {
   // Auth modal state (shared between header and bottom nav)
   const [showAuthModal, setShowAuthModal] = useState(false)
 
+  // Mirror e2.user as state so vote/cool/gift-shop actions that dispatch
+  // window 'e2:userUpdate' events refresh the header EpicenterZen and the
+  // MobileProfileMenu — not just the sidebar Epicenter (which has its own
+  // listener inside E2ReactRoot).
+  const [user, setUser] = useState(e2.user)
+  useEffect(() => {
+    const onUserUpdate = (event) => {
+      const updates = event.detail
+      if (!updates) return
+      setUser(prev => ({ ...prev, ...updates }))
+      if (window.e2?.user) Object.assign(window.e2.user, updates)
+    }
+    window.addEventListener('e2:userUpdate', onUserUpdate)
+    return () => window.removeEventListener('e2:userUpdate', onUserUpdate)
+  }, [])
+
   // Check if this is a standalone page (fullscreen, no header/footer/sidebar)
   const isStandalone = e2.contentData?.standalone === true
 
@@ -42,7 +58,7 @@ const PageLayout = ({ e2 }) => {
   const renderContent = () => {
     // Case 1: Structured data (React component)
     if (e2.contentData) {
-      return <DocumentComponent data={e2.contentData} user={e2.user} e2={e2} />
+      return <DocumentComponent data={e2.contentData} user={user} e2={e2} />
     }
 
     // Case 2: HTML string (Mason/delegation HTML)
@@ -77,7 +93,7 @@ const PageLayout = ({ e2 }) => {
       {/* Header */}
       <div id="header" role="banner" aria-label="Site header" data-reader-ignore="true">
         <Header
-          user={e2.user}
+          user={user}
           epicenter={e2.epicenter}
           lastNodeId={parseInt(e2.node_id, 10) || 0}
           showEpicenterZen={showEpicenterZen}
@@ -93,7 +109,7 @@ const PageLayout = ({ e2 }) => {
             <PageHeader
               node={e2.node}
               pageheader={e2.pageheader}
-              user={e2.user}
+              user={user}
               feedUrl={e2.contentData?.feed_url}
             >
               <PageActions />
@@ -119,16 +135,16 @@ const PageLayout = ({ e2 }) => {
       {/* Mobile bottom navigation - only shown on mobile */}
       {isMobile && (
         <MobileBottomNav
-          user={e2.user}
-          unreadMessages={e2.user?.unreadMessages || 0}
+          user={user}
+          unreadMessages={user?.unreadMessages || 0}
           onShowAuth={() => setShowAuthModal(true)}
           chatterMessages={e2.chatterbox?.messages || []}
           chatterCount={e2.chatterbox?.messages?.length || 0}
           otherUsersData={e2.otherUsersData || null}
           otherUsersCount={e2.otherUsersData?.userCount || 0}
-          currentRoom={e2.otherUsersData?.currentRoomId ?? e2.user?.in_room ?? 0}
+          currentRoom={e2.otherUsersData?.currentRoomId ?? user?.in_room ?? 0}
           publicChatterOff={!!e2.chatterbox?.publicChatterOff}
-          isBorged={!!e2.user?.borged}
+          isBorged={!!user?.borged}
           notificationsData={e2.notificationsData || null}
           notificationsCount={e2.notificationsData?.notifications?.length || 0}
         />
