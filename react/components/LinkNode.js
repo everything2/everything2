@@ -29,11 +29,22 @@ const decodeHtmlEntities = (str) => {
   return decoded
 }
 
-// Note: nodeId, nodeType, and titleAttr are destructured but intentionally handled specially -
+// Note: nodeType and titleAttr are destructured but intentionally handled specially -
 // this prevents React warnings when parent components pass these as props
 // titleAttr is used to override the hover title (since 'title' is used for URL generation)
 // nodeType is sometimes passed from parent data but not used in link generation
 const LinkNode = ({type,title,id,display,className,author,anchor,url,params,style,onMouseEnter,onMouseLeave,nodeId,nodeType,titleAttr,...restProps}) => {
+
+  // Accept `nodeId` as a synonym for `id`. Server-side data is keyed
+  // `node_id`, so React callers usually pass `nodeId={...}` (120-odd
+  // callers use this form vs ~46 using `id`). Without this fallback,
+  // `nodeId` was being silently ignored and the URL fell back to a
+  // /title/<title> form — which fails for nodes whose title isn't a
+  // public e2node (drafts, deleted/private nodes, exotic titles like
+  // CJK characters not present as e2nodes). User-visible symptom: a
+  // bookmark to a draft titled "美国国家安全局" produced a Nothing Found
+  // page even though the node existed under that node_id.
+  if (id === undefined) id = nodeId
 
   let rel=""
   let originalDecodedTitle = null  // Store decoded title for hover text
