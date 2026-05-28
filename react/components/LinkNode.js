@@ -54,11 +54,6 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params,styl
 
     if(title != undefined)
     {
-      if(display == undefined)
-      {
-        display = title
-      }
-
       // Decode HTML entities first, then single-encode special URL characters.
       // Decoding `&amp;` → `&` before encoding avoids `%2526...` garbage in the
       // href. The server-side path-recovery helper
@@ -71,6 +66,19 @@ const LinkNode = ({type,title,id,display,className,author,anchor,url,params,styl
       // server — so titles like "Star Trek #9: Triangle" silently truncate
       // to "/title/Star Trek " on the wire (#4132).
       originalDecodedTitle = decodeHtmlEntities(title)
+
+      // Default the visible link text to the decoded title so CJK-titled nodes
+      // (e.g. #2198233 "美国国家安全局", stored as "&#32654;&#22269;…") and
+      // syntax-conflict titles (e.g. "&#91;?&#93;" → "[?]") render readably
+      // instead of showing literal "&#NNNN;" runs. The hover tooltip already
+      // used the decoded form via originalDecodedTitle, so prior to this the
+      // tooltip showed proper Chinese while the visible text showed entity
+      // refs — the asymmetry that surfaced the bug.
+      if(display == undefined)
+      {
+        display = originalDecodedTitle
+      }
+
       title = originalDecodedTitle.replace(/[\&@\+\/\;\?#]/g, (match) => {return encodeURIComponent(match)});
     }
 

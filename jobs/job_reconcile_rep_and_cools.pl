@@ -37,6 +37,12 @@ use lib qw(/var/everything/ecore);
 use Everything;
 use Getopt::Long;
 
+# Autoflush STDOUT so the periodic progress prints (every 10 batches) reach
+# the Fargate awslogs driver in real time. Without this, perl block-buffers
+# STDOUT when stdout isn't a tty and you only see output after the job exits
+# — which masks "is it making progress?" during a ~30-minute prod run.
+$| = 1;
+
 my $dry_run    = 0;
 my $batch_size = 500;
 my $verbose    = 0;

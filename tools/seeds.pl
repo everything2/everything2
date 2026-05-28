@@ -1963,6 +1963,15 @@ my @softlink_target_titles = (
   "C++ programming",                                                                  # Plus signs
   "Q&A forum",                                                                        # Another ampersand
   "Fish & chips",                                                                     # Food with ampersand
+
+  # Title stored as literal `&#NNNN;` entity strings (not UTF-8). Reproduces
+  # prod node 2198233 — 美国国家安全局 (NSA in Chinese). Some historical
+  # insertion paths stored CJK as HTML numeric entity refs instead of UTF-8,
+  # so LinkNode/PageHeader must entity-decode the title for display. The
+  # tooltip already decoded; the visible link text did not — that asymmetry
+  # was the bug.
+  "&#32654;&#22269;&#22269;&#23478;&#23433;&#20840;&#23616;",                            # = 美国国家安全局
+  "&#91;NSA&#93;",                                                                       # = [NSA] (square-bracket case)
 );
 
 my $nodeshell_count = 0;
@@ -2036,6 +2045,9 @@ my %softlink_relationships = (
     {to => "encryption algorithms", hits => 92}, {to => "penetration testing", hits => 84},
     {to => "firewalls", hits => 76}, {to => "malware", hits => 68},
     {to => "social engineering", hits => 60}, {to => "zero trust security", hits => 52},
+    # Entity-encoded titles — exercise LinkNode entity-decode in softlink table
+    {to => "&#32654;&#22269;&#22269;&#23478;&#23433;&#20840;&#23616;", hits => 30},  # 美国国家安全局
+    {to => "&#91;NSA&#93;", hits => 28},                                            # [NSA]
   ],
 
   # Popular seed nodes

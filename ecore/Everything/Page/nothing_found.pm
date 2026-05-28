@@ -3,6 +3,7 @@ package Everything::Page::nothing_found;
 use Moose;
 use Readonly;
 use List::Util qw(shuffle);
+use Encode qw(decode_utf8 is_utf8);
 extends 'Everything::Page';
 
 =head1 NAME
@@ -41,6 +42,20 @@ sub buildReactData {
     my $op = $query->param('op') || '';
     my $node_id = $query->param('node_id') || '';
     my $lastnode_id = $query->param('lastnode_id') || 0;
+
+    # Searching for CJK (e.g. ?node=美国国家安全局) was rendering on the page
+    # as Latin-1 mojibake (ç¾Žå›½…) because the CGI -utf8 pragma in
+    # Everything::Request doesn't reliably flag the param as UTF-8 here, so
+    # downstream JSON encoding emitted each byte as a separate codepoint and
+    # the browser then UTF-8-encoded those codepoints — classic double-
+    # encoding. Force a one-time UTF-8 decode when the value still looks like
+    # raw bytes. is_utf8 guards against double-decoding when the pragma did
+    # work (the byte path produces the visible mojibake; the unicode path
+    # produces correct output).
+    if (!is_utf8($node_param)) {
+        my $decoded = eval { decode_utf8($node_param, Encode::FB_CROAK) };
+        $node_param = $decoded if defined $decoded && !$@;
+    }
 
     # Check if this was a successful nuke operation
     my $was_nuke = 0;

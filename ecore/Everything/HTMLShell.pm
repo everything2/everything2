@@ -4,7 +4,7 @@ use Moose;
 with 'Everything::Globals';
 
 use JSON::MaybeXS;
-use HTML::Entities qw(encode_entities);
+use HTML::Entities qw(encode_entities decode_entities);
 
 # Core page data
 has 'node' => (is => 'ro', required => 1);
@@ -43,7 +43,13 @@ has 'friendly_pagetype' => (is => 'ro', lazy => 1, builder => '_build_friendly_p
 
 sub _build_pagetitle {
     my ($self) = @_;
-    return $self->node->title;
+    # Decode HTML numeric/named entities stored in the title (e.g. prod node
+    # 2198233 stores 美国国家安全局 as the literal string "&#32654;&#22269;…",
+    # and `[NSA]` is stored as "&#91;NSA&#93;" because '[' / ']' are link
+    # syntax). _render_head re-encodes for the <title> tag and meta content,
+    # so the round-trip is decode-then-encode rather than letting raw
+    # entities double-escape into &amp;#NNNN; visible to users.
+    return decode_entities($self->node->title);
 }
 
 sub _build_friendly_pagetype {
@@ -235,7 +241,7 @@ sub _render_json_ld {
                 push @breadcrumb_items, {
                     '@type' => 'ListItem',
                     'position' => 2,
-                    'name' => $parent->title,
+                    'name' => decode_entities($parent->title),
                     'item' => $parent_url
                 };
                 push @breadcrumb_items, {
@@ -248,7 +254,7 @@ sub _render_json_ld {
             push @breadcrumb_items, {
                 '@type' => 'ListItem',
                 'position' => 2,
-                'name' => $node->title
+                'name' => decode_entities($node->title)
             };
         }
 
