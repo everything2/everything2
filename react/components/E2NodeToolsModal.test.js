@@ -151,7 +151,7 @@ describe('E2NodeToolsModal', () => {
         />
       )
 
-      expect(screen.getByText('E2 Node Tools')).toBeInTheDocument()
+      expect(screen.getByText('Editor Tools')).toBeInTheDocument()
     })
 
     it('has close button', () => {

@@ -2307,4 +2307,110 @@ sub cleanup_test_nodes {
     cleanup_test_nodes( $draft_id, $e2node_id );
 }
 
+# mark_reviewed tests — exercise the API endpoint added for the review-cycle
+# feature. The endpoint clears publication_status back to 'private' and drops
+# an audit nodenote with noter_user=0 so the DataStash::reviewdrafts query
+# stops surfacing the draft on the For Review nodelet.
+{
+    my $review_status = $DB->getNode( 'review', 'publication_status' );
+
+    # Editor request — has is_editor_flag set so the API authorization check passes
+    my $editor_request = MockRequest->new(
+        node_id        => $admin_user->{node_id},
+        title          => $admin_user->{title},
+        nodedata       => $admin_user,
+        is_admin_flag  => 1,
+        is_editor_flag => 1,
+        is_guest_flag  => 0
+    );
+
+    # Helper: build a draft already in 'review' status
+    my $build_review_draft = sub {
+        my $title = shift;
+        $regular_request->set_postdata({ title => $title, doctext => '<p>x</p>' });
+        my (undef, $create_resp) = @{ $api->create_draft($regular_request) };
+        my $draft_id = $create_resp->{draft}{node_id};
+
+        # Promote to review via update_draft so the noter_user=0 marker note
+        # is inserted by _notify_review — mirrors how the production code
+        # path arrives at this state.
+        $regular_request->set_postdata({ status => 'review' });
+        $api->update_draft( $regular_request, $draft_id );
+        return $draft_id;
+    };
+
+    # Editor marks a review-status draft reviewed → success path
+    {
+        my $draft_id = $build_review_draft->("MarkReviewed Happy " . time());
+
+        my ($status, $response) =
+          @{ $api->mark_reviewed( $editor_request, $draft_id ) };
+
+        is( $status, $api->HTTP_OK, 'mark_reviewed returns HTTP_OK' );
+        ok( $response->{success}, 'mark_reviewed succeeds' );
+        is( $response->{status}, 'private', 'mark_reviewed reports new status as private' );
+
+        my $row = $DB->{dbh}->selectrow_hashref(
+            'SELECT publication_status FROM draft WHERE draft_id = ?',
+            {}, $draft_id );
+        is( $row->{publication_status}, $private_status->{node_id},
+            'publication_status reset to private after mark_reviewed' );
+
+        # Audit nodenote with noter_user=0 — the DataStash subquery treats
+        # this as "review request answered" → draft drops off the nodelet.
+        # Order by nodenote_id (auto-increment) as a tiebreaker — the review
+        # request and the mark-reviewed note can land in the same second when
+        # the test runs fast, and timestamp alone won't disambiguate.
+        my $audit = $DB->{dbh}->selectrow_hashref(
+            q|SELECT notetext, noter_user FROM nodenote
+              WHERE nodenote_nodeid = ? AND noter_user = 0
+              ORDER BY timestamp DESC, nodenote_id DESC LIMIT 1|,
+            {}, $draft_id );
+        like( $audit->{notetext}, qr/marked reviewed/i, 'audit nodenote inserted' );
+
+        cleanup_test_nodes($draft_id);
+        $DB->sqlDelete('nodenote', "nodenote_nodeid=$draft_id");
+    }
+
+    # Non-editor regular user → permission denied
+    {
+        my $draft_id = $build_review_draft->("MarkReviewed PermDenied " . time());
+
+        my ($status, $response) =
+          @{ $api->mark_reviewed( $regular_request, $draft_id ) };
+
+        is( $status, $api->HTTP_FORBIDDEN,
+            'mark_reviewed forbidden for non-editor' );
+        ok( !$response->{success}, 'non-editor cannot mark reviewed' );
+
+        cleanup_test_nodes($draft_id);
+        $DB->sqlDelete('nodenote', "nodenote_nodeid=$draft_id");
+    }
+
+    # Draft NOT in review status → 400 not_in_review
+    {
+        # Build a draft, leave it in 'private' (the default), don't promote.
+        $regular_request->set_postdata({ title => "MarkReviewed WrongState " . time(), doctext => '<p>x</p>' });
+        my (undef, $cr) = @{ $api->create_draft($regular_request) };
+        my $draft_id = $cr->{draft}{node_id};
+
+        my ($status, $response) =
+          @{ $api->mark_reviewed( $editor_request, $draft_id ) };
+
+        is( $status, $api->HTTP_BAD_REQUEST,
+            'mark_reviewed rejects non-review drafts' );
+        is( $response->{error}, 'not_in_review',
+            'error code identifies the wrong-state case' );
+
+        cleanup_test_nodes($draft_id);
+    }
+
+    # Invalid draft id
+    {
+        my ($status, $response) =
+          @{ $api->mark_reviewed( $editor_request, 0 ) };
+        is( $status, $api->HTTP_BAD_REQUEST, 'invalid id rejected' );
+    }
+}
+
 done_testing();

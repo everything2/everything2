@@ -235,6 +235,22 @@ describe('E2NodeDisplay Component', () => {
     })
   })
 
+  describe('Editor Tools chip button', () => {
+    it('renders a labelled "Editor Tools" chip for editor viewers', () => {
+      // showTools derives from user.editor (the e2 global flag), not from
+      // any e2node prop — so the gate is on the viewer's role.
+      render(<E2NodeDisplay e2node={mockE2Node} user={{ ...mockUser, editor: true }} />)
+      const btn = screen.getByRole('button', { name: /editor tools/i })
+      expect(btn).toBeInTheDocument()
+      expect(btn).toHaveClass('e2-action-chip')
+    })
+
+    it('does not render the chip for non-editor viewers', () => {
+      render(<E2NodeDisplay e2node={mockE2Node} user={{ ...mockUser, editor: false }} />)
+      expect(screen.queryByRole('button', { name: /editor tools/i })).not.toBeInTheDocument()
+    })
+  })
+
   describe('locked node warning', () => {
     it('displays warning box when node is locked with user and reason', () => {
       const lockedE2Node = {

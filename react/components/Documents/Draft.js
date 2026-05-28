@@ -4,7 +4,7 @@ import InlineWriteupEditor from '../InlineWriteupEditor'
 import PublishModal from './PublishModal'
 import DraftAdminModal from '../DraftAdminModal'
 import LinkNode from '../LinkNode'
-import { FaEdit, FaTrash, FaPaperPlane } from 'react-icons/fa'
+import { FaEdit, FaTrash, FaPaperPlane, FaCheckCircle } from 'react-icons/fa'
 
 /**
  * Draft Document Component
@@ -31,6 +31,9 @@ const Draft = ({ data }) => {
   const [deleteError, setDeleteError] = useState(null)
   const [showPublishModal, setShowPublishModal] = useState(false)
   const [adminModalOpen, setAdminModalOpen] = useState(false)
+  const [isMarkingReviewed, setIsMarkingReviewed] = useState(false)
+  const [reviewError, setReviewError] = useState(null)
+  const [reviewStatusOverride, setReviewStatusOverride] = useState(null)
 
   if (!data) return <div>Loading...</div>
 
@@ -49,9 +52,42 @@ const Draft = ({ data }) => {
   const isEditor = user?.is_editor
   const isAdmin = user?.is_admin
   const authorName = draft.author?.title || 'Unknown'
-  const isRemoved = draft.publication_status === 'removed'
+  // Effective status reflects any client-side mark-reviewed action so the
+  // button hides immediately on success without needing a full page reload.
+  const effectiveStatus = reviewStatusOverride || draft.publication_status
+  const isRemoved = effectiveStatus === 'removed'
+  const isInReview = effectiveStatus === 'review'
   // Editors/admins can use admin tools on removed drafts
   const showAdminTools = isRemoved && (isEditor || isAdmin)
+  // Editors (not just the author) can mark a draft reviewed when it's in
+  // the 'review' publication status. Mirrors the For Review nodelet
+  // visibility — same audience, same gate.
+  const showMarkReviewed = isInReview && isEditor
+
+  const handleMarkReviewed = async () => {
+    if (isMarkingReviewed) return
+    setIsMarkingReviewed(true)
+    setReviewError(null)
+    try {
+      const response = await fetch(`/api/drafts/${draft.node_id}/mark_reviewed`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const result = await response.json()
+      if (result.success) {
+        // Hide the button locally; the server has already moved status to
+        // 'private' and dropped the draft off the For Review nodelet.
+        setReviewStatusOverride(result.status || 'private')
+      } else {
+        setReviewError(result.message || result.error || 'Failed to mark reviewed')
+      }
+    } catch (err) {
+      setReviewError(err.message)
+    } finally {
+      setIsMarkingReviewed(false)
+    }
+  }
 
   // Handle delete
   const handleDelete = async () => {
@@ -94,34 +130,54 @@ const Draft = ({ data }) => {
 
   return (
     <div className="draft-page">
-      {/* Toolbar - show if user can edit */}
-      {Boolean(canEdit) && !isEditing && (
+      {/* Toolbar - show if user can edit or there's an editor-only action.
+          Buttons use the same .e2-action-chip class as the e2node Editor
+          Tools / Bookmark / Cool chips so all top-of-page actions read as a
+          single labelled affordance row instead of a mix of icon-only buttons
+          and chip-with-label buttons. */}
+      {(Boolean(canEdit) || showMarkReviewed) && !isEditing && (
         <div className="draft-page__toolbar">
-          <button
-            onClick={() => setIsEditing(true)}
-            title={isAuthor ? 'Edit your draft' : `Edit ${authorName}'s draft`}
-            className="draft-page__icon-btn draft-page__icon-btn--edit"
-          >
-            <FaEdit />
-          </button>
+          {Boolean(canEdit) && (
+            <button
+              onClick={() => setIsEditing(true)}
+              title={isAuthor ? 'Edit your draft' : `Edit ${authorName}'s draft`}
+              className="e2-action-chip"
+            >
+              <FaEdit />
+              <span className="e2-action-chip__label">Edit</span>
+            </button>
+          )}
           {Boolean(isAuthor) && !isRemoved && (
             <>
               <button
                 onClick={() => setShowPublishModal(true)}
                 title="Publish this draft"
-                className="draft-page__icon-btn draft-page__icon-btn--publish"
+                className="e2-action-chip"
               >
                 <FaPaperPlane />
+                <span className="e2-action-chip__label">Publish</span>
               </button>
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
                 title="Delete this draft"
-                className={`draft-page__icon-btn draft-page__icon-btn--delete${isDeleting ? ' draft-page__icon-btn--deleting' : ''}`}
+                className="e2-action-chip"
               >
                 <FaTrash />
+                <span className="e2-action-chip__label">{isDeleting ? 'Deleting…' : 'Delete'}</span>
               </button>
             </>
+          )}
+          {showMarkReviewed && (
+            <button
+              onClick={handleMarkReviewed}
+              disabled={isMarkingReviewed}
+              title="Mark this draft as reviewed (drops it from the For Review nodelet and returns it to private)"
+              className="e2-action-chip"
+            >
+              <FaCheckCircle />
+              <span className="e2-action-chip__label">{isMarkingReviewed ? 'Marking…' : 'Mark Reviewed'}</span>
+            </button>
           )}
         </div>
       )}
@@ -130,6 +186,13 @@ const Draft = ({ data }) => {
       {deleteError && (
         <div className="draft-page__error">
           Error: {deleteError}
+        </div>
+      )}
+
+      {/* Mark-reviewed error message */}
+      {reviewError && (
+        <div className="draft-page__error">
+          Error: {reviewError}
         </div>
       )}
 

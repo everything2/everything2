@@ -7515,8 +7515,11 @@ sub buildNodeInfoStructure
     $e2->{notificationsData} = $this->buildNotificationsData($NODE, $USER, $VARS, $query);
   }
 
-  # ForReview - Editor draft review queue
-  if($nodelets =~ /1930900/)
+  # ForReview - Editor draft review queue. nodelet node_id 2068913
+  # (see nodepack/nodelet/for_review.xml). The hardcoded id used to be
+  # 1930900 which never matched any real nodelet, so forReviewData was
+  # silently undefined and the nodelet always rendered empty.
+  if($nodelets =~ /2068913/)
   {
     $e2->{forReviewData} = $this->buildForReviewData($USER);
   }

@@ -88,16 +88,19 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, b
     <div className="e2node-display">
       {/* E2node header - title and createdby already displayed by zen.mc #pageheader */}
 
-      {/* E2 Node Tools button for editors - right-aligned icon */}
-      {/* data-reader-ignore excludes from reading mode */}
+      {/* Editor Tools chip-style button — matches the homenode action row
+          (see UserDisplay.js __icon-btn pattern). Was an icon-only button
+          tucked into the corner; users missed it. The label is now visible
+          for editors so the affordance reads "Editor Tools" without a hover. */}
       {showTools && (
         <nav className="e2node-tools-nav" aria-label="Editor tools" data-reader-ignore="true">
           <button
             onClick={() => setToolsModalOpen(true)}
-            title="Editor node tools"
-            className="e2node-tools-btn"
+            title="Open editor tools for this node"
+            className="e2node-tools-btn e2-action-chip"
           >
             <FaTools />
+            <span className="e2-action-chip__label">Editor Tools</span>
           </button>
         </nav>
       )}

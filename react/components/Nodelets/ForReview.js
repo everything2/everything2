@@ -52,10 +52,24 @@ const ForReview = (props) => {
                 className={`for-review__row ${index % 2 === 0 ? 'for-review__row--even' : 'for-review__row--odd'}`}
               >
                 <td className="for-review__td">
-                  <LinkNode node_id={draft.node_id} title={draft.title} />
+                  {/* LinkNode's id-alias is `nodeId` (camelCase), not the
+                      server-side `node_id` snake form — passing the snake
+                      version silently falls through to the /title/ URL
+                      form and, for the author link, leaves the link with
+                      no display text at all. */}
+                  <LinkNode nodeId={draft.node_id} title={draft.title} />
                   <br />
                   <small className="for-review__author">
-                    by <LinkNode node_id={draft.author_user} />
+                    by{' '}
+                    {draft.author_title ? (
+                      <LinkNode
+                        type="user"
+                        nodeId={draft.author_user}
+                        title={draft.author_title}
+                      />
+                    ) : (
+                      <LinkNode nodeId={draft.author_user} />
+                    )}
                   </small>
                 </td>
                 <td className="for-review__td for-review__td--center">

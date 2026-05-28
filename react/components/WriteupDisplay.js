@@ -275,10 +275,17 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
   // Check coolsleft directly - user needs to have cools remaining and not be guest/author
   const canCool = !isGuest && !isAuthor && (user?.coolsleft || 0) > 0
   const coolCount = coolState.cools?.length || 0
-  // Show admin tools (gear menu) for logged-in users - the modal itself determines which actions are available
-  // Includes: editors, authors, voters, coolers, and users who can post to usergroups
-  // Also allow override for drafts that have admin actions (like republish)
-  const showAdminTools = showAdminToolsOverride || isEditor || isAuthor || (!isGuest && !isDraft)
+  // Show admin tools (gear menu).
+  // - On non-drafts: any logged-in viewer gets a gear; the modal itself
+  //   decides which actions the user can actually take (editor-only,
+  //   author-only, etc).
+  // - On drafts: the gear only renders when the parent (Draft.js) explicitly
+  //   opts in via showAdminToolsOverride. The DraftAdminModal is republish-
+  //   for-removed-drafts only — without this gate, editors viewing a review-
+  //   status draft saw a gear that opened nothing.
+  const showAdminTools = isDraft
+    ? Boolean(showAdminToolsOverride)
+    : (isEditor || isAuthor || !isGuest)
   // Can message author if logged in and not messaging yourself
   const canMessage = !isGuest && !isAuthor && author
 
@@ -411,6 +418,21 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
                           className="writeup-tool-btn"
                         >
                           &#9881;
+                        </button>
+                      )}
+                      {/* Message-draft-author button. Surfaces the same
+                          feedback flow editors get on published writeups so
+                          a draft in review can be commented on without
+                          jumping out to the messaging UI. Always shows the
+                          feedback checkbox (default-on) so the message
+                          doubles as a nodenote on the draft. */}
+                      {canMessage && (
+                        <button
+                          onClick={() => setMessageModalOpen(true)}
+                          title={`Send feedback to ${author.title}`}
+                          className="writeup-tool-btn"
+                        >
+                          <FaEnvelope />
                         </button>
                       )}
                       <small className="writeup-draft-notice">
@@ -615,14 +637,22 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
         />
       )}
 
-      {/* Message modal for messaging the author (writeups only, not drafts) */}
-      {!isDraft && canMessage && (
+      {/* Message modal for messaging the author. Renders on both writeups
+          and drafts — on drafts it doubles as the feedback flow for editors
+          reviewing a draft in 'review' status. */}
+      {canMessage && (
         <MessageModal
           isOpen={messageModalOpen}
           onClose={() => setMessageModalOpen(false)}
           replyTo={{ author_user: { title: author.title, type: 'user' } }}
-          initialMessage={parent?.title ? `re: ${parent.title}\n\n` : ''}
-          onSend={async (recipient, message) => {
+          initialMessage={parent?.title ? `re: ${parent.title}\n\n` : (isDraft && title ? `re: ${title}\n\n` : '')}
+          // Editors get a "This is writeup feedback" checkbox (default on).
+          // When checked, the same text is also persisted as a nodenote on
+          // the writeup/draft so the review thread survives past the message
+          // inbox (which the author may purge). Non-editor messagers don't
+          // see the checkbox — the nodenote API rejects non-editors anyway.
+          showFeedbackOption={Boolean(user?.is_editor || user?.editor)}
+          onSend={async (recipient, message, meta = {}) => {
             const response = await fetch('/api/messages/create', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -638,6 +668,28 @@ const WriteupDisplay = ({ writeup, user, showVoting = true, showMetadata = true,
             if (data.ignores && !data.successes) {
               // Completely blocked
               throw new Error('User is blocking you')
+            }
+
+            // If the editor opted to record this as writeup feedback, also
+            // drop a nodenote on the writeup. We don't fail the modal close
+            // if the nodenote call fails — the message went out, that's the
+            // user-visible action; the nodenote is the audit trail and a
+            // failure there is logged but doesn't block.
+            if (meta.isFeedback && (user?.is_editor || user?.editor)) {
+              try {
+                const noteResponse = await fetch(`/api/nodenotes/${node_id}/create`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ notetext: message })
+                })
+                if (!noteResponse.ok) {
+                  // Surface as a warning so the editor knows the note didn't
+                  // attach, but don't reject the whole modal action.
+                  return { success: true, ...data, warning: 'Message sent, but failed to record as node note.' }
+                }
+              } catch (err) {
+                return { success: true, ...data, warning: 'Message sent, but failed to record as node note: ' + (err.message || 'unknown error') }
+              }
             }
 
             // Return data with success flag for MessageModal compatibility
