@@ -15242,7 +15242,20 @@ a.settings-nav__tab:active {
 /* Mobile image section */
 .user-display__mobile-image {
   text-align: center;
+  margin-top: 16px;
   margin-bottom: 16px;
+}
+
+/* On mobile, the global `#homenodeheader dl { width: 250px; float: right }`
+   rule creates a fixed-width floated user-info block. Nothing else fits
+   the leftover space cleanly — the homenode image flows into it (#4018).
+   Override on narrow viewports so the dl stacks full-width and the image
+   below it sits in normal flow underneath. */
+@media (max-width: 767px) {
+  #homenodeheader dl {
+    width: 100%;
+    float: none;
+  }
 }
 
 .user-display__mobile-img {

@@ -187,36 +187,27 @@ const UserDisplay = ({ data, e2 }) => {
           </p>
         )}
 
-        {/* Mobile layout: image centered above info */}
-        {isMobile && (
-          <div className="user-display__mobile-image">
-            {user.imgsrc && (
-              <img
-                src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
-                alt={`${user.title}'s image`}
-                className="user-display__mobile-img"
-              />
-            )}
-            {/* Edit Profile button for own profile - mobile */}
-            {Boolean(is_own) && (
-              <div className={user.imgsrc ? 'user-display__edit-link-wrapper--mobile' : 'user-display__edit-link-wrapper--mobile-no-img'}>
-                <a
-                  href={`/user/${encodeURIComponent(user.title)}?displaytype=edit`}
-                  className="user-display__edit-link"
-                >
-                  Edit Profile
-                </a>
-              </div>
-            )}
+        {/* Mobile layout: Edit Profile button only — the image moves
+            below the user info dl (#4018). Keeping the button here so it's
+            tappable above the fold; only the picture (decorative on mobile)
+            is deferred below the info bars. */}
+        {isMobile && Boolean(is_own) && (
+          <div className={user.imgsrc ? 'user-display__edit-link-wrapper--mobile' : 'user-display__edit-link-wrapper--mobile-no-img'}>
+            <a
+              href={`/user/${encodeURIComponent(user.title)}?displaytype=edit`}
+              className="user-display__edit-link"
+            >
+              Edit Profile
+            </a>
           </div>
         )}
 
         {/* Desktop layout: floated image box (CSS handles float) */}
         {!isMobile && (
           <div id="homenodepicbox">
-            {user.imgsrc && (
+            {user.imgsrc_url && (
               <img
-                src={`https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com/${user.title.replace(/\W/g, '_')}`}
+                src={user.imgsrc_url}
                 alt={`${user.title}'s image`}
                 id="userimage"
                 className="user-display__desktop-img"
@@ -429,6 +420,21 @@ const UserDisplay = ({ data, e2 }) => {
             </>
           )}
         </dl>
+
+        {/* Mobile homenode picture — placed AFTER the user info bars so
+            the most-useful content (writeups count, dates, level) appears
+            first on small screens (#4018). URL comes from the server via
+            imgsrc_url so the dev environment can swap in a local stub for
+            root without masking real 404s for other users in production. */}
+        {isMobile && user.imgsrc_url && (
+          <div className="user-display__mobile-image">
+            <img
+              src={user.imgsrc_url}
+              alt={`${user.title}'s image`}
+              className="user-display__mobile-img"
+            />
+          </div>
+        )}
       </div>
 
       <hr className="clear" />
