@@ -28,9 +28,29 @@ sub display {
     # Build user profile data using Node methods
     my $profile = $node->json_display($user);
 
-    # Add user image URL if exists
+    # Add user image URL if exists. Server-side composition rather than
+    # client-side guessing keeps the URL in one place (#4018).
+    #
+    # Dev override: in development, swap root's image for a local stub so
+    # we can verify the layout. Other users in dev get the real S3 URL,
+    # which will 404 in dev — that's intentional and mirrors prod, where
+    # a missing image is a real failure mode, not something to silently
+    # paper over.
     if ( $node->NODEDATA->{imgsrc} ) {
         $profile->{imgsrc} = $node->NODEDATA->{imgsrc};
+
+        my $imgsrc_path = $node->NODEDATA->{imgsrc};
+        $imgsrc_path = "/$imgsrc_path" unless $imgsrc_path =~ m{^/};
+
+        my $is_dev = $Everything::CONF->environment eq 'development';
+        if ( $is_dev && $node->title eq 'root' ) {
+            $profile->{imgsrc_url} = '/static/homenode-stub.png';
+        } else {
+            $profile->{imgsrc_url} =
+                'https://s3-us-west-2.amazonaws.com/'
+              . $Everything::CONF->homenode_image_host
+              . $imgsrc_path;
+        }
     }
 
     # Add realname and email (only visible to self or admin)

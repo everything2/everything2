@@ -170,6 +170,14 @@ my $gods = $DB->getNode("gods","usergroup");
 my $e2gods = $DB->getNode("e2gods","usergroup");
 my $root_user = $DB->getNode("root","user");
 
+# Set imgsrc on root in dev so the dev-only stub (#4018) has a user to
+# render against. Other dev users keep imgsrc=NULL — the homenode picture
+# block stays hidden for them, mirroring the typical prod case.
+unless ($root_user->{imgsrc}) {
+  $root_user->{imgsrc} = '/root';
+  $DB->updateNode($root_user, -1);
+}
+
 # Check if root is already in gods (idempotent operation)
 my $existing_gods = $DB->sqlSelect('COUNT(*)', 'nodegroup',
   "nodegroup_id=$gods->{node_id} AND node_id=$root_user->{node_id}");
