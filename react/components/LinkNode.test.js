@@ -107,6 +107,30 @@ describe('LinkNode Component', () => {
       expect(link).toHaveAttribute('title', 'Q&A Forum');
     });
 
+    it('renders link text decoded when display is not provided (prod #2198233)', () => {
+      // Prod node 2198233 stores its title as the literal ASCII string
+      // "&#32654;&#22269;&#22269;&#23478;&#23433;&#20840;&#23616;" rather than
+      // the Chinese characters 美国国家安全局. Without decoding, the softlink
+      // table rendered literal "&#NNNN;" runs as link text while the tooltip
+      // showed proper Chinese — the user-reported asymmetry.
+      render(<LinkNode title="&#32654;&#22269;&#22269;&#23478;&#23433;&#20840;&#23616;" />);
+      const link = screen.getByRole('link');
+      expect(link).toHaveTextContent('美国国家安全局');
+      expect(link.textContent).not.toContain('&#');
+    });
+
+    it('renders syntax-conflict entities (e.g. brackets) decoded in link text', () => {
+      // Titles containing `[` or `]` must be entity-encoded in storage because
+      // square brackets are link syntax; LinkNode must decode them for display.
+      render(<LinkNode title="&#91;NSA&#93;" />);
+      expect(screen.getByRole('link')).toHaveTextContent('[NSA]');
+    });
+
+    it('explicit display prop still wins over decoded title', () => {
+      render(<LinkNode title="&#32654;&#22269;" display="pipelink text" />);
+      expect(screen.getByRole('link')).toHaveTextContent('pipelink text');
+    });
+
     it('adds query parameters', () => {
       render(<LinkNode title="Test" params={{ foo: 'bar', baz: 'qux' }} />);
       const link = screen.getByRole('link');

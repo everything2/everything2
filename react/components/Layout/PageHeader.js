@@ -1,6 +1,7 @@
 import React from 'react'
 import { FaRss } from 'react-icons/fa'
 import LinkNode from '../LinkNode'
+import { decodeHtmlEntities } from '../../utils/textUtils'
 
 /**
  * PageHeader - Renders the page header section with title, createdby, firmlinks, etc.
@@ -32,7 +33,7 @@ const PageHeader = ({ node, pageheader, user, feedUrl, children }) => {
     <div id="pageheader">
       <div className="page-header__title-row">
         <div className="page-header__title-with-feed">
-          <h1 className="nodetitle page-header__title">{node.title}</h1>
+          <h1 className="nodetitle page-header__title">{decodeHtmlEntities(node.title)}</h1>
           {feedUrl && (
             <a
               href={feedUrl}

@@ -9,6 +9,7 @@ import MenuBar from './Editor/MenuBar';
 import PreviewContent from './Editor/PreviewContent';
 import { useWriteuptypes } from '../hooks/usePublishDraft';
 import { fetchWithErrorReporting } from '../utils/reportClientError';
+import { decodeHtmlEntities } from '../utils/textUtils';
 import './Editor/E2Editor.css';
 
 /**
@@ -663,7 +664,7 @@ const InlineWriteupEditor = ({
           </h3>
           {!writeupId && (
             <span className="inline-editor-subtitle">
-              to "{e2nodeTitle}"
+              to "{decodeHtmlEntities(e2nodeTitle)}"
             </span>
           )}
         </div>
@@ -767,7 +768,7 @@ const InlineWriteupEditor = ({
             {/* Dynamic title preview that updates with selected writeup type */}
             <span className="inline-editor-publish-label">
               Publishing: <strong className="inline-editor-publish-title">
-                {e2nodeTitle}
+                {decodeHtmlEntities(e2nodeTitle)}
                 {selectedWriteuptypeId && writeuptypes.length > 0 && (
                   <> ({writeuptypes.find(wt => wt.node_id === selectedWriteuptypeId)?.title || ''})</>
                 )}
