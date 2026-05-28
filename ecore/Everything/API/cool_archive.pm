@@ -157,10 +157,13 @@ sub list_writeups {
         }
 
     } else {
-        # General query (sorted by tstamp only)
-        # Use bigLimit for subquery to handle deleted writeups
-        my $bigLimit = 10 * $fetch_limit;
-
+        # General query (sorted by tstamp only). Previously this used a
+        # `bigLimit = 10 * fetch_limit` subquery to over-pull from
+        # coolwriteups (intended to survive INNER JOIN drops for deleted
+        # writeups) but had NO outer LIMIT — so the server returned ~10x
+        # the requested page size, and infinite-scroll requests overlapped
+        # each other heavily (#3870). Replaced with plain outer LIMIT/OFFSET
+        # so client offsets map directly to result-row positions.
         $sql = qq|
             SELECT
                 node.node_id, node.title, node.author_user, node.reputation,
@@ -170,8 +173,7 @@ sub list_writeups {
                 author.title AS author_name,
                 cooler.title AS cooled_by_name,
                 wutype.title AS writeup_type
-            FROM
-                (SELECT * FROM coolwriteups ORDER BY $orderby LIMIT ? OFFSET ?) cw
+            FROM coolwriteups cw
             INNER JOIN writeup
                 ON writeup.writeup_id = cw.coolwriteups_id
             INNER JOIN node
@@ -184,8 +186,10 @@ sub list_writeups {
                 ON cooler.node_id = cw.cooledby_user
             LEFT JOIN node AS wutype
                 ON wutype.node_id = writeup.wrtype_writeuptype
+            ORDER BY cw.$orderby
+            LIMIT ? OFFSET ?
         |;
-        @bind_params = ($bigLimit, $offset);
+        @bind_params = ($fetch_limit, $offset);
     }
 
     my $rows = $DB->{dbh}->selectall_arrayref($sql, { Slice => {} }, @bind_params);
