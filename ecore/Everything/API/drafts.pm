@@ -54,13 +54,14 @@ Returns 409 Conflict if e2node is locked by another operation.
 
 sub routes {
     return {
-        '/'              => 'list_or_create',
-        '/search'        => 'search_drafts',
-        '/:id'           => 'get_or_update',
-        '/:id/parent'    => 'set_parent_e2node(:id)',
-        '/:id/publish'   => 'publish_draft(:id)',
-        '/:id/republish' => 'republish_draft(:id)',
-        '/preview'       => 'render_preview'
+        '/'                  => 'list_or_create',
+        '/search'            => 'search_drafts',
+        '/:id'               => 'get_or_update',
+        '/:id/parent'        => 'set_parent_e2node(:id)',
+        '/:id/publish'       => 'publish_draft(:id)',
+        '/:id/republish'     => 'republish_draft(:id)',
+        '/:id/mark_reviewed' => 'mark_reviewed(:id)',
+        '/preview'           => 'render_preview'
     };
 }
 
@@ -1566,8 +1567,122 @@ sub republish_draft {
     ];
 }
 
+=head2 POST /api/drafts/:id/mark_reviewed
+
+Editor-only. Marks a draft currently in 'review' publication_status as
+review-completed:
+
+  * sets the draft's publication_status back to 'private' (the safest default
+    — author can re-promote if they want findability while iterating).
+  * inserts a noter_user=0 audit nodenote with text
+    "Marked reviewed by <editor>". The DataStash::reviewdrafts query keys on
+    "no newer noter_user=0 note than the original request" — inserting this
+    note alone would be enough to drop the draft from the For Review nodelet,
+    but we also clear the publication_status so the author isn't stuck
+    waiting on a review that's already happened.
+
+Returns the new draft state.
+
+=cut
+
+sub mark_reviewed {
+    my ( $self, $REQUEST, $draft_id ) = @_;
+
+    $draft_id = int( $draft_id || 0 );
+    return [ $self->HTTP_BAD_REQUEST, { success => 0, error => 'invalid_id' } ]
+      unless $draft_id > 0;
+
+    my $user = $REQUEST->user;
+    my $DB   = $self->DB;
+    my $APP  = $self->APP;
+
+    unless ( $APP->isEditor( $user->NODEDATA ) ) {
+        return [
+            $self->HTTP_FORBIDDEN,
+            { success => 0, error => 'permission_denied',
+              message => 'Only editors can mark drafts reviewed' }
+        ];
+    }
+
+    my $draft = $DB->getNodeById($draft_id);
+    return [ $self->HTTP_NOT_FOUND, { success => 0, error => 'not_found' } ]
+      unless $draft && $draft->{type}{title} eq 'draft';
+
+    my $review_status = $DB->getNode( 'review', 'publication_status' );
+    unless ($review_status) {
+        return [
+            $self->HTTP_INTERNAL_SERVER_ERROR,
+            { success => 0, error => 'config_error',
+              message => 'review publication_status not found' }
+        ];
+    }
+
+    # Read publication_status directly from the draft table rather than from
+    # the cached node — update_draft (where the status flip to 'review'
+    # happens) writes the draft row without ticking the node cache, so a
+    # request that arrived close behind it would see stale state on the
+    # blessed/hashref node copy.
+    my $current_status = $DB->{dbh}->selectrow_array(
+        'SELECT publication_status FROM draft WHERE draft_id = ?',
+        {}, $draft_id );
+
+    unless ( defined $current_status
+        && $current_status == $review_status->{node_id} )
+    {
+        return [
+            $self->HTTP_BAD_REQUEST,
+            { success => 0, error => 'not_in_review',
+              message => 'Only drafts in review status can be marked reviewed' }
+        ];
+    }
+
+    my $private_status = $DB->getNode( 'private', 'publication_status' );
+    unless ($private_status) {
+        return [
+            $self->HTTP_INTERNAL_SERVER_ERROR,
+            { success => 0, error => 'config_error',
+              message => 'private publication_status not found' }
+        ];
+    }
+
+    # Audit note. noter_user=0 matches the marker used by _notify_review when
+    # the draft was first put up for review; the DataStash::reviewdrafts
+    # subquery treats any newer noter_user=0 note as "the review request was
+    # answered" and drops the draft from the For Review list.
+    my $editor_title = $user->title || 'an editor';
+    $DB->{dbh}->do(
+        q|INSERT INTO nodenote (nodenote_nodeid, noter_user, notetext, timestamp)
+          VALUES (?, 0, ?, NOW())|,
+        {},
+        $draft_id, "Marked reviewed by $editor_title"
+    );
+
+    # Status reset. Same shape as the inline status update in update_draft,
+    # but we don't go through update_draft because that endpoint requires
+    # author ownership.
+    $DB->{dbh}->do(
+        'UPDATE draft SET publication_status = ? WHERE draft_id = ?',
+        {}, $private_status->{node_id}, $draft_id
+    );
+
+    # Cache invalidation across webheads. Same pattern as
+    # publish_draft / republish_draft.
+    $DB->getCache->incrementGlobalVersion($draft);
+    $DB->getCache->removeNode($draft);
+
+    return [
+        $self->HTTP_OK,
+        {
+            success  => 1,
+            draft_id => $draft_id,
+            status   => 'private',
+            message  => 'Draft marked reviewed'
+        }
+    ];
+}
+
 around [ 'list_or_create', 'get_or_update', 'search_drafts', 'set_parent_e2node',
-    'publish_draft', 'republish_draft', 'render_preview' ] => \&Everything::API::unauthorized_if_guest;
+    'publish_draft', 'republish_draft', 'mark_reviewed', 'render_preview' ] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 

@@ -195,10 +195,11 @@ export const AddToWeblogButton = ({ nodeId, nodeTitle, nodeType, user, style }) 
       <button
         onClick={() => setIsOpen(true)}
         title="Add to usergroup page"
-        className="icon-btn"
+        className="icon-btn e2-action-chip"
         style={style}
       >
         <FaShareSquare />
+        <span className="e2-action-chip__label">Add to Page</span>
       </button>
 
       <AddToWeblogModal

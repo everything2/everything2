@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import WriteupDisplay from './WriteupDisplay'
 
 // Mock the E2HtmlSanitizer
@@ -15,13 +15,35 @@ jest.mock('./LinkNode', () => {
   }
 })
 
-// Mock MessageModal to capture props
+// Mock MessageModal to capture props. We expose `onSend` and the
+// showFeedbackOption prop so tests can simulate the editor submitting the
+// modal with a chosen feedback-checkbox state and observe what WriteupDisplay
+// does in response (specifically: whether it POSTs a nodenote alongside the
+// /api/messages/create call).
 jest.mock('./MessageModal', () => {
-  return function MockMessageModal({ isOpen, initialMessage }) {
+  return function MockMessageModal({ isOpen, initialMessage, onSend, showFeedbackOption }) {
     if (!isOpen) return null
     return (
-      <div data-testid="message-modal" data-initial-message={initialMessage || ''}>
+      <div
+        data-testid="message-modal"
+        data-initial-message={initialMessage || ''}
+        data-show-feedback={showFeedbackOption ? '1' : '0'}
+      >
         Message Modal
+        <button
+          type="button"
+          data-testid="message-modal__send-feedback"
+          onClick={() => onSend && onSend('author', 'looks good', { isFeedback: true })}
+        >
+          send feedback
+        </button>
+        <button
+          type="button"
+          data-testid="message-modal__send-plain"
+          onClick={() => onSend && onSend('author', 'just chatting', { isFeedback: false })}
+        >
+          send plain
+        </button>
       </div>
     )
   }
@@ -491,6 +513,120 @@ describe('WriteupDisplay Component', () => {
       // Check the MessageModal received empty initialMessage
       const modal = screen.getByTestId('message-modal')
       expect(modal).toHaveAttribute('data-initial-message', '')
+    })
+
+    describe('editor writeup feedback', () => {
+      const editorUser = { node_id: 789, is_guest: false, is_editor: true }
+
+      beforeEach(() => {
+        global.fetch = jest.fn().mockImplementation((url) => {
+          if (url === '/api/messages/create') {
+            return Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve({ successes: 1, errors: [], ignores: 0 })
+            })
+          }
+          if (url.startsWith('/api/nodenotes/')) {
+            return Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve({ success: true })
+            })
+          }
+          return Promise.reject(new Error('unexpected fetch: ' + url))
+        })
+      })
+
+      afterEach(() => {
+        delete global.fetch
+      })
+
+      it('exposes the feedback checkbox to MessageModal when the viewer is an editor', () => {
+        render(<WriteupDisplay writeup={mockWriteup} user={editorUser} />)
+        fireEvent.click(screen.getByTitle(`Message ${mockWriteup.author.title}`))
+        expect(screen.getByTestId('message-modal')).toHaveAttribute('data-show-feedback', '1')
+      })
+
+      it('hides the feedback checkbox for non-editor viewers', () => {
+        render(<WriteupDisplay writeup={mockWriteup} user={mockUser} />)
+        fireEvent.click(screen.getByTitle(`Message ${mockWriteup.author.title}`))
+        expect(screen.getByTestId('message-modal')).toHaveAttribute('data-show-feedback', '0')
+      })
+
+      it('posts a nodenote on the writeup when editor sends with feedback checked', async () => {
+        render(<WriteupDisplay writeup={mockWriteup} user={editorUser} />)
+        fireEvent.click(screen.getByTitle(`Message ${mockWriteup.author.title}`))
+        fireEvent.click(screen.getByTestId('message-modal__send-feedback'))
+
+        await waitFor(() => {
+          expect(global.fetch).toHaveBeenCalledWith(
+            `/api/nodenotes/${mockWriteup.node_id}/create`,
+            expect.objectContaining({
+              method: 'POST',
+              body: JSON.stringify({ notetext: 'looks good' })
+            })
+          )
+        })
+      })
+
+      it('does NOT post a nodenote when editor unchecks the feedback box', async () => {
+        render(<WriteupDisplay writeup={mockWriteup} user={editorUser} />)
+        fireEvent.click(screen.getByTitle(`Message ${mockWriteup.author.title}`))
+        fireEvent.click(screen.getByTestId('message-modal__send-plain'))
+
+        await waitFor(() => {
+          // /api/messages/create still fires
+          expect(global.fetch).toHaveBeenCalledWith('/api/messages/create', expect.anything())
+        })
+        const nodenoteCalls = global.fetch.mock.calls.filter(([url]) => url.startsWith('/api/nodenotes/'))
+        expect(nodenoteCalls).toHaveLength(0)
+      })
+    })
+  })
+
+  describe('drafts: feedback mail button + gear gating', () => {
+    const editorUser = { node_id: 789, is_guest: false, is_editor: true }
+
+    it('renders the mail button on a draft for editor viewers', () => {
+      render(<WriteupDisplay writeup={mockWriteup} user={editorUser} isDraft />)
+      expect(screen.getByTitle(/Send feedback to/)).toBeInTheDocument()
+    })
+
+    it('opens the MessageModal when the mail button on a draft is clicked', () => {
+      render(<WriteupDisplay writeup={mockWriteup} user={editorUser} isDraft />)
+      fireEvent.click(screen.getByTitle(/Send feedback to/))
+      expect(screen.getByTestId('message-modal')).toBeInTheDocument()
+    })
+
+    it('passes showFeedbackOption to MessageModal for editor draft messaging', () => {
+      render(<WriteupDisplay writeup={mockWriteup} user={editorUser} isDraft />)
+      fireEvent.click(screen.getByTitle(/Send feedback to/))
+      expect(screen.getByTestId('message-modal')).toHaveAttribute('data-show-feedback', '1')
+    })
+
+    it('hides the mail button when the draft viewer IS the author', () => {
+      // canMessage gates on !isAuthor — viewer.node_id === author.node_id
+      const sameAuthor = { ...mockUser, node_id: mockWriteup.author.node_id }
+      render(<WriteupDisplay writeup={mockWriteup} user={sameAuthor} isDraft />)
+      expect(screen.queryByTitle(/Send feedback to/)).not.toBeInTheDocument()
+    })
+
+    it('does NOT render the gear on drafts unless showAdminToolsOverride is set', () => {
+      render(<WriteupDisplay writeup={mockWriteup} user={editorUser} isDraft onAdminGearClick={() => {}} />)
+      // Gear button uses title="Draft tools"
+      expect(screen.queryByTitle('Draft tools')).not.toBeInTheDocument()
+    })
+
+    it('renders the gear on drafts when parent opts in via showAdminToolsOverride', () => {
+      render(
+        <WriteupDisplay
+          writeup={mockWriteup}
+          user={editorUser}
+          isDraft
+          showAdminToolsOverride
+          onAdminGearClick={() => {}}
+        />
+      )
+      expect(screen.getByTitle('Draft tools')).toBeInTheDocument()
     })
   })
 })

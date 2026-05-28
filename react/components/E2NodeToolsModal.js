@@ -65,12 +65,12 @@ const E2NodeToolsModal = ({ e2node, isOpen, onClose, user }) => {
       onRequestClose={handleClose}
       className="e2node-tools-modal"
       overlayClassName="e2node-tools-modal-overlay"
-      contentLabel="E2 Node Tools"
+      contentLabel="Editor Tools"
     >
       <div className="e2node-tools-container">
         {/* Header */}
         <div className="e2node-tools-header">
-          <h2><FaTools /> E2 Node Tools</h2>
+          <h2><FaTools /> Editor Tools</h2>
           <button onClick={handleClose} className="close-button" aria-label="Close">
             <FaTimes />
           </button>

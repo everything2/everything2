@@ -221,10 +221,11 @@ export const AddToCategoryButton = ({ nodeId, nodeTitle, nodeType, user, style }
       <button
         onClick={() => setIsOpen(true)}
         title="Add to category"
-        className="icon-btn"
+        className="icon-btn e2-action-chip"
         style={style}
       >
         <FaFolderPlus />
+        <span className="e2-action-chip__label">Add to Category</span>
       </button>
 
       <AddToCategoryModal

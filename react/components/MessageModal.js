@@ -24,7 +24,12 @@ const MessageModal = ({
   sendAsUser = null,
   accessibleBots = [],
   currentUser = null,
-  onSendAsChange = null
+  onSendAsChange = null,
+  // Writeup-feedback props. When showFeedbackOption is true, the modal
+  // renders a checkbox (default-on per the spec) that the caller reads off
+  // the onSend payload to also drop a nodenote on the writeup.
+  showFeedbackOption = false,
+  feedbackLabel = 'This is writeup feedback'
 }) => {
   const [message, setMessage] = useState('')
   const [recipient, setRecipient] = useState('')
@@ -32,6 +37,7 @@ const MessageModal = ({
   const [sending, setSending] = useState(false)
   const [error, setError] = useState(null)
   const [warning, setWarning] = useState(null)
+  const [isFeedback, setIsFeedback] = useState(true)
   const textareaRef = useRef(null)
 
   // Autocomplete state — fetch lifecycle (debounce / abort / stale-guard)
@@ -78,6 +84,10 @@ const MessageModal = ({
       setError(null)
       setWarning(null)
       setSending(false)
+      // Reset the feedback checkbox to its default (on) every time the modal
+      // opens so an editor doesn't carry over an unchecked state from a
+      // previous message into a fresh one.
+      setIsFeedback(true)
       clearSuggestions()
       setShowSuggestions(false)
       setSelectedSuggestionIndex(-1)
@@ -177,7 +187,9 @@ const MessageModal = ({
         }
       }
 
-      const result = await onSend(targetRecipient, message.trim())
+      // Pass a meta object as a 3rd arg so callers that don't need it can
+      // ignore it; callers that opted into showFeedbackOption read meta.isFeedback.
+      const result = await onSend(targetRecipient, message.trim(), { isFeedback: showFeedbackOption && isFeedback })
 
       if (result === true || result?.success) {
         // Check for warnings (partial success)
@@ -398,6 +410,25 @@ const MessageModal = ({
               {charCount} / {charLimit} characters
             </div>
           </div>
+
+          {/* Writeup-feedback checkbox. Shown only when the caller opted in
+              (editors messaging a writeup author). Checked by default so the
+              common case — an editor's review note — automatically lands as a
+              nodenote on the writeup without an extra click. */}
+          {showFeedbackOption && (
+            <div className="message-modal-field message-modal-field--feedback">
+              <label className="message-modal-feedback-label">
+                <input
+                  type="checkbox"
+                  checked={isFeedback}
+                  onChange={(e) => setIsFeedback(e.target.checked)}
+                  disabled={sending}
+                  className="message-modal-feedback-checkbox"
+                />
+                {' '}{feedbackLabel}
+              </label>
+            </div>
+          )}
 
           {/* Error message */}
           {error && (

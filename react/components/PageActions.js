@@ -144,9 +144,10 @@ const EditorCoolButton = ({ nodeId }) => {
       onClick={handleToggle}
       disabled={isLoading}
       title={isCooled ? 'Remove editor cool' : 'Add editor cool (endorsement)'}
-      className={`icon-btn${isCooled ? ' icon-btn--gold' : ''}`}
+      className={`icon-btn e2-action-chip${isCooled ? ' icon-btn--gold' : ''}`}
     >
       {isCooled ? <FaStar /> : <FaRegStar />}
+      <span className="e2-action-chip__label">{isCooled ? 'Cooled' : 'Editor Cool'}</span>
     </button>
   )
 }
@@ -216,9 +217,10 @@ const BookmarkButton = ({ nodeId }) => {
       onClick={handleToggle}
       disabled={isLoading}
       title={isBookmarked ? 'Remove bookmark' : 'Bookmark this page'}
-      className={`icon-btn${isBookmarked ? ' icon-btn--active' : ''}`}
+      className={`icon-btn e2-action-chip${isBookmarked ? ' icon-btn--active' : ''}`}
     >
       {isBookmarked ? <FaBookmark /> : <FaRegBookmark />}
+      <span className="e2-action-chip__label">{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
     </button>
   )
 }
