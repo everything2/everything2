@@ -4,7 +4,7 @@ import EditorModeToggle from '../Editor/EditorModeToggle'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
-import { breakTags } from '../Editor/E2HtmlSanitizer'
+import { normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
 import MenuBar from '../Editor/MenuBar'
 import PreviewContent from '../Editor/PreviewContent'
 import LinkNode from '../LinkNode'
@@ -83,7 +83,7 @@ const CreateCategory = ({ data }) => {
       setHtmlContent(cleanedHtml)
     } else {
       // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
-      const withBreaks = breakTags(htmlContent)
+      const withBreaks = normalizeEditorHtml(htmlContent)
       editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks))
     }
 

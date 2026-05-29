@@ -385,6 +385,53 @@ describe('InlineWriteupEditor', () => {
       // In rich mode, editor should have content
       expect(screen.getByTestId('editor-content')).toBeInTheDocument()
     })
+
+    // #3385: shared/plain-text drafts lost their paragraph breaks in the edit
+    // box (one solid block) while the read-only display rendered them fine.
+    // The editor must run the same breakTags newline→<p> normalization the
+    // display does, before handing content to TipTap (which collapses bare
+    // newlines).
+    describe('paragraph preservation (#3385)', () => {
+      const getEditorContent = () => {
+        const { useEditor } = require('@tiptap/react')
+        // convertEntitiesToRawBrackets is mocked identity, so the content arg
+        // is exactly the breakTags-normalized initial content.
+        return useEditor.mock.calls[0][0].content
+      }
+
+      it('converts plain-text \\n\\n paragraph breaks to <p> before TipTap sees them', () => {
+        render(
+          <InlineWriteupEditor
+            {...defaultProps}
+            initialContent={'First paragraph.\n\nSecond paragraph.'}
+          />
+        )
+        const content = getEditorContent()
+        // Should be wrapped/split into paragraphs, not a single bare block.
+        expect(content).toMatch(/<p>/i)
+        expect(content).toContain('First paragraph.')
+        expect(content).toContain('Second paragraph.')
+        // The two paragraphs must be separated by block markup, not just a
+        // collapsed space.
+        expect(content).not.toBe('First paragraph.\n\nSecond paragraph.')
+      })
+
+      it('leaves already-formatted (<p>-tagged) drafts unchanged (idempotent)', () => {
+        const formatted = '<p>Already</p><p>Formatted</p>'
+        render(
+          <InlineWriteupEditor
+            {...defaultProps}
+            initialContent={formatted}
+          />
+        )
+        expect(getEditorContent()).toBe(formatted)
+      })
+
+      it('handles empty initial content without error', () => {
+        render(<InlineWriteupEditor {...defaultProps} initialContent={''} />)
+        expect(getEditorContent()).toBe('')
+      })
+    })
   })
 
   describe('title parsing for drafts', () => {

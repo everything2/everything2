@@ -187,6 +187,39 @@ export function breakTags(text) {
   return result
 }
 
+// Block-level tags whose adjacent newline-whitespace is purely formatting.
+// `pre` is intentionally excluded — whitespace inside it is significant.
+const EDITOR_BLOCK_TAGS = 'p|div|h[1-6]|blockquote|ul|ol|li|dl|dt|dd|center|hr|br|table|thead|tbody|tr|td|th'
+const NL_AFTER_BLOCK = new RegExp(`(</?(?:${EDITOR_BLOCK_TAGS})\\b[^>]*>)\\s*\\n\\s*`, 'gi')
+const NL_BEFORE_BLOCK = new RegExp(`\\s*\\n\\s*(</?(?:${EDITOR_BLOCK_TAGS})\\b[^>]*>)`, 'gi')
+
+/**
+ * Normalize HTML before handing it to TipTap (setContent / initial content).
+ *
+ * Runs breakTags (plain-text \n\n → <p>, idempotent on already-tagged content),
+ * then strips newline-containing whitespace that sits immediately against a
+ * block-level tag boundary.
+ *
+ * Why the second step: breakTags bails the moment it sees any <p>/<br>, so
+ * MIXED content authored in HTML mode — e.g. "<p>Hello</p>\n\nHello" (a rich
+ * paragraph plus a hand-typed plain one) — keeps its trailing "\n\nHello"
+ * raw. TipTap wraps that loose text into a paragraph but preserves the
+ * leading "\n\n" as a literal space, yielding "<p>Hello</p><p> Hello</p>"
+ * with a stray leading space that throws off formatting (reported on the
+ * rich/HTML mode round-trip). Removing the newline-whitespace that abuts the
+ * block boundary leaves "<p>Hello</p>Hello", which TipTap wraps cleanly as
+ * "<p>Hello</p><p>Hello</p>".
+ *
+ * Only newline-bearing whitespace is touched, so meaningful inline spaces
+ * (e.g. a single space between <strong>/<em>) are preserved.
+ */
+export function normalizeEditorHtml(html) {
+  if (!html) return ''
+  let out = breakTags(html)
+  out = out.replace(NL_AFTER_BLOCK, '$1').replace(NL_BEFORE_BLOCK, '$1')
+  return out
+}
+
 /**
  * Convert h1 tags to h2 for proper heading hierarchy
  * The page title is the only h1, so user-submitted h1s become h2s

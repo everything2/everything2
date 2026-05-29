@@ -56,14 +56,16 @@ describe('NewWriteupsCard', () => {
     expect(authorLink.getAttribute('href')).toBe('/user/root')
   })
 
-  it('uses title-based URL when entry has no parent (no anchor needed)', () => {
-    // No parent → WriteupEntry's "node title directly" branch. LinkNode receives
-    // only `nodeId` (destructured but not used for URL building) and `title`,
-    // so it falls through to `/title/<title>` with no anchor or author param.
+  it('uses the node_id URL when entry has no parent', () => {
+    // No parent → WriteupEntry's "node title directly" branch passes
+    // nodeId={node_id} to LinkNode. Since LinkNode treats `nodeId` as a
+    // synonym for `id`, this resolves to the robust /node/<id> form rather
+    // than the title-dependent /title/<title> (which can 404 for exotic or
+    // non-public titles). See the nodeId-fallback in LinkNode.js.
     render(<NewWriteupsCard writeups={[writeupWithoutParent]} />)
     const titleLink = screen.getByText('standalone node')
     expect(titleLink.tagName).toBe('A')
-    expect(titleLink.getAttribute('href')).toBe('/title/standalone node')
+    expect(titleLink.getAttribute('href')).toBe('/node/888')
   })
 
   it('respects the limit prop', () => {
