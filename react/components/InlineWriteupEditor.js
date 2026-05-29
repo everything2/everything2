@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import EditorModeToggle from './Editor/EditorModeToggle';
 import { getE2EditorExtensions } from './Editor/useE2Editor';
 import { convertToE2Syntax } from './Editor/E2LinkExtension';
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Editor/RawBracketExtension';
-import { breakTags } from './Editor/E2HtmlSanitizer';
+import { normalizeEditorHtml } from './Editor/E2HtmlSanitizer';
 import MenuBar from './Editor/MenuBar';
 import PreviewContent from './Editor/PreviewContent';
 import { useWriteuptypes } from '../hooks/usePublishDraft';
@@ -82,8 +82,21 @@ const InlineWriteupEditor = ({
   const parsedTitle = parseDraftTitle(e2nodeTitleProp)
   const e2nodeTitle = parsedTitle.e2nodeTitle
 
+  // Normalize plain-text paragraph breaks to HTML before the content reaches
+  // TipTap. Legacy/HTML-mode drafts store paragraphs as bare "\n\n" with no
+  // <p>/<br> tags; TipTap's HTML parser collapses bare newlines to a single
+  // space, so without this the editor showed the whole draft as one solid
+  // block even though the read-only display rendered it correctly (the display
+  // path runs the same breakTags via renderE2Content). breakTags is guarded —
+  // it no-ops on content that already contains <p>/<br>, so it's idempotent and
+  // safe for drafts authored in the rich editor. Fixes #3385.
+  const normalizedInitialContent = useMemo(
+    () => normalizeEditorHtml(initialContent),
+    [initialContent]
+  )
+
   const [editorMode, setEditorMode] = useState(getInitialEditorMode); // 'rich' or 'html'
-  const [htmlContent, setHtmlContent] = useState(initialContent);
+  const [htmlContent, setHtmlContent] = useState(normalizedInitialContent);
   const [draftId, setDraftId] = useState(initialDraftId);
   const [saveStatus, setSaveStatus] = useState('saved'); // 'saved', 'saving', 'unsaved'
   const [publishing, setPublishing] = useState(false);
@@ -97,7 +110,7 @@ const InlineWriteupEditor = ({
   const [deleting, setDeleting] = useState(false); // Delete in progress
   const autosaveTimerRef = useRef(null);
   const firstEditRef = useRef(false);
-  const lastSavedContentRef = useRef(initialContent); // Track last saved content from server
+  const lastSavedContentRef = useRef(normalizedInitialContent); // Track last saved content from server
   const hasSetWriteuptypeFromTitleRef = useRef(false); // Track if we've already set writeuptype from title
 
   // Use shared writeuptypes hook (skip for editing existing writeups)
@@ -172,7 +185,7 @@ const InlineWriteupEditor = ({
   // Preprocess to convert &#91; and &#93; entities back to parseable spans for TipTap
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
-    content: convertEntitiesToRawBrackets(initialContent),
+    content: convertEntitiesToRawBrackets(normalizedInitialContent),
     editorProps: {
       attributes: {
         'aria-label': 'Writeup content',
@@ -516,10 +529,13 @@ const InlineWriteupEditor = ({
       const cleanedHtml = convertRawBracketsToEntities(e2Html);
       setHtmlContent(cleanedHtml);
     } else {
-      // Switch to Rich mode - update editor with HTML content
-      // First apply breakTags to convert plain-text newlines to proper HTML paragraphs
-      // Then convert &#91; and &#93; entities back to parseable spans for TipTap
-      const withBreaks = breakTags(htmlContent);
+      // Switch to Rich mode - update editor with HTML content.
+      // normalizeEditorHtml runs breakTags (plain-text \n\n → <p>) AND strips
+      // newline-whitespace abutting block tags, so mixed content like
+      // "<p>Hello</p>\n\nHello" doesn't round-trip into "<p>Hello</p><p> Hello</p>"
+      // (stray leading space). Then convert &#91;/&#93; entities back to
+      // parseable spans for TipTap.
+      const withBreaks = normalizeEditorHtml(htmlContent);
       editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
     }
 

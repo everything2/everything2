@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { getE2EditorExtensions } from '../Editor/useE2Editor';
 import { convertToE2Syntax } from '../Editor/E2LinkExtension';
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension';
-import { renderE2Content, breakTags } from '../Editor/E2HtmlSanitizer';
+import { renderE2Content, normalizeEditorHtml } from '../Editor/E2HtmlSanitizer';
 import MenuBar from '../Editor/MenuBar';
 import PreviewContent from '../Editor/PreviewContent';
 import PublishModal from './PublishModal';
@@ -325,11 +325,13 @@ const EditorBeta = ({ data }) => {
         setRawHtmlContent(convertToE2Syntax(withEntities));
       }
     } else {
-      // Switching to rich mode - load HTML content into editor
-      // First apply breakTags to convert plain-text newlines to proper HTML paragraphs
-      // Then convert &#91; and &#93; entities back to parseable spans for TipTap
+      // Switching to rich mode - load HTML content into editor.
+      // normalizeEditorHtml runs breakTags (plain-text \n\n → <p>) AND strips
+      // newline-whitespace abutting block tags, so mixed content like
+      // "<p>x</p>\n\ny" doesn't round-trip into "<p>x</p><p> y</p>" (stray
+      // leading space). Then convert &#91;/&#93; back to spans for TipTap.
       if (editor) {
-        const withBreaks = breakTags(rawHtmlContent);
+        const withBreaks = normalizeEditorHtml(rawHtmlContent);
         editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
       }
     }
@@ -412,11 +414,11 @@ const EditorBeta = ({ data }) => {
       // (empty string '' can cause Tiptap issues)
       const content = draft.doctext || '<p></p>';
 
-      // Load into both rich editor and raw HTML state
-      // Apply breakTags to convert plain-text newlines to proper HTML paragraphs
-      // Then convert &#91; and &#93; entities back to parseable spans for TipTap
+      // Load into both rich editor and raw HTML state.
+      // normalizeEditorHtml = breakTags + strip block-adjacent newline
+      // whitespace (see mode-toggle above). Then entities → spans for TipTap.
       if (editor) {
-        const withBreaks = breakTags(content);
+        const withBreaks = normalizeEditorHtml(content);
         editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks));
       }
       setRawHtmlContent(content);
@@ -534,9 +536,10 @@ const EditorBeta = ({ data }) => {
       if (result.success && result.draft) {
         const content = result.draft.doctext || '';
 
-        // Update both editor and raw HTML state
+        // Update both editor and raw HTML state. Normalize so a restored
+        // plain-text version doesn't collapse / leak leading spaces.
         if (editor) {
-          editor.commands.setContent(content);
+          editor.commands.setContent(convertEntitiesToRawBrackets(normalizeEditorHtml(content)));
         }
         setRawHtmlContent(content);
 

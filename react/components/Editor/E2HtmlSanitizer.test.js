@@ -18,6 +18,7 @@ import {
   APPROVED_TAGS,
   escapeHtml,
   breakTags,
+  normalizeEditorHtml,
 } from './E2HtmlSanitizer'
 
 describe('E2HtmlSanitizer', () => {
@@ -1208,6 +1209,50 @@ And some [links] too.`
       expect(result).toContain('<p>This is a legacy writeup.</p>')
       expect(result).toContain('<p>It has multiple paragraphs.</p>')
       expect(result).toContain('[links]') // Links are processed later
+    })
+  })
+
+  describe('normalizeEditorHtml (rich/HTML round-trip whitespace)', () => {
+    it('returns empty string for null/undefined/empty', () => {
+      expect(normalizeEditorHtml(null)).toBe('')
+      expect(normalizeEditorHtml(undefined)).toBe('')
+      expect(normalizeEditorHtml('')).toBe('')
+    })
+
+    it('strips the \\n\\n after a closing block tag that precedes bare text (the reported bug)', () => {
+      // "<p>Hello</p>\n\nHello" must not leave the trailing "\n\n" raw — TipTap
+      // would wrap it as "<p> Hello</p>" with a stray leading space.
+      const out = normalizeEditorHtml('<p>Hello</p>\n\nHello')
+      expect(out).toBe('<p>Hello</p>Hello')
+      expect(out).not.toMatch(/<\/p>\s*\n/)
+    })
+
+    it('removes newline-whitespace between block tags', () => {
+      expect(normalizeEditorHtml('<p>One</p>\n\n<p>Two</p>')).toBe('<p>One</p><p>Two</p>')
+    })
+
+    it('preserves meaningful inline spaces (no newline involved)', () => {
+      const input = '<p><strong>bold</strong> <em>italic</em></p>'
+      // No newline, so the inline space between the two elements must survive.
+      expect(normalizeEditorHtml(input)).toBe(input)
+    })
+
+    it('still converts pure plain-text via breakTags', () => {
+      const out = normalizeEditorHtml('Para one.\n\nPara two.')
+      expect(out).toContain('<p>Para one.</p>')
+      expect(out).toContain('<p>Para two.</p>')
+      // And no stray newline-whitespace leaking against a block boundary
+      expect(out).not.toMatch(/<\/p>\s*\n/)
+    })
+
+    it('does not collapse significant whitespace inside <pre>', () => {
+      const out = normalizeEditorHtml('<pre>line1\nline2\nline3</pre>')
+      expect(out).toContain('line1\nline2\nline3')
+    })
+
+    it('is idempotent on already-clean content', () => {
+      const clean = '<p>Hello</p><p>World</p>'
+      expect(normalizeEditorHtml(clean)).toBe(clean)
     })
   })
 

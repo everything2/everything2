@@ -9,7 +9,8 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { E2Link, convertToE2Syntax } from './E2LinkExtension'
 import { E2TextAlign } from './E2TextAlignExtension'
-import { RawBracket, convertRawBracketsToEntities } from './RawBracketExtension'
+import { RawBracket, convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './RawBracketExtension'
+import { normalizeEditorHtml } from './E2HtmlSanitizer'
 
 /**
  * Shared TipTap editor configuration for Everything2
@@ -98,8 +99,12 @@ export const useEditorMode = ({
         const withEntities = convertRawBracketsToEntities(html)
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
-        // Switching to rich mode - load HTML content into editor
-        editor.commands.setContent(htmlContent)
+        // Switching to rich mode - load HTML content into editor.
+        // normalizeEditorHtml (breakTags + strip block-adjacent newline
+        // whitespace) prevents mixed content from round-tripping into a stray
+        // leading space, and convertEntitiesToRawBrackets restores literal
+        // bracket/angle spans for TipTap — matching the per-component editors.
+        editor.commands.setContent(convertEntitiesToRawBrackets(normalizeEditorHtml(htmlContent)))
       }
     }
 

@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import { getE2EditorExtensions } from './Editor/useE2Editor'
 import { convertToE2Syntax } from './Editor/E2LinkExtension'
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Editor/RawBracketExtension'
-import { breakTags } from './Editor/E2HtmlSanitizer'
+import { normalizeEditorHtml } from './Editor/E2HtmlSanitizer'
 import MenuBar from './Editor/MenuBar'
 import EditorModeToggle from './Editor/EditorModeToggle'
 import './Editor/E2Editor.css'
@@ -42,7 +42,7 @@ const UsergroupDescriptionEditor = ({
   // Initialize TipTap editor
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
-    content: breakTags(initialContent),
+    content: normalizeEditorHtml(initialContent),
     editorProps: {
       attributes: {
         class: 'e2-editor-content'
@@ -67,7 +67,7 @@ const UsergroupDescriptionEditor = ({
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        editor.commands.setContent(breakTags(htmlContent))
+        editor.commands.setContent(normalizeEditorHtml(htmlContent))
       }
     }
 

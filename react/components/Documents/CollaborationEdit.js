@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities } from '../Editor/RawBracketExtension'
-import { breakTags } from '../Editor/E2HtmlSanitizer'
+import { normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
 import MenuBar from '../Editor/MenuBar'
 import EditorModeToggle from '../Editor/EditorModeToggle'
 import LinkNode from '../LinkNode'
@@ -89,7 +89,7 @@ const CollaborationEdit = ({ data }) => {
   // Initialize TipTap editor
   const editor = useEditor({
     extensions: getE2EditorExtensions(),
-    content: breakTags(collaboration.doctext || ''),
+    content: normalizeEditorHtml(collaboration.doctext || ''),
     editorProps: {
       attributes: {
         class: 'e2-editor-content'
@@ -125,7 +125,7 @@ const CollaborationEdit = ({ data }) => {
         setHtmlContent(convertToE2Syntax(withEntities))
       } else {
         // Switching to rich - load HTML into editor
-        editor.commands.setContent(breakTags(htmlContent))
+        editor.commands.setContent(normalizeEditorHtml(htmlContent))
       }
     }
 

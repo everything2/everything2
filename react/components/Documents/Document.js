@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { FaEdit, FaRss } from 'react-icons/fa'
-import { renderE2Content, breakTags } from '../Editor/E2HtmlSanitizer'
+import { renderE2Content, normalizeEditorHtml } from '../Editor/E2HtmlSanitizer'
 import { getE2EditorExtensions } from '../Editor/useE2Editor'
 import { convertToE2Syntax } from '../Editor/E2LinkExtension'
 import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from '../Editor/RawBracketExtension'
@@ -368,7 +368,7 @@ const DocumentEditor = ({
     } else if (newMode === 'rich' && editor) {
       // Switching to Rich mode - update Tiptap with HTML content
       // First apply breakTags to convert plain-text newlines to proper HTML paragraphs
-      const withBreaks = breakTags(htmlContent)
+      const withBreaks = normalizeEditorHtml(htmlContent)
       editor.commands.setContent(convertEntitiesToRawBrackets(withBreaks))
     }
 
