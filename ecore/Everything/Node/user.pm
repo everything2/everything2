@@ -410,7 +410,17 @@ sub leveltitle
 sub infravision
 {
   my ($self) = @_;
-  return $self->VARS->{infravision};
+  # Infravision = the ability to see cloaked (invisible) users. Editors and
+  # chanops have it implicitly, on top of anyone who's set the infravision
+  # user var. This accessor is the single source of truth — the Other Users
+  # nodelet historically did this `editor || chanop || var` check inline while
+  # the tickers / finger / API session only consulted the var, so editors
+  # could see cloaked users in the nodelet but nowhere else (#3389). Centralize
+  # it here so every caller (other_users_xml_ticker, everything_finger,
+  # API::sessions) is consistent.
+  return 1 if $self->VARS->{infravision};
+  return 1 if $self->is_editor || $self->is_chanop;
+  return 0;
 }
 
 sub newxp

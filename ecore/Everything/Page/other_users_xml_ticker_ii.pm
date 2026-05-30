@@ -38,8 +38,16 @@ sub generate_xml {
     $sortstr = 'ORDER BY experience DESC' unless $query->param('nosort');
     my $wherestr;
 
-    #TODO: do not do visible filter if infravision
-    $wherestr = 'visible = 0';
+    # Cloaked (invisible) users are excluded by default. Viewers with
+    # infravision — the var, or implicitly editors/chanops via the centralized
+    # Node::user::infravision accessor — see everyone, so we drop the filter
+    # for them. Resolves the long-standing TODO and brings this ticker in line
+    # with the Other Users nodelet (#3389).
+    if ($REQUEST->user->infravision) {
+        $wherestr = '1=1';
+    } else {
+        $wherestr = 'visible = 0';
+    }
 
     my $roomfor = $query->param('in_room');
     if ($roomfor) {
