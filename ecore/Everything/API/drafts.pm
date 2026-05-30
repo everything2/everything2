@@ -1222,6 +1222,16 @@ sub publish_draft {
         $APP->devLog("Failed to add nodenote for published draft $draft_id: $@");
     };
 
+    # Award the author +5 XP for publishing a writeup. The legacy
+    # publishwriteup htmlcode did this ($USER{experience} += 5) but the React
+    # publish path dropped it; remove_writeup correspondingly deducts -5 so the
+    # accounting is symmetric (#3415). Granted only on a genuine publish — the
+    # already_published retry branch above returns before reaching here, so a
+    # retried request can't farm XP. numwriteups is NOT touched: it's recomputed
+    # from an actual count (cached hourly) in Controller/user.pm, so it
+    # self-heals and must not be incremented here.
+    $APP->adjustExp( $user_id, 5 );
+
     return [
         $self->HTTP_OK,
         {
@@ -1547,6 +1557,12 @@ sub republish_draft {
     } or do {
         $APP->devLog("Failed to add nodenote for republished draft $draft_id: $@");
     };
+
+    # Restore the +5 XP to the author. republish only runs on 'removed' drafts,
+    # and removal deducted -5 from the author (admin.pm remove_writeup), so
+    # restoring the writeup restores the points — keeps the publish/remove/
+    # republish XP accounting symmetric (#3415).
+    $APP->adjustExp( $draft->{author_user}, 5 );
 
     # Security log
     my $author = $DB->getNodeById($draft->{author_user});

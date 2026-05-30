@@ -252,6 +252,10 @@ SKIP: {
       is_editor_flag => 0
     );
 
+    # Capture the author's XP before removal — remove_writeup should deduct
+    # the +5 that publishing granted, reversing it symmetrically (#3415).
+    my $exp_before = $DB->sqlSelect('experience', 'user', "user_id=$regular_user->{node_id}");
+
     my $result = $api->remove_writeup($author_request, $writeup_id);
     if ($result->[0] != $api->HTTP_OK) {
       diag("Error: " . ($result->[1]->{message} || 'No message'));
@@ -268,6 +272,10 @@ SKIP: {
     my $current_status = $DB->sqlSelect('publication_status', 'draft', "draft_id=$writeup_id");
     is($current_status, $private_status->{node_id},
        'Writeup publication_status is private after removal');
+
+    # XP deducted by 5 on removal (#3415)
+    my $exp_after = $DB->sqlSelect('experience', 'user', "user_id=$regular_user->{node_id}");
+    is($exp_after, $exp_before - 5, 'Author loses 5 XP when writeup is removed to draft');
   }
 
   # Create another test writeup for editor removal test

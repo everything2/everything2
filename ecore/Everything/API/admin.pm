@@ -613,6 +613,14 @@ sub remove_writeup
     }
   }
 
+  # Reverse the +5 XP that publishing the writeup granted (#3415). The legacy
+  # remove path deducted this (adjustExp(author, -5)); the React migration
+  # dropped it, so XP only ever went up — publish/remove/republish could farm
+  # it. Always deduct from the *author* (not the remover), matching publish
+  # which credits the author. numwriteups is left alone — it's recomputed from
+  # an actual count (cached hourly) in Controller/user.pm and self-heals.
+  $APP->adjustExp( $NODE->{author_user}, -5 );
+
   # Security log for editor removals
   if ($is_editor)
   {

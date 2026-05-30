@@ -212,11 +212,21 @@ sub cleanup_test_nodes {
         }
     );
 
+    # Capture author XP before publish — publishing grants +5 (#3415).
+    my $exp_before_publish =
+      $DB->sqlSelect( 'experience', 'user', "user_id=$regular_user->{node_id}" );
+
     my ( $publish_status, $publish_response ) =
       @{ $api->publish_draft( $regular_request, $draft_id ) };
 
     is( $publish_status, $api->HTTP_OK, 'publish_draft returns HTTP_OK' );
     ok( $publish_response->{success}, 'publish_draft succeeds' );
+
+    # Author gains 5 XP for publishing a writeup (#3415)
+    my $exp_after_publish =
+      $DB->sqlSelect( 'experience', 'user', "user_id=$regular_user->{node_id}" );
+    is( $exp_after_publish, $exp_before_publish + 5,
+        'Author gains 5 XP when a draft is published' );
     is( $publish_response->{writeup_id},
         $draft_id, 'Writeup ID matches draft ID' );
     is( $publish_response->{e2node_id}, $e2node_id, 'E2node ID is correct' );
@@ -1588,6 +1598,13 @@ sub cleanup_test_nodes {
         }
     );
 
+    # #3415 — this publish→remove→republish loop is the exact XP-farm the
+    # issue described. Capture XP at the start and assert the net change over
+    # the whole cycle is +5 (one published writeup), NOT +10 (the old bug,
+    # where remove didn't deduct so each publish stacked).
+    my $loop_exp_before =
+      $DB->sqlSelect( 'experience', 'user', "user_id=$regular_user->{node_id}" );
+
     my ( $publish_status, $publish_response ) =
       @{ $api->publish_draft( $regular_request, $draft_id ) };
     is( $publish_status, $api->HTTP_OK, 'Draft published as idea' );
@@ -1602,6 +1619,12 @@ sub cleanup_test_nodes {
     my ( $remove_status, $remove_response ) =
       @{ $admin_api->remove_writeup( $regular_request, $draft_id ) };
     ok( $remove_response->{success}, 'Writeup removed' );
+
+    # After publish (+5) then remove (-5), XP is back to where it started.
+    my $exp_after_remove =
+      $DB->sqlSelect( 'experience', 'user', "user_id=$regular_user->{node_id}" );
+    is( $exp_after_remove, $loop_exp_before,
+        'XP nets to zero after publish + remove (no leftover from publish)' );
 
     # Verify draft title still has the old writeuptype
     $DB->getCache->removeNode($writeup_node);
@@ -1623,6 +1646,13 @@ sub cleanup_test_nodes {
       @{ $api->publish_draft( $regular_request, $draft_id ) };
     is( $republish_status, $api->HTTP_OK, 'Draft republished as thing' );
     ok( $republish_response->{success}, 'Republish succeeded' );
+
+    # Net XP over the full publish→remove→republish loop is +5, not +10.
+    # This is the regression guard for the #3415 farm.
+    my $loop_exp_after =
+      $DB->sqlSelect( 'experience', 'user', "user_id=$regular_user->{node_id}" );
+    is( $loop_exp_after, $loop_exp_before + 5,
+        'Publish/remove/republish nets +5 XP, not a farmable +10' );
 
     # Verify the title now has "thing" instead of "idea"
     $DB->getCache->removeNode($draft_node);
