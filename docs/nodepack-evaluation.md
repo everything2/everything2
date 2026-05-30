@@ -21,7 +21,7 @@ The first half is actionable for the July 2026 MySQL upgrade. The second half is
 
 | Concern | Count | Severity | Notes |
 |---|---|---|---|
-| `DEFAULT '0000-00-00'` zero-date columns | **18 columns in 17 tables** | **HIGH** | Rejected under MySQL 8.4 default `sql_mode` |
+| `DEFAULT '0000-00-00'` zero-date columns | **17 columns in 16 tables** | **HIGH** | Rejected under MySQL 8.4 default `sql_mode` (`krut_tomb` excluded — being dropped) |
 | Tables without `PRIMARY KEY` | 5 | MEDIUM | Performance / replication concern; blocks if `sql_require_primary_key` is enabled |
 | `int(N)` display-width usage | 4 occurrences | LOW | Deprecated since 8.0, still parses; produces warnings |
 | `FULLTEXT` index | 1 (`node.title`) | LOW | Supported in 8.4 InnoDB; minor behavioral diffs possible |
@@ -42,7 +42,7 @@ MySQL 8.4's default `sql_mode` includes both `NO_ZERO_DATE` and `NO_ZERO_IN_DATE
 - **At INSERT/UPDATE time**: inserting a `'0000-00-00'` value into a date column is rejected.
 - **At SELECT time**: reading an existing row that already contains `'0000-00-00'` typically succeeds (you get back the zero-date), but operations on that value (date arithmetic, comparisons under STRICT mode) may fail or return NULL.
 
-The 17 affected tables and 18 columns:
+The 16 affected tables and 17 columns:
 
 | Table | Column | Notes |
 |---|---|---|
@@ -54,12 +54,19 @@ The 17 affected tables and 18 columns:
 | `notified` | `notified_time` | |
 | `podcast` | `pubdate` | Sparse data |
 | `roomdata` | `lastused_date` | `date` (not datetime), `DEFAULT '0000-00-00'` |
-| `heaven` | `createtime` | Deleted-node archive |
-| `tomb` | `createtime` | Deleted-node archive |
-| `krut_tomb` | `createtime` | Spam-killed archive |
+| `heaven` | `createtime` | Deleted-node archive (live — resurrect path reads it) |
+| `tomb` | `createtime` | Deleted-node archive (live — `nukeNode` writes it) |
 | `nodebak` | `createtime`, `locktime` | Backup-on-edit |
 | `dbstats` | `tstamp` | Stats logging |
 | `lastreaddebate` | `dateread` | Per-user read tracking |
+
+> **`krut_tomb` dropped, not migrated.** This table was a one-off archive of a
+> ~24k-node spam purge run by the user *Kurt* (node 329) over July–August 2004
+> — every row has `killa_user = 329`, all reputation 0, and it has had no
+> writes since 2004. There are **zero code references** to it anywhere in the
+> tree. Rather than fix its 68 zero-date rows, the table is being dropped
+> (`DROP TABLE krut_tomb;`) and removed from the nodepack. Its still-live
+> sibling `tomb` (and `heaven`) get the standard default fix instead.
 
 ### What we don't know without prod access
 
@@ -67,7 +74,7 @@ The schema-level fix is easy: change `DEFAULT '0000-00-00 00:00:00'` to `DEFAULT
 
 That's a data audit, not a schema audit. We can't answer it from this dev environment. Two ways to find out:
 
-1. Run `SELECT COUNT(*) FROM <table> WHERE <date_col> = '0000-00-00 00:00:00'` against each of the 18 columns in production. This is read-only and cheap.
+1. Run `SELECT COUNT(*) FROM <table> WHERE <date_col> = '0000-00-00 00:00:00'` against each of the 17 columns in production. This is read-only and cheap.
 2. Stand up a snapshot-restored 8.4 instance per the migration plan's Phase 2b — the upgrade itself will surface any row that fails strict-mode validation.
 
 Best plan: do (1) first because it's free signal. Then (2) catches anything (1) missed.
@@ -107,7 +114,7 @@ The audit ruled out a long list of common migration headaches:
 Two PRs, both small, both reviewable independently of the migration itself:
 
 **PR 1 — Zero-date default cleanup** (estimated effort: 1 day)
-- Change `DEFAULT '0000-00-00 00:00:00'` → `DEFAULT '1970-01-01 00:00:01'` in all 18 columns
+- Change `DEFAULT '0000-00-00 00:00:00'` → `DEFAULT '1970-01-01 00:00:01'` in all 17 columns
 - (Why `1970-01-01 00:00:01`? It's the lowest valid UNIX epoch value that passes both `NO_ZERO_DATE` and `NO_ZERO_IN_DATE`. The legacy "never" semantics map cleanly: any row whose date is `'1970-01-01 00:00:01'` means "never set", same as the old zero-date meaning.)
 - Code review: search for explicit `'0000-00-00'` comparisons in ecore/ — if any code does `WHERE createtime != '0000-00-00 00:00:00'` as a "is this real?" check, update it.
 - Apply via `ecoretool import` against the dev DB, run tests.
