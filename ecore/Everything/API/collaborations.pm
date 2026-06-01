@@ -50,7 +50,10 @@ sub _check_access {
 sub _is_lock_expired {
     my ($self, $locktime) = @_;
 
-    return 1 unless $locktime && $locktime ne '0000-00-00 00:00:00';
+    # An unset lock is NULL (no lock). Previously the "unset" sentinel was
+    # '0000-00-00 00:00:00'; locktime is now nullable (#4085), so undef alone
+    # means "not locked / expired".
+    return 1 unless $locktime;
 
     my $expire_threshold = strftime('%Y-%m-%d %H:%M:%S', localtime(time() - $LOCK_EXPIRE_SECONDS));
     return $locktime lt $expire_threshold;
@@ -102,7 +105,7 @@ sub save {
 
     # Check lock - user must hold the lock (or be admin/CE) to save
     my $lockedby = $node->NODEDATA->{lockedby_user} || 0;
-    my $locktime = $node->NODEDATA->{locktime} || '0000-00-00 00:00:00';
+    my $locktime = $node->NODEDATA->{locktime};
 
     unless ($lockedby == $user->node_id || $user->is_admin || $user->is_editor) {
         # Check if lock expired
@@ -166,7 +169,7 @@ sub unlock {
 
     # Check if user can unlock (owner of lock, admin, CE, or lock expired)
     my $lockedby = $node->NODEDATA->{lockedby_user} || 0;
-    my $locktime = $node->NODEDATA->{locktime} || '0000-00-00 00:00:00';
+    my $locktime = $node->NODEDATA->{locktime};
 
     my $can_unlock = ($lockedby == $user->node_id) ||
                      $user->is_admin ||
@@ -177,8 +180,10 @@ sub unlock {
         return [$self->HTTP_OK, {success => 0, error => 'Cannot unlock - document is locked by another user'}];
     }
 
-    # Clear the lock
-    $node->NODEDATA->{locktime} = '0000-00-00 00:00:00';
+    # Clear the lock — locktime is nullable now (#4085), so NULL means "not
+    # locked". Writing '0000-00-00 00:00:00' here was the live MySQL-8.4
+    # strict-mode breaker (NO_ZERO_DATE rejects it on the UPDATE).
+    $node->NODEDATA->{locktime} = undef;
     $node->NODEDATA->{lockedby_user} = 0;
 
     $DB->updateNode($node->NODEDATA, -1);
