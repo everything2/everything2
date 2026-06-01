@@ -2,7 +2,7 @@
   <_create_table_statement>CREATE TABLE `collaboration` (
   `collaboration_id` int NOT NULL DEFAULT '0',
   `public` int NOT NULL DEFAULT '0',
-  `locktime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `locktime` datetime DEFAULT NULL,
   `lockedby_user` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`collaboration_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>

@@ -45,7 +45,9 @@ sub _check_access {
 sub _is_lock_expired {
     my ($self, $locktime) = @_;
 
-    return 1 unless $locktime && $locktime ne '0000-00-00 00:00:00';
+    # NULL locktime = not locked. locktime is nullable now (#4085); the old
+    # '0000-00-00 00:00:00' unset-sentinel is gone.
+    return 1 unless $locktime;
 
     # Parse locktime and compare to expiry threshold
     my $expire_threshold = strftime('%Y-%m-%d %H:%M:%S', localtime(time() - $LOCK_EXPIRE_SECONDS));
@@ -58,7 +60,9 @@ sub _is_lock_expired {
 sub _clear_lock {
     my ($self, $node) = @_;
 
-    $node->NODEDATA->{locktime} = '0000-00-00 00:00:00';
+    # NULL = unlocked. Writing '0000-00-00 00:00:00' here was the MySQL-8.4
+    # strict-mode breaker (#4085).
+    $node->NODEDATA->{locktime} = undef;
     $node->NODEDATA->{lockedby_user} = 0;
     $self->DB->updateNode($node->NODEDATA, -1);
     return;
@@ -107,7 +111,7 @@ sub display {
 
     # Get collaboration data
     my $lockedby_user = $node->NODEDATA->{lockedby_user} || 0;
-    my $locktime = $node->NODEDATA->{locktime} || '0000-00-00 00:00:00';
+    my $locktime = $node->NODEDATA->{locktime};
     my $is_public = $node->NODEDATA->{public} ? 1 : 0;
 
     # Handle unlock action
@@ -120,7 +124,7 @@ sub display {
             if ($can_unlock) {
                 $self->_clear_lock($node);
                 $lockedby_user = 0;
-                $locktime = '0000-00-00 00:00:00';
+                $locktime = undef;
                 $unlock_msg = 'Document unlocked.';
             }
         }
@@ -130,7 +134,7 @@ sub display {
     if ($lockedby_user && $self->_is_lock_expired($locktime)) {
         $self->_clear_lock($node);
         $lockedby_user = 0;
-        $locktime = '0000-00-00 00:00:00';
+        $locktime = undef;
     }
 
     # Determine lock state
@@ -233,12 +237,12 @@ sub useredit {
 
     # Get current lock state
     my $lockedby_user = $node->NODEDATA->{lockedby_user} || 0;
-    my $locktime = $node->NODEDATA->{locktime} || '0000-00-00 00:00:00';
+    my $locktime = $node->NODEDATA->{locktime};
 
     # Auto-expire stale locks
     if ($lockedby_user && $self->_is_lock_expired($locktime)) {
         $lockedby_user = 0;
-        $locktime = '0000-00-00 00:00:00';
+        $locktime = undef;
     }
 
     my $is_locked_by_other = ($lockedby_user && $lockedby_user != $user_id) ? 1 : 0;
