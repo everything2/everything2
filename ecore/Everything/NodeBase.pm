@@ -13,6 +13,7 @@ use strict;
 use DBI;
 use Everything;
 use Everything::Application;
+use Everything::Constants;
 use Everything::NodeCache;
 use Everything::Delegation::maintenance;
 use Test::Deep::NoTest;
@@ -1374,6 +1375,20 @@ sub resurrectNode
 			$insertref->{$field} = $nodeproto->{$field};
 			$insertref->{$field} ||= $tomb->{$field};
 			$insertref->{$field} ||= 0;
+
+			# Tomb/heaven dumps freeze a 1999-era schema snapshot, so a
+			# resurrected node can carry a literal '0000-00-00 00:00:00' for a
+			# date column (e.g. document.edittime, writeup.publishtime). That
+			# string is truthy, so it survives the ||= chain above and would be
+			# re-inserted verbatim — which MySQL 8.4 NO_ZERO_DATE rejects.
+			# Coerce any zero-date on a date/datetime/timestamp column to the
+			# birthday sentinel so un-nuke survives strict mode (#4074).
+			if (   ($field_info->{Type} || '') =~ /\b(?:date|datetime|timestamp)\b/i
+				&& defined $insertref->{$field}
+				&& $insertref->{$field} =~ /^0000-00-00/)
+			{
+				$insertref->{$field} = Everything::Constants::ZERO_DATE_SENTINEL;
+			}
 		}
 
 		# Primary key may not be in the data if new tables added since nuke

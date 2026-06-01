@@ -13,6 +13,7 @@ use lib "/var/libraries/lib/perl5";
 use Test::More;
 use Everything;
 use Everything::Application;
+use Everything::Constants;
 
 # Suppress expected warnings throughout the test
 # These warnings come from legacy code during node operations and are handled gracefully
@@ -256,6 +257,69 @@ SKIP: {
     } else {
         pass("Skipped multiple resurrection test (could not create node)");
         pass("");
+        pass("");
+        pass("");
+        pass("");
+        pass("");
+    }
+}
+
+#############################################################################
+# Test 5: Zero-date coercion on resurrection (#4074 / MySQL 8.4 NO_ZERO_DATE)
+#
+# Tomb/heaven dumps freeze an old schema snapshot, so ~525 production tomb
+# rows carry a literal '0000-00-00 00:00:00' for a date column (chiefly
+# document.edittime, writeup.publishtime). That string is truthy, so it would
+# be re-inserted verbatim on resurrection and rejected by 8.4 strict mode.
+# resurrectNode now coerces any zero-date on a date/datetime/timestamp column
+# to the birthday sentinel. This test forges that exact dump and asserts the
+# resurrected node comes back with the sentinel, never the zero-date.
+#############################################################################
+
+{
+    my $sentinel = Everything::Constants->ZERO_DATE_SENTINEL;
+
+    my $zd_title = "Test Zero Date Coercion " . time();
+    my $zd_node = create_test_node($zd_title, "document", {
+        doctext => "zero-date coercion content",
+    });
+
+    if ($zd_node) {
+        my $zd_id = $zd_node->{node_id};
+
+        # Nuke with tombstone.
+        $DB->nukeNode($zd_node, $test_user, 0);
+        ok(verify_node_in_tomb($zd_id), "Zero-date doc has tombstone");
+
+        # Forge a zero-date in the dump for document.edittime (a real, current
+        # date column), mirroring the legacy production rows.
+        my $tomb = $DB->sqlSelectHashref("data", "tomb",
+            "node_id=" . $DB->quote($zd_id));
+        my $data = $tomb->{data};
+        if ($data =~ /'edittime'\s*=>\s*'[^']*'/) {
+            $data =~ s/'edittime'\s*=>\s*'[^']*'/'edittime' => '0000-00-00 00:00:00'/;
+        } else {
+            # Dump didn't carry edittime; inject it so the test is deterministic.
+            $data =~ s/\{/\{\n          'edittime' => '0000-00-00 00:00:00',/;
+        }
+        $DB->sqlUpdate("tomb", { data => $data },
+            "node_id=" . $DB->quote($zd_id));
+        like($data, qr/'edittime' => '0000-00-00 00:00:00'/,
+            "Forged a zero-date edittime into the tomb dump");
+
+        # Resurrect — the insert must not carry the zero-date through.
+        my $resurrected = $DB->resurrectNode($zd_id, "tomb");
+        ok($resurrected, "Resurrected node despite zero-date in dump");
+
+        is($resurrected->{edittime}, $sentinel,
+            "Zero-date edittime coerced to birthday sentinel on resurrection");
+        unlike($resurrected->{edittime} // '', qr/^0000-00-00/,
+            "Resurrected edittime is not a zero-date");
+
+        # Cleanup
+        cleanup_node($zd_id);
+    } else {
+        pass("Skipped zero-date coercion test (could not create node)");
         pass("");
         pass("");
         pass("");
