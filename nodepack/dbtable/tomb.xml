@@ -5,7 +5,7 @@
   `title` varchar(240) DEFAULT NULL,
   `author_user` int NOT NULL DEFAULT '0',
   `killa_user` int NOT NULL DEFAULT '0',
-  `createtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `createtime` datetime NOT NULL DEFAULT '1998-03-23 00:00:00',
   `hits` int DEFAULT '0',
   `reputation` int NOT NULL DEFAULT '0',
   `data` mediumtext,

@@ -8,6 +8,14 @@ use warnings;
 #nodes
 use constant GUEST_USER => 779713;
 
+#dates
+# Sentinel date replacing the legacy '0000-00-00 00:00:00' zero-date on
+# NOT NULL date columns ahead of the MySQL 8.4 NO_ZERO_DATE migration (#4074).
+# Value is E2's data-derived "birthday": the earliest real createtime on the
+# site (CmdrTaco's node 321 at 1998-03-23 20:20:43). Midnight that day sorts
+# cleanly before the first real node.
+use constant ZERO_DATE_SENTINEL => '1998-03-23 00:00:00';
+
 #nodelets
 use constant NODELET_EPICENTER => 262;
 use constant NODELET_MESSAGES => 2044453;
