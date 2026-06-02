@@ -220,6 +220,13 @@ ListenBacklog 511
 	ServerAdmin e2webmaster@everything2.com
 	DocumentRoot /var/everything/www
 
+	# Allow %2F (encoded slash) in URLs so nodes with '/' in their title route
+	# correctly. LinkNode percent-encodes '/' to %2F; without this, Apache's
+	# default (Off) 404s those URLs before the app runs. NoDecode (not On) keeps
+	# %2F undecoded so _recover_route_params_from_request_uri does the single
+	# decode it's designed for, and avoids the path-traversal surface On would add. (#4186)
+	AllowEncodedSlashes NoDecode
+
 	<IfDefine PERLDB>
 		<Perl>
 			use Apache::DB ();
