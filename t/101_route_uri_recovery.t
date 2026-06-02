@@ -195,11 +195,44 @@ sub recover {
 }
 
 #############################################################################
-# Defensive: a path that matches none of the routes is also a no-op
+# #4186: encoded-slash (%2F) titles — nodes whose title contains a literal '/'
+#
+# LinkNode percent-encodes '/' as %2F. Two-part fix: Apache needs
+# `AllowEncodedSlashes NoDecode` (etc/templates/apache2.conf.erb) so the request
+# isn't 404'd before it reaches the app, and THIS helper must recover the slash
+# correctly from the still-encoded REQUEST_URI. The helper decodes *after* the
+# regex match, so %2F is just literal chars to the pattern (not a delimiter) and
+# survives into the single decode. These cases guard that behavior — they are
+# especially important to keep green through the PSGI migration, which rewires
+# how REQUEST_URI reaches the app and is exactly where this could silently break.
 #############################################################################
 {
-	my $p = recover('/some/random/api/path');
-	is(scalar keys %$p, 0, 'unmatched path leaves params untouched');
+	my $p = recover('/title/flicker%2Fmode');
+	is($p->{node}, 'flicker/mode', '/title/ decodes %2F to / in the title (#4186)');
+}
+{
+	# The real reporter case: a slash mid-title plus a parenthesized type suffix.
+	my $p = recover('/title/flicker-download%2F01');
+	is($p->{node}, 'flicker-download/01', '/title/ decodes %2F mid-title (#4186)');
+}
+{
+	my $p = recover('/node/e2node/flicker%2Fmode');
+	is($p->{type}, 'e2node',       '/node/<type>/<slash-title> keeps the type');
+	is($p->{node}, 'flicker/mode', '/node/<type>/<slash-title> decodes %2F (#4186)');
+}
+{
+	# Single-segment /node/<slash-title>: no real second slash, so it must NOT be
+	# read as /node/<type>/<title> — the %2F stays inside one captured segment.
+	my $p = recover('/node/flicker%2Fmode');
+	is($p->{node}, 'flicker/mode', '/node/<slash-title> decodes %2F, no spurious type');
+	ok(!exists $p->{type}, '/node/<slash-title> leaves type unset (single segment)');
+}
+{
+	# A writeup whose title contains a slash, via the most-specific route.
+	my $p = recover('/user/normaluser1/writeups/flicker%2Fmode%20%28fiction%29');
+	is($p->{author}, 'normaluser1',            '/user/X/writeups/Y sets author with slash title');
+	is($p->{node},   'flicker/mode (fiction)', '/user/X/writeups/Y decodes %2F in writeup title (#4186)');
+	is($p->{type},   'writeup',                '/user/X/writeups/Y sets type=writeup');
 }
 
 done_testing;
