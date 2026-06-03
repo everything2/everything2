@@ -3,8 +3,8 @@
   `vote_id` int NOT NULL DEFAULT '0',
   `voter_user` int NOT NULL DEFAULT '0',
   `weight` int NOT NULL DEFAULT '0',
-  `votetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `revotetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `votetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `revotetime` datetime DEFAULT NULL,
   PRIMARY KEY (`vote_id`,`voter_user`),
   KEY `voter_user` (`voter_user`),
   KEY `vote_voter_user` (`voter_user`)
