@@ -3,7 +3,7 @@
   `podcast_id` int NOT NULL DEFAULT '0',
   `description` mediumtext,
   `link` char(255) DEFAULT NULL,
-  `pubdate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `pubdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `announcement` int NOT NULL DEFAULT '0',
   `createdby_user` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`podcast_id`)
