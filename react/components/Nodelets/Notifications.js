@@ -120,8 +120,12 @@ const Notifications = (props) => {
   // Convert showSettings to proper boolean to prevent rendering "0"
   const shouldShowSettings = Boolean(showSettings)
 
-  // Settings link generated purely in React (no server-rendered HTML)
-  const settingsUrl = '/node/superdoc/Nodelet+Settings#notificationsnodeletsettings'
+  // Settings link generated purely in React (no server-rendered HTML).
+  // The unified Settings page reads the tab from the URL hash; '#notifications'
+  // is the valid tab id. The old '/node/superdoc/Nodelet+Settings#notificationsnodeletsettings'
+  // used an invalid hash that fell through to the default (nodelets) tab, and the
+  // wrong base page. Match the mobile sibling (MobileNotificationsModal.js).
+  const settingsUrl = '/title/Settings#notifications'
 
   // Handle dismiss button clicks
   useEffect(() => {
