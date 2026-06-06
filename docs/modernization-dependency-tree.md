@@ -18,7 +18,7 @@ An issue can be `epoch:perl-cleanup` **and** blocked by PSGI — the label says 
 
 ```
 epoch:mysql-8.4   ── July 2026 deadline (RDS engine sunset). Hard root.
-   │  blockers: #4122 auth-plugin · #4074 zero-date family · #4111 · #4109
+   │  blockers: #4122 auth-plugin · #4074 zero-date family · #4109
    │
    └─> epoch:psgi   ── the PSGI/Plack migration itself (roadmap-sequenced after 8.4;
          │              also cuts DB connections ~5×, relieving RDS memory)
@@ -51,7 +51,6 @@ Key non-obvious edges:
 Deadline-gated (July 2026). Tracking: **#4074**.
 - Zero-date family: #4075 node.createtime · #4076 writeup.publishtime · #4077 e2node.updated · #4078 vote times · #4079 weblog · #4080 pollvote · #4081 nodetracker · #4082 notified · #4083 lastreaddebate · #4084 dbstats · #4086 podcast · #4087 roomdata · #4088 nodebak · #4089 heaven  *(— #4085 locktime done; #4090/#4091 tomb/krut evaluated)*
 - #4122 — everyuser → caching_sha2_password (hard blocker)
-- #4111 — drop ON UPDATE CURRENT_TIMESTAMP (message tstamps)
 - #4109 — message_outbox columns
 - #4092 — promote unique keys to PRIMARY KEY on 5 PK-less tables *(low priority; not 8.4-blocking)*
 - #2210 — drop the `ALLOW_INVALID_DATES` sql-mode workaround *(the parent reason for the #4074 zero-date family)*
@@ -97,7 +96,7 @@ The PSGI/Plack migration itself. Plan: [psgi-plack-migration-plan.md](psgi-plack
 - #158 — emoji in node title: *verify-by-test* (encoding proven in t/103+t/038; needs title round-trip test, then close)
 - #235 — password reset: *verify-by-test* — **no coverage today**; write reset-flow test, fix if it surfaces the 2017 bug *(auth — priority)*
 - **2017 messages-API cluster** — #247 #248 #252 #253 #254 #256 #257 #258 #259 #263 *(verify each vs current `Everything::API::messages` in the enrichment pass — recent messaging work likely OBE'd several; #248 maybe covered by #3990)*
-- **API/engine test-coverage sub-cluster** — #267 #295 #352 #368 #386 (+ verify-by-test #158/#235) *(one coordinated test push, shared fixtures)*
+- **API/engine test-coverage sub-cluster** — #267 #295 #352 #368 #386 · #4194 t/049 aborts mid-file (unguarded decode_json, no-root-writeup) *(+ verify-by-test #158/#235; one coordinated test push, shared fixtures)*
 - **API behavior/validation** — #315 POST-without-POST · #348 NOT_FOUND vs UNIMPLEMENTED · #353 group-member model restriction · #354 usergroup add/del post-limit
 - **NodeBase engine** — #363 remove legacy-bug defense · #366 multi-row title lookup *(ties to retire-NodeBase w/ #24)*
 - **VARS/data** — #291 numcools contains HTML · #292 cache numcools (ties to #4173) · #268 settings unignore warning · #333 bookmark usergroup attribution

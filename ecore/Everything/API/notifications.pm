@@ -95,7 +95,7 @@ sub dismiss
       reference_notified_id => $notified_id,
       is_seen => 1,
       notification_id => 1,  # Dummy notification_id required by schema
-      notified_time => \"NOW()",
+      -notified_time => 'now()',   # E2 sqlInsert honors the -key literal form, NOT \"NOW()" (#4082/#4193)
       args => '{}'
     });
     $self->devLog("User $user_id dismissed subscribed notification $notified_id (belongs to user/type $for_user)");
