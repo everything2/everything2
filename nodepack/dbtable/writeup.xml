@@ -5,7 +5,7 @@
   `wrtype_writeuptype` int NOT NULL DEFAULT '0',
   `notnew` int NOT NULL DEFAULT '0',
   `cooled` int NOT NULL DEFAULT '0',
-  `publishtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `publishtime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `feedback_policy_id` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`writeup_id`),
   KEY `parent_e2node_index` (`parent_e2node`),

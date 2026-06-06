@@ -140,6 +140,7 @@ The PSGI/Plack migration itself. Plan: [psgi-plack-migration-plan.md](psgi-plack
 - #4182 — HTTP security posture (HttpOnly/Secure cookie, HSTS, headers, CSP) **(ships now, ungated)**
 - #4146 — modernize dev build pipeline
 - #4129 — remove mod_rewrite title hacks *(needs PSGI + #4163)*
+- #4198 — audit + retire legacy opcode handlers (44 subs in Delegation/opcode.pm; overlaps delegation-removal/#897)
 - #11 — normalize `user.imgsrc` path (drop `images/userimages/` prefix) *(homenode-images cluster)*
 - #91 — rework `homenode_image_host` for the TLS/prod setup *(homenode-images cluster)*
 - #116 — move robots.txt blocks → Apache UA blocking (`apache_blocks.json`)
