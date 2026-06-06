@@ -159,6 +159,21 @@ Estimated 6–12 months for full conversion. The forcing function from the versi
 
 ---
 
+## RDS Parameter Group (`EverythingDB80Parameters` → 8.4)
+
+Prod uses a custom DB parameter group **`EverythingDB80Parameters`** ([cf/everything2-production.json:899](../cf/everything2-production.json), `Family: mysql8.0`). An 8.0 group can't attach to an 8.4 instance, so the cutover needs a **new group with `Family: mysql8.4`**. Current parameters + disposition:
+
+| Parameter | Current | 8.4 disposition |
+|---|---|---|
+| `log_bin_trust_function_creators` | 1 | **Drop** — the group's stated purpose ("Enables stored procedures") is a fossil; prod has **zero** stored procedures/functions (verified, #500). |
+| `explicit_defaults_for_timestamp` | 0 | **Decide** — legacy timestamp behavior, deprecated since 8.0 (modern default is 1). Flipping interacts with the `ON UPDATE CURRENT_TIMESTAMP` cleanup (#4111) and the zero-date default work. See Open Questions #7. |
+| `innodb_flush_log_at_trx_commit` | 1 | Keep |
+| `long_query_time` | 3 | Keep |
+
+The group does **not** set `sql_mode` — prod's current zero-date tolerance comes from the RDS-default sql_mode for the 8.0 family. The strict behavior (`NO_ZERO_DATE` etc.) that the whole zero-date effort targets flips with the **8.4 default sql_mode**, not via this group — so it's *not* where that's controlled, but it *is* the place to pin `sql_mode` explicitly if we want to control the cutover moment.
+
+---
+
 ## Open Questions / Decisions Needed
 
 1. **Exact RDS sunset date** — The user mentioned "July." Need to confirm the specific AWS notice and target a window 4 weeks before. (Check AWS console for the maintenance event on the cluster.)
@@ -167,6 +182,7 @@ Estimated 6–12 months for full conversion. The forcing function from the versi
 4. **Dev container MySQL version** — bump local Docker DB to 8.4 once Phase 1 is green, so all dev work runs against the target version.
 5. **Blue/green vs. read replica promotion** — blue/green is preferred but adds short-term cost; confirm the spend is acceptable.
 6. **CI matrix expansion** — running tests against two engine versions doubles CI time. Acceptable for the ~6 weeks until cutover; revert after.
+7. **`explicit_defaults_for_timestamp` on 8.4** — currently `0` (legacy) in the 8.0 parameter group. Flip to `1` (modern) when building the mysql8.4 group? Interacts with #4111 (ON UPDATE CURRENT_TIMESTAMP cleanup) and the zero-date defaults — decide deliberately, don't carry the legacy value forward by copy-paste.
 
 ---
 
