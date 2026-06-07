@@ -194,7 +194,19 @@ if ($detailed || $check_db) {
 
             my $dbserv = $ENV{E2_DBSERV} || 'localhost';
             my $dbname = 'everything';
+            # Track the same DB user the app uses (CONF->everyuser): in production
+            # that's whatever production.json sets (everyuser2 after the caching_sha2
+            # migration), read framework-free so this lightweight prober follows the
+            # flip and tests the real auth path. Dev always uses 'everyuser'. (#4215)
             my $dbuser = 'everyuser';
+            if (($ENV{E2_DOCKER} || '') ne 'development') {
+                if (open(my $cf, '<', '/var/everything/etc/production.json')) {
+                    local $/ = undef;
+                    my $j = eval { decode_json(<$cf>) };
+                    close($cf);
+                    $dbuser = $j->{everyuser} if $j && $j->{everyuser};
+                }
+            }
 
             # Read database password from configuration file
             my $dbpass = '';
@@ -207,7 +219,7 @@ if ($detailed || $check_db) {
 
             # Try to connect with minimal timeout
             my $dbh = DBI->connect(
-                "DBI:mysql:database=$dbname;host=$dbserv",
+                "DBI:mysql:database=$dbname;host=$dbserv;mysql_ssl=1;mysql_get_server_pubkey=1",
                 $dbuser,
                 $dbpass,
                 {
