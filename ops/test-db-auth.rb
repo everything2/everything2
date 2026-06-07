@@ -58,6 +58,7 @@ end
 perl = <<~'PERL'
   use strict; use warnings;
   use lib '/var/everything/ecore';
+  use lib '/var/libraries/lib/perl5';
   use Everything::Configuration;
   use DBI;
   my $u = shift || 'everyuser2';
