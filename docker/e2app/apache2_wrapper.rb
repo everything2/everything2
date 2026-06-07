@@ -51,6 +51,11 @@ files.each do |f|
 end
 
 if ENV['E2_DOCKER'].eql? "development"
+  # Dev DB password: mirror the dev DB wrapper's everyuser (caching_sha2 BY 'blah')
+  # so the app exercises the full caching_sha2-with-password handshake (#4122).
+  # No trailing newline -- _filesystem_default() reads the secret file verbatim.
+  STDERR.puts "Writing development database_password_secret"
+  File.write('/etc/everything/database_password_secret', 'blah')
   # Create development log file with world-writable permissions for tests
   STDERR.puts "Setting up development log file"
   `touch /tmp/development.log`

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-mysql --host=localhost --user=everyuser --port=9306 --protocol=TCP -Deverything
+mysql --host=localhost --user=everyuser --password=blah --port=9306 --protocol=TCP -Deverything
