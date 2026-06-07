@@ -1,9 +1,9 @@
 <node>
   <_create_table_statement>CREATE TABLE `nodeparam` (
   `node_id` int NOT NULL,
-  `paramkey` varchar(128) DEFAULT NULL,
+  `paramkey` varchar(128) NOT NULL,
   `paramvalue` varchar(512) DEFAULT NULL,
-  UNIQUE KEY `nodeparamidx` (`node_id`,`paramkey`)
+  PRIMARY KEY (`node_id`,`paramkey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>2070525</node_id>
   <title>nodeparam</title>
