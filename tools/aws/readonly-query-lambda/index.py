@@ -33,6 +33,7 @@ import decimal
 import json
 import os
 import re
+import ssl
 import time
 
 import boto3
@@ -49,6 +50,15 @@ _DB_HOST = os.environ["DB_HOST"]
 _DB_PORT = int(os.environ.get("DB_PORT", "3306"))
 _DB_NAME = os.environ.get("DB_NAME", "everything")
 _DB_USER = os.environ.get("DB_USER", "everyuser")
+
+# TLS context for the RDS connection. caching_sha2_password requires a secure
+# transport to send credentials, so enabling TLS here lets the Lambda authenticate
+# against a caching_sha2 user (e.g. everyuser2) without depending on the RSA-pubkey
+# path (the `cryptography` package). We encrypt but don't verify the server cert --
+# the goal is a secure channel to satisfy caching_sha2, not identity verification. (#4217)
+_SSL_CTX = ssl.create_default_context()
+_SSL_CTX.check_hostname = False
+_SSL_CTX.verify_mode = ssl.CERT_NONE
 
 # Cached at cold start; warm invocations skip the S3 GET.
 _DB_PASSWORD = None
@@ -188,6 +198,7 @@ def handler(event, context):
         cursorclass=pymysql.cursors.DictCursor,
         autocommit=True,
         charset="utf8mb4",
+        ssl=_SSL_CTX,
     )
     try:
         with conn.cursor() as cur:
