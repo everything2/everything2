@@ -68,7 +68,7 @@ The "Kernel Blue" palette is the design system: `#38495e` primary, `#4060b0` lin
 | Inline-styles refactor status | [docs/inline-styles-refactor.md](docs/inline-styles-refactor.md), [docs/css-refactor-testing.md](docs/css-refactor-testing.md) |
 | Mobile audit | [docs/mobile-audit.md](docs/mobile-audit.md), `tools/mobile-layout-checker.js` |
 | Schema (current) | `nodepack/dbtable/*.xml` — CREATE TABLE statements, slated for migration to versioned SQL during MySQL work |
-| Special document map | [docs/special-documents.md](docs/special-documents.md) |
+| Special document map | `ecore/Everything/Page/*.pm` + `react/components/DocumentComponent.js` (the live registry; the old hand-curated `special-documents.md` was retired once delegation/document.pm was eliminated) |
 | Active CSS-diff workflow | `tools/computed-style-diff.js --help` |
 
 ---

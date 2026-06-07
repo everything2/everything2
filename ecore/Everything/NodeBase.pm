@@ -106,7 +106,13 @@ sub new
 		$dbh_props->{RaiseError} = 1;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbserv;port=$dbport;mysql_ssl=1;mysql_get_server_pubkey=1", $user, $pass, $dbh_props);
+	# connect_cached (DBI-native per-process handle caching) replaces Apache::DBI,
+	# which is mod_perl-only -- this decouples the connection layer ahead of the
+	# PSGI/Starman migration (#4228). AutoCommit=1 (above) means no open transactions
+	# need Apache::DBI's cleanup-rollback, and mysql_auto_reconnect=1 covers stale-
+	# handle recovery between requests. $dbh_props holds only scalars, so the
+	# connect_cached key is stable across calls (no spurious cache misses).
+	my $dbh = DBI->connect_cached("DBI:mysql:database=$dbname;host=$dbserv;port=$dbport;mysql_ssl=1;mysql_get_server_pubkey=1", $user, $pass, $dbh_props);
 	$this->{dbh} = $dbh;
 
 	$this->{cache} = new Everything::NodeCache($this);

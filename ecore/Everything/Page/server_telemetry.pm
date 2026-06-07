@@ -35,8 +35,8 @@ sub buildReactData {
 
     # Memory analysis from /proc + the task cgroup. Per-process RSS overcounts
     # COW-shared pages (interpreter + preloaded modules counted once per worker),
-    # so we also report PSS where readable and the cgroup total -- the only
-    # figure that reflects the task's real memory budget (and matches CloudWatch).
+    # so the authoritative figure is the cgroup total -- the only number that
+    # reflects the task's real memory budget (and matches CloudWatch).
     my $memory_analysis = _get_apache_memory();
 
     return {
@@ -54,15 +54,13 @@ sub buildReactData {
 sub _get_apache_memory {
     my @results;
     my $total_rss = 0;
-    my $total_pss = 0;
-    my $pss_complete = 1;   # cleared if any worker's PSS is unreadable
 
     # Get apache2 PIDs
     my @pids = split /\n/, `pgrep -f '/usr/sbin/apache2'`;
 
-    push @results, sprintf("%-8s %12s %12s %12s  %s",
-        "PID", "RSS (KB)", "PSS (KB)", "VmSize (KB)", "Command");
-    push @results, "-" x 72;
+    push @results, sprintf("%-8s %12s %12s  %s",
+        "PID", "RSS (KB)", "VmSize (KB)", "Command");
+    push @results, "-" x 60;
 
     my $count = 0;
     for my $pid (@pids) {
@@ -97,39 +95,26 @@ sub _get_apache_memory {
 
         $cmdline = substr($cmdline, 0, 40) . '...' if length($cmdline) > 40;
 
-        # PSS (proportional set size): real per-process RAM with COW-shared
-        # pages divided across sharers. Readable for our own worker; sibling
-        # workers dropped privileges (root -> www-data) and are non-dumpable,
-        # so theirs return EACCES without CAP_SYS_PTRACE -- show "-" there and
-        # lean on the cgroup total below for the authoritative figure.
-        my $pss = _read_pss("/proc/$pid/smaps_rollup");
-        if (defined $pss) {
-            $total_pss += $pss;
-        }
-        else {
-            $pss_complete = 0;
-        }
-
-        push @results, sprintf("%-8s %12d %12s %12d  %s",
+        push @results, sprintf("%-8s %12d %12d  %s",
             $pid,
             $mem{VmRSS},
-            (defined $pss ? $pss : '-'),
             $mem{VmSize} || 0,
             $cmdline || '(unknown)');
         $total_rss += $mem{VmRSS};
         $count++;
     }
 
-    push @results, "-" x 72;
+    push @results, "-" x 60;
     push @results, sprintf(
         "Sum of RSS:  %.1f MB (%d procs) -- OVERCOUNTS: shared pages counted once per worker",
         $total_rss / 1024, $count);
-    if ($total_pss > 0) {
-        push @results, sprintf(
-            "Sum of PSS:  %.1f MB%s -- real RAM (COW-shared pages counted once)",
-            $total_pss / 1024,
-            ($pss_complete ? '' : ' [partial: some workers non-dumpable]'));
-    }
+
+    # Per-process PSS is intentionally not shown: the mod_perl workers drop from
+    # root to www-data and become non-dumpable, so the kernel makes their
+    # /proc/<pid>/smaps_rollup root-owned 0400 -- unreadable from this worker even
+    # for itself. The cgroup total below is the authoritative real-RAM figure
+    # (shared pages counted once), so per-process PSS would add nothing anyway.
+    push @results, "(per-process PSS omitted -- workers non-dumpable post-setuid; use the cgroup total below)";
 
     # Authoritative task memory from the cgroup. This is what the Fargate task
     # budget is measured against and what CloudWatch MemoryUtilization reports.
@@ -145,27 +130,13 @@ sub _get_apache_memory {
     return join("\n", @results);
 }
 
-# Pull the single rollup Pss: line from smaps_rollup (kB). Returns undef if the
-# file is unreadable (non-dumpable sibling) or absent (old kernel).
-sub _read_pss {
-    my ($file) = @_;
-    return undef unless -r $file;
-    open my $fh, '<', $file or return undef;
-    my $pss;
-    while (<$fh>) {
-        if (/^Pss:\s+(\d+)\s+kB/) { $pss = $1; last; }
-    }
-    close $fh;
-    return $pss;
-}
-
 # Task memory from the cgroup (v2 preferred, v1 fallback). Returns a formatted
 # multi-line string, or undef if no cgroup memory controller is readable.
 sub _get_cgroup_memory {
     # cgroup v2
     if (-r '/sys/fs/cgroup/memory.current') {
         my $cur = _slurp_num('/sys/fs/cgroup/memory.current');
-        return undef unless defined $cur;
+        return unless defined $cur;
         my $max = _slurp_raw('/sys/fs/cgroup/memory.max');
         my %stat = _read_kv('/sys/fs/cgroup/memory.stat');
         my $line = sprintf("  used %.0f MB", $cur / 1048576);
@@ -182,7 +153,7 @@ sub _get_cgroup_memory {
     # cgroup v1
     if (-r '/sys/fs/cgroup/memory/memory.usage_in_bytes') {
         my $cur = _slurp_num('/sys/fs/cgroup/memory/memory.usage_in_bytes');
-        return undef unless defined $cur;
+        return unless defined $cur;
         my $max = _slurp_num('/sys/fs/cgroup/memory/memory.limit_in_bytes');
         my $line = sprintf("  used %.0f MB", $cur / 1048576);
         # v1 reports a huge sentinel (~2^63) when no limit is set
@@ -192,12 +163,12 @@ sub _get_cgroup_memory {
         }
         return $line;
     }
-    return undef;
+    return;
 }
 
 sub _slurp_raw {
     my ($f) = @_;
-    open my $fh, '<', $f or return undef;
+    open my $fh, '<', $f or return;
     my $v = <$fh>;
     close $fh;
     chomp $v if defined $v;
@@ -206,7 +177,7 @@ sub _slurp_raw {
 
 sub _slurp_num {
     my $v = _slurp_raw($_[0]);
-    return undef unless defined $v && $v =~ /^\d+$/;
+    return unless defined $v && $v =~ /^\d+$/;
     return $v + 0;
 }
 
