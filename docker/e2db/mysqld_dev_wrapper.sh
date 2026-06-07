@@ -12,7 +12,17 @@ then
   echo 'wait_timeout=31536000' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   echo 'interactive_timeout=31536000' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   sed -i "s/bind-address.*/bind-address = 0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf
-  /etc/init.d/mysql start
+  # Ubuntu 26.04 / MySQL 8.4 dropped the SysV init.d script, so the old
+  # `/etc/init.d/mysql start` no longer exists -- the bootstrap silently ran
+  # every CREATE/GRANT/qareload against a dead socket (ERROR 2002), everyuser
+  # never got created, and the app 500'd with "Host not allowed to connect".
+  # Start the bootstrap server directly in the background instead, then block
+  # until it actually answers a query before bootstrapping.
+  mysqld_safe &
+  for i in $(seq 1 60); do
+    echo 'SELECT 1' | mysql --user=root >/dev/null 2>&1 && break
+    sleep 1
+  done
   echo "development" > /etc/everything/override_configuration
   echo "CREATE DATABASE everything DEFAULT CHARACTER SET=utf8mb4 COLLATE utf8mb4_0900_ai_ci;" | mysql --user=root
   # Explicit caching_sha2_password WITH a real password so dev fully mirrors the
@@ -29,7 +39,14 @@ then
   /var/everything/tools/qareload.pl
   touch /etc/everything/dev_db_ready
   mv /var/everything/etc/development.json.old /var/everything/etc/development.json
-  /etc/init.d/mysql stop
+  # Shut the bootstrap server down cleanly (init.d 'stop' is gone on 26.04) and
+  # wait for the socket to disappear before the foreground server takes over,
+  # so the two mysqld instances don't fight over the datadir/socket.
+  mysqladmin --user=root shutdown
+  for i in $(seq 1 60); do
+    [ -S /var/run/mysqld/mysqld.sock ] || break
+    sleep 1
+  done
 fi
 
 mysqld_safe
