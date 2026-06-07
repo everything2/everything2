@@ -2,7 +2,8 @@
   <_create_table_statement>CREATE TABLE `lastreaddebate` (
   `user_id` int NOT NULL DEFAULT '0',
   `debateroot_id` int NOT NULL DEFAULT '0',
-  `dateread` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `dateread` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`,`debateroot_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
   <node_id>1977479</node_id>
   <title>lastreaddebate</title>
