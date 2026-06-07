@@ -263,14 +263,9 @@ ListenBacklog 511
 	PerlPassEnv E2_MAINTENANCE_MESSAGE
 	PerlPassEnv E2_DBSERV
 
-	# Apache::DBI MUST be loaded before DBI to intercept connections
-	# Configure ping timeout to avoid unnecessary connection checks
-	PerlModule Apache::DBI
-	<Perl>
-		# Set ping timeout - only ping if connection idle > 60 seconds
-		# Reduces overhead on every request while catching stale connections
-		Apache::DBI->setPingTimeOut("DBI:mysql", 60);
-	</Perl>
+	# Apache::DBI removed (#4228) -- connection persistence is now DBI-native via
+	# DBI->connect_cached in Everything::NodeBase. It is not mod_perl-specific, so
+	# it carries forward unchanged to PSGI/Starman (the point of this pre-decouple).
 
 	# Preload modules to maximize shared memory via copy-on-write
 	# Heavy modules loaded before fork are shared across all workers
