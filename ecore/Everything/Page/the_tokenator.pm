@@ -4,7 +4,6 @@ use Moose;
 extends 'Everything::Page';
 
 use Everything qw(setVars);
-use Everything::Delegation::htmlcode qw(htmlcode);
 
 =head1 Everything::Page::the_tokenator
 

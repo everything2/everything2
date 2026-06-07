@@ -12,9 +12,6 @@ use DateTime::Format::Strptime;
 use Paws;
 use LWP::UserAgent;
 
-# For convertDateToEpoch
-use Date::Calc;
-
 # For addNodeNote
 use Scalar::Util qw(blessed);
 
@@ -1448,7 +1445,11 @@ sub convertDateToEpoch
     return 0;
   }
   my ($hour,$min,$sec) = split(':', $t);
-  my $epoch = Date::Calc::Date_to_Time($year,$month,$day, $hour,$min,$sec);
+  # timegm() (UTC) replaces Date::Calc::Date_to_Time -- the app is UTC-everywhere
+  # (Apache TZ='+0000', container TZ=Etc/UTC), so this is behaviour-preserving and
+  # TZ-independent, and it drops the Date::Calc -> Bit::Vector dep (which doesn't
+  # build under gcc-15/C23 on Ubuntu 26.04). Note timegm month is 0-based.
+  my $epoch = timegm($sec, $min, $hour, $day, $month - 1, $year);
   return $epoch;
 }
 

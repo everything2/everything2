@@ -1,9 +1,9 @@
 # Stage 1: Dependencies (cached separately)
-FROM ubuntu:24.04 AS deps
+FROM ubuntu:26.04 AS deps
 
 ARG ARCH=x64
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 libapache2-mod-evasive mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc cmake unzip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y git wget curl vim build-essential libcrypt-dev libssl-dev zlib1g-dev libbrotli-dev libzstd-dev libexpat1-dev libmysqlclient-dev pkg-config libxml2-dev dnsutils tzdata perl apache2 libapache2-mod-perl2 libapache2-mod-evasive mysql-client ruby ruby-dev xz-utils cpanminus perlmagick psmisc cmake unzip && rm -rf /var/lib/apt/lists/*
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Ruby

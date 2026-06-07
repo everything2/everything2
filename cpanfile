@@ -5,7 +5,6 @@ requires 'CGI::Carp';
 requires 'Clone';
 requires 'Compress::Zlib';
 requires 'Data::Dumper';
-requires 'Date::Calc';
 requires 'DateTime';
 requires 'DateTime::Format::Strptime';
 requires 'DBD::mysql';
