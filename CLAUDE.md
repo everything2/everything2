@@ -63,7 +63,7 @@ The "Kernel Blue" palette is the design system: `#38495e` primary, `#4060b0` lin
 | Need | Place |
 |---|---|
 | Project roadmap | [docs/DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) (long; phases drift from reality, cross-check with `git log`) |
-| MySQL migration plan | [docs/mysql-migration-plan.md](docs/mysql-migration-plan.md) (April 2026, fresh) |
+| MySQL 8.4 migration | ✅ **done 2026-06-07** (#4226); [docs/mysql-migration-plan.md](docs/mysql-migration-plan.md) is now a tombstone, forward work in the dependency tree + #4225 |
 | ORM/DBIx::Class plan | [docs/orm-migration-plan.md](docs/orm-migration-plan.md) (Dec 2025, deferred) |
 | Inline-styles refactor status | [docs/inline-styles-refactor.md](docs/inline-styles-refactor.md), [docs/css-refactor-testing.md](docs/css-refactor-testing.md) |
 | Mobile audit | [docs/mobile-audit.md](docs/mobile-audit.md), `tools/mobile-layout-checker.js` |

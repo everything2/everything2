@@ -881,7 +881,7 @@
         "DBInstanceClass": "db.t4g.medium",
         "DBInstanceIdentifier": "everything2vpc",
         "Engine": "mysql",
-        "EngineVersion": "8.0.43",
+        "EngineVersion": "8.4.9",
         "EnableCloudwatchLogsExports": ["slowquery","error"],
         "MultiAZ": false,
         "CACertificateIdentifier": "rds-ca-rsa2048-g1",
@@ -890,8 +890,8 @@
         "DBSubnetGroupName": {"Ref": "EverythingDBSubnetGroup"},
         "StorageType": "gp3",
         "VPCSecurityGroups": [{"Fn::GetAtt": ["AppVPC","DefaultSecurityGroup"]}, {"Ref": "MainDBSecurityGroup"}],
-        "DBParameterGroupName": {"Ref": "EverythingDB80Parameters"},
-	"OptionGroupName": {"Ref": "DB80OptionGroup"},
+        "DBParameterGroupName": {"Ref": "EverythingDB84Parameters"},
+	"OptionGroupName": {"Ref": "DB84OptionGroup"},
         "MasterUsername": "everyuser",
         "MasterUserPassword": {"Fn::Join": ["", ["{{resolve:secretsmanager:", {"Ref": "E2DBMasterPassword"}, "::password}}"]]}
       }
@@ -917,6 +917,29 @@
         "EngineName": "mysql",
         "MajorEngineVersion": "8.0",
         "OptionGroupDescription": "mysql-8.0 default option group",
+        "OptionConfigurations": []
+      }
+    },
+    "EverythingDB84Parameters": {
+      "Type": "AWS::RDS::DBParameterGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "E2 parameter group for mysql 8.4 (8.4 LTS migration). Dropped log_bin_trust_function_creators -- no stored routines/triggers exist (verified prod + repo).",
+        "Family": "mysql8.4",
+        "Parameters": {
+          "innodb_flush_log_at_trx_commit": 1,
+          "explicit_defaults_for_timestamp": 0,
+          "long_query_time": 3
+        }
+      }
+    },
+    "DB84OptionGroup": {
+      "Type": "AWS::RDS::OptionGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EngineName": "mysql",
+        "MajorEngineVersion": "8.4",
+        "OptionGroupDescription": "mysql-8.4 default option group",
         "OptionConfigurations": []
       }
     },
