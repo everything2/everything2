@@ -25,7 +25,6 @@ These documents serve as:
 - **[Modernization Priorities](modernization-priorities.md)** - Strategic roadmap
 
 ### Architecture & Infrastructure
-- [React Analysis](react-analysis.md) - Frontend implementation and mobile gaps
 - [Infrastructure Overview](infrastructure-overview.md) - AWS, Docker, deployment pipeline
 - [API Documentation](API.md) - API endpoints and usage
 

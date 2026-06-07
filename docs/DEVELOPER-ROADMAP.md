@@ -43,7 +43,7 @@ The prior version (Dec 2025, 5,281 lines) tried to be both index and per-phase p
 **Currently in flight:**
 - MySQL 8.4 migration — 17 child issues created (#4075-#4091) for hand-applied schema fixes
 - dateFormat utility migration in working tree (not yet committed)
-- nodepack compatibility audit complete ([docs/nodepack-evaluation.md](nodepack-evaluation.md))
+- nodepack/dbtable schema-tooling plan ([docs/sqitch-migration-plan.md](sqitch-migration-plan.md)); the 8.4 compat audit it began as is complete
 - ORM/DBIC re-evaluation complete ([docs/orm-migration-plan.md](orm-migration-plan.md))
 
 **Active GH issue backlog:** open issues #4007, #4009, #4011, #4015, #4018, #4019, #4026, #4030, #4031, #4032, #4033, #4039, #4042, #4043, #4052, #4058, #4060, #4061, #4062 — mix of small bugs, mobile fixes, missing features. Triaged opportunistically alongside phase work.
@@ -137,7 +137,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 ### Phase 9 — Schema migration framework (sqitch)
 - **Window:** Q2 2027 (2-3 weeks) — can be done earlier opportunistically if Phase 4 social login pushes it forward
 - **Why here:** the genuinely missing piece. Production has no migrations pipeline today; every schema change is hand-applied SQL by the maintainer. Sqitch fixes that.
-- **Detailed plan:** [docs/nodepack-evaluation.md](nodepack-evaluation.md) Part 2 covers the sqitch evaluation
+- **Detailed plan:** [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) (alternatives analysis + why sqitch)
 - **Scope:** sqitch baseline captures current schema, every schema change after baseline becomes a sqitch change file. Begins retirement of `nodepack/dbtable/` (the XML CREATE TABLE statements).
 
 ### Phase 10 — Bot defense modernization (Cloudflare or AWS WAF)
@@ -176,7 +176,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 | Phase | Detail doc | Status |
 |---|---|---|
 | 1 | [docs/mysql-migration-plan.md](mysql-migration-plan.md) | Fresh (2026-05-24) |
-| 1 (schema audit) | [docs/nodepack-evaluation.md](nodepack-evaluation.md) | Fresh (2026-05-24) |
+| 1 (schema audit) | [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) | Audit done; refocused to sqitch plan 2026-06-07 |
 | 2 | (no dedicated doc yet — write when work starts) | — |
 | 3 | [docs/inline-styles-refactor.md](inline-styles-refactor.md) tracks the 12 remaining | Updated 2026-04 |
 | 4 | (no dedicated doc yet) | — |
@@ -184,7 +184,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 | 6 | [docs/psgi-plack-migration-plan.md](psgi-plack-migration-plan.md) | Fresh (2026-04-28) |
 | 7 | (no dedicated doc yet — small) | — |
 | 8 | [docs/react-19-migration.md](react-19-migration.md) | Stale; needs refresh before Phase 8 |
-| 9 | [docs/nodepack-evaluation.md](nodepack-evaluation.md) Part 2 + [docs/orm-migration-plan.md](orm-migration-plan.md) | Fresh |
+| 9 | [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) + [docs/orm-migration-plan.md](orm-migration-plan.md) | Fresh |
 | 10 | (no dedicated doc yet) | — |
 | 11 | (no dedicated doc yet) | — |
 

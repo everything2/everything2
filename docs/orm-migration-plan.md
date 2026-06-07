@@ -108,7 +108,7 @@ But DBIC also brings costs:
 - Add a parameterized-query convenience: `$DB->sqlSelectParam('*', 'table', 'col = ?', [$value])` that auto-binds. Migrate existing call sites opportunistically.
 - Replace `Apache::DBI` with `DBI->connect_cached` as part of the PSGI migration.
 - Add a thin "Result row" wrapper around the hashref returns so callers can have light typing / accessors without a full ORM (`$DB->sqlSelectAsRow('Writeup', ...)`).
-- Adopt sqitch for schema migrations (separate concern — see [docs/nodepack-evaluation.md](nodepack-evaluation.md)).
+- Adopt sqitch for schema migrations (separate concern — see [docs/sqitch-migration-plan.md](sqitch-migration-plan.md)).
 - Leave Node domain layer untouched.
 
 **Effort:** 4-8 weeks total, spread out, low-risk. Opportunistic — every new SQL call uses the parameterized helper; old ones are migrated when touched for other reasons.
@@ -194,7 +194,7 @@ If you eventually decide DBIC is unavoidable (Path 4), the lift can be sequenced
 
 ## References
 
-- [docs/nodepack-evaluation.md](nodepack-evaluation.md) — sqitch and schema-migration concerns (the other half of this story)
+- [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) — sqitch and schema-migration concerns (the other half of this story)
 - [docs/mysql-migration-plan.md](mysql-migration-plan.md) — MySQL 8.4 migration (current focus)
 - [docs/psgi-plack-migration-plan.md](psgi-plack-migration-plan.md) — PSGI migration (downstream)
 - `ecore/Everything/NodeBase.pm` — the persistence layer in question
