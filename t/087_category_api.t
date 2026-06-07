@@ -71,7 +71,7 @@ sub create_test_category {
     title => $title,
     type_nodetype => $category_type->{node_id},
     author_user => $author_id,
-    createtime => 'now()'
+    -createtime => 'now()'
   });
 
   my $node_id = $DB->{dbh}->last_insert_id(undef, undef, 'node', 'node_id');
@@ -97,7 +97,7 @@ sub create_test_e2node {
     title => $title,
     type_nodetype => $e2node_type->{node_id},
     author_user => $author_id,
-    createtime => 'now()'
+    -createtime => 'now()'
   });
 
   my $node_id = $DB->{dbh}->last_insert_id(undef, undef, 'node', 'node_id');

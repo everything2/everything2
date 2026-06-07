@@ -9,6 +9,7 @@ has '+interval' => (default => 60);
 # Number of drafts to expose to the For Review nodelet. The nodelet renders a
 # compact table in the sidebar; older drafts are still reachable via the full
 # Drafts For Review document for editors who want the unbounded list.
+## no critic (ProhibitConstantPragma)
 use constant REVIEW_DRAFTS_NODELET_LIMIT => 20;
 
 sub generate

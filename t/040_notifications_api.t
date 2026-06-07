@@ -70,12 +70,11 @@ sub create_test_notification {
   my ($user_id) = @_;
 
   my $notification_id = 1;  # Assuming a notification type exists
-  my $notified_time = time();
 
   $DB->sqlInsert('notified', {
     user_id => $user_id,
     notification_id => $notification_id,
-    notified_time => $notified_time,
+    -notified_time => 'now()',   # dash-prefix = literal SQL now(); a quoted epoch/string fails 8.4 strict mode
     is_seen => 0,
     args => '{}'
   });

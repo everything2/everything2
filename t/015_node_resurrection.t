@@ -327,4 +327,64 @@ SKIP: {
     }
 }
 
+#############################################################################
+# Test 6: Missing-date-column coercion on resurrection (#4180 follow-up)
+#
+# Older tomb dumps predate columns that exist in the live schema, so a
+# date/datetime/timestamp column can be ABSENT from the dump entirely. In that
+# case resurrectNode's `||= 0` fallback leaves the field as the numeric 0, which
+# is falsy and does NOT match the '0000-00-00' check -- yet MySQL 8.4 strict
+# mode rejects '0' for a date column just the same ("Incorrect datetime value:
+# '0'"). The coercion guard must therefore catch the falsy fallback too, not
+# only literal zero-dates. This test strips edittime from the dump and asserts
+# resurrection still yields the sentinel rather than dying on the '0' insert.
+#############################################################################
+
+{
+    my $sentinel = Everything::Constants->ZERO_DATE_SENTINEL;
+
+    my $md_title = "Test Missing Date Coercion " . time();
+    my $md_node = create_test_node($md_title, "document", {
+        doctext => "missing-date coercion content",
+    });
+
+    if ($md_node) {
+        my $md_id = $md_node->{node_id};
+
+        $DB->nukeNode($md_node, $test_user, 0);
+        ok(verify_node_in_tomb($md_id), "Missing-date doc has tombstone");
+
+        # Strip edittime from the dump entirely, mirroring a pre-column dump.
+        my $tomb = $DB->sqlSelectHashref("data", "tomb",
+            "node_id=" . $DB->quote($md_id));
+        my $data = $tomb->{data};
+        $data =~ s/'edittime'\s*=>\s*'[^']*',?\s*//;
+        $DB->sqlUpdate("tomb", { data => $data },
+            "node_id=" . $DB->quote($md_id));
+        unlike($data, qr/'edittime'/,
+            "Stripped edittime from the tomb dump");
+
+        # Resurrect -- must not die on a '0' insert; the falsy fallback is coerced.
+        my $resurrected = $DB->resurrectNode($md_id, "tomb");
+        ok($resurrected, "Resurrected node despite missing edittime in dump");
+
+        is($resurrected->{edittime}, $sentinel,
+            "Missing-date edittime coerced to birthday sentinel on resurrection");
+        unlike($resurrected->{edittime} // '', qr/^0000-00-00/,
+            "Resurrected edittime is not a zero-date");
+        isnt($resurrected->{edittime} // '', '0',
+            "Resurrected edittime is not the bare '0' fallback");
+
+        # Cleanup
+        cleanup_node($md_id);
+    } else {
+        pass("Skipped missing-date coercion test (could not create node)");
+        pass("");
+        pass("");
+        pass("");
+        pass("");
+        pass("");
+    }
+}
+
 done_testing;

@@ -66,7 +66,7 @@ sub create_test_podcast {
         title => $title,
         type_nodetype => $podcast_type->{node_id},
         author_user => $author_id,
-        createtime => 'now()'
+        -createtime => 'now()'
     });
 
     my $node_id = $DB->{dbh}->last_insert_id(undef, undef, 'node', 'node_id');

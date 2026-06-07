@@ -82,10 +82,13 @@ sub search {
     # Build filter clause
     my $filter_clause = '';
 
-    # Only show published writeups (publishtime != 0) unless viewing own writeups
-    # Users can see their own drafts, but not others' drafts
+    # Only show published writeups (publishtime is a real date) unless viewing
+    # own writeups. Users can see their own drafts, but not others' drafts.
+    # publishtime is NOT NULL DEFAULT CURRENT_TIMESTAMP (#4076) and all legacy
+    # zero-dates were backfilled, so guard with a strict-safe lower-bound rather
+    # than the literal '0000-00-00 00:00:00', which MySQL 8.4 strict mode rejects.
     unless ($is_self) {
-        $filter_clause = "AND writeup.publishtime != '0000-00-00 00:00:00'";
+        $filter_clause = "AND writeup.publishtime > '1970-01-01 00:00:00'";
     }
 
     if ( $can_see_hidden && $filter_hidden ) {
