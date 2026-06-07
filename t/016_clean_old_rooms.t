@@ -50,4 +50,11 @@ $DB->insertNode($testname,$DB->getType("room"), $root, {"criteria" => '1;',"doct
 $APP->clean_old_rooms;
 
 $tor = $DB->getNode($testname, "room");
-ok(!defined($tor), "Never used rooms are deleted");
+# #4087: roomdata.lastused_date now defaults to curdate() instead of the legacy
+# '0000-00-00'. A freshly-created, never-entered room therefore gets the normal
+# room_cleanup_threshold grace period rather than being instantly reaped (the old
+# zero-date default made UNIX_TIMESTAMP()=0, so such rooms vanished on the very
+# next clean_old_rooms run, even seconds after creation). It is still reaped once
+# it has gone unused past the threshold, like any other stale room.
+ok(defined($tor), "Never-used rooms get a grace period, not instant deletion (#4087)");
+$DB->nukeNode($tor, -1) if $tor;

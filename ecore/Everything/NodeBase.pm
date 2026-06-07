@@ -1382,10 +1382,14 @@ sub resurrectNode
 			# string is truthy, so it survives the ||= chain above and would be
 			# re-inserted verbatim — which MySQL 8.4 NO_ZERO_DATE rejects.
 			# Coerce any zero-date on a date/datetime/timestamp column to the
-			# birthday sentinel so un-nuke survives strict mode (#4074).
+			# birthday sentinel so un-nuke survives strict mode (#4074). This also
+			# catches the numeric-0 fallback from the `||= 0` chain above, which
+			# happens when a date column is absent from an older tomb dump: '0'
+			# (and '', undef) are falsy and would otherwise be inserted verbatim,
+			# which MySQL 8.4 NO_ZERO_DATE rejects just like '0000-00-00'.
 			if (   ($field_info->{Type} || '') =~ /\b(?:date|datetime|timestamp)\b/i
-				&& defined $insertref->{$field}
-				&& $insertref->{$field} =~ /^0000-00-00/)
+				&& (!$insertref->{$field}
+					|| $insertref->{$field} =~ /^0000-00-00/))
 			{
 				$insertref->{$field} = Everything::Constants::ZERO_DATE_SENTINEL;
 			}

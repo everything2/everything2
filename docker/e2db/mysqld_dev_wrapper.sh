@@ -4,7 +4,9 @@ if [ ! -e /etc/everything/dev_db_ready ]
 then
   usermod -d /var/lib/mysql/ mysql
   cp /etc/mysql/mysql.conf.d/mysqld.cnf /etc/mysql/mysqld.cnf.old
-  echo 'sql_mode="ALLOW_INVALID_DATES"' >> /etc/mysql/mysql.conf.d/mysqld.cnf
+# Removed sql_mode="ALLOW_INVALID_DATES" workaround (#2210) -- the zero-date
+# default family is fixed, so dev now runs MySQL's default strict sql_mode
+# (incl. NO_ZERO_DATE) to catch any zero-date regression before 8.4.
 # echo 'general_log=1' >> /etc/mysql/mysql.conf.d/mysqld.cnf
 # echo 'general_log_file=/var/log/mysql/general.log' >> /etc/mysql/mysql.conf.d/mysqld.cnf
   echo 'wait_timeout=31536000' >> /etc/mysql/mysql.conf.d/mysqld.cnf
