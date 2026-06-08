@@ -28,7 +28,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
    */
   async function addNotificationsNodelet(page) {
     await page.goto('/title/Nodelet+Settings')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
 
     // Wait for React page to render
     await page.waitForSelector('#e2-react-page-root', { timeout: 10000 })
@@ -39,7 +39,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
 
     if (await addNotificationsButton.isVisible()) {
       await addNotificationsButton.click()
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('load')
       return true
     }
 
@@ -58,7 +58,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
    */
   async function removeNotificationsNodelet(page) {
     await page.goto('/title/Nodelet+Settings')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
 
     // Nodelet Settings page shows nodelets as draggable items in the main content area
     // Search only within #mainbody to avoid matching the sidebar nodelets
@@ -89,7 +89,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
         const submitButton = form.locator('input[type="submit"]').first()
         await submitButton.click()
 
-        await page.waitForLoadState('networkidle')
+        await page.waitForLoadState('load')
         return true
       }
     }
@@ -103,7 +103,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
    */
   async function subscribeToNodeNotes(page) {
     await page.goto('/title/Nodelet+Settings#notificationsnodeletsettings')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
 
     // Find and check the "node note created" checkbox
     const checkbox = page.locator('input[type="checkbox"][value="note"]')
@@ -113,7 +113,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
 
       // Submit the settings form
       await page.locator('input[type="submit"]').last().click()
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('load')
     }
   }
 
@@ -122,7 +122,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
    */
   async function unsubscribeFromNodeNotes(page) {
     await page.goto('/title/Nodelet+Settings#notificationsnodeletsettings')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
 
     // Find and uncheck the "node note created" checkbox
     const checkbox = page.locator('input[type="checkbox"][value="note"]')
@@ -132,7 +132,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
 
       // Submit the settings form
       await page.locator('input[type="submit"]').last().click()
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('load')
     }
   }
 
@@ -142,7 +142,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
   async function logout(page) {
     // Navigate directly to logout endpoint
     await page.goto('/?op=logout')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
 
     // Wait for logout to complete - check that user is guest
     await page.waitForFunction(() => {
@@ -172,9 +172,9 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
 
     // Step 3: Verify Notifications nodelet is visible
     await page.goto('/')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     // Wait for React sidebar to render
-    await page.waitForSelector('#sidebar #e2-react-root', { timeout: 10000 })
+    await page.waitForSelector('#e2-react-page-root', { timeout: 10000 })
     const notificationsNodelet = page.locator('#notifications')
     await expect(notificationsNodelet).toBeVisible({ timeout: 10000 })
 
@@ -187,7 +187,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
 
     // Use a custom login for e2e_editor
     await editorPage.goto('/')
-    await editorPage.waitForSelector('#e2-react-root', { timeout: 5000 })
+    await editorPage.waitForSelector('#e2-react-page-root', { timeout: 5000 })
     await editorPage.waitForSelector('#sign_in', { timeout: 5000 })
 
     const signInHeader = editorPage.locator('h2:has-text("Sign In")')
@@ -202,13 +202,13 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
     await editorPage.fill('#signin_user', 'e2e_editor')
     await editorPage.fill('#signin_passwd', 'test123')
     await Promise.all([
-      editorPage.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
+      editorPage.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 10000 }),
       editorPage.click('input[type="submit"]')
     ])
 
     // Step 6: Navigate to ENN page to find a writeup
     await editorPage.goto('/node/superdoc/ENN')
-    await editorPage.waitForLoadState('networkidle')
+    await editorPage.waitForLoadState('load')
 
     // Extract first writeup link from ENN page
     // Look for links in the content area that point to writeups
@@ -218,7 +218,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
 
     // Navigate to the writeup page
     await editorPage.goto(writeupHref)
-    await editorPage.waitForLoadState('networkidle')
+    await editorPage.waitForLoadState('load')
 
     // Extract node_id from window.e2
     const nodeId = await editorPage.evaluate(() => window.e2?.node?.node_id)
@@ -276,7 +276,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
 
       // Step 10: Load another page to verify notification is gone
       await page.goto('/title/Settings')
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('load')
 
       await page.goto('/')
       const updatedNotificationsList = notificationsNodelet.locator('#notifications_list li')
@@ -291,7 +291,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
     // Settings are processed after the nodelet array gets built, so we need to
     // reload the page to see the updated nodelet list
     await page.goto('/')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     await page.waitForTimeout(500)
 
     // Step 13: Now go back to Nodelet Settings to remove the nodelet
@@ -301,7 +301,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
 
       // Step 14: Verify nodelet is gone (reload page to see changes)
       await page.goto('/')
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('load')
 
       // Re-query the nodelet to get fresh state after reload
       const updatedNotificationsNodelet = page.locator('#notifications')
@@ -310,7 +310,7 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
       // If nodelet can't be found to remove, it might have already been removed
       // This is acceptable for cleanup - just verify it's not visible
       await page.goto('/')
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('load')
 
       const updatedNotificationsNodelet = page.locator('#notifications')
       const isVisible = await updatedNotificationsNodelet.isVisible().catch(() => false)

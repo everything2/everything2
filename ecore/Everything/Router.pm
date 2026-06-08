@@ -44,7 +44,7 @@ sub output
 
   if($data)
   {
-    if(my $best_compression = $self->APP->best_compression_type)
+    if(my $best_compression = $self->APP->compress_response_body)
     {
       $headers->{content_encoding} = $best_compression;
     }

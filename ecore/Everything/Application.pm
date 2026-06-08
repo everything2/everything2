@@ -27,11 +27,14 @@ use JSON;
 # For sitemap_batch_xml
 use XML::Generator;
 
-# For optimally_compress_page
-use Compress::Zlib;
-use IO::Compress::Brotli;
-use IO::Compress::Deflate;
-use IO::Compress::Zstd;
+# Body-compression backends for optimally_compress_page are loaded LAZILY (see
+# that sub), not here. Under PSGI/Starman the app never compresses the body
+# (Apache compresses at the edge; compress_response_body() returns undef under
+# E2_PSGI), so these XS modules -- ~5.5MB resident, mostly Compress::Zlib --
+# would otherwise sit in every worker for nothing. require-on-use keeps them out
+# of the PSGI process entirely while still working under mod_perl. asset_uri's
+# pre-compressed-S3-variant selection uses best_compression_type, which is pure
+# string matching and needs none of these.
 use Encode;
 
 # For updateNewWriteups
@@ -6133,29 +6136,50 @@ sub best_compression_type
   return;
 }
 
+sub compress_response_body
+{
+  my ($this) = @_;
+
+  # Under PSGI/Starman, Apache compresses the proxied response at the edge, so the
+  # app must NOT compress the body itself -- a Perl-compressed binary body gets
+  # corrupted through the PSGI STDOUT byte-capture (net::ERR_CONTENT_DECODING_FAILED
+  # in browsers). best_compression_type is still used by asset_uri() to pick the
+  # right pre-compressed S3 CSS/JS variant (S3 can't content-negotiate), so the
+  # shell links stay correct -- only the response *body* compression is disabled.
+  return if $ENV{E2_PSGI};
+  return $this->best_compression_type;
+}
+
 sub optimally_compress_page
 {
   my ($this, $page) = @_;
 
-  my $best_compression = $this->best_compression_type;
+  my $best_compression = $this->compress_response_body;
 
   $page = Encode::encode("utf8",$page);
 
   if(defined($best_compression))
   {
+    # require-on-use: under PSGI this whole block is unreachable
+    # (compress_response_body returns undef), so these XS backends never load
+    # into the worker. require is idempotent (%INC-cached) -- cheap on repeat.
     if($best_compression eq "zstd")
     {
+      require IO::Compress::Zstd;
       my $outpage = undef;
       IO::Compress::Zstd::zstd(\$page => \$outpage);
       $page = $outpage;
     }elsif($best_compression eq "br")
     {
+      require IO::Compress::Brotli;
       $page = IO::Compress::Brotli::bro($page);
     }elsif($best_compression eq "deflate") {
+      require IO::Compress::Deflate;
       my $outpage = undef;
       $page = IO::Compress::Deflate::deflate(\$page => \$outpage);
       $page = $outpage;
     }elsif($best_compression eq "gzip"){
+      require Compress::Zlib;
       $page = Compress::Zlib::memGzip($page);
     }
   }

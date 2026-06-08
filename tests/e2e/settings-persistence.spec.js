@@ -25,17 +25,14 @@ test('votesafety preference persists across page loads', async ({ page }) => {
   await page.fill('#signin_passwd', 'test123')
 
   // Click and wait for JavaScript redirect
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
-    page.click('input[type="submit"]')
-  ])
+  await page.click('#sign_in button[type="submit"]')
 
   // Wait for React to render - epicenter nodelet is always visible for logged-in users
   await page.waitForSelector('#epicenter', { timeout: 10000 })
 
   // Navigate to Settings
   await page.goto('http://localhost:9080/title/Settings')
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('load')
 
   // Wait for React Settings page to render
   await page.waitForSelector('#e2-react-page-root', { timeout: 10000 })
@@ -64,7 +61,7 @@ test('votesafety preference persists across page loads', async ({ page }) => {
 
   // Reload the page
   await page.reload()
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('load')
 
   // Wait for React to render again
   await page.waitForSelector('#e2-react-page-root', { timeout: 10000 })

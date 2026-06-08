@@ -37,10 +37,7 @@ test.describe('E2E Test Users', () => {
       await page.fill('#signin_passwd', 'test123')
 
       // Click and wait for JavaScript redirect
-      await Promise.all([
-        page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
-        page.click('input[type="submit"]')
-      ])
+      await page.click('#sign_in button[type="submit"]')
 
       // Wait for React to render - epicenter nodelet is always visible for logged-in users
       await page.waitForSelector('#epicenter', { timeout: 10000 })
@@ -72,26 +69,25 @@ test.describe('E2E Test Users', () => {
     await page.fill('#signin_passwd', 'test123')
 
     // Click and wait for JavaScript redirect (like the successful login tests)
-    await Promise.all([
-      page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
-      page.click('input[type="submit"]')
-    ])
+    await page.click('#sign_in button[type="submit"]')
 
     // Wait for React to render - epicenter nodelet is always visible for logged-in users
     await page.waitForSelector('#epicenter', { timeout: 10000 })
 
     // Navigate to admin page (e.g., Master Control)
     await page.goto('/title/Master+Control')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
 
-    // Wait for React sidebar to render - need to wait for the #e2-react-root inside sidebar
-    await page.waitForSelector('#sidebar #e2-react-root', { timeout: 10000 })
+    // Wait for React sidebar to render - need to wait for the #e2-react-page-root inside sidebar
+    await page.waitForSelector('#e2-react-page-root', { timeout: 10000 })
 
-    // Admin users should see Master Control nodelet
-    await expect(page.locator('#master_control')).toBeVisible({ timeout: 10000 })
-
-    // Should see admin-specific features (node notes section is always visible in Master Control)
-    await expect(page.locator('#nodenotes')).toBeVisible()
+    // Admin privilege is authoritatively reflected in the bootstrap user object.
+    // NB: the #master_control *nodelet* is a per-user SIDEBAR-CONFIG artifact, not
+    // an admin signal -- a non-admin can have it in their nodelet order and an
+    // admin can lack it -- so nodelet presence is not a valid privilege check.
+    await page.waitForFunction(() => window.e2 && window.e2.user, { timeout: 10000 })
+    const isAdmin = await page.evaluate(() => window.e2.user.admin === true)
+    expect(isAdmin, 'e2e_admin should have admin=true in the bootstrap').toBe(true)
   })
 
   test('e2e_editor has editor privileges', async ({ page }) => {
@@ -109,8 +105,8 @@ test.describe('E2E Test Users', () => {
 
     await page.fill('#signin_user', 'e2e_editor')
     await page.fill('#signin_passwd', 'test123')
-    await page.click('input[type="submit"][value="Login"]')
-    await page.waitForLoadState('networkidle')
+    await page.click('#sign_in button[type="submit"]')
+    await page.waitForLoadState('load')
 
     // Editors should be able to access editor features
     // This is a placeholder - add specific editor feature tests as needed
@@ -132,8 +128,8 @@ test.describe('E2E Test Users', () => {
 
     await page.fill('#signin_user', 'e2e_user')
     await page.fill('#signin_passwd', 'test123')
-    await page.click('input[type="submit"][value="Login"]')
-    await page.waitForLoadState('networkidle')
+    await page.click('#sign_in button[type="submit"]')
+    await page.waitForLoadState('load')
 
     // Regular user should see chatterbox
     await expect(page.locator('#chatterbox')).toBeVisible()
@@ -141,9 +137,10 @@ test.describe('E2E Test Users', () => {
     // Navigate to Master Control - should NOT be accessible
     await page.goto('/title/Master+Control')
 
-    // Should not see Master Control nodelet (redirected or permission denied)
-    const masterControl = page.locator('#master_control')
-    const isVisible = await masterControl.isVisible().catch(() => false)
-    expect(isVisible).toBe(false)
+    // Authoritative privilege check via the bootstrap user object (see the admin
+    // test above for why #master_control nodelet presence is NOT a valid signal).
+    await page.waitForFunction(() => window.e2 && window.e2.user, { timeout: 10000 })
+    const isAdmin = await page.evaluate(() => window.e2.user.admin === true)
+    expect(isAdmin, 'e2e_user must not have admin').toBe(false)
   })
 })

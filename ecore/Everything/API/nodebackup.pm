@@ -3,7 +3,11 @@ package Everything::API::nodebackup;
 use Moose;
 extends 'Everything::API';
 
-use IO::Compress::Zip qw($ZipError);
+# IO::Compress::Zip is required lazily in create_backup (below), not here: it is
+# only needed when a user actually backs up a node, and it transitively pulls in
+# IO::Compress::Zstd + Compress::Raw::Zlib. Keeping it out of the compile-time
+# load means the preloaded controller table (every Starman/mod_perl worker) does
+# not carry the zip/zstd XS for a rarely-used endpoint.
 use Everything::S3;
 
 sub routes {
@@ -105,11 +109,12 @@ sub create_backup {
     return [$self->HTTP_OK, {success => 0, error => 'No content found to back up'}]
         unless @wus;
 
-    # Create zip file
+    # Create zip file (lazy-load the backend; see the note at the top of the file)
+    require IO::Compress::Zip;
     my $zipbuffer;
     my $zip = IO::Compress::Zip->new(\$zipbuffer);
 
-    return [$self->HTTP_OK, {success => 0, error => "Failed to create zip: $ZipError"}]
+    return [$self->HTTP_OK, {success => 0, error => "Failed to create zip: $IO::Compress::Zip::ZipError"}]
         unless $zip;
 
     my $draft_type_id = $draft_type->{node_id};

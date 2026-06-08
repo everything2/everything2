@@ -89,11 +89,27 @@ AccessFileName .htaccess
 	Satisfy all
 </Files>
 
+<% if node["psgi"] %>
+# PSGI/Starman mode (PSGI migration). When set, Apache serves static and proxies
+# all dynamic requests to a Starman backend (started by apache2_wrapper.rb)
+# instead of running the app via mod_perl. Toggled by the E2_PSGI env flag; the
+# mod_perl path remains the default when unset. The same switch is the eventual
+# production cutover.
+#
+# MUST be defined here, ahead of any <IfDefine !E2_PSGI> guard below -- Apache
+# evaluates IfDefine in parse order, so defining E2_PSGI later would let early
+# mod_perl-only directives (e.g. the NYTProf PerlPassEnv) slip through and fail
+# to parse once mod_perl isn't loaded.
+Define E2_PSGI
+<% end %>
+
 <% if node["override_configuration"].eql? "development" %>
 Define E2_DEVELOPMENT
 UnDefine E2_PRODUCTION
+<IfDefine !E2_PSGI>
 PerlPassEnv NYTPROF
 PerlModule Devel::NYTProf::Apache
+</IfDefine>
 <% else %>
 Undefine E2_DEVELOPMENT
 Define E2_PRODUCTION
@@ -209,7 +225,9 @@ MaxRequestWorkers    ${E2MaxRequestWorkers}
 MaxConnectionsPerChild ${E2MaxConnections}
 </IfModule>
 
+<IfDefine !E2_PSGI>
 PerlSwitches -I/var/everything/ecore -I/var/libraries/lib/perl5
+</IfDefine>
 ServerName everything2.com
 Listen 80
 ListenBacklog 511
@@ -237,9 +255,11 @@ ListenBacklog 511
 		</Location>
 	</IfDefine>
 
+	<IfDefine !E2_PSGI>
 	<Perl>
 		use CGI qw(-utf8);
 	</Perl>
+	</IfDefine>
 
 	<Directory />
 		Options FollowSymLinks
@@ -247,8 +267,11 @@ ListenBacklog 511
 	</Directory>
 
 	<IfDefine E2_PRODUCTION>
-		# Limit process size to 800M in production (original value)
-		# Reverted to isolate issues - use smem in Server Telemetry to monitor
+	<IfDefine !E2_PSGI>
+		# Limit process size to 800M in production (original value).
+		# mod_perl-only (SizeLimit recycles bloated interpreter workers); under PSGI
+		# Apache runs no app code, so there's nothing to size-limit, and mod_perl
+		# isn't even loaded -- guard it or Apache fails to parse <Perl> at startup.
 		<Perl>
 			use Apache2::SizeLimit;
 			$Apache2::SizeLimit::MAX_PROCESS_SIZE = 800000;
@@ -256,7 +279,15 @@ ListenBacklog 511
 		</Perl>
 		PerlCleanupHandler Apache2::SizeLimit
 	</IfDefine>
+	</IfDefine>
 
+	# mod_perl is NOT loaded under E2_PSGI (the wrapper drops the perl.load module).
+	# Apache is then a pure proxy to Starman, which runs the app with its own
+	# --preload-app. So all of these PerlPassEnv / PerlModule preloads + the
+	# ModPerl::Registry handler -- the legacy mod_perl path -- are guarded here:
+	# under PSGI Apache neither loads mod_perl NOR carries a redundant second
+	# in-memory copy of the whole app (the PerlModule Everything... preload).
+	<IfDefine !E2_PSGI>
 	PerlPassEnv AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 	PerlPassEnv AWS_DEFAULT_REGION
 	PerlPassEnv E2_DOCKER
@@ -295,6 +326,7 @@ ListenBacklog 511
 	PerlModule Everything Everything::HTML Everything::Application Everything::Request
 	PerlResponseHandler ModPerl::Registry
 	PerlOptions +ParseHeaders
+	</IfDefine>
 
 	# Serve favicon.ico from static directory
 	Alias /favicon.ico /var/everything/www/static/favicon.ico
@@ -323,6 +355,7 @@ ListenBacklog 511
 
 <%= ip_blocks %>
 
+	<IfDefine !E2_PSGI>
 	<Directory /var/everything/www/>
 		DirectoryIndex index.pl
 		AddHandler perl-script .pl
@@ -386,6 +419,89 @@ ListenBacklog 511
 		allow from all
 		deny from env=denyip
 	</Directory>
+	</IfDefine>
+
+	<IfDefine E2_PSGI>
+	# PSGI mode (stage 1): Apache serves static from DocumentRoot and proxies all
+	# dynamic requests to the Starman backend on :5000. app.psgi routes both pages
+	# (mod_perlInit) and /api (APIRouter) from REQUEST_URI, so the mod_perl
+	# title-rewrites and the /api ScriptAlias above are unnecessary here.
+	ProxyPreserveHost On
+
+	# Static assets + the local/external special routes are served by the
+	# <Directory>/filesystem and the rewrites below -- NOT proxied to Starman.
+	ProxyPass /css !
+	ProxyPass /react !
+	ProxyPass /images !
+	ProxyPass /static !
+	ProxyPass /js !
+	ProxyPass /sound !
+	ProxyPass /fonts !
+	ProxyPass /favicon.ico !
+	ProxyPass /robots.txt !
+	ProxyPass /stylesheet !
+	ProxyPass /sitemap !
+	ProxyPass /server-status !
+	# Everything else -> Starman. `nocanon` passes the RAW, pre-encoded path
+	# through unchanged. Apache's DEFAULT proxy canonicalization DECODES %2B->'+'
+	# (and %2C->','), and then _recover_route_params_from_request_uri's tr/+/ /
+	# turns that '+' into a SPACE -- so titles with a literal '+'
+	# ("Writeups+plusses", "C++"), '&', etc. bounced to Findings. nocanon makes
+	# Starman see exactly the pristine REQUEST_URI the mod_perl path always saw
+	# (LinkNode emits literal '+' as %2B; _recover decodes it once -- a matched
+	# pair). NB: this is why [P]/[NE] on a RewriteRule could not fix it -- only the
+	# ProxyPass directive exposes nocanon.
+	# disablereuse=On: do NOT pool/reuse backend connections. Starman is a
+	# PREFORKING server with a 1s default keepalive-timeout; mod_proxy otherwise
+	# keeps a backend connection in its pool, Starman closes it after 1s idle, and
+	# the next reuse stalls ~1s detecting/re-establishing the dead socket -- a
+	# periodic ~900ms tail-latency spike (every ~5-6 sequential requests) that
+	# load testing surfaced. A fresh local-loopback connection per request is
+	# ~sub-ms and is the correct model for a preforking backend anyway (it also
+	# avoids keepalive connections holding Starman workers idle). Starman direct
+	# (:5000) never showed the stall; only the proxied path did.
+	ProxyPass / http://127.0.0.1:5000/ nocanon disablereuse=On
+	ProxyPassReverse / http://127.0.0.1:5000/
+
+	# Edge compression + the denyip ban live in <Location /> (NOT a <Directory>):
+	# proxied responses have no filesystem path, so a Directory-scoped output
+	# filter or access rule would never apply to the dynamic pages. Under PSGI the
+	# app compresses NOTHING (compress_response_body() returns false), so Apache is
+	# the sole compressor and must cover html/css/js/xml AND application/json API
+	# bodies. Prefer brotli, fall back to gzip without a filter-order fight: when
+	# the client accepts br, set `no-gzip` so every mod_deflate instance (the
+	# global deflate.conf's and ours) stands down, leaving brotli sole; br-less
+	# clients fall through to gzip. (No mod_zstd in Apache -> zstd clients get br;
+	# zstd S3 assets are unaffected.)
+	<Location />
+		Order allow,deny
+		allow from all
+		deny from env=denyip
+		SetEnvIfNoCase Accept-Encoding "br" no-gzip
+		<IfModule mod_brotli.c>
+		AddOutputFilterByType BROTLI_COMPRESS text/javascript text/html text/xml text/css application/x-javascript application/javascript application/json
+		</IfModule>
+		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript application/javascript application/json
+	</Location>
+
+	<Directory /var/everything/www/>
+		Options +FollowSymLinks
+		AllowOverride None
+		Order allow,deny
+		allow from all
+		deny from env=denyip
+
+		RewriteEngine On
+		RewriteRule ^favicon.ico$ /static/favicon.ico [L]
+
+		# Versioned-stylesheet 307 + sitemap external proxy. Reached because
+		# /stylesheet and /sitemap are ProxyPass-excluded above.
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^/?stylesheet/([^_]+)_v[0-9]+(_autofix)?\.css      /stylesheet/$1$2.css  [R=307,L]
+		RewriteRule ^/?sitemap/(.+)$               http://sitemap.everything2.com/$1 [P]
+		RewriteRule ^/?sitemap.xml$                http://sitemap.everything2.com/index.xml [P]
+	</Directory>
+	</IfDefine>
 
 	<IfDefine E2_DEVELOPMENT>
 		ErrorLog "|<%= rotatelogs %> -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
