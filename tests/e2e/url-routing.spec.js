@@ -159,4 +159,17 @@ test.describe('URL-shape routing parity (mod_perl ⇄ PSGI)', () => {
     expect(resp.ok()).toBe(true)
     expect(resp.headers()['content-type'] || '', 'favicon content-type').toMatch(/image|icon|octet-stream/i)
   })
+
+  // Unimplemented/legacy display types (crawlers still hit ?displaytype=listnodelets,
+  // shownodelet, etc.) must degrade to the default 'display' view, NOT 500 with
+  // "Can't locate object method '<displaytype>'" from HTMLRouter::route_node.
+  for (const dt of ['listnodelets', 'shownodelet', 'nonexistent_displaytype_xyz']) {
+    test(`?displaytype=${dt} degrades to a 200 render, not a 500`, async ({ page }) => {
+      const resp = await page.request.get(`/title/${encodeURIComponent(ANCHOR_SUPERDOC)}?displaytype=${dt}`)
+      expect(resp.status(), `displaytype=${dt} should not 5xx`).toBe(200)
+      const body = await resp.text()
+      expect(body, `displaytype=${dt} leaked a die`).not.toMatch(/Can't locate object method|wrapper caught a die/i)
+      expect(body, `displaytype=${dt} did not render the node`).toContain(ANCHOR_SUPERDOC)
+    })
+  }
 })

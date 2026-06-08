@@ -1591,7 +1591,8 @@ sub isMaintenanceNode
 	}
 
 	return unless $node and $node->{node_id};
-	return unless $node->{type}->{title} eq "e2node" or $node->{type}->{title} eq "writeup";
+	return unless defined $node->{type}->{title}
+		and ($node->{type}->{title} eq "e2node" or $node->{type}->{title} eq "writeup");
 
 	my $maintenance_nodes = [@{$this->{conf}->maintenance_nodes}];
 
