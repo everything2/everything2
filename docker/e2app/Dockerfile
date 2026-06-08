@@ -17,9 +17,12 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "/tm
 
 # Core Directories and Apache
 RUN mkdir -p /var/libraries /etc/everything /var/mason /var/log/everything /etc/apache2/logs /var/everything /var/bootstrap/cache
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.*
 RUN rm -rf /etc/apache2/sites-enabled /etc/apache2/sites-available /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available
-RUN for i in deflate brotli rewrite authz_core proxy proxy_http perl mpm_prefork status evasive remoteip; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
+# PSGI: Apache is a pure reverse proxy -- no mod_perl, so no `perl` module and
+# mpm_event (the base-image default) instead of mpm_prefork. prefork was only
+# mandated by mod_perl's lack of thread-safety; event handles proxy connections
+# with threads at far lower per-connection cost. (#4234, full PSGI commit)
+RUN for i in deflate brotli rewrite authz_core proxy proxy_http mpm_event status evasive remoteip; do ln -sf ../mods-available/$i.load /etc/apache2/mods-enabled/$i.load; done
 RUN chown root:root /etc/everything
 RUN chown www-data:www-data /var/mason /var/log/everything /etc/apache2/logs
 RUN chmod 0755 /var/mason
@@ -42,6 +45,11 @@ RUN /usr/bin/npm install
 FROM deps AS final
 
 ARG CODEBUILD_RESOLVED_SOURCE_VERSION
+
+# mod_perl is enabled by default in the base image (libapache2-mod-perl2); under
+# PSGI Apache runs no Perl handlers, so unload it -- no redundant interpreter and
+# no thread-safety concern under mpm_event. (#4234)
+RUN rm -f /etc/apache2/mods-enabled/perl.load /etc/apache2/mods-enabled/perl.conf
 
 COPY ./etc/templates/* /var/bootstrap/etc/
 

@@ -884,7 +884,7 @@ sub gotoNode
 				, -status => 303
 				, -Cache_Control => 'private, no-cache, no-store'
 			);
-			print $redir_header if $ENV{E2_PSGI};
+			print $redir_header;
 			return;
 		}
 	}

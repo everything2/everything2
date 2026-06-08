@@ -44,17 +44,13 @@ files.each do |f|
     variables['override_configuration'] = "development"
   end
 
-  # PSGI/Starman mode toggle (PSGI migration). When E2_PSGI is set, render the
-  # proxy-to-Starman Apache config (Define E2_PSGI) instead of the mod_perl path.
-  variables['psgi'] = !ENV['E2_PSGI'].nil?
-
   bind = binding
   bind.local_variable_set(:node, variables)
 
   File.write(f[:file], template.result(bind))
 end
 
-# Build the Starman supervisor command (used in BOTH dev and prod under E2_PSGI).
+# Build the Starman supervisor command (the app backend, in both dev and prod).
 # Tunable via env with sane, memory-aware defaults derived from how we already
 # size Apache prefork:
 #   STARMAN_WORKERS (default 10) -- worker process count. PSGI needs FEWER workers
@@ -80,20 +76,6 @@ def starman_supervisor(logdest)
     "echo 'starman exited, restarting in 1s' >> #{logdest}; sleep 1; done"
 end
 
-# Under E2_PSGI, Apache is a pure reverse proxy to Starman and runs no app code,
-# so don't load mod_perl at all. Drop its module symlink before Apache starts.
-# Every Perl* directive in the rendered config is guarded behind <IfDefine
-# !E2_PSGI>, so Apache parses cleanly without the module. This removes both the
-# redundant mod_perl interpreter AND the second in-memory copy of the whole app
-# that the PerlModule Everything... preloads would load into every Apache worker.
-unless ENV['E2_PSGI'].nil?
-  %w[perl.load perl.conf].each do |m|
-    f = "/etc/apache2/mods-enabled/#{m}"
-    File.delete(f) if File.exist?(f)
-  end
-  STDERR.puts "E2_PSGI: mod_perl not loaded (Apache is a pure proxy)"
-end
-
 if ENV['E2_DOCKER'].eql? "development"
   # Dev DB password: mirror the dev DB wrapper's everyuser (caching_sha2 BY 'blah')
   # so the app exercises the full caching_sha2-with-password handshake (#4122).
@@ -107,21 +89,16 @@ if ENV['E2_DOCKER'].eql? "development"
   # Link Apache error_log to development.log for easier debugging
   `rm -f /etc/apache2/logs/error_log`
   `ln -s /tmp/development.log /etc/apache2/logs/error_log`
-  unless ENV['E2_PSGI'].nil?
-    STDERR.puts "Starting Starman PSGI backend on 127.0.0.1:5000 (E2_PSGI mode)"
-    # Keep Starman alive in the background, then start Apache.
-    spawn("/bin/bash", "-c", starman_supervisor("/tmp/development.log"))
-  end
+  STDERR.puts "Starting Starman PSGI backend on 127.0.0.1:5000"
+  # Keep Starman alive in the background, then start Apache (pure reverse proxy).
+  spawn("/bin/bash", "-c", starman_supervisor("/tmp/development.log"))
   exec("/usr/sbin/apachectl -k start; sleep infinity & wait")
 else
   `rm -f /etc/apache2/logs/error_log`
   `ln -s /dev/stderr /etc/apache2/logs/error_log`
-  # Production: under E2_PSGI, run the same Starman supervisor (logging to stderr
-  # for CloudWatch) before handing the foreground to Apache. Without this the prod
-  # path would render the proxy config but have no backend to proxy to.
-  unless ENV['E2_PSGI'].nil?
-    STDERR.puts "Starting Starman PSGI backend on 127.0.0.1:5000 (E2_PSGI mode)"
-    spawn("/bin/bash", "-c", starman_supervisor("/dev/stderr"))
-  end
+  # Production: run the Starman supervisor (logging to stderr for CloudWatch)
+  # before handing the foreground to Apache, which reverse-proxies to it.
+  STDERR.puts "Starting Starman PSGI backend on 127.0.0.1:5000"
+  spawn("/bin/bash", "-c", starman_supervisor("/dev/stderr"))
   exec("/usr/sbin/apachectl -D FOREGROUND")
 end

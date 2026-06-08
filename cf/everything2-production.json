@@ -1532,10 +1532,6 @@
               "Value": {"Fn::GetAtt": ["EverythingDB","Endpoint.Address"]}
             },
             {
-              "Name": "E2_PSGI",
-              "Value": "1"
-            },
-            {
               "Name": "STARMAN_WORKERS",
               "Value": "10"
             },
