@@ -12,7 +12,7 @@ async function loginAsRoot(page) {
   await page.goto('/')
 
   // Wait for React to hydrate Sign In nodelet
-  await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
   await page.waitForSelector('#sign_in', { timeout: 5000 })
 
   // Expand Sign In nodelet if collapsed
@@ -28,11 +28,12 @@ async function loginAsRoot(page) {
   await page.fill('#signin_user', 'root')
   await page.fill('#signin_passwd', 'blah')
 
-  // Click and wait for JavaScript redirect
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
-    page.click('input[type="submit"]')
-  ])
+  // Submit. The Sign In nodelet uses a <button type="submit">Login</button>
+  // (not input[type=submit]), and login can be a client-side fetch with no full
+  // navigation -- so we do NOT waitForNavigation (it would hang on the background
+  // pollers anyway). The post-submit wait below (#epicenter / window.e2.user) is
+  // the real "we're logged in" signal.
+  await page.click('#sign_in button[type="submit"]')
 
   // Wait for React to render epicenter (always present for logged-in users)
   await page.waitForSelector('#epicenter', { timeout: 15000 })
@@ -46,7 +47,7 @@ async function loginAsGenericDev(page) {
   await page.goto('/')
 
   // Wait for React to hydrate Sign In nodelet
-  await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
   await page.waitForSelector('#sign_in', { timeout: 5000 })
 
   // Expand Sign In nodelet if collapsed
@@ -62,11 +63,12 @@ async function loginAsGenericDev(page) {
   await page.fill('#signin_user', 'genericdev')
   await page.fill('#signin_passwd', 'blah')
 
-  // Click and wait for JavaScript redirect
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
-    page.click('input[type="submit"]')
-  ])
+  // Submit. The Sign In nodelet uses a <button type="submit">Login</button>
+  // (not input[type=submit]), and login can be a client-side fetch with no full
+  // navigation -- so we do NOT waitForNavigation (it would hang on the background
+  // pollers anyway). The post-submit wait below (#epicenter / window.e2.user) is
+  // the real "we're logged in" signal.
+  await page.click('#sign_in button[type="submit"]')
 
   // Wait for React to render epicenter (always present for logged-in users)
   await page.waitForSelector('#epicenter', { timeout: 15000 })
@@ -80,7 +82,7 @@ async function loginAsE2EAdmin(page) {
   await page.goto('/')
 
   // Wait for React to hydrate Sign In nodelet
-  await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
   await page.waitForSelector('#sign_in', { timeout: 5000 })
 
   // Expand Sign In nodelet if collapsed
@@ -96,11 +98,12 @@ async function loginAsE2EAdmin(page) {
   await page.fill('#signin_user', 'e2e_admin')
   await page.fill('#signin_passwd', 'test123')
 
-  // Click and wait for JavaScript redirect
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
-    page.click('input[type="submit"]')
-  ])
+  // Submit. The Sign In nodelet uses a <button type="submit">Login</button>
+  // (not input[type=submit]), and login can be a client-side fetch with no full
+  // navigation -- so we do NOT waitForNavigation (it would hang on the background
+  // pollers anyway). The post-submit wait below (#epicenter / window.e2.user) is
+  // the real "we're logged in" signal.
+  await page.click('#sign_in button[type="submit"]')
 
   // Wait for React to populate window.e2.user (indicates successful login)
   await page.waitForFunction(() => {
@@ -116,7 +119,7 @@ async function loginAsE2EUser(page) {
   await page.goto('/')
 
   // Wait for React to hydrate Sign In nodelet
-  await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+  await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
   await page.waitForSelector('#sign_in', { timeout: 5000 })
 
   // Expand Sign In nodelet if collapsed
@@ -132,11 +135,12 @@ async function loginAsE2EUser(page) {
   await page.fill('#signin_user', 'e2e_user')
   await page.fill('#signin_passwd', 'test123')
 
-  // Click and wait for JavaScript redirect
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle', timeout: 10000 }),
-    page.click('input[type="submit"]')
-  ])
+  // Submit. The Sign In nodelet uses a <button type="submit">Login</button>
+  // (not input[type=submit]), and login can be a client-side fetch with no full
+  // navigation -- so we do NOT waitForNavigation (it would hang on the background
+  // pollers anyway). The post-submit wait below (#epicenter / window.e2.user) is
+  // the real "we're logged in" signal.
+  await page.click('#sign_in button[type="submit"]')
 
   // Wait for React to populate window.e2.user (indicates successful login)
   await page.waitForFunction(() => {

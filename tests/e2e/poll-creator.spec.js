@@ -6,15 +6,14 @@
  */
 
 const { test, expect } = require('@playwright/test');
+const { loginAsE2EAdmin } = require('./fixtures/auth');
 
 test.describe('Everything Poll Creator', () => {
   test.beforeEach(async ({ page }) => {
-    // Login as e2e_admin (has poll creation permissions)
-    await page.goto('/');
-    await page.fill('input[name="user"]', 'e2e_admin');
-    await page.fill('input[name="passwd"]', 'test123');
-    await page.press('input[name="passwd"]', 'Enter');
-    await page.waitForLoadState('networkidle');
+    // Login as e2e_admin (has poll creation permissions). Use the shared
+    // fixture: it expands the collapsed Sign In nodelet and waits for the real
+    // post-login signal (window.e2.user) rather than a load-state race.
+    await loginAsE2EAdmin(page);
   });
 
   test('should load poll creator page', async ({ page }) => {

@@ -868,12 +868,23 @@ sub gotoNode
 			# Generate relative URL without hostname/port for proper development environment support
 			my $url = urlGen({%{$redirQuery->Vars}}, $noQuotes, $NODE);
 
-			$redirQuery->redirect(
+			# $redirQuery is a raw CGI object, so ->redirect() RETURNS the
+			# CGI header string ("Status: 303 ...\nLocation: ...") rather than
+			# emitting it. Under mod_perl that return value can be discarded
+			# because CGI.pm's mod_perl integration also pushes the status +
+			# Location onto the Apache request as a side effect. Under PSGI
+			# there is no live Apache request, so the side effect never happens
+			# and the redirect silently vanishes -> an empty 200 (e.g. visiting
+			# an e2node by node_id with a lastnode_id, which 303s to the
+			# canonical /title/ URL). Print the header so app.psgi's
+			# STDOUT-capture sees the Status/Location and produces the 303.
+			my $redir_header = $redirQuery->redirect(
 				-uri => $url
 				, -nph => 0
 				, -status => 303
 				, -Cache_Control => 'private, no-cache, no-store'
 			);
+			print $redir_header if $ENV{E2_PSGI};
 			return;
 		}
 	}
@@ -989,7 +1000,7 @@ sub printHeader
 		$extras->{cookie} = \@cookies;
 	}
 
-        if(my $best_compression = $APP->best_compression_type)
+        if(my $best_compression = $APP->compress_response_body)
         {
 		$extras->{content_encoding} = $best_compression;
         }
@@ -1413,6 +1424,17 @@ sub _recover_route_params_from_request_uri
 		$q->param('node', $decode->($1));
 		$q->param('type', 'user');
 	}
+	elsif ($uri =~ m{^/?s/([^/]+)/?$}) {
+		# Short URL lookup. mod_perl rewrote ^/?s/([^/]+) ->
+		# type=fullpage&node=Short+URL+Lookup&short_string=$1; without the
+		# rewrite (PSGI) we recover it here so /s/<base49> still resolves to
+		# its target node (Everything::Page::short_url_lookup). The short
+		# string is base-49 [a-zA-Z0-9] so decoding is a no-op, but route it
+		# through $decode for consistency.
+		$q->param('type',         'fullpage');
+		$q->param('node',         'Short URL Lookup');
+		$q->param('short_string', $decode->($1));
+	}
 	elsif ($uri =~ m{^/?title/(.+?)/?$}) {
 		$q->param('node', $decode->($1));
 	}
@@ -1420,7 +1442,20 @@ sub _recover_route_params_from_request_uri
 		$q->param('node', $decode->($1));
 	}
 	elsif ($uri =~ m{^/?node/(\d+)/(\w+)/?$}) {
-		# node_id + displaytype — both already alphanumeric, no recovery needed
+		# node_id + displaytype. Under mod_perl the apache rewrite
+		# (^node/(\d+)/(\w+) -> node_id=$1&displaytype=$2) already put these
+		# in the query string and this case was a deliberate no-op. Under
+		# PSGI there is no such rewrite, so populate them here. Re-setting the
+		# same values under mod_perl is harmless.
+		$q->param('node_id',     $1);
+		$q->param('displaytype', $2);
+	}
+	elsif ($uri =~ m{^/?node/(\d+)/?$}) {
+		# Bare node_id. Same story: apache rewrote ^node/(\d+) -> node_id=$1
+		# under mod_perl; without the rewrite (PSGI) we recover it from the
+		# path. This is the /node/<id> permalink shape (e.g. the ?lastnode_id
+		# softlink/SEO links).
+		$q->param('node_id', $1);
 	}
 	elsif ($uri =~ m{^/?node/([^\d/][^/]*)/?$}) {
 		$q->param('node', $decode->($1));

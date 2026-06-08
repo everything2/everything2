@@ -26,10 +26,10 @@ test.describe('Navigation & Basic Functionality', () => {
     // Fill in Sign In nodelet with e2e_admin credentials
     await page.fill('#signin_user', 'e2e_admin')
     await page.fill('#signin_passwd', 'test123')
-    await page.click('input[type="submit"][value="Login"]')
+    await page.click('#sign_in button[type="submit"]')
 
     // Should show user is logged in - verify Sign In nodelet is gone (replaced with user info)
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     await expect(page.locator('#signin_user')).not.toBeVisible()
 
     // User's homenode link should be visible in Epicenter

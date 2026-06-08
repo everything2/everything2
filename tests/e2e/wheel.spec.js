@@ -59,21 +59,19 @@ test.describe('Wheel of Surprise', () => {
     await page.click('button:has-text("Spin")')
 
     // Verify result appears (any prize message)
-    await expect(page.locator('.wheel-of-surprise div[style*="background"]'))
+    await expect(page.locator('.wheel-of-surprise__result'))
       .toBeVisible({ timeout: 5000 })
 
     // Wait for page reload (wheel component reloads after spin)
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
 
     // CLEANUP: Restore GP by sanctifying self (grants 10 GP, offsets 5 GP spin cost)
     await page.goto('/title/Sanctify+user')
-    await page.fill('[name="give_to"]', 'e2e_admin')
-    await page.click('input[name="give_GP"]')
-    await page.waitForLoadState('networkidle')
-
-    // Verify sanctify succeeded
-    await expect(page.locator('text=/has been given 10 GP|User.*e2e_admin.*has been given/i'))
-      .toBeVisible({ timeout: 3000 })
+    await page.fill('input.sanctify-user__input', 'e2e_admin')
+    await page.click('button.sanctify-user__button')
+    // Verify sanctify succeeded (React renders the result; no page reload now)
+    await expect(page.locator('.sanctify-user__message--success'))
+      .toBeVisible({ timeout: 5000 })
   })
 
   /**
@@ -135,17 +133,19 @@ test.describe('Wheel of Surprise', () => {
     await page.goto('/title/Sanctify+user')
 
     // Type own username
-    await page.fill('[name="give_to"]', 'e2e_admin')
-    await page.click('input[name="give_GP"]')
+    await page.fill('input.sanctify-user__input', 'e2e_admin')
+    await page.click('button.sanctify-user__button')
 
     // Should succeed (not show "cannot sanctify yourself" error)
     await expect(page.locator('text=cannot sanctify yourself'))
       .not.toBeVisible({ timeout: 2000 })
       .catch(() => true) // It's ok if element doesn't exist at all
 
-    // Should show success message
-    await expect(page.locator('text=/has been given 10 GP|User.*e2e_admin.*has been given/i'))
-      .toBeVisible({ timeout: 3000 })
+    // Should show the success message. The React SanctifyUser form renders it
+    // in .sanctify-user__message--success; the exact text comes from the API,
+    // so assert on the success element rather than a brittle text match.
+    await expect(page.locator('.sanctify-user__message--success'))
+      .toBeVisible({ timeout: 5000 })
 
     // NOTE: This test intentionally grants 10 GP to e2e_admin for cleanup purposes
   })

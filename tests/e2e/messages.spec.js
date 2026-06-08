@@ -88,7 +88,7 @@ test.describe('Mini Messages', () => {
     await loginAsE2EAdmin(page)
 
     // Wait for React to hydrate
-    await page.waitForSelector('#e2-react-root', { timeout: 5000 })
+    await page.waitForSelector('#e2-react-page-root', { timeout: 5000 })
 
     const miniMessages = page.locator('#chatterbox_messages')
     const messagesNodelet = page.locator('#messages') // Messages nodelet ID (React component)

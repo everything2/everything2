@@ -1,0 +1,41 @@
+# Diverse URL corpus for the PSGI leak harness (tools/psgi-leak-harness.pl --routes).
+# Goal: exercise as many distinct render/controller code paths as possible, since
+# a leak is often path-specific. Mixes node TYPES, URL SHAPES, and API endpoints.
+# GET-only / read-only so the run is repeatable with no side effects.
+# Node ids are dev-DB samples; re-point if the seed renumbers.
+
+# --- front page + core shapes ---
+/
+/index.pl?node_id=529746
+/?node_id=529746
+
+# --- page renders across node TYPES (each runs different render code) ---
+/node/2213557                       # writeup (by id)
+/node/2213150                       # e2node (by id)
+/node/2213789                       # document (front-page news item)
+/node/451269                        # fullpage (chatterbox XML ticker -- hot polled path)
+/node/113                           # user (by id)
+/node/104                           # superdoc (Permission Denied)
+
+# --- title / type-title / e2node / user URL SHAPES ---
+/title/Cool+Archive                 # superdoc
+/node/superdoc/Cool+Archive         # type/title shape
+/title/good+poetry                  # e2node
+/e2node/good+poetry                 # e2node route
+/title/quantum+sensing+and+metrology # e2node w/ writeups
+/user/root                          # user page
+/user/root/writeups                 # user writeups search
+/title/News+for+noders.+Stuff+that+matters.
+/title/Page+of+Cool
+
+# --- APIs (authed via --cookie so handlers run their main path) ---
+/api/sessions
+/api/messages/count
+/api/messages
+/api/drafts
+/api/notifications
+/api/nodes/529746
+/api/chatter/
+/api/cool_archive
+/api/cool/bookmark/529746/status
+/api/cool/edcool/2213557/status
