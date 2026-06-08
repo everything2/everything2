@@ -78,6 +78,17 @@ sub route_node
     $controller = $self->BASE_CONTROLLER;
   }
 
+  # Unimplemented display type (e.g. legacy ?displaytype=listnodelets / shownodelet
+  # that crawlers still request) -> degrade to the node's default 'display' view
+  # instead of dying with "Can't locate object method '$displaytype'" -> 500.
+  unless ($controller->can($displaytype)) {
+    $self->devLog("route_node: '$displaytype' unimplemented for '$nodetype'; falling back to 'display'");
+    $displaytype = 'display';
+    $controller  = (exists($self->CONTROLLER_TABLE->{$nodetype})
+                    and $self->CONTROLLER_TABLE->{$nodetype}->can('display'))
+        ? $self->CONTROLLER_TABLE->{$nodetype} : $self->BASE_CONTROLLER;
+  }
+
   return $self->output($REQUEST, $controller->$displaytype($REQUEST, $node));
 }
 
