@@ -6147,8 +6147,10 @@ sub compress_response_body
   # in browsers). best_compression_type is still used by asset_uri() to pick the
   # right pre-compressed S3 CSS/JS variant (S3 can't content-negotiate), so the
   # shell links stay correct -- only the response *body* compression is disabled.
-  return if $ENV{E2_PSGI};
-  return $this->best_compression_type;
+  # PSGI is the only serving mode now (#4234), so the app never compresses the
+  # body -- Apache's edge compression handles it. (best_compression_type is still
+  # used by asset_uri() for S3 pre-compressed variant selection.)
+  return;
 }
 
 sub optimally_compress_page
