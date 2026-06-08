@@ -441,6 +441,11 @@ ListenBacklog 511
 	ProxyPass /robots.txt !
 	ProxyPass /stylesheet !
 	ProxyPass /sitemap !
+	# /sitemap.xml is a sibling FILE, not under the /sitemap/ path -- Apache 2.4's
+	# segment-aware ProxyPass matching does NOT treat it as covered by the
+	# `/sitemap` exclusion above, so without this it falls through to Starman and
+	# renders the front page instead of the S3 sitemap index. Exclude it explicitly.
+	ProxyPass /sitemap.xml !
 	ProxyPass /server-status !
 	# Everything else -> Starman. `nocanon` passes the RAW, pre-encoded path
 	# through unchanged. Apache's DEFAULT proxy canonicalization DECODES %2B->'+'
@@ -496,6 +501,17 @@ ListenBacklog 511
 
 		# Versioned-stylesheet 307 + sitemap external proxy. Reached because
 		# /stylesheet and /sitemap are ProxyPass-excluded above.
+		#
+		# ProxyPreserveHost is On at the vhost level (so Starman sees the real
+		# everything2.com Host). But that setting leaks into the [P] sitemap proxy
+		# below, making it send `Host: everything2.com` to S3 -- which S3 reads as a
+		# virtual-hosted bucket name and rejects with NoSuchBucket. Force it Off for
+		# this Directory so the proxy sends `Host: sitemap.everything2.com` (the
+		# bucket's vhost), exactly as the mod_perl path did (it had no
+		# ProxyPreserveHost at all). ProxyPreserveHost is a per-dir directive, so this
+		# override applies only here; it affects the [P] proxy -- local static serving
+		# and the 307 redirect ignore it.
+		ProxyPreserveHost Off
 		RewriteCond %{REQUEST_FILENAME} !-f
 		RewriteRule ^/?stylesheet/([^_]+)_v[0-9]+(_autofix)?\.css      /stylesheet/$1$2.css  [R=307,L]
 		RewriteRule ^/?sitemap/(.+)$               http://sitemap.everything2.com/$1 [P]
