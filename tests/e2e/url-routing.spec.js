@@ -134,11 +134,25 @@ test.describe('URL-shape routing parity (mod_perl ⇄ PSGI)', () => {
     expect(await resp.text()).toMatch(/^\s*Sitemap:\s*\S+/im)
   })
 
-  test('/sitemap/<path> is proxied out, not swallowed by the app', async ({ page }) => {
-    const resp = await page.request.get('/sitemap/index.xml')
-    expect(await resp.text(), '/sitemap was swallowed by the app catch-all')
-      .not.toMatch(/Welcome to Everything|Here's the stuff we found/i)
-  })
+  // Both sitemap entry points must reach the S3 bucket and return REAL sitemap
+  // XML -- not the app shell, and not an S3 error. The old assertion only checked
+  // "not the app shell", so an S3 NoSuchBucket/WebsiteRedirect error page passed
+  // it: under PSGI the vhost's `ProxyPreserveHost On` leaked into the [P] sitemap
+  // proxy (sent Host: everything2.com -> NoSuchBucket), and `/sitemap.xml` (a
+  // sibling file, not under /sitemap/) slipped past the ProxyPass exclusion and
+  // rendered the front page. Assert positively on sitemap content so either
+  // regression fails here.
+  for (const path of ['/sitemap/index.xml', '/sitemap.xml']) {
+    test(`${path} returns real S3 sitemap XML (not the app shell, not an S3 error)`, async ({ page }) => {
+      const resp = await page.request.get(path)
+      expect(resp.status(), `${path} status`).toBe(200)
+      expect(resp.headers()['content-type'] || '', `${path} content-type`).toMatch(/xml/i)
+      const body = await resp.text()
+      expect(body, `${path} not swallowed by the app`).not.toMatch(/Welcome to Everything|Here's the stuff we found/i)
+      expect(body, `${path} hit an S3 error (wrong Host?)`).not.toMatch(/NoSuchBucket|WebsiteRedirect|bucket name/i)
+      expect(body, `${path} is not a sitemap`).toMatch(/<sitemapindex|<urlset|<loc>/i)
+    })
+  }
 
   test('/favicon.ico is served as an image, not the app', async ({ page }) => {
     const resp = await page.request.get('/favicon.ico')

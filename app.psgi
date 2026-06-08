@@ -98,6 +98,17 @@ my $app = sub {
     open my $capture, '>:raw', \$body or die "capture open: $!";
     {
         local *STDOUT = $capture;
+        # Re-assert the default output handle for THIS request. Under production
+        # config, E2 can leave the process's *selected* filehandle
+        # (select()/PL_defoutgv) pointing at a PRIOR request's captured STDOUT via
+        # an unrestored select() deep in the stack (observed at the XS level). Once
+        # that prior $capture is closed, every later plain print() on this preforked
+        # Starman worker writes to a closed handle -> empty body + "print() on closed
+        # filehandle $capture" -> 5xx, and stays poisoned until the worker recycles.
+        # `local *STDOUT = $capture` only swaps the glob, NOT the selected handle, so
+        # it can't fix a leaked selection on its own. Selecting STDOUT (now aliased to
+        # this request's $capture) makes each request immune. See issue #4237.
+        select STDOUT;
         my $ok = eval {
             if ($is_api) {
                 Everything::initEverything();

@@ -1530,6 +1530,18 @@
             {
               "Name": "E2_DBSERV",
               "Value": {"Fn::GetAtt": ["EverythingDB","Endpoint.Address"]}
+            },
+            {
+              "Name": "E2_PSGI",
+              "Value": "1"
+            },
+            {
+              "Name": "STARMAN_WORKERS",
+              "Value": "10"
+            },
+            {
+              "Name": "STARMAN_MAX_REQUESTS",
+              "Value": "1000"
             }
           ],
           "LogConfiguration": {
