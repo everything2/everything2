@@ -10,76 +10,92 @@ with 'Everything::Globals';
 
 use Everything::Cron::Schedule;
 use Everything::Cron::State;
+use Everything::Cron::Health;
 
-# Everything::Cron::Runner
+# Everything::Cron::Runner -- the in-webhead cron engine (docs/cron-sidecar-design.md).
 #
-# The in-webhead cron engine (docs/cron-sidecar-design.md). One of these runs in
-# every webhead task; exactly one is the *leader* at a time, enforced by a MySQL
-# GET_LOCK held on a DEDICATED connection. The leader ticks the schedule and runs
-# each due job sequentially (fork+exec of the existing cron_*.pl), with a per-job
-# timeout-kill so one hung job can't starve the rest. Non-leaders idle and retry
-# the lock; if the leader dies its connection drops and the lock auto-releases, so
-# another runner takes over. State + heartbeat live in cron_state/cron_leader
-# (Everything::Cron::State); health is judged by Everything::Cron::Health.
+# PERIODIC model: a thin trigger (a supervised `run_once; sleep 60` loop, or OS
+# crond) invokes run_once on each webhead every ~minute. run_once grabs a MySQL
+# GET_LOCK (non-blocking), and whoever wins runs the due jobs once, then releases.
+# The lock is held ONLY for the duration of a run -- between runs nothing is held,
+# so there is no persistent leader to wedge, no idle lock connection to keep alive,
+# and failover is automatic (the next trigger re-contends on a free lock). A random
+# pre-lock jitter spreads the webheads and rotates who does the work.
 
-has 'tick_seconds' => ( isa => 'Int',  is => 'ro', default => 15 );
 has 'lock_wait_timeout' => ( isa => 'Int', is => 'ro', default => 120 );
-has 'kill_grace' => ( isa => 'Int', is => 'ro', default => 5 );
-has 'dry_run'  => ( isa => 'Bool', is => 'rw', default => 0 );    # shadow mode: log, don't run
+has 'kill_grace'        => ( isa => 'Int', is => 'ro', default => 5 );
+has 'maintain_every'    => ( isa => 'Int', is => 'ro', default => 30 );  # keep lock alive during long jobs
+has 'jitter_max'        => ( isa => 'Int', is => 'ro', default => 0 );   # prod multi-webhead spread
+has 'dry_run'           => ( isa => 'Bool', is => 'rw', default => 0 );
 
 has 'schedule' => ( isa => 'Everything::Cron::Schedule', is => 'ro', lazy => 1,
     default => sub { Everything::Cron::Schedule->new } );
 has 'state'    => ( isa => 'Everything::Cron::State', is => 'ro', lazy => 1,
     default => sub { Everything::Cron::State->new } );
-
 has 'lock_name' => ( isa => 'Str', is => 'ro', lazy => 1,
     default => sub { Everything::Cron::State::LEADER_LOCK() } );
 
-has '_lock_dbh'  => ( is => 'rw', predicate => '_has_lock_dbh', clearer => '_clear_lock_dbh' );
-has '_is_leader' => ( is => 'rw', default => 0 );
-has '_stop'      => ( is => 'rw', default => 0 );
+has '_lock_dbh' => ( is => 'rw', predicate => '_has_lock_dbh', clearer => '_clear_lock_dbh' );
+has '_stop'     => ( is => 'rw', default => 0 );
 
 #############################################################################
-# Main loop
+# One run: contend for the lock, run what's due, release.
 #############################################################################
 
-sub run {
+sub run_once {
     my ($self) = @_;
     $self->_install_signal_handlers;
-    $self->_log( 'starting on ' . $self->state->host . ( $self->dry_run ? ' (DRY RUN)' : '' ) );
+    $self->_jitter;
 
-    until ( $self->_stop ) {
-        eval { $self->tick; 1 } or $self->_log("tick error: $@");
-        # Sleep the tick interval in 1s steps so SIGTERM is honored promptly.
-        my $slept = 0;
-        while ( $slept < $self->tick_seconds && !$self->_stop ) { sleep 1; $slept++; }
+    my $dbh = $self->_connect_lock or return;
+    my ($got) = eval { $dbh->selectrow_array( 'SELECT GET_LOCK(?, 0)', undef, $self->lock_name ) };
+    unless ($got) {
+        eval { $dbh->disconnect; 1 } or $self->_log( 'lock-conn disconnect failed: ' . ( $@ || 'unknown' ) );
+        return;    # another webhead is running this minute -- nothing to do
     }
-    $self->_shutdown;
+    $self->_lock_dbh($dbh);
+    $self->_log( 'leader for this run' . ( $self->dry_run ? ' (DRY RUN)' : '' ) );
+
+    eval {
+        $self->state->heartbeat_leader;
+        $self->_run_due_jobs;
+        $self->_emit_health_metric;
+        1;
+    } or $self->_log("run error: $@");
+
+    eval { $dbh->do( 'SELECT RELEASE_LOCK(?)', undef, $self->lock_name ); 1 }
+        or $self->_log( 'release_lock failed: ' . ( $@ || 'unknown' ) );
+    eval { $dbh->disconnect; 1 }
+        or $self->_log( 'lock-conn disconnect failed: ' . ( $@ || 'unknown' ) );
+    $self->_clear_lock_dbh;
     return;
 }
 
-sub tick {
+sub _run_due_jobs {
     my ($self) = @_;
-    $self->_ensure_leadership;
-    return unless $self->_is_leader;
-
-    $self->state->heartbeat_leader;
-
+    my $now  = time;
     my $jobs = $self->state->snapshot->{jobs};
     for my $entry ( @{ $self->schedule->entries } ) {
         last if $self->_stop;
-        next if !$self->_is_leader;                 # may be lost mid-tick during a long job
-        my $js = $jobs->{ $entry->{name} } || {};
+        my $name = $entry->{name};
+        my $js   = $jobs->{$name};
+
+        # Init-on-first-sight: a job with no cron_state row yet (fresh deploy / dev
+        # rebuild) is seeded to "now" WITHOUT running, so a cold cron_state doesn't
+        # fire every job at once. It then fires at its normal next interval.
+        unless ($js) {
+            $self->state->mark_seen($name);
+            next;
+        }
         next if $self->_in_progress( $entry, $js );
-        next unless $self->schedule->due( $entry, time, $js->{started_at} || 0 );
+        next unless $self->schedule->due( $entry, $now, $js->{started_at} || 0 );
         $self->run_job($entry);
     }
     return;
 }
 
-# A row left 'running' by a crashed prior leader: still in-progress until its
-# timeout elapses; past that it's presumed dead (Health flags it 'hung') and we
-# allow a fresh run.
+# A row left 'running' by a crashed prior run: in-progress until its timeout
+# elapses, then presumed dead (Health flags 'hung') and a fresh run is allowed.
 sub _in_progress {
     my ( $self, $entry, $js ) = @_;
     return 0 unless ( $js->{status} || '' ) eq 'running';
@@ -87,45 +103,8 @@ sub _in_progress {
 }
 
 #############################################################################
-# Leadership (GET_LOCK on a dedicated connection)
+# Dedicated lock connection (NOT connect_cached -- the lock lives on it)
 #############################################################################
-
-sub _ensure_leadership {
-    my ($self) = @_;
-
-    if ( !$self->_has_lock_dbh || !$self->_lock_dbh->ping ) {
-        $self->_is_leader(0);
-        $self->_clear_lock_dbh if $self->_has_lock_dbh;
-        return unless $self->_connect_lock;
-    }
-    return if $self->_is_leader;
-
-    my ($got) = eval {
-        $self->_lock_dbh->selectrow_array( 'SELECT GET_LOCK(?, 0)', undef, $self->lock_name );
-    };
-    if ($got) {
-        $self->_is_leader(1);
-        $self->_log('acquired cron leadership');
-    }
-    return;
-}
-
-# Keep leadership alive DURING a long-running job: a synchronous job blocks the
-# tick, so without this the heartbeat would go stale and -- worse -- the lock
-# connection would idle past wait_timeout and the lock would be reaped, letting a
-# second leader start. Called periodically from the job wait loop.
-sub _maintain_leadership {
-    my ($self) = @_;
-    if ( $self->_has_lock_dbh && $self->_lock_dbh->ping ) {
-        $self->state->heartbeat_leader;
-    }
-    else {
-        $self->_log('lock connection dropped during a job -- lost leadership');
-        $self->_is_leader(0);
-        $self->_clear_lock_dbh if $self->_has_lock_dbh;
-    }
-    return;
-}
 
 sub _connect_lock {
     my ($self) = @_;
@@ -140,24 +119,23 @@ sub _connect_lock {
                 AutoCommit           => 1,
                 RaiseError           => 0,
                 PrintError           => 0,
-                mysql_auto_reconnect => 0,    # MUST be off: a reconnect = new session = lock lost
+                mysql_auto_reconnect => 0,    # a reconnect = new session = lock lost
             } );
     };
     if ( !$dbh ) {
         $self->_log( 'lock connection failed: ' . ( $@ || $DBI::errstr || 'unknown' ) );
-        return 0;
+        return;
     }
-    # Bound the post-SIGKILL ghost-lock window: if this container is hard-killed,
-    # the server reaps this idle session (releasing the lock) after wait_timeout.
-    # We ping every tick (<< this), so it never reaps while we're alive.
+    # Bound the ghost-lock window if this process is hard-killed mid-run: the
+    # server reaps the idle session (releasing the lock) after wait_timeout. We
+    # ping during long jobs (below) so it never reaps while we're actively working.
     eval { $dbh->do( 'SET SESSION wait_timeout = ' . $self->lock_wait_timeout ); 1 }
-        or $self->_log( 'could not set lock-connection wait_timeout: ' . ( $@ || 'unknown' ) );
-    $self->_lock_dbh($dbh);
-    return 1;
+        or $self->_log( 'could not set lock wait_timeout: ' . ( $@ || 'unknown' ) );
+    return $dbh;
 }
 
 #############################################################################
-# Job execution (fork + exec, timeout-kill)
+# Job execution (fork + exec, timeout-kill, lock kept alive during long jobs)
 #############################################################################
 
 sub run_job {
@@ -176,8 +154,6 @@ sub run_job {
         return;
     }
     if ( $pid == 0 ) {
-        # Child: become the job. Output flows to the runner's stdout/stderr ->
-        # CloudWatch. exec replaces the process; only reached on exec failure.
         exec { $entry->{argv}[0] } @{ $entry->{argv} };
         print STDERR "[cron] exec failed for $name: $!\n";
         POSIX::_exit(127);
@@ -196,9 +172,10 @@ sub run_job {
     return;
 }
 
-# Wait for $pid up to $timeout seconds, maintaining leadership meanwhile. On
-# timeout (or runner SIGTERM) kill the child TERM->KILL and reap it.
-# Returns ($exit_code, $timed_out).
+# Wait for $pid up to $timeout, keeping the lock connection alive (a long job --
+# e.g. datastash-lengthy -- holds the lock for its whole run, so the dedicated
+# connection must be pinged or wait_timeout would reap it and free the lock under
+# us). On timeout or SIGTERM, kill TERM->KILL and reap. Returns ($exit, $timed_out).
 sub _wait_with_timeout {
     my ( $self, $pid, $timeout ) = @_;
     my $deadline   = time + $timeout;
@@ -207,10 +184,10 @@ sub _wait_with_timeout {
     while (1) {
         my $reaped = waitpid( $pid, WNOHANG );
         return ( $? >> 8, 0 ) if $reaped == $pid;
-        return ( 0, 0 ) if $reaped == -1;            # already gone
+        return ( 0, 0 ) if $reaped == -1;
 
         if ( $self->_stop ) {
-            $self->_log("SIGTERM received -- terminating job pid $pid");
+            $self->_log("SIGTERM -- terminating job pid $pid");
             $self->_kill_child($pid);
             return ( -1, 0 );
         }
@@ -219,13 +196,17 @@ sub _wait_with_timeout {
             $self->_kill_child($pid);
             return ( -1, 1 );
         }
-        if ( time - $last_maint >= $self->tick_seconds ) {
-            $self->_maintain_leadership;
+        if ( time - $last_maint >= $self->maintain_every ) {
+            eval { $self->_lock_dbh->ping if $self->_has_lock_dbh; 1 }
+                or $self->_log('lock ping failed during job');
+            eval { $self->state->heartbeat_leader; 1 }
+                or $self->_log('heartbeat failed during job');
+            $self->_emit_health_metric;    # keep the metric flowing during a long job
             $last_maint = time;
         }
         sleep 1;
     }
-    return;    # unreachable (the loop only exits via return) -- satisfies RequireFinalReturn
+    return;    # unreachable (loop only exits via return)
 }
 
 sub _kill_child {
@@ -242,30 +223,56 @@ sub _kill_child {
 }
 
 #############################################################################
-# Lifecycle
+# Misc
 #############################################################################
+
+sub _jitter {
+    my ($self) = @_;
+    return if $self->jitter_max <= 0;
+    my $s = int( rand( $self->jitter_max ) );    ## no critic (ProhibitMagicNumbers)
+    sleep $s if $s > 0;
+    return;
+}
 
 sub _install_signal_handlers {
     my ($self) = @_;
-    # Daemon handlers must persist process-wide for the runner's whole life, so
-    # they are deliberately NOT localized (the usual punctuation-var guidance).
-    ## no critic (RequireLocalizedPunctuationVars)
+    ## no critic (RequireLocalizedPunctuationVars) -- must persist for the run
     $SIG{TERM} = sub { $self->_stop(1) };
     $SIG{INT}  = sub { $self->_stop(1) };
     ## use critic
     return;
 }
 
-sub _shutdown {
+# Publish the cron health metric (E2/Cron UnhealthyJobs = wedged + failing count)
+# to CloudWatch. The leader emits it each run and during long jobs; the CFN alarm
+# (TreatMissingData=breaching) fires on >0 OR on missing data -- i.e. wedged/failing
+# jobs OR total cron death (no leader emitting). Skipped in dry-run shadow (jobs
+# aren't running, so they would read as falsely overdue) and in dev (no CloudWatch).
+sub _emit_health_metric {
     my ($self) = @_;
-    $self->_log('shutting down');
-    if ( $self->_is_leader && $self->_has_lock_dbh ) {
-        eval { $self->_lock_dbh->do( 'SELECT RELEASE_LOCK(?)', undef, $self->lock_name ); 1 }
-            or $self->_log( 'release_lock on shutdown failed: ' . ( $@ || 'unknown' ) );
-        eval { $self->_lock_dbh->disconnect; 1 }
-            or $self->_log( 'lock disconnect on shutdown failed: ' . ( $@ || 'unknown' ) );
-        $self->_log('released cron leadership');
-    }
+    return if $self->dry_run;
+    # Metric emission must never break a run -- wrap the snapshot/evaluate too.
+    eval {
+        my $verdict = Everything::Cron::Health->new( schedule => $self->schedule )
+            ->evaluate( $self->state->snapshot, time );
+        $self->_emit_metric( scalar( @{ $verdict->{wedged} } ) + scalar( @{ $verdict->{failing} } ) );
+        1;
+    } or $self->_log( 'health metric failed: ' . ( $@ || 'unknown' ) );
+    return;
+}
+
+sub _emit_metric {
+    my ( $self, $value ) = @_;
+    return if $self->CONF->environment eq 'development';
+    eval {
+        require Paws;
+        my $cw = Paws->service( 'CloudWatch', region => $self->CONF->current_region );
+        $cw->PutMetricData(
+            Namespace  => 'E2/Cron',
+            MetricData => [ { MetricName => 'UnhealthyJobs', Value => $value + 0, Unit => 'Count' } ],
+        );
+        1;
+    } or $self->_log( 'CloudWatch metric emit failed: ' . ( $@ || 'unknown' ) );
     return;
 }
 
