@@ -95,7 +95,7 @@ around 'update' => sub
       }
 
       $type_is_changing = (!defined($current_type)
-        or lc($current_type) ne lc($new_writeuptype->title)) ? 1 : 0;
+        || lc($current_type) ne lc($new_writeuptype->title)) ? 1 : 0;
     }
   }
 

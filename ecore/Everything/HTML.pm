@@ -16,8 +16,7 @@ use Everything::Delegation::opcode;
 use Everything::Request;
 
 use Encode;
-use CGI qw(-utf8);
-use CGI::Carp qw(set_die_handler);
+use Everything::Response;
 use Carp qw(longmess);
 
 ## no critic (ProhibitAutomaticExportation,RequireUseWarnings)
@@ -106,7 +105,9 @@ my %NO_SIDE_EFFECT_PARAMS = (
 
 sub handle_errors {
 
-    CORE::die(@_) if CGI::Carp::ineval();
+    # Re-throw if we're inside an eval so the eval can catch it (was
+    # CGI::Carp::ineval(); $^S is Perl's own "currently in an eval" flag).
+    CORE::die(@_) if $^S;
 
     Everything::printLog('Trying to handle error.');
 
@@ -854,33 +855,31 @@ sub gotoNode
 			;
 
 	if ($shouldRedirect) {
-		my $redirQuery = new CGI($query);
+		# Build a throwaway, mutable copy of the request params for the redirect
+		# (the side-effect-param stripping below must not mutate the real $query,
+		# which is reused if we end up NOT redirecting). GET-only path (the
+		# $shouldRedirect guard), so a single value per param is sufficient for
+		# the canonical URL. No CGI object -- a plain param hash + the CGI-free
+		# Everything::Response for the 303 header.
+		my %redir_params = map { $_ => scalar $query->param($_) } $query->param;
 		my $safeToRedirect = 1;
-		$redirQuery->delete('op') if $redirQuery->param('op') eq "";
-		foreach ($redirQuery->param) {
-			$safeToRedirect = 0 unless defined $NO_SIDE_EFFECT_PARAMS{$_};
-			$redirQuery->delete($_) if(defined($NO_SIDE_EFFECT_PARAMS{$_}) and $NO_SIDE_EFFECT_PARAMS{$_} eq 'delete');
+		delete $redir_params{op} if defined $redir_params{op} && $redir_params{op} eq "";
+		foreach my $p (keys %redir_params) {
+			$safeToRedirect = 0 unless defined $NO_SIDE_EFFECT_PARAMS{$p};
+			delete $redir_params{$p} if(defined($NO_SIDE_EFFECT_PARAMS{$p}) and $NO_SIDE_EFFECT_PARAMS{$p} eq 'delete');
 		}
 
 		if ($safeToRedirect) {
 			my $noQuotes = 1;
 
 			# Generate relative URL without hostname/port for proper development environment support
-			my $url = urlGen({%{$redirQuery->Vars}}, $noQuotes, $NODE);
+			my $url = urlGen(\%redir_params, $noQuotes, $NODE);
 
-			# $redirQuery is a raw CGI object, so ->redirect() RETURNS the
-			# CGI header string ("Status: 303 ...\nLocation: ...") rather than
-			# emitting it. Under mod_perl that return value can be discarded
-			# because CGI.pm's mod_perl integration also pushes the status +
-			# Location onto the Apache request as a side effect. Under PSGI
-			# there is no live Apache request, so the side effect never happens
-			# and the redirect silently vanishes -> an empty 200 (e.g. visiting
-			# an e2node by node_id with a lastnode_id, which 303s to the
-			# canonical /title/ URL). Print the header so app.psgi's
-			# STDOUT-capture sees the Status/Location and produces the 303.
-			my $redir_header = $redirQuery->redirect(
+			# Emit the canonical 303 (Status/Location) for app.psgi's STDOUT
+			# capture to turn into the redirect. Was a raw CGI ->redirect();
+			# now Everything::Response (no CGI). This is the #4237 redirect site.
+			my $redir_header = Everything::Response->cgi_redirect(
 				-uri => $url
-				, -nph => 0
 				, -status => 303
 				, -Cache_Control => 'private, no-cache, no-store'
 			);
@@ -1327,7 +1326,8 @@ sub mod_perlInit
 
 	%HEADER_PARAMS = ( );
 
-	set_die_handler(\&handle_errors);
+	## no critic (RequireLocalizedPunctuationVars)
+	$SIG{__DIE__} = \&handle_errors;   # was CGI::Carp::set_die_handler
 
 	$query = $REQUEST->cgi;
 

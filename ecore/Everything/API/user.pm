@@ -461,8 +461,21 @@ sub upload_image {
   my $max_width = ($user_level > 4 || $is_god) ? 400 : 200;
   my $max_height = ($user_level > 4 || $is_god) ? 800 : 400;
 
-  # Read file data
-  my $buf = join('', <$fname>);
+  # Read file data. Under the Plack request backing (#4129), $fname is a
+  # Plack::Request::Upload (spooled to a temp file); read its path. The legacy
+  # branch (a CGI upload filehandle) is kept defensively.
+  my $buf;
+  if (ref($fname) && eval { $fname->can('path') }) {
+    if (open(my $ufh, '<', $fname->path)) {
+      binmode($ufh);
+      local $/ = undef;
+      $buf = <$ufh>;
+      close($ufh);
+    }
+  } else {
+    $buf = join('', <$fname>);
+  }
+  $buf //= '';
   my $size = length($buf);
 
   if ($size > $sizelimit) {

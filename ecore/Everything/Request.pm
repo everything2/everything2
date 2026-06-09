@@ -3,12 +3,33 @@ package Everything::Request;
 use strict;
 use Moose;
 use namespace::autoclean;
-use CGI qw(-utf8);
+use Plack::Request;
+use Everything::Request::PlackQuery;
 use Encode qw(decode_utf8);
 
 with 'Everything::Globals';
 
-has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method","path_info","script_name"], is => "rw");
+# The PSGI environment for the current request. app.psgi threads it in with
+# `local $Everything::Request::PSGI_ENV = $env;` per request so the (new)
+# Plack::Request backing can be built. Package-scoped + localized rather than a
+# constructor arg so existing `Everything::Request->new` call sites are
+# untouched during the migration.
+our $PSGI_ENV;
+
+# Despite the historical name, `cgi` is now the Plack-backed query object
+# (Everything::Request::PlackQuery), NOT a CGI.pm instance: CGI is out of the
+# request-parsing path. The accessor name and the $query global are kept so the
+# ~600 call sites (`$query->param`, `$REQUEST->cgi->...`) are untouched.
+has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "Everything::Request::PlackQuery", handles => ["param", "header", "cookie","url","request_method","path_info","script_name"], is => "rw");
+
+# NEW (additive) Plack::Request backing over the PSGI env. Nothing live reads
+# from it yet -- the site still runs entirely on the CGI object above. This is
+# the leverage point the migration flips to once the parity harness proves the
+# read surface agrees. Lazy + isolated so building it has no effect unless asked.
+# NB: do NOT call body-reading accessors (->content/->body_parameters) on this in
+# the live path while CGI is primary -- both read psgi.input and the body can
+# only be consumed once. Body parity is exercised in the harness with fresh input.
+has 'req' => (is => 'ro', isa => 'Plack::Request', lazy => 1, builder => '_build_req');
 has 'user' => (lazy => 1, builder => "_build_user", isa => "Everything::Node::user", is => "rw", handles => ["is_guest","is_admin","is_developer","is_chanop","is_clientdev","is_editor","VARS"]);
 has 'node' => (is => "rw", isa => "Everything::Node");
 
@@ -52,8 +73,12 @@ sub POSTDATA
       return $self->_raw_stdin_cache;
     }
 
-    # For POST, CGI.pm handles it fine
-    return $self->param("POSTDATA");
+    # For POST, read the raw JSON body from the Plack request. CGI.pm used to
+    # expose an unparsed body as the pseudo-param 'POSTDATA'; Plack::Request has
+    # no such pseudo-param, so go to the body directly via ->content. (This is
+    # the change the CGI->Plack backing flip requires for JSON POSTs -- the
+    # sessions/login + every JSON-body API endpoint depends on it.)
+    return $self->req->content;
   }elsif($encoding =~ m|^application/x-www-form-urlencoded|)
   {
     return $self->param("data");
@@ -84,24 +109,51 @@ sub _build_user
   return $self->get_current_user;
 }
 
+# The PSGI env for this request: the threaded one under Starman, or a minimal
+# env synthesized from %ENV for non-PSGI contexts (cron/CLI/tests that did not
+# thread one). Body reads in the fallback default to empty -- callers that need a
+# real body in those contexts thread a proper env (the harness/tests do).
+sub psgi_env
+{
+  my $self = shift;
+  return $PSGI_ENV if $PSGI_ENV;
+
+  my %env = %ENV;
+  unless ($env{'psgi.input'})
+  {
+    open(my $in, '<', \(my $empty = '')) or die "psgi_env input: $!";
+    $env{'psgi.input'} = $in;
+  }
+  $env{'psgi.url_scheme'} //= ($ENV{HTTPS} ? 'https' : 'http');
+  $env{'REQUEST_METHOD'}  //= 'GET';
+  return \%env;
+}
+
+sub _build_req
+{
+  my $self = shift;
+  return Plack::Request->new($self->psgi_env);
+}
+
 sub _build_cgi
 {
   my $self = shift;
 
-  my $cgi;
+  # The query object is now Plack-backed. It shares the one Plack::Request with
+  # $self->req (a single request parse). CGI.pm is no longer constructed here;
+  # the old `new CGI` / `new CGI(\*STDIN)` SCRIPT_NAME gate is obsolete because
+  # Plack::Request reads the body from the PSGI env's psgi.input directly.
+  my $query = Everything::Request::PlackQuery->new(req => $self->req);
 
-  if ($ENV{SCRIPT_NAME}) {
-    $cgi = new CGI;
-  } else {
-    $cgi = new CGI(\*STDIN);
-  }
-
-  if (not defined ($cgi->param("op")))
+  # Preserve the historical default: `op` is always defined. Many call sites do
+  # `$query->param('op') eq '...'`, which would warn/misbehave on undef. CGI's
+  # _build_cgi set this; keep it on the mutable param table.
+  if (not defined($query->param("op")))
   {
-    $cgi->param("op", "");
+    $query->param("op", "");
   }
 
-  return $cgi;
+  return $query;
 }
 
 sub login

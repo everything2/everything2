@@ -17,6 +17,7 @@ use lib '/var/everything/ecore';
 use Everything;
 use Everything::HTML;
 use Everything::APIRouter;
+use Everything::HealthCheck;
 use Plack::Builder;
 
 # Preload once per worker (mirrors mod_perl's persistent interpreter). The API
@@ -24,35 +25,31 @@ use Plack::Builder;
 # request.
 my $APIr = Everything::APIRouter->new;
 
+# The PSGI health-check app (replaces the mod_perl www/health.pl). Built once
+# per worker. Answers /health + /health.pl below, before any request setup.
+my $health_app = Everything::HealthCheck->to_app;
+
 my $app = sub {
     my $env = shift;
 
-    # Health check, answered directly from the PSGI layer (before any CGI
-    # setup, so it stays cheap). Under mod_perl this was www/health.pl via the
-    # `^health$ -> /health.pl` rewrite, but health.pl is mod_perl-bound
-    # ($r = shift; $r->status; Apache mod_status parsing) and can't run under
-    # Starman. Answering it here means a green /health proves the real serving
-    # path -- Apache -> Starman -> Perl -- is up: if Starman is down, Apache's
-    # proxy returns 503 and ECS recycles the task. Same basic health-check-v1
-    # contract the ELB expects (the detailed=1/db=1 modes are intentionally not
-    # reproduced; see docs/psgi-spike-findings.md). `backend` marks the responder.
+    # Health check, answered by Everything::HealthCheck directly from the PSGI
+    # layer (before any request setup, so basic liveness stays cheap and DB-
+    # independent). This is the PSGI rewrite of the old mod_perl www/health.pl,
+    # which is Apache-bound and can't run under Starman. A green /health proves
+    # the real serving path -- Apache -> Starman -> Perl -- is up: if Starman is
+    # down, Apache's proxy returns 503 and ECS recycles the task. ?detailed=1 adds
+    # system/memory; ?db=1 adds a framework-free DB probe (503 if unhealthy).
     my $health_path = ( $env->{REQUEST_URI} // '' ) =~ s/\?.*//r;
     if ( $health_path eq '/health' || $health_path eq '/health.pl' ) {
-        my $json = sprintf(
-            '{"status":"ok","timestamp":%d,"version":"health-check-v1","backend":"psgi"}',
-            time() );
-        return [ 200,
-            [ 'Content-Type'  => 'application/json',
-              'Cache-Control' => 'no-cache, no-store, must-revalidate' ],
-            [ $json ] ];
+        return $health_app->($env);
     }
 
-    # CRITICAL per-request isolation. Under mod_perl, ModPerl::Registry resets
-    # CGI.pm's package globals on every request. Under a bare PSGI server nothing
-    # does, so the globals persist on the worker and a fresh `new CGI` returns the
-    # PREVIOUS request's parsed query -> cross-request bleed (wrong node, wrong
-    # user, data leakage). Reset them at the top of every request.
-    CGI::initialize_globals() if CGI->can('initialize_globals');
+    # (Historical: a CGI::initialize_globals() call lived here to reset CGI.pm's
+    # package globals per request and avoid cross-request bleed -- mod_perl did
+    # that reset, a bare PSGI server doesn't. It's gone now: CGI.pm is no longer
+    # in the request path. Everything::Request::PlackQuery is built fresh from
+    # this $env on every request, so there is no shared parsed-query global to
+    # bleed in the first place.)
 
     # 1. PSGI env -> %ENV (CGI-named request vars + HTTP_* headers).
     local %ENV = %ENV;
@@ -82,6 +79,18 @@ my $app = sub {
 
     # 2. STDIN <- psgi.input (POST/PUT/PATCH bodies for CGI.pm).
     local *STDIN = $env->{'psgi.input'} if $env->{'psgi.input'};
+
+    # 2b. Thread the PSGI env to Everything::Request so its Plack::Request backing
+    # (Everything::Request::PlackQuery) parses the request. Thread a COPY with the
+    # same SCRIPT_NAME/PATH_INFO remap applied to %ENV just above, so Plack's
+    # script_name/path/url match what CGI read from %ENV (full path in
+    # SCRIPT_NAME, empty PATH_INFO). Localized per request. See
+    # docs/plack-request-migration.md.
+    local $Everything::Request::PSGI_ENV = {
+        %$env,
+        SCRIPT_NAME => $ENV{SCRIPT_NAME},
+        PATH_INFO   => $ENV{PATH_INFO},
+    };
 
     # 3. Pick the handler the way Apache does: /api/* -> dispatcher, else pages.
     my $path = $env->{PATH_INFO};

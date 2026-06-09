@@ -1,7 +1,7 @@
 package Everything::Node;
 
 use Moose;
-use CGI qw(-utf8);
+use URI::Escape qw(uri_escape);
 use URI::Escape;
 use Everything::Link;
 use Everything::Node::null;
@@ -207,7 +207,7 @@ sub url_safe_title
   my ($self) = @_;
 
   my $title = $self->title;
-  $title = CGI::escape(CGI::escape($title));
+  $title = uri_escape(uri_escape($title));
   # Make spaces more readable
   # But not for spaces at the start/end or next to other spaces
   $title =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;

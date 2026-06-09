@@ -4,7 +4,7 @@ use Moose;
 extends 'Everything::Controller';
 
 use Everything qw(getNodeById);
-use CGI;
+use URI::Escape qw(uri_escape);
 
 # Controller for debatecomment nodes (usergroup discussions)
 # Debatecomments are threaded discussion nodes with:
@@ -629,7 +629,7 @@ sub _build_atom_entry {
 
     my $author = $self->DB->getNodeById($comment->{author_user});
     my $author_name = $author ? $author->{title} : 'Unknown';
-    my $author_url = $author ? "$host/user/" . CGI::escape($author->{title}) : '';
+    my $author_url = $author ? "$host/user/" . uri_escape($author->{title}) : '';
 
     my $timestamp = $comment->{publishtime} || $comment->{createtime};
     my $formatted_time = $self->_format_atom_date($timestamp);

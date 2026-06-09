@@ -1,6 +1,4 @@
 requires 'Carp';
-requires 'CGI';
-requires 'CGI::Carp';
 requires 'Clone';
 requires 'Compress::Zlib';
 requires 'Data::Dumper';

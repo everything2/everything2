@@ -16,7 +16,7 @@ use LWP::UserAgent;
 use Scalar::Util qw(blessed);
 
 # For rewriteCleanEscape, urlGen
-use CGI qw(-utf8);
+use URI::Escape qw(uri_escape);
 
 # For getCallStack
 use Devel::Caller qw(caller_args);
@@ -3029,7 +3029,7 @@ sub rewriteCleanEscape {
   # the redirect-to-canonical path silently looped users on any title with
   # an apostrophe or ampersand (#4145, reported by Clockmaker 2026-05-27).
   # Must stay in sync with react/components/LinkNode.js and the helper.
-  $string = CGI::escape($string);
+  $string = uri_escape($string);
   # Cosmetic: collapse mid-string %20 to '+' for readability. The helper
   # decodes '+'→space, so this round-trips losslessly. Skip at start/end
   # and inside %20 runs — '+'s there parse oddly and look strange in URLs.
@@ -3374,8 +3374,8 @@ sub urlGen {
   # Cycle through all the keys of the hashref for node_id, etc.
   foreach my $key (keys %$REF) {
     my $value = "";
-    $value = CGI::escape($$REF{$key}) if defined $$REF{$key};
-    $str .= $quamp . CGI::escape($key) .'='. $value;
+    $value = uri_escape($$REF{$key}) if defined $$REF{$key};
+    $str .= $quamp . uri_escape($key) .'='. $value;
     $quamp = $noquotes eq 'no escape' ? '&' : '&amp;' ;
   }
 

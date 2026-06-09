@@ -1025,9 +1025,12 @@ my $normaluser1 = $DB->getNode("normaluser1","user");
 my $root = $DB->getNode("root","user");
 
 ## Insert a node_forward
-# Work around maintenance weirdness
+# Work around maintenance weirdness: the maintenance code triggered by
+# insert/updateNode reads the $Everything::HTML::query global. In this CLI
+# context there's no request, so give it an empty Plack-backed query object
+# (was `new CGI`, before CGI.pm was removed from the app).
 print STDERR "Inserting a node_foward\n";
-$Everything::HTML::query = new CGI;
+$Everything::HTML::query = Everything::Request->new->cgi;
 my $potato = $DB->getNode("potato", "e2node");
 my $nf = $DB->getNode("Goto potato", "node_forward");
 if (!$nf) {
@@ -2370,8 +2373,12 @@ if ($legacy_user) {
   my $writeup_type_id = $writeup_type ? $writeup_type->{node_id} : 117;
 
   # Insert a heaven entry (deleted writeup with reputation)
-  # This simulates a writeup that was deleted but had votes
+  # This simulates a writeup that was deleted but had votes.
+  # Idempotent: clear any pre-existing legacy fixture rows first so seeds.pl is
+  # re-runnable and doesn't collide on the hardcoded id 1960000 (the crash that
+  # aborted the rest of the seed).
   print STDERR "Creating heaven entry for legacy_user (reputation: 15)\n";
+  $DB->sqlDelete('heaven', "author_user = $legacy_user_id");
   $DB->sqlInsert('heaven', {
     type_nodetype => $writeup_type_id,
     title => "Legacy User's Deleted Writeup (thing)",
@@ -2385,6 +2392,7 @@ if ($legacy_user) {
 
   # Insert xpHistoryCache entry (cached upvotes/cools from deleted content)
   print STDERR "Creating xpHistoryCache entry for legacy_user (upvotes: 10, cools: 2)\n";
+  $DB->sqlDelete('xpHistoryCache', "xpHistoryCache_id = $legacy_user_id");
   $DB->sqlInsert('xpHistoryCache', {
     xpHistoryCache_id => $legacy_user_id,
     upvotes => 10,

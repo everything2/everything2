@@ -480,7 +480,12 @@ sub getNode
 	if ($title !~ /%/) {
 		($NODE) = $this->getNodeWhere({ 'title' => $title }, $TYPE);
 	} else {
-		($NODE) = $this->getNodeWhere({ 'title' => [ $title, CGI::unescape($title) ] }, $TYPE);
+		# URL-decode the title for the fallback lookup. Replaces CGI::unescape
+		# (CGI is no longer loaded): '+' -> space, then %XX -> char, matching
+		# CGI's exact behaviour.
+		(my $decoded_title = $title) =~ tr/+/ /;
+		$decoded_title =~ s/%([0-9a-fA-F]{2})/chr(hex($1))/ge;
+		($NODE) = $this->getNodeWhere({ 'title' => [ $title, $decoded_title ] }, $TYPE);
 	}
 
 	if(defined $NODE and $selectop ne 'nocache')

@@ -164,36 +164,6 @@ DISTRIBUTIONS
     requirements:
       B 0
       ExtUtils::MakeMaker 0
-  CGI-4.72
-    pathname: L/LE/LEEJO/CGI-4.72.tar.gz
-    provides:
-      CGI 4.72
-      CGI::Carp 4.72
-      CGI::Cookie 4.59
-      CGI::File::Temp 4.72
-      CGI::HTML::Functions undef
-      CGI::MultipartBuffer 4.72
-      CGI::Pretty 4.72
-      CGI::Push 4.72
-      CGI::Util 4.72
-      Fh 4.72
-    requirements:
-      Carp 0
-      Config 0
-      Encode 0
-      Exporter 0
-      ExtUtils::MakeMaker 0
-      File::Spec 0.82
-      File::Temp 0.17
-      HTML::Entities 3.69
-      URI 1.76
-      if 0
-      overload 0
-      parent 0.225
-      perl 5.008001
-      strict 0
-      utf8 0
-      warnings 0
   Canary-Stability-2013
     pathname: M/ML/MLEHMANN/Canary-Stability-2013.tar.gz
     provides:
