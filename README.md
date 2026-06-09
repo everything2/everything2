@@ -20,7 +20,8 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 
 ## Architecture
 
-- **Backend:** Perl 5.38 + mod_perl2 + Apache2 + MySQL 8.0 (migrating to 8.4 LTS by July 2026)
+- **Backend:** Perl + Moose on **PSGI/Plack** (Starman), behind **Apache2 (mpm_event)** as a pure
+  reverse proxy + edge compression — **mod_perl and CGI.pm fully removed**. **MySQL 8.4 LTS**.
 - **Frontend:** React 18.3 + Webpack 5 (jQuery fully retired; legacy Mason templates fully retired)
 - **Infrastructure:** AWS Fargate ECS, CodeBuild CI/CD, S3 asset storage, RDS MySQL
 - **Development:** Docker containers (`e2devapp`, `e2devdb`) with automated testing
@@ -49,10 +50,13 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 - **[Code Coverage Guide](docs/code-coverage.md)** — Coverage tooling and methodology
 
 ### Strategy & Architecture
-- **[Developer Roadmap](docs/DEVELOPER-ROADMAP.md)** ⭐ — Strategic priorities, 11-phase sequencing, current status
-- **[MySQL 8.4 Migration Plan](docs/mysql-migration-plan.md)** — Active workstream (deadline 2026-07-31)
-- **[PSGI/Plack Migration Plan](docs/psgi-plack-migration-plan.md)** — Next major backend work
-- **[ORM Migration Plan](docs/orm-migration-plan.md)** — NodeBase modernization strategy
+- **[Developer Roadmap](docs/DEVELOPER-ROADMAP.md)** ⭐ — Strategic priorities, phase sequencing, current status
+- **[Modernization Epoch Tree](docs/modernization-dependency-tree.md)** — Dependency ordering of the deferred work (what unblocks what)
+- **[MySQL 8.4 Migration Plan](docs/mysql-migration-plan.md)** — ✅ Done (migrated 2026-06-07)
+- **[PSGI/Plack Migration Plan](docs/psgi-plack-migration-plan.md)** — ✅ Shipped (live in prod 2026-06-08)
+- **[Plack::Request Migration](docs/plack-request-migration.md)** — ✅ CGI.pm removed (request + response layers)
+- **[API-Driven Architecture](docs/api-driven-architecture.md)** — Next epoch: return-based responses, PageState, 100%-API
+- **[ORM Migration Plan](docs/orm-migration-plan.md)** — NodeBase modernization strategy (deferred)
 - **[Infrastructure Overview](docs/infrastructure-overview.md)** — AWS/Docker deployment
 - **[React Analysis](docs/react-analysis.md)** — Frontend implementation notes
 
@@ -70,9 +74,11 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 | Date/Timezone Standardization | ✅ Done | 18 components migrated to `react/utils/dateFormat.js` |
 | Testing Infrastructure | ✅ Stable | Automated via `./docker/devbuild.sh` |
 | Code Coverage | ✅ Tracked | Perl 47.9% / React tracked via Jest |
-| **MySQL 8.4 Migration** | 🔄 In progress | Hard deadline 2026-07-31; 17 schema-fix issues open |
-| PSGI/Plack Migration | 📋 Planned | Post-MySQL; ~$90/mo Fargate savings |
-| DBIx::Class / Schema Migrations | 📋 Deferred | Post-PSGI; modernize NodeBase in place first |
+| **MySQL 8.4 Migration** | ✅ Done | Migrated 2026-06-07 (#4226), ahead of the July 2026 RDS deadline |
+| **PSGI/Plack Migration** | ✅ Shipped | Live in prod 2026-06-08; mod_perl removed, Apache on mpm_event, Starman serving |
+| **CGI.pm Removal** | ✅ Done | Request via `Everything::Request::PlackQuery`, response via `Everything::Response`; CGI dropped from deps + vendor cache |
+| 100%-API-Driven Move | 📋 Next epoch | Return-based responses, PageState chrome/content split — see [api-driven-architecture.md](docs/api-driven-architecture.md) |
+| DBIx::Class / Schema Migrations | 📋 Deferred | Modernize NodeBase in place first; sqitch for versioned migrations |
 
 See [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for coverage details and [docs/DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) for full sequencing rationale.
 
@@ -111,10 +117,11 @@ See [Contributing Guide](docs/GETTING_STARTED.md#contributing) for full details.
 ## Technology Stack
 
 **Backend:**
-- Perl 5.38 with Moose
-- mod_perl2 + Apache2 (CGI-style scripts via `ModPerl::Registry`)
-- MySQL 8.0 → migrating to 8.4 LTS
-- DBI with `Apache::DBI` for connection reuse
+- Perl 5.40 with Moose (Ubuntu 26.04 LTS base)
+- **PSGI/Plack** served by **Starman**, behind **Apache2 (mpm_event)** as a pure reverse proxy + edge compression — no mod_perl, no CGI.pm
+- Request layer: `Everything::Request::PlackQuery` (Plack::Request) · Response layer: `Everything::Response` (Plack::Response)
+- **MySQL 8.4 LTS**
+- DBI with native `connect_cached` for connection reuse (`Apache::DBI` removed, #4228)
 
 **Frontend:**
 - React 18.3 (~80 top-level components + ~250 Document components)
@@ -130,7 +137,7 @@ See [Contributing Guide](docs/GETTING_STARTED.md#contributing) for full details.
 - Cloudflare (CDN/edge)
 
 **Development:**
-- Carton (Perl dependency management)
+- `cpanfile` + Carton snapshot (Perl deps; installed offline from a vendored cpanm cache)
 - npm (Node.js dependencies)
 - Test::More + Devel::Cover (Perl testing & coverage)
 - Jest (React testing & coverage)

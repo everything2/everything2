@@ -158,8 +158,11 @@ test.describe('Link construction → parse → click-through', () => {
       // Loose match — the rendered title contains the words of the link
       // text. Don't require exact match because HTML entity encoding and
       // whitespace handling differ between the link text and the page
-      // title rendering.
-      const firstWord = text.split(/\s+/)[0].replace(/[^\w]/g, '')
+      // title rendering. Use the first word *segment* (up to the first
+      // non-word char) rather than stripping all non-word chars: a hyphenated
+      // title like "pour-over" must match the literal "pour-over" on the page,
+      // not the non-existent joined string "pourover".
+      const firstWord = text.split(/\s+/)[0].split(/[^\w]/)[0]
       if (firstWord) {
         expect(
           body,

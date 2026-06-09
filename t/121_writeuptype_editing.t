@@ -356,4 +356,16 @@ for my $id (@cleanup) {
     $DB->sqlDelete('node',      "node_id=$id");
 }
 
+# Regenerate the New Writeups DataStash. The publish subtests (Part C) run
+# publish_draft, which refreshes the "newwriteups" stash and bakes our fixtures
+# into it. /api/newwriteups serves that stash blob (not the live writeup table),
+# so after we delete the fixture writeups above the stash still references them
+# -> the front-page New Writeups nodelet serves dangling links and the
+# link-resolution e2e fails. Rebuild the stash from the now-clean writeup table.
+eval {
+    require Everything::DataStash::newwriteups;
+    Everything::DataStash::newwriteups->new(DB => $DB)->generate;
+    1;
+} or diag("newwriteups stash regen skipped: $@");
+
 done_testing();

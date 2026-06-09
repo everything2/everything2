@@ -15,14 +15,22 @@
 use strict;
 use lib qw(/var/libraries/lib/perl5 /var/everything/ecore);
 use Test::More;
-use CGI;
+use Plack::Request;
+use Everything::Request::PlackQuery;
 use Everything::HTML;
 
-# Drive the helper: set REQUEST_URI, hand it a fresh CGI, read back the params.
+# Drive the helper: set REQUEST_URI, hand it a fresh query object, read back the
+# params. The helper receives the Plack-backed query object in production (CGI is
+# gone), so we test it with an empty PlackQuery -- the real path.
 sub recover {
     my ($uri) = @_;
     local $ENV{REQUEST_URI} = $uri;
-    my $q = CGI->new('');
+    open my $in, '<', \(my $empty = '') or die $!;
+    my $q = Everything::Request::PlackQuery->new(
+        req => Plack::Request->new(
+            { QUERY_STRING => '', REQUEST_METHOD => 'GET', 'psgi.input' => $in, 'psgi.url_scheme' => 'http' }
+        )
+    );
     Everything::HTML::_recover_route_params_from_request_uri($q);
     return { map { $_ => $q->param($_) } $q->param };
 }

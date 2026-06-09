@@ -1,7 +1,13 @@
 # Everything2 Modernization — Epoch Tree
 
-**Last updated**: 2026-06-01
+**Last updated**: 2026-06-09
 **Maintainer**: Jay Bonci
+
+> **The two hard roots are cleared.** `epoch:mysql-8.4` (migrated 2026-06-07, #4226) and
+> `epoch:psgi` (live in prod 2026-06-08) are **done** — so the post-PSGI cleanups this tree lists
+> as *blocked* are now the **active frontier**, and CGI.pm has since been removed entirely
+> (#4230). The current center of gravity is the request/response modernization → 100%-API-driven
+> move (see `docs/api-driven-architecture.md`).
 
 The map of where deferred work lands and what depends on what. Two axes:
 
@@ -17,18 +23,30 @@ An issue can be `epoch:perl-cleanup` **and** blocked by PSGI — the label says 
 ## Dependency ordering (the spine)
 
 ```
-epoch:mysql-8.4   ── July 2026 deadline (RDS engine sunset). Hard root.
-   │  blockers: #4122 auth-plugin · #4074 zero-date family · #4109
+epoch:mysql-8.4   ✅ DONE — migrated 2026-06-07 (#4226). Was the July 2026 hard root
+   │                 (RDS engine sunset). Zero-date family + auth-plugin cleared.
    │
-   └─> epoch:psgi   ── the PSGI/Plack migration itself (roadmap-sequenced after 8.4;
-         │              also cuts DB connections ~5×, relieving RDS memory)
+   └─> epoch:psgi   ✅ DONE — live in prod 2026-06-08. mod_perl gone, Apache on
+         │              mpm_event (#2424), Starman/Plack; DB connections cut ~5×.
          │
-         │   ENABLERS that unlock the cleanups (do early in the post-PSGI batch):
+         │   ── post-PSGI request/response modernization (the ACTIVE FRONTIER) ──
+         │   ├─ ✅ CGI.pm fully removed (#4230) — request + response layers + the dep
+         │   │     itself. New: Everything::Request::PlackQuery (request),
+         │   │     Everything::Response (response), Everything::HealthCheck (PSGI health
+         │   │     app, replaced www/health.pl). CGI dropped from cpanfile + vendor cache.
+         │   │     Docs: plack-request-migration.md, plack-request-progress.md.
+         │   └─ ▶ NEXT epoch: 100%-API-driven move — controllers return data, HTTP lives
+         │         in the response layer. Return-based responses (retire the STDOUT
+         │         capture → #4237-immune), PageState chrome/content split, the e2-blob
+         │         normalization (#3981 identity de-dup, #4152 int-as-string).
+         │         Design: docs/api-driven-architecture.md.
+         │
+         │   ENABLERS for the broader cleanups (early in the post-PSGI batch):
          │   ├─ sqitch adoption ........ versioned schema migrations (no DBIC needed)
          │   └─ #4178 Globals/Constants/Configuration detangle (perl-cleanup hub)
          │
-         ├─> epoch:perl-cleanup   (backend debt; schema-touching ones need sqitch)
-         ├─> epoch:react-cleanup  (frontend debt; some need PSGI's SSE-capable model)
+         ├─> epoch:perl-cleanup   (UNBLOCKED; schema-touching ones need sqitch)
+         ├─> epoch:react-cleanup  (UNBLOCKED; SSE ones use PSGI's process model)
          ├─> epoch:infra-cleanup  (apache/deploy; #4129 also needs #4163 settled)
          │
          └─> epoch:social-login   (feature; first new table → DBIC carve-out decision;
@@ -46,21 +64,61 @@ Key non-obvious edges:
 
 ---
 
-## epoch:mysql-8.4
+## epoch:mysql-8.4 — ✅ DONE (migrated 2026-06-07, #4226)
 
-Deadline-gated (July 2026). Tracking: **#4074**.
+Was deadline-gated (July 2026 RDS engine sunset); shipped ahead of it. The zero-date family and
+the `everyuser`→`caching_sha2_password` auth-plugin blocker are cleared. Residual non-8.4-blocking
+items below (e.g. #4092 PK-less tables, #2210 `ALLOW_INVALID_DATES` removal) are now ordinary
+backlog, not deadline work. Original tracking: **#4074**.
 - Zero-date family: #4075 node.createtime · #4076 writeup.publishtime · #4077 e2node.updated · #4078 vote times · #4079 weblog · #4080 pollvote · #4081 nodetracker · #4082 notified · #4083 lastreaddebate · #4084 dbstats · #4086 podcast · #4087 roomdata · #4088 nodebak · #4089 heaven  *(— #4085 locktime done; #4090/#4091 tomb/krut evaluated)*
 - #4122 — everyuser → caching_sha2_password (hard blocker)
 - #4109 — message_outbox columns
 - #4092 — promote unique keys to PRIMARY KEY on 5 PK-less tables *(low priority; not 8.4-blocking)*
 - #2210 — drop the `ALLOW_INVALID_DATES` sql-mode workaround *(the parent reason for the #4074 zero-date family)*
 
-## epoch:psgi
+## epoch:psgi — ✅ DONE (live in prod 2026-06-08)
 
-The PSGI/Plack migration itself. Plan: [psgi-plack-migration-plan.md](psgi-plack-migration-plan.md). *(No tracking issue cut yet.)*
-- #31 — `ModPerl::Util::exit` called oddly in HTML.pm — the exit/STDIN-STDOUT handling the PSGI wrapper rewires
-- #2424 — flip Apache to **mpm_event** (blocked on PSGI: remove mod_perl → invert Dockerfile MPM lines → delete prefork tuning → worker count to Starman; reframe note on the issue)
-- #3768 — mod_perl overrides non-200 status + appends HTML (the root of the 'API must be HTTP 200' rule; PSGI removes it)
+The PSGI/Plack migration shipped: mod_perl removed, Apache on mpm_event, Starman/Plack serving,
+DB connections cut ~5×. Plan: [psgi-plack-migration-plan.md](psgi-plack-migration-plan.md).
+- ✅ **#2424 — Apache flipped to mpm_event.** Done (mod_perl gone, prefork tuning removed,
+  worker count moved to Starman).
+- 🔄 **#3768 — mod_perl overrides non-200 + appends HTML — TRANSFORMS into an API-consistency
+  pass.** mod_perl was the thing that mangled non-200 responses (appended HTML, breaking JSON
+  clients) — hence the 'API responses must be HTTP 200, return errors as `[HTTP_OK, {success=>0}]`'
+  rule. With mod_perl gone, **non-200 responses work correctly now**, so the workaround can be
+  lifted: reframe #3768 as bringing the APIs in line with HTTP standards — return proper status
+  codes (400/403/404/409/422/…) for errors instead of `200 + {success:0,error}`. Pairs with the
+  return-based-response epoch (status becomes a first-class field of `Everything::Response`); the
+  CLAUDE.md 200-only rule retires as that pass lands.
+- #31 — `ModPerl::Util::exit` called oddly in HTML.pm. The PSGI wrapper rewired exit/STDIN/STDOUT;
+  **verify** whether any `ModPerl::Util::exit` / bare `exit` remains in the live path (would kill a
+  Starman worker) and convert to a return, then close.
+
+### ✅ Post-PSGI: CGI.pm removal (#4230) — DONE (working tree; not yet committed/PR'd)
+
+CGI.pm removed from the entire application across two threads:
+- **Request layer** — `Everything::Request::PlackQuery` (Plack::Request-backed drop-in); the
+  request is parsed 100% by Plack::Request. Docs: [plack-request-migration.md](plack-request-migration.md),
+  [plack-request-progress.md](plack-request-progress.md).
+- **Response layer** — `Everything::Response` (Plack::Response/Cookie::Baker-backed); header/cookie/
+  redirect generation no longer use CGI. `finalize` returns a real PSGI triple — the seam the
+  return-based-response epoch flips.
+- **Health check** — `Everything::HealthCheck` (PSGI app) replaced the mod_perl `www/health.pl`.
+- **The dependency** — `CGI` + `CGI::Carp` dropped from `cpanfile`, the tarball + index entries
+  pulled from the `vendor/cache` minicpan + `cpanfile.snapshot`. Verified: a clean image build no
+  longer installs CGI.pm at all (nothing pulls it transitively).
+- Tests: t/122 (req backing) + t/123 (request/response contract) + t/127 (health); the migration
+  parity scaffolds were retired once proven.
+
+### ▶ NEXT epoch: 100%-API-driven move
+
+Controllers become pure `(request data) → (response data)`; HTTP lives only in the response layer.
+Foundation (`Everything::Response.finalize`) is already in place. Steps: return-based responses
+(retire the STDOUT capture → immune to the #4237 bug class) → `PageState` extraction with a
+**structural-vs-live chrome** split (the e2 blob out of the `Application.pm` god-method; #3981
+identity de-dup, #4152 int-as-string normalization fold in here) → React-owned routing.
+**ALB-cost constraint:** deliver bundled (one request/page); the split is a server-assembly +
+client-memory optimization, *not* per-endpoint fan-out. Design: [api-driven-architecture.md](api-driven-architecture.md).
 
 ## epoch:react-cleanup
 
