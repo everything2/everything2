@@ -9,6 +9,14 @@
 > (#4230). The current center of gravity is the request/response modernization → 100%-API-driven
 > move (see `docs/api-driven-architecture.md`).
 
+> **★ Near-top cost priority — #4246 (cron sidecar).** The dedicated cron Fargate tasks
+> (`e2cron-family`) measure at **~$70/mo (~$840/yr), ~half the Fargate+IPv4 bill** — driven by
+> `datastash` at `rate(2m)` running effectively 24/7. Collapse the 8 EventBridge→`RunTask` rules
+> onto the (overprovisioned) webheads via a `GET_LOCK`-elected cron sidecar; near-zero marginal
+> cost, frees ~4 public IPs, and fixes a latent overlap bug. Unblocked by PSGI (hooks into the
+> Starman entrypoint). Cheap pre-step: `datastash` `rate(2m)`→`rate(10m)`. Design:
+> `docs/cron-sidecar-design.md`.
+
 The map of where deferred work lands and what depends on what. Two axes:
 
 - **Epoch label** (`epoch:*` on the GH issue) = *which workstream owns it* (domain/phase).
@@ -48,6 +56,7 @@ epoch:mysql-8.4   ✅ DONE — migrated 2026-06-07 (#4226). Was the July 2026 ha
          ├─> epoch:perl-cleanup   (UNBLOCKED; schema-touching ones need sqitch)
          ├─> epoch:react-cleanup  (UNBLOCKED; SSE ones use PSGI's process model)
          ├─> epoch:infra-cleanup  (apache/deploy; #4129 also needs #4163 settled)
+         │      └─ ★ #4246 cron sidecar (GET_LOCK) — ~$840/yr cost cut, do early
          │
          └─> epoch:social-login   (feature; first new table → DBIC carve-out decision;
                                     needs sqitch first)

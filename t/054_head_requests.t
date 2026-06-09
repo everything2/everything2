@@ -4,6 +4,10 @@ use strict;
 use warnings;
 use LWP::UserAgent;
 use Test::More;
+use lib qw(/var/everything/ecore /var/libraries/lib/perl5);
+use Everything;
+
+initEverything 'everything';
 
 =head1 NAME
 
@@ -70,9 +74,13 @@ subtest 'HEAD to non-existent node_id returns 404' => sub {
 subtest 'HEAD to existing node by ID returns 200' => sub {
     plan tests => 2;
 
-    # Use tomato e2node which exists in dev database
-    my $response = $ua->head("http://localhost/?node_id=2213609");
-    is($response->code, 200, "HEAD to node_id=2213609 (tomato) returns 200");
+    # Look up tomato's node_id dynamically -- it varies across reseeds, so the
+    # old hardcoded 2213609 broke this test after every devbuild. Exercises the
+    # HEAD /?node_id=<id> fast path against a real existing e2node.
+    my $tomato = $DB->getNode('tomato', 'e2node');
+    my $nid = $tomato ? $tomato->{node_id} : 0;
+    my $response = $ua->head("http://localhost/?node_id=$nid");
+    is($response->code, 200, "HEAD to node_id=$nid (tomato) returns 200");
     is($response->header('X-E2-Head-Optimized'), 1, "X-E2-Head-Optimized header present");
 };
 

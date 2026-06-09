@@ -2,7 +2,15 @@ package Everything::Node;
 
 use Moose;
 use URI::Escape qw(uri_escape);
-use URI::Escape;
+
+# CGI::escape parity (UTF-8-encode wide strings only, then escape) -- see
+# Everything::Application::_uri_escape_e2 for why both shapes must be handled.
+sub _uri_escape_e2 {
+    my $s = shift;
+    return '' unless defined $s;
+    utf8::encode($s) if utf8::is_utf8($s);
+    return uri_escape($s);
+}
 use Everything::Link;
 use Everything::Node::null;
 use XML::Generator;
@@ -207,7 +215,10 @@ sub url_safe_title
   my ($self) = @_;
 
   my $title = $self->title;
-  $title = uri_escape(uri_escape($title));
+  # Inner _uri_escape_e2 handles wide chars (>255) that plain uri_escape dies on
+  # (without double-encoding byte strings); the outer re-escapes the resulting
+  # ASCII %XX (the LinkNode double-encode pair).
+  $title = uri_escape(_uri_escape_e2($title));
   # Make spaces more readable
   # But not for spaces at the start/end or next to other spaces
   $title =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;
@@ -218,7 +229,7 @@ sub uri_safe_title
 {
   my ($self) = @_;
 
-  return uri_escape_utf8($self->title);
+  return _uri_escape_e2($self->title);
 }
 
 sub canonical_url

@@ -170,30 +170,34 @@ class SmokeTest
       'Create Room',  # Level-gated
     ]
 
-    docs_path = File.expand_path('../docs/special-documents.md', __dir__)
-    File.readlines(docs_path).each do |line|
-      # Skip non-table rows
-      next unless line.start_with?('| ') && !line.include?('Document | Type | URL')
+    # The exhaustive list used to be generated from docs/special-documents.md,
+    # which was retired along with delegation/document.pm. Comprehensive
+    # per-document coverage now lives in the full test suite; this smoke check
+    # exercises a representative cross-section of key special documents (mostly
+    # public, plus a few auth-gated ones the logged-in session above can reach).
+    # Spaces map to '+', other characters stay literal -- matching LinkNode's
+    # title encoding and the recovery in Everything::HTML.
+    key_documents = [
+      'Cool Archive', 'E2 Full Text Search', 'E2 Gift Shop', 'E2 Penny Jar',
+      'E2 Source Code Formatter', 'E2 Rot13 Encoder', 'E2 Marble Shop',
+      'Available Rooms', 'Buffalo Generator', 'Buffalo Haiku Generator',
+      'Display Categories', 'Database Lag-o-meter', 'A Year Ago Today',
+      'Between the Cracks', 'Blind Voting Booth', 'Bounty Hunters Wanted',
+      'Chatterbox help topics', 'Create a Registry', 'Create Category',
+      'Do You C! What I C?', 'E2 Acceptable Use Policy', 'E2 staff',
+      'Edev Documentation Index', 'EDev FAQ', 'EKN', 'E2N', 'alphabetizer',
+      'Advanced Settings', 'Clientdev Home', 'Editor Endorsements',
+      'Drafts', 'Drafts for review', 'Admin Settings', 'Decloaker', 'Create Room',
+    ]
 
-      # Parse table row: | Document | Type | URL | Rendering |
-      parts = line.split('|').map(&:strip)
-      next if parts.length < 5
-
-      title = parts[1]
-
-      # Skip undersupported documents
+    key_documents.each do |title|
       next if skip_docs.include?(title)
-
-      url = parts[3].gsub('`', '')
-      doc_type = parts[2]
-      rendering = parts[4]
-
       superdocs << {
         title: title,
-        path: url,
-        type: doc_type,
-        rendering: rendering,
-        auth_required: auth_required_pages.include?(title)
+        path: "/title/#{title.gsub(' ', '+')}",
+        type: 'Superdoc',
+        rendering: 'React',
+        auth_required: auth_required_pages.include?(title),
       }
     end
 

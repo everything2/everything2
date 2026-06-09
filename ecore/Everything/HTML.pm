@@ -1383,6 +1383,17 @@ sub mod_perlInit
 sub _recover_route_params_from_request_uri
 {
 	my ($q) = @_;
+
+	# An explicitly-submitted node/node_id (form POST or query param) is
+	# authoritative -- do NOT let the URL-path recovery overwrite it. Pre-PSGI
+	# these forms posted to /index.pl (a node-less path) so the path never
+	# competed; now that app.psgi maps SCRIPT_NAME to the full request path, a
+	# form posting back to its own node-bearing URL (e.g. Master Control's node
+	# search) would otherwise have its node clobbered by the path. Yielding to the
+	# explicit param fixes that whole class in one place. Normal navigation (a
+	# plain GET with no node param) is unaffected: recovery still runs and sets it.
+	return if defined $q->param('node') || defined $q->param('node_id');
+
 	my $uri = $ENV{REQUEST_URI};
 	return unless defined $uri && length $uri;
 

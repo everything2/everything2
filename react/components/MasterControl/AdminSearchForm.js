@@ -39,7 +39,7 @@ const AdminSearchForm = ({ nodeId, nodeType, nodeTitle, serverName, scriptName, 
         </div>
 
         {/* Search by name */}
-        <form method="POST" action={scriptName} className="mc-search__form">
+        <form method="POST" action="/" className="mc-search__form">
           <div className="mc-search__input-row">
             <FaSearch size={12} className="mc-search__icon" />
             <input
@@ -61,7 +61,7 @@ const AdminSearchForm = ({ nodeId, nodeType, nodeTitle, serverName, scriptName, 
         </form>
 
         {/* Search by ID */}
-        <form method="POST" action={scriptName} className="mc-search__form">
+        <form method="POST" action="/" className="mc-search__form">
           <div className="mc-search__input-row">
             <FaHashtag size={12} className="mc-search__icon" />
             <input

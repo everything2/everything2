@@ -110,11 +110,15 @@ sub recover {
 }
 
 #############################################################################
-# Pattern: /node/<id>/<displaytype>  — already-canonical, no recovery
+# Pattern: /node/<id>/<displaytype>  — under PSGI there is no mod_rewrite, so the
+# recovery is what populates node_id + displaytype from the path (under mod_perl
+# the rewrite did it and this branch was a no-op; the old "expect 0 params" test
+# reflected that retired behavior).
 #############################################################################
 {
 	my $p = recover('/node/2219931/xmltrue');
-	is(scalar keys %$p, 0, '/node/<id>/<displaytype> leaves params untouched (already canonical)');
+	is($p->{node_id},     '2219931', '/node/<id>/<displaytype> recovers node_id from path');
+	is($p->{displaytype}, 'xmltrue', '/node/<id>/<displaytype> recovers displaytype from path');
 }
 
 #############################################################################

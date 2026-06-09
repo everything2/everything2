@@ -104,4 +104,40 @@ for my $c (@cases) {
         'emoji title decodes to the right raw UTF-8 bytes' );
 }
 
+# --- explicit node/node_id is authoritative (PSGI SCRIPT_NAME regression) -----
+# Master Control's node-search form POSTs node=... back to its own (node-bearing)
+# page URL, because app.psgi now maps SCRIPT_NAME to the full request path. The
+# path recovery must YIELD to an explicitly-submitted node/node_id, or it clobbers
+# the search and silently shows the current node. Pre-set a param, run recovery
+# against a node-bearing path, and assert the submitted value survives.
+sub recover_preset {
+    my ( $uri, %preset ) = @_;
+    local $ENV{REQUEST_URI} = $uri;
+    open my $in, '<', \( my $empty = '' ) or die $!;
+    my $q = Everything::Request::PlackQuery->new(
+        req => Plack::Request->new(
+            { QUERY_STRING => '', REQUEST_METHOD => 'POST', 'psgi.input' => $in, 'psgi.url_scheme' => 'http' }
+        )
+    );
+    $q->param( $_, $preset{$_} ) for keys %preset;
+    Everything::HTML::_recover_route_params_from_request_uri($q);
+    return { map { $_ => $q->param($_) } $q->param };
+}
+
+is( recover_preset( '/title/Foo', node => 'Bar' )->{node}, 'Bar',
+    'explicit node= survives recovery against a /title/ path (MC search fix)' );
+is( recover_preset( '/node/123', node_id => '999' )->{node_id}, '999',
+    'explicit node_id= survives recovery against a /node/<id> path' );
+{
+    # Whole recovery is skipped when node is explicit -- no partial type/author leak.
+    my $r = recover_preset( '/user/Alice', node => 'Bar' );
+    is( $r->{node}, 'Bar', 'explicit node= not overwritten on a /user/ path' );
+    ok( !exists $r->{type}, 'no partial type leak from the path when node is explicit' );
+}
+
+# The guard must NOT affect normal navigation: a plain GET with no node param
+# still recovers from the path exactly as before.
+is( recover('/title/good%20poetry')->{node}, 'good poetry',
+    'plain GET with no node param still recovers from the path' );
+
 done_testing();
