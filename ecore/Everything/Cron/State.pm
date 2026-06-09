@@ -100,6 +100,23 @@ sub mark_finished {
     return $self->DB->sqlInsert( 'cron_state', { job => $job, %insert }, { %update } );
 }
 
+# Baseline a never-run job at "now" (both started_at and last_success) so a cold
+# cron_state -- a fresh deploy or a dev rebuild -- does NOT make every job look
+# immediately due (a stampede) or overdue to Health before it has had a chance to
+# run. It then fires at its normal next interval; if it later fails to run, the
+# last_success seeded here ages out and Health flags it for real.
+sub mark_seen {
+    my ( $self, $job ) = @_;
+    my %fields = (
+        status          => 'idle',
+        '-started_at'    => 'NOW()',
+        '-last_success'  => 'NOW()',
+        host            => $self->host,
+        '-heartbeat'    => 'NOW()',
+    );
+    return $self->DB->sqlInsert( 'cron_state', { job => $job, %fields }, { %fields } );
+}
+
 # ---------------------------------------------------------------------------
 # Snapshot for Health
 # ---------------------------------------------------------------------------

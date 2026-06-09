@@ -6,10 +6,17 @@
       "Type": "String",
       "Description": "CloudFront distribution domain name (e.g., d3hgg69yh1kthz.cloudfront.net)",
       "Default": ""
+    },
+    "EnableCronAlarm": {
+      "Type": "String",
+      "Description": "Set to 'true' at the in-webhead cron live-cutover to create the cron wedge alarm. Kept off until then so it cannot fire on missing data while cron is still dark/shadow.",
+      "Default": "false",
+      "AllowedValues": ["true", "false"]
     }
   },
   "Conditions": {
-    "UseCloudFront": {"Fn::Not": [{"Fn::Equals": [{"Ref": "CloudFrontDomainName"}, ""]}]}
+    "UseCloudFront": {"Fn::Not": [{"Fn::Equals": [{"Ref": "CloudFrontDomainName"}, ""]}]},
+    "CronAlarmEnabled": {"Fn::Equals": [{"Ref": "EnableCronAlarm"}, "true"]}
   },
   "Mappings" : {
     "RegionMap" : {
@@ -1879,6 +1886,18 @@
             {"Ref": "SitemapBucketWritePolicy"},
             {"Ref": "WriteupExportS3Policy"}
         ],
+        "Policies": [{
+          "PolicyName": "cron-cloudwatch-metrics",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": "cloudwatch:PutMetricData",
+              "Resource": "*",
+              "Condition": {"StringEquals": {"cloudwatch:namespace": "E2/Cron"}}
+            }]
+          }
+        }],
         "Path": "/",
         "RoleName": "E2-App-Fargate-Task-Role"
       }
@@ -2128,9 +2147,26 @@
         "OKActions": [{"Ref": "E2AlertsTopic"}]
       }
     },
+    "CronWedgedJobsAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Condition": "CronAlarmEnabled",
+      "Properties": {
+        "AlarmName": "e2-cron-wedged-jobs",
+        "AlarmDescription": "In-webhead cron has wedged/failing jobs (E2/Cron UnhealthyJobs > 0) for 3 min, OR no leader is publishing the metric at all -- missing data is treated as breaching, so this also catches total cron death (no webhead winning the GET_LOCK and ticking). The runner emits UnhealthyJobs (wedged + failing count from Everything::Cron::Health) each run and during long jobs. Check the [cron] lines in /aws/fargate/fargate-app-awslogs and the cron_state table. Gated behind the EnableCronAlarm parameter -- only set 'true' once cron is live and emitting.",
+        "Namespace": "E2/Cron",
+        "MetricName": "UnhealthyJobs",
+        "Statistic": "Maximum",
+        "Period": 60,
+        "EvaluationPeriods": 3,
+        "Threshold": 0,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "breaching",
+        "AlarmActions": [{"Ref": "E2AlertsTopic"}],
+        "OKActions": [{"Ref": "E2AlertsTopic"}]
+      }
+    },
     "ECSEventsRole": {
       "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "RoleName": "e2-ecs-events-role",
         "AssumeRolePolicyDocument": {
@@ -2167,7 +2203,6 @@
     },
     "CronChatterboxCleanupRule": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call chatterbox-cleanup",
         "Name": "cron-chatterbox-cleanup",
@@ -2200,7 +2235,6 @@
     },
     "CronGenerateSitemapRule": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call generate-sitemap",
         "Name": "cron-generate-sitemap",
@@ -2233,7 +2267,6 @@
     },
     "CronDatastashRule": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call datastash",
         "Name": "cron-datastash",
@@ -2266,7 +2299,6 @@
     },
     "CronDatastashLengthyRule": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call datastash lengthy",
         "Name": "cron-datastash-lengthy",
@@ -2299,7 +2331,6 @@
     },
     "CronIQMRecalcRule": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call IQM Recalculate",
         "Name": "cron-iqm-recalc",
@@ -2332,7 +2363,6 @@
     },
     "CronRefreshRoomsRule": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call refresh rooms",
         "Name": "cron-refresh-rooms",
@@ -2365,7 +2395,6 @@
     },
     "CronCleanOldRoomsRule": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call clean old rooms",
         "Name": "cron-clean-old-rooms",
@@ -2398,7 +2427,6 @@
     },
     "CronWriteupReaperRule": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call legacy writeup reaper",
         "Name": "cron-writeup-reaper",

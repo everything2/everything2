@@ -84,11 +84,16 @@ end
 # E2_CRON_LIVE=1 to actually run jobs. This is how the EventBridge->Fargate cron
 # rules get retired without a flag-day.
 def cron_runner_supervisor(logdest)
-  mode = ENV['E2_CRON_LIVE'].eql?('1') ? '' : '--dry-run'
+  # Dev always runs LIVE (keeps the datastash/newwriteups objects fresh in dev,
+  # which dev otherwise lacks any cron to do); prod is dry-run shadow unless
+  # E2_CRON_LIVE=1. cron_runner.pl runs ONE pass (run_once) and exits, so we loop
+  # it ~every minute -- the periodic model holds nothing between runs.
+  live = ENV['E2_CRON_LIVE'].eql?('1') || ENV['E2_DOCKER'].eql?('development')
+  mode = live ? '' : '--dry-run'
   "while true; do " \
     "PERL5LIB=/var/libraries/lib/perl5:/var/everything/ecore " \
     "/usr/bin/perl /var/everything/cron/cron_runner.pl #{mode} >> #{logdest} 2>&1; " \
-    "echo 'cron_runner exited, restarting in 5s' >> #{logdest}; sleep 5; done"
+    "sleep 60; done"
 end
 
 if ENV['E2_DOCKER'].eql? "development"
@@ -107,7 +112,7 @@ if ENV['E2_DOCKER'].eql? "development"
   STDERR.puts "Starting Starman PSGI backend on 127.0.0.1:5000"
   # Keep Starman alive in the background, then start Apache (pure reverse proxy).
   spawn("/bin/bash", "-c", starman_supervisor("/tmp/development.log"))
-  STDERR.puts "Starting cron runner sidecar (#{ENV['E2_CRON_LIVE'].eql?('1') ? 'LIVE' : 'shadow/dry-run'})"
+  STDERR.puts "Starting cron runner sidecar (LIVE in dev -- keeps datastash fresh)"
   spawn("/bin/bash", "-c", cron_runner_supervisor("/tmp/development.log"))
   exec("/usr/sbin/apachectl -k start; sleep infinity & wait")
 else

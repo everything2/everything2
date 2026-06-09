@@ -23,4 +23,9 @@ initEverything 'everything';
 my $dry_run = 0;
 GetOptions( 'dry-run' => \$dry_run );
 
-Everything::Cron::Runner->new( dry_run => $dry_run )->run;
+# One pass and exit -- the supervised loop (or crond) re-invokes us each minute.
+# E2_CRON_JITTER (seconds) spreads multiple webheads' attempts; 0/unset = no jitter.
+Everything::Cron::Runner->new(
+    dry_run    => $dry_run,
+    jitter_max => ( $ENV{E2_CRON_JITTER} || 0 ),
+)->run_once;
