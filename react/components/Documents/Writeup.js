@@ -79,6 +79,10 @@ const Writeup = ({ data }) => {
   // Track current doctext for live updates after editing
   const [currentDoctext, setCurrentDoctext] = useState(null)
 
+  // Track current writeuptype for live updates after an in-place type change
+  // (#4224) -- without this the displayed "(type)" stays stale until refresh.
+  const [currentWriteuptype, setCurrentWriteuptype] = useState(null)
+
   if (!data) return <div>Loading...</div>
 
   const { writeup, user, parent_e2node, existing_draft, categories, parent_categories } = data
@@ -88,6 +92,7 @@ const Writeup = ({ data }) => {
 
   // Use currentDoctext if set (after editing), otherwise use original
   const displayDoctext = currentDoctext !== null ? currentDoctext : writeup?.doctext
+  const displayWriteuptype = currentWriteuptype !== null ? currentWriteuptype : writeup?.writeuptype
 
   if (!writeup) {
     return <div className="error">Writeup not found</div>
@@ -175,10 +180,24 @@ const Writeup = ({ data }) => {
             writeupId={writeup.node_id}
             writeupAuthor={authorName}
             isOwnWriteup={isOwnWriteup}
-            onSave={(newContent) => {
-              // Update the displayed content and exit edit mode
+            currentWriteuptype={displayWriteuptype}
+            isEditor={isEditor}
+            onSave={(newContent, newWriteuptype) => {
+              // Update the displayed content + type and exit edit mode
               if (newContent !== undefined) {
                 setCurrentDoctext(newContent)
+              }
+              if (newWriteuptype) {
+                const prevType = (displayWriteuptype || '').toLowerCase()
+                setCurrentWriteuptype(newWriteuptype)
+                // On a real type change the writeup's node title becomes
+                // "<e2node> (<type>)" server-side; update the page H1 in place to
+                // match (the H1 lives in PageHeader, above this component). #4224
+                if (newWriteuptype.toLowerCase() !== prevType && parent_e2node?.title) {
+                  window.dispatchEvent(new CustomEvent('e2:nodeTitleUpdate', {
+                    detail: { title: `${parent_e2node.title} (${newWriteuptype})` }
+                  }))
+                }
               }
               setIsEditing(false)
               // Remove ?edit=1 from URL if present
@@ -202,7 +221,7 @@ const Writeup = ({ data }) => {
       ) : (
         <main className="writeup-main-content" aria-label="Writeup">
           <WriteupDisplay
-            writeup={{ ...writeup, doctext: displayDoctext }}
+            writeup={{ ...writeup, doctext: displayDoctext, writeuptype: displayWriteuptype }}
             user={user}
             onEdit={() => setIsEditing(true)}
           />
@@ -245,6 +264,7 @@ const Writeup = ({ data }) => {
             e2nodeTitle={parent_e2node.title}
             initialContent={existing_draft?.doctext || ''}
             draftId={existing_draft?.node_id || null}
+            isEditor={isEditor}
             onPublish={(writeupId) => {
               // Redirect to the e2node to show all writeups
               window.location.href = `/title/${encodeURIComponent(parent_e2node.title)}`

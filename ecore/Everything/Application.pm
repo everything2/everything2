@@ -987,6 +987,54 @@ sub isChanop
 	return $this->{db}->isApproved($user, $this->{db}->getNode('chanops','usergroup'),$nogods);
 }
 
+# The writeuptypes that may only be *set* by Content Editors (or the two
+# dictionary-import bot accounts). 'definition' is reserved for Webster 1913
+# style entries; 'lede' was meant to head an e2node. Historically the legacy
+# maintenance.pm form-handler enforced this by silently downgrading any
+# disallowed choice to 'thing' on every edit -- which is exactly what produced
+# the #3396 "my definition reverts to thing whenever I fix a typo" bug. We do
+# NOT clobber: see can_set_writeuptype below.
+sub restricted_writeuptypes
+{
+	return { 'definition' => 1, 'lede' => 1 };
+}
+
+# Decide whether a user is allowed to set a writeup to a given writeuptype.
+#
+# Pure-data on purpose (no blessed/hashref node juggling): callers pass
+# primitives so this is identical from the blessed API-controller world and the
+# raw-hashref publish path.
+#
+#   is_editor    => bool   ($user->is_editor in controllers)
+#   username     => string ($user->title)
+#   new_type     => string the writeuptype title being set (e.g. 'lede')
+#   current_type => string|undef the writeup's existing writeuptype title, or
+#                   undef for a brand-new publish (nothing to grandfather)
+#
+# Rule: anyone may set a non-restricted type. Restricted types ('definition',
+# 'lede') may be set by editors and the Webster 1913 / Virgil bots. A
+# non-editor may also *keep* a restricted type the writeup already has
+# (new_type eq current_type) -- some users hold ledes from before the rule, and
+# editing the body must not force a type change or block the save. They simply
+# cannot switch *to* a restricted type or move between the two.
+sub can_set_writeuptype
+{
+	my ($this, $opts) = @_;
+
+	my $new = lc($opts->{new_type} // '');
+	return 1 unless $this->restricted_writeuptypes->{$new};
+
+	return 1 if $opts->{is_editor};
+
+	my $username = $opts->{username} // '';
+	return 1 if $username eq 'Webster 1913' or $username eq 'Virgil';
+
+	return 1 if defined($opts->{current_type})
+		and lc($opts->{current_type}) eq $new;
+
+	return 0;
+}
+
 #TODO: Work on me some, not sure how I'm going to use this
 sub chatSigils
 {

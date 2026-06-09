@@ -16,10 +16,27 @@ jest.mock('../LinkNode', () => {
   }
 })
 
-// Mock InlineWriteupEditor
+// Mock InlineWriteupEditor. Exposes buttons that invoke onSave with a new type
+// so tests can drive the in-place type-change flow (#4224).
 jest.mock('../InlineWriteupEditor', () => {
-  return function MockInlineWriteupEditor({ e2nodeTitle }) {
-    return <div data-testid="inline-editor">Add a Writeup to "{e2nodeTitle}"</div>
+  return function MockInlineWriteupEditor({ e2nodeTitle, onSave }) {
+    return (
+      <div data-testid="inline-editor">
+        Add a Writeup to "{e2nodeTitle}"
+        <button
+          data-testid="mock-save-as-idea"
+          onClick={() => onSave && onSave('<p>edited</p>', 'idea')}
+        >
+          save-as-idea
+        </button>
+        <button
+          data-testid="mock-save-same-type"
+          onClick={() => onSave && onSave('<p>edited</p>', 'thing')}
+        >
+          save-same-type
+        </button>
+      </div>
+    )
   }
 })
 
@@ -402,6 +419,61 @@ describe('Writeup Component', () => {
       )
 
       expect(screen.queryByTitle(/Edit/)).not.toBeInTheDocument()
+    })
+
+    // #4224: an in-place type change rewrites the writeup's node title; the page
+    // H1 (in PageHeader, above this component) is updated via an
+    // 'e2:nodeTitleUpdate' window event. Author user + start_in_edit_mode keeps
+    // only the edit instance mounted (no separate add-a-writeup editor).
+    it('dispatches e2:nodeTitleUpdate with the new node title on a type change', () => {
+      const userAsAuthor = { ...mockUser, node_id: 200 }
+      const dispatchSpy = jest.spyOn(window, 'dispatchEvent')
+
+      render(
+        <Writeup
+          data={{
+            writeup: mockWriteup, // currently 'thing'
+            user: userAsAuthor,
+            parent_e2node: mockParentE2node, // title: 'Test E2Node'
+            start_in_edit_mode: true
+          }}
+        />
+      )
+
+      fireEvent.click(screen.getByTestId('mock-save-as-idea'))
+
+      const evt = dispatchSpy.mock.calls
+        .map(c => c[0])
+        .find(e => e && e.type === 'e2:nodeTitleUpdate')
+      expect(evt).toBeTruthy()
+      expect(evt.detail.title).toBe('Test E2Node (idea)')
+
+      dispatchSpy.mockRestore()
+    })
+
+    it('does not dispatch a title update when the type is unchanged', () => {
+      const userAsAuthor = { ...mockUser, node_id: 200 }
+      const dispatchSpy = jest.spyOn(window, 'dispatchEvent')
+
+      render(
+        <Writeup
+          data={{
+            writeup: mockWriteup, // 'thing'
+            user: userAsAuthor,
+            parent_e2node: mockParentE2node,
+            start_in_edit_mode: true
+          }}
+        />
+      )
+
+      fireEvent.click(screen.getByTestId('mock-save-same-type')) // 'thing' again
+
+      const evt = dispatchSpy.mock.calls
+        .map(c => c[0])
+        .find(e => e && e.type === 'e2:nodeTitleUpdate')
+      expect(evt).toBeFalsy()
+
+      dispatchSpy.mockRestore()
     })
   })
 

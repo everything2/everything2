@@ -74,6 +74,8 @@ const InlineWriteupEditor = ({
   writeupId = null,
   writeupAuthor = null,
   isOwnWriteup = false,
+  currentWriteuptype = null,
+  isEditor = false,
   onPublish = () => {},
   onSave = () => {},
   onCancel = () => {}
@@ -112,13 +114,16 @@ const InlineWriteupEditor = ({
   const firstEditRef = useRef(false);
   const lastSavedContentRef = useRef(normalizedInitialContent); // Track last saved content from server
   const hasSetWriteuptypeFromTitleRef = useRef(false); // Track if we've already set writeuptype from title
+  const hasSetWriteuptypeFromCurrentRef = useRef(false); // Track if we've pre-selected the writeup's existing type (edit mode)
 
-  // Use shared writeuptypes hook (skip for editing existing writeups)
+  // Use shared writeuptypes hook. We now load types when editing an existing
+  // writeup too (issue #4224 in-place type change), not just when publishing a
+  // draft.
   const {
     writeuptypes,
     selectedWriteuptypeId,
     setSelectedWriteuptypeId
-  } = useWriteuptypes({ skip: !!writeupId });
+  } = useWriteuptypes();
 
   // When writeuptypes load, pre-select the one from the title (if any)
   // This overrides the default "thing" selection if we have a writeuptype in the title
@@ -137,6 +142,41 @@ const InlineWriteupEditor = ({
       }
     }
   }, [writeuptypes, parsedTitle.writeuptypeName, setSelectedWriteuptypeId])
+
+  // Editing an existing writeup: pre-select its *current* type so the picker
+  // shows where it stands (the draft-publish title-parse above doesn't apply —
+  // edit mode is handed the parent e2node title with no "(type)" suffix).
+  useEffect(() => {
+    if (
+      writeupId &&
+      currentWriteuptype &&
+      writeuptypes.length > 0 &&
+      !hasSetWriteuptypeFromCurrentRef.current
+    ) {
+      const matchingType = writeuptypes.find(
+        wt => wt.title.toLowerCase() === currentWriteuptype.toLowerCase()
+      )
+      if (matchingType) {
+        hasSetWriteuptypeFromCurrentRef.current = true
+        setSelectedWriteuptypeId(matchingType.node_id)
+      }
+    }
+  }, [writeupId, currentWriteuptype, writeuptypes, setSelectedWriteuptypeId])
+
+  // 'definition' and 'lede' are editor-only types (issue #4224). Non-editors
+  // see every non-restricted type, plus the writeup's *current* type if it
+  // already happens to be restricted — so a user holding a pre-existing lede
+  // can keep it, but can't newly assign one or switch between the two. The
+  // server enforces the same rule (Application::can_set_writeuptype); this is
+  // just the UI mirror so disallowed options never appear.
+  const RESTRICTED_WRITEUPTYPES = ['definition', 'lede']
+  const currentTypeLower = (currentWriteuptype || '').toLowerCase()
+  const selectableWriteuptypes = isEditor
+    ? writeuptypes
+    : writeuptypes.filter(wt => {
+        const t = wt.title.toLowerCase()
+        return !RESTRICTED_WRITEUPTYPES.includes(t) || t === currentTypeLower
+      })
 
   // Check if e2node exists when we have a parsed title but no e2nodeId prop
   useEffect(() => {
@@ -307,9 +347,15 @@ const InlineWriteupEditor = ({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({
-              doctext: processedContent
-            })
+            body: JSON.stringify(
+              // Editing an existing writeup also carries the (possibly changed)
+              // writeuptype (issue #4224). Only sent on the writeups update path
+              // and only when a type is actually selected; the drafts autosave
+              // path is unaffected. The server re-checks the editor-only rule.
+              writeupId && selectedWriteuptypeId
+                ? { doctext: processedContent, wrtype_writeuptype: selectedWriteuptypeId }
+                : { doctext: processedContent }
+            )
           },
           'saving draft'
         );
@@ -340,9 +386,16 @@ const InlineWriteupEditor = ({
           }
           return lastSavedContentRef.current;
         } else {
-          lastError = result.error || 'Unknown error';
+          // Prefer the server's human-readable message (e.g. the editor-only
+          // writeuptype rejection) over the bare error code.
+          lastError = result.message || result.error || 'Unknown error';
           // Don't retry on permission/validation errors
-          if (result.error === 'permission_denied' || result.error === 'not_a_draft') {
+          if (
+            result.error === 'permission_denied' ||
+            result.error === 'not_a_draft' ||
+            result.error === 'writeuptype_not_allowed' ||
+            result.error === 'invalid_writeuptype'
+          ) {
             break;
           }
         }
@@ -752,28 +805,54 @@ const InlineWriteupEditor = ({
               </button>
             )}
 
-            {/* Update button for editing existing writeups */}
+            {/* Writeuptype selector + Update button for editing an existing
+                writeup (issue #4224). The type sits inline to the left of
+                Update; restricted types are filtered out for non-editors. */}
             {writeupId && (
-              <button
-                onClick={async () => {
-                  // Get current content
-                  const content = editorMode === 'rich'
-                    ? convertToE2Syntax(convertRawBracketsToEntities(editor.getHTML()))
-                    : htmlContent;
+              <>
+                <label className="inline-editor-type-inline">
+                  <span className="inline-editor-publish-label">Type:</span>
+                  <select
+                    value={selectedWriteuptypeId || ''}
+                    onChange={(e) => setSelectedWriteuptypeId(Number(e.target.value))}
+                    disabled={saveStatus === 'saving' || selectableWriteuptypes.length === 0}
+                    className="inline-editor-select"
+                    aria-label="Writeup type"
+                  >
+                    {selectableWriteuptypes.length > 0 ? (
+                      selectableWriteuptypes.map(wt => (
+                        <option key={wt.node_id} value={wt.node_id}>{wt.title}</option>
+                      ))
+                    ) : (
+                      <option value="">Loading...</option>
+                    )}
+                  </select>
+                </label>
+                <button
+                  onClick={async () => {
+                    // Get current content
+                    const content = editorMode === 'rich'
+                      ? convertToE2Syntax(convertRawBracketsToEntities(editor.getHTML()))
+                      : htmlContent;
 
-                  // Save the content and get the server-returned doctext
-                  const savedContent = await saveDraft(content);
+                    // Save the content and get the server-returned doctext
+                    const savedContent = await saveDraft(content);
 
-                  // Only call onSave if save was successful
-                  if (savedContent !== null) {
-                    onSave(savedContent);
-                  }
-                }}
-                disabled={saveStatus === 'saving'}
-                className="inline-editor-btn inline-editor-btn--primary"
-              >
-                {saveStatus === 'saving' ? 'Saving...' : 'Update'}
-              </button>
+                    // Only call onSave if save was successful. Pass the new type
+                    // title too so the display updates without a refresh (#4224).
+                    if (savedContent !== null) {
+                      const newType = selectableWriteuptypes.find(
+                        wt => wt.node_id === selectedWriteuptypeId
+                      )?.title;
+                      onSave(savedContent, newType);
+                    }
+                  }}
+                  disabled={saveStatus === 'saving'}
+                  className="inline-editor-btn inline-editor-btn--primary"
+                >
+                  {saveStatus === 'saving' ? 'Saving...' : 'Update'}
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -785,8 +864,8 @@ const InlineWriteupEditor = ({
             <span className="inline-editor-publish-label">
               Publishing: <strong className="inline-editor-publish-title">
                 {decodeHtmlEntities(e2nodeTitle)}
-                {selectedWriteuptypeId && writeuptypes.length > 0 && (
-                  <> ({writeuptypes.find(wt => wt.node_id === selectedWriteuptypeId)?.title || ''})</>
+                {selectedWriteuptypeId && selectableWriteuptypes.length > 0 && (
+                  <> ({selectableWriteuptypes.find(wt => wt.node_id === selectedWriteuptypeId)?.title || ''})</>
                 )}
               </strong>
               {/* E2node status indicator */}
@@ -813,8 +892,8 @@ const InlineWriteupEditor = ({
               disabled={!draftId || publishing || saveStatus === 'saving'}
               className="inline-editor-select"
             >
-              {writeuptypes.length > 0 ? (
-                writeuptypes.map(wt => (
+              {selectableWriteuptypes.length > 0 ? (
+                selectableWriteuptypes.map(wt => (
                   <option key={wt.node_id} value={wt.node_id}>{wt.title}</option>
                 ))
               ) : (

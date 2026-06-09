@@ -1064,6 +1064,26 @@ sub publish_draft {
         ];
     }
 
+    # Editor-only restriction on 'definition'/'lede' (issue #4224). A fresh
+    # publish has no current type to grandfather, so a non-editor simply cannot
+    # publish under a restricted type. HTTP 200 + success=0 for a clean JSON
+    # error to the client.
+    unless ( $APP->can_set_writeuptype({
+        is_editor    => $REQUEST->user->is_editor,
+        username     => $REQUEST->user->title,
+        new_type     => $writeuptype->{title},
+        current_type => undef,
+    }) ) {
+        return [
+            $self->HTTP_OK,
+            {
+                success => 0,
+                error   => 'writeuptype_not_allowed',
+                message => "The '$writeuptype->{title}' writeup type can only be set by editors."
+            }
+        ];
+    }
+
     # Get writeup nodetype
     my $writeup_type = $DB->getType('writeup');
     unless ($writeup_type) {

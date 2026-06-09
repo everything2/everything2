@@ -174,6 +174,7 @@ const E2NodeDisplay = ({ e2node, user, existingDraft, startWithToolsModalOpen, b
             e2nodeTitle={title}
             initialContent={existingDraft?.doctext || ''}
             draftId={existingDraft?.node_id || null}
+            isEditor={!!(user && user.editor)}
             onPublish={(writeupId) => {
               // Reload page to show the new writeup
               window.location.reload()
