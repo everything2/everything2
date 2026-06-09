@@ -6,6 +6,15 @@ extends 'Everything::Controller';
 use Everything qw(getNodeById);
 use URI::Escape qw(uri_escape);
 
+# CGI::escape parity (UTF-8-encode wide strings only, then escape) -- see
+# Everything::Application::_uri_escape_e2 for why both shapes must be handled.
+sub _uri_escape_e2 {
+    my $s = shift;
+    return '' unless defined $s;
+    utf8::encode($s) if utf8::is_utf8($s);
+    return uri_escape($s);
+}
+
 # Controller for debatecomment nodes (usergroup discussions)
 # Debatecomments are threaded discussion nodes with:
 # - Usergroup-restricted access (only members can view/post)
@@ -629,7 +638,7 @@ sub _build_atom_entry {
 
     my $author = $self->DB->getNodeById($comment->{author_user});
     my $author_name = $author ? $author->{title} : 'Unknown';
-    my $author_url = $author ? "$host/user/" . uri_escape($author->{title}) : '';
+    my $author_url = $author ? "$host/user/" . _uri_escape_e2($author->{title}) : '';
 
     my $timestamp = $comment->{publishtime} || $comment->{createtime};
     my $formatted_time = $self->_format_atom_date($timestamp);

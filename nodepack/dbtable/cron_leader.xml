@@ -1,0 +1,11 @@
+<node>
+  <_create_table_statement>CREATE TABLE `cron_leader` (
+  `lock_name` varchar(32) NOT NULL,
+  `host` varchar(64) DEFAULT NULL,
+  `heartbeat` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`lock_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>
+  <node_id>2213844</node_id>
+  <title>cron_leader</title>
+  <type_nodetype>148</type_nodetype>
+</node>

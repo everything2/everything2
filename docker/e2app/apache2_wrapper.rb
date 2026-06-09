@@ -76,6 +76,21 @@ def starman_supervisor(logdest)
     "echo 'starman exited, restarting in 1s' >> #{logdest}; sleep 1; done"
 end
 
+# The in-webhead cron sidecar (docs/cron-sidecar-design.md). Supervised restart
+# loop just like Starman's: if it dies it comes back and re-contends for the
+# GET_LOCK leader lock. Every webhead runs one; exactly one wins the lock and runs
+# due jobs, the rest idle. Defaults to --dry-run (SHADOW MODE: elect + heartbeat +
+# log "would run X", but run nothing) so it is safe to ship before cutover; set
+# E2_CRON_LIVE=1 to actually run jobs. This is how the EventBridge->Fargate cron
+# rules get retired without a flag-day.
+def cron_runner_supervisor(logdest)
+  mode = ENV['E2_CRON_LIVE'].eql?('1') ? '' : '--dry-run'
+  "while true; do " \
+    "PERL5LIB=/var/libraries/lib/perl5:/var/everything/ecore " \
+    "/usr/bin/perl /var/everything/cron/cron_runner.pl #{mode} >> #{logdest} 2>&1; " \
+    "echo 'cron_runner exited, restarting in 5s' >> #{logdest}; sleep 5; done"
+end
+
 if ENV['E2_DOCKER'].eql? "development"
   # Dev DB password: mirror the dev DB wrapper's everyuser (caching_sha2 BY 'blah')
   # so the app exercises the full caching_sha2-with-password handshake (#4122).
@@ -92,6 +107,8 @@ if ENV['E2_DOCKER'].eql? "development"
   STDERR.puts "Starting Starman PSGI backend on 127.0.0.1:5000"
   # Keep Starman alive in the background, then start Apache (pure reverse proxy).
   spawn("/bin/bash", "-c", starman_supervisor("/tmp/development.log"))
+  STDERR.puts "Starting cron runner sidecar (#{ENV['E2_CRON_LIVE'].eql?('1') ? 'LIVE' : 'shadow/dry-run'})"
+  spawn("/bin/bash", "-c", cron_runner_supervisor("/tmp/development.log"))
   exec("/usr/sbin/apachectl -k start; sleep infinity & wait")
 else
   `rm -f /etc/apache2/logs/error_log`
@@ -100,5 +117,13 @@ else
   # before handing the foreground to Apache, which reverse-proxies to it.
   STDERR.puts "Starting Starman PSGI backend on 127.0.0.1:5000"
   spawn("/bin/bash", "-c", starman_supervisor("/dev/stderr"))
+  # Cron sidecar ships DARK in prod: not spawned at all unless explicitly enabled,
+  # so the code/tables can land while the EventBridge cron stays the source of
+  # truth. Staged cutover: E2_CRON_ENABLED=1 spawns it in dry-run shadow (elects a
+  # leader + heartbeats, runs nothing); then E2_CRON_LIVE=1 actually runs jobs.
+  if ENV['E2_CRON_ENABLED'].eql?('1')
+    STDERR.puts "Starting cron runner sidecar (#{ENV['E2_CRON_LIVE'].eql?('1') ? 'LIVE' : 'shadow/dry-run'})"
+    spawn("/bin/bash", "-c", cron_runner_supervisor("/dev/stderr"))
+  end
   exec("/usr/sbin/apachectl -D FOREGROUND")
 end

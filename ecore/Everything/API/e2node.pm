@@ -829,6 +829,11 @@ sub _get_softlinks {
 # Helper function for URL escaping
 sub uri_escape {
     my ($str) = @_;
+    return '' unless defined $str;
+    # UTF-8-encode wide strings first so ord() yields bytes (0-255), not raw
+    # codepoints -- otherwise a >255 char escapes to a bogus %XXXX. Matches
+    # Everything::Application::_uri_escape_e2 / CGI::escape semantics.
+    utf8::encode($str) if utf8::is_utf8($str);
     $str =~ s/([^A-Za-z0-9\-._~])/sprintf("%%%02X", ord($1))/eg;
     return $str;
 }

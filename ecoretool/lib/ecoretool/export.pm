@@ -133,8 +133,24 @@ sub xml_to_file
 		return;
 	}
 
+	# Build the XML BEFORE opening the output file, and isolate a single node's
+	# failure so it can't abort the whole export. Without this, an orphaned
+	# dbtable node (the node exists but its table was dropped, so
+	# ect::dbtable's SHOW CREATE TABLE comes back empty and it die()s) used to
+	# (a) leave a 0-byte file from the open-before-write, and worse (b) kill the
+	# export process mid-iteration -- every node after it in iteration order
+	# (e.g. freshly-added tables) silently never exported, and job_nodepack_builder
+	# uploaded the truncated result as if complete. Skip the bad node, warn, go on.
+	my $xml = eval { $obj->node_to_xml($node, $dbh, $this->{options}) };
+	if(not defined $xml or $@)
+	{
+		warn "Skipping export of $type '$$node{title}' (node_id $$node{node_id}): "
+			. ($@ || "node_to_xml returned undef") . "\n";
+		return;
+	}
+
 	open $handle, ">:encoding(UTF-8)", "$$this{basedir}/$type/$outtitle.xml" or die "Open error '$$this{basedir}/$type/$outtitle.xml': $!";
-	print $handle $obj->node_to_xml($node, $dbh, $this->{options});
+	print $handle $xml;
 	close $handle;
 }
 

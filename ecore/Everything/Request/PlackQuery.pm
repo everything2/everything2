@@ -203,7 +203,16 @@ sub uploadInfo
 
 sub header   { my $self = shift; return Everything::Response->cgi_header(@_); }
 sub redirect { my $self = shift; return Everything::Response->cgi_redirect(@_); }
-sub escape   { my $self = shift; return uri_escape( defined $_[0] ? $_[0] : '' ); }
+sub escape   { my $self = shift; return _uri_escape_e2( $_[0] ); }
+
+# CGI::escape parity (UTF-8-encode wide strings only, then escape) -- see
+# Everything::Application::_uri_escape_e2 for why both shapes must be handled.
+sub _uri_escape_e2 {
+    my $s = shift;
+    return '' unless defined $s;
+    utf8::encode($s) if utf8::is_utf8($s);
+    return uri_escape($s);
+}
 
 # $query->print(...) wrote to the (selected) STDOUT, which under PSGI is the
 # capture. Mirror that.
