@@ -1503,8 +1503,8 @@
     "E2AppFargateTaskDefinition": {
       "Type": "AWS::ECS::TaskDefinition",
       "Properties": {
-        "Cpu": 2048,
-        "Memory": 4096,
+        "Cpu": 1024,
+        "Memory": 2048,
         "Family": "e2app-family",
         "ExecutionRoleArn": {"Ref": "E2TaskExecutionRole"},
         "RequiresCompatibilities": ["FARGATE"],
@@ -1517,7 +1517,7 @@
         "ContainerDefinitions": [{
           "Name": "e2app",
           "Image": {"Fn::Join": [":",[{"Fn::GetAtt": ["E2AppECRRegistryARM","RepositoryUri"]},"latest"]]},
-          "Memory": 4096,
+          "Memory": 2048,
           "Essential": true,
           "HealthCheck": {
             "Interval": 10,
@@ -1938,24 +1938,194 @@
         "ServiceNamespace": "ecs",
         "ScalableDimension": "ecs:service:DesiredCount",
         "MinCapacity": 2,
-        "MaxCapacity": 4
+        "MaxCapacity": 6
       }
     },
     "FargateAppAutoScalingPolicy": {
       "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
       "DeletionPolicy": "Retain",
+      "Metadata": {
+        "Comment": "Scale on successfully-SERVED 2xx-per-task, NOT raw ALB request count. mod_evasive 403-deflects abuse at the Apache layer, so request count is inflated by traffic we reject; scaling on it would add capacity for the abuser. 2xx counts only work actually done -> a real (many distinct IPs) traffic spike scales out; a few-IP abuse storm (deflected to 403s) does not. CPU is a no-op metric here: this is a DB-bound app and Fargate CPU peaks ~11%, never reaching a 60% target. TargetValue 12000 = ~200 served req/s/task, well under the ~700/s/task load-test ceiling. Deeper ceiling is RDS connections (303), so MaxCapacity caps at 6 (~120 conns); a p99 TargetResponseTime alarm is the real 'DB is the wall' signal."
+      },
       "Properties": {
-        "PolicyName": "FargateAppCPUAutoScalingPolicy",
+        "PolicyName": "FargateApp2xxPerTargetScalingPolicy",
         "PolicyType": "TargetTrackingScaling",
         "ScalingTargetId": {"Ref": "FargateAppScalableTarget"},
         "TargetTrackingScalingPolicyConfiguration": {
-          "TargetValue": 60,
+          "TargetValue": 12000,
           "ScaleInCooldown": 300,
           "ScaleOutCooldown": 60,
-          "PredefinedMetricSpecification": {
-            "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+          "CustomizedMetricSpecification": {
+            "Metrics": [
+              {
+                "Id": "served2xx",
+                "Label": "Target 2xx responses per minute",
+                "MetricStat": {
+                  "Metric": {
+                    "Namespace": "AWS/ApplicationELB",
+                    "MetricName": "HTTPCode_Target_2XX_Count",
+                    "Dimensions": [
+                      {"Name": "LoadBalancer", "Value": {"Fn::GetAtt": ["ContainerizedFrontendELB","LoadBalancerFullName"]}},
+                      {"Name": "TargetGroup", "Value": {"Fn::GetAtt": ["FargateTargetGroupHTTP","TargetGroupFullName"]}}
+                    ]
+                  },
+                  "Stat": "Sum"
+                },
+                "ReturnData": false
+              },
+              {
+                "Id": "healthyTasks",
+                "Label": "Healthy serving targets",
+                "MetricStat": {
+                  "Metric": {
+                    "Namespace": "AWS/ApplicationELB",
+                    "MetricName": "HealthyHostCount",
+                    "Dimensions": [
+                      {"Name": "LoadBalancer", "Value": {"Fn::GetAtt": ["ContainerizedFrontendELB","LoadBalancerFullName"]}},
+                      {"Name": "TargetGroup", "Value": {"Fn::GetAtt": ["FargateTargetGroupHTTP","TargetGroupFullName"]}}
+                    ]
+                  },
+                  "Stat": "Average"
+                },
+                "ReturnData": false
+              },
+              {
+                "Id": "served2xxPerTarget",
+                "Label": "2xx per healthy target per minute",
+                "Expression": "served2xx / healthyTasks",
+                "ReturnData": true
+              }
+            ]
           }
         }
+      }
+    },
+    "E2AlertsTopic": {
+      "Type": "AWS::SNS::Topic",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "TopicName": "e2-alerts",
+        "DisplayName": "E2 Alerts",
+        "Subscription": [
+          {"Protocol": "email", "Endpoint": "jay@bonci.net"}
+        ]
+      }
+    },
+    "AppHighLatencyAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "e2-app-high-p99-latency",
+        "AlarmDescription": "Front-end p99 response time > 1s for 3 min. Real user-facing slowness; on a DB-bound app this usually means the database is the bottleneck -- autoscaling more app tasks will NOT fix it. Investigate RDS / per-page query load.",
+        "Namespace": "AWS/ApplicationELB",
+        "MetricName": "TargetResponseTime",
+        "Dimensions": [
+          {"Name": "LoadBalancer", "Value": {"Fn::GetAtt": ["ContainerizedFrontendELB","LoadBalancerFullName"]}},
+          {"Name": "TargetGroup", "Value": {"Fn::GetAtt": ["FargateTargetGroupHTTP","TargetGroupFullName"]}}
+        ],
+        "ExtendedStatistic": "p99",
+        "Period": 60,
+        "EvaluationPeriods": 3,
+        "Threshold": 1.0,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [{"Ref": "E2AlertsTopic"}],
+        "OKActions": [{"Ref": "E2AlertsTopic"}]
+      }
+    },
+    "App5xxAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "e2-app-5xx-errors",
+        "AlarmDescription": "Target 5xx > 10/min for 3 min. The app is failing requests (caught dies -> 500s, or a regression). Check /aws/events/e2-app-errors and the ALB access logs.",
+        "Namespace": "AWS/ApplicationELB",
+        "MetricName": "HTTPCode_Target_5XX_Count",
+        "Dimensions": [
+          {"Name": "LoadBalancer", "Value": {"Fn::GetAtt": ["ContainerizedFrontendELB","LoadBalancerFullName"]}},
+          {"Name": "TargetGroup", "Value": {"Fn::GetAtt": ["FargateTargetGroupHTTP","TargetGroupFullName"]}}
+        ],
+        "Statistic": "Sum",
+        "Period": 60,
+        "EvaluationPeriods": 3,
+        "Threshold": 10,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [{"Ref": "E2AlertsTopic"}],
+        "OKActions": [{"Ref": "E2AlertsTopic"}]
+      }
+    },
+    "AppUnhealthyHostsAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "e2-app-unhealthy-hosts",
+        "AlarmDescription": "Fewer than 2 healthy app tasks for 3 min -- a task is down or failing health checks (lost N+1 redundancy). Check ECS service events and task stoppedReason.",
+        "Namespace": "AWS/ApplicationELB",
+        "MetricName": "HealthyHostCount",
+        "Dimensions": [
+          {"Name": "LoadBalancer", "Value": {"Fn::GetAtt": ["ContainerizedFrontendELB","LoadBalancerFullName"]}},
+          {"Name": "TargetGroup", "Value": {"Fn::GetAtt": ["FargateTargetGroupHTTP","TargetGroupFullName"]}}
+        ],
+        "Statistic": "Minimum",
+        "Period": 60,
+        "EvaluationPeriods": 3,
+        "Threshold": 2,
+        "ComparisonOperator": "LessThanThreshold",
+        "TreatMissingData": "breaching",
+        "AlarmActions": [{"Ref": "E2AlertsTopic"}],
+        "OKActions": [{"Ref": "E2AlertsTopic"}]
+      }
+    },
+    "RDSLowMemoryAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "e2-rds-low-freeable-memory",
+        "AlarmDescription": "RDS FreeableMemory < 150 MB for 5 min. Memory is E2's binding DB constraint (the InnoDB buffer pool). Normal floor is ~380 MB; below 150 MB the instance risks swap/OOM -- the working set has outgrown RAM. Lever: bigger instance class or trim the working set. This is the 'memory is the wall' signal Fargate scaling cannot fix.",
+        "Namespace": "AWS/RDS",
+        "MetricName": "FreeableMemory",
+        "Dimensions": [{"Name": "DBInstanceIdentifier", "Value": {"Ref": "EverythingDB"}}],
+        "Statistic": "Average",
+        "Period": 60,
+        "EvaluationPeriods": 5,
+        "Threshold": 157286400,
+        "ComparisonOperator": "LessThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [{"Ref": "E2AlertsTopic"}],
+        "OKActions": [{"Ref": "E2AlertsTopic"}]
+      }
+    },
+    "RDSHighConnectionsAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "e2-rds-high-connections",
+        "AlarmDescription": "RDS DatabaseConnections > 250 for 5 min (max_connections=303). Approaching the connection ceiling -- a leak, or too many Starman workers across scaled-out tasks (STARMAN_WORKERS x task count + cron/heavyjob). The connection ceiling, not Fargate, is the real scale-out limit.",
+        "Namespace": "AWS/RDS",
+        "MetricName": "DatabaseConnections",
+        "Dimensions": [{"Name": "DBInstanceIdentifier", "Value": {"Ref": "EverythingDB"}}],
+        "Statistic": "Average",
+        "Period": 60,
+        "EvaluationPeriods": 5,
+        "Threshold": 250,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [{"Ref": "E2AlertsTopic"}],
+        "OKActions": [{"Ref": "E2AlertsTopic"}]
+      }
+    },
+    "RDSHighCPUAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "e2-rds-high-cpu",
+        "AlarmDescription": "RDS CPUUtilization > 80% for 10 min. The DB is CPU-strained, and a burstable t4g.medium burns CPU credits above its ~40% baseline. Likely a heavy/uncached query pattern. Check the slow-query log and the ~130-queries-per-page load.",
+        "Namespace": "AWS/RDS",
+        "MetricName": "CPUUtilization",
+        "Dimensions": [{"Name": "DBInstanceIdentifier", "Value": {"Ref": "EverythingDB"}}],
+        "Statistic": "Average",
+        "Period": 300,
+        "EvaluationPeriods": 2,
+        "Threshold": 80,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [{"Ref": "E2AlertsTopic"}],
+        "OKActions": [{"Ref": "E2AlertsTopic"}]
       }
     },
     "ECSEventsRole": {

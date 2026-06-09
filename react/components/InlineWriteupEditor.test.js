@@ -286,11 +286,11 @@ describe('InlineWriteupEditor', () => {
       })
     })
 
-    it('does not fetch writeuptypes for existing writeup', () => {
+    it('fetches writeuptypes for existing writeup too (in-place type edit, #4224)', () => {
       render(<InlineWriteupEditor {...defaultProps} writeupId={789} />)
 
-      // With skip option, the hook doesn't make the fetch call
-      expect(fetch).not.toHaveBeenCalledWith('/api/writeuptypes', expect.any(Object))
+      // Edit mode now loads types so the author can change the type in place.
+      expect(fetch).toHaveBeenCalledWith('/api/writeuptypes', expect.any(Object))
     })
 
     it('has writeuptype select for new writeups', async () => {
@@ -633,6 +633,175 @@ describe('InlineWriteupEditor', () => {
         const select = screen.getByRole('combobox')
         // Should default to thing since obsoletetype doesn't exist
         expect(select.value).toBe('1')
+      })
+    })
+  })
+
+  describe('in-place writeup type editing (#4224)', () => {
+    // Full type set including the two editor-only restricted types.
+    const ALL_TYPES = [
+      { node_id: 1, title: 'thing' },
+      { node_id: 2, title: 'idea' },
+      { node_id: 3, title: 'poetry' },
+      { node_id: 4, title: 'definition' },
+      { node_id: 5, title: 'lede' }
+    ]
+
+    const mockTypes = (types = ALL_TYPES) => {
+      fetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true, writeuptypes: types })
+      })
+    }
+
+    const typeOptions = () => {
+      const select = screen.getByLabelText('Writeup type')
+      return Array.from(select.querySelectorAll('option')).map(o => o.textContent)
+    }
+
+    it('renders a Type selector when editing an existing writeup', async () => {
+      mockTypes()
+      render(
+        <InlineWriteupEditor {...defaultProps} writeupId={789} currentWriteuptype="thing" isEditor={false} />
+      )
+      await waitFor(() => expect(screen.getByLabelText('Writeup type')).toBeInTheDocument())
+      expect(screen.getByText('Type:')).toBeInTheDocument()
+    })
+
+    it('pre-selects the writeup\'s current type', async () => {
+      mockTypes()
+      render(
+        <InlineWriteupEditor {...defaultProps} writeupId={789} currentWriteuptype="poetry" isEditor={false} />
+      )
+      await waitFor(() => {
+        expect(screen.getByLabelText('Writeup type').value).toBe('3') // poetry
+      })
+    })
+
+    it('pre-selects current type case-insensitively', async () => {
+      mockTypes()
+      render(
+        <InlineWriteupEditor {...defaultProps} writeupId={789} currentWriteuptype="Poetry" isEditor={false} />
+      )
+      await waitFor(() => {
+        expect(screen.getByLabelText('Writeup type').value).toBe('3')
+      })
+    })
+
+    it('editors see all types including definition and lede', async () => {
+      mockTypes()
+      render(
+        <InlineWriteupEditor {...defaultProps} writeupId={789} currentWriteuptype="thing" isEditor={true} />
+      )
+      await waitFor(() => expect(typeOptions()).toContain('definition'))
+      const opts = typeOptions()
+      expect(opts).toEqual(expect.arrayContaining(['thing', 'idea', 'poetry', 'definition', 'lede']))
+    })
+
+    it('non-editors do NOT see definition or lede', async () => {
+      mockTypes()
+      render(
+        <InlineWriteupEditor {...defaultProps} writeupId={789} currentWriteuptype="thing" isEditor={false} />
+      )
+      // Wait until the type list has populated (more than the Loading... placeholder).
+      await waitFor(() => expect(typeOptions()).toContain('thing'))
+      const opts = typeOptions()
+      expect(opts).toEqual(expect.arrayContaining(['thing', 'idea', 'poetry']))
+      expect(opts).not.toContain('definition')
+      expect(opts).not.toContain('lede')
+    })
+
+    it('non-editor holding an existing lede DOES see lede (keep-if-current) but not definition', async () => {
+      mockTypes()
+      render(
+        <InlineWriteupEditor {...defaultProps} writeupId={789} currentWriteuptype="lede" isEditor={false} />
+      )
+      await waitFor(() => expect(typeOptions()).toContain('lede'))
+      const opts = typeOptions()
+      expect(opts).toContain('lede')        // can keep it
+      expect(opts).not.toContain('definition') // but not switch to the other restricted type
+    })
+
+    it('includes wrtype_writeuptype in the update request body when editing', async () => {
+      // Route fetch by URL: writeuptypes list, then the writeup update.
+      fetch.mockImplementation((url) => {
+        if (typeof url === 'string' && url.includes('/api/writeuptypes')) {
+          return Promise.resolve({ json: () => Promise.resolve({ success: true, writeuptypes: ALL_TYPES }) })
+        }
+        if (typeof url === 'string' && url.includes('/api/writeups/789/action/update')) {
+          return Promise.resolve({ json: () => Promise.resolve({ node_id: 789, doctext: '<p>Test content</p>' }) })
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: true }) })
+      })
+
+      render(
+        <InlineWriteupEditor {...defaultProps} writeupId={789} currentWriteuptype="idea" isEditor={false} />
+      )
+      await waitFor(() => expect(screen.getByLabelText('Writeup type').value).toBe('2')) // idea
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }))
+      })
+
+      const updateCall = fetch.mock.calls.find(
+        c => typeof c[0] === 'string' && c[0].includes('/api/writeups/789/action/update')
+      )
+      expect(updateCall).toBeTruthy()
+      const body = JSON.parse(updateCall[1].body)
+      expect(body).toHaveProperty('wrtype_writeuptype', 2)
+      expect(body).toHaveProperty('doctext')
+    })
+
+    it('passes the new type title to onSave so the display updates without a refresh', async () => {
+      const onSave = jest.fn()
+      fetch.mockImplementation((url) => {
+        if (typeof url === 'string' && url.includes('/api/writeuptypes')) {
+          return Promise.resolve({ json: () => Promise.resolve({ success: true, writeuptypes: ALL_TYPES }) })
+        }
+        if (typeof url === 'string' && url.includes('/action/update')) {
+          return Promise.resolve({ json: () => Promise.resolve({ node_id: 789, doctext: '<p>Test content</p>' }) })
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: true }) })
+      })
+
+      render(
+        <InlineWriteupEditor {...defaultProps} onSave={onSave} writeupId={789} currentWriteuptype="idea" isEditor={false} />
+      )
+      await waitFor(() => expect(screen.getByLabelText('Writeup type').value).toBe('2')) // idea
+
+      // Change idea -> poetry, then Update
+      fireEvent.change(screen.getByLabelText('Writeup type'), { target: { value: '3' } })
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }))
+      })
+
+      expect(onSave).toHaveBeenCalledWith('<p>Test content</p>', 'poetry')
+    })
+
+    it('surfaces the server rejection message on a blocked type change', async () => {
+      fetch.mockImplementation((url) => {
+        if (typeof url === 'string' && url.includes('/api/writeuptypes')) {
+          return Promise.resolve({ json: () => Promise.resolve({ success: true, writeuptypes: ALL_TYPES }) })
+        }
+        if (typeof url === 'string' && url.includes('/action/update')) {
+          return Promise.resolve({ json: () => Promise.resolve({
+            success: 0, error: 'writeuptype_not_allowed',
+            message: "The 'definition' writeup type can only be set by editors."
+          }) })
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: true }) })
+      })
+
+      render(
+        <InlineWriteupEditor {...defaultProps} writeupId={789} currentWriteuptype="thing" isEditor={false} />
+      )
+      await waitFor(() => expect(screen.getByLabelText('Writeup type')).toBeInTheDocument())
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }))
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText(/can only be set by editors/)).toBeInTheDocument()
       })
     })
   })
