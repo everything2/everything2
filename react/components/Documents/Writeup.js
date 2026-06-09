@@ -188,7 +188,16 @@ const Writeup = ({ data }) => {
                 setCurrentDoctext(newContent)
               }
               if (newWriteuptype) {
+                const prevType = (displayWriteuptype || '').toLowerCase()
                 setCurrentWriteuptype(newWriteuptype)
+                // On a real type change the writeup's node title becomes
+                // "<e2node> (<type>)" server-side; update the page H1 in place to
+                // match (the H1 lives in PageHeader, above this component). #4224
+                if (newWriteuptype.toLowerCase() !== prevType && parent_e2node?.title) {
+                  window.dispatchEvent(new CustomEvent('e2:nodeTitleUpdate', {
+                    detail: { title: `${parent_e2node.title} (${newWriteuptype})` }
+                  }))
+                }
               }
               setIsEditing(false)
               // Remove ?edit=1 from URL if present

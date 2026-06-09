@@ -42,6 +42,21 @@ const PageLayout = ({ e2 }) => {
     return () => window.removeEventListener('e2:userUpdate', onUserUpdate)
   }, [])
 
+  // Mirror e2.node as state so an in-place writeup type change (#4224) can
+  // update the page H1 ("<e2node> (<type>)") without a refresh, via an
+  // 'e2:nodeTitleUpdate' window event — same pattern as e2:userUpdate above.
+  const [node, setNode] = useState(e2.node)
+  useEffect(() => {
+    const onNodeTitleUpdate = (event) => {
+      const title = event.detail?.title
+      if (!title) return
+      setNode(prev => ({ ...(prev || {}), title }))
+      if (window.e2?.node) window.e2.node.title = title
+    }
+    window.addEventListener('e2:nodeTitleUpdate', onNodeTitleUpdate)
+    return () => window.removeEventListener('e2:nodeTitleUpdate', onNodeTitleUpdate)
+  }, [])
+
   // Check if this is a standalone page (fullscreen, no header/footer/sidebar)
   const isStandalone = e2.contentData?.standalone === true
 
@@ -107,7 +122,7 @@ const PageLayout = ({ e2 }) => {
           {/* google_ad_section_start */}
           {!e2.contentData?.hidePageHeader && (
             <PageHeader
-              node={e2.node}
+              node={node}
               pageheader={e2.pageheader}
               user={user}
               feedUrl={e2.contentData?.feed_url}

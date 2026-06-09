@@ -158,13 +158,39 @@ sub wrtype_of {
     return $t->{title};
 }
 
+sub title_of {
+    my ($wid) = @_;
+    my $n = $DB->getNodeById($wid, 'force');
+    return $n->{title};
+}
+
+sub parent_title_of {
+    my ($wid) = @_;
+    my $pid = $DB->sqlSelect('parent_e2node', 'writeup', "writeup_id = $wid");
+    my $p = $DB->getNodeById($pid);
+    return $p->{title};
+}
+
 subtest 'author (non-editor) edits body only, no type field -> succeeds' => sub {
     my $wid = make_writeup('NoTypeField', $author, $thing_wt);
+    my $title_before = title_of($wid);
     my $r = req(user => $author, is_editor => 0, post => { doctext => 'edited body' });
     my $res = $writeups_api->update($r, $wid);
     is($res->[0], $writeups_api->HTTP_OK, 'HTTP_OK');
     ok(defined($res->[1]{node_id}), 'returns the node (success)');
     is(wrtype_of($wid), 'thing', 'type unchanged');
+    is(title_of($wid), $title_before, 'title untouched on a body-only edit');
+};
+
+subtest 'author (non-editor) changes thing -> idea: type AND title rewritten' => sub {
+    my $wid = make_writeup('ThingToIdea', $author, $thing_wt);
+    my $r = req(user => $author, is_editor => 0,
+                post => { doctext => 'x', wrtype_writeuptype => $idea_wt->{node_id} });
+    my $res = $writeups_api->update($r, $wid);
+    ok(defined($res->[1]{node_id}), 'succeeds');
+    is(wrtype_of($wid), 'idea', 'type changed to idea');
+    is(title_of($wid), parent_title_of($wid) . ' (idea)', 'node title rewritten to "<e2node> (idea)"');
+    is($res->[1]{title}, parent_title_of($wid) . ' (idea)', 'returned JSON carries the new title');
 };
 
 subtest 'author (non-editor) cannot change thing -> definition' => sub {
@@ -180,12 +206,14 @@ subtest 'author (non-editor) cannot change thing -> definition' => sub {
 
 subtest 'author (non-editor) may KEEP an existing lede while editing body' => sub {
     my $wid = make_writeup('KeepLede', $author, $lede_wt);
+    my $title_before = title_of($wid);
     my $r = req(user => $author, is_editor => 0,
                 post => { doctext => 'fixed a typo', wrtype_writeuptype => $lede_wt->{node_id} });
     my $res = $writeups_api->update($r, $wid);
     is($res->[0], $writeups_api->HTTP_OK, 'HTTP_OK');
     ok(defined($res->[1]{node_id}), 'succeeds (keep-if-current)');
     is(wrtype_of($wid), 'lede', 'lede preserved -- the #3396 clobber does not happen');
+    is(title_of($wid), $title_before, 'title not rewritten when the type is unchanged');
 };
 
 subtest 'author (non-editor) cannot switch lede -> definition' => sub {
@@ -204,6 +232,7 @@ subtest 'author (non-editor) may downgrade lede -> thing' => sub {
     my $res = $writeups_api->update($r, $wid);
     ok(defined($res->[1]{node_id}), 'succeeds');
     is(wrtype_of($wid), 'thing', 'moved to thing');
+    is(title_of($wid), parent_title_of($wid) . ' (thing)', 'title rewritten on downgrade');
 };
 
 subtest 'editor may set a restricted type (thing -> definition)' => sub {
@@ -214,6 +243,7 @@ subtest 'editor may set a restricted type (thing -> definition)' => sub {
     is($res->[0], $writeups_api->HTTP_OK, 'HTTP_OK');
     ok(defined($res->[1]{node_id}), 'editor edit succeeds');
     is(wrtype_of($wid), 'definition', 'type changed to definition');
+    is(title_of($wid), parent_title_of($wid) . ' (definition)', 'title rewritten to "<e2node> (definition)"');
 };
 
 subtest 'invalid writeuptype id is rejected' => sub {

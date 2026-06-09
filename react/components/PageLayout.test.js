@@ -42,8 +42,13 @@ jest.mock('./Layout/Header', () => {
 })
 
 jest.mock('./Layout/PageHeader', () => {
-  return function MockPageHeader({ children }) {
-    return <div data-testid="pageheader">{children}</div>
+  return function MockPageHeader({ node, children }) {
+    return (
+      <div data-testid="pageheader">
+        <h1 data-testid="pageheader-title">{node?.title}</h1>
+        {children}
+      </div>
+    )
   }
 })
 
@@ -179,6 +184,40 @@ describe('PageLayout', () => {
         }))
       })
       expect(screen.getByTestId('doc-coolsleft')).toHaveTextContent('2')
+    })
+  })
+
+  describe('e2:nodeTitleUpdate event (#4224)', () => {
+    it('updates the page header H1 when the node title changes in place', () => {
+      const e2 = {
+        contentData: { type: 'writeup' },
+        user: null,
+        node: { node_id: 100, title: 'Hippopotamus (thing)' }
+      }
+
+      render(<PageLayout e2={e2} />)
+      expect(screen.getByTestId('pageheader-title')).toHaveTextContent('Hippopotamus (thing)')
+
+      act(() => {
+        window.dispatchEvent(new CustomEvent('e2:nodeTitleUpdate', {
+          detail: { title: 'Hippopotamus (idea)' }
+        }))
+      })
+      expect(screen.getByTestId('pageheader-title')).toHaveTextContent('Hippopotamus (idea)')
+    })
+
+    it('ignores an event with no title', () => {
+      const e2 = {
+        contentData: { type: 'writeup' },
+        user: null,
+        node: { node_id: 100, title: 'Hippopotamus (thing)' }
+      }
+
+      render(<PageLayout e2={e2} />)
+      act(() => {
+        window.dispatchEvent(new CustomEvent('e2:nodeTitleUpdate', { detail: {} }))
+      })
+      expect(screen.getByTestId('pageheader-title')).toHaveTextContent('Hippopotamus (thing)')
     })
   })
 
