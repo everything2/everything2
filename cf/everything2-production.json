@@ -10,7 +10,7 @@
     "EnableCronAlarm": {
       "Type": "String",
       "Description": "Set to 'true' at the in-webhead cron live-cutover to create the cron wedge alarm. Kept off until then so it cannot fire on missing data while cron is still dark/shadow.",
-      "Default": "false",
+      "Default": "true",
       "AllowedValues": ["true", "false"]
     },
     "EnableCron": {
