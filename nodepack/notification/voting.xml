@@ -1,6 +1,7 @@
 <node>
   <code></code>
   <description>a writeup of yours gets [Voting/Experience system|voted] on.</description>
+  <hourLimit>48</hourLimit>
   <invalid_check></invalid_check>
   <node_id>1961735</node_id>
   <title>voting</title>

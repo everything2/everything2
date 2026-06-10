@@ -33,6 +33,22 @@ has 'req' => (is => 'ro', isa => 'Plack::Request', lazy => 1, builder => '_build
 has 'user' => (lazy => 1, builder => "_build_user", isa => "Everything::Node::user", is => "rw", handles => ["is_guest","is_admin","is_developer","is_chanop","is_clientdev","is_editor","VARS"]);
 has 'node' => (is => "rw", isa => "Everything::Node");
 
+# Cookies (Set-Cookie value strings) produced as a SIDE EFFECT of the request flow
+# -- chiefly login() on an explicit credential login. Historically login() printed
+# the Set-Cookie header directly into the STDOUT capture; the return-based API path
+# (Everything::APIRouter::output) bypasses that capture, so it reads these off the
+# request and folds them into the returned Everything::Response instead. The page
+# path (HTML.pm opLogin) still uses the print, so login() does BOTH (cheap, and the
+# accumulator is simply ignored by the page path). See docs/api-driven-architecture.md.
+has 'response_cookies' => (is => 'ro', isa => 'ArrayRef', default => sub { [] });
+
+sub add_response_cookie
+{
+  my ($self, $cookie) = @_;
+  push @{$self->response_cookies}, $cookie if defined $cookie;
+  return;
+}
+
 # Page class instance - allows reusing the same instance across display() and buildReactData()
 # Critical for form-processing pages like Sign Up that cache state between calls
 has 'page_class_instance' => (is => "rw");
@@ -230,7 +246,9 @@ sub get_current_user
           # Salted password accepted
           unless($cookie)
           {
-            print $self->header({-cookie => $self->make_login_cookie($user, $expires)});
+            my $login_cookie = $self->make_login_cookie($user, $expires);
+            print $self->header({-cookie => $login_cookie});  # page path (HTML.pm opLogin -> capture)
+            $self->add_response_cookie($login_cookie);        # return-based API path
           }
         }else{
           # Salted password not accepted by default for user
@@ -248,7 +266,9 @@ sub get_current_user
                 $self->APP->updatePassword($user->NODEDATA, $user->passwd);
                 unless($cookie)
                 {
-                  print $self->header({-cookie => $self->make_login_cookie($user, $expires)});
+                  my $login_cookie = $self->make_login_cookie($user, $expires);
+                  print $self->header({-cookie => $login_cookie});  # page path (HTML.pm opLogin -> capture)
+                  $self->add_response_cookie($login_cookie);        # return-based API path
                 }
                 # Successfully updated password and logged in
             }

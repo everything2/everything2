@@ -1,9 +1,10 @@
 #!/usr/bin/perl
 
-# cron_runner.pl -- the in-webhead cron sidecar entry point. Spawned (supervised)
-# by docker/e2app/apache2_wrapper.rb next to the Starman supervisor; runs forever,
-# contends for cron leadership via GET_LOCK, and drives the schedule. See
-# docs/cron-sidecar-design.md and Everything::Cron::Runner.
+# cron_runner.pl -- the in-webhead cron sidecar entry point. Invoked each minute by
+# a supervised `run_once; sleep 60` loop in docker/e2app/apache2_wrapper.rb (next to
+# the Starman supervisor); each invocation contends for cron leadership via GET_LOCK,
+# runs whatever is due, and exits. See
+# docs/cron-sidecar.md and Everything::Cron::Runner.
 #
 # Usage:
 #   cron_runner.pl              # normal: the leader runs due jobs

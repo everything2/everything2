@@ -12,7 +12,7 @@ use Everything::Cron::Schedule;
 use Everything::Cron::State;
 use Everything::Cron::Health;
 
-# Everything::Cron::Runner -- the in-webhead cron engine (docs/cron-sidecar-design.md).
+# Everything::Cron::Runner -- the in-webhead cron engine (docs/cron-sidecar.md).
 #
 # PERIODIC model: a thin trigger (a supervised `run_once; sleep 60` loop, or OS
 # crond) invokes run_once on each webhead every ~minute. run_once grabs a MySQL

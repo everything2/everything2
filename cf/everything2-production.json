@@ -12,11 +12,25 @@
       "Description": "Set to 'true' at the in-webhead cron live-cutover to create the cron wedge alarm. Kept off until then so it cannot fire on missing data while cron is still dark/shadow.",
       "Default": "false",
       "AllowedValues": ["true", "false"]
+    },
+    "EnableCron": {
+      "Type": "String",
+      "Description": "In-webhead cron cutover step 1: 'true' spawns the cron sidecar on the webheads (shadow/dry-run unless CronLive is also true); 'false' = dark, not spawned. Drives the E2_CRON_ENABLED env var.",
+      "Default": "true",
+      "AllowedValues": ["true", "false"]
+    },
+    "CronLive": {
+      "Type": "String",
+      "Description": "In-webhead cron cutover step 2: 'true' makes the sidecar actually RUN jobs (vs shadow dry-run); requires EnableCron=true. Drives E2_CRON_LIVE, and ties the 8 EventBridge cron-* rules to State:DISABLED via CronLiveCond so they stop atomically (no double-execution).",
+      "Default": "true",
+      "AllowedValues": ["true", "false"]
     }
   },
   "Conditions": {
     "UseCloudFront": {"Fn::Not": [{"Fn::Equals": [{"Ref": "CloudFrontDomainName"}, ""]}]},
-    "CronAlarmEnabled": {"Fn::Equals": [{"Ref": "EnableCronAlarm"}, "true"]}
+    "CronAlarmEnabled": {"Fn::Equals": [{"Ref": "EnableCronAlarm"}, "true"]},
+    "CronEnabledCond": {"Fn::Equals": [{"Ref": "EnableCron"}, "true"]},
+    "CronLiveCond": {"Fn::Equals": [{"Ref": "CronLive"}, "true"]}
   },
   "Mappings" : {
     "RegionMap" : {
@@ -1545,6 +1559,14 @@
             {
               "Name": "STARMAN_MAX_REQUESTS",
               "Value": "1000"
+            },
+            {
+              "Name": "E2_CRON_ENABLED",
+              "Value": {"Fn::If": ["CronEnabledCond", "1", "0"]}
+            },
+            {
+              "Name": "E2_CRON_LIVE",
+              "Value": {"Fn::If": ["CronLiveCond", "1", "0"]}
             }
           ],
           "LogConfiguration": {
@@ -2206,7 +2228,7 @@
       "Properties": {
         "Description": "Cron rule to call chatterbox-cleanup",
         "Name": "cron-chatterbox-cleanup",
-        "State": "ENABLED",
+        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
         "ScheduleExpression": "cron(50 * * * ? *)",
         "Targets": [{
           "Id": "chatterbox-cleanup-task-arn",
@@ -2238,7 +2260,7 @@
       "Properties": {
         "Description": "Cron rule to call generate-sitemap",
         "Name": "cron-generate-sitemap",
-        "State": "ENABLED",
+        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
         "ScheduleExpression": "cron(0 0 * * ? *)",
         "Targets": [{
           "Id": "cron-sitemap-task-arn",
@@ -2270,7 +2292,7 @@
       "Properties": {
         "Description": "Cron rule to call datastash",
         "Name": "cron-datastash",
-        "State": "ENABLED",
+        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
         "ScheduleExpression": "rate(2 minutes)",
         "Targets": [{
           "Id": "datastash-task-arn",
@@ -2302,7 +2324,7 @@
       "Properties": {
         "Description": "Cron rule to call datastash lengthy",
         "Name": "cron-datastash-lengthy",
-        "State": "ENABLED",
+        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
         "ScheduleExpression": "rate(6 hours)",
         "Targets": [{
           "Id": "datastash-lengthy-task-arn",
@@ -2334,7 +2356,7 @@
       "Properties": {
         "Description": "Cron rule to call IQM Recalculate",
         "Name": "cron-iqm-recalc",
-        "State": "ENABLED",
+        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
         "ScheduleExpression": "rate(1 day)",
         "Targets": [{
           "Id": "iqm-recalc-task-arn",
@@ -2366,7 +2388,7 @@
       "Properties": {
         "Description": "Cron rule to call refresh rooms",
         "Name": "cron-refresh-rooms",
-        "State": "ENABLED",
+        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
         "ScheduleExpression": "rate(5 minutes)",
         "Targets": [{
           "Id": "refresh-rooms-task-arn",
@@ -2398,7 +2420,7 @@
       "Properties": {
         "Description": "Cron rule to call clean old rooms",
         "Name": "cron-clean-old-rooms",
-        "State": "ENABLED",
+        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
         "ScheduleExpression": "rate(1 day)",
         "Targets": [{
           "Id": "clean-old-rooms-task-arn",
@@ -2430,7 +2452,7 @@
       "Properties": {
         "Description": "Cron rule to call legacy writeup reaper",
         "Name": "cron-writeup-reaper",
-        "State": "ENABLED",
+        "State": {"Fn::If": ["CronLiveCond", "DISABLED", "ENABLED"]},
         "ScheduleExpression": "rate(1 day)",
         "Targets": [{
           "Id": "writeup-reaper-task-arn",

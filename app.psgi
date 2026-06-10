@@ -104,6 +104,7 @@ my $app = sub {
     # the browser then can't decode (net::ERR_CONTENT_DECODING_FAILED). Invisible to
     # curl-without-Accept-Encoding, fatal to every real browser page load.
     my $body = '';
+    my $returned;
     open my $capture, '>:raw', \$body or die "capture open: $!";
     {
         local *STDOUT = $capture;
@@ -121,7 +122,7 @@ my $app = sub {
         my $ok = eval {
             if ($is_api) {
                 Everything::initEverything();
-                $APIr->dispatcher;
+                $returned = $APIr->dispatcher;
             }
             else {
                 mod_perlInit();
@@ -137,6 +138,16 @@ my $app = sub {
         }
     }
     close $capture;
+
+    # Return-based fast path: an API handler that returned an Everything::Response is
+    # finalized directly -- it never went through the STDOUT capture, so it is immune
+    # to the #4237 capture-poisoning class. The page path (mod_perlInit) prints into
+    # the capture and leaves $returned unset, so it falls through to the capture
+    # parser below. Dual-mode; the capture is deleted last, once nothing prints.
+    # See docs/api-driven-architecture.md.
+    if ( $APIr->is_response($returned) ) {
+        return $returned->finalize;
+    }
 
     return _cgi_output_to_psgi($body);
 };

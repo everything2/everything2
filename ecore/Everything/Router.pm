@@ -25,9 +25,15 @@ sub dispatcher
   return $self->output($REQUEST, [$self->HTTP_UNIMPLEMENTED]);
 }
 
-sub output
+# Build the (\%headers, $body_bytes) for an [$status, $data, \%headers] controller
+# result -- the pure, I/O-free half of response emission. Both emission paths share
+# it: the page path (output, below) prints these into the STDOUT capture; the API
+# path (Everything::APIRouter::output) hands them to Everything::Response->from_cgi_parts
+# and RETURNS the response for app.psgi to finalize (no capture). Sharing the builder
+# keeps the two paths byte-equivalent. $body is undef for a header-only response.
+sub _build_response_parts
 {
-  my ($self, $REQUEST, $output) = @_;
+  my ($self, $output) = @_;
 
   my $response_code = $output->[0];
   my $data = $output->[1];
@@ -60,18 +66,30 @@ sub output
     $headers->{'Cache-Control'} = "private, no-cache, no-store, must-revalidate";
   }
 
-  print $REQUEST->header($headers);
+  my $body;
   if($data)
   {
     if($headers->{type} eq "application/json")
     {
-      print $self->APP->optimally_compress_page($self->JSON->encode($data));
+      $body = $self->APP->optimally_compress_page($self->JSON->encode($data));
     }else{
-      print $self->APP->optimally_compress_page($data);
+      $body = $self->APP->optimally_compress_page($data);
     }
   }
 
-  return 1; # Indicate success for callers checking route result
+  return ($headers, $body);
+}
+
+sub output
+{
+  my ($self, $REQUEST, $output) = @_;
+
+  my ($headers, $body) = $self->_build_response_parts($output);
+
+  print $REQUEST->header($headers);
+  print $body if defined $body;
+
+  return 1; # Indicate success for callers checking result (page path prints to capture)
 }
 
 __PACKAGE__->meta->make_immutable;
