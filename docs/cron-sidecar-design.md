@@ -1,6 +1,12 @@
 # Cron Sidecar Design — collapse e2cron-family onto the webheads via GET_LOCK
 
-**Status**: Design / proposed (June 2026)
+> **Implemented (#4246) — superseded by the as-built reference [cron-sidecar.md](cron-sidecar.md).**
+> This remains the original design rationale + cost analysis. Note the shipped build uses
+> the **`run_once` periodic model** (each webhead invokes a one-pass runner each minute and
+> contends for the lock per run), **not** the persistent single-leader daemon sketched below.
+> For how the system actually works and how to operate/cut it over, read cron-sidecar.md.
+
+**Status**: Design / proposed (June 2026) — see banner above
 **Driver**: cost. The dedicated cron Fargate tasks are ~half the Fargate+IPv4 bill.
 **Owner**: Jay Bonci
 

@@ -207,6 +207,51 @@ sub html {
     return $self;
 }
 
+=head2 from_cgi_parts(\%header_args, $body_bytes)
+
+The return-based twin of C<cgi_header>: build a finalize-able response from the
+same CGI-style header args that C<cgi_header> consumes (C<-type>/C<-status>/
+C<-charset>/C<-cookie>/custom C<-Foo> keys), plus an already-encoded body. Where
+C<cgi_header> emits a header-block *string* for the STDOUT-capture flow, this
+populates a L<Plack::Response> whose C<finalize> is a real PSGI triple -- so the
+API path can return a response that app.psgi finalizes directly, bypassing the
+capture (the #4237 capture-poisoning class). Both consume the SAME parse
+(C<_parse_header_args>), so the emitted fields are identical; t/131 pins it.
+
+Class or instance method. C<\%header_args> may be a hashref or an arrayref of
+pairs; C<$body_bytes> is the raw (already UTF-8-encoded) body, or undef for a
+header-only response.
+
+=cut
+
+sub from_cgi_parts {
+    my ( $proto, $args, $body ) = @_;
+    my $self = ref $proto ? $proto : $proto->new;
+    my @list = ref $args eq 'HASH' ? %$args : ref $args eq 'ARRAY' ? @$args : ();
+    my $p    = $self->_parse_header_args(@list);
+    my $r    = $self->res;
+
+    # Status: CGI emits "Status: NNN"; the capture parser pulls the 3-digit code.
+    # Mirror that (a bare integer or an "NNN Reason" string both reduce to NNN).
+    my ($code) = defined $p->{status} ? $p->{status} =~ /(\d{3})/ : ();
+    $r->status( $code || 200 );
+
+    # Content-Type (+ charset) assembled exactly as cgi_header does.
+    my $type = defined $p->{type} ? $p->{type} : 'text/html';
+    if ( defined $p->{charset} && length $p->{charset} && $type !~ /charset=/i ) {
+        $type .= '; charset=' . $p->{charset};
+    }
+    $r->content_type($type);
+
+    $r->headers->push_header( 'Set-Cookie' => $_ ) for @{ $p->{cookies} };
+    $r->header( $_->[0] => $_->[1] ) for @{ $p->{custom} };
+    $r->header( 'Content-Encoding' => $p->{content_encoding} ) if defined $p->{content_encoding};
+    $r->header( 'Content-Length'   => $p->{content_length} )   if defined $p->{content_length};
+
+    $r->body($body) if defined $body;
+    return $self;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
