@@ -52,6 +52,10 @@ use Encode;
 # For updateNewWriteups
 use Everything::DataStash::newwriteups;
 
+# Type-normalizes the e2 blob at its single source (buildNodeInfoStructure) so the
+# inline render and /api/pagestate emit the identical, correctly-typed contract.
+use Everything::PageState;
+
 # For parse_timestamp
 use Time::Local;
 
@@ -7728,6 +7732,13 @@ sub buildNodeInfoStructure
       publicKey => $conf->recaptcha_v3_public_key // ''
     };
   }
+
+  # Single normalization point: coerce integer-string ids (node_id, etc.) to real
+  # integers so React keys/truthy guards behave (#4152/#4108). Both consumers of this
+  # blob -- the inline page render and Everything::API::pagestate -- get the identical
+  # normalized contract. (The deeper fix is coercing in the stash generators, 2b; this
+  # per-render pass is the parity bridge until then.)
+  Everything::PageState->normalize_types($e2);
 
   return $e2;
 }

@@ -32,6 +32,16 @@ for my $e ( @{ $s->entries } ) {
 # frequent ones stay tight. Spot-check datastash (avg 172s observed) -> 600s.
 is( $s->entry('datastash')->{timeout}, 600, 'datastash timeout is 600s (>3x observed avg runtime)' );
 
+# generate-sitemap is the one heavy daily job (~50min). It MUST be detached (so it
+# doesn't block the tick / starve datastash / pin the lock) and its timeout MUST clear
+# the observed runtime with headroom (the old 1800s killed it mid-batch every night).
+ok( $s->entry('generate-sitemap')->{detached}, 'generate-sitemap is detached' );
+cmp_ok( $s->entry('generate-sitemap')->{timeout}, '>=', 3600,
+    'generate-sitemap timeout clears its ~50min runtime with headroom' );
+# Nothing frequent should ever be detached (detached defers completion off-tick).
+ok( !$s->entry('datastash')->{detached},     'datastash is NOT detached' );
+ok( !$s->entry('refresh-rooms')->{detached}, 'refresh-rooms is NOT detached' );
+
 # --- rate() due() -------------------------------------------------------------
 my $now = 1781018349;    # fixed reference epoch
 my $ds  = $s->entry('datastash');    # interval 120

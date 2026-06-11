@@ -78,6 +78,21 @@ describe('UsergroupEditor', () => {
       render(<UsergroupEditor {...defaultProps} usergroup={{ ...mockUsergroup, group: [] }} />)
       expect(screen.getByText('No members in this group')).toBeInTheDocument()
     })
+
+    // #4108: the server sends is_owner as 0/1 ints, not booleans. `{member.is_owner && …}`
+    // leaked a literal "0" on every non-owner row. Guard with `!!`.
+    it('renders no stray "0" for non-owner rows when is_owner is numeric 0', () => {
+      const numericGroup = {
+        ...mockUsergroup,
+        group: [
+          { node_id: 1, title: 'user1', type: 'user', is_owner: 1, flags: '' },
+          { node_id: 2, title: 'user2', type: 'user', is_owner: 0, flags: '' },
+        ],
+      }
+      render(<UsergroupEditor {...defaultProps} usergroup={numericGroup} />)
+      expect(screen.queryByText('0')).not.toBeInTheDocument()
+      expect(screen.getByText('owner')).toBeInTheDocument() // still shown for is_owner: 1
+    })
   })
 
   describe('close functionality', () => {

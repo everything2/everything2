@@ -1,0 +1,1502 @@
+{
+    "use_local_assets": 1,
+    "contentData": {
+        "current_type": 0,
+        "current_page": 0,
+        "current_count": 50,
+        "type_options": [
+            {
+                "value": 0,
+                "label": "All"
+            },
+            {
+                "label": "definition",
+                "value": 177599
+            },
+            {
+                "label": "dream",
+                "value": 1893266
+            },
+            {
+                "value": 1873013,
+                "label": "essay"
+            },
+            {
+                "label": "event",
+                "value": 1882121
+            },
+            {
+                "label": "fiction",
+                "value": 1871558
+            },
+            {
+                "value": 2100440,
+                "label": "help"
+            },
+            {
+                "label": "how-to",
+                "value": 1952055
+            },
+            {
+                "value": 251,
+                "label": "idea"
+            },
+            {
+                "value": 1795854,
+                "label": "lede"
+            },
+            {
+                "label": "log",
+                "value": 1871573
+            },
+            {
+                "label": "opinion",
+                "value": 2100439
+            },
+            {
+                "value": 249,
+                "label": "person"
+            },
+            {
+                "value": 1721675,
+                "label": "personal"
+            },
+            {
+                "value": 252,
+                "label": "place"
+            },
+            {
+                "label": "poetry",
+                "value": 1871559
+            },
+            {
+                "label": "recipe",
+                "value": 1871705
+            },
+            {
+                "value": 1871572,
+                "label": "review"
+            },
+            {
+                "label": "thing",
+                "value": 250
+            }
+        ],
+        "count_options": [
+            10,
+            25,
+            50,
+            75,
+            100,
+            150,
+            200,
+            250,
+            500
+        ],
+        "type": "writeups_by_type",
+        "current_type_name": "All",
+        "writeups": [
+            {
+                "title": "I was raised on red pepper and blood.  I am so hot if you strike me I will light like a match. (thing)",
+                "parent": {
+                    "node_id": 2214540,
+                    "title": "I was raised on red pepper and blood.  I am so hot if you strike me I will light like a match."
+                },
+                "author": {
+                    "node_id": 2213846,
+                    "title": "normaluser1"
+                },
+                "publishtime": "2026-06-09 20:16:42",
+                "writeup_type": "thing",
+                "node_id": 2214541
+            },
+            {
+                "parent": {
+                    "node_id": 2214542,
+                    "title": "Neiboku's Secret Library"
+                },
+                "title": "Neiboku's Secret Library (thing)",
+                "author": {
+                    "node_id": 2213846,
+                    "title": "normaluser1"
+                },
+                "publishtime": "2026-06-09 20:16:42",
+                "node_id": 2214543,
+                "writeup_type": "thing"
+            },
+            {
+                "writeup_type": "thing",
+                "node_id": 2214545,
+                "publishtime": "2026-06-09 20:16:42",
+                "author": {
+                    "title": "normaluser1",
+                    "node_id": 2213846
+                },
+                "title": "Star Trek #9: Triangle (review)",
+                "parent": {
+                    "node_id": 2214544,
+                    "title": "Star Trek #9: Triangle"
+                }
+            },
+            {
+                "author": {
+                    "node_id": 2213846,
+                    "title": "normaluser1"
+                },
+                "title": "writeup with bad cool info (thing)",
+                "parent": {
+                    "title": "writeup with bad cool info",
+                    "node_id": 2214536
+                },
+                "writeup_type": "thing",
+                "node_id": 2214537,
+                "publishtime": "2026-06-09 20:16:41"
+            },
+            {
+                "author": {
+                    "title": "normaluser1",
+                    "node_id": 2213846
+                },
+                "title": "Sense & Sensibility (thing)",
+                "parent": {
+                    "title": "Sense & Sensibility",
+                    "node_id": 2214538
+                },
+                "writeup_type": "thing",
+                "node_id": 2214539,
+                "publishtime": "2026-06-09 20:16:41"
+            },
+            {
+                "publishtime": "2026-06-09 20:16:39",
+                "node_id": 2214531,
+                "writeup_type": "thing",
+                "parent": null,
+                "title": "writeup with no parent (thing)",
+                "author": {
+                    "title": "normaluser1",
+                    "node_id": 2213846
+                }
+            },
+            {
+                "node_id": 2214533,
+                "writeup_type": "thing",
+                "publishtime": "2026-06-09 20:16:39",
+                "author": {
+                    "node_id": 2213846,
+                    "title": "normaluser1"
+                },
+                "parent": {
+                    "title": "writeup with a broken nodegroup",
+                    "node_id": 2214532
+                },
+                "title": "writeup with a broken nodegroup (thing)"
+            },
+            {
+                "author": null,
+                "title": "writeup with no owner (thing)",
+                "parent": {
+                    "node_id": 2214534,
+                    "title": "writeup with no owner"
+                },
+                "writeup_type": "thing",
+                "node_id": 2214535,
+                "publishtime": "2026-06-09 20:16:39"
+            },
+            {
+                "author": {
+                    "title": "genericdev",
+                    "node_id": 2213878
+                },
+                "title": "lukewarm dev announcement (thing)",
+                "parent": {
+                    "node_id": 2214518,
+                    "title": "lukewarm dev announcement"
+                },
+                "writeup_type": "thing",
+                "node_id": 2214519,
+                "publishtime": "2026-06-09 20:16:06"
+            },
+            {
+                "title": "root log: June 2026 (log)",
+                "parent": {
+                    "title": "root log: June 2026",
+                    "node_id": 2214520
+                },
+                "author": {
+                    "node_id": 2213878,
+                    "title": "genericdev"
+                },
+                "publishtime": "2026-06-09 20:16:06",
+                "writeup_type": "log",
+                "node_id": 2214521
+            },
+            {
+                "author": {
+                    "node_id": 2213878,
+                    "title": "genericdev"
+                },
+                "title": "tech symbols \u2699\ufe0f\ud83d\udcbb (thing)",
+                "parent": {
+                    "title": "tech symbols \u2699\ufe0f\ud83d\udcbb",
+                    "node_id": 2214522
+                },
+                "writeup_type": "thing",
+                "node_id": 2214523,
+                "publishtime": "2026-06-09 20:16:06"
+            },
+            {
+                "writeup_type": "log",
+                "node_id": 2214524,
+                "publishtime": "2026-06-09 20:16:06",
+                "author": {
+                    "node_id": 2213878,
+                    "title": "genericdev"
+                },
+                "title": "programming languages (log)",
+                "parent": {
+                    "title": "programming languages",
+                    "node_id": 2214403
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:06",
+                "node_id": 2214525,
+                "writeup_type": "essay",
+                "parent": {
+                    "title": "quantum communication networks",
+                    "node_id": 2214318
+                },
+                "title": "quantum communication networks (essay)",
+                "author": {
+                    "title": "normaluser23",
+                    "node_id": 2213868
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:06",
+                "node_id": 2214526,
+                "writeup_type": "thing",
+                "parent": {
+                    "node_id": 2214393,
+                    "title": "quantum biology emerging evidence"
+                },
+                "title": "quantum biology emerging evidence (thing)",
+                "author": {
+                    "title": "normaluser23",
+                    "node_id": 2213868
+                }
+            },
+            {
+                "node_id": 2214507,
+                "writeup_type": "essay",
+                "publishtime": "2026-06-09 20:16:05",
+                "author": {
+                    "node_id": 2213849,
+                    "title": "normaluser4"
+                },
+                "parent": {
+                    "node_id": 2214407,
+                    "title": "databases"
+                },
+                "title": "databases (essay)"
+            },
+            {
+                "author": {
+                    "title": "normaluser12",
+                    "node_id": 2213857
+                },
+                "title": "historical origins of the beverage (essay)",
+                "parent": {
+                    "title": "historical origins of the beverage",
+                    "node_id": 2214508
+                },
+                "writeup_type": "essay",
+                "node_id": 2214509,
+                "publishtime": "2026-06-09 20:16:05"
+            },
+            {
+                "author": {
+                    "node_id": 2213857,
+                    "title": "normaluser12"
+                },
+                "parent": {
+                    "title": "cupping protocols and evaluation",
+                    "node_id": 2214510
+                },
+                "title": "cupping protocols and evaluation (thing)",
+                "node_id": 2214511,
+                "writeup_type": "thing",
+                "publishtime": "2026-06-09 20:16:05"
+            },
+            {
+                "title": "boring dev announcement 1 (log)",
+                "parent": {
+                    "title": "boring dev announcement 1",
+                    "node_id": 2214512
+                },
+                "author": {
+                    "node_id": 2213878,
+                    "title": "genericdev"
+                },
+                "publishtime": "2026-06-09 20:16:05",
+                "writeup_type": "log",
+                "node_id": 2214513
+            },
+            {
+                "node_id": 2214515,
+                "writeup_type": "idea",
+                "publishtime": "2026-06-09 20:16:05",
+                "author": {
+                    "title": "genericdev",
+                    "node_id": 2213878
+                },
+                "parent": {
+                    "title": "boring dev announcement 2",
+                    "node_id": 2214514
+                },
+                "title": "boring dev announcement 2 (idea)"
+            },
+            {
+                "publishtime": "2026-06-09 20:16:05",
+                "node_id": 2214517,
+                "writeup_type": "lede",
+                "parent": {
+                    "node_id": 2214516,
+                    "title": "interesting dev announcement"
+                },
+                "title": "interesting dev announcement (lede)",
+                "author": {
+                    "title": "genericdev",
+                    "node_id": 2213878
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:04",
+                "node_id": 2214496,
+                "writeup_type": "idea",
+                "parent": {
+                    "title": "artificial intelligence",
+                    "node_id": 2214495
+                },
+                "title": "artificial intelligence (idea)",
+                "author": {
+                    "node_id": 2213849,
+                    "title": "normaluser4"
+                }
+            },
+            {
+                "writeup_type": "thing",
+                "node_id": 2214498,
+                "publishtime": "2026-06-09 20:16:04",
+                "author": {
+                    "title": "normaluser4",
+                    "node_id": 2213849
+                },
+                "title": "quantum computing (thing)",
+                "parent": {
+                    "title": "quantum computing",
+                    "node_id": 2214497
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:04",
+                "writeup_type": "essay",
+                "node_id": 2214500,
+                "title": "blockchain technology (essay)",
+                "parent": {
+                    "title": "blockchain technology",
+                    "node_id": 2214499
+                },
+                "author": {
+                    "node_id": 2213849,
+                    "title": "normaluser4"
+                }
+            },
+            {
+                "author": {
+                    "node_id": 2213849,
+                    "title": "normaluser4"
+                },
+                "title": "climate change (idea)",
+                "parent": {
+                    "node_id": 2214501,
+                    "title": "climate change"
+                },
+                "writeup_type": "idea",
+                "node_id": 2214502,
+                "publishtime": "2026-06-09 20:16:04"
+            },
+            {
+                "parent": {
+                    "node_id": 2214503,
+                    "title": "existentialism"
+                },
+                "title": "existentialism (thing)",
+                "author": {
+                    "title": "normaluser4",
+                    "node_id": 2213849
+                },
+                "publishtime": "2026-06-09 20:16:04",
+                "node_id": 2214504,
+                "writeup_type": "thing"
+            },
+            {
+                "writeup_type": "idea",
+                "node_id": 2214505,
+                "publishtime": "2026-06-09 20:16:04",
+                "author": {
+                    "title": "normaluser4",
+                    "node_id": 2213849
+                },
+                "title": "programming languages (idea)",
+                "parent": {
+                    "title": "programming languages",
+                    "node_id": 2214403
+                }
+            },
+            {
+                "writeup_type": "thing",
+                "node_id": 2214506,
+                "publishtime": "2026-06-09 20:16:04",
+                "author": {
+                    "title": "normaluser4",
+                    "node_id": 2213849
+                },
+                "title": "coffee (thing)",
+                "parent": {
+                    "node_id": 2214405,
+                    "title": "coffee"
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:03",
+                "node_id": 2214486,
+                "writeup_type": "thing",
+                "parent": {
+                    "title": "jazz improvisation",
+                    "node_id": 2214485
+                },
+                "title": "jazz improvisation (thing)",
+                "author": {
+                    "node_id": 2213850,
+                    "title": "normaluser5"
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:03",
+                "node_id": 2214488,
+                "writeup_type": "idea",
+                "parent": {
+                    "title": "dystopian fiction",
+                    "node_id": 2214487
+                },
+                "title": "dystopian fiction (idea)",
+                "author": {
+                    "node_id": 2213850,
+                    "title": "normaluser5"
+                }
+            },
+            {
+                "parent": {
+                    "title": "programming languages",
+                    "node_id": 2214403
+                },
+                "title": "programming languages (definition)",
+                "author": {
+                    "title": "normaluser5",
+                    "node_id": 2213850
+                },
+                "publishtime": "2026-06-09 20:16:03",
+                "node_id": 2214489,
+                "writeup_type": "definition"
+            },
+            {
+                "title": "coffee (essay)",
+                "parent": {
+                    "node_id": 2214405,
+                    "title": "coffee"
+                },
+                "author": {
+                    "title": "normaluser5",
+                    "node_id": 2213850
+                },
+                "publishtime": "2026-06-09 20:16:03",
+                "writeup_type": "essay",
+                "node_id": 2214490
+            },
+            {
+                "writeup_type": "thing",
+                "node_id": 2214491,
+                "publishtime": "2026-06-09 20:16:03",
+                "author": {
+                    "node_id": 2213850,
+                    "title": "normaluser5"
+                },
+                "title": "databases (thing)",
+                "parent": {
+                    "title": "databases",
+                    "node_id": 2214407
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:03",
+                "node_id": 2214492,
+                "writeup_type": "essay",
+                "parent": {
+                    "node_id": 2214478,
+                    "title": "quantum supremacy demonstrations"
+                },
+                "title": "quantum supremacy demonstrations (essay)",
+                "author": {
+                    "title": "normaluser20",
+                    "node_id": 2213865
+                }
+            },
+            {
+                "title": "quantum computing hardware platforms (thing)",
+                "parent": {
+                    "title": "quantum computing hardware platforms",
+                    "node_id": 2214493
+                },
+                "author": {
+                    "node_id": 2213865,
+                    "title": "normaluser20"
+                },
+                "publishtime": "2026-06-09 20:16:03",
+                "writeup_type": "thing",
+                "node_id": 2214494
+            },
+            {
+                "author": {
+                    "title": "normaluser3",
+                    "node_id": 2213848
+                },
+                "parent": {
+                    "title": "hebrew \u05e2\u05d1\u05e8\u05d9\u05ea",
+                    "node_id": 2214475
+                },
+                "title": "hebrew \u05e2\u05d1\u05e8\u05d9\u05ea (thing)",
+                "node_id": 2214476,
+                "writeup_type": "thing",
+                "publishtime": "2026-06-09 20:16:02"
+            },
+            {
+                "author": {
+                    "node_id": 2213869,
+                    "title": "normaluser24"
+                },
+                "title": "quantum tunneling through barriers (essay)",
+                "parent": {
+                    "node_id": 2214440,
+                    "title": "quantum tunneling through barriers"
+                },
+                "writeup_type": "essay",
+                "node_id": 2214477,
+                "publishtime": "2026-06-09 20:16:02"
+            },
+            {
+                "node_id": 2214479,
+                "writeup_type": "idea",
+                "publishtime": "2026-06-09 20:16:02",
+                "author": {
+                    "node_id": 2213869,
+                    "title": "normaluser24"
+                },
+                "parent": {
+                    "node_id": 2214478,
+                    "title": "quantum supremacy demonstrations"
+                },
+                "title": "quantum supremacy demonstrations (idea)"
+            },
+            {
+                "writeup_type": "idea",
+                "node_id": 2214480,
+                "publishtime": "2026-06-09 20:16:02",
+                "author": {
+                    "node_id": 2213870,
+                    "title": "normaluser25"
+                },
+                "title": "quantum sensing and metrology (idea)",
+                "parent": {
+                    "title": "quantum sensing and metrology",
+                    "node_id": 2214410
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:02",
+                "node_id": 2214482,
+                "writeup_type": "definition",
+                "parent": {
+                    "node_id": 2214481,
+                    "title": "machine learning"
+                },
+                "title": "machine learning (definition)",
+                "author": {
+                    "node_id": 2213850,
+                    "title": "normaluser5"
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:02",
+                "writeup_type": "essay",
+                "node_id": 2214484,
+                "title": "renewable energy (essay)",
+                "parent": {
+                    "node_id": 2214483,
+                    "title": "renewable energy"
+                },
+                "author": {
+                    "title": "normaluser5",
+                    "node_id": 2213850
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:01",
+                "writeup_type": "thing",
+                "node_id": 2214464,
+                "title": "Writeup w/ slash (thing)",
+                "parent": {
+                    "node_id": 2214463,
+                    "title": "Writeup w/ slash"
+                },
+                "author": {
+                    "title": "normaluser3",
+                    "node_id": 2213848
+                }
+            },
+            {
+                "parent": {
+                    "title": "Writeups & ampersands",
+                    "node_id": 2214465
+                },
+                "title": "Writeups & ampersands (thing)",
+                "author": {
+                    "node_id": 2213848,
+                    "title": "normaluser3"
+                },
+                "publishtime": "2026-06-09 20:16:01",
+                "node_id": 2214466,
+                "writeup_type": "thing"
+            },
+            {
+                "writeup_type": "essay",
+                "node_id": 2214468,
+                "publishtime": "2026-06-09 20:16:01",
+                "author": {
+                    "title": "normaluser3",
+                    "node_id": 2213848
+                },
+                "title": "Writeup; semicolon (essay)",
+                "parent": {
+                    "title": "Writeup; semicolon",
+                    "node_id": 2214467
+                }
+            },
+            {
+                "publishtime": "2026-06-09 20:16:01",
+                "writeup_type": "idea",
+                "node_id": 2214470,
+                "title": "Writeups can have questions? (idea)",
+                "parent": {
+                    "title": "Writeups can have questions?",
+                    "node_id": 2214469
+                },
+                "author": {
+                    "node_id": 2213848,
+                    "title": "normaluser3"
+                }
+            },
+            {
+                "writeup_type": "thing",
+                "node_id": 2214472,
+                "publishtime": "2026-06-09 20:16:01",
+                "author": {
+                    "node_id": 2213848,
+                    "title": "normaluser3"
+                },
+                "title": "cyrillic \u041f\u0440\u0438\u0432\u0435\u0442 (thing)",
+                "parent": {
+                    "title": "cyrillic \u041f\u0440\u0438\u0432\u0435\u0442",
+                    "node_id": 2214471
+                }
+            },
+            {
+                "writeup_type": "idea",
+                "node_id": 2214474,
+                "publishtime": "2026-06-09 20:16:01",
+                "author": {
+                    "title": "normaluser3",
+                    "node_id": 2213848
+                },
+                "title": "greek \u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac (idea)",
+                "parent": {
+                    "node_id": 2214473,
+                    "title": "greek \u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac"
+                }
+            },
+            {
+                "parent": {
+                    "node_id": 2214453,
+                    "title": "zodiac signs \u2648\u2649"
+                },
+                "title": "zodiac signs \u2648\u2649 (idea)",
+                "author": {
+                    "title": "normaluser2",
+                    "node_id": 2213847
+                },
+                "publishtime": "2026-06-09 20:16:00",
+                "node_id": 2214454,
+                "writeup_type": "idea"
+            },
+            {
+                "author": {
+                    "title": "normaluser2",
+                    "node_id": 2213847
+                },
+                "title": "hearts and flowers \u2764\ud83c\udf38 (thing)",
+                "parent": {
+                    "node_id": 2214455,
+                    "title": "hearts and flowers \u2764\ud83c\udf38"
+                },
+                "writeup_type": "thing",
+                "node_id": 2214456,
+                "publishtime": "2026-06-09 20:16:00"
+            },
+            {
+                "publishtime": "2026-06-09 20:16:00",
+                "node_id": 2214458,
+                "writeup_type": "idea",
+                "parent": {
+                    "node_id": 2214457,
+                    "title": "animals \ud83d\udc15\ud83d\udc08"
+                },
+                "title": "animals \ud83d\udc15\ud83d\udc08 (idea)",
+                "author": {
+                    "title": "normaluser2",
+                    "node_id": 2213847
+                }
+            },
+            {
+                "author": {
+                    "title": "normaluser27",
+                    "node_id": 2213872
+                },
+                "title": "quantum dots in nanotechnology (idea)",
+                "parent": {
+                    "node_id": 2214298,
+                    "title": "quantum dots in nanotechnology"
+                },
+                "writeup_type": "idea",
+                "node_id": 2214459,
+                "publishtime": "2026-06-09 20:16:00"
+            }
+        ]
+    },
+    "lastCommit": "c45169a62063acf7f5fdee953964d1adf974c152",
+    "staffpicks": [
+        {
+            "title": "tomato",
+            "type": "e2node",
+            "node_id": 2214383
+        },
+        {
+            "node_id": 2214381,
+            "title": "good poetry",
+            "type": "e2node"
+        },
+        {
+            "title": "Quick brown fox",
+            "type": "e2node",
+            "node_id": 2214322
+        }
+    ],
+    "node": {
+        "title": "Writeups by Type",
+        "type": "superdoc",
+        "node_id": 1924773,
+        "createtime": 1781036099
+    },
+    "recaptcha": {
+        "enabled": false,
+        "publicKey": "6LeF2BwsAAAAAMrkwFG7CXJmF6p0hV2swBxYfqc2"
+    },
+    "assets_location": "",
+    "developerNodelet": {},
+    "display_prefs": {
+        "rtn_hideedc": 0,
+        "vit_hidenodeinfo": 0,
+        "edn_hideutil": 0,
+        "vit_hidelist": 0,
+        "vit_hidemaintenance": 0,
+        "vit_hidemisc": 0,
+        "rtn_hidecwu": 0,
+        "rtn_hidenws": 0,
+        "num_newwus": "10",
+        "nw_nojunk": false,
+        "vit_hidenodeutil": 0,
+        "edn_hideedev": 0
+    },
+    "reactPageMode": true,
+    "chatterbox": {
+        "showMessagesInChatterbox": 1,
+        "messages": [],
+        "miniMessages": [],
+        "roomName": "outside",
+        "roomTopic": "Test topic from gift shop test"
+    },
+    "newWriteups": [
+        {
+            "parent": {
+                "node_id": 2217712,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781105218"
+            },
+            "title": "Test Vote API Node 1781105218",
+            "author": {
+                "type": "user",
+                "title": "normaluser2",
+                "node_id": 2213847
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2217713,
+            "writeuptype": null
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2217669,
+            "writeuptype": null,
+            "parent": {
+                "node_id": 2217668,
+                "title": "Test Parent for Toggle 1781105135",
+                "type": "e2node"
+            },
+            "title": "Test Writeup for Toggle 1781105135",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "node_id": 2217666,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "parent": {
+                "node_id": 2217665,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781105135"
+            },
+            "title": "Test Writeup for Auth 1781105135"
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2217664,
+            "writeuptype": null,
+            "notnew": false,
+            "parent": {
+                "title": "Test Parent for Show",
+                "type": "e2node",
+                "node_id": 2217663
+            },
+            "title": "Test Writeup for Show",
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "parent": {
+                "node_id": 2217394,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781103745"
+            },
+            "title": "Test Vote API Node 1781103745",
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2217395,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217351,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "title": "Test Writeup for Toggle 1781103629",
+            "parent": {
+                "node_id": 2217350,
+                "title": "Test Parent for Toggle 1781103629",
+                "type": "e2node"
+            }
+        },
+        {
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217348,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Auth 1781103628",
+            "parent": {
+                "node_id": 2217347,
+                "title": "Test Parent for Auth 1781103628",
+                "type": "e2node"
+            }
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2217346,
+            "notnew": false,
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "title": "Test Vote API Node 1781097864",
+            "parent": {
+                "node_id": 2217076,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781097864"
+            },
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217077,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2217033,
+            "writeuptype": null,
+            "notnew": false,
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781097784",
+                "node_id": 2217032
+            },
+            "title": "Test Writeup for Toggle 1781097784",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "node_id": 2217030,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "parent": {
+                "title": "Test Parent for Auth 1781097784",
+                "type": "e2node",
+                "node_id": 2217029
+            },
+            "title": "Test Writeup for Auth 1781097784"
+        },
+        {
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217028,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "title": "Test Writeup for Show"
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "normaluser2",
+                "node_id": 2213847
+            },
+            "parent": {
+                "node_id": 2216758,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781067231"
+            },
+            "title": "Test Vote API Node 1781067231",
+            "node_id": 2216759,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "node_id": 2216715,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "parent": {
+                "node_id": 2216714,
+                "title": "Test Parent for Toggle 1781067133",
+                "type": "e2node"
+            },
+            "title": "Test Writeup for Toggle 1781067133"
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2216712,
+            "writeuptype": null,
+            "notnew": false,
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781067133",
+                "node_id": 2216711
+            },
+            "title": "Test Writeup for Auth 1781067133",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2216710,
+            "notnew": false
+        },
+        {
+            "notnew": false,
+            "node_id": 2216441,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "parent": {
+                "node_id": 2216440,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781066250"
+            },
+            "title": "Test Vote API Node 1781066250"
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "title": "Test Writeup for Toggle 1781066129",
+            "parent": {
+                "title": "Test Parent for Toggle 1781066129",
+                "type": "e2node",
+                "node_id": 2216396
+            },
+            "writeuptype": null,
+            "node_id": 2216397,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "node_id": 2216394,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781066129",
+                "node_id": 2216393
+            },
+            "title": "Test Writeup for Auth 1781066129"
+        },
+        {
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show",
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216392,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "title": "Test Vote API Node 1781062572",
+            "parent": {
+                "node_id": 2216122,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781062572"
+            },
+            "writeuptype": null,
+            "node_id": 2216123,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "parent": {
+                "node_id": 2216078,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781062493"
+            },
+            "title": "Test Writeup for Toggle 1781062493",
+            "node_id": 2216079,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2216076,
+            "writeuptype": null,
+            "parent": {
+                "node_id": 2216075,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781062492"
+            },
+            "title": "Test Writeup for Auth 1781062492",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "title": "Test Writeup for Show",
+            "notnew": false,
+            "node_id": 2216074,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "title": "Test Vote API Node 1781039814",
+            "parent": {
+                "title": "Test Vote API Node 1781039814",
+                "type": "e2node",
+                "node_id": 2215716
+            },
+            "writeuptype": null,
+            "node_id": 2215718,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "title": "Multi Source 1781039808 (thing)",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215704,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "parent": {
+                "node_id": 2215678,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781039794"
+            },
+            "title": "Test Writeup for Toggle 1781039794",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215679,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "parent": {
+                "node_id": 2215675,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781039794"
+            },
+            "title": "Test Writeup for Auth 1781039794",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2215676,
+            "writeuptype": null
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show",
+            "notnew": false,
+            "node_id": 2215674,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "title": "Test Vote API Node 1781038715",
+            "parent": {
+                "node_id": 2215400,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781038715"
+            },
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215402
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215361,
+            "title": "Test Writeup for Toggle 1781038693",
+            "parent": {
+                "node_id": 2215360,
+                "title": "Test Parent for Toggle 1781038693",
+                "type": "e2node"
+            },
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215358,
+            "title": "Test Writeup for Auth 1781038693",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781038693",
+                "node_id": 2215357
+            },
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            }
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show",
+            "node_id": 2215356,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        }
+    ],
+    "title": "Writeups by Type",
+    "pageheader": {},
+    "node_id": 1924773,
+    "nodetype": "superdoc",
+    "architecture": "x86_64",
+    "user": {
+        "guest": true,
+        "admin": false,
+        "node_id": 779713,
+        "title": "Guest User",
+        "developer": true,
+        "chanop": false,
+        "in_room": "0",
+        "editor": false
+    },
+    "hasMessagesNodelet": 0,
+    "guest": 1,
+    "coolnodes": [
+        {
+            "parentNode": 2214381,
+            "coolwriteups_id": 2214382,
+            "latest_cool": "2026-06-09 20:16:43",
+            "wu_author": "user with space",
+            "writeupCooled": 20,
+            "parentTitle": "good poetry"
+        },
+        {
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": null,
+            "coolwriteups_id": 2214531,
+            "latest_cool": "2026-06-09 20:16:43",
+            "parentNode": 0
+        },
+        {
+            "coolwriteups_id": 2214533,
+            "latest_cool": "2026-06-09 20:16:43",
+            "parentNode": 2214532,
+            "wu_author": "normaluser1",
+            "parentTitle": "writeup with a broken nodegroup",
+            "writeupCooled": 1
+        },
+        {
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214535,
+            "parentNode": 2214534,
+            "writeupCooled": 1,
+            "parentTitle": "writeup with no owner",
+            "wu_author": null
+        },
+        {
+            "parentTitle": "Quick brown fox",
+            "writeupCooled": 1,
+            "wu_author": "normaluser1",
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214323,
+            "parentNode": 2214322
+        },
+        {
+            "coolwriteups_id": 2214325,
+            "latest_cool": "2026-06-09 20:16:42",
+            "parentNode": 2214324,
+            "wu_author": "normaluser1",
+            "parentTitle": "lazy dog",
+            "writeupCooled": 1
+        },
+        {
+            "wu_author": "normaluser1",
+            "parentTitle": "regular brown fox",
+            "writeupCooled": 1,
+            "parentNode": 2214326,
+            "coolwriteups_id": 2214327,
+            "latest_cool": "2026-06-09 20:16:42"
+        },
+        {
+            "parentNode": 2214445,
+            "coolwriteups_id": 2214446,
+            "latest_cool": "2026-06-09 20:16:42",
+            "wu_author": "normaluser2",
+            "writeupCooled": 1,
+            "parentTitle": "swedish tomato\u00eb"
+        },
+        {
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214530,
+            "parentNode": 2214529,
+            "writeupCooled": 1,
+            "parentTitle": "writeup with a broken type",
+            "wu_author": "normaluser1"
+        },
+        {
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": "writeup with bad cool info",
+            "coolwriteups_id": 2214537,
+            "latest_cool": "2026-06-09 20:16:41",
+            "parentNode": 2214536
+        }
+    ]
+}

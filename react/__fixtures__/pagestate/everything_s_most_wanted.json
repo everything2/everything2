@@ -1,0 +1,911 @@
+{
+    "staffpicks": [
+        {
+            "node_id": 2214383,
+            "title": "tomato",
+            "type": "e2node"
+        },
+        {
+            "node_id": 2214381,
+            "type": "e2node",
+            "title": "good poetry"
+        },
+        {
+            "node_id": 2214322,
+            "type": "e2node",
+            "title": "Quick brown fox"
+        }
+    ],
+    "use_local_assets": 1,
+    "contentData": {
+        "csrf_nonce": "ddc18dc79046a580ea51415b8a3ac951",
+        "gp_optout": 0,
+        "has_bounty": 0,
+        "csrf_seed": "841451525",
+        "can_post": 0,
+        "bounty_limit": 0,
+        "is_sheriff": 0,
+        "is_admin": 0,
+        "type": "everything_s_most_wanted",
+        "message": null,
+        "justice_served": [
+            "[nuggets] tracked down [kinesin] and earned 200 GP from [Tem42]!",
+            "[Estelore] hauled in [Eros rose, sore.] and earned a bounty from [decoy hunches] of 420 GP + a C!",
+            "[Rancid_Pickle] tracked down [Madonna] and earned 40 GP from [StuartO)))]!",
+            "[drownzsurf] tracked down [Jimmy Buffett] and earned 25 GP from [borgo]!",
+            "[mjijm] tracked down [Philosophus Stone and the Sound of Terror!] and earned 200 GP from [Zephronias]!"
+        ],
+        "bounties": [
+            {
+                "requester": "eh2",
+                "outlaw": "[Stratford Festival]",
+                "comment": "Good writeup - weblogged to the [eh2] page<br> amazing writeup - upvotes &amp; C!s from the user group<br> jawdroppingly awesome writeup - A Tim Horton's gift certificate<br><br>(Contact [Lord Brawl])",
+                "reward": "N/A",
+                "number": "2"
+            },
+            {
+                "requester": "e2hockey",
+                "outlaw": "[Los Angeles Kings]",
+                "comment": "Not currently a nodeshell, but easily could be.<br><small>It's a sort of a threat, you see[Slartibartfast|.]</small>  <br><br>bad writeup - A good ol'-fashioned sweater-over-head [goon]ing<br> good writeup - weblogged to the [e2hockey] page<br> amazing writeup - upvotes &amp; C!s from the user group<br><br>(Contact [Lord Brawl])",
+                "number": "4",
+                "reward": "N/A"
+            },
+            {
+                "number": "5",
+                "reward": "50",
+                "outlaw": "Famous Georges: [George Allen] (the Redskins owner), [George Brett], and/or [Gorgeous George] (aka [George Wagner])",
+                "comment": "bad writeup - a \"John 3:16\" sign pointed in your direction<br /> good writeup - a C! from me and possibly a visit from [Morgana the Kissing Bandit]<br /> amazing writeup - 50 GP and an autographed picture of the [San Diego Chicken]",
+                "requester": "kthejoker"
+            },
+            {
+                "number": "6",
+                "reward": "N/A",
+                "outlaw": "[Nevil Shute] or any of his books",
+                "comment": "Thoughtful and soulful writeups will earn rare signed first edition copies of Halspal's book [Humane Society] and his infinite favor. See www.nevilshute.org for the starter kit.",
+                "requester": "Halspal"
+            },
+            {
+                "outlaw": "[Michael Jackson]",
+                "comment": "Could do with a bit of updating. So to speak.<br><br>Rewards? Undying love and C!, and if you are really good, a gift from a friendly god.",
+                "requester": "ReiToei",
+                "number": "8",
+                "reward": "N/A"
+            },
+            {
+                "requester": "Heisenberg",
+                "outlaw": "Writeups relating to [ITALO DISCO]!",
+                "comment": "I'd be happy to send every noder with a good new w/u about Italo Disco a cool mix cd with my favourite (you guessed it) ITALO DISCO!!",
+                "reward": "N/A",
+                "number": "10"
+            },
+            {
+                "number": "37",
+                "reward": "300",
+                "comment": "Tallu was, as they say, \"mad, bad, and dangerous to know\", but the existing w/u gives us no idea why. She had an interesting history, both because of her family, and as a performer. Make us proud, and not only will you get 300 GP, but a disc containing all her '[The Big Show]' broadcasts still existing. Aside from the kitsch value, it's a great listen into the last gasp of big network radio.",
+                "outlaw": "[Tallulah Bankhead]",
+                "requester": "joer"
+            },
+            {
+                "outlaw": "[Martha Vickers]",
+                "comment": "Actress who played Carmen in [The Big Sleep],  I need more information.  We'll discuss rewards in a coffee shop later on.",
+                "requester": "TheDeadGuy",
+                "reward": "N/A",
+                "number": "40"
+            },
+            {
+                "requester": "liveforever",
+                "comment": "I'll award up to 50 GP, depending on quality -- and a ching if it merits it. ",
+                "outlaw": "[Pueyrredones]",
+                "reward": "50",
+                "number": "50"
+            },
+            {
+                "comment": "Why in the hell is there no writeup for the TV series? If you do a good job, you get a C! from me, and can request which original series Doctor Who story I write up next. I do not just want to hear about [Emma Peel], you must discuss all the main characters who worked with Steed (including boring old Keel). Try this site for starters: [http://theavengers.tv/forever/guide.htm]",
+                "outlaw": "[The Avengers]",
+                "requester": "Morwen",
+                "reward": "N/A",
+                "number": "55"
+            },
+            {
+                "comment": "I'll upvote and ching a solid writeup. I'll even mail you a postcard, if you want.",
+                "outlaw": "[Antiterrorism and Effective Death Penalty Act (AEDPA)]",
+                "requester": "randombit",
+                "reward": "N/A",
+                "number": "57"
+            },
+            {
+                "reward": "30",
+                "number": "59",
+                "outlaw": "[John Lasseter]",
+                "comment": "When you steal the mantle of most influential animator from Walt Disney, when they buy your company to get you to save their ailing company, when you've got Hiyao Miyazaki's phone number programmed into your cell, I think you deserve a writeup here.",
+                "requester": "e2reneta"
+            },
+            {
+                "requester": "The Custodian",
+                "comment": "The man just passed away and deserves recognition.",
+                "outlaw": "[John Hughes]",
+                "reward": "100",
+                "number": "60"
+            },
+            {
+                "outlaw": "[John Lilburne]",
+                "comment": "The biggest badass of the British 17th Century...  England's Thomas Paine, only with a better moustache. A snotty, opinionated fiercely educated revolutionary who personally made life about as difficult for the Roundheads as anyone could hope. Imprisoned, unimprisoned, imprisoned again...  Makes Ben Franklin look like a royalist.  The man deserves a decent writeup.",
+                "requester": "Auduster",
+                "reward": "5",
+                "number": "62"
+            },
+            {
+                "requester": "Auspice",
+                "outlaw": "[Qliphoth]",
+                "comment": "We've got the [Tree of Life] well-noded, now tell me all about the dark side. Bonus points may be award for separate nodes about the dark aspects of each of the sefira.",
+                "reward": "500",
+                "number": "78"
+            },
+            {
+                "comment": "Cover the book and film well, and you'll get an upvote, a C!, and a message of appreciation.",
+                "outlaw": "[Revolutionary Road]",
+                "requester": "Posmella",
+                "number": "87",
+                "reward": "N/A"
+            },
+            {
+                "reward": "15",
+                "number": "90",
+                "comment": "Probably chinged because [Veruca Salt] is better than Everything.",
+                "outlaw": "[Blow it out your ass it's Veruca Salt]",
+                "requester": "schizophasic"
+            },
+            {
+                "number": "96",
+                "reward": "200",
+                "requester": "Clockmaker",
+                "comment": "The node is terribly subpar, with the first writeup as of the time of writing consisting of about 50% aggressive falsehood by volume. A good writeup that doesn't talk nonsense about unsubstantiated \u00ef\u00bf\u00bdprimordial mythologies\u00ef\u00bf\u00bd will earn a ching, and I can egg you until I get tired of it.",
+                "outlaw": "[Oracle of Apollo at Delphi]"
+            },
+            {
+                "number": "98",
+                "reward": "100",
+                "outlaw": "[Janet Reno]",
+                "comment": "She deserves a good biography.",
+                "requester": "wertperch"
+            },
+            {
+                "outlaw": "[Al Pacino]",
+                "comment": "C! awaits anybody who does this justice",
+                "requester": "borgo",
+                "number": "100",
+                "reward": "100"
+            },
+            {
+                "requester": "mauler",
+                "outlaw": "[Extremadura]",
+                "comment": "One of the main regions of Spain, the one which produced most of the famous conquistadors.",
+                "reward": "500",
+                "number": "102"
+            },
+            {
+                "outlaw": "[Birdman: Or (The Unexpected Virtue of Ignorance)]",
+                "comment": "Such an interesting movie, yet not even a review for it. Review or summary will get you GP. Both make you eligible for a ching. Going above and beyond will be duly noted and rewarded",
+                "requester": "andycyca",
+                "reward": "150",
+                "number": "111"
+            },
+            {
+                "number": "112",
+                "reward": "400",
+                "requester": "GhettoAardvark",
+                "outlaw": "[touch grass]",
+                "comment": "C!s for the node and the noder alike!"
+            },
+            {
+                "comment": "&nbsp;",
+                "outlaw": "[tortured artist]",
+                "requester": "ameriwire",
+                "number": "113",
+                "reward": "650"
+            },
+            {
+                "outlaw": "[Big Bang Bar]",
+                "comment": "A quality writeup on one of the rarest and more sought after pinball machines of all time, with reference to what it is like to play actually in the flesh rather than in emulation, and get a jackpot of GP. For the wizard mode: write about actually owning such a machine, and get a triple super jackpot.",
+                "requester": "Hazelnut",
+                "number": "115",
+                "reward": "555"
+            }
+        ],
+        "min_level": 3,
+        "current_bounty": null,
+        "user_gp": 0,
+        "bounty_number": 0,
+        "user_level": 0
+    },
+    "lastCommit": "c45169a62063acf7f5fdee953964d1adf974c152",
+    "recaptcha": {
+        "publicKey": "6LeF2BwsAAAAAMrkwFG7CXJmF6p0hV2swBxYfqc2",
+        "enabled": false
+    },
+    "assets_location": "",
+    "developerNodelet": {},
+    "node": {
+        "createtime": 1781036100,
+        "node_id": 1986695,
+        "type": "superdoc",
+        "title": "Everything's Most Wanted"
+    },
+    "newWriteups": [
+        {
+            "title": "Test Vote API Node 1781105218",
+            "parent": {
+                "title": "Test Vote API Node 1781105218",
+                "type": "e2node",
+                "node_id": 2217712
+            },
+            "author": {
+                "type": "user",
+                "title": "normaluser2",
+                "node_id": 2213847
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217713
+        },
+        {
+            "title": "Test Writeup for Toggle 1781105135",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781105135",
+                "node_id": 2217668
+            },
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2217669,
+            "notnew": false
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781105135",
+                "node_id": 2217665
+            },
+            "title": "Test Writeup for Auth 1781105135",
+            "node_id": 2217666,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2217664,
+            "writeuptype": null,
+            "parent": {
+                "title": "Test Parent for Show",
+                "type": "e2node",
+                "node_id": 2217663
+            },
+            "title": "Test Writeup for Show",
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "normaluser2",
+                "node_id": 2213847
+            },
+            "parent": {
+                "node_id": 2217394,
+                "title": "Test Vote API Node 1781103745",
+                "type": "e2node"
+            },
+            "title": "Test Vote API Node 1781103745",
+            "node_id": 2217395,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781103629",
+                "node_id": 2217350
+            },
+            "title": "Test Writeup for Toggle 1781103629",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2217351,
+            "writeuptype": null
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2217348,
+            "notnew": false,
+            "title": "Test Writeup for Auth 1781103628",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781103628",
+                "node_id": 2217347
+            },
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            }
+        },
+        {
+            "title": "Test Writeup for Show",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217346
+        },
+        {
+            "title": "Test Vote API Node 1781097864",
+            "parent": {
+                "node_id": 2217076,
+                "title": "Test Vote API Node 1781097864",
+                "type": "e2node"
+            },
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217077
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2217033,
+            "writeuptype": null,
+            "notnew": false,
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781097784",
+                "node_id": 2217032
+            },
+            "title": "Test Writeup for Toggle 1781097784",
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "title": "Test Writeup for Auth 1781097784",
+            "parent": {
+                "node_id": 2217029,
+                "title": "Test Parent for Auth 1781097784",
+                "type": "e2node"
+            },
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217030,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2217028,
+            "notnew": false,
+            "title": "Test Writeup for Show",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            }
+        },
+        {
+            "title": "Test Vote API Node 1781067231",
+            "parent": {
+                "node_id": 2216758,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781067231"
+            },
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216759
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216715,
+            "title": "Test Writeup for Toggle 1781067133",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781067133",
+                "node_id": 2216714
+            },
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216712,
+            "title": "Test Writeup for Auth 1781067133",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781067133",
+                "node_id": 2216711
+            },
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "title": "Test Writeup for Show",
+            "notnew": false,
+            "node_id": 2216710,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "notnew": false,
+            "node_id": 2216441,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "parent": {
+                "title": "Test Vote API Node 1781066250",
+                "type": "e2node",
+                "node_id": 2216440
+            },
+            "title": "Test Vote API Node 1781066250"
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2216397,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Toggle 1781066129",
+            "parent": {
+                "title": "Test Parent for Toggle 1781066129",
+                "type": "e2node",
+                "node_id": 2216396
+            }
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216394,
+            "title": "Test Writeup for Auth 1781066129",
+            "parent": {
+                "node_id": 2216393,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781066129"
+            },
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "title": "Test Writeup for Show",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2216392,
+            "notnew": false
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2216123,
+            "notnew": false,
+            "title": "Test Vote API Node 1781062572",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781062572",
+                "node_id": 2216122
+            },
+            "author": {
+                "type": "user",
+                "title": "normaluser2",
+                "node_id": 2213847
+            }
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781062493",
+                "node_id": 2216078
+            },
+            "title": "Test Writeup for Toggle 1781062493",
+            "notnew": false,
+            "node_id": 2216079,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2216076,
+            "notnew": false,
+            "title": "Test Writeup for Auth 1781062492",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781062492",
+                "node_id": 2216075
+            },
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show",
+            "writeuptype": null,
+            "node_id": 2216074,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2215718,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "type": "user",
+                "title": "normaluser2",
+                "node_id": 2213847
+            },
+            "title": "Test Vote API Node 1781039814",
+            "parent": {
+                "title": "Test Vote API Node 1781039814",
+                "type": "e2node",
+                "node_id": 2215716
+            }
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "title": "Multi Source 1781039808 (thing)",
+            "notnew": false,
+            "node_id": 2215704,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "parent": {
+                "node_id": 2215678,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781039794"
+            },
+            "title": "Test Writeup for Toggle 1781039794",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215679,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "title": "Test Writeup for Auth 1781039794",
+            "parent": {
+                "title": "Test Parent for Auth 1781039794",
+                "type": "e2node",
+                "node_id": 2215675
+            },
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215676
+        },
+        {
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show",
+            "notnew": false,
+            "node_id": 2215674,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "node_id": 2215402,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781038715",
+                "node_id": 2215400
+            },
+            "title": "Test Vote API Node 1781038715"
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2215361,
+            "notnew": false,
+            "title": "Test Writeup for Toggle 1781038693",
+            "parent": {
+                "title": "Test Parent for Toggle 1781038693",
+                "type": "e2node",
+                "node_id": 2215360
+            },
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "parent": {
+                "node_id": 2215357,
+                "title": "Test Parent for Auth 1781038693",
+                "type": "e2node"
+            },
+            "title": "Test Writeup for Auth 1781038693",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215358,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2215356,
+            "notnew": false,
+            "title": "Test Writeup for Show",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            }
+        }
+    ],
+    "title": "Everything's Most Wanted",
+    "display_prefs": {
+        "nw_nojunk": false,
+        "num_newwus": "10",
+        "edn_hideedev": 0,
+        "vit_hidenodeutil": 0,
+        "vit_hidelist": 0,
+        "edn_hideutil": 0,
+        "rtn_hideedc": 0,
+        "vit_hidenodeinfo": 0,
+        "rtn_hidenws": 0,
+        "vit_hidemisc": 0,
+        "vit_hidemaintenance": 0,
+        "rtn_hidecwu": 0
+    },
+    "reactPageMode": true,
+    "chatterbox": {
+        "roomTopic": "Test topic from gift shop test",
+        "miniMessages": [],
+        "roomName": "outside",
+        "messages": [],
+        "showMessagesInChatterbox": 1
+    },
+    "architecture": "x86_64",
+    "hasMessagesNodelet": 0,
+    "user": {
+        "admin": false,
+        "node_id": 779713,
+        "guest": true,
+        "chanop": false,
+        "in_room": "0",
+        "editor": false,
+        "title": "Guest User",
+        "developer": true
+    },
+    "guest": 1,
+    "coolnodes": [
+        {
+            "wu_author": "user with space",
+            "parentTitle": "good poetry",
+            "writeupCooled": 20,
+            "parentNode": 2214381,
+            "coolwriteups_id": 2214382,
+            "latest_cool": "2026-06-09 20:16:43"
+        },
+        {
+            "coolwriteups_id": 2214531,
+            "latest_cool": "2026-06-09 20:16:43",
+            "parentNode": 0,
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": null
+        },
+        {
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214533,
+            "parentNode": 2214532,
+            "writeupCooled": 1,
+            "parentTitle": "writeup with a broken nodegroup",
+            "wu_author": "normaluser1"
+        },
+        {
+            "parentTitle": "writeup with no owner",
+            "writeupCooled": 1,
+            "wu_author": null,
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214535,
+            "parentNode": 2214534
+        },
+        {
+            "parentTitle": "Quick brown fox",
+            "writeupCooled": 1,
+            "wu_author": "normaluser1",
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214323,
+            "parentNode": 2214322
+        },
+        {
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214325,
+            "parentNode": 2214324,
+            "writeupCooled": 1,
+            "parentTitle": "lazy dog",
+            "wu_author": "normaluser1"
+        },
+        {
+            "parentNode": 2214326,
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214327,
+            "writeupCooled": 1,
+            "parentTitle": "regular brown fox",
+            "wu_author": "normaluser1"
+        },
+        {
+            "parentTitle": "swedish tomato\u00eb",
+            "writeupCooled": 1,
+            "wu_author": "normaluser2",
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214446,
+            "parentNode": 2214445
+        },
+        {
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": "writeup with a broken type",
+            "parentNode": 2214529,
+            "coolwriteups_id": 2214530,
+            "latest_cool": "2026-06-09 20:16:42"
+        },
+        {
+            "latest_cool": "2026-06-09 20:16:41",
+            "coolwriteups_id": 2214537,
+            "parentNode": 2214536,
+            "parentTitle": "writeup with bad cool info",
+            "writeupCooled": 1,
+            "wu_author": "normaluser1"
+        }
+    ],
+    "pageheader": {},
+    "nodetype": "superdoc",
+    "node_id": 1986695
+}

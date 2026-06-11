@@ -442,7 +442,9 @@ my $untyped_writeup_id = $DB->insertNode(
     {
         parent_e2node => $untyped_e2node_id,
         doctext => "Writeup with no writeup type set.",
-        publishtime => "2020-01-01 12:00:00",  # oldest, so we can find it via ASC
+        # Uniquely oldest so publishtime_asc always lands it on the first page,
+        # independent of any other test writeups sharing a publishtime.
+        publishtime => "1990-01-01 00:00:00",
         notnew => 0,
     }
 );
@@ -478,11 +480,15 @@ ok(!defined($ids{$untyped_writeup_id}{writeup_type})
 # Cleanup
 #############################################################################
 
+# Nuke as root: $search_user (normaluser1) has no delete permission, so the old
+# cleanup silently failed and every run leaked its test writeups into the dev DB.
+# The accumulation collided on publishtime and broke the pagination-sensitive
+# untyped-writeup assertion below.
 foreach my $test_data (@test_writeup_ids) {
     my $writeup = $DB->getNodeById($test_data->{writeup_id});
     my $e2node = $DB->getNodeById($test_data->{e2node_id});
-    $DB->nukeNode($writeup, $search_user) if $writeup;
-    $DB->nukeNode($e2node, $search_user) if $e2node;
+    $DB->nukeNode($writeup, $editor_user) if $writeup;
+    $DB->nukeNode($e2node, $editor_user) if $e2node;
 }
 
 done_testing();

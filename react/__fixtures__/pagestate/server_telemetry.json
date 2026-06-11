@@ -1,0 +1,720 @@
+{
+    "developerNodelet": {},
+    "assets_location": "",
+    "recaptcha": {
+        "publicKey": "6LeF2BwsAAAAAMrkwFG7CXJmF6p0hV2swBxYfqc2",
+        "enabled": false
+    },
+    "node": {
+        "title": "Server Telemetry",
+        "type": "oppressor_superdoc",
+        "node_id": 2203605,
+        "createtime": 1781036094
+    },
+    "staffpicks": [
+        {
+            "node_id": 2214383,
+            "type": "e2node",
+            "title": "tomato"
+        },
+        {
+            "node_id": 2214381,
+            "title": "good poetry",
+            "type": "e2node"
+        },
+        {
+            "node_id": 2214322,
+            "type": "e2node",
+            "title": "Quick brown fox"
+        }
+    ],
+    "lastCommit": "c45169a62063acf7f5fdee953964d1adf974c152",
+    "contentData": {
+        "vmstat": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n 7  0  23428 2003264 1075916 16925372    2    7   719  4636 17172   21 33  3 63  1  0  0\n",
+        "apache_count": "4",
+        "uptime": " 16:38:36 up  5:04,  0 users,  load average: 8.67, 12.82, 14.59\n",
+        "apache_processes": "root        24  0.0  0.0  10512  5416 ?        Ss   15:31   0:00 /usr/sbin/apache2 -k start\nroot        26  0.0  0.0   3092  2176 ?        S    15:31   0:00 /usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\nroot        27  0.0  0.0   3100  2048 ?        S    15:31   0:00 /usr/bin/rotatelogs -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\nwww-data    28  0.0  0.0 2003504 8128 ?        Sl   15:31   0:00 /usr/sbin/apache2 -k start\n",
+        "memory_analysis": "PID          RSS (KB)  VmSize (KB)  Command\n------------------------------------------------------------\n24               5416        10512  /usr/sbin/apache2 -k start\n28               8128      2003504  /usr/sbin/apache2 -k start\n------------------------------------------------------------\nSum of RSS:  13.2 MB (2 procs) -- OVERCOUNTS: shared pages counted once per worker\n(per-process PSS omitted -- workers non-dumpable post-setuid; use the cgroup total below)\n\nTask memory (cgroup -- authoritative, matches CloudWatch):\n  used 856 MB\n  (anon 807 MB, file 30 MB)",
+        "health_check": "{\"version\":\"container-health-check-v1\",\"cloudwatch_debug\":{\"will_send_logs\":0,\"enabled\":1,\"put_log_command\":\"aws logs put-log-events --log-group-name '/aws/fargate/e2-health-check' --log-stream-name 'container-health-50660e7afabb' --log-events '[{\\\"timestamp\\\":1781109516354,\\\"message\\\":\\\"{\\\\\\\"checks\\\\\\\":{\\\\\\\"apache_http_status\\\\\\\":\\\\\\\"200\\\\\\\",\\\\\\\"apache_http\\\\\\\":\\\\\\\"ok\\\\\\\",\\\\\\\"database\\\\\\\":\\\\\\\"ok\\\\\\\",\\\\\\\"apache_processes\\\\\\\":\\\\\\\"ok\\\\\\\"},\\\\\\\"timestamp\\\\\\\":1781109516.35411,\\\\\\\"status\\\\\\\":\\\\\\\"ok\\\\\\\",\\\\\\\"apache\\\\\\\":{\\\\\\\"busy_workers\\\\\\\":2,\\\\\\\"total_accesses\\\\\\\":525,\\\\\\\"idle_workers\\\\\\\":23,\\\\\\\"process_count\\\\\\\":4,\\\\\\\"uptime_seconds\\\\\\\":4495,\\\\\\\"server_status\\\\\\\":{\\\\\\\"BytesPerSec\\\\\\\":\\\\\\\"1312.18\\\\\\\",\\\\\\\"Total_Duration\\\\\\\":\\\\\\\"15369\\\\\\\",\\\\\\\"DurationPerReq\\\\\\\":\\\\\\\"29.2743\\\\\\\",\\\\\\\"ServerMPM\\\\\\\":\\\\\\\"event\\\\\\\",\\\\\\\"ServerUptime\\\\\\\":\\\\\\\"1 hour 14 minutes 55 seconds\\\\\\\",\\\\\\\"ConnsAsyncWaitIO\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"CurrentTime\\\\\\\":\\\\\\\"Wednesday, 10-Jun-2026 16:38:36 UTC\\\\\\\",\\\\\\\"Total_kBytes\\\\\\\":\\\\\\\"5760\\\\\\\",\\\\\\\"ConnsAsyncKeepAlive\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"ConnsAsyncWriting\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"ReqPerSec\\\\\\\":\\\\\\\".116796\\\\\\\",\\\\\\\"Scoreboard\\\\\\\":\\\\\\\"____W_________________W__.........................\\\\\\\",\\\\\\\"ConnsAsyncClosing\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"Load1\\\\\\\":\\\\\\\"8.67\\\\\\\",\\\\\\\"RestartTime\\\\\\\":\\\\\\\"Wednesday, 10-Jun-2026 15:23:40 UTC\\\\\\\",\\\\\\\"CPUSystem\\\\\\\":\\\\\\\".41\\\\\\\",\\\\\\\"ParentServerMPMGeneration\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"Server_Built\\\\\\\":\\\\\\\"2026-06-03T15:25:00\\\\\\\",\\\\\\\"CPULoad\\\\\\\":\\\\\\\".0140156\\\\\\\",\\\\\\\"Uptime\\\\\\\":\\\\\\\"4495\\\\\\\",\\\\\\\"Processes\\\\\\\":\\\\\\\"1\\\\\\\",\\\\\\\"Total_Accesses\\\\\\\":\\\\\\\"525\\\\\\\",\\\\\\\"ParentServerConfigGeneration\\\\\\\":\\\\\\\"1\\\\\\\",\\\\\\\"ServerUptimeSeconds\\\\\\\":\\\\\\\"4495\\\\\\\",\\\\\\\"ServerVersion\\\\\\\":\\\\\\\"Apache/2.4.66 (Ubuntu)\\\\\\\",\\\\\\\"IdleWorkers\\\\\\\":\\\\\\\"23\\\\\\\",\\\\\\\"GracefulWorkers\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"BusyWorkers\\\\\\\":\\\\\\\"2\\\\\\\",\\\\\\\"CPUChildrenUser\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"Load5\\\\\\\":\\\\\\\"12.82\\\\\\\",\\\\\\\"Stopping\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"CPUUser\\\\\\\":\\\\\\\".22\\\\\\\",\\\\\\\"BytesPerReq\\\\\\\":\\\\\\\"11234.7\\\\\\\",\\\\\\\"ConnsTotal\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"CPUChildrenSystem\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"Load15\\\\\\\":\\\\\\\"14.59\\\\\\\"},\\\\\\\"requests_per_sec\\\\\\\":\\\\\\\"0.12\\\\\\\"},\\\\\\\"response_time_ms\\\\\\\":52.32}\\\"}]' 2>&1\",\"log_stream\":\"container-health-50660e7afabb\",\"create_stream_exit_code\":null,\"create_stream_output\":\"(skipped - not in production)\",\"put_log_exit_code\":null,\"log_events_payload\":\"[{\\\"timestamp\\\":1781109516354,\\\"message\\\":\\\"{\\\\\\\"checks\\\\\\\":{\\\\\\\"apache_http_status\\\\\\\":\\\\\\\"200\\\\\\\",\\\\\\\"apache_http\\\\\\\":\\\\\\\"ok\\\\\\\",\\\\\\\"database\\\\\\\":\\\\\\\"ok\\\\\\\",\\\\\\\"apache_processes\\\\\\\":\\\\\\\"ok\\\\\\\"},\\\\\\\"timestamp\\\\\\\":1781109516.35411,\\\\\\\"status\\\\\\\":\\\\\\\"ok\\\\\\\",\\\\\\\"apache\\\\\\\":{\\\\\\\"busy_workers\\\\\\\":2,\\\\\\\"total_accesses\\\\\\\":525,\\\\\\\"idle_workers\\\\\\\":23,\\\\\\\"process_count\\\\\\\":4,\\\\\\\"uptime_seconds\\\\\\\":4495,\\\\\\\"server_status\\\\\\\":{\\\\\\\"BytesPerSec\\\\\\\":\\\\\\\"1312.18\\\\\\\",\\\\\\\"Total_Duration\\\\\\\":\\\\\\\"15369\\\\\\\",\\\\\\\"DurationPerReq\\\\\\\":\\\\\\\"29.2743\\\\\\\",\\\\\\\"ServerMPM\\\\\\\":\\\\\\\"event\\\\\\\",\\\\\\\"ServerUptime\\\\\\\":\\\\\\\"1 hour 14 minutes 55 seconds\\\\\\\",\\\\\\\"ConnsAsyncWaitIO\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"CurrentTime\\\\\\\":\\\\\\\"Wednesday, 10-Jun-2026 16:38:36 UTC\\\\\\\",\\\\\\\"Total_kBytes\\\\\\\":\\\\\\\"5760\\\\\\\",\\\\\\\"ConnsAsyncKeepAlive\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"ConnsAsyncWriting\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"ReqPerSec\\\\\\\":\\\\\\\".116796\\\\\\\",\\\\\\\"Scoreboard\\\\\\\":\\\\\\\"____W_________________W__.........................\\\\\\\",\\\\\\\"ConnsAsyncClosing\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"Load1\\\\\\\":\\\\\\\"8.67\\\\\\\",\\\\\\\"RestartTime\\\\\\\":\\\\\\\"Wednesday, 10-Jun-2026 15:23:40 UTC\\\\\\\",\\\\\\\"CPUSystem\\\\\\\":\\\\\\\".41\\\\\\\",\\\\\\\"ParentServerMPMGeneration\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"Server_Built\\\\\\\":\\\\\\\"2026-06-03T15:25:00\\\\\\\",\\\\\\\"CPULoad\\\\\\\":\\\\\\\".0140156\\\\\\\",\\\\\\\"Uptime\\\\\\\":\\\\\\\"4495\\\\\\\",\\\\\\\"Processes\\\\\\\":\\\\\\\"1\\\\\\\",\\\\\\\"Total_Accesses\\\\\\\":\\\\\\\"525\\\\\\\",\\\\\\\"ParentServerConfigGeneration\\\\\\\":\\\\\\\"1\\\\\\\",\\\\\\\"ServerUptimeSeconds\\\\\\\":\\\\\\\"4495\\\\\\\",\\\\\\\"ServerVersion\\\\\\\":\\\\\\\"Apache/2.4.66 (Ubuntu)\\\\\\\",\\\\\\\"IdleWorkers\\\\\\\":\\\\\\\"23\\\\\\\",\\\\\\\"GracefulWorkers\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"BusyWorkers\\\\\\\":\\\\\\\"2\\\\\\\",\\\\\\\"CPUChildrenUser\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"Load5\\\\\\\":\\\\\\\"12.82\\\\\\\",\\\\\\\"Stopping\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"CPUUser\\\\\\\":\\\\\\\".22\\\\\\\",\\\\\\\"BytesPerReq\\\\\\\":\\\\\\\"11234.7\\\\\\\",\\\\\\\"ConnsTotal\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"CPUChildrenSystem\\\\\\\":\\\\\\\"0\\\\\\\",\\\\\\\"Load15\\\\\\\":\\\\\\\"14.59\\\\\\\"},\\\\\\\"requests_per_sec\\\\\\\":\\\\\\\"0.12\\\\\\\"},\\\\\\\"response_time_ms\\\\\\\":52.32}\\\"}]\",\"environment\":{\"E2_DOCKER\":\"development\",\"E2_DEVELOPMENT\":\"(not set)\",\"E2_DBSERV\":\"e2devdb\"},\"log_group\":\"/aws/fargate/e2-health-check\",\"log_event_size\":1263,\"hostname\":\"50660e7afabb\",\"production_checks\":{\"no_development\":1,\"rds_database\":0,\"no_docker\":0},\"is_production\":0,\"put_log_output\":\"(skipped - not in production)\",\"create_stream_command\":\"aws logs create-log-stream --log-group-name '/aws/fargate/e2-health-check' --log-stream-name 'container-health-50660e7afabb' 2>&1\"},\"apache\":{\"busy_workers\":2,\"total_accesses\":525,\"idle_workers\":23,\"process_count\":4,\"uptime_seconds\":4495,\"server_status\":{\"BytesPerSec\":\"1312.18\",\"Total_Duration\":\"15369\",\"DurationPerReq\":\"29.2743\",\"ServerMPM\":\"event\",\"ServerUptime\":\"1 hour 14 minutes 55 seconds\",\"ConnsAsyncWaitIO\":\"0\",\"CurrentTime\":\"Wednesday, 10-Jun-2026 16:38:36 UTC\",\"Total_kBytes\":\"5760\",\"ConnsAsyncKeepAlive\":\"0\",\"ConnsAsyncWriting\":\"0\",\"ReqPerSec\":\".116796\",\"Scoreboard\":\"____W_________________W__.........................\",\"ConnsAsyncClosing\":\"0\",\"Load1\":\"8.67\",\"RestartTime\":\"Wednesday, 10-Jun-2026 15:23:40 UTC\",\"CPUSystem\":\".41\",\"ParentServerMPMGeneration\":\"0\",\"Server_Built\":\"2026-06-03T15:25:00\",\"CPULoad\":\".0140156\",\"Uptime\":\"4495\",\"Processes\":\"1\",\"Total_Accesses\":\"525\",\"ParentServerConfigGeneration\":\"1\",\"ServerUptimeSeconds\":\"4495\",\"ServerVersion\":\"Apache/2.4.66 (Ubuntu)\",\"IdleWorkers\":\"23\",\"GracefulWorkers\":\"0\",\"BusyWorkers\":\"2\",\"CPUChildrenUser\":\"0\",\"Load5\":\"12.82\",\"Stopping\":\"0\",\"CPUUser\":\".22\",\"BytesPerReq\":\"11234.7\",\"ConnsTotal\":\"0\",\"CPUChildrenSystem\":\"0\",\"Load15\":\"14.59\"},\"requests_per_sec\":\"0.12\"},\"timestamp\":1781109516.35411,\"response_time_ms\":\"52.32\",\"status\":\"ok\",\"checks\":{\"apache_http_status\":\"200\",\"apache_http\":\"ok\",\"database\":\"ok\",\"apache_processes\":\"ok\"}}\n",
+        "apache_config": "\nMutex file:${APACHE_LOCK_DIR} default\nPidFile ${APACHE_PID_FILE}\n\nTimeout 300\nKeepAlive On\nMaxKeepAliveRequests 500\nKeepAliveTimeout 15\n\nUser ${APACHE_RUN_USER}\nGroup ${APACHE_RUN_GROUP}\n\n##### E2 CUSTOM SETTINGS #####\nUseCanonicalName On\nServerTokens Prod\nServerSignature EMail\nTraceEnable Off\n\n# Fargate/Docker environment variables\nPassEnv AWS_CONTAINER_CREDENTIALS_RELATIVE_URI\nPassEnv AWS_DEFAULT_REGION\nPassEnv E2_DOCKER\nPassEnv E2_MAINTENANCE_MESSAGE\nPassEnv E2_DBSERV\n\nHostnameLookups Off\nAccessFileName .htaccess\n<Files ~ \"^\\.ht\">\n\tOrder allow,deny\n\tDeny from all\n\tSatisfy all\n</Files>\n\n# PSGI/Starman: Apache is a pure reverse proxy to the Starman backend on :5000\n# (started by apache2_wrapper.rb); it runs NO app code and mod_perl is not loaded.\n# The legacy mod_perl path and its E2_PSGI toggle were removed in the full PSGI\n# commit (#4234) -- this config is now PSGI-only, on mpm_event.\n\n\nDefine E2_DEVELOPMENT\nUnDefine E2_PRODUCTION\n\n\n# Include module configuration\nInclude mods-enabled/*.load\nInclude mods-enabled/*.conf\n\n# mod_remoteip - Use X-Forwarded-For header as client IP\n# Required for mod_evasive to rate-limit by real client IP (not ALB IP)\n<IfModule mod_remoteip.c>\n\tRemoteIPHeader X-Forwarded-For\n\t# Trust private/internal IPs (ALB, Docker, localhost)\n\tRemoteIPTrustedProxy 10.0.0.0/8\n\tRemoteIPTrustedProxy 172.16.0.0/12\n\tRemoteIPTrustedProxy 192.168.0.0/16\n\tRemoteIPTrustedProxy 127.0.0.1\n\n\t# CloudFront IP ranges (fetched from AWS at config generation time)\n\n\tRemoteIPTrustedProxy 23.228.249.0/24\n\n\tRemoteIPTrustedProxy 120.52.22.96/27\n\n\tRemoteIPTrustedProxy 23.228.222.0/24\n\n\tRemoteIPTrustedProxy 205.251.249.0/24\n\n\tRemoteIPTrustedProxy 180.163.57.128/26\n\n\tRemoteIPTrustedProxy 23.228.220.0/24\n\n\tRemoteIPTrustedProxy 204.246.168.0/22\n\n\tRemoteIPTrustedProxy 111.13.171.128/26\n\n\tRemoteIPTrustedProxy 18.160.0.0/15\n\n\tRemoteIPTrustedProxy 205.251.252.0/23\n\n\tRemoteIPTrustedProxy 54.192.0.0/16\n\n\tRemoteIPTrustedProxy 204.246.173.0/24\n\n\tRemoteIPTrustedProxy 23.228.244.0/24\n\n\tRemoteIPTrustedProxy 54.230.200.0/21\n\n\tRemoteIPTrustedProxy 120.253.240.192/26\n\n\tRemoteIPTrustedProxy 23.234.192.0/18\n\n\tRemoteIPTrustedProxy 116.129.226.128/26\n\n\tRemoteIPTrustedProxy 130.176.0.0/17\n\n\tRemoteIPTrustedProxy 3.173.192.0/18\n\n\tRemoteIPTrustedProxy 108.156.0.0/14\n\n\tRemoteIPTrustedProxy 99.86.0.0/16\n\n\tRemoteIPTrustedProxy 23.228.214.0/24\n\n\tRemoteIPTrustedProxy 23.228.213.0/24\n\n\tRemoteIPTrustedProxy 13.32.0.0/15\n\n\tRemoteIPTrustedProxy 120.253.245.128/26\n\n\tRemoteIPTrustedProxy 13.224.0.0/14\n\n\tRemoteIPTrustedProxy 70.132.0.0/18\n\n\tRemoteIPTrustedProxy 15.158.0.0/16\n\n\tRemoteIPTrustedProxy 111.13.171.192/26\n\n\tRemoteIPTrustedProxy 13.249.0.0/16\n\n\tRemoteIPTrustedProxy 18.238.0.0/15\n\n\tRemoteIPTrustedProxy 18.244.0.0/15\n\n\tRemoteIPTrustedProxy 205.251.208.0/20\n\n\tRemoteIPTrustedProxy 3.165.0.0/16\n\n\tRemoteIPTrustedProxy 3.168.0.0/14\n\n\tRemoteIPTrustedProxy 23.228.251.0/24\n\n\tRemoteIPTrustedProxy 65.9.128.0/18\n\n\tRemoteIPTrustedProxy 130.176.128.0/18\n\n\tRemoteIPTrustedProxy 23.228.221.0/24\n\n\tRemoteIPTrustedProxy 23.228.248.0/24\n\n\tRemoteIPTrustedProxy 58.254.138.0/25\n\n\tRemoteIPTrustedProxy 205.251.206.0/23\n\n\tRemoteIPTrustedProxy 54.230.208.0/20\n\n\tRemoteIPTrustedProxy 3.160.0.0/14\n\n\tRemoteIPTrustedProxy 116.129.226.0/25\n\n\tRemoteIPTrustedProxy 23.91.0.0/19\n\n\tRemoteIPTrustedProxy 52.222.128.0/17\n\n\tRemoteIPTrustedProxy 18.164.0.0/15\n\n\tRemoteIPTrustedProxy 111.13.185.32/27\n\n\tRemoteIPTrustedProxy 64.252.128.0/18\n\n\tRemoteIPTrustedProxy 205.251.254.0/24\n\n\tRemoteIPTrustedProxy 3.166.0.0/15\n\n\tRemoteIPTrustedProxy 54.230.224.0/19\n\n\tRemoteIPTrustedProxy 71.152.0.0/17\n\n\tRemoteIPTrustedProxy 216.137.32.0/19\n\n\tRemoteIPTrustedProxy 204.246.172.0/24\n\n\tRemoteIPTrustedProxy 205.251.202.0/23\n\n\tRemoteIPTrustedProxy 18.172.0.0/15\n\n\tRemoteIPTrustedProxy 120.52.39.128/27\n\n\tRemoteIPTrustedProxy 118.193.97.64/26\n\n\tRemoteIPTrustedProxy 3.164.64.0/18\n\n\tRemoteIPTrustedProxy 18.154.0.0/15\n\n\tRemoteIPTrustedProxy 3.173.0.0/17\n\n\tRemoteIPTrustedProxy 54.240.128.0/18\n\n\tRemoteIPTrustedProxy 205.251.250.0/23\n\n\tRemoteIPTrustedProxy 180.163.57.0/25\n\n\tRemoteIPTrustedProxy 52.46.0.0/18\n\n\tRemoteIPTrustedProxy 3.174.0.0/15\n\n\tRemoteIPTrustedProxy 52.82.128.0/19\n\n\tRemoteIPTrustedProxy 54.230.0.0/17\n\n\tRemoteIPTrustedProxy 54.230.128.0/18\n\n\tRemoteIPTrustedProxy 54.239.128.0/18\n\n\tRemoteIPTrustedProxy 130.176.224.0/20\n\n\tRemoteIPTrustedProxy 36.103.232.128/26\n\n\tRemoteIPTrustedProxy 52.84.0.0/15\n\n\tRemoteIPTrustedProxy 143.204.0.0/16\n\n\tRemoteIPTrustedProxy 144.220.0.0/16\n\n\tRemoteIPTrustedProxy 120.52.153.192/26\n\n\tRemoteIPTrustedProxy 23.228.250.0/24\n\n\tRemoteIPTrustedProxy 119.147.182.0/25\n\n\tRemoteIPTrustedProxy 120.232.236.0/25\n\n\tRemoteIPTrustedProxy 111.13.185.64/27\n\n\tRemoteIPTrustedProxy 3.164.0.0/18\n\n\tRemoteIPTrustedProxy 3.172.64.0/18\n\n\tRemoteIPTrustedProxy 54.182.0.0/16\n\n\tRemoteIPTrustedProxy 58.254.138.128/26\n\n\tRemoteIPTrustedProxy 120.253.245.192/27\n\n\tRemoteIPTrustedProxy 54.239.192.0/19\n\n\tRemoteIPTrustedProxy 18.68.0.0/16\n\n\tRemoteIPTrustedProxy 18.64.0.0/14\n\n\tRemoteIPTrustedProxy 120.52.12.64/26\n\n\tRemoteIPTrustedProxy 24.110.32.0/19\n\n\tRemoteIPTrustedProxy 99.84.0.0/16\n\n\tRemoteIPTrustedProxy 205.251.204.0/23\n\n\tRemoteIPTrustedProxy 130.176.192.0/19\n\n\tRemoteIPTrustedProxy 23.228.223.0/24\n\n\tRemoteIPTrustedProxy 23.228.212.0/24\n\n\tRemoteIPTrustedProxy 52.124.128.0/17\n\n\tRemoteIPTrustedProxy 204.246.164.0/22\n\n\tRemoteIPTrustedProxy 13.35.0.0/16\n\n\tRemoteIPTrustedProxy 204.246.174.0/23\n\n\tRemoteIPTrustedProxy 3.164.128.0/17\n\n\tRemoteIPTrustedProxy 24.110.128.0/17\n\n\tRemoteIPTrustedProxy 3.172.0.0/18\n\n\tRemoteIPTrustedProxy 36.103.232.0/25\n\n\tRemoteIPTrustedProxy 119.147.182.128/26\n\n\tRemoteIPTrustedProxy 118.193.97.128/25\n\n\tRemoteIPTrustedProxy 120.232.236.128/26\n\n\tRemoteIPTrustedProxy 204.246.176.0/20\n\n\tRemoteIPTrustedProxy 65.8.0.0/16\n\n\tRemoteIPTrustedProxy 65.9.0.0/17\n\n\tRemoteIPTrustedProxy 108.138.0.0/15\n\n\tRemoteIPTrustedProxy 120.253.241.160/27\n\n\tRemoteIPTrustedProxy 3.173.128.0/18\n\n\tRemoteIPTrustedProxy 51.74.192.0/18\n\n\tRemoteIPTrustedProxy 64.252.64.0/18\n\n\tRemoteIPTrustedProxy 13.113.196.64/26\n\n\tRemoteIPTrustedProxy 13.113.203.0/24\n\n\tRemoteIPTrustedProxy 52.199.127.192/26\n\n\tRemoteIPTrustedProxy 57.182.253.0/24\n\n\tRemoteIPTrustedProxy 57.183.42.0/25\n\n\tRemoteIPTrustedProxy 13.124.199.0/24\n\n\tRemoteIPTrustedProxy 3.35.130.128/25\n\n\tRemoteIPTrustedProxy 52.78.247.128/26\n\n\tRemoteIPTrustedProxy 13.203.133.0/26\n\n\tRemoteIPTrustedProxy 13.233.177.192/26\n\n\tRemoteIPTrustedProxy 15.207.13.128/25\n\n\tRemoteIPTrustedProxy 15.207.213.128/25\n\n\tRemoteIPTrustedProxy 52.66.194.128/26\n\n\tRemoteIPTrustedProxy 13.228.69.0/24\n\n\tRemoteIPTrustedProxy 47.129.82.0/24\n\n\tRemoteIPTrustedProxy 47.129.83.0/24\n\n\tRemoteIPTrustedProxy 47.129.84.0/24\n\n\tRemoteIPTrustedProxy 52.220.191.0/26\n\n\tRemoteIPTrustedProxy 13.210.67.128/26\n\n\tRemoteIPTrustedProxy 13.54.63.128/26\n\n\tRemoteIPTrustedProxy 3.107.43.128/25\n\n\tRemoteIPTrustedProxy 3.107.44.0/25\n\n\tRemoteIPTrustedProxy 3.107.44.128/25\n\n\tRemoteIPTrustedProxy 43.218.56.128/26\n\n\tRemoteIPTrustedProxy 43.218.56.192/26\n\n\tRemoteIPTrustedProxy 43.218.56.64/26\n\n\tRemoteIPTrustedProxy 43.218.71.0/26\n\n\tRemoteIPTrustedProxy 99.79.169.0/24\n\n\tRemoteIPTrustedProxy 18.192.142.0/23\n\n\tRemoteIPTrustedProxy 18.199.68.0/22\n\n\tRemoteIPTrustedProxy 18.199.72.0/22\n\n\tRemoteIPTrustedProxy 18.199.76.0/22\n\n\tRemoteIPTrustedProxy 35.158.136.0/24\n\n\tRemoteIPTrustedProxy 52.57.254.0/24\n\n\tRemoteIPTrustedProxy 18.200.212.0/23\n\n\tRemoteIPTrustedProxy 52.212.248.0/26\n\n\tRemoteIPTrustedProxy 13.134.24.0/23\n\n\tRemoteIPTrustedProxy 13.134.94.0/23\n\n\tRemoteIPTrustedProxy 18.175.65.0/24\n\n\tRemoteIPTrustedProxy 18.175.66.0/24\n\n\tRemoteIPTrustedProxy 18.175.67.0/24\n\n\tRemoteIPTrustedProxy 3.10.17.128/25\n\n\tRemoteIPTrustedProxy 3.11.53.0/24\n\n\tRemoteIPTrustedProxy 52.56.127.0/25\n\n\tRemoteIPTrustedProxy 15.188.184.0/24\n\n\tRemoteIPTrustedProxy 51.44.234.0/23\n\n\tRemoteIPTrustedProxy 51.44.236.0/23\n\n\tRemoteIPTrustedProxy 51.44.238.0/23\n\n\tRemoteIPTrustedProxy 52.47.139.0/24\n\n\tRemoteIPTrustedProxy 3.29.40.128/26\n\n\tRemoteIPTrustedProxy 3.29.40.192/26\n\n\tRemoteIPTrustedProxy 3.29.40.64/26\n\n\tRemoteIPTrustedProxy 3.29.57.0/26\n\n\tRemoteIPTrustedProxy 18.229.220.192/26\n\n\tRemoteIPTrustedProxy 18.230.229.0/24\n\n\tRemoteIPTrustedProxy 18.230.230.0/25\n\n\tRemoteIPTrustedProxy 54.233.255.128/26\n\n\tRemoteIPTrustedProxy 56.125.46.0/24\n\n\tRemoteIPTrustedProxy 56.125.47.0/32\n\n\tRemoteIPTrustedProxy 56.125.48.0/24\n\n\tRemoteIPTrustedProxy 3.231.2.0/25\n\n\tRemoteIPTrustedProxy 3.234.232.224/27\n\n\tRemoteIPTrustedProxy 3.236.169.192/26\n\n\tRemoteIPTrustedProxy 3.236.48.0/23\n\n\tRemoteIPTrustedProxy 34.195.252.0/24\n\n\tRemoteIPTrustedProxy 34.226.14.0/24\n\n\tRemoteIPTrustedProxy 44.220.194.0/23\n\n\tRemoteIPTrustedProxy 44.220.196.0/23\n\n\tRemoteIPTrustedProxy 44.220.198.0/23\n\n\tRemoteIPTrustedProxy 44.220.200.0/23\n\n\tRemoteIPTrustedProxy 44.220.202.0/23\n\n\tRemoteIPTrustedProxy 44.222.66.0/24\n\n\tRemoteIPTrustedProxy 13.59.250.0/26\n\n\tRemoteIPTrustedProxy 18.216.170.128/25\n\n\tRemoteIPTrustedProxy 3.128.93.0/24\n\n\tRemoteIPTrustedProxy 3.134.215.0/24\n\n\tRemoteIPTrustedProxy 3.146.232.0/22\n\n\tRemoteIPTrustedProxy 3.147.164.0/22\n\n\tRemoteIPTrustedProxy 3.147.244.0/22\n\n\tRemoteIPTrustedProxy 52.15.127.128/26\n\n\tRemoteIPTrustedProxy 3.101.158.0/23\n\n\tRemoteIPTrustedProxy 52.52.191.128/26\n\n\tRemoteIPTrustedProxy 34.216.51.0/25\n\n\tRemoteIPTrustedProxy 34.223.12.224/27\n\n\tRemoteIPTrustedProxy 34.223.80.192/26\n\n\tRemoteIPTrustedProxy 35.162.63.192/26\n\n\tRemoteIPTrustedProxy 35.167.191.128/26\n\n\tRemoteIPTrustedProxy 35.93.168.0/23\n\n\tRemoteIPTrustedProxy 35.93.170.0/23\n\n\tRemoteIPTrustedProxy 35.93.172.0/23\n\n\tRemoteIPTrustedProxy 44.227.178.0/24\n\n\tRemoteIPTrustedProxy 44.234.108.128/25\n\n\tRemoteIPTrustedProxy 44.234.90.252/30\n\n\n</IfModule>\n\n# mod_evasive rate limiting configuration\n# Protects against DoS attacks and aggressive scrapers\n<IfModule mod_evasive20.c>\n\n\t# Development: Very high thresholds to avoid test interference\n\tDOSHashTableSize 3097\n\tDOSPageCount 99999\n\tDOSPageInterval 1\n\tDOSSiteCount 99999\n\tDOSSiteInterval 1\n\tDOSBlockingPeriod 1\n\n</IfModule>\n\nLogLevel warn\nLogFormat \"{\\\"time\\\":\\\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\\\",\\\"process\\\":\\\"%D\\\",\\\"filename\\\":\\\"%f\\\",\\\"remoteIP\\\":\\\"%{X-Forwarded-For}i\\\",\\\"host\\\":\\\"%V\\\",\\\"request\\\":\\\"%U\\\",\\\"query\\\":\\\"%q\\\",\\\"method\\\":\\\"%m\\\",\\\"status\\\":\\\"%>s\\\",\\\"userAgent\\\":\\\"%{User-agent}i\\\",\\\"referer\\\":\\\"%{Referer}i\\\"}\" cloudwatch\n\nBrowserMatch \"^ELB-HealthChecker\" loghealthcheck\n\n<IfDefine E2_DEVELOPMENT>\nErrorLogFormat \"{\\\"time\\\":\\\"%{%usec_frac}t\\\", \\\"function\\\" : \\\"[%-m:%l]\\\", \\\"process\\\" : \\\"[pid%P]\\\" ,\\\"message\\\" : \\\"%M\\\"}\"\nErrorLog \"|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"\nSetEnvIf Remote_Addr \"127\\.0\\.0\\.1\" dontlog\nSetEnvIf Request_URI \"^/server_live\\.html$\" dontlog\nSetEnvIf Request_URI \"favicon.ico$\" dontlog\nSetEnvIf Request_URI \"^/robots\\.txt$\" dontlog\n</IfDefine>\n\n<IfDefine E2_PRODUCTION>\nDefine E2StartServers 2\nDefine E2ServerLimit 4\nDefine E2ThreadsPerChild 25\nDefine E2MinSpareThreads 25\nDefine E2MaxSpareThreads 75\nDefine E2MaxRequestWorkers 100\nDefine E2MaxConnections 5000\n</IfDefine>\n\n<IfDefine E2_DEVELOPMENT>\nDefine E2StartServers 1\nDefine E2ServerLimit 2\nDefine E2ThreadsPerChild 25\nDefine E2MinSpareThreads 10\nDefine E2MaxSpareThreads 50\nDefine E2MaxRequestWorkers 50\nDefine E2MaxConnections 0\n</IfDefine>\n\n# mpm_event: Apache is a pure proxy under PSGI (no mod_perl, which is what\n# mandated prefork). Threads handle client connections cheaply; effective request\n# concurrency is bounded by STARMAN_WORKERS at the backend, so MaxRequestWorkers\n# is generous headroom for client connections, not parallel app work.\n<IfModule mpm_event_module>\nStartServers            ${E2StartServers}\nServerLimit             ${E2ServerLimit}\nThreadLimit             ${E2ThreadsPerChild}\nThreadsPerChild         ${E2ThreadsPerChild}\nMinSpareThreads         ${E2MinSpareThreads}\nMaxSpareThreads         ${E2MaxSpareThreads}\nMaxRequestWorkers       ${E2MaxRequestWorkers}\nMaxConnectionsPerChild  ${E2MaxConnections}\n</IfModule>\n\nServerName everything2.com\nListen 80\nListenBacklog 511\n\n##### MAIN VIRTUALHOST (HTTP ONLY) #####\n<VirtualHost _default_:80>\n\tServerName everything2.com\n\tServerAdmin e2webmaster@everything2.com\n\tDocumentRoot /var/everything/www\n\n\t# Allow %2F (encoded slash) in URLs so nodes with '/' in their title route\n\t# correctly. LinkNode percent-encodes '/' to %2F; without this, Apache's\n\t# default (Off) 404s those URLs before the app runs. NoDecode (not On) keeps\n\t# %2F undecoded so _recover_route_params_from_request_uri does the single\n\t# decode it's designed for, and avoids the path-traversal surface On would add. (#4186)\n\tAllowEncodedSlashes NoDecode\n\n\t<Directory />\n\t\tOptions FollowSymLinks\n\t\tAllowOverride None\n\t</Directory>\n\n\t# Serve favicon.ico from static directory\n\tAlias /favicon.ico /var/everything/www/static/favicon.ico\n\t<Location /favicon.ico>\n\t\tRequire all granted\n\t\tSetEnv dontlog 1\n\t</Location>\n\n\t# Static files directory\n\t<Directory /var/everything/www/static/>\n\t\tRequire all granted\n\t\tOptions -ExecCGI\n\t</Directory>\n\n\t# Health check endpoint - no access logging\n\t<Location /health.pl>\n\t\tSetEnv dontlog 1\n\t</Location>\n\n\t# Apache server-status for monitoring (localhost only)\n\t<Location /server-status>\n\t\tSetHandler server-status\n\t\tRequire local\n\t\tSetEnv dontlog 1\n\t</Location>\n\n\t# Explicit IP address bans\n\tSetEnvIf X-FORWARDED-FOR \"97.66.136.146\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"37.0.121.104\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"183.38.89.8\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"174.36.137.162\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"84.238.211.161\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"186.202.184.231\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"168.61.72.61\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"23.227.199.110\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"150.129.81.30\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"203.189.235.65\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"103.242.1.36\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"103.212.34.90\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"45.125.13.32\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"150.129.81.9\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"31.145.16.12\" denyip\n\tSetEnvIf X-FORWARDED-FOR \"149.76.216.252\" denyip\n\t# IP address block bans\n\tSetEnvIf X-FORWARDED-FOR ^221\\.204 denyip\n\tSetEnvIf X-FORWARDED-FOR ^34\\.174 denyip\n\tSetEnvIf X-FORWARDED-FOR ^47\\.79 denyip\n\tSetEnvIf X-FORWARDED-FOR ^202\\.46 denyip\n\tSetEnvIf X-FORWARDED-FOR ^220\\.181 denyip\n\t# User agent bans\n\tBrowserMatchNoCase BLEXBot/1.0 denyip\n\tBrowserMatchNoCase DataForSeoBot/1.0 denyip\n\tBrowserMatchNoCase aiohttp denyip\n\tBrowserMatchNoCase HTTrack denyip\n\tBrowserMatchNoCase Baiduspider denyip\n\n\n\t# PSGI: Apache serves static from DocumentRoot and reverse-proxies all dynamic\n\t# requests to the Starman backend on :5000. app.psgi routes both pages\n\t# (mod_perlInit) and /api (APIRouter) from REQUEST_URI, so no title-rewrites or\n\t# /api ScriptAlias are needed here -- Apache runs no app code.\n\tProxyPreserveHost On\n\n\t# Static assets + the local/external special routes are served by the\n\t# <Directory>/filesystem and the rewrites below -- NOT proxied to Starman.\n\tProxyPass /css !\n\tProxyPass /react !\n\tProxyPass /images !\n\tProxyPass /static !\n\tProxyPass /js !\n\tProxyPass /sound !\n\tProxyPass /fonts !\n\tProxyPass /favicon.ico !\n\tProxyPass /robots.txt !\n\tProxyPass /stylesheet !\n\tProxyPass /sitemap !\n\t# /sitemap.xml is a sibling FILE, not under the /sitemap/ path -- Apache 2.4's\n\t# segment-aware ProxyPass matching does NOT treat it as covered by the\n\t# `/sitemap` exclusion above, so without this it falls through to Starman and\n\t# renders the front page instead of the S3 sitemap index. Exclude it explicitly.\n\tProxyPass /sitemap.xml !\n\tProxyPass /server-status !\n\t# Everything else -> Starman. `nocanon` passes the RAW, pre-encoded path\n\t# through unchanged. Apache's DEFAULT proxy canonicalization DECODES %2B->'+'\n\t# (and %2C->','), and then _recover_route_params_from_request_uri's tr/+/ /\n\t# turns that '+' into a SPACE -- so titles with a literal '+'\n\t# (\"Writeups+plusses\", \"C++\"), '&', etc. bounced to Findings. nocanon makes\n\t# Starman see exactly the pristine REQUEST_URI the mod_perl path always saw\n\t# (LinkNode emits literal '+' as %2B; _recover decodes it once -- a matched\n\t# pair). NB: this is why [P]/[NE] on a RewriteRule could not fix it -- only the\n\t# ProxyPass directive exposes nocanon.\n\t# disablereuse=On: do NOT pool/reuse backend connections. Starman is a\n\t# PREFORKING server with a 1s default keepalive-timeout; mod_proxy otherwise\n\t# keeps a backend connection in its pool, Starman closes it after 1s idle, and\n\t# the next reuse stalls ~1s detecting/re-establishing the dead socket -- a\n\t# periodic ~900ms tail-latency spike (every ~5-6 sequential requests) that\n\t# load testing surfaced. A fresh local-loopback connection per request is\n\t# ~sub-ms and is the correct model for a preforking backend anyway (it also\n\t# avoids keepalive connections holding Starman workers idle). Starman direct\n\t# (:5000) never showed the stall; only the proxied path did.\n\tProxyPass / http://127.0.0.1:5000/ nocanon disablereuse=On\n\tProxyPassReverse / http://127.0.0.1:5000/\n\n\t# Edge compression + the denyip ban live in <Location /> (NOT a <Directory>):\n\t# proxied responses have no filesystem path, so a Directory-scoped output\n\t# filter or access rule would never apply to the dynamic pages. Under PSGI the\n\t# app compresses NOTHING (compress_response_body() returns false), so Apache is\n\t# the sole compressor and must cover html/css/js/xml AND application/json API\n\t# bodies. Prefer brotli, fall back to gzip without a filter-order fight: when\n\t# the client accepts br, set `no-gzip` so every mod_deflate instance (the\n\t# global deflate.conf's and ours) stands down, leaving brotli sole; br-less\n\t# clients fall through to gzip. (No mod_zstd in Apache -> zstd clients get br;\n\t# zstd S3 assets are unaffected.)\n\t<Location />\n\t\tOrder allow,deny\n\t\tallow from all\n\t\tdeny from env=denyip\n\t\tSetEnvIfNoCase Accept-Encoding \"br\" no-gzip\n\t\t<IfModule mod_brotli.c>\n\t\tAddOutputFilterByType BROTLI_COMPRESS text/javascript text/html text/xml text/css application/x-javascript application/javascript application/json\n\t\t</IfModule>\n\t\tAddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript application/javascript application/json\n\t</Location>\n\n\t<Directory /var/everything/www/>\n\t\tOptions +FollowSymLinks\n\t\tAllowOverride None\n\t\tOrder allow,deny\n\t\tallow from all\n\t\tdeny from env=denyip\n\n\t\tRewriteEngine On\n\t\tRewriteRule ^favicon.ico$ /static/favicon.ico [L]\n\n\t\t# Versioned-stylesheet 307 + sitemap external proxy. Reached because\n\t\t# /stylesheet and /sitemap are ProxyPass-excluded above.\n\t\t#\n\t\t# ProxyPreserveHost is On at the vhost level (so Starman sees the real\n\t\t# everything2.com Host). But that setting leaks into the [P] sitemap proxy\n\t\t# below, making it send `Host: everything2.com` to S3 -- which S3 reads as a\n\t\t# virtual-hosted bucket name and rejects with NoSuchBucket. Force it Off for\n\t\t# this Directory so the proxy sends `Host: sitemap.everything2.com` (the\n\t\t# bucket's vhost), exactly as the mod_perl path did (it had no\n\t\t# ProxyPreserveHost at all). ProxyPreserveHost is a per-dir directive, so this\n\t\t# override applies only here; it affects the [P] proxy -- local static serving\n\t\t# and the 307 redirect ignore it.\n\t\tProxyPreserveHost Off\n\t\tRewriteCond %{REQUEST_FILENAME} !-f\n\t\tRewriteRule ^/?stylesheet/([^_]+)_v[0-9]+(_autofix)?\\.css      /stylesheet/$1$2.css  [R=307,L]\n\t\tRewriteRule ^/?sitemap/(.+)$               http://sitemap.everything2.com/$1 [P]\n\t\tRewriteRule ^/?sitemap.xml$                http://sitemap.everything2.com/index.xml [P]\n\t</Directory>\n\n\t<IfDefine E2_DEVELOPMENT>\n\t\tErrorLog \"|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"\n\t\tCustomLog \"|/usr/bin/rotatelogs -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" cloudwatch env=!dontlog\n\t</IfDefine>\n\n\tServerSignature On\n</VirtualHost>\n",
+        "type": "server_telemetry"
+    },
+    "use_local_assets": 1,
+    "coolnodes": [
+        {
+            "coolwriteups_id": 2214382,
+            "latest_cool": "2026-06-09 20:16:43",
+            "parentNode": 2214381,
+            "wu_author": "user with space",
+            "writeupCooled": 20,
+            "parentTitle": "good poetry"
+        },
+        {
+            "writeupCooled": 1,
+            "parentTitle": null,
+            "wu_author": "normaluser1",
+            "parentNode": 0,
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214531
+        },
+        {
+            "writeupCooled": 1,
+            "parentTitle": "writeup with a broken nodegroup",
+            "wu_author": "normaluser1",
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214533,
+            "parentNode": 2214532
+        },
+        {
+            "coolwriteups_id": 2214535,
+            "latest_cool": "2026-06-09 20:16:43",
+            "parentNode": 2214534,
+            "wu_author": null,
+            "parentTitle": "writeup with no owner",
+            "writeupCooled": 1
+        },
+        {
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214323,
+            "parentTitle": "Quick brown fox",
+            "writeupCooled": 1,
+            "parentNode": 2214322,
+            "wu_author": "normaluser1"
+        },
+        {
+            "coolwriteups_id": 2214325,
+            "latest_cool": "2026-06-09 20:16:42",
+            "parentNode": 2214324,
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": "lazy dog"
+        },
+        {
+            "parentTitle": "regular brown fox",
+            "writeupCooled": 1,
+            "wu_author": "normaluser1",
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214327,
+            "parentNode": 2214326
+        },
+        {
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214446,
+            "parentTitle": "swedish tomato\u00eb",
+            "writeupCooled": 1,
+            "wu_author": "normaluser2",
+            "parentNode": 2214445
+        },
+        {
+            "wu_author": "normaluser1",
+            "parentNode": 2214529,
+            "parentTitle": "writeup with a broken type",
+            "writeupCooled": 1,
+            "coolwriteups_id": 2214530,
+            "latest_cool": "2026-06-09 20:16:42"
+        },
+        {
+            "latest_cool": "2026-06-09 20:16:41",
+            "coolwriteups_id": 2214537,
+            "parentNode": 2214536,
+            "writeupCooled": 1,
+            "parentTitle": "writeup with bad cool info",
+            "wu_author": "normaluser1"
+        }
+    ],
+    "guest": 1,
+    "hasMessagesNodelet": 0,
+    "user": {
+        "node_id": 779713,
+        "admin": false,
+        "guest": true,
+        "in_room": "0",
+        "editor": false,
+        "chanop": false,
+        "developer": true,
+        "title": "Guest User"
+    },
+    "architecture": "x86_64",
+    "nodetype": "oppressor_superdoc",
+    "node_id": 2203605,
+    "pageheader": {},
+    "title": "Server Telemetry",
+    "newWriteups": [
+        {
+            "author": {
+                "node_id": 2213847,
+                "title": "normaluser2",
+                "type": "user"
+            },
+            "title": "Test Vote API Node 1781105218",
+            "parent": {
+                "node_id": 2217712,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781105218"
+            },
+            "writeuptype": null,
+            "node_id": 2217713,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2217669,
+            "writeuptype": null,
+            "parent": {
+                "node_id": 2217668,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781105135"
+            },
+            "title": "Test Writeup for Toggle 1781105135",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "title": "Test Writeup for Auth 1781105135",
+            "parent": {
+                "title": "Test Parent for Auth 1781105135",
+                "type": "e2node",
+                "node_id": 2217665
+            },
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2217666,
+            "notnew": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2217664,
+            "writeuptype": null,
+            "parent": {
+                "node_id": 2217663,
+                "type": "e2node",
+                "title": "Test Parent for Show"
+            },
+            "title": "Test Writeup for Show",
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "notnew": false,
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "writeuptype": null,
+            "node_id": 2217395,
+            "is_junk": false,
+            "is_log": false,
+            "title": "Test Vote API Node 1781103745",
+            "parent": {
+                "title": "Test Vote API Node 1781103745",
+                "type": "e2node",
+                "node_id": 2217394
+            }
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "title": "Test Writeup for Toggle 1781103629",
+            "parent": {
+                "title": "Test Parent for Toggle 1781103629",
+                "type": "e2node",
+                "node_id": 2217350
+            },
+            "writeuptype": null,
+            "node_id": 2217351,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2217348,
+            "notnew": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_log": false,
+            "title": "Test Writeup for Auth 1781103628",
+            "parent": {
+                "title": "Test Parent for Auth 1781103628",
+                "type": "e2node",
+                "node_id": 2217347
+            },
+            "is_junk": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217346,
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2217077,
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "notnew": false,
+            "title": "Test Vote API Node 1781097864",
+            "is_log": false,
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781097864",
+                "node_id": 2217076
+            },
+            "is_junk": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2217033,
+            "writeuptype": null,
+            "parent": {
+                "node_id": 2217032,
+                "title": "Test Parent for Toggle 1781097784",
+                "type": "e2node"
+            },
+            "title": "Test Writeup for Toggle 1781097784",
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "title": "Test Writeup for Auth 1781097784",
+            "is_log": false,
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781097784",
+                "node_id": 2217029
+            },
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2217030,
+            "notnew": false,
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2217028,
+            "writeuptype": null,
+            "notnew": false,
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "title": "Test Vote API Node 1781067231",
+            "parent": {
+                "node_id": 2216758,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781067231"
+            },
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216759
+        },
+        {
+            "title": "Test Writeup for Toggle 1781067133",
+            "parent": {
+                "node_id": 2216714,
+                "title": "Test Parent for Toggle 1781067133",
+                "type": "e2node"
+            },
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216715
+        },
+        {
+            "parent": {
+                "node_id": 2216711,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781067133"
+            },
+            "title": "Test Writeup for Auth 1781067133",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2216712,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show",
+            "node_id": 2216710,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2216441,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "node_id": 2213847,
+                "title": "normaluser2",
+                "type": "user"
+            },
+            "title": "Test Vote API Node 1781066250",
+            "parent": {
+                "title": "Test Vote API Node 1781066250",
+                "type": "e2node",
+                "node_id": 2216440
+            }
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2216397,
+            "writeuptype": null,
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781066129",
+                "node_id": 2216396
+            },
+            "title": "Test Writeup for Toggle 1781066129",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216394,
+            "title": "Test Writeup for Auth 1781066129",
+            "parent": {
+                "node_id": 2216393,
+                "title": "Test Parent for Auth 1781066129",
+                "type": "e2node"
+            },
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            }
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2216392,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "title": "Test Writeup for Show"
+        },
+        {
+            "node_id": 2216123,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781062572",
+                "node_id": 2216122
+            },
+            "title": "Test Vote API Node 1781062572"
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2216079,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "title": "Test Writeup for Toggle 1781062493",
+            "parent": {
+                "node_id": 2216078,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781062493"
+            }
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216076,
+            "title": "Test Writeup for Auth 1781062492",
+            "parent": {
+                "node_id": 2216075,
+                "title": "Test Parent for Auth 1781062492",
+                "type": "e2node"
+            },
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216074,
+            "title": "Test Writeup for Show",
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            }
+        },
+        {
+            "node_id": 2215718,
+            "writeuptype": null,
+            "author": {
+                "node_id": 2213847,
+                "title": "normaluser2",
+                "type": "user"
+            },
+            "notnew": false,
+            "parent": {
+                "node_id": 2215716,
+                "title": "Test Vote API Node 1781039814",
+                "type": "e2node"
+            },
+            "is_log": false,
+            "title": "Test Vote API Node 1781039814",
+            "is_junk": false
+        },
+        {
+            "title": "Multi Source 1781039808 (thing)",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2215704,
+            "writeuptype": null
+        },
+        {
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781039794",
+                "node_id": 2215678
+            },
+            "title": "Test Writeup for Toggle 1781039794",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215679,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "parent": {
+                "title": "Test Parent for Auth 1781039794",
+                "type": "e2node",
+                "node_id": 2215675
+            },
+            "title": "Test Writeup for Auth 1781039794",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215676,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215674,
+            "is_junk": false,
+            "title": "Test Writeup for Show",
+            "is_log": false
+        },
+        {
+            "parent": {
+                "node_id": 2215400,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781038715"
+            },
+            "title": "Test Vote API Node 1781038715",
+            "author": {
+                "node_id": 2213847,
+                "title": "normaluser2",
+                "type": "user"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215402,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "parent": {
+                "title": "Test Parent for Toggle 1781038693",
+                "type": "e2node",
+                "node_id": 2215360
+            },
+            "title": "Test Writeup for Toggle 1781038693",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215361,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "parent": {
+                "title": "Test Parent for Auth 1781038693",
+                "type": "e2node",
+                "node_id": 2215357
+            },
+            "title": "Test Writeup for Auth 1781038693",
+            "notnew": false,
+            "node_id": 2215358,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2215356,
+            "writeuptype": null
+        }
+    ],
+    "chatterbox": {
+        "roomName": "outside",
+        "miniMessages": [],
+        "roomTopic": "Test topic from gift shop test",
+        "showMessagesInChatterbox": 1,
+        "messages": []
+    },
+    "reactPageMode": true,
+    "display_prefs": {
+        "rtn_hideedc": 0,
+        "vit_hidenodeinfo": 0,
+        "edn_hideutil": 0,
+        "vit_hidelist": 0,
+        "vit_hidemaintenance": 0,
+        "vit_hidemisc": 0,
+        "rtn_hidecwu": 0,
+        "rtn_hidenws": 0,
+        "num_newwus": "10",
+        "nw_nojunk": false,
+        "vit_hidenodeutil": 0,
+        "edn_hideedev": 0
+    }
+}

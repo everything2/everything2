@@ -1,0 +1,714 @@
+{
+    "staffpicks": [
+        {
+            "title": "tomato",
+            "type": "e2node",
+            "node_id": 2214383
+        },
+        {
+            "node_id": 2214381,
+            "type": "e2node",
+            "title": "good poetry"
+        },
+        {
+            "node_id": 2214322,
+            "title": "Quick brown fox",
+            "type": "e2node"
+        }
+    ],
+    "use_local_assets": 1,
+    "contentData": {
+        "is_guest": 1,
+        "type": "recent_registry_entries"
+    },
+    "lastCommit": "c45169a62063acf7f5fdee953964d1adf974c152",
+    "recaptcha": {
+        "publicKey": "6LeF2BwsAAAAAMrkwFG7CXJmF6p0hV2swBxYfqc2",
+        "enabled": false
+    },
+    "assets_location": "",
+    "developerNodelet": {},
+    "node": {
+        "type": "superdoc",
+        "title": "Recent Registry Entries",
+        "createtime": 1781036099,
+        "node_id": 2001828
+    },
+    "newWriteups": [
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2217713,
+            "notnew": false,
+            "title": "Test Vote API Node 1781105218",
+            "parent": {
+                "node_id": 2217712,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781105218"
+            },
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            }
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Toggle 1781105135",
+            "parent": {
+                "node_id": 2217668,
+                "title": "Test Parent for Toggle 1781105135",
+                "type": "e2node"
+            },
+            "writeuptype": null,
+            "node_id": 2217669,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "parent": {
+                "node_id": 2217665,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781105135"
+            },
+            "title": "Test Writeup for Auth 1781105135",
+            "notnew": false,
+            "node_id": 2217666,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217664,
+            "title": "Test Writeup for Show",
+            "parent": {
+                "node_id": 2217663,
+                "type": "e2node",
+                "title": "Test Parent for Show"
+            },
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "title": "Test Vote API Node 1781103745",
+            "parent": {
+                "title": "Test Vote API Node 1781103745",
+                "type": "e2node",
+                "node_id": 2217394
+            },
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217395,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "title": "Test Writeup for Toggle 1781103629",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781103629",
+                "node_id": 2217350
+            },
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217351
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217348,
+            "title": "Test Writeup for Auth 1781103628",
+            "parent": {
+                "node_id": 2217347,
+                "title": "Test Parent for Auth 1781103628",
+                "type": "e2node"
+            },
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "notnew": false,
+            "node_id": 2217346,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show"
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217077,
+            "title": "Test Vote API Node 1781097864",
+            "parent": {
+                "title": "Test Vote API Node 1781097864",
+                "type": "e2node",
+                "node_id": 2217076
+            },
+            "author": {
+                "type": "user",
+                "title": "normaluser2",
+                "node_id": 2213847
+            }
+        },
+        {
+            "title": "Test Writeup for Toggle 1781097784",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781097784",
+                "node_id": 2217032
+            },
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2217033,
+            "notnew": false
+        },
+        {
+            "title": "Test Writeup for Auth 1781097784",
+            "parent": {
+                "node_id": 2217029,
+                "title": "Test Parent for Auth 1781097784",
+                "type": "e2node"
+            },
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217030
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "title": "Test Writeup for Show",
+            "node_id": 2217028,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "parent": {
+                "node_id": 2216758,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781067231"
+            },
+            "title": "Test Vote API Node 1781067231",
+            "node_id": 2216759,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "parent": {
+                "node_id": 2216714,
+                "title": "Test Parent for Toggle 1781067133",
+                "type": "e2node"
+            },
+            "title": "Test Writeup for Toggle 1781067133",
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2216715,
+            "writeuptype": null
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2216712,
+            "notnew": false,
+            "title": "Test Writeup for Auth 1781067133",
+            "parent": {
+                "title": "Test Parent for Auth 1781067133",
+                "type": "e2node",
+                "node_id": 2216711
+            },
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216710,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show"
+        },
+        {
+            "author": {
+                "node_id": 2213847,
+                "title": "normaluser2",
+                "type": "user"
+            },
+            "parent": {
+                "title": "Test Vote API Node 1781066250",
+                "type": "e2node",
+                "node_id": 2216440
+            },
+            "title": "Test Vote API Node 1781066250",
+            "notnew": false,
+            "node_id": 2216441,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216397,
+            "title": "Test Writeup for Toggle 1781066129",
+            "parent": {
+                "node_id": 2216396,
+                "title": "Test Parent for Toggle 1781066129",
+                "type": "e2node"
+            },
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            }
+        },
+        {
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "parent": {
+                "title": "Test Parent for Auth 1781066129",
+                "type": "e2node",
+                "node_id": 2216393
+            },
+            "title": "Test Writeup for Auth 1781066129",
+            "node_id": 2216394,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "node_id": 2216392,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Show"
+        },
+        {
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "parent": {
+                "node_id": 2216122,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781062572"
+            },
+            "title": "Test Vote API Node 1781062572",
+            "node_id": 2216123,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "parent": {
+                "node_id": 2216078,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781062493"
+            },
+            "title": "Test Writeup for Toggle 1781062493",
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2216079,
+            "writeuptype": null
+        },
+        {
+            "parent": {
+                "node_id": 2216075,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781062492"
+            },
+            "title": "Test Writeup for Auth 1781062492",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2216076,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216074,
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2215718,
+            "notnew": false,
+            "title": "Test Vote API Node 1781039814",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781039814",
+                "node_id": 2215716
+            },
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            }
+        },
+        {
+            "title": "Multi Source 1781039808 (thing)",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215704,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "parent": {
+                "node_id": 2215678,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781039794"
+            },
+            "title": "Test Writeup for Toggle 1781039794",
+            "node_id": 2215679,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "title": "Test Writeup for Auth 1781039794",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781039794",
+                "node_id": 2215675
+            },
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2215676,
+            "notnew": false
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "title": "Test Writeup for Show",
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215674,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "title": "Test Vote API Node 1781038715",
+            "parent": {
+                "title": "Test Vote API Node 1781038715",
+                "type": "e2node",
+                "node_id": 2215400
+            },
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215402,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "parent": {
+                "node_id": 2215360,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781038693"
+            },
+            "title": "Test Writeup for Toggle 1781038693",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2215361,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "node_id": 2215358,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "parent": {
+                "title": "Test Parent for Auth 1781038693",
+                "type": "e2node",
+                "node_id": 2215357
+            },
+            "title": "Test Writeup for Auth 1781038693"
+        },
+        {
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215356
+        }
+    ],
+    "title": "Recent Registry Entries",
+    "display_prefs": {
+        "nw_nojunk": false,
+        "num_newwus": "10",
+        "edn_hideedev": 0,
+        "vit_hidenodeutil": 0,
+        "vit_hidelist": 0,
+        "edn_hideutil": 0,
+        "vit_hidenodeinfo": 0,
+        "rtn_hideedc": 0,
+        "rtn_hidenws": 0,
+        "rtn_hidecwu": 0,
+        "vit_hidemisc": 0,
+        "vit_hidemaintenance": 0
+    },
+    "reactPageMode": true,
+    "chatterbox": {
+        "messages": [],
+        "showMessagesInChatterbox": 1,
+        "roomTopic": "Test topic from gift shop test",
+        "roomName": "outside",
+        "miniMessages": []
+    },
+    "architecture": "x86_64",
+    "user": {
+        "chanop": false,
+        "editor": false,
+        "in_room": "0",
+        "title": "Guest User",
+        "developer": true,
+        "admin": false,
+        "node_id": 779713,
+        "guest": true
+    },
+    "hasMessagesNodelet": 0,
+    "guest": 1,
+    "coolnodes": [
+        {
+            "coolwriteups_id": 2214382,
+            "latest_cool": "2026-06-09 20:16:43",
+            "parentNode": 2214381,
+            "wu_author": "user with space",
+            "writeupCooled": 20,
+            "parentTitle": "good poetry"
+        },
+        {
+            "parentTitle": null,
+            "writeupCooled": 1,
+            "wu_author": "normaluser1",
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214531,
+            "parentNode": 0
+        },
+        {
+            "writeupCooled": 1,
+            "parentTitle": "writeup with a broken nodegroup",
+            "wu_author": "normaluser1",
+            "parentNode": 2214532,
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214533
+        },
+        {
+            "wu_author": null,
+            "parentTitle": "writeup with no owner",
+            "writeupCooled": 1,
+            "parentNode": 2214534,
+            "coolwriteups_id": 2214535,
+            "latest_cool": "2026-06-09 20:16:43"
+        },
+        {
+            "parentTitle": "Quick brown fox",
+            "writeupCooled": 1,
+            "wu_author": "normaluser1",
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214323,
+            "parentNode": 2214322
+        },
+        {
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": "lazy dog",
+            "coolwriteups_id": 2214325,
+            "latest_cool": "2026-06-09 20:16:42",
+            "parentNode": 2214324
+        },
+        {
+            "coolwriteups_id": 2214327,
+            "latest_cool": "2026-06-09 20:16:42",
+            "parentNode": 2214326,
+            "wu_author": "normaluser1",
+            "parentTitle": "regular brown fox",
+            "writeupCooled": 1
+        },
+        {
+            "parentNode": 2214445,
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214446,
+            "writeupCooled": 1,
+            "parentTitle": "swedish tomato\u00eb",
+            "wu_author": "normaluser2"
+        },
+        {
+            "parentTitle": "writeup with a broken type",
+            "writeupCooled": 1,
+            "wu_author": "normaluser1",
+            "parentNode": 2214529,
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214530
+        },
+        {
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": "writeup with bad cool info",
+            "coolwriteups_id": 2214537,
+            "latest_cool": "2026-06-09 20:16:41",
+            "parentNode": 2214536
+        }
+    ],
+    "pageheader": {},
+    "node_id": 2001828,
+    "nodetype": "superdoc"
+}

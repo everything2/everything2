@@ -1,0 +1,1343 @@
+{
+    "newWriteups": [
+        {
+            "writeuptype": null,
+            "node_id": 2217713,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "title": "Test Vote API Node 1781105218",
+            "parent": {
+                "title": "Test Vote API Node 1781105218",
+                "type": "e2node",
+                "node_id": 2217712
+            }
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "parent": {
+                "node_id": 2217668,
+                "title": "Test Parent for Toggle 1781105135",
+                "type": "e2node"
+            },
+            "title": "Test Writeup for Toggle 1781105135",
+            "node_id": 2217669,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "notnew": false,
+            "node_id": 2217666,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "parent": {
+                "node_id": 2217665,
+                "title": "Test Parent for Auth 1781105135",
+                "type": "e2node"
+            },
+            "title": "Test Writeup for Auth 1781105135"
+        },
+        {
+            "notnew": false,
+            "node_id": 2217664,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "parent": {
+                "node_id": 2217663,
+                "title": "Test Parent for Show",
+                "type": "e2node"
+            },
+            "title": "Test Writeup for Show"
+        },
+        {
+            "is_junk": false,
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781103745",
+                "node_id": 2217394
+            },
+            "is_log": false,
+            "title": "Test Vote API Node 1781103745",
+            "notnew": false,
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "node_id": 2217395,
+            "writeuptype": null
+        },
+        {
+            "node_id": 2217351,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "parent": {
+                "title": "Test Parent for Toggle 1781103629",
+                "type": "e2node",
+                "node_id": 2217350
+            },
+            "title": "Test Writeup for Toggle 1781103629"
+        },
+        {
+            "notnew": false,
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            },
+            "writeuptype": null,
+            "node_id": 2217348,
+            "is_junk": false,
+            "title": "Test Writeup for Auth 1781103628",
+            "is_log": false,
+            "parent": {
+                "node_id": 2217347,
+                "title": "Test Parent for Auth 1781103628",
+                "type": "e2node"
+            }
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2217346,
+            "writeuptype": null,
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "title": "root",
+                "type": "user"
+            }
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2217077,
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "notnew": false,
+            "is_log": false,
+            "title": "Test Vote API Node 1781097864",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781097864",
+                "node_id": 2217076
+            },
+            "is_junk": false
+        },
+        {
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217033,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Toggle 1781097784",
+            "parent": {
+                "node_id": 2217032,
+                "title": "Test Parent for Toggle 1781097784",
+                "type": "e2node"
+            }
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2217030,
+            "is_junk": false,
+            "is_log": false,
+            "title": "Test Writeup for Auth 1781097784",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781097784",
+                "node_id": 2217029
+            }
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "title": "Test Writeup for Show",
+            "notnew": false,
+            "node_id": 2217028,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2216759,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "type": "user",
+                "title": "normaluser2",
+                "node_id": 2213847
+            },
+            "title": "Test Vote API Node 1781067231",
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781067231",
+                "node_id": 2216758
+            }
+        },
+        {
+            "node_id": 2216715,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "parent": {
+                "title": "Test Parent for Toggle 1781067133",
+                "type": "e2node",
+                "node_id": 2216714
+            },
+            "title": "Test Writeup for Toggle 1781067133"
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "parent": {
+                "title": "Test Parent for Auth 1781067133",
+                "type": "e2node",
+                "node_id": 2216711
+            },
+            "title": "Test Writeup for Auth 1781067133",
+            "notnew": false,
+            "node_id": 2216712,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "title": "Test Writeup for Show",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2216710,
+            "writeuptype": null
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2216441,
+            "notnew": false,
+            "title": "Test Vote API Node 1781066250",
+            "parent": {
+                "node_id": 2216440,
+                "title": "Test Vote API Node 1781066250",
+                "type": "e2node"
+            },
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            }
+        },
+        {
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "parent": {
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781066129",
+                "node_id": 2216396
+            },
+            "title": "Test Writeup for Toggle 1781066129",
+            "node_id": 2216397,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false
+        },
+        {
+            "notnew": false,
+            "node_id": 2216394,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "parent": {
+                "title": "Test Parent for Auth 1781066129",
+                "type": "e2node",
+                "node_id": 2216393
+            },
+            "title": "Test Writeup for Auth 1781066129"
+        },
+        {
+            "title": "Test Writeup for Show",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2216392,
+            "writeuptype": null
+        },
+        {
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2216123,
+            "is_junk": false,
+            "is_log": false,
+            "author": {
+                "node_id": 2213847,
+                "type": "user",
+                "title": "normaluser2"
+            },
+            "title": "Test Vote API Node 1781062572",
+            "parent": {
+                "node_id": 2216122,
+                "title": "Test Vote API Node 1781062572",
+                "type": "e2node"
+            }
+        },
+        {
+            "writeuptype": null,
+            "node_id": 2216079,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "title": "Test Writeup for Toggle 1781062493",
+            "parent": {
+                "node_id": 2216078,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781062493"
+            }
+        },
+        {
+            "is_log": false,
+            "is_junk": false,
+            "writeuptype": null,
+            "node_id": 2216076,
+            "notnew": false,
+            "title": "Test Writeup for Auth 1781062492",
+            "parent": {
+                "node_id": 2216075,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781062492"
+            },
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            }
+        },
+        {
+            "title": "Test Writeup for Show",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "is_log": false,
+            "is_junk": false,
+            "node_id": 2216074,
+            "writeuptype": null,
+            "notnew": false
+        },
+        {
+            "author": {
+                "node_id": 2213847,
+                "title": "normaluser2",
+                "type": "user"
+            },
+            "notnew": false,
+            "node_id": 2215718,
+            "writeuptype": null,
+            "is_junk": false,
+            "parent": {
+                "node_id": 2215716,
+                "type": "e2node",
+                "title": "Test Vote API Node 1781039814"
+            },
+            "is_log": false,
+            "title": "Test Vote API Node 1781039814"
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215704,
+            "title": "Multi Source 1781039808 (thing)",
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            }
+        },
+        {
+            "node_id": 2215679,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "parent": {
+                "node_id": 2215678,
+                "type": "e2node",
+                "title": "Test Parent for Toggle 1781039794"
+            },
+            "title": "Test Writeup for Toggle 1781039794"
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "parent": {
+                "node_id": 2215675,
+                "type": "e2node",
+                "title": "Test Parent for Auth 1781039794"
+            },
+            "title": "Test Writeup for Auth 1781039794",
+            "notnew": false,
+            "node_id": 2215676,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "notnew": false,
+            "author": {
+                "title": "root",
+                "type": "user",
+                "node_id": 113
+            },
+            "writeuptype": null,
+            "node_id": 2215674,
+            "is_junk": false,
+            "is_log": false,
+            "title": "Test Writeup for Show"
+        },
+        {
+            "author": {
+                "title": "normaluser2",
+                "type": "user",
+                "node_id": 2213847
+            },
+            "parent": {
+                "type": "e2node",
+                "title": "Test Vote API Node 1781038715",
+                "node_id": 2215400
+            },
+            "title": "Test Vote API Node 1781038715",
+            "notnew": false,
+            "node_id": 2215402,
+            "writeuptype": null,
+            "is_junk": false,
+            "is_log": false
+        },
+        {
+            "node_id": 2215361,
+            "writeuptype": null,
+            "notnew": false,
+            "is_log": false,
+            "is_junk": false,
+            "author": {
+                "type": "user",
+                "title": "root",
+                "node_id": 113
+            },
+            "parent": {
+                "title": "Test Parent for Toggle 1781038693",
+                "type": "e2node",
+                "node_id": 2215360
+            },
+            "title": "Test Writeup for Toggle 1781038693"
+        },
+        {
+            "is_junk": false,
+            "is_log": false,
+            "notnew": false,
+            "node_id": 2215358,
+            "writeuptype": null,
+            "parent": {
+                "title": "Test Parent for Auth 1781038693",
+                "type": "e2node",
+                "node_id": 2215357
+            },
+            "title": "Test Writeup for Auth 1781038693",
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            }
+        },
+        {
+            "author": {
+                "node_id": 113,
+                "type": "user",
+                "title": "root"
+            },
+            "title": "Test Writeup for Show",
+            "notnew": false,
+            "writeuptype": null,
+            "node_id": 2215356,
+            "is_junk": false,
+            "is_log": false
+        }
+    ],
+    "title": "Nodes of the Year",
+    "display_prefs": {
+        "num_newwus": "10",
+        "nw_nojunk": false,
+        "edn_hideedev": 0,
+        "vit_hidenodeutil": 0,
+        "vit_hidenodeinfo": 0,
+        "rtn_hideedc": 0,
+        "vit_hidelist": 0,
+        "edn_hideutil": 0,
+        "rtn_hidecwu": 0,
+        "vit_hidemisc": 0,
+        "vit_hidemaintenance": 0,
+        "rtn_hidenws": 0
+    },
+    "reactPageMode": true,
+    "chatterbox": {
+        "showMessagesInChatterbox": 1,
+        "messages": [],
+        "miniMessages": [],
+        "roomName": "outside",
+        "roomTopic": "Test topic from gift shop test"
+    },
+    "architecture": "x86_64",
+    "hasMessagesNodelet": 0,
+    "user": {
+        "editor": false,
+        "in_room": "0",
+        "chanop": false,
+        "developer": true,
+        "title": "Guest User",
+        "node_id": 779713,
+        "admin": false,
+        "guest": true
+    },
+    "guest": 1,
+    "coolnodes": [
+        {
+            "writeupCooled": 20,
+            "parentTitle": "good poetry",
+            "wu_author": "user with space",
+            "parentNode": 2214381,
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214382
+        },
+        {
+            "wu_author": "normaluser1",
+            "parentNode": 0,
+            "parentTitle": null,
+            "writeupCooled": 1,
+            "coolwriteups_id": 2214531,
+            "latest_cool": "2026-06-09 20:16:43"
+        },
+        {
+            "parentNode": 2214532,
+            "latest_cool": "2026-06-09 20:16:43",
+            "coolwriteups_id": 2214533,
+            "parentTitle": "writeup with a broken nodegroup",
+            "writeupCooled": 1,
+            "wu_author": "normaluser1"
+        },
+        {
+            "coolwriteups_id": 2214535,
+            "latest_cool": "2026-06-09 20:16:43",
+            "wu_author": null,
+            "parentNode": 2214534,
+            "writeupCooled": 1,
+            "parentTitle": "writeup with no owner"
+        },
+        {
+            "parentNode": 2214322,
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": "Quick brown fox",
+            "coolwriteups_id": 2214323,
+            "latest_cool": "2026-06-09 20:16:42"
+        },
+        {
+            "parentNode": 2214324,
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214325,
+            "writeupCooled": 1,
+            "parentTitle": "lazy dog",
+            "wu_author": "normaluser1"
+        },
+        {
+            "writeupCooled": 1,
+            "parentTitle": "regular brown fox",
+            "wu_author": "normaluser1",
+            "parentNode": 2214326,
+            "latest_cool": "2026-06-09 20:16:42",
+            "coolwriteups_id": 2214327
+        },
+        {
+            "parentNode": 2214445,
+            "wu_author": "normaluser2",
+            "writeupCooled": 1,
+            "parentTitle": "swedish tomato\u00eb",
+            "coolwriteups_id": 2214446,
+            "latest_cool": "2026-06-09 20:16:42"
+        },
+        {
+            "wu_author": "normaluser1",
+            "parentNode": 2214529,
+            "writeupCooled": 1,
+            "parentTitle": "writeup with a broken type",
+            "coolwriteups_id": 2214530,
+            "latest_cool": "2026-06-09 20:16:42"
+        },
+        {
+            "parentNode": 2214536,
+            "coolwriteups_id": 2214537,
+            "latest_cool": "2026-06-09 20:16:41",
+            "wu_author": "normaluser1",
+            "writeupCooled": 1,
+            "parentTitle": "writeup with bad cool info"
+        }
+    ],
+    "pageheader": {},
+    "node_id": 2117856,
+    "nodetype": "superdoc",
+    "staffpicks": [
+        {
+            "node_id": 2214383,
+            "type": "e2node",
+            "title": "tomato"
+        },
+        {
+            "node_id": 2214381,
+            "title": "good poetry",
+            "type": "e2node"
+        },
+        {
+            "type": "e2node",
+            "title": "Quick brown fox",
+            "node_id": 2214322
+        }
+    ],
+    "use_local_assets": 1,
+    "contentData": {
+        "wutype": 0,
+        "count": "50",
+        "orderby": "cooled DESC,reputation DESC",
+        "writeups": [
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 4",
+                "parent_id": 2214627,
+                "writeup_id": 2214628,
+                "cooled": 0,
+                "author_id": 2213847,
+                "publishtime": "2025-11-04 12:00:00",
+                "author_title": "normaluser2"
+            },
+            {
+                "parent_id": 2214603,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 27",
+                "publishtime": "2025-11-27 12:00:00",
+                "author_title": "normaluser1",
+                "writeup_id": 2214604,
+                "author_id": 2213846,
+                "cooled": 0,
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214606,
+                "publishtime": "2025-11-28 12:00:00",
+                "author_title": "normaluser1",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 28",
+                "parent_id": 2214605,
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "parent_id": 2214607,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 29",
+                "publishtime": "2025-11-29 12:00:00",
+                "author_title": "normaluser1",
+                "writeup_id": 2214608,
+                "cooled": 0,
+                "author_id": 2213846,
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214610,
+                "publishtime": "2025-11-30 12:00:00",
+                "author_title": "normaluser1",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 30",
+                "parent_id": 2214609
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_id": 2214611,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 31",
+                "publishtime": "2025-11-01 12:00:00",
+                "author_title": "normaluser1",
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214612
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_id": 2214613,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 32",
+                "publishtime": "2025-11-02 12:00:00",
+                "author_title": "normaluser1",
+                "writeup_id": 2214614,
+                "author_id": 2213846,
+                "cooled": 0
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-03 12:00:00",
+                "writeup_id": 2214616,
+                "cooled": 0,
+                "author_id": 2213846,
+                "parent_id": 2214615,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 33"
+            },
+            {
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214618,
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-04 12:00:00",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 34",
+                "parent_id": 2214617,
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214620,
+                "publishtime": "2025-11-05 12:00:00",
+                "author_title": "normaluser1",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 35",
+                "parent_id": 2214619
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "author_title": "normaluser2",
+                "publishtime": "2025-11-01 12:00:00",
+                "cooled": 0,
+                "author_id": 2213847,
+                "writeup_id": 2214622,
+                "parent_id": 2214621,
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 1"
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "cooled": 0,
+                "author_id": 2213847,
+                "writeup_id": 2214624,
+                "publishtime": "2025-11-02 12:00:00",
+                "author_title": "normaluser2",
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 2",
+                "parent_id": 2214623
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_id": 2214625,
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 3",
+                "author_title": "normaluser2",
+                "publishtime": "2025-11-03 12:00:00",
+                "writeup_id": 2214626,
+                "cooled": 0,
+                "author_id": 2213847
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214602,
+                "publishtime": "2025-11-26 12:00:00",
+                "author_title": "normaluser1",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 26",
+                "parent_id": 2214601
+            },
+            {
+                "parent_id": 2214629,
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 5",
+                "publishtime": "2025-11-05 12:00:00",
+                "author_title": "normaluser2",
+                "writeup_id": 2214630,
+                "author_id": 2213847,
+                "cooled": 0,
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "author_id": 2213847,
+                "cooled": 0,
+                "writeup_id": 2214632,
+                "author_title": "normaluser2",
+                "publishtime": "2025-11-06 12:00:00",
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 6",
+                "parent_id": 2214631
+            },
+            {
+                "author_id": 2213847,
+                "cooled": 0,
+                "writeup_id": 2214634,
+                "publishtime": "2025-11-07 12:00:00",
+                "author_title": "normaluser2",
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 7",
+                "parent_id": 2214633,
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "author_title": "normaluser2",
+                "publishtime": "2025-11-08 12:00:00",
+                "writeup_id": 2214636,
+                "cooled": 0,
+                "author_id": 2213847,
+                "parent_id": 2214635,
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 8",
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "cooled": 0,
+                "author_id": 2213847,
+                "writeup_id": 2214638,
+                "author_title": "normaluser2",
+                "publishtime": "2025-11-09 12:00:00",
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 9",
+                "parent_id": 2214637
+            },
+            {
+                "writeup_id": 2214640,
+                "cooled": 0,
+                "author_id": 2213847,
+                "publishtime": "2025-11-10 12:00:00",
+                "author_title": "normaluser2",
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 10",
+                "parent_id": 2214639,
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "author_id": 2213847,
+                "cooled": 0,
+                "writeup_id": 2214642,
+                "author_title": "normaluser2",
+                "publishtime": "2025-11-11 12:00:00",
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 11",
+                "parent_id": 2214641
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_id": 2214643,
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 12",
+                "author_title": "normaluser2",
+                "publishtime": "2025-11-12 12:00:00",
+                "writeup_id": 2214644,
+                "author_id": 2213847,
+                "cooled": 0
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 13",
+                "parent_id": 2214645,
+                "cooled": 0,
+                "author_id": 2213847,
+                "writeup_id": 2214646,
+                "publishtime": "2025-11-13 12:00:00",
+                "author_title": "normaluser2"
+            },
+            {
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 14",
+                "parent_id": 2214647,
+                "writeup_id": 2214648,
+                "author_id": 2213847,
+                "cooled": 0,
+                "publishtime": "2025-11-14 12:00:00",
+                "author_title": "normaluser2",
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "author_id": 2213847,
+                "cooled": 0,
+                "writeup_id": 2214650,
+                "author_title": "normaluser2",
+                "publishtime": "2025-11-15 12:00:00",
+                "parent_title": "Iron Noder 2025 - normaluser2 writeup 15",
+                "parent_id": 2214649
+            },
+            {
+                "reputation": 0,
+                "type_title": "log",
+                "parent_id": 2214797,
+                "parent_title": "November 8, 2025",
+                "publishtime": "2025-11-08 10:00:00",
+                "author_title": "normaluser1",
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214798
+            },
+            {
+                "parent_id": 2214577,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 14",
+                "publishtime": "2025-11-14 12:00:00",
+                "author_title": "normaluser1",
+                "writeup_id": 2214578,
+                "cooled": 0,
+                "author_id": 2213846,
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "writeup_id": 2214554,
+                "cooled": 0,
+                "author_id": 2213846,
+                "publishtime": "2025-11-02 12:00:00",
+                "author_title": "normaluser1",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 2",
+                "parent_id": 2214553,
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "writeup_id": 2214556,
+                "author_id": 2213846,
+                "cooled": 0,
+                "publishtime": "2025-11-03 12:00:00",
+                "author_title": "normaluser1",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 3",
+                "parent_id": 2214555
+            },
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 4",
+                "parent_id": 2214557,
+                "writeup_id": 2214558,
+                "author_id": 2213846,
+                "cooled": 0,
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-04 12:00:00"
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_id": 2214559,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 5",
+                "publishtime": "2025-11-05 12:00:00",
+                "author_title": "normaluser1",
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214560
+            },
+            {
+                "writeup_id": 2214562,
+                "author_id": 2213846,
+                "cooled": 0,
+                "publishtime": "2025-11-06 12:00:00",
+                "author_title": "normaluser1",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 6",
+                "parent_id": 2214561,
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 7",
+                "parent_id": 2214563,
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214564,
+                "publishtime": "2025-11-07 12:00:00",
+                "author_title": "normaluser1",
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "parent_id": 2214565,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 8",
+                "publishtime": "2025-11-08 12:00:00",
+                "author_title": "normaluser1",
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214566
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 9",
+                "parent_id": 2214567,
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214568,
+                "publishtime": "2025-11-09 12:00:00",
+                "author_title": "normaluser1"
+            },
+            {
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 10",
+                "parent_id": 2214569,
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214570,
+                "publishtime": "2025-11-10 12:00:00",
+                "author_title": "normaluser1",
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214572,
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-11 12:00:00",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 11",
+                "parent_id": 2214571,
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_id": 2214573,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 12",
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-12 12:00:00",
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214574
+            },
+            {
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 13",
+                "parent_id": 2214575,
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214576,
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-13 12:00:00",
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "parent_id": 2214551,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 1",
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-01 12:00:00",
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214552,
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 15",
+                "parent_id": 2214579,
+                "writeup_id": 2214580,
+                "author_id": 2213846,
+                "cooled": 0,
+                "publishtime": "2025-11-15 12:00:00",
+                "author_title": "normaluser1",
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "author_id": 2213846,
+                "cooled": 0,
+                "writeup_id": 2214582,
+                "publishtime": "2025-11-16 12:00:00",
+                "author_title": "normaluser1",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 16",
+                "parent_id": 2214581
+            },
+            {
+                "reputation": 0,
+                "type_title": "thing",
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-17 12:00:00",
+                "writeup_id": 2214584,
+                "author_id": 2213846,
+                "cooled": 0,
+                "parent_id": 2214583,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 17"
+            },
+            {
+                "writeup_id": 2214586,
+                "author_id": 2213846,
+                "cooled": 0,
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-18 12:00:00",
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 18",
+                "parent_id": 2214585,
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 19",
+                "parent_id": 2214587,
+                "writeup_id": 2214588,
+                "author_id": 2213846,
+                "cooled": 0,
+                "publishtime": "2025-11-19 12:00:00",
+                "author_title": "normaluser1"
+            },
+            {
+                "type_title": "thing",
+                "reputation": 0,
+                "parent_id": 2214589,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 20",
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-20 12:00:00",
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214590
+            },
+            {
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 21",
+                "parent_id": 2214591,
+                "cooled": 0,
+                "author_id": 2213846,
+                "writeup_id": 2214592,
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-21 12:00:00",
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "publishtime": "2025-11-22 12:00:00",
+                "author_title": "normaluser1",
+                "writeup_id": 2214594,
+                "cooled": 0,
+                "author_id": 2213846,
+                "parent_id": 2214593,
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 22",
+                "type_title": "thing",
+                "reputation": 0
+            },
+            {
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 23",
+                "parent_id": 2214595,
+                "writeup_id": 2214596,
+                "cooled": 0,
+                "author_id": 2213846,
+                "author_title": "normaluser1",
+                "publishtime": "2025-11-23 12:00:00",
+                "reputation": 0,
+                "type_title": "thing"
+            },
+            {
+                "parent_title": "Iron Noder 2025 - normaluser1 writeup 24",
+                "parent_id": 2214597,
+                "writeup_id": 2214598,
+                "cooled": 0,
+                "author_id": 2213846,
+                "publishtime": "2025-11-24 12:00:00",
+                "author_title": "normaluser1",
+                "type_title": "thing",
+                "reputation": 0
+            }
+        ],
+        "writeup_types": [
+            {
+                "node_id": 177599,
+                "title": "definition"
+            },
+            {
+                "node_id": 1893266,
+                "title": "dream"
+            },
+            {
+                "node_id": 1873013,
+                "title": "essay"
+            },
+            {
+                "title": "event",
+                "node_id": 1882121
+            },
+            {
+                "title": "fiction",
+                "node_id": 1871558
+            },
+            {
+                "title": "help",
+                "node_id": 2100440
+            },
+            {
+                "title": "how-to",
+                "node_id": 1952055
+            },
+            {
+                "title": "idea",
+                "node_id": 251
+            },
+            {
+                "node_id": 1795854,
+                "title": "lede"
+            },
+            {
+                "node_id": 1871573,
+                "title": "log"
+            },
+            {
+                "node_id": 2100439,
+                "title": "opinion"
+            },
+            {
+                "title": "person",
+                "node_id": 249
+            },
+            {
+                "title": "personal",
+                "node_id": 1721675
+            },
+            {
+                "title": "place",
+                "node_id": 252
+            },
+            {
+                "title": "poetry",
+                "node_id": 1871559
+            },
+            {
+                "node_id": 1871705,
+                "title": "recipe"
+            },
+            {
+                "title": "review",
+                "node_id": 1871572
+            },
+            {
+                "node_id": 250,
+                "title": "thing"
+            }
+        ],
+        "year": "2025",
+        "type": "nodes_of_the_year"
+    },
+    "lastCommit": "c45169a62063acf7f5fdee953964d1adf974c152",
+    "recaptcha": {
+        "enabled": false,
+        "publicKey": "6LeF2BwsAAAAAMrkwFG7CXJmF6p0hV2swBxYfqc2"
+    },
+    "assets_location": "",
+    "developerNodelet": {},
+    "node": {
+        "title": "Nodes of the Year",
+        "type": "superdoc",
+        "node_id": 2117856,
+        "createtime": 1781036101
+    }
+}

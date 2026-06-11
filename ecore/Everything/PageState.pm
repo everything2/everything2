@@ -68,6 +68,44 @@ sub from_blob {
     return { chrome => \%chrome, content => \%content };
 }
 
+# Keys whose values are conceptually integers but sometimes serialize as strings
+# (the #4152 class -- e.g. newWriteups[].node_id comes back as "1234567"). React uses
+# these as list keys (key={node_id}) and in truthy guards ({x && <JSX/>}), where a
+# string "0" is truthy and a string id breaks key identity. normalize_types coerces
+# them to real integers recursively so the /api/pagestate contract is correctly typed.
+# Conservative set -- IDs/counts/flags only; the deeper source-level coercion (in the
+# stash generators) is the 2b fix. Extend as that catches up.
+my %INT_KEYS = map { $_ => 1 } qw(
+    node_id user_id parent_e2node author_user type_nodetype lastnode_id
+    to_node from_node reputation numwriteups use_local_assets
+);
+
+sub normalize_types {
+    my ( $self, $data ) = @_;
+    _coerce_ints($data);
+    return $data;
+}
+
+# Recursively coerce integer-valued strings under INT_KEYS to real integers (mutates
+# in place). int() forces an IV so JSON encodes a number, not a quoted string.
+sub _coerce_ints {
+    my ($v) = @_;
+    if ( ref $v eq 'HASH' ) {
+        for my $k ( keys %$v ) {
+            if ( $INT_KEYS{$k} && defined $v->{$k} && !ref $v->{$k} && $v->{$k} =~ /\A-?\d+\z/ ) {
+                $v->{$k} = int( $v->{$k} );
+            }
+            else {
+                _coerce_ints( $v->{$k} );
+            }
+        }
+    }
+    elsif ( ref $v eq 'ARRAY' ) {
+        _coerce_ints($_) for @$v;
+    }
+    return;
+}
+
 # The migration safety net: blob keys present in $e2 that no manifest classifies.
 # Should always be empty; the test asserts it against a live blob so a new key in
 # buildNodeInfoStructure forces a conscious classification decision.

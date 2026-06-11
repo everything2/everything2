@@ -387,7 +387,7 @@ const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }
                       {member.flags && (
                         <small className="usergroup-editor__member-flags">{member.flags}</small>
                       )}
-                      {member.is_owner && (
+                      {!!member.is_owner && (
                         <span className="usergroup-editor__owner-badge">owner</span>
                       )}
                     </div>

@@ -312,4 +312,21 @@ describe('Epicenter Component', () => {
       expect(linkNodes.length).toBeGreaterThanOrEqual(6)
     })
   })
+
+  // #4108: gain quantities arrive as numbers. `{gain && <p/>}` leaks a literal "0"
+  // when the gain is the number 0. Guard with `> 0`.
+  describe('logical-zero guards', () => {
+    it('renders no stray "0" when experience/gp gains are 0', () => {
+      const props = {
+        ...defaultProps,
+        experienceGain: 0,
+        gpGain: 0,
+        user: { ...defaultProps.user, votesleft: 0, coolsleft: 0 },
+      }
+      const { container } = render(<Epicenter {...props} />)
+      expect(container.querySelector('#experience')).not.toBeInTheDocument()
+      expect(container.querySelector('#gp')).not.toBeInTheDocument()
+      expect(screen.queryByText('0')).not.toBeInTheDocument()
+    })
+  })
 })

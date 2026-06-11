@@ -5,6 +5,7 @@ with 'Everything::Globals';
 
 use JSON::MaybeXS;
 use HTML::Entities qw(encode_entities decode_entities);
+use Everything::PageMetadata;
 
 # Core page data
 has 'node' => (is => 'ro', required => 1);
@@ -40,6 +41,22 @@ has 'body_class' => (is => 'ro', required => 1);
 # Computed/lazy attributes
 has 'pagetitle' => (is => 'ro', lazy => 1, builder => '_build_pagetitle');
 has 'friendly_pagetype' => (is => 'ro', lazy => 1, builder => '_build_friendly_pagetype');
+
+# The single metadata producer (og / JSON-LD / the e2 `meta` key the React app reads).
+# HTMLShell renders FROM it so the server <head> and the client-set <head> never diverge.
+has 'page_metadata' => (is => 'ro', lazy => 1, builder => '_build_page_metadata');
+
+sub _build_page_metadata {
+    my ($self) = @_;
+    return Everything::PageMetadata->new(
+        node            => $self->node,
+        canonical_url   => $self->canonical_url,
+        pagetitle       => $self->pagetitle,
+        metadescription => $self->metadescription,
+        robots_index    => $self->meta_robots_index,
+        robots_follow   => $self->meta_robots_follow,
+    );
+}
 
 sub _build_pagetitle {
     my ($self) = @_;
@@ -109,19 +126,18 @@ sub _render_head {
     $html .= qq{<meta name="robots" content="} . $self->meta_robots_index . "," . $self->meta_robots_follow . qq{">\n};
     $html .= qq{<meta name="description" content="$metadescription">\n};
 
-    # Open Graph
-    my $og_type = ($friendly_pagetype eq 'writeup' || $friendly_pagetype eq 'e2node') ? 'article' : 'website';
+    # Open Graph (driven by the shared metadata producer so the client-set <head> matches)
+    my $og = $self->page_metadata->og;
     $html .= qq{<!-- Open Graph / Facebook -->\n};
-    $html .= qq{<meta property="og:type" content="$og_type">\n};
+    $html .= qq{<meta property="og:type" content="} . $og->{type} . qq{">\n};
     $html .= qq{<meta property="og:url" content="$canonical_url">\n};
     $html .= qq{<meta property="og:title" content="$pagetitle">\n};
     $html .= qq{<meta property="og:description" content="$metadescription">\n};
     $html .= qq{<meta property="og:site_name" content="Everything2">\n};
 
     # Article published time for writeups/e2nodes
-    if (($friendly_pagetype eq 'writeup' || $friendly_pagetype eq 'e2node')
-        && $self->node->can('publishtime') && $self->node->publishtime) {
-        $html .= qq{<meta property="article:published_time" content="} . $self->node->publishtime . qq{">\n};
+    if (defined $og->{published_time}) {
+        $html .= qq{<meta property="article:published_time" content="} . $og->{published_time} . qq{">\n};
     }
 
     # Twitter
@@ -187,180 +203,9 @@ sub _render_head {
 sub _render_json_ld {
     my ($self) = @_;
 
-    my $node = $self->node;
-    my $ntypet = $node->type->title;
-    my $canonical_url = $self->canonical_url;
-    my $pagetitle = $self->pagetitle;
-    my $metadescription = $self->metadescription;
-
-    my @json_ld_items;
-
-    # WebSite schema (always include on all pages)
-    push @json_ld_items, {
-        '@type' => 'WebSite',
-        '@id' => 'https://everything2.com/#website',
-        'url' => 'https://everything2.com/',
-        'name' => 'Everything2',
-        'description' => 'Everything2 is a community for fiction, nonfiction, poetry, reviews, and more.',
-        'potentialAction' => {
-            '@type' => 'SearchAction',
-            'target' => {
-                '@type' => 'EntryPoint',
-                'urlTemplate' => 'https://everything2.com/title/{search_term_string}'
-            },
-            'query-input' => 'required name=search_term_string'
-        }
-    };
-
-    # WebPage schema (for all pages)
-    my $webpage_schema = {
-        '@type' => 'WebPage',
-        '@id' => $canonical_url . '#webpage',
-        'url' => $canonical_url,
-        'name' => $pagetitle,
-        'description' => $metadescription,
-        'isPartOf' => { '@id' => 'https://everything2.com/#website' },
-        'inLanguage' => 'en-US'
-    };
-
-    # Add breadcrumbs for writeups and e2nodes
-    if ($ntypet eq 'writeup' || $ntypet eq 'e2node') {
-        my @breadcrumb_items = (
-            {
-                '@type' => 'ListItem',
-                'position' => 1,
-                'name' => 'Home',
-                'item' => 'https://everything2.com/'
-            }
-        );
-
-        if ($ntypet eq 'writeup') {
-            my $parent = $node->parent;
-            if ($parent && !UNIVERSAL::isa($parent, "Everything::Node::null")) {
-                my $parent_url = 'https://everything2.com/title/' . $self->APP->rewriteCleanEscape($parent->title);
-                push @breadcrumb_items, {
-                    '@type' => 'ListItem',
-                    'position' => 2,
-                    'name' => decode_entities($parent->title),
-                    'item' => $parent_url
-                };
-                push @breadcrumb_items, {
-                    '@type' => 'ListItem',
-                    'position' => 3,
-                    'name' => $pagetitle
-                };
-            }
-        } else {
-            push @breadcrumb_items, {
-                '@type' => 'ListItem',
-                'position' => 2,
-                'name' => decode_entities($node->title)
-            };
-        }
-
-        push @json_ld_items, {
-            '@type' => 'BreadcrumbList',
-            'itemListElement' => \@breadcrumb_items
-        };
-    }
-
-    # Article schema for writeups
-    if ($ntypet eq 'writeup') {
-        my $author = $node->author;
-        my $author_name = $author ? $author->title : 'Anonymous';
-        my $author_url = $author ? 'https://everything2.com/user/' . $self->APP->rewriteCleanEscape($author_name) : undef;
-
-        my $article_schema = {
-            '@type' => 'Article',
-            '@id' => $canonical_url . '#article',
-            'headline' => $pagetitle,
-            'description' => $metadescription,
-            'url' => $canonical_url,
-            'isPartOf' => { '@id' => $canonical_url . '#webpage' },
-            'inLanguage' => 'en-US',
-            'author' => {
-                '@type' => 'Person',
-                'name' => $author_name,
-                ($author_url ? ('url' => $author_url) : ())
-            },
-            'publisher' => {
-                '@type' => 'Organization',
-                'name' => 'Everything2',
-                'url' => 'https://everything2.com/'
-            }
-        };
-
-        # Add dates if available
-        if ($node->can('createtime') && $node->createtime) {
-            $article_schema->{datePublished} = $node->createtime;
-        }
-        if ($node->can('updated') && $node->updated) {
-            $article_schema->{dateModified} = $node->updated;
-        }
-
-        push @json_ld_items, $article_schema;
-        $webpage_schema->{mainEntity} = { '@id' => $canonical_url . '#article' };
-    }
-
-    # CollectionPage schema for categories
-    if ($ntypet eq 'category') {
-        my $author = $node->author;
-        my $author_name = $author ? $author->title : 'Everything2';
-        my $author_url = $author ? 'https://everything2.com/user/' . $self->APP->rewriteCleanEscape($author_name) : undef;
-
-        # Get member count from category
-        my $category_linktype = $self->DB->getNode('category', 'linktype');
-        my $member_count = 0;
-        if ($category_linktype) {
-            $member_count = $self->DB->sqlSelect(
-                'COUNT(*)',
-                'links',
-                'from_node = ' . $node->node_id . ' AND linktype = ' . $category_linktype->{node_id}
-            ) || 0;
-        }
-
-        my $collection_schema = {
-            '@type' => 'CollectionPage',
-            '@id' => $canonical_url . '#collection',
-            'name' => $node->title,
-            'description' => $metadescription,
-            'url' => $canonical_url,
-            'isPartOf' => { '@id' => $canonical_url . '#webpage' },
-            'inLanguage' => 'en-US',
-            'mainEntity' => {
-                '@type' => 'ItemList',
-                'numberOfItems' => $member_count,
-                'itemListOrder' => 'https://schema.org/ItemListOrderAscending'
-            }
-        };
-
-        # Add author/maintainer
-        if ($author_url) {
-            $collection_schema->{maintainer} = {
-                '@type' => 'Person',
-                'name' => $author_name,
-                'url' => $author_url
-            };
-        }
-
-        # Add dates if available
-        if ($node->can('createtime') && $node->createtime) {
-            $collection_schema->{dateCreated} = $node->createtime;
-        }
-
-        push @json_ld_items, $collection_schema;
-        $webpage_schema->{mainEntity} = { '@id' => $canonical_url . '#collection' };
-    }
-
-    push @json_ld_items, $webpage_schema;
-
-    # Combine into @graph
-    my $json_ld = {
-        '@context' => 'https://schema.org',
-        '@graph' => \@json_ld_items
-    };
-
-    my $json_ld_str = encode_json($json_ld);
+    # The schema.org @graph is built by Everything::PageMetadata (the single source,
+    # also surfaced to React via the e2 `meta` key). Here we only serialize + wrap it.
+    my $json_ld_str = encode_json($self->page_metadata->json_ld);
     return qq{<script type="application/ld+json">$json_ld_str</script>\n};
 }
 

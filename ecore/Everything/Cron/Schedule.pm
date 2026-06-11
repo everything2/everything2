@@ -18,6 +18,13 @@ use namespace::autoclean;
 #   local    -- 1 = run in-place on the leader webhead (light jobs); 0 = the
 #               leader should dispatch it to e2heavyjob-family instead (reserved
 #               for datastash --lengthy if it ever pressures request latency).
+#   detached -- 1 = the leader hands this job to a BACKGROUND supervisor and returns
+#               immediately, instead of blocking the tick (and holding the GET_LOCK)
+#               for the job's whole runtime. For heavy daily batch jobs whose runtime
+#               exceeds the ~1min tick: a blocking run starves the frequent jobs
+#               (datastash @120s goes 'overdue') and pins the lock the entire time.
+#               The supervisor (cron/cron_supervise.pl) owns the fork/exec, the
+#               timeout-kill, and the mark_finished. See Everything::Cron::Runner.
 #
 # Cadence is expressed two ways, faithful to the current EventBridge rules:
 #   type 'rate' + interval (s)  -- fire when interval has elapsed since last run
@@ -51,8 +58,14 @@ my $REGISTRY = [
     # --- wall-clock cron rules ---
     { name => 'chatterbox-cleanup', argv => _cron('cron_clean_cbox.pl'),
       type => 'cron', cron => '50 * * * *', period => 3600,  timeout => 120,  local => 1 },
+    # Heavy daily batch (~50min: batches the whole corpus to S3). DETACHED so the
+    # ~1min tick isn't blocked for the whole run -- a blocking run starved datastash
+    # and held the GET_LOCK for 30min, and the old 1800s timeout killed it mid-batch
+    # every night (it never completed post-cutover). 5400s = generous headroom over
+    # observed runtime.
     { name => 'generate-sitemap',   argv => _cron('cron_generate_sitemap.pl'),
-      type => 'cron', cron => '0 0 * * *',  period => 86400, timeout => 1800, local => 1 },
+      type => 'cron', cron => '0 0 * * *',  period => 86400, timeout => 5400,
+      local => 1, detached => 1 },
 ];
 
 sub entries { return $REGISTRY }

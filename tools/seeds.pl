@@ -2508,4 +2508,28 @@ if ($oppressor_doc) {
   print STDERR "  - Created: Test Oppressor Document (oppressor_document)\n";
 }
 
+# collaboration + debate -- give the collaboration/debatecomment React views a live node
+# so their fixtures can be (re)captured in dev (PageState 2a, #4255). Without these the
+# 'collaboration' and 'debatecomment' nodetypes have zero rows in a fresh dev DB.
+print STDERR "Creating collaboration + debate test nodes\n";
+my $seed_collab = getNode("Seed Collaboration for PageState", "collaboration");
+if (!$seed_collab) {
+  my $cid = $DB->insertNode("Seed Collaboration for PageState", "collaboration", $DB->getNode("root","user"), {});
+  $DB->{dbh}->do("INSERT IGNORE INTO collaboration (collaboration_id, public) VALUES ($cid, 1)");
+  print STDERR "  - Created: Seed Collaboration for PageState (collaboration)\n";
+}
+
+my $seed_debate = getNode("Seed Debate for PageState", "debate");
+if (!$seed_debate) {
+  # Mirrors Everything::API::debatecomments::create_debate; the debate_create
+  # maintenance fills root_debatecomment. restricted=114 (gods usergroup).
+  $DB->insertNode("Seed Debate for PageState", "debate", $DB->getNode("root","user"), {
+    doctext              => "Seed debate body for fixture capture.",
+    parent_debatecomment => 0,
+    root_debatecomment   => 0,
+    restricted           => 114,
+  });
+  print STDERR "  - Created: Seed Debate for PageState (debate)\n";
+}
+
 print STDERR "\n=== Additional nodetype test data complete ===\n";

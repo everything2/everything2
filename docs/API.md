@@ -320,6 +320,49 @@ If the title/type combination does not exist, this returns NOT FOUND
 
 If the user cannot read the node details, this returns FORBIDDEN
 
+## Page State
+
+**Test Coverage: ✅** (t/142_pagestate_api.t; the returned contract is pinned by ~229 fixture-backed React component tests)
+
+The full page payload the React app boots from — the `e2` blob, delivered as an API resource instead of being inlined into every server-rendered page. This is Step 2a of the API-driven architecture (see [pagestate-design.md](pagestate-design.md)). It serves the **identical, type-normalized contract** the inline page emits, for every node type.
+
+### GET /api/pagestate
+
+Returns the page payload for a node, rendered **as the current user** (send the session cookie for a logged-in/admin view; otherwise the guest view).
+
+**Addressing the node** — three forms, since the client doesn't always know the node_id:
+
+* **`?node_id=N`** — by id.
+* **`?title=T[&type=X]`** — by title; **`type` defaults to `e2node`** (the common title-URL case). E.g. `?title=root&type=user`.
+* **`GET /api/pagestate/lookup/:type/:title`** — the same by-name lookup as a path form (mirrors `/api/nodes/lookup/:type/:title`); `:type`/`:title` are URL-encoded segments.
+* No addressing params → the site default node (`CONF->default_node`). Chrome is largely node-independent, so the default is fine when you only want the shell.
+
+The **URL-pattern resolution lives in React's client router**, not here. React parses the legacy node-router / Apache URL forms (`/title/X`, `/node/:type/:title`, `/user/X`, `/user/X/writeups/Y`, `/s/X`, …) inline and reduces each to one of the forms above — a `node_id`, or a `type`/`title` (defaulting to `e2node` when no type is implied). This API only needs id or type/title.
+
+**Other parameters:**
+
+* **displaytype** *(optional, default `display`)* — the view to render, e.g. `display`, `edit`, `editvars`, `replyto`, `useredit`. Variant/edit views are auth-gated exactly as the page render is (e.g. editing your own user node, or admin-only views).
+
+**Returns** a single object — the page's `e2` structure. Two conceptual halves (not separate keys; see "future" below):
+
+* **Chrome** — per-user/site shell: `user`, `guest`, `display_prefs`, the nodelet feeds (`newWriteups`, `news`, `randomNodes`, `coolnodes`, `chatterbox`, `epicenter`, …), `pageheader`, etc. Page-independent.
+* **Content** — per-node: `contentData` (the node body), `node`, `nodetype`, `nodeCategories`, …
+* **`contentData.type`** — the **rendering key**: React's `DocumentComponent` maps it to the view component (e.g. `e2node`, `user`, `welcome_to_everything`, `collaborationEdit`). `None`/absent means the node has no React view for that displaytype.
+* **`meta`** — the page `<head>` metadata, so the React app can set the title / canonical / Open Graph / structured data on **client-side navigation** (where there's no server render to emit it). Produced by `Everything::PageMetadata` — the *same* producer `Everything::HTMLShell` renders the server `<head>` from, so the two never diverge. Shape:
+  * `title` — raw (entity-decoded) page title; the consumer encodes.
+  * `canonical` — absolute canonical URL.
+  * `description` — meta description.
+  * `robots` — e.g. `index,follow`.
+  * `og` — `{ type (`article`|`website`), url, title, description, site_name, published_time? }`.
+  * `twitter` — `{ card, title, description }`.
+  * `jsonLd` — the schema.org structured-data object (`@context` + `@graph`: WebSite + WebPage, plus Article/BreadcrumbList for writeups/e2nodes and CollectionPage for categories). The consumer serializes it into a `<script type="application/ld+json">`.
+
+**Type contract:** the payload is type-normalized — integer ids (`node_id`, `user_id`, …) are real integers, never strings (#4152/#4108). The same normalization runs at the single source (`buildNodeInfoStructure`), so the inline page render and this endpoint are byte-for-byte equivalent. Captured fixtures (`react/__fixtures__/pagestate/`) are snapshots of this endpoint; `tools/capture-pagestate-fixtures.sh` regenerates them (supports `E2_LOGIN_USER`/`E2_LOGIN_PASS` for authed views).
+
+Always returns **200 OK** (E2 API convention); a missing context node returns `{success: 0, error: ...}`.
+
+**Future:** `?lite=1` (not yet implemented) will return the chrome subset only, for clients that reuse it across client-side navigation. The chrome/content partition is already modeled in `Everything::PageState->from_blob`.
+
 ## Users
 
 **Test Coverage: ❌ 0%** (0/7 endpoints tested)
