@@ -99,7 +99,7 @@ sub cools050
 {
     my ($DB, $APP, $user_id) = @_;
 
-    my $coolCount = htmlcode('coolcount', $user_id);
+    my $coolCount = $APP->coolcount($user_id);
     return 1 if $coolCount >=50;
     return 0;
 }
@@ -108,7 +108,7 @@ sub cools100
 {
     my ($DB, $APP, $user_id) = @_;
 
-    my $coolCount = htmlcode('coolcount', $user_id);
+    my $coolCount = $APP->coolcount($user_id);
     return 1 if $coolCount >=100;
     return 0;
 }
@@ -117,7 +117,7 @@ sub cools200
 {
     my ($DB, $APP, $user_id) = @_;
 
-    my $coolCount = htmlcode('coolcount', $user_id);
+    my $coolCount = $APP->coolcount($user_id);
     return 1 if $coolCount >=200;
     return 0;
 }
@@ -126,7 +126,7 @@ sub cools500
 {
     my ($DB, $APP, $user_id) = @_;
 
-    my $coolCount = htmlcode('coolcount', $user_id);
+    my $coolCount = $APP->coolcount($user_id);
     return 1 if $coolCount >=500;
     return 0;
 }

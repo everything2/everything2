@@ -1487,58 +1487,7 @@ sub firmlinks
 
 # writeupssincelastyear REMOVED - Dead code, stats now provided via API. Jan 2026.
 
-# This is almost certainly identical to the flattenUsergroup functionality that already exists inside of the NodeBase
-# but I am keeping it for compatibility. Ultimately it can be wound into something less oddly specific
-#
-sub usergroupToUserIds
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-
-  #Given a ug_id or a ug hash, convert it to a comma-separated string of user IDs
-  my ($ug) = @_;
-
-  #Given a ug_id or a ug hashref, convert it recursively to an array of user IDs
-  my @uids = htmlcode("explode_ug",$ug);
-
-  my $out = "@uids";
-
-  $out =~ s/ /,/g;
-  return $out;
-}
-
-# Used this to kill off a local subref in usergroupToUserIds
-#
-sub explode_ug
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my ($ug) = @_;
-  $ug = getNodeById($ug) if $ug =~ /^\d+$/;
-
-  my @ids = @{$$ug{'group'} || []};
-
-  my @result = ();
-  foreach my $id(@ids){
-    if(getNodeById($id) -> {'type'} -> {'title'} eq 'user'){
-      push @result, $id;
-    } else{
-      push @result, htmlcode("explode_ug",$id);
-    }
-  }
-
-  return @result;
-}
+# usergroupToUserIds + explode_ug REMOVED - factored into Everything::Application->usergroupToUserIds / ->explode_ug (unit-tested). Jun 2026.
 
 sub unignoreUser
 {
@@ -3335,18 +3284,7 @@ sub ignoreUser
 # achievementsByType REMOVED - Dead code, achievements display migrated to React. Jan 2026.
 # editor_homenode_tools REMOVED - Dead code, editor tools migrated to React. Jan 2026.
 
-sub coolcount
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-  
-  my $user_id = shift;
-  return $DB->sqlSelect("count(*)","coolwriteups JOIN node ON coolwriteups_id = node_id","author_user=$user_id and type_nodetype=117");
-}
+# coolcount REMOVED - factored into Everything::Application->coolcount (unit-tested). Jun 2026.
 
 # epicenterZen REMOVED - Dead code, epicenter data now provided via Application.pm to React. Jan 2026.
 

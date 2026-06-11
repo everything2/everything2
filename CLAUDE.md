@@ -1,6 +1,6 @@
 # Everything2 — AI Assistant Context
 
-**Last Updated**: 2026-04-28
+**Last Updated**: 2026-06-11
 **Maintainer**: Jay Bonci (jay@bonci.net)
 
 This file is a thin layer of non-discoverable context. For anything you can derive by reading code or running `git log`, do that instead. Treat `docs/` as the deeper reference and this file as a finger pointing at it.
@@ -96,14 +96,18 @@ Test command shortcuts: `./docker/devbuild.sh` (full rebuild + tests), `npm test
 
 ---
 
-## Active workstreams (April 2026)
+## Operational priorities (June 2026, post-PSGI)
 
-These are pointers; the docs above have detail. State here may go stale — verify with `git log` and `git status` before acting.
+We're past the PSGI cutover (LIVE in prod) and the MySQL 8.4 migration (done #4226). These are pointers; verify with `git log`/`git status` before acting. The agreed sequence (decided June 2026) — the **destination is full React routing**, reached in this order:
 
-**Inline-styles → BEM refactor** is in the working tree (~280 modified files, +23k lines in basesheet CSS). Tests pass. The 200-cell computed-style diff was clean for 60 cells outright; the rest show structured, theme-consistent drift consistent with intentional palette/layout tweaks. Awaiting spot-check sign-off before commit.
+1. **htmlcode retirement** (#4259, `epoch:infra-cleanup`) — *in progress, current detour.* Factor `Everything::Delegation::htmlcode` (65 subs, ~37 live) into real, unit-tested `Everything::Application` methods; update callers; retire the delegation subs + orphaned nodepack nodes. Batch 1 (`getGravatarMD5`/`DateTimeLocal`/`isSpecialDate`) merged (#4260). Thin/consolidate as we go. Each batch lands `Refs #4259` (umbrella stays open).
 
-**MySQL 8.0.43 → 8.4 LTS migration** has a July 2026 deadline (RDS engine sunset). Decoupled from the broader DBIx::Class ORM cleanup, which is post-deadline. Static audits (April 2026) found zero remaining SQL injection sites, zero reserved-word collisions, zero `utf8mb3` usage — the migration risk surface is much narrower than older docs suggest. Real concerns: `mysql_native_password` deprecation, DBD::mysql/Apache::DBI behavior on 8.4.
+2. **opcode → API** (#4198, `epoch:react-routing`) — **the gating prerequisite for React routing.** Migrate live `op=` action handlers (`Everything::Delegation::opcode`, 44 subs) into `POST /api/…` endpoints so forms call APIs instead of server-side `op=` dispatch. *Full client-side React routing cannot be clean until this is done* (you can't client-route a page whose form POSTs `op=X` to be processed and re-rendered server-side). ~115/259 Pages read request params, but most are GET reads (fine through `/api/pagestate`); the blockers are the mutating actions = opcodes.
 
-**ecoretool/nodepack retirement** is a long-term direction. The user wants it gone eventually; happens organically as each modernization phase displaces a category (schema → SQL migrations, templates → React, settings → JSON). Don't treat it as a standalone project.
+3. **React routing** (`epoch:react-routing`: #4255 ✅ pagestate facade, #4257 = 2b chrome/content split, + a client-router issue TBD) — the SPA flip. Pagestate facade + `normalize_types` + the `e2.meta` producer are done. Remaining: the React client router/resolver (parse legacy URL forms → id/type-title), `useDocumentMeta`, a routing-parity test harness, the progressive-flip strategy (keep SSR first paint, client-route subsequent nav), and 2b for the chrome cache. Gated by #4198.
+
+4. **ORM / data-model / node-model** — **deferred.** Pull forward *only* if it becomes a cost bottleneck or blocks a needed feature. Rationale (decided June 2026): the node model is adequate today (RDS healthy, not pressured); React routing moves the cost+growth north star and is incremental/reversible; and the API layer built via #4198/React is the **seam that de-risks** a later ORM migration. Do ORM when the data model actively hurts, on the cleaner/smaller surface the API layer exposes — not speculatively first.
+
+**ecoretool/nodepack retirement** remains a long-term direction that happens organically as each phase above displaces a category (htmlcode/opcode nodes → deleted; templates → React). Not a standalone project.
 
 For "what shipped recently," run `git log --oneline --since="2 months ago"` rather than relying on a list here that will rot.
