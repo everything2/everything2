@@ -160,6 +160,15 @@ ok(defined($result->[1]{reputation}), "Reputation is returned");
 is($result->[1]{upvotes}, 1, "Upvotes count is 1");
 is($result->[1]{downvotes}, 0, "Downvotes count is 0");
 
+# Blind voting booth reveal (#4266): the author is returned ONLY in the
+# post-vote response, so BlindVotingBooth.js can unmask "by ???" after the
+# user commits. (The old reveal rode on an op=vote opcode round-trip; gone now.)
+ok($result->[1]{author}, "Author is returned post-vote (blind-booth reveal)");
+is($result->[1]{author}{node_id}, $author_user_hash->{node_id},
+  "Returned author node_id matches the writeup author");
+is($result->[1]{author}{title}, $author_user_hash->{title},
+  "Returned author title matches the writeup author");
+
 # Verify vote was recorded in database
 my $vote_record = $DB->sqlSelectHashref(
   '*',

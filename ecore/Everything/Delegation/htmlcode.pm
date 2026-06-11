@@ -3856,65 +3856,8 @@ sub unpublishwriteup
 
 # blacklistedIPs REMOVED - Dead code, IP blacklist display migrated to React Page class. Jan 2026.
 
-sub resurrectNode
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-  
-  my ($node_id) = @_;
+# resurrectNode REMOVED - orphaned by the resurrect opcode removal (API uses $DB->resurrectNode). Jun 2026.
 
-  my $N = $DB->sqlSelectHashref("*", 'tomb', "node_id=".$DB->{dbh}->quote("$node_id"));
-  return unless $N;
-
-  my $NODEDATA = safe_deserialize_dumper($$N{data});
-  return unless $NODEDATA;
-
-  @$N{keys %$NODEDATA} = values %$NODEDATA;
-
-  delete $$N{data};
-  delete $$N{killa_user};
-  delete $$N{node_id};
-
-  return $N;
-}
-
-sub reinsertCorpse
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-  
-  my ($N) = @_;
-  my @kids = ();
-  if ($$N{group})
-  {
-    foreach (@{ $$N{group} })
-    {
-      my $KID = htmlcode("resurrectNode",$_);
-      push @kids, htmlcode("reinsertCorpse", $KID);
-    }
-  }
-
-  my $author = $$N{author_user};
-  delete $$N{author_user};
-  my $title = $$N{title};
-  delete $$N{title};
-  my $type = $$N{type_nodetype};
-  delete $$N{type_nodetype};
-  delete $$N{group} if exists $$N{group};
-
-  my $A = getNodeById($author);
-  $A = getNode('root','user') unless $A;
-  my $id = insertNode($title, $type, $A, $N);
-  insertIntoNodegroup($id, $author, \@kids) if @kids;
-  return $id;
-}
+# reinsertCorpse REMOVED - orphaned by the resurrect opcode removal. Jun 2026.
 
 1;

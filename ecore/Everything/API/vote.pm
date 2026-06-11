@@ -137,6 +137,14 @@ sub cast_vote {
     my $votes_remaining =
       $existing_vote ? $current_votes_left : ( $current_votes_left - 1 );
 
+    # Reveal the author -- only ever returned post-vote, so the blind voting
+    # booth (BlindVotingBooth.js) stays blind until the user commits a vote.
+    my $author = $self->APP->node_by_id( $writeup->author_user );
+    my $author_data =
+      $author
+      ? { node_id => int( $author->node_id ), title => $author->title }
+      : undef;
+
     return [
         $self->HTTP_OK,
         {
@@ -149,7 +157,8 @@ sub cast_vote {
             votes_remaining => $votes_remaining,
             reputation      => $new_reputation,
             upvotes         => $upvotes,
-            downvotes       => $downvotes
+            downvotes       => $downvotes,
+            author          => $author_data
         }
     ];
 }

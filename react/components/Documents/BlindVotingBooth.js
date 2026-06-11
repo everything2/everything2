@@ -15,8 +15,7 @@ const BlindVotingBooth = ({ data }) => {
   const {
     writeup,
     parent,
-    author,
-    hasVoted: initialHasVoted,
+    hasVoted: initialHasVoted = false,
     votesLeft: initialVotesLeft = 0,
     nodeId,
     noVotesLeft,
@@ -30,6 +29,7 @@ const BlindVotingBooth = ({ data }) => {
   const [hasVoted, setHasVoted] = useState(initialHasVoted);
   const [votesLeft, setVotesLeft] = useState(initialVotesLeft);
   const [reputation, setReputation] = useState(writeup?.reputation || 0);
+  const [author, setAuthor] = useState(null);
   const [voteError, setVoteError] = useState(null);
 
   // Error states
@@ -131,6 +131,7 @@ const BlindVotingBooth = ({ data }) => {
         setHasVoted(true);
         setVotesLeft(result.votes_remaining);
         setReputation(result.reputation);
+        setAuthor(result.author || null);
       } else {
         setVoteError(result.error || 'Failed to cast vote');
       }
@@ -158,9 +159,9 @@ const BlindVotingBooth = ({ data }) => {
 
   // Determine reputation display class
   const getReputationClass = () => {
-    if (reputation > 0) return 'voting-booth__rep-value voting-booth__rep-value--positive';
-    if (reputation < 0) return 'voting-booth__rep-value voting-booth__rep-value--negative';
-    return 'voting-booth__rep-value voting-booth__rep-value--neutral';
+    if (reputation > 0) return 'voting-booth__reputation-value voting-booth__reputation-value--positive';
+    if (reputation < 0) return 'voting-booth__reputation-value voting-booth__reputation-value--negative';
+    return 'voting-booth__reputation-value voting-booth__reputation-value--neutral';
   };
 
   return (
@@ -181,13 +182,13 @@ const BlindVotingBooth = ({ data }) => {
         {/* Writeup Card */}
         <div className="voting-booth__card">
           {/* Header with title and author */}
-          <div className="voting-booth__header">
-            <div className="voting-booth__title-row">
-              <h3 className="voting-booth__writeup-title">{writeup.title}</h3>
+          <div className="voting-booth__card-header">
+            <div className="voting-booth__card-title-row">
+              <h3 className="voting-booth__card-title">{writeup.title}</h3>
               {parent && (
                 <a
                   href={`/node/${parent.node_id}`}
-                  className="voting-booth__node-link"
+                  className="voting-booth__view-link"
                   title="View full node"
                 >
                   view e2node
@@ -215,7 +216,7 @@ const BlindVotingBooth = ({ data }) => {
           />
 
           {/* Footer with voting or reputation */}
-          <div className="voting-booth__footer">
+          <div className="voting-booth__card-footer">
             {!hasVoted ? (
               <div className="voting-booth__voting-area">
                 <div className="voting-booth__vote-buttons">
@@ -266,7 +267,7 @@ const BlindVotingBooth = ({ data }) => {
             ) : (
               <div className="voting-booth__post-vote">
                 <div className="voting-booth__reputation">
-                  <span className="voting-booth__rep-label">Reputation</span>
+                  <span className="voting-booth__reputation-label">Reputation</span>
                   <span className={getReputationClass()}>
                     {reputation > 0 ? '+' : ''}{reputation}
                   </span>
