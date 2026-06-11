@@ -41,7 +41,7 @@ const Htmlcode = ({ data, user }) => {
           Htmlcodes are reusable Perl code snippets that can be called from templates
           and other code throughout the Everything2 system. They provide a way to
           share common functionality across different parts of the site.
-          {is_delegated && (
+          {!!is_delegated && (
             <span className="dev-display__delegated-warning">
               <strong>This htmlcode is delegated</strong> - its implementation has been moved
               to the codebase. To modify it, submit a pull request on GitHub.
@@ -51,7 +51,7 @@ const Htmlcode = ({ data, user }) => {
       </div>
 
       {/* Code Preview Section (Developer only) */}
-      {isDeveloper && code_preview && (
+      {!!isDeveloper && code_preview && (
         <div className="dev-display__section">
           <h4 className="dev-display__header dev-display__header--section">
             <FaCode size={16} /> Code Preview
@@ -63,7 +63,7 @@ const Htmlcode = ({ data, user }) => {
       )}
 
       {/* Developer Source Map */}
-      {isDeveloper && sourceMap && (
+      {!!isDeveloper && sourceMap && (
         <SourceMapDisplay
           sourceMap={sourceMap}
           title={`Source Map: ${title}`}

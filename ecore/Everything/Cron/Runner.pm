@@ -143,9 +143,11 @@ sub run_job {
     my $name = $entry->{name};
 
     if ( $self->dry_run ) {
-        $self->_log("[dry-run] would run $name");
+        $self->_log( '[dry-run] would run ' . $name . ( $entry->{detached} ? ' (detached)' : '' ) );
         return;
     }
+
+    return $self->_run_detached($entry) if $entry->{detached};
 
     my $start = Time::HiRes::time();
     my $pid   = fork;
@@ -170,6 +172,63 @@ sub run_job {
     $self->_log( "$name finished: $result (${dur_ms}ms)"
             . ( $timed_out ? ' [TIMEOUT -> killed]' : ( $result eq 'fail' ? " [exit $exit]" : '' ) ) );
     return;
+}
+
+# Detached execution (heavy daily batch jobs -- e.g. generate-sitemap). The leader
+# hands the job to a BACKGROUND supervisor (cron/cron_supervise.pl) and returns at
+# once, so it neither blocks the ~1min tick nor pins the GET_LOCK for the job's whole
+# runtime (a 50min blocking run starved datastash and held the lock the entire time).
+# We mark the job 'running' here, under the lock, BEFORE returning -- so the next
+# tick's _in_progress check skips it (no double-launch) and Health reads it as a
+# healthy in-progress run until its (generous) timeout. The supervisor owns the
+# fork/exec, the timeout-kill, and the mark_finished, on its own DB connection.
+sub _run_detached {
+    my ( $self, $entry ) = @_;
+    my $name = $entry->{name};
+
+    my $pid = $self->_spawn_supervisor($entry);
+    return unless $pid;    # fork failed -- logged; leave the row untouched so it retries
+
+    # Record 'running' (supervisor pid) on the leader's own connection. A non-trivial
+    # detached job cannot finish before this line, so there is no mark_finished race.
+    $self->state->mark_started( $name, $pid );
+    $self->_log("started $name (detached, supervisor pid $pid)");
+    return;
+}
+
+# Fork a fully-detached supervisor and exec cron/cron_supervise.pl into it. setsid
+# so it survives the leader's exit (it is reparented to init) and isn't taken out by
+# a signal to the runner's process group. We exec immediately -- the child shares no
+# live Perl state with the leader, and the inherited lock/DB sockets are never touched
+# (the supervisor opens its own via initEverything). Returns the supervisor pid, or
+# undef on fork failure.
+sub _spawn_supervisor {
+    my ( $self, $entry ) = @_;
+    my @argv = $self->_supervise_argv($entry);
+    my $pid  = fork;
+    if ( !defined $pid ) {
+        $self->_log( "fork failed (supervisor) for $entry->{name}: $!" );
+        return;
+    }
+    if ( $pid == 0 ) {
+        POSIX::setsid();
+        exec { $argv[0] } @argv;
+        print STDERR "[cron] exec failed (supervise) for $entry->{name}: $!\n";
+        POSIX::_exit(127);
+    }
+    return $pid;
+}
+
+# Build the argv that runs cron_supervise.pl <name> <timeout> -- <the job's own argv>.
+# (Same perl invocation prefix the schedule uses for the job scripts themselves.)
+sub _supervise_argv {
+    my ( $self, $entry ) = @_;
+    return (
+        '/usr/bin/perl', '-Mlib=/var/everything/ecore', '-Mlib=/var/libraries/lib/perl5',
+        '/var/everything/cron/cron_supervise.pl',
+        $entry->{name}, $entry->{timeout}, '--',
+        @{ $entry->{argv} },
+    );
 }
 
 # Wait for $pid up to $timeout, keeping the lock connection alive (a long job --

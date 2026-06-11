@@ -122,7 +122,7 @@ const ReputationGraph = ({ data }) => {
         <VerticalGraph data={graphData} />
       )}
 
-      {is_admin && (
+      {!!is_admin && (
         <p className="reputation-graph__admin-note">
           NOTE: Admins can view the graph of any writeup by simply appending "&id=&lt;writeup_id&gt;" to the end of the URL
         </p>

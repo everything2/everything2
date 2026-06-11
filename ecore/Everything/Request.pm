@@ -49,6 +49,24 @@ sub add_response_cookie
   return;
 }
 
+# The normalized e2 blob, stashed by Everything::Controller::layout during a render.
+# Everything::API::pagestate drives the real render path (route_node) and reads this off
+# the request, so the facade serves the IDENTICAL payload the inline page emits -- for
+# controller-class nodes (user/e2node/category/*_edit) whose contentData is built inside
+# the controller, not by buildNodeInfoStructure. The render's HTML is discarded; only the
+# blob is wanted. See docs/pagestate-design.md (2a).
+has 'pagestate_e2' => (is => "rw", isa => "Maybe[HashRef]");
+
+# The page <head> metadata PRODUCER (an Everything::PageMetadata), stashed by
+# Everything::Controller::layout. We stash the producer, not its computed hashref, so a
+# normal pageload never pays for ->as_hashref (which rebuilds the JSON-LD graph -- and runs
+# a category member COUNT) when nothing reads it. Everything::API::pagestate calls
+# ->as_hashref and merges the result into the blob it returns -- the API path is the only
+# consumer (React setting <head> on client navigation). Kept OUT of the e2 blob on purpose:
+# the inline server render already emits the <head> in HTML, so inlining meta would just
+# duplicate the JSON-LD bytes in every hydration payload. See docs/pagestate-design.md.
+has 'pagestate_meta' => (is => "rw", isa => "Maybe[Object]");
+
 # Page class instance - allows reusing the same instance across display() and buildReactData()
 # Critical for form-processing pages like Sign Up that cache state between calls
 has 'page_class_instance' => (is => "rw");

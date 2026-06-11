@@ -128,13 +128,13 @@ const Epicenter = (props) => {
         </p>
       )}
 
-      {props.experienceGain && (
+      {props.experienceGain > 0 && (
         <p id="experience">
           <ExperienceGain amount={props.experienceGain} />
         </p>
       )}
 
-      {!gpOptOut && props.gpGain && (
+      {!gpOptOut && props.gpGain > 0 && (
         <p id="gp">
           <GPGain amount={props.gpGain} />
         </p>

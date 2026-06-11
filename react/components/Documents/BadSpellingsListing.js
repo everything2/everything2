@@ -45,7 +45,7 @@ const BadSpellingsListing = ({ data }) => {
         )}.
       </p>
 
-      {is_admin && (
+      {!!is_admin && (
         <p className="bad-spellings-listing__admin-note">
           (Site administrators can edit this setting at{' '}
           <a href={`/?node_id=${setting_node_id}`}>bad spellings en-US</a>.)
@@ -75,7 +75,7 @@ const BadSpellingsListing = ({ data }) => {
 
       <p className="bad-spellings-listing__summary">
         ({shown_count} entries
-        {is_editor && ` shown, ${total_count} total`})
+        {!!is_editor && ` shown, ${total_count} total`})
       </p>
     </div>
   );

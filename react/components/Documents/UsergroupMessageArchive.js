@@ -44,7 +44,7 @@ const UsergroupMessageArchive = ({ data }) => {
 
       <p>If you are a member of one of these groups, you can view messages sent to the group.</p>
 
-      {is_admin && (
+      {!!is_admin && (
         <p>
           You can edit the usergroups that have messages archived at{' '}
           <a

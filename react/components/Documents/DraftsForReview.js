@@ -44,7 +44,7 @@ const DraftsForReview = ({ data }) => {
             <tr>
               <th className="drafts-for-review__th">Draft</th>
               <th className="drafts-for-review__th drafts-for-review__th--date">For review since</th>
-              {is_editor && (
+              {!!is_editor && (
                 <th className="drafts-for-review__th drafts-for-review__th--notes">Notes</th>
               )}
             </tr>
@@ -64,7 +64,7 @@ const DraftsForReview = ({ data }) => {
                 <td className="drafts-for-review__td drafts-for-review__td--date">
                   {formatDate(draft.publishtime)}
                 </td>
-                {is_editor && (
+                {!!is_editor && (
                   <td className="drafts-for-review__td drafts-for-review__td--notes">
                     {draft.notecount > 0 ? (
                       <a

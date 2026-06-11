@@ -909,7 +909,7 @@ const Chatterbox = (props) => {
                 <div key={index} className="chatter-command-item">
                   <div className={`chatter-command-name${command.restricted ? ' chatter-command-name--restricted' : ''}`}>
                     {command.cmd}
-                    {command.restricted && (
+                    {!!command.restricted && (
                       <span className="chatter-command-badge">
                         {isAdmin ? 'ADMIN' : 'CHANOP'}
                       </span>

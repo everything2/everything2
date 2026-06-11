@@ -120,7 +120,6 @@ const COMPONENT_MAP = {
   // User-specific pages
   a_year_ago_today: lazy(() => import('./Documents/AYearAgoToday')),
   node_tracker: lazy(() => import('./Documents/NodeTracker')),
-  node_tracker2: lazy(() => import('./Documents/NodeTracker')),
   your_ignore_list: lazy(() => import('./Documents/YourIgnoreList')),
   your_insured_writeups: lazy(() => import('./Documents/YourInsuredWriteups')),
   your_nodeshells: lazy(() => import('./Documents/YourNodeshells')),
@@ -258,7 +257,6 @@ const COMPONENT_MAP = {
   e2_marble_shop: lazy(() => import('./Documents/E2MarbleShop')),
   e2_gift_shop: lazy(() => import('./Documents/E2GiftShop')),
   sanctify_user: lazy(() => import('./Documents/SanctifyUser')),
-  sanctify: lazy(() => import('./Documents/SanctifyUser')),
   e2_penny_jar: lazy(() => import('./Documents/E2PennyJar')),
   my_achievements: lazy(() => import('./Documents/MyAchievements')),
 
@@ -309,9 +307,6 @@ const COMPONENT_MAP = {
 
   // Help & documentation
   macro_faq: lazy(() => import('./Documents/MacroFaq')),
-
-  // Admin settings (uses unified Settings component with defaultTab='admin')
-  admin_settings: lazy(() => import('./Documents/Settings')),
 
   // Voting
   blind_voting_booth: lazy(() => import('./Documents/BlindVotingBooth')),
@@ -393,9 +388,8 @@ const COMPONENT_MAP = {
   user_statistics: lazy(() => import('./Documents/UserStatistics')),
   who_killed_what: lazy(() => import('./Documents/WhoKilledWhat')),
 
-  // User variable tools (both use same component)
+  // User variable tools
   the_oracle: lazy(() => import('./Documents/TheOracle')),
-  the_oracle_classic: lazy(() => import('./Documents/TheOracle')),
 
   // Admin info tools
   users_with_infravision: lazy(() => import('./Documents/UsersWithInfravision')),

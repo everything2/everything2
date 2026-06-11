@@ -294,7 +294,7 @@ const CollaborationEdit = ({ data }) => {
             <FaLockOpen className="collab-edit__icon-margin" />
             unlock
           </button>
-          {user.is_admin && (
+          {!!user.is_admin && (
             <button
               onClick={() => setShowDeleteModal(true)}
               className="collab-edit__delete-btn"

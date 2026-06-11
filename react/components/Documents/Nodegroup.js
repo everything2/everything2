@@ -51,7 +51,7 @@ const Nodegroup = ({ data, user, e2 }) => {
           <FaFolder className="nodegroup__title-icon" />
           {nodegroup.title}
         </div>
-        {can_edit && (
+        {!!can_edit && (
           <button
             onClick={() => setShowEditor(true)}
             className="nodegroup__edit-button"
@@ -110,7 +110,7 @@ const Nodegroup = ({ data, user, e2 }) => {
       ) : (
         <div className="nodegroup__empty-state">
           This nodegroup is empty.
-          {can_edit && ' Click "Edit Members" to add nodes.'}
+          {!!can_edit && ' Click "Edit Members" to add nodes.'}
         </div>
       )}
 

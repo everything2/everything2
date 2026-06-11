@@ -16,6 +16,12 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+// jsdom doesn't implement Element.scrollIntoView; components that call it in an effect
+// (e.g. SettingsNavigation) would otherwise throw under test. Stub it.
+if (typeof window !== 'undefined' && window.Element) {
+  window.Element.prototype.scrollIntoView = window.Element.prototype.scrollIntoView || jest.fn();
+}
+
 // Mock global e2 object that's normally provided by the server
 global.e2 = {
   user: {

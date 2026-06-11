@@ -6,6 +6,7 @@ with 'Everything::HTTP';
 
 use Everything::HTML;
 use Everything::HTMLShell;
+use Everything::PageState;
 
 has 'PAGE_TABLE' => (isa => "HashRef", is => "ro", builder => "_build_page_table", lazy => 1);
 
@@ -162,6 +163,16 @@ sub layout
   my $REQUEST = $params->{REQUEST};
   my $node = $params->{node};
 
+  # Stash the e2 blob so Everything::API::pagestate can serve the identical payload via the
+  # facade (route-through-render). This is the single point where every controller-class
+  # render hands off its fully-built blob (incl. the controller's contentData override).
+  # normalize_types is idempotent -- the chrome was already normalized at the source
+  # (buildNodeInfoStructure); this also catches the post-override contentData. #4255.
+  if ($REQUEST && ref($params->{e2}) eq 'HASH') {
+    Everything::PageState->normalize_types($params->{e2});
+    $REQUEST->pagestate_e2($params->{e2});
+  }
+
   my $basesheet = $self->APP->node_by_name("basesheet","stylesheet");
   my $zensheet = $REQUEST->user->style;
   my $customstyle = $self->APP->htmlScreen($REQUEST->user->customstyle);
@@ -266,6 +277,18 @@ sub layout
 
   # Generate HTML using HTMLShell (no more Mason!)
   my $shell = Everything::HTMLShell->new(%shell_params);
+
+  # Stash the page <head> metadata PRODUCER so the React app can set <head> on client-side
+  # navigation -- where there's no server render to emit it. Same producer the shell renders
+  # the server <head> from, so the two never diverge. We stash the producer (not its computed
+  # hashref): a normal pageload never calls ->as_hashref, so it pays nothing for the API path.
+  # Everything::API::pagestate calls ->as_hashref and merges it into the blob it returns --
+  # kept OUT of the inline hydration blob (the HTML <head> already carries it). #4255.
+  if ($REQUEST) {
+    $REQUEST->pagestate_meta($shell->page_metadata);
+    $REQUEST->pagestate_e2($e2);
+  }
+
   my $output = $shell->render();
 
   # Persist VARS changes made during buildNodeInfoStructure (oldGP, oldexp, etc.)

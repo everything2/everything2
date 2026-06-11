@@ -512,7 +512,7 @@ const CategoryEdit = ({ data }) => {
       </div>
 
       {/* Category Settings Section (editors+ only) */}
-      {can_edit_meta && (
+      {!!can_edit_meta && (
         <div className="category-edit__settings">
           <h2 className="category-edit__section-title">Category Settings</h2>
 

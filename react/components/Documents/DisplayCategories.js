@@ -169,7 +169,7 @@ const DisplayCategories = ({ data }) => {
                         type={cat.is_usergroup ? 'usergroup' : 'user'}
                         title={cat.maintainer_name}
                       />
-                      {cat.is_usergroup && (
+                      {!!cat.is_usergroup && (
                         <span className="display-categories__usergroup-tag"> (usergroup)</span>
                       )}
                     </>
