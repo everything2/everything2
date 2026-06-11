@@ -216,79 +216,7 @@ sub bookmark
 
 }
 
-sub vote
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $$USER{votesleft};
-  return if $APP->isSuspended($USER, "vote");
-  return if $APP->isGuest($USER);
-  my @params = $query->param;
-  my $defID = getId(getNode('definition','writeuptype')) || 0;
-
-  my $userid = getId($USER) || 0;
-
-  my $oldXP = $$USER{experience};
-  my $prev_uid = 0;
-  my $numTimes=0;
-  my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
-  my $countPlus=0;
-  my $countMinus=0;
-
-  foreach (@params)
-  {
-    next unless /^vote\_\_(\d+)$/;
-    my $N = $1;
-    my $val = $query->param($_);
-    next unless ($val eq '1' or $val eq '-1');
-
-    getRef($N);
-
-    next unless $N;
-    next unless $$N{type}{title} eq 'writeup' ;
-    next if $$N{author_user} == $userid;
-    next if $$N{wrtype_writeuptype}==$defID;
-
-    if ( $APP->isUnvotable($N) )
-    {
-      next;
-    }
-
-    if ($$N{author_user}==$prev_uid)
-    {
-      ++$numTimes;
-      if ($val>0)
-      {
-        ++$countPlus;
-      } elsif ($val<0) {
-        ++$countMinus;
-      }
-    } else {
-      $prev_uid = $$N{author_user};
-    }
-
-    $APP->castVote(getId($N), $USER, $val, 0, $VSETTINGS);
-
-
-    $APP->checkAchievementsByType('vote', $$USER{user_id});
-    $APP->checkAchievementsByType('reputation', $$N{author_user});
-
-
-    last unless $$USER{votesleft};
-  }
-
-  if ($numTimes)
-  {
-    ++$numTimes;
-  }
-
-  return; 
-}
+# vote opcode REMOVED - superseded by Everything::API::vote (cast_vote); op= dispatch is dead. Jun 2026.
 
 sub bless
 {
@@ -719,69 +647,7 @@ sub message_outbox
 }
 
 
-sub cool
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  # single-writeup C!
-
-  my $cid = $query->param('cool_id');
-  my $uid = getId($USER);
-
-  my $COOL = getNodeById($cid);
-  getRef($COOL);
-
-  return unless $COOL;
-  return unless $$COOL{type}{title} eq 'writeup';
-  return if $$COOL{author_user} == $uid;
-  return if $APP->isSuspended($USER, "cool");
-
-  my $forceAllow = 0;
-  return unless $forceAllow || ($$VARS{cools} > 0);
-
-  return if ($DB->sqlSelect('cooledby_user', 'coolwriteups', 'coolwriteups_id='.$cid.' and cooledby_user = '.$uid.' limit 1') || 0 );
-
-  --$$VARS{cools} unless $forceAllow;
-  setVars($USER, $VARS); #Discount chings right away before anything else.
-
-  $APP->adjustExp($$COOL{author_user}, 20);
-  $DB->sqlInsert('coolwriteups', {coolwriteups_id => $cid, cooledby_user => $uid});
-  $$COOL{cooled}++;
-  updateNode($COOL, -1);
-
-  my $coolVars = getVars($$COOL{author_user});
-
-  my $cooledNotification = getNode("cooled","notification")->{node_id};
-  if ($$coolVars{settings})
-  {
-    if (from_json($$coolVars{settings})->{notifications}->{$cooledNotification})
-    {
-      my $argSet = { writeup_id => $cid, cooluser_id => $uid};
-      my $argStr = to_json($argSet);
-      my $addNotifier = htmlcode('addNotification', $cooledNotification , $$COOL{author_user},$argStr);
-    }
-  }
-
-
-  unless ($coolVars->{no_coolnotification})
-  {
-    htmlcode('sendPrivateMessage',{
-      'author_id' => getId(getNode('Cool Man Eddie', 'user')),
-      'recipient_id' => $$COOL{author_user},
-      'message' => 'Hey, [' . $$USER{title} . '[user]] just cooled [' . getNode($$COOL{parent_e2node})->{title} . '], baby!',
-    });
-  }
-
-  $APP->checkAchievementsByType('cool', $uid);
-  $APP->checkAchievementsByType('cool', $$COOL{author_user});
-
-  return;
-}
+# cool opcode REMOVED - superseded by Everything::API::cool (award_cool); op= dispatch is dead. Jun 2026.
 
 sub weblog
 {
@@ -911,27 +777,7 @@ sub lockroom
   return;
 }
 
-sub resurrect
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless isGod($USER);
-
-  my $node_id=$query->param('olde2nodeid');
-  return unless $node_id;
-
-  my $N = htmlcode("resurrectNode", $node_id);
-  return unless $N;
-  my $id = htmlcode("reinsertCorpse",$N);
-
-  $query->param('node_id', $id);
-  return;
-}
+# resurrect opcode REMOVED - superseded by Everything::API::resurrect; op= dispatch is dead. Jun 2026.
 
 # NOTE: bucketop and addbucket opcodes removed 2025-11-30
 # The nodebucket VARS key is deprecated - see docs/user-vars-reference.md
@@ -1824,43 +1670,7 @@ sub socialBookmark
   return 1;
 }
 
-sub sanctify
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return if ($$VARS{GPoptout});
-
-  my $minLevel = 11;
-  my $Sanctificity = 10;
-  return unless $APP->getLevel($USER)>= $minLevel;
-
-  my $U = $query->param('node_id');
-  $U = getNode($query->param("node"), 'user') if ($query->param('node'));
-  getRef $U;
-
-  return unless $$U{type}{title} eq 'user';
-
-  $$U{sanctity} += 1;
-  updateNode($U, -1);
-
-  $APP->adjustGP($U, $Sanctificity);
-  $APP->adjustGP($USER, -$Sanctificity);
-  $$VARS{oldGP} = $$USER{GP};
-
-  $APP->securityLog(getNode('Sanctify user', 'superdoc'), $USER, "$$USER{title} sanctified $$U{title} with $Sanctificity GP.");
-
-  htmlcode('sendPrivateMessage',{
-    'author_id' => getId(getNode('Cool Man Eddie', 'user')),
-    'recipient_id' => $$U{user_id},
-    'message' => "Whoa! You’ve been [Sanctify|sanctified]!" });
-
-  return;
-}
+# sanctify opcode REMOVED - superseded by Everything::API::sanctify; op= dispatch is dead. Jun 2026.
 
 sub cure_infection
 {

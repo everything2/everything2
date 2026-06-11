@@ -241,6 +241,71 @@ a:focus {
   text-decoration: none;
 }
 
+/* --------------------------------------------------------------------------
+   Filled "button-styled" ANCHORS must keep their button text color.
+   The global a:link / a:visited / a:hover|focus|active rules above (all
+   specificity 0,1,1) otherwise override these anchors' white fill text and
+   render them blue-on-blue. Anchor-qualified + placed after the globals so
+   they win the cascade by source order. <button>-rendered variants are
+   unaffected (a.X does not match them). Button-coloring audit, Jun 2026.
+   -------------------------------------------------------------------------- */
+a.achievement__action-btn,
+a.admin-settings__save-button,
+a.between-cracks__button,
+a.category-display__edit-button,
+a.catwalk__btn,
+a.catwalk__nav-btn,
+a.chatterlight__back-link,
+a.clientdev-home__submit-button,
+a.create-category__submit-button,
+a.create-node__button,
+a.datastash__toggle-button--active,
+a.dev-display__action-btn,
+a.document-editor__save-button,
+a.e2-pub-directory__submit-button,
+a.e2client-edit__save-button,
+a.ebu__submit-btn,
+a.edev-docs__submit,
+a.editor-endorsements__button,
+a.faq-editor__submit-button,
+a.ip-blacklist__submit-button,
+a.ip-hunter__submit-button,
+a.maintenance__action-btn,
+a.mass-ip-blacklister__submit-button,
+a.mwr__action-button,
+a.news-for-noders__add-button,
+a.nodegroup__edit-button,
+a.nodelet-display__list-btn,
+a.nodes-of-year__submit-button,
+a.nodetype__action-btn,
+a.noding-speedometer__submit-button,
+a.notelet-editor__submit-button,
+a.notification-display__action-btn,
+a.oracle__btn,
+a.penny-jar__btn--give,
+a.podcast-edit__submit-button,
+a.podcast__download-link,
+a.poll-creator__submit-btn,
+a.poll-display__vote-btn,
+a.recording-edit__submit-button,
+a.recording__download-link,
+a.registry__submit-button,
+a.rot13-encoder__button,
+a.schema__action-button,
+a.setting__edit-button,
+a.setting__edit-small-button,
+a.source-formatter__btn--primary,
+a.stylesheet__button--primary,
+a.ug-archive__btn,
+a.user-edit-vars__edit-button,
+a.who-killed__btn,
+a.word-messer-upper__button,
+a.writeups-by-type__btn,
+a.voting-booth__next-btn {
+  color: var(--e2-btn-primary-text, #fff);
+}
+
+
 /* Nodeshell links (red) */
 .nodeshell a {
   color: var(--e2-text-error);
@@ -1839,7 +1904,8 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
 }
 
 .settings-btn-primary:disabled {
-  background-color: #ccc;
+  background-color: #e9ecef;
+  color: #6c757d;
   cursor: not-allowed;
 }
 
@@ -6184,8 +6250,8 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
 
 .voting-booth__submit-btn {
   padding: 10px 32px;
-  background-color: var(--e2-color-link, #4060b0);
-  color: #fff;
+  background-color: var(--e2-btn-primary-bg, #4060b0);
+  color: var(--e2-btn-primary-text, #fff);
   border: none;
   border-radius: 6px;
   font-size: 14px;
@@ -6253,8 +6319,8 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
 
 .voting-booth__next-btn {
   padding: 10px 20px;
-  background-color: var(--e2-color-link, #4060b0);
-  color: #fff;
+  background-color: var(--e2-btn-primary-bg, #4060b0);
+  color: var(--e2-btn-primary-text, #fff);
   text-decoration: none;
   border-radius: 6px;
   font-size: 14px;
@@ -6307,8 +6373,8 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
 
 .voting-booth__try-again-btn {
   padding: 10px 24px;
-  background-color: var(--e2-color-link, #4060b0);
-  color: #fff;
+  background-color: var(--e2-btn-primary-bg, #4060b0);
+  color: var(--e2-btn-primary-text, #fff);
   border: none;
   border-radius: 6px;
   font-size: 14px;
