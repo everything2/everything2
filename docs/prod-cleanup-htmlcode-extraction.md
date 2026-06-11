@@ -14,6 +14,8 @@ be nuked from prod once the code is live.
 | `getGravatarMD5` | 2048927 | `Everything::Application->getGravatarMD5` |
 | `DateTimeLocal`  | 1358138 | `Everything::Application->DateTimeLocal` |
 | `isSpecialDate`  | 1002054 | `Everything::Application->isSpecialDate` |
+| `coolcount`      | 2003804 | `Everything::Application->coolcount` |
+| `usergroupToUserIds` | 1980272 | `Everything::Application->usergroupToUserIds` (+ internal `explode_ug`, no node) |
 
 **Why it's safe:** all call sites were updated to `$self->APP->...` / `$this->...`, the
 delegation subs are removed, and the node_ids are not referenced by id anywhere in the

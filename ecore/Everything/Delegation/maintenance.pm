@@ -402,7 +402,7 @@ sub debatecomment_create
   return unless $ug_id;  # Safety check
 
   #notify *all* usergroup members that we have a new reply
-  my @uids = split ',', htmlcode('usergroupToUserIds',$ug_id);
+  my @uids = split ',', $APP->usergroupToUserIds($ug_id);
 
   my $replyNotification = getNode("newcomment","notification");
   return unless $replyNotification;  # Safety check
@@ -538,7 +538,7 @@ sub debate_create
   }
 
   #Have to notify each group member, unless they don't want to be notified
-  my @uids = split ',', htmlcode('usergroupToUserIds',$notify_ug_id);
+  my @uids = split ',', $APP->usergroupToUserIds($notify_ug_id);
 
   my $discussionNotification = getNode("newdiscussion","notification")->{node_id};
 

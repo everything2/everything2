@@ -95,4 +95,60 @@ subtest 'isSpecialDate' => sub {
     is( $APP->isSpecialDate( 'notaholiday', $d->( 2025, 10, 31 ) ), 0, 'unknown name -> 0' );
 };
 
+#############################################################################
+# coolcount -- count of a user's cooled writeups (the C! count)
+#############################################################################
+
+subtest 'coolcount' => sub {
+    my $user = $DB->getNode( 'root', 'user' );
+    ok( $user, 'got a test user' );
+
+    my $count = $APP->coolcount( $user->{node_id} );
+    ok( defined $count,                'coolcount returns a value' );
+    like( $count, qr/^\d+$/,           'coolcount is a non-negative integer' );
+
+    # Matches an independent count of the same join (the method is a thin wrapper).
+    my $expected = $DB->sqlSelect( 'count(*)',
+        'coolwriteups JOIN node ON coolwriteups_id = node_id',
+        "author_user=$user->{node_id} and type_nodetype=117" );
+    is( $count, $expected, 'coolcount matches the direct query' );
+};
+
+#############################################################################
+# usergroupToUserIds / explode_ug -- recursive usergroup -> user_id flatten
+#############################################################################
+
+subtest 'usergroupToUserIds + explode_ug' => sub {
+    # Helper: is this node_id a user?
+    my $is_user = sub {
+        my $n = $DB->getNodeById( $_[0] );
+        return $n && ( $n->{type}{title} || '' ) eq 'user';
+    };
+
+    # Flat group: every member is a user.
+    my $gods = $DB->getNode( 'gods', 'usergroup' );
+    SKIP: {
+        skip 'no gods usergroup in dev DB', 3 unless $gods;
+        my $ids = $APP->usergroupToUserIds( $gods->{node_id} );
+        like( $ids, qr/\A\d+(,\d+)*\z/, 'returns a comma-separated id list' );
+        my @ids = split /,/, $ids;
+        ok( scalar(@ids) >= 1, 'gods has members' );
+        is( scalar( grep { !$is_user->($_) } @ids ), 0,
+            'every returned id is a user (no group ids leak)' );
+    }
+
+    # Nested group: "Content Editors" contains the "e2gods" usergroup, which must be
+    # FLATTENED to its users -- explode_ug recurses, the sub-usergroup id never appears.
+    my $ce     = $DB->getNode( 'Content Editors', 'usergroup' );
+    my $e2gods = $DB->getNode( 'e2gods',          'usergroup' );
+    SKIP: {
+        skip 'no nested usergroup fixture in dev DB', 2 unless $ce && $e2gods;
+        my %out = map { $_ => 1 } split /,/, $APP->usergroupToUserIds( $ce->{node_id} );
+        ok( !$out{ $e2gods->{node_id} },
+            'nested usergroup id is NOT in the output (recursion flattened it)' );
+        is( scalar( grep { !$is_user->($_) } keys %out ), 0,
+            'every flattened id is a user' );
+    }
+};
+
 done_testing();

@@ -8917,4 +8917,50 @@ sub isSpecialDate
   return 0;
 }
 
+# Count of a user's cooled writeups (the "C!" count). (was htmlcode 'coolcount')
+sub coolcount
+{
+  my ($self, $user_id) = @_;
+  return $self->{db}->sqlSelect(
+    "count(*)",
+    "coolwriteups JOIN node ON coolwriteups_id = node_id",
+    "author_user=$user_id and type_nodetype=117",
+  );
+}
+
+# Recursively flatten a usergroup (id or hashref) to its member user node_ids --
+# sub-usergroups are expanded, not included. (was htmlcode 'explode_ug')
+sub explode_ug
+{
+  my ($self, $ug) = @_;
+  $ug = $self->{db}->getNodeById($ug) if !ref($ug) && $ug =~ /\A\d+\z/;
+  return () unless ref $ug;
+
+  my @result;
+  foreach my $id ( @{ $ug->{group} || [] } )
+  {
+    my $node = $self->{db}->getNodeById($id) or next;
+    if ( ( $node->{type}{title} || '' ) eq 'user' )
+    {
+      push @result, $id;
+    }
+    else
+    {
+      push @result, $self->explode_ug($id);
+    }
+  }
+  return @result;
+}
+
+# A usergroup (id or hashref) -> comma-separated string of its member user_ids,
+# recursively flattened. (was htmlcode 'usergroupToUserIds')
+sub usergroupToUserIds
+{
+  my ($self, $ug) = @_;
+  my @uids = $self->explode_ug($ug);
+  my $out = "@uids";
+  $out =~ s/ /,/g;
+  return $out;
+}
+
 1;
