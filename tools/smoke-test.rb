@@ -23,6 +23,7 @@ class SmokeTest
 
     test_server_running
     test_homepage_loads
+    test_root_static_files
     test_login
     test_key_superdocs
     test_react_initialization
@@ -96,6 +97,64 @@ class SmokeTest
     rescue => e
       puts "✗ Exception"
       @errors << "Homepage test failed: #{e.message}"
+    end
+  end
+
+  # Root verification / liveness files (ads.txt, search-engine site-verification,
+  # robots.txt, favicon, ...) are served by Apache straight from DocumentRoot via
+  # `ProxyPass /<file> !` exclusions. If an exclusion is missing, the request falls
+  # through to Starman and renders the React front page instead of the file -- which
+  # SILENTLY breaks AdSense (ads.txt) and Bing/Google/Yandex verification. The PSGI
+  # cutover did exactly this. The tell-tale of a fall-through is the React root marker
+  # ('e2-react-page-root') in the body. Guard against it.
+  def test_root_static_files
+    print "Testing root static / verification files... "
+
+    # path => a string the real file must contain (nil = only assert it's not the app)
+    files = {
+      '/robots.txt'                                                  => nil,
+      '/favicon.ico'                                                 => nil,
+      '/ads.txt'                                                     => 'pub-',
+      '/BingSiteAuth.xml'                                            => '<users>',
+      '/google0222469f926a9749.html'                                 => nil,
+      '/yandex_44f770ae4d7c2332.html'                                => nil,
+      '/everything2.com5f91dd93a2fdcb4127140f0234c6a078b22a9433.html' => nil,
+      '/server_live.html'                                            => 'OK',
+    }
+
+    failed = 0
+    files.each do |path, must_include|
+      begin
+        response = http_get(path, follow_redirects: false)
+        code = response.code.to_i
+        body = response.body || ''
+
+        if code != 200
+          @errors << "Root static #{path}: HTTP #{code} (expected 200)"
+          failed += 1
+          next
+        end
+
+        # Served from DocumentRoot, NOT the app: the app front page carries these markers.
+        if body.include?('e2-react-page-root') || body.include?('e2 = {')
+          @errors << "Root static #{path}: served the React front page, not the file -- missing `ProxyPass #{path} !` exclusion in apache2.conf.erb"
+          failed += 1
+          next
+        end
+
+        if must_include && !body.include?(must_include)
+          @warnings << "Root static #{path}: 200 and not the front page, but missing expected content '#{must_include}'"
+        end
+      rescue => e
+        @errors << "Root static #{path}: #{e.message}"
+        failed += 1
+      end
+    end
+
+    if failed == 0
+      puts "✓ #{files.length}/#{files.length} served from DocumentRoot (not the app)"
+    else
+      puts "✗ #{failed}/#{files.length} fell through to the app"
     end
   end
 

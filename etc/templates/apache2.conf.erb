@@ -289,6 +289,16 @@ ListenBacklog 511
 	ProxyPass /fonts !
 	ProxyPass /favicon.ico !
 	ProxyPass /robots.txt !
+	# Root verification + liveness files served from DocumentRoot (www/), NOT proxied to
+	# Starman -- otherwise they fall through to the app and render the front page,
+	# breaking AdSense (ads.txt) and search-engine site verification (Bing/Google/Yandex).
+	# Same sibling-FILE footgun as /sitemap.xml below; broke during the PSGI cutover.
+	ProxyPass /ads.txt !
+	ProxyPass /BingSiteAuth.xml !
+	ProxyPass /google0222469f926a9749.html !
+	ProxyPass /yandex_44f770ae4d7c2332.html !
+	ProxyPass /everything2.com5f91dd93a2fdcb4127140f0234c6a078b22a9433.html !
+	ProxyPass /server_live.html !
 	ProxyPass /stylesheet !
 	ProxyPass /sitemap !
 	# /sitemap.xml is a sibling FILE, not under the /sitemap/ path -- Apache 2.4's

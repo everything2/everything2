@@ -147,7 +147,7 @@ sub display {
             my $grp = $self->DB->getNodeById($row->{for_usergroup});
             $username = $frm->{title};
 
-            if (Everything::HTML::htmlcode('isSpecialDate','halloween') && $room)
+            if ($self->APP->isSpecialDate('halloween') && $room)
             {
                 $costume = '';
                 $costume = Everything::getVars($frm)->{costume} if (Everything::getVars($frm)->{costume});
@@ -168,7 +168,7 @@ sub display {
                 #<from> tags without any attributes, and XML::Simple will only
                 #allow this for grouping tags.
                 my $frmdata = [];
-                my $md5 = Everything::HTML::htmlcode('getGravatarMD5', $frm);
+                my $md5 = $self->APP->getGravatarMD5($frm);
                 push @$frmdata, {node_id => $frm->{node_id},
                             content => $username,
                             md5 => $md5

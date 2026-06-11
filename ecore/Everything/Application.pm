@@ -8,6 +8,7 @@ use Everything::Delegation::room;
 
 use DateTime;
 use DateTime::Format::Strptime;
+use Digest::MD5 qw(md5_hex);
 
 use Paws;
 use LWP::UserAgent;
@@ -7021,9 +7022,9 @@ sub buildNodeInfoStructure
 
     # Server time data (formatted strings for React component)
     my $NOW = time;
-    $e2->{epicenter}->{serverTime} = Everything::HTML::htmlcode('DateTimeLocal', "$NOW,1");
+    $e2->{epicenter}->{serverTime} = $this->DateTimeLocal($NOW, 1, $VARS);
     if($VARS->{localTimeUse}) {
-      $e2->{epicenter}->{localTime} = Everything::HTML::htmlcode('DateTimeLocal', $NOW);
+      $e2->{epicenter}->{localTime} = $this->DateTimeLocal($NOW, 0, $VARS);
     }
   }
 
@@ -8827,6 +8828,93 @@ sub _get_category_navigation
     position => $current_idx + 1,  # 1-indexed for display
     total => $total
   };
+}
+
+#############################################################################
+# Extracted from Everything::Delegation::htmlcode (the last delegation holdout).
+# These were htmlcode("name", ...) snippets; they are now real, unit-tested methods.
+#############################################################################
+
+# Gravatar hash for a user: the MD5 of their lowercased, trimmed email -- their
+# gravatar_email uservar if set, else the <title>@chat.everything2.com default.
+# Accepts a user id or hashref. (was htmlcode 'getGravatarMD5')
+sub getGravatarMD5
+{
+  my ($self, $user) = @_;
+  $user = $self->{db}->getNodeById($user) unless ref $user;
+  return unless ref $user;
+
+  my $default_email = "$$user{title}\@chat.everything2.com";
+  my $email = $self->{db}->sqlSelect("setting_value", "uservars",
+    "user_id = $$user{user_id} AND setting_name = 'gravatar_email'");
+
+  $email = $default_email unless defined $email;
+  $email = lc $email;
+  $email =~ s/^\s+|\s+$//g;
+
+  return md5_hex($email);
+}
+
+# Format an epoch as a human-readable datetime string ("Monday, January 1, 2026 at
+# 13:05:00"). $show_server forces server (UTC) time; otherwise the user's localTime*
+# VARS shift and 12-hour-format it. $vars is the user's VARS hashref.
+# (was htmlcode 'DateTimeLocal'; the old comma-string arg form is gone.)
+sub DateTimeLocal
+{
+  my ($self, $use_time, $show_server, $vars) = @_;
+  $vars ||= {};
+
+  my $calc_time = defined($use_time) && length($use_time) ? $use_time : time;
+  if (!$show_server && $vars->{localTimeUse})
+  {
+    $calc_time += $vars->{localTimeOffset} if exists $vars->{localTimeOffset};
+    $calc_time += 3600 if $vars->{localTimeDST};  # naive DST: +1 hour
+  }
+
+  my @months = qw(January February March April May June July August September October November December);
+  my ($sec, $min, $hour, $mday, $mon, $year, $wday) = localtime($calc_time);
+  my $result = ('Sun','Mon','Tues','Wednes','Thurs','Fri','Satur')[$wday] . 'day, '
+    . $months[$mon] . ' ' . $mday . ', ' . (1900 + $year) . ' at ';
+
+  my $show_ampm = '';
+  if ($vars->{localTime12hr})
+  {
+    if ($hour < 12) { $show_ampm = ' AM'; $hour = 12 if $hour == 0; }
+    else            { $show_ampm = ' PM'; $hour -= 12 unless $hour == 12; }
+  }
+
+  $min = '0' . $min if length($min) == 1;
+  $sec = '0' . $sec if length($sec) == 1;
+  $result .= $hour . ':' . $min . ':' . $sec;
+  $result .= $show_ampm if length($show_ampm);
+
+  return $result;
+}
+
+# True (1) if the current UTC date matches a named special date: afd (Apr 1),
+# halloween (Oct 31), xmas (Dec 25), nye (Dec 31), nyd (Jan 1). An optional trailing
+# year pins it (e.g. 'xmas2025'). $now is an optional DateTime (UTC) for testing.
+# (was htmlcode 'isSpecialDate')
+sub isSpecialDate
+{
+  my ($self, $d, $now) = @_;
+  return 0 unless defined $d && length $d;
+
+  my $dt   = $now || DateTime->now(time_zone => "UTC");
+  my $year = $dt->year();
+  my $mday = $dt->mday();
+  my $mon  = $dt->month() - 1;  # 0 = January .. 11 = December (match the original)
+
+  $d = "\L$d";  # case-insensitive
+  my $y = ($d =~ /(\d+)$/) ? $1 : 0;  # optional year pin
+
+  if    ($d =~ /^afd/)       { return 1 if $mon == 3  && $mday == 1  && ($y ? $y == $year : 1); }
+  elsif ($d =~ /^halloween/) { return 1 if $mon == 9  && $mday == 31 && ($y ? $y == $year : 1); }
+  elsif ($d =~ /^xmas/)      { return 1 if $mon == 11 && $mday == 25 && ($y ? $y == $year : 1); }
+  elsif ($d =~ /^nye/)       { return 1 if $mon == 11 && $mday == 31 && ($y ? $y == $year : 1); }
+  elsif ($d =~ /^nyd/)       { return 1 if $mon == 0  && $mday == 1  && ($y ? $y == $year : 1); }
+
+  return 0;
 }
 
 1;
