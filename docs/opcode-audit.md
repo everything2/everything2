@@ -32,15 +32,36 @@ Nuke the 4 orphaned `opcode` nodes from prod (nodepack delete only affects fresh
 447476, 1960821, 754045**. Confirm each is an `opcode` type with no inbound links first. Also check
 prod for any `resurrectNode`/`reinsertCorpse` htmlcode node and nuke if present.
 
-## Remaining 40 — first-pass classification (continue here)
+## Removed — phase 2 (#4269)
+
+Same bar as phase 1: superseded by a React-wired API, dispatched from nowhere (no `op=` in
+`react/`/`nodepack/`, no `ecore/` caller, no template/test reference).
+
+| opcode | superseded by | React wiring | nodepack node (→ nuke from prod) |
+|---|---|---|---|
+| `favorite` | `API::favorites` (`favorite`) | UserDisplay, FavoriteUsersManager | **1930913** |
+| `unfavorite` | `API::favorites` (`unfavorite`) | UserDisplay, FavoriteUsersManager | **1930914** |
+| `hidewriteup` | `API::hidewriteups` (`hide_writeup`) | AdminModal | **1216701** |
+| `unhidewriteup` | `API::hidewriteups` (`show_writeup`) | AdminModal | **1217041** |
+| `nodenote` | `API::nodenotes` (`add_note`) | WriteupDisplay, MasterControl/NodeNotes | **1180774** |
+| `ilikeit` | `API::ilikeit` (`like_writeup`) | ILikeItButton | **1920135** |
+
+`nodenote`/`hidewriteup`/`unhidewriteup` called `htmlcode('addNodenote')`, which is **kept** — it has
+other live callers (`the_old_hooked_pole`, `maintenance`, `htmlcode`) and the nodenotes API uses its
+own `sqlInsert`. No orphan.
+
+### PENDING prod cleanup (after this deploys)
+Nuke the 6 orphaned `opcode` nodes: **1930913, 1930914, 1216701, 1217041, 1180774, 1920135**.
+
+## Remaining 34 — first-pass classification (continue here)
 
 - **Superseded by an existing API + 0 `op=` refs → remove candidates** (confirm the API fully
   replaces each, then delete): `bless`/`curse`/`bestow` (→superbless/sanctify), `bookmark`,
-  `message`/`message_outbox` (→messages), `nodenote` (→nodenotes), `hidewriteup`/`unhidewriteup`
-  (→hidewriteups), `ilikeit`, `weblog`/`weblogify` (→weblog), `category`, `pollvote` (→poll),
-  `parameter` (→node_parameter), `publishdraft`/`publishdrafttodocument`/`approve_draft` (→drafts),
-  `changeusergroup`/`leadusergroup` (→usergroups), `favorite`/`unfavorite` (→favorites),
-  `socialBookmark`.
+  `message`/`message_outbox` (→messages), `weblog`/`weblogify` (→weblog), `category`,
+  `pollvote` (→poll), `parameter` (→node_parameter),
+  `publishdraft`/`publishdrafttodocument`/`approve_draft` (→drafts),
+  `changeusergroup`/`leadusergroup` (→usergroups), `socialBookmark`.
+  *(phase 2 removed: `favorite`/`unfavorite`, `hidewriteup`/`unhidewriteup`, `nodenote`, `ilikeit`.)*
 - **Admin/maintenance, no API + no `op=` ref → reachability check** (likely dead or admin-tool wired):
   `massacre`, `lockroom`, `linktrim`, `firmlink`, `lockaccount`/`unlockaccount`, `changewucount`,
   `repair_e2node`/`repair_e2node_noreorder`, `borg`, `flushcbox`, `orderlock`, `softlock`,
