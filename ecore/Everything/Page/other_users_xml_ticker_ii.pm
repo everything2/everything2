@@ -76,7 +76,7 @@ sub generate_xml {
         my $borged = $$row{borgd};
         $borged ||=0;
 
-        my $md5 = Everything::HTML::htmlcode('getGravatarMD5', $member);
+        my $md5 = $self->APP->getGravatarMD5($member);
 
         my $room_xml = '';
         my $r = $self->DB->getNodeById($$row{room_id});

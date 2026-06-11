@@ -1483,28 +1483,7 @@ sub firmlinks
   return "$parentstr\n$str" ;
 }
 
-sub getGravatarMD5
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my $gravatarUser = shift;
-  getRef $gravatarUser;
-
-  my $defaultEmail = "$$gravatarUser{title}\@chat.everything2.com";
-  my $email = $DB->sqlSelect("setting_value", "uservars", "user_id = $$gravatarUser{user_id}". " AND setting_name = 'gravatar_email'");
-
-  $email = $defaultEmail unless defined $email;
-  $email = lc $email;
-  $email =~ s/^\s+|\s+$//g;
-
-  return md5_hex($email);
-
-}
+# getGravatarMD5 REMOVED - factored into Everything::Application->getGravatarMD5 (unit-tested). Jun 2026.
 
 # writeupssincelastyear REMOVED - Dead code, stats now provided via API. Jan 2026.
 
@@ -1598,43 +1577,7 @@ sub unignoreUser
 # parameter: case insensitive string(s) of date(s) - if more than 1, then any matches counts as a success
 # if no date given, or date not found, returns 0
 #
-sub isSpecialDate
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my ($d) = @_;
-  my $dt = DateTime->now( time_zone => "UTC" );
-  my $year = $dt->year();
-  my $mday = $dt->mday();
-  my $mon = $dt->month();
-  my $hour = $dt->hour();
-
-
-  $d = "\L$d"; #case insensitive
-  my $y = ($d =~ /(\d+)$/) ? $1 : 0; #try to get the year
-
-  $mon -= 1;
-  # Note that $mon = month - 1, January is 0, December is 11
-
-  if($d =~ /^afd/) {
-    return '1' if ($mon==3 and $mday==1 and ($y?$y==$year:1));
-  } elsif($d =~ /^halloween/) {
-    return '1' if ($mon==9 and $mday==31 and ($y?$y==$year:1));
-  } elsif($d =~ /^xmas/) {
-    return '1' if ($mon==11 and $mday==25 and ($y?$y==$year:1));
-  } elsif($d =~ /^nye/) {
-    return '1' if ($mon==11 and $mday==31 and ($y?$y==$year:1));
-  } elsif($d =~ /^nyd/) {
-    return '1' if ($mon==0 and $mday==1 and ($y?$y==$year:1));
-  }
-
-  return 0;
-}
+# isSpecialDate REMOVED - factored into Everything::Application->isSpecialDate (unit-tested). Jun 2026.
 
 # This functionality might go away
 #
@@ -3206,52 +3149,7 @@ sub formxml_usergroup
 #  local language - really best if we load common localization strings before we even parse the pages
 #  local format (just Gregorian month, day, and year, unless we can figure a safe way of combining a date/time module and potentially dangerous user input)
 #
-sub DateTimeLocal
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my ($useTime, $showServer) = @_;
-
-  my $calcTime = defined($useTime) && length($useTime) ? $useTime : time;
-  if(!$showServer && $VARS->{'localTimeUse'})
-  {
-    $calcTime += $VARS->{'localTimeOffset'} if exists $VARS->{'localTimeOffset'};
-    #add 1 hour = 60 min * 60 s/min = 3600 seconds if daylight savings
-    $calcTime += 3600 if $VARS->{'localTimeDST'};	#maybe later, only add time if also in the time period for that - but places have different daylight saving time start and end dates
-  }
-
-  my @months = qw(January February March April May June July August September October November December);
-  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($calcTime);
-  my $result = ('Sun','Mon','Tues','Wednes','Thurs','Fri','Satur')[$wday].'day, ' . $months[$mon] . ' ' . $mday . ', ' . (1900+$year) . ' at ';
-
-  my $showAMPM='';
-  if($VARS->{'localTime12hr'})
-  {
-    if($hour<12)
-    {
-      $showAMPM = ' AM';
-      $hour=12 if $hour==0;
-    } else {
-      $showAMPM = ' PM';
-      $hour -= 12 unless $hour==12;
-    }
-  }
-
-  # $hour = '0'.$hour if length($hrs)==1;	#leading 0 looks ugly
-  $min = '0'.$min if length($min)==1;
-  $sec = '0'.$sec if length($sec)==1;	
-  $result .= $hour.':'.$min.':'.$sec;
-  $result .= $showAMPM if length($showAMPM);
-
-  # $result .= sprintf('%02d:%02d:%02d',$hour,$min,$sec);
-
-  return $result;
-}
+# DateTimeLocal REMOVED - factored into Everything::Application->DateTimeLocal (unit-tested). Jun 2026.
 
 sub formxml_room
 {
