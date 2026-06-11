@@ -917,38 +917,7 @@ sub insure
   return;
 }
 
-sub nodenote
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-
-  my $notetext = $query->param('notetext'); 
-  my $notefor = int($query->param('notefor'));
-
-  my $NOTEFOR = getNodeById($notefor);
-  return unless $NOTEFOR;
-
-  # Strip dynamic URLs
-  $notetext =~ s/\<.*?img.*?src[\s\"\']*?\=[\s\"\']*?.*?\?.*?\>//g;
-
-  foreach($query->param)
-  {
-    if($_ =~ /^deletenote\_(\d+)$/)
-    {
-      $DB->sqlDelete('nodenote', "nodenote_id=$1");
-      $APP->securityLog(getNode("Recent Node Notes","superdoc"), $USER, "removed note on [$$NOTEFOR{title}]");
-    }
-  }
-
-  htmlcode('addNodenote', $notefor, $notetext, $USER) if $notetext;
-  return;
-}
+# nodenote opcode REMOVED - superseded by Everything::API::nodenotes (React-wired); op= dispatch is dead. Jun 2026.
 
 sub lockaccount
 {
@@ -990,55 +959,9 @@ sub unlockaccount
   return;
 }
 
-sub hidewriteup
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
+# hidewriteup opcode REMOVED - superseded by Everything::API::hidewriteups (React-wired); op= dispatch is dead. Jun 2026.
 
-  return unless $APP->isEditor($USER);
-
-  if($query->param('hidewriteup'))
-  {
-    $APP->devLog("Hiding writeup: ".$query->param('hidewriteup'));
-    my $writeup = int($query->param('hidewriteup'));
-    $DB->sqlUpdate('newwriteup', { notnew=>'1' }, "node_id=$writeup");
-    getRef $writeup;
-    $$writeup{notnew} = 1;
-    $DB->updateNode($writeup, -1);
-    htmlcode('addNodenote', $writeup, "Hidden by $$USER{title}");
-  }else{
-    $APP->devLog("In hidewriteup: Can't figure out what writeup to hide");
-  }
-  return "";
-}
-
-sub unhidewriteup
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-
-  if($query->param('hidewriteup'))
-  {
-    my $writeup = int($query->param('hidewriteup'));
-    $DB->sqlUpdate('newwriteup', { notnew=>'0' }, "node_id=$writeup");
-    getRef $writeup;
-    $$writeup{notnew} = 0;
-    $DB->updateNode($writeup, -1);
-    htmlcode('addNodenote', $writeup, "Unhidden by $$USER{title}");
-  }
-
-  return "";
-}
+# unhidewriteup opcode REMOVED - superseded by Everything::API::hidewriteups (React-wired); op= dispatch is dead. Jun 2026.
 
 sub changewucount
 {
@@ -1364,87 +1287,7 @@ sub leadusergroup
   return 1;
 }
 
-sub ilikeit
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return if $APP->isSpider();
-  my $nid = $query->param("like_id");
-  return unless $nid;
-
-  my $LIKE = getNodeById($nid);
-  return unless $LIKE;
-
-  my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
-  return if $DB->sqlSelect("count(*)","likedit","likedit_ip = '$addr' and likedit_node=$nid");
- 
-  my $GU = $Everything::CONF->guest_user;
-
-  my $lType = getNode("ilikeit","linktype")->{node_id};
-
-  my $linkExists = $DB->sqlSelect("count(*)","links","from_node=$GU and to_node=$nid and linkType = $lType");
-  if ($linkExists)
-  {
-    $DB->sqlUpdate("links",{-hits => 'hits + 1'},"from_node=$GU and to_node=$nid and linkType = $lType");
-  } else {
-    $DB->sqlInsert("links",{from_node => $$USER{user_id}, to_node => $nid, linktype => $lType});
-  }
-
-  return if ($$LIKE{author_user} == getId(getNode('Webster 1913', 'user')));
-
-  my $logQueryLikeIt = qq|
-    INSERT INTO likeitlog
-    (user_agent, liked_node_id, hits)
-    VALUES
-    (?, ?, ?)
-    ON DUPLICATE KEY UPDATE
-    hits=hits+1|;
- 
-  $DB->getDatabaseHandle()->do($logQueryLikeIt, undef , $ENV{HTTP_USER_AGENT}, $nid, 1);
-
-  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time - 86400*30);
-  $year += 1900;
-  $mon++;
-  if ($mon ==12)
-  {
-    $mon = 1;
-  }
-
-  my $checkDate = sprintf('%02d-%02d-%02d',$year,$mon,$mday);
-
-  my $isRecent = (getNodeById($$LIKE{author_user})->{lasttime} ge  $checkDate);
-
-  my $likeVars = getVars(getNodeById($$LIKE{author_user}));
-  my $notifyMe = (!($$likeVars{no_likeitnotification}));
-
-  if (($isRecent) && ($notifyMe))
-  {
-    my $msgText = 'Hey, sweet! Someone likes your writeup titled "[' . getNode($$LIKE{parent_e2node})->{title} . ']!"';
-
-    # Path is currently disabled (ilikeit is shelved pending other bug
-    # investigations). Fixed the stray comma in 'msgtext' => , $msgText —
-    # that parses as msgtext=>undef and an orphan $msgText key, producing
-    # blank-text messages if this ever fired. Pre-emptive cleanup so the
-    # syntax isn't waiting to bite us when the feature is re-enabled. When
-    # we wire it back up, this should route through
-    # Everything::Application::sendPrivateMessage like every other system-
-    # bot path (#4142), not stay as a raw insert.
-    $DB->sqlInsert('message',{
-      'msgtext' => $msgText,
-      'author_user' => getId(getNode('Cool Man Eddie', 'user')),
-      'for_user' => $$LIKE{author_user},
-      'for_usergroup' => 0,
-      'archive' => 0 });
-  }
-
-  $DB->sqlInsert('likedit',{likedit_ip => $addr, likedit_node => $$LIKE{node_id}});
-  return;
-}
+# ilikeit opcode REMOVED - superseded by Everything::API::ilikeit (React-wired); op= dispatch is dead. Jun 2026.
 
 sub changeusergroup
 {
@@ -1466,45 +1309,9 @@ sub changeusergroup
   return 1;
 }
 
-sub favorite
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
+# favorite opcode REMOVED - superseded by Everything::API::favorites (React-wired); op= dispatch is dead. Jun 2026.
 
-  my $node_id = $query -> param("fave_id");
-  my $fav = getNodeById($node_id);
-  return if $fav -> {type_nodetype} != getType("user") -> {node_id};
-  return if $APP->isGuest($USER);
-  my $LINKTYPE = getNode('favorite', 'linktype');
-
-  $DB->sqlInsert('links', {-from_node => getId($USER), -to_node => $node_id, -linktype => getId($LINKTYPE)});
-  return;
-}
-
-sub unfavorite
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my $node_id = $query -> param("fave_id");
-  my $fav = getNodeById($node_id);
-  return if $fav -> {type_nodetype} != getType("user") -> {node_id};
-  return if $APP->isGuest($USER);
-  my $LINKTYPE = getNode('favorite', 'linktype');
-
-  my $uid = $$USER{'node_id'};
-
-  $DB->sqlDelete('links', "from_node = $uid AND to_node = $node_id AND linktype = $$LINKTYPE{node_id}");
-  return;
-}
+# unfavorite opcode REMOVED - superseded by Everything::API::favorites (React-wired); op= dispatch is dead. Jun 2026.
 
 sub category
 {
