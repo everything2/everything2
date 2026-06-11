@@ -70,7 +70,7 @@ const ShowUserVars = ({ data }) => {
       </table>
 
       {/* USER table (admin only) */}
-      {is_admin && user_data.length > 0 && (
+      {!!is_admin && user_data.length > 0 && (
         <>
           <h3 className="show-user-vars__subtitle">USER</h3>
           <table className="show-user-vars__table">

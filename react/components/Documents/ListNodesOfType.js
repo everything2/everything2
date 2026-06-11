@@ -199,7 +199,7 @@ const ListNodesOfType = ({ data, user }) => {
               {nodes.map((node, index) => (
                 <tr key={node.node_id} className={index % 2 === 0 ? 'list-nodes-of-type__even-row' : 'list-nodes-of-type__odd-row'}>
                   <td className="list-nodes-of-type__td">
-                    {node.can_edit && <small>(<a href={'/?node_id=' + node.node_id + '&displaytype=edit'}>edit</a>)</small>}
+                    {!!node.can_edit && <small>(<a href={'/?node_id=' + node.node_id + '&displaytype=edit'}>edit</a>)</small>}
                   </td>
                   <td className="list-nodes-of-type__td"><a href={'/?node_id=' + node.node_id}>{node.title}</a></td>
                   <td className="list-nodes-of-type__td">{node.node_id}</td>

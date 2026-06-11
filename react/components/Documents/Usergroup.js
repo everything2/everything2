@@ -443,7 +443,7 @@ const Usergroup = ({ data, user, e2 }) => {
       </div>
 
       {/* Actions section for members */}
-      {!isGuest && is_in_group && (
+      {!isGuest && !!is_in_group && (
         <div className="usergroup-actions">
           <button
             type="button"
@@ -473,14 +473,14 @@ const Usergroup = ({ data, user, e2 }) => {
             )}
           </div>
           <div className="usergroup-card-body">
-            {!is_in_group && userData.is_admin && (
+            {!is_in_group && !!userData.is_admin && (
               <p className="usergroup-empty usergroup-empty--spaced">
                 You aren't in this group, but may message it as an administrator.
               </p>
             )}
 
             {/* Message the group */}
-            {(is_in_group || userData.is_admin) && (
+            {!!(is_in_group || userData.is_admin) && (
               <div className="usergroup-messaging-row">
                 <FaEnvelope className="usergroup-messaging-icon" />
                 <span>Message the group:</span>

@@ -140,7 +140,7 @@ const RecalculateXp = ({ data }) => {
       {error && <div className="recalculate-xp__error">{error}</div>}
 
       {/* Admin lookup */}
-      {isAdmin && (
+      {!!isAdmin && (
         <div className="recalculate-xp__admin-box">
           <strong>Admin: Look up another user</strong>
           <div className="recalculate-xp__admin-row">

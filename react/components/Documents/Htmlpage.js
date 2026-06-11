@@ -48,7 +48,7 @@ const Htmlpage = ({ data, user }) => {
           Htmlpages are legacy page templates that define how nodes of specific types
           are displayed or edited. Most htmlpage functionality has been migrated to
           Everything::Page classes and React document components.
-          {is_delegated && (
+          {!!is_delegated && (
             <span className="dev-display__delegated-warning">
               <strong>This htmlpage is delegated</strong> - its implementation has been moved
               to the codebase. To modify it, submit a pull request on GitHub.
@@ -111,7 +111,7 @@ const Htmlpage = ({ data, user }) => {
       </div>
 
       {/* Page Code Preview Section (Developer only) */}
-      {isDeveloper && page_preview && (
+      {!!isDeveloper && page_preview && (
         <div className="dev-display__section">
           <h4 className="dev-display__header dev-display__header--section">
             <FaCode size={16} /> Page Code Preview
@@ -123,7 +123,7 @@ const Htmlpage = ({ data, user }) => {
       )}
 
       {/* Developer Source Map */}
-      {isDeveloper && sourceMap && (
+      {!!isDeveloper && sourceMap && (
         <SourceMapDisplay
           sourceMap={sourceMap}
           title={`Source Map: ${title}`}

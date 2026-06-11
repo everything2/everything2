@@ -57,7 +57,7 @@ const Maintenance = ({ data, user }) => {
           Maintenance nodes define automated operations that run during node lifecycle events.
           They contain Perl code that executes when nodes of a specific type are created,
           updated, or deleted.
-          {is_delegated && (
+          {!!is_delegated && (
             <span className="dev-display__delegated-warning">
               <strong>This maintenance is delegated</strong> - its implementation has been moved
               to the codebase. To modify it, submit a pull request on GitHub.

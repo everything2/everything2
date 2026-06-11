@@ -92,7 +92,7 @@ const Stylesheet = ({ data, user }) => {
         >
           <FaExternalLinkAlt size={12} /> View Raw CSS
         </a>
-        {isAdmin && (
+        {!!isAdmin && (
           <a
             href={`/node/${node_id}?displaytype=edit`}
             className="stylesheet__button stylesheet__button--danger"
@@ -224,7 +224,7 @@ const Stylesheet = ({ data, user }) => {
       </div>
 
       {/* Developer Source Map */}
-      {isDeveloper && sourceMap && (
+      {!!isDeveloper && sourceMap && (
         <SourceMapDisplay
           sourceMap={sourceMap}
           title={`Source Map: ${title}`}

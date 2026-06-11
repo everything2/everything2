@@ -356,7 +356,7 @@ const Registry = ({ data }) => {
                   <th className="registry__th">As of</th>
                   <th className="registry__th">Comments</th>
                   <th className="registry__th">Profile?</th>
-                  {is_admin && <th className="registry__th">Actions</th>}
+                  {!!is_admin && <th className="registry__th">Actions</th>}
                 </tr>
               </thead>
               <tbody>
@@ -375,7 +375,7 @@ const Registry = ({ data }) => {
                       dangerouslySetInnerHTML={{ __html: entry.comments ? renderE2Content(entry.comments).html : '-' }}
                     />
                     <td className="registry__td">{entry.in_user_profile ? 'Yes' : 'No'}</td>
-                    {is_admin && (
+                    {!!is_admin && (
                       <td className="registry__td">
                         <button
                           onClick={() => handleAdminDelete(entry.user_id, entry.username)}

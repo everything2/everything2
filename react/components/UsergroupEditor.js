@@ -393,7 +393,7 @@ const UsergroupEditor = ({ isOpen, onClose, usergroup, onUpdate, currentUserId }
                     </div>
 
                     {/* Show Change Owner button for the owner row if current user is owner */}
-                    {member.is_owner && currentUserIsOwner && members.filter(m => m.type !== 'usergroup').length > 1 && (
+                    {!!member.is_owner && currentUserIsOwner && members.filter(m => m.type !== 'usergroup').length > 1 && (
                       <button
                         onClick={() => setShowTransferModal(true)}
                         className="usergroup-editor__change-owner-button"

@@ -169,7 +169,7 @@ export default function Setting({ data }) {
       <div className="setting">
         {/* Page title is already rendered by PageHeader; only show the
             Edit button (admins) here as the page action. */}
-        {user?.is_admin && (
+        {!!user?.is_admin && (
           <div className="setting__header">
             <button
               onClick={() => setIsEditing(true)}

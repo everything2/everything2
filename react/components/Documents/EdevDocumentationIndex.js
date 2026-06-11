@@ -75,7 +75,7 @@ export default function EdevDocumentationIndex({ data }) {
         </div>
       )}
 
-      {is_developer && (
+      {!!is_developer && (
         <div className="edev-docs__create-box">
           <h3 className="edev-docs__create-heading">
             <svg

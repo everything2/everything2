@@ -57,7 +57,7 @@ const Schema = ({ data, user }) => {
     <div className="schema">
       {/* Action Bar */}
       <div className="schema__action-bar">
-        {isAdmin && (
+        {!!isAdmin && (
           <a
             href={`/node/${node_id}?displaytype=edit`}
             className="schema__action-button schema__action-button--admin"
@@ -149,7 +149,7 @@ const Schema = ({ data, user }) => {
       </div>
 
       {/* Developer Source Map */}
-      {isDeveloper && sourceMap && (
+      {!!isDeveloper && sourceMap && (
         <SourceMapDisplay
           sourceMap={sourceMap}
           title={`Source Map: ${title}`}
