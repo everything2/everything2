@@ -26,7 +26,7 @@ const SecurityMonitor = ({ data }) => {
 
   // Find the name of the currently viewed category
   const viewingCategory = viewing_type
-    ? categories.find(c => c.node_id === viewing_type)
+    ? categories.find(c => c.id === viewing_type)
     : null
 
   return (
@@ -41,9 +41,9 @@ const SecurityMonitor = ({ data }) => {
                 rows.push(
                   <tr key={i}>
                     {categories.slice(i, i + 5).map(cat => (
-                      <td key={cat.node_id} className="security-monitor__category-cell">
+                      <td key={cat.id} className="security-monitor__category-cell">
                         <div className="security-monitor__category-box">
-                          <a href={`/?node_id=${node_id}&sectype=${cat.node_id}`}>
+                          <a href={`/?node_id=${node_id}&sectype=${cat.id}`}>
                             {cat.name}
                           </a>
                           <br />
@@ -72,7 +72,7 @@ const SecurityMonitor = ({ data }) => {
               <thead>
                 <tr>
                   <th className="security-monitor__th">
-                    <strong>Node</strong>
+                    <strong>Subject</strong>
                   </th>
                   <th className="security-monitor__th">
                     <strong>User</strong>
@@ -89,10 +89,10 @@ const SecurityMonitor = ({ data }) => {
                 {entries.map((entry, idx) => (
                   <tr key={idx}>
                     <td className="security-monitor__td">
-                      {entry.node_id ? (
-                        <a href={`/?node_id=${entry.node_id}`}>{entry.node_title}</a>
+                      {entry.subject_id ? (
+                        <a href={`/?node_id=${entry.subject_id}`}>{entry.subject_title}</a>
                       ) : (
-                        entry.node_title
+                        entry.subject_title
                       )}
                     </td>
                     <td className="security-monitor__td">
