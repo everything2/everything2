@@ -1,0 +1,78 @@
+#!/usr/bin/perl -w
+#
+# Regression net for Everything::Application->securityLog (#4272).
+# Pins the CURRENT writer behavior before the dual-write rework, so the migration
+# can be verified green. (Once securityLog writes seclog_event, this test gains
+# seclog_event assertions alongside the seclog_node ones.)
+#
+use strict;
+use warnings;
+use lib qw(/var/everything/ecore /var/libraries/lib/perl5);
+use Test::More;
+use Everything;
+use Everything::Application;
+
+initEverything 'everything';
+
+ok( $DB,  'DB connected' );
+ok( $APP, 'Application object' );
+
+my $root = $DB->getNode( 'root', 'user' );
+my $cat  = $DB->getNode( 'massacre', 'opcode' );    # an existing seclog category node
+ok( $root, 'got root user' );
+ok( $cat,  'got a category node (massacre opcode)' );
+
+my $marker = 't147-seclog-writer';
+my @cleanup;
+
+sub fetch_last {
+    my ($details) = @_;
+    return $DB->sqlSelectHashref( '*', 'seclog',
+        "seclog_details = " . $DB->{dbh}->quote($details),
+        'ORDER BY seclog_id DESC LIMIT 1' );
+}
+
+subtest 'writes a row (hashref args)' => sub {
+    my $d  = "$marker basic";
+    my $id = $APP->securityLog( $cat, $root, $d );
+    ok( $id, 'returns an inserted seclog_id' );
+    push @cleanup, $id if $id;
+    my $row = fetch_last($d);
+    ok( $row, 'row exists' );
+    is( $row->{seclog_node},    $cat->{node_id},  'seclog_node = category node id' );
+    is( $row->{seclog_user},    $root->{node_id}, 'seclog_user = actor id' );
+    is( $row->{seclog_details}, $d,               'details stored verbatim' );
+};
+
+subtest 'accepts a node id (getRef resolves it)' => sub {
+    my $d   = "$marker byid";
+    my $nid = $cat->{node_id};               # copy: getRef mutates its arg in place
+    my $id  = $APP->securityLog( $nid, $root, $d );
+    ok( $id, 'inserted' );
+    push @cleanup, $id if $id;
+    my $row = fetch_last($d);
+    is( $row->{seclog_node}, $cat->{node_id}, 'bare node id resolved to the same node' );
+};
+
+subtest 'user -1 resolves to root' => sub {
+    my $d  = "$marker rootuser";
+    my $id = $APP->securityLog( $cat, -1, $d );
+    ok( $id, 'inserted' );
+    push @cleanup, $id if $id;
+    my $row = fetch_last($d);
+    is( $row->{seclog_user}, $root->{node_id}, 'actor defaulted to root' );
+};
+
+subtest 'undef node logs nothing' => sub {
+    my $before = $DB->sqlSelect( 'COUNT(*)', 'seclog' );
+    $APP->securityLog( undef, $root, "$marker shouldnotappear" );
+    my $after = $DB->sqlSelect( 'COUNT(*)', 'seclog' );
+    is( $after, $before, 'no row inserted for undef node' );
+    ok( !fetch_last("$marker shouldnotappear"), 'no row with that marker' );
+};
+
+# cleanup -- remove anything this test inserted
+$DB->sqlDelete( 'seclog', "seclog_id = $_" ) for grep { $_ } @cleanup;
+$DB->sqlDelete( 'seclog', "seclog_details LIKE " . $DB->{dbh}->quote("$marker%") );
+
+done_testing();
