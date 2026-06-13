@@ -1248,11 +1248,10 @@ sub securityLog
   my ($this, $event, $user, $details, $subject) = @_;
   my $db = $this->{db};
 
-  my ($event_id, $node_id);
+  my $event_id;
   if (ref $event)
   {
     # legacy category node passed as a hashref -> map by its (env-stable) title
-    $node_id  = $event->{node_id};
     $event_id = Everything::SecurityLog->event_for_title($event->{title});
   }
   elsif (defined($event) and $event > 65535)
@@ -1260,14 +1259,12 @@ sub securityLog
     # legacy category node passed as a bare id (node ids are far above the event range)
     my $n = $db->getNodeById($event);
     return unless $n;                                   # node gone -> nothing to classify
-    $node_id  = $n->{node_id};
     $event_id = Everything::SecurityLog->event_for_title($n->{title});
   }
   elsif (defined($event))
   {
     # new: an event id (0..65535) from Everything::SecurityLog
     $event_id = $event;
-    $node_id  = 0;
   }
   else
   {
@@ -1292,7 +1289,6 @@ sub securityLog
   return $db->sqlInsert('seclog', {
     'seclog_event'   => $event_id,
     'seclog_subject' => $subject_id,
-    'seclog_node'    => $node_id,                       # dual-write during the transition
     'seclog_user'    => $$user{node_id},
     'seclog_details' => $details,
   });
