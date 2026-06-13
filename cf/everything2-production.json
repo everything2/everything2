@@ -85,6 +85,28 @@
         }
       }
     },
+    "MaintenanceJobsBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "e2-maintenance-jobs",
+        "VersioningConfiguration": { "Status": "Enabled" },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "LifecycleConfiguration": {
+          "Rules": [{
+            "Id": "ExpireOldJobs",
+            "Status": "Enabled",
+            "ExpirationInDays": 90,
+            "NoncurrentVersionExpirationInDays": 90
+          }]
+        }
+      }
+    },
     "SnapshotExportKMSKey": {
       "Type": "AWS::KMS::Key",
       "Properties": {
@@ -820,6 +842,11 @@
             "Effect": "Allow",
             "Action": "s3:PutObject",
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "PodcastS3Bucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "MaintenanceJobsBucket", "Arn"] }, "/*"]]}
           }]
         }
       }

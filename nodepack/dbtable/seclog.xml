@@ -5,7 +5,7 @@
   `seclog_subject` int DEFAULT NULL,
   `seclog_node` int NOT NULL DEFAULT '0',
   `seclog_user` int NOT NULL DEFAULT '0',
-  `seclog_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `seclog_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `seclog_details` char(255) DEFAULT NULL,
   PRIMARY KEY (`seclog_id`),
   KEY `seclog_node__seclog_id` (`seclog_node`,`seclog_id`),
