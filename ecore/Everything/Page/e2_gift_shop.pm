@@ -3,6 +3,7 @@ package Everything::Page::e2_gift_shop;
 use Moose;
 use POSIX qw(floor);
 use Time::Local qw(timelocal);
+use Everything::SecurityLog qw(:events);
 extends 'Everything::Page';
 with 'Everything::Security::NoGuest';
 
@@ -94,13 +95,11 @@ sub _get_last_topic_change {
   my ($self) = @_;
   my $DB = $self->DB;
 
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  return '' unless $giftshop_node;
-
+  my $event = SECLOG_GIFTSHOP_TOPIC;
   my ($lastChange, $lastTime) = $DB->sqlSelect(
     "seclog_details, seclog_time",
     "seclog",
-    "seclog_node = $giftshop_node->{node_id} AND seclog_details LIKE '%changed room topic%'",
+    "seclog_event = $event AND seclog_details LIKE '%changed room topic%'",
     "ORDER BY seclog_id DESC LIMIT 1"
   );
 

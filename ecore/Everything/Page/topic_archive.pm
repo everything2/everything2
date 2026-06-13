@@ -5,6 +5,7 @@ extends 'Everything::Page';
 with 'Everything::Security::NoGuest';
 
 use Readonly;
+use Everything::SecurityLog qw(:events);
 Readonly my $PAGE_SIZE => 50;
 
 sub buildReactData {
@@ -13,12 +14,8 @@ sub buildReactData {
     my $DB = $self->DB;
     my $q = $REQUEST->cgi;
 
-    # Get the E2 Gift Shop node ID
-    my $gift_shop = $DB->getNode('E2 Gift Shop', 'superdoc');
-    return { type => 'topic_archive', error => 'Gift Shop not found' }
-        unless $gift_shop;
-
-    my $sectype = $gift_shop->{node_id};
+    # Room-topic-change events (decoupled from the old E2 Gift Shop seclog_node).
+    my $event = SECLOG_GIFTSHOP_TOPIC;
 
     # Pagination
     my $startat = $q->param('startat') || 0;
@@ -30,7 +27,7 @@ sub buildReactData {
     my ($total_count) = $DB->sqlSelect(
         'count(*)',
         'seclog',
-        "seclog_node=$sectype AND seclog_time>'2011-01-22 00:00:00' AND seclog_details LIKE '%changed room topic%'"
+        "seclog_event=$event AND seclog_time>'2011-01-22 00:00:00' AND seclog_details LIKE '%changed room topic%'"
     );
     $total_count ||= 0;
 
@@ -38,7 +35,7 @@ sub buildReactData {
     my $csr = $DB->sqlSelectMany(
         '*',
         'seclog',
-        "seclog_node=$sectype AND seclog_time>'2011-01-22 00:00:00' AND seclog_details LIKE '%changed room topic%' order by seclog_time DESC limit $startat,$PAGE_SIZE"
+        "seclog_event=$event AND seclog_time>'2011-01-22 00:00:00' AND seclog_details LIKE '%changed room topic%' order by seclog_time DESC limit $startat,$PAGE_SIZE"
     );
 
     my @entries = ();

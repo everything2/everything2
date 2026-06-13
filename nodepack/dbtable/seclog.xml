@@ -3,12 +3,10 @@
   `seclog_id` int NOT NULL AUTO_INCREMENT,
   `seclog_event` smallint unsigned NOT NULL DEFAULT '0',
   `seclog_subject` int DEFAULT NULL,
-  `seclog_node` int NOT NULL DEFAULT '0',
   `seclog_user` int NOT NULL DEFAULT '0',
   `seclog_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `seclog_details` char(255) DEFAULT NULL,
   PRIMARY KEY (`seclog_id`),
-  KEY `seclog_node__seclog_id` (`seclog_node`,`seclog_id`),
   KEY `seclog_user__seclog_id` (`seclog_user`,`seclog_id`),
   KEY `seclog_event__seclog_id` (`seclog_event`,`seclog_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</_create_table_statement>

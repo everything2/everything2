@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 #
 # Regression net for Everything::Application->securityLog (#4272).
-# Pins the CURRENT writer behavior before the dual-write rework, so the migration
-# can be verified green. (Once securityLog writes seclog_event, this test gains
-# seclog_event assertions alongside the seclog_node ones.)
+# Pins the writer behavior after phase 5 (#4280): securityLog writes seclog_event +
+# seclog_subject only -- the seclog_node dual-write (and the column) are gone. The
+# legacy category-node arg is still accepted and mapped to an event by its title.
 #
 use strict;
 use warnings;
@@ -40,20 +40,18 @@ subtest 'writes a row (hashref args)' => sub {
     push @cleanup, $id if $id;
     my $row = fetch_last($d);
     ok( $row, 'row exists' );
-    is( $row->{seclog_node},    $cat->{node_id},  'seclog_node = category node id (dual-write)' );
     is( $row->{seclog_user},    $root->{node_id}, 'seclog_user = actor id' );
     is( $row->{seclog_details}, $d,               'details stored verbatim' );
     is( $row->{seclog_event},   SECLOG_MASSACRE,  'seclog_event mapped from node title (massacre -> 5)' );
 };
 
-subtest 'event-key arg writes seclog_event directly (no node)' => sub {
+subtest 'event-key arg writes seclog_event directly' => sub {
     my $d  = "$marker eventkey";
     my $id = $APP->securityLog( SECLOG_MASSACRE, $root, $d );
     ok( $id, 'inserted' );
     push @cleanup, $id if $id;
     my $row = fetch_last($d);
     is( $row->{seclog_event}, SECLOG_MASSACRE, 'seclog_event set from the SECLOG_* key' );
-    is( $row->{seclog_node},  0,               'seclog_node = 0 for a key-based call' );
 };
 
 subtest 'subject node is stored' => sub {
@@ -66,14 +64,14 @@ subtest 'subject node is stored' => sub {
     is( $row->{seclog_subject}, $cat->{node_id},         'seclog_subject = the affected node id' );
 };
 
-subtest 'accepts a node id (getRef resolves it)' => sub {
+subtest 'accepts a node id (getRef resolves it, maps to event)' => sub {
     my $d   = "$marker byid";
     my $nid = $cat->{node_id};               # copy: getRef mutates its arg in place
     my $id  = $APP->securityLog( $nid, $root, $d );
     ok( $id, 'inserted' );
     push @cleanup, $id if $id;
     my $row = fetch_last($d);
-    is( $row->{seclog_node}, $cat->{node_id}, 'bare node id resolved to the same node' );
+    is( $row->{seclog_event}, SECLOG_MASSACRE, 'bare node id resolved -> massacre event' );
 };
 
 subtest 'user -1 resolves to root' => sub {
