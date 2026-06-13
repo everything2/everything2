@@ -4,6 +4,7 @@ use warnings;
 
 use Everything;
 use Everything::S3;
+use Everything::SecurityLog qw(:events);
 use Everything::Delegation::room;
 
 use DateTime;
@@ -1140,9 +1141,9 @@ sub setParameter
   
   $this->{db}->setNodeParam($node, $param, $paramvalue);
 
-  # The security log needs a node to map to an action, so we need to use the parameter opcode
-  # I don't love the way this works, but I can fix it later pretty easily.
-  $this->securityLog($this->{db}->getNode("parameter","opcode"), $user, "Set parameter '$param' as '$paramvalue' on '$$node{title}'");
+  # seclog: PARAMETER_CHANGE event, with the affected node as the subject (#4272 -- no
+  # longer needs the 'parameter' opcode node to exist).
+  $this->securityLog(SECLOG_PARAMETER_CHANGE, $user, "Set parameter '$param' as '$paramvalue' on '$$node{title}'", $node);
   return 1;
 }
 
@@ -1163,9 +1164,9 @@ sub delParameter
   return if !$this->canSetParameter($node,$user,$param);
   $this->{db}->deleteNodeParam($node, $param);
 
-  # The security log needs a node to map to an action, so we need to use the parameter opcode
-  # I don't love the way this works, but I can fix it later pretty easily.
-  $this->securityLog($this->{db}->getNode("parameter","opcode"), $user, "Deleted parameter '$param' from '$$node{title}'");
+  # seclog: PARAMETER_CHANGE event, with the affected node as the subject (#4272 -- no
+  # longer needs the 'parameter' opcode node to exist).
+  $this->securityLog(SECLOG_PARAMETER_CHANGE, $user, "Deleted parameter '$param' from '$$node{title}'", $node);
   return 1; 
 }
 
@@ -1241,17 +1242,60 @@ sub getNodesWithParameter
 
 sub securityLog
 {
-  my ($this, $node, $user, $details) = @_;
-  $this->{db}->getRef($node);
+  # $event is EITHER a SECLOG_* event id (new, from Everything::SecurityLog) OR a
+  # legacy category node (hashref/id) during the transition. $subject is an optional
+  # affected node (reparent target, XP recipient, ...). See docs/seclog-decoupling-design.md.
+  my ($this, $event, $user, $details, $subject) = @_;
+  my $db = $this->{db};
+
+  my ($event_id, $node_id);
+  if (ref $event)
+  {
+    # legacy category node passed as a hashref -> map by its (env-stable) title
+    $node_id  = $event->{node_id};
+    $event_id = Everything::SecurityLog->event_for_title($event->{title});
+  }
+  elsif (defined($event) and $event > 65535)
+  {
+    # legacy category node passed as a bare id (node ids are far above the event range)
+    my $n = $db->getNodeById($event);
+    return unless $n;                                   # node gone -> nothing to classify
+    $node_id  = $n->{node_id};
+    $event_id = Everything::SecurityLog->event_for_title($n->{title});
+  }
+  elsif (defined($event))
+  {
+    # new: an event id (0..65535) from Everything::SecurityLog
+    $event_id = $event;
+    $node_id  = 0;
+  }
+  else
+  {
+    return;                                             # nothing to log
+  }
 
   if(defined($user) and $user eq "-1")
   {
-    $user = $this->{db}->getNode("root","user");
+    $user = $db->getNode("root","user");
   }else{
-    $this->{db}->getRef($user);
+    $db->getRef($user);
   }
-  return unless defined($node) and defined($user);
-  return $this->{db}->sqlInsert('seclog', { 'seclog_node' => $$node{node_id}, 'seclog_user'=>$$user{node_id}, 'seclog_details'=>$details});
+  return unless defined($user);
+
+  my $subject_id;
+  if (defined $subject)
+  {
+    $db->getRef($subject);
+    $subject_id = ref $subject ? $subject->{node_id} : $subject;
+  }
+
+  return $db->sqlInsert('seclog', {
+    'seclog_event'   => $event_id,
+    'seclog_subject' => $subject_id,
+    'seclog_node'    => $node_id,                       # dual-write during the transition
+    'seclog_user'    => $$user{node_id},
+    'seclog_details' => $details,
+  });
 }
 
 sub addNodeNote

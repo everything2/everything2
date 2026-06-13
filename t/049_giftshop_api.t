@@ -14,6 +14,7 @@ use Test::More;
 use Everything;
 use Everything::Application;
 use Everything::API::giftshop;
+use Everything::SecurityLog qw(:events);
 
 # Declare globals so MockUser can access them
 our ($APP, $DB);
@@ -622,7 +623,7 @@ subtest "Eddie message - give votes" => sub {
 # Test 14: Eddie message - give ching
 #############################################################################
 subtest "Eddie message - give ching" => sub {
-  plan tests => 5;
+  plan tests => 6;
 
   # Get Cool Man Eddie
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
@@ -673,15 +674,15 @@ subtest "Eddie message - give ching" => sub {
   );
   ok($msg, 'Eddie message sent for give_ching');
 
-  # Check for security log entry (logs to "E2 Gift Shop" superdoc)
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  SKIP: {
-    skip 'E2 Gift Shop superdoc not found', 1 unless $giftshop_node;
+  # Check for security log entry -- give_ching now logs the CHING_GIVEN event (#4272),
+  # not the generic "E2 Gift Shop" node.
+  {
     my $seclog = $DB->sqlSelectHashref('*', 'seclog',
-      "seclog_node = $giftshop_node->{node_id} AND seclog_user = $test_user->{node_id}",
+      "seclog_user = $test_user->{node_id} AND seclog_details LIKE '%gave a C!%'",
       'ORDER BY seclog_id DESC LIMIT 1'
     );
-    ok($seclog && $seclog->{seclog_details} =~ /gave a C!/, 'Security log entry created for give_ching');
+    ok($seclog, 'Security log entry created for give_ching');
+    is($seclog->{seclog_event}, SECLOG_CHING_GIVEN, 'give_ching logged as CHING_GIVEN');
   }
 
   # Clean up only our message

@@ -6,6 +6,7 @@ extends 'Everything::API';
 
 use Encode qw(decode_utf8);
 use JSON;
+use Everything::SecurityLog qw(:events);
 
 =head1 Everything::API::node_parameter
 
@@ -160,9 +161,10 @@ sub set_param {
 
     # Security log
     $APP->securityLog(
-        $node,
+        SECLOG_PARAMETER_CHANGE,
         $USER->NODEDATA,
-        "Set parameter '$param_name' = '$param_value' on node '$node->{title}'"
+        "Set parameter '$param_name' = '$param_value' on node '$node->{title}'",
+        $node
     );
 
     return [$self->HTTP_OK, {
@@ -235,9 +237,10 @@ sub delete_param {
 
     # Security log
     $APP->securityLog(
-        $node,
+        SECLOG_PARAMETER_CHANGE,
         $USER->NODEDATA,
-        "Deleted parameter '$param_name' from node '$node->{title}'"
+        "Deleted parameter '$param_name' from node '$node->{title}'",
+        $node
     );
 
     return [$self->HTTP_OK, {
