@@ -218,83 +218,11 @@ sub bookmark
 
 # vote opcode REMOVED - superseded by Everything::API::vote (cast_vote); op= dispatch is dead. Jun 2026.
 
-sub bless
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
+# bless opcode REMOVED - superseded by Everything::API::superbless (AdminBestowTool, React-wired); op= dispatch is dead. Jun 2026.
 
-  return unless isGod($USER);
-  my $U = $query->param('bless_id');
-  $U = getNode($query->param("node"), 'user') if ($query->param('node'));
-  getRef $U;
+# curse opcode REMOVED - superseded by Everything::API::superbless (AdminBestowTool, React-wired); op= dispatch is dead. Jun 2026.
 
-  return unless $$U{type}{title} eq 'user';
-
-  my $gp = int($query->param('experience')); # I have no idea where this parameter might get called from, so I'm leaving it in place to be on the safe side.
-  $gp ||= 10;
-
-  $$U{gp} += $gp;
-  $$U{karma} += 1;
-
-  $APP->checkAchievementsByType('karma', $$U{user_id});
-
-  $APP->securityLog(getNode("bless","opcode"), $USER, "$$U{title} was blessed 10GP by $$USER{title}");
-
-  htmlcode('sendPrivateMessage',{
-    'author_id' => getId(getNode('Cool Man Eddie', 'user')),
-    'recipient_id' => $$U{user_id},
-    'message' => "Whoa, you&rsquo;ve just been [bless|blessed]!"});
-
-  updateNode($U, -1);
-  $APP->adjustGP($U, $gp);
-  return;
-}
-
-sub curse
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  # Currently disabled
-  return;
-  # return unless isGod($USER);
-  # my $U = $query->param('node_id');
-  # getRef $U;
-
-  # $$U{experience} -= 10;
-  # $$U{karma} -= 1;
-  # updateNode($U, -1);
-}
-
-sub bestow
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless isGod($USER);
-  my $U = $query->param('bestow_id');
-  getRef $U;
-
-  $$U{votesleft} += 25;
-  $$U{karma} += 1;
-
-  $APP->securityLog(getNode("bestow","opcode"), $USER, "$$U{title} was given 25 votes by $$USER{title}");
-
-  updateNode($U, -1);
-  return;
-}
+# bestow opcode REMOVED - superseded by Everything::API::superbless (AdminBestowTool, React-wired); op= dispatch is dead. Jun 2026.
 
 sub message
 {
@@ -1126,51 +1054,7 @@ sub orderlock
   return;
 }
 
-sub pollvote
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return if $APP->isGuest($USER);
-
-  my $pollId = $query -> param('poll_id');
-  my $vote = $query->param('vote');
-
-  my $N = getNodeById($pollId);
-  my @options = split /\n\s*/s, $$N{doctext};
-  my @result_array = split(',', $$N{e2poll_results});
-  return unless $N  && $$N{type}{title} eq 'e2poll' && $$N{poll_status} ne 'new' && $$N{poll_status} ne 'closed'
-    && exists($options[$vote]);
-
-  return if $DB->sqlSelect( # has already voted on this poll
-    'pollvote_id'
-    , 'pollvote'
-    , "voter_user=$$USER{node_id} AND pollvote_id=$$N{node_id}");
-
-  return unless $DB->sqlInsert('pollvote', { # don't update the poll if the vote gets lost
-    pollvote_id => $pollId
-    , voter_user => $$USER{node_id}
-    , choice => $vote
-    , -votetime => 'NOW()'});
-
-  $result_array[$vote]++;
-  my $votesum = undef;
-  foreach ( @result_array )
-  {
-    $votesum = $votesum + $_;
-  }
-
-  $DB->sqlUpdate("e2poll", {
-    e2poll_results => join(',', @result_array)
-    , totalvotes => $votesum}
-    , "e2poll_id=$pollId");
-
-  return;
-}
+# pollvote opcode REMOVED - superseded by Everything::API::poll submit_vote (CurrentUserPoll, React-wired); op= dispatch is dead. Jun 2026.
 
 sub softlock
 {
@@ -1558,36 +1442,7 @@ sub approve_draft
   return;
 }
 
-sub parameter
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my $paramname = $query->param('paramname');
-  my $paramvalue = $query->param('paramvalue');
-  my $action = $query->param('action');
-  my $for_node = $query->param('for_node');
-
-  if(not defined($for_node))
-  {
-    $for_node ||= $NODE;
-  }
-
-  $DB->getRef($for_node);
-
-  if($action ne "delete")
-  {
-    $APP->setParameter($for_node, $USER, $paramname, $paramvalue);
-  }else{
-    $APP->delParameter($for_node, $USER, $paramname);
-  }
-
-  return;
-}
+# parameter opcode REMOVED - superseded by Everything::API::node_parameter (NodeParameterEditor, React-wired); op= dispatch is dead. Jun 2026.
 
 sub remove
 {

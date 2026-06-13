@@ -53,19 +53,40 @@ own `sqlInsert`. No orphan.
 ### PENDING prod cleanup (after this deploys)
 Nuke the 6 orphaned `opcode` nodes: **1930913, 1930914, 1216701, 1217041, 1180774, 1920135**.
 
-## Remaining 34 — first-pass classification (continue here)
+## Removed — phase 3 (#4271)
+
+Same bar; the **hidden-form-field** sweep is what makes this the confirmed-clean subset (it caught
+`changeusergroup` still wired in `UsergroupWriteups.js`, which stays for migration).
+
+| opcode | superseded by | React wiring | nodepack node (→ nuke from prod) |
+|---|---|---|---|
+| `bless` | `API::superbless` (`grant_gp`/`grant_xp`) | AdminBestowTool | **444704** |
+| `curse` | `API::superbless` | AdminBestowTool | **444709** |
+| `bestow` | `API::superbless` | AdminBestowTool | **444712** |
+| `parameter` | `API::node_parameter` | NodeParameterEditor | **2071202** |
+| `pollvote` | `API::poll` (`submit_vote`) | CurrentUserPoll, EverythingPollDirectory | **1685363** |
+
+`bless` called `htmlcode('sendPrivateMessage')`, **kept** — core PM helper, 11 other callers. No orphan.
+
+### PENDING prod cleanup (after this deploys)
+Nuke the 5 orphaned `opcode` nodes: **444704, 444709, 444712, 2071202, 1685363**.
+
+## Remaining 29 — first-pass classification (continue here)
 
 - **Superseded by an existing API + 0 `op=` refs → remove candidates** (confirm the API fully
-  replaces each, then delete): `bless`/`curse`/`bestow` (→superbless/sanctify), `bookmark`,
-  `message`/`message_outbox` (→messages), `weblog`/`weblogify` (→weblog), `category`,
-  `pollvote` (→poll), `parameter` (→node_parameter),
+  replaces each, then delete): `bookmark`, `message`/`message_outbox` (→messages),
+  `weblog`/`weblogify` (→weblog), `category`,
   `publishdraft`/`publishdrafttodocument`/`approve_draft` (→drafts),
-  `changeusergroup`/`leadusergroup` (→usergroups), `socialBookmark`.
-  *(phase 2 removed: `favorite`/`unfavorite`, `hidewriteup`/`unhidewriteup`, `nodenote`, `ilikeit`.)*
+  `leadusergroup` (→usergroups, but verify — its sibling `changeusergroup` is still wired),
+  `socialBookmark`.
+  *(phase 2 removed: `favorite`/`unfavorite`, `hidewriteup`/`unhidewriteup`, `nodenote`, `ilikeit`.
+  phase 3 removed: `bless`/`curse`/`bestow`, `parameter`, `pollvote`.)*
 - **Admin/maintenance, no API + no `op=` ref → reachability check** (likely dead or admin-tool wired):
   `massacre`, `lockroom`, `linktrim`, `firmlink`, `lockaccount`/`unlockaccount`, `changewucount`,
   `repair_e2node`/`repair_e2node_noreorder`, `borg`, `flushcbox`, `orderlock`, `softlock`,
   `cure_infection`, `insure`.
-- **Still genuinely wired → migrate before removal (phase 2)**: `removeweblog` (React link
+- **Still genuinely wired → migrate before removal (#4198)**: `removeweblog` (React link
   `op=removeweblog` in NodeRow.js → should use the weblog API), `remove` (AltarOfSacrifice delete form
-  → needs a delete API).
+  → needs a delete API), `changeusergroup` (hidden form field in `UsergroupWriteups.js:73` → needs the
+  usergroups API), plus the other live form/link ops surfaced by the dispatch scan: `collaboration`,
+  `debate`, `draft`, `e2client`, `edit`, `new`, `useredit`, `nuke`, `logout`, `randomnode`.
