@@ -1298,6 +1298,69 @@ sub securityLog
   });
 }
 
+# Security-monitor read side (#4272 phase 4). Both key off seclog_event via the
+# Everything::SecurityLog enum -- no node lookups -- so they survive node deletion.
+
+# Returns an arrayref of { event_id, key, name, group, count } for every event in
+# the registry, counts pulled from a single grouped query over seclog_event.
+sub seclog_event_counts
+{
+  my ($this) = @_;
+  my %count;
+  my $csr = $this->{db}->sqlSelectMany( 'seclog_event, COUNT(*) AS n', 'seclog',
+    '1=1', 'GROUP BY seclog_event' );
+  if ($csr) {
+    while ( my $r = $csr->fetchrow_hashref ) { $count{ $r->{seclog_event} } = $r->{n}; }
+    $csr->finish;
+  }
+  my @out;
+  for my $ev ( Everything::SecurityLog->all ) {
+    push @out, {
+      event_id => int( $ev->{id} ),
+      key      => $ev->{key},
+      name     => $ev->{desc},
+      group    => $ev->{group},
+      count    => int( $count{ $ev->{id} } || 0 ),
+    };
+  }
+  return \@out;
+}
+
+# Returns { entries => [...], total => N } for one event id, newest first.
+# Each entry's linked node is the seclog_subject (the affected node), not the
+# old category node.
+sub seclog_entries
+{
+  my ( $this, $event_id, $startat, $limit ) = @_;
+  my $db = $this->{db};
+  $event_id = int( $event_id || 0 );
+  $startat  = int( $startat  || 0 );
+  $limit    = int( $limit    || 50 );
+
+  my $total = $db->sqlSelect( 'COUNT(*)', 'seclog', "seclog_event = $event_id" ) || 0;
+  my $csr = $db->sqlSelectMany( '*', 'seclog',
+    "seclog_event = $event_id ORDER BY seclog_time DESC", "LIMIT $startat, $limit" );
+
+  my @entries;
+  if ($csr) {
+    while ( my $row = $csr->fetchrow_hashref ) {
+      my $subj = $row->{seclog_subject}
+        ? $db->getNodeById( $row->{seclog_subject}, 'light' ) : undef;
+      my $user = $db->getNodeById( $row->{seclog_user}, 'light' );
+      push @entries, {
+        subject_id    => $subj ? int( $subj->{node_id} ) : 0,
+        subject_title => $subj ? $subj->{title} : undef,
+        user_id       => $user ? int( $user->{node_id} ) : 0,
+        user_title    => $user ? $user->{title} : 'Unknown',
+        time          => $row->{seclog_time},
+        details       => $row->{seclog_details} || '',
+      };
+    }
+    $csr->finish;
+  }
+  return { entries => \@entries, total => int($total) };
+}
+
 sub addNodeNote
 {
   my ($this, $node, $notetext, $user) = @_;
