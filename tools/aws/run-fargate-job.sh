@@ -39,6 +39,7 @@ NET=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" --reg
   --query 'services[0].networkConfiguration.awsvpcConfiguration' --output json)
 SUBNETS=$(echo "$NET" | jq -r '.subnets | join(",")')
 SGS=$(echo "$NET" | jq -r '.securityGroups | join(",")')
+PUBIP=$(echo "$NET" | jq -r '.assignPublicIp // "DISABLED"')   # must match the service (ECR/S3 egress)
 CONTAINER=$(aws ecs describe-task-definition --task-definition "$TASKDEF" --region "$REGION" \
   --query 'taskDefinition.containerDefinitions[0].name' --output text)
 
@@ -46,15 +47,29 @@ ENV_JSON=$(echo "$ENV_JSON" | jq --arg k E2_JOB_S3_KEY --arg v "$KEY" '. + [{nam
 OVERRIDES=$(jq -nc --arg c "$CONTAINER" --argjson env "$ENV_JSON" \
   '{containerOverrides:[{name:$c, command:["perl","/var/everything/cron/run_s3_job.pl"], environment:$env}]}')
 
-echo ">> run-task ($CONTAINER; subnets=$SUBNETS sgs=$SGS)"
+echo ">> run-task ($CONTAINER; subnets=$SUBNETS sgs=$SGS pubip=$PUBIP)"
 TASK=$(aws ecs run-task --cluster "$CLUSTER" --task-definition "$TASKDEF" \
   --launch-type FARGATE --region "$REGION" --started-by "run-fargate-job:$(basename "$SCRIPT")" \
-  --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$SGS],assignPublicIp=DISABLED}" \
+  --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$SGS],assignPublicIp=$PUBIP}" \
   --overrides "$OVERRIDES" --query 'tasks[0].taskArn' --output text)
 echo ">> task: $TASK"
 
-echo ">> waiting for stop..."
-aws ecs wait tasks-stopped --cluster "$CLUSTER" --tasks "$TASK" --region "$REGION"
+TASKID=$(basename "$TASK")
+echo ">> polling until stopped (log stream: e2-fargate/$CONTAINER/$TASKID)"
+# `aws ecs wait tasks-stopped` caps at ~10min; a 2M-row repair runs longer. Poll instead.
+MAXWAIT="${E2_JOB_TIMEOUT:-5400}"   # seconds; default 90min
+ELAPSED=0
+while :; do
+  ST=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK" --region "$REGION" \
+    --query 'tasks[0].lastStatus' --output text 2>&1)
+  [ "$ST" = "STOPPED" ] && break
+  if [ "$ELAPSED" -ge "$MAXWAIT" ]; then
+    echo ">> still $ST after ${MAXWAIT}s -- not blocking further; poll the log stream above."
+    exit 0
+  fi
+  printf ">> [%4ds] %s\n" "$ELAPSED" "$ST"
+  sleep 30; ELAPSED=$((ELAPSED+30))
+done
 aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK" --region "$REGION" \
   --query 'tasks[0].containers[0].{exitCode:exitCode,reason:reason}' --output table
-echo ">> logs: e2app log group, stream for task $(basename "$TASK")"
+echo ">> logs: e2app log group, stream e2-fargate/$CONTAINER/$TASKID"
