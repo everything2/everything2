@@ -80,32 +80,32 @@ for my $e (@EVENTS) {
   $NODE_TO_ID{$_}  = $e->{id} for @{ $e->{nodes}  || [] };
 }
 
-sub all { @EVENTS }
+sub all { return @EVENTS }
 
-sub by_id  { my ($class, $id)  = @_; $BY_ID{ $id  // -1 } }
-sub by_key { my ($class, $key) = @_; $BY_KEY{ $key // '' } }
+sub by_id  { my ($class, $id)  = @_; return $BY_ID{ $id  // -1 } }
+sub by_key { my ($class, $key) = @_; return $BY_KEY{ $key // '' } }
 
-sub id_for_key { my ($class, $key) = @_; my $e = $BY_KEY{ $key // '' }; defined $e ? $e->{id} : undef }
+sub id_for_key { my ($class, $key) = @_; my $e = $BY_KEY{ $key // '' }; return defined $e ? $e->{id} : undef }
 
-sub description { my ($class, $id) = @_; my $e = $BY_ID{ $id // -1 }; defined $e ? $e->{desc}  : 'Unknown' }
-sub group       { my ($class, $id) = @_; my $e = $BY_ID{ $id // -1 }; defined $e ? $e->{group} : 'legacy'  }
+sub description { my ($class, $id) = @_; my $e = $BY_ID{ $id // -1 }; return defined $e ? $e->{desc}  : 'Unknown' }
+sub group       { my ($class, $id) = @_; my $e = $BY_ID{ $id // -1 }; return defined $e ? $e->{group} : 'legacy'  }
 
 # Map a node TITLE (env-stable) -> event id. Used by the transitional securityLog()
 # so it works in dev and prod regardless of differing node ids. Unknown -> LEGACY_UNKNOWN(0).
-sub event_for_title { my ($class, $title) = @_; my $id = $TITLE_TO_ID{ $title // '' }; defined $id ? $id : 0 }
+sub event_for_title { my ($class, $title) = @_; my $id = $TITLE_TO_ID{ $title // '' }; return defined $id ? $id : 0 }
 
 # Map a PROD seclog_node id -> event id. For the one-time prod backfill ONLY
 # (dev node ids differ). Unknown -> LEGACY_UNKNOWN(0).
-sub event_for_node { my ($class, $node_id) = @_; my $id = $NODE_TO_ID{ $node_id // -1 }; defined $id ? $id : 0 }
+sub event_for_node { my ($class, $node_id) = @_; my $id = $NODE_TO_ID{ $node_id // -1 }; return defined $id ? $id : 0 }
 
 # --- exported SECLOG_<KEY> constants for writers ---------------------------------
+# Built from the registry via constant->import (no symbol-table poking / no `no strict`).
 use Exporter 'import';
+use constant ();   ## no critic (ProhibitConstantPragma)
 our (@EXPORT_OK, %EXPORT_TAGS);
 for my $e (@EVENTS) {
-  my $id = $e->{id};
   my $name = "SECLOG_$e->{key}";
-  no strict 'refs';
-  *{"Everything::SecurityLog::$name"} = sub () { $id };
+  constant->import( $name => $e->{id} );
   push @EXPORT_OK, $name;
 }
 $EXPORT_TAGS{events} = [ @EXPORT_OK ];

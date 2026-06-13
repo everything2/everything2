@@ -4,6 +4,7 @@ use Moose;
 extends 'Everything::API';
 
 use Readonly;
+use Everything::SecurityLog qw(:events);
 Readonly my $WRITEUP_BONUS => 5;
 Readonly my $COOL_BONUS => 20;
 Readonly my $CUTOFF_NODE_ID => 1960662;  # October 29, 2008
@@ -106,9 +107,9 @@ sub recalculate {
     my $new_xp = $stats->{recalculatedXP};
     my $gp_bonus = $stats->{gpBonus};
 
-    # Perform recalculation
-    $APP->securityLog($user->NODEDATA, $target_user,
-        $user->title . " recalculated " . $target_user->{title} . "'s XP");
+    # Perform recalculation -- actor is the admin ($user); the recalc'd user is the subject.
+    $APP->securityLog(SECLOG_XP_RECALC, $user->NODEDATA,
+        $user->title . " recalculated " . $target_user->{title} . "'s XP", $target_user);
 
     # Adjust XP
     $APP->adjustExp($target_user, -$current_xp);

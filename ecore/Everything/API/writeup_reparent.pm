@@ -6,6 +6,7 @@ extends 'Everything::API';
 
 use Encode qw(decode_utf8);
 use JSON::MaybeXS;
+use Everything::SecurityLog qw(:events);
 
 =head1 Everything::API::writeup_reparent
 
@@ -261,7 +262,7 @@ sub reparentWriteup
         . $writeup->{title} . "'"
         . ( $old_e2node ? " (from e2node $old_e2node->{node_id})" : " (from orphaned state)" );
 
-    $APP->securityLog( $new_e2node, $USER, $log_message );
+    $APP->securityLog( SECLOG_WRITEUP_REPARENT, $USER, $log_message, $new_e2node );
 
     # Send notification to author
     if ( $author && $author->{node_id} != $USER->{node_id} ) {

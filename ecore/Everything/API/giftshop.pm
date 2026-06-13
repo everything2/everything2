@@ -3,6 +3,7 @@ package Everything::API::giftshop;
 use Moose;
 use POSIX qw(floor);
 use Time::Local qw(timelocal);
+use Everything::SecurityLog qw(:events);
 extends 'Everything::API';
 
 =head1 Everything::API::giftshop
@@ -203,8 +204,7 @@ sub give_star {
   my $article = ($color =~ /^\s*[aeiou]/i) ? 'an' : 'a';
 
   # Log the action
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  $APP->securityLog($giftshop_node, $USER, "[$USER->{title}] gave $article $color Star to [$recipient->{title}] at the [E2 Gift Shop].");
+  $APP->securityLog(SECLOG_STARS_AWARDED, $USER, "[$USER->{title}] gave $article $color Star to [$recipient->{title}] at the [E2 Gift Shop].", $recipient);
 
   # Send Cool Man Eddie message
   $self->_send_eddie_message(
@@ -262,8 +262,7 @@ sub buy_votes {
   $DB->updateNode($USER, -1);
 
   # Log the action
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  $APP->securityLog($giftshop_node, $USER, "$USER->{title} purchased $amount votes at the [E2 Gift Shop].");
+  $APP->securityLog(SECLOG_VOTES_PURCHASED, $USER, "$USER->{title} purchased $amount votes at the [E2 Gift Shop].");
 
   return [$self->HTTP_OK, {
     success => 1,
@@ -323,8 +322,7 @@ sub give_votes {
   $DB->updateNode($recipient, -1);
 
   # Log the action
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  $APP->securityLog($giftshop_node, $USER, "$USER->{title} gave $amount of their votes to $recipient->{title} at the [E2 Gift Shop].");
+  $APP->securityLog(SECLOG_VOTES_GIVEN, $USER, "$USER->{title} gave $amount of their votes to $recipient->{title} at the [E2 Gift Shop].", $recipient);
 
   # Send Cool Man Eddie message
   my $from = $anonymous ? "someone mysterious" : "[$USER->{title}]";
@@ -392,8 +390,7 @@ sub give_ching {
   $DB->updateNode($recipient, -1);
 
   # Log the action
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  $APP->securityLog($giftshop_node, $USER, "$USER->{title} gave a C! to $recipient->{title} at the [E2 Gift Shop].");
+  $APP->securityLog(SECLOG_CHING_GIVEN, $USER, "$USER->{title} gave a C! to $recipient->{title} at the [E2 Gift Shop].", $recipient);
 
   # Send Cool Man Eddie message
   my $from = $anonymous ? "someone mysterious" : "[$USER->{title}]";
@@ -462,8 +459,7 @@ sub buy_ching {
   $user->set_vars($VARS);
 
   # Log the action
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  $APP->securityLog($giftshop_node, $USER, "$USER->{title} purchased a C! at the [E2 Gift Shop] for $cost GP.");
+  $APP->securityLog(SECLOG_CHINGS_PURCHASED, $USER, "$USER->{title} purchased a C! at the [E2 Gift Shop] for $cost GP.");
 
   return [$self->HTTP_OK, {
     success => 1,
@@ -572,8 +568,7 @@ sub set_topic {
   }
 
   # Log the action
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  $APP->securityLog($giftshop_node, $USER, "$USER->{title} changed room topic to '$new_topic'");
+  $APP->securityLog(SECLOG_GIFTSHOP_TOPIC, $USER, "$USER->{title} changed room topic to '$new_topic'");
 
   return [$self->HTTP_OK, {
     success => 1,
@@ -684,8 +679,7 @@ sub give_egg {
   Everything::setVars($recipient, $recipient_vars);
 
   # Log the action
-  my $giftshop_node = $DB->getNode('E2 Gift Shop', 'superdoc');
-  $APP->securityLog($giftshop_node, $USER, "$USER->{title} gave an easter egg to $recipient->{title} at the [E2 Gift Shop].");
+  $APP->securityLog(SECLOG_EGGS_GIVEN, $USER, "$USER->{title} gave an easter egg to $recipient->{title} at the [E2 Gift Shop].", $recipient);
 
   # Send Cool Man Eddie message
   my $from = $anonymous ? "someone mysterious" : "[$USER->{title}]";
