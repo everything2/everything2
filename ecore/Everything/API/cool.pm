@@ -298,25 +298,8 @@ sub toggle_bookmark
       food => 0
     });
 
-    # Send Cool Man Eddie message for writeups. Two opt-out gates, same
-    # structure as award_cool above (#4142):
-    #   1. no_bookmarkinformer user-var on the author (bookmark-specific
-    #      opt-out, stays caller-side because it's bookmark-only logic)
-    #   2. message_forward_to / messageignore — handled by sendPrivateMessage
-    if ($node->type->title eq 'writeup') {
-      my $eddie = $DB->getNode('Cool Man Eddie', 'user');
-      my $author = $APP->node_by_id($node->author_user);
-      my $author_vars = $author ? $author->VARS : {};
-
-      # Skip if: user is bookmarking own writeup, author opted out, or Eddie missing.
-      if ($eddie && $author && $user_id != $node->author_user && !$author_vars->{no_bookmarkinformer}) {
-        $APP->sendPrivateMessage(
-          $eddie,
-          $node->author_user,
-          'Yo, your writeup [' . $node->title . '] was bookmarked. Dig it, baby.',
-        );
-      }
-    }
+    # Cool Man Eddie bookmark notification, at parity with the legacy bookmark opcode.
+    $self->_notify_bookmark($node, $user);
 
     return [$self->HTTP_OK, {
       success => 1,
@@ -325,6 +308,64 @@ sub toggle_bookmark
       bookmarked => 1
     }];
   }
+}
+
+# Cool Man Eddie bookmark notification, ported from the legacy bookmark opcode (#4292):
+#   * writeup -> notify its single author
+#   * e2node  -> notify EVERY writeup author in the group ("the entire node ...")
+# Opt-outs: the bookmarker's no_bookmarkinformer suppresses all; each recipient's
+# no_bookmarknotification (and self-bookmarking) is skipped; recipients are de-duped.
+# The structured 'bookmark' notification is intentionally omitted in the API layer --
+# addNotification requires htmlcode delegation that isn't available here, the same
+# decision as Application.pm's nodenote path (Application.pm:1417).
+sub _notify_bookmark
+{
+  my ($self, $node, $user) = @_;
+  my $APP = $self->APP;
+  my $DB  = $self->DB;
+
+  return if $user->VARS->{no_bookmarkinformer};          # bookmarker opted out of informing
+
+  my $type = $node->type->title;
+  return unless $type eq 'writeup' || $type eq 'e2node'; # only these get a CME message
+
+  my $eddie = $DB->getNode('Cool Man Eddie', 'user');
+  return unless $eddie;
+
+  my $NODE    = $node->NODEDATA;
+  my $title   = $node->title;
+  my $user_id = $user->node_id;
+  my @group   = @{ $NODE->{group} || [] };
+
+  my (@recipients, %seen, $eddiemessage);
+
+  if (@group) {
+    # e2node with writeups: every author who hasn't opted out (and isn't the bookmarker)
+    foreach my $wu_id (@group) {
+      my $wu = $APP->node_by_id($wu_id) or next;
+      my $author_id = $wu->author_user or next;
+      next if $author_id == $user_id;
+      next if $seen{$author_id}++;
+      my $author = $APP->node_by_id($author_id) or next;
+      next if $author->VARS->{no_bookmarknotification};
+      push @recipients, $author_id;
+    }
+    return unless @recipients;
+    $eddiemessage = "the entire node [$title], in which you have a writeup,";
+  } else {
+    # writeup, or a group-less e2node nodeshell: the single author
+    my $author_id = $NODE->{createdby_user} || $NODE->{author_user};
+    return unless $author_id;
+    return if $author_id == $user_id;
+    my $author = $APP->node_by_id($author_id) or return;
+    return if $author->VARS->{no_bookmarknotification};
+    push @recipients, $author_id;
+    $eddiemessage = $type eq 'writeup' ? "your writeup [$title]" : "your nodeshell [$title]";
+  }
+
+  $APP->sendPrivateMessage($eddie, \@recipients,
+    "Yo, $eddiemessage was bookmarked. Dig it, baby.");
+  return;
 }
 
 sub edcool_status

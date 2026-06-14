@@ -220,16 +220,6 @@
     <paramvalue>1</paramvalue>
   </nodeparam>
   <nodeparam>
-    <node_id>855769</node_id>
-    <paramkey>prevent_nuke</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>884776</node_id>
-    <paramkey>prevent_nuke</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
     <node_id>891793</node_id>
     <paramkey>disable_cool</paramkey>
     <paramvalue>1</paramvalue>
@@ -251,11 +241,6 @@
   </nodeparam>
   <nodeparam>
     <node_id>952215</node_id>
-    <paramkey>prevent_nuke</paramkey>
-    <paramvalue>1</paramvalue>
-  </nodeparam>
-  <nodeparam>
-    <node_id>993891</node_id>
     <paramkey>prevent_nuke</paramkey>
     <paramvalue>1</paramvalue>
   </nodeparam>
