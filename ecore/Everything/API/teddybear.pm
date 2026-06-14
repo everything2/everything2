@@ -1,4 +1,5 @@
 package Everything::API::teddybear;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 extends 'Everything::API';
@@ -123,8 +124,7 @@ sub hug
         $DB->updateNode($target_user, -1);
 
         # Security log
-        $APP->securityLog(
-            $DB->getNode('Superbless', 'superdoc'),
+        $APP->securityLog(SECLOG_SUPERBLESS,
             $USER,
             "$USER->{title} hugged $target_user->{title} using the [Giant Teddy Bear suit] for $gp_amount GP."
         );

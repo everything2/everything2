@@ -1,4 +1,5 @@
 package Everything::API::drafts;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 use namespace::autoclean;
@@ -1586,8 +1587,7 @@ sub republish_draft {
 
     # Security log
     my $author = $DB->getNodeById($draft->{author_user});
-    $APP->securityLog(
-        $DB->getNode('remove', 'opcode') || $draft,
+    $APP->securityLog(SECLOG_NODE_REMOVE,
         $user->NODEDATA,
         $user->title . " republished \"$writeup_title\" by " . ($author ? $author->{title} : 'unknown')
     );

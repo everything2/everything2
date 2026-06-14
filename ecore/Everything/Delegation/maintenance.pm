@@ -1,4 +1,5 @@
 package Everything::Delegation::maintenance;
+use Everything::SecurityLog qw(:events);
 
 # We have to assume that this module is subservient to Everything::HTML
 #  and that the symbols are always available
@@ -694,7 +695,7 @@ sub user_delete
   my ($DELETED_USER) = @_;
   $DB->getRef($DELETED_USER);
 
-  $APP->securityLog(getNode('The Old Hooked Pole', 'restricted_superdoc'), $USER, "Deleted user $$DELETED_USER{title} (node_id $$DELETED_USER{node_id})");
+  $APP->securityLog(SECLOG_USER_DELETION, $USER, "Deleted user $$DELETED_USER{title} (node_id $$DELETED_USER{node_id})");
 
   # Remove user from room lists so [Other Users[nodelet]] doesn't bug out
   $DB->sqlDelete('room', "member_user = $$DELETED_USER{node_id}");

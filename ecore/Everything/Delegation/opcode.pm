@@ -1,4 +1,5 @@
 package Everything::Delegation::opcode;
+use Everything::SecurityLog qw(:events);
 
 # We have to assume that this module is subservient to Everything::HTML
 #  and that the symbols are always available
@@ -342,7 +343,7 @@ sub message
     my $msgOp = getNode('E2 Gift Shop', 'superdoc');
     my $room = getNodeById($$USER{in_room});
     my $roomName = $$USER{in_room} == 0 ? "outside" : ($room ? $$room{title} : "missing room ($$USER{in_room})");
-    $APP->securityLog(getNode('E2 Gift Shop', 'superdoc'), $USER, "\[$$USER{title}\[user\]\] changed $roomName topic to '$message'");
+    $APP->securityLog(SECLOG_GIFTSHOP_TOPIC, $USER, "\[$$USER{title}\[user\]\] changed $roomName topic to '$message'");
 
   } elsif( ($isRoot || $isChanop) and $message=~ /^\/sayas\s+(\S*)\s+(.*)$/si) {
 
@@ -682,12 +683,12 @@ sub insure
     $$insnode{publication_status} = 0;
     htmlcode('addNodenote', $insnode, "Uninsured by [$$USER{title}\[user]]");
     $DB->sqlDelete("publish", "publish_id = $$insnode{node_id}");
-    $APP->securityLog(getNode("insure","opcode"), $USER, "$$USER{title} uninsured \"$$insnode{title}\" by $$AUTHOR{title}");
+    $APP->securityLog(SECLOG_WRITEUP_INSURANCE, $USER, "$$USER{title} uninsured \"$$insnode{title}\" by $$AUTHOR{title}");
   } else {
     $$insnode{publication_status} = $insured;
     htmlcode('addNodenote', $insnode, "Insured by [$$USER{title}\[user]]");
     $DB->sqlInsert("publish",{publish_id => $$insnode{node_id}, publisher => $$USER{user_id}});
-    $APP->securityLog(getNode("insure","opcode"), $USER, "$$USER{title} insured \"$$insnode{title}\" by $$AUTHOR{title}");
+    $APP->securityLog(SECLOG_WRITEUP_INSURANCE, $USER, "$$USER{title} insured \"$$insnode{title}\" by $$AUTHOR{title}");
   }
 
   $DB->updateNode($insnode, -1);
@@ -732,7 +733,7 @@ sub unlockaccount
   $$uid{acctlock} = 0;
   updateNode($uid, -1);
 
-  $APP->securityLog(getNode("unlockaccount","opcode"), $USER, "$$uid{title}'s account was unlocked by $$USER{title}");
+  $APP->securityLog(SECLOG_ACCOUNT_UNLOCK, $USER, "$$uid{title}'s account was unlocked by $$USER{title}");
   return;
 }
 
@@ -850,7 +851,7 @@ sub flushcbox
     $currentRoomName = "in room '$$currentRoom{title}'";
   }
 
-  $APP->securityLog(getNode('flushcbox', 'opcode'), $USER, "Chat $currentRoomName flushed.");
+  $APP->securityLog(SECLOG_CATBOX_FLUSH, $USER, "Chat $currentRoomName flushed.");
   $DB->sqlDelete("message", "for_user = 0 AND room = $currentRoomId");
   return 1;
 }

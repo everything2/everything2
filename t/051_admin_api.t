@@ -11,6 +11,7 @@ use lib '/var/everything/ecore';
 use lib "$FindBin::Bin/lib";
 
 use Everything;
+use Everything::SecurityLog qw(:events);
 use Everything::API::admin;
 use MockUser;
 use MockRequest;
@@ -362,7 +363,7 @@ SKIP: {
   {
     # Check for security log from earlier tests
     my $seclog = $DB->sqlSelect('COUNT(*)', 'seclog',
-      "seclog_node=(SELECT node_id FROM node WHERE title='insure' AND type_nodetype=(SELECT node_id FROM node WHERE title='opcode'))");
+      "seclog_event = @{[SECLOG_WRITEUP_INSURANCE]}");
     ok($seclog > 0, 'Insure creates security log entry');
   }
 

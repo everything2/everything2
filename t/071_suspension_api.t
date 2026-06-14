@@ -11,6 +11,7 @@ use lib "$FindBin::Bin/lib";
 use Test::More;
 use JSON;
 use Everything;
+use Everything::SecurityLog qw(:events);
 use Everything::Application;
 use Everything::API::suspension;
 use MockRequest;
@@ -264,7 +265,7 @@ SKIP: {
     SKIP: {
         skip 'Suspension Info superdoc not found', 1 unless $suspension_node;
         my $seclog = $DB->sqlSelectHashref('*', 'seclog',
-            "seclog_node = $suspension_node->{node_id} AND seclog_user = $admin_user->{node_id}",
+            "seclog_event = @{[SECLOG_SUSPENSION]} AND seclog_user = $admin_user->{node_id}",
             'ORDER BY seclog_id DESC LIMIT 1'
         );
         ok($seclog && $seclog->{seclog_details} =~ /suspended/, 'Security log entry created for suspension');
@@ -293,7 +294,7 @@ SKIP: {
     SKIP: {
         skip 'Suspension Info superdoc not found for unsuspend check', 1 unless $suspension_node;
         my $seclog_unsuspend = $DB->sqlSelectHashref('*', 'seclog',
-            "seclog_node = $suspension_node->{node_id} AND seclog_user = $admin_user->{node_id}",
+            "seclog_event = @{[SECLOG_SUSPENSION]} AND seclog_user = $admin_user->{node_id}",
             'ORDER BY seclog_id DESC LIMIT 1'
         );
         ok($seclog_unsuspend && $seclog_unsuspend->{seclog_details} =~ /unsuspended/, 'Security log entry created for unsuspension');

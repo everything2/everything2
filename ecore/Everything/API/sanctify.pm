@@ -1,4 +1,5 @@
 package Everything::API::sanctify;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 extends 'Everything::API';
@@ -153,8 +154,7 @@ sub give {
   $USER = $DB->getNode($USER->{node_id});
 
   # 3. Log the action
-  my $sanctify_node = $DB->getNode('Sanctify user', 'superdoc');
-  $APP->securityLog($sanctify_node, $USER, "$USER->{title} sanctified $recipient->{title} with $sanctify_amount GP.");
+  $APP->securityLog(SECLOG_SANCTIFY, $USER, "$USER->{title} sanctified $recipient->{title} with $sanctify_amount GP.");
 
   # 4. Send Cool Man Eddie message
   my $from = $anonymous ? '!' : " by [$USER->{title}]!";

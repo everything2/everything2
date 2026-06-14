@@ -1,4 +1,5 @@
 package Everything::API::signup;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 use utf8;
@@ -84,10 +85,8 @@ sub route {
 
 sub security_log {
   my ($self, $message) = @_;
-  my $signup_page = $self->APP->node_by_name('Sign Up', 'superdoc');
   my @addrs = $self->APP->getIp();
-  return $self->APP->securityLog(
-    $signup_page->NODEDATA,
+  return $self->APP->securityLog(SECLOG_USER_SIGNUP,
     $self->seclog_user->NODEDATA,
     "$message; IP: " . join('-', @addrs)
   );

@@ -1,4 +1,5 @@
 package Everything::API::userimages;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 extends 'Everything::API';
@@ -33,8 +34,7 @@ sub approve {
         int($user_id)
     );
 
-    $self->APP->securityLog(
-        $user->NODEDATA,
+    $self->APP->securityLog(SECLOG_USER_IMAGE_MODERATION,
         $self->APP->node_by_id($user_id)->NODEDATA,
         'Approved user image'
     );
@@ -77,8 +77,7 @@ sub remove_image {
         int($user_id)
     );
 
-    $self->APP->securityLog(
-        $user->NODEDATA,
+    $self->APP->securityLog(SECLOG_USER_IMAGE_MODERATION,
         $target_user->NODEDATA,
         'Removed user image'
     );

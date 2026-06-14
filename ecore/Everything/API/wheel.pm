@@ -1,4 +1,5 @@
 package Everything::API::wheel;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 extends 'Everything::API';
@@ -207,8 +208,7 @@ sub spin {
   $user->set_vars($VARS);
 
   # Log the spin (for security/audit trail)
-  $APP->securityLog(
-    $DB->getNode('Wheel of Surprise', 'superdoc'),
+  $APP->securityLog(SECLOG_WHEEL_OF_SURPRISE,
     $USER,
     "[$USER->{title}] spun the [Wheel of Surprise]."
   );

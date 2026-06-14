@@ -1,4 +1,5 @@
 package Everything::API::resurrect;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 use namespace::autoclean;
@@ -87,9 +88,7 @@ sub resurrect_node {
     }
 
     # Log the resurrection (linked to Dr. Nate's Secret Lab for security monitor)
-    my $lab_node = $DB->getNode("Dr. Nate's Secret Lab", 'restricted_superdoc');
-    $APP->securityLog(
-        $lab_node->{node_id},
+    $APP->securityLog(SECLOG_RESURRECTION,
         $user->NODEDATA,
         "$resurrected_node->{title} (id: $resurrected_node->{node_id}) was raised from its $burial_ground"
     );

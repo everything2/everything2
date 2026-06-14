@@ -1,4 +1,5 @@
 package Everything::Delegation::htmlcode;
+use Everything::SecurityLog qw(:events);
 
 # We have to assume that this module is subservient to Everything::HTML
 #  and that the symbols are always available
@@ -3418,7 +3419,7 @@ sub blacklistIP
 	return "Error adding $ipToAdd to blacklist" unless
 		$DB -> sqlInsert('ipblacklist', $data, $update);
 
-	$APP->securityLog(getNode('IP Blacklist', 'restricted_superdoc'), $USER, "$$USER{title} $result: \"$blockReason.\"");
+	$APP->securityLog(SECLOG_IP_BLACKLIST, $USER, "$$USER{title} $result: \"$blockReason.\"");
 	$result =~ s/^(\w)/\u$1/;
 	return $result;
 }
@@ -3509,7 +3510,7 @@ sub lock_user_account
   return unless($$uid{type_nodetype} == getId(getType('user')));
   $$uid{acctlock} = $$USER{user_id};
 
-  $APP->securityLog(getNode("lockaccount","opcode"), $USER, "$$uid{title}'s account was locked by $$USER{title}");
+  $APP->securityLog(SECLOG_ACCOUNT_LOCK, $USER, "$$uid{title}'s account was locked by $$USER{title}");
 
   # Delete all public messages from locked user
   $DB->sqlDelete('message', "for_user = 0 AND author_user = $$uid{user_id}");
@@ -3831,7 +3832,7 @@ sub unpublishwriteup
   my $author = getNodeById($$wu{author_user});
   my $mass = getNode('massacre', 'opcode');
 
-  $APP->securityLog(getNode('massacre', 'opcode'), $USER, "[$title] by [$$author{title}] was removed$reason");
+  $APP->securityLog(SECLOG_MASSACRE, $USER, "[$title] by [$$author{title}] was removed$reason");
 
   unless($noexp)
   {
