@@ -272,7 +272,6 @@ const Zenmastery = () => {
                   <li><a href='/index.pl'>25</a> | <a href='/index.pl'>Everything New Nodes</a></li>
                   <li><a href='/index.pl'>E2 Nuke Request</a></li>
                   <li><a href='/index.pl'>Nodeshells</a></li>
-                  <li><a href='/index.pl'>Node Row</a></li>
                   <li><a href='/index.pl'>Recent Node Notes</a></li>
                   <li><a href='/index.pl'>Your insured writeups</a></li>
                   <li><a href='/index.pl'>Make Unvotable</a></li>

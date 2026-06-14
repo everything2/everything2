@@ -52,8 +52,6 @@ my $REGISTRY = [
       type => 'rate', interval => 86400, timeout => 900,  local => 1 },
     { name => 'clean-old-rooms',   argv => _cron('cron_clean_old_rooms.pl'),
       type => 'rate', interval => 86400, timeout => 300,  local => 1 },
-    { name => 'writeup-reaper',    argv => _cron('cron_writeup_reaper.pl'),
-      type => 'rate', interval => 86400, timeout => 300,  local => 1 },
 
     # --- wall-clock cron rules ---
     { name => 'chatterbox-cleanup', argv => _cron('cron_clean_cbox.pl'),

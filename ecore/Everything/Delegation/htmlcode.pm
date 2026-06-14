@@ -2763,9 +2763,6 @@ sub formxml_e2node
   return $str;
 }
 
-#
-# Seriously get rid of the node row stuff
-#
 sub xmlwriteup
 {
   my $DB = shift;
@@ -2783,11 +2780,8 @@ sub xmlwriteup
 
   my $str = "";
 
-  my $nr = getId(getNode("node row", "oppressor_superdoc"));
-  my $marked = (($DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$wu{node_id}"))?(1):(0));
-
   $str .= "<writeup node_id=\"$$wu{node_id}\" createtime=\"$$wu{publishtime}\" ";
-  $str .= "type_nodetype=\"$$wu{type_nodetype}\" marked=\"$marked\">\n";
+  $str .= "type_nodetype=\"$$wu{type_nodetype}\">\n";
   my $ntype = getNodeById($$wu{wrtype_writeuptype});
 
   my $parent = getNodeById($$wu{parent_e2node});

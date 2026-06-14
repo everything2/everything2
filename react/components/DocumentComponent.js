@@ -357,11 +357,6 @@ const COMPONENT_MAP = {
   noding_speedometer: lazy(() => import('./Documents/NodingSpeedometer')),
   notelet_editor: lazy(() => import('./Documents/NoteletEditor')),
 
-  // Deprecated editorial tools (preserved for site integrity)
-  the_killing_floor: lazy(() => import('./Documents/TheKillingFloor')),
-  the_killing_floor_ii: lazy(() => import('./Documents/TheKillingFloor')),
-  node_row: lazy(() => import('./Documents/NodeRow')),
-
   // EDB/borg tools
   feed_edb: lazy(() => import('./Documents/FeedEdb')),
   nate_s_secret_unborg_doc: lazy(() => import('./Documents/NatesSecretUnborgDoc')),

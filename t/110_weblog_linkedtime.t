@@ -12,8 +12,8 @@ use warnings;
 # Guards the MySQL 8.4 zero-date fix on weblog.linkedtime (#4079):
 #   linkedtime datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 #
-# weblog backs the curated-feed mechanism (usergroup picks, news archives,
-# node_row). Both insert paths set linkedtime explicitly — API/weblog.pm
+# weblog backs the curated-feed mechanism (usergroup picks, news archives).
+# Both insert paths set linkedtime explicitly — API/weblog.pm
 # (-linkedtime => 'NOW()') and Delegation/opcode.pm (-linkedtime => 'now()') —
 # so the default is never exercised and there are 0 zero-date rows. This is the
 # clean event-timestamp case (like vote.votetime / pollvote.votetime): the
