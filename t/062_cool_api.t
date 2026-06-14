@@ -34,6 +34,7 @@ my $admin_user = $DB->getNode('root', 'user');
       is_editor_flag => $args{is_editor_flag} // 0,
       is_guest_flag => $args{is_guest_flag} // 0,
       _nodedata => $args{nodedata} // {},
+      _vars => $args{vars} // {},
       _coolsleft => $args{coolsleft} // 10,
       _votesleft => $args{votesleft} // 10,
     }, $class;
@@ -44,6 +45,7 @@ my $admin_user = $DB->getNode('root', 'user');
   sub node_id { shift->{node_id} }
   sub title { shift->{title} }
   sub NODEDATA { shift->{_nodedata} }
+  sub VARS { return shift->{_vars}; }
   sub coolsleft { return shift->{_coolsleft}; }
   sub votesleft { return shift->{_votesleft}; }
 }
