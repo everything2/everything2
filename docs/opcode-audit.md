@@ -107,7 +107,31 @@ Deferred (undispatched but parity NOT clean — see #4299): `message` (chatterbo
 ### PENDING prod cleanup (after deploy)
 Nuke the 2 orphaned `opcode` nodes: **648516** (massacre), **1887815** (leadusergroup).
 
-## Remaining 24 — first-pass classification (continue here)
+## Removed — round 6 (#4303): bucket-2 node-tools/admin (12)
+
+All undispatched, 0 `getNode(...,'opcode')` callers, each 1:1-superseded by a named React-wired API
+(the node-tools/admin actions migrated to `API::e2node` / `API::admin` via E2NodeToolsModal /
+UserToolsModal, plus `API::preferences` / `API::user`).
+
+| opcode | node | superseded by |
+|---|---|---|
+| `lockaccount` 1203049 / `unlockaccount` 1203054 / `insure` 1179550 / `borg` 1307637 | | `API::admin` (lock_user/unlock_user/insure_writeup/user-borg) |
+| `firmlink` 1150387 / `repair_e2node` 1298189 / `repair_e2node_noreorder` 1466148 / `orderlock` 1466528 / `softlock` 1876426 / `linktrim` 977694 | | `API::e2node` (create_firmlink/repair_node/toggle_orderlock/node_lock/remove_firmlink+manage_softlinks) |
+| `changewucount` 1217094 | | `API::preferences` (nw_nojunk + nodelet settings) |
+| `cure_infection` 2034111 | | `API::user` (POST /api/user/cure). Infection feature stays live; only the dead opcode removed. |
+
+**Deferred (need a decision/API first):** `lockroom` (legacy room `criteria` toggle vs the current
+`roomlocked` path), `flushcbox` (chanop chatterbox flush — **no API equivalent**).
+
+### PENDING prod node nukes (after deploy)
+1203049, 1203054, 1179550, 1307637, 1150387, 1298189, 1466148, 1466528, 1876426, 977694, 1217094, 2034111.
+
+## Remaining 11 — the harder tail (continue here)
+
+The clean kills are nearly exhausted. What's left: bucket-3 gating migrations (`remove`, `removeweblog`,
+`changeusergroup` — need new APIs), the deferred-needs-validation set (`message`, `message_outbox`,
+`approve_draft`, `publishdraft`, `publishdrafttodocument`, `social`), and the two deferred this round
+(`lockroom`, `flushcbox`).
 
 - **Superseded by an existing API + 0 `op=` refs → remove candidates** (confirm the API fully
   replaces each, then delete): `message`/`message_outbox` (→messages),

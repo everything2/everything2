@@ -556,274 +556,27 @@ sub lockroom
 # NOTE: bucketop and addbucket opcodes removed 2025-11-30
 # The nodebucket VARS key is deprecated - see docs/user-vars-reference.md
 
-sub linktrim
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
+# linktrim opcode REMOVED - superseded by Everything::API::e2node (remove_firmlink/manage_softlinks, E2NodeToolsModal). #4303. Jun 2026.
 
-  return unless htmlcode('verifyRequest', 'linktrim');
+# firmlink opcode REMOVED - superseded by Everything::API::e2node (create_firmlink, E2NodeToolsModal). #4303. Jun 2026.
 
-  my $from_node = int $query->param('cutlinkfrom');
-  my $trimlinktype = int $query->param('linktype');
-  my $linktype = getNodeById($trimlinktype);
-
-  return unless $from_node;
-
-  my $linkName = undef; $linkName = $$linktype{title} if $linktype && $$linktype{type}{title} eq 'linktype';
-
-  if ($linkName eq '')
-  {
-    $linkName = 'softlink';
-    $trimlinktype = 0;
-  }
-
-  my %trimmable = (
-    'softlink' => 1,
-    'firmlink' => 1,
-    'favorite' => 1,
-  );
-
-  return unless $trimmable{$linkName};
-
-  if ($linkName eq 'softlink' || $linkName eq 'firmlink')
-  {
-    my $recurseGroups = 1;
-    return unless $APP->isEditor($USER);
-  } elsif ($linkName eq 'favorite') {
-    return unless $from_node == $$USER{node_id};
-  }
-
-  foreach ($query->param) {
-    next unless /^cutlinkto_(\d+)$/;
-    $DB->sqlDelete('links', "from_node=$from_node and to_node=$1 and linktype=".$trimlinktype);
-    $DB->sqlDelete('firmlink_note', "from_node=$from_node and to_node=$1") if $$linktype{title} eq 'firmlink';
-  }
-
-  return;
-}
-
-sub firmlink
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-
-  return unless($query->param('firmlink_to_node'));
-  return unless htmlcode('verifyRequestHash', 'firmlink');
-
-  my ($firmtarget, $firmtargetname) = (undef, undef);
-  $firmtargetname = $query->param('firmlink_to_node');
-
-  foreach(qw/superdoc document superdocnolinks e2node user/)
-  {
-    $firmtarget = getNode($firmtargetname, $_);
-    last if $firmtarget;
-  }
-  my $firmfrom = getNodeById($query->param('firmlink_from_id'));
-  my $firmtypelink = getNode("firmlink","linktype");
-  my $firmtype = undef; $firmtype = $$firmtypelink{node_id} if $firmtypelink;
-  my $firmlink_note_text = $query->param('firmlink_note_text');
-
-  return unless $firmtarget && $firmfrom && $firmtype;
-  return if($$firmtarget{node_id} == $$firmfrom{node_id});
-
-  $DB->sqlInsert("links", 
-  {
-    "linktype" => $firmtype, 
-    "to_node" => $$firmtarget{node_id},
-    "from_node" => $$firmfrom{node_id}
-  });
-
-  $DB->sqlInsert("firmlink_note",
-  {
-    "to_node" => $$firmtarget{node_id},
-    "from_node" => $$firmfrom{node_id},
-    "firmlink_note_text" => $firmlink_note_text
-  }) if $firmlink_note_text ne "";
-
-  return 1;
-
-}
-
-sub insure
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-
-  return unless($query->param('ins_id'));
-  my $insnode = getNodeById($query->param('ins_id'));
-  return unless $insnode and $$insnode{type}{title} eq 'writeup';
-
-  my $insure = getNode("insure","opcode");
-  my $AUTHOR = getNode($$insnode{author_user});
-  my $insured = getId(getNode('insured', 'publication_status'));
-
-
-  if ($$insnode{publication_status} == $insured)
-  {
-    $$insnode{publication_status} = 0;
-    htmlcode('addNodenote', $insnode, "Uninsured by [$$USER{title}\[user]]");
-    $DB->sqlDelete("publish", "publish_id = $$insnode{node_id}");
-    $APP->securityLog(SECLOG_WRITEUP_INSURANCE, $USER, "$$USER{title} uninsured \"$$insnode{title}\" by $$AUTHOR{title}");
-  } else {
-    $$insnode{publication_status} = $insured;
-    htmlcode('addNodenote', $insnode, "Insured by [$$USER{title}\[user]]");
-    $DB->sqlInsert("publish",{publish_id => $$insnode{node_id}, publisher => $$USER{user_id}});
-    $APP->securityLog(SECLOG_WRITEUP_INSURANCE, $USER, "$$USER{title} insured \"$$insnode{title}\" by $$AUTHOR{title}");
-  }
-
-  $DB->updateNode($insnode, -1);
-  return;
-}
+# insure opcode REMOVED - superseded by Everything::API::admin (insure_writeup, UserToolsModal/AdminModal). #4303. Jun 2026.
 
 # nodenote opcode REMOVED - superseded by Everything::API::nodenotes (React-wired); op= dispatch is dead. Jun 2026.
 
-sub lockaccount
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
+# lockaccount opcode REMOVED - superseded by Everything::API::admin (lock_user, UserToolsModal). #4303. Jun 2026.
 
-  return unless(isGod($USER));
-
-  my $uid = $query->param('lock_id');
-  return unless $uid;
-  htmlcode('lock user account', $uid);
-  return;
-}
-
-sub unlockaccount
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless(isGod($USER));
-
-  my $uid = $query->param('lock_id');
-  return unless $uid;
-  $uid = getNodeById($uid);
-
-  return unless($$uid{type_nodetype} == getId(getType('user')));
-  $$uid{acctlock} = 0;
-  updateNode($uid, -1);
-
-  $APP->securityLog(SECLOG_ACCOUNT_UNLOCK, $USER, "$$uid{title}'s account was unlocked by $$USER{title}");
-  return;
-}
+# unlockaccount opcode REMOVED - superseded by Everything::API::admin (unlock_user, UserToolsModal). #4303. Jun 2026.
 
 # hidewriteup opcode REMOVED - superseded by Everything::API::hidewriteups (React-wired); op= dispatch is dead. Jun 2026.
 
 # unhidewriteup opcode REMOVED - superseded by Everything::API::hidewriteups (React-wired); op= dispatch is dead. Jun 2026.
 
-sub changewucount
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
+# changewucount opcode REMOVED - superseded by Everything::API::preferences (nw_nojunk + nodelet settings, Settings.js). #4303. Jun 2026.
 
-  return '' if ( $APP->isGuest($USER) );
+# repair_e2node opcode REMOVED - superseded by Everything::API::e2node (repair_node, E2NodeToolsModal). #4303. Jun 2026.
 
-  if($query->param('amount'))
-  {
-    my $amount = $query->param('amount');
-    if($amount =~ /^(\d+)$/)
-    {
-      $amount=$1;
-      $amount = 50 if $amount > 50 ;
-      $$VARS{num_newwus}=$amount;
-    }
-  }
-
-  if ( $query->param( 'nw_nojunk' ) )
-  {
-    $$VARS{ nw_nojunk } = 1 ;
-  } else {
-    delete $$VARS{ nw_nojunk } ;
-  }
-
-  return 1;
-}
-
-sub repair_e2node
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-
-  my $repair_id = $query->param('repair_id');
-  my $no_order = $query->param('noorder');
-  return unless $repair_id;
-
-  my $result = htmlcode('repair e2node', $repair_id, $no_order);
-  return 1 if $result;
-  return;
-}
-
-sub borg
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  # borgs the current node 1 time (iff current node is a user and current user is an admin)
-  # N-Wing, Friday, May 24, 2002
-
-  my $userid = $$USER{node_id};
-
-  return unless $APP->isAdmin($USER);
-  return unless $query->param('borgvictim');
-  my $victimID = $query->param('borgvictim') || 0;
-  return unless $victimID =~ /^(\d+)$/;
-  my $victim = getNodeById($victimID=$1) || undef;
-  return unless defined $victim;
-  return unless $$victim{type}{title} eq 'user';
-
-  my $borgSelf = $victimID==$userid;
-
-  # following ripped from [message] (opcode)
-  my $V = $borgSelf ? $VARS : getVars($victim);
-  ++$$V{numborged};
-  $$V{borged}=time;
-  setVars($victim,$V) unless $borgSelf;
-  $query->param('borgcount'.$victimID,$$V{numborged});
-
-  $DB->sqlUpdate('room',{borgd=>'1'},'member_user='.$victimID);
-
-  return;
-}
+# borg opcode REMOVED - superseded by Everything::API::admin user borg (UserToolsModal). #4303. Jun 2026.
 
 sub flushcbox
 {
@@ -852,84 +605,13 @@ sub flushcbox
   return 1;
 }
 
-sub repair_e2node_noreorder
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
+# repair_e2node_noreorder opcode REMOVED - superseded by Everything::API::e2node (repair_node no-reorder). #4303. Jun 2026.
 
-  return unless $APP->isEditor($USER);
-
-  my $repair_id = $query->param('repair_id');
-  my $no_order = 1;
-  return unless $repair_id;
-
-  my $result = htmlcode('repair e2node', $repair_id, $no_order);
-  return 1 if $result;
-  return;
-
-}
-
-sub orderlock
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-
-  my $N = getNodeById($query->param('node_id'));
-
-  return unless $N;
-  return unless $$N{type}{title} eq "e2node";
-
-  if($query->param("unlock"))
-  {
-    $N->{orderlock_user} = 0;
-  }else{
-    $N->{orderlock_user} = $USER->{node_id};
-  }
-
-  updateNode($N, -1);
-  return;
-}
+# orderlock opcode REMOVED - superseded by Everything::API::e2node (toggle_orderlock, E2NodeToolsModal). #4303. Jun 2026.
 
 # pollvote opcode REMOVED - superseded by Everything::API::poll submit_vote (CurrentUserPoll, React-wired); op= dispatch is dead. Jun 2026.
 
-sub softlock
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $query->param("lockID");
-  return unless $APP->isEditor($USER);
-
-  my $lockNode = getNodeById($query->param("lockID"));
-  return unless $lockNode;
-
-  my $nodeReason = $query->param('nodelock_reason') || '';
-
-  my $isLocked = $DB->sqlSelect("nodelock_node", "nodelock", "nodelock_node=$$lockNode{node_id} limit 1") || 0;
-
-  if ($isLocked)
-  {
-    $DB->sqlDelete("nodelock","nodelock_node=$$lockNode{node_id}");
-  } else {
-    $DB->sqlInsert("nodelock", {nodelock_reason => $nodeReason, nodelock_user => $$USER{user_id}, nodelock_node => $$lockNode{node_id}});
-  }
-
-  return;
-}
+# softlock opcode REMOVED - superseded by Everything::API::e2node (node_lock). #4303. Jun 2026.
 
 # weblogify opcode REMOVED - superseded by Everything::API::usergroups (weblogify action, Usergroup.js, React-wired); op= dispatch is dead. Jun 2026.
 
@@ -1048,27 +730,7 @@ sub socialBookmark
 
 # sanctify opcode REMOVED - superseded by Everything::API::sanctify; op= dispatch is dead. Jun 2026.
 
-sub cure_infection
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return 0 unless $APP->isAdmin($USER) || !htmlcode('verifyRequest', 'cure_infection');
-
-  my $cureUserId = int($query->param("cure_user_id"));
-  my $cureUser = getNodeById($cureUserId);
-  return 0 unless $cureUser && $$cureUser{type}{title} eq 'user';
-
-  my $cureVars = getVars($cureUser);
-  $$cureVars{infected} = 0;
-  setVars($cureUser, $cureVars);
-
-  return 1;
-}
+# cure_infection opcode REMOVED - superseded by Everything::API::user (cure_infection, POST /api/user/cure). Infection FEATURE stays live; only the dead opcode removed. #4303. Jun 2026.
 
 sub publishdrafttodocument
 {
