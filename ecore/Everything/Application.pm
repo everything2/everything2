@@ -7000,6 +7000,10 @@ sub buildNodeInfoStructure
   $e2->{node}->{type} = $NODE->{type}->{title};
   $e2->{node}->{node_id} = $NODE->{node_id};
   $e2->{node}->{createtime} = $this->convertDateToEpoch($NODE->{createtime});
+  # Server-authoritative: lets the React PageActions hide the bookmark button on
+  # nodes that set disable_bookmark (front page / superdocs / writeups), rather than
+  # showing it and failing on click. JSON boolean so {flag && ...} is safe.
+  $e2->{node}->{can_bookmark} = $this->can_bookmark($NODE) ? \1 : \0;
 
   $e2->{lastCommit} = $this->{conf}->last_commit;
   $e2->{architecture} = $this->{conf}->architecture;
