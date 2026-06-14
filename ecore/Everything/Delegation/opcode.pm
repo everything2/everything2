@@ -577,66 +577,7 @@ sub message_outbox
 
 # cool opcode REMOVED - superseded by Everything::API::cool (award_cool); op= dispatch is dead. Jun 2026.
 
-sub weblog
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my $SRC = $query->param("source");
-
-  my $N = $query->param('target');
-  $N ||= $query->param("node_id");
-
-  getRef ($N);
-  getRef $SRC;
-
-  return unless $N;
-  return unless $SRC;
-  return unless $$N{type}{sqltablelist} =~ /document/;
-  return if $$N{nodetype} eq 'usergroup'; 
-
-  return unless $SRC->{type}->{title} eq "usergroup";
-  return unless Everything::isApproved($USER, $SRC);
-
-  my $exists = $DB->sqlSelect("weblog_id","weblog","weblog_id=".getId($SRC)." and to_node=".getId($N));
-
-  if ($exists)
-  {
-    $DB->sqlUpdate("weblog",{removedby_user => 0, linkedby_user => getId($USER)},"weblog_id=".getId($SRC)." and to_node=".getId($N));
-  } else {
-    $DB->sqlInsert("weblog", {
-      weblog_id => getId($SRC), 
-      to_node => getId($N),
-      linkedby_user => getId($USER),
-      -linkedtime => 'now()'});
-
-    my $weblogNotification = getNode("weblog","notification")->{node_id};
-    foreach my $notifiee (@{$$SRC{group}})
-    {
-      my $v = getVars(getNodeById($notifiee));
-      if ($$v{settings})
-      {
-        if (from_json($$v{settings})->{notifications}->{$weblogNotification})
-        {
-          htmlcode('addNotification', $weblogNotification, $notifiee, {
-            writeup_id => getId($N),
-            group_id => $$SRC{node_id} });
-        }
-      }
-    }
-  }
-
-  if ($$SRC{title} eq 'News')
-  {
-    htmlcode('addNotification', 'frontpage', 0, { frontpage_item_id => getId($N) });
-  }
-
-  return;
-}
+# weblog opcode REMOVED - superseded by Everything::API::weblog (add_entry/remove_entry, AddToWeblogModal, React-wired); op= dispatch is dead. Jun 2026.
 
 sub removeweblog
 {
@@ -1085,59 +1026,7 @@ sub softlock
   return;
 }
 
-sub weblogify
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my $disp = $query->param("ify_display");
-  my $nid =  $query->param("node_id");
-  return unless $disp;
-  return unless $disp gt '';
-
-  my $wl = getNode('webloggables','setting');
-
-  my $wSettings = getVars($wl);
-
-  $$wSettings{$nid} = $disp;
-
-  setVars($wl, $wSettings);
-
-  my $N = getNodeById($nid);
-  getRef $N;
-
-  if($$N{group})
-  {
-    my $GROUP = $$N{group};
-    my @memberIDs = @$GROUP;
-    foreach(@memberIDs)
-    {
-      my $u = getNodeById($_);
-      next unless $u;
-      my $v =getVars($u);
-      next if ($$v{can_weblog} =~ /$nid/);
-      if (length($$v{can_weblog}) ==0 )
-      {
-        $$v{can_weblog} = $nid;
-      } else {
-        $$v{can_weblog} = $$v{can_weblog} .",".$nid;
-      }
-
-      if ($_ == $$USER{user_id})
-      {
-        $VARS = $v;
-      }
-
-      setVars($u,$v);
-    }
-  }
-
-  return;
-}
+# weblogify opcode REMOVED - superseded by Everything::API::usergroups (weblogify action, Usergroup.js, React-wired); op= dispatch is dead. Jun 2026.
 
 sub leadusergroup
 {
@@ -1197,86 +1086,7 @@ sub changeusergroup
 
 # unfavorite opcode REMOVED - superseded by Everything::API::favorites (React-wired); op= dispatch is dead. Jun 2026.
 
-sub category
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return if $APP->isGuest($USER);
-  my $isCE = $APP->isEditor($USER);
-  return if ($APP->getLevel($USER) <= 1) && !$isCE;
-
-  my $cid = $query->param('cid');
-  if ($cid eq 'new' and my $title = $query -> param('categorytitle'))
-  {
-    $cid = $DB -> insertNode($APP->cleanNodeName($title), 'category', $USER);
-    $query -> param('cid', $cid) if $cid;
-  }
-  $cid = int $cid;
-  return unless $cid;
-
-  my $nid = int($query->param('nid'));
-  $nid ||= int($query->param('node_id'));
-  $nid ||= 0;
-  return unless $nid;
-
-  #don't let users link the category to itself
-  return if ($cid == $nid);
-
-  my $nodeToLink = getNodeById($nid);
-  my $category = getNodeById($cid);
-  return unless $nodeToLink && $category;
-
-  my $maintainer = getNodeById($$category{author_user});
-
-  # validate the maintainer nodetype
-  if ($$maintainer{type}{title} eq 'user')
-  {
-    # if category author is not current user or guest user
-    # and the user is not an admin or CE, quit
-    if($$maintainer{node_id} != $$USER{user_id} && !$APP->isGuest($$maintainer{node_id}) && !$isCE)
-    {
-      return 0;
-    }
-  } elsif ($$maintainer{type}{title} eq 'usergroup')
-  {
-    if(!$APP->inUsergroup($USER, $maintainer) && !$isCE)
-    {
-      return 0;
-    }
-  } else {
-    # category author must be a user or usergroup
-    return 0;
-  }
-
-  my $LINKTYPE = getNode('category', 'linktype');
-
-  # if the node to be linked is a writeup, make sure the writeup's parent e2node is not already linked
-  return if $$nodeToLink{type}{title} eq 'writeup' and $DB -> sqlSelect(
-    'to_node'
-    , 'links'
-    , "from_node=$$category{node_id} AND to_node=$$nodeToLink{parent_e2node} AND linktype=$$LINKTYPE{node_id}");
-
-  # don't allow dups
-  return if $DB -> sqlSelect(
-    'to_node'
-    , 'links'
-    , "from_node=$$category{node_id} AND to_node=$nid AND linktype=$$LINKTYPE{node_id}" );
-
-  # if we've passed all these checks, go ahead and add the link
-  $DB->sqlInsert('links', {
-    from_node => $cid
-    , to_node => $nid
-    , linktype => getId($LINKTYPE)
-    , -food => "(SELECT IFNULL(MAX(food) + 10, 0) 'food'
-    FROM links AS l WHERE from_node = $cid)"});
-  return 1;
-
-}
+# category opcode REMOVED - superseded by Everything::API::category (add_member/remove_member, AddToCategoryModal, React-wired); op= dispatch is dead. Jun 2026.
 
 sub socialBookmark
 {

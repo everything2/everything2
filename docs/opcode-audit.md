@@ -71,16 +71,38 @@ Same bar; the **hidden-form-field** sweep is what makes this the confirmed-clean
 ### PENDING prod cleanup (after this deploys)
 Nuke the 5 orphaned `opcode` nodes: **444704, 444709, 444712, 2071202, 1685363**.
 
-## Remaining 29 — first-pass classification (continue here)
+## Removed — phase 4 (#4291)
+
+Same bar; each verified superseded by a React-wired API, 0 `op=` dispatch, no `getNode(<name>,'opcode')`
+key usage, no real test ref. Name collisions (`weblog`/`category` also exist as linktype/notification/
+setting nodes used by the APIs) are harmless — only the **opcode**-type nodes were removed.
+
+| opcode | superseded by | React wiring | nodepack node (→ nuke from prod) |
+|---|---|---|---|
+| `weblog` | `API::weblog` (`add_entry`/`remove_entry`) | AddToWeblogModal, Weblog | **458215** |
+| `weblogify` | `API::usergroups` (`weblogify` action) | Usergroup.js | **1882499** |
+| `category` | `API::category` (`add_member`/`remove_member`) | AddToCategoryModal, CategoryEdit | **1935812** |
+
+`bookmark` was pulled from this batch: its API (`toggle_bookmark`) lacks parity with the legacy
+opcode's notification behavior (e2node → all writeup authors; correct `no_bookmarkinformer` /
+`no_bookmarknotification` opt-outs; structured notification). Tracked in **#4292** — fix the API, then
+remove the opcode (node **419552**).
+
+### PENDING prod cleanup (after this deploys)
+Nuke the 3 orphaned `opcode` nodes: **458215, 1882499, 1935812**.
+
+## Remaining 26 — first-pass classification (continue here)
 
 - **Superseded by an existing API + 0 `op=` refs → remove candidates** (confirm the API fully
-  replaces each, then delete): `bookmark`, `message`/`message_outbox` (→messages),
-  `weblog`/`weblogify` (→weblog), `category`,
+  replaces each, then delete): `message`/`message_outbox` (→messages),
   `publishdraft`/`publishdrafttodocument`/`approve_draft` (→drafts),
   `leadusergroup` (→usergroups, but verify — its sibling `changeusergroup` is still wired),
-  `socialBookmark`.
+  `socialBookmark` (NB: not API-superseded — dead-but-with-lingering-infra: notification.pm
+  `socialbookmark`, settings prefs, writeup.pm hooks — treat as a feature retirement, not a clean
+  delete). `bookmark` → see #4292 (API parity needed first).
   *(phase 2 removed: `favorite`/`unfavorite`, `hidewriteup`/`unhidewriteup`, `nodenote`, `ilikeit`.
-  phase 3 removed: `bless`/`curse`/`bestow`, `parameter`, `pollvote`.)*
+  phase 3 removed: `bless`/`curse`/`bestow`, `parameter`, `pollvote`.
+  phase 4 removed: `weblog`/`weblogify`/`category`.)*
 - **Admin/maintenance, no API + no `op=` ref → reachability check** (likely dead or admin-tool wired):
   `massacre`, `lockroom`, `linktrim`, `firmlink`, `lockaccount`/`unlockaccount`, `changewucount`,
   `repair_e2node`/`repair_e2node_noreorder`, `borg`, `flushcbox`, `orderlock`, `softlock`,
