@@ -42,8 +42,10 @@ const PageActions = () => {
   const edcoolTypes = ['e2node', 'superdoc', 'superdocnolinks', 'document']
   const showEdcool = user.editor && edcoolTypes.includes(nodeType)
 
-  // Bookmark: all logged-in users (server will check can_bookmark)
-  const showBookmark = !user.guest
+  // Bookmark: logged-in users, but only where the node allows it. The server sets
+  // node.can_bookmark (false on disable_bookmark nodes: front page, superdocs,
+  // writeups). Treat a missing flag as allowed so older payloads don't regress.
+  const showBookmark = !user.guest && node.can_bookmark !== false
 
   // Category: all logged-in users (level > 1 or editor, server validates)
   const showCategory = !user.guest
