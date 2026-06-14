@@ -66,9 +66,6 @@ sub generate_xml {
     my $wuCount = $self->DB->sqlSelect('count(*)','node',
         "author_user=$searchuser->{node_id} AND type_nodetype=117");
 
-    my $nr_node = $self->DB->getNode("node row", "oppressor_superdoc");
-    my $nr = $self->DB->getId($nr_node);
-
     my $csr = $self->DB->sqlSelectMany("node_id", "node JOIN writeup ON node_id=writeup_id",
         "author_user=$searchuser->{node_id} $sort $limit");
 
@@ -81,10 +78,6 @@ sub generate_xml {
         my $parent = $self->DB->getNodeById($n->{parent_e2node});
 
         my %attrs = (createtime => $n->{publishtime});
-
-        my $marked = ($self->DB->sqlSelect('linkedby_user', 'weblog',
-            "weblog_id=$nr and to_node=$n->{node_id}") ? 1 : 0);
-        $attrs{marked} = $marked if($searchuser->{node_id} == $USER->{node_id});
 
         my $hidden = $n->{notnew} || 0;
         $attrs{hidden} = $hidden if($searchuser->{node_id} == $USER->{node_id});
