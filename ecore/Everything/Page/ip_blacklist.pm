@@ -1,4 +1,5 @@
 package Everything::Page::ip_blacklist;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 extends 'Everything::Page';
@@ -171,8 +172,7 @@ sub addIPToBlacklist {
 
         if ($result) {
             my $action = $listRef ? "updated IP blacklist entry for" : "added $ipToAdd to IP blacklist";
-            $APP->securityLog(
-                $self->DB->getNode( 'IP Blacklist', 'restricted_superdoc' ),
+            $APP->securityLog(SECLOG_IP_BLACKLIST,
                 $USER->NODEDATA,
                 $USER->title . " $action: \"$blockReason.\""
             );
@@ -217,8 +217,7 @@ sub addIPToBlacklist {
         };
     }
     else {
-        $APP->securityLog(
-            $self->DB->getNode( 'IP Blacklist', 'restricted_superdoc' ),
+        $APP->securityLog(SECLOG_IP_BLACKLIST,
             $USER->NODEDATA,
             $USER->title . " added $ipToAdd to the IP blacklist: \"$blockReason.\""
         );
@@ -284,8 +283,7 @@ DELETE ipblacklist, ipblacklistref, ipblacklistrange
         };
     }
     else {
-        $APP->securityLog(
-            $self->DB->getNode( 'IP Blacklist', 'restricted_superdoc' ),
+        $APP->securityLog(SECLOG_IP_BLACKLIST,
             $USER->NODEDATA,
             $USER->title . " removed $blAddress from the IP blacklist."
         );

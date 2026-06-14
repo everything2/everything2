@@ -12,6 +12,7 @@ use lib "/var/libraries/lib/perl5";
 
 use Test::More;
 use Everything;
+use Everything::SecurityLog qw(:events);
 use Everything::Application;
 use Everything::API::sanctify;
 
@@ -447,7 +448,7 @@ subtest "Successful sanctification" => sub {
   SKIP: {
     skip 'Sanctify user superdoc not found', 1 unless $sanctify_node;
     my $seclog = $DB->sqlSelectHashref('*', 'seclog',
-      "seclog_node = $sanctify_node->{node_id} AND seclog_user = $test_user->{node_id} AND seclog_details LIKE '%genericdev%'",
+      "seclog_event = @{[SECLOG_SANCTIFY]} AND seclog_user = $test_user->{node_id} AND seclog_details LIKE '%genericdev%'",
       'ORDER BY seclog_id DESC LIMIT 1'
     );
     ok($seclog && $seclog->{seclog_details} =~ /sanctified.*genericdev/i, 'Security log entry created for sanctification');

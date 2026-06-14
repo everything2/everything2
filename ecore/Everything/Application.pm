@@ -455,7 +455,7 @@ sub checkToken
 			, $action, $expiry) ne $token;
 
 	$this->updatePassword($user, $passwd);
-	return $this->securityLog($this->{db}->getNode($action eq 'activate' ? 'Sign up' : 'Reset password', 'superdoc')
+	return $this->securityLog($action eq 'activate' ? SECLOG_USER_SIGNUP : SECLOG_PASSWORD_RESET
 		, $user, "$$user{title} account $action");
 
 }
@@ -1242,34 +1242,14 @@ sub getNodesWithParameter
 
 sub securityLog
 {
-  # $event is EITHER a SECLOG_* event id (new, from Everything::SecurityLog) OR a
-  # legacy category node (hashref/id) during the transition. $subject is an optional
-  # affected node (reparent target, XP recipient, ...). See docs/seclog-decoupling-design.md.
+  # $event is a SECLOG_* event id (0..65535) from Everything::SecurityLog. $subject is
+  # an optional affected node (reparent target, XP recipient, ...). undef event -> no log.
+  # See docs/seclog-decoupling-design.md.
   my ($this, $event, $user, $details, $subject) = @_;
   my $db = $this->{db};
 
-  my $event_id;
-  if (ref $event)
-  {
-    # legacy category node passed as a hashref -> map by its (env-stable) title
-    $event_id = Everything::SecurityLog->event_for_title($event->{title});
-  }
-  elsif (defined($event) and $event > 65535)
-  {
-    # legacy category node passed as a bare id (node ids are far above the event range)
-    my $n = $db->getNodeById($event);
-    return unless $n;                                   # node gone -> nothing to classify
-    $event_id = Everything::SecurityLog->event_for_title($n->{title});
-  }
-  elsif (defined($event))
-  {
-    # new: an event id (0..65535) from Everything::SecurityLog
-    $event_id = $event;
-  }
-  else
-  {
-    return;                                             # nothing to log
-  }
+  return unless defined $event;                         # nothing to log
+  my $event_id = $event;
 
   if(defined($user) and $user eq "-1")
   {

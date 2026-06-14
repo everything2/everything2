@@ -12,6 +12,7 @@ use lib "/var/libraries/lib/perl5";
 
 use Test::More;
 use Everything;
+use Everything::SecurityLog qw(:events);
 use Everything::Application;
 use Everything::API::wheel;
 
@@ -249,7 +250,7 @@ subtest "Successful spin" => sub {
     SKIP: {
         skip 'Wheel of Surprise superdoc not found', 1 unless $wheel_node;
         my $seclog = $DB->sqlSelectHashref('*', 'seclog',
-            "seclog_node = $wheel_node->{node_id} AND seclog_user = $test_user->{node_id}",
+            "seclog_event = @{[SECLOG_WHEEL_OF_SURPRISE]} AND seclog_user = $test_user->{node_id}",
             'ORDER BY seclog_id DESC LIMIT 1'
         );
         ok($seclog && $seclog->{seclog_details} =~ /spun|won/i, 'Security log entry created for wheel spin');

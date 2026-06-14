@@ -1,4 +1,5 @@
 package Everything::API::admin;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 extends 'Everything::API';
@@ -265,8 +266,7 @@ sub edit_node
   $DB->updateNode($NODE, -1);
 
   # Log the edit
-  $APP->securityLog(
-    $node->NODEDATA,
+  $APP->securityLog(SECLOG_NODE_EDIT,
     $user->NODEDATA,
     $user->title . " edited $nodetype '" . $node->title . "' via admin API. Fields: " . join(', ', @updated_fields)
   );
@@ -360,8 +360,7 @@ sub insure_writeup
     }
 
     # Security log
-    $APP->securityLog(
-      $DB->getNode("insure", "opcode"),
+    $APP->securityLog(SECLOG_WRITEUP_INSURANCE,
       $user->NODEDATA,
       $user->title . " uninsured \"$NODE->{title}\" by " . ($author ? $author->title : "unknown")
     );
@@ -388,8 +387,7 @@ sub insure_writeup
     }
 
     # Security log
-    $APP->securityLog(
-      $DB->getNode("insure", "opcode"),
+    $APP->securityLog(SECLOG_WRITEUP_INSURANCE,
       $user->NODEDATA,
       $user->title . " insured \"$NODE->{title}\" by " . ($author ? $author->title : "unknown")
     );
@@ -628,8 +626,7 @@ sub remove_writeup
     my $log_msg = $user->title . " removed \"$NODE->{title}\" by " . ($author ? $author->title : "unknown");
     $log_msg .= ": $reason" if $reason;
 
-    $APP->securityLog(
-      $DB->getNode("remove", "opcode") || $NODE,
+    $APP->securityLog(SECLOG_NODE_REMOVE,
       $user->NODEDATA,
       $log_msg
     );
@@ -858,8 +855,7 @@ sub lock_user
   }
 
   # Security log
-  $APP->securityLog(
-    $DB->getNode("lockaccount", "opcode"),
+  $APP->securityLog(SECLOG_ACCOUNT_LOCK,
     $user->NODEDATA,
     $target->title . "'s account was locked by " . $user->title
   );
@@ -942,8 +938,7 @@ sub unlock_user
   $DB->updateNode($TARGET, -1);
 
   # Security log
-  $APP->securityLog(
-    $DB->getNode("unlockaccount", "opcode"),
+  $APP->securityLog(SECLOG_ACCOUNT_UNLOCK,
     $user->NODEDATA,
     $target->title . "'s account was unlocked by " . $user->title
   );
@@ -1119,8 +1114,7 @@ sub basicedit_node
   $DB->updateNode($NODE, -1);
 
   # Log the edit
-  $APP->securityLog(
-    $NODE,
+  $APP->securityLog(SECLOG_NODE_EDIT,
     $user->NODEDATA,
     $user->title . " used basicedit on $nodetype '" . $node->title . "'. Fields: " . join(', ', sort @updated_fields)
   );

@@ -1,4 +1,5 @@
 package Everything::API::suspension;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 extends 'Everything::API';
@@ -200,8 +201,7 @@ sub suspend_user
   });
 
   # Security log (use Suspension Info superdoc as context node for API calls)
-  $APP->securityLog(
-    $DB->getNode('Suspension Info', 'superdoc'),
+  $APP->securityLog(SECLOG_SUSPENSION,
     $USER,
     "$target_user->{title} was suspended from $sustype->{title} by $USER->{title}"
   );
@@ -289,8 +289,7 @@ sub unsuspend_user
   }
 
   # Security log (use Suspension Info superdoc as context node for API calls)
-  $APP->securityLog(
-    $DB->getNode('Suspension Info', 'superdoc'),
+  $APP->securityLog(SECLOG_SUSPENSION,
     $USER,
     "$target_user->{title} was unsuspended from $sustype->{title} by $USER->{title}"
   );

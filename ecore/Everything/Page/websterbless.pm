@@ -1,4 +1,5 @@
 package Everything::Page::websterbless;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 extends 'Everything::Page';
@@ -110,9 +111,7 @@ sub buildReactData
             $APP->adjustGP( $recipient, $gp_amount );
 
             # Security log
-            my $superbless_node = $DB->getNode( 'Superbless', 'superdoc' );
-            $APP->securityLog(
-                $superbless_node,
+            $APP->securityLog(SECLOG_WEBSTERBLESS,
                 $USER->NODEDATA,
                 $USER->title . " [Websterbless|Websterblessed] $recipient->{title} with $gp_amount GP."
             );

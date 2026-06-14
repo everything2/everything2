@@ -1,4 +1,5 @@
 package Everything::API::superbless;
+use Everything::SecurityLog qw(:events);
 
 use Moose;
 use namespace::autoclean;
@@ -107,8 +108,7 @@ sub grant_gp
         }
 
         # Security log
-        $APP->securityLog(
-            $DB->getNode('Superbless', 'superdoc'),
+        $APP->securityLog(SECLOG_SUPERBLESS,
             $USER,
             "$target_user->{title} was superblessed $amount GP by $USER->{title}"
         );
@@ -204,8 +204,7 @@ sub grant_xp
         }
 
         # Security log
-        $APP->securityLog(
-            $DB->getNode('XP Superbless', 'superdoc'),
+        $APP->securityLog(SECLOG_XP_SUPERBLESS,
             $USER,
             "$target_user->{title} was superblessed $amount XP by $USER->{title}"
         );
@@ -305,8 +304,7 @@ sub grant_cools
             $user_node->{karma} = ($user_node->{karma} || 0) + 1;
             $DB->updateNode($user_node, -1);
 
-            $APP->securityLog(
-                $DB->getNode('Bestow Cools', 'restricted_superdoc'),
+            $APP->securityLog(SECLOG_COOLS_BESTOWED,
                 $USER,
                 "$USER->{title} bestowed $amount cools to themselves"
             );
@@ -335,8 +333,7 @@ sub grant_cools
             $target_node->{karma} = ($target_node->{karma} || 0) + 1;
             $DB->updateNode($target_node, -1);
 
-            $APP->securityLog(
-                $DB->getNode('Bestow Cools', 'restricted_superdoc'),
+            $APP->securityLog(SECLOG_COOLS_BESTOWED,
                 $USER,
                 "$target_user->{title} was given $amount cools by $USER->{title}"
             );
@@ -440,8 +437,7 @@ sub fiery_hug
         $DB->updateNode($target_user, -1);
 
         # Security log
-        $APP->securityLog(
-            $DB->getNode('Superbless', 'superdoc'),
+        $APP->securityLog(SECLOG_SUPERBLESS,
             $USER,
             "$USER->{title} hugged $target_user->{title} using the [Fiery Teddy Bear suit] for negative $gp_penalty GP."
         );
