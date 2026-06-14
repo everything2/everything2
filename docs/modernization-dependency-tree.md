@@ -1,6 +1,6 @@
 # Everything2 Modernization — Epoch Tree
 
-**Last updated**: 2026-06-09
+**Last updated**: 2026-06-14
 **Maintainer**: Jay Bonci
 
 > **The two hard roots are cleared.** `epoch:mysql-8.4` (migrated 2026-06-07, #4226) and
@@ -207,7 +207,13 @@ client-memory optimization, *not* per-endpoint fan-out. Design: [api-driven-arch
 - #4182 — HTTP security posture (HttpOnly/Secure cookie, HSTS, headers, CSP) **(ships now, ungated)**
 - #4146 — modernize dev build pipeline
 - #4129 — remove mod_rewrite title hacks *(needs PSGI + #4163)*
-- #4198 — audit + retire legacy opcode handlers (44 subs in Delegation/opcode.pm; overlaps delegation-removal/#897)
+- **React-routing epic** — the mid-2026 thrust toward full client-side routing (see `DEVELOPER-ROADMAP.md` → "Current thrust"). Gated on retiring server-side request processing:
+  - #4198 — opcode → API: retire legacy `op=` handlers in Delegation/opcode.pm. **The gating prerequisite.** Overlaps #897.
+  - #4299 — opcode kill rounds (verify dead / 1:1-superseded, delete). Phases 1–5 + bookmark/weblog/weblogify/category/massacre/leadusergroup done; remaining candidates mapped.
+  - #4298 — page form-handling: 23 Page controllers that process form params server-side (the *other* routing blocker, beyond opcodes).
+  - #4300 — htmlcode burndown: 57 `Delegation/htmlcode` subs → factor into `Application` methods or delete. Continues the closed #4259.
+  - #4301 — API-wide CSRF guard (belt-and-suspenders Origin/header check; lands after the cleanout).
+  - #4272 — ✅ security-log decoupling (done; `seclog_event` enum, callers on `SECLOG_*`).
 - #11 — normalize `user.imgsrc` path (drop `images/userimages/` prefix) *(homenode-images cluster)*
 - #91 — rework `homenode_image_host` for the TLS/prod setup *(homenode-images cluster)*
 - #116 — move robots.txt blocks → Apache UA blocking (`apache_blocks.json`)
