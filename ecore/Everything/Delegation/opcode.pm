@@ -522,11 +522,7 @@ sub removeweblog
 
 # There are still references to this in the javascript that need to get cleaned out
 #
-sub massacre
-{
-  # Legacy opcode that exists because unpublishwriteup links to it for the security monitor. Disabling the page, then will swing back around to clean this out
-  return;
-}
+# massacre opcode REMOVED - dead stub (0 op= dispatch); no longer a securityLog token (caller uses SECLOG_MASSACRE). #4299. Jun 2026.
 
 sub lockroom
 {
@@ -937,37 +933,7 @@ sub softlock
 
 # weblogify opcode REMOVED - superseded by Everything::API::usergroups (weblogify action, Usergroup.js, React-wired); op= dispatch is dead. Jun 2026.
 
-sub leadusergroup
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my $uName = $query->param("new_leader");
-  my $userGroup = $query->param("node_id");
-
-  return unless $uName;
-  return unless $userGroup;
-
-  my $recUser = getNode($uName,"user");
-  if (!$recUser)
-  {
-    $uName =~ s/\_/ /gs;
-    $recUser = getNode($uName, 'user');
-  }
-
-  return unless $recUser;
-  return unless $APP->inUsergroup($recUser,getNodeById($userGroup));
-
-  my $auth = $USER;
-  $auth = -1 if $APP -> getParameter($userGroup, 'usergroup_owner') == $USER -> {node_id};
-  $APP -> setParameter($userGroup, $auth, 'usergroup_owner', $recUser -> {node_id});
-
-  return 1;
-}
+# leadusergroup opcode REMOVED - superseded by Everything::API::usergroups (transfer_ownership action, UsergroupEditor.js/Usergroup.js, React-wired). #4299. Jun 2026.
 
 # ilikeit opcode REMOVED - superseded by Everything::API::ilikeit (React-wired); op= dispatch is dead. Jun 2026.
 

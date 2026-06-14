@@ -91,7 +91,23 @@ remove the opcode (node **419552**).
 ### PENDING prod cleanup (after this deploys)
 Nuke the 3 orphaned `opcode` nodes: **458215, 1882499, 1935812**.
 
-## Remaining 26 — first-pass classification (continue here)
+## Removed — round 5 (#4299)
+
+1:1-validated dead opcodes (0 `op=` dispatch; functionality covered by a React-wired API or already a stub).
+
+| opcode | superseded by | nodepack node (→ nuke from prod) |
+|---|---|---|
+| `massacre` | dead stub; no longer a securityLog token (caller uses `SECLOG_MASSACRE` after #4272 conversion). Also removed the dead `my $mass = getNode('massacre','opcode')` in `htmlcode::unpublishwriteup`. | **648516** |
+| `leadusergroup` | `API::usergroups` `transfer_ownership` (UsergroupEditor.js / Usergroup.js) | **1887815** |
+
+Deferred (undispatched but parity NOT clean — see #4299): `message` (chatterbox slash-commands),
+`message_outbox` (outbox archive coverage), `approve_draft` (food-flag vs publication_status),
+`publishdraft` (core publishing), `publishdrafttodocument` (no API), `social` (dead-but-infra).
+
+### PENDING prod cleanup (after deploy)
+Nuke the 2 orphaned `opcode` nodes: **648516** (massacre), **1887815** (leadusergroup).
+
+## Remaining 24 — first-pass classification (continue here)
 
 - **Superseded by an existing API + 0 `op=` refs → remove candidates** (confirm the API fully
   replaces each, then delete): `message`/`message_outbox` (→messages),

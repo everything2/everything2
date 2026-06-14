@@ -2,6 +2,7 @@
 
 **Created**: 2025-12-17 (original)
 **Rewritten**: 2026-05-24 (this revision)
+**Updated**: 2026-06-14 (MySQL + PSGI + right-size shipped; React-routing epic added)
 **Owner**: Jay Bonci
 **Status**: Living document — strategic priorities + sequencing
 
@@ -31,22 +32,52 @@ The prior version (Dec 2025, 5,281 lines) tried to be both index and per-phase p
 
 ---
 
-## Where we are (2026-05-24)
+## Where we are (updated 2026-06-14)
 
-**Recently shipped:**
-- Inline-styles → BEM CSS refactor (Jan 2026 work, landed Apr-May 2026)
-- jQuery retirement, TinyMCE removal, mobile redesign with bottom nav
-- 11 dependabot bumps incl. webpack 5.106, jest-environment-jsdom rollback (incompatibility), DOMPurify 3.4, postcss 8.5.14
-- Issue #4048 — NewWriteups card refactored to share `WriteupEntry` with the sidebar nodelet; LinkNode null-anchor fix
-- Issue #4056 — homenode date timezone bug; spawned a 18-component dateFormat utility migration
+**The two hard-deadline / biggest-lever items shipped:**
+- ✅ **MySQL 8.4 migration** — done 2026-06-07 (#4226), ahead of the July RDS deadline. (Phase 1 below = done.)
+- ✅ **PSGI/Plack migration** — LIVE in prod 2026-06-08 (#4234); mod_perl + CGI.pm removed, Apache on
+  mpm_event as a pure proxy, Starman serving. (Phase 6 below = done.)
+- ✅ **Post-PSGI Fargate right-size + autoscaling** — 1vCPU/2GB, 2xx-per-target autoscaling min2/max6,
+  SNS alarms. (Phase 7 below = done.)
+- ✅ **Security-log decoupling** (#4272) — the `seclog` event log moved off node identity onto a stable
+  `Everything::SecurityLog` enum (`seclog_event`), all ~38 writer callers converted to `SECLOG_*`
+  constants, legacy node-mapping machinery removed.
 
-**Currently in flight:**
-- MySQL 8.4 migration — 17 child issues created (#4075-#4091) for hand-applied schema fixes
-- dateFormat utility migration in working tree (not yet committed)
-- nodepack/dbtable schema-tooling plan ([docs/sqitch-migration-plan.md](sqitch-migration-plan.md)); the 8.4 compat audit it began as is complete
-- ORM/DBIC re-evaluation complete ([docs/orm-migration-plan.md](orm-migration-plan.md))
+**Current thrust — the React-routing epic (see its own section below).** With MySQL + PSGI behind us,
+the cost/growth north star is **full client-side React routing**. Getting there is gated by retiring the
+legacy server-side request-processing surfaces; this session enumerated that surface end-to-end into
+trackers. This is the near-term grind (mid-2026), and it reorders the phase list below — the
+modernization items (esp. anything React) now sit behind the routing epic.
 
-**Active GH issue backlog:** open issues #4007, #4009, #4011, #4015, #4018, #4019, #4026, #4030, #4031, #4032, #4033, #4039, #4042, #4043, #4052, #4058, #4060, #4061, #4062 — mix of small bugs, mobile fixes, missing features. Triaged opportunistically alongside phase work.
+**Active GH issue backlog:** ambient small bugs / mobile fixes / missing features, triaged opportunistically
+alongside the epic. (GitHub issues are the unit of tracking — this doc is the index.)
+
+---
+
+## Current thrust — React routing epic (mid-2026)
+
+**Destination:** full client-side React routing (SPA navigation; SSR first paint, client-route subsequent
+nav). **Why it's the north star:** it moves the cost+growth curve, is incremental/reversible, and the API
+layer it forces is the seam that de-risks a later ORM migration.
+
+**Why it's gated:** you cannot client-route a page whose form POSTs `op=X` (or reads request params) to be
+processed and re-rendered **server-side**. So the epic is mostly *retiring server-side request processing*.
+This session mapped that surface completely:
+
+| Tracker | Surface | State |
+|---|---|---|
+| **#4255 / #4257** | pagestate facade + chrome/content split + `e2.meta` producer | mostly done |
+| **#4198** | **opcode → API** — migrate the live `op=` mutating handlers (`Everything::Delegation::opcode`) to `POST /api/…`. *The gating prerequisite.* | in progress |
+| **#4299** | opcode kill rounds — verify dead/1:1-superseded opcodes and delete them (shrinks #4198's surface). Phases 1–5 + `bookmark`/`weblog`/`weblogify`/`category`/`massacre`/`leadusergroup` done; deferred candidates mapped (message/drafts-publish/etc.). | ongoing |
+| **#4298** | **page form-handling** — 23 Page controllers that process form params server-side (mutate/branch on submit). The *other half* of the routing block, beyond opcodes. | tracked (worklist) |
+| **#4300** | **htmlcode burndown** — 57 remaining `Everything::Delegation::htmlcode` subs; factor into unit-tested `Everything::Application` methods or delete as opcodes/pages strand them. Continues the closed #4259. | tracked |
+| **#4301** | **API-wide CSRF guard** — belt-and-suspenders central Origin/header check in `Everything::API` (on top of the existing `SameSite=Lax` cookie). Lands after #4198; the `verifyRequest*` htmlcodes then delete. | tracked (spec) |
+
+**Sequence:** opcode kills + htmlcode burndown grind in parallel now → #4198 opcode→API (the gate) →
+the client router/resolver + `useDocumentMeta` + routing-parity harness → progressive flip. #4298 page
+form-handling converts alongside #4198 (same 1:1-parity bar). CSRF guard (#4301) lands as the cleanout
+finishes. **ORM stays deferred** until the data model actively hurts (decided June 2026).
 
 ---
 
@@ -68,8 +99,8 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 
 ## The phase list (priority-ordered)
 
-### Phase 1 — MySQL 8.4 migration
-- **Window:** now → 2026-07-31 (9 weeks, hard deadline)
+### Phase 1 — MySQL 8.4 migration ✅ DONE (2026-06-07, #4226)
+- **Window:** now → 2026-07-31 (9 weeks, hard deadline) — *completed well ahead of deadline*
 - **Why first:** hard deadline + the +$146/mo Extended Support penalty for missing it
 - **Detailed plan:** [docs/mysql-migration-plan.md](mysql-migration-plan.md)
 - **Schema cleanup tracking:** [#4074](https://github.com/everything2/everything2/issues/4074) (umbrella) + 17 child issues
@@ -114,15 +145,15 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **Estimated savings:** $30-40/mo + traffic-scaling improvement
 - **No deliverable doc yet**
 
-### Phase 6 — PSGI/Plack migration
-- **Window:** November 2026 → February 2027 (5-7 weeks of focused work)
+### Phase 6 — PSGI/Plack migration ✅ DONE (live in prod 2026-06-08, #4234)
+- **Window:** ~~November 2026 → February 2027~~ — *pulled forward and shipped June 2026; mod_perl + CGI.pm removed*
 - **Why here:** biggest single architectural move; needs stable DB and frontend (Phase 1-3 done) before starting
 - **Detailed plan:** [docs/psgi-plack-migration-plan.md](psgi-plack-migration-plan.md) — rewritten 2026-04-28 with corrected architecture
 - **Key facts:** app is CGI-style via ModPerl::Registry (not native mod_perl handlers), so the migration is shallower than originally feared. Phase A (PSGI wrapper, dev only) → Phase B (Apache::DBI replacement, ECS shape) → Phase C (staging + canary) → Phase D (post-migration Fargate right-sizing)
 - **Compound benefits:** drops Fargate worker count ~5x, halves DB connection count, frees up the "always-on" memory pressure on RDS, removes Apache::DBI dependency
 
-### Phase 7 — Post-PSGI Fargate right-sizing + 1-year commits
-- **Window:** February 2027 (1-2 weeks)
+### Phase 7 — Post-PSGI Fargate right-sizing + 1-year commits 🟡 right-size + autoscaling DONE (June 2026); commits TBD
+- **Window:** ~~February 2027~~ — *right-size to 1vCPU/2GB + 2xx-per-target autoscaling (min2/max6) shipped June 2026; 1-year Savings Plan commit still deferred until the shape settles*
 - **Why here:** PSGI makes the smaller container shape viable; this is when the final cost shape is known and commits make sense
 - **Scope:** drop to 1vCPU/2GB × 3 tasks (from 2vCPU/4GB × 2). Add 1-year all-upfront Compute Savings Plan sized to the new baseline. Evaluate RDS RI on the post-MySQL instance class.
 - **Estimated savings:** additional $50-70/mo on top of Phase 6's PSGI savings; commits add another $30-40/mo

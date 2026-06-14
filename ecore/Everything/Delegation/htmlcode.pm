@@ -3830,7 +3830,6 @@ sub unpublishwriteup
   htmlcode('addNodenote', $wu, "Removed by $remover$reason");
 
   my $author = getNodeById($$wu{author_user});
-  my $mass = getNode('massacre', 'opcode');
 
   $APP->securityLog(SECLOG_MASSACRE, $USER, "[$title] by [$$author{title}] was removed$reason");
 

@@ -77,8 +77,9 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 | **MySQL 8.4 Migration** | ✅ Done | Migrated 2026-06-07 (#4226), ahead of the July 2026 RDS deadline |
 | **PSGI/Plack Migration** | ✅ Shipped | Live in prod 2026-06-08; mod_perl removed, Apache on mpm_event, Starman serving |
 | **CGI.pm Removal** | ✅ Done | Request via `Everything::Request::PlackQuery`, response via `Everything::Response`; CGI dropped from deps + vendor cache |
-| 100%-API-Driven Move | 📋 Next epoch | Return-based responses, PageState chrome/content split — see [api-driven-architecture.md](docs/api-driven-architecture.md) |
-| DBIx::Class / Schema Migrations | 📋 Deferred | Modernize NodeBase in place first; sqitch for versioned migrations |
+| **Security-Log Decoupling** | ✅ Done | `seclog` moved off node identity to the `Everything::SecurityLog` enum (`seclog_event`); all writer callers use `SECLOG_*` constants (#4272) |
+| **React Routing Epic** | 🔄 In progress | Destination: full client-side routing. Gated on retiring server-side request processing — opcode→API (#4198), opcode kills (#4299), page form-handling (#4298), htmlcode burndown (#4300), API CSRF guard (#4301). Pagestate facade (#4255/#4257) mostly done. |
+| DBIx::Class / Schema Migrations | 📋 Deferred | Modernize NodeBase in place first; sqitch for versioned migrations. Pull forward only if the data model hurts |
 
 See [coverage/COVERAGE-SUMMARY.md](coverage/COVERAGE-SUMMARY.md) for coverage details and [docs/DEVELOPER-ROADMAP.md](docs/DEVELOPER-ROADMAP.md) for full sequencing rationale.
 
@@ -154,6 +155,10 @@ If you discover a security vulnerability:
 **Recent Security Work:**
 - ✅ April 2026 SQL injection re-audit: zero vulnerable sites remaining
 - ✅ Test coverage in place for security-sensitive code paths
+- ✅ Security-log decoupling (#4272): `seclog` keyed off a stable event enum, not node identity
+- 🛡️ CSRF posture: session cookie is `SameSite=Lax` (blocks cross-site POST); a belt-and-suspenders
+  API-wide Origin/header guard is specced (#4301) to land as the API-driven cleanout finishes —
+  invariant: **no mutation is served by GET**
 - 🔄 Ongoing: NodeBase modernization to eliminate raw-SQL call sites in controllers
 
 ## License
