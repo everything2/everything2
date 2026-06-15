@@ -589,25 +589,7 @@ sub flushcbox
 
 # ilikeit opcode REMOVED - superseded by Everything::API::ilikeit (React-wired); op= dispatch is dead. Jun 2026.
 
-sub changeusergroup
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  # Changes which usergroup is selected for the Usergroup Writeups nodelet.
-
-  if($query->param('newusergroup'))
-  {
-    my $newUsergroup = $query->param('newusergroup');
-    $$VARS{nodeletusergroup}=$newUsergroup;
-  }
-
-  return 1;
-}
+# changeusergroup opcode REMOVED - was a one-line user-pref write ($VARS->{nodeletusergroup}); now POST /api/preferences/set {nodeletusergroup}. op= dispatch is dead. #4312. Jun 2026.
 
 # favorite opcode REMOVED - superseded by Everything::API::favorites (React-wired); op= dispatch is dead. Jun 2026.
 
