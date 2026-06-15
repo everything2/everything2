@@ -85,9 +85,13 @@ sub award_cool {
         # Decrement user's cools remaining and save immediately
         my $USER = $user->NODEDATA;
         my $VARS = $self->APP->getVars($USER);
-        $VARS->{cools}-- if $VARS->{cools} && $VARS->{cools} > 0;
+        # cools can be stored as a blank/space string -> coerce to a number first
+        # so the comparison + int below don't warn "isn't numeric" (#4307).
+        my $cools = ($VARS->{cools} // '') =~ /^\s*(-?\d+)/ ? $1 : 0;
+        $cools-- if $cools > 0;
+        $VARS->{cools} = $cools;
         Everything::setVars($USER, $VARS);
-        $new_cools_left = int($VARS->{cools} || 0);
+        $new_cools_left = int($cools);
 
         # Grant experience to the writeup author
         $self->APP->adjustExp($writeup->author_user, 20);
