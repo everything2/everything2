@@ -33,6 +33,7 @@ sub routes
     "node/:id/basicedit" => "basicedit_node(:id)",
     "writeup/:id/insure" => "insure_writeup(:id)",
     "writeup/:id/remove" => "remove_writeup(:id)",
+    "remove_writeups" => "remove_writeups",
     "writeup/:id/remove_vote" => "remove_vote(:id)",
     "writeup/:id/remove_cool" => "remove_cool(:id)",
     "user/:id/lock" => "lock_user(:id)",
@@ -636,6 +637,93 @@ sub remove_writeup
     success => 1,
     message => 'Writeup removed and returned to draft status',
     node_id => $writeup->node_id
+  }];
+}
+
+=head2 remove_writeups
+
+POST /api/admin/remove_writeups
+
+Bulk editorial writeup removal -- the migrated `remove` opcode path used by AltarOfSacrifice.
+Body: { "writeup_ids": [...], "reason": "..." } OR { "author_id": N, "reason": "..." } (remove ALL of
+that author's writeups). Editor-only; a reason is required. Reuses the single-writeup remove_writeup for
+each removal, and layers on the opcode's bulk policy: skip insured writeups, and Klaproth-notify each
+author (with the author's `no_notify_kill` opt-out and a self-removal skip). The single-writeup endpoint
+stays silent (its existing behavior is unchanged).
+
+=cut
+
+sub remove_writeups
+{
+  my ($self, $REQUEST) = @_;
+  my $user = $REQUEST->user;
+  my $APP  = $self->APP;
+  my $DB   = $self->DB;
+
+  return [$self->HTTP_OK, { success => 0, error => 'Editors only' }]
+    unless $user->is_editor;
+
+  my $data   = $REQUEST->JSON_POSTDATA || {};
+  my $reason = $data->{reason} // '';
+  $reason =~ s/^\s+|\s+$//g;
+  return [$self->HTTP_OK, { success => 0, error => 'A removal reason is required' }]
+    unless length $reason;
+
+  # Resolve the target list: explicit writeup_ids, or ALL of author_id's writeups.
+  my @ids;
+  if (defined $data->{author_id}) {
+    my $author = $APP->node_by_id(int($data->{author_id}));
+    return [$self->HTTP_OK, { success => 0, error => 'Author not found' }]
+      unless $author && $author->type->title eq 'user';
+    @ids = @{ $DB->selectNodeWhere({ author_user => $author->node_id }, 'writeup') || [] };
+  } elsif (ref $data->{writeup_ids} eq 'ARRAY') {
+    @ids = map { int($_) } @{ $data->{writeup_ids} };
+  }
+  return [$self->HTTP_OK, { success => 0, error => 'No writeups specified' }]
+    unless @ids;
+
+  my $klaproth = $DB->getNode('Klaproth', 'user');
+  my (@removed, @skipped);
+
+  foreach my $id (@ids) {
+    my $wu = $APP->node_by_id($id);
+    unless ($wu && $wu->type->title eq 'writeup') {
+      push @skipped, { node_id => $id, reason => 'not a writeup' };
+      next;
+    }
+    my $NODE = $wu->NODEDATA;
+    # Insured (or otherwise protected) writeups carry a non-zero draft publication_status -> skip.
+    if ($DB->sqlSelect('publication_status', 'draft', "draft_id=$id")) {
+      push @skipped, { node_id => $id, reason => 'insured' };
+      next;
+    }
+
+    # Capture before removal -- remove_writeup turns the node into a draft.
+    my $author_id = $NODE->{author_user};
+    my $parent    = $NODE->{parent_e2node} ? $APP->node_by_id($NODE->{parent_e2node}) : undef;
+    my $title     = ($parent ? $parent->title : undef) || $wu->title;
+
+    my $res = $self->remove_writeup($REQUEST, $id);   # full, tested single-writeup removal
+    unless (ref $res eq 'ARRAY' && $res->[0] == $self->HTTP_OK) {
+      push @skipped, { node_id => $id, reason => ($res->[1]{message} || $res->[1]{error} || 'removal failed') };
+      next;
+    }
+    push @removed, $id;
+
+    # Author notification (opcode parity): Klaproth -> author, with opt-outs.
+    next unless $klaproth && $author_id && $author_id != $user->node_id;   # skip self
+    my $author = $APP->node_by_id($author_id);
+    next if $author && $author->VARS->{no_notify_kill};                    # author opted out
+    my $byline = $author ? " [by " . $author->title . "]" : "";
+    $APP->sendPrivateMessage($klaproth, $author_id,
+      "I removed your writeup [$title]$byline: $reason. It has been sent to your [Drafts[superdoc]].");
+  }
+
+  return [$self->HTTP_OK, {
+    success       => 1,
+    removed       => \@removed,
+    removed_count => scalar(@removed),
+    skipped       => \@skipped,
   }];
 }
 
