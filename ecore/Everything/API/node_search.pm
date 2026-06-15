@@ -552,9 +552,23 @@ sub _search_site_wide {
     # Note: MySQL FULLTEXT boolean mode only supports trailing wildcards (term*),
     # not leading wildcards (*term). This means we match word prefixes, not arbitrary substrings.
     # This is acceptable for most searches and provides massive performance gains on 1M+ nodes.
-    my $fulltext_term = $search_term;
-    $fulltext_term =~ s/([+\-><()~*\"@])/\\$1/g;  # Escape FULLTEXT special chars
-    $fulltext_term = $fulltext_term . '*';  # Trailing wildcard for prefix matching
+    # FULLTEXT boolean mode: the operator chars (+ - > < ( ) ~ * " @) can't be
+    # searched literally (backslash-escaping does NOT work in boolean mode), and a
+    # term that reduces to just operators/empty throws a parser syntax error
+    # ("unexpected $end, expecting FTS_TERM") -> a 500. Strip the operators to
+    # spaces; if no token survives there is nothing to MATCH -> empty result (#4307).
+    (my $fulltext_term = $search_term) =~ s/[+\-><()~*"\@]/ /g;
+    $fulltext_term =~ s/^\s+|\s+$//g;
+    unless (length $fulltext_term) {
+        return [$self->HTTP_OK, {
+            success     => 1,
+            results     => [],
+            count       => 0,
+            scope       => 'all',
+            search_term => $search_term,
+        }];
+    }
+    $fulltext_term .= '*';  # trailing wildcard for prefix matching
 
     my @results;
 

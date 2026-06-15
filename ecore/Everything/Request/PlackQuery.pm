@@ -118,7 +118,9 @@ sub Vars
     $self->_params;
     my %out;
     for my $k (@{ $self->_order }) {
-        $out{$k} = join("\0", @{ $self->_params->{$k} });
+        # guard undef values in the param list (avoids an uninitialized warning
+        # in join on multi-valued params that carry an undef element) (#4307)
+        $out{$k} = join("\0", map { $_ // '' } @{ $self->_params->{$k} });
     }
     return wantarray ? %out : \%out;
 }

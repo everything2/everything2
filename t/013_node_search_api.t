@@ -943,6 +943,28 @@ $result = $api->search($nodegroup_addable_injection_request);
 is($result->[0], 200, "nodegroup_addable search with SQL injection attempt returns 200");
 is($result->[1]{success}, 1, "nodegroup_addable search with SQL injection was handled safely");
 
+# FULLTEXT boolean-mode operator terms must not blow up the MATCH query (#4307).
+# Pre-fix these threw DBD "syntax error ... expecting FTS_TERM" -> a 500.
+for my $bad ('@', '+', '"', '>', '*', '~()', '   +  ') {
+    my $req = MockRequest->new(
+        node_id => 1, title => 'root', is_admin_flag => 1,
+        query_params => { q => $bad, scope => 'all' });
+    my $r = $api->search($req);
+    is($r->[0], 200, "site-wide search for operator-only q=" . (length($bad) ? "'$bad'" : 'blank') . " returns 200 (no FTS crash)");
+    is($r->[1]{success}, 1, "  ...and succeeds with no results");
+    is(scalar(@{ $r->[1]{results} || [] }), 0, "  ...and yields an empty result set");
+}
+
+# A real term with trailing operators still searches (operators stripped -> 'root*').
+{
+    my $req = MockRequest->new(
+        node_id => 1, title => 'root', is_admin_flag => 1,
+        query_params => { q => 'root+', scope => 'all' });
+    my $r = $api->search($req);
+    is($r->[0], 200, "site-wide search 'root+' returns 200 (operator stripped, still searches)");
+    is($r->[1]{success}, 1, "  ...and succeeds");
+}
+
 done_testing();
 
 =head1 NAME

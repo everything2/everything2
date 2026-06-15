@@ -120,7 +120,7 @@ sub _getOldInfo {
             $oldnode->{$1} = [$2, $3, $4, 0, 0];
         }
 
-        if ($oldinfo->{maxrep} <= 0) {
+        if (($oldinfo->{maxrep} // 0) <= 0) {   # undef on a fresh tracker (#4307)
             $oldinfo->{maxrep} = $oldinfo->{minrep} = $2;
         }
         if (defined $2) {
