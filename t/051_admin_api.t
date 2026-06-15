@@ -673,4 +673,76 @@ SKIP: {
   }
 }
 
+# ========================================================
+# Tests for remove_writeups (bulk editorial removal -- #4306, migrated `remove` opcode)
+# ========================================================
+SKIP: {
+  skip "remove_writeups: need editor + regular user", 7
+    unless $editor_user && $regular_user && $editor_request;
+
+  my $wtype    = $DB->getNode('writeup', 'nodetype');
+  my $klaproth = $DB->getNode('Klaproth', 'user');
+  my $marker   = "t051-bulkremove-$$";
+
+  my $mk_wu = sub {
+    my ($n, $ins) = @_;
+    my $e2  = $DB->insertNode("$marker node $n", 'e2node', $regular_user, { title => "$marker node $n" });
+    my $wid = $DB->insertNode("$marker wu $n", $wtype, $regular_user,
+      { doctext => 'bulk remove test', parent_e2node => $e2 });
+    if ($ins) {
+      # mark insured (replace whatever draft row insertNode created)
+      $DB->sqlDelete('draft', "draft_id=$wid");
+      $DB->sqlInsert('draft', { draft_id => $wid, publication_status => $ins });
+    }
+    return ($wid, $e2);
+  };
+
+  my ($w1) = $mk_wu->(1);
+  my ($w2) = $mk_wu->(2);
+
+  # non-editor rejected
+  my $res = $api->remove_writeups(MockRequest->new(
+    node_id => $regular_user->{node_id}, nodedata => $regular_user, is_editor_flag => 0,
+    postdata => { writeup_ids => [$w1, $w2], reason => 'x' }));
+  is($res->[1]{success}, 0, 'non-editor cannot bulk-remove');
+
+  # reason required
+  $editor_request->set_postdata({ writeup_ids => [$w1, $w2] });
+  $res = $api->remove_writeups($editor_request);
+  is($res->[1]{success}, 0, 'bulk-remove requires a reason');
+
+  # bulk remove both
+  my $klap_before = $DB->sqlSelect('COUNT(*)', 'message',
+    "author_user=$klaproth->{node_id} AND for_user=$regular_user->{node_id} AND msgtext LIKE "
+    . $DB->{dbh}->quote("%$marker%"));
+  $editor_request->set_postdata({ writeup_ids => [$w1, $w2], reason => "$marker reason" });
+  $res = $api->remove_writeups($editor_request);
+  is($res->[0], $api->HTTP_OK,        'bulk-remove returns OK');
+  is($res->[1]{removed_count}, 2,     'both writeups removed');
+
+  my $draft_type = $DB->getType('draft');
+  my $as_draft = $DB->sqlSelect('COUNT(*)', 'node',
+    "node_id IN ($w1,$w2) AND type_nodetype=$draft_type->{node_id}");
+  is($as_draft, 2, 'both writeups converted to drafts');
+
+  my $klap_after = $DB->sqlSelect('COUNT(*)', 'message',
+    "author_user=$klaproth->{node_id} AND for_user=$regular_user->{node_id} AND msgtext LIKE "
+    . $DB->{dbh}->quote("%$marker reason%"));
+  is($klap_after - $klap_before, 2, 'author Klaproth-notified once per removal');
+
+  # insured writeup is skipped
+  my $insured = $DB->getNode('insured', 'publication_status');
+  my ($wi) = $mk_wu->('i', $insured->{node_id});
+  $editor_request->set_postdata({ writeup_ids => [$wi], reason => "$marker reason2" });
+  $res = $api->remove_writeups($editor_request);
+  is(scalar(@{ $res->[1]{skipped} || [] }), 1, 'insured writeup is skipped');
+
+  # cleanup
+  $DB->sqlDelete('message', "msgtext LIKE " . $DB->{dbh}->quote("%$marker%"));
+  for my $id ($w1, $w2, $wi) {
+    my $n = $DB->getNodeById($id, 'force');
+    $DB->nukeNode($n, -1) if $n;
+  }
+}
+
 done_testing();

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 import ConfirmActionModal from '../ConfirmActionModal'
 
@@ -48,10 +48,6 @@ const AltarOfSacrifice = ({ data }) => {
 
       <p className="altar__intro">
         Welcome to the mountaintop. Don&apos;t mind the blood.
-      </p>
-
-      <p className="altar__note">
-        <strong>N.B.:</strong> This tool <em>will</em> remove the writeups you select.
       </p>
 
       <div className="altar__instructions">
@@ -141,11 +137,15 @@ const StepSelect = ({
   const [selectedForRemoval, setSelectedForRemoval] = useState(
     () => new Set(writeups.map(w => w.node_id))
   )
+  // "Remove all of this author's writeups" (across pages) — sends author_id instead of a list
+  const [removeAll, setRemoveAll] = useState(false)
 
-  // Confirmation modal state
+  // Confirmation modal + submission state
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const formRef = useRef(null)
+  const [error, setError] = useState(null)
+
+  const count = removeAll ? total : selectedForRemoval.size
 
   const toggleWriteup = (nodeId) => {
     setSelectedForRemoval(prev => {
@@ -169,28 +169,41 @@ const StepSelect = ({
 
   const handleSubmitClick = (e) => {
     e.preventDefault()
-    if (selectedForRemoval.size === 0) {
-      return // Nothing to remove
+    setError(null)
+    if (count === 0) return
+    if (!reason.trim()) {
+      setError('A removal reason is required.')
+      return
     }
     setShowConfirmModal(true)
   }
 
-  const handleConfirmRemoval = () => {
+  const handleConfirmRemoval = async () => {
     setIsSubmitting(true)
-    // Submit the form with op=remove instead of confirmop=remove
-    if (formRef.current) {
-      formRef.current.submit()
+    setError(null)
+    const body = removeAll
+      ? { author_id: authorId, reason: reason.trim() }
+      : { writeup_ids: Array.from(selectedForRemoval), reason: reason.trim() }
+    try {
+      const res = await fetch('/api/admin/remove_writeups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error || 'Removal failed')
+      window.location.reload() // writeups are now drafts; reload to reflect
+    } catch (err) {
+      setError(err.message)
+      setIsSubmitting(false)
+      setShowConfirmModal(false)
     }
   }
 
   const pageDisplay = totalPages > 1 ? `: page ${page}` : ''
 
   return (
-    <form method="post" className="altar__form" ref={formRef}>
-      <input type="hidden" name="node_id" value={nodeId} />
-      <input type="hidden" name="author" value={authorName} />
-      <input type="hidden" name="op" value="remove" />
-
+    <div className="altar__form">
       <fieldset className="altar__fieldset">
         <legend className="altar__legend">Step 2: show mercy (or not)</legend>
 
@@ -200,15 +213,17 @@ const StepSelect = ({
 
         <p className="altar__summary">
           Showing {writeups.length} of {total} total writeups.
-          {' '}{selectedForRemoval.size} selected for removal.
+          {' '}{count} selected for removal.
         </p>
 
+        {error && <p className="altar__error">{error}</p>}
+
         <div className="altar__actions">
-          <button type="button" onClick={selectAll} className="altar__btn--small">
+          <button type="button" onClick={selectAll} className="altar__btn--small" disabled={removeAll}>
             Select All
           </button>
           {' '}
-          <button type="button" onClick={selectNone} className="altar__btn--small">
+          <button type="button" onClick={selectNone} className="altar__btn--small" disabled={removeAll}>
             Select None
           </button>
         </div>
@@ -227,9 +242,8 @@ const StepSelect = ({
                 <td className="altar__td--axe">
                   <input
                     type="checkbox"
-                    name={`removenode${wu.node_id}`}
-                    value="1"
-                    checked={selectedForRemoval.has(wu.node_id)}
+                    checked={removeAll || selectedForRemoval.has(wu.node_id)}
+                    disabled={removeAll}
                     onChange={() => toggleWriteup(wu.node_id)}
                   />
                 </td>
@@ -257,24 +271,24 @@ const StepSelect = ({
             <label>
               <input
                 type="checkbox"
-                name="removeauthor"
-                value="1"
+                checked={removeAll}
+                onChange={(e) => setRemoveAll(e.target.checked)}
               />
-              {' '}Remove <strong>all</strong> of {authorName}&apos;s writeups
+              {' '}Remove <strong>all</strong> {total} of {authorName}&apos;s writeups
             </label>
           </p>
         )}
 
         <p className="altar__reason-field">
           <label>
-            Reason for removal (optional):{' '}
+            Reason for removal (required):{' '}
             <input
               type="text"
-              name="removereason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               className="altar__reason-input"
               size="50"
+              required
             />
           </label>
         </p>
@@ -303,7 +317,7 @@ const StepSelect = ({
         confirmStyle="danger"
         isSubmitting={isSubmitting}
       />
-    </form>
+    </div>
   )
 }
 
