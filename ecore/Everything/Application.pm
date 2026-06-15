@@ -6493,6 +6493,104 @@ Returns:
 
 =cut
 
+# Builds the Usergroup Writeups nodelet payload: the selected group, its 14
+# most-recent (non-removed) weblog writeups, the user's available groups, and
+# restricted/editor flags. $override_title (optional) selects a group directly
+# (used by the API refresh endpoint, GET /api/usergroups/:id/writeups, so the
+# nodelet can repaint in place); otherwise the user's nodeletusergroup pref (or
+# the default group) is used. Returns undef when the resolved group does not
+# exist, so the caller can leave usergroupData unset (parity with the original
+# nodelet builder).
+sub buildUsergroupWriteupsData
+{
+  my ($this, $USER, $VARS, $override_title) = @_;
+
+  my $isEd = $this->isEditor($USER);
+
+  # Get user's available weblog groups first
+  my $can_weblog = $VARS->{can_weblog} || '';
+  my @groupids = split(',', $can_weblog);
+
+  # If can_weblog is empty, get all usergroups the user is a member of
+  unless (@groupids && $groupids[0]) {
+    my $membership_csr = $this->{db}->sqlSelectMany(
+      'DISTINCT nodegroup_id',
+      'nodegroup',
+      "node_id=$$USER{node_id}"
+    );
+    while (my $row = $membership_csr->fetchrow_hashref()) {
+      push @groupids, $row->{nodegroup_id};
+    }
+  }
+
+  # Default to first available group, or fallback if none
+  my $default_group_title = 'edev';  # Fallback for dev environment
+  if(@groupids && $groupids[0]) {
+    my $first_group = $this->{db}->getNodeById($groupids[0], 'light');
+    $default_group_title = $first_group->{title} if $first_group;
+  }
+
+  my $ug_title = $override_title || $VARS->{nodeletusergroup} || $default_group_title;
+  my $ug = $this->{db}->getNode($ug_title, 'usergroup');
+
+  return unless $ug;
+
+  my $view_weblog = $ug->{node_id};
+  my $isRestricted = ($view_weblog == 114 || $view_weblog == 923653);
+
+  # Get writeups from this usergroup's weblog
+  my @writeups = ();
+  my $wclause = "weblog_id='$view_weblog' AND removedby_user=''";
+  my $csr = $this->{db}->sqlSelectMany('*','weblog',$wclause,'order by tstamp desc');
+  my $counter = 0;
+  my $limit = 14;
+  while(($counter <= $limit) && (my $ref = $csr->fetchrow_hashref()))
+  {
+    my $N = $this->{db}->getNodeById($ref->{to_node});
+    next unless $N;
+    push @writeups, {
+      node_id => $N->{node_id},
+      title => $N->{title}
+    };
+    $counter++;
+  }
+
+  # Build available usergroups for dropdown (reuse groupids from above)
+  my @availableGroups = ();
+  my %seen = ();  # Track which groups we've already added
+
+  foreach my $gid (@groupids)
+  {
+    my $g = $this->{db}->getNodeById($gid, 'light');
+    if ($g) {
+      push @availableGroups, {
+        node_id => $g->{node_id},
+        title => $g->{title}
+      };
+      $seen{$g->{node_id}} = 1;
+    }
+  }
+
+  # Ensure current group is always in the list (even if not in can_weblog)
+  unless ($seen{$ug->{node_id}}) {
+    unshift @availableGroups, {
+      node_id => $ug->{node_id},
+      title => $ug->{title}
+    };
+  }
+
+  return {
+    currentGroup => {
+      node_id => $ug->{node_id},
+      title => $ug->{title}
+    },
+    writeups => \@writeups,
+    availableGroups => \@availableGroups,
+    isRestricted => $isRestricted,
+    isEditor => $isEd
+  };
+}
+
 sub buildOtherUsersData
 {
   my ($this, $USER) = @_;
@@ -7566,91 +7664,8 @@ sub buildNodeInfoStructure
   # Usergroup Writeups
   if($nodelets =~ /1924754/)
   {
-    my $isEd = $this->isEditor($USER);
-
-    # Get user's available weblog groups first
-    my $can_weblog = $VARS->{can_weblog} || '';
-    my @groupids = split(',', $can_weblog);
-
-    # If can_weblog is empty, get all usergroups the user is a member of
-    unless (@groupids && $groupids[0]) {
-      my $membership_csr = $this->{db}->sqlSelectMany(
-        'DISTINCT nodegroup_id',
-        'nodegroup',
-        "node_id=$$USER{node_id}"
-      );
-      while (my $row = $membership_csr->fetchrow_hashref()) {
-        push @groupids, $row->{nodegroup_id};
-      }
-    }
-
-    # Default to first available group, or fallback if none
-    my $default_group_title = 'edev';  # Fallback for dev environment
-    if(@groupids && $groupids[0]) {
-      my $first_group = $this->{db}->getNodeById($groupids[0], 'light');
-      $default_group_title = $first_group->{title} if $first_group;
-    }
-
-    my $ug_title = $VARS->{nodeletusergroup} || $default_group_title;
-    my $ug = $this->{db}->getNode($ug_title, 'usergroup');
-
-    if($ug)
-    {
-      my $view_weblog = $ug->{node_id};
-      my $isRestricted = ($view_weblog == 114 || $view_weblog == 923653);
-
-      # Get writeups from this usergroup's weblog
-      my @writeups = ();
-      my $wclause = "weblog_id='$view_weblog' AND removedby_user=''";
-      my $csr = $this->{db}->sqlSelectMany('*','weblog',$wclause,'order by tstamp desc');
-      my $counter = 0;
-      my $limit = 14;
-      while(($counter <= $limit) && (my $ref = $csr->fetchrow_hashref()))
-      {
-        my $N = $this->{db}->getNodeById($ref->{to_node});
-        next unless $N;
-        push @writeups, {
-          node_id => $N->{node_id},
-          title => $N->{title}
-        };
-        $counter++;
-      }
-
-      # Build available usergroups for dropdown (reuse groupids from above)
-      my @availableGroups = ();
-      my %seen = ();  # Track which groups we've already added
-
-      foreach my $gid (@groupids)
-      {
-        my $g = $this->{db}->getNodeById($gid, 'light');
-        if ($g) {
-          push @availableGroups, {
-            node_id => $g->{node_id},
-            title => $g->{title}
-          };
-          $seen{$g->{node_id}} = 1;
-        }
-      }
-
-      # Ensure current group is always in the list (even if not in can_weblog)
-      unless ($seen{$ug->{node_id}}) {
-        unshift @availableGroups, {
-          node_id => $ug->{node_id},
-          title => $ug->{title}
-        };
-      }
-
-      $e2->{usergroupData} = {
-        currentGroup => {
-          node_id => $ug->{node_id},
-          title => $ug->{title}
-        },
-        writeups => \@writeups,
-        availableGroups => \@availableGroups,
-        isRestricted => $isRestricted,
-        isEditor => $isEd
-      };
-    }
+    my $ugdata = $this->buildUsergroupWriteupsData($USER, $VARS);
+    $e2->{usergroupData} = $ugdata if $ugdata;
   }
 
   # Other Users - Real-time user tracking

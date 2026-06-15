@@ -20,6 +20,11 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
   'edn_hideedev' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'collapsedNodelets' => Everything::Preference::String->new(default_value => '', allowed_values => qr/.?/),
   'nodetrail' => Everything::Preference::String->new(default_value => '', allowed_values => qr/.?/),
+  # Usergroup Writeups nodelet: which usergroup's writeups to list. A usergroup
+  # title; read back via getNode($title,'usergroup') (parameterized, falls back
+  # to the default group on a missing/bad title). Empty clears -> default group.
+  # Replaces the retired `changeusergroup` opcode (#4312).
+  'nodeletusergroup' => Everything::Preference::String->new(default_value => '', allowed_values => qr/^.{0,80}$/),
 
   ## Settings Tab - Look and Feel
   'userstyle' => Everything::Preference::String->new(default_value => '', allowed_values => qr/^\d*$/), # node_id or empty

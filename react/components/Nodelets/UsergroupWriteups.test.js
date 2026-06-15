@@ -35,6 +35,32 @@ describe('UsergroupWriteups', () => {
     isEditor: false
   }
 
+  // Payload the content endpoint returns when switching to E2arts (node 999).
+  const e2artsData = {
+    currentGroup: { node_id: 999, title: 'E2arts' },
+    writeups: [{ node_id: 111, title: 'Impressionism' }],
+    availableGroups: mockData.availableGroups,
+    isRestricted: false,
+    isEditor: false
+  }
+
+  beforeEach(() => {
+    global.fetch = jest.fn((url) => {
+      if (typeof url === 'string' && url.includes('/api/usergroups/')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ success: 1, usergroupData: e2artsData })
+        })
+      }
+      // /api/preferences/set
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   test('shows friendly message when usergroupData is undefined', () => {
     render(<UsergroupWriteups usergroupData={undefined} />)
 
@@ -56,6 +82,15 @@ describe('UsergroupWriteups', () => {
     expect(screen.getByText('String Theory Explained')).toBeInTheDocument()
   })
 
+  test('uses the shared infolist display (matching New Writeups, not the old bold linklist)', () => {
+    const { container } = render(<UsergroupWriteups usergroupData={mockData} />)
+
+    const list = container.querySelector('ul.usergroup-writeups__list')
+    expect(list).toBeInTheDocument()
+    expect(list).toHaveClass('infolist')
+    expect(list).not.toHaveClass('linklist')
+  })
+
   test('renders dropdown with available groups', () => {
     render(<UsergroupWriteups usergroupData={mockData} />)
 
@@ -68,13 +103,33 @@ describe('UsergroupWriteups', () => {
     expect(options[1]).toHaveValue('E2arts')
   })
 
-  test('allows changing selected group', () => {
+  test('on group change: updates the selection, persists the preference, and repaints in place (no full reload)', async () => {
     render(<UsergroupWriteups usergroupData={mockData} />)
 
     const select = screen.getByRole('combobox')
     fireEvent.change(select, { target: { value: 'E2arts' } })
 
+    // Selection reflects the choice immediately
     expect(select.value).toBe('E2arts')
+
+    // Persists the choice as a user preference
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/preferences/set',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ nodeletusergroup: 'E2arts' })
+      })
+    )
+
+    // Fetches the new group's writeups by id (for the in-place repaint)
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/usergroups/999/writeups',
+      expect.objectContaining({ credentials: 'include' })
+    )
+
+    // The nodelet repaints with the new group's writeups without a page reload
+    expect(await screen.findByText('Impressionism')).toBeInTheDocument()
+    expect(screen.queryByText('Quantum Mechanics 101')).not.toBeInTheDocument()
   })
 
   test('shows "No writeups available" when writeups list is empty', () => {

@@ -906,7 +906,74 @@ my $weblog_group_node = $DB->getNodeById($weblog_group_id);
 $DB->nukeNode($weblog_group_node, $root_user) if $weblog_group_node;
 
 #############################################################################
-# Test 35: Remove Owner - Owner cannot be removed
+# Test 35: nodelet_writeups - the Usergroup Writeups nodelet content endpoint
+# (GET /api/usergroups/:id/writeups) that replaced the changeusergroup opcode
+# full-page reload (#4312). Exercises the shared
+# Everything::Application::buildUsergroupWriteupsData builder.
+#############################################################################
+
+$routes = $api->routes();
+ok(exists $routes->{':id/writeups'}, "writeups (nodelet content) route exists");
+
+# A real usergroup to read; skip the live-data assertions if absent in this DB.
+my $edev = $DB->getNode("edev", "usergroup");
+
+SKIP: {
+  skip "edev usergroup not present in this DB", 8 unless $edev;
+
+  my $nodelet_request = MockRequest->new(
+    node_id => $root_user->{node_id},
+    title => $root_user->{title},
+    nodedata => $root_user,
+    is_guest_flag => 0,
+    is_admin_flag => 1,
+  );
+
+  $result = $api->nodelet_writeups($nodelet_request, $edev->{node_id});
+  is($result->[0], 200, "nodelet_writeups for a real usergroup returns 200");
+  ok($result->[1]{success}, "Response has success=1");
+  my $payload = $result->[1]{usergroupData};
+  is(ref($payload), 'HASH', "Returns a usergroupData payload");
+  is($payload->{currentGroup}{title}, 'edev', "currentGroup is the requested group");
+  is(ref($payload->{writeups}), 'ARRAY', "writeups is an arrayref");
+  is(ref($payload->{availableGroups}), 'ARRAY', "availableGroups is an arrayref");
+
+  # edev is seeded with three weblog writeups (tools/seeds.pl), so the payload
+  # should render real content -- not just an empty list.
+  ok(scalar(@{$payload->{writeups}}) >= 1, "edev nodelet has seeded writeups");
+  my %wtitles = map { $_->{title} => 1 } @{$payload->{writeups}};
+  ok($wtitles{'interesting dev announcement (lede)'},
+     "Seeded edev weblog writeup is present in the payload");
+}
+
+# Guest cannot read the nodelet content
+my $guest_nodelet_request = MockRequest->new(
+  node_id => 0,
+  title => 'Guest User',
+  nodedata => {},
+  is_guest_flag => 1,
+  is_admin_flag => 0,
+);
+$result = $api->nodelet_writeups($guest_nodelet_request, ($edev ? $edev->{node_id} : 838015));
+is($result->[0], 401, "nodelet_writeups returns 401 for guests");
+
+# Non-existent node -> 404
+my $valid_nodelet_request = MockRequest->new(
+  node_id => $root_user->{node_id},
+  title => $root_user->{title},
+  nodedata => $root_user,
+  is_guest_flag => 0,
+  is_admin_flag => 1,
+);
+$result = $api->nodelet_writeups($valid_nodelet_request, 999999999);
+is($result->[0], 404, "nodelet_writeups returns 404 for a non-existent node");
+
+# A node that is not a usergroup (root is a user) -> 404
+$result = $api->nodelet_writeups($valid_nodelet_request, $root_user->{node_id});
+is($result->[0], 404, "nodelet_writeups returns 404 when the node is not a usergroup");
+
+#############################################################################
+# Test 36: Remove Owner - Owner cannot be removed
 #############################################################################
 
 # Make sure nm1 is still owner

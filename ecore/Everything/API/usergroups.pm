@@ -17,9 +17,36 @@ around 'routes' => sub {
   $routes->{':id/action/description'} = 'update_description(:id)';
   $routes->{':id/action/transfer_ownership'} = 'transfer_ownership(:id)';
   $routes->{':id/action/weblogify'} = 'weblogify(:id)';
+  $routes->{':id/writeups'} = 'nodelet_writeups(:id)';
 
   return $routes;
 };
+
+# Returns the Usergroup Writeups nodelet payload for a given group, so the
+# nodelet can repaint in place after the user picks a different group (the
+# nodeletusergroup preference is persisted separately via /api/preferences/set).
+# Replaces the full-page reload the retired changeusergroup opcode forced (#4312).
+sub nodelet_writeups
+{
+  my ($self, $REQUEST, $id) = @_;
+
+  my $user = $REQUEST->user;
+  if ($user->is_guest) {
+    return [$self->HTTP_UNAUTHORIZED, { success => 0, error => 'Must be logged in' }];
+  }
+
+  my $group = $self->APP->node_by_id($id);
+  unless ($group && $group->type->title eq 'usergroup') {
+    return [$self->HTTP_NOT_FOUND, { success => 0, error => 'Usergroup not found' }];
+  }
+
+  my $data = $self->APP->buildUsergroupWriteupsData($user->NODEDATA, $user->VARS, $group->title);
+  unless ($data) {
+    return [$self->HTTP_NOT_FOUND, { success => 0, error => 'Usergroup not found' }];
+  }
+
+  return [$self->HTTP_OK, { success => 1, usergroupData => $data }];
+}
 
 # Build enhanced member data with flags, is_owner, is_current
 # This mirrors what the controller does for initial page render
