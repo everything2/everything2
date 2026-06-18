@@ -1,11 +1,11 @@
 # Everything2 Node Object System
 
-**Last Updated**: 2025-11-23
+**Last Updated**: 2026-06-15
 **Author**: Claude Code / Jay Bonci
 
 ## Overview
 
-This document describes the Everything2 node object system, covering the transition from legacy HASHREF-based nodes to the modern `Everything::Node` blessed object system, and the eventual migration to DBIx::Class.
+This document describes the Everything2 node object system, covering the transition from legacy HASHREF-based nodes to the modern `Everything::Node` blessed object system. A full migration to DBIx::Class was **evaluated and deferred** (June 2026) — see [docs/orm-migration-plan.md](orm-migration-plan.md). The forward direction is to modernize `NodeBase` in place, reserving DBIx::Class for new tables rather than re-hosting the node model on it.
 
 ## Table of Contents
 
@@ -70,19 +70,26 @@ $APP->legacyFunction($hashref);
 - `NODEDATA` method bridges old and new worlds
 - Type-safe method calls
 
-### Phase 3: DBIx::Class (Future Goal)
+### Phase 3: DBIx::Class — Evaluated and Deferred (June 2026)
+
+A full ORM migration was considered as the eventual Phase 3 and **deliberately deferred** — the
+decision (June 2026) is "mostly no": modernize `NodeBase` in place and reserve DBIx::Class for
+*new* tables, rather than re-hosting the node model on an ORM. Rationale and the dual-write/
+benchmark plan that was shelved live in [docs/orm-migration-plan.md](orm-migration-plan.md); pull
+it forward only if the data model actively becomes a cost or feature bottleneck. The sketch below
+is the shape it would take *if* revived, not committed work:
+
 ```perl
-# Future pattern (planned)
+# Illustrative only (deferred) — what an ORM-backed access pattern might look like
 my $user = $schema->resultset('User')->find({ title => 'root' });
 # $user is a DBIx::Class::Row object
 
-# Modern ORM patterns
 my $title = $user->title;
 my $writeups = $user->writeups->search({ reputation => { '>' => 5 } });
 $user->update({ lasttime => \'NOW()' });
 ```
 
-**Goals**:
+**If revived, the goals would be**:
 - Full ORM with relationships
 - Database abstraction
 - Transaction support
@@ -417,9 +424,14 @@ ok($DB->getNodeById($node->{node_id}), 'Node exists');
 
 ---
 
-## Future Direction: DBIx::Class
+## Future Direction: DBIx::Class — Deferred
 
-### Goals
+> **Status (June 2026):** evaluated and deferred. The direction is to modernize `NodeBase` in
+> place and use DBIx::Class only for *new* tables, not to replace the node model wholesale. The
+> material below is the parked design — see [docs/orm-migration-plan.md](orm-migration-plan.md)
+> for the deferral rationale. Revisit only if the node model becomes a cost/feature bottleneck.
+
+### Goals (if revived)
 
 1. **Full ORM**: Replace custom NodeBase with DBIx::Class
 2. **Relationships**: Define has_many, belongs_to, many_to_many
@@ -538,7 +550,7 @@ my $writeups = $user->writeups->search(
 
 ### Low Priority
 
-7. **DBIx::Class Preparation**
+7. **DBIx::Class Preparation** (deferred — not active work; see [docs/orm-migration-plan.md](orm-migration-plan.md))
    - ⬜ Design DBIx::Class schema for core tables
    - ⬜ Create proof-of-concept for user table
    - ⬜ Benchmark DBIx::Class vs current NodeBase
@@ -623,7 +635,7 @@ The Everything2 node system is in transition from legacy hashrefs to blessed obj
 - **APIs use blessed objects** - call methods directly
 - **Legacy code uses hashrefs** - use hash access and $APP methods
 - **NODEDATA bridges the gap** - converts blessed → hashref when needed
-- **Future is DBIx::Class** - full ORM with relationships
+- **DBIx::Class is deferred** - the forward direction is modernizing NodeBase in place; ORM only for new tables (see [docs/orm-migration-plan.md](orm-migration-plan.md))
 
 When in doubt, check `blessed($node)` to determine what you're working with.
 

@@ -1,15 +1,16 @@
 # Everything2 Nodetype Inheritance Tree
 
-This document maps the complete nodetype inheritance hierarchy and indicates whether each type is handled by a React-enabled controller or falls back to legacy delegation.
+This document maps the complete nodetype inheritance hierarchy (node IDs, `extends_nodetype`, and `sqltable`).
 
-**Last Updated**: 2026-01-08
+**Last Updated**: 2026-06-15
+
+> **Note on the controller labels below.** The "React Controller" / "No Controller" annotations are a historical snapshot of the React-migration state and are *not* the authoritative source — re-derive from `ecore/Everything/Controller/*` and `ecore/Everything/Page/*` if you need current status. The old framing they referenced is gone: `Everything::Delegation::htmlpage` and the `page_header` / `page_actions` htmlcodes **no longer exist**, and tickers are now `Everything::Page` classes (no "legacy htmlpage fallback"). What remains durably accurate in this document is the **inheritance tree itself** (node IDs / `extends_nodetype` / `sqltable`).
 
 ## Legend
 
-- **React Controller** - Type has a controller that sets `reactPageMode = \1`, bypassing legacy `page_header`/`page_actions`
-- **Legacy Delegation** - Type falls back to legacy htmlpage delegation system
+- **React Controller** - Type has a controller that sets `reactPageMode = \1`
 - **Inherits Controller** - Type's controller extends another controller (inherits its behavior)
-- **No Controller** - Type has no dedicated controller, uses legacy system entirely
+- **No Controller** - Type has no dedicated controller class
 
 ## Inheritance Tree
 
@@ -29,7 +30,7 @@ node (7) - No Controller (base type, handled specially)
 │   │   ├── superdocnolinks (1065266) - Inherits Controller (extends superdoc) → React
 │   │   ├── oppressor_superdoc (1144104) - Inherits Controller (extends superdoc) → React
 │   │   ├── fullpage (451267) - React Controller (extends page)
-│   │   ├── ticker (1252389) - Legacy (falls back when no Page class)
+│   │   ├── ticker (1252389) - Page classes (Everything::Page)
 │   │   │   └── schema (1258942) - React Controller
 │   │   │       └── sqltable: e2schema
 │   │   └── e2poll (1685242) - React Controller
@@ -111,7 +112,7 @@ datastash (2117441) - React Controller
 
 ## Document-Inheriting Types Summary
 
-These types include the `document` sqltable (either directly or through inheritance) and are relevant for features like weblogform that check `sqltablelist =~ /document/`:
+These types include the `document` sqltable (either directly or through inheritance):
 
 | Type | Node ID | Controller Status | Notes |
 |------|---------|-------------------|-------|
@@ -121,7 +122,7 @@ These types include the `document` sqltable (either directly or through inherita
 | superdocnolinks | 1065266 | React (via superdoc) | Extends superdoc |
 | oppressor_superdoc | 1144104 | React (via superdoc) | Extends superdoc |
 | fullpage | 451267 | React | Extends superdoc |
-| ticker | 1252389 | **Legacy fallback** | Falls back when no Page class |
+| ticker | 1252389 | Page classes | Rendered by `Everything::Page` classes |
 | e2poll | 1685242 | React | Extends superdoc |
 | schema | 1258942 | React | Extends ticker |
 | draft | 2035430 | React | Extends document |
@@ -143,7 +144,7 @@ These types include the `document` sqltable (either directly or through inherita
 
 ## Types Without React Controllers
 
-These types may still use legacy `page_header`/`page_actions`:
+These types have no dedicated controller class:
 
 ### No Controller at All
 - **sustype** (1399991) - Extends document
@@ -164,23 +165,13 @@ These types may still use legacy `page_header`/`page_actions`:
 - **jsonexport** (2100759) - Legacy controller for JSON exports
 - **node_forward** (1147470) - Does HTTP redirect, never renders page content
 
-## Implications for Legacy Code Removal
+## Types Still Lacking a Dedicated Controller Class
 
-### weblogform / categoryform
-These htmlcodes in `page_actions` check `$$NODE{type}{sqltablelist} =~ /document/`. They could still be reached by:
-- **sustype**, **registry**, **writeup_feedback** nodes (no controllers)
+The following document-inheriting types have no dedicated controller class and are the main remaining gaps if a uniform per-type controller surface is ever desired:
 
-### page_actions
-The `page_actions` htmlcode is called from `page_header` which is part of the legacy container system. It's still reachable for any document-inheriting type without a React controller.
-
-## Migration Status
-
-- **Fully migrated**: 27 types have React controllers
-- **Partially migrated**: 3 types have controllers but may fall back
-- **Not migrated**: 12 types have no controller and use legacy system
-
-To fully deprecate legacy `page_actions` features like `weblogform`, controllers would need to be created for:
 1. sustype
 2. registry
 3. writeup_feedback
 4. Various standalone metadata types (if they need display pages)
+
+(The legacy `page_header` / `page_actions` / `weblogform` / `categoryform` htmlcode plumbing that this section previously described no longer exists, so there is no longer a "legacy fallback render path" to deprecate.)

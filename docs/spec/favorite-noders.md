@@ -41,13 +41,13 @@ CREATE TABLE `links` (
 ### Data Flow
 
 ```
-User Profile Page
+User Profile Page (React)
+       │
+       ▼  (button click)
+POST /api/favorites/:id/action/favorite   (or .../unfavorite)
        │
        ▼
-favorite_noder htmlcode ──► Creates "favorite!" / "unfavorite!" button
-       │
-       ▼ (AJAX click)
-favorite/unfavorite opcode
+Everything::API::favorites
        │
        ▼
 links table INSERT/DELETE
@@ -64,46 +64,36 @@ FavoriteNoders React component
 
 ### Backend Components
 
-#### 1. Favorite/Unfavorite Opcodes
-**Location:** `ecore/Everything/Delegation/opcode.pm` (lines 1648-1688)
+#### 1. Favorites API
+**Location:** `ecore/Everything/API/favorites.pm`
+
+The favorite/unfavorite **opcodes** and the `favorite_noder` **htmlcode** were removed (June 2026). Following/unfollowing is now a REST API:
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/favorites/` | GET | List users the current user has favorited |
+| `/api/favorites/:id` | GET | Favorite status for a specific user (`is_favorited`) |
+| `/api/favorites/:id/action/favorite` | POST | Favorite (follow) a user |
+| `/api/favorites/:id/action/unfavorite` | POST | Unfavorite (unfollow) a user |
 
 ```perl
 sub favorite {
-  # Inserts link: from_node=USER, to_node=target_user, linktype=favorite
-  $DB->sqlInsert('links', {
-    -from_node => getId($USER),
-    -to_node => $node_id,
-    -linktype => getId($LINKTYPE)
+  # Inserts link: from_node=USER, to_node=:id, linktype=favorite
+  $self->DB->sqlInsert('links', {
+    -from_node => $user_id,
+    -to_node   => $target_id,
+    -linktype  => $linktype_id
   });
-}
-
-sub unfavorite {
-  # Deletes link from links table
-  $DB->sqlDelete('links',
-    "from_node = $uid AND to_node = $node_id AND linktype = $$LINKTYPE{node_id}");
 }
 ```
 
 **Validation:**
-- Target must be a `user` nodetype
-- Requester must not be a guest
+- Target must exist and be a `user` nodetype
+- Cannot favorite yourself
+- Guests are rejected (`unauthorized_if_guest` around all actions)
+- Favoriting an already-favorited user is idempotent (returns `is_favorited => 1`)
 
-#### 2. Favorite Button Generator
-**Location:** `ecore/Everything/Delegation/htmlcode.pm` (lines 8662-8703)
-
-```perl
-sub favorite_noder {
-  # Only renders on user profile pages (type 15)
-  # Checks if link exists to determine button text
-  # Returns "favorite!" or "unfavorite!" link with AJAX class
-}
-```
-
-**Output:**
-- AJAX-enabled link with class `ajax favoritenoder:favorite_noder`
-- Title tooltip explains the action
-
-#### 3. Data Population for Nodelet
+#### 2. Data Population for Nodelet
 **Location:** `ecore/Everything/Application.pm` (lines 7085-7127)
 
 ```perl
@@ -212,10 +202,10 @@ The "unfavorite" system (hiding writeups) is separate but often confused with fa
 |---------|---------|-------|
 | Favorite Noders Nodelet | `1876005` | - |
 | Favorite Linktype | `1930912` | `favorite` |
-| Unfavorite Opcode | `1930914` | `unfavorite` |
-| Favorite Opcode | `1930913` | `favorite` |
 | Favorite Notification | `1930837` | - |
 | User Nodetype | `15` | `user` |
+
+> The `favorite` (`1930913`) and `unfavorite` (`1930914`) **opcodes were removed** (June 2026), replaced by `Everything::API::favorites`.
 
 ### Constants
 **Location:** `ecore/Everything/Constants.pm`
@@ -239,21 +229,21 @@ The React component hard-codes a limit of 5 writeups regardless of `favorite_lim
 
 These are completely separate systems despite similar names.
 
-### No Dedicated API for Favorites
-The favorite/unfavorite actions still use legacy AJAX opcodes rather than a modern REST API.
+### Display Limit vs. favorite_limit
+The Favorite Noders nodelet still hard-caps display at 5 items (issue #3765) even though `favorite_limit` allows up to 50. The data plumbing (`/api/favorites` + the nodelet query) now exists to support honoring the configured limit.
 
 ## User Experience
 
 ### Adding a Favorite
 1. Navigate to a user's profile page
-2. Click "favorite!" link
-3. AJAX updates the link to "unfavorite!"
+2. Click the "favorite!" control
+3. React POSTs `/api/favorites/:id/action/favorite` and flips the control to "unfavorite!"
 4. User's writeups now appear in Favorite Noders nodelet
 
 ### Removing a Favorite
 1. Navigate to the favorited user's profile page
-2. Click "unfavorite!" link
-3. AJAX updates the link to "favorite!"
+2. Click the "unfavorite!" control
+3. React POSTs `/api/favorites/:id/action/unfavorite` and flips the control back to "favorite!"
 4. User's writeups no longer appear in nodelet
 
 ### Configuring Display Limit
@@ -271,7 +261,7 @@ Users can set `favorite_limit` in their settings (via Oracle for admins, or dire
 
 ## Future Considerations
 
-1. **Create dedicated API endpoints** for favorite management (`/api/favorites`)
+1. **Honor `favorite_limit`** in the nodelet (remove the hard-coded slice of 5; the `/api/favorites` backend now exists).
 2. **Unify terminology** - rename "unfavorite" to "hide" or "mute"
 3. **Add pagination** to the Favorite Noders nodelet
 4. **Add favorite count** to user profiles

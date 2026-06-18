@@ -48,6 +48,7 @@ my $idea_writeuptype = $DB->getNode( 'idea', 'writeuptype' );
             is_editor_flag => $args{is_editor_flag} // 0,
             is_guest_flag  => $args{is_guest_flag}  // 0,
             _nodedata      => $args{nodedata}       // {},
+            _vars          => $args{vars}           // {},
         }, $class;
     }
     sub is_admin  { return shift->{is_admin_flag}; }
@@ -56,6 +57,8 @@ my $idea_writeuptype = $DB->getNode( 'idea', 'writeuptype' );
     sub node_id   { shift->{node_id} }
     sub title     { shift->{title} }
     sub NODEDATA  { shift->{_nodedata} }
+    sub VARS      { shift->{_vars} }
+    sub set_vars  { my ( $self, $v ) = @_; $self->{_vars} = $v; return 1; }
 }
 
 {
@@ -2442,5 +2445,183 @@ sub cleanup_test_nodes {
         is( $status, $api->HTTP_BAD_REQUEST, 'invalid id rejected' );
     }
 }
+
+#############################################################################
+# #4314: publish-finisher parity with the legacy publishwriteup htmlcode
+#   - lastnoded VARS update on publish
+#   - lede writeups go to the top of the e2node (lede is editor-protected)
+#   - finalize_published_writeup fires the favorite-author notification
+#############################################################################
+subtest 'publish finisher parity (#4314)' => sub {
+    my $lede_writeuptype = $DB->getNode( 'lede', 'writeuptype' );
+
+    # --- lastnoded VARS is set to the published writeup ---
+    {
+        my $e2node_title = 'parity lastnoded ' . time() . "_$$";
+        my $e2node_id =
+          $DB->insertNode( $e2node_title, $e2node_type, $regular_user );
+
+        my $req = MockRequest->new(
+            node_id  => $regular_user->{node_id},
+            title    => $regular_user->{title},
+            nodedata => $regular_user,
+            vars     => {},
+        );
+        $req->set_postdata(
+            { title => $e2node_title, doctext => '<p>lastnoded body</p>' } );
+        my ( undef, $cresp ) = @{ $api->create_draft($req) };
+        my $draft_id = $cresp->{draft}{node_id};
+
+        $req->set_postdata(
+            {
+                parent_e2node      => $e2node_id,
+                wrtype_writeuptype => $idea_writeuptype->{node_id}
+            }
+        );
+        my ($st) = @{ $api->publish_draft( $req, $draft_id ) };
+        is( $st, $api->HTTP_OK, 'lastnoded: publish OK' );
+        is( $req->user->VARS->{lastnoded},
+            $draft_id, 'lastnoded VARS set to the published writeup' );
+
+        cleanup_test_nodes( $draft_id, $e2node_id );
+    }
+
+    # --- lede goes to the top of the e2node; the existing writeup shifts down ---
+  SKIP: {
+        skip 'lede writeuptype not present', 3 unless $lede_writeuptype;
+
+        my $editor_request = MockRequest->new(
+            node_id        => $admin_user->{node_id},
+            title          => $admin_user->{title},
+            nodedata       => $admin_user,
+            is_editor_flag => 1,
+            is_admin_flag  => 1,
+            vars           => {},
+        );
+
+        my $e2node_title = 'parity lede ' . time() . "_$$";
+        my $e2node_id =
+          $DB->insertNode( $e2node_title, $e2node_type, $admin_user );
+
+        # First, a normal (non-lede) writeup
+        $editor_request->set_postdata(
+            { title => "$e2node_title first", doctext => '<p>first body</p>' } );
+        my ( undef, $r1 ) = @{ $api->create_draft($editor_request) };
+        my $wu1 = $r1->{draft}{node_id};
+        $editor_request->set_postdata(
+            {
+                parent_e2node      => $e2node_id,
+                wrtype_writeuptype => $idea_writeuptype->{node_id}
+            }
+        );
+        @{ $api->publish_draft( $editor_request, $wu1 ) };
+
+        # Then a writeup published as a lede
+        $editor_request->set_postdata(
+            { title => "$e2node_title lede", doctext => '<p>lede body</p>' } );
+        my ( undef, $r2 ) = @{ $api->create_draft($editor_request) };
+        my $wu2 = $r2->{draft}{node_id};
+        $editor_request->set_postdata(
+            {
+                parent_e2node      => $e2node_id,
+                wrtype_writeuptype => $lede_writeuptype->{node_id}
+            }
+        );
+        my ($st2) = @{ $api->publish_draft( $editor_request, $wu2 ) };
+        is( $st2, $api->HTTP_OK, 'lede: publish OK' );
+
+        my $lede_orderby = $DB->sqlSelect( 'orderby', 'nodegroup',
+            "nodegroup_id=$e2node_id AND node_id=$wu2" );
+        my $first_orderby = $DB->sqlSelect( 'orderby', 'nodegroup',
+            "nodegroup_id=$e2node_id AND node_id=$wu1" );
+        is( $lede_orderby, 0, 'lede writeup is at the top (orderby 0)' );
+        ok( $first_orderby > $lede_orderby,
+            'existing writeup shifted below the lede' );
+
+        cleanup_test_nodes( $wu1, $wu2, $e2node_id );
+    }
+
+    # --- finalize_published_writeup queues the favorite-author notification ---
+  SKIP: {
+        my $author    = $regular_user;
+        my $fan       = $DB->getNode( 'normaluser1', 'user' );
+        my $fav_notif = $DB->getNode( 'favorite',    'notification' );
+        my $fav_link  = $DB->getNode( 'favorite',    'linktype' );
+        skip 'favorite notification fixtures missing', 1
+          unless $fav_notif && $fav_link && $fan;
+
+        # fan favorites the author and has the favorite notification enabled
+        $DB->sqlInsert(
+            'links',
+            {
+                from_node => $fan->{node_id},
+                to_node   => $author->{node_id},
+                linktype  => $fav_link->{node_id}
+            }
+        );
+        my $fan_node    = $DB->getNodeById( $fan->{node_id} );
+        my $orig_vars   = $APP->getVars($fan_node);
+        my %saved       = %$orig_vars;
+        my $had_settings = exists $orig_vars->{settings};
+        $orig_vars->{settings} = JSON::encode_json(
+            { notifications => { $fav_notif->{node_id} => 1 } } );
+        Everything::setVars( $fan_node, $orig_vars );
+
+        $APP->finalize_published_writeup( $author, $author->{node_id} );
+
+        my $queued = $DB->sqlSelect( 'count(*)', 'notified',
+            "user_id=$fan->{node_id} AND notification_id=$fav_notif->{node_id}" );
+        ok( $queued >= 1,
+            'favorite-author notification queued for the favoriting user' );
+
+        # cleanup: notification rows, favorite link, restored settings
+        $DB->sqlDelete( 'notified',
+            "user_id=$fan->{node_id} AND notification_id=$fav_notif->{node_id}" );
+        $DB->sqlDelete( 'links',
+                "from_node=$fan->{node_id} AND to_node=$author->{node_id} "
+              . "AND linktype=$fav_link->{node_id}" );
+        $fan_node = $DB->getNodeById( $fan->{node_id} );
+        delete $saved{settings} unless $had_settings;
+        Everything::setVars( $fan_node, \%saved );
+    }
+
+    # --- finalize_published_writeup queues the newbie-writeup notification
+    #     for a young author (account < 14 days old) ---
+  SKIP: {
+        my $newbie_notif = $DB->getNode( 'newbiewriteup', 'notification' );
+        skip 'newbiewriteup notification fixture missing', 1 unless $newbie_notif;
+
+        # A freshly created user has createtime = NOW => "young" => the newbie
+        # branch fires regardless of writeup count.
+        my $young_name = "tmp_newbie_${$}_" . time();
+        my $young_id   = $DB->insertNode( $young_name, 'user', -1, {} );
+        my $young      = $DB->getNodeById($young_id);
+
+        # any existing writeup id is fine for the notification's args
+        my $some_writeup =
+          $DB->sqlSelect( 'writeup_id', 'writeup', '1=1 LIMIT 1' ) || $young_id;
+
+        $APP->finalize_published_writeup( $young, $some_writeup );
+
+        # match on author_id (unique to this throwaway user) rather than the
+        # shared writeup id
+        # The throwaway user's id is unique, so any newbie notified row whose
+        # args mention it is ours (author_id serializes as a quoted string).
+        my $queued = $DB->sqlSelect(
+            'count(*)', 'notified',
+            "notification_id=$newbie_notif->{node_id} AND args LIKE '%$young_id%'"
+        );
+        ok( $queued >= 1,
+            'newbie-writeup notification queued for a young author' );
+
+        # cleanup (direct deletes — nukeNode needs the global $USER for its seclog row)
+        $DB->sqlDelete( 'notified',
+            "notification_id=$newbie_notif->{node_id} AND args LIKE '%$young_id%'" );
+        $DB->sqlDelete( 'achieved', "achieved_user=$young_id" );
+        $DB->sqlDelete( 'setting',  "setting_id=$young_id" );
+        $DB->sqlDelete( 'user',     "user_id=$young_id" );
+        $DB->sqlDelete( 'node',     "node_id=$young_id" );
+    }
+};
 
 done_testing();

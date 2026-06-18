@@ -1,7 +1,7 @@
 # Categories System Specification
 
 **Purpose**: Allow users to create curated lists of related nodes
-**Status**: Implemented (Legacy + React hybrid)
+**Status**: Implemented (React UI + `Everything::API::category` backend)
 
 ---
 
@@ -18,14 +18,16 @@ Categories are special nodes that group related e2nodes and writeups into curate
 | `Categories.js` | `react/components/Nodelets/Categories.js` | Sidebar nodelet UI |
 | `CreateCategory.js` | `react/components/Documents/CreateCategory.js` | Category creation form |
 | `create_category.pm` | `ecore/Everything/Page/create_category.pm` | Creation page data |
-| `categoryform` | `ecore/Everything/Delegation/htmlcode.pm:11179` | Add-to-category widget |
-| `listnodecategories` | `ecore/Everything/Delegation/htmlcode.pm:10476` | Show node's categories |
+| `AddToCategoryModal.js` | `react/components/AddToCategoryModal.js` | Add-to-category React modal |
+| `Everything::API::category` | `ecore/Everything/API/category.pm` | Category REST backend (add/remove/list/reorder) |
 
 ### Data Flow
 
 1. **Nodelet display**: `buildE2PageData()` queries editable categories → passes to React
-2. **Adding to category**: `categoryform` htmlcode renders dropdown → form POSTs with `op=category`
+2. **Adding to category**: React `AddToCategoryModal` calls `GET /api/category/list` to populate choices, then `POST /api/category/add_member`
 3. **Creating category**: React form → POSTs with `op=new`, `type=1522375`
+
+> **Backend note (current):** The legacy `categoryform` / `listnodecategories` / `showUserCategories` htmlcodes and the `op=category` opcode were **removed**. All category membership operations now go through `Everything::API::category` (`add_member`, `remove_member`, `reorder_members`, `list`, `node_categories`, `update`, `update_meta`, `lookup_owner`), driven from React.
 
 ---
 
@@ -130,46 +132,20 @@ This returns categories the user can edit, excluding categories the current node
 
 ## Adding Nodes to Categories
 
-### Widget (categoryform htmlcode)
+### Widget (AddToCategoryModal React component)
 
-The `categoryform` htmlcode renders an add-to-category dropdown:
+`react/components/AddToCategoryModal.js` renders the add-to-category UI. It populates its choices from `GET /api/category/list?node_id=X` (which returns `your_categories`, `public_categories`, and — for editors — `other_categories`, already excluding categories the node is in) and submits via `POST /api/category/add_member`:
 
-```html
-<fieldset id="categoryform{node_id}">
-  <legend>Add this [type] to a category:</legend>
-  <select name="cid{node_id}">
-    <option value="">Choose...</option>
-    <option value="123">My Category</option>
-    <option value="new">New category...</option>
-  </select>
-  <button name="op" value="category">Add</button>
-</fieldset>
+```javascript
+// POST /api/category/add_member
+{ category_id: 123, node_id: 999999 }
 ```
 
-### AJAX Updates
-
-Uses the legacy AJAX system with class:
-```
-ajax categoryform{nid}:categoryform?op=category&nid=/nid&cid=/cid
-```
-
-On success, displays "Added" notification and updates the categories display.
+On success the API returns `{ success: 1, category_title }` and the React UI updates.
 
 ### Permission Check
 
-```perl
-# Application.pm
-sub can_category_add {
-  my ($this, $node) = @_;
-  return $this->can_action($node, "category");
-}
-```
-
-Checks `disable_category` node param on node or node type.
-
-### Level Restriction
-
-Level 1 users can only add their own writeups to categories. Level 2+ users can add others' writeups.
+Permission lives in the API (`add_member` in `ecore/Everything/API/category.pm`). A user can add to a category if any of: they are an editor; the category is public (owned by Guest User); they own the category; or they belong to the usergroup that maintains it.
 
 ---
 
@@ -218,42 +194,15 @@ The description textarea has `class="formattable"`, which triggers TinyMCE initi
 
 ## Displaying Category Contents
 
-### listnodecategories htmlcode
+### `GET /api/category/node_categories?node_id=X`
 
-Shows which categories contain a given node:
-
-```perl
-sub listnodecategories {
-  my $nodeid = shift || $$NODE{node_id};
-  # Query links where to_node = $nodeid AND linktype = category_linktype
-  # Return linked list of category titles
-}
-```
-
-Output:
-```html
-<div class="categories" id="categories{node_id}">
-  Categories: <a href="/node/123">Best Fiction</a>, <a href="/node/456">User's Favorites</a>
-</div>
-```
+Returns the categories that contain a given node, each with `can_remove` permission info and prev/next navigation within the category (`_get_category_navigation`). React renders this list; the legacy `listnodecategories` htmlcode no longer exists.
 
 ---
 
 ## User Profile Integration
 
-### showUserCategories htmlcode
-
-Lists categories maintained by a user:
-
-```perl
-sub showUserCategories {
-  my $U = shift || $$USER{node_id};
-  # Query: author_user = $U AND type_nodetype = category_type_id
-  # Return comma-separated linked titles
-}
-```
-
-Used on user profile pages to show categories they maintain.
+Categories a user maintains are surfaced through `Everything::Node::user::editable_categories()` and the category API (`/api/category/list`). The legacy `showUserCategories` htmlcode no longer exists.
 
 ### Node class: editable_categories
 
@@ -270,13 +219,13 @@ Used on user profile pages to show categories they maintain.
 |------|---------|
 | `react/components/Nodelets/Categories.js` | Sidebar nodelet |
 | `react/components/Documents/CreateCategory.js` | Creation form |
+| `react/components/AddToCategoryModal.js` | Add-to-category React modal |
 | `ecore/Everything/Page/create_category.pm` | Creation page data |
-| `ecore/Everything/Delegation/htmlcode.pm` | categoryform, listnodecategories, showUserCategories |
+| `ecore/Everything/API/category.pm` | Category REST backend (add/remove/list/reorder/meta) |
 | `ecore/Everything/Node/user.pm` | editable_categories method |
 | `ecore/Everything/Application.pm:6915` | Categories nodelet data |
 | `nodepack/nodetype/category.xml` | Node type definition |
 | `nodepack/linktype/category.xml` | Link type definition |
-| `nodepack/opcode/category.xml` | Operation code |
 
 ---
 
@@ -284,10 +233,6 @@ Used on user profile pages to show categories they maintain.
 
 1. **TinyMCE replacement**: The category description editor is one of the last TinyMCE users. Could migrate to TipTap.
 
-2. **React migration**: The categoryform widget is legacy htmlcode. Could be converted to React component.
-
-3. **API endpoint**: Currently uses form POSTs. Could add `/api/categories/` for modern integration.
-
 ---
 
-*Last updated: December 2025*
+*Last updated: June 2026 (backend now `Everything::API::category` + React `AddToCategoryModal`; legacy categoryform/listnodecategories/showUserCategories htmlcode and the `op=category` opcode removed)*

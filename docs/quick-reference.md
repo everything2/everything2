@@ -33,31 +33,14 @@ npm run build                          # Build React
 
 ## 📊 Modernization Status
 
-See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) for the comprehensive modernization plan and current status.
+See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) and run `git log` for the current modernization plan and status.
 
-**Quick Summary (Dec 2025)**:
-- ✅ **Phase 4a Complete**: All 26 nodelets + 21 content pages migrated to React
-- 🔄 **Phase 1**: API modernization in progress (50+ endpoints)
-- 🔄 **Phase 5**: jQuery elimination in progress
-- ⏳ **Phase 6-10**: Planned (guest user optimization, PSGI/Plack, ORM, etc.)
-
-**Key Achievements**:
-- Mason2 reduced to 3 base templates only
-- All user-facing content pages React-rendered
-- Full-Text Search, Sign Up, and Maintenance Display migrated
-
-## 🎯 Current Priorities
-
-1. **API Modernization** (Phase 1) - RESTful endpoints with comprehensive testing
-2. **Guest User Optimization** (Phase 6) - S3 caching for anonymous users
-3. **PSGI/Plack Migration** (Phase 7) - Eliminate mod_perl dependency
-
-## 🏗️ Architecture
+## 🏗️ Architecture (as of 2026-06)
 
 ```
-Frontend:  React 18.2 + Mason2 templates
-Backend:   Perl + mod_perl2 + Apache2
-Database:  MySQL 8.0+
+Frontend:  React 18.3.1
+Backend:   Perl on Starman/PSGI (Apache mpm_event reverse proxy; mod_perl removed)
+Database:  MySQL 8.4
 Deploy:    Docker → AWS CodeBuild → Fargate ECS
 ```
 
@@ -78,13 +61,7 @@ react/                          # React frontend
 │   ├── Documents/             # Page-level components
 │   ├── Nodelets/              # Sidebar nodelet components
 │   └── ...                    # Various feature components
-templates/                      # Mason2 templates (only 3 base templates)
-├── pages/
-│   ├── Base.mc                # Base template class
-│   ├── react_page.mc          # React page wrapper
-│   └── react_fullpage.mc      # Full-page React wrapper
 www/                           # Web-accessible files
-├── index.pl                   # mod_perl entry point
 ├── css/                       # Stylesheets
 └── react/                     # Compiled React bundles
 t/                             # Perl test suite
@@ -186,20 +163,7 @@ test('renders component', () => {
 
 ## 🐛 Known Issues
 
-### Critical
-- **SQL Injection:** ~15 direct interpolations (Priority 2)
-- **Database Code:** 45 achievements, room criteria, 129 superdocs (Priority 1)
-- **No Mobile CSS:** Fixed widths, zero media queries (Priority 3)
-
-### High
-- **No CI/CD Tests:** Tests don't block deployment
-- **No React Tests:** Zero test coverage for 29 components
-- **Thread Safety:** Code not safe for Apache threaded MPM
-
-### Medium
-- **Legacy Patterns:** Class components instead of hooks
-- **No Code Coverage:** Can't measure test coverage
-- **Stored Procedures:** 2 stored procedures in database
+See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) and run `git log` for current open issues and status. (The earlier list here — SQL injection, no CI/CD, zero React coverage, Apache thread-safety — is stale/resolved as of 2026-06.)
 
 ## 📞 Emergency Procedures
 

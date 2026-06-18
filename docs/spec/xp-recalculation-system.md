@@ -197,19 +197,19 @@ This feature is essentially **frozen functionality** - it was designed for a one
 - Most legacy users have likely already recalculated
 - The `xpHistoryCache` maintenance continues for remaining legacy users
 
-## Migration Notes
+## Migration Notes (COMPLETE)
 
-When migrating to React:
+The React migration is **done**:
 
-1. **Recalculate XP** (superdoc): Could be migrated, but low usage
-2. **Recalculated Users** (oppressor_superdoc): Simple list view, easy migration
+1. **Recalculate XP** — React component `react/components/Documents/RecalculateXp.js`, backed by `Everything::API::xp` (`POST /api/xp/stats`, `POST /api/xp/recalculate`).
+2. **Recalculated Users** — React component `react/components/Documents/RecalculatedUsers.js`.
 
-Key considerations:
-- Preserve all eligibility checks
-- Maintain security logging
-- Keep the confirmation workflow
-- The `xpHistoryCache` logic in `draft_delete` should remain in Perl
+The original migration considerations were honored:
+- Eligibility checks preserved (`$CUTOFF_NODE_ID = 1960662` in `API/xp.pm`; `hasRecalculated` guard).
+- Security logging maintained (`Everything::SecurityLog`).
+- Confirmation workflow kept in the React UI.
+- The `xpHistoryCache` logic in `draft_delete` remains in Perl.
 
 ---
 
-*Last updated: December 31, 2025*
+*Last updated: June 2026 (React migration complete: `Everything::API::xp` + RecalculateXp.js / RecalculatedUsers.js)*

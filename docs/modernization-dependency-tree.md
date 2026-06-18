@@ -9,13 +9,12 @@
 > (#4230). The current center of gravity is the request/response modernization → 100%-API-driven
 > move (see `docs/api-driven-architecture.md`).
 
-> **★ Near-top cost priority — #4246 (cron sidecar).** The dedicated cron Fargate tasks
-> (`e2cron-family`) measure at **~$70/mo (~$840/yr), ~half the Fargate+IPv4 bill** — driven by
-> `datastash` at `rate(2m)` running effectively 24/7. Collapse the 8 EventBridge→`RunTask` rules
-> onto the (overprovisioned) webheads via a `GET_LOCK`-elected cron sidecar; near-zero marginal
-> cost, frees ~4 public IPs, and fixes a latent overlap bug. Unblocked by PSGI (hooks into the
-> Starman entrypoint). Cheap pre-step: `datastash` `rate(2m)`→`rate(10m)`. Design:
-> `docs/cron-sidecar-design.md`.
+> **★ #4246 (cron sidecar) — BUILT, in cutover.** The `GET_LOCK`-elected cron sidecar is built
+> (`ecore/Everything/Cron/{Runner,Schedule,State,Health}.pm` + `cron/cron_runner.pl`) and in cutover.
+> It collapses the 8 EventBridge→`RunTask` rules onto the (overprovisioned) webheads, retiring the
+> dedicated cron Fargate tasks (`e2cron-family`, **~$70/mo (~$840/yr), ~half the Fargate+IPv4 bill**,
+> driven by `datastash` at `rate(2m)` running effectively 24/7); near-zero marginal cost, frees ~4
+> public IPs, and fixes a latent overlap bug. Design: `docs/cron-sidecar-design.md`.
 
 The map of where deferred work lands and what depends on what. Two axes:
 
@@ -42,7 +41,7 @@ epoch:mysql-8.4   ✅ DONE — migrated 2026-06-07 (#4226). Was the July 2026 ha
          │   │     itself. New: Everything::Request::PlackQuery (request),
          │   │     Everything::Response (response), Everything::HealthCheck (PSGI health
          │   │     app, replaced www/health.pl). CGI dropped from cpanfile + vendor cache.
-         │   │     Docs: plack-request-migration.md, plack-request-progress.md.
+         │   │     Docs: plack-request-migration.md.
          │   └─ ▶ NEXT epoch: 100%-API-driven move — controllers return data, HTTP lives
          │         in the response layer. Return-based responses (retire the STDOUT
          │         capture → #4237-immune), PageState chrome/content split, the e2-blob
@@ -56,7 +55,7 @@ epoch:mysql-8.4   ✅ DONE — migrated 2026-06-07 (#4226). Was the July 2026 ha
          ├─> epoch:perl-cleanup   (UNBLOCKED; schema-touching ones need sqitch)
          ├─> epoch:react-cleanup  (UNBLOCKED; SSE ones use PSGI's process model)
          ├─> epoch:infra-cleanup  (apache/deploy; #4129 also needs #4163 settled)
-         │      └─ ★ #4246 cron sidecar (GET_LOCK) — ~$840/yr cost cut, do early
+         │      └─ ★ #4246 cron sidecar (GET_LOCK) — ~$840/yr cost cut, BUILT/in cutover
          │
          └─> epoch:social-login   (feature; first new table → DBIC carve-out decision;
                                     needs sqitch first)
@@ -88,7 +87,7 @@ backlog, not deadline work. Original tracking: **#4074**.
 ## epoch:psgi — ✅ DONE (live in prod 2026-06-08)
 
 The PSGI/Plack migration shipped: mod_perl removed, Apache on mpm_event, Starman/Plack serving,
-DB connections cut ~5×. Plan: [psgi-plack-migration-plan.md](psgi-plack-migration-plan.md).
+DB connections cut ~5×. (Shipped 2026-06-08; original plan in git history.)
 - ✅ **#2424 — Apache flipped to mpm_event.** Done (mod_perl gone, prefork tuning removed,
   worker count moved to Starman).
 - 🔄 **#3768 — mod_perl overrides non-200 + appends HTML — TRANSFORMS into an API-consistency
@@ -107,8 +106,7 @@ DB connections cut ~5×. Plan: [psgi-plack-migration-plan.md](psgi-plack-migrati
 
 CGI.pm removed from the entire application across two threads:
 - **Request layer** — `Everything::Request::PlackQuery` (Plack::Request-backed drop-in); the
-  request is parsed 100% by Plack::Request. Docs: [plack-request-migration.md](plack-request-migration.md),
-  [plack-request-progress.md](plack-request-progress.md).
+  request is parsed 100% by Plack::Request. Docs: [plack-request-migration.md](plack-request-migration.md).
 - **Response layer** — `Everything::Response` (Plack::Response/Cookie::Baker-backed); header/cookie/
   redirect generation no longer use CGI. `finalize` returns a real PSGI triple — the seam the
   return-based-response epoch flips.
@@ -211,7 +209,7 @@ client-memory optimization, *not* per-endpoint fan-out. Design: [api-driven-arch
   - #4198 — opcode → API: retire legacy `op=` handlers in Delegation/opcode.pm. **The gating prerequisite.** Overlaps #897.
   - #4299 — opcode kill rounds (verify dead / 1:1-superseded, delete). Phases 1–5 + bookmark/weblog/weblogify/category/massacre/leadusergroup done; remaining candidates mapped.
   - #4298 — page form-handling: 23 Page controllers that process form params server-side (the *other* routing blocker, beyond opcodes).
-  - #4300 — htmlcode burndown: 57 `Delegation/htmlcode` subs → factor into `Application` methods or delete. Continues the closed #4259.
+  - #4300 — htmlcode burndown: 56 `Delegation/htmlcode` subs → factor into `Application` methods or delete. Continues the closed #4259.
   - #4301 — API-wide CSRF guard (belt-and-suspenders Origin/header check; lands after the cleanout).
   - #4272 — ✅ security-log decoupling (done; `seclog_event` enum, callers on `SECLOG_*`).
 - #11 — normalize `user.imgsrc` path (drop `images/userimages/` prefix) *(homenode-images cluster)*

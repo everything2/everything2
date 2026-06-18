@@ -3,6 +3,7 @@
 use strict;
 use lib qw(/var/libraries/lib/perl5 /var/everything/ecore);
 use Test::More;
+use JSON;
 use Everything;
 use Everything::Delegation::achievement;
 
@@ -226,5 +227,86 @@ ok($result == 0, "usergroupgods returns 0 for CME (not admin)");
 
 $result = Everything::Delegation::achievement::fool_s_errand($DB, $APP, $cme->{node_id});
 ok($result == 1, "fool_s_errand returns 1 for any user");
+
+#############################################################################
+# Achievement GRANT WIRING: hasAchieved + checkAchievementsByType
+#
+# The tests above only check the delegation functions' return values. These
+# cover the Everything::Application layer that actually records grants and
+# fires notifications — the path publish_draft and every other call site
+# depends on (#4314). Uses "Fool's Errand" (a 'hunt' achievement whose
+# delegation always returns 1) and a throwaway user so grants are
+# deterministic and fully cleaned up.
+#############################################################################
+my $fool      = getNode("Fool's Errand", 'achievement');
+my $ach_notif = getNode('achievement', 'notification');
+
+SKIP: {
+    skip "Fool's Errand achievement not present in this DB", 9 unless $fool;
+    my $fool_id = $fool->{node_id};
+
+    my $uname = "tmp_ach_user_${$}_" . time();
+    my $uid   = $DB->insertNode( $uname, 'user', -1, {} );
+    ok( $uid, "created throwaway user for grant-wiring tests" );
+
+    my $achieved_count = sub {
+        return $DB->sqlSelect( 'count(*)', 'achieved',
+            "achieved_user=$uid AND achieved_achievement=$fool_id" ) || 0;
+    };
+    my $notif_count = sub {
+        return 0 unless $ach_notif;
+        return $DB->sqlSelect( 'count(*)', 'notified',
+            "user_id=$uid AND notification_id=$ach_notif->{node_id}" ) || 0;
+    };
+
+    # --- grant records an 'achieved' row; no notification when pref is off ---
+    my $unode = $DB->getNodeById($uid);
+    my $uvars = $APP->getVars($unode);
+    $uvars->{settings} = encode_json( { notifications => {} } );
+    Everything::setVars( $unode, $uvars );
+
+    is( $achieved_count->(), 0, 'not achieved before grant' );
+    ok( $APP->hasAchieved( $fool_id, $uid ),
+        'hasAchieved returns true for an always-granting achievement' );
+    is( $achieved_count->(), 1, 'grant recorded in achieved table' );
+    is( $notif_count->(), 0, 'no achievement notification when pref disabled' );
+
+    # --- idempotent: re-granting does not duplicate ---
+    ok( $APP->hasAchieved( $fool_id, $uid ),
+        're-call returns true (already achieved)' );
+    is( $achieved_count->(), 1, 'no duplicate achieved row on re-grant' );
+
+    # --- notification fires on grant when the user is subscribed ---
+    SKIP: {
+        skip 'achievement notification node missing', 1 unless $ach_notif;
+        $DB->sqlDelete( 'achieved',
+            "achieved_user=$uid AND achieved_achievement=$fool_id" );
+        $unode = $DB->getNodeById($uid);
+        $uvars = $APP->getVars($unode);
+        $uvars->{settings} =
+          encode_json( { notifications => { $ach_notif->{node_id} => 1 } } );
+        Everything::setVars( $unode, $uvars );
+
+        $APP->hasAchieved( $fool_id, $uid );
+        ok( $notif_count->() >= 1,
+            'achievement notification queued on grant when subscribed' );
+    }
+
+    # --- checkAchievementsByType grants qualifying achievements of a type ---
+    $DB->sqlDelete( 'achieved',
+        "achieved_user=$uid AND achieved_achievement=$fool_id" );
+    is( $achieved_count->(), 0, 'reset before checkAchievementsByType' );
+    $APP->checkAchievementsByType( 'hunt', $uid );
+    is( $achieved_count->(), 1,
+        "checkAchievementsByType('hunt') granted the always-true achievement" );
+
+    # cleanup (direct deletes — nukeNode writes a seclog row that needs the
+    # global $USER, which this test harness does not set)
+    $DB->sqlDelete( 'achieved', "achieved_user=$uid" );
+    $DB->sqlDelete( 'notified', "user_id=$uid" );
+    $DB->sqlDelete( 'setting',  "setting_id=$uid" );
+    $DB->sqlDelete( 'user',     "user_id=$uid" );
+    $DB->sqlDelete( 'node',     "node_id=$uid" );
+}
 
 done_testing();

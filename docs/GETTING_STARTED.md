@@ -49,7 +49,6 @@ To log in:
 * **[ops](https://github.com/everything2/everything2/tree/master/ops)** - Cloud operation scripts (AWS CodeBuild, ECS deployment)
 * **[react](https://github.com/everything2/everything2/tree/master/react)** - Modern React 18 frontend components
 * **[t](https://github.com/everything2/everything2/tree/master/t)** - Test suite (Perl tests)
-* **[templates](https://github.com/everything2/everything2/tree/master/templates)** - Mason2 templates for server-side rendering
 * **[tools](https://github.com/everything2/everything2/tree/master/tools)** - Build tools (asset pipeline, perlcritic, etc.)
 * **[vendor](https://github.com/everything2/everything2/tree/master/vendor)** - Carton-managed Perl dependencies
 * **[www](https://github.com/everything2/everything2/tree/master/www)** - Static web assets (CSS, JS, images, index.pl)
@@ -171,14 +170,13 @@ The database container automatically runs `qareload.pl` to load nodepack and see
 
 ## Architecture Overview
 
-### Backend
-- **Perl 5.38** with mod_perl2 and Apache2
+### Backend (as of 2026-06)
+- **Perl** on **Starman/PSGI** (`app.psgi`); **Apache (mpm_event)** runs as a reverse proxy only — mod_perl is gone
 - **Moose** - Modern OOP framework (100+ modules)
-- **MySQL 8.0+** - Primary database
-- **Mason2** - Server-side templating
+- **MySQL 8.4** - Primary database
 
 ### Frontend
-- **React 18.2.0** - Modern frontend framework
+- **React 18.3.1** - Modern frontend framework
 - **Webpack** - Asset bundling
 - **Legacy jQuery 1.11.1** - Being phased out
 
@@ -190,13 +188,7 @@ The database container automatically runs `qareload.pl` to load nodepack and see
 
 ## Key Modernization Priorities
 
-1. ✅ **SQL Injection Fixes** - Completed (4 critical vulnerabilities fixed)
-2. **Database Code Removal** - 81% complete (migration to filesystem)
-3. **Mobile Responsiveness** - Critical gap, zero mobile CSS currently
-4. **Testing Infrastructure** - ✅ Now automated in build process
-5. **jQuery Removal** - Migrate to vanilla JS and React
-
-See [modernization-priorities.md](modernization-priorities.md) for complete roadmap.
+See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) for the current roadmap, and run `git log` for up-to-date status.
 
 ## Documentation
 

@@ -69,7 +69,9 @@ During the rapid development period, we may be changing the APIs, but we will be
 
 This section documents the automated test coverage for each API endpoint. Coverage indicates how many endpoints have dedicated test suites verifying their functionality.
 
-**Last Updated**: 2025-12-22
+> **Note:** This catalogue is hand-maintained and may lag the code. There are currently **78** controller modules under `ecore/Everything/API/` (`ls ecore/Everything/API/*.pm | wc -l`); the table below was last reconciled when there were 54 and does not enumerate every newer controller. The authoritative endpoint list for any controller is its own `routes()` method — treat that as ground truth, this doc as a guide.
+
+**Last Updated**: 2026-06-15
 
 | API Module | Endpoints | Tested | Coverage | Test File |
 |------------|-----------|--------|----------|-----------|
@@ -138,10 +140,11 @@ This section documents the automated test coverage for each API endpoint. Covera
 | Catchall | 0 | 0 | ⚠️ N/A | Empty placeholder module |
 | Writeuptypes | 1 | 0 | ❌ 0% | None - **LOW PRIORITY** (writeup type info) |
 
-**Overall API Test Coverage: 93%** (49 of 54 modules have tests)
+**Overall API Test Coverage** (as of the 54-module reconciliation below): 49 of 54 catalogued modules had tests. The controller count has since grown to **78** (see note at the top of this section) — the figures below describe the 54 modules enumerated in the table, not the full current surface.
 
-**Key Metrics:**
-- Total API Modules: 54
+**Key Metrics (54-module snapshot):**
+- Total API Modules (this snapshot): 54
+- Current controller count (`ecore/Everything/API/*.pm`): 78
 - Fully Tested: 46 modules (85%)
 - Partially Tested: 3 modules (6%)
 - No Tests: 5 modules (9%)
@@ -196,7 +199,7 @@ This section documents the automated test coverage for each API endpoint. Covera
 
 ---
 
-**Modernization Status**: ✅ All 54 modules use modern `routes()` method - No legacy `command_post` patterns remain!
+**Modernization Status**: ✅ All controllers use the modern `routes()` method - No legacy `command_post` patterns remain! (This held across the 54 catalogued modules and remains the convention for the controllers added since.)
 
 ## Node requests
 

@@ -17,13 +17,13 @@ The Other Users nodelet shows who is currently online in the chatterbox, their s
 |-----------|----------|---------|
 | `OtherUsers.js` | `react/components/Nodelets/OtherUsers.js` | React UI component |
 | `useOtherUsersPolling.js` | `react/hooks/useOtherUsersPolling.js` | Polling hook (2 min interval) |
-| `buildOtherUsersData()` | `ecore/Everything/Application.pm:6115` | Server-side data builder |
+| `buildOtherUsersData()` | `ecore/Everything/Application.pm:6658` | Server-side data builder |
 | `chatroom.pm` | `ecore/Everything/API/chatroom.pm` | API endpoints for room operations |
 
 ### Data Flow
 
 1. **Initial load**: `buildOtherUsersData($USER)` generates data during page render
-2. **Polling**: `useOtherUsersPolling` refreshes every 2 minutes via `/api/chatroom/other_users`
+2. **Polling**: `useOtherUsersPolling` refreshes every 2 minutes via `GET /api/chatroom/` (the `/` route → `get_other_users`)
 3. **Actions**: Room changes, cloaking, room creation use dedicated API endpoints
 
 ---
@@ -32,7 +32,7 @@ The Other Users nodelet shows who is currently online in the chatterbox, their s
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
-| `/api/chatroom/other_users` | GET | Fetch current other users data |
+| `/api/chatroom/` | GET | Fetch current other users data (route `/` → `get_other_users`) |
 | `/api/chatroom/change_room` | POST | Change user's current room |
 | `/api/chatroom/set_cloaked` | POST | Toggle user visibility (cloak) |
 | `/api/chatroom/create_room` | POST | Create a new room |

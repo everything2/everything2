@@ -1,8 +1,33 @@
 # Plack::Request migration — surface audit & approach
 
-**Status:** design / discovery (2026-06-08, rev 2). Successor to the PSGI migration: PSGI gave
-us the *server*; this replaces the CGI.pm *request layer* with Plack::Request while keeping
+**Status:** as-built / largely complete (2026-06). Successor to the PSGI migration: PSGI gave
+us the *server*; this replaced the CGI.pm *request layer* with Plack::Request while keeping
 `Everything::Request` as the auth-bearing façade.
+
+**What shipped (the core migration is DONE):**
+- **CGI.pm is out of the live request path.** `use CGI` is gone from `ecore/` (commit
+  `e8b00e4dc` "Removes CGI.pm"). The `Everything::Request->cgi` seam is now backed by
+  `Everything::Request::PlackQuery` (a Plack-backed read façade), *not* a CGI.pm instance, so
+  the ~600 `$query->...` / `->cgi->...` callers were preserved without rewriting each site.
+- The additive `req` attribute (`ecore/Everything/Request.pm`) carries a real `Plack::Request`
+  over the PSGI env.
+- **`Everything::Response` exists** (`ecore/Everything/Response.pm`, commit `d3217e175`) — the
+  return-based response object that retires the request-doing-response-work coupling.
+- `Everything::PageState` (`ecore/Everything/PageState.pm`) and the `/api/pagestate` endpoint
+  (`ecore/Everything/API/pagestate.pm`) exist; `normalize_types` is wired into the e2 blob.
+
+**Still forward-looking (deferred, feeds the React-routing epoch):**
+- The **immutable-param model + `handleUserRequest` rework** (Appendix A / "Clean model"
+  below) — the param-mutation sites and the node/type routing-derivation rework are not yet
+  done; `handleUserRequest` still lives in `Everything::HTML.pm`.
+- The **PageState chrome/content split** (Appendix C) — `PageState` exists but
+  `Application.pm::buildNodeInfoStructure` is still the ~870-line monolith (`ecore/Everything/
+  Application.pm:7015`); only `normalize_types` has been extracted. The chrome-vs-content split
+  and build-on-demand nodelets are still planned.
+
+The sections below are retained as the design of record. Where a phase describes the
+now-finished CGI→Plack request/response flip it is marked **DONE**; the deferred follow-ups are
+marked **PLANNED**.
 
 **Principle:** composition, not inheritance — `Everything::Request` (Moose) *wraps* a
 `Plack::Request` (a blessed hashref over the PSGI env), rather than subclassing it (avoids
@@ -134,18 +159,20 @@ deliberate migration-with-test. The scaffold is built to be deleted (final phase
 
 ## Sequencing
 
-- **Phase 0** — delete confirmed-dead CGI consumers (`health.pl`?, dead htmlcode form-helpers)
-  to shrink the surface before touching the seam.
-- **Phase 1** — build the **parity harness** (CGI vs Plack::Request decoding corpus). Coverage
-  for the read surface as a *layer*, before flipping anything.
-- **Phase 2** — declare the immutable model; migrate the ~30–40 **risky sites** one at a time
-  (mutation, `Vars`, form-helpers), each with its own test.
-- **Phase 3** — flip the backing (`_build_cgi` → Plack::Request, behind the strict read-only
-  scaffold *or* mechanically). Parity harness + e2e are the backstop. **CGI.pm out of the live
-  request path** — the headline win.
-- **Phase 4 (response epoch)** — move `header`/`redirect`/`print` to Plack::Response /
-  return-based responses; **retires the STDOUT capture** as a consequence (not a bugfix).
-- **Phase 5** — delete the scaffold; pure Plack-backed `Everything::Request`; remove `use CGI`.
+- **Phase 0 — DONE** — delete confirmed-dead CGI consumers (`health.pl`, dead htmlcode
+  form-helpers) to shrink the surface before touching the seam.
+- **Phase 1 — DONE** — parity coverage for the read surface before flipping anything.
+- **Phase 2 — PLANNED** — declare the immutable model; migrate the ~30–40 **risky sites** one at
+  a time (mutation, `Vars`, form-helpers), each with its own test. (The CGI→Plack *backing* flip
+  shipped without this; the deliberate immutable-param/`handleUserRequest` rework is the
+  remaining deferred piece — see "Clean model" and Appendix A.)
+- **Phase 3 — DONE** — flip the backing (`_build_cgi` → `Everything::Request::PlackQuery` over
+  Plack::Request). **CGI.pm out of the live request path** (commit `e8b00e4dc`) — the headline
+  win, shipped.
+- **Phase 4 (response epoch) — IN PROGRESS** — `Everything::Response` exists (commit `d3217e175`)
+  and is the return-based response object; converting the remaining `header`/`redirect`/`print`
+  sites and retiring the STDOUT capture is the tail of this epoch.
+- **Phase 5 — DONE** — `use CGI` removed from `ecore/`; `Everything::Request` is Plack-backed.
 
 ## Open questions (to refine)
 
@@ -276,7 +303,11 @@ $RESPONSE  (NEW -- response work that used to live on the request)  -- see Appen
 
 ---
 
-## Appendix B — the `$RESPONSE` object (response epoch) — sketch for discussion
+## Appendix B — the `$RESPONSE` object (response epoch) — **shipped** (`Everything::Response`)
+
+> **Status:** the class described here exists at `ecore/Everything/Response.pm` (commit
+> `d3217e175`). The remaining work is converting the last request-doing-response-work sites and
+> deleting the STDOUT capture; the design below is the as-built reference.
 
 Composition mirror of the request side: `Everything::Response` wraps `Plack::Response`. This is
 what controllers **return** instead of printing — and returning one makes a handler **immune to
@@ -375,9 +406,15 @@ thing deleted. This is why the response epoch is sequenced **after** the request
 
 ---
 
-## Appendix C — `PageState` extraction (the e2 blob, out of the god module)
+## Appendix C — `PageState` extraction (the e2 blob, out of the god module) — **PLANNED**
 
-`Application.pm::buildNodeInfoStructure` is **947 lines inside an 8,761-line god module** — it
+> **Status:** still forward-looking. `Everything::PageState` exists
+> (`ecore/Everything/PageState.pm`) but so far only `normalize_types` is wired in;
+> `Application.pm::buildNodeInfoStructure` (`ecore/Everything/Application.pm:7015`) is still the
+> ~870-line monolith. The chrome/content split and build-on-demand nodelets below feed the
+> React-routing epoch and are deferred.
+
+`Application.pm::buildNodeInfoStructure` is **~870 lines inside an ~8,800-line god module** — it
 builds the `e2` JSON blob every controller mounts the React app with. Extracting it is the
 high-value refactor adjacent to the controllers (the controller *construct* is sound and stays).
 

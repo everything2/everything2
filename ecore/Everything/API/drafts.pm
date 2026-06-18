@@ -1177,12 +1177,44 @@ sub publish_draft {
         collaborators => ''
     }, "draft_id=$draft_id" );
 
-    # Add to e2node's nodegroup
-    # nodegroup_id = the e2node (parent), node_id = the writeup (member)
-    # Get max rank to add at end
+    # Add to e2node's nodegroup, preserving the legacy publishwriteup ordering
+    # (#4314): lede writeups go to the top of the e2node; everything else is
+    # appended, but any "Webster 1913" entry is kept last. Display order is the
+    # nodegroup.orderby column (NodeBase selects the group ORDER BY orderby);
+    # nodegroup_rank stays monotonic by insertion order.
     my ($max_rank) = $DB->sqlSelect( 'MAX(nodegroup_rank)', 'nodegroup',
         "nodegroup_id=$parent_e2node_id" );
     my $new_rank = defined($max_rank) ? $max_rank + 1 : 0;
+
+    my $orderby;
+    if ( $writeuptype->{title} eq 'lede' ) {
+        # Top of the e2node: shift everything down, take orderby 0.
+        $DB->sqlUpdate( 'nodegroup', { '-orderby' => 'orderby+1' },
+            "nodegroup_id=$parent_e2node_id" );
+        $orderby = 0;
+    }
+    else {
+        # Keep a Webster 1913 entry (if present) last by inserting just ahead of it.
+        my $webster = $DB->getNode( 'Webster 1913', 'user' );
+        my $webster_orderby;
+        if ($webster) {
+            $webster_orderby = $DB->sqlSelect(
+                'ng.orderby',
+                'nodegroup ng JOIN node n ON ng.node_id=n.node_id',
+                "ng.nodegroup_id=$parent_e2node_id AND n.author_user=$webster->{node_id}"
+            );
+        }
+        if ( defined $webster_orderby ) {
+            $DB->sqlUpdate( 'nodegroup', { '-orderby' => 'orderby+1' },
+                "nodegroup_id=$parent_e2node_id AND orderby>=$webster_orderby" );
+            $orderby = $webster_orderby;
+        }
+        else {
+            my ($max_orderby) = $DB->sqlSelect( 'MAX(orderby)', 'nodegroup',
+                "nodegroup_id=$parent_e2node_id" );
+            $orderby = defined($max_orderby) ? $max_orderby + 1 : 0;
+        }
+    }
 
     $DB->sqlInsert(
         'nodegroup',
@@ -1190,7 +1222,7 @@ sub publish_draft {
             nodegroup_id   => $parent_e2node_id,
             node_id        => $draft_id,
             nodegroup_rank => $new_rank,
-            orderby        => $new_rank
+            orderby        => $orderby
         }
     );
 
@@ -1252,6 +1284,28 @@ sub publish_draft {
     # from an actual count (cached hourly) in Controller/user.pm, so it
     # self-heals and must not be incremented here.
     $APP->adjustExp( $user_id, 5 );
+
+    # Record this as the author's most-recently-noded writeup (parity with the
+    # legacy publishwriteup finisher, #4314). Wrapped so a VARS hiccup can't fail
+    # the publish.
+    eval {
+        my $author_vars = $REQUEST->user->VARS;
+        $author_vars->{lastnoded} = $draft_id;
+        $REQUEST->user->set_vars($author_vars);
+        1;
+    } or do {
+        $APP->devLog("Failed to set lastnoded for published draft $draft_id: $@");
+    };
+
+    # Post-publish notifications + achievements (favorite-author, newbie-writeup,
+    # writeup achievements) -- ported from publishwriteup so the API publish path
+    # is at parity (#4314). Wrapped so a notification hiccup can't fail the publish.
+    eval {
+        $APP->finalize_published_writeup( $REQUEST->user->NODEDATA, $draft_id );
+        1;
+    } or do {
+        $APP->devLog("Post-publish finishers failed for draft $draft_id: $@");
+    };
 
     return [
         $self->HTTP_OK,

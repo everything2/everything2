@@ -1,17 +1,17 @@
 # Everything2 Code Coverage Summary
 
-**Last Updated**: 2026-05-17 22:51:55
+**Last Updated**: 2026-06-15 01:24:48
 
 ## Overall Coverage
 
 | Language | Coverage | Status |
 |----------|----------|--------|
-| ![Perl Coverage](badges/perl-coverage.svg) | 47.9% | ⚠️ Needs Improvement |
+| ![Perl Coverage](badges/perl-coverage.svg) | 53.1% | ⚠️ Needs Improvement |
 | ![React Coverage](badges/react-coverage.svg) | 17.73% | ⚠️ Needs Improvement |
 
 ## Perl Coverage Details
 
-**Total Statement Coverage**: 47.9%
+**Total Statement Coverage**: 53.1%
 
 Coverage data tracked from mock-based API tests. See [code-coverage.md](../docs/code-coverage.md) for full details.
 
@@ -39,16 +39,12 @@ npm test -- --coverage           # Run Jest with coverage
 
 ## Coverage Goals
 
-### Current (Dec 2025)
-- ✅ Perl: 47.9% (mock-based tests working)
-- ✅ React: 17.73% (Jest infrastructure ready)
+### Current
+- Perl: 53.1%
+- React: 17.73%
 
-### Short-term Goals (Q1 2026)
-- 🎯 Perl: 40% (comprehensive API testing)
-- 🎯 React: 60% (component test coverage)
-
-### Long-term Goals (2026)
-- 🎯 Perl: 70% (after PSGI migration enables full coverage)
+### Targets
+- 🎯 Perl: 70% (full request-path coverage now reachable under PSGI/Starman)
 - 🎯 React: 80% (full component coverage)
 
 ## How Coverage Works
@@ -56,8 +52,7 @@ npm test -- --coverage           # Run Jest with coverage
 ### Perl Coverage (Devel::Cover)
 - **Mock-based tests**: ✅ Coverage tracked successfully
 - **Integration tests**: ✅ Coverage tracked for test-loaded modules
-- **Request handlers**: ⏳ Limited coverage (mod_perl architecture)
-- **Full coverage**: Requires PSGI/Plack migration (Phase 7)
+- **Request handlers**: now exercisable end-to-end under PSGI/Starman (mod_perl removed)
 
 ### React Coverage (Jest)
 - **Unit tests**: Coverage tracked via Istanbul/NYC

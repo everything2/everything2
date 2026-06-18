@@ -14,7 +14,7 @@ Everything2's notification system provides user notifications for events like vo
 
 1. **Notification Nodes** - Template definitions in `nodepack/notification/*.xml`
 2. **Notified Table** - Active notifications per user in database
-3. **Delegation Module** - `Everything::Delegation::notification` with 23 rendering functions
+3. **Delegation Module** - `Everything::Delegation::notification` with 23 rendering functions (one, `bookmark`, is now dormant — its notification type is retired and no longer emitted; see below)
 4. **Rendering Engine** - `getRenderedNotifications()` in `Application.pm`
 5. **Delivery System** - `add_notification()` in `Application.pm`
 6. **API Endpoints** - `Everything::API::notifications` (get_all, dismiss)
@@ -45,20 +45,21 @@ The system uses two patterns for routing notifications:
 
 1. **Direct Notifications**: Sent to a specific user
    - `notified.user_id = target_user_id`
-   - Examples: voting, cooled, achievement, experience, gp, frontpage, favorite, bookmark
+   - Examples: voting, cooled, achievement, experience, gp, frontpage, favorite
 
 2. **Broadcast Notifications**: Available to all users subscribed to that notification type
    - `notified.user_id = notification_id` (the notification type's node ID)
    - Examples: nodenote, e2poll, draft_for_review, newbiewriteup, weblog, newdiscussion
 
-### Complete List (23 Notification Types)
+### Complete List (22 Active Notification Types)
+
+> **`bookmark` is omitted (retired).** A `bookmark` rendering function still exists in `Everything::Delegation::notification`, but the `bookmark` notification is **no longer emitted**: the bookmark opcode that produced it was retired in #4292, and nothing in the codebase calls `add_notification('bookmark', ...)`. It is intentionally excluded from the active type list below.
 
 | Notification | Pattern | Target Audience | Description |
 |--------------|---------|-----------------|-------------|
 | achievement | Direct | Node author | User earned an achievement |
 | author_removed_writeup | Direct | Node author | Author deleted their own writeup |
 | blankedwriteup | Broadcast | Editors | A writeup was blanked |
-| bookmark | Direct | Node author | Node was bookmarked by another user |
 | chanop_borged_user | Broadcast | Chanops | A user was borged |
 | chanop_dragged_user | Broadcast | Chanops | A user was dragged |
 | cooled | Direct | Node author | Writeup was C!'d (cooled) |
@@ -410,7 +411,7 @@ Dismisses a notification.
 | achievement | 1931728 |
 | author removed writeup | 2047531 |
 | blankedwriteup | 2027665 |
-| bookmark | 1931545 |
+| bookmark | 1931545 | *(retired — type no longer emitted, #4292)* |
 | chanop borged user | 2054468 |
 | chanop dragged user | 2054467 |
 | cooled | 1930720 |
@@ -433,7 +434,7 @@ Dismisses a notification.
 
 ---
 
-**Document Version**: 2.1
+**Document Version**: 2.2
 **Author**: System audit
-**Last Updated**: 2026-01-17
+**Last Updated**: 2026-06-15 (bookmark notification type marked retired per #4292)
 **Next Review**: After remaining migration work complete
