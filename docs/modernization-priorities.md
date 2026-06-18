@@ -12,7 +12,7 @@ left and when it's reachable." The original detail remains in git history.
 | 1 | Remove executable code from DB | ✅ **Done** (eval-from-DB eliminated) |
 | 2 | Object-oriented refactoring (delegation → Page/Controller) | 🔄 `epoch:perl-cleanup` in the tree (#629, #1443, retire-NodeBase cluster) |
 | 3 | Database security (SQL injection) | ✅ **Done** — zero injection sites (Apr 2026 audit). Security *headers* = #4182 (`epoch:infra-cleanup`, ships now) |
-| 4 | Web framework migration (PSGI/Plack) | 🔄 `epoch:psgi` + [psgi-plack-migration-plan.md](psgi-plack-migration-plan.md) |
+| 4 | Web framework migration (PSGI/Plack) | ✅ Shipped (live in prod 2026-06-08); mod_perl removed |
 | 5 | Mobile-first React frontend | ✅ **Done** — shipped Jan 2026 (PR #4020) |
 | 5.5 | Guest static-page caching (S3) | ❌ **Rejected** — no new cache infrastructure (cost-conscious; PSGI connection-cut is the lever, not a cache tier) |
 | 6 | Message opcode cleanup | 🔄 #4198 (`epoch:infra-cleanup`) |

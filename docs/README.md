@@ -1,53 +1,71 @@
 # Everything2 Documentation
 
-This directory contains comprehensive documentation, technical analysis, and modernization plans for the Everything2 codebase.
+Technical reference and modernization planning for the Everything2 codebase.
 
-## Purpose
+This index lists only docs that describe the **current** state of the system or **active/deferred** forward work. Records of completed migrations (PSGI, MySQL 8.4, the SecurityLog decoupling, the inline-styles refactor, etc.) have been retired — they live in git history. For "what shipped recently," run `git log` rather than trusting any status line here.
 
-These documents serve as:
-- Technical analysis of current architecture
-- Modernization roadmap and strategy
-- Communication tool for users and staff
-- Reference for development decisions
-- Historical record of architectural evolution
+**Last reviewed:** 2026-06-15
 
-## Documents
+---
 
-### Getting Started
-- **[Getting Started Guide](GETTING_STARTED.md)** - Development setup and workflow ⭐
-- **[Quick Reference](quick-reference.md)** - Common tasks, commands, checklists
-- **[Coding Standards](coding-standards.md)** - Perl/JavaScript style guide and best practices
-- **[Code Coverage Guide](code-coverage.md)** - Testing coverage infrastructure and usage
-- **[Delegation Migration](delegation-migration.md)** - Moving database code to filesystem delegation functions
+## Getting started & process
+- **[Getting Started Guide](GETTING_STARTED.md)** ⭐ — Dev setup, build/test workflow
+- **[Quick Reference](quick-reference.md)** — Common commands and checklists
+- **[Coding Standards](coding-standards.md)** — Perl/Moose/JS/React style and conventions
+- **[Code Coverage Guide](code-coverage.md)** — Coverage tooling (Devel::Cover + Jest)
+- **[React Testing](react-testing.md)** — Jest + React Testing Library patterns
 
-### Technical Overview
-- **[Analysis Summary](analysis-summary.md)** - Complete architectural overview
-- **[Modernization Priorities](modernization-priorities.md)** - Strategic roadmap
+## Roadmap & strategy
+- **[Developer Roadmap](DEVELOPER-ROADMAP.md)** ⭐ — Strategic priorities, phase sequencing, current status
+- **[Modernization Dependency Tree](modernization-dependency-tree.md)** — What unblocks what
+- **[Modernization Priorities](modernization-priorities.md)** — Crosswalk/redirect to the dependency tree
+- **[Opcode Audit](opcode-audit.md)** — opcode→API burndown tracker (8 live opcodes as of 2026-06)
 
-### Architecture & Infrastructure
-- [Infrastructure Overview](infrastructure-overview.md) - AWS, Docker, deployment pipeline
-- [API Documentation](API.md) - API endpoints and usage
+## Architecture & API
+- **[API Documentation](API.md)** — Endpoint catalogue (hand-maintained; each controller's `routes()` is authoritative)
+- **[API-Driven Architecture](api-driven-architecture.md)** — The controllers-return-data north star
+- **[API Polling Optimization](api-polling-optimization.md)** — `initialData` nodelet polling
+- **[PageState Design](pagestate-design.md)** — Chrome/content split + React-routing facade
+- **[Node Object System](node-object-system.md)** — hashref-vs-blessed node access model
+- **[Draft System Analysis](draft-system-analysis.md)** — Draft/writeup/publication model
 
-### Security & Modernization
-- [SQL Fixes Applied](sql-fixes-applied.md) - ✅ Completed security fixes (4 critical issues)
-- [Inline JavaScript Modernization](inline-javascript-modernization.md) - Asset pipeline integration
-- [jQuery Removal](jquery-removal.md) - Legacy jQuery 1.11.1 → Modern vanilla JS/React
+## Infrastructure & operations
+- **[Infrastructure Overview](infrastructure-overview.md)** — AWS/Fargate/RDS/Docker, PSGI/Starman
+- **[Health Checks](health-checks.md)** — `Everything::HealthCheck` PSGI app + ECS health config
+- **[Maintenance Jobs](maintenance-jobs.md)** — One-off Fargate S3-job runner facility (#4282)
+- **[Cron Sidecar](cron-sidecar.md)** — As-built leader-elected cron runner
+- **[Cron Sidecar Design](cron-sidecar-design.md)** — Original cost rationale + design (#4246)
 
-## Contributing
+## Migrations — status
+- **[MySQL 8.4 Migration](mysql-migration-plan.md)** — ✅ Done (2026-06-07); tombstone/signpost
+- **[Plack::Request Migration](plack-request-migration.md)** — ✅ CGI.pm removed; PageState/param follow-ups deferred
+- **[ORM Migration Plan](orm-migration-plan.md)** — Evaluated, **deferred** (modernize NodeBase in place)
+- **[Sqitch Migration Plan](sqitch-migration-plan.md)** — Versioned-schema plan (not yet adopted)
+- **[React 19 Migration](react-19-migration.md)** — Deferred (blocked on `react-collapsible`)
 
-When updating these documents:
-1. Keep technical accuracy as the priority
-2. Include code examples where helpful
-3. Document risks and challenges honestly
-4. Update status documents as work progresses
-5. Date major revisions
+## Frontend & CSS
+- **[Stylesheet System](stylesheet-system.md)** — Node-based stylesheet architecture + Kernel Blue variables
+- **[CSS Consistency Audit](css-consistency-audit.md)** — Remaining per-theme variable/softlink backlog
+- **[Mobile Audit](mobile-audit.md)** — Regenerable output of `tools/mobile-audit.js`
 
-## Maintenance
+## Reference
+- **[User VARS Reference](user-vars-reference.md)** — Catalogue of `setting.vars` keys
 
-These documents should be reviewed and updated:
-- Quarterly for strategic changes
-- After major milestones
-- When architecture decisions are made
-- As modernization work progresses
+## Subsystem specs (`spec/`)
+Focused descriptions of individual live subsystems:
+- [Apache configuration](spec/apache-configuration.md) · [Apache blocks (IP/UA bans)](spec/apache_blocks.md)
+- [Categories system](spec/categories-system.md) · [Favorite noders](spec/favorite-noders.md)
+- [Developer sourcemap system](spec/developer-sourcemap-system.md) · [E2 global state](spec/e2-global-state.md)
+- [Halloween costume system](spec/halloween-costume-system.md) · [Link syntax specification](spec/link-syntax-specification.md)
+- [Node cache architecture](spec/node-cache-architecture.md) · [Nodetype inheritance tree](spec/nodetype-inheritance-tree.md)
+- [Notification system](spec/notification-system.md) · [Nodelet periodic updates](spec/nodelet-periodic-updates.md)
+- [Other Users nodelet](spec/other-users-nodelet-spec.md) · [Random Nodes nodelet](spec/random-nodes-nodelet.md)
+- [XP recalculation system](spec/xp-recalculation-system.md)
 
-Last Updated: 2025-11-09
+---
+
+## Maintaining these docs
+- Keep technical accuracy first; cross-check claims against code and `git log` before trusting a status line.
+- When a migration/refactor completes, **retire** its planning doc (git retains it) rather than leaving a stale plan.
+- If a doc's only remaining value is tracking unfinished work, convert it to a GitHub issue.
+- Broad roadmap docs (Developer Roadmap, dependency tree) are the exception — keep them as living indexes.

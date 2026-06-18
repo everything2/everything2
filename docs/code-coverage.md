@@ -4,7 +4,7 @@
 
 Everything2 uses [Devel::Cover](https://metacpan.org/pod/Devel::Cover) to measure and track code coverage across the Perl codebase. Coverage reports are generated automatically during development builds and tracked via SVG badges.
 
-## ✅ Current Status (Dec 2025)
+## ✅ Current Status (point-in-time snapshot, Dec 2025)
 
 **Coverage is now working!** The migration from legacy HTTP-based tests to mock-based unit tests has enabled proper code coverage tracking. The Everything::APIClient module has been removed from the codebase.
 
@@ -19,7 +19,7 @@ Everything2 uses [Devel::Cover](https://metacpan.org/pod/Devel::Cover) to measur
 
 ![Perl Coverage](../coverage/badges/perl-coverage.svg)
 
-**From just 6 mock-based API tests**: ~24% overall coverage
+**From just 6 mock-based API tests** (~24% overall coverage, as of the Dec 2025 snapshot):
 - `Everything::API::e2nodes`: 100%
 - `Everything::API::users`: 100%
 - `Everything::API::writeups`: 81.2%
@@ -30,7 +30,7 @@ See [coverage/COVERAGE-SUMMARY.md](../coverage/COVERAGE-SUMMARY.md) for detailed
 
 ### Future Coverage
 
-**Full request handler coverage** still requires PSGI/Plack migration (Phase 7), but current mock-based testing provides excellent coverage of business logic, APIs, and core modules.
+**Full request-path coverage** is now achievable: the PSGI/Plack migration is done and live (as of 2026-06), so request handlers can be exercised directly rather than only through mocks. Current mock-based testing already provides excellent coverage of business logic, APIs, and core modules.
 
 ## Quick Start
 
@@ -114,7 +114,7 @@ A text summary is displayed after each coverage run showing:
 
 ## Coverage Goals
 
-### Current (Dec 2025)
+### Current (snapshot, Dec 2025)
 - ✅ **Perl**: ~24% (6 mock-based API tests)
 - ✅ **React**: 0% (Jest infrastructure ready, tests needed)
 
@@ -123,7 +123,7 @@ A text summary is displayed after each coverage run showing:
 - 🎯 **React**: 60% (component test coverage)
 
 ### Long-term Goals (2026+)
-- 🎯 **Perl**: 70% (after PSGI migration)
+- 🎯 **Perl**: 70% (full request-path coverage, now unblocked — PSGI migration is done/live as of 2026-06)
 - 🎯 **React**: 80% (full component coverage)
 
 ### By Module Type

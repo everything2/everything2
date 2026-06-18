@@ -29,7 +29,8 @@ curl http://localhost/health
 {
   "status": "ok",
   "timestamp": 1234567890,
-  "version": "health-check-v1"
+  "version": "health-check-v2",
+  "backend": "psgi"
 }
 ```
 
@@ -48,9 +49,10 @@ curl http://localhost/health.pl?detailed=1
 {
   "status": "ok",
   "timestamp": 1234567890,
-  "version": "health-check-v1",
+  "version": "health-check-v2",
+  "backend": "psgi",
   "checks": {
-    "apache": "ok"
+    "app": "ok"
   },
   "system": {
     "load_1min": 0.52,
@@ -65,29 +67,7 @@ curl http://localhost/health.pl?detailed=1
     "used_kb": 2048000,
     "used_percent": "50.0"
   },
-  "apache": {
-    "process_count": 12,
-    "busy_workers": 3,
-    "idle_workers": 9,
-    "total_accesses": 123456,
-    "requests_per_sec": "2.45",
-    "uptime_seconds": 86400,
-    "total_slots": 150,
-    "worker_states": {
-      "waiting": 9,
-      "starting": 0,
-      "reading": 1,
-      "sending": 2,
-      "keepalive": 0,
-      "dns": 0,
-      "closing": 0,
-      "logging": 0,
-      "finishing": 0,
-      "idle_cleanup": 0,
-      "open_slot": 138
-    }
-  },
-  "response_time_ms": "12.45"
+  "response_ms": "12.4"
 }
 ```
 
@@ -102,9 +82,10 @@ curl http://localhost/health.pl?db=1
 {
   "status": "ok",
   "timestamp": 1234567890,
-  "version": "health-check-v1",
+  "version": "health-check-v2",
+  "backend": "psgi",
   "checks": {
-    "apache": "ok",
+    "app": "ok",
     "database": "ok"
   },
   "system": {
@@ -120,29 +101,7 @@ curl http://localhost/health.pl?db=1
     "used_kb": 2048000,
     "used_percent": "50.0"
   },
-  "apache": {
-    "process_count": 12,
-    "busy_workers": 3,
-    "idle_workers": 9,
-    "total_accesses": 123456,
-    "requests_per_sec": "2.45",
-    "uptime_seconds": 86400,
-    "total_slots": 150,
-    "worker_states": {
-      "waiting": 9,
-      "starting": 0,
-      "reading": 1,
-      "sending": 2,
-      "keepalive": 0,
-      "dns": 0,
-      "closing": 0,
-      "logging": 0,
-      "finishing": 0,
-      "idle_cleanup": 0,
-      "open_slot": 138
-    }
-  },
-  "response_time_ms": "156.23"
+  "response_ms": "156.2"
 }
 ```
 
@@ -198,78 +157,23 @@ Reports memory statistics from `/proc/meminfo`:
 - High memory usage with good performance is normal (Linux caches aggressively)
 - Memory issues typically show as swap usage or OOM kills
 
-### Apache Request Metrics
+### Worker / Concurrency Model (as of 2026-06)
 
-Reports Apache worker status, process information, and request statistics from mod_status:
+The app runs under **Starman/PSGI** (`app.psgi`, served by `Everything::HealthCheck` as a standalone PSGI app); **Apache (mpm_event)** sits in front as a pure reverse proxy and runs no app code. mod_perl, the prefork MPM, and the old mod_status worker-metrics block are gone, so the health response no longer carries an `apache` object. Concurrency is bounded at the backend by `STARMAN_WORKERS` (see `etc/templates/apache2.conf.erb` and `docker/e2app/apache2_wrapper.rb`), not by `MaxRequestWorkers`.
 
-```json
-"apache": {
-  "process_count": 12,
-  "busy_workers": 3,
-  "idle_workers": 9,
-  "total_accesses": 123456,
-  "requests_per_sec": "2.45",
-  "uptime_seconds": 86400,
-  "total_slots": 150,
-  "worker_states": {
-    "waiting": 9,
-    "starting": 0,
-    "reading": 1,
-    "sending": 2,
-    "keepalive": 0,
-    "dns": 0,
-    "closing": 0,
-    "logging": 0,
-    "finishing": 0,
-    "idle_cleanup": 0,
-    "open_slot": 138
-  }
-}
-```
-
-**What it means:**
-- `process_count` - Total Apache processes (parent + children)
-- `busy_workers` - Workers actively handling requests
-- `idle_workers` - Workers waiting for requests
-- `total_accesses` - Total number of requests served since startup
-- `requests_per_sec` - Average requests per second
-- `uptime_seconds` - Apache server uptime in seconds
-- `total_slots` - Total worker slots configured
-- `worker_states` - Detailed breakdown of what workers are doing:
-  - `waiting` - Waiting for connection
-  - `reading` - Reading request
-  - `sending` - Sending reply
-  - `keepalive` - Keepalive (read)
-  - `dns` - DNS lookup
-  - `closing` - Closing connection
-  - `logging` - Logging
-  - `finishing` - Gracefully finishing
-  - `open_slot` - Available slots (no process)
-
-**Understanding worker states:**
-- High `sending` count indicates slow clients or large responses
-- High `reading` count may indicate slow client uploads
-- High `waiting` with low `busy_workers` is normal (idle capacity)
-- `open_slot` shows unused worker capacity
-- All slots busy (`open_slot` == 0) indicates capacity exhaustion
-
-**Note:** All metrics except `process_count` require Apache mod_status to be enabled (enabled by default in E2).
+The detailed health response instead reports `system` (load average) and `memory` (meminfo), plus `database` when `?db=1` is passed — see the examples above. To inspect live worker/request state, look at Starman's own process list and the CloudWatch request/latency metrics rather than an Apache mod_status scrape.
 
 ### Interpreting Metrics for Diagnostics
 
 | Symptom | Likely Cause | What to Check |
 |---------|--------------|---------------|
-| High load (> CPU cores) | CPU saturation | Check `busy_workers`, review slow queries |
-| High memory usage (> 90%) | Memory pressure | Check for memory leaks, review process sizes |
-| All workers busy | Request backlog | Increase MaxRequestWorkers, check slow endpoints |
+| High load (> CPU cores) | CPU saturation | Review slow queries, check Starman worker saturation |
+| High memory usage (> 90%) | Memory pressure | Check for memory leaks, review Starman worker sizes |
+| All Starman workers busy | Request backlog | Raise `STARMAN_WORKERS`, check slow endpoints |
 | Low workers, high load | Database or I/O bottleneck | Check database connectivity and query performance |
 | Rising 1min load | Current spike | Monitor to see if temporary or sustained |
 | High 15min load | Sustained problem | Investigate application performance |
-| `open_slot` == 0 | Worker exhaustion | All worker slots in use, need more workers or fix slow requests |
-| High `sending` count | Slow clients | Network issues or clients with slow connections |
-| High `reading` count | Slow uploads | Clients uploading large files or slow network |
-| High `requests_per_sec` | Traffic spike | Check if legitimate or bot attack |
-| Low `uptime_seconds` | Recent restart | Check why Apache restarted recently |
+| Backend 503 / proxy errors | Starman backend down or saturated | Check Starman process on :5000, review CloudWatch |
 
 ## Health Check Configuration
 
@@ -293,34 +197,29 @@ Configured in [cf/everything2-production.json](../cf/everything2-production.json
 - **StartPeriod:** 60 second grace period during container startup
 - **Timeout:** 5 second timeout per check
 
-### Apache Configuration
+### Apache (Reverse Proxy) Configuration
 
-The health endpoint is configured in [etc/templates/everything.erb](../etc/templates/everything.erb):
+The proxy-side bits are in [etc/templates/apache2.conf.erb](../etc/templates/apache2.conf.erb). Under PSGI, `/health` and `/health.pl` are reverse-proxied to the Starman backend and answered by `Everything::HealthCheck` (in `app.psgi`); Apache only suppresses logging for them:
 
 ```apache
-# Health check endpoint - lightweight, no access logging
+# Health check endpoint - no access logging
 <Location /health.pl>
     SetEnv dontlog 1
 </Location>
 
-# Apache server-status for monitoring (localhost only)
+# Apache server-status for monitoring the *proxy* layer (localhost only)
 <Location /server-status>
     SetHandler server-status
     Require local
     SetEnv dontlog 1
 </Location>
-
-# Rewrite rule to redirect /health to /health.pl for convenience
-RewriteRule ^health$  /health.pl [L,QSA]
 ```
 
-**Key features:**
+**Key features (as of 2026-06):**
 - No access logging for health check or server-status (reduces log noise)
-- Minimal processing overhead
-- No IP bans or restrictions
-- Both `/health` and `/health.pl` work (rewrite rule handles the redirect)
-- Apache mod_status enabled at `/server-status` (localhost only)
-- Health check queries mod_status for detailed Apache metrics
+- Both `/health` and `/health.pl` are proxied to Starman and answered by the PSGI health app
+- `/server-status` (Apache mod_status) reports on the **proxy** layer only — it no longer feeds app metrics into the health response
+- The health JSON's worker/concurrency model is Starman, not Apache prefork (see the Worker / Concurrency Model section above)
 
 ### CloudWatch Logs Configuration
 
@@ -682,17 +581,18 @@ See [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) for au
 │  │  Docker Container                                     │  │
 │  │                                                        │  │
 │  │  ┌──────────────────────────────────────────────┐    │  │
-│  │  │  Apache + mod_perl                           │    │  │
+│  │  │  Apache (mpm_event) reverse proxy            │    │  │
+│  │  │     │  proxies /health -> Starman :5000      │    │  │
+│  │  │     ▼                                         │    │  │
+│  │  │  Starman / PSGI  (app.psgi)                  │    │  │
 │  │  │                                               │    │  │
 │  │  │  ┌────────────────────────────────────┐      │    │  │
 │  │  │  │  /health endpoint                  │      │    │  │
-│  │  │  │  (www/health.pl)                   │      │    │  │
+│  │  │  │  (Everything::HealthCheck)         │      │    │  │
 │  │  │  │                                     │      │    │  │
-│  │  │  │  • Basic check: Apache OK          │      │    │  │
-│  │  │  │  • Detailed: + response time       │      │    │  │
-│  │  │  │  • DB check: + database conn       │      │    │  │
-│  │  │  │                                     │      │    │  │
-│  │  │  │  Logs to: health-check.log         │      │    │  │
+│  │  │  │  • Basic check: app OK             │      │    │  │
+│  │  │  │  • Detailed: + load + memory       │      │    │  │
+│  │  │  │  • DB check (?db=1): + database    │      │    │  │
 │  │  │  └────────────────────────────────────┘      │    │  │
 │  │  │                                               │    │  │
 │  │  └──────────────────────────────────────────────┘    │  │
@@ -720,8 +620,8 @@ See [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) for au
 
 | File | Purpose |
 |------|---------|
-| [www/health.pl](../www/health.pl) | Health check endpoint implementation |
-| [etc/templates/everything.erb](../etc/templates/everything.erb) | Apache configuration for `/health` |
+| [ecore/Everything/HealthCheck.pm](../ecore/Everything/HealthCheck.pm) | Health check endpoint implementation (PSGI app, wired in `app.psgi`) |
+| [etc/templates/apache2.conf.erb](../etc/templates/apache2.conf.erb) | Apache reverse-proxy config for `/health` |
 | [cf/everything2-production.json](../cf/everything2-production.json) | ECS health check configuration |
 | [tools/test-health-check.sh](../tools/test-health-check.sh) | Health check testing script |
 | [tools/diagnose-health-checks.rb](../tools/diagnose-health-checks.rb) | ECS health check diagnostics |

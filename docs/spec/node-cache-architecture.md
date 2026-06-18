@@ -6,7 +6,7 @@
 
 ## Overview
 
-Everything2 uses a multi-layered caching system to reduce database load in a multi-process Apache/mod_perl environment. The key challenge is **cache coherency** - since each Apache httpd process runs in its own memory space, changes made by one process must be visible to all others.
+Everything2 uses a multi-layered caching system to reduce database load in a multi-process **PSGI/Starman** environment (Apache is a pure reverse proxy; the application runs in preforked Starman worker processes — mod_perl is gone). The key challenge is **cache coherency** - since each Starman worker process runs in its own memory space, changes made by one worker must be visible to all others.
 
 The solution employs **version-based invalidation**: nodes are tagged with version numbers stored in shared database tables. When any process modifies a node, it increments the global version number, causing other processes to detect stale cached data on their next access.
 
@@ -14,7 +14,7 @@ The solution employs **version-based invalidation**: nodes are tagged with versi
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                         Apache httpd Process                             │
+│                       Starman Worker Process                             │
 │  ┌─────────────────────────────────────────────────────────────────┐   │
 │  │                    NodeCache (per-process)                       │   │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │   │
@@ -69,7 +69,7 @@ The primary cache, storing complete node hashrefs in process memory.
 | `paramcache` | {node_id}{param_name} → value | Per-pageload |
 | `groupCache` | {group_id}{member_id} → 1 | Persistent (until group modified) |
 
-**Cache Size:** Controlled by `nodecache_size` in Configuration.pm (default: 500 nodes)
+**Cache Size:** Controlled by `nodecache_size` in Configuration.pm (default: 1000 nodes)
 
 ### Layer 2: Static Cache (No Version Checks)
 
@@ -101,12 +101,12 @@ has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
   "superdocnolinks" => 1,
   "restricted_superdoc" => 1,
   "oppressor_superdoc" => 1,
-  "document" => 1,
   "ticker" => 1,
   "jsonexport" => 1,
 
   # Other code-controlled types
   "achievement" => 1,
+  "opcode" => 1,
 } });
 ```
 
@@ -114,7 +114,7 @@ has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
 1. Never evicted from cache (permanent)
 2. **No version table queries** - `isSameVersion()` returns 1 immediately
 3. Changes only take effect after ECS task restart
-4. ~641 nodes total across 20 types
+4. Covers the code-backed types listed above (`document` was removed from the list; `opcode` was added)
 
 ### Layer 3: Permanent Cache (With Version Checks)
 
@@ -333,7 +333,7 @@ sub isSameVersion {
 
 ### Issue 4: No Group Cache Invalidation (RESOLVED - December 2025)
 
-**Historical Problem:** The `groupCache` tracked usergroup membership but had no version invalidation mechanism. When group membership changed, the cache was only invalidated via `groupUncache()` call in the modifying process. Other httpd processes had stale group membership data until their cache entry was naturally evicted.
+**Historical Problem:** The `groupCache` tracked usergroup membership but had no version invalidation mechanism. When group membership changed, the cache was only invalidated via `groupUncache()` call in the modifying process. Other Starman workers had stale group membership data until their cache entry was naturally evicted.
 
 **Resolution:** Modified `isSameVersion()` to also invalidate the `groupCache` entry when a version mismatch is detected:
 
@@ -355,13 +355,13 @@ sub isSameVersion {
 
 **How it works:**
 1. When a usergroup's membership changes, `incrementGlobalVersion()` bumps the version
-2. Other httpd processes still have the old version cached
+2. Other Starman workers still have the old version cached
 3. On next access (e.g., `isApproved()` → `isGod()` → `existsInGroupCache()`), the node is fetched first
 4. `isSameVersion()` detects the version mismatch and clears the `groupCache` entry
 5. The next `hasGroupCache()` check returns false, triggering a fresh `selectNodegroupFlat()` call
 6. Fresh membership data is cached with the new version
 
-**Impact:** Usergroup membership changes (add/remove user from gods, editors, chanops, etc.) now propagate correctly to all httpd processes on next access.
+**Impact:** Usergroup membership changes (add/remove user from gods, editors, chanops, etc.) now propagate correctly to all Starman workers on next access.
 
 ### Issue 5: Permanent Cache Can Grow Unbounded
 
@@ -533,7 +533,7 @@ sub getCacheStats {
 
 | Setting | Location | Default | Purpose |
 |---------|----------|---------|---------|
-| `nodecache_size` | Configuration.pm | 500 | Max non-permanent nodes |
+| `nodecache_size` | Configuration.pm | 1000 | Max non-permanent nodes |
 | `permanent_cache` | Configuration.pm | 13 types | Types never evicted |
 | `static_nodetypes` | Configuration.pm | varies | Whether nodetypes are cached permanently |
 

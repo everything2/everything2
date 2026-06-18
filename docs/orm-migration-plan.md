@@ -196,6 +196,6 @@ If you eventually decide DBIC is unavoidable (Path 4), the lift can be sequenced
 
 - [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) — sqitch and schema-migration concerns (the other half of this story)
 - [docs/mysql-migration-plan.md](mysql-migration-plan.md) — MySQL 8.4 migration (current focus)
-- [docs/psgi-plack-migration-plan.md](psgi-plack-migration-plan.md) — PSGI migration (downstream)
+- PSGI migration — shipped and live in prod (2026-06-08); plan in git history
 - `ecore/Everything/NodeBase.pm` — the persistence layer in question
 - `ecore/Everything/Node.pm` and `ecore/Everything/Node/*.pm` — the 63-subclass domain layer

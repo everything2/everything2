@@ -53,7 +53,7 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 - **[Developer Roadmap](docs/DEVELOPER-ROADMAP.md)** ⭐ — Strategic priorities, phase sequencing, current status
 - **[Modernization Epoch Tree](docs/modernization-dependency-tree.md)** — Dependency ordering of the deferred work (what unblocks what)
 - **[MySQL 8.4 Migration Plan](docs/mysql-migration-plan.md)** — ✅ Done (migrated 2026-06-07)
-- **[PSGI/Plack Migration Plan](docs/psgi-plack-migration-plan.md)** — ✅ Shipped (live in prod 2026-06-08)
+- **PSGI/Plack migration** — ✅ Shipped (live in prod 2026-06-08); mod_perl removed (original plan in git history)
 - **[Plack::Request Migration](docs/plack-request-migration.md)** — ✅ CGI.pm removed (request + response layers)
 - **[API-Driven Architecture](docs/api-driven-architecture.md)** — Next epoch: return-based responses, PageState, 100%-API
 - **[ORM Migration Plan](docs/orm-migration-plan.md)** — NodeBase modernization strategy (deferred)
@@ -73,7 +73,7 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for complete development 
 | Mobile Redesign | ✅ Shipped | Bottom-nav layout, mobile audit tooling in `tools/` |
 | Date/Timezone Standardization | ✅ Done | 18 components migrated to `react/utils/dateFormat.js` |
 | Testing Infrastructure | ✅ Stable | Automated via `./docker/devbuild.sh` |
-| Code Coverage | ✅ Tracked | Perl 47.9% / React tracked via Jest |
+| Code Coverage | ✅ Tracked | Perl 53.1% / React 17.7% (as of 2026-06-15) |
 | **MySQL 8.4 Migration** | ✅ Done | Migrated 2026-06-07 (#4226), ahead of the July 2026 RDS deadline |
 | **PSGI/Plack Migration** | ✅ Shipped | Live in prod 2026-06-08; mod_perl removed, Apache on mpm_event, Starman serving |
 | **CGI.pm Removal** | ✅ Done | Request via `Everything::Request::PlackQuery`, response via `Everything::Response`; CGI dropped from deps + vendor cache |

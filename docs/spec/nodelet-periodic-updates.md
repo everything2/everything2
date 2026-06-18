@@ -158,7 +158,7 @@ fetch('/api/chatter/', {
 
 Without this, background polling would make users appear constantly active.
 
-**Backend check**: `ecore/Everything/Request.pm:171-174`
+**Backend check**: `ecore/Everything/Request.pm:305-307`
 
 ---
 

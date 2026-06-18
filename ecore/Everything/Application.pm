@@ -3977,6 +3977,70 @@ sub add_notification {
   return 1;
 }
 
+# Post-publish finishers for a freshly published writeup. Ported from the legacy
+# publishwriteup htmlcode so the React publish path (Everything::API::drafts
+# publish_draft) stays at parity (#4314):
+#   1. notify users who have this author as a favorite (and enabled the pref)
+#   2. send the newbie-writeup notification on the author's first writeup or a
+#      young (< 14 day) account
+#   3. run writeup achievement checks
+# $author is the author user hashref (NODEDATA); $writeup_id the new writeup id.
+# NB: producer args follow the *current* notification renderer/validity
+# convention (node_id + author for display; writeup_id + publish_time for the
+# newbie validity check) -- the stale legacy producer used writeup_id/author_id,
+# which the refactored renderers + *_is_valid checks no longer read, so the
+# legacy favorite/newbie notifications were effectively suppressed.
+sub finalize_published_writeup {
+  my ($this, $author, $writeup_id) = @_;
+  my $db = $this->{db};
+  my $author_id = $author->{user_id} || $author->{node_id};
+  return unless $author_id && $writeup_id;
+
+  my $writeup = $db->getNodeById($writeup_id);
+
+  # 1. Favorite-author notifications
+  my $fav_notif = $db->getNode('favorite', 'notification');
+  my $fav_link  = $db->getNode('favorite', 'linktype');
+  if ($fav_notif && $fav_link) {
+    my $fav_notif_id = $fav_notif->{node_id};
+    my $faves = $db->sqlSelectMany('from_node', 'links',
+      "to_node=$author_id AND linktype=$fav_link->{node_id}");
+    while (my $f = $faves->fetchrow_hashref) {
+      my $favuser = $db->getNodeById($f->{from_node}) or next;
+      my $fvars = $this->getVars($favuser);
+      next unless $fvars && $fvars->{settings};
+      my $settings = eval { from_json($fvars->{settings}) };
+      next unless $settings && ref($settings->{notifications}) eq 'HASH'
+        && $settings->{notifications}{$fav_notif_id};
+      $this->add_notification($fav_notif_id, $f->{from_node},
+        { node_id => $writeup_id, favorite_author => $author_id });
+    }
+  }
+
+  # 2. Newbie-writeup notification (first writeup, or account < 14 days old)
+  my $writeup_type = $db->getType('writeup');
+  my $wherestr = 'type_nodetype=' . $writeup_type->{node_id} . " AND author_user=$author_id";
+  my $maint = $this->getMaintenanceNodesForUser($author_id) || [];
+  $wherestr .= ' AND node_id NOT IN (' . join(', ', @$maint) . ')' if @$maint;
+  my $wu_count = int($db->sqlSelect('count(*)', 'node', $wherestr) || 0);
+  my $age_days = $db->sqlSelect('TIMESTAMPDIFF(DAY, createtime, NOW())', 'node', "node_id=$author_id");
+  my $is_young = (defined $age_days && $age_days >= 0 && $age_days < 14) ? 1 : 0;
+
+  if ($wu_count == 1 || $is_young) {
+    $this->add_notification('newbiewriteup', undef, {
+      node_id      => $writeup_id,
+      author       => $author->{title},
+      writeup_id   => $writeup_id,
+      author_id    => $author_id,
+      publish_time => ($writeup ? $writeup->{publishtime} : undef),
+    });
+  }
+
+  # 3. Writeup achievements
+  $this->checkAchievementsByType('writeup', $author_id);
+  return;
+}
+
 # Check achievements by type for a user
 # This is a port of htmlcode::achievementsByType to Application.pm
 # so it can be called from API classes without symbol table pollution

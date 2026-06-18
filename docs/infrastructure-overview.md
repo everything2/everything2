@@ -16,8 +16,8 @@ Everything2 runs on a containerized AWS infrastructure with Docker containers ma
 ```
 
 **Containers:**
-- `e2devdb` - MySQL 8.0+ database
-- `e2devapp` - Apache2 + mod_perl2 + Node.js application
+- `e2devdb` - MySQL 8.4 database
+- `e2devapp` - Perl on Starman/PSGI behind an Apache (mpm_event) reverse proxy + Node.js application (as of 2026-06; mod_perl removed)
 
 **Access:**
 - Local site: http://localhost:9080
@@ -180,8 +180,8 @@ CloudWatch Logs
 
 **Development:**
 - Location: `docker/` directory
-- Base image: Ubuntu 24.04
-- Includes: Apache2, mod_perl2, MySQL client, Node.js 20.19.2
+- Base image: Ubuntu 26.04
+- Includes: Apache2 (mpm_event proxy), Starman/PSGI, MySQL client, Node.js 20.19.2
 - Build script: `docker/devbuild.sh`
 - Clean script: `docker/devclean.sh`
 
@@ -198,11 +198,11 @@ CloudWatch Logs
 1. System dependencies (imagemagick, libmysqlclient, etc.)
 2. Perl dependencies via Carton
 3. Node.js and React build
-4. Apache configuration
+4. Apache (mpm_event reverse proxy) configuration
 5. Everything2 codebase
 
 **Key Components:**
-- Apache2 with mod_perl2
+- Apache (mpm_event) reverse proxy in front of Starman/PSGI (`app.psgi`); mod_perl removed
 - Perl modules from cpanfile (via Carton)
 - Node.js for Webpack build
 - React compiled to `www/react/main.bundle.js`
@@ -440,10 +440,10 @@ The health check diagnostic tool ([tools/diagnose-health-checks.rb](../tools/dia
   - Custom bot blacklist (HTTrack blocker)
   - CloudWatch metrics and logging
 
-### Security Gaps
+### Security Gaps (as of 2026-06)
 
-- ❌ SQL injection vulnerabilities (see analysis-summary.md)
-- ❌ Eval'd code in database (see analysis-summary.md)
+The previously-flagged SQL injection vulnerabilities and eval'd-in-database code have been cleaned up (the "~15 vulnerabilities" framing in older docs is stale). Remaining hardening opportunities:
+
 - ❌ No automated security scanning
 - ❌ No dependency vulnerability scanning
 
@@ -451,41 +451,27 @@ The health check diagnostic tool ([tools/diagnose-health-checks.rb](../tools/dia
 
 1. Add Dependabot for dependency updates
 2. Run Snyk or similar for vulnerability scanning
-3. Fix SQL injection vulnerabilities (Priority 2)
-4. Remove database code execution (Priority 1)
-5. Consider WAF geo-blocking if needed
-6. Consider enabling AWS Shield Advanced for DDoS protection
+3. Consider WAF geo-blocking if needed
+4. Consider enabling AWS Shield Advanced for DDoS protection
 
 ## Scaling Considerations
 
-### Current Limitations
+### Current Architecture (as of 2026-06)
 
-**mod_perl Architecture:**
-- Per-process memory cache
-- Package-level globals
-- Not thread-safe
-- Apache prefork MPM (one process per connection)
-- Process size limit: 800MB (Apache2::SizeLimit)
+**Starman/PSGI (as-built):** The PSGI/Plack migration is done and live in production (#4234). The app runs under Starman workers; Apache (mpm_event) is a pure reverse proxy on the front. This delivered the benefits previously listed as future work — lower per-worker memory, more efficient connection pooling (RDS connections roughly halved), and a clean worker model bounded by `STARMAN_WORKERS`.
+
+- Per-worker memory cache (no shared cache tier; Redis/Memcached was evaluated and rejected as not cost-effective)
+- Cache coherency via database `version` table
 
 **Horizontal Scaling:**
-- Multiple Fargate tasks possible
+- Multiple Fargate tasks (autoscaling on 2xx-per-target, min 2 / max 6)
 - Each task has isolated cache
 - Cache coherency via database `version` table
-- Database queries for every cache hit
 
 **Bottlenecks:**
-- Database connection pool
+- Database connection pool (eased by PSGI's reduced connection count)
 - Cache version checks (DB query per cache hit)
-- No shared cache between workers
-
-### PSGI/Plack Benefits
-
-**When migrated:**
-- Shared cache (Redis/Memcached)
-- Better horizontal scaling
-- Thread-safe workers
-- Lower memory per worker
-- More efficient connection pooling
+- No shared cache between workers (by design)
 
 ## Cost Optimization Opportunities
 
@@ -528,26 +514,7 @@ The health check diagnostic tool ([tools/diagnose-health-checks.rb](../tools/dia
 
 ## Future Infrastructure Improvements
 
-### Short Term (Q1-Q2 2025)
-
-1. **Add CI/CD test phase** - Run tests before deployment
-2. **CloudWatch dashboards** - Better visibility
-3. **Alerting** - Error rate, latency thresholds
-4. **Backup monitoring** - Verify backups are working
-
-### Medium Term (Q2-Q3 2025)
-
-1. **APM integration** - Application performance monitoring
-2. **Error tracking** - Sentry or similar
-3. **WAF enhancements** - Geo-blocking, advanced rules, Shield Advanced
-4. **Redis for caching** - Shared cache for PSGI
-
-### Long Term (Q3-Q4 2025)
-
-1. **PSGI/Plack migration** - Modern web framework
-2. **Kubernetes** - Consider EKS for container orchestration
-3. **Multi-region** - High availability
-4. **Serverless components** - Lambda for cron jobs?
+The dated Q1-Q4 2025 roadmap that lived here (including "PSGI/Plack migration — long term", now done and live) is superseded. See [DEVELOPER-ROADMAP.md](DEVELOPER-ROADMAP.md) for the current roadmap and run `git log` for up-to-date status.
 
 ## Future Monitoring and Analysis Tasks
 
@@ -632,6 +599,6 @@ jq '.events[].message' app-errors-3days.json | sort | uniq -c | sort -rn | head 
 
 ---
 
-**Document Status:** Updated with CloudWatch log analysis task
-**Last Updated:** 2025-11-07
-**Next Review:** 2025-12-07
+**Document Status:** Architecture/security/roadmap sections refreshed for Starman/PSGI as-built
+**Last Updated:** 2026-06-15 (was 2025-11-07)
+**Next Review:** see DEVELOPER-ROADMAP.md

@@ -4,6 +4,8 @@
 
 This document describes the Apache2 configuration for Everything2, focusing on production settings optimized for performance, security, and reliability in AWS ECS Fargate environments.
 
+**Architecture (post-PSGI):** Apache is a **pure reverse proxy** in front of the application. All dynamic requests are proxied to a Starman/PSGI backend listening on `127.0.0.1:5000` (started by `apache2_wrapper.rb`); Apache itself runs **no application code and does not load mod_perl**. Apache uses **MPM Event** (the old mod_perl-mandated MPM Prefork is gone). The legacy mod_perl path and its `E2_PSGI` toggle were removed in the full PSGI cutover (#4234); this config is PSGI-only. See `etc/templates/apache2.conf.erb` for the live source of truth.
+
 ## Configuration Files
 
 ### Main Configuration Template
@@ -16,7 +18,9 @@ This ERB template is processed by `docker/e2app/apache2_wrapper.rb` during conta
 
 **Location:** `etc/templates/everything.erb`
 
-Contains the main virtual host configuration, including mod_perl handlers and access control rules.
+Contains the main virtual host configuration, including the reverse-proxy (`ProxyPass`/`ProxyPassReverse`) directives to the Starman backend and access control rules.
+
+**Note:** As of the PSGI cutover, the virtual host configuration lives directly in `apache2.conf.erb` (the `<VirtualHost _default_:80>` block); the older standalone `everything.erb` mod_perl handler template is no longer the dispatcher.
 
 ## Production Settings
 
@@ -71,70 +75,67 @@ KeepAliveTimeout 15
 - 15 seconds balances responsiveness with worker availability
 - Shorter than Timeout to free workers faster
 
-### MPM Prefork Settings (Production)
+### MPM Event Settings (Production)
 
 ```apache
 <IfDefine E2_PRODUCTION>
-Define E2StartServers 15
-Define E2MinSpareServers 15
-Define E2MaxSpareServers 20
-Define E2MaxRequestWorkers 40
-Define E2MaxConnections 10000
+Define E2StartServers 2
+Define E2ServerLimit 4
+Define E2ThreadsPerChild 25
+Define E2MinSpareThreads 25
+Define E2MaxSpareThreads 75
+Define E2MaxRequestWorkers 100
+Define E2MaxConnections 5000
 </IfDefine>
 
-<IfModule mpm_prefork_module>
-  StartServers         ${E2StartServers}
-  MinSpareServers      ${E2MinSpareServers}
-  MaxSpareServers      ${E2MaxSpareServers}
-  MaxRequestWorkers    ${E2MaxRequestWorkers}
-  MaxConnectionsPerChild ${E2MaxConnections}
+<IfModule mpm_event_module>
+  StartServers            ${E2StartServers}
+  ServerLimit             ${E2ServerLimit}
+  ThreadLimit             ${E2ThreadsPerChild}
+  ThreadsPerChild         ${E2ThreadsPerChild}
+  MinSpareThreads         ${E2MinSpareThreads}
+  MaxSpareThreads         ${E2MaxSpareThreads}
+  MaxRequestWorkers       ${E2MaxRequestWorkers}
+  MaxConnectionsPerChild  ${E2MaxConnections}
 </IfModule>
 ```
 
-**Why MPM Prefork?**
-- Required for mod_perl compatibility
-- Each worker is isolated (safer for legacy code)
-- Simpler memory management for Perl
+**Why MPM Event (not Prefork)?**
+- mod_perl is gone, so the constraint that mandated Prefork is gone with it.
+- Apache only proxies; threads handle client connections cheaply.
+- **Effective request concurrency is bounded at the backend by `STARMAN_WORKERS`, not by Apache.** `MaxRequestWorkers` here is generous headroom for client connections, not a cap on parallel application work, and is *not* a per-worker-memory budget the way the old Prefork model was — Apache proxy threads are lightweight.
 
-**StartServers (15):**
-- Number of child processes to spawn at startup
-- Ensures immediate capacity without warmup delay
-- Sized for typical baseline traffic
+**StartServers (2) / ServerLimit (4) / ThreadsPerChild (25):**
+- Apache spawns a small number of multi-threaded child processes.
+- `ServerLimit × ThreadsPerChild` (4 × 25 = 100) is the hard ceiling, matching `MaxRequestWorkers`.
 
-**MinSpareServers (15) / MaxSpareServers (20):**
-- Apache maintains pool of idle workers
-- Ensures workers available for traffic bursts
-- Narrow range (15-20) keeps resource usage predictable
+**MinSpareThreads (25) / MaxSpareThreads (75):**
+- Apache maintains a pool of idle worker threads for bursts.
 
-**MaxRequestWorkers (40):**
-- Maximum concurrent Apache processes
-- **CRITICAL LIMIT:** Constrained by container memory
-- Fargate task definition must allocate sufficient memory
-- Each mod_perl worker can use 100-200MB of RAM
-- 40 workers × 150MB ≈ 6GB + overhead = ~8GB container
+**MaxRequestWorkers (100):**
+- Maximum concurrent connections Apache will service.
+- Memory is no longer the binding constraint (no mod_perl interpreter per worker); the real application concurrency limit is the Starman worker count at `127.0.0.1:5000`.
 
-**MaxConnectionsPerChild (10000):**
-- Number of requests each worker handles before recycling
-- Prevents memory leaks from accumulating
-- 10,000 balances worker longevity with memory hygiene
-- With 40 workers: 400,000 total requests between full recycling
+**MaxConnectionsPerChild (5000):**
+- Number of connections each child process handles before recycling, for general hygiene. Far less critical than under mod_perl, since Apache holds no application state or Perl memory.
 
 ### Development Settings
 
 ```apache
 <IfDefine E2_DEVELOPMENT>
-Define E2StartServers 2
-Define E2MinSpareServers 2
-Define E2MaxSpareServers 2
-Define E2MaxRequestWorkers 2
+Define E2StartServers 1
+Define E2ServerLimit 2
+Define E2ThreadsPerChild 25
+Define E2MinSpareThreads 10
+Define E2MaxSpareThreads 50
+Define E2MaxRequestWorkers 50
 Define E2MaxConnections 0
 </IfDefine>
 ```
 
 **Purpose:** Lightweight configuration for local development
 
-**MaxRequestWorkers (2):** Minimal workers for profiling with NYTProf
-**MaxConnections (0):** Workers never recycle (preserves profiling data)
+**MaxConnections (0):** Child processes never recycle on a connection count.
 
 **Note:** E2_DEVELOPMENT vs E2_PRODUCTION set based on `node["override_configuration"]` in ERB template
 
@@ -188,7 +189,7 @@ PassEnv E2_MAINTENANCE_MESSAGE
 PassEnv E2_DBSERV
 ```
 
-**Purpose:** Pass environment variables from container to mod_perl code
+**Purpose:** Pass environment variables from the container into the proxied request environment so the application (running under Starman) can read them.
 
 **AWS Variables:**
 - Enable IAM role-based AWS API access
@@ -220,7 +221,7 @@ LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\
 **Fields:**
 - `time`: ISO 8601 timestamp with milliseconds
 - `process`: Request duration in microseconds
-- `filename`: File that handled request (for mod_perl debugging)
+- `filename`: File that handled request (for static assets; dynamic requests are proxied to Starman)
 - `remoteIP`: Client IP from X-Forwarded-For (ELB provides this)
 - `host`: Virtual host name
 - `request`: URI path (without query string)
@@ -300,31 +301,18 @@ AccessFileName .htaccess
 
 ### Capacity Planning
 
-**Formula for MaxRequestWorkers:**
-
-```
-MaxRequestWorkers = (Available_Memory - OS_Overhead) / Worker_Memory
-```
-
-**Example calculation:**
-- Container memory: 8GB (8192MB)
-- OS/Apache overhead: 1GB (1024MB)
-- Available: 7GB (7168MB)
-- Average worker size: 150MB
-- Max workers: 7168 / 150 = **47 workers**
-
-**Current setting:** 40 workers (conservative, allows headroom)
+**Post-PSGI, Apache is not the concurrency constraint.** The old "MaxRequestWorkers = available memory / 150MB per mod_perl worker" formula no longer applies — Apache proxy threads are lightweight and hold no Perl interpreter or application memory. Real application concurrency is governed by the number of **Starman workers** (`STARMAN_WORKERS`) at the `127.0.0.1:5000` backend; size that against container CPU/RAM and database connection budget. Apache's `MaxRequestWorkers` (100 in prod) is generous connection headroom in front of that backend.
 
 ### Monitoring Recommendations
 
 **Key metrics to monitor:**
 
-1. **Apache Worker Utilization:**
+1. **Apache Connection Utilization** (`mod_status` is enabled at `/server-status`, localhost only):
    ```bash
    curl http://localhost/server-status?auto
    ```
-   - Watch `BusyWorkers` / `MaxRequestWorkers` ratio
-   - If consistently > 90%, increase workers or container size
+   - Watch `BusyWorkers` / `MaxRequestWorkers` ratio for proxy saturation.
+   - Sustained saturation more often points to the **Starman backend** being the bottleneck (workers all busy) than to Apache itself — check backend worker count first.
 
 2. **Memory Usage:**
    ```bash
@@ -344,9 +332,8 @@ MaxRequestWorkers = (Available_Memory - OS_Overhead) / Worker_Memory
 ### Scaling Considerations
 
 **Vertical Scaling (increase container resources):**
-- Increase Fargate task memory: 8GB → 16GB
-- Increase MaxRequestWorkers: 40 → 80
-- Monitor memory per worker to ensure headroom
+- Increase Fargate task CPU/memory and raise the **Starman worker count** — that is the lever that adds application concurrency.
+- Apache's `MaxRequestWorkers` rarely needs raising in lockstep, since proxy threads are cheap.
 
 **Horizontal Scaling (add more containers):**
 - Increase ECS service desired count
@@ -374,25 +361,14 @@ apache2ctl configtest
 - Missing required modules in `mods-enabled/`
 - Port 80 already bound
 
-### Workers Recycling Too Frequently
-
-**Symptoms:**
-- High CPU usage
-- Increased latency
-- Memory usage climbs then drops repeatedly
-
-**Solutions:**
-- Increase `MaxConnectionsPerChild` (10000 → 20000)
-- Reduce worker memory footprint (profile with NYTProf)
-- Check for memory leaks in mod_perl code
-
 ### Connection Refused / 503 Errors
 
 **Possible causes:**
-1. **All workers busy:** Check `BusyWorkers` at `/server-status`
-2. **ListenBacklog exceeded:** Increase backlog or add workers
-3. **Container memory limit:** Check `docker stats`, may be OOM killing
-4. **Health check failing:** See [health-checks.md](health-checks.md)
+1. **Starman backend saturated/down:** All Starman workers busy, or the backend on `127.0.0.1:5000` isn't responding — Apache returns 502/503 from the proxy. Check the backend first.
+2. **All proxy workers busy:** Check `BusyWorkers` at `/server-status`
+3. **ListenBacklog exceeded:** Increase backlog or add workers
+4. **Container memory limit:** Check `docker stats`, may be OOM killing
+5. **Health check failing:** See [health-checks.md](health-checks.md)
 
 **Debug steps:**
 ```bash
@@ -411,23 +387,20 @@ tail -f /var/log/apache2/e2.error.*.log
 
 ### High Memory Usage
 
-**Investigation:**
+Under PSGI, application memory lives in the **Starman worker processes**, not in Apache. Investigate the `starman`/`perl` processes rather than `apache2`:
+
 ```bash
 # Memory by process
 ps aux --sort=-%mem | head -20
 
-# Apache worker memory
-ps aux | grep apache2 | awk '{print $6}' | awk '{s+=$1} END {print s/1024 "MB total"}'
-
-# Average per worker
-ps aux | grep apache2 | awk '{s+=$6; c++} END {print s/c/1024 "MB average"}'
+# Starman backend memory
+ps aux | grep -E 'starman|perl' | awk '{s+=$6} END {print s/1024 "MB total"}'
 ```
 
 **Solutions:**
-- Reduce `MaxRequestWorkers` if exceeding container memory
-- Decrease `MaxConnectionsPerChild` to recycle workers sooner
-- Profile code with NYTProf to find memory leaks
-- Check for circular references in Perl objects
+- Tune the Starman worker count and per-worker request limit (workers recycle to bound memory).
+- Profile application code with NYTProf to find leaks.
+- Check for circular references in Perl objects.
 
 ## Related Documentation
 
@@ -444,13 +417,14 @@ Main Apache configuration template. Processes based on environment:
 - `E2_DEVELOPMENT`: Lightweight, profiling-friendly
 - `E2_PRODUCTION`: Optimized for production workloads
 
-### everything.erb
+### Virtual Host (in apache2.conf.erb)
 
-Virtual host configuration template. Includes:
-- mod_perl handlers
+The `<VirtualHost _default_:80>` block in `apache2.conf.erb` provides:
+- Reverse-proxy directives (`ProxyPass` / `ProxyPassReverse`) to the Starman backend on `127.0.0.1:5000`, with `nocanon` and `disablereuse=On`
+- Static-asset `ProxyPass ... !` exclusions (css, react, images, static, js, sound, fonts, favicon, robots.txt, verification files, sitemap)
 - Access control rules from `apache_blocks.json`
 - Document root and directory settings
-- Custom error pages
+- Edge compression (brotli with gzip fallback)
 
 ### apache2_wrapper.rb
 
@@ -476,7 +450,7 @@ Ruby script that processes ERB templates at container startup:
 
 3. **Regular Security Updates:**
    - Keep base Docker image updated
-   - Update mod_perl and Apache packages
+   - Update Apache and Perl/Starman packages
    - Monitor CVEs for Apache and OpenSSL
 
 4. **Access Control:**
@@ -494,26 +468,17 @@ Ruby script that processes ERB templates at container startup:
 **Potential optimizations:**
 
 1. **HTTP/2 Support:**
-   - Requires switch from MPM Prefork to MPM Event
-   - Not compatible with mod_perl
-   - Would require significant refactoring
-   - Note: HTTP/2 is already supported at CloudFront edge
+   - Now unblocked: mod_perl is gone and Apache already runs MPM Event, so the historical "not compatible with mod_perl / requires Prefork→Event switch" obstacle no longer applies.
+   - HTTP/2 is already supported at the CloudFront edge; enabling it origin-side is an optional follow-up.
 
 2. **Request Coalescing:**
    - Implement request queue at application layer
    - Batch similar requests (e.g., multiple users loading same node)
    - Reduce database load
 
-3. **Connection Pooling:**
-   - Currently using Apache::DBI
-   - Consider persistent connection management improvements
-   - Monitor connection lifecycle
-
-4. **Graceful Worker Recycling:**
-   - Implement signal handling for worker replacement
-   - Avoid request interruption during recycling
-   - Better memory management without user impact
+3. **Database Connection Pooling:**
+   - Connection lifecycle is now owned by the Starman worker processes (each worker holds its own DB handle), not by Apache::DBI. Tune persistence at the application/Starman layer.
 
 ---
 
-*Last updated: December 2025*
+*Last updated: June 2026 (post-PSGI: Apache is a pure mpm_event reverse proxy to Starman; mod_perl removed)*

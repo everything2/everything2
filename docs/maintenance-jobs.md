@@ -46,7 +46,7 @@ can optionally add a bucket policy denying `PutObject` except from a named admin
 
 ## First job: `tools/jobs/seclog_time_repair.pl`
 Restores `seclog.seclog_time` from a PITR copy after the phase-3 backfill re-stamped it
-(see `docs/seclog-time-repair.md` for the restore mechanics). Because the task is
+(the seclog_time repair runbook is in git history). Because the task is
 in-VPC, one script reaches both prod and the restored instance:
 ```bash
 # 1. (out of band) PITR-restore everything2vpc to 2026-06-13T17:58Z as a temp instance.

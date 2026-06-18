@@ -68,8 +68,8 @@ This session mapped that surface completely:
 | Tracker | Surface | State |
 |---|---|---|
 | **#4255 / #4257** | pagestate facade + chrome/content split + `e2.meta` producer | mostly done |
-| **#4198** | **opcode → API** — migrate the live `op=` mutating handlers (`Everything::Delegation::opcode`) to `POST /api/…`. *The gating prerequisite.* | in progress |
-| **#4299** | opcode kill rounds — verify dead/1:1-superseded opcodes and delete them (shrinks #4198's surface). Phases 1–5 + `bookmark`/`weblog`/`weblogify`/`category`/`massacre`/`leadusergroup` done; deferred candidates mapped (message/drafts-publish/etc.). | ongoing |
+| **#4198** | **opcode → API** — migrate the live `op=` mutating handlers (`Everything::Delegation::opcode`) to `POST /api/…`. *The gating prerequisite.* Burndown now at **~8 live opcodes (from 44)**. | in progress |
+| **#4299** | opcode kill rounds — verify dead/1:1-superseded opcodes and delete them (shrinks #4198's surface). Phases 1–5 + `bookmark`/`weblog`/`weblogify`/`category`/`massacre`/`leadusergroup` done; bucket-2 admin/node-tools (#4303) and the bucket-3 gating migrations `remove` (#4306) / `removeweblog` (#4310) / `changeusergroup` (#4312) shipped. 8 live opcodes remain (message/message_outbox/lockroom/flushcbox/socialBookmark/publishdraft/publishdrafttodocument/approve_draft). | ongoing |
 | **#4298** | **page form-handling** — 23 Page controllers that process form params server-side (mutate/branch on submit). The *other half* of the routing block, beyond opcodes. | tracked (worklist) |
 | **#4300** | **htmlcode burndown** — 57 remaining `Everything::Delegation::htmlcode` subs; factor into unit-tested `Everything::Application` methods or delete as opcodes/pages strand them. Continues the closed #4259. | tracked |
 | **#4301** | **API-wide CSRF guard** — belt-and-suspenders central Origin/header check in `Everything::API` (on top of the existing `SameSite=Lax` cookie). Lands after #4198; the `verifyRequest*` htmlcodes then delete. | tracked (spec) |
@@ -121,7 +121,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 - **Window:** August-September 2026 (3-4 weeks; can overlap with Phase 2)
 - **Why here:** Finish what the Jan 2026 refactor started while context is fresh; before adding new React features (social login UI)
 - **Scope:**
-  - Finish the 12 partially-converted inline-styles components (per [docs/inline-styles-refactor.md](inline-styles-refactor.md))
+  - Inline-styles → BEM refactor is resolved; residual theme-level work is tracked in [docs/css-consistency-audit.md](css-consistency-audit.md)
   - Migrate remaining `formatDate` callers in chat/message components (5 files) to the shared `dateFormat` utility from #4056 work
   - Audit react/components/ for other one-off utilities that should be shared (similar to dateFormat pattern)
   - Drop any unused legacy.js / pre-React holdovers
@@ -148,7 +148,7 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 ### Phase 6 — PSGI/Plack migration ✅ DONE (live in prod 2026-06-08, #4234)
 - **Window:** ~~November 2026 → February 2027~~ — *pulled forward and shipped June 2026; mod_perl + CGI.pm removed*
 - **Why here:** biggest single architectural move; needs stable DB and frontend (Phase 1-3 done) before starting
-- **Detailed plan:** [docs/psgi-plack-migration-plan.md](psgi-plack-migration-plan.md) — rewritten 2026-04-28 with corrected architecture
+- **Status:** shipped and live in prod (2026-06-08); mod_perl + CGI.pm removed. Original migration plan is in git history.
 - **Key facts:** app is CGI-style via ModPerl::Registry (not native mod_perl handlers), so the migration is shallower than originally feared. Phase A (PSGI wrapper, dev only) → Phase B (Apache::DBI replacement, ECS shape) → Phase C (staging + canary) → Phase D (post-migration Fargate right-sizing)
 - **Compound benefits:** drops Fargate worker count ~5x, halves DB connection count, frees up the "always-on" memory pressure on RDS, removes Apache::DBI dependency
 
@@ -209,10 +209,10 @@ Everything2 has been through several distinct architectural eras. Brief recap, b
 | 1 | [docs/mysql-migration-plan.md](mysql-migration-plan.md) | Fresh (2026-05-24) |
 | 1 (schema audit) | [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) | Audit done; refocused to sqitch plan 2026-06-07 |
 | 2 | (no dedicated doc yet — write when work starts) | — |
-| 3 | [docs/inline-styles-refactor.md](inline-styles-refactor.md) tracks the 12 remaining | Updated 2026-04 |
+| 3 | Inline-styles refactor resolved; theme backlog in [docs/css-consistency-audit.md](css-consistency-audit.md) | 2026-06 |
 | 4 | (no dedicated doc yet) | — |
 | 5 | (no dedicated doc yet) | — |
-| 6 | [docs/psgi-plack-migration-plan.md](psgi-plack-migration-plan.md) | Fresh (2026-04-28) |
+| 6 | PSGI shipped (live in prod 2026-06-08); plan in git history | Done |
 | 7 | (no dedicated doc yet — small) | — |
 | 8 | [docs/react-19-migration.md](react-19-migration.md) | Stale; needs refresh before Phase 8 |
 | 9 | [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) + [docs/orm-migration-plan.md](orm-migration-plan.md) | Fresh |
