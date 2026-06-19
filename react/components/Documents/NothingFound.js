@@ -17,7 +17,6 @@ const NothingFound = ({ data, user }) => {
     is_url,
     external_link,
     is_guest,
-    is_editor,
     show_tin_opener,
     tinopener_active,
     tin_opener_message,
@@ -206,14 +205,6 @@ const NothingFound = ({ data, user }) => {
           </form>
 
           <AdminCreateNodeLink user={user} searchTerm={createValue} />
-
-          {is_editor && (
-            <p className="nothing-found__editor-note">
-              If you wish to exercise your Editorial Power to create a document[nodetype], create a draft,
-              click on the 'Advanced option(s)' button, and then use the nice shiny 'Publish as document'
-              button provided for this purpose.
-            </p>
-          )}
         </>
       )}
     </div>

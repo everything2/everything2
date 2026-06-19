@@ -167,14 +167,5 @@ describe('NothingFound', () => {
       }} user={defaultProps.user} />)
       expect(screen.getByText(/Draft found and displayed/)).toBeInTheDocument()
     })
-
-    it('shows editor note for editors', () => {
-      render(<NothingFound data={{
-        ...defaultProps.data,
-        is_guest: false,
-        is_editor: true
-      }} user={defaultProps.user} />)
-      expect(screen.getByText(/Editorial Power/)).toBeInTheDocument()
-    })
   })
 })

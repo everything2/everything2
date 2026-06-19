@@ -872,7 +872,7 @@ sub shownewexp
   return $str;
 }
 
-# called from [publishdraft] or from [writeup maintenance create]
+# called from [writeup maintenance create] (formerly also the retired publishdraft opcode, #4320)
 # we have already checked that everything exists,
 # and that this user can publish this writeup to this node
 #
