@@ -604,30 +604,7 @@ sub socialBookmark
 
 # publishdrafttodocument opcode REMOVED - orphaned ~2011 admin draft->document tool; no UI dispatcher ever existed (git pickaxe clean), no modern API/React equivalent. Retired alongside publishdraft. #4320. Jun 2026.
 
-sub approve_draft
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-
-  my $draft = $query -> param('draft');
-  my $e2node = $query -> param('e2node');
-  my $previousEditor = $query -> param('revoke');
-
-  my $food = $previousEditor ? 0 : $$USER{node_id};
-
-  my $linktype = getId(getNode('parent_node', 'linktype'));
-  my $success = $DB -> sqlUpdate( # editor approval flagged by feeding the link
-    'links', {food => $food},
-    "from_node=$draft AND to_node=$e2node AND linktype=$linktype");
-
-  return;
-}
+# approve_draft opcode REMOVED - the editor draft-review flow is status-based now (review->private via Everything::API::drafts::mark_reviewed, React-wired in Draft.js); its legacy parent_node links.food approval flag is unconsumed (For Review keys on status+nodenotes). op= dispatch was already dead. #4322. Jun 2026.
 
 # parameter opcode REMOVED - superseded by Everything::API::node_parameter (NodeParameterEditor, React-wired); op= dispatch is dead. Jun 2026.
 

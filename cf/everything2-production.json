@@ -1767,7 +1767,7 @@
           }
         },
         "DesiredCount": 2,
-        "HealthCheckGracePeriodSeconds": 120,
+        "HealthCheckGracePeriodSeconds": 45,
         "TaskDefinition": {"Ref": "E2AppFargateTaskDefinition"},
         "CapacityProviderStrategy": [{
           "CapacityProvider": "FARGATE",
@@ -2006,14 +2006,14 @@
         "ServiceNamespace": "ecs",
         "ScalableDimension": "ecs:service:DesiredCount",
         "MinCapacity": 2,
-        "MaxCapacity": 6
+        "MaxCapacity": 8
       }
     },
     "FargateAppAutoScalingPolicy": {
       "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
       "DeletionPolicy": "Retain",
       "Metadata": {
-        "Comment": "Scale on successfully-SERVED 2xx-per-task, NOT raw ALB request count. mod_evasive 403-deflects abuse at the Apache layer, so request count is inflated by traffic we reject; scaling on it would add capacity for the abuser. 2xx counts only work actually done -> a real (many distinct IPs) traffic spike scales out; a few-IP abuse storm (deflected to 403s) does not. CPU is a no-op metric here: this is a DB-bound app and Fargate CPU peaks ~11%, never reaching a 60% target. TargetValue 12000 = ~200 served req/s/task, well under the ~700/s/task load-test ceiling. Deeper ceiling is RDS connections (303), so MaxCapacity caps at 6 (~120 conns); a p99 TargetResponseTime alarm is the real 'DB is the wall' signal."
+        "Comment": "Scale on successfully-SERVED 2xx-per-task, NOT raw ALB request count. mod_evasive 403-deflects abuse at the Apache layer, so request count is inflated by traffic we reject; scaling on it would add capacity for the abuser. 2xx counts only work actually done -> a real (many distinct IPs) traffic spike scales out; a few-IP abuse storm (deflected to 403s) does not. CPU was historically a no-op here (DB-bound path, Fargate CPU ~11%), but the 2026-06-18 distributed render-scrape of /title+/user pinned CPU at 100% for ~30min while RDS stayed at 0.7ms reads -> FargateAppCpuScalingPolicy now covers that render-bound case alongside this 2xx policy (ECS takes the max desired across both). TargetValue 12000 = ~200 served req/s/task, well under the ~700/s/task load-test ceiling. Deeper ceiling is RDS connections (303), so MaxCapacity caps at 6 (~120 conns); a p99 TargetResponseTime alarm is the real 'DB is the wall' signal."
       },
       "Properties": {
         "PolicyName": "FargateApp2xxPerTargetScalingPolicy",
@@ -2064,6 +2064,26 @@
                 "ReturnData": true
               }
             ]
+          }
+        }
+      }
+    },
+    "FargateAppCpuScalingPolicy": {
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "Comment": "CPU safety net added after the 2026-06-18 distributed render-scrape, which broke the 2xx policy's 'DB-bound, CPU ~11%, abuse gets 403-deflected' assumptions: a many-IP scrape (spoofed browser UAs, only 2x 403 so mod_evasive's per-IP deflection missed it) of /title+/user pinned Fargate CPU at 100% for ~30min while RDS stayed at 0.7ms reads. As tasks saturated, their 2xx count COLLAPSED into 460s (client-abandoned), so the 2xx-per-target policy read 'load light' and refused to scale out -> both tasks failed health checks and were replaced (the 504 window). This policy scales on app CPU (rises under render load -> correct direction) and runs ALONGSIDE the 2xx policy; ECS uses the max desired across both, so 2xx still governs normal DB-bound traffic while CPU covers render-bound saturation. Target 60% avg CPU; pins -> scale toward MaxCapacity. Post-PSGI, RDS connections are no longer the ceiling (incident peaked at ~43 of 303), so MaxCapacity raised to 8 (~160 conns)."
+      },
+      "Properties": {
+        "PolicyName": "FargateAppCpuScalingPolicy",
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {"Ref": "FargateAppScalableTarget"},
+        "TargetTrackingScalingPolicyConfiguration": {
+          "TargetValue": 60,
+          "ScaleInCooldown": 300,
+          "ScaleOutCooldown": 60,
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
           }
         }
       }
