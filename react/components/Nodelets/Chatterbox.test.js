@@ -200,7 +200,7 @@ describe('Chatterbox', () => {
     expect(messages[1]).toHaveTextContent('How are you?')
   })
 
-  it('handles /clearchatter command for admins', async () => {
+  it('routes /flushchatter to the clear endpoint with room scope', async () => {
     useChatterPolling.mockReturnValue({
       chatter: mockChatter,
       loading: false,
@@ -210,7 +210,7 @@ describe('Chatterbox', () => {
 
     global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ success: 1, deleted: 5 })
+      json: async () => ({ success: 1, deleted: 3, scope: 'room' })
     })
 
     render(<Chatterbox showNodelet={true} nodeletIsOpen={true} isGuest={false} />)
@@ -218,17 +218,18 @@ describe('Chatterbox', () => {
     const input = screen.getByPlaceholderText('Type a message...')
     const button = screen.getByText('talk')
 
-    fireEvent.change(input, { target: { value: '/clearchatter' } })
+    fireEvent.change(input, { target: { value: '/flushchatter' } })
     fireEvent.click(button)
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/api/chatter/clear_all', {
+      expect(global.fetch).toHaveBeenCalledWith('/api/chatter/clear', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        credentials: 'same-origin'
+        credentials: 'same-origin',
+        body: JSON.stringify({ scope: 'room' })
       })
     })
 
@@ -237,7 +238,45 @@ describe('Chatterbox', () => {
     })
   })
 
-  it('handles /clearchatter 403 error gracefully', async () => {
+  it('routes /flushallchatter (and legacy /clearchatter) to clear with all scope', async () => {
+    useChatterPolling.mockReturnValue({
+      chatter: mockChatter,
+      loading: false,
+      error: null,
+      refresh: mockRefresh
+    })
+
+    for (const cmd of ['/flushallchatter', '/clearchatter']) {
+      global.fetch.mockClear()
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: 1, deleted: 5, scope: 'all' })
+      })
+
+      const { unmount } = render(<Chatterbox showNodelet={true} nodeletIsOpen={true} isGuest={false} />)
+      const input = screen.getByPlaceholderText('Type a message...')
+      const button = screen.getByText('talk')
+
+      fireEvent.change(input, { target: { value: cmd } })
+      fireEvent.click(button)
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith('/api/chatter/clear', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify({ scope: 'all' })
+        })
+      })
+
+      unmount()
+    }
+  })
+
+  it('handles a flush 403 error gracefully', async () => {
     useChatterPolling.mockReturnValue({
       chatter: [],
       loading: false,
@@ -257,11 +296,11 @@ describe('Chatterbox', () => {
     const input = screen.getByPlaceholderText('Type a message...')
     const button = screen.getByText('talk')
 
-    fireEvent.change(input, { target: { value: '/clearchatter' } })
+    fireEvent.change(input, { target: { value: '/flushchatter' } })
     fireEvent.click(button)
 
     await waitFor(() => {
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Clear chatter requires admin access')
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Chatter flush denied (insufficient privileges)')
     })
 
     consoleWarnSpy.mockRestore()

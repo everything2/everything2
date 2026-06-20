@@ -485,26 +485,35 @@ const Chatterbox = (props) => {
     setSending(true)
 
     try {
-      // Handle /clearchatter command (admin-only)
-      if (message.trim() === '/clearchatter') {
-        const response = await fetch('/api/chatter/clear_all', {
+      // Flush commands -> unified /api/chatter/clear endpoint:
+      //   /flushchatter    clears THIS room (chanop+)
+      //   /flushallchatter clears EVERY room (admin)
+      //   /clearchatter    legacy alias for all rooms
+      const flushScope = {
+        '/flushchatter': 'room',
+        '/flushallchatter': 'all',
+        '/clearchatter': 'all'
+      }[message.trim()]
+      if (flushScope) {
+        const response = await fetch('/api/chatter/clear', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          credentials: 'same-origin'
+          credentials: 'same-origin',
+          body: JSON.stringify({ scope: flushScope })
         })
 
         if (!response.ok) {
           if (response.status === 403) {
-            console.warn('Clear chatter requires admin access')
+            console.warn('Chatter flush denied (insufficient privileges)')
           } else {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
         } else {
           const data = await response.json()
-          console.log(`Cleared ${data.deleted} chatter messages`)
+          console.log(`Flushed ${data.deleted} chatter messages (${data.scope})`)
           setMessage('')
           refresh()
         }
@@ -682,14 +691,15 @@ const Chatterbox = (props) => {
         { cmd: '/borg <user> [reason]', desc: 'Suspend user from chat (replace spaces with underscores)', restricted: true },
         { cmd: '/drag <user>', desc: 'Move user to your room (replace spaces with underscores)', restricted: true },
         { cmd: '/topic <text>', desc: 'Set room topic', restricted: true },
-        { cmd: '/fakeborg <name>', desc: 'EDB announces a fake borging (no actual suspension)', restricted: true }
+        { cmd: '/fakeborg <name>', desc: 'EDB announces a fake borging (no actual suspension)', restricted: true },
+        { cmd: '/flushchatter', desc: 'Clear public chatter in your current room', restricted: true }
       )
     }
 
     // Additional admin-only commands
     if (isAdmin) {
       commands.push(
-        { cmd: '/clearchatter', desc: 'Clear all chatter in current room', restricted: true },
+        { cmd: '/flushallchatter', desc: 'Clear public chatter in ALL rooms', restricted: true },
         { cmd: '/sayas <user> <text>', desc: 'Speak as another user (replace spaces with underscores)', restricted: true },
         { cmd: '/invite <user>', desc: 'Invite user to room (replace spaces with underscores)', restricted: true }
       )

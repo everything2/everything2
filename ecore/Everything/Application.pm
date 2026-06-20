@@ -1005,6 +1005,41 @@ sub isChanop
 	return $this->{db}->isApproved($user, $this->{db}->getNode('chanops','usergroup'),$nogods);
 }
 
+# Flush public chatter (the "clear the catbox" chanop/admin action). $user is a
+# hashref. $scope:
+#   'room' -> a chanop may clear ONLY their current room's public chatter
+#   'all'  -> an admin may clear ALL public chatter, in every room
+# Returns { success => 1, deleted => N, scope => ... } on success, or
+# { success => 0, forbidden => 1, error => ... } when the user lacks the role.
+# Writes a SECLOG_CATBOX_FLUSH audit entry on success. Backs the unified
+# Everything::API::chatter `clear` endpoint; replaces the orphaned flushcbox opcode.
+sub flushChatter
+{
+	my ($this, $user, $scope) = @_;
+	$scope = (defined $scope && $scope eq 'all') ? 'all' : 'room';
+
+	if($scope eq 'all')
+	{
+		return { success => 0, forbidden => 1, error => 'Administrator access required' }
+			unless $this->isAdmin($user);
+		my $deleted = $this->{db}->sqlDelete('message', 'for_user=0');
+		$this->securityLog(SECLOG_CATBOX_FLUSH, $user, 'All public chat flushed.');
+		return { success => 1, deleted => int($deleted), scope => 'all' };
+	}
+
+	# room scope -- chanops (and gods, since isChanop includes them) only
+	return { success => 0, forbidden => 1, error => 'Chanop access required' }
+		unless $this->isChanop($user);
+
+	my $room = int($user->{in_room});
+	my $room_node = $room ? $this->{db}->getNodeById($room) : undef;
+	my $where = $room_node ? "room '$room_node->{title}'"
+	          : ($room ? "expired room (#$room)" : 'outside');
+	my $deleted = $this->{db}->sqlDelete('message', "for_user=0 AND room=$room");
+	$this->securityLog(SECLOG_CATBOX_FLUSH, $user, "Chat $where flushed.");
+	return { success => 1, deleted => int($deleted), scope => 'room', room => $room };
+}
+
 # The writeuptypes that may only be *set* by Content Editors (or the two
 # dictionary-import bot accounts). 'definition' is reserved for Webster 1913
 # style entries; 'lede' was meant to head an e2node. Historically the legacy

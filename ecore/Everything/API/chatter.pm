@@ -11,6 +11,7 @@ sub routes
   return {
   "create" => "create",
   "/" => "get_all",
+  "clear" => "clear",
   "clear_all" => "clear_all"
   }
 }
@@ -106,27 +107,44 @@ sub create
   }
 }
 
+# Flush public chatter. Body: { scope => 'room' | 'all' } (defaults to 'room').
+#   room -> a chanop clears their CURRENT room (room taken server-side, not from
+#           the client); all -> an admin clears every room. SECLOG_CATBOX_FLUSH
+#   is written on success. Backs /flushchatter and /flushallchatter.
+sub clear
+{
+  my ($self, $REQUEST) = @_;
+
+  my $data  = $REQUEST->JSON_POSTDATA || {};
+  my $scope = (defined $data->{scope} && $data->{scope} eq 'all') ? 'all' : 'room';
+
+  my $result = $self->APP->flushChatter($REQUEST->user->NODEDATA, $scope);
+  unless($result->{success})
+  {
+    $self->devLog("chatter clear ($scope) denied: $result->{error}");
+    return [$self->HTTP_FORBIDDEN, {error => $result->{error}}];
+  }
+
+  $self->devLog("Flushed chatter (scope=$result->{scope}, deleted=$result->{deleted})");
+  return [$self->HTTP_OK, {success => 1, deleted => int($result->{deleted}), scope => $result->{scope}}];
+}
+
+# Back-compat alias for the legacy /clearchatter client command: clear all rooms.
 sub clear_all
 {
   my ($self, $REQUEST) = @_;
 
-  # Admin-only endpoint
-  unless($REQUEST->user->is_admin)
+  my $result = $self->APP->flushChatter($REQUEST->user->NODEDATA, 'all');
+  unless($result->{success})
   {
-    $self->devLog("Non-admin user attempted to clear chatter. Sending FORBIDDEN");
-    return [$self->HTTP_FORBIDDEN, {error => "Administrator access required"}];
+    return [$self->HTTP_FORBIDDEN, {error => $result->{error}}];
   }
 
-  # Delete all public chatter messages (for_user=0)
-  my $deleted = $self->DB->sqlDelete('message', 'for_user=0');
-
-  $self->devLog("Cleared all public chatter messages (deleted: $deleted)");
-
-  return [$self->HTTP_OK, {success => 1, deleted => int($deleted)}];
+  return [$self->HTTP_OK, {success => 1, deleted => int($result->{deleted}), scope => 'all'}];
 }
 
 around ['get_all','create'] => \&Everything::API::unauthorized_if_guest;
-around ['clear_all'] => \&Everything::API::unauthorized_if_guest;
+around ['clear','clear_all'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 1;

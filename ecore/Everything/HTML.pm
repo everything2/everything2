@@ -145,7 +145,7 @@ sub query_vars_string {
 	if (defined $query && defined $query->Vars()) {
 		my $params = $query->Vars();
 		for (keys %$params) {
-			$error .= "\t- param: " . $_ . " = " . $query->param($_) . "\n";
+			$error .= "\t- param: " . $_ . " = " . ($query->param($_) // '') . "\n";
 		}
 	}
 
@@ -1057,7 +1057,8 @@ sub handleUserRequest{
 
   if ($query->param('node')) {
     # Searching for a node my string title
-    my $type  = $query->param('type');
+    my $type  = $query->param('type') // '';  # undef when no type= param; both
+                                               # 'writeup' eq-checks below warned
 
     $nodename = $APP->cleanNodeName(scalar $query->param('node'), $noRemoveSpaces);
 
