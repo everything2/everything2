@@ -443,7 +443,6 @@ class E2ReactRoot extends React.Component {
               localTimeUse={this.state.epicenter?.localTimeUse}
               userSettingsId={this.state.epicenter?.userSettingsId}
               helpPage={this.state.epicenter?.helpPage}
-              borgcheck={this.state.epicenter?.borgcheck}
               experienceGain={this.state.epicenter?.experienceGain}
               gpGain={this.state.epicenter?.gpGain}
               serverTime={this.state.epicenter?.serverTime}
@@ -731,8 +730,8 @@ class E2ReactRoot extends React.Component {
               user={this.props.e2?.user}
             showNodelet={this.showNodelet}
             nodeletIsOpen={this.state.chatterbox_show}
-            borged={this.props.e2?.user?.vars?.borged}
-            numborged={this.props.e2?.user?.vars?.numborged}
+            borged={this.props.e2?.chatterbox?.borged}
+            numborged={this.props.e2?.chatterbox?.numborged}
             chatSuspended={this.props.e2?.user?.chatSuspended}
             publicChatterOff={Boolean(this.props.e2?.user?.vars?.publicchatteroff)}
             easterEggs={this.props.e2?.user?.easterEggs}

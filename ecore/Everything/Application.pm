@@ -4584,6 +4584,21 @@ sub processMessageCommand
   elsif ($message =~ /^\/borg\s+(\S+)/i) {
     $result = $this->handleBorgCommand($user, $message, $vars);
   }
+  elsif ($message =~ /^\/fakeborg\s+(.+)/i) {
+    $result = $this->handleFakeborgCommand($user, $1, $vars);
+  }
+  elsif ($message =~ /^\/drag\s+(\S+)/i) {
+    $result = $this->handleDragCommand($user, $1, $vars);
+  }
+  elsif ($message =~ /^\/topic\s+(.+)$/i) {
+    $result = $this->handleTopicCommand($user, $1, $vars);
+  }
+  elsif ($message =~ /^\/sayas\s+(\S+)\s+(.+)$/si) {
+    $result = $this->handleSayasCommand($user, $1, $2, $vars);
+  }
+  elsif ($message =~ /^\/(unignore|ignore)\s+(.+)/i) {
+    $result = $this->handleIgnoreCommand($user, $1, $2, $vars);
+  }
   elsif ($message =~ /^\/help\s*(.*)$/i) {
     $result = $this->handleHelpCommand($user, $1, $vars);
   }
@@ -4972,9 +4987,15 @@ sub handleBorgCommand
     for_user => $user->{user_id}
   });
 
-  # Set borged flag in target's vars
+  # Record the borg START TIME. Downstream consumers (the Chatterbox countdown
+  # and the borg-expiry check) treat `borged` as a unix timestamp:
+  # the borg lasts 300 + 60*(2*numborged) seconds from this moment. (Storing a
+  # bare flag here was a regression from the message-opcode port -- it made the
+  # countdown compute against epoch 1970 and showed "spit you out" immediately.)
   my $target_vars = $this->getVars($target);
-  $target_vars->{borged} = 1;
+  # Each borg escalates the next one's length: cooldown = 300 + 60*(2*numborged)s.
+  $target_vars->{numborged} = ($target_vars->{numborged} || 0) + 1;
+  $target_vars->{borged} = time();
   Everything::setVars($target, $target_vars);
 
   # Public announcement
@@ -5003,6 +5024,201 @@ sub handleBorgCommand
   });
 
   return 1;
+}
+
+# Expire a due borg. `$vars->{borged}` is the unix timestamp of the borging; a
+# borg lasts 300 + 60*(2*numborged) seconds. If that window has passed (or the
+# value is a legacy `1` flag, which always reads as long-expired), clear it,
+# remember it in lastborg, drop the room borgd flag, and return 1 ("just
+# expired this call"). Returns 0 if still borged or not borged. Guests are never
+# borged. Mutates $vars in place (the caller persists it). Mirrors the old
+# personal_session XML ticker, which the React client no longer polls.
+sub expire_borg_if_due
+{
+  my ($this, $user, $vars) = @_;
+  return 0 if $this->isGuest($user);
+  return 0 unless $vars->{borged};
+
+  my $cooldown = 300 + 60 * (($vars->{numborged} || 1) * 2);
+  return 0 if time - $vars->{borged} < $cooldown;
+
+  $vars->{lastborg} = $vars->{borged};
+  delete $vars->{borged};
+  $this->{db}->sqlUpdate('room', { borgd => '0' }, 'member_user=' . $user->{node_id});
+  return 1;
+}
+
+# /drag <user> -- chanop/admin: move a user into your room and pin them there
+# for 5 minutes. Ported from the retired `message` opcode (#4198 burndown).
+sub handleDragCommand
+{
+  my ($this, $user, $target_name, $vars) = @_;
+
+  unless ($this->isChanop($user, "nogods") || $this->isAdmin($user)) {
+    return { success => 0, error => "You must be a chanop or administrator to use /drag" };
+  }
+
+  my $target = $this->{db}->getNode($target_name, 'user');
+  unless ($target) {
+    (my $spaced = $target_name) =~ s/_/ /g;
+    $target = $this->{db}->getNode($spaced, 'user');
+  }
+
+  my $edb = $this->{db}->getNode('EDB', 'user');
+  unless ($target) {
+    $this->{db}->sqlInsert('message', {
+      msgtext => "Could not find user to drag: '$target_name'",
+      author_user => $edb->{node_id},
+      for_user => $user->{node_id}
+    });
+    return { success => 0, error => "User '$target_name' not found" };
+  }
+
+  my $room = $user->{in_room} || 0;
+  my $room_title = "outside";
+  if ($room != 0) {
+    my $room_node = $this->{db}->getNodeById($room);
+    $room_title = $room_node ? "into $room_node->{title}" : "into the room";
+  }
+
+  $this->changeRoom($target, $room, "force");
+  $this->suspendUser($target, "changeroom", $user, 60 * 5);  # 5 minutes
+
+  $this->{db}->sqlInsert('message', {
+    msgtext => "You have been dragged $room_title for five minutes",
+    for_user => $target->{node_id},
+    author_user => $edb->{node_id}
+  });
+
+  return 1;
+}
+
+# /fakeborg <name> -- chanop/admin: EDB announces a (fake) borging in the room,
+# without actually borging anyone. Ported from the retired `message` opcode.
+sub handleFakeborgCommand
+{
+  my ($this, $user, $target, $vars) = @_;
+
+  unless ($this->isChanop($user, "nogods") || $this->isAdmin($user)) {
+    return { success => 0, error => "You must be a chanop or administrator to use /fakeborg" };
+  }
+  $target =~ s/^\s+|\s+$//g;
+  return { success => 0, error => "Usage: /fakeborg <name>" } unless length $target;
+
+  my $edb = $this->{db}->getNode('EDB', 'user');
+  my @bursts = (
+    '*BURP*', 'Mmmm...', "[$target] is good food!", "[$target] was tasty!",
+    "keep 'em coming!", "[$target] yummy! More!", '[EDB] needed that!',
+    '*GULP*', 'moist noder flesh', '*B R A P *'
+  );
+  my $msg = "/me has swallowed [$target]. " . $bursts[int(rand(@bursts))];
+
+  $this->{db}->sqlInsert('message', {
+    msgtext => $msg,
+    author_user => $edb->{node_id},
+    for_user => 0,
+    room => $user->{in_room}
+  });
+
+  return 1;
+}
+
+# /topic <text> -- chanop/admin: set the current room's topic for free (the
+# token-gated path is API/giftshop set_topic; both write the same 'Room topics'
+# setting). Ported from the retired `message` opcode.
+sub handleTopicCommand
+{
+  my ($this, $user, $topic, $vars) = @_;
+
+  unless ($this->isChanop($user, "nogods") || $this->isAdmin($user)) {
+    return { success => 0, error => "You must be a chanop or administrator to use /topic" };
+  }
+
+  $topic =~ s/^\s+|\s+$//g;
+  return { success => 0, error => "Usage: /topic <text>" } unless length $topic;
+
+  $topic = $this->htmlScreen($topic);
+  return { success => 0, error => "Invalid topic." }
+    if $topic eq '' || $topic =~ /^No information/i;
+
+  my $room = $user->{in_room} || 0;
+  my $settingsnode = $this->{db}->getNode('Room topics', 'setting');
+  my $topics = $this->getVars($settingsnode);
+  $topics->{$room} = $topic;
+  Everything::setVars($settingsnode, $topics);
+
+  my $room_node = $room ? $this->{db}->getNodeById($room) : undef;
+  my $room_name = $room == 0 ? "outside"
+    : ($room_node ? $room_node->{title} : "missing room ($room)");
+  $this->securityLog(SECLOG_GIFTSHOP_TOPIC, $user,
+    "[$user->{title}\[user\]] changed $room_name topic to '$topic'");
+
+  return { success => 1, message => "Topic set." };
+}
+
+# /sayas <user> <text> -- admin only: speak as one of the system personas.
+# Intentionally kept admin-only (the legacy opcode allowed chanops; we do not
+# broaden impersonation). Ported from the retired `message` opcode.
+sub handleSayasCommand
+{
+  my ($this, $user, $as_name, $text, $vars) = @_;
+
+  unless ($this->isAdmin($user)) {
+    return { success => 0, error => "You must be an administrator to use /sayas" };
+  }
+
+  my %personas = (
+    webster  => 'Webster 1913', edb    => 'EDB',     klaproth => 'Klaproth',
+    eddie    => 'Cool Man Eddie', bear  => 'Giant Teddy Bear',
+    virgil   => 'Virgil', guest => 'Guest User', gu => 'Guest User',
+  );
+  my $persona_title = $personas{ lc $as_name };
+  unless ($persona_title) {
+    return { success => 0,
+      error => "To sayas, give a user: EDB, eddie, virgil, Bear, Klaproth, Webster, or guest" };
+  }
+  my $persona = $this->{db}->getNode($persona_title, 'user');
+  return { success => 0, error => "Persona '$persona_title' not found" } unless $persona;
+
+  $this->{db}->sqlInsert('message', {
+    msgtext => $text,
+    author_user => $persona->{node_id},
+    for_user => 0,
+    room => $user->{in_room}
+  });
+
+  return 1;
+}
+
+# /ignore <user> and /unignore <user> -- any logged-in user. Routes through the
+# modern user->set_message_ignore (same mechanism as API/messageignores).
+# Ported from the retired `message` opcode (which called htmlcode ignoreUser).
+sub handleIgnoreCommand
+{
+  my ($this, $user, $which, $target_name, $vars) = @_;
+
+  $target_name =~ s/^\s+|\s+$//g;
+  return { success => 0, error => "Usage: /$which <user>" } unless length $target_name;
+
+  my $target = $this->{db}->getNode($target_name, 'user');
+  unless ($target) {
+    (my $spaced = $target_name) =~ s/_/ /g;
+    $target = $this->{db}->getNode($spaced, 'user');
+  }
+  return { success => 0, error => "User '$target_name' not found" } unless $target;
+
+  my $me = $this->node_by_id($user->{node_id});
+  return { success => 0, error => "Could not load your account" }
+    unless $me && $me->can('set_message_ignore');
+
+  if (lc($which) eq 'unignore') {
+    $me->set_message_ignore($target->{node_id}, 0);
+    return { success => 1, message => "No longer ignoring $target->{title}." };
+  }
+  else {
+    $me->set_message_ignore($target->{node_id}, 1);
+    return { success => 1, message => "Now ignoring $target->{title}." };
+  }
 }
 
 sub handleEasterEggCommand
@@ -7070,8 +7286,19 @@ sub buildNodeInfoStructure
     $e2->{user}->{unreadMessages} = $this->get_unread_message_count($USER);
   }
 
+  # Borg lifecycle: `borged` is the unix timestamp of the borging; a borg lasts
+  # 300 + 60*(2*numborged) seconds. Expire it here, once, so chat re-enables and
+  # the value doesn't linger (this also heals legacy `borged=1` flag values).
+  # Mirrors the old personal_session XML ticker, which the React client no longer
+  # polls. The active countdown is shown in the Chatterbox nodelet.
+  $this->expire_borg_if_due($USER, $VARS);
+
   # Chatterbox data - room topic and initial messages for current room
   $e2->{chatterbox} ||= {};
+  # Borg status drives the chatterbox countdown ("You are borged! MM:SS") and
+  # hides the input. Only active borgs reach here (expired ones cleared above).
+  $e2->{chatterbox}->{borged}    = $VARS->{borged} ? int($VARS->{borged}) : 0;
+  $e2->{chatterbox}->{numborged} = int($VARS->{numborged} || 1);
   if (defined $USER->{in_room}) {
     # Get room name
     if ($USER->{in_room} == 0) {
@@ -7210,14 +7437,9 @@ sub buildNodeInfoStructure
     $e2->{epicenter}->{userSettingsId} = $this->{conf}->user_settings;
     $e2->{epicenter}->{helpPage} = ($e2->{user}->{level} < 2) ? 'E2 Quick Start' : 'Everything2 Help';
 
-    # Borgcheck data (React component will handle rendering)
-    if($VARS->{borged}) {
-      $e2->{epicenter}->{borgcheck} = {
-        borged => $VARS->{borged},
-        numborged => $VARS->{numborged} || 1,
-        currentTime => time
-      };
-    }
+    # (Borg status is NOT shown in Epicenter -- it lives in the Chatterbox
+    # nodelet as a live "You are borged! MM:SS" countdown under the talk control.
+    # expire_borg_if_due (above) still clears an expired borg so chat re-enables.)
 
     # Experience change data (React component will handle rendering)
     # Initialize oldexp on first visit (use defined() and numeric check)
@@ -7252,19 +7474,6 @@ sub buildNodeInfoStructure
     $e2->{epicenter}->{serverTime} = $this->DateTimeLocal($NOW, 1, $VARS);
     if($VARS->{localTimeUse}) {
       $e2->{epicenter}->{localTime} = $this->DateTimeLocal($NOW, 0, $VARS);
-    }
-  }
-
-  # Epicenter for guests (borgcheck only, if they have the nodelet)
-  if($has_epicenter_nodelet and $this->isGuest($USER))
-  {
-    $e2->{epicenter} = {};
-    if($VARS->{borged}) {
-      $e2->{epicenter}->{borgcheck} = {
-        borged => $VARS->{borged},
-        numborged => $VARS->{numborged} || 1,
-        currentTime => time
-      };
     }
   }
 

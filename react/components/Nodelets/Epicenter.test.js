@@ -19,12 +19,6 @@ jest.mock('../NodeletContainer', () => {
   }
 })
 
-jest.mock('../Borgcheck', () => {
-  return function MockBorgcheck({ borged, numborged, currentTime }) {
-    return <div data-testid="borgcheck">Borgcheck: {borged}</div>
-  }
-})
-
 jest.mock('../ExperienceGain', () => {
   return function MockExperienceGain({ amount }) {
     return <span data-testid="experience-gain">You gained {amount} experience points!</span>
@@ -66,7 +60,6 @@ describe('Epicenter Component', () => {
     localTimeUse: false,
     userSettingsId: 456,
     helpPage: 'Everything2 Help',
-    borgcheck: null,
     experienceGain: 10,
     gpGain: 5,
     serverTime: '2025-11-20 12:00:00',
@@ -129,11 +122,10 @@ describe('Epicenter Component', () => {
   })
 
   describe('guest user', () => {
-    it('renders only borgcheck for guest users', () => {
+    it('renders a minimal nodelet for guest users', () => {
       const guestProps = {
         ...defaultProps,
-        user: { ...defaultProps.user, guest: true },
-        borgcheck: '<p>You have been borged!</p>'
+        user: { ...defaultProps.user, guest: true }
       }
 
       render(<Epicenter {...guestProps} />)
@@ -242,23 +234,14 @@ describe('Epicenter Component', () => {
     })
   })
 
-  describe('borgcheck', () => {
-    it('renders borgcheck when present', () => {
-      const props = {
-        ...defaultProps,
-        borgcheck: { borged: 1234567890, numborged: 2, currentTime: 1234567900 }
-      }
-      render(<Epicenter {...props} />)
-
-      expect(screen.getByTestId('borgcheck')).toBeInTheDocument()
-      expect(screen.getByText('Borgcheck: 1234567890')).toBeInTheDocument()
-    })
-
-    it('renders without borgcheck when null', () => {
-      const props = { ...defaultProps, borgcheck: null }
+  describe('borg status', () => {
+    it('does not render any borg status (it lives in the Chatterbox now)', () => {
+      const props = { ...defaultProps, user: { ...defaultProps.user, guest: false } }
       render(<Epicenter {...props} />)
 
       expect(screen.queryByTestId('borgcheck')).not.toBeInTheDocument()
+      expect(screen.queryByText(/spit you out/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/Been Borged/i)).not.toBeInTheDocument()
     })
   })
 
