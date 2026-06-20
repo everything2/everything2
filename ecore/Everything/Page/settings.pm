@@ -90,8 +90,8 @@ sub buildReactData
   $advanced_prefs{no_bookmarknotification} = int($VARS->{no_bookmarknotification} || 0);
   $advanced_prefs{no_bookmarkinformer} = int($VARS->{no_bookmarkinformer} || 0);
   $advanced_prefs{anonymous_bookmark} = int($VARS->{anonymous_bookmark} || 0);
-  $advanced_prefs{no_socialbookmarknotification} = int($VARS->{no_socialbookmarknotification} || 0);
-  $advanced_prefs{no_socialbookmarkinformer} = int($VARS->{no_socialbookmarkinformer} || 0);
+  # no_socialbookmarknotification / no_socialbookmarkinformer removed with the dead
+  # socialBookmark notifier (#4332); see docs/user-vars-reference.md.
   $advanced_prefs{no_discussionreplynotify} = int($VARS->{no_discussionreplynotify} || 0);
   $advanced_prefs{hidelastseen} = int($VARS->{hidelastseen} || 0);
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { renderE2Content } from '../Editor/E2HtmlSanitizer';
 
 /**
@@ -7,6 +7,27 @@ import { renderE2Content } from '../Editor/E2HtmlSanitizer';
  */
 export default function Room({ data }) {
   const { room, is_admin, entered, go_outside_id } = data;
+  const [roomLocked, setRoomLocked] = useState(room.roomlocked ? 1 : 0);
+
+  // Admin lock/unlock -> POST /api/chatroom/lock_room (canEnterRoom enforces it).
+  // Replaces the legacy ?roomlocked= page-reload link.
+  const toggleLock = async () => {
+    const next = roomLocked ? 0 : 1;
+    try {
+      const res = await fetch('/api/chatroom/lock_room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ room_id: room.node_id, locked: next }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        setRoomLocked(d.roomlocked ? 1 : 0);
+      }
+    } catch (e) {
+      // leave state unchanged on failure
+    }
+  };
 
   // Get sanitized HTML for doctext
   const getRenderedDoctext = () => {
@@ -20,12 +41,13 @@ export default function Room({ data }) {
       {/* Admin lock/unlock toggle */}
       {is_admin === 1 && (
         <div className="room__admin-controls">
-          <a
-            href={`/?node_id=${room.node_id}&roomlocked=${room.roomlocked ? 0 : 1}`}
+          <button
+            type="button"
+            onClick={toggleLock}
             className="room__lock-link"
           >
-            {room.roomlocked ? 'unlock' : 'lock'}
-          </a>
+            {roomLocked ? 'unlock' : 'lock'}
+          </button>
         </div>
       )}
 

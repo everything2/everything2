@@ -1336,29 +1336,6 @@ function Settings({ data }) {
             )}
           </fieldset>
 
-          {/* Social Bookmarking */}
-          <fieldset className="settings-fieldset">
-            <legend>Social Bookmarking</legend>
-
-            <label className="settings-checkbox-label">
-              <input
-                type="checkbox"
-                checked={!(advancedPrefs.no_socialbookmarknotification === 1)}
-                onChange={() => handleToggleAdvancedPref('no_socialbookmarknotification')}
-              />
-              <strong>Tell me when my writeups get bookmarked on a social bookmarking site</strong>
-            </label>
-
-            <label className="settings-checkbox-label">
-              <input
-                type="checkbox"
-                checked={!(advancedPrefs.no_socialbookmarkinformer === 1)}
-                onChange={() => handleToggleAdvancedPref('no_socialbookmarkinformer')}
-              />
-              <strong>Tell others when I bookmark a writeup on a social bookmarking site</strong>
-            </label>
-          </fieldset>
-
           {/* Other Information */}
           <fieldset className="settings-fieldset">
             <legend>Other Information</legend>

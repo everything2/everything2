@@ -607,6 +607,40 @@ subtest 'Create room - Already in room with same title' => sub {
   like($result->[1]{error}, qr/already in this room/, 'Returns specific error message for already in room');
 };
 
+#############################################################################
+# lock_room - admin-only room lock toggle (replaces the retired lockroom opcode;
+# canEnterRoom enforces room.roomlocked)
+#############################################################################
+subtest 'lock_room - admin locks and unlocks' => sub {
+    my $admin = MockUser->new(real_node => $admin_user, is_admin_flag => 1);
+
+    my $lock_req = MockRequest->new(user => $admin, _postdata => { room_id => $test_room_id, locked => 1 });
+    my ($s, $d) = @{$api->lock_room($lock_req)};
+    is($s, $api->HTTP_OK, 'lock returns 200');
+    is($d->{roomlocked}, 1, 'response reports locked');
+    is($DB->getNodeById($test_room_id, 'force')->{roomlocked}, 1, 'roomlocked=1 persisted');
+
+    my $unlock_req = MockRequest->new(user => $admin, _postdata => { room_id => $test_room_id, locked => 0 });
+    my ($s2, $d2) = @{$api->lock_room($unlock_req)};
+    is($d2->{roomlocked}, 0, 'response reports unlocked');
+    is($DB->getNodeById($test_room_id, 'force')->{roomlocked}, 0, 'roomlocked=0 persisted');
+};
+
+subtest 'lock_room - non-admin is forbidden' => sub {
+    my $user = MockUser->new(real_node => $admin_user, is_admin_flag => 0);
+    my $req = MockRequest->new(user => $user, _postdata => { room_id => $test_room_id, locked => 1 });
+    my ($s, $d) = @{$api->lock_room($req)};
+    is($s, $api->HTTP_FORBIDDEN, 'non-admin gets 403');
+    is($DB->getNodeById($test_room_id, 'force')->{roomlocked}, 0, 'room left unlocked');
+};
+
+subtest 'lock_room - missing room_id rejected' => sub {
+    my $admin = MockUser->new(real_node => $admin_user, is_admin_flag => 1);
+    my $req = MockRequest->new(user => $admin, _postdata => { locked => 1 });
+    my ($s, $d) = @{$api->lock_room($req)};
+    is($s, $api->HTTP_BAD_REQUEST, 'missing room_id gets 400');
+};
+
 # Move admin user back to "outside" before cleaning up test room
 $admin_user->{in_room} = 0;
 $DB->updateNode($admin_user, -1);

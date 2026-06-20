@@ -11737,7 +11737,7 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
    ===================================================== */
 
 /* Container */
-.debate {
+#mainbody .debate {
   max-width: 800px;
   margin: 0 auto;
   padding: 16px 0;
@@ -20463,7 +20463,13 @@ a.node-toolset__btn {
    Chat room entry/display page
    ========================================================================== */
 
-.room {
+/* Scoped to #mainbody so this styles the room CONTENT div, not `body.room`.
+   The body gets the nodetype title as a class (`body.room`), and an unscoped
+   `.room { max-width:800px; margin:0 auto }` constrained the whole page to a
+   centered 800px column -> big side gutters. Scoping keeps the narrow content
+   column (like the document/superdoc pages) without touching the body. #4332.
+   Same collision fixed for .nodegroup/.debate/.podcast/.recording/.registry/.e2client. */
+#mainbody .room {
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
@@ -21971,7 +21977,7 @@ a.node-toolset__btn {
    Generic node container display
    ========================================================================== */
 
-.nodegroup {
+#mainbody .nodegroup {
   max-width: 800px;
   margin: 0 auto;
 }
@@ -25411,7 +25417,7 @@ a.node-toolset__btn {
    E2client - API client display
    ========================================================================== */
 
-.e2client {
+#mainbody .e2client {
   max-width: 800px;
   margin: 0 auto;
   padding: 16px 0;
@@ -26083,7 +26089,7 @@ a.node-toolset__btn {
    Podcast - Podcast display
    ========================================================================== */
 
-.podcast {
+#mainbody .podcast {
   max-width: 800px;
   margin: 0 auto;
   padding: 16px 0;
@@ -26231,7 +26237,7 @@ a.node-toolset__btn {
    Recording - Audio recording display
    ========================================================================== */
 
-.recording {
+#mainbody .recording {
   max-width: 800px;
   margin: 0 auto;
   padding: 16px 0;
@@ -29131,7 +29137,7 @@ a.node-toolset__btn {
 }
 
 /* Registry */
-.registry {
+#mainbody .registry {
   max-width: 800px;
   margin: 0 auto;
   padding: 16px 0;
