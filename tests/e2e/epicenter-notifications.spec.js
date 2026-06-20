@@ -35,7 +35,9 @@ test.describe.skip('Epicenter Notifications', () => {
    * Ongoing polls/requests can prevent networkidle from resolving.
    */
   async function logout(page) {
-    const logoutLink = page.locator('#epicenter a[href*="logout"]').first()
+    // LogoutLink now POSTs /api/sessions/delete then redirects (#4335 Phase 2);
+    // its href is '/', so select by the .logout-link class, not href*=logout.
+    const logoutLink = page.locator('#epicenter a.logout-link').first()
     await logoutLink.click()
 
     // Wait for logout to complete - check for guest state

@@ -140,8 +140,10 @@ test.describe('Notifications Nodelet - Complete Workflow', () => {
    * Helper: Logout current user
    */
   async function logout(page) {
-    // Navigate directly to logout endpoint
-    await page.goto('/?op=logout')
+    // Logout is now POST /api/sessions/delete (#4335 Phase 2). page.request shares
+    // the browser cookies, so this clears the session cookie; then reload as guest.
+    await page.request.post('/api/sessions/delete')
+    await page.goto('/')
     await page.waitForLoadState('load')
 
     // Wait for logout to complete - check that user is guest
