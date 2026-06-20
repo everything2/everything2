@@ -2,7 +2,6 @@ import React from 'react'
 import LinkNode from '../LinkNode'
 import LogoutLink from '../LogoutLink'
 import NodeletContainer from '../NodeletContainer'
-import Borgcheck from '../Borgcheck'
 import ExperienceGain from '../ExperienceGain'
 import GPGain from '../GPGain'
 import ServerTime from '../ServerTime'
@@ -21,13 +20,6 @@ const Epicenter = (props) => {
         showNodelet={props.showNodelet}
         nodeletIsOpen={props.nodeletIsOpen}
       >
-        {props.borgcheck && (
-          <Borgcheck
-            borged={props.borgcheck.borged}
-            numborged={props.borgcheck.numborged}
-            currentTime={props.borgcheck.currentTime}
-          />
-        )}
       </NodeletContainer>
     )
   }
@@ -59,14 +51,6 @@ const Epicenter = (props) => {
       showNodelet={props.showNodelet}
       nodeletIsOpen={props.nodeletIsOpen}
     >
-      {props.borgcheck && (
-        <Borgcheck
-          borged={props.borgcheck.borged}
-          numborged={props.borgcheck.numborged}
-          currentTime={props.borgcheck.currentTime}
-        />
-      )}
-
       <ul>
         <li>
           <LogoutLink />

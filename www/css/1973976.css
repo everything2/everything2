@@ -3212,9 +3212,10 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
    ========================================================================== */
 
 .welcome-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .welcome-container--desktop {
@@ -13134,9 +13135,10 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
    ========================================================================== */
 
 .page-of-cool {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .page-of-cool--mobile {
@@ -14506,9 +14508,10 @@ a.settings-nav__tab:active {
 
 /* Container */
 .cool-archive {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .cool-archive--mobile {
@@ -15573,9 +15576,10 @@ a.user-display__edit-link:active {
 
 /* Everything's Best Users - matches user-search styling */
 .ebu {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .ebu__header {
@@ -18929,9 +18933,10 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .writeups-by-type {
-  padding: 12px;
-  max-width: 1000px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
   box-sizing: border-box;
 }
 
@@ -22793,9 +22798,10 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .duplicates-found {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .duplicates-found__header {
@@ -24799,9 +24805,12 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .datastash {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin — let #mainbody size and pad
+     this document the same way it sizes every other page. The earlier
+     `max-width: 1200px` + `padding: 20px` blew past mainbody's actual
+     width (mainbody loses width to the nodelet column) and produced odd
+     gutters where the document overflowed in both directions. Matches the
+     .setting fix (same god-only node-vars display class of problem). */
 }
 
 .datastash__title {
@@ -25904,9 +25913,10 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .schema {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .schema__action-bar {
@@ -27019,9 +27029,10 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .stylesheet {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .stylesheet__action-bar {
@@ -28962,9 +28973,10 @@ a.node-toolset__btn {
 
 /* EverythingDocumentDirectory */
 .doc-directory {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
   font-size: 16px;
   line-height: 1.6;
   color: #111111;
@@ -32273,9 +32285,10 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .recent-registry-entries {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .recent-registry-entries__intro {
@@ -33006,9 +33019,10 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .list-nodes-of-type {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .list-nodes-of-type__title {
@@ -34001,9 +34015,10 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .e2-data-pages {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .e2-data-pages__header {
@@ -35340,9 +35355,10 @@ a.node-toolset__btn {
    ========================================================================== */
 
 .catwalk {
-  padding: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .catwalk__guest-message {
@@ -37737,9 +37753,10 @@ a.node-toolset__btn {
 
 /* ListHtmlTags - HTML tag reference display */
 .list-html-tags {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .list-html-tags__title {
@@ -38672,9 +38689,10 @@ a.node-toolset__btn {
 
 /* ThemeNirvana.js - Full component styling */
 .theme-nirvana {
-  padding: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
+  /* No custom padding / max-width / margin -- #mainbody sizes and pads this
+     document like every other page. The earlier max-width + margin:0 auto
+     produced odd side gutters (full-width pages, and any page on wide
+     viewports). Matches the .setting / .datastash fix. */
 }
 
 .theme-nirvana__intro {

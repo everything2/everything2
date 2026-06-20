@@ -170,7 +170,15 @@ const Chatterbox = (props) => {
   const [messageSuccess, setMessageSuccess] = React.useState(null)
   const [messageFading, setMessageFading] = React.useState(false)
   const [messageEntering, setMessageEntering] = React.useState(false)
-  const [borgTimeRemaining, setBorgTimeRemaining] = React.useState(0)
+  // Seconds left on the borg, computed synchronously on first render (no flash
+  // of the input before the effect runs) and then ticked down by the effect
+  // below. Drives both the countdown display and whether chat is disabled.
+  const [borgTimeRemaining, setBorgTimeRemaining] = React.useState(() => {
+    if (!props.borged) return 0
+    const elapsed = Math.floor(Date.now() / 1000) - props.borged
+    const cooldownPeriod = 300 + 60 * ((props.numborged || 1) * 2)
+    return Math.max(0, cooldownPeriod - elapsed)
+  })
   const inputRef = React.useRef(null)
 
   // Mini-messages state (when Messages nodelet not present)
@@ -628,8 +636,10 @@ const Chatterbox = (props) => {
     }
   }
 
-  // Check if user is borged (suspended from chat)
-  const isBorged = props.borged || false
+  // Borged = there's still time left on the countdown. Deriving from the timer
+  // (rather than the raw `borged` timestamp) means chat re-enables the instant
+  // the countdown hits 0:00, without waiting for a page reload.
+  const isBorged = borgTimeRemaining > 0
   const isChatSuspended = props.chatSuspended || false
   const isGuest = props.isGuest || false
   const isEditor = props.user?.editor || false
@@ -671,7 +681,8 @@ const Chatterbox = (props) => {
       commands.push(
         { cmd: '/borg <user> [reason]', desc: 'Suspend user from chat (replace spaces with underscores)', restricted: true },
         { cmd: '/drag <user>', desc: 'Move user to your room (replace spaces with underscores)', restricted: true },
-        { cmd: '/topic <text>', desc: 'Set room topic', restricted: true }
+        { cmd: '/topic <text>', desc: 'Set room topic', restricted: true },
+        { cmd: '/fakeborg <name>', desc: 'EDB announces a fake borging (no actual suspension)', restricted: true }
       )
     }
 
