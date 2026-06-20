@@ -99,6 +99,14 @@ my $test_user_vars = Everything::getVars($test_user);
 delete $test_user_vars->{publicchatteroff};
 Everything::setVars($test_user, $test_user_vars);
 
+# Put the poster in the default room (0). getRecentChatter is room-scoped, so a
+# stale non-zero in_room (left by other dev activity) would post under one room
+# and read back another, making the create/get assertions see 0 messages. Patch
+# both the DB and the already-cached $test_user hashref the subtests pass as
+# NODEDATA (the latter was read above, before this reset).
+$DB->sqlUpdate('user', { in_room => 0 }, "user_id=$test_user->{node_id}");
+$test_user->{in_room} = 0;
+
 # Create API instance
 my $api = Everything::API::chatter->new(DB => $DB, APP => $APP);
 ok($api, "Created chatter API instance");
@@ -342,11 +350,14 @@ subtest 'POST /api/chatter/clear_all - non-admin blocked' => sub {
         for_user => 0
     });
 
-    # Regular user without admin flag
+    # Regular user without admin privileges. Must be a REAL non-god account:
+    # clear_all now authorizes via Application::flushChatter (real isAdmin/isGod),
+    # not the mock is_admin flag, so root-with-a-fake-flag would wrongly pass.
+    my $non_admin = $DB->getNode('normaluser1', 'user');
     my $regular_user = MockUser->new(
-        NODEDATA => $test_user,
-        node_id => $test_user->{node_id},
-        title => $test_user->{title},
+        NODEDATA => $non_admin,
+        node_id => $non_admin->{node_id},
+        title => $non_admin->{title},
         is_admin_flag => 0
     );
 
@@ -400,6 +411,73 @@ subtest 'UTF-8 emoji storage in chatter' => sub {
 
     # Verify emoji appears in returned chatter array
     is($data->{chatter}->[0]->{msgtext}, $emoji_message, "Emoji message in API response is correct");
+};
+
+#############################################################################
+# flushChatter - backs the unified /api/chatter/clear endpoint.
+#   room scope: a chanop clears ONLY their current room
+#   all  scope: an admin clears every room
+#############################################################################
+subtest 'flushChatter scopes + permission matrix' => sub {
+    my $admin  = $DB->getNode('root', 'user');           # god => admin + chanop
+    my $chanop = $DB->getNode('genericchanop', 'user');  # chanop, not admin
+    my $plain  = $DB->getNode('normaluser1', 'user');    # neither
+    ok($admin && $chanop && $plain, 'got admin/chanop/plain test users');
+    ok($APP->isChanop($chanop), 'genericchanop is a chanop');
+
+    # permission matrix
+    is($APP->flushChatter($plain,  'all')->{forbidden},  1, 'plain user cannot flush all');
+    is($APP->flushChatter($plain,  'room')->{forbidden}, 1, 'plain user cannot flush room');
+    is($APP->flushChatter($chanop, 'all')->{forbidden},  1, 'chanop cannot flush all (admin only)');
+
+    # room scope clears only the caller's current room
+    my ($roomA, $roomB) = (9999991, 9999992);
+    $DB->sqlDelete('message', 'for_user=0');
+    $DB->sqlInsert('message', { author_user => $admin->{node_id}, for_user => 0, room => $roomA, msgtext => 'flush A' });
+    $DB->sqlInsert('message', { author_user => $admin->{node_id}, for_user => 0, room => $roomB, msgtext => 'flush B' });
+
+    my %chanop_in_a = (%$chanop, in_room => $roomA);   # flushChatter reads in_room
+    my $r = $APP->flushChatter(\%chanop_in_a, 'room');
+    is($r->{success}, 1, 'chanop room flush succeeds');
+    is($r->{scope}, 'room', 'scope is room');
+    is($DB->sqlSelect('count(*)', 'message', "for_user=0 AND room=$roomA"), 0, 'current room cleared');
+    is($DB->sqlSelect('count(*)', 'message', "for_user=0 AND room=$roomB"), 1, 'other room preserved');
+
+    # all scope clears everything (admin)
+    my $ra = $APP->flushChatter($admin, 'all');
+    is($ra->{success}, 1, 'admin all flush succeeds');
+    is($DB->sqlSelect('count(*)', 'message', 'for_user=0'), 0, 'all public chatter cleared');
+
+    $DB->sqlDelete('message', 'for_user=0');
+};
+
+#############################################################################
+# POST /api/chatter/clear - endpoint wiring (scope parse, response, guard)
+#############################################################################
+subtest 'POST /api/chatter/clear endpoint' => sub {
+    my $admin = $DB->getNode('root', 'user');
+    $DB->sqlDelete('message', 'for_user=0');
+    $DB->sqlInsert('message', { author_user => $admin->{node_id}, for_user => 0, room => 0, msgtext => 'endpoint test' });
+
+    my $req = MockRequest->new(
+        user => MockUser->new(NODEDATA => $admin, node_id => $admin->{node_id}, title => $admin->{title}, is_admin_flag => 1),
+        _postdata => { scope => 'all' }
+    );
+    my $res = $api->clear($req);
+    is($res->[0], $api->HTTP_OK, 'clear returns HTTP 200');
+    is($res->[1]->{success}, 1, 'clear reports success');
+    is($res->[1]->{scope}, 'all', 'scope echoed back');
+    is($DB->sqlSelect('count(*)', 'message', 'for_user=0'), 0, 'endpoint cleared chatter');
+
+    # guest is blocked by the unauthorized_if_guest guard before any delete
+    my $greq = MockRequest->new(
+        user => MockUser->new(NODEDATA => {}, is_guest_flag => 1),
+        _postdata => { scope => 'all' }
+    );
+    my $gres = $api->clear($greq);
+    isnt($gres->[0], $api->HTTP_OK, 'guest is blocked from clear');
+
+    $DB->sqlDelete('message', 'for_user=0');
 };
 
 # Cleanup

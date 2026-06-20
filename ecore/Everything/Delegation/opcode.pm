@@ -419,32 +419,10 @@ sub lockroom
 
 # borg opcode REMOVED - superseded by Everything::API::admin user borg (UserToolsModal). #4303. Jun 2026.
 
-sub flushcbox
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless $APP->isChanop($USER); # Specifically include gods
-  my $currentRoomId = int($$USER{in_room});
-  my $currentRoom = getNode($currentRoomId);
-  my $currentRoomName = undef;
-  if (!$currentRoom && $currentRoomId)
-  {
-    $currentRoomName = "in expired room (#$currentRoomId)";
-  } elsif (!$currentRoom) {
-    $currentRoomName = "outside";
-  } else {
-    $currentRoomName = "in room '$$currentRoom{title}'";
-  }
-
-  $APP->securityLog(SECLOG_CATBOX_FLUSH, $USER, "Chat $currentRoomName flushed.");
-  $DB->sqlDelete("message", "for_user = 0 AND room = $currentRoomId");
-  return 1;
-}
+# flushcbox opcode REMOVED - superseded by Everything::API::chatter (clear, scope=room) via
+# the /flushchatter command (Chatterbox.js). The chanop room-scoped flush + SECLOG_CATBOX_FLUSH
+# audit now live in Everything::Application::flushChatter. op= dispatch was already orphaned
+# (no React UI reached it). #4327. Jun 2026.
 
 # repair_e2node_noreorder opcode REMOVED - superseded by Everything::API::e2node (repair_node no-reorder). #4303. Jun 2026.
 
