@@ -253,6 +253,23 @@ Some "preferences" aren't stored in VARS:
 
 These keys are no longer used and can be cleaned up from user settings:
 
+### Removed in 2026-06 (socialBookmark opcode retirement, #4332)
+
+The external-site social-bookmark *notifier* (Cool Man Eddie messaging authors when
+their writeup was bookmarked to del.icio.us/Digg-era sites) was a dead feature with no
+dispatch. Retiring its opcode + notification handler orphaned these two prefs. **Drop
+both during the JSON conversion** — nothing reads them anymore.
+
+| Key | Status | Notes | Removal Date |
+|-----|--------|-------|--------------|
+| `no_socialbookmarknotification` | **DEPRECATED** | "Tell me when my writeups get bookmarked on a social bookmarking site." Only the retired `socialBookmark` opcode/notification consumed it. | 2026-06-20 |
+| `no_socialbookmarkinformer` | **DEPRECATED** | "Tell others when I bookmark a writeup on a social bookmarking site." Read only by the retired `socialBookmark` opcode. | 2026-06-20 |
+
+> **Not deprecated (still live), despite similar names:** `nosocialbookmarking` gates the
+> Facebook/X/Reddit *share* buttons on writeups (`WriteupDisplay.js`), and
+> `no_bookmarknotification` gates the *internal* bookmark notification (`Everything::API::cool`).
+> Keep both.
+
 ### Removed in 2026-05 (Favorite Noders Cap)
 
 | Key | Status | Notes | Removal Date |

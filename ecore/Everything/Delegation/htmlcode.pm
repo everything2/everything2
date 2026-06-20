@@ -1246,35 +1246,7 @@ sub createdby
 
 # Not currently used; left for clarity, but a strong candidate for removal
 #
-sub lockroom
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return unless isGod($USER);
-  my $R = $$USER{in_room};
-  return if $R == 0;
-
-  getRef($R);
-
-  my $open = "1\;";
-  my $locked = "0\;";
-
-  my $title = "";
-  if($$R{criteria} eq $open) {
-    $title = '(lock)';
-  } elsif($$R{criteria} eq $locked) {
-    $title = '(unlock)';
-  } else {
-    return;
-  }
-
-  return linkNode($NODE, $title, {op=>'lockroom', target => getId($R)});
-}
+# lockroom htmlcode REMOVED - emitted the orphaned op=lockroom criteria-toggle link (nothing rendered it). Room locking is now POST /api/chatroom/lock_room. #4332. Jun 2026.
 
 # borgcheck REMOVED - Dead code, borgcheck display migrated to React, unborg logic in Node/user.pm. Jan 2026.
 

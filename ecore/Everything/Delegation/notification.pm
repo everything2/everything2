@@ -387,22 +387,8 @@ sub weblog
     return $str;
 }
 
-#############################################################################
-# Social bookmark notification
-# Triggered when content is shared via social bookmarking
-# Args: { writeup_id => node_id, bookmark_user => user_id, bookmark_site => site_name }
-#############################################################################
-
-sub socialbookmark
-{
-    my ($DB, $APP, $args) = @_;
-
-    my $str = "Your content was shared";
-    $str .= " on " . $args->{bookmark_site} if $args->{bookmark_site};
-    $str .= ": " . $APP->bracketLink( $args->{writeup_id}) if $args->{writeup_id};
-
-    return $str;
-}
+# socialbookmark notification handler REMOVED with the dead socialBookmark opcode
+# (its only trigger). External-site bookmark notifier; del.icio.us-era. #4332.
 
 #############################################################################
 # Chanop borged user notification
@@ -719,17 +705,6 @@ sub writeupedit_is_valid
     return $node ? 1 : 0;
 }
 
-#############################################################################
-# Social bookmark validity check
-# Invalid if: the writeup no longer exists
-#############################################################################
-
-sub socialbookmark_is_valid
-{
-    my ($DB, $APP, $args) = @_;
-
-    my $node = $DB->getNodeById($args->{writeup_id});
-    return $node ? 1 : 0;
-}
+# socialbookmark_is_valid REMOVED with the dead socialBookmark opcode. #4332.
 
 1;

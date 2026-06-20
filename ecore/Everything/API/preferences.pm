@@ -70,8 +70,8 @@ has 'allowed_preferences' => (isa => 'HashRef', is => 'ro', default => sub { {
   'no_bookmarknotification' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'no_bookmarkinformer' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'anonymous_bookmark' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
-  'no_socialbookmarknotification' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
-  'no_socialbookmarkinformer' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
+  # no_socialbookmarknotification / no_socialbookmarkinformer removed with the dead
+  # socialBookmark notifier (#4332); see docs/user-vars-reference.md.
   'no_discussionreplynotify' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
   'hidelastseen' => Everything::Preference::List->new(default_value => 0, allowed_values => [0,1]),
 

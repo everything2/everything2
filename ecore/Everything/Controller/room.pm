@@ -17,11 +17,8 @@ sub display {
     my $USER = $user->NODEDATA;
     my $VARS = $user->VARS;
 
-    # Handle roomlocked parameter if provided (admin toggle)
-    if (defined $REQUEST->param('roomlocked') && $APP->isAdmin($USER)) {
-        $NODE->{roomlocked} = $REQUEST->param('roomlocked');
-        $DB->updateNode($NODE, -1);
-    }
+    # (Lock/unlock is now POST /api/chatroom/lock_room, not a ?roomlocked= page
+    # mutation -- see Everything::API::chatroom::lock_room + Room.js.)
 
     my $is_admin = $APP->isAdmin($USER) ? 1 : 0;
     my $is_guest = $user->is_guest ? 1 : 0;

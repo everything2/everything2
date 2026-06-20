@@ -10,6 +10,7 @@ sub routes
     'change_room' => 'change_room',
     'set_cloaked' => 'set_cloaked',
     'create_room' => 'create_room',
+    'lock_room' => 'lock_room',
     '/' => 'get_other_users',
   }
 }
@@ -264,7 +265,38 @@ sub create_room {
   }];
 }
 
-around ['get_other_users', 'change_room', 'set_cloaked', 'create_room'] => \&Everything::API::unauthorized_if_guest;
+# Lock or unlock a chat room (admin only). Body: { room_id, locked: 0|1 }.
+# Sets roomdata.roomlocked, which Everything::Application::canEnterRoom enforces
+# (non-admins are blocked from a locked room; admins always pass). Replaces the
+# legacy ?roomlocked= page mutation in Controller::room and the dead `lockroom`
+# opcode (which toggled an unused `criteria` field canEnterRoom never read).
+sub lock_room {
+  my ($self, $REQUEST) = @_;
+
+  my $USER_BLESSED = $REQUEST->user;
+  unless ($USER_BLESSED->is_admin) {
+    return [$self->HTTP_FORBIDDEN, { error => 'Administrator access required' }];
+  }
+
+  my $data = $REQUEST->JSON_POSTDATA || {};
+  my $room_id = int($data->{room_id} || 0);
+  unless ($room_id) {
+    return [$self->HTTP_BAD_REQUEST, { error => 'room_id is required' }];
+  }
+
+  my $room = $self->DB->getNodeById($room_id);
+  unless ($room && ref($room->{type}) eq 'HASH' && $room->{type}{title} eq 'room') {
+    return [$self->HTTP_NOT_FOUND, { error => 'Room not found' }];
+  }
+
+  my $locked = $data->{locked} ? 1 : 0;
+  $room->{roomlocked} = $locked;
+  $self->DB->updateNode($room, -1);
+
+  return [$self->HTTP_OK, { success => 1, room_id => $room_id, roomlocked => $locked }];
+}
+
+around ['get_other_users', 'change_room', 'set_cloaked', 'create_room', 'lock_room'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 
