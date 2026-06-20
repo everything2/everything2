@@ -109,7 +109,6 @@ has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
 
   # Other code-controlled types
   "achievement" => 1,
-  "opcode" => 1,
 } });
 
 # permanent_cache: Types that are cached permanently (never evicted by LRU)

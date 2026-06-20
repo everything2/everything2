@@ -539,31 +539,7 @@ sub test_notification {
     ok(defined $result, "weblog: Handles missing writeup_id");
 }
 
-#############################################################################
-# Test: socialbookmark notification
-#############################################################################
-
-{
-    my $args = { writeup_id => 1313, bookmark_user => 777, bookmark_site => 'Twitter' };
-    test_notification(
-        'socialbookmark',
-        \&Everything::Delegation::notification::socialbookmark,
-        $args,
-        qr/shared/i,
-        'with writeup_id and bookmark_site'
-    );
-
-    # Test without bookmark_site
-    $args = { writeup_id => 1313, bookmark_user => 777 };
-    my $result = Everything::Delegation::notification::socialbookmark($DB, $APP, $args);
-    ok(defined $result, "socialbookmark: Handles missing bookmark_site");
-    like($result, qr/shared/i, "socialbookmark: Contains 'shared'");
-
-    # Test without writeup_id
-    $args = { bookmark_site => 'Twitter', bookmark_user => 777 };
-    $result = Everything::Delegation::notification::socialbookmark($DB, $APP, $args);
-    ok(defined $result, "socialbookmark: Handles missing writeup_id");
-}
+# socialbookmark notification REMOVED with the dead socialBookmark opcode (#4332).
 
 #############################################################################
 # Test: chanop_borged_user notification
@@ -612,7 +588,7 @@ sub test_notification {
         achievement voting newcomment experience gp cooled frontpage
         favorite bookmark mostwanted draft_for_review writeupedit
         editor_removed_writeup author_removed_writeup blankedwriteup
-        nodenote newbiewriteup newdiscussion e2poll weblog socialbookmark
+        nodenote newbiewriteup newdiscussion e2poll weblog
         chanop_borged_user chanop_dragged_user
     );
 

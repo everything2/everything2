@@ -11,7 +11,6 @@ package Everything::HTML;
 use strict;
 use Everything;
 use Everything::Delegation::htmlcode;
-use Everything::Delegation::opcode;
 
 use Everything::Request;
 
@@ -1257,19 +1256,12 @@ sub opNew
 sub execOpCode
 {
   my $op = $query->param('op');
-  my $handled = 0;
 
   return 0 unless(defined $op && $op ne "");
-  my $delegation = undef;
-  if($op ne "new" and $delegation = Everything::Delegation::opcode->can($op))
-  {
-    $APP->devLog("Using delegated opcode: $op");
-    $delegation->($DB, $query, $GNODE, $USER, $VARS, $APP);
-    return;
-  }
 
-  # These are built in defaults.  If no 'opcode' nodes exist for
-  # the specified op, we have some default handlers.
+  # The opcode delegation/type was retired (#4335) -- all opcodes became APIs
+  # (#4198). What remains are these built-in op= handlers; they are the residual
+  # op= surface tracked for API migration in #4335. Any other op= is ignored.
 
   if($op eq 'login')
   {
