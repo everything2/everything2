@@ -37,7 +37,7 @@
     "react-modal": "^3.16.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.5",
+    "@babel/core": "^7.29.6",
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
     "@mozilla/readability": "^0.6.0",
