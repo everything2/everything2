@@ -1,22 +1,31 @@
 import React from 'react'
 
 /**
- * LogoutLink - Handles logout via server-side op=logout with client-side backup
+ * LogoutLink - logs out via POST /api/sessions/delete (clears the session
+ * cookie server-side), then redirects home. Keeps a client-side cookie clear
+ * as a backup in case the Set-Cookie response is cached/stripped.
  *
- * Uses traditional op=logout to let server clear the cookie properly.
- * Also clears cookie client-side as a backup in case server response is cached.
+ * Replaces the legacy op=logout dispatch (#4335 Phase 2).
  */
 const LogoutLink = ({ display = 'Log Out', style }) => {
-  const handleLogout = (e) => {
-    // Clear cookie client-side as backup (in case server response is cached/stripped)
+  const handleLogout = async (e) => {
+    e.preventDefault()
+    try {
+      await fetch('/api/sessions/delete', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' },
+      })
+    } catch (err) {
+      // ignore network errors; fall through to the client-side clear + redirect
+    }
+    // Backup client-side clear (in case the Set-Cookie was cached/stripped)
     document.cookie = 'userpass=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-
-    // Let the link navigate normally to op=logout
-    // Don't preventDefault - allow normal navigation
+    window.location.href = '/'
   }
 
   return (
-    <a href="/node/superdoc/login?op=logout" onClick={handleLogout} className="logout-link" style={style}>
+    <a href="/" onClick={handleLogout} className="logout-link" style={style}>
       {display}
     </a>
   )

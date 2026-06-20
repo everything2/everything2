@@ -53,9 +53,20 @@ const MobileProfileMenu = ({ user }) => {
     }
   }, [isOpen])
 
-  const handleLogout = () => {
-    // E2 logout is handled by navigating to the logout URL
-    window.location.href = '/?op=logout'
+  const handleLogout = async () => {
+    // Log out via the sessions API (clears the cookie server-side), then go home.
+    // Replaces the legacy op=logout navigation (#4335 Phase 2).
+    try {
+      await fetch('/api/sessions/delete', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' },
+      })
+    } catch (err) {
+      // ignore; fall through to the client-side clear + redirect
+    }
+    document.cookie = 'userpass=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+    window.location.href = '/'
   }
 
   return (

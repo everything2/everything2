@@ -1174,28 +1174,9 @@ sub opLogin
 }
 
 #############################################################################
-sub opLogout
-{
-	# The user is logging out.  Nuke their cookie.
-	# Must set expires to past date for browser to actually delete the cookie
-	# SameSite=Lax must match the login cookie to ensure proper deletion
-	my $cookie = $query->cookie(
-		-name => $Everything::CONF->cookiepass,
-		-value => "",
-		-expires => '-1d',
-		-path => '/',
-		-samesite => 'Lax'
-	);
-	my $user_id = $Everything::CONF->guest_user;
-
-	$USER = getNodeById($user_id);
-	$VARS = getVars($USER);
-
-	$$USER{cookie} = $cookie if($cookie);
-
-	$REQUEST->logout;
-	return;
-}
+# opLogout REMOVED - op=logout retired; logout is now POST /api/sessions/delete
+# (Everything::API::sessions::delete clears the cookie server-side). Callers:
+# LogoutLink.js, MobileProfileMenu.js. #4335 Phase 2. Jun 2026.
 
 
 #############################################################################
@@ -1266,9 +1247,6 @@ sub execOpCode
   if($op eq 'login')
   {
     opLogin()
-  }elsif($op eq 'logout')
-  {
-    opLogout();
   }elsif($op eq 'nuke')
   {
     opNuke();

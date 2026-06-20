@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import LogoutLink from './LogoutLink'
 
 describe('LogoutLink Component', () => {
@@ -13,10 +13,14 @@ describe('LogoutLink Component', () => {
 
     // Clear cookies
     document.cookie = 'userpass=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+
+    // Mock the sessions API
+    global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: async () => ({}) }))
   })
 
   afterEach(() => {
     window.location = originalLocation
+    jest.restoreAllMocks()
   })
 
   it('renders with default "Log Out" text', () => {
@@ -29,13 +33,24 @@ describe('LogoutLink Component', () => {
     expect(screen.getByText('Sign Out')).toBeInTheDocument()
   })
 
-  it('has correct href with op=logout', () => {
+  it('POSTs to /api/sessions/delete on click, then redirects home', async () => {
     render(<LogoutLink />)
     const link = screen.getByText('Log Out')
-    expect(link).toHaveAttribute('href', '/node/superdoc/login?op=logout')
+
+    fireEvent.click(link)
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/sessions/delete',
+        expect.objectContaining({ method: 'POST', credentials: 'same-origin' })
+      )
+    })
+    await waitFor(() => {
+      expect(window.location.href).toBe('/')
+    })
   })
 
-  it('clears cookie client-side as backup on click', () => {
+  it('clears cookie client-side as backup on click', async () => {
     // Set a test cookie first
     document.cookie = 'userpass=testvalue; path=/'
 
@@ -44,24 +59,19 @@ describe('LogoutLink Component', () => {
 
     fireEvent.click(link)
 
-    // Check that cookie was cleared (expired) client-side
-    // Note: In jsdom, checking cookie expiration is tricky, but we can verify
-    // the cookie value is empty or the cookie is gone
-    expect(document.cookie).not.toContain('userpass=testvalue')
+    await waitFor(() => {
+      expect(document.cookie).not.toContain('userpass=testvalue')
+    })
   })
 
-  it('allows default link navigation (does not preventDefault)', () => {
+  it('prevents default navigation (logout is handled via the API)', () => {
     render(<LogoutLink />)
     const link = screen.getByText('Log Out')
 
-    const clickEvent = new MouseEvent('click', {
-      bubbles: true,
-      cancelable: true
-    })
-
+    const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true })
     link.dispatchEvent(clickEvent)
 
-    // Should NOT prevent default - we want the navigation to happen
-    expect(clickEvent.defaultPrevented).toBe(false)
+    // The handler calls preventDefault() and logs out via fetch instead
+    expect(clickEvent.defaultPrevented).toBe(true)
   })
 })
