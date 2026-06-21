@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import AdminCreateNodeLink from '../AdminCreateNodeLink';
 import { decodeHtmlEntities } from '../../utils/textUtils';
 import { InContentAd } from '../Layout/GoogleAds';
@@ -12,6 +12,29 @@ const Findings = ({ data, user }) => {
   const [searchValue, setSearchValue] = useState(search_term || '');
   const [soundex, setSoundex] = useState(false);
   const [matchAll, setMatchAll] = useState(false);
+  const createInputRef = useRef(null);
+
+  // Create via the generic node API (was op=new). #4340 Phase 2.
+  const handleCreate = async (type) => {
+    const title = (createInputRef.current?.value || '').trim();
+    if (!title) {
+      return;
+    }
+    try {
+      const res = await fetch('/api/node/create', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ type, title }),
+      });
+      const result = res.ok ? await res.json() : null;
+      if (result && result.success && result.node_id) {
+        window.location.href = `/node/${result.node_id}`;
+      }
+    } catch (err) {
+      // Network error; leave the form in place so the user can retry.
+    }
+  };
 
   if (no_search_term) {
     return (
@@ -117,7 +140,7 @@ const Findings = ({ data, user }) => {
 
         {/* Create new form - only for logged-in users */}
         {!is_guest && (
-          <form method="get" action="/" className="findings-form">
+          <form className="findings-form" onSubmit={(e) => e.preventDefault()}>
             <fieldset className="findings-fieldset">
               <legend>Create new...</legend>
               <small>You can correct the spelling or capitalization here.</small>
@@ -128,15 +151,14 @@ const Findings = ({ data, user }) => {
                   defaultValue={search_term}
                   maxLength="100"
                   className="findings-text-input"
+                  ref={createInputRef}
                 />
-                <input type="hidden" name="lastnode_id" value={lastnode_id} />
-                <input type="hidden" name="op" value="new" />
               </div>
               <div className="findings-button-row">
-                <button type="submit" name="type" value="draft" className="findings-button">
+                <button type="button" onClick={() => handleCreate('draft')} className="findings-button">
                   New draft
                 </button>
-                <button type="submit" name="type" value="e2node" className="findings-button">
+                <button type="button" onClick={() => handleCreate('e2node')} className="findings-button">
                   New node
                 </button>
               </div>

@@ -10,6 +10,7 @@ extends 'Everything::API';
 
 sub routes {
   return {
+    'create'          => 'create',
     'update'          => 'update_category',
     'update_meta'     => 'update_category_meta',
     'reorder_members' => 'reorder_members',
@@ -842,6 +843,86 @@ sub _get_category_navigation {
     position => $current_idx + 1,  # 1-indexed for display
     total => $total
   };
+}
+
+# POST /api/category/create  { title, maintainer, doctext }
+# Create a category with a chosen maintainer (the category's author_user / access
+# owner) and description. Restores the behavior the legacy `category_create`
+# maintenance hook provided via a POSTed `maintainer` form field -- the op=new ->
+# /api/node/create migration dropped it, because the JSON API doesn't populate the
+# global $query the hook reads, so every new category defaulted to creator-owned.
+# Validation mirrors that hook: a maintainer must be the creator, "Any Noder"
+# (guest), or a usergroup the creator belongs to. #4340.
+## no critic (ProhibitBuiltinHomonyms)
+sub create {
+  my ($self, $REQUEST) = @_;
+
+  my $user = $REQUEST->user;
+  if ($user->is_guest) {
+    return [$self->HTTP_UNAUTHORIZED, { success => 0, error => 'Must be logged in' }];
+  }
+
+  my $APP = $self->APP;
+  my $DB  = $self->DB;
+
+  my $data;
+  my $ok = eval { $data = JSON::decode_json($REQUEST->POSTDATA // '{}'); 1 };
+  unless ($ok && ref($data) eq 'HASH') {
+    return [$self->HTTP_OK, { success => 0, error => 'Invalid request body' }];
+  }
+
+  my $title = defined $data->{title} ? $data->{title} : '';
+  $title =~ s/^\s+|\s+$//g;
+  unless (length $title) {
+    return [$self->HTTP_BAD_REQUEST, { success => 0, error => 'title is required' }];
+  }
+
+  # Must be allowed to create a category at all.
+  my $TYPE = $DB->getType('category');
+  unless ($DB->canCreateNode($user->NODEDATA, $TYPE)) {
+    return [$self->HTTP_FORBIDDEN, { success => 0, error => 'Permission denied' }];
+  }
+
+  # Resolve + validate the maintainer (author_user). Default to the creator.
+  my $guest_user_id = $self->CONF->guest_user;
+  my $maint_id = int($data->{maintainer} || 0) || $user->node_id;
+  my $MAINT      = $APP->node_by_id($maint_id);
+  my $maint_type = $MAINT ? $MAINT->type->title : '';
+
+  unless ($maint_type eq 'user' || $maint_type eq 'usergroup') {
+    return [$self->HTTP_OK, { success => 0, error => 'Maintainer must be a user or usergroup' }];
+  }
+  if ($maint_type eq 'user'
+      && $maint_id != $user->node_id && $maint_id != $guest_user_id) {
+    return [$self->HTTP_FORBIDDEN, { success => 0,
+      error => 'You can only create a category maintained by yourself or Any Noder' }];
+  }
+  if ($maint_type eq 'usergroup'
+      && !$APP->inUsergroup($user->NODEDATA, $MAINT->NODEDATA)) {
+    return [$self->HTTP_FORBIDDEN, { success => 0,
+      error => 'You must belong to that usergroup to make it the maintainer' }];
+  }
+
+  my $doctext  = defined $data->{doctext} ? $data->{doctext} : '';
+  my $nodename = $APP->cleanNodeName($title, 1);
+
+  # Create with the maintainer + doctext set up front, and skip the create
+  # maintenance hook (it would re-default author_user from the absent form param).
+  my $node_id = $DB->insertNode($nodename, $TYPE, $user->node_id,
+    { author_user => $maint_id, doctext => $doctext }, 1);
+
+  unless ($node_id) {
+    # Already exists -> return the existing id without modifying it (op=new behavior).
+    $node_id = $DB->sqlSelect('node_id', 'node',
+      'title=' . $DB->quote($nodename) . ' AND type_nodetype=' . $TYPE->{node_id});
+    return [$self->HTTP_OK, { success => 1, node_id => int($node_id), existing => 1 }];
+  }
+
+  return [$self->HTTP_OK, {
+    success    => 1,
+    node_id    => int($node_id),
+    maintainer => int($maint_id),
+  }];
 }
 
 __PACKAGE__->meta->make_immutable;

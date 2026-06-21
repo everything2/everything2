@@ -30,6 +30,28 @@ const NothingFound = ({ data, user }) => {
   const [soundex, setSoundex] = useState(false);
   const [matchAll, setMatchAll] = useState(false);
 
+  // Create via the generic node API (was op=new). #4340 Phase 2.
+  const handleCreate = async (type) => {
+    const title = (createValue || '').trim();
+    if (!title) {
+      return;
+    }
+    try {
+      const res = await fetch('/api/node/create', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ type, title }),
+      });
+      const result = res.ok ? await res.json() : null;
+      if (result && result.success && result.node_id) {
+        window.location.href = `/node/${result.node_id}`;
+      }
+    } catch (err) {
+      // Network error; leave the form in place so the user can retry.
+    }
+  };
+
   // Handle successful nuke
   if (was_nuke) {
     return (
@@ -177,7 +199,7 @@ const NothingFound = ({ data, user }) => {
           </form>
 
           {/* Create new form */}
-          <form method="get" action="/" className="nothing-found__form">
+          <form onSubmit={(e) => e.preventDefault()} className="nothing-found__form">
             <fieldset className="nothing-found__fieldset">
               <legend>Create new...</legend>
               <small>You can correct the spelling or capitalization here.</small>
@@ -191,14 +213,12 @@ const NothingFound = ({ data, user }) => {
                 maxLength="100"
                 className="nothing-found__text-input"
               />
-              <input type="hidden" name="lastnode_id" value={lastnode_id} />
-              <input type="hidden" name="op" value="new" />
               {' '}
-              <button type="submit" name="type" value="draft" className="nothing-found__button">
+              <button type="button" onClick={() => handleCreate('draft')} className="nothing-found__button">
                 New draft
               </button>
               {' '}
-              <button type="submit" name="type" value="e2node" className="nothing-found__button">
+              <button type="button" onClick={() => handleCreate('e2node')} className="nothing-found__button">
                 New node
               </button>
             </fieldset>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
@@ -11,6 +11,8 @@ import LinkNode from '../LinkNode'
 const EverythingPublicationDirectory = ({ data }) => {
   const { error, debates = [], can_create = false } = data
 
+  const [title, setTitle] = useState('')
+
   if (error) {
     return (
       <div className="e2-pub-directory">
@@ -19,16 +21,27 @@ const EverythingPublicationDirectory = ({ data }) => {
     )
   }
 
-  const handleCreateDebate = (e) => {
+  // Create the debate via the generic node API (was op=new). #4340.
+  const handleCreateDebate = async (e) => {
     e.preventDefault()
-    const title = e.target.elements.node.value.trim()
-    if (!title) {
+    const trimmed = title.trim()
+    if (!trimmed) {
       alert('Please enter a title for the new discussion')
       return
     }
 
-    // Submit the form to create a new debate
-    e.target.submit()
+    const res = await fetch('/api/node/create', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ type: 'debate', title: trimmed }),
+    })
+    const result = res.ok ? await res.json() : null
+    if (result && result.success && result.node_id) {
+      window.location.href = `/node/${result.node_id}`
+      return
+    }
+    alert((result && result.error) || 'Could not create the discussion')
   }
 
   return (
@@ -93,12 +106,7 @@ const EverythingPublicationDirectory = ({ data }) => {
             <strong>Create a New Discussion:</strong>
           </p>
 
-          <form method="post" onSubmit={handleCreateDebate}>
-            <input type="hidden" name="op" value="new" />
-            <input type="hidden" name="type" value="debate" />
-            <input type="hidden" name="displaytype" value="edit" />
-            <input type="hidden" name="debate_parent_debatecomment" value="0" />
-
+          <form onSubmit={handleCreateDebate}>
             <div className="e2-pub-directory__form-group">
               <input
                 type="text"
@@ -107,6 +115,8 @@ const EverythingPublicationDirectory = ({ data }) => {
                 maxLength="64"
                 placeholder="Enter discussion title..."
                 className="e2-pub-directory__input"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
               <br />
               <input

@@ -1176,37 +1176,11 @@ sub opLogin
 
 
 #############################################################################
-sub opNew
-{
-	my $node_id = 0;
-	my $user_id = $$USER{node_id};
-	my $type = $query->param('type');
-	my $TYPE = getType($type);
-	my $removeSpaces = 1;
-	my $nodename = $APP->cleanNodeName(scalar($query->param('node')), $removeSpaces);
-
-	if (canCreateNode($user_id, $DB->getType($type)) and not $APP->isGuest($USER))
-	{
-		$node_id = insertNode($nodename,$TYPE, $user_id);
-
-		if($node_id == 0)
-		{
-			# It appears that the node already exists.  Get its id.
-			$node_id = $DB->sqlSelect("node_id", "node", "title=" .
-				$DB->quote($nodename) . " && type_nodetype=" .
-				$$TYPE{node_id});
-		}
-
-		$query->param("node_id", $node_id);
-		$query->param("node", "");
-	} 
-	else
-	{
-		$query->param("node_id", $Everything::CONF->permission_denied);
-	}
-
-	return;
-}
+# opNew REMOVED - op=new retired; node creation is now POST /api/node/create
+# (Everything::API::node: canCreateNode + insertNode, returns node_id). Callers:
+# CreateNode, CreateCategory, E2CollaborationNodes, Findings, NothingFound,
+# CreateARegistry, EverythingPublicationDirectory, EdevDocumentationIndex,
+# ClientdevHome. #4340 / #4335 Phase 2. Jun 2026.
 
 
 #############################################################################
@@ -1243,9 +1217,6 @@ sub execOpCode
   if($op eq 'login')
   {
     opLogin()
-  }elsif($op eq 'new')
-  {
-    opNew();
   }
 
   return;

@@ -18,6 +18,29 @@ const CreateARegistry = ({ data }) => {
   const [title, setTitle] = React.useState('')
   const [description, setDescription] = React.useState('')
   const [inputStyle, setInputStyle] = React.useState('text')
+  const [error, setError] = React.useState('')
+
+  // Create via the generic node API (was op=new). #4340 Phase 2.
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    try {
+      const res = await fetch('/api/node/create', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ type: 'registry', title }),
+      })
+      const data = res.ok ? await res.json() : null
+      if (data && data.success && data.node_id) {
+        window.location.href = `/node/${data.node_id}`
+        return
+      }
+      setError((data && data.error) || 'Could not create the registry')
+    } catch (err) {
+      setError('Network error: ' + err.message)
+    }
+  }
 
   // Guest message
   if (is_guest) {
@@ -56,11 +79,7 @@ const CreateARegistry = ({ data }) => {
         <p>Before you create any new registries, you should have a look at <a href="/title/The+Registries" className="create-registry__link">the registries</a> we already have.</p>
       </div>
 
-      <form method="POST" action="/" className="create-registry__form">
-        <input type="hidden" name="op" value="new" />
-        <input type="hidden" name="type" value="registry" />
-        <input type="hidden" name="displaytype" value="display" />
-
+      <form onSubmit={handleSubmit} className="create-registry__form">
         <table className="create-registry__table">
           <tbody>
             <tr>
@@ -110,6 +129,7 @@ const CreateARegistry = ({ data }) => {
                 <button type="submit" name="sexisgood" value="create" className="create-registry__submit-button">
                   Create Registry
                 </button>
+                {error && <p className="create-registry__error">{error}</p>}
               </td>
             </tr>
           </tbody>

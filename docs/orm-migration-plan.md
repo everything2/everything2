@@ -192,6 +192,39 @@ If you eventually decide DBIC is unavoidable (Path 4), the lift can be sequenced
 
 ---
 
+## Node creation: API-controller vs model split (the seam the ORM should fix)
+
+**Added 2026-06-21.** Surfaced concretely by the `op=new` → `/api/node/create` migration (#4340). Tackle this *after* the existing controllers are scraped clean (the op=*→API and htmlcode burndown), as part of strengthening the `Node::*` domain layer.
+
+### The problem, stated as a layering rule
+- **API controller = the HTTP boundary.** Parse the body into a params hash, do request-level auth (guest? session?), call a domain operation, map result/errors to HTTP status + JSON. **No business rules.**
+- **Model (`Node::<type>`) = the domain.** "What is a valid category, who may create one, with what owner" is an invariant of the *category*, not of HTTP.
+
+By that rule, two things are currently in the wrong place:
+1. The **maintainer validation in `Everything::API::category::create`** (added in #4340) is domain logic living in a controller. Pragmatic interim; it belongs in the model.
+2. The legacy **`<type>_create` maintenance hooks** (`Everything::Delegation::maintenance`) *are* per-type creation logic — but implemented as a side effect of `insertNode` that reads the **global `$Everything::HTML::query`**. That request-coupling is exactly why `category_create` silently broke when the request shape changed (form POST → JSON): the hook kept reading a `maintainer` param the JSON API never sends, so every new category defaulted to creator-owned. **A model method taking explicit params could not have broken that way** — the regression is the strongest argument for the refactor.
+
+### What "right" looks like
+- **`Node::<type>->create($author, $params)`** is the single canonical creator per type. It absorbs: create-permission (`can_create_type`/`canCreateNode`), param validation (the maintainer rule, required fields, uniqueness), construction (insert + field-setting), and invariants/side-effects (notifications, search indexing — i.e. the `<type>_create` maintenance hooks get **lifted into here and the hooks retired**). Returns the new object or throws a typed domain error.
+- **API controllers become uniform and thin** for every type: guest-guard → `JSON_POSTDATA` → `Node::<type>->create` → map domain error to 400/403/409 → envelope the node_id. `category::create` shrinks to ~10 lines with no rules in it.
+- **`insertNode` stops being the creation *path*.** Creation goes through the model method; `insertNode` is the low-level primitive the model calls, not a place that re-runs business logic off request globals.
+
+### Generic vs per-type endpoint
+Delegation: **yes**. Delegation target: **the model**, not a type-aware controller. The endpoint *surface* is secondary:
+- E2 already has the seam — `Everything::API::nodes` (base) + `users`/`e2nodes`/`writeups`/… subclasses with `node_type` + `CREATE_ALLOWED`, and the base's `create` calling `node_new` / `can_create_type` / `translate_create_params`. Those three are **proto-delegation stubs**; make them real model methods.
+- Recommendation: **keep per-type API endpoints over the shared base, gut them to thin adapters, put all type-specific logic in the model.** Request contracts genuinely differ by type (category→maintainer, writeup→parent+writeuptype, e2node→just a title), so per-type surfaces stay explicit/evolvable. A generic `/api/node/create` *dispatcher* (resolve type → `Node::<type>->create`) is a fine later addition for the one real "create any type" client (the `CreateNode` admin tool) — but it should be a thin shim over the same model creators, never the home of per-type rules.
+- Anti-pattern to avoid: pushing `category`-knows-about-`maintainer` logic into a controller, generic *or* per-type. That's the layer violation; it's just less visible in a per-type controller.
+
+### Migration path
+1. *(now)* `/api/category/create` with the rule in the controller — tested, correct, interim.
+2. *(ORM/domain work)* introduce `Node::category->create`, move the maintainer rule + the `category_create` hook into it, repoint the controller, retire the hook.
+3. Repeat per type as the domain layer matures (writeup/e2node already carry controller-level logic wanting this).
+4. Optionally add the generic `/api/node/create` dispatcher once a couple of model creators exist.
+
+This is a Path-1-flavored change (modernize the domain layer in place) independent of the DBIC decision — `Node::<type>->create` is the right home whether persistence stays NodeBase or moves to DBIC.
+
+---
+
 ## References
 
 - [docs/sqitch-migration-plan.md](sqitch-migration-plan.md) — sqitch and schema-migration concerns (the other half of this story)
