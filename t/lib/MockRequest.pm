@@ -107,6 +107,38 @@ sub is_guest {
     return shift->{user}->is_guest;
 }
 
+=head2 login(username => $u, pass => $p)
+
+Authenticates against the real database the way Everything::Request->login
+does (hash the password with the user's salt, compare to the stored hash) and
+swaps in a MockUser for the authenticated user, or a guest on failure. Returns
+the resulting user object. Lets API tests exercise login-bearing endpoints
+(e.g. /api/users/confirm, /api/sessions/create).
+
+=cut
+
+sub login {
+    my ($self, %args) = @_;
+    my $username = $args{username} // '';
+    my $pass     = $args{pass} // '';
+
+    my $user = $username ne '' ? $Everything::DB->getNode($username, 'user') : undef;
+
+    if ($user && $user->{salt}
+        && $Everything::APP->hashString($pass, $user->{salt}) eq $user->{passwd}) {
+        $self->{user} = MockUser->new(
+            node_id       => $user->{node_id},
+            title         => $user->{title},
+            nodedata      => $user,
+            is_guest_flag => 0,
+        );
+    } else {
+        $self->{user} = MockUser->new(is_guest_flag => 1, title => 'Guest User');
+    }
+
+    return $self->{user};
+}
+
 =head2 set_postdata($data)
 
 Sets the POST data for this request. Useful for testing multiple

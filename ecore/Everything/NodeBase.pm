@@ -1063,10 +1063,26 @@ sub updateNode
 			}
 
 			if (exists $$NODE{$field})
-			{ 
+			{
+				my $value = $$NODE{$field};
+
+				# MySQL 8.4 strict mode rejects a non-numeric string (e.g. a
+				# stray '' or ' ' from VARS/params/legacy data) for an integer
+				# column, where older MySQL silently coerced it to 0. Restore
+				# that lenient coercion at the write layer so the whole class of
+				# "Incorrect integer value" failures can't crash a request.
+				my $dtype = $fieldHash->{$table}->{$ordinal}->{DATA_TYPE} || '';
+				if ($dtype =~ /^(?:tinyint|smallint|mediumint|int|bigint)$/i
+					&& defined $value && $value !~ /^-?\d+$/)
+				{
+					# parse a leading integer MySQL-style, else 0 (no numeric warnings)
+					my ($n) = $value =~ /^\s*(-?\d+)/;
+					$value = defined $n ? $n + 0 : 0;
+				}
+
 				my $qualified_column =
 				  $this->{dbh}->quote_identifier(undef, undef, $table, $field);
-				$VALUES{$qualified_column} = $$NODE{$field};
+				$VALUES{$qualified_column} = $value;
 				$tableList{$table} = 1;
 			}
 
@@ -1616,7 +1632,7 @@ sub getFieldsHash
 
 			my $paramList = ' (?' . (', ?' x (-1 + scalar @$table)) . ') ';
 			my $sqlQuery = qq|
-SELECT TABLE_NAME, ORDINAL_POSITION, COLUMN_NAME
+SELECT TABLE_NAME, ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE
 	FROM INFORMATION_SCHEMA.COLUMNS
 	WHERE TABLE_NAME IN
 		$paramList

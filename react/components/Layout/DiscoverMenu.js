@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { goToRandomNode } from '../../utils/randomNode'
 
 /**
  * DiscoverMenu - Bottom sheet menu for content discovery
@@ -35,7 +36,7 @@ const DiscoverMenu = ({ onClose }) => {
     { label: 'User Search', href: '/title/Everything+User+Search' },
     { label: "Editor's Picks", href: '/title/Page+of+Cool' },
     { label: 'Cool Archive', href: '/title/Cool+Archive' },
-    { label: 'Random Node', href: '/?op=randomnode' }
+    { label: 'Random Node', onClick: goToRandomNode }
   ]
 
   return (
@@ -84,7 +85,8 @@ const DiscoverMenu = ({ onClose }) => {
         {menuItems.map(item => (
           <a
             key={item.label}
-            href={item.href}
+            href={item.href || '#'}
+            onClick={item.onClick ? (e) => { e.preventDefault(); item.onClick() } : undefined}
             className="discover-menu-item"
           >
             {item.label}

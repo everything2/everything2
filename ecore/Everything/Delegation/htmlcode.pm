@@ -34,7 +34,6 @@ BEGIN {
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *getPageForType = *Everything::HTML::getPageForType;
-  *opLogin = *Everything::HTML::opLogin;
 }
 
 # Used by parsetime, parsetimestamp, timesince, giftshop_buyching 

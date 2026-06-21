@@ -1,6 +1,7 @@
 import React from 'react'
 import LinkNode from '../LinkNode'
 import LogoutLink from '../LogoutLink'
+import { goToRandomNode } from '../../utils/randomNode'
 
 /**
  * EpicenterZen - Compact header linkbar for users without Epicenter nodelet
@@ -79,10 +80,10 @@ const EpicenterZen = ({ user, epicenter }) => {
 
         {/* Random Node */}
         <a
-          href="/?op=randomnode"
+          href="#"
           onClick={(e) => {
             e.preventDefault()
-            window.location.href = `/?op=randomnode&garbage=${Math.floor(Math.random() * 100000)}`
+            goToRandomNode()
           }}
         >
           Random

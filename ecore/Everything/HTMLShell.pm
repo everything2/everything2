@@ -3,7 +3,10 @@ package Everything::HTMLShell;
 use Moose;
 with 'Everything::Globals';
 
-use JSON::MaybeXS;
+# Import only encode_json -- JSON::MaybeXS also exports a JSON() sub that collides
+# with the Everything::Globals 'JSON' accessor (Moose warns "overwriting a locally
+# defined function (JSON)" when the role is applied to this class).
+use JSON::MaybeXS qw(encode_json);
 use HTML::Entities qw(encode_entities decode_entities);
 use Everything::PageMetadata;
 

@@ -265,12 +265,15 @@ describe('Epicenter Component', () => {
   })
 
   describe('HTML content rendering', () => {
-    it('renders random node link with client-side garbage generation', () => {
+    it('renders the random node link (navigates via the randomnode API)', () => {
       const { container } = render(<Epicenter {...defaultProps} />)
 
-      const link = container.querySelector('a[href="/?op=randomnode"]')
+      // op=randomnode retired -> goToRandomNode() onClick (#4335 Phase 3)
+      const link = Array.from(container.querySelectorAll('a')).find(
+        (a) => a.textContent === 'Random Node'
+      )
       expect(link).toBeInTheDocument()
-      expect(link.textContent).toBe('Random Node')
+      expect(link.getAttribute('href')).toBe('#')
     })
 
     it('renders server time', () => {
