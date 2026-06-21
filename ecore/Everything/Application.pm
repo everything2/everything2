@@ -442,22 +442,20 @@ sub getTokenLinkParameters
 
 sub checkToken
 {
-	my ($this, $user, $query) = @_;
+	# Explicit params (no longer reads $query) so both the legacy page flow and
+	# the /api/users/confirm endpoint can call it. Returns 1 on success, 0 on
+	# invalid/expired/mismatched token. #4335
+	my ($this, $user, $action, $expiry, $passwd, $token) = @_;
 
-	my $action = $query->param('action');
-	my $expiry = $query->param('expiry');
-	my $passwd = $query->param('passwd');
-	my $token = $query->param('token');
-
-	return if ($expiry && time() > $expiry)
+	return 0 if ($expiry && time() > $expiry)
 		or ($action ne 'activate' && $action ne 'reset')
 		or $this->getToken($user, $passwd
 			, $action, $expiry) ne $token;
 
 	$this->updatePassword($user, $passwd);
-	return $this->securityLog($action eq 'activate' ? SECLOG_USER_SIGNUP : SECLOG_PASSWORD_RESET
+	$this->securityLog($action eq 'activate' ? SECLOG_USER_SIGNUP : SECLOG_PASSWORD_RESET
 		, $user, "$$user{title} account $action");
-
+	return 1;
 }
 
 #############################################################################
@@ -2345,7 +2343,8 @@ sub confirmUser
     # login with plaintext password. May reset password or activate account first:
     if($query and $query->param('token'))
     {
-      $this->checkToken($user, $query);
+      $this->checkToken($user, $query->param('action'), $query->param('expiry'),
+        $query->param('passwd'), $query->param('token'));
     }
 
     $pass = $this->hashString($pass, $user->{salt});
@@ -7458,7 +7457,15 @@ sub buildNodeInfoStructure
   # The Epicenter nodelet ID is 262
   # Note: user fields (gp, experience, level, gpOptOut, node_id, title, guest, votesleft, coolsleft)
   # are available globally on e2.user - no need to duplicate here
-  my $has_epicenter_nodelet = ($nodelets =~ /262/);
+  #
+  # A brand-new user has no configured nodelets yet; Node::user::nodelets() then
+  # falls back to default_nodelets (which lead with Epicenter) and renders it.
+  # Check the same effective list here, otherwise showEpicenterZen flashes the
+  # no-Epicenter bar before the real Epicenter appears.
+  my $effective_nodelets = (defined($VARS->{nodelets}) && $VARS->{nodelets} ne '')
+    ? $VARS->{nodelets}
+    : ($this->isGuest($USER) ? '' : join(",", @{$this->{conf}->default_nodelets}));
+  my $has_epicenter_nodelet = ($effective_nodelets =~ /262/);
 
   if (not $this->isGuest($USER))
   {

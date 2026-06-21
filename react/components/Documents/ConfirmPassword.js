@@ -1,39 +1,81 @@
 import React, { useState, useCallback } from 'react'
+import { goToRandomNode } from '../../utils/randomNode'
 
 /**
- * ConfirmPassword - Login/password confirmation form
+ * ConfirmPassword - account activation / password-reset confirmation.
+ *
+ * The page loads with a server-rendered state (login_required for a valid link,
+ * or missing_params/expired/no_user/locked). Submitting the login form POSTs to
+ * /api/users/confirm (which validates the token, sets the password, logs in, and
+ * on activation sends the welcome PM) and we render the returned state. #4335
+ *
  * Styles in CSS: .confirm-password__*
  */
 const ConfirmPassword = ({ data }) => {
   const confirmData = data || {}
   const {
-    state,
-    message,
-    error,
-    prompt,
     username,
     action,
     token,
     expiry,
-    currentSalt,
+    prompt,
     renewLink,
     renewLabel,
     signupLink,
-    profileUrl,
   } = confirmData
 
   const [password, setPassword] = useState('')
   const [stayLoggedIn, setStayLoggedIn] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = useCallback((e) => {
-    // Allow form to submit normally since login is handled by the server
-    if (!password.trim()) {
-      e.preventDefault()
-      return
-    }
+  // The displayed view starts from the server-rendered state and is replaced by
+  // the /api/users/confirm response after the user submits.
+  const [view, setView] = useState({
+    state: confirmData.state,
+    message: confirmData.message,
+    error: confirmData.error,
+    profileUrl: confirmData.profileUrl,
+  })
+
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault()
+    if (!password.trim()) return
     setLoading(true)
-  }, [password])
+    try {
+      const res = await fetch('/api/users/confirm', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          username,
+          passwd: password,
+          token,
+          action,
+          expiry,
+          ...(stayLoggedIn ? { expires: '+10y' } : {}),
+        }),
+      })
+      const d = res.ok ? await res.json() : null
+      if (d && (d.state === 'success_activate' || d.state === 'success_reset')) {
+        // The user is now logged in, but the surrounding page chrome was rendered
+        // server-side as a guest. Navigate so it reloads into the logged-in page
+        // (their new profile for activation, the front page for a reset).
+        window.location.href = d.profileUrl || '/'
+        return
+      }
+      if (d && d.state) {
+        setView({ state: d.state, message: d.message, error: d.error, profileUrl: d.profileUrl })
+      } else {
+        setView({ state: 'login_required', error: 'Something went wrong. Please try again.' })
+      }
+    } catch (err) {
+      setView({ state: 'login_required', error: 'Something went wrong. Please try again.' })
+    } finally {
+      setLoading(false)
+    }
+  }, [password, username, token, action, expiry, stayLoggedIn])
+
+  const { state, message, error, profileUrl } = view
 
   // Missing parameters
   if (state === 'missing_params') {
@@ -121,22 +163,24 @@ const ConfirmPassword = ({ data }) => {
             or check out the logged-in users'{' '}
             <a href="/" className="confirm-password__link">front page</a>,
             or maybe just read{' '}
-            <a href="/?op=randomnode" className="confirm-password__link">something at random</a>.
+            <a href="#" onClick={(e) => { e.preventDefault(); goToRandomNode() }} className="confirm-password__link">something at random</a>.
           </p>
         </div>
       </div>
     )
   }
 
-  // Login required
+  // Login required (initial valid link, or a failed/invalid submission)
   if (state === 'login_required') {
     return (
       <div className="confirm-password">
-        <form method="POST" action="/index.pl" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <fieldset className="confirm-password__fieldset">
             <legend className="confirm-password__legend">Log in</legend>
 
-            <p className="confirm-password__prompt">{prompt}:</p>
+            {error
+              ? <p className="confirm-password__error">{error}</p>
+              : <p className="confirm-password__prompt">{prompt}:</p>}
 
             <div className="confirm-password__form-group">
               <label className="confirm-password__label">
@@ -167,7 +211,6 @@ const ConfirmPassword = ({ data }) => {
                 <input
                   type="checkbox"
                   name="expires"
-                  value="+10y"
                   checked={stayLoggedIn}
                   onChange={(e) => setStayLoggedIn(e.target.checked)}
                 />
@@ -178,7 +221,6 @@ const ConfirmPassword = ({ data }) => {
             <div className="confirm-password__button-container">
               <button
                 type="submit"
-                name="sockItToMe"
                 disabled={loading || !password.trim()}
                 className={`confirm-password__button${loading || !password.trim() ? ' confirm-password__button--disabled' : ''}`}
               >
@@ -186,12 +228,6 @@ const ConfirmPassword = ({ data }) => {
               </button>
             </div>
           </fieldset>
-
-          <input type="hidden" name="token" value={token} />
-          <input type="hidden" name="action" value={action} />
-          <input type="hidden" name="expiry" value={expiry} />
-          <input type="hidden" name="oldsalt" value={currentSalt} />
-          <input type="hidden" name="op" value="login" />
         </form>
       </div>
     )

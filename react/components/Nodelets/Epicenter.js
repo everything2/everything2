@@ -5,6 +5,7 @@ import NodeletContainer from '../NodeletContainer'
 import ExperienceGain from '../ExperienceGain'
 import GPGain from '../GPGain'
 import ServerTime from '../ServerTime'
+import { goToRandomNode } from '../../utils/randomNode'
 
 const Epicenter = (props) => {
   // Use global user object instead of individual props
@@ -85,10 +86,10 @@ const Epicenter = (props) => {
         </li>
         <li title="View a randomly selected node">
           <a
-            href="/?op=randomnode"
+            href="#"
             onClick={(e) => {
               e.preventDefault()
-              window.location.href = `/?op=randomnode&garbage=${Math.floor(Math.random() * 100000)}`
+              goToRandomNode()
             }}
           >
             Random Node

@@ -76,65 +76,27 @@ sub buildReactData {
         };
     }
 
-    # Check if login was attempted
-    my $op = $q->param('op') // '';
-    my $old_salt = $q->param('oldsalt') // '';
-    my $prompt = '';
+    # Render the login form for a valid link. The actual activation/reset is
+    # finalized client-side by POST /api/users/confirm, which validates the
+    # token, sets the password, logs in, and (on activation) sends the welcome
+    # PM, then returns the success state. #4335
+    my $new_vars = $APP->getVars($user);
+    my $display_action = $action;
 
-    if ($op ne 'login') {
-        # Check for locked-user infection
-        my $new_vars = $APP->getVars($user);
-        my $display_action = $action;
-
-        if ($new_vars->{infected}) {
-            # New user infects current user
-            $VARS->{infected} = 1 unless $USER->is_guest;
-            $display_action = 'validate';
-        }
-
-        $prompt = "Please log in with your username and password to $display_action your account";
-    } elsif ($USER->title ne $username || $USER->NODEDATA->{salt} eq $old_salt) {
-        $prompt = 'Password or link invalid. Please try again';
-    }
-
-    # If prompt is set, show login form
-    if ($prompt) {
-        return {
-            type          => 'confirm_password',
-            state         => 'login_required',
-            prompt        => $prompt,
-            username      => $username,
-            action        => $action,
-            token         => $token,
-            expiry        => $expiry,
-            currentSalt   => $USER->NODEDATA->{salt},
-        };
-    }
-
-    # Success - password was reset or account activated
-    if ($action eq 'reset') {
-        return {
-            type    => 'confirm_password',
-            state   => 'success_reset',
-            message => 'Password updated. You are logged in.',
-        };
-    }
-
-    # Account activation success - send welcome message
-    my $virgil = $DB->getNode('Virgil', 'user');
-    if ($virgil) {
-        $APP->sendPrivateMessage({
-            author_id    => $virgil->{node_id},
-            recipient_id => $USER->NODEDATA->{node_id},
-            message      => q|Welcome to E2! We hope you're enjoying the site. If you haven't already done so, we recommend reading both [E2 Quick Start] and [Links on Everything2] before you start writing anything. If you have any questions or need help, feel free to ask any editor (editors have a $ next to their names in the Other Users list)|
-        });
+    if ($new_vars->{infected}) {
+        # New user infects current user
+        $VARS->{infected} = 1 unless $USER->is_guest;
+        $display_action = 'validate';
     }
 
     return {
-        type       => 'confirm_password',
-        state      => 'success_activate',
-        message    => 'Your account has been activated and you have been logged in.',
-        profileUrl => "/node/" . $USER->NODEDATA->{node_id},
+        type     => 'confirm_password',
+        state    => 'login_required',
+        prompt   => "Please log in with your username and password to $display_action your account",
+        username => $username,
+        action   => $action,
+        token    => $token,
+        expiry   => $expiry,
     };
 }
 

@@ -38,6 +38,28 @@ initEverything('development-docker');
 my $APP = $Everything::APP;
 my $DB  = $APP->{db};
 
+# Every node/user this test creates is tracked here and swept in the END block
+# below, which runs even if a subtest dies mid-way. Without this the bookmark/cool
+# subtests orphaned "Test writeup for ..." nodes (and their now-deleted authors)
+# on every failing run. (#4142 follow-up)
+my @CREATED_NODES;
+END {
+    return unless $DB && $DB->{dbh};
+    eval {
+        my %seen;
+        for my $id (grep { $_ && !$seen{$_}++ } @CREATED_NODES) {
+            $DB->sqlDelete('writeup',   "writeup_id=$id");
+            $DB->sqlDelete('e2node',    "e2node_id=$id");
+            $DB->sqlDelete('document',  "document_id=$id");
+            $DB->sqlDelete('nodegroup', "nodegroup_id=$id OR node_id=$id");
+            $DB->sqlDelete('links',     "from_node=$id OR to_node=$id");
+            $DB->sqlDelete('user',      "user_id=$id");
+            $DB->sqlDelete('node',      "node_id=$id");
+        }
+        1;
+    };
+}
+
 ok($APP, 'application initialized');
 
 # -- Test users ------------------------------------------------------------
@@ -50,8 +72,9 @@ ok($APP, 'application initialized');
 sub setup_user {
     my ($name, $extra_fields) = @_;
     my $existing = $DB->getNode($name, 'user');
-    return $existing if $existing;
+    if ($existing) { push @CREATED_NODES, $existing->{node_id}; return $existing; }
     my $id = $DB->insertNode($name, 'user', -1, $extra_fields || {});
+    push @CREATED_NODES, $id;
     return $DB->getNodeById($id);
 }
 
@@ -258,6 +281,7 @@ sub cool_one {
         doctext       => "body for $label",
         parent_e2node => $parent_id,
     });
+    push @CREATED_NODES, $parent_id, $writeup_id;
 
     my $api = Everything::API::cool->new();
     my $req = MockRequest4142->new(
@@ -365,6 +389,7 @@ sub bookmark_one {
         doctext       => "body for bookmark $label",
         parent_e2node => $parent_id,
     });
+    push @CREATED_NODES, $parent_id, $writeup_id;
 
     my $api = Everything::API::cool->new();
     my $req = MockRequest4142->new(

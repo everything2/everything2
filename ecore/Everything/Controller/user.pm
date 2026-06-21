@@ -373,7 +373,10 @@ sub _setup_user_vars {
     # Update can_weblog permissions if viewing own profile
     if ($is_own) {
         my $user_data = $user->NODEDATA;
-        $user_data->{numwriteups} = $settings->{numwriteups} || 0;
+        # int() the value: numwriteups is an int NOT NULL column and MySQL 8.4
+        # strict mode rejects a non-integer (e.g. a stray ' ' from VARS, which is
+        # truthy so `|| 0` won't catch it). Mirrors the recompute on line 367.
+        $user_data->{numwriteups} = int( $settings->{numwriteups} || 0 );
         $self->DB->updateNode( $user_data, $user_data );
 
         # Update weblog permissions

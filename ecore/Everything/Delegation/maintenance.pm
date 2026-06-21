@@ -716,8 +716,10 @@ sub draft_create
 
   if($query)
   {
-    # make sure it has a publication status
-    $$D{publication_status} = $query -> param('draft_publication_status');
+    # make sure it has a publication status. int() it: publication_status is an
+    # int NOT NULL column and a stray ' '/non-numeric param would survive the
+    # `||=` below (a space is truthy) and die under MySQL 8.4 strict mode.
+    $$D{publication_status} = int($query -> param('draft_publication_status') || 0);
 
     # if draft has just been created from an e2node
     # doctext parameter would be ignored because of wrong nodetype prefix

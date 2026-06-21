@@ -249,7 +249,8 @@ sub get_current_user
           # Check for a password reset token
           if($self->param('token'))
           {
-            $self->APP->checkToken($user->NODEDATA, $self->cgi);
+            $self->APP->checkToken($user->NODEDATA, $self->param('action'),
+              $self->param('expiry'), $self->param('passwd'), $self->param('token'));
           }
 
           if($pass)

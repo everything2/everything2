@@ -1148,26 +1148,13 @@ sub clearGlobals
 
 
 #############################################################################
-#	Sub
-#		opLogin
-#
-#	Purpose
-#		log in user with plain text password and set login cookie
-#		with username and hashed password
-#
-
-sub opLogin
-{
-  my $user = $query->param("user");
-  $user = "" if not defined($user);
-
-  my $pass = $query->param("passwd");
-  $pass = "" if not defined($pass);
-
-  $USER = $REQUEST->login("username" => $user, "pass" => $pass)->NODEDATA;
-  $VARS = $REQUEST->user->VARS;
-  return;
-}
+# opLogin + execOpCode REMOVED - op=login was the last built-in op= handler.
+# Account activation and password reset are now POST /api/users/confirm
+# (Everything::API::users::confirm: validates the token, sets the password, logs
+# in, and on activation sends the welcome PM). The main login form uses POST
+# /api/sessions/create. With op=login gone there are no op= handlers left, so the
+# execOpCode dispatch and its mod_perlInit call site were removed too. This
+# completes the op= wind-down. #4335 Phase 3. Jun 2026.
 
 #############################################################################
 # opLogout REMOVED - op=logout retired; logout is now POST /api/sessions/delete
@@ -1182,45 +1169,6 @@ sub opLogin
 # CreateARegistry, EverythingPublicationDirectory, EdevDocumentationIndex,
 # ClientdevHome. #4340 / #4335 Phase 2. Jun 2026.
 
-
-#############################################################################
-#	Sub
-#		execOpCode
-#
-#	Purpose
-#		One of the CGI parameters that can be passed to Everything is the
-#		'op' parameter.  "Operations" are discrete pieces of work that are
-#		to be executed before the page is displayed.  They are useful for
-#		providing functionality that can be shared from any node.
-#
-#		By creating an opcode node you can create new ops or override the
-#		defaults.  Just becareful if you override any default operations.
-#		For example, if you override the 'login' op with a broken
-#		implementation you may not be able to log in.
-#
-#	Parameters
-#		None
-#
-#	Returns
-#		Nothing
-#
-sub execOpCode
-{
-  my $op = $query->param('op');
-
-  return 0 unless(defined $op && $op ne "");
-
-  # The opcode delegation/type was retired (#4335) -- all opcodes became APIs
-  # (#4198). What remains are these built-in op= handlers; they are the residual
-  # op= surface tracked for API migration in #4335. Any other op= is ignored.
-
-  if($op eq 'login')
-  {
-    opLogin()
-  }
-
-  return;
-}
 
 #############################################################################
 #	Sub
@@ -1282,15 +1230,12 @@ sub mod_perlInit
 	$USER = $REQUEST->user->NODEDATA;
     $VARS = $REQUEST->user->VARS;
 
-         #only for Everything2.com
-         if ($query->param("op") eq "randomnode") {
-               $query->param("node_id", $APP->getRandomNodesMany(1)->[0]->{node_id});
-         }
+         # op=randomnode REMOVED - now GET /api/randomnode + goToRandomNode()
+         # (react/utils/randomNode.js). #4335 Phase 3.
 
 	$APP->refreshVotesAndCools($USER, $VARS);
 
-	# Execute any operations that we may have
-	execOpCode();
+	# op= dispatch removed entirely (#4335 Phase 3) -- all actions are APIs now.
 
 	# Do the work.
 	handleUserRequest();
