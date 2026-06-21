@@ -1141,14 +1141,10 @@ sub clearGlobals
 
 
 #############################################################################
-sub opNuke
-{
-	my $user_id = $$USER{node_id};
-	my $node_id = $query->param("node_id");
-
-	return if $APP->getParameter($node_id, "prevent_nuke");
-	return nukeNode($node_id, $user_id);
-}
+# opNuke REMOVED - op=nuke retired; node deletion is now POST
+# /api/collaborations/:id/action/delete (its only callers were the collaboration
+# components). Reuses can_delete_node + $node->delete, same as Everything::API::nodes.
+# Callers: Collaboration.js, CollaborationEdit.js. #4335 Phase 2. Jun 2026.
 
 
 #############################################################################
@@ -1247,9 +1243,6 @@ sub execOpCode
   if($op eq 'login')
   {
     opLogin()
-  }elsif($op eq 'nuke')
-  {
-    opNuke();
   }elsif($op eq 'new')
   {
     opNew();

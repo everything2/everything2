@@ -3,6 +3,8 @@ package Everything::API::collaborations;
 use Moose;
 extends 'Everything::API';
 
+## no critic (ProhibitBuiltinHomonyms)
+
 use POSIX qw(strftime);
 use Readonly;
 
@@ -17,6 +19,7 @@ sub routes {
         '/:id/action/unlock' => 'unlock(:id)',
         '/:id/action/addmember' => 'addmember(:id)',
         '/:id/action/removemember' => 'removemember(:id)',
+        '/:id/action/delete' => 'delete(:id)',
     };
 }
 
@@ -306,7 +309,40 @@ sub removemember {
     }];
 }
 
-around ['save', 'unlock', 'addmember', 'removemember'] => \&Everything::API::unauthorized_if_guest;
+# Delete a collaboration. Reuses the same permission + delete path as the generic
+# node API (Everything::API::nodes): the node's own can_delete_node (author/admin),
+# not the broader collaboration edit access. Replaces the op=nuke dispatch
+# (Collaboration.js / CollaborationEdit.js). #4335 Phase 2.
+sub delete {
+    my ($self, $REQUEST, $id) = @_;
+
+    if ($REQUEST->is_guest) {
+        return [$self->HTTP_UNAUTHORIZED, {success => 0, error => 'Must be logged in'}];
+    }
+
+    my $user = $REQUEST->user;
+    my $node = $self->APP->node_by_id($id);
+
+    unless ($node && $node->type->title eq 'collaboration') {
+        return [$self->HTTP_OK, {success => 0, error => 'Collaboration not found'}];
+    }
+
+    unless ($node->can_delete_node($user)) {
+        return [$self->HTTP_FORBIDDEN, {success => 0, error => 'Permission denied'}];
+    }
+
+    # Honor the legacy op=nuke guard
+    if ($self->APP->getParameter($node->node_id, 'prevent_nuke')) {
+        return [$self->HTTP_OK, {success => 0, error => 'This collaboration cannot be deleted'}];
+    }
+
+    my $node_id = $node->node_id;
+    $node->delete($user);
+
+    return [$self->HTTP_OK, {success => 1, deleted => $node_id, message => 'Collaboration deleted'}];
+}
+
+around ['save', 'unlock', 'addmember', 'removemember', 'delete'] => \&Everything::API::unauthorized_if_guest;
 
 __PACKAGE__->meta->make_immutable;
 1;

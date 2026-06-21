@@ -32,10 +32,25 @@ const Collaboration = ({ data }) => {
     user
   } = data
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setIsDeleting(true)
-    // Navigate to the delete action URL
-    window.location.href = `/?node_id=${collaboration.node_id}&op=nuke`
+    // Delete via the collaborations API (was op=nuke). #4335 Phase 2.
+    try {
+      const res = await fetch(`/api/collaborations/${collaboration.node_id}/action/delete`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' },
+      })
+      const data = res.ok ? await res.json() : null
+      if (data && data.success) {
+        // Back to the collaboration index (E2 Collaboration Nodes superdoc)
+        window.location.href = '/node/1256403'
+        return
+      }
+    } catch (err) {
+      // fall through to re-enable the control
+    }
+    setIsDeleting(false)
   }
 
   // Permission denied view
