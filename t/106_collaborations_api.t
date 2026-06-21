@@ -92,4 +92,49 @@ ok($api, 'Created collaborations API instance');
     $DB->nukeNode($DB->getNodeById($collab_id, 'force'), -1);
 }
 
+# --- delete action: op=nuke -> POST /api/collaborations/:id/action/delete (#4335 Phase 2) ---
+{
+    my $collab_type = $DB->getType('collaboration');
+    my $root  = $DB->getNode('root', 'user');
+    my $plain = $DB->getNode('normaluser1', 'user');
+
+    my $admin_req = MockRequest->new(
+        node_id => $root->{node_id}, title => 'root', nodedata => $root,
+        is_admin_flag => 1, is_guest_flag => 0,
+    );
+
+    # Guest is blocked (the unauthorized_if_guest guard)
+    my $guest_req = MockRequest->new(nodedata => {}, is_guest_flag => 1);
+    is($api->delete($guest_req, 1)->[0], $api->HTTP_UNAUTHORIZED,
+        'guest cannot delete a collaboration');
+
+    # Non-author, non-admin is forbidden (can_delete_node, same as the generic node API)
+    my $cid = $DB->insertNode('Delete Test Collab ' . time(), $collab_type, $root, {});
+    ok($cid, 'created a collaboration to delete');
+    my $plain_req = MockRequest->new(
+        node_id => $plain->{node_id}, title => 'normaluser1', nodedata => $plain,
+        is_admin_flag => 0, is_guest_flag => 0,
+    );
+    is($api->delete($plain_req, $cid)->[0], $api->HTTP_FORBIDDEN,
+        'non-author non-admin cannot delete');
+    ok($DB->getNodeById($cid, 'force'), 'collaboration survives the forbidden delete');
+
+    # prevent_nuke blocks deletion even for an admin (own node so the param can't
+    # interfere with the happy-path delete below)
+    my $pcid = $DB->insertNode('Prevent Nuke Collab ' . time(), $collab_type, $root, {});
+    $APP->setParameter($pcid, $root, 'prevent_nuke', 1);
+    my ($pns, $pnresp) = @{ $api->delete($admin_req, $pcid) };
+    is($pns, $api->HTTP_OK, 'prevent_nuke delete returns HTTP_OK');
+    ok(!$pnresp->{success}, 'prevent_nuke blocks the deletion');
+    ok($DB->getNodeById($pcid, 'force'), 'collaboration survives the prevent_nuke delete');
+    $DB->nukeNode($DB->getNodeById($pcid, 'force'), -1);  # cleanup
+
+    # Admin deletes successfully (happy path) -- a fresh node with no prevent_nuke
+    my ($as, $aresp) = @{ $api->delete($admin_req, $cid) };
+    is($as, $api->HTTP_OK, 'admin delete returns HTTP_OK');
+    ok($aresp->{success}, 'admin delete reports success');
+    is($aresp->{deleted}, $cid, 'deleted node id is returned');
+    ok(!$DB->getNodeById($cid, 'force'), 'collaboration node is gone after delete');
+}
+
 done_testing();
