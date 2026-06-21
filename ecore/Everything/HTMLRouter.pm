@@ -23,7 +23,7 @@ sub can_route
 
   $displaytype ||= "display";
 
-  unless(grep { $displaytype eq $_ } ("display","edit","xml","xmltrue","basicedit","editvars","softlinks","useredit","compact","replyto","atom"))
+  unless(grep { $displaytype eq $_ } ("display","edit","xml","basicedit","editvars","softlinks","useredit","compact","replyto","atom"))
   {
     $self->devLog("Using banned displaytype: '$displaytype', falling back");
     return 0;
