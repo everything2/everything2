@@ -144,17 +144,10 @@ sub basicedit
   return [$self->HTTP_OK, $html];
 }
 
-sub xmltrue
-{
-  my ($self, $REQUEST, $node) = @_;
-
-  my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
-  $str .= Everything::HTML::htmlcode("xmlheader") .
-          Everything::HTML::htmlcode("formxml") .
-          Everything::HTML::htmlcode("xmlfooter");
-
-  return [$self->HTTP_OK, $str, {type => 'application/xml'}];
-}
+# xmltrue (?displaytype=xmltrue node XML export) RETIRED -- ~zero real traffic
+# (ALB logs: ~10 hits/60d, mostly bots). Removed from the HTMLRouter displaytype
+# whitelist; the formxml/xml* htmlcode chain it drove is deleted too. The Atom/RSS
+# feeds (displaytype=atom) are unaffected. #4300 / htmlcode burndown.
 
 sub layout
 {
