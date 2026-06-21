@@ -10,33 +10,27 @@ export default function EdevDocumentationIndex({ data }) {
   const { docs = [], is_developer } = data;
   const [newDocTitle, setNewDocTitle] = useState('');
 
-  const handleCreateDoc = (e) => {
+  // Create via the generic node API (was op=new). #4340 Phase 2.
+  const handleCreateDoc = async (e) => {
     e.preventDefault();
-    if (!newDocTitle.trim()) return;
+    const title = newDocTitle.trim();
+    if (!title) return;
 
-    // Create a form and submit it
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/index.pl';
-
-    // Add hidden fields for node creation
-    const fields = {
-      op: 'new',
-      type: 'edevdoc',
-      displaytype: 'edit',
-      node: newDocTitle.trim()
-    };
-
-    Object.entries(fields).forEach(([name, value]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
+    try {
+      const res = await fetch('/api/node/create', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ type: 'edevdoc', title }),
+      });
+      const data = res.ok ? await res.json() : null;
+      if (data && data.success && data.node_id) {
+        window.location.href = `/node/${data.node_id}`;
+        return;
+      }
+    } catch (err) {
+      // Swallow network errors; the form stays editable for retry.
+    }
   };
 
   return (

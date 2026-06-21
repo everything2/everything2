@@ -743,4 +743,75 @@ subtest 'Application get_node_categories helper' => sub {
   ok(exists $found_cat->{total}, "Has total field");
 };
 
+#############################################################################
+# create: POST /api/category/create -- applies maintainer (author_user) +
+# doctext at create time (restores the legacy category_create behavior). #4340
+#############################################################################
+subtest 'create category with maintainer + doctext' => sub {
+  my @made;
+
+  # Guest -> 401
+  is($category_api->create(MockRequest->new(
+        node_id => $guest_user_id, is_guest_flag => 1))->[0],
+      $category_api->HTTP_UNAUTHORIZED, 'guest cannot create a category');
+
+  # Missing title -> 400
+  is($category_api->create(MockRequest->new(
+        node_id => $admin_user->{node_id}, nodedata => $admin_user, is_guest_flag => 0,
+        postdata => { maintainer => $admin_user->{node_id} }))->[0],
+      $category_api->HTTP_BAD_REQUEST, 'missing title -> 400');
+
+  # Maintainer = self -> author_user = creator, doctext applied
+  {
+    my ($s, $r) = @{ $category_api->create(MockRequest->new(
+      node_id => $admin_user->{node_id}, nodedata => $admin_user, is_guest_flag => 0,
+      postdata => { title => 'Cat Create Self ' . time(),
+                    maintainer => $admin_user->{node_id}, doctext => '<p>hello</p>' })) };
+    is($s, $category_api->HTTP_OK, 'self-maintained create returns HTTP_OK');
+    ok($r->{success} && $r->{node_id}, 'returns a node_id');
+    push @made, $r->{node_id};
+    my $node = $DB->getNodeById($r->{node_id}, 'force');
+    is($node->{author_user}, $admin_user->{node_id}, 'author_user = creator (maintainer=self)');
+    is($node->{doctext}, '<p>hello</p>', 'doctext applied at create');
+  }
+
+  # Maintainer = guest ("Any Noder") -> allowed, author_user = guest (public)
+  {
+    my ($s, $r) = @{ $category_api->create(MockRequest->new(
+      node_id => $admin_user->{node_id}, nodedata => $admin_user, is_guest_flag => 0,
+      postdata => { title => 'Cat Create Public ' . time(), maintainer => $guest_user_id })) };
+    ok($r->{success}, 'Any Noder (guest) maintainer is allowed');
+    push @made, $r->{node_id} if $r->{node_id};
+    is($DB->getNodeById($r->{node_id}, 'force')->{author_user}, $guest_user_id,
+       'author_user = guest (public category)') if $r->{node_id};
+  }
+
+  # Maintainer = another user -> 403 (the key security rule)
+  is($category_api->create(MockRequest->new(
+        node_id => $admin_user->{node_id}, nodedata => $admin_user, is_guest_flag => 0,
+        postdata => { title => 'Cat Create Other ' . time(),
+                      maintainer => $normal_user->{node_id} }))->[0],
+      $category_api->HTTP_FORBIDDEN, 'cannot assign another user as maintainer');
+
+  # Maintainer = a usergroup the creator is NOT in -> 403
+  {
+    my $gods = $DB->getNode('gods', 'usergroup');
+    SKIP: {
+      skip 'no gods usergroup', 1 unless $gods;
+      is($category_api->create(MockRequest->new(
+            node_id => $normal_user->{node_id}, nodedata => $normal_user, is_guest_flag => 0,
+            postdata => { title => 'Cat Create BadUG ' . time(),
+                          maintainer => $gods->{node_id} }))->[0],
+          $category_api->HTTP_FORBIDDEN, 'cannot assign a usergroup you do not belong to');
+    }
+  }
+
+  # cleanup (direct delete -- nukeNode needs a global $USER in tests)
+  for my $id (@made) {
+    next unless $id;
+    $DB->sqlDelete('document', "document_id=$id");
+    $DB->sqlDelete('node', "node_id=$id");
+  }
+};
+
 done_testing();

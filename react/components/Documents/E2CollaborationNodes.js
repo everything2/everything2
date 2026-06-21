@@ -12,6 +12,26 @@ const E2CollaborationNodes = ({ data }) => {
   const [soundex, setSoundex] = useState(false)
   const [matchAll, setMatchAll] = useState(false)
 
+  // Create a collaboration via the generic node API (was op=new). #4340 Phase 2.
+  const handleCreateCollab = async (e) => {
+    e.preventDefault()
+    if (!createNode.trim()) return
+    try {
+      const res = await fetch('/api/node/create', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ type: 'collaboration', title: createNode }),
+      })
+      const data = res.ok ? await res.json() : null
+      if (data && data.success && data.node_id) {
+        window.location.href = `/node/${data.node_id}`
+      }
+    } catch (err) {
+      // leave the form in place on failure
+    }
+  }
+
   return (
     <div className="e2-collab">
       <div className="e2-collab__instructions">
@@ -104,10 +124,7 @@ const E2CollaborationNodes = ({ data }) => {
       {/* Create Form */}
       <div className="e2-collab__form">
         <div className="e2-collab__form-title">Create a new collaboration node:</div>
-        <form method="post">
-          <input type="hidden" name="op" value="new" />
-          <input type="hidden" name="type" value="collaboration" />
-          <input type="hidden" name="displaytype" value="useredit" />
+        <form onSubmit={handleCreateCollab}>
           <input
             type="text"
             name="node"

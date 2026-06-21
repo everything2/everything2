@@ -169,29 +169,22 @@ const CreateCategory = ({ data }) => {
     setIsSubmitting(true)
 
     try {
-      // Submit to new category creation (op=new)
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = window.location.pathname
-
-      const fields = {
-        node: categoryName,
-        maintainer: maintainer,
-        category_doctext: description,
-        op: 'new',
-        type: category_type_id
-      }
-
-      Object.entries(fields).forEach(([name, value]) => {
-        const input = document.createElement('input')
-        input.type = 'hidden'
-        input.name = name
-        input.value = value
-        form.appendChild(input)
+      // Create the category via the category API (was op=new). This applies the
+      // chosen maintainer (author_user) + description at create time, restoring
+      // the behavior the legacy category_create maintenance hook provided. #4340.
+      const res = await fetch('/api/category/create', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ title: categoryName, maintainer, doctext: description }),
       })
-
-      document.body.appendChild(form)
-      form.submit()
+      const data = res.ok ? await res.json() : null
+      if (data && data.success && data.node_id) {
+        window.location.href = `/node/${data.node_id}`
+        return
+      }
+      alert((data && data.error) || 'Error creating category. Please try again.')
+      setIsSubmitting(false)
     } catch (err) {
       console.error('Error creating category:', err)
       alert('Error creating category. Please try again.')

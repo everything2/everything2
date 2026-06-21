@@ -9,10 +9,28 @@ const CreateNode = ({ data }) => {
 
   const [nodeName, setNodeName] = useState(newtitle || '')
   const [nodeType, setNodeType] = useState(default_type || '')
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e) => {
-    // Let the form submit naturally to the server
-    // The server handles the node creation via op=new
+  // Create via the generic node API (was op=new). #4340 Phase 2.
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    try {
+      const res = await fetch('/api/node/create', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ type: nodeType, title: nodeName }),
+      })
+      const data = res.ok ? await res.json() : null
+      if (data && data.success && data.node_id) {
+        window.location.href = `/node/${data.node_id}`
+        return
+      }
+      setError((data && data.error) || 'Could not create the node')
+    } catch (err) {
+      setError('Network error: ' + err.message)
+    }
   }
 
   return (
@@ -28,7 +46,7 @@ const CreateNode = ({ data }) => {
         </p>
       </div>
 
-      <form method="GET" action="/" onSubmit={handleSubmit} className="create-node__form">
+      <form onSubmit={handleSubmit} className="create-node__form">
         <div className="create-node__form-row">
           <label>
             Node name:{' '}
@@ -61,7 +79,7 @@ const CreateNode = ({ data }) => {
           </label>
         </div>
 
-        <input type="hidden" name="op" value="new" />
+        {error && <p className="create-node__error">{error}</p>}
 
         <div className="create-node__form-row">
           <button type="submit" className="create-node__button">

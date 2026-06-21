@@ -30,8 +30,34 @@ const ClientdevHome = ({ data, e2 }) => {
   const [entries, setEntries] = useState(initialEntries)
   const [confirmModal, setConfirmModal] = useState(null)
   const [removing, setRemoving] = useState(false)
+  const [clientName, setClientName] = useState('')
+  const [createError, setCreateError] = useState('')
 
   const currentNodeId = e2?.node_id || data.node_id
+
+  // Create the e2client via the generic node API (was op=new). #4340 Phase 2.
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setCreateError('')
+    const title = clientName.trim()
+    if (!title) return
+    try {
+      const res = await fetch('/api/node/create', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ type: 'e2client', title }),
+      })
+      const result = res.ok ? await res.json() : null
+      if (result && result.success && result.node_id) {
+        window.location.href = `/node/${result.node_id}`
+        return
+      }
+      setCreateError((result && result.error) || 'Could not register the client')
+    } catch (err) {
+      setCreateError('Network error: ' + err.message)
+    }
+  }
 
   const handleRemoveClick = (entry) => {
     setConfirmModal(entry)
@@ -113,18 +139,18 @@ const ClientdevHome = ({ data, e2 }) => {
       {Boolean(can_create) && (
         <div className="clientdev-home__create-form">
           <h2 className="clientdev-home__subheading">Register your client:</h2>
-          <form method="post">
-            <input type="hidden" name="op" value="new" />
-            <input type="hidden" name="type" value="e2client" />
-            <input type="hidden" name="displaytype" value="edit" />
+          <form onSubmit={handleSubmit} method="post">
             <input
               type="text"
               name="node"
               size="25"
               placeholder="Client name..."
               className="clientdev-home__input"
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
             />
             <br />
+            {createError && <p className="clientdev-home__error">{createError}</p>}
             <input
               type="submit"
               value="Register Client"

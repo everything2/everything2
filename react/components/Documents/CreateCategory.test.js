@@ -1,7 +1,35 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import CreateCategory from './CreateCategory'
 import fixture from '../../__fixtures__/pagestate/create_category.json'
+
+// Mock Tiptap editor - the real editor requires a DOM environment.
+jest.mock('@tiptap/react', () => ({
+  useEditor: jest.fn(() => ({
+    commands: { setContent: jest.fn() },
+    getHTML: jest.fn(() => '<p>Category description</p>'),
+  })),
+  EditorContent: () => <div data-testid="editor-content">Mock Editor Content</div>,
+}))
+
+jest.mock('../Editor/MenuBar', () => () => <div data-testid="menu-bar">Mock Menu Bar</div>)
+jest.mock('../Editor/PreviewContent', () => () => <div data-testid="preview">Mock Preview</div>)
+jest.mock('../Editor/EditorModeToggle', () => () => <div data-testid="mode-toggle">Mock Toggle</div>)
+jest.mock('../Editor/E2LinkExtension', () => ({
+  E2Link: {},
+  convertToE2Syntax: jest.fn((html) => html),
+}))
+jest.mock('../Editor/RawBracketExtension', () => ({
+  RawBracket: {},
+  convertRawBracketsToEntities: jest.fn((html) => html),
+  convertEntitiesToRawBrackets: jest.fn((html) => html),
+}))
+jest.mock('../Editor/E2HtmlSanitizer', () => ({
+  normalizeEditorHtml: jest.fn((html) => html),
+}))
+jest.mock('../Editor/useE2Editor', () => ({
+  getE2EditorExtensions: jest.fn(() => []),
+}))
 // Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
 // pinning the int-typed contract (#4152/#4108).
 describe('CreateCategory (real pagestate fixture)', () => {
@@ -18,5 +46,61 @@ describe('CreateCategory (real pagestate fixture)', () => {
     render(<CreateCategory data={fixture.contentData} e2={fixture} user={fixture.user || {}} />)
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
+  })
+})
+
+// Migration from op=new to POST /api/category/create (#4340) -- the category
+// endpoint applies the chosen maintainer + description at create time.
+describe('create-node API migration', () => {
+  let originalLocation
+
+  // Minimal props that render the create form (no mustLogin/forbidden/error).
+  const formProps = {
+    user_id: 123,
+    user_title: 'testuser',
+    guest_user_id: 1,
+    category_type_id: 1522375,
+    usergroups: [],
+  }
+
+  beforeEach(() => {
+    originalLocation = window.location
+    delete window.location
+    window.location = { href: '' }
+    global.fetch = jest.fn(() =>
+      Promise.resolve({ ok: true, json: async () => ({ success: 1, node_id: 999 }) })
+    )
+  })
+
+  afterEach(() => {
+    window.location = originalLocation
+    jest.restoreAllMocks()
+  })
+
+  it('creates a category via /api/category/create with title+maintainer+doctext and redirects', async () => {
+    const { container } = render(<CreateCategory data={formProps} />)
+
+    const input = container.querySelector('.create-category__text-input')
+    fireEvent.change(input, { target: { value: 'My Category' } })
+
+    fireEvent.submit(input.closest('form'))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+    const call = global.fetch.mock.calls[0]
+    expect(call[0]).toBe('/api/category/create')
+    const body = JSON.parse(call[1].body)
+    expect(body.title).toBe('My Category')
+    // maintainer defaults to "Me" (user_id); doctext is the editor content
+    expect(body.maintainer).toBe(formProps.user_id)
+    expect(typeof body.doctext).toBe('string')
+
+    await waitFor(() => expect(window.location.href).toBe('/node/999'))
+  })
+
+  it('does not call the API when the category name is empty', () => {
+    window.alert = jest.fn()
+    const { container } = render(<CreateCategory data={formProps} />)
+    fireEvent.submit(container.querySelector('form'))
+    expect(global.fetch).not.toHaveBeenCalled()
   })
 })

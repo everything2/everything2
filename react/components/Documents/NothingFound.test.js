@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import NothingFound from './NothingFound'
 
 // Mock the GoogleAds component
@@ -145,6 +145,64 @@ describe('NothingFound', () => {
       }} user={defaultProps.user} />)
       expect(screen.getByText('Existing Node')).toBeInTheDocument()
       expect(screen.getByText('already exists.')).toBeInTheDocument()
+    })
+  })
+
+  // Migration from op=new to POST /api/node/create (#4340).
+  describe('create-node API migration', () => {
+    let originalLocation
+
+    beforeEach(() => {
+      originalLocation = window.location
+      delete window.location
+      window.location = { href: '' }
+      global.fetch = jest.fn(() =>
+        Promise.resolve({ ok: true, json: async () => ({ success: 1, node_id: 999 }) })
+      )
+    })
+
+    afterEach(() => {
+      window.location = originalLocation
+      jest.restoreAllMocks()
+    })
+
+    const parseBody = (call) => JSON.parse(call[1].body)
+
+    it('creates a draft via /api/node/create and redirects to /node/<id>', async () => {
+      render(<NothingFound data={{ ...defaultProps.data, search_term: 'My Topic' }} user={defaultProps.user} />)
+
+      fireEvent.change(screen.getAllByRole('textbox')[1], { target: { value: 'My Topic' } })
+      fireEvent.click(screen.getByRole('button', { name: 'New draft' }))
+
+      await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+      const call = global.fetch.mock.calls[0]
+      expect(call[0]).toBe('/api/node/create')
+      expect(parseBody(call)).toMatchObject({ type: 'draft', title: 'My Topic' })
+
+      await waitFor(() => expect(window.location.href).toBe('/node/999'))
+    })
+
+    it('creates an e2node via /api/node/create', async () => {
+      render(<NothingFound data={{ ...defaultProps.data, search_term: 'My Topic' }} user={defaultProps.user} />)
+
+      fireEvent.change(screen.getAllByRole('textbox')[1], { target: { value: 'My Topic' } })
+      fireEvent.click(screen.getByRole('button', { name: 'New node' }))
+
+      await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+      const call = global.fetch.mock.calls[0]
+      expect(call[0]).toBe('/api/node/create')
+      expect(parseBody(call)).toMatchObject({ type: 'e2node', title: 'My Topic' })
+
+      await waitFor(() => expect(window.location.href).toBe('/node/999'))
+    })
+
+    it('does not call the API when the title is empty', () => {
+      render(<NothingFound data={{ ...defaultProps.data, search_term: '   ' }} user={defaultProps.user} />)
+
+      fireEvent.change(screen.getAllByRole('textbox')[1], { target: { value: '   ' } })
+      fireEvent.click(screen.getByRole('button', { name: 'New draft' }))
+
+      expect(global.fetch).not.toHaveBeenCalled()
     })
   })
 
