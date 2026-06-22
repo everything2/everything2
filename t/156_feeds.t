@@ -78,6 +78,10 @@ sub feed_req {
     is($r->[0], $page->HTTP_OK, 'podcast: HTTP_OK');
     is($r->[2]{type}, 'application/rss+xml', 'podcast: rss mimetype');
     like($r->[1], qr/<rss/, 'podcast: has <rss> root');
+    # <item> children must be real XML elements, not HTML-escaped text. The old
+    # code concatenated $XG->title(...) . $XG->link(...) with '.', stringifying
+    # them before $XG->item() so item() escaped the whole thing to &lt;title&gt;.
+    unlike($r->[1], qr/&lt;title&gt;/, 'podcast item children are real XML, not escaped');
 }
 
 done_testing();
