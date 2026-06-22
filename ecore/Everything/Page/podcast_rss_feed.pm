@@ -85,12 +85,12 @@ sub display {
             my $pub_date_str = strftime("%a, %d %b %Y %H:%M:%S %z", localtime($$pod{pubdate} || time()));
 
             $items .= $XG->item(
-                $XG->title($$pod{title}) .
-                $XG->link("http://everything2.com/node/$$pod{podcast_id}") .
-                $XG->guid($$pod{link}) .
-                $XG->description($text) .
-                $XG->enclosure({url => $$pod{link}, type => 'audio/mpeg'}) .
-                $XG->category('Podcasts') .
+                $XG->title($$pod{title}) ,
+                $XG->link("http://everything2.com/node/$$pod{podcast_id}") ,
+                $XG->guid($$pod{link}) ,
+                $XG->description($text) ,
+                $XG->enclosure({url => $$pod{link}, type => 'audio/mpeg'}) ,
+                $XG->category('Podcasts') ,
                 $XG->pubDate($pub_date_str)
             );
         }

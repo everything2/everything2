@@ -69,231 +69,6 @@ use Image::Magick;
 # Used by create_short_url;
 use POSIX;
 
-# textarea REMOVED - Dead code, CGI textarea generator replaced by React forms. Jan 2026.
-
-# windowview REMOVED - Dead code, no references found in database. Jan 2026.
-# Was "pretty ancient" popup window generator.
-
-# The mother of all display functions:
-# generic content/contentinfo display
-# arguments:
-# 0. single hashref or node id, arrayref of node ids or hashrefs, sql cursor for node(s) to show
-# 1. string containing comma-separated list of instructions:
-#	(optional) 'xml' to specify xml output and/or
-#	(optional) html tag, used for wrapping each node (attributes optional, quotes="double")
-#		- default is <div>
-#		- may include class attribute (which is added to default class(es))
-#		- class tokens starting with & are interpreted as function names and executed on the node
-#		- no default classes for xml, otherwise:
-#		- default class is 'item' if content is included, otherwise 'contentinfo'
-#			- div class 'contentinfo' also wraps headers/footers before and after content,
-#			  with class 'contentheader' or 'contentfooter' as appropriate
-#
-#	and then/or:
-#	list of fields to display, which can be:
-#		* a function name, either a built-in mark-up function or an additional one passed in the next argument
-#		* "text"
-#		* a hash key to a value to be marked up as
-#			- <span class="[key]>">value</span> (not xml) or
-#			- <[key]>$APP->encodeHTML(value)</[key> (xml)
-#		* 'content' to show the doctext
-#		* 'unfiltered' to show the doctext without screening the html
-#		* a number n, to display the first n bytes of the doctext
-#	Multiple content/unfiltered/numbers can be specified one after the other, separated by '-':
-#	they will be used in turn for successive items. The last one is used for any remaining items.
-# 	If content is truncated and not xml a link is provided to the node in a div class="morelink"
-#	If xml is specified content is encoded and wrapped as <content type="html">
-# 2. (optional) additional markup functions
-#	If one of these has the key 'cansee' it will be used to check whether to show an item:
-#	return '1' for yes.
-#
-# Superdoc content is rendered via delegation
-# tables in doctext are screened for logged-in users
-#
-sub show_content
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my ( $input , $instructions , %infofunctions ) = @_ ;
-
-  my $showanyway = 96 ; # how many bytes not to bother chopping off shortened content
-  # pack/unpack input
-
-  my @input = ( $input ) ;
-  if ( ref $input eq 'ARRAY' ) {
-    @input = @$input ;
-  } elsif ( ref( $input ) =~ /DBI/ ) {
-    @input = @{ $input->fetchall_arrayref( {} ) } ;
-  }
-
-  return '' unless getRef( @input );
-
-  # define standard info functions
-
-  my $getAuthor = sub{ $_[0]->{author} ||= getNodeById($_[0] -> {author_user}, 'light') || {}; } ;
-
-  my $author = $infofunctions{author} ||= sub {
-    linkNode( &$getAuthor , '' , {-class => 'author'}) ;
-  } ;
-
-  $infofunctions{ byline } ||= sub { '<cite>by '.&$author.'</cite>' ; } ;
-
-  my $title = $infofunctions{ title } ||= sub {  linkNode($_[0] , '' , {-class => 'title'}) ; } ;
-
-  $infofunctions{ parenttitle } ||= sub { 
-    my $parent = getNodeById($_[0]{parent_e2node},'light'); 
-    return '<span class="title noparent">(No parent node) '.&$title.'</span>' unless $parent ;
-    my $localauthor = &$getAuthor;
-    return linkNode($parent, '', {
-      -class => 'title'
-      , '#' => $$localauthor{title}
-      , author_id => $$localauthor{node_id}
-    });
-  };
-
-  $infofunctions{ type } ||= sub {
-    my $type = $_[0]{type_title} || getNodeById($_[0]{wrtype_writeuptype}) || $_[0]{type};
-    $type = $type->{title} if(UNIVERSAL::isa($type,"HASH"));
-    if ($type eq 'draft'){
-      my $status = getNodeById($_[0]{publication_status});
-      $type = ($status ? $$status{title} : '(bad status)').' draft';
-    }
-
-    return '<span class="type">('.linkNode($_[0]{node_id}||$_[0]{writeup_id}, $type || '!bad type!').')</span>';
-  };
-
-  my $date = $infofunctions{date} ||= sub {
-    return '<span class="date">'
-      .htmlcode('parsetimestamp', $_[0]{publishtime} || $_[0]{createtime}, 256 + defined($_[1])?($_[1]):(0)) # 256 suppresses the seconds
-      .'</span>' ;
-  };
-
-  $infofunctions{listdate} ||= sub{
-    &$date($_[0], 4 + 512); # 4 suppresses day name, 512 adds leading zero to hours
-  };
-
-  my $oddrow = '';
-  $infofunctions{oddrow} ||= sub{
-    $oddrow = $oddrow ? '' : 'oddrow';
-  };
-
-  # decode instructions
-
-  my $xml = 0;
-  $xml = '1' if $instructions =~ s/^xml\b\s*// ;
-
-  my ($wrapTag, $wrapClass, $wrapAtts) = ("", undef, undef);
-  ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
-
-  $wrapAtts .= $1 if $wrapTag =~ s/(\s+.*)//;
-  $wrapAtts ||= "";
-
-  $instructions =~ s/\s*,\s*/,/g ;
-  $instructions =~ s/(^|,),+/$1/g ; # remove spare commas
-
-  my @sections = split( /,?((?:(?:content|[\d]+|unfiltered)-?)+),?/ , $instructions ) ;
-  my $content = $sections[1] ;
-
-  $wrapTag ||= 'div';
-  $wrapClass .= ' ' if $wrapClass;
-  $wrapClass .= $content ? 'item' : 'contentinfo';
-
-  my @infowrap = ();
-  @infowrap = ('<div class="contentinfo contentheader">', '', '<div class="contentinfo contentfooter">') if $content && !$xml;
-
-  # define content function
-
-  if ( $content ) {
-    my $lastnodeid = undef;
-    if ( !$APP->isGuest($USER) ) {
-      $lastnodeid = $$NODE{ parent_e2node } if $$NODE{ type }{ title } eq 'writeup' ;
-      $lastnodeid = $$NODE{ node_id } if $$NODE{ type }{ title } eq 'e2node' ;
-    }
-
-    my $HTML = getVars( getNode( 'approved HTML tags' , 'setting' ) ) ;
-    my @content = split /-/, $content;
-    my $i = 0;
-
-    $infofunctions{$content} = sub {
-      my $N = shift ;
-      my $length = undef; $length = $content[$i] if $content[$i] =~ /\d/ ;
-      $$HTML{ noscreening } = ($content[$i] eq 'unfiltered');
-      $i-- unless $content[++$i];
-      my $text = $N->{ doctext } ;
-
-      # Superdocs now use React Page classes; doctext is empty for migrated superdocs
-      $text = $APP->breakTags( $text ) ;
-
-      my ( $dots , $morelink ) = ( '' , '' ) ;
-      if ( $length && length( $text ) > $length + $showanyway ) {
-        $text = substr( $text , 0 , $length );
-        $text =~ s/\[[^\]]*$// ; # broken links
-        $text =~ s/\s+\w*$// ; # broken words
-        $dots = '&hellip;' ; # don't add here in case we still have a broken tag at the end
-        $morelink = "\n<div class='morelink'>(". linkNode($$N{node_id} || $$N{writeup_id}, 'more') . ")\n</div>";
-      }
-
-      $text = $APP->screenTable( $text ) if $lastnodeid ; # i.e. if writeup page & logged in
-      $text = parseLinks( $APP->htmlScreen( $text , $HTML ) , $lastnodeid ) ;
-      return "\n<div class=\"content\">\n$text$dots\n</div>$morelink" unless $xml ;
-
-      $text =~ s/<a .*?(href=".*?").*?>/<a $1>/sg ; # kill onmouseup etc
-      return '<content type="html">'.$APP->encodeHTML( $text.$dots ).'</content>' ;
-    };
-  }
-
-  # do it
-
-  my $str = '';
-  foreach my $N ( @input ) {
-    next if $infofunctions{cansee} and $infofunctions{cansee}($N) != 1;
-
-    my $class = ''; $class = qq' class="$wrapClass"' unless $xml;
-    while ($class =~ m/\&(\w+)/) {
-      my $intendedName = $1 ;
-      my $intendedFunc = $infofunctions{ $intendedName } ;
-      if ( $intendedFunc ) {
-        $class =~ s/\&$intendedName/&$intendedFunc( $N )/e ;
-      } else {
-        $class =~ s/\&$intendedName/-Bad-info-function-'$intendedName'-/ ;
-      }
-    }
-
-    $str .= qq'<$wrapTag$class$wrapAtts>';
-    my $count = 0;
-
-    foreach ( @sections ) {
-      $str .= ($infowrap[$count] || "");
-      my @chunks = split( /,+/ , $_ ) ;
-
-      foreach ( @chunks ) {
-        if ( exists( $infofunctions{ $_ } ) ) {
-          $str .= $infofunctions{ $_ }( $N ) ;
-        } elsif (/^"([^"]*)"$/){
-          $str .= $1;
-        } elsif ( $xml ) {
-          $str .= "<$_>".$APP->encodeHTML( $$N{ $_ } )."</$_>" ;
-        } else {
-          my $value = $$N{ $_ } // '';
-          $str .= "<span class=\"$_\">$value</span>" ;
-        }
-
-        $str .= "\n" ;
-      }
-
-      $str .= '</div>' if $infowrap[$count++];
-    }
-    $str .= "</$wrapTag>";
-  }
-
-  return $str ;
-}
-
 # called from [writeup maintenance create] (formerly also the retired publishdraft opcode, #4320)
 # we have already checked that everything exists,
 # and that this user can publish this writeup to this node
@@ -424,127 +199,6 @@ sub publishwriteup
   }
 
   return $query->param('publish', 'OK');
-
-}
-
-# [{parsetimestamp:time,flags}]
-# Parses out a datetime field into a more human-readable form
-# note: the expected time format in the parameter is: yyyy-mm-dd hh:mm:ss, although the year part works for any year after year 0
-#	flags: optional flags:
-#		1 = hide time (only show the date)
-#		2 = hide date (only show the time)
-#		4 = hide day of week (only useful if showing date)
-#		8 = show 'UTC' (recommended to show only if also showing time)
-#		16 = show full name of day of week (only useful if showing date)
-#		32 = show full name of month (only useful if showing date)
-#		64 = ignore user's local time zone settings
-#		128 = compact (yyyy-mm-dd@hh:mm)
-#		256 = hide seconds
-#		512 = leading zero on single-digit hours
-#
-sub parsetimestamp
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my ($timestamp,$flags)=@_;
-  $flags = ($flags || 0)+0;
-  $timestamp //= '';
-  my ($date, $time, $yy, $mm, $dd, $hrs, $min, $sec) = (undef,undef,undef,undef,undef,undef,undef,undef);
-
-  if($timestamp =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/)
-  {
-    ($yy, $mm, $dd, $hrs, $min, $sec) = ($1, $2, $3, $4, $5, $6);
-    #let's hear it for fudge:
-    $mm-=1;
-  }elsif($timestamp =~ / /)
-  {
-    ($date, $time) = split / /,$timestamp;
-
-    ($hrs, $min, $sec) = split /:/, $time;
-    ($yy, $mm, $dd) = split /-/, $date;
-    $mm-=1;
-  }
-
-  # I repeat: let's hear it for fudge!
-  return "<em>never</em>" unless (defined $yy && $yy =~ /^\d+$/ && int($yy)>0 && defined $mm && $mm =~ /^-?\d+$/ && int($mm)>-1 && defined $dd && $dd =~ /^\d+$/ && int($dd)>0);
-
-  my $epoch_secs = timelocal( $sec, $min, $hrs, $dd, $mm, $yy);
-
-  if(!($flags & 64) && $VARS->{'localTimeUse'}) {
-    $epoch_secs += $VARS->{'localTimeOffset'} if exists $VARS->{'localTimeOffset'};
-    #add 1 hour = 60 min * 60 s/min = 3600 seconds if daylight savings
-    $epoch_secs += 3600 if $VARS->{'localTimeDST'};	#maybe later, only add time if also in the time period for that - but is it true that some places have different daylight savings time stuff?
-  }
-
-  my $wday = undef;
-  ($sec, $min, $hrs, $dd, $mm, $yy, $wday, undef, undef) = localtime($epoch_secs);
-  $yy += 1900;	#stupid Perl
-  ++$mm;
-
-  my $niceDate='';
-  if(!($flags & 2)) {	#show date
-    if ($flags & 128) { # compact
-      $mm = substr('0'.$mm,-2);
-      $dd = substr('0'.$dd,-2);
-      $niceDate .= $yy. '-' .$mm. '-' .$dd;
-    } else {
-      if(!($flags & 4))
-      {	
-        #4=hide week day, 0=show week day
-        $niceDate .= ($flags & 16)	#16=full day name, 0=short name
-          ? (qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday))[$wday].', '
-          : (qw(Sun Mon Tue Wed Thu Fri Sat))[$wday].' ';
-      }
-
-      my $fullMonthName = $flags & 32;
-      $niceDate .= ($fullMonthName
-        ? (qw(January February March April May June July August September October November December))
-        : (qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)))[$mm-1];
-
-      $dd='0'.$dd if length($dd)==1 && !$fullMonthName;
-      $niceDate .= ' ' . $dd;
-      $niceDate .= ',' if $fullMonthName;
-      $niceDate .= ' '.$yy;
-    }
-  }
-
-  if(!($flags & 1)) {	#show time
-    if ($flags & 128) { # if compact
-      $niceDate .= '@' if length($niceDate);
-    } else {
-      $niceDate .= ' at ' if length($niceDate);
-    }
-
-    my $showAMPM='';
-    if($VARS->{'localTime12hr'}) {
-      if($hrs<12) {
-        $showAMPM = ' AM';
-        $hrs=12 if $hrs==0;
-      } else {
-        $showAMPM = ' PM';
-        $hrs -= 12 unless $hrs==12;
-      }
-    }
-
-    $hrs = '0'.$hrs if $flags & 512 and length($hrs)==1;
-    $min = '0'.$min if length($min)==1;
-    $niceDate .= $hrs.':'.$min;
-    if (!($flags & 128 or $flags & 256)) { # if no compact show seconds
-      $sec = '0'.$sec if length($sec)==1;
-      $niceDate .= ':'.$sec;
-    }	
-
-    $niceDate .= $showAMPM if length($showAMPM);
-  }
-
-  $niceDate .= ' UTC' if length($niceDate) && ($flags & 8);	#show UTC
-
-  return $niceDate;
 
 }
 
@@ -1521,7 +1175,55 @@ sub atomiseNode
 
   my ( $input , $length ) = @_ ;
   $length ||= 1024 ;
-  return htmlcode( 'show content' , $input , "xml <entry> atominfo, $length" , ( atominfo => $atominfo) ) ;
+
+  # Inlined the only slice of [show content] the feeds used: wrap each node in
+  # <entry>, emit the atominfo metadata, then render doctext through the link
+  # parser, truncated to $length. show_content's full-page rendering breadth was
+  # unused here; it is retired with this change. #4345
+  my @input = ( $input ) ;
+  if ( ref $input eq 'ARRAY' ) {
+    @input = @$input ;
+  } elsif ( ref( $input ) =~ /DBI/ ) {
+    @input = @{ $input->fetchall_arrayref( {} ) } ;
+  }
+  return '' unless getRef( @input ) ;
+
+  my $showanyway = 96 ; # too few bytes to bother truncating
+  my $HTML = getVars( getNode( 'approved HTML tags' , 'setting' ) ) ;
+
+  # parseLinks/screenTable target derives from the PAGE node (this mirrors
+  # [show content], which read the global $NODE, not each entry). For the feeds
+  # the page node is the feed node, so this is undef and links carry no
+  # lastnode_id -- matching the prior output exactly.
+  my $lastnodeid = undef ;
+  unless ( $APP->isGuest( $USER ) ) {
+    $lastnodeid = $$NODE{ parent_e2node } if $$NODE{ type }{ title } eq 'writeup' ;
+    $lastnodeid = $$NODE{ node_id } if $$NODE{ type }{ title } eq 'e2node' ;
+  }
+
+  my $str = '' ;
+  foreach my $N ( @input ) {
+    my $text = $$N{ doctext } ;
+    $text = $APP->breakTags( $text ) ;
+
+    my $dots = '' ;
+    if ( $length && length( $text ) > $length + $showanyway ) {
+      $text = substr( $text , 0 , $length ) ;
+      $text =~ s/\[[^\]]*$// ; # broken links
+      $text =~ s/\s+\w*$// ;   # broken words
+      $dots = '&hellip;' ;
+    }
+
+    $text = $APP->screenTable( $text ) if $lastnodeid ;
+    $text = parseLinks( $APP->htmlScreen( $text , $HTML ) , $lastnodeid ) ;
+    $text =~ s/<a .*?(href=".*?").*?>/<a $1>/sg ; # kill onmouseup etc
+
+    $str .= '<entry>' . $atominfo->( $N ) . "\n"
+      . '<content type="html">' . $APP->encodeHTML( $text . $dots ) . '</content>' . "\n"
+      . '</entry>' ;
+  }
+
+  return $str ;
 }
 
 sub userAtomFeed

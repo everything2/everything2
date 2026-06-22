@@ -62,6 +62,7 @@ sub new {
     my $request_method = delete $args{request_method} // 'GET';
     my $cookie = delete $args{cookie};
     my $query_params = delete $args{query_params} // {};
+    my $ip = delete $args{ip} // '127.0.0.1';
     my $vars = $args{vars} // {};  # Don't delete - pass to MockUser as well
 
     return bless {
@@ -70,6 +71,7 @@ sub new {
         request_method => $request_method,
         cookie => $cookie,
         query_params => $query_params,
+        ip => $ip,
         vars => $vars,
     }, $class;
 }
@@ -105,6 +107,19 @@ Example:
 
 sub is_guest {
     return shift->{user}->is_guest;
+}
+
+=head2 get_ip()
+
+Returns the client IP (mirrors Everything::Request->get_ip). Defaults to
+'127.0.0.1'; pass C<< ip => '...' >> to new() to vary it (e.g. for rate-limit
+tests). Mirrors the real request so endpoints that resolve the IP via get_ip
+(rather than the old CGI.pm ->cgi->http/->remote_addr) are exercised faithfully.
+
+=cut
+
+sub get_ip {
+    return shift->{ip};
 }
 
 =head2 login(username => $u, pass => $p)

@@ -17,7 +17,6 @@ const SourceMapModal = ({ isOpen, onClose, sourceMap, nodeTitle }) => {
       contentLabel="Source Map"
       className="modal-compact modal-compact--wide"
       overlayClassName="nodelet-modal-overlay"
-      style={modalPositioning}
     >
       <div className="modal-compact__content">
         <SourceMapDisplay
@@ -42,19 +41,8 @@ const SourceMapModal = ({ isOpen, onClose, sourceMap, nodeTitle }) => {
   )
 }
 
-// react-modal requires positioning styles as objects
-const modalPositioning = {
-  overlay: {},
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    padding: 0,
-    border: 'none'
-  }
-}
+// Centering is handled by the flex overlay (.nodelet-modal-overlay); no inline
+// positioning needed. The old absolute-centering (top/left/transform) fought the
+// flex centering and pushed the modal off the top of the screen.
 
 export default SourceMapModal
