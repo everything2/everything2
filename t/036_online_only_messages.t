@@ -19,22 +19,41 @@ initEverything('development-docker');
 
 ok($DB, "Database connection established");
 
-# Get test users
-my $sender = $DB->getNode('root', 'user');
-ok($sender, 'Got sender user');
+# Dedicated sender + recipients instead of the shared singletons root / guest
+# user / Cool Man Eddie. Those are mutated by other messaging tests (ignore
+# lists, delivery prefs, presence), which raced this test's delivery counts
+# under prove -j4. Throwaway users created here, nuked in teardown. #4267
+my $root = $DB->getNode('root', 'user');
+my $usuffix = 'ono' . $$;
+my @created_users;
+my $mk_user = sub {
+  my ($label) = @_;
+  my $uid = $DB->insertNode("e2e_${usuffix}_$label", 'user', $root, undef, 1);
+  push @created_users, $uid;
+  $DB->sqlDelete('user', "user_id=$uid");   # ensure a clean user row (user_id=node_id)
+  $DB->sqlInsert('user', { user_id => $uid });
+  # Mark "online" (a room row) so online_only delivery reaches them. Scoping
+  # presence to our own throwaway users is the whole point -- no shared singleton.
+  $DB->sqlInsert('room', { member_user => $uid });
+  $DB->getNodeById($uid, 'force');
+  return $DB->getNode($uid);
+};
 
-my $recipient1 = $DB->getNode('guest user', 'user');
-ok($recipient1, 'Got recipient 1 (guest user)');
+my $sender = $mk_user->('sender');
+ok($sender, 'Got sender user (dedicated)');
 
-my $recipient2 = $DB->getNode('Cool Man Eddie', 'user');
-ok($recipient2, 'Got recipient 2 (Cool Man Eddie)');
+my $recipient1 = $mk_user->('rcpt1');
+ok($recipient1, 'Got recipient 1 (dedicated)');
+
+my $recipient2 = $mk_user->('rcpt2');
+ok($recipient2, 'Got recipient 2 (dedicated)');
 
 # Create test usergroup
 my $ug_title = 'test_ono_msg_ug_' . time();
 my $ug_node = $DB->insertNode(
   $ug_title,
   'usergroup',
-  $sender,
+  $root,
   {
     title => $ug_title,
     groupaccess => 'public'
@@ -42,10 +61,11 @@ my $ug_node = $DB->insertNode(
 );
 ok($ug_node, 'Created test usergroup');
 
-# Add members to usergroup
-$DB->insertIntoNodegroup($ug_node, $sender, $sender);
-$DB->insertIntoNodegroup($ug_node, $sender, $recipient1);
-$DB->insertIntoNodegroup($ug_node, $sender, $recipient2);
+# Add members to usergroup (root is the privileged actor; members are the
+# dedicated users so message delivery doesn't touch shared singletons)
+$DB->insertIntoNodegroup($ug_node, $root, $sender);
+$DB->insertIntoNodegroup($ug_node, $root, $recipient1);
+$DB->insertIntoNodegroup($ug_node, $root, $recipient2);
 
 subtest 'Send online-only message to usergroup' => sub {
   plan tests => 8;
@@ -144,7 +164,14 @@ subtest 'Normal message vs online-only message difference' => sub {
   ok(1, 'Cleaned up test messages');
 };
 
-# Cleanup test usergroup
-$DB->nukeNode($ug_node, $sender);
+# Cleanup test usergroup + the dedicated users (skip_maintenance avoids firing
+# user_delete on a teardown where the global USER isn't set).
+$DB->nukeNode($ug_node, $root);
+for my $uid (@created_users) {
+  my $n = $DB->getNodeById($uid, 'force');
+  $DB->nukeNode($n, -1, 0, 1) if $n;
+  $DB->sqlDelete('user', "user_id=$uid");
+  $DB->sqlDelete('room', "member_user=$uid");
+}
 
 done_testing();

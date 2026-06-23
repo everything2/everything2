@@ -19,15 +19,30 @@ initEverything('development-docker');
 
 ok($DB, "Database connection established");
 
-# Get test users
-my $sender = $DB->getNode('root', 'user');
-ok($sender, 'Got sender user');
+# Dedicated sender / blocker / third-user instead of shared root / guest /
+# Cool Man Eddie -- other messaging tests race their ignore + in_room state
+# under prove -j4. root stays only as the privileged node-op actor. #4267
+my $root = $DB->getNode('root', 'user');
+my $usuffix = 'blk' . $$;
+my @created_users;
+my $mk_user = sub {
+  my ($label) = @_;
+  my $uid = $DB->insertNode("e2e_${usuffix}_$label", 'user', $root, undef, 1);
+  push @created_users, $uid;
+  $DB->sqlDelete('user', "user_id=$uid");
+  $DB->sqlInsert('user', { user_id => $uid });
+  $DB->getNodeById($uid, 'force');
+  return $DB->getNode($uid);
+};
 
-my $blocker = $DB->getNode('guest user', 'user');
-ok($blocker, 'Got blocker user');
+my $sender = $mk_user->('sender');
+ok($sender, 'Got sender user (dedicated)');
 
-my $eddie = $DB->getNode('Cool Man Eddie', 'user');
-ok($eddie, 'Got third user (Eddie)');
+my $blocker = $mk_user->('blocker');
+ok($blocker, 'Got blocker user (dedicated)');
+
+my $eddie = $mk_user->('third');
+ok($eddie, 'Got third user (dedicated)');
 
 subtest 'Direct message blocking returns error notification' => sub {
   plan tests => 7;
@@ -77,7 +92,7 @@ subtest 'Usergroup message with individual blocker returns notification' => sub 
   my $ug_node = $DB->insertNode(
     $ug_title,
     'usergroup',
-    $sender,
+    $root,
     {
       title => $ug_title,
       groupaccess => 'public'
@@ -86,9 +101,9 @@ subtest 'Usergroup message with individual blocker returns notification' => sub 
   ok($ug_node, 'Created test usergroup');
 
   # Add members to usergroup
-  $DB->insertIntoNodegroup($ug_node, $sender, $sender);
-  $DB->insertIntoNodegroup($ug_node, $sender, $blocker);
-  $DB->insertIntoNodegroup($ug_node, $sender, $eddie);
+  $DB->insertIntoNodegroup($ug_node, $root, $sender);
+  $DB->insertIntoNodegroup($ug_node, $root, $blocker);
+  $DB->insertIntoNodegroup($ug_node, $root, $eddie);
 
   # Test normal delivery (no blocks)
   my $result = $APP->sendPrivateMessage(
@@ -200,7 +215,7 @@ subtest 'Multiple blockers in usergroup return multiple errors' => sub {
   my $ug_node = $DB->insertNode(
     $ug_title,
     'usergroup',
-    $sender,
+    $root,
     {
       title => $ug_title,
       groupaccess => 'public'
@@ -209,9 +224,9 @@ subtest 'Multiple blockers in usergroup return multiple errors' => sub {
   ok($ug_node, 'Created test usergroup');
 
   # Add members to usergroup
-  $DB->insertIntoNodegroup($ug_node, $sender, $sender);
-  $DB->insertIntoNodegroup($ug_node, $sender, $blocker);
-  $DB->insertIntoNodegroup($ug_node, $sender, $eddie);
+  $DB->insertIntoNodegroup($ug_node, $root, $sender);
+  $DB->insertIntoNodegroup($ug_node, $root, $blocker);
+  $DB->insertIntoNodegroup($ug_node, $root, $eddie);
 
   # Add blocks from both blocker and eddie
   $DB->sqlInsert('messageignore', {
@@ -270,7 +285,7 @@ subtest 'Usergroup block does not trigger individual block notification' => sub 
   my $ug_node = $DB->insertNode(
     $ug_title,
     'usergroup',
-    $sender,
+    $root,
     {
       title => $ug_title,
       groupaccess => 'public'
@@ -279,9 +294,9 @@ subtest 'Usergroup block does not trigger individual block notification' => sub 
   ok($ug_node, 'Created test usergroup');
 
   # Add members
-  $DB->insertIntoNodegroup($ug_node, $sender, $sender);
-  $DB->insertIntoNodegroup($ug_node, $sender, $blocker);
-  $DB->insertIntoNodegroup($ug_node, $sender, $eddie);
+  $DB->insertIntoNodegroup($ug_node, $root, $sender);
+  $DB->insertIntoNodegroup($ug_node, $root, $blocker);
+  $DB->insertIntoNodegroup($ug_node, $root, $eddie);
 
   # Add block for usergroup itself (not sender)
   $DB->sqlInsert('messageignore', {
@@ -317,7 +332,13 @@ subtest 'Usergroup block does not trigger individual block notification' => sub 
   $DB->sqlDelete('node', "node_id=$ug_node->{node_id}");
 };
 
-# Reset root user to "outside" room
-$DB->sqlUpdate('user', { in_room => 0 }, "user_id=$sender->{user_id}");
+# Teardown: nuke the dedicated users (skip_maintenance avoids user_delete).
+for my $uid (@created_users) {
+  my $n = $DB->getNodeById($uid, 'force');
+  $DB->nukeNode($n, -1, 0, 1) if $n;
+  $DB->sqlDelete('user', "user_id=$uid");
+  $DB->sqlDelete('message', "for_user=$uid OR author_user=$uid");
+  $DB->sqlDelete('messageignore', "messageignore_id=$uid OR ignore_node=$uid");
+}
 
 done_testing();

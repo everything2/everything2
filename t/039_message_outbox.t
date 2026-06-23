@@ -10,10 +10,12 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
+use lib "$FindBin::Bin/lib";
 
 use Test::More;
 use Everything;
 use Everything::Application;
+use TestSeed;
 
 binmode(STDOUT, ":utf8");
 binmode(STDERR, ":utf8");
@@ -32,11 +34,13 @@ ok($DB, "Database connection established");
 ok($APP, "Application object created");
 
 # Test users
-my $sender = $DB->getNode('root', 'user');
-my $recipient = $DB->getNode('Cool Man Eddie', 'user');
+# Dedicated sender/recipient instead of shared root / Cool Man Eddie (their
+# message + outbox rows are read/wiped by other tests; raced under -j4). #4267
+my $sender = TestSeed::make_user($DB, $APP, label => 'sender');
+my $recipient = TestSeed::make_user($DB, $APP, label => 'recipient');
 
-ok($sender, 'Got sender user (root)');
-ok($recipient, 'Got recipient user (Cool Man Eddie)');
+ok($sender, 'Got sender user (dedicated)');
+ok($recipient, 'Got recipient user (dedicated)');
 
 # Clean up any existing messages for these users
 $DB->sqlDelete('message', "for_user=$sender->{user_id} OR for_user=$recipient->{user_id}");
@@ -48,14 +52,14 @@ subtest 'Private message creates inbox and outbox entries' => sub {
     # Send a private message
     my $result = $APP->sendPrivateMessage(
         $sender,
-        ['Cool Man Eddie'],
+        [$recipient->{title}],
         'Test message for outbox',
         {}
     );
 
     ok($result->{success}, 'Message sent successfully');
     is(scalar(@{$result->{sent_to}}), 1, 'Message sent to one recipient');
-    is($result->{sent_to}[0], 'Cool Man Eddie', 'Sent to correct recipient');
+    is($result->{sent_to}[0], $recipient->{title}, 'Sent to correct recipient');
 
     # Check inbox message (for recipient)
     my $inbox_msg = $DB->sqlSelectHashref(
@@ -80,7 +84,7 @@ subtest 'Multiple recipients create multiple outbox entries' => sub {
     plan tests => 5;
 
     # Clean up
-    my $recipient2 = $DB->getNode('genericdev', 'user');
+    my $recipient2 = TestSeed::make_user($DB, $APP, label => 'recipient2');
     ok($recipient2, 'Got second recipient');
 
     $DB->sqlDelete('message', "for_user=$sender->{user_id} OR for_user=$recipient->{user_id} OR for_user=$recipient2->{user_id}");
@@ -89,7 +93,7 @@ subtest 'Multiple recipients create multiple outbox entries' => sub {
     # Send to multiple recipients
     my $result = $APP->sendPrivateMessage(
         $sender,
-        ['Cool Man Eddie', 'genericdev'],
+        [$recipient->{title}, $recipient2->{title}],
         'Multi-recipient test',
         {}
     );
@@ -131,7 +135,7 @@ subtest 'Online-only messages create outbox with OnO prefix' => sub {
     # Send online-only message
     my $result = $APP->sendPrivateMessage(
         $sender,
-        ['Cool Man Eddie'],
+        [$recipient->{title}],
         'Online-only test',
         { online_only => 1 }
     );
@@ -159,10 +163,11 @@ subtest '/msg command via chatter API creates outbox' => sub {
     # Get sender VARS
     my $vars = $APP->getVars($sender);
 
-    # Process /msg command without quotes around username
+    # The dedicated title is hyphenated (no underscores), so /msg addresses it
+    # directly as a single token without the _->space mangling.
     my $result = $APP->processMessageCommand(
         $sender,
-        '/msg Cool_Man_Eddie Test via chatter API',
+        "/msg $recipient->{title} Test via chatter API",
         $vars
     );
 
@@ -190,5 +195,7 @@ subtest '/msg command via chatter API creates outbox' => sub {
 # Clean up
 $DB->sqlDelete('message', "for_user=$sender->{user_id} OR for_user=$recipient->{user_id}");
 $DB->sqlDelete('message_outbox', "author_user=$sender->{user_id}");
+
+TestSeed::cleanup($DB);
 
 done_testing();

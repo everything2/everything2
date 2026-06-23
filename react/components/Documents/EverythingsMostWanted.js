@@ -14,24 +14,18 @@ const renderMessageWithLinks = (message) => {
   let lastIndex = 0
   let key = 0
 
-  // Match [username] pattern (simple bracket syntax for usernames)
   const bracketPattern = /\[([^\[\]]+)\]/g
   let match
 
   while ((match = bracketPattern.exec(message)) !== null) {
-    // Add text before this match
     if (match.index > lastIndex) {
       parts.push(message.substring(lastIndex, match.index))
     }
-
-    // Add LinkNode for the username
     const username = match[1]
     parts.push(<LinkNode key={`user-${key++}`} title={username} type="user" />)
-
     lastIndex = match.index + match[0].length
   }
 
-  // Add remaining text
   if (lastIndex < message.length) {
     parts.push(message.substring(lastIndex))
   }
@@ -43,9 +37,28 @@ const renderMessageWithLinks = (message) => {
  * EverythingsMostWanted - Bounty system for filling nodeshells.
  * Styles in CSS: .emw__*
  *
- * Users can post bounties, sheriffs/admins can manage them.
+ * Mutations go through the level/sheriff-gated POST /api/bounties endpoints
+ * (post / remove / reward / award / yank); the read model is refreshed from
+ * GET /api/bounties after each action. Replaces the old server-side form POST +
+ * verifyRequest form-CSRF. #4198
  */
 const EverythingsMostWanted = ({ data }) => {
+  const [state, setState] = useState(data)
+  const [message, setMessage] = useState(null)
+  const [error, setError] = useState(null)
+  const [busy, setBusy] = useState(false)
+
+  const [showModal, setShowModal] = useState(false)
+  const [showRewardModal, setShowRewardModal] = useState(false)
+  const [showAwardModal, setShowAwardModal] = useState(false)
+  const [outlawNode, setOutlawNode] = useState('')
+  const [gpReward, setGpReward] = useState('')
+  const [comment, setComment] = useState('')
+  const [rewardee, setRewardee] = useState('')
+  const [awardee, setAwardee] = useState('')
+  const [awarded, setAwarded] = useState('')
+  const [removee, setRemovee] = useState('')
+
   const {
     min_level,
     is_sheriff,
@@ -56,28 +69,87 @@ const EverythingsMostWanted = ({ data }) => {
     gp_optout,
     bounties,
     justice_served,
-    can_post,
-    message,
-    csrf_nonce,
-    csrf_seed
-  } = data
+    can_post
+  } = state
 
-  const nodeId = window.e2?.node_id || ''
-  const [showModal, setShowModal] = useState(false)
-  const [showRewardModal, setShowRewardModal] = useState(false)
-  const [showAwardModal, setShowAwardModal] = useState(false)
-  const [outlawNode, setOutlawNode] = useState('')
-  const [gpReward, setGpReward] = useState('')
-  const [comment, setComment] = useState('')
-  const [rewardee, setRewardee] = useState('')
-  const [awardee, setAwardee] = useState('')
-  const [awarded, setAwarded] = useState('')
+  const refresh = async () => {
+    try {
+      const res = await fetch('/api/bounties', { credentials: 'same-origin' })
+      const d = await res.json()
+      if (d.success) setState(d)
+    } catch (e) {
+      /* leave stale state; the message/error already told the user the outcome */
+    }
+  }
+
+  // POST an action, surface its message/error, refresh the read model.
+  const doAction = async (path, body, onDone) => {
+    setBusy(true)
+    setError(null)
+    setMessage(null)
+    try {
+      const res = await fetch(`/api/bounties${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(body || {})
+      })
+      const r = await res.json()
+      if (r.success) {
+        setMessage(r.message)
+        if (onDone) onDone()
+        await refresh()
+      } else {
+        setError(r.error || r.message || 'Request failed')
+      }
+    } catch (e) {
+      setError('Failed to reach the bounty office: ' + e.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const submit = (handler) => (e) => {
+    e.preventDefault()
+    handler()
+  }
+
+  const postBounty = () =>
+    doAction('', { outlaw: outlawNode, reward: gpReward, comment }, () => {
+      setShowModal(false)
+      setOutlawNode('')
+      setGpReward('')
+      setComment('')
+    })
+
+  const removeBounty = () => doAction('/remove', {})
+
+  const rewardBounty = () =>
+    doAction('/reward', { winner: rewardee }, () => {
+      setShowRewardModal(false)
+      setRewardee('')
+    })
+
+  const awardBounty = () =>
+    doAction('/award', { winner: awardee, prize: awarded }, () => {
+      setShowAwardModal(false)
+      setAwardee('')
+      setAwarded('')
+    })
+
+  const yankBounty = () =>
+    doAction('/yank', { removee }, () => setRemovee(''))
 
   return (
     <div className="emw">
       {message && (
         <div className="emw__message">
           <p>{renderMessageWithLinks(message)}</p>
+        </div>
+      )}
+      {error && (
+        <div className="emw__error" role="alert">
+          <p>{error}</p>
         </div>
       )}
 
@@ -130,14 +202,9 @@ const EverythingsMostWanted = ({ data }) => {
                 >
                   Pay out custom reward
                 </button>
-                <form method="POST" className="emw__form-inline">
-                  <input type="hidden" name="node_id" value={nodeId} />
-                  <input type="hidden" name="emw_nonce" value={csrf_nonce} />
-                  <input type="hidden" name="emw_seed" value={csrf_seed} />
-                  <button type="submit" name="Remove" value="1" className="emw__button">
-                    Just remove it
-                  </button>
-                </form>
+                <button type="button" onClick={removeBounty} disabled={busy} className="emw__button">
+                  Just remove it
+                </button>
               </div>
             </div>
           ) : (
@@ -162,18 +229,12 @@ const EverythingsMostWanted = ({ data }) => {
         <div className="emw__modal-overlay" onClick={() => setShowModal(false)}>
           <div className="emw__modal" onClick={e => e.stopPropagation()}>
             <h3 className="emw__modal-title">Post a Bounty</h3>
-            <form method="POST">
-              <input type="hidden" name="node_id" value={nodeId} />
-              <input type="hidden" name="emw_nonce" value={csrf_nonce} />
-              <input type="hidden" name="emw_seed" value={csrf_seed} />
-              <input type="hidden" name="Yes" value="1" />
-
+            <form onSubmit={submit(postBounty)}>
               <div className="emw__form-group">
                 <label className="emw__label">
                   Outlaw Node (nodeshell to be filled):
                   <input
                     type="text"
-                    name="outlaw"
                     value={outlawNode}
                     onChange={e => setOutlawNode(e.target.value)}
                     className="emw__input-full"
@@ -188,7 +249,6 @@ const EverythingsMostWanted = ({ data }) => {
                   GP Reward (max {bounty_limit} GP, or 0 for non-GP reward):
                   <input
                     type="number"
-                    name="bountyreward"
                     value={gpReward}
                     onChange={e => setGpReward(e.target.value)}
                     className="emw__input-full"
@@ -203,7 +263,6 @@ const EverythingsMostWanted = ({ data }) => {
                 <label className="emw__label">
                   Comment (describe conditions, other rewards, etc.):
                   <textarea
-                    name="bountycomment"
                     value={comment}
                     onChange={e => setComment(e.target.value)}
                     className="emw__textarea"
@@ -214,7 +273,7 @@ const EverythingsMostWanted = ({ data }) => {
               </div>
 
               <div className="emw__button-row">
-                <button type="submit" className="emw__button">
+                <button type="submit" disabled={busy} className="emw__button">
                   Post Bounty
                 </button>
                 <button
@@ -235,18 +294,12 @@ const EverythingsMostWanted = ({ data }) => {
         <div className="emw__modal-overlay" onClick={() => setShowRewardModal(false)}>
           <div className="emw__modal" onClick={e => e.stopPropagation()}>
             <h3 className="emw__modal-title">Pay Out GP Reward</h3>
-            <form method="POST">
-              <input type="hidden" name="node_id" value={nodeId} />
-              <input type="hidden" name="emw_nonce" value={csrf_nonce} />
-              <input type="hidden" name="emw_seed" value={csrf_seed} />
-              <input type="hidden" name="Reward" value="1" />
-
+            <form onSubmit={submit(rewardBounty)}>
               <div className="emw__form-group">
                 <label className="emw__label">
                   Who filled this bounty?
                   <input
                     type="text"
-                    name="rewardee"
                     value={rewardee}
                     onChange={e => setRewardee(e.target.value)}
                     className="emw__input-full"
@@ -257,7 +310,7 @@ const EverythingsMostWanted = ({ data }) => {
               </div>
 
               <div className="emw__button-row">
-                <button type="submit" className="emw__button">
+                <button type="submit" disabled={busy} className="emw__button">
                   Pay {current_bounty?.reward || 0} GP
                 </button>
                 <button
@@ -278,18 +331,12 @@ const EverythingsMostWanted = ({ data }) => {
         <div className="emw__modal-overlay" onClick={() => setShowAwardModal(false)}>
           <div className="emw__modal" onClick={e => e.stopPropagation()}>
             <h3 className="emw__modal-title">Pay Out Custom Reward</h3>
-            <form method="POST">
-              <input type="hidden" name="node_id" value={nodeId} />
-              <input type="hidden" name="emw_nonce" value={csrf_nonce} />
-              <input type="hidden" name="emw_seed" value={csrf_seed} />
-              <input type="hidden" name="Award" value="1" />
-
+            <form onSubmit={submit(awardBounty)}>
               <div className="emw__form-group">
                 <label className="emw__label">
                   Who filled this bounty?
                   <input
                     type="text"
-                    name="awardee"
                     value={awardee}
                     onChange={e => setAwardee(e.target.value)}
                     className="emw__input-full"
@@ -304,7 +351,6 @@ const EverythingsMostWanted = ({ data }) => {
                   What are you awarding them?
                   <input
                     type="text"
-                    name="awarded"
                     value={awarded}
                     onChange={e => setAwarded(e.target.value)}
                     className="emw__input-full"
@@ -321,7 +367,7 @@ const EverythingsMostWanted = ({ data }) => {
               </p>
 
               <div className="emw__button-row">
-                <button type="submit" className="emw__button">
+                <button type="submit" disabled={busy} className="emw__button">
                   Award Prize
                 </button>
                 <button
@@ -352,15 +398,17 @@ const EverythingsMostWanted = ({ data }) => {
               bounties if necessary.
             </p>
           )}
-          <form method="POST">
-            <input type="hidden" name="node_id" value={nodeId} />
-            <input type="hidden" name="emw_nonce" value={csrf_nonce} />
-            <input type="hidden" name="emw_seed" value={csrf_seed} />
+          <form onSubmit={submit(yankBounty)}>
             <label>
               Enter the name of a user whose bounty you need to remove:{' '}
-              <input type="text" name="removee" className="emw__input" />
+              <input
+                type="text"
+                value={removee}
+                onChange={e => setRemovee(e.target.value)}
+                className="emw__input"
+              />
             </label>{' '}
-            <button type="submit" name="yankify" value="1" className="emw__button">
+            <button type="submit" disabled={busy} className="emw__button">
               Remove Bounty
             </button>
           </form>
@@ -391,7 +439,7 @@ const EverythingsMostWanted = ({ data }) => {
                 <td
                   className="emw__td"
                   dangerouslySetInnerHTML={{
-                    __html: renderE2Content(bounty.comment || '\u00A0').html
+                    __html: renderE2Content(bounty.comment || ' ').html
                   }}
                 />
                 <td className="emw__td">{bounty.reward}</td>

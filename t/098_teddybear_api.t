@@ -13,6 +13,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::teddybear;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -27,7 +28,11 @@ ok($api, "Created teddybear API instance");
 # Test Setup: Get test users
 #############################################################################
 
-my $normal_user = $DB->getNode("normaluser1", "user");
+# Dedicated teddybear recipient/actor so concurrent tests don't collide on this
+# user's teddybear vars/notifications. It's the give-target (hardcoded by name in
+# postdata below) AND a scratch handle reused by later re-reads. admin/editor stay
+# real for their give privileges. #4267
+my $normal_user = TestSeed::make_user($DB, $APP, label => 'teddytarget', experience => 1000);
 ok($normal_user, "Got normal user");
 
 my $admin_user = $DB->getNode("root", "user");
@@ -56,7 +61,7 @@ my $guest_request = MockRequest->new(
     title => 'Guest User',
     is_guest_flag => 1,
     nodedata => $guest_user,
-    postdata => { users => [{ username => 'normaluser1' }] }
+    postdata => { users => [{ username => $normal_user->{title} }] }
 );
 
 my $result = $api->hug($guest_request);
@@ -72,7 +77,7 @@ my $normal_request = MockRequest->new(
     title => $normal_user->{title},
     is_guest_flag => 0,
     nodedata => $normal_user,
-    postdata => { users => [{ username => 'normaluser1' }] }
+    postdata => { users => [{ username => $normal_user->{title} }] }
 );
 
 $result = $api->hug($normal_request);
@@ -89,7 +94,7 @@ my $editor_request = MockRequest->new(
     is_guest_flag => 0,
     is_editor_flag => 1,
     nodedata => $editor_user,
-    postdata => { users => [{ username => 'normaluser1' }] }
+    postdata => { users => [{ username => $normal_user->{title} }] }
 );
 
 $result = $api->hug($editor_request);
@@ -109,7 +114,7 @@ my $admin_request = MockRequest->new(
     is_guest_flag => 0,
     is_admin_flag => 1,
     nodedata => $admin_user,
-    postdata => { users => [{ username => 'normaluser1' }] }
+    postdata => { users => [{ username => $normal_user->{title} }] }
 );
 
 $result = $api->hug($admin_request);
@@ -122,7 +127,7 @@ is($result->[1]{results}[0]{amount}, 2, "Hug grants 2 GP");
 like($result->[1]{results}[0]{message}, qr/2 GP/i, "Message mentions 2 GP");
 
 # Revert GP
-$normal_user = $DB->getNode("normaluser1", "user");
+$normal_user = $DB->getNodeById($normal_user->{node_id}, 'force');
 $APP->adjustGP($normal_user, -2);
 
 #############################################################################
@@ -170,7 +175,7 @@ $admin_request = MockRequest->new(
     is_guest_flag => 0,
     is_admin_flag => 1,
     nodedata => $admin_user,
-    postdata => { usernames => ['normaluser1'] }  # Legacy format
+    postdata => { usernames => [$normal_user->{title}] }  # Legacy format
 );
 
 $result = $api->hug($admin_request);
@@ -178,7 +183,7 @@ is($result->[0], $api->HTTP_OK, "Legacy format returns 200");
 is($result->[1]{results}[0]{success}, 1, "Legacy format hug succeeds");
 
 # Revert GP
-$normal_user = $DB->getNode("normaluser1", "user");
+$normal_user = $DB->getNodeById($normal_user->{node_id}, 'force');
 $APP->adjustGP($normal_user, -2);
 
 #############################################################################
@@ -192,7 +197,7 @@ $admin_request = MockRequest->new(
     is_admin_flag => 1,
     nodedata => $admin_user,
     postdata => { users => [
-        { username => 'normaluser1' },
+        { username => $normal_user->{title} },
         { username => 'nonexistent_xyz' },
         { username => 'root' }
     ]}
@@ -206,10 +211,12 @@ is($result->[1]{results}[1]{success}, 0, "Second user failed (not found)");
 is($result->[1]{results}[2]{success}, 1, "Third user succeeded");
 
 # Revert GP changes
-$normal_user = $DB->getNode("normaluser1", "user");
+$normal_user = $DB->getNodeById($normal_user->{node_id}, 'force');
 $APP->adjustGP($normal_user, -2);
 $admin_user = $DB->getNode("root", "user");
 $APP->adjustGP($admin_user, -2);
+
+TestSeed::cleanup($DB);
 
 done_testing();
 

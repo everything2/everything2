@@ -8,9 +8,11 @@ use Encode qw(encode_utf8);
 
 use lib '/var/libraries/lib/perl5';
 use lib '/var/everything/ecore';
+use lib '/var/everything/t/lib';
 
 use Everything;
 use Everything::API::drafts;
+use TestSeed;
 
 # Initialize E2 system
 initEverything();
@@ -18,8 +20,11 @@ initEverything();
 my $APP = $Everything::APP;
 my $DB  = $APP->{db};
 
-# Get test users
-my $regular_user = $DB->getNode( 'e2e_user', 'user' );
+# Dedicated draft author so concurrent tests don't collide on e2e_user's drafts/
+# publish rows -- this 279-test file would intermittently DIE under prove -j4 when
+# another test mutated or deleted shared draft state mid-run. admin stays root for
+# its publish/approve privileges. #4267
+my $regular_user = TestSeed::make_user( $DB, $APP, label => 'drafter', experience => 1000 );
 my $admin_user   = $DB->getNode( 'root',     'user' );
 
 # Get nodetypes
@@ -2052,7 +2057,7 @@ sub cleanup_test_nodes {
         'Draft has correct author_user' );
 
     # Create a second user request with different user
-    my $other_user = $DB->getNode( 'normaluser1', 'user' );
+    my $other_user = TestSeed::make_user( $DB, $APP, label => 'fan', experience => 1000 );
     ok( $other_user, 'Got another user for cross-user test' );
 
     my $other_request = MockRequest->new(
@@ -2544,7 +2549,7 @@ subtest 'publish finisher parity (#4314)' => sub {
     # --- finalize_published_writeup queues the favorite-author notification ---
   SKIP: {
         my $author    = $regular_user;
-        my $fan       = $DB->getNode( 'normaluser1', 'user' );
+        my $fan       = TestSeed::make_user( $DB, $APP, label => 'fan', experience => 1000 );
         my $fav_notif = $DB->getNode( 'favorite',    'notification' );
         my $fav_link  = $DB->getNode( 'favorite',    'linktype' );
         skip 'favorite notification fixtures missing', 1
@@ -2623,5 +2628,7 @@ subtest 'publish finisher parity (#4314)' => sub {
         $DB->sqlDelete( 'node',     "node_id=$young_id" );
     }
 };
+
+TestSeed::cleanup($DB);
 
 done_testing();

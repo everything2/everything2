@@ -14,6 +14,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::userinteractions;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -28,13 +29,15 @@ ok($api, "Created userinteractions API instance");
 # Test Setup: Get test users
 #############################################################################
 
-my $normal_user = $DB->getNode("normaluser1", "user");
+# Dedicated actor + targets so concurrent tests don't collide on the block /
+# messageignore rows keyed by these users under prove -j4. #4267
+my $normal_user = TestSeed::make_user($DB, $APP, label => 'actor');
 ok($normal_user, "Got normal user");
 
-my $target_user = $DB->getNode("normaluser2", "user");
+my $target_user = TestSeed::make_user($DB, $APP, label => 'target');
 ok($target_user, "Got target user for blocking tests");
 
-my $another_user = $DB->getNode("normaluser3", "user");
+my $another_user = TestSeed::make_user($DB, $APP, label => 'another');
 ok($another_user, "Got another user");
 
 my $guest_user = $DB->getNode("guest user", "user");
@@ -425,6 +428,8 @@ sub cleanup_blocks {
 
 cleanup_blocks($normal_user, $target_user);
 cleanup_blocks($normal_user, $another_user);
+
+TestSeed::cleanup($DB);
 
 done_testing();
 

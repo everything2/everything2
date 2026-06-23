@@ -14,6 +14,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::messageignores;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -36,8 +37,12 @@ ok($APP, "Application object created");
 #############################################################################
 
 # Get test users
-my $root = $DB->getNode("root", "user");
-my $normaluser1 = $DB->getNode("e2e_user", "user");
+# The OWNERS (root, normaluser1) get their ignore lists mutated -> dedicate them
+# so concurrent tests don't collide on the messageignore rows. The TARGETS are
+# ignored by literal name and matched against their real node ids, so keep them
+# real. (Var names retained for minimal churn.) #4267
+my $root = TestSeed::make_user($DB, $APP, label => 'owner1');
+my $normaluser1 = TestSeed::make_user($DB, $APP, label => 'owner2');
 my $cme = $DB->getNode("Cool Man Eddie", "user");
 my $virgil = $DB->getNode("Virgil", "user");
 
@@ -168,5 +173,7 @@ foreach my $user_data ({name => "root", node => $root}, {name => "e2e_user", nod
   is($result->[0], $api->HTTP_OK, "$user_name: get_all returns 200 OK");
   cmp_deeply($result->[1], [], "$user_name: Ignore list still empty");
 }
+
+TestSeed::cleanup($DB);
 
 done_testing();

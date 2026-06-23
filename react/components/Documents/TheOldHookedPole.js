@@ -1,23 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
 import LinkNode from '../LinkNode'
 
 /**
  * TheOldHookedPole - Editor tool for mass user account management.
  * Styles in CSS: .hooked-pole__*
- * Checks users for safety before deletion/locking.
+ *
+ * Submits the username list to POST /api/admin/users/cleanup and renders the
+ * per-user outcome (deleted / locked / skipped) returned by the API. Only gods
+ * can actually delete a user node; for everyone else a "safe to delete" account
+ * is locked instead, and the API reports that honestly -- the UI surfaces the
+ * exact state per user rather than assuming a deletion happened.
  */
+const ACTION_LABEL = {
+  deleted: 'Deleted',
+  locked: 'Locked',
+  skipped: 'Skipped'
+}
+
 const TheOldHookedPole = ({ data }) => {
-  const {
-    is_editor,
-    message,
-    results,
-    saved_users,
-    show_form,
-    node_id,
-    prefill,
-    polehash_nonce,
-    polehash_seed
-  } = data
+  const { is_editor, message, prefill } = data
+
+  const [usernames, setUsernames] = useState(prefill || '')
+  const [smite, setSmite] = useState(false)
+  const [results, setResults] = useState(null)
+  const [savedUsers, setSavedUsers] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   if (!is_editor) {
     return (
@@ -27,17 +35,54 @@ const TheOldHookedPole = ({ data }) => {
     )
   }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/admin/users/cleanup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ usernames, smite: smite ? 1 : 0 })
+      })
+      const payload = await response.json()
+
+      if (payload.success) {
+        setResults(payload.results || [])
+        setSavedUsers(payload.saved_users || [])
+      } else {
+        setError(payload.message || payload.error || 'Request failed')
+      }
+    } catch (err) {
+      setError('Failed to process the list: ' + err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="hooked-pole">
+      {error && (
+        <p className="hooked-pole__error" role="alert">{error}</p>
+      )}
+
       {results && results.length > 0 && (
         <div className="hooked-pole__results-section">
           <h3 className="hooked-pole__subtitle">The Doomed Performers</h3>
           <ul className="hooked-pole__results-list">
             {results.map((result, idx) => (
-              <li key={idx} className="hooked-pole__result-item">
+              <li
+                key={idx}
+                className={`hooked-pole__result-item hooked-pole__result-item--${result.action}`}
+              >
+                <span className={`hooked-pole__status hooked-pole__status--${result.action}`}>
+                  {ACTION_LABEL[result.action] || result.action}
+                </span>{' '}
                 {result.action === 'deleted' ? (
                   <span className="hooked-pole__deleted">
-                    Deleted {result.input} ({result.node_id}).
+                    {result.input} ({result.node_id}).
                   </span>
                 ) : (
                   <>
@@ -46,7 +91,7 @@ const TheOldHookedPole = ({ data }) => {
                     ) : (
                       <span>{result.input}</span>
                     )}
-                    {result.reasons.length > 0 && (
+                    {result.reasons && result.reasons.length > 0 && (
                       <ul className="hooked-pole__reasons-list">
                         {result.reasons.map((reason, ridx) => (
                           <li key={ridx} dangerouslySetInnerHTML={{ __html: reason }} />
@@ -61,60 +106,60 @@ const TheOldHookedPole = ({ data }) => {
         </div>
       )}
 
-      {show_form && (
-        <>
-          <h3 className="hooked-pole__subtitle">&ldquo;Off the stage with &apos;em!&rdquo;</h3>
-          <p>
-            A mass user deletion tool which provides basic checks for deletion.
-          </p>
-          <p>Copy and paste list of names of users to destroy.</p>
+      <h3 className="hooked-pole__subtitle">&ldquo;Off the stage with &apos;em!&rdquo;</h3>
+      <p>A mass user deletion tool which provides basic checks for deletion.</p>
+      <p>Copy and paste list of names of users to destroy.</p>
 
-          <div className="hooked-pole__checks-list">
-            <p>This does the following things:</p>
-            <ul>
-              <li>Checks to see if the user has ever logged in</li>
-              <li>Checks if the user has any live writeups</li>
-              <li>Checks if the user has any live e2nodes</li>
-              <li>Deletes the user if it is safe</li>
-              <li>Locks a user if deletion isn&apos;t safe</li>
-            </ul>
-          </div>
+      <div className="hooked-pole__checks-list">
+        <p>This does the following things:</p>
+        <ul>
+          <li>Checks to see if the user has ever logged in</li>
+          <li>Checks if the user has any live writeups</li>
+          <li>Checks if the user has any live e2nodes</li>
+          <li>Deletes the user if it is safe (and you are allowed to delete users)</li>
+          <li>Locks the user if deletion isn&apos;t safe or isn&apos;t permitted</li>
+        </ul>
+      </div>
 
-          <form method="post" className="hooked-pole__form">
-            <input type="hidden" name="node_id" value={node_id} />
-            <input type="hidden" name="polehash_nonce" value={polehash_nonce} />
-            <input type="hidden" name="polehash_seed" value={polehash_seed} />
+      <form onSubmit={handleSubmit} className="hooked-pole__form">
+        {savedUsers && savedUsers.length > 0 && (
+          <fieldset className="hooked-pole__fieldset">
+            <legend>The users who were spared</legend>
+            <textarea
+              name="ignored-saved"
+              value={savedUsers.join('\n')}
+              className="hooked-pole__textarea"
+              readOnly
+            />
+          </fieldset>
+        )}
 
-            {saved_users && saved_users.length > 0 && (
-              <fieldset className="hooked-pole__fieldset">
-                <legend>The users who were spared</legend>
-                <textarea
-                  name="ignored-saved"
-                  defaultValue={saved_users.join('\n')}
-                  className="hooked-pole__textarea"
-                  readOnly
-                />
-              </fieldset>
-            )}
-
-            <fieldset className="hooked-pole__fieldset">
-              <legend>Inadequate Performers</legend>
-              <textarea
-                name="usernames"
-                rows="10"
-                cols="30"
-                className="hooked-pole__textarea"
-                placeholder="Enter usernames, one per line"
-                defaultValue={prefill || ''}
-              />
-              <br /><br />
-              <button type="submit" className="hooked-pole__button">
-                Get The Hook!
-              </button>
-            </fieldset>
-          </form>
-        </>
-      )}
+        <fieldset className="hooked-pole__fieldset">
+          <legend>Inadequate Performers</legend>
+          <textarea
+            name="usernames"
+            rows="10"
+            cols="30"
+            className="hooked-pole__textarea"
+            placeholder="Enter usernames, one per line"
+            value={usernames}
+            onChange={(e) => setUsernames(e.target.value)}
+          />
+          <br />
+          <label className="hooked-pole__smite">
+            <input
+              type="checkbox"
+              checked={smite}
+              onChange={(e) => setSmite(e.target.checked)}
+            />{' '}
+            Smite spammers (blank homenode, blacklist a shared recently-locked IP)
+          </label>
+          <br /><br />
+          <button type="submit" className="hooked-pole__button" disabled={loading}>
+            {loading ? 'Working…' : 'Get The Hook!'}
+          </button>
+        </fieldset>
+      </form>
     </div>
   )
 }

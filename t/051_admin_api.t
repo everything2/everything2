@@ -15,6 +15,7 @@ use Everything::SecurityLog qw(:events);
 use Everything::API::admin;
 use MockUser;
 use MockRequest;
+use TestSeed;
 
 # Initialize E2 system
 initEverything();
@@ -537,6 +538,13 @@ SKIP: {
     skip "Unable to run lock/unlock tests", 18;
   }
 
+  # Lock/unlock a dedicated throwaway user instead of the shared e2e_user, which
+  # other tests (e.g. t/065) read concurrently -- raced under prove -j4. The
+  # shadow means every $regular_user target reference below uses it; the actor
+  # requests ($regular_request etc.) were already built from the real seeds. #4267
+  my $lock_target = TestSeed::make_user($DB, $APP, label => 'locktarget');
+  my $regular_user = $lock_target;
+
   # Ensure the target user starts unlocked
   my $initial_lock = $regular_user->{acctlock};
   if ($initial_lock) {
@@ -744,5 +752,7 @@ SKIP: {
     $DB->nukeNode($n, -1) if $n;
   }
 }
+
+TestSeed::cleanup($DB);
 
 done_testing();

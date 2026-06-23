@@ -6,11 +6,13 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
+use lib "$FindBin::Bin/lib";
 
 use Test::More;
 use Everything;
 use Everything::Application;
 use Everything::API::vote;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -26,11 +28,13 @@ ok($api, "Created vote API instance");
 #############################################################################
 
 # Get test users - these exist in seeds.pl
-my $voter_user_hash = $DB->getNode("normaluser1", "user");
-ok($voter_user_hash, "Got voter user (normaluser1)");
+# Dedicated voter + author so concurrent tests don't race normaluser1's
+# votesleft or normaluser2's reputation/GP/XP under prove -j4. #4267
+my $voter_user_hash = TestSeed::make_user($DB, $APP, label => 'voter', experience => 1000, votesleft => 50);
+ok($voter_user_hash, "Got voter user (dedicated)");
 
-my $author_user_hash = $DB->getNode("normaluser2", "user");
-ok($author_user_hash, "Got author user (normaluser2)");
+my $author_user_hash = TestSeed::make_user($DB, $APP, label => 'author', experience => 1000);
+ok($author_user_hash, "Got author user (dedicated)");
 
 my $guest_user_hash = $DB->getNode("guest user", "user");
 ok($guest_user_hash, "Got guest user");
@@ -147,7 +151,7 @@ is($result->[1]{error}, 'You cannot vote on your own writeup', "Correct error fo
 #############################################################################
 
 # Refresh voter hashref to get current votes_left
-$voter_user_hash = $DB->getNode("normaluser1", "user");
+$voter_user_hash = $DB->getNodeById($voter_user_hash->{node_id}, 'force');
 $voter_request = TestRequest->new($voter_user_hash, { weight => 1 });
 $result = $api->cast_vote($voter_request, $writeup_id);
 is($result->[0], 200, "Upvote returns HTTP 200");
@@ -192,7 +196,7 @@ is($result->[1]{error}, 'You have already cast this vote', "Correct error for du
 #############################################################################
 
 # Change vote from +1 to -1
-$voter_user_hash = $DB->getNode("normaluser1", "user");
+$voter_user_hash = $DB->getNodeById($voter_user_hash->{node_id}, 'force');
 $voter_request = TestRequest->new($voter_user_hash, { weight => -1 });
 $result = $api->cast_vote($voter_request, $writeup_id);
 is($result->[0], 200, "Vote swap returns HTTP 200");
@@ -220,7 +224,7 @@ is($votes_after_swap, $votes_before_swap, "Votes remaining unchanged after swap"
 # Test 9: Vote swapping back (downvote to upvote)
 #############################################################################
 
-$voter_user_hash = $DB->getNode("normaluser1", "user");
+$voter_user_hash = $DB->getNodeById($voter_user_hash->{node_id}, 'force');
 $voter_request = TestRequest->new($voter_user_hash, { weight => 1 });
 $result = $api->cast_vote($voter_request, $writeup_id);
 is($result->[0], 200, "Vote swap back returns HTTP 200");
@@ -289,7 +293,7 @@ if ($user3_hash && $user3_hash->{votesleft} > 0) {
 
   # Clear cache and refresh user hash
   $DB->getCache->removeNode($voter_user_hash);
-  $voter_user_hash = $DB->getNode("normaluser1", "user");
+  $voter_user_hash = $DB->getNodeById($voter_user_hash->{node_id}, 'force');
   # Manually ensure votesleft reflects DB state (in case getNode uses stale cache)
   $voter_user_hash->{votesleft} = $DB->sqlSelect('votesleft', 'user', "user_id=" . $voter_user_hash->{user_id});
 
@@ -351,8 +355,10 @@ is($result->[1]{message}, 'Vote changed successfully', "Vote changed message");
 $DB->sqlDelete('vote', "vote_id=$writeup_id");
 
 # Delete test writeup and e2node
-$DB->nukeNode($DB->getNodeById($writeup_id), $author_user_hash);
-$DB->nukeNode($DB->getNodeById($e2node_id), $author_user_hash);
+$DB->nukeNode($DB->getNodeById($writeup_id), -1);
+$DB->nukeNode($DB->getNodeById($e2node_id), -1);
+
+TestSeed::cleanup($DB);
 
 done_testing();
 

@@ -14,9 +14,11 @@ use Test::More;
 
 use lib '/var/libraries/lib/perl5';
 use lib '/var/everything/ecore';
+use lib '/var/everything/t/lib';
 
 use Everything;
 use Everything::API::cool;
+use TestSeed;
 
 initEverything();
 
@@ -27,11 +29,14 @@ my $api   = Everything::API::cool->new();
 my $eddie = $DB->getNode('Cool Man Eddie', 'user');
 ok($eddie, 'Cool Man Eddie exists');
 
-# Two authors + a separate bookmarker, from the seed user pool.
-my $authorA    = $DB->getNode('normaluser1', 'user');
-my $authorB    = $DB->getNode('normaluser2', 'user');
-my $bookmarker = $DB->getNode('normaluser3', 'user');
-ok($authorA && $authorB && $bookmarker, 'got three distinct seed users');
+# Two authors + a separate bookmarker. Dedicated users: eddie_msgs_to() counts
+# eddie->author messages by msgtext substring (NOT scoped to $mark), so a
+# concurrent bookmark-notify to a shared normaluser would skew the counts under
+# prove -j4. #4267
+my $authorA    = TestSeed::make_user($DB, $APP, label => 'authorA', experience => 1000);
+my $authorB    = TestSeed::make_user($DB, $APP, label => 'authorB', experience => 1000);
+my $bookmarker = TestSeed::make_user($DB, $APP, label => 'bookmarker', experience => 1000);
+ok($authorA && $authorB && $bookmarker, 'got three distinct dedicated users');
 
 my $mark = "t149-bm-$$";
 
@@ -85,5 +90,7 @@ $DB->sqlDelete('message', "msgtext LIKE " . $DB->{dbh}->quote("%$mark%"));
 $DB->nukeNode($DB->getNodeById($wuA), -1) if $DB->getNodeById($wuA);
 $DB->nukeNode($DB->getNodeById($wuB), -1) if $DB->getNodeById($wuB);
 $DB->nukeNode($DB->getNodeById($e2node_id), -1) if $DB->getNodeById($e2node_id);
+
+TestSeed::cleanup($DB);
 
 done_testing();

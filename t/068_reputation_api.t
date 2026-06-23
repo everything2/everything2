@@ -13,6 +13,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::reputation;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -27,10 +28,12 @@ ok($api, "Created reputation API instance");
 # Test Setup: Get test users and create test writeup
 #############################################################################
 
-my $author_user = $DB->getNode("normaluser1", "user");
+# Dedicated author + voter instead of shared normaluser1/normaluser2 (raced
+# t/069 and others under prove -j4). #4267
+my $author_user = TestSeed::make_user($DB, $APP, label => 'author', experience => 50000, GP => 100, numwriteups => 50);
 ok($author_user, "Got author user for testing");
 
-my $voter_user = $DB->getNode("normaluser2", "user");
+my $voter_user = TestSeed::make_user($DB, $APP, label => 'voter', experience => 50000, votesleft => 100, GP => 100);
 ok($voter_user, "Got voter user for testing");
 
 my $admin_user = $DB->getNode("root", "user");
@@ -252,7 +255,7 @@ $DB->sqlInsert('vote', {
 });
 
 # Get a third user for downvote
-my $third_user = $DB->getNode("normaluser3", "user");
+my $third_user = TestSeed::make_user($DB, $APP, label => 'third', experience => 50000, votesleft => 100);
 if ($third_user) {
     $DB->sqlInsert('vote', {
         vote_id => $writeup_id,
@@ -304,9 +307,11 @@ foreach my $month (@$months) {
 # Delete test votes
 $DB->sqlDelete('vote', "vote_id=$writeup_id");
 
-# Delete test writeup and e2node
-$DB->nukeNode($DB->getNodeById($writeup_id), $author_user);
-$DB->nukeNode($DB->getNodeById($e2node_id), $author_user);
+# Delete test writeup and e2node (-1 = superuser; the dedicated author can't
+# delete nodes), then nuke the dedicated users.
+$DB->nukeNode($DB->getNodeById($writeup_id), -1);
+$DB->nukeNode($DB->getNodeById($e2node_id), -1);
+TestSeed::cleanup($DB);
 
 done_testing();
 

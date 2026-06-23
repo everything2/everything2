@@ -7,9 +7,11 @@ use JSON;
 
 use lib '/var/libraries/lib/perl5';
 use lib '/var/everything/ecore';
+use lib '/var/everything/t/lib';
 
 use Everything;
 use Everything::API::cool;
+use TestSeed;
 
 # Initialize E2 system
 initEverything();
@@ -19,7 +21,9 @@ my $DB = $APP->{db};
 
 # Get test users
 my $editor_user = $DB->getNode('e2e_editor', 'user');
-my $regular_user = $DB->getNode('e2e_user', 'user');
+# Dedicated author so concurrent tests don't collide on e2e_user's reputation/
+# cools or on the eddie->author cool-notification messages (LIMIT 1 query). #4267
+my $regular_user = TestSeed::make_user($DB, $APP, label => 'author', experience => 1000);
 my $admin_user = $DB->getNode('root', 'user');
 
 # Create mock request and user objects
@@ -423,5 +427,7 @@ SKIP: {
   $DB->sqlDelete('document', "document_id=$writeup_id");
   $DB->sqlDelete('links', "from_node=$parent_e2node_id OR to_node=$writeup_id");
 }
+
+TestSeed::cleanup($DB);
 
 done_testing();

@@ -14,6 +14,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::superbless;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -25,12 +26,18 @@ my $api = Everything::API::superbless->new();
 ok($api, "Created superbless API instance");
 
 #############################################################################
-# Test Setup: Get test users
-# Use normaluser25 instead of normaluser10 to reduce conflicts with other tests
+# Test Setup: dedicated throwaway users (see #4267 note below)
 #############################################################################
 
-my $normal_user = $DB->getNode("normaluser25", "user");
-ok($normal_user, "Got normal user (normaluser25)");
+# Dedicated non-admin actor + a dedicated bless target so concurrent runs don't
+# race these users' GP/XP/cools/vars. (This file previously hand-mitigated the
+# collision by picking normaluser25 "to reduce conflicts" -- now done properly.)
+# #4267. $normal_user is also reused downstream as a scratch handle for re-reading
+# the target, so it tracks $bless_target after the first refetch.
+my $normal_user = TestSeed::make_user($DB, $APP, label => 'actor', experience => 1000);
+ok($normal_user, "Got normal user (dedicated)");
+my $bless_target = TestSeed::make_user($DB, $APP, label => 'blesstarget', GP => 1000, experience => 1000);
+ok($bless_target, "Got bless target (dedicated)");
 
 my $admin_user = $DB->getNode("root", "user");
 ok($admin_user, "Got admin user");
@@ -66,7 +73,7 @@ my $guest_request = MockRequest->new(
     title => 'Guest User',
     is_guest_flag => 1,
     nodedata => $guest_user,
-    postdata => { users => [{ username => 'normaluser10', amount => 10 }] }
+    postdata => { users => [{ username => $bless_target->{title}, amount => 10 }] }
 );
 
 my $result = $api->grant_gp($guest_request);
@@ -82,7 +89,7 @@ my $normal_request = MockRequest->new(
     title => $normal_user->{title},
     is_guest_flag => 0,
     nodedata => $normal_user,
-    postdata => { users => [{ username => 'normaluser10', amount => 10 }] }
+    postdata => { users => [{ username => $bless_target->{title}, amount => 10 }] }
 );
 
 $result = $api->grant_gp($normal_request);
@@ -101,7 +108,7 @@ my $editor_request = MockRequest->new(
     is_guest_flag => 0,
     is_editor_flag => 1,
     nodedata => $editor_user,
-    postdata => { users => [{ username => 'normaluser10', amount => 5 }] }
+    postdata => { users => [{ username => $bless_target->{title}, amount => 5 }] }
 );
 
 $result = $api->grant_gp($editor_request);
@@ -113,7 +120,7 @@ is($result->[1]{results}[0]{amount}, 5, "Amount is correct");
 
 # Revert GP - wrapped to prevent test failures
 try {
-    $normal_user = $DB->getNode("normaluser10", "user");
+    $normal_user = $DB->getNodeById($bless_target->{node_id}, 'force');
     $APP->adjustGP($normal_user, -5) if $normal_user;
 } catch { diag("GP revert warning: $_"); };
 
@@ -144,7 +151,7 @@ $editor_request = MockRequest->new(
     is_guest_flag => 0,
     is_editor_flag => 1,
     nodedata => $editor_user,
-    postdata => { users => [{ username => 'normaluser10', amount => 'abc' }] }
+    postdata => { users => [{ username => $bless_target->{title}, amount => 'abc' }] }
 );
 
 $result = $api->grant_gp($editor_request);
@@ -180,7 +187,7 @@ $editor_request = MockRequest->new(
     is_guest_flag => 0,
     is_editor_flag => 1,
     nodedata => $editor_user,
-    postdata => { users => [{ username => 'normaluser10', amount => 100 }] }
+    postdata => { users => [{ username => $bless_target->{title}, amount => 100 }] }
 );
 
 $result = $api->grant_xp($editor_request);
@@ -197,11 +204,11 @@ my $admin_request = MockRequest->new(
     is_guest_flag => 0,
     is_admin_flag => 1,
     nodedata => $admin_user,
-    postdata => { users => [{ username => 'normaluser10', amount => 10 }] }
+    postdata => { users => [{ username => $bless_target->{title}, amount => 10 }] }
 );
 
 # Note: using stored original_xp from setup
-$normal_user = $DB->getNode("normaluser10", "user");
+$normal_user = $DB->getNodeById($bless_target->{node_id}, 'force');
 
 $result = $api->grant_xp($admin_request);
 is($result->[0], $api->HTTP_OK, "Admin gets HTTP 200 for XP grant");
@@ -211,7 +218,7 @@ is($result->[1]{results}[0]{amount}, 10, "XP amount is correct");
 
 # Revert XP - wrapped to prevent test failures
 try {
-    $normal_user = $DB->getNode("normaluser10", "user");
+    $normal_user = $DB->getNodeById($bless_target->{node_id}, 'force');
     $APP->adjustExp($normal_user, -10) if $normal_user;
 } catch { diag("XP revert warning: $_"); };
 
@@ -225,7 +232,7 @@ $editor_request = MockRequest->new(
     is_guest_flag => 0,
     is_editor_flag => 1,
     nodedata => $editor_user,
-    postdata => { users => [{ username => 'normaluser10', amount => 5 }] }
+    postdata => { users => [{ username => $bless_target->{title}, amount => 5 }] }
 );
 
 $result = $api->grant_cools($editor_request);
@@ -242,7 +249,7 @@ $admin_request = MockRequest->new(
     is_guest_flag => 0,
     is_admin_flag => 1,
     nodedata => $admin_user,
-    postdata => { users => [{ username => 'normaluser10', amount => -5 }] }
+    postdata => { users => [{ username => $bless_target->{title}, amount => -5 }] }
 );
 
 $result = $api->grant_cools($admin_request);
@@ -260,7 +267,7 @@ $editor_request = MockRequest->new(
     is_guest_flag => 0,
     is_editor_flag => 1,
     nodedata => $editor_user,
-    postdata => { users => [{ username => 'normaluser10' }] }
+    postdata => { users => [{ username => $bless_target->{title} }] }
 );
 
 $result = $api->fiery_hug($editor_request);
@@ -272,7 +279,7 @@ like($result->[1]{error}, qr/bear|bobo/i, "Fiery hug denied with bear message");
 #############################################################################
 
 # Note: using stored original_gp from setup
-$normal_user = $DB->getNode("normaluser10", "user");
+$normal_user = $DB->getNodeById($bless_target->{node_id}, 'force');
 
 $admin_request = MockRequest->new(
     node_id => $admin_user->{node_id},
@@ -280,7 +287,7 @@ $admin_request = MockRequest->new(
     is_guest_flag => 0,
     is_admin_flag => 1,
     nodedata => $admin_user,
-    postdata => { users => [{ username => 'normaluser10' }] }
+    postdata => { users => [{ username => $bless_target->{title} }] }
 );
 
 $result = $api->fiery_hug($admin_request);
@@ -291,7 +298,7 @@ is($result->[1]{results}[0]{amount}, -1, "Fiery hug removes 1 GP");
 
 # Revert GP (add back the 1 that was removed) - wrapped to prevent test failures
 try {
-    $normal_user = $DB->getNode("normaluser10", "user");
+    $normal_user = $DB->getNodeById($bless_target->{node_id}, 'force');
     $APP->adjustGP($normal_user, 1) if $normal_user;
 } catch { diag("Fiery hug GP revert warning: $_"); };
 
@@ -324,7 +331,7 @@ $admin_request = MockRequest->new(
     is_admin_flag => 1,
     nodedata => $admin_user,
     postdata => { users => [
-        { username => 'normaluser10', amount => 1 },
+        { username => $bless_target->{title}, amount => 1 },
         { username => 'nonexistent_xyz', amount => 1 },
         { username => 'root', amount => 1 }
     ]}
@@ -339,7 +346,7 @@ is($result->[1]{results}[2]{success}, 1, "Third user succeeded");
 
 # Revert GP changes - wrap in try/catch to prevent test failures on cleanup
 try {
-    $normal_user = $DB->getNode("normaluser10", "user");
+    $normal_user = $DB->getNodeById($bless_target->{node_id}, 'force');
     $APP->adjustGP($normal_user, -1) if $normal_user;
     $admin_user = $DB->getNode("root", "user");
     $APP->adjustGP($admin_user, -1) if $admin_user;
@@ -419,7 +426,7 @@ subtest 'grant_cools to other user preserves their vars' => sub {
     plan tests => 7;
 
     # Get a target user
-    my $target = $DB->getNode("normaluser25", "user", 'force');
+    my $target = $DB->getNodeById($bless_target->{node_id}, 'force');
     ok($target, "Got target user");
 
     # Get current vars and set a marker
@@ -436,7 +443,7 @@ subtest 'grant_cools to other user preserves their vars' => sub {
         is_guest_flag => 0,
         is_admin_flag => 1,
         nodedata => $admin,
-        postdata => { users => [{ username => 'normaluser25', amount => 2 }] }
+        postdata => { users => [{ username => $bless_target->{title}, amount => 2 }] }
     );
 
     my $result = $api->grant_cools($bestow_request);
@@ -444,7 +451,7 @@ subtest 'grant_cools to other user preserves their vars' => sub {
     is($result->[1]{results}[0]{success}, 1, "Bestow succeeded");
 
     # CRITICAL: Verify cools were saved on target
-    $target = $DB->getNode("normaluser25", "user", 'force');
+    $target = $DB->getNodeById($bless_target->{node_id}, 'force');
     my $target_vars_after = Everything::getVars($target);
     my $cools_after = $target_vars_after->{cools} || 0;
 
@@ -460,11 +467,13 @@ subtest 'grant_cools to other user preserves their vars' => sub {
     Everything::setVars($target, $target_vars_after);
 
     # Verify cleanup
-    $target = $DB->getNode("normaluser25", "user", 'force');
+    $target = $DB->getNodeById($bless_target->{node_id}, 'force');
     my $final_vars = Everything::getVars($target);
     ok(!exists $final_vars->{test_bestow_marker}, "Cleanup: target marker removed");
     is($final_vars->{cools} || 0, $cools_before, "Cleanup: target cools reverted");
 };
+
+TestSeed::cleanup($DB);
 
 done_testing();
 

@@ -96,6 +96,26 @@ SKIP: {
     is( $type_of->('/api/pagestate/lookup/user/root'), 'user',
         'lookup/:type/:title path form resolves' );
 
+    # Per-document-type addressing: the facade exists to serve controller-class
+    # nodes, and each carries the contentData.type that DocumentComponent.js (and
+    # the future React router) keys its view off. Superdocs normalize to a
+    # document-specific key (title-slug), not the bare "superdoc" type -- pin a
+    # few so a normalize/resolve regression can't silently mistype a whole class
+    # of pages during the routing flip. Rows whose node isn't in this DB (seed
+    # variance) are skipped, not failed.
+    my %type_cases = (
+        'Settings'                 => [ 'superdoc', 'settings' ],                  # core system superdoc
+        "Everything's Most Wanted" => [ 'superdoc', 'everything_s_most_wanted' ],  # content superdoc
+        'Coffee Culture'           => [ 'category', 'category' ],                  # category controller-class
+    );
+    for my $title ( sort keys %type_cases ) {
+        my ( $type, $want ) = @{ $type_cases{$title} };
+        ( my $esc = $title ) =~ s/([^A-Za-z0-9])/sprintf('%%%02X', ord $1)/ge;
+        my $got = $type_of->("/api/pagestate?title=$esc&type=$type");
+        if ( !defined $got ) { diag("skip '$title' ($type): not resolvable in this DB"); next; }
+        is( $got, $want, "$type '$title' resolves contentData.type='$want'" );
+    }
+
     my $bad = $ua->get('http://localhost/api/pagestate/lookup/e2node/NoSuchNode_zzz_999');
     is( $bad->code, 200, 'bad lookup is still HTTP 200 (E2 convention)' );
     my $bd = JSON->new->decode( $bad->content );

@@ -14,6 +14,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::e2node;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -28,7 +29,9 @@ ok($api, "Created e2node API instance");
 # Test Setup: Get test users
 #############################################################################
 
-my $normal_user = $DB->getNode("normaluser1", "user");
+# Dedicated actor instead of shared normaluser1 (other tests mutate it; raced
+# under prove -j4). The e2nodes/writeups it creates are owned by it. #4267
+my $normal_user = TestSeed::make_user($DB, $APP, label => 'normal', experience => 5000);
 ok($normal_user, "Got normal user");
 
 my $editor_user = $DB->getNode("root", "user");
@@ -582,6 +585,8 @@ $DB->nukeNode($e2node, $editor_user) if $e2node;
 
 my $target = $DB->getNodeById($target_id);
 $DB->nukeNode($target, $editor_user) if $target;
+
+TestSeed::cleanup($DB);
 
 done_testing();
 
