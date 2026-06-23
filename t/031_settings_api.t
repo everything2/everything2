@@ -9,12 +9,14 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
+use lib "$FindBin::Bin/lib";
 
 use Test::More;
 use Everything;
 use Everything::Application;
 use Everything::API::nodelets;
 use JSON;
+use TestSeed;
 
 # Suppress expected warnings
 $SIG{__WARN__} = sub {
@@ -39,9 +41,20 @@ ok($APP, "Application object created");
 # 4. Validation (nodelet IDs must be valid)
 #############################################################################
 
-# Get test user (use e2e_user instead of root to avoid modifying root's settings)
-my $test_user = $DB->getNode("e2e_user", "user");
-ok($test_user, "Got test user (e2e_user)");
+# Dedicated user so this test's nodelet-order writes don't race other tests on a
+# shared user (this file previously hand-picked e2e_user "to avoid modifying
+# root's settings" -- now isolated properly). #4267
+my $test_user = TestSeed::make_user($DB, $APP, label => 'settings', experience => 1000);
+ok($test_user, "Got test user (dedicated)");
+
+# A fresh dedicated user has no nodelet order (seed users carry one); seed a valid
+# one from real core nodelet node_ids so the reorder/restore tests have a baseline.
+{
+    my $seed = Everything::getVars($test_user);
+    $seed->{nodelets} = '262,263,91,165437,170070';  # Epicenter,New Writeups,Other Users,Vitals,Chatterbox
+    Everything::setVars($test_user, $seed);
+    $test_user = $DB->getNodeById($test_user->{node_id}, 'force');
+}
 
 # Get original nodelet order
 my $VARS = Everything::getVars($test_user);
@@ -221,5 +234,7 @@ package main;
     ok(!$data->{success}, 'Response has success=false');
     is($data->{error}, 'invalid_json', 'Error code is invalid_json');
 }
+
+TestSeed::cleanup($DB);
 
 done_testing();

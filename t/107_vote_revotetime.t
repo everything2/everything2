@@ -29,10 +29,12 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
+use lib "$FindBin::Bin/lib";
 
 use Test::More;
 use Everything;
 use Everything::Application;
+use TestSeed;
 
 $SIG{__WARN__} = sub {
     my $w = shift;
@@ -45,8 +47,10 @@ my $APP = $Everything::APP;
 ok($DB,  'Database connection established');
 ok($APP, 'Application object created');
 
-my $voter  = $DB->getNode('normaluser1', 'user');
-my $author = $DB->getNode('normaluser2', 'user');
+# Dedicated voter + author so concurrent tests don't race normaluser1's
+# votesleft or normaluser2's GP/XP under prove -j4. #4267
+my $voter  = TestSeed::make_user($DB, $APP, label => 'voter',  experience => 1000, votesleft => 10);
+my $author = TestSeed::make_user($DB, $APP, label => 'author', experience => 1000);
 ok($voter && $author, 'Got voter + author users');
 
 # Fresh writeup to vote on.
@@ -137,5 +141,7 @@ $DB->sqlDelete('vote', "vote_id=$writeup_id");
 $DB->sqlDelete('vote', "vote_id=$writeup_id");
 $DB->nukeNode($DB->getNodeById($writeup_id, 'force'), -1) if $DB->getNodeById($writeup_id, 'force');
 $DB->nukeNode($DB->getNodeById($e2node_id, 'force'), -1)  if $DB->getNodeById($e2node_id, 'force');
+
+TestSeed::cleanup($DB);
 
 done_testing();

@@ -9,12 +9,14 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
+use lib "$FindBin::Bin/lib";
 
 use Test::More;
 use Everything;
 use Everything::Application;
 use Everything::API::giftshop;
 use Everything::SecurityLog qw(:events);
+use TestSeed;
 
 # Declare globals so MockUser can access them
 our ($APP, $DB);
@@ -107,8 +109,11 @@ package MockUser {
 my $api = Everything::API::giftshop->new();
 ok($api, "Created giftshop API instance");
 
-# Helper: Get normaluser1 and boost experience for level-gated tests
-my $test_user = $DB->getNode("normaluser1", "user");
+# Dedicated buyer + gift recipient so concurrent tests don't race normaluser1's
+# experience/GP (this test boosts experience to 50000) or genericdev's
+# votes/GP/messages from received gifts under prove -j4. #4267
+my $test_user = TestSeed::make_user($DB, $APP, label => 'buyer', experience => 50000, numwriteups => 100);
+my $gift_recipient = TestSeed::make_user($DB, $APP, label => 'giftee', experience => 1000);
 my $original_experience = $test_user->{experience};
 
 # Also need to set numwriteups in user vars for level calculation
@@ -571,9 +576,9 @@ subtest "Eddie message - give votes" => sub {
   ok($eddie, "Got Cool Man Eddie user");
 
   # Get recipient user (clear cache to avoid stale data from other tests)
-  my $recipient_node = $DB->getNode('genericdev', 'user');
+  my $recipient_node = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
-  my $recipient = $DB->getNode('genericdev', 'user');
+  my $recipient = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   ok($recipient, "Got genericdev as recipient");
 
   # Record the highest message_id before our action for filtering
@@ -600,7 +605,7 @@ subtest "Eddie message - give votes" => sub {
     user => $user,
     method => 'POST',
     postdata => {
-      recipient => 'genericdev',
+      recipient => $gift_recipient->{title},
       amount => 5,
     }
   );
@@ -630,9 +635,9 @@ subtest "Eddie message - give ching" => sub {
   ok($eddie, "Got Cool Man Eddie user");
 
   # Get recipient user (clear cache to avoid stale data from other tests)
-  my $recipient_node = $DB->getNode('genericdev', 'user');
+  my $recipient_node = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
-  my $recipient = $DB->getNode('genericdev', 'user');
+  my $recipient = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   ok($recipient, "Got genericdev as recipient");
 
   # Record the highest message_id before our action for filtering
@@ -660,7 +665,7 @@ subtest "Eddie message - give ching" => sub {
     user => $user,
     method => 'POST',
     postdata => {
-      recipient => 'genericdev',
+      recipient => $gift_recipient->{title},
     }
   );
 
@@ -700,9 +705,9 @@ subtest "Eddie message - give star" => sub {
   ok($eddie, "Got Cool Man Eddie user");
 
   # Get recipient user (clear cache to avoid stale data from other tests)
-  my $recipient_node = $DB->getNode('genericdev', 'user');
+  my $recipient_node = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
-  my $recipient = $DB->getNode('genericdev', 'user');
+  my $recipient = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   ok($recipient, "Got genericdev as recipient");
 
   # Record the highest message_id before our action for filtering
@@ -734,7 +739,7 @@ subtest "Eddie message - give star" => sub {
     user => $user,
     method => 'POST',
     postdata => {
-      recipient => 'genericdev',
+      recipient => $gift_recipient->{title},
       color => 'Gold',
       reason => 'Great work on testing',
     }
@@ -768,9 +773,9 @@ subtest "Eddie message - give egg" => sub {
   ok($eddie, "Got Cool Man Eddie user");
 
   # Get recipient user (clear cache to avoid stale data from other tests)
-  my $recipient_node = $DB->getNode('genericdev', 'user');
+  my $recipient_node = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
-  my $recipient = $DB->getNode('genericdev', 'user');
+  my $recipient = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   ok($recipient, "Got genericdev as recipient");
 
   # Clear any existing messages from Eddie to recipient
@@ -801,7 +806,7 @@ subtest "Eddie message - give egg" => sub {
     user => $user,
     method => 'POST',
     postdata => {
-      recipient => 'genericdev',
+      recipient => $gift_recipient->{title},
     }
   );
 
@@ -829,9 +834,9 @@ subtest "Eddie message - anonymous flag" => sub {
   my $eddie = $DB->getNode('Cool Man Eddie', 'user');
 
   # Get recipient user (clear cache to avoid stale data from other tests)
-  my $recipient_node = $DB->getNode('genericdev', 'user');
+  my $recipient_node = $DB->getNodeById($gift_recipient->{node_id}, 'force');
   $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
-  my $recipient = $DB->getNode('genericdev', 'user');
+  my $recipient = $DB->getNodeById($gift_recipient->{node_id}, 'force');
 
   # Record the highest message_id before our action for filtering
   my $max_msg_before = $DB->sqlSelect('MAX(message_id)', 'message') || 0;
@@ -857,7 +862,7 @@ subtest "Eddie message - anonymous flag" => sub {
     user => $user,
     method => 'POST',
     postdata => {
-      recipient => 'genericdev',
+      recipient => $gift_recipient->{title},
       amount => 3,
       anonymous => 1,
     }
@@ -877,5 +882,7 @@ subtest "Eddie message - anonymous flag" => sub {
   # Clean up only our message
   $DB->sqlDelete('message', "author_user = $eddie->{user_id} AND for_user = $recipient->{user_id} AND message_id > $max_msg_before");
 };
+
+TestSeed::cleanup($DB);
 
 done_testing();

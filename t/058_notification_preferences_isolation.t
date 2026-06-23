@@ -13,6 +13,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::preferences;
 use JSON;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -39,9 +40,10 @@ ok($APP, "Application object created");
 #   Everything::setVars($user_node, $VARS);
 #############################################################################
 
-# Get test user
-my $test_user = $DB->getNode("e2e_user", "user");
-ok($test_user, "Got test user (e2e_user)");
+# Dedicated user so concurrent tests don't race e2e_user's vars/settings while
+# this test deliberately rewrites them to prove the no-erase fix. #4267
+my $test_user = TestSeed::make_user($DB, $APP, label => 'prefs', experience => 1000);
+ok($test_user, "Got test user (dedicated)");
 
 # Get a valid notification type
 my $notification_type = $DB->getType('notification');
@@ -324,5 +326,7 @@ subtest 'Cleanup test user' => sub {
     my $result = $api->set_preferences($request);
     is($result->[0], $api->HTTP_OK, "Cleanup: reset preferences to defaults");
 };
+
+TestSeed::cleanup($DB);
 
 done_testing();

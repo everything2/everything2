@@ -1,6 +1,6 @@
 # Everything2 — AI Assistant Context
 
-**Last Updated**: 2026-06-11
+**Last Updated**: 2026-06-23
 **Maintainer**: Jay Bonci (jay@bonci.net)
 
 This file is a thin layer of non-discoverable context. For anything you can derive by reading code or running `git log`, do that instead. Treat `docs/` as the deeper reference and this file as a finger pointing at it.
@@ -96,18 +96,20 @@ Test command shortcuts: `./docker/devbuild.sh` (full rebuild + tests), `npm test
 
 ---
 
-## Operational priorities (June 2026, post-PSGI)
+## Operational priorities (June 2026, post-PSGI, post-opcode)
 
-We're past the PSGI cutover (LIVE in prod) and the MySQL 8.4 migration (done #4226). These are pointers; verify with `git log`/`git status` before acting. The agreed sequence (decided June 2026) — the **destination is full React routing**, reached in this order:
+We're past the PSGI cutover (LIVE in prod), the MySQL 8.4 migration (done #4226), and the **opcode→API migration (done #4335 — verified 2026-06-23)**: `Everything::Delegation::opcode` is gone, `execOpCode` + the `op=` dispatch are removed from `HTML.pm`, and there's no `nodepack/opcode/`. That was the gating prerequisite, so **React routing is now unblocked.** These are pointers; verify with `git log`/`git status` before acting. The destination is a **faster, lighter, React-routed site**, reached in this order:
 
-1. **htmlcode retirement** (#4259, `epoch:infra-cleanup`) — *in progress, current detour.* Factor `Everything::Delegation::htmlcode` (65 subs, ~37 live) into real, unit-tested `Everything::Application` methods; update callers; retire the delegation subs + orphaned nodepack nodes. Batch 1 (`getGravatarMD5`/`DateTimeLocal`/`isSpecialDate`) merged (#4260). Thin/consolidate as we go. Each batch lands `Refs #4259` (umbrella stays open).
+1. **htmlcode retirement** (#4259, `epoch:infra-cleanup`) — *in progress, current detour.* Factor the remaining `Everything::Delegation::htmlcode` subs (~11 live: `publishwriteup`/`unpublishwriteup`, `atomise`, `canpublishas`, `send`, `screen`, `user`, `url`, `add`, `nopublishreason`, …) into real, unit-tested `Everything::Application` methods; update callers; retire the delegation subs + orphaned nodepack nodes. The sibling Delegation modules (`achievement`/`maintenance`/`notification`/`room`) are on the same chopping block as each is displaced. Each batch lands `Refs #4259` (umbrella stays open).
 
-2. **opcode → API** (#4198, `epoch:react-routing`) — **the gating prerequisite for React routing.** Migrate live `op=` action handlers (`Everything::Delegation::opcode`, 44 subs) into `POST /api/…` endpoints so forms call APIs instead of server-side `op=` dispatch. *Full client-side React routing cannot be clean until this is done* (you can't client-route a page whose form POSTs `op=X` to be processed and re-rendered server-side). ~115/259 Pages read request params, but most are GET reads (fine through `/api/pagestate`); the blockers are the mutating actions = opcodes.
+2. **Skinny controllers → APIs → React.** Keep collapsing server-rendered `Everything::Page`/legacy controller logic into thin shells over `POST /api/…` endpoints, with the React component owning state and calling the API — the pattern proven on `the_old_hooked_pole` + `everything_s_most_wanted` (#4198). This is the bulk of the controller detangle: every mutating page action becomes an API call a React view drives. As each Document migrates it should graduate from a render-only fixture test to the submit→result→error interaction pattern (templates: `TheOldHookedPole.test.js`, `EverythingsMostWanted.test.js`). ~60 API-driven Documents are still on render-only tests.
 
-3. **React routing** (`epoch:react-routing`: #4255 ✅ pagestate facade, #4257 = 2b chrome/content split, + a client-router issue TBD) — the SPA flip. Pagestate facade + `normalize_types` + the `e2.meta` producer are done. Remaining: the React client router/resolver (parse legacy URL forms → id/type-title), `useDocumentMeta`, a routing-parity test harness, the progressive-flip strategy (keep SSR first paint, client-route subsequent nav), and 2b for the chrome cache. Gated by #4198.
+3. **React routing prep** (`epoch:react-routing`) — the SPA flip. Server-side primitives are DONE + tested: pagestate facade (#4255), `normalize_types`, the `e2.meta` producer, and the legacy-URL route-recovery helper (`t/101`/`t/103`/`t/120`/`t/142`/`t/143`). Remaining BUILD: the React client router/resolver (it re-implements the Perl URL-recovery parsing inline — keep the two parsers in parity; the cross-language LinkNode↔helper round-trip is the biggest untested risk), `useDocumentMeta`, a routing-parity harness, and the progressive flip (SSR first paint, client-route subsequent nav).
 
-4. **ORM / data-model / node-model** — **deferred.** Pull forward *only* if it becomes a cost bottleneck or blocks a needed feature. Rationale (decided June 2026): the node model is adequate today (RDS healthy, not pressured); React routing moves the cost+growth north star and is incremental/reversible; and the API layer built via #4198/React is the **seam that de-risks** a later ORM migration. Do ORM when the data model actively hurts, on the cleaner/smaller surface the API layer exposes — not speculatively first.
+4. **Guest-user chrome caching detour** (#4257, the 2b chrome/content split) — *still to take.* The near-term **page-speed + payload-size** win: cache the non-personalized page chrome for guest users so we stop re-rendering and re-shipping it per request. This is the concrete performance reason to push routing forward; take it on the way to the full client-router flip.
 
-**ecoretool/nodepack retirement** remains a long-term direction that happens organically as each phase above displaces a category (htmlcode/opcode nodes → deleted; templates → React). Not a standalone project.
+5. **ORM / data-model / node-model cleanup** — **deferred to last.** Pull forward *only* if it becomes a cost bottleneck or blocks a needed feature. The node model is adequate today (RDS healthy, not pressured); the API layer built in steps 2–3 is the **seam that de-risks** a later ORM migration, so do it on the cleaner/smaller surface the APIs expose — not speculatively first.
+
+**ecoretool/nodepack retirement** remains a long-term direction that happens organically as each step above displaces a category (htmlcode/opcode nodes → deleted; templates → React). Not a standalone project.
 
 For "what shipped recently," run `git log --oneline --since="2 months ago"` rather than relying on a list here that will rot.

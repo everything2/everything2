@@ -9,11 +9,13 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
+use lib "$FindBin::Bin/lib";
 
 use Test::More;
 use Everything;
 use Everything::Application;
 use Everything::API::messages;
+use TestSeed;
 use JSON;
 use Data::Dumper;
 
@@ -45,12 +47,14 @@ ok($APP, "Application object created");
 #############################################################################
 
 # Get test users - use known existing users for reliable testing
-my $test_user1 = $DB->getNode("root", "user");
-ok($test_user1, "Got first test user (root)");
+# Dedicated message parties instead of shared root / guest user -- other tests
+# read and even wipe their message rows, which raced this test under prove -j4. #4267
+my $test_user1 = TestSeed::make_user($DB, $Everything::APP, label => 'owner');
+ok($test_user1, "Got first test user (dedicated)");
 diag("Test user 1 ID: " . ($test_user1 ? $test_user1->{node_id} : "NONE")) if $ENV{TEST_VERBOSE};
 
-my $test_user2 = $DB->getNode("guest user", "user");
-ok($test_user2, "Got second test user (guest user)");
+my $test_user2 = TestSeed::make_user($DB, $Everything::APP, label => 'party2');
+ok($test_user2, "Got second test user (dedicated)");
 diag("Test user 2 ID: " . ($test_user2 ? $test_user2->{node_id} : "NONE")) if $ENV{TEST_VERBOSE};
 
 # Verify both users exist in node table
@@ -879,8 +883,7 @@ subtest 'Inbox: filter by sender via from_user param' => sub {
 
     # Seed three messages to test_user1's inbox: two from test_user2, one
     # from test_user3 (which exists from earlier subtest setup).
-    my $other_user = $DB->getNode( 'Cool Man Eddie', 'user' )
-        || $DB->getNode( 'guest user', 'user' );
+    my $other_user = TestSeed::make_user( $DB, $Everything::APP, label => 'sender' );
     plan skip_all => 'need a second message sender available'
         unless $other_user
         && $other_user->{node_id} != $test_user2->{node_id};
@@ -978,5 +981,7 @@ subtest 'Archive does not bump message.tstamp (#4005 / #4111)' => sub {
 
     $DB->sqlDelete( 'message', "message_id=$id" );
 };
+
+TestSeed::cleanup($DB);
 
 done_testing();

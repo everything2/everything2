@@ -13,6 +13,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::user_search;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -27,10 +28,13 @@ ok($api, "Created user_search API instance");
 # Test Setup: Get test users and create test writeups
 #############################################################################
 
-my $search_user = $DB->getNode("normaluser1", "user");
+# Dedicated search target + viewer instead of shared normaluser1/normaluser2
+# (raced t/068 and others under prove -j4; searches use $search_user->{title}
+# so the dedicated name flows through automatically). #4267
+my $search_user = TestSeed::make_user($DB, $APP, label => 'search', experience => 5000);
 ok($search_user, "Got search target user");
 
-my $viewer_user = $DB->getNode("normaluser2", "user");
+my $viewer_user = TestSeed::make_user($DB, $APP, label => 'viewer');
 ok($viewer_user, "Got viewer user");
 
 my $editor_user = $DB->getNode("root", "user");
@@ -39,7 +43,11 @@ ok($editor_user, "Got editor/admin user");
 my $guest_user = $DB->getNode("guest user", "user");
 ok($guest_user, "Got guest user");
 
-# Create test writeups for the search user
+# Create test writeups for the search user. Give them a real writeuptype --
+# the dedicated search user has no other writeups, so the search response's
+# writeup_type would otherwise be empty (the shared normaluser1 only passed
+# before because its real seeded writeups carried a type). #4267
+my $wrtype = $DB->getNode('thing', 'writeuptype');
 my @test_writeup_ids;
 for my $i (1..3) {
     my $e2node_title = "Test UserSearch Node $i " . time();
@@ -58,6 +66,7 @@ for my $i (1..3) {
             parent_e2node => $e2node_id,
             doctext => "Test writeup $i for user_search API testing.",
             publishtime => "2025-01-" . sprintf("%02d", $i) . " 12:00:00",
+            wrtype_writeuptype => $wrtype->{node_id},
             notnew => 0  # Not hidden
         }
     );
@@ -490,6 +499,7 @@ foreach my $test_data (@test_writeup_ids) {
     $DB->nukeNode($writeup, $editor_user) if $writeup;
     $DB->nukeNode($e2node, $editor_user) if $e2node;
 }
+TestSeed::cleanup($DB);
 
 done_testing();
 

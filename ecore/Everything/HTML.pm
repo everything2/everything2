@@ -777,56 +777,13 @@ sub gotoNode
 
 	my $displaytype = $query->param("displaytype");
 
-	my $updateAllowed = !$no_update && canUpdateNode($user_id, $NODE);
-
-	if ($updateAllowed && $$NODE{type}{verify_edits}) {
-		my $type = $$NODE{type}{title};
-		if (!htmlcode('verifyRequest', "edit_$type")) {
-
-			$updateAllowed = 0;
-
-			# Blank the passed values if this looks like an XSRF
-			if ($query->param('add') || $query->param('group')
-				|| (grep { /^${type}_/ } $query->Vars)) {
-				$query->delete_all();
-			}
-		}
-	}
-
-	if ($updateAllowed) {
-		if (my $groupadd = $query->param('add')) {
-			insertIntoNodegroup($NODE, $user_id, $groupadd,
-				$query->param('orderby'));
-		}
-		
-		if ($query->param('group')) {
-			my @newgroup;
-
-			my $counter = 0;
-			while (my $item = $query->param($counter++)) {
-				push @newgroup, $item;
-			}
-
-			replaceNodegroup ($NODE, \@newgroup, $user_id);
-		}
-
-		my @updatefields = $query->param;
-		my $updateflag;
-
-		my $RESTRICTED = getVars(getNode('restricted fields', 'setting'));
-		$RESTRICTED ||= {};
-		foreach my $field (@updatefields) {
-			if ($field =~ /^$$NODE{type}{title}\_(\w*)$/) {
-				next if exists $$RESTRICTED{$1} or exists $$RESTRICTED{"$$NODE{type}{title}\_$1"};	
-				$$NODE{$1} = $query->param($field);
-				$updateflag = 1;
-			}	
-		}
-		if ($updateflag) {
-			updateNode($NODE, $USER); 
-			if (getId($USER) == getId($NODE)) { $USER = $NODE; }
-		}
-	}
+	# Legacy node-update-via-URL path REMOVED (#4198). gotoNode used to apply
+	# edits inline when a request carried add / group / <type>_<field> params --
+	# the form the `openform` htmlcode rendered, XSRF-guarded for verify_edits
+	# types (nodetype/user/sustype) by verifyRequest. openform and that form are
+	# gone; all editing now goes through APIs (basicedit, usergroups, nodegroups),
+	# so this block was dead but still XSRF-reachable. verifyRequest /
+	# verifyRequestHash are now caller-free and retired.
 	
 
 	#updateHits ($NODE, $USER) unless $query->param('op') ne "" or $query->param("displaytype") eq "ajaxupdate";

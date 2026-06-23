@@ -9,12 +9,14 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
+use lib "$FindBin::Bin/lib";
 
 use Test::More;
 use Everything;
 use Everything::SecurityLog qw(:events);
 use Everything::Application;
 use Everything::API::wheel;
+use TestSeed;
 
 # Declare globals so MockUser can access them
 our ($APP, $DB);
@@ -42,9 +44,10 @@ ok($DB, "Database connection established");
 # 5. Prize distribution and user updates
 #############################################################################
 
-# Get test user
-my $test_user = $DB->getNode("normaluser1", "user");
-ok($test_user, "Got test user normaluser1");
+# Dedicated spinner so concurrent tests don't race normaluser1's GP/vars
+# (the wheel mutates GP) under prove -j4. #4267
+my $test_user = TestSeed::make_user($DB, $APP, label => 'spinner', GP => 100, experience => 1000);
+ok($test_user, "Got test user (dedicated)");
 
 # Helper: Create a mock request object
 package MockRequest {
@@ -288,5 +291,7 @@ subtest "Spin counter increments" => sub {
     is($response->[0], 200, "Spin successful");
     is($response->[1]->{user}->{spinCount}, $original_spin_count + 1, "Spin counter incremented");
 };
+
+TestSeed::cleanup($DB);
 
 done_testing();

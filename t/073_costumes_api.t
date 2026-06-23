@@ -13,6 +13,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::costumes;
 use MockRequest;
+use TestSeed;
 
 # Initialize Everything
 initEverything('development-docker');
@@ -31,7 +32,10 @@ ok($api, "Created costumes API instance");
 # Test Setup: Get test users
 #############################################################################
 
-my $normal_user = $DB->getNode("normaluser1", "user");
+# Dedicated buyer so concurrent tests don't race normaluser1's GP/costume vars
+# (buy_costume deducts GP) under prove -j4. admin/editor stay real for their
+# role checks. #4267
+my $normal_user = TestSeed::make_user($DB, $APP, label => 'buyer', GP => 1000, experience => 1000);
 ok($normal_user, "Got normal user");
 
 my $admin_user = $DB->getNode("root", "user");
@@ -287,6 +291,8 @@ SKIP: {
     is($result->[0], $api->HTTP_OK, "User not found returns HTTP 200");
     is($result->[1]{success}, 0, "User not found fails");
 }
+
+TestSeed::cleanup($DB);
 
 done_testing();
 

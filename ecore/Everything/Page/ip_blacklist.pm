@@ -125,7 +125,8 @@ sub addIPToBlacklist {
     # Check if it's a CIDR range
     my ( $isRangeAddr, $rangeMin, $rangeMax ) = $self->parseCIDRRange($ipToAdd);
 
-    # For single IPs, use the blacklistIP htmlcode
+    # For single IPs, validate + insert directly (this page owns the logic; the
+    # old blacklistIP htmlcode was retired -- its other caller moved to the API).
     if ( !$isRangeAddr ) {
         # Validate single IP
         unless ( $ipToAdd =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/ ) {

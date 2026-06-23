@@ -16,6 +16,7 @@ use Everything;
 use Everything::Application;
 use Everything::API::user;
 use MockRequest;
+use TestSeed;
 
 # Suppress expected warnings throughout the test
 $SIG{__WARN__} = sub {
@@ -44,9 +45,11 @@ ok($DB, "Database connection established");
 # 6. Successful cure operation
 #############################################################################
 
-# Get test users
-my $test_user = $DB->getNode("normaluser1", "user");
-ok($test_user, "Got test user normaluser1");
+# Dedicated cure target so this test's infected-flag writes don't race other
+# tests on normaluser1's vars under prove -j4. admin stays root (cure is
+# admin-gated). #4267
+my $test_user = TestSeed::make_user($DB, $Everything::APP, label => 'infected', experience => 1000);
+ok($test_user, "Got test user (dedicated)");
 
 my $root = $DB->getNode("root", "user");
 ok($root, "Got root (admin) user");
@@ -234,5 +237,7 @@ subtest "Successful cure operation" => sub {
     delete $vars->{infected};
     Everything::setVars($test_user, $vars);
 }
+
+TestSeed::cleanup($DB);
 
 done_testing();

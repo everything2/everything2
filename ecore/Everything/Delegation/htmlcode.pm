@@ -57,9 +57,6 @@ use DateTime;
 # Used by publishwriteup
 use DateTime::Format::Strptime;
 
-# Used by verifyRequestHash, getGravatarMD5, verifyRequest, verifyRequestForm
-use Digest::MD5 qw(md5_hex);
-
 # Used by uploaduserimage, giftshop_buyching
 use POSIX qw(strftime ceil floor);
 use File::Copy;
@@ -204,22 +201,11 @@ sub publishwriteup
 
 # weblog htmlcode REMOVED - orphaned legacy weblog display (rendered op=removeweblog remove-links); htmlcode('weblog') invoked nowhere, node 458113 unreferenced. Modern path: Controller/usergroup + React + API::weblog. #4310. Jun 2026.
 
-sub verifyRequestHash
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  #Generates a hashref used to verify the form submission. Pass a prefix.
-  my ($prefix) = @_;
-  my $rand = rand(999999999);
-  my $nonce = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $rand);
-
-  return {$prefix . '_nonce' => $nonce, $prefix . '_seed' => $rand};
-}
+# verifyRequestHash + verifyRequest REMOVED - they were the nonce generator +
+# checker for the legacy gotoNode node-update-via-URL form (rendered by the now-
+# dead `openform`). That form + its only other callers (the_old_hooked_pole,
+# everything_s_most_wanted) are gone, and the gotoNode update block was removed,
+# so both are caller-free. #4198
 
 # sends a private message
 #
@@ -1292,116 +1278,15 @@ sub addNotification
   return $APP->add_notification(@_);
 }
 
-sub verifyRequest
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  # checks that the form was a real e2 one
-  my ($prefix) = @_;
-
-  my $seed = scalar($query->param($prefix . '_seed'));
-  $seed = '' if not defined($seed);
-  my $email = $$USER{email} // '';
-  my $test = md5_hex($$USER{passwd} . ' ' . $email . $seed);
-  my $nonce = scalar($query->param($prefix . '_nonce'));
-  return (defined($nonce) and $test eq $nonce) ? 1 : 0;
-}
-
 # isInfected REMOVED - Dead code, old infection game feature. Jan 2026.
 
 # ip_lookup_tools REMOVED - Migrated to React UserToolsModal. Jan 2026.
 
-sub blacklistIP
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-#	purpose
-#		add an IP address to the blacklist table or update an existing
-#		entry for the address
-#
-#	parameters
-#		IP to block, reason to block it
-#
-#	returns
-#		error report or report on action done
-#
-	my ($ipToAdd, $blockReason) = @_;
-
-	return 'No IP given to blacklist' unless $ipToAdd;
-	# still waiting for IPv6...
-	return "'".$APP->encodeHTML($ipToAdd)."' is not a valid IP address" unless $ipToAdd =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-	my $result = '';
-
-	my $data = {ipblacklist_user => $$USER{user_id}
-		, ipblacklist_ipaddress => $ipToAdd
-	};
-
-	my $update = 0;
-
-	my $listRef = $DB -> sqlSelect('ipblacklistref_id'
-		, 'ipblacklist'
-		, "ipblacklist_ipaddress = '$ipToAdd'"
-	);
-
-	if ($listRef){
-		$$data{ipblacklistref_id} = $listRef;
-		$update = {%$data
-			, -ipblacklist_comment => 'CONCAT('.$DB->quote("$blockReason <br>&#91;").
-				", ipblacklist_timestamp, ']: ', ipblacklist_comment)"
-		};
-		$result = "updated IP blacklist entry for $ipToAdd";
-	}else{
-		$DB -> sqlInsert('ipblacklistref', {});
-		$$data{-ipblacklistref_id} = 'LAST_INSERT_ID()';
-		$$data{ipblacklist_comment} = $blockReason;
-		$result = "added $ipToAdd to IP blacklist";
-	}
-
-	return "Error adding $ipToAdd to blacklist" unless
-		$DB -> sqlInsert('ipblacklist', $data, $update);
-
-	$APP->securityLog(SECLOG_IP_BLACKLIST, $USER, "$$USER{title} $result: \"$blockReason.\"");
-	$result =~ s/^(\w)/\u$1/;
-	return $result;
-}
-
-sub lock_user_account
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my ($uid) = @_;
-  getRef $uid;
-  return unless $uid;
-  return unless($$uid{type_nodetype} == getId(getType('user')));
-  $$uid{acctlock} = $$USER{user_id};
-
-  $APP->securityLog(SECLOG_ACCOUNT_LOCK, $USER, "$$uid{title}'s account was locked by $$USER{title}");
-
-  # Delete all public messages from locked user
-  $DB->sqlDelete('message', "for_user = 0 AND author_user = $$uid{user_id}");
-
-  # revert all review drafts to 'findable' status
-  # (they won't actually be findable unless/until the account is unlocked)
-  $DB -> sqlUpdate('draft JOIN node ON draft_id=node_id', {publication_status => getId(getNode('findable', 'publication_status'))}, "node.author_user = $$uid{node_id} AND
-    draft.publication_status = " . getId(getNode('review', 'publication_status')));
-
-  return updateNode($uid, -1);
-}
+# blacklistIP REMOVED - migrated to Everything::API::admin::_blacklist_ip. Its
+# only caller, the_old_hooked_pole, now drives the mass cleanup through
+# POST /api/admin/users/cleanup. #4198
+# lock_user_account REMOVED - migrated to Everything::API::admin::_do_lock_account
+# (shared by lock_user + the cleanup endpoint). #4198
 
 # decode_short_string REMOVED - Dead code, replaced by Everything::Page::short_url_lookup. Jan 2026.
 # create_short_url REMOVED - Dead code, replaced by Everything::Application::create_short_url. Jan 2026.

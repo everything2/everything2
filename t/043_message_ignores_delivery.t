@@ -19,22 +19,38 @@ initEverything('development-docker');
 
 ok($DB, "Database connection established");
 
-# Get test users
-my $sender = $DB->getNode('root', 'user');
-ok($sender, 'Got sender user');
+# Dedicated sender / recipient / third-user instead of shared singletons
+# root / guest user / Cool Man Eddie. Other messaging tests mutate those
+# (ignore lists, in_room presence, message rows), which raced this test under
+# prove -j4. root stays only as the privileged actor for node ops. #4267
+my $root = $DB->getNode('root', 'user');
+my $usuffix = 'ign' . $$;
+my @created_users;
+my $mk_user = sub {
+  my ($label) = @_;
+  my $uid = $DB->insertNode("e2e_${usuffix}_$label", 'user', $root, undef, 1);
+  push @created_users, $uid;
+  $DB->sqlDelete('user', "user_id=$uid");   # clean user row (user_id=node_id)
+  $DB->sqlInsert('user', { user_id => $uid });
+  $DB->getNodeById($uid, 'force');
+  return $DB->getNode($uid);
+};
 
-my $recipient = $DB->getNode('guest user', 'user');
-ok($recipient, 'Got recipient user');
+my $sender = $mk_user->('sender');
+ok($sender, 'Got sender user (dedicated)');
 
-my $eddie = $DB->getNode('Cool Man Eddie', 'user');
-ok($eddie, 'Got third user (Eddie)');
+my $recipient = $mk_user->('rcpt');
+ok($recipient, 'Got recipient user (dedicated)');
+
+my $eddie = $mk_user->('third');
+ok($eddie, 'Got third user (dedicated)');
 
 # Blessed user nodes for deliver_message testing
 my $sender_node = $APP->node_by_id($sender->{node_id});
 my $recipient_node = $APP->node_by_id($recipient->{node_id});
 my $eddie_node = $APP->node_by_id($eddie->{node_id});
 
-# Clear any existing blocks for test users from previous test runs
+# Clear any existing blocks for these users (defensive; they're fresh anyway)
 $DB->sqlDelete('messageignore', "messageignore_id IN ($sender->{user_id}, $recipient->{user_id}, $eddie->{user_id})");
 $DB->sqlDelete('messageignore', "ignore_node IN ($sender->{user_id}, $recipient->{user_id}, $eddie->{user_id})");
 
@@ -122,7 +138,7 @@ subtest 'User ignoring usergroup messages' => sub {
   my $ug_node = $DB->insertNode(
     $ug_title,
     'usergroup',
-    $sender,
+    $root,
     {
       title => $ug_title,
       groupaccess => 'public'
@@ -131,9 +147,9 @@ subtest 'User ignoring usergroup messages' => sub {
   ok($ug_node, 'Created test usergroup');
 
   # Add members to usergroup
-  $DB->insertIntoNodegroup($ug_node, $sender, $sender);
-  $DB->insertIntoNodegroup($ug_node, $sender, $recipient);
-  $DB->insertIntoNodegroup($ug_node, $sender, $eddie);
+  $DB->insertIntoNodegroup($ug_node, $root,$sender);
+  $DB->insertIntoNodegroup($ug_node, $root,$recipient);
+  $DB->insertIntoNodegroup($ug_node, $root,$eddie);
 
   my $ug_blessed = $APP->node_by_id($ug_node->{node_id});
 
@@ -198,7 +214,7 @@ subtest 'Usergroup messages preserve for_usergroup field' => sub {
   my $ug_node = $DB->insertNode(
     $ug_title,
     'usergroup',
-    $sender,
+    $root,
     {
       title => $ug_title,
       groupaccess => 'public'
@@ -207,8 +223,8 @@ subtest 'Usergroup messages preserve for_usergroup field' => sub {
   ok($ug_node, 'Created test usergroup');
 
   # Add members
-  $DB->insertIntoNodegroup($ug_node, $sender, $sender);
-  $DB->insertIntoNodegroup($ug_node, $sender, $recipient);
+  $DB->insertIntoNodegroup($ug_node, $root,$sender);
+  $DB->insertIntoNodegroup($ug_node, $root,$recipient);
 
   my $ug_blessed = $APP->node_by_id($ug_node->{node_id});
 
@@ -257,7 +273,7 @@ subtest 'Non-member cannot send to usergroup' => sub {
   my $ug_node = $DB->insertNode(
     $ug_title,
     'usergroup',
-    $sender,
+    $root,
     {
       title => $ug_title,
       groupaccess => 'public'
@@ -266,7 +282,7 @@ subtest 'Non-member cannot send to usergroup' => sub {
   ok($ug_node, 'Created test usergroup');
 
   # Add only sender as member (not eddie)
-  $DB->insertIntoNodegroup($ug_node, $sender, $sender);
+  $DB->insertIntoNodegroup($ug_node, $root,$sender);
 
   my $ug_blessed = $APP->node_by_id($ug_node->{node_id});
 
@@ -292,7 +308,7 @@ subtest 'Usergroup archive copy creation' => sub {
   my $ug_node = $DB->insertNode(
     $ug_title,
     'usergroup',
-    $sender,
+    $root,
     {
       title => $ug_title,
       groupaccess => 'public'
@@ -301,11 +317,11 @@ subtest 'Usergroup archive copy creation' => sub {
   ok($ug_node, 'Created test usergroup');
 
   # Add members
-  $DB->insertIntoNodegroup($ug_node, $sender, $sender);
-  $DB->insertIntoNodegroup($ug_node, $sender, $recipient);
+  $DB->insertIntoNodegroup($ug_node, $root,$sender);
+  $DB->insertIntoNodegroup($ug_node, $root,$recipient);
 
   # Enable archive for usergroup
-  $APP->setParameter($ug_node, $sender, 'allow_message_archive', 1);
+  $APP->setParameter($ug_node, $root, 'allow_message_archive', 1);
 
   my $ug_blessed = $APP->node_by_id($ug_node->{node_id});
 
@@ -349,11 +365,15 @@ subtest 'Usergroup archive copy creation' => sub {
   $DB->sqlDelete('node', "node_id=$ug_node->{node_id}");
 };
 
-# Final cleanup: remove any lingering message blocks for test users
+# Final cleanup: remove ignore blocks + nuke the dedicated users (skip_maintenance
+# avoids firing user_delete with an unset global USER).
 $DB->sqlDelete('messageignore', "messageignore_id IN ($sender->{user_id}, $recipient->{user_id}, $eddie->{user_id})");
 $DB->sqlDelete('messageignore', "ignore_node IN ($sender->{user_id}, $recipient->{user_id}, $eddie->{user_id})");
-
-# Reset root user to "outside" room
-$DB->sqlUpdate('user', { in_room => 0 }, "user_id=$sender->{user_id}");
+for my $uid (@created_users) {
+  my $n = $DB->getNodeById($uid, 'force');
+  $DB->nukeNode($n, -1, 0, 1) if $n;
+  $DB->sqlDelete('user', "user_id=$uid");
+  $DB->sqlDelete('message', "for_user=$uid OR author_user=$uid");
+}
 
 done_testing();

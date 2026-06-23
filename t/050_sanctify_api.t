@@ -106,16 +106,38 @@ package MockUser {
 my $api = Everything::API::sanctify->new();
 ok($api, "Created sanctify API instance");
 
-# Helper: Get normaluser1 and boost experience for level-gated tests
-my $test_user = $DB->getNode("normaluser1", "user");
-my $original_experience = $test_user->{experience};
-my $original_gp = $test_user->{GP};
+# Dedicated sanctifier + recipient instead of the shared seed users normaluser1
+# and genericdev, whose GP/level/sanctity this test mutates -- which raced other
+# GP/level/sanctify tests under prove -j4. Throwaway users, nuked in END. #4267
+my $usuffix = 'snt' . $$;
+my @created_users;
+my $root_u = $DB->getNode('root', 'user');
 
-# Also need to set numwriteups in user vars for level calculation
-my $original_vars = $APP->getVars($test_user);
-my $original_numwriteups = $original_vars->{numwriteups};
+my $mk_user = sub {
+  my ($label, %o) = @_;
+  my $uid = $DB->insertNode("e2e_${usuffix}_$label", 'user', $root_u, undef, 1);
+  push @created_users, $uid;
+  $DB->sqlDelete('user', "user_id=$uid");
+  $DB->sqlInsert('user', { user_id => $uid, GP => ($o{GP} // 0), experience => ($o{experience} // 0) });
+  $DB->getNodeById($uid, 'force');
+  my $n = $DB->getNode($uid);
+  if ($o{numwriteups}) {
+    my $v = $APP->getVars($n);
+    $v->{numwriteups} = $o{numwriteups};
+    Everything::setVars($n, $v);
+    $DB->updateNode($n, -1);
+  }
+  return $DB->getNode($n->{node_id});
+};
 
-# Helper to ensure test user is at the right level for tests
+# The sanctify target.
+my $recipient_title = "e2e_${usuffix}_recipient";
+$mk_user->('recipient', GP => 50);
+
+# The sanctifier: level 12+ (experience 50000 + numwriteups 100) and enough GP.
+my $test_user = $mk_user->('sanctifier', GP => 100, experience => 50000, numwriteups => 100);
+
+# Re-assert the sanctifier's level between subtests (idempotent).
 sub boost_test_user_level {
   my $vars = $APP->getVars($test_user);
   $vars->{numwriteups} = 100;
@@ -123,27 +145,23 @@ sub boost_test_user_level {
   Everything::setVars($test_user, $vars);
   $DB->updateNode($test_user, -1);
 
-  # Boost to level 12+ (experience ~50000, numwriteups >= 60)
   $DB->sqlUpdate("user", {experience => 50000}, "user_id = $test_user->{node_id}");
 
-  # Clear cache so re-fetches see updated experience
   $DB->{cache}->removeNode($test_user) if $DB->{cache};
   $test_user = $DB->getNode($test_user->{node_id});
 }
 
-# Set up the test user level now
 boost_test_user_level();
 
-# Cleanup handler to restore state
+# Teardown: nuke the throwaway users (skip_maintenance avoids user_delete firing
+# with an unset global USER).
 END {
-  if ($test_user && defined $original_experience && $DB) {
-    $DB->sqlUpdate("user", {experience => $original_experience, GP => $original_gp}, "user_id = $test_user->{node_id}");
-    my $vars = $APP->getVars($test_user);
-    $vars->{numwriteups} = $original_numwriteups;
-    delete $vars->{GPoptout};
-    Everything::setVars($test_user, $vars);
-    $DB->updateNode($test_user, -1);
-    $DB->{cache}->removeNode($test_user) if $DB->{cache};
+  if ($DB) {
+    for my $uid (@created_users) {
+      my $n = $DB->getNodeById($uid, 'force');
+      $DB->nukeNode($n, -1, 0, 1) if $n;
+      $DB->sqlDelete('user', "user_id=$uid");
+    }
   }
 }
 
@@ -327,7 +345,7 @@ subtest "Give - insufficient GP" => sub {
   my $request = MockRequest->new(
     user => $user,
     method => 'POST',
-    postdata => { recipient => 'genericdev' }
+    postdata => { recipient => $recipient_title }
   );
 
   my $result = $api->give($request);
@@ -366,7 +384,7 @@ subtest "GPoptout blocks sanctification" => sub {
   my $request = MockRequest->new(
     user => $user,
     method => 'POST',
-    postdata => { recipient => 'genericdev' }
+    postdata => { recipient => $recipient_title }
   );
 
   my $result = $api->give($request);
@@ -394,9 +412,9 @@ subtest "Successful sanctification" => sub {
   $DB->updateNode($test_user, -1);
 
   # Get recipient fresh from DB (clear cache to avoid stale data from other tests)
-  my $recipient_node = $DB->getNode('genericdev', 'user');
+  my $recipient_node = $DB->getNode($recipient_title, 'user');
   $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
-  my $recipient = $DB->getNode('genericdev', 'user');
+  my $recipient = $DB->getNode($recipient_title, 'user');
   my $original_recipient_gp = $recipient->{GP};
   my $original_recipient_sanctity = $recipient->{sanctity} || 0;
 
@@ -414,7 +432,7 @@ subtest "Successful sanctification" => sub {
   my $request = MockRequest->new(
     user => $user,
     method => 'POST',
-    postdata => { recipient => 'genericdev' }
+    postdata => { recipient => $recipient_title }
   );
 
   my $result = $api->give($request);
@@ -448,10 +466,10 @@ subtest "Successful sanctification" => sub {
   SKIP: {
     skip 'Sanctify user superdoc not found', 1 unless $sanctify_node;
     my $seclog = $DB->sqlSelectHashref('*', 'seclog',
-      "seclog_event = @{[SECLOG_SANCTIFY]} AND seclog_user = $test_user->{node_id} AND seclog_details LIKE '%genericdev%'",
+      "seclog_event = @{[SECLOG_SANCTIFY]} AND seclog_user = $test_user->{node_id} AND seclog_details LIKE '%$recipient_title%'",
       'ORDER BY seclog_id DESC LIMIT 1'
     );
-    ok($seclog && $seclog->{seclog_details} =~ /sanctified.*genericdev/i, 'Security log entry created for sanctification');
+    ok($seclog && $seclog->{seclog_details} =~ /sanctified.*\Q\E/i, 'Security log entry created for sanctification');
   }
 
   # Clean up only our message
@@ -472,9 +490,9 @@ subtest "Anonymous sanctification" => sub {
   $DB->updateNode($test_user, -1);
 
   # Get recipient fresh from DB (clear cache to avoid stale data from other tests)
-  my $recipient_node = $DB->getNode('genericdev', 'user');
+  my $recipient_node = $DB->getNode($recipient_title, 'user');
   $DB->{cache}->removeNode($recipient_node) if $DB->{cache} && $recipient_node;
-  my $recipient = $DB->getNode('genericdev', 'user');
+  my $recipient = $DB->getNode($recipient_title, 'user');
   my $original_recipient_gp = $recipient->{GP};
   my $original_recipient_sanctity = $recipient->{sanctity} || 0;
 
@@ -495,7 +513,7 @@ subtest "Anonymous sanctification" => sub {
   my $request = MockRequest->new(
     user => $user,
     method => 'POST',
-    postdata => { recipient => 'genericdev', anonymous => 1 }
+    postdata => { recipient => $recipient_title, anonymous => 1 }
   );
 
   my $result = $api->give($request);
