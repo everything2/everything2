@@ -63,7 +63,7 @@ sub buildReactData {
 
     # Users can view graphs of their own writeups
     if (!$can_view) {
-        $can_view = ($writeup->{author_user} == $USER->{node_id});
+        $can_view = ($writeup->{author_user} == $USER->node_id);
     }
 
     # Check if user has voted on this writeup
@@ -71,7 +71,7 @@ sub buildReactData {
         my $sth = $DB->{dbh}->prepare(
             'SELECT weight FROM vote WHERE vote_id = ? AND voter_user = ?'
         );
-        $sth->execute($writeup_id, $USER->{node_id});
+        $sth->execute($writeup_id, $USER->node_id);
         $can_view = 1 if $sth->rows > 0;
     }
 

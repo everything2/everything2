@@ -126,7 +126,7 @@ sub list {
             author_user => $row->{author_user},
             author_name => $author ? $author->{title} : 'unknown',
             createtime => $row->{createtime},
-            can_edit => ($is_admin || ($row->{author_user} == $USER->{node_id})) ? 1 : 0
+            can_edit => ($is_admin || ($row->{author_user} == $USER->node_id)) ? 1 : 0
         };
     }
 

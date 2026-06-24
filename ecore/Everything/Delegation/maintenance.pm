@@ -389,11 +389,11 @@ sub debatecomment_create
 
     unless ($$parentVars{"no_discussionreplynotify"} or $$COMMENT{ 'author_user' } == $$PARENT{ 'author_user'})
     {
-      htmlcode('sendPrivateMessage',{
-        'author_id' => getId(getNode("Virgil","user")),
-        'recipient_id' => $parentOwner,
-        'message' => $msg
-        });
+      $APP->sendPrivateMessage(
+        getNode("Virgil","user"),
+        $parentOwner,
+        $msg
+      );
     }
   }
 
@@ -528,14 +528,17 @@ sub debate_create
   $notify_ug_id = 829913 if $notify_ug_id == 114;
 
   if ($announce) {
-    htmlcode('sendPrivateMessage',{
-      'author_id' => getId(getNode("Virgil","user")),
-      'recipient_id' => $notify_ug_id,
-      'message' => 'Make it known, [' .
+    # Virgil (a non-member system bot) announces to the discussion's usergroup;
+    # bypass_membership preserves the legacy acting-user gating semantics.
+    $APP->sendPrivateMessage(
+      getNode("Virgil","user"),
+      $notify_ug_id,
+      'Make it known, [' .
       $$USER{title} .
       '] just started a new discussion: [' .
-      $$ug{title}.': '.$$COMMENT{title} . '].'
-      });
+      $$ug{title}.': '.$$COMMENT{title} . '].',
+      { bypass_membership => 1 }
+    );
   }
 
   #Have to notify each group member, unless they don't want to be notified
