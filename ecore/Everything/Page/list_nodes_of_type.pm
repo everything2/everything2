@@ -94,7 +94,7 @@ sub buildReactData {
         default_type => $default_type,
         is_admin => $is_admin ? 1 : 0,
         is_editor => $is_editor ? 1 : 0,
-        user_id => $USER->{node_id}
+        user_id => $USER->node_id
     };
 }
 

@@ -68,7 +68,7 @@ sub buildReactData {
             $can_remove = 1 if $APP->isAdmin($USER);
             # Also check if user is usergroup owner
             my $owner_id = $APP->getParameter($log_id, 'usergroup_owner');
-            $can_remove = 1 if $owner_id && $USER->{node_id} == $owner_id;
+            $can_remove = 1 if $owner_id && $USER->node_id == $owner_id;
         }
 
         # Pagination for weblog

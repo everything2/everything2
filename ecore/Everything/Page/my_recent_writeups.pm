@@ -35,7 +35,7 @@ sub buildReactData {
         };
     }
 
-    my $user_id = $USER->{node_id};
+    my $user_id = $USER->node_id;
 
     # Calculate one year ago timestamp
     my $one_year_ago = time() - 31536000;
@@ -69,7 +69,7 @@ sub buildReactData {
         writeup_count => $count,
         one_year_ago => $one_year_ago_formatted,
         user_id => $user_id,
-        username => $USER->{title}
+        username => $USER->title
     };
 }
 

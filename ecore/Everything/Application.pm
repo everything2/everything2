@@ -4201,7 +4201,7 @@ sub getVars
   return unless $N;
 	
   unless (exists $N->{vars}) {
-    $this->printLog("getVars: 'vars' field does not exist for node ".$this->{db}->getId($N)."perhaps it doesn't join on the settings table?\n");
+    $this->printLog("getVars: 'vars' field does not exist for node ".($this->{db}->getId($N) // '(unknown)')." -- perhaps it doesn't join on the settings table?\n");
   }
 
   my %vars = ();
@@ -5658,8 +5658,13 @@ sub sendUsergroupMessage
 
   $options ||= {};
 
-  # Check if author is member of usergroup
-  unless ($this->inUsergroup($author, $usergroup)) {
+  # Check if author is member of usergroup. System/bot senders (e.g. Virgil
+  # posting maintenance notifications to a group it does not belong to) pass
+  # bypass_membership: they are not members but are authorized to notify the
+  # group. The legacy htmlcode path gated this on the *acting* user, who was
+  # always a member in those call paths, so this preserves that behavior without
+  # threading the acting user through the system-message callers.
+  unless ($options->{bypass_membership} || $this->inUsergroup($author, $usergroup)) {
     return {success => 0, error => "You are not a member of $usergroup->{title}"};
   }
 
@@ -6325,8 +6330,23 @@ sub writeup_edittime
 sub global_warn_handler
 {
   my ($this, $warning) = @_;
+  return if $this->_warning_is_suppressed($warning);
   $this->devLog("Sent warning: $warning");
   return $this->send_cloudwatch_event("warning", $warning || "");
+}
+
+# Benign third-party library warnings we deliberately do NOT surface as app
+# warnings: they originate entirely inside a library (no app frame, nothing our
+# code passes them), so they are non-actionable noise on the uninitialized bus.
+# Currently just Starman's chunked-input reader, which checks an uninitialized
+# {inputbuf} ("inputbuf ne ''") on some bodyless requests. Our own
+# uninitialized-value warnings (at /var/everything/...) are unaffected.
+sub _warning_is_suppressed
+{
+  my ($this, $warning) = @_;
+  return 0 unless defined $warning;
+  return 1 if $warning =~ m{^Use of uninitialized value.* at \S*Starman/Server\.pm line \d+};
+  return 0;
 }
 
 sub global_die_handler
