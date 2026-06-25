@@ -204,7 +204,11 @@ Reparents a single writeup to a new e2node.
 
 sub reparentWriteup
 {
-    my ( $self, $writeup_id, $new_e2node, $USER ) = @_;
+    # $actor is the reparenting user as a NODEDATA *hashref* -- handle_post passes
+    # $USER->NODEDATA (not the blessed request user), so $actor->{node_id} is the
+    # real id here. (Renamed from $USER, which read as the blessed object and
+    # invited a spurious ->node_id "fix"; see #4350.)
+    my ( $self, $writeup_id, $new_e2node, $actor ) = @_;
 
     my $DB  = $self->DB;
     my $APP = $self->APP;
@@ -262,15 +266,15 @@ sub reparentWriteup
         . $writeup->{title} . "'"
         . ( $old_e2node ? " (from e2node $old_e2node->{node_id})" : " (from orphaned state)" );
 
-    $APP->securityLog( SECLOG_WRITEUP_REPARENT, $USER, $log_message, $new_e2node );
+    $APP->securityLog( SECLOG_WRITEUP_REPARENT, $actor, $log_message, $new_e2node );
 
-    # Send notification to author
-    if ( $author && $author->{node_id} != $USER->{node_id} ) {
+    # Send notification to author (skip if the editor is reparenting their own)
+    if ( $author && $author->{node_id} != $actor->{node_id} ) {
         $DB->sqlInsert(
             'message',
             {
                 msgtext => "I moved your writeup \"$old_title\" to \"$new_e2node->{title}\"",
-                author_user => $USER->{node_id},
+                author_user => $actor->{node_id},
                 for_user    => $author->{node_id}
             }
         );
