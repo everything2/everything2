@@ -4011,6 +4011,84 @@ sub add_notification {
   return 1;
 }
 
+# Attach a nodenote to a node (the legacy addNodenote htmlcode; #4354). $notefor
+# is a node or node_id, $notetext the note body, $user the optional noter (node
+# or id). Prefixes the note with a user link + notifies the noter when present.
+# Returns the new nodenote_id.
+sub add_nodenote {
+  my ($this, $notefor, $notetext, $user) = @_;
+  my $db = $this->{db};
+
+  $db->getRef($user) if defined $user && !ref $user;
+  $notefor = $db->getId($notefor);
+
+  if ($user) {
+    $notetext = "[$user->{title}\[user]]: $notetext";
+    $user = $user->{user_id};
+  }
+  $user ||= 0;
+
+  $db->sqlInsert('nodenote', {
+    nodenote_nodeid => $notefor,
+    noter_user      => $user,
+    notetext        => $notetext,
+  });
+
+  my $nodenote_id = $db->{dbh}->last_insert_id(undef, undef, qw(nodenote nodenote_id)) || 0;
+
+  $this->add_notification('nodenote', 0, {
+    node_noter  => $user,
+    node_id     => $notefor,
+    nodenote_id => $nodenote_id,
+  }) if $user;
+
+  return $nodenote_id;
+}
+
+# The accounts a user may publish a writeup AS (ceding authorship), migrated from
+# the canpublishas htmlcode (#4354). Level-1+ non-guests may publish as 'everyone'
+# (anonymous) and 'Virgil' (if approved in the e2docs usergroup); editors may also
+# publish as the system bots Webster 1913 / EDB / Klaproth / Cool Man Eddie.
+# Returns an arrayref of { title, node_id }, 'everyone' first then alphabetical --
+# the publish-as picker is populated from this, and can_publish_as() gates it.
+sub publishas_accounts {
+  my ($this, $user) = @_;
+  my $db = $this->{db};
+  return [] unless $user && !$this->isGuest($user) && $this->getLevel($user) >= 1;
+
+  # value 1 => allowed for anyone who has the entry; a string => a usergroup the
+  # user must be approved in. The bot entries are only present for editors.
+  my %accounts = (everyone => 1, Virgil => 'e2docs');
+  @accounts{ ('Webster 1913', 'EDB', 'Klaproth', 'Cool Man Eddie') } = (1) x 4
+    if $this->isEditor($user);
+
+  my @out;
+  for my $name (sort { $a eq 'everyone' ? -1 : $b eq 'everyone' ? 1 : lc($a) cmp lc($b) }
+                keys %accounts) {
+    my $ok = ($accounts{$name} eq '1');
+    unless ($ok) {
+      my $grp = $db->getNode($accounts{$name}, 'usergroup');
+      $ok = $grp && $db->isApproved($user, $grp);
+    }
+    next unless $ok;
+    my $acct = $db->getNode($name, 'user') or next;
+    push @out, { title => $name, node_id => $acct->{node_id} };
+  }
+  return \@out;
+}
+
+# Whether $user may publish a writeup as the account titled $target. Returns the
+# target's node_id (truthy) when allowed, 0 otherwise -- so callers can both gate
+# and resolve in one call.
+sub can_publish_as {
+  my ($this, $user, $target) = @_;
+  return 0 unless defined $target && length $target;
+  for my $a (@{ $this->publishas_accounts($user) }) {
+    return $a->{node_id} if $a->{title} eq $target;
+  }
+  return 0;
+}
+
 # Post-publish finishers for a freshly published writeup. Ported from the legacy
 # publishwriteup htmlcode so the React publish path (Everything::API::drafts
 # publish_draft) stays at parity (#4314):
@@ -4073,6 +4151,93 @@ sub finalize_published_writeup {
   # 3. Writeup achievements
   $this->checkAchievementsByType('writeup', $author_id);
   return;
+}
+
+# Unpublish a writeup: convert it back to a draft and tear down its e2node ties,
+# new-writeup/publish/category rows, then notify + node-note the author and dock
+# their XP/writeup count (unless the parent is a maintenance node). The legacy
+# unpublishwriteup htmlcode (#4354). $user is the acting user (hashref), $wu the
+# writeup (node or id), $reason a short string (blanked / parent node deleted /
+# (nuked) / ...). Returns 1 on success, 0/undef if it couldn't unpublish.
+sub unpublish_writeup {
+  my ($this, $user, $wu, $reason) = @_;
+  my $db = $this->{db};
+
+  $db->getRef($wu);
+  return unless $wu and $wu->{type}{title} eq 'writeup';
+  return unless $user->{node_id} == $wu->{author_user} or $this->isEditor($user);
+
+  my $id = $wu->{node_id};
+  my ($title, $noexp) = ($wu->{title}, 0);
+
+  my $E2NODE = $db->getNodeById($wu->{parent_e2node});
+  if ($E2NODE) {
+    $noexp = $this->isMaintenanceNode($E2NODE);
+    $title = $E2NODE->{title};
+  } elsif ($title =~ / \((\w+)\)$/ and $db->getNode($1, 'writeuptype')) {
+    $title =~ s/ \((\w+)\)$//;
+  }
+
+  my $draftType = $db->getType('draft');
+  return 0 unless $db->sqlUpdate('node, draft', {
+    type_nodetype      => $draftType->{node_id},
+    title              => $title,
+    publication_status => $db->getId($db->getNode('removed', 'publication_status')),
+  }, "node_id=$id AND draft_id=$id");
+
+  $wu->{title}         = $title;   # save possible fiddling elsewhere (e.g. [remove])
+  $wu->{type}          = $draftType;
+  $wu->{type_nodetype} = $draftType->{node_id};
+  delete $wu->{wrtype_writeuptype};
+
+  $db->sqlDelete('writeup', "writeup_id=$id");
+  $db->removeFromNodegroup($E2NODE, $wu, -1) if $E2NODE;
+
+  $db->{cache}->incrementGlobalVersion($wu);  # tell other processes this changed
+  $db->{cache}->removeNode($wu);              # and it's in the wrong typecache now
+
+  $db->sqlDelete('newwriteup', "node_id=$id");
+  $this->updateNewWriteups();
+
+  $db->sqlDelete('publish', "publish_id=$id");
+  $db->sqlDelete('links',
+    "to_node=$id OR from_node=$id AND linktype=" . $db->getId($db->getNode('category', 'linktype')));
+
+  my ($remover, $notification) = (undef, undef);
+  my %editor = ();
+  if ($user->{node_id} == $wu->{author_user}) {
+    $remover = $notification = 'author';
+  } else {
+    $remover      = "[$user->{title}\[user]]";
+    $notification = 'editor';
+    %editor       = (editor_id => $user->{user_id});
+  }
+
+  $this->add_notification("$notification removed writeup", 0, {
+    writeup_id => $wu->{node_id},
+    title      => $wu->{title},
+    author_id  => $wu->{author_user},
+    reason     => $reason,
+    %editor,
+  });
+
+  $reason = defined($reason) && $reason ? ": $reason" : '';
+  $this->add_nodenote($wu, "Removed by $remover$reason");
+
+  my $author = $db->getNodeById($wu->{author_user});
+  $this->securityLog(SECLOG_MASSACRE, $user, "[$title] by [$author->{title}] was removed$reason");
+
+  unless ($noexp) {
+    $this->adjustExp($wu->{author_user}, -5);
+
+    my $vars = $this->getVars($author);
+    $vars->{numwriteups}--;
+    $author->{numwriteups} = $vars->{numwriteups};
+    Everything::setVars($author, $vars);
+    $db->updateNode($author, -1);
+  }
+
+  return 1;
 }
 
 # Check achievements by type for a user

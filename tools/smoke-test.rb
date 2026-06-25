@@ -712,7 +712,7 @@ class SmokeTest
   end
 
   def test_xml_displaytypes
-    print "Testing displaytype=xml/xmltrue... "
+    print "Testing displaytype=xml/softlinks... "
 
     # Test critical node types using seed data
     tests = [
@@ -720,9 +720,8 @@ class SmokeTest
       {path: '/user/normaluser1/writeups/lazy%20dog?displaytype=xml', name: 'writeup (xml)', must_include: ['<NODE>', '<INFO>rendered by Everything::Node->to_xml()</INFO>', '<title']},
       {path: '/title/lazy%20dog?displaytype=xml', name: 'e2node (xml)', must_include: ['<NODE>', '<title', 'lazy dog']},
 
-      # displaytype=xmltrue tests - uses form representation with <node> wrapper
-      {path: '/user/normaluser1/writeups/lazy%20dog?displaytype=xmltrue', name: 'writeup (xmltrue)', must_include: ['<node node_id', '<type>writeup</type>', '<doctext>']},
-      {path: '/title/lazy%20dog?displaytype=xmltrue', name: 'e2node (xmltrue)', must_include: ['<node node_id', '<type>']},
+      # NB: displaytype=xmltrue was removed (b2069643d "Remove xmltrue type and
+      # dead htmlcodes"); its smoke cases were retired with it.
 
       # displaytype=softlinks - e2node softlinks XML export
       {path: '/title/tomato?displaytype=softlinks', name: 'e2node (softlinks)', must_include: ['<?xml', '<node node_id', '<softlinks>']},

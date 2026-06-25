@@ -15,9 +15,12 @@ my $s = Everything::Cron::Schedule->new;
 
 # --- registry shape -----------------------------------------------------------
 my @names = map { $_->{name} } @{ $s->entries };
-is( scalar(@names), 8, 'eight jobs registered (mirrors the 8 EventBridge rules)' );
+is( scalar(@names), 7, 'seven jobs registered (mirrors the EventBridge rules)' );
+# NB: writeup-reaper was retired in #3070cb0ec ("Retires the node row series of
+# documents") -- it ran the legacy "node row" oppressor_superdoc MASSACRE path,
+# fully replaced by the draft system (unpublish -> draft, publication_status=removed).
 for my $n (qw(datastash refresh-rooms datastash-lengthy iqm-recalc
-              clean-old-rooms writeup-reaper chatterbox-cleanup generate-sitemap)) {
+              clean-old-rooms chatterbox-cleanup generate-sitemap)) {
     ok( $s->entry($n), "job '$n' present" );
 }
 

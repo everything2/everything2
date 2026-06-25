@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { useWriteuptypes, useSetParentE2node, usePublishDraft } from '../../hooks/usePublishDraft'
+import { useWriteuptypes, useSetParentE2node, usePublishDraft, usePublishAsOptions } from '../../hooks/usePublishDraft'
+import PublishAsPicker from '../PublishAsPicker'
 
 /**
  * Parse a draft title to extract e2node title and writeuptype
@@ -73,6 +74,13 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
       }
     }
   }, [writeuptypes, parsedTitle.writeuptypeName, setSelectedWriteuptypeId])
+
+  // Publish-as options (canpublishas, #4354)
+  const {
+    options: publishAsOptions,
+    publishAs,
+    setPublishAs
+  } = usePublishAsOptions()
 
   const {
     setParentE2node,
@@ -174,7 +182,8 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
     await publishDraft({
       parentE2nodeId: parentResult.e2node.node_id,
       writeuptypeId: selectedWriteuptypeId,
-      hideFromNewWriteups
+      hideFromNewWriteups,
+      publishAs
     })
   }
 
@@ -317,6 +326,16 @@ const PublishModal = ({ draft, onSuccess, onClose }) => {
             <p className="publish-modal-hint publish-modal-hint--indented">
               Check this to publish without appearing in the New Writeups list (for maintenance, logs, etc.)
             </p>
+          </div>
+
+          {/* Publish-as picker (canpublishas, #4354) - renders nothing when ineligible */}
+          <div className="publish-modal-field publish-modal-field--large">
+            <PublishAsPicker
+              options={publishAsOptions}
+              value={publishAs}
+              onChange={setPublishAs}
+              disabled={loading}
+            />
           </div>
         </div>
 

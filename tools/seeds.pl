@@ -98,6 +98,16 @@ if (!$already_dev) {
 }
 # Set genericdev as owner of edev (production owner doesn't exist in dev)
 $APP->setParameter($dev, $DB->getNode("root","user"), 'usergroup_owner', $genericdev->{node_id});
+
+# Prod has root as a god (auto-approved everywhere) but NOT an explicit edev
+# member. The base dev dump wrongly carries root in the edev nodegroup, which
+# breaks the inUsergroup($root,'edev','nogods') semantics that t/010 verifies
+# (nogods should exclude god-only members). Align dev with prod by removing it.
+my $root_in_edev = $DB->getNode("root","user");
+if ($DB->sqlSelect('COUNT(*)', 'nodegroup', "nodegroup_id=$dev->{node_id} AND node_id=$root_in_edev->{node_id}")) {
+  $DB->removeFromNodegroup($dev, $root_in_edev, -1);
+  $DB->updateNode($dev, -1);
+}
 my $genericdevv = getVars($genericdev);
 $genericdevv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708,836984";
 $genericdevv->{settings} = '{"notifications":{"2045486":1}}';

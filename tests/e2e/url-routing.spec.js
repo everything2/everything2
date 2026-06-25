@@ -73,10 +73,13 @@ test.describe('URL-shape routing parity (mod_perl ⇄ PSGI)', () => {
   })
 
   test('/node/<id>/<displaytype> serves the XML variant', async ({ page }) => {
+    // NB: the xmltrue displaytype was retired (b2069643d "Remove xmltrue type and
+    // dead htmlcodes"); assert the live `xml` variant instead. Still exercises the
+    // /node/<id>/<displaytype> path-form routing parity this block is about.
     const id = await discoverNodeId(page, 'writeup with bad cool info')
-    const resp = await page.request.get(`/node/${id}/xmltrue`)
+    const resp = await page.request.get(`/node/${id}/xml`)
     expect(resp.ok()).toBe(true)
-    expect(await resp.text(), 'xmltrue did not produce XML').toMatch(new RegExp(`node_id="${id}"|<\\?xml`, 'i'))
+    expect(await resp.text(), 'xml displaytype did not produce XML').toMatch(/<\?xml|<NODE>/i)
   })
 
   // ---- B) redirect shapes: assert the exact status + Location (no following) ----

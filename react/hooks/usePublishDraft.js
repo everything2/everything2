@@ -65,6 +65,78 @@ export const useWriteuptypes = ({ skip = false } = {}) => {
 }
 
 /**
+ * Hook to fetch the "publish as" options for the current user (canpublishas, #4354).
+ *
+ * GET /api/drafts/publishas_options -> { success, options: [{ title, node_id }] }
+ *
+ * The list is empty for most users. Eligible users get at least
+ * [{ title: 'everyone', ... }]; editors get additional system/bot accounts.
+ *
+ * Returns:
+ * - options: the raw account list ([] when none / before load)
+ * - publishAs: the currently selected account title ('' = publish as yourself)
+ * - setPublishAs: setter for the selected title
+ * - loading / error
+ */
+export const usePublishAsOptions = ({ skip = false } = {}) => {
+  const [options, setOptions] = useState([])
+  const [publishAs, setPublishAs] = useState('')
+  const [loading, setLoading] = useState(!skip)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    if (skip) {
+      setLoading(false)
+      return
+    }
+
+    let cancelled = false
+
+    const fetchOptions = async () => {
+      try {
+        setLoading(true)
+        const response = await fetchWithErrorReporting(
+          '/api/drafts/publishas_options',
+          {},
+          'fetching publish-as options'
+        )
+        const result = await response.json()
+
+        if (cancelled) return
+
+        if (result.success && Array.isArray(result.options)) {
+          setOptions(result.options)
+        } else {
+          setOptions([])
+        }
+      } catch (err) {
+        if (cancelled) return
+        // Non-fatal: a missing picker just means "publish as yourself".
+        console.error('Failed to fetch publish-as options:', err)
+        setError(err.message)
+        setOptions([])
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchOptions()
+
+    return () => {
+      cancelled = true
+    }
+  }, [skip])
+
+  return {
+    options,
+    publishAs,
+    setPublishAs,
+    loading,
+    error
+  }
+}
+
+/**
  * Hook to handle publishing a draft as a writeup
  *
  * Features:
@@ -85,7 +157,8 @@ export const usePublishDraft = ({ draftId, onSuccess, maxRetries = 3 }) => {
   const publishDraft = useCallback(async ({
     parentE2nodeId,
     writeuptypeId,
-    hideFromNewWriteups = false
+    hideFromNewWriteups = false,
+    publishAs = ''
   }) => {
     if (!draftId) {
       setError('No draft to publish')
@@ -122,7 +195,10 @@ export const usePublishDraft = ({ draftId, onSuccess, maxRetries = 3 }) => {
               parent_e2node: parentE2nodeId,
               wrtype_writeuptype: writeuptypeId,
               feedback_policy_id: 0,
-              notnew: hideFromNewWriteups ? 1 : 0
+              notnew: hideFromNewWriteups ? 1 : 0,
+              // canpublishas (#4354): only include publish_as when a non-self
+              // account is chosen. Omitted/empty => publish as yourself.
+              ...(publishAs ? { publish_as: publishAs } : {})
             })
           },
           'publishing draft'

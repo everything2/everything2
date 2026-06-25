@@ -59,6 +59,7 @@ sub routes {
         '/search'            => 'search_drafts',
         '/:id'               => 'get_or_update',
         '/:id/parent'        => 'set_parent_e2node(:id)',
+        '/publishas_options' => 'publishas_options',
         '/:id/publish'       => 'publish_draft(:id)',
         '/:id/republish'     => 'republish_draft(:id)',
         '/:id/mark_reviewed' => 'mark_reviewed(:id)',
@@ -939,6 +940,24 @@ sub set_parent_e2node {
     ];
 }
 
+=head2 publishas_options($REQUEST)
+
+GET /api/drafts/publishas_options -- the system accounts the current user may
+publish a writeup AS (canpublishas, #4354). Drives the publish-as picker in the
+draft editing/publish controls. Returns { success, options => [{title, node_id}] }.
+
+=cut
+
+sub publishas_options {
+    my ( $self, $REQUEST ) = @_;
+    return [
+        $self->HTTP_OK,
+        # NODEDATA (hashref): publishas_accounts' gate (getLevel/isEditor/isGuest)
+        # is an Application method that expects the raw hashref, not the blessed user.
+        { success => 1, options => $self->APP->publishas_accounts( $REQUEST->user->NODEDATA ) }
+    ];
+}
+
 sub publish_draft {
     my ( $self, $REQUEST, $draft_id ) = @_;
 
@@ -998,6 +1017,23 @@ sub publish_draft {
             $self->HTTP_FORBIDDEN,
             { success => 0, error => 'permission_denied' }
         ];
+    }
+
+    # Optional "publish as" (canpublishas, #4354): you publish your OWN draft, but
+    # an eligible user may cede authorship to a system account (everyone/Virgil/
+    # the editor bots). Validate + resolve the target; it becomes the writeup's
+    # author. can_publish_as returns the target node_id when allowed, 0 otherwise.
+    my $publish_author_id = $user_id;
+    if ( defined $data->{publish_as} && length $data->{publish_as} ) {
+        my $target_id = $APP->can_publish_as( $REQUEST->user->NODEDATA, $data->{publish_as} );
+        unless ($target_id) {
+            return [
+                $self->HTTP_FORBIDDEN,
+                { success => 0, error => 'cannot_publish_as',
+                  message => "You are not allowed to publish as '$data->{publish_as}'." }
+            ];
+        }
+        $publish_author_id = $target_id;
     }
 
     # Get required data from request
@@ -1134,14 +1170,16 @@ sub publish_draft {
         ];
     }
 
-    # Convert draft to writeup - update node type and title
+    # Convert draft to writeup - update node type, title, and (for publish-as) the
+    # author. $publish_author_id is the publishing user unless they ceded it above.
     # Writeup title format: "e2node title (writeuptype)"
     my $writeup_title = $e2node->{title} . ' (' . $writeuptype->{title} . ')';
     my $update_result = $DB->sqlUpdate(
         'node',
         {
             type_nodetype => $writeup_type->{node_id},
-            title         => $writeup_title
+            title         => $writeup_title,
+            author_user   => $publish_author_id
         },
         "node_id=$draft_id"
     );
@@ -1301,7 +1339,12 @@ sub publish_draft {
     # writeup achievements) -- ported from publishwriteup so the API publish path
     # is at parity (#4314). Wrapped so a notification hiccup can't fail the publish.
     eval {
-        $APP->finalize_published_writeup( $REQUEST->user->NODEDATA, $draft_id );
+        # Credit the published author (the publish-as target when one was chosen,
+        # else the publishing user) for XP / achievements / favorite notifications.
+        my $publish_author = ( $publish_author_id == $user_id )
+            ? $REQUEST->user->NODEDATA
+            : $DB->getNodeById($publish_author_id);
+        $APP->finalize_published_writeup( $publish_author, $draft_id );
         1;
     } or do {
         $APP->devLog("Post-publish finishers failed for draft $draft_id: $@");

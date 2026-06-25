@@ -124,7 +124,7 @@ sub list {
             node_id => $row->{node_id},
             title => $row->{title},
             author_user => $row->{author_user},
-            author_name => $author ? $author->{title} : 'unknown',
+            author_name => (ref $author) ? $author->{title} : 'unknown',  # getNodeById(-1) returns the "-1" superuser sentinel string, not a node
             createtime => $row->{createtime},
             can_edit => ($is_admin || ($row->{author_user} == $USER->node_id)) ? 1 : 0
         };
