@@ -190,7 +190,7 @@ sub writeup_update
 
       return $APP->unpublish_writeup($USER, $WRITEUP, 'blanked') unless $trimmedNewText;
 
-      htmlcode('addNotification', 'blankedwriteup', 0, {
+      $APP->add_notification('blankedwriteup', 0, {
         writeup_id => getId($WRITEUP)
         , author_id => $$USER{user_id}
       }) if length $trimmedNewText < 20;
@@ -416,7 +416,7 @@ sub debatecomment_create
 
       my $argStr = to_json($argSet);
 
-      my $addNotifier = htmlcode('addNotification', $notification_id, $user_id, $argStr);
+      my $addNotifier = $APP->add_notification($notification_id, $user_id, $argStr);
 
     }
   }
@@ -523,34 +523,12 @@ sub debate_create
     );
   }
 
-  #Have to notify each group member, unless they don't want to be notified
-  my @uids = split ',', $APP->usergroupToUserIds($notify_ug_id);
-
-  my $discussionNotification = getNode("newdiscussion","notification")->{node_id};
-
-  foreach my $uid(@uids)
-  {
-    #Don't notify the creator.
-    next if($uid == $$USER{node_id});
-
-    my $v = getVars( getNodeById($uid));
-
-    #This curiously named value of "settings" in the user's vars refers
-    #*only* to the notifications settings.
-    next unless $$v{settings};
-
-    my %notifications = %{from_json($$v{settings})->{notifications}};
-
-    if( $notifications{$discussionNotification} )
-    {
-      my $argSet = {uid => $$USER{node_id},
-        debate_id => $$COMMENT{ 'node_id' },
-        gid => $ug_id};
-      my $argStr = to_json($argSet);
-      my $test = htmlcode('addNotification',$discussionNotification,
-        $uid, $argStr);
-    }
-  }
+  # The per-member 'newdiscussion' notification moved to
+  # Everything::Application::notify_new_discussion, called from the
+  # Everything::API::debatecomments create path. The loop here was unreliable
+  # under PSGI: API-vs-form was detected via !$query, but a request always
+  # carries a CGI object, so $notify_ug_id came out wrong/empty and nobody was
+  # notified. (regression surfaced via the discussion-notification testing)
 
   $$COMMENT{ 'root_debatecomment' } = $$COMMENT{ 'node_id' };
 
@@ -762,7 +740,7 @@ sub draft_update
       my $nodenote_id = $APP->add_nodenote($$N{node_id}, "author requested review$note");
 
       # Notify. If no $editor, everyone gets it:
-      htmlcode('addNotification', 'draft for review', $editor, {draft_id => $$N{node_id}, nodenote_id => $nodenote_id});
+      $APP->add_notification('draft for review', $editor, {draft_id => $$N{node_id}, nodenote_id => $nodenote_id});
 
     }
   }

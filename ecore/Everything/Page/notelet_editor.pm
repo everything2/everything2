@@ -86,12 +86,10 @@ sub buildReactData {
             $VARS->{noteletRaw} = $notelet_source;
         }
 
-        # Call screenNotelet htmlcode to process the notelet
-        # This modifies $VARS directly
-        require Everything::Delegation::htmlcode;
-        Everything::Delegation::htmlcode::screenNotelet($DB, $CGI, $REQUEST->node->NODEDATA, $USER->NODEDATA, $VARS, undef, $APP);
+        # Screen the notelet (length-limit, strip comments/scripts); modifies $VARS
+        $APP->screen_notelet($USER->NODEDATA, $VARS);
 
-        # Save the updated VARS (including noteletScreened set by screenNotelet)
+        # Save the updated VARS (including noteletScreened set by screen_notelet)
         $USER->set_vars($VARS);
 
         $success_message = 'Notelet saved successfully!' unless $error;

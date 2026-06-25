@@ -171,7 +171,7 @@ const UsergroupSelector = ({ usergroups, selectedUsergroup, nodeId }) => (
         <a
           key={ug.node_id}
           href={`?node_id=${nodeId}&show_ug=${ug.node_id}`}
-          className={`ug-discussions__usergroup-link${selectedUsergroup === ug.node_id ? ' ug-discussions__usergroup-link--active' : ''}`}
+          className={`ug-discussions__usergroup-link${Number(selectedUsergroup) === ug.node_id ? ' ug-discussions__usergroup-link--active' : ''}`}
         >
           {ug.title}
         </a>
@@ -181,7 +181,7 @@ const UsergroupSelector = ({ usergroups, selectedUsergroup, nodeId }) => (
       Or{' '}
       <a
         href={`?node_id=${nodeId}&show_ug=0`}
-        className={`ug-discussions__link${selectedUsergroup === 0 ? ' ug-discussions__link--active' : ''}`}
+        className={`ug-discussions__link${Number(selectedUsergroup) === 0 ? ' ug-discussions__link--active' : ''}`}
       >
         show discussions from all usergroups.
       </a>
@@ -317,16 +317,17 @@ const NewDiscussionForm = ({ usergroups, selectedUsergroup }) => {
       if (result.success) {
         setSuccess('Discussion created!')
 
-        // Redirect to the new discussion
+        // Keep the button disabled (saving stays true) through the redirect so it
+        // doesn't flash back to its active state before the page navigates away.
         setTimeout(() => {
           window.location.href = `/?node_id=${result.node_id}`
         }, 1000)
       } else {
         setError(result.error || 'Failed to create discussion')
+        setSaving(false)
       }
     } catch (err) {
       setError('Network error: ' + err.message)
-    } finally {
       setSaving(false)
     }
   }

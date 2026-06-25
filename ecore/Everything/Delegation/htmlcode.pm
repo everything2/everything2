@@ -94,96 +94,9 @@ use POSIX;
 # screens notelet text
 # reads "raw" and writes "screened"
 #
-sub screenNotelet
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my $work = $VARS->{'noteletRaw'} || $VARS->{'personalRaw'};
-  delete $VARS->{'personalRaw'};
-
-  my $UID = getId($USER) || 0;
-  # not filtering, since only shown for user that enters the stuff anyway
-
-  ##only allow certain HTML tags through
-  #my $HTMLS = getVars(getNode('approved HTML tags','setting'));
-
-  ##allow a few other tags and attributes
-  ##TODO? others?
-  #$HTMLS->{'table'} = 'border,cellpadding,cellspacing';
-  #$HTMLS->{'th'} = $HTMLS->{'tr'} = $HTMLS->{'td'} = 1;
-
-  #TODO? allow eds to psuedoExec
-  #TODO? allow admins to have normal code
-
-  #$work =~ s/\<!--.*?--\>//gs;	#$APP->htmlScreen messes up comments
-  #$work = $APP->htmlScreen($work, $HTMLS);	#we may get rid of this later
-
-  unless($VARS->{noteletKeepComments})
-  {
-    $work =~ s/<!--.*?-->//gs;
-  }
-
-  # length is limited based on level
-  my $maxLen = $APP->getLevel($USER) || 0;
-  $maxLen *= 100;
-  if($maxLen>1000)
-  {
-    $maxLen=1000;
-  } elsif($maxLen<500) {
-    $maxLen=500;
-  }
-
-  # power has its privileges
-  # this is in [Notelet Editor] (superdoc) and [screenNotelet] (htmlcode)
-  if($APP->isAdmin($USER))
-  {
-    $maxLen = 32768;
-  } elsif( $APP->isEditor($USER) ) {
-    $maxLen += 100;
-  } elsif($APP->isDeveloper($USER) ) {
-    $maxLen = 16384; #16k ought to be enough for everyone. --[Swap]
-  }
-
-  if(length($work)>$maxLen)
-  {
-    $work=substr($work,0,$maxLen);
-  }
-
-  # N-Wing added 2003.08.20.n3 to deal with an unclosed comment
-  # preventing a user from editing the notelet later
-  if($work =~ /^(.*)<!--(.+?)$/s)
-  {
-    my $preLastComment = $1;
-    my $postLastComment = $2;
-    if($postLastComment !~ /-->/s)
-    {
-      # oops, unclosed comment; display it instead
-      $work = $preLastComment . '<code>&lt;!--</code>' . $postLastComment;
-    }
-  }
-
-  delete $VARS->{'personalScreened'};	#old way
-
-  # Strip <script> tags to prevent user scripts from breaking React pages
-  $work =~ s/<script[^>]*>.*?<\/script>//gis;
-  $work =~ s/<script[^>]*>//gis;  # Also catch unclosed script tags
-  $work =~ s/<\/script>//gis;     # Also catch stray closing tags
-
-  if(length($work))
-  {
-    $VARS->{'noteletScreened'} = $work;
-  } else {
-    delete $VARS->{'noteletScreened'};
-  }
-
-  return;
-
-}
+# screenNotelet REMOVED - migrated to Everything::Application::screen_notelet
+# ($APP->screen_notelet($USER, $VARS)); notelet_editor + Application.pm repointed.
+# nodepack/htmlcode/screennotelet.xml deleted. #4358
 
 #
 # possibly forms a link to external web site
@@ -193,135 +106,11 @@ sub screenNotelet
 
 # softlock htmlcode - REMOVED January 2026: No callers found
 
-sub atomiseNode
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
+# atomiseNode REMOVED - migrated to Everything::Application::atomise_node; the
+# atom-feed pages were repointed. nodepack/htmlcode/atomisenode.xml deleted. #4358
 
-  my $host = $ENV{HTTP_HOST} || $Everything::CONF->canonical_web_server || "everything2.com";
-  $host = "http://$host" ;
-
-  my $atominfo = sub {
-    my $N = shift ;
-    my $url = $host . urlGen({ }, 'noQuotes', $N) ;
-    my $author = getNodeById( $$N{author_user} ) ;
-    my $authorurl = $host . $APP -> urlGenNoParams($author, 'no quotes') ;
-    my $timestamp = $$N{publishtime} || $$N{createtime};
-    $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
-    $timestamp = sprintf ("%04d-%02d-%02dT%02d:%02d:%02dZ", $1, $2, $3, $4, $5, $6);
-	
-    return '<title>' . $APP->encodeHTML($$N{title}) . '</title>' .
-      '<link rel="alternate" type="text/html" href="' . $url . '"/>' .
-      '<id>' . $url . '</id>' .
-      '<author>' .
-      '<name>' . $$author{ title } . '</name>' .
-      '<uri>' . $authorurl . '</uri>' .
-      '</author>' .
-      '<published>'. $timestamp . '</published>' .
-      '<updated>'. $timestamp . '</updated>' ;
-  };
-
-  my ( $input , $length ) = @_ ;
-  $length ||= 1024 ;
-
-  # Inlined the only slice of [show content] the feeds used: wrap each node in
-  # <entry>, emit the atominfo metadata, then render doctext through the link
-  # parser, truncated to $length. show_content's full-page rendering breadth was
-  # unused here; it is retired with this change. #4345
-  my @input = ( $input ) ;
-  if ( ref $input eq 'ARRAY' ) {
-    @input = @$input ;
-  } elsif ( ref( $input ) =~ /DBI/ ) {
-    @input = @{ $input->fetchall_arrayref( {} ) } ;
-  }
-  return '' unless getRef( @input ) ;
-
-  my $showanyway = 96 ; # too few bytes to bother truncating
-  my $HTML = getVars( getNode( 'approved HTML tags' , 'setting' ) ) ;
-
-  # parseLinks/screenTable target derives from the PAGE node (this mirrors
-  # [show content], which read the global $NODE, not each entry). For the feeds
-  # the page node is the feed node, so this is undef and links carry no
-  # lastnode_id -- matching the prior output exactly.
-  my $lastnodeid = undef ;
-  unless ( $APP->isGuest( $USER ) ) {
-    $lastnodeid = $$NODE{ parent_e2node } if $$NODE{ type }{ title } eq 'writeup' ;
-    $lastnodeid = $$NODE{ node_id } if $$NODE{ type }{ title } eq 'e2node' ;
-  }
-
-  my $str = '' ;
-  foreach my $N ( @input ) {
-    my $text = $$N{ doctext } ;
-    $text = $APP->breakTags( $text ) ;
-
-    my $dots = '' ;
-    if ( $length && length( $text ) > $length + $showanyway ) {
-      $text = substr( $text , 0 , $length ) ;
-      $text =~ s/\[[^\]]*$// ; # broken links
-      $text =~ s/\s+\w*$// ;   # broken words
-      $dots = '&hellip;' ;
-    }
-
-    $text = $APP->screenTable( $text ) if $lastnodeid ;
-    $text = parseLinks( $APP->htmlScreen( $text , $HTML ) , $lastnodeid ) ;
-    $text =~ s/<a .*?(href=".*?").*?>/<a $1>/sg ; # kill onmouseup etc
-
-    $str .= '<entry>' . $atominfo->( $N ) . "\n"
-      . '<content type="html">' . $APP->encodeHTML( $text . $dots ) . '</content>' . "\n"
-      . '</entry>' ;
-  }
-
-  return $str ;
-}
-
-sub userAtomFeed
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my ($foruser) = @_;
-  return unless $foruser;
-
-  $foruser =~ s/&#39;/'/g;
-  my $u = getNode($foruser, 'user');
-  return unless $u;
-
-  my $csr = $DB->sqlSelectMany('node.node_id, publishtime',
-    'node JOIN writeup on node_id=writeup_id',
-    'author_user=' . getId($u) .
-    ' order by publishtime desc limit 6');
-
-  # this is so we have the first result for the timestamp
-  my $row = $csr->fetchrow_hashref;
-  return unless $row;
-  my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-  $str .= "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:base=\"http://everything2.com/\">\n";
-  $str .= "    <title>" . $foruser . "'s New Writeups</title>\n";
-  $str .= "    <link rel=\"alternate\" type=\"text/html\" href=\"http://everything2.com/index.pl?node=Everything%20User%20Search&amp;usersearch=" . $foruser . "\" />\n";
-  $str .= "    <link rel=\"self\" type=\"application/atom+xml\" href=\"?node=New%20Writeups%20Atom%20Feed&amp;type=ticker&amp;foruser=" . $foruser . "\" />\n";
-  $str .= "    <id>http://everything2.com/?node=New%20Writeups%20Atom%20Feed&amp;foruser=" . $foruser . "</id>\n";
-
-  my $timestamp = $$row{publishtime};   
-  $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
-  $timestamp = sprintf ("%04d-%02d-%02dT%02d:%02d:%02dZ", $1, $2, $3, $4, $5, $6);
-   
-  $str .= "    <updated>$timestamp</updated>\n";
-
-  do {
-    $str .= htmlcode('atomiseNode', $$row{node_id});
-  } while($row = $csr->fetchrow_hashref);
-
-  $str.="</feed>\n";
-  return $str;
-}
+# userAtomFeed REMOVED - migrated to Everything::Application::user_atom_feed; the
+# atom-feed pages were repointed. nodepack/htmlcode/useratomfeed.xml deleted. #4358
 
 # show_node_forward REMOVED - Dead code, node forward display migrated to React. Jan 2026.
 
@@ -332,17 +121,9 @@ sub userAtomFeed
 
 # epicenterZen REMOVED - Dead code, epicenter data now provided via Application.pm to React. Jan 2026.
 
-sub addNotification
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  return $APP->add_notification(@_);
-}
+# addNotification REMOVED - was a pass-through to Everything::Application::add_notification;
+# the maintenance callers now call $APP->add_notification directly.
+# nodepack/htmlcode/addnotification.xml deleted. #4358
 
 # isInfected REMOVED - Dead code, old infection game feature. Jan 2026.
 
@@ -357,23 +138,8 @@ sub addNotification
 # decode_short_string REMOVED - Dead code, replaced by Everything::Page::short_url_lookup. Jan 2026.
 # create_short_url REMOVED - Dead code, replaced by Everything::Application::create_short_url. Jan 2026.
 
-sub urlToNode
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $APP = shift;
-
-  my $targetNode = shift;
-  getRef $targetNode;
-
-  my $bNoQuoteUrl = 1;
-  my $urlParams = { };
-  my $redirectPath = urlGen($urlParams, $bNoQuoteUrl, $targetNode);
-  return 'http://' . $ENV{HTTP_HOST} . $redirectPath;
-}
+# urlToNode REMOVED - dead (its last caller was the gutted writeup_create, #4354).
+# nodepack/htmlcode/urltonode.xml deleted. #4358
 
 # weblogform htmlcode - REMOVED January 2026: React AddToWeblogModal + /api/weblog handles this
 # categoryform htmlcode - REMOVED January 2026: React AddToCategoryModal + /api/category handles this

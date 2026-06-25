@@ -36,7 +36,7 @@ sub display {
     my $foruser = $query->param('foruser');
     my $str;
     if ($foruser) {
-        $str = Everything::HTML::htmlcode('userAtomFeed', $foruser);
+        $str = $self->APP->user_atom_feed($foruser);
         return [$self->HTTP_OK, $str, {type => $self->mimetype}] if $str;
     }
 
@@ -96,7 +96,7 @@ sub display {
 
     while(my $row = $csr->fetchrow_hashref)
     {
-        $str .= Everything::HTML::htmlcode('atomiseNode', $$row{nodeid});
+        $str .= $self->APP->atomise_node($$row{nodeid});
     }
 
     $str.="</feed>\n";
