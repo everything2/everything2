@@ -7777,10 +7777,11 @@ sub buildNodeInfoStructure
   # Cover for display on nodelet pages
   $nodelets .= ",$NODE->{node_id}";
 
-  # The second half of New Logs
+  # New Logs nodelet (second half) - daylogLinks. Datastash passthrough via the shared
+  # Everything::PageState::_build_stash builder (#4257 Phase 2b). Gate stays here.
   if($nodelets =~ /1923735/)
   {
-    $e2->{daylogLinks} = $this->{db}->stashData("dayloglinks");
+    $e2->{daylogLinks} = Everything::PageState->_build_stash($this->{db}, "dayloglinks");
   }
 
   # Recommended Reading or ReadThis
@@ -7810,23 +7811,12 @@ sub buildNodeInfoStructure
     }
   }
 
-  # ReadThis news section - uses frontpagenews datastash (weblog entries from "News" usergroup)
+  # ReadThis news section - the front-page "News" list. Assembly moved to
+  # Everything::PageState::_build_news (#4257 Phase 2b). The nodelet gate stays
+  # here, so $e2->{news} is omitted unless the ReadThis nodelet (1157024) is installed.
   if($nodelets =~ /1157024/)
   {
-    my $fpnews = $this->{db}->stashData("frontpagenews");
-    $fpnews = [] unless(defined($fpnews) and UNIVERSAL::isa($fpnews,"ARRAY"));
-
-    my $final_news = [];
-    foreach my $entry (@$fpnews)
-    {
-      my $n = $this->{db}->getNodeById($entry->{to_node});
-      # Skip removed nodes and drafts (same logic as htmlcode show_content_frontpage)
-      if($n && $n->{type}{title} ne 'draft')
-      {
-        push @$final_news, {"node_id" => $n->{node_id}, "title" => $n->{title}};
-      }
-    }
-    $e2->{news} = $final_news;
+    $e2->{news} = Everything::PageState->_build_news($this->{db});
   }
 
   # Epicenter data - always sent for logged-in users (regardless of nodelet)
@@ -7967,16 +7957,16 @@ sub buildNodeInfoStructure
     }
   }
 
-  # Random Nodes
+  # Random Nodes - datastash passthrough via the shared _build_stash builder (#4257 2b)
   if($nodelets =~ /457857/)
   {
-    $e2->{randomNodes} = $this->{db}->stashData("randomnodes");
+    $e2->{randomNodes} = Everything::PageState->_build_stash($this->{db}, "randomnodes");
   }
 
-  # Neglected Drafts
+  # Neglected Drafts - datastash passthrough via the shared _build_stash builder (#4257 2b)
   if($nodelets =~ /2051342/)
   {
-    $e2->{neglectedDrafts} = $this->{db}->stashData("neglecteddrafts");
+    $e2->{neglectedDrafts} = Everything::PageState->_build_stash($this->{db}, "neglecteddrafts");
   }
 
   # Quick Reference
@@ -7997,56 +7987,13 @@ sub buildNodeInfoStructure
   }
 
   # Statistics
+  # Statistics nodelet - the viewing user's own progression stats. Assembly moved to
+  # Everything::PageState::_build_statistics (#4257 Phase 2b). PER-USER data; the gate
+  # (Statistics nodelet 838296 + non-guest) stays here, so $e2->{statistics} is omitted
+  # for guests and for users without the nodelet.
   if($nodelets =~ /838296/ and not $this->isGuest($USER))
   {
-    $e2->{statistics} = {};
-
-    # Personal section
-    my $numwriteups = $VARS->{numwriteups} || 0;
-    my $xp = $USER->{experience} || 0;
-    my $lvl = $this->getLevel($USER) + 1;
-    my $LVLS = Everything::getVars(Everything::getNode('level experience', 'setting'));
-    my $WRPS = Everything::getVars(Everything::getNode('level writeups', 'setting'));
-
-    my $expleft = 0;
-    $expleft = $$LVLS{$lvl} - $xp if exists $$LVLS{$lvl};
-    my $wrpleft = 0;
-    $wrpleft = $$WRPS{$lvl} - $numwriteups if exists $$WRPS{$lvl};
-
-    $e2->{statistics}->{personal} = {
-      xp => $xp,
-      writeups => $numwriteups,
-      level => $this->getLevel($USER),
-      xpNeeded => $expleft > 0 ? $expleft : undef,
-      wusNeeded => ($expleft <= 0 && $wrpleft) ? $wrpleft : undef,
-      gp => $USER->{GP} || 0,
-      gpOptout => $VARS->{GPoptout} ? 1 : 0
-    };
-
-    # Fun Stats section
-    my $nodeFu = ($numwriteups > 0) ? sprintf('%.1f', $xp/$numwriteups) : '0.0';
-    $e2->{statistics}->{fun} = {
-      nodeFu => $nodeFu,
-      goldenTrinkets => $USER->{karma} || 0,
-      silverTrinkets => $USER->{sanctity} || 0,
-      stars => $USER->{stars} || 0,
-      easterEggs => $VARS->{easter_eggs} || 0,
-      tokens => $VARS->{tokens} || 0
-    };
-
-    # Old Merit System (advancement) section
-    my $hv = Everything::getVars(Everything::getNode("hrstats", "setting"));
-    my $merit = ($USER->{merit}) ? $USER->{merit} : 0;
-    my $lf = $this->getHRLF($USER) || 0;
-    my $devotion = int(($numwriteups * $merit) + .5);
-
-    $e2->{statistics}->{advancement} = {
-      merit => sprintf('%.2f', $merit),
-      lf => sprintf('%.4f', $lf),
-      devotion => $devotion,
-      meritMean => $$hv{mean} || 0,
-      meritStddev => $$hv{stddev} || 0
-    };
+    $e2->{statistics} = Everything::PageState->_build_statistics($this, $USER, $VARS);
   }
 
   # Notelet
@@ -8181,168 +8128,44 @@ sub buildNodeInfoStructure
     $e2->{bounties} = \@bounties;
   }
 
-  # Recent Nodes
+  # Recent Nodes nodelet - the breadcrumb trail. Assembly moved to
+  # Everything::PageState::_build_recentNodes (#4257 Phase 2b). NOTE: that builder also
+  # rewrites $VARS->{nodetrail} in place (the page side-effect), exactly as before.
   if($nodelets =~ /1322699/)
   {
-    $VARS->{nodetrail} ||= "";
-    my @trail_ids = split(",", $VARS->{nodetrail});
-
-    # Add current node to beginning of trail for next page load
-    $VARS->{nodetrail} = $NODE->{node_id} . ',';
-
-    my @recent_nodes = ();
-    my $count = 0;
-
-    foreach my $nid (@trail_ids)
-    {
-      next unless $nid;
-      # Skip if already in our updated trail (avoids dupes)
-      next if $VARS->{nodetrail} =~ /\b$nid\b/;
-
-      my $node = $this->{db}->getNodeById($nid);
-      if($node && $node->{node_id})
-      {
-        push @recent_nodes, {
-          node_id => $node->{node_id},
-          title => $node->{title}
-        };
-
-        $VARS->{nodetrail} .= $nid . ',';
-        $count++;
-        last if $count > 8;
-      }
-    }
-
-    $e2->{recentNodes} = \@recent_nodes;
+    $e2->{recentNodes} = Everything::PageState->_build_recentNodes($this->{db}, $NODE, $VARS);
   }
 
-  # Favorite Noders
+  # Favorite Noders nodelet - latest writeups by favorited authors. Assembly moved to
+  # Everything::PageState::_build_favoriteWriteups (#4257 Phase 2b). Gate (1876005 +
+  # non-guest) stays here.
   if($nodelets =~ /1876005/ and not $this->isGuest($USER))
   {
-    # Hard cap at 5 to match the React nodelet's display limit (#3765).
-    # Previously this defaulted to 15 and could be bumped to 50 via a user
-    # var, hydrating 50 nodes worth of writeup/author/parent/wrtype lookups
-    # per page load — then React threw away all but 5.
-    my $wuLimit = 5;
-
-    my $linktypeFavorite = Everything::getNode('favorite', 'linktype');
-    if($linktypeFavorite)
-    {
-      my $linktypeIdFavorite = $linktypeFavorite->{node_id};
-      my $typeIdWriteup = Everything::getType('writeup')->{node_id};
-
-      my $sql = "SELECT node.node_id, node.author_user
-        FROM links
-        JOIN node ON links.to_node = node.author_user
-        WHERE links.linktype = $linktypeIdFavorite
-          AND links.from_node = $USER->{user_id}
-          AND node.type_nodetype = $typeIdWriteup
-        ORDER BY node.node_id DESC
-        LIMIT $wuLimit";
-
-      my $writeuplist = $this->{db}->{dbh}->selectall_arrayref($sql);
-      my @fav_writeups = ();
-
-      foreach my $row (@$writeuplist)
-      {
-        my $node = $this->{db}->getNodeById($row->[0]);
-        if($node && $node->{node_id})
-        {
-          my $author = $this->{db}->getNodeById($node->{author_user});
-          my $parent = $this->{db}->getNodeById($node->{parent_e2node});
-
-          # Get writeup type from the writeuptype table
-          my $writeuptype_name = '';
-          if($node->{wrtype_writeuptype})
-          {
-            my $wutype = $this->{db}->getNodeById($node->{wrtype_writeuptype});
-            $writeuptype_name = $wutype->{title} if $wutype;
-          }
-
-          push @fav_writeups, {
-            node_id => $node->{node_id},
-            title => $node->{title},
-            parent => $parent ? { node_id => $parent->{node_id}, title => $parent->{title} } : undef,
-            author => { node_id => int($node->{author_user}), title => ($author ? $author->{title} : 'Unknown') },
-            writeuptype => $writeuptype_name
-          };
-        }
-      }
-
-      $e2->{favoriteWriteups} = \@fav_writeups;
-    }
+    my $fav = Everything::PageState->_build_favoriteWriteups($this->{db}, $USER);
+    $e2->{favoriteWriteups} = $fav if defined $fav;
   }
 
-  # Personal Links
+  # Personal Links nodelet - the user's saved node-title list. List assembly moved to
+  # Everything::PageState::_build_personalLinks (#4257 Phase 2b). currentNodeTitle/
+  # currentNodeId are still set here -- they ride along with this nodelet's gate.
   if($nodelets =~ /174581/ and not $this->isGuest($USER))
   {
-    my $item_limit = 20;
-    my $char_limit = 1000;
-
-    my $personal_nodelet_str = $VARS->{personal_nodelet} || '';
-    my @nodes = split('<br>', $personal_nodelet_str);
-    my @links = ();
-    my $total_chars = 0;
-
-    foreach my $title (@nodes)
-    {
-      next unless $title && $title !~ /^\s*$/;
-      my $title_length = length($title);
-
-      # Stop if we would exceed either limit
-      last if scalar(@links) >= $item_limit;
-      last if ($total_chars + $title_length) > $char_limit;
-
-      push @links, $title;
-      $total_chars += $title_length;
-    }
+    $e2->{personalLinks} = Everything::PageState->_build_personalLinks($VARS);
 
     # Just pass the current node title - React will calculate if it can be added
     my $current_title = $NODE->{title};
     $current_title =~ s/(\S{16})/$1 /g;
-
-    $e2->{personalLinks} = \@links;
     $e2->{currentNodeTitle} = $current_title;
     $e2->{currentNodeId} = $NODE->{node_id};
   }
 
-  # Current User Poll
+  # Current User Poll nodelet. Assembly moved to Everything::PageState::_build_currentPoll
+  # (#4257 Phase 2b). The builder returns undef when there's no active poll, so the key
+  # stays absent (matching the original). Gate (1689202) stays here.
   if($nodelets =~ /1689202/)
   {
-    my @POLL = $this->{db}->getNodeWhere({poll_status => 'current'}, 'e2poll');
-    if(@POLL)
-    {
-      my $POLL = $POLL[0];
-      my $vote = ($this->{db}->sqlSelect(
-        'choice',
-        'pollvote',
-        "voter_user=".$USER->{node_id}." AND pollvote_id=".$POLL->{node_id}))[0];
-
-      $vote = -1 unless defined $vote;
-
-      # Parse options from doctext
-      my @options = split /\s*\n\s*/, $POLL->{doctext};
-
-      # Parse results
-      my @results = split ',', $POLL->{e2poll_results} || '';
-
-      # Get author info
-      my $author = $this->{db}->getNodeById($POLL->{poll_author});
-      my $author_name = $author ? $author->{title} : 'Unknown';
-
-      $e2->{currentPoll} = {
-        node_id => $POLL->{node_id},
-        title => $POLL->{title},
-        poll_author => $POLL->{poll_author},
-        author_name => $author_name,
-        question => $POLL->{question},
-        options => \@options,
-        poll_status => $POLL->{poll_status},
-        e2poll_results => \@results,
-        totalvotes => $POLL->{totalvotes} || 0,
-        userVote => $vote
-      };
-    }
+    my $poll = Everything::PageState->_build_currentPoll($this->{db}, $USER);
+    $e2->{currentPoll} = $poll if defined $poll;
   }
 
   # Usergroup Writeups
