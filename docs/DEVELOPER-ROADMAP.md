@@ -2,7 +2,7 @@
 
 **Created**: 2025-12-17 (original)
 **Rewritten**: 2026-05-24 (this revision)
-**Updated**: 2026-06-14 (MySQL + PSGI + right-size shipped; React-routing epic added)
+**Updated**: 2026-06-25 (opcode→API + htmlcode burndown gates cleared; React-routing thread resequenced, target end of June)
 **Owner**: Jay Bonci
 **Status**: Living document — strategic priorities + sequencing
 
@@ -43,41 +43,63 @@ The prior version (Dec 2025, 5,281 lines) tried to be both index and per-phase p
 - ✅ **Security-log decoupling** (#4272) — the `seclog` event log moved off node identity onto a stable
   `Everything::SecurityLog` enum (`seclog_event`), all ~38 writer callers converted to `SECLOG_*`
   constants, legacy node-mapping machinery removed.
+- ✅ **opcode → API + htmlcode burndown** (#4335 / #4358) — the two big routing gates. Every `op=` mutating
+  handler is now `POST /api/…` (opcode dispatch removed), and `Everything::Delegation::htmlcode` is emptied
+  into unit-tested `Everything::Application` methods (the `htmlcode()` dispatch removed from `Everything::HTML`).
 
-**Current thrust — the React-routing epic (see its own section below).** With MySQL + PSGI behind us,
-the cost/growth north star is **full client-side React routing**. Getting there is gated by retiring the
-legacy server-side request-processing surfaces; this session enumerated that surface end-to-end into
-trackers. This is the near-term grind (mid-2026), and it reorders the phase list below — the
-modernization items (esp. anything React) now sit behind the routing epic.
+**Current thrust — the React-routing thread (see its own section below).** With MySQL + PSGI behind us and
+the opcode/htmlcode gates cleared, the cost/growth north star is **full client-side React routing**. What
+remains is sweeping the last server-side request-processing surfaces (the silent-`$query` handlers in the
+maintenance hooks and the form-processing Pages), shipping the guest-chrome cache, and building the client
+router — **target: end of June 2026**. The modernization items (esp. anything React) sit behind this thread;
+the ORM/object-cleanup epoch follows it.
 
 **Active GH issue backlog:** ambient small bugs / mobile fixes / missing features, triaged opportunistically
 alongside the epic. (GitHub issues are the unit of tracking — this doc is the index.)
 
 ---
 
-## Current thrust — React routing epic (mid-2026)
+## Current thrust — the React-routing thread (mid-2026)
 
 **Destination:** full client-side React routing (SPA navigation; SSR first paint, client-route subsequent
 nav). **Why it's the north star:** it moves the cost+growth curve, is incremental/reversible, and the API
-layer it forces is the seam that de-risks a later ORM migration.
+layer it forces is the seam that de-risks the later ORM epoch.
 
-**Why it's gated:** you cannot client-route a page whose form POSTs `op=X` (or reads request params) to be
-processed and re-rendered **server-side**. So the epic is mostly *retiring server-side request processing*.
-This session mapped that surface completely:
+**The unifying theme — kill silent `$query` dependence.** You cannot client-route a page that processes a
+request *server-side* — a form POST, an `op=`, or anything that quietly reads `$query`. The whole thread is
+retiring server-side request processing. The htmlcode work made the failure mode concrete: handlers that
+branched on `!$query` to *guess* API-vs-form context, which is unreliable under PSGI/React and silently
+broke newdiscussion notifications + discussion threading until fixed. The same pattern still hides in the
+maintenance hooks and the form-processing Pages — that's what's left to sweep.
 
-| Tracker | Surface | State |
-|---|---|---|
-| **#4255 / #4257** | pagestate facade + chrome/content split + `e2.meta` producer | mostly done |
-| **#4198** | **opcode → API** — migrate the live `op=` mutating handlers (`Everything::Delegation::opcode`) to `POST /api/…`. *The gating prerequisite.* Burndown now at **~8 live opcodes (from 44)**. | in progress |
-| **#4299** | opcode kill rounds — verify dead/1:1-superseded opcodes and delete them (shrinks #4198's surface). Phases 1–5 + `bookmark`/`weblog`/`weblogify`/`category`/`massacre`/`leadusergroup` done; bucket-2 admin/node-tools (#4303) and the bucket-3 gating migrations `remove` (#4306) / `removeweblog` (#4310) / `changeusergroup` (#4312) shipped. 8 live opcodes remain (message/message_outbox/lockroom/flushcbox/socialBookmark/publishdraft/publishdrafttodocument/approve_draft). | ongoing |
-| **#4298** | **page form-handling** — 23 Page controllers that process form params server-side (mutate/branch on submit). The *other half* of the routing block, beyond opcodes. | tracked (worklist) |
-| **#4300** | **htmlcode burndown** — 57 remaining `Everything::Delegation::htmlcode` subs; factor into unit-tested `Everything::Application` methods or delete as opcodes/pages strand them. Continues the closed #4259. | tracked |
-| **#4301** | **API-wide CSRF guard** — belt-and-suspenders central Origin/header check in `Everything::API` (on top of the existing `SameSite=Lax` cookie). Lands after #4198; the `verifyRequest*` htmlcodes then delete. | tracked (spec) |
+**Gating prerequisites — DONE:**
+- ✅ **opcode → API** (#4198 / #4335) — every `op=` mutating handler migrated to `POST /api/…`;
+  `Everything::Delegation::opcode` + the `op=` dispatch removed.
+- ✅ **htmlcode burndown** (#4259 / #4354 / #4358) — `Everything::Delegation::htmlcode` emptied; the
+  migrated subs are unit-tested `Everything::Application` methods, and the `htmlcode()` dispatch wiring is
+  removed from `Everything::HTML`. *(The htmlcode **nodetype + table stay** — `maintenance` stores its code
+  in the htmlcode table, `jsonexport` extends it — so the empty module + display controller + nodetype are
+  retired later, in the ORM epoch, behind the maintenance teardown.)*
 
-**Sequence:** opcode kills + htmlcode burndown grind in parallel now → #4198 opcode→API (the gate) →
-the client router/resolver + `useDocumentMeta` + routing-parity harness → progressive flip. #4298 page
-form-handling converts alongside #4198 (same 1:1-parity bar). CSRF guard (#4301) lands as the cleanout
-finishes. **ORM stays deferred** until the data model actively hurts (decided June 2026).
+**The sequence from here (target: React routing by end of June 2026):**
+1. **Skinny down htmlcode exposure** *(this work — essentially done)*. Subs + dispatch gone; the residual
+   shell (empty Delegation module, display controller, nodetype) waits on the maintenance teardown.
+2. **Ship cacheable guest-user chrome (#4257)** — the chrome/content split, shipped early so the guest page
+   chrome bakes in prod while the rest of the thread proceeds. Page-speed + payload win on the way to the router.
+3. **Clean out the htmlpage infrastructure (#4361)** + **sweep the maintenance hooks for remaining `$query`
+   exposure** — htmlpages no longer render (the router does); the residual couplings are mimetype/dev-tooling.
+   The maintenance create/update/delete hooks still carry the silent-`$query` pattern.
+4. **Audit all Pages for mutation (#4298)** — move every mutating page action to an API call (React owns
+   state) or a React-rendered display. The last server-side request-processing surface.
+5. **90%+ API test coverage** — the APIs *are* the routing seam; lock them down before the flip. (CSRF guard
+   #4301 lands in this window.)
+6. **React-based routing** — the client router/resolver + `useDocumentMeta` + routing-parity harness +
+   the progressive flip (SSR first paint, client-route subsequent nav).
+
+**Then the next major epoch — ORM / `Everything::Node` object cleanup.** Includes the configuration objects,
+schema versioning (sqitch, Phase 9), and the **deferred htmlcode/maintenance teardown**: maintenance gets
+restructured out of the htmlcode table, which finally frees the htmlcode nodetype + table + display shell.
+Deferred until now on purpose — the API layer built above is the seam that de-risks it.
 
 ---
 

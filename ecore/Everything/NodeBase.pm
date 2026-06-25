@@ -799,7 +799,7 @@ sub getNodeCursor
 
 	if ($select eq 'SELECT * FROM node')
 	{
-		Everything::HTML::htmlFormatErr($select, 'getNodeCursor() tried to evaluate a stupid query', '');
+		Everything::printLog('getNodeCursor() tried to evaluate a stupid query: ' . $select);
 		return;
 	}
 
