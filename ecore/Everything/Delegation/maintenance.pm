@@ -91,38 +91,20 @@ sub writeup_create
   my ($WRITEUP) = @_;
   $DB->getRef($WRITEUP);
 
-  # This is an odd consession for the time being so that maintenance functions can properly
-  # bomb out if there isn't a CGI object in place
+  # The legacy form-post publish flow (the dead `openform` form posting
+  # writeup_doctext / writeup_parent_e2node, then publishing via the
+  # publishwriteup / nopublishreason / canpublishas htmlcodes) is retired (#4354).
+  # Writeups are now created by converting a draft in
+  # Everything::API::drafts::publish_draft -- a node-type sqlUpdate that skips
+  # maintenance, so the live publish path never reaches this create hook.
+  #
+  # This hook survives only as a guard: a writeup arriving here came from an
+  # out-of-band web insertNode (e.g. POST /api/node/create type=writeup), with no
+  # parent e2node and no draft lineage -- reject it, exactly as the old flow did
+  # when handed a writeup with no writeup_doctext. Non-web contexts (no CGI
+  # object: cron, bulk import) are left untouched, as before.
   return unless $query;
-
-  my $E2NODE = $query->param('writeup_parent_e2node');
-  $DB->getRef($E2NODE);
-
-  # we need an e2node to insert the writeup into,
-  # and the writeup must have some text:
-  my $problem = (not $E2NODE or $query->param("writeup_doctext") eq '');
-
-  # the user must be allowed to publish, the node must not be locked,
-  # and the user must not have a writeup there already:
-  $problem ||= htmlcode('nopublishreason', $USER, $E2NODE);
-
-  # if no problem, attach writeup to node:
-  return htmlcode('publishwriteup', $WRITEUP, $E2NODE) unless $problem;
-
-  # otherwise, we don't want it:
   $DB->nukeNode($WRITEUP, -1, 1);
-
-  return unless UNIVERSAL::isa($problem,'HASH');
-
-  # user already has a writeup in this E2node: update it
-  $$problem{doctext} = $query->param("writeup_doctext");
-  $$problem{wrtype_writeuptype} = $query -> param('writeup_wrtype_writeuptype') if $query -> param('writeup_wrtype_writeuptype');
-  $DB->updateNode($problem, $USER);
-
-  # redirect to the updated writeup
-  $Everything::HTML::HEADER_PARAMS{-status} = 303;
-  $Everything::HTML::HEADER_PARAMS{-location} = htmlcode('urlToNode', $problem);
-
   return;
 }
 
@@ -206,7 +188,7 @@ sub writeup_update
       my $trimmedNewText = $query->param('writeup_doctext');
       $trimmedNewText =~ s/^\s+|\s$//;
 
-      return htmlcode('unpublishwriteup', $WRITEUP, 'blanked') unless $trimmedNewText;
+      return $APP->unpublish_writeup($USER, $WRITEUP, 'blanked') unless $trimmedNewText;
 
       htmlcode('addNotification', 'blankedwriteup', 0, {
         writeup_id => getId($WRITEUP)
@@ -260,7 +242,7 @@ sub e2node_delete
   return unless $group;
 
   foreach(@$group) {
-    htmlcode('unpublishwriteup', getId($_), 'parent node deleted');
+    $APP->unpublish_writeup($USER, getId($_), 'parent node deleted');
   }
   return;
 }
@@ -303,7 +285,7 @@ sub writeup_delete
 # use it. So to avoid writeups getting nuked, we turn them into drafts first.
 # (Then the draft gets nuked. )
 
-  htmlcode('unpublishwriteup', $_[0], '(nuked)');
+  $APP->unpublish_writeup($USER, $_[0], '(nuked)');
 
   return;
 }
@@ -682,7 +664,7 @@ sub node_forward_create
   $$FORWARD{author_user} = getId(getNode('Content Editors', 'usergroup'));
 
   $DB->updateNode($FORWARD, -1);
-  htmlcode('addNodenote', $FORWARD, "Created by [$$USER{title}\[user]]");
+  $APP->add_nodenote($FORWARD, "Created by [$$USER{title}\[user]]");
   return;
 }
 
@@ -777,7 +759,7 @@ sub draft_update
 
       # record event in node history:
       my $note = ''; $note = ' (while suspended by '.$APP->linkNode($editor).') ' if $editor;
-      my $nodenote_id = htmlcode('addNodenote', $$N{node_id}, "author requested review$note");
+      my $nodenote_id = $APP->add_nodenote($$N{node_id}, "author requested review$note");
 
       # Notify. If no $editor, everyone gets it:
       htmlcode('addNotification', 'draft for review', $editor, {draft_id => $$N{node_id}, nodenote_id => $nodenote_id});

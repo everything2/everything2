@@ -10682,6 +10682,84 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
   margin-left: 24px;
 }
 
+/* Publish-as picker (canpublishas, #4354). Reused in the publish modal
+   (.publish-as) and the inline writeup editor (.inline-editor-publish-as);
+   each mirrors its host control's sizing and shares the Kernel Blue --e2- vars. */
+.publish-as__label-text {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--e2-color-primary, #333);
+}
+
+.publish-as__select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--e2-border-color, #ccc);
+  border-radius: 4px;
+  background-color: var(--e2-input-bg, #fff);
+  color: var(--e2-color-primary, #333);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.publish-as__select:focus {
+  outline: none;
+  border-color: var(--e2-link-color, #4060b0);
+}
+
+.publish-as__select:disabled,
+.inline-editor-publish-as__select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Inline editor variant: compact, matches .inline-editor-select. display:contents
+   flattens the picker into the .inline-editor-publish-row flex row so the select is
+   its own flex item (stays on the publish-button line); only the warning, given
+   flex-basis:100% below, wraps to the next line when an account is selected. */
+.inline-editor-publish-as {
+  display: contents;
+}
+
+.inline-editor-publish-as__label-text {
+  margin-right: 6px;
+  font-size: 13px;
+  color: var(--e2-color-muted, #666);
+}
+
+.inline-editor-publish-as__select {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid var(--e2-border-color, #ccc);
+  border-radius: 4px;
+  background: var(--e2-input-bg, #fff);
+  color: var(--e2-color-primary, #333);
+  cursor: pointer;
+}
+
+/* The cede-copyright notice -- theme-aware (Kernel Blue accent), both contexts */
+.publish-as__warning,
+.inline-editor-publish-as__warning {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--e2-color-primary, #333);
+  background-color: var(--e2-input-bg, #fff);
+  border-left: 3px solid var(--e2-link-color, #4060b0);
+  border-radius: 0 3px 3px 0;
+}
+
+/* In the inline editor's flex row, the warning takes a full-width line of its own
+   so the select stays up on the publish-button line. */
+.inline-editor-publish-as__warning {
+  flex-basis: 100%;
+}
+
 /* Suggestions dropdown */
 .publish-modal-suggestions {
   position: absolute;

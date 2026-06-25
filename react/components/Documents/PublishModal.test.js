@@ -26,6 +26,12 @@ jest.mock('../../hooks/usePublishDraft', () => ({
     publishing: false,
     error: null,
     setError: jest.fn()
+  })),
+  // canpublishas (#4354): default to no options (the common case).
+  usePublishAsOptions: jest.fn(() => ({
+    options: [],
+    publishAs: '',
+    setPublishAs: jest.fn()
   }))
 }))
 
@@ -37,7 +43,12 @@ global.fetch = jest.fn(() =>
 )
 
 import PublishModal from './PublishModal'
-import { useWriteuptypes } from '../../hooks/usePublishDraft'
+import {
+  useWriteuptypes,
+  useSetParentE2node,
+  usePublishDraft,
+  usePublishAsOptions
+} from '../../hooks/usePublishDraft'
 
 describe('PublishModal', () => {
   beforeEach(() => {
@@ -51,6 +62,12 @@ describe('PublishModal', () => {
       ],
       selectedWriteuptypeId: 1,
       setSelectedWriteuptypeId: jest.fn()
+    })
+    // Reset publish-as options to "no options" default
+    usePublishAsOptions.mockReturnValue({
+      options: [],
+      publishAs: '',
+      setPublishAs: jest.fn()
     })
   })
 
@@ -368,6 +385,137 @@ describe('PublishModal', () => {
 
       // When input is empty, should fall back to showing draft title
       expect(screen.getByText('Fallback Title')).toBeInTheDocument()
+    })
+  })
+
+  // canpublishas (#4354): the "Publish as another user" picker. The fetch of
+  // /api/drafts/publishas_options is owned by usePublishAsOptions (mocked here);
+  // this block pins the PublishModal wiring + payload contract.
+  describe('publish-as picker (canpublishas)', () => {
+    const CEDE_WARNING =
+      /cede your copyright and lose\s+all control over your writeup/i
+
+    it('renders no picker when the user has no publish-as options', () => {
+      usePublishAsOptions.mockReturnValue({
+        options: [],
+        publishAs: '',
+        setPublishAs: jest.fn()
+      })
+
+      render(
+        <PublishModal draft={{ node_id: 1, title: 'X' }} onSuccess={jest.fn()} onClose={jest.fn()} />
+      )
+
+      expect(screen.queryByText('Publish as:')).toBeNull()
+      expect(screen.queryByText(CEDE_WARNING)).toBeNull()
+    })
+
+    it('populates the picker from the options endpoint', () => {
+      usePublishAsOptions.mockReturnValue({
+        options: [
+          { title: 'everyone', node_id: 919 },
+          { title: 'Webster 1913', node_id: 923 }
+        ],
+        publishAs: '',
+        setPublishAs: jest.fn()
+      })
+
+      render(
+        <PublishModal draft={{ node_id: 1, title: 'X' }} onSuccess={jest.fn()} onClose={jest.fn()} />
+      )
+
+      expect(screen.getByText('Publish as:')).toBeInTheDocument()
+      const select = screen.getByRole('combobox', { name: /publish as/i })
+      const optionTexts = Array.from(select.options).map((o) => o.textContent)
+      expect(optionTexts).toEqual(['(yourself)', 'everyone', 'Webster 1913'])
+    })
+
+    it('shows the cede-copyright warning only when a non-self account is chosen', () => {
+      const options = [{ title: 'everyone', node_id: 919 }]
+
+      // Default (yourself) -> no warning
+      usePublishAsOptions.mockReturnValue({ options, publishAs: '', setPublishAs: jest.fn() })
+      const { rerender } = render(
+        <PublishModal draft={{ node_id: 1, title: 'X' }} onSuccess={jest.fn()} onClose={jest.fn()} />
+      )
+      expect(screen.queryByText(CEDE_WARNING)).toBeNull()
+
+      // Non-self account selected -> warning
+      usePublishAsOptions.mockReturnValue({
+        options,
+        publishAs: 'everyone',
+        setPublishAs: jest.fn()
+      })
+      rerender(
+        <PublishModal draft={{ node_id: 1, title: 'X' }} onSuccess={jest.fn()} onClose={jest.fn()} />
+      )
+      expect(screen.getByText(CEDE_WARNING)).toBeInTheDocument()
+    })
+
+    it('passes the chosen account title to publishDraft (publish_as set)', async () => {
+      const publishDraft = jest.fn().mockResolvedValue({ success: true })
+      usePublishDraft.mockReturnValue({
+        publishDraft,
+        publishing: false,
+        error: null,
+        setError: jest.fn()
+      })
+      useSetParentE2node.mockReturnValue({
+        setParentE2node: jest
+          .fn()
+          .mockResolvedValue({ success: true, e2node: { node_id: 555 } }),
+        loading: false,
+        error: null
+      })
+      usePublishAsOptions.mockReturnValue({
+        options: [{ title: 'everyone', node_id: 919 }],
+        publishAs: 'everyone',
+        setPublishAs: jest.fn()
+      })
+
+      render(
+        <PublishModal
+          draft={{ node_id: 1, title: 'My Node (thing)' }}
+          onSuccess={jest.fn()}
+          onClose={jest.fn()}
+        />
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: /^publish$/i }))
+
+      await waitFor(() => expect(publishDraft).toHaveBeenCalled())
+      expect(publishDraft.mock.calls[0][0]).toMatchObject({ publishAs: 'everyone' })
+    })
+
+    it('passes an empty publishAs (publish as yourself) by default', async () => {
+      const publishDraft = jest.fn().mockResolvedValue({ success: true })
+      usePublishDraft.mockReturnValue({
+        publishDraft,
+        publishing: false,
+        error: null,
+        setError: jest.fn()
+      })
+      useSetParentE2node.mockReturnValue({
+        setParentE2node: jest
+          .fn()
+          .mockResolvedValue({ success: true, e2node: { node_id: 555 } }),
+        loading: false,
+        error: null
+      })
+      // default options mock -> publishAs: ''
+
+      render(
+        <PublishModal
+          draft={{ node_id: 1, title: 'My Node (thing)' }}
+          onSuccess={jest.fn()}
+          onClose={jest.fn()}
+        />
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: /^publish$/i }))
+
+      await waitFor(() => expect(publishDraft).toHaveBeenCalled())
+      expect(publishDraft.mock.calls[0][0]).toMatchObject({ publishAs: '' })
     })
   })
 })

@@ -145,10 +145,6 @@ Each cron job:
    - Purpose: Room refresh
    - Updates room state, user lists
 
-7. **cron_writeup_reaper.pl** (346 bytes)
-   - Purpose: Writeup reaper
-   - Removes or archives writeups marked for deletion
-
 ### Cron Job Architecture
 
 ```

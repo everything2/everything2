@@ -266,6 +266,7 @@ subtest 'messageignore: target blocking sender drops message' => sub {
     sub NODEDATA { shift->{_nodedata}; }
     sub coolsleft { shift->{_coolsleft}; }
     sub votesleft { 10 }
+    sub VARS { shift->{_vars} // {}; }  # _notify_bookmark reads $user->VARS->{no_bookmarkinformer}
     package MockRequest4142;
     sub new   { my ($c, %a) = @_; bless { user => MockUser4142->new(%a) }, $c; }
     sub user  { shift->{user}; }
@@ -424,7 +425,7 @@ subtest 'bookmark CME: forwards when author has message_forward_to (#4142)' => s
 
 subtest 'bookmark CME: suppressed when author has no_bookmarkinformer' => sub {
     my $v = $APP->getVars($plain_user);
-    $v->{no_bookmarkinformer} = 1;
+    $v->{no_bookmarknotification} = 1;  # the AUTHOR's opt-out (no_bookmarkinformer is the bookmarker's, cool.pm:331 vs :365)
     Everything::setVars($plain_user, $v);
 
     my $before = max_msg_id();
@@ -435,7 +436,7 @@ subtest 'bookmark CME: suppressed when author has no_bookmarkinformer' => sub {
     is($count, 0, 'no CME message when author opts out of bookmark notifications');
 
     # cleanup
-    delete $v->{no_bookmarkinformer};
+    delete $v->{no_bookmarknotification};
     Everything::setVars($plain_user, $v);
     $DB->sqlDelete('links',
         "from_node=$cooler->{node_id} AND to_node=$wu_id");

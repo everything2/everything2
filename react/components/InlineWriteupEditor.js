@@ -7,9 +7,10 @@ import { convertRawBracketsToEntities, convertEntitiesToRawBrackets } from './Ed
 import { normalizeEditorHtml } from './Editor/E2HtmlSanitizer';
 import MenuBar from './Editor/MenuBar';
 import PreviewContent from './Editor/PreviewContent';
-import { useWriteuptypes } from '../hooks/usePublishDraft';
+import { useWriteuptypes, usePublishAsOptions } from '../hooks/usePublishDraft';
 import { fetchWithErrorReporting } from '../utils/reportClientError';
 import { decodeHtmlEntities } from '../utils/textUtils';
+import PublishAsPicker from './PublishAsPicker';
 import './Editor/E2Editor.css';
 
 /**
@@ -124,6 +125,13 @@ const InlineWriteupEditor = ({
     selectedWriteuptypeId,
     setSelectedWriteuptypeId
   } = useWriteuptypes();
+
+  // Publish-as options (canpublishas, #4354). Renders nothing when ineligible.
+  const {
+    options: publishAsOptions,
+    publishAs,
+    setPublishAs
+  } = usePublishAsOptions();
 
   // When writeuptypes load, pre-select the one from the title (if any)
   // This overrides the default "thing" selection if we have a writeuptype in the title
@@ -514,7 +522,10 @@ const InlineWriteupEditor = ({
                 parent_e2node: targetE2nodeId,
                 wrtype_writeuptype: selectedWriteuptypeId,
                 feedback_policy_id: 0,
-                notnew: hideFromNewWriteups ? 1 : 0
+                notnew: hideFromNewWriteups ? 1 : 0,
+                // canpublishas (#4354): only include when a non-self account is
+                // chosen. Omitted/empty => publish as yourself.
+                ...(publishAs ? { publish_as: publishAs } : {})
               })
             },
             'publishing draft'
@@ -916,6 +927,14 @@ const InlineWriteupEditor = ({
             >
               {publishing ? 'Publishing...' : 'Publish'}
             </button>
+            {/* Publish-as picker (canpublishas, #4354) - renders nothing when ineligible */}
+            <PublishAsPicker
+              options={publishAsOptions}
+              value={publishAs}
+              onChange={setPublishAs}
+              disabled={!draftId || publishing || saveStatus === 'saving'}
+              className="inline-editor-publish-as"
+            />
           </div>
         )}
       </div>

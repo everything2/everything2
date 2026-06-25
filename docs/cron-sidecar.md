@@ -46,7 +46,6 @@ Tests: `t/128_cron_schedule.t`, `t/129_cron_health.t`, `t/130_cron_state.t`.
 | datastash-lengthy | every 6 h | 1800s | `cron_datastash.pl --lengthy` |
 | iqm-recalc | daily | 900s | `cron_iqm_recalculate.pl` |
 | clean-old-rooms | daily | 300s | `cron_clean_old_rooms.pl` |
-| writeup-reaper | daily | 300s | `cron_writeup_reaper.pl` |
 | chatterbox-cleanup | hourly (`50 * * * *`) | 120s | `cron_clean_cbox.pl` |
 | generate-sitemap | daily (`0 0 * * *`) | 1800s | `cron_generate_sitemap.pl` |
 

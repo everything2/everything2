@@ -47,7 +47,6 @@ EventBridge can overlap-fire datastash onto itself).
   - `cron_clean_cbox.pl` → `$APP->chatterbox_cleanup` — `cron(50 * * * *)`
   - `cron_refresh_rooms.pl` → `$APP->refreshRoomUsers` — `rate(5 minutes)`
   - `cron_clean_old_rooms.pl` → `$APP->clean_old_rooms` — `rate(1 day)`
-  - `cron_writeup_reaper.pl` → `$APP->process_reaper_targets` — `rate(1 day)`
   - `cron_iqm_recalculate.pl` → `$APP->global_iqm_recalculate` — `rate(1 day)`
   - `cron_generate_sitemap.pl` → `Everything::S3` sitemap build → `cron(0 0 * * *)`
   - `cron_datastash.pl` → DataStash generators — `rate(2 minutes)`
