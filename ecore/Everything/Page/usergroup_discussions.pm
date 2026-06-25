@@ -105,7 +105,7 @@ sub buildReactData
                 type               => 'usergroup_discussions',
                 is_guest           => 0,
                 usergroups         => \@usergroups,
-                selected_usergroup => $show_ug,
+                selected_usergroup => int($show_ug),   # numeric: $show_ug got string-flagged via SQL interpolation (#4152)
                 access_denied      => 1,
                 message            => "You are not a member of the selected usergroup."
             };
@@ -217,7 +217,7 @@ sub buildReactData
         type               => 'usergroup_discussions',
         is_guest           => 0,
         usergroups         => \@usergroups,
-        selected_usergroup => $show_ug,
+        selected_usergroup => int($show_ug),   # numeric: $show_ug got string-flagged via SQL interpolation (#4152)
         discussions        => \@discussions,
         total_discussions  => $totalnodes,
         offset             => $offset,

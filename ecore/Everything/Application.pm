@@ -4011,6 +4011,197 @@ sub add_notification {
   return 1;
 }
 
+# Notify usergroup members of a new discussion (the per-member "newdiscussion"
+# notification). Called from Everything::API::debatecomments so it no longer
+# depends on the debate_create maintenance hook -- that hook decided API-vs-form
+# via !$query, which is unreliable under PSGI (a request always carries a CGI
+# object), so it sent to an empty/wrong usergroup and silently notified nobody.
+# Skips the creator and anyone who hasn't opted in. Returns the count sent.
+sub notify_new_discussion {
+  my ($this, $creator_id, $ug_id, $debate_id) = @_;
+  my $db = $this->{db};
+  my $notif = $db->getNode('newdiscussion', 'notification') or return 0;
+
+  my $notify_ug = $ug_id;
+  $notify_ug = 829913 if $notify_ug == 114;   # notify e2gods, not gods
+
+  my $sent = 0;
+  for my $uid (split ',', ($this->usergroupToUserIds($notify_ug) // '')) {
+    next if $uid == $creator_id;
+    my $member = $db->getNodeById($uid) or next;
+    my $mvars  = $this->getVars($member) or next;
+    next unless $mvars->{settings};
+    my $parsed = eval { from_json($mvars->{settings}) };
+    next unless ref($parsed) eq 'HASH' && ref($parsed->{notifications}) eq 'HASH';
+    next unless $parsed->{notifications}{ $notif->{node_id} };
+    # The newdiscussion notification delegation (render + _is_valid) reads
+    # $args->{node_id}; the legacy hook wrote 'debate_id', so the notification was
+    # always judged invalid and never displayed. Write node_id.
+    $this->add_notification($notif->{node_id}, $uid, {
+      node_id => $debate_id, uid => $creator_id, gid => $ug_id,
+    });
+    $sent++;
+  }
+  return $sent;
+}
+
+# Screen a user's notelet (the legacy screenNotelet htmlcode; #4358). Reads
+# $vars->{noteletRaw}/{personalRaw}, length-limits by user level, strips comments
+# (unless noteletKeepComments) and <script> tags, then writes the result to
+# $vars->{noteletScreened} (or deletes it when empty). Mutates $vars in place.
+sub screen_notelet {
+  my ($this, $user, $vars) = @_;
+
+  my $work = $vars->{noteletRaw} || $vars->{personalRaw};
+  delete $vars->{personalRaw};
+
+  unless ($vars->{noteletKeepComments}) {
+    $work =~ s/<!--.*?-->//gs;
+  }
+
+  # length is limited based on level
+  my $maxLen = ($this->getLevel($user) || 0) * 100;
+  $maxLen = 1000 if $maxLen > 1000;
+  $maxLen = 500  if $maxLen < 500;
+
+  # power has its privileges
+  if ($this->isAdmin($user)) {
+    $maxLen = 32768;
+  } elsif ($this->isEditor($user)) {
+    $maxLen += 100;
+  } elsif ($this->isDeveloper($user)) {
+    $maxLen = 16384;   # 16k ought to be enough for everyone --[Swap]
+  }
+
+  $work = substr($work, 0, $maxLen) if length($work) > $maxLen;
+
+  # an unclosed comment would otherwise block later editing (N-Wing, 2003)
+  if ($work =~ /^(.*)<!--(.+?)$/s) {
+    my ($pre, $post) = ($1, $2);
+    $work = $pre . '<code>&lt;!--</code>' . $post if $post !~ /-->/s;
+  }
+
+  delete $vars->{personalScreened};   # old way
+
+  # strip <script> so user scripts can't break React pages
+  $work =~ s/<script[^>]*>.*?<\/script>//gis;
+  $work =~ s/<script[^>]*>//gis;
+  $work =~ s/<\/script>//gis;
+
+  if (length($work)) {
+    $vars->{noteletScreened} = $work;
+  } else {
+    delete $vars->{noteletScreened};
+  }
+  return;
+}
+
+# Render writeup nodes as Atom <entry> elements (the legacy atomiseNode htmlcode;
+# #4358), used by the atom-feed pages. $input is a node_id, an arrayref of ids/
+# nodes, or a DBI cursor; $length truncates doctext (default 1024). $lastnode_id
+# is the link-parser context -- the feed pages never carry one (their page node is
+# the feed ticker, not a writeup/e2node, so the legacy isGuest/$NODE gate always
+# yielded undef here), so it defaults to undef.
+sub atomise_node {
+  my ($this, $input, $length, $lastnode_id) = @_;
+  my $db = $this->{db};
+  $length ||= 1024;
+
+  my $host = $ENV{HTTP_HOST} || $this->{conf}->canonical_web_server || 'everything2.com';
+  $host = "http://$host";
+
+  my $atominfo = sub {
+    my $N = shift;
+    my $url = $host . $this->urlGen({}, 'noQuotes', $N);
+    my $author = $db->getNodeById($$N{author_user});
+    my $authorurl = $host . $this->urlGenNoParams($author, 'no quotes');
+    my $timestamp = $$N{publishtime} || $$N{createtime};
+    $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
+    $timestamp = sprintf('%04d-%02d-%02dT%02d:%02d:%02dZ', $1, $2, $3, $4, $5, $6);
+
+    return '<title>' . $this->encodeHTML($$N{title}) . '</title>' .
+      '<link rel="alternate" type="text/html" href="' . $url . '"/>' .
+      '<id>' . $url . '</id>' .
+      '<author>' .
+      '<name>' . $$author{title} . '</name>' .
+      '<uri>' . $authorurl . '</uri>' .
+      '</author>' .
+      '<published>' . $timestamp . '</published>' .
+      '<updated>' . $timestamp . '</updated>';
+  };
+
+  my @input = ($input);
+  if (ref $input eq 'ARRAY') {
+    @input = @$input;
+  } elsif (ref($input) =~ /DBI/) {
+    @input = @{ $input->fetchall_arrayref({}) };
+  }
+  return '' unless $db->getRef(@input);
+
+  my $showanyway = 96;   # too few bytes to bother truncating
+  my $HTML = $this->getVars($db->getNode('approved HTML tags', 'setting'));
+
+  my $str = '';
+  foreach my $N (@input) {
+    my $text = $this->breakTags($$N{doctext});
+
+    my $dots = '';
+    if ($length && length($text) > $length + $showanyway) {
+      $text = substr($text, 0, $length);
+      $text =~ s/\[[^\]]*$//;   # broken links
+      $text =~ s/\s+\w*$//;     # broken words
+      $dots = '&hellip;';
+    }
+
+    $text = $this->screenTable($text) if $lastnode_id;
+    $text = $this->parseLinks($this->htmlScreen($text, $HTML), $lastnode_id);
+    $text =~ s/<a .*?(href=".*?").*?>/<a $1>/sg;   # kill onmouseup etc
+
+    $str .= '<entry>' . $atominfo->($N) . "\n"
+      . '<content type="html">' . $this->encodeHTML($text . $dots) . '</content>' . "\n"
+      . '</entry>';
+  }
+  return $str;
+}
+
+# Build a user's "New Writeups" Atom feed (the legacy userAtomFeed htmlcode;
+# #4358). Returns the full <feed> XML, or undef when the user has no writeups.
+sub user_atom_feed {
+  my ($this, $foruser) = @_;
+  return unless $foruser;
+  my $db = $this->{db};
+
+  $foruser =~ s/&#39;/'/g;
+  my $u = $db->getNode($foruser, 'user');
+  return unless $u;
+
+  my $csr = $db->sqlSelectMany('node.node_id, publishtime',
+    'node JOIN writeup on node_id=writeup_id',
+    'author_user=' . $db->getId($u) . ' order by publishtime desc limit 6');
+
+  my $row = $csr->fetchrow_hashref;
+  return unless $row;
+
+  my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+  $str .= "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:base=\"http://everything2.com/\">\n";
+  $str .= "    <title>" . $foruser . "'s New Writeups</title>\n";
+  $str .= "    <link rel=\"alternate\" type=\"text/html\" href=\"http://everything2.com/index.pl?node=Everything%20User%20Search&amp;usersearch=" . $foruser . "\" />\n";
+  $str .= "    <link rel=\"self\" type=\"application/atom+xml\" href=\"?node=New%20Writeups%20Atom%20Feed&amp;type=ticker&amp;foruser=" . $foruser . "\" />\n";
+  $str .= "    <id>http://everything2.com/?node=New%20Writeups%20Atom%20Feed&amp;foruser=" . $foruser . "</id>\n";
+
+  my $timestamp = $$row{publishtime};
+  $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
+  $timestamp = sprintf('%04d-%02d-%02dT%02d:%02d:%02dZ', $1, $2, $3, $4, $5, $6);
+  $str .= "    <updated>$timestamp</updated>\n";
+
+  do {
+    $str .= $this->atomise_node($$row{node_id});
+  } while ($row = $csr->fetchrow_hashref);
+
+  $str .= "</feed>\n";
+  return $str;
+}
+
 # Attach a nodenote to a node (the legacy addNodenote htmlcode; #4354). $notefor
 # is a node or node_id, $notetext the note body, $user the optional noter (node
 # or id). Prefixes the note with a user link + notifies the noter when present.
@@ -7868,14 +8059,7 @@ sub buildNodeInfoStructure
     if ($hasContent) {
       # Call screenNotelet if needed
       unless(exists $VARS->{'noteletScreened'}) {
-        Everything::Delegation::htmlcode::screenNotelet(
-          $this->{db},
-          $query,
-          $NODE,
-          $USER,
-          $VARS,
-          $this   # $APP
-        );
+        $this->screen_notelet($USER, $VARS);
       }
       $content = $VARS->{'noteletScreened'} || '';
 

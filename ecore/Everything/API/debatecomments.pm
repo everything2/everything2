@@ -66,12 +66,15 @@ sub create_debate {
         return [$self->HTTP_OK, {success => 0, error => 'Could not find debate nodetype'}];
     }
 
-    # Create the debate node
-    # The debate_create maintenance will set root_debatecomment to self
+    # Create the debate node.
+    # NB: do NOT seed root_debatecomment here. Passing it in the insert nodedata
+    # silently defeats the debate_create maintenance hook that is meant to set it,
+    # leaving it 0 -- and usergroup_discussions GROUP BYs root_debatecomment then
+    # getNodeById()s it, so a 0 makes the discussion invisible on the listing page.
+    # (Regression from the htmlpage->API conversion, 252576b08.)
     my $nodedata = {
         doctext => $doctext,
         parent_debatecomment => 0,
-        root_debatecomment => 0,  # Will be set by maintenance
         restricted => $restricted_id,
     };
 
@@ -79,6 +82,15 @@ sub create_debate {
 
     unless ($new_id) {
         return [$self->HTTP_OK, {success => 0, error => 'Failed to create discussion'}];
+    }
+
+    # A top-level discussion is its own root. Set it explicitly rather than relying
+    # on the maintenance hook (which is also sensitive to CGI context), so the
+    # discussion is always listable.
+    my $newnode = $DB->getNodeById($new_id, 'force');
+    if ($newnode && $newnode->{root_debatecomment} != $new_id) {
+        $newnode->{root_debatecomment} = $new_id;
+        $DB->updateNode($newnode, $user->NODEDATA);
     }
 
     # If announce requested, send message to usergroup
@@ -96,6 +108,10 @@ sub create_debate {
             });
         }
     }
+
+    # Per-member 'newdiscussion' notification (opt-in; skips the creator). Done
+    # here rather than in the unreliable debate_create maintenance hook.
+    $self->APP->notify_new_discussion($user->node_id, $restricted_id, $new_id);
 
     return [$self->HTTP_OK, {
         success => 1,

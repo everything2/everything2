@@ -35,7 +35,7 @@ sub display {
     $foruser =~ s/'/&#39;/g if $foruser;
     my $str;
     if ($foruser) {
-        $str = Everything::HTML::htmlcode('userAtomFeed', $foruser);
+        $str = $self->APP->user_atom_feed($foruser);
         return [$self->HTTP_OK, $str, {type => $self->mimetype}] if $str;
     }
 
@@ -50,7 +50,7 @@ sub display {
         push @$node_ids, $wu->{node_id};
     }
 
-    $str .= Everything::HTML::htmlcode( 'atomiseNode' , $node_ids);
+    $str .= $self->APP->atomise_node($node_ids);
 
     my $feed = '<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:base="https://everything2.com">

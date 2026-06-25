@@ -149,6 +149,15 @@ const Debatecomment = ({ data, user }) => {
               <LinkNode {...usergroup} type="usergroup" />
             </span>
           )}
+          {usergroup && (
+            <div className="debate__back-link">
+              <LinkNode
+                title="Usergroup discussions"
+                params={{ show_ug: usergroup.node_id }}
+                display={`← Back to ${usergroup.title} discussions`}
+              />
+            </div>
+          )}
         </div>
         <div className="debate__actions">
           {can_edit && (
