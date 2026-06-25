@@ -10,7 +10,6 @@ package Everything::HTML;
 
 use strict;
 use Everything;
-use Everything::Delegation::htmlcode;
 
 use Everything::Request;
 
@@ -31,7 +30,6 @@ sub BEGIN {
               $VARS
               $query
               parseLinks
-              htmlFormatErr
               urlGen
               getPage
               getPages
@@ -39,7 +37,6 @@ sub BEGIN {
               linkNode
               linkNodeTitle
               nodeName
-              htmlcode
               displayPage
               gotoNode
               encodeHTML
@@ -158,161 +155,12 @@ sub encodeHTML
 }
 
 #############################################################################
-#	Sub
-#		htmlFormatErr
-#
-#	Purpose
-#		An error has occured and we need to print or log it.  This will
-#		do the appropriate action based on who the user is.
-#
-#	Parameters
-#		$code - the code snipit that is causing the error
-#		$err - the error message returned from the system
-#		$warn - the warning message returned from the system
-#
-#	Returns
-#		An html/text string that will be displayed to the browser.
-#
-sub htmlFormatErr
-{
-	my ($code, $err, $warn) = @_;
-
-	my $dbg = getNode("debuggers", "usergroup");
-	my $str = htmlErrorUsers($code, $err, $warn);
-
-	if($DB->isApproved($USER, $dbg))
-	{
-		$str = htmlErrorGods($code, $err, $warn);
-	}
-
-	return $str;
-}
-
-
+# htmlFormatErr / htmlErrorUsers / htmlErrorGods REMOVED (#4259) -- legacy
+# server-rendered error-page formatters. After the htmlcode() dispatch was
+# removed, the only caller (NodeBase getNodeCursor's stupid-query guard) threw
+# the formatted output away; React / the router render everything now, so these
+# never reached a browser. The guard now just printLog()s the bad query.
 #############################################################################
-#	Sub
-#		htmlErrorUsers
-#
-#	Purpose
-#		Format an error for the general user.  In this case we do not
-#		want them to see the error or the perl code.  So we will log
-#		the error and give them a simple one.
-#
-#		You can define a custom error text by creating an htmlcode
-#		node that formats a string error.  The code is passed a single
-#		numeric value that can be used to reference the error that is
-#		written to the log file.  However, be very careful that your
-#		htmlcode for your custom message doesn't have an error, or
-#		you may cause a user to get stuck in an infinite loop.  Since,
-#		an error in that code would cause the system to call itself
-#		to handle the error.
-#
-#	Parameters
-#		$code - the code snipit that is causing the error
-#		$err - the error message returned from the system
-#		$warn - the warning message returned from the system
-#
-#	Returns
-#		An html/text string that will be displayed to the browser.
-#
-sub htmlErrorUsers
-{
-	my ($code, $err, $warn) = @_;
-	my $errorId = int(rand(9999999));  # just generate a random error id.
-
-	my $str = "Server Error (Error Id $errorId)!";
-	$str = "<font color=\"#CC0000\"><b>$str</b></font>";
-	$str .= '<p id="servererror">An error has occured.  It has been logged. Apologies for the inconvenience. If it persists, contact an administrator</p>';
-
-	# Print the error to the log instead of the browser.  That way users
-	# do not see all the messy perl code.
-	my $error = "Server Error (#" . $errorId . ")\n";
-	if ($GNODE) { $error .= "Node: $$GNODE{title}\n"; }
-	else { $error .= "Node: null\n"; }
-
-	if ($USER) { $error .= "User: $$USER{title}\n"; }
-	else { $error .= "User: null\n"; }
-	$error .= "User agent: " . $query->user_agent() . "\n" if defined $query;
-	$error .= "Code:\n$code\n";
-	$error .= "Error:\n$err\n";
-	$error .= "Warning:\n$warn";
-	$error .= "Params:\n";
-	$error .= query_vars_string();
-	$error .= longmess();
-	Everything::printLog($error);
-
-	return $str;
-}
-
-
-#############################################################################
-#	Sub
-#		htmlErrorGods
-#
-#	Purpose
-#		Print an error for a god user.  This will dump the code, the call
-#		stack and any other error information.  You probably don't want
-#		the average user of a site to see this stuff.
-#
-#	Parameters
-#		$code - the code snipit that is causing the error
-#		$err - the error message returned from the system
-#		$warn - the warning message returned from the system
-#
-#	Returns
-#		An html/text string that will be displayed to the browser.
-#
-sub htmlErrorGods
-{
-	my ($code, $err, $warn) = @_;
-	my $error = $err . $warn;
-	my $linenum;
-
-	$code = $APP->encodeHTML($code);
-
-	my @mycode = split /\n/, $code;
-	while($error =~ /line (\d+)/sg)
-	{
-		# If the error line is within the range of the offending code
-		# snipit, make it red.  The line number may actually be from
-		# a perl module that the evaled code is calling.  If thats the
-		# case, we don't want some bogus number to add lines.
-		if($1 < (scalar @mycode))
-		{
-			# This highlights the offendling line in red.
-			$mycode[$1-1] = "<FONT color=cc0000><b>" . $mycode[$1-1] .
-				"</b></font>";
-		}
-	}
-
-	my $str = "<dl>\n"
-		. "<dt>Error:</dt><dd>"
-		. $APP->encodeHTML($err)
-		. "</dd>\n"
-		. "<dt>Warning:</dt><dd>"
-		. $APP->encodeHTML($warn)
-		. "</dd>\n"
-		;
-
-	my $count = 1;
-	$str .= "<dt>Code</dt><dd><pre>";
-	foreach my $line (@mycode)
-	{
-		$str .= sprintf("%4d: ", $count) . "$line\n";
-		$count++;
-	}
-
-	# Print the callstack to the browser too, so we can see where this
-	# is coming from.
-	my $ignoreMe = 3;
-	$str .= "\n\n<b>Call Stack</b>:\n";
-	$str .= (join "\n", reverse $APP->getCallStack($ignoreMe));
-	$str .= "\n<b>End Call Stack</b>\n";
-
-	$str.= "</pre></dd>";
-	$str.="</dl>\n";
-	return $str;
-}
 
 sub urlGen
 {
@@ -596,58 +444,14 @@ sub nodeName
 
 
 #########################################################################
-#	sub htmlcode
-#
-#	purpose
-#		allow for easy use of htmlcode functions in embedded perl
-#
-#	args
-#		[0] the function name
-#		[1] the arguments in a comma delimited list (must be string), or
-#			more than one argument: can be anything
-#
-#
-sub htmlcode {
-	my ($splitter, $returnVal) = ('');
-	my @returnArray;
-	my $encodedArgs = "(no arguments)";
-	my $htmlcodeName = shift;
-
-
-	# localize @_ to insure encodeHTML doesn't mess with our args
-	my @savedArgs = @_;
-
-	# Old-style htmlcode call. We will eventually change the way this works
-	# By creating an embedded htmlcode entrypoint which is smarter about doing the split
-	# But for now, emulate the old behavior
-
-	if(scalar(@savedArgs) == 1 && !ref($savedArgs[0]) && defined($savedArgs[0]))
-	{
-		@savedArgs = split(/\s*,\s*/, $savedArgs[0]);
-	}
-
-	$encodedArgs = $APP->encodeHTML($encodedArgs);
-
-	my $delegation_name = $htmlcodeName;
-	$delegation_name =~ s/[\s\-]/_/g;
-
-	if(my $delegation = Everything::Delegation::htmlcode->can($delegation_name))
-	{
-		if(wantarray) {
-			@returnArray = $delegation->($DB, $query, $GNODE, $USER, $VARS, $APP, @savedArgs);
-		}else{
-			$returnVal = $delegation->($DB, $query, $GNODE, $USER, $VARS, $APP, @savedArgs);
-		}
-	}else{
-                return htmlFormatErr("","$htmlcodeName could not be found as Everything::Delegation::htmlcode::$delegation_name");
-	}
-
-	if (wantarray) {
-		return @returnArray;
-	} else {
-		return $returnVal;
-	}
-}
+# sub htmlcode REMOVED (#4259) -- the htmlcode() dispatch is retired. It looked up
+# Everything::Delegation::htmlcode subs by name (for embedded-perl / node use);
+# every htmlcode has since migrated to Everything::Application (or a Controller/
+# API), so there were no callers left. The htmlcode NODETYPE + table stay (the
+# maintenance type stores its code in the htmlcode table; jsonexport extends
+# htmlcode). The empty Delegation::htmlcode module + the htmlcode display
+# controller are retained for now and retired alongside the maintenance work.
+#########################################################################
 
 #############################################################################
 #	Sub
@@ -906,83 +710,10 @@ sub parseLinks {
 
 
 #############################################################################
-#	Sub
-#		printHeader
-#
-#	Purpose
-#		For each page we serve, we need to pass standard HTML header
-#		information.  If we are script, we are responsible for doing
-#		this (the web server has no idea what kind of information we
-#		are passing).
-#
-#	Parameters
-#		$datatype - (optional) the MIME type of the data that we are
-#			to display	('image/gif', 'text/html', etc).  If not
-#			provided, the header will default to 'text/html'.
-#
-sub printHeader
-{
-	my ($datatype, $page, $lastnode) = @_;
-
- 	my $len = length $page;
-	# default to plain html
-	$datatype = "text/html" unless $datatype;
-	my @cookies = ();
-
-	if ($lastnode && $lastnode > 0) {
-		# Clear the lastnode_id cookie - must match all attributes set by client JavaScript:
-		# path=/, SameSite=Lax, and expires in the past for proper deletion
-		# Without matching attributes, Firefox may not properly clear the cookie
-		push @cookies, $query->cookie(-name=>'lastnode_id', -value=>'', -path=>'/', -expires=>'-1d', -samesite=>'Lax');
-
-	} elsif ($lastnode && $lastnode == -1) {
-		# -1 means don't touch the cookie
-
-	} else {
-		# Clear the lastnode_id cookie - must match all attributes set by client JavaScript:
-		# path=/, SameSite=Lax, and expires in the past for proper deletion
-		# Without matching attributes, Firefox may not properly clear the cookie
-		push @cookies, $query->cookie(-name=>'lastnode_id', -value=>'', -path=>'/', -expires=>'-1d', -samesite=>'Lax');
-	}
-	if ($$USER{cookie}) {
-		push @cookies, $$USER{cookie};
-	}
-
-	my $extras = {};
-	$extras->{charset} = 'utf-8';
-	if(@cookies)
-	{
-		$extras->{cookie} = \@cookies;
-	}
-
-        if(my $best_compression = $APP->compress_response_body)
-        {
-		$extras->{content_encoding} = $best_compression;
-        }
-
-        $extras->{'X-Frame-Options'} = "sameorigin";
-
-        # Set Cache-Control based on user login state and cookie presence
-        # Logged-in users get private, no-cache to prevent CloudFront caching
-        # This ensures user-specific content (random nodes, personal data) is fresh
-        # Also force no-cache when setting cookies (e.g., logout) to prevent
-        # CloudFront from caching and stripping the Set-Cookie header
-        if ($$USER{cookie} || !$APP->isGuest($USER)) {
-            # Setting cookies or logged-in users should never be cached
-            $extras->{'Cache-Control'} = "private, no-cache, no-store, must-revalidate";
-        } else {
-            # Guests without cookie changes can be cached by CloudFront
-            $extras->{'Cache-Control'} = "public, max-age=300";
-        }
-
-	if($ENV{SCRIPT_NAME}) {
-		$query->header(-type=> $datatype,
-			       -content_length => $len,
-			       %HEADER_PARAMS,%$extras);
-	}
-
-	return;
-}
+# printHeader REMOVED (#4259) -- legacy mod_perl HTTP-header printing. Under
+# PSGI, Plack / the response builder own response headers; nothing called this
+# (only a stale comment referenced it).
+#############################################################################
 
 
 #############################################################################

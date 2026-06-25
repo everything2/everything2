@@ -1,6 +1,7 @@
 package Everything::Controller::htmlcode;
 
 use Moose;
+use Everything::Delegation::htmlcode;   # empty module; _is_delegated() probes it via ->can (HTML.pm no longer loads it)
 extends 'Everything::Controller';
 with 'Everything::Controller::Role::BasicEdit';
 
