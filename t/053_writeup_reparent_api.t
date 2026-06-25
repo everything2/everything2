@@ -9,6 +9,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../ecore";
 use lib "/var/libraries/lib/perl5";
+use lib "$FindBin::Bin/lib";
 
 use Test::More;
 use Everything;
@@ -16,6 +17,7 @@ use Everything::Application;
 use Everything::API::writeup_reparent;
 use JSON;
 use Data::Dumper;
+use TestSeed;
 
 # Suppress expected warnings throughout the test
 $SIG{__WARN__} = sub {
@@ -626,6 +628,74 @@ subtest 'Admin can access API' => sub {
     is($result->[0], 200, "GET returns HTTP 200");
     ok($result->[1]{success}, "Admin can access API");
     ok(!$result->[1]{error}, "No error for admin user");
+};
+
+#############################################################################
+# Move-notification attribution (#4350). The success subtest above has the
+# writeup authored by the reparenting editor, so the "notify the author" path
+# (handle_post -> reparentWriteup, line ~268) never fires. This exercises it
+# with a DIFFERENT author and pins that the notification is attributed to the
+# real reparenting editor -- reparentWriteup receives $USER->NODEDATA (a
+# hashref), so $USER->{node_id} there is the real id, NOT undef. Also checks the
+# self-notify guard (an editor reparenting their own writeup gets no message).
+#############################################################################
+subtest 'POST: move-notification attributed to the reparenting editor (#4350)' => sub {
+    plan tests => 8;
+    my $ts = time();
+
+    my $author = TestSeed::make_user($DB, $APP, label => 'wauthor', experience => 1000);
+    ok($author, 'dedicated (non-editor) writeup author');
+
+    my $src = create_test_e2node("Reparent Notify Src $ts");
+    my $dst = create_test_e2node("Reparent Notify Dst $ts");
+    my $writeup = create_test_writeup($src, $author);
+    ok($writeup, 'writeup authored by the dedicated user');
+    my $writeup_id = $writeup->{node_id};
+
+    $DB->sqlDelete('message', "for_user=$author->{node_id}");  # no stale notice
+
+    my $mock_user = MockUser->new(
+        node_id        => $editor_user->{node_id},
+        title          => $editor_user->{title},
+        is_editor_flag => 1,
+        NODEDATA       => $editor_user,
+    );
+    my $mock_request = MockRequest->new(
+        user     => $mock_user,
+        cgi      => MockCGI->new({}),
+        POSTDATA => encode_json({ new_e2node_id => $dst->{node_id}, writeup_ids => [$writeup_id] }),
+    );
+
+    my $result = $api->post($mock_request);
+    is($result->[0], 200, 'reparent returns HTTP 200');
+    ok($result->[1]{success}, 'reparent succeeded');
+
+    my $msg = $DB->sqlSelectHashref('*', 'message',
+        "for_user=$author->{node_id} AND author_user=$editor_user->{node_id}");
+    ok($msg, 'the author received a move-notification from the reparenting editor');
+    like($msg->{msgtext}, qr/moved your writeup/i, 'notification text describes the move');
+    is($msg->{author_user}, $editor_user->{node_id},
+        'author_user is the real reparenting-editor id, not 0/undef (#4350)');
+
+    # Self-notify guard: an editor reparenting their OWN writeup gets no message.
+    my $own = create_test_writeup($src, $editor_user);  # author == reparenter
+    $DB->sqlDelete('message', "for_user=$editor_user->{node_id} AND msgtext LIKE '%moved your writeup%'");
+    $api->post(MockRequest->new(
+        user     => $mock_user,
+        cgi      => MockCGI->new({}),
+        POSTDATA => encode_json({ new_e2node_id => $dst->{node_id}, writeup_ids => [$own->{node_id}] }),
+    ));
+    my $self_msg = $DB->sqlSelect('COUNT(*)', 'message',
+        "for_user=$editor_user->{node_id} AND msgtext LIKE '%moved your writeup%'");
+    is($self_msg, 0, 'no self-notification when the editor reparents their own writeup');
+
+    # cleanup
+    $DB->sqlDelete('message', "for_user IN ($author->{node_id}, $editor_user->{node_id}) AND msgtext LIKE '%moved your writeup%'");
+    for my $id ($writeup_id, $own->{node_id}, $src->{node_id}, $dst->{node_id}) {
+        my $n = $DB->getNodeById($id, 'force');
+        $DB->nukeNode($n, -1) if $n;
+    }
+    TestSeed::cleanup($DB);
 };
 
 done_testing();
