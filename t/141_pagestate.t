@@ -276,6 +276,208 @@ is(Everything::PageState->_build_currentPoll( T141::PollNoVoteDB->new, { node_id
     is($st->{advancement}{meritStddev}, 2,        'advancement.meritStddev from hrstats');
 }
 
+#############################################################################
+# Phase 2b builder: _build_epicenter (#4367). PER-USER, with SIDE EFFECTS on
+# $VARS->{oldexp}/{oldGP}. Mock $app (conf->user_settings + DateTimeLocal).
+#############################################################################
+{
+    package T141::EpiConf; sub new { bless {}, $_[0] } sub user_settings { return 12345 }
+    package T141::EpiApp;
+    sub new { bless { conf => T141::EpiConf->new }, $_[0] }
+    sub DateTimeLocal { my ( $self, $now, $flag, $vars ) = @_; return $flag ? 'server-time' : 'local-time'; }
+}
+{
+    # XP + GP gained; has nodelet; level 3; localTimeUse on
+    my $USER = { experience => 150, GP => 30 };
+    my $VARS = { oldexp => 100, oldGP => 20, localTimeUse => 1 };
+    my $epi = Everything::PageState->_build_epicenter( T141::EpiApp->new, $USER, $VARS, 1, 3 );
+    is(${ $epi->{showEpicenterZen} }, 0,  '_build_epicenter showEpicenterZen=0 when user has the nodelet');
+    is(${ $epi->{localTimeUse} },     1,  'epicenter localTimeUse flag');
+    is($epi->{userSettingsId},        12345, 'epicenter userSettingsId from conf');
+    is($epi->{helpPage}, 'Everything2 Help', 'epicenter helpPage for level >= 2');
+    is($epi->{experienceGain}, 50, 'epicenter experienceGain = exp - oldexp (positive)');
+    is($epi->{gpGain},         10, 'epicenter gpGain = GP - oldGP (positive)');
+    is($epi->{serverTime}, 'server-time', 'epicenter serverTime via DateTimeLocal');
+    is($epi->{localTime},  'local-time',  'epicenter localTime present when localTimeUse');
+    is($VARS->{oldexp}, 150, 'SIDE EFFECT: oldexp advanced to current experience');
+    is($VARS->{oldGP},  30,  'SIDE EFFECT: oldGP advanced to current GP');
+
+    # No XP delta; GPoptout; no nodelet; level 1; no localTimeUse; non-numeric oldexp resets
+    my $USER2 = { experience => 80, GP => 99 };
+    my $VARS2 = { oldexp => 'garbage', GPoptout => 1 };
+    my $epi2  = Everything::PageState->_build_epicenter( T141::EpiApp->new, $USER2, $VARS2, 0, 1 );
+    is(${ $epi2->{showEpicenterZen} }, 1, 'epicenter showEpicenterZen=1 when user lacks the nodelet');
+    is($epi2->{helpPage}, 'E2 Quick Start', 'epicenter helpPage for level < 2');
+    ok(!exists $epi2->{experienceGain}, 'epicenter: non-numeric oldexp resets -> no phantom gain');
+    ok(!exists $epi2->{gpGain},   'epicenter: no gpGain when GPoptout');
+    ok(!exists $epi2->{localTime}, 'epicenter: no localTime when localTimeUse off');
+    is($VARS2->{oldexp}, 80, 'epicenter: oldexp reset to current experience');
+    ok(!exists $VARS2->{oldGP}, 'epicenter: oldGP untouched when GPoptout');
+}
+
+#############################################################################
+# Phase 2b builder: _build_masterControl (#4367). Editor/admin tooling. Mock $app
+# (role checks + getNodeNotes/getParameter/db) + $query; stub CONF + canDeleteNode.
+#############################################################################
+{
+    package T141::MCDb;  sub new { bless {}, $_[0] } sub sqlSelectHashref { return undef }
+    package T141::MCApp;
+    sub new { bless { db => T141::MCDb->new, _ed => $_[1], _ad => $_[2] }, $_[0] }
+    sub isEditor     { return $_[0]->{_ed} }
+    sub isAdmin      { return $_[0]->{_ad} }
+    sub getNodeNotes { return [ { t => 1 }, { t => 2 } ] }
+    sub getParameter { return 0 }
+    package T141::MCQuery; sub new { bless {}, $_[0] } sub script_name { return '/node' } sub param { return undef }
+    package T141::MCConf;  sub server_hostname { return 'test.example.com' }
+}
+{
+    no warnings 'redefine', 'once';
+    local *Everything::canDeleteNode = sub { return 1 };
+    local $Everything::CONF = bless {}, 'T141::MCConf';
+
+    my $NODE  = { node_id => 555, title => 'SomeNode', type => { title => 'writeup' } };
+    my $query = T141::MCQuery->new;
+    my $USER  = { node_id => 42 };
+
+    # Editor (not admin)
+    my $mc = Everything::PageState->_build_masterControl( T141::MCApp->new( 1, 0 ), $NODE, {}, $query, $USER );
+    is($mc->{adminSearchForm}{nodeId},     555,                'masterControl editor: adminSearchForm nodeId');
+    is($mc->{adminSearchForm}{serverName}, 'test.example.com', 'masterControl editor: serverName from CONF');
+    is($mc->{adminSearchForm}{scriptName}, '/node',            'masterControl editor: scriptName from query');
+    ok(exists $mc->{ceSection},           'masterControl editor: ceSection present');
+    is($mc->{nodeNotesData}{count}, 2,    'masterControl editor: nodeNotesData count');
+    ok(!exists $mc->{nodeToolsetData},    'masterControl editor(non-admin): no nodeToolsetData');
+    ok(!exists $mc->{adminSection},       'masterControl editor(non-admin): no adminSection');
+
+    # Admin (also editor)
+    my $mca = Everything::PageState->_build_masterControl( T141::MCApp->new( 1, 1 ), $NODE, {}, $query, $USER );
+    ok(exists $mca->{nodeToolsetData},        'masterControl admin: nodeToolsetData present');
+    is(${ $mca->{nodeToolsetData}{isWriteup} }, 1, 'masterControl admin: isWriteup for writeup node');
+    is(${ $mca->{nodeToolsetData}{canDelete} }, 1, 'masterControl admin: canDelete (writeup + canDeleteNode)');
+    ok(exists $mca->{adminSection},           'masterControl admin: adminSection present');
+
+    # Non-editor -> empty (degenerate; the gate normally prevents the call)
+    is_deeply(Everything::PageState->_build_masterControl( T141::MCApp->new( 0, 0 ), $NODE, {}, $query, $USER ),
+        {}, 'masterControl non-editor: empty hash');
+}
+
+#############################################################################
+# Phase 2b builder: _build_user (#4367). The global identity object: role flags
+# always; gp/xp/level/votes/cools only for logged-in users.
+#############################################################################
+{
+    package T141::UserApp;
+    sub new { bless { ad=>$_[1], ed=>$_[2], ch=>$_[3], dv=>$_[4], gu=>$_[5], lv=>$_[6], un=>$_[7] }, $_[0] }
+    sub isAdmin{$_[0]{ad}} sub isEditor{$_[0]{ed}} sub isChanop{$_[0]{ch}}
+    sub isDeveloper{$_[0]{dv}} sub isGuest{$_[0]{gu}}
+    sub getLevel{$_[0]{lv}} sub get_unread_message_count{$_[0]{un}}
+}
+{
+    my $app  = T141::UserApp->new( 0, 1, 0, 0, 0, 5, 3 );   # editor, non-dev, level 5, 3 unread
+    my $USER = { node_id=>42, title=>'alice', in_room=>0, GP=>100, experience=>2000, votesleft=>20 };
+    my $u = Everything::PageState->_build_user( $app, $USER, { GPoptout=>0, cools=>4, coolsafety=>1, votesafety=>0 } );
+    is($u->{node_id}, 42, '_build_user node_id');
+    is(${ $u->{editor} },    1, 'user editor flag');
+    is(${ $u->{admin} },     0, 'user admin flag');
+    is(${ $u->{developer} }, 1, 'user developer flag = always \1 (pre-existing quirk)');
+    is($u->{gp},        100, 'user gp (logged-in)');
+    is($u->{level},     5,   'user level = getLevel');
+    is($u->{coolsleft}, 4,   'user coolsleft = int(VARS cools)');
+    is($u->{unreadMessages}, 3, 'user unreadMessages');
+
+    my $gu = Everything::PageState->_build_user( T141::UserApp->new(0,0,0,0,1,0,0),
+        { node_id=>1, title=>'Guest User', in_room=>0 }, {} );
+    is(${ $gu->{guest} }, 1, '_build_user guest flag');
+    ok(!exists $gu->{gp},    'guest: no gp (logged-in-only block skipped)');
+    ok(!exists $gu->{level}, 'guest: no level');
+}
+
+#############################################################################
+# Phase 2b builder: _build_quickRefSearchTerm (#4367). node title / parent e2node
+# title for writeups / searched term on Findings.
+#############################################################################
+{
+    package T141::QRDb;  sub new{bless{},shift} sub getNodeById{ return { title => 'ParentNode' } }
+    package T141::QRApp; sub new{ bless { db => T141::QRDb->new }, $_[0] }
+    package T141::QRQ;   sub new{bless{},shift} sub param{ return 'searchedterm' }
+}
+{
+    my $app = T141::QRApp->new;
+    is(Everything::PageState->_build_quickRefSearchTerm( $app, { title=>'Tomato', type=>{title=>'e2node'} }, undef ),
+        'Tomato', '_build_quickRefSearchTerm: e2node uses node title');
+    is(Everything::PageState->_build_quickRefSearchTerm( $app, { title=>'T (thing)', type=>{title=>'writeup'}, parent_e2node=>99 }, undef ),
+        'ParentNode', '_build_quickRefSearchTerm: writeup uses parent e2node title');
+    is(Everything::PageState->_build_quickRefSearchTerm( $app, { title=>'Findings:', type=>{title=>'superdoc'} }, T141::QRQ->new ),
+        'searchedterm', '_build_quickRefSearchTerm: Findings uses query node param');
+}
+
+#############################################################################
+# Phase 2b builder: _build_bounties (#4367). Top open bounties, descending, capped at 5.
+# (Provide exactly 5 ranks so the pre-existing descending loop terminates.)
+#############################################################################
+{
+    package T141::BountyDb; sub new{bless{},shift} sub getNode{ return { node_id => 1000 } }
+}
+{
+    no warnings 'redefine';
+    local *Everything::getNode = sub { return $_[0] };
+    local *Everything::getVars = sub {
+        my $name = shift;
+        return { map { ( $_ => "user$_" ) } 1 .. 5 }            if $name eq 'bounty order';
+        return { map { ( "user$_" => "outlaw$_" ) } 1 .. 5 }   if $name eq 'outlaws';
+        return { map { ( "user$_" => "reward$_" ) } 1 .. 5 }   if $name eq 'bounties';
+        return { 1 => 5 }                                       if $name eq 'bounty number';
+        return {};
+    };
+    my $b = Everything::PageState->_build_bounties( bless { db => T141::BountyDb->new }, 'T141::BApp' );
+    is(scalar(@$b), 5, '_build_bounties returns up to MAX=5');
+    is($b->[0]{requester_name},  'user5',   '_build_bounties: highest rank first (descending)');
+    is($b->[0]{reward},          'reward5', '_build_bounties: reward carried');
+    is($b->[0]{outlaw_nodeshell},'outlaw5', '_build_bounties: outlaw carried');
+}
+{
+    # Regression (#4367): fewer-than-MAX bounties must TERMINATE. Before the $i>0 bound this
+    # spun forever (it would hang the test suite), since exists $REQ{negative} is never true.
+    no warnings 'redefine';
+    local *Everything::getNode = sub { return $_[0] };
+    local *Everything::getVars = sub {
+        my $name = shift;
+        return { map { ( $_ => "user$_" ) } 1 .. 3 } if $name eq 'bounty order';
+        return { 1 => 3 }                            if $name eq 'bounty number';
+        return {};
+    };
+    my $b3 = Everything::PageState->_build_bounties( bless { db => T141::BountyDb->new }, 'T141::BApp' );
+    is(scalar(@$b3), 3, '_build_bounties terminates + returns all when fewer than MAX exist (#4367 fix)');
+    is($b3->[0]{requester_name}, 'user3', '_build_bounties: highest available rank first');
+
+    # Absent 'bounty number' setting -> bountyTot defaults to 0 -> empty list, no spin/warning
+    local *Everything::getVars = sub { return {} };
+    is_deeply(Everything::PageState->_build_bounties( bless { db => T141::BountyDb->new }, 'T141::BApp' ), [],
+        '_build_bounties: no/undef bounty count -> empty list (terminates)');
+}
+
+#############################################################################
+# Phase 2b builder: _build_recaptcha (#4367). Enabled in prod or on the dev host.
+#############################################################################
+{
+    package T141::RCConf;
+    sub new{ bless { prod=>$_[1] }, $_[0] } sub is_production{$_[0]{prod}} sub recaptcha_v3_public_key{'PUBKEY'}
+}
+{
+    local $ENV{HTTP_HOST} = '';
+    my $rc = Everything::PageState->_build_recaptcha( bless { conf => T141::RCConf->new(1) }, 'T141::RCApp' );
+    is(${ $rc->{enabled} }, 1, '_build_recaptcha enabled in production');
+    is($rc->{publicKey}, 'PUBKEY', '_build_recaptcha publicKey from conf');
+
+    local $ENV{HTTP_HOST} = 'localhost';
+    is(${ Everything::PageState->_build_recaptcha( bless { conf => T141::RCConf->new(0) }, 'T141::RCApp' )->{enabled} },
+        0, '_build_recaptcha disabled in non-prod / non-dev host');
+
+    local $ENV{HTTP_HOST} = 'development.everything2.com';
+    is(${ Everything::PageState->_build_recaptcha( bless { conf => T141::RCConf->new(0) }, 'T141::RCApp' )->{enabled} },
+        1, '_build_recaptcha enabled on development.everything2.com host');
+}
+
 done_testing();
 
 =head1 NAME
