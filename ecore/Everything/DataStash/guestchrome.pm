@@ -53,8 +53,10 @@ sub _build_chrome {
         );
         my $query = $request->cgi;
 
+        # skip_guest_cache => the guest fast-path (#4371) would otherwise recurse here:
+        # current_or_build -> generate -> _build_chrome -> buildNodeInfoStructure -> cache.
         my $e2 = $this->APP->buildNodeInfoStructure(
-            $guest, $guest, $vars, $query, $request );
+            $guest, $guest, $vars, $query, $request, { skip_guest_cache => 1 } );
 
         Everything::PageState->from_blob($e2)->{chrome};
     };
