@@ -338,6 +338,233 @@ sub _build_currentPoll {
     };
 }
 
+# epicenter: the Epicenter nodelet -- per-user identity/progression header. PER-USER, and
+# carries SIDE EFFECTS: it advances $VARS->{oldexp} / $VARS->{oldGP} (the XP/GP "since last
+# page" deltas), mutating the passed $VARS in place exactly as the inline code did. Cross-deps
+# passed in by the caller: $has_epicenter_nodelet (whether the user actually has nodelet 262,
+# computed in the orchestrator from the effective nodelet list) and $user_level (== the
+# already-built $e2->{user}{level}, used to pick the help page). Takes $app for conf +
+# DateTimeLocal. Gated by the caller on non-guest.
+sub _build_epicenter {
+    my ( $class, $app, $USER, $VARS, $has_epicenter_nodelet, $user_level ) = @_;
+
+    my $epicenter = {};
+
+    # Show EpicenterZen header bar if the user doesn't have the Epicenter nodelet
+    $epicenter->{showEpicenterZen} = $has_epicenter_nodelet ? \0 : \1;
+
+    # Core settings
+    $epicenter->{localTimeUse}   = $VARS->{localTimeUse} ? \1 : \0;
+    $epicenter->{userSettingsId} = $app->{conf}->user_settings;
+    $epicenter->{helpPage}       = ( $user_level < 2 ) ? 'E2 Quick Start' : 'Everything2 Help';
+
+    # Experience change (SIDE EFFECT: advances $VARS->{oldexp}). Initialize/reset oldexp on
+    # first visit or if non-numeric (legacy garbage), then report a positive delta.
+    $VARS->{oldexp} = $USER->{experience}
+        unless ( defined $VARS->{oldexp} && $VARS->{oldexp} =~ /^\d+$/ );
+    my $expChange = $USER->{experience} - $VARS->{oldexp};
+    $epicenter->{experienceGain} = $expChange if $expChange > 0;
+    $VARS->{oldexp} = $USER->{experience};   # keep in sync even on reset/decrease
+
+    # GP change (SIDE EFFECT: advances $VARS->{oldGP}), unless the user opted out
+    unless ( $VARS->{GPoptout} ) {
+        $VARS->{oldGP} = $USER->{GP}
+            unless ( defined $VARS->{oldGP} && $VARS->{oldGP} =~ /^\d+$/ );
+        my $gpChange = $USER->{GP} - $VARS->{oldGP};
+        $epicenter->{gpGain} = $gpChange if $gpChange > 0;
+        $VARS->{oldGP} = $USER->{GP};
+    }
+
+    # Server time (formatted strings for the React component)
+    my $NOW = time;
+    $epicenter->{serverTime} = $app->DateTimeLocal( $NOW, 1, $VARS );
+    $epicenter->{localTime}  = $app->DateTimeLocal( $NOW, 0, $VARS ) if $VARS->{localTimeUse};
+
+    return $epicenter;
+}
+
+# masterControl: the Master Control nodelet -- editor/admin tooling. Built only for editors
+# (and the admin sub-section only for admins). Per-user. The caller gates on isEditor||isAdmin
+# and separately sets $e2->{currentUserId} (a distinct key, kept in the orchestrator). Takes
+# $app for the role checks + getNodeNotes/getParameter/db, plus $NODE/$VARS/$query.
+sub _build_masterControl {
+    my ( $class, $app, $NODE, $VARS, $query, $USER ) = @_;
+
+    my $mc = {};
+
+    if ( $app->isEditor($USER) ) {
+        # Admin search form data
+        $mc->{adminSearchForm} = {
+            nodeId     => $$NODE{node_id} || '',
+            nodeType   => $$NODE{type}{title},
+            nodeTitle  => $$NODE{title},
+            serverName => $Everything::CONF->server_hostname,
+            scriptName => $query->script_name
+        };
+
+        # CE Section data
+        my ( undef, undef, undef, $mday, $mon, $year ) = localtime(time);
+        $year += 1900;
+        $mc->{ceSection} = {
+            currentMonth => $mon,
+            currentYear  => $year,
+            isUserNode   => ( $$NODE{type}{title} eq 'user' ),
+            nodeId       => $$NODE{node_id},
+            nodeTitle    => $$NODE{title},
+            showSection  => ( ( $VARS->{epi_hideces} // 0 ) != 1 )
+        };
+
+        # NodeNote data, unless the hidenodenotes preference is set
+        unless ( $VARS->{hidenodenotes} ) {
+            my $notes = $app->getNodeNotes($NODE);
+            $mc->{nodeNotesData} = {
+                node_id    => $NODE->{node_id},
+                node_title => $NODE->{title},
+                node_type  => $NODE->{type}{title},
+                notes      => $notes,
+                count      => scalar(@$notes),
+            };
+        }
+
+        if ( $app->isAdmin($USER) ) {
+            # Node Toolset data (React nuke-confirmation modal)
+            my $currentDisplay = $query->param("displaytype") || "display";
+            my $nodeType       = $NODE->{type}{title};
+            my $canDelete = Everything::canDeleteNode( $USER, $NODE )
+                && $nodeType ne 'draft' && $nodeType ne 'user';
+            my $hasHelp = $app->{db}->sqlSelectHashref( "*", "nodehelp", "nodehelp_id=$$NODE{node_id}" ) ? \1 : \0;
+            my $preventNuke = $app->getParameter( $NODE->{node_id}, "prevent_nuke" ) ? \1 : \0;
+
+            $mc->{nodeToolsetData} = {
+                nodeId         => $NODE->{node_id},
+                nodeTitle      => $NODE->{title},
+                nodeType       => $nodeType,
+                canDelete      => $canDelete ? \1 : \0,
+                currentDisplay => $currentDisplay,
+                hasHelp        => $hasHelp,
+                isWriteup      => ( $nodeType eq 'writeup' ) ? \1 : \0,
+                preventNuke    => $preventNuke,
+            };
+
+            # Admin Section data
+            $mc->{adminSection} = {
+                isBorged    => $$VARS{borged} ? \1 : \0,
+                showSection => ( ( $VARS->{epi_hideadmins} // 0 ) != 1 )
+            };
+        }
+    }
+
+    return $mc;
+}
+
+# user: the global user-identity object -- node_id/title, role flags, and (for logged-in
+# users) gp/xp/level/votes/cools/safety prefs/unread-message count. CHROME, always present.
+# Takes $app for the role checks + getLevel + get_unread_message_count. The `developer`
+# flag's ?(\1):(\1) is a pre-existing quirk (both branches true) -- preserved byte-identical.
+sub _build_user {
+    my ( $class, $app, $USER, $VARS ) = @_;
+
+    my $user = {};
+    $user->{node_id}   = $USER->{node_id};
+    $user->{title}     = $USER->{title};
+    $user->{admin}     = $app->isAdmin($USER)     ? \1 : \0;
+    $user->{editor}    = $app->isEditor($USER)    ? \1 : \0;
+    $user->{chanop}    = $app->isChanop($USER)    ? \1 : \0;
+    $user->{developer} = $app->isDeveloper($USER) ? \1 : \1;   # pre-existing quirk: both \1
+    $user->{guest}     = $app->isGuest($USER)     ? \1 : \0;
+    $user->{in_room}   = $USER->{in_room};
+
+    # Core user properties (logged-in only)
+    unless ( $app->isGuest($USER) ) {
+        $user->{gp}            = $USER->{GP} || 0;
+        $user->{gpOptOut}      = $VARS->{GPoptout} ? \1 : \0;
+        $user->{experience}    = $USER->{experience} || 0;
+        $user->{level}         = $app->getLevel($USER);
+        $user->{votesleft}     = $USER->{votesleft} || 0;
+        $user->{coolsleft}     = int( $VARS->{cools} || 0 );
+        # Confirm-before-acting prefs (#4052 cool / #3613 vote) read off the global user object
+        $user->{coolsafety}    = int( $VARS->{coolsafety} || 0 );
+        $user->{votesafety}    = int( $VARS->{votesafety} || 0 );
+        $user->{unreadMessages} = $app->get_unread_message_count($USER);
+    }
+
+    return $user;
+}
+
+# quickRefSearchTerm: the Quick Reference nodelet's lookup term -- the node title, or the
+# parent e2node title for a writeup, or (on Findings:/Nothing Found) the searched-for term
+# from the query. Node-derived but classified chrome. Caller gates on nodelet 2146276.
+sub _build_quickRefSearchTerm {
+    my ( $class, $app, $NODE, $query ) = @_;
+
+    my $lookfor = $NODE->{title};
+    if ( $$NODE{type}{title} eq 'writeup' ) {
+        # Use the e2node title rather than the writeup title w/ type annotation
+        $lookfor = $app->{db}->getNodeById( $NODE->{parent_e2node} )->{title};
+    }
+    else {
+        if ( ( $NODE->{title} eq 'Findings:' ) || ( $NODE->{title} eq 'Nothing Found' ) ) {
+            # Special-case findings: look up what was searched
+            $lookfor = $query->param('node');
+        }
+    }
+    return $lookfor;
+}
+
+# bounties: the Most Wanted nodelet -- the top open bounties from the bounty-order/outlaws/
+# bounties/bounty-number settings, highest rank first, capped at $MAX. Caller gates on 1986723.
+# The descending loop is bounded by `$i > 0` (#4367): the original lacked that bound and would
+# spin forever whenever fewer than $MAX bounties existed (or $bountyTot was undef). $bountyTot
+# defaults to 0 so an absent 'bounty number' setting yields an empty list rather than a warning.
+sub _build_bounties {
+    my ( $class, $app ) = @_;
+
+    my $REQ  = Everything::getVars( Everything::getNode( 'bounty order',  'setting' ) );
+    my $OUT  = Everything::getVars( Everything::getNode( 'outlaws',       'setting' ) );
+    my $REW  = Everything::getVars( Everything::getNode( 'bounties',      'setting' ) );
+    my $HIGH = Everything::getVars( Everything::getNode( 'bounty number', 'setting' ) );
+    my $MAX  = 5;
+
+    my $bountyTot   = $$HIGH{1} // 0;
+    my $numberShown = 0;
+    my @bounties    = ();
+
+    for ( my $i = $bountyTot; $numberShown < $MAX && $i > 0; $i-- ) {
+        if ( exists $$REQ{$i} ) {
+            $numberShown++;
+            my $requesterName = $$REQ{$i};
+            my $requesterNode = $app->{db}->getNode( $requesterName, 'user' );
+            my $outlawStr     = $$OUT{$requesterName} || '';
+            my $reward        = $$REW{$requesterName} || '';
+
+            push @bounties, {
+                requester_id     => $requesterNode->{node_id},
+                requester_name   => $requesterName,
+                outlaw_nodeshell => $outlawStr,
+                reward           => $reward
+            };
+        }
+    }
+
+    return \@bounties;
+}
+
+# recaptcha: the global reCAPTCHA config for the guest signup modal. Caller gates on guest.
+# Enabled in production (or on development.everything2.com via the request host).
+sub _build_recaptcha {
+    my ( $class, $app ) = @_;
+
+    my $conf          = $app->{conf};
+    my $use_recaptcha = 0;
+    if ( $conf->is_production || ( $ENV{HTTP_HOST} // '' ) =~ /^development\.everything2\.com/ ) {
+        $use_recaptcha = 1;
+    }
+    return {
+        enabled   => $use_recaptcha ? \1 : \0,
+        publicKey => $conf->recaptcha_v3_public_key // ''
+    };
+}
+
 # Keys whose values are conceptually integers but sometimes serialize as strings
 # (the #4152 class -- e.g. newWriteups[].node_id comes back as "1234567"). React uses
 # these as list keys (key={node_id}) and in truthy guards ({x && <JSX/>}), where a

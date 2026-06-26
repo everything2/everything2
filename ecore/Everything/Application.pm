@@ -7667,34 +7667,9 @@ sub buildNodeInfoStructure
 
   $e2->{display_prefs} = $this->display_preferences($VARS);
 
-  $e2->{user} ||= {};
-  $e2->{user}->{node_id} = $USER->{node_id};
-  $e2->{user}->{title} = $USER->{title};
-  $e2->{user}->{admin} = $this->isAdmin($USER)?(\1):(\0);
-  $e2->{user}->{editor} = $this->isEditor($USER)?(\1):(\0);
-  $e2->{user}->{chanop} = $this->isChanop($USER)?(\1):(\0);
-  $e2->{user}->{developer} = $this->isDeveloper($USER)?(\1):(\1);
-  $e2->{user}->{guest} = $this->isGuest($USER)?(\1):(\0);
-  $e2->{user}->{in_room} = $USER->{in_room};
-
-  # Core user properties (always available, not nodelet-specific)
-  unless($this->isGuest($USER)) {
-    $e2->{user}->{gp} = $USER->{GP} || 0;
-    $e2->{user}->{gpOptOut} = $VARS->{GPoptout} ? \1 : \0;
-    $e2->{user}->{experience} = $USER->{experience} || 0;
-    $e2->{user}->{level} = $this->getLevel($USER);
-    # Voting and cooling capacity (needed for WriteupDisplay C! button)
-    $e2->{user}->{votesleft} = $USER->{votesleft} || 0;
-    $e2->{user}->{coolsleft} = int($VARS->{cools} || 0);
-    # Confirm-before-acting preferences. WriteupDisplay reads these off the
-    # global user object (passed via PageLayout) — without them, the C? / vote
-    # buttons act immediately even when the user has the safety pref on.
-    # Fixes #4052 (cool) and #3613 (vote).
-    $e2->{user}->{coolsafety} = int($VARS->{coolsafety} || 0);
-    $e2->{user}->{votesafety} = int($VARS->{votesafety} || 0);
-    # Unread message count for inbox badge
-    $e2->{user}->{unreadMessages} = $this->get_unread_message_count($USER);
-  }
+  # User identity object. Assembly moved to Everything::PageState::_build_user (#4367,
+  # #4257 Phase 2b). Always present; logged-in users also get gp/xp/level/votes/cools/etc.
+  $e2->{user} = Everything::PageState->_build_user($this, $USER, $VARS);
 
   # Borg lifecycle: `borged` is the unix timestamp of the borging; a borg lasts
   # 300 + 60*(2*numborged) seconds. Expire it here, once, so chat re-enables and
@@ -7833,128 +7808,25 @@ sub buildNodeInfoStructure
     : ($this->isGuest($USER) ? '' : join(",", @{$this->{conf}->default_nodelets}));
   my $has_epicenter_nodelet = ($effective_nodelets =~ /262/);
 
+  # Epicenter nodelet - per-user identity/progression header. Assembly moved to
+  # Everything::PageState::_build_epicenter (#4367, #4257 Phase 2b). NOTE: that builder also
+  # advances $VARS->{oldexp}/$VARS->{oldGP} (the XP/GP "since last page" side effect), exactly
+  # as before. Cross-deps ($has_epicenter_nodelet, the user level) are passed in. Gate stays here.
   if (not $this->isGuest($USER))
   {
-    $e2->{epicenter} = {};
-
-    # Show EpicenterZen header bar if user doesn't have Epicenter nodelet
-    $e2->{epicenter}->{showEpicenterZen} = $has_epicenter_nodelet ? \0 : \1;
-
-    # Core settings
-    $e2->{epicenter}->{localTimeUse} = $VARS->{localTimeUse} ? \1 : \0;
-    $e2->{epicenter}->{userSettingsId} = $this->{conf}->user_settings;
-    $e2->{epicenter}->{helpPage} = ($e2->{user}->{level} < 2) ? 'E2 Quick Start' : 'Everything2 Help';
-
-    # (Borg status is NOT shown in Epicenter -- it lives in the Chatterbox
-    # nodelet as a live "You are borged! MM:SS" countdown under the talk control.
-    # expire_borg_if_due (above) still clears an expired borg so chat re-enables.)
-
-    # Experience change data (React component will handle rendering)
-    # Initialize oldexp on first visit (use defined() and numeric check)
-    # Reset if oldexp is non-numeric (handles garbage data from legacy code)
-    $VARS->{oldexp} = $USER->{experience} unless (defined $VARS->{oldexp} && $VARS->{oldexp} =~ /^\d+$/);
-    my $expChange = $USER->{experience} - $VARS->{oldexp};
-    if($expChange > 0) {
-      $e2->{epicenter}->{experienceGain} = $expChange;
-    }
-    # Always update oldexp to current experience (not just on positive gains)
-    # This ensures oldexp stays in sync even when XP is reset/decreased
-    $VARS->{oldexp} = $USER->{experience};
-
-    # GP change data (React component will handle rendering)
-    unless($VARS->{GPoptout}) {
-      # Initialize oldGP on first visit (use defined() and numeric check)
-      # Reset if oldGP is non-numeric (handles garbage data from legacy code)
-      $VARS->{oldGP} = $USER->{GP} unless (defined $VARS->{oldGP} && $VARS->{oldGP} =~ /^\d+$/);
-      my $gpChange = $USER->{GP} - $VARS->{oldGP};
-
-      if($gpChange > 0) {
-        $e2->{epicenter}->{gpGain} = $gpChange;
-      }
-
-      # Always update oldGP to current GP (not just on positive gains)
-      # This ensures oldGP stays in sync even when GP is reset/decreased
-      $VARS->{oldGP} = $USER->{GP};
-    }
-
-    # Server time data (formatted strings for React component)
-    my $NOW = time;
-    $e2->{epicenter}->{serverTime} = $this->DateTimeLocal($NOW, 1, $VARS);
-    if($VARS->{localTimeUse}) {
-      $e2->{epicenter}->{localTime} = $this->DateTimeLocal($NOW, 0, $VARS);
-    }
+    $e2->{epicenter} = Everything::PageState->_build_epicenter(
+      $this, $USER, $VARS, $has_epicenter_nodelet, $e2->{user}->{level});
   }
 
   # Master Control - load for editors/admins (htmlcode will add nodelet to list)
   # Note: isEditor and isAdmin already set globally on e2.user.editor and e2.user.admin
+  # Master Control nodelet - editor/admin tooling. Assembly moved to
+  # Everything::PageState::_build_masterControl (#4367, #4257 Phase 2b). The currentUserId key
+  # (set for editors) stays here -- it's a separate key. Gate stays here.
   if($this->isEditor($USER) || $this->isAdmin($USER))
   {
-    $e2->{masterControl} = {};
-
-    if($this->isEditor($USER))
-    {
-      # Admin search form data (React component will handle rendering)
-      $e2->{masterControl}->{adminSearchForm} = {
-        nodeId => $$NODE{node_id} || '',
-        nodeType => $$NODE{type}{title},
-        nodeTitle => $$NODE{title},
-        serverName => $Everything::CONF->server_hostname,
-        scriptName => $query->script_name
-      };
-
-      # CE Section data (React component will handle rendering)
-      my (undef,undef,undef,$mday,$mon,$year) = localtime(time);
-      $year += 1900;
-      $e2->{masterControl}->{ceSection} = {
-        currentMonth => $mon,
-        currentYear => $year,
-        isUserNode => ($$NODE{type}{title} eq 'user'),
-        nodeId => $$NODE{node_id},
-        nodeTitle => $$NODE{title},
-        showSection => (($VARS->{epi_hideces} // 0) != 1)
-      };
-
-      # NodeNote - Get notes data and pass structured data to React
-      # Only load if hidenodenotes preference is not set
-      unless ($VARS->{hidenodenotes}) {
-        my $notes = $this->getNodeNotes($NODE);
-        $e2->{masterControl}->{nodeNotesData} = {
-          node_id => $NODE->{node_id},
-          node_title => $NODE->{title},
-          node_type => $NODE->{type}{title},
-          notes => $notes,
-          count => scalar(@$notes),
-        };
-      }
-      $e2->{currentUserId} = $USER->{node_id};
-
-      if($this->isAdmin($USER))
-      {
-        # Node Toolset data (React component with nuke confirmation modal)
-        my $currentDisplay = $query->param("displaytype") || "display";
-        my $nodeType = $NODE->{type}{title};
-        my $canDelete = Everything::canDeleteNode($USER, $NODE) && $nodeType ne 'draft' && $nodeType ne 'user';
-        my $hasHelp = $this->{db}->sqlSelectHashref("*", "nodehelp", "nodehelp_id=$$NODE{node_id}") ? \1 : \0;
-        my $preventNuke = $this->getParameter($NODE->{node_id}, "prevent_nuke") ? \1 : \0;
-
-        $e2->{masterControl}->{nodeToolsetData} = {
-          nodeId => $NODE->{node_id},
-          nodeTitle => $NODE->{title},
-          nodeType => $nodeType,
-          canDelete => $canDelete ? \1 : \0,
-          currentDisplay => $currentDisplay,
-          hasHelp => $hasHelp,
-          isWriteup => ($nodeType eq 'writeup') ? \1 : \0,
-          preventNuke => $preventNuke,
-        };
-
-        # Admin Section data (React component will handle rendering)
-        $e2->{masterControl}->{adminSection} = {
-          isBorged => $$VARS{borged} ? \1 : \0,
-          showSection => (($VARS->{epi_hideadmins} // 0) != 1)
-        };
-      }
-    }
+    $e2->{masterControl} = Everything::PageState->_build_masterControl($this, $NODE, $VARS, $query, $USER);
+    $e2->{currentUserId} = $USER->{node_id} if $this->isEditor($USER);
   }
 
   # Random Nodes - datastash passthrough via the shared _build_stash builder (#4257 2b)
@@ -7969,21 +7841,11 @@ sub buildNodeInfoStructure
     $e2->{neglectedDrafts} = Everything::PageState->_build_stash($this->{db}, "neglecteddrafts");
   }
 
-  # Quick Reference
+  # Quick Reference nodelet search term. Assembly moved to
+  # Everything::PageState::_build_quickRefSearchTerm (#4367, #4257 Phase 2b). Gate stays here.
   if($nodelets =~ /2146276/)
   {
-    # What topic to link
-    my $lookfor = $NODE->{title};
-    if ($$NODE{type}{title} eq 'writeup') {
-      # Instead of writeup title w/ type annotation, use the e2node title
-      $lookfor = $this->{db}->getNodeById($NODE->{parent_e2node})->{title} ;
-    }else{
-       if (($NODE->{title} eq 'Findings:') || ($NODE->{title} eq 'Nothing Found')) {
-       # Special case findings to look up what was searched
-       $lookfor = $query->param('node');
-     }
-    }
-    $e2->{quickRefSearchTerm} = $lookfor;
+    $e2->{quickRefSearchTerm} = Everything::PageState->_build_quickRefSearchTerm($this, $NODE, $query);
   }
 
   # Statistics
@@ -8093,39 +7955,11 @@ sub buildNodeInfoStructure
     $e2->{nodeCategories} = \@current_categories;
   }
 
-  # Most Wanted
+  # Most Wanted nodelet - top open bounties. Assembly moved to
+  # Everything::PageState::_build_bounties (#4367, #4257 Phase 2b). Gate stays here.
   if($nodelets =~ /1986723/)
   {
-    my $REQ = Everything::getVars(Everything::getNode('bounty order','setting'));
-    my $OUT = Everything::getVars(Everything::getNode('outlaws', 'setting'));
-    my $REW = Everything::getVars(Everything::getNode('bounties', 'setting'));
-    my $HIGH = Everything::getVars(Everything::getNode('bounty number', 'setting'));
-    my $MAX = 5;
-
-    my $bountyTot = $$HIGH{1};
-    my $numberShown = 0;
-    my @bounties = ();
-
-    for(my $i = $bountyTot; $numberShown < $MAX; $i--)
-    {
-      if (exists $$REQ{$i})
-      {
-        $numberShown++;
-        my $requesterName = $$REQ{$i};
-        my $requesterNode = $this->{db}->getNode($requesterName, 'user');
-        my $outlawStr = $$OUT{$requesterName} || '';
-        my $reward = $$REW{$requesterName} || '';
-
-        push @bounties, {
-          requester_id => $requesterNode->{node_id},
-          requester_name => $requesterName,
-          outlaw_nodeshell => $outlawStr,
-          reward => $reward
-        };
-      }
-    }
-
-    $e2->{bounties} = \@bounties;
+    $e2->{bounties} = Everything::PageState->_build_bounties($this);
   }
 
   # Recent Nodes nodelet - the breadcrumb trail. Assembly moved to
@@ -8307,18 +8141,10 @@ sub buildNodeInfoStructure
   # This includes: createdby, parent link (writeups), firmlinks, "is also a"
   $e2->{pageheader} = $this->buildPageheaderData($NODE, $USER, $user_node);
 
-  # Global reCAPTCHA config for guest signup modal
-  # This allows AuthModal to show reCAPTCHA-protected signup form
+  # Global reCAPTCHA config for the guest signup modal (AuthModal). Assembly moved to
+  # Everything::PageState::_build_recaptcha (#4367, #4257 Phase 2b). Gate stays here.
   if ($this->isGuest($USER)) {
-    my $conf = $this->{conf};
-    my $use_recaptcha = 0;
-    if ($conf->is_production || ($ENV{HTTP_HOST} // '') =~ /^development\.everything2\.com/) {
-      $use_recaptcha = 1;
-    }
-    $e2->{recaptcha} = {
-      enabled => $use_recaptcha ? \1 : \0,
-      publicKey => $conf->recaptcha_v3_public_key // ''
-    };
+    $e2->{recaptcha} = Everything::PageState->_build_recaptcha($this);
   }
 
   # Single normalization point: coerce integer-string ids (node_id, etc.) to real
