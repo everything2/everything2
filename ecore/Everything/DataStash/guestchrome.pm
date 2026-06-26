@@ -7,31 +7,36 @@ extends 'Everything::DataStash';
 use Everything::Request;
 use Everything::PageState;
 
-# Caches the guest "chrome" -- the per-session, page-independent half of the
-# page-state blob (nodelets, identity, feeds) that is IDENTICAL for every guest
-# on every page (see Everything::PageState chrome/content partition). Guests are
-# the bulk of crawler/bot traffic, and rebuilding this blob per request is the
-# largest slice of guest render CPU; caching it lets the guest render path
-# (a separate, later change) serve the chrome from here and build only the
+# Caches the guest "chrome" -- the per-session, page-independent half of the page-state
+# blob (nodelets, identity, feeds) that is IDENTICAL for every guest on every page (see
+# Everything::PageState chrome/content partition). Guests are the bulk of crawler/bot
+# traffic, and rebuilding this blob per request is the largest slice of guest render CPU;
+# caching it lets the guest render path serve the chrome from here and build only the
 # per-node content fresh.
 #
-# Refresh ~every minute so the cached feeds inside the chrome (New Writeups,
-# Random Nodes, etc.) don't go more than a minute stale.
+# Refreshed by the regular ~2-min datastash tick (NOT lengthy -- the build is one
+# synthetic-guest render, cheap against that tick's 600s timeout), so the embedded feeds
+# (New Writeups, Random Nodes) stay ~2 min fresh. (#4369)
 has '+interval' => ( default => 60 );
 
-# Heavy build (it runs buildNodeInfoStructure), so route this to the dedicated
-# datastash-lengthy cron tick rather than the ~120s general tick, where a slow
-# run could pressure request latency / hold the cron lock.
-has '+lengthy' => ( default => 1 );
+# BUILD-KEYED CACHE (#4369). The stash is { $buildid => $chrome }, where $buildid is the
+# git last_commit the chrome was generated under. A consumer only uses the entry when the
+# cached build == the running build, so after a deploy we never serve stale-asset chrome --
+# the entry simply misses until the next tick (or the first guest request, via
+# current_or_build) rebuilds it under the new build id. This is what makes a 2-min refresh
+# safe across deploys.
 
-sub generate
-{
+# The build identifier the chrome is keyed under (git commit of the running code).
+sub _buildid {
+    my ($this) = @_;
+    return $this->APP->{conf}->last_commit;
+}
+
+# Build the guest chrome from a synthetic guest (no live request). Returns the chrome
+# hashref, or undef on any build error (logged) so we never clobber a good stash.
+sub _build_chrome {
     my ($this) = @_;
 
-    # buildNodeInfoStructure is built to run outside a live request: when handed
-    # an undef $REQUEST it self-builds a minimal Everything::Request. We give it
-    # a synthetic guest request (no $query/$REQUEST exists in cron context) and
-    # keep only the chrome half of the resulting blob.
     my $chrome = eval {
         my $db    = $this->DB;
         my $guest = $db->getNode( 'Guest User', 'user' )
@@ -40,6 +45,8 @@ sub generate
         my $guest_node = $this->APP->node_by_id( $guest->{node_id} );
         my $vars       = $this->APP->getVars($guest);
 
+        # buildNodeInfoStructure self-builds a minimal Everything::Request from the synthetic
+        # guest when there's no live $REQUEST (cron context). Keep only the chrome half.
         my $request = Everything::Request->new(
             user => $guest_node,
             node => $guest_node,
@@ -53,13 +60,41 @@ sub generate
     };
 
     if ( my $err = $@ ) {
-        # Never clobber a good stash on a transient build failure -- log and
-        # keep the last value. (Latent today: nothing consumes guestchrome yet.)
-        $this->APP->devLog("guestchrome generate failed: $err");
-        return;
+        $this->APP->devLog("guestchrome build failed: $err");
+        return;    # scalar caller -> undef -> generate() keeps the last stash
     }
+    return $chrome;
+}
 
-    return $this->SUPER::generate($chrome);
+# Cron path: build the chrome and stash it keyed by the current build id.
+sub generate {
+    my ($this) = @_;
+
+    my $chrome = $this->_build_chrome;
+    return unless defined $chrome;    # build failed (already logged) -- keep the last value
+
+    return $this->SUPER::generate( { $this->_buildid => $chrome } );
+}
+
+# The cached chrome IFF it was generated under the currently-running build; else undef
+# (cold start, or a stale entry from a previous deploy).
+sub current_chrome {
+    my ($this) = @_;
+    return $this->current_data->{ $this->_buildid };
+}
+
+# Consumer accessor: the current guest chrome, building + stashing it INLINE on a cache
+# miss (cold start / first guest after a deploy) so subsequent guests hit a warm cache
+# instead of every one rebuilding until the next cron tick (#4369). Returns undef only if
+# the inline build also failed, in which case the caller falls back to a normal full render.
+sub current_or_build {
+    my ($this) = @_;
+
+    my $chrome = $this->current_chrome;
+    return $chrome if $chrome;
+
+    $this->generate;                  # build + stash { buildid => chrome }
+    return $this->current_chrome;     # the freshly-stashed value (undef if the build errored)
 }
 
 __PACKAGE__->meta->make_immutable;
