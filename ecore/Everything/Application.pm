@@ -8415,21 +8415,7 @@ sub buildSourceMap
         path => 'ecore/Everything/Delegation/document.pm',
         description => "Document delegation (sub $sub_name)"
       };
-
-      # Add htmlpage delegation if page exists
-      # Note: $page comes from Everything::HTML::getPage() call
-      # For superdocnolinks and some superdocs, this may be undef or empty
-      if ($page && ref($page) eq 'HASH' && $page->{title}) {
-        my $htmlpage_name = $page->{title};
-        $htmlpage_name =~ s/\s+/_/g;
-
-        push @{$sourceMap->{components}}, {
-          type => 'delegation',
-          name => 'htmlpage.pm',
-          path => 'ecore/Everything/Delegation/htmlpage.pm',
-          description => "HTML page delegation (sub $htmlpage_name)"
-        };
-      }
+      # (htmlpage source-map delegation removed -- htmlpages retired, #4361)
     }
   }
   # Handle maintenance, nodelet and other system node types

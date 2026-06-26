@@ -230,11 +230,10 @@ sub layout
   if($e2->{user}->{developer} and $nodelets_var =~ /836984/)
   {
     my $edev = $self->APP->node_by_name("edev","usergroup");
-    my $page = Everything::HTML::getPage($node->NODEDATA, scalar($REQUEST->param("displaytype")));
-    my $page_struct = {node_id => $page->{node_id}, title => $page->{title}, type => $page->{type}->{title}};
-    my $sourceMap = $self->APP->buildSourceMap($node->NODEDATA, $page);
+    # htmlpages retired (#4361) -- the source map no longer references a display htmlpage.
+    my $sourceMap = $self->APP->buildSourceMap($node->NODEDATA, undef);
     $e2->{developerNodelet} = {
-      page => $page_struct,
+      page => {},
       news => {weblog_id => $edev->node_id, weblogs => $self->APP->weblogs_structure($edev->node_id)},
       sourceMap => $sourceMap
     };
