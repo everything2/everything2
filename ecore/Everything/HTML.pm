@@ -31,9 +31,6 @@ sub BEGIN {
               $query
               parseLinks
               urlGen
-              getPage
-              getPages
-              getPageForType
               linkNode
               linkNodeTitle
               nodeName
@@ -167,155 +164,6 @@ sub urlGen
   return $APP->urlGen(@_);
 }
 
-#############################################################################
-#	Sub
-#		getPages
-#
-#	Purpose
-#		This gets the edit and display pages for the given node.  Since
-#		nodetypes can be inherited, we need to find the display/edit pages.
-#
-#		If the given node is a nodetype, it will get the display pages for
-#		that particular nodetype rather than the main 'nodetype'.
-#		Difference is subtle between this function and getPage().  If you
-#		pass a nodetype to getPage() it will return the htmlpages to display
-#		it, while this will return the htmlpages needed to display nodes
-#		of the type passed in.
-#
-#		For example, lets say you pass the nodetype 'document' to both
-#		this and getPage().  This would return 'document display page'
-#		and 'document edit page', while getPage would return 'nodetype
-#		dipslay page' and 'nodetype edit page'.
-#
-#	Parameters
-#		$NODE - the nodetype in which to get the display/edit pages for.
-#
-#	Returns
-#		An array containing the display/edit pages for this nodetype.
-#
-sub getPages
-{
-	my ($NODE) = @_;
-	getRef $NODE;
-	my $TYPE;
-	my @pages;
-
-	$TYPE = $NODE if (isNodetype($NODE) && $$NODE{extends_nodetype});
-	$TYPE ||= getType($$NODE{type_nodetype});
-
-	push @pages, getPageForType($TYPE, "display");
-	push @pages, getPageForType($TYPE, "edit");
-
-	return @pages;
-}
-
-#############################################################################
-#	Sub
-#		getPageForType
-#
-#	Purpose
-#		Given a nodetype, get the htmlpages needed to display nodes of this
-#		type.  This runs up the nodetype inheritance hierarchy until it
-#		finds something.
-#
-#	Parameters
-#		$TYPE - the nodetype hash to get display pages for.
-#		$displaytype - the type of display (usually 'display' or 'edit')
-#
-#	Returns
-#		A node hashref to the page that can display nodes of this nodetype.
-#
-sub getPageForType
-{
-	my ($TYPE, $displaytype) = @_;
-	my %WHEREHASH;
-	my $PAGE;
-	my $ORIGTYPE = int $$TYPE{node_id};
-	my $PAGETYPE;
-
-	$PAGETYPE = getType("htmlpage");
-	$PAGETYPE or die "HTML PAGES NOT LOADED!";
-
-	# Starting with the nodetype of the given node, We run up the
-	# nodetype inheritance hierarchy looking for some nodetype that
-	# does have a display page.
-	do
-	{
-		# Clear the hash for a new search
-		undef %WHEREHASH;
-		
-		%WHEREHASH = ( -pagetype_nodetype => $$TYPE{node_id},
-				displaytype => $displaytype);
-		
-
-		($PAGE) = getNodeWhere(\%WHEREHASH, $PAGETYPE) unless $PAGE;
-
-		if(not defined $PAGE)
-		{
-			if($$TYPE{extends_nodetype})
-			{
-				$TYPE = getType($$TYPE{extends_nodetype});
-			}
-			else
-			{
-
-			# No pages for the specified nodetype were found.
-				# Use the default node display.
-				($PAGE) = getNodeWhere (
-						{ -pagetype_nodetype => getId(getType("node")),
-						displaytype => $displaytype}, 
-						$PAGETYPE);
-
-				$PAGE or ($PAGE) =  getNodeWhere(
-						{ -pagetype_nodetype => $ORIGTYPE,
-						displaytype => "display" },
-						$PAGETYPE );
-				$PAGE or ($PAGE) = getNodeWhere(
-						{ -pagetype_nodetype => getId(getType("node")),
-						  displaytype => "display"},
-						$PAGETYPE);
-			}
-		}
-	} until($PAGE);
-
-	return $PAGE;
-}
-
-
-#############################################################################
-#	Sub
-#		getPage
-#
-#	Purpose
-#		This gets the htmlpage of the specified display type for this
-#		node.  An htmlpage is basically a database form that knows
-#		how to display the information for a particular nodetype.
-#
-#	Parameters
-#		$NODE - a node hash of the node that we want to get the htmlpage for
-#		$displaytype - the type of display of the htmlpage (usually
-#			'display' or 'edit')
-#
-#	Returns
-#		The node hash of the htmlpage for this node.  If none can be
-#		found it uses the basic node display page.
-#
-sub getPage
-{
-	my ($NODE, $displaytype) = @_; 
-	my $TYPE;
-	
-	getRef $NODE;
-	$TYPE = getType($$NODE{type_nodetype});
-	$displaytype ||= 'display';
-
-	my $PAGE = getPageForType $TYPE, $displaytype;
-	$PAGE ||= getPageForType $TYPE, 'display';
-
-	die "can't load a page $displaytype for $$TYPE{title} type" unless $PAGE;
-
-	return $PAGE;
-}
 
 sub linkNode
 {
@@ -510,8 +358,6 @@ sub displayPage
 	my $type = $NODE->{type}->{title};
 
 	my $displaytype = $query->param('displaytype');
-	my $PAGE = getPage($NODE, $displaytype);
-	$NODE->{datatype} = $PAGE->{mimetype};
 
 	# All routing is handled by HTMLRouter - it always succeeds
 	# (unimplemented pages get a friendly error via React)

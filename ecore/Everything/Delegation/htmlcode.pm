@@ -33,7 +33,6 @@ BEGIN {
   *updateLinks = *Everything::HTML::updateLinks;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *getPageForType = *Everything::HTML::getPageForType;
 }
 
 # Used by parsetime, parsetimestamp, timesince, giftshop_buyching 

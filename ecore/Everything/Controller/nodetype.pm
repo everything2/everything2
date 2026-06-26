@@ -42,16 +42,8 @@ sub display {
         }
     }
 
-    # Get relevant pages
-    my @pages      = Everything::HTML::getPages($node_data);
+    # htmlpages retired (#4361) -- nodetypes no longer have display/edit htmlpages.
     my $pages_data = [];
-    foreach my $page_node (@pages) {
-        push @$pages_data,
-          {
-            node_id => $page_node->{node_id},
-            title   => $page_node->{title}
-          };
-    }
 
     # Get active maintenances
     my @maintenance_nodes = $self->DB->getNodeWhere(
