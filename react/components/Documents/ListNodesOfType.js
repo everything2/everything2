@@ -8,11 +8,7 @@ import { formatDateTime } from '../../utils/dateFormat';
  * Displays nodes of a selected type with filtering and pagination.
  */
 const ListNodesOfType = ({ data, user }) => {
-  const { access_denied, message, node_types = [], default_type = '', type } = data;
-
-  // GNL (Gigantic Node Lister) uses same component but shows different title
-  const isGNL = type === 'gnl';
-  const pageTitle = isGNL ? 'Gigantic Node Lister' : 'List Nodes of Type';
+  const { access_denied, message, node_types = [], default_type = '' } = data;
 
   if (access_denied) {
     return (
@@ -131,8 +127,6 @@ const ListNodesOfType = ({ data, user }) => {
 
   return (
     <div className="list-nodes-of-type">
-      <h2 className="list-nodes-of-type__title">{pageTitle}</h2>
-
       <div className="list-nodes-of-type__section">
         <label className="list-nodes-of-type__label">
           nodetype:{' '}

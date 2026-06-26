@@ -1051,6 +1051,19 @@ $nf->{doctext} = $potato->{node_id};
 $DB->updateNode($nf, -1);
 print STDERR "Node_forward '$nf->{title}' points to '$potato->{title}' ($potato->{node_id})\n";
 
+## A dead-target node_forward for e2e coverage (tests/e2e/node-forward.spec.js):
+## doctext points at a nonexistent node, exercising the bad-link branch
+## (non-admins -> search, admins -> edit). The all-digit doctext survives
+## node_forward_update, which only rewrites title-shaped / forward_to_node targets.
+my $nfdead = $DB->getNode("Goto nowhere", "node_forward");
+if (!$nfdead) {
+  $nfdead = $DB->insertNode("Goto nowhere", "node_forward", $root, {});
+  $nfdead = $DB->getNode("Goto nowhere", "node_forward");
+}
+$nfdead->{doctext} = "999999999";
+$DB->updateNode($nfdead, -1);
+print STDERR "Node_forward '$nfdead->{title}' is a dead link (doctext=999999999)\n";
+
 $Everything::HTML::query = undef;
 
 
