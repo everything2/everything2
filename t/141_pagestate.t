@@ -22,7 +22,7 @@ my @chrome    = Everything::PageState->chrome_keys;
 my @content   = Everything::PageState->content_keys;
 my @ambiguous = Everything::PageState->ambiguous_keys;
 
-is(scalar(@chrome),    32, 'chrome manifest has 32 keys');
+is(scalar(@chrome),    34, 'chrome manifest has 34 keys');
 is(scalar(@content),   10, 'content manifest has 10 keys');
 is(scalar(@ambiguous),  2, 'ambiguous set has 2 keys (bounties, otherUsersData)');
 
@@ -30,7 +30,7 @@ my %seen;
 $seen{$_}++ for (@chrome, @content, @ambiguous);
 my @dupes = grep { $seen{$_} > 1 } keys %seen;
 is_deeply(\@dupes, [], 'no key is classified into more than one bucket');
-is(scalar(keys %seen), 44, 'manifest covers exactly 44 distinct blob keys');
+is(scalar(keys %seen), 46, 'manifest covers exactly 46 distinct blob keys');
 
 # The exact key inventory of buildNodeInfoStructure (Application.pm:6787), captured
 # 2026-06-10. If buildNodeInfoStructure gains/loses a key, this list and the manifest
@@ -43,9 +43,9 @@ my @blob_keys = qw(
     nodeCategories node_id nodetype node nonodeletcollapser noquickvote noteletData
     notificationsData otherUsersData pageheader personalLinks quickRefSearchTerm
     randomNodes reactPageMode recaptcha recentNodes statistics title use_local_assets
-    usergroupData user
+    usergroupData user coolnodes staffpicks
 );
-is(scalar(@blob_keys), 44, 'reference blob inventory is 44 keys');
+is(scalar(@blob_keys), 46, 'reference blob inventory is 46 keys');
 
 #############################################################################
 # unclassified_keys: the migration safety net

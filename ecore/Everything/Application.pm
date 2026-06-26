@@ -7638,9 +7638,52 @@ sub buildOtherUsersData
   };
 }
 
+# Build the small per-node CONTENT keys for the guest fast-path (#4371) -- the part that
+# varies by node. Matches exactly what buildNodeInfoStructure produces for a guest on a
+# non-React node (node_id/title/nodetype + the node sub-hash); the chrome comes from cache.
+sub _build_guest_content {
+  my ($this, $e2, $NODE) = @_;
+  $e2->{node_id}  = $$NODE{node_id};
+  $e2->{title}    = $$NODE{title};
+  $e2->{nodetype} = $NODE->{type}->{title};
+  $e2->{node} = {
+    title        => $NODE->{title},
+    type         => $NODE->{type}->{title},
+    node_id      => $NODE->{node_id},
+    createtime   => $this->convertDateToEpoch($NODE->{createtime}),
+    can_bookmark => $this->can_bookmark($NODE) ? \1 : \0,
+  };
+  return;
+}
+
+# Node types that render their content + page-dependent chrome (notificationsData/etc.) via a
+# Page class -- these must build fresh and cannot use the cached (node-independent) guest chrome.
+my %GUEST_CACHE_REACT_TYPES = map { $_ => 1 }
+  qw(superdoc superdocnolinks fullpage restricted_superdoc oppressor_superdoc maintenance nodelet);
+
 sub buildNodeInfoStructure
 {
-  my ($this, $NODE, $USER, $VARS, $query, $REQUEST) = @_;
+  my ($this, $NODE, $USER, $VARS, $query, $REQUEST, $opts) = @_;
+  $opts ||= {};
+
+  # GUEST FAST-PATH (#4371): for a guest viewing a non-React-document node, hydrate the
+  # node-independent chrome from the build-keyed guestchrome cache and build only the small
+  # per-node content -- skipping the expensive chrome assembly (feeds, etc.). Bypassed when
+  # guestchrome is BUILDING the cache (skip_guest_cache -- else infinite recursion), and for
+  # React-document types whose content + page-dependent chrome must render fresh.
+  if (!$opts->{skip_guest_cache} && $this->isGuest($USER)
+      && !$GUEST_CACHE_REACT_TYPES{$NODE->{type}->{title}})
+  {
+    require Everything::DataStash::guestchrome;
+    my $chrome = Everything::DataStash::guestchrome->new(
+      APP => $this, CONF => $this->{conf}, DB => $this->{db} )->current_or_build;
+    if ($chrome) {
+      my $e2 = { %$chrome };
+      $this->_build_guest_content($e2, $NODE);
+      Everything::PageState->normalize_types($e2);
+      return $e2;
+    }
+  }
 
   # Convert USER hashref to blessed object for use throughout this function
   my $user_node = $this->node_by_id($USER->{node_id});

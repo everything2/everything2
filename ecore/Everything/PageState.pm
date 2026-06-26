@@ -31,6 +31,7 @@ our @CHROME_KEYS = qw(
     chatterbox developerNodelet
     masterControl neglectedDrafts forReviewData
     newWriteups news randomNodes recentNodes statistics daylogLinks currentPoll
+    coolnodes staffpicks
 );
 
 # Per-node content -- varies with the viewed node.
