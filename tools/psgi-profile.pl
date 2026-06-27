@@ -3,8 +3,10 @@
 # request loop (app load + warmup are excluded via DB::disable/enable_profile),
 # so the report reflects per-request hot subs, not one-time Moose compilation.
 #
-#   perl -d:NYTProf /var/everything/tools/psgi-profile.pl [N] [routes-file]
-#   SOAK_COOKIE="userpass=..." perl -d:NYTProf ... (to exercise authed handlers)
+#   # -d:NYTProf loads at startup, BEFORE this script's `use lib`, so NYTProf must
+#   # already be on @INC -- prepend the vendored lib via PERL5LIB or it won't be found:
+#   PERL5LIB=/var/libraries/lib/perl5 perl -d:NYTProf /var/everything/tools/psgi-profile.pl [N] [routes-file]
+#   SOAK_COOKIE="userpass=..." PERL5LIB=/var/libraries/lib/perl5 perl -d:NYTProf ... (authed handlers)
 #   nytprofcsv --out /tmp/nytprof.csv nytprof.out   # then sort by exclusive time
 use strict;
 use warnings;

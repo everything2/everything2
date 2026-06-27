@@ -13,9 +13,11 @@ use Test::More;
 use JSON;
 use Everything::PageState;
 
-# Step 2a: Everything::PageState->normalize_types (the #4152/#4108 fix) + the
-# GET /api/pagestate facade endpoint. The unit half is pure; the HTTP half hits the
-# running container and SKIPs if it's unreachable.
+# Step 2a: Everything::PageState->normalize_types + the GET /api/pagestate facade endpoint.
+# NOTE: int-key coercion moved client-side (#4381 interim / undo #4383). normalize_types is
+# retained as the reference coercion spec (react/utils/normalizeE2 mirrors it), but the live
+# blob is now served untyped. The unit half pins the spec; the HTTP half hits the running
+# container and SKIPs if unreachable.
 
 #############################################################################
 # normalize_types -- integer-string IDs coerced to real integers
@@ -74,8 +76,10 @@ SKIP: {
     ok( $page->{contentData} && $page->{contentData}{type},
         'content carries the rendering key (contentData.type)' );
 
-    # Normalization held end-to-end (content included): no string-typed node_id survives.
-    unlike( $resp->content, qr/"node_id":"\d/, 'no string-typed node_id in /api/pagestate' );
+    # Int-key coercion moved client-side (#4381 interim / undo #4383): the server now serves the
+    # blob untyped, so node_id arrives as a JSON string and react/utils/normalizeE2 coerces it at
+    # ingestion. The normalize_types unit subtest above still pins the (retained) coercion spec.
+    like( $resp->content, qr/"node_id":"\d/, 'node_id served untyped (string); client coerces' );
 
     # Head metadata: the React app sets <title>/canonical/JSON-LD from this on client nav.
     ok( $page->{meta}, 'carries the page head metadata (meta)' );
