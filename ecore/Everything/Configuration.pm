@@ -95,7 +95,6 @@ has 'static_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
 
   # Code-backed types (delegation modules)
   "htmlcode" => 1,
-  "htmlpage" => 1,
   "maintenance" => 1,
 
   # Code-backed document types (Page/Controller classes)
