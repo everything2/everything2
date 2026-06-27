@@ -11,7 +11,7 @@ jest.mock('../LinkNode', () => {
 
 describe('GoldenTrinkets', () => {
   const mockUser = {
-    is_admin: false,
+    admin: false,
     node_id: 123,
     title: 'testuser'
   }
@@ -53,11 +53,23 @@ describe('GoldenTrinkets', () => {
 
     it('shows admin lookup section for admin users', () => {
       const data = { karma: 10, isAdmin: 1 }
-      render(<GoldenTrinkets data={data} user={{ ...mockUser, is_admin: true }} />)
+      render(<GoldenTrinkets data={data} user={{ ...mockUser, admin: true }} />)
 
       expect(screen.getByText('Admin Lookup')).toBeInTheDocument()
       expect(screen.getByPlaceholderText('Enter username')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Lookup' })).toBeInTheDocument()
+    })
+
+    it('drives the admin lookup section from the user prop, not data', () => {
+      const data = { karma: 10 }
+
+      const { container, rerender } = render(
+        <GoldenTrinkets data={data} user={{ ...mockUser, admin: true }} />
+      )
+      expect(container.textContent).toContain('Admin Lookup')
+
+      rerender(<GoldenTrinkets data={data} user={{ ...mockUser, admin: false }} />)
+      expect(container.textContent).not.toContain('Admin Lookup')
     })
 
     it('displays lookup error when provided', () => {
@@ -66,7 +78,7 @@ describe('GoldenTrinkets', () => {
         isAdmin: 1,
         error: 'User not found'
       }
-      render(<GoldenTrinkets data={data} user={{ ...mockUser, is_admin: true }} />)
+      render(<GoldenTrinkets data={data} user={{ ...mockUser, admin: true }} />)
 
       expect(screen.getByText('User not found')).toBeInTheDocument()
     })
@@ -81,7 +93,7 @@ describe('GoldenTrinkets', () => {
           node_id: 456
         }
       }
-      render(<GoldenTrinkets data={data} user={{ ...mockUser, is_admin: true }} />)
+      render(<GoldenTrinkets data={data} user={{ ...mockUser, admin: true }} />)
 
       expect(screen.getByText(/anotheruser/)).toBeInTheDocument()
       expect(screen.getByText(/'s karma: 25/)).toBeInTheDocument()
@@ -91,7 +103,7 @@ describe('GoldenTrinkets', () => {
   describe('form submission', () => {
     it('renders lookup form with GET method for page reload', () => {
       const data = { karma: 10, isAdmin: 1 }
-      render(<GoldenTrinkets data={data} user={{ ...mockUser, is_admin: true }} />)
+      render(<GoldenTrinkets data={data} user={{ ...mockUser, admin: true }} />)
 
       const form = screen.getByRole('button', { name: 'Lookup' }).closest('form')
       expect(form).toHaveAttribute('method', 'GET')
@@ -118,7 +130,7 @@ describe('GoldenTrinkets', () => {
 
     it('shows neither error nor result when lookup not performed', () => {
       const data = { karma: 10, isAdmin: 1 }
-      render(<GoldenTrinkets data={data} user={{ ...mockUser, is_admin: true }} />)
+      render(<GoldenTrinkets data={data} user={{ ...mockUser, admin: true }} />)
 
       expect(screen.queryByText(/User not found/)).not.toBeInTheDocument()
       expect(screen.queryByText(/'s karma:/)).not.toBeInTheDocument()

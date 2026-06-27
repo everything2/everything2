@@ -12,7 +12,6 @@ sub buildReactData {
     my $USER = $REQUEST->user;
     my $q = $REQUEST->cgi;
 
-    my $is_admin = $APP->isAdmin($USER->NODEDATA);
     my $is_editor = $APP->isEditor($USER->NODEDATA);
 
     # Get the webloggables setting
@@ -99,7 +98,6 @@ sub buildReactData {
         viewGroupName   => $group_name,
         entries         => \@entries,
         skippedCount    => $skipped,
-        isAdmin         => $is_admin ? \1 : \0,
     };
 }
 

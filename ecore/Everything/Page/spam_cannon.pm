@@ -26,10 +26,8 @@ sub buildReactData {
     my ($self, $REQUEST) = @_;
 
     my $user = $REQUEST->user;
-    my $is_editor = $self->APP->isEditor($user->NODEDATA);
 
     return {
-        is_editor => $is_editor ? 1 : 0,
         max_recipients => 20,
         username => $user->title
     };

@@ -21,10 +21,11 @@ sub buildReactData {
     my $current_costume = $VARS->{costume} // '';
 
     return {
+        # isAdmin + userGP dropped: they duplicate e2.user.admin / e2.user.gp, which the React
+        # component reads from the `user` prop. $is_admin/$user_gp still drive the server-side
+        # cost + affordability below. (#4390)
         costumeShop => {
             isHalloween     => $is_halloween ? \1 : \0,
-            isAdmin         => $is_admin ? \1 : \0,
-            userGP          => $user_gp,
             costumeCost     => $costume_cost,
             currentCostume  => $current_costume,
             hasCostume      => $current_costume ? \1 : \0,

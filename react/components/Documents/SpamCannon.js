@@ -4,12 +4,13 @@ import React, { useState } from 'react';
  * SpamCannon - Editor tool for bulk messaging
  * Styles in CSS: .spam-cannon__*
  */
-const SpamCannon = ({ data, e2 }) => {
+const SpamCannon = ({ data, e2, user }) => {
   const {
-    is_editor = false,
     max_recipients = 20,
     username = ''
   } = data;
+
+  const isEditor = !!user?.editor;
 
   const [recipients, setRecipients] = useState('');
   const [message, setMessage] = useState('');
@@ -83,7 +84,7 @@ const SpamCannon = ({ data, e2 }) => {
   };
 
   // Permission denied
-  if (!is_editor) {
+  if (!isEditor) {
     return (
       <div className="spam-cannon">
         <div className="spam-cannon__error">

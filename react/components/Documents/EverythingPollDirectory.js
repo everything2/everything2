@@ -13,8 +13,8 @@ import PollDisplay from '../Poll/PollDisplay'
  * - Pagination
  * - Option to show/hide old polls
  */
-const EverythingPollDirectory = ({ data, user }) => {
-  const { is_admin = false } = data || {}
+const EverythingPollDirectory = ({ user }) => {
+  const isAdmin = !!user?.admin
 
   const [polls, setPolls] = useState([])
   const [loading, setLoading] = useState(true)
@@ -233,7 +233,7 @@ const EverythingPollDirectory = ({ data, user }) => {
         <h1 className="poll-directory__title">Everything Poll Directory</h1>
         <div>
           <a href="/node/Everything%20User%20Poll" className="poll-directory__link">Current User Poll</a>
-          {is_admin && (
+          {isAdmin && (
             <>
               <span> | </span>
               <button onClick={toggleOldPolls} className="poll-directory__toggle-btn">
@@ -263,14 +263,14 @@ const EverythingPollDirectory = ({ data, user }) => {
                   showStatus={true}
                   isOwnPage={false}
                   canEdit={false}
-                  isAdmin={is_admin}
+                  isAdmin={isAdmin}
                   userId={user?.node_id}
                   onVote={handleVote}
                   onDeleteVote={handleDeleteVote}
                 />
 
                 {/* Admin actions */}
-                {is_admin && (
+                {isAdmin && (
                   <div className="poll-directory__admin-actions">
                     {poll.poll_status !== 'current' && (
                       <button

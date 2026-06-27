@@ -4,17 +4,18 @@ import React, { useState, useCallback } from 'react'
  * TheCostumeShop - Halloween costume purchasing interface
  * Styles in CSS: .costume-shop__*
  */
-const TheCostumeShop = ({ data }) => {
+const TheCostumeShop = ({ data, user }) => {
   const shop = data?.costumeShop || {}
   const {
     isHalloween,
-    isAdmin,
-    userGP,
     costumeCost,
     currentCostume,
     hasCostume,
     canAfford,
   } = shop
+  // Viewer identity reads from the global user prop, not page contentData (#4390)
+  const isAdmin = !!user?.admin
+  const userGP = user?.gp ?? 0
 
   const [costume, setCostume] = useState('')
   const [loading, setLoading] = useState(false)

@@ -28,9 +28,6 @@ sub buildReactData {
     my $user = $REQUEST->user;
     my $VARS = $REQUEST->VARS;
 
-    my $is_admin = $user->is_admin;
-    my $is_editor = $user->is_editor;
-
     # Get spelling setting node
     my $spell_info_node = $DB->getNode('bad spellings en-US', 'setting');
     unless ($spell_info_node) {
@@ -76,8 +73,6 @@ sub buildReactData {
         shown_count => scalar(@spellings),
         total_count => $total_entries,
         user_has_disabled => $VARS->{nohintSpelling} ? 1 : 0,
-        is_admin => $is_admin ? 1 : 0,
-        is_editor => $is_editor ? 1 : 0,
         setting_node_id => $spell_info_node->{node_id}
     };
 }

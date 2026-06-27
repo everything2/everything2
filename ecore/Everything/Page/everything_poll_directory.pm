@@ -17,12 +17,8 @@ Displays list of active polls with admin management options.
 sub buildReactData {
     my ($self, $REQUEST) = @_;
 
-    my $APP = $self->APP;
-    my $USER = $REQUEST->user->NODEDATA;
-
     return {
         type => 'everything_poll_directory',
-        is_admin => $APP->isAdmin($USER) ? 1 : 0
     };
 }
 

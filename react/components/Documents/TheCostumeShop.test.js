@@ -20,3 +20,30 @@ describe('TheCostumeShop (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// #4390: viewer identity (admin, gp) reads from the global `user` prop, NOT from page
+// contentData (which used to re-emit isAdmin/userGP -- the same bytes shipped twice).
+describe('TheCostumeShop — viewer identity from the user prop (#4390)', () => {
+  const openShop = {
+    isHalloween: true, costumeCost: 0, currentCostume: '', hasCostume: false, canAfford: true,
+  }
+
+  it('gates the admin note on user.admin and prints user.gp (not contentData)', () => {
+    const { container, rerender } = render(
+      <TheCostumeShop data={{ costumeShop: openShop }} user={{ admin: true, gp: 42 }} />
+    )
+    expect(container.textContent).toMatch(/you are an administrator/i)  // user.admin -> note shown
+    expect(container.textContent).toContain('Your GP: 42')              // user.gp, not data.userGP
+
+    rerender(<TheCostumeShop data={{ costumeShop: openShop }} user={{ admin: false, gp: 42 }} />)
+    expect(container.textContent).not.toMatch(/you are an administrator/i)  // non-admin -> hidden
+    expect(container.textContent).toContain('Your GP: 42')
+  })
+
+  it('treats a missing user prop as non-admin, GP 0 (no crash)', () => {
+    const cantAfford = { ...openShop, costumeCost: 30, canAfford: false }
+    const { container } = render(<TheCostumeShop data={{ costumeShop: cantAfford }} user={undefined} />)
+    expect(container.textContent).toContain('Your GP: 0')
+    expect(container.textContent).not.toMatch(/you are an administrator/i)
+  })
+})

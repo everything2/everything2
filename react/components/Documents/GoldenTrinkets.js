@@ -10,7 +10,7 @@ import LinkNode from '../LinkNode'
  */
 const GoldenTrinkets = ({ data, user }) => {
   const karma = data.karma || 0
-  const isAdmin = Boolean(data.isAdmin)
+  const isAdmin = !!user?.admin
   const forUser = data.forUser
   const error = data.error
 

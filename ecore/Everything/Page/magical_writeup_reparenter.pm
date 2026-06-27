@@ -40,9 +40,7 @@ sub buildReactData
         old_writeup      => undef,
         new_e2node       => undef,
         suggested_parent => undef,
-        errors           => [],
-        is_admin         => $is_admin ? 1 : 0,
-        is_editor        => $is_editor ? 1 : 0
+        errors           => []
     };
 
     # Get old e2node if provided

@@ -4,18 +4,19 @@ import React from 'react';
  * BadSpellingsListing - Common bad spellings reference
  * Styles in CSS: .bad-spellings-listing__*
  */
-const BadSpellingsListing = ({ data }) => {
+const BadSpellingsListing = ({ data, user }) => {
   const {
     spellings = [],
     shown_count,
     total_count,
     user_has_disabled = false,
-    is_admin = false,
-    is_editor = false,
     setting_node_id,
     error,
     message
   } = data;
+
+  const isAdmin = !!user?.admin;
+  const isEditor = !!user?.editor;
 
   // Handle errors
   if (error === 'config') {
@@ -45,7 +46,7 @@ const BadSpellingsListing = ({ data }) => {
         )}.
       </p>
 
-      {!!is_admin && (
+      {isAdmin && (
         <p className="bad-spellings-listing__admin-note">
           (Site administrators can edit this setting at{' '}
           <a href={`/?node_id=${setting_node_id}`}>bad spellings en-US</a>.)
@@ -75,7 +76,7 @@ const BadSpellingsListing = ({ data }) => {
 
       <p className="bad-spellings-listing__summary">
         ({shown_count} entries
-        {!!is_editor && ` shown, ${total_count} total`})
+        {isEditor && ` shown, ${total_count} total`})
       </p>
     </div>
   );
