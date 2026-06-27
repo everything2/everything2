@@ -306,16 +306,17 @@ sub resolve_and_check {
 # renders). This is the negative control for the loop-detector itself.
 #############################################################################
 {
-	# Truly-bogus search routes to the "Nothing Found" superdoc (terminal),
-	# not Findings. Either way, the property the loop-detector cares about
-	# is "didn't redirect-loop" — both terminal pages satisfy it.
+	# Truly-bogus search routes to the Findings page (search_results) with an empty
+	# result set: not_found_node now resolves to search_results (#4382), so the old
+	# "Nothing Found" superdoc is no longer reached. The property the loop-detector
+	# cares about is "didn't redirect-loop" — Findings is terminal (renders, no redirect).
 	my ($r, $chain) = follow_chain(
 		'/?node=' . uri_escape('definitely-not-a-real-node-xyz-12345'),
 		'loop-detector control — bogus search reaches a terminal page without looping');
 	ok($r->is_success, 'bogus search resolves with 2xx (terminal page)');
 	like($r->decoded_content // '',
-		qr/Here's the stuff we found when you searched|Nothing Found|nothing_found/,
-		'bogus search reaches Findings or Nothing Found (either is fine for the control)');
+		qr/"type":\s*"findings"|<title>Findings:/,
+		'bogus search reaches the terminal Findings page (no redirect loop)');
 }
 
 done_testing;
