@@ -2983,7 +2983,10 @@ sub stashData
 # Returns the cached decoded structure; treat it as READ-ONLY -- callers must
 # build new structures from it (the front-page controllers `push @new, {...}`),
 # not mutate it in place, or they corrupt it for the next caller on this worker.
-my $STASH_CACHE_GRACE            = 5;    # backoff (s) when the cron hasn't regenerated yet
+my $STASH_CACHE_GRACE            = 30;   # re-check backoff while the cron is late. With the
+                                         # self-tuning window (cached_stash) this fires only on
+                                         # the first cycle + genuine cron lateness, so 30s just
+                                         # bounds the re-check cost in those rare cases. (#4392)
 my $STASH_CACHE_DEFAULT_INTERVAL = 300;  # mirrors Everything::DataStash's base interval default
 
 sub _stash_interval
@@ -3026,10 +3029,19 @@ sub cached_stash
     return $entry->{data};
   }
 
-  # delta > 0 (or first populate): re-decode and align the window to the cron boundary.
+  # delta > 0 (or first populate): re-decode and SELF-TUNE the window to the OBSERVED refresh
+  # cadence. The gap between this last_update and the previous one is how often the cron
+  # ACTUALLY regenerates this stash -- which can be longer than the stash's declared interval
+  # (a 60s-interval stash on the 120s datastash cron really refreshes every ~120s). Keying the
+  # window on the declared interval expires it a full cron-cycle early and burns grace
+  # re-checks every read in the gap. Floor at the declared interval (first cycle, no prior to
+  # measure); cap at 2x to bound a one-off gap after a cron outage. (#4392)
   $this->{_stash_stats}{$stash_name}{decodes}++;
   my $data = JSON->new->decode($stashnode->{vars});
-  my $next = $src_last_update + $interval;
+  my $observed = ($entry && $entry->{last_update}) ? ($src_last_update - $entry->{last_update}) : 0;
+  my $ttl = $observed > $interval ? $observed : $interval;
+  $ttl = 2 * $interval if $ttl > 2 * $interval;
+  my $next = $src_last_update + $ttl;
   $next = $now + $STASH_CACHE_GRACE if $next <= $now + $STASH_CACHE_GRACE;
   $this->{_stash_cache}{$stash_name} = {
     data        => $data,
@@ -3082,17 +3094,23 @@ sub cached_stash_stats
   };
 }
 
-# stash_last_update($name) -- the source datastash's last_update stamp, read from the
-# cached_stash entry when present (free) else via getNodeParam. This is the "version" a
-# derived memoize keys on: when the cron regenerates the stash this advances, so consumers
-# of the data rebuild.
-sub stash_last_update
+# stash_content_version($name) -- a CONTENT fingerprint of a datastash, for a derived memoize
+# (e.g. the guest front page) to key on. We can't key on last_update: the cron re-stamps it
+# every cycle even when the regenerated content is byte-identical, which would churn the
+# memoize needlessly. So we key on the data itself, canonically encoded (sorted keys -- the
+# cron regenerates in a fresh process each run, so raw-JSON key order is unstable across runs;
+# canonical makes identical content produce an identical string). Cached on the cached_stash
+# entry and recomputed only on a re-decode, so the encode cost is once-per-cron-refresh, not
+# per request. Returns '' if the stash is absent. (#4392)
+sub stash_content_version
 {
   my ($this, $stash_name) = @_;
   my $e = $this->{_stash_cache}{$stash_name};
-  return $e->{last_update} if $e;
-  my $node = $this->getNode($stash_name, 'datastash') or return 0;
-  return $this->getNodeParam($node, 'last_update') || 0;
+  unless ($e) {
+    $this->cached_stash($stash_name);
+    $e = $this->{_stash_cache}{$stash_name} or return '';
+  }
+  return $e->{content_version} //= JSON->new->canonical->encode($e->{data});
 }
 
 # memoized_build($key, $version, $build) -- per-worker cache of a derived, NON-personalized
