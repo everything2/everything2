@@ -8418,7 +8418,7 @@ sub buildSourceMap
     }
   }
   # Handle maintenance, nodelet and other system node types
-  elsif ($nodetype eq 'maintenance' || $nodetype eq 'nodelet' || $nodetype eq 'htmlcode' || $nodetype eq 'htmlpage') {
+  elsif ($nodetype eq 'maintenance' || $nodetype eq 'nodelet' || $nodetype eq 'htmlcode') {
     # Show controller for this node type
     my $controller_class = "Everything::Controller::$nodetype";
     push @{$sourceMap->{components}}, {

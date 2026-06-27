@@ -1750,7 +1750,6 @@ sub dropNodeTable
 		'container',
 		'document',
 		'htmlcode',
-		'htmlpage',
 		'image',
 		'links',
 		'maintenance',
