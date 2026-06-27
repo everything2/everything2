@@ -19,4 +19,31 @@ describe('NewsArchives (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+
+  // Admin gating reads from the global user prop (user.admin), not contentData (#4390).
+  const groupData = {
+    type: 'news_archives',
+    groups: [],
+    viewWeblog: 114,
+    viewGroupName: 'Editor Picks',
+    entries: [{ node_id: 42, title: 'Some Node', timestamp: '2026-01-01 00:00:00', linker_id: 113, linker_name: 'root' }],
+    skippedCount: 0,
+  }
+
+  it('shows unlink controls for admins (user.admin === true)', () => {
+    const { container } = render(<NewsArchives data={groupData} user={{ admin: true }} />)
+    expect(container.textContent).toMatch(/Unlink\?/)
+    expect(container.textContent).toMatch(/unlink/)
+  })
+
+  it('hides unlink controls for non-admins (user.admin === false)', () => {
+    const { container } = render(<NewsArchives data={groupData} user={{ admin: false }} />)
+    expect(container.textContent).not.toMatch(/Unlink\?/)
+  })
+
+  it('does not crash when user is undefined', () => {
+    const { container } = render(<NewsArchives data={groupData} user={undefined} />)
+    expect(container.textContent).not.toMatch(/Unlink\?/)
+    expect(container).toBeTruthy()
+  })
 })

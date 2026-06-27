@@ -17,8 +17,6 @@ sub buildReactData {
     my $USER = $REQUEST->user;
     my $VARS = $USER->VARS;
 
-    my $is_admin = $USER->is_admin;
-
     # Check eligibility (for the current user)
     my $can_recalculate = 1;
     my $ineligible_reason = '';
@@ -36,7 +34,6 @@ sub buildReactData {
 
     return {
         recalculateXp => {
-            isAdmin          => $is_admin ? \1 : \0,
             canRecalculate   => $can_recalculate ? \1 : \0,
             ineligibleReason => $ineligible_reason,
             username         => $USER->title,

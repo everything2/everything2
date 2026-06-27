@@ -90,8 +90,7 @@ sub buildReactData {
             node_id => $author ? $author->{node_id} : 0,
             title => $author ? $author->{title} : 'unknown'
         },
-        can_view => $can_view ? 1 : 0,
-        is_admin => $is_admin ? 1 : 0
+        can_view => $can_view ? 1 : 0
     };
 }
 

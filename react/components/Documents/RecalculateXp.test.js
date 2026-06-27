@@ -19,4 +19,22 @@ describe('RecalculateXp (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+  it('admin lookup box shows for admins, hides for non-admins, no crash when user undefined (#4390)', () => {
+    const adminGate = 'Admin: Look up another user'
+
+    const { container: adminC } = render(
+      <RecalculateXp data={fixture.contentData} e2={fixture} user={{ admin: true }} />
+    )
+    expect(adminC.textContent).toContain(adminGate)
+
+    const { container: plainC } = render(
+      <RecalculateXp data={fixture.contentData} e2={fixture} user={{ admin: false }} />
+    )
+    expect(plainC.textContent).not.toContain(adminGate)
+
+    const { container: noUserC } = render(
+      <RecalculateXp data={fixture.contentData} e2={fixture} user={undefined} />
+    )
+    expect(noUserC.textContent).not.toContain(adminGate)
+  })
 })

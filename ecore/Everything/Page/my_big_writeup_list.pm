@@ -38,8 +38,7 @@ sub buildReactData
         return {
             type     => 'my_big_writeup_list',
             error    => "User '$username' doesn't exist. Did you type their name correctly?",
-            username => $username,
-            is_admin => $is_admin ? 1 : 0
+            username => $username
         };
     }
 
@@ -48,8 +47,7 @@ sub buildReactData
         return {
             type     => 'my_big_writeup_list',
             error    => 'G r o w l !',
-            username => $username,
-            is_admin => $is_admin ? 1 : 0
+            username => $username
         };
     }
 
@@ -57,8 +55,7 @@ sub buildReactData
         return {
             type     => 'my_big_writeup_list',
             error    => 'Are you really looking for almost all the words in the English language?',
-            username => $username,
-            is_admin => $is_admin ? 1 : 0
+            username => $username
         };
     }
 
@@ -79,7 +76,6 @@ sub buildReactData
         return {
             type         => 'my_big_writeup_list',
             username     => $target_user->{title},
-            is_admin     => $is_admin ? 1 : 0,
             is_me        => $is_me ? 1 : 0,
             show_rep     => $show_rep ? 1 : 0,
             total_count  => 0,
@@ -114,7 +110,6 @@ sub buildReactData
             type         => 'my_big_writeup_list',
             error        => "Delimiter must be exactly one character.",
             username     => $target_user->{title},
-            is_admin     => $is_admin ? 1 : 0,
             is_me        => $is_me ? 1 : 0,
             show_rep     => $show_rep ? 1 : 0,
             total_count  => $total_count,
@@ -188,8 +183,6 @@ sub buildReactData
         type         => 'my_big_writeup_list',
         username     => $target_user->{title},
         user_id      => $target_user_id,
-        is_admin     => $is_admin ? 1 : 0,
-        is_editor    => $is_editor ? 1 : 0,
         is_me        => $is_me ? 1 : 0,
         show_rep     => $show_rep ? 1 : 0,
         total_count  => $total_count,

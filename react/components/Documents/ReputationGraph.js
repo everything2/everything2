@@ -6,15 +6,16 @@ import React, { useState, useEffect } from 'react';
  *
  * Supports both horizontal (simple bar) and vertical (table) layouts
  */
-const ReputationGraph = ({ data }) => {
+const ReputationGraph = ({ data, user }) => {
   const {
     error,
     writeup,
     author,
     can_view,
-    is_admin,
     layout = 'vertical' // 'horizontal' or 'vertical'
   } = data;
+
+  const isAdmin = !!user?.admin;
 
   const [graphData, setGraphData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -122,7 +123,7 @@ const ReputationGraph = ({ data }) => {
         <VerticalGraph data={graphData} />
       )}
 
-      {!!is_admin && (
+      {isAdmin && (
         <p className="reputation-graph__admin-note">
           NOTE: Admins can view the graph of any writeup by simply appending "&id=&lt;writeup_id&gt;" to the end of the URL
         </p>

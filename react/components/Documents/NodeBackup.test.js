@@ -19,4 +19,19 @@ describe('NodeBackup (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+  // Role-gating: the "For noder (admin only)" field renders only for user.admin.
+  // The form (and thus the field) only renders when not in the dev environment.
+  const prodData = { ...fixture.contentData, isDevelopment: false }
+  it('shows the admin-only "For noder" field for admins (user.admin)', () => {
+    const { container } = render(<NodeBackup data={prodData} user={{ admin: true }} />)
+    expect(container.textContent).toContain('(admin only)')
+  })
+  it('hides the admin-only "For noder" field for non-admins', () => {
+    const { container } = render(<NodeBackup data={prodData} user={{ admin: false }} />)
+    expect(container.textContent).not.toContain('(admin only)')
+  })
+  it('does not crash when user is undefined', () => {
+    const { container } = render(<NodeBackup data={prodData} user={undefined} />)
+    expect(container.textContent).not.toContain('(admin only)')
+  })
 })

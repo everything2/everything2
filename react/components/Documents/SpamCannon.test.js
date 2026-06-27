@@ -19,4 +19,17 @@ describe('SpamCannon (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+  it('gates on user.editor: editor sees the tool, non-editor is denied (#4390)', () => {
+    const editor = render(<SpamCannon data={fixture.contentData} e2={fixture} user={{ editor: true }} />)
+    expect(editor.container.textContent).toContain('The Spam Cannon sends a single /msg')
+    expect(editor.container.textContent).not.toContain('Permission Denied')
+
+    const nonEditor = render(<SpamCannon data={fixture.contentData} e2={fixture} user={{ editor: false }} />)
+    expect(nonEditor.container.textContent).toContain('Permission Denied')
+    expect(nonEditor.container.textContent).not.toContain('The Spam Cannon sends a single /msg')
+  })
+  it('does not crash and denies when user prop is undefined (#4390)', () => {
+    const { container } = render(<SpamCannon data={fixture.contentData} e2={fixture} user={undefined} />)
+    expect(container.textContent).toContain('Permission Denied')
+  })
 })

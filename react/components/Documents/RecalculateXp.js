@@ -7,10 +7,10 @@ import React, { useState, useCallback } from 'react'
  * Converts user XP total to the new system calculation.
  * Excess XP is converted to GP bonus.
  */
-const RecalculateXp = ({ data }) => {
+const RecalculateXp = ({ data, user }) => {
   const xpData = data?.recalculateXp || {}
+  const isAdmin = !!user?.admin
   const {
-    isAdmin,
     username,
     canRecalculate,
     ineligibleReason,

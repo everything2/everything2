@@ -20,3 +20,37 @@ describe('MyBigWriteupList (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+describe('MyBigWriteupList admin role gating (#4390, reads user.admin)', () => {
+  // The rendered search form's user-search input ("Search for user:") is admin-only;
+  // non-admins instead get a "For: <username>" row. This payload reaches the main render.
+  const listData = {
+    type: 'my_big_writeup_list',
+    username: 'someuser',
+    user_id: 42,
+    is_me: 0,
+    show_rep: 0,
+    total_count: 0,
+    writeups: []
+  }
+
+  it('admin sees the user-search input', () => {
+    const { container } = render(
+      <MyBigWriteupList data={listData} user={{ admin: true, editor: true }} />
+    )
+    expect(container.textContent).toContain('Search for user:')
+  })
+
+  it('non-admin does not see the user-search input', () => {
+    const { container } = render(
+      <MyBigWriteupList data={listData} user={{ admin: false, editor: false }} />
+    )
+    expect(container.textContent).not.toContain('Search for user:')
+    expect(container.textContent).toContain('For: someuser')
+  })
+
+  it('renders without crashing when user is undefined', () => {
+    const { container } = render(<MyBigWriteupList data={listData} user={undefined} />)
+    expect(container.textContent).not.toContain('Search for user:')
+  })
+})

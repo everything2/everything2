@@ -19,4 +19,17 @@ describe('BadSpellingsListing (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+  it('reads role flags from the user prop (admin/editor gating)', () => {
+    const yes = render(<BadSpellingsListing data={fixture.contentData} user={{ admin: true, editor: true }} />)
+    expect(yes.container.textContent).toContain('Site administrators can edit this setting')
+    expect(yes.container.textContent).toContain('total')
+
+    const no = render(<BadSpellingsListing data={fixture.contentData} user={{ admin: false, editor: false }} />)
+    expect(no.container.textContent).not.toContain('Site administrators can edit this setting')
+    expect(no.container.textContent).not.toContain('total')
+  })
+  it('does not crash when the user prop is undefined', () => {
+    const { container } = render(<BadSpellingsListing data={fixture.contentData} user={undefined} />)
+    expect(container.textContent).not.toContain('Site administrators can edit this setting')
+  })
 })

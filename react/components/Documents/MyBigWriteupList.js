@@ -11,13 +11,12 @@ import LinkNode from '../LinkNode'
  * - Admins can search for other users
  * - Shows reputation details for user's own writeups or admins
  */
-const MyBigWriteupList = ({ data }) => {
+const MyBigWriteupList = ({ data, user }) => {
   const {
     guest,
     error,
     username,
     user_id,
-    is_admin,
     is_me,
     show_rep,
     total_count,
@@ -26,6 +25,8 @@ const MyBigWriteupList = ({ data }) => {
     raw_mode: initialRawMode = false,
     delimiter: initialDelimiter = '_'
   } = data
+
+  const isAdmin = !!user?.admin
 
   const [usersearch, setUsersearch] = useState(username || '')
   const [orderBy, setOrderBy] = useState(initialOrderBy)
@@ -85,7 +86,7 @@ const MyBigWriteupList = ({ data }) => {
         <form method="get" onSubmit={handleSubmit}>
           <input type="hidden" name="node_id" value={window.e2?.node_id || ''} />
 
-          {is_admin ? (
+          {isAdmin ? (
             <div className="my-big-writeup-list__form-row">
               <label>
                 Search for user:{' '}

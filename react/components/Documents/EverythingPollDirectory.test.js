@@ -20,3 +20,22 @@ describe('EverythingPollDirectory (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// #4390: viewer admin status reads from the global `user` prop, NOT from page
+// contentData (which used to re-emit is_admin -- the same bytes shipped twice).
+describe('EverythingPollDirectory — admin gating from the user prop (#4390)', () => {
+  it('shows the admin-only "Show old polls" toggle when user.admin is true', () => {
+    const { container } = render(<EverythingPollDirectory user={{ admin: true }} />)
+    expect(container.textContent).toMatch(/show old polls/i)
+  })
+
+  it('hides the admin-only toggle when user.admin is false', () => {
+    const { container } = render(<EverythingPollDirectory user={{ admin: false }} />)
+    expect(container.textContent).not.toMatch(/show old polls/i)
+  })
+
+  it('treats a missing user prop as non-admin (no admin toggle, no crash)', () => {
+    const { container } = render(<EverythingPollDirectory user={undefined} />)
+    expect(container.textContent).not.toMatch(/show old polls/i)
+  })
+})

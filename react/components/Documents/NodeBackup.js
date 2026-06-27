@@ -6,9 +6,10 @@ import React, { useState, useCallback } from 'react'
  *
  * Allows users to download backups of their writeups and/or drafts.
  */
-const NodeBackup = ({ data }) => {
+const NodeBackup = ({ data, user }) => {
   const backupData = data || {}
-  const { isAdmin, isDevelopment } = backupData
+  const { isDevelopment } = backupData
+  const isAdmin = !!user?.admin
 
   const [contentType, setContentType] = useState('both')
   const [format, setFormat] = useState('both')

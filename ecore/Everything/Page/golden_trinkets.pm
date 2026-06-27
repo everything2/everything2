@@ -26,7 +26,6 @@ sub buildReactData
     contentData => {
       type => 'golden_trinkets',
       karma => $user->karma,
-      isAdmin => $user->is_admin ? 1 : 0,
       forUser => $for_user ? {
         username => $for_user->title,
         karma => $for_user->karma,

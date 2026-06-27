@@ -43,9 +43,7 @@ sub buildReactData {
         can_create => $can_create,
         is_suspended => $is_suspended,
         required_level => int($required_level),
-        user_level => int($user_level),
-        is_admin => $is_admin,
-        is_chanop => $is_chanop
+        user_level => int($user_level)
     };
 }
 
