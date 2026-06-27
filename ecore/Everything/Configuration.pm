@@ -293,7 +293,11 @@ has 'guest_nodelets' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub {[
 
 has 'default_node' => (isa => 'Int', is => 'ro', default => '124');
 has 'default_duplicates_node' => (isa => 'Int', is => 'ro', default => '382987');
-has 'not_found_node' => (isa => 'Int', is => 'ro', default => '668164');
+# not_found_node resolves to search_results (the Findings: page). The old "Nothing Found"
+# superdoc (668164) was tombed in #1801, but this config + HTML.pm kept loading it, so a
+# search with no matches 500'd with "NO NODE!" for ~3 years (#4382). Findings now renders
+# the no-results case ("We couldn't find anything for ...").
+has 'not_found_node' => (isa => 'Int', is => 'ro', lazy => 1, default => sub { $_[0]->search_results });
 has 'search_results' => (isa => 'Int', is => 'ro', default => '1140332');
 has 'permission_denied' => (isa => 'Int', is => 'ro', default => '104');
 has 'user_settings' => (isa => 'Int', is => 'ro', default => '108');

@@ -318,7 +318,14 @@ sub displayPage
 {
 	my ($NODE, $user_id) = @_;
 	getRef $NODE, $USER;
-	die "NO NODE!" unless $NODE;
+	# Defensive: never 500 on a missing node. Any path that reaches here with an undef
+	# $NODE (e.g. a non-existent node_id or name) renders the not-found page (Findings:,
+	# via not_found_node -> search_results) instead of dying with "NO NODE!". #4382
+	unless ($NODE) {
+		$NODE = getNodeById($Everything::CONF->not_found_node);
+		getRef $NODE, $USER;
+	}
+	die "NO NODE!" unless $NODE;  # last resort: only if search_results itself is missing
 	$GNODE = $NODE;
 
 	# Fast-path for HEAD requests: return appropriate status without full rendering
@@ -391,8 +398,20 @@ sub gotoNode
 		$$NODE{group} = $node_id;
 	}
 
-	unless ($NODE) { $NODE = getNodeById($Everything::CONF->not_found_node); }
-	
+	# A non-existent node_id falls through to the not-found page (Findings:, via
+	# not_found_node -> search_results). Seed it with the requested id + an empty result
+	# set so it renders "We couldn't find anything for <id>" instead of the bare search
+	# prompt -- and, critically, never passes undef to displayPage (which used to 500). #4382
+	unless ($NODE) {
+		$NODE = getNodeById($Everything::CONF->not_found_node);
+		if ($NODE && ref($node_id) ne 'ARRAY' && defined $node_id) {
+			$$NODE{group} = [];
+			my $existing = $query->param('node');
+			$query->param('node', $node_id)
+				unless defined($existing) && length($existing);
+		}
+	}
+
 	unless (canReadNode($user_id, $NODE)) {
 		$NODE = getNodeById($Everything::CONF->permission_denied);
 	}

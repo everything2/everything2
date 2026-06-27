@@ -50,7 +50,9 @@ const Findings = ({ data, user }) => {
   return (
     <div className="findings-container">
       <p className="findings-header">
-        Here's the stuff we found when you searched for "{search_term}"
+        {findings.length === 0
+          ? <>We couldn't find anything for "{search_term}".</>
+          : <>Here's the stuff we found when you searched for "{search_term}"</>}
       </p>
 
       <ul className="findings-list">
@@ -82,10 +84,6 @@ const Findings = ({ data, user }) => {
           </React.Fragment>
         ))}
       </ul>
-
-      {findings.length === 0 && (
-        <p className="findings-no-results">No results found.</p>
-      )}
 
       {/* Create new node form */}
       <div className="findings-create-section">

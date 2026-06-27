@@ -20,8 +20,18 @@ describe('Findings', () => {
   }
 
   it('renders search term message', () => {
-    render(<Findings {...defaultProps} />)
+    const findings = [{ node_id: 1, title: 'Result 1', type: 'e2node' }]
+    render(<Findings data={{ ...defaultProps.data, findings }} user={defaultProps.user} />)
     expect(screen.getByText(/Here's the stuff we found when you searched for "test search"/)).toBeInTheDocument()
+  })
+
+  // Regression for #4382 (Tem42): a search with no matches must render the "couldn't find
+  // anything" message, not 500. not_found_node now points at Findings (search_results), and
+  // Findings renders the empty-results case instead of loading a tombed "Nothing Found" node.
+  it('shows the not-found message when there are no results', () => {
+    render(<Findings data={{ ...defaultProps.data, findings: [] }} user={defaultProps.user} />)
+    expect(screen.getByText(/We couldn't find anything for "test search"/)).toBeInTheDocument()
+    expect(screen.queryByText(/Here's the stuff we found/)).not.toBeInTheDocument()
   })
 
   it('renders findings list', () => {
