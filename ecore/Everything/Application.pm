@@ -7679,8 +7679,9 @@ sub buildNodeInfoStructure
       APP => $this, CONF => $this->{conf}, DB => $this->{db} )->current_or_build;
     if ($chrome) {
       my $e2 = { %$chrome };
+      # Returns the cached chrome + per-node content, untyped: int-key coercion is done
+      # client-side now (react/utils/normalizeE2 at ingestion, #4381 interim / undo #4383).
       $this->_build_guest_content($e2, $NODE);
-      Everything::PageState->normalize_types($e2);
       return $e2;
     }
   }
@@ -8190,12 +8191,10 @@ sub buildNodeInfoStructure
     $e2->{recaptcha} = Everything::PageState->_build_recaptcha($this);
   }
 
-  # Single normalization point: coerce integer-string ids (node_id, etc.) to real
-  # integers so React keys/truthy guards behave (#4152/#4108). Both consumers of this
-  # blob -- the inline page render and Everything::API::pagestate -- get the identical
-  # normalized contract. (The deeper fix is coercing in the stash generators, 2b; this
-  # per-render pass is the parity bridge until then.)
-  Everything::PageState->normalize_types($e2);
+  # Int-key coercion (node_id etc. -> real integers for React keys/truthy guards, #4152/#4108)
+  # moved client-side: react/utils/normalizeE2 coerces window.e2 once at ingestion. Page state
+  # is API-served + client-rendered, so the client is the right owner; the server hands the blob
+  # off untyped. This is the #4381 interim -- undo when source/model coercion lands (#4383).
 
   return $e2;
 }

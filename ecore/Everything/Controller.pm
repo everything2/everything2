@@ -159,10 +159,9 @@ sub layout
   # Stash the e2 blob so Everything::API::pagestate can serve the identical payload via the
   # facade (route-through-render). This is the single point where every controller-class
   # render hands off its fully-built blob (incl. the controller's contentData override).
-  # normalize_types is idempotent -- the chrome was already normalized at the source
-  # (buildNodeInfoStructure); this also catches the post-override contentData. #4255.
+  # Int-key coercion moved client-side (react/utils/normalizeE2 at the ingestion point) as the
+  # #4381 interim -- the server hands the blob off untyped now. Undo: #4383. #4255.
   if ($REQUEST && ref($params->{e2}) eq 'HASH') {
-    Everything::PageState->normalize_types($params->{e2});
     $REQUEST->pagestate_e2($params->{e2});
   }
 

@@ -4,6 +4,7 @@ import Modal from 'react-modal'
 import { createRoot } from 'react-dom/client'
 import { setupGlobalErrorHandlers } from './utils/reportClientError'
 import { setupAnalytics } from './utils/analytics'
+import { normalizeIntKeys } from './utils/normalizeE2'
 
 import PageLayout from './components/PageLayout'
 
@@ -51,6 +52,10 @@ function initReact() {
     setTimeout(initReact, 50)
     return
   }
+
+  // Coerce integer-valued strings (ids/counts/flags) to real numbers across the blob.
+  // The server no longer types these -- moved client-side as the #4381 interim (#4383 to undo).
+  normalizeIntKeys(e2)
 
   // Set up softlink tracking for intentional navigation
   // Only tracks clicks on links inside main content, not nodelets

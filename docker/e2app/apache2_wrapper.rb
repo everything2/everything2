@@ -53,7 +53,7 @@ end
 # Build the Starman supervisor command (the app backend, in both dev and prod).
 # Tunable via env with sane, memory-aware defaults derived from how we already
 # size Apache prefork:
-#   STARMAN_WORKERS (default 10) -- worker process count. PSGI needs FEWER workers
+#   STARMAN_WORKERS (default 16) -- worker process count. PSGI needs FEWER workers
 #       than mod_perl's MaxRequestWorkers because the Apache proxy + disablereuse
 #       decouple client connections from workers (keep-alive / slow clients no
 #       longer pin a worker; a worker is busy only while actually processing).
@@ -67,7 +67,7 @@ end
 #       shared parent). E2 opens its DB handle lazily per worker (NodeBase
 #       connect_cached on first request), so nothing live crosses the fork.
 def starman_supervisor(logdest)
-  workers = ENV.fetch('STARMAN_WORKERS', '10')
+  workers = ENV.fetch('STARMAN_WORKERS', '16')
   maxreq  = ENV.fetch('STARMAN_MAX_REQUESTS', '1000')
   "while true; do " \
     "PERL5LIB=/var/libraries/lib/perl5:/var/everything/ecore " \
