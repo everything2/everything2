@@ -7808,7 +7808,7 @@ sub buildNodeInfoStructure
   {
     foreach my $section (qw/coolnodes staffpicks/)
     {
-      my $section_data = $this->{db}->stashData($section);
+      my $section_data = $this->{db}->cached_stash($section);
       $section_data = [] unless(defined($section_data) and UNIVERSAL::isa($section_data,"ARRAY"));
 
       my $final_section_data = [];
@@ -8143,19 +8143,24 @@ sub buildNodeInfoStructure
       if ($page_data->{pagenodelets}) {
         my @pagenodelets = @{$page_data->{pagenodelets}};
 
+        # //= below: the sidebar-nodelet gates above (on $VARS->{nodelets}) may have
+        # already built these for the same user. When a page also declares the nodelet in
+        # its pagenodelets, only build if not already present -- defined-or short-circuits
+        # the (identical) builder call instead of rebuilding and overwriting. #3981 dedup.
+
         # Check for Notifications nodelet (1930708)
         if (grep { $_ == 1930708 } @pagenodelets) {
-          $e2->{notificationsData} = $this->buildNotificationsData($NODE, $USER, $VARS, $query);
+          $e2->{notificationsData} //= $this->buildNotificationsData($NODE, $USER, $VARS, $query);
         }
 
         # Check for Other Users nodelet (1969174)
         if (grep { $_ == 1969174 } @pagenodelets) {
-          $e2->{otherUsersData} = $this->buildOtherUsersData($USER);
+          $e2->{otherUsersData} //= $this->buildOtherUsersData($USER);
         }
 
         # Check for Messages nodelet (2044453)
         if (grep { $_ == 2044453 } @pagenodelets) {
-          $e2->{messagesData} = $this->get_messages($USER, 10, 0);
+          $e2->{messagesData} //= $this->get_messages($USER, 10, 0);
         }
 
         # Note: newWriteups is loaded unconditionally earlier for all users

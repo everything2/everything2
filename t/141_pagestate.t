@@ -104,6 +104,9 @@ is_deeply($empty, { chrome => {}, content => {} }, 'undef blob -> empty partitio
     package T141::MockDB;
     sub new         { bless { stash => $_[1], nodes => $_[2] }, $_[0] }
     sub stashData   { return $_[0]->{stash} }
+    # _build_news/_build_stash read via cached_stash now (#3981); the mock returns the
+    # same fixture, since the TTL cache is irrelevant to the builders' transform logic.
+    sub cached_stash { return $_[0]->{stash} }
     sub getNodeById { return $_[0]->{nodes}{ $_[1] } }
 }
 

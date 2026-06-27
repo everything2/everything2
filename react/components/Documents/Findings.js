@@ -7,7 +7,7 @@ import { InContentAd } from '../Layout/GoogleAds';
 const AD_INTERVAL = 4;
 
 const Findings = ({ data, user }) => {
-  const { no_search_term, message, search_term, findings = [], lastnode_id, is_guest, has_excerpts } = data;
+  const { no_search_term, message, search_term, search_was_node_id, findings = [], lastnode_id, is_guest, has_excerpts } = data;
 
   const [searchValue, setSearchValue] = useState(search_term || '');
   const [soundex, setSoundex] = useState(false);
@@ -51,7 +51,9 @@ const Findings = ({ data, user }) => {
     <div className="findings-container">
       <p className="findings-header">
         {findings.length === 0
-          ? <>We couldn't find anything for "{search_term}".</>
+          ? (search_was_node_id
+              ? <>We couldn't find anything for node ID {search_term}.</>
+              : <>We couldn't find anything for "{search_term}".</>)
           : <>Here's the stuff we found when you searched for "{search_term}"</>}
       </p>
 

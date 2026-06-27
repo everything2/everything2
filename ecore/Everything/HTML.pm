@@ -407,8 +407,12 @@ sub gotoNode
 		if ($NODE && ref($node_id) ne 'ARRAY' && defined $node_id) {
 			$$NODE{group} = [];
 			my $existing = $query->param('node');
-			$query->param('node', $node_id)
-				unless defined($existing) && length($existing);
+			unless (defined($existing) && length($existing)) {
+				$query->param('node', $node_id);
+				# Flag it so Findings renders "node ID <n>" rather than a bare "<n>"
+				# (which reads like a title search). Only when the term IS the node_id.
+				$query->param('not_found_by_id', 1);
+			}
 		}
 	}
 

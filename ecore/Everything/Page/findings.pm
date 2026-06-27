@@ -203,6 +203,9 @@ sub buildReactData {
     return {
         type => 'findings',
         search_term => $title,
+        # Set when the "search term" is actually a non-existent node_id (e.g. /node/5),
+        # so the no-results message reads "node ID 5" instead of a bare "5". (#4382)
+        search_was_node_id => $query->param('not_found_by_id') ? 1 : 0,
         findings => \@findings,
         lastnode_id => $lastnode_id,
         is_guest => $is_guest,
