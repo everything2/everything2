@@ -62,9 +62,10 @@ ok( $row, 'memoized_build_stats has a row for our key' );
 is( $row->{hits},   1, 'stats: exactly one hit (the same-version call)' );
 is( $row->{builds}, 5, 'stats: five builds (cold + churn + undef x2)' );
 
-# --- the version source: a feed's last_update is a numeric epoch stamp ---
-my $lu = $DB->stash_last_update("frontpagenews");
-ok( defined $lu && $lu =~ /^\d+$/, 'stash_last_update returns a numeric last_update stamp' );
+# --- the version source: a feed's content fingerprint is a non-empty string (#4392 changed
+#     this from last_update to a canonical-content version) ---
+my $cv = $DB->stash_content_version("frontpagenews");
+ok( defined $cv && length $cv, 'stash_content_version returns a content-fingerprint string' );
 
 # --- guest-front-page wiring end-to-end: a repeat render is a memoize HIT ---
 SKIP: {

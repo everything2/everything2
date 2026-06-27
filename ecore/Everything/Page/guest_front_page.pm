@@ -35,13 +35,14 @@ sub buildReactData {
     }
 
     # The guest front page is identical for every guest and changes only when its two source
-    # feeds refresh. Cache the ~40-70-query contentData assembly per-worker, keyed by the
-    # feeds' last_update; a feed refresh changes the version string and rebuilds. (#4391)
-    $DB->cached_stash("altfrontpagecontent");   # cheap within-window; populates last_update
-    $DB->cached_stash("frontpagenews");
-    my $version = join(":",
-        $DB->stash_last_update("altfrontpagecontent"),
-        $DB->stash_last_update("frontpagenews"));
+    # feeds' CONTENT changes. Cache the ~40-70-query contentData assembly per-worker, keyed on
+    # a content fingerprint of the feeds (NOT last_update -- the cron re-stamps that every
+    # cycle even when the news is identical, which would rebuild needlessly, #4392).
+    # stash_content_version populates the cached_stash entry as a side effect, so _build_content
+    # reads the feeds warm. The \x1f separator can't occur in JSON, so the join is unambiguous.
+    my $version = join("\x1f",
+        $DB->stash_content_version("altfrontpagecontent"),
+        $DB->stash_content_version("frontpagenews"));
 
     return $DB->memoized_build("guest_front_page", $version, sub { $self->_build_content });
 }
