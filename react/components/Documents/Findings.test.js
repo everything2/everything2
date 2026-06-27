@@ -34,6 +34,14 @@ describe('Findings', () => {
     expect(screen.queryByText(/Here's the stuff we found/)).not.toBeInTheDocument()
   })
 
+  // When the not-found came from a node_id lookup (e.g. /node/5), say "node ID 5" so it's
+  // clear we weren't searching for a title "5". (#4382 node_id fallback)
+  it('frames the no-results term as a node ID when search_was_node_id is set', () => {
+    render(<Findings data={{ ...defaultProps.data, findings: [], search_term: '5', search_was_node_id: 1 }} user={defaultProps.user} />)
+    expect(screen.getByText(/We couldn't find anything for node ID 5/)).toBeInTheDocument()
+    expect(screen.queryByText(/We couldn't find anything for "5"/)).not.toBeInTheDocument()
+  })
+
   it('renders findings list', () => {
     const findings = [
       { node_id: 1, title: 'Result 1', type: 'e2node' },

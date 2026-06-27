@@ -87,7 +87,7 @@ sub from_blob {
 sub _build_news {
     my ( $class, $db ) = @_;
 
-    my $fpnews = $db->stashData("frontpagenews");
+    my $fpnews = $db->cached_stash("frontpagenews");
     $fpnews = [] unless defined($fpnews) && UNIVERSAL::isa( $fpnews, "ARRAY" );
 
     my $news = [];
@@ -171,7 +171,7 @@ sub _build_statistics {
 #   neglectedDrafts -> "neglecteddrafts" (Neglected Drafts nodelet 2051342)
 sub _build_stash {
     my ( $class, $db, $key ) = @_;
-    return $db->stashData($key);
+    return $db->cached_stash($key);
 }
 
 # recentNodes: the Recent Nodes nodelet -- the user's breadcrumb trail. PER-USER, and the

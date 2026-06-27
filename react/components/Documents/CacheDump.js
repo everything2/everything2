@@ -17,6 +17,8 @@ const CacheDump = ({ data = {} }) => {
     nodes = [],
     type_stats = [],
     perf_stats = [],
+    stash_cache = { stashes: [], totals: {} },
+    memoize_cache = [],
     group_cache = [],
     group_cache_size = 0,
     error
@@ -93,6 +95,88 @@ const CacheDump = ({ data = {} }) => {
                 <td className={getRateClass(stat.hit_rate)}>
                   {stat.hit_rate}%
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <h3>Datastash Memoize Cache (this process)</h3>
+      <p className="cache-dump__help-text">
+        cached_stash() per-worker TTL cache (#3981/#4385). High hit rate = the TTL window is
+        working; high decodes vs hits = window too short for the request rate; high grace = the
+        cron is regenerating late (delta==0 re-checks).
+      </p>
+      {(!stash_cache.stashes || stash_cache.stashes.length === 0) ? (
+        <p><em>No datastash reads cached yet.</em></p>
+      ) : (
+        <>
+          <table className="cache-dump__perf-table">
+            <thead>
+              <tr>
+                <th>Stash</th>
+                <th>Hits</th>
+                <th>Decodes</th>
+                <th>Grace</th>
+                <th>Hit Rate</th>
+                <th>Size</th>
+                <th>Age (s)</th>
+                <th>Next (s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stash_cache.stashes.map(s => (
+                <tr key={s.name}>
+                  <td>{s.name}{!s.cached && ' (evicted)'}</td>
+                  <td className="cache-dump__td--right">{s.hits}</td>
+                  <td className="cache-dump__td--right">{s.decodes}</td>
+                  <td className="cache-dump__td--right">{s.grace}</td>
+                  <td className={getRateClass(s.hit_rate)}>{s.hit_rate}%</td>
+                  <td className="cache-dump__td--right">{s.cached ? `${(s.bytes / 1024).toFixed(1)} KB` : '—'}</td>
+                  <td className="cache-dump__td--right">{s.cached ? s.age : '—'}</td>
+                  <td className="cache-dump__td--right">{s.cached ? s.next_check_in : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {(stash_cache.totals && (stash_cache.totals.hits || stash_cache.totals.decodes)) ? (
+            <p className="cache-dump__help-text">
+              Overall: {stash_cache.totals.hits} hits / {stash_cache.totals.decodes} decodes / {stash_cache.totals.grace} grace
+              {' '}(<strong>{stash_cache.totals.hit_rate}%</strong> hit rate)
+            </p>
+          ) : null}
+        </>
+      )}
+
+      <h3>Derived Memoize Cache (this process)</h3>
+      <p className="cache-dump__help-text">
+        memoized_build() per-worker cache of derived non-personalized values (e.g. the guest
+        front page's assembled contentData, #4391). hits = full assembly skipped; builds =
+        rebuilt (cold start, or a source feed refreshed). High hit rate = page served from cache.
+      </p>
+      {(!memoize_cache || memoize_cache.length === 0) ? (
+        <p><em>No memoized builds yet.</em></p>
+      ) : (
+        <table className="cache-dump__perf-table">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Hits</th>
+              <th>Builds</th>
+              <th>Hit Rate</th>
+              <th>Cached</th>
+              <th>Age (s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {memoize_cache.map(m => (
+              <tr key={m.name}>
+                <td>{m.name}</td>
+                <td className="cache-dump__td--right">{m.hits}</td>
+                <td className="cache-dump__td--right">{m.builds}</td>
+                <td className={getRateClass(m.hit_rate)}>{m.hit_rate}%</td>
+                <td className="cache-dump__td--right">{m.cached ? 'yes' : 'no'}</td>
+                <td className="cache-dump__td--right">{m.cached ? m.age : '—'}</td>
               </tr>
             ))}
           </tbody>

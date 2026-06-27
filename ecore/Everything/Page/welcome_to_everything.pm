@@ -25,7 +25,7 @@ sub buildReactData {
     };
 
     # Load daylog links (Logs section)
-    my $daylog_data = $DB->stashData("dayloglinks");
+    my $daylog_data = $DB->cached_stash("dayloglinks");
     if ($daylog_data && ref($daylog_data) eq 'ARRAY') {
         my @daylogs;
         foreach my $block (@$daylog_data) {
@@ -38,7 +38,7 @@ sub buildReactData {
     }
 
     # Load coolnodes data (Cool User Picks)
-    my $coolnodes_data = $DB->stashData("coolnodes");
+    my $coolnodes_data = $DB->cached_stash("coolnodes");
     if ($coolnodes_data && ref($coolnodes_data) eq 'ARRAY') {
         my @coolnodes;
         my %used;
@@ -57,7 +57,7 @@ sub buildReactData {
 
     # Load staffpicks data (Staff Picks)
     unless ($is_guest) {
-        my $staffpicks_data = $DB->stashData("staffpicks");
+        my $staffpicks_data = $DB->cached_stash("staffpicks");
         if ($staffpicks_data && ref($staffpicks_data) eq 'ARRAY') {
             my @staffpicks;
             foreach my $sp (@$staffpicks_data) {
@@ -74,7 +74,7 @@ sub buildReactData {
     }
 
     # Load Cream of the Cool content
-    my $cotc_data = $DB->stashData("creamofthecool");
+    my $cotc_data = $DB->cached_stash("creamofthecool");
     if ($cotc_data && ref($cotc_data) eq 'ARRAY') {
         my @creamofthecool;
         foreach my $item (@$cotc_data) {
@@ -113,7 +113,7 @@ sub buildReactData {
 
     # Load News for Noders (frontpagenews)
     unless ($is_guest) {
-        my $news_data = $DB->stashData("frontpagenews");
+        my $news_data = $DB->cached_stash("frontpagenews");
         if ($news_data) {
             $news_data = [$news_data] unless ref($news_data) eq 'ARRAY';
             my @news;

@@ -23,17 +23,35 @@ sub buildReactData {
     my ($self, $REQUEST) = @_;
 
     my $DB = $self->DB;
-    my $APP = $self->APP;
-    my $USER = $REQUEST->user->NODEDATA;
     my $VARS = $REQUEST->user->VARS;
 
-    # Ensure guest users have nodelets configured for proper e2 config generation
+    # Side effect (affects the CHROME, not the cached contentData): ensure guests have
+    # nodelets configured for proper e2 config generation. Runs every request.
     unless ($VARS->{nodelets}) {
         my $guest_nodelets = $Everything::CONF->guest_nodelets;
         if ($guest_nodelets && ref($guest_nodelets) eq 'ARRAY' && @$guest_nodelets) {
             $VARS->{nodelets} = join(',', @$guest_nodelets);
         }
     }
+
+    # The guest front page is identical for every guest and changes only when its two source
+    # feeds refresh. Cache the ~40-70-query contentData assembly per-worker, keyed by the
+    # feeds' last_update; a feed refresh changes the version string and rebuilds. (#4391)
+    $DB->cached_stash("altfrontpagecontent");   # cheap within-window; populates last_update
+    $DB->cached_stash("frontpagenews");
+    my $version = join(":",
+        $DB->stash_last_update("altfrontpagecontent"),
+        $DB->stash_last_update("frontpagenews"));
+
+    return $DB->memoized_build("guest_front_page", $version, sub { $self->_build_content });
+}
+
+# The non-personalized contentData: static hero + the two feed-derived lists (Best of The
+# Week, News for Noders). No $USER/$VARS -- safe to cache + share across all guests.
+sub _build_content {
+    my ($self) = @_;
+
+    my $DB = $self->DB;
 
     # Get nodelet IDs for sidebar
     my $sign_in_id = $DB->getNode('Sign in', 'nodelet')->{node_id};
@@ -67,7 +85,7 @@ sub buildReactData {
     }
 
     # Load Best of The Week (altfrontpagecontent)
-    my $altcontent_data = $DB->stashData("altfrontpagecontent");
+    my $altcontent_data = $DB->cached_stash("altfrontpagecontent");
     if ($altcontent_data && ref($altcontent_data) eq 'ARRAY') {
         my @bestofweek;
         foreach my $node_id (@$altcontent_data) {
@@ -124,7 +142,7 @@ sub buildReactData {
     }
 
     # Load News for Noders (frontpagenews)
-    my $news_data = $DB->stashData("frontpagenews");
+    my $news_data = $DB->cached_stash("frontpagenews");
     if ($news_data) {
         $news_data = [$news_data] unless ref($news_data) eq 'ARRAY';
         my @news;

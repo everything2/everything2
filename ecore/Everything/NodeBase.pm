@@ -2942,7 +2942,11 @@ sub stashData
 {
   my ($this, $stash_name, $stash_values) = @_;
 
-  # TODO: Add to permanent cache
+  # Low-level datastash primitive: fetch the node and encode/decode its JSON
+  # every call. For request-path READS prefer cached_stash() below, which holds
+  # the decoded structure in a per-worker TTL cache (the standing "permanent
+  # cache" TODO). This raw read stays for the cron/write path, which wants the
+  # live value to decide regeneration.
   my $stashnode = $this->getNode($stash_name, 'datastash');
   return unless $stashnode;
 
@@ -2953,11 +2957,191 @@ sub stashData
     my $stash_text = $json->encode($stash_values);
     $stashnode->{vars} = $stash_text;
     $this->updateNode($stashnode, -1);
+    # Invalidate this worker's decode cache so a same-worker read sees the write
+    # immediately; other workers re-sync via the last_update delta (cached_stash).
+    delete $this->{_stash_cache}{$stash_name};
     return $stash_values;
   }else{
     # read operation
     return $json->decode($stashnode->{vars});
   }
+}
+
+# Per-worker TTL cache for datastash reads. stashData() re-decodes multi-KB JSON
+# on every call; cached_stash() decodes a stash at most once per refresh WINDOW
+# (and skips the node fetch entirely on a hit), reusing the DataStash framework's
+# own freshness signals -- so this also drops the datastash version-validation
+# query from per-request to per-window (#4385 datastash-TTL lever, #3981 dedup).
+#
+# Validity is gated on the cron's `last_update` nodeparam (the same stamp
+# DataStash::stash_set_updated writes). An entry is served untouched until its
+# next_check; on expiry we read last_update ONCE and only RE-DECODE when it has
+# advanced (delta > 0). A quiet expiry (cron hasn't regenerated yet) keeps the
+# existing decode and backs off STASH_CACHE_GRACE seconds. last_update is a single
+# shared stamp, so every worker derives the same window -- no cross-worker state.
+#
+# Returns the cached decoded structure; treat it as READ-ONLY -- callers must
+# build new structures from it (the front-page controllers `push @new, {...}`),
+# not mutate it in place, or they corrupt it for the next caller on this worker.
+my $STASH_CACHE_GRACE            = 5;    # backoff (s) when the cron hasn't regenerated yet
+my $STASH_CACHE_DEFAULT_INTERVAL = 300;  # mirrors Everything::DataStash's base interval default
+
+sub _stash_interval
+{
+  my ($this, $stash_name) = @_;
+  return $this->{_stash_interval_cache}{$stash_name} //= do {
+    my $class = "Everything::DataStash::$stash_name";
+    my $iv = eval {
+      (my $path = "$class.pm") =~ s{::}{/}g;
+      require $path;
+      $class->meta->find_attribute_by_name('interval')->default;
+    };
+    (defined $iv && !ref $iv && $iv > 0) ? $iv : $STASH_CACHE_DEFAULT_INTERVAL;
+  };
+}
+
+sub cached_stash
+{
+  my ($this, $stash_name) = @_;
+  my $now   = time();
+  my $entry = $this->{_stash_cache}{$stash_name};
+
+  # Hit: still inside the window -- no node fetch, no decode, no version query.
+  if($entry && $now < $entry->{next_check})
+  {
+    $this->{_stash_stats}{$stash_name}{hits}++;
+    return $entry->{data};
+  }
+
+  # Expiry (or first read): consult the source's last_update once.
+  my $stashnode = $this->getNode($stash_name, 'datastash') or return;
+  my $src_last_update = $this->getNodeParam($stashnode, 'last_update') || 0;
+  my $interval = $this->_stash_interval($stash_name);
+
+  if($entry && $src_last_update <= $entry->{last_update})
+  {
+    # delta == 0: cron hasn't regenerated yet -- keep the decode, retry after the grace.
+    $this->{_stash_stats}{$stash_name}{grace}++;
+    $entry->{next_check} = $now + $STASH_CACHE_GRACE;
+    return $entry->{data};
+  }
+
+  # delta > 0 (or first populate): re-decode and align the window to the cron boundary.
+  $this->{_stash_stats}{$stash_name}{decodes}++;
+  my $data = JSON->new->decode($stashnode->{vars});
+  my $next = $src_last_update + $interval;
+  $next = $now + $STASH_CACHE_GRACE if $next <= $now + $STASH_CACHE_GRACE;
+  $this->{_stash_cache}{$stash_name} = {
+    data        => $data,
+    last_update => $src_last_update,
+    next_check  => $next,
+  };
+  return $data;
+}
+
+# Per-worker cached_stash effectiveness, for [Cache Dump] / prod evaluation. The counters
+# persist across entry re-decodes (kept in {_stash_stats}, not the entry); the live entry
+# supplies the cached size + age. hit_rate near 100% means the TTL window is doing its job;
+# a high `decodes` relative to `hits` means the window is too short for the request rate, and
+# a high `grace` means the cron is regenerating late (delta==0 re-checks).
+sub cached_stash_stats
+{
+  my ($this) = @_;
+  my $now   = time();
+  my $stats = $this->{_stash_stats} || {};
+  my $cache = $this->{_stash_cache} || {};
+  my (@rows, $TH, $TD, $TG);
+  for my $name (sort keys %$stats)
+  {
+    my $s = $stats->{$name};
+    my ($h, $d, $g) = ($s->{hits} || 0, $s->{decodes} || 0, $s->{grace} || 0);
+    my $tot = $h + $d + $g;
+    my $e = $cache->{$name};
+    push @rows, {
+      name          => $name,
+      hits          => int($h),
+      decodes       => int($d),
+      grace         => int($g),
+      hit_rate      => $tot ? sprintf("%.1f", 100 * $h / $tot) : "0.0",
+      cached        => $e ? 1 : 0,
+      bytes         => $e ? length(JSON->new->encode($e->{data})) : 0,
+      age           => $e ? $now - $e->{last_update} : -1,
+      next_check_in => $e ? $e->{next_check} - $now : -1,
+    };
+    $TH += $h; $TD += $d; $TG += $g;
+  }
+  my $GT = ($TH || 0) + ($TD || 0) + ($TG || 0);
+  return {
+    stashes => \@rows,
+    totals  => {
+      hits     => int($TH || 0),
+      decodes  => int($TD || 0),
+      grace    => int($TG || 0),
+      hit_rate => $GT ? sprintf("%.1f", 100 * ($TH || 0) / $GT) : "0.0",
+    },
+  };
+}
+
+# stash_last_update($name) -- the source datastash's last_update stamp, read from the
+# cached_stash entry when present (free) else via getNodeParam. This is the "version" a
+# derived memoize keys on: when the cron regenerates the stash this advances, so consumers
+# of the data rebuild.
+sub stash_last_update
+{
+  my ($this, $stash_name) = @_;
+  my $e = $this->{_stash_cache}{$stash_name};
+  return $e->{last_update} if $e;
+  my $node = $this->getNode($stash_name, 'datastash') or return 0;
+  return $this->getNodeParam($node, 'last_update') || 0;
+}
+
+# memoized_build($key, $version, $build) -- per-worker cache of a derived, NON-personalized
+# value (e.g. the guest front page's assembled contentData -- ~40-70 queries rebuilt
+# identically per guest). Returns the cached value while $version is unchanged; rebuilds
+# (calling the $build coderef) when $version differs or on cold start. Pass $version as a
+# string composed from the source data's freshness (e.g. feed last_updates joined) -- an
+# undef $version disables caching (always rebuilds). The build's return is held as-is and
+# shared across requests, so it MUST be non-personalized + treated read-only by callers.
+# Tracks hits/builds for [Cache Dump] (memoized_build_stats).
+sub memoized_build
+{
+  my ($this, $key, $version, $build) = @_;
+  my $entry = $this->{_memo_cache}{$key};
+  if ($entry && defined($version) && defined($entry->{version}) && $entry->{version} eq $version)
+  {
+    $this->{_memo_stats}{$key}{hits}++;
+    return $entry->{data};
+  }
+  $this->{_memo_stats}{$key}{builds}++;
+  my $data = $build->();
+  $this->{_memo_cache}{$key} = { version => $version, data => $data, built => time() };
+  return $data;
+}
+
+# Per-worker memoized_build effectiveness, for [Cache Dump] / prod evaluation.
+sub memoized_build_stats
+{
+  my ($this) = @_;
+  my $now   = time();
+  my $stats = $this->{_memo_stats} || {};
+  my $cache = $this->{_memo_cache} || {};
+  my @rows;
+  for my $key (sort keys %$stats)
+  {
+    my $s = $stats->{$key};
+    my ($h, $b) = ($s->{hits} || 0, $s->{builds} || 0);
+    my $tot = $h + $b;
+    my $e = $cache->{$key};
+    push @rows, {
+      name     => $key,
+      hits     => int($h),
+      builds   => int($b),
+      hit_rate => $tot ? sprintf("%.1f", 100 * $h / $tot) : "0.0",
+      cached   => $e ? 1 : 0,
+      age      => ($e && $e->{built}) ? $now - $e->{built} : -1,
+    };
+  }
+  return \@rows;
 }
 
 #############################################################################

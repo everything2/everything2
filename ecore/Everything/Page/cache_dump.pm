@@ -150,6 +150,8 @@ sub buildReactData {
         nodes => \@nodes,
         type_stats => \@type_stats,
         perf_stats => \@perf_stats,
+        stash_cache => $DB->cached_stash_stats(),
+        memoize_cache => $DB->memoized_build_stats(),
         group_cache => \@group_cache_entries,
         group_cache_size => scalar(@group_cache_entries)
     };
