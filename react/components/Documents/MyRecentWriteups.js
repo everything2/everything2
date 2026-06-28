@@ -4,8 +4,9 @@ import React from 'react';
  * MyRecentWriteups - User writeup count since last year
  * Styles in CSS: .my-recent-writeups__*
  */
-const MyRecentWriteups = ({ data }) => {
-  const { is_guest, message, writeup_count, one_year_ago, user_id, username } = data;
+const MyRecentWriteups = ({ data, user = {} }) => {
+  const { is_guest, message, writeup_count, one_year_ago } = data;
+  const user_id = user.node_id;
 
   if (is_guest) {
     return (

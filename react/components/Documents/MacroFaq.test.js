@@ -44,3 +44,34 @@ describe('MacroFaq (viewer flags from e2.user, #4390)', () => {
     expect(container.textContent).not.toContain('Log in to see your macros.')
   })
 })
+
+describe('MacroFaq (viewer username from user prop, #4399)', () => {
+  const data = { userMacros: [], contentEditorsId: 0, godsId: 0 }
+
+  it('non-guest viewer: example macro uses user.title (underscored), not contentData', () => {
+    const { container } = render(
+      <MacroFaq data={data} user={{ guest: false, editor: true, title: 'Some User' }} />
+    )
+    // username from user.title, spaces -> underscores in the /macro example
+    expect(container.textContent).toContain('/macro newbie Some_User')
+  })
+
+  it('ignores any stale username left in contentData (read from user prop only)', () => {
+    const { container } = render(
+      <MacroFaq
+        data={{ ...data, username: 'StaleFromPerl' }}
+        user={{ guest: false, editor: true, title: 'RealViewer' }}
+      />
+    )
+    expect(container.textContent).toContain('/macro newbie RealViewer')
+    expect(container.textContent).not.toContain('StaleFromPerl')
+  })
+
+  it('guest viewer: falls back to placeholder example username', () => {
+    const { container } = render(
+      <MacroFaq data={data} user={{ guest: true, editor: false, title: 'IgnoredForGuest' }} />
+    )
+    expect(container.textContent).toContain('/macro newbie your_username')
+    expect(container.textContent).not.toContain('IgnoredForGuest')
+  })
+})

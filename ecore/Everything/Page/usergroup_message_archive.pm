@@ -50,8 +50,7 @@ sub buildReactData
     unless ( $viewgroup ) {
         return {
             type           => 'usergroup_message_archive',
-            archive_groups => \@archive_groups,
-            node_id        => $NODE->NODEDATA->{node_id}
+            archive_groups => \@archive_groups
         };
     }
 
@@ -60,7 +59,6 @@ sub buildReactData
         return {
             type           => 'usergroup_message_archive',
             archive_groups => \@archive_groups,
-            node_id        => $NODE->NODEDATA->{node_id},
             error          => 'There is no such usergroup.'
         };
     }
@@ -70,7 +68,6 @@ sub buildReactData
         return {
             type           => 'usergroup_message_archive',
             archive_groups => \@archive_groups,
-            node_id        => $NODE->NODEDATA->{node_id},
             selected_group => {
                 node_id => $UG->{node_id},
                 title   => $UG->{title}
@@ -84,7 +81,6 @@ sub buildReactData
         return {
             type           => 'usergroup_message_archive',
             archive_groups => \@archive_groups,
-            node_id        => $NODE->NODEDATA->{node_id},
             selected_group => {
                 node_id => $UG->{node_id},
                 title   => $UG->{title}
@@ -180,7 +176,6 @@ sub buildReactData
     return {
         type           => 'usergroup_message_archive',
         archive_groups => \@archive_groups,
-        node_id        => $NODE->NODEDATA->{node_id},
         selected_group => {
             node_id => $UG->{node_id},
             title   => $UG->{title}

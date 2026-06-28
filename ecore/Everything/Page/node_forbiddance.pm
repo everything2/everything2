@@ -77,8 +77,7 @@ sub buildReactData
     return {
         type            => 'node_forbiddance',
         message         => $message,
-        forbidden_users => \@forbidden_users,
-        node_id         => $NODE->NODEDATA->{node_id}
+        forbidden_users => \@forbidden_users
     };
 }
 

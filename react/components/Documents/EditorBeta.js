@@ -209,8 +209,13 @@ const VersionHistoryModal = ({ nodeId, onClose, onRestore }) => {
  * - Autosave: saves to main draft every 60s, stashes previous version to history
  * - Version history popup to view/restore previous versions
  */
-const EditorBeta = ({ data }) => {
-  const { approvedTags, canAccess, username, drafts: initialDrafts, pagination: initialPagination, statuses = [], preferRawHtml, pageTitle = 'Drafts', viewingOther = false, targetUser = null } = data || {};
+const EditorBeta = ({ data, user = {} }) => {
+  const { approvedTags, canAccess, drafts: initialDrafts, pagination: initialPagination, statuses = [], preferRawHtml, pageTitle = 'Drafts', viewingOther = false, targetUser = null } = data || {};
+
+  // The viewer's own username comes from the shared `user` prop (e2.user.title),
+  // not from a per-page contentData duplicate. Per-draft author info is in
+  // `targetUser` / the drafts list and is unaffected by this.
+  const viewerName = user.title;
 
   // When viewing another user's drafts, the page is read-only
   // Coerce to boolean to avoid React rendering "0" from Perl
@@ -745,7 +750,12 @@ const EditorBeta = ({ data }) => {
       {/* Drafts Sidebar */}
       <div className={`editor-beta-sidebar${sidebarCollapsed ? ' editor-beta-sidebar--collapsed' : ''}${isMobile ? ' editor-beta-sidebar--mobile' : ''}${isMobile && !sidebarCollapsed ? ' editor-beta-sidebar--mobile-open' : ''}`}>
         <div className={`editor-beta-sidebar-header${sidebarCollapsed ? ' editor-beta-sidebar-header--collapsed' : ''}`}>
-          {!sidebarCollapsed && <h3 className={`editor-beta-sidebar-title${isMobile ? ' editor-beta-sidebar-title--mobile' : ''}`}>Your Drafts</h3>}
+          {!sidebarCollapsed && (
+            <h3 className={`editor-beta-sidebar-title${isMobile ? ' editor-beta-sidebar-title--mobile' : ''}`}>
+              Your Drafts
+              {viewerName && <span className="editor-beta-sidebar-viewer"> ({viewerName})</span>}
+            </h3>
+          )}
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className={`editor-beta-sidebar-toggle${isMobile ? ' editor-beta-sidebar-toggle--mobile' : ''}${isMobile && sidebarCollapsed ? ' editor-beta-sidebar-toggle--mobile-collapsed' : ''}`}

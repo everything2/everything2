@@ -38,8 +38,8 @@ sub buildReactData {
     my $data = {
         type         => 'the_oracle',
         classic_mode => 1,
-        is_admin     => 1,
-        is_editor    => 0
+        # is_admin/is_editor dropped: this page reuses the TheOracle component, which reads
+        # the viewer role from e2.user (user.admin), not contentData. (#4399)
     };
 
     # Handle variable update

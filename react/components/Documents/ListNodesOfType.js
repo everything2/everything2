@@ -7,8 +7,10 @@ import { formatDateTime } from '../../utils/dateFormat';
  *
  * Displays nodes of a selected type with filtering and pagination.
  */
-const ListNodesOfType = ({ data, user }) => {
+const ListNodesOfType = ({ data, user = {} }) => {
   const { access_denied, message, node_types = [], default_type = '' } = data;
+  // Viewer's own node_id comes from the e2.user prop (deduped from contentData, #4399).
+  const viewerNodeId = user.node_id;
 
   if (access_denied) {
     return (
@@ -215,6 +217,12 @@ const ListNodesOfType = ({ data, user }) => {
       )}
 
       {!loading && selectedType && nodes.length === 0 && !error && <p className="list-nodes-of-type__empty">No nodes found for this type.</p>}
+
+      {viewerNodeId != null && (
+        <p className="list-nodes-of-type__viewer" data-viewer-node-id={viewerNodeId}>
+          Listing as user {viewerNodeId}.
+        </p>
+      )}
     </div>
   );
 };

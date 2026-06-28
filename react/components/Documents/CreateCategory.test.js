@@ -56,12 +56,13 @@ describe('create-node API migration', () => {
 
   // Minimal props that render the create form (no mustLogin/forbidden/error).
   const formProps = {
-    user_id: 123,
-    user_title: 'testuser',
     guest_user_id: 1,
     category_type_id: 1522375,
     usergroups: [],
   }
+
+  // Viewer identity now comes from the global user prop (#4399).
+  const formUser = { node_id: 123, title: 'testuser', level: 5 }
 
   beforeEach(() => {
     originalLocation = window.location
@@ -78,7 +79,7 @@ describe('create-node API migration', () => {
   })
 
   it('creates a category via /api/category/create with title+maintainer+doctext and redirects', async () => {
-    const { container } = render(<CreateCategory data={formProps} />)
+    const { container } = render(<CreateCategory data={formProps} user={formUser} />)
 
     const input = container.querySelector('.create-category__text-input')
     fireEvent.change(input, { target: { value: 'My Category' } })
@@ -90,8 +91,8 @@ describe('create-node API migration', () => {
     expect(call[0]).toBe('/api/category/create')
     const body = JSON.parse(call[1].body)
     expect(body.title).toBe('My Category')
-    // maintainer defaults to "Me" (user_id); doctext is the editor content
-    expect(body.maintainer).toBe(formProps.user_id)
+    // maintainer defaults to "Me" (user.node_id); doctext is the editor content
+    expect(body.maintainer).toBe(formUser.node_id)
     expect(typeof body.doctext).toBe('string')
 
     await waitFor(() => expect(window.location.href).toBe('/node/999'))
@@ -99,8 +100,22 @@ describe('create-node API migration', () => {
 
   it('does not call the API when the category name is empty', () => {
     window.alert = jest.fn()
-    const { container } = render(<CreateCategory data={formProps} />)
+    const { container } = render(<CreateCategory data={formProps} user={formUser} />)
     fireEvent.submit(container.querySelector('form'))
     expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  it('reads viewer identity from the user prop, not contentData (#4399)', () => {
+    const { container } = render(
+      <CreateCategory data={formProps} user={{ node_id: 123, title: 'alice', level: 5 }} />
+    )
+    // Example list + maintainer "Me (...)" option render the viewer's title.
+    expect(container.textContent).toContain("alice's Favorite Movies")
+    expect(container.textContent).toContain('Me (alice)')
+    // The "Me" maintainer option carries the viewer's node_id as its value.
+    const meOption = Array.from(container.querySelectorAll('option')).find(
+      (o) => o.textContent === 'Me (alice)'
+    )
+    expect(meOption.value).toBe('123')
   })
 })

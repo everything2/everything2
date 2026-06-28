@@ -357,10 +357,8 @@ sub buildReactData
     availableStylesheets => \@available_stylesheets,
     currentStylesheet => $current_stylesheet_title,
     defaultStylesheetId => $default_style_id,
-    currentUser => {
-      node_id => int($user->node_id),
-      title => $user->title
-    },
+    # currentUser identity (node_id/title) deduped (#4399): the viewer's own
+    # identity is read from the global e2.user prop in React, not re-emitted here.
     # Profile tab data
     profileData => \%profile_data,
     canHaveImage => $can_have_image ? 1 : 0,

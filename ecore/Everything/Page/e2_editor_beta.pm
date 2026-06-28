@@ -165,7 +165,6 @@ sub buildReactData {
         pageTitle => $page_title,
         approvedTags => \@tags,
         canAccess => $can_access,
-        username => $user ? $user->title : undef,
         drafts => \@drafts,
         pagination => $pagination,
         statuses => \@statuses,

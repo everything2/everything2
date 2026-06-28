@@ -11,14 +11,17 @@ const introContent = (
   </>
 )
 
-const UsergroupPicks = ({ data }) => {
+const UsergroupPicks = ({ data, user }) => {
+  // Viewer's admin flag now comes from the shared `user` prop (e2.user.admin),
+  // not a duplicated contentData key (#4399). WeblogViewer reads data.isAdmin.
+  const viewerData = { ...data, isAdmin: !!user?.admin }
   return (
     <WeblogViewer
       pageTitle="Usergroup Picks"
       pageUrl="/title/Usergroup+Picks"
       backLinkText="[back to groups list]"
       introContent={introContent}
-      data={data}
+      data={viewerData}
       emptyGroupMessage="No entries found for this group."
     />
   )

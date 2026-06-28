@@ -19,4 +19,10 @@ describe('MyRecentWriteups (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+  it('sources the viewer identity link from the user prop, not contentData (#4399)', () => {
+    const data = { type: 'my_recent_writeups', is_guest: 0, writeup_count: 3, one_year_ago: 'Monday, June 27, 2025' }
+    const { container } = render(<MyRecentWriteups data={data} user={{ node_id: 12345, title: 'Viewer' }} />)
+    expect(container.textContent).toContain('you have published')
+    expect(container.querySelector('a.my-recent-writeups__link').getAttribute('href')).toBe('/?node_id=12345')
+  })
 })

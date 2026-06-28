@@ -28,6 +28,12 @@ describe('SpamCannon (real pagestate fixture)', () => {
     expect(nonEditor.container.textContent).toContain('Permission Denied')
     expect(nonEditor.container.textContent).not.toContain('The Spam Cannon sends a single /msg')
   })
+  it('viewer username comes from the user prop, not contentData (#4399)', () => {
+    const { container } = render(
+      <SpamCannon data={fixture.contentData} e2={fixture} user={{ editor: true, title: 'TestViewer' }} />
+    )
+    expect(container.textContent).toContain('TestViewer')
+  })
   it('does not crash and denies when user prop is undefined (#4390)', () => {
     const { container } = render(<SpamCannon data={fixture.contentData} e2={fixture} user={undefined} />)
     expect(container.textContent).toContain('Permission Denied')

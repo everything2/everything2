@@ -31,11 +31,8 @@ sub buildReactData {
         };
     }
 
-    my $node_id = $REQUEST->node->node_id;
-
     my $result = {
-        type    => 'renunciation_chainsaw',
-        node_id => $node_id
+        type => 'renunciation_chainsaw'
     };
 
     # Check for pre-filled writeup

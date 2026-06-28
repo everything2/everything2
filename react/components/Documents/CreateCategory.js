@@ -32,18 +32,21 @@ const getInitialEditorMode = () => {
   return 'rich'
 }
 
-const CreateCategory = ({ data }) => {
+const CreateCategory = ({ data, user = {} }) => {
   const {
     error,
     mustLogin,
     forbidden,
-    user_id,
-    user_title,
     usergroups = [],
     category_type_id,
     guest_user_id,
     low_level_warning
   } = data
+
+  // Viewer's own identity comes from the global user prop (e2.user), not
+  // duplicated into contentData (#4399 contentData identity dedup).
+  const user_id = user.node_id
+  const user_title = user.title
 
   const isMobile = useIsMobile()
   const [categoryName, setCategoryName] = useState('')

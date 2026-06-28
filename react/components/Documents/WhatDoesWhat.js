@@ -8,8 +8,9 @@ import ParseLinks from '../ParseLinks'
  * Lists all superdocs, oppressor_superdocs, restricted_superdocs, and settings
  * with their documentation descriptions. Admin-only.
  */
-const WhatDoesWhat = ({ data }) => {
-  const { sections, mainDocSettingId, isAdmin } = data
+const WhatDoesWhat = ({ data, user }) => {
+  const { sections, mainDocSettingId } = data
+  const isAdmin = !!user?.admin
 
   if (data.error) {
     return <div className="error">{data.error}</div>

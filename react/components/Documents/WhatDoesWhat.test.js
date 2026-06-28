@@ -35,12 +35,13 @@ describe('WhatDoesWhat', () => {
         docSettingId: 1002
       }
     ],
-    mainDocSettingId: 999,
-    isAdmin: true
+    mainDocSettingId: 999
   }
 
+  const adminUser = { admin: true }
+
   it('renders section headers for each type', () => {
-    render(<WhatDoesWhat data={mockData} />)
+    render(<WhatDoesWhat data={mockData} user={adminUser} />)
 
     const headings = screen.getAllByRole('heading')
     expect(headings.length).toBe(2)
@@ -49,7 +50,7 @@ describe('WhatDoesWhat', () => {
   })
 
   it('renders nodes within each section', () => {
-    render(<WhatDoesWhat data={mockData} />)
+    render(<WhatDoesWhat data={mockData} user={adminUser} />)
 
     expect(screen.getByText('Sign Up')).toBeInTheDocument()
     expect(screen.getByText('Settings')).toBeInTheDocument()
@@ -57,27 +58,27 @@ describe('WhatDoesWhat', () => {
   })
 
   it('shows documentation when available', () => {
-    render(<WhatDoesWhat data={mockData} />)
+    render(<WhatDoesWhat data={mockData} user={adminUser} />)
 
     expect(screen.getByText('The document where you sign up for a new user account.')).toBeInTheDocument()
   })
 
   it('shows "none" in italics when no documentation', () => {
-    render(<WhatDoesWhat data={mockData} />)
+    render(<WhatDoesWhat data={mockData} user={adminUser} />)
 
     expect(screen.getByText('none')).toBeInTheDocument()
     expect(screen.getByText('none').tagName).toBe('EM')
   })
 
   it('shows node IDs', () => {
-    render(<WhatDoesWhat data={mockData} />)
+    render(<WhatDoesWhat data={mockData} user={adminUser} />)
 
     expect(screen.getByText('(101)')).toBeInTheDocument()
     expect(screen.getByText('(102)')).toBeInTheDocument()
   })
 
   it('shows edit links for admins', () => {
-    render(<WhatDoesWhat data={mockData} />)
+    render(<WhatDoesWhat data={mockData} user={adminUser} />)
 
     // Main edit link
     expect(screen.getByText('edit/add documentation')).toBeInTheDocument()
@@ -87,16 +88,26 @@ describe('WhatDoesWhat', () => {
     expect(editLinks.length).toBe(2)
   })
 
-  it('hides edit links for non-admins', () => {
-    const nonAdminData = {
-      ...mockData,
-      isAdmin: false
-    }
+  it('hides edit links for non-admins (user.admin false)', () => {
+    const { container } = render(<WhatDoesWhat data={mockData} user={{ admin: false }} />)
 
-    render(<WhatDoesWhat data={nonAdminData} />)
+    expect(container.textContent).not.toContain('edit/add documentation')
+    expect(container.textContent).not.toContain('edit documentation')
+  })
 
-    expect(screen.queryByText('edit/add documentation')).not.toBeInTheDocument()
-    expect(screen.queryByText('edit documentation')).not.toBeInTheDocument()
+  it('shows admin edit links when user.admin is true', () => {
+    const { container } = render(<WhatDoesWhat data={mockData} user={{ admin: true }} />)
+
+    expect(container.textContent).toContain('edit/add documentation')
+    expect(container.textContent).toContain('edit documentation')
+  })
+
+  it('does not crash and hides admin links when user prop is undefined', () => {
+    const { container } = render(<WhatDoesWhat data={mockData} user={undefined} />)
+
+    expect(container.textContent).toContain('Sign Up')
+    expect(container.textContent).not.toContain('edit/add documentation')
+    expect(container.textContent).not.toContain('edit documentation')
   })
 
   it('shows error message when access denied', () => {
@@ -108,7 +119,7 @@ describe('WhatDoesWhat', () => {
   })
 
   it('renders alternating row classes', () => {
-    const { container } = render(<WhatDoesWhat data={mockData} />)
+    const { container } = render(<WhatDoesWhat data={mockData} user={adminUser} />)
 
     const rows = container.querySelectorAll('tr')
     // First row should have oddrow class (index 0 is even, so className is oddrow)
@@ -128,11 +139,10 @@ describe('WhatDoesWhat', () => {
           docSettingId: 1001
         }
       ],
-      mainDocSettingId: 999,
-      isAdmin: true
+      mainDocSettingId: 999
     }
 
-    render(<WhatDoesWhat data={dataWithLinks} />)
+    render(<WhatDoesWhat data={dataWithLinks} user={adminUser} />)
 
     // ParseLinks component should receive the documentation text
     const parsedContent = screen.getByTestId('parse-links')

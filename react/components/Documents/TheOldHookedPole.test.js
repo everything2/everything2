@@ -25,11 +25,39 @@ describe('TheOldHookedPole (API-backed)', () => {
   it('non-editor sees the brush-off and no form', () => {
     render(
       <TheOldHookedPole
-        data={{ is_editor: 0, message: "You've got other things to snoop on, don't ya." }}
+        data={{ message: "You've got other things to snoop on, don't ya." }}
+        user={{ editor: false }}
       />
     )
     expect(screen.getByText(/snoop on/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Get The Hook/ })).toBeNull()
+  })
+
+  it('is_editor comes from user.editor, not contentData (global dedup #4399)', () => {
+    // No is_editor in data; editor gating is driven purely by the user prop.
+    const { container: gated } = render(
+      <TheOldHookedPole
+        data={{ message: "You've got other things to snoop on, don't ya." }}
+        user={{ editor: false }}
+      />
+    )
+    expect(gated.textContent).toMatch(/snoop on/)
+    expect(gated.querySelector('button')).toBeNull()
+
+    const { container: open } = render(
+      <TheOldHookedPole data={{ prefill: '' }} user={{ editor: true }} e2={{ node: { node_id: 1 } }} />
+    )
+    expect(open.textContent).toMatch(/Get The Hook/)
+    expect(open.textContent).not.toMatch(/snoop on/)
+  })
+
+  it('node_id comes from e2.node.node_id, not contentData (global dedup #4399)', () => {
+    const { container } = render(
+      <TheOldHookedPole data={{ prefill: '' }} user={{ editor: true }} e2={{ node: { node_id: 4242 } }} />
+    )
+    // form renders (editor), and node_id is sourced from the e2 prop
+    expect(container.textContent).toMatch(/Get The Hook/)
+    expect(container.querySelector('input[name="node_id"]').value).toBe('4242')
   })
 
   it('submits the list and reports each user state (deleted / locked / skipped)', async () => {
@@ -51,7 +79,7 @@ describe('TheOldHookedPole (API-backed)', () => {
       })
     }))
 
-    render(<TheOldHookedPole data={{ is_editor: 1, node_id: 999, prefill: '' }} />)
+    render(<TheOldHookedPole data={{ prefill: '' }} user={{ editor: true }} e2={{ node: { node_id: 999 } }} />)
     fireEvent.change(screen.getByPlaceholderText(/Enter usernames/), {
       target: { value: 'spam1\nrealuser\nghost' }
     })
@@ -78,7 +106,7 @@ describe('TheOldHookedPole (API-backed)', () => {
     const fetchMock = (global.fetch = jest.fn().mockResolvedValue({
       json: async () => ({ success: 1, results: [], saved_users: [] })
     }))
-    render(<TheOldHookedPole data={{ is_editor: 1, node_id: 1 }} />)
+    render(<TheOldHookedPole data={{}} user={{ editor: true }} e2={{ node: { node_id: 1 } }} />)
     fireEvent.change(screen.getByPlaceholderText(/Enter usernames/), { target: { value: 'x' } })
     fireEvent.click(screen.getByRole('checkbox'))
     fireEvent.click(screen.getByRole('button', { name: /Get The Hook/ }))
@@ -90,7 +118,7 @@ describe('TheOldHookedPole (API-backed)', () => {
     global.fetch = jest.fn().mockResolvedValue({
       json: async () => ({ success: 0, message: 'Editor access required' })
     })
-    render(<TheOldHookedPole data={{ is_editor: 1, node_id: 1 }} />)
+    render(<TheOldHookedPole data={{}} user={{ editor: true }} e2={{ node: { node_id: 1 } }} />)
     fireEvent.click(screen.getByRole('button', { name: /Get The Hook/ }))
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Editor access required'))
   })

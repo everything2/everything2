@@ -12,7 +12,6 @@ import React from 'react';
  */
 const MacroFaq = ({ data, user }) => {
   const {
-    username = '',
     userMacros = [],
     contentEditorsId = 0,
     godsId = 0
@@ -21,6 +20,9 @@ const MacroFaq = ({ data, user }) => {
   const isGuest = !!user?.guest;
   const isEditor = !!user?.editor;
 
+  // Viewer's own username comes from the user prop (e2.user), deduped from
+  // contentData per #4399. Guests have no username for the example.
+  const username = isGuest ? '' : (user?.title || '');
   const usernameFormatted = username.replace(/ /g, '_');
 
   return (

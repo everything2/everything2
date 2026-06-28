@@ -14,7 +14,7 @@ import '../Editor/E2Editor.css'
  * UsergroupDiscussions - View and manage usergroup discussions.
  * Allows users to browse and create threaded discussions within their usergroups.
  */
-const UsergroupDiscussions = ({ data, user }) => {
+const UsergroupDiscussions = ({ data, user, e2 }) => {
   const {
     no_usergroups,
     access_denied,
@@ -24,9 +24,12 @@ const UsergroupDiscussions = ({ data, user }) => {
     discussions,
     total_discussions,
     offset,
-    limit,
-    node_id
+    limit
   } = data
+
+  // #4399: the current page's node_id comes from the global e2.node, not a
+  // duplicated contentData.node_id key.
+  const node_id = (e2 ?? (typeof window !== 'undefined' ? window.e2 : undefined))?.node?.node_id
 
   const isGuest = !!user?.guest
 

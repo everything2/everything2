@@ -132,6 +132,13 @@ function Settings({ data, user }) {
   // Viewer role flag now lives on the global e2.user prop (#4390 contentData dedup)
   const isEditor = !!user?.editor
 
+  // Viewer identity (node_id/title) now lives on the global e2.user prop
+  // (#4399 contentData identity dedup) rather than a duplicated data.currentUser key.
+  const currentUser = useMemo(
+    () => (user ? { node_id: user.node_id, title: user.title } : null),
+    [user]
+  )
+
   // Check for trytheme parameter before initializing state
   const initialTryTheme = useMemo(() => getTryThemeFromUrl(data.availableStylesheets), [])
 
@@ -669,7 +676,7 @@ function Settings({ data, user }) {
         }
 
         const profilePayload = {
-          node_id: data.currentUser?.node_id,
+          node_id: currentUser?.node_id,
           realname: profileData.realname,
           email: profileData.email,
           user_doctext: getCurrentBioContent(),
@@ -722,7 +729,7 @@ function Settings({ data, user }) {
     } finally {
       setIsSaving(false)
     }
-  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, profileData, removeImage, selectedBookmarks, hasPasswordInput, passwordsMatch, getCurrentBioContent, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros, data.profileData, data.currentUser])
+  }, [settingsPrefs, advancedPrefs, nodelets, notificationPrefs, nodeletSettings, editorPrefs, macros, profileData, removeImage, selectedBookmarks, hasPasswordInput, passwordsMatch, getCurrentBioContent, data.settingsPreferences, data.advancedPreferences, data.nodelets, data.notificationPreferences, data.nodeletSettings, data.editorPreferences, data.macros, data.profileData, currentUser])
 
   // Warn about unsaved changes
   useEffect(() => {
@@ -782,7 +789,7 @@ function Settings({ data, user }) {
       <SettingsNavigation
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        username={data.currentUser?.title}
+        username={currentUser?.title}
         showAdminTab={isEditor}
       />
 
@@ -840,7 +847,7 @@ function Settings({ data, user }) {
 
             <FavoriteUsersManager
               initialFavorites={favoriteUsers}
-              currentUser={data.currentUser}
+              currentUser={currentUser}
             />
           </fieldset>
 
@@ -849,7 +856,7 @@ function Settings({ data, user }) {
 
             <UserInteractionsManager
               initialBlocked={blockedUsers}
-              currentUser={data.currentUser}
+              currentUser={currentUser}
             />
 
             <div className="settings-info-box">
@@ -962,7 +969,7 @@ function Settings({ data, user }) {
                       </select>
                     </div>
 
-                    {data.currentUser && (data.currentUser.level >= 2 || data.currentUser.title === 'e2e_admin') && (
+                    {currentUser && (currentUser.level >= 2 || currentUser.title === 'e2e_admin') && (
                       <label className="settings-checkbox-label">
                         <input
                           type="checkbox"
@@ -1641,7 +1648,7 @@ function Settings({ data, user }) {
               <legend>Profile Image</legend>
               <img
                 src={`/${data.profileData.imgsrc}`}
-                alt={`${data.currentUser?.title}'s image`}
+                alt={`${currentUser?.title}'s image`}
                 className="settings-profile-image"
               />
               <label className="settings-checkbox-label">

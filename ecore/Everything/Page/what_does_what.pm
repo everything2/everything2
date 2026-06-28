@@ -59,8 +59,7 @@ sub buildReactData
 
   return {
     sections => \@sections,
-    mainDocSettingId => $main_doc_id,
-    isAdmin => $self->APP->isAdmin($REQUEST->user) ? \1 : \0
+    mainDocSettingId => $main_doc_id
   };
 }
 
