@@ -21,6 +21,23 @@ const TheCatwalk = ({ data, user }) => {
     filter = {}
   } = data || {}
 
+  const handleClearStyle = async (e) => {
+    e.preventDefault()
+    try {
+      const res = await fetch('/api/customstyle/clear', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' },
+      })
+      const result = res.ok ? await res.json() : null
+      if (result && result.success) {
+        window.location.reload()
+      }
+    } catch (err) {
+      // leave the page as-is on failure
+    }
+  }
+
   // Local state for form
   const [sortValue, setSortValue] = useState(current_sort || '0')
   const [filterUser, setFilterUser] = useState(filter.user_name || '')
@@ -99,19 +116,20 @@ const TheCatwalk = ({ data, user }) => {
 
       {has_custom_style ? (
         <div className="catwalk__custom-warning">
-          Note that you have customised your style using the{' '}
-          <a href="/title/style%20defacer" className="catwalk__link">style defacer</a>,
-          which is going to affect the formatting of any stylesheet you choose.{' '}
-          <a href="?clearVandalism=true" className="catwalk__link">Click here to clear that out</a>{' '}
-          if that's not what you want. If you want to create a whole new stylesheet,
-          visit <a href="/title/the%20draughty%20atelier" className="catwalk__link">the draughty atelier</a>.
+          <p>
+            Note that you have customised your style using the{' '}
+            <a href="/title/style%20defacer" className="catwalk__link">style defacer</a>,
+            which is going to affect the formatting of any stylesheet you choose. If that's not
+            what you want, you can reset it:
+          </p>
+          <button type="button" className="catwalk__clear-button" onClick={handleClearStyle}>
+            Clear my custom style
+          </button>
         </div>
       ) : (
         <p className="catwalk__intro">
           You can customise your stylesheet at the{' '}
-          <a href="/title/style%20defacer" className="catwalk__link">style defacer</a> or,
-          if you're feeling brave, create a whole new stylesheet at{' '}
-          <a href="/title/the%20draughty%20atelier" className="catwalk__link">the draughty atelier</a>.
+          <a href="/title/style%20defacer" className="catwalk__link">style defacer</a>.
         </p>
       )}
 

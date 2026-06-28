@@ -26,11 +26,8 @@ sub buildReactData {
         };
     }
 
-    # Handle clear vandalism (custom style reset)
-    if (defined($query->param('clearVandalism'))) {
-        delete($VARS->{customstyle});
-        $APP->setVars($USER, $VARS);
-    }
+    # The custom-style reset ("clearVandalism") moved to POST /api/customstyle/clear so this
+    # controller is pure-render -- no VARS mutation during render (#4401).
 
     # Get user's current style
     my $userstyle_id = $VARS->{userstyle} || 0;

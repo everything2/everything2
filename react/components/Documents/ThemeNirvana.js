@@ -18,6 +18,23 @@ const ThemeNirvana = ({ data, user }) => {
 
   const isGuest = !!user?.guest
 
+  const handleClearStyle = async (e) => {
+    e.preventDefault()
+    try {
+      const res = await fetch('/api/customstyle/clear', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' },
+      })
+      const result = res.ok ? await res.json() : null
+      if (result && result.success) {
+        window.location.reload()
+      }
+    } catch (err) {
+      // leave the page as-is on failure
+    }
+  }
+
   return (
     <div className="theme-nirvana">
       <p className="theme-nirvana__intro">
@@ -37,20 +54,21 @@ const ThemeNirvana = ({ data, user }) => {
 
       {has_custom_style ? (
         <div className="theme-nirvana__custom-warning">
-          Note that you have customised your style using the{' '}
-          <a href="/title/style%20defacer" className="theme-nirvana__link">style defacer</a> or{' '}
-          <a href="/title/ekw%20Shredder" className="theme-nirvana__link">ekw Shredder</a>,
-          which is going to affect the formatting of any stylesheet you choose.{' '}
-          <a href="?clearVandalism=true" className="theme-nirvana__link">Click here to clear that out</a>{' '}
-          if that's not what you want. If you want to create a whole new stylesheet,
-          visit <a href="/title/the%20draughty%20atelier" className="theme-nirvana__link">the draughty atelier</a>.
+          <p>
+            Note that you have customised your style using the{' '}
+            <a href="/title/style%20defacer" className="theme-nirvana__link">style defacer</a> or{' '}
+            <a href="/title/ekw%20Shredder" className="theme-nirvana__link">ekw Shredder</a>,
+            which is going to affect the formatting of any stylesheet you choose. If that's not
+            what you want, you can reset it:
+          </p>
+          <button type="button" className="theme-nirvana__clear-button" onClick={handleClearStyle}>
+            Clear my custom style
+          </button>
         </div>
       ) : (
         <p className="theme-nirvana__intro">
           You can also customise your stylesheet at the{' '}
-          <a href="/title/style%20defacer" className="theme-nirvana__link">style defacer</a> or
-          create a whole new stylesheet at{' '}
-          <a href="/title/the%20draughty%20atelier" className="theme-nirvana__link">the draughty atelier</a>.
+          <a href="/title/style%20defacer" className="theme-nirvana__link">style defacer</a>.
         </p>
       )}
 
