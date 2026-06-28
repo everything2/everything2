@@ -20,3 +20,26 @@ describe('DisplayCategories (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+describe('DisplayCategories guest gating (user.guest, #4390)', () => {
+  it('hides the "Can I Contribute?" column for guests', () => {
+    const { container } = render(
+      <DisplayCategories data={fixture.contentData} user={{ guest: true }} />
+    )
+    expect(container.textContent).not.toContain('Can I Contribute?')
+  })
+  it('shows the "Can I Contribute?" column for non-guests', () => {
+    const { container } = render(
+      <DisplayCategories data={fixture.contentData} user={{ guest: false }} />
+    )
+    expect(container.textContent).toContain('Can I Contribute?')
+  })
+  it('does not crash with an undefined user prop', () => {
+    const { container } = render(
+      <DisplayCategories data={fixture.contentData} user={undefined} />
+    )
+    // No crash: optional chaining keeps !!user?.guest safe (=> false / non-guest).
+    expect(container).toBeTruthy()
+    expect(container.textContent).toContain('Category')
+  })
+})

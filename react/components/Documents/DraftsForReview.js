@@ -5,8 +5,9 @@ import { formatDateTime } from '../../utils/dateFormat';
  * DraftsForReview - Editor drafts pending review
  * Styles in CSS: .drafts-for-review__*
  */
-const DraftsForReview = ({ data }) => {
-  const { drafts = [], is_editor = false, error, message } = data;
+const DraftsForReview = ({ data, user }) => {
+  const { drafts = [], error, message } = data;
+  const isEditor = !!user?.editor;
 
   // Handle errors
   if (error === 'guest') {
@@ -44,7 +45,7 @@ const DraftsForReview = ({ data }) => {
             <tr>
               <th className="drafts-for-review__th">Draft</th>
               <th className="drafts-for-review__th drafts-for-review__th--date">For review since</th>
-              {!!is_editor && (
+              {isEditor && (
                 <th className="drafts-for-review__th drafts-for-review__th--notes">Notes</th>
               )}
             </tr>
@@ -64,7 +65,7 @@ const DraftsForReview = ({ data }) => {
                 <td className="drafts-for-review__td drafts-for-review__td--date">
                   {formatDate(draft.publishtime)}
                 </td>
-                {!!is_editor && (
+                {isEditor && (
                   <td className="drafts-for-review__td drafts-for-review__td--notes">
                     {draft.notecount > 0 ? (
                       <a

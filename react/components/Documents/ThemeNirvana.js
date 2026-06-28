@@ -9,13 +9,14 @@ import React from 'react'
  *
  * Styles in CSS: .theme-nirvana__*
  */
-const ThemeNirvana = ({ data }) => {
+const ThemeNirvana = ({ data, user }) => {
   const {
     stylesheets = [],
     current_style,
-    has_custom_style,
-    is_guest
+    has_custom_style
   } = data || {}
+
+  const isGuest = !!user?.guest
 
   return (
     <div className="theme-nirvana">
@@ -87,7 +88,7 @@ const ThemeNirvana = ({ data }) => {
                   {style.user_count}
                 </td>
                 <td className={tdClass}>
-                  {!is_guest && (
+                  {!isGuest && (
                     <a
                       href={`/title/Settings?trytheme=${style.node_id}`}
                       className="theme-nirvana__test-link"

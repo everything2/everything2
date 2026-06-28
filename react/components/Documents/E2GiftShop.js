@@ -126,7 +126,8 @@ const GiftOfStar = ({ data, user, onUpdate }) => {
 
 // Gift of Sanctity section
 const GiftOfSanctity = ({ data, user }) => {
-  const { userLevel, isEditor } = data
+  const { userLevel } = data
+  const isEditor = !!user?.editor
 
   if (userLevel < 11 && !isEditor) return null
 
@@ -551,7 +552,8 @@ const GiftOfTopic = ({ data, user, onUpdate }) => {
   const [loadingSet, setLoadingSet] = useState(false)
   const [message, setMessage] = useState(null)
 
-  const { userLevel, gp, gpOptOut, tokens, topicSuspended, lastTopicChange, isEditor } = data
+  const { userLevel, gp, gpOptOut, tokens, topicSuspended, lastTopicChange } = data
+  const isEditor = !!user?.editor
 
   if (userLevel < 6 && !isEditor) return null
 
@@ -937,10 +939,10 @@ const SelfExamination = ({ data, user }) => {
 }
 
 // Main component
-const E2GiftShop = ({ data }) => {
+const E2GiftShop = ({ data, user }) => {
   const initialData = data.giftShop || {}
   const [shopData, setShopData] = useState(initialData)
-  const user = window.e2?.user || {}
+  const viewer = user || window.e2?.user || {}
 
   const handleUpdate = useCallback((updates) => {
     setShopData(prev => ({ ...prev, ...updates }))
@@ -963,16 +965,16 @@ const E2GiftShop = ({ data }) => {
         <h1 className="giftshop-title">Welcome to the Everything2 Gift Shop!</h1>
       </div>
 
-      <GiftOfStar data={shopData} user={user} onUpdate={handleUpdate} />
-      <GiftOfSanctity data={shopData} user={user} />
-      <BuyVotes data={shopData} user={user} onUpdate={handleUpdate} />
-      <GiveVotes data={shopData} user={user} onUpdate={handleUpdate} />
-      <GiftOfChing data={shopData} user={user} onUpdate={handleUpdate} />
-      <BuyChing data={shopData} user={user} onUpdate={handleUpdate} />
-      <GiftOfTopic data={shopData} user={user} onUpdate={handleUpdate} />
-      <BuyEggs data={shopData} user={user} onUpdate={handleUpdate} />
-      <GiveEggs data={shopData} user={user} onUpdate={handleUpdate} />
-      <SelfExamination data={shopData} user={user} />
+      <GiftOfStar data={shopData} user={viewer} onUpdate={handleUpdate} />
+      <GiftOfSanctity data={shopData} user={viewer} />
+      <BuyVotes data={shopData} user={viewer} onUpdate={handleUpdate} />
+      <GiveVotes data={shopData} user={viewer} onUpdate={handleUpdate} />
+      <GiftOfChing data={shopData} user={viewer} onUpdate={handleUpdate} />
+      <BuyChing data={shopData} user={viewer} onUpdate={handleUpdate} />
+      <GiftOfTopic data={shopData} user={viewer} onUpdate={handleUpdate} />
+      <BuyEggs data={shopData} user={viewer} onUpdate={handleUpdate} />
+      <GiveEggs data={shopData} user={viewer} onUpdate={handleUpdate} />
+      <SelfExamination data={shopData} user={viewer} />
     </div>
   )
 }

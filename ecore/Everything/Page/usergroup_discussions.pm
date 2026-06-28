@@ -27,7 +27,6 @@ sub buildReactData
     if ( $APP->isGuest( $USER->NODEDATA ) ) {
         return {
             type     => 'usergroup_discussions',
-            is_guest => 1,
             message  => "If you logged in, you would be able to strike up long-winded conversations with your buddies"
         };
     }
@@ -72,7 +71,6 @@ sub buildReactData
     unless ( @thisnoder_ug_ids ) {
         return {
             type          => 'usergroup_discussions',
-            is_guest      => 0,
             no_usergroups => 1,
             message       => "You have no usergroups! Find some friends first, and then start a discussion with them."
         };
@@ -103,7 +101,6 @@ sub buildReactData
         unless ( $is_valid ) {
             return {
                 type               => 'usergroup_discussions',
-                is_guest           => 0,
                 usergroups         => \@usergroups,
                 selected_usergroup => int($show_ug),   # numeric: $show_ug got string-flagged via SQL interpolation (#4152)
                 access_denied      => 1,
@@ -215,7 +212,6 @@ sub buildReactData
 
     return {
         type               => 'usergroup_discussions',
-        is_guest           => 0,
         usergroups         => \@usergroups,
         selected_usergroup => int($show_ug),   # numeric: $show_ug got string-flagged via SQL interpolation (#4152)
         discussions        => \@discussions,

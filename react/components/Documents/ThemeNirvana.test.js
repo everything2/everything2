@@ -19,4 +19,27 @@ describe('ThemeNirvana (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+
+  // #4390 contentData-global-dedup: is_guest now read from the global `user` prop
+  // (user.guest), not a duplicated contentData key. The "[ test ]" link is the
+  // guest-gated element — hidden for guests, shown for logged-in viewers.
+  it('shows the [ test ] link for a logged-in (non-guest) viewer', () => {
+    const { container } = render(
+      <ThemeNirvana data={fixture.contentData} user={{ guest: false }} />
+    )
+    expect(container.textContent).toContain('[ test ]')
+  })
+  it('hides the [ test ] link for a guest viewer', () => {
+    const { container } = render(
+      <ThemeNirvana data={fixture.contentData} user={{ guest: true }} />
+    )
+    expect(container.textContent).not.toContain('[ test ]')
+  })
+  it('does not crash when the user prop is undefined (treated as non-guest)', () => {
+    const { container } = render(
+      <ThemeNirvana data={fixture.contentData} user={undefined} />
+    )
+    expect(container).toBeTruthy()
+    expect(container.textContent).toContain('[ test ]')
+  })
 })

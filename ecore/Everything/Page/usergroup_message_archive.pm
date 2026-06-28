@@ -24,13 +24,11 @@ sub buildReactData
     my $VARS  = $APP->getVars( $USER->NODEDATA );
 
     my $userid = getId( $USER->NODEDATA );
-    my $is_admin = $APP->isAdmin( $USER->NODEDATA );
 
     # Guest check
     if ( $APP->isGuest( $USER->NODEDATA ) ) {
         return {
             type     => 'usergroup_message_archive',
-            is_guest => 1,
             message  => 'You must login to use this feature.'
         };
     }
@@ -52,8 +50,6 @@ sub buildReactData
     unless ( $viewgroup ) {
         return {
             type           => 'usergroup_message_archive',
-            is_guest       => 0,
-            is_admin       => $is_admin,
             archive_groups => \@archive_groups,
             node_id        => $NODE->NODEDATA->{node_id}
         };
@@ -63,8 +59,6 @@ sub buildReactData
     unless ( $UG ) {
         return {
             type           => 'usergroup_message_archive',
-            is_guest       => 0,
-            is_admin       => $is_admin,
             archive_groups => \@archive_groups,
             node_id        => $NODE->NODEDATA->{node_id},
             error          => 'There is no such usergroup.'
@@ -75,8 +69,6 @@ sub buildReactData
     unless ( Everything::isApproved( $USER->NODEDATA, $UG ) ) {
         return {
             type           => 'usergroup_message_archive',
-            is_guest       => 0,
-            is_admin       => $is_admin,
             archive_groups => \@archive_groups,
             node_id        => $NODE->NODEDATA->{node_id},
             selected_group => {
@@ -91,8 +83,6 @@ sub buildReactData
     unless ( $APP->getParameter( $UG, "allow_message_archive" ) ) {
         return {
             type           => 'usergroup_message_archive',
-            is_guest       => 0,
-            is_admin       => $is_admin,
             archive_groups => \@archive_groups,
             node_id        => $NODE->NODEDATA->{node_id},
             selected_group => {
@@ -189,8 +179,6 @@ sub buildReactData
 
     return {
         type           => 'usergroup_message_archive',
-        is_guest       => 0,
-        is_admin       => $is_admin,
         archive_groups => \@archive_groups,
         node_id        => $NODE->NODEDATA->{node_id},
         selected_group => {

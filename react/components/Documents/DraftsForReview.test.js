@@ -20,3 +20,40 @@ describe('DraftsForReview (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// #4390: editor-only Notes column is gated off the global e2.user prop, not a
+// duplicated contentData flag.
+describe('DraftsForReview editor gating (e2.user prop, #4390)', () => {
+  const data = {
+    type: 'drafts_for_review',
+    drafts: [
+      {
+        title: 'A pending draft',
+        author: 'normaluser1',
+        author_id: 12345,
+        publishtime: '2026-06-01 12:00:00',
+        notecount: 3,
+        latestnote: '2026-06-02: needs work'
+      }
+    ]
+  }
+
+  it('renders the Notes column for an editor (user.editor true)', () => {
+    const { container } = render(<DraftsForReview data={data} user={{ editor: true }} />)
+    expect(container.textContent).toContain('Notes')
+    // editor-only notecount link is shown
+    expect(container.textContent).toContain('3')
+  })
+
+  it('hides the Notes column for a non-editor (user.editor false)', () => {
+    const { container } = render(<DraftsForReview data={data} user={{ editor: false }} />)
+    expect(container.textContent).not.toContain('Notes')
+    expect(container.textContent).toContain('A pending draft')
+  })
+
+  it('does not crash when user prop is undefined', () => {
+    const { container } = render(<DraftsForReview data={data} user={undefined} />)
+    expect(container.textContent).toContain('A pending draft')
+    expect(container.textContent).not.toContain('Notes')
+  })
+})

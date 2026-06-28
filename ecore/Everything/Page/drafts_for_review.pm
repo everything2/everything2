@@ -106,8 +106,7 @@ sub buildReactData {
 
     return {
         type => 'drafts_for_review',
-        drafts => \@drafts,
-        is_editor => $is_editor ? 1 : 0
+        drafts => \@drafts
     };
 }
 

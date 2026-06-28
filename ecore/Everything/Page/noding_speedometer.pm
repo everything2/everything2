@@ -29,7 +29,7 @@ sub buildReactData {
     my $APP = $self->APP;
 
     # Guests cannot use this
-    if ($APP->isGuest($USER)) {
+    if ($USER->is_guest) {   # $USER is blessed; $APP->isGuest wants NODEDATA (#4390)
         return {
             type => 'noding_speedometer',
             error => 'Sorry, but only registered members can use the Noding Speedometer.'

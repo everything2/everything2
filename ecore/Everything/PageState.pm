@@ -471,7 +471,7 @@ sub _build_user {
     $user->{admin}     = $app->isAdmin($USER)     ? \1 : \0;
     $user->{editor}    = $app->isEditor($USER)    ? \1 : \0;
     $user->{chanop}    = $app->isChanop($USER)    ? \1 : \0;
-    $user->{developer} = $app->isDeveloper($USER) ? \1 : \1;   # pre-existing quirk: both \1
+    $user->{developer} = $app->isDeveloper($USER) ? \1 : \0;   # #4390: was `? \1 : \1` (always true)
     $user->{guest}     = $app->isGuest($USER)     ? \1 : \0;
     $user->{in_room}   = $USER->{in_room};
 

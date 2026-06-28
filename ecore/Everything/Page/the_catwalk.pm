@@ -22,7 +22,6 @@ sub buildReactData {
     if ($is_guest) {
         return {
             type => 'the_catwalk',
-            is_guest => 1,
             message => 'This page will allow you to customize your view of the site if you sign up for an account.'
         };
     }
@@ -133,7 +132,6 @@ sub buildReactData {
 
     return {
         type => 'the_catwalk',
-        is_guest => 0,
         stylesheets => \@stylesheets,
         current_style => $current_style,
         has_custom_style => $has_custom_style ? 1 : 0,

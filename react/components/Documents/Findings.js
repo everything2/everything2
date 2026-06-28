@@ -7,7 +7,8 @@ import { InContentAd } from '../Layout/GoogleAds';
 const AD_INTERVAL = 4;
 
 const Findings = ({ data, user }) => {
-  const { no_search_term, message, search_term, search_was_node_id, findings = [], lastnode_id, is_guest, has_excerpts } = data;
+  const { no_search_term, message, search_term, search_was_node_id, findings = [], lastnode_id, has_excerpts } = data;
+  const isGuest = !!user?.guest;
 
   const [searchValue, setSearchValue] = useState(search_term || '');
   const [soundex, setSoundex] = useState(false);
@@ -63,14 +64,14 @@ const Findings = ({ data, user }) => {
             <li
               className={finding.is_nodeshell ? 'findings-item findings-item--nodeshell' : 'findings-item'}
             >
-              <a href={`/?node_id=${finding.node_id}${is_guest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}>
+              <a href={`/?node_id=${finding.node_id}${isGuest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}>
                 {finding.title}
               </a>
               {finding.type !== 'e2node' && <span> ({finding.type})</span>}
               {finding.writeup_count > 1 && <span> ({finding.writeup_count} entries)</span>}
               {finding.excerpt && (
                 <a
-                  href={`/?node_id=${finding.node_id}${is_guest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}
+                  href={`/?node_id=${finding.node_id}${isGuest ? '&lastnode_id=0' : `&lastnode_id=${lastnode_id}`}`}
                   className="findings-excerpt-link"
                 >
                   <p className="findings-excerpt">{decodeHtmlEntities(finding.excerpt)}</p>
@@ -78,7 +79,7 @@ const Findings = ({ data, user }) => {
               )}
             </li>
             {/* Show ad every AD_INTERVAL items for guests */}
-            {!!is_guest && (index + 1) % AD_INTERVAL === 0 && index < findings.length - 1 && (
+            {isGuest && (index + 1) % AD_INTERVAL === 0 && index < findings.length - 1 && (
               <li className="findings-ad-item">
                 <InContentAd show={true} />
               </li>
@@ -90,7 +91,7 @@ const Findings = ({ data, user }) => {
       {/* Create new node form */}
       <div className="findings-create-section">
         <p>
-          {is_guest
+          {isGuest
             ? "Since we didn't find what you were looking for, you can search again:"
             : "Since we didn't find what you were looking for, you can search again, or create a new draft or e2node (page):"}
         </p>
@@ -139,7 +140,7 @@ const Findings = ({ data, user }) => {
         </form>
 
         {/* Create new form - only for logged-in users */}
-        {!is_guest && (
+        {!isGuest && (
           <form className="findings-form" onSubmit={(e) => e.preventDefault()}>
             <fieldset className="findings-fieldset">
               <legend>Create new...</legend>

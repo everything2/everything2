@@ -120,7 +120,6 @@ sub buildReactData {
             hasMore => $has_more ? \1 : \0,
             maintainerName => $maintainer_name,
             sortOrder => $order,
-            isGuest => $is_guest ? \1 : \0,
         }
     };
 }

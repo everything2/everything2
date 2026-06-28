@@ -8,9 +8,9 @@ import { formatShortDate } from '../../utils/dateFormat'
  * Displays all stylesheets on E2 with sorting, filtering by author,
  * and pagination. Users can test different themes.
  */
-const TheCatwalk = ({ data }) => {
+const TheCatwalk = ({ data, user }) => {
+  const isGuest = !!user?.guest
   const {
-    is_guest,
     message,
     stylesheets = [],
     current_style,
@@ -27,7 +27,7 @@ const TheCatwalk = ({ data }) => {
   const [filterUserNot, setFilterUserNot] = useState(filter.is_not || false)
 
   // Guest message
-  if (is_guest) {
+  if (isGuest) {
     return (
       <div className="catwalk__guest-message">
         {message}

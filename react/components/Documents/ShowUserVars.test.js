@@ -19,4 +19,21 @@ describe('ShowUserVars (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+  it('shows the admin username form when user.admin is true (#4390 user-prop gating)', () => {
+    const data = { ...fixture.contentData, access_denied: 0, viewvars_mode: false, inspect_user: { node_id: 1, title: 'root' }, vars_data: [], user_data: [] }
+    const { container } = render(<ShowUserVars data={data} user={{ admin: true }} />)
+    expect(container.querySelector('input[name="username"]')).toBeTruthy()
+    expect(container.textContent).toContain('Showing user variables for')
+  })
+  it('hides the admin form for a non-admin viewer', () => {
+    const data = { ...fixture.contentData, access_denied: 0, viewvars_mode: false, inspect_user: { node_id: 1, title: 'root' }, vars_data: [], user_data: [] }
+    const { container } = render(<ShowUserVars data={data} user={{ admin: false }} />)
+    expect(container.querySelector('input[name="username"]')).toBeNull()
+  })
+  it('does not crash when the user prop is undefined (treated as non-admin)', () => {
+    const data = { ...fixture.contentData, access_denied: 0, viewvars_mode: false, inspect_user: { node_id: 1, title: 'root' }, vars_data: [], user_data: [] }
+    const { container } = render(<ShowUserVars data={data} user={undefined} />)
+    expect(container.textContent).toContain('Show User Vars')
+    expect(container.querySelector('input[name="username"]')).toBeNull()
+  })
 })

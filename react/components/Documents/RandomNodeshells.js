@@ -4,10 +4,11 @@ import React from 'react';
  * RandomNodeshells - Random nodeshell generator
  * Styles in CSS: .random-nodeshells__*
  */
-const RandomNodeshells = ({ data }) => {
-  const { is_guest, message, num_searched, num_found, nodeshells = [] } = data;
+const RandomNodeshells = ({ data, user }) => {
+  const { message, num_searched, num_found, nodeshells = [] } = data;
+  const isGuest = !!user?.guest;
 
-  if (is_guest) {
+  if (isGuest) {
     return (
       <div className="random-nodeshells">
         <p className="random-nodeshells__guest-message">{message}</p>

@@ -56,7 +56,6 @@ sub buildReactData {
       topicSuspended => $APP->isSuspended($NODEDATA, "topic") ? \1 : \0,
       lastTopicChange => $last_topic_change,
       gpOptOut => $VARS->{GPoptout} ? \1 : \0,
-      isEditor => $APP->isEditor($NODEDATA) ? \1 : \0,
     }
   };
 }

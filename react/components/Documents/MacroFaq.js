@@ -10,15 +10,16 @@ import React from 'react';
  * - FAQ section
  * - User's currently defined macros
  */
-const MacroFaq = ({ data }) => {
+const MacroFaq = ({ data, user }) => {
   const {
-    isGuest = true,
-    isEditor = false,
     username = '',
     userMacros = [],
     contentEditorsId = 0,
     godsId = 0
   } = data;
+
+  const isGuest = !!user?.guest;
+  const isEditor = !!user?.editor;
 
   const usernameFormatted = username.replace(/ /g, '_');
 

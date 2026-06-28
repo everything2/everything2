@@ -20,3 +20,29 @@ describe('Settings (real pagestate fixture)', () => {
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
 })
+
+// #4390 contentData global dedup: the isEditor role flag is read from the global
+// e2.user prop (user.editor) rather than a duplicated contentData key.
+describe('Settings editor gating via user prop (#4390)', () => {
+  // Drop the guest short-circuit from the captured fixture so the tab bar renders.
+  const data = { ...fixture.contentData, error: undefined, currentUser: { node_id: 1, title: 'editoruser' } }
+
+  it('shows the Admin tab when user.editor is true', () => {
+    const { container } = render(
+      <Settings data={data} e2={fixture} user={{ editor: true }} />
+    )
+    expect(container.textContent).toMatch(/admin/i)
+  })
+  it('hides the Admin tab when user.editor is false', () => {
+    const { container } = render(
+      <Settings data={data} e2={fixture} user={{ editor: false }} />
+    )
+    expect(container.textContent).not.toMatch(/admin/i)
+  })
+  it('does not crash when user is undefined', () => {
+    const { container } = render(
+      <Settings data={data} e2={fixture} user={undefined} />
+    )
+    expect(container.textContent).not.toMatch(/admin/i)
+  })
+})

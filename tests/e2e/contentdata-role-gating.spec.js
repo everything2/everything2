@@ -40,3 +40,39 @@ test.describe('#4390 role-gating reads from e2.user (post-dedup)', () => {
     })
   }
 })
+
+/**
+ * Guest gating (#4390 batch 3): is_guest was removed from page contentData; components read
+ * user.guest from the global e2.user prop. A guest viewer sees the guest-only message; a
+ * logged-in viewer does not. A fresh Playwright context has no session, so it IS a guest.
+ * Each guestText is the exact string the dedup'd component renders only for guests.
+ */
+const GUEST_PAGES = [
+  { name: 'between_the_cracks',    id: 1927770, guestText: 'fall between the cracks yourself' },
+  { name: 'random_nodeshells',    id: 1802702, guestText: 'If you logged in' },
+  { name: 'usergroup_discussions', id: 1977025, guestText: 'strike up long-winded conversations' },
+  { name: 'the_catwalk',          id: 1854411, guestText: 'customize your view of the site if you sign up' },
+  // noding_speedometer: not dedup'd, but it had the $APP->isGuest($USER) blessed-arg bug — a
+  // guest was mis-detected as a member. This asserts the guest now gets the members-only notice
+  // (would fail before the #4390 isGuest fix, when the guest wrongly got the speedometer form).
+  { name: 'noding_speedometer',   id: 1206744, guestText: 'only registered members' },
+]
+
+test.describe('#4390 guest-gating reads from e2.user.guest (post-dedup)', () => {
+  for (const p of GUEST_PAGES) {
+    test(`${p.name}: a guest sees the guest-only message`, async ({ page }) => {
+      // fresh context = no session = guest
+      await page.goto(`/node/${p.id}`)
+      await page.waitForSelector('#e2-react-page-root', { timeout: 10000 })
+      await expect(page.locator('body')).toContainText(p.guestText, { timeout: 10000 })
+    })
+
+    test(`${p.name}: a logged-in user does NOT see the guest-only message`, async ({ page }) => {
+      await loginAsE2EUser(page)
+      await page.goto(`/node/${p.id}`)
+      await page.waitForSelector('#e2-react-page-root', { timeout: 10000 })
+      await page.waitForTimeout(2500)
+      await expect(page.locator('body')).not.toContainText(p.guestText)
+    })
+  }
+})

@@ -128,7 +128,10 @@ const getTryThemeFromUrl = (availableStylesheets) => {
   return validTheme ? tryThemeId : null
 }
 
-function Settings({ data }) {
+function Settings({ data, user }) {
+  // Viewer role flag now lives on the global e2.user prop (#4390 contentData dedup)
+  const isEditor = !!user?.editor
+
   // Check for trytheme parameter before initializing state
   const initialTryTheme = useMemo(() => getTryThemeFromUrl(data.availableStylesheets), [])
 
@@ -780,7 +783,7 @@ function Settings({ data }) {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         username={data.currentUser?.title}
-        showAdminTab={Boolean(data.isEditor)}
+        showAdminTab={isEditor}
       />
 
       {/* Settings tab - Tab 1 from legacy settings function */}
@@ -1450,7 +1453,7 @@ function Settings({ data }) {
       )}
 
       {/* Admin tab - editors only */}
-      {activeTab === 'admin' && Boolean(data.isEditor) && (
+      {activeTab === 'admin' && isEditor && (
         <div>
           <h2 className="settings-section-header">Editor Settings</h2>
 

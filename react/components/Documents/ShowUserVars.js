@@ -6,8 +6,9 @@ import LinkNode from '../LinkNode'
  * Styles in CSS: .show-user-vars__*
  * Admin/Developer tool.
  */
-const ShowUserVars = ({ data }) => {
-  const { access_denied, message, is_admin, inspect_user, vars_data, user_data, viewvars_mode } = data
+const ShowUserVars = ({ data, user }) => {
+  const { access_denied, message, inspect_user, vars_data, user_data, viewvars_mode } = data
+  const isAdmin = !!user?.admin
 
   const [username, setUsername] = useState(inspect_user?.title || '')
 
@@ -32,7 +33,7 @@ const ShowUserVars = ({ data }) => {
         <p>
           Showing variables for: <LinkNode nodeId={inspect_user.node_id} title={inspect_user.title} />
         </p>
-      ) : is_admin ? (
+      ) : isAdmin ? (
         <form method="GET" className="show-user-vars__form">
           <input type="hidden" name="node_id" value={nodeId} />
           <label>
@@ -70,7 +71,7 @@ const ShowUserVars = ({ data }) => {
       </table>
 
       {/* USER table (admin only) */}
-      {!!is_admin && user_data.length > 0 && (
+      {isAdmin && user_data.length > 0 && (
         <>
           <h3 className="show-user-vars__subtitle">USER</h3>
           <table className="show-user-vars__table">
