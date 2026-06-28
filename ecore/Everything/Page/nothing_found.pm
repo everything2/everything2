@@ -141,8 +141,6 @@ sub buildReactData {
         search_term => $node_param,
         is_url => $is_url ? \1 : \0,
         external_link => $external_link,
-        is_guest => $is_guest ? \1 : \0,
-        is_editor => $APP->isEditor($USER) ? \1 : \0,
         show_tin_opener => $show_tin_opener ? \1 : \0,
         tinopener_active => $tinopener_active ? \1 : \0,
         tin_opener_message => $tin_opener_message,

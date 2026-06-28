@@ -91,8 +91,7 @@ sub buildReactData {
         type => 'list_nodes_of_type',
         access_denied => 0,
         node_types => \@node_types,
-        default_type => $default_type,
-        user_id => $USER->node_id
+        default_type => $default_type
     };
 }
 

@@ -25,11 +25,8 @@ Requires editor privileges to use.
 sub buildReactData {
     my ($self, $REQUEST) = @_;
 
-    my $user = $REQUEST->user;
-
     return {
-        max_recipients => 20,
-        username => $user->title
+        max_recipients => 20
     };
 }
 

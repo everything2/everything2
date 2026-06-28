@@ -19,7 +19,6 @@ sub buildReactData
     my $APP   = $self->APP;
     my $USER  = $REQUEST->user;
     my $query = $REQUEST->cgi;
-    my $NODE  = $REQUEST->node;
 
     my $uid = getId( $USER->NODEDATA );
 
@@ -217,8 +216,7 @@ sub buildReactData
         discussions        => \@discussions,
         total_discussions  => $totalnodes,
         offset             => $offset,
-        limit              => $limit,
-        node_id            => $NODE->NODEDATA->{node_id}
+        limit              => $limit
     };
 }
 

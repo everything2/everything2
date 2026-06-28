@@ -62,3 +62,35 @@ describe('UsergroupDiscussions guest gating (#4390 e2.user dedup)', () => {
     expect(container.textContent).not.toContain('you would be able to strike up')
   })
 })
+
+// #4399: the current page node_id now comes from the global e2.node prop,
+// not a duplicated contentData.node_id key.
+describe('UsergroupDiscussions node_id dedup (#4399 e2.node)', () => {
+  const loggedInData = {
+    type: 'usergroup_discussions',
+    usergroups: [{ node_id: 114, title: 'gods' }],
+    selected_usergroup: 0,
+    discussions: [],
+    total_discussions: 0,
+    offset: 0,
+    limit: 50
+  }
+
+  it('uses node_id from the e2.node prop in the usergroup-filter links', () => {
+    const { container } = render(
+      <UsergroupDiscussions
+        data={loggedInData}
+        user={{ guest: false }}
+        e2={{ node: { node_id: 987654 } }}
+      />
+    )
+    // The page's own node_id is woven into the filter/show-all hrefs.
+    const showAll = Array.from(container.querySelectorAll('a')).find((a) =>
+      /show_ug=0/.test(a.getAttribute('href') || '')
+    )
+    expect(showAll).toBeTruthy()
+    expect(showAll.getAttribute('href')).toContain('node_id=987654')
+    // Sanity: still renders the logged-in surface.
+    expect(container.textContent).toContain('Start a New Discussion')
+  })
+})

@@ -32,8 +32,7 @@ sub buildReactData {
     # Admin-only access
     unless ($APP->isAdmin($user->NODEDATA)) {
         return {
-            access_denied => 1,
-            username => $user->title
+            access_denied => 1
         };
     }
 

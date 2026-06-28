@@ -90,7 +90,8 @@ sub buildReactData {
             title => $author ? $author->{title} : 'unknown'
         },
         can_view => $can_view ? 1 : 0,
-        is_admin => $is_admin ? 1 : 0
+        # is_admin dropped: this page reuses the ReputationGraph component, which reads user.admin
+        # from e2.user. can_view stays -- it's a page-specific computed permission, not a dup. (#4399)
     };
 }
 

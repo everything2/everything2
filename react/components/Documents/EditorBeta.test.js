@@ -105,7 +105,6 @@ global.fetch = jest.fn(() =>
 describe('EditorBeta', () => {
   const mockData = {
     canAccess: true,
-    username: 'testuser',
     approvedTags: ['p', 'strong', 'em', 'a', 'h1', 'h2', 'ul', 'li'],
     drafts: [],
     statuses: [
@@ -139,6 +138,16 @@ describe('EditorBeta', () => {
       render(<EditorBeta data={mockData} />)
 
       expect(screen.getByText('Your Drafts')).toBeInTheDocument()
+    })
+
+    it('renders the viewer identity from the user prop, not contentData', () => {
+      const { container } = render(
+        <EditorBeta data={mockData} user={{ title: 'alice' }} />
+      )
+
+      // The logged-in viewer's name is sourced from e2.user.title (the `user`
+      // prop), not a duplicated `username` key in contentData.
+      expect(container.textContent).toContain('alice')
     })
   })
 

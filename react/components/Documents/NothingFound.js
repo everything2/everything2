@@ -16,7 +16,6 @@ const NothingFound = ({ data, user }) => {
     search_term,
     is_url,
     external_link,
-    is_guest,
     show_tin_opener,
     tinopener_active,
     tin_opener_message,
@@ -24,6 +23,10 @@ const NothingFound = ({ data, user }) => {
     lastnode_id,
     best_entries = []
   } = data;
+
+  // Viewer role flags come from the canonical `user` prop (#4399 dedup).
+  // A guest viewer still receives `user` with user.guest === true.
+  const is_guest = !!user?.guest;
 
   const [searchValue, setSearchValue] = useState(search_term || '');
   const [createValue, setCreateValue] = useState(search_term ? search_term.replace(/^\s*https?:\/\//, '') : '');

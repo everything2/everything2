@@ -67,9 +67,7 @@ sub buildReactData {
         type => 'my_recent_writeups',
         is_guest => 0,
         writeup_count => $count,
-        one_year_ago => $one_year_ago_formatted,
-        user_id => $user_id,
-        username => $USER->title
+        one_year_ago => $one_year_ago_formatted
     };
 }
 

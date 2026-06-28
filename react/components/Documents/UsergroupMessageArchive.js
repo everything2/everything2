@@ -7,10 +7,10 @@ import LinkNode from '../LinkNode'
  *
  * Allows copying messages to personal inbox.
  */
-const UsergroupMessageArchive = ({ data, user }) => {
+const UsergroupMessageArchive = ({ data, user, e2 }) => {
+  const node_id = (e2 || (typeof window !== 'undefined' ? window.e2 : undefined))?.node?.node_id
   const {
     archive_groups,
-    node_id,
     selected_group,
     messages,
     total_messages,

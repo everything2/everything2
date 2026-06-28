@@ -17,8 +17,10 @@ const ACTION_LABEL = {
   skipped: 'Skipped'
 }
 
-const TheOldHookedPole = ({ data }) => {
-  const { is_editor, message, prefill } = data
+const TheOldHookedPole = ({ data, user = {}, e2 }) => {
+  const { message, prefill } = data
+  const is_editor = user.editor
+  const node_id = e2?.node?.node_id ?? (typeof window !== 'undefined' ? window.e2?.node?.node_id : undefined)
 
   const [usernames, setUsernames] = useState(prefill || '')
   const [smite, setSmite] = useState(false)
@@ -122,6 +124,7 @@ const TheOldHookedPole = ({ data }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="hooked-pole__form">
+        <input type="hidden" name="node_id" value={node_id ?? ''} />
         {savedUsers && savedUsers.length > 0 && (
           <fieldset className="hooked-pole__fieldset">
             <legend>The users who were spared</legend>

@@ -45,7 +45,6 @@ sub buildReactData {
 
     return {
         type => 'macro_faq',
-        username => $is_guest ? '' : $user->title,
         userMacros => \@user_macros,
         contentEditorsId => $ce_group ? int($ce_group->{node_id}) : 0,
         godsId => $gods_group ? int($gods_group->{node_id}) : 0

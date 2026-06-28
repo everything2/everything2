@@ -5,8 +5,9 @@ import LinkNode from '../LinkNode'
  * NodeForbiddance - Admin tool to forbid/unforbid users from creating nodes.
  * Styles in CSS: .node-forbiddance__*
  */
-const NodeForbiddance = ({ data }) => {
-  const { message, forbidden_users, node_id } = data
+const NodeForbiddance = ({ data, e2 }) => {
+  const { message, forbidden_users } = data
+  const node_id = e2?.node?.node_id ?? window.e2?.node?.node_id
 
   return (
     <div className="node-forbiddance">

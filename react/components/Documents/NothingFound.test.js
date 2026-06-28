@@ -11,13 +11,13 @@ describe('NothingFound', () => {
   const defaultProps = {
     data: {
       search_term: 'nonexistent',
-      is_guest: false,
-      is_editor: false,
       lastnode_id: 12345,
       best_entries: []
     },
-    user: { node_id: 123 }
+    user: { node_id: 123, guest: false }
   }
+
+  const guestUser = { node_id: 0, guest: true }
 
   it('renders nothing found message', () => {
     render(<NothingFound {...defaultProps} />)
@@ -47,7 +47,7 @@ describe('NothingFound', () => {
 
   describe('guest experience', () => {
     it('shows login message for guests', () => {
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: true }} user={defaultProps.user} />)
+      render(<NothingFound data={defaultProps.data} user={guestUser} />)
       expect(screen.getByRole('link', { name: 'Log in' })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'register here' })).toBeInTheDocument()
     })
@@ -57,7 +57,7 @@ describe('NothingFound', () => {
         { writeup_id: 1, node_id: 100, title: 'Best Entry 1', author: { title: 'Author1' } },
         { writeup_id: 2, node_id: 101, title: 'Best Entry 2', author: { title: 'Author2' } }
       ]
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: true, best_entries }} user={defaultProps.user} />)
+      render(<NothingFound data={{ ...defaultProps.data, best_entries }} user={guestUser} />)
       expect(screen.getByText('Best Entry 1')).toBeInTheDocument()
       expect(screen.getByText('Best Entry 2')).toBeInTheDocument()
     })
@@ -66,7 +66,7 @@ describe('NothingFound', () => {
       const best_entries = [
         { writeup_id: 1, node_id: 100, title: 'Entry', author: { title: 'Author' } }
       ]
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: true, best_entries }} user={defaultProps.user} />)
+      render(<NothingFound data={{ ...defaultProps.data, best_entries }} user={guestUser} />)
       expect(screen.getByText(/here are some of our best entries/)).toBeInTheDocument()
     })
 
@@ -74,7 +74,7 @@ describe('NothingFound', () => {
       const best_entries = [
         { writeup_id: 1, node_id: 100, title: 'Entry', author: { title: 'TestAuthor' } }
       ]
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: true, best_entries }} user={defaultProps.user} />)
+      render(<NothingFound data={{ ...defaultProps.data, best_entries }} user={guestUser} />)
       expect(screen.getByText('TestAuthor')).toBeInTheDocument()
     })
 
@@ -82,7 +82,7 @@ describe('NothingFound', () => {
       const best_entries = [
         { writeup_id: 1, node_id: 100, title: 'Entry', author: { title: 'Author' }, excerpt: 'This is the excerpt text' }
       ]
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: true, best_entries }} user={defaultProps.user} />)
+      render(<NothingFound data={{ ...defaultProps.data, best_entries }} user={guestUser} />)
       expect(screen.getByText('This is the excerpt text')).toBeInTheDocument()
     })
   })
@@ -95,7 +95,7 @@ describe('NothingFound', () => {
         title: `Best Entry ${i + 1}`,
         author: { title: `Author${i + 1}` }
       }))
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: true, best_entries }} user={defaultProps.user} />)
+      render(<NothingFound data={{ ...defaultProps.data, best_entries }} user={guestUser} />)
       // Ads should appear after items 4 and 8
       const ads = screen.getAllByTestId('in-content-ad')
       expect(ads).toHaveLength(2)
@@ -108,7 +108,7 @@ describe('NothingFound', () => {
         title: `Best Entry ${i + 1}`,
         author: { title: `Author${i + 1}` }
       }))
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: true, best_entries }} user={defaultProps.user} />)
+      render(<NothingFound data={{ ...defaultProps.data, best_entries }} user={guestUser} />)
       // With exactly 4 items, no ad should show
       expect(screen.queryByTestId('in-content-ad')).not.toBeInTheDocument()
     })
@@ -120,19 +120,19 @@ describe('NothingFound', () => {
         title: `Best Entry ${i + 1}`,
         author: { title: `Author${i + 1}` }
       }))
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: true, best_entries }} user={defaultProps.user} />)
+      render(<NothingFound data={{ ...defaultProps.data, best_entries }} user={guestUser} />)
       expect(screen.getAllByTestId('in-content-ad')).toHaveLength(1)
     })
   })
 
   describe('logged-in user experience', () => {
     it('shows search again form', () => {
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: false }} user={defaultProps.user} />)
+      render(<NothingFound data={defaultProps.data} user={defaultProps.user} />)
       expect(screen.getByRole('button', { name: 'search' })).toBeInTheDocument()
     })
 
     it('shows create new buttons', () => {
-      render(<NothingFound data={{ ...defaultProps.data, is_guest: false }} user={defaultProps.user} />)
+      render(<NothingFound data={defaultProps.data} user={defaultProps.user} />)
       expect(screen.getByRole('button', { name: 'New draft' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'New node' })).toBeInTheDocument()
     })
@@ -140,7 +140,6 @@ describe('NothingFound', () => {
     it('shows existing e2node link when it exists', () => {
       render(<NothingFound data={{
         ...defaultProps.data,
-        is_guest: false,
         existing_e2node: { node_id: 999, title: 'Existing Node' }
       }} user={defaultProps.user} />)
       expect(screen.getByText('Existing Node')).toBeInTheDocument()
@@ -203,6 +202,45 @@ describe('NothingFound', () => {
       fireEvent.click(screen.getByRole('button', { name: 'New draft' }))
 
       expect(global.fetch).not.toHaveBeenCalled()
+    })
+  })
+
+  // #4399: viewer role flags are read from the canonical `user` prop, not
+  // duplicated keys in contentData. user.guest gates the guest vs logged-in view.
+  describe('role gating via user prop (#4399)', () => {
+    it('renders guest view when user.guest is true', () => {
+      const { container } = render(<NothingFound data={defaultProps.data} user={guestUser} />)
+      expect(container.textContent).toMatch(/Log in/)
+      // Logged-in-only "Create new..." forms must not appear for guests.
+      expect(screen.queryByRole('button', { name: 'New draft' })).not.toBeInTheDocument()
+    })
+
+    it('renders logged-in view when user.guest is false', () => {
+      const { container } = render(<NothingFound data={defaultProps.data} user={{ node_id: 123, guest: false }} />)
+      expect(container.textContent).not.toMatch(/If you .*Log in.* you could create/)
+      expect(screen.getByRole('button', { name: 'New draft' })).toBeInTheDocument()
+    })
+
+    it('does not read is_guest from data (dedup) — data.is_guest is ignored', () => {
+      // Stale/absent data.is_guest must not drive the view; only user.guest does.
+      const { container } = render(
+        <NothingFound data={{ ...defaultProps.data, is_guest: true }} user={{ node_id: 123, guest: false }} />
+      )
+      // user.guest === false wins: logged-in form shows.
+      expect(screen.getByRole('button', { name: 'New draft' })).toBeInTheDocument()
+      expect(container.textContent).toMatch(/create a new draft or e2node/)
+    })
+
+    it('treats a guest viewer (user.guest true) as guest even if data lacks is_guest', () => {
+      const { container } = render(<NothingFound data={defaultProps.data} user={{ node_id: 0, guest: true }} />)
+      expect(container.textContent).toMatch(/register here/)
+    })
+
+    it('does not crash when user is undefined (treats as non-guest)', () => {
+      const { container } = render(<NothingFound data={defaultProps.data} user={undefined} />)
+      // No throw; falls back to the logged-in/create view.
+      expect(container.textContent).toMatch(/Sorry, but nothing matching/)
+      expect(screen.getByRole('button', { name: 'New draft' })).toBeInTheDocument()
     })
   })
 

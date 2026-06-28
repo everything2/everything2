@@ -76,12 +76,9 @@ sub buildReactData {
 
     return {
         type              => 'create_category',
-        user_id           => $user_id,
-        user_title        => $USER->title,
         usergroups        => \@usergroups,
         category_type_id  => $category_type_id,
         guest_user_id     => $guest_user_id,
-        user_level        => $APP->getLevel( $USER->NODEDATA ),
         low_level_warning => ( $APP->getLevel( $USER->NODEDATA ) <= 1 ) ? 1 : 0
     };
 }

@@ -6,11 +6,11 @@ import React, { useState } from 'react';
  */
 const SpamCannon = ({ data, e2, user }) => {
   const {
-    max_recipients = 20,
-    username = ''
+    max_recipients = 20
   } = data;
 
   const isEditor = !!user?.editor;
+  const username = user?.title || '';
 
   const [recipients, setRecipients] = useState('');
   const [message, setMessage] = useState('');
@@ -105,6 +105,11 @@ const SpamCannon = ({ data, e2, user }) => {
         <p className="spam-cannon__warning">
           The privilege of using this tool will be revoked if abused.
         </p>
+        {username && (
+          <p className="spam-cannon__sender">
+            Sending as: {username}
+          </p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="spam-cannon__form">

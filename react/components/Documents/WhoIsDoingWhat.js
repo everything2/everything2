@@ -7,14 +7,16 @@ import { formatDateTime } from '../../utils/dateFormat';
  *
  * Admin tool showing recently created nodes.
  */
-const WhoIsDoingWhat = ({ data, e2 }) => {
+const WhoIsDoingWhat = ({ data, e2, user }) => {
   const {
     access_denied,
-    username,
     nodes = [],
     days = 2,
     node_count = 0
   } = data;
+
+  // Viewer's own identity comes from the user prop (e2.user), not contentData (#4399).
+  const username = user?.title || '';
 
   const [daysInput, setDaysInput] = useState(days.toString());
 

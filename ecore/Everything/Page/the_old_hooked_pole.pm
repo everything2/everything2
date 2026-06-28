@@ -20,14 +20,12 @@ sub buildReactData
 
     my $APP  = $self->APP;
     my $USER = $REQUEST->user;
-    my $NODE = $REQUEST->node;
 
     # Editor check
     unless ( $APP->isEditor( $USER->NODEDATA ) ) {
         return {
-            type      => 'the_old_hooked_pole',
-            is_editor => 0,
-            message   => "You've got other things to snoop on, don't ya."
+            type    => 'the_old_hooked_pole',
+            message => "You've got other things to snoop on, don't ya."
         };
     }
 
@@ -35,10 +33,8 @@ sub buildReactData
     my $prefill = scalar( $REQUEST->cgi->param('prefill') ) || '';
 
     return {
-        type      => 'the_old_hooked_pole',
-        is_editor => 1,
-        node_id   => $NODE->NODEDATA->{node_id},
-        prefill   => $prefill,
+        type    => 'the_old_hooked_pole',
+        prefill => $prefill,
     };
 }
 

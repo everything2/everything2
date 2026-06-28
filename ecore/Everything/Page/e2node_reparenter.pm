@@ -44,8 +44,8 @@ sub buildReactData
         new_e2node       => undef,
         suggested_parent => undef,
         errors           => [],
-        is_admin         => $is_admin ? 1 : 0,
-        is_editor        => $is_editor ? 1 : 0
+        # is_admin/is_editor dropped: this page reuses the MagicalWriteupReparenter component,
+        # which gates server-side (access_denied) and doesn't read these from contentData. (#4399)
     };
 
     # Get old e2node if provided

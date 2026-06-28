@@ -78,8 +78,8 @@ sub buildReactData
 
     return {
         type         => 'show_user_vars',
-        is_admin     => 1,
-        is_developer => 0,
+        # is_admin/is_developer dropped: this page reuses the ShowUserVars component, which reads
+        # the viewer role from e2.user (user.admin). inspect_user stays -- the component reads it. (#4399)
         inspect_user => {
             node_id => $inspect_user->{node_id},
             title   => $inspect_user->{title}

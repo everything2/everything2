@@ -19,4 +19,14 @@ describe('ListNodesOfType (real pagestate fixture)', () => {
     spy.mockRestore()
     expect(errs.filter((x) => /unique "key"|each child in a list/i.test(x))).toEqual([])
   })
+  it('reads the viewer node_id from the user prop, not contentData (#4399)', () => {
+    // contentData no longer carries the viewer's own user_id; it comes from e2.user.
+    expect(fixture.contentData.user_id).toBeUndefined()
+    // Granted (non-denied) data so the viewer footer renders; node_id is sourced from the user prop.
+    const grantedData = { type: 'list_nodes_of_type', access_denied: 0, node_types: [], default_type: '' }
+    const { container } = render(
+      <ListNodesOfType data={grantedData} e2={fixture} user={{ node_id: 424242 }} />
+    )
+    expect(container.textContent).toContain('424242')
+  })
 })

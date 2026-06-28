@@ -60,3 +60,23 @@ describe('UsergroupMessageArchive role gating via user prop', () => {
     expect(container.textContent).not.toContain('usergroup message archive manager')
   })
 })
+
+// The current page node_id now comes from the global e2.node prop (#4399 contentData
+// node-id dedup), not a duplicated node_id key in contentData.
+describe('UsergroupMessageArchive page node_id via e2 prop', () => {
+  const archiveGroups = [{ node_id: 999, title: 'Test Group' }]
+
+  it('builds archive-group links from e2.node.node_id, not contentData', () => {
+    const { container } = render(
+      <UsergroupMessageArchive
+        data={{ type: 'usergroup_message_archive', archive_groups: archiveGroups }}
+        e2={{ node: { node_id: 424242 } }}
+        user={{ guest: false, admin: false }}
+      />
+    )
+    const link = container.querySelector('a.usergroup-archive__link')
+    expect(link.getAttribute('href')).toContain('node_id=424242')
+    // The referenced usergroup link text is still rendered from its own node.
+    expect(container.textContent).toContain('Test Group')
+  })
+})

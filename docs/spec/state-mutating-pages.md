@@ -54,6 +54,15 @@ Status legend: ✅ already API-driven · 🟡 mutates via API but React still do
 | e2_gift_shop | yes | buy/give votes/ching/tokens/eggs; set topic; star | ✅ `/api/giftshop/*` (9 endpoints) |
 | drafts_for_review | — | (read-only editor review queue) | — n/a |
 
+| create_category | yes | create a category (logged-in) | ✅ `POST /api/category/create` |
+| drafts / e2_editor_beta | yes | draft CRUD + autosave + editor pref | ✅ `/api/drafts/*`, `/api/autosave`, `/api/preferences/set` |
+| my_recent_writeups / who_is_doing_what / what_does_what / list_nodes_of_type | — | (read-only; list_nodes saves a sort pref via `/api/preferences/update`) | — n/a |
+| node_forbiddance | yes | (admin) forbid/unforbid a node | ❌ **side-effect in buildReactData** (GET `?forbid`/`?unforbid` → `sqlInsert`/`sqlDelete` on `nodelock`) |
+| renunciation_chainsaw | yes | (admin) reparent writeups to another user | ❌ **side-effect in buildReactData** (self-POST → `updateNode` author + `setVars` numwriteups) |
+| the_old_hooked_pole | yes | (editor) bulk user cleanup | ✅ `POST /api/admin/users/cleanup` |
+| usergroup_picks | yes | (admin) unlink a weblog entry | ✅ `POST /api/usergrouppicks/unlink` |
+| nothing_found | yes | create a draft/e2node from a no-results search (logged-in) | ✅ `POST /api/node/create` |
+
 <!-- append one row per Document as the #4390 sweep reaches it -->
 
 ## API-candidate backlog (mutating, not yet API)
@@ -69,6 +78,8 @@ These mutate server state **inside the page controller on render**, driven by GE
 - **mark_all_discussions_as_read** — GET `?mark_*_read` → `sqlUpdate`/`sqlInsert` on `lastreaddebate`
 - **usergroup_message_archive** — params → `sqlInsert` message (copy-to-self) + `setVars` (resettime pref)
 - **everything_document_directory** — POST `EDD_Sort` → `setVars` (sort pref; mildest)
+- **node_forbiddance** (#4399) — GET `?forbid`/`?unforbid` → `sqlInsert`/`sqlDelete` on `nodelock` (admin)
+- **renunciation_chainsaw** (#4399) — self-POST → `updateNode` (writeup author) + `setVars` (numwriteups), admin reparent
 
 ### Related latent bug (not a mutation, but found in the same sweep)
-`$APP->isGuest($USER)` is mis-called with the **blessed** `$USER` object (instead of `$USER->NODEDATA` / `$USER->is_guest`) in several pages — it silently returns false for guests. Fixed in `random_nodeshells` (#4390); a wider audit (`e2_penny_jar`, `clientdev_home`, `welcome_to_everything`, some xml_tickers — verify each's `$USER` definition first) is worth a follow-up issue.
+`$APP->isGuest($USER)` (and `isAdmin`/`isEditor`) mis-called with the **blessed** `$USER` object instead of `$USER->NODEDATA` / the `$USER->is_guest` method — silently returns false for guests/admins. **Fixed: `random_nodeshells` (#4397), `clientdev_home` (isGuest+isAdmin) + `noding_speedometer` (#4397).** Audited the rest: `welcome_to_everything`, `e2_penny_jar`, and all the xml_tickers correctly pass `->NODEDATA` (not buggy). So the latent class is now closed for known cases; the blessed-arg call is the anti-pattern to watch in new code.

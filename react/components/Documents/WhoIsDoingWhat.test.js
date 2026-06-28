@@ -12,6 +12,13 @@ describe('WhoIsDoingWhat (real pagestate fixture)', () => {
   it('fixture has integer node_ids, never strings (#4152)', () => {
     expect(JSON.stringify(fixture).match(/"node_id":"\d/g)).toBeNull()
   })
+  it('denied message draws the viewer name from the user prop, not contentData (#4399)', () => {
+    const data = { access_denied: 1 }
+    const { container } = render(
+      <WhoIsDoingWhat data={data} e2={{}} user={{ title: 'CuriousGeorge' }} />
+    )
+    expect(container.textContent).toContain('CuriousGeorge')
+  })
   it('no React key warnings', () => {
     const errs = []
     const spy = jest.spyOn(console, 'error').mockImplementation((...a) => errs.push(a.join(' ')))

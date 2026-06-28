@@ -7,10 +7,10 @@ import LinkNode from '../LinkNode'
  * Admin tool for transferring ownership of multiple writeups from one
  * user to another.
  */
-const RenunciationChainsaw = ({ data }) => {
+const RenunciationChainsaw = ({ data, e2 }) => {
+  const node_id = e2?.node?.node_id ?? window.e2?.node?.node_id
   const {
     error,
-    node_id,
     prefill_user = '',
     prefill_node = '',
     processed,
