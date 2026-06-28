@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import ThemeNirvana from './ThemeNirvana'
 import fixture from '../../__fixtures__/pagestate/theme_nirvana.json'
 // Fixture-backed coverage (PageState 2a, #4255): real normalized /api/pagestate payload,
@@ -41,5 +41,31 @@ describe('ThemeNirvana (real pagestate fixture)', () => {
     )
     expect(container).toBeTruthy()
     expect(container.textContent).toContain('[ test ]')
+  })
+
+  // #4401: clearing a custom style POSTs to /api/customstyle/clear (was a ?clearVandalism
+  // GET that mutated VARS inside buildReactData) and reloads so the cleared style drops.
+  it('POSTs to /api/customstyle/clear and reloads when clearing a custom style', async () => {
+    const reloadMock = jest.fn()
+    const savedLocation = window.location
+    delete window.location
+    window.location = { reload: reloadMock }
+    const fetchMock = (global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: 1, message: 'Your custom theme has been cleared.' }),
+    }))
+    try {
+      const { getByRole } = render(
+        <ThemeNirvana data={{ has_custom_style: 1, stylesheets: [], current_style: null }} user={{ guest: false }} />
+      )
+      fireEvent.click(getByRole('button', { name: /clear my custom style/i }))
+      await waitFor(() =>
+        expect(fetchMock).toHaveBeenCalledWith('/api/customstyle/clear', expect.objectContaining({ method: 'POST' }))
+      )
+      await waitFor(() => expect(reloadMock).toHaveBeenCalled())
+    } finally {
+      window.location = savedLocation
+      delete global.fetch
+    }
   })
 })
